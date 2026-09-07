@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>원파인데이 주간 업무 보고서</title>
+<style>
+  :root{
+    --paper:#ece6d4;
+    --paper-deep:#e2dabf;
+    --line:#c3b795;
+    --ink:#2b2417;
+    --ink-soft:#5c5340;
+    --ledger-green:#5f7a55;
+    --ledger-green-soft:#e7ecdd;
+    --stamp-red:#a13b2c;
+    --gold:#a3823f;
+    --done-ink:#8f8875;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(
+        var(--paper) 0px, var(--paper) 30px,
+        var(--paper-deep) 30px, var(--paper-deep) 31px
+      );
+    font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    color: var(--ink);
+    padding: 28px 16px 80px;
+  }
+  .sheet{
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .letterhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .letterhead h1{
+    font-family: "Noto Serif KR", "Batang", serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: 0.5px;
+  }
+  .letterhead .sub{
+    display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;
+  }
+  .letterhead input{
+    font-family: -apple-system, "Apple SD Gothic Neo", sans-serif;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--line);
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    padding: 2px 2px;
+  }
+  .letterhead input:focus{outline:none; border-bottom-color: var(--ink);}
+  #range{width:170px;}
+  #title-input{ font-family:"Noto Serif KR","Batang",serif; font-size:26px; font-weight:700; width: 360px; color:var(--ink); border-bottom:1px dashed var(--line); }
+  .toolbar{
+    display:flex; gap:8px; align-items:center; flex-wrap: wrap;
+  }
+  select, .btn{
+    font-family: -apple-system, "Apple SD Gothic Neo", sans-serif;
+    font-size: 13px;
+    padding: 6px 10px;
+    border: 1px solid var(--ink-soft);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .btn:hover{ background: var(--ink); color: var(--paper); }
+  .btn.primary{ border-color: var(--ledger-green); color: var(--ledger-green); font-weight:600; }
+  .btn.primary:hover{ background: var(--ledger-green); color:#fff; }
+  .saved-note{ font-size:11.5px; color: var(--ink-soft); margin-left:4px; }
+
+  .summary{
+    margin: 18px 0 26px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.25);
+  }
+  .summary label{ font-size:12px; color:var(--ink-soft); display:block; margin-bottom:4px; }
+  .summary textarea{
+    width:100%; border:none; background:transparent; resize:vertical;
+    font-family:inherit; font-size:14px; color:var(--ink); min-height:44px;
+  }
+  .summary textarea:focus{ outline:none; }
+
+  .section{ margin-bottom: 26px; }
+  .section-head{
+    display:flex; align-items:center; gap:10px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .tab{
+    width: 10px; height:10px; flex:0 0 auto;
+  }
+  .section-head h2{
+    font-family:"Noto Serif KR","Batang",serif;
+    font-size: 16px; font-weight:700; margin:0; letter-spacing:0.3px;
+  }
+  .section-head .count{
+    font-size:12px; color:var(--ink-soft); margin-left:auto;
+  }
+  .toggle-done{
+    font-size:11.5px; color:var(--ink-soft); background:none; border:none; cursor:pointer; text-decoration:underline;
+    padding:0;
+  }
+
+  .item-row{
+    display:flex; align-items:center; gap:10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(195,183,149,0.6);
+  }
+  .item-row.done .item-text{ color: var(--done-ink); text-decoration: line-through; }
+  .stamp{
+    width: 24px; height:24px; border-radius:50%;
+    border: 2px solid var(--ink-soft);
+    flex: 0 0 auto;
+    cursor:pointer;
+    position:relative;
+    background: transparent;
+  }
+  .stamp.on{
+    border-color: var(--stamp-red);
+    background: radial-gradient(circle, rgba(161,59,44,0.15) 0%, rgba(161,59,44,0.15) 60%, transparent 62%);
+  }
+  .stamp.on::after{
+    content:"完";
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px; color: var(--stamp-red); font-weight:700;
+    font-family:"Noto Serif KR","Batang",serif;
+  }
+  @keyframes stampdown{
+    0%{ transform: scale(1.6) rotate(-8deg); opacity:0; }
+    60%{ transform: scale(0.95) rotate(-4deg); opacity:1; }
+    100%{ transform: scale(1) rotate(-4deg); opacity:1; }
+  }
+  .stamp.on{ animation: stampdown 0.22s ease-out; }
+
+  .item-text{
+    flex: 1 1 auto;
+    border:none; background:transparent; font-size:14px; color:var(--ink);
+    font-family:inherit; padding:2px 0;
+  }
+  .item-text:focus{ outline:none; border-bottom:1px dashed var(--line); }
+  .item-due{
+    flex: 0 0 auto; width: 96px;
+    border:none; background:transparent; font-size:12.5px; color:var(--ink-soft);
+    font-family:inherit; text-align:right;
+  }
+  .item-due:focus{ outline:none; border-bottom:1px dashed var(--line); }
+  .item-del{
+    flex:0 0 auto; background:none; border:none; color:var(--ink-soft);
+    cursor:pointer; font-size:15px; padding:0 2px;
+  }
+  .item-del:hover{ color: var(--stamp-red); }
+
+  .add-row{
+    display:flex; gap:8px; margin-top:8px;
+  }
+  .add-row input[type=text]{
+    flex:1 1 auto; padding:6px 8px; border:1px solid var(--line); background:rgba(255,255,255,0.4);
+    font-family:inherit; font-size:13.5px;
+  }
+  .add-row input[type=date]{
+    padding:6px 6px; border:1px solid var(--line); background:rgba(255,255,255,0.4); font-family:inherit; font-size:12.5px; width:135px;
+  }
+  .add-row button{
+    padding:6px 12px; border:1px solid var(--ledger-green); background:transparent; color:var(--ledger-green);
+    cursor:pointer; font-size:13px; font-weight:600;
+  }
+  .add-row button:hover{ background:var(--ledger-green); color:#fff; }
+
+  .empty-hint{ font-size:12.5px; color:var(--ink-soft); padding:6px 0; font-style:italic; }
+
+  .footer-note{
+    margin-top:36px; padding-top:14px; border-top:1px dashed var(--line);
+    font-size:11.5px; color:var(--ink-soft); text-align:center;
+  }
+
+  ::selection{ background: rgba(95,122,85,0.25); }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="letterhead">
+    <div>
+      <input id="title-input" value="주간 업무 보고서" />
+      <div class="sub">
+        <input id="range" placeholder="예: 08/31 ~ 09/07" />
+      </div>
+    </div>
+    <div class="toolbar">
+      <select id="report-select"></select>
+      <button class="btn" id="new-report">새 보고서</button>
+      <button class="btn" id="copy-text">텍스트 복사</button>
+      <button class="btn primary" id="save-now">저장</button>
+    </div>
+  </div>
+  <div class="saved-note" id="saved-note">불러오는 중...</div>
+
+  <div class="summary">
+    <label>요약 (3줄 이내)</label>
+    <textarea id="summary-text" placeholder="이번 주 핵심 이슈를 간단히 적어두세요"></textarea>
+  </div>
+
+  <div id="sections"></div>
+
+  <div class="footer-note">원파인데이 · 강세희 정리 · 이 문서는 이 브라우저 세션에만 저장됩니다. 허브 업로드 시 '텍스트 복사'를 활용하세요.</div>
+</div>
+
+<script>
+const SECTION_DEFS = [
+  { id:'urgent',    label:'마감 임박 / 즉시 처리',   color:'#a13b2c' },
+  { id:'pending',   label:'답변 · 처리 대기',        color:'#a3823f' },
+  { id:'directive', label:'원장님 확정 지시사항',     color:'#5f7a55' },
+  { id:'staffing',  label:'인력 · 채용',             color:'#3d5a80' },
+  { id:'payment',   label:'결제 · 미납',             color:'#8a6d3b' },
+  { id:'complaint', label:'컴플레인 트래킹',         color:'#7a2e2e' },
+  { id:'schedule',  label:'다가오는 일정',           color:'#3a6b64' },
+];
+
+function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function defaultReport(){
+  const id = uid('report');
+  const sections = {};
+  SECTION_DEFS.forEach(s => sections[s.id] = []);
+
+  // 8/31 ~ 9/7 최초 실전 데이터로 초기화
+  sections.urgent = [
+    { id: uid('i'), text: '내일(9/8) 회의용 컴플레인(박승우, 조현서) 정리본 준비', due: '', done: false },
+    { id: uid('i'), text: '예진님 면접 (2층, 오전 8시) 참석', due: '', done: false },
+    { id: uid('i'), text: '김도연 학생 어머니 - "조금 더 고민" 상태, 팔로우업', due: '', done: false },
+  ];
+  sections.pending = [
+    { id: uid('i'), text: '박승우 환불 방식 확정 (1회 수강료 제외 vs 환불규정)', due: '', done: false },
+    { id: uid('i'), text: '다락원 PDF 제공 가능 여부 회신 대기', due: '', done: false },
+    { id: uid('i'), text: '쏠북 중간고사 자료 활용방안 - 태은쌤 확인 후속', due: '', done: false },
+    { id: uid('i'), text: '조민 학생 - 태준쌤 채널 직접 답변 여부 확인', due: '', done: false },
+    { id: uid('i'), text: '정수기/공기청정기 업체 (010-4140-2242) 방문 일정 확정', due: '', done: false },
+  ];
+  sections.directive = [
+    { id: uid('i'), text: '성범죄경력 조회 명단 제출 (교육지원청)', due: '2026-09-09', done: true },
+    { id: uid('i'), text: '퇴원생/휴원생 리스트 재분류 (트러블 학생만 퇴원생)', due: '', done: false },
+    { id: uid('i'), text: '8월 고등부 결제 총액 재정리 (임재희 포함)', due: '', done: false },
+    { id: uid('i'), text: '추석 연휴 안내 총 5회 발송 (현재 1회만 발송)', due: '', done: false },
+    { id: uid('i'), text: '국제중 안내문 + 성과 전단지 엘베 옆 게시 (구버전 교체)', due: '', done: false },
+    { id: uid('i'), text: '최주아 자소서 수업 요일/장소 확정', due: '', done: false },
+  ];
+  sections.staffing = [
+    { id: uid('i'), text: '안태은쌤 9월 말 퇴사 예정', due: '', done: false },
+    { id: uid('i'), text: '박정은쌤 9월 17일 퇴사 예정 (임용고시)', due: '2026-09-17', done: false },
+    { id: uid('i'), text: '화목 5~10시 조교 2명 필요 - 류창희 9/29 확정, 10/1 투입분 1명 미정', due: '', done: false },
+  ];
+  sections.payment = [
+    { id: uid('i'), text: '9월 미납 27명 - 화요일경 안내 예정', due: '', done: false },
+    { id: uid('i'), text: '임재희 7월 미납분 8월 합산 결제 완료건 재확인', due: '', done: false },
+  ];
+  sections.complaint = [
+    { id: uid('i'), text: '조현서 (지현쌤반) - 수업 퀄리티 컴플레인, 6회 환불로 마무리, 내일 회의 논의 예정', due: '', done: false },
+    { id: uid('i'), text: '박승우 (에피쌤반) - 반 분위기 컴플레인, 퇴원 확정, 환불 처리만 남음', due: '', done: false },
+  ];
+  sections.schedule = [
+    { id: uid('i'), text: '9/8(화) 전체 회의 - 월말 리포트 양식, 컴플레인 논의', due: '2026-09-08', done: false },
+    { id: uid('i'), text: '9/19(토) 청심국제중 설명회 11시', due: '2026-09-19', done: false },
+    { id: uid('i'), text: '9/22~9/26 추석 휴가', due: '2026-09-22', done: false },
+  ];
+
+  return {
+    id,
+    title: '주간 업무 보고서',
+    range: '08/31 ~ 09/07',
+    summary: '조현서·박승우 컴플레인 2건 동시 발생. 성범죄경력 명단 제출 완료. 신규 조교 1명 자리 아직 미확정.',
+    sections,
+    updatedAt: Date.now(),
+  };
+}
+
+let state = null;
+let saveTimer = null;
+
+async function safeGet(key){
+  try{
+    const r = await window.storage.get(key, false);
+    return r ? r.value : null;
+  }catch(e){ return null; }
+}
+async function safeSet(key, value){
+  try{
+    await window.storage.set(key, value, false);
+    return true;
+  }catch(e){ return false; }
+}
+
+async function loadList(){
+  const raw = await safeGet('report:list');
+  if(!raw) return [];
+  try{ return JSON.parse(raw); }catch(e){ return []; }
+}
+async function saveList(list){
+  await safeSet('report:list', JSON.stringify(list));
+}
+async function loadReport(id){
+  const raw = await safeGet('report:' + id);
+  if(!raw) return null;
+  try{ return JSON.parse(raw); }catch(e){ return null; }
+}
+async function persistCurrent(){
+  if(!state) return;
+  state.updatedAt = Date.now();
+  await safeSet('report:' + state.id, JSON.stringify(state));
+  const list = await loadList();
+  const idx = list.findIndex(r => r.id === state.id);
+  const entry = { id: state.id, title: state.title, range: state.range, updatedAt: state.updatedAt };
+  if(idx >= 0) list[idx] = entry; else list.unshift(entry);
+  await saveList(list);
+  setSavedNote('저장됨 · ' + new Date(state.updatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}));
+  await refreshSelect();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  setSavedNote('저장 중...');
+  saveTimer = setTimeout(persistCurrent, 500);
+}
+function setSavedNote(text){
+  document.getElementById('saved-note').textContent = text;
+}
+
+function render(){
+  document.getElementById('title-input').value = state.title;
+  document.getElementById('range').value = state.range;
+  document.getElementById('summary-text').value = state.summary;
+
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+
+  SECTION_DEFS.forEach(def => {
+    const items = state.sections[def.id] || [];
+    const doneCount = items.filter(i => i.done).length;
+    const hideDone = def._hideDone;
+
+    const sec = document.createElement('div');
+    sec.className = 'section';
+
+    const head = document.createElement('div');
+    head.className = 'section-head';
+    head.innerHTML = `
+      <div class="tab" style="background:${def.color}"></div>
+      <h2>${def.label}</h2>
+      <button class="toggle-done" data-sec="${def.id}">${hideDone ? '완료 항목 보기' : '완료 항목 숨기기'}</button>
+      <span class="count">${items.length}건 · 완료 ${doneCount}</span>
+    `;
+    sec.appendChild(head);
+
+    const list = document.createElement('div');
+    if(items.length === 0){
+      const hint = document.createElement('div');
+      hint.className = 'empty-hint';
+      hint.textContent = '등록된 항목이 없습니다.';
+      list.appendChild(hint);
+    }
+    items.forEach(item => {
+      if(hideDone && item.done) return;
+      const row = document.createElement('div');
+      row.className = 'item-row' + (item.done ? ' done' : '');
+
+      const stamp = document.createElement('button');
+      stamp.className = 'stamp' + (item.done ? ' on' : '');
+      stamp.title = '완료 표시';
+      stamp.addEventListener('click', () => {
+        item.done = !item.done;
+        render();
+        scheduleSave();
+      });
+
+      const text = document.createElement('input');
+      text.className = 'item-text';
+      text.value = item.text;
+      text.addEventListener('change', () => { item.text = text.value; scheduleSave(); });
+
+      const due = document.createElement('input');
+      due.className = 'item-due';
+      due.type = 'text';
+      due.placeholder = '마감/일자';
+      due.value = item.due || '';
+      due.addEventListener('change', () => { item.due = due.value; scheduleSave(); });
+
+      const del = document.createElement('button');
+      del.className = 'item-del';
+      del.textContent = '×';
+      del.title = '삭제';
+      del.addEventListener('click', () => {
+        state.sections[def.id] = state.sections[def.id].filter(i => i.id !== item.id);
+        render();
+        scheduleSave();
+      });
+
+      row.appendChild(stamp);
+      row.appendChild(text);
+      row.appendChild(due);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+    sec.appendChild(list);
+
+    const addRow = document.createElement('div');
+    addRow.className = 'add-row';
+    addRow.innerHTML = `
+      <input type="text" placeholder="새 항목 입력 후 Enter" data-add-text>
+      <input type="text" placeholder="마감/일자 (선택)" data-add-due style="width:120px;">
+      <button data-add-btn>추가</button>
+    `;
+    const addText = addRow.querySelector('[data-add-text]');
+    const addDue = addRow.querySelector('[data-add-due]');
+    const addBtn = addRow.querySelector('[data-add-btn]');
+    function doAdd(){
+      const val = addText.value.trim();
+      if(!val) return;
+      state.sections[def.id].push({ id: uid('i'), text: val, due: addDue.value.trim(), done: false });
+      addText.value = ''; addDue.value = '';
+      render();
+      scheduleSave();
+    }
+    addBtn.addEventListener('click', doAdd);
+    addText.addEventListener('keydown', e => { if(e.key === 'Enter') doAdd(); });
+    sec.appendChild(addRow);
+
+    container.appendChild(sec);
+  });
+
+  container.querySelectorAll('.toggle-done').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const def = SECTION_DEFS.find(d => d.id === btn.dataset.sec);
+      def._hideDone = !def._hideDone;
+      render();
+    });
+  });
+}
+
+async function refreshSelect(){
+  const list = await loadList();
+  list.sort((a,b) => b.updatedAt - a.updatedAt);
+  const sel = document.getElementById('report-select');
+  sel.innerHTML = '';
+  list.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.id;
+    opt.textContent = `${r.title} (${r.range || '기간 미지정'})`;
+    if(state && r.id === state.id) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+async function init(){
+  setSavedNote('불러오는 중...');
+  const list = await loadList();
+  if(list.length === 0){
+    state = defaultReport();
+    await persistCurrent();
+  } else {
+    list.sort((a,b) => b.updatedAt - a.updatedAt);
+    state = await loadReport(list[0].id);
+    if(!state) state = defaultReport();
+  }
+  render();
+  await refreshSelect();
+  setSavedNote('불러옴');
+
+  document.getElementById('title-input').addEventListener('change', e => { state.title = e.target.value; scheduleSave(); });
+  document.getElementById('range').addEventListener('change', e => { state.range = e.target.value; scheduleSave(); });
+  document.getElementById('summary-text').addEventListener('change', e => { state.summary = e.target.value; scheduleSave(); });
+
+  document.getElementById('save-now').addEventListener('click', persistCurrent);
+
+  document.getElementById('new-report').addEventListener('click', async () => {
+    const fresh = { id: uid('report'), title:'주간 업무 보고서', range:'', summary:'', sections:{}, updatedAt: Date.now() };
+    SECTION_DEFS.forEach(s => fresh.sections[s.id] = []);
+    state = fresh;
+    render();
+    await persistCurrent();
+  });
+
+  document.getElementById('report-select').addEventListener('change', async (e) => {
+    const r = await loadReport(e.target.value);
+    if(r){ state = r; render(); setSavedNote('불러옴'); }
+  });
+
+  document.getElementById('copy-text').addEventListener('click', () => {
+    let out = `## ${state.title}\n기간: ${state.range}\n\n요약: ${state.summary}\n\n`;
+    SECTION_DEFS.forEach(def => {
+      const items = state.sections[def.id] || [];
+      if(items.length === 0) return;
+      out += `\n### ${def.label}\n`;
+      items.forEach(i => {
+        out += `- [${i.done ? 'x' : ' '}] ${i.text}${i.due ? ' (' + i.due + ')' : ''}\n`;
+      });
+    });
+    navigator.clipboard.writeText(out).then(() => {
+      setSavedNote('텍스트가 클립보드에 복사되었습니다.');
+      setTimeout(() => setSavedNote('저장됨'), 2000);
+    }).catch(() => {
+      setSavedNote('복사 실패 - 브라우저 권한을 확인하세요.');
+    });
+  });
+}
+
+init();
+</script>
+</body>
+</html>

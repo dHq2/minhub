@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>원파인데이 허브</title>
+<style>
+  :root{
+    --sky-1:#050810;
+    --sky-2:#0e1830;
+    --sky-3:#1c2947;
+    --moon:#efe8d4;
+    --front:#2c2f3a;
+    --front-dark:#22242e;
+    --side:#17181f;
+    --roof:#101116;
+    --win-off:#383c4a;
+    --win-glow-core:#ffd98a;
+    --win-glow-outer:#f2a53f;
+    --neon:#e2543f;
+    --neon-soft:rgba(226,84,63,0.55);
+    --ground:#04050a;
+    --cream:#e7ddc7;
+    --cream-dim:#a89f8c;
+    --card:#14161d;
+    --card-line:#2a2d38;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--sky-1);
+    font-family: -apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    color: var(--cream);
+    overflow-x:hidden;
+  }
+
+  /* ---------- HERO / SKY ---------- */
+  .hero{
+    position:relative;
+    height: 100vh;
+    min-height: 560px;
+    background: radial-gradient(ellipse at 50% 20%, var(--sky-3) 0%, var(--sky-2) 45%, var(--sky-1) 100%);
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .stars{ position:absolute; inset:0; }
+  .star{
+    position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+    opacity:0.5;
+    animation: twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:0.15; }
+    50%{ opacity:0.85; }
+  }
+  .moon{
+    position:absolute; top:9%; right:14%;
+    width:64px; height:64px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #fffdf5, var(--moon) 60%, #cfc7ab 100%);
+    box-shadow: 0 0 40px 10px rgba(239,232,212,0.25);
+  }
+
+  .stage{
+    perspective: 1400px;
+    padding-bottom: 0;
+    z-index: 2;
+  }
+  .building{
+    position:relative;
+    width: 340px;
+    height: 380px;
+    transform-style: preserve-3d;
+    transform: rotateX(-8deg) rotateY(-30deg);
+    transition: transform 0.4s ease-out;
+  }
+  .face{
+    position:absolute;
+    top:0; left:0;
+  }
+  .front{
+    width:220px; height:380px;
+    background: linear-gradient(180deg, var(--front) 0%, var(--front-dark) 100%);
+    transform: translateZ(90px);
+  }
+  .side{
+    width:170px; height:380px;
+    background: linear-gradient(180deg, var(--side) 0%, #0e0f14 100%);
+    transform: rotateY(90deg) translateZ(130px);
+    transform-origin: left;
+  }
+  .roof{
+    width:220px; height:170px;
+    background: var(--roof);
+    transform: rotateX(90deg) translateZ(0px) translateY(-170px);
+    transform-origin: top;
+  }
+  .roof::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03), transparent 60%);
+  }
+
+  .win-grid{
+    position:absolute; inset: 22px 18px 18px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 14px 16px;
+  }
+  .win{
+    position:relative;
+    background: var(--win-off);
+    border-radius: 1px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+  }
+  .win.lit{
+    background: linear-gradient(180deg, var(--win-glow-core), var(--win-glow-outer));
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.25),
+      0 0 16px 3px rgba(242,165,63,0.55);
+    animation: flicker-in 1.4s ease-out both;
+  }
+  .win.lit:nth-of-type(1){ animation-delay: 0.2s; }
+  .win.lit:nth-of-type(2){ animation-delay: 0.6s; }
+  @keyframes flicker-in{
+    0%{ opacity:0; box-shadow:none; }
+    40%{ opacity:1; }
+    55%{ opacity:0.4; }
+    70%{ opacity:1; }
+    100%{ opacity:1; }
+  }
+  .win .tip{
+    position:absolute;
+    bottom: 130%;
+    left:50%;
+    transform: translateX(-50%);
+    background: #0c0d11;
+    border:1px solid var(--card-line);
+    color: var(--cream);
+    font-size: 11.5px;
+    padding: 5px 9px;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.15s;
+  }
+  .win:hover .tip{ opacity:1; }
+  .win.future{ cursor:default; }
+  .win.future .tip{ color: var(--cream-dim); }
+
+  .door{
+    position:absolute;
+    left:50%; bottom:0;
+    transform: translateX(-50%) translateZ(91px);
+    width:52px; height:64px;
+    background: linear-gradient(180deg,#1c1e26,#111319);
+    border-radius: 3px 3px 0 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .door::after{
+    content:'';
+    position:absolute; top:14px; left:50%; width:3px; height:3px;
+    background: var(--win-glow-core); border-radius:50%;
+    box-shadow: 0 0 4px 1px var(--win-glow-outer);
+    transform: translateX(-50%);
+  }
+
+  .sign{
+    position:absolute;
+    left:50%; top:-34px;
+    transform: translateX(-50%) translateZ(92px) rotateX(2deg);
+    font-family:"Noto Serif KR","Batang",serif;
+    font-size: 17px;
+    font-weight:700;
+    letter-spacing: 1px;
+    color: var(--neon);
+    text-shadow: 0 0 6px var(--neon-soft), 0 0 18px var(--neon-soft);
+    white-space:nowrap;
+    opacity:0;
+    animation: sign-on 1.6s ease-out 0.4s forwards;
+  }
+  @keyframes sign-on{
+    0%{ opacity:0; }
+    18%{ opacity:1; }
+    23%{ opacity:0.2; }
+    28%{ opacity:1; }
+    100%{ opacity:1; }
+  }
+
+  .ground{
+    position:absolute; bottom:0; left:50%;
+    width: 640px; height: 90px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(226,84,63,0.10), transparent 70%),
+                var(--ground);
+    z-index:1;
+  }
+
+  .caption{
+    position:absolute;
+    bottom: 26px; left:50%; transform:translateX(-50%);
+    text-align:center;
+    z-index:3;
+    color: var(--cream-dim);
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+  }
+  .caption b{ color: var(--cream); font-weight:600; }
+
+  /* ---------- DASHBOARD ---------- */
+  .desk{
+    background: var(--sky-1);
+    padding: 46px 20px 70px;
+  }
+  .desk-inner{ max-width: 760px; margin:0 auto; }
+  .desk h2{
+    font-family:"Noto Serif KR","Batang",serif;
+    font-size: 19px;
+    margin: 0 0 4px;
+    color: var(--cream);
+  }
+  .desk p.lead{
+    color: var(--cream-dim);
+    font-size: 13px;
+    margin: 0 0 22px;
+  }
+  .cards{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .card{
+    display:block;
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    padding: 16px 16px 14px;
+    text-decoration:none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover{ border-color: var(--neon); transform: translateY(-2px); }
+  .card .dot{
+    width:7px; height:7px; border-radius:50%; margin-bottom:10px;
+    background: var(--win-glow-outer);
+    box-shadow: 0 0 8px 1px rgba(242,165,63,0.6);
+  }
+  .card.soon .dot{ background: #565a68; box-shadow:none; }
+  .card h3{ font-size:14.5px; margin:0 0 5px; font-weight:600; color: var(--cream); }
+  .card p{ font-size:12px; margin:0; color: var(--cream-dim); line-height:1.5; }
+  .card .status{
+    display:inline-block; margin-top:10px; font-size:10.5px;
+    color: var(--neon); border:1px solid var(--neon-soft); padding:2px 7px;
+  }
+  .card.soon .status{ color: var(--cream-dim); border-color: var(--card-line); }
+
+  .foot{
+    max-width:760px; margin: 34px auto 0; padding-top:16px;
+    border-top: 1px dashed var(--card-line);
+    font-size: 11.5px; color: var(--cream-dim); text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero" id="hero">
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+
+  <div class="stage">
+    <div class="building" id="building">
+      <div class="face roof"></div>
+      <div class="face side">
+        <div class="win-grid">
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+        </div>
+      </div>
+      <div class="face front">
+        <div class="sign">원파인데이 허브</div>
+        <div class="win-grid">
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win future"><span class="tip">입주 예정</span></div>
+          <div class="win lit"><span class="tip">보스 — 최수웅</span></div>
+          <div class="win lit"><span class="tip">강세희 — 비서 데스크</span></div>
+        </div>
+        <div class="door"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ground"></div>
+  <div class="caption">오늘 밤 켜진 불은 둘뿐입니다. <b>위층은 비워뒀습니다.</b></div>
+</div>
+
+<div class="desk">
+  <div class="desk-inner">
+    <h2>바로가기</h2>
+    <p class="lead">허브가 자리 잡을 때까지, 당분간 이 페이지가 입구입니다.</p>
+
+    <div class="cards">
+      <a class="card" href="tracker.html" target="_blank">
+        <div class="dot"></div>
+        <h3>주간 업무 트래커</h3>
+        <p>마감·컴플레인·인력·결제 현황을 도장 찍어가며 관리</p>
+        <span class="status">바로 열기</span>
+      </a>
+
+      <div class="card soon">
+        <div class="dot"></div>
+        <h3>드라이브 허브</h3>
+        <p>cym48783 계정 기준 문서 저장소 (폴더명 확정 대기)</p>
+        <span class="status">준비 중</span>
+      </div>
+
+      <div class="card soon">
+        <div class="dot"></div>
+        <h3>컴플레인 로그</h3>
+        <p>학생·학부모 컴플레인 이력 누적 기록</p>
+        <span class="status">준비 중</span>
+      </div>
+
+      <div class="card soon">
+        <div class="dot"></div>
+        <h3>채용 · 인력 현황</h3>
+        <p>지원자, 면접 일정, 퇴사 예정자 트래킹</p>
+        <span class="status">준비 중</span>
+      </div>
+    </div>
+
+    <div class="foot">원파인데이 허브 · v0.1 · 팀이 늘어날 때마다 이 건물도 채워집니다</div>
+  </div>
+</div>
+
+<script>
+  const starsEl = document.getElementById('stars');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*70 + '%';
+    s.style.animationDelay = (Math.random()*4) + 's';
+    starsEl.appendChild(s);
+  }
+
+  const building = document.getElementById('building');
+  const hero = document.getElementById('hero');
+  hero.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    building.style.transform = `rotateX(${-8 + y*6}deg) rotateY(${-30 + x*14}deg)`;
+  });
+  hero.addEventListener('mouseleave', () => {
+    building.style.transform = 'rotateX(-8deg) rotateY(-30deg)';
+  });
+</script>
+
+</body>
+</html>
