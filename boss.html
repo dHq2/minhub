@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>원파인데이 허브 — 보스 방</title>
+<style>
+  :root{
+    --sky-1:#050810;
+    --sky-2:#0e1830;
+    --sky-3:#1c2947;
+    --cream:#e7ddc7;
+    --cream-dim:#a89f8c;
+    --neon:#e2543f;
+    --card-line:#2a2d38;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    min-height:100vh;
+    background: radial-gradient(ellipse at 50% 20%, var(--sky-3) 0%, var(--sky-2) 45%, var(--sky-1) 100%);
+    font-family: -apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    color: var(--cream);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:14px;
+  }
+  .back{
+    position:absolute; top:20px; left:20px;
+    color: var(--cream-dim); text-decoration:none; font-size:13px;
+    border:1px solid var(--card-line); padding:6px 12px;
+  }
+  .back:hover{ color:var(--cream); border-color:var(--neon); }
+  h1{ font-family:"Noto Serif KR","Batang",serif; font-size:20px; margin:0; }
+  p{ color:var(--cream-dim); font-size:13.5px; margin:0; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← 건물로</a>
+  <h1>보스 방</h1>
+  <p>입주 예정입니다.</p>
+</body>
+</html>

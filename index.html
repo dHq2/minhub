@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>원파인데이 허브</title>
 <style>
   :root{
@@ -109,11 +110,14 @@
     gap: 14px 16px;
   }
   .win{
+    display:block;
     position:relative;
     background: var(--win-off);
     border-radius: 1px;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.35);
+    text-decoration:none;
   }
+  .win.lit{ cursor:pointer; }
   .win.lit{
     background: linear-gradient(180deg, var(--win-glow-core), var(--win-glow-outer));
     box-shadow:
@@ -333,15 +337,6 @@
   :root{
     /* 팔 안쪽의 투명 틈을 배경과 같은 색으로 맞추는 fallback 값 */
     --scene-bg:#0b0c12;
-  }
-
-  *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;background:var(--scene-bg)}
-  body{
-    min-height:100vh;
-    display:grid;
-    place-items:center;
-    overflow:hidden;
   }
 
   /*
@@ -644,8 +639,8 @@
           <div class="win future"><span class="tip">입주 예정</span></div>
           <div class="win future"><span class="tip">입주 예정</span></div>
           <div class="win future"><span class="tip">입주 예정</span></div>
-          <div class="win lit"><span class="tip">보스 — 최수웅</span></div>
-          <div class="win lit"><span class="tip">강세희 — 비서 데스크</span></div>
+          <a class="win lit" href="boss.html"><span class="tip">보스 — 최수웅</span></a>
+          <a class="win lit" href="secretary.html"><span class="tip">강세희 — 비서 데스크</span></a>
         </div>
         <div class="door"></div>
       </div>
@@ -694,53 +689,7 @@
     <span class="m-tip">강세희</span>
   </div>
 
-  <div class="caption">오늘 밤 켜진 불은 둘뿐입니다. <b>위층은 비워뒀습니다.</b></div>
-</div>
-
-<div class="desk">
-  <div class="desk-inner">
-    <h2>바로가기</h2>
-    <p class="lead">허브가 자리 잡을 때까지, 당분간 이 페이지가 입구입니다.</p>
-
-    <div class="cards">
-      <a class="card" href="tracker.html" target="_blank">
-        <div class="dot"></div>
-        <h3>주간 업무 트래커</h3>
-        <p>마감·컴플레인·인력·결제 현황을 도장 찍어가며 관리</p>
-        <span class="status">바로 열기</span>
-      </a>
-
-      <a class="card" href="calendar.html" target="_blank">
-        <div class="dot"></div>
-        <h3>일일 업무 달력</h3>
-        <p>구글 시트와 실시간 연동, 날짜 클릭하면 그날 기록 표시</p>
-        <span class="status">바로 열기</span>
-      </a>
-
-      <div class="card soon">
-        <div class="dot"></div>
-        <h3>드라이브 허브</h3>
-        <p>cym48783 계정 기준 문서 저장소 (폴더명 확정 대기)</p>
-        <span class="status">준비 중</span>
-      </div>
-
-      <div class="card soon">
-        <div class="dot"></div>
-        <h3>컴플레인 로그</h3>
-        <p>학생·학부모 컴플레인 이력 누적 기록</p>
-        <span class="status">준비 중</span>
-      </div>
-
-      <div class="card soon">
-        <div class="dot"></div>
-        <h3>채용 · 인력 현황</h3>
-        <p>지원자, 면접 일정, 퇴사 예정자 트래킹</p>
-        <span class="status">준비 중</span>
-      </div>
-    </div>
-
-    <div class="foot">원파인데이 허브 · v0.1 · 팀이 늘어날 때마다 이 건물도 채워집니다</div>
-  </div>
+  <div class="caption">오늘 밤 켜진 불은 둘뿐입니다. <b>창문을 클릭해 들어가세요.</b></div>
 </div>
 
 <script>
