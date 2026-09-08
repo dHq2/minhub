@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>원파인데이 — 일일 업무 달력</title>
+<style>
+  :root{
+    --paper:#ece6d4;
+    --paper-deep:#e2dabf;
+    --line:#c3b795;
+    --ink:#2b2417;
+    --ink-soft:#5c5340;
+    --ledger-green:#5f7a55;
+    --stamp-red:#a13b2c;
+    --done-ink:#8f8875;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: repeating-linear-gradient(var(--paper) 0px, var(--paper) 30px, var(--paper-deep) 30px, var(--paper-deep) 31px);
+    font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    color:var(--ink);
+    padding: 24px 16px 70px;
+  }
+  .wrap{ max-width: 900px; margin: 0 auto; }
+
+  .head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:2px solid var(--ink); padding-bottom:12px; margin-bottom:16px;
+    flex-wrap:wrap; gap:12px;
+  }
+  .head h1{
+    font-family:"Noto Serif KR","Batang",serif; font-size:23px; margin:0;
+  }
+  .head .sync{ font-size:11.5px; color:var(--ink-soft); }
+  .nav{ display:flex; align-items:center; gap:10px; }
+  .nav button{
+    border:1px solid var(--ink-soft); background:var(--paper); color:var(--ink);
+    padding:5px 10px; cursor:pointer; font-size:13px;
+  }
+  .nav button:hover{ background:var(--ink); color:var(--paper); }
+  .nav .month-label{ font-size:15px; font-weight:600; min-width:92px; text-align:center; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 16px; margin-bottom:16px; font-size:11.5px; color:var(--ink-soft); }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .legend i{ width:8px; height:8px; display:inline-block; }
+
+  .grid{
+    display:grid; grid-template-columns: repeat(7, 1fr);
+    border-top:1px solid var(--line); border-left:1px solid var(--line);
+  }
+  .dow{
+    text-align:center; font-size:11.5px; color:var(--ink-soft);
+    padding:6px 0; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+    background: rgba(255,255,255,0.2);
+  }
+  .cell{
+    min-height:76px; border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:6px; position:relative; cursor:pointer;
+    transition: background 0.12s;
+  }
+  .cell:hover{ background: rgba(255,255,255,0.35); }
+  .cell.empty{ background: rgba(0,0,0,0.03); cursor:default; }
+  .cell.today{ box-shadow: inset 0 0 0 2px var(--ledger-green); }
+  .cell.selected{ background: rgba(161,59,44,0.10); }
+  .cell .num{ font-size:12.5px; color:var(--ink-soft); }
+  .dots{ display:flex; flex-wrap:wrap; gap:3px; margin-top:6px; }
+  .dots i{ width:6px; height:6px; border-radius:50%; display:inline-block; }
+  .cell .ring{
+    position:absolute; top:5px; right:6px; width:8px; height:8px; border-radius:50%;
+  }
+  .ring.all-done{ background:var(--ledger-green); }
+  .ring.pending{ background:var(--stamp-red); }
+
+  .detail{
+    margin-top:22px; border:1px solid var(--line); background: rgba(255,255,255,0.25); padding:16px 18px;
+  }
+  .detail h2{ font-family:"Noto Serif KR","Batang",serif; font-size:16px; margin:0 0 12px; }
+  .detail .empty-hint{ font-size:13px; color:var(--ink-soft); font-style:italic; }
+  .d-item{
+    display:flex; align-items:flex-start; gap:10px; padding:6px 0;
+    border-bottom:1px solid rgba(195,183,149,0.5); font-size:13.5px;
+  }
+  .d-item .tag{ width:8px; height:8px; border-radius:50%; margin-top:5px; flex:0 0 auto; }
+  .d-item .txt{ flex:1 1 auto; }
+  .d-item.done .txt{ color:var(--done-ink); text-decoration:line-through; }
+  .d-item .stamp{
+    flex:0 0 auto; font-size:11px; font-family:"Noto Serif KR","Batang",serif;
+    color:var(--stamp-red); border:1px solid var(--stamp-red); padding:1px 6px; opacity:0.85;
+  }
+  .d-item .due{ font-size:11.5px; color:var(--ink-soft); flex:0 0 auto; }
+
+  .foot{
+    margin-top:28px; padding-top:12px; border-top:1px dashed var(--line);
+    font-size:11px; color:var(--ink-soft); text-align:center; line-height:1.7;
+  }
+  .status{ font-size:12px; color:var(--ink-soft); margin-bottom:10px; }
+  .status.err{ color:var(--stamp-red); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>일일 업무 달력</h1>
+    <div class="sync" id="syncNote">불러오는 중...</div>
+  </div>
+
+  <div class="nav">
+    <button id="prevBtn">‹ 이전달</button>
+    <div class="month-label" id="monthLabel">-</div>
+    <button id="nextBtn">다음달 ›</button>
+    <button id="refreshBtn" style="margin-left:auto;">새로고침</button>
+  </div>
+  <div style="height:14px"></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="status" id="status"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="detail" id="detail">
+    <h2 id="detailTitle">날짜를 선택하세요</h2>
+    <div id="detailBody" class="empty-hint">달력에서 날짜를 클릭하면 그날 기록이 여기 뜹니다.</div>
+  </div>
+
+  <div class="foot">
+    데이터는 구글 시트에서 실시간으로 읽어옵니다. 시트에 새 줄만 추가하면, 이 페이지는 새로고침할 때마다 자동 반영됩니다 — 페이지 파일을 다시 올릴 필요 없습니다.<br>
+    이 페이지 자체의 디자인/기능을 바꿀 때만 GitHub에 재업로드가 필요합니다.
+  </div>
+</div>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXp6gj2s9elG-8xZH0lvMqgMJEwGWJQTdqhtc8XUemrnrAd4FFXzXuCUYYvTQkHQWiiHbMEDp5qjn6/pub?output=csv";
+
+const SECTIONS = {
+  urgent:    { label:'마감 임박',       color:'#a13b2c' },
+  pending:   { label:'답변·대기',       color:'#a3823f' },
+  directive: { label:'지시사항',        color:'#5f7a55' },
+  staffing:  { label:'인력·채용',       color:'#3d5a80' },
+  payment:   { label:'결제·미납',       color:'#8a6d3b' },
+  complaint: { label:'컴플레인',        color:'#7a2e2e' },
+  schedule:  { label:'일정',            color:'#3a6b64' },
+};
+
+// 범례 렌더
+(function(){
+  const legend = document.getElementById('legend');
+  Object.entries(SECTIONS).forEach(([k,v]) => {
+    const s = document.createElement('span');
+    s.innerHTML = `<i style="background:${v.color}"></i>${v.label}`;
+    legend.appendChild(s);
+  });
+})();
+
+// 아주 단순한 CSV 파서 (따옴표로 감싼 콤마/개행 지원)
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field=''; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else if(c === '\r'){ /* skip */ }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+let DATA = {}; // { 'YYYY-MM-DD': [ {section,text,done,due,note} ] }
+
+async function loadData(){
+  const statusEl = document.getElementById('status');
+  const syncEl = document.getElementById('syncNote');
+  statusEl.textContent = '시트에서 불러오는 중...';
+  statusEl.className = 'status';
+  try{
+    const res = await fetch(CSV_URL + '&_=' + Date.now());
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if(rows.length < 2) throw new Error('데이터 없음');
+
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const idx = {
+      date: header.indexOf('date'),
+      section: header.indexOf('section'),
+      text: header.indexOf('text'),
+      done: header.indexOf('done'),
+      due: header.indexOf('due'),
+      note: header.indexOf('note'),
+    };
+
+    DATA = {};
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      if(!r || !r[idx.date]) continue;
+      const date = r[idx.date].trim();
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+      const item = {
+        section: (r[idx.section]||'').trim(),
+        text: (r[idx.text]||'').trim(),
+        done: (r[idx.done]||'').trim().toUpperCase() === 'TRUE',
+        due: (r[idx.due]||'').trim(),
+        note: (r[idx.note]||'').trim(),
+      };
+      if(!DATA[date]) DATA[date] = [];
+      DATA[date].push(item);
+    }
+    statusEl.textContent = '';
+    syncEl.textContent = '마지막 동기화 ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  } catch(e){
+    statusEl.textContent = '시트를 불러오지 못했습니다 (' + e.message + '). 게시 설정이나 인터넷 연결을 확인하세요.';
+    statusEl.className = 'status err';
+    syncEl.textContent = '동기화 실패';
+  }
+}
+
+let viewYear, viewMonth; // month: 0-11
+let selectedDate = null;
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function renderCalendar(){
+  document.getElementById('monthLabel').textContent = `${viewYear}. ${pad(viewMonth+1)}`;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  ['일','월','화','수','목','금','토'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(viewYear, viewMonth, 1);
+  const startOffset = firstDay.getDay();
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+  const todayStr = new Date().toISOString().slice(0,10);
+
+  for(let i=0;i<startOffset;i++){
+    const el = document.createElement('div');
+    el.className = 'cell empty';
+    grid.appendChild(el);
+  }
+
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${viewYear}-${pad(viewMonth+1)}-${pad(d)}`;
+    const items = DATA[dateStr] || [];
+
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    if(dateStr === todayStr) cell.classList.add('today');
+    if(dateStr === selectedDate) cell.classList.add('selected');
+
+    const num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = d;
+    cell.appendChild(num);
+
+    if(items.length){
+      const hasPending = items.some(it => !it.done);
+      const ring = document.createElement('div');
+      ring.className = 'ring ' + (hasPending ? 'pending' : 'all-done');
+      cell.appendChild(ring);
+
+      const dots = document.createElement('div');
+      dots.className = 'dots';
+      const seen = new Set();
+      items.forEach(it => {
+        if(seen.has(it.section)) return;
+        seen.add(it.section);
+        const dot = document.createElement('i');
+        dot.style.background = (SECTIONS[it.section]||{color:'#999'}).color;
+        dots.appendChild(dot);
+      });
+      cell.appendChild(dots);
+    }
+
+    cell.addEventListener('click', () => {
+      selectedDate = dateStr;
+      renderCalendar();
+      renderDetail(dateStr);
+    });
+
+    grid.appendChild(cell);
+  }
+}
+
+function renderDetail(dateStr){
+  const title = document.getElementById('detailTitle');
+  const body = document.getElementById('detailBody');
+  const items = DATA[dateStr] || [];
+
+  title.textContent = dateStr + (items.length ? ` (${items.length}건)` : '');
+
+  if(!items.length){
+    body.className = 'empty-hint';
+    body.textContent = '이 날 기록된 항목이 없습니다.';
+    return;
+  }
+  body.className = '';
+  body.innerHTML = '';
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'd-item' + (it.done ? ' done' : '');
+
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.style.background = (SECTIONS[it.section]||{color:'#999'}).color;
+    row.appendChild(tag);
+
+    const txt = document.createElement('div');
+    txt.className = 'txt';
+    txt.textContent = it.text + (it.note ? ` — ${it.note}` : '');
+    row.appendChild(txt);
+
+    if(it.due){
+      const due = document.createElement('div');
+      due.className = 'due';
+      due.textContent = it.due;
+      row.appendChild(due);
+    }
+
+    if(it.done){
+      const st = document.createElement('div');
+      st.className = 'stamp';
+      st.textContent = '完';
+      row.appendChild(st);
+    }
+
+    body.appendChild(row);
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  viewMonth--; if(viewMonth<0){ viewMonth=11; viewYear--; }
+  renderCalendar();
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  viewMonth++; if(viewMonth>11){ viewMonth=0; viewYear++; }
+  renderCalendar();
+});
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+  await loadData();
+  renderCalendar();
+  if(selectedDate) renderDetail(selectedDate);
+});
+
+(async function init(){
+  const now = new Date();
+  viewYear = now.getFullYear();
+  viewMonth = now.getMonth();
+  await loadData();
+  renderCalendar();
+})();
+</script>
+</body>
+</html>
