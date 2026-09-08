@@ -197,6 +197,74 @@
     z-index:1;
   }
 
+  /* ---------- MASCOT ---------- */
+  .mascot-wrap{
+    position:absolute;
+    left: 63%;
+    bottom: 20px;
+    z-index: 4;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .mascot{
+    position:relative;
+    width: 104px; height: 180px;
+  }
+  .mascot-precise{
+    position: relative;
+    width: 103px; height: 341px;
+    overflow: visible;
+    animation: m-sway 3.6s ease-in-out infinite;
+    transform-origin: 50% 95%;
+  }
+  .mascot-precise .sh-character{
+    position: absolute;
+    left: 0; top: 0;
+    transform: scale(var(--scale));
+    transform-origin: top left;
+  }
+  .m-svg{
+    width:100%; height:100%;
+    overflow: visible;
+    transform-origin: 50% 95%;
+    animation: m-sway 3.6s ease-in-out infinite;
+  }
+  @keyframes m-sway{
+    0%,100%{ transform: rotate(-1.2deg) translateY(0); }
+    50%{ transform: rotate(1.2deg) translateY(-2px); }
+  }
+  .m-eyes{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: m-blink 4.2s ease-in-out infinite;
+  }
+  @keyframes m-blink{
+    0%, 92%, 100%{ transform: scaleY(1); }
+    95%{ transform: scaleY(0.12); }
+  }
+  .m-toe{
+    transform-box: fill-box;
+    transform-origin: 15% 50%;
+    animation: m-tap 1.8s ease-in-out infinite;
+  }
+  @keyframes m-tap{
+    0%,100%{ transform: rotate(0deg); }
+    50%{ transform: rotate(-6deg); }
+  }
+  .m-tip{
+    margin-top:6px;
+    font-size: 11px;
+    color: var(--cream-dim);
+    background:#0c0d11;
+    border:1px solid var(--card-line);
+    padding: 3px 8px;
+    opacity:0;
+    transition: opacity 0.15s;
+    white-space:nowrap;
+  }
+  .mascot-wrap:hover .m-tip{ opacity:1; }
+
   .caption{
     position:absolute;
     bottom: 26px; left:50%; transform:translateX(-50%);
@@ -259,6 +327,289 @@
     border-top: 1px dashed var(--card-line);
     font-size: 11.5px; color: var(--cream-dim); text-align:center;
   }
+
+  /* ---- GPT 정밀 트레이싱 캐릭터 (네임스페이스: sh-) ---- */
+
+  :root{
+    /* 팔 안쪽의 투명 틈을 배경과 같은 색으로 맞추는 fallback 값 */
+    --scene-bg:#0b0c12;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:var(--scene-bg)}
+  body{
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+  }
+
+  /*
+    원본 이미지에서 실제 비백색 픽셀을 다시 측정한 좌표계
+      BBox: x=685..867, y=96..701
+      base size = 183 x 606
+
+    v2처럼 머리/상체/하체를 서로 다른 transform 그룹으로 축소하지 않는다.
+    v4는 원본과 렌더 결과를 183x606 동일 좌표로 다시 겹쳐 비교해 팔 틈/라펠/다리/신발을 재측정했다.
+    모든 파트를 같은 183x606 실측 좌표계에 직접 배치해서
+    목-카라-재킷-치마가 끊어지지 않도록 했다.
+  */
+  .sh-character{
+    --scale:0.56;
+    --skin:#edb696;
+    --hair:#202020;
+    --suit:#202020;
+    --lapel:#3c3a38;
+    --skirt:#020202;
+    --shoe:#3c3a38;
+    --shirt:#f3f3f1;
+    --shirt-line:#c9c9c7;
+    --board:#875b36;
+    --board-dark:#6f4a2f;
+    --clip:#bebeba;
+
+    position:relative;
+    width:183px;
+    height:606px;
+    transform:scale(var(--scale));
+    transform-origin:center center;
+    filter:drop-shadow(0 4px 4px rgba(0,0,0,.24));
+  }
+
+  .sh-shape{
+    position:absolute;
+    inset:0;
+    width:183px;
+    height:606px;
+  }
+
+  /* ---------- 하체: 원본 실측 ---------- */
+  .sh-leg-left{
+    z-index:1;
+    background:var(--skin);
+    clip-path:polygon(
+      50px 401px,49px 404px,53px 421px,53px 440px,51px 452px,52px 471px,
+      67px 541px,65px 550px,67px 550px,67px 555px,64px 565px,64px 574px,
+      67px 576px,74px 576px,79px 574px,81px 570px,84px 543px,82px 533px,
+      82px 508px,85px 469px,82px 438px,86px 412px,85px 407px,65px 405px
+    );
+  }
+  .sh-leg-right{
+    z-index:1;
+    background:var(--skin);
+    clip-path:polygon(
+      131px 402px,112px 406px,96px 407px,95px 413px,100px 442px,97px 469px,
+      100px 532px,97px 544px,99px 545px,101px 571px,107px 576px,115px 576px,
+      119px 572px,115px 555px,115px 539px,130px 471px,128px 423px,130px 411px,133px 405px
+    );
+  }
+
+  .sh-shoe-left{
+    z-index:2;
+    background:var(--shoe);
+    clip-path:polygon(
+      85px 550px,83px 570px,79px 576px,74px 578px,65px 577px,61px 572px,
+      63px 561px,57px 579px,57px 588px,61px 593px,65px 595px,71px 595px,
+      77px 592px,82px 587px,84px 582px
+    );
+  }
+  .sh-shoe-right{
+    z-index:2;
+    background:var(--shoe);
+    clip-path:polygon(
+      97px 548px,98px 583px,103px 591px,110px 595px,117px 595px,122px 592px,
+      125px 586px,125px 581px,118px 558px,121px 571px,120px 574px,115px 578px,
+      107px 578px,99px 572px
+    );
+  }
+
+  /* 치마는 재킷 밑으로 15px가량 들어가도록 원본 그대로 겹친다. */
+  .sh-skirt{
+    z-index:3;
+    background:var(--skirt);
+    clip-path:polygon(
+      147px 301px,131px 309px,105px 312px,96px 304px,91px 284px,
+      87px 301px,79px 311px,59px 311px,34px 300px,35px 338px,
+      43px 396px,86px 405px,108px 404px,137px 397px,145px 352px
+    );
+  }
+
+  /* 재킷과 치마의 안티앨리어싱 틈 방지용 겹침. 실루엣 밖으로는 나오지 않는다. */
+  .sh-waist-underlay{
+    z-index:4;
+    background:var(--skirt);
+    clip-path:polygon(34px 292px,149px 292px,149px 320px,34px 320px);
+  }
+
+  /* ---------- 머리 뒤: 포니테일 ---------- */
+  .sh-ponytail{
+    z-index:4;
+    background:var(--hair);
+    clip-path:path("M 116 64 C 122 70 126 78 126 88 C 126 99 130 106 131 115 C 132 124 129 132 123 136 C 118 139 113 136 111 132 C 110 127 112 120 114 113 C 116 103 116 92 114 82 C 113 73 114 68 116 64 Z");
+  }
+
+  /* ---------- 셔츠 바탕: 재킷보다 먼저 그려서 V존 밖으로 삐져나오지 않게 함 ---------- */
+  .sh-shirt-base{
+    z-index:5;
+    background:var(--shirt);
+    clip-path:polygon(70px 103px,91px 128px,112px 103px,110px 146px,91px 208px,72px 146px);
+  }
+
+  /* ---------- 재킷: 원본 외곽 실측 30점 ---------- */
+  .sh-jacket{
+    z-index:6;
+    background:var(--suit);
+    clip-path:polygon(
+      30px 124px,21px 143px,5px 230px,16px 241px,47px 242px,
+      32px 298px,51px 309px,78px 311px,84px 307px,91px 286px,
+      100px 310px,126px 310px,147px 301px,148px 319px,150px 293px,
+      138px 254px,166px 239px,178px 225px,167px 167px,155px 127px,
+      126px 115px,125px 100px,109px 100px,113px 107px,113px 130px,
+      103px 177px,91px 212px,71px 143px,70px 106px,57px 115px
+    );
+  }
+
+  /*
+    팔을 몸통과 한 덩어리로 그리면 '거미 다리'처럼 보이므로,
+    실제 원본의 팔 안쪽 여백을 그대로 다시 뚫었다.
+    --scene-bg를 페이지 배경색과 같게 두면 된다.
+  */
+  .sh-arm-gap-left{
+    z-index:7;
+    background:var(--scene-bg);
+    clip-path:polygon(41px 201px,40px 203px,40px 206px,38px 207px,38px 209px,37px 210px,37px 214px,43px 214px,44px 215px,48px 215px,46px 207px,44px 205px,43px 202px);
+  }
+  .sh-arm-gap-right{
+    z-index:7;
+    background:var(--scene-bg);
+    clip-path:polygon(141px 197px,136px 204px,135px 214px,134px 215px,134px 225px,138px 223px,147px 215px,145px 211px,145px 207px,143px 203px,143px 200px,141px 198px);
+  }
+
+  /* ---------- 얼굴+목: 한 도형으로 연결. v2의 목 분리 현상 제거 ---------- */
+  .sh-face-neck{
+    z-index:8;
+    background:var(--skin);
+    clip-path:path("M 57 56 C 56 68 59 80 65 89 C 69 96 75 101 81 104 L 80 113 C 81 119 86 125 91 129 C 96 125 101 119 103 113 L 102 104 C 109 101 115 95 119 88 C 124 79 127 68 126 56 L 118 56 L 116 66 L 106 64 L 103 54 L 102 65 L 81 65 L 78 55 L 77 64 L 64 62 L 62 73 L 57 69 Z");
+  }
+
+  /* ---------- 앞머리: 상부는 곡선, 하부는 원본의 3갈래 뱅 ---------- */
+  .sh-hair-front{
+    z-index:9;
+    background:var(--hair);
+    clip-path:path("M 91 1 C 83 1 78 5 77 13 C 68 17 61 25 58 35 C 55 45 56 56 59 64 L 62 73 L 64 61 L 77 64 L 79 47 L 81 64 L 102 64 L 104 46 L 106 63 L 116 61 L 119 74 L 123 64 C 126 55 126 44 123 35 C 120 25 115 18 109 14 C 108 6 101 1 91 1 Z");
+  }
+
+  /* ---------- 카라/라펠 ---------- */
+  .sh-collar-left{
+    z-index:10;
+    background:#fafaf8;
+    clip-path:polygon(70px 104px,91px 129px,78px 139px,72px 119px);
+  }
+  .sh-collar-right{
+    z-index:10;
+    background:#fafaf8;
+    clip-path:polygon(112px 104px,91px 129px,104px 139px,110px 119px);
+  }
+  .sh-collar-line-left{
+    z-index:11;
+    left:80px;top:113px;width:1px;height:28px;
+    position:absolute;background:var(--shirt-line);
+    transform:rotate(-42deg);transform-origin:top center;
+  }
+  .sh-collar-line-right{
+    z-index:11;
+    left:102px;top:113px;width:1px;height:28px;
+    position:absolute;background:var(--shirt-line);
+    transform:rotate(42deg);transform-origin:top center;
+  }
+  .sh-shirt-seam{
+    z-index:11;
+    left:91px;top:129px;width:1px;height:59px;
+    position:absolute;background:var(--shirt-line);opacity:.72;
+  }
+
+  .sh-lapel-left{
+    z-index:12;
+    background:var(--lapel);
+    clip-path:polygon(
+      70px 105px,59px 114px,57px 114px,59px 115px,56px 120px,52px 134px,
+      60px 137px,61px 139px,52px 145px,65px 173px,86px 207px,82px 207px,
+      86px 209px,83px 211px,85px 212px,88px 213px,91px 213px,87px 201px,
+      85px 195px,83px 194px,84px 191px,82px 190px,83px 187px,78px 173px,69px 129px
+    );
+  }
+  .sh-lapel-right{
+    z-index:12;
+    background:var(--lapel);
+    clip-path:polygon(
+      111px 104px,113px 108px,112px 134px,102px 179px,93px 209px,91px 211px,
+      94px 210px,101px 199px,106px 188px,120px 166px,129px 146px,129px 144px,
+      120px 139px,121px 137px,129px 134px,122px 112px
+    );
+  }
+
+  /* ---------- 필기구/손/클립보드 ---------- */
+  .sh-pen{
+    z-index:13;
+    position:absolute;
+    left:68px;top:195px;
+    width:3px;height:29px;
+    background:#111;
+    border-radius:2px;
+    transform:rotate(-41deg);
+    transform-origin:center bottom;
+  }
+  .sh-pen-tip{
+    z-index:13;
+    position:absolute;
+    left:77px;top:207px;
+    width:3px;height:5px;
+    background:#c7c7c4;
+    transform:rotate(-41deg);
+  }
+
+  .sh-writing-hand{
+    z-index:14;
+    background:var(--skin);
+    clip-path:polygon(59px 223px,59px 228px,102px 226px,78px 226px,78px 224px,82px 224px,87px 220px,94px 221px,94px 218px,91px 214px,86px 214px,75px 210px,71px 210px,67px 217px);
+  }
+
+  .sh-clipboard{
+    z-index:15;
+    background:var(--board);
+    clip-path:polygon(52px 229px,124px 224px,121px 260px,57px 266px);
+  }
+  .sh-clipboard-clip{
+    z-index:16;
+    position:absolute;
+    left:77px;top:220px;
+    width:29px;height:8px;
+    background:var(--clip);
+    border-radius:2px 2px 1px 1px;
+    transform:rotate(-4deg);
+    box-shadow:0 1px 0 rgba(0,0,0,.12);
+  }
+  .sh-clipboard-clip-base{
+    z-index:15;
+    position:absolute;
+    left:78px;top:222px;
+    width:27px;height:7px;
+    background:var(--board-dark);
+    transform:rotate(-4deg);
+    border-radius:2px;
+  }
+
+  .sh-support-hand{
+    z-index:17;
+    background:var(--skin);
+    clip-path:polygon(136px 242px,130px 234px,124px 234px,123px 242px,120px 245px,102px 244px,96px 247px,95px 250px,110px 259px,122px 262px,128px 257px,132px 251px,135px 250px);
+  }
+
+  /* 모바일 데모: 원본 비율은 그대로 두고 전체만 한 번에 축소 */
+  @media (max-width:480px){
+    .sh-character{--scale:0.44}
+  }
+
 </style>
 </head>
 <body>
@@ -302,6 +653,47 @@
   </div>
 
   <div class="ground"></div>
+
+  <div class="mascot-wrap" id="mascotWrap">
+    <div class="mascot mascot-precise">
+<div class="sh-character" aria-label="CSS로 그린 여성 안내 캐릭터">
+    <div class="sh-shape sh-leg-left"></div>
+    <div class="sh-shape sh-leg-right"></div>
+    <div class="sh-shape sh-shoe-left"></div>
+    <div class="sh-shape sh-shoe-right"></div>
+    <div class="sh-shape sh-skirt"></div>
+    <div class="sh-shape sh-waist-underlay"></div>
+
+    <div class="sh-shape sh-ponytail"></div>
+    <div class="sh-shape sh-shirt-base"></div>
+    <div class="sh-shape sh-jacket"></div>
+    <div class="sh-shape sh-arm-gap-left"></div>
+    <div class="sh-shape sh-arm-gap-right"></div>
+
+    <div class="sh-shape sh-face-neck"></div>
+    <div class="sh-shape sh-hair-front"></div>
+
+    <div class="sh-shape sh-collar-left"></div>
+    <div class="sh-shape sh-collar-right"></div>
+    <div class="sh-collar-line-left"></div>
+    <div class="sh-collar-line-right"></div>
+    <div class="sh-shirt-seam"></div>
+    <div class="sh-shape sh-lapel-left"></div>
+    <div class="sh-shape sh-lapel-right"></div>
+
+    <div class="sh-pen"></div>
+    <div class="sh-pen-tip"></div>
+    <div class="sh-shape sh-writing-hand"></div>
+    <div class="sh-shape sh-clipboard"></div>
+    <div class="sh-clipboard-clip-base"></div>
+    <div class="sh-clipboard-clip"></div>
+    <div class="sh-shape sh-support-hand"></div>
+  </div>
+
+    </div>
+    <span class="m-tip">강세희</span>
+  </div>
+
   <div class="caption">오늘 밤 켜진 불은 둘뿐입니다. <b>위층은 비워뒀습니다.</b></div>
 </div>
 
@@ -366,6 +758,7 @@
   hero.addEventListener('mouseleave', () => {
     building.style.transform = 'rotateX(-8deg) rotateY(-30deg)';
   });
+
 </script>
 
 </body>
