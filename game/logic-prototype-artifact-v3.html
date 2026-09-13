@@ -238,6 +238,22 @@
         - 질주 시작 연출을 대쉬와 확실히 구분되게 대폭 강화: 전용 "질주!!!" 배너(노란-주황
           그라데이션, 대쉬의 파란 배너와 대비), 사방으로 뻗는 속도선 폭발(spawnRunBurst 개선),
           짧은 카메라 펀치인까지 겹쳐서 질주 전환을 확실히 체감할 수 있게 했다.
+  v8.8: "질주 방향의 반대를 바라보고 달리는" 버그의 진짜 원인을 잡았다.
+        - 원인 1: startDashLeg에서 후퇴일 때 facing을 OPPOSITE_DIR[moveDir]로 "그냥 뒤집고"
+          있었다 — 이게 정확히 고쳐달라던 그 증상을 코드로 박아둔 것이었다. 이제 대쉬/질주 중에는
+          상대 위치에서 직접 구한 방향(dirTowards)을 바라본다. 다가갈 때는 전방 질주, 멀어질 때는
+          상대를 노려보며 물러나는 백페달이 자동으로 성립한다.
+        - 원인 2: isRetreatDir가 내적 부호만 봐서, 거리가 그대로인 옆걸음/위아래 이동까지 후퇴로
+          잡혀 엉뚱한 뒤로달리기 모션이 나왔다. 이제 실제 체비셰프 거리가 멀어질 때만 후퇴로 본다.
+        - 숄더배쉬를 "공격"에서 "이동 상태"로 재설계: 질주 중 O를 누르면 질주가 그대로 무거운
+          돌진으로 전환된다(BASH_FRAMES_MUL만큼 느리고 무겁게, 가속 없음). 스스로 멈추지 않고,
+          반대 방향을 누르면 관성 때문에 BASH_SKID_TILES칸을 더 미끄러진 뒤에야 멈춘다. 상대에게
+          닿는 순간 판정이 들어가고(가드도 판정), 전용 "돌격!! 숄더배쉬" 배너·먼지·방패·카메라
+          펀치인이 함께 나간다. 돌진 중에는 황소처럼 상체를 깊이 숙인 전용 포즈를 쓴다.
+        - 슬라이딩은 달리던 관성 방향(moveDir)으로 나가도록 facing을 이동 방향에 맞췄다 —
+          판정 타일/스프라이트 방향이 실제 미끄러지는 방향과 어긋나지 않는다.
+        - 클린치(잡기)에도 카메라 연출 추가: 얽히는 지점으로 부드럽게 완전히 붙어 들어가
+          몸싸움이 끝날 때까지 유지된다(triggerCameraFocus).
 -->
 <style>
   :root{
@@ -581,9 +597,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.7</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.8</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v8.7.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 멈추지 않고 점점 가속하며 큼직하게 뛰어 달립니다 — 후퇴할 땐 이동 방향의 정반대를 보며 물러나고, 접근 중엔 황소가 돌격하듯 상체를 깊이 숙입니다. 벽에 부딪혀도 살짝만 기절해요. 질주 중에만 <b>K</b>(정면 4칸을 관통하는 슬라이딩 태클, 50% 다운) / <b>O</b>(숄더배쉬, 1칸 밀침·2초 기절)로 캔슬할 수 있고, 둘 다 자동 타겟팅 없이 지금 달리는 방향 그대로 나갑니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별 이펙트가 터집니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.8.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 계속 돌격하는 <b>숄더배쉬</b>입니다 — 돌진은 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이며, 그 지점으로 카메라가 완전히 붙어 들어갑니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -646,7 +662,7 @@
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향(대각선 포함) 두 번(따닥)이면 <b>대쉬</b>(짧은 단발 스텝), 대쉬 도중 한 번 더(따다닥)면 <b>질주</b>로 전환 — 멈추지 않고 점점 가속하며 달리다 상대에게 붙으면 정지, 벽에 부딪히면 넘어져 기절. 대쉬/질주 도중 공격·강공을 누르면 가까운 칸에서 바로 캔슬돼 대쉬 강타/공참각으로 이어진다</div>
     <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
-    <div class="keyline">질주 중에만: <kbd>K</kbd> → <b style="color:#7fd4ff;">슬라이딩</b>(정면 4칸을 관통하며 미끄러짐, 50% 확률로 다운) &nbsp;·&nbsp; <kbd>O</kbd> → <b style="color:#ff9a52;">숄더배쉬</b>(방패 들고 몸통 박치기, 1칸 밀침, 2초 기절)</div>
+    <div class="keyline">질주 중에만: <kbd>K</kbd> → <b style="color:#7fd4ff;">슬라이딩</b>(달리던 방향으로 4칸 관통하며 미끄러짐, 50% 확률로 다운) &nbsp;·&nbsp; <kbd>O</kbd> → <b style="color:#ff9a52;">숄더배쉬 돌진</b>(방패를 앞세워 무겁게 계속 돌격 — <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤 멈춤, 상대에 닿으면 1칸 밀침·2초 기절)</div>
     <div class="keyline">대쉬 도중 같은 방향을 <b>대쉬가 끝나가는 그 타이밍</b>에 다시 누르면(리듬게임처럼!) <b>질주</b>로 전환 — 너무 일찍 누르면 안 먹힌다</div>
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
@@ -802,6 +818,9 @@ function makeFighter(opts) {
     dashActive: false,     // 지금 대쉬/질주 이동 애니메이션 재생 중인지
     dashLegsLeft: 0,       // 대쉬(단발)로 남은 칸 수 — 0이 되면 멈춘다(질주로 전환되지 않았을 때)
     running: false,        // 대쉬 도중 같은 방향을 한 번 더 눌러 "질주"로 전환됐는지 — 그러면 멈추지 않는다
+    bashing: false,        // 질주가 "무거운 돌진(숄더배쉬)"으로 전환됐는지
+    bashSkidLeft: -1,      // 돌진 멈춤 요청 후 관성으로 더 갈 칸수 (-1 = 아직 멈춤 요청 없음)
+    justBashStarted: null, // 돌진이 시작된 순간(이펙트용) — { x, y }
     runSpeedStep: 0,       // 질주 중 몇 칸째인지(가속 계산용) — 칸을 이어갈수록 점점 빨라진다
     moveDir: null,         // 대쉬/질주의 실제 이동 방향 — 후퇴 중엔 facing(상대 쪽)과 달라진다
     retreating: false,     // 지금 상대로부터 멀어지는 방향으로 대쉬/질주 중인지(후퇴)
@@ -974,6 +993,8 @@ function startCrash(f) {
   f.state = 'Hit';
   f.stateFrame = 0;
   f.dashActive = false;
+  f.running = false;
+  f.bashing = false;
   f.blockedHit = false;
   f.dizzyStun = true;
   f.crashed = true;
@@ -991,14 +1012,15 @@ let RUN_ESCALATE_WINDOW = 0.65; // 대쉬 도중 질주로 전환하는 입력�
                                  // 넉넉하게 잡는다 — 세 번 연달아 두드리면 어지간해서는 걸린다.
                                  // 1.0이면 아무 때나 눌러도 된다.
 
-// 이동 방향 dir로 대쉬/질주할 때, 그게 상대로부터 "멀어지는" 방향인지 — 맞다면 후퇴이므로
-// 몸은 상대를 계속 바라본 채(facing 고정) 뒤로 물러나는 모션을 써야, 뒤로 달리는데 정면으로
-// 도망치는 것처럼 보이는 어색함이 없어진다.
+// 이동 방향 dir로 한 칸 갔을 때 상대와의 거리가 "실제로 멀어지는지"만 본다.
+// (예전엔 내적 부호로 판단해서, 옆으로/위아래로 움직이는 것처럼 거리가 그대로인 경우까지
+//  후퇴로 잡혀 뒤로 달리는 모션이 엉뚱하게 나왔다. 게임의 다른 판정과 같은 체비셰프 거리로 통일.)
 function isRetreatDir(f, dir, other) {
   if (!other) return false;
   const off = facingOffset(dir);
-  const awayFromOther = { x: f.tx - other.tx, y: f.ty - other.ty };
-  return (off.dx * awayFromOther.x + off.dy * awayFromOther.y) > 0;
+  const before = Math.max(Math.abs(f.tx - other.tx), Math.abs(f.ty - other.ty));
+  const after = Math.max(Math.abs(f.tx + off.dx - other.tx), Math.abs(f.ty + off.dy - other.ty));
+  return after > before;
 }
 
 // 대쉬(→→)는 정해진 DASH_TILES칸짜리 단발 스텝이다 — 여기서 대쉬 강타/공참각으로 캔슬할 수 있고,
@@ -1012,17 +1034,21 @@ function startDash(f, dir, other) {
   f.dashLegsLeft = DASH_TILES;
   f.running = false;
   f.runSpeedStep = 0;
+  f.bashing = false;
+  f.bashSkidLeft = -1;
   f.justDashed = { fromTx: f.tx, fromTy: f.ty }; // 이펙트/로그는 대쉬가 시작될 때 한 번만
   startDashLeg(f, other);
 }
 
 function startDashLeg(f, other) {
-  // 매 칸마다 다시 판단한다. 후퇴(상대로부터 멀어지는 방향)면 상대 위치를 따로 계산하지 않고,
-  // 그냥 이동 방향의 정반대를 바라본다("질주하는 반대방향을 바라보며 달린다" = 뒤로 달리는 것) —
-  // 이렇게 하면 항상 명확하고, 상대가 어디 있든 결과가 흔들리지 않는다.
+  // 대쉬/질주 중에는 "항상 상대를 바라본다". 이동은 moveDir로 하고 시선만 상대를 향하므로,
+  // 다가갈 때는 자연스럽게 전방 질주가 되고 멀어질 때는 상대를 노려보며 물러나는 백페달이 된다.
+  // (예전엔 후퇴 시 facing을 moveDir의 반대로 그냥 뒤집었는데, 그게 곧 "질주 방향의 반대를
+  //  바라보고 달리는" 그 버그였다. 시선은 상대 위치에서 직접 구하는 게 항상 옳다.)
   if (other) {
     f.retreating = isRetreatDir(f, f.moveDir, other);
-    f.facing = f.retreating ? OPPOSITE_DIR[f.moveDir] : f.moveDir;
+    const dx = other.tx - f.tx, dy = other.ty - f.ty;
+    if (dx !== 0 || dy !== 0) f.facing = dirTowards(dx, dy);
   } else {
     f.retreating = false;
     f.facing = f.moveDir;
@@ -1031,6 +1057,13 @@ function startDashLeg(f, other) {
   const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
   if (dest.blocked) {
     if (dest.reason === 'wall') { startCrash(f); return; }
+    // 돌진(숄더배쉬) 중이었다면 그 관성이 그대로 상대에게 꽂힌다.
+    if (f.bashing && other) {
+      if (other.guardBlend > 0.6) applyBlockedHit(other, f, MOVES.shoulderBash);
+      else applyHit(other, f, MOVES.shoulderBash);
+      f.justAttacked = { label: MOVES.shoulderBash.label };
+      f.bashing = false;
+    }
     // 상대에게 붙어서 더 갈 수 없다 — 튕겨나가지 않고 그 자리에 멈춰 선다. 대쉬 강타/공참각
     // 콤보 입력이 이미 눌려 있었다면 곧바로 이어서 나간다.
     f.state = 'Idle';
@@ -1053,6 +1086,11 @@ function startDashLeg(f, other) {
   if (frameCount < f.slowUntil) {
     f.currentMoveFrames = Math.round(f.framesPerTile * SLOW_MULTIPLIER);
     f.slowUntil = -9999;
+  } else if (f.bashing) {
+    // 돌진은 가속하지 않고 일정하게 무겁다. 멈춤 요청(반대 방향 입력)이 들어온 뒤의 마지막
+    // 한 칸은 관성으로 쭉 미끄러지듯 더 느리게 간다.
+    const skidding = f.bashSkidLeft >= 0;
+    f.currentMoveFrames = Math.round(f.framesPerTile * (skidding ? BASH_SKID_FRAMES_MUL : BASH_FRAMES_MUL));
   } else if (f.running) {
     f.runSpeedStep++;
     f.currentMoveFrames = Math.max(RUN_MIN_FRAMES, Math.round(f.framesPerTile - f.runSpeedStep * RUN_ACCEL_PER_TILE));
@@ -1060,6 +1098,20 @@ function startDashLeg(f, other) {
     f.dashLegsLeft--;
     f.currentMoveFrames = f.framesPerTile; // 단발 대쉬는 평범한 이동과 똑같은 한 칸당 속도
   }
+}
+
+let BASH_FRAMES_MUL = 1.45;      // 돌진 한 칸당 프레임 배수 — 질주보다 확실히 무겁고 느리다
+let BASH_SKID_FRAMES_MUL = 2.4;  // 멈추기로 한 뒤 관성으로 미끄러지는 마지막 칸(더 느리게)
+let BASH_SKID_TILES = 1;         // 반대 방향을 눌렀을 때 관성으로 더 나아가는 칸수
+
+// 질주 중 O — 지금의 질주를 그대로 "무거운 돌진"으로 전환한다. 스스로 멈추지 않고, 반대 방향을
+// 누르면 관성 때문에 BASH_SKID_TILES칸 정도 더 미끄러진 뒤에야 멈춘다. 상대에게 닿으면 그
+// 순간 판정이 들어간다(startDashLeg의 충돌 분기).
+function startShoulderBash(f) {
+  f.bashing = true;
+  f.running = true;      // 질주 골격(레그 이어달리기)을 그대로 재사용
+  f.bashSkidLeft = -1;   // -1 = 아직 멈춤 요청 없음
+  f.justBashStarted = { x: f.tx, y: f.ty };
 }
 
 const ATTACK_RANGE = 1; // 실제로 맞으려면(=AI가 공격을 선택하려면) 인근 8칸 이내여야 함
@@ -1096,11 +1148,11 @@ function startAttack(f, moveKey, target) {
   const dashCombo = (frameCount - f.dashLandedFrame) <= DASH_COMBO_WINDOW;
 
   f.attackRangeDist = 1; // 기본공격/강공은 항상 인접 1칸 판정 (사거리 개념 없음)
-  // 슬라이딩/숄더배쉬는 예외다 — 이건 "지금 달리고 있는 방향으로" 몸을 던지는 물리적인 돌진이라,
-  // 저 멀리 있는 상대 쪽으로 순간적으로 방향을 꺾어(자동 타겟팅) 나가면 관성이 뜬금없이
-  // 끊겨 보인다. 그래서 이 둘은 auto-face를 타지 않고 지금 바라보고 있는 방향(질주 방향) 그대로
-  // 나간다.
-  const usesAutoFace = moveKey !== 'slide' && moveKey !== 'shoulderBash';
+  // 슬라이딩은 예외다 — 이건 "지금 달리고 있는 방향으로" 몸을 던지는 물리적인 돌진이라, 저 멀리
+  // 있는 상대 쪽으로 순간적으로 방향을 꺾어(자동 타겟팅) 나가면 관성이 뜬금없이 끊겨 보인다.
+  // 그래서 auto-face를 타지 않고 질주하던 방향(moveDir) 그대로 미끄러진다.
+  // (숄더배쉬는 이제 공격이 아니라 이동 상태 자체를 바꾸는 돌진이라 여기로 오지 않는다.)
+  const usesAutoFace = moveKey !== 'slide';
   if (target && usesAutoFace) {
     const dx = target.tx - f.tx, dy = target.ty - f.ty;
     // 거리와 무관하게 항상 상대가 있는 방향을 바라보고 공격한다.
@@ -1116,10 +1168,12 @@ function startAttack(f, moveKey, target) {
 
   f.attackLungeFrom = null;
   if (finalMoveKey === 'slide') {
-    // 슬라이딩: 정면으로 SLIDE_TILES칸을 실제로 미끄러져 지나간다 — 상대를 관통하듯 넘어가는
-    // 연출이라 상대는 충돌 대상에서 뺀다(벽에만 막힌다). 그래서 항상 끝 지점(최장 SLIDE_TILES칸)
-    // 에 가서 눕고, 그 다음에 일어난다. 판정은 attackHitboxTiles에서 시작 지점 기준
-    // 1~SLIDE_TILES칸을 전부 훑어 관통 판정한다.
+    // 슬라이딩: 질주하던 관성 그대로(moveDir) SLIDE_TILES칸을 실제로 미끄러져 지나간다 —
+    // 상대를 관통하듯 넘어가는 연출이라 상대는 충돌 대상에서 뺀다(벽에만 막힌다). 그래서 항상
+    // 끝 지점(최장 SLIDE_TILES칸)에 가서 눕고, 그 다음에 일어난다. 판정은 attackHitboxTiles에서
+    // 시작 지점 기준 1~SLIDE_TILES칸을 전부 훑어 관통 판정한다.
+    // facing을 이동 방향에 맞춰줘야 판정 타일/스프라이트 방향이 실제 미끄러지는 방향과 일치한다.
+    if (f.moveDir) f.facing = f.moveDir;
     const off = facingOffset(f.facing);
     const dest = computeFreeDestination(f, off.dx, off.dy, SLIDE_TILES, null);
     f.attackLungeFrom = { x: f.tx, y: f.ty };
@@ -1160,7 +1214,7 @@ function startAttack(f, moveKey, target) {
   f.hitLandedThisAttack = false;
   f.justAttacked = { label: MOVES[finalMoveKey].label };
   // 콤보/커맨드 입력이 제대로 인식됐는지는 맞았는지와 무관하게 그 즉시 확실히 보여준다.
-  if (['ultimate', 'dashAttack', 'boonggwon', 'slide', 'shoulderBash'].includes(finalMoveKey)) f.justComboConfirmed = finalMoveKey;
+  if (['ultimate', 'dashAttack', 'boonggwon', 'slide'].includes(finalMoveKey)) f.justComboConfirmed = finalMoveKey;
   if (finalMoveKey === 'slide') f.justSlid = { x: f.tx, y: f.ty }; // 명중 여부와 무관하게 미끄러질 때 먼지가 인다
   if (dashCombo) f.dashLandedFrame = -9999; // 콤보 창 소모(한 번만 나가도록)
 }
@@ -1190,6 +1244,10 @@ function startClinch(attacker, defender) {
 
   defender.state = 'Clinch'; defender.stateFrame = 0;
   defender.clinchRole = 'defender'; defender.clinchFrame = 0; defender.clinchResult = null; defender.clinchAnchor = anchor;
+
+  // 잡기는 두 캐릭터가 한 지점에서 얽히는 장면이라, 그 지점으로 카메라가 완전히 붙어 들어간다.
+  // 몸싸움이 끝나고 떨어질 때까지 유지되도록 클린치 전체 길이만큼 잡아둔다.
+  triggerCameraFocus(anchor.x, anchor.y, CLINCH_CHARGE + CLINCH_STRUGGLE + CLINCH_RESOLVE + CLINCH_RETURN_FRAMES);
 
   logEvent(`${attacker.name} — 클린치 돌입! (${defender.name}에게 달려든다)`, 'attack');
 }
@@ -1349,7 +1407,11 @@ function processMovementInput(f, currentDirs, other) {
     // 이동이 거의 끝나가는 구간(RUN_ESCALATE_WINDOW) 안에 들어와야 인정된다. 타이밍을
     // 놓친 입력은 그냥 씹힌다(질주로 전환되지 않는다).
     const legProgress = f.currentMoveFrames > 0 ? f.stateFrame / f.currentMoveFrames : 1;
-    if (f.state === 'Move' && f.dashActive && !f.running && rawDir === f.moveDir
+    if (f.bashing && f.bashSkidLeft < 0 && rawDir === OPPOSITE_DIR[f.moveDir]) {
+      // 돌진 중 반대 방향 입력 = 브레이크. 하지만 관성이 있어 바로 서지 못하고 한 칸 정도
+      // 더 미끄러진 뒤에 멈춘다.
+      f.bashSkidLeft = BASH_SKID_TILES;
+    } else if (f.state === 'Move' && f.dashActive && !f.running && rawDir === f.moveDir
         && legProgress >= 1 - RUN_ESCALATE_WINDOW) {
       f.running = true;
       f.justRunStarted = { x: f.tx, y: f.ty };
@@ -1477,9 +1539,9 @@ function handlePlayerInput(f, keymap, target) {
     keys.delete(keymap.slide);
     if (isRunning) tryFireAttack(f, 'slide', target);
   }
-  if (isRunning && keys.has(keymap.guard)) {
+  if (isRunning && !f.bashing && keys.has(keymap.guard)) {
     keys.delete(keymap.guard);
-    tryFireAttack(f, 'shoulderBash', target);
+    startShoulderBash(f);
   }
 
   if (keys.has(keymap.attack)) {
@@ -1618,10 +1680,18 @@ function updateFighter(f, other) {
             // 콤보로 캔슬됐다 — 대쉬/질주를 멈추고 그 자리에서 바로 공격으로 이어간다.
             f.dashActive = false;
             f.running = false;
+            f.bashing = false;
             f.fireDashAttackNow = true;
             f.state = 'Idle';
+          } else if (f.bashing && f.bashSkidLeft === 0) {
+            // 관성으로 미끄러질 칸까지 다 썼다 — 이제야 멈춘다.
+            f.dashActive = false;
+            f.running = false;
+            f.bashing = false;
+            f.state = 'Idle';
           } else if (f.running || f.dashLegsLeft > 0) {
-            // 질주로 전환됐거나(멈추지 않음), 아직 단발 대쉬로 남은 칸이 있으면 계속 이어간다.
+            // 질주/돌진 중이거나(멈추지 않음), 아직 단발 대쉬로 남은 칸이 있으면 계속 이어간다.
+            if (f.bashing && f.bashSkidLeft > 0) f.bashSkidLeft--;
             startDashLeg(f, other);
           } else {
             // 단발 대쉬 칸수를 다 썼고 질주로도 전환되지 않았다 — 여기서 멈춘다.
@@ -1818,12 +1888,12 @@ const FRAME_SCHEMA = [
     { label: '관통 사거리(칸)', get: () => SLIDE_TILES, set: v => SLIDE_TILES = v },
     { label: '다운 확률(0~1)', get: () => SLIDE_TRIP_CHANCE, set: v => SLIDE_TRIP_CHANCE = v },
   ]},
-  { group: '숄더배쉬 (질주 중 O)', rows: [
-    { label: '발동(startup)', get: () => MOVES.shoulderBash.startup, set: v => MOVES.shoulderBash.startup = v },
-    { label: '판정 유지(active)', get: () => MOVES.shoulderBash.active, set: v => MOVES.shoulderBash.active = v },
-    { label: '후딜(recovery)', get: () => MOVES.shoulderBash.recovery, set: v => MOVES.shoulderBash.recovery = v },
+  { group: '숄더배쉬 돌진 (질주 중 O)', rows: [
     { label: '경직(stun)', get: () => MOVES.shoulderBash.stun, set: v => MOVES.shoulderBash.stun = v },
     { label: '넉백(칸)', get: () => MOVES.shoulderBash.push, set: v => MOVES.shoulderBash.push = v },
+    { label: '돌진 한 칸 배수', get: () => BASH_FRAMES_MUL, set: v => BASH_FRAMES_MUL = v },
+    { label: '미끄러짐 한 칸 배수', get: () => BASH_SKID_FRAMES_MUL, set: v => BASH_SKID_FRAMES_MUL = v },
+    { label: '관성 미끄러짐(칸)', get: () => BASH_SKID_TILES, set: v => BASH_SKID_TILES = v },
   ]},
   { group: '방어', rows: [
     { label: '방어 성공 경직', get: () => BLOCK_STUN_FRAMES, set: v => BLOCK_STUN_FRAMES = v },
@@ -1950,7 +2020,19 @@ let cameraCritPos = null, cameraCritLook = null;
 let CAMERA_CRIT_HOLD = 24;   // 클로즈업이 유지되는 프레임
 let CAMERA_CRIT_SHAKE = 0.16; // 흔들림 폭
 
+// --- 특정 지점을 한동안 완전히 클로즈업으로 붙잡는 연출(클린치 등) ---
+// 크리티컬과 달리 스냅이 아니라 부드럽게 밀고 들어가고, 끝나면 일반 로직이 다시 빼준다.
+let cameraFocusUntil = -9999;
+let cameraFocusAt = null;
+let CAMERA_FOCUS_HEIGHT = 2.5; // 클로즈업 시 카메라 높이
+let CAMERA_FOCUS_BACK = 2.9;   // 대상에서 뒤로 물러나는 거리(작을수록 더 붙는다)
+
 function triggerCameraZoom() { cameraZoomTarget = 1; }
+
+function triggerCameraFocus(tx, ty, frames) {
+  cameraFocusAt = { x: tx, y: ty };
+  cameraFocusUntil = frameCount + frames;
+}
 
 function triggerCameraCrit(tx, ty) {
   const wx = worldX(tx), wz = worldZ(ty);
@@ -1973,6 +2055,16 @@ function updateCamera() {
     camera.up.set((Math.random() - 0.5) * 0.25, 1, 0); // 살짝 기울어진 대각선 앵글(더치 앵글)
     camera.lookAt(cameraCritLook.x, cameraCritLook.y, cameraCritLook.z);
     camera.up.set(0, 1, 0); // 다음 프레임 계산에 영향 주지 않도록 원복
+    return;
+  }
+
+  if (frameCount < cameraFocusUntil && cameraFocusAt) {
+    // 클린치처럼 한 지점에서 오래 얽히는 장면 — 그 지점으로 부드럽게 완전히 붙어 들어간다.
+    const fx = worldX(cameraFocusAt.x), fz = worldZ(cameraFocusAt.y);
+    camera.position.x += (fx - camera.position.x) * 0.1;
+    camera.position.y += (CAMERA_FOCUS_HEIGHT - camera.position.y) * 0.1;
+    camera.position.z += ((fz + CAMERA_FOCUS_BACK) - camera.position.z) * 0.1;
+    camera.lookAt(fx, 0.7, fz);
     return;
   }
 
@@ -2062,7 +2154,15 @@ function computePose(f) {
     if (f.dashActive) {
       // 대쉬/질주: 매 칸(레그)마다 갱신되므로 여러 칸을 이어 달리는 동안 같은 사이클이 반복 재생된다.
       const sprint = Math.sin(t * Math.PI * 3);
-      if (f.retreating) {
+      if (f.bashing) {
+        // 숄더배쉬(돌진): 황소가 뿔을 들이대듯 상체를 깊게 숙이고, 어깨/방패를 앞세워 무겁게
+        // 밀고 나간다. 관성으로 미끄러져 멈추는 구간에서는 버티듯 몸을 살짝 세운다.
+        const skidding = f.bashSkidLeft >= 0;
+        pose.torsoLean = skidding ? 0.55 : 1.0;
+        pose.headTilt = skidding ? 0.1 : 0.35;
+        pose.legSpread = skidding ? -0.5 : sprint * 0.55;
+        pose.armSwing = 0.15;
+      } else if (f.retreating) {
         // 후퇴: 상대를 계속 바라본 채(facing 고정) 뒤로 물러난다 — 전진 스프린트와 뚜렷이
         // 구분되도록 몸을 반대로(뒤로) 젖히고 팔 스윙도 반대 위상으로 준다.
         pose.legSpread = sprint * 0.85;
@@ -2077,7 +2177,7 @@ function computePose(f) {
         pose.headTilt = 0.1;
       }
 
-      if (f.running && !f.retreating) {
+      if (f.running && !f.retreating && !f.bashing) {
         // 질주 중 상대에게 가까워질수록 황소가 돌격하듯 상체를 더 깊이 숙인다 —
         // 팔다리 스윙은 줄이지 않고 그대로 크게 유지해서 박진감을 해치지 않는다.
         const opp = f === p1 ? p2 : p1;
@@ -2167,13 +2267,6 @@ function computePose(f) {
         pose.headTilt = lerp(-0.2, 0, t);
       }
       pose.armSwing = -0.35;
-    } else if (move.shoulderBash) {
-      // 숄더배쉬: 황소가 돌격하듯 상체를 상대 쪽으로 깊이 숙이고 몸 전체로 들이받는다.
-      const t = Math.min(1, f.stateFrame / total);
-      pose.torsoLean = lerp(0.5, 1.05, Math.min(1, t * 1.6));
-      pose.headTilt = 0.35;
-      pose.legSpread = 0.3 * Math.sin(t * Math.PI * 4); // 힘차게 내딛는 다리
-      pose.armSwing = 0.1; // 방패 아이콘은 updateVisual에서 어깨 높이로 별도로 띄운다
     } else {
       const windUp = Math.min(1, f.stateFrame / Math.max(1, activeStart));
       pose.punch = f.stateFrame >= activeStart ? 1 : windUp * 0.35;
@@ -2546,7 +2639,12 @@ function updateVisual(f, visual, hitMarkers) {
       // facing을 쓰면 방향이 어긋난다.
       const travelDir = f.moveDir || f.facing;
       if (frameCount % 2 === 0) spawnWindTrail(fx, fy, travelDir);
-      if (f.running && frameCount % 3 === 0) spawnBlueStarTrail(fx, fy, travelDir);
+      // 돌진은 파란 별 대신 무겁게 땅을 긁는 먼지가 계속 인다.
+      if (f.bashing) {
+        if (frameCount % 3 === 0) spawnDustBurst(fx, fy, 2);
+      } else if (f.running && frameCount % 3 === 0) {
+        spawnBlueStarTrail(fx, fy, travelDir);
+      }
     }
   }
 
@@ -2610,11 +2708,12 @@ function updateVisual(f, visual, hitMarkers) {
 
   // 방어 중이면 큰 방패 아이콘을 몸 앞쪽에 띄워서 확실하게 보여준다.
   // 숄더배쉬 중에는 같은 아이콘을 어깨 높이로 더 크게 들어 "방패로 들이받는" 느낌을 낸다.
-  const bashing = f.state === 'Attack' && MOVES[f.attackMove] && MOVES[f.attackMove].shoulderBash;
-  if (bashing) {
+  if (f.bashing) {
+    // 돌진 중에는 방패를 어깨 높이로 크게 들어 앞을 막는다 — 이동 방향(moveDir) 쪽으로.
+    const bOff = facingOffset(f.moveDir || f.facing);
     visual.shieldIcon.visible = true;
-    visual.shieldIcon.scale.set(0.8, 0.8, 1);
-    visual.shieldIcon.position.set(px + off.dx * 0.42, py + 0.42, pz + off.dy * 0.42);
+    visual.shieldIcon.scale.set(0.85, 0.85, 1);
+    visual.shieldIcon.position.set(px + bOff.dx * 0.45, py + 0.4, pz + bOff.dy * 0.45);
   } else if (f.guardBlend > 0.05) {
     visual.shieldIcon.visible = true;
     const s = 0.62 * Math.min(1, f.guardBlend * 1.3);
@@ -2753,11 +2852,14 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 7; ctx.strokeStyle = '#123a52'; ctx.strokeText('슬라이딩!', cx, cy);
     ctx.fillStyle = '#7fd4ff'; ctx.fillText('슬라이딩!', cx, cy);
     scaleW = 1.8; scaleH = 0.48; maxLife = 14; riseTotal = 0.22;
-  } else if (type === 'comboShoulderBash') {
-    ctx.font = "700 30px 'Chakra Petch', sans-serif";
-    ctx.lineWidth = 7; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('숄더배쉬!', cx, cy);
-    ctx.fillStyle = '#ff9a52'; ctx.fillText('숄더배쉬!', cx, cy);
-    scaleW = 1.9; scaleH = 0.5; maxLife = 14; riseTotal = 0.22;
+  } else if (type === 'bashStart') {
+    // 돌진(숄더배쉬) 돌입 — 질주 배너와는 또 다르게, 묵직한 붉은 색조의 큰 배너.
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    grad.addColorStop(0, '#ffb64d'); grad.addColorStop(0.5, '#ff6b5e'); grad.addColorStop(1, '#ffb64d');
+    ctx.font = "900 50px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 12; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('돌격!! 숄더배쉬', cx, cy);
+    ctx.fillStyle = grad; ctx.fillText('돌격!! 숄더배쉬', cx, cy);
+    scaleW = 3.4; scaleH = 0.82; maxLife = 26; riseTotal = 0.45;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -3052,8 +3154,7 @@ function processEventFlags(f) {
     // 맞았는지와 무관하게, 콤보/커맨드 입력이 인식된 그 순간 바로 확인시켜준다.
     const origin = f.attackLungeFrom || { x: f.tx, y: f.ty };
     const COMBO_EFFECT_MAP = {
-      ultimate: 'comboUltimate', boonggwon: 'comboBoonggwon',
-      slide: 'comboSlide', shoulderBash: 'comboShoulderBash',
+      ultimate: 'comboUltimate', boonggwon: 'comboBoonggwon', slide: 'comboSlide',
     };
     const effectType = COMBO_EFFECT_MAP[f.justComboConfirmed] || 'comboDash';
     spawnEffect(effectType, origin.x, origin.y);
@@ -3084,6 +3185,15 @@ function processEventFlags(f) {
     triggerCameraZoom();
     logEvent(`${f.name} — 질주 돌입!!`, 'dash');
     f.justRunStarted = null;
+  }
+  if (f.justBashStarted) {
+    // 돌진 돌입 — 질주와 또 다른 전용 배너 + 먼지 + 카메라 펀치인으로 무게감을 준다.
+    spawnEffect('bashStart', f.justBashStarted.x, f.justBashStarted.y);
+    spawnDustBurst(f.justBashStarted.x, f.justBashStarted.y, 6);
+    spawnBigEmoji('🛡️', f.justBashStarted.x, f.justBashStarted.y, { life: 24, size: 1.5, rise: 0.2 });
+    triggerCameraZoom();
+    logEvent(`${f.name} — 숄더배쉬 돌격!! (반대 방향을 누르면 미끄러지며 멈춤)`, 'dash');
+    f.justBashStarted = null;
   }
   if (f.justDashed) {
     spawnEffect('dash', f.justDashed.fromTx, f.justDashed.fromTy);
