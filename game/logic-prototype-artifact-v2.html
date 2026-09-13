@@ -1,0 +1,864 @@
+<title>타일 대전 프레임 랩</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/128/three.min.js"></script>
+<!--
+  변경 이력
+  v1.0: 최초 아티팩트 (2D canvas, 타일 이동/대각 결합/대쉬, 기본공격/밀치기 판정)
+  v1.1: 방향키 홀드 시 매 칸마다 붙던 6프레임 대각 결합 지연 제거, P2 AI 옵션 추가
+  v2.0: 렌더러를 Three.js 3D로 전면 교체.
+        - 바닥을 체스판 스타일 체커보드(라이트/다크 목재 톤 + 프레임)로 구현
+        - 캐릭터는 캔버스로 그린 2D 스프라이트를 빌보드(항상 카메라를 보는 평면)로 3D 공간에 배치
+        - 이동 시 hop 모션, 공격 시 전진 lunge, 피격 시 셰이크+색 플래시 등 프레젠테이션 레이어 추가
+        - 시뮬레이션 로직(FSM/프레임 판정)은 v1.1과 동일, 렌더링만 분리
+-->
+<style>
+  :root{
+    --bg:#0b0d13;
+    --bg-crt:#0e1119;
+    --panel:#151a24;
+    --panel-line:#232a38;
+    --grid-line-soft:#1a2029;
+    --text:#e7ecf6;
+    --text-dim:#8892a6;
+    --text-faint:#5a6479;
+    --p1:#4fd2ff;
+    --p2:#ff9a52;
+    --stun:#ffd34d;
+    --hitbox:#ff4d5e;
+    --key:#1c2230;
+    --key-border:#333d52;
+    --ok:#57d18a;
+    --font-display:'Chakra Petch', 'Pretendard', sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+    --font-body:'IBM Plex Sans KR', 'Pretendard', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #131826 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:var(--font-body);
+    padding:28px 16px 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .masthead{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-width:640px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .ver-tag{
+    background:rgba(87,209,138,.14);
+    color:var(--ok);
+    border:1px solid rgba(87,209,138,.35);
+    border-radius:99px;
+    padding:1px 8px;
+    letter-spacing:.06em;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(22px,4vw,32px);
+    margin:0;
+    letter-spacing:.01em;
+    text-wrap:balance;
+  }
+  h1 span{color:var(--p1);}
+  .sub{
+    font-size:13px;
+    color:var(--text-dim);
+    line-height:1.6;
+    text-wrap:balance;
+  }
+  .sub b{color:var(--ok); font-weight:600;}
+
+  .rig{
+    width:100%;
+    max-width:1040px;
+    display:grid;
+    grid-template-columns:200px minmax(0,1fr) 200px;
+    gap:16px;
+    align-items:start;
+  }
+  @media (max-width:900px){
+    .rig{ grid-template-columns:1fr; }
+    .side{ flex-direction:row !important; flex-wrap:wrap; }
+  }
+
+  .side{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .panel h3{
+    margin:0 0 10px;
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:.04em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .p1 .dot{background:var(--p1); box-shadow:0 0 8px var(--p1);}
+  .p2 .dot{background:var(--p2); box-shadow:0 0 8px var(--p2);}
+  .p1 h3{color:var(--p1);}
+  .p2 h3{color:var(--p2);}
+
+  .stat-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:12px;
+    padding:3px 0;
+    border-bottom:1px dashed var(--grid-line-soft);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .k{color:var(--text-faint);}
+  .stat-row .v{color:var(--text);}
+  .state-pill{
+    display:inline-block;
+    padding:1px 8px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:600;
+    background:var(--grid-line-soft);
+    color:var(--text-dim);
+  }
+  .state-pill.st-Attack{background:rgba(255,77,94,.18); color:var(--hitbox);}
+  .state-pill.st-Hit,.state-pill.st-Stun{background:rgba(255,211,77,.18); color:var(--stun);}
+  .state-pill.st-Move{background:rgba(79,210,255,.14); color:var(--p1);}
+
+  .ai-toggle{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:2px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .ai-toggle input{ accent-color:var(--p2); width:13px; height:13px; }
+
+  .stage{
+    background:var(--bg-crt);
+    border:1px solid var(--panel-line);
+    border-radius:12px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+    width:100%;
+  }
+  #stage3d{
+    width:100%;
+    max-width:760px;
+    aspect-ratio:16/10;
+    background:#10141d;
+    border:1px solid var(--panel-line);
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+  }
+  #stage3d canvas{ display:block; width:100%; height:100%; }
+
+  .frame-tape{
+    width:100%;
+    max-width:760px;
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+  }
+  .frame-tape b{color:var(--text-dim); font-weight:500;}
+
+  .controls{
+    width:100%;
+    max-width:1040px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:640px){ .controls{ grid-template-columns:1fr; } }
+  .controls .panel{ display:flex; flex-direction:column; gap:8px; }
+  .keyline{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-dim); flex-wrap:wrap;}
+  .keyline .kk{display:flex; gap:4px;}
+  kbd{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text);
+    background:var(--key);
+    border:1px solid var(--key-border);
+    border-bottom:2px solid var(--key-border);
+    border-radius:5px;
+    padding:2px 7px;
+    min-width:20px;
+    text-align:center;
+  }
+  .reset-note{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+  }
+  .reset-note kbd{margin:0 3px;}
+
+  .legend{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    font-size:11px;
+    color:var(--text-faint);
+    font-family:var(--font-mono);
+  }
+  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px;}
+</style>
+
+<div class="masthead">
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v2.0 · 3D</span></div>
+  <h1>타일 대전 <span>프레임 랩</span></h1>
+  <p class="sub"><b>v2.0: 3D 체스판 뷰로 전면 교체.</b> 바닥은 체스판처럼 라이트/다크 목재가 번갈아 놓인 체커보드고, 캐릭터는 항상 카메라를 향하는 2D 스프라이트로 그 위에 서 있습니다. 이동/공격/판정 로직(프레임 데이터)은 이전 버전과 동일합니다.</p>
+</div>
+
+<div class="rig">
+  <div class="side">
+    <div class="panel p1">
+      <h3><span class="dot"></span>PLAYER 1</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p1-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">state frame</span><span class="v" id="p1-frame">0</span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p1-tile">(2,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p1-facing">right</span></div>
+      <div class="stat-row"><span class="k">hitstun left</span><span class="v" id="p1-stun">-</span></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div id="stage3d"></div>
+    <div class="frame-tape">
+      <span>frame <b id="fc">0</b></span>
+      <span>60fps fixed-step sim &middot; Three.js render</span>
+      <span>board <b>12×8</b></span>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="panel p2">
+      <h3><span class="dot"></span>PLAYER 2</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p2-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">state frame</span><span class="v" id="p2-frame">0</span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p2-tile">(9,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p2-facing">left</span></div>
+      <div class="stat-row"><span class="k">hitstun left</span><span class="v" id="p2-stun">-</span></div>
+      <label class="ai-toggle"><input type="checkbox" id="aiToggle" checked> AI가 P2 조작</label>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="panel p1">
+    <h3><span class="dot"></span>P1 조작</h3>
+    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 대각은 두 키를 6프레임 이내 동시입력, 같은 방향 2연타는 대쉬</div>
+    <div class="keyline">기본공격(스턴) <kbd>/</kbd> &nbsp;&middot;&nbsp; 밀치기(스턴+넉백) <kbd>.</kbd></div>
+  </div>
+  <div class="panel p2">
+    <h3><span class="dot"></span>P2 조작 <span style="color:var(--text-faint); font-weight:400;">(AI 해제 시)</span></h3>
+    <div class="keyline">이동 <span class="kk"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> — 규칙 동일</div>
+    <div class="keyline">기본공격(스턴) <kbd>1</kbd> &nbsp;&middot;&nbsp; 밀치기(스턴+넉백) <kbd>2</kbd></div>
+  </div>
+</div>
+
+<div class="reset-note">
+  <kbd>R</kbd> 리셋 &middot;
+  <span class="legend" style="display:inline-flex;vertical-align:middle;margin-left:6px;">
+    <span><span class="sw" style="background:var(--hitbox);"></span>활성 히트박스</span>
+    <span><span class="sw" style="background:var(--stun);"></span>스턴/피격</span>
+  </span>
+</div>
+
+<script>
+// ===================================================================
+// 시뮬레이션 레이어 — docs/game-design-v1.md 기반, v1.1과 동일한 프레임 판정 로직
+// (렌더링과 완전히 분리: 아래는 타일 좌표/상태/프레임만 다룬다)
+// ===================================================================
+
+const COLS = 12, ROWS = 8;
+
+const DIRS = {
+  up:    {dx:0, dy:-1},
+  down:  {dx:0, dy:1},
+  left:  {dx:-1, dy:0},
+  right: {dx:1, dy:0},
+};
+function combineDir(a, b) {
+  const set = new Set([a,b]);
+  if (set.has('up') && set.has('left')) return 'upleft';
+  if (set.has('up') && set.has('right')) return 'upright';
+  if (set.has('down') && set.has('left')) return 'downleft';
+  if (set.has('down') && set.has('right')) return 'downright';
+  return null;
+}
+const DIAG_OFFSET = {
+  upleft: {dx:-1, dy:-1}, upright:{dx:1, dy:-1},
+  downleft:{dx:-1, dy:1}, downright:{dx:1, dy:1},
+};
+
+const MOVES = {
+  basic: { startup: 7, stun: 15, push: 0, label: '기본공격' },
+  push:  { startup: 7, stun: 20, push: 1, label: '밀치기' },
+};
+
+function makeFighter(opts) {
+  return {
+    name: opts.name,
+    color: opts.color,
+    tx: opts.tx, ty: opts.ty,
+    facing: opts.facing,
+    framesPerTile: opts.framesPerTile ?? 10,
+    diagWindow: 6,
+    dashWindow: 12,
+
+    state: 'Idle',
+    stateFrame: 0,
+
+    moveFromX: 0, moveFromY: 0, moveToX: 0, moveToY: 0,
+
+    prevHeld: new Set(),
+    pending: null,
+    lastDir: null, lastDirFrame: -9999,
+
+    attackMove: null,
+    hitstunFrames: 0,
+    knockback: null,
+
+    aiCooldown: 0,
+  };
+}
+
+function facingOffset(f) { return DIAG_OFFSET[f] || DIRS[f]; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function tryStartMove(f, dir) {
+  if (f.state !== 'Idle') return;
+  const isDash = f.lastDir === dir && (frameCount - f.lastDirFrame) <= f.dashWindow;
+  f.lastDir = dir;
+  f.lastDirFrame = frameCount;
+  const off = DIRS[dir];
+  const dist = isDash ? 2 : 1;
+  const nx = clamp(f.tx + off.dx * dist, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy * dist, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, dir);
+}
+
+function tryStartDiagMove(f, diag) {
+  if (f.state !== 'Idle') return;
+  const off = DIAG_OFFSET[diag];
+  const nx = clamp(f.tx + off.dx, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, diag);
+}
+
+function startMove(f, nx, ny, facing) {
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = nx; f.moveToY = ny;
+  f.facing = facing;
+  f.pending = null;
+}
+
+function startAttack(f, moveKey) {
+  if (f.state !== 'Idle' && f.state !== 'Move') return;
+  f.state = 'Attack';
+  f.stateFrame = 0;
+  f.attackMove = moveKey;
+}
+
+function applyHit(target, attacker, move) {
+  target.state = 'Hit';
+  target.stateFrame = 0;
+  target.hitstunFrames = move.stun;
+  if (move.push > 0) {
+    const off = facingOffset(attacker.facing);
+    target.knockback = {
+      fromX: target.tx, fromY: target.ty,
+      toX: clamp(target.tx + off.dx * move.push, 0, COLS-1),
+      toY: clamp(target.ty + off.dy * move.push, 0, ROWS-1),
+      frame: 0, duration: 8,
+    };
+  } else {
+    target.knockback = null;
+  }
+}
+
+function attackHitboxTile(f) {
+  const off = facingOffset(f.facing);
+  return { x: f.tx + off.dx, y: f.ty + off.dy };
+}
+
+const keys = new Set();
+window.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  keys.add(e.key);
+});
+window.addEventListener('keyup', e => keys.delete(e.key));
+
+function processMovementInput(f, currentDirs) {
+  const prevHeld = f.prevHeld;
+  f.prevHeld = new Set(currentDirs);
+
+  if (f.state !== 'Idle') return;
+
+  if (currentDirs.length >= 2) {
+    const diag = combineDir(currentDirs[0], currentDirs[1]);
+    if (diag) { tryStartDiagMove(f, diag); f.pending = null; }
+    return;
+  }
+  if (currentDirs.length === 0) { f.pending = null; return; }
+
+  const dir = currentDirs[0];
+  const isNewPress = !prevHeld.has(dir);
+
+  if (isNewPress) { f.pending = { dir, frame: frameCount }; return; }
+
+  if (!f.pending) { tryStartMove(f, dir); return; }
+
+  if (f.pending.dir === dir && (frameCount - f.pending.frame) > f.diagWindow) {
+    tryStartMove(f, dir);
+    f.pending = null;
+  }
+}
+
+function handleInput(f, keymap) {
+  const currentDirs = [];
+  for (const dir of ['up','down','left','right']) {
+    if (keys.has(keymap[dir])) currentDirs.push(dir);
+  }
+  processMovementInput(f, currentDirs);
+
+  if (keys.has(keymap.basic)) { startAttack(f, 'basic'); keys.delete(keymap.basic); }
+  if (keys.has(keymap.push))  { startAttack(f, 'push');  keys.delete(keymap.push); }
+}
+
+function dirTowards(dx, dy) {
+  const sx = dx === 0 ? 0 : (dx > 0 ? 1 : -1);
+  const sy = dy === 0 ? 0 : (dy > 0 ? 1 : -1);
+  if (sx === 0 && sy === -1) return 'up';
+  if (sx === 0 && sy === 1) return 'down';
+  if (sx === -1 && sy === 0) return 'left';
+  if (sx === 1 && sy === 0) return 'right';
+  if (sx === -1 && sy === -1) return 'upleft';
+  if (sx === 1 && sy === -1) return 'upright';
+  if (sx === -1 && sy === 1) return 'downleft';
+  return 'downright';
+}
+
+function driveAI(ai, target) {
+  if (ai.aiCooldown > 0) ai.aiCooldown--;
+  if (ai.state !== 'Idle') return;
+
+  const dx = target.tx - ai.tx;
+  const dy = target.ty - ai.ty;
+  const adjacent = Math.abs(dx) <= 1 && Math.abs(dy) <= 1 && (dx !== 0 || dy !== 0);
+  if (ai.aiCooldown > 0) return;
+
+  const dir = dirTowards(dx, dy);
+
+  if (adjacent) {
+    ai.facing = dir;
+    const move = Math.random() < 0.7 ? 'basic' : 'push';
+    startAttack(ai, move);
+    ai.aiCooldown = 20 + Math.floor(Math.random() * 20);
+    return;
+  }
+
+  if (['up','down','left','right'].includes(dir)) tryStartMove(ai, dir);
+  else tryStartDiagMove(ai, dir);
+  ai.aiCooldown = 4 + Math.floor(Math.random() * 6);
+}
+
+let frameCount = 0;
+
+function updateFighter(f) {
+  switch (f.state) {
+    case 'Idle': break;
+
+    case 'Move': {
+      f.stateFrame++;
+      if (f.stateFrame >= f.framesPerTile) {
+        f.tx = f.moveToX; f.ty = f.moveToY;
+        f.state = 'Idle';
+        f.stateFrame = 0;
+      }
+      break;
+    }
+
+    case 'Attack': {
+      f.stateFrame++;
+      const move = MOVES[f.attackMove];
+      if (f.stateFrame >= move.startup + 3) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.attackMove = null;
+      }
+      break;
+    }
+
+    case 'Hit': {
+      f.stateFrame++;
+      if (f.knockback) {
+        f.knockback.frame++;
+        if (f.knockback.frame >= f.knockback.duration) {
+          f.tx = f.knockback.toX; f.ty = f.knockback.toY;
+        }
+      }
+      if (f.stateFrame >= f.hitstunFrames) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.knockback = null;
+      }
+      break;
+    }
+  }
+}
+
+function checkAttackHits(attacker, defender) {
+  if (attacker.state !== 'Attack') return;
+  const move = MOVES[attacker.attackMove];
+  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + 3;
+  if (!active) return;
+  if (defender.state === 'Hit') return;
+  const box = attackHitboxTile(attacker);
+  if (box.x === defender.tx && box.y === defender.ty) {
+    applyHit(defender, attacker, move);
+  }
+}
+
+// 현재 프레임의 렌더용(보간된) 타일 좌표 — 시뮬레이션 상태는 건드리지 않는다.
+function getRenderTile(f) {
+  if (f.state === 'Move') {
+    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    return { x: lerp(f.moveFromX, f.moveToX, t), y: lerp(f.moveFromY, f.moveToY, t) };
+  }
+  if (f.state === 'Hit' && f.knockback) {
+    const t = Math.min(1, f.knockback.frame / f.knockback.duration);
+    return { x: lerp(f.knockback.fromX, f.knockback.toX, t), y: lerp(f.knockback.fromY, f.knockback.toY, t) };
+  }
+  return { x: f.tx, y: f.ty };
+}
+
+const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
+const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
+
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', basic:'/', push:'.' };
+const p2keys = { up:'w', down:'s', left:'a', right:'d', basic:'1', push:'2' };
+
+function resetIfNeeded() {
+  if (keys.has('r') || keys.has('R')) {
+    Object.assign(p1, makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' }));
+    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' }));
+  }
+}
+
+// ===================================================================
+// 프레젠테이션 레이어 — Three.js. 체스판 스타일 바닥 + 2D 스프라이트 캐릭터.
+// ===================================================================
+
+const aiToggle = document.getElementById('aiToggle');
+const stageEl = document.getElementById('stage3d');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x10141d);
+scene.fog = new THREE.Fog(0x10141d, 14, 26);
+
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 10, 8.4);
+camera.lookAt(0, 0.4, 0.6);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stageEl.appendChild(renderer.domElement);
+
+function resizeRenderer() {
+  const w = stageEl.clientWidth, h = stageEl.clientHeight;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resizeRenderer);
+
+// --- 조명 ---
+scene.add(new THREE.HemisphereLight(0x8fb4ff, 0x1a140d, 0.65));
+const sun = new THREE.DirectionalLight(0xfff2d6, 1.05);
+sun.position.set(-6, 11, 7);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -9; sun.shadow.camera.right = 9;
+sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 26;
+scene.add(sun);
+
+// --- 체스판 스타일 바닥 ---
+const worldX = tx => tx - (COLS - 1) / 2;
+const worldZ = ty => ty - (ROWS - 1) / 2;
+
+const LIGHT_SQUARE = 0xf0efe9; // 클래식 체스판 흰 칸
+const DARK_SQUARE  = 0x1c1d22; // 클래식 체스판 검은 칸
+
+const lightMat = new THREE.MeshStandardMaterial({ color: LIGHT_SQUARE, roughness: 0.5 });
+const darkMat  = new THREE.MeshStandardMaterial({ color: DARK_SQUARE,  roughness: 0.55 });
+const tileGeo  = new THREE.BoxGeometry(0.96, 0.14, 0.96);
+
+for (let tx = 0; tx < COLS; tx++) {
+  for (let ty = 0; ty < ROWS; ty++) {
+    const mesh = new THREE.Mesh(tileGeo, (tx + ty) % 2 === 0 ? lightMat : darkMat);
+    mesh.position.set(worldX(tx), -0.07, worldZ(ty));
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
+}
+
+// 체스판 느낌을 완성하는 프레임 (스크린샷의 다크 챠콜 톤 참고)
+const frameMat = new THREE.MeshStandardMaterial({ color: 0x1a1c24, roughness: 0.75 });
+const frameGeo = new THREE.BoxGeometry(COLS + 0.9, 0.22, ROWS + 0.9);
+const frame = new THREE.Mesh(frameGeo, frameMat);
+frame.position.set(0, -0.2, 0);
+frame.receiveShadow = true;
+scene.add(frame);
+
+// 바닥(테이블) — 프레임 아래로 은은하게
+const tableMat = new THREE.MeshStandardMaterial({ color: 0x171a22, roughness: 0.9 });
+const table = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), tableMat);
+table.rotation.x = -Math.PI / 2;
+table.position.y = -0.35;
+table.receiveShadow = true;
+scene.add(table);
+
+// --- 활성 히트박스 표시 (붉은 타일 하이라이트) ---
+const hitboxMat = new THREE.MeshBasicMaterial({ color: 0xff4d5e, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+const hitboxGeo = new THREE.PlaneGeometry(0.9, 0.9);
+function makeHitboxMarker() {
+  const m = new THREE.Mesh(hitboxGeo, hitboxMat);
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.02;
+  m.visible = false;
+  scene.add(m);
+  return m;
+}
+const p1HitMarker = makeHitboxMarker();
+const p2HitMarker = makeHitboxMarker();
+
+// --- 2D 스프라이트 캐릭터 ---
+function drawFighterSprite(hex) {
+  const c = document.createElement('canvas');
+  c.width = 96; c.height = 128;
+  const g = c.getContext('2d');
+  g.clearRect(0, 0, 96, 128);
+
+  // 그림자 없는 심플 블록 캐릭터 (팔다리/몸통/머리)
+  g.fillStyle = '#11131a';
+  g.fillRect(30, 96, 14, 26); // 왼다리
+  g.fillRect(52, 96, 14, 26); // 오른다리
+
+  g.fillStyle = hex;
+  g.strokeStyle = '#11131a';
+  g.lineWidth = 4;
+  roundRect(g, 20, 40, 56, 60, 10);
+  g.fill(); g.stroke();
+
+  // 팔
+  g.fillStyle = hex;
+  roundRect(g, 6, 46, 16, 40, 7); g.fill(); g.stroke();
+  roundRect(g, 74, 46, 16, 40, 7); g.fill(); g.stroke();
+
+  // 머리
+  g.fillStyle = '#f2e6d8';
+  g.beginPath();
+  g.arc(48, 26, 22, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+
+  // 눈 (정면 표시용, 살짝 진행 방향 쪽으로 붙임)
+  g.fillStyle = '#11131a';
+  g.beginPath(); g.arc(40, 24, 3.2, 0, Math.PI*2); g.fill();
+  g.beginPath(); g.arc(56, 24, 3.2, 0, Math.PI*2); g.fill();
+
+  // 가슴 배지
+  g.fillStyle = '#11131a';
+  g.beginPath();
+  g.moveTo(48, 54); g.lineTo(58, 64); g.lineTo(48, 74); g.lineTo(38, 64);
+  g.closePath(); g.fill();
+
+  return c;
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function makeFighterVisual(hexColor) {
+  const canvas = drawFighterSprite(hexColor);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+  const sprite = new THREE.Sprite(material);
+  const aspect = canvas.width / canvas.height;
+  sprite.scale.set(0.95 * aspect, 0.95, 1);
+  scene.add(sprite);
+
+  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32 });
+  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.34, 24), shadowMat);
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.021;
+  scene.add(shadow);
+
+  return { sprite, shadow, material, baseScaleX: sprite.scale.x };
+}
+
+const p1Visual = makeFighterVisual(p1.color);
+const p2Visual = makeFighterVisual(p2.color);
+
+const LEFT_FACINGS = new Set(['left', 'upleft', 'downleft']);
+
+function updateVisual(f, visual, hitMarker) {
+  const { x: fx, y: fy } = getRenderTile(f);
+  const wx = worldX(fx), wz = worldZ(fy);
+
+  let hop = 0;
+  if (f.state === 'Move') {
+    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    hop = Math.sin(t * Math.PI) * 0.22;
+  }
+
+  let lunge = 0;
+  if (f.state === 'Attack') {
+    const move = MOVES[f.attackMove];
+    const t = Math.min(1, f.stateFrame / (move.startup + 3));
+    lunge = Math.sin(t * Math.PI) * 0.18;
+  }
+  const off = facingOffset(f.facing);
+  const lungeX = off.dx * lunge, lungeZ = off.dy * lunge;
+
+  let shakeX = 0, shakeZ = 0;
+  if (f.state === 'Hit') {
+    const remain = Math.max(0, f.hitstunFrames - f.stateFrame);
+    const amp = Math.min(0.08, remain * 0.01);
+    shakeX = (Math.random() - 0.5) * amp;
+    shakeZ = (Math.random() - 0.5) * amp;
+  }
+
+  visual.sprite.position.set(wx + lungeX + shakeX, 0.5 + hop, wz + lungeZ + shakeZ);
+  visual.shadow.position.set(wx, 0.021, wz);
+
+  const mirrored = LEFT_FACINGS.has(f.facing);
+  visual.sprite.scale.x = mirrored ? -Math.abs(visual.baseScaleX) : Math.abs(visual.baseScaleX);
+
+  visual.material.color.set(f.state === 'Hit' ? 0xffd34d : 0xffffff);
+
+  // 히트박스 마커
+  if (f.state === 'Attack') {
+    const move = MOVES[f.attackMove];
+    const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + 3;
+    if (active) {
+      const box = attackHitboxTile(f);
+      hitMarker.visible = box.x >= 0 && box.x < COLS && box.y >= 0 && box.y < ROWS;
+      hitMarker.position.set(worldX(box.x), 0.02, worldZ(box.y));
+    } else {
+      hitMarker.visible = false;
+    }
+  } else {
+    hitMarker.visible = false;
+  }
+}
+
+// ===================================================================
+// 메인 루프
+// ===================================================================
+
+const STEP = 1000/60;
+let acc = 0, last = performance.now();
+
+function loop(now) {
+  acc += now - last;
+  last = now;
+  let steps = 0;
+  while (acc >= STEP && steps < 5) {
+    tick();
+    acc -= STEP;
+    steps++;
+  }
+  updateVisual(p1, p1Visual, p1HitMarker);
+  updateVisual(p2, p2Visual, p2HitMarker);
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+
+function tick() {
+  frameCount++;
+  resetIfNeeded();
+  handleInput(p1, p1keys);
+  if (aiToggle.checked) driveAI(p2, p1);
+  else handleInput(p2, p2keys);
+  updateFighter(p1);
+  updateFighter(p2);
+  checkAttackHits(p1, p2);
+  checkAttackHits(p2, p1);
+  updateHud();
+}
+
+function updateHud() {
+  document.getElementById('fc').textContent = frameCount;
+  fillHud('p1', p1);
+  fillHud('p2', p2);
+}
+function fillHud(prefix, f) {
+  document.getElementById(prefix+'-state').innerHTML = `<span class="state-pill st-${f.state}">${f.state}</span>`;
+  document.getElementById(prefix+'-frame').textContent = f.stateFrame + 'f';
+  document.getElementById(prefix+'-tile').textContent = `(${f.tx},${f.ty})`;
+  document.getElementById(prefix+'-facing').textContent = f.facing;
+  document.getElementById(prefix+'-stun').textContent = f.state === 'Hit' ? (f.hitstunFrames - f.stateFrame) + 'f' : '-';
+}
+
+resizeRenderer();
+requestAnimationFrame(loop);
+</script>
