@@ -14,8 +14,8 @@
         - 캐릭터를 매 프레임 절차적으로 다시 그리는 스틱맨(졸라맨) 스프라이트로 교체, 이동/공격/피격 포즈 분리
         - 공격 판정을 실시간으로 확인할 수 있도록 히트박스 예고(반투명)→발동(밝은 채움) 2단계 표시 + HIT!/miss 텍스트 이펙트 추가
         - 림월드식 실시간 전투 로그 패널 추가: "P1 — 기본공격 시전!" / "…명중! (스턴 15f)" / "…피했습니다!" 를 프레임 번호와 함께 중계
-  v3.1: 공격 시 정면 판정만 보던 타겟팅 문제 수정 — 사방(직선+대각선) 8칸 이내에 상대가 있으면
-        자동으로 그 방향을 바라보고 그 타일에 판정을 생성 (체스 룩+비숍 이동 범위와 동일).
+  v3.1: 공격 시 정면 판정만 보던 타겟팅 문제 수정 — 인근 8칸(상하좌우+대각선 인접 타일, 체스 킹 이동 범위)
+        안에 상대가 있으면 자동으로 그 방향을 바라보고 그 타일에 판정을 생성. 범위 밖이면 헛침.
         ATB 충전 속도를 0.1초 더 빠르게 조정.
 -->
 <style>
@@ -299,7 +299,7 @@
 <div class="masthead">
   <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.1 · ATB</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.1: 사방 8칸 자동 타겟팅</b>으로 정면이 어긋나 헛치던 문제를 고쳤습니다.</p>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.1: 인근 8칸 자동 타겟팅</b>으로 정면이 어긋나 헛치던 문제를 고쳤습니다.</p>
 </div>
 
 <div class="rig">
@@ -354,7 +354,7 @@
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능</div>
-    <div class="keyline">공격(스턴) <kbd>U</kbd> — 사방 8칸 이내 상대를 자동으로 조준</div>
+    <div class="keyline">공격(스턴) <kbd>U</kbd> — 인근 8칸(인접 타일) 이내 상대를 자동으로 조준</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -478,9 +478,9 @@ function startMove(f, nx, ny, facing) {
   f.pending = null;
 }
 
-const ATTACK_RANGE = 8; // 사방(직선/대각선) 8칸까지 자동 타겟팅
+const ATTACK_RANGE = 1; // 인근 8칸(상하좌우+대각선 인접 타일)까지만 자동 타겟팅
 
-// 사방 8방향 직선상에, 범위(maxRange 칸) 안에 target이 있는지 확인 (체스 룩+비숍 이동 범위와 동일)
+// 사방 8방향 직선상에, 범위(maxRange 칸) 안에 target이 있는지 확인
 function findTargetInRange(f, target, maxRange) {
   const dx = target.tx - f.tx, dy = target.ty - f.ty;
   if (dx === 0 && dy === 0) return null;
