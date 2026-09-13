@@ -115,6 +115,11 @@
         소비되면서 갑자기 대쉬(2칸)로 나가버렸다. 이게 "대쉬가 한 번 이동만으로 발동된다"는 증상의
         원인이었다. 이제 예약에는 유효시간(DASH_ARM_TTL, 기본 45프레임)이 생겨 그 안에 소비되지
         않으면 자동으로 무효화되고, 연타가 아닌 새 단발 입력이 들어오면 즉시 예약을 취소한다.
+  v6.7: v6.6에서 추가한 "연타가 아닌 새 단발 입력이면 예약 취소" 로직이 회귀 버그였음 — 더블탭으로
+        미리 대쉬를 예약해두고 손을 뗀 채 게이지가 찰 때까지 기다렸다가, 다 찬 순간(또는 그
+        직전) 정상적으로 한 번 더 눌러서 발동시키는 흔한 사용법까지 그 "한 번 더 누르기"에 걸려
+        예약이 취소돼버렸다. 그래서 게이지가 다 찬 뒤 첫 입력이 항상 1칸 이동으로만 나갔던 것.
+        이제 그 취소 로직을 제거했다 — 오래된 예약을 거르는 일은 DASH_ARM_TTL 하나만으로 충분하다.
 -->
 <style>
   :root{
@@ -458,7 +463,7 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v6.6</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v6.7</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
   <p class="sub"><b>v6.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타(최장 사거리 3칸) 또는 필살기 "공참각"이 나가는데, 공참각은 대쉬로도 아직 안 닿았을 때만 한 칸 더 파고들어 붙어 때려(최장 4칸) 원거리 공참각과 근거리 근참각이 하나로 이어집니다. 인식된 순간 바로 전용 텍스트로 확인됩니다. 신규 <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
@@ -977,9 +982,11 @@ function processMovementInput(f, currentDirs, other) {
       if (frameCount - f.keyEdgeFrame[dir] <= f.dashWindow) {
         f.dashArm = dir;
         f.dashArmFrame = frameCount;
-      } else if (f.dashArm === dir) {
-        f.dashArm = null; // 이번 입력은 연타가 아닌 새로운 단발 입력 — 남아있던 예약은 취소
       }
+      // 주의: 여기서 "연타가 아닌 새 단발 입력이니 예약을 취소" 하면 안 된다 — 예약해두고 손을 뗀 뒤
+      // 게이지가 찰 때까지 기다렸다가 그걸 발동시키려고 다시 한 번 누르는 정상적인 사용법까지
+      // 취소돼버린다(v6.6의 회귀 버그). 오래된 예약을 거르는 건 오직 DASH_ARM_TTL(소비 시점 검사,
+      // tryStartMove)만으로 충분하다.
       f.keyEdgeFrame[dir] = frameCount;
     }
   }
