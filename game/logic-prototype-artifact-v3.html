@@ -155,6 +155,7 @@
            착지한 대쉬로 취급해 그대로 대쉬 강타/공참각으로 이어갈 수 있다. 이 김에 지근거리(이미
            완전히 인접)에서 대쉬를 시도했을 때 콤보 입력이 그냥 버려지던 버그도 같이 잡았다
            (tryFireAttack이 pendingBumpWasDash도 "대쉬 도중"으로 인정하도록 수정).
+  v7.4: 기본공격 후딜(recovery)을 4 → 15프레임으로 고정.
 -->
 <style>
   :root{
@@ -498,7 +499,7 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v7.3</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v7.4</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
   <p class="sub"><b>v7.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타(최장 사거리 3칸) 또는 필살기 "공참각"이 나가는데, 공참각은 대쉬로도 아직 안 닿았을 때만 한 칸 더 파고들어 붙어 때려(최장 4칸) 원거리 공참각과 근거리 근참각이 하나로 이어집니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 1칸 넉백+2초 기절을 줍니다. 콤보/커맨드는 인식된 순간 바로 전용 텍스트로 확인됩니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
@@ -659,7 +660,7 @@ function boonggwonPrefixMatch(buf) {
 // 모든 공격은 startup(발동 전 준비) -> active(판정 유지) -> recovery(판정 없이 못 움직임) 3단계.
 // 이 값들은 우측 "프레임표" 패널에서 실시간으로도 조정할 수 있다.
 const MOVES = {
-  basic:      { startup: 10, active: 3, recovery: 4,  stun: 10, push: 0, label: '기본공격' },
+  basic:      { startup: 10, active: 3, recovery: 15, stun: 10, push: 0, label: '기본공격' },
   push:       { startup: 10, active: 3, recovery: 6,  stun: 14, push: 1, label: '밀치기' },
   dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
