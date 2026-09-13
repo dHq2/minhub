@@ -31,6 +31,9 @@
         올려 포즈가 잘 보이게 했고, 검(앞손)과 방패(뒷손)를 스틱맨에 장착 — 애니메이션이 아니라
         상태마다 한 장씩 그리는 포즈 그림이라는 원래 설계를 유지. HIT!/miss/DASH! 이펙트 글자도
         훨씬 크게 키움.
+  v3.5: 대쉬 강타의 스턴을 1초(60프레임)로 늘리고, 맞은 쪽 머리 위에 별 3개가 빙글빙글 도는
+        전용 스턴 연출 추가. 공격팔(검) 가동범위를 크게 넓혀 뒤로 젖힌 준비자세에서 완전히 뻗는
+        슬래시까지 큰 호를 그리도록 수정, 걷기 팔 스윙 폭도 확대.
 -->
 <style>
   :root{
@@ -312,9 +315,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.4 · ATB</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.5 · ATB</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.2: 공격은 거리와 무관하게 항상 상대 쪽을 바라보고 발동</b>되고(예측 가능성), 실제로 맞으려면 인접(1칸)해야 합니다. <b>v3.3: 방향키를 연타(따닥)하면 대쉬</b>로 2칸 이동하고, 착지 후 공격하면 <b>대쉬 강타</b>(2칸 밀치기 + 별 5개 이펙트)가 나갑니다. <b>v3.4: 화면/캐릭터를 키우고 검·방패를 장착</b>했고, 대쉬 강타 타이밍에 여유를 줬습니다.</p>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.3: 방향키를 연타(따닥)하면 대쉬</b>로 2칸 이동, 착지 후 공격하면 <b>대쉬 강타</b>(2칸 밀치기)가 나갑니다. <b>v3.5: 대쉬 강타에 맞으면 1초간 머리 위에 별이 빙글빙글</b> 돌며 스턴하고, 검 공격 동작의 가동범위가 훨씬 커졌습니다.</p>
 </div>
 
 <div class="rig">
@@ -416,7 +419,7 @@ const DIAG_OFFSET = {
 const MOVES = {
   basic:     { startup: 7, stun: 15, push: 0, label: '기본공격' },
   push:      { startup: 7, stun: 20, push: 1, label: '밀치기' },
-  dashAttack:{ startup: 5, stun: 18, push: 2, label: '대쉬 강타', special: true }, // 대쉬 직후 4프레임 콤보
+  dashAttack:{ startup: 5, stun: 60, push: 2, label: '대쉬 강타', special: true }, // 대쉬 캔슬 콤보, 스턴 1초(60f)
 };
 
 function makeFighter(opts) {
@@ -462,6 +465,7 @@ function makeFighter(opts) {
     // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
     justAttacked: null, // { label }
     justGotHit: null,   // { attackerName, label, stun, special }
+    dizzyStun: false,   // 대쉬 강타에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
     justWhiffed: null,  // { label }
     justDashed: null,   // { fromTx, fromTy }
   };
@@ -550,6 +554,7 @@ function applyHit(target, attacker, move) {
   target.stateFrame = 0;
   target.hitstunFrames = move.stun;
   target.justGotHit = { attackerName: attacker.name, label: move.label, stun: move.stun, special: !!move.special };
+  target.dizzyStun = !!move.special;
   if (move.push > 0) {
     const off = facingOffset(attacker.facing);
     target.knockback = {
@@ -717,6 +722,7 @@ function updateFighter(f) {
         f.state = 'Idle';
         f.stateFrame = 0;
         f.knockback = null;
+        f.dizzyStun = false;
       }
       break;
     }
@@ -866,7 +872,7 @@ function drawLine(ctx, x1, y1, x2, y2) {
 }
 
 function computePose(f) {
-  const pose = { legSpread: 0, armSwing: 0, torsoLean: 0, headTilt: 0, punch: 0 };
+  const pose = { legSpread: 0, armSwing: 0, torsoLean: 0, headTilt: 0, punch: 0, attacking: false };
   if (f.state === 'Move') {
     const t = f.stateFrame / f.framesPerTile;
     if (f.dashActive) {
@@ -887,6 +893,7 @@ function computePose(f) {
     const windUp = Math.min(1, f.stateFrame / move.startup);
     pose.punch = f.stateFrame >= move.startup ? 1 : windUp * 0.35;
     pose.torsoLean = 0.16 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
+    pose.attacking = true;
   } else if (f.state === 'Hit') {
     const t = Math.min(1, f.stateFrame / Math.max(1, f.hitstunFrames));
     const decay = 1 - t;
@@ -929,16 +936,19 @@ function drawStickFigure(ctx, color, pose) {
   // 팔 (뒷팔 = 방패팔, 앞팔 = 검팔)
   const shoulderX = hipX + Math.sin(lean) * torsoLen * 0.62;
   const shoulderY = hipY - Math.cos(lean) * torsoLen * 0.62;
-  const armLen = 38, armSwingAngle = 0.5;
+  const armLen = 38, armSwingAngle = 0.8; // 걷기 팔 스윙 가동범위를 넓힘
 
   const backAngle = lean - pose.armSwing * armSwingAngle;
   const backHandX = shoulderX - 8 + Math.sin(backAngle) * armLen;
   const backHandY = shoulderY + Math.cos(backAngle) * armLen;
 
+  // 공격팔(검팔): 뒤로 크게 젖힌 준비 자세(-1.0)에서 완전히 뻗은 슬래시(+1.5)까지 큰 호를 그린다.
   const restAngle = lean + pose.armSwing * armSwingAngle;
-  const punchAngle = Math.PI / 2;
-  const frontAngle = lerp(restAngle, punchAngle, pose.punch);
-  const frontLen = lerp(armLen, armLen * 1.2, pose.punch);
+  const swingBack = -1.0;
+  const swingForward = 1.5;
+  const attackAngle = lerp(swingBack, swingForward, pose.punch);
+  const frontAngle = pose.attacking ? attackAngle : restAngle;
+  const frontLen = lerp(armLen, armLen * 1.35, pose.punch);
   const frontHandX = shoulderX + 8 + Math.sin(frontAngle) * frontLen;
   const frontHandY = shoulderY + Math.cos(frontAngle) * frontLen;
 
@@ -959,7 +969,7 @@ function drawStickFigure(ctx, color, pose) {
   drawLine(ctx, shoulderX + 8, shoulderY, frontHandX, frontHandY);
 
   // 검 (앞손, 팔보다 길게 뻗어나감)
-  const bladeLen = 56;
+  const bladeLen = 64;
   const tipX = frontHandX + Math.sin(frontAngle) * bladeLen;
   const tipY = frontHandY + Math.cos(frontAngle) * bladeLen;
   const perp = frontAngle + Math.PI / 2;
@@ -983,6 +993,20 @@ function drawStickFigure(ctx, color, pose) {
   ctx.beginPath();
   ctx.arc(headX, headY, headR, 0, Math.PI * 2);
   ctx.fill(); ctx.stroke();
+}
+
+let _dizzyStarTex = null;
+function getDizzyStarTexture() {
+  if (_dizzyStarTex) return _dizzyStarTex;
+  const c = document.createElement('canvas');
+  c.width = 32; c.height = 32;
+  const ctx = c.getContext('2d');
+  ctx.font = '26px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffd34d';
+  ctx.fillText('★', 16, 17);
+  _dizzyStarTex = new THREE.CanvasTexture(c);
+  return _dizzyStarTex;
 }
 
 function makeFighterVisual(hexColor) {
@@ -1012,10 +1036,23 @@ function makeFighterVisual(hexColor) {
   gaugeSprite.renderOrder = 15;
   scene.add(gaugeSprite);
 
+  // 대쉬 강타 스턴 중 머리 위에서 빙글빙글 도는 별 3개
+  const dizzyTex = getDizzyStarTexture();
+  const dizzyStars = [0, 1, 2].map(() => {
+    const mat = new THREE.SpriteMaterial({ map: dizzyTex, transparent: true, depthTest: false });
+    const s = new THREE.Sprite(mat);
+    s.scale.set(0.26, 0.26, 1);
+    s.visible = false;
+    s.renderOrder = 16;
+    scene.add(s);
+    return s;
+  });
+
   return {
     canvas, ctx, texture, sprite, shadow, material,
     baseScaleX: sprite.scale.x, color: hexColor,
     gaugeCanvas, gaugeCtx, gaugeTex, gaugeSprite,
+    dizzyStars,
   };
 }
 
@@ -1076,6 +1113,16 @@ function updateVisual(f, visual, hitMarker) {
   visual.sprite.position.set(px, py, pz);
   visual.shadow.position.set(wx, 0.021, wz);
   visual.gaugeSprite.position.set(wx, 1.38 + hop * 0.3, wz);
+
+  // 대쉬 강타 스턴: 머리 위에서 별 3개가 빙글빙글 돈다
+  const dizzy = f.state === 'Hit' && f.dizzyStun;
+  visual.dizzyStars.forEach((star, i) => {
+    if (!dizzy) { star.visible = false; return; }
+    star.visible = true;
+    const angle = frameCount * 0.3 + (i * Math.PI * 2) / 3;
+    const r = 0.34;
+    star.position.set(px + Math.cos(angle) * r, py + 0.62, pz + Math.sin(angle) * r * 0.5);
+  });
 
   drawStickFigure(visual.ctx, f.color, computePose(f));
   visual.texture.needsUpdate = true;
