@@ -1091,14 +1091,22 @@ const STEP = 1000 / 60;
 let acc = 0, last = performance.now();
 
 function loop(now) {
-  acc += now - last;
+  // 페이지 로드 직후나 백그라운드 탭에 있다가 돌아오면 now-last가 크게 벌어질 수 있는데,
+  // 이걸 그대로 누적하면 밀린 프레임을 몰아서 재생하느라 한동안 초고속으로 진행된다.
+  // 큰 공백은 버리고 딱 한 프레임 분량만 처리해서 "밀린 시간을 따라잡는" 것을 막는다.
+  let delta = now - last;
   last = now;
+  if (delta > 250) delta = STEP;
+  acc += delta;
+
   let steps = 0;
   while (acc >= STEP && steps < 5) {
     tick();
     acc -= STEP;
     steps++;
   }
+  if (acc > STEP * 5) acc = 0; // 안전망: 그래도 남아있으면 버린다
+
   updateVisual(p1, p1Visual, p1HitMarker);
   updateVisual(p2, p2Visual, p2HitMarker);
   updateEffects();
