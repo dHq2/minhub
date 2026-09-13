@@ -177,6 +177,22 @@
         RUN_MIN_FRAMES로 한계 설정). 대각선도 동일하게 대쉬→질주 전환이 된다. 질주 중 상대와
         2칸 이내로 가까워지면 충돌에 대비해 어깨를 움츠리고 팔다리 스윙을 줄이는 포즈 변화를
         추가했다.
+  v8.2: 대쉬/질주 대규모 보강.
+        - 후퇴(상대로부터 멀어지는 방향) 모션을 전진과 뚜렷이 구분. 실제 이동 방향(moveDir)과
+          시각적 방향(facing)을 분리해서, 후퇴 중엔 상대를 계속 바라본 채(facing 고정) 몸을
+          반대로 젖히며 뒤로 물러나는 별도 포즈를 쓴다 — 예전엔 뒤로 갈 때도 그냥 돌아서서
+          앞으로 뛰는 것처럼 보였다.
+        - 질주는 훨씬 큼직하게 뛰어나가는 보폭(hop 2배 이상)으로 박진감을 살렸고, 상대에게
+          가까워질수록 팔다리는 그대로 크게 흔들되 상체와 고개를 더 깊이 숙이는(박치기 준비
+          자세) 디테일을 추가했다.
+        - 질주로 전환되는 순간 "펑"하는 확인 이펙트(spawnRunBurst)가 터지고, 질주 중에는 등
+          뒤로 파란 별 파티클(spawnBlueStarTrail)이 계속 따라붙는다(바람 자국과 별개).
+        - HIT!/DASH! 같은 텍스트 배너가 전체적으로 너무 작다는 피드백을 받아 TEXT_EFFECT_SCALE
+          (기본 1.5배) 배율을 추가해 모든 배너를 일괄적으로 키웠다.
+        - 질주 중에만 쓸 수 있는 두 가지 신규 캔슬기 추가: <b>K</b> = 슬라이딩(낮게 미끄러지며
+          다운시킴, 먼지 이펙트), 질주 중의 <b>O</b> = 숄더배쉬(방패를 어깨에 걸치고 몸통으로
+          들이받는 강한 돌진, 3칸 밀침). 둘 다 기존 "가까운 칸 캔슬" 로직을 그대로 재사용한다.
+        - 주인공(P1, 파란색)에게 카우보이 모자를 씌워 한눈에 구분되도록 했다.
 -->
 <style>
   :root{
@@ -520,9 +536,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.1</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.2</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v8.1.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸)가 나가고, 그 도중 같은 방향을 한 번 더 누르면 <b>질주</b>로 전환돼 멈추지 않고 점점 가속하며 상대에게 붙거나 벽에 부딪힐 때까지 계속 달립니다(가까워지면 어깨를 움츠려요). 대쉬/질주 도중 공격·강공을 누르면 가까운 칸에서 바로 캔슬돼 대쉬 강타/필살기 "공참각"으로 이어집니다(공참각은 안 닿았으면 한 칸 더 파고들어 붙고, 이미 인접하면 근참각으로). 벽에 그대로 부딪히면 넘어져 기절합니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 1칸 넉백+2초 기절을 줍니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.2.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸)가 나가고, 그 도중 같은 방향을 한 번 더 누르면 <b>질주</b>로 전환돼 멈추지 않고 점점 가속하며 상대에게 붙거나 벽에 부딪힐 때까지 큼직하게 뛰어 달립니다 — 후퇴할 땐 상대를 계속 바라본 채 뚜렷이 다른 모션으로 물러나고, 가까워지면 상체를 깊이 숙입니다. 질주 중에만 <b>K</b>(슬라이딩) / <b>O</b>(숄더배쉬)로 캔슬할 수 있고, 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어집니다. 벽에 부딪히면 넘어져 기절해요. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 입력한 뒤 공격키를 누르면 발동합니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -585,6 +601,7 @@
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향(대각선 포함) 두 번(따닥)이면 <b>대쉬</b>(짧은 단발 스텝), 대쉬 도중 한 번 더(따다닥)면 <b>질주</b>로 전환 — 멈추지 않고 점점 가속하며 달리다 상대에게 붙으면 정지, 벽에 부딪히면 넘어져 기절. 대쉬/질주 도중 공격·강공을 누르면 가까운 칸에서 바로 캔슬돼 대쉬 강타/공참각으로 이어진다</div>
     <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
+    <div class="keyline">질주 중에만: <kbd>K</kbd> → <b style="color:#7fd4ff;">슬라이딩</b>(낮게 미끄러져 다운) &nbsp;·&nbsp; <kbd>O</kbd> → <b style="color:#ff9a52;">숄더배쉬</b>(방패 들고 몸통 박치기, 3칸 밀침)</div>
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
     <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (안 닿았으면 한 칸 더 파고들어 붙고, 이미 인접하면 그 자리에서 근참각으로, 최장 4칸 도약 내리찍기, 큰 후딜)</div>
@@ -687,6 +704,8 @@ const MOVES = {
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
   ultimate:   { startup: 24, active: 6, recovery: 32, stun: 45, push: 3, label: '공참각', ultimate: true },
   boonggwon:  { startup: 10, active: 4, recovery: 24, stun: 120, push: 1, label: '붕권', boonggwon: true },
+  slide:        { startup: 6,  active: 5, recovery: 22, stun: 55, push: 1, label: '슬라이딩', slide: true },
+  shoulderBash: { startup: 8,  active: 6, recovery: 26, stun: 90, push: 3, label: '숄더배쉬', shoulderBash: true },
 };
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -735,9 +754,12 @@ function makeFighter(opts) {
     dashLegsLeft: 0,       // 대쉬(단발)로 남은 칸 수 — 0이 되면 멈춘다(질주로 전환되지 않았을 때)
     running: false,        // 대쉬 도중 같은 방향을 한 번 더 눌러 "질주"로 전환됐는지 — 그러면 멈추지 않는다
     runSpeedStep: 0,       // 질주 중 몇 칸째인지(가속 계산용) — 칸을 이어갈수록 점점 빨라진다
+    moveDir: null,         // 대쉬/질주의 실제 이동 방향 — 후퇴 중엔 facing(상대 쪽)과 달라진다
+    retreating: false,     // 지금 상대로부터 멀어지는 방향으로 대쉬/질주 중인지(후퇴)
     dashLandedFrame: -9999, // 대쉬가 착지한 프레임 (대쉬 콤보 판정용)
     bufferedAttackKey: null, // 대쉬/질주가 끝나기 전에 눌러서 예약해둔 공격키 ('basic'|'heavy'|null)
     fireDashAttackNow: false, // 착지 시점에 예약된 공격을 발동하라는 1틱 신호
+    justRunStarted: null,  // 대쉬 도중 질주로 전환된 그 순간(이펙트용) — { x, y }
 
     attackMove: null,
     hitstunFrames: 0,
@@ -756,9 +778,11 @@ function makeFighter(opts) {
     justGotHit: null,   // { attackerName, label, stun, special }
     dizzyStun: false,   // 대쉬 강타/필살기에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
     crashed: false,     // 무한 질주 중 벽에 부딪혀 넘어진 것인지(피격이 아니라 자기 실수)
+    tripped: false,     // 슬라이딩에 맞아 다운(넘어짐)됐는지
     blockedHit: false,  // 지금 Hit 상태가 "맞은 것"이 아니라 "방어로 막은 것"인지
     justWhiffed: null,  // { label }
     justDashed: null,   // { fromTx, fromTy }
+    justSlid: null,     // { x, y } — 슬라이딩 시작 시 먼지 이펙트용
 
     // --- 방어(방패 들기) ---
     guarding: false,   // 방어키를 누르고 있는지 (입력 상태)
@@ -913,13 +937,23 @@ let DASH_TILES = 2;          // 단발 대쉬(스텝)의 기본 칸수 — 질�
 let RUN_ACCEL_PER_TILE = 0.6; // 질주로 전환된 뒤 한 칸 이어갈 때마다 한 칸당 프레임이 이만큼씩 짧아진다(가속)
 let RUN_MIN_FRAMES = 5;       // 질주 가속의 한계 — 아무리 오래 달려도 이보다 빨라지지는 않는다
 
+// 이동 방향 dir로 대쉬/질주할 때, 그게 상대로부터 "멀어지는" 방향인지 — 맞다면 후퇴이므로
+// 몸은 상대를 계속 바라본 채(facing 고정) 뒤로 물러나는 모션을 써야, 뒤로 달리는데 정면으로
+// 도망치는 것처럼 보이는 어색함이 없어진다.
+function isRetreatDir(f, dir, other) {
+  if (!other) return false;
+  const off = facingOffset(dir);
+  const awayFromOther = { x: f.tx - other.tx, y: f.ty - other.ty };
+  return (off.dx * awayFromOther.x + off.dy * awayFromOther.y) > 0;
+}
+
 // 대쉬(→→)는 정해진 DASH_TILES칸짜리 단발 스텝이다 — 여기서 대쉬 강타/공참각으로 캔슬할 수 있고,
 // 아무 것도 안 하면 그냥 그 칸수만큼 가고 멈춘다. 그런데 대쉬가 진행되는 도중에 같은 방향을 한
 // 번 더 누르면(→→→) "질주"로 전환된다 — 그때부터는 캔슬되거나 상대/벽에 막힐 때까지 멈추지
 // 않고, 한 칸씩 이어갈수록 점점 빨라진다(RUN_ACCEL_PER_TILE). 대각선도 동일하게 지원한다.
 function startDash(f, dir, other) {
   f.atbGauge = 0; // 대쉬 시도 자체가 게이지를 소모한다
-  f.facing = dir;
+  f.moveDir = dir; // 실제 이동 방향 — facing과 별개로 끝까지 이 방향으로 나아간다
   f.pending = null;
   f.dashLegsLeft = DASH_TILES;
   f.running = false;
@@ -929,7 +963,21 @@ function startDash(f, dir, other) {
 }
 
 function startDashLeg(f, other) {
-  const off = facingOffset(f.facing);
+  // 매 칸마다 다시 판단한다 — 상대가 움직였을 수도 있으므로, 지금도 후퇴 방향이면 상대를
+  // 바라본 채로, 아니면 이동 방향 그대로를 보고 달린다.
+  if (other) {
+    f.retreating = isRetreatDir(f, f.moveDir, other);
+    if (f.retreating) {
+      const toward = dirTowards(other.tx - f.tx, other.ty - f.ty);
+      f.facing = toward || f.facing;
+    } else {
+      f.facing = f.moveDir;
+    }
+  } else {
+    f.retreating = false;
+    f.facing = f.moveDir;
+  }
+  const off = facingOffset(f.moveDir);
   const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
   if (dest.blocked) {
     if (dest.reason === 'wall') { startCrash(f); return; }
@@ -1047,7 +1095,8 @@ function startAttack(f, moveKey, target) {
   f.hitLandedThisAttack = false;
   f.justAttacked = { label: MOVES[finalMoveKey].label };
   // 콤보/커맨드 입력이 제대로 인식됐는지는 맞았는지와 무관하게 그 즉시 확실히 보여준다.
-  if (finalMoveKey === 'ultimate' || finalMoveKey === 'dashAttack' || finalMoveKey === 'boonggwon') f.justComboConfirmed = finalMoveKey;
+  if (['ultimate', 'dashAttack', 'boonggwon', 'slide', 'shoulderBash'].includes(finalMoveKey)) f.justComboConfirmed = finalMoveKey;
+  if (finalMoveKey === 'slide') f.justSlid = { x: f.tx, y: f.ty }; // 명중 여부와 무관하게 미끄러질 때 먼지가 인다
   if (dashCombo) f.dashLandedFrame = -9999; // 콤보 창 소모(한 번만 나가도록)
 }
 
@@ -1130,13 +1179,15 @@ let BLOCK_STUN_FRAMES = 8; // 방어 성공 시의 짧은 경직 — 공격자�
 
 function applyHit(target, attacker, move) {
   attacker.hitLandedThisAttack = true;
-  const kind = move.boonggwon ? 'boonggwon' : (move.special ? 'dashAttack' : (move.ultimate ? 'ultimate' : 'normal'));
+  const kind = move.slide ? 'slide' : move.shoulderBash ? 'shoulderBash'
+    : move.boonggwon ? 'boonggwon' : (move.special ? 'dashAttack' : (move.ultimate ? 'ultimate' : 'normal'));
   target.state = 'Hit';
   target.stateFrame = 0;
   target.blockedHit = false;
   target.hitstunFrames = move.stun;
   target.justGotHit = { attackerName: attacker.name, label: move.label, stun: move.stun, kind };
-  target.dizzyStun = kind === 'dashAttack' || kind === 'ultimate' || kind === 'boonggwon';
+  target.dizzyStun = kind === 'dashAttack' || kind === 'ultimate' || kind === 'boonggwon' || kind === 'shoulderBash';
+  target.tripped = kind === 'slide'; // 슬라이딩에 맞으면 다운(넘어짐) 리액션
   if (move.push > 0) {
     const off = facingOffset(attacker.facing);
     target.knockback = {
@@ -1216,8 +1267,10 @@ function processMovementInput(f, currentDirs, other) {
 
     // 대쉬(→→)가 진행되는 도중에 같은 방향을 한 번 더 누르면(→→→) "질주"로 전환된다 —
     // 그때부터는 알아서 멈추지 않고 캔슬되거나 상대/벽에 막힐 때까지 가속하며 계속 달린다.
-    if (f.state === 'Move' && f.dashActive && !f.running && rawDir === f.facing) {
+    // (facing이 아니라 moveDir과 비교해야 한다 — 후퇴 중엔 facing이 상대 쪽으로 고정돼 있으므로)
+    if (f.state === 'Move' && f.dashActive && !f.running && rawDir === f.moveDir) {
       f.running = true;
+      f.justRunStarted = { x: f.tx, y: f.ty };
     } else if (frameCount - f.keyEdgeFrame[rawDir] <= f.dashWindow) {
       f.dashArm = rawDir;
       f.dashArmFrame = frameCount;
@@ -1333,6 +1386,19 @@ function handlePlayerInput(f, keymap, target) {
 
   // 방어는 게이지/턴 개념이 없는 순수 자세 — 누르고 있는 동안만 방패를 든다.
   f.guarding = keys.has(keymap.guard) && f.state === 'Idle';
+
+  const isRunning = f.state === 'Move' && f.dashActive && f.running;
+
+  // 질주 도중에만 쓸 수 있는 두 가지 캔슬기: K는 낮게 미끄러지며 넘어뜨리는 슬라이딩,
+  // (질주 중의) O는 방패를 어깨에 걸치고 그대로 들이받는 숄더배쉬. 평소 O는 그냥 방어.
+  if (keys.has(keymap.slide)) {
+    keys.delete(keymap.slide);
+    if (isRunning) tryFireAttack(f, 'slide', target);
+  }
+  if (isRunning && keys.has(keymap.guard)) {
+    keys.delete(keymap.guard);
+    tryFireAttack(f, 'shoulderBash', target);
+  }
 
   if (keys.has(keymap.attack)) {
     keys.delete(keymap.attack);
@@ -1533,6 +1599,7 @@ function updateFighter(f, other) {
         f.dizzyStun = false;
         f.blockedHit = false;
         f.crashed = false;
+        f.tripped = false;
       }
       break;
     }
@@ -1582,7 +1649,7 @@ function getRenderTile(f) {
 const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
 const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
 
-const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u', heavy:'i', guard:'o', grab:'y' };
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u', heavy:'i', guard:'o', grab:'y', slide:'k' };
 
 let aiMode = 'auto'; // 'auto' | 'stopped'
 document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -1607,6 +1674,9 @@ const FRAME_SCHEMA = [
     { label: '단발 대쉬 칸수', get: () => DASH_TILES, set: v => DASH_TILES = v },
     { label: '질주 가속(칸당)', get: () => RUN_ACCEL_PER_TILE, set: v => RUN_ACCEL_PER_TILE = v },
     { label: '질주 최고속도(프레임)', get: () => RUN_MIN_FRAMES, set: v => RUN_MIN_FRAMES = v },
+  ]},
+  { group: '이펙트', rows: [
+    { label: '텍스트 배너 크기', get: () => TEXT_EFFECT_SCALE, set: v => TEXT_EFFECT_SCALE = v },
   ]},
   { group: '기본공격 (게이지 무관)', rows: [
     { label: '발동(startup)', get: () => MOVES.basic.startup, set: v => MOVES.basic.startup = v },
@@ -1646,6 +1716,19 @@ const FRAME_SCHEMA = [
     { label: '경직(stun)', get: () => MOVES.boonggwon.stun, set: v => MOVES.boonggwon.stun = v },
     { label: '넉백(칸)', get: () => MOVES.boonggwon.push, set: v => MOVES.boonggwon.push = v },
     { label: '커맨드 입력 제한시간', get: () => MOTION_INPUT_WINDOW, set: v => MOTION_INPUT_WINDOW = v },
+  ]},
+  { group: '슬라이딩 (질주 중 K)', rows: [
+    { label: '발동(startup)', get: () => MOVES.slide.startup, set: v => MOVES.slide.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.slide.active, set: v => MOVES.slide.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.slide.recovery, set: v => MOVES.slide.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.slide.stun, set: v => MOVES.slide.stun = v },
+  ]},
+  { group: '숄더배쉬 (질주 중 O)', rows: [
+    { label: '발동(startup)', get: () => MOVES.shoulderBash.startup, set: v => MOVES.shoulderBash.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.shoulderBash.active, set: v => MOVES.shoulderBash.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.shoulderBash.recovery, set: v => MOVES.shoulderBash.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.shoulderBash.stun, set: v => MOVES.shoulderBash.stun = v },
+    { label: '넉백(칸)', get: () => MOVES.shoulderBash.push, set: v => MOVES.shoulderBash.push = v },
   ]},
   { group: '방어', rows: [
     { label: '방어 성공 경직', get: () => BLOCK_STUN_FRAMES, set: v => BLOCK_STUN_FRAMES = v },
@@ -1818,24 +1901,32 @@ function computePose(f) {
   if (f.state === 'Move') {
     const t = f.stateFrame / f.currentMoveFrames;
     if (f.dashActive) {
-      // 대쉬/질주: 몸을 앞으로 깊게 기울이고 팔다리를 빠르게 휘저어 계속 달리는 느낌을 준다.
-      // 매 칸(레그)마다 갱신되므로 여러 칸을 이어 달리는 동안 같은 사이클이 반복 재생된다.
+      // 대쉬/질주: 매 칸(레그)마다 갱신되므로 여러 칸을 이어 달리는 동안 같은 사이클이 반복 재생된다.
       const sprint = Math.sin(t * Math.PI * 3);
-      pose.legSpread = sprint * 1.15;
-      pose.armSwing = -sprint * 1.05;
-      pose.torsoLean = 0.5;
-      pose.headTilt = 0.1;
+      if (f.retreating) {
+        // 후퇴: 상대를 계속 바라본 채(facing 고정) 뒤로 물러난다 — 전진 스프린트와 뚜렷이
+        // 구분되도록 몸을 반대로(뒤로) 젖히고 팔 스윙도 반대 위상으로 준다.
+        pose.legSpread = sprint * 0.85;
+        pose.armSwing = sprint * 0.55;
+        pose.torsoLean = -0.3;
+        pose.headTilt = -0.05;
+      } else {
+        // 전진: 몸을 앞으로 깊게 기울이고 팔다리를 빠르게 휘저어 계속 달리는 느낌을 준다.
+        pose.legSpread = sprint * 1.15;
+        pose.armSwing = -sprint * 1.05;
+        pose.torsoLean = 0.5;
+        pose.headTilt = 0.1;
+      }
 
-      if (f.running) {
-        // 질주 중 상대와 가까워지면 충돌에 대비해 어깨를 움츠린다.
+      if (f.running && !f.retreating) {
+        // 질주 중 상대에게 가까워질수록 충돌에 대비해 상체를 더 깊이 숙인다(박치기 준비 자세) —
+        // 팔다리 스윙은 줄이지 않고 그대로 크게 유지해서 박진감을 해치지 않는다.
         const opp = f === p1 ? p2 : p1;
         const dist = Math.max(Math.abs(opp.tx - f.tx), Math.abs(opp.ty - f.ty));
         if (dist <= 2) {
           const brace = 1 - clamp(dist / 2, 0, 1); // 가까울수록 1에 가까워짐
-          pose.legSpread *= 1 - brace * 0.5;
-          pose.armSwing *= 1 - brace * 0.6;
-          pose.torsoLean += brace * 0.18;
-          pose.headTilt -= brace * 0.3;
+          pose.torsoLean += brace * 0.35;
+          pose.headTilt += brace * 0.25;
         }
       }
     } else {
@@ -1895,6 +1986,20 @@ function computePose(f) {
       pose.punch = f.stateFrame >= activeStart ? 1 : windUp * 0.6;
       pose.torsoLean = 0.32 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
       pose.legSpread = 0.4 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
+    } else if (move.slide) {
+      // 슬라이딩: 질주 관성 그대로 낮게 미끄러지며 다리를 뻗어 상대를 넘어뜨린다.
+      const t = Math.min(1, f.stateFrame / total);
+      pose.legSpread = -1.1; // 한쪽 다리를 쭉 뻗은 낮은 자세
+      pose.torsoLean = -0.35 + 0.2 * t; // 처음엔 눕듯이 낮게, 후딜에 다시 일어선다
+      pose.headTilt = -0.15;
+      pose.armSwing = -0.3;
+    } else if (move.shoulderBash) {
+      // 숄더배쉬: 방패를 어깨에 걸치고 몸 전체로 들이받는 묵직한 돌진.
+      const t = Math.min(1, f.stateFrame / total);
+      pose.torsoLean = lerp(0.3, 0.75, Math.min(1, t * 1.6));
+      pose.headTilt = 0.15;
+      pose.legSpread = 0.3 * Math.sin(t * Math.PI * 4); // 힘차게 내딛는 다리
+      pose.armSwing = 0.1; // 방패 아이콘은 updateVisual에서 어깨 높이로 별도로 띄운다
     } else {
       const windUp = Math.min(1, f.stateFrame / Math.max(1, activeStart));
       pose.punch = f.stateFrame >= activeStart ? 1 : windUp * 0.35;
@@ -1910,6 +2015,13 @@ function computePose(f) {
       pose.headTilt = 0.5 * flop;
       pose.legSpread = 0.6 * flop * decay;
       pose.armSwing = Math.sin(f.stateFrame * 0.6) * 0.08 * decay;
+    } else if (f.tripped) {
+      // 슬라이딩에 걸려 다리가 걸리면서 뒤로 나자빠진다.
+      const flop = Math.min(1, t * 3);
+      pose.torsoLean = 0.55 * flop;
+      pose.headTilt = -0.45 * flop;
+      pose.legSpread = -0.7 * flop * decay;
+      pose.armSwing = -Math.sin(f.stateFrame * 0.5) * 0.1 * decay;
     } else if (f.blockedHit) {
       // 방어 성공: 크게 휘청이지 않고 방패를 든 채 짧게 웅크리며 떤다
       const tremble = Math.sin(f.stateFrame * 4.2) * 0.1 * decay;
@@ -1961,7 +2073,7 @@ function computePose(f) {
 // 캔버스 128x172 기준 좌표. 애니메이션을 프레임별로 그리는 게 아니라, 포즈 파라미터 하나로
 // "그 순간의 자세"를 매번 다시 그리는 방식 — 진짜 다중 프레임 애니메이션이 아니라
 // 상태마다 한 장짜리 대표 포즈를 실시간으로 계산해서 보여주는 것.
-function drawStickFigure(ctx, color, pose) {
+function drawStickFigure(ctx, color, pose, hasHat) {
   ctx.clearRect(0, 0, 128, 172);
   ctx.lineCap = 'round';
 
@@ -2057,6 +2169,35 @@ function drawStickFigure(ctx, color, pose) {
   ctx.beginPath();
   ctx.arc(headX, headY, headR, 0, Math.PI * 2);
   ctx.fill(); ctx.stroke();
+
+  // 카우보이 모자 — 주인공(P1, 파란색)을 한눈에 구분하기 위한 표식
+  if (hasHat) {
+    ctx.save();
+    ctx.translate(headX, headY - headR * 0.55);
+    ctx.rotate(headAngle);
+    ctx.fillStyle = '#6b4423';
+    ctx.strokeStyle = '#3a2412';
+    ctx.lineWidth = 2.5;
+    // 챙(brim) — 살짝 위로 휜 타원
+    ctx.beginPath();
+    ctx.ellipse(0, 2, headR * 1.55, headR * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+    // 크라운(윗부분)
+    ctx.beginPath();
+    ctx.moveTo(-headR * 0.62, 0);
+    ctx.quadraticCurveTo(-headR * 0.5, -headR * 1.25, 0, -headR * 1.3);
+    ctx.quadraticCurveTo(headR * 0.5, -headR * 1.25, headR * 0.62, 0);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // 밴드
+    ctx.strokeStyle = '#4a2f18';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(-headR * 0.6, -headR * 0.05);
+    ctx.lineTo(headR * 0.6, -headR * 0.05);
+    ctx.stroke();
+    ctx.restore();
+  }
 }
 
 let _dizzyStarTex = null;
@@ -2198,7 +2339,7 @@ function updateVisual(f, visual, hitMarkers) {
     visual.gaugeSprite.visible = false;
     visual.shieldIcon.visible = false;
     visual.dizzyStars.forEach(s => { s.visible = false; });
-    drawStickFigure(visual.ctx, f.color, computePose(f));
+    drawStickFigure(visual.ctx, f.color, computePose(f), f === p1);
     visual.texture.needsUpdate = true;
     const mirrored = LEFT_FACINGS.has(f.facing);
     visual.sprite.scale.x = mirrored ? -Math.abs(visual.baseScaleX) : Math.abs(visual.baseScaleX);
@@ -2222,8 +2363,15 @@ function updateVisual(f, visual, hitMarkers) {
   let hop = 0;
   if (f.state === 'Move') {
     const t = Math.min(1, f.stateFrame / f.currentMoveFrames);
-    hop = Math.sin(t * Math.PI) * 0.22;
-    if (f.dashActive && frameCount % 2 === 0) spawnWindTrail(fx, fy, f.facing);
+    // 질주는 큼직하게 뛰어나가는 보폭으로 — 평범한 이동/단발 대쉬보다 훨씬 크게 튀어오른다.
+    hop = Math.sin(t * Math.PI) * (f.running ? 0.5 : 0.22);
+    if (f.dashActive) {
+      // 바람 자국은 실제로 나아가는 방향(moveDir) 기준 — 후퇴 중엔 facing(상대 쪽)과 다르므로
+      // facing을 쓰면 방향이 어긋난다.
+      const travelDir = f.moveDir || f.facing;
+      if (frameCount % 2 === 0) spawnWindTrail(fx, fy, travelDir);
+      if (f.running && frameCount % 3 === 0) spawnBlueStarTrail(fx, fy, travelDir);
+    }
   }
 
   let lunge = 0, jumpLift = 0;
@@ -2274,8 +2422,14 @@ function updateVisual(f, visual, hitMarkers) {
     star.position.set(px + Math.cos(angle) * r, py + 0.62, pz + Math.sin(angle) * r * 0.5);
   });
 
-  // 방어 중이면 큰 방패 아이콘을 몸 앞쪽에 띄워서 확실하게 보여준다
-  if (f.guardBlend > 0.05) {
+  // 방어 중이면 큰 방패 아이콘을 몸 앞쪽에 띄워서 확실하게 보여준다.
+  // 숄더배쉬 중에는 같은 아이콘을 어깨 높이로 더 크게 들어 "방패로 들이받는" 느낌을 낸다.
+  const bashing = f.state === 'Attack' && MOVES[f.attackMove] && MOVES[f.attackMove].shoulderBash;
+  if (bashing) {
+    visual.shieldIcon.visible = true;
+    visual.shieldIcon.scale.set(0.8, 0.8, 1);
+    visual.shieldIcon.position.set(px + off.dx * 0.42, py + 0.42, pz + off.dy * 0.42);
+  } else if (f.guardBlend > 0.05) {
     visual.shieldIcon.visible = true;
     const s = 0.62 * Math.min(1, f.guardBlend * 1.3);
     visual.shieldIcon.scale.set(s, s, 1);
@@ -2284,7 +2438,7 @@ function updateVisual(f, visual, hitMarkers) {
     visual.shieldIcon.visible = false;
   }
 
-  drawStickFigure(visual.ctx, f.color, computePose(f));
+  drawStickFigure(visual.ctx, f.color, computePose(f), f === p1);
   visual.texture.needsUpdate = true;
 
   const mirrored = LEFT_FACINGS.has(f.facing);
@@ -2318,6 +2472,8 @@ function updateVisual(f, visual, hitMarkers) {
 
 // --- 텍스트/파티클 이펙트 (HIT! / miss / DASH! / 대쉬 강타 별 5개) ---
 const effects = [];
+
+let TEXT_EFFECT_SCALE = 1.5; // HIT!/DASH! 같은 텍스트 배너 전체 크기 배율 — 너무 작아서 잘 안 보인다는 피드백 반영
 
 function spawnEffect(type, tx, ty) {
   const wx = worldX(tx), wz = worldZ(ty);
@@ -2387,12 +2543,32 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 9; ctx.strokeStyle = '#4a2b00'; ctx.strokeText('쿵!! CRASH!', cx, cy);
     ctx.fillStyle = '#ffb64d'; ctx.fillText('쿵!! CRASH!', cx, cy);
     scaleW = 2.4; scaleH = 0.6; maxLife = 24; riseTotal = 0.2;
+  } else if (type === 'slideHit') {
+    ctx.font = "700 38px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 8; ctx.strokeStyle = '#123a52'; ctx.strokeText('★ 슬라이딩! ★', cx, cy);
+    ctx.fillStyle = '#7fd4ff'; ctx.fillText('★ 슬라이딩! ★', cx, cy);
+    scaleW = 2.5; scaleH = 0.66; maxLife = 26; riseTotal = 0.3;
+  } else if (type === 'shoulderBashHit') {
+    ctx.font = "800 40px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 10; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('★★ 숄더배쉬!! ★★', cx, cy);
+    ctx.fillStyle = '#ff9a52'; ctx.fillText('★★ 숄더배쉬!! ★★', cx, cy);
+    scaleW = 3.0; scaleH = 0.78; maxLife = 32; riseTotal = 0.55;
+  } else if (type === 'comboSlide') {
+    ctx.font = "700 30px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 7; ctx.strokeStyle = '#123a52'; ctx.strokeText('슬라이딩!', cx, cy);
+    ctx.fillStyle = '#7fd4ff'; ctx.fillText('슬라이딩!', cx, cy);
+    scaleW = 1.8; scaleH = 0.48; maxLife = 14; riseTotal = 0.22;
+  } else if (type === 'comboShoulderBash') {
+    ctx.font = "700 30px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 7; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('숄더배쉬!', cx, cy);
+    ctx.fillStyle = '#ff9a52'; ctx.fillText('숄더배쉬!', cx, cy);
+    scaleW = 1.9; scaleH = 0.5; maxLife = 14; riseTotal = 0.22;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(scaleW, scaleH, 1);
+  sprite.scale.set(scaleW * TEXT_EFFECT_SCALE, scaleH * TEXT_EFFECT_SCALE, 1);
   sprite.position.set(wx, 1.7, wz);
   sprite.renderOrder = 25;
   scene.add(sprite);
@@ -2444,6 +2620,82 @@ function spawnWindTrail(tx, ty, facing) {
   sprite.renderOrder = 17;
   scene.add(sprite);
   effects.push({ sprite, mat, tex, life: 0, maxLife: 9, riseTotal: 0, vx: -off.dx * 0.03, vz: -off.dy * 0.03 });
+}
+
+// 질주 중 등 뒤로 따라붙는 작은 파란 별 — 대쉬의 바람 자국과 별개로, "질주"임을 한눈에 알려준다.
+function spawnBlueStarTrail(tx, ty, facing) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const off = facingOffset(facing);
+  const canvas = document.createElement('canvas');
+  canvas.width = 40; canvas.height = 40;
+  const ctx = canvas.getContext('2d');
+  ctx.translate(20, 20);
+  ctx.fillStyle = '#6fdcff';
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const a1 = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+    const a2 = a1 + Math.PI / 5;
+    ctx.lineTo(Math.cos(a1) * 16, Math.sin(a1) * 16);
+    ctx.lineTo(Math.cos(a2) * 7, Math.sin(a2) * 7);
+  }
+  ctx.closePath();
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  const s = 0.14 + Math.random() * 0.08;
+  sprite.scale.set(s, s, 1);
+  sprite.position.set(
+    wx - off.dx * (0.4 + Math.random() * 0.25) + (Math.random() - 0.5) * 0.15,
+    0.45 + Math.random() * 0.35,
+    wz - off.dy * (0.4 + Math.random() * 0.25) + (Math.random() - 0.5) * 0.15
+  );
+  sprite.renderOrder = 19;
+  scene.add(sprite);
+  effects.push({ sprite, mat, tex, life: 0, maxLife: 16, riseTotal: 0.15, vx: -off.dx * 0.02, vz: -off.dy * 0.02 });
+}
+
+// 대쉬가 질주로 전환되는 그 순간 터지는 "펑" 하는 확인 이펙트.
+function spawnRunBurst(tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const canvas = document.createElement('canvas');
+  canvas.width = 128; canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createRadialGradient(64, 64, 2, 64, 64, 60);
+  grad.addColorStop(0, 'rgba(230,248,255,0.95)');
+  grad.addColorStop(0.45, 'rgba(120,205,255,0.6)');
+  grad.addColorStop(1, 'rgba(120,205,255,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(64, 64, 60, 0, Math.PI * 2); ctx.fill();
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(1.5, 1.5, 1);
+  sprite.position.set(wx, 0.55, wz);
+  sprite.renderOrder = 20;
+  scene.add(sprite);
+  effects.push({ sprite, mat, tex, life: 0, maxLife: 14, riseTotal: 0.05, vx: 0, vz: 0 });
+}
+
+// 뿌옇게 흩날리는 먼지 몇 조각 — 부딪힘/슬라이딩처럼 바닥과의 마찰이 느껴져야 하는 순간에 쓴다.
+function spawnDustBurst(tx, ty, count = 3) {
+  const dustCanvas = document.createElement('canvas');
+  dustCanvas.width = 32; dustCanvas.height = 32;
+  const dctx = dustCanvas.getContext('2d');
+  dctx.fillStyle = 'rgba(230,230,235,0.85)';
+  dctx.beginPath(); dctx.arc(16, 16, 9, 0, Math.PI * 2); dctx.fill();
+  const wx = worldX(tx), wz = worldZ(ty);
+  for (let i = 0; i < count; i++) {
+    const tex = new THREE.CanvasTexture(dustCanvas);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    const s = 0.16 + Math.random() * 0.1;
+    sprite.scale.set(s, s, 1);
+    sprite.position.set(wx + (Math.random() - 0.5) * 0.4, 0.5, wz + (Math.random() - 0.5) * 0.4);
+    sprite.renderOrder = 22;
+    scene.add(sprite);
+    effects.push({ sprite, mat, tex, life: 0, maxLife: 14, riseTotal: 0.12, vx: (Math.random() - 0.5) * 0.02, vz: (Math.random() - 0.5) * 0.02 });
+  }
 }
 
 function spawnStarBurst(tx, ty) {
@@ -2551,37 +2803,34 @@ function processEventFlags(f) {
   if (f.justComboConfirmed) {
     // 맞았는지와 무관하게, 콤보/커맨드 입력이 인식된 그 순간 바로 확인시켜준다.
     const origin = f.attackLungeFrom || { x: f.tx, y: f.ty };
-    const effectType = f.justComboConfirmed === 'ultimate' ? 'comboUltimate'
-      : f.justComboConfirmed === 'boonggwon' ? 'comboBoonggwon' : 'comboDash';
+    const COMBO_EFFECT_MAP = {
+      ultimate: 'comboUltimate', boonggwon: 'comboBoonggwon',
+      slide: 'comboSlide', shoulderBash: 'comboShoulderBash',
+    };
+    const effectType = COMBO_EFFECT_MAP[f.justComboConfirmed] || 'comboDash';
     spawnEffect(effectType, origin.x, origin.y);
     f.justComboConfirmed = null;
   }
   if (f.justBumped) {
-    const dustCanvas = document.createElement('canvas');
-    dustCanvas.width = 32; dustCanvas.height = 32;
-    const dctx = dustCanvas.getContext('2d');
-    dctx.fillStyle = 'rgba(230,230,235,0.85)';
-    dctx.beginPath(); dctx.arc(16, 16, 9, 0, Math.PI * 2); dctx.fill();
-    const wx = worldX(f.justBumped.x), wz = worldZ(f.justBumped.y);
-    for (let i = 0; i < 3; i++) {
-      const tex = new THREE.CanvasTexture(dustCanvas);
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
-      const sprite = new THREE.Sprite(mat);
-      const s = 0.16 + Math.random() * 0.1;
-      sprite.scale.set(s, s, 1);
-      sprite.position.set(wx + (Math.random() - 0.5) * 0.3, 0.55, wz + (Math.random() - 0.5) * 0.3);
-      sprite.renderOrder = 22;
-      scene.add(sprite);
-      effects.push({ sprite, mat, tex, life: 0, maxLife: 14, riseTotal: 0.12, vx: (Math.random() - 0.5) * 0.02, vz: (Math.random() - 0.5) * 0.02 });
-    }
+    spawnDustBurst(f.justBumped.x, f.justBumped.y, 3);
     logEvent(`${f.name} — 상대와 부딪혔다! (튕겨나감, 나중에 클린치로 확장 예정)`, 'dash');
     f.justBumped = null;
+  }
+  if (f.justSlid) {
+    // 명중 여부와 무관하게, 미끄러지는 그 순간 바닥에 먼지가 인다.
+    spawnDustBurst(f.justSlid.x, f.justSlid.y, 5);
+    f.justSlid = null;
   }
   if (f.justCrashed) {
     spawnEffect('crash', f.tx, f.ty);
     spawnBigEmoji('💫', f.tx, f.ty, { life: 24, size: 1.3, rise: 0.2 });
     logEvent(`${f.name} — 질주하다 벽에 그대로 처박혔다!! (기절 ${f.hitstunFrames}f)`, 'hit');
     f.justCrashed = null;
+  }
+  if (f.justRunStarted) {
+    spawnRunBurst(f.justRunStarted.x, f.justRunStarted.y);
+    logEvent(`${f.name} — 질주 돌입!`, 'dash');
+    f.justRunStarted = null;
   }
   if (f.justDashed) {
     spawnEffect('dash', f.justDashed.fromTx, f.justDashed.fromTy);
@@ -2610,6 +2859,14 @@ function processEventFlags(f) {
       spawnStarBurst(f.tx, f.ty);
       spawnBigEmoji('👊', f.tx, f.ty, { life: 26, size: 1.7, rise: 0.35 });
       logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 강타당함!! (1칸 넉백, 스턴 ${info.stun}f)`, 'hit');
+    } else if (info.kind === 'slide') {
+      spawnEffect('slideHit', f.tx, f.ty);
+      spawnBigEmoji('💨', f.tx, f.ty, { life: 22, size: 1.4, rise: 0.15 });
+      logEvent(`${info.attackerName}의 ${info.label}! ${f.name} 다운!! (스턴 ${info.stun}f)`, 'hit');
+    } else if (info.kind === 'shoulderBash') {
+      spawnEffect('shoulderBashHit', f.tx, f.ty);
+      spawnStarBurst(f.tx, f.ty);
+      logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 튕겨나감!! (3칸 밀림, 스턴 ${info.stun}f)`, 'hit');
     } else {
       spawnEffect('hit', f.tx, f.ty);
       logEvent(`${info.attackerName}의 ${info.label} → ${f.name}에게 명중! (스턴 ${info.stun}f)`, 'hit');
