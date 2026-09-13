@@ -1,6 +1,6 @@
 <title>타일 대전 프레임 랩</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <!--
   변경 이력
   v1.0: 최초 아티팩트 (2D canvas, 타일 이동/대각 결합/대쉬, 기본공격/밀치기 판정)
@@ -600,6 +600,11 @@ function resetIfNeeded() {
 
 const aiToggle = document.getElementById('aiToggle');
 const stageEl = document.getElementById('stage3d');
+
+if (typeof THREE === 'undefined') {
+  stageEl.innerHTML = '<div style="color:#ff9a52;font-family:monospace;font-size:12px;padding:16px;text-align:center;">Three.js 라이브러리를 불러오지 못했습니다. 네트워크 상태를 확인하고 새로고침해 주세요.</div>';
+  throw new Error('THREE is not defined — CDN script failed to load');
+}
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x10141d);
