@@ -1,0 +1,1129 @@
+<title>타일 대전 프레임 랩</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<!--
+  변경 이력
+  v1.0: 최초 아티팩트 (2D canvas, 타일 이동/대각 결합/대쉬, 기본공격/밀치기 판정)
+  v1.1: 방향키 홀드 시 매 칸마다 붙던 6프레임 대각 결합 지연 제거, P2 AI 옵션 추가
+  v2.0: 렌더러를 Three.js 3D로 교체 (체스판 바닥 + 2D 빌보드 스프라이트)
+  v3.0: 전투 구조를 ATB(액티브 타임 배틀)로 전면 개편.
+        - 각 캐릭터가 실시간으로 게이지를 채우고, 다 찼을 때만 이동/공격 가능 (그 순간이 "내 턴")
+        - 행동을 하면 게이지가 0으로 리셋되고 다시 충전 시작. 프레임 단위 동시입력 우선순위 판정 로직 제거
+        - AI는 "자동/정지" 두 모드로 단순화 (더 이상 키를 할당하지 않음)
+        - 플레이어 공격 버튼을 U 하나로 단순화
+        - 캐릭터를 매 프레임 절차적으로 다시 그리는 스틱맨(졸라맨) 스프라이트로 교체, 이동/공격/피격 포즈 분리
+        - 공격 판정을 실시간으로 확인할 수 있도록 히트박스 예고(반투명)→발동(밝은 채움) 2단계 표시 + HIT!/miss 텍스트 이펙트 추가
+        - 림월드식 실시간 전투 로그 패널 추가: "P1 — 기본공격 시전!" / "…명중! (스턴 15f)" / "…피했습니다!" 를 프레임 번호와 함께 중계
+-->
+<style>
+  :root{
+    --bg:#0b0d13;
+    --bg-crt:#0e1119;
+    --panel:#151a24;
+    --panel-line:#232a38;
+    --grid-line-soft:#1a2029;
+    --text:#e7ecf6;
+    --text-dim:#8892a6;
+    --text-faint:#5a6479;
+    --p1:#4fd2ff;
+    --p2:#ff9a52;
+    --stun:#ffd34d;
+    --hitbox:#ff4d5e;
+    --key:#1c2230;
+    --key-border:#333d52;
+    --ok:#57d18a;
+    --font-display:'Chakra Petch', 'Pretendard', sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+    --font-body:'IBM Plex Sans KR', 'Pretendard', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #131826 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:var(--font-body);
+    padding:28px 16px 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .masthead{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-width:660px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .ver-tag{
+    background:rgba(87,209,138,.14);
+    color:var(--ok);
+    border:1px solid rgba(87,209,138,.35);
+    border-radius:99px;
+    padding:1px 8px;
+    letter-spacing:.06em;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(22px,4vw,32px);
+    margin:0;
+    letter-spacing:.01em;
+    text-wrap:balance;
+  }
+  h1 span{color:var(--p1);}
+  .sub{
+    font-size:13px;
+    color:var(--text-dim);
+    line-height:1.6;
+    text-wrap:balance;
+  }
+  .sub b{color:var(--ok); font-weight:600;}
+
+  .rig{
+    width:100%;
+    max-width:1040px;
+    display:grid;
+    grid-template-columns:210px minmax(0,1fr) 210px;
+    gap:16px;
+    align-items:start;
+  }
+  @media (max-width:900px){
+    .rig{ grid-template-columns:1fr; }
+    .side{ flex-direction:row !important; flex-wrap:wrap; }
+    .side .panel{ flex:1 1 240px; }
+  }
+
+  .side{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .panel h3{
+    margin:0 0 10px;
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:.04em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .p1 .dot{background:var(--p1); box-shadow:0 0 8px var(--p1);}
+  .p2 .dot{background:var(--p2); box-shadow:0 0 8px var(--p2);}
+  .p1 h3{color:var(--p1);}
+  .p2 h3{color:var(--p2);}
+
+  .stat-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:12px;
+    padding:3px 0;
+    border-bottom:1px dashed var(--grid-line-soft);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .k{color:var(--text-faint);}
+  .stat-row .v{color:var(--text);}
+  .state-pill{
+    display:inline-block;
+    padding:1px 8px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:600;
+    background:var(--grid-line-soft);
+    color:var(--text-dim);
+  }
+  .state-pill.st-Attack{background:rgba(255,77,94,.18); color:var(--hitbox);}
+  .state-pill.st-Hit{background:rgba(255,211,77,.18); color:var(--stun);}
+  .state-pill.st-Move{background:rgba(79,210,255,.14); color:var(--p1);}
+
+  .atb-row{ margin-top:8px; }
+  .atb-label{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-faint); margin-bottom:3px; }
+  .atb-track{ height:7px; border-radius:4px; background:var(--grid-line-soft); overflow:hidden; }
+  .atb-fill{ height:100%; border-radius:4px; background:var(--p1); width:0%; transition:width .05s linear; }
+  .p2 .atb-fill{ background:var(--p2); }
+  .atb-fill.ready{ background:var(--ok); }
+  .atb-ready-tag{ display:none; font-size:10px; color:var(--ok); font-family:var(--font-mono); margin-top:3px; }
+  .atb-ready-tag.show{ display:block; }
+
+  .mode-toggle{ display:flex; gap:6px; margin-top:10px; }
+  .mode-btn{
+    flex:1;
+    font-family:var(--font-mono);
+    font-size:11px;
+    padding:5px 0;
+    border-radius:6px;
+    border:1px solid var(--key-border);
+    background:var(--key);
+    color:var(--text-dim);
+    cursor:pointer;
+  }
+  .mode-btn.active{ background:rgba(255,154,82,.18); color:var(--p2); border-color:var(--p2); }
+
+  .stage{
+    background:var(--bg-crt);
+    border:1px solid var(--panel-line);
+    border-radius:12px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+    width:100%;
+  }
+  #stage3d{
+    width:100%;
+    max-width:760px;
+    aspect-ratio:16/10;
+    background:#10141d;
+    border:1px solid var(--panel-line);
+    border-radius:6px;
+    overflow:hidden;
+    position:relative;
+  }
+  #stage3d canvas{ display:block; width:100%; height:100%; }
+
+  .frame-tape{
+    width:100%;
+    max-width:760px;
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+  }
+  .frame-tape b{color:var(--text-dim); font-weight:500;}
+
+  .controls{
+    width:100%;
+    max-width:1040px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:640px){ .controls{ grid-template-columns:1fr; } }
+  .controls .panel{ display:flex; flex-direction:column; gap:8px; }
+  .keyline{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-dim); flex-wrap:wrap;}
+  .keyline .kk{display:flex; gap:4px;}
+  kbd{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text);
+    background:var(--key);
+    border:1px solid var(--key-border);
+    border-bottom:2px solid var(--key-border);
+    border-radius:5px;
+    padding:2px 7px;
+    min-width:20px;
+    text-align:center;
+  }
+  .reset-note{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+  }
+  .reset-note kbd{margin:0 3px;}
+
+  .legend{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    font-size:11px;
+    color:var(--text-faint);
+    font-family:var(--font-mono);
+  }
+  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px;}
+
+  .combat-log{
+    width:100%;
+    max-width:1040px;
+    background:#0d1017;
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  .combat-log-title{
+    font-family:var(--font-display);
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-bottom:8px;
+  }
+  .combat-log-body{
+    height:150px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    font-family:var(--font-mono);
+    font-size:12.5px;
+  }
+  .log-line{ color:var(--text-dim); white-space:pre-wrap; }
+  .log-line .fr{ color:var(--text-faint); margin-right:7px; }
+  .log-line.hit{ color:var(--hitbox); font-weight:600; }
+  .log-line.miss{ color:var(--text-faint); font-style:italic; }
+  .log-line.attack{ color:var(--stun); }
+  .log-line.ready{ color:var(--ok); }
+</style>
+
+<div class="masthead">
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.0 · ATB</span></div>
+  <h1>타일 대전 <span>프레임 랩</span></h1>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다.</p>
+</div>
+
+<div class="rig">
+  <div class="side">
+    <div class="panel p1">
+      <h3><span class="dot"></span>PLAYER 1</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p1-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p1-tile">(2,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p1-facing">right</span></div>
+      <div class="atb-row">
+        <div class="atb-label"><span>ATB</span><span id="p1-atb-num">0%</span></div>
+        <div class="atb-track"><div class="atb-fill" id="p1-atb-fill"></div></div>
+        <div class="atb-ready-tag" id="p1-ready-tag">★ 지금 행동 가능</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div id="stage3d"></div>
+    <div class="frame-tape">
+      <span>frame <b id="fc">0</b></span>
+      <span>60fps fixed-step sim &middot; ATB 전투</span>
+      <span>board <b>12×8</b></span>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="panel p2">
+      <h3><span class="dot"></span>PLAYER 2 (AI)</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p2-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p2-tile">(9,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p2-facing">left</span></div>
+      <div class="atb-row">
+        <div class="atb-label"><span>ATB</span><span id="p2-atb-num">0%</span></div>
+        <div class="atb-track"><div class="atb-fill" id="p2-atb-fill"></div></div>
+        <div class="atb-ready-tag" id="p2-ready-tag">★ 지금 행동 가능</div>
+      </div>
+      <div class="mode-toggle">
+        <button type="button" class="mode-btn active" data-mode="auto">자동</button>
+        <button type="button" class="mode-btn" data-mode="stopped">정지</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="combat-log">
+  <div class="combat-log-title">Combat Log</div>
+  <div class="combat-log-body" id="combat-log-body"></div>
+</div>
+
+<div class="controls">
+  <div class="panel p1">
+    <h3><span class="dot"></span>P1 조작</h3>
+    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능</div>
+    <div class="keyline">공격(스턴) <kbd>U</kbd></div>
+  </div>
+  <div class="panel p2">
+    <h3><span class="dot"></span>P2 (AI)</h3>
+    <div class="keyline">키 조작 없음 — <b style="color:var(--ok)">자동</b>: 게이지가 차면 스스로 접근/공격 &nbsp;·&nbsp; <b style="color:var(--p2)">정지</b>: 행동/충전 없이 샌드백처럼 서있음 (테스트용)</div>
+  </div>
+</div>
+
+<div class="reset-note">
+  <kbd>R</kbd> 리셋 &middot;
+  <span class="legend" style="display:inline-flex;vertical-align:middle;margin-left:6px;">
+    <span><span class="sw" style="background:var(--hitbox);"></span>공격 판정 타일 (예고→발동)</span>
+    <span><span class="sw" style="background:var(--stun);"></span>피격/스턴</span>
+  </span>
+</div>
+
+<script>
+// ===================================================================
+// 시뮬레이션 레이어 — 타일 좌표/상태/프레임/ATB 게이지만 다룬다 (렌더링과 분리)
+// ===================================================================
+
+const COLS = 12, ROWS = 8;
+const ATB_MAX = 100;
+
+const DIRS = {
+  up:    {dx:0, dy:-1},
+  down:  {dx:0, dy:1},
+  left:  {dx:-1, dy:0},
+  right: {dx:1, dy:0},
+};
+function combineDir(a, b) {
+  const set = new Set([a,b]);
+  if (set.has('up') && set.has('left')) return 'upleft';
+  if (set.has('up') && set.has('right')) return 'upright';
+  if (set.has('down') && set.has('left')) return 'downleft';
+  if (set.has('down') && set.has('right')) return 'downright';
+  return null;
+}
+const DIAG_OFFSET = {
+  upleft: {dx:-1, dy:-1}, upright:{dx:1, dy:-1},
+  downleft:{dx:-1, dy:1}, downright:{dx:1, dy:1},
+};
+
+const MOVES = {
+  basic: { startup: 7, stun: 15, push: 0, label: '기본공격' },
+  push:  { startup: 7, stun: 20, push: 1, label: '밀치기' },
+};
+
+function makeFighter(opts) {
+  const framesPerTile = opts.framesPerTile ?? 10;
+  return {
+    name: opts.name,
+    color: opts.color,
+    tx: opts.tx, ty: opts.ty,
+    facing: opts.facing,
+    framesPerTile,
+    diagWindow: 6,
+    dashWindow: 12,
+
+    state: 'Idle',
+    stateFrame: 0,
+
+    moveFromX: 0, moveFromY: 0, moveToX: 0, moveToY: 0,
+
+    prevHeld: new Set(),
+    pending: null,
+    lastDir: null, lastDirFrame: -9999,
+
+    attackMove: null,
+    hitstunFrames: 0,
+    knockback: null,
+
+    aiCooldown: 0,
+
+    // --- ATB ---
+    atbGauge: 0,
+    atbChargeFrames: framesPerTile * 10, // 이 프레임만큼 지나면 게이지가 가득 참
+    hitLandedThisAttack: false,
+
+    // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
+    justAttacked: null, // { label }
+    justGotHit: null,   // { attackerName, label, stun }
+    justWhiffed: null,  // { label }
+  };
+}
+
+function facingOffset(f) { return DIAG_OFFSET[f] || DIRS[f]; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function isReady(f) { return f.state === 'Idle' && f.atbGauge >= ATB_MAX; }
+
+function tryStartMove(f, dir) {
+  if (!isReady(f)) return;
+  const isDash = f.lastDir === dir && (frameCount - f.lastDirFrame) <= f.dashWindow;
+  f.lastDir = dir;
+  f.lastDirFrame = frameCount;
+  const off = DIRS[dir];
+  const dist = isDash ? 2 : 1;
+  const nx = clamp(f.tx + off.dx * dist, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy * dist, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, dir);
+}
+
+function tryStartDiagMove(f, diag) {
+  if (!isReady(f)) return;
+  const off = DIAG_OFFSET[diag];
+  const nx = clamp(f.tx + off.dx, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, diag);
+}
+
+function startMove(f, nx, ny, facing) {
+  f.atbGauge = 0; // 행동 = 턴 소모
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = nx; f.moveToY = ny;
+  f.facing = facing;
+  f.pending = null;
+}
+
+function startAttack(f, moveKey) {
+  if (!isReady(f)) return;
+  f.atbGauge = 0; // 행동 = 턴 소모
+  f.state = 'Attack';
+  f.stateFrame = 0;
+  f.attackMove = moveKey;
+  f.hitLandedThisAttack = false;
+  f.justAttacked = { label: MOVES[moveKey].label };
+}
+
+function applyHit(target, attacker, move) {
+  attacker.hitLandedThisAttack = true;
+  target.state = 'Hit';
+  target.stateFrame = 0;
+  target.hitstunFrames = move.stun;
+  target.justGotHit = { attackerName: attacker.name, label: move.label, stun: move.stun };
+  if (move.push > 0) {
+    const off = facingOffset(attacker.facing);
+    target.knockback = {
+      fromX: target.tx, fromY: target.ty,
+      toX: clamp(target.tx + off.dx * move.push, 0, COLS-1),
+      toY: clamp(target.ty + off.dy * move.push, 0, ROWS-1),
+      frame: 0, duration: 8,
+    };
+  } else {
+    target.knockback = null;
+  }
+}
+
+function attackHitboxTile(f) {
+  const off = facingOffset(f.facing);
+  return { x: f.tx + off.dx, y: f.ty + off.dy };
+}
+
+// 키를 소문자로 정규화해서 저장 (Shift/Caps 상태와 무관하게 U/u 인식)
+const keys = new Set();
+function normKey(k) { return k.length === 1 ? k.toLowerCase() : k; }
+window.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  keys.add(normKey(e.key));
+});
+window.addEventListener('keyup', e => keys.delete(normKey(e.key)));
+
+function processMovementInput(f, currentDirs) {
+  const prevHeld = f.prevHeld;
+  f.prevHeld = new Set(currentDirs);
+
+  if (!isReady(f)) return;
+
+  if (currentDirs.length >= 2) {
+    const diag = combineDir(currentDirs[0], currentDirs[1]);
+    if (diag) { tryStartDiagMove(f, diag); f.pending = null; }
+    return;
+  }
+  if (currentDirs.length === 0) { f.pending = null; return; }
+
+  const dir = currentDirs[0];
+  const isNewPress = !prevHeld.has(dir);
+
+  if (isNewPress) { f.pending = { dir, frame: frameCount }; return; }
+
+  if (!f.pending) { tryStartMove(f, dir); return; }
+
+  if (f.pending.dir === dir && (frameCount - f.pending.frame) > f.diagWindow) {
+    tryStartMove(f, dir);
+    f.pending = null;
+  }
+}
+
+function handlePlayerInput(f, keymap) {
+  const currentDirs = [];
+  for (const dir of ['up','down','left','right']) {
+    if (keys.has(keymap[dir])) currentDirs.push(dir);
+  }
+  processMovementInput(f, currentDirs);
+
+  if (keys.has(keymap.attack)) { startAttack(f, 'basic'); keys.delete(keymap.attack); }
+}
+
+function dirTowards(dx, dy) {
+  const sx = dx === 0 ? 0 : (dx > 0 ? 1 : -1);
+  const sy = dy === 0 ? 0 : (dy > 0 ? 1 : -1);
+  if (sx === 0 && sy === -1) return 'up';
+  if (sx === 0 && sy === 1) return 'down';
+  if (sx === -1 && sy === 0) return 'left';
+  if (sx === 1 && sy === 0) return 'right';
+  if (sx === -1 && sy === -1) return 'upleft';
+  if (sx === 1 && sy === -1) return 'upright';
+  if (sx === -1 && sy === 1) return 'downleft';
+  return 'downright';
+}
+
+function driveAI(ai, target) {
+  if (ai.aiCooldown > 0) ai.aiCooldown--;
+  if (!isReady(ai)) return;
+  if (ai.aiCooldown > 0) return;
+
+  const dx = target.tx - ai.tx;
+  const dy = target.ty - ai.ty;
+  const adjacent = Math.abs(dx) <= 1 && Math.abs(dy) <= 1 && (dx !== 0 || dy !== 0);
+  const dir = dirTowards(dx, dy);
+
+  if (adjacent) {
+    ai.facing = dir;
+    const move = Math.random() < 0.7 ? 'basic' : 'push';
+    startAttack(ai, move);
+    ai.aiCooldown = 10;
+    return;
+  }
+
+  if (['up','down','left','right'].includes(dir)) tryStartMove(ai, dir);
+  else tryStartDiagMove(ai, dir);
+  ai.aiCooldown = 4;
+}
+
+let frameCount = 0;
+
+function updateATB(f) {
+  if (f.state === 'Hit') return; // 피격/스턴 중엔 충전 중단 (상대가 내 턴을 방해한 것)
+  if (f.atbGauge >= ATB_MAX) return;
+  f.atbGauge = Math.min(ATB_MAX, f.atbGauge + ATB_MAX / f.atbChargeFrames);
+}
+
+function updateFighter(f) {
+  switch (f.state) {
+    case 'Idle': break;
+
+    case 'Move': {
+      f.stateFrame++;
+      if (f.stateFrame >= f.framesPerTile) {
+        f.tx = f.moveToX; f.ty = f.moveToY;
+        f.state = 'Idle';
+        f.stateFrame = 0;
+      }
+      break;
+    }
+
+    case 'Attack': {
+      f.stateFrame++;
+      const move = MOVES[f.attackMove];
+      if (f.stateFrame >= move.startup + 3) {
+        if (!f.hitLandedThisAttack) f.justWhiffed = { label: move.label };
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.attackMove = null;
+      }
+      break;
+    }
+
+    case 'Hit': {
+      f.stateFrame++;
+      if (f.knockback) {
+        f.knockback.frame++;
+        if (f.knockback.frame >= f.knockback.duration) {
+          f.tx = f.knockback.toX; f.ty = f.knockback.toY;
+        }
+      }
+      if (f.stateFrame >= f.hitstunFrames) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.knockback = null;
+      }
+      break;
+    }
+  }
+}
+
+function checkAttackHits(attacker, defender) {
+  if (attacker.state !== 'Attack') return;
+  const move = MOVES[attacker.attackMove];
+  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + 3;
+  if (!active) return;
+  if (defender.state === 'Hit') return;
+  const box = attackHitboxTile(attacker);
+  if (box.x === defender.tx && box.y === defender.ty) {
+    applyHit(defender, attacker, move);
+  }
+}
+
+// 현재 프레임의 렌더용(보간된) 타일 좌표 — 시뮬레이션 상태는 건드리지 않는다.
+function getRenderTile(f) {
+  if (f.state === 'Move') {
+    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    return { x: lerp(f.moveFromX, f.moveToX, t), y: lerp(f.moveFromY, f.moveToY, t) };
+  }
+  if (f.state === 'Hit' && f.knockback) {
+    const t = Math.min(1, f.knockback.frame / f.knockback.duration);
+    return { x: lerp(f.knockback.fromX, f.knockback.toX, t), y: lerp(f.knockback.fromY, f.knockback.toY, t) };
+  }
+  return { x: f.tx, y: f.ty };
+}
+
+const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
+const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
+
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u' };
+
+let aiMode = 'auto'; // 'auto' | 'stopped'
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    aiMode = btn.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b === btn));
+  });
+});
+
+function resetIfNeeded() {
+  if (keys.has('r')) {
+    Object.assign(p1, makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' }));
+    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' }));
+  }
+}
+
+// ===================================================================
+// 프레젠테이션 레이어 — Three.js. 체스판 바닥 + 절차적 스틱맨 스프라이트.
+// ===================================================================
+
+const stageEl = document.getElementById('stage3d');
+
+if (typeof THREE === 'undefined') {
+  stageEl.innerHTML = '<div style="color:#ff9a52;font-family:monospace;font-size:12px;padding:16px;text-align:center;">Three.js 라이브러리를 불러오지 못했습니다. 네트워크 상태를 확인하고 새로고침해 주세요.</div>';
+  throw new Error('THREE is not defined — CDN script failed to load');
+}
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x10141d);
+scene.fog = new THREE.Fog(0x10141d, 14, 26);
+
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 10, 8.4);
+camera.lookAt(0, 0.4, 0.6);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stageEl.appendChild(renderer.domElement);
+
+function resizeRenderer() {
+  const w = stageEl.clientWidth, h = stageEl.clientHeight;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resizeRenderer);
+
+// --- 조명 ---
+scene.add(new THREE.HemisphereLight(0x8fb4ff, 0x1a140d, 0.65));
+const sun = new THREE.DirectionalLight(0xfff2d6, 1.05);
+sun.position.set(-6, 11, 7);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -9; sun.shadow.camera.right = 9;
+sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 26;
+scene.add(sun);
+
+// --- 체스판 바닥 ---
+const worldX = tx => tx - (COLS - 1) / 2;
+const worldZ = ty => ty - (ROWS - 1) / 2;
+
+const LIGHT_SQUARE = 0xf0efe9;
+const DARK_SQUARE  = 0x1c1d22;
+
+const lightMat = new THREE.MeshStandardMaterial({ color: LIGHT_SQUARE, roughness: 0.5 });
+const darkMat  = new THREE.MeshStandardMaterial({ color: DARK_SQUARE,  roughness: 0.55 });
+const tileGeo  = new THREE.BoxGeometry(0.96, 0.14, 0.96);
+
+for (let tx = 0; tx < COLS; tx++) {
+  for (let ty = 0; ty < ROWS; ty++) {
+    const mesh = new THREE.Mesh(tileGeo, (tx + ty) % 2 === 0 ? lightMat : darkMat);
+    mesh.position.set(worldX(tx), -0.07, worldZ(ty));
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
+}
+
+const frameMat = new THREE.MeshStandardMaterial({ color: 0x1a1c24, roughness: 0.75 });
+const frameGeo = new THREE.BoxGeometry(COLS + 0.9, 0.22, ROWS + 0.9);
+const frame = new THREE.Mesh(frameGeo, frameMat);
+frame.position.set(0, -0.2, 0);
+frame.receiveShadow = true;
+scene.add(frame);
+
+const tableMat = new THREE.MeshStandardMaterial({ color: 0x171a22, roughness: 0.9 });
+const table = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), tableMat);
+table.rotation.x = -Math.PI / 2;
+table.position.y = -0.35;
+table.receiveShadow = true;
+scene.add(table);
+
+// --- 공격 판정 타일 표시: 예고(반투명) -> 발동(밝게) 2단계 ---
+function makeHitboxMarker() {
+  const mat = new THREE.MeshBasicMaterial({ color: 0xff4d5e, transparent: true, opacity: 0, side: THREE.DoubleSide });
+  const geo = new THREE.PlaneGeometry(0.9, 0.9);
+  const m = new THREE.Mesh(geo, mat);
+  m.rotation.x = -Math.PI / 2;
+  m.position.y = 0.02;
+  m.visible = false;
+  scene.add(m);
+  return m;
+}
+const p1HitMarker = makeHitboxMarker();
+const p2HitMarker = makeHitboxMarker();
+
+// --- 절차적 스틱맨(졸라맨) 스프라이트 ---
+function drawLine(ctx, x1, y1, x2, y2) {
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+}
+
+function computePose(f) {
+  const pose = { legSpread: 0, armSwing: 0, torsoLean: 0, headTilt: 0, punch: 0 };
+  if (f.state === 'Move') {
+    const t = f.stateFrame / f.framesPerTile;
+    const wave = Math.sin(t * Math.PI);
+    pose.legSpread = wave;
+    pose.armSwing = -wave * 0.6;
+    pose.torsoLean = wave * 0.05;
+  } else if (f.state === 'Attack') {
+    const move = MOVES[f.attackMove];
+    const total = move.startup + 3;
+    const windUp = Math.min(1, f.stateFrame / move.startup);
+    pose.punch = f.stateFrame >= move.startup ? 1 : windUp * 0.35;
+    pose.torsoLean = 0.16 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
+  } else if (f.state === 'Hit') {
+    const t = Math.min(1, f.stateFrame / Math.max(1, f.hitstunFrames));
+    const decay = 1 - t;
+    pose.torsoLean = -0.4 * decay;
+    pose.headTilt = 0.3 * decay;
+    pose.armSwing = Math.sin(f.stateFrame * 1.7) * 0.35 * decay;
+  }
+  return pose;
+}
+
+function drawStickFigure(ctx, color, pose) {
+  ctx.clearRect(0, 0, 96, 128);
+  ctx.lineCap = 'round';
+
+  const hipX = 48, hipY = 78;
+  const torsoLen = 34;
+  const lean = pose.torsoLean;
+  const neckX = hipX + Math.sin(lean) * torsoLen;
+  const neckY = hipY - Math.cos(lean) * torsoLen;
+
+  // 다리
+  const legLen = 34, legSpreadAngle = 0.55;
+  ctx.strokeStyle = '#11131a';
+  ctx.lineWidth = 7;
+  drawLine(ctx, hipX - 5, hipY,
+    hipX - 5 + Math.sin(pose.legSpread * legSpreadAngle) * legLen,
+    hipY + Math.cos(pose.legSpread * legSpreadAngle) * legLen);
+  drawLine(ctx, hipX + 5, hipY,
+    hipX + 5 + Math.sin(-pose.legSpread * legSpreadAngle) * legLen,
+    hipY + Math.cos(-pose.legSpread * legSpreadAngle) * legLen);
+
+  // 몸통
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 9;
+  drawLine(ctx, hipX, hipY, neckX, neckY);
+
+  // 팔
+  const shoulderX = hipX + Math.sin(lean) * torsoLen * 0.62;
+  const shoulderY = hipY - Math.cos(lean) * torsoLen * 0.62;
+  const armLen = 28, armSwingAngle = 0.5;
+  ctx.strokeStyle = '#11131a';
+  ctx.lineWidth = 6;
+
+  const backAngle = lean - pose.armSwing * armSwingAngle;
+  drawLine(ctx, shoulderX - 6, shoulderY,
+    shoulderX - 6 + Math.sin(backAngle) * armLen,
+    shoulderY + Math.cos(backAngle) * armLen);
+
+  const restAngle = lean + pose.armSwing * armSwingAngle;
+  const punchAngle = Math.PI / 2;
+  const frontAngle = lerp(restAngle, punchAngle, pose.punch);
+  const frontLen = lerp(armLen, armLen * 1.2, pose.punch);
+  drawLine(ctx, shoulderX + 6, shoulderY,
+    shoulderX + 6 + Math.sin(frontAngle) * frontLen,
+    shoulderY + Math.cos(frontAngle) * frontLen);
+
+  // 머리
+  const headR = 15;
+  const headAngle = lean + pose.headTilt;
+  const headX = neckX + Math.sin(headAngle) * (headR + 3);
+  const headY = neckY - Math.cos(headAngle) * (headR + 3);
+  ctx.fillStyle = '#f2e6d8';
+  ctx.strokeStyle = '#11131a';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(headX, headY, headR, 0, Math.PI * 2);
+  ctx.fill(); ctx.stroke();
+}
+
+function makeFighterVisual(hexColor) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 96; canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+  const sprite = new THREE.Sprite(material);
+  const aspect = canvas.width / canvas.height;
+  sprite.scale.set(0.95 * aspect, 0.95, 1);
+  scene.add(sprite);
+
+  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32 });
+  const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.34, 24), shadowMat);
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.021;
+  scene.add(shadow);
+
+  const gaugeCanvas = document.createElement('canvas');
+  gaugeCanvas.width = 80; gaugeCanvas.height = 12;
+  const gaugeCtx = gaugeCanvas.getContext('2d');
+  const gaugeTex = new THREE.CanvasTexture(gaugeCanvas);
+  const gaugeMat = new THREE.SpriteMaterial({ map: gaugeTex, transparent: true, depthTest: false });
+  const gaugeSprite = new THREE.Sprite(gaugeMat);
+  gaugeSprite.scale.set(0.8, 0.12, 1);
+  gaugeSprite.renderOrder = 15;
+  scene.add(gaugeSprite);
+
+  return {
+    canvas, ctx, texture, sprite, shadow, material,
+    baseScaleX: sprite.scale.x, color: hexColor,
+    gaugeCanvas, gaugeCtx, gaugeTex, gaugeSprite,
+  };
+}
+
+const p1Visual = makeFighterVisual(p1.color);
+const p2Visual = makeFighterVisual(p2.color);
+
+const LEFT_FACINGS = new Set(['left', 'upleft', 'downleft']);
+
+function drawGauge(visual, pct, ready) {
+  const c = visual.gaugeCtx, W = 80, H = 12;
+  c.clearRect(0, 0, W, H);
+  c.fillStyle = 'rgba(0,0,0,0.5)';
+  roundRectPath(c, 0, 0, W, H, 4); c.fill();
+  const fillW = Math.max(0, Math.min(W - 4, (W - 4) * (pct / 100)));
+  c.fillStyle = ready ? '#57d18a' : visual.color;
+  roundRectPath(c, 2, 2, fillW, H - 4, 3); c.fill();
+  visual.gaugeTex.needsUpdate = true;
+}
+function roundRectPath(ctx, x, y, w, h, r) {
+  w = Math.max(w, 0.001);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function updateVisual(f, visual, hitMarker) {
+  const { x: fx, y: fy } = getRenderTile(f);
+  const wx = worldX(fx), wz = worldZ(fy);
+
+  let hop = 0;
+  if (f.state === 'Move') {
+    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    hop = Math.sin(t * Math.PI) * 0.22;
+  }
+
+  let lunge = 0;
+  if (f.state === 'Attack') {
+    const move = MOVES[f.attackMove];
+    const t = Math.min(1, f.stateFrame / (move.startup + 3));
+    lunge = Math.sin(t * Math.PI) * 0.16;
+  }
+  const off = facingOffset(f.facing);
+  const lungeX = off.dx * lunge, lungeZ = off.dy * lunge;
+
+  let shakeX = 0, shakeZ = 0;
+  if (f.state === 'Hit') {
+    const remain = Math.max(0, f.hitstunFrames - f.stateFrame);
+    const amp = Math.min(0.08, remain * 0.01);
+    shakeX = (Math.random() - 0.5) * amp;
+    shakeZ = (Math.random() - 0.5) * amp;
+  }
+
+  const px = wx + lungeX + shakeX, pz = wz + lungeZ + shakeZ, py = 0.5 + hop;
+  visual.sprite.position.set(px, py, pz);
+  visual.shadow.position.set(wx, 0.021, wz);
+  visual.gaugeSprite.position.set(wx, 1.18 + hop * 0.3, wz);
+
+  drawStickFigure(visual.ctx, f.color, computePose(f));
+  visual.texture.needsUpdate = true;
+
+  const mirrored = LEFT_FACINGS.has(f.facing);
+  visual.sprite.scale.x = mirrored ? -Math.abs(visual.baseScaleX) : Math.abs(visual.baseScaleX);
+
+  visual.material.color.set((f.state === 'Hit' && f.stateFrame < 5) ? 0xffe08a : 0xffffff);
+
+  const ready = isReady(f);
+  drawGauge(visual, f.atbGauge, ready);
+
+  // 공격 판정 타일: 준비(선딜, 흐림) -> 발동(밝게)
+  if (f.state === 'Attack') {
+    const move = MOVES[f.attackMove];
+    const box = attackHitboxTile(f);
+    const inBounds = box.x >= 0 && box.x < COLS && box.y >= 0 && box.y < ROWS;
+    if (inBounds) {
+      const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + 3;
+      hitMarker.visible = true;
+      hitMarker.position.set(worldX(box.x), 0.02, worldZ(box.y));
+      hitMarker.material.opacity = active ? 0.65 : 0.22;
+    } else {
+      hitMarker.visible = false;
+    }
+  } else {
+    hitMarker.visible = false;
+  }
+}
+
+// --- HIT!/miss 텍스트 이펙트 ---
+const effects = [];
+function spawnEffect(type, tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const canvas = document.createElement('canvas');
+  canvas.width = 128; canvas.height = 48;
+  const ctx = canvas.getContext('2d');
+  if (type === 'hit') {
+    ctx.font = "700 30px 'Chakra Petch', sans-serif";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 6; ctx.strokeStyle = '#7a3d00'; ctx.strokeText('HIT!', 64, 24);
+    ctx.fillStyle = '#ffe14d'; ctx.fillText('HIT!', 64, 24);
+  } else {
+    ctx.font = "600 22px 'IBM Plex Mono', monospace";
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#8892a6'; ctx.fillText('miss', 64, 24);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(type === 'hit' ? 1.1 : 0.8, type === 'hit' ? 0.42 : 0.3, 1);
+  sprite.position.set(wx, 1.3, wz);
+  sprite.renderOrder = 25;
+  scene.add(sprite);
+  effects.push({ sprite, mat, tex, life: 0, maxLife: type === 'hit' ? 28 : 20 });
+}
+
+function updateEffects() {
+  for (let i = effects.length - 1; i >= 0; i--) {
+    const e = effects[i];
+    e.life++;
+    const t = e.life / e.maxLife;
+    e.sprite.position.y = 1.3 + t * 0.55;
+    e.mat.opacity = 1 - t;
+    if (t >= 1) {
+      scene.remove(e.sprite);
+      e.mat.dispose(); e.tex.dispose();
+      effects.splice(i, 1);
+    }
+  }
+}
+
+// --- 실시간 전투 로그 (림월드식 중계) ---
+const logBody = document.getElementById('combat-log-body');
+const logEntries = [];
+function escapeHtml(s) { return s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+function logEvent(text, kind) {
+  logEntries.push({ text, kind, frame: frameCount });
+  if (logEntries.length > 80) logEntries.shift();
+  logBody.innerHTML = logEntries.map(e =>
+    `<div class="log-line ${e.kind}"><span class="fr">f${e.frame}</span>${escapeHtml(e.text)}</div>`
+  ).join('');
+  logBody.scrollTop = logBody.scrollHeight;
+}
+
+function processEventFlags(f) {
+  if (f.justAttacked) {
+    logEvent(`${f.name} — ${f.justAttacked.label} 시전!`, 'attack');
+    f.justAttacked = null;
+  }
+  if (f.justGotHit) {
+    const info = f.justGotHit;
+    spawnEffect('hit', f.tx, f.ty);
+    logEvent(`${info.attackerName}의 ${info.label} → ${f.name}에게 명중! (스턴 ${info.stun}f)`, 'hit');
+    f.justGotHit = null;
+  }
+  if (f.justWhiffed) {
+    const info = f.justWhiffed;
+    const box = attackHitboxTile(f);
+    spawnEffect('miss', box.x, box.y);
+    logEvent(`${f.name}의 ${info.label} → 피했습니다!`, 'miss');
+    f.justWhiffed = null;
+  }
+}
+
+// ===================================================================
+// 메인 루프
+// ===================================================================
+
+const STEP = 1000 / 60;
+let acc = 0, last = performance.now();
+
+function loop(now) {
+  acc += now - last;
+  last = now;
+  let steps = 0;
+  while (acc >= STEP && steps < 5) {
+    tick();
+    acc -= STEP;
+    steps++;
+  }
+  updateVisual(p1, p1Visual, p1HitMarker);
+  updateVisual(p2, p2Visual, p2HitMarker);
+  updateEffects();
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+
+function tick() {
+  frameCount++;
+  resetIfNeeded();
+
+  updateATB(p1);
+  if (aiMode === 'auto') updateATB(p2);
+
+  handlePlayerInput(p1, p1keys);
+  if (aiMode === 'auto') driveAI(p2, p1);
+
+  updateFighter(p1);
+  updateFighter(p2);
+  checkAttackHits(p1, p2);
+  checkAttackHits(p2, p1);
+
+  processEventFlags(p1);
+  processEventFlags(p2);
+
+  updateHud();
+}
+
+function updateHud() {
+  document.getElementById('fc').textContent = frameCount;
+  fillHud('p1', p1);
+  fillHud('p2', p2);
+}
+function fillHud(prefix, f) {
+  document.getElementById(prefix + '-state').innerHTML = `<span class="state-pill st-${f.state}">${f.state}</span>`;
+  document.getElementById(prefix + '-tile').textContent = `(${f.tx},${f.ty})`;
+  document.getElementById(prefix + '-facing').textContent = f.facing;
+  const pct = Math.round(f.atbGauge);
+  document.getElementById(prefix + '-atb-num').textContent = pct + '%';
+  const fillEl = document.getElementById(prefix + '-atb-fill');
+  fillEl.style.width = pct + '%';
+  const ready = isReady(f);
+  fillEl.classList.toggle('ready', ready);
+  document.getElementById(prefix + '-ready-tag').classList.toggle('show', ready);
+}
+
+resizeRenderer();
+requestAnimationFrame(loop);
+</script>
