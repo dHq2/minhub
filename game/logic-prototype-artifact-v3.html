@@ -14,6 +14,9 @@
         - 캐릭터를 매 프레임 절차적으로 다시 그리는 스틱맨(졸라맨) 스프라이트로 교체, 이동/공격/피격 포즈 분리
         - 공격 판정을 실시간으로 확인할 수 있도록 히트박스 예고(반투명)→발동(밝은 채움) 2단계 표시 + HIT!/miss 텍스트 이펙트 추가
         - 림월드식 실시간 전투 로그 패널 추가: "P1 — 기본공격 시전!" / "…명중! (스턴 15f)" / "…피했습니다!" 를 프레임 번호와 함께 중계
+  v3.1: 공격 시 정면 판정만 보던 타겟팅 문제 수정 — 사방(직선+대각선) 8칸 이내에 상대가 있으면
+        자동으로 그 방향을 바라보고 그 타일에 판정을 생성 (체스 룩+비숍 이동 범위와 동일).
+        ATB 충전 속도를 0.1초 더 빠르게 조정.
 -->
 <style>
   :root{
@@ -294,9 +297,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.0 · ATB</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.1 · ATB</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다.</p>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.1: 사방 8칸 자동 타겟팅</b>으로 정면이 어긋나 헛치던 문제를 고쳤습니다.</p>
 </div>
 
 <div class="rig">
@@ -351,7 +354,7 @@
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능</div>
-    <div class="keyline">공격(스턴) <kbd>U</kbd></div>
+    <div class="keyline">공격(스턴) <kbd>U</kbd> — 사방 8칸 이내 상대를 자동으로 조준</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -424,10 +427,11 @@ function makeFighter(opts) {
     knockback: null,
 
     aiCooldown: 0,
+    attackRangeDist: 1, // 공격 판정이 정면으로 몇 칸 떨어진 타일에 생기는지 (자동 타겟팅 시 갱신)
 
     // --- ATB ---
     atbGauge: 0,
-    atbChargeFrames: framesPerTile * (10 / 3), // 이 프레임만큼 지나면 게이지가 가득 참 (최초 1.7초 대비 3배 빠르게 충전)
+    atbChargeFrames: framesPerTile * (10 / 3) - 6, // 이 프레임만큼 지나면 게이지가 가득 참 (0.56초 대비 0.1초 더 빠르게)
     hitLandedThisAttack: false,
 
     // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
@@ -474,8 +478,26 @@ function startMove(f, nx, ny, facing) {
   f.pending = null;
 }
 
-function startAttack(f, moveKey) {
+const ATTACK_RANGE = 8; // 사방(직선/대각선) 8칸까지 자동 타겟팅
+
+// 사방 8방향 직선상에, 범위(maxRange 칸) 안에 target이 있는지 확인 (체스 룩+비숍 이동 범위와 동일)
+function findTargetInRange(f, target, maxRange) {
+  const dx = target.tx - f.tx, dy = target.ty - f.ty;
+  if (dx === 0 && dy === 0) return null;
+  const aligned = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy);
+  if (!aligned) return null;
+  const dist = Math.max(Math.abs(dx), Math.abs(dy));
+  if (dist > maxRange) return null;
+  return { dir: dirTowards(dx, dy), dist };
+}
+
+function startAttack(f, moveKey, target) {
   if (!isReady(f)) return;
+  f.attackRangeDist = 1;
+  if (target) {
+    const lock = findTargetInRange(f, target, ATTACK_RANGE);
+    if (lock) { f.facing = lock.dir; f.attackRangeDist = lock.dist; }
+  }
   f.atbGauge = 0; // 행동 = 턴 소모
   f.state = 'Attack';
   f.stateFrame = 0;
@@ -505,7 +527,8 @@ function applyHit(target, attacker, move) {
 
 function attackHitboxTile(f) {
   const off = facingOffset(f.facing);
-  return { x: f.tx + off.dx, y: f.ty + off.dy };
+  const dist = f.attackRangeDist || 1;
+  return { x: f.tx + off.dx * dist, y: f.ty + off.dy * dist };
 }
 
 // 키를 소문자로 정규화해서 저장 (Shift/Caps 상태와 무관하게 U/u 인식)
@@ -543,14 +566,14 @@ function processMovementInput(f, currentDirs) {
   }
 }
 
-function handlePlayerInput(f, keymap) {
+function handlePlayerInput(f, keymap, target) {
   const currentDirs = [];
   for (const dir of ['up','down','left','right']) {
     if (keys.has(keymap[dir])) currentDirs.push(dir);
   }
   processMovementInput(f, currentDirs);
 
-  if (keys.has(keymap.attack)) { startAttack(f, 'basic'); keys.delete(keymap.attack); }
+  if (keys.has(keymap.attack)) { startAttack(f, 'basic', target); keys.delete(keymap.attack); }
 }
 
 function dirTowards(dx, dy) {
@@ -573,13 +596,11 @@ function driveAI(ai, target) {
 
   const dx = target.tx - ai.tx;
   const dy = target.ty - ai.ty;
-  const adjacent = Math.abs(dx) <= 1 && Math.abs(dy) <= 1 && (dx !== 0 || dy !== 0);
   const dir = dirTowards(dx, dy);
 
-  if (adjacent) {
-    ai.facing = dir;
+  if (findTargetInRange(ai, target, ATTACK_RANGE)) {
     const move = Math.random() < 0.7 ? 'basic' : 'push';
-    startAttack(ai, move);
+    startAttack(ai, move, target);
     ai.aiCooldown = 10;
     return;
   }
@@ -1092,7 +1113,7 @@ function tick() {
   updateATB(p1);
   if (aiMode === 'auto') updateATB(p2);
 
-  handlePlayerInput(p1, p1keys);
+  handlePlayerInput(p1, p1keys, p2);
   if (aiMode === 'auto') driveAI(p2, p1);
 
   updateFighter(p1);
