@@ -293,6 +293,17 @@
           느려서 실제로 못 따라잡고 헛칠 수 있지만, 그건 "발동은 됐는데 헛친 것"이지 애초에
           발동이 막히는 경우는 없다. 사거리 안에 들어오는 순간 바로 붙잡히고, 정말 못 따라잡을
           만큼 오래 도망 다니면(CLINCH_MAX_CHASE_FRAMES) 결국 포기하고 헛친다.
+  v8.9.3: 자체 로직 재검증 + 전투 로그 위치 변경.
+        - [버그 수정] checkAttackHits가 "이미 기절 중인 상대도 계속 맞을 수 있다"(v8.9)로
+          바뀌면서, active가 여러 프레임인 공격(강공/필살기/붕권/슬라이딩/숄더배쉬 등)이
+          자기 자신의 active 프레임 수만큼 한 번의 스윙에 중복으로 명중 판정을 내고 있었다
+          (히트 이펙트/로그/카메라 연출이 프레임마다 반복 발동). attacker.hitLandedThisAttack
+          가드를 추가해 "한 스윙당 한 번만 명중"을 복원하면서도, 기절 중인 상대가 다음
+          공격에는 계속 맞을 수 있는 동작은 그대로 유지했다.
+        - [버그 수정] 넉백 목적지가 벽만 clamp하고 지형지물(블럭)은 무시해서, 밀려난 자리가
+          블럭 위에 그대로 겹칠 수 있었다. computeFreeDestination을 그대로 재사용해 벽/블럭
+          모두에 막히도록 수정.
+        - 전투 로그(Combat Log)를 화면 하단에서 코트 좌측 상단으로 옮겨 오버레이로 띄웠다.
 -->
 <style>
   :root{
@@ -601,29 +612,35 @@
   .fd-row input:focus{ outline:1px solid var(--p1); }
 
   .combat-log{
-    width:100%;
-    max-width:1240px;
-    background:#0d1017;
+    position:absolute;
+    top:8px;
+    left:8px;
+    width:min(300px, 46%);
+    max-height:calc(100% - 16px);
+    background:rgba(13,16,23,.82);
+    backdrop-filter:blur(2px);
     border:1px solid var(--panel-line);
     border-radius:10px;
-    padding:12px 14px;
+    padding:10px 12px;
+    z-index:5;
+    pointer-events:auto;
   }
   .combat-log-title{
     font-family:var(--font-display);
-    font-size:11px;
+    font-size:10px;
     letter-spacing:.1em;
     text-transform:uppercase;
     color:var(--text-faint);
-    margin-bottom:8px;
+    margin-bottom:6px;
   }
   .combat-log-body{
-    height:150px;
+    max-height:min(220px, 34vh);
     overflow-y:auto;
     display:flex;
     flex-direction:column;
     gap:3px;
     font-family:var(--font-mono);
-    font-size:12.5px;
+    font-size:11.5px;
   }
   .log-line{ color:var(--text-dim); white-space:pre-wrap; }
   .log-line .fr{ color:var(--text-faint); margin-right:7px; }
@@ -636,9 +653,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.9.2</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.9.3</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v8.9.2.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.9.3.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -658,7 +675,12 @@
   </div>
 
   <div class="stage">
-    <div id="stage3d"></div>
+    <div id="stage3d">
+      <div class="combat-log">
+        <div class="combat-log-title">Combat Log</div>
+        <div class="combat-log-body" id="combat-log-body"></div>
+      </div>
+    </div>
     <div class="frame-tape">
       <span>frame <b id="fc">0</b></span>
       <span>60fps fixed-step sim &middot; ATB 전투</span>
@@ -689,11 +711,6 @@
     <p class="fd-note">이동 게이지는 이동에만 관여합니다. 공격·강공·방어는 게이지와 무관하게 아래 각자의 프레임값으로만 동작해요. 숫자를 바꾸면 즉시 게임에 반영됩니다.</p>
     <div id="fd-body"></div>
   </div>
-</div>
-
-<div class="combat-log">
-  <div class="combat-log-title">Combat Log</div>
-  <div class="combat-log-body" id="combat-log-body"></div>
 </div>
 
 <div class="controls">
@@ -1412,11 +1429,13 @@ function applyHit(target, attacker, move) {
   target.dizzyStun = kind === 'dashAttack' || kind === 'ultimate' || kind === 'boonggwon' || kind === 'shoulderBash' || slideTripped;
   target.tripped = slideTripped; // 슬라이딩에 걸려 다운됐을 때만 넘어지는 리액션
   if (move.push > 0) {
+    // 밀려나는 목적지도 벽/지형지물(블럭)에 막혀야 한다 — 그냥 clamp만 하면 넉백이 블럭 위에
+    // 그대로 겹쳐버릴 수 있었다.
     const off = facingOffset(attacker.facing);
+    const dest = computeFreeDestination(target, off.dx, off.dy, move.push, attacker);
     target.knockback = {
       fromX: target.tx, fromY: target.ty,
-      toX: clamp(target.tx + off.dx * move.push, 0, COLS-1),
-      toY: clamp(target.ty + off.dy * move.push, 0, ROWS-1),
+      toX: dest.x, toY: dest.y,
       frame: 0, duration: 8,
     };
   } else {
@@ -2018,12 +2037,13 @@ function updateFighter(f, other) {
 
 function checkAttackHits(attacker, defender) {
   if (attacker.state !== 'Attack') return;
+  // 이번 공격은 이미 한 번 명중(또는 막힘) 판정이 끝났다 — active가 여러 프레임(예: 강공 6f)에
+  // 걸쳐 있어도 같은 공격이 그 프레임 수만큼 중복으로 맞는 걸 막는다. 이미 기절(Hit) 중인
+  // 상대도 계속 맞을 수 있게 defender.state 체크를 뺀 대신(v8.9), 그 자리를 이 가드가 대신한다.
+  if (attacker.hitLandedThisAttack) return;
   const move = MOVES[attacker.attackMove];
   const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + move.active;
   if (!active) return;
-  // 이미 기절(Hit) 중이어도 계속 맞을 수는 있다 — 다만 추가로 기절 시간이 늘어나거나 상태가
-  // 새로 초기화되지는 않는다(applyHit/applyBlockedHit에서 처리). 그래야 다운돼 있는 상대를
-  // 무적 취급하지 않고, 몰아치는 연타가 자연스럽게 이어진다.
   const boxes = attackHitboxTiles(attacker);
   if (!boxes.some(b => b.x === defender.tx && b.y === defender.ty)) return;
 
