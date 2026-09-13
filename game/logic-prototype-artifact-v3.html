@@ -286,6 +286,13 @@
         - 이제는 실제로 최대 GRAB_RANGE(2)칸을 걸어서 상대 앞까지 다가간 뒤(논리 좌표도
           같이 이동) 접촉을 확정한다 — 제자리에서 기다리기만 하던 것에서, 진짜로 걸어서
           다가가는 연출(clinchApproachFrom/To)로 바뀌었다.
+  v8.9.2: 클린치를 "발동 자체는 절대 실패하지 않는 추적전"으로 다시 재설계.
+        - 이제 Idle 상태에서 잡기를 누르면 거리와 무관하게 무조건 발동한다(발동 불발 자체가
+          없다). 대신 발동 뒤에는 대쉬/질주보다 훨씬 느린 "잡기 걸음"(CLINCH_STEP_FRAMES)으로
+          상대의 현재 위치를 매 프레임 계속 쫓아간다 — 상대가 대쉬/질주로 도망치면 걸음이
+          느려서 실제로 못 따라잡고 헛칠 수 있지만, 그건 "발동은 됐는데 헛친 것"이지 애초에
+          발동이 막히는 경우는 없다. 사거리 안에 들어오는 순간 바로 붙잡히고, 정말 못 따라잡을
+          만큼 오래 도망 다니면(CLINCH_MAX_CHASE_FRAMES) 결국 포기하고 헛친다.
 -->
 <style>
   :root{
@@ -629,9 +636,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.9.1</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.9.2</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v8.9.1.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 2칸 이내 상대를 향해 실제로 걸어서 다가간 뒤 붙잡습니다 — 웬만하면 그대로 붙잡히고, 정말로 끊어내려면 그 짧은 예비 동작 도중 상대가 직접 때려서 중단시켜야 합니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.9.2.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -919,6 +926,7 @@ function makeFighter(opts) {
     clinchAnchor: null,   // { x, y } 두 캐릭터가 나란히 서는 접촉 지점(타일 좌표, 중간값)
     clinchTarget: null,   // ClinchAttempt 예비 동작 중 실제로 접촉이 성사됐는지 재확인할 상대 참조
     clinchApproachFrom: null, clinchApproachTo: null, // ClinchAttempt 중 화면상 다가가는 연출용
+    clinchStepFrame: 0, // "잡기 걸음"으로 한 칸 다가가는 진행도(0~CLINCH_STEP_FRAMES)
     clinchReleaseAt: -9999,      // 클린치가 끝난 프레임 — 이후 천천히 원래 자리로 돌아간다
     clinchReleaseFromWorld: null, // 클린치 상태에서의 마지막 화면 위치(월드 좌표)
   };
@@ -1288,33 +1296,26 @@ let CLINCH_RESOLVE = 18;    // 승패가 갈린 뒤 마무리 동작
 let CLINCH_WIN_CHANCE = 0.5;
 let CLINCH_WIN_STUN = 40;   // 성공(마운트) 시 상대에게 주는 다운 경직
 let CLINCH_RETURN_FRAMES = 26; // 클린치가 끝난 뒤 원래 자리(인근 1칸)로 천천히 떨어져 돌아가는 시간
-let CLINCH_STARTUP = 24;        // 잡으러 천천히 다가가는 예비 동작 — 상대적으로 느린 편이라
-                                 // (기본공격 판정이 나오는 것보다 확실히 나중에 성사된다), 상대가
-                                 // 그 사이 곧바로 기본공격을 눌러 맞히면 여기서 그대로 끊긴다
-                                 // (checkAttackHits가 ClinchAttempt 상태도 그냥 때릴 수 있어서 자동으로
-                                 // 성립한다). 반대로 상대가 아무것도 안 하면 웬만해선 그대로 붙잡힌다.
-let CLINCH_WHIFF_RECOVERY = 12; // 헛쳤을 때(허공을 잡았을 때)의 회복 프레임
+let CLINCH_STEP_FRAMES = 11;        // "잡기 걸음"으로 한 칸 다가가는 데 걸리는 프레임 — 대쉬/질주보다
+                                     // 훨씬 느리다. 그래서 상대가 대쉬/질주로 도망가면 실제로 놓칠 수 있다.
+let CLINCH_MAX_CHASE_FRAMES = 70;   // 이 시간 안에 붙잡지 못하면(계속 도망가서 따라잡지 못하면) 포기하고 헛친다.
+let CLINCH_WHIFF_RECOVERY = 12;     // 헛쳤을 때(끝내 놓쳤을 때)의 회복 프레임
 
-// 클린치는 눌렀다고 그 즉시 성사되지 않는다 — 다른 공격들처럼 짧은 예비 동작(startup)이 있고,
-// 그 동작이 끝나는 순간에야 실제로 접촉했는지 다시 확인한다(ClinchAttempt, updateFighter에서 처리).
-// 그 사이 상대가 GRAB_RANGE 밖으로 빠지거나 먼저 다른 행동을 시작해버리면 그대로 헛친다.
+// 클린치는 누르면 무조건 발동한다(공격자가 Idle이기만 하면 실패하지 않는다) — 다만 그 뒤로는
+// 대쉬/질주보다 느린 "잡기 걸음"으로 상대의 현재 위치를 계속 쫓아가는 추적전이 된다.
+// 상대가 대쉬/질주로 도망치면 걸음이 느려서 실제로 못 따라잡고 헛칠 수 있지만, 그건 어디까지나
+// "발동은 됐는데 헛쳤다"이지 애초에 "발동이 안 되는" 경우는 없다(ClinchAttempt, updateFighter에서 처리).
 function startClinch(attacker, target) {
   const dx = target.tx - attacker.tx, dy = target.ty - attacker.ty;
   if (dx !== 0 || dy !== 0) attacker.facing = dirTowards(dx, dy);
 
-  // 실제로 상대 쪽으로 최대 GRAB_RANGE(2)칸을 걸어서 다가간다(상대 칸 앞에서 멈춘다) —
-  // 논리 좌표는 여기서 바로 확정되고(다른 필살기들과 동일한 패턴), 화면상으로는
-  // clinchApproachFrom -> clinchApproachTo를 CLINCH_STARTUP에 걸쳐 천천히 걸어가는 것처럼 보인다.
-  attacker.clinchApproachFrom = { x: attacker.tx, y: attacker.ty };
-  const off = facingOffset(attacker.facing);
-  const dest = computeFreeDestination(attacker, off.dx, off.dy, GRAB_RANGE, target);
-  if (dest.travel > 0) { attacker.tx = dest.x; attacker.ty = dest.y; }
-  attacker.clinchApproachTo = { x: attacker.tx, y: attacker.ty };
-
   attacker.state = 'ClinchAttempt';
   attacker.stateFrame = 0;
   attacker.clinchTarget = target;
-  logEvent(`${attacker.name} — 클린치를 노리고 다가간다!`, 'attack');
+  attacker.clinchStepFrame = 0;
+  attacker.clinchApproachFrom = { x: attacker.tx, y: attacker.ty };
+  attacker.clinchApproachTo = { x: attacker.tx, y: attacker.ty };
+  logEvent(`${attacker.name} — 클린치를 노리고 쫓아간다!`, 'attack');
 }
 
 // 예비 동작이 끝나는 순간 실제로 접촉이 성사됐는지 판정된 뒤 호출된다 — 여기서부터 원래의
@@ -1657,10 +1658,11 @@ function handlePlayerInput(f, keymap, target) {
     tryFireAttack(f, 'heavy', target);
   }
 
-  // 클린치(잡기): 인접해 있고 둘 다 자유로운 상태일 때만 시도할 수 있다.
+  // 클린치(잡기): 누르는 순간 자신이 Idle이기만 하면 무조건 발동한다(거리는 상관없다) —
+  // 그 뒤로 대상을 쫓아가서 실제로 붙잡히는지는 startClinch 이후의 추적전에서 갈린다.
   if (keys.has(keymap.grab)) {
     keys.delete(keymap.grab);
-    if (f.state === 'Idle' && target.state === 'Idle' && findTargetInRange(f, target, GRAB_RANGE)) {
+    if (f.state === 'Idle') {
       startClinch(f, target);
     }
   }
@@ -1841,7 +1843,7 @@ function driveAI(ai, target) {
   }
   if (ai.aiWantGrab) {
     ai.aiWantGrab = false;
-    if (ai.state === 'Idle' && target.state === 'Idle' && findTargetInRange(ai, target, GRAB_RANGE)) startClinch(ai, target);
+    if (ai.state === 'Idle') startClinch(ai, target);
   }
 }
 
@@ -1951,21 +1953,40 @@ function updateFighter(f, other) {
 
     case 'ClinchAttempt': {
       f.stateFrame++;
-      if (f.stateFrame === CLINCH_STARTUP) {
-        const target = f.clinchTarget;
-        // 걸어서 다가간 뒤 실제로 붙잡을 수 있는 거리인지만 확인한다 — 상대가 무엇을 하고
-        // 있었는지(이동 중이었는지 등)는 따지지 않는다. 그래야 "웬만하면 그냥 붙잡힌다"는
-        // 느낌이 나고, 정말로 끊어내려면 상대가 이 예비 동작 도중에 직접 때려서 중단시켜야
-        // 한다(그러면 f.state가 여기 도달하기 전에 이미 'Hit'으로 바뀐다).
-        const stillThere = target && findTargetInRange(f, target, GRAB_RANGE);
-        if (stillThere) {
-          commitClinch(f, target);
-        } else {
-          f.justWhiffed = { label: '클린치' };
-          logEvent(`${f.name} — 클린치, 허공을 잡았다!`, 'miss');
-        }
+      const target = f.clinchTarget;
+      const chasing = f.stateFrame <= CLINCH_MAX_CHASE_FRAMES;
+
+      // 매 프레임 실제로 붙잡을 수 있는 거리인지 확인한다 — 상대가 무엇을 하고 있었는지는
+      // 따지지 않는다(끊어내려면 상대가 직접 때려서 중단시켜야 한다 — 그러면 f.state가 여기
+      // 도달하기 전에 이미 'Hit'으로 바뀐다). 거리 안에 들어오는 즉시 붙잡는다.
+      if (chasing && target && findTargetInRange(f, target, GRAB_RANGE)) {
+        commitClinch(f, target);
+        break;
       }
-      if (f.state === 'ClinchAttempt' && f.stateFrame >= CLINCH_STARTUP + CLINCH_WHIFF_RECOVERY) {
+
+      if (chasing) {
+        // "잡기 걸음": 대쉬/질주보다 훨씬 느리게, 한 칸씩 상대의 현재 위치 쪽으로 계속 쫓아간다.
+        f.clinchStepFrame++;
+        if (f.clinchStepFrame >= CLINCH_STEP_FRAMES && target) {
+          f.clinchStepFrame = 0;
+          const dx = target.tx - f.tx, dy = target.ty - f.ty;
+          if (dx !== 0 || dy !== 0) {
+            const dir = dirTowards(dx, dy);
+            f.facing = dir;
+            const off = facingOffset(dir);
+            const dest = computeFreeDestination(f, off.dx, off.dy, 1, target);
+            f.clinchApproachFrom = { x: f.tx, y: f.ty };
+            if (dest.travel > 0) { f.tx = dest.x; f.ty = dest.y; }
+            f.clinchApproachTo = { x: f.tx, y: f.ty };
+          }
+        }
+      } else if (f.stateFrame === CLINCH_MAX_CHASE_FRAMES + 1) {
+        // 끝까지 쫓아갔지만 따라잡지 못했다 — 헛친 것으로 확정(한 번만 기록).
+        f.justWhiffed = { label: '클린치' };
+        logEvent(`${f.name} — 클린치, 끝내 놓쳤다!`, 'miss');
+      }
+
+      if (f.state === 'ClinchAttempt' && f.stateFrame >= CLINCH_MAX_CHASE_FRAMES + CLINCH_WHIFF_RECOVERY) {
         f.state = 'Idle';
         f.stateFrame = 0;
         f.clinchTarget = null;
@@ -2028,10 +2049,10 @@ function getRenderTile(f) {
     return { x: lerp(f.knockback.fromX, f.knockback.toX, t), y: lerp(f.knockback.fromY, f.knockback.toY, t) };
   }
   if (f.state === 'ClinchAttempt' && f.clinchApproachFrom) {
-    // 클린치 예비 동작: 걸어서 다가가는 느낌으로 천천히 이동한다(등속에 가깝게, 살짝 이즈아웃).
-    const t = Math.min(1, f.stateFrame / Math.max(1, CLINCH_STARTUP));
-    const eased = 1 - Math.pow(1 - t, 2);
-    return { x: lerp(f.clinchApproachFrom.x, f.clinchApproachTo.x, eased), y: lerp(f.clinchApproachFrom.y, f.clinchApproachTo.y, eased) };
+    // 클린치 추적: "잡기 걸음"으로 한 칸씩 쫓아가는 느낌 — 매 스텝(CLINCH_STEP_FRAMES)마다
+    // 다음 칸으로 등속에 가깝게 걸어간다.
+    const t = Math.min(1, f.clinchStepFrame / Math.max(1, CLINCH_STEP_FRAMES));
+    return { x: lerp(f.clinchApproachFrom.x, f.clinchApproachTo.x, t), y: lerp(f.clinchApproachFrom.y, f.clinchApproachTo.y, t) };
   }
   if (f.state === 'Attack' && f.attackLungeFrom) {
     const move = MOVES[f.attackMove];
