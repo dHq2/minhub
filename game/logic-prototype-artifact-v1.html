@@ -1,0 +1,597 @@
+<title>타일 대전 프레임 랩</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#0b0d13;
+    --bg-crt:#0e1119;
+    --panel:#151a24;
+    --panel-line:#232a38;
+    --grid-line:#232a38;
+    --grid-line-soft:#1a2029;
+    --text:#e7ecf6;
+    --text-dim:#8892a6;
+    --text-faint:#5a6479;
+    --p1:#4fd2ff;
+    --p1-dim:#1c4f66;
+    --p2:#ff9a52;
+    --p2-dim:#6b3d1c;
+    --stun:#ffd34d;
+    --hitbox:#ff4d5e;
+    --hit-flash:#ffffff;
+    --key:#1c2230;
+    --key-border:#333d52;
+    --font-display:'Chakra Petch', 'Pretendard', sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, monospace;
+    --font-body:'IBM Plex Sans KR', 'Pretendard', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #131826 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:var(--font-body);
+    padding:28px 16px 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .masthead{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-width:640px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(22px,4vw,32px);
+    margin:0;
+    letter-spacing:.01em;
+    text-wrap:balance;
+  }
+  h1 span{color:var(--p1);}
+  .sub{
+    font-size:13px;
+    color:var(--text-dim);
+    line-height:1.6;
+    text-wrap:balance;
+  }
+
+  .rig{
+    width:100%;
+    max-width:980px;
+    display:grid;
+    grid-template-columns:200px minmax(0,1fr) 200px;
+    gap:16px;
+    align-items:start;
+  }
+  @media (max-width:860px){
+    .rig{ grid-template-columns:1fr; }
+    .side{ flex-direction:row !important; flex-wrap:wrap; }
+  }
+
+  .side{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .panel h3{
+    margin:0 0 10px;
+    font-family:var(--font-display);
+    font-size:13px;
+    letter-spacing:.04em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .p1 .dot{background:var(--p1); box-shadow:0 0 8px var(--p1);}
+  .p2 .dot{background:var(--p2); box-shadow:0 0 8px var(--p2);}
+  .p1 h3{color:var(--p1);}
+  .p2 h3{color:var(--p2);}
+
+  .stat-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:12px;
+    padding:3px 0;
+    border-bottom:1px dashed var(--grid-line-soft);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .k{color:var(--text-faint);}
+  .stat-row .v{color:var(--text);}
+  .state-pill{
+    display:inline-block;
+    padding:1px 8px;
+    border-radius:99px;
+    font-size:11px;
+    font-weight:600;
+    background:var(--grid-line-soft);
+    color:var(--text-dim);
+  }
+  .state-pill.st-Attack{background:rgba(255,77,94,.18); color:var(--hitbox);}
+  .state-pill.st-Hit,.state-pill.st-Stun{background:rgba(255,211,77,.18); color:var(--stun);}
+  .state-pill.st-Move{background:rgba(79,210,255,.14); color:var(--p1);}
+
+  .stage{
+    background:var(--bg-crt);
+    border:1px solid var(--panel-line);
+    border-radius:12px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+  }
+  canvas{
+    width:100%;
+    max-width:640px;
+    height:auto;
+    aspect-ratio:12/8;
+    background:#10141d;
+    border:1px solid var(--grid-line);
+    border-radius:6px;
+    image-rendering:pixelated;
+  }
+  .frame-tape{
+    width:100%;
+    max-width:640px;
+    display:flex;
+    justify-content:space-between;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+  }
+  .frame-tape b{color:var(--text-dim); font-weight:500;}
+
+  .controls{
+    width:100%;
+    max-width:980px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:640px){ .controls{ grid-template-columns:1fr; } }
+  .controls .panel{ display:flex; flex-direction:column; gap:8px; }
+  .keyline{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-dim); flex-wrap:wrap;}
+  .keyline .kk{display:flex; gap:4px;}
+  kbd{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text);
+    background:var(--key);
+    border:1px solid var(--key-border);
+    border-bottom:2px solid var(--key-border);
+    border-radius:5px;
+    padding:2px 7px;
+    min-width:20px;
+    text-align:center;
+  }
+  .reset-note{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-faint);
+  }
+  .reset-note kbd{margin:0 3px;}
+
+  .legend{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    font-size:11px;
+    color:var(--text-faint);
+    font-family:var(--font-mono);
+  }
+  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px;}
+</style>
+
+<div class="masthead">
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check</div>
+  <h1>타일 대전 <span>프레임 랩</span></h1>
+  <p class="sub">그리드 이동·대각 결합·대쉬·히트박스 판정을 프레임 단위로 그대로 재현한 검증용 트레이닝 룸입니다. 왼쪽/오른쪽 패널은 실제 격투 게임의 프레임 미터를 본떠, 현재 상태와 남은 히트스턴 프레임을 실시간으로 보여줍니다.</p>
+</div>
+
+<div class="rig">
+  <div class="side">
+    <div class="panel p1">
+      <h3><span class="dot"></span>PLAYER 1</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p1-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">state frame</span><span class="v" id="p1-frame">0</span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p1-tile">(2,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p1-facing">right</span></div>
+      <div class="stat-row"><span class="k">hitstun left</span><span class="v" id="p1-stun">-</span></div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <canvas id="game" width="720" height="480"></canvas>
+    <div class="frame-tape">
+      <span>frame <b id="fc">0</b></span>
+      <span>60fps fixed-step sim</span>
+      <span>tile <b>60px</b> &middot; grid <b>12×8</b></span>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="panel p2">
+      <h3><span class="dot"></span>PLAYER 2</h3>
+      <div class="stat-row"><span class="k">state</span><span class="v" id="p2-state"><span class="state-pill">Idle</span></span></div>
+      <div class="stat-row"><span class="k">state frame</span><span class="v" id="p2-frame">0</span></div>
+      <div class="stat-row"><span class="k">tile</span><span class="v" id="p2-tile">(9,4)</span></div>
+      <div class="stat-row"><span class="k">facing</span><span class="v" id="p2-facing">left</span></div>
+      <div class="stat-row"><span class="k">hitstun left</span><span class="v" id="p2-stun">-</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="panel p1">
+    <h3><span class="dot"></span>P1 조작</h3>
+    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 대각은 두 키를 6프레임 이내 동시입력, 같은 방향 2연타는 대쉬</div>
+    <div class="keyline">기본공격(스턴) <kbd>/</kbd> &nbsp;&middot;&nbsp; 밀치기(스턴+넉백) <kbd>.</kbd></div>
+  </div>
+  <div class="panel p2">
+    <h3><span class="dot"></span>P2 조작</h3>
+    <div class="keyline">이동 <span class="kk"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> — 규칙 동일</div>
+    <div class="keyline">기본공격(스턴) <kbd>1</kbd> &nbsp;&middot;&nbsp; 밀치기(스턴+넉백) <kbd>2</kbd></div>
+  </div>
+</div>
+
+<div class="reset-note">
+  <kbd>R</kbd> 리셋 &middot;
+  <span class="legend" style="display:inline-flex;vertical-align:middle;margin-left:6px;">
+    <span><span class="sw" style="background:var(--hitbox);"></span>활성 히트박스</span>
+    <span><span class="sw" style="background:var(--stun);"></span>스턴/피격</span>
+  </span>
+</div>
+
+<script>
+// ===== 설계 문서(docs/game-design-v1.md) 기반 로직 검증용 트레이닝 룸 =====
+// 60프레임 고정 스텝 시뮬레이션. 렌더 fps와 분리해 프레임 단위 판정을 정확히 재현.
+
+const TILE = 60;
+const COLS = 12, ROWS = 8;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+const DIRS = {
+  up:    {dx:0, dy:-1},
+  down:  {dx:0, dy:1},
+  left:  {dx:-1, dy:0},
+  right: {dx:1, dy:0},
+};
+function combineDir(a, b) {
+  const set = new Set([a,b]);
+  if (set.has('up') && set.has('left')) return 'upleft';
+  if (set.has('up') && set.has('right')) return 'upright';
+  if (set.has('down') && set.has('left')) return 'downleft';
+  if (set.has('down') && set.has('right')) return 'downright';
+  return null;
+}
+const DIAG_OFFSET = {
+  upleft: {dx:-1, dy:-1}, upright:{dx:1, dy:-1},
+  downleft:{dx:-1, dy:1}, downright:{dx:1, dy:1},
+};
+
+const MOVES = {
+  basic: { startup: 7, stun: 15, push: 0, label: '기본공격' },
+  push:  { startup: 7, stun: 20, push: 1, label: '밀치기' },
+};
+
+function makeFighter(opts) {
+  return {
+    name: opts.name,
+    color: opts.color,
+    tx: opts.tx, ty: opts.ty,
+    px: opts.tx * TILE + TILE/2,
+    py: opts.ty * TILE + TILE/2,
+    facing: opts.facing,
+    framesPerTile: opts.framesPerTile ?? 10,
+    diagWindow: 6,
+    dashWindow: 12,
+
+    state: 'Idle',
+    stateFrame: 0,
+
+    moveFromX: 0, moveFromY: 0, moveToX: 0, moveToY: 0,
+
+    pendingDir: null, pendingDirFrame: 0,
+    lastDir: null, lastDirFrame: -9999,
+
+    attackMove: null,
+    hitstunFrames: 0,
+    knockback: null,
+  };
+}
+
+function facingOffset(f) { return DIAG_OFFSET[f] || DIRS[f]; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function tryStartMove(f, dir) {
+  if (f.state !== 'Idle') return;
+  const isDash = f.lastDir === dir && (frameCount - f.lastDirFrame) <= f.dashWindow;
+  f.lastDir = dir;
+  f.lastDirFrame = frameCount;
+  const off = DIRS[dir];
+  const dist = isDash ? 2 : 1;
+  const nx = clamp(f.tx + off.dx * dist, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy * dist, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, dir);
+}
+
+function tryStartDiagMove(f, diag) {
+  if (f.state !== 'Idle') return;
+  const off = DIAG_OFFSET[diag];
+  const nx = clamp(f.tx + off.dx, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, diag);
+}
+
+function startMove(f, nx, ny, facing) {
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = nx; f.moveToY = ny;
+  f.facing = facing;
+  f.pendingDir = null;
+}
+
+function startAttack(f, moveKey) {
+  if (f.state !== 'Idle' && f.state !== 'Move') return;
+  f.state = 'Attack';
+  f.stateFrame = 0;
+  f.attackMove = moveKey;
+}
+
+function applyHit(target, attacker, move) {
+  target.state = 'Hit';
+  target.stateFrame = 0;
+  target.hitstunFrames = move.stun;
+  if (move.push > 0) {
+    const off = facingOffset(attacker.facing);
+    target.knockback = {
+      fromX: target.tx, fromY: target.ty,
+      toX: clamp(target.tx + off.dx * move.push, 0, COLS-1),
+      toY: clamp(target.ty + off.dy * move.push, 0, ROWS-1),
+      frame: 0, duration: 8,
+    };
+  } else {
+    target.knockback = null;
+  }
+}
+
+function attackHitboxTile(f) {
+  const off = facingOffset(f.facing);
+  return { x: f.tx + off.dx, y: f.ty + off.dy };
+}
+
+const keys = new Set();
+window.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  keys.add(e.key);
+});
+window.addEventListener('keyup', e => keys.delete(e.key));
+
+function handleInput(f, keymap) {
+  const pressedDirs = [];
+  for (const dir of ['up','down','left','right']) {
+    if (keys.has(keymap[dir])) pressedDirs.push(dir);
+  }
+
+  if (f.state === 'Idle') {
+    if (pressedDirs.length >= 2) {
+      const diag = combineDir(pressedDirs[0], pressedDirs[1]);
+      if (diag) { tryStartDiagMove(f, diag); f.pendingDir = null; }
+    } else if (pressedDirs.length === 1) {
+      const dir = pressedDirs[0];
+      if (f.pendingDir && f.pendingDir !== dir && (frameCount - f.pendingDirFrame) <= f.diagWindow) {
+        const diag = combineDir(f.pendingDir, dir);
+        if (diag) { tryStartDiagMove(f, diag); f.pendingDir = null; }
+      } else {
+        f.pendingDir = dir;
+        f.pendingDirFrame = frameCount;
+      }
+    }
+    if (f.pendingDir && f.state === 'Idle' && (frameCount - f.pendingDirFrame) > f.diagWindow) {
+      tryStartMove(f, f.pendingDir);
+    }
+  }
+
+  if (keys.has(keymap.basic)) { startAttack(f, 'basic'); keys.delete(keymap.basic); }
+  if (keys.has(keymap.push))  { startAttack(f, 'push');  keys.delete(keymap.push); }
+}
+
+let frameCount = 0;
+
+function updateFighter(f) {
+  switch (f.state) {
+    case 'Idle': break;
+
+    case 'Move': {
+      f.stateFrame++;
+      const t = Math.min(1, f.stateFrame / f.framesPerTile);
+      f.px = lerp(f.moveFromX, f.moveToX, t) * TILE + TILE/2;
+      f.py = lerp(f.moveFromY, f.moveToY, t) * TILE + TILE/2;
+      if (t >= 1) {
+        f.tx = f.moveToX; f.ty = f.moveToY;
+        f.state = 'Idle';
+        f.stateFrame = 0;
+      }
+      break;
+    }
+
+    case 'Attack': {
+      f.stateFrame++;
+      const move = MOVES[f.attackMove];
+      if (f.stateFrame >= move.startup + 3) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.attackMove = null;
+      }
+      break;
+    }
+
+    case 'Hit': {
+      f.stateFrame++;
+      if (f.knockback) {
+        const kb = f.knockback;
+        kb.frame++;
+        const t = Math.min(1, kb.frame / kb.duration);
+        f.px = lerp(kb.fromX, kb.toX, t) * TILE + TILE/2;
+        f.py = lerp(kb.fromY, kb.toY, t) * TILE + TILE/2;
+        if (t >= 1) { f.tx = kb.toX; f.ty = kb.toY; }
+      }
+      if (f.stateFrame >= f.hitstunFrames) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.knockback = null;
+        f.px = f.tx * TILE + TILE/2;
+        f.py = f.ty * TILE + TILE/2;
+      }
+      break;
+    }
+  }
+}
+
+function checkAttackHits(attacker, defender) {
+  if (attacker.state !== 'Attack') return;
+  const move = MOVES[attacker.attackMove];
+  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + 3;
+  if (!active) return;
+  if (defender.state === 'Hit') return;
+  const box = attackHitboxTile(attacker);
+  if (box.x === defender.tx && box.y === defender.ty) {
+    applyHit(defender, attacker, move);
+  }
+}
+
+const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
+const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
+
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', basic:'/', push:'.' };
+const p2keys = { up:'w', down:'s', left:'a', right:'d', basic:'1', push:'2' };
+
+function resetIfNeeded() {
+  if (keys.has('r') || keys.has('R')) {
+    Object.assign(p1, makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' }));
+    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' }));
+  }
+}
+
+const STEP = 1000/60;
+let acc = 0, last = performance.now();
+
+function loop(now) {
+  acc += now - last;
+  last = now;
+  let steps = 0;
+  while (acc >= STEP && steps < 5) {
+    tick();
+    acc -= STEP;
+    steps++;
+  }
+  render();
+  requestAnimationFrame(loop);
+}
+
+function tick() {
+  frameCount++;
+  resetIfNeeded();
+  handleInput(p1, p1keys);
+  handleInput(p2, p2keys);
+  updateFighter(p1);
+  updateFighter(p2);
+  checkAttackHits(p1, p2);
+  checkAttackHits(p2, p1);
+  updateHud();
+}
+
+function updateHud() {
+  document.getElementById('fc').textContent = frameCount;
+  fillHud('p1', p1);
+  fillHud('p2', p2);
+}
+function fillHud(prefix, f) {
+  document.getElementById(prefix+'-state').innerHTML = `<span class="state-pill st-${f.state}">${f.state}</span>`;
+  document.getElementById(prefix+'-frame').textContent = f.stateFrame + 'f';
+  document.getElementById(prefix+'-tile').textContent = `(${f.tx},${f.ty})`;
+  document.getElementById(prefix+'-facing').textContent = f.facing;
+  document.getElementById(prefix+'-stun').textContent = f.state === 'Hit' ? (f.hitstunFrames - f.stateFrame) + 'f' : '-';
+}
+
+function render() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  ctx.strokeStyle = '#232a38';
+  ctx.lineWidth = 1;
+  for (let x=0;x<=COLS;x++){ ctx.beginPath(); ctx.moveTo(x*TILE+0.5,0); ctx.lineTo(x*TILE+0.5,ROWS*TILE); ctx.stroke(); }
+  for (let y=0;y<=ROWS;y++){ ctx.beginPath(); ctx.moveTo(0,y*TILE+0.5); ctx.lineTo(COLS*TILE,y*TILE+0.5); ctx.stroke(); }
+
+  drawHitboxIfActive(p1);
+  drawHitboxIfActive(p2);
+
+  drawFighter(p1);
+  drawFighter(p2);
+}
+
+function drawHitboxIfActive(f) {
+  if (f.state !== 'Attack') return;
+  const move = MOVES[f.attackMove];
+  const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + 3;
+  if (!active) return;
+  const box = attackHitboxTile(f);
+  ctx.fillStyle = 'rgba(255,77,94,0.45)';
+  ctx.fillRect(box.x*TILE+2, box.y*TILE+2, TILE-4, TILE-4);
+  ctx.strokeStyle = '#ff4d5e';
+  ctx.strokeRect(box.x*TILE+2, box.y*TILE+2, TILE-4, TILE-4);
+}
+
+function drawFighter(f) {
+  ctx.save();
+  ctx.translate(f.px, f.py);
+  if (['upleft','upright','downleft','downright'].includes(f.facing)) {
+    const angle = {upright:45, downright:135, downleft:225, upleft:315}[f.facing] * Math.PI/180;
+    ctx.rotate(angle);
+  }
+  const isHit = f.state === 'Hit';
+  ctx.fillStyle = isHit ? '#ffd34d' : f.color;
+  ctx.shadowColor = isHit ? '#ffd34d' : f.color;
+  ctx.shadowBlur = isHit ? 14 : 8;
+  ctx.fillRect(-TILE*0.3, -TILE*0.3, TILE*0.6, TILE*0.6);
+  ctx.restore();
+
+  ctx.fillStyle = '#e7ecf6';
+  ctx.font = '600 12px "IBM Plex Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(f.name, f.px, f.py - TILE*0.42);
+}
+
+requestAnimationFrame(loop);
+</script>
