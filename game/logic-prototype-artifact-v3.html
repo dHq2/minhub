@@ -226,6 +226,18 @@
           넉백 1칸·기절 2초(120f)로 조정.
         - 카메라가 두 캐릭터 중간 지점을 은은하게 따라가도록(updateCamera) 만들고, 붕권 명중과
           슬라이딩 시작 순간에 살짝 줌인됐다가 서서히 풀리는 연출(triggerCameraZoom)을 추가했다.
+  v8.7: 피드백 네 가지 반영.
+        - 붕권이 명중하면 30%(BOONGGWON_CRIT_CHANCE) 확률로 크리티컬이 뜬다 — 부드러운 줌 애니
+          없이 그 즉시(스냅) 완전 초근접 샷으로 전환되고, 대각선으로 살짝 기울어진 앵글(더치
+          앵글)에 화면이 거칠게 흔들리며, 훨씬 크고 많은 별(spawnCritStars)이 파아악 터진다.
+          홀드가 끝나면 일반 카메라 로직이 알아서 자연스럽게 원상 복귀시킨다.
+        - 질주 전환이 저스트프레임처럼 너무 빡빡하다는 피드백 반영 — RUN_ESCALATE_WINDOW를
+          0.35 → 0.65로 넉넉하게 넓혀서, 정확한 타이밍이 아니라 "대충 그 타이밍에 세 번 두드리면
+          어지간해서는 걸리는" 리듬감으로 조정.
+        - 질주 중 벽 충돌(크래시) 기절을 60f → 4f로 대폭 단축 — 너무 오래 못 움직이던 문제 해결.
+        - 질주 시작 연출을 대쉬와 확실히 구분되게 대폭 강화: 전용 "질주!!!" 배너(노란-주황
+          그라데이션, 대쉬의 파란 배너와 대비), 사방으로 뻗는 속도선 폭발(spawnRunBurst 개선),
+          짧은 카메라 펀치인까지 겹쳐서 질주 전환을 확실히 체감할 수 있게 했다.
 -->
 <style>
   :root{
@@ -569,9 +581,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.6</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.7</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v8.6.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 타이밍에(리듬게임처럼!) 같은 방향을 다시 누르면 <b>질주</b>로 전환돼 멈추지 않고 점점 가속하며 큼직하게 뛰어 달립니다 — 후퇴할 땐 이동 방향의 정반대를 바라보며 물러나고, 접근 중엔 황소가 돌격하듯 상체를 깊이 숙입니다. 질주 중에만 <b>K</b>(정면 4칸을 관통하는 슬라이딩 태클, 50% 다운, 공중으로 붕 뜨는 리액션) / <b>O</b>(숄더배쉬, 1칸 밀침·2초 기절)로 캔슬할 수 있고, 둘 다 자동 타겟팅 없이 지금 달리는 방향 그대로 나갑니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권 명중·슬라이딩 시작 순간엔 카메라가 살짝 줌인됩니다. 벽에 부딪히면 넘어져 기절해요. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.7.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 멈추지 않고 점점 가속하며 큼직하게 뛰어 달립니다 — 후퇴할 땐 이동 방향의 정반대를 보며 물러나고, 접근 중엔 황소가 돌격하듯 상체를 깊이 숙입니다. 벽에 부딪혀도 살짝만 기절해요. 질주 중에만 <b>K</b>(정면 4칸을 관통하는 슬라이딩 태클, 50% 다운) / <b>O</b>(숄더배쉬, 1칸 밀침·2초 기절)로 캔슬할 수 있고, 둘 다 자동 타겟팅 없이 지금 달리는 방향 그대로 나갑니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별 이펙트가 터집니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -745,6 +757,7 @@ let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" �
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
 let SLIDE_TILES = 4;        // 슬라이딩이 정면으로 미끄러지며 관통 판정하는 칸수
 let SLIDE_TRIP_CHANCE = 0.5; // 슬라이딩에 맞았을 때 다운(넘어짐)될 확률 — 실패하면 가벼운 히트로 처리
+let BOONGGWON_CRIT_CHANCE = 0.3; // 붕권이 명중했을 때 크리티컬(초근접 카메라+화면 흔들림+큰 별)이 뜰 확률
 
 function makeFighter(opts) {
   const framesPerTile = opts.framesPerTile ?? 10;
@@ -954,7 +967,7 @@ function startMove(f, nx, ny, facing, isDash, blocked) {
   }
 }
 
-let CRASH_STUN = 60; // 무한 질주 중 벽에 부딪혀 넘어졌을 때의 기절 프레임
+let CRASH_STUN = 4; // 무한 질주 중 벽에 부딪혀 넘어졌을 때의 기절 프레임 — 너무 오래 기절해있지 않도록 짧게
 
 // 넘어져 기절 — 공격에 맞은 게 아니라 스스로 벽에 처박은 것이므로 넉백은 없다.
 function startCrash(f) {
@@ -972,9 +985,11 @@ function startCrash(f) {
 let DASH_TILES = 2;          // 단발 대쉬(스텝)의 기본 칸수 — 질주로 전환되지 않으면 이만큼만 가고 멈춘다
 let RUN_ACCEL_PER_TILE = 0.6; // 질주로 전환된 뒤 한 칸 이어갈 때마다 한 칸당 프레임이 이만큼씩 짧아진다(가속)
 let RUN_MIN_FRAMES = 5;       // 질주 가속의 한계 — 아무리 오래 달려도 이보다 빨라지지는 않는다
-let RUN_ESCALATE_WINDOW = 0.35; // 대쉬 도중 질주로 전환하는 입력을 받아주는 구간 — 지금 칸(레그)
+let RUN_ESCALATE_WINDOW = 0.65; // 대쉬 도중 질주로 전환하는 입력을 받아주는 구간 — 지금 칸(레그)
                                  // 이동의 마지막 이 비율(%)만큼만 유효하다("대쉬가 끝나는 그 지점"에
-                                 // 맞춰 눌러야 하는 리듬 타이밍). 1.0이면 아무 때나 눌러도 된다.
+                                 // 맞춰야 하는 리듬이지, 저스트 프레임 정밀도를 요구하는 건 아니라서
+                                 // 넉넉하게 잡는다 — 세 번 연달아 두드리면 어지간해서는 걸린다.
+                                 // 1.0이면 아무 때나 눌러도 된다.
 
 // 이동 방향 dir로 대쉬/질주할 때, 그게 상대로부터 "멀어지는" 방향인지 — 맞다면 후퇴이므로
 // 몸은 상대를 계속 바라본 채(facing 고정) 뒤로 물러나는 모션을 써야, 뒤로 달리는데 정면으로
@@ -1237,8 +1252,10 @@ function applyHit(target, attacker, move) {
   // 슬라이딩은 명중해도 50% 확률로만 완전히 다운(넘어짐)된다 — 실패하면 훨씬 가벼운 히트로 끝난다.
   const slideTripped = kind === 'slide' && Math.random() < SLIDE_TRIP_CHANCE;
   const stun = kind === 'slide' && !slideTripped ? Math.round(move.stun * 0.4) : move.stun;
+  // 붕권은 30% 확률로 크리티컬 — 초근접 카메라+화면 흔들림+큰 별 이펙트가 뜬다.
+  const boonggwonCrit = kind === 'boonggwon' && Math.random() < BOONGGWON_CRIT_CHANCE;
   target.hitstunFrames = stun;
-  target.justGotHit = { attackerName: attacker.name, label: move.label, stun, kind, tripped: slideTripped };
+  target.justGotHit = { attackerName: attacker.name, label: move.label, stun, kind, tripped: slideTripped, crit: boonggwonCrit };
   target.dizzyStun = kind === 'dashAttack' || kind === 'ultimate' || kind === 'boonggwon' || kind === 'shoulderBash' || slideTripped;
   target.tripped = slideTripped; // 슬라이딩에 걸려 다운됐을 때만 넘어지는 리액션
   if (move.push > 0) {
@@ -1791,6 +1808,7 @@ const FRAME_SCHEMA = [
     { label: '경직(stun)', get: () => MOVES.boonggwon.stun, set: v => MOVES.boonggwon.stun = v },
     { label: '넉백(칸)', get: () => MOVES.boonggwon.push, set: v => MOVES.boonggwon.push = v },
     { label: '커맨드 입력 제한시간', get: () => MOTION_INPUT_WINDOW, set: v => MOTION_INPUT_WINDOW = v },
+    { label: '크리티컬 확률(0~1)', get: () => BOONGGWON_CRIT_CHANCE, set: v => BOONGGWON_CRIT_CHANCE = v },
   ]},
   { group: '슬라이딩 (질주 중 K)', rows: [
     { label: '발동(startup)', get: () => MOVES.slide.startup, set: v => MOVES.slide.startup = v },
@@ -1923,9 +1941,41 @@ let CAMERA_FOLLOW = 0.35;   // 두 캐릭터 중간 지점을 얼마나 따라�
 let CAMERA_ZOOM_DIST = 2.2; // 줌인 시 카메라가 앞으로 당겨지는 거리
 let CAMERA_ZOOM_HEIGHT = 1.4; // 줌인 시 카메라가 낮아지는 정도
 
+// --- 붕권 크리티컬 전용 카메라 연출 ---
+// 부드럽게 줌 되는 위의 triggerCameraZoom과 달리, 이건 애니메이션 없이 그 즉시(스냅) 완전
+// 클로즈업으로 전환하고 화면을 거칠게 흔든다 — "얼빡" 수준의 초근접 샷. 홀드가 끝나면 그 자리에서
+// 일반 카메라 로직으로 넘어가므로, 위쪽의 부드러운 추적 로직이 알아서 자연스럽게 원상 복귀시킨다.
+let cameraCritUntil = -9999;
+let cameraCritPos = null, cameraCritLook = null;
+let CAMERA_CRIT_HOLD = 24;   // 클로즈업이 유지되는 프레임
+let CAMERA_CRIT_SHAKE = 0.16; // 흔들림 폭
+
 function triggerCameraZoom() { cameraZoomTarget = 1; }
 
+function triggerCameraCrit(tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  // 카메라워킹은 대각선으로 꺾여도 상관없다 — 오히려 더 역동적으로 보인다.
+  const side = Math.random() < 0.5 ? 1 : -1;
+  cameraCritPos = { x: wx + side * 0.85, y: 0.95, z: wz + 1.05 };
+  cameraCritLook = { x: wx - side * 0.15, y: 0.55, z: wz };
+  cameraCritUntil = frameCount + CAMERA_CRIT_HOLD;
+}
+
 function updateCamera() {
+  if (frameCount < cameraCritUntil && cameraCritPos) {
+    // 크리티컬 홀드 구간: 보간 없이 그 자리에 스냅 + 매 프레임 거칠게 흔들어 "부숴지는" 느낌을 낸다.
+    const amp = CAMERA_CRIT_SHAKE;
+    camera.position.set(
+      cameraCritPos.x + (Math.random() - 0.5) * amp,
+      cameraCritPos.y + (Math.random() - 0.5) * amp * 0.7,
+      cameraCritPos.z + (Math.random() - 0.5) * amp
+    );
+    camera.up.set((Math.random() - 0.5) * 0.25, 1, 0); // 살짝 기울어진 대각선 앵글(더치 앵글)
+    camera.lookAt(cameraCritLook.x, cameraCritLook.y, cameraCritLook.z);
+    camera.up.set(0, 1, 0); // 다음 프레임 계산에 영향 주지 않도록 원복
+    return;
+  }
+
   // 코트 전체가 계속 보여야 하므로 두 캐릭터를 완전히 따라가지는 않고, 중간 지점 쪽으로
   // 카메라를 살짝만 드리프트시킨다(CAMERA_FOLLOW가 그 비율).
   const a = getRenderTile(p1), b = getRenderTile(p2);
@@ -2634,6 +2684,15 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 10; ctx.strokeStyle = '#123a52'; ctx.strokeText('DASH!!', cx, cy);
     ctx.fillStyle = '#6fdcff'; ctx.fillText('DASH!!', cx, cy);
     scaleW = 2.6; scaleH = 0.72; maxLife = 20; riseTotal = 0.4;
+  } else if (type === 'runStart') {
+    // 대쉬가 질주로 전환되는 순간 — 대쉬와는 확실히 다른 색/문구/크기로, 놓칠 수 없게 크고
+    // 화려한 배너를 띄운다(파란 대쉬 배너와 대비되는 노란-주황 그라데이션 + 느낌표 3개).
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    grad.addColorStop(0, '#ffe14d'); grad.addColorStop(0.5, '#ffb64d'); grad.addColorStop(1, '#ffe14d');
+    ctx.font = "900 52px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 12; ctx.strokeStyle = '#5c2d00'; ctx.strokeText('질주!!!', cx, cy);
+    ctx.fillStyle = grad; ctx.fillText('질주!!!', cx, cy);
+    scaleW = 3.0; scaleH = 0.8; maxLife = 24; riseTotal = 0.5;
   } else if (type === 'dashHit') {
     ctx.font = "700 38px 'Chakra Petch', sans-serif";
     ctx.lineWidth = 9; ctx.strokeStyle = '#5c2d00'; ctx.strokeText('★ 대쉬 강타! ★', cx, cy);
@@ -2795,22 +2854,47 @@ function spawnBlueStarTrail(tx, ty, facing) {
 function spawnRunBurst(tx, ty) {
   const wx = worldX(tx), wz = worldZ(ty);
   const canvas = document.createElement('canvas');
-  canvas.width = 128; canvas.height = 128;
+  canvas.width = 160; canvas.height = 160;
   const ctx = canvas.getContext('2d');
-  const grad = ctx.createRadialGradient(64, 64, 2, 64, 64, 60);
-  grad.addColorStop(0, 'rgba(230,248,255,0.95)');
-  grad.addColorStop(0.45, 'rgba(120,205,255,0.6)');
-  grad.addColorStop(1, 'rgba(120,205,255,0)');
+  const grad = ctx.createRadialGradient(80, 80, 2, 80, 80, 78);
+  grad.addColorStop(0, 'rgba(255,245,220,0.98)');
+  grad.addColorStop(0.35, 'rgba(255,210,120,0.75)');
+  grad.addColorStop(0.7, 'rgba(255,180,80,0.35)');
+  grad.addColorStop(1, 'rgba(255,180,80,0)');
   ctx.fillStyle = grad;
-  ctx.beginPath(); ctx.arc(64, 64, 60, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(80, 80, 78, 0, Math.PI * 2); ctx.fill();
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(1.5, 1.5, 1);
+  sprite.scale.set(2.4, 2.4, 1);
   sprite.position.set(wx, 0.55, wz);
   sprite.renderOrder = 20;
   scene.add(sprite);
-  effects.push({ sprite, mat, tex, life: 0, maxLife: 14, riseTotal: 0.05, vx: 0, vz: 0 });
+  effects.push({ sprite, mat, tex, life: 0, maxLife: 16, riseTotal: 0.05, vx: 0, vz: 0 });
+
+  // 사방으로 뻗어나가는 속도선을 더해 "확 튀어나가는" 느낌을 더 분명하게 준다.
+  for (let i = 0; i < 8; i++) {
+    const angle = (i / 8) * Math.PI * 2;
+    const lineCanvas = document.createElement('canvas');
+    lineCanvas.width = 64; lineCanvas.height = 16;
+    const lctx = lineCanvas.getContext('2d');
+    const lgrad = lctx.createLinearGradient(0, 0, 64, 0);
+    lgrad.addColorStop(0, 'rgba(255,225,150,0)');
+    lgrad.addColorStop(1, 'rgba(255,225,150,0.9)');
+    lctx.fillStyle = lgrad;
+    lctx.fillRect(0, 5, 64, 6);
+    const ltex = new THREE.CanvasTexture(lineCanvas);
+    const lmat = new THREE.SpriteMaterial({ map: ltex, transparent: true, depthTest: false });
+    const lsprite = new THREE.Sprite(lmat);
+    lsprite.scale.set(0.9, 0.22, 1);
+    lsprite.position.set(wx, 0.55, wz);
+    lsprite.renderOrder = 19;
+    scene.add(lsprite);
+    effects.push({
+      sprite: lsprite, mat: lmat, tex: ltex, life: 0, maxLife: 12, riseTotal: 0,
+      vx: Math.cos(angle) * 0.14, vz: Math.sin(angle) * 0.14,
+    });
+  }
 }
 
 // 뿌옇게 흩날리는 먼지 몇 조각 — 부딪힘/슬라이딩처럼 바닥과의 마찰이 느껴져야 하는 순간에 쓴다.
@@ -2856,6 +2940,34 @@ function spawnStarBurst(tx, ty) {
     effects.push({
       sprite, mat, tex, life: 0, maxLife: 22, riseTotal: 0.15,
       vx: Math.cos(angle) * 0.045, vz: Math.sin(angle) * 0.045,
+    });
+  }
+}
+
+// 붕권 크리티컬 전용 — 훨씬 크고 많은 별이 화면을 채우듯 파아악 터진다.
+function spawnCritStars(tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const count = 10;
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '52px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = i % 2 === 0 ? '#ffe14d' : '#ff6b5e';
+    ctx.fillText('★', 32, 33);
+    const tex = new THREE.CanvasTexture(canvas);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    const s = 0.7 + Math.random() * 0.4;
+    sprite.scale.set(s, s, 1);
+    sprite.position.set(wx, 1.2, wz);
+    sprite.renderOrder = 26;
+    scene.add(sprite);
+    effects.push({
+      sprite, mat, tex, life: 0, maxLife: 30, riseTotal: 0.25,
+      vx: Math.cos(angle) * 0.085, vz: Math.sin(angle) * 0.085,
     });
   }
 }
@@ -2965,8 +3077,12 @@ function processEventFlags(f) {
     f.justCrashed = null;
   }
   if (f.justRunStarted) {
+    // 대쉬와는 확실히 다르다는 걸 알 수 있도록 훨씬 화려하게: 전용 배너 + 속도선 폭발 +
+    // 카메라가 살짝 펀치인(짧게 줌) 되는 연출까지 겹친다.
+    spawnEffect('runStart', f.justRunStarted.x, f.justRunStarted.y);
     spawnRunBurst(f.justRunStarted.x, f.justRunStarted.y);
-    logEvent(`${f.name} — 질주 돌입!`, 'dash');
+    triggerCameraZoom();
+    logEvent(`${f.name} — 질주 돌입!!`, 'dash');
     f.justRunStarted = null;
   }
   if (f.justDashed) {
@@ -2995,8 +3111,14 @@ function processEventFlags(f) {
       spawnEffect('boonggwonHit', f.tx, f.ty);
       spawnStarBurst(f.tx, f.ty);
       spawnBigEmoji('👊', f.tx, f.ty, { life: 26, size: 1.7, rise: 0.35 });
-      triggerCameraZoom();
-      logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 강타당함!! (1칸 넉백, 스턴 ${info.stun}f)`, 'hit');
+      if (info.crit) {
+        spawnCritStars(f.tx, f.ty);
+        triggerCameraCrit(f.tx, f.ty);
+        logEvent(`💥💥 크리티컬!! ${info.attackerName}의 ${info.label}! ${f.name} 완전히 박살남!! (1칸 넉백, 스턴 ${info.stun}f)`, 'hit');
+      } else {
+        triggerCameraZoom();
+        logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 강타당함!! (1칸 넉백, 스턴 ${info.stun}f)`, 'hit');
+      }
     } else if (info.kind === 'slide') {
       spawnEffect('slideHit', f.tx, f.ty);
       spawnBigEmoji('💨', f.tx, f.ty, { life: 22, size: 1.4, rise: 0.15 });
