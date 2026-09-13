@@ -48,6 +48,18 @@
           가끔 대쉬로 뒤로 빠지는 등 불규칙한 행동을 섞음.
         - 우측에 "프레임표" 패널 추가: 이동/기본공격/밀치기/강공/대쉬강타의 모든 프레임 수치를
           숫자칸으로 노출해 실시간으로 직접 조정하고 바로 확인해볼 수 있다.
+  v5.0: 대형 업데이트.
+        - 이동 입력을 누적(버퍼링)하도록 변경 — 이동 중이거나 게이지가 덜 찼어도 방향키를 눌러두면
+          (특히 이동이 끝나갈 무렵 눌러도) 그 의도가 남아있다가 게이지가 차는 순간 바로 발동된다.
+        - 이동/대쉬 중 상대가 있는 칸은 지나갈 수 없다: 부딪힌 지점에서 막혀 짧게 움찔하고 원래
+          있던 자리로 튕겨 돌아온다 (실제 능력치에는 영향 없음 — 나중에 클린치 로직이 붙을 자리).
+        - 강공이 정면 1칸 + 그 좌우 인접 1칸까지 총 3칸을 부채꼴로 때리도록 확장 (판정 마커도 3개).
+        - 방어가 실제로 공격을 막아낸다: 방패를 들고 있을 때 맞으면 크게 휘청이는 대신 짧게 떨며
+          웅크리고, 공격자의 후딜보다 먼저 회복해 반격할 틈이 생긴다. 방어 중임을 알리는 큰 방패
+          이모지를 몸 앞에 띄움.
+        - 신규 필살기 "공참각" 추가: 강공키(I)를 따다닥 3연타하면 게이지/프레임 대기 없이 즉시
+          발동 — 크게 뛰어올라 정점에서 잠깐 멈췄다가(슬로우모션) 다리를 아래로 크게 내리찍는
+          강력한 일격. 명중 시 전용 대형 이펙트와 별 폭발로 확인된다.
 -->
 <style>
   :root{
@@ -386,12 +398,13 @@
   .log-line.attack{ color:var(--stun); }
   .log-line.ready{ color:var(--ok); }
   .log-line.dash{ color:var(--p1); font-weight:600; }
+  .log-line.block{ color:#7fd4ff; font-weight:600; }
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v4.0 · 프레임표</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v5.0</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v4.0: 이동 게이지와 공격/방어를 완전히 분리했습니다.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle 상태이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 강공은 준비→횡베기(판정)→큰 후딜 3단계로, 끝난 직후 한 번 느려집니다. AI도 최적 행동만 하지 않고 가끔 망설이거나 물러섭니다. 우측 <b>프레임표</b>에서 모든 발동/판정/후딜/경직 수치를 실시간으로 직접 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v5.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 그 자리에서 막혀 튕겨 돌아오고(클린치 로직의 자리), 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 강공은 정면+좌우 3칸을 부채꼴로 때리고, 강공키를 <b>따다닥 3연타</b>하면 크게 뛰어올라 내리찍는 필살기 "공참각"이 나갑니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -453,8 +466,9 @@
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
-    <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관, 각자의 프레임으로만 동작</div>
+    <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
+    <div class="keyline"><kbd>I</kbd> 따다닥 3연타 → <b style="color:#ff6b5e;">필살기 공참각</b> (도약 내리찍기, 큰 스턴)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -504,6 +518,7 @@ const MOVES = {
   push:       { startup: 10, active: 3, recovery: 6,  stun: 14, push: 1, label: '밀치기' },
   dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
+  ultimate:   { startup: 30, active: 6, recovery: 24, stun: 45, push: 3, label: '공참각', ultimate: true },
 };
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -526,6 +541,7 @@ function makeFighter(opts) {
 
     prevHeld: new Set(),
     pending: null,
+    bufferedMove: null, // 이동 게이지가 찰 때까지 대기 중인 이동 의도 ({dir} 또는 {diag})
 
     // --- 대쉬(연타 감지) ---
     // ATB 타이밍과 무관하게, 방향키를 짧게 두 번 누르면 다음 이동이 대쉬로 예약된다.
@@ -552,7 +568,8 @@ function makeFighter(opts) {
     // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
     justAttacked: null, // { label }
     justGotHit: null,   // { attackerName, label, stun, special }
-    dizzyStun: false,   // 대쉬 강타에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
+    dizzyStun: false,   // 대쉬 강타/필살기에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
+    blockedHit: false,  // 지금 Hit 상태가 "맞은 것"이 아니라 "방어로 막은 것"인지
     justWhiffed: null,  // { label }
     justDashed: null,   // { fromTx, fromTy }
 
@@ -562,6 +579,15 @@ function makeFighter(opts) {
 
     // --- 강공 후딜 이후 슬로우 ---
     slowUntil: -9999,  // 이 프레임까지는 다음 이동이 느려짐
+
+    // --- 충돌(추후 클린치 로직의 자리) ---
+    pendingBump: false, // 이번 이동이 상대와 부딪혀 도중에 막혔는지
+    bumping: false,     // 지금 튕겨서 되돌아가는 반동 애니메이션 중인지
+    bumpUntil: -9999,   // 제자리에서 움찔하는 연출이 끝나는 프레임 (0칸 이동 시)
+    justBumped: null,   // { x, y } 프레젠테이션 레이어용 1틱 이벤트
+
+    // --- 강공 3연타(따다닥) 필살기 ---
+    heavyTapTimes: [], // 최근 강공키 입력 프레임 기록
   };
 }
 
@@ -570,28 +596,49 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function lerp(a, b, t) { return a + (b - a) * t; }
 function isReady(f) { return f.state === 'Idle' && f.atbGauge >= ATB_MAX; }
 
-function tryStartMove(f, dir) {
+// 이동 경로를 따라 한 칸씩 확인해서, 상대가 차지한 칸 앞에서 멈춘 "갈 수 있는 만큼"의 목적지를 구한다.
+// (나중에 클린치 로직이 붙을 자리 — 지금은 그 칸을 점유할 수 없다는 것만 구현)
+function computeFreeDestination(f, dx, dy, maxDist, other) {
+  let travel = 0, lastX = f.tx, lastY = f.ty;
+  for (let d = 1; d <= maxDist; d++) {
+    const nx = clamp(f.tx + dx * d, 0, COLS - 1);
+    const ny = clamp(f.ty + dy * d, 0, ROWS - 1);
+    if (nx === lastX && ny === lastY) break; // 맵 끝
+    if (other && other.tx === nx && other.ty === ny) break; // 상대와 충돌
+    travel = d; lastX = nx; lastY = ny;
+  }
+  return { travel, x: lastX, y: lastY, blocked: travel < maxDist };
+}
+
+// 아무 칸도 못 가고 제자리에서 상대와 부딪혔을 때: 짧게 움찔하는 연출만 남기고 아무 일도 없던 것으로.
+function bumpInPlace(f, dir) {
+  f.bumping = true;
+  f.bumpUntil = frameCount + 12;
+  const off = DIRS[dir] || DIAG_OFFSET[dir];
+  f.justBumped = { x: f.tx + off.dx, y: f.ty + off.dy };
+  f.facing = dir;
+}
+
+function tryStartMove(f, dir, other) {
   if (!isReady(f)) return;
   const isDash = f.dashArm === dir;
   if (isDash) f.dashArm = null;
   const off = DIRS[dir];
-  const dist = isDash ? 2 : 1;
-  const nx = clamp(f.tx + off.dx * dist, 0, COLS-1);
-  const ny = clamp(f.ty + off.dy * dist, 0, ROWS-1);
-  if (nx === f.tx && ny === f.ty) return;
-  startMove(f, nx, ny, dir, isDash);
+  const maxDist = isDash ? 2 : 1;
+  const dest = computeFreeDestination(f, off.dx, off.dy, maxDist, other);
+  if (dest.travel === 0) { bumpInPlace(f, dir); return; }
+  startMove(f, dest.x, dest.y, dir, isDash, dest.blocked);
 }
 
-function tryStartDiagMove(f, diag) {
+function tryStartDiagMove(f, diag, other) {
   if (!isReady(f)) return;
   const off = DIAG_OFFSET[diag];
-  const nx = clamp(f.tx + off.dx, 0, COLS-1);
-  const ny = clamp(f.ty + off.dy, 0, ROWS-1);
-  if (nx === f.tx && ny === f.ty) return;
-  startMove(f, nx, ny, diag, false);
+  const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
+  if (dest.travel === 0) { bumpInPlace(f, diag); return; }
+  startMove(f, dest.x, dest.y, diag, false, false);
 }
 
-function startMove(f, nx, ny, facing, isDash) {
+function startMove(f, nx, ny, facing, isDash, blocked) {
   f.atbGauge = 0; // 행동 = 턴 소모 (이동만 게이지를 씀)
   f.state = 'Move';
   f.stateFrame = 0;
@@ -600,6 +647,8 @@ function startMove(f, nx, ny, facing, isDash) {
   f.facing = facing;
   f.pending = null;
   f.dashActive = !!isDash;
+  f.pendingBump = !!blocked;
+  f.bumping = false;
   if (isDash) f.justDashed = { fromTx: f.tx, fromTy: f.ty };
 
   // 강공을 쓴 직후라면 이번 한 번의 이동만 느려진다.
@@ -652,13 +701,17 @@ function startAttack(f, moveKey, target) {
   if (dashCombo) f.dashLandedFrame = -9999; // 콤보 창 소모(한 번만 나가도록)
 }
 
+let BLOCK_STUN_FRAMES = 8; // 방어 성공 시의 짧은 경직 — 공격자의 후딜보다 항상 짧게 잡아 반격 기회를 준다
+
 function applyHit(target, attacker, move) {
   attacker.hitLandedThisAttack = true;
+  const kind = move.special ? 'dashAttack' : (move.ultimate ? 'ultimate' : 'normal');
   target.state = 'Hit';
   target.stateFrame = 0;
+  target.blockedHit = false;
   target.hitstunFrames = move.stun;
-  target.justGotHit = { attackerName: attacker.name, label: move.label, stun: move.stun, special: !!move.special };
-  target.dizzyStun = !!move.special;
+  target.justGotHit = { attackerName: attacker.name, label: move.label, stun: move.stun, kind };
+  target.dizzyStun = kind === 'dashAttack' || kind === 'ultimate';
   if (move.push > 0) {
     const off = facingOffset(attacker.facing);
     target.knockback = {
@@ -672,10 +725,45 @@ function applyHit(target, attacker, move) {
   }
 }
 
+// 방어(방패)가 막았을 때: 공격이 무효화되고 짧게 웅크렸다 떨며 회복 — 공격자보다 먼저 다시 움직일 수 있다.
+function applyBlockedHit(target, attacker, move) {
+  attacker.hitLandedThisAttack = true; // 막힌 것도 "빗나감"은 아니다
+  target.state = 'Hit';
+  target.stateFrame = 0;
+  target.blockedHit = true;
+  target.dizzyStun = false;
+  target.hitstunFrames = BLOCK_STUN_FRAMES;
+  target.knockback = null; // 막았으니 밀려나지 않는다
+  target.justGotHit = { attackerName: attacker.name, label: move.label, stun: BLOCK_STUN_FRAMES, kind: 'blocked' };
+}
+
 function attackHitboxTile(f) {
   const off = facingOffset(f.facing);
   const dist = f.attackRangeDist || 1;
   return { x: f.tx + off.dx * dist, y: f.ty + off.dy * dist };
+}
+
+// 8방향을 시계방향으로 나열 — 강공의 좌우 인접 판정 타일을 구하는 데 쓴다.
+// 예: 5(나)가 위(2)를 보고 있으면 강공은 1(위왼쪽)과 3(위오른쪽)도 함께 때린다.
+const COMPASS = ['up', 'upright', 'right', 'downright', 'down', 'downleft', 'left', 'upleft'];
+function neighborDirs(dir) {
+  const i = COMPASS.indexOf(dir);
+  if (i === -1) return [dir, dir];
+  return [COMPASS[(i + 7) % 8], COMPASS[(i + 1) % 8]];
+}
+
+// 강공은 정면 1칸 + 그 좌우 인접 1칸까지 총 3칸을 부채꼴로 때린다. 그 외 공격은 정면 1칸뿐.
+function attackHitboxTiles(f) {
+  const move = MOVES[f.attackMove];
+  const main = attackHitboxTile(f);
+  if (!move || !move.heavy) return [main];
+  const [leftDir, rightDir] = neighborDirs(f.facing);
+  const leftOff = facingOffset(leftDir), rightOff = facingOffset(rightDir);
+  return [
+    main,
+    { x: f.tx + leftOff.dx, y: f.ty + leftOff.dy },
+    { x: f.tx + rightOff.dx, y: f.ty + rightOff.dy },
+  ];
 }
 
 // 키를 소문자로 정규화해서 저장 (Shift/Caps 상태와 무관하게 U/u 인식)
@@ -687,12 +775,12 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys.delete(normKey(e.key)));
 
-function processMovementInput(f, currentDirs) {
+function processMovementInput(f, currentDirs, other) {
   const prevHeld = f.prevHeld;
   f.prevHeld = new Set(currentDirs);
 
   // 대쉬 연타 감지: 방향키를 새로 누른 순간(edge)마다 직전 같은 방향 입력과의 간격을 확인한다.
-  // ATB 준비 상태와 무관하게 항상 감지하므로, 충전 중에 미리 연타해둬도 대쉬가 예약된다.
+  // 이동 게이지 상태와 무관하게 항상 감지하므로, 충전 중에 미리 연타해둬도 대쉬가 예약된다.
   if (currentDirs.length === 1) {
     const dir = currentDirs[0];
     if (!prevHeld.has(dir)) {
@@ -701,25 +789,48 @@ function processMovementInput(f, currentDirs) {
     }
   }
 
-  if (!isReady(f)) return;
-
+  // 이동 입력은 누적(버퍼링)한다 — 지금 이동 중이거나 게이지가 아직 안 찼어도, 방향키를 눌러두면
+  // (특히 이동이 끝나갈 무렵 눌러도) 그 의도가 남아있다가 게이지가 차는 순간 바로 발동된다.
   if (currentDirs.length >= 2) {
     const diag = combineDir(currentDirs[0], currentDirs[1]);
-    if (diag) { tryStartDiagMove(f, diag); f.pending = null; }
-    return;
-  }
-  if (currentDirs.length === 0) { f.pending = null; return; }
+    if (diag) { f.bufferedMove = { diag }; f.pending = null; }
+  } else if (currentDirs.length === 1) {
+    const dir = currentDirs[0];
+    const isNewPress = !prevHeld.has(dir);
 
-  const dir = currentDirs[0];
-  const isNewPress = !prevHeld.has(dir);
-
-  if (isNewPress) { f.pending = { dir, frame: frameCount }; return; }
-
-  if (!f.pending) { tryStartMove(f, dir); return; }
-
-  if (f.pending.dir === dir && (frameCount - f.pending.frame) > f.diagWindow) {
-    tryStartMove(f, dir);
+    if (isNewPress) {
+      f.pending = { dir, frame: frameCount };
+    } else if (f.pending && f.pending.dir === dir) {
+      if (frameCount - f.pending.frame > f.diagWindow) {
+        f.bufferedMove = { dir };
+        f.pending = null;
+      }
+    } else if (!f.pending) {
+      f.bufferedMove = { dir };
+    }
+  } else {
     f.pending = null;
+  }
+
+  if (!isReady(f)) return; // 실제 발동은 게이지가 찼을 때만
+
+  if (f.bufferedMove) {
+    const bm = f.bufferedMove;
+    f.bufferedMove = null;
+    if (bm.diag) tryStartDiagMove(f, bm.diag, other);
+    else tryStartMove(f, bm.dir, other);
+  }
+}
+
+let HEAVY_COMBO_WINDOW = 14; // 강공키를 이 프레임 안에 연속으로 눌러야 콤보로 이어붙는다
+const ULTIMATE_TAPS = 3;       // 따다닥(3연타)이면 필살기
+
+// 대쉬 도중이면 예약(버퍼)해뒀다가 착지 즉시 발동, 아니면 바로 시전 시도.
+function tryFireAttack(f, moveKey, target) {
+  if (f.state === 'Move' && f.dashActive) {
+    f.bufferDashAttack = true;
+  } else {
+    startAttack(f, moveKey, target);
   }
 }
 
@@ -728,23 +839,30 @@ function handlePlayerInput(f, keymap, target) {
   for (const dir of ['up','down','left','right']) {
     if (keys.has(keymap[dir])) currentDirs.push(dir);
   }
-  processMovementInput(f, currentDirs);
+  processMovementInput(f, currentDirs, target);
 
   // 방어는 게이지/턴 개념이 없는 순수 자세 — 누르고 있는 동안만 방패를 든다.
   f.guarding = keys.has(keymap.guard) && f.state === 'Idle';
 
-  const wantsAttack = keys.has(keymap.attack);
-  const wantsHeavy = keys.has(keymap.heavy);
-  if (wantsAttack || wantsHeavy) {
-    const moveKey = wantsHeavy ? 'heavy' : 'basic';
-    if (wantsAttack) keys.delete(keymap.attack);
-    if (wantsHeavy) keys.delete(keymap.heavy);
-    if (f.state === 'Move' && f.dashActive) {
-      // 대쉬가 아직 진행 중일 때 눌렀어도 놓치지 않도록 예약해뒀다가, 착지하는 즉시 대쉬 강타로 발동한다.
-      f.bufferDashAttack = true;
-    } else {
-      startAttack(f, moveKey, target);
-    }
+  if (keys.has(keymap.attack)) {
+    keys.delete(keymap.attack);
+    tryFireAttack(f, 'basic', target);
+  }
+
+  if (keys.has(keymap.heavy)) {
+    keys.delete(keymap.heavy);
+    f.heavyTapTimes.push(frameCount);
+  }
+  // 오래된 탭 기록은 정리
+  f.heavyTapTimes = f.heavyTapTimes.filter(t => frameCount - t <= HEAVY_COMBO_WINDOW * (ULTIMATE_TAPS - 1));
+
+  if (f.heavyTapTimes.length >= ULTIMATE_TAPS) {
+    f.heavyTapTimes = [];
+    tryFireAttack(f, 'ultimate', target); // 따다닥! 필살기
+  } else if (f.heavyTapTimes.length > 0 && frameCount - f.heavyTapTimes[0] > HEAVY_COMBO_WINDOW) {
+    // 콤보 대기시간을 넘기면 그냥 일반 강공으로 확정
+    f.heavyTapTimes = [];
+    tryFireAttack(f, 'heavy', target);
   }
 }
 
@@ -766,15 +884,15 @@ const OPPOSITE_DIR = {
   upleft: 'downright', upright: 'downleft', downleft: 'upright', downright: 'upleft',
 };
 
-function moveDir(f, dir) {
-  if (['up', 'down', 'left', 'right'].includes(dir)) tryStartMove(f, dir);
-  else tryStartDiagMove(f, dir);
+function moveDir(f, dir, other) {
+  if (['up', 'down', 'left', 'right'].includes(dir)) tryStartMove(f, dir, other);
+  else tryStartDiagMove(f, dir, other);
 }
 
-function forceDash(f, dir) {
-  if (!['up', 'down', 'left', 'right'].includes(dir)) { moveDir(f, dir); return; } // 대각은 대쉬 미지원, 한 칸만
+function forceDash(f, dir, other) {
+  if (!['up', 'down', 'left', 'right'].includes(dir)) { moveDir(f, dir, other); return; } // 대각은 대쉬 미지원, 한 칸만
   f.dashArm = dir;
-  tryStartMove(f, dir);
+  tryStartMove(f, dir, other);
 }
 
 // AI는 무조건 최적 행동만 하지 않는다 — 사거리 안이어도 가끔 물러서거나 망설이고,
@@ -797,7 +915,7 @@ function driveAI(ai, target) {
       startAttack(ai, move, target);
       ai.aiCooldown = 12;
     } else if (roll < 0.85) {
-      forceDash(ai, away); // 순간적으로 확 물러남 (이동은 게이지가 찼을 때만 가능)
+      forceDash(ai, away, target); // 순간적으로 확 물러남 (이동은 게이지가 찼을 때만 가능)
       ai.aiCooldown = 14;
     } else {
       ai.aiCooldown = 8 + Math.floor(Math.random() * 12); // 잠깐 망설이며 가만히 있음
@@ -808,10 +926,10 @@ function driveAI(ai, target) {
   if (!isReady(ai)) return; // 이하는 전부 "이동" 판단이므로 이동 게이지가 찼을 때만
 
   if (roll < 0.75) {
-    moveDir(ai, dir);
+    moveDir(ai, dir, target);
     ai.aiCooldown = 4 + Math.floor(Math.random() * 6);
   } else if (roll < 0.9) {
-    moveDir(ai, away); // 접근하다가 문득 뒤로 빠짐
+    moveDir(ai, away, target); // 접근하다가 문득 뒤로 빠짐
     ai.aiCooldown = 6 + Math.floor(Math.random() * 6);
   } else {
     ai.aiCooldown = 10 + Math.floor(Math.random() * 16); // 제자리에 서서 지켜봄
@@ -834,18 +952,35 @@ function updateGuardBlend(f) {
 
 function updateFighter(f) {
   switch (f.state) {
-    case 'Idle': break;
+    case 'Idle':
+      if (f.bumping && frameCount >= f.bumpUntil) f.bumping = false; // 제자리 움찔 연출 종료
+      break;
 
     case 'Move': {
       f.stateFrame++;
       if (f.stateFrame >= f.currentMoveFrames) {
         f.tx = f.moveToX; f.ty = f.moveToY;
-        f.state = 'Idle';
         f.stateFrame = 0;
+
         if (f.dashActive) {
           f.dashLandedFrame = frameCount;
           f.dashActive = false;
           if (f.bufferDashAttack) { f.bufferDashAttack = false; f.fireDashAttackNow = true; }
+        }
+
+        if (f.pendingBump) {
+          // 상대와 부딪혀 막힌 만큼만 갔다 — 튕겨서 원래 있던 자리로 되돌아가는 반동을 이어붙인다.
+          f.pendingBump = false;
+          const backX = f.moveFromX, backY = f.moveFromY; // 이번 이동을 시작했던 원래 자리
+          f.moveFromX = f.tx; f.moveFromY = f.ty;
+          f.moveToX = backX; f.moveToY = backY;
+          f.bumping = true;
+          f.currentMoveFrames = Math.max(4, Math.round(f.currentMoveFrames * 0.5));
+          f.justBumped = { x: f.tx, y: f.ty };
+          // state는 'Move'를 유지한 채 다음 프레임부터 반동 구간을 재생한다.
+        } else {
+          f.state = 'Idle';
+          f.bumping = false;
         }
       }
       break;
@@ -881,6 +1016,7 @@ function updateFighter(f) {
         f.stateFrame = 0;
         f.knockback = null;
         f.dizzyStun = false;
+        f.blockedHit = false;
       }
       break;
     }
@@ -893,8 +1029,12 @@ function checkAttackHits(attacker, defender) {
   const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + move.active;
   if (!active) return;
   if (defender.state === 'Hit') return;
-  const box = attackHitboxTile(attacker);
-  if (box.x === defender.tx && box.y === defender.ty) {
+  const boxes = attackHitboxTiles(attacker);
+  if (!boxes.some(b => b.x === defender.tx && b.y === defender.ty)) return;
+
+  if (defender.guardBlend > 0.6) {
+    applyBlockedHit(defender, attacker, move);
+  } else {
     applyHit(defender, attacker, move);
   }
 }
@@ -959,6 +1099,16 @@ const FRAME_SCHEMA = [
     { label: '판정 유지(active)', get: () => MOVES.dashAttack.active, set: v => MOVES.dashAttack.active = v },
     { label: '경직(stun)', get: () => MOVES.dashAttack.stun, set: v => MOVES.dashAttack.stun = v },
     { label: '착지 후 콤보창', get: () => DASH_COMBO_WINDOW, set: v => DASH_COMBO_WINDOW = v },
+  ]},
+  { group: '필살기(따다닥 강공)', rows: [
+    { label: '발동(startup)', get: () => MOVES.ultimate.startup, set: v => MOVES.ultimate.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.ultimate.active, set: v => MOVES.ultimate.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.ultimate.recovery, set: v => MOVES.ultimate.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.ultimate.stun, set: v => MOVES.ultimate.stun = v },
+    { label: '연타 인식창', get: () => HEAVY_COMBO_WINDOW, set: v => HEAVY_COMBO_WINDOW = v },
+  ]},
+  { group: '방어', rows: [
+    { label: '방어 성공 경직', get: () => BLOCK_STUN_FRAMES, set: v => BLOCK_STUN_FRAMES = v },
   ]},
 ];
 
@@ -1098,8 +1248,9 @@ function makeHitboxMarker() {
   scene.add(m);
   return m;
 }
-const p1HitMarker = makeHitboxMarker();
-const p2HitMarker = makeHitboxMarker();
+// 강공은 3칸을 부채꼴로 때리므로 마커도 최대 3개까지 쓴다 (그 외 공격은 첫 번째만 사용).
+const p1HitMarkers = [makeHitboxMarker(), makeHitboxMarker(), makeHitboxMarker()];
+const p2HitMarkers = [makeHitboxMarker(), makeHitboxMarker(), makeHitboxMarker()];
 
 // --- 절차적 스틱맨(졸라맨) 스프라이트 ---
 function drawLine(ctx, x1, y1, x2, y2) {
@@ -1108,6 +1259,15 @@ function drawLine(ctx, x1, y1, x2, y2) {
 
 function computePose(f) {
   const pose = { legSpread: 0, armSwing: 0, torsoLean: 0, headTilt: 0, punch: 0, attacking: false };
+
+  // 상대와 부딪혀 움찔하는 중이면 다른 어떤 포즈보다 우선한다 (제자리 충돌이든, 튕겨 되돌아가는 중이든).
+  if (f.bumping) {
+    pose.torsoLean = -0.3 * Math.sin(frameCount * 0.9);
+    pose.headTilt = 0.22;
+    pose.legSpread = -0.3;
+    return pose;
+  }
+
   if (f.state === 'Move') {
     const t = f.stateFrame / f.currentMoveFrames;
     if (f.dashActive) {
@@ -1148,6 +1308,25 @@ function computePose(f) {
         pose.punch = 1 - t * 0.5;
         pose.headTilt = -0.2 * (1 - t);
       }
+    } else if (move.ultimate) {
+      // 필살기 "공참각": 크게 뛰어올라 정점에서 잠깐 멈췄다가(슬로우모션) 다리를 아래로 내리찍는다.
+      const riseEnd = Math.round(activeStart * 0.55);
+      if (f.stateFrame < riseEnd) {
+        const t = f.stateFrame / Math.max(1, riseEnd);
+        pose.kickAngle = lerp(0, -1.7, t); // 차올릴 다리를 뒤로 크게 접어 든다
+        pose.torsoLean = -0.22 * t;
+      } else if (f.stateFrame < activeStart) {
+        pose.kickAngle = -1.7; // 공중 정점에서 잠깐 정지 (슬로우모션 홀드)
+        pose.torsoLean = -0.22;
+      } else if (f.stateFrame < activeEnd) {
+        const t = (f.stateFrame - activeStart) / Math.max(1, move.active);
+        pose.kickAngle = lerp(-1.7, 1.3, t); // 다리를 아래로 크게 내리찍는다
+        pose.torsoLean = lerp(-0.22, 0.15, t);
+      } else {
+        const t = (f.stateFrame - activeEnd) / Math.max(1, move.recovery || 1);
+        pose.kickAngle = lerp(1.3, 0, t);
+        pose.torsoLean = 0.15 * (1 - t);
+      }
     } else {
       const windUp = Math.min(1, f.stateFrame / Math.max(1, activeStart));
       pose.punch = f.stateFrame >= activeStart ? 1 : windUp * 0.35;
@@ -1156,9 +1335,17 @@ function computePose(f) {
   } else if (f.state === 'Hit') {
     const t = Math.min(1, f.stateFrame / Math.max(1, f.hitstunFrames));
     const decay = 1 - t;
-    pose.torsoLean = -0.4 * decay;
-    pose.headTilt = 0.3 * decay;
-    pose.armSwing = Math.sin(f.stateFrame * 1.7) * 0.35 * decay;
+    if (f.blockedHit) {
+      // 방어 성공: 크게 휘청이지 않고 방패를 든 채 짧게 웅크리며 떤다
+      const tremble = Math.sin(f.stateFrame * 4.2) * 0.1 * decay;
+      pose.torsoLean = -0.22 * decay + tremble;
+      pose.legSpread = -0.55 * decay;
+      pose.headTilt = -0.12 * decay;
+    } else {
+      pose.torsoLean = -0.4 * decay;
+      pose.headTilt = 0.3 * decay;
+      pose.armSwing = Math.sin(f.stateFrame * 1.7) * 0.35 * decay;
+    }
   }
 
   // 방어: 방패를 정면 중앙으로 끌어오는 자세를 부드럽게 블렌드
@@ -1181,16 +1368,18 @@ function drawStickFigure(ctx, color, pose) {
   const neckX = hipX + Math.sin(lean) * torsoLen;
   const neckY = hipY - Math.cos(lean) * torsoLen;
 
-  // 다리
+  // 다리 (필살기 "공참각" 중엔 오른다리가 pose.kickAngle로 크게 내리찍는다)
   const legLen = 46, legSpreadAngle = 0.55;
+  const leftLegAngle = pose.legSpread * legSpreadAngle;
+  const rightLegAngle = pose.kickAngle !== undefined ? pose.kickAngle : -pose.legSpread * legSpreadAngle;
   ctx.strokeStyle = '#11131a';
   ctx.lineWidth = 10;
   drawLine(ctx, hipX - 7, hipY,
-    hipX - 7 + Math.sin(pose.legSpread * legSpreadAngle) * legLen,
-    hipY + Math.cos(pose.legSpread * legSpreadAngle) * legLen);
+    hipX - 7 + Math.sin(leftLegAngle) * legLen,
+    hipY + Math.cos(leftLegAngle) * legLen);
   drawLine(ctx, hipX + 7, hipY,
-    hipX + 7 + Math.sin(-pose.legSpread * legSpreadAngle) * legLen,
-    hipY + Math.cos(-pose.legSpread * legSpreadAngle) * legLen);
+    hipX + 7 + Math.sin(rightLegAngle) * legLen,
+    hipY + Math.cos(rightLegAngle) * legLen);
 
   // 몸통
   ctx.strokeStyle = color;
@@ -1281,6 +1470,19 @@ function getDizzyStarTexture() {
   return _dizzyStarTex;
 }
 
+let _shieldIconTex = null;
+function getShieldIconTexture() {
+  if (_shieldIconTex) return _shieldIconTex;
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.font = '46px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🛡️', 32, 34);
+  _shieldIconTex = new THREE.CanvasTexture(c);
+  return _shieldIconTex;
+}
+
 function makeFighterVisual(hexColor) {
   const canvas = document.createElement('canvas');
   canvas.width = 128; canvas.height = 172;
@@ -1320,11 +1522,18 @@ function makeFighterVisual(hexColor) {
     return s;
   });
 
+  // 방어 중임을 확실히 알려주는 큰 방패 아이콘 (스틱맨 그림의 작은 방패와 별개로 덧붙임)
+  const shieldMat = new THREE.SpriteMaterial({ map: getShieldIconTexture(), transparent: true, depthTest: false });
+  const shieldIcon = new THREE.Sprite(shieldMat);
+  shieldIcon.visible = false;
+  shieldIcon.renderOrder = 17;
+  scene.add(shieldIcon);
+
   return {
     canvas, ctx, texture, sprite, shadow, material,
     baseScaleX: sprite.scale.x, color: hexColor,
     gaugeCanvas, gaugeCtx, gaugeTex, gaugeSprite,
-    dizzyStars,
+    dizzyStars, shieldIcon,
   };
 }
 
@@ -1354,7 +1563,7 @@ function roundRectPath(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function updateVisual(f, visual, hitMarker) {
+function updateVisual(f, visual, hitMarkers) {
   const { x: fx, y: fy } = getRenderTile(f);
   const wx = worldX(fx), wz = worldZ(fy);
 
@@ -1364,12 +1573,27 @@ function updateVisual(f, visual, hitMarker) {
     hop = Math.sin(t * Math.PI) * 0.22;
   }
 
-  let lunge = 0;
+  let lunge = 0, jumpLift = 0;
   if (f.state === 'Attack') {
     const move = MOVES[f.attackMove];
     const totalAttack = move.startup + move.active + (move.recovery || 0);
     const t = Math.min(1, f.stateFrame / totalAttack);
     lunge = Math.sin(t * Math.PI) * 0.16;
+
+    if (move.ultimate) {
+      // 필살기 "공참각": 크게 튀어올랐다가 정점에서 살짝 멈추고 내리찍는다
+      const riseEnd = Math.round(move.startup * 0.55);
+      const activeEnd = move.startup + move.active;
+      if (f.stateFrame < riseEnd) {
+        jumpLift = Math.sin((f.stateFrame / Math.max(1, riseEnd)) * (Math.PI / 2)) * 0.95;
+      } else if (f.stateFrame < move.startup) {
+        jumpLift = 0.95;
+      } else if (f.stateFrame < activeEnd) {
+        jumpLift = 0.95 * (1 - (f.stateFrame - move.startup) / Math.max(1, move.active));
+      } else {
+        jumpLift = 0;
+      }
+    }
   }
   const off = facingOffset(f.facing);
   const lungeX = off.dx * lunge, lungeZ = off.dy * lunge;
@@ -1382,7 +1606,7 @@ function updateVisual(f, visual, hitMarker) {
     shakeZ = (Math.random() - 0.5) * amp;
   }
 
-  const px = wx + lungeX + shakeX, pz = wz + lungeZ + shakeZ, py = 0.6 + hop;
+  const px = wx + lungeX + shakeX, pz = wz + lungeZ + shakeZ, py = 0.6 + hop + jumpLift;
   visual.sprite.position.set(px, py, pz);
   visual.shadow.position.set(wx, 0.021, wz);
   visual.gaugeSprite.position.set(wx, 1.38 + hop * 0.3, wz);
@@ -1397,6 +1621,16 @@ function updateVisual(f, visual, hitMarker) {
     star.position.set(px + Math.cos(angle) * r, py + 0.62, pz + Math.sin(angle) * r * 0.5);
   });
 
+  // 방어 중이면 큰 방패 아이콘을 몸 앞쪽에 띄워서 확실하게 보여준다
+  if (f.guardBlend > 0.05) {
+    visual.shieldIcon.visible = true;
+    const s = 0.62 * Math.min(1, f.guardBlend * 1.3);
+    visual.shieldIcon.scale.set(s, s, 1);
+    visual.shieldIcon.position.set(px + off.dx * 0.4, py + 0.18, pz + off.dy * 0.4);
+  } else {
+    visual.shieldIcon.visible = false;
+  }
+
   drawStickFigure(visual.ctx, f.color, computePose(f));
   visual.texture.needsUpdate = true;
 
@@ -1408,26 +1642,24 @@ function updateVisual(f, visual, hitMarker) {
   const ready = isReady(f);
   drawGauge(visual, f.atbGauge, ready);
 
-  // 공격 판정 타일: 준비(선딜, 흐림) -> 발동(밝게)
+  // 공격 판정 타일: 준비(선딜, 흐림) -> 발동(밝게). 강공은 정면+좌우 3칸을 부채꼴로 보여준다.
   if (f.state === 'Attack') {
     const move = MOVES[f.attackMove];
-    const box = attackHitboxTile(f);
-    const inBounds = box.x >= 0 && box.x < COLS && box.y >= 0 && box.y < ROWS;
-    if (inBounds) {
-      const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + move.active;
-      hitMarker.visible = true;
-      hitMarker.position.set(worldX(box.x), 0.02, worldZ(box.y));
-      hitMarker.material.opacity = active ? 0.65 : 0.22;
-
-      // 강공 스윙 중엔 판정 타일에서 네모/세모/동그라미 파편이 흩날린다
-      if (active && move.heavy && frameCount % 2 === 0) {
-        spawnShapeTrail(box.x, box.y);
+    const boxes = attackHitboxTiles(f);
+    const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + move.active;
+    hitMarkers.forEach((marker, i) => {
+      const box = boxes[i];
+      const inBounds = box && box.x >= 0 && box.x < COLS && box.y >= 0 && box.y < ROWS;
+      if (!inBounds) { marker.visible = false; return; }
+      marker.visible = true;
+      marker.position.set(worldX(box.x), 0.02, worldZ(box.y));
+      marker.material.opacity = active ? 0.65 : 0.22;
+      if (active && move.heavy && frameCount % 3 === i % 3) {
+        spawnShapeTrail(box.x, box.y); // 강공 스윙 중 판정 타일마다 궤적 파편
       }
-    } else {
-      hitMarker.visible = false;
-    }
+    });
   } else {
-    hitMarker.visible = false;
+    hitMarkers.forEach(marker => { marker.visible = false; });
   }
 }
 
@@ -1437,7 +1669,7 @@ const effects = [];
 function spawnEffect(type, tx, ty) {
   const wx = worldX(tx), wz = worldZ(ty);
   const canvas = document.createElement('canvas');
-  canvas.width = 340; canvas.height = 96;
+  canvas.width = 440; canvas.height = 110;
   const ctx = canvas.getContext('2d');
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
@@ -1462,6 +1694,16 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 9; ctx.strokeStyle = '#5c2d00'; ctx.strokeText('★ 대쉬 강타! ★', cx, cy);
     ctx.fillStyle = '#ffd34d'; ctx.fillText('★ 대쉬 강타! ★', cx, cy);
     scaleW = 2.6; scaleH = 0.74; maxLife = 34; riseTotal = 0.65;
+  } else if (type === 'block') {
+    ctx.font = "700 34px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 7; ctx.strokeStyle = '#123a52'; ctx.strokeText('BLOCK!', cx, cy);
+    ctx.fillStyle = '#7fd4ff'; ctx.fillText('BLOCK!', cx, cy);
+    scaleW = 1.6; scaleH = 0.44; maxLife = 20; riseTotal = 0.3;
+  } else if (type === 'ultimateHit') {
+    ctx.font = "700 40px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 10; ctx.strokeStyle = '#5c0d0d'; ctx.strokeText('★ 필살! 공참각! ★', cx, cy);
+    ctx.fillStyle = '#ff6b5e'; ctx.fillText('★ 필살! 공참각! ★', cx, cy);
+    scaleW = 3.2; scaleH = 0.8; maxLife = 40; riseTotal = 0.7;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -1577,6 +1819,27 @@ function logEvent(text, kind) {
 }
 
 function processEventFlags(f) {
+  if (f.justBumped) {
+    const dustCanvas = document.createElement('canvas');
+    dustCanvas.width = 32; dustCanvas.height = 32;
+    const dctx = dustCanvas.getContext('2d');
+    dctx.fillStyle = 'rgba(230,230,235,0.85)';
+    dctx.beginPath(); dctx.arc(16, 16, 9, 0, Math.PI * 2); dctx.fill();
+    const wx = worldX(f.justBumped.x), wz = worldZ(f.justBumped.y);
+    for (let i = 0; i < 3; i++) {
+      const tex = new THREE.CanvasTexture(dustCanvas);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+      const sprite = new THREE.Sprite(mat);
+      const s = 0.16 + Math.random() * 0.1;
+      sprite.scale.set(s, s, 1);
+      sprite.position.set(wx + (Math.random() - 0.5) * 0.3, 0.55, wz + (Math.random() - 0.5) * 0.3);
+      sprite.renderOrder = 22;
+      scene.add(sprite);
+      effects.push({ sprite, mat, tex, life: 0, maxLife: 14, riseTotal: 0.12, vx: (Math.random() - 0.5) * 0.02, vz: (Math.random() - 0.5) * 0.02 });
+    }
+    logEvent(`${f.name} — 상대와 부딪혔다! (튕겨나감, 나중에 클린치로 확장 예정)`, 'dash');
+    f.justBumped = null;
+  }
   if (f.justDashed) {
     spawnEffect('dash', f.justDashed.fromTx, f.justDashed.fromTy);
     logEvent(`${f.name} — 대쉬! (2칸 이동)`, 'dash');
@@ -1588,10 +1851,17 @@ function processEventFlags(f) {
   }
   if (f.justGotHit) {
     const info = f.justGotHit;
-    if (info.special) {
+    if (info.kind === 'blocked') {
+      spawnEffect('block', f.tx, f.ty);
+      logEvent(`${f.name} — ${info.attackerName}의 ${info.label}을(를) 방어! (경직 ${info.stun}f, 선반격 가능)`, 'block');
+    } else if (info.kind === 'dashAttack') {
       spawnEffect('dashHit', f.tx, f.ty);
       spawnStarBurst(f.tx, f.ty);
       logEvent(`${info.attackerName}의 ${info.label} → ${f.name}에게 명중!! (2칸 밀림, 스턴 ${info.stun}f)`, 'hit');
+    } else if (info.kind === 'ultimate') {
+      spawnEffect('ultimateHit', f.tx, f.ty);
+      spawnStarBurst(f.tx, f.ty);
+      logEvent(`★ 필살! ${info.attackerName}의 ${info.label} → ${f.name}에게 작렬!! (스턴 ${info.stun}f)`, 'hit');
     } else {
       spawnEffect('hit', f.tx, f.ty);
       logEvent(`${info.attackerName}의 ${info.label} → ${f.name}에게 명중! (스턴 ${info.stun}f)`, 'hit');
@@ -1631,8 +1901,8 @@ function loop(now) {
   }
   if (acc > STEP * 5) acc = 0; // 안전망: 그래도 남아있으면 버린다
 
-  updateVisual(p1, p1Visual, p1HitMarker);
-  updateVisual(p2, p2Visual, p2HitMarker);
+  updateVisual(p1, p1Visual, p1HitMarkers);
+  updateVisual(p2, p2Visual, p2HitMarkers);
   updateEffects();
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
