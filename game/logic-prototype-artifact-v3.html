@@ -156,6 +156,20 @@
            완전히 인접)에서 대쉬를 시도했을 때 콤보 입력이 그냥 버려지던 버그도 같이 잡았다
            (tryFireAttack이 pendingBumpWasDash도 "대쉬 도중"으로 인정하도록 수정).
   v7.4: 기본공격 후딜(recovery)을 4 → 15프레임으로 고정.
+  v8.0: 대쉬를 "정해진 2칸 이동"에서 "멈출 수 없는 무한 질주"로 재설계.
+        - 더블탭(대각선 포함)으로 예약되면, 이후 한 칸씩(startDashLeg) 계속 이어 붙이며 상대나 벽을
+          만날 때까지 멈추지 않는다. 한 칸당 속도는 평범한 이동과 동일해서 실제로 달려나가는
+          느낌을 준다. 등 뒤로 바람 자국(spawnWindTrail)이 스치고, 질주 전용 스프린트 포즈도 더
+          역동적으로 다듬었다.
+        - 상대에게 붙으면 튕겨나가지 않고 그 자리에서 깔끔하게 멈춘다(기존 v7.3 동작 유지).
+        - 도중에 대쉬 강타/공참각 콤보 입력이 들어오면, 다음 칸까지 다 갈 필요 없이 지금 위치에서
+          "가까운 칸"(진행 중인 한 칸의 절반을 넘었으면 목적지, 안 넘었으면 출발지) 기준으로 즉시
+          캔슬돼 공격으로 이어진다.
+        - 아무 것도 캔슬하지 않고 계속 달리다 맵 끝(벽)에 부딪히면, 피격이 아니라 스스로 넘어지는
+          "크래시" 상태(넉백 없는 기절, 전용 포즈/이펙트)에 빠진다.
+        - 이 재설계로 대쉬 전용이었던 부딪힘 처리(startBumpMove)가 더 이상 필요 없어져 관련 코드
+          (pendingBumpWasDash 등)를 정리했다. AI의 forceDash가 dashArmFrame을 안 찍어서 TTL
+          검사를 통과 못 하던 잠재 버그도 같이 고쳤다.
 -->
 <style>
   :root{
@@ -499,9 +513,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v7.4</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.0</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v7.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타(최장 사거리 3칸) 또는 필살기 "공참각"이 나가는데, 공참각은 대쉬로도 아직 안 닿았을 때만 한 칸 더 파고들어 붙어 때려(최장 4칸) 원거리 공참각과 근거리 근참각이 하나로 이어집니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 1칸 넉백+2초 기절을 줍니다. 콤보/커맨드는 인식된 순간 바로 전용 텍스트로 확인됩니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v8.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. <b>대쉬</b>는 이제 정해진 칸수가 아니라 멈출 수 없는 <b>질주</b>입니다 — 더블탭(대각선 포함)하면 상대에게 붙거나 벽에 부딪힐 때까지 계속 달리고, 도중에 공격/강공을 누르면 가까운 칸에서 바로 캔슬돼 대쉬 강타/필살기 "공참각"으로 이어집니다(공참각은 안 닿았으면 한 칸 더 파고들어 붙고, 이미 인접하면 근참각으로). 벽에 그대로 부딪히면 넘어져 기절합니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 1칸 넉백+2초 기절을 줍니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -562,7 +576,7 @@
 <div class="controls">
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
-    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향(대각선 포함) 연타(따닥)로 대쉬(2칸) — 상대에게 가로막히면 그 앞까지 파고들어 붙는다</div>
+    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향(대각선 포함) 연타(따닥)로 <b>대쉬(질주)</b> — 멈출 수 없이 계속 달리다 상대에게 붙으면 정지, 벽에 부딪히면 넘어져 기절. 도중에 공격/강공을 누르면 가까운 칸에서 바로 캔슬돼 대쉬 강타/공참각으로 이어진다</div>
     <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
@@ -731,6 +745,7 @@ function makeFighter(opts) {
     justAttacked: null, // { label }
     justGotHit: null,   // { attackerName, label, stun, special }
     dizzyStun: false,   // 대쉬 강타/필살기에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
+    crashed: false,     // 무한 질주 중 벽에 부딪혀 넘어진 것인지(피격이 아니라 자기 실수)
     blockedHit: false,  // 지금 Hit 상태가 "맞은 것"이 아니라 "방어로 막은 것"인지
     justWhiffed: null,  // { label }
     justDashed: null,   // { fromTx, fromTy }
@@ -743,8 +758,8 @@ function makeFighter(opts) {
     slowUntil: -9999,  // 이 프레임까지는 다음 이동이 느려짐
 
     // --- 충돌(추후 클린치 로직의 자리) ---
-    pendingBump: false, // 이번 이동이 상대와 부딪혀 도중에 막혔는지
-    pendingBumpWasDash: false, // 막힌 이동이 원래 대쉬였는지 (대쉬 캔슬 콤보 판정용)
+    pendingBump: false, // 이번 이동이 상대와 부딪혀 도중에 막혔는지 (평범한 이동에만 해당 — 대쉬는
+                         // startDashLeg에서 상대/벽 충돌을 직접 처리하므로 부딪힘 연출을 타지 않는다)
     bumping: false,     // 지금 튕겨서 되돌아가는 반동 애니메이션 중인지
     bumpUntil: -9999,   // 제자리에서 움찔하는 연출이 끝나는 프레임 (0칸 이동 시)
     justBumped: null,   // { x, y } 프레젠테이션 레이어용 1틱 이벤트
@@ -783,21 +798,23 @@ function neededMoveHold(f, minWindow) {
 // 이동 경로를 따라 한 칸씩 확인해서, 상대가 차지한 칸 앞에서 멈춘 "갈 수 있는 만큼"의 목적지를 구한다.
 // (나중에 클린치 로직이 붙을 자리 — 지금은 그 칸을 점유할 수 없다는 것만 구현)
 function computeFreeDestination(f, dx, dy, maxDist, other) {
-  let travel = 0, lastX = f.tx, lastY = f.ty;
+  let travel = 0, lastX = f.tx, lastY = f.ty, reason = null;
   for (let d = 1; d <= maxDist; d++) {
     const nx = clamp(f.tx + dx * d, 0, COLS - 1);
     const ny = clamp(f.ty + dy * d, 0, ROWS - 1);
-    if (nx === lastX && ny === lastY) break; // 맵 끝
-    if (other && other.tx === nx && other.ty === ny) break; // 상대와 충돌
+    if (nx === lastX && ny === lastY) { reason = 'wall'; break; } // 맵 끝
+    if (other && other.tx === nx && other.ty === ny) { reason = 'opponent'; break; } // 상대와 충돌
     travel = d; lastX = nx; lastY = ny;
   }
-  return { travel, x: lastX, y: lastY, blocked: travel < maxDist };
+  const blocked = travel < maxDist;
+  return { travel, x: lastX, y: lastY, blocked, reason: blocked ? reason : null };
 }
 
 // 상대와 부딪혀 막혔을 때: 안전한 칸(부딪히기 직전)까지만 실제로 이동하지만, 화면에는 상대 쪽으로
 // 더 파고들어 확실히 "부딪히는" 것처럼 보이게 시각적 목표를 상대 칸 근처(overshoot)로 잡는다.
 // 그 다음 프레임에서 원래 있던 자리로 튕겨 돌아오는 반동이 이어진다 (updateFighter의 Move 처리부).
-function startBumpMove(f, dx, dy, travel, facing, wasDash) {
+// 대쉬는 이제 이 함수를 타지 않는다 — startDashLeg에서 상대/벽 충돌을 직접 처리한다.
+function startBumpMove(f, dx, dy, travel, facing) {
   f.atbGauge = 0; // 시도한 이동이므로 게이지는 소모
   f.state = 'Move';
   f.stateFrame = 0;
@@ -806,8 +823,6 @@ function startBumpMove(f, dx, dy, travel, facing, wasDash) {
   f.dashActive = false;
   f.bumping = true;
   f.pendingBump = true;
-  // 대쉬 도중 부딪혀 막혔더라도, 접촉 전에 콤보 입력(공격/강공)이 이미 눌려 있었다면 나가야 한다.
-  f.pendingBumpWasDash = !!wasDash;
 
   const safeX = clamp(f.tx + dx * travel, 0, COLS - 1);
   const safeY = clamp(f.ty + dy * travel, 0, ROWS - 1);
@@ -824,40 +839,27 @@ function dashArmedFor(f, dirOrDiag) {
   return f.dashArm === dirOrDiag && (frameCount - f.dashArmFrame) <= DASH_ARM_TTL;
 }
 
-// 대쉬가 상대에게 가로막혀 최대 거리까지 못 갔더라도, 그래서 상대 바로 앞까지 파고들었다면
-// (travel > 0) 그건 실패한 충돌이 아니라 "다가가서 붙었다"는 뜻이다. 대쉬는 애초에 상대에게
-// 접근하기 위한 기술이기도 하므로, 이 경우 튕겨 돌아오는 부딪힘 연출 없이 그 자리에 정상적으로
-// 착지한 대쉬로 취급한다 — 대쉬 강타/공참각 콤보도 그대로 이어진다. 아예 한 발짝도 못 뗀
-// 경우(이미 완전히 인접한 상태에서 대쉬를 시도, travel === 0)만 부딪힘으로 처리한다.
 function tryStartMove(f, dir, other) {
   if (!isReady(f)) return;
   const isDash = dashArmedFor(f, dir);
   if (f.dashArm === dir) f.dashArm = null;
+  if (isDash) { startDash(f, dir, other); return; }
   const off = DIRS[dir];
-  const maxDist = isDash ? 2 : 1;
-  const dest = computeFreeDestination(f, off.dx, off.dy, maxDist, other);
-  if (dest.blocked) {
-    if (isDash && dest.travel > 0) { startMove(f, dest.x, dest.y, dir, true, false); return; }
-    startBumpMove(f, off.dx, off.dy, dest.travel, dir, isDash);
-    return;
-  }
-  startMove(f, dest.x, dest.y, dir, isDash, false);
+  const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
+  if (dest.blocked) { startBumpMove(f, off.dx, off.dy, dest.travel, dir); return; }
+  startMove(f, dest.x, dest.y, dir, false, false);
 }
 
-// 대각선도 방향키를 두 번 겹쳐 누르면(예: ↗을 짧게 두 번) 동일하게 2칸 대쉬로 승격된다.
+// 대각선도 방향키를 두 번 겹쳐 누르면(예: ↗을 짧게 두 번) 동일하게 대쉬로 승격된다.
 function tryStartDiagMove(f, diag, other) {
   if (!isReady(f)) return;
   const isDash = dashArmedFor(f, diag);
   if (f.dashArm === diag) f.dashArm = null;
+  if (isDash) { startDash(f, diag, other); return; }
   const off = DIAG_OFFSET[diag];
-  const maxDist = isDash ? 2 : 1;
-  const dest = computeFreeDestination(f, off.dx, off.dy, maxDist, other);
-  if (dest.blocked) {
-    if (isDash && dest.travel > 0) { startMove(f, dest.x, dest.y, diag, true, false); return; }
-    startBumpMove(f, off.dx, off.dy, dest.travel, diag, isDash);
-    return;
-  }
-  startMove(f, dest.x, dest.y, diag, isDash, false);
+  const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
+  if (dest.blocked) { startBumpMove(f, off.dx, off.dy, dest.travel, diag); return; }
+  startMove(f, dest.x, dest.y, diag, false, false);
 }
 
 function startMove(f, nx, ny, facing, isDash, blocked) {
@@ -872,7 +874,6 @@ function startMove(f, nx, ny, facing, isDash, blocked) {
   f.dashActive = !!isDash;
   f.pendingBump = !!blocked;
   f.bumping = false;
-  if (isDash) f.justDashed = { fromTx: f.tx, fromTy: f.ty };
 
   // 강공을 쓴 직후라면 이번 한 번의 이동만 느려진다.
   if (frameCount < f.slowUntil) {
@@ -880,6 +881,64 @@ function startMove(f, nx, ny, facing, isDash, blocked) {
     f.slowUntil = -9999;
   } else {
     f.currentMoveFrames = f.framesPerTile;
+  }
+}
+
+let CRASH_STUN = 60; // 무한 질주 중 벽에 부딪혀 넘어졌을 때의 기절 프레임
+
+// 넘어져 기절 — 공격에 맞은 게 아니라 스스로 벽에 처박은 것이므로 넉백은 없다.
+function startCrash(f) {
+  f.state = 'Hit';
+  f.stateFrame = 0;
+  f.dashActive = false;
+  f.blockedHit = false;
+  f.dizzyStun = true;
+  f.crashed = true;
+  f.hitstunFrames = CRASH_STUN;
+  f.knockback = null;
+  f.justCrashed = { name: f.name };
+}
+
+// 대쉬는 더 이상 정해진 칸수가 아니다 — 캔슬(콤보 입력)되거나 상대/벽에 막힐 때까지 멈추지 않고
+// 계속 달리는 "질주"다. 한 칸씩(startDashLeg) 이어 붙이며 매 칸의 속도는 평범한 이동과 동일하게
+// 유지해서 실제로 달려나가는 느낌을 준다. 상대에게 붙으면 그 자리에서 깔끔하게 멈추고(콤보로
+// 이어갈 수 있음), 벽에 부딪히면 그대로 넘어져 기절한다.
+function startDash(f, dir, other) {
+  f.atbGauge = 0; // 대쉬 시도 자체가 게이지를 소모한다
+  f.facing = dir;
+  f.pending = null;
+  f.justDashed = { fromTx: f.tx, fromTy: f.ty }; // 이펙트/로그는 대쉬가 시작될 때 한 번만
+  startDashLeg(f, other);
+}
+
+function startDashLeg(f, other) {
+  const off = facingOffset(f.facing);
+  const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
+  if (dest.blocked) {
+    if (dest.reason === 'wall') { startCrash(f); return; }
+    // 상대에게 붙어서 더 갈 수 없다 — 튕겨나가지 않고 그 자리에 멈춰 선다. 대쉬 강타/공참각
+    // 콤보 입력이 이미 눌려 있었다면 곧바로 이어서 나간다.
+    f.state = 'Idle';
+    f.stateFrame = 0;
+    f.dashActive = false;
+    f.dashLandedFrame = frameCount;
+    if (f.bufferedAttackKey) { f.fireDashAttackNow = true; }
+    return;
+  }
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = dest.x; f.moveToY = dest.y;
+  f.moveVisualToX = null; f.moveVisualToY = null;
+  f.dashActive = true;
+  f.pendingBump = false;
+  f.bumping = false;
+
+  if (frameCount < f.slowUntil) {
+    f.currentMoveFrames = Math.round(f.framesPerTile * SLOW_MULTIPLIER);
+    f.slowUntil = -9999;
+  } else {
+    f.currentMoveFrames = f.framesPerTile; // 평범한 이동과 똑같은 한 칸당 속도로 계속 달린다
   }
 }
 
@@ -1230,13 +1289,10 @@ function processMovementInput(f, currentDirs, other) {
   }
 }
 
-// 대쉬 도중이면 예약(버퍼)해뒀다가 착지 즉시 발동, 아니면 바로 시전 시도.
-// 상대가 바로 붙어 있어서(지근거리) 대쉬가 시작하자마자 막힌 경우, startBumpMove가
-// dashActive는 곧바로 꺼버리지만 pendingBumpWasDash는 켜둔다 — 그것도 "대쉬 도중"으로 쳐줘야
-// 이 순간 누른 공격이 버려지지 않고 제대로 대쉬 강타/공참각으로 이어진다.
+// 대쉬(질주) 도중이면 예약(버퍼)해뒀다가, 가까운 칸에서 즉시(또는 착지 시) 발동, 아니면 바로 시전 시도.
 function tryFireAttack(f, moveKey, target) {
-  if (f.state === 'Move' && (f.dashActive || f.pendingBumpWasDash)) {
-    f.bufferedAttackKey = moveKey; // 어떤 공격키를 눌렀는지 기억해뒀다가 착지 즉시 그걸로 발동
+  if (f.state === 'Move' && f.dashActive) {
+    f.bufferedAttackKey = moveKey; // 어떤 공격키를 눌렀는지 기억해뒀다가 다음 처리에서 그걸로 발동
   } else {
     startAttack(f, moveKey, target);
   }
@@ -1300,9 +1356,9 @@ function moveDir(f, dir, other) {
 }
 
 function forceDash(f, dir, other) {
-  if (!['up', 'down', 'left', 'right'].includes(dir)) { moveDir(f, dir, other); return; } // 대각은 대쉬 미지원, 한 칸만
   f.dashArm = dir;
-  tryStartMove(f, dir, other);
+  f.dashArmFrame = frameCount; // TTL 검사(dashArmedFor)를 통과하려면 예약 시점도 같이 찍어둬야 한다
+  moveDir(f, dir, other);
 }
 
 // AI는 무조건 최적 행동만 하지 않는다 — 사거리 안이어도 가끔 물러서거나 망설이고,
@@ -1360,7 +1416,7 @@ function updateGuardBlend(f) {
   if (Math.abs(target - f.guardBlend) < 0.01) f.guardBlend = target;
 }
 
-function updateFighter(f) {
+function updateFighter(f, other) {
   switch (f.state) {
     case 'Idle':
       if (f.bumping && frameCount >= f.bumpUntil) f.bumping = false; // 제자리 움찔 연출 종료
@@ -1368,25 +1424,31 @@ function updateFighter(f) {
 
     case 'Move': {
       f.stateFrame++;
+
+      // 대쉬(질주) 도중 콤보 입력(대쉬 강타/공참각)이 들어왔다면, 다음 칸까지 다 가지 않고
+      // "가까운 칸" 기준으로 즉시 멈춰서 공격으로 이어간다 — 지금 칸의 절반을 넘었으면 목적지가,
+      // 안 넘었으면 출발지가 더 가까운 칸이다.
+      if (f.dashActive && f.bufferedAttackKey) {
+        const t = f.stateFrame / f.currentMoveFrames;
+        if (t < 0.5) { f.moveToX = f.moveFromX; f.moveToY = f.moveFromY; }
+        f.stateFrame = f.currentMoveFrames;
+      }
+
       if (f.stateFrame >= f.currentMoveFrames) {
         f.tx = f.moveToX; f.ty = f.moveToY;
         f.stateFrame = 0;
 
-        // 대쉬가 정상적으로 끝났든, 상대와 부딪혀 도중에 막혔든(거리 상관없이) — 콤보 입력이
-        // 접촉 전에 이미 눌려 있었다면 대쉬 강타/공참각이 나가야 한다.
-        let comboWillFire = false;
-        if (f.dashActive || f.pendingBumpWasDash) {
+        if (f.dashActive) {
           f.dashLandedFrame = frameCount;
           f.dashActive = false;
-          f.pendingBumpWasDash = false;
-          if (f.bufferedAttackKey) { f.fireDashAttackNow = true; comboWillFire = true; }
-        }
-
-        if (f.pendingBump && comboWillFire) {
-          // 부딪혔지만 콤보 입력이 이미 끝나 있었다 — 튕겨나가는 대신 그 자리에서 바로 공격으로 이어간다.
-          f.pendingBump = false;
-          f.state = 'Idle';
-          f.bumping = false;
+          if (f.bufferedAttackKey) {
+            // 콤보로 캔슬됐다 — 질주를 멈추고 그 자리에서 바로 공격으로 이어간다.
+            f.fireDashAttackNow = true;
+            f.state = 'Idle';
+          } else {
+            // 캔슬되지 않았다면 질주는 멈추지 않는다 — 계속 다음 칸으로 달려간다(벽/상대를 만날 때까지).
+            startDashLeg(f, other);
+          }
         } else if (f.pendingBump) {
           // 상대와 부딪혀 막힌 만큼만 갔다 — 튕겨서 원래 있던 자리로 되돌아가는 반동을 이어붙인다.
           f.pendingBump = false;
@@ -1439,6 +1501,7 @@ function updateFighter(f) {
         f.knockback = null;
         f.dizzyStun = false;
         f.blockedHit = false;
+        f.crashed = false;
       }
       break;
     }
@@ -1509,6 +1572,7 @@ const FRAME_SCHEMA = [
     { label: '대쉬 연타 허용', get: () => p1.dashWindow, set: v => { p1.dashWindow = v; p2.dashWindow = v; } },
     { label: '대쉬 예약 유지', get: () => DASH_ARM_TTL, set: v => DASH_ARM_TTL = v },
     { label: '이동 입력 버퍼', get: () => MOVE_BUFFER_FRAMES, set: v => MOVE_BUFFER_FRAMES = v },
+    { label: '질주 중 벽 충돌 기절', get: () => CRASH_STUN, set: v => CRASH_STUN = v },
   ]},
   { group: '기본공격 (게이지 무관)', rows: [
     { label: '발동(startup)', get: () => MOVES.basic.startup, set: v => MOVES.basic.startup = v },
@@ -1720,11 +1784,13 @@ function computePose(f) {
   if (f.state === 'Move') {
     const t = f.stateFrame / f.currentMoveFrames;
     if (f.dashActive) {
-      // 대쉬: 몸을 앞으로 깊게 기울이고 팔다리를 빠르게 휘저어 돌진하는 느낌을 준다.
+      // 대쉬(질주): 몸을 앞으로 깊게 기울이고 팔다리를 빠르게 휘저어 계속 달리는 느낌을 준다.
+      // 매 칸(레그)마다 갱신되므로 여러 칸을 이어 달리는 동안 같은 사이클이 반복 재생된다.
       const sprint = Math.sin(t * Math.PI * 3);
-      pose.legSpread = sprint;
-      pose.armSwing = -sprint * 0.9;
-      pose.torsoLean = 0.42;
+      pose.legSpread = sprint * 1.15;
+      pose.armSwing = -sprint * 1.05;
+      pose.torsoLean = 0.5;
+      pose.headTilt = 0.1;
     } else {
       const wave = Math.sin(t * Math.PI);
       pose.legSpread = wave;
@@ -1790,7 +1856,14 @@ function computePose(f) {
   } else if (f.state === 'Hit') {
     const t = Math.min(1, f.stateFrame / Math.max(1, f.hitstunFrames));
     const decay = 1 - t;
-    if (f.blockedHit) {
+    if (f.crashed) {
+      // 질주하다 벽에 처박힘: 상대에게 맞아 뒤로 밀리는 게 아니라 스스로 앞으로 고꾸라진다.
+      const flop = Math.min(1, t * 3); // 앞으로 고꾸라지는 건 빠르게, 그 뒤로는 뻗어 있음
+      pose.torsoLean = -0.6 * flop;
+      pose.headTilt = 0.5 * flop;
+      pose.legSpread = 0.6 * flop * decay;
+      pose.armSwing = Math.sin(f.stateFrame * 0.6) * 0.08 * decay;
+    } else if (f.blockedHit) {
       // 방어 성공: 크게 휘청이지 않고 방패를 든 채 짧게 웅크리며 떤다
       const tremble = Math.sin(f.stateFrame * 4.2) * 0.1 * decay;
       pose.torsoLean = -0.22 * decay + tremble;
@@ -2103,6 +2176,7 @@ function updateVisual(f, visual, hitMarkers) {
   if (f.state === 'Move') {
     const t = Math.min(1, f.stateFrame / f.currentMoveFrames);
     hop = Math.sin(t * Math.PI) * 0.22;
+    if (f.dashActive && frameCount % 2 === 0) spawnWindTrail(fx, fy, f.facing);
   }
 
   let lunge = 0, jumpLift = 0;
@@ -2261,6 +2335,11 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 11; ctx.strokeStyle = '#4a0d0d'; ctx.strokeText('★★ 붕 권 !! ★★', cx, cy);
     ctx.fillStyle = grad; ctx.fillText('★★ 붕 권 !! ★★', cx, cy);
     scaleW = 3.4; scaleH = 0.86; maxLife = 42; riseTotal = 0.75;
+  } else if (type === 'crash') {
+    ctx.font = "700 40px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 9; ctx.strokeStyle = '#4a2b00'; ctx.strokeText('쿵!! CRASH!', cx, cy);
+    ctx.fillStyle = '#ffb64d'; ctx.fillText('쿵!! CRASH!', cx, cy);
+    scaleW = 2.4; scaleH = 0.6; maxLife = 24; riseTotal = 0.2;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -2291,6 +2370,33 @@ function spawnBigEmoji(emoji, tx, ty, { life = 22, size = 1.4, rise = 0.25 } = {
   sprite.renderOrder = 27;
   scene.add(sprite);
   effects.push({ sprite, mat, tex, life: 0, maxLife: life, riseTotal: rise, vx: 0, vz: 0 });
+}
+
+// 질주(대쉬) 도중 등 뒤로 스치는 바람 자국 — 캐릭터가 실제로 빠르게 달리고 있다는 박진감을 더한다.
+function spawnWindTrail(tx, ty, facing) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const off = facingOffset(facing);
+  const canvas = document.createElement('canvas');
+  canvas.width = 96; canvas.height = 36;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  grad.addColorStop(0, 'rgba(220,245,255,0)');
+  grad.addColorStop(0.55, 'rgba(220,245,255,0.65)');
+  grad.addColorStop(1, 'rgba(220,245,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 10, canvas.width, 16);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(0.55, 0.22, 1);
+  sprite.position.set(
+    wx - off.dx * 0.35 + (Math.random() - 0.5) * 0.12,
+    0.5 + (Math.random() - 0.5) * 0.18,
+    wz - off.dy * 0.35 + (Math.random() - 0.5) * 0.12
+  );
+  sprite.renderOrder = 17;
+  scene.add(sprite);
+  effects.push({ sprite, mat, tex, life: 0, maxLife: 9, riseTotal: 0, vx: -off.dx * 0.03, vz: -off.dy * 0.03 });
 }
 
 function spawnStarBurst(tx, ty) {
@@ -2424,6 +2530,12 @@ function processEventFlags(f) {
     logEvent(`${f.name} — 상대와 부딪혔다! (튕겨나감, 나중에 클린치로 확장 예정)`, 'dash');
     f.justBumped = null;
   }
+  if (f.justCrashed) {
+    spawnEffect('crash', f.tx, f.ty);
+    spawnBigEmoji('💫', f.tx, f.ty, { life: 24, size: 1.3, rise: 0.2 });
+    logEvent(`${f.name} — 질주하다 벽에 그대로 처박혔다!! (기절 ${f.hitstunFrames}f)`, 'hit');
+    f.justCrashed = null;
+  }
   if (f.justDashed) {
     spawnEffect('dash', f.justDashed.fromTx, f.justDashed.fromTy);
     logEvent(`${f.name} — 대쉬! (2칸 이동)`, 'dash');
@@ -2510,8 +2622,8 @@ function tick() {
   if (p1.state === 'Clinch' || p2.state === 'Clinch') {
     updateClinch(p1, p2); // 클린치는 둘을 함께 진행시키는 링크 상태라 따로 처리한다
   } else {
-    updateFighter(p1);
-    updateFighter(p2);
+    updateFighter(p1, p2);
+    updateFighter(p2, p1);
   }
   updateGuardBlend(p1);
   updateGuardBlend(p2);
