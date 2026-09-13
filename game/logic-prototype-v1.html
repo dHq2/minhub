@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>이동/전투 로직 프로토타입 v1</title>
+<style>
+  body { background:#1b1b1f; color:#eee; font-family: "Malgun Gothic", sans-serif; text-align:center; }
+  canvas { background:#222; border:2px solid #555; margin-top:10px; }
+  #hud { display:flex; justify-content:center; gap:40px; margin-top:10px; font-size:14px; }
+  .panel { text-align:left; background:#2a2a30; padding:10px 16px; border-radius:6px; min-width:220px; }
+  .panel h3 { margin:0 0 6px; }
+  #help { margin-top:14px; font-size:13px; color:#aaa; }
+  .p1 { color:#7fc7ff; }
+  .p2 { color:#ff9d7f; }
+</style>
+</head>
+<body>
+<h2>타일 이동 + 전투 로직 프로토타입 <small>v1</small></h2>
+<canvas id="game" width="720" height="480"></canvas>
+<div id="hud">
+  <div class="panel"><h3 class="p1">P1 (파랑)</h3><div id="p1info"></div></div>
+  <div class="panel"><h3 class="p2">P2 (주황)</h3><div id="p2info"></div></div>
+</div>
+<div id="help">
+  P1: 방향키 이동 (대각선은 두 키 6프레임 이내 동시입력), 같은 방향키 2연타 = 대쉬 &nbsp;|&nbsp; / = 기본공격(스턴) &nbsp;·&nbsp; . = 밀치기(스턴+넉백)<br>
+  P2: WASD 이동, 대각선/대쉬 동일 규칙 &nbsp;|&nbsp; 1 = 기본공격(스턴) &nbsp;·&nbsp; 2 = 밀치기(스턴+넉백)
+</div>
+
+<script>
+// ===== 설계 문서(docs/game-design-v1.md) 기반 로직 검증용 프로토타입 =====
+// 60프레임 고정 스텝 시뮬레이션. 실제 렌더 fps와 분리해 프레임 단위 판정을 정확히 재현.
+
+const TILE = 60;
+const COLS = 12, ROWS = 8;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+const DIRS = {
+  up:    {dx:0, dy:-1},
+  down:  {dx:0, dy:1},
+  left:  {dx:-1, dy:0},
+  right: {dx:1, dy:0},
+};
+// 대각 조합 방향키 -> 결과 방향
+function combineDir(a, b) {
+  const set = new Set([a,b]);
+  if (set.has('up') && set.has('left')) return 'upleft';
+  if (set.has('up') && set.has('right')) return 'upright';
+  if (set.has('down') && set.has('left')) return 'downleft';
+  if (set.has('down') && set.has('right')) return 'downright';
+  return null;
+}
+const DIAG_OFFSET = {
+  upleft: {dx:-1, dy:-1}, upright:{dx:1, dy:-1},
+  downleft:{dx:-1, dy:1}, downright:{dx:1, dy:1},
+};
+
+const MOVES = {
+  basic: { startup: 7, stun: 15, push: 0, label: '기본공격' },
+  push:  { startup: 7, stun: 20, push: 1, label: '밀치기' },
+};
+
+function makeFighter(opts) {
+  return {
+    name: opts.name,
+    color: opts.color,
+    tx: opts.tx, ty: opts.ty,           // 현재(도착) 타일 좌표
+    px: opts.tx * TILE + TILE/2,        // 렌더용 픽셀 좌표
+    py: opts.ty * TILE + TILE/2,
+    facing: opts.facing,                // 'up'|'down'|'left'|'right'|diag
+    framesPerTile: opts.framesPerTile ?? 10,
+    diagWindow: 6,                      // 대각 입력 결합 허용 프레임
+    dashWindow: 12,                     // 대쉬 판정용 동일 방향키 재입력 허용 프레임
+
+    state: 'Idle',                      // Idle | Move | Attack | Hit | Stun
+    stateFrame: 0,
+
+    moveFromX: 0, moveFromY: 0, moveToX: 0, moveToY: 0, moveDist: 1,
+
+    pendingDir: null, pendingDirFrame: 0, // 단일 방향키 입력 후 대각 결합 대기
+    lastDir: null, lastDirFrame: -9999,   // 대쉬 판정용 직전 입력 기록
+
+    attackMove: null,
+    hp: 100,
+    hitstunFrames: 0,
+    knockback: null,
+  };
+}
+
+function facingOffset(f) {
+  return DIAG_OFFSET[f] || DIRS[f];
+}
+
+// 입력 방향 하나가 들어왔을 때 이동 시작 처리 (Idle 상태에서만)
+function tryStartMove(f, dir) {
+  if (f.state !== 'Idle') return;
+
+  // 대쉬: 직전에 같은 방향 입력이 dashWindow 프레임 이내에 또 들어왔는가
+  const isDash = f.lastDir === dir && (frameCount - f.lastDirFrame) <= f.dashWindow;
+  f.lastDir = dir;
+  f.lastDirFrame = frameCount;
+
+  const off = DIRS[dir];
+  const dist = isDash ? 2 : 1;
+  const nx = clamp(f.tx + off.dx * dist, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy * dist, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+
+  startMove(f, nx, ny, dir);
+}
+
+function tryStartDiagMove(f, diag) {
+  if (f.state !== 'Idle') return;
+  const off = DIAG_OFFSET[diag];
+  const nx = clamp(f.tx + off.dx, 0, COLS-1);
+  const ny = clamp(f.ty + off.dy, 0, ROWS-1);
+  if (nx === f.tx && ny === f.ty) return;
+  startMove(f, nx, ny, diag);
+}
+
+function startMove(f, nx, ny, facing) {
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = nx; f.moveToY = ny;
+  f.facing = facing;
+  f.pendingDir = null;
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function startAttack(f, moveKey) {
+  if (f.state !== 'Idle' && f.state !== 'Move') return; // 이동 중에도 공격 가능(설계 문서 반영)
+  f.state = 'Attack';
+  f.stateFrame = 0;
+  f.attackMove = moveKey;
+}
+
+function applyHit(target, attacker, move) {
+  target.state = 'Hit';
+  target.stateFrame = 0;
+  target.hitstunFrames = move.stun;
+  if (move.push > 0) {
+    const off = facingOffset(attacker.facing);
+    target.knockback = {
+      fromX: target.tx, fromY: target.ty,
+      toX: clamp(target.tx + off.dx * move.push, 0, COLS-1),
+      toY: clamp(target.ty + off.dy * move.push, 0, ROWS-1),
+      frame: 0, duration: 8,
+    };
+  } else {
+    target.knockback = null;
+  }
+}
+
+function attackHitboxTile(f) {
+  const off = facingOffset(f.facing);
+  return { x: f.tx + off.dx, y: f.ty + off.dy };
+}
+
+// ===== 입력 처리 =====
+const keys = new Set();
+window.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  keys.add(e.key);
+});
+window.addEventListener('keyup', e => keys.delete(e.key));
+
+function handleInput(f, keymap) {
+  const pressedDirs = [];
+  for (const dir of ['up','down','left','right']) {
+    if (keys.has(keymap[dir])) pressedDirs.push(dir);
+  }
+
+  if (f.state === 'Idle') {
+    if (pressedDirs.length >= 2) {
+      const diag = combineDir(pressedDirs[0], pressedDirs[1]);
+      if (diag) { tryStartDiagMove(f, diag); f.pendingDir = null; }
+    } else if (pressedDirs.length === 1) {
+      const dir = pressedDirs[0];
+      if (f.pendingDir && f.pendingDir !== dir && (frameCount - f.pendingDirFrame) <= f.diagWindow) {
+        const diag = combineDir(f.pendingDir, dir);
+        if (diag) { tryStartDiagMove(f, diag); f.pendingDir = null; }
+      } else {
+        f.pendingDir = dir;
+        f.pendingDirFrame = frameCount;
+      }
+    }
+    // 대각 결합 대기시간 초과 시 단일 이동으로 확정
+    if (f.pendingDir && f.state === 'Idle' && (frameCount - f.pendingDirFrame) > f.diagWindow) {
+      tryStartMove(f, f.pendingDir);
+    }
+  }
+
+  if (keys.has(keymap.basic)) { startAttack(f, 'basic'); keys.delete(keymap.basic); }
+  if (keys.has(keymap.push))  { startAttack(f, 'push');  keys.delete(keymap.push); }
+}
+
+// ===== 프레임 업데이트 =====
+let frameCount = 0;
+
+function updateFighter(f) {
+  switch (f.state) {
+    case 'Idle':
+      break;
+
+    case 'Move': {
+      f.stateFrame++;
+      const t = Math.min(1, f.stateFrame / f.framesPerTile);
+      f.px = lerp(f.moveFromX, f.moveToX, t) * TILE + TILE/2;
+      f.py = lerp(f.moveFromY, f.moveToY, t) * TILE + TILE/2;
+      if (t >= 1) {
+        f.tx = f.moveToX; f.ty = f.moveToY;
+        f.state = 'Idle';
+        f.stateFrame = 0;
+      }
+      break;
+    }
+
+    case 'Attack': {
+      f.stateFrame++;
+      const move = MOVES[f.attackMove];
+      if (f.stateFrame === move.startup) {
+        // 판정 발생 프레임: 히트박스 생성 후 즉시 충돌 체크는 메인 루프에서 처리
+      }
+      if (f.stateFrame >= move.startup + 3) { // 판정 유지 3프레임 후 종료
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.attackMove = null;
+      }
+      break;
+    }
+
+    case 'Hit': {
+      f.stateFrame++;
+      if (f.knockback) {
+        const kb = f.knockback;
+        kb.frame++;
+        const t = Math.min(1, kb.frame / kb.duration);
+        f.px = lerp(kb.fromX, kb.toX, t) * TILE + TILE/2;
+        f.py = lerp(kb.fromY, kb.toY, t) * TILE + TILE/2;
+        if (t >= 1) { f.tx = kb.toX; f.ty = kb.toY; }
+      }
+      if (f.stateFrame >= f.hitstunFrames) {
+        f.state = 'Idle';
+        f.stateFrame = 0;
+        f.knockback = null;
+        f.px = f.tx * TILE + TILE/2;
+        f.py = f.ty * TILE + TILE/2;
+      }
+      break;
+    }
+  }
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function checkAttackHits(attacker, defender) {
+  if (attacker.state !== 'Attack') return;
+  const move = MOVES[attacker.attackMove];
+  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + 3;
+  if (!active) return;
+  if (defender.state === 'Hit') return; // 이미 히트스턴 중이면 중복 판정 방지
+  const box = attackHitboxTile(attacker);
+  if (box.x === defender.tx && box.y === defender.ty) {
+    applyHit(defender, attacker, move);
+  }
+}
+
+// ===== 초기화 =====
+const p1 = makeFighter({ name:'P1', color:'#7fc7ff', tx:2, ty:4, facing:'right' });
+const p2 = makeFighter({ name:'P2', color:'#ff9d7f', tx:9, ty:4, facing:'left' });
+
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', basic:'/', push:'.' };
+const p2keys = { up:'w', down:'s', left:'a', right:'d', basic:'1', push:'2' };
+
+function resetIfNeeded() {
+  if (keys.has('r')) {
+    Object.assign(p1, makeFighter({ name:'P1', color:'#7fc7ff', tx:2, ty:4, facing:'right' }));
+    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9d7f', tx:9, ty:4, facing:'left' }));
+  }
+}
+
+// ===== 고정 60fps 스텝 루프 =====
+const STEP = 1000/60;
+let acc = 0, last = performance.now();
+
+function loop(now) {
+  acc += now - last;
+  last = now;
+  while (acc >= STEP) {
+    tick();
+    acc -= STEP;
+  }
+  render();
+  requestAnimationFrame(loop);
+}
+
+function tick() {
+  frameCount++;
+  resetIfNeeded();
+  handleInput(p1, p1keys);
+  handleInput(p2, p2keys);
+  updateFighter(p1);
+  updateFighter(p2);
+  checkAttackHits(p1, p2);
+  checkAttackHits(p2, p1);
+  updateHud();
+}
+
+function updateHud() {
+  document.getElementById('p1info').innerHTML = fighterInfo(p1);
+  document.getElementById('p2info').innerHTML = fighterInfo(p2);
+}
+function fighterInfo(f) {
+  return `state: <b>${f.state}</b> (${f.stateFrame}f)<br>tile: (${f.tx},${f.ty})<br>facing: ${f.facing}<br>hitstun 남음: ${f.state==='Hit' ? (f.hitstunFrames - f.stateFrame) : '-'}`;
+}
+
+function render() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // 그리드
+  ctx.strokeStyle = '#3a3a42';
+  for (let x=0;x<=COLS;x++){ ctx.beginPath(); ctx.moveTo(x*TILE,0); ctx.lineTo(x*TILE,ROWS*TILE); ctx.stroke(); }
+  for (let y=0;y<=ROWS;y++){ ctx.beginPath(); ctx.moveTo(0,y*TILE); ctx.lineTo(COLS*TILE,y*TILE); ctx.stroke(); }
+
+  // 활성 히트박스 표시
+  drawHitboxIfActive(p1);
+  drawHitboxIfActive(p2);
+
+  drawFighter(p1);
+  drawFighter(p2);
+}
+
+function drawHitboxIfActive(f) {
+  if (f.state !== 'Attack') return;
+  const move = MOVES[f.attackMove];
+  const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + 3;
+  if (!active) return;
+  const box = attackHitboxTile(f);
+  ctx.fillStyle = 'rgba(255,60,60,0.5)';
+  ctx.fillRect(box.x*TILE, box.y*TILE, TILE, TILE);
+}
+
+function drawFighter(f) {
+  ctx.save();
+  ctx.translate(f.px, f.py);
+  if (['upleft','upright','downleft','downright'].includes(f.facing)) {
+    const angle = {upright:45, downright:135, downleft:225, upleft:315}[f.facing] * Math.PI/180;
+    ctx.rotate(angle);
+  }
+  ctx.fillStyle = f.state === 'Hit' ? '#ffffff' : f.color;
+  ctx.fillRect(-TILE*0.3, -TILE*0.3, TILE*0.6, TILE*0.6);
+  ctx.restore();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(f.name, f.px, f.py - TILE*0.4);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
