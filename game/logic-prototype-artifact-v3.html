@@ -199,6 +199,7 @@
         앞으로 옮겨서 해결. 브라우저 콘솔 없이도 걸러낼 수 있도록, 발행 전 Node로 스크립트를
         실제 로드해보는 런타임 검증 단계를 추가했다(기존의 문법 검사만으로는 이런 종류의
         초기화 순서 버그를 못 잡는다).
+  v8.4: 기본 게이지 충전 프레임을 18f로 고정(기존엔 framesPerTile에서 파생된 값이었음).
 -->
 <style>
   :root{
@@ -542,7 +543,7 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.3</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v8.4</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
   <p class="sub"><b>v8.2.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸)가 나가고, 그 도중 같은 방향을 한 번 더 누르면 <b>질주</b>로 전환돼 멈추지 않고 점점 가속하며 상대에게 붙거나 벽에 부딪힐 때까지 큼직하게 뛰어 달립니다 — 후퇴할 땐 상대를 계속 바라본 채 뚜렷이 다른 모션으로 물러나고, 가까워지면 상체를 깊이 숙입니다. 질주 중에만 <b>K</b>(슬라이딩) / <b>O</b>(숄더배쉬)로 캔슬할 수 있고, 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어집니다. 벽에 부딪히면 넘어져 기절해요. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 입력한 뒤 공격키를 누르면 발동합니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
@@ -776,7 +777,7 @@ function makeFighter(opts) {
 
     // --- ATB ---
     atbGauge: 0,
-    atbChargeFrames: framesPerTile * (10 / 3) - 6, // 이 프레임만큼 지나면 게이지가 가득 참 (0.56초 대비 0.1초 더 빠르게)
+    atbChargeFrames: opts.atbChargeFrames ?? 18, // 이 프레임만큼 지나면 게이지가 가득 참 — 기본 18f로 고정
     hitLandedThisAttack: false,
 
     // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
