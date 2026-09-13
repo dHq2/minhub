@@ -17,6 +17,9 @@
   v3.1: 공격 시 정면 판정만 보던 타겟팅 문제 수정 — 인근 8칸(상하좌우+대각선 인접 타일, 체스 킹 이동 범위)
         안에 상대가 있으면 자동으로 그 방향을 바라보고 그 타일에 판정을 생성. 범위 밖이면 헛침.
         ATB 충전 속도를 0.1초 더 빠르게 조정.
+  v3.2: 공격 시 상대를 바라보는 것은 거리와 무관하게 항상 적용 (맵 끝에서 공격해도 중앙의 적 쪽을
+        향함). 실제로 맞는지는 여전히 인접(1칸) 여부로만 결정 — "항상 상대를 조준하지만, 맞으려면
+        가까워야 한다"는 예측 가능한 규칙으로 정리.
 -->
 <style>
   :root{
@@ -297,9 +300,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.1 · ATB</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.2 · ATB</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.1: 인근 8칸 자동 타겟팅</b>으로 정면이 어긋나 헛치던 문제를 고쳤습니다.</p>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.2: 공격은 거리와 무관하게 항상 상대 쪽을 바라보고 발동</b>되고(예측 가능성), 실제로 맞으려면 인접(1칸)해야 합니다.</p>
 </div>
 
 <div class="rig">
@@ -354,7 +357,7 @@
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능</div>
-    <div class="keyline">공격(스턴) <kbd>U</kbd> — 인근 8칸(인접 타일) 이내 상대를 자동으로 조준</div>
+    <div class="keyline">공격(스턴) <kbd>U</kbd> — 거리 상관없이 항상 상대를 조준, 맞으려면 인접(1칸)해야 함</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -478,9 +481,9 @@ function startMove(f, nx, ny, facing) {
   f.pending = null;
 }
 
-const ATTACK_RANGE = 1; // 인근 8칸(상하좌우+대각선 인접 타일)까지만 자동 타겟팅
+const ATTACK_RANGE = 1; // 실제로 맞으려면(=AI가 공격을 선택하려면) 인근 8칸 이내여야 함
 
-// 사방 8방향 직선상에, 범위(maxRange 칸) 안에 target이 있는지 확인
+// target이 인근 8칸(상하좌우+대각선 인접 타일) 이내인지 확인 — AI가 "지금 때릴지 접근할지" 판단할 때 사용
 function findTargetInRange(f, target, maxRange) {
   const dx = target.tx - f.tx, dy = target.ty - f.ty;
   if (dx === 0 && dy === 0) return null;
@@ -493,10 +496,12 @@ function findTargetInRange(f, target, maxRange) {
 
 function startAttack(f, moveKey, target) {
   if (!isReady(f)) return;
-  f.attackRangeDist = 1;
+  f.attackRangeDist = 1; // 기본공격은 항상 인접 1칸 판정 (사거리 개념 없음)
   if (target) {
-    const lock = findTargetInRange(f, target, ATTACK_RANGE);
-    if (lock) { f.facing = lock.dir; f.attackRangeDist = lock.dist; }
+    const dx = target.tx - f.tx, dy = target.ty - f.ty;
+    // 거리와 무관하게 항상 상대가 있는 방향을 바라보고 공격한다.
+    // 실제로 맞는지는 (인접해 있는지) 히트박스 판정에서 자연스럽게 결정됨 — 이게 예측 가능성을 준다.
+    if (dx !== 0 || dy !== 0) f.facing = dirTowards(dx, dy);
   }
   f.atbGauge = 0; // 행동 = 턴 소모
   f.state = 'Attack';
