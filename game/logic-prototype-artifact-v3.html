@@ -427,7 +427,7 @@ function makeFighter(opts) {
 
     // --- ATB ---
     atbGauge: 0,
-    atbChargeFrames: framesPerTile * 30, // 이 프레임만큼 지나면 게이지가 가득 참 (기존 대비 3배 느리게 충전)
+    atbChargeFrames: framesPerTile * (10 / 3), // 이 프레임만큼 지나면 게이지가 가득 참 (최초 1.7초 대비 3배 빠르게 충전)
     hitLandedThisAttack: false,
 
     // --- 프레젠테이션/로그 레이어에 알리는 1틱짜리 이벤트 플래그 ---
