@@ -60,6 +60,13 @@
         - 신규 필살기 "공참각" 추가: 강공키(I)를 따다닥 3연타하면 게이지/프레임 대기 없이 즉시
           발동 — 크게 뛰어올라 정점에서 잠깐 멈췄다가(슬로우모션) 다리를 아래로 크게 내리찍는
           강력한 일격. 명중 시 전용 대형 이펙트와 별 폭발로 확인된다.
+  v5.1: 두 가지 수정.
+        - 이동 입력 버퍼가 너무 오래 살아있어서 손을 뗀 지 한참 지난 뒤에도 한 칸씩 더 가버리는
+          문제 수정 — 버퍼 유지 시간을 MOVE_BUFFER_FRAMES(기본 8프레임)로 짧게 제한.
+        - 필살기 "공참각"을 원래 의도대로 재구현: 3연타가 아니라 "대쉬 직후 강공"으로 발동하는
+          대쉬 캔슬 콤보다 (기본공격 버전인 대쉬 강타와 같은 구조, 강공 버전). 대쉬로 2칸 이동한
+          뒤 착지 시점(또는 도중)에 강공을 누르면 한 칸 더 전진하며 내리찍어 총 3칸을 이동하고,
+          대신 후딜이 훨씬 크다.
 -->
 <style>
   :root{
@@ -402,9 +409,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v5.0</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v5.1</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v5.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 그 자리에서 막혀 튕겨 돌아오고(클린치 로직의 자리), 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 강공은 정면+좌우 3칸을 부채꼴로 때리고, 강공키를 <b>따다닥 3연타</b>하면 크게 뛰어올라 내리찍는 필살기 "공참각"이 나갑니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v5.1.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 그 자리에서 막혀 튕겨 돌아오고(클린치 로직의 자리), 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 강공은 정면+좌우 3칸을 부채꼴로 때리고, <b>대쉬 직후 강공을 누르면</b> 한 칸 더 전진하며 내리찍는 필살기 "공참각"(총 3칸 이동, 큰 후딜)이 나갑니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -468,7 +475,7 @@
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
     <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
-    <div class="keyline"><kbd>I</kbd> 따다닥 3연타 → <b style="color:#ff6b5e;">필살기 공참각</b> (도약 내리찍기, 큰 스턴)</div>
+    <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (한 칸 더 전진, 총 3칸+도약 내리찍기, 큰 후딜)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -491,6 +498,7 @@
 
 const COLS = 12, ROWS = 8;
 const ATB_MAX = 100;
+let MOVE_BUFFER_FRAMES = 8; // 이동 입력이 버퍼로 살아있는 최대 프레임 (너무 길면 손을 뗀 뒤에도 계속 가는 느낌이 남)
 
 const DIRS = {
   up:    {dx:0, dy:-1},
@@ -518,7 +526,7 @@ const MOVES = {
   push:       { startup: 10, active: 3, recovery: 6,  stun: 14, push: 1, label: '밀치기' },
   dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
-  ultimate:   { startup: 30, active: 6, recovery: 24, stun: 45, push: 3, label: '공참각', ultimate: true },
+  ultimate:   { startup: 24, active: 6, recovery: 32, stun: 45, push: 3, label: '공참각', ultimate: true },
 };
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -550,8 +558,8 @@ function makeFighter(opts) {
     dashArm: null,    // 대쉬가 예약된 방향
     dashActive: false,     // 지금 대쉬 이동 애니메이션 재생 중인지
     dashLandedFrame: -9999, // 대쉬가 착지한 프레임 (대쉬 콤보 판정용)
-    bufferDashAttack: false, // 대쉬가 끝나기 전에 공격키를 눌러서 예약해둔 상태
-    fireDashAttackNow: false, // 착지 시점에 예약된 대쉬 강타를 발동하라는 1틱 신호
+    bufferedAttackKey: null, // 대쉬가 끝나기 전에 눌러서 예약해둔 공격키 ('basic'|'heavy'|null)
+    fireDashAttackNow: false, // 착지 시점에 예약된 공격을 발동하라는 1틱 신호
 
     attackMove: null,
     hitstunFrames: 0,
@@ -586,8 +594,7 @@ function makeFighter(opts) {
     bumpUntil: -9999,   // 제자리에서 움찔하는 연출이 끝나는 프레임 (0칸 이동 시)
     justBumped: null,   // { x, y } 프레젠테이션 레이어용 1틱 이벤트
 
-    // --- 강공 3연타(따다닥) 필살기 ---
-    heavyTapTimes: [], // 최근 강공키 입력 프레임 기록
+    attackLungeFrom: null, // 필살기 시전 시 "원래 있던 자리" — 그 자리에서 한 칸 전진하며 타격하는 연출용
   };
 }
 
@@ -681,7 +688,7 @@ let DASH_COMBO_WINDOW = 20; // 대쉬 착지 후 이 프레임(약 0.33초) 안�
 function startAttack(f, moveKey, target) {
   if (f.state !== 'Idle') return;
 
-  // 대쉬 직후 짧은 콤보 창 안이면, 어떤 공격키를 눌렀든 "대쉬 강타"로 승격된다.
+  // 대쉬 직후 짧은 콤보 창 안이면 승격된다: 기본공격 -> 대쉬 강타, 강공 -> 필살기 "공참각".
   const dashCombo = (frameCount - f.dashLandedFrame) <= DASH_COMBO_WINDOW;
 
   f.attackRangeDist = 1; // 기본공격/강공은 항상 인접 1칸 판정 (사거리 개념 없음)
@@ -692,7 +699,18 @@ function startAttack(f, moveKey, target) {
     if (dx !== 0 || dy !== 0) f.facing = dirTowards(dx, dy);
   }
 
-  const finalMoveKey = dashCombo ? 'dashAttack' : moveKey;
+  let finalMoveKey = moveKey;
+  if (dashCombo) finalMoveKey = (moveKey === 'heavy') ? 'ultimate' : 'dashAttack';
+
+  f.attackLungeFrom = null;
+  if (finalMoveKey === 'ultimate') {
+    // 공참각: 대쉬(2칸) + 이 한 칸 전진 = 총 3칸을 이동하며 타격한다.
+    f.attackLungeFrom = { x: f.tx, y: f.ty };
+    const off = facingOffset(f.facing);
+    f.tx = clamp(f.tx + off.dx, 0, COLS - 1);
+    f.ty = clamp(f.ty + off.dy, 0, ROWS - 1);
+  }
+
   f.state = 'Attack';
   f.stateFrame = 0;
   f.attackMove = finalMoveKey;
@@ -789,11 +807,12 @@ function processMovementInput(f, currentDirs, other) {
     }
   }
 
-  // 이동 입력은 누적(버퍼링)한다 — 지금 이동 중이거나 게이지가 아직 안 찼어도, 방향키를 눌러두면
-  // (특히 이동이 끝나갈 무렵 눌러도) 그 의도가 남아있다가 게이지가 차는 순간 바로 발동된다.
+  // 이동 입력은 짧게 누적(버퍼링)한다 — 이동이 끝나갈 무렵 눌러두면 게이지가 차는 순간 바로
+  // 발동되지만, 너무 오래 전에 뗀 입력까지 살아있으면 안 눌렀는데도 계속 이동하는 것처럼 느껴지므로
+  // MOVE_BUFFER_FRAMES가 지나면 버린다.
   if (currentDirs.length >= 2) {
     const diag = combineDir(currentDirs[0], currentDirs[1]);
-    if (diag) { f.bufferedMove = { diag }; f.pending = null; }
+    if (diag) { f.bufferedMove = { diag, frame: frameCount }; f.pending = null; }
   } else if (currentDirs.length === 1) {
     const dir = currentDirs[0];
     const isNewPress = !prevHeld.has(dir);
@@ -802,14 +821,18 @@ function processMovementInput(f, currentDirs, other) {
       f.pending = { dir, frame: frameCount };
     } else if (f.pending && f.pending.dir === dir) {
       if (frameCount - f.pending.frame > f.diagWindow) {
-        f.bufferedMove = { dir };
+        f.bufferedMove = { dir, frame: frameCount };
         f.pending = null;
       }
     } else if (!f.pending) {
-      f.bufferedMove = { dir };
+      f.bufferedMove = { dir, frame: frameCount };
     }
   } else {
     f.pending = null;
+  }
+
+  if (f.bufferedMove && frameCount - f.bufferedMove.frame > MOVE_BUFFER_FRAMES) {
+    f.bufferedMove = null; // 너무 오래된 버퍼는 폐기
   }
 
   if (!isReady(f)) return; // 실제 발동은 게이지가 찼을 때만
@@ -822,13 +845,10 @@ function processMovementInput(f, currentDirs, other) {
   }
 }
 
-let HEAVY_COMBO_WINDOW = 14; // 강공키를 이 프레임 안에 연속으로 눌러야 콤보로 이어붙는다
-const ULTIMATE_TAPS = 3;       // 따다닥(3연타)이면 필살기
-
 // 대쉬 도중이면 예약(버퍼)해뒀다가 착지 즉시 발동, 아니면 바로 시전 시도.
 function tryFireAttack(f, moveKey, target) {
   if (f.state === 'Move' && f.dashActive) {
-    f.bufferDashAttack = true;
+    f.bufferedAttackKey = moveKey; // 어떤 공격키를 눌렀는지 기억해뒀다가 착지 즉시 그걸로 발동
   } else {
     startAttack(f, moveKey, target);
   }
@@ -849,19 +869,10 @@ function handlePlayerInput(f, keymap, target) {
     tryFireAttack(f, 'basic', target);
   }
 
+  // 강공도 동일한 대쉬 캔슬 창의 대상이다 — 대쉬 직후(DASH_COMBO_WINDOW 안) 강공을 누르면
+  // startAttack에서 자동으로 필살기 "공참각"으로 승격된다.
   if (keys.has(keymap.heavy)) {
     keys.delete(keymap.heavy);
-    f.heavyTapTimes.push(frameCount);
-  }
-  // 오래된 탭 기록은 정리
-  f.heavyTapTimes = f.heavyTapTimes.filter(t => frameCount - t <= HEAVY_COMBO_WINDOW * (ULTIMATE_TAPS - 1));
-
-  if (f.heavyTapTimes.length >= ULTIMATE_TAPS) {
-    f.heavyTapTimes = [];
-    tryFireAttack(f, 'ultimate', target); // 따다닥! 필살기
-  } else if (f.heavyTapTimes.length > 0 && frameCount - f.heavyTapTimes[0] > HEAVY_COMBO_WINDOW) {
-    // 콤보 대기시간을 넘기면 그냥 일반 강공으로 확정
-    f.heavyTapTimes = [];
     tryFireAttack(f, 'heavy', target);
   }
 }
@@ -965,7 +976,7 @@ function updateFighter(f) {
         if (f.dashActive) {
           f.dashLandedFrame = frameCount;
           f.dashActive = false;
-          if (f.bufferDashAttack) { f.bufferDashAttack = false; f.fireDashAttackNow = true; }
+          if (f.bufferedAttackKey) f.fireDashAttackNow = true;
         }
 
         if (f.pendingBump) {
@@ -999,6 +1010,7 @@ function updateFighter(f) {
         f.state = 'Idle';
         f.stateFrame = 0;
         f.attackMove = null;
+        f.attackLungeFrom = null;
       }
       break;
     }
@@ -1049,6 +1061,13 @@ function getRenderTile(f) {
     const t = Math.min(1, f.knockback.frame / f.knockback.duration);
     return { x: lerp(f.knockback.fromX, f.knockback.toX, t), y: lerp(f.knockback.fromY, f.knockback.toY, t) };
   }
+  if (f.state === 'Attack' && f.attackLungeFrom) {
+    // 필살기: 도약 상승 구간(riseEnd) 동안 원래 있던 자리에서 착지 자리로 부드럽게 전진한다.
+    const move = MOVES[f.attackMove];
+    const riseEnd = Math.max(1, Math.round(move.startup * 0.55));
+    const t = Math.min(1, f.stateFrame / riseEnd);
+    return { x: lerp(f.attackLungeFrom.x, f.tx, t), y: lerp(f.attackLungeFrom.y, f.ty, t) };
+  }
   return { x: f.tx, y: f.ty };
 }
 
@@ -1074,6 +1093,7 @@ const FRAME_SCHEMA = [
     { label: '게이지 충전 프레임', get: () => p1.atbChargeFrames, set: v => { p1.atbChargeFrames = v; p2.atbChargeFrames = v; } },
     { label: '대각 결합 허용', get: () => p1.diagWindow, set: v => { p1.diagWindow = v; p2.diagWindow = v; } },
     { label: '대쉬 연타 허용', get: () => p1.dashWindow, set: v => { p1.dashWindow = v; p2.dashWindow = v; } },
+    { label: '이동 입력 버퍼', get: () => MOVE_BUFFER_FRAMES, set: v => MOVE_BUFFER_FRAMES = v },
   ]},
   { group: '기본공격 (게이지 무관)', rows: [
     { label: '발동(startup)', get: () => MOVES.basic.startup, set: v => MOVES.basic.startup = v },
@@ -1100,12 +1120,11 @@ const FRAME_SCHEMA = [
     { label: '경직(stun)', get: () => MOVES.dashAttack.stun, set: v => MOVES.dashAttack.stun = v },
     { label: '착지 후 콤보창', get: () => DASH_COMBO_WINDOW, set: v => DASH_COMBO_WINDOW = v },
   ]},
-  { group: '필살기(따다닥 강공)', rows: [
+  { group: '필살기 공참각 (대쉬 후 강공)', rows: [
     { label: '발동(startup)', get: () => MOVES.ultimate.startup, set: v => MOVES.ultimate.startup = v },
     { label: '판정 유지(active)', get: () => MOVES.ultimate.active, set: v => MOVES.ultimate.active = v },
     { label: '후딜(recovery)', get: () => MOVES.ultimate.recovery, set: v => MOVES.ultimate.recovery = v },
     { label: '경직(stun)', get: () => MOVES.ultimate.stun, set: v => MOVES.ultimate.stun = v },
-    { label: '연타 인식창', get: () => HEAVY_COMBO_WINDOW, set: v => HEAVY_COMBO_WINDOW = v },
   ]},
   { group: '방어', rows: [
     { label: '방어 성공 경직', get: () => BLOCK_STUN_FRAMES, set: v => BLOCK_STUN_FRAMES = v },
@@ -1924,8 +1943,8 @@ function tick() {
   updateGuardBlend(p2);
 
   // 대쉬 도중에 미리 눌러둔 공격이 있다면, 착지한 이 프레임에 바로 대쉬 강타로 발동시킨다.
-  if (p1.fireDashAttackNow) { p1.fireDashAttackNow = false; startAttack(p1, 'basic', p2); }
-  if (p2.fireDashAttackNow) { p2.fireDashAttackNow = false; startAttack(p2, 'basic', p1); }
+  if (p1.fireDashAttackNow) { p1.fireDashAttackNow = false; const k = p1.bufferedAttackKey; p1.bufferedAttackKey = null; startAttack(p1, k, p2); }
+  if (p2.fireDashAttackNow) { p2.fireDashAttackNow = false; const k = p2.bufferedAttackKey; p2.bufferedAttackKey = null; startAttack(p2, k, p1); }
 
   checkAttackHits(p1, p2);
   checkAttackHits(p2, p1);
