@@ -126,6 +126,14 @@
         인식된 순간 "붕권 발동!" 확인 이펙트가 뜨고, 실제로 맞으면 화려한 배너+스타버스트+큰 주먹
         이모지가 함께 터진다. 방향 입력은 실제 이동/게이지와 완전히 무관하게 순수 키 입력 이력만
         보고 판정한다(dirEventBuffer). 프레임표에 전용 그룹을 추가해 실시간으로 조정 가능.
+  v7.1: 대쉬/붕권 모두 커맨드를 입력하는 과정에서 그 방향으로 "진짜 이동"이 먼저 나가버리는 문제
+        수정 — 더블탭의 첫 탭이나 붕권의 아래/아래대각 입력이, 게이지가 이미 차 있으면 실제 이동으로
+        즉시 발동돼버려서 의도한 커맨드 대신 엉뚱한 한 칸(또는 대각선) 이동이 먼저 나가고 있었다.
+        이제 새로 눌린 방향 입력은 곧바로 실제 이동으로 확정하지 않고, 더블탭(dashWindow)이나
+        붕권 커맨드(MOTION_INPUT_WINDOW)로 이어질 가능성이 있는 동안은 잠깐 붙잡아뒀다가, 그 안에
+        아무 커맨드도 완성되지 않으면 그제서야 원래 의도대로 한 칸 이동을 내보낸다. 이미 대쉬로
+        확정된 입력(dashArm 유효)은 더 기다릴 필요가 없으므로 즉시 발동한다. 붕권 스펙도 1칸
+        넉백·2초 기절로 조정.
 -->
 <style>
   :root{
@@ -469,9 +477,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v7.0</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v7.1</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v7.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타(최장 사거리 3칸) 또는 필살기 "공참각"이 나가는데, 공참각은 대쉬로도 아직 안 닿았을 때만 한 칸 더 파고들어 붙어 때려(최장 4칸) 원거리 공참각과 근거리 근참각이 하나로 이어집니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 3칸 넉백+3초 기절을 줍니다. 콤보/커맨드는 인식된 순간 바로 전용 텍스트로 확인됩니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v7.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타(최장 사거리 3칸) 또는 필살기 "공참각"이 나가는데, 공참각은 대쉬로도 아직 안 닿았을 때만 한 칸 더 파고들어 붙어 때려(최장 4칸) 원거리 공참각과 근거리 근참각이 하나로 이어집니다. 신규 커맨드 기술 <b>"붕권"</b>은 방향키를 ↓→↘→→(또는 반대쪽)로 짧게 입력한 뒤 공격키를 누르면 발동 — 한 칸 파고들어 강한 정권을 내지르고 1칸 넉백+2초 기절을 줍니다. 콤보/커맨드는 인식된 순간 바로 전용 텍스트로 확인됩니다. <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -537,7 +545,7 @@
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
     <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (안 닿았으면 한 칸 더 파고들어 붙고, 이미 인접하면 그 자리에서 근참각으로, 최장 4칸 도약 내리찍기, 큰 후딜)</div>
-    <div class="keyline">방향키 <kbd>↓</kbd>→<kbd>↘</kbd>→<kbd>→</kbd> (또는 <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd>) 이어서 <kbd>U</kbd> → <b style="color:#ffd34d;">붕권</b> (한 칸 파고들어 정권지르기, 3칸 넉백, 3초 기절, 큰 후딜)</div>
+    <div class="keyline">방향키 <kbd>↓</kbd>→<kbd>↘</kbd>→<kbd>→</kbd> (또는 <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd>) 이어서 <kbd>U</kbd> → <b style="color:#ffd34d;">붕권</b> (한 칸 파고들어 정권지르기, 1칸 넉백, 2초 기절, 큰 후딜)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -608,6 +616,21 @@ function checkBoonggwonInput(f) {
   return false;
 }
 
+// 지금까지의 입력이 붕권 시퀀스의 (완성 포함) 앞부분과 일치하는지 — 실제로 아직 이동을 확정 짓지
+// 말고 좀 더 기다려봐야 하는지 판단하는 데 쓴다("의도한 입력 그대로 발동"을 위해 필요).
+function boonggwonPrefixMatch(buf) {
+  for (const seq of BOONGGWON_SEQUENCES) {
+    for (let len = 1; len <= seq.length; len++) {
+      if (buf.length < len) continue;
+      const tail = buf.slice(-len);
+      if (tail.every((e, i) => e.dir === seq[i]) && (frameCount - tail[0].frame) <= MOTION_INPUT_WINDOW) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // 모든 공격은 startup(발동 전 준비) -> active(판정 유지) -> recovery(판정 없이 못 움직임) 3단계.
 // 이 값들은 우측 "프레임표" 패널에서 실시간으로도 조정할 수 있다.
 const MOVES = {
@@ -616,7 +639,7 @@ const MOVES = {
   dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
   ultimate:   { startup: 24, active: 6, recovery: 32, stun: 45, push: 3, label: '공참각', ultimate: true },
-  boonggwon:  { startup: 10, active: 4, recovery: 24, stun: 180, push: 3, label: '붕권', boonggwon: true },
+  boonggwon:  { startup: 10, active: 4, recovery: 24, stun: 120, push: 1, label: '붕권', boonggwon: true },
 };
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -641,6 +664,8 @@ function makeFighter(opts) {
     prevHeld: new Set(),
     pending: null,
     bufferedMove: null, // 이동 게이지가 찰 때까지 대기 중인 이동 의도 ({dir} 또는 {diag})
+    moveHoldUntil: 0, // 이 프레임 전에는 게이지가 다 찼어도 실제 이동을 발동시키지 않는다 — 더블탭(대쉬)이나
+                       // 붕권 커맨드 도중 입력이 그대로 "진짜 이동"으로 새 나가버리는 걸 막는 유예시간.
 
     // --- 대쉬(연타 감지) ---
     // ATB 타이밍과 무관하게, 방향키를 짧게 두 번 누르면 다음 이동이 대쉬로 예약된다.
@@ -817,6 +842,12 @@ let DASH_ARM_TTL = 45; // 더블탭으로 예약된 대쉬가 게이지 충전 �
 // 게이지가 얼마나 찼든 상관없이 공격할 수 있다.
 function startAttack(f, moveKey, target) {
   if (f.state !== 'Idle') return;
+
+  // 공격이 확정된 순간, 대기 중이던 이동 예약은 취소한다 — 안 그러면 공격 후딜이 끝나고
+  // Idle로 돌아왔을 때 한참 전에 눌러뒀던 이동이 뒤늦게 튀어나올 수 있다.
+  f.bufferedMove = null;
+  f.pending = null;
+  f.moveHoldUntil = 0;
 
   // 대쉬 직후 짧은 콤보 창 안이면 승격된다: 기본공격 -> 대쉬 강타, 강공 -> 필살기 "공참각".
   const dashCombo = (frameCount - f.dashLandedFrame) <= DASH_COMBO_WINDOW;
@@ -1062,7 +1093,13 @@ function processMovementInput(f, currentDirs, other) {
   if (currentDirs.length >= 2) {
     // 두 방향키가 실제로 동시에 눌려 있는 경우 — 언제나 대각선으로 처리.
     const diag = combineDir(currentDirs[0], currentDirs[1]);
-    if (diag) { f.bufferedMove = { diag, frame: frameCount }; f.pending = null; }
+    if (diag) {
+      f.bufferedMove = { diag, frame: frameCount };
+      f.pending = null;
+      // 이 대각선이 붕권 커맨드의 일부(예: 아래대각)일 수 있다면, 나머지 입력이 끝날 때까지
+      // 실제 이동으로 확정 짓지 않고 기다린다 — "의도한 입력 그대로" 나가게 하기 위함.
+      f.moveHoldUntil = boonggwonPrefixMatch(f.dirEventBuffer) ? frameCount + MOTION_INPUT_WINDOW : 0;
+    }
   } else if (currentDirs.length === 1) {
     const dir = currentDirs[0];
     const isNewPress = !prevHeld.has(dir);
@@ -1075,23 +1112,38 @@ function processMovementInput(f, currentDirs, other) {
       if (combined) {
         f.bufferedMove = { diag: combined, frame: frameCount };
         f.pending = null;
+        f.moveHoldUntil = boonggwonPrefixMatch(f.dirEventBuffer) ? frameCount + MOTION_INPUT_WINDOW : 0;
       } else {
         f.bufferedMove = { dir, frame: frameCount };
         f.pending = { dir, frame: frameCount };
+        // 이 입력이 실제로 "그냥 한 칸 이동"이 맞는지 아직 확실치 않다 — 곧바로 같은 방향을 한 번
+        // 더 눌러 대쉬가 될 수도 있고(dashWindow), 붕권 커맨드의 시작(아래)일 수도 있다
+        // (MOTION_INPUT_WINDOW, 더 김). 이미 대쉬로 확정된 입력이라면 더 기다릴 필요가 없다.
+        const dashArmedNow = f.dashArm === dir && (frameCount - f.dashArmFrame) <= DASH_ARM_TTL;
+        if (dashArmedNow) {
+          f.moveHoldUntil = 0;
+        } else if (boonggwonPrefixMatch(f.dirEventBuffer)) {
+          f.moveHoldUntil = frameCount + MOTION_INPUT_WINDOW;
+        } else {
+          f.moveHoldUntil = frameCount + f.dashWindow;
+        }
       }
     } else if (!f.bufferedMove) {
-      // 계속 누르고 있는 동안 이전 버퍼가 이미 소비됐다면, 끊기지 않게 다시 채워 넣는다.
+      // 계속 누르고 있는 동안 이전 버퍼가 이미 소비됐다면, 끊기지 않게 다시 채워 넣는다 —
+      // 계속 눌려 있던 키는 더블탭/커맨드의 시작일 수 없으므로 지체 없이 바로 이동한다.
       f.bufferedMove = { dir, frame: frameCount };
+      f.moveHoldUntil = 0;
     }
   } else {
     f.pending = null;
   }
 
-  if (f.bufferedMove && frameCount - f.bufferedMove.frame > MOVE_BUFFER_FRAMES) {
-    f.bufferedMove = null; // 너무 오래된 버퍼는 폐기
+  if (f.bufferedMove && frameCount >= f.moveHoldUntil && frameCount - f.bufferedMove.frame > MOVE_BUFFER_FRAMES) {
+    f.bufferedMove = null; // 너무 오래된 버퍼는 폐기 (단, 커맨드 완성을 기다리는 중엔 폐기하지 않는다)
   }
 
   if (!isReady(f)) return; // 실제 발동은 게이지가 찼을 때만
+  if (frameCount < f.moveHoldUntil) return; // 대쉬/붕권 커맨드가 완성될지 좀 더 지켜본다
 
   if (f.bufferedMove) {
     const bm = f.bufferedMove;
@@ -2318,7 +2370,7 @@ function processEventFlags(f) {
       spawnEffect('boonggwonHit', f.tx, f.ty);
       spawnStarBurst(f.tx, f.ty);
       spawnBigEmoji('👊', f.tx, f.ty, { life: 26, size: 1.7, rise: 0.35 });
-      logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 강타당함!! (3칸 넉백, 스턴 ${info.stun}f)`, 'hit');
+      logEvent(`★★ ${info.attackerName}의 ${info.label}! ${f.name} 강타당함!! (1칸 넉백, 스턴 ${info.stun}f)`, 'hit');
     } else {
       spawnEffect('hit', f.tx, f.ty);
       logEvent(`${info.attackerName}의 ${info.label} → ${f.name}에게 명중! (스턴 ${info.stun}f)`, 'hit');
