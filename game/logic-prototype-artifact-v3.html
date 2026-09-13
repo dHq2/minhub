@@ -67,6 +67,19 @@
           대쉬 캔슬 콤보다 (기본공격 버전인 대쉬 강타와 같은 구조, 강공 버전). 대쉬로 2칸 이동한
           뒤 착지 시점(또는 도중)에 강공을 누르면 한 칸 더 전진하며 내리찍어 총 3칸을 이동하고,
           대신 후딜이 훨씬 크다.
+  v5.2: 두 가지 가시성 수정.
+        - 이동/대쉬 충돌이 "부딪히는" 느낌 없이 그냥 안 움직이는 것처럼 보이던 문제 수정 — 이제
+          실제 목적지는 상대 칸 앞에서 멈추되, 화면상으로는 상대 칸 쪽으로 확실히 파고들었다가
+          튕겨 돌아오도록 시각적 목표(overshoot)를 따로 두었다.
+        - 대쉬 캔슬(따다닥) 콤보가 맞았을 때만 확인되던 것을, 인식된 그 즉시("공참각 발동!" /
+          "대쉬 강타!" 텍스트)로 보여주도록 추가 — 맞았는지와 무관하게 입력이 인식됐는지 바로 알 수 있다.
+  v6.0: 신규 시스템 "클린치"(잡기, Y) 추가 — v1(단순 승패) 버전.
+        - 인접한 상대에게 Y를 누르면 달려들어 접촉, 두 캐릭터가 같은 지점 좌우로 나란히 서서
+          엎치락뒤치락하는 전용 링크 상태로 전환(겹치지 않고 모션이 함께 보임).
+        - 접촉 시 💥 이펙트, 이후 50% 확률로 성공/실패 판정.
+        - 성공: 마운트를 잡는 모션과 함께 상대를 크게 다운시킨다 (긴 스턴).
+        - 실패: 상대는 그래플링 가드(하체를 낮추는) 자세를, 시전자는 1칸 물러나며 서로 대치 상태로.
+        - 이후 마운트 지속 상황(파운딩/서브미션 vs 탈출)으로 확장할 수 있는 자리를 남겨둠.
 -->
 <style>
   :root{
@@ -217,6 +230,7 @@
   .state-pill.st-Attack{background:rgba(255,77,94,.18); color:var(--hitbox);}
   .state-pill.st-Hit{background:rgba(255,211,77,.18); color:var(--stun);}
   .state-pill.st-Move{background:rgba(79,210,255,.14); color:var(--p1);}
+  .state-pill.st-Clinch{background:rgba(255,154,82,.2); color:var(--p2);}
 
   .atb-row{ margin-top:8px; }
   .atb-label{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-faint); margin-bottom:3px; }
@@ -409,9 +423,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v5.1</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v6.0</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v5.1.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 그 자리에서 막혀 튕겨 돌아오고(클린치 로직의 자리), 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 강공은 정면+좌우 3칸을 부채꼴로 때리고, <b>대쉬 직후 강공을 누르면</b> 한 칸 더 전진하며 내리찍는 필살기 "공참각"(총 3칸 이동, 큰 후딜)이 나갑니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v6.0.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)·클린치(Y)는 Idle이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 이동 중 상대와 부딪히면 확실히 파고들었다가 튕겨 돌아오고, 방어는 실제로 공격을 막아내 공격자보다 먼저 움직일 수 있게 해줍니다. 대쉬 직후 공격/강공을 누르면 대쉬 강타 또는 필살기 "공참각"(3칸 이동 후 내리찍기)이 나가고, 인식된 순간 바로 전용 텍스트로 확인됩니다. 신규 <b>클린치(Y)</b>는 인접한 상대에게 달려들어 몸싸움을 벌이고 50%로 다운시키거나 밀려납니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -474,6 +488,7 @@
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
     <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> (정면+좌우 3칸) &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관</div>
+    <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
     <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (한 칸 더 전진, 총 3칸+도약 내리찍기, 큰 후딜)</div>
   </div>
@@ -546,6 +561,7 @@ function makeFighter(opts) {
     stateFrame: 0,
 
     moveFromX: 0, moveFromY: 0, moveToX: 0, moveToY: 0,
+    moveVisualToX: null, moveVisualToY: null, // 부딪힘 연출용: 실제 목적지보다 상대 쪽으로 더 파고드는 화면 목표
 
     prevHeld: new Set(),
     pending: null,
@@ -595,6 +611,13 @@ function makeFighter(opts) {
     justBumped: null,   // { x, y } 프레젠테이션 레이어용 1틱 이벤트
 
     attackLungeFrom: null, // 필살기 시전 시 "원래 있던 자리" — 그 자리에서 한 칸 전진하며 타격하는 연출용
+    justComboConfirmed: null, // 'ultimate'|'dashAttack'|null — 대쉬 캔슬이 인식된 그 순간 확인용
+
+    // --- 클린치(잡기, Y) ---
+    clinchRole: null,     // 'attacker' | 'defender' | null
+    clinchFrame: 0,
+    clinchResult: null,   // 'win' | 'lose' | null
+    clinchAnchor: null,   // { x, y } 두 캐릭터가 나란히 서는 접촉 지점(타일 좌표, 중간값)
   };
 }
 
@@ -617,13 +640,26 @@ function computeFreeDestination(f, dx, dy, maxDist, other) {
   return { travel, x: lastX, y: lastY, blocked: travel < maxDist };
 }
 
-// 아무 칸도 못 가고 제자리에서 상대와 부딪혔을 때: 짧게 움찔하는 연출만 남기고 아무 일도 없던 것으로.
-function bumpInPlace(f, dir) {
+// 상대와 부딪혀 막혔을 때: 안전한 칸(부딪히기 직전)까지만 실제로 이동하지만, 화면에는 상대 쪽으로
+// 더 파고들어 확실히 "부딪히는" 것처럼 보이게 시각적 목표를 상대 칸 근처(overshoot)로 잡는다.
+// 그 다음 프레임에서 원래 있던 자리로 튕겨 돌아오는 반동이 이어진다 (updateFighter의 Move 처리부).
+function startBumpMove(f, dx, dy, travel, facing) {
+  f.atbGauge = 0; // 시도한 이동이므로 게이지는 소모
+  f.state = 'Move';
+  f.stateFrame = 0;
+  f.facing = facing;
+  f.pending = null;
+  f.dashActive = false;
   f.bumping = true;
-  f.bumpUntil = frameCount + 12;
-  const off = DIRS[dir] || DIAG_OFFSET[dir];
-  f.justBumped = { x: f.tx + off.dx, y: f.ty + off.dy };
-  f.facing = dir;
+  f.pendingBump = true;
+
+  const safeX = clamp(f.tx + dx * travel, 0, COLS - 1);
+  const safeY = clamp(f.ty + dy * travel, 0, ROWS - 1);
+  f.moveFromX = f.tx; f.moveFromY = f.ty;
+  f.moveToX = safeX; f.moveToY = safeY; // 실제(논리) 목적지 — 상대 칸을 넘지 않는다
+  f.moveVisualToX = f.tx + dx * (travel + 0.85); // 화면상으로는 상대 칸 바로 앞까지 파고든다
+  f.moveVisualToY = f.ty + dy * (travel + 0.85);
+  f.currentMoveFrames = Math.max(6, Math.round(f.framesPerTile * 0.6));
 }
 
 function tryStartMove(f, dir, other) {
@@ -633,15 +669,15 @@ function tryStartMove(f, dir, other) {
   const off = DIRS[dir];
   const maxDist = isDash ? 2 : 1;
   const dest = computeFreeDestination(f, off.dx, off.dy, maxDist, other);
-  if (dest.travel === 0) { bumpInPlace(f, dir); return; }
-  startMove(f, dest.x, dest.y, dir, isDash, dest.blocked);
+  if (dest.blocked) { startBumpMove(f, off.dx, off.dy, dest.travel, dir); return; }
+  startMove(f, dest.x, dest.y, dir, isDash, false);
 }
 
 function tryStartDiagMove(f, diag, other) {
   if (!isReady(f)) return;
   const off = DIAG_OFFSET[diag];
   const dest = computeFreeDestination(f, off.dx, off.dy, 1, other);
-  if (dest.travel === 0) { bumpInPlace(f, diag); return; }
+  if (dest.blocked) { startBumpMove(f, off.dx, off.dy, dest.travel, diag); return; }
   startMove(f, dest.x, dest.y, diag, false, false);
 }
 
@@ -651,6 +687,7 @@ function startMove(f, nx, ny, facing, isDash, blocked) {
   f.stateFrame = 0;
   f.moveFromX = f.tx; f.moveFromY = f.ty;
   f.moveToX = nx; f.moveToY = ny;
+  f.moveVisualToX = null; f.moveVisualToY = null;
   f.facing = facing;
   f.pending = null;
   f.dashActive = !!isDash;
@@ -716,7 +753,75 @@ function startAttack(f, moveKey, target) {
   f.attackMove = finalMoveKey;
   f.hitLandedThisAttack = false;
   f.justAttacked = { label: MOVES[finalMoveKey].label };
+  // 대쉬 캔슬(따다닥)이 제대로 인식됐는지 맞았는지와 무관하게 그 즉시 확실히 보여준다.
+  if (finalMoveKey === 'ultimate' || finalMoveKey === 'dashAttack') f.justComboConfirmed = finalMoveKey;
   if (dashCombo) f.dashLandedFrame = -9999; // 콤보 창 소모(한 번만 나가도록)
+}
+
+// ===================================================================
+// 클린치(잡기, Y) — 두 캐릭터가 한 칸에 겹치지 않고 나란히 서서 힘겨루기하는 링크 상태.
+// 지금은 v1: 접촉 -> 몸싸움 -> 50% 승패 판정만. 이후 마운트 서브 게임으로 확장할 자리.
+// ===================================================================
+let CLINCH_CHARGE = 10;     // 상대에게 달려들어 접촉하기까지
+let CLINCH_STRUGGLE = 18;   // 엎치락뒤치락 몸싸움
+let CLINCH_RESOLVE = 14;    // 승패가 갈린 뒤 마무리 동작
+let CLINCH_WIN_CHANCE = 0.5;
+let CLINCH_WIN_STUN = 40;   // 성공(마운트) 시 상대에게 주는 다운 경직
+
+function startClinch(attacker, defender) {
+  const dx = defender.tx - attacker.tx, dy = defender.ty - attacker.ty;
+  if (dx !== 0 || dy !== 0) {
+    attacker.facing = dirTowards(dx, dy);
+    defender.facing = dirTowards(-dx, -dy);
+  }
+  const anchor = { x: (attacker.tx + defender.tx) / 2, y: (attacker.ty + defender.ty) / 2 };
+
+  attacker.state = 'Clinch'; attacker.stateFrame = 0;
+  attacker.clinchRole = 'attacker'; attacker.clinchFrame = 0; attacker.clinchResult = null; attacker.clinchAnchor = anchor;
+
+  defender.state = 'Clinch'; defender.stateFrame = 0;
+  defender.clinchRole = 'defender'; defender.clinchFrame = 0; defender.clinchResult = null; defender.clinchAnchor = anchor;
+
+  logEvent(`${attacker.name} — 클린치 돌입! (${defender.name}에게 달려든다)`, 'attack');
+}
+
+// attacker 쪽의 clinchFrame이 기준 시계 — 매 틱 한 번만 불러서 둘 다 같이 진행시킨다.
+function updateClinch(p1, p2) {
+  const attacker = p1.clinchRole === 'attacker' ? p1 : p2;
+  const defender = attacker === p1 ? p2 : p1;
+  attacker.clinchFrame++;
+  defender.clinchFrame = attacker.clinchFrame;
+
+  const chargeEnd = CLINCH_CHARGE;
+  const struggleEnd = chargeEnd + CLINCH_STRUGGLE;
+  const resolveEnd = struggleEnd + CLINCH_RESOLVE;
+
+  if (attacker.clinchFrame === chargeEnd) {
+    spawnEffect('clinchContact', attacker.clinchAnchor.x, attacker.clinchAnchor.y);
+    logEvent(`${attacker.name}와(과) ${defender.name} — 몸싸움 시작!`, 'attack');
+  }
+
+  if (attacker.clinchFrame === struggleEnd) {
+    const result = Math.random() < CLINCH_WIN_CHANCE ? 'win' : 'lose';
+    attacker.clinchResult = result;
+    defender.clinchResult = result;
+  }
+
+  if (attacker.clinchFrame >= resolveEnd) {
+    if (attacker.clinchResult === 'win') {
+      applyHit(defender, attacker, { label: '클린치', active: 1, stun: CLINCH_WIN_STUN, push: 0 });
+      logEvent(`${attacker.name}의 클린치 성공! ${defender.name} 다운!! (스턴 ${CLINCH_WIN_STUN}f)`, 'hit');
+    } else {
+      const off = facingOffset(attacker.facing);
+      attacker.tx = clamp(attacker.tx - off.dx, 0, COLS - 1);
+      attacker.ty = clamp(attacker.ty - off.dy, 0, ROWS - 1);
+      defender.state = 'Idle'; defender.stateFrame = 0;
+      logEvent(`${attacker.name}의 클린치 실패 — 서로 거리를 벌리며 대치`, 'miss');
+    }
+    if (attacker.state === 'Clinch') { attacker.state = 'Idle'; attacker.stateFrame = 0; }
+    attacker.clinchRole = null; attacker.clinchFrame = 0; attacker.clinchResult = null; attacker.clinchAnchor = null;
+    defender.clinchRole = null; defender.clinchAnchor = null;
+  }
 }
 
 let BLOCK_STUN_FRAMES = 8; // 방어 성공 시의 짧은 경직 — 공격자의 후딜보다 항상 짧게 잡아 반격 기회를 준다
@@ -875,6 +980,14 @@ function handlePlayerInput(f, keymap, target) {
     keys.delete(keymap.heavy);
     tryFireAttack(f, 'heavy', target);
   }
+
+  // 클린치(잡기): 인접해 있고 둘 다 자유로운 상태일 때만 시도할 수 있다.
+  if (keys.has(keymap.grab)) {
+    keys.delete(keymap.grab);
+    if (f.state === 'Idle' && target.state === 'Idle' && findTargetInRange(f, target, ATTACK_RANGE)) {
+      startClinch(f, target);
+    }
+  }
 }
 
 function dirTowards(dx, dy) {
@@ -983,11 +1096,13 @@ function updateFighter(f) {
           // 상대와 부딪혀 막힌 만큼만 갔다 — 튕겨서 원래 있던 자리로 되돌아가는 반동을 이어붙인다.
           f.pendingBump = false;
           const backX = f.moveFromX, backY = f.moveFromY; // 이번 이동을 시작했던 원래 자리
+          const off = facingOffset(f.facing);
+          f.justBumped = { x: f.tx + off.dx, y: f.ty + off.dy }; // 실제로 부딪힌(상대가 있는) 칸
           f.moveFromX = f.tx; f.moveFromY = f.ty;
           f.moveToX = backX; f.moveToY = backY;
+          f.moveVisualToX = null; f.moveVisualToY = null;
           f.bumping = true;
           f.currentMoveFrames = Math.max(4, Math.round(f.currentMoveFrames * 0.5));
-          f.justBumped = { x: f.tx, y: f.ty };
           // state는 'Move'를 유지한 채 다음 프레임부터 반동 구간을 재생한다.
         } else {
           f.state = 'Idle';
@@ -1055,6 +1170,10 @@ function checkAttackHits(attacker, defender) {
 function getRenderTile(f) {
   if (f.state === 'Move') {
     const t = Math.min(1, f.stateFrame / f.currentMoveFrames);
+    if (f.pendingBump && f.moveVisualToX !== null) {
+      // 아직 부딪히러 가는 중(반동 전) — 실제 목적지보다 상대 쪽으로 더 파고드는 것처럼 보여준다.
+      return { x: lerp(f.moveFromX, f.moveVisualToX, t), y: lerp(f.moveFromY, f.moveVisualToY, t) };
+    }
     return { x: lerp(f.moveFromX, f.moveToX, t), y: lerp(f.moveFromY, f.moveToY, t) };
   }
   if (f.state === 'Hit' && f.knockback) {
@@ -1074,7 +1193,7 @@ function getRenderTile(f) {
 const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
 const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
 
-const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u', heavy:'i', guard:'o' };
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u', heavy:'i', guard:'o', grab:'y' };
 
 let aiMode = 'auto'; // 'auto' | 'stopped'
 document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -1128,6 +1247,12 @@ const FRAME_SCHEMA = [
   ]},
   { group: '방어', rows: [
     { label: '방어 성공 경직', get: () => BLOCK_STUN_FRAMES, set: v => BLOCK_STUN_FRAMES = v },
+  ]},
+  { group: '클린치(잡기, Y)', rows: [
+    { label: '접촉까지(charge)', get: () => CLINCH_CHARGE, set: v => CLINCH_CHARGE = v },
+    { label: '몸싸움(struggle)', get: () => CLINCH_STRUGGLE, set: v => CLINCH_STRUGGLE = v },
+    { label: '마무리(resolve)', get: () => CLINCH_RESOLVE, set: v => CLINCH_RESOLVE = v },
+    { label: '성공 시 다운 경직', get: () => CLINCH_WIN_STUN, set: v => CLINCH_WIN_STUN = v },
   ]},
 ];
 
@@ -1365,6 +1490,34 @@ function computePose(f) {
       pose.headTilt = 0.3 * decay;
       pose.armSwing = Math.sin(f.stateFrame * 1.7) * 0.35 * decay;
     }
+  } else if (f.state === 'Clinch') {
+    const isAttacker = f.clinchRole === 'attacker';
+    const chargeEnd = CLINCH_CHARGE, struggleEnd = chargeEnd + CLINCH_STRUGGLE;
+    if (f.clinchFrame < chargeEnd) {
+      // 달려들어 접촉하는 구간
+      const t = f.clinchFrame / Math.max(1, chargeEnd);
+      pose.legSpread = Math.sin(t * Math.PI * 4) * (isAttacker ? 0.7 : 0.15);
+      pose.torsoLean = isAttacker ? 0.3 * t : -0.1 * t;
+    } else if (f.clinchFrame < struggleEnd) {
+      // 엎치락뒤치락 몸싸움
+      const sway = Math.sin(f.clinchFrame * 0.55) * 0.3;
+      pose.torsoLean = isAttacker ? sway : -sway;
+      pose.armSwing = 0.6;
+      pose.legSpread = 0.25;
+    } else {
+      // 승패가 갈린 뒤 마무리 동작
+      const t = (f.clinchFrame - struggleEnd) / Math.max(1, CLINCH_RESOLVE);
+      if (f.clinchResult === 'win') {
+        pose.torsoLean = isAttacker ? lerp(0, 0.55, t) : lerp(0, -0.7, t);
+        pose.legSpread = isAttacker ? 0.3 : -0.8;
+        pose.headTilt = isAttacker ? 0 : 0.3 * t;
+      } else {
+        // 실패: 방어자가 그래플링 가드(하체를 낮추는) 자세를 취한다
+        pose.torsoLean = isAttacker ? lerp(0, -0.35, t) : lerp(0, -0.5, t);
+        pose.legSpread = isAttacker ? -0.2 : -0.85;
+        pose.headTilt = isAttacker ? -0.1 * t : -0.2 * t;
+      }
+    }
   }
 
   // 방어: 방패를 정면 중앙으로 끌어오는 자세를 부드럽게 블렌드
@@ -1582,7 +1735,38 @@ function roundRectPath(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+// 방향의 오른쪽 90도(월드 XZ 평면 기준) — 클린치에서 두 캐릭터를 나란히 벌려 세우는 데 쓴다.
+function perpOffset(facing) {
+  const off = facingOffset(facing);
+  return { dx: -off.dy, dz: off.dx };
+}
+
 function updateVisual(f, visual, hitMarkers) {
+  if (f.state === 'Clinch' && f.clinchAnchor) {
+    const isAttacker = f.clinchRole === 'attacker';
+    const perp = perpOffset(f.facing);
+    const side = isAttacker ? -0.34 : 0.34;
+    const anchorX = worldX(f.clinchAnchor.x), anchorZ = worldZ(f.clinchAnchor.y);
+    const targetX = anchorX + perp.dx * side, targetZ = anchorZ + perp.dz * side;
+    const chargeT = Math.min(1, f.clinchFrame / CLINCH_CHARGE);
+    const startX = worldX(f.tx), startZ = worldZ(f.ty);
+    const rx = lerp(startX, targetX, chargeT), rz = lerp(startZ, targetZ, chargeT);
+
+    visual.sprite.position.set(rx, 0.6, rz);
+    visual.shadow.position.set(rx, 0.021, rz);
+    visual.gaugeSprite.visible = false;
+    visual.shieldIcon.visible = false;
+    visual.dizzyStars.forEach(s => { s.visible = false; });
+    drawStickFigure(visual.ctx, f.color, computePose(f));
+    visual.texture.needsUpdate = true;
+    const mirrored = LEFT_FACINGS.has(f.facing);
+    visual.sprite.scale.x = mirrored ? -Math.abs(visual.baseScaleX) : Math.abs(visual.baseScaleX);
+    visual.material.color.set(0xffffff);
+    hitMarkers.forEach(m => { m.visible = false; });
+    return;
+  }
+  visual.gaugeSprite.visible = true;
+
   const { x: fx, y: fy } = getRenderTile(f);
   const wx = worldX(fx), wz = worldZ(fy);
 
@@ -1723,6 +1907,21 @@ function spawnEffect(type, tx, ty) {
     ctx.lineWidth = 10; ctx.strokeStyle = '#5c0d0d'; ctx.strokeText('★ 필살! 공참각! ★', cx, cy);
     ctx.fillStyle = '#ff6b5e'; ctx.fillText('★ 필살! 공참각! ★', cx, cy);
     scaleW = 3.2; scaleH = 0.8; maxLife = 40; riseTotal = 0.7;
+  } else if (type === 'comboUltimate') {
+    // 명중 여부와 무관하게, 따다닥(대쉬->강공) 콤보가 인식된 순간 바로 뜨는 확인 이펙트
+    ctx.font = "700 34px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 8; ctx.strokeStyle = '#5c0d0d'; ctx.strokeText('공참각 발동!', cx, cy);
+    ctx.fillStyle = '#ff9a52'; ctx.fillText('공참각 발동!', cx, cy);
+    scaleW = 2.1; scaleH = 0.56; maxLife = 16; riseTotal = 0.25;
+  } else if (type === 'comboDash') {
+    ctx.font = "700 30px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 7; ctx.strokeStyle = '#7a3d00'; ctx.strokeText('대쉬 강타!', cx, cy);
+    ctx.fillStyle = '#ffe14d'; ctx.fillText('대쉬 강타!', cx, cy);
+    scaleW = 1.8; scaleH = 0.48; maxLife = 14; riseTotal = 0.22;
+  } else if (type === 'clinchContact') {
+    ctx.font = "48px sans-serif";
+    ctx.fillText('💥', cx, cy);
+    scaleW = 1.3; scaleH = 0.36; maxLife = 18; riseTotal = 0.2;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -1838,6 +2037,12 @@ function logEvent(text, kind) {
 }
 
 function processEventFlags(f) {
+  if (f.justComboConfirmed) {
+    // 맞았는지와 무관하게, 대쉬 캔슬(따다닥)이 인식된 그 순간 바로 확인시켜준다.
+    const origin = f.attackLungeFrom || { x: f.tx, y: f.ty };
+    spawnEffect(f.justComboConfirmed === 'ultimate' ? 'comboUltimate' : 'comboDash', origin.x, origin.y);
+    f.justComboConfirmed = null;
+  }
   if (f.justBumped) {
     const dustCanvas = document.createElement('canvas');
     dustCanvas.width = 32; dustCanvas.height = 32;
@@ -1937,8 +2142,12 @@ function tick() {
   handlePlayerInput(p1, p1keys, p2);
   if (aiMode === 'auto') driveAI(p2, p1);
 
-  updateFighter(p1);
-  updateFighter(p2);
+  if (p1.state === 'Clinch' || p2.state === 'Clinch') {
+    updateClinch(p1, p2); // 클린치는 둘을 함께 진행시키는 링크 상태라 따로 처리한다
+  } else {
+    updateFighter(p1);
+    updateFighter(p2);
+  }
   updateGuardBlend(p1);
   updateGuardBlend(p2);
 
