@@ -34,6 +34,20 @@
   v3.5: 대쉬 강타의 스턴을 1초(60프레임)로 늘리고, 맞은 쪽 머리 위에 별 3개가 빙글빙글 도는
         전용 스턴 연출 추가. 공격팔(검) 가동범위를 크게 넓혀 뒤로 젖힌 준비자세에서 완전히 뻗는
         슬래시까지 큰 호를 그리도록 수정, 걷기 팔 스윙 폭도 확대.
+  v4.0: 전투 모델을 다시 나눔 — 이동 게이지는 오직 "이동"에만 관여하고, 공격/강공/방어는 게이지와
+        완전히 분리된 자기 자신의 프레임(startup/active/recovery)만으로 동작한다 (Idle이기만 하면
+        게이지 상태와 무관하게 공격 가능).
+        - 신규 "강공"(I) 추가: 머리를 숙이는 준비 -> 넓은 호를 그리는 횡베기(이때만 판정 존재) ->
+          큰 후딜. 후딜이 끝난 직후엔 판정 없이 다음 이동 한 번이 느려짐. 횡베기 중엔 네모/세모/
+          동그라미 파편이 궤적을 따라 흩날린다.
+        - 신규 "방어"(O) 추가: 방패를 정면 중앙으로 정확히 들어올리는 자세 (게이지/프레임 소모 없는
+          순수 포즈, 누르고 있는 동안 유지).
+        - 기본공격 발동을 7→10프레임으로 늦추고 경직을 15→10프레임으로 줄여 "공격이 너무 빠르고
+          경직이 너무 크다"는 문제를 조정.
+        - AI가 최적 행동만 하지 않도록 개선: 사거리 안에서도 가끔 물러서거나 망설이고, 접근 중에도
+          가끔 대쉬로 뒤로 빠지는 등 불규칙한 행동을 섞음.
+        - 우측에 "프레임표" 패널 추가: 이동/기본공격/밀치기/강공/대쉬강타의 모든 프레임 수치를
+          숫자칸으로 노출해 실시간으로 직접 조정하고 바로 확인해볼 수 있다.
 -->
 <style>
   :root{
@@ -116,16 +130,21 @@
 
   .rig{
     width:100%;
-    max-width:1240px;
+    max-width:1420px;
     display:grid;
-    grid-template-columns:210px minmax(0,1fr) 210px;
+    grid-template-columns:210px minmax(0,1fr) 210px 230px;
     gap:16px;
     align-items:start;
+  }
+  @media (max-width:1180px){
+    .rig{ grid-template-columns:210px minmax(0,1fr) 210px; }
+    .framedata{ grid-column:1 / -1; }
   }
   @media (max-width:900px){
     .rig{ grid-template-columns:1fr; }
     .side{ flex-direction:row !important; flex-wrap:wrap; }
     .side .panel{ flex:1 1 240px; }
+    .framedata{ grid-column:auto; }
   }
 
   .side{
@@ -280,6 +299,61 @@
   }
   .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px;}
 
+  .framedata{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:10px;
+    padding:14px 14px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .framedata h3{
+    margin:0;
+    font-family:var(--font-display);
+    font-size:12.5px;
+    letter-spacing:.04em;
+    color:var(--text-dim);
+  }
+  .framedata .fd-note{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    color:var(--text-faint);
+    line-height:1.5;
+  }
+  .fd-group{ display:flex; flex-direction:column; gap:4px; }
+  .fd-group-title{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin-top:4px;
+    border-top:1px dashed var(--grid-line-soft);
+    padding-top:8px;
+  }
+  .fd-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-dim);
+  }
+  .fd-row input{
+    width:52px;
+    background:var(--key);
+    border:1px solid var(--key-border);
+    border-radius:5px;
+    color:var(--text);
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    padding:3px 5px;
+    text-align:right;
+  }
+  .fd-row input:focus{ outline:1px solid var(--p1); }
+
   .combat-log{
     width:100%;
     max-width:1240px;
@@ -315,9 +389,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.5 · ATB</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v4.0 · 프레임표</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.3: 방향키를 연타(따닥)하면 대쉬</b>로 2칸 이동, 착지 후 공격하면 <b>대쉬 강타</b>(2칸 밀치기)가 나갑니다. <b>v3.5: 대쉬 강타에 맞으면 1초간 머리 위에 별이 빙글빙글</b> 돌며 스턴하고, 검 공격 동작의 가동범위가 훨씬 커졌습니다.</p>
+  <p class="sub"><b>v4.0: 이동 게이지와 공격/방어를 완전히 분리했습니다.</b> 이동 게이지는 오직 이동에만 관여하고, 공격(U)·강공(I)·방어(O)는 Idle 상태이기만 하면 게이지와 무관하게 각자의 프레임으로 동작합니다. 강공은 준비→횡베기(판정)→큰 후딜 3단계로, 끝난 직후 한 번 느려집니다. AI도 최적 행동만 하지 않고 가끔 망설이거나 물러섭니다. 우측 <b>프레임표</b>에서 모든 발동/판정/후딜/경직 수치를 실시간으로 직접 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="rig">
@@ -328,10 +402,11 @@
       <div class="stat-row"><span class="k">tile</span><span class="v" id="p1-tile">(2,4)</span></div>
       <div class="stat-row"><span class="k">facing</span><span class="v" id="p1-facing">right</span></div>
       <div class="atb-row">
-        <div class="atb-label"><span>ATB</span><span id="p1-atb-num">0%</span></div>
+        <div class="atb-label"><span>이동 게이지</span><span id="p1-atb-num">0%</span></div>
         <div class="atb-track"><div class="atb-fill" id="p1-atb-fill"></div></div>
-        <div class="atb-ready-tag" id="p1-ready-tag">★ 지금 행동 가능</div>
+        <div class="atb-ready-tag" id="p1-ready-tag">★ 지금 이동 가능</div>
       </div>
+      <div class="atb-ready-tag show" id="p1-guard-tag" style="color:var(--p1); display:none;">🛡 방어 중</div>
     </div>
   </div>
 
@@ -351,15 +426,21 @@
       <div class="stat-row"><span class="k">tile</span><span class="v" id="p2-tile">(9,4)</span></div>
       <div class="stat-row"><span class="k">facing</span><span class="v" id="p2-facing">left</span></div>
       <div class="atb-row">
-        <div class="atb-label"><span>ATB</span><span id="p2-atb-num">0%</span></div>
+        <div class="atb-label"><span>이동 게이지</span><span id="p2-atb-num">0%</span></div>
         <div class="atb-track"><div class="atb-fill" id="p2-atb-fill"></div></div>
-        <div class="atb-ready-tag" id="p2-ready-tag">★ 지금 행동 가능</div>
+        <div class="atb-ready-tag" id="p2-ready-tag">★ 지금 이동 가능</div>
       </div>
       <div class="mode-toggle">
         <button type="button" class="mode-btn active" data-mode="auto">자동</button>
         <button type="button" class="mode-btn" data-mode="stopped">정지</button>
       </div>
     </div>
+  </div>
+
+  <div class="framedata">
+    <h3>프레임표 (실시간 조정)</h3>
+    <p class="fd-note">이동 게이지는 이동에만 관여합니다. 공격·강공·방어는 게이지와 무관하게 아래 각자의 프레임값으로만 동작해요. 숫자를 바꾸면 즉시 게임에 반영됩니다.</p>
+    <div id="fd-body"></div>
   </div>
 </div>
 
@@ -371,9 +452,9 @@
 <div class="controls">
   <div class="panel p1">
     <h3><span class="dot"></span>P1 조작</h3>
-    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
-    <div class="keyline">공격(스턴) <kbd>U</kbd> — 거리 상관없이 항상 상대를 조준, 맞으려면 인접(1칸)해야 함</div>
-    <div class="keyline">대쉬 도중~착지 직후 <kbd>U</kbd> → <b style="color:var(--stun);">대쉬 강타</b> (게이지 무시, 2칸 밀치기)</div>
+    <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — 이동 게이지가 다 찼을 때만 이동 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
+    <div class="keyline">공격 <kbd>U</kbd> &nbsp;·&nbsp; 강공 <kbd>I</kbd> &nbsp;·&nbsp; 방어(방패 들기) <kbd>O</kbd> — 전부 게이지와 무관, 각자의 프레임으로만 동작</div>
+    <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -416,11 +497,16 @@ const DIAG_OFFSET = {
   downleft:{dx:-1, dy:1}, downright:{dx:1, dy:1},
 };
 
+// 모든 공격은 startup(발동 전 준비) -> active(판정 유지) -> recovery(판정 없이 못 움직임) 3단계.
+// 이 값들은 우측 "프레임표" 패널에서 실시간으로도 조정할 수 있다.
 const MOVES = {
-  basic:     { startup: 7, stun: 15, push: 0, label: '기본공격' },
-  push:      { startup: 7, stun: 20, push: 1, label: '밀치기' },
-  dashAttack:{ startup: 5, stun: 60, push: 2, label: '대쉬 강타', special: true }, // 대쉬 캔슬 콤보, 스턴 1초(60f)
+  basic:      { startup: 10, active: 3, recovery: 4,  stun: 10, push: 0, label: '기본공격' },
+  push:       { startup: 10, active: 3, recovery: 6,  stun: 14, push: 1, label: '밀치기' },
+  dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
+  heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
 };
+let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
+let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
 
 function makeFighter(opts) {
   const framesPerTile = opts.framesPerTile ?? 10;
@@ -430,6 +516,7 @@ function makeFighter(opts) {
     tx: opts.tx, ty: opts.ty,
     facing: opts.facing,
     framesPerTile,
+    currentMoveFrames: framesPerTile, // 지금 진행 중인 이동에 실제로 걸리는 프레임 (강공 후 슬로우 반영)
     diagWindow: 6,
 
     state: 'Idle',
@@ -468,6 +555,13 @@ function makeFighter(opts) {
     dizzyStun: false,   // 대쉬 강타에 맞아 스턴 중일 때 머리 위에 별이 빙글빙글 도는지
     justWhiffed: null,  // { label }
     justDashed: null,   // { fromTx, fromTy }
+
+    // --- 방어(방패 들기) ---
+    guarding: false,   // 방어키를 누르고 있는지 (입력 상태)
+    guardBlend: 0,     // 0~1, 방어 자세로 부드럽게 전환되는 정도
+
+    // --- 강공 후딜 이후 슬로우 ---
+    slowUntil: -9999,  // 이 프레임까지는 다음 이동이 느려짐
   };
 }
 
@@ -498,7 +592,7 @@ function tryStartDiagMove(f, diag) {
 }
 
 function startMove(f, nx, ny, facing, isDash) {
-  f.atbGauge = 0; // 행동 = 턴 소모
+  f.atbGauge = 0; // 행동 = 턴 소모 (이동만 게이지를 씀)
   f.state = 'Move';
   f.stateFrame = 0;
   f.moveFromX = f.tx; f.moveFromY = f.ty;
@@ -507,6 +601,14 @@ function startMove(f, nx, ny, facing, isDash) {
   f.pending = null;
   f.dashActive = !!isDash;
   if (isDash) f.justDashed = { fromTx: f.tx, fromTy: f.ty };
+
+  // 강공을 쓴 직후라면 이번 한 번의 이동만 느려진다.
+  if (frameCount < f.slowUntil) {
+    f.currentMoveFrames = Math.round(f.framesPerTile * SLOW_MULTIPLIER);
+    f.slowUntil = -9999;
+  } else {
+    f.currentMoveFrames = f.framesPerTile;
+  }
 }
 
 const ATTACK_RANGE = 1; // 실제로 맞으려면(=AI가 공격을 선택하려면) 인근 8칸 이내여야 함
@@ -522,15 +624,18 @@ function findTargetInRange(f, target, maxRange) {
   return { dir: dirTowards(dx, dy), dist };
 }
 
-const DASH_COMBO_WINDOW = 20; // 대쉬 착지 후 이 프레임(약 0.33초) 안에 공격하면 대쉬 강타로 승격 — 반응할 여유를 줌
+let DASH_COMBO_WINDOW = 20; // 대쉬 착지 후 이 프레임(약 0.33초) 안에 공격하면 대쉬 강타로 승격 — 반응할 여유를 줌 (프레임표에서 실시간 조정 가능)
 
+// 이동 게이지(ATB)는 오직 "이동"에만 관여한다. 공격/강공/방어는 게이지와 완전히 분리된
+// 자기 자신의 프레임(startup/active/recovery)만으로 가능 여부가 결정된다 — Idle 상태이기만 하면
+// 게이지가 얼마나 찼든 상관없이 공격할 수 있다.
 function startAttack(f, moveKey, target) {
-  // 대쉬 직후 4프레임 콤보 창: 이 순간만큼은 게이지가 덜 찼어도 예외적으로 공격이 나간다
-  // (대쉬로 파고든 타이밍을 살리는 "대쉬 캔슬" 콤보).
-  const dashCombo = (frameCount - f.dashLandedFrame) <= DASH_COMBO_WINDOW;
-  if (!isReady(f) && !dashCombo) return;
+  if (f.state !== 'Idle') return;
 
-  f.attackRangeDist = 1; // 기본공격은 항상 인접 1칸 판정 (사거리 개념 없음)
+  // 대쉬 직후 짧은 콤보 창 안이면, 어떤 공격키를 눌렀든 "대쉬 강타"로 승격된다.
+  const dashCombo = (frameCount - f.dashLandedFrame) <= DASH_COMBO_WINDOW;
+
+  f.attackRangeDist = 1; // 기본공격/강공은 항상 인접 1칸 판정 (사거리 개념 없음)
   if (target) {
     const dx = target.tx - f.tx, dy = target.ty - f.ty;
     // 거리와 무관하게 항상 상대가 있는 방향을 바라보고 공격한다.
@@ -539,7 +644,6 @@ function startAttack(f, moveKey, target) {
   }
 
   const finalMoveKey = dashCombo ? 'dashAttack' : moveKey;
-  f.atbGauge = 0; // 행동 = 턴 소모
   f.state = 'Attack';
   f.stateFrame = 0;
   f.attackMove = finalMoveKey;
@@ -626,13 +730,20 @@ function handlePlayerInput(f, keymap, target) {
   }
   processMovementInput(f, currentDirs);
 
-  if (keys.has(keymap.attack)) {
-    keys.delete(keymap.attack);
+  // 방어는 게이지/턴 개념이 없는 순수 자세 — 누르고 있는 동안만 방패를 든다.
+  f.guarding = keys.has(keymap.guard) && f.state === 'Idle';
+
+  const wantsAttack = keys.has(keymap.attack);
+  const wantsHeavy = keys.has(keymap.heavy);
+  if (wantsAttack || wantsHeavy) {
+    const moveKey = wantsHeavy ? 'heavy' : 'basic';
+    if (wantsAttack) keys.delete(keymap.attack);
+    if (wantsHeavy) keys.delete(keymap.heavy);
     if (f.state === 'Move' && f.dashActive) {
       // 대쉬가 아직 진행 중일 때 눌렀어도 놓치지 않도록 예약해뒀다가, 착지하는 즉시 대쉬 강타로 발동한다.
       f.bufferDashAttack = true;
     } else {
-      startAttack(f, 'basic', target);
+      startAttack(f, moveKey, target);
     }
   }
 }
@@ -650,25 +761,61 @@ function dirTowards(dx, dy) {
   return 'downright';
 }
 
+const OPPOSITE_DIR = {
+  up: 'down', down: 'up', left: 'right', right: 'left',
+  upleft: 'downright', upright: 'downleft', downleft: 'upright', downright: 'upleft',
+};
+
+function moveDir(f, dir) {
+  if (['up', 'down', 'left', 'right'].includes(dir)) tryStartMove(f, dir);
+  else tryStartDiagMove(f, dir);
+}
+
+function forceDash(f, dir) {
+  if (!['up', 'down', 'left', 'right'].includes(dir)) { moveDir(f, dir); return; } // 대각은 대쉬 미지원, 한 칸만
+  f.dashArm = dir;
+  tryStartMove(f, dir);
+}
+
+// AI는 무조건 최적 행동만 하지 않는다 — 사거리 안이어도 가끔 물러서거나 망설이고,
+// 접근 중에도 가끔 뒤로 빠지거나 가만히 서서 완급을 준다.
 function driveAI(ai, target) {
   if (ai.aiCooldown > 0) ai.aiCooldown--;
-  if (!isReady(ai)) return;
+  if (ai.state !== 'Idle') return;
   if (ai.aiCooldown > 0) return;
 
   const dx = target.tx - ai.tx;
   const dy = target.ty - ai.ty;
   const dir = dirTowards(dx, dy);
+  const away = OPPOSITE_DIR[dir];
+  const roll = Math.random();
 
   if (findTargetInRange(ai, target, ATTACK_RANGE)) {
-    const move = Math.random() < 0.7 ? 'basic' : 'push';
-    startAttack(ai, move, target);
-    ai.aiCooldown = 10;
+    // 공격/방어는 이동 게이지와 무관 — 사거리 안이면 게이지 상태와 상관없이 시도 가능
+    if (roll < 0.7) {
+      const move = Math.random() < 0.25 ? 'heavy' : (Math.random() < 0.6 ? 'basic' : 'push');
+      startAttack(ai, move, target);
+      ai.aiCooldown = 12;
+    } else if (roll < 0.85) {
+      forceDash(ai, away); // 순간적으로 확 물러남 (이동은 게이지가 찼을 때만 가능)
+      ai.aiCooldown = 14;
+    } else {
+      ai.aiCooldown = 8 + Math.floor(Math.random() * 12); // 잠깐 망설이며 가만히 있음
+    }
     return;
   }
 
-  if (['up','down','left','right'].includes(dir)) tryStartMove(ai, dir);
-  else tryStartDiagMove(ai, dir);
-  ai.aiCooldown = 4;
+  if (!isReady(ai)) return; // 이하는 전부 "이동" 판단이므로 이동 게이지가 찼을 때만
+
+  if (roll < 0.75) {
+    moveDir(ai, dir);
+    ai.aiCooldown = 4 + Math.floor(Math.random() * 6);
+  } else if (roll < 0.9) {
+    moveDir(ai, away); // 접근하다가 문득 뒤로 빠짐
+    ai.aiCooldown = 6 + Math.floor(Math.random() * 6);
+  } else {
+    ai.aiCooldown = 10 + Math.floor(Math.random() * 16); // 제자리에 서서 지켜봄
+  }
 }
 
 let frameCount = 0;
@@ -679,13 +826,19 @@ function updateATB(f) {
   f.atbGauge = Math.min(ATB_MAX, f.atbGauge + ATB_MAX / f.atbChargeFrames);
 }
 
+function updateGuardBlend(f) {
+  const target = (f.guarding && f.state === 'Idle') ? 1 : 0;
+  f.guardBlend += (target - f.guardBlend) * 0.35;
+  if (Math.abs(target - f.guardBlend) < 0.01) f.guardBlend = target;
+}
+
 function updateFighter(f) {
   switch (f.state) {
     case 'Idle': break;
 
     case 'Move': {
       f.stateFrame++;
-      if (f.stateFrame >= f.framesPerTile) {
+      if (f.stateFrame >= f.currentMoveFrames) {
         f.tx = f.moveToX; f.ty = f.moveToY;
         f.state = 'Idle';
         f.stateFrame = 0;
@@ -701,8 +854,13 @@ function updateFighter(f) {
     case 'Attack': {
       f.stateFrame++;
       const move = MOVES[f.attackMove];
-      if (f.stateFrame >= move.startup + 3) {
-        if (!f.hitLandedThisAttack) f.justWhiffed = { label: move.label };
+      const activeEnd = move.startup + move.active;
+      if (f.stateFrame === activeEnd && !f.hitLandedThisAttack) {
+        f.justWhiffed = { label: move.label }; // 판정이 끝나는 순간 확정 (후딜 중엔 더 이상 맞을 일이 없으므로)
+      }
+      const total = move.startup + move.active + (move.recovery || 0);
+      if (f.stateFrame >= total) {
+        if (move.slowAfter) f.slowUntil = frameCount + SLOW_AFTER_FRAMES;
         f.state = 'Idle';
         f.stateFrame = 0;
         f.attackMove = null;
@@ -732,7 +890,7 @@ function updateFighter(f) {
 function checkAttackHits(attacker, defender) {
   if (attacker.state !== 'Attack') return;
   const move = MOVES[attacker.attackMove];
-  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + 3;
+  const active = attacker.stateFrame >= move.startup && attacker.stateFrame < move.startup + move.active;
   if (!active) return;
   if (defender.state === 'Hit') return;
   const box = attackHitboxTile(attacker);
@@ -744,7 +902,7 @@ function checkAttackHits(attacker, defender) {
 // 현재 프레임의 렌더용(보간된) 타일 좌표 — 시뮬레이션 상태는 건드리지 않는다.
 function getRenderTile(f) {
   if (f.state === 'Move') {
-    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    const t = Math.min(1, f.stateFrame / f.currentMoveFrames);
     return { x: lerp(f.moveFromX, f.moveToX, t), y: lerp(f.moveFromY, f.moveToY, t) };
   }
   if (f.state === 'Hit' && f.knockback) {
@@ -757,7 +915,7 @@ function getRenderTile(f) {
 const p1 = makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' });
 const p2 = makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' });
 
-const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u' };
+const p1keys = { up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', attack:'u', heavy:'i', guard:'o' };
 
 let aiMode = 'auto'; // 'auto' | 'stopped'
 document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -767,10 +925,87 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
   });
 });
 
+// ===================================================================
+// 프레임표 — 우측 패널의 실시간 튜닝 UI. 숫자를 바꾸면 바로 게임에 반영된다.
+// ===================================================================
+const FRAME_SCHEMA = [
+  { group: '이동 (이동 게이지 연동)', rows: [
+    { label: '타일당 이동 프레임', get: () => p1.framesPerTile, set: v => { p1.framesPerTile = v; p2.framesPerTile = v; } },
+    { label: '게이지 충전 프레임', get: () => p1.atbChargeFrames, set: v => { p1.atbChargeFrames = v; p2.atbChargeFrames = v; } },
+    { label: '대각 결합 허용', get: () => p1.diagWindow, set: v => { p1.diagWindow = v; p2.diagWindow = v; } },
+    { label: '대쉬 연타 허용', get: () => p1.dashWindow, set: v => { p1.dashWindow = v; p2.dashWindow = v; } },
+  ]},
+  { group: '기본공격 (게이지 무관)', rows: [
+    { label: '발동(startup)', get: () => MOVES.basic.startup, set: v => MOVES.basic.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.basic.active, set: v => MOVES.basic.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.basic.recovery, set: v => MOVES.basic.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.basic.stun, set: v => MOVES.basic.stun = v },
+  ]},
+  { group: '밀치기', rows: [
+    { label: '발동(startup)', get: () => MOVES.push.startup, set: v => MOVES.push.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.push.active, set: v => MOVES.push.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.push.recovery, set: v => MOVES.push.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.push.stun, set: v => MOVES.push.stun = v },
+  ]},
+  { group: '강공', rows: [
+    { label: '발동(startup)', get: () => MOVES.heavy.startup, set: v => MOVES.heavy.startup = v },
+    { label: '횡베기(active)', get: () => MOVES.heavy.active, set: v => MOVES.heavy.active = v },
+    { label: '후딜(recovery)', get: () => MOVES.heavy.recovery, set: v => MOVES.heavy.recovery = v },
+    { label: '경직(stun)', get: () => MOVES.heavy.stun, set: v => MOVES.heavy.stun = v },
+    { label: '이후 슬로우 지속', get: () => SLOW_AFTER_FRAMES, set: v => SLOW_AFTER_FRAMES = v },
+  ]},
+  { group: '대쉬 강타', rows: [
+    { label: '발동(startup)', get: () => MOVES.dashAttack.startup, set: v => MOVES.dashAttack.startup = v },
+    { label: '판정 유지(active)', get: () => MOVES.dashAttack.active, set: v => MOVES.dashAttack.active = v },
+    { label: '경직(stun)', get: () => MOVES.dashAttack.stun, set: v => MOVES.dashAttack.stun = v },
+    { label: '착지 후 콤보창', get: () => DASH_COMBO_WINDOW, set: v => DASH_COMBO_WINDOW = v },
+  ]},
+];
+
+function renderFrameData() {
+  const body = document.getElementById('fd-body');
+  body.innerHTML = '';
+  FRAME_SCHEMA.forEach(section => {
+    const groupTitle = document.createElement('div');
+    groupTitle.className = 'fd-group-title';
+    groupTitle.textContent = section.group;
+    body.appendChild(groupTitle);
+
+    const group = document.createElement('div');
+    group.className = 'fd-group';
+    section.rows.forEach(row => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'fd-row';
+      const labelEl = document.createElement('span');
+      labelEl.textContent = row.label;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.step = '1';
+      input.value = row.get();
+      input.addEventListener('input', () => {
+        const v = Math.max(0, Math.round(Number(input.value) || 0));
+        row.set(v);
+      });
+      rowEl.appendChild(labelEl);
+      rowEl.appendChild(input);
+      group.appendChild(rowEl);
+    });
+    body.appendChild(group);
+  });
+}
+renderFrameData();
+
 function resetIfNeeded() {
   if (keys.has('r')) {
-    Object.assign(p1, makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' }));
-    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' }));
+    // 리셋은 위치/체력 등 전투 상태만 초기화하고, 프레임표에서 조정해둔 이동 설정값은 유지한다.
+    const keepTuning = f => ({
+      framesPerTile: f.framesPerTile, atbChargeFrames: f.atbChargeFrames,
+      diagWindow: f.diagWindow, dashWindow: f.dashWindow,
+    });
+    const p1Keep = keepTuning(p1), p2Keep = keepTuning(p2);
+    Object.assign(p1, makeFighter({ name:'P1', color:'#4fd2ff', tx:2, ty:4, facing:'right' }), p1Keep);
+    Object.assign(p2, makeFighter({ name:'P2', color:'#ff9a52', tx:9, ty:4, facing:'left' }), p2Keep);
   }
 }
 
@@ -874,7 +1109,7 @@ function drawLine(ctx, x1, y1, x2, y2) {
 function computePose(f) {
   const pose = { legSpread: 0, armSwing: 0, torsoLean: 0, headTilt: 0, punch: 0, attacking: false };
   if (f.state === 'Move') {
-    const t = f.stateFrame / f.framesPerTile;
+    const t = f.stateFrame / f.currentMoveFrames;
     if (f.dashActive) {
       // 대쉬: 몸을 앞으로 깊게 기울이고 팔다리를 빠르게 휘저어 돌진하는 느낌을 준다.
       const sprint = Math.sin(t * Math.PI * 3);
@@ -889,17 +1124,46 @@ function computePose(f) {
     }
   } else if (f.state === 'Attack') {
     const move = MOVES[f.attackMove];
-    const total = move.startup + 3;
-    const windUp = Math.min(1, f.stateFrame / move.startup);
-    pose.punch = f.stateFrame >= move.startup ? 1 : windUp * 0.35;
-    pose.torsoLean = 0.16 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
+    const activeStart = move.startup;
+    const activeEnd = move.startup + move.active;
+    const total = activeEnd + (move.recovery || 0);
     pose.attacking = true;
+
+    if (move.heavy) {
+      // 강공: 머리를 숙이는 준비 -> 넓은 호를 그리는 횡베기 -> 자세를 추스르는 후딜
+      if (f.stateFrame < activeStart) {
+        const t = f.stateFrame / Math.max(1, activeStart);
+        pose.headTilt = -0.55 * t;
+        pose.heavySweep = -1.35;
+        pose.punch = 0.15;
+      } else if (f.stateFrame < activeEnd) {
+        const t = (f.stateFrame - activeStart) / Math.max(1, move.active);
+        pose.heavySweep = lerp(-1.35, 1.35, t);
+        pose.punch = 1;
+        pose.headTilt = -0.2;
+        pose.torsoLean = 0.12 * Math.sin(t * Math.PI);
+      } else {
+        const t = (f.stateFrame - activeEnd) / Math.max(1, move.recovery || 1);
+        pose.heavySweep = lerp(1.35, 0.2, t);
+        pose.punch = 1 - t * 0.5;
+        pose.headTilt = -0.2 * (1 - t);
+      }
+    } else {
+      const windUp = Math.min(1, f.stateFrame / Math.max(1, activeStart));
+      pose.punch = f.stateFrame >= activeStart ? 1 : windUp * 0.35;
+      pose.torsoLean = 0.16 * Math.sin(Math.min(1, f.stateFrame / total) * Math.PI);
+    }
   } else if (f.state === 'Hit') {
     const t = Math.min(1, f.stateFrame / Math.max(1, f.hitstunFrames));
     const decay = 1 - t;
     pose.torsoLean = -0.4 * decay;
     pose.headTilt = 0.3 * decay;
     pose.armSwing = Math.sin(f.stateFrame * 1.7) * 0.35 * decay;
+  }
+
+  // 방어: 방패를 정면 중앙으로 끌어오는 자세를 부드럽게 블렌드
+  if (f.guardBlend > 0.001) {
+    pose.guard = f.guardBlend;
   }
   return pose;
 }
@@ -938,17 +1202,25 @@ function drawStickFigure(ctx, color, pose) {
   const shoulderY = hipY - Math.cos(lean) * torsoLen * 0.62;
   const armLen = 38, armSwingAngle = 0.8; // 걷기 팔 스윙 가동범위를 넓힘
 
-  const backAngle = lean - pose.armSwing * armSwingAngle;
-  const backHandX = shoulderX - 8 + Math.sin(backAngle) * armLen;
-  const backHandY = shoulderY + Math.cos(backAngle) * armLen;
+  let backAngle = lean - pose.armSwing * armSwingAngle;
 
   // 공격팔(검팔): 뒤로 크게 젖힌 준비 자세(-1.0)에서 완전히 뻗은 슬래시(+1.5)까지 큰 호를 그린다.
+  // 강공은 별도의 넓은 좌우 횡베기(pose.heavySweep)를 그대로 사용한다.
   const restAngle = lean + pose.armSwing * armSwingAngle;
   const swingBack = -1.0;
   const swingForward = 1.5;
-  const attackAngle = lerp(swingBack, swingForward, pose.punch);
-  const frontAngle = pose.attacking ? attackAngle : restAngle;
+  const attackAngle = pose.heavySweep !== undefined ? (lean + pose.heavySweep) : lerp(swingBack, swingForward, pose.punch);
+  let frontAngle = pose.attacking ? attackAngle : restAngle;
   const frontLen = lerp(armLen, armLen * 1.35, pose.punch);
+
+  // 방어: 검/방패를 정면 중앙으로 부드럽게 끌어온다.
+  if (pose.guard) {
+    frontAngle = lerp(frontAngle, lean + 0.15, pose.guard);
+    backAngle = lerp(backAngle, lean, pose.guard);
+  }
+
+  const backHandX = shoulderX - 8 + Math.sin(backAngle) * armLen;
+  const backHandY = shoulderY + Math.cos(backAngle) * armLen;
   const frontHandX = shoulderX + 8 + Math.sin(frontAngle) * frontLen;
   const frontHandY = shoulderY + Math.cos(frontAngle) * frontLen;
 
@@ -1088,14 +1360,15 @@ function updateVisual(f, visual, hitMarker) {
 
   let hop = 0;
   if (f.state === 'Move') {
-    const t = Math.min(1, f.stateFrame / f.framesPerTile);
+    const t = Math.min(1, f.stateFrame / f.currentMoveFrames);
     hop = Math.sin(t * Math.PI) * 0.22;
   }
 
   let lunge = 0;
   if (f.state === 'Attack') {
     const move = MOVES[f.attackMove];
-    const t = Math.min(1, f.stateFrame / (move.startup + 3));
+    const totalAttack = move.startup + move.active + (move.recovery || 0);
+    const t = Math.min(1, f.stateFrame / totalAttack);
     lunge = Math.sin(t * Math.PI) * 0.16;
   }
   const off = facingOffset(f.facing);
@@ -1141,10 +1414,15 @@ function updateVisual(f, visual, hitMarker) {
     const box = attackHitboxTile(f);
     const inBounds = box.x >= 0 && box.x < COLS && box.y >= 0 && box.y < ROWS;
     if (inBounds) {
-      const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + 3;
+      const active = f.stateFrame >= move.startup && f.stateFrame < move.startup + move.active;
       hitMarker.visible = true;
       hitMarker.position.set(worldX(box.x), 0.02, worldZ(box.y));
       hitMarker.material.opacity = active ? 0.65 : 0.22;
+
+      // 강공 스윙 중엔 판정 타일에서 네모/세모/동그라미 파편이 흩날린다
+      if (active && move.heavy && frameCount % 2 === 0) {
+        spawnShapeTrail(box.x, box.y);
+      }
     } else {
       hitMarker.visible = false;
     }
@@ -1219,6 +1497,51 @@ function spawnStarBurst(tx, ty) {
     effects.push({
       sprite, mat, tex, life: 0, maxLife: 22, riseTotal: 0.15,
       vx: Math.cos(angle) * 0.045, vz: Math.sin(angle) * 0.045,
+    });
+  }
+}
+
+// 강공(횡베기) 스윙 경로를 따라 네모/세모/동그라미 파편이 흩날리는 효과
+const SHAPE_KINDS = ['square', 'triangle', 'circle'];
+function drawShapeIcon(ctx, kind, color) {
+  ctx.fillStyle = color;
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+  ctx.lineWidth = 2;
+  if (kind === 'square') {
+    ctx.fillRect(8, 8, 16, 16);
+    ctx.strokeRect(8, 8, 16, 16);
+  } else if (kind === 'triangle') {
+    ctx.beginPath();
+    ctx.moveTo(16, 6); ctx.lineTo(27, 26); ctx.lineTo(5, 26);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.arc(16, 16, 10, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+  }
+}
+
+function spawnShapeTrail(tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const colors = ['#ff9a52', '#ffe14d', '#e7ecf6'];
+  const n = 1 + (Math.random() < 0.5 ? 1 : 0);
+  for (let i = 0; i < n; i++) {
+    const kind = SHAPE_KINDS[Math.floor(Math.random() * SHAPE_KINDS.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const canvas = document.createElement('canvas');
+    canvas.width = 32; canvas.height = 32;
+    drawShapeIcon(canvas.getContext('2d'), kind, color);
+    const tex = new THREE.CanvasTexture(canvas);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    const s = 0.22 + Math.random() * 0.14;
+    sprite.scale.set(s, s, 1);
+    sprite.position.set(wx + (Math.random() - 0.5) * 0.5, 0.7 + Math.random() * 0.5, wz + (Math.random() - 0.5) * 0.5);
+    sprite.renderOrder = 24;
+    scene.add(sprite);
+    effects.push({
+      sprite, mat, tex, life: 0, maxLife: 14 + Math.floor(Math.random() * 6), riseTotal: 0.2,
+      vx: (Math.random() - 0.5) * 0.03, vz: (Math.random() - 0.5) * 0.03,
     });
   }
 }
@@ -1327,6 +1650,8 @@ function tick() {
 
   updateFighter(p1);
   updateFighter(p2);
+  updateGuardBlend(p1);
+  updateGuardBlend(p2);
 
   // 대쉬 도중에 미리 눌러둔 공격이 있다면, 착지한 이 프레임에 바로 대쉬 강타로 발동시킨다.
   if (p1.fireDashAttackNow) { p1.fireDashAttackNow = false; startAttack(p1, 'basic', p2); }
@@ -1357,6 +1682,8 @@ function fillHud(prefix, f) {
   const ready = isReady(f);
   fillEl.classList.toggle('ready', ready);
   document.getElementById(prefix + '-ready-tag').classList.toggle('show', ready);
+  const guardTag = document.getElementById(prefix + '-guard-tag');
+  if (guardTag) guardTag.style.display = f.guardBlend > 0.5 ? 'block' : 'none';
 }
 
 resizeRenderer();
