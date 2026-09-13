@@ -25,6 +25,12 @@
         팔다리를 휘젓고, 시작 지점에 파란 "DASH!" 텍스트가 뜬다. 대쉬 착지 후 4프레임 안에 공격을
         누르면 ATB 게이지가 안 찼어도 예외적으로 "대쉬 강타"가 나가 상대를 2칸 밀치며, 명중 시
         별 5개가 방사형으로 터지는 전용 이펙트로 확인된다.
+  v3.4: 대쉬 강타 콤보 창을 4→20프레임(약 0.33초)으로 넉넉하게 늘리고, 대쉬 애니메이션이 끝나기
+        전에 공격을 눌러도 착지 즉시 발동하도록 입력 버퍼링 추가 (예전엔 창이 너무 좁아 사실상
+        나가지 않는 문제가 있었음). 스테이지/카메라를 키우고 캐릭터 스프라이트 해상도와 크기를
+        올려 포즈가 잘 보이게 했고, 검(앞손)과 방패(뒷손)를 스틱맨에 장착 — 애니메이션이 아니라
+        상태마다 한 장씩 그리는 포즈 그림이라는 원래 설계를 유지. HIT!/miss/DASH! 이펙트 글자도
+        훨씬 크게 키움.
 -->
 <style>
   :root{
@@ -107,7 +113,7 @@
 
   .rig{
     width:100%;
-    max-width:1040px;
+    max-width:1240px;
     display:grid;
     grid-template-columns:210px minmax(0,1fr) 210px;
     gap:16px;
@@ -208,7 +214,7 @@
   }
   #stage3d{
     width:100%;
-    max-width:760px;
+    max-width:960px;
     aspect-ratio:16/10;
     background:#10141d;
     border:1px solid var(--panel-line);
@@ -220,7 +226,7 @@
 
   .frame-tape{
     width:100%;
-    max-width:760px;
+    max-width:960px;
     display:flex;
     justify-content:space-between;
     font-family:var(--font-mono);
@@ -232,7 +238,7 @@
 
   .controls{
     width:100%;
-    max-width:1040px;
+    max-width:1240px;
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:14px;
@@ -273,7 +279,7 @@
 
   .combat-log{
     width:100%;
-    max-width:1040px;
+    max-width:1240px;
     background:#0d1017;
     border:1px solid var(--panel-line);
     border-radius:10px;
@@ -306,9 +312,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.3 · ATB</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v3.4 · ATB</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.2: 공격은 거리와 무관하게 항상 상대 쪽을 바라보고 발동</b>되고(예측 가능성), 실제로 맞으려면 인접(1칸)해야 합니다. <b>v3.3: 방향키를 연타(따닥)하면 대쉬</b>로 2칸 이동하고, 착지 후 4프레임 안에 공격하면 <b>대쉬 강타</b>(2칸 밀치기 + 별 5개 이펙트)가 나갑니다.</p>
+  <p class="sub"><b>v3.0: ATB(액티브 타임 배틀) 전투로 개편.</b> 게이지가 실시간으로 차오르고, 다 찬 순간에만 이동하거나 공격할 수 있습니다 (그 찰나가 "내 턴"). 공격을 준비하는 동안 판정 타일이 먼저 흐릿하게 예고되고, 실제로 맞는 순간 밝게 채워지며 HIT! 이펙트로 확인됩니다. 아래 <b>전투 로그</b>가 모든 판정을 실시간 텍스트로 중계합니다. <b>v3.2: 공격은 거리와 무관하게 항상 상대 쪽을 바라보고 발동</b>되고(예측 가능성), 실제로 맞으려면 인접(1칸)해야 합니다. <b>v3.3: 방향키를 연타(따닥)하면 대쉬</b>로 2칸 이동하고, 착지 후 공격하면 <b>대쉬 강타</b>(2칸 밀치기 + 별 5개 이펙트)가 나갑니다. <b>v3.4: 화면/캐릭터를 키우고 검·방패를 장착</b>했고, 대쉬 강타 타이밍에 여유를 줬습니다.</p>
 </div>
 
 <div class="rig">
@@ -364,7 +370,7 @@
     <h3><span class="dot"></span>P1 조작</h3>
     <div class="keyline">이동 <span class="kk"><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd></span> — ATB 게이지가 다 찼을 때만 이동/공격 가능, 같은 방향키 연타(따닥)로 대쉬(2칸)</div>
     <div class="keyline">공격(스턴) <kbd>U</kbd> — 거리 상관없이 항상 상대를 조준, 맞으려면 인접(1칸)해야 함</div>
-    <div class="keyline">대쉬 착지 후 4프레임 내 <kbd>U</kbd> → <b style="color:var(--stun);">대쉬 강타</b> (게이지 무시, 2칸 밀치기)</div>
+    <div class="keyline">대쉬 도중~착지 직후 <kbd>U</kbd> → <b style="color:var(--stun);">대쉬 강타</b> (게이지 무시, 2칸 밀치기)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -438,6 +444,8 @@ function makeFighter(opts) {
     dashArm: null,    // 대쉬가 예약된 방향
     dashActive: false,     // 지금 대쉬 이동 애니메이션 재생 중인지
     dashLandedFrame: -9999, // 대쉬가 착지한 프레임 (대쉬 콤보 판정용)
+    bufferDashAttack: false, // 대쉬가 끝나기 전에 공격키를 눌러서 예약해둔 상태
+    fireDashAttackNow: false, // 착지 시점에 예약된 대쉬 강타를 발동하라는 1틱 신호
 
     attackMove: null,
     hitstunFrames: 0,
@@ -510,7 +518,7 @@ function findTargetInRange(f, target, maxRange) {
   return { dir: dirTowards(dx, dy), dist };
 }
 
-const DASH_COMBO_WINDOW = 4; // 대쉬 착지 후 이 프레임 안에 공격하면 대쉬 강타로 승격
+const DASH_COMBO_WINDOW = 20; // 대쉬 착지 후 이 프레임(약 0.33초) 안에 공격하면 대쉬 강타로 승격 — 반응할 여유를 줌
 
 function startAttack(f, moveKey, target) {
   // 대쉬 직후 4프레임 콤보 창: 이 순간만큼은 게이지가 덜 찼어도 예외적으로 공격이 나간다
@@ -613,7 +621,15 @@ function handlePlayerInput(f, keymap, target) {
   }
   processMovementInput(f, currentDirs);
 
-  if (keys.has(keymap.attack)) { startAttack(f, 'basic', target); keys.delete(keymap.attack); }
+  if (keys.has(keymap.attack)) {
+    keys.delete(keymap.attack);
+    if (f.state === 'Move' && f.dashActive) {
+      // 대쉬가 아직 진행 중일 때 눌렀어도 놓치지 않도록 예약해뒀다가, 착지하는 즉시 대쉬 강타로 발동한다.
+      f.bufferDashAttack = true;
+    } else {
+      startAttack(f, 'basic', target);
+    }
+  }
 }
 
 function dirTowards(dx, dy) {
@@ -668,7 +684,11 @@ function updateFighter(f) {
         f.tx = f.moveToX; f.ty = f.moveToY;
         f.state = 'Idle';
         f.stateFrame = 0;
-        if (f.dashActive) { f.dashLandedFrame = frameCount; f.dashActive = false; }
+        if (f.dashActive) {
+          f.dashLandedFrame = frameCount;
+          f.dashActive = false;
+          if (f.bufferDashAttack) { f.bufferDashAttack = false; f.fireDashAttackNow = true; }
+        }
       }
       break;
     }
@@ -763,8 +783,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x10141d);
 scene.fog = new THREE.Fog(0x10141d, 14, 26);
 
-const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(0, 10, 8.4);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+camera.position.set(0, 9, 7.6);
 camera.lookAt(0, 0.4, 0.6);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -877,60 +897,89 @@ function computePose(f) {
   return pose;
 }
 
+// 캔버스 128x172 기준 좌표. 애니메이션을 프레임별로 그리는 게 아니라, 포즈 파라미터 하나로
+// "그 순간의 자세"를 매번 다시 그리는 방식 — 진짜 다중 프레임 애니메이션이 아니라
+// 상태마다 한 장짜리 대표 포즈를 실시간으로 계산해서 보여주는 것.
 function drawStickFigure(ctx, color, pose) {
-  ctx.clearRect(0, 0, 96, 128);
+  ctx.clearRect(0, 0, 128, 172);
   ctx.lineCap = 'round';
 
-  const hipX = 48, hipY = 78;
-  const torsoLen = 34;
+  const hipX = 64, hipY = 104;
+  const torsoLen = 46;
   const lean = pose.torsoLean;
   const neckX = hipX + Math.sin(lean) * torsoLen;
   const neckY = hipY - Math.cos(lean) * torsoLen;
 
   // 다리
-  const legLen = 34, legSpreadAngle = 0.55;
+  const legLen = 46, legSpreadAngle = 0.55;
   ctx.strokeStyle = '#11131a';
-  ctx.lineWidth = 7;
-  drawLine(ctx, hipX - 5, hipY,
-    hipX - 5 + Math.sin(pose.legSpread * legSpreadAngle) * legLen,
+  ctx.lineWidth = 10;
+  drawLine(ctx, hipX - 7, hipY,
+    hipX - 7 + Math.sin(pose.legSpread * legSpreadAngle) * legLen,
     hipY + Math.cos(pose.legSpread * legSpreadAngle) * legLen);
-  drawLine(ctx, hipX + 5, hipY,
-    hipX + 5 + Math.sin(-pose.legSpread * legSpreadAngle) * legLen,
+  drawLine(ctx, hipX + 7, hipY,
+    hipX + 7 + Math.sin(-pose.legSpread * legSpreadAngle) * legLen,
     hipY + Math.cos(-pose.legSpread * legSpreadAngle) * legLen);
 
   // 몸통
   ctx.strokeStyle = color;
-  ctx.lineWidth = 9;
+  ctx.lineWidth = 13;
   drawLine(ctx, hipX, hipY, neckX, neckY);
 
-  // 팔
+  // 팔 (뒷팔 = 방패팔, 앞팔 = 검팔)
   const shoulderX = hipX + Math.sin(lean) * torsoLen * 0.62;
   const shoulderY = hipY - Math.cos(lean) * torsoLen * 0.62;
-  const armLen = 28, armSwingAngle = 0.5;
-  ctx.strokeStyle = '#11131a';
-  ctx.lineWidth = 6;
+  const armLen = 38, armSwingAngle = 0.5;
 
   const backAngle = lean - pose.armSwing * armSwingAngle;
-  drawLine(ctx, shoulderX - 6, shoulderY,
-    shoulderX - 6 + Math.sin(backAngle) * armLen,
-    shoulderY + Math.cos(backAngle) * armLen);
+  const backHandX = shoulderX - 8 + Math.sin(backAngle) * armLen;
+  const backHandY = shoulderY + Math.cos(backAngle) * armLen;
 
   const restAngle = lean + pose.armSwing * armSwingAngle;
   const punchAngle = Math.PI / 2;
   const frontAngle = lerp(restAngle, punchAngle, pose.punch);
   const frontLen = lerp(armLen, armLen * 1.2, pose.punch);
-  drawLine(ctx, shoulderX + 6, shoulderY,
-    shoulderX + 6 + Math.sin(frontAngle) * frontLen,
-    shoulderY + Math.cos(frontAngle) * frontLen);
+  const frontHandX = shoulderX + 8 + Math.sin(frontAngle) * frontLen;
+  const frontHandY = shoulderY + Math.cos(frontAngle) * frontLen;
+
+  // 방패 (뒷손, 팔보다 먼저 그려서 팔/몸통에 살짝 가려지게)
+  ctx.fillStyle = '#2b3040';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3.5;
+  ctx.beginPath();
+  ctx.ellipse(backHandX, backHandY, 15, 20, 0, 0, Math.PI * 2);
+  ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.lineWidth = 2;
+  drawLine(ctx, backHandX, backHandY - 12, backHandX, backHandY + 12);
+
+  ctx.strokeStyle = '#11131a';
+  ctx.lineWidth = 8;
+  drawLine(ctx, shoulderX - 8, shoulderY, backHandX, backHandY);
+  drawLine(ctx, shoulderX + 8, shoulderY, frontHandX, frontHandY);
+
+  // 검 (앞손, 팔보다 길게 뻗어나감)
+  const bladeLen = 56;
+  const tipX = frontHandX + Math.sin(frontAngle) * bladeLen;
+  const tipY = frontHandY + Math.cos(frontAngle) * bladeLen;
+  const perp = frontAngle + Math.PI / 2;
+  ctx.strokeStyle = '#cfd8e6';
+  ctx.lineWidth = 5;
+  drawLine(ctx, frontHandX, frontHandY, tipX, tipY);
+  ctx.strokeStyle = '#8b6a2f';
+  ctx.lineWidth = 6;
+  drawLine(ctx,
+    frontHandX + Math.sin(perp) * 9, frontHandY + Math.cos(perp) * 9,
+    frontHandX - Math.sin(perp) * 9, frontHandY - Math.cos(perp) * 9);
 
   // 머리
-  const headR = 15;
+  const headR = 21;
   const headAngle = lean + pose.headTilt;
-  const headX = neckX + Math.sin(headAngle) * (headR + 3);
-  const headY = neckY - Math.cos(headAngle) * (headR + 3);
+  const headX = neckX + Math.sin(headAngle) * (headR + 4);
+  const headY = neckY - Math.cos(headAngle) * (headR + 4);
   ctx.fillStyle = '#f2e6d8';
   ctx.strokeStyle = '#11131a';
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.arc(headX, headY, headR, 0, Math.PI * 2);
   ctx.fill(); ctx.stroke();
@@ -938,13 +987,13 @@ function drawStickFigure(ctx, color, pose) {
 
 function makeFighterVisual(hexColor) {
   const canvas = document.createElement('canvas');
-  canvas.width = 96; canvas.height = 128;
+  canvas.width = 128; canvas.height = 172;
   const ctx = canvas.getContext('2d');
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
   const sprite = new THREE.Sprite(material);
   const aspect = canvas.width / canvas.height;
-  sprite.scale.set(0.95 * aspect, 0.95, 1);
+  sprite.scale.set(1.2 * aspect, 1.2, 1); // 이전보다 크게 표시해서 포즈/장비가 잘 보이게
   scene.add(sprite);
 
   const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.32 });
@@ -1023,10 +1072,10 @@ function updateVisual(f, visual, hitMarker) {
     shakeZ = (Math.random() - 0.5) * amp;
   }
 
-  const px = wx + lungeX + shakeX, pz = wz + lungeZ + shakeZ, py = 0.5 + hop;
+  const px = wx + lungeX + shakeX, pz = wz + lungeZ + shakeZ, py = 0.6 + hop;
   visual.sprite.position.set(px, py, pz);
   visual.shadow.position.set(wx, 0.021, wz);
-  visual.gaugeSprite.position.set(wx, 1.18 + hop * 0.3, wz);
+  visual.gaugeSprite.position.set(wx, 1.38 + hop * 0.3, wz);
 
   drawStickFigure(visual.ctx, f.color, computePose(f));
   visual.texture.needsUpdate = true;
@@ -1063,37 +1112,38 @@ const effects = [];
 function spawnEffect(type, tx, ty) {
   const wx = worldX(tx), wz = worldZ(ty);
   const canvas = document.createElement('canvas');
-  canvas.width = 220; canvas.height = 56;
+  canvas.width = 340; canvas.height = 96;
   const ctx = canvas.getContext('2d');
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 
-  let scaleW = 1.1, scaleH = 0.42, maxLife = 28, riseTotal = 0.55;
+  let scaleW = 1.7, scaleH = 0.48, maxLife = 28, riseTotal = 0.6;
+  const cx = canvas.width / 2, cy = canvas.height / 2;
 
   if (type === 'hit') {
-    ctx.font = "700 30px 'Chakra Petch', sans-serif";
-    ctx.lineWidth = 6; ctx.strokeStyle = '#7a3d00'; ctx.strokeText('HIT!', 110, 28);
-    ctx.fillStyle = '#ffe14d'; ctx.fillText('HIT!', 110, 28);
+    ctx.font = "700 46px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 9; ctx.strokeStyle = '#7a3d00'; ctx.strokeText('HIT!', cx, cy);
+    ctx.fillStyle = '#ffe14d'; ctx.fillText('HIT!', cx, cy);
   } else if (type === 'miss') {
-    ctx.font = "600 22px 'IBM Plex Mono', monospace";
-    ctx.fillStyle = '#8892a6'; ctx.fillText('miss', 110, 28);
-    scaleW = 0.8; scaleH = 0.3; maxLife = 20;
+    ctx.font = "600 34px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = '#8892a6'; ctx.fillText('miss', cx, cy);
+    scaleW = 1.2; scaleH = 0.34; maxLife = 20;
   } else if (type === 'dash') {
-    ctx.font = "700 26px 'Chakra Petch', sans-serif";
-    ctx.lineWidth = 5; ctx.strokeStyle = '#123a52'; ctx.strokeText('DASH!', 110, 28);
-    ctx.fillStyle = '#6fdcff'; ctx.fillText('DASH!', 110, 28);
-    scaleW = 0.95; scaleH = 0.36; maxLife = 18; riseTotal = 0.35;
+    ctx.font = "700 40px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 8; ctx.strokeStyle = '#123a52'; ctx.strokeText('DASH!', cx, cy);
+    ctx.fillStyle = '#6fdcff'; ctx.fillText('DASH!', cx, cy);
+    scaleW = 1.5; scaleH = 0.42; maxLife = 18; riseTotal = 0.4;
   } else if (type === 'dashHit') {
-    ctx.font = "700 26px 'Chakra Petch', sans-serif";
-    ctx.lineWidth = 6; ctx.strokeStyle = '#5c2d00'; ctx.strokeText('★ 대쉬 강타! ★', 110, 28);
-    ctx.fillStyle = '#ffd34d'; ctx.fillText('★ 대쉬 강타! ★', 110, 28);
-    scaleW = 1.9; scaleH = 0.5; maxLife = 34; riseTotal = 0.6;
+    ctx.font = "700 38px 'Chakra Petch', sans-serif";
+    ctx.lineWidth = 9; ctx.strokeStyle = '#5c2d00'; ctx.strokeText('★ 대쉬 강타! ★', cx, cy);
+    ctx.fillStyle = '#ffd34d'; ctx.fillText('★ 대쉬 강타! ★', cx, cy);
+    scaleW = 2.6; scaleH = 0.74; maxLife = 34; riseTotal = 0.65;
   }
 
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
   sprite.scale.set(scaleW, scaleH, 1);
-  sprite.position.set(wx, 1.3, wz);
+  sprite.position.set(wx, 1.7, wz);
   sprite.renderOrder = 25;
   scene.add(sprite);
   effects.push({ sprite, mat, tex, life: 0, maxLife, riseTotal, vx: 0, vz: 0 });
@@ -1106,17 +1156,17 @@ function spawnStarBurst(tx, ty) {
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 + Math.random() * 0.3;
     const canvas = document.createElement('canvas');
-    canvas.width = 32; canvas.height = 32;
+    canvas.width = 48; canvas.height = 48;
     const ctx = canvas.getContext('2d');
-    ctx.font = '22px sans-serif';
+    ctx.font = '34px sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillStyle = '#ffd34d';
-    ctx.fillText('★', 16, 17);
+    ctx.fillText('★', 24, 25);
     const tex = new THREE.CanvasTexture(canvas);
     const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
     const sprite = new THREE.Sprite(mat);
-    sprite.scale.set(0.32, 0.32, 1);
-    sprite.position.set(wx, 0.9, wz);
+    sprite.scale.set(0.5, 0.5, 1);
+    sprite.position.set(wx, 1.1, wz);
     sprite.renderOrder = 26;
     scene.add(sprite);
     effects.push({
@@ -1230,6 +1280,11 @@ function tick() {
 
   updateFighter(p1);
   updateFighter(p2);
+
+  // 대쉬 도중에 미리 눌러둔 공격이 있다면, 착지한 이 프레임에 바로 대쉬 강타로 발동시킨다.
+  if (p1.fireDashAttackNow) { p1.fireDashAttackNow = false; startAttack(p1, 'basic', p2); }
+  if (p2.fireDashAttackNow) { p2.fireDashAttackNow = false; startAttack(p2, 'basic', p1); }
+
   checkAttackHits(p1, p2);
   checkAttackHits(p2, p1);
 
