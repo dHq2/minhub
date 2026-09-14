@@ -335,6 +335,16 @@
         - 철산고 카운터 전용 이펙트 추가: 파란 별들이 사방으로 튀어올랐다가 중력에 끌려 바닥에
           떨어져 몇 번 통통 튕기고 잦아들며 사라진다(spawnCounterStars — 이펙트 시스템에 중력/
           바운스 물리 경로를 새로 추가).
+  v9.3: 공참각을 "날아가 훑고 미끄러지는" 궤적으로 다시 잡음.
+        - 발동 40f→20f, 공중제비는 2바퀴→크게 한 바퀴로.
+        - 판정 범위를 "도약 시작 지점 기준 정면 1~2칸"으로 바꿨다. 이전엔 2칸을 날아간 *뒤*
+          다시 그 앞 2칸을 때리는 구조(총 도달 6칸)라 제자리에서 수직으로 꽂히는 것처럼 보였는데,
+          이제는 캐릭터 자신이 그 2칸을 직접 훑고 지나간다(슬라이딩과 같은 원리, 총 도달 4칸).
+        - 궤적도 그에 맞춰 2단으로: 공중 구간에서 전체 거리의 72%(=1칸과 2칸 사이)까지 날아가
+          그 지점에 착지하고, 착지 관성으로 나머지를 앞으로 미끄러지며 감속해 2칸 끝에서 멈춘다.
+          착지 충격 진동 + 미끄러지는 동안 바닥 먼지, 무릎을 굽히고 상체를 숙인 채 밀려나는
+          전용 포즈까지 붙였다. 실측 궤적: 20f 판정 시작(공중, 1칸 지점) → 36f 착지(1.44칸)
+          → 51f 정지(2.00칸).
   v9.2: 자동 타겟팅 규칙 재설계 + 공참각을 "체공하는 도약기"로 개편.
         - 자동 타겟팅(공격 시 상대 쪽으로 몸을 도는 것)을 인접 1칸(AUTO_FACE_RANGE)으로 제한했다.
           그 거리에선 상대가 반드시 8방향 중 하나에 있어 엉뚱한 방향이 나올 수 없고, 붙어 있는
@@ -699,9 +709,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v9.2</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v9.3</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v9.2.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 <b>공참각</b>(약 1초간 체공하며 공중제비 2바퀴, 관성으로 2칸 날아가 정면 2칸을 내리찍음)으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>O를 누르고 있는 채로</b> 같은 커맨드를 넣으면 <b>방패 철산고</b> — 등과 방패로 한 칸 끝까지 파고들어 처박고, <b>상대가 공격을 내미는 순간</b>에 꽂으면 카운터가 터져 2D 횡스크롤 시점으로 카메라가 전환되며 상대가 배를 잡고 3초간 쓰러집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 자동 타겟팅은 <b>인접 1칸</b>일 때만 걸리고, 그보다 멀면 조준은 전적으로 플레이어 몫이라 엉뚱한 방향으로 지르면 그대로 헛칩니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v9.3.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 <b>공참각</b>(크게 한 바퀴 공중제비를 돌며 정면 2칸을 날아가, 1칸과 2칸 사이에 착지해 2칸 끝까지 미끄러지며 멈춤)으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>O를 누르고 있는 채로</b> 같은 커맨드를 넣으면 <b>방패 철산고</b> — 등과 방패로 한 칸 끝까지 파고들어 처박고, <b>상대가 공격을 내미는 순간</b>에 꽂으면 카운터가 터져 2D 횡스크롤 시점으로 카메라가 전환되며 상대가 배를 잡고 3초간 쓰러집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 자동 타겟팅은 <b>인접 1칸</b>일 때만 걸리고, 그보다 멀면 조준은 전적으로 플레이어 몫이라 엉뚱한 방향으로 지르면 그대로 헛칩니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="combat-log">
@@ -768,7 +778,7 @@
     <div class="keyline">대쉬 도중 같은 방향을 <b>대쉬가 끝나가는 그 타이밍</b>에 다시 누르면(리듬게임처럼!) <b>질주</b>로 전환 — 너무 일찍 누르면 안 먹힌다</div>
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
-    <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (약 <b>1초간 체공</b>하며 공중제비 2바퀴 — 관성으로 2칸을 날아가 정면 2칸을 내리찍음 · 카메라가 붙어 따라가며 크게 진동 · <b>달리던 방향으로 날아가므로 조준은 내 몫</b>, 빗나가면 그냥 헛침)</div>
+    <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (20f 발동, 크게 한 바퀴 <b>공중제비</b>를 돌며 정면 <b>2칸을 날아가 훑고</b>, 1칸과 2칸 사이에 착지해 관성으로 <b>앞으로 미끄러지며</b> 2칸 끝에서 멈춤 · 카메라가 붙어 따라가며 크게 진동 · <b>달리던 방향으로 날아가므로 조준은 내 몫</b>, 빗나가면 그냥 헛침)</div>
     <div class="keyline">방향키 <kbd>↓</kbd>→<kbd>↘</kbd>→<kbd>→</kbd> (또는 <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd>) 이어서 <kbd>U</kbd> → <b style="color:#ffd34d;">붕권</b> (한 칸 파고들어 정권지르기, 1칸 넉백, 2초 기절, 큰 후딜)</div>
     <div class="keyline"><kbd>O</kbd>를 <b>누르고 있는 채로</b> <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd> (또는 반대 방향) → <b style="color:#7fd4ff;">방패 철산고</b> (3f 발동·8f 판정·20f 후딜 — 예비동작이 거의 안 보일 만큼 짧게 "쓱빡!" 하고 한 칸 끝까지 파고들어 처박음 · 1초 기절 + 30% 치명타 · <b style="color:#ff6b5e;">상대가 공격을 내미는 순간에 꽂으면 카운터</b> → 4초 기절 + 2D 횡스크롤 카메라 전환 + 파란 별이 바닥에 떨어져 튕기며 흩어짐 + 배를 잡고 다운, 3초간 기상 불가·그동안 계속 때릴 수 있음)</div>
   </div>
@@ -871,9 +881,10 @@ const MOVES = {
   push:       { startup: 10, active: 3, recovery: 6,  stun: 14, push: 1, label: '밀치기' },
   dashAttack: { startup: 5,  active: 3, recovery: 4,  stun: 60, push: 2, label: '대쉬 강타', special: true },
   heavy:      { startup: 16, active: 6, recovery: 20, stun: 20, push: 0, label: '강공', heavy: true, slowAfter: true },
-  // 공참각은 "체공"이 핵심이다 — startup(도약+부유) + active(내리찍기)를 합친 약 1초 동안
-  // 공중에 떠 있고, 그 사이 관성으로 2칸을 날아간다. 그만큼 후딜도 큰 완전 커밋 기술.
-  ultimate:   { startup: 40, active: 18, recovery: 26, stun: 45, push: 3, label: '공참각', ultimate: true },
+  // 공참각은 "날아가 훑는" 기술이다 — 크게 한 바퀴 공중제비를 돌며 정면 2칸을 날아가서,
+  // 1칸과 2칸 사이에 착지하고 그 관성으로 2칸 끝까지 앞으로 미끄러지며 멈춘다.
+  // 그 2칸이 그대로 판정 범위이고(자기가 지나간 자리), 후딜이 큰 완전 커밋 기술.
+  ultimate:   { startup: 20, active: 16, recovery: 28, stun: 45, push: 3, label: '공참각', ultimate: true },
   boonggwon:  { startup: 10, active: 4, recovery: 24, stun: 120, push: 1, label: '붕권', boonggwon: true },
   slide:        { startup: 18, active: 7, recovery: 20, stun: 55, push: 1, label: '슬라이딩', slide: true },
   shoulderBash: { startup: 8,  active: 6, recovery: 26, stun: 120, push: 1, label: '숄더배쉬', shoulderBash: true },
@@ -885,7 +896,9 @@ const AUTO_FACE_RANGE = 1;   // 자동 타겟팅(공격 시 상대 쪽으로 몸
                               // 이보다 멀면 조준은 전적으로 플레이어 몫 — 빗나가면 그냥 헛친다.
 let ULTIMATE_LEAP_TILES = 2;  // 공참각이 공중에서 관성으로 날아가는 최대 칸수
 let ULTIMATE_JUMP_HEIGHT = 1.35; // 공참각 도약의 최고 높이
-let ULTIMATE_SPINS = 2;       // 체공 중 공중제비를 몇 바퀴 도는지
+let ULTIMATE_SPINS = 1;       // 체공 중 공중제비를 몇 바퀴 도는지 — 크게 한 바퀴
+let ULTIMATE_LAND_FRACTION = 0.72; // 전체 이동(2칸) 중 어디쯤에서 착지하는지 — 1칸과 2칸 사이
+let ULTIMATE_SLIDE_RATIO = 0.55;   // 후딜 중 착지 관성으로 앞으로 미끄러지는 구간의 비율
 
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -1625,9 +1638,17 @@ function attackHitboxTiles(f) {
     return tiles;
   }
   if (move && move.ultimate) {
-    // 공참각: 공중제비의 회전 관성을 그대로 실어서 정면 1칸이 아니라 2칸까지 훑어 내리찍는다.
+    // 공참각: 도약을 시작한 지점(attackLungeFrom) 기준으로 정면 1~2칸을 훑는다. 캐릭터 자신이
+    // 바로 그 2칸을 날아가 1칸과 2칸 사이에 착지하고 2칸 끝까지 미끄러지므로, "내가 지나간 자리"가
+    // 그대로 판정 범위가 된다(슬라이딩과 같은 원리). 상대에게 막혀 덜 날아갔더라도 원래 노리던
+    // 2칸 전체는 판정 대상이다.
+    const origin = f.attackLungeFrom || { x: f.tx, y: f.ty };
     const off = facingOffset(f.facing);
-    return [main, { x: f.tx + off.dx * 2, y: f.ty + off.dy * 2 }];
+    const tiles = [];
+    for (let d = 1; d <= ULTIMATE_LEAP_TILES; d++) {
+      tiles.push({ x: origin.x + off.dx * d, y: origin.y + off.dy * d });
+    }
+    return tiles;
   }
   if (!move || !move.heavy) return [main];
   const [leftDir, rightDir] = neighborDirs(f.facing);
@@ -2269,11 +2290,22 @@ function getRenderTile(f) {
       return { x: lerp(f.attackLungeFrom.x, f.tx, eased), y: lerp(f.attackLungeFrom.y, f.ty, eased) };
     }
     if (move.ultimate) {
-      // 공참각: 뛰어오른 뒤 체공하는 내내 관성으로 쭉 미끄러지듯 날아간다 — 도약(startup) 구간
-      // 전체에 걸쳐 이즈아웃으로 2칸을 이동하고, 내리찍기(active)가 시작될 즈음엔 이미 도착해 있다.
-      const t = Math.min(1, f.stateFrame / Math.max(1, move.startup));
-      const eased = 1 - Math.pow(1 - t, 2);
-      return { x: lerp(f.attackLungeFrom.x, f.tx, eased), y: lerp(f.attackLungeFrom.y, f.ty, eased) };
+      // 공참각: 수직으로 꽂히는 게 아니라 "날아가서 미끄러지며 멈추는" 궤적이다.
+      //  1) 공중 구간(startup+active): 관성으로 쭉 날아가 전체 거리의 ULTIMATE_LAND_FRACTION
+      //     (=1칸과 2칸 사이)까지 전진하고, 그 지점에서 착지한다.
+      //  2) 미끄러지는 구간(후딜 앞부분): 착지 관성으로 나머지 거리를 앞으로 미끄러지며
+      //     서서히 감속해 2칸 끝에서 멈춘다.
+      const activeEnd = move.startup + move.active;
+      const slideFrames = Math.max(1, Math.round((move.recovery || 1) * ULTIMATE_SLIDE_RATIO));
+      let p;
+      if (f.stateFrame <= activeEnd) {
+        const t = f.stateFrame / Math.max(1, activeEnd);
+        p = (1 - Math.pow(1 - t, 1.5)) * ULTIMATE_LAND_FRACTION; // 공중을 가르며 전진
+      } else {
+        const t = Math.min(1, (f.stateFrame - activeEnd) / slideFrames);
+        p = ULTIMATE_LAND_FRACTION + (1 - ULTIMATE_LAND_FRACTION) * (1 - Math.pow(1 - t, 2.5)); // 미끄러지며 감속
+      }
+      return { x: lerp(f.attackLungeFrom.x, f.tx, p), y: lerp(f.attackLungeFrom.y, f.ty, p) };
     }
     // 그 외 돌진기(붕권 등): 도약 상승 구간(riseEnd) 동안 원래 있던 자리에서 착지 자리로 전진한다.
     const riseEnd = Math.max(1, Math.round(move.startup * 0.55));
@@ -2819,14 +2851,27 @@ function computePose(f) {
         pose.torsoLean = -0.3 * t;
         pose.legSpread = 0.5 * t;
       } else if (f.stateFrame < activeEnd) {
+        // 앞으로 날아가며 다리를 휘둘러 훑는다 — 수직으로 꽂는 게 아니라 비스듬히 쓸어 내린다.
         const t = (f.stateFrame - activeStart) / Math.max(1, move.active);
-        pose.kickAngle = lerp(-1.9, 1.45, t); // 회전 관성 그대로 다리를 내리꽂는다
-        pose.torsoLean = lerp(-0.3, 0.2, t);
+        pose.kickAngle = lerp(-1.9, 1.2, t);
+        pose.torsoLean = lerp(-0.3, 0.45, t); // 진행 방향으로 상체를 기울인 채
         pose.legSpread = 0.5 * (1 - t);
       } else {
-        const t = (f.stateFrame - activeEnd) / Math.max(1, move.recovery || 1);
-        pose.kickAngle = lerp(1.45, 0, t);
-        pose.torsoLean = 0.2 * (1 - t);
+        const slideFrames = Math.max(1, Math.round((move.recovery || 1) * ULTIMATE_SLIDE_RATIO));
+        const rt = f.stateFrame - activeEnd;
+        if (rt < slideFrames) {
+          // 착지 후 앞으로 미끄러지는 구간 — 무릎을 굽히고 상체를 숙인 채 쭉 밀려 나간다.
+          const t = rt / slideFrames;
+          pose.kickAngle = lerp(1.2, 0.5, t);
+          pose.torsoLean = lerp(0.45, 0.6, 1 - Math.pow(1 - t, 2));
+          pose.legSpread = lerp(0, -0.55, t);
+        } else {
+          // 다 멈춘 뒤에야 천천히 일어선다(긴 후딜).
+          const t = (rt - slideFrames) / Math.max(1, (move.recovery || 1) - slideFrames);
+          pose.kickAngle = lerp(0.5, 0, t);
+          pose.torsoLean = lerp(0.6, 0, t);
+          pose.legSpread = lerp(-0.55, 0, t);
+        }
       }
     } else if (move.ironMountain) {
       // 방패 철산고: 예비동작이 3프레임뿐이라 눈에 거의 안 보인다 — 판정이 시작되는 즉시
@@ -3310,8 +3355,9 @@ function updateVisual(f, visual, hitMarkers) {
           const t = (f.stateFrame - riseEnd) / Math.max(1, move.startup - riseEnd);
           jumpLift = h * (1 + Math.sin(t * Math.PI) * 0.06);
         } else {
+          // 판정 구간 내내 앞으로 날아가며 고도를 낮춰, active가 끝나는 순간 바닥에 닿는다.
           const t = (f.stateFrame - move.startup) / Math.max(1, move.active);
-          jumpLift = h * (1 - Math.pow(t, 1.7)); // 회전 관성 그대로 급강하하며 내리꽂는다
+          jumpLift = h * (1 - Math.pow(t, 1.55));
         }
         // 회전하는 다리 끝의 궤적을 따라 잔상이 그려진다
         const pose = computePose(f);
@@ -3325,6 +3371,12 @@ function updateVisual(f, visual, hitMarkers) {
         else if (f.stateFrame > move.startup && frameCount >= screenShakeUntil) triggerScreenShake(0.06, 3);
       } else {
         jumpLift = 0;
+        // 착지 후 앞으로 미끄러지는 구간 — 바닥을 긁으며 먼지가 계속 인다.
+        const slideFrames = Math.max(1, Math.round((move.recovery || 1) * ULTIMATE_SLIDE_RATIO));
+        if (f.stateFrame <= activeEnd + slideFrames) {
+          if (f.stateFrame === activeEnd + 1) triggerScreenShake(0.12, 8); // 착지 충격
+          if (frameCount % 2 === 0) spawnDustBurst(fx, fy, 2);
+        }
       }
     }
   }
