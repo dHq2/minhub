@@ -612,18 +612,19 @@
   .fd-row input:focus{ outline:1px solid var(--p1); }
 
   .combat-log{
-    position:absolute;
-    top:8px;
-    left:8px;
-    width:min(300px, 46%);
-    max-height:calc(100% - 16px);
-    background:rgba(13,16,23,.82);
+    position:fixed;
+    top:12px;
+    left:12px;
+    width:min(280px, calc(100vw - 24px));
+    max-height:calc(100vh - 24px);
+    background:rgba(13,16,23,.92);
     backdrop-filter:blur(2px);
     border:1px solid var(--panel-line);
     border-radius:10px;
     padding:10px 12px;
-    z-index:5;
+    z-index:50;
     pointer-events:auto;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
   }
   .combat-log-title{
     font-family:var(--font-display);
@@ -658,6 +659,11 @@
   <p class="sub"><b>v8.9.3.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 "공참각"으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
+<div class="combat-log">
+  <div class="combat-log-title">Combat Log</div>
+  <div class="combat-log-body" id="combat-log-body"></div>
+</div>
+
 <div class="rig">
   <div class="side">
     <div class="panel p1">
@@ -675,12 +681,7 @@
   </div>
 
   <div class="stage">
-    <div id="stage3d">
-      <div class="combat-log">
-        <div class="combat-log-title">Combat Log</div>
-        <div class="combat-log-body" id="combat-log-body"></div>
-      </div>
-    </div>
+    <div id="stage3d"></div>
     <div class="frame-tape">
       <span>frame <b id="fc">0</b></span>
       <span>60fps fixed-step sim &middot; ATB 전투</span>
