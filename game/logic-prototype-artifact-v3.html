@@ -321,6 +321,20 @@
           거친 진동으로 꽂히는 순간을 보여주고, 상대가 배를 잡고 무너지는 동안 서서히 줌아웃된다.
           쓰러진 상대는 약 3초간 일어나지 못하고, 그동안 계속 맞을 수 있다(추가 기절은 없음).
         - AI도 동일하게 방패 철산고를 쓴다 — 플레이어와 같은 경로(가드 유지 + 커맨드 입력)로만.
+  v9.1: 역방향 공참각 버그 수정 + 공참각/철산고 추가 손질.
+        - [버그 수정] 대쉬 캔슬 기술(공참각)이 "뒤로 물러나던(retreating) 중"에 나가면, 근처에
+          상대가 있다는 이유만으로 몸이 확 반대로 꺾여 상대 쪽으로 파고드는 부자연스러운
+          역방향 공격이 나가고 있었다. 이제 retreating 상태에서 캔슬됐다면 억지로 파고들지
+          않고 그 자리에서 그대로 내지르기만 한다 — 안 닿는 위치면 자연스럽게 헛친다. 실제로
+          접근/조준 중이었다면(대각선 포함) 기존처럼 정상적으로 파고들어 명중한다.
+        - 공참각: 히트박스에 정면 2칸째를 추가(회전 관성으로 두 칸을 훑어 내리찍는 느낌) +
+          진동을 크게 키우고(내리찍는 순간 0.12→0.28) 판정이 유지되는 동안 잔진동이 남도록 했다.
+        - 방패 철산고 프레임 조정: 발동 12f→3f, 판정 5f→8f, 후딜 26f→20f — 예비동작이 거의 안
+          보일 만큼 짧아져 "쓱빡!" 하고 순간이동하듯 꽂히고 긴 후딜로 대가를 치르는 한 방
+          기술이 됐다. 화면상 파고드는 모션도 판정 시작 직후 2프레임 안에 다 꽂히도록 스냅.
+        - 철산고 카운터 전용 이펙트 추가: 파란 별들이 사방으로 튀어올랐다가 중력에 끌려 바닥에
+          떨어져 몇 번 통통 튕기고 잦아들며 사라진다(spawnCounterStars — 이펙트 시스템에 중력/
+          바운스 물리 경로를 새로 추가).
 -->
 <style>
   :root{
@@ -671,9 +685,9 @@
 </style>
 
 <div class="masthead">
-  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v9.0</span></div>
+  <div class="eyebrow">docs/game-design-v1.md &middot; live logic check <span class="ver-tag">v9.1</span></div>
   <h1>타일 대전 <span>프레임 랩</span></h1>
-  <p class="sub"><b>v9.0.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 <b>공참각</b>(15f 발동, 크게 공중제비를 돌며 다리 궤적을 남기고 내리찍음)으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>O를 누르고 있는 채로</b> 같은 커맨드를 넣으면 <b>방패 철산고</b> — 등과 방패로 한 칸 끝까지 파고들어 처박고, <b>상대가 공격을 내미는 순간</b>에 꽂으면 카운터가 터져 2D 횡스크롤 시점으로 카메라가 전환되며 상대가 배를 잡고 3초간 쓰러집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
+  <p class="sub"><b>v9.1.</b> 더블탭(대각선 포함)하면 짧은 단발 <b>대쉬</b>(2칸, "DASH!!" 배너)가 나가고, 그 대쉬가 끝나가는 넉넉한 타이밍 구간에 같은 방향을 다시 누르면(리듬감 있게 세 번 두드리면 어지간해서는 걸립니다) <b>질주</b>로 전환돼 전용 "질주!!!" 배너·속도선 폭발과 함께 점점 가속하며 큼직하게 뛰어 달립니다 — 달리는 동안 몸은 항상 상대를 바라보므로, 다가갈 때는 전방 질주, 멀어질 때는 상대를 노려보며 물러나는 백페달이 됩니다. 질주도 반대 방향을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 질주 중 <b>K</b>는 달리던 방향으로 4칸을 관통하는 <b>슬라이딩 태클</b>(50% 다운, 맞으면 공중으로 붕 뜸), <b>O</b>는 방패를 앞세워 무겁게 지면에 붙어 돌격하는 <b>숄더배쉬</b>입니다(방패를 세우는 순간 화면이 짧게 울립니다) — 돌진도 스스로 멈추지 않고, <b>반대 방향</b>을 누르면 관성으로 한 칸 미끄러진 뒤에야 섭니다. 공격·강공을 누르면 가까운 칸에서 바로 대쉬 강타/필살기 <b>공참각</b>(15f 발동, 크게 공중제비를 돌며 다리 궤적을 남기고 내리찍음)으로 이어지고, 붕권이 명중하면 30% 확률로 초근접 크리티컬 카메라+화면 흔들림+큰 별이 터집니다. <b>O를 누르고 있는 채로</b> 같은 커맨드를 넣으면 <b>방패 철산고</b> — 등과 방패로 한 칸 끝까지 파고들어 처박고, <b>상대가 공격을 내미는 순간</b>에 꽂으면 카운터가 터져 2D 횡스크롤 시점으로 카메라가 전환되며 상대가 배를 잡고 3초간 쓰러집니다. <b>클린치(Y)</b>는 거리와 무관하게 무조건 발동하며(발동 자체는 절대 실패하지 않습니다), 대신 대쉬/질주보다 느린 "잡기 걸음"으로 상대를 계속 쫓아갑니다 — 사거리 안에 들어오면 바로 붙잡히지만, 상대가 대쉬/질주로 계속 도망치면 못 따라잡고 헛칠 수 있습니다. 코트 위 지형지물(블럭)은 벽처럼 이동을 가로막습니다. 상대(P2)는 이제 이 모든 규칙을 플레이어와 똑같은 입력 타이밍으로 그대로 받으며 움직입니다. 우측 <b>프레임표</b>에서 모든 수치를 실시간으로 조정해볼 수 있습니다.</p>
 </div>
 
 <div class="combat-log">
@@ -740,9 +754,9 @@
     <div class="keyline">대쉬 도중 같은 방향을 <b>대쉬가 끝나가는 그 타이밍</b>에 다시 누르면(리듬게임처럼!) <b>질주</b>로 전환 — 너무 일찍 누르면 안 먹힌다</div>
     <div class="keyline">클린치(잡기) <kbd>Y</kbd> — 인접 시 달려들어 몸싸움, 50% 확률로 다운 vs 실패 시 후퇴</div>
     <div class="keyline">대쉬 도중~착지 직후 공격키 → <b style="color:var(--stun);">대쉬 강타</b> (2칸 밀치기, 1초 스턴)</div>
-    <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (15f 발동, 크게 <b>공중제비</b>를 돌며 다리 궤적을 남기고 내리찍음 · 카메라가 붙어 따라가며 진동, 최장 4칸)</div>
+    <div class="keyline">대쉬 도중~착지 직후 <kbd>I</kbd> → <b style="color:#ff6b5e;">필살기 공참각</b> (15f 발동, 크게 <b>공중제비</b>를 돌며 다리 궤적을 남기고 정면 2칸을 내리찍음 · 카메라가 붙어 따라가며 크게 진동, 최장 4칸 · 뒤로 물러나던 중 캔슬되면 억지로 파고들지 않고 그대로 헛침)</div>
     <div class="keyline">방향키 <kbd>↓</kbd>→<kbd>↘</kbd>→<kbd>→</kbd> (또는 <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd>) 이어서 <kbd>U</kbd> → <b style="color:#ffd34d;">붕권</b> (한 칸 파고들어 정권지르기, 1칸 넉백, 2초 기절, 큰 후딜)</div>
-    <div class="keyline"><kbd>O</kbd>를 <b>누르고 있는 채로</b> <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd> (또는 반대 방향) → <b style="color:#7fd4ff;">방패 철산고</b> (12f 발동, 등과 방패로 한 칸 끝까지 파고들어 처박음 · 1초 기절 + 30% 치명타 · <b style="color:#ff6b5e;">상대가 공격을 내미는 순간에 꽂으면 카운터</b> → 4초 기절 + 2D 횡스크롤 카메라 전환 + 배를 잡고 다운, 3초간 기상 불가·그동안 계속 때릴 수 있음)</div>
+    <div class="keyline"><kbd>O</kbd>를 <b>누르고 있는 채로</b> <kbd>↓</kbd>→<kbd>↙</kbd>→<kbd>←</kbd> (또는 반대 방향) → <b style="color:#7fd4ff;">방패 철산고</b> (3f 발동·8f 판정·20f 후딜 — 예비동작이 거의 안 보일 만큼 짧게 "쓱빡!" 하고 한 칸 끝까지 파고들어 처박음 · 1초 기절 + 30% 치명타 · <b style="color:#ff6b5e;">상대가 공격을 내미는 순간에 꽂으면 카운터</b> → 4초 기절 + 2D 횡스크롤 카메라 전환 + 파란 별이 바닥에 떨어져 튕기며 흩어짐 + 배를 잡고 다운, 3초간 기상 불가·그동안 계속 때릴 수 있음)</div>
   </div>
   <div class="panel p2">
     <h3><span class="dot"></span>P2 (AI)</h3>
@@ -849,7 +863,7 @@ const MOVES = {
   shoulderBash: { startup: 8,  active: 6, recovery: 26, stun: 120, push: 1, label: '숄더배쉬', shoulderBash: true },
   // 방패 철산고 — 가드(O)를 누르고 있는 상태에서 ↓↙← (또는 ↓↘→) 커맨드를 입력하면 발동한다.
   // 등과 방패를 상대에게 깊숙이 처박는 기술. 상대가 "공격을 내미는 순간"에 꽂히면 카운터로 판정된다.
-  ironMountain: { startup: 12, active: 5, recovery: 26, stun: 60, push: 1, label: '방패 철산고', ironMountain: true },
+  ironMountain: { startup: 3, active: 8, recovery: 20, stun: 60, push: 1, label: '방패 철산고', ironMountain: true },
 };
 let SLOW_AFTER_FRAMES = 90; // 강공 후딜 종료 후 "조금 느려지는" 효과가 지속되는 프레임
 let SLOW_MULTIPLIER = 1.5;  // 느려진 상태에서 다음 이동에 걸리는 프레임 배수
@@ -1355,7 +1369,13 @@ function startAttack(f, moveKey, target) {
     // "아직 인접하지 않았다면 한 칸 더 파고들어 붙는다"는 실제 돌진으로 처리한다.
     // 대쉬(2칸)로도 안 닿았을 때만 1칸 더 이동해 붙고, 이미 인접해 있으면 그 자리에서 그대로 때린다(근참각).
     // 즉 최장 도달거리는 대쉬2+돌진1+판정1=4칸, 근접에서는 돌진 없이 판정1칸만 쓰는 근참각으로 자연스럽게 이어진다.
-    if (target) {
+    //
+    // 단, 막 retreating(뒤로 빠지는) 다리에서 캔슬돼 나온 거라면 이 "파고들기"를 하지 않는다 —
+    // 안 그러면 뒤로 물러나던 중에 근처에 상대가 있다는 이유만으로 몸이 확 반대로 꺾여 상대
+    // 쪽으로 돌진해버리는, 방향이 뒤집히는 부자연스러운 그림이 나온다(f.retreating은 dashCombo
+    // 창 안이라 바로 직전 대쉬 다리에서 갱신된 신선한 값이라 여기서 그대로 믿을 수 있다).
+    // 그 자리에서 그대로(파고들지 않고) 내지르기만 하므로, 안 닿는 위치면 자연스럽게 헛친다.
+    if (target && !f.retreating) {
       const dx = target.tx - f.tx, dy = target.ty - f.ty;
       const dist = Math.max(Math.abs(dx), Math.abs(dy));
       if (dist > 1) {
@@ -1579,6 +1599,11 @@ function attackHitboxTiles(f) {
     const tiles = [];
     for (let d = 1; d <= SLIDE_TILES; d++) tiles.push({ x: origin.x + off.dx * d, y: origin.y + off.dy * d });
     return tiles;
+  }
+  if (move && move.ultimate) {
+    // 공참각: 공중제비의 회전 관성을 그대로 실어서 정면 1칸이 아니라 2칸까지 훑어 내리찍는다.
+    const off = facingOffset(f.facing);
+    return [main, { x: f.tx + off.dx * 2, y: f.ty + off.dy * 2 }];
   }
   if (!move || !move.heavy) return [main];
   const [leftDir, rightDir] = neighborDirs(f.facing);
@@ -2226,17 +2251,21 @@ function getRenderTile(f) {
   }
   if (f.state === 'Attack' && MOVES[f.attackMove] && MOVES[f.attackMove].ironMountain) {
     // 방패 철산고: 논리 좌표는 그대로 두고, 화면상으로만 거의 한 칸 끝까지 등을 처박았다가
-    // 되돌아온다 — "깊숙이 들어갔다"는 게 눈에 확 보이도록.
+    // 되돌아온다 — 발동이 워낙 짧아서(3f) 거의 순간이동하듯 "쓱" 꽂히고, 판정이 끝날 때까지
+    // 그 자리를 지키다가, 긴 후딜 동안 "빡" 하고 튕기듯 빠르게 되돌아온다.
     const move = MOVES[f.attackMove];
-    const impact = move.startup + move.active * 0.5;
+    const activeEnd = move.startup + move.active;
+    const impact = move.startup + 2; // 판정 시작 직후 2프레임 안에 이미 다 꽂혀 있다
     const total = move.startup + move.active + (move.recovery || 0);
     let depth;
     if (f.stateFrame <= impact) {
       const t = f.stateFrame / Math.max(1, impact);
-      depth = Math.pow(t, 2.2) * IRON_LUNGE_DEPTH; // 확 튀어나가듯 가속해서 파고든다
+      depth = Math.pow(t, 3) * IRON_LUNGE_DEPTH; // 거의 순간이동하듯 확 꽂힌다
+    } else if (f.stateFrame <= activeEnd) {
+      depth = IRON_LUNGE_DEPTH; // 판정이 유지되는 동안은 그 자리를 지킨다
     } else {
-      const t = (f.stateFrame - impact) / Math.max(1, total - impact);
-      depth = IRON_LUNGE_DEPTH * (1 - Math.min(1, t * 1.6)); // 튕기듯 되돌아온다
+      const t = (f.stateFrame - activeEnd) / Math.max(1, total - activeEnd);
+      depth = IRON_LUNGE_DEPTH * (1 - Math.min(1, t * 1.3)); // 튕기듯 빠르게 되돌아온다
     }
     const off = facingOffset(f.facing);
     return { x: f.tx + off.dx * Math.max(0, depth), y: f.ty + off.dy * Math.max(0, depth) };
@@ -2765,23 +2794,28 @@ function computePose(f) {
         pose.torsoLean = 0.2 * (1 - t);
       }
     } else if (move.ironMountain) {
-      // 방패 철산고: 방패를 든 채 몸을 잔뜩 웅크렸다가(선딜), 등과 어깨로 상대에게 깊숙이
-      // 처박고(판정), 다시 자세를 세운다(후딜).
+      // 방패 철산고: 예비동작이 3프레임뿐이라 눈에 거의 안 보인다 — 판정이 시작되는 즉시
+      // "쓱빡!" 하고 거의 순간이동하듯 꽂히고, 그 뻗은 자세를 판정이 끝날 때까지 홀드한 뒤
+      // 긴 후딜(20f) 동안 천천히 자세를 추스른다. 짧은 발동·긴 후딜인 "한 방" 기술의 그림.
       pose.guard = Math.max(pose.guard || 0, 1);
+      const snapFrames = 2; // 뻗어나가는 데 걸리는 프레임 — 거의 즉시
       if (f.stateFrame < activeStart) {
-        const t = f.stateFrame / Math.max(1, activeStart);
-        pose.torsoLean = lerp(0, -0.45, t); // 반대로 몸을 감아 힘을 모은다
-        pose.legSpread = 0.3 + 0.4 * t;
-        pose.headTilt = -0.2 * t;
+        pose.torsoLean = -0.15; // 무게를 낮추는 정도만, 거의 티 안 남
+        pose.legSpread = 0.15;
+      } else if (f.stateFrame < activeStart + snapFrames) {
+        const t = (f.stateFrame - activeStart) / snapFrames;
+        pose.torsoLean = lerp(-0.15, 0.8, t); // 등/어깨로 순식간에 밀어 넣는다
+        pose.legSpread = lerp(0.15, -0.6, t);
+        pose.headTilt = -0.25 * t;
       } else if (f.stateFrame < activeEnd) {
-        const t = (f.stateFrame - activeStart) / Math.max(1, move.active);
-        pose.torsoLean = lerp(-0.45, 0.75, t); // 등/어깨로 그대로 밀어 넣는다
-        pose.legSpread = lerp(0.7, -0.55, t);
+        // 뻗은 자세 그대로 판정이 끝날 때까지 버틴다.
+        pose.torsoLean = 0.8;
+        pose.legSpread = -0.6;
         pose.headTilt = -0.25;
       } else {
         const t = (f.stateFrame - activeEnd) / Math.max(1, move.recovery || 1);
-        pose.torsoLean = lerp(0.75, 0, t);
-        pose.legSpread = lerp(-0.55, 0, t);
+        pose.torsoLean = lerp(0.8, 0, t);
+        pose.legSpread = lerp(-0.6, 0, t);
         pose.headTilt = -0.25 * (1 - t);
       }
     } else if (move.boonggwon) {
@@ -3238,9 +3272,11 @@ function updateVisual(f, visual, hitMarkers) {
         if (pose.spin !== undefined && frameCount % 2 === 0) {
           spawnKickArc(fx, fy, pose.spin, f.facing, 0.6 + jumpLift);
         }
-        // 카메라가 살짝 붙어 따라가고, 내리찍는 순간엔 짧게 울린다
-        cameraZoomTarget = Math.max(cameraZoomTarget, 0.8);
-        if (f.stateFrame === move.startup) triggerScreenShake(0.12, 10);
+        // 카메라가 살짝 붙어 따라가고, 내리찍는 순간엔 크게 울린다 — 판정이 유지되는 동안도
+        // 계속 잔진동이 남아 있어서 "쿵 하고 박히는" 무게감을 더 준다.
+        cameraZoomTarget = Math.max(cameraZoomTarget, 0.85);
+        if (f.stateFrame === move.startup) triggerScreenShake(0.28, 16);
+        else if (f.stateFrame > move.startup && frameCount >= screenShakeUntil) triggerScreenShake(0.06, 3);
       } else {
         jumpLift = 0;
       }
@@ -3707,6 +3743,44 @@ function spawnCritStars(tx, ty) {
   }
 }
 
+// 철산고 카운터 전용: 파란 별들이 사방으로 튀어올랐다가 중력에 끌려 바닥에 떨어져
+// 몇 번 통통 튕기고 잦아들며 사라진다 — spawnCritStars의 방사형 폭발과 달리 실제 낙하/바운스
+// 물리를 흉내낸다(updateEffects의 e.physics 경로).
+function spawnCounterStars(tx, ty) {
+  const wx = worldX(tx), wz = worldZ(ty);
+  const count = 12;
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '52px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = i % 2 === 0 ? '#7fd4ff' : '#bfe9ff';
+    ctx.fillText('★', 32, 33);
+    const tex = new THREE.CanvasTexture(canvas);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+    const sprite = new THREE.Sprite(mat);
+    const s = 0.55 + Math.random() * 0.35;
+    sprite.scale.set(s, s, 1);
+    const launchR = 0.15 + Math.random() * 0.1;
+    sprite.position.set(wx + Math.cos(angle) * launchR, 1.1, wz + Math.sin(angle) * launchR);
+    sprite.renderOrder = 26;
+    scene.add(sprite);
+    effects.push({
+      sprite, mat, tex, life: 0, maxLife: 50 + Math.floor(Math.random() * 14),
+      physics: true,
+      vx: Math.cos(angle) * (0.05 + Math.random() * 0.05),
+      vz: Math.sin(angle) * (0.05 + Math.random() * 0.05),
+      vy: 0.12 + Math.random() * 0.08, // 위로 확 튀어오른 뒤
+      gravity: -0.012,                 // 중력에 끌려 떨어진다
+      groundY: 0.03 + Math.random() * 0.02,
+      bouncesLeft: 2 + Math.floor(Math.random() * 2), // 몇 번 통통 튕기고
+      bounceDamp: 0.45,
+    });
+  }
+}
+
 // 강공(횡베기) 스윙 경로를 따라 네모/세모/동그라미 파편이 흩날리는 효과
 const SHAPE_KINDS = ['square', 'triangle', 'circle'];
 function drawShapeIcon(ctx, kind, color) {
@@ -3757,9 +3831,27 @@ function updateEffects() {
     const e = effects[i];
     e.life++;
     const t = e.life / e.maxLife;
-    e.sprite.position.x += e.vx;
-    e.sprite.position.z += e.vz;
-    e.sprite.position.y += e.riseTotal / e.maxLife;
+    if (e.physics) {
+      // 중력 + 바닥 튕김 시뮬레이션(카운터 별 등) — 일반 이펙트의 선형 상승과는 별개의 경로.
+      e.vy += e.gravity;
+      e.sprite.position.x += e.vx;
+      e.sprite.position.z += e.vz;
+      e.sprite.position.y += e.vy;
+      if (e.sprite.position.y <= e.groundY) {
+        e.sprite.position.y = e.groundY;
+        if (e.bouncesLeft > 0) {
+          e.vy = -e.vy * e.bounceDamp;
+          e.vx *= 0.72; e.vz *= 0.72;
+          e.bouncesLeft--;
+        } else {
+          e.vy = 0; e.vx = 0; e.vz = 0;
+        }
+      }
+    } else {
+      e.sprite.position.x += e.vx;
+      e.sprite.position.z += e.vz;
+      e.sprite.position.y += e.riseTotal / e.maxLife;
+    }
     e.mat.opacity = 1 - t;
     if (t >= 1) {
       scene.remove(e.sprite);
@@ -3898,7 +3990,7 @@ function processEventFlags(f) {
         // 카운터: 2D 횡스크롤 시점으로 확 전환 + 빡줌인/진동 → 쓰러지는 동안 서서히 줌아웃.
         const attacker = (f === p1) ? p2 : p1;
         spawnEffect('ironCounter', f.tx, f.ty);
-        spawnCritStars(f.tx, f.ty);
+        spawnCounterStars(f.tx, f.ty); // 파란 별들이 바닥에 떨어져 통통 튀다 사라진다
         triggerCameraSideView(attacker, f, Math.min(info.stun, IRON_COUNTER_STUN));
         triggerScreenShake(0.2, 18);
         logEvent(`⚡⚡ 카운터!! ${info.attackerName}의 ${info.label}이(가) ${f.name}의 공격 순간에 그대로 꽂혔다!! ${f.name} 배를 잡고 다운!! (스턴 ${info.stun}f, 약 ${(IRON_DOWN_FRAMES/60).toFixed(0)}초간 기상 불가)`, 'hit');
