@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.1
+  version v3.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.1';
+const VERSION = 'v3.2';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1906,7 +1906,7 @@ const STYLES = {
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
   poren:       { approach:3, hold:5, guard:3, strafe:0.5 },
-  norman:      { kite:5, strafe:2, hold:1, retreat:1 },
+  norman:      { follow:6, kite:1, strafe:1 },   // 위생병: 동료 뒤에 붙어 다님
   jeokroe:     { approach:4, hold:3 },
 };
 const HEROES = {
@@ -1934,12 +1934,12 @@ HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
-HEROES.norman = { name:'노먼', grade:'★★★', color:'#b8b2a2', sub:'군인 · 소총과 응급 가방 · 말수가 적다 · 172cm',
-  hp:120, atk:13, def:6, block:0.15, crit:0.10, eva:0.08, spd:2.8, range:5.0, cd:0.95, windup:0.22, hits:1, weight:75, react:0.3,
+HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'위생병 · 소총과 응급 가방 · 말수가 적다 · 172cm',
+  hp:100, atk:8, def:4, block:0.10, crit:0.05, eva:0.08, spd:2.8, range:4.0, cd:1.2, windup:0.3, hits:1, weight:70, react:0.3,
   projectile:'bullet', ranged:true,
-  melee:{ atk:10, range:1.3, windup:0.25, cd:0.9 },   // 붙으면 개머리판
-  tags:['사격A', '의무B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🎯 제압 사격 — 공격 준비 중인 적을 쏘면 35% 확률로 공격을 끊는다.',
-  equip:{ 무기:'🔫 돌격소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
+  melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
+  tags:['의무B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🩺 위생병 — 앞에 선 동료 뒤에 붙어 다니며 견제 사격만 한다. 적이 다가오면 물러난다.',
+  equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:1500, atk:25, def:12, block:0.10, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:250, react:0.1,
@@ -2641,7 +2641,7 @@ function decide(u, dist){
     shout(u, Math.random() < 0.5 ? '이야아아아!!' : '으아아아!');
     return;
   }
-  if (!w.kite && !w.keep){
+  if (!w.kite && !w.keep && !w.follow){
     if (adv >= ADV_WIN){        // 우세: 물러나지 않고 밀어붙여 포위
       w.retreat = 0; w.hitrun = (w.hitrun || 0) * 0.25; w.guard = (w.guard || 0) * 0.5; w.strafe = (w.strafe || 0) * 0.5;
       w.approach = (w.approach || 0) + 4; w.hold = (w.hold || 0) + 2;
@@ -2651,7 +2651,7 @@ function decide(u, dist){
       w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
     }
   }
-  if (dist > u.st.range + 2.5 && !w.keep){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
+  if (dist > u.st.range + 2.5 && !w.keep && !w.follow){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
   const opts = Object.entries(w).filter(([, v]) => typeof v === 'number' && v > 0);
   let r = Math.random() * opts.reduce((a, [, v]) => a + v, 0), pick = opts[0][0];
   for (const [k, v] of opts){ r -= v; if (r <= 0){ pick = k; break; } }
@@ -2682,12 +2682,6 @@ function updateProjectiles(sdt){
     if (p.t < p.dur) continue;
     p.done = true;
     if (!p.d.dead && Math.hypot(p.d.x - p.tx, p.d.y - p.ty) < 0.75){
-      // 제압 사격: 공격 준비 중인 적을 맞히면 35% 확률로 공격이 끊김
-      if (p.kind === 'bullet' && p.d.windup > 0 && Math.random() < 0.35){
-        p.d.windup = 0; p.d.atkTarget = null; p.d.cd = Math.max(p.d.cd, 0.5);
-        fxText(p.d, '제압!', '#e8e0b0', 'big', 0.5);
-        logLine(`🎯 ${p.a.name}의 제압 사격 → ${p.d.name}의 공격이 끊김`);
-      }
       resolveHit(p.a, p.d, { ...p.opts, ranged: true });
     }
     else {
@@ -3124,6 +3118,22 @@ function updateBattle(dt){
         else if (u.state === 'charge'){
           dir = to; speed *= 2.2;
           if (dist <= u.st.range * 0.8){ chargeHit(u, tgt); u.state = 'keep'; u.stateT = 0.9; dir = null; }
+        }
+        else if (u.state === 'follow'){
+          // 위생병: 적에게 가장 가까운 동료(전열) 뒤 1.8칸에 붙음. 적이 2.2칸 안이면 물러남
+          const mates = b.units.filter(o => o !== u && !o.dead && o.side === u.side && !o.st.summon);
+          if (dist < 2.2){ dir = { x: -to.x, y: -to.y }; u.running = true; }
+          else if (mates.length){
+            // 뒤쪽 = 적 무리 중심 → 아군 무리 중심 방향 (가로 위주)
+            const foes = b.units.filter(o => !o.dead && o.side !== u.side);
+            const cx = arr => arr.reduce((t, o) => t + o.x, 0) / arr.length;
+            const ex = cx(foes), ey = foes.reduce((t, o) => t + o.y, 0) / foes.length;
+            const back = { x: Math.sign(cx(mates) - ex) || -1, y: 0 };
+            const front = mates.reduce((best, o) => Math.hypot(ex - o.x, ey - o.y) < Math.hypot(ex - best.x, ey - best.y) ? o : best, mates[0]);
+            const gx = Math.max(0, Math.min(BATTLE_COLS - 1, front.x + back.x * 1.8)), gy = Math.max(0, Math.min(ROWS - 1, front.y + (u.uid % 2 ? 0.6 : -0.6)));
+            if (Math.hypot(gx - u.x, gy - u.y) > 0.35){ dir = norm(gx - u.x, gy - u.y); u.running = Math.hypot(gx - u.x, gy - u.y) > 2.5; }
+            else u.running = false;
+          } else if (dist > u.st.range * 0.95){ dir = to; u.running = false; }
         }
         else if (u.state === 'kite'){
           if (u.st.melee && dist <= u.st.melee.range + 0.1 && u.cd <= 0.25){ dir = null; u.running = false; }
@@ -3777,8 +3787,8 @@ const SKILLS = {
     desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
   firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
     desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 3초 동안 치료한다.\n치료하는 동안 노먼과 대상 둘 다 행동 불가 (맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤\n전투당 3회.' },
-  suppress:  { name:'제압 사격', kind:'패시브', icon:'🎯',
-    desc:'총알은 빠르고 곧게 날아간다.\n공격 준비 중("!")인 적을 맞히면 35% 확률로 그 공격을 끊는다.\n붙으면 개머리판으로 친다 (공격 10).' },
+  medic:     { name:'위생병', kind:'패시브', icon:'🩺',
+    desc:'싸우러 온 게 아니라 살리러 왔다.\n적에게 가장 가까운 동료 뒤 두 칸쯤에 붙어 다니며 견제 사격만 한다 (공격 8, 사거리 4).\n적이 두 칸 안으로 다가오면 물러나고, 붙으면 개머리판으로 친다 (공격 6).\n동료가 없으면 거리를 벌리며 쏜다.' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
     desc:'굴의 모두가 당신을 대장이라 부른다.' },
   justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
@@ -3791,7 +3801,7 @@ HEROES.karius.skills = ['modified'];
 HEROES.goblin.skills = ['ignite'];
 HEROES.morningstar.skills = ['madness'];
 HEROES.poren.skills = ['loyalty', 'ratking'];
-HEROES.norman.skills = ['firstAid', 'suppress'];
+HEROES.norman.skills = ['firstAid', 'medic'];
 ENEMIES.jeokroe.skills = ['thunder', 'dropkick'];
 for (const k of Object.values(SKILLS)) if (k.img){ k.image = new Image(); k.image.src = k.img; }
 
