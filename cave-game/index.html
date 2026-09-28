@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v4.1
+  version v4.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v4.1';
+const VERSION = 'v4.2';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1138,7 +1138,19 @@ function drawRebeccaFigure(o){
     ctx.restore();
     return;
   }
-  drawHumanoid({ ...REBECCA_LOOK, x: p.x, y: p.y - walkBob(o), u, face: o.face, pose: o });
+  const y = p.y - walkBob(o), up = o.guarding || (o.guardFlash > 0);
+  if (!up) drawKiteShield(p.x - o.face * u * 0.2, y - u * 0.44, u * 0.95, o.face);        // 평소엔 등 쪽 팔에
+  drawHumanoid({ ...REBECCA_LOOK, x: p.x, y, u, face: o.face, pose: o });
+  if (up) drawKiteShield(p.x + o.face * u * 0.3, y - u * 0.55, u * 1.05, o.face);         // 막을 땐 앞으로 들어 올림
+}
+// 레베카의 기사 방패: 은빛 테두리에 루비색 면, 가운데 금 십자
+function drawKiteShield(sx, sy, u, face){
+  shape(() => { ctx.moveTo(sx - u * 0.17, sy - u * 0.2); ctx.lineTo(sx + u * 0.17, sy - u * 0.2); ctx.lineTo(sx + u * 0.17, sy + u * 0.02);
+    ctx.quadraticCurveTo(sx + u * 0.15, sy + u * 0.2, sx, sy + u * 0.3); ctx.quadraticCurveTo(sx - u * 0.15, sy + u * 0.2, sx - u * 0.17, sy + u * 0.02); ctx.closePath(); }, '#c3cad3');
+  shape(() => { ctx.moveTo(sx - u * 0.12, sy - u * 0.15); ctx.lineTo(sx + u * 0.12, sy - u * 0.15); ctx.lineTo(sx + u * 0.12, sy + u * 0.02);
+    ctx.quadraticCurveTo(sx + u * 0.1, sy + u * 0.15, sx, sy + u * 0.23); ctx.quadraticCurveTo(sx - u * 0.1, sy + u * 0.15, sx - u * 0.12, sy + u * 0.02); ctx.closePath(); }, '#9e1731', 1);
+  ctx.strokeStyle = '#e8c35a'; ctx.lineWidth = Math.max(1.5, u * 0.03);
+  ctx.beginPath(); ctx.moveTo(sx, sy - u * 0.12); ctx.lineTo(sx, sy + u * 0.18); ctx.moveTo(sx - u * 0.08, sy - u * 0.03); ctx.lineTo(sx + u * 0.08, sy - u * 0.03); ctx.stroke();
 }
 function drawGoblinArcher(o){
   const p = P(o.x + 0.5, o.y + 0.5);
@@ -1892,7 +1904,7 @@ function drawWeather(){
    방어 기술% = 방어율×100 + 방어력×2 + 무게/10 (최대 90) → 방어 중에 맞으면 이 확률로 피해 0
    ========================================================= */
 const RUN_MUL = 1.5;
-const BASE_STATS = { hp:100, atk:10, def:5, block:0.15, crit:0.05, eva:0.05, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:65, react:0.3 };
+const BASE_STATS = { hp:100, atk:10, def:5, block:0.32, crit:0.05, eva:0.05, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:65, react:0.3 };
 const JOB_MOD  = { knight:{ atk:2, def:3, block:0.10, weight:15 }, miner:{ atk:3, def:1, hp:10, weight:5 },
                    mage:{ atk:6, def:-2, range:2.0, cd:0.3, windup:0.1, ranged:true }, rogue:{ crit:0.10, eva:0.10, spd:0.5, cd:-0.25, windup:-0.08, weight:-5 } };
 const RACE_MOD = { human:{ atk:1 }, goblin:{ hp:-10, eva:0.05, spd:0.4, weight:-25 }, elf:{ crit:0.05, spd:0.2, weight:-10 }, dwarf:{ hp:20, def:2, spd:-0.3, weight:15 } };
@@ -1911,31 +1923,33 @@ const STYLES = {
 };
 const HEROES = {
   rebecca: { name:'레베카', grade:'★★', color:'#e0435a', sub:'루비색 장발의 소녀 기사 · 158cm · 27세',
-    hp:100, atk:14, def:8, block:0.30, crit:0.05, eva:0.05, spd:2.7, range:1.15, cd:1.1, windup:0.3, hits:1, weight:50, react:0.45,
-    regen:2, revive:5,
-    tags:['축복:불사A'], trait:'🔆 불사 — 늘 조금씩 재생하고, 쓰러져도 5초 뒤 체력 절반으로 다시 일어난다. 아픈 건 똑같이 아프다.',
-    equip:{ 무기:'🗡️ 낡은 장검', 머리:'—', 몸:'🛡 낡은 판금 갑옷', 장신구:'—' } },
+    hp:100, atk:14, def:8, block:0.51, crit:0.05, eva:0.05, spd:2.7, range:1.15, cd:1.1, windup:0.3, hits:1, weight:50, react:0.45,
+    regen:2, revive:5, shield:true,
+    tags:['축복:불사A'], trait:'🔆 불사 — 늘 조금씩 재생하고, 쓰러져도 5초 뒤 체력 절반으로 다시 일어난다. 아픈 건 똑같이 아프다.\n🛡️ 방패 — 막으면 피해 60% 감소, 방패를 든 동안은 총알·화살에도 방어력이 먹힌다.',
+    equip:{ 무기:'🗡️ 낡은 장검', 방패:'🛡️ 기사 방패', 머리:'—', 몸:'낡은 판금 갑옷', 장신구:'—' } },
   karius: { name:'카리우스', grade:'★★★★★', color:'#6fb8e8', sub:'Sir. 3m 융합 실험체 E-07 · 팔 넷, 다리 여섯',
-    hp:400, atk:12, def:10, block:0.15, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
-    tags:['괴력A'], trait:'🔆 개조된 신체 — 상태이상에 강하다 (출혈 확률 절반). 팔이 많아 한 번에 두 번 친다.',
+    hp:400, atk:12, def:10, block:0.65, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
+    shield:true, bulletproof:true,   // 개조된 신체: 늘 방탄, 막기는 방패와 같음
+    tags:['괴력A'], trait:'🔆 개조된 신체 — 상태이상에 강하다 (출혈 확률 절반). 팔이 많아 한 번에 두 번 친다. 몸 자체가 방탄이라 총알·화살에도 늘 방어력이 먹히고, 막기는 방패와 같다.',
     equip:{ 무기:'✊ 맨손 (팔 넷)', 머리:'👓 둥근 안경', 몸:'⛓ 쇠사슬 가죽 결박구', 장신구:'—' } },
   goblin: { name:'청광묵', grade:'★★', color:'#5cc26a', sub:'고블린 생존 전사 · 130cm',
-    hp:70, atk:9, def:2, block:0.05, crit:0.15, eva:0.20, spd:3.6, range:1.15, cd:0.8, windup:0.22, hits:1, weight:30, react:0.35,
+    hp:70, atk:9, def:2, block:0.12, crit:0.15, eva:0.20, spd:3.6, range:1.15, cd:0.8, windup:0.22, hits:1, weight:30, react:0.35,
     tags:['실명:좌안'], trait:'🔆 발화 — 손바닥에서 불을 피운다. 열이 나면 금방 배고파진다. 맞기 전에 잘 빠진다.',
     equip:{ 무기:'🔪 흑요석 단검', 머리:'—', 몸:'🧥 꼬질한 가죽옷', 장신구:'—' } },
 };
 HEROES.morningstar = { name:'모닝스타', grade:'★★', color:'#c9c9d6', sub:'"슈퍼스타" · 철퇴를 휘두르는 광기의 근딜 · 160cm',
-  hp:110, atk:18, def:4, block:0.10, crit:0.15, eva:0.08, spd:3.0, range:1.6, cd:1.3, windup:0.4, hits:1, weight:55, react:0.25,
+  hp:110, atk:18, def:4, block:0.24, crit:0.15, eva:0.08, spd:3.0, range:1.6, cd:1.3, windup:0.4, hits:1, weight:55, react:0.25,
   splash:0.5,
   tags:['광기'], trait:'🔆 광기 — 쇠사슬 철퇴가 대상 주변까지 휩쓸어, 붙어 있는 적에게도 절반 피해.',
   equip:{ 무기:'⛓ 모닝스타 (쇠사슬 철퇴)', 머리:'—', 몸:'찢어진 드레스', 장신구:'쇠 팔찌' } };
 HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"쥐왕" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm',
-  hp:300, atk:20, def:22, block:0.45, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.6, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
+  hp:300, atk:20, def:22, block:0.85, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.6, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
+  shield:true,   // 대검이 곧 방패
   taunt:3, cleave:0.6,
-  tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
+  tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.\n🛡️ 대검이 곧 방패 — 막으면 피해 60% 감소, 막는 동안은 방탄.',
   equip:{ 무기:'🗡 에메랄드 대검', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
 HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력자들이 날뛰는 세계의 평범한 베테랑 군인 · 위생병 · 말수가 적다 · 172cm',
-  hp:100, atk:5, def:4, block:0.10, crit:0.05, eva:0.08, spd:2.8, range:8.0, cd:1.2, windup:0.3, hits:2, weight:70, react:0.3,
+  hp:100, atk:5, def:4, block:0.25, crit:0.05, eva:0.08, spd:2.8, range:8.0, cd:1.2, windup:0.3, hits:2, weight:70, react:0.3,
   projectile:'bullet', ranged:true,   // 공격력은 탄 한 발 기준, 한 번에 2발 (10% 6발)
   mag:30, reloadT:3,                   // 탄창 30발, 재장전 3초
   melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
@@ -1943,24 +1957,24 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
-    hp:1500, atk:25, def:12, block:0.10, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:250, react:0.1,
+    hp:1500, atk:25, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:250, react:0.1,
     boss:true, thunderAtk:90, residualAtk:25, kickAtk:40,
     tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 무작위 대상에게 붉은 낙뢰. 직격(스프라이트가 겹칠 때) 90 + 큰 경직, 인근 8칸 + 십자 4칸 잔류 25. 물 바닥이면 범위 안 전원 감전, 비 오는 필드면 맵 전체 감전 (피아 구분 없음). 감전은 3씩 5턴.\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 40 피해, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
     equip:{ 무기:'⚡ 붉은 낙뢰', 머리:'피 흐르는 광륜', 몸:'🌟 붉은 성해포', 장신구:'—' } },
   goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
-    hp:70, atk:12, def:2, block:0.05, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
+    hp:70, atk:12, def:2, block:0.13, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
     projectile:'arrow', ranged:true,
     melee:{ atk:7, range:1.2, windup:0.28, cd:0.9 },   // 붙으면 단검
     tags:[], trait:'화살은 날아가는 동안 대상이 자리를 뜨면 빗나간다. 붙으면 단검(공격 7, 준비 0.28초)으로 찌르고 다시 거리를 벌린다.',
     equip:{ 무기:'🏹 짧은 활 / 🔪 단검', 머리:'초록 두건', 몸:'누더기', 장신구:'화살통' } },
   enemyGoblin: { name:'일반 고블린', grade:'', color:'#e2443a', sub:'굴 밖의 적 · 무리 지어 다닌다',
-    hp:100, atk:10, def:5, block:0.20, crit:0.05, eva:0.05, spd:2.4, range:1.15, cd:1.2, windup:0.32, hits:1, weight:45, react:0.25,
+    hp:100, atk:10, def:5, block:0.35, crit:0.05, eva:0.05, spd:2.4, range:1.15, cd:1.2, windup:0.32, hits:1, weight:45, react:0.25,
     tags:[], trait:'', equip:{ 무기:'🔪 녹슨 칼', 머리:'—', 몸:'누더기', 장신구:'—' } },
 };
 const STAT_ROWS = [
   ['atk', '⚔ 공격력', ''],
-  ['guard', '🛡 방어 기술', '방어 중에 맞으면 이 확률로 피해 0, 실패하면 그대로 맞음'],
-  ['def', '방어력', '방어 기술 계산에 들어감'], ['block', '방어율', '방어 기술 계산에 들어감'],
+  ['guard', '🛡 막기율', '방어 자세에서 맞으면 이 확률로 막음 → 방패 60% · 맨몸 30% 감소, 그중 10%는 튕겨냄(0)'],
+  ['def', '방어력', '피해 감소 = 방어력÷(방어력+30). 총알·화살은 방탄일 때만 (방패로 막는 중 · 카리우스)'],
   ['crit', '치명타율', '치명타는 피해 x3'], ['eva', '회피율', ''],
   ['spd', '이동속도', '칸/초'], ['run', '달리기', '칸/초 (x1.5)'],
   ['atkSpd', '공격속도', '회/초'], ['windup', '공격 준비', '초 · 이 동안 머리 위에 "!"'],
@@ -1979,7 +1993,13 @@ function fmtStat(k, v){
   return String(v);
 }
 const gradeShort = g => g === 'SPECIAL' ? 'SP' : g === 'BOSS' ? 'BOSS' : g ? '★' + g.length : '적';
-const guardSkill = s => Math.max(0, Math.min(90, Math.round(s.block * 100 + s.def * 2 + s.weight / 10)));
+const guardSkill = s => Math.max(0, Math.min(90, Math.round(s.block * 100)));   // 막기율 (최대 90%)
+// 방어 규칙
+//  방어력: 피해 감소율 = 방어력 ÷ (방어력 + 30). 총알·화살은 방탄일 때만 (방패를 들고 막는 중, 또는 카리우스)
+//  막기: 방어 자세에서 막기율 확률로 성공 → 방패 60% / 맨몸 30% 감소. 성공 중 10%는 정확한 타이밍 → 튕겨냄 (피해 0)
+const DEF_K = 30, BLOCK_SHIELD = 0.6, BLOCK_BARE = 0.3, PERFECT_P = 0.1;
+const defCut = def => def > 0 ? def / (def + DEF_K) : 0;
+const bulletproof = d => !!(d.st.bulletproof || (d.st.shield && d.guarding));
 function withDerived(s){
   return { ...s, guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
 }
@@ -2269,7 +2289,7 @@ function enterBattle(){
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
   battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [],
-    parryTest: document.getElementById('bt-parry').checked, water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
+    parryTest: document.getElementById('bt-parry').checked, ricos: [], water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
   buildBtTools();
   defaultSetup();
   btUi.hidden = false;
@@ -2800,7 +2820,36 @@ function guardFx(d, a, opts = {}){
   }
   pushUnit(d, a, 0.08);
   if (!opts.ranged){ pushUnit(a, d, 0.2); a.stun = Math.max(a.stun, 0.2); }
-  logLine(`🛡 ${a.name} → ${d.name}: 방어 성공 (0)`, 'guard');
+}
+// 정확한 타이밍의 막기: 피해 0. 방패나 방탄이면 총알·화살이 튕겨서 맵 밖으로 날아감
+function perfectBlock(d, a, opts = {}){
+  const b = battle;
+  guardFx(d, a, opts);
+  b.hitstop = Math.max(b.hitstop, 0.14);
+  ringAt(d, '143,232,255');
+  fxText(d, '튕겨냄!', '#8fe8ff', 'big', 0.5);
+  if (!opts.ranged) a.stun = Math.max(a.stun, 0.35);
+  const rico = opts.ranged && (d.st.shield || d.st.bulletproof);
+  if (rico) ricochet(d, a);
+  logLine(`✨ ${a.name} → ${d.name}: 튕겨냄 (0)${rico ? ' — 탄이 튕겨 나감' : ''}`, 'parry');
+}
+function ricochet(d, a){
+  const p = P(d.x + 0.5, d.y + 0.5), h = unitHeight(d) * T * depthScale(d.y);
+  const back = Math.sign(a.x - d.x) || -d.face;                     // 쏜 쪽으로, 위로 크게 튕김
+  const ang = -Math.PI / 2 + back * (0.5 + Math.random() * 0.9);
+  const sp = 900 + Math.random() * 400;
+  battle.ricos.push({ x: p.x + camX + d.face * T * 0.25, y: p.y - h * 0.55, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, life: 1.2 });
+  for (let i = 0; i < 10; i++) sparks.push({ x: p.x + camX + d.face * T * 0.25, y: p.y - h * 0.55, vx: (Math.random() - 0.5) * 300, vy: -Math.random() * 260, life: 0.35, c: i % 2 ? '#fff6c8' : '#ffd35a' });
+}
+function drawRicos(dt){
+  const b = battle;
+  if (!b.ricos) b.ricos = [];
+  ctx.strokeStyle = '#fff3b0'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  for (const r of b.ricos){
+    r.life -= dt; r.x += r.vx * dt; r.y += r.vy * dt;
+    ctx.beginPath(); ctx.moveTo(r.x - camX, r.y); ctx.lineTo(r.x - camX - r.vx * 0.03, r.y - r.vy * 0.03); ctx.stroke();
+  }
+  b.ricos = b.ricos.filter(r => r.life > 0 && r.y > -200 && r.x - camX > -200 && r.x - camX < W + 200);
 }
 // 반격 치명타: 별이 터져서 바닥에 통통 튄다
 function starBurst(u, n = 22){
@@ -2835,6 +2884,7 @@ function parry(d, a, opts = {}){
   burst(d, 22, '#e8fbff', 380);
   fxText(d, '튕겨냄!', '#8fe8ff', 'crit', 1.1);
   fxText(a, '경직', '#b8b0a4');
+  if (opts.ranged && (d.st.shield || d.st.bulletproof)) ricochet(d, a);
   logLine(`✨ ${d.name} 저스트 방어! ${a.name}의 공격을 튕겨냄`, 'parry');
   d.cd = d.st.cd;
   const n = norm(a.x - d.x, a.y - d.y); d.lx = n.x; d.ly = n.y; d.face = Math.sign(n.x) || d.face;
@@ -2851,7 +2901,7 @@ function resolveHit(a, d, opts = {}){
     if (since >= 0 && since <= JUST_WINDOW){
       b.guardPressAt = -99;
       if (b.parryTest || Math.random() < PARRY_CHANCE){ parry(d, a, opts); return; }
-      logLine(`${d.name} 저스트 방어 (튕겨내기 실패)`, 'sys');
+      perfectBlock(d, a, opts); return;                     // 정확한 타이밍: 피해 0
     }
     const sinceD = b.clock - b.dodgePressAt;
     if (sinceD >= 0 && sinceD <= JUST_WINDOW){
@@ -2868,8 +2918,13 @@ function resolveHit(a, d, opts = {}){
     logLine(`${a.name} → ${d.name}: 회피`, 'miss');
     return;
   }
+  let blockCut = 0;
   if (d.guarding && !opts.forceCrit){
-    if (Math.random() < d.st.guard / 100){ guardFx(d, a, opts); return; }
+    if (Math.random() < d.st.guard / 100){
+      if (Math.random() < PERFECT_P){ perfectBlock(d, a, opts); return; }   // 정확한 타이밍
+      blockCut = d.st.shield ? BLOCK_SHIELD : BLOCK_BARE;
+      guardFx(d, a, opts);
+    } else {
     fxText(d, '방어 뚫림!', '#ff8f7a');
     if (d.state === 'charge'){   // 방패 돌격 중 방어가 뚫리면 돌격 취소
       d.state = 'keep'; d.stateT = 0.8;
@@ -2877,10 +2932,13 @@ function resolveHit(a, d, opts = {}){
       logLine(`${d.name}의 돌격이 저지됨`, 'miss');
     }
     burst(d, 10, '#9aa3ad', 300);
+    }
   }
   let dmg = opts.atk ?? a.st.atk;
   const crit = opts.forceCrit || Math.random() < a.st.crit;
   if (crit) dmg *= 3;
+  const armor = !opts.ranged || bulletproof(d) ? defCut(d.st.def) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
+  dmg = Math.max(1, Math.round(dmg * (1 - armor) * (1 - blockCut)));
   d.hp = Math.max(0, d.hp - dmg);
   d.hurt = 0.18;
   if (crit){
@@ -2893,16 +2951,17 @@ function resolveHit(a, d, opts = {}){
   } else {
     burst(d, 10, '#e2443a');
     fxText(d, String(dmg), '#f3e6c8');
-    logLine(`${a.name} → ${d.name}: ${dmg}${d.guarding ? ' (방어 뚫림)' : ''}`);
+    logLine(`${blockCut ? '🛡 ' : ''}${a.name} → ${d.name}: ${dmg}${blockCut ? ` (막기 -${blockCut * 100}%)` : d.guarding ? ' (방어 뚫림)' : ''}`, blockCut ? 'guard' : '');
   }
   // 출혈
   let bc = crit ? BLEED.critChance : BLEED.chance;
   if (d.id === 'karius') bc *= 0.5;
-  if (d.hp > 0 && Math.random() < bc) applyBleed(d);
-  // 무게: 버틸지 밀려날지
+  if (d.hp > 0 && !blockCut && Math.random() < bc) applyBleed(d);   // 막았으면 출혈 없음
+  // 무게: 버틸지 밀려날지 (막았으면 버팀)
   const aw = a.st.weight, dw = d.st.weight;
   let hold = dw / (dw + aw);
   if (crit) hold *= 0.6;
+  if (blockCut) hold = 1;
   if (Math.random() >= hold){
     pushUnit(d, a, (0.25 + 0.35 * aw / (aw + dw)) * (crit ? 1.5 : 1));
     d.stun = Math.max(d.stun, 0.18);
@@ -3380,6 +3439,7 @@ function drawBattle(){
   }
   drawBossSky();
   drawProjectiles();
+  drawRicos(1 / 60);
   sparks.forEach(s => { ctx.fillStyle = s.c || '#ffe9a8'; ctx.fillRect(s.x - camX, s.y, 2.5, 2.5); });
   for (const st of b.stars){
     ctx.save();
@@ -3651,7 +3711,7 @@ function bossUpdate(u, sdt, tgt, dist){
 }
 function kickHit(u, o){
   const b = battle;
-  if (o.guarding && Math.random() < o.st.guard / 200){       // 방어로는 절반 확률로만 막힘
+  if (o.guarding && Math.random() < o.st.guard / 200){       // 막기율의 절반 확률로만 막힘
     guardFx(o, u, { ranged: true }); pushUnit(o, u, 1.0);
     logLine(`🛡 ${o.name}이(가) 날아차기를 막음`, 'guard');
     return;
@@ -3846,7 +3906,7 @@ const SKILLS = {
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
     desc:'초당 체력 2씩 재생. 쓰러져도 5초 뒤 체력 절반으로 일어난다.\n아픈 건 똑같이 아프다.' },
   modified:  { name:'개조된 신체', kind:'패시브', icon:'🧬',
-    desc:'상태이상에 강하다 (출혈 확률 절반).\n팔이 넷이라 한 번 공격에 두 번 친다.' },
+    desc:'상태이상에 강하다 (출혈 확률 절반).\n팔이 넷이라 한 번 공격에 두 번 친다.\n몸 자체가 방탄: 총알·화살에도 늘 방어력이 먹히고, 막기는 방패와 같다 (60% 감소, 튕겨내면 탄이 튕겨 나감).' },
   ignite:    { name:'발화', kind:'패시브', icon:'🔥',
     desc:'손바닥에서 불을 피운다. 열이 나면 금방 배고파진다.\n적이 치려고 하면 방어 대신 뒤로 빠진다.' },
   madness:   { name:'광기', kind:'패시브', icon:'⛓',
@@ -3858,7 +3918,7 @@ const SKILLS = {
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
     desc:'굴의 모두가 당신을 대장이라 부른다.' },
   justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
-    desc:'적 머리 위에 "!"가 뜨고 맞기 직전 0.35초 안에 X.\n3% 확률로 튕겨냄 → 상대 0.9초 경직, 확정 치명타 반격. 화살이면 금색 화살로 되받아친다.' },
+    desc:'적 머리 위에 "!"가 뜨고 맞기 직전 0.35초 안에 X.\n정확한 타이밍이라 늘 튕겨냄 (피해 0).\n그중 3%는 상대 0.9초 경직 + 확정 치명타 반격. 화살이면 금색 화살로 되받아친다.' },
   reversal:  { name:'역전의 기회', kind:'액티브', icon:'💨',
     desc:'맞기 직전 0.35초 안에 Z로 회피 스텝.\n확실히 피하고, 3% 확률로 역전의 기회 → 상대 0.8초 경직, 확정 치명타 반격.' },
 };
@@ -3918,8 +3978,8 @@ Object.assign(HEROES, {
     hp:200, atk:14, def:4, block:0, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0,
     summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사',
-    hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
-    charger:true, chargeAtk:16, chargeStun:0.8,
+    hp:90, atk:13, def:10, block:0.64, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
+    charger:true, chargeAtk:16, chargeStun:0.8, shield:true,
     summon:true, tags:['희귀'], trait:'창과 방패를 든 쥐 기사. 전열에서 창 길이만큼 거리를 두고 방어를 자주 올린다. 적이 멀어지면 가끔 소리치며 돌격해 0.8초 동안 행동을 끊는다.',
     equip:{ 무기:'🔱 창', 머리:'—', 몸:'판금 흉갑', 장신구:'🛡 방패' } },
 });
