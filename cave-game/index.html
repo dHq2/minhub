@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.0
+  version v3.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -168,6 +168,10 @@
   #bt-allies button,#bt-enemies button,#bt-summons button{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;gap:4px;padding:4px 5px;letter-spacing:-.3px;}
   .bt-tools button canvas.face{width:28px;height:28px;border-radius:50%;background:#0a080c;border:1px solid var(--line);flex:none;}
   .bt-tools button.on canvas.face{border-color:var(--fire);}
+  .bt-tools button canvas.face{cursor:pointer;border-width:2px;}
+  .bt-tools button canvas.face.sd-ally{border-color:#5cc26a;}
+  .bt-tools button canvas.face.sd-enemy{border-color:#e2443a;}
+  .bt-tools button.swapped{font-style:italic;}
   /* 스킬 아이콘: 모두 같은 금테 */
   .sk-title{margin:12px 0 6px;font-size:11px;color:var(--ink-dim);letter-spacing:1px;}
   .sk-row{display:flex;flex-wrap:wrap;gap:8px;}
@@ -256,7 +260,7 @@
       <div class="bt-sec">소환수 (포렌의 충성)</div><div class="bt-tools" id="bt-summons"></div>
       <div class="bt-sec">도구</div>
       <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
-      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
+      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 초상화를 누르면 아군 ↔ 적군 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
         적 머리 위 "!" 뜨고 맞기 직전 X 또는 Z: 저스트 (3% 확정 치명타 반격)</div>
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-water"> 물 바닥 (천벌 범위 안 전원 감전)</label>
@@ -283,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.0';
+const VERSION = 'v3.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1934,7 +1938,7 @@ HEROES.norman = { name:'노먼', grade:'★★★', color:'#b8b2a2', sub:'군인
   hp:120, atk:13, def:6, block:0.15, crit:0.10, eva:0.08, spd:2.8, range:5.0, cd:0.95, windup:0.22, hits:1, weight:75, react:0.3,
   projectile:'bullet', ranged:true,
   melee:{ atk:10, range:1.3, windup:0.25, cd:0.9 },   // 붙으면 개머리판
-  tags:['사격A', '의무B'], trait:'🔆 응급처치 — 쓰러지기 직전의 동료에게 달려가 무릎 꿇고 치료한다.\n🎯 제압 사격 — 공격 준비 중인 적을 쏘면 35% 확률로 공격을 끊는다.',
+  tags:['사격A', '의무B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🎯 제압 사격 — 공격 준비 중인 적을 쏘면 35% 확률로 공격을 끊는다.',
   equip:{ 무기:'🔫 돌격소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
@@ -2277,6 +2281,17 @@ function exitBattle(){
   btUi.hidden = true;
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
 }
+/* ---------- 훈련장 편 토글: 누른 캐릭터는 반대 편 목록으로 옮겨 가고, 그 편으로 소환됨 ---------- */
+let btSide = {};
+try { btSide = JSON.parse(localStorage.getItem('cave.btSide') || '{}') || {}; } catch (e) { btSide = {}; }
+const sideOf = id => btSide[id] || getStats(id).side;
+function toggleSide(id){
+  const nat = getStats(id).side, next = sideOf(id) === 'ally' ? 'enemy' : 'ally';
+  if (next === nat) delete btSide[id]; else btSide[id] = next;
+  try { localStorage.setItem('cave.btSide', JSON.stringify(btSide)); } catch (e) {}
+  logLine(`${getStats(id).name} → 이제 ${next === 'ally' ? '아군' : '적군'}으로 소환`, 'sys');
+  buildBtTools();
+}
 /* ---------- 목록에서 얼굴을 끌어다 바닥에 놓으면 배치 ---------- */
 let palDrag = null;
 function startPaletteDrag(e, id){
@@ -2311,7 +2326,7 @@ function onPalUp(e){
   battle.dragTool = null;
   const t = e.type === 'pointerup' ? screenToTile(e) : null;
   if (t){
-    const u = spawnUnit(d.id, t.c, t.r);
+    const u = spawnUnit(d.id, t.c, t.r, sideOf(d.id));
     logLine(`${u.name} 배치 (${t.c}, ${t.r})`, 'sys');
     battle.tool = d.id; syncTools();
   }
@@ -2319,10 +2334,15 @@ function onPalUp(e){
 }
 function buildBtTools(){
   const mk = (id, wrap) => {
-    const s = getStats(id);
+    const s = getStats(id), side = sideOf(id);
     const b = el('button'); b.dataset.tool = id;
+    if (side !== s.side) b.classList.add('swapped');
     const face = document.createElement('canvas'); face.width = 80; face.height = 80; face.className = 'face';
     drawPortrait(face, id);
+    face.classList.add(side === 'ally' ? 'sd-ally' : 'sd-enemy');
+    face.title = '초상화를 누르면 아군 ↔ 적군';
+    face.addEventListener('pointerdown', e => e.stopPropagation());
+    face.addEventListener('click', e => { e.stopPropagation(); toggleSide(id); });
     b.appendChild(face);
     b.addEventListener('pointerdown', e => startPaletteDrag(e, id));
     b.appendChild(document.createTextNode(s.name));
@@ -2331,7 +2351,8 @@ function buildBtTools(){
   };
   const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies'), sm = document.getElementById('bt-summons');
   a.innerHTML = ''; e.innerHTML = ''; sm.innerHTML = '';
-  BT_ALLIES.forEach(id => mk(id, a)); BT_ENEMIES.forEach(id => mk(id, e));
+  // 목록은 절반으로: 위는 아군, 아래는 적군. 초상화를 누르면 반대쪽 절반으로 옮겨 감
+  [...BT_ALLIES, ...BT_ENEMIES].forEach(id => mk(id, sideOf(id) === 'ally' ? a : e));
   ['ratS', 'ratM', 'ratL', 'ratKnight'].forEach(id => mk(id, sm));
   document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.onclick = () => { battle.tool = b.dataset.tool; syncTools(); });
   syncTools();
@@ -2377,10 +2398,11 @@ function defaultSetup(){
   logLine('기본 배치. ▶ 전투 시작 (Space)', 'sys');
   syncRun();
 }
-function spawnUnit(id, x, y){
+function spawnUnit(id, x, y, side){
   const st = getStats(id);
-  const u = { uid: ++uidSeq, id, st, side: st.side, name: st.name, hp: st.hp, x, y, vx: 0, vy: 0,
-    face: st.side === 'ally' ? 1 : -1, cd: 0.3 + Math.random() * 0.8, lunge: 0, lx: 0, ly: 0,
+  side = side || st.side;
+  const u = { uid: ++uidSeq, id, st, side, name: st.name, hp: st.hp, x, y, vx: 0, vy: 0,
+    face: side === 'ally' ? 1 : -1, cd: 0.3 + Math.random() * 0.8, lunge: 0, lx: 0, ly: 0,
     dead: false, deadT: 0, t: 1, walkClock: 0, kind: 'idle', busy: false, swing: 0, hurt: 0, moving: false,
     weapon: id === 'goblin' ? '🔪' : null,
     state: 'approach', stateT: Math.random() * 0.6, running: false, strafeDir: 1,
@@ -2389,7 +2411,7 @@ function spawnUnit(id, x, y){
     thCd: 3, kkCd: 6, cast: null, spriteAnim: null, lift: 0, charT: 0, shock: null,
     dodgeT: 0, dodgeCd: 0, guardFlash: 0, ghostClock: 0, altArm: false, windupMax: 0 };
   const n = battle.units.filter(o => o.id === id).length;
-  if (st.side === 'enemy' && !(st.boss && n === 0)) u.name = `${st.name} ${n + 1}`;
+  if (side === 'enemy' && !(st.boss && n === 0)) u.name = `${st.name} ${n + 1}`;
   else if (n) u.name = `${st.name} ${n + 1}`;
   battle.units.push(u);
   if (battle.over) battle.over = null;
@@ -2495,7 +2517,7 @@ function copyUnit(u){
     const x = bx + dx, y = by + dy;
     if (x < 0 || x > BATTLE_COLS - 1 || y < 0 || y > ROWS - 1) continue;
     if (battle.units.some(o => !o.dead && Math.hypot(o.x - x, o.y - y) < 0.7)) continue;
-    const c = spawnUnit(u.id, x, y);
+    const c = spawnUnit(u.id, x, y, u.side);
     logLine(`${u.name} 복사 → ${c.name}`, 'sys');
     return;
   }
@@ -2536,7 +2558,7 @@ cv.addEventListener('pointerdown', e => {
   }
   const t = screenToTile(e);
   if (!t || battle.tool === 'select' || battle.tool === 'erase') return;
-  const nu = spawnUnit(battle.tool, t.c, t.r);
+  const nu = spawnUnit(battle.tool, t.c, t.r, sideOf(battle.tool));
   logLine(`${nu.name} 배치 (${t.c}, ${t.r})`, 'sys');
 });
 cv.addEventListener('pointerup', () => {
@@ -3048,6 +3070,11 @@ function updateBattle(dt){
     u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
     const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
+    if (u.aided){
+      const md = u.aided;
+      if (md.dead || !b.units.includes(md) || !md.medic || md.medic.target !== u) u.aided = null;
+      else { u.guarding = false; u.windup = 0; u.atkTarget = null; u.vx = u.vy = 0; u.t = 1; continue; }   // 치료받는 중: 행동 불가
+    }
     if (u.st.skills && u.st.skills.includes('firstAid') && b.running && !u.manual && medicUpdate(u, sdt)){ u.guarding = false; continue; }
     if (u.st.boss && b.running && u.stun <= 0 && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge'));   // 돌격 중엔 방패를 앞세워 상시 방어
@@ -3198,7 +3225,7 @@ function drawBattle(){
     const { c, r } = hoverTile;
     const q = [P(c, r), P(c + 1, r), P(c + 1, r + 1), P(c, r + 1)];
     ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
-    ctx.fillStyle = getStats(placeTool).side === 'ally' ? `rgba(92,194,106,${b.dragTool ? .45 : .25})` : `rgba(226,68,58,${b.dragTool ? .45 : .25})`;
+    ctx.fillStyle = sideOf(placeTool) === 'ally' ? `rgba(92,194,106,${b.dragTool ? .45 : .25})` : `rgba(226,68,58,${b.dragTool ? .45 : .25})`;
     ctx.fill();
   }
   drawWaterFloor();
@@ -3329,6 +3356,12 @@ function drawBattle(){
       ctx.fillRect(p.x - w / 2, gy, w * (u.loyal.full ? 1 : k), 4);
       if (u.loyal.full){ ctx.font = `${Math.round(T * 0.15)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#9dff7a'; ctx.fillText('MAX', p.x + w / 2 + 3, gy + 5); }
     }
+    if (u.medic && u.medic.phase === 'kneel'){
+      const gy = top + 8, k = Math.min(1, u.medic.t / AID_TIME);
+      ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, gy - 1, w + 2, 6);
+      ctx.fillStyle = '#7dff9a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
+    }
+    if (u.aided){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#7dff9a'; ctx.fillText('⛑️치료 중', p.x + w / 2 + 3, top + 6); }
     if (u.shock){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = '#ffe45a'; ctx.fillText('⚡감전', p.x - w / 2 - 3, top + 6); }
     if (!u.st.summon || u.id === 'ratKnight') tag(u.name + (u.manual ? ' (조작)' : ''), p.x, p.y + T * 0.3, u.side === 'ally' ? '#f3e6c8' : '#ffb3a8');   // 쥐 떼는 이름표 생략
   }
@@ -3743,7 +3776,7 @@ const SKILLS = {
   madness:   { name:'광기', kind:'패시브', icon:'⛓',
     desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
   firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
-    desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 1.5초 동안 치료한다.\n회복: 40 + 대상 최대 체력의 15%, 출혈을 멈춤\n대기시간 9초. 치료하는 동안은 쏘지 않는다.' },
+    desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 3초 동안 치료한다.\n치료하는 동안 노먼과 대상 둘 다 행동 불가 (맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤\n전투당 3회.' },
   suppress:  { name:'제압 사격', kind:'패시브', icon:'🎯',
     desc:'총알은 빠르고 곧게 날아간다.\n공격 준비 중("!")인 적을 맞히면 35% 확률로 그 공격을 끊는다.\n붙으면 개머리판으로 친다 (공격 10).' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
@@ -3948,15 +3981,16 @@ function drawRatUnit(o){
 }
 
 /* ---------- 노먼: 응급처치 ---------- */
-const AID_CD = 9, AID_TIME = 1.5, AID_LOW = 0.5, AID_RANGE = 7;
-const aidAmount = t => Math.round(40 + t.st.hp * 0.15);
+const AID_CD = 2, AID_TIME = 3, AID_LOW = 0.5, AID_RANGE = 7, AID_USES = 3;   // 전투당 3회
+const aidAmount = t => Math.round(t.st.hp * 0.4);
 function medicUpdate(u, sdt){
   const b = battle;
-  u.aidCd = (u.aidCd ?? 3) - sdt;
+  u.aidCd = (u.aidCd ?? 1) - sdt;
+  u.aidLeft = u.aidLeft ?? AID_USES;
   const m = u.medic;
   if (m){
     const t = m.target;
-    if (t.dead || !b.units.includes(t)){ u.medic = null; u.spriteAnim = null; return false; }
+    if (t.dead || !b.units.includes(t)){ u.medic = null; u.spriteAnim = null; if (t.aided === u) t.aided = null; return false; }
     if (m.phase === 'move'){
       m.t += sdt;
       const d = Math.hypot(t.x - u.x, t.y - u.y);
@@ -3968,9 +4002,11 @@ function medicUpdate(u, sdt){
       if (d > 1.1){ u.medic = null; return false; }            // 못 닿으면 포기
       m.phase = 'kneel'; m.t = 0;
       u.spriteAnim = { name: 'heal', t: 0, dur: AID_TIME };
+      u.aidLeft--;
+      if (t !== u){ t.aided = u; t.windup = 0; t.atkTarget = null; t.guarding = false; }   // 치료받는 쪽도 행동 불가
       if (t !== u) u.face = Math.sign(t.x - u.x) || u.face;
       skillPop(u, 'firstAid');
-      logLine(`⛑️ ${u.name}, ${t === u ? '스스로' : t.name + '에게'} 응급처치 시작`, 'heal');
+      logLine(`⛑️ ${u.name}, ${t === u ? '스스로' : t.name + '에게'} 응급처치 시작 (3초, 남은 횟수 ${u.aidLeft})`, 'heal');
     }
     // 무릎 꿇고 치료 (이동하지 않음)
     m.t += sdt; u.spriteAnim.t = m.t;
@@ -3983,13 +4019,14 @@ function medicUpdate(u, sdt){
       burst(t, 10, '#7dff9a', 80);
       logLine(`⛑️ 응급처치 → ${t.name}: +${amt}${stop ? ' (지혈)' : ''}`, 'heal');
       u.medic = null; u.spriteAnim = null; u.aidCd = AID_CD;
+      if (t.aided === u) t.aided = null;
     }
     return true;
   }
-  if (u.aidCd > 0 || u.windup > 0 || u.stun > 0) return false;
+  if (u.aidLeft <= 0 || u.aidCd > 0 || u.windup > 0 || u.stun > 0) return false;
   let best = null, bestK = AID_LOW;
   for (const o of b.units){
-    if (o.dead || o.side !== u.side || o.st.summon) continue;
+    if (o.dead || o.side !== u.side || o.st.summon || o.aided || (o.medic && o !== u)) continue;
     const k = o.hp / o.st.hp;
     if (k < bestK && Math.hypot(o.x - u.x, o.y - u.y) <= AID_RANGE){ bestK = k; best = o; }
   }
