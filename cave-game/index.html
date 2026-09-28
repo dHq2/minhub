@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.5
+  version v3.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.5';
+const VERSION = 'v3.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1906,7 +1906,7 @@ const STYLES = {
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
   poren:       { approach:3, hold:5, guard:3, strafe:0.5 },
-  norman:      { follow:6, kite:1, strafe:1 },   // 위생병: 동료 뒤에 붙어 다님
+  norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
 };
 const HEROES = {
@@ -1939,7 +1939,7 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   projectile:'bullet', ranged:true,   // 공격력은 탄 한 발 기준, 한 번에 2발 (10% 6발)
   mag:30, reloadT:3,                   // 탄창 30발, 재장전 3초
   melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
-  tags:['의무B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🩺 위생병 — 앞에 선 동료 뒤에 붙어 다니며 견제 사격만 한다. 적이 다가오면 물러난다.',
+  tags:['의무B', '사격B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🎯 사수 — 멀리서 뒤로 빠지며 견제 사격. 가끔 앞으로 살짝 나가 멈춰 서서 조준 사격.',
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
@@ -2642,7 +2642,7 @@ function decide(u, dist){
     shout(u, Math.random() < 0.5 ? '이야아아아!!' : '으아아아!');
     return;
   }
-  if (!w.kite && !w.keep && !w.follow){
+  if (!w.kite && !w.keep && !w.snipe){
     if (adv >= ADV_WIN){        // 우세: 물러나지 않고 밀어붙여 포위
       w.retreat = 0; w.hitrun = (w.hitrun || 0) * 0.25; w.guard = (w.guard || 0) * 0.5; w.strafe = (w.strafe || 0) * 0.5;
       w.approach = (w.approach || 0) + 4; w.hold = (w.hold || 0) + 2;
@@ -2652,7 +2652,7 @@ function decide(u, dist){
       w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
     }
   }
-  if (dist > u.st.range + 2.5 && !w.keep && !w.follow){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
+  if (dist > u.st.range + 2.5 && !w.keep && !w.snipe){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
   const opts = Object.entries(w).filter(([, v]) => typeof v === 'number' && v > 0);
   let r = Math.random() * opts.reduce((a, [, v]) => a + v, 0), pick = opts[0][0];
   for (const [k, v] of opts){ r -= v; if (r <= 0){ pick = k; break; } }
@@ -2661,6 +2661,9 @@ function decide(u, dist){
   u.running = pick === 'hitrun' || pick === 'retreat' || (pick === 'approach' && Math.random() < 0.3);
   if (pick === 'strafe') u.strafeDir = Math.random() < 0.5 ? 1 : -1;
   if (pick === 'guard') u.guardT = u.stateT;
+  if (pick === 'aim' && dist < u.st.range * 0.6) u.state = pick = 'snipe';   // 적이 가까우면 조준하러 나가지 않음
+  if (pick === 'aim'){ u.stateT = 2.2; u.aimT = 0; u.aiming = false; }
+  if (pick === 'snipe') u.strafeDir = Math.random() < 0.5 ? 1 : -1;
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 function reactTo(d, a){
@@ -3129,21 +3132,23 @@ function updateBattle(dt){
           dir = to; speed *= 2.2;
           if (dist <= u.st.range * 0.8){ chargeHit(u, tgt); u.state = 'keep'; u.stateT = 0.9; dir = null; }
         }
-        else if (u.state === 'follow'){
-          // 위생병: 적에게 가장 가까운 동료(전열) 뒤 1.8칸에 붙음. 적이 2.2칸 안이면 물러남
-          const mates = b.units.filter(o => o !== u && !o.dead && o.side === u.side && !o.st.summon);
-          if (dist < 2.2){ dir = { x: -to.x, y: -to.y }; u.running = true; }
-          else if (mates.length){
-            // 뒤쪽 = 적 무리 중심 → 아군 무리 중심 방향 (가로 위주)
-            const foes = b.units.filter(o => !o.dead && o.side !== u.side);
-            const cx = arr => arr.reduce((t, o) => t + o.x, 0) / arr.length;
-            const ex = cx(foes), ey = foes.reduce((t, o) => t + o.y, 0) / foes.length;
-            const back = { x: Math.sign(cx(mates) - ex) || -1, y: 0 };
-            const front = mates.reduce((best, o) => Math.hypot(ex - o.x, ey - o.y) < Math.hypot(ex - best.x, ey - best.y) ? o : best, mates[0]);
-            const gx = Math.max(0, Math.min(BATTLE_COLS - 1, front.x + back.x * 1.8)), gy = Math.max(0, Math.min(ROWS - 1, front.y + (u.uid % 2 ? 0.6 : -0.6)));
-            if (Math.hypot(gx - u.x, gy - u.y) > 0.35){ dir = norm(gx - u.x, gy - u.y); u.running = Math.hypot(gx - u.x, gy - u.y) > 2.5; }
-            else u.running = false;
-          } else if (dist > u.st.range * 0.95){ dir = to; u.running = false; }
+        else if (u.state === 'snipe'){
+          // 사수: 사거리의 75% 거리를 유지. 가까우면 뒤로 빠지면서 쏨 (벽에 막히면 옆으로 빠짐)
+          const want = u.st.range * 0.75;
+          if (dist < want - 0.4){
+            dir = { x: -to.x, y: -to.y }; u.running = dist < 3;
+            const wall = (u.x <= 0.3 && dir.x < 0) || (u.x >= BATTLE_COLS - 1.3 && dir.x > 0);
+            u.cornered = wall && dist < 2.2;
+            if (wall) dir = { x: to.x > 0 ? -0.2 : 0.2, y: (tgt.y > u.y ? -1 : 1) * (u.y <= 0.2 || u.y >= ROWS - 1.2 ? -1 : 1) };
+          } else if (dist > u.st.range * 0.95){ dir = { x: to.x * 0.7, y: to.y * 0.7 }; u.running = false; }
+          else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.3, y: to.x * u.strafeDir * 0.3 }; }
+        }
+        else if (u.state === 'aim'){
+          // 조준 사격: 앞으로 살짝 나가서 멈추고, 다음 사격을 똑바로 겨눔
+          u.aimT = (u.aimT || 0) + sdt;
+          if (dist < u.st.range * 0.5){ u.state = 'snipe'; u.stateT = 0.6; u.aiming = false; }
+          else if (u.aimT < 0.45 && dist > u.st.melee.range + 2){ dir = { x: to.x * 0.55, y: to.y * 0.55 }; u.running = false; }
+          else { dir = null; u.aiming = true; }
         }
         else if (u.state === 'kite'){
           if (u.st.melee && dist <= u.st.melee.range + 0.1 && u.cd <= 0.25){ dir = null; u.running = false; }
@@ -3177,10 +3182,13 @@ function updateBattle(dt){
         else { u.lx = u.face; u.ly = 0; }
         dir = null;
       }
-      if (!handOnly && b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05 &&
+      const breakAway = u.state === 'snipe' && dist < 2.2 && !u.cornered;   // 사수: 붙으면 쏘기보다 먼저 빠져나감
+      if (!handOnly && b.running && tgt && !u.guarding && !retreating && !breakAway && u.cd <= 0 && dist <= u.st.range + 0.05 &&
           (canShoot(u) || (u.st.melee && dist <= u.st.melee.range + 0.05))){   // 재장전 중엔 붙은 적만 개머리판
         u.stab = !!(u.st.melee && dist <= u.st.melee.range + 0.05);
         u.windup = u.windupMax = u.stab ? u.st.melee.windup : u.st.windup;
+        u.aimShot = !u.stab && u.state === 'aim' && u.aiming;
+        if (u.aimShot){ u.windup = u.windupMax = u.st.windup * 2; fxText(u, '조준', '#e8e0b0', null, 0.3); }
         u.atkTarget = tgt; u.noHitT = 0;
         const n = norm(tgt.x - u.x, tgt.y - u.y); u.lx = n.x; u.ly = n.y; u.face = Math.sign(n.x) || u.face;
         reactTo(tgt, u);
@@ -3809,8 +3817,8 @@ const SKILLS = {
     desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
   firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
     desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 3초 동안 치료한다.\n치료하는 동안 노먼과 대상 둘 다 행동 불가 (맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤\n전투당 3회.' },
-  medic:     { name:'위생병', kind:'패시브', icon:'🩺',
-    desc:'싸우러 온 게 아니라 살리러 왔다.\n적에게 가장 가까운 동료 뒤 두 칸쯤에 붙어 다니며 2발씩 끊어 쏘는 견제 사격만 한다 (발당 5, 사거리 8).\n멀수록 조금씩 빗나가고, 쏠 때마다 반동이 쌓였다가 가라앉는다. 움직이는 적은 조금 앞을 겨눈다.\n탄창 30발, 재장전 3초. 탄이 10발 이하인데 적이 멀면 미리 갈아 끼운다. 재장전 중에는 붙은 적만 개머리판으로 친다.\n10% 확률로 손가락이 늦게 떨어져 6발이 나간다.\n탄은 한 발씩 따로 날아가서 따로 판정한다 (회피, 방어, 치명타 전부). 탄 사이로 움직이면 아슬아슬하게 피할 수도 있다.\n적이 두 칸 안으로 다가오면 물러나고, 붙으면 개머리판으로 친다 (공격 6).\n동료가 없으면 거리를 벌리며 쏜다.' },
+  medic:     { name:'사수', kind:'패시브', icon:'🎯',
+    desc:'기본은 원거리 견제. 적과 6칸쯤 거리를 두고, 다가오면 뒤로 빠지면서 쏜다 (벽에 막히면 옆으로).\n가끔 앞으로 살짝 나가서 멈춰 서고, 두 배로 길게 겨눈 뒤 조준 사격 (처음 두 발은 흩어짐 35%, 반동 무시). 쏘고 나면 다시 물러난다.\n2발씩 끊어 쏜다 (발당 5, 사거리 8). 10% 확률로 6발.\n멀수록 조금씩 빗나가고, 쏠 때마다 반동이 쌓였다가 가라앉는다. 움직이는 적은 조금 앞을 겨눈다.\n탄창 30발, 재장전 3초. 탄이 10발 이하인데 적이 멀면 미리 갈아 끼운다. 재장전 중에는 붙은 적만 개머리판으로 친다 (공격 6).' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
     desc:'굴의 모두가 당신을 대장이라 부른다.' },
   justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
@@ -4018,7 +4026,8 @@ const BURST_GAP = 0.09, BURST_LONG_P = 0.1;
 const RECOIL_KICK = 0.07, RECOIL_SETTLE = 0.7, RECOIL_MAX = 0.45;
 function fireBullet(u, d, i){
   const dist0 = Math.hypot(d.x - u.x, d.y - u.y) || 1;
-  const spread = 0.05 + dist0 * 0.06 + (u.recoil || 0);
+  const aimed = u.aimShot && i < 2;                               // 조준 사격: 두 발까지 똑바로
+  const spread = aimed ? (0.05 + dist0 * 0.06) * 0.35 : 0.05 + dist0 * 0.06 + (u.recoil || 0);
   const lead = Math.max(0.05, dist0 / 45) * 0.8;                 // 베테랑: 움직이는 대상은 조금 앞을 겨눔
   const ax = d.x + (d.vx || 0) * lead, ay = d.y + (d.vy || 0) * lead;
   const px = -(ay - u.y) / dist0, py = (ax - u.x) / dist0;       // 조준선에 수직
@@ -4036,13 +4045,16 @@ function fireBullet(u, d, i){
 function tickBurst(u, sdt){
   const bu = u.burst;
   if (!bu) return;
-  if (u.dead || u.stun > 0 || u.medic || bu.d.dead){ u.burst = null; return; }
+  if (u.dead || u.stun > 0 || u.medic || bu.d.dead){ u.burst = null; u.aimShot = false; return; }
   bu.t -= sdt;
   while (bu.t <= 0 && bu.left > 0 && u.ammo > 0){
     fireBullet(u, bu.d, bu.i++); bu.left--; bu.t += BURST_GAP;
   }
-  if (u.ammo <= 0){ u.burst = null; startReload(u, '탄창이 비었다'); return; }
-  if (bu.left <= 0) u.burst = null;
+  if (u.ammo <= 0){ u.burst = null; u.aimShot = false; startReload(u, '탄창이 비었다'); return; }
+  if (bu.left <= 0){
+    u.burst = null;
+    if (u.aimShot){ u.aimShot = false; u.aiming = false; u.state = 'snipe'; u.stateT = 0.4; }   // 조준 사격 뒤엔 다시 물러남
+  }
 }
 /* ---------- 탄창 · 재장전 ---------- */
 const canShoot = u => !u.st.mag || (!(u.reload > 0) && (u.ammo ?? u.st.mag) > 0);
