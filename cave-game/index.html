@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.2
+  version v6.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -209,6 +209,25 @@
   #bt-log .crit{color:#ffd35a;} #bt-log .miss{color:#8d8374;} #bt-log .dead{color:#ff8f8f;} #bt-log .sys{color:#9fd3ff;} #bt-log .heal{color:#8ee08e;}
   @media (max-width:640px){ #bt-panel{width:calc(100% - 24px);max-height:44%;} #bt-log{left:12px;right:12px;width:auto;max-height:20%;} }
 
+  /* 빠른 버튼 줄: 전투 중 늘 보임 */
+  #bt-quick{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:12px;display:flex;gap:6px;z-index:3;}
+  #bt-quick button{background:rgba(18,14,20,.92);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 11px;font-size:13px;font-family:var(--display);min-height:38px;}
+  #bt-quick button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
+  #bt-quick #bq-last{border-color:#8fe0a0;color:#bff5c8;}
+  @media (max-width:640px){
+    #bt-quick{left:12px;right:12px;justify-content:stretch;}
+    #bt-quick button{flex:1;padding:9px 4px;font-size:14px;}
+    #bt-panel{top:calc(58px + env(safe-area-inset-top,0px));max-height:52%;}
+    #bt-panel.collapsed{display:none;}
+    #bt-log{bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:15%;font-size:11px;background:rgba(10,8,12,.62);pointer-events:none;}
+  }
+  body.battle #act{display:none !important;}
+  body.battle:not(.manual) #pad, body.battle:not(.manual) #bt-touch{display:none !important;}
+  @media (pointer:coarse){
+    body.battle #pad{bottom:calc(20% + 14px);left:10px;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);opacity:.8;}
+    body.battle #bt-touch{bottom:calc(20% + 14px);right:10px;display:grid;grid-template-columns:repeat(2,58px);gap:6px;opacity:.85;}
+    body.battle #bt-touch button{width:58px;height:44px;}
+  }
   #pad{position:absolute;bottom:calc(96px + env(safe-area-inset-bottom,0px));left:16px;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:4px;}
   #pad button,#act{background:rgba(23,18,26,.72);border:1px solid var(--line);color:var(--ink);border-radius:6px;font-size:17px;touch-action:none;}
   #act{position:absolute;right:20px;bottom:calc(110px + env(safe-area-inset-bottom,0px));width:64px;height:64px;border-radius:50%;display:none;font-size:14px;}
@@ -271,6 +290,12 @@
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
     </div>
+    <div id="bt-quick">
+      <button id="bq-run" class="primary">▶ 시작</button>
+      <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
+      <button id="bq-speed">x1</button>
+      <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
+    </div>
     <div id="bt-log"></div>
     <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>시작/정지</b> Space</div>
   </div>
@@ -287,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.2';
+const VERSION = 'v6.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2410,11 +2435,14 @@ function enterBattle(){
   buildBtTools();
   defaultSetup();
   btUi.hidden = false;
+  cam.on = false;
+  if (W <= 640) document.getElementById('bt-panel').classList.remove('collapsed');
+  syncRun();
 }
 function exitBattle(){
   closePanels();
   mode = 'lobby'; curCols = LOBBY_COLS; resize();
-  document.body.classList.remove('battle');
+  document.body.classList.remove('battle', 'manual'); cam.on = false;
   battle = null; floaters = []; sparks = []; caption = null; held.clear();
   btUi.hidden = true;
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
@@ -2565,7 +2593,22 @@ function logLine(text, cls = ''){
 function syncRun(){
   document.getElementById('bt-run').textContent = battle.running ? '⏸ 일시정지' : '▶ 전투 시작';
   document.getElementById('bt-speed').textContent = `속도 x${battle.speed}`;
+  const q = document.getElementById('bq-run');
+  q.textContent = battle.running ? '⏸ 정지' : '▶ 시작'; q.classList.toggle('primary', !battle.running);
+  document.getElementById('bq-speed').textContent = `x${battle.speed}`;
+  // 좁은 화면: 전투가 시작되면 편성 창을 접어 전장을 넓게
+  if (battle.running && W <= 640) document.getElementById('bt-panel').classList.add('collapsed');
+  syncManual();
 }
+// 직접 조작할 주인공이 있을 때만 방향키 · 공격 버튼을 보여줌
+function syncManual(){
+  const on = mode === 'battle' && battle && battle.running && !battle.playerAuto && battle.units.some(u => u.id === 'player' && !u.dead);
+  document.body.classList.toggle('manual', !!on);
+}
+document.getElementById('bq-run').onclick = () => toggleRun();
+document.getElementById('bq-last').onclick = () => restartLastSetup();
+document.getElementById('bq-speed').onclick = () => document.getElementById('bt-speed').click();
+document.getElementById('bq-panel').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
 function toggleRun(){
   if (!battle) return;
   if (!battle.running){
@@ -2589,6 +2632,7 @@ document.getElementById('bt-exit').onclick = exitBattle;
 document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTest = e.target.checked; };
 document.getElementById('btn-battle').onclick = enterBattle;
 document.getElementById('bt-title').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
+document.getElementById('bt-auto').addEventListener('change', () => setTimeout(syncManual, 0));
 function pressGuard(){ if (mode === 'battle' && battle) battle.guardPressAt = battle.clock; }
 // 회피 스텝: 누른 방향 (없으면 가장 가까운 적 반대쪽)으로 짧게 몸을 뺌
 function pressDodge(){
@@ -3005,7 +3049,7 @@ function reversal(d, a, opts = {}){
 }
 function parry(d, a, opts = {}){
   const b = battle;
-  b.hitstop = 0.22; shake = 0.25;
+  b.hitstop = 0.22; shake = 0.25; camFocus(d.x, d.y, 1.35, 0.8);
   a.stun = 0.9; a.windup = 0; a.atkTarget = null;
   if (!opts.ranged) pushUnit(a, d, 0.35);
   ringAt(d, '143,232,255');
@@ -3147,6 +3191,7 @@ function killUnit(d, why){
     if (!d.lastStand){
       d.lastStand = true;
       d.kc = { type: 'agony', t: 0, dur: 3, moan: 0.2 };
+      camFocus(d.x, d.y, 1.5, 3.2);
       d.windup = 0; d.atkTarget = null; d.guarding = false; d.bleed = null;
       skillPop(d, 'heretic');
       logLine(`👓 ${d.name}이(가) 쓰러지지 않는다… 꿈틀꿈틀 괴로워한다`, 'crit');
@@ -3580,6 +3625,49 @@ function drawUnitBody(v){
   else if (v.id === 'goblin') drawGoblin(v);
   else if (v.id === 'goblinArcher') drawGoblinArcher(v);
   else drawEnemyGoblin(v);
+}
+/* ---------- 전투 카메라 (세로 화면): 싸우는 곳을 따라가며 확대, 큰 순간엔 줌인 ---------- */
+const cam = { T: 0, x: 0, top: 0, on: false };
+function camFocus(x, y, k = 1.35, t = 0.9){ if (battle) battle.camFocus = { x, y, k, t, max: t }; }
+function updateCamera(dt){
+  const b = battle, portrait = H > W * 1.15;
+  if (!portrait){ if (cam.on){ cam.on = false; resize(); } return; }
+  const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
+  const panelEl = document.getElementById('bt-panel');
+  const panelOpen = !panelEl.classList.contains('collapsed');
+  const topReserve = (panelOpen ? panelEl.getBoundingClientRect().bottom : 58) + 8 + (b.units.some(u => u.st.boss && !u.dead) ? 40 : 0);   // 보스 체력바 자리
+  const bottomReserve = H * (document.body.classList.contains('manual') ? 0.36 : 0.17);
+  const availH = Math.max(120, H - topReserve - bottomReserve);
+  const maxT = Math.min(70, W / 5.2, availH / 6.2);
+  // 따라갈 곳: 살아 있는 폰들 (쥐 떼는 무게 낮게), 전투 전엔 맵 전체
+  let tT = fitT, cx = curCols / 2;
+  const alive = b.units.filter(u => !u.dead);
+  if (b.running && alive.length){
+    const main = alive.filter(u => !u.st.summon || u.id === 'ratKnight');
+    const xs = (main.length ? main : alive).map(u => u.x).sort((a, c) => a - c);
+    const q = k => xs[Math.min(xs.length - 1, Math.max(0, Math.round((xs.length - 1) * k)))];
+    const x0 = q(0.1), x1 = q(0.9);                                   // 가운데 80%가 싸우는 곳
+    let sx = 0, sw = 0;
+    for (const u of alive){ const wgt = u.st.summon && u.id !== 'ratKnight' ? 0.3 : 1; sx += u.x * wgt; sw += wgt; }
+    const span = Math.max(4.5, x1 - x0 + 2.5) + ROWS * 0.42;
+    tT = Math.max(fitT, Math.min(maxT, W / span));
+    cx = (sx / sw) * 0.5 + (x0 + x1) / 2 * 0.5 + 0.5;
+  }
+  if (b.camFocus && b.camFocus.t > 0){                        // 큰 순간: 잠깐 줌인
+    const f = b.camFocus, k = Math.sin(Math.min(1, f.t / f.max) * Math.PI) ;
+    f.t -= dt;
+    tT = Math.min(maxT * 1.3, tT * (1 + (f.k - 1) * k)); cx = cx + (f.x + 0.5 - cx) * k * 0.8;
+  }
+  if (!cam.on){ cam.on = true; cam.T = T; cam.x = cx; cam.top = floorTop; }
+  const a = Math.min(1, dt * 3.2);
+  cam.T += (tT - cam.T) * a; cam.x += (cx - cam.x) * a;
+  T = cam.T; rowH = T * 0.6; skew = rowH * 0.7;
+  // 세로 자리: 바닥 띠가 남은 공간 아래쪽에, 위로 큰 폰이 설 자리 (약 2.6칸)를 둠
+  const wantTop = Math.max(topReserve + T * 2.6, Math.min(H - bottomReserve - ROWS * rowH - T * 0.35, topReserve + availH * 0.62 - ROWS * rowH * 0.5));
+  cam.top += (wantTop - cam.top) * a; floorTop = cam.top;
+  const half = W / 2, mapW = curCols * T;
+  camX = Math.max(-T * 1.2, Math.min(mapW - W + T * 1.2 + skew * 2.5, cam.x * T - half));
+  if (mapW + skew * 3 < W) camX = mapW / 2 - half;
 }
 function drawBattle(){
   const b = battle;
@@ -4066,6 +4154,7 @@ function bossUpdate(u, sdt, tgt, dist){
 const KICK_R = 0.75, KICK_PIN = 40;
 function kickHit(u, o, c){
   const b = battle;
+  camFocus(o.x, o.y, 1.4, 0.9);
   const toWall = kickWallDist(o, c.dx, c.dy);
   const left = Math.hypot(c.ex - u.x, c.ey - u.y);          // 발이 벽에 닿기까지 남은 거리
   const pinned = c.wall && toWall < left + 0.5;              // 발과 벽 사이에 끼임
@@ -4203,6 +4292,7 @@ function strikeBolt(u, bo){
 }
 function strikeThunder(u, c){
   const b = battle;
+  camFocus(c.x, c.y, 1.25, 0.7);
   const cx = Math.round(c.x), cy = Math.round(c.y);
   const tiles = thunderTiles(cx, cy);
   const inArea = o => tiles.some(([tc, tr]) => tc === Math.round(o.x) && tr === Math.round(o.y));
@@ -4385,7 +4475,7 @@ function drawWaterFloor(){
 function drawBossBar(){
   const boss = battle.units.find(u => u.st.boss && !u.dead);
   if (!boss) return;
-  const w = Math.min(520, W * 0.42), x = W / 2 - w / 2, y = 18;
+  const small = W <= 640, w = small ? W - 24 : Math.min(520, W * 0.42), x = W / 2 - w / 2, y = small ? 62 : 18;   // 좁은 화면: 빠른 버튼 줄 아래
   ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(x - 2, y - 2, w + 4, 14);
   ctx.fillStyle = '#b3122a'; ctx.fillRect(x, y, w * boss.hp / boss.st.hp, 10);
   ctx.font = `15px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
@@ -4636,6 +4726,7 @@ function porenFort(u, why){
   if (rats.length < 2) return false;
   u.fortCd = battle.clock + FORT.cd;
   u.fort = { t: 0, rats, dead: 0, absorbed: 0 };
+  camFocus(u.x, u.y, 1.3, 1.2);
   rats.forEach((r, i) => { r.state = 'fort'; r.stateT = FORT.dur + 0.5; r.fortOf = u; r.fortIdx = i; r.fortN = rats.length; });
   u.windup = 0; u.atkTarget = null;
   skillPop(u, 'ratFort'); shout(u, '버텨라!');
@@ -4845,7 +4936,7 @@ function kariusUpdate(u, sdt, tgt, dist){
     if (u.roarT <= 0){ u.roarT = 1.6 + Math.random(); shout(u, ['크아아아!!', '으아아아아!!', '우오오오!!'][Math.random() * 3 | 0]); shake = Math.max(shake, 0.25); }
     if (u.p2Timer <= 0){
       if (u.kc && u.kc.type === 'rush') u.kc.carried.forEach(o => { o.kbx = o.kby = 0; });
-      u.kc = { type: 'cut', t: 0, dur: 1.2 }; u.vx = u.vy = 0; battle.slowmo = 4.5;   // 슬로우모션 속에서 서서 고개를 떨굼
+      u.kc = { type: 'cut', t: 0, dur: 1.2 }; u.vx = u.vy = 0; battle.slowmo = 4.5; camFocus(u.x, u.y, 1.6, 4.5);   // 슬로우모션 속에서 서서 고개를 떨굼
     }
   }
   // 페이즈 2: 체력 10% (400이면 40)부터
@@ -5200,7 +5291,7 @@ let last = performance.now();
 function loop(now){
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (player && !gameEl.hidden){
-    if (mode === 'battle'){ updateBattle(dt); drawBattle(); }
+    if (mode === 'battle'){ updateBattle(dt); updateCamera(dt); drawBattle(); }
     else { update(dt); draw(); }
   }
   requestAnimationFrame(loop);
