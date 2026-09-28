@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.6.1
+  version v2.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -260,6 +260,7 @@
         적 머리 위 "!" 뜨고 맞기 직전 X 또는 Z: 저스트 (3% 확정 치명타 반격)</div>
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-water"> 물 바닥 (천벌 범위 안 전원 감전)</label>
+      <label class="bt-check"><input type="checkbox" id="bt-rain"> 🌧️ 비 오는 필드 (천벌이 맵 전체 감전)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
@@ -281,7 +282,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.6.1';
+const VERSION = 'v2.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1930,7 +1931,7 @@ const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:1500, atk:25, def:12, block:0.10, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:250, react:0.1,
     boss:true, thunderAtk:90, residualAtk:25, kickAtk:40,
-    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 무작위 대상에게 붉은 낙뢰. 직격(스프라이트가 겹칠 때) 90 + 큰 경직, 인근 8칸 + 십자 4칸 잔류 25. 물 바닥이면 범위 안 전원 감전 (피아 구분 없음).\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 40 피해, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
+    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 무작위 대상에게 붉은 낙뢰. 직격(스프라이트가 겹칠 때) 90 + 큰 경직, 인근 8칸 + 십자 4칸 잔류 25. 물 바닥이면 범위 안 전원 감전, 비 오는 필드면 맵 전체 감전 (피아 구분 없음). 감전은 3씩 5턴.\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 40 피해, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
     equip:{ 무기:'⚡ 붉은 낙뢰', 머리:'피 흐르는 광륜', 몸:'🌟 붉은 성해포', 장신구:'—' } },
   goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
     hp:70, atk:12, def:2, block:0.05, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
@@ -2246,6 +2247,7 @@ const BLEED = { chance: 0.12, critChance: 0.5, ticks: 5, maxStacks: 3 };   // �
 
 function enterBattle(){
   if (scene || falling) return;
+  if (world && world.weather && (world.weather.kind === '비' || world.weather.kind === '뇌우')) document.getElementById('bt-rain').checked = true;   // 굴에 비가 오면 전투도 비
   closePanels(); endDialog(); closeEvent();
   mode = 'battle'; curCols = BATTLE_COLS; resize();
   document.body.classList.add('battle');
@@ -2253,7 +2255,7 @@ function enterBattle(){
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
   battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [],
-    parryTest: document.getElementById('bt-parry').checked, water: document.getElementById('bt-water').checked, playerAuto: document.getElementById('bt-auto').checked };
+    parryTest: document.getElementById('bt-parry').checked, water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
   buildBtTools();
   defaultSetup();
   btUi.hidden = false;
@@ -2406,6 +2408,7 @@ function pressDodge(){
 document.getElementById('tb-dodge').addEventListener('pointerdown', e => { e.preventDefault(); pressDodge(); });
 document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); pressAttack(); });
 document.getElementById('bt-water').onchange = e => { if (battle) battle.water = e.target.checked; };
+document.getElementById('bt-rain').onchange = e => { if (battle){ battle.rain = e.target.checked; battle.drops = []; } };
 document.getElementById('bt-auto').onchange = e => { if (battle) battle.playerAuto = e.target.checked; };
 // 공격 입력: 0.35초 동안 버퍼 (공격 간격이 끝나는 순간에 맞춰 나감)
 function pressAttack(){ if (mode === 'battle' && battle) battle.attackPressAt = battle.clock; }
@@ -2866,6 +2869,13 @@ function updateBattle(dt){
   else b.clock += dt;
   shake = Math.max(0, shake - dt);
   b.redFlash = Math.max(0, b.redFlash - dt * 1.5);
+  b.rainFlash = Math.max(0, (b.rainFlash || 0) - dt * 1.5);
+  if (b.rain){
+    const n = Math.floor(220 * dt + Math.random());
+    for (let i = 0; i < n; i++) b.drops.push({ x: Math.random() * (W + 80), y: -10, vy: 700 + Math.random() * 200, end: floorTop + Math.random() * rowH * ROWS });
+  }
+  for (const d of b.drops){ d.y += d.vy * dt; d.x -= 40 * dt; }
+  b.drops = b.drops.filter(d => d.y < d.end);
   floaters.forEach(f => { f.life -= dt; f.y -= 26 * dt; });
   floaters = floaters.filter(f => f.life > 0);
   sparks.forEach(s => { s.life -= dt; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 520 * dt; });
@@ -2914,15 +2924,16 @@ function updateBattle(dt){
     u.hurt = Math.max(0, u.hurt - sdt);
     u.charT = Math.max(0, (u.charT || 0) - sdt);
     if (u.shock && b.running){
-      u.shock.t -= sdt; u.shock.clock += sdt;
-      if (u.shock.clock >= 0.5){
-        u.shock.clock -= 0.5;
-        u.hp = Math.max(0, u.hp - 3); u.stun = Math.max(u.stun, 0.25);
+      u.shock.clock += sdt;
+      if (u.shock.clock >= SHOCK_TICK){
+        u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
+        u.hp = Math.max(0, u.hp - SHOCK_DMG); u.stun = Math.max(u.stun, 0.25);
+        fxText(u, `${SHOCK_DMG}`, '#ffe45a');
         const q = P(u.x + 0.5, u.y + 0.5);
         for (let i = 0; i < 6; i++) sparks.push({ x: q.x + camX + (Math.random() - 0.5) * T * 0.5, y: q.y - T * (0.2 + Math.random() * 0.8), vx: (Math.random() - 0.5) * 160, vy: (Math.random() - 0.5) * 160, life: 0.25, c: '#ffe45a' });
         if (u.hp <= 0){ killUnit(u, '감전'); continue; }
       }
-      if (u.shock.t <= 0){ u.shock = null; }
+      if (u.shock.ticks <= 0){ u.shock = null; }
     }
     u.lunge = Math.max(0, u.lunge - sdt);
     u.stun = Math.max(0, u.stun - sdt);
@@ -3266,7 +3277,13 @@ function drawBattle(){
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)');
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   drawBossBar();
+  if (b.drops.length){
+    ctx.strokeStyle = 'rgba(170,200,255,.4)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (const d of b.drops){ ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.5, d.y - 12); }
+    ctx.stroke();
+  }
   if (b.redFlash > 0){ ctx.fillStyle = `rgba(200,30,20,${b.redFlash * 0.35})`; ctx.fillRect(0, 0, W, H); }
+  if (b.rainFlash > 0){ ctx.fillStyle = `rgba(255,228,90,${b.rainFlash * 0.3})`; ctx.fillRect(0, 0, W, H); }
   if (caption){
     ctx.globalAlpha = Math.min(1, caption.life, (caption.max - caption.life) * 3);
     ctx.font = `${Math.round(Math.max(24, T * 0.6))}px "Do Hyeon",sans-serif`;
@@ -3500,15 +3517,27 @@ function strikeThunder(u, c){
       fxText(o, `잔류 ${dmg}`, '#ff8f8f');
       logLine(`⚡ 잔류 → ${o.name}: ${dmg}`);
     }
-    if (b.water && inArea(o)) applyShock(o);     // 물 바닥이면 범위 안 전원 감전 (피아 구분 없음)
+    if (b.rain) applyShock(o, true);                  // 비 오는 필드: 맵 전체 감전 (피아 구분 없음)
+    else if (b.water && inArea(o)) applyShock(o);     // 물 바닥이면 범위 안 전원 감전 (피아 구분 없음)
     if (o.hp <= 0 && !o.dead) killUnit(o, '천벌');
   }
   if (!direct) logLine(`${c.target.name}, 직격을 피함`, 'miss');
+  if (b.rain){
+    const n = b.units.filter(o => o.shock && !o.dead).length;
+    logLine(`🌧️⚡ 빗물을 타고 번개가 퍼진다 — 맵 전체 ${n}명 감전 (${SHOCK_DMG}씩 ${SHOCK_TURNS}턴)`, 'crit');
+    b.rainFlash = 0.6;
+    for (const o of b.units){
+      if (o.dead) continue;
+      const q = P(o.x + 0.5, o.y + 0.5);
+      for (let i = 0; i < 8; i++) sparks.push({ x: q.x + camX + (Math.random() - 0.5) * T * 0.6, y: q.y - T * Math.random(), vx: (Math.random() - 0.5) * 220, vy: -Math.random() * 200, life: 0.4, c: '#ffe45a' });
+    }
+  }
 }
-function applyShock(o){
-  o.shock = { t: 3, clock: 0 };
+const SHOCK_DMG = 3, SHOCK_TURNS = 5, SHOCK_TICK = 1;   // 감전: 1초(1턴)마다 3 피해, 5턴
+function applyShock(o, quiet){
+  o.shock = { ticks: SHOCK_TURNS, clock: 0 };
   fxText(o, '⚡감전', '#ffe45a', null, 0.5);
-  logLine(`⚡ ${o.name} 감전 (3턴)`, 'bleed');
+  if (!quiet) logLine(`⚡ ${o.name} 감전 (${SHOCK_DMG}씩 ${SHOCK_TURNS}턴)`, 'bleed');
 }
 // 적뢰 기술 범위 안이면 피하는 방향 (AI용)
 function dangerDir(u){
@@ -3594,7 +3623,7 @@ function drawBossSky(){
   }
 }
 function drawWaterFloor(){
-  if (!battle.water) return;
+  if (!battle.water && !battle.rain) return;
   for (let r = 0; r < ROWS; r++) for (let c = 0; c < BATTLE_COLS; c++){
     const q = [P(c, r), P(c + 1, r), P(c + 1, r + 1), P(c, r + 1)];
     ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
@@ -3622,11 +3651,11 @@ function drawBossBar(){
    ========================================================= */
 const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
-    desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 겹칠 때): 90 피해 + 1.6초 큰 경직 + 그을림\n잔류 (중심 · 인근 8칸 · 십자 4칸): 25 피해 + 짧은 경직\n물 바닥이면 범위 안 전원 감전 (피아 불문)' },
+    desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 겹칠 때): 90 피해 + 1.6초 큰 경직 + 그을림\n잔류 (중심 · 인근 8칸 · 십자 4칸): 25 피해 + 짧은 경직\n물 바닥이면 범위 안 전원 감전 (피아 불문)\n비 오는 필드면 맵 전체 전원 감전 (피아 불문)\n감전: 1턴(1초)마다 3 피해 + 짧은 경직, 5턴' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'0.8초 웅크렸다가 5칸을 일직선으로 날아찬다 (5~7초마다).\n경로 위: 40 피해 + 밀려남 + 경직, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통)\n옆으로 비키면 회피, 방어는 방어 기술의 절반 확률로만 막힌다.' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
-    desc:'맵 끝에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n작은 쥐: 3초마다 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐: 10초마다 (🫀40 ⚔7)\n15초마다 예고 없이 사람만 한 쥐 (🫀120 ⚔14, 무거움)\n  └ 그 자리에 15% 확률로 쥐 기사 (🫀90 ⚔13, 창과 방패, 돌격)' },
+    desc:'맵 끝에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n작은 쥐: 3초마다 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐: 13초마다 (🫀40 ⚔7)\n20초마다 예고 없이 사람만 한 쥐 (🫀200 ⚔14, 무거움)\n  └ 그 자리에 15% 확률로 쥐 기사 (🫀90 ⚔13, 창과 방패, 돌격)' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
     desc:'도발: 3칸 안의 적은 포렌을 먼저 노린다 (보스 제외).\n대검 베기: 옆에 있는 적 하나까지 60% 피해.' },
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
@@ -3696,7 +3725,7 @@ Object.assign(HEROES, {
     hp:40, atk:7, def:1, block:0.05, crit:0.05, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0.2,
     summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratL: { name:'큰 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 사람만 한 쥐',
-    hp:120, atk:14, def:4, block:0.10, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0.2,
+    hp:200, atk:14, def:4, block:0.10, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0.2,
     summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사',
     hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
@@ -3714,8 +3743,8 @@ const RAT_SIZE = { ratS:0.42, ratM:0.62, ratL:1.15 };
 // 충성 게이지: 다음 쥐를 미리 정하고, 쥐가 클수록 게이지가 느리게 참 → 게이지 속도로 다음 쥐를 짐작
 const LOYALTY_MAX = 24;
 const RAT_ROLL = [ ['ratS', 0.65, 0.5], ['ratM', 0.30, 2.0], ['ratL', 0.04, 6], ['ratKnight', 0.01, 10] ];   // (소환수 목록 배치용)
-// 충성 타이머: 작은 쥐 3초, 쥐 10초, 15초마다 큰 쥐가 예고 없이 (그 자리에 가끔 쥐 기사)
-const RAT_TIMERS = { ratS: 3, ratM: 10, big: 15 };
+// 충성 타이머: 작은 쥐 3초, 쥐 13초, 20초마다 큰 쥐가 예고 없이 (그 자리에 가끔 쥐 기사)
+const RAT_TIMERS = { ratS: 3, ratM: 13, big: 20 };
 const KNIGHT_AT_BIG = 0.15;
 function rollRat(){
   let r = Math.random();
