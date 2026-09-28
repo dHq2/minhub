@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v7.4
+  version v7.5
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v7.4';
+const VERSION = 'v7.5';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4220,6 +4220,7 @@ function bossUpdate(u, sdt, tgt, dist){
       const t = foes.reduce((best, o) => (byAtk ? o.st.atk > best.st.atk || (o.st.atk === best.st.atk && o.hp > best.hp)
                                                 : o.hp > best.hp) ? o : best, foes[0]);
       u.cast = { type: 'thunder', t: 0, dur: 2.0, target: t, x: t.x, y: t.y, locked: false };
+      if (FORT.onThunder && t.st.skills && t.st.skills.includes('legion')) t.fortWant = 1.1;   // 낙뢰 직전 방진
       skillPop(u, 'thunder');
       logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name} · ${byAtk ? '가장 강한 자' : '가장 질긴 자'})`, 'crit');
       return true;
@@ -4667,7 +4668,7 @@ const SKILLS = {
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
-    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두른다: 1.8칸 안의 적에게 공격력 + 희생된 쥐 1마리당 4.' },
+    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두르는 반격: 1.8칸 안의 적에게 공격력 + 쥐들이 대신 맞은 피해의 60%, 치명타 25%.' },
   ratLadder: { name:'쥐 사다리', kind:'액티브', icon:'🌊',
     desc:'3~8칸 떨어진 적에게, 쥐 4마리가 발밑에 모이고 포렌이 그 위에 올라타 파도처럼 미끄러져 들어간다 (대기 10초).\n도착하면 내려찍는다: 1.3칸 안의 적에게 공격력 x1.5 + 경직.' },
   ratBind:   { name:'쥐 포박', kind:'액티브', icon:'🪢',
@@ -4917,7 +4918,7 @@ function strongAttack(a, d, atk){
 }
 /* ---------- 포렌: 쥐 망토 · 쥐 방진 · 쥐 사다리 · 쥐 포박 ---------- */
 const CLOAK = { r: 1.6, per: 2, max: 10 };
-const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, bonus: 4 };
+const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, critChance: 0.25, onThunder: false };   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
 const LADDER = { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3 };
 const BIND = { cd: 12, range: 4.5, rats: 5, per: 22, max: 100, drain: 22, dur: 4.5 };
 const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk);
@@ -4962,17 +4963,19 @@ function fortAbsorb(d, dmg){
 function porenUpdate(u, sdt, tgt, dist){
   const b = battle;
   u.cloak = cloakCount(u);
+  if (u.fortWant > 0){ u.fortWant -= sdt; if (u.fortWant <= 0){ u.fortWant = 0; if (!u.fort) porenFort(u, 'strong'); } }
   // 쥐 방진 진행: 대검을 꽂고 움직이지 않음 → 끝에 뽑으며 휘두름 (희생된 쥐 수만큼 강해짐)
   if (u.fort){
     const f = u.fort; f.t += sdt; u.vx = u.vy = 0; u.stun = 0;
     if (f.t >= FORT.dur){
-      const atk = u.st.atk + f.dead * FORT.bonus;
+      // 반격: 쥐들이 대신 맞은 만큼 되갚는 대검 회전 (치명타 25%)
+      const atk = u.st.atk + Math.round(f.absorbed * FORT.counter), crit = Math.random() < FORT.critChance;
       const hits = b.units.filter(o => !o.dead && o.side !== u.side && Math.hypot(o.x - u.x, o.y - u.y) < 1.8);
-      hits.forEach(o => { resolveHit(u, o, { atk }); if (!o.dead) pushUnit(o, u, 0.8); });
+      hits.forEach(o => { resolveHit(u, o, { atk, forceCrit: crit }); if (!o.dead) pushUnit(o, u, 0.8); });
       shake = Math.max(shake, 0.35); ringAt(u, '157,255,122'); burst(u, 30, '#9dff7a', 420);
       b.fx.push({ type: 'gspin', u, dir: u.face || 1, life: 0.6, max: 0.6 });
-      fxText(u, `대검 회전! ${atk}`, '#9dff7a', 'crit', 0.6);
-      logLine(`🗡 ${u.name}이(가) 대검을 뽑으며 휘두른다 — 쥐 ${f.dead}마리의 희생으로 공격 ${atk} (${hits.length}명), 쥐들이 대신 맞은 피해 ${f.absorbed}`, 'crit');
+      fxText(u, `${crit ? '치명 ' : ''}대검 회전! ${atk}`, crit ? '#ffd35a' : '#9dff7a', 'crit', 0.6);
+      logLine(`🗡 ${u.name}이(가) 대검을 뽑으며 휘두른다 — 쥐들이 대신 맞은 피해 ${f.absorbed}를 되갚아 공격 ${atk}${crit ? ' (치명타)' : ''} (${hits.length}명, 쓰러진 쥐 ${f.dead})`, 'crit');
       f.rats.forEach(r => { if (!r.dead && r.state === 'fort') r.stateT = 0; });
       u.fort = null;
     }
