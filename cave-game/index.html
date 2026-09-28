@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.8
+  version v3.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.8';
+const VERSION = 'v3.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2652,7 +2652,7 @@ function decide(u, dist){
       w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
     }
   }
-  if (dist > u.st.range + 2.5 && !w.keep && !w.snipe){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
+  if (dist > u.st.range + 2.5 && !w.keep && !w.snipe && !w.scurry){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
   const opts = Object.entries(w).filter(([, v]) => typeof v === 'number' && v > 0);
   let r = Math.random() * opts.reduce((a, [, v]) => a + v, 0), pick = opts[0][0];
   for (const [k, v] of opts){ r -= v; if (r <= 0){ pick = k; break; } }
@@ -3144,6 +3144,16 @@ function updateBattle(dt){
             if (wall) dir = { x: to.x > 0 ? -0.2 : 0.2, y: (tgt.y > u.y ? -1 : 1) * (u.y <= 0.2 || u.y >= ROWS - 1.2 ? -1 : 1) };
           } else if (dist > u.st.range * 0.95){ dir = { x: to.x * 0.7, y: to.y * 0.7 }; u.running = false; }
           else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.3, y: to.x * u.strafeDir * 0.3 }; }
+        }
+        else if (u.state === 'scurry'){
+          // 쥐: 지그재그로 달려들고, 붙어서도 대상 주위를 이리저리 쏘다니며 틈나면 문다
+          u.zzT = (u.zzT || 0) - sdt;
+          if (u.zzT <= 0){ u.zzT = 0.12 + Math.random() * 0.35; u.zz = (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.8); u.zzIn = Math.random() * 0.9 - 0.35; }
+          const px = -to.y, py = to.x;
+          if (dist > u.st.range + 0.6) dir = norm(to.x + px * u.zz, to.y + py * u.zz);
+          else dir = norm(px * u.zz * 1.3 + to.x * u.zzIn, py * u.zz * 1.3 + to.y * u.zzIn);
+          speed *= 1.15; u.running = false;
+          if (Math.random() < sdt * 0.12) fxText(u, Math.random() < 0.5 ? '찍!' : '찍찍', '#cfe8cf', null, 0.2);
         }
         else if (u.state === 'aim'){
           // 조준 사격: 앞으로 살짝 나가서 멈추고, 다음 사격을 똑바로 겨눔
@@ -3806,7 +3816,7 @@ const SKILLS = {
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'0.8초 웅크렸다가 5칸을 일직선으로 날아찬다 (5~7초마다).\n경로 위: 40 피해 + 밀려남 + 경직, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통)\n옆으로 비키면 회피, 방어는 방어 기술의 절반 확률로만 막힌다.' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
-    desc:'아군 진형 안에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n게이지 하나가 계속 차고, 다음 쥐는 미리 정해진다. 쥐에 따라 게이지 길이가 다르다 (전투 시작부터 바로).\n작은 쥐 65%: 0.8초 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 30%: 5초 (🫀40 ⚔7)\n사람만 한 쥐 약 4%: 15초 (🫀200 ⚔14, 무거움)\n쥐 기사 약 1%: 15초 (🫀90 ⚔13, 창과 방패, 돌격)\n쥐 · 큰 쥐 · 쥐 기사가 나올 때 충성 아이콘이 뜬다.' },
+    desc:'아군 진형 안에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n게이지 하나가 계속 차고, 다음 쥐는 미리 정해진다. 쥐에 따라 게이지 길이가 다르다 (전투 시작부터 바로).\n작은 쥐 58%: 0.8초 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 27%: 3초 (🫀40 ⚔7)\n사람만 한 쥐 13%: 10초 (🫀200 ⚔14, 무거움)\n쥐 기사 2%: 10초 (🫀90 ⚔13, 창과 방패, 돌격)\n쥐 떼는 방어 없이 무조건 공격하고, 작은 쥐와 쥐는 이리저리 찍찍 쏘다니며 문다.' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
     desc:'도발: 3칸 안의 적은 포렌을 먼저 노린다 (보스 제외).\n대검 베기: 옆에 있는 적 하나까지 60% 피해.' },
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
@@ -3891,8 +3901,8 @@ Object.assign(HEROES, {
 });
 Object.assign(STYLES, {
   // 쥐 떼는 방어도 후퇴도 없이 무조건 공격 (방어는 쥐 기사만)
-  ratS: { approach:5, strafe:1 },
-  ratM: { approach:5, strafe:1 },
+  ratS: { scurry:6, approach:1 },   // 이리저리 찍찍, 성가시게
+  ratM: { scurry:4, approach:2 },
   ratL: { approach:4, hold:3 },
   ratKnight: { keep:4, guard:4, hold:1, strafe:1 },
 });
@@ -3900,8 +3910,7 @@ const RAT_SIZE = { ratS:0.42, ratM:0.62, ratL:1.15 };
 // 충성 게이지: 다음 쥐를 미리 정하고, 쥐가 클수록 게이지가 느리게 참 → 게이지 속도로 다음 쥐를 짐작
 const LOYALTY_MAX = 24;
 // 충성 게이지: 다음 쥐를 먼저 정하고, 그 쥐에 따라 게이지 길이가 다름 [id, 확률, 게이지 초]
-// 큰 쥐 자리(5%)의 15%는 쥐 기사
-const RAT_ROLL = [ ['ratS', 0.65, 0.8], ['ratM', 0.30, 5], ['ratL', 0.05 * 0.85, 15], ['ratKnight', 0.05 * 0.15, 15] ];
+const RAT_ROLL = [ ['ratS', 0.58, 0.8], ['ratM', 0.27, 3], ['ratL', 0.13, 10], ['ratKnight', 0.02, 10] ];
 // 충성 타이머: 작은 쥐 3초, 쥐 13초, 20초마다 큰 쥐가 예고 없이 (그 자리에 가끔 쥐 기사)
 function rollRat(){
   let r = Math.random();
