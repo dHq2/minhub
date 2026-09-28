@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v4.8
+  version v4.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v4.8';
+const VERSION = 'v4.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3286,7 +3286,7 @@ function updateBattle(dt){
       else { u.guarding = false; u.windup = 0; u.atkTarget = null; u.vx = u.vy = 0; u.t = 1; continue; }   // 치료받는 중: 행동 불가
     }
     if (u.st.skills && u.st.skills.includes('firstAid') && b.running && !u.manual && medicUpdate(u, sdt)){ u.guarding = false; continue; }
-    if (u.id === 'karius' && b.running && kariusUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
+    if (u.id === 'karius' && (b.running || (u.lastStand && !u.p2End)) && kariusUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
     if (u.st.boss && b.running && u.stun <= 0 && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge'));   // 돌격 중엔 방패를 앞세워 상시 방어
     let dir = null, speed = u.st.spd;
@@ -4081,7 +4081,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'체력이 0이 되면 쓰러지지 않는다.\n3초 동안 무적으로 꿈틀꿈틀 괴로워한다 (죽기 직전). 안경 빛은 꺼지고 얼굴에 그림자가 번지며 주저앉는다.\n그리고 안광이 살아난다. 꺼졌던 안경이 다시 빛나며 크게 울부짖는다.\n최후의 5초 (근성): 5초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다. 5초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고 쓰러진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 노인의 팔로 앞을 내려찍어 주변 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형으로 돌진하며 부딪힌 적들을 밀고 나가고 (무거울수록 버팀), 끝에서 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)' },
+    desc:'체력이 0이 되면 쓰러지지 않는다.\n3초 동안 무적으로 꿈틀꿈틀 괴로워한다 (죽기 직전). 안경 빛은 꺼지고 얼굴에 그림자가 번지며 주저앉는다.\n그리고 안광이 살아난다. 꺼졌던 안경이 다시 빛나며 크게 울부짖는다.\n최후의 5초 (근성): 5초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다. 5초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고 쓰러진다. 싸움에서 이겨도 마찬가지다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 노인의 팔로 앞을 내려찍어 주변 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형으로 돌진하며 부딪힌 적들을 밀고 나가고 (무거울수록 버팀), 끝에서 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
