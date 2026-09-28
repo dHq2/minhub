@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.5
+  version v8.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.5';
+const VERSION = 'v8.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2067,7 +2067,7 @@ const STYLES = {
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
   poren:       { approach:3, hold:4, guard:2, retreat:1 },   // 쥐 군단의 왕: 혼자선 버티다 빠지고, 쥐들이 모이면 함께 밀고 들어감 (뭉침)
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
-  jeokroe:     { approach:4, hold:3, step:true },   // step: 공격이 오면 막지 않고 옆으로 재빠르게 스텝
+  jeokroe:     { approach:4, hold:3 },
 };
 const HEROES = {
   rebecca: { name:'레베카', grade:'★★', color:'#e0435a', sub:'루비색 장발의 소녀 기사 · 158cm · 27세',
@@ -2106,11 +2106,11 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
-    hp:1500, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.15, hits:1, weight:2000, react:0.6,   // 대리석 몸, 몇 톤
+    hp:1500, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.15, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
     splash:0.5, splashR:1.2, quake:true,   // 대리석 주먹 내리찍기: 예고 없이 (0.15초) 내리찍고, 주변 1.2칸에 땅울림 (절반 피해). 드문드문 (2.4초마다) 번개처럼
     lunge:2.8,                             // 천천히 걷다가 2.8칸 안이면 순식간에 파고들며 침
     boss:true, thunderAtk:90, thunderRest:6, residualAtk:20, kickAtk:40, shield:'🗿 대리석 피부 (특성)',
-    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 가장 질긴 자 또는 가장 강한 자에게 붉은 낙뢰. 직격 90 (치명타 5%: 270) + 큰 경직 + 감전 (10씩 5턴), 인근 8칸 + 십자 4칸 방사 20 + 잔류 (5씩 5턴). 감전 · 잔류는 겹치면 중첩. 물 바닥이면 범위 안 전원, 비 오는 필드면 맵 전체 (피아 구분 없음). 떨어진 뒤 6초는 숨을 고른다.\n🗿 대리석 주먹 — 천천히 걸어오다가 2.8칸 안이면 예고 없이 (0.15초) 순식간에 파고들어 내리찍는다 (30, 2.4초마다). 주변 1.2칸에 땅울림 (절반 피해). 몇 톤짜리 몸이라 맞으면 대부분 밀려나고 휘청인다.\n👣 회피 스텝 — 공격이 오면 막지 않고 60% 확률로 옆으로 재빠르게 스텝 (잔상).\n⛈️ 번개비 — 적뢰 2~4개씩 3번 쏟아짐 (대기 20초).\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 막지 않으면 확정 치명타 120, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
+    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 가장 질긴 자 또는 가장 강한 자에게 붉은 낙뢰. 직격 90 (치명타 5%: 270) + 큰 경직 + 감전 (10씩 5턴), 인근 8칸 + 십자 4칸 방사 20 + 잔류 (5씩 5턴). 감전 · 잔류는 겹치면 중첩. 물 바닥이면 범위 안 전원, 비 오는 필드면 맵 전체 (피아 구분 없음). 떨어진 뒤 6초는 숨을 고른다.\n🗿 대리석 주먹 — 천천히 걸어오다가 2.8칸 안이면 예고 없이 (0.15초) 순식간에 파고들어 내리찍는다 (30, 2.4초마다). 주변 1.2칸에 땅울림 (절반 피해). 몇 톤짜리 몸이라 맞으면 대부분 밀려나고 휘청인다.\n👣 회피 스텝 — 강공이 오면 옆으로 재빠르게 스텝 (잔상, 대기 4초). 다른 공격은 대리석 피부로 막는다.\n⛈️ 번개비 — 적뢰 2~4개씩 3번 쏟아짐 (대기 20초).\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 막지 않으면 확정 치명타 120, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
     equip:{ 무기:'⚡ 붉은 낙뢰', 머리:'피 흐르는 광륜', 몸:'🌟 붉은 성해포', 장신구:'—' } },
   goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
     hp:70, atk:12, def:2, block:0.13, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
@@ -2133,6 +2133,7 @@ const STAT_ROWS = [
   ['range', '사거리', '칸'], ['hits', '타격 수', '한 번 공격에 치는 횟수'],
   ['weight', '무게', '무거울수록 맞아도 버팀, 가벼우면 밀려남'],
   ['regen', '재생', '초당 체력 회복'], ['reviveAt', '부활', '쓰러진 뒤 이 체력까지 재생하면 일어남'],
+  ['stepCd', '회피 스텝', '강공이 오면 옆으로 피하는 기술의 대기시간'],
 ];
 function fmtStat(k, v){
   if (['block','crit','eva'].includes(k)) return Math.round(v * 100) + '%';
@@ -2140,6 +2141,7 @@ function fmtStat(k, v){
   if (k === 'weight') return v + 'kg';
   if (k === 'regen') return v + '/초';
   if (k === 'reviveAt') return '체력 ' + v;
+  if (k === 'stepCd') return v + '초';
   if (k === 'windup' || k === 'atkSpd') return (+v).toFixed(2);
   if (k === 'cd' || k === 'spd' || k === 'range' || k === 'run') return (+v).toFixed(1);
   return String(v);
@@ -2152,8 +2154,10 @@ const guardSkill = s => Math.max(0, Math.min(90, Math.round(s.block * 100)));   
 const DEF_K = 30, BLOCK_SHIELD = 0.6, BLOCK_BARE = 0.3, PERFECT_P = 0.1;
 const defCut = def => def > 0 ? def / (def + DEF_K) : 0;
 const bulletproof = d => !!d.st.shield;   // 방패 = 방탄: 방패를 가졌으면 늘 총알·화살에도 방어력이 먹힘
+// 회피 스텝 대기시간 (초). 몸에 맞게: 날쌘 쪽은 짧고, 중갑은 길게 (중요한 순간 한두 번), 거구는 없음
+const STEP_CD = { goblin:3, jeokroe:4, goblinArcher:5, morningstar:5, norman:6, player:6, enemyGoblin:7, rebecca:8, ratKnight:8, poren:15 };
 function withDerived(s){
-  return { ...s, guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
+  return { ...s, stepCd: s.stepCd ?? STEP_CD[s.id], guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
 }
 function getStats(id){
   if (id === 'player'){
@@ -2925,6 +2929,16 @@ function decide(u, dist){
   if (pick === 'snipe') u.strafeDir = Math.random() < 0.5 ? 1 : -1;
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
+// 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상. 대기시간이 있어 남발 못 함
+function stepAway(d, a){
+  if (!d.st.stepCd || (d.stepReadyAt || 0) > battle.clock || d.cast || d.fort || d.kc || d.ladder || d.rise || d.stun > 0 || d.windup > 0) return false;
+  const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
+  d.skDir = norm(-n.y * sgn + n.x * 0.5, n.x * sgn + n.y * 0.5);
+  d.state = 'skitter'; d.stateT = 0.24; d.stepT = 0.24; d.guarding = false;
+  d.stepReadyAt = battle.clock + d.st.stepCd;
+  fxText(d, '스텝', '#d8d0c0', null, 0.3);
+  return true;
+}
 function reactTo(d, a){
   if (!d.dead && !d.st.summon && strongAttack(a, d)){                               // 강공이 오면
     if (d.st.skills && d.st.skills.includes('legion') && porenFort(d, 'strong')) {}   // 포렌 본인: 대검을 꽂고 쥐 방진
@@ -2940,14 +2954,8 @@ function reactTo(d, a){
     d.state = 'skitter'; d.stateT = 0.22 + Math.random() * 0.1;
     return;
   }
-  if ((STYLES[d.id] || {}).step){                     // 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상
-    if (d.cast) return;
-    const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
-    d.skDir = norm(-n.y * sgn + n.x * 0.5, n.x * sgn + n.y * 0.5);
-    d.state = 'skitter'; d.stateT = 0.24; d.stepT = 0.24;
-    fxText(d, '스텝', '#d8d0c0', null, 0.3);
-    return;
-  }
+  // 공격 · 막기 · 회피 삼각형: 강공이면 스텝 (준비됐을 때), 아니면 막기
+  if (strongAttack(a, d) && stepAway(d, a)) return;
   if ((STYLES[d.id] || {}).dodge){ d.state = 'retreat'; d.stateT = 0.45; d.running = true; }
   else { d.state = 'guard'; d.stateT = a.windup + 0.35; d.guardT = d.stateT; }
 }
@@ -3020,6 +3028,7 @@ function counterAttack(d, a, opts, delay){
   } else battle.pending.push({ t: delay, a: d, d: a, opts: { forceCrit: true, counter: true } });
 }
 
+const WHIFF_GAP = 0.45;   // 강공이 헛치면 생기는 틈 (초)
 function releaseAttack(u){
   let d = u.atkTarget; u.atkTarget = null;
   const stab = u.stab;
@@ -3041,6 +3050,7 @@ function releaseAttack(u){
     return;
   }
   if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.range + 0.5){
+    if (strongAttack(u, d) && !u.superArmor){ u.stun = Math.max(u.stun, WHIFF_GAP); fxText(u, '빈틈!', '#ffe27a', 'big', 0.5); }   // 헛친 강공: 틈이 생김 (카운터 기회)
     fxText(u, '헛침', '#b8b0a4');
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
   } else {
@@ -3187,6 +3197,7 @@ function resolveHit(a, d, opts = {}){
     if (Math.random() < d.st.guard / 100){
       if (Math.random() < PERFECT_P){ perfectBlock(d, a, opts); return; }   // 정확한 타이밍
       blockCut = d.st.shield ? BLOCK_SHIELD : BLOCK_BARE;
+      if (!opts.ranged && strongAttack(a, d, opts.atk)){ blockCut /= 2; fxText(d, '강공! 막기 반감', '#ffb36a', null, 0.4); }   // 강공은 막기를 뚫는다
       guardFx(d, a, opts);
     } else {
     fxText(d, '방어 뚫림!', '#ff8f7a');
@@ -3492,8 +3503,8 @@ function updateBattle(dt){
       dir = null;
     } else if (u.windup > 0){
       u.windup -= sdt;
-      const lt = u.atkTarget;                                      // 파고들기: 사거리 밖에서 시작했으면 준비 동안 대상 앞으로 순식간에
-      if (u.st.lunge && lt && !lt.dead){
+      const lt = u.lungeTo;                                        // 파고들기: 사거리 밖에서 시작했으면 준비 동안 그 자리 앞으로 순식간에 (시작할 때의 자리라 스텝으로 피할 수 있음)
+      if (u.st.lunge && lt){
         const dx = lt.x - u.x, dy = lt.y - u.y, d0 = Math.hypot(dx, dy), want = u.st.range * 0.8;
         if (d0 > want){
           const mv = Math.min(d0 - want, (d0 - want) * sdt / Math.max(sdt, u.windup + sdt) + 0.001);
@@ -3742,7 +3753,7 @@ function updateBattle(dt){
         if (u.st.skills && u.st.skills.includes('legion')) ratAssault(u, tgt);
         u.aimShot = !u.stab && u.state === 'aim' && u.aiming;
         if (u.aimShot){ u.windup = u.windupMax = u.st.windup * 2; fxText(u, '조준', '#e8e0b0', null, 0.3); }
-        u.atkTarget = tgt; u.noHitT = 0;
+        u.atkTarget = tgt; u.noHitT = 0; u.lungeTo = u.st.lunge ? { x: tgt.x, y: tgt.y } : null;
         const n = norm(tgt.x - u.x, tgt.y - u.y); u.lx = n.x; u.ly = n.y; u.face = Math.sign(n.x) || u.face;
         reactTo(tgt, u);
         dir = null;
@@ -4363,7 +4374,7 @@ function bossUpdate(u, sdt, tgt, dist){
       const wall = Math.abs(ex - rx) > 0.01 || Math.abs(ey - ry) > 0.01;   // 발이 벽에 부딪히는 경로
       u.cast = { type: 'kick', t: 0, phase: 'prep', sx: u.x, sy: u.y, ex, ey, dx: n.x, dy: n.y, wall, hit: new Set() };
       ratWall(tgt, u);
-      braceFor(tgt, 1.4);
+      braceFor(tgt, 1.4, u);
       u.face = Math.sign(n.x) || u.face;
       u.kkCd = 5 + Math.random() * 2;
       logLine(`${u.name}이(가) 몸을 웅크린다`, 'sys');
@@ -4818,7 +4829,7 @@ const SKILLS = {
   boltRain:  { name:'번개비', kind:'액티브', icon:'⛈️',
     desc:'0.8초 두 손을 치켜들면, 맵에 적뢰가 2~4개씩 3번 연달아 쏟아진다 (1초 간격). 대기 20초.\n쏟아지는 동안 적뢰는 자유롭게 움직이고 싸운다.\n떨어질 자리에 붉은 십자가 0.8초 먼저 뜬다. 70%는 적 발밑, 나머지는 아무 데나.\n직격 50 + 1초 경직 + 감전: 적뢰 (약, 7씩 5턴) · 십자 5칸 방사 18 + 잔류 (약, 4씩 5턴, 겹치면 중첩)\n비 오는 날에도 맵 전체로 퍼지지 않는다. 물 바닥이면 범위 안 아군도 잔류.' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
-    desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n근접전 중엔 낮은 확률 (매초 25%)로 뒤로 크게 뛰어 3칸 물러난 뒤, 그 자리에서 끝거리 날아차기.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다.\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 날아차기 방향으로 벽까지 날아가 부딪히고 경직. 버티기 무게 400kg 이상 (근성 카리우스, 방진 포렌, 막는 카리우스)이면 날아가지 않고 밀리기만 한다\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
+    desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n근접전 중엔 낮은 확률 (매초 25%)로 뒤로 크게 뛰어 3칸 물러난 뒤, 그 자리에서 끝거리 날아차기.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다 (회피 스텝이 준비된 캐릭터는 스텝으로 빠져나가기도 한다).\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 날아차기 방향으로 벽까지 날아가 부딪히고 경직. 버티기 무게 400kg 이상 (근성 카리우스, 방진 포렌, 막는 카리우스)이면 날아가지 않고 밀리기만 한다\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
     desc:'아군 진형 안에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n게이지 하나가 계속 차고, 다음 쥐는 미리 정해진다. 쥐에 따라 게이지 길이가 다르다 (전투 시작부터 바로).\n작은 쥐 58%: 0.8초 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 27%: 3초 (🫀40 ⚔7)\n사람만 한 쥐 13%: 8초 (🫀200 ⚔14, 무거움)\n쥐 기사 2%: 8초 (🫀90 ⚔13, 창과 방패, 돌격)\n작은 쥐와 쥐는 막지 않는다. 나올 때 성격이 정해진다: 따르는 쥐 (70%)는 포렌 둘레를 우글우글 따라다니다 포렌이 붙은 적에게 몰려들고, 떠돌이 쥐 (30%)는 맵 여기저기 싸돌아다니며 마주친 적을 문다. 갑자기 뒤로 쌩 도망갔다 돌아오고, 맞을 것 같으면 바퀴벌레처럼 옆으로 쌩 피한다.' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
@@ -5049,8 +5060,9 @@ function ratWall(g, a){
 
 /* ---------- 강공 판정: 보스이거나, 방어력을 빼고도 15 이상 또는 상대 최대 체력의 20% 이상 들어갈 공격 ---------- */
 // 피할 수 없는 큰 공격이 조준되면: 포렌은 대검을 꽂고 방진, 방패 캐릭터는 막기 자세
-function braceFor(t, dur){
+function braceFor(t, dur, a){
   if (!t || t.dead || t.manual) return;
+  if (a && !t.st.berserk && Math.random() < t.st.react + 0.3 && stepAway(t, a)) return;   // 피할 수 없다던 날아차기도 준비 동안 스텝으로 경로 밖으로
   if (t.st.skills && t.st.skills.includes('legion') && porenFort(t, 'strong')) return;
   if (t.st.shield && !t.st.berserk && !t.phase2 && !t.lastStand && Math.random() < t.st.react){ t.state = 'guard'; t.stateT = dur; t.guardT = dur; }
 }
