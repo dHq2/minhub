@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.6
+  version v8.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.6';
+const VERSION = 'v8.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2133,7 +2133,7 @@ const STAT_ROWS = [
   ['range', '사거리', '칸'], ['hits', '타격 수', '한 번 공격에 치는 횟수'],
   ['weight', '무게', '무거울수록 맞아도 버팀, 가벼우면 밀려남'],
   ['regen', '재생', '초당 체력 회복'], ['reviveAt', '부활', '쓰러진 뒤 이 체력까지 재생하면 일어남'],
-  ['stepCd', '회피 스텝', '강공이 오면 옆으로 피하는 기술의 대기시간'],
+  ['stepCd', '회피 스텝', '강공 · 투사체를 옆으로 피하고, 거리를 좁히거나 벌리고, 맨몸이면 옆으로 빠져 치는 스텝의 대기시간'],
 ];
 function fmtStat(k, v){
   if (['block','crit','eva'].includes(k)) return Math.round(v * 100) + '%';
@@ -2930,14 +2930,32 @@ function decide(u, dist){
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 // 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상. 대기시간이 있어 남발 못 함
-function stepAway(d, a){
-  if (!d.st.stepCd || (d.stepReadyAt || 0) > battle.clock || d.cast || d.fort || d.kc || d.ladder || d.rise || d.stun > 0 || d.windup > 0) return false;
-  const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
-  d.skDir = norm(-n.y * sgn + n.x * 0.5, n.x * sgn + n.y * 0.5);
-  d.state = 'skitter'; d.stateT = 0.24; d.stepT = 0.24; d.guarding = false;
-  d.stepReadyAt = battle.clock + d.st.stepCd;
-  fxText(d, '스텝', '#d8d0c0', null, 0.3);
+const stepReady = d => !!d.st.stepCd && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !d.cast && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
+function doStep(d, vx, vy, label = '스텝'){
+  if (!stepReady(d)) return false;
+  d.skDir = norm(vx, vy); d.state = 'skitter'; d.stateT = 0.24; d.stepT = 0.24; d.guarding = false;
+  d.stepReadyAt = battle.clock + d.st.stepCd; d.lastStepAt = battle.clock;
+  fxText(d, label, '#d8d0c0', null, 0.3);
   return true;
+}
+// 옆 (조금 뒤)으로 빠지는 스텝: 강공 · 투사체 피하기
+function stepAway(d, a){
+  const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
+  return doStep(d, -n.y * sgn + n.x * 0.5, n.x * sgn + n.y * 0.5);
+}
+// 평소의 스텝: 거리 좁히기 (원거리 적에게) · 거리 벌리기 (원거리 캐릭터) · 맨몸의 옆으로 빠져 치기
+const isRangedUnit = u => !!u.st.projectile || !!(STYLES[u.id] || {}).kite || !!(STYLES[u.id] || {}).snipe;
+function autoStep(u, tgt, dist, sdt){
+  if (!tgt || u.st.summon || !stepReady(u) || ['skitter', 'retreat', 'regroup', 'toMedic', 'medicCall', 'charge'].includes(u.state)) return;
+  const n = norm(tgt.x - u.x, tgt.y - u.y);
+  if (isRangedUnit(u)){
+    if (dist < 1.6 && !u.cornered){ const sgn = Math.random() < 0.5 ? 1 : -1; doStep(u, -n.x + -n.y * sgn * 0.6, -n.y + n.x * sgn * 0.6, '백스텝'); }   // 붙으면 뒤로 빠짐
+    return;
+  }
+  if (isRangedUnit(tgt) && dist > u.st.range + 1 && dist < u.st.range + 3.2){ doStep(u, n.x, n.y, '파고듦'); return; }   // 쏘는 놈에게 거리 좁히기
+  if (!u.st.shield && dist <= u.st.range + 0.4 && u.cd <= 0.3 && Math.random() < sdt * 0.35){       // 맨몸: 뜬금없이 옆으로 싹 빠져서 침
+    const sgn = Math.random() < 0.5 ? 1 : -1; doStep(u, -n.y * sgn + n.x * 0.25, n.x * sgn + n.y * 0.25, '사이드');
+  }
 }
 function reactTo(d, a){
   if (!d.dead && !d.st.summon && strongAttack(a, d)){                               // 강공이 오면
@@ -2964,6 +2982,7 @@ function reactTo(d, a){
 /* ---------- 화살: 실제로 날아가고, 도착했을 때 대상이 자리를 떴으면 빗나감 ---------- */
 function fireArrow(a, d, opts = {}){
   const len = Math.hypot(d.x - a.x, d.y - a.y);
+  if (!opts.counter && len > 2 && Math.random() < (d.st.react || 0) * 0.5) stepAway(d, a);   // 날아오는 걸 보고 옆으로 스텝 (화살은 자리를 뜨면 빗나감)
   const kind = a.st.projectile || 'arrow';
   battle.proj.push({ a, d, sx: a.x, sy: a.y, tx: d.x, ty: d.y, len, t: 0, dur: kind === 'bullet' ? Math.max(0.05, len / 32) : Math.max(0.15, len / 9), opts, kind });
 }
@@ -3033,6 +3052,7 @@ function releaseAttack(u){
   let d = u.atkTarget; u.atkTarget = null;
   const stab = u.stab;
   u.cd = stab ? u.st.melee.cd : u.st.cd;
+  if (u.id === 'karius' && u.last5) u.cd /= 1.5;              // 근성: 공격속도 1.5배
   u.lunge = u.st.projectile && !stab ? 0 : 0.25;
   if (!d || d.dead) return;
   if (u.st.projectile === 'bullet' && !stab){
@@ -3051,6 +3071,7 @@ function releaseAttack(u){
   }
   if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.range + 0.5){
     if (strongAttack(u, d) && !u.superArmor){ u.stun = Math.max(u.stun, WHIFF_GAP); fxText(u, '빈틈!', '#ffe27a', 'big', 0.5); }   // 헛친 강공: 틈이 생김 (카운터 기회)
+    if (battle.clock - (d.lastStepAt ?? -99) < 0.8){ d.counterT = 1.2; d.cd = Math.min(d.cd, 0.1); }   // 스텝으로 흘렸으면 역습 준비: 다음 한 방은 치명타
     fxText(u, '헛침', '#b8b0a4');
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
   } else {
@@ -3210,7 +3231,9 @@ function resolveHit(a, d, opts = {}){
     }
   }
   let dmg = opts.atk ?? a.st.atk;
-  const crit = opts.forceCrit || Math.random() < a.st.crit;
+  const counter = a.counterT > 0 && !opts.ranged;             // 역습: 스텝으로 강공을 흘린 직후의 한 방
+  if (counter){ a.counterT = 0; fxText(a, '역습!', '#ffe27a', 'big', 0.6); }
+  const crit = opts.forceCrit || counter || (a.id === 'karius' && a.last5) || Math.random() < a.st.crit;   // 근성의 카리우스: 모든 공격 치명타
   if (crit) dmg *= 3;
   const armor = !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
   dmg = Math.max(1, Math.round(dmg * (1 - armor) * (1 - blockCut)));
@@ -3498,6 +3521,8 @@ function updateBattle(dt){
     if (u.id === 'karius' && (b.running || (u.lastStand && !u.p2End)) && kariusUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
     if (u.st.boss && b.running && (u.stun <= 0 || (u.cast && u.cast.type === 'kick')) && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge')) && !u.phase2 && !u.lastStand;   // 돌격 중엔 방패를 앞세워 상시 방어, 불경자 ~ 근성은 막지 않음
+    if (b.running && !u.manual) autoStep(u, tgt, dist, sdt);
+    if (u.counterT > 0) u.counterT -= sdt;
     let dir = null, speed = u.st.spd;
     if (u.stun > 0){
       dir = null;
@@ -3663,8 +3688,9 @@ function updateBattle(dt){
           if (Math.random() < sdt * 0.12) fxText(u, Math.random() < 0.5 ? '찍!' : '찍찍', '#cfe8cf', null, 0.2);
         }
         else if (u.state === 'medicCall' || u.state === 'toMedic'){
-          const m = u.state === 'medicCall' ? u.medic : u.medicCall.medic;
-          if (m && m.mx !== undefined){
+          const m = u.state === 'medicCall' ? u.medic : (u.medicCall && u.medicCall.medic);   // 호출이 취소됐으면 상태도 끝냄
+          if (!m) u.stateT = 0;
+          else if (m.mx !== undefined){
             const d2 = Math.hypot(m.mx - u.x, m.my - u.y);
             if (d2 > 0.35) dir = norm(m.mx - u.x, m.my - u.y);
             u.running = u.state === 'toMedic' || d2 > 2;
@@ -4851,7 +4877,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (무거운 상대는 버틸 수 있음, 대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 슈퍼아머: 경직이 아예 없고, 버티기 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
+    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (무거운 상대는 버틸 수 있음, 대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 공격속도 1.5배, 모든 공격이 치명타. 슈퍼아머: 경직이 아예 없고, 버티기 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
