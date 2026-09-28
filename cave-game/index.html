@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.3
+  version v3.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.3';
+const VERSION = 'v3.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1934,9 +1934,10 @@ HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
-HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'위생병 · 소총과 응급 가방 · 말수가 적다 · 172cm',
-  hp:100, atk:5, def:4, block:0.10, crit:0.05, eva:0.08, spd:2.8, range:4.0, cd:1.2, windup:0.3, hits:2, weight:70, react:0.3,
+HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력자들이 날뛰는 세계의 평범한 베테랑 군인 · 위생병 · 말수가 적다 · 172cm',
+  hp:100, atk:5, def:4, block:0.10, crit:0.05, eva:0.08, spd:2.8, range:10.0, cd:1.2, windup:0.3, hits:2, weight:70, react:0.3,
   projectile:'bullet', ranged:true,   // 공격력은 탄 한 발 기준, 한 번에 2발 (10% 6발)
+  mag:30, reloadT:3,                   // 탄창 30발, 재장전 3초
   melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
   tags:['의무B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🩺 위생병 — 앞에 선 동료 뒤에 붙어 다니며 견제 사격만 한다. 적이 다가오면 물러난다.',
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
@@ -3072,6 +3073,7 @@ function updateBattle(dt){
     u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
     const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
+    tickAmmo(u, b.running ? sdt : 0, dist);
     if (u.aided){
       const md = u.aided;
       if (md.dead || !b.units.includes(md) || !md.medic || md.medic.target !== u) u.aided = null;
@@ -3175,7 +3177,8 @@ function updateBattle(dt){
         else { u.lx = u.face; u.ly = 0; }
         dir = null;
       }
-      if (!handOnly && b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05){
+      if (!handOnly && b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05 &&
+          (canShoot(u) || (u.st.melee && dist <= u.st.melee.range + 0.05))){   // 재장전 중엔 붙은 적만 개머리판
         u.stab = !!(u.st.melee && dist <= u.st.melee.range + 0.05);
         u.windup = u.windupMax = u.stab ? u.st.melee.windup : u.st.windup;
         u.atkTarget = tgt; u.noHitT = 0;
@@ -3378,6 +3381,17 @@ function drawBattle(){
       const gy = top + 8, k = Math.min(1, u.medic.t / AID_TIME);
       ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, gy - 1, w + 2, 6);
       ctx.fillStyle = '#7dff9a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
+    }
+    if (u.st.mag && !(u.medic && u.medic.phase === 'kneel')){
+      const gy = top + 8;
+      if (u.reload > 0){
+        const k = 1 - u.reload / u.st.reloadT;
+        ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, gy - 1, w + 2, 6);
+        ctx.fillStyle = '#e8d08a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
+      }
+      ctx.font = `${Math.max(9, Math.round(T * 0.15))}px "Nanum Gothic Coding",monospace`; ctx.textAlign = 'left';
+      ctx.fillStyle = u.reload > 0 ? '#e8d08a' : (u.ammo ?? u.st.mag) <= u.st.mag / 3 ? '#ffb07a' : '#d8d2c0';
+      ctx.fillText(u.reload > 0 ? '🔄장전' : `🔫${u.ammo ?? u.st.mag}`, p.x + w / 2 + 3, gy + 5);
     }
     if (u.aided){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#7dff9a'; ctx.fillText('⛑️치료 중', p.x + w / 2 + 3, top + 6); }
     if (u.shock){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = '#ffe45a'; ctx.fillText('⚡감전', p.x - w / 2 - 3, top + 6); }
@@ -3796,7 +3810,7 @@ const SKILLS = {
   firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
     desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 3초 동안 치료한다.\n치료하는 동안 노먼과 대상 둘 다 행동 불가 (맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤\n전투당 3회.' },
   medic:     { name:'위생병', kind:'패시브', icon:'🩺',
-    desc:'싸우러 온 게 아니라 살리러 왔다.\n적에게 가장 가까운 동료 뒤 두 칸쯤에 붙어 다니며 2발씩 끊어 쏘는 견제 사격만 한다 (발당 5, 사거리 4).\n10% 확률로 손가락이 늦게 떨어져 6발이 나간다. 연사할수록 탄이 퍼진다.\n탄은 한 발씩 따로 날아가서 따로 판정한다 (회피, 방어, 치명타 전부). 탄 사이로 움직이면 아슬아슬하게 피할 수도 있다.\n적이 두 칸 안으로 다가오면 물러나고, 붙으면 개머리판으로 친다 (공격 6).\n동료가 없으면 거리를 벌리며 쏜다.' },
+    desc:'싸우러 온 게 아니라 살리러 왔다.\n적에게 가장 가까운 동료 뒤 두 칸쯤에 붙어 다니며 2발씩 끊어 쏘는 견제 사격만 한다 (발당 5, 사거리 10).\n멀수록 조금씩 빗나가고, 쏠 때마다 반동이 쌓였다가 가라앉는다. 움직이는 적은 조금 앞을 겨눈다.\n탄창 30발, 재장전 3초. 탄이 10발 이하인데 적이 멀면 미리 갈아 끼운다. 재장전 중에는 붙은 적만 개머리판으로 친다.\n10% 확률로 손가락이 늦게 떨어져 6발이 나간다.\n탄은 한 발씩 따로 날아가서 따로 판정한다 (회피, 방어, 치명타 전부). 탄 사이로 움직이면 아슬아슬하게 피할 수도 있다.\n적이 두 칸 안으로 다가오면 물러나고, 붙으면 개머리판으로 친다 (공격 6).\n동료가 없으면 거리를 벌리며 쏜다.' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
     desc:'굴의 모두가 당신을 대장이라 부른다.' },
   justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
@@ -4000,14 +4014,20 @@ function drawRatUnit(o){
 
 /* ---------- 노먼: 점사 (탄마다 따로 날아가고 따로 판정) ---------- */
 const BURST_GAP = 0.09, BURST_LONG_P = 0.1;
+// 탄착: 거리가 멀수록 흩어지고(0.05 + 거리×0.06), 반동은 쏠 때마다 쌓였다가 초당 0.7씩 가라앉음
+const RECOIL_KICK = 0.07, RECOIL_SETTLE = 0.7, RECOIL_MAX = 0.45;
 function fireBullet(u, d, i){
-  const spread = 0.12 + i * 0.07;                      // 연사할수록 반동으로 퍼짐
-  const len0 = Math.hypot(d.x - u.x, d.y - u.y) || 1;
-  const px = -(d.y - u.y) / len0, py = (d.x - u.x) / len0;   // 조준선에 수직
+  const dist0 = Math.hypot(d.x - u.x, d.y - u.y) || 1;
+  const spread = 0.05 + dist0 * 0.06 + (u.recoil || 0);
+  const lead = Math.max(0.05, dist0 / 45) * 0.8;                 // 베테랑: 움직이는 대상은 조금 앞을 겨눔
+  const ax = d.x + (d.vx || 0) * lead, ay = d.y + (d.vy || 0) * lead;
+  const px = -(ay - u.y) / dist0, py = (ax - u.x) / dist0;       // 조준선에 수직
   const off = (Math.random() * 2 - 1) * spread;
-  const tx = d.x + px * off, ty = d.y + py * off;
+  const tx = Math.max(-0.5, Math.min(BATTLE_COLS - 0.5, ax + px * off)), ty = Math.max(-0.5, Math.min(ROWS - 0.5, ay + py * off));
   const len = Math.hypot(tx - u.x, ty - u.y);
-  battle.proj.push({ a: u, d, sx: u.x, sy: u.y, tx, ty, len, t: 0, dur: Math.max(0.05, len / 32), opts: {}, kind: 'bullet' });
+  battle.proj.push({ a: u, d, sx: u.x, sy: u.y, tx, ty, len, t: 0, dur: Math.max(0.05, len / 45), opts: {}, kind: 'bullet' });
+  u.recoil = Math.min(RECOIL_MAX, (u.recoil || 0) + RECOIL_KICK);
+  u.ammo--;
   u.shotT = 0.18;
   const q = P(u.x + 0.5, u.y + 0.5), h = unitHeight(u) * T * depthScale(u.y);
   sparks.push({ x: q.x + camX + u.face * T * 0.1, y: q.y - h * 0.62, vx: -u.face * (60 + Math.random() * 80), vy: -120 - Math.random() * 80, life: 0.5, c: '#d9a441' });   // 탄피
@@ -4018,10 +4038,32 @@ function tickBurst(u, sdt){
   if (!bu) return;
   if (u.dead || u.stun > 0 || u.medic || bu.d.dead){ u.burst = null; return; }
   bu.t -= sdt;
-  while (bu.t <= 0 && bu.left > 0){
+  while (bu.t <= 0 && bu.left > 0 && u.ammo > 0){
     fireBullet(u, bu.d, bu.i++); bu.left--; bu.t += BURST_GAP;
   }
+  if (u.ammo <= 0){ u.burst = null; startReload(u, '탄창이 비었다'); return; }
   if (bu.left <= 0) u.burst = null;
+}
+/* ---------- 탄창 · 재장전 ---------- */
+const canShoot = u => !u.st.mag || (!(u.reload > 0) && (u.ammo ?? u.st.mag) > 0);
+function startReload(u, why){
+  if (u.reload > 0) return;
+  u.reload = u.st.reloadT;
+  fxText(u, '재장전', '#e8e0b0', null, 0.3);
+  logLine(`🔄 ${u.name} 재장전 (${why}, ${u.st.reloadT}초)`, 'miss');
+}
+function tickAmmo(u, sdt, dist){
+  if (!u.st.mag) return;
+  u.ammo = u.ammo ?? u.st.mag;
+  u.recoil = Math.max(0, (u.recoil || 0) - RECOIL_SETTLE * sdt);
+  if (u.reload > 0){
+    if (u.medic && u.medic.phase === 'kneel') return;             // 치료하는 손으로는 장전 못 함
+    u.reload -= sdt;
+    if (u.reload <= 0){ u.reload = 0; u.ammo = u.st.mag; fxText(u, '장전 완료', '#e8e0b0', null, 0.3); }
+    return;
+  }
+  // 베테랑: 탄이 1/3 아래로 남았는데 적이 멀면 미리 갈아 끼움
+  if (!u.burst && u.windup <= 0 && u.ammo < u.st.mag && u.ammo <= u.st.mag / 3 && dist > 6) startReload(u, `${u.ammo}발 남음, 미리`);
 }
 
 /* ---------- 노먼: 응급처치 ---------- */
