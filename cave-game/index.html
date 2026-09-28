@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v5.3
+  version v5.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v5.3';
+const VERSION = 'v5.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3086,8 +3086,8 @@ function resolveHit(a, d, opts = {}){
   if (blockCut) hold = 1;
   if (Math.random() >= hold){
     pushUnit(d, a, (0.25 + 0.35 * aw / (aw + dw)) * (crit ? 1.5 : 1));
-    d.stun = Math.max(d.stun, 0.18);
-    if (d.windup > 0){ d.windup = 0; d.atkTarget = null; d.cd = d.st.cd * 0.5; fxText(d, '끊김', '#b8b0a4'); }
+    if (!d.superArmor) d.stun = Math.max(d.stun, 0.18);
+    if (d.windup > 0 && !d.superArmor){ d.windup = 0; d.atkTarget = null; d.cd = d.st.cd * 0.5; fxText(d, '끊김', '#b8b0a4'); }
   }
   if (d.hp <= 0) killUnit(d);
 }
@@ -3143,7 +3143,7 @@ function killUnit(d, why){
   }
   d.dead = true; d.deadT = 0; d.hp = 0;
   d.bleed = null; d.windup = 0; d.guarding = false; d.atkTarget = null;
-  d.cast = null; d.spriteAnim = null; d.lift = 0; d.shock = null; d.kc = null; d.fly = false;
+  d.cast = null; d.spriteAnim = null; d.lift = 0; d.shock = null; d.kc = null; d.fly = false; d.superArmor = false;
   logLine(`💀 ${d.name} 쓰러짐${why ? ` (${why})` : ''}`, 'dead');
   if (d.st.revive) fxText(d, '…재생 중', '#ffc2cc');
 }
@@ -3248,6 +3248,7 @@ function updateBattle(dt){
     }
     u.lunge = Math.max(0, u.lunge - sdt);
     u.stun = Math.max(0, u.stun - sdt);
+    if (u.superArmor) u.stun = 0;                          // 슈퍼아머: 경직 없음
     u.guardT = Math.max(0, u.guardT - sdt);
     u.guardFlash = Math.max(0, u.guardFlash - dt);
     u.dodgeCd = Math.max(0, u.dodgeCd - sdt);
@@ -3661,7 +3662,7 @@ function drawBattle(){
       ctx.fillText(u.reload > 0 ? '🔄장전' : `🔫${u.ammo ?? u.st.mag}`, p.x + w / 2 + 3, gy + 5);
     }
     if (u.kc && u.kc.type === 'agony'){ ctx.font = `${Math.round(T * 0.2)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#b8a8c8'; ctx.fillText('…', p.x, top - T * 0.25); }
-    if (u.last5 && !u.p2End && u.p2Timer > 0){ ctx.font = `${Math.round(T * 0.2)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#ff6a5a'; ctx.fillText(`근성 ${Math.max(0, u.p2Timer).toFixed(1)}초`, p.x, top - T * 0.25); }
+    if (u.last5 && !u.p2End && u.p2Timer > 0){ ctx.font = `${Math.round(T * 0.2)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#ff6a5a'; ctx.fillText(`근성 ${Math.max(0, u.p2Timer).toFixed(1)}초 · 슈퍼아머`, p.x, top - T * 0.25); }
     if (u.aided){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#7dff9a'; ctx.fillText('⛑️치료 중', p.x + w / 2 + 3, top + 6); }
     if (u.st.shield){ ctx.font = `${Math.round(T * 0.16)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = '#fff'; ctx.fillText('🛡️', p.x - w / 2 - 2, top + 6); }   // 방패 · 방탄
     if (u.shock){ const K = SHOCKS[u.shock.kind]; ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = K.color; ctx.fillText(K.tag, p.x - w / 2 - 3 - (u.st.shield ? T * 0.22 : 0), top + 6); }
@@ -3950,6 +3951,11 @@ function kickHit(u, o, c){
   if (o.kc && !['agony', 'cut', 'heretic'].includes(o.kc.type)) o.kc = null;   // 하던 기술도 끊김
   b.hitstop = Math.max(b.hitstop, 0.16); shake = Math.max(shake, 0.55); b.redFlash = Math.max(b.redFlash, 0.3);
   if (o.hp <= 0){ killUnit(o, '날아차기'); if (o.dead) return; }
+  if (o.superArmor){                                            // 근성의 카리우스: 날아가진 않고 크게 밀려남
+    o.kbx += c.dx * 18; o.kby += c.dy * 18;
+    fxText(o, '버팀!', '#ff6a5a', 'big', 0.6);
+    return;
+  }
   // 날아감: 무게와 상관없이 날아차기 방향으로 벽까지
   o.wallFly = { dx: c.dx, dy: c.dy, sp: 13 };
   o.fly = true; o.lift = 0.05; o.liftV = pinned ? 0 : 3.5;
@@ -4161,7 +4167,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고 쓰러진다. 싸움에서 이겨도 마찬가지다.' },
+    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 슈퍼아머: 경직이 아예 없고, 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고 쓰러진다. 싸움에서 이겨도 마찬가지다.' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
@@ -4425,6 +4431,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       if (kc.moan <= 0){ kc.moan = 0.7 + Math.random() * 0.5; fxText(u, ['크윽…', '끄으으…', '으…', '크흐…'][Math.random() * 4 | 0], '#b8a8c8', null, 0.2); shake = Math.max(shake, 0.06); }
       if (kc.t >= kc.dur){
         u.kc = null; kariusPhase2(u); u.last5 = true;       // 죽은 줄 알았는데 다시 살아나 날뛰는 마지막 항전
+        u.superArmor = true; u.st = { ...u.st, weight: u.st.weight * 4 };   // 근성: 슈퍼아머 (경직 없음, 훨씬 무거워짐)
         shake = 0.5; b.hitstop = Math.max(b.hitstop, 0.2);
         ringAt(u, '255,246,192'); burst(u, 30, '#fff6c0', 420);
         fxText(u, '안광!', '#fff6c0', 'crit', 1.2);
