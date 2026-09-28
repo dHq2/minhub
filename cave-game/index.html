@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.0
+  version v8.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.0';
+const VERSION = 'v8.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4555,7 +4555,7 @@ function strikeThunder(u, c){
   const cx = Math.round(c.x), cy = Math.round(c.y);
   const tiles = thunderTiles(cx, cy);
   const inArea = o => tiles.some(([tc, tr]) => tc === Math.round(o.x) && tr === Math.round(o.y));
-  b.fx.push({ type: 'thunder', x: c.x, y: c.y, tiles, life: 0.7, max: 0.7, seed: Math.random() * 1000 });
+  b.fx.push({ type: 'thunder', big: true, x: c.x, y: c.y, tiles, life: 0.7, max: 0.7, seed: Math.random() * 1000 });
   for (let i = 0; i < 18; i++){                                   // 검은 연기가 뭉게뭉게 (3초 가까이 남음)
     const a = Math.random() * Math.PI * 2, r = Math.random() * THUNDER_DIRECT_R;
     const life = 1.8 + Math.random() * 1.4;
@@ -4717,12 +4717,25 @@ function drawBossSky(){
     }
     let seed = f.seed;
     const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-    const pts = []; let x = p.x + (rnd() - 0.5) * T, y = 0;
-    while (y < p.y){ pts.push([x, y]); y += T * 0.35; x += (rnd() - 0.5) * T * 0.6; x += (p.x - x) * 0.25; }
+    // 천벌: 직격 원만큼 굵은 번개 줄기 / 번개비: 가느다란 줄기
+    const big = !!f.big, bw = big ? 2 * THUNDER_DIRECT_R * T * depthScale(f.y) : T * 0.1;
+    const pts = []; let x = p.x + (rnd() - 0.5) * T * (big ? 0.6 : 1), y = 0;
+    while (y < p.y){ pts.push([x, y]); y += T * (big ? 0.45 : 0.3); x += (rnd() - 0.5) * T * (big ? 0.5 : 0.7); x += (p.x - x) * (big ? 0.35 : 0.25); }
     pts.push([p.x, p.y]);
-    for (const [w, col] of [[T * 0.28, `rgba(255,40,40,${0.6 * k})`], [T * 0.08, `rgba(255,240,240,${k})`]]){
-      ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineJoin = 'round';
+    const layers = big
+      ? [[bw * 1.25, `rgba(255,30,30,${0.18 * k})`], [bw, `rgba(255,40,40,${0.55 * k})`], [bw * 0.55, `rgba(255,120,110,${0.75 * k})`], [bw * 0.22, `rgba(255,245,245,${k})`]]
+      : [[bw, `rgba(255,40,40,${0.55 * k})`], [bw * 0.35, `rgba(255,240,240,${k})`]];
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    for (const [w, col] of layers){
+      ctx.strokeStyle = col; ctx.lineWidth = w;
       ctx.beginPath(); pts.forEach(([a, bb], i) => i ? ctx.lineTo(a, bb) : ctx.moveTo(a, bb)); ctx.stroke();
+    }
+    if (big){                                                     // 굵은 줄기에서 튀는 잔가지
+      ctx.strokeStyle = `rgba(255,200,200,${0.8 * k})`; ctx.lineWidth = 2;
+      for (let i = 1; i < pts.length - 1; i += 2){
+        const [a, bb] = pts[i], sd = rnd() < 0.5 ? -1 : 1;
+        ctx.beginPath(); ctx.moveTo(a + sd * bw * 0.4, bb); ctx.lineTo(a + sd * (bw * 0.5 + rnd() * T * 0.6), bb + T * (0.1 + rnd() * 0.3)); ctx.stroke();
+      }
     }
   }
 }
