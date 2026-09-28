@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.3
+  version v2.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -164,10 +164,25 @@
   .bt-tools{display:flex;flex-wrap:wrap;gap:5px;}
   .bt-tools button{background:#0a080c;border:1px solid var(--line);color:var(--ink);border-radius:3px;padding:5px 7px;font-size:12px;display:flex;align-items:center;gap:5px;}
   .bt-tools button{touch-action:none;}
-  #bt-allies,#bt-enemies,#bt-misc{display:grid;grid-template-columns:1fr 1fr;}
-  #bt-allies button,#bt-enemies button{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;gap:4px;padding:4px 5px;letter-spacing:-.3px;}
+  #bt-allies,#bt-enemies,#bt-summons,#bt-misc{display:grid;grid-template-columns:1fr 1fr;}
+  #bt-allies button,#bt-enemies button,#bt-summons button{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;gap:4px;padding:4px 5px;letter-spacing:-.3px;}
   .bt-tools button canvas.face{width:28px;height:28px;border-radius:50%;background:#0a080c;border:1px solid var(--line);flex:none;}
   .bt-tools button.on canvas.face{border-color:var(--fire);}
+  /* 스킬 아이콘: 모두 같은 금테 */
+  .sk-title{margin:12px 0 6px;font-size:11px;color:var(--ink-dim);letter-spacing:1px;}
+  .sk-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .sk{position:relative;width:54px;height:54px;padding:0;border:2px solid #b89a4a;border-radius:6px;background:#120e14;overflow:hidden;
+    box-shadow:0 0 0 1px #000, inset 0 0 0 2px #2a2016;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .sk img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sk .ic{font-size:26px;line-height:1;}
+  .sk::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 10px rgba(0,0,0,.85);pointer-events:none;}
+  .sk.on,.sk:hover{border-color:#ffd76a;}
+  .sk .kd{position:absolute;right:3px;bottom:3px;width:8px;height:8px;border-radius:50%;border:1px solid #000;z-index:1;}
+  .kd.act,.kb.act{background:#e2443a;} .kd.pas,.kb.pas{background:#3f9f5a;}
+  .skdesc{margin-top:8px;background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-size:12px;line-height:1.65;white-space:pre-line;}
+  .skh{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .skh b{font-family:var(--display);font-weight:400;font-size:17px;color:var(--fire);}
+  .kb{font-size:10px;color:#fff;border-radius:3px;padding:1px 6px;}
   #pal-ghost{position:fixed;width:56px;height:56px;pointer-events:none;z-index:50;border-radius:50%;border:2px solid var(--fire);
     background:rgba(10,8,12,.85);transform:translate(-50%,-60%);box-shadow:0 4px 14px rgba(0,0,0,.6);}
   .bt-tools button small{color:#ffd76a;font-size:10px;}
@@ -238,6 +253,7 @@
       <div class="bt-title" id="bt-title">훈련장 <small>접기</small></div>
       <div class="bt-sec">아군</div><div class="bt-tools" id="bt-allies"></div>
       <div class="bt-sec">적</div><div class="bt-tools" id="bt-enemies"></div>
+      <div class="bt-sec">소환수 (포렌의 충성)</div><div class="bt-tools" id="bt-summons"></div>
       <div class="bt-sec">도구</div>
       <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
       <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
@@ -265,7 +281,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.3';
+const VERSION = 'v2.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1479,6 +1495,11 @@ function buildBar(){
   });
 }
 function drawPortrait(c, id){
+  if (id.startsWith('rat')){
+    const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height);
+    withCtx(g, () => { if (id === 'ratKnight') drawRatKnightShape(40, 116, 86, 1, null); else drawRatShape(34, 62, 62, 1, 0); });
+    return;
+  }
   if (SPRITES[id]){
     const g = c.getContext('2d'), F = SPRITES[id].faceImg;
     g.clearRect(0, 0, c.width, c.height);
@@ -1950,6 +1971,7 @@ function getStats(id){
       for (const k in m) s[k] = typeof m[k] === 'number' ? +((s[k] || 0) + m[k]).toFixed(2) : m[k];
     return withDerived({ ...s, id, side:'ally', name:character.name, grade:'SPECIAL', color:'#f0c35a', sub:`${r.name} ${j.name} · 굴의 대장`,
       tags:[], trait:'🔆 대장 — 굴의 모두가 당신을 대장이라 부른다. 맞기 직전에 방어를 누르면 가끔 튕겨낸다.',
+      skills:['leader', 'justGuard', 'reversal'],
       equip:{ 무기:`${j.weapon.icon} ${j.weapon.name}`, 머리:'—', 몸:j.body, 장신구:'—' } });
   }
   if (HEROES[id]) return withDerived({ ...HEROES[id], id, side:'ally' });
@@ -2016,6 +2038,7 @@ function openSheet(id, tab = 'status', unit = null){
         const br = el('div', 'srow'); br.appendChild(el('span', '', '🩸 출혈'));
         br.appendChild(el('b', '', `x${unit.bleed.stacks} · ${unit.bleed.ticks}턴 남음`)); body.appendChild(br);
       }
+      if (s.skills && s.skills.length) renderSkills(body, s.skills);   // 스킬은 체력 바로 아래
       for (const [k, label, note] of STAT_ROWS){
         if (s[k] === undefined) continue;
         const row = el('div', 'srow');
@@ -2023,7 +2046,7 @@ function openSheet(id, tab = 'status', unit = null){
         row.appendChild(l); row.appendChild(el('b', '', fmtStat(k, s[k]) + (k === 'range' && s.ranged ? ' (원거리)' : '')));
         body.appendChild(row);
       }
-      if (s.trait) body.appendChild(el('div', 'trait', s.trait));
+      if (!(s.skills && s.skills.length) && s.trait) body.appendChild(el('div', 'trait', s.trait));
     } else {
       for (const [slot, v] of Object.entries(s.equip)){
         const row = el('div', 'srow'); row.appendChild(el('span', '', slot)); row.appendChild(el('b', '', v));
@@ -2290,9 +2313,10 @@ function buildBtTools(){
     if (s.grade) b.appendChild(el('small', '', gradeShort(s.grade)));
     wrap.appendChild(b);
   };
-  const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies');
-  a.innerHTML = ''; e.innerHTML = '';
+  const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies'), sm = document.getElementById('bt-summons');
+  a.innerHTML = ''; e.innerHTML = ''; sm.innerHTML = '';
   BT_ALLIES.forEach(id => mk(id, a)); BT_ENEMIES.forEach(id => mk(id, e));
+  ['ratS', 'ratM', 'ratL', 'ratKnight'].forEach(id => mk(id, sm));
   document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.onclick = () => { battle.tool = b.dataset.tool; syncTools(); });
   syncTools();
 }
@@ -2477,8 +2501,9 @@ cv.addEventListener('pointerup', () => {
 });
 
 const norm = (x, y) => { const l = Math.hypot(x, y); return l ? { x: x / l, y: y / l } : { x: 0, y: 0 }; };
-const unitRadius = u => (u.id === 'karius' || u.id === 'jeokroe') ? 0.8 : u.id === 'poren' ? 0.5 : 0.4;
-const unitHeight = u => SPRITES[u.id] ? SPRITES[u.id].heightTiles * 0.95 : u.id === 'karius' ? 3.3 : (u.id === 'goblin' || u.id === 'enemyGoblin' || u.id === 'goblinArcher') ? 0.95 : 1.15;
+const unitRadius = u => (u.id === 'karius' || u.id === 'jeokroe') ? 0.8 : u.id === 'poren' ? 0.5 :
+  u.id === 'ratS' ? 0.2 : u.id === 'ratM' ? 0.28 : u.id === 'ratL' ? 0.45 : 0.4;
+const unitHeight = u => RAT_SIZE[u.id] ? RAT_SIZE[u.id] * 0.7 : u.id === 'ratKnight' ? 0.85 : SPRITES[u.id] ? SPRITES[u.id].heightTiles * 0.95 : u.id === 'karius' ? 3.3 : (u.id === 'goblin' || u.id === 'enemyGoblin' || u.id === 'goblinArcher') ? 0.95 : 1.15;
 function battleSolid(u){
   return (nx, ny, ox, oy) => {
     if (nx < 0 || nx > BATTLE_COLS - 1 || ny < 0 || ny > ROWS - 1) return true;
@@ -2826,6 +2851,10 @@ function updateBattle(dt){
       if (u.regenAcc >= 1){ const n = Math.floor(u.regenAcc); u.regenAcc -= n; u.hp = Math.min(u.st.hp, u.hp + n); }
     }
     u.slotT -= sdt; u.flankT = Math.max(0, u.flankT - sdt);
+    if (b.running && u.st.skills && u.st.skills.includes('loyalty')){
+      u.loyalT = (u.loyalT || 0) + sdt;
+      if (u.loyalT >= LOYALTY_EVERY){ u.loyalT -= LOYALTY_EVERY; summonRat(u); }
+    }
     u.hurt = Math.max(0, u.hurt - sdt);
     u.charT = Math.max(0, (u.charT || 0) - sdt);
     if (u.shock && b.running){
@@ -2999,6 +3028,7 @@ function updateBattle(dt){
 
 function drawUnitBody(v){
   if (SPRITES[v.id]) return drawSpriteUnit(v);
+  if (v.id.startsWith('rat')) return drawRatUnit(v);
   if (v.id === 'player') drawPlayerFigure(v);
   else if (v.id === 'rebecca') drawRebeccaFigure(v);
   else if (v.id === 'karius') drawKarius(v);
@@ -3082,6 +3112,8 @@ function drawBattle(){
       const a = P(f.a.x + 0.5, f.a.y + 0.5), d = P(f.d.x + 0.5, f.d.y + 0.5);
       ctx.strokeStyle = `rgba(170,140,255,${k})`; ctx.lineWidth = 4 * k + 1;
       ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.6); ctx.lineTo(d.x, d.y - T * 0.6); ctx.stroke();
+    } else if (f.type === 'skillpop'){
+      drawSkillPop(f);
     } else if (f.type === 'shield'){
       if (f.u.dead) continue;
       const q = P(f.u.x + 0.5, f.u.y + 0.5), hh0 = unitHeight(f.u) * T * depthScale(f.u.y);
@@ -3270,16 +3302,17 @@ function thunderTiles(cx, cy){
 }
 function bossUpdate(u, sdt, tgt, dist){
   const b = battle;
-  u.thCd -= sdt; u.kkCd -= sdt;
+  u.thRoll = (u.thRoll ?? 1) - sdt; u.kkCd -= sdt;
+  let wantThunder = false;
+  if (u.thRoll <= 0){ u.thRoll = 1; wantThunder = Math.random() < 0.3; }   // 대기시간 없음: 쉬는 동안 매초 30%
   if (!u.cast){
     if (u.windup > 0) return false;
     const foes = b.units.filter(o => o.side !== u.side && !o.dead);
     if (!foes.length) return false;
-    if (u.thCd <= 0){
+    if (wantThunder){
       const t = foes[Math.floor(Math.random() * foes.length)];
       u.cast = { type: 'thunder', t: 0, dur: 2.0, target: t, x: t.x, y: t.y, locked: false };
-      u.thCd = 7 + Math.random() * 3;
-      fxText(u, '천벌', '#ff4a4a', 'big');
+      skillPop(u, 'thunder');
       logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name})`, 'crit');
       return true;
     }
@@ -3498,6 +3531,207 @@ function drawBossBar(){
   ctx.fillStyle = '#b3122a'; ctx.fillRect(x, y, w * boss.hp / boss.st.hp, 10);
   ctx.font = `15px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
   ctx.fillStyle = '#ffb3a8'; ctx.fillText(`${boss.name}  ${Math.ceil(boss.hp)} / ${boss.st.hp}`, W / 2, y + 30);
+}
+
+/* =========================================================
+   스킬 (상태창의 아이콘, 테두리는 모두 같은 틀)
+   ========================================================= */
+const SKILLS = {
+  thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
+    desc:'손을 번쩍 들고 2초 뒤, 무작위 대상에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 겹칠 때): 90 피해 + 1.6초 큰 경직 + 그을림\n잔류 (중심 · 인근 8칸 · 십자 4칸): 25 피해 + 짧은 경직\n물 바닥이면 범위 안 전원 감전 (피아 불문)' },
+  dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
+    desc:'0.8초 웅크렸다가 5칸을 일직선으로 날아찬다 (5~7초마다).\n경로 위: 40 피해 + 밀려남 + 경직, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통)\n옆으로 비키면 회피, 방어는 방어 기술의 절반 확률로만 막힌다.' },
+  loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
+    desc:'10초마다 맵 끝에서 쥐가 달려와 포렌의 편에 선다. 한 번에 최대 6마리.\n작은 쥐 65% (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 30% (🫀40 ⚔7)\n사람만 한 쥐 5% (🫀120 ⚔14, 무거움)\n1%: 쥐 기사 (🫀90 ⚔13, 방패와 검을 든 작은 여기사)' },
+  ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
+    desc:'도발: 3칸 안의 적은 포렌을 먼저 노린다 (보스 제외).\n대검 베기: 옆에 있는 적 하나까지 60% 피해.' },
+  undying:   { name:'불사', kind:'패시브', icon:'♾️',
+    desc:'초당 체력 2씩 재생. 쓰러져도 5초 뒤 체력 절반으로 일어난다.\n아픈 건 똑같이 아프다.' },
+  modified:  { name:'개조된 신체', kind:'패시브', icon:'🧬',
+    desc:'상태이상에 강하다 (출혈 확률 절반).\n팔이 넷이라 한 번 공격에 두 번 친다.' },
+  ignite:    { name:'발화', kind:'패시브', icon:'🔥',
+    desc:'손바닥에서 불을 피운다. 열이 나면 금방 배고파진다.\n적이 치려고 하면 방어 대신 뒤로 빠진다.' },
+  madness:   { name:'광기', kind:'패시브', icon:'⛓',
+    desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
+  leader:    { name:'대장', kind:'패시브', icon:'⭐',
+    desc:'굴의 모두가 당신을 대장이라 부른다.' },
+  justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
+    desc:'적 머리 위에 "!"가 뜨고 맞기 직전 0.35초 안에 X.\n3% 확률로 튕겨냄 → 상대 0.9초 경직, 확정 치명타 반격. 화살이면 금색 화살로 되받아친다.' },
+  reversal:  { name:'역전의 기회', kind:'액티브', icon:'💨',
+    desc:'맞기 직전 0.35초 안에 Z로 회피 스텝.\n확실히 피하고, 3% 확률로 역전의 기회 → 상대 0.8초 경직, 확정 치명타 반격.' },
+};
+HEROES.rebecca.skills = ['undying'];
+HEROES.karius.skills = ['modified'];
+HEROES.goblin.skills = ['ignite'];
+HEROES.morningstar.skills = ['madness'];
+HEROES.poren.skills = ['loyalty', 'ratking'];
+ENEMIES.jeokroe.skills = ['thunder', 'dropkick'];
+for (const k of Object.values(SKILLS)) if (k.img){ k.image = new Image(); k.image.src = k.img; }
+
+function skillIcon(id){
+  const k = SKILLS[id];
+  const b = el('button', 'sk'); b.type = 'button'; b.setAttribute('aria-label', k.name);
+  if (k.img){ const i = document.createElement('img'); i.src = k.img; i.alt = ''; b.appendChild(i); }
+  else b.appendChild(el('span', 'ic', k.icon));
+  b.appendChild(el('i', 'kd ' + (k.kind === '액티브' ? 'act' : 'pas')));
+  return b;
+}
+function renderSkills(body, ids){
+  const row = el('div', 'sk-row'), box = el('div', 'skdesc');
+  const show = (id, btn) => {
+    const k = SKILLS[id];
+    box.innerHTML = '';
+    const h = el('div', 'skh');
+    h.appendChild(el('b', '', k.name));
+    h.appendChild(el('span', 'kb ' + (k.kind === '액티브' ? 'act' : 'pas'), k.kind));
+    box.appendChild(h);
+    box.appendChild(el('div', '', k.desc));
+    [...row.children].forEach(c => c.classList.toggle('on', c === btn));
+  };
+  ids.forEach(id => {
+    const b = skillIcon(id);
+    b.addEventListener('mouseenter', () => show(id, b));
+    b.addEventListener('focus', () => show(id, b));
+    b.addEventListener('click', () => show(id, b));
+    row.appendChild(b);
+  });
+  body.appendChild(el('div', 'sk-title', '스킬'));
+  body.appendChild(row);
+  body.appendChild(box);
+  show(ids[0], row.children[0]);
+}
+
+/* =========================================================
+   포렌 패시브 <충성>: 쥐 소환
+   ========================================================= */
+Object.assign(HEROES, {
+  ratS: { name:'작은 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 작은 쥐',
+    hp:15, atk:3, def:0, block:0, crit:0.05, eva:0.30, spd:3.8, range:0.9, cd:0.7, windup:0.15, hits:1, weight:3, react:0.2,
+    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+  ratM: { name:'쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 쥐',
+    hp:40, atk:7, def:1, block:0.05, crit:0.05, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0.2,
+    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+  ratL: { name:'큰 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 사람만 한 쥐',
+    hp:120, atk:14, def:4, block:0.10, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0.2,
+    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+  ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 작은 여기사 (1%)',
+    hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:40, react:0.5,
+    summon:true, tags:['희귀'], trait:'방패와 검을 든 쥐 기사. 방어를 자주 올린다.', equip:{ 무기:'🗡️ 짧은 검', 머리:'—', 몸:'판금 흉갑', 장신구:'🛡 둥근 방패' } },
+});
+Object.assign(STYLES, {
+  ratS: { approach:4, hitrun:3, strafe:2 },
+  ratM: { approach:4, hitrun:2, strafe:2 },
+  ratL: { approach:4, hold:3 },
+  ratKnight: { approach:2, guard:3, hold:3, strafe:1 },
+});
+const RAT_SIZE = { ratS:0.42, ratM:0.62, ratL:1.15 };
+const LOYALTY_EVERY = 10, LOYALTY_MAX = 6;
+function rollRat(){
+  if (Math.random() < 0.01) return 'ratKnight';
+  const r = Math.random();
+  return r < 0.65 ? 'ratS' : r < 0.95 ? 'ratM' : 'ratL';
+}
+// 스킬 발동 모션: 머리 위로 아이콘이 톡 튀어나오며 빛이 "파앗" 퍼짐
+function skillPop(u, id){ battle.fx.push({ type: 'skillpop', u, id, life: 1.4, max: 1.4 }); }
+function drawSkillPop(f){
+  const k = 1 - f.life / f.max, S = SKILLS[f.id];
+  const p = P(f.u.x + 0.5, f.u.y + 0.5), h = unitHeight(f.u) * T * depthScale(f.u.y);
+  const cx = p.x, cy = p.y - h - T * 1.35;
+  const sc = k < 0.16 ? easeOut(k / 0.16) * 1.3 : 1.3 - Math.min(0.3, (k - 0.16) * 1.6);
+  const alpha = k > 0.75 ? (1 - k) / 0.25 : 1;
+  const col = S.kind === '액티브' ? '255,90,80' : '140,255,150';
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.globalCompositeOperation = 'lighter';
+  const R = T * (0.7 + k * 1.8);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+  g.addColorStop(0, `rgba(${col},${0.6 * (1 - k)})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = `rgba(${col},${0.8 * (1 - k)})`; ctx.lineWidth = 2;
+  for (let i = 0; i < 12; i++){
+    const a = i / 12 * Math.PI * 2 + k * 0.8, r0 = T * (0.45 + k * 0.6), r1 = r0 + T * (0.35 + (i % 2) * 0.3) * (1 - k * 0.5);
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); ctx.stroke();
+  }
+  ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, T * (0.35 + easeOut(k) * 1.5), 0, Math.PI * 2); ctx.stroke();
+  ctx.globalCompositeOperation = 'source-over';
+  const sz = T * 0.8 * sc;
+  ctx.fillStyle = '#120e14'; ctx.fillRect(cx - sz / 2, cy - sz / 2, sz, sz);
+  if (S.image && S.image.complete && S.image.naturalWidth) ctx.drawImage(S.image, cx - sz / 2, cy - sz / 2, sz, sz);
+  else emoji(S.icon, cx, cy, sz * 0.6);
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 4; ctx.strokeRect(cx - sz / 2, cy - sz / 2, sz, sz);
+  ctx.strokeStyle = '#d9b85a'; ctx.lineWidth = 2.5; ctx.strokeRect(cx - sz / 2, cy - sz / 2, sz, sz);
+  ctx.font = `${Math.round(T * 0.26)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.8)'; ctx.strokeText(S.name, cx, cy + sz / 2 + T * 0.28);
+  ctx.fillStyle = `rgb(${col})`; ctx.fillText(S.name, cx, cy + sz / 2 + T * 0.28);
+  ctx.restore();
+}
+function summonRat(owner, id = rollRat()){
+  const b = battle;
+  const mine = b.units.filter(o => o.summoner === owner && !o.dead).length;
+  if (mine >= LOYALTY_MAX) return null;
+  const col = owner.x < BATTLE_COLS / 2 ? 0 : BATTLE_COLS - 1;
+  const row = Math.floor(Math.random() * ROWS);
+  const r = spawnUnit(id, col, row);
+  r.side = owner.side; r.summoner = owner; r.face = col === 0 ? 1 : -1;
+  const q = P(col + 0.5, row + 0.5);
+  for (let i = 0; i < 18; i++) sparks.push({ x: q.x + camX, y: q.y - T * 0.2, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 220, life: 0.5, c: i % 2 ? '#9dff7a' : '#2b5a2b' });
+  skillPop(owner, 'loyalty');
+  logLine(`🐀 충성: ${r.name}${id === 'ratKnight' ? ' (1%!)' : ''}이(가) 달려왔다`, id === 'ratKnight' ? 'crit' : 'heal');
+  return r;
+}
+
+/* ---------- 쥐 그리기 (검은 털, 초록으로 빛나는 눈) ---------- */
+function drawRatShape(x, y, u, face, walk){
+  const bob = walk ? Math.abs(Math.sin(walk * 18)) * u * 0.05 : 0;
+  const by = y - u * 0.32 - bob;
+  // 꼬리
+  ctx.strokeStyle = OUTC; ctx.lineWidth = Math.max(2, u * 0.07) + 2 * OUTW; ctx.lineCap = 'round';
+  const tail = () => { ctx.beginPath(); ctx.moveTo(x - face * u * 0.45, by + u * 0.05); ctx.quadraticCurveTo(x - face * u * 0.95, by - u * 0.05, x - face * u * 0.85, by - u * 0.45); ctx.stroke(); };
+  tail(); ctx.strokeStyle = '#3a2f33'; ctx.lineWidth = Math.max(1.5, u * 0.05); tail();
+  // 다리
+  for (let i = 0; i < 4; i++){
+    const lx = x + (i - 1.5) * u * 0.22, ph = walk ? Math.sin(walk * 18 + i * 1.6) * u * 0.06 : 0;
+    ctx.strokeStyle = '#141414'; ctx.lineWidth = Math.max(1.5, u * 0.07);
+    ctx.beginPath(); ctx.moveTo(lx, by + u * 0.15); ctx.lineTo(lx + ph, y - bob * 0.2); ctx.stroke();
+  }
+  // 몸
+  shape(() => ctx.ellipse(x, by, u * 0.55, u * 0.3, 0, 0, Math.PI * 2), '#1c1f1c');
+  ctx.fillStyle = 'rgba(120,255,120,.08)'; ctx.beginPath(); ctx.ellipse(x - face * u * 0.1, by - u * 0.12, u * 0.35, u * 0.1, 0, 0, Math.PI * 2); ctx.fill();
+  // 머리 · 귀 · 주둥이
+  const hx = x + face * u * 0.5, hy = by - u * 0.08;
+  circle(hx - face * u * 0.08, hy - u * 0.2, u * 0.11, '#2a2d2a', 1.5);
+  shape(() => { ctx.moveTo(hx - face * u * 0.15, hy - u * 0.18); ctx.quadraticCurveTo(hx + face * u * 0.2, hy - u * 0.12, hx + face * u * 0.32, hy + u * 0.04); ctx.quadraticCurveTo(hx + face * u * 0.1, hy + u * 0.16, hx - face * u * 0.15, hy + u * 0.12); ctx.closePath(); }, '#1c1f1c');
+  ctx.save(); ctx.shadowColor = '#9dff7a'; ctx.shadowBlur = 8;
+  ctx.fillStyle = '#b8ff8a'; ctx.beginPath(); ctx.arc(hx + face * u * 0.05, hy - u * 0.05, Math.max(1.5, u * 0.045), 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(220,220,220,.5)'; ctx.lineWidth = 1;
+  for (let i = -1; i <= 1; i++){ ctx.beginPath(); ctx.moveTo(hx + face * u * 0.26, hy + u * 0.04); ctx.lineTo(hx + face * u * 0.48, hy + u * (0.02 + i * 0.05)); ctx.stroke(); }
+}
+function drawRatKnightShape(x, y, u, face, pose){
+  // 꼬리
+  ctx.strokeStyle = '#7d8a80'; ctx.lineWidth = Math.max(2, u * 0.06); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - face * u * 0.15, y - u * 0.2); ctx.quadraticCurveTo(x - face * u * 0.7, y - u * 0.1, x - face * u * 0.6, y - u * 0.55); ctx.stroke();
+  // 둥근 쥐 귀 (머리 뒤)
+  const hx = x + face * u * 0.02, hy = y - u * 0.8, hr = u * 0.21;
+  [-1, 1].forEach(d => { circle(hx + d * hr * 0.95, hy - hr * 0.95, hr * 0.62, '#9aa89c'); circle(hx + d * hr * 0.95, hy - hr * 0.95, hr * 0.34, '#d9a3a8', 1); });
+  drawHumanoid({ x, y, u, face, skin:'#f1ddd0', cloth:'#9aa3ad', bw:0.95, female:true, hair:'#9aa89c', race:'human', armor:true,
+    weapon:'sword', wstyle:{ blade:'#e6ebf0' }, pose });
+  // 방패 (뒷손)
+  const sx = x - face * u * 0.2, sy = y - u * 0.42;
+  shape(() => { ctx.moveTo(sx - u * 0.16, sy - u * 0.16); ctx.lineTo(sx + u * 0.16, sy - u * 0.16); ctx.lineTo(sx + u * 0.16, sy + u * 0.02); ctx.quadraticCurveTo(sx + u * 0.16, sy + u * 0.16, sx, sy + u * 0.24); ctx.quadraticCurveTo(sx - u * 0.16, sy + u * 0.16, sx - u * 0.16, sy + u * 0.02); ctx.closePath(); }, '#4d6b58');
+  ctx.strokeStyle = '#d9c27a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(sx, sy - u * 0.12); ctx.lineTo(sx, sy + u * 0.16); ctx.stroke();
+}
+function drawRatUnit(o){
+  const p = P(o.x + 0.5, o.y + 0.5), dsc = depthScale(o.y);
+  if (o.id === 'ratKnight'){
+    const u = T * dsc * 0.72;
+    shadowAt(p.x, p.y, u * 0.3);
+    drawRatKnightShape(p.x, p.y - walkBob(o), u, o.face, o);
+    return;
+  }
+  const u = T * dsc * RAT_SIZE[o.id];
+  shadowAt(p.x, p.y, u * 0.5);
+  drawRatShape(p.x, p.y, u, o.face, o.moving ? o.walkClock : 0);
 }
 
 /* ---------- 루프 ---------- */
