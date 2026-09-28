@@ -1370,7 +1370,7 @@ function drawKarius(k){
   }
 
   const p2k = k.p2k || 0;                                   // 불경자: 얼굴에 그림자, 자세가 낮아짐
-  if (k.last5 && !k.p2End && (k.p2glow ?? 1) > 0.5){                   // 최후의 5초: 분노의 붉은 기운
+  if (k.last5 && !k.p2End && (k.p2glow ?? 1) > 0.5){                   // 최후의 항전: 분노의 붉은 기운
     const pulse = 0.25 + Math.sin(time * 14) * 0.08;
     const g = ctx.createRadialGradient(p.x, p.y - u*1.3, 0, p.x, p.y - u*1.3, u*1.9);
     g.addColorStop(0, `rgba(255,40,30,${pulse})`); g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1495,7 +1495,7 @@ function drawKarius(k){
     // 불경자: 얼굴이 새까매지고 안경만 빛나며 이를 악문다 (으으)
     ctx.save(); ctx.globalAlpha = p2k;
     circle(hx, hy, hr, '#060408', 2);
-    const glow = k.p2glow ?? 1;                             // 최후의 5초가 끝나면 안경 빛이 꺼짐
+    const glow = k.p2glow ?? 1;                             // 최후의 항전이 끝나면 안경 빛이 꺼짐
     ctx.shadowColor = '#fff3a0'; ctx.shadowBlur = 14 * p2k * glow;
     ctx.fillStyle = glow > 0.02 ? `rgba(255,246,192,${0.15 + 0.85 * glow})` : '#1a161c';
     [-1,1].forEach(d => { ctx.beginPath(); ctx.arc(gx + d*lr*1.15, gy, lr, 0, Math.PI*2); ctx.fill(); });
@@ -3128,7 +3128,7 @@ function applyBleed(d){
   logLine(`🩸 ${d.name} 출혈 x${d.bleed.stacks} / ${BLEED.ticks}턴`, 'bleed');
 }
 function killUnit(d, why){
-  if (d.id === 'karius' && !d.p2End){                        // 불경자: 체력 0 → 3초 발버둥 → 안광 → 최후의 5초 → 실이 끊김
+  if (d.id === 'karius' && !d.p2End){                        // 불경자: 체력 0 → 3초 발버둥 → 안광 → 최후의 7초 → 실이 끊김
     d.hp = 0;
     if (!d.lastStand){
       d.lastStand = true;
@@ -4306,7 +4306,7 @@ function kariusUpdate(u, sdt, tgt, dist){
   const b = battle;
   if (u.swCd === undefined){ u.swCd = 4; u.grCd = 6; u.slCd = 2; u.rsCd = 3; u.stompT = 0; }
   u.swCd -= sdt; u.grCd -= sdt; u.slCd -= sdt; u.rsCd -= sdt;
-  // 최후의 5초: 기술 중에도 시간은 흐르고, 다 되면 실이 끊김
+  // 최후의 7초: 기술 중에도 시간은 흐르고, 다 되면 실이 끊김
   if (u.last5 && !u.p2End && !(u.kc && u.kc.type === 'cut')){
     u.p2Timer -= sdt; u.roarT -= sdt;
     if (u.roarT <= 0){ u.roarT = 1.6 + Math.random(); shout(u, ['크아아아!!', '으아아아아!!', '우오오오!!'][Math.random() * 3 | 0]); shake = Math.max(shake, 0.25); }
