@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v5.9
+  version v6.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v5.9';
+const VERSION = 'v6.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3230,9 +3230,9 @@ function updateBattle(dt){
       u.shock.clock += sdt;
       if (u.shock.clock >= SHOCK_TICK){
         u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
-        const K = SHOCKS[u.shock.kind];
-        u.hp = Math.max(0, u.hp - K.dmg); u.stun = Math.max(u.stun, 0.25);
-        fxText(u, `${K.dmg}`, K.color);
+        const K = SHOCKS[u.shock.kind], dmg = K.dmg * (u.shock.stacks || 1);
+        u.hp = Math.max(0, u.hp - dmg); u.stun = Math.max(u.stun, 0.25);
+        fxText(u, `${dmg}`, K.color, u.shock.stacks > 2 ? 'big' : null);
         const q = P(u.x + 0.5, u.y + 0.5);
         for (let i = 0; i < 6; i++) sparks.push({ x: q.x + camX + (Math.random() - 0.5) * T * 0.5, y: q.y - T * (0.2 + Math.random() * 0.8), vx: (Math.random() - 0.5) * 160, vy: (Math.random() - 0.5) * 160, life: 0.25, c: K.color });
         if (u.hp <= 0){ killUnit(u, '감전'); continue; }
@@ -3319,6 +3319,12 @@ function updateBattle(dt){
           if (u.hp >= u.st.hp * 0.5) u.regroupT = 0;
           else if (u.stateT <= 0){ u.state = 'regroup'; u.stateT = 0.5; }
         }
+        if (u.medicCall){                                        // 위생병을 부른 쪽: 만날 곳으로
+          const md = u.medicCall;
+          if (md.dead || !md.medic || md.medic.target !== u || md.medic.phase !== 'call') u.medicCall = null;
+          else { u.state = 'toMedic'; u.stateT = 0.3; }
+        }
+        if (u.medic && u.medic.phase === 'call'){ u.state = 'medicCall'; u.stateT = 0.3; }
         if (u.stateT <= 0) decide(u, dist);
         const to = norm(tgt.x - u.x, tgt.y - u.y);
         const reach = u.st.range * 0.9;
@@ -3391,6 +3397,14 @@ function updateBattle(dt){
           }
           if (Math.random() < sdt * 0.12) fxText(u, Math.random() < 0.5 ? '찍!' : '찍찍', '#cfe8cf', null, 0.2);
         }
+        else if (u.state === 'medicCall' || u.state === 'toMedic'){
+          const m = u.state === 'medicCall' ? u.medic : u.medicCall.medic;
+          if (m && m.mx !== undefined){
+            const d2 = Math.hypot(m.mx - u.x, m.my - u.y);
+            if (d2 > 0.35) dir = norm(m.mx - u.x, m.my - u.y);
+            u.running = u.state === 'toMedic' || d2 > 2;
+          }
+        }
         else if (u.state === 'regroup'){
           // 정비: 적 무리 반대쪽 뒤로 빠져서 숨 고르기. 붙은 적은 방패로 막음
           const foes = b.units.filter(o => !o.dead && o.side !== u.side);
@@ -3430,7 +3444,7 @@ function updateBattle(dt){
       }
       if (u.guarding && u.state !== 'charge') speed *= 0.7;   // 방어 중 이동 30% 감소 (방패 돌격은 제외)
       // 공격 시작 (준비 동작 → "!" → 타격)
-      const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2));
+      const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
       if (handOnly && b.running && !u.guarding && u.cd <= 0 && b.clock - b.attackPressAt <= 0.35){
         b.attackPressAt = -99;
@@ -3666,9 +3680,20 @@ function drawBattle(){
     }
     if (u.kc && u.kc.type === 'agony'){ ctx.font = `${Math.round(T * 0.2)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#b8a8c8'; ctx.fillText('…', p.x, top - T * 0.25); }
     if (u.last5 && !u.p2End && u.p2Timer > 0){ ctx.font = `${Math.round(T * 0.2)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#ff6a5a'; ctx.fillText(`근성 ${Math.max(0, u.p2Timer).toFixed(1)}초 · 슈퍼아머`, p.x, top - T * 0.25); }
+    if ((u.medic && u.medic.phase === 'call' && u.medic.target !== u) || u.medicCall){
+      const bob = Math.sin(time * 6) * T * 0.04;
+      ctx.font = `${Math.round(T * 0.3)}px sans-serif`; ctx.textAlign = 'center';
+      ctx.fillText('⛑️', p.x, top - T * 0.32 + bob);
+      if (u.medic){
+        const q = P(u.medic.target.x + 0.5, u.medic.target.y + 0.5);
+        ctx.save(); ctx.setLineDash([6, 6]); ctx.lineDashOffset = -time * 30;
+        ctx.strokeStyle = 'rgba(125,255,154,.5)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.restore();
+      }
+    }
     if (u.aided){ ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#7dff9a'; ctx.fillText('⛑️치료 중', p.x + w / 2 + 3, top + 6); }
     if (u.st.shield){ ctx.font = `${Math.round(T * 0.16)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = '#fff'; ctx.fillText('🛡️', p.x - w / 2 - 2, top + 6); }   // 방패 · 방탄
-    if (u.shock){ const K = SHOCKS[u.shock.kind]; ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = K.color; ctx.fillText(K.tag, p.x - w / 2 - 3 - (u.st.shield ? T * 0.22 : 0), top + 6); }
+    if (u.shock){ const K = SHOCKS[u.shock.kind]; ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right'; ctx.fillStyle = K.color; ctx.fillText(K.tag + ((u.shock.stacks || 1) > 1 ? `x${u.shock.stacks}` : ''), p.x - w / 2 - 3 - (u.st.shield ? T * 0.22 : 0), top + 6); }
     if (!u.st.summon || u.id === 'ratKnight') tag(u.name + (u.manual ? ' (조작)' : ''), p.x, p.y + T * 0.3, u.side === 'ally' ? '#f3e6c8' : '#ffb3a8');   // 쥐 떼는 이름표 생략
   }
   ctx.textAlign = 'center';
@@ -3995,9 +4020,9 @@ function kickWallImpact(o, pinned){
 }
 
 // 번개비: 맵에 4~7개씩 3번 쏟아지는 작은 적뢰. 위력은 천벌의 절반
-//  직격 60 + 1초 경직 + 감전: 적뢰(약) 7씩 5턴 · 3x3 9칸 방사 18 + 잔류(약) 4씩 5턴 · 70%는 적 발밑
+//  직격 50 + 1초 경직 + 감전: 적뢰(약) 7씩 5턴 · 3x3 9칸 방사 18 + 잔류(약) 4씩 5턴 · 70%는 적 발밑
 //  비 오는 날에도 맵 전체로 퍼지지 않음 (한꺼번에 너무 많아서), 물 바닥이면 십자 안 아군도 잔류
-const BOLT_RAIN = { cd: 20, waves: 3, gap: 1.0, min: 2, max: 5, warn: 0.8, direct: 60, radial: 18, aimed: 0.7 };
+const BOLT_RAIN = { cd: 20, waves: 3, gap: 1.0, min: 2, max: 5, warn: 0.8, direct: 50, radial: 18, aimed: 0.7 };
 const boltTiles = (cx, cy) => { const t = []; for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) t.push([cx + dx, cy + dy]); return t.filter(([c, r]) => c >= 0 && c < BATTLE_COLS && r >= 0 && r < ROWS); };   // 3x3 9칸
 function spawnBoltWave(u, c){
   const foes = battle.units.filter(o => !o.dead && o.side !== u.side);
@@ -4085,12 +4110,17 @@ function strikeThunder(u, c){
 const SHOCK_TICK = 1;
 const SHOCKS = { red: { name:'감전: 적뢰', dmg:10, turns:5, color:'#ff4a4a', tag:'⚡적뢰' }, res: { name:'잔류', dmg:5, turns:5, color:'#ffb45a', tag:'⚡잔류' },
   redHalf: { name:'감전: 적뢰 (약)', dmg:7, turns:5, color:'#ff6a5a', tag:'⚡적뢰' }, resHalf: { name:'잔류 (약)', dmg:4, turns:5, color:'#ffc27a', tag:'⚡잔류' } };
+const SHOCK_MAX = 5;   // 감전 · 잔류는 겹칠수록 중첩 (최대 5중첩, 틱 피해 x중첩)
 function applyShock(o, kind = 'res', quiet){
   const K = SHOCKS[kind];
-  if (o.shock && SHOCKS[o.shock.kind].dmg > K.dmg && o.shock.ticks > 0){ o.shock.ticks = Math.max(o.shock.ticks, K.turns); return; }
-  o.shock = { kind, ticks: K.turns, clock: 0 };
-  fxText(o, K.tag, K.color, null, 0.5);
-  if (!quiet) logLine(`⚡ ${o.name} ${K.name} (${K.dmg}씩 ${K.turns}턴)`, 'bleed');
+  if (o.shock && o.shock.ticks > 0){
+    if (K.dmg > SHOCKS[o.shock.kind].dmg) o.shock.kind = kind;              // 센 쪽 기준으로
+    o.shock.stacks = Math.min(SHOCK_MAX, (o.shock.stacks || 1) + 1);
+    o.shock.ticks = Math.max(o.shock.ticks, K.turns);
+  } else o.shock = { kind, ticks: K.turns, clock: 0, stacks: 1 };
+  const n = o.shock.stacks, KK = SHOCKS[o.shock.kind];
+  fxText(o, n > 1 ? `${KK.tag} x${n}` : KK.tag, KK.color, n > 2 ? 'big' : null, 0.5);
+  if (!quiet || n > 2) logLine(`⚡ ${o.name} ${KK.name}${n > 1 ? ` ${n}중첩` : ''} (${KK.dmg * n}씩 ${o.shock.ticks}턴)`, 'bleed');
 }
 // 적뢰 기술 범위 안이면 피하는 방향 (AI용)
 function dangerDir(u){
@@ -4228,7 +4258,7 @@ const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
     desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
   boltRain:  { name:'번개비', kind:'액티브', icon:'⛈️',
-    desc:'두 손을 치켜들고 맵에 적뢰를 2~5개씩 3번 연달아 쏟아낸다 (1초 간격). 대기 20초.\n떨어질 자리에 붉은 표시가 0.8초 먼저 뜬다. 70%는 적 발밑, 나머지는 아무 데나.\n직격 60 + 1초 경직 + 감전: 적뢰 (약, 7씩 5턴) · 3x3 9칸 방사 18 + 잔류 (약, 4씩 5턴)\n비 오는 날에도 맵 전체로 퍼지지 않는다. 물 바닥이면 범위 안 아군도 잔류.' },
+    desc:'두 손을 치켜들고 맵에 적뢰를 2~5개씩 3번 연달아 쏟아낸다 (1초 간격). 대기 20초.\n떨어질 자리에 붉은 표시가 0.8초 먼저 뜬다. 70%는 적 발밑, 나머지는 아무 데나.\n직격 50 + 1초 경직 + 감전: 적뢰 (약, 7씩 5턴) · 3x3 9칸 방사 18 + 잔류 (약, 4씩 5턴)\n비 오는 날에도 맵 전체로 퍼지지 않는다. 물 바닥이면 범위 안 아군도 잔류.' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n근접전 중엔 낮은 확률 (매초 25%)로 뒤로 크게 뛰어 3칸 물러난 뒤, 그 자리에서 끝거리 날아차기.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다.\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 무게와 상관없이 날아차기 방향으로 벽까지 날아가 부딪히고 경직\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
@@ -4244,7 +4274,7 @@ const SKILLS = {
   madness:   { name:'광기', kind:'패시브', icon:'⛓',
     desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
   firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
-    desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 3초 동안 치료한다.\n치료하는 동안 노먼과 대상 둘 다 행동 불가 (맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤\n전투당 3회.' },
+    desc:'체력이 절반 아래로 떨어진 동료가 위생병을 부른다 (호출). 둘의 머리 위에 ⛑️가 뜨고, 둘 다 전선을 빠져나와 중간보다 조금 뒤쪽에서 만난다.\n노먼은 가는 길에도 틈틈이 견제 사격을 한다.\n만나면 무릎을 꿇고 3초 동안 치료 (노먼과 대상 둘 다 행동 불가, 맞기는 한다).\n회복: 대상 최대 체력의 40%, 출혈을 멈춤. 전투당 3회. 8초 안에 못 만나면 포기.' },
   medic:     { name:'사수', kind:'패시브', icon:'🎯',
     desc:'기본은 원거리 견제. 적과 6칸쯤 거리를 두고, 다가오면 뒤로 빠지면서 쏜다 (벽에 막히면 옆으로).\n가끔 앞으로 살짝 나가서 멈춰 서고, 두 배로 길게 겨눈 뒤 조준 사격 (처음 두 발은 흩어짐 35%, 반동 무시). 쏘고 나면 다시 물러난다.\n2발씩 끊어 쏜다 (발당 5, 사거리 8). 10% 확률로 6발.\n멀수록 조금씩 빗나가고, 쏠 때마다 반동이 쌓였다가 가라앉는다. 움직이는 적은 조금 앞을 겨눈다.\n탄창 30발, 재장전 3초. 탄이 10발 이하인데 적이 멀면 미리 갈아 끼운다. 재장전 중에는 붙은 적만 개머리판으로 친다 (공격 6).' },
   oldArm:    { name:'노인의 팔', kind:'액티브', icon:'💪',
@@ -4767,16 +4797,20 @@ function medicUpdate(u, sdt){
   const m = u.medic;
   if (m){
     const t = m.target;
-    if (t.dead || !b.units.includes(t)){ u.medic = null; u.spriteAnim = null; if (t.aided === u) t.aided = null; return false; }
-    if (m.phase === 'move'){
-      m.t += sdt;
+    if (t.dead || !b.units.includes(t)){ u.medic = null; u.spriteAnim = null; if (t.aided === u) t.aided = null; if (t.medicCall === u) t.medicCall = null; return false; }
+    if (m.phase === 'call'){
+      // 호출: 둘 다 전선을 빠져나와 중간(조금 뒤쪽)에서 만남. 노먼은 가는 길에 견제 사격
+      m.t += sdt; m.upd -= sdt;
+      if (m.upd <= 0){ m.upd = 0.4; medicMeetPoint(u, t, m); }
       const d = Math.hypot(t.x - u.x, t.y - u.y);
-      if (d > 1.1 && m.t < 4 && u.stun <= 0){
-        stepMover(u, sdt, norm(t.x - u.x, t.y - u.y), u.st.spd * RUN_MUL, battleSolid(u));
-        u.face = Math.sign(t.x - u.x) || u.face; u.t = 0;
-        return true;
+      if (t !== u && d > 1.2){
+        if (m.t > 8){                                          // 끝내 못 만나면 포기
+          u.medic = null; if (t.medicCall === u) t.medicCall = null; u.aidCd = AID_CD;
+          logLine(`⛑️ ${u.name}, ${t.name}에게 닿지 못함`, 'miss');
+        }
+        return false;
       }
-      if (d > 1.1){ u.medic = null; return false; }            // 못 닿으면 포기
+      if (t.medicCall === u) t.medicCall = null;
       m.phase = 'kneel'; m.t = 0;
       u.spriteAnim = { name: 'heal', t: 0, dur: AID_TIME };
       u.aidLeft--;
@@ -4803,14 +4837,28 @@ function medicUpdate(u, sdt){
   if (u.aidLeft <= 0 || u.aidCd > 0 || u.windup > 0 || u.stun > 0) return false;
   let best = null, bestK = AID_LOW;
   for (const o of b.units){
-    if (o.dead || o.side !== u.side || o.st.summon || o.aided || o.lastStand || (o.medic && o !== u)) continue;
+    if (o.dead || o.side !== u.side || o.st.summon || o.aided || o.lastStand || o.phase2 || o.manual || o.medicCall || (o.medic && o !== u)) continue;
     const k = o.hp / o.st.hp;
     if (k < bestK && Math.hypot(o.x - u.x, o.y - u.y) <= AID_RANGE){ bestK = k; best = o; }
   }
   if (!best) return false;
-  u.medic = { target: best, phase: 'move', t: 0 };
-  if (best !== u) fxText(u, '엄호해!', '#e8e0b0', null, 0.4);
+  u.medic = { target: best, phase: 'call', t: 0, upd: 0 };
+  if (best !== u){
+    best.medicCall = u;
+    medicMeetPoint(u, best, u.medic);
+    fxText(best, '⛑️ 위생병!', '#7dff9a', 'big', 0.4);
+    fxText(u, '⛑️ 간다!', '#7dff9a', null, 0.4);
+    logLine(`⛑️ ${best.name}이(가) 위생병을 부른다 — ${u.name}와(과) 전선 뒤에서 만나기로`, 'heal');
+  }
   return false;
+}
+// 만날 곳: 둘의 중간에서 아군 쪽(뒤)으로 1칸
+function medicMeetPoint(u, t, m){
+  const foes = battle.units.filter(o => !o.dead && o.side !== u.side);
+  const ex = foes.length ? foes.reduce((a, o) => a + o.x, 0) / foes.length : u.x;
+  const mx = (u.x + t.x) / 2, my = (u.y + t.y) / 2;
+  const back = Math.sign(mx - ex) || -u.face;
+  m.mx = Math.max(0, Math.min(BATTLE_COLS - 1, mx + back * 1.0)); m.my = Math.max(0, Math.min(ROWS - 1, my));
 }
 
 /* ---------- 루프 ---------- */
