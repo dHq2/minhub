@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v5.2
+  version v5.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v5.2';
+const VERSION = 'v5.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3828,6 +3828,20 @@ function bossUpdate(u, sdt, tgt, dist){
       logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name} · ${byAtk ? '가장 강한 자' : '가장 질긴 자'})`, 'crit');
       return true;
     }
+    // 근접전 중 낮은 확률로 뒤로 크게 뛰어 3칸 빠진 뒤, 끝거리 날아차기 (연출 + 피할 시간)
+    u.bkRoll = (u.bkRoll ?? 1) - sdt;
+    if (u.kkCd <= 0 && tgt && dist <= 1.8 && u.bkRoll <= 0){
+      u.bkRoll = 1;
+      if (Math.random() < 0.25){
+        const away = norm(u.x - tgt.x, u.y - tgt.y);
+        const bx = Math.max(0, Math.min(BATTLE_COLS - 1, u.x + away.x * 3)), by = Math.max(0, Math.min(ROWS - 1, u.y + away.y * 3));
+        u.cast = { type: 'kick', t: 0, phase: 'back', bx0: u.x, by0: u.y, bx, by, target: tgt, hit: new Set() };
+        u.face = Math.sign(tgt.x - u.x) || u.face;
+        u.kkCd = 5 + Math.random() * 2;
+        logLine(`${u.name}이(가) 뒤로 크게 뛰어 물러난다…`, 'crit');
+        return true;
+      }
+    }
     if (u.kkCd <= 0 && tgt && dist > 1.8 && dist < 6.5){
       const n = norm(tgt.x - u.x, tgt.y - u.y);
       const rx = u.x + n.x * 5, ry = u.y + n.y * 5;
@@ -3852,7 +3866,26 @@ function bossUpdate(u, sdt, tgt, dist){
     if (c.t >= c.dur){ strikeThunder(u, c); u.cast = null; }
     return true;
   }
-  const PREP = 0.8, LEAP = 0.35, FLY = 0.3;
+  const PREP = 0.8, LEAP = 0.35, FLY = 0.3, BACK = 0.5;
+  if (c.phase === 'back'){
+    // 뒤로 점프: 포물선으로 3칸 물러나 착지 → 그 자리에서 대상을 향해 끝거리 날아차기
+    const k = Math.min(1, c.t / BACK);
+    u.spriteAnim = { name: 'leap', t: Math.min(LEAP, k * LEAP), dur: LEAP };
+    u.x = c.bx0 + (c.bx - c.bx0) * k; u.y = c.by0 + (c.by - c.by0) * k;
+    u.lift = Math.sin(k * Math.PI) * 0.9;
+    if (c.t >= BACK){
+      u.lift = 0; shake = Math.max(shake, 0.15);
+      const t = c.target && !c.target.dead ? c.target : b.units.find(o => !o.dead && o.side !== u.side);
+      if (!t){ u.cast = null; u.spriteAnim = null; return true; }
+      const n = norm(t.x - u.x, t.y - u.y);
+      const rx = u.x + n.x * 5, ry = u.y + n.y * 5;
+      const ex = Math.max(0, Math.min(BATTLE_COLS - 1, rx)), ey = Math.max(0, Math.min(ROWS - 1, ry));
+      Object.assign(c, { t: 0, phase: 'prep', sx: u.x, sy: u.y, ex, ey, dx: n.x, dy: n.y, wall: Math.abs(ex - rx) > 0.01 || Math.abs(ey - ry) > 0.01 });
+      u.face = Math.sign(n.x) || u.face;
+      logLine(`${u.name}이(가) 몸을 웅크린다`, 'sys');
+    }
+    return true;
+  }
   if (c.phase === 'prep'){
     u.spriteAnim = { name: 'prep', t: c.t, dur: PREP };
     if (c.t >= PREP){ c.phase = 'leap'; c.t = 0; }
@@ -4106,7 +4139,7 @@ const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
     desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
-    desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다.\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 무게와 상관없이 날아차기 방향으로 벽까지 날아가 부딪히고 경직\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
+    desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n근접전 중엔 낮은 확률 (매초 25%)로 뒤로 크게 뛰어 3칸 물러난 뒤, 그 자리에서 끝거리 날아차기.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다.\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 무게와 상관없이 날아차기 방향으로 벽까지 날아가 부딪히고 경직\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
     desc:'아군 진형 안에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n게이지 하나가 계속 차고, 다음 쥐는 미리 정해진다. 쥐에 따라 게이지 길이가 다르다 (전투 시작부터 바로).\n작은 쥐 58%: 0.8초 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 27%: 3초 (🫀40 ⚔7)\n사람만 한 쥐 13%: 8초 (🫀200 ⚔14, 무거움)\n쥐 기사 2%: 8초 (🫀90 ⚔13, 창과 방패, 돌격)\n작은 쥐와 쥐는 막지 않는다. 주인이 싸우는 적에게 몰려들어 이리저리 쏘다니며 물고, 맵 여기저기 흩어져 다니고, 갑자기 뒤로 쌩 도망갔다 돌아오고, 맞을 것 같으면 바퀴벌레처럼 옆으로 쌩 피한다.' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
