@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v7.7
+  version v7.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v7.7';
+const VERSION = 'v7.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2053,6 +2053,10 @@ const JOB_MOD  = { knight:{ atk:2, def:3, block:0.10, weight:15 }, miner:{ atk:3
                    mage:{ atk:6, def:-2, range:2.0, cd:0.3, windup:0.1, ranged:true }, rogue:{ crit:0.10, eva:0.10, spd:0.5, cd:-0.25, windup:-0.08, weight:-5 } };
 const RACE_MOD = { human:{ atk:1 }, goblin:{ hp:-10, eva:0.05, spd:0.4, weight:-25 }, elf:{ crit:0.05, spd:0.2, weight:-10 }, dwarf:{ hp:20, def:2, spd:-0.3, weight:15 } };
 // 전투 성향: 매 순간 어떤 움직임을 고를지의 비중 (dodge: 반응할 때 방어 대신 뒤로 빠짐)
+// 쥐 떼 성격: 따르는 쥐 (70%)는 포렌 둘레를 우글우글 따라다니다 포렌이 붙은 적에게 몰려들고, 떠돌이 쥐 (30%)는 맵을 싸돌아다니며 아무나 문다
+const RAT_FOLLOW = { follow:6, assist:2, flee:0.6, roam:0.3 };
+const RAT_WILD = { roam:4, assist:2.5, flee:1.2 };
+const RAT_WILD_P = 0.3;
 const STYLES = {
   player:      { approach:3, hitrun:2, strafe:2, guard:2, hold:2, retreat:1 },
   rebecca:     { approach:2, hitrun:1, strafe:2, guard:3, hold:3, retreat:1 },
@@ -2068,8 +2072,8 @@ const STYLES = {
 const HEROES = {
   rebecca: { name:'레베카', grade:'★★', color:'#e0435a', sub:'루비색 장발의 소녀 기사 · 158cm · 27세',
     hp:100, atk:14, def:8, block:0.51, crit:0.05, eva:0.05, spd:2.7, range:1.15, cd:1.1, windup:0.3, hits:1, weight:50, react:0.45,
-    regen:1, revive:5, reviveHp:0.1, shield:'🛡️ 기사 방패 (장비)',
-    tags:['축복:불사A'], trait:'🔆 불사 — 늘 아주 조금씩 재생하고, 쓰러져도 5초 뒤 다시 일어난다 (체력 10%). 편이 전멸하면 일어나지 못한다.',
+    regen:2, reviveAt:30, riseT:1.6, shield:'🛡️ 기사 방패 (장비)',
+    tags:['축복:불사A'], trait:'🔆 불사 — 초당 체력 2씩 재생한다. 쓰러져도 누운 채로 계속 재생해서, 체력이 30이 되면 서서히 일어나 다시 싸운다. 편이 전멸하면 일어나지 못한다.',
     equip:{ 무기:'🗡️ 낡은 장검', 방패:'🛡️ 기사 방패', 머리:'—', 몸:'낡은 판금 갑옷', 장신구:'—' } },
   karius: { name:'카리우스', grade:'★★★★★', color:'#6fb8e8', sub:'Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯',
     hp:400, atk:12, def:10, block:0.65, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
@@ -2126,14 +2130,14 @@ const STAT_ROWS = [
   ['atkSpd', '공격속도', '회/초'], ['windup', '공격 준비', '초 · 이 동안 머리 위에 "!"'],
   ['range', '사거리', '칸'], ['hits', '타격 수', '한 번 공격에 치는 횟수'],
   ['weight', '무게', '무거울수록 맞아도 버팀, 가벼우면 밀려남'],
-  ['regen', '재생', '초당 체력 회복'], ['revive', '부활', '쓰러진 뒤 다시 일어나기까지'],
+  ['regen', '재생', '초당 체력 회복'], ['reviveAt', '부활', '쓰러진 뒤 이 체력까지 재생하면 일어남'],
 ];
 function fmtStat(k, v){
   if (['block','crit','eva'].includes(k)) return Math.round(v * 100) + '%';
   if (k === 'guard') return v + '%';
   if (k === 'weight') return v + 'kg';
   if (k === 'regen') return v + '/초';
-  if (k === 'revive') return v + '초';
+  if (k === 'reviveAt') return '체력 ' + v;
   if (k === 'windup' || k === 'atkSpd') return (+v).toFixed(2);
   if (k === 'cd' || k === 'spd' || k === 'range' || k === 'run') return (+v).toFixed(1);
   return String(v);
@@ -2865,7 +2869,8 @@ const COHESION = { r: 2.5, push: 0.5, alone: 0.15 };   // 뭉침: 반경 2.5칸 
 const ADV_WIN = 1.25, ADV_LOSE = 0.8;
 function decide(u, dist){
   if (u.phase2){ u.state = 'approach'; u.stateT = 0.6; u.running = Math.random() < 0.6; return; }   // 전장의 흥분: 오로지 돌격
-  const base = STYLES[u.id] || STYLES.enemyGoblin;
+  let base = STYLES[u.id] || STYLES.enemyGoblin;
+  if (u.summoner && base.assist) base = u.wild ? RAT_WILD : RAT_FOLLOW;   // 쥐 떼: 대부분은 포렌을 따라다니고, 일부는 여기저기 싸돌아다님
   const adv = (battle.adv && battle.adv[u.side]) || 1;
   const w = { ...base };
   // 돌격형: 적이 멀어지면 가끔 소리치며 돌격
@@ -2910,6 +2915,7 @@ function decide(u, dist){
   u.running = pick === 'hitrun' || pick === 'retreat' || (pick === 'approach' && Math.random() < 0.3);
   if (pick === 'strafe') u.strafeDir = Math.random() < 0.5 ? 1 : -1;
   if (pick === 'guard') u.guardT = u.stateT;
+  if (pick === 'follow'){ u.stateT = 0.8 + Math.random() * 1.2; u.orbA = u.orbA ?? Math.random() * Math.PI * 2; u.orbR = 0.8 + Math.random() * 1.1; }
   if (pick === 'roam'){ u.stateT = 1.2 + Math.random() * 1.5; u.roamX = Math.random() * (BATTLE_COLS - 1); u.roamY = Math.random() * (ROWS - 1); }
   if (pick === 'flee'){ u.stateT = 0.45 + Math.random() * 0.45; u.running = true; if (Math.random() < 0.5) fxText(u, '찍!', '#cfe8cf', null, 0.2); }
   if (pick === 'aim' && dist < u.st.range * 0.6) u.state = pick = 'snipe';   // 적이 가까우면 조준하러 나가지 않음
@@ -3267,11 +3273,12 @@ function killUnit(d, why){
   d.bleed = null; d.windup = 0; d.guarding = false; d.atkTarget = null;
   d.cast = null; d.spriteAnim = null; d.lift = 0; d.shock = null; d.kc = null; d.fly = false; d.superArmor = false;
   logLine(`💀 ${d.name} 쓰러짐${why ? ` (${why})` : ''}`, 'dead');
-  if (d.st.revive) fxText(d, '…재생 중', '#ffc2cc');
+  if (d.st.reviveAt) fxText(d, '…재생 중', '#ffc2cc');
 }
 function reviveUnit(u){
-  u.dead = false; u.hp = Math.ceil(u.st.hp * (u.st.reviveHp ?? 0.5)); u.deadT = 0;
-  u.regroupT = 6; u.state = 'regroup'; u.stateT = 0.5;   // 부활 직후: 뒤로 빠져서 정비 u.regenAcc = 0; u.bleed = null; u.stun = 0; u.kbx = u.kby = 0;
+  u.dead = false; u.hp = Math.max(1, Math.floor(u.hp)); u.deadT = 0;
+  u.rise = { t: 0, dur: u.st.riseT || 1.2 };                 // 서서히 일어남 (그동안 행동 불가)
+  u.regroupT = 6; u.state = 'regroup'; u.stateT = 0.5; u.regenAcc = 0; u.bleed = null; u.kbx = u.kby = 0;   // 부활 직후: 뒤로 빠져서 정비
   fxText(u, '재생!', '#8ee08e', 'big');
   burst(u, 20, '#8ee08e');
   logLine(`✨ ${u.name} 재생 (🫀${u.hp})`, 'heal');
@@ -3320,7 +3327,11 @@ function updateBattle(dt){
     if (drag && drag.moved && drag.u === u) continue;
     if (u.dead){
       u.deadT += sdt; u.vx = u.vy = 0;
-      if (u.st.revive && b.running && u.deadT > u.st.revive && b.units.some(o => o !== u && !o.dead && o.side === u.side)) reviveUnit(u);   // 편이 전멸했으면 부활 불가
+      if (u.st.reviveAt && b.running && b.units.some(o => o !== u && !o.dead && o.side === u.side)){   // 편이 전멸했으면 부활 불가
+        u.regenAcc += (u.st.regen || 1) * sdt;                  // 누운 채로 재생
+        if (u.regenAcc >= 1){ const n = Math.floor(u.regenAcc); u.regenAcc -= n; u.hp = Math.min(u.st.reviveAt, u.hp + n); }
+        if (u.hp >= u.st.reviveAt) reviveUnit(u);
+      }
       continue;
     }
     if (u.enter){
@@ -3332,6 +3343,10 @@ function updateBattle(dt){
       e.dustT -= sdt;
       if (e.dustT <= 0){ e.dustT = 0.07 + Math.random() * 0.05; const q = P(u.x + 0.5, u.y + 0.5); b.fx.push({ type: 'dust', wx: q.x + camX - u.face * T * 0.2, y: q.y - 2, s: 0.6 + Math.random() * 0.6, life: 0.55, max: 0.55 }); }
       continue;
+    }
+    if (u.rise){                                               // 일어나는 중: 행동 불가
+      u.rise.t += sdt; u.stun = Math.max(u.stun, u.rise.dur - u.rise.t); u.windup = 0; u.guarding = false;
+      if (u.rise.t >= u.rise.dur){ u.rise = null; u.stun = 0; fxText(u, '일어섰다!', '#8ee08e', 'big'); }
     }
     if (u.st.regen && u.hp < u.st.hp){
       u.regenAcc += u.st.regen * sdt;
@@ -3566,7 +3581,7 @@ function updateBattle(dt){
             u.face = Math.sign(a.x - u.x) || u.face;
           } else u.stateT = 0;
         }
-        else if (u.state === 'assist' || u.state === 'roam' || u.state === 'flee' || u.state === 'skitter'){
+        else if (u.state === 'assist' || u.state === 'roam' || u.state === 'flee' || u.state === 'skitter' || u.state === 'follow'){
           // 쥐 떼 (작은 쥐 · 쥐): 방어 없이, 성가시게
           u.zzT = (u.zzT || 0) - sdt;
           if (u.zzT <= 0){ u.zzT = 0.12 + Math.random() * 0.35; u.zz = (Math.random() < 0.5 ? -1 : 1) * (0.6 + Math.random() * 0.8); u.zzIn = Math.random() * 0.9 - 0.35; }
@@ -3577,17 +3592,35 @@ function updateBattle(dt){
             dir = norm(-to.x - to.y * u.zz * 0.5, -to.y + to.x * u.zz * 0.5); speed *= 1.8;
           } else {
             let gx, gy;
-            if (u.state === 'roam'){ gx = u.roamX; gy = u.roamY; if (Math.hypot(gx - u.x, gy - u.y) < 0.4){ u.roamX = Math.random() * (BATTLE_COLS - 1); u.roamY = Math.random() * (ROWS - 1); } }
+            const m0 = u.summoner && !u.summoner.dead ? u.summoner : null;
+            if (u.state === 'follow' && m0){
+              // 따르는 쥐: 주인이 적과 붙어 있으면 그 적에게 몰려들고, 아니면 주인 둘레를 우글우글 맴돎
+              let mt = m0.atkTarget && !m0.atkTarget.dead ? m0.atkTarget : null;
+              if (!mt){ for (const o of b.units){ if (!o.dead && o.side !== u.side && !o.enter && Math.hypot(o.x - m0.x, o.y - m0.y) < 2.2){ mt = o; break; } } }
+              if (mt){ gx = mt.x; gy = mt.y; }
+              else {
+                u.orbA += sdt * (0.6 + (u.uid % 3) * 0.3) * (u.uid % 2 ? 1 : -1);
+                gx = m0.x + Math.cos(u.orbA) * u.orbR; gy = m0.y + Math.sin(u.orbA) * u.orbR * 0.8;
+                const dd0 = Math.hypot(gx - u.x, gy - u.y);
+                if (dd0 < 0.35){ dir = norm(u.zz, u.zzIn); speed *= 0.6; }
+                else { dir = norm(gx - u.x + (Math.random() - 0.5) * 0.4, gy - u.y + (Math.random() - 0.5) * 0.4); speed *= Math.min(1.6, 0.8 + dd0 * 0.4); }
+                gx = null;
+              }
+            } else if (u.state === 'follow'){ u.state = 'roam'; u.roamX = Math.random() * (BATTLE_COLS - 1); u.roamY = Math.random() * (ROWS - 1); }
+            if (gx === null){ /* 맴돌기 이동은 위에서 정함 */ }
+            else if (u.state === 'roam'){ gx = u.roamX; gy = u.roamY; if (Math.hypot(gx - u.x, gy - u.y) < 0.4){ u.roamX = Math.random() * (BATTLE_COLS - 1); u.roamY = Math.random() * (ROWS - 1); } }
             else {                                           // 주인 보조: 주인이 싸우는 적에게 몰려듦
               const m = u.summoner && !u.summoner.dead ? u.summoner : null;
               let mt = m && m.atkTarget && !m.atkTarget.dead ? m.atkTarget : null;
               if (!mt && m){ let best = Infinity; for (const o of b.units){ if (o.dead || o.side === u.side) continue; const d2 = Math.hypot(o.x - m.x, o.y - m.y); if (d2 < best){ best = d2; mt = o; } } }
               mt = mt || tgt; gx = mt.x; gy = mt.y;
             }
-            const d = Math.hypot(gx - u.x, gy - u.y) || 1, tx = (gx - u.x) / d, ty = (gy - u.y) / d, px = -ty, py = tx;
-            if (u.state === 'roam' || d > u.st.range + 0.6) dir = norm(tx + px * u.zz, ty + py * u.zz);
-            else dir = norm(px * u.zz * 1.3 + tx * u.zzIn, py * u.zz * 1.3 + ty * u.zzIn);   // 붙어서도 이리저리 쏘다니며 틈나면 묾
-            speed *= 1.15;
+            if (gx !== null){
+              const d = Math.hypot(gx - u.x, gy - u.y) || 1, tx = (gx - u.x) / d, ty = (gy - u.y) / d, px = -ty, py = tx;
+              if (u.state === 'roam' || d > u.st.range + 0.6) dir = norm(tx + px * u.zz, ty + py * u.zz);
+              else dir = norm(px * u.zz * 1.3 + tx * u.zzIn, py * u.zz * 1.3 + ty * u.zzIn);   // 붙어서도 이리저리 쏘다니며 틈나면 묾
+              speed *= 1.15;
+            }
           }
           if (Math.random() < sdt * 0.12) fxText(u, Math.random() < 0.5 ? '찍!' : '찍찍', '#cfe8cf', null, 0.2);
         }
@@ -3816,13 +3849,16 @@ function drawBattle(){
     let lo = 0;
     if (u.windup > 0) lo = -0.15 * (1 - u.windup / (u.windupMax || u.st.windup));                 // 준비 동작: 살짝 뒤로
     else if (u.lunge > 0) lo = Math.sin((u.lunge / 0.25) * Math.PI) * 0.3;       // 타격: 앞으로
-    const jitter = !u.dead && (u.hurt > 0 || u.stun > 0) ? (Math.random() - 0.5) * 0.06 : 0;
+    const jitter = !u.dead && !u.rise && (u.hurt > 0 || u.stun > 0) ? (Math.random() - 0.5) * 0.06 : 0;
     const v = { ...u, x: u.x + u.lx * lo + jitter, y: u.y + u.ly * lo * 0.5 };
     ctx.save();
     if (u.dead){
       const p = P(v.x + 0.5, v.y + 0.5);
       ctx.globalAlpha = u.st.summon ? Math.max(0, Math.min(0.9, 4 - u.deadT)) : 0.9;
       if (!u.standDeath){ ctx.translate(p.x, p.y - T * 0.05); ctx.rotate(-u.face * Math.PI / 2); ctx.translate(-p.x, -p.y); }   // 카리우스는 선 채로
+    } else if (u.rise){                                          // 누운 자세에서 서서히 일어남
+      const p = P(v.x + 0.5, v.y + 0.5), k = easeOut(u.rise.t / u.rise.dur);
+      ctx.translate(p.x, p.y - T * 0.05); ctx.rotate(-u.face * Math.PI / 2 * (1 - k)); ctx.translate(-p.x, -p.y);
     }
     const lit = u === hoverUnit || (drag && drag.u === u);
     if (lit){ OUTC = '#f0c35a'; OUTW = 2.2; }
@@ -3850,7 +3886,7 @@ function drawBattle(){
       ctx.lineWidth = 3; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('!', p.x, p.y - h - T * 0.45);
       ctx.fillStyle = '#ffd35a'; ctx.fillText('!', p.x, p.y - h - T * 0.45);
     }
-    if (u.stun > 0.25) emoji('💫', p.x, p.y - h - T * 0.45, T * 0.3, time * 4);
+    if (u.stun > 0.25 && !u.rise) emoji('💫', p.x, p.y - h - T * 0.45, T * 0.3, time * 4);
   }
   // 쥐 포박: 묶으러 달려가는 쥐와 대상 사이의 초록 점선 (밧줄)
   for (const t of b.units){
@@ -3921,7 +3957,7 @@ function drawBattle(){
   }
   for (const u of list){
     if (u.dead){
-      if (u.st.revive){ const p = P(u.x + 0.5, u.y + 0.5); tag(`재생까지 ${Math.max(0, u.st.revive - u.deadT).toFixed(1)}초`, p.x, p.y + T * 0.3, '#ffc2cc'); }
+      if (u.st.reviveAt){ const p = P(u.x + 0.5, u.y + 0.5); tag(`…재생 중 ${Math.floor(u.hp)}/${u.st.reviveAt}`, p.x, p.y + T * 0.3, '#ffc2cc'); }
       continue;
     }
     const p = P(u.x + 0.5, u.y + 0.5);
@@ -4812,7 +4848,7 @@ HEROES.ratKnight.skills = ['knightCharge', 'shieldBP'];
 Object.assign(STYLES, {
   // 쥐 떼는 방어도 후퇴도 없이 무조건 공격 (방어는 쥐 기사만)
   // 쥐: 주인의 전투를 돕고(assist), 맵 여기저기 흩어져 다니고(roam), 갑자기 뒤로 쌩 도망갔다 돌아옴(flee)
-  ratS: { assist:5, roam:1, flee:1.2 },
+  ratS: { assist:5, roam:1, flee:1.2 },   // (포렌의 쥐는 아래 RAT_FOLLOW · RAT_WILD 성격을 씀)
   ratM: { assist:5, roam:0.8, flee:1 },
   ratL: { approach:4, hold:3 },
   ratKnight: { keep:4, guard:4, hold:1, strafe:1 },
@@ -4877,6 +4913,7 @@ function summonRat(owner, id = rollRat(), fromEdge = false){
   const row = Math.max(0, Math.min(ROWS - 1, anchor.y + (Math.random() - 0.5) * 2));
   const r = spawnUnit(id, col, row);
   r.side = owner.side; r.summoner = owner; r.face = fwd;
+  r.wild = Math.random() < RAT_WILD_P;               // 떠돌이 쥐
   if (fromEdge){
     // 어디선가: 아군 쪽 화면 밖에서 먼지를 일으키며 호다닥 달려 들어옴
     const ey = Math.random() * (ROWS - 1);
