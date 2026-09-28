@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.9
+  version v7.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.9';
+const VERSION = 'v7.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3007,6 +3007,7 @@ function releaseAttack(u){
   let d = u.atkTarget; u.atkTarget = null;
   const stab = u.stab;
   u.cd = stab ? u.st.melee.cd : u.st.cd;
+  if (u.state === 'assault' && u.assaultOn === d && markOn(d)) u.cd *= RAT_ASSAULT.cdMul;   // 쥐 표식: 미친 듯이 물어뜯음
   u.lunge = u.st.projectile && !stab ? 0 : 0.25;
   if (!d || d.dead) return;
   if (u.st.projectile === 'bullet' && !stab){
@@ -3176,6 +3177,7 @@ function resolveHit(a, d, opts = {}){
     }
   }
   let dmg = opts.atk ?? a.st.atk;
+  if (a.summoner && a.state === 'assault' && a.assaultOn === d && markOn(d)) dmg = Math.round(dmg * (1 + RAT_ASSAULT.perRat * swarmOf(d)));   // 쥐 표식: 둘러싼 쥐가 많을수록 셈
   const crit = opts.forceCrit || Math.random() < a.st.crit;
   if (crit) dmg *= 3;
   const armor = !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
@@ -3419,6 +3421,11 @@ function updateBattle(dt){
       if (o.st.taunt && d <= o.st.taunt && d < tauntD){ tauntD = d; taunt = o; }
     }
     if (taunt && !u.st.boss){ tgt = taunt; dist = tauntD; }   // 도발: 근처의 포렌을 먼저 노림
+    // 쥐 표식: 표식이 남아 있으면 한가한 쥐는 전부 합류
+    if (u.summoner && u.st.berserk && !BUSY_RAT.includes(u.state) && u.state !== 'assault' && !(u.state === 'skitter' && u.stateT > 0)){   // 번개를 피해 옆으로 튀는 중엔 잠깐 빠짐
+      const mk = b.units.find(o => markOn(o) && o.ratMark.p === u.summoner);
+      if (mk) joinSwarm(u, mk);
+    }
     // 쥐 군단: 총공격 · 방벽 중인 쥐는 정해진 적만 노림
     if (u.summoner && u.stateT > 0){
       const f = u.state === 'assault' ? u.assaultOn : u.state === 'wall' ? u.wallFrom : (u.state === 'bind' || u.state === 'bindRun') ? u.bindTo : null;
@@ -3509,13 +3516,17 @@ function updateBattle(dt){
           else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.3, y: to.x * u.strafeDir * 0.3 }; }
         }
         else if (u.state === 'assault'){
-          // 총공격: 대상에게 일제히 달려들어 물어뜯음
+          // 쥐 표식: 대상 둘레의 제 자리로 우르르 몰려가 포위하고 물어뜯음
           u.zzT = (u.zzT || 0) - sdt;
-          if (u.zzT <= 0){ u.zzT = 0.15 + Math.random() * 0.3; u.zz = (Math.random() < 0.5 ? -1 : 1) * (0.2 + Math.random() * 0.5); }
-          if (dist > u.st.range * 0.8) dir = norm(to.x - to.y * u.zz, to.y + to.x * u.zz);
-          else dir = { x: -to.y * u.zz, y: to.x * u.zz };
-          speed *= 1.35; u.running = false;
-          if (Math.random() < sdt * 0.5) fxText(u, '찍!', '#cfe8cf', null, 0.2);
+          if (u.zzT <= 0){ u.zzT = 0.15 + Math.random() * 0.3; u.zz = (Math.random() < 0.5 ? -1 : 1) * (0.2 + Math.random() * 0.5); u.slotA = (u.slotA || 0) + (Math.random() - 0.5) * 0.5; }
+          const ring = unitRadius(tgt) + 0.35;
+          const sx = tgt.x + Math.cos(u.slotA || 0) * ring, sy = tgt.y + Math.sin(u.slotA || 0) * ring * 0.8;
+          const sd = Math.hypot(sx - u.x, sy - u.y);
+          if (dist > ring + 1.2) dir = norm(to.x - to.y * u.zz, to.y + to.x * u.zz);          // 달려듦 (지그재그)
+          else if (sd > 0.2) dir = norm(sx - u.x, sy - u.y);                                   // 제 자리로
+          else dir = { x: -to.y * u.zz * 0.4, y: to.x * u.zz * 0.4 };                           // 붙어서 들썩들썩
+          speed *= 1.5; u.running = false;
+          if (Math.random() < sdt * 1.5) fxText(u, Math.random() < 0.5 ? '찍!' : '콱!', '#cfe8cf', null, 0.2);
         }
         else if (u.state === 'fort'){
           // 방진: 포렌 둘레에 원으로 붙음
@@ -3839,6 +3850,10 @@ function drawBattle(){
       for (let i = 0; i < 2; i++){
         ctx.beginPath(); ctx.arc(cx, cy, w * (0.8 + i * 0.35 + (1 - k) * 0.6), -1.1 + (f.u.face < 0 ? Math.PI : 0), 1.1 + (f.u.face < 0 ? Math.PI : 0)); ctx.stroke();
       }
+    } else if (f.type === 'ratmark'){
+      drawRatMark(f);
+    } else if (f.type === 'gspin'){
+      drawGreatswordSpin(f);
     } else if (f.type === 'ring'){
       ctx.strokeStyle = `rgba(${f.color},${k})`; ctx.lineWidth = 3 + 5 * k;
       ctx.beginPath(); ctx.arc(f.wx - camX, f.y, T * (0.3 + (1 - k) * 1.1), 0, Math.PI * 2); ctx.stroke();
@@ -4015,6 +4030,70 @@ function drawPorenAura(o, p, dsc){
     ctx.strokeStyle = `rgba(157,255,122,${0.3 + 0.4 * k})`; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 1.1 * dsc, T * 0.42 * dsc, 0, 0, Math.PI * 2); ctx.stroke();
   }
+}
+// 쥐 표식: 대상 발밑의 도는 초록 고리 + 머리 위 쥐 머리 문양과 포위한 쥐 수
+function drawRatMark(f){
+  const t = f.t;
+  if (!markOn(t)){ f.life = 0; return; }
+  const p = P(t.x + 0.5, t.y + 0.5), dsc = depthScale(t.y), h = unitHeight(t) * T * dsc;
+  const n = swarmOf(t), rx = T * (unitRadius(t) + 0.45) * dsc, ry = rx * 0.38;
+  const fade = Math.min(1, f.life / 0.4), pulse = 0.5 + 0.5 * Math.sin(time * 10);
+  ctx.save();
+  ctx.globalAlpha = fade;
+  ctx.strokeStyle = `rgba(157,255,122,${0.45 + 0.35 * pulse})`; ctx.lineWidth = 2.5 + n * 0.35;
+  ctx.setLineDash([10, 6]); ctx.lineDashOffset = -time * 40;
+  ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+  for (let i = 0; i < 6; i++){                                   // 고리를 도는 이빨 자국
+    const a = -time * 2.5 + i / 6 * Math.PI * 2, x = p.x + Math.cos(a) * rx, y = p.y + Math.sin(a) * ry;
+    ctx.fillStyle = '#e8ffe0'; ctx.beginPath(); ctx.moveTo(x - 4, y - 3); ctx.lineTo(x + 4, y - 3); ctx.lineTo(x, y + 5); ctx.closePath(); ctx.fill();
+  }
+  const cy = p.y - h - T * 0.55, r = T * (0.24 + n * 0.012) * (1 + 0.08 * pulse);
+  ctx.shadowColor = '#9dff7a'; ctx.shadowBlur = 10 + n * 2;
+  ctx.fillStyle = 'rgba(20,40,20,.85)'; ctx.strokeStyle = '#9dff7a'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(p.x, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#9dff7a';                                     // 쥐 머리 문양 (두 귀 + 주둥이)
+  ctx.beginPath(); ctx.arc(p.x - r * 0.45, cy - r * 0.35, r * 0.28, 0, Math.PI * 2); ctx.arc(p.x + r * 0.45, cy - r * 0.35, r * 0.28, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(p.x - r * 0.5, cy - r * 0.1); ctx.lineTo(p.x + r * 0.5, cy - r * 0.1); ctx.lineTo(p.x, cy + r * 0.6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#10200f'; ctx.beginPath(); ctx.arc(p.x - r * 0.18, cy + r * 0.05, r * 0.07, 0, Math.PI * 2); ctx.arc(p.x + r * 0.18, cy + r * 0.05, r * 0.07, 0, Math.PI * 2); ctx.fill();
+  if (n > 0){
+    ctx.font = `${Math.round(T * (0.2 + n * 0.01))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
+    ctx.lineWidth = 3; ctx.strokeStyle = '#0a1a08'; ctx.strokeText(`x${n}  +${Math.round(n * RAT_ASSAULT.perRat * 100)}%`, p.x, cy + r + T * 0.24);
+    ctx.fillStyle = '#c8ffb0'; ctx.fillText(`x${n}  +${Math.round(n * RAT_ASSAULT.perRat * 100)}%`, p.x, cy + r + T * 0.24);
+  }
+  ctx.restore();
+}
+// 대검 회전: 뽑아 든 에메랄드 대검이 포렌 둘레를 두 바퀴 휘돌며 초록 잔상을 남김
+function drawGreatswordSpin(f){
+  const u = f.u; if (u.dead) return;
+  const k = 1 - f.life / f.max, p = P(u.x + 0.5, u.y + 0.5), dsc = depthScale(u.y);
+  const cx = p.x, cy = p.y - unitHeight(u) * T * dsc * 0.35, R = T * 2.1 * dsc;
+  const ang = f.dir * (easeOut(k) * Math.PI * 4 - Math.PI / 2);
+  const pt = a => ({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R * 0.5 });        // 바닥에 누운 원 (2.5D)
+  ctx.save();
+  const fadeOut = 1 - Math.max(0, k - 0.7) / 0.3;
+  for (let i = 18; i >= 1; i--){                                  // 잔상 (칼이 지나간 부채꼴)
+    const a0 = ang - f.dir * i * 0.12, a1 = ang - f.dir * (i - 1) * 0.12, q0 = pt(a0), q1 = pt(a1);
+    ctx.fillStyle = `rgba(157,255,122,${(1 - i / 18) * 0.6 * fadeOut})`;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(q0.x, q0.y); ctx.lineTo(q1.x, q1.y); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle = `rgba(232,255,224,${0.9 * fadeOut})`; ctx.lineWidth = 4; ctx.lineCap = 'round';   // 칼끝 궤적
+  ctx.beginPath();
+  for (let i = 0; i <= 20; i++){ const q = pt(ang - f.dir * i * 0.1); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
+  ctx.stroke();
+  const tip = pt(ang), grip = { x: cx + (tip.x - cx) * 0.18, y: cy + (tip.y - cy) * 0.18 };
+  const nx = -(tip.y - cy), ny = tip.x - cx, nl = Math.hypot(nx, ny) || 1, wv = T * 0.14;
+  ctx.shadowColor = '#9dff7a'; ctx.shadowBlur = 22; ctx.globalAlpha = fadeOut;
+  ctx.fillStyle = '#7ad0a0'; ctx.strokeStyle = '#e8ffe0'; ctx.lineWidth = 1.5;   // 칼날
+  ctx.beginPath();
+  ctx.moveTo(grip.x + nx / nl * wv, grip.y + ny / nl * wv); ctx.lineTo(tip.x, tip.y); ctx.lineTo(grip.x - nx / nl * wv, grip.y - ny / nl * wv); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#d9c27a'; ctx.lineWidth = T * 0.07; ctx.lineCap = 'round';    // 코등이 · 손잡이
+  ctx.beginPath(); ctx.moveTo(grip.x + nx / nl * wv * 2.2, grip.y + ny / nl * wv * 2.2); ctx.lineTo(grip.x - nx / nl * wv * 2.2, grip.y - ny / nl * wv * 2.2); ctx.stroke();
+  ctx.strokeStyle = '#5a3a24'; ctx.beginPath(); ctx.moveTo(grip.x, grip.y); ctx.lineTo(cx, cy); ctx.stroke();
+  ctx.restore();
 }
 function drawSpriteUnit(o){
   const S = SPRITES[o.id];
@@ -4573,7 +4652,7 @@ const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
     desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 떨어진 뒤 6초는 숨을 고르고, 그 뒤로는 쉬는 동안 매초 30% 확률로 다시 손을 든다. 숨 고르기가 반격의 틈.\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
   legion:    { name:'쥐 군단', kind:'패시브', icon:'🐀',
-    desc:'포렌은 쥐들의 군단을 부린다.\n총공격: 포렌이 적을 치려 하면 흩어져 있던 쥐들이 일제히 "찍찍!" 그 적에게 달려들어 3.5초 동안 물어뜯는다 (쥐 3마리 이상, 대기 9초).\n방벽: 동료에게 강한 공격 (공격력 15 이상 · 보스 · 날아차기)이 오면, 가까운 쥐들이 필요한 만큼 (2~4마리) 동료 앞으로 모여 3초 동안 전열을 세운다. 사이에 선 쥐가 근접 공격을 대신 맞는다 (대기 6초).' },
+    desc:'포렌은 쥐들의 군단을 부린다.\n쥐 표식 (물어라!): 포렌이 적을 치려 하면 그 적에게 쥐 표식을 새긴다. 5초 동안 모든 쥐가 우르르 달려들어 둘러싸고 물어뜯는다. 둘러싼 쥐 1마리당 무는 힘 +12% (최대 12마리 +144%), 무는 속도 두 배. 표식이 남아 있으면 새로 나온 쥐도 합류 (쥐 3마리 이상, 대기 12초).\n방벽: 동료에게 강한 공격 (공격력 15 이상 · 보스 · 날아차기)이 오면, 가까운 쥐들이 필요한 만큼 (2~4마리) 동료 앞으로 모여 3초 동안 전열을 세운다. 사이에 선 쥐가 근접 공격을 대신 맞는다 (대기 6초).' },
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
@@ -4762,17 +4841,32 @@ function summonRat(owner, id = rollRat()){
 
 /* ---------- 포렌: 쥐 군단 (총공격 · 방벽) ---------- */
 const BUSY_RAT = ['wall', 'fort', 'ladder', 'bind', 'bindRun'];   // 다른 임무 중인 쥐는 빼고
-const RAT_ASSAULT = { cd: 9, dur: 3.5 }, RAT_WALL = { cd: 6, dur: 3, minAtk: 15 };
+// 쥐 표식 ("물어라!"): 포렌이 적에게 쥐 표식을 새기면, 표식이 남은 동안 모든 쥐가 우르르 달려들어 둘러싸고 물어뜯는다.
+// 둘러싼 쥐가 많을수록 한 입 한 입이 세지고 (1마리당 +12%, 최대 12마리), 무는 속도도 두 배
+const RAT_ASSAULT = { cd: 12, dur: 5, perRat: 0.12, maxRats: 12, cdMul: 0.5 }, RAT_WALL = { cd: 6, dur: 3, minAtk: 15 };
+const markOn = t => t && !t.dead && t.ratMark && t.ratMark.until > battle.clock && !t.ratMark.p.dead;
+function swarmOf(t){
+  if (!markOn(t)) return 0;
+  const reach = unitRadius(t) + 0.9;
+  return Math.min(RAT_ASSAULT.maxRats, battle.units.filter(r => !r.dead && r.summoner === t.ratMark.p && r.state === 'assault' && r.assaultOn === t && Math.hypot(r.x - t.x, r.y - t.y) < reach).length);
+}
+function joinSwarm(r, t){
+  r.state = 'assault'; r.stateT = t.ratMark.until - battle.clock; r.assaultOn = t; r.running = false;
+  r.slotA = Math.random() * Math.PI * 2;                         // 포위할 자리 (대상 둘레의 각도)
+}
 function ratAssault(p, t){
   if (!t || t.dead || (p.assaultCd || 0) > battle.clock) return;
   const rats = battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk && !BUSY_RAT.includes(r.state));
   if (rats.length < 3) return;
   p.assaultCd = battle.clock + RAT_ASSAULT.cd;
-  rats.forEach(r => { r.state = 'assault'; r.stateT = RAT_ASSAULT.dur; r.assaultOn = t; r.running = false; });
+  t.ratMark = { p, until: battle.clock + RAT_ASSAULT.dur };
+  rats.forEach((r, i) => { joinSwarm(r, t); r.slotA = i / rats.length * Math.PI * 2 + Math.random() * 0.3; });
+  battle.fx.push({ type: 'ratmark', t, life: RAT_ASSAULT.dur, max: RAT_ASSAULT.dur });
   skillPop(p, 'legion');
   shout(p, '물어라!');
-  fxText(t, `찍찍찍! x${rats.length}`, '#9dff7a', 'big', 0.6);
-  logLine(`🐀 ${p.name}의 호령 — 쥐 ${rats.length}마리가 ${t.name}에게 일제히 달려든다`, 'heal');
+  ringAt(t, '157,255,122'); shake = Math.max(shake, 0.15);
+  fxText(t, `🐀 쥐 표식! x${rats.length}`, '#9dff7a', 'crit', 0.6);
+  logLine(`🐀 ${p.name}이(가) ${t.name}에게 쥐 표식을 새긴다 — "물어라!" 쥐 ${rats.length}마리가 우르르 달려든다 (${RAT_ASSAULT.dur}초)`, 'heal');
 }
 function ratWall(g, a){
   const p = battle.units.find(o => !o.dead && o.side === g.side && o.st.skills && o.st.skills.includes('legion'));
@@ -4845,6 +4939,7 @@ function porenUpdate(u, sdt, tgt, dist){
       const hits = b.units.filter(o => !o.dead && o.side !== u.side && Math.hypot(o.x - u.x, o.y - u.y) < 1.8);
       hits.forEach(o => { resolveHit(u, o, { atk }); if (!o.dead) pushUnit(o, u, 0.8); });
       shake = Math.max(shake, 0.35); ringAt(u, '157,255,122'); burst(u, 30, '#9dff7a', 420);
+      b.fx.push({ type: 'gspin', u, dir: u.face || 1, life: 0.6, max: 0.6 });
       fxText(u, `대검 회전! ${atk}`, '#9dff7a', 'crit', 0.6);
       logLine(`🗡 ${u.name}이(가) 대검을 뽑으며 휘두른다 — 쥐 ${f.dead}마리의 희생으로 공격 ${atk} (${hits.length}명), 쥐들이 대신 맞은 피해 ${f.absorbed}`, 'crit');
       f.rats.forEach(r => { if (!r.dead && r.state === 'fort') r.stateT = 0; });
