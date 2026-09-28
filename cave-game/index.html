@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v5.5
+  version v5.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v5.5';
+const VERSION = 'v5.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1468,7 +1468,8 @@ function drawKarius(k){
   if (giant) drawOldArm(k, x + face*u*0.5, torsoTop + u*0.28 + bob, u, face, y, giant);
   if (kc && kc.type === 'grab') drawGrabArms(k, x + face*u*0.5, torsoTop + u*0.1 + bob, u, face);
   // 머리: 노인 (대머리 + 둥근 안경)
-  const hx = x + face*u*0.05, hy = torsoTop - u*0.2 + bob, hr = u*0.3;
+  const droop = k.droop || 0;                               // 죽을 때 고개를 떨굼
+  const hx = x + face*u*(0.05 + 0.14*droop), hy = torsoTop - u*(0.2 - 0.34*droop) + bob, hr = u*0.3;
   circle(hx, hy, hr, skin);
   ctx.fillStyle = 'rgba(255,255,255,.4)';
   ctx.beginPath(); ctx.ellipse(hx - face*hr*0.3, hy - hr*0.6, hr*0.3, hr*0.12, -0.3*face, 0, Math.PI*2); ctx.fill();
@@ -3161,6 +3162,7 @@ function updateBattle(dt){
   const b = battle;
   let sdt = dt;
   if (b.hitstop > 0){ b.hitstop -= dt; sdt = dt * 0.1; }
+  if (b.slowmo > 0){ b.slowmo -= dt; sdt *= 0.3; }          // 카리우스의 최후: 슬로우모션
   sdt *= b.speed;
   if (b.running) b.clock += sdt;
   else b.clock += dt;
@@ -3542,7 +3544,7 @@ function drawBattle(){
     if (u.dead){
       const p = P(v.x + 0.5, v.y + 0.5);
       ctx.globalAlpha = u.st.summon ? Math.max(0, Math.min(0.9, 4 - u.deadT)) : 0.9;
-      ctx.translate(p.x, p.y - T * 0.05); ctx.rotate(-u.face * Math.PI / 2); ctx.translate(-p.x, -p.y);
+      if (!u.standDeath){ ctx.translate(p.x, p.y - T * 0.05); ctx.rotate(-u.face * Math.PI / 2); ctx.translate(-p.x, -p.y); }   // 카리우스는 선 채로
     }
     const lit = u === hoverUnit || (drag && drag.u === u);
     if (lit){ OUTC = '#f0c35a'; OUTW = 2.2; }
@@ -4168,7 +4170,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 슈퍼아머: 경직이 아예 없고, 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고 쓰러진다. 싸움에서 이겨도 마찬가지다.' },
+    desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 슈퍼아머: 경직이 아예 없고, 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
@@ -4397,7 +4399,7 @@ function kariusUpdate(u, sdt, tgt, dist){
     if (u.roarT <= 0){ u.roarT = 1.6 + Math.random(); shout(u, ['크아아아!!', '으아아아아!!', '우오오오!!'][Math.random() * 3 | 0]); shake = Math.max(shake, 0.25); }
     if (u.p2Timer <= 0){
       if (u.kc && u.kc.type === 'rush') u.kc.carried.forEach(o => { o.kbx = o.kby = 0; });
-      u.kc = { type: 'cut', t: 0, dur: 0.8 }; u.vx = u.vy = 0;
+      u.kc = { type: 'cut', t: 0, dur: 1.2 }; u.vx = u.vy = 0; battle.slowmo = 4.5;   // 슬로우모션 속에서 서서 고개를 떨굼
     }
   }
   // 페이즈 2: 체력 10% (400이면 40)부터
@@ -4444,8 +4446,10 @@ function kariusUpdate(u, sdt, tgt, dist){
       return true;
     }
     if (kc.type === 'cut'){                                   // 실이 끊긴 것처럼: 안경 빛이 사라지고 쓰러짐
-      u.p2glow = Math.max(0, 1 - kc.t / kc.dur);
-      if (kc.t >= kc.dur){ u.p2End = true; u.kc = null; killUnit(u, '실이 끊김'); logLine(`👓 ${u.name}의 안경 빛이 꺼졌다. 실이 끊긴 것처럼 쓰러진다`, 'dead'); }
+      u.p2glow = Math.max(0, 1 - kc.t / (kc.dur * 0.6));
+      u.droop = Math.min(1, kc.t / kc.dur);
+      u.superArmor = true; u.stun = 0; u.kbx = u.kby = 0;
+      if (kc.t >= kc.dur){ u.p2End = true; u.kc = null; u.standDeath = true; u.droop = 1; killUnit(u, '실이 끊김'); logLine(`👓 ${u.name}의 안경 빛이 꺼졌다. 선 채로 고개를 떨군다`, 'dead'); }
       return true;
     }
     if (u.stun > 0.3 && kc.type !== 'rush'){ u.kc = null; return false; }   // 크게 경직되면 기술이 끊김
