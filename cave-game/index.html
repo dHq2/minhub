@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v4.0
+  version v4.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v4.0';
+const VERSION = 'v4.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1905,7 +1905,7 @@ const STYLES = {
   enemyGoblin: { approach:3, hitrun:3, strafe:2, guard:2, hold:1, retreat:1 },
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
-  poren:       { approach:3, hold:5, guard:3, strafe:0.5 },
+  poren:       { approach:3, hold:5, guard:4, strafe:0.5 },
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
 };
@@ -1930,7 +1930,7 @@ HEROES.morningstar = { name:'모닝스타', grade:'★★', color:'#c9c9d6', sub
   tags:['광기'], trait:'🔆 광기 — 쇠사슬 철퇴가 대상 주변까지 휩쓸어, 붙어 있는 적에게도 절반 피해.',
   equip:{ 무기:'⛓ 모닝스타 (쇠사슬 철퇴)', 머리:'—', 몸:'찢어진 드레스', 장신구:'쇠 팔찌' } };
 HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"쥐왕" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm',
-  hp:300, atk:20, def:16, block:0.35, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.6, windup:0.5, hits:1, weight:140, react:0.5,
+  hp:300, atk:20, def:22, block:0.45, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.6, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
