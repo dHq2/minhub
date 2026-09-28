@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v7.3
+  version v7.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v7.3';
+const VERSION = 'v7.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2848,8 +2848,9 @@ function slotPoint(u, tgt){
 
 /* ---------- 움직임 결정 (성향표에서 뽑기) ---------- */
 // 전력 = 살아 있는 폰의 체력 + 공격력×8. 우리 전력 ÷ 상대 전력 = 우세 비율
-// 버티기 무게: 지면에 기대어 버티기로 작정하면 무거워진다 (막기 x2, 대검을 꽂으면 x3, 근성 x4)
-const braceW = u => u.st.weight * (u.superArmor ? 4 : u.fort ? 3 : u.guarding ? 2 : 1);
+// 버티기 무게: 지면에 기대어 버티기로 작정하면 무거워진다 (막기 x2, 근성 x4, 방진은 대검을 꽂고 x4 + 둘러선 쥐들의 무게)
+const braceW = u => u.fort ? u.st.weight * 4 + fortRats(u).reduce((a, r) => a + r.st.weight, 0)   // 방진: 대검을 꽂고 x4 + 방진 쥐들의 무게까지
+                           : u.st.weight * (u.superArmor ? 4 : u.guarding ? 2 : 1);
 // 경직 판정: 물리 충격은 무게로 버틴다. 충격의 힘(kg) 대 버티기 무게 → 경직 확률 = 힘 / (힘 + 무게)
 // (감전 · 낙뢰는 몸을 타고 흐르는 전기라 무게와 상관없이 경직)
 function stagger(o, dur, power){
@@ -4666,7 +4667,7 @@ const SKILLS = {
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
-    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 곁의 쥐가 대신 맞는다.\n끝에 대검을 뽑으며 두 바퀴 휘두른다: 1.8칸 안의 적에게 공격력 + 희생된 쥐 1마리당 4.' },
+    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두른다: 1.8칸 안의 적에게 공격력 + 희생된 쥐 1마리당 4.' },
   ratLadder: { name:'쥐 사다리', kind:'액티브', icon:'🌊',
     desc:'3~8칸 떨어진 적에게, 쥐 4마리가 발밑에 모이고 포렌이 그 위에 올라타 파도처럼 미끄러져 들어간다 (대기 10초).\n도착하면 내려찍는다: 1.3칸 안의 적에게 공격력 x1.5 + 경직.' },
   ratBind:   { name:'쥐 포박', kind:'액티브', icon:'🪢',
@@ -4938,14 +4939,24 @@ function porenFort(u, why){
   logLine(`🗡 ${u.name}이(가) 대검을 땅에 꽂는다 — 쥐 ${rats.length}마리가 둘러싸 방진을 친다${why === 'low' ? ' (위기)' : ' (강공)'}`, 'guard');
   return true;
 }
+// 방진 안의 쥐들: 대검 곁 1.6칸 안에 자리 잡은 방진 쥐
+const fortRats = d => d.fort ? d.fort.rats.filter(r => !r.dead && Math.hypot(r.x - d.x, r.y - d.y) < 1.6) : [];
+// 방진: 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받음 (나머지 30%는 포렌)
 function fortAbsorb(d, dmg){
-  const f = d.fort, near = f.rats.filter(r => !r.dead && Math.hypot(r.x - d.x, r.y - d.y) < 1.6);
+  const f = d.fort, near = fortRats(d);
   if (!near.length) return dmg;
-  const share = Math.round(dmg * FORT.share), r = near[Math.floor(Math.random() * near.length)];
-  r.hp = Math.max(0, r.hp - share); r.hurt = 0.2; f.absorbed += share;
-  fxText(r, `대신 ${share}`, '#9dff7a', 'big');
-  battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.3, max: 0.3, color: '157,255,122' });
-  if (r.hp <= 0){ killUnit(r, '방진'); f.dead++; }
+  const share = Math.round(dmg * FORT.share);
+  const base = Math.floor(share / near.length); let rem = share - base * near.length;
+  near.sort(() => Math.random() - 0.5).forEach(r => {
+    const part = base + (rem-- > 0 ? 1 : 0);
+    if (part <= 0) return;
+    r.hp = Math.max(0, r.hp - part); r.hurt = 0.2;
+    if (part >= 3) fxText(r, `-${part}`, '#9dff7a');
+    battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.25, max: 0.25, color: '157,255,122' });
+    if (r.hp <= 0){ killUnit(r, '방진'); f.dead++; }
+  });
+  f.absorbed += share;
+  fxText(d, `나눠 받음 ${share} ÷ ${near.length}`, '#9dff7a', 'big', 0.4);
   return dmg - share;
 }
 function porenUpdate(u, sdt, tgt, dist){
