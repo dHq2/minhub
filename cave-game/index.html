@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.5
+  version v2.6.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -281,7 +281,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.5';
+const VERSION = 'v2.6.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1182,7 +1182,7 @@ function drawEnemyGoblin(o){
 
 /* ---------- 무기와 팔 동작: 준비(뒤로 들어올림) → 휘두르기(베기 궤적) / 방어(앞으로 세움) ---------- */
 const WEAPON_OF = { knight:'sword', miner:'pickaxe', mage:'staff', rogue:'dagger' };
-const WEAPON_LEN = { sword:0.55, longsword:0.66, dagger:0.3, pickaxe:0.5, staff:0.66 };
+const WEAPON_LEN = { sword:0.55, longsword:0.66, dagger:0.3, pickaxe:0.5, staff:0.66, spear:1.0 };
 const easeOut = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
 function atkPose(o){
   if (!o) return { phase:'rest', k:0 };
@@ -1202,6 +1202,10 @@ function drawWeapon(kind, x, y, a, u, st = {}){
   } else if (kind === 'pickaxe'){
     shape(() => rrect(-u*0.05, -u*0.022, L + u*0.05, u*0.044, u*0.01), '#6b4326', 1.2);
     shape(() => { ctx.moveTo(L - u*0.02, -u*0.24); ctx.quadraticCurveTo(L + u*0.1, 0, L - u*0.02, u*0.24); ctx.lineTo(L - u*0.06, u*0.2); ctx.quadraticCurveTo(L + u*0.03, 0, L - u*0.06, -u*0.2); ctx.closePath(); }, '#8d949c', 1.4);
+  } else if (kind === 'spear'){
+    shape(() => rrect(-u*0.3, -u*0.02, L + u*0.3 - u*0.14, u*0.04, u*0.01), '#7a5634', 1.2);
+    shape(() => { ctx.moveTo(L - u*0.16, 0); ctx.quadraticCurveTo(L - u*0.08, -u*0.07, L + u*0.02, 0); ctx.quadraticCurveTo(L - u*0.08, u*0.07, L - u*0.16, 0); ctx.closePath(); }, st.blade || '#dfe4ea', 1.3);
+    ctx.fillStyle = '#9e1731'; ctx.fillRect(L - u*0.2, -u*0.03, u*0.04, u*0.06);
   } else if (kind === 'staff'){
     shape(() => rrect(-u*0.08, -u*0.02, L + u*0.08, u*0.04, u*0.01), '#7a5634', 1.2);
     ctx.shadowColor = '#b48cff'; ctx.shadowBlur = 10;
@@ -1218,6 +1222,7 @@ function drawArmWeapon(o, sx, sy, u, face, skin, kind, st){
   if (pose.phase === 'windup'){ a = REST + (UP - REST) * easeOut(pose.k); wa = null; }
   else if (pose.phase === 'swing'){ a = UP + (END - UP) * easeOut(pose.k * 1.6); trail = pose.k; wa = null; }
   else if (pose.phase === 'guard'){ a = GUARD; wa = -1.5; }
+  if (o && o.state === 'charge' && pose.phase === 'rest'){ a = 0.15; wa = -0.03; }
   const r = u * 0.3;
   ctx.save(); ctx.translate(sx, sy); ctx.scale(face, 1);
   const hx = Math.cos(a) * r, hy = Math.sin(a) * r;
@@ -2563,7 +2568,13 @@ function decide(u, dist){
   const base = STYLES[u.id] || STYLES.enemyGoblin;
   const adv = (battle.adv && battle.adv[u.side]) || 1;
   const w = { ...base };
-  if (!w.kite){
+  // 돌격형: 적이 멀어지면 가끔 소리치며 돌격
+  if (u.st.charger && dist > 2.5 && Math.random() < 0.35){
+    u.state = 'charge'; u.stateT = 1.6; u.running = false;
+    shout(u, Math.random() < 0.5 ? '이야아아아!!' : '으아아아!');
+    return;
+  }
+  if (!w.kite && !w.keep){
     if (adv >= ADV_WIN){        // 우세: 물러나지 않고 밀어붙여 포위
       w.retreat = 0; w.hitrun = (w.hitrun || 0) * 0.25; w.guard = (w.guard || 0) * 0.5; w.strafe = (w.strafe || 0) * 0.5;
       w.approach = (w.approach || 0) + 4; w.hold = (w.hold || 0) + 2;
@@ -2573,7 +2584,7 @@ function decide(u, dist){
       w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
     }
   }
-  if (dist > u.st.range + 2.5){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
+  if (dist > u.st.range + 2.5 && !w.keep){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
   const opts = Object.entries(w).filter(([, v]) => typeof v === 'number' && v > 0);
   let r = Math.random() * opts.reduce((a, [, v]) => a + v, 0), pick = opts[0][0];
   for (const [k, v] of opts){ r -= v; if (r <= 0){ pick = k; break; } }
@@ -2753,6 +2764,11 @@ function resolveHit(a, d, opts = {}){
   if (d.guarding && !opts.forceCrit){
     if (Math.random() < d.st.guard / 100){ guardFx(d, a, opts); return; }
     fxText(d, '방어 뚫림!', '#ff8f7a');
+    if (d.state === 'charge'){   // 방패 돌격 중 방어가 뚫리면 돌격 취소
+      d.state = 'keep'; d.stateT = 0.8;
+      fxText(d, '돌격 저지', '#ffb3a8', null, 0.5);
+      logLine(`${d.name}의 돌격이 저지됨`, 'miss');
+    }
     burst(d, 10, '#9aa3ad', 300);
   }
   let dmg = opts.atk ?? a.st.atk;
@@ -2786,6 +2802,38 @@ function resolveHit(a, d, opts = {}){
     if (d.windup > 0){ d.windup = 0; d.atkTarget = null; d.cd = d.st.cd * 0.5; fxText(d, '끊김', '#b8b0a4'); }
   }
   if (d.hp <= 0) killUnit(d);
+}
+function chargeHit(u, d){
+  if (d.dead) return;
+  u.lunge = 0.25; u.cd = u.st.cd;
+  const n = norm(d.x - u.x, d.y - u.y); u.lx = n.x; u.ly = n.y;
+  d.stun = Math.max(d.stun, u.st.chargeStun);
+  if (d.windup > 0){ d.windup = 0; d.atkTarget = null; }
+  if (d.cast && d.cast.type === 'kick' && d.cast.phase === 'prep'){ d.cast = null; d.spriteAnim = null; }
+  pushUnit(d, u, 0.5 * u.st.weight / (u.st.weight + d.st.weight) + 0.15);
+  battle.hitstop = Math.max(battle.hitstop, 0.08); shake = Math.max(shake, 0.15);
+  fxText(d, '행동 끊김', '#ffd28a', 'big', 0.3);
+  logLine(`🔱 ${u.name}의 돌격 → ${d.name} (0.8초 행동 끊김)`, 'crit');
+  resolveHit(u, d, { atk: u.st.chargeAtk });
+}
+function shout(u, text){ battle.fx.push({ type: 'bubble', u, text, life: 1.3, max: 1.3 }); }
+function drawBubble(f){
+  if (f.u.dead) return;
+  const p = P(f.u.x + 0.5, f.u.y + 0.5), h = unitHeight(f.u) * T * depthScale(f.u.y);
+  const k = f.life / f.max;
+  const jx = (Math.random() - 0.5) * 4, jy = (Math.random() - 0.5) * 3;   // 부들부들 흔들리는 말풍선
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, k * 3);
+  ctx.font = `${Math.round(T * 0.26)}px "Do Hyeon",sans-serif`;
+  const w = ctx.measureText(f.text).width + T * 0.3, hh = T * 0.42;
+  const x = p.x - w / 2 + jx, y = p.y - h - T * 0.95 + jy;
+  ctx.fillStyle = '#fff8e8'; ctx.strokeStyle = OUT; ctx.lineWidth = 2;
+  ctx.beginPath(); rrect(x, y, w, hh, hh * 0.4); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(p.x - 4 + jx, y + hh - 1); ctx.lineTo(p.x + jx, y + hh + 8); ctx.lineTo(p.x + 6 + jx, y + hh - 1); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#b3122a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(f.text, p.x + jx, y + hh / 2 + 1);
+  ctx.restore();
 }
 function applyBleed(d){
   if (!d.bleed) d.bleed = { stacks: 0, ticks: 0, clock: 0 };
@@ -2852,16 +2900,15 @@ function updateBattle(dt){
     }
     u.slotT -= sdt; u.flankT = Math.max(0, u.flankT - sdt);
     if (u.st.skills && u.st.skills.includes('loyalty')){
-      if (!u.loyal){ u.loyal = { next: rollRat(), t: 0 }; u.loyal.dur = ratFill(u.loyal.next); }
+      if (!u.loyal) u.loyal = { t: 0, dur: RAT_TIMERS.ratS, tM: 0, tB: 0 };
       const full = b.units.filter(o => o.summoner === u && !o.dead).length >= LOYALTY_MAX;
       u.loyal.full = full;
       if (b.running && !full){
         if (!u.loyal.started){ u.loyal.started = true; skillPop(u, 'loyalty'); }
-        u.loyal.t += sdt;
-        if (u.loyal.t >= u.loyal.dur){
-          summonRat(u, u.loyal.next);
-          u.loyal.next = rollRat(); u.loyal.dur = ratFill(u.loyal.next); u.loyal.t = 0;
-        }
+        u.loyal.t += sdt; u.loyal.tM += sdt; u.loyal.tB += sdt;
+        if (u.loyal.t >= RAT_TIMERS.ratS){ u.loyal.t -= RAT_TIMERS.ratS; summonRat(u, 'ratS'); }
+        if (u.loyal.tM >= RAT_TIMERS.ratM){ u.loyal.tM -= RAT_TIMERS.ratM; summonRat(u, 'ratM'); }
+        if (u.loyal.tB >= RAT_TIMERS.big){ u.loyal.tB -= RAT_TIMERS.big; summonRat(u, Math.random() < KNIGHT_AT_BIG ? 'ratKnight' : 'ratL'); }
       }
     }
     u.hurt = Math.max(0, u.hurt - sdt);
@@ -2921,7 +2968,7 @@ function updateBattle(dt){
     const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
     if (u.st.boss && b.running && u.stun <= 0 && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
-    u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : (u.state === 'guard' && u.guardT > 0 && b.running));
+    u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge'));   // 돌격 중엔 방패를 앞세워 상시 방어
     let dir = null, speed = u.st.spd;
     if (u.stun > 0){
       dir = null;
@@ -2958,6 +3005,17 @@ function updateBattle(dt){
         else if (u.state === 'retreat') dir = { x: -to.x, y: -to.y };
         else if (u.state === 'strafe'){ const k = dist > u.st.range ? 0.45 : -0.25; dir = norm(-to.y * u.strafeDir + to.x * k, to.x * u.strafeDir + to.y * k); }
         else if (u.state === 'guard' && dist < u.st.range * 0.6) dir = { x: -to.x * 0.5, y: -to.y * 0.5 };
+        else if (u.state === 'keep'){
+          // 전열 유지: 창 길이만큼 거리를 두고 버팀
+          const want = u.st.range * 0.85;
+          if (dist > want + 0.3) dir = { x: to.x * 0.8, y: to.y * 0.8 };
+          else if (dist < want - 0.35) dir = { x: -to.x * 0.7, y: -to.y * 0.7 };
+          if (Math.random() < sdt * 0.6){ u.guardT = 0.8; u.state = 'guard'; u.stateT = 0.8; }
+        }
+        else if (u.state === 'charge'){
+          dir = to; speed *= 2.2;
+          if (dist <= u.st.range * 0.8){ chargeHit(u, tgt); u.state = 'keep'; u.stateT = 0.9; dir = null; }
+        }
         else if (u.state === 'kite'){
           if (u.st.melee && dist <= u.st.melee.range + 0.1 && u.cd <= 0.25){ dir = null; u.running = false; }
           else if (dist < 2.2){ dir = { x: -to.x, y: -to.y }; u.running = true; }
@@ -2976,7 +3034,7 @@ function updateBattle(dt){
           const m = Math.min(1, Math.hypot(dir.x, dir.y)); const nd = norm(dir.x, dir.y); dir = { x: nd.x * m, y: nd.y * m };
         }
       }
-      if (u.guarding) speed *= 0.7;   // 방어 중 이동 30% 감소
+      if (u.guarding && u.state !== 'charge') speed *= 0.7;   // 방어 중 이동 30% 감소 (방패 돌격은 제외)
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && u.state === 'retreat';
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
@@ -3122,6 +3180,8 @@ function drawBattle(){
       const a = P(f.a.x + 0.5, f.a.y + 0.5), d = P(f.d.x + 0.5, f.d.y + 0.5);
       ctx.strokeStyle = `rgba(170,140,255,${k})`; ctx.lineWidth = 4 * k + 1;
       ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.6); ctx.lineTo(d.x, d.y - T * 0.6); ctx.stroke();
+    } else if (f.type === 'bubble'){
+      drawBubble(f);
     } else if (f.type === 'skillpop'){
       drawSkillPop(f);
     } else if (f.type === 'shield'){
@@ -3172,6 +3232,10 @@ function drawBattle(){
     ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, top - 1, w + 2, 7);
     ctx.fillStyle = u.side === 'ally' ? '#5cc26a' : '#e2443a';
     ctx.fillRect(p.x - w / 2, top, w * u.hp / u.st.hp, 5);
+    ctx.font = `${Math.max(9, Math.round(T * (u.st.summon && u.id !== 'ratKnight' ? 0.13 : 0.16)))}px "Nanum Gothic Coding",monospace`;   // 체력 숫자
+    ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.85)';
+    const hpTxt = `${Math.ceil(u.hp)}/${u.st.hp}`;
+    ctx.strokeText(hpTxt, p.x, top - 3); ctx.fillStyle = '#fff'; ctx.fillText(hpTxt, p.x, top - 3);
     if (u.bleed){
       ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#ff8f8f';
       ctx.fillText(`🩸${u.bleed.stacks}·${u.bleed.ticks}`, p.x + w / 2 + 3, top + 6);
@@ -3327,10 +3391,13 @@ function bossUpdate(u, sdt, tgt, dist){
     const foes = b.units.filter(o => o.side !== u.side && !o.dead);
     if (!foes.length) return false;
     if (wantThunder){
-      const t = foes[Math.floor(Math.random() * foes.length)];
+      // 가장 체력이 많은 적 또는 가장 공격력이 높은 적 (반반)
+      const byAtk = Math.random() < 0.5;
+      const t = foes.reduce((best, o) => (byAtk ? o.st.atk > best.st.atk || (o.st.atk === best.st.atk && o.hp > best.hp)
+                                                : o.hp > best.hp) ? o : best, foes[0]);
       u.cast = { type: 'thunder', t: 0, dur: 2.0, target: t, x: t.x, y: t.y, locked: false };
       skillPop(u, 'thunder');
-      logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name})`, 'crit');
+      logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name} · ${byAtk ? '가장 강한 자' : '가장 질긴 자'})`, 'crit');
       return true;
     }
     if (u.kkCd <= 0 && tgt && dist > 1.8 && dist < 6.5){
@@ -3555,11 +3622,11 @@ function drawBossBar(){
    ========================================================= */
 const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
-    desc:'손을 번쩍 들고 2초 뒤, 무작위 대상에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 겹칠 때): 90 피해 + 1.6초 큰 경직 + 그을림\n잔류 (중심 · 인근 8칸 · 십자 4칸): 25 피해 + 짧은 경직\n물 바닥이면 범위 안 전원 감전 (피아 불문)' },
+    desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 겹칠 때): 90 피해 + 1.6초 큰 경직 + 그을림\n잔류 (중심 · 인근 8칸 · 십자 4칸): 25 피해 + 짧은 경직\n물 바닥이면 범위 안 전원 감전 (피아 불문)' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'0.8초 웅크렸다가 5칸을 일직선으로 날아찬다 (5~7초마다).\n경로 위: 40 피해 + 밀려남 + 경직, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통)\n옆으로 비키면 회피, 방어는 방어 기술의 절반 확률로만 막힌다.' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
-    desc:'충성 게이지가 찰 때마다 맵 끝에서 쥐가 튀어나와 포렌의 편에 선다 (최대 24마리).\n다음 쥐는 미리 정해지고, 클수록 게이지가 느리게 찬다. 게이지 속도로 다음 쥐를 짐작할 수 있다.\n작은 쥐 65% · 0.5초 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐 30% · 2초 (🫀40 ⚔7)\n사람만 한 쥐 4% · 6초 (🫀120 ⚔14, 무거움)\n쥐 기사 1% · 10초 (🫀90 ⚔13, 방패와 검을 든 작은 여기사)' },
+    desc:'맵 끝에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n작은 쥐: 3초마다 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐: 10초마다 (🫀40 ⚔7)\n15초마다 예고 없이 사람만 한 쥐 (🫀120 ⚔14, 무거움)\n  └ 그 자리에 15% 확률로 쥐 기사 (🫀90 ⚔13, 창과 방패, 돌격)' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
     desc:'도발: 3칸 안의 적은 포렌을 먼저 노린다 (보스 제외).\n대검 베기: 옆에 있는 적 하나까지 60% 피해.' },
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
@@ -3631,20 +3698,25 @@ Object.assign(HEROES, {
   ratL: { name:'큰 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 사람만 한 쥐',
     hp:120, atk:14, def:4, block:0.10, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0.2,
     summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
-  ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 작은 여기사 (1%)',
-    hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:40, react:0.5,
-    summon:true, tags:['희귀'], trait:'방패와 검을 든 쥐 기사. 방어를 자주 올린다.', equip:{ 무기:'🗡️ 짧은 검', 머리:'—', 몸:'판금 흉갑', 장신구:'🛡 둥근 방패' } },
+  ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사',
+    hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
+    charger:true, chargeAtk:16, chargeStun:0.8,
+    summon:true, tags:['희귀'], trait:'창과 방패를 든 쥐 기사. 전열에서 창 길이만큼 거리를 두고 방어를 자주 올린다. 적이 멀어지면 가끔 소리치며 돌격해 0.8초 동안 행동을 끊는다.',
+    equip:{ 무기:'🔱 창', 머리:'—', 몸:'판금 흉갑', 장신구:'🛡 방패' } },
 });
 Object.assign(STYLES, {
   ratS: { approach:4, hitrun:3, strafe:2 },
   ratM: { approach:4, hitrun:2, strafe:2 },
   ratL: { approach:4, hold:3 },
-  ratKnight: { approach:2, guard:3, hold:3, strafe:1 },
+  ratKnight: { keep:4, guard:4, hold:1, strafe:1 },
 });
 const RAT_SIZE = { ratS:0.42, ratM:0.62, ratL:1.15 };
 // 충성 게이지: 다음 쥐를 미리 정하고, 쥐가 클수록 게이지가 느리게 참 → 게이지 속도로 다음 쥐를 짐작
 const LOYALTY_MAX = 24;
-const RAT_ROLL = [ ['ratS', 0.65, 0.5], ['ratM', 0.30, 2.0], ['ratL', 0.04, 6], ['ratKnight', 0.01, 10] ];   // [종류, 확률, 게이지 초]
+const RAT_ROLL = [ ['ratS', 0.65, 0.5], ['ratM', 0.30, 2.0], ['ratL', 0.04, 6], ['ratKnight', 0.01, 10] ];   // (소환수 목록 배치용)
+// 충성 타이머: 작은 쥐 3초, 쥐 10초, 15초마다 큰 쥐가 예고 없이 (그 자리에 가끔 쥐 기사)
+const RAT_TIMERS = { ratS: 3, ratM: 10, big: 15 };
+const KNIGHT_AT_BIG = 0.15;
 function rollRat(){
   let r = Math.random();
   for (const [id, pr] of RAT_ROLL){ if ((r -= pr) <= 0) return id; }
@@ -3738,10 +3810,11 @@ function drawRatKnightShape(x, y, u, face, pose){
   // 둥근 쥐 귀 (머리 뒤)
   const hx = x + face * u * 0.02, hy = y - u * 0.8, hr = u * 0.21;
   [-1, 1].forEach(d => { circle(hx + d * hr * 0.95, hy - hr * 0.95, hr * 0.62, '#9aa89c'); circle(hx + d * hr * 0.95, hy - hr * 0.95, hr * 0.34, '#d9a3a8', 1); });
-  drawHumanoid({ x, y, u, face, skin:'#f1ddd0', cloth:'#9aa3ad', bw:0.95, female:true, hair:'#9aa89c', race:'human', armor:true,
-    weapon:'sword', wstyle:{ blade:'#e6ebf0' }, pose });
-  // 방패 (뒷손)
-  const sx = x - face * u * 0.2, sy = y - u * 0.42;
+  drawHumanoid({ x, y, u, face, skin:'#f1ddd0', cloth:'#9aa3ad', bw:0.95, female:true, longHair:true, hair:'#9aa89c', race:'human', armor:true,
+    weapon:'spear', wstyle:{ blade:'#e6ebf0' }, pose });
+  // 방패 (평소엔 뒷손, 돌격 중엔 앞으로 내밀어 앞세움)
+  const charging = pose && pose.state === 'charge' && !pose.dead;
+  const sx = x + face * u * (charging ? 0.38 : -0.2), sy = y - u * (charging ? 0.5 : 0.42);
   shape(() => { ctx.moveTo(sx - u * 0.16, sy - u * 0.16); ctx.lineTo(sx + u * 0.16, sy - u * 0.16); ctx.lineTo(sx + u * 0.16, sy + u * 0.02); ctx.quadraticCurveTo(sx + u * 0.16, sy + u * 0.16, sx, sy + u * 0.24); ctx.quadraticCurveTo(sx - u * 0.16, sy + u * 0.16, sx - u * 0.16, sy + u * 0.02); ctx.closePath(); }, '#4d6b58');
   ctx.strokeStyle = '#d9c27a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(sx, sy - u * 0.12); ctx.lineTo(sx, sy + u * 0.16); ctx.stroke();
 }
