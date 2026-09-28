@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.4
+  version v6.5
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -312,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.4';
+const VERSION = 'v6.5';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2084,8 +2084,10 @@ HEROES.morningstar = { name:'모닝스타', grade:'★★', color:'#c9c9d6', sub
   tags:['광기'], trait:'🔆 광기 — 쇠사슬 철퇴가 대상 주변까지 휩쓸어, 붙어 있는 적에게도 절반 피해.',
   equip:{ 무기:'⛓ 모닝스타 (쇠사슬 철퇴)', 머리:'—', 몸:'찢어진 드레스', 장신구:'쇠 팔찌' } };
 HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"쥐왕" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm',
-  hp:300, atk:20, def:22, block:0.85, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.6, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
+  hp:380, atk:28, def:22, block:0.85, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.3, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
   shield:'🗡 에메랄드 대검 (장비)',   // 대검이 곧 방패
+  stunRes:1,   // 전신 중갑: 경직 절반
+  shockRes:0.4,   // 대검 접지: 감전 · 잔류 틱 피해 40% 감소
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검 (방패 겸용)', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
@@ -3287,8 +3289,9 @@ function updateBattle(dt){
       if (u.shock.clock >= SHOCK_TICK){
         u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
         const K = SHOCKS[u.shock.kind];
-        let dmg = K.dmg * (u.shock.stacks || 1);
+        let dmg = Math.round(K.dmg * (u.shock.stacks || 1) * (1 - (u.st.shockRes || 0)));
         if (u.fort) dmg = fortAbsorb(u, dmg);                   // 방진: 쥐들이 전기도 나눠 받음
+        else if (u.cloak > 0) dmg = cloakGround(u, dmg);        // 쥐 망토: 매달린 쥐들이 전기를 흘려받음
         u.hp = Math.max(0, u.hp - dmg); u.stun = Math.max(u.stun, 0.25);
         fxText(u, `${dmg}`, K.color, u.shock.stacks > 2 ? 'big' : null);
         const q = P(u.x + 0.5, u.y + 0.5);
@@ -3315,7 +3318,7 @@ function updateBattle(dt){
       if (u.lift <= 0){ u.lift = 0; u.fly = false; u.liftV = 0; shake = Math.max(shake, 0.1); burst(u, 8, '#8a7f70', 160); }
     }
     u.lunge = Math.max(0, u.lunge - sdt);
-    u.stun = Math.max(0, u.stun - sdt);
+    u.stun = Math.max(0, u.stun - sdt * (1 + (u.st.stunRes || 0)));   // 중갑: 경직이 빨리 풀림
     if (u.superArmor) u.stun = 0;                          // 슈퍼아머: 경직 없음
     u.guardT = Math.max(0, u.guardT - sdt);
     u.guardFlash = Math.max(0, u.guardFlash - dt);
@@ -4350,7 +4353,7 @@ function applyShock(o, kind = 'res', quiet){
   const K = SHOCKS[kind];
   if (o.shock && o.shock.ticks > 0){
     if (K.dmg > SHOCKS[o.shock.kind].dmg) o.shock.kind = kind;              // 센 쪽 기준으로
-    o.shock.stacks = Math.min(SHOCK_MAX, (o.shock.stacks || 1) + 1);
+    o.shock.stacks = Math.min(o.shock.kind === 'red' ? 3 : SHOCK_MAX, (o.shock.stacks || 1) + 1);   // 적뢰 감전은 3중첩까지
     o.shock.ticks = Math.max(o.shock.ticks, K.turns);
   } else o.shock = { kind, ticks: K.turns, clock: 0, stacks: 1 };
   const n = o.shock.stacks, KK = SHOCKS[o.shock.kind];
@@ -4724,7 +4727,7 @@ function strongAttack(a, d, atk){
 /* ---------- 포렌: 쥐 망토 · 쥐 방진 · 쥐 사다리 · 쥐 포박 ---------- */
 const CLOAK = { r: 1.6, per: 2, max: 10 };
 const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, bonus: 4 };
-const LADDER = { cd: 10, min: 3, max: 8, speed: 7, rats: 4 };
+const LADDER = { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3 };
 const BIND = { cd: 12, range: 4.5, rats: 5, per: 22, max: 100, drain: 22, dur: 4.5 };
 const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk);
 function cloakCount(u){
@@ -4744,6 +4747,18 @@ function porenFort(u, why){
   skillPop(u, 'ratFort'); shout(u, '버텨라!');
   logLine(`🗡 ${u.name}이(가) 대검을 땅에 꽂는다 — 쥐 ${rats.length}마리가 둘러싸 방진을 친다${why === 'low' ? ' (위기)' : ' (강공)'}`, 'guard');
   return true;
+}
+function cloakGround(d, dmg){
+  // 쥐 망토의 접지: 곁의 쥐 1마리당 감전 15% (최대 60%)를 쥐 하나가 대신 받는다
+  const near = battle.units.filter(r => !r.dead && r.summoner === d && r.st.berserk && Math.hypot(r.x - d.x, r.y - d.y) < CLOAK.r);
+  if (!near.length) return dmg;
+  const share = Math.round(dmg * Math.min(0.6, near.length * 0.15)); if (share <= 0) return dmg;
+  const r = near[Math.floor(Math.random() * near.length)];
+  r.hp = Math.max(0, r.hp - share); r.hurt = 0.2;
+  fxText(r, `접지 ${share}`, '#9dff7a');
+  battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.25, max: 0.25, color: '157,255,122' });
+  if (r.hp <= 0) killUnit(r, '감전');
+  return dmg - share;
 }
 function fortAbsorb(d, dmg){
   const f = d.fort, near = f.rats.filter(r => !r.dead && Math.hypot(r.x - d.x, r.y - d.y) < 1.6);
