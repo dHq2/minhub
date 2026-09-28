@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v7.6
+  version v7.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v7.6';
+const VERSION = 'v7.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3634,6 +3634,24 @@ function updateBattle(dt){
         if (dd){ dir = dd; u.running = true; }
         if (u.running) speed *= RUN_MUL;
         if (dir){
+          // 길막: 가는 길 앞 1.6칸 안에 몸이 막고 있으면 옆으로 돌아감 (한 번 정한 쪽으로 계속)
+          const dl = Math.hypot(dir.x, dir.y);
+          if (dl > 0.01){
+            const fx = dir.x / dl, fy = dir.y / dl;
+            let blk = null, bp = 1.6, bl = 0;
+            for (const o of b.units){
+              if (o === u || o.dead || o === tgt || o.enter) continue;
+              const vx = o.x - u.x, vy = o.y - u.y, proj = vx * fx + vy * fy;
+              if (proj <= 0 || proj >= bp) continue;
+              const lat = fx * vy - fy * vx;
+              if (Math.abs(lat) < unitRadius(u) + unitRadius(o) + 0.05){ blk = o; bp = proj; bl = lat; }
+            }
+            if (blk){
+              if (u.avoidOf !== blk){ u.avoidOf = blk; u.avoidSide = Math.abs(bl) > 0.05 ? -Math.sign(bl) : (Math.random() < 0.5 ? -1 : 1); }
+              const k = (1 - bp / 1.6) * 1.6 * dl;
+              dir.x += -fy * u.avoidSide * k; dir.y += fx * u.avoidSide * k;
+            } else u.avoidOf = null;
+          }
           for (const o of b.units){
             if (o === u || o.dead) continue;
             const dx = u.x - o.x, dy = u.y - o.y, d = Math.hypot(dx, dy), rr = unitRadius(u) + unitRadius(o);
@@ -3834,6 +3852,18 @@ function drawBattle(){
     }
     if (u.stun > 0.25) emoji('💫', p.x, p.y - h - T * 0.45, T * 0.3, time * 4);
   }
+  // 쥐 포박: 묶으러 달려가는 쥐와 대상 사이의 초록 점선 (밧줄)
+  for (const t of b.units){
+    if (!t.bind || t.dead) continue;
+    const q = P(t.x + 0.5, t.y + 0.5), ty = q.y - unitHeight(t) * T * depthScale(t.y) * 0.45;
+    ctx.save(); ctx.setLineDash([5, 5]); ctx.lineDashOffset = -time * 30; ctx.lineWidth = 1.5;
+    for (const r of b.units){
+      if (r.dead || r.bindTo !== t || r.state !== 'bindRun') continue;
+      const a = P(r.x + 0.5, r.y + 0.5);
+      ctx.strokeStyle = 'rgba(157,255,122,.55)'; ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.15); ctx.lineTo(q.x, ty); ctx.stroke();
+    }
+    ctx.restore();
+  }
   for (const f of b.fx){
     const k = f.life / f.max;
     if (f.type === 'bolt'){
@@ -3921,12 +3951,19 @@ function drawBattle(){
       ctx.fillStyle = '#7dff9a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
     }
     if (u.cloak){ ctx.font = `${Math.max(9, Math.round(T * 0.16))}px "Nanum Gothic Coding",monospace`; ctx.textAlign = 'left'; ctx.fillStyle = '#9dff7a'; ctx.fillText(`🐀방어+${u.cloak * CLOAK.per}`, p.x + w / 2 + 3, top + 17); }
-    if (u.bind && u.bind.gauge > 0){
-      const gy = top + 8, k = Math.min(1, u.bind.gauge / BIND.max);
-      ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, gy - 1, w + 2, 6);
-      ctx.fillStyle = '#6fbf4a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
-      ctx.font = `${Math.max(9, Math.round(T * 0.16))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = '#9dff7a';
-      ctx.fillText('🐀 포박', p.x, top - T * 0.3);
+    if (u.bind){
+      // 쥐 포박 게이지: 매달린 쥐 수만큼 차고, 버둥거릴수록 줄어듦. 달려오는 쥐 수도 표시
+      const bd = u.bind, gy = top + 8, k = Math.max(0, Math.min(1, bd.gauge / BIND.max));
+      const running = b.units.filter(r => !r.dead && r.state === 'bindRun' && r.bindTo === u).length, hang = bd.rats.length;
+      const bw = Math.max(w, T * 1.1), held = bd.gauge > 0;
+      ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillRect(p.x - bw / 2 - 2, gy - 2, bw + 4, 10);
+      ctx.fillStyle = held ? '#6fdc4a' : '#6a5a4a'; ctx.fillRect(p.x - bw / 2, gy, bw * k, 6);
+      ctx.strokeStyle = '#9dff7a'; ctx.lineWidth = 1; ctx.strokeRect(p.x - bw / 2 - 2, gy - 2, bw + 4, 10);
+      for (let i = 1; i < 5; i++){ ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillRect(p.x - bw / 2 + bw * i / 5, gy, 1, 6); }   // 쥐 한 마리 몫 눈금
+      ctx.font = `${Math.max(10, Math.round(T * 0.18))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
+      const label = held ? `🐀 포박! x${hang}` : hang ? '🐀 뿌리치는 중…' : `🐀 묶으러 가는 중 ${running}`;
+      ctx.lineWidth = 3; ctx.strokeStyle = '#0a1a08'; ctx.strokeText(label, p.x, top - T * 0.3);
+      ctx.fillStyle = held ? '#c8ffb0' : '#d8d0c0'; ctx.fillText(label, p.x, top - T * 0.3);
     }
     if (u.st.mag && !(u.medic && u.medic.phase === 'kneel')){
       const gy = top + 8;
@@ -4918,7 +4955,7 @@ function strongAttack(a, d, atk){
 }
 /* ---------- 포렌: 쥐 망토 · 쥐 방진 · 쥐 사다리 · 쥐 포박 ---------- */
 const CLOAK = { r: 1.6, per: 2, max: 10 };
-const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, critChance: 0.25, spinR: 1.8, onThunder: false };   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
+const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, critChance: 0.25, spinR: 1.8, onThunder: true };   // 천벌 방진: 하이리스크 하이리턴 (켜 둠)   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
 const LADDER = { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3 };
 const BIND = { cd: 12, range: 4.5, rats: 5, per: 22, max: 100, drain: 22, dur: 4.5 };
 const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk);
