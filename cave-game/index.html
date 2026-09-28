@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.5
+  version v6.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -312,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.5';
+const VERSION = 'v6.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2057,7 +2057,7 @@ const STYLES = {
   enemyGoblin: { approach:3, hitrun:3, strafe:2, guard:2, hold:1, retreat:1 },
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
-  poren:       { approach:5, hold:4, guard:1.5 },   // 쥐 군단의 왕: 막고 서 있기보다 밀고 들어감 (막기는 방진 · 반응으로)
+  poren:       { approach:3, hold:4, guard:2, retreat:1 },   // 쥐 군단의 왕: 혼자선 버티다 빠지고, 쥐들이 모이면 함께 밀고 들어감 (뭉침)
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
 };
@@ -2086,8 +2086,6 @@ HEROES.morningstar = { name:'모닝스타', grade:'★★', color:'#c9c9d6', sub
 HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"쥐왕" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm',
   hp:380, atk:28, def:22, block:0.85, crit:0.05, eva:0, spd:1.8, range:1.5, cd:1.3, windup:0.5, hits:1, weight:140, react:0.65,   // 중갑 전열 탱커
   shield:'🗡 에메랄드 대검 (장비)',   // 대검이 곧 방패
-  stunRes:1,   // 전신 중갑: 경직 절반
-  shockRes:0.4,   // 대검 접지: 감전 · 잔류 틱 피해 40% 감소
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검 (방패 겸용)', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
@@ -2813,7 +2811,11 @@ function slotPoint(u, tgt){
 
 /* ---------- 움직임 결정 (성향표에서 뽑기) ---------- */
 // 전력 = 살아 있는 폰의 체력 + 공격력×8. 우리 전력 ÷ 상대 전력 = 우세 비율
-function sideStrength(side){ return battle.units.reduce((s, o) => s + (o.side === side && !o.dead ? o.hp + o.st.atk * 8 : 0), 0); }
+// 버티기 무게: 지면에 기대어 버티기로 작정하면 무거워진다 (막기 x2, 대검을 꽂으면 x3, 근성 x4)
+const braceW = u => u.st.weight * (u.superArmor ? 4 : u.fort ? 3 : u.guarding ? 2 : 1);
+const unitStrength = o => o.hp + o.st.atk * 8;
+function sideStrength(side){ return battle.units.reduce((s, o) => s + (o.side === side && !o.dead ? unitStrength(o) : 0), 0); }
+const COHESION = { r: 2.5, push: 0.5, alone: 0.15 };   // 뭉침: 반경 2.5칸 안 동료 전력이 내 전력의 50% 이상이면 밀고 들어감, 15% 미만이면 동료 쪽으로
 const ADV_WIN = 1.25, ADV_LOSE = 0.8;
 function decide(u, dist){
   if (u.phase2){ u.state = 'approach'; u.stateT = 0.6; u.running = Math.random() < 0.6; return; }   // 전장의 흥분: 오로지 돌격
@@ -2834,6 +2836,23 @@ function decide(u, dist){
       w.retreat = (w.retreat || 0) + 1; w.guard = (w.guard || 0) + 1.5;
     } else {                     // 비등: 기본은 포위
       w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
+    }
+  }
+  // 뭉침: 곁에 동료가 있으면 함께 밀고 들어가고, 혼자 튀어나와 있으면 동료 쪽으로 물러남 (모두에게 같은 규칙)
+  if (!w.kite && !w.keep && !w.snipe && !u.st.berserk){
+    const mates = battle.units.filter(o => o !== u && !o.dead && o.side === u.side);
+    const near = mates.filter(o => Math.hypot(o.x - u.x, o.y - u.y) < COHESION.r);
+    const support = near.reduce((a, o) => a + unitStrength(o), 0) / unitStrength(u);
+    if (support >= COHESION.push){
+      w.approach = (w.approach || 0) + 3; w.hold = (w.hold || 0) + 1; w.retreat = 0; w.guard = (w.guard || 0) * 0.5;
+    } else if (support < COHESION.alone && mates.length && adv < ADV_WIN && dist < u.st.range + 3){
+      const far = mates.filter(o => !near.includes(o));
+      if (far.length){
+        const tot = far.reduce((a, o) => a + unitStrength(o), 0);
+        u.rallyX = far.reduce((a, o) => a + o.x * unitStrength(o), 0) / tot;
+        u.rallyY = far.reduce((a, o) => a + o.y * unitStrength(o), 0) / tot;
+        if (Math.random() < 0.5){ u.state = 'rally'; u.stateT = 0.8 + Math.random() * 0.6; u.running = dist < 2; return; }
+      }
     }
   }
   if (dist > u.st.range + 2.5 && !w.keep && !w.snipe && !w.assist){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
@@ -3138,7 +3157,7 @@ function resolveHit(a, d, opts = {}){
   if (d.id === 'karius') bc *= 0.5;
   if (d.hp > 0 && !blockCut && Math.random() < bc) applyBleed(d);   // 막았으면 출혈 없음
   // 무게: 버틸지 밀려날지 (막았으면 버팀)
-  const aw = a.st.weight, dw = d.st.weight;
+  const aw = braceW(a), dw = braceW(d);
   let hold = dw / (dw + aw);
   if (crit) hold *= 0.6;
   if (blockCut) hold = 1;
@@ -3155,7 +3174,7 @@ function chargeHit(u, d){
   const n = norm(d.x - u.x, d.y - u.y); u.lx = n.x; u.ly = n.y;
   d.stun = Math.max(d.stun, u.st.chargeStun);
   if (d.windup > 0){ d.windup = 0; d.atkTarget = null; }
-  pushUnit(d, u, 0.5 * u.st.weight / (u.st.weight + d.st.weight) + 0.15);
+  pushUnit(d, u, 0.5 * braceW(u) / (braceW(u) + braceW(d)) + 0.15);
   battle.hitstop = Math.max(battle.hitstop, 0.08); shake = Math.max(shake, 0.15);
   fxText(d, '행동 끊김', '#ffd28a', 'big', 0.3);
   logLine(`🔱 ${u.name}의 돌격 → ${d.name} (0.8초 행동 끊김)`, 'crit');
@@ -3289,9 +3308,8 @@ function updateBattle(dt){
       if (u.shock.clock >= SHOCK_TICK){
         u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
         const K = SHOCKS[u.shock.kind];
-        let dmg = Math.round(K.dmg * (u.shock.stacks || 1) * (1 - (u.st.shockRes || 0)));
+        let dmg = K.dmg * (u.shock.stacks || 1);
         if (u.fort) dmg = fortAbsorb(u, dmg);                   // 방진: 쥐들이 전기도 나눠 받음
-        else if (u.cloak > 0) dmg = cloakGround(u, dmg);        // 쥐 망토: 매달린 쥐들이 전기를 흘려받음
         u.hp = Math.max(0, u.hp - dmg); u.stun = Math.max(u.stun, 0.25);
         fxText(u, `${dmg}`, K.color, u.shock.stacks > 2 ? 'big' : null);
         const q = P(u.x + 0.5, u.y + 0.5);
@@ -3305,7 +3323,7 @@ function updateBattle(dt){
       // 관성: 날아가다 같은 편과 부딪히면 튕겨서 함께 날아감 (연쇄 최대 3번)
       if (w.chain && w.chain.n < BOUNCE.max){
         for (const o of b.units){
-          if (o.dead || o.side !== u.side || w.chain.hit.has(o) || o.superArmor) continue;
+          if (o.dead || o.side !== u.side || w.chain.hit.has(o) || braceW(o) >= KICK_HOLD_W) continue;
           if (Math.hypot(o.x - u.x, o.y - u.y) < unitRadius(u) + unitRadius(o) + 0.15){ bounceHit(u, o, w); break; }
         }
       }
@@ -3318,7 +3336,7 @@ function updateBattle(dt){
       if (u.lift <= 0){ u.lift = 0; u.fly = false; u.liftV = 0; shake = Math.max(shake, 0.1); burst(u, 8, '#8a7f70', 160); }
     }
     u.lunge = Math.max(0, u.lunge - sdt);
-    u.stun = Math.max(0, u.stun - sdt * (1 + (u.st.stunRes || 0)));   // 중갑: 경직이 빨리 풀림
+    u.stun = Math.max(0, u.stun - sdt);
     if (u.superArmor) u.stun = 0;                          // 슈퍼아머: 경직 없음
     u.guardT = Math.max(0, u.guardT - sdt);
     u.guardFlash = Math.max(0, u.guardFlash - dt);
@@ -3518,6 +3536,12 @@ function updateBattle(dt){
             u.running = u.state === 'toMedic' || d2 > 2;
           }
         }
+        else if (u.state === 'rally'){
+          // 뭉침: 동료 무리 쪽으로 물러남. 가까이 붙은 적은 막으면서
+          const dx = u.rallyX - u.x, dy = u.rallyY - u.y;
+          if (Math.hypot(dx, dy) > 1.0) dir = norm(dx, dy); else u.stateT = 0;
+          if (dist < 1.6){ u.guardT = 0.4; u.guarding = true; }
+        }
         else if (u.state === 'regroup'){
           // 정비: 적 무리 반대쪽 뒤로 빠져서 숨 고르기. 붙은 적은 방패로 막음
           const foes = b.units.filter(o => !o.dead && o.side !== u.side);
@@ -3557,7 +3581,7 @@ function updateBattle(dt){
       }
       if (u.guarding && u.state !== 'charge') speed *= 0.7;   // 방어 중 이동 30% 감소 (방패 돌격은 제외)
       // 공격 시작 (준비 동작 → "!" → 타격)
-      const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
+      const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
       if (handOnly && b.running && !u.guarding && u.cd <= 0 && b.clock - b.attackPressAt <= 0.35){
         b.attackPressAt = -99;
@@ -4160,6 +4184,7 @@ function bossUpdate(u, sdt, tgt, dist){
 //  맞으면 무게와 상관없이 날아차기 방향으로 날아가 벽에 부딪히고 경직
 //  발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40
 const KICK_R = 0.75, KICK_PIN = 40;
+const KICK_HOLD_W = 400;   // 날아차기를 받고도 날아가지 않는 버티기 무게 (kg)
 function kickHit(u, o, c){
   const b = battle;
   camFocus(o.x, o.y, 1.4, 0.9);
@@ -4191,12 +4216,13 @@ function kickHit(u, o, c){
     logLine(`🦶 ${u.name}의 날아차기 → ${o.name}: ${pinned ? '벽 사이에 짓뭉개짐, ' : ''}치명타 ${dmg}`, 'crit');
   }
   if (o.fort) dmg = fortAbsorb(o, dmg);
+  const held = braceW(o) >= KICK_HOLD_W;                        // 버티기 무게로 버팀 (근성 · 대검을 꽂은 포렌 · 막는 카리우스)
   o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3;
   o.windup = 0; o.atkTarget = null; o.guarding = false; o.cast = null;
   if (o.kc && !['agony', 'cut', 'heretic'].includes(o.kc.type)) o.kc = null;   // 하던 기술도 끊김
   b.hitstop = Math.max(b.hitstop, 0.16); shake = Math.max(shake, 0.55); b.redFlash = Math.max(b.redFlash, 0.3);
   if (o.hp <= 0){ killUnit(o, '날아차기'); if (o.dead) return; }
-  if (o.superArmor || o.fort){                                  // 근성의 카리우스 · 대검을 꽂은 포렌: 날아가진 않고 밀려남
+  if (held){                                                    // 날아가진 않고 밀려남
     o.kbx += c.dx * 18; o.kby += c.dy * 18;
     fxText(o, '버팀!', '#ff6a5a', 'big', 0.6);
     return;
@@ -4353,7 +4379,7 @@ function applyShock(o, kind = 'res', quiet){
   const K = SHOCKS[kind];
   if (o.shock && o.shock.ticks > 0){
     if (K.dmg > SHOCKS[o.shock.kind].dmg) o.shock.kind = kind;              // 센 쪽 기준으로
-    o.shock.stacks = Math.min(o.shock.kind === 'red' ? 3 : SHOCK_MAX, (o.shock.stacks || 1) + 1);   // 적뢰 감전은 3중첩까지
+    o.shock.stacks = Math.min(SHOCK_MAX, (o.shock.stacks || 1) + 1);
     o.shock.ticks = Math.max(o.shock.ticks, K.turns);
   } else o.shock = { kind, ticks: K.turns, clock: 0, stacks: 1 };
   const n = o.shock.stacks, KK = SHOCKS[o.shock.kind];
@@ -4748,18 +4774,6 @@ function porenFort(u, why){
   logLine(`🗡 ${u.name}이(가) 대검을 땅에 꽂는다 — 쥐 ${rats.length}마리가 둘러싸 방진을 친다${why === 'low' ? ' (위기)' : ' (강공)'}`, 'guard');
   return true;
 }
-function cloakGround(d, dmg){
-  // 쥐 망토의 접지: 곁의 쥐 1마리당 감전 15% (최대 60%)를 쥐 하나가 대신 받는다
-  const near = battle.units.filter(r => !r.dead && r.summoner === d && r.st.berserk && Math.hypot(r.x - d.x, r.y - d.y) < CLOAK.r);
-  if (!near.length) return dmg;
-  const share = Math.round(dmg * Math.min(0.6, near.length * 0.15)); if (share <= 0) return dmg;
-  const r = near[Math.floor(Math.random() * near.length)];
-  r.hp = Math.max(0, r.hp - share); r.hurt = 0.2;
-  fxText(r, `접지 ${share}`, '#9dff7a');
-  battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.25, max: 0.25, color: '157,255,122' });
-  if (r.hp <= 0) killUnit(r, '감전');
-  return dmg - share;
-}
 function fortAbsorb(d, dmg){
   const f = d.fort, near = f.rats.filter(r => !r.dead && Math.hypot(r.x - d.x, r.y - d.y) < 1.6);
   if (!near.length) return dmg;
@@ -4877,7 +4891,7 @@ function updateBinds(sdt){
       const a = i / Math.max(1, bd.rats.length) * Math.PI * 2 + bd.t * 2;
       r.x = t.x + Math.cos(a) * 0.35; r.y = t.y + Math.sin(a) * 0.25; r.stun = 0; r.kbx = r.kby = 0;
     });
-    const drain = BIND.drain * (1 + t.st.weight / 200) * (t.st.boss ? 2.5 : 1);    // 무겁고 셀수록 빨리 뿌리침
+    const drain = BIND.drain * (1 + braceW(t) / 200) * (t.st.boss ? 2.5 : 1);    // 무겁고 셀수록 빨리 뿌리침
     if (bd.rats.length) bd.gauge -= drain * sdt;
     if (bd.gauge > 0){ t.stun = Math.max(t.stun, 0.15); t.windup = 0; t.atkTarget = null; t.guarding = false; if (t.cast && t.cast.type !== 'kick') t.cast = null; }
     const over = t.dead || bd.t > BIND.dur || (bd.t > 1.2 && bd.gauge <= 0) || (bd.t > 2.5 && !bd.rats.length);
@@ -5000,7 +5014,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       if (kc.moan <= 0){ kc.moan = 0.7 + Math.random() * 0.5; fxText(u, ['크윽…', '끄으으…', '으…', '크흐…'][Math.random() * 4 | 0], '#b8a8c8', null, 0.2); shake = Math.max(shake, 0.06); }
       if (kc.t >= kc.dur){
         u.kc = null; kariusPhase2(u); u.last5 = true;       // 죽은 줄 알았는데 다시 살아나 날뛰는 마지막 항전
-        u.superArmor = true; u.st = { ...u.st, weight: u.st.weight * 4 };   // 근성: 슈퍼아머 (경직 없음, 훨씬 무거워짐)
+        u.superArmor = true;                                    // 근성: 슈퍼아머 (경직 없음, 버티기 무게 x4)
         shake = 0.5; b.hitstop = Math.max(b.hitstop, 0.2);
         ringAt(u, '255,246,192'); burst(u, 30, '#fff6c0', 420);
         fxText(u, '안광!', '#fff6c0', 'crit', 1.2);
@@ -5071,7 +5085,7 @@ function kariusUpdate(u, sdt, tgt, dist){
         for (const o of kariusFoes(u)){
           if (kc.carried.includes(o) || kc.resisted.includes(o)) continue;
           if (Math.hypot(o.x - u.x, o.y - u.y) < 1.05){
-            const carry = Math.random() < u.st.weight / (u.st.weight + o.st.weight * 1.5);   // 무거울수록 버팀
+            const carry = Math.random() < braceW(u) / (braceW(u) + braceW(o) * 1.5);   // 무거울수록 버팀
             if (carry){ kc.carried.push(o); fxText(o, '밀려남!', '#ffb3a8'); }
             else { kc.resisted.push(o); pushUnit(o, u, 0.7); fxText(o, '버팀!', '#bfe6ff'); }
           }
