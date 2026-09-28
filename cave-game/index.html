@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.0
+  version v2.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -163,7 +163,13 @@
   .bt-sec{color:var(--ink-dim);font-size:11px;letter-spacing:1px;margin:10px 0 5px;}
   .bt-tools{display:flex;flex-wrap:wrap;gap:5px;}
   .bt-tools button{background:#0a080c;border:1px solid var(--line);color:var(--ink);border-radius:3px;padding:5px 7px;font-size:12px;display:flex;align-items:center;gap:5px;}
-  .bt-tools button i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .bt-tools button{touch-action:none;}
+  #bt-allies,#bt-enemies,#bt-misc{display:grid;grid-template-columns:1fr 1fr;}
+  #bt-allies button,#bt-enemies button{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;gap:4px;padding:4px 5px;letter-spacing:-.3px;}
+  .bt-tools button canvas.face{width:28px;height:28px;border-radius:50%;background:#0a080c;border:1px solid var(--line);flex:none;}
+  .bt-tools button.on canvas.face{border-color:var(--fire);}
+  #pal-ghost{position:fixed;width:56px;height:56px;pointer-events:none;z-index:50;border-radius:50%;border:2px solid var(--fire);
+    background:rgba(10,8,12,.85);transform:translate(-50%,-60%);box-shadow:0 4px 14px rgba(0,0,0,.6);}
   .bt-tools button small{color:#ffd76a;font-size:10px;}
   .bt-tools button.on{border-color:var(--fire);color:var(--fire);}
   .bt-hint{color:var(--ink-dim);font-size:11px;line-height:1.55;margin:10px 0 4px;}
@@ -214,7 +220,7 @@
     <button id="btn-codex">낙하 목록 [L]</button>
     <button id="btn-stats">스탯 [P]</button>
     <button id="btn-inv">장비 [I]</button>
-    <button id="btn-battle">전투 테스트 [B]</button>
+    <button id="btn-battle">훈련장 [B]</button>
     <button id="btn-drop">낙하 테스트</button>
     <button id="btn-remake">캐릭터 다시</button>
   </div>
@@ -229,14 +235,13 @@
   <div id="codex" class="panel" hidden></div>
   <div id="bt-ui" hidden>
     <div id="bt-panel">
-      <div class="bt-title" id="bt-title">전투 테스트 <small>자동 · 접기</small></div>
+      <div class="bt-title" id="bt-title">훈련장 <small>접기</small></div>
       <div class="bt-sec">아군</div><div class="bt-tools" id="bt-allies"></div>
       <div class="bt-sec">적</div><div class="bt-tools" id="bt-enemies"></div>
       <div class="bt-sec">도구</div>
       <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
-      <div class="bt-hint">빈 바닥 좌클릭: 고른 유닛 소환 · 폰 좌클릭: 복사 · 폰 우클릭: 삭제 · 폰 드래그: 칸 이동 (커서를 올리면 외곽선이 금색으로)<br>
-        주인공은 직접 조작: 방향키 이동 · Shift 누르고 있기 달리기 · C 공격 · X 누르고 있기 방어 (이동 30% 느려짐) · Z 회피 스텝 (방어를 풀어야 가능)<br>
-        적 머리 위 "!" 뜨고 맞기 직전에 X: 저스트 방어 (3% 튕겨냄) · Z: 저스트 회피 (3% 역전의 기회) → 둘 다 확정 치명타 반격</div>
+      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
+        적 머리 위 "!" 뜨고 맞기 직전 X 또는 Z: 저스트 (3% 확정 치명타 반격)</div>
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
@@ -259,7 +264,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.0';
+const VERSION = 'v2.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2206,13 +2211,56 @@ function exitBattle(){
   btUi.hidden = true;
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
 }
+/* ---------- 목록에서 얼굴을 끌어다 바닥에 놓으면 배치 ---------- */
+let palDrag = null;
+function startPaletteDrag(e, id){
+  if (e.button !== 0) return;
+  palDrag = { id, sx: e.clientX, sy: e.clientY, moved: false, ghost: null };
+  window.addEventListener('pointermove', onPalMove);
+  window.addEventListener('pointerup', onPalUp, { once: true });
+  window.addEventListener('pointercancel', onPalUp, { once: true });
+}
+function onPalMove(e){
+  if (!palDrag) return;
+  if (!palDrag.moved && Math.hypot(e.clientX - palDrag.sx, e.clientY - palDrag.sy) > 6){
+    palDrag.moved = true;
+    const g = document.createElement('canvas'); g.id = 'pal-ghost'; g.width = 80; g.height = 80;
+    drawPortrait(g, palDrag.id);
+    document.body.appendChild(g);
+    palDrag.ghost = g;
+    battle.dragTool = palDrag.id;
+  }
+  if (palDrag.moved){
+    palDrag.ghost.style.left = e.clientX + 'px'; palDrag.ghost.style.top = e.clientY + 'px';
+    hoverTile = screenToTile(e);
+  }
+}
+function onPalUp(e){
+  window.removeEventListener('pointermove', onPalMove);
+  window.removeEventListener('pointerup', onPalUp);
+  window.removeEventListener('pointercancel', onPalUp);
+  const d = palDrag; palDrag = null;
+  if (!d || !d.moved) return;
+  if (d.ghost) d.ghost.remove();
+  battle.dragTool = null;
+  const t = e.type === 'pointerup' ? screenToTile(e) : null;
+  if (t){
+    const u = spawnUnit(d.id, t.c, t.r);
+    logLine(`${u.name} 배치 (${t.c}, ${t.r})`, 'sys');
+    battle.tool = d.id; syncTools();
+  }
+  hoverTile = null;
+}
 function buildBtTools(){
   const mk = (id, wrap) => {
     const s = getStats(id);
     const b = el('button'); b.dataset.tool = id;
-    const dot = el('i'); dot.style.background = s.color; b.appendChild(dot);
+    const face = document.createElement('canvas'); face.width = 80; face.height = 80; face.className = 'face';
+    drawPortrait(face, id);
+    b.appendChild(face);
+    b.addEventListener('pointerdown', e => startPaletteDrag(e, id));
     b.appendChild(document.createTextNode(s.name));
-    if (s.grade) b.appendChild(el('small', '', s.grade === 'SPECIAL' ? 'SP' : s.grade));
+    if (s.grade) b.appendChild(el('small', '', s.grade === 'SPECIAL' ? 'SP' : '★' + s.grade.length));
     wrap.appendChild(b);
   };
   const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies');
@@ -2911,11 +2959,12 @@ function drawBattle(){
   ctx.fillStyle = '#060408'; ctx.fillRect(-10, -10, W + 20, H + 20);
   drawWall();
   drawFloor();
-  if (hoverTile && b.tool !== 'select' && b.tool !== 'erase'){
+  const placeTool = b.dragTool || b.tool;
+  if (hoverTile && placeTool !== 'select' && placeTool !== 'erase'){
     const { c, r } = hoverTile;
     const q = [P(c, r), P(c + 1, r), P(c + 1, r + 1), P(c, r + 1)];
     ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
-    ctx.fillStyle = getStats(b.tool).side === 'ally' ? 'rgba(92,194,106,.25)' : 'rgba(226,68,58,.25)';
+    ctx.fillStyle = getStats(placeTool).side === 'ally' ? `rgba(92,194,106,${b.dragTool ? .45 : .25})` : `rgba(226,68,58,${b.dragTool ? .45 : .25})`;
     ctx.fill();
   }
   const list = [...b.units].sort((a, c) => a.y - c.y);
