@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.7
+  version v6.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -312,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.7';
+const VERSION = 'v6.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2813,6 +2813,14 @@ function slotPoint(u, tgt){
 // 전력 = 살아 있는 폰의 체력 + 공격력×8. 우리 전력 ÷ 상대 전력 = 우세 비율
 // 버티기 무게: 지면에 기대어 버티기로 작정하면 무거워진다 (막기 x2, 대검을 꽂으면 x3, 근성 x4)
 const braceW = u => u.st.weight * (u.superArmor ? 4 : u.fort ? 3 : u.guarding ? 2 : 1);
+// 경직 판정: 물리 충격은 무게로 버틴다. 충격의 힘(kg) 대 버티기 무게 → 경직 확률 = 힘 / (힘 + 무게)
+// (감전 · 낙뢰는 몸을 타고 흐르는 전기라 무게와 상관없이 경직)
+function stagger(o, dur, power){
+  if (o.dead || o.superArmor) return false;
+  if (Math.random() < power / (power + braceW(o))){ o.stun = Math.max(o.stun, dur); return true; }
+  fxText(o, '버팀', '#d8d0c0', null, 0.3);
+  return false;
+}
 const unitStrength = o => o.hp + o.st.atk * 8;
 function sideStrength(side){ return battle.units.reduce((s, o) => s + (o.side === side && !o.dead ? unitStrength(o) : 0), 0); }
 const COHESION = { r: 2.5, push: 0.5, alone: 0.15 };   // 뭉침: 반경 2.5칸 안 동료 전력이 내 전력의 50% 이상이면 밀고 들어감, 15% 미만이면 동료 쪽으로
@@ -3012,7 +3020,7 @@ function guardFx(d, a, opts = {}){
     sparks.push({ x: p.x + camX + d.face * T * 0.3, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 120, life: 0.45, c: i % 2 ? '#dff3ff' : '#7fc4ff' });
   }
   pushUnit(d, a, 0.08);
-  if (!opts.ranged){ pushUnit(a, d, 0.2); a.stun = Math.max(a.stun, 0.2); }
+  if (!opts.ranged){ pushUnit(a, d, 0.2); stagger(a, 0.2, braceW(d) * 2); }   // 막힌 반동
 }
 // 정확한 타이밍의 막기: 피해 0. 방패나 방탄이면 총알·화살이 튕겨서 맵 밖으로 날아감
 function perfectBlock(d, a, opts = {}){
@@ -3021,7 +3029,7 @@ function perfectBlock(d, a, opts = {}){
   b.hitstop = Math.max(b.hitstop, 0.14);
   ringAt(d, '143,232,255');
   fxText(d, '튕겨냄!', '#8fe8ff', 'big', 0.5);
-  if (!opts.ranged) a.stun = Math.max(a.stun, 0.35);
+  if (!opts.ranged) stagger(a, 0.35, braceW(d) * 4);                        // 튕겨냄: 큰 반동
   const rico = opts.ranged && !!d.st.shield;
   if (rico) ricochet(d, a);
   logLine(`✨ ${a.name} → ${d.name}: 튕겨냄 (0)${rico ? ' — 탄이 튕겨 나감' : ''}`, 'parry');
@@ -3158,8 +3166,7 @@ function resolveHit(a, d, opts = {}){
   if (d.hp > 0 && !blockCut && Math.random() < bc) applyBleed(d);   // 막았으면 출혈 없음
   // 무게: 버틸지 밀려날지 (막았으면 버팀)
   const aw = braceW(a), dw = braceW(d);
-  let hold = dw / (dw + aw);
-  if (crit) hold *= 0.6;
+  let hold = dw / (dw + aw * (crit ? 2.5 : 1));                 // 치명타는 2.5배의 힘으로 밀어붙임
   if (blockCut) hold = 1;
   if (Math.random() >= hold){
     pushUnit(d, a, (0.25 + 0.35 * aw / (aw + dw)) * (crit ? 1.5 : 1));
@@ -3172,8 +3179,7 @@ function chargeHit(u, d){
   if (d.dead) return;
   u.lunge = 0.25; u.cd = u.st.cd;
   const n = norm(d.x - u.x, d.y - u.y); u.lx = n.x; u.ly = n.y;
-  d.stun = Math.max(d.stun, u.st.chargeStun);
-  if (d.windup > 0){ d.windup = 0; d.atkTarget = null; }
+  if (stagger(d, u.st.chargeStun, braceW(u) * 3) && d.windup > 0){ d.windup = 0; d.atkTarget = null; }
   pushUnit(d, u, 0.5 * braceW(u) / (braceW(u) + braceW(d)) + 0.15);
   battle.hitstop = Math.max(battle.hitstop, 0.08); shake = Math.max(shake, 0.15);
   fxText(d, '행동 끊김', '#ffd28a', 'big', 0.3);
@@ -3927,7 +3933,8 @@ function drawBattle(){
    ========================================================= */
 const SPRITES = {
   jeokroe:     { src:'assets/jeokroe.png', face:'assets/jeokroe_face.png', frames:39, fw:494, fh:361, ax:299, ay:317, idleH:274,
-                 heightTiles:3.6, baseFace:-1, fps:9, anims:{ idle:[0, 11], prep:[12, 19], leap:[20, 32], kick:[33, 38] } },
+                 heightTiles:3.6, baseFace:-1, fps:9, anims:{ idle:[0, 11], prep:[12, 19], leap:[20, 32], kick:[33, 38] },
+                 hurt:{ src:'assets/jeokroe_hurt.png', ax:108, ay:299, h:300, scale:0.95 } },   // 경직될 때 피격 원화
   morningstar: { src:'assets/morningstar.png', face:'assets/morningstar_face.png', frames:8, fw:316, fh:399, ax:162, ay:399, idleH:399,
                  heightTiles:1.3, baseFace:1, fps:6, anims:{ idle:[0, 7] } },   // 원화가 오른쪽을 봄
   poren:       { src:'assets/poren.png', face:'assets/poren_face.png', frames:10, fw:386, fh:378, ax:186, ay:378, idleH:375,
@@ -3939,6 +3946,7 @@ const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   S.img = new Image(); S.img.src = S.src;
   S.faceImg = new Image(); S.faceImg.src = S.face;
+  if (S.hurt){ S.hurt.img = new Image(); S.hurt.img.src = S.hurt.src; }
   S.faceImg.onload = () => portraitWaiters.filter(w => w.id === id).forEach(w => drawPortrait(w.c, id));
 }
 const spriteReady = S => S.img.complete && S.img.naturalWidth > 0;
@@ -4000,7 +4008,11 @@ function drawSpriteUnit(o){
   ctx.rotate(rot);
   if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
   if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
-  ctx.drawImage(S.img, frame * S.fw, 0, S.fw, S.fh, -S.ax * k, -S.ay * k, S.fw * k, S.fh * k);
+  const H = S.hurt;
+  if (H && o.stun > 0.05 && !o.dead && !o.spriteAnim && !o.cast && H.img.complete && H.img.naturalWidth > 0){   // 경직: 피격 원화
+    const kh = S.heightTiles * T * dsc * H.scale / H.h;
+    ctx.drawImage(H.img, -H.ax * kh, -H.ay * kh, H.img.naturalWidth * kh, H.img.naturalHeight * kh);
+  } else ctx.drawImage(S.img, frame * S.fw, 0, S.fw, S.fh, -S.ax * k, -S.ay * k, S.fw * k, S.fh * k);
   ctx.restore();
   if (o.dead) return;
   // 무기 동작 덧그림
@@ -4826,7 +4838,7 @@ function porenUpdate(u, sdt, tgt, dist){
       if (!L.hit && L.t >= 0.15){
         L.hit = true;
         const hits = b.units.filter(o => !o.dead && o.side !== u.side && Math.hypot(o.x - t.x, o.y - t.y) < 1.3);
-        hits.forEach(o => { resolveHit(u, o, { atk: Math.round(u.st.atk * 1.5) }); if (!o.dead){ o.stun = Math.max(o.stun, 0.5); pushUnit(o, u, 0.6); } });
+        hits.forEach(o => { resolveHit(u, o, { atk: Math.round(u.st.atk * 1.5) }); if (!o.dead){ stagger(o, 0.5, braceW(u) * 3); pushUnit(o, u, 0.6); } });
         shake = Math.max(shake, 0.4); b.hitstop = Math.max(b.hitstop, 0.12);
         fxText(u, '쾅!', '#9dff7a', 'big', 0.5);
         logLine(`🐀 ${u.name}이(가) 쥐 사다리를 타고 날아들어 내려찍는다 (${hits.length}명)`, 'crit');
@@ -5037,7 +5049,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       if (!kc.hit && kc.t >= kc.wind + kc.swing * 0.5){
         kc.hit = true; shake = Math.max(shake, 0.3); b.hitstop = Math.max(b.hitstop, 0.1);
         const hits = kariusFoes(u).filter(o => inSweep(u, o));
-        hits.forEach(o => { resolveHit(u, o, { atk: u.st.sweepAtk }); if (!o.dead){ pushUnit(o, u, 1.6); o.stun = Math.max(o.stun, 0.5); } });
+        hits.forEach(o => { resolveHit(u, o, { atk: u.st.sweepAtk }); if (!o.dead){ pushUnit(o, u, 1.6); stagger(o, 0.5, braceW(u) * 2); } });
         logLine(`💪 ${u.name}의 노인의 팔 — ${hits.length}명을 쓸어버림`, hits.length ? 'crit' : 'miss');
       }
       if (kc.t >= kc.wind + kc.swing + kc.rec) u.kc = null;
@@ -5065,7 +5077,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       if (!kc.hit && kc.t >= kc.wind){
         kc.hit = true; shake = 0.55; b.hitstop = Math.max(b.hitstop, 0.15);
         const hits = kariusFoes(u).filter(o => Math.hypot(o.x - kc.px, o.y - kc.py) < 1.3);
-        hits.forEach(o => { resolveHit(u, o, { atk: u.st.slamAtk }); if (!o.dead){ o.stun = Math.max(o.stun, 0.6); pushUnit(o, { x: kc.px, y: kc.py }, 0.8); } });
+        hits.forEach(o => { resolveHit(u, o, { atk: u.st.slamAtk }); if (!o.dead){ stagger(o, 0.6, braceW(u) * 3); pushUnit(o, { x: kc.px, y: kc.py }, 0.8); } });
         const q = P(kc.px + 0.5, kc.py + 0.5);
         for (let i = 0; i < 30; i++) sparks.push({ x: q.x + camX, y: q.y, vx: (Math.random() - 0.5) * 520, vy: -Math.random() * 300, life: 0.5, c: i % 2 ? '#8a7f70' : '#c9bda8' });
         fxText(u, '쾅!', '#fff6c0', 'big', 0.6);
