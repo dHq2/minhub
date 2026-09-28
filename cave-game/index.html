@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.3
+  version v8.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.3';
+const VERSION = 'v8.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2932,7 +2932,7 @@ function reactTo(d, a){
   if (d.dead || d.stun > 0 || d.windup > 0 || d.manual) return;
   if (d.phase2 || d.lastStand) return;                 // 불경자 ~ 근성: 아예 막지 않음
   if (Math.random() >= d.st.react) return;
-  if (d.st.berserk && ['wall', 'assault', 'fort', 'ladder', 'bind', 'bindRun'].includes(d.state) && d.stateT > 0) return;   // 군단 임무 중인 쥐는 버팀
+  if (d.summoner && ['wall', 'assault', 'fort', 'ladder', 'bind', 'bindRun'].includes(d.state) && d.stateT > 0) return;   // 군단 임무 중인 쥐 (쥐 기사 포함)는 막지 않고 버팀
   if (d.st.berserk){                                   // 쥐 떼는 막지 않고 바퀴벌레처럼 옆으로 쌩
     const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
     d.skDir = norm(-n.y * sgn + n.x * 0.3, n.x * sgn + n.y * 0.3);
@@ -3453,7 +3453,7 @@ function updateBattle(dt){
     }
     if (taunt && !u.st.boss){ tgt = taunt; dist = tauntD; }   // 도발: 근처의 포렌을 먼저 노림
     // 쥐 표식: 표식이 남아 있으면 한가한 쥐는 전부 합류
-    if (u.summoner && u.st.berserk && !BUSY_RAT.includes(u.state) && u.state !== 'assault' && !(u.state === 'skitter' && u.stateT > 0)){   // 번개를 피해 옆으로 튀는 중엔 잠깐 빠짐
+    if (u.summoner && !BUSY_RAT.includes(u.state) && u.state !== 'assault' && !(u.state === 'skitter' && u.stateT > 0)){   // 번개를 피해 옆으로 튀는 중엔 잠깐 빠짐
       const mk = b.units.find(o => markOn(o) && o.ratMark.p === u.summoner);
       if (mk) joinSwarm(u, mk);
     }
@@ -3715,7 +3715,7 @@ function updateBattle(dt){
         dir = null;
       }
       const breakAway = u.state === 'snipe' && dist < 2.2 && !u.cornered;   // 사수: 붙으면 쏘기보다 먼저 빠져나감
-      if (!handOnly && b.running && tgt && !u.guarding && !retreating && !breakAway && u.cd <= 0 && dist <= u.st.range + 0.05 &&
+      if (!handOnly && b.running && tgt && !u.guarding && !retreating && !breakAway && u.state !== 'bindRun' && u.cd <= 0 && dist <= u.st.range + 0.05 &&   // 묶으러 가는 중엔 치지 않고 달라붙음
           (canShoot(u) || (u.st.melee && dist <= u.st.melee.range + 0.05))){   // 재장전 중엔 붙은 적만 개머리판
         u.stab = !!(u.st.melee && dist <= u.st.melee.range + 0.05);
         u.windup = u.windupMax = u.stab ? u.st.melee.windup : u.st.windup;
@@ -4890,7 +4890,7 @@ Object.assign(HEROES, {
   ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사',
     hp:90, atk:13, def:10, block:0.64, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
     charger:true, chargeAtk:16, chargeStun:0.8, shield:'🛡 방패 (장비)',
-    summon:true, tags:['희귀'], trait:'창과 방패를 든 쥐 기사. 전열에서 창 길이만큼 거리를 두고 방어를 자주 올린다. 적이 멀어지면 가끔 소리치며 돌격해 0.8초 동안 행동을 끊는다.',
+    summon:true, tags:['희귀'], trait:'창과 방패를 든 쥐 기사. 전열에서 창 길이만큼 거리를 두고 방어를 자주 올린다. 적이 멀어지면 가끔 소리치며 돌격해 0.8초 동안 행동을 끊는다. 포렌의 군대라서 쥐 표식 · 방벽 · 방진 · 포박 · 사다리 명령엔 다른 쥐들과 함께 따른다 (임무 중엔 막지 않고 버팀).',
     equip:{ 무기:'🔱 창', 방패:'🛡 방패', 머리:'—', 몸:'판금 흉갑', 장신구:'—' } },
 });
 HEROES.ratKnight.skills = ['knightCharge', 'shieldBP'];
@@ -4998,7 +4998,7 @@ function joinSwarm(r, t){
 }
 function ratAssault(p, t){
   if (!t || t.dead || (p.assaultCd || 0) > battle.clock) return;
-  const rats = battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk && !BUSY_RAT.includes(r.state));
+  const rats = battle.units.filter(r => !r.dead && r.summoner === p && !BUSY_RAT.includes(r.state));   // 쥐 기사도 포렌의 군대
   if (rats.length < 1) return;
   p.assaultCd = battle.clock + RAT_ASSAULT.cd;
   t.ratMark = { p, until: battle.clock + RAT_ASSAULT.dur };
@@ -5018,7 +5018,7 @@ function ratWall(g, a){
   const p = battle.units.find(o => !o.dead && o.side === g.side && o.st.skills && o.st.skills.includes('legion'));
   if (!p || (p.wallCd || 0) > battle.clock) return;
   const need = a.st.boss ? 4 : a.st.atk >= 25 ? 3 : 2;                            // 필요한 만큼만
-  const rats = battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk && !BUSY_RAT.includes(r.state))
+  const rats = battle.units.filter(r => !r.dead && r.summoner === p && !BUSY_RAT.includes(r.state))
     .sort((x, y) => Math.hypot(x.x - g.x, x.y - g.y) - Math.hypot(y.x - g.x, y.y - g.y)).slice(0, need);
   if (!rats.length) return;
   p.wallCd = battle.clock + RAT_WALL.cd;
@@ -5044,7 +5044,7 @@ const CLOAK = { r: 1.6, per: 2, max: 10 };
 const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, critChance: 0.25, spinR: 1.8, onThunder: true };   // 천벌 방진: 하이리스크 하이리턴 (켜 둠)   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
 const LADDER = { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3 };
 const BIND = { cd: 12, range: 4.5, rats: 5, per: 22, max: 100, drain: 22, dur: 4.5 };
-const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p && r.st.berserk);
+const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p);   // 포렌의 군대 전부 (쥐 기사 포함)
 function cloakCount(u){
   if (!u.st.skills || !u.st.skills.includes('legion')) return 0;
   return Math.min(CLOAK.max / CLOAK.per, battle.units.filter(r => !r.dead && r.summoner === u && Math.hypot(r.x - u.x, r.y - u.y) < CLOAK.r).length);
