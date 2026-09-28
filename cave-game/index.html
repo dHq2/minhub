@@ -1,0 +1,1153 @@
+<title>굴의 프롤로그</title>
+<!--
+  굴의 프롤로그 — 프롤로그 : 노말모드
+  version v1.1
+  변경 기록은 README.md 참고
+-->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0d0a0f;
+    --ink:#eadfcb;
+    --ink-dim:#8d8374;
+    --fire:#ff9d3c;
+    --panel:#17121a;
+    --line:#342b36;
+    --ruby:#c2253f;
+    --blue:#6fb8e8;
+    --green:#5cc26a;
+    --display:"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --mono:"Nanum Gothic Coding","D2Coding",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden;font-family:var(--mono);}
+  [hidden]{display:none!important;}
+  button{font:inherit;cursor:pointer;}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--fire);outline-offset:2px;}
+
+  /* ---------- 1. 텍스트 캐릭터 생성 ---------- */
+  #creator{position:fixed;inset:0;display:flex;flex-direction:column;padding:max(20px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;}
+  #creator h1{margin:0;font-family:var(--display);font-weight:400;font-size:30px;color:var(--fire);letter-spacing:1px;}
+  #creator .sub{color:var(--ink-dim);font-size:12px;margin:2px 0 14px;letter-spacing:1px;}
+  #log{flex:1;overflow-y:auto;font-size:15px;line-height:1.75;white-space:pre-wrap;padding-right:6px;}
+  #log .sys{color:var(--ink-dim);}
+  #log .q{color:var(--fire);}
+  #log .me{color:#9fd3ff;}
+  #log .ok{color:#8ee08e;}
+  #opts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  #opts button{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:4px;}
+  #opts button:hover{border-color:var(--fire);color:var(--fire);}
+  #inrow{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:10px;}
+  #inrow span{color:var(--fire);padding-top:8px;}
+  #cin{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font:inherit;font-size:16px;padding:8px 0;}
+
+  /* ---------- 2. 굴 ---------- */
+  #game{position:fixed;inset:0;}
+  canvas{display:block;width:100%;height:100%;}
+  .hud{position:absolute;pointer-events:none;font-size:12px;}
+  #hud-tl{top:calc(10px + env(safe-area-inset-top,0px));left:12px;color:var(--ink-dim);line-height:1.5;}
+  #hud-tl b{font-family:var(--display);font-weight:400;font-size:18px;color:var(--fire);}
+  #hud-tr{top:calc(10px + env(safe-area-inset-top,0px));right:12px;display:flex;gap:6px;pointer-events:auto;}
+  #hud-tr button{background:rgba(23,18,26,.88);color:var(--ink);border:1px solid var(--line);padding:5px 9px;border-radius:4px;font-size:12px;}
+
+  /* 림월드식 캐릭터 바 */
+  #bar{top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+  .pi{width:78px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 4px 4px;background:rgba(23,18,26,.8);border:1px solid var(--line);border-radius:3px;transition:border-color .2s;}
+  .pi.near{border-color:var(--fire);}
+  .pi canvas{width:40px;height:40px;}
+  .pi .nm{font-size:11px;color:var(--ink);}
+  .pi .job{font-size:10px;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  @media (max-width:640px){ #bar{top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));} .pi{width:64px;} #hud-tl{font-size:11px;} }
+
+  #prompt{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);border:1px solid var(--line);padding:4px 10px;border-radius:3px;}
+  #ver{bottom:calc(6px + env(safe-area-inset-bottom,0px));right:10px;color:#4f4652;font-size:10px;}
+
+  #dialog{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(680px,calc(100% - 32px));
+    background:rgba(18,14,20,.95);border:1px solid var(--line);border-top:3px solid var(--fire);border-radius:4px;padding:12px 16px 16px;}
+  #dialog .who{font-family:var(--display);font-size:18px;margin-bottom:4px;}
+  #dialog .txt{font-size:15px;line-height:1.65;min-height:48px;}
+  #dialog .nx{position:absolute;right:12px;bottom:6px;font-size:11px;color:var(--ink-dim);}
+
+  #inv{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(360px,calc(100% - 32px));
+    background:rgba(18,14,20,.97);border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:14px;}
+  #inv h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:20px;color:var(--fire);}
+  #inv .slot{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:6px 0;}
+  #inv .slot span:first-child{color:var(--ink-dim);}
+  #inv .stat{margin-top:10px;color:var(--ink-dim);font-size:12px;line-height:1.6;}
+
+  #pad{position:absolute;bottom:calc(96px + env(safe-area-inset-bottom,0px));left:16px;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:4px;}
+  #pad button,#act{background:rgba(23,18,26,.72);border:1px solid var(--line);color:var(--ink);border-radius:6px;font-size:17px;touch-action:none;}
+  #act{position:absolute;right:20px;bottom:calc(110px + env(safe-area-inset-bottom,0px));width:64px;height:64px;border-radius:50%;display:none;font-size:14px;}
+  @media (pointer:coarse){ #pad{display:grid;} #act{display:block;} #prompt{bottom:auto;top:calc(110px + env(safe-area-inset-top,0px));} }
+</style>
+
+<!-- 1. 텍스트 캐릭터 생성 -->
+<section id="creator">
+  <h1>굴의 프롤로그</h1>
+  <div class="sub">프롤로그 · 노말모드 · 캐릭터 생성</div>
+  <div id="log"></div>
+  <div id="opts"></div>
+  <div id="inrow"><span>&gt;</span><input id="cin" autocomplete="off" placeholder="번호나 텍스트 입력 후 Enter"></div>
+</section>
+
+<!-- 2. 굴 (로비) -->
+<section id="game" hidden>
+  <canvas id="cv"></canvas>
+  <div class="hud" id="hud-tl"><b>프롤로그</b> · 노말모드<br><span id="mapname">굴 (로비)</span></div>
+  <div class="hud" id="bar"></div>
+  <div class="hud" id="hud-tr">
+    <button id="btn-inv">장비 [I]</button>
+    <button id="btn-remake">캐릭터 다시</button>
+  </div>
+  <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
+  <div class="hud" id="ver"></div>
+  <div id="dialog" hidden><div class="who"></div><div class="txt"></div><div class="nx">Space ▶</div></div>
+  <div id="inv" hidden></div>
+  <div id="pad">
+    <span></span><button data-k="up" aria-label="위">▲</button><span></span>
+    <button data-k="left" aria-label="왼쪽">◀</button><span></span><button data-k="right" aria-label="오른쪽">▶</button>
+    <span></span><button data-k="down" aria-label="아래">▼</button><span></span>
+  </div>
+  <button id="act">대화</button>
+</section>
+
+<script>
+/* =========================================================
+   설정
+   ========================================================= */
+const VERSION = 'v1.1';
+const SAVE_KEY = 'cave-game.character.v1';
+const ROWS = 5;          // 모든 맵 공통: 세로 5칸
+const LOBBY_COLS = 30;   // 굴(로비) 가로 길이
+const GATE_COL = 27;     // 이 열부터 석문 (통과 불가)
+const OUT = '#16111a';   // 림월드식 외곽선 색
+
+document.getElementById('ver').textContent = VERSION;
+
+/* =========================================================
+   1. 텍스트 캐릭터 생성
+   ========================================================= */
+const GENDERS = [ { id:'f', name:'여자 (단발)' }, { id:'m', name:'남자 (대머리)' } ];
+const RACES = [
+  { id:'human',  name:'인간',   skin:'#eec39a', scale:1.0,  w:1.0 },
+  { id:'goblin', name:'고블린', skin:'#78b84e', scale:0.78, w:1.0 },
+  { id:'elf',    name:'엘프',   skin:'#f4dcc2', scale:1.07, w:0.9 },
+  { id:'dwarf',  name:'드워프', skin:'#dca47c', scale:0.8,  w:1.3 },
+];
+const JOBS = [
+  { id:'knight', name:'기사',   weapon:{ name:'녹슨 롱소드', icon:'🗡️' }, body:'낡은 사슬갑옷', stat:{힘:6,민첩:3,지능:2} },
+  { id:'miner',  name:'광부',   weapon:{ name:'곡괭이',      icon:'⛏️' }, body:'가죽 앞치마',   stat:{힘:5,민첩:3,지능:3} },
+  { id:'mage',   name:'마법사', weapon:{ name:'나무 지팡이', icon:'🪄' }, body:'해진 로브',     stat:{힘:2,민첩:3,지능:6} },
+  { id:'rogue',  name:'도적',   weapon:{ name:'단검',        icon:'🔪' }, body:'검은 두건',     stat:{힘:3,민첩:6,지능:2} },
+];
+const HAIRS  = [ {name:'검정',c:'#1f1a17'}, {name:'금발',c:'#e3bd55'}, {name:'빨강',c:'#b8392a'}, {name:'은발',c:'#cfd3d9'} ];
+const CLOTHS = [ {name:'남색',c:'#34508f'}, {name:'초록',c:'#3f7b46'}, {name:'자주',c:'#7c3f7c'}, {name:'갈색',c:'#7d5836'} ];
+
+const STEPS = [
+  { key:'name',   q:'이름이 뭐야?', free:true, def:'무명' },
+  { key:'gender', q:'성별은?', list:GENDERS },
+  { key:'race',   q:'종족을 골라.', list:RACES },
+  { key:'job',    q:'직업은?', list:JOBS },
+  { key:'hair',   q:'머리색은?', list:HAIRS, when:d => d.gender === 0 },
+  { key:'cloth',  q:'옷 색은?', list:CLOTHS },
+  { key:'motto',  q:'마지막으로, 한마디. (비워도 됨)', free:true, def:'' },
+];
+
+const logEl = document.getElementById('log');
+const optsEl = document.getElementById('opts');
+const cin = document.getElementById('cin');
+let stepIdx = 0, draft = {}, onAnswer = null;
+
+function say(text, cls='sys'){
+  const d = document.createElement('div'); d.className = cls; d.textContent = text;
+  logEl.appendChild(d); logEl.scrollTop = logEl.scrollHeight;
+}
+function setOptions(list, cb){
+  optsEl.innerHTML = '';
+  list.forEach((label, i) => {
+    const b = document.createElement('button'); b.textContent = `${i+1}. ${label}`;
+    b.onclick = () => cb(String(i+1)); optsEl.appendChild(b);
+  });
+}
+function visibleSteps(){ return STEPS.filter(s => !s.when || s.when(draft)); }
+function ask(){
+  while (stepIdx < STEPS.length && STEPS[stepIdx].when && !STEPS[stepIdx].when(draft)) stepIdx++;
+  if (stepIdx >= STEPS.length) return summary();
+  const s = STEPS[stepIdx];
+  const vs = visibleSteps();
+  say('');
+  say(`[${vs.indexOf(s)+1}/${vs.length}] ${s.q}`, 'q');
+  if (s.list){
+    s.list.forEach((o,i) => say(`  ${i+1}. ${o.name}`));
+    setOptions(s.list.map(o=>o.name), handle);
+  } else {
+    optsEl.innerHTML = '';
+    if (s.def) say(`  (그냥 Enter 치면 "${s.def}")`);
+  }
+  cin.focus();
+}
+function handle(raw){
+  const v = raw.trim();
+  if (onAnswer) return onAnswer(v);
+  const s = STEPS[stepIdx];
+  if (!s) return;
+  if (s.list){
+    let idx = parseInt(v,10) - 1;
+    if (isNaN(idx)) idx = s.list.findIndex(o => o.name.startsWith(v) && v);
+    if (idx < 0 || idx >= s.list.length){ say(`  1~${s.list.length} 중에서 골라줘.`); return; }
+    say(`> ${s.list[idx].name}`, 'me');
+    draft[s.key] = idx;
+  } else {
+    const val = (v || s.def).slice(0, 16);
+    say(`> ${val || '(없음)'}`, 'me');
+    draft[s.key] = val;
+  }
+  stepIdx++;
+  ask();
+}
+function describe(c){
+  const r = RACES[c.race], j = JOBS[c.job], female = c.gender === 0;
+  return [
+    `  이름   : ${c.name}`,
+    `  성별   : ${female ? '여자' : '남자'}`,
+    `  종족   : ${r.name}`,
+    `  직업   : ${j.name}  (시작 장비: ${j.weapon.icon} ${j.weapon.name})`,
+    `  머리   : ${female ? HAIRS[c.hair ?? 0].name + ' 단발' : '대머리'}`,
+    `  옷 색  : ${CLOTHS[c.cloth].name}`,
+    c.motto ? `  한마디 : "${c.motto}"` : null,
+  ].filter(Boolean).join('\n');
+}
+function summary(){
+  say('');
+  say('── 캐릭터 확인 ──', 'q');
+  say(describe(draft));
+  say('이대로 굴에 들어갈까?  1. 들어간다   2. 처음부터 다시', 'q');
+  setOptions(['들어간다','처음부터 다시'], handle);
+  onAnswer = v => {
+    if (v === '1' || /^y/i.test(v)){
+      onAnswer = null; optsEl.innerHTML = '';
+      say('> 들어간다', 'me'); say('…어두운 굴 속, 모닥불 냄새가 난다.', 'ok');
+      const ch = { ...draft, v: VERSION };
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(ch)); } catch(e){}
+      setTimeout(() => startGame(ch), 700);
+    } else if (v === '2' || /^n/i.test(v)){
+      onAnswer = null; say('> 다시', 'me'); beginCreator(false);
+    } else say('  1 또는 2.');
+  };
+}
+function beginCreator(offerLoad=true){
+  stepIdx = 0; draft = {}; onAnswer = null;
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch(e){}
+  if (saved && saved.gender === undefined) saved = null;   // v1.0 저장본은 성별이 없어서 새로 만듦
+  if (offerLoad && saved){
+    say('저장된 캐릭터가 있어.', 'q');
+    say(describe(saved));
+    say('1. 이 캐릭터로 계속   2. 새로 만들기', 'q');
+    setOptions(['이 캐릭터로 계속','새로 만들기'], handle);
+    onAnswer = v => {
+      if (v === '1'){ onAnswer = null; optsEl.innerHTML = ''; say('> 계속', 'me'); setTimeout(() => startGame(saved), 400); }
+      else if (v === '2'){ onAnswer = null; say('> 새로', 'me'); beginCreator(false); }
+      else say('  1 또는 2.');
+    };
+    cin.focus();
+    return;
+  }
+  say('── 새 캐릭터 ──', 'q');
+  ask();
+}
+cin.addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ const v = cin.value; cin.value = ''; handle(v); }
+});
+
+/* =========================================================
+   2. 굴 (로비) — 5행 타일 × 긴 가로, 2.5D 횡스크롤
+   ========================================================= */
+const cv = document.getElementById('cv');
+let ctx = cv.getContext('2d');
+function swapCtx(g){ ctx = g; }
+let W = 0, H = 0, DPR = 1;
+let T, rowH, skew, floorTop;
+
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  T = Math.max(44, Math.min(84, Math.min(H / 7.2, W / 8.5)));
+  rowH = T * 0.6;
+  skew = rowH * 0.7;
+  const bottomPad = W <= 640 ? 96 : Math.max(24, H * 0.07);
+  floorTop = H - rowH * ROWS - bottomPad;
+}
+window.addEventListener('resize', () => { if (!gameEl.hidden) resize(); });
+
+// 타일 좌표 → 화면. c: 가로(열), r: 세로(행, 0 = 뒤쪽 벽)
+let camX = 0;
+function P(c, r){ return { x: c*T - camX - r*skew + 2.5*skew, y: floorTop + r*rowH }; }
+function depthScale(r){ return 0.88 + r * 0.06; }
+
+const gameEl = document.getElementById('game');
+let player, karius, goblin, rebecca, floaters, sparks, embers, time = 0, dialog = null, character = null;
+let shift = 'goblin', shiftT = 0;
+const blocked = new Set();
+const keyOf = (c,r) => c + ',' + r;
+
+// 굴 안의 자리들
+const FIRE    = { c:9,  r:2 };
+const SPOTS = {
+  kariusFire:  { c:11, r:2, face:-1 },
+  goblinFire:  { c:8,  r:2, face:1 },
+  meditate:    { c:15, r:1, face:1 },
+  goblinDig:   { c:GATE_COL - 1, r:1, face:1 },
+  kariusDig:   { c:GATE_COL - 1, r:3, face:1 },
+};
+const SHIFT_LEN = { goblin: 40, karius: 24 };
+const KIND_LABEL = { dig:'곡괭이질', fire:'모닥불 곁 휴식', meditate:'명상 중', wander:'어슬렁거림', idle:'멍하니 서 있음' };
+
+function startGame(ch){
+  character = ch;
+  document.getElementById('creator').hidden = true;
+  document.getElementById('creator').style.display = 'none';
+  gameEl.hidden = false;
+  resize();
+  setupLobby();
+  buildBar();
+  try { window.claude?.hot?.snapshot?.(() => ({ character })); } catch(e){}
+  if (!startGame.looping){ startGame.looping = true; requestAnimationFrame(loop); }
+}
+
+function makePawn(o){
+  return Object.assign({ x:o.c, y:o.r, fromX:o.c, fromY:o.r, t:1, face:1, kind:'idle', busy:true, timer:0,
+    target:null, wait:0, swing:0, hitClock:0, walkClock:0 }, o);
+}
+
+function setupLobby(){
+  const race = RACES[character.race];
+  player = makePawn({ id:'player', c:5, r:2, race, stepTime:0.15 });
+  karius = makePawn({ id:'karius', name:'카리우스', raw:'#6fb8e8', c:SPOTS.kariusFire.c, r:SPOTS.kariusFire.r, face:-1, stepTime:0.55, kind:'fire', timer:14 });
+  goblin = makePawn({ id:'goblin', name:'청광묵', raw:'#5cc26a', c:SPOTS.goblinDig.c, r:SPOTS.goblinDig.r, face:1, stepTime:0.28, kind:'dig' });
+  rebecca = { id:'rebecca', name:'레베카', raw:'#e0435a', c:2, r:0 };
+  floaters = []; sparks = []; embers = []; dialog = null;
+  shift = 'goblin'; shiftT = SHIFT_LEN.goblin;
+  blocked.clear();
+  for (let c = GATE_COL; c < LOBBY_COLS; c++) for (let r = 0; r < ROWS; r++) blocked.add(keyOf(c,r));
+  blocked.add(keyOf(FIRE.c, FIRE.r));
+}
+
+/* ---------- NPC 대사 ---------- */
+function linesFor(n){
+  const name = character.name, w = JOBS[character.job].weapon;
+  if (n === rebecca) return [
+    '(벽 속에서) 읍! 으읍!!',
+    '…거기 누구 있어? 발소리 들렸어!',
+    '나 좀 꺼내줘! 기사 레베카가 벽에 끼어 있다니… 이건 기사도에 어긋나!',
+    '머리카락 잡아당기지 마! 그리고 엉덩이 쳐다보지 마!!',
+  ];
+  if (n === goblin) return n.kind === 'dig' ? [
+    '캉! 캉! …뭐야, 방해하지 마.',
+    '이 석문 너머에 뭐가 있냐고? 그걸 알려고 파는 거야.',
+    `${w.icon} ${w.name}? 흥, 그걸로 이 돌은 못 깨.`,
+    '(다시 곡괭이를 든다) 캉!',
+  ] : [
+    '(불 앞에서 손을 녹이는 중) …지금 교대 시간이야.',
+    '카리우스는 힘이 세서 좋은데, 문을 너무 세게 쳐.',
+    '조금만 쉬고 다시 팔 거야. 저 문은 내 거야.',
+  ];
+  if (n === karius) return ({
+    fire: [
+      '……(거대한 숨소리. 모닥불이 흔들린다)',
+      '카리우스가 안경을 밀어 올리며 당신을 내려다본다.',
+      `작은 것, ${name}. 앉아라. 불은 나눌수록 따뜻하다.`,
+    ],
+    meditate: [
+      '(여섯 다리를 접고 명상 중이다)',
+      '…………',
+      '팔 하나가 천천히 흔들린다. 방해하지 말라는 뜻 같다.',
+    ],
+    dig: [
+      '(콰앙!) …교대 중이다.',
+      '청광묵은 작다. 쉬어야 한다.',
+      '이 문은… 나를 만든 자들이 닫은 것이다.',
+    ],
+  })[n.kind] || [
+    '카리우스가 걸음을 멈춘다. 다리들이 차례로 멈춘다.',
+    `…${name}. 굴은 익숙해졌나.`,
+  ];
+}
+
+/* ---------- 입력 ---------- */
+const held = new Set();
+const KEYMAP = { ArrowUp:'up', KeyW:'up', ArrowDown:'down', KeyS:'down', ArrowLeft:'left', KeyA:'left', ArrowRight:'right', KeyD:'right' };
+window.addEventListener('keydown', e => {
+  if (!player || gameEl.hidden) return;
+  if (KEYMAP[e.code]){ held.add(KEYMAP[e.code]); e.preventDefault(); }
+  if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
+  if (e.code === 'KeyI') toggleInv();
+  if (e.code === 'Escape'){ closeInv(); if (dialog) endDialog(); }
+});
+window.addEventListener('keyup', e => { if (KEYMAP[e.code]) held.delete(KEYMAP[e.code]); });
+window.addEventListener('blur', () => held.clear());
+document.querySelectorAll('#pad button').forEach(b => {
+  const k = b.dataset.k;
+  b.addEventListener('pointerdown', e => { e.preventDefault(); held.add(k); });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev => b.addEventListener(ev, () => held.delete(k)));
+});
+document.getElementById('act').addEventListener('pointerdown', e => { e.preventDefault(); action(); });
+document.getElementById('btn-inv').onclick = toggleInv;
+document.getElementById('btn-remake').onclick = () => {
+  gameEl.hidden = true; endDialog(); closeInv();
+  const cr = document.getElementById('creator'); cr.hidden = false; cr.style.display = 'flex';
+  logEl.innerHTML = ''; beginCreator(false);
+};
+
+function occupied(c, r, self){
+  if (c < 0 || c >= LOBBY_COLS || r < 0 || r >= ROWS) return true;
+  if (blocked.has(keyOf(c,r))) return true;
+  for (const p of [player, karius, goblin]) if (p !== self && p.c === c && p.r === r) return true;
+  return false;
+}
+
+function stepPawn(p, dc, dr){
+  p.fromX = p.x; p.fromY = p.y; p.c += dc; p.r += dr; p.t = 0;
+  if (dc) p.face = dc;
+}
+
+function tryMovePlayer(){
+  if (dialog || player.t < 1 || !invEl.hidden) return;
+  let dc = 0, dr = 0;
+  if (held.has('left')) dc = -1; else if (held.has('right')) dc = 1;
+  else if (held.has('up')) dr = -1; else if (held.has('down')) dr = 1;
+  if (!dc && !dr) return;
+  if (dc) player.face = dc;
+  if (!occupied(player.c + dc, player.r + dr, player)) stepPawn(player, dc, dr);
+}
+
+function nearestNpc(){
+  const d = p => Math.abs(p.c - player.c) + Math.abs(p.r - player.r);
+  if (player.r <= 1 && Math.abs(player.c - rebecca.c) <= 1) return rebecca;
+  if (d(goblin) <= 1) return goblin;
+  if (d(karius) <= 2) return karius;
+  return null;
+}
+
+/* ---------- 대화 ---------- */
+const dlgEl = document.getElementById('dialog');
+function action(){
+  if (!invEl.hidden) return closeInv();
+  if (dialog){
+    dialog.i++;
+    if (dialog.i >= dialog.lines.length) endDialog(); else showLine();
+    return;
+  }
+  const n = nearestNpc();
+  if (!n) return;
+  if (n.c !== undefined && n !== rebecca) n.face = Math.sign(player.c - n.c) || n.face;
+  dialog = { npc:n, i:0, lines:linesFor(n) };
+  dlgEl.hidden = false;
+  showLine();
+}
+function showLine(){
+  const n = dialog.npc;
+  const who = dlgEl.querySelector('.who');
+  who.textContent = n.name; who.style.color = n.raw;
+  dlgEl.querySelector('.txt').textContent = dialog.lines[dialog.i];
+}
+function endDialog(){ dialog = null; dlgEl.hidden = true; }
+
+/* ---------- 장비창 ---------- */
+const invEl = document.getElementById('inv');
+function closeInv(){ invEl.hidden = true; }
+function toggleInv(){
+  if (!invEl.hidden) return closeInv();
+  const j = JOBS[character.job], r = RACES[character.race];
+  const st = Object.entries(j.stat).map(([k,v]) => `${k} ${v}`).join(' · ');
+  invEl.innerHTML = '';
+  const h = document.createElement('h3'); h.textContent = `${character.name} · ${r.name} ${j.name}`; invEl.appendChild(h);
+  [['무기', `${j.weapon.icon} ${j.weapon.name}`], ['머리','—'], ['몸', j.body], ['장신구','—']].forEach(([a,b]) => {
+    const d = document.createElement('div'); d.className = 'slot';
+    const s1 = document.createElement('span'); s1.textContent = a;
+    const s2 = document.createElement('span'); s2.textContent = b;
+    d.append(s1, s2); invEl.appendChild(d);
+  });
+  const s = document.createElement('div'); s.className = 'stat';
+  s.textContent = st + (character.motto ? `\n"${character.motto}"` : '') + '\n[I] 또는 Esc 로 닫기';
+  s.style.whiteSpace = 'pre-line';
+  invEl.appendChild(s);
+  invEl.hidden = false;
+}
+
+/* =========================================================
+   자유 행동 AI (림월드식)
+   ========================================================= */
+function assign(p, kind){
+  p.kind = kind; p.busy = false;
+  let spot;
+  if (kind === 'dig') spot = p === goblin ? SPOTS.goblinDig : SPOTS.kariusDig;
+  else if (kind === 'fire') spot = p === goblin ? SPOTS.goblinFire : SPOTS.kariusFire;
+  else if (kind === 'meditate') spot = SPOTS.meditate;
+  else {
+    for (let i = 0; i < 30; i++){
+      const c = 3 + Math.floor(Math.random() * (GATE_COL - 6)), r = Math.floor(Math.random() * ROWS);
+      if (!occupied(c, r, p)){ spot = { c, r, face: Math.random() < .5 ? 1 : -1 }; break; }
+    }
+    spot = spot || { c:p.c, r:p.r, face:p.face };
+  }
+  p.target = spot;
+  p.timer = { fire: 14 + Math.random()*6, meditate: 12 + Math.random()*6, wander: 4 + Math.random()*3 }[kind] || 0;
+}
+
+function updatePawn(p, dt){
+  if (p.t < 1){
+    p.t = Math.min(1, p.t + dt / p.stepTime);
+    const e = p.t;
+    p.x = p.fromX + (p.c - p.fromX) * e;
+    p.y = p.fromY + (p.r - p.fromY) * e;
+    p.walkClock += dt;
+    return;
+  }
+  if (dialog && dialog.npc === p) return;
+  if (p.target){
+    const tc = p.target.c, tr = p.target.r;
+    if (p.c === tc && p.r === tr){
+      p.face = p.target.face; p.target = null; p.busy = true; return;
+    }
+    const opts = [];
+    if (p.c !== tc) opts.push([Math.sign(tc - p.c), 0]);
+    if (p.r !== tr) opts.push([0, Math.sign(tr - p.r)]);
+    if (p.wait > 1.2) opts.push([0, p.r < 2 ? 1 : -1], [0, p.r < 2 ? -1 : 1]);
+    for (const [dc, dr] of opts){
+      if (!occupied(p.c + dc, p.r + dr, p)){ stepPawn(p, dc, dr); p.wait = 0; return; }
+    }
+    p.wait += dt;
+    if (p.wait > 4 && p.kind === 'wander'){ p.wait = 0; assign(p, 'wander'); }
+    return;
+  }
+  // 도착해서 일하는 중
+  if (p.kind !== 'dig') p.timer -= dt;
+}
+
+function director(dt){
+  shiftT -= dt;
+  if (shiftT <= 0){
+    shift = shift === 'goblin' ? 'karius' : 'goblin';
+    shiftT = SHIFT_LEN[shift];
+    if (shift === 'karius'){ assign(karius, 'dig'); assign(goblin, 'fire'); addFloater('교대!', karius, '#ffd28a'); }
+    else                   { assign(goblin, 'dig'); assign(karius, 'fire'); addFloater('교대!', goblin, '#ffd28a'); }
+  }
+  // 카리우스가 쉬는 차례면 모닥불 → 명상 → 산책 순환
+  if (shift === 'goblin' && karius.busy && karius.kind !== 'dig' && karius.timer <= 0){
+    const next = { fire:'meditate', meditate:'wander', wander:'fire', idle:'fire' }[karius.kind];
+    assign(karius, next);
+  }
+}
+
+function digEffects(p, dt){
+  if (!(p.kind === 'dig' && p.busy)) { p.swing = 0; return; }
+  const period = p === karius ? 1.1 : 0.72;
+  p.hitClock += dt;
+  p.swing = (p.hitClock % period) / period;
+  if (p.hitClock >= period){
+    p.hitClock -= period;
+    const big = p === karius;
+    const hit = { x: GATE_COL - 0.05, y: p.r + 0.5 };
+    const s = P(hit.x, hit.y);
+    const hy = s.y - T * (big ? 1.7 : 0.55);
+    floaters.push({ text: big ? '콰앙!' : '캉!', wx: s.x + camX + (Math.random()*16-8), y: hy - T*0.3, color: big ? '#ffe0a0' : '#cfe8ff', life: 1, big });
+    for (let i = 0; i < (big ? 12 : 6); i++) sparks.push({ x:s.x + camX, y:hy, vx:-Math.random()*180, vy:-Math.random()*170, life:0.45 });
+    if (big) shake = 0.18;
+  }
+}
+
+/* =========================================================
+   업데이트
+   ========================================================= */
+let shake = 0;
+function update(dt){
+  time += dt;
+  if (player.t < 1){
+    player.t = Math.min(1, player.t + dt / player.stepTime);
+    const e = player.t < 0.5 ? 2*player.t*player.t : 1 - Math.pow(-2*player.t+2, 2)/2;
+    player.x = player.fromX + (player.c - player.fromX) * e;
+    player.y = player.fromY + (player.r - player.fromY) * e;
+  }
+  tryMovePlayer();
+  director(dt);
+  updatePawn(karius, dt);
+  updatePawn(goblin, dt);
+  digEffects(karius, dt);
+  digEffects(goblin, dt);
+
+  if (karius.kind === 'meditate' && karius.busy && Math.random() < dt * 0.4) addFloater('…옴', karius, '#9fd0ff');
+  if (Math.random() < dt * 0.22) addFloater(['읍!','으읍!!','꺼내줘…!','(꿈틀꿈틀)'][Math.floor(Math.random()*4)], rebecca, '#ff9aa8', -1.5);
+
+  // 모닥불 불티
+  if (Math.random() < dt * 14){
+    const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
+    embers.push({ wx: f.x + camX + (Math.random()-0.5)*T*0.3, y: f.y - T*0.3, vx:(Math.random()-0.5)*20, vy:-40 - Math.random()*50, life:1 + Math.random() });
+  }
+
+  floaters.forEach(f => { f.life -= dt; f.y -= 22 * dt; });
+  floaters = floaters.filter(f => f.life > 0);
+  sparks.forEach(s => { s.life -= dt; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 520 * dt; });
+  sparks = sparks.filter(s => s.life > 0);
+  embers.forEach(e => { e.life -= dt; e.wx += e.vx * dt; e.y += e.vy * dt; });
+  embers = embers.filter(e => e.life > 0);
+  shake = Math.max(0, shake - dt);
+
+  const target = player.x * T - W * 0.45;
+  const maxCam = LOBBY_COLS * T - W + 3 * skew + T;
+  camX += (Math.max(-T, Math.min(maxCam, target)) - camX) * Math.min(1, dt * 6);
+
+  const n = dialog ? null : nearestNpc();
+  const pr = document.getElementById('prompt');
+  pr.hidden = !n;
+  if (n) pr.textContent = `[Space] ${n.name}에게 말걸기`;
+  updateBar(n);
+}
+function addFloater(text, who, color, lift=-1){
+  const isR = who === rebecca;
+  const p = P((isR ? who.c : who.x) + 0.5, isR ? 0 : who.y + 0.5);
+  const h = who === karius ? 3.4 : who === goblin ? 1.2 : 1;
+  floaters.push({ text, wx: p.x + camX, y: p.y + T * (lift < -1 ? lift : -h), color, life: 1.2 });
+}
+
+/* =========================================================
+   그리기 — 림월드식: 굵은 외곽선 + 단색 도형
+   ========================================================= */
+function shape(pathFn, fill, lw=2){
+  ctx.beginPath(); pathFn();
+  ctx.fillStyle = fill; ctx.fill();
+  ctx.lineWidth = lw; ctx.strokeStyle = OUT; ctx.lineJoin = 'round'; ctx.stroke();
+}
+function circle(x, y, r, fill, lw){ shape(() => ctx.arc(x, y, r, 0, Math.PI*2), fill, lw); }
+function limb(x0, y0, cx, cy, x1, y1, w, color){
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.quadraticCurveTo(cx,cy,x1,y1);
+  ctx.strokeStyle = OUT; ctx.lineWidth = w + 4; ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = w; ctx.stroke();
+}
+function rrect(x, y, w, h, r){ ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+function emoji(ch, x, y, size, rot=0){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.font = `${Math.round(size)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(ch, 0, 0);
+  ctx.restore();
+}
+function hash(a, b){ const s = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return s - Math.floor(s); }
+
+function draw(){
+  ctx.save();
+  if (shake > 0) ctx.translate((Math.random()-0.5)*6*shake/0.18, (Math.random()-0.5)*4*shake/0.18);
+  ctx.fillStyle = '#060408'; ctx.fillRect(-10,-10,W+20,H+20);
+
+  drawWall();
+  drawFloor();
+  drawRebecca();
+  drawGate();
+
+  const list = [
+    { y: player.y, fn: drawPlayerPawn },
+    { y: karius.y, fn: () => drawKarius(karius) },
+    { y: goblin.y, fn: () => drawGoblin(goblin) },
+    { y: FIRE.r - 0.01, fn: drawFire },
+  ].sort((a,b) => a.y - b.y);
+  list.forEach(o => o.fn());
+
+  // 불빛 (가산 합성)
+  const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
+  const flick = 0.85 + Math.sin(time*13)*0.06 + Math.sin(time*7.3)*0.05;
+  ctx.globalCompositeOperation = 'lighter';
+  const lg = ctx.createRadialGradient(f.x, f.y - T*0.3, 0, f.x, f.y - T*0.3, T*4.2*flick);
+  lg.addColorStop(0, 'rgba(255,150,60,.34)'); lg.addColorStop(0.4, 'rgba(255,110,40,.12)'); lg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = lg; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#ffb35a';
+  embers.forEach(e => { ctx.globalAlpha = Math.min(1, e.life); ctx.fillRect(e.wx - camX, e.y, 2, 2); });
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+
+  ctx.fillStyle = '#ffe9a8';
+  sparks.forEach(s => ctx.fillRect(s.x - camX, s.y, 2.5, 2.5));
+
+  // 이름표 (림월드처럼 발밑)
+  labelUnder(player, character.name, '#f3e6c8');
+  labelUnder(karius, '카리우스', '#bfe0f5');
+  labelUnder(goblin, '청광묵', '#c7eec9');
+  const rp = P(rebecca.c + 0.5, 0.35);
+  tag('레베카', rp.x, rp.y + T*0.1, '#ffc2cc');
+
+  ctx.textAlign = 'center';
+  floaters.forEach(fl => {
+    ctx.globalAlpha = Math.min(1, fl.life * 2);
+    ctx.font = `${Math.round(T*(fl.big ? 0.36 : 0.26))}px "Do Hyeon",sans-serif`;
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.7)';
+    ctx.strokeText(fl.text, fl.wx - camX, fl.y);
+    ctx.fillStyle = fl.color; ctx.fillText(fl.text, fl.wx - camX, fl.y);
+  });
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  const vg = ctx.createRadialGradient(W/2, H*0.62, H*0.25, W/2, H*0.62, Math.max(W,H)*0.8);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.7)');
+  ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+}
+
+function drawWall(){
+  const a = P(0,0), b = P(LOBBY_COLS,0);
+  const top = floorTop - T * 3.4;
+  const g = ctx.createLinearGradient(0, top, 0, floorTop);
+  g.addColorStop(0,'rgba(40,32,40,0)'); g.addColorStop(0.35,'#2a222b'); g.addColorStop(1,'#3b2f37');
+  ctx.fillStyle = g;
+  ctx.fillRect(a.x, top, b.x - a.x, floorTop - top);
+  // 암석 덩어리
+  for (let c = 0; c < LOBBY_COLS; c += 0.7){
+    const p = P(c, 0);
+    if (p.x < -T || p.x > W + T) continue;
+    for (let k = 0; k < 3; k++){
+      const hv = hash(c, k);
+      if (hv < 0.45) continue;
+      ctx.fillStyle = `rgba(0,0,0,${0.12 + hv*0.12})`;
+      ctx.beginPath();
+      ctx.ellipse(p.x + hv*T*0.4, floorTop - T*(0.4 + k*0.75 + hv*0.3), T*(0.18 + hv*0.2), T*(0.1 + hv*0.08), hv, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+  // 벽 아래 턱
+  ctx.fillStyle = '#1c161d';
+  ctx.fillRect(a.x, floorTop - 4, b.x - a.x, 4);
+  // 레베카 옆 갈라진 틈 (구불구불)
+  const cr = P(3.5,0);
+  ctx.strokeStyle = '#0c090d'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i <= 12; i++){
+    const y = floorTop - i * T * 0.26, x = cr.x + Math.sin(i * 1.4) * 6;
+    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // 좌우 끝 암벽
+  ctx.fillStyle = '#09070b';
+  const l0 = P(0,0), l1 = P(0,ROWS);
+  ctx.beginPath(); ctx.moveTo(l0.x, top); ctx.lineTo(l0.x, l0.y); ctx.lineTo(l1.x, l1.y + 12); ctx.lineTo(l1.x - W, l1.y + 12); ctx.lineTo(l0.x - W, top); ctx.fill();
+  const r0 = P(LOBBY_COLS,0), r1 = P(LOBBY_COLS,ROWS);
+  ctx.beginPath(); ctx.moveTo(r0.x, top); ctx.lineTo(r0.x, r0.y); ctx.lineTo(r1.x, r1.y + 12); ctx.lineTo(r1.x + W, r1.y + 12); ctx.lineTo(r0.x + W, top); ctx.fill();
+}
+
+function drawFloor(){
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < LOBBY_COLS; c++){
+      const a = P(c,r), b = P(c+1,r), d = P(c+1,r+1), e = P(c,r+1);
+      if (b.x < -skew*6 || a.x > W + skew*6) continue;
+      const hv = hash(c, r);
+      const base = 44 + r*4 + hv*8;
+      ctx.fillStyle = `rgb(${base+10|0},${base+2|0},${base-4|0})`;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(d.x,d.y); ctx.lineTo(e.x,e.y); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.stroke();
+      // 자갈
+      if (hv > 0.55){
+        const q = P(c + 0.2 + hash(r,c)*0.6, r + 0.3 + hv*0.4);
+        ctx.fillStyle = 'rgba(0,0,0,.28)';
+        ctx.beginPath(); ctx.ellipse(q.x, q.y, T*0.06, T*0.03, 0, 0, Math.PI*2); ctx.fill();
+      }
+    }
+  }
+  const f0 = P(0,ROWS), f1 = P(LOBBY_COLS,ROWS);
+  ctx.fillStyle = '#1b1519';
+  ctx.fillRect(f0.x, f0.y, f1.x - f0.x, 12);
+}
+
+function drawGate(){
+  // 오른쪽 끝의 거대한 석문 — 바닥 전체를 막고 천장까지 솟음
+  const a0 = P(GATE_COL, 0), a1 = P(GATE_COL, ROWS);
+  const b0 = P(LOBBY_COLS - 0.1, 0);
+  const top = floorTop - T * 4.6;
+  const faceTop = top + T*0.9;
+  // 옆면(파는 면)
+  ctx.beginPath();
+  ctx.moveTo(a0.x, faceTop - rowH*0.2); ctx.lineTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y); ctx.lineTo(a1.x, faceTop + ROWS*rowH*0.15);
+  ctx.closePath();
+  ctx.fillStyle = '#56505b'; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2.5; ctx.stroke();
+  // 파인 자국 (교대로 판 흔적)
+  ctx.fillStyle = 'rgba(0,0,0,.4)';
+  [[1,0.55],[3,1.6],[1.5,0.9],[3.2,0.5]].forEach(([r, h], i) => {
+    const q = P(GATE_COL, r + 0.5);
+    ctx.beginPath(); ctx.ellipse(q.x + 3, q.y - T*h, T*0.16, T*0.24, 0.3*i, 0, Math.PI*2); ctx.fill();
+  });
+  // 정면(문짝)
+  const g = ctx.createLinearGradient(a0.x, 0, b0.x + T, 0);
+  g.addColorStop(0,'#6a6370'); g.addColorStop(1,'#39333d');
+  ctx.beginPath();
+  ctx.moveTo(a1.x, a1.y); ctx.lineTo(a1.x, faceTop + ROWS*rowH*0.15);
+  ctx.quadraticCurveTo(a1.x + T*1.4, top - T*0.2, a1.x + T*3.4, faceTop);
+  ctx.lineTo(a1.x + T*3.4, a1.y);
+  ctx.closePath();
+  ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2.5; ctx.stroke();
+  const mid = a1.x + T*1.7;
+  ctx.beginPath(); ctx.moveTo(mid, a1.y); ctx.lineTo(mid, top + T*0.55); ctx.stroke();
+  ctx.strokeStyle = 'rgba(150,200,255,' + (0.18 + Math.sin(time*1.5)*0.06) + ')'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(mid, top + T*2.0, T*0.6, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(mid, top + T*2.0, T*0.3, 0, Math.PI*2); ctx.stroke();
+}
+
+function drawFire(){
+  const p = P(FIRE.c + 0.5, FIRE.r + 0.5);
+  // 돌 테두리
+  for (let i = 0; i < 8; i++){
+    const a = i / 8 * Math.PI * 2;
+    circle(p.x + Math.cos(a)*T*0.3, p.y + Math.sin(a)*T*0.1, T*0.07, '#5b545c', 1.5);
+  }
+  // 장작
+  ctx.save(); ctx.translate(p.x, p.y - T*0.05);
+  [-0.4, 0.4].forEach(rot => { ctx.save(); ctx.rotate(rot); shape(() => rrect(-T*0.28, -T*0.05, T*0.56, T*0.1, T*0.04), '#6b4326', 1.5); ctx.restore(); });
+  ctx.restore();
+  // 불꽃
+  const layers = [['#e2442a', 0.5, 0.26], ['#ff9d3c', 0.38, 0.19], ['#ffe07a', 0.24, 0.1]];
+  layers.forEach(([col, h, w], i) => {
+    const fl = 1 + Math.sin(time*11 + i*2)*0.12 + Math.sin(time*17 + i)*0.06;
+    ctx.beginPath();
+    ctx.moveTo(p.x - T*w, p.y - T*0.05);
+    ctx.quadraticCurveTo(p.x - T*w*0.8, p.y - T*h*0.6*fl, p.x + Math.sin(time*6 + i)*T*0.04, p.y - T*h*fl);
+    ctx.quadraticCurveTo(p.x + T*w*0.8, p.y - T*h*0.6*fl, p.x + T*w, p.y - T*0.05);
+    ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+  });
+}
+
+/* ---------- 레베카: 벽에 박혀 꿈틀 ---------- */
+function drawRebecca(){
+  const p = P(rebecca.c + 0.5, 0);
+  const cx = p.x + Math.sin(time * 5) * T * 0.03, wallY = p.y - T*0.95;
+  const u = T;
+  // 벽 구멍
+  ctx.fillStyle = '#0b080c';
+  ctx.beginPath(); ctx.ellipse(p.x, wallY - u*0.05, u*0.44, u*0.38, 0, 0, Math.PI*2); ctx.fill();
+  // 구멍 틈으로 흘러나온 루비색 장발
+  for (let i = 0; i < 7; i++){
+    const sx = p.x + (i - 3) * u*0.12, side = i < 3.5 ? -1 : 1;
+    const sway = Math.sin(time*2.4 + i) * u*0.04;
+    ctx.beginPath();
+    ctx.moveTo(sx, wallY - u*0.3);
+    ctx.quadraticCurveTo(sx + side*u*0.35, wallY + u*0.1, sx + side*u*(0.25 + Math.abs(i-3)*0.06) + sway, p.y - u*0.05 - (i%3)*u*0.08);
+    ctx.strokeStyle = i % 2 ? '#9e1731' : '#c2253f'; ctx.lineWidth = u*0.07; ctx.lineCap = 'round'; ctx.stroke();
+  }
+  // 다리 (판금 정강이, 번갈아 버둥)
+  const k1 = Math.sin(time * 8) * u*0.07, k2 = Math.sin(time * 8 + 2) * u*0.07;
+  limb(cx - u*0.13, wallY + u*0.15, cx - u*0.2, wallY + u*0.5, cx - u*0.22 + k1, p.y - u*0.12, u*0.12, '#b7bec8');
+  limb(cx + u*0.13, wallY + u*0.15, cx + u*0.2, wallY + u*0.5, cx + u*0.24 + k2, p.y - u*0.16, u*0.12, '#b7bec8');
+  shape(() => rrect(cx - u*0.32 + k1, p.y - u*0.18, u*0.2, u*0.1, u*0.03), '#5c616b', 1.5);
+  shape(() => rrect(cx + u*0.14 + k2, p.y - u*0.22, u*0.2, u*0.1, u*0.03), '#5c616b', 1.5);
+  // 엉덩이 판금 + 루비 천
+  const wob = Math.sin(time * 8) * 1.5;
+  shape(() => { ctx.moveTo(cx - u*0.36, wallY - u*0.12); ctx.lineTo(cx + u*0.36, wallY - u*0.12); ctx.lineTo(cx + u*0.3, wallY + u*0.25); ctx.lineTo(cx - u*0.3, wallY + u*0.25); ctx.closePath(); }, '#a01c35', 2);
+  circle(cx - u*0.15, wallY + wob, u*0.2, '#c9d0d8', 2);
+  circle(cx + u*0.15, wallY - wob, u*0.2, '#c9d0d8', 2);
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.beginPath(); ctx.ellipse(cx - u*0.2, wallY - u*0.08 + wob, u*0.06, u*0.03, -0.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + u*0.1, wallY - u*0.08 - wob, u*0.06, u*0.03, -0.5, 0, Math.PI*2); ctx.fill();
+}
+
+/* ---------- 플레이어: 여자 단발 / 남자 대머리 ---------- */
+function drawPlayerPawn(){
+  const race = player.race;
+  const p = P(player.x + 0.5, player.y + 0.5);
+  const u = T * depthScale(player.y) * race.scale;
+  const moving = player.t < 1;
+  const hop = moving ? Math.sin(player.t * Math.PI) * T * 0.07 : Math.sin(time*2)*T*0.008;
+  shadowAt(p.x, p.y, u*0.3);
+  drawHumanoid({
+    x: p.x, y: p.y - hop, u, face: player.face, skin: race.skin, cloth: CLOTHS[character.cloth].c, bw: race.w,
+    female: character.gender === 0, hair: HAIRS[character.hair ?? 0].c, race: race.id, tool: JOBS[character.job].weapon.icon,
+  });
+}
+
+function drawHumanoid(o){
+  const { x, y, u, face } = o;
+  const bw = u * 0.44 * o.bw;
+  // 몸통 (림월드식 둥근 몸)
+  shape(() => rrect(x - bw/2, y - u*0.58, bw, u*0.56, [u*0.2, u*0.2, u*0.12, u*0.12]), o.cloth);
+  ctx.fillStyle = 'rgba(0,0,0,.18)';
+  ctx.fillRect(x - bw/2 + 2, y - u*0.14, bw - 4, u*0.1);
+  // 손
+  circle(x + face*bw*0.55, y - u*0.28, u*0.07, o.skin, 1.5);
+  if (o.tool) emoji(o.tool, x + face*bw*0.75, y - u*0.42, u*0.34, face*0.4);
+  const hx = x + face*u*0.02, hy = y - u*0.8, hr = u*0.21;
+  // 뒷머리 (단발)
+  if (o.female) shape(() => rrect(hx - hr*1.14, hy - hr*1.12, hr*2.28, hr*1.78, [hr, hr, hr*0.2, hr*0.2]), o.hair);
+  // 귀
+  if (o.race === 'goblin' || o.race === 'elf'){
+    const L = o.race === 'goblin' ? 0.34 : 0.22;
+    [-1,1].forEach(d => shape(() => { ctx.moveTo(hx + d*hr*0.75, hy - hr*0.15); ctx.lineTo(hx + d*(hr + u*L), hy - hr*0.75); ctx.lineTo(hx + d*hr*0.8, hy + hr*0.35); ctx.closePath(); }, o.skin, 1.5));
+  }
+  // 머리
+  circle(hx, hy, hr, o.skin);
+  if (o.female){
+    // 앞머리
+    shape(() => { ctx.arc(hx, hy - hr*0.05, hr*1.08, Math.PI*1.02, Math.PI*1.98); ctx.lineTo(hx + hr*0.95, hy - hr*0.2); ctx.lineTo(hx - hr*0.95, hy - hr*0.2); ctx.closePath(); }, o.hair);
+  } else {
+    // 대머리 광택
+    ctx.fillStyle = 'rgba(255,255,255,.45)';
+    ctx.beginPath(); ctx.ellipse(hx - face*hr*0.3, hy - hr*0.55, hr*0.28, hr*0.13, -0.4*face, 0, Math.PI*2); ctx.fill();
+  }
+  if (o.race === 'dwarf') shape(() => { ctx.moveTo(hx - hr*0.75, hy + hr*0.25); ctx.quadraticCurveTo(hx, hy + hr*2.1, hx + hr*0.75, hy + hr*0.25); ctx.closePath(); }, o.female ? o.hair : '#6d4a2c', 1.5);
+  // 눈
+  ctx.fillStyle = OUT;
+  ctx.beginPath(); ctx.arc(hx + face*hr*0.15 - hr*0.28, hy + hr*0.05, hr*0.1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(hx + face*hr*0.15 + hr*0.28, hy + hr*0.05, hr*0.1, 0, Math.PI*2); ctx.fill();
+}
+
+/* ---------- 청광묵: 작은 고블린 소녀 ---------- */
+function drawGoblin(g){
+  const p = P(g.x + 0.5, g.y + 0.5);
+  const u = T * depthScale(g.y) * 0.72;
+  const sitting = g.kind === 'fire' && g.busy;
+  const walking = g.t < 1;
+  const y = p.y - (walking ? Math.abs(Math.sin(g.walkClock*14)) * T*0.05 : 0) + (sitting ? u*0.16 : 0);
+  const x = p.x, face = g.face;
+  shadowAt(x, p.y, u*0.34);
+  const skin = '#78b84e', hair = '#2c5a3c';
+  // 양갈래
+  circle(x - u*0.3, y - u*0.98, u*0.12, hair);
+  circle(x + u*0.3, y - u*0.98, u*0.12, hair);
+  // 원피스
+  shape(() => { ctx.moveTo(x - u*0.16, y - u*0.58); ctx.lineTo(x + u*0.16, y - u*0.58); ctx.lineTo(x + u*0.28, y - (sitting ? u*0.14 : u*0.04)); ctx.lineTo(x - u*0.28, y - (sitting ? u*0.14 : u*0.04)); ctx.closePath(); }, '#8a5a2e');
+  if (!sitting){
+    ctx.fillStyle = OUT;
+    ctx.fillRect(x - u*0.14, y - u*0.05, u*0.09, u*0.06);
+    ctx.fillRect(x + u*0.05, y - u*0.05, u*0.09, u*0.06);
+  }
+  // 곡괭이질
+  if (g.kind === 'dig' && g.busy){
+    const sw = g.swing;
+    const ang = sw < 0.65 ? -2.3 + (sw/0.65)*0.5 : -1.8 + ((sw-0.65)/0.35)*2.3;
+    const sx = x + u*0.12, sy = y - u*0.5;
+    const hx = sx + Math.cos(ang)*u*0.3, hy = sy + Math.sin(ang)*u*0.3;
+    limb(sx, sy, (sx+hx)/2, (sy+hy)/2, hx, hy, u*0.08, skin);
+    emoji('⛏️', hx + Math.cos(ang)*u*0.15, hy + Math.sin(ang)*u*0.15, u*0.55, ang + Math.PI*0.75);
+  } else {
+    circle(x + face*u*(sitting ? 0.3 : 0.22), y - u*(sitting ? 0.38 : 0.3), u*0.07, skin, 1.5);
+  }
+  // 머리 + 큰 귀
+  const hx = x + face*u*0.03, hy = y - u*0.82, hr = u*0.24;
+  [-1,1].forEach(d => shape(() => { ctx.moveTo(hx + d*hr*0.7, hy - hr*0.2); ctx.lineTo(hx + d*(hr + u*0.36), hy - hr*0.55); ctx.lineTo(hx + d*hr*0.75, hy + hr*0.35); ctx.closePath(); }, skin, 1.5));
+  circle(hx, hy, hr, skin);
+  shape(() => { ctx.arc(hx, hy - hr*0.1, hr*1.04, Math.PI*1.05, Math.PI*1.95); ctx.lineTo(hx + hr*0.8, hy - hr*0.35); ctx.lineTo(hx - hr*0.8, hy - hr*0.35); ctx.closePath(); }, hair);
+  ctx.fillStyle = OUT;
+  ctx.beginPath(); ctx.arc(hx + face*hr*0.2 - hr*0.28, hy + hr*0.08, hr*0.11, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(hx + face*hr*0.2 + hr*0.28, hy + hr*0.08, hr*0.11, 0, Math.PI*2); ctx.fill();
+  if (g.kind === 'dig') jobIcon('⛏️', hx, hy - hr - u*0.45);
+}
+
+/* ---------- 카리우스: 3m 실험체, 다리 여섯, 팔 넷, 대머리 안경 ---------- */
+function drawKarius(k){
+  const p = P(k.x + 0.5, k.y + 0.5);
+  const u = T * depthScale(k.y);
+  const x = p.x, face = k.face;
+  const walking = k.t < 1;
+  const sitting = (k.kind === 'fire' || k.kind === 'meditate') && k.busy;
+  const med = k.kind === 'meditate' && k.busy;
+  const float = med ? Math.sin(time*1.6)*u*0.06 - u*0.12 : 0;
+  const y = p.y + float;
+  const skin = '#b9aeb9', skinDark = '#8c8190';
+  shadowAt(x, p.y, u*0.95);
+
+  if (med){
+    ctx.strokeStyle = `rgba(140,200,255,${0.25 + Math.sin(time*2)*0.1})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(x, p.y, u*(1.0 + Math.sin(time*2)*0.08), u*0.3, 0, 0, Math.PI*2); ctx.stroke();
+  }
+
+  const pelvisY = y - (sitting ? u*0.5 : u*1.05);
+  const torsoH = u*1.4, torsoTop = pelvisY - torsoH;
+  // 다리 여섯
+  for (let i = 0; i < 6; i++){
+    const side = i < 3 ? -1 : 1, k3 = i % 3;
+    const hipX = x + side*u*(0.12 + k3*0.13);
+    let fx, fy, kx, ky;
+    if (sitting){
+      fx = x + side*u*(0.55 + k3*0.28); fy = y - k3*u*0.02;
+      kx = hipX + side*u*(0.45 + k3*0.15); ky = pelvisY - u*(0.45 - k3*0.08);
+    } else {
+      const lift = walking ? Math.max(0, Math.sin(k.walkClock*9 + i*1.05 + side)) * u*0.15 : 0;
+      fx = x + side*u*(0.3 + k3*0.3); fy = y - lift - (k3 === 1 ? u*0.04 : 0);
+      kx = hipX + side*u*(0.55 + k3*0.12); ky = pelvisY + u*0.1;
+    }
+    limb(hipX, pelvisY, kx, ky, fx, fy, u*0.13, i % 2 ? skinDark : skin);
+  }
+  // 허리천
+  shape(() => rrect(x - u*0.5, pelvisY - u*0.28, u*1.0, u*0.36, u*0.1), '#4a4452');
+  // 몸통
+  const bob = walking ? Math.sin(k.walkClock*9)*u*0.03 : Math.sin(time*1.8)*u*0.015;
+  shape(() => rrect(x - u*0.52, torsoTop + bob, u*1.04, torsoH - u*0.2, [u*0.42, u*0.42, u*0.2, u*0.2]), skin);
+  // 봉합 자국 + 실험체 번호표
+  ctx.strokeStyle = 'rgba(40,20,40,.55)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(x - u*0.3, torsoTop + u*0.5 + bob); ctx.lineTo(x + u*0.3, torsoTop + u*0.62 + bob); ctx.stroke();
+  for (let i = 0; i < 5; i++){
+    const sx = x - u*0.25 + i*u*0.12, sy = torsoTop + u*0.52 + i*u*0.024 + bob;
+    ctx.beginPath(); ctx.moveTo(sx, sy - u*0.04); ctx.lineTo(sx, sy + u*0.04); ctx.stroke();
+  }
+  shape(() => rrect(x + face*u*0.1 - u*0.14, torsoTop + u*0.78 + bob, u*0.28, u*0.16, 2), '#d8d2c0', 1.5);
+  ctx.fillStyle = OUT; ctx.font = `${Math.round(u*0.1)}px "Nanum Gothic Coding",monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('E-07', x + face*u*0.1, torsoTop + u*0.86 + bob);
+  ctx.textBaseline = 'alphabetic';
+
+  // 팔 넷 (위 2, 아래 2)
+  const shY = torsoTop + u*0.28 + bob, loY = torsoTop + u*0.75 + bob;
+  const arms = [
+    { sx: x - u*0.5, sy: shY, side:-1, upper:true },
+    { sx: x + u*0.5, sy: shY, side: 1, upper:true },
+    { sx: x - u*0.48, sy: loY, side:-1, upper:false },
+    { sx: x + u*0.48, sy: loY, side: 1, upper:false },
+  ];
+  const digging = k.kind === 'dig' && k.busy;
+  arms.forEach((a, i) => {
+    let hx, hy, cx, cy;
+    const sway = Math.sin(time*1.7 + i) * u*0.04;
+    if (med){
+      if (a.upper){ hx = x + a.side*u*0.08; hy = torsoTop + u*0.95 + bob; }
+      else { hx = x + a.side*u*0.75; hy = pelvisY - u*0.15; }
+      cx = a.sx + a.side*u*0.35; cy = (a.sy + hy)/2;
+    } else if (k.kind === 'fire' && k.busy){
+      hx = x + face*u*(a.upper ? 0.95 : 0.8) + sway; hy = a.sy + u*(a.upper ? 0.35 : 0.3);
+      cx = (a.sx + hx)/2; cy = a.sy + u*0.4;
+    } else if (digging && a.upper && a.side === face){
+      const sw = k.swing;
+      const ang = sw < 0.6 ? -2.4 + (sw/0.6)*0.4 : -2.0 + ((sw-0.6)/0.4)*2.4;
+      hx = a.sx + Math.cos(ang)*u*0.7*face; hy = a.sy + Math.sin(ang)*u*0.7;
+      cx = (a.sx + hx)/2 + face*u*0.1; cy = (a.sy + hy)/2;
+      a.pick = { hx, hy, ang };
+    } else {
+      hx = a.sx + a.side*u*(a.upper ? 0.25 : 0.3) + sway; hy = a.sy + u*(a.upper ? 0.85 : 0.6);
+      cx = a.sx + a.side*u*0.3; cy = (a.sy + hy)/2;
+    }
+    limb(a.sx, a.sy, cx, cy, hx, hy, u*0.13, a.upper ? skin : skinDark);
+    circle(hx, hy, u*0.1, a.upper ? skin : skinDark, 1.5);
+    if (a.pick){
+      const ang = face > 0 ? a.pick.ang : Math.PI - a.pick.ang;
+      emoji('⛏️', hx + Math.cos(ang)*u*0.25, hy + Math.sin(ang)*u*0.25, u*0.8, ang + Math.PI*0.75);
+    }
+  });
+
+  // 머리: 대머리 + 둥근 안경
+  const hx = x + face*u*0.05, hy = torsoTop - u*0.2 + bob, hr = u*0.3;
+  circle(hx, hy, hr, skin);
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.beginPath(); ctx.ellipse(hx - face*hr*0.3, hy - hr*0.6, hr*0.3, hr*0.12, -0.3*face, 0, Math.PI*2); ctx.fill();
+  const gx = hx + face*hr*0.25, gy = hy + hr*0.02, lr = hr*0.26;
+  if (med){
+    ctx.strokeStyle = OUT; ctx.lineWidth = 2;
+    [-1,1].forEach(d => { ctx.beginPath(); ctx.arc(gx + d*lr*1.15, gy + lr*0.1, lr*0.5, 0.15*Math.PI, 0.85*Math.PI); ctx.stroke(); });
+  } else {
+    ctx.fillStyle = OUT;
+    [-1,1].forEach(d => { ctx.beginPath(); ctx.arc(gx + d*lr*1.15, gy, lr*0.28, 0, Math.PI*2); ctx.fill(); });
+  }
+  ctx.strokeStyle = OUT; ctx.lineWidth = 2.5;
+  [-1,1].forEach(d => {
+    ctx.beginPath(); ctx.arc(gx + d*lr*1.15, gy, lr, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(190,225,255,.28)'; ctx.fill(); ctx.stroke();
+  });
+  ctx.beginPath(); ctx.moveTo(gx - lr*0.2, gy); ctx.lineTo(gx + lr*0.2, gy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(gx - face*lr*2.15, gy); ctx.lineTo(hx - face*hr*0.95, gy - hr*0.1); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.7)';
+  ctx.fillRect(gx - lr*1.5, gy - lr*0.55, lr*0.3, lr*0.18);
+  ctx.beginPath(); ctx.moveTo(hx + face*hr*0.05, hy + hr*0.55); ctx.lineTo(hx + face*hr*0.45, hy + hr*0.5); ctx.stroke();
+
+  if (digging || k.kind === 'dig') jobIcon('⛏️', hx, hy - hr - u*0.4);
+  if (med) jobIcon('🧘', hx, hy - hr - u*0.4);
+}
+
+function jobIcon(ch, x, y){
+  const r = T*0.2;
+  circle(x, y, r, 'rgba(23,18,26,.9)', 1.5);
+  emoji(ch, x, y + 1, r*1.3);
+}
+function shadowAt(x, y, r){
+  ctx.fillStyle = 'rgba(0,0,0,.38)';
+  ctx.beginPath(); ctx.ellipse(x, y, r, r*0.3, 0, 0, Math.PI*2); ctx.fill();
+}
+function labelUnder(p, text, color){
+  const q = P(p.x + 0.5, p.y + 0.5);
+  tag(text, q.x, q.y + T*0.3, color);
+}
+function tag(text, x, y, color){
+  ctx.font = `${Math.round(Math.max(11, T*0.18))}px "Nanum Gothic Coding",monospace`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(text).width + 8;
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.fillRect(x - w/2, y - T*0.12, w, T*0.24);
+  ctx.fillStyle = color; ctx.fillText(text, x, y);
+  ctx.textBaseline = 'alphabetic';
+}
+
+/* ---------- 림월드식 캐릭터 바 ---------- */
+const barEl = document.getElementById('bar');
+const barItems = {};
+function buildBar(){
+  barEl.innerHTML = '';
+  [['player', character.name], ['rebecca','레베카'], ['karius','카리우스'], ['goblin','청광묵']].forEach(([id, name]) => {
+    const d = document.createElement('div'); d.className = 'pi';
+    const c = document.createElement('canvas'); c.width = 80; c.height = 80;
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = name;
+    const jb = document.createElement('div'); jb.className = 'job';
+    d.append(c, nm, jb); barEl.appendChild(d);
+    barItems[id] = { el:d, job:jb };
+    drawPortrait(c, id);
+  });
+}
+function drawPortrait(c, id){
+  const g = c.getContext('2d');
+  g.clearRect(0,0,80,80);
+  // 같은 그리기 함수를 초상화용 캔버스로 재사용
+  withCtx(g, () => {
+    if (id === 'player'){
+      const r = RACES[character.race];
+      drawHumanoid({ x:40, y:120, u:95*r.scale, face:1, skin:r.skin, cloth:CLOTHS[character.cloth].c, bw:r.w, female:character.gender === 0, hair:HAIRS[character.hair ?? 0].c, race:r.id });
+    } else if (id === 'rebecca'){
+      circle(40, 44, 26, '#c9d0d8', 2.5);
+      shape(() => rrect(16, 38, 48, 12, 3), '#2a2230', 2);
+      for (let i = 0; i < 6; i++){ g.strokeStyle = i % 2 ? '#9e1731' : '#c2253f'; g.lineWidth = 5; g.beginPath(); g.moveTo(22 + i*7, 66); g.quadraticCurveTo(20 + i*8, 76, 18 + i*9, 80); g.stroke(); }
+    } else if (id === 'karius'){
+      circle(40, 50, 26, '#b9aeb9', 2.5);
+      g.strokeStyle = OUT; g.lineWidth = 2.5;
+      [-1,1].forEach(d => { g.beginPath(); g.arc(44 + d*10, 50, 8, 0, Math.PI*2); g.fillStyle = 'rgba(190,225,255,.35)'; g.fill(); g.stroke(); });
+      g.fillStyle = 'rgba(255,255,255,.45)'; g.beginPath(); g.ellipse(32, 32, 9, 4, -0.3, 0, Math.PI*2); g.fill();
+    } else {
+      circle(20, 30, 9, '#2c5a3c', 2);
+      circle(60, 30, 9, '#2c5a3c', 2);
+      [-1,1].forEach(d => shape(() => { g.moveTo(40 + d*16, 44); g.lineTo(40 + d*38, 34); g.lineTo(40 + d*17, 56); g.closePath(); }, '#78b84e', 2));
+      circle(40, 50, 22, '#78b84e', 2.5);
+      shape(() => { g.arc(40, 47, 23, Math.PI*1.05, Math.PI*1.95); g.closePath(); }, '#2c5a3c', 2);
+      g.fillStyle = OUT; g.beginPath(); g.arc(33, 53, 3, 0, 7); g.arc(47, 53, 3, 0, 7); g.fill();
+    }
+  });
+}
+function withCtx(g, fn){
+  const prev = ctx;
+  swapCtx(g); try { fn(); } finally { swapCtx(prev); }
+}
+function updateBar(near){
+  if (!barItems.player) return;
+  const lab = p => KIND_LABEL[p.kind] + (p.target ? ' (이동)' : '');
+  barItems.player.job.textContent = '자유 행동';
+  barItems.rebecca.job.textContent = '꿈틀거리는 중';
+  barItems.karius.job.textContent = lab(karius);
+  barItems.goblin.job.textContent = lab(goblin);
+  for (const id of ['rebecca','karius','goblin']) barItems[id].el.classList.toggle('near', !!near && near.id === id);
+}
+
+/* ---------- 루프 ---------- */
+let last = performance.now();
+function loop(now){
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (player && !gameEl.hidden){ update(dt); draw(); }
+  requestAnimationFrame(loop);
+}
+
+function boot(data){
+  if (data && data.character) startGame(data.character);
+  else beginCreator(true);
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
