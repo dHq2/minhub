@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.8
+  version v2.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -283,7 +283,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.8';
+const VERSION = 'v2.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3690,7 +3690,7 @@ const SKILLS = {
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'0.8초 웅크렸다가 5칸을 일직선으로 날아찬다 (5~7초마다).\n경로 위: 40 피해 + 밀려남 + 경직, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통)\n옆으로 비키면 회피, 방어는 방어 기술의 절반 확률로만 막힌다.' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
-    desc:'맵 끝에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n작은 쥐: 3초마다 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐: 13초마다 (🫀40 ⚔7)\n20초마다 예고 없이 사람만 한 쥐 (🫀200 ⚔14, 무거움)\n  └ 그 자리에 15% 확률로 쥐 기사 (🫀90 ⚔13, 창과 방패, 돌격)' },
+    desc:'아군 진형 안에서 쥐가 끊임없이 튀어나와 포렌의 편에 선다 (최대 24마리).\n작은 쥐: 3초마다 (🫀15 ⚔3, 빠르고 잘 피함)\n쥐: 13초마다 (🫀40 ⚔7)\n20초마다 예고 없이 사람만 한 쥐 (🫀200 ⚔14, 무거움)\n  └ 그 자리에 15% 확률로 쥐 기사 (🫀90 ⚔13, 창과 방패, 돌격)' },
   ratking:   { name:'쥐들의 대왕', kind:'패시브', icon:'👑',
     desc:'도발: 3칸 안의 적은 포렌을 먼저 노린다 (보스 제외).\n대검 베기: 옆에 있는 적 하나까지 60% 피해.' },
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
@@ -3825,11 +3825,17 @@ function summonRat(owner, id = rollRat()){
   const b = battle;
   const mine = b.units.filter(o => o.summoner === owner && !o.dead).length;
   if (mine >= LOYALTY_MAX) return null;
-  const col = owner.x < BATTLE_COLS / 2 ? 0 : BATTLE_COLS - 1;
-  const row = Math.floor(Math.random() * ROWS);
+  // 아군 진형 안에서 튀어나옴: 앞 방향 = 적 무리 쪽, 무작위 아군 곁 조금 뒤에서
+  const friends = b.units.filter(o => !o.dead && o.side === owner.side && !o.summoner);
+  const foes = b.units.filter(o => !o.dead && o.side !== owner.side);
+  const avg = (arr, k) => arr.reduce((a, o) => a + o[k], 0) / arr.length;
+  const fwd = foes.length ? (avg(foes, 'x') >= avg(friends.length ? friends : [owner], 'x') ? 1 : -1) : (owner.face || 1);
+  const anchor = friends.length ? friends[Math.floor(Math.random() * friends.length)] : owner;
+  const col = Math.max(0, Math.min(BATTLE_COLS - 1, anchor.x - fwd * (0.3 + Math.random() * 0.8)));
+  const row = Math.max(0, Math.min(ROWS - 1, anchor.y + (Math.random() - 0.5) * 2));
   const r = spawnUnit(id, col, row);
-  r.side = owner.side; r.summoner = owner; r.face = col === 0 ? 1 : -1;
-  r.kbx = r.face * (3 + Math.random() * 3);          // 맵 끝에서 튀어나오듯
+  r.side = owner.side; r.summoner = owner; r.face = fwd;
+  r.kbx = fwd * (2 + Math.random() * 2);             // 진형 안에서 앞으로 튀어나오듯
   const big = id === 'ratL' || id === 'ratKnight';
   const q = P(col + 0.5, row + 0.5);
   for (let i = 0; i < (big ? 22 : 8); i++) sparks.push({ x: q.x + camX, y: q.y - T * 0.2, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 220, life: 0.45, c: i % 2 ? '#9dff7a' : '#2b5a2b' });
