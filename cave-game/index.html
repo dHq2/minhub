@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v3.7
+  version v3.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v3.7';
+const VERSION = 'v3.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2642,7 +2642,7 @@ function decide(u, dist){
     shout(u, Math.random() < 0.5 ? '이야아아아!!' : '으아아아!');
     return;
   }
-  if (!w.kite && !w.keep && !w.snipe){
+  if (!w.kite && !w.keep && !w.snipe && !u.st.berserk){
     if (adv >= ADV_WIN){        // 우세: 물러나지 않고 밀어붙여 포위
       w.retreat = 0; w.hitrun = (w.hitrun || 0) * 0.25; w.guard = (w.guard || 0) * 0.5; w.strafe = (w.strafe || 0) * 0.5;
       w.approach = (w.approach || 0) + 4; w.hold = (w.hold || 0) + 2;
@@ -2667,7 +2667,7 @@ function decide(u, dist){
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 function reactTo(d, a){
-  if (d.dead || d.stun > 0 || d.windup > 0 || d.manual) return;
+  if (d.dead || d.stun > 0 || d.windup > 0 || d.manual || d.st.berserk) return;   // 쥐 떼는 막지 않음
   if (Math.random() >= d.st.react) return;
   if ((STYLES[d.id] || {}).dodge){ d.state = 'retreat'; d.stateT = 0.45; d.running = true; }
   else { d.state = 'guard'; d.stateT = a.windup + 0.35; d.guardT = d.stateT; }
@@ -3158,7 +3158,7 @@ function updateBattle(dt){
           else if (dist > u.st.range * 0.95){ dir = to; u.running = false; }
           else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.45, y: to.x * u.strafeDir * 0.45 }; }
         }
-        const dd = dangerDir(u);
+        const dd = u.st.berserk ? null : dangerDir(u);   // 쥐 떼는 낙뢰 표시도 무시하고 달려듦
         if (dd){ dir = dd; u.running = true; }
         if (u.running) speed *= RUN_MUL;
         if (dir){
@@ -3875,14 +3875,14 @@ function renderSkills(body, ids){
    ========================================================= */
 Object.assign(HEROES, {
   ratS: { name:'작은 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 작은 쥐',
-    hp:15, atk:3, def:0, block:0, crit:0.05, eva:0.30, spd:3.8, range:0.9, cd:0.7, windup:0.15, hits:1, weight:3, react:0.2,
-    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+    hp:15, atk:3, def:0, block:0, crit:0.05, eva:0.30, spd:3.8, range:0.9, cd:0.7, windup:0.15, hits:1, weight:3, react:0,
+    summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratM: { name:'쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 쥐',
-    hp:40, atk:7, def:1, block:0.05, crit:0.05, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0.2,
-    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+    hp:40, atk:7, def:1, block:0, crit:0.05, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0,
+    summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratL: { name:'큰 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 사람만 한 쥐',
-    hp:200, atk:14, def:4, block:0.10, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0.2,
-    summon:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
+    hp:200, atk:14, def:4, block:0, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0,
+    summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratKnight: { name:'쥐 기사', grade:'', color:'#9fe0b0', sub:'충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사',
     hp:90, atk:13, def:10, block:0.40, crit:0.08, eva:0.08, spd:3.0, range:1.7, cd:1.1, windup:0.35, hits:1, weight:40, react:0.6,
     charger:true, chargeAtk:16, chargeStun:0.8,
@@ -3890,8 +3890,9 @@ Object.assign(HEROES, {
     equip:{ 무기:'🔱 창', 머리:'—', 몸:'판금 흉갑', 장신구:'🛡 방패' } },
 });
 Object.assign(STYLES, {
-  ratS: { approach:4, hitrun:3, strafe:2 },
-  ratM: { approach:4, hitrun:2, strafe:2 },
+  // 쥐 떼는 방어도 후퇴도 없이 무조건 공격 (방어는 쥐 기사만)
+  ratS: { approach:5, strafe:1 },
+  ratM: { approach:5, strafe:1 },
   ratL: { approach:4, hold:3 },
   ratKnight: { keep:4, guard:4, hold:1, strafe:1 },
 });
