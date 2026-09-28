@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.2
+  version v8.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.2';
+const VERSION = 'v8.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2106,9 +2106,10 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
-    hp:1500, atk:25, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:2000, react:0.1,   // 대리석 몸, 몇 톤
+    hp:1500, atk:40, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:1.0, hits:1, weight:2000, react:0.1,   // 대리석 몸, 몇 톤
+    splash:0.5, splashR:1.2, quake:true,   // 대리석 주먹 내리찍기: 크게 치켜들었다가 (1초) 내리찍고, 주변 1.2칸에 땅울림 (절반 피해)
     boss:true, thunderAtk:90, thunderRest:6, residualAtk:20, kickAtk:40, shield:'🗿 대리석 피부 (특성)',
-    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 가장 질긴 자 또는 가장 강한 자에게 붉은 낙뢰. 직격 90 (치명타 5%: 270) + 큰 경직 + 감전 (10씩 5턴), 인근 8칸 + 십자 4칸 방사 20 + 잔류 (5씩 5턴). 감전 · 잔류는 겹치면 중첩. 물 바닥이면 범위 안 전원, 비 오는 필드면 맵 전체 (피아 구분 없음). 떨어진 뒤 6초는 숨을 고른다.\n⛈️ 번개비 — 적뢰 2~4개씩 3번 쏟아짐 (대기 20초).\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 막지 않으면 확정 치명타 120, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
+    tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 가장 질긴 자 또는 가장 강한 자에게 붉은 낙뢰. 직격 90 (치명타 5%: 270) + 큰 경직 + 감전 (10씩 5턴), 인근 8칸 + 십자 4칸 방사 20 + 잔류 (5씩 5턴). 감전 · 잔류는 겹치면 중첩. 물 바닥이면 범위 안 전원, 비 오는 필드면 맵 전체 (피아 구분 없음). 떨어진 뒤 6초는 숨을 고른다.\n🗿 대리석 주먹 — 1초 동안 크게 치켜들었다가 내리찍는다 (40). 주변 1.2칸에 땅울림 (절반 피해). 몇 톤짜리 몸이라 맞으면 대부분 밀려나고 휘청인다.\n⛈️ 번개비 — 적뢰 2~4개씩 3번 쏟아짐 (대기 20초).\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 막지 않으면 확정 치명타 120, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
     equip:{ 무기:'⚡ 붉은 낙뢰', 머리:'피 흐르는 광륜', 몸:'🌟 붉은 성해포', 장신구:'—' } },
   goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
     hp:70, atk:12, def:2, block:0.13, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
@@ -3039,9 +3040,15 @@ function releaseAttack(u){
       Math.hypot(r.x - u.x, r.y - u.y) < Math.hypot(d.x - u.x, d.y - u.y) && Math.hypot(r.x - d.x, r.y - d.y) < 1.4);
     if (wr){ fxText(wr, '대신 막음!', '#9dff7a'); logLine(`🐀 ${wr.name}이(가) ${d.name} 대신 맞음`, 'guard'); d = wr; }
     resolveHit(u, d);
+    if (u.st.quake){                                              // 땅울림: 내리찍은 자리에서 퍼지는 충격파 + 흙먼지
+      const q = P(d.x + 0.5, d.y + 0.5);
+      ringAt(d, '200,180,160'); shake = Math.max(shake, 0.35); battle.hitstop = Math.max(battle.hitstop, 0.08);
+      battle.fx.push({ type: 'quake', x: d.x, y: d.y, r: u.st.splashR || 1, life: 0.5, max: 0.5 });
+      for (let i = 0; i < 10; i++){ const a = i / 10 * Math.PI * 2; battle.fx.push({ type: 'dust', wx: q.x + camX + Math.cos(a) * T * 0.8, y: q.y + Math.sin(a) * rowH * 0.5, s: 0.9 + Math.random() * 0.6, life: 0.7, max: 0.7 }); }
+    }
     if (u.st.splash || u.st.cleave){
       const extra = battle.units.filter(o => o !== d && !o.dead && o.side !== u.side &&
-        (u.st.splash ? Math.hypot(o.x - d.x, o.y - d.y) < 1.0 : Math.hypot(o.x - u.x, o.y - u.y) <= u.st.range + 0.3))
+        (u.st.splash ? Math.hypot(o.x - d.x, o.y - d.y) < (u.st.splashR || 1.0) : Math.hypot(o.x - u.x, o.y - u.y) <= u.st.range + 0.3))
         .slice(0, u.st.cleave ? 1 : 3);
       extra.forEach(o => resolveHit(u, o, { atk: Math.round(u.st.atk * (u.st.splash || u.st.cleave)) }));
     }
@@ -3925,6 +3932,12 @@ function drawBattle(){
       for (let i = 0; i < 2; i++){
         ctx.beginPath(); ctx.arc(cx, cy, w * (0.8 + i * 0.35 + (1 - k) * 0.6), -1.1 + (f.u.face < 0 ? Math.PI : 0), 1.1 + (f.u.face < 0 ? Math.PI : 0)); ctx.stroke();
       }
+    } else if (f.type === 'quake'){
+      const q = P(f.x + 0.5, f.y + 0.5), e = 1 - k, rx = T * f.r * (0.4 + e * 0.8), ry = rowH * f.r * (0.4 + e * 0.8);
+      ctx.strokeStyle = `rgba(220,200,180,${0.8 * k})`; ctx.lineWidth = 3 + 4 * k;
+      ctx.beginPath(); ctx.ellipse(q.x, q.y, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = `rgba(60,40,30,${0.7 * k})`; ctx.lineWidth = 2;               // 바닥 금
+      for (let i = 0; i < 6; i++){ const a = i / 6 * Math.PI * 2 + f.x; ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(q.x + Math.cos(a) * rx * 0.8, q.y + Math.sin(a) * ry * 0.8); ctx.stroke(); }
     } else if (f.type === 'smoke'){
       const age = f.max - f.life; if (age < f.delay) continue;
       const k2 = f.life / f.max, q = P(f.x + 0.5 + f.vx * age, f.y + 0.5);
