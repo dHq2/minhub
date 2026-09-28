@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v1.8
+  version v1.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -231,7 +231,7 @@
       <div class="bt-sec">도구</div>
       <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
       <div class="bt-hint">빈 바닥 좌클릭: 고른 유닛 소환 · 폰 좌클릭: 복사 · 폰 우클릭: 삭제 · 폰 드래그: 칸 이동 (커서를 올리면 외곽선이 금색으로)<br>
-        방향키 주인공 직접 이동 · Shift 달리기 · X 누르고 있기 방어 · Z 회피 스텝<br>
+        방향키 주인공 직접 이동 · Shift 달리기 · X 누르고 있기 방어 (이동 30% 느려짐) · Z 회피 스텝 (방어를 풀어야 가능)<br>
         적 머리 위 "!" 뜨고 맞기 직전에 X: 저스트 방어 (3% 튕겨냄) · Z: 저스트 회피 (3% 역전의 기회) → 둘 다 확정 치명타 반격</div>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
@@ -253,7 +253,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v1.8';
+const VERSION = 'v1.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1087,22 +1087,22 @@ function drawPlayerFigure(o){
   shadowAt(p.x, p.y, u*0.3);
   drawHumanoid({
     x: p.x, y: p.y - walkBob(o), u, face: o.face, skin: race.skin, cloth: CLOTHS[character.cloth].c, bw: race.w,
-    female: character.gender === 0, hair: HAIRS[character.hair ?? 0].c, race: race.id, tool: JOBS[character.job].weapon.icon,
+    female: character.gender === 0, hair: HAIRS[character.hair ?? 0].c, race: race.id, weapon: WEAPON_OF[JOBS[character.job].id], pose: o,
   });
 }
 /* ---------- 레베카 (합류 후): 루비색 장발, 판금 갑옷, 장검 ---------- */
-const REBECCA_LOOK = { skin:'#f3d5c0', cloth:'#c3cad3', bw:1.0, female:true, longHair:true, hair:'#c2253f', race:'human', tool:'🗡️', armor:true };
+const REBECCA_LOOK = { skin:'#f3d5c0', cloth:'#c3cad3', bw:1.0, female:true, longHair:true, hair:'#c2253f', race:'human', weapon:'longsword', wstyle:{ blade:'#eef2f6', guard:'#9e1731' }, armor:true };
 function drawRebeccaFigure(o){
   const p = P(o.x + 0.5, o.y + 0.5);
   const u = T * depthScale(o.y) * 0.95;
   shadowAt(p.x, p.y, u*0.3);
   if (o.kind === 'lying' && o.busy !== false){
     ctx.save(); ctx.translate(p.x, p.y - u*0.12); ctx.rotate(-Math.PI/2);
-    drawHumanoid({ ...REBECCA_LOOK, x: 0, y: u*0.35, u, face: 1, tool: null });
+    drawHumanoid({ ...REBECCA_LOOK, x: 0, y: u*0.35, u, face: 1, weapon: null });
     ctx.restore();
     return;
   }
-  drawHumanoid({ ...REBECCA_LOOK, x: p.x, y: p.y - walkBob(o), u, face: o.face });
+  drawHumanoid({ ...REBECCA_LOOK, x: p.x, y: p.y - walkBob(o), u, face: o.face, pose: o });
 }
 function drawGoblinArcher(o){
   const p = P(o.x + 0.5, o.y + 0.5);
@@ -1121,10 +1121,7 @@ function drawGoblinArcher(o){
   shape(() => { ctx.arc(hx, hy - hr*0.05, hr*1.12, Math.PI*1.0, Math.PI*2.0); ctx.lineTo(hx + hr*0.9, hy - hr*0.1); ctx.lineTo(hx - hr*0.9, hy - hr*0.1); ctx.closePath(); }, '#2f4a24');
   // 가까이 붙었으면 단검
   if (o.stab && (o.windup > 0 || o.lunge > 0) || o.closeIn){
-    const k = o.windup > 0 ? 1 - o.windup / (o.windupMax || 0.28) : 0;
-    const hx2 = x + o.face*u*(0.3 - k*0.12), hy2 = y - u*0.34;
-    circle(hx2, hy2, u*0.06, '#6f9e3f', 1.2);
-    emoji('🔪', hx2 + o.face*u*0.14, hy2 - u*0.05, u*0.42, o.face*(0.5 - k*0.9));
+    drawArmWeapon(o, x + o.face*u*0.14, y - u*0.46, u, o.face, '#6f9e3f', 'dagger', { blade:'#a38b6d', guard:'#5a4a3a' });
     // 활은 등에
     ctx.strokeStyle = '#8a5a2e'; ctx.lineWidth = Math.max(2, u*0.04);
     ctx.beginPath(); ctx.arc(x - o.face*u*0.12, y - u*0.42, u*0.26, -1.3, 1.3); ctx.stroke();
@@ -1150,7 +1147,63 @@ function drawEnemyGoblin(o){
   const p = P(o.x + 0.5, o.y + 0.5);
   const u = T * depthScale(o.y) * 0.8;
   shadowAt(p.x, p.y, u*0.3);
-  drawHumanoid({ x: p.x, y: p.y - walkBob(o), u, face: o.face, skin:'#6f9e3f', cloth:'#5b4630', bw:1.1, female:false, race:'goblin', tool:'🔪', eye:'#e2443a' });
+  drawHumanoid({ x: p.x, y: p.y - walkBob(o), u, face: o.face, skin:'#6f9e3f', cloth:'#5b4630', bw:1.1, female:false, race:'goblin', eye:'#e2443a',
+    weapon:'dagger', wstyle:{ blade:'#a38b6d', guard:'#5a4a3a' }, pose: o });
+}
+
+/* ---------- 무기와 팔 동작: 준비(뒤로 들어올림) → 휘두르기(베기 궤적) / 방어(앞으로 세움) ---------- */
+const WEAPON_OF = { knight:'sword', miner:'pickaxe', mage:'staff', rogue:'dagger' };
+const WEAPON_LEN = { sword:0.55, longsword:0.66, dagger:0.3, pickaxe:0.5, staff:0.66 };
+const easeOut = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
+function atkPose(o){
+  if (!o) return { phase:'rest', k:0 };
+  if (o.windup > 0) return { phase:'windup', k: 1 - o.windup / (o.windupMax || (o.st && o.st.windup) || 0.3) };
+  if (o.lunge > 0) return { phase:'swing', k: 1 - o.lunge / 0.25 };
+  if (o.guarding) return { phase:'guard', k:1 };
+  return { phase:'rest', k:0 };
+}
+function drawWeapon(kind, x, y, a, u, st = {}){
+  const L = u * (WEAPON_LEN[kind] || 0.5);
+  ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+  if (kind === 'sword' || kind === 'longsword' || kind === 'dagger'){
+    shape(() => rrect(-u*0.09, -u*0.025, u*0.11, u*0.05, u*0.01), '#5a3a22', 1.2);
+    shape(() => rrect(u*0.015, -u*0.085, u*0.035, u*0.17, u*0.01), st.guard || '#b89a4a', 1.2);
+    shape(() => { ctx.moveTo(u*0.05, -u*0.032); ctx.lineTo(L - u*0.07, -u*0.032); ctx.lineTo(L, 0); ctx.lineTo(L - u*0.07, u*0.032); ctx.lineTo(u*0.05, u*0.032); ctx.closePath(); }, st.blade || '#dfe4ea', 1.4);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(u*0.07, -u*0.012, L - u*0.16, u*0.01);
+  } else if (kind === 'pickaxe'){
+    shape(() => rrect(-u*0.05, -u*0.022, L + u*0.05, u*0.044, u*0.01), '#6b4326', 1.2);
+    shape(() => { ctx.moveTo(L - u*0.02, -u*0.24); ctx.quadraticCurveTo(L + u*0.1, 0, L - u*0.02, u*0.24); ctx.lineTo(L - u*0.06, u*0.2); ctx.quadraticCurveTo(L + u*0.03, 0, L - u*0.06, -u*0.2); ctx.closePath(); }, '#8d949c', 1.4);
+  } else if (kind === 'staff'){
+    shape(() => rrect(-u*0.08, -u*0.02, L + u*0.08, u*0.04, u*0.01), '#7a5634', 1.2);
+    ctx.shadowColor = '#b48cff'; ctx.shadowBlur = 10;
+    circle(L + u*0.05, 0, u*0.065, '#b48cff', 1.2);
+    ctx.shadowBlur = 0;
+  }
+  ctx.restore();
+}
+// 어깨(sx, sy)를 축으로 팔과 무기를 그림. face 방향으로 좌우 반전.
+function drawArmWeapon(o, sx, sy, u, face, skin, kind, st){
+  const pose = atkPose(o);
+  const REST = 0.8, UP = -2.35, END = 1.2, GUARD = -0.25;
+  let a = REST + Math.sin(time * 2 + (o && o.x || 0)) * 0.05, wa = -0.25, trail = null;   // 평소: 팔은 아래, 무기는 앞으로
+  if (pose.phase === 'windup'){ a = REST + (UP - REST) * easeOut(pose.k); wa = null; }
+  else if (pose.phase === 'swing'){ a = UP + (END - UP) * easeOut(pose.k * 1.6); trail = pose.k; wa = null; }
+  else if (pose.phase === 'guard'){ a = GUARD; wa = -1.5; }
+  const r = u * 0.3;
+  ctx.save(); ctx.translate(sx, sy); ctx.scale(face, 1);
+  const hx = Math.cos(a) * r, hy = Math.sin(a) * r;
+  if (trail !== null && trail < 0.8){
+    const Lw = r + u * (WEAPON_LEN[kind] || 0.5) * 0.9;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = `rgba(255,255,255,${0.6 * (1 - trail / 0.8)})`; ctx.lineWidth = u * 0.14;
+    ctx.beginPath(); ctx.arc(0, 0, Lw, Math.max(UP, a - 2.4), a); ctx.stroke();
+    ctx.strokeStyle = `rgba(255,240,200,${0.35 * (1 - trail / 0.8)})`; ctx.lineWidth = u * 0.05;
+    ctx.beginPath(); ctx.arc(0, 0, Lw * 1.08, Math.max(UP, a - 2.0), a); ctx.stroke();
+  }
+  limb(0, 0, hx * 0.5, hy * 0.5 + u * 0.03, hx, hy, u * 0.07, skin);
+  if (kind) drawWeapon(kind, hx, hy, wa ?? a, u, st || {});
+  circle(hx, hy, u * 0.065, skin, 1.5);
+  ctx.restore();
 }
 
 function drawHumanoid(o){
@@ -1170,9 +1223,11 @@ function drawHumanoid(o){
     circle(x - bw*0.46, y - u*0.5, u*0.1, '#e1e6ec', 1.5);
     circle(x + bw*0.46, y - u*0.5, u*0.1, '#e1e6ec', 1.5);
   }
-  // 손
-  circle(x + face*bw*0.55, y - u*0.28, u*0.07, o.skin, 1.5);
-  if (o.tool) emoji(o.tool, x + face*bw*0.75, y - u*0.42, u*0.34, face*0.4);
+  // 손 (무기 동작이 있는 폰은 머리 뒤에 따로 그림)
+  if (!o.weapon){
+    circle(x + face*bw*0.55, y - u*0.28, u*0.07, o.skin, 1.5);
+    if (o.tool) emoji(o.tool, x + face*bw*0.75, y - u*0.42, u*0.34, face*0.4);
+  }
   const hx = x + face*u*0.02, hy = y - u*0.8, hr = u*0.21;
   // 뒷머리 (단발)
   if (o.female && !o.longHair) shape(() => rrect(hx - hr*1.14, hy - hr*1.12, hr*2.28, hr*1.78, [hr, hr, hr*0.2, hr*0.2]), o.hair);
@@ -1196,6 +1251,7 @@ function drawHumanoid(o){
   ctx.fillStyle = o.eye || OUT;
   ctx.beginPath(); ctx.arc(hx + face*hr*0.15 - hr*0.28, hy + hr*0.05, hr*0.1, 0, Math.PI*2); ctx.fill();
   ctx.beginPath(); ctx.arc(hx + face*hr*0.15 + hr*0.28, hy + hr*0.05, hr*0.1, 0, Math.PI*2); ctx.fill();
+  if (o.weapon) drawArmWeapon(o.pose, x + face*bw*0.28, y - u*0.46, u, face, o.skin, o.weapon, o.wstyle);
 }
 
 /* ---------- 청광묵: 작은 고블린 소녀 ---------- */
@@ -1228,7 +1284,7 @@ function drawGoblin(g){
     emoji('⛏️', hx + Math.cos(ang)*u*0.15, hy + Math.sin(ang)*u*0.15, u*0.55, ang + Math.PI*0.75);
   } else {
     circle(x + face*u*(sitting ? 0.3 : 0.22), y - u*(sitting ? 0.38 : 0.3), u*0.07, skin, 1.5);
-    if (g.weapon) emoji(g.weapon, x + face*u*0.34, y - u*0.44, u*0.42, face*0.4);
+    if (g.weapon) drawArmWeapon(g, x + face*u*0.14, y - u*0.46, u, face, skin, 'dagger', { blade:'#2a2530', guard:'#6b5a8a' });
   }
   // 머리 + 큰 귀
   const hx = x + face*u*0.03, hy = y - u*0.82, hr = u*0.24;
@@ -1302,6 +1358,7 @@ function drawKarius(k){
     { sx: x + u*0.48, sy: loY, side: 1, upper:false },
   ];
   const digging = k.kind === 'dig' && k.busy;
+  const ap = atkPose(k);
   arms.forEach((a, i) => {
     let hx, hy, cx, cy;
     const sway = Math.sin(time*1.7 + i) * u*0.04;
@@ -1318,12 +1375,23 @@ function drawKarius(k){
       hx = a.sx + Math.cos(ang)*u*0.7*face; hy = a.sy + Math.sin(ang)*u*0.7;
       cx = (a.sx + hx)/2 + face*u*0.1; cy = (a.sy + hy)/2;
       a.pick = { hx, hy, ang };
+    } else if (ap.phase !== 'rest' && (a.upper || ap.phase === 'guard')){
+      const striker = k.altArm ? -face : face;
+      if (ap.phase === 'guard'){ hx = x + face*u*(a.upper ? 0.5 : 0.62); hy = a.sy + u*(a.upper ? 0.35 : 0.05); }
+      else if (ap.phase === 'windup'){ const e = easeOut(ap.k); hx = a.sx - face*u*0.35*e + a.side*u*0.05; hy = a.sy - u*0.55*e + u*0.12; }
+      else if (a.side === striker){ const e = easeOut(ap.k * 1.7); hx = a.sx + face*u*(0.2 + 0.95*e); hy = a.sy + u*(0.22 - 0.1*e); a.punch = ap.k; }
+      else { hx = a.sx - face*u*0.2; hy = a.sy - u*0.15; }
+      cx = (a.sx + hx)/2; cy = (a.sy + hy)/2 + u*0.1;
     } else {
       hx = a.sx + a.side*u*(a.upper ? 0.25 : 0.3) + sway; hy = a.sy + u*(a.upper ? 0.85 : 0.6);
       cx = a.sx + a.side*u*0.3; cy = (a.sy + hy)/2;
     }
     limb(a.sx, a.sy, cx, cy, hx, hy, u*0.13, a.upper ? skin : skinDark);
     circle(hx, hy, u*0.1, a.upper ? skin : skinDark, 1.5);
+    if (a.punch !== undefined && a.punch < 0.8){
+      ctx.strokeStyle = `rgba(255,255,255,${0.7 * (1 - a.punch / 0.8)})`; ctx.lineWidth = 2;
+      for (let j = -1; j <= 1; j++){ ctx.beginPath(); ctx.moveTo(hx - face*u*0.2, hy + j*u*0.09); ctx.lineTo(hx - face*u*0.75, hy + j*u*0.09); ctx.stroke(); }
+    }
     if (a.pick){
       const ang = face > 0 ? a.pick.ang : Math.PI - a.pick.ang;
       emoji('⛏️', hx + Math.cos(ang)*u*0.25, hy + Math.sin(ang)*u*0.25, u*0.8, ang + Math.PI*0.75);
@@ -1406,7 +1474,7 @@ function drawPortrait(c, id){
       const r = RACES[character.race];
       drawHumanoid({ x:40, y:120, u:95*r.scale, face:1, skin:r.skin, cloth:CLOTHS[character.cloth].c, bw:r.w, female:character.gender === 0, hair:HAIRS[character.hair ?? 0].c, race:r.id });
     } else if (id === 'rebecca'){
-      drawHumanoid({ ...REBECCA_LOOK, x:40, y:120, u:95, face:1, tool:null });
+      drawHumanoid({ ...REBECCA_LOOK, x:40, y:120, u:95, face:1, weapon:null });
     } else if (id === 'goblinArcher'){
       drawHumanoid({ x:40, y:118, u:88, face:1, skin:'#6f9e3f', cloth:'#3f5a2c', bw:1.0, female:false, race:'goblin', eye:'#e2443a' });
       shape(() => { ctx.arc(41, 47, 21, Math.PI, Math.PI*2); ctx.lineTo(58, 49); ctx.lineTo(24, 49); ctx.closePath(); }, '#2f4a24');
@@ -2116,7 +2184,7 @@ function enterBattle(){
   document.body.classList.add('battle');
   floaters = []; sparks = []; held.clear();
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
-  battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [],
+  battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, stars: [], parryTest: document.getElementById('bt-parry').checked };
   buildBtTools();
   defaultSetup();
@@ -2164,7 +2232,7 @@ function spawnUnit(id, x, y){
     state: 'approach', stateT: Math.random() * 0.6, running: false, strafeDir: 1,
     windup: 0, atkTarget: null, guarding: false, guardT: 0, stun: 0, kbx: 0, kby: 0, bleed: null, manual: false,
     slotFor: null, slotA: 0, slotT: 0, flankT: 0, flankOff: 0, noHitT: 0, regenAcc: 0,
-    dodgeT: 0, dodgeCd: 0, guardFlash: 0, ghostClock: 0 };
+    dodgeT: 0, dodgeCd: 0, guardFlash: 0, ghostClock: 0, altArm: false, windupMax: 0 };
   const n = battle.units.filter(o => o.id === id).length;
   if (st.side === 'enemy') u.name = `${st.name} ${n + 1}`;
   else if (n) u.name = `${st.name} ${n + 1}`;
@@ -2210,6 +2278,7 @@ function pressDodge(){
   if (mode !== 'battle' || !battle) return;
   const u = battle.units.find(o => o.id === 'player' && !o.dead);
   if (!u || u.stun > 0 || u.dodgeCd > 0) return;
+  if (u.guarding || held.has('guard')){ fxText(u, '방어 중', '#9fd3ff'); return; }   // 방어를 풀어야 회피 가능
   battle.dodgePressAt = battle.clock;
   if (u.windup > 0){ u.windup = 0; u.atkTarget = null; }
   let dir = moveInput();
@@ -2373,8 +2442,23 @@ function slotPoint(u, tgt){
 }
 
 /* ---------- 움직임 결정 (성향표에서 뽑기) ---------- */
+// 전력 = 살아 있는 폰의 체력 + 공격력×8. 우리 전력 ÷ 상대 전력 = 우세 비율
+function sideStrength(side){ return battle.units.reduce((s, o) => s + (o.side === side && !o.dead ? o.hp + o.st.atk * 8 : 0), 0); }
+const ADV_WIN = 1.25, ADV_LOSE = 0.8;
 function decide(u, dist){
-  const w = STYLES[u.id] || STYLES.enemyGoblin;
+  const base = STYLES[u.id] || STYLES.enemyGoblin;
+  const adv = (battle.adv && battle.adv[u.side]) || 1;
+  const w = { ...base };
+  if (!w.kite){
+    if (adv >= ADV_WIN){        // 우세: 물러나지 않고 밀어붙여 포위
+      w.retreat = 0; w.hitrun = (w.hitrun || 0) * 0.25; w.guard = (w.guard || 0) * 0.5; w.strafe = (w.strafe || 0) * 0.5;
+      w.approach = (w.approach || 0) + 4; w.hold = (w.hold || 0) + 2;
+    } else if (adv <= ADV_LOSE){ // 열세: 방어와 후퇴가 늘어남
+      w.retreat = (w.retreat || 0) + 1; w.guard = (w.guard || 0) + 1.5;
+    } else {                     // 비등: 기본은 포위
+      w.approach = (w.approach || 0) + 2; w.retreat = (w.retreat || 0) * 0.5;
+    }
+  }
   if (dist > u.st.range + 2.5){ u.state = 'approach'; u.stateT = 0.8; u.running = Math.random() < 0.5; return; }
   const opts = Object.entries(w).filter(([, v]) => typeof v === 'number' && v > 0);
   let r = Math.random() * opts.reduce((a, [, v]) => a + v, 0), pick = opts[0][0];
@@ -2458,10 +2542,11 @@ function releaseAttack(u){
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
   } else {
     resolveHit(u, d);
-    for (let k = 1; k < u.st.hits; k++) battle.pending.push({ t: k * 0.18, a: u, d });
+    u.altArm = false;
+    for (let k = 1; k < u.st.hits; k++) battle.pending.push({ t: k * 0.18, a: u, d, opts: { swing: true } });
     if (u.st.ranged) battle.fx.push({ type: 'bolt', a: u, d, life: 0.22, max: 0.22 });
   }
-  if (u.state === 'hitrun'){ u.state = 'retreat'; u.stateT = 0.5 + Math.random() * 0.5; u.running = true; }
+  if (u.state === 'hitrun' && (battle.adv[u.side] || 1) < ADV_WIN){ u.state = 'retreat'; u.stateT = 0.5 + Math.random() * 0.5; u.running = true; }
 }
 function guardFx(d, a, opts = {}){
   const b = battle;
@@ -2521,6 +2606,7 @@ function resolveHit(a, d, opts = {}){
   if (d.dead || (a.dead && !opts.ranged)) return;
   const b = battle;
   if (opts.counter){ if (!opts.ranged) a.lunge = 0.25; fxText(a, '반격!', '#ffe27a', 'big', 0.6); }
+  if (opts.swing){ a.lunge = 0.25; a.altArm = !a.altArm; }
   // 저스트 방어 (주인공이 맞기 직전에 방어를 눌렀을 때)
   if (d.id === 'player' && !opts.counter){
     const since = b.clock - b.guardPressAt;
@@ -2627,6 +2713,8 @@ function updateBattle(dt){
   b.stars = b.stars.filter(st => st.life > 0);
   if (caption){ caption.life -= dt; if (caption.life <= 0) caption = null; }
 
+  const sA = sideStrength('ally'), sE = sideStrength('enemy');
+  b.adv = { ally: sA / Math.max(1, sE), enemy: sE / Math.max(1, sA) };
   const free = !anyPanel();
   const input = free ? moveInput() : null;
   const guardHeld = free && held.has('guard'), runHeld = held.has('run');
@@ -2702,6 +2790,10 @@ function updateBattle(dt){
           if (dist > reach || u.flankT > 0){
             const sp = slotPoint(u, tgt);
             if (Math.hypot(sp.x - u.x, sp.y - u.y) > 0.12) dir = norm(sp.x - u.x, sp.y - u.y);
+          } else if (u.cd > 0.35){
+            // 사거리 안이지만 공격 사이라면 비어 있는 포위 자리로 조금씩 돌아 들어감
+            const sp = slotPoint(u, tgt);
+            if (Math.hypot(sp.x - u.x, sp.y - u.y) > 0.45) dir = (d => ({ x: d.x * 0.6, y: d.y * 0.6 }))(norm(sp.x - u.x, sp.y - u.y));
           }
           // 한참 못 때리면 옆이나 뒤로 돌아가서 포위 (카리우스는 더 빨리, 더 크게 돈다)
           if (dist > u.st.range){
@@ -2732,7 +2824,7 @@ function updateBattle(dt){
           const m = Math.min(1, Math.hypot(dir.x, dir.y)); const nd = norm(dir.x, dir.y); dir = { x: nd.x * m, y: nd.y * m };
         }
       }
-      if (u.guarding) speed *= 0.4;
+      if (u.guarding) speed *= 0.7;   // 방어 중 이동 30% 감소
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && u.state === 'retreat';
       if (b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05){
