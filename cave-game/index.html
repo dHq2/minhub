@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v1.6
+  version v1.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -253,7 +253,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v1.6';
+const VERSION = 'v1.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1103,6 +1103,37 @@ function drawRebeccaFigure(o){
   }
   drawHumanoid({ ...REBECCA_LOOK, x: p.x, y: p.y - walkBob(o), u, face: o.face });
 }
+function drawGoblinArcher(o){
+  const p = P(o.x + 0.5, o.y + 0.5);
+  const u = T * depthScale(o.y) * 0.8;
+  const x = p.x, y = p.y - walkBob(o);
+  shadowAt(x, p.y, u*0.3);
+  // 등에 멘 화살통
+  ctx.save(); ctx.translate(x - o.face*u*0.18, y - u*0.45); ctx.rotate(-o.face*0.35);
+  shape(() => rrect(-u*0.06, -u*0.2, u*0.12, u*0.34, u*0.03), '#6b4326', 1.5);
+  ctx.strokeStyle = '#d8c9a6'; ctx.lineWidth = 1.5;
+  for (let i = -1; i <= 1; i++){ ctx.beginPath(); ctx.moveTo(i*u*0.03, -u*0.2); ctx.lineTo(i*u*0.03, -u*0.3); ctx.stroke(); }
+  ctx.restore();
+  drawHumanoid({ x, y, u, face: o.face, skin:'#6f9e3f', cloth:'#3f5a2c', bw:1.0, female:false, race:'goblin', tool:null, eye:'#e2443a' });
+  // 두건
+  const hx = x + o.face*u*0.02, hy = y - u*0.8, hr = u*0.21;
+  shape(() => { ctx.arc(hx, hy - hr*0.05, hr*1.12, Math.PI*1.0, Math.PI*2.0); ctx.lineTo(hx + hr*0.9, hy - hr*0.1); ctx.lineTo(hx - hr*0.9, hy - hr*0.1); ctx.closePath(); }, '#2f4a24');
+  // 활: 준비 중이면 시위를 당김
+  const draw = o.windup > 0 ? 1 - o.windup / o.st.windup : 0;
+  const bx = x + o.face*u*0.36, by = y - u*0.45;
+  ctx.strokeStyle = '#8a5a2e'; ctx.lineWidth = Math.max(2, u*0.05); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(bx - o.face*u*0.1, by, u*0.3, o.face > 0 ? -1.1 : Math.PI - 1.1, o.face > 0 ? 1.1 : Math.PI + 1.1); ctx.stroke();
+  const tipTop = { x: bx - o.face*u*0.1 + Math.cos(o.face > 0 ? -1.1 : Math.PI + 1.1)*u*0.3*(o.face > 0 ? 1 : 1), y: by - Math.sin(1.1)*u*0.3 };
+  const tipBot = { x: tipTop.x, y: by + Math.sin(1.1)*u*0.3 };
+  const pull = { x: tipTop.x - o.face*u*(0.02 + draw*0.28), y: by };
+  ctx.strokeStyle = '#e8e0cc'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(tipTop.x, tipTop.y); ctx.lineTo(pull.x, pull.y); ctx.lineTo(tipBot.x, tipBot.y); ctx.stroke();
+  if (draw > 0){
+    ctx.strokeStyle = '#c9b48a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(pull.x, by); ctx.lineTo(bx + o.face*u*0.25, by); ctx.stroke();
+  }
+  circle(pull.x, by, u*0.06, '#6f9e3f', 1.2);
+}
 function drawEnemyGoblin(o){
   const p = P(o.x + 0.5, o.y + 0.5);
   const u = T * depthScale(o.y) * 0.8;
@@ -1364,6 +1395,9 @@ function drawPortrait(c, id){
       drawHumanoid({ x:40, y:120, u:95*r.scale, face:1, skin:r.skin, cloth:CLOTHS[character.cloth].c, bw:r.w, female:character.gender === 0, hair:HAIRS[character.hair ?? 0].c, race:r.id });
     } else if (id === 'rebecca'){
       drawHumanoid({ ...REBECCA_LOOK, x:40, y:120, u:95, face:1, tool:null });
+    } else if (id === 'goblinArcher'){
+      drawHumanoid({ x:40, y:118, u:88, face:1, skin:'#6f9e3f', cloth:'#3f5a2c', bw:1.0, female:false, race:'goblin', eye:'#e2443a' });
+      shape(() => { ctx.arc(41, 47, 21, Math.PI, Math.PI*2); ctx.lineTo(58, 49); ctx.lineTo(24, 49); ctx.closePath(); }, '#2f4a24');
     } else if (id === 'enemyGoblin'){
       drawHumanoid({ x:40, y:118, u:88, face:1, skin:'#6f9e3f', cloth:'#5b4630', bw:1.1, female:false, race:'goblin', eye:'#e2443a' });
     } else if (id === 'karius'){
@@ -1736,6 +1770,7 @@ const STYLES = {
   karius:      { approach:4, hitrun:0, strafe:1, guard:1, hold:5, retreat:0 },
   goblin:      { approach:1, hitrun:4, strafe:3, guard:0, hold:1, retreat:2, dodge:true },
   enemyGoblin: { approach:3, hitrun:3, strafe:2, guard:2, hold:1, retreat:1 },
+  goblinArcher: { kite:6, strafe:2, retreat:1 },
 };
 const HEROES = {
   rebecca: { name:'레베카', grade:'★★', color:'#e0435a', sub:'루비색 장발의 소녀 기사 · 158cm · 27세',
@@ -1753,6 +1788,11 @@ const HEROES = {
     equip:{ 무기:'🔪 흑요석 단검', 머리:'—', 몸:'🧥 꼬질한 가죽옷', 장신구:'—' } },
 };
 const ENEMIES = {
+  goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
+    hp:70, atk:12, def:2, block:0.05, crit:0.10, eva:0.10, spd:2.6, range:4.2, cd:1.8, windup:0.55, hits:1, weight:38, react:0.2,
+    projectile:'arrow', ranged:true,
+    tags:[], trait:'화살은 날아가는 동안 대상이 자리를 뜨면 빗나간다. 가까이 붙으면 달려서 물러난다.',
+    equip:{ 무기:'🏹 짧은 활', 머리:'초록 두건', 몸:'누더기', 장신구:'화살통' } },
   enemyGoblin: { name:'일반 고블린', grade:'', color:'#e2443a', sub:'굴 밖의 적 · 무리 지어 다닌다',
     hp:100, atk:10, def:5, block:0.20, crit:0.05, eva:0.05, spd:2.4, range:1.15, cd:1.2, windup:0.32, hits:1, weight:45, react:0.25,
     tags:[], trait:'', equip:{ 무기:'🔪 녹슨 칼', 머리:'—', 몸:'누더기', 장신구:'—' } },
@@ -1899,7 +1939,7 @@ function toggleStats(){
     ['hp','atk','guard','crit','eva','spd','atkSpd','weight'].forEach(k => tr.appendChild(el('td', 'num', fmtStat(k, s[k]))));
     t.appendChild(tr);
   };
-  ['player', 'rebecca', 'karius', 'goblin', 'enemyGoblin'].forEach(addRow);
+  ['player', 'rebecca', 'karius', 'goblin', 'enemyGoblin', 'goblinArcher'].forEach(addRow);
   wrap.appendChild(t);
   statsEl.appendChild(wrap);
   statsEl.hidden = false;
@@ -2050,7 +2090,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin'];
-const BT_ENEMIES = ['enemyGoblin'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -2063,7 +2103,7 @@ function enterBattle(){
   document.body.classList.add('battle');
   floaters = []; sparks = []; held.clear();
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
-  battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [],
+  battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [],
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, stars: [], parryTest: document.getElementById('bt-parry').checked };
   buildBtTools();
   defaultSetup();
@@ -2094,9 +2134,10 @@ function buildBtTools(){
 }
 function syncTools(){ document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === battle.tool)); }
 function defaultSetup(){
-  battle.units = []; battle.over = null; battle.running = false; battle.pending = []; battle.fx = [];
+  battle.units = []; battle.over = null; battle.running = false; battle.pending = []; battle.fx = []; battle.proj = [];
   spawnUnit('player', 1, 2); spawnUnit('rebecca', 3, 1); spawnUnit('karius', 3, 3); spawnUnit('goblin', 2, 4);
-  spawnUnit('enemyGoblin', 9, 0); spawnUnit('enemyGoblin', 10, 2); spawnUnit('enemyGoblin', 9, 3); spawnUnit('enemyGoblin', 10, 4);
+  spawnUnit('enemyGoblin', 8, 1); spawnUnit('enemyGoblin', 8, 3); spawnUnit('enemyGoblin', 9, 2);
+  spawnUnit('goblinArcher', 11, 1); spawnUnit('goblinArcher', 11, 3);
   battle.log = [];
   logLine('기본 배치. ▶ 전투 시작 (Space)', 'sys');
   syncRun();
@@ -2266,7 +2307,7 @@ cv.addEventListener('pointerup', () => {
 
 const norm = (x, y) => { const l = Math.hypot(x, y); return l ? { x: x / l, y: y / l } : { x: 0, y: 0 }; };
 const unitRadius = u => u.id === 'karius' ? 0.8 : 0.4;
-const unitHeight = u => u.id === 'karius' ? 3.3 : (u.id === 'goblin' || u.id === 'enemyGoblin') ? 0.95 : 1.15;
+const unitHeight = u => u.id === 'karius' ? 3.3 : (u.id === 'goblin' || u.id === 'enemyGoblin' || u.id === 'goblinArcher') ? 0.95 : 1.15;
 function battleSolid(u){
   return (nx, ny, ox, oy) => {
     if (nx < 0 || nx > BATTLE_COLS - 1 || ny < 0 || ny > ROWS - 1) return true;
@@ -2340,10 +2381,58 @@ function reactTo(d, a){
 }
 
 /* ---------- 공격 · 피격 ---------- */
+/* ---------- 화살: 실제로 날아가고, 도착했을 때 대상이 자리를 떴으면 빗나감 ---------- */
+function fireArrow(a, d, opts = {}){
+  const len = Math.hypot(d.x - a.x, d.y - a.y);
+  battle.proj.push({ a, d, sx: a.x, sy: a.y, tx: d.x, ty: d.y, len, t: 0, dur: Math.max(0.15, len / 9), opts });
+}
+function updateProjectiles(sdt){
+  for (const p of battle.proj){
+    p.t += sdt;
+    if (p.t < p.dur) continue;
+    p.done = true;
+    if (!p.d.dead && Math.hypot(p.d.x - p.tx, p.d.y - p.ty) < 0.75) resolveHit(p.a, p.d, { ...p.opts, ranged: true });
+    else {
+      floaters.push({ text: '빗나감', wx: P(p.tx + 0.5, p.ty + 0.5).x + camX, y: P(p.tx + 0.5, p.ty + 0.5).y - T * 0.9, color: '#b8b0a4', life: 0.9 });
+      logLine(`${p.a.name}의 화살이 빗나감`, 'miss');
+    }
+  }
+  battle.proj = battle.proj.filter(p => !p.done);
+}
+function drawProjectiles(){
+  for (const p of battle.proj){
+    const pos = k => {
+      const x = p.sx + (p.tx - p.sx) * k, y = p.sy + (p.ty - p.sy) * k;
+      const q = P(x + 0.5, y + 0.5);
+      return { x: q.x, y: q.y - T * 0.5 - Math.sin(k * Math.PI) * p.len * T * 0.12 };
+    };
+    const k = Math.min(1, p.t / p.dur), a = pos(k), b = pos(Math.min(1, k + 0.04));
+    const ang = Math.atan2(b.y - a.y, b.x - a.x);
+    const gold = p.opts.counter;
+    ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(ang);
+    if (gold){ ctx.shadowColor = '#ffd35a'; ctx.shadowBlur = 12; }
+    ctx.strokeStyle = gold ? '#ffd35a' : '#b8905a'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(-T * 0.4, 0); ctx.lineTo(T * 0.05, 0); ctx.stroke();
+    ctx.fillStyle = gold ? '#fff3b0' : '#d9dde2';
+    ctx.beginPath(); ctx.moveTo(T * 0.14, 0); ctx.lineTo(T * 0.03, -T * 0.05); ctx.lineTo(T * 0.03, T * 0.05); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = gold ? '#fff3b0' : '#e8e0cc'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-T * 0.4, 0); ctx.lineTo(-T * 0.48, -T * 0.06); ctx.moveTo(-T * 0.4, 0); ctx.lineTo(-T * 0.48, T * 0.06); ctx.stroke();
+    ctx.restore();
+  }
+}
+// 저스트 방어/회피 뒤 반격: 근접이면 바로 치고, 화살이면 되던진다
+function counterAttack(d, a, opts, delay){
+  if (opts && opts.ranged){
+    fxText(d, '되받아침!', '#ffe27a', 'big', 0.6);
+    fireArrow(d, a, { forceCrit: true, counter: true });
+  } else battle.pending.push({ t: delay, a: d, d: a, opts: { forceCrit: true, counter: true } });
+}
+
 function releaseAttack(u){
   const d = u.atkTarget; u.atkTarget = null;
-  u.cd = u.st.cd; u.lunge = 0.25;
+  u.cd = u.st.cd; u.lunge = u.st.projectile ? 0 : 0.25;
   if (!d || d.dead) return;
+  if (u.st.projectile){ fireArrow(u, d); return; }
   if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.range + 0.5){
     fxText(u, '헛침', '#b8b0a4');
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
@@ -2354,7 +2443,7 @@ function releaseAttack(u){
   }
   if (u.state === 'hitrun'){ u.state = 'retreat'; u.stateT = 0.5 + Math.random() * 0.5; u.running = true; }
 }
-function guardFx(d, a){
+function guardFx(d, a, opts = {}){
   const b = battle;
   b.hitstop = Math.max(b.hitstop, 0.08); shake = Math.max(shake, 0.12);
   d.guardFlash = 0.35;
@@ -2367,8 +2456,7 @@ function guardFx(d, a){
     sparks.push({ x: p.x + camX + d.face * T * 0.3, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 120, life: 0.45, c: i % 2 ? '#dff3ff' : '#7fc4ff' });
   }
   pushUnit(d, a, 0.08);
-  pushUnit(a, d, 0.2);
-  a.stun = Math.max(a.stun, 0.2);
+  if (!opts.ranged){ pushUnit(a, d, 0.2); a.stun = Math.max(a.stun, 0.2); }
   logLine(`🛡 ${a.name} → ${d.name}: 방어 성공 (0)`, 'guard');
 }
 // 반격 치명타: 별이 터져서 바닥에 통통 튄다
@@ -2382,7 +2470,7 @@ function starBurst(u, n = 22){
       size: T * (0.06 + Math.random() * 0.07), life: 1.8 + Math.random() * 0.7, c: cols[i % cols.length] });
   }
 }
-function reversal(d, a){
+function reversal(d, a, opts = {}){
   const b = battle;
   b.hitstop = 0.32; shake = 0.2;
   a.stun = 0.8; a.windup = 0; a.atkTarget = null;
@@ -2393,13 +2481,13 @@ function reversal(d, a){
   logLine(`🌟 ${d.name} 저스트 회피! 역전의 기회`, 'parry');
   d.cd = d.st.cd;
   const n = norm(a.x - d.x, a.y - d.y); d.lx = n.x; d.ly = n.y; d.face = Math.sign(n.x) || d.face;
-  b.pending.push({ t: 0.2, a: d, d: a, opts: { forceCrit: true, counter: true } });
+  counterAttack(d, a, opts, 0.2);
 }
-function parry(d, a){
+function parry(d, a, opts = {}){
   const b = battle;
   b.hitstop = 0.22; shake = 0.25;
   a.stun = 0.9; a.windup = 0; a.atkTarget = null;
-  pushUnit(a, d, 0.35);
+  if (!opts.ranged) pushUnit(a, d, 0.35);
   ringAt(d, '143,232,255');
   burst(d, 22, '#e8fbff', 380);
   fxText(d, '튕겨냄!', '#8fe8ff', 'crit', 1.1);
@@ -2407,24 +2495,24 @@ function parry(d, a){
   logLine(`✨ ${d.name} 저스트 방어! ${a.name}의 공격을 튕겨냄`, 'parry');
   d.cd = d.st.cd;
   const n = norm(a.x - d.x, a.y - d.y); d.lx = n.x; d.ly = n.y; d.face = Math.sign(n.x) || d.face;
-  b.pending.push({ t: 0.12, a: d, d: a, opts: { forceCrit: true, counter: true } });
+  counterAttack(d, a, opts, 0.12);
 }
 function resolveHit(a, d, opts = {}){
-  if (a.dead || d.dead) return;
+  if (d.dead || (a.dead && !opts.ranged)) return;
   const b = battle;
-  if (opts.counter){ a.lunge = 0.25; fxText(a, '반격!', '#ffe27a', 'big', 0.6); }
+  if (opts.counter){ if (!opts.ranged) a.lunge = 0.25; fxText(a, '반격!', '#ffe27a', 'big', 0.6); }
   // 저스트 방어 (주인공이 맞기 직전에 방어를 눌렀을 때)
   if (d.id === 'player' && !opts.counter){
     const since = b.clock - b.guardPressAt;
     if (since >= 0 && since <= JUST_WINDOW){
       b.guardPressAt = -99;
-      if (b.parryTest || Math.random() < PARRY_CHANCE){ parry(d, a); return; }
+      if (b.parryTest || Math.random() < PARRY_CHANCE){ parry(d, a, opts); return; }
       logLine(`${d.name} 저스트 방어 (튕겨내기 실패)`, 'sys');
     }
     const sinceD = b.clock - b.dodgePressAt;
     if (sinceD >= 0 && sinceD <= JUST_WINDOW){
       b.dodgePressAt = -99;
-      if (b.parryTest || Math.random() < REVERSAL_CHANCE){ reversal(d, a); return; }
+      if (b.parryTest || Math.random() < REVERSAL_CHANCE){ reversal(d, a, opts); return; }
       fxText(d, '회피!', '#dcd4c6', 'big');
       logLine(`${d.name} 저스트 회피`, 'miss');
       return;
@@ -2437,7 +2525,7 @@ function resolveHit(a, d, opts = {}){
     return;
   }
   if (d.guarding && !opts.forceCrit){
-    if (Math.random() < d.st.guard / 100){ guardFx(d, a); return; }
+    if (Math.random() < d.st.guard / 100){ guardFx(d, a, opts); return; }
     fxText(d, '방어 뚫림!', '#ff8f7a');
     burst(d, 10, '#9aa3ad', 300);
   }
@@ -2607,6 +2695,11 @@ function updateBattle(dt){
         else if (u.state === 'retreat') dir = { x: -to.x, y: -to.y };
         else if (u.state === 'strafe'){ const k = dist > u.st.range ? 0.45 : -0.25; dir = norm(-to.y * u.strafeDir + to.x * k, to.x * u.strafeDir + to.y * k); }
         else if (u.state === 'guard' && dist < u.st.range * 0.6) dir = { x: -to.x * 0.5, y: -to.y * 0.5 };
+        else if (u.state === 'kite'){
+          if (dist < 2.2){ dir = { x: -to.x, y: -to.y }; u.running = true; }
+          else if (dist > u.st.range * 0.95){ dir = to; u.running = false; }
+          else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.45, y: to.x * u.strafeDir * 0.45 }; }
+        }
         if (u.running) speed *= RUN_MUL;
         if (dir){
           for (const o of b.units){
@@ -2646,6 +2739,7 @@ function updateBattle(dt){
     }
   }
   b.pending.forEach(p => { p.t -= sdt; if (p.t <= 0) resolveHit(p.a, p.d, p.opts); });
+  updateProjectiles(sdt);
   b.pending = b.pending.filter(p => p.t > 0);
 
   if (b.running){
@@ -2667,6 +2761,7 @@ function drawUnitBody(v){
   else if (v.id === 'rebecca') drawRebeccaFigure(v);
   else if (v.id === 'karius') drawKarius(v);
   else if (v.id === 'goblin') drawGoblin(v);
+  else if (v.id === 'goblinArcher') drawGoblinArcher(v);
   else drawEnemyGoblin(v);
 }
 function drawBattle(){
@@ -2684,6 +2779,15 @@ function drawBattle(){
     ctx.fill();
   }
   const list = [...b.units].sort((a, c) => a.y - c.y);
+  for (const u of list){
+    if (!u.dead) continue;
+    const p = P(u.x + 0.5, u.y + 0.5), g = Math.min(1, u.deadT / 1.5);
+    const rx = T * (0.2 + 0.5 * g) * (u.id === 'karius' ? 1.8 : 1);
+    ctx.fillStyle = 'rgba(190,60,65,.28)';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y, rx, rx * 0.36, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(150,35,45,.22)';
+    ctx.beginPath(); ctx.ellipse(p.x - rx * 0.15, p.y + 1, rx * 0.6, rx * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+  }
   for (const f of b.fx){
     if (f.type !== 'ghost') continue;
     ctx.save(); ctx.globalAlpha = 0.35 * f.life / f.max; drawUnitBody(f.snap); ctx.restore();
@@ -2692,13 +2796,13 @@ function drawBattle(){
     let lo = 0;
     if (u.windup > 0) lo = -0.15 * (1 - u.windup / u.st.windup);                 // 준비 동작: 살짝 뒤로
     else if (u.lunge > 0) lo = Math.sin((u.lunge / 0.25) * Math.PI) * 0.3;       // 타격: 앞으로
-    const jitter = (u.hurt > 0 || u.stun > 0) ? (Math.random() - 0.5) * 0.06 : 0;
+    const jitter = !u.dead && (u.hurt > 0 || u.stun > 0) ? (Math.random() - 0.5) * 0.06 : 0;
     const v = { ...u, x: u.x + u.lx * lo + jitter, y: u.y + u.ly * lo * 0.5 };
     ctx.save();
     if (u.dead){
       const p = P(v.x + 0.5, v.y + 0.5);
-      ctx.globalAlpha = 0.6;
-      ctx.translate(p.x, p.y); ctx.rotate(-u.face * 1.35); ctx.translate(-p.x, -p.y);
+      ctx.globalAlpha = 0.9;
+      ctx.translate(p.x, p.y - T * 0.05); ctx.rotate(-u.face * Math.PI / 2); ctx.translate(-p.x, -p.y);
     }
     const lit = u === hoverUnit || (drag && drag.u === u);
     if (lit){ OUTC = '#f0c35a'; OUTW = 2.2; }
@@ -2735,7 +2839,7 @@ function drawBattle(){
       if (f.u.dead) continue;
       const q = P(f.u.x + 0.5, f.u.y + 0.5), hh0 = unitHeight(f.u) * T * depthScale(f.u.y);
       const sc = 0.7 + (1 - k) * 0.9, cx = q.x + f.u.face * T * 0.45, cy = q.y - hh0 * 0.5;
-      const w = Math.max(T * 0.5, hh0 * 0.5) * sc, hh = Math.max(T * 0.65, hh0 * 0.62) * sc;
+      const w = T * 0.55 * sc, hh = T * 0.75 * sc;
       ctx.beginPath();
       ctx.moveTo(cx - w / 2, cy - hh / 2); ctx.lineTo(cx + w / 2, cy - hh / 2); ctx.lineTo(cx + w / 2, cy);
       ctx.quadraticCurveTo(cx + w / 2, cy + hh * 0.35, cx, cy + hh / 2);
@@ -2751,6 +2855,7 @@ function drawBattle(){
       ctx.beginPath(); ctx.arc(f.wx - camX, f.y, T * (0.3 + (1 - k) * 1.1), 0, Math.PI * 2); ctx.stroke();
     }
   }
+  drawProjectiles();
   sparks.forEach(s => { ctx.fillStyle = s.c || '#ffe9a8'; ctx.fillRect(s.x - camX, s.y, 2.5, 2.5); });
   for (const st of b.stars){
     ctx.save();
