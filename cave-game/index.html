@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.9
+  version v3.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -283,7 +283,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.9';
+const VERSION = 'v3.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1902,6 +1902,7 @@ const STYLES = {
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
   poren:       { approach:3, hold:5, guard:3, strafe:0.5 },
+  norman:      { kite:5, strafe:2, hold:1, retreat:1 },
   jeokroe:     { approach:4, hold:3 },
 };
 const HEROES = {
@@ -1929,6 +1930,12 @@ HEROES.poren = { name:'포렌', grade:'★★★★★', color:'#5fd08a', sub:'"
   taunt:3, cleave:0.6,
   tags:['지휘S'], trait:'🔆 쥐들의 대왕 — 3칸 안의 적은 포렌을 먼저 노린다 (도발). 대검이 옆의 적 하나까지 60% 피해로 벤다.',
   equip:{ 무기:'🗡 에메랄드 대검', 머리:'👑 왕관', 몸:'전신 중갑 · 털망토', 장신구:'—' } };
+HEROES.norman = { name:'노먼', grade:'★★★', color:'#b8b2a2', sub:'군인 · 소총과 응급 가방 · 말수가 적다 · 172cm',
+  hp:120, atk:13, def:6, block:0.15, crit:0.10, eva:0.08, spd:2.8, range:5.0, cd:0.95, windup:0.22, hits:1, weight:75, react:0.3,
+  projectile:'bullet', ranged:true,
+  melee:{ atk:10, range:1.3, windup:0.25, cd:0.9 },   // 붙으면 개머리판
+  tags:['사격A', '의무B'], trait:'🔆 응급처치 — 쓰러지기 직전의 동료에게 달려가 무릎 꿇고 치료한다.\n🎯 제압 사격 — 공격 준비 중인 적을 쏘면 35% 확률로 공격을 끊는다.',
+  equip:{ 무기:'🔫 돌격소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:1500, atk:25, def:12, block:0.10, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:250, react:0.1,
@@ -2090,7 +2097,7 @@ function toggleStats(){
     ['hp','atk','guard','crit','eva','spd','atkSpd','weight'].forEach(k => tr.appendChild(el('td', 'num', fmtStat(k, s[k]))));
     t.appendChild(tr);
   };
-  ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'enemyGoblin', 'goblinArcher', 'jeokroe'].forEach(addRow);
+  ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'enemyGoblin', 'goblinArcher', 'jeokroe'].forEach(addRow);
   wrap.appendChild(t);
   statsEl.appendChild(wrap);
   statsEl.hidden = false;
@@ -2240,7 +2247,7 @@ function showJoinWindow(){
 let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
-const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren'];
+const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman'];
 const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
@@ -2644,17 +2651,26 @@ function reactTo(d, a){
 /* ---------- 화살: 실제로 날아가고, 도착했을 때 대상이 자리를 떴으면 빗나감 ---------- */
 function fireArrow(a, d, opts = {}){
   const len = Math.hypot(d.x - a.x, d.y - a.y);
-  battle.proj.push({ a, d, sx: a.x, sy: a.y, tx: d.x, ty: d.y, len, t: 0, dur: Math.max(0.15, len / 9), opts });
+  const kind = a.st.projectile || 'arrow';
+  battle.proj.push({ a, d, sx: a.x, sy: a.y, tx: d.x, ty: d.y, len, t: 0, dur: kind === 'bullet' ? Math.max(0.05, len / 32) : Math.max(0.15, len / 9), opts, kind });
 }
 function updateProjectiles(sdt){
   for (const p of battle.proj){
     p.t += sdt;
     if (p.t < p.dur) continue;
     p.done = true;
-    if (!p.d.dead && Math.hypot(p.d.x - p.tx, p.d.y - p.ty) < 0.75) resolveHit(p.a, p.d, { ...p.opts, ranged: true });
+    if (!p.d.dead && Math.hypot(p.d.x - p.tx, p.d.y - p.ty) < 0.75){
+      // 제압 사격: 공격 준비 중인 적을 맞히면 35% 확률로 공격이 끊김
+      if (p.kind === 'bullet' && p.d.windup > 0 && Math.random() < 0.35){
+        p.d.windup = 0; p.d.atkTarget = null; p.d.cd = Math.max(p.d.cd, 0.5);
+        fxText(p.d, '제압!', '#e8e0b0', 'big', 0.5);
+        logLine(`🎯 ${p.a.name}의 제압 사격 → ${p.d.name}의 공격이 끊김`);
+      }
+      resolveHit(p.a, p.d, { ...p.opts, ranged: true });
+    }
     else {
       floaters.push({ text: '빗나감', wx: P(p.tx + 0.5, p.ty + 0.5).x + camX, y: P(p.tx + 0.5, p.ty + 0.5).y - T * 0.9, color: '#b8b0a4', life: 0.9 });
-      logLine(`${p.a.name}의 화살이 빗나감`, 'miss');
+      logLine(`${p.a.name}의 ${p.kind === 'bullet' ? '총알' : '화살'}이 빗나감`, 'miss');
     }
   }
   battle.proj = battle.proj.filter(p => !p.done);
@@ -2666,6 +2682,15 @@ function drawProjectiles(){
       const q = P(x + 0.5, y + 0.5);
       return { x: q.x, y: q.y - T * 0.5 - Math.sin(k * Math.PI) * p.len * T * 0.12 };
     };
+    if (p.kind === 'bullet'){
+      const k = Math.min(1, p.t / p.dur);
+      const q0 = P(p.sx + (p.tx - p.sx) * Math.max(0, k - 0.25) + 0.5, p.sy + (p.ty - p.sy) * Math.max(0, k - 0.25) + 0.5);
+      const q1 = P(p.sx + (p.tx - p.sx) * k + 0.5, p.sy + (p.ty - p.sy) * k + 0.5);
+      const gold = p.opts.counter;
+      ctx.strokeStyle = gold ? '#ffd35a' : 'rgba(255,230,160,.95)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(q0.x, q0.y - T * 0.7); ctx.lineTo(q1.x, q1.y - T * 0.7); ctx.stroke();
+      continue;
+    }
     const k = Math.min(1, p.t / p.dur), a = pos(k), b = pos(Math.min(1, k + 0.04));
     const ang = Math.atan2(b.y - a.y, b.x - a.x);
     const gold = p.opts.counter;
@@ -2694,7 +2719,16 @@ function releaseAttack(u){
   u.cd = stab ? u.st.melee.cd : u.st.cd;
   u.lunge = u.st.projectile && !stab ? 0 : 0.25;
   if (!d || d.dead) return;
-  if (u.st.projectile && !stab){ fireArrow(u, d); return; }
+  if (u.st.projectile && !stab){
+    fireArrow(u, d);
+    if (u.st.projectile === 'bullet'){
+      u.shotT = 0.22;
+      const q = P(u.x + 0.5, u.y + 0.5), h = unitHeight(u) * T * depthScale(u.y);
+      for (let i = 0; i < 2; i++) sparks.push({ x: q.x + camX + u.face * T * 0.1, y: q.y - h * 0.62, vx: -u.face * (60 + Math.random() * 80), vy: -120 - Math.random() * 80, life: 0.5, c: '#d9a441' });   // 탄피
+      shake = Math.max(shake, 0.04);
+    }
+    return;
+  }
   if (stab){
     if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.melee.range + 0.5){ fxText(u, '헛침', '#b8b0a4'); logLine(`${u.name}의 단검이 허공을 가름`, 'miss'); }
     else resolveHit(u, d, { atk: u.st.melee.atk });
@@ -2957,6 +2991,7 @@ function updateBattle(dt){
       }
     }
     u.hurt = Math.max(0, u.hurt - sdt);
+    u.shotT = Math.max(0, (u.shotT || 0) - sdt);
     u.charT = Math.max(0, (u.charT || 0) - sdt);
     if (u.shock && b.running){
       u.shock.clock += sdt;
@@ -3013,6 +3048,7 @@ function updateBattle(dt){
     u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
     const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
+    if (u.st.skills && u.st.skills.includes('firstAid') && b.running && !u.manual && medicUpdate(u, sdt)){ u.guarding = false; continue; }
     if (u.st.boss && b.running && u.stun <= 0 && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge'));   // 돌격 중엔 방패를 앞세워 상시 방어
     let dir = null, speed = u.st.spd;
@@ -3341,6 +3377,8 @@ const SPRITES = {
                  heightTiles:1.3, baseFace:1, fps:6, anims:{ idle:[0, 7] } },   // 원화가 오른쪽을 봄
   poren:       { src:'assets/poren.png', face:'assets/poren_face.png', frames:10, fw:386, fh:378, ax:186, ay:378, idleH:375,
                  heightTiles:1.25, baseFace:1, fps:6, anims:{ idle:[0, 9] } },  // 원화가 오른쪽을 봄
+  norman:      { src:'assets/norman.png', face:'assets/norman_face.png', frames:16, fw:268, fh:332, ax:139, ay:332, idleH:330,
+                 heightTiles:1.4, baseFace:1, fps:10, anims:{ idle:[0, 8], heal:[9, 14], shoot:[15, 15] } },   // 대기 9 · 응급처치 6 · 사격 1
 };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
@@ -3360,6 +3398,8 @@ function drawSpriteUnit(o){
   if (o.spriteAnim){
     const [a, b] = S.anims[o.spriteAnim.name];
     frame = a + Math.min(b - a, Math.floor(o.spriteAnim.t / o.spriteAnim.dur * (b - a + 1)));
+  } else if (S.anims.shoot && !o.dead && (o.windup > 0 || o.shotT > 0)){
+    frame = S.anims.shoot[0];                                           // 조준 · 사격
   } else {
     const [a, b] = S.anims.idle;
     frame = a + (Math.floor(time * S.fps + (o.uid || 0) * 3) % (b - a + 1));
@@ -3367,7 +3407,8 @@ function drawSpriteUnit(o){
   const flip = (o.face || S.baseFace) !== S.baseFace;
   const pose = atkPose(o);
   let rot = 0;
-  if (pose.phase === 'windup') rot = 0.12 * easeOut(pose.k);          // 뒤로 젖힘
+  if (S.anims.shoot){ /* 총잡이는 몸을 젖히지 않음 */ }
+  else if (pose.phase === 'windup') rot = 0.12 * easeOut(pose.k);          // 뒤로 젖힘
   else if (pose.phase === 'swing') rot = -0.2 * (1 - pose.k);         // 앞으로 내지름
   ctx.save();
   ctx.translate(p.x, p.y - (o.lift || 0) * T);
@@ -3701,6 +3742,10 @@ const SKILLS = {
     desc:'손바닥에서 불을 피운다. 열이 나면 금방 배고파진다.\n적이 치려고 하면 방어 대신 뒤로 빠진다.' },
   madness:   { name:'광기', kind:'패시브', icon:'⛓',
     desc:'쇠사슬 철퇴가 대상 주변까지 휩쓴다. 대상에 붙어 있는 적 최대 3명에게 절반 피해.' },
+  firstAid:  { name:'응급처치', kind:'액티브', img:'assets/skill_firstaid.png', color:'150,255,190',
+    desc:'체력이 절반 아래로 떨어진 동료(자신 포함)가 7칸 안에 있으면 달려가서 무릎을 꿇고 1.5초 동안 치료한다.\n회복: 40 + 대상 최대 체력의 15%, 출혈을 멈춤\n대기시간 9초. 치료하는 동안은 쏘지 않는다.' },
+  suppress:  { name:'제압 사격', kind:'패시브', icon:'🎯',
+    desc:'총알은 빠르고 곧게 날아간다.\n공격 준비 중("!")인 적을 맞히면 35% 확률로 그 공격을 끊는다.\n붙으면 개머리판으로 친다 (공격 10).' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
     desc:'굴의 모두가 당신을 대장이라 부른다.' },
   justGuard: { name:'저스트 방어', kind:'액티브', icon:'🛡️',
@@ -3713,6 +3758,7 @@ HEROES.karius.skills = ['modified'];
 HEROES.goblin.skills = ['ignite'];
 HEROES.morningstar.skills = ['madness'];
 HEROES.poren.skills = ['loyalty', 'ratking'];
+HEROES.norman.skills = ['firstAid', 'suppress'];
 ENEMIES.jeokroe.skills = ['thunder', 'dropkick'];
 for (const k of Object.values(SKILLS)) if (k.img){ k.image = new Image(); k.image.src = k.img; }
 
@@ -3795,7 +3841,7 @@ function drawSkillPop(f){
   const cx = p.x, cy = p.y - h - T * 1.35;
   const sc = k < 0.16 ? easeOut(k / 0.16) * 1.3 : 1.3 - Math.min(0.3, (k - 0.16) * 1.6);
   const alpha = k > 0.75 ? (1 - k) / 0.25 : 1;
-  const col = S.kind === '액티브' ? '255,90,80' : '140,255,150';
+  const col = S.color || (S.kind === '액티브' ? '255,90,80' : '140,255,150');
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.globalCompositeOperation = 'lighter';
@@ -3899,6 +3945,58 @@ function drawRatUnit(o){
   const u = T * dsc * RAT_SIZE[o.id];
   shadowAt(p.x, p.y, u * 0.5);
   drawRatShape(p.x, p.y, u, o.face, o.moving ? o.walkClock : 0);
+}
+
+/* ---------- 노먼: 응급처치 ---------- */
+const AID_CD = 9, AID_TIME = 1.5, AID_LOW = 0.5, AID_RANGE = 7;
+const aidAmount = t => Math.round(40 + t.st.hp * 0.15);
+function medicUpdate(u, sdt){
+  const b = battle;
+  u.aidCd = (u.aidCd ?? 3) - sdt;
+  const m = u.medic;
+  if (m){
+    const t = m.target;
+    if (t.dead || !b.units.includes(t)){ u.medic = null; u.spriteAnim = null; return false; }
+    if (m.phase === 'move'){
+      m.t += sdt;
+      const d = Math.hypot(t.x - u.x, t.y - u.y);
+      if (d > 1.1 && m.t < 4 && u.stun <= 0){
+        stepMover(u, sdt, norm(t.x - u.x, t.y - u.y), u.st.spd * RUN_MUL, battleSolid(u));
+        u.face = Math.sign(t.x - u.x) || u.face; u.t = 0;
+        return true;
+      }
+      if (d > 1.1){ u.medic = null; return false; }            // 못 닿으면 포기
+      m.phase = 'kneel'; m.t = 0;
+      u.spriteAnim = { name: 'heal', t: 0, dur: AID_TIME };
+      if (t !== u) u.face = Math.sign(t.x - u.x) || u.face;
+      skillPop(u, 'firstAid');
+      logLine(`⛑️ ${u.name}, ${t === u ? '스스로' : t.name + '에게'} 응급처치 시작`, 'heal');
+    }
+    // 무릎 꿇고 치료 (이동하지 않음)
+    m.t += sdt; u.spriteAnim.t = m.t;
+    u.vx = u.vy = 0; u.windup = 0; u.atkTarget = null; u.t = 1;
+    if (m.t >= AID_TIME){
+      const amt = Math.min(aidAmount(t), t.st.hp - t.hp);
+      t.hp += amt;
+      const stop = !!t.bleed; t.bleed = null;
+      fxText(t, `+${amt}`, '#7dff9a', 'big');
+      burst(t, 10, '#7dff9a', 80);
+      logLine(`⛑️ 응급처치 → ${t.name}: +${amt}${stop ? ' (지혈)' : ''}`, 'heal');
+      u.medic = null; u.spriteAnim = null; u.aidCd = AID_CD;
+    }
+    return true;
+  }
+  if (u.aidCd > 0 || u.windup > 0 || u.stun > 0) return false;
+  let best = null, bestK = AID_LOW;
+  for (const o of b.units){
+    if (o.dead || o.side !== u.side || o.st.summon) continue;
+    const k = o.hp / o.st.hp;
+    if (k < bestK && Math.hypot(o.x - u.x, o.y - u.y) <= AID_RANGE){ bestK = k; best = o; }
+  }
+  if (!best) return false;
+  u.medic = { target: best, phase: 'move', t: 0 };
+  if (best !== u) fxText(u, '엄호해!', '#e8e0b0', null, 0.4);
+  return false;
 }
 
 /* ---------- 루프 ---------- */
