@@ -1,7 +1,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v1.1
+  version v1.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -120,11 +120,10 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v1.1';
+const VERSION = 'v1.2';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
-const LOBBY_COLS = 30;   // 굴(로비) 가로 길이
-const GATE_COL = 27;     // 이 열부터 석문 (통과 불가)
+const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const OUT = '#16111a';   // 림월드식 외곽선 색
 
 document.getElementById('ver').textContent = VERSION;
@@ -279,11 +278,12 @@ function resize(){
   W = cv.clientWidth; H = cv.clientHeight;
   cv.width = W * DPR; cv.height = H * DPR;
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  T = Math.max(44, Math.min(84, Math.min(H / 7.2, W / 8.5)));
+  T = Math.min(84, H / 7.4, (W - 40) / (LOBBY_COLS + ROWS * 0.42 + 1.2));
   rowH = T * 0.6;
   skew = rowH * 0.7;
   const bottomPad = W <= 640 ? 96 : Math.max(24, H * 0.07);
-  floorTop = H - rowH * ROWS - bottomPad;
+  floorTop = Math.min(H - rowH * ROWS - bottomPad, H / 2 + T * 1.5);
+  camX = LOBBY_COLS * T / 2 - W / 2;   // 굴 전체가 화면 가운데
 }
 window.addEventListener('resize', () => { if (!gameEl.hidden) resize(); });
 
@@ -299,13 +299,13 @@ const blocked = new Set();
 const keyOf = (c,r) => c + ',' + r;
 
 // 굴 안의 자리들
-const FIRE    = { c:9,  r:2 };
+const FIRE    = { c:6,  r:2 };
 const SPOTS = {
-  kariusFire:  { c:11, r:2, face:-1 },
-  goblinFire:  { c:8,  r:2, face:1 },
-  meditate:    { c:15, r:1, face:1 },
-  goblinDig:   { c:GATE_COL - 1, r:1, face:1 },
-  kariusDig:   { c:GATE_COL - 1, r:3, face:1 },
+  kariusFire:  { c:8,  r:2, face:-1 },
+  goblinFire:  { c:5,  r:2, face:1 },
+  meditate:    { c:10, r:1, face:1 },
+  goblinDig:   { c:LOBBY_COLS - 1, r:1, face:1 },
+  kariusDig:   { c:LOBBY_COLS - 1, r:3, face:1 },
 };
 const SHIFT_LEN = { goblin: 40, karius: 24 };
 const KIND_LABEL = { dig:'곡괭이질', fire:'모닥불 곁 휴식', meditate:'명상 중', wander:'어슬렁거림', idle:'멍하니 서 있음' };
@@ -329,14 +329,13 @@ function makePawn(o){
 
 function setupLobby(){
   const race = RACES[character.race];
-  player = makePawn({ id:'player', c:5, r:2, race, stepTime:0.15 });
+  player = makePawn({ id:'player', c:3, r:3, race, stepTime:0.15 });
   karius = makePawn({ id:'karius', name:'카리우스', raw:'#6fb8e8', c:SPOTS.kariusFire.c, r:SPOTS.kariusFire.r, face:-1, stepTime:0.55, kind:'fire', timer:14 });
   goblin = makePawn({ id:'goblin', name:'청광묵', raw:'#5cc26a', c:SPOTS.goblinDig.c, r:SPOTS.goblinDig.r, face:1, stepTime:0.28, kind:'dig' });
-  rebecca = { id:'rebecca', name:'레베카', raw:'#e0435a', c:2, r:0 };
+  rebecca = { id:'rebecca', name:'레베카', raw:'#e0435a', c:1, r:0 };
   floaters = []; sparks = []; embers = []; dialog = null;
   shift = 'goblin'; shiftT = SHIFT_LEN.goblin;
   blocked.clear();
-  for (let c = GATE_COL; c < LOBBY_COLS; c++) for (let r = 0; r < ROWS; r++) blocked.add(keyOf(c,r));
   blocked.add(keyOf(FIRE.c, FIRE.r));
 }
 
@@ -493,7 +492,7 @@ function assign(p, kind){
   else if (kind === 'meditate') spot = SPOTS.meditate;
   else {
     for (let i = 0; i < 30; i++){
-      const c = 3 + Math.floor(Math.random() * (GATE_COL - 6)), r = Math.floor(Math.random() * ROWS);
+      const c = 1 + Math.floor(Math.random() * (LOBBY_COLS - 3)), r = Math.floor(Math.random() * ROWS);
       if (!occupied(c, r, p)){ spot = { c, r, face: Math.random() < .5 ? 1 : -1 }; break; }
     }
     spot = spot || { c:p.c, r:p.r, face:p.face };
@@ -555,7 +554,7 @@ function digEffects(p, dt){
   if (p.hitClock >= period){
     p.hitClock -= period;
     const big = p === karius;
-    const hit = { x: GATE_COL - 0.05, y: p.r + 0.5 };
+    const hit = { x: LOBBY_COLS - 0.05, y: p.r + 0.5 };
     const s = P(hit.x, hit.y);
     const hy = s.y - T * (big ? 1.7 : 0.55);
     floaters.push({ text: big ? '콰앙!' : '캉!', wx: s.x + camX + (Math.random()*16-8), y: hy - T*0.3, color: big ? '#ffe0a0' : '#cfe8ff', life: 1, big });
@@ -600,9 +599,6 @@ function update(dt){
   embers = embers.filter(e => e.life > 0);
   shake = Math.max(0, shake - dt);
 
-  const target = player.x * T - W * 0.45;
-  const maxCam = LOBBY_COLS * T - W + 3 * skew + T;
-  camX += (Math.max(-T, Math.min(maxCam, target)) - camX) * Math.min(1, dt * 6);
 
   const n = dialog ? null : nearestNpc();
   const pr = document.getElementById('prompt');
@@ -667,6 +663,12 @@ function draw(){
   const lg = ctx.createRadialGradient(f.x, f.y - T*0.3, 0, f.x, f.y - T*0.3, T*4.2*flick);
   lg.addColorStop(0, 'rgba(255,150,60,.34)'); lg.addColorStop(0.4, 'rgba(255,110,40,.12)'); lg.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = lg; ctx.fillRect(0,0,W,H);
+  // 우물 위에서 떨어지는 희미한 빛
+  const mc = P(LOBBY_COLS/2, 2.5);
+  const sh = ctx.createLinearGradient(0, 0, 0, mc.y + rowH*2);
+  sh.addColorStop(0, 'rgba(150,180,220,.10)'); sh.addColorStop(1, 'rgba(150,180,220,0)');
+  ctx.fillStyle = sh;
+  ctx.beginPath(); ctx.moveTo(mc.x - T*1.2, 0); ctx.lineTo(mc.x + T*1.2, 0); ctx.lineTo(mc.x + T*2.6, mc.y + rowH*2); ctx.lineTo(mc.x - T*2.6, mc.y + rowH*2); ctx.fill();
   ctx.fillStyle = '#ffb35a';
   embers.forEach(e => { ctx.globalAlpha = Math.min(1, e.life); ctx.fillRect(e.wx - camX, e.y, 2, 2); });
   ctx.globalAlpha = 1;
@@ -722,7 +724,7 @@ function drawWall(){
   ctx.fillStyle = '#1c161d';
   ctx.fillRect(a.x, floorTop - 4, b.x - a.x, 4);
   // 레베카 옆 갈라진 틈 (구불구불)
-  const cr = P(3.5,0);
+  const cr = P(2.5,0);
   ctx.strokeStyle = '#0c090d'; ctx.lineWidth = 2;
   ctx.beginPath();
   for (let i = 0; i <= 12; i++){
@@ -762,36 +764,44 @@ function drawFloor(){
 }
 
 function drawGate(){
-  // 오른쪽 끝의 거대한 석문 — 바닥 전체를 막고 천장까지 솟음
-  const a0 = P(GATE_COL, 0), a1 = P(GATE_COL, ROWS);
-  const b0 = P(LOBBY_COLS - 0.1, 0);
-  const top = floorTop - T * 4.6;
-  const faceTop = top + T*0.9;
-  // 옆면(파는 면)
-  ctx.beginPath();
-  ctx.moveTo(a0.x, faceTop - rowH*0.2); ctx.lineTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y); ctx.lineTo(a1.x, faceTop + ROWS*rowH*0.15);
-  ctx.closePath();
-  ctx.fillStyle = '#56505b'; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2.5; ctx.stroke();
-  // 파인 자국 (교대로 판 흔적)
-  ctx.fillStyle = 'rgba(0,0,0,.4)';
-  [[1,0.55],[3,1.6],[1.5,0.9],[3.2,0.5]].forEach(([r, h], i) => {
-    const q = P(GATE_COL, r + 0.5);
-    ctx.beginPath(); ctx.ellipse(q.x + 3, q.y - T*h, T*0.16, T*0.24, 0.3*i, 0, Math.PI*2); ctx.fill();
+  // 석문 — 바닥 오른쪽 대각선 테두리 위에 반투명하게 서 있음
+  const B0 = P(LOBBY_COLS, 0), B1 = P(LOBBY_COLS, ROWS);
+  const Hg = T * 3.9;
+  // 문 로컬 좌표(u: 뒤→앞 0~1, v: 바닥→위 0~1)를 화면으로
+  const G = (u, v) => ({ x: B0.x + (B1.x - B0.x)*u, y: B0.y + (B1.y - B0.y)*u - Hg*v });
+  const outline = () => {
+    const p0 = G(0,0), p1 = G(1,0), p2 = G(1,0.82), p3 = G(0,0.82), top = G(0.5,1.08);
+    ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y);
+    ctx.quadraticCurveTo(top.x, top.y, p3.x, p3.y); ctx.closePath();
+  };
+  // 바닥에 드리운 그림자
+  ctx.fillStyle = 'rgba(0,0,0,.3)';
+  ctx.beginPath(); const s0 = G(0,0), s1 = G(1,0);
+  ctx.moveTo(s0.x, s0.y); ctx.lineTo(s1.x, s1.y); ctx.lineTo(s1.x - T*0.35, s1.y); ctx.lineTo(s0.x - T*0.35, s0.y); ctx.fill();
+  // 반투명 문짝
+  const gl = 0.5 + Math.sin(time*1.5)*0.5;
+  const g = ctx.createLinearGradient(G(0,0.9).x, G(0,0.9).y, G(1,0).x, G(1,0).y);
+  g.addColorStop(0, 'rgba(120,112,135,.42)'); g.addColorStop(1, 'rgba(70,64,82,.32)');
+  ctx.beginPath(); outline(); ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(22,17,26,.85)'; ctx.stroke();
+  ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(210,200,230,.35)'; ctx.stroke();
+  // 가운데 이음새
+  ctx.strokeStyle = 'rgba(22,17,26,.7)'; ctx.lineWidth = 2;
+  ctx.beginPath(); let q = G(0.5,0); ctx.moveTo(q.x,q.y); q = G(0.5,0.98); ctx.lineTo(q.x,q.y); ctx.stroke();
+  // 문양 (문 면을 따라 기울어진 원)
+  ctx.save();
+  const o = G(0,0);
+  ctx.transform(B1.x - B0.x, B1.y - B0.y, 0, -Hg, o.x, o.y);
+  ctx.beginPath(); ctx.ellipse(0.5, 0.58, 0.28, 0.13, 0, 0, Math.PI*2);
+  ctx.moveTo(0.64, 0.58); ctx.ellipse(0.5, 0.58, 0.14, 0.065, 0, 0, Math.PI*2);
+  ctx.restore();
+  ctx.strokeStyle = `rgba(150,200,255,${0.25 + gl*0.2})`; ctx.lineWidth = 2; ctx.stroke();
+  // 파인 자국
+  ctx.fillStyle = 'rgba(10,8,12,.45)';
+  [[0.28,0.15],[0.72,0.42],[0.3,0.24],[0.66,0.12]].forEach(([u,v], i) => {
+    const m = G(u, v);
+    ctx.beginPath(); ctx.ellipse(m.x, m.y, T*0.12, T*0.2, 0.5 + i*0.2, 0, Math.PI*2); ctx.fill();
   });
-  // 정면(문짝)
-  const g = ctx.createLinearGradient(a0.x, 0, b0.x + T, 0);
-  g.addColorStop(0,'#6a6370'); g.addColorStop(1,'#39333d');
-  ctx.beginPath();
-  ctx.moveTo(a1.x, a1.y); ctx.lineTo(a1.x, faceTop + ROWS*rowH*0.15);
-  ctx.quadraticCurveTo(a1.x + T*1.4, top - T*0.2, a1.x + T*3.4, faceTop);
-  ctx.lineTo(a1.x + T*3.4, a1.y);
-  ctx.closePath();
-  ctx.fillStyle = g; ctx.fill(); ctx.strokeStyle = OUT; ctx.lineWidth = 2.5; ctx.stroke();
-  const mid = a1.x + T*1.7;
-  ctx.beginPath(); ctx.moveTo(mid, a1.y); ctx.lineTo(mid, top + T*0.55); ctx.stroke();
-  ctx.strokeStyle = 'rgba(150,200,255,' + (0.18 + Math.sin(time*1.5)*0.06) + ')'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(mid, top + T*2.0, T*0.6, 0, Math.PI*2); ctx.stroke();
-  ctx.beginPath(); ctx.arc(mid, top + T*2.0, T*0.3, 0, Math.PI*2); ctx.stroke();
 }
 
 function drawFire(){
