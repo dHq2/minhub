@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.8
+  version v6.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -196,6 +196,7 @@
   .bt-row button{flex:1;background:#0a080c;border:1px solid var(--line);color:var(--ink);border-radius:3px;padding:7px 6px;font-size:12px;}
   .bt-row button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
   #bt-log{pointer-events:auto;position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(280px,36%);max-height:24%;overflow-y:auto;
+    touch-action:pan-y;overscroll-behavior:contain;cursor:grab;user-select:none;-webkit-user-select:none;
     background:rgba(10,8,12,.86);border:1px solid var(--line);border-radius:4px;padding:6px 10px;font-size:11px;line-height:1.6;}
   #bt-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom,0px));pointer-events:none;
     font-size:11px;color:var(--ink-dim);background:rgba(10,8,12,.75);border:1px solid var(--line);border-radius:3px;padding:4px 10px;white-space:nowrap;}
@@ -206,6 +207,8 @@
   #bt-touch button{width:64px;height:48px;background:rgba(23,18,26,.75);border:1px solid var(--line);color:var(--ink);border-radius:8px;font-size:12px;touch-action:none;}
   @media (pointer:coarse){ body.battle #bt-touch{display:flex;} }
   #bt-log .guard{color:#9fd3ff;} #bt-log .parry{color:#8fe8ff;font-weight:700;} #bt-log .bleed{color:#ff8f8f;}
+  #bt-log.dragging{cursor:grabbing;}
+  #bt-log-new{position:absolute;display:none;z-index:6;pointer-events:auto;padding:3px 10px;font-size:11px;border-radius:10px;border:1px solid var(--fire);background:rgba(10,8,12,.92);color:var(--fire);cursor:pointer;}
   #bt-log .crit{color:#ffd35a;} #bt-log .miss{color:#8d8374;} #bt-log .dead{color:#ff8f8f;} #bt-log .sys{color:#9fd3ff;} #bt-log .heal{color:#8ee08e;}
   @media (max-width:640px){ #bt-panel{width:calc(100% - 24px);max-height:44%;} #bt-log{left:12px;right:12px;width:auto;max-height:20%;} }
 
@@ -219,7 +222,7 @@
     #bt-quick button{flex:1;padding:9px 4px;font-size:14px;}
     #bt-panel{top:calc(58px + env(safe-area-inset-top,0px));max-height:52%;}
     #bt-panel.collapsed{display:none;}
-    #bt-log{bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:15%;font-size:11px;background:rgba(10,8,12,.62);pointer-events:none;}
+    #bt-log{bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:15%;font-size:11px;background:rgba(10,8,12,.62);pointer-events:auto;}
   }
   body.battle #act{display:none !important;}
   body.battle:not(.manual) #pad, body.battle:not(.manual) #bt-touch{display:none !important;}
@@ -297,6 +300,7 @@
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
     </div>
     <div id="bt-log"></div>
+    <button id="bt-log-new">↓ 최신 로그</button>
     <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>시작/정지</b> Space</div>
   </div>
   <div id="pad">
@@ -312,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.8';
+const VERSION = 'v6.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2583,13 +2587,46 @@ function spawnUnit(id, x, y, side){
   if (battle.over) battle.over = null;
   return u;
 }
-function logLine(text, cls = ''){
-  battle.log.push({ text, cls });
-  if (battle.log.length > 90) battle.log.shift();
+// 전투 로그: 드래그 · 스크롤로 위로 올려 지난 기록을 볼 수 있음. 올려서 읽는 동안은 화면이 멈추고, 맨 아래로 내리면 다시 따라감
+const btLogNew = document.getElementById('bt-log-new');
+let logFollow = true, logDrag = null;
+function renderLog(){
   btLog.innerHTML = '';
   battle.log.forEach(l => btLog.appendChild(el('div', l.cls, l.text)));
   btLog.scrollTop = btLog.scrollHeight;
 }
+function placeLogNew(){
+  const r = btLog.getBoundingClientRect(), pr = btLog.offsetParent ? btLog.offsetParent.getBoundingClientRect() : { left: 0, top: 0 };
+  btLogNew.style.left = (r.left - pr.left + r.width / 2 - btLogNew.offsetWidth / 2) + 'px';
+  btLogNew.style.top = (r.top - pr.top - btLogNew.offsetHeight - 4) + 'px';
+}
+function setLogFollow(on){
+  if (logFollow === on) return;
+  logFollow = on;
+  btLogNew.style.display = on ? 'none' : 'block';
+  if (on) renderLog(); else placeLogNew();
+}
+function logLine(text, cls = ''){
+  battle.log.push({ text, cls });
+  if (battle.log.length > 90) battle.log.shift();
+  if (battle.log.length === 1 && !logFollow){ btLogNew.textContent = '↓ 최신 로그'; logFollow = true; btLogNew.style.display = 'none'; }   // 새 전투: 다시 따라감
+  if (logFollow) renderLog();
+  else btLogNew.textContent = '↓ 새 로그 있음';
+}
+btLog.addEventListener('scroll', () => {
+  const atBottom = btLog.scrollHeight - btLog.scrollTop - btLog.clientHeight < 8;
+  if (!atBottom && !logFollow) return;
+  if (atBottom !== logFollow) setLogFollow(atBottom);
+});
+btLog.addEventListener('pointerdown', e => {                 // 마우스로 끌어서 올리기 (터치는 기본 스크롤)
+  e.stopPropagation();
+  if (e.pointerType !== 'mouse') return;
+  logDrag = { y: e.clientY, top: btLog.scrollTop }; btLog.classList.add('dragging'); btLog.setPointerCapture(e.pointerId);
+});
+btLog.addEventListener('pointermove', e => { if (logDrag) btLog.scrollTop = logDrag.top - (e.clientY - logDrag.y); });
+const endLogDrag = () => { logDrag = null; btLog.classList.remove('dragging'); };
+btLog.addEventListener('pointerup', endLogDrag); btLog.addEventListener('pointercancel', endLogDrag);
+btLogNew.addEventListener('click', e => { e.stopPropagation(); btLogNew.textContent = '↓ 최신 로그'; setLogFollow(true); });
 function syncRun(){
   document.getElementById('bt-run').textContent = battle.running ? '⏸ 일시정지' : '▶ 전투 시작';
   document.getElementById('bt-speed').textContent = `속도 x${battle.speed}`;
