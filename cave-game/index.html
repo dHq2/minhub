@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.6
+  version v6.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -312,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.6';
+const VERSION = 'v6.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2099,7 +2099,7 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:1500, atk:25, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:1.8, windup:0.6, hits:1, weight:2000, react:0.1,   // 대리석 몸, 몇 톤
-    boss:true, thunderAtk:90, residualAtk:20, kickAtk:40, shield:'🗿 대리석 피부 (특성)',
+    boss:true, thunderAtk:90, thunderRest:6, residualAtk:20, kickAtk:40, shield:'🗿 대리석 피부 (특성)',
     tags:['축복:신성A'], trait:'🔆 천벌: 적뢰 — 손을 번쩍 들면 2초 뒤 무작위 대상에게 붉은 낙뢰. 직격(스프라이트가 겹칠 때) 90 + 큰 경직, 인근 8칸 + 십자 4칸 잔류 25. 물 바닥이면 범위 안 전원 감전, 비 오는 필드면 맵 전체 감전 (피아 구분 없음). 감전은 3씩 5턴.\n🦶 날아차기 — 웅크렸다가 5칸을 일직선으로 날아참. 40 피해, 5% 확률로 머리가 터져 즉사 (모든 캐릭터 공통).',
     equip:{ 무기:'⚡ 붉은 낙뢰', 머리:'피 흐르는 광륜', 몸:'🌟 붉은 성해포', 장신구:'—' } },
   goblinArcher: { name:'고블린 궁수', grade:'', color:'#d9803a', sub:'굴 밖의 적 · 거리를 벌리고 활을 쏜다',
@@ -4062,7 +4062,7 @@ function bossUpdate(u, sdt, tgt, dist){
   const b = battle;
   u.thRoll = (u.thRoll ?? 1) - sdt; u.kkCd -= sdt; u.rainCd = (u.rainCd ?? 8) - sdt;
   let wantThunder = false;
-  if (u.thRoll <= 0){ u.thRoll = 1; wantThunder = Math.random() < 0.3; }   // 대기시간 없음: 쉬는 동안 매초 30%
+  if (u.thRoll <= 0){ u.thRoll = 1; wantThunder = Math.random() < 0.3; }   // 숨 고르기가 끝나면 매초 30%
   if (!u.cast){
     if (u.windup > 0) return false;
     const foes = b.units.filter(o => o.side !== u.side && !o.dead);
@@ -4131,7 +4131,7 @@ function bossUpdate(u, sdt, tgt, dist){
       if (!c.target.dead){ c.x = c.target.x; c.y = c.target.y; }
       if (c.t >= c.dur - 0.6) c.locked = true;           // 마지막 0.6초는 자리 고정 → 그때 피하면 직격 회피
     }
-    if (c.t >= c.dur){ strikeThunder(u, c); u.cast = null; }
+    if (c.t >= c.dur){ strikeThunder(u, c); u.cast = null; u.thRoll = u.st.thunderRest; }   // 천벌 뒤 숨 고르기: 이 동안은 다시 준비하지 않음
     return true;
   }
   const PREP = 0.8, LEAP = 0.35, FLY = 0.3, BACK = 0.5;
@@ -4522,7 +4522,7 @@ function drawBossBar(){
    ========================================================= */
 const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
-    desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
+    desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 떨어진 뒤 6초는 숨을 고르고, 그 뒤로는 쉬는 동안 매초 30% 확률로 다시 손을 든다. 숨 고르기가 반격의 틈.\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
   legion:    { name:'쥐 군단', kind:'패시브', icon:'🐀',
     desc:'포렌은 쥐들의 군단을 부린다.\n총공격: 포렌이 적을 치려 하면 흩어져 있던 쥐들이 일제히 "찍찍!" 그 적에게 달려들어 3.5초 동안 물어뜯는다 (쥐 3마리 이상, 대기 9초).\n방벽: 동료에게 강한 공격 (공격력 15 이상 · 보스 · 날아차기)이 오면, 가까운 쥐들이 필요한 만큼 (2~4마리) 동료 앞으로 모여 3초 동안 전열을 세운다. 사이에 선 쥐가 근접 공격을 대신 맞는다 (대기 6초).' },
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
