@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v1.9
+  version v2.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -172,6 +172,10 @@
   .bt-row button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
   #bt-log{pointer-events:auto;position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(280px,36%);max-height:24%;overflow-y:auto;
     background:rgba(10,8,12,.86);border:1px solid var(--line);border-radius:4px;padding:6px 10px;font-size:11px;line-height:1.6;}
+  #bt-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom,0px));pointer-events:none;
+    font-size:11px;color:var(--ink-dim);background:rgba(10,8,12,.75);border:1px solid var(--line);border-radius:3px;padding:4px 10px;white-space:nowrap;}
+  #bt-keys b{color:var(--fire);font-weight:400;margin-left:8px;} #bt-keys b:first-child{margin-left:0;}
+  @media (pointer:coarse){ #bt-keys{display:none;} }
   .bt-check{display:flex;gap:6px;align-items:center;color:var(--ink-dim);font-size:11px;margin-top:6px;}
   #bt-touch{position:absolute;right:20px;bottom:calc(190px + env(safe-area-inset-bottom,0px));display:none;flex-direction:column;gap:8px;}
   #bt-touch button{width:64px;height:48px;background:rgba(23,18,26,.75);border:1px solid var(--line);color:var(--ink);border-radius:8px;font-size:12px;touch-action:none;}
@@ -231,14 +235,16 @@
       <div class="bt-sec">도구</div>
       <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
       <div class="bt-hint">빈 바닥 좌클릭: 고른 유닛 소환 · 폰 좌클릭: 복사 · 폰 우클릭: 삭제 · 폰 드래그: 칸 이동 (커서를 올리면 외곽선이 금색으로)<br>
-        방향키 주인공 직접 이동 · Shift 달리기 · X 누르고 있기 방어 (이동 30% 느려짐) · Z 회피 스텝 (방어를 풀어야 가능)<br>
+        주인공은 직접 조작: 방향키 이동 · Shift 누르고 있기 달리기 · C 공격 · X 누르고 있기 방어 (이동 30% 느려짐) · Z 회피 스텝 (방어를 풀어야 가능)<br>
         적 머리 위 "!" 뜨고 맞기 직전에 X: 저스트 방어 (3% 튕겨냄) · Z: 저스트 회피 (3% 역전의 기회) → 둘 다 확정 치명타 반격</div>
+      <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
     </div>
     <div id="bt-log"></div>
+    <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>시작/정지</b> Space</div>
   </div>
   <div id="pad">
     <span></span><button data-k="up" aria-label="위">▲</button><span></span>
@@ -246,14 +252,14 @@
     <span></span><button data-k="down" aria-label="아래">▼</button><span></span>
   </div>
   <button id="act">대화</button>
-  <div id="bt-touch"><button id="tb-guard">🛡 방어</button><button id="tb-dodge">💨 회피</button><button id="tb-run">🏃 달리기</button></div>
+  <div id="bt-touch"><button id="tb-attack">⚔ 공격</button><button id="tb-guard">🛡 방어</button><button id="tb-dodge">💨 회피</button><button id="tb-run">🏃 달리기</button></div>
 </section>
 
 <script>
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v1.9';
+const VERSION = 'v2.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -541,6 +547,7 @@ window.addEventListener('keydown', e => {
   if (KEYMAP[e.code]){ held.add(KEYMAP[e.code]); e.preventDefault(); }
   if (e.code === 'KeyX' && !e.repeat) pressGuard();
   if (e.code === 'KeyZ' && !e.repeat) pressDodge();
+  if (e.code === 'KeyC' && !e.repeat) pressAttack();
   if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
   if (e.code === 'KeyI') toggleInv();
   if (e.code === 'KeyC' && mode === 'lobby') toggleStore();
@@ -2185,7 +2192,8 @@ function enterBattle(){
   floaters = []; sparks = []; held.clear();
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
   battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
-    redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, stars: [], parryTest: document.getElementById('bt-parry').checked };
+    redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [],
+    parryTest: document.getElementById('bt-parry').checked, playerAuto: document.getElementById('bt-auto').checked };
   buildBtTools();
   defaultSetup();
   btUi.hidden = false;
@@ -2291,6 +2299,10 @@ function pressDodge(){
   u.dodgeT = 0.3; u.dodgeCd = 0.7; u.ghostClock = 0;
 }
 document.getElementById('tb-dodge').addEventListener('pointerdown', e => { e.preventDefault(); pressDodge(); });
+document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); pressAttack(); });
+document.getElementById('bt-auto').onchange = e => { if (battle) battle.playerAuto = e.target.checked; };
+// 공격 입력: 0.35초 동안 버퍼 (공격 간격이 끝나는 순간에 맞춰 나감)
+function pressAttack(){ if (mode === 'battle' && battle) battle.attackPressAt = battle.clock; }
 [['tb-guard', 'guard'], ['tb-run', 'run']].forEach(([id, k]) => {
   const b = document.getElementById(id);
   b.addEventListener('pointerdown', e => { e.preventDefault(); held.add(k); if (k === 'guard') pressGuard(); });
@@ -2769,7 +2781,8 @@ function updateBattle(dt){
       const d = Math.hypot(o.x - u.x, o.y - u.y);
       if (d < dist){ dist = d; tgt = o; }
     }
-    u.manual = u.id === 'player' && !!(input || guardHeld);
+    u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
+    const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : (u.state === 'guard' && u.guardT > 0 && b.running));
     let dir = null, speed = u.st.spd;
@@ -2827,7 +2840,18 @@ function updateBattle(dt){
       if (u.guarding) speed *= 0.7;   // 방어 중 이동 30% 감소
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && u.state === 'retreat';
-      if (b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05){
+      // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
+      if (handOnly && b.running && !u.guarding && u.cd <= 0 && b.clock - b.attackPressAt <= 0.35){
+        b.attackPressAt = -99;
+        const inRange = tgt && dist <= u.st.range + 0.3;
+        u.stab = false;
+        u.windup = u.windupMax = u.st.windup;
+        u.atkTarget = inRange ? tgt : null;
+        if (inRange){ const n = norm(tgt.x - u.x, tgt.y - u.y); u.lx = n.x; u.ly = n.y; u.face = Math.sign(n.x) || u.face; reactTo(tgt, u); }
+        else { u.lx = u.face; u.ly = 0; }
+        dir = null;
+      }
+      if (!handOnly && b.running && tgt && !u.guarding && !retreating && u.cd <= 0 && dist <= u.st.range + 0.05){
         u.stab = !!(u.st.melee && dist <= u.st.melee.range + 0.05);
         u.windup = u.windupMax = u.stab ? u.st.melee.windup : u.st.windup;
         u.atkTarget = tgt; u.noHitT = 0;
@@ -2848,7 +2872,7 @@ function updateBattle(dt){
       }
     }
     u.t = u.moving ? 0 : 1;
-    if (tgt && !u.moving && u.stun <= 0 && u.windup <= 0) u.face = Math.sign(tgt.x - u.x) || u.face;
+    if (tgt && !u.moving && u.stun <= 0 && u.windup <= 0 && !handOnly) u.face = Math.sign(tgt.x - u.x) || u.face;
     if (u.moving && speed > u.st.spd * 1.2 && Math.random() < sdt * 12){
       const p = P(u.x + 0.5, u.y + 0.5);
       sparks.push({ x: p.x + camX, y: p.y - 2, vx: -u.vx * 12 + (Math.random() - 0.5) * 30, vy: -Math.random() * 40, life: 0.35, c: '#7a6a58' });
