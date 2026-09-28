@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v5.6
+  version v5.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v5.6';
+const VERSION = 'v5.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3786,9 +3786,9 @@ function drawSpriteUnit(o){
     if (face > 0) ctx.arc(cx, cy, R, -1.4, 0.9); else ctx.arc(cx, cy, R, Math.PI + 1.4, Math.PI - 0.9, true);
     ctx.stroke();
   }
-  if (o.id === 'jeokroe' && o.cast && o.cast.type === 'thunder'){
+  if (o.id === 'jeokroe' && o.cast && (o.cast.type === 'thunder' || o.cast.type === 'boltRain')){
     // 손을 번쩍 든 천벌: 붉은 기운이 몸을 감싸고 머리 위로 번개가 튄다
-    const k2 = Math.min(1, o.cast.t / o.cast.dur);
+    const k2 = o.cast.type === 'boltRain' ? 1 : Math.min(1, o.cast.t / o.cast.dur);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     const g = ctx.createRadialGradient(p.x, p.y - h * 0.6, 0, p.x, p.y - h * 0.6, h * 0.7);
     g.addColorStop(0, `rgba(255,40,40,${0.25 + k2 * 0.3})`); g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -3815,13 +3815,20 @@ function thunderTiles(cx, cy){
 }
 function bossUpdate(u, sdt, tgt, dist){
   const b = battle;
-  u.thRoll = (u.thRoll ?? 1) - sdt; u.kkCd -= sdt;
+  u.thRoll = (u.thRoll ?? 1) - sdt; u.kkCd -= sdt; u.rainCd = (u.rainCd ?? 8) - sdt;
   let wantThunder = false;
   if (u.thRoll <= 0){ u.thRoll = 1; wantThunder = Math.random() < 0.3; }   // 대기시간 없음: 쉬는 동안 매초 30%
   if (!u.cast){
     if (u.windup > 0) return false;
     const foes = b.units.filter(o => o.side !== u.side && !o.dead);
     if (!foes.length) return false;
+    if (u.rainCd <= 0){
+      u.cast = { type: 'boltRain', t: 0, waves: 0, nextWave: 0.6, bolts: [] };
+      u.rainCd = BOLT_RAIN.cd;
+      skillPop(u, 'boltRain');
+      logLine(`⛈️ ${u.name}이(가) 두 손을 치켜든다… 번개비`, 'crit');
+      return true;
+    }
     if (wantThunder){
       // 가장 체력이 많은 적 또는 가장 공격력이 높은 적 (반반)
       const byAtk = Math.random() < 0.5;
@@ -3861,6 +3868,13 @@ function bossUpdate(u, sdt, tgt, dist){
   }
   const c = u.cast;
   c.t += sdt;
+  if (c.type === 'boltRain'){
+    u.spriteAnim = null;
+    if (c.waves < BOLT_RAIN.waves && c.t >= c.nextWave){ spawnBoltWave(u, c); c.waves++; c.nextWave += BOLT_RAIN.gap; }
+    for (const bo of c.bolts){ if (bo.done) continue; bo.t += sdt; if (bo.t >= bo.dur){ bo.done = true; strikeBolt(u, bo); } }
+    if (c.waves >= BOLT_RAIN.waves && c.bolts.every(bo => bo.done)) u.cast = null;
+    return true;
+  }
   if (c.type === 'thunder'){
     u.spriteAnim = null;
     if (!c.locked){
@@ -3980,6 +3994,49 @@ function kickWallImpact(o, pinned){
   if (!pinned) logLine(`💫 ${o.name}이(가) 벽에 부딪혀 경직`, 'miss');
 }
 
+// 번개비: 맵에 4~7개씩 3번 쏟아지는 작은 적뢰. 위력은 천벌의 절반
+//  직격 45 + 0.8초 경직 + 감전: 적뢰(약) 5씩 5턴 · 십자 5칸 방사 10 + 잔류(약) 3씩 5턴
+//  비 오는 날에도 맵 전체로 퍼지지 않음 (한꺼번에 너무 많아서), 물 바닥이면 십자 안 아군도 잔류
+const BOLT_RAIN = { cd: 20, waves: 3, gap: 1.1, min: 4, max: 7, warn: 1.0, direct: 45, radial: 10 };
+const boltTiles = (cx, cy) => [[cx, cy], [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]].filter(([c, r]) => c >= 0 && c < BATTLE_COLS && r >= 0 && r < ROWS);
+function spawnBoltWave(u, c){
+  const foes = battle.units.filter(o => !o.dead && o.side !== u.side);
+  const n = BOLT_RAIN.min + Math.floor(Math.random() * (BOLT_RAIN.max - BOLT_RAIN.min + 1));
+  const taken = new Set();
+  for (let i = 0; i < n; i++){
+    let x, y;
+    if (i < Math.ceil(n / 2) && foes.length){ const f = foes[Math.floor(Math.random() * foes.length)]; x = Math.round(f.x); y = Math.round(f.y); }   // 절반은 적 발밑
+    else { x = Math.floor(Math.random() * BATTLE_COLS); y = Math.floor(Math.random() * ROWS); }                                                 // 나머지는 아무 데나
+    if (taken.has(x + ',' + y)){ x = Math.floor(Math.random() * BATTLE_COLS); y = Math.floor(Math.random() * ROWS); }
+    taken.add(x + ',' + y);
+    c.bolts.push({ x, y, t: -Math.random() * 0.25, dur: BOLT_RAIN.warn, done: false });
+  }
+}
+function strikeBolt(u, bo){
+  const b = battle;
+  const tiles = boltTiles(bo.x, bo.y);
+  const inArea = o => tiles.some(([tc, tr]) => tc === Math.round(o.x) && tr === Math.round(o.y));
+  b.fx.push({ type: 'thunder', x: bo.x, y: bo.y, tiles, life: 0.5, max: 0.5, seed: Math.random() * 1000 });
+  b.redFlash = Math.max(b.redFlash, 0.3); shake = Math.max(shake, 0.25);
+  const q = P(bo.x + 0.5, bo.y + 0.5);
+  for (let i = 0; i < 16; i++) sparks.push({ x: q.x + camX, y: q.y - 4, vx: (Math.random() - 0.5) * 360, vy: -Math.random() * 260, life: 0.45, c: i % 2 ? '#ff4a4a' : '#fff0f0' });
+  for (const o of b.units){
+    if (o.dead) continue;
+    const opp = o.side !== u.side, air = (o.lift || 0) > 0.05;
+    if (opp && Math.hypot(o.x - bo.x, o.y - bo.y) < 0.55){
+      o.hp = Math.max(0, o.hp - BOLT_RAIN.direct); o.hurt = 0.3; o.stun = Math.max(o.stun, 0.8); o.charT = Math.max(o.charT, 1.2);
+      o.windup = 0; o.atkTarget = null;
+      fxText(o, `직격 ${BOLT_RAIN.direct}`, '#ff4a4a', 'big');
+      logLine(`⛈️ 번개비 직격 → ${o.name}: ${BOLT_RAIN.direct}`, 'crit');
+      applyShock(o, 'redHalf', true);
+    } else if (opp && inArea(o)){
+      o.hp = Math.max(0, o.hp - BOLT_RAIN.radial); o.hurt = 0.2; o.stun = Math.max(o.stun, 0.3);
+      fxText(o, `방사 ${BOLT_RAIN.radial}`, '#ff8f8f');
+      if (!air) applyShock(o, 'resHalf', true);
+    } else if (b.water && inArea(o) && !air) applyShock(o, 'resHalf', true);
+    if (o.hp <= 0 && !o.dead) killUnit(o, '번개비');
+  }
+}
 function strikeThunder(u, c){
   const b = battle;
   const cx = Math.round(c.x), cy = Math.round(c.y);
@@ -4026,7 +4083,8 @@ function strikeThunder(u, c){
 }
 // 감전 두 가지: 적뢰(직격, 붉은 번개) 10씩 5턴 · 잔류(범위) 5씩 5턴. 1턴 = 1초. 강한 쪽이 약한 쪽을 덮어씀
 const SHOCK_TICK = 1;
-const SHOCKS = { red: { name:'감전: 적뢰', dmg:10, turns:5, color:'#ff4a4a', tag:'⚡적뢰' }, res: { name:'잔류', dmg:5, turns:5, color:'#ffb45a', tag:'⚡잔류' } };
+const SHOCKS = { red: { name:'감전: 적뢰', dmg:10, turns:5, color:'#ff4a4a', tag:'⚡적뢰' }, res: { name:'잔류', dmg:5, turns:5, color:'#ffb45a', tag:'⚡잔류' },
+  redHalf: { name:'감전: 적뢰 (약)', dmg:5, turns:5, color:'#ff6a5a', tag:'⚡적뢰' }, resHalf: { name:'잔류 (약)', dmg:3, turns:5, color:'#ffc27a', tag:'⚡잔류' } };
 function applyShock(o, kind = 'res', quiet){
   const K = SHOCKS[kind];
   if (o.shock && SHOCKS[o.shock.kind].dmg > K.dmg && o.shock.ticks > 0){ o.shock.ticks = Math.max(o.shock.ticks, K.turns); return; }
@@ -4039,6 +4097,13 @@ function dangerDir(u){
   for (const o of battle.units){
     if (o.dead || !o.cast || o.side === u.side) continue;
     const c = o.cast;
+    if (c.type === 'boltRain'){
+      for (const bo of c.bolts){
+        if (bo.done || bo.t < (1 - u.st.react) * 0.6) continue;
+        const d = Math.hypot(u.x - bo.x, u.y - bo.y);
+        if (d < 1.3) return d > 0.01 ? norm(u.x - bo.x, u.y - bo.y) : { x: 0, y: u.y < 2 ? 1 : -1 };
+      }
+    }
     if (c.type === 'thunder' && c.t > (1 - u.st.react) * 1.2){
       const d = Math.hypot(u.x - c.x, u.y - c.y);
       if (d < 1.7) return d > 0.01 ? norm(u.x - c.x, u.y - c.y) : { x: 0, y: u.y < 2 ? 1 : -1 };
@@ -4059,6 +4124,21 @@ function drawBossTelegraphs(){
   for (const u of battle.units){
     if (u.dead || !u.cast) continue;
     const c = u.cast;
+    if (c.type === 'boltRain'){
+      for (const bo of c.bolts){
+        if (bo.done || bo.t < 0) continue;
+        const k = Math.min(1, bo.t / bo.dur), pulse = 0.5 + Math.sin(time * 20 + bo.x) * 0.5;
+        for (const [tc, tr] of boltTiles(bo.x, bo.y)){
+          const q = [P(tc, tr), P(tc + 1, tr), P(tc + 1, tr + 1), P(tc, tr + 1)];
+          ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
+          ctx.fillStyle = `rgba(255,40,40,${0.05 + k * 0.15})`; ctx.fill();
+        }
+        const p = P(bo.x + 0.5, bo.y + 0.5);
+        ctx.strokeStyle = `rgba(255,70,70,${0.4 + k * 0.4 + pulse * 0.2 * k})`; ctx.lineWidth = 1.5 + k * 1.5;
+        ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.42, T * 0.17, 0, 0, Math.PI * 2); ctx.stroke();
+      }
+      continue;
+    }
     if (c.type === 'thunder'){
       const k = Math.min(1, c.t / c.dur), pulse = 0.5 + Math.sin(time * 18) * 0.5;
       for (const [tc, tr] of thunderTiles(Math.round(c.x), Math.round(c.y))){
@@ -4147,6 +4227,8 @@ function drawBossBar(){
 const SKILLS = {
   thunder:   { name:'천벌: 적뢰', kind:'액티브', img:'assets/skill_thunder.png',
     desc:'손을 번쩍 들고 2초 뒤, 적 중 가장 질긴 자(체력 최고) 또는 가장 강한 자(공격력 최고)에게 붉은 낙뢰를 내린다. 대기시간이 없어서 재수 없으면 연달아 두세 번 떨어진다 (쉬는 동안 매초 30%).\n처음 1.4초는 대상을 쫓고, 마지막 0.6초는 자리가 고정된다.\n직격 (몸이 번개에 닿을 때): 90 피해 + 1.6초 큰 경직 + 그을림 + 감전: 적뢰 (붉은 번개, 10씩 5턴)\n범위 (중심 · 인근 8칸 · 십자 4칸): 방사 20 + 짧은 경직 + 잔류 (5씩 5턴)\n비 오는 날: 방사와 잔류가 확정으로 맵 전체 (피아 불문). 공중에 뜬 상태면 면역\n물 바닥: 범위 안이면 아군도 잔류' },
+  boltRain:  { name:'번개비', kind:'액티브', icon:'⛈️',
+    desc:'두 손을 치켜들고 맵에 작은 적뢰를 4~7개씩 3번 연달아 쏟아낸다 (1.1초 간격). 대기 20초.\n떨어질 자리에 붉은 십자가 1초 먼저 표시된다. 절반은 적 발밑, 나머지는 아무 데나.\n위력은 천벌의 절반: 직격 45 + 0.8초 경직 + 감전: 적뢰 (약, 5씩 5턴) · 십자 5칸 방사 10 + 잔류 (약, 3씩 5턴)\n비 오는 날에도 맵 전체로 퍼지지 않는다. 물 바닥이면 십자 안의 아군도 잔류.' },
   dropkick:  { name:'날아차기', kind:'액티브', icon:'🦶',
     desc:'거대한 돌덩이가 포탄처럼 날아온다. 0.8초 웅크렸다가 (끊을 수 없음) 5칸을 일직선으로 날아찬다 (5~7초마다). 도약 · 비행 중엔 무적.\n근접전 중엔 낮은 확률 (매초 25%)로 뒤로 크게 뛰어 3칸 물러난 뒤, 그 자리에서 끝거리 날아차기.\n방향은 정확하고 판정은 넓다. 피하려면 웅크리는 동안 경로 밖으로 나가야 한다.\n방패가 없거나 막고 있지 않으면: 확정 치명타 (40 x3, 방어력만큼 감소), 5% 확률로 머리가 터져 즉사 (카리우스도 예외 없음)\n방패를 들고 막는 중이면: 막기율로 막아 60% 감소. 튕겨냄 · 회피 반격은 없다\n맞으면 무게와 상관없이 날아차기 방향으로 벽까지 날아가 부딪히고 경직\n발이 벽에 부딪히는 경로에서 벽 사이에 끼면 짓뭉개짐: 확정 치명타 + 40' },
   loyalty:   { name:'충성', kind:'패시브', img:'assets/skill_loyalty.png',
@@ -4188,7 +4270,7 @@ HEROES.goblin.skills = ['ignite'];
 HEROES.morningstar.skills = ['madness'];
 HEROES.poren.skills = ['loyalty', 'ratking', 'shieldBP'];
 HEROES.norman.skills = ['firstAid', 'medic'];
-ENEMIES.jeokroe.skills = ['thunder', 'dropkick', 'shieldBP'];
+ENEMIES.jeokroe.skills = ['thunder', 'boltRain', 'dropkick', 'shieldBP'];
 for (const k of Object.values(SKILLS)) if (k.img){ k.image = new Image(); k.image.src = k.img; }
 
 function skillIcon(id){
