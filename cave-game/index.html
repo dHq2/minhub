@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v4.5
+  version v4.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,7 +287,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v4.5';
+const VERSION = 'v4.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4062,7 +4062,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'체력이 10% 남으면 발동. 0.5초 만에 얼굴에 그림자가 지고 자세가 살짝 낮아진다.\n2페이즈: 얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +20 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 노인의 팔로 앞을 내려찍어 주변 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형으로 돌진하며 부딪힌 적들을 밀고 나가고 (무거울수록 버팀), 끝에서 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)' },
+    desc:'체력이 10% 남으면 발동. 0.5초 만에 얼굴에 그림자가 지고 자세가 살짝 낮아진다.\n2페이즈: 얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 된다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 (최후의 저력, 피해 67% 감소) · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 노인의 팔로 앞을 내려찍어 주변 1.3칸에 40 피해 + 경직 (대기 5초)\n돌진: 적 진형으로 돌진하며 부딪힌 적들을 밀고 나가고 (무거울수록 버팀), 끝에서 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
@@ -4294,7 +4294,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       if (kc.t >= kc.dur){
         u.phase2 = true; u.p2k = 1; u.kc = null;
         const s0 = u.st;
-        u.st = { ...s0, atk: Math.round(s0.atk * 1.5), def: s0.def + 20, spd: +(s0.spd * 1.4).toFixed(2), cd: +(s0.cd * 0.8).toFixed(2), windup: +(s0.windup * 0.8).toFixed(2),
+        u.st = { ...s0, atk: Math.round(s0.atk * 1.5), def: s0.def + 50, spd: +(s0.spd * 1.4).toFixed(2), cd: +(s0.cd * 0.8).toFixed(2), windup: +(s0.windup * 0.8).toFixed(2),
           sweepAtk: Math.round(s0.sweepAtk * 1.5), run: +(s0.spd * 1.4 * RUN_MUL).toFixed(1), atkSpd: +(1 / (s0.cd * 0.8)).toFixed(2) };
         shake = 0.5; b.hitstop = Math.max(b.hitstop, 0.2);
         ringAt(u, '255,246,192');
