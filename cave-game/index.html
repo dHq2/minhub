@@ -1,7 +1,8 @@
+<meta charset="utf-8">
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v1.2
+  version v1.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -80,6 +81,46 @@
   #inv .slot span:first-child{color:var(--ink-dim);}
   #inv .stat{margin-top:10px;color:var(--ink-dim);font-size:12px;line-height:1.6;}
 
+  /* 턴 · 속도 */
+  #mapline{color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums;}
+  #nextdrop{color:var(--ink-dim);font-size:11px;}
+  #turnbar{width:150px;height:3px;background:var(--line);margin:5px 0 6px;border-radius:2px;overflow:hidden;}
+  #turnbar i{display:block;height:100%;width:0;background:var(--fire);}
+  #speed{display:flex;gap:4px;pointer-events:auto;}
+  #speed button{background:rgba(23,18,26,.88);color:var(--ink-dim);border:1px solid var(--line);padding:3px 8px;border-radius:3px;font-size:11px;}
+  #speed button.on{color:var(--fire);border-color:var(--fire);}
+
+  /* 이벤트 창 (화면 가운데) */
+  #event{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 32px));max-height:min(80%,640px);
+    display:flex;flex-direction:column;background:rgba(14,11,16,.97);border:1px solid var(--line);border-top:3px solid var(--fire);border-radius:4px;padding:14px 16px;z-index:5;}
+  #event .ev-narr{font-family:var(--display);font-size:20px;color:var(--ink);margin-bottom:10px;text-wrap:balance;}
+  #event .ev-box{flex:1;overflow-y:auto;background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:6px 10px;}
+  #event .ev-tag{font-size:11px;color:var(--ink-dim);letter-spacing:1px;padding:4px 0 6px;border-bottom:1px dashed var(--line);}
+  #event .ev-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed #221c25;}
+  #event .ev-row:last-child{border-bottom:none;}
+  #event .ev-em{font-size:22px;text-align:center;}
+  #event .ev-name{font-size:14px;color:var(--ink);}
+  #event .ev-desc{font-size:12px;color:var(--ink-dim);line-height:1.5;}
+  #event .ev-chips{font-size:12px;color:#9fe0a8;text-align:right;white-space:nowrap;}
+  #event .ev-row.relic .ev-name{color:#ffd76a;}
+  #event .ev-row.weather .ev-name{color:#9fd3ff;}
+  #event .ev-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--ink-dim);}
+  #event .ev-foot button{background:var(--fire);color:#1a1008;border:none;border-radius:3px;padding:7px 14px;font-size:13px;}
+
+  /* 창고 */
+  #store{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));max-height:80%;overflow-y:auto;
+    background:rgba(14,11,16,.97);border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:13px;z-index:4;}
+  #store h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:20px;color:var(--fire);}
+  #store h4{margin:12px 0 6px;font-weight:400;font-size:12px;color:var(--ink-dim);letter-spacing:1px;}
+  #store .res{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  #store .res div{background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:5px 6px;font-variant-numeric:tabular-nums;}
+  #store .res small{display:block;font-size:10px;color:var(--ink-dim);}
+  #store .list div{padding:3px 0;}
+  #store .relic{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px dashed var(--line);color:#ffd76a;padding:5px 0;}
+  #store .info{margin-top:8px;background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:8px 10px;white-space:pre-wrap;line-height:1.6;font-size:12px;}
+  #store .src{margin-top:12px;font-size:10px;color:#5d5361;}
+  @media (max-width:640px){ #store .res{grid-template-columns:repeat(3,1fr);} }
+
   #pad{position:absolute;bottom:calc(96px + env(safe-area-inset-bottom,0px));left:16px;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:4px;}
   #pad button,#act{background:rgba(23,18,26,.72);border:1px solid var(--line);color:var(--ink);border-radius:6px;font-size:17px;touch-action:none;}
   #act{position:absolute;right:20px;bottom:calc(110px + env(safe-area-inset-bottom,0px));width:64px;height:64px;border-radius:50%;display:none;font-size:14px;}
@@ -98,16 +139,25 @@
 <!-- 2. 굴 (로비) -->
 <section id="game" hidden>
   <canvas id="cv"></canvas>
-  <div class="hud" id="hud-tl"><b>프롤로그</b> · 노말모드<br><span id="mapname">굴 (로비)</span></div>
+  <div class="hud" id="hud-tl"><b>프롤로그</b> · 노말모드
+    <div id="mapline"></div>
+    <div id="nextdrop"></div>
+    <div id="turnbar"><i></i></div>
+    <div id="speed"><button data-s="0" aria-label="일시정지">⏸</button><button data-s="1" aria-label="보통 속도">▶</button><button data-s="4" aria-label="빠르게">▶▶</button></div>
+  </div>
   <div class="hud" id="bar"></div>
   <div class="hud" id="hud-tr">
+    <button id="btn-store">창고 [C]</button>
     <button id="btn-inv">장비 [I]</button>
+    <button id="btn-drop">낙하 테스트</button>
     <button id="btn-remake">캐릭터 다시</button>
   </div>
   <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
   <div class="hud" id="ver"></div>
   <div id="dialog" hidden><div class="who"></div><div class="txt"></div><div class="nx">Space ▶</div></div>
   <div id="inv" hidden></div>
+  <div id="store" hidden></div>
+  <div id="event" hidden></div>
   <div id="pad">
     <span></span><button data-k="up" aria-label="위">▲</button><span></span>
     <button data-k="left" aria-label="왼쪽">◀</button><span></span><button data-k="right" aria-label="오른쪽">▶</button>
@@ -120,7 +170,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v1.2';
+const VERSION = 'v1.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -232,7 +282,7 @@ function summary(){
       onAnswer = null; optsEl.innerHTML = '';
       say('> 들어간다', 'me'); say('…어두운 굴 속, 모닥불 냄새가 난다.', 'ok');
       const ch = { ...draft, v: VERSION };
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(ch)); } catch(e){}
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(ch)); localStorage.removeItem(WORLD_KEY); } catch(e){}
       setTimeout(() => startGame(ch), 700);
     } else if (v === '2' || /^n/i.test(v)){
       onAnswer = null; say('> 다시', 'me'); beginCreator(false);
@@ -318,6 +368,10 @@ function startGame(ch){
   resize();
   setupLobby();
   buildBar();
+  world = loadWorld(ch);
+  falling = null; caption = null; rain = []; evEl.hidden = true; storeEl.hidden = true;
+  syncSpeed();
+  if (!world.opened) setTimeout(() => startDrop(), 2500);
   try { window.claude?.hot?.snapshot?.(() => ({ character })); } catch(e){}
   if (!startGame.looping){ startGame.looping = true; requestAnimationFrame(loop); }
 }
@@ -388,7 +442,8 @@ window.addEventListener('keydown', e => {
   if (KEYMAP[e.code]){ held.add(KEYMAP[e.code]); e.preventDefault(); }
   if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
   if (e.code === 'KeyI') toggleInv();
-  if (e.code === 'Escape'){ closeInv(); if (dialog) endDialog(); }
+  if (e.code === 'KeyC') toggleStore();
+  if (e.code === 'Escape'){ closeInv(); storeEl.hidden = true; if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }
 });
 window.addEventListener('keyup', e => { if (KEYMAP[e.code]) held.delete(KEYMAP[e.code]); });
 window.addEventListener('blur', () => held.clear());
@@ -400,7 +455,7 @@ document.querySelectorAll('#pad button').forEach(b => {
 document.getElementById('act').addEventListener('pointerdown', e => { e.preventDefault(); action(); });
 document.getElementById('btn-inv').onclick = toggleInv;
 document.getElementById('btn-remake').onclick = () => {
-  gameEl.hidden = true; endDialog(); closeInv();
+  gameEl.hidden = true; endDialog(); closeInv(); closeEvent(); storeEl.hidden = true; falling = null;
   const cr = document.getElementById('creator'); cr.hidden = false; cr.style.display = 'flex';
   logEl.innerHTML = ''; beginCreator(false);
 };
@@ -418,7 +473,7 @@ function stepPawn(p, dc, dr){
 }
 
 function tryMovePlayer(){
-  if (dialog || player.t < 1 || !invEl.hidden) return;
+  if (dialog || player.t < 1 || !invEl.hidden || !evEl.hidden || !storeEl.hidden) return;
   let dc = 0, dr = 0;
   if (held.has('left')) dc = -1; else if (held.has('right')) dc = 1;
   else if (held.has('up')) dr = -1; else if (held.has('down')) dr = 1;
@@ -438,6 +493,8 @@ function nearestNpc(){
 /* ---------- 대화 ---------- */
 const dlgEl = document.getElementById('dialog');
 function action(){
+  if (!evEl.hidden) return closeEvent();
+  if (!storeEl.hidden) return (storeEl.hidden = true);
   if (!invEl.hidden) return closeInv();
   if (dialog){
     dialog.i++;
@@ -598,6 +655,11 @@ function update(dt){
   embers.forEach(e => { e.life -= dt; e.wx += e.vx * dt; e.y += e.vy * dt; });
   embers = embers.filter(e => e.life > 0);
   shake = Math.max(0, shake - dt);
+  tickTurn(dt);
+  updateFalling(dt);
+  updateWeather(dt);
+  if (caption){ caption.life -= dt; if (caption.life <= 0) caption = null; }
+  updateHud();
 
 
   const n = dialog ? null : nearestNpc();
@@ -655,6 +717,7 @@ function draw(){
     { y: FIRE.r - 0.01, fn: drawFire },
   ].sort((a,b) => a.y - b.y);
   list.forEach(o => o.fn());
+  drawFalling();
 
   // 불빛 (가산 합성)
   const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
@@ -676,6 +739,7 @@ function draw(){
 
   ctx.fillStyle = '#ffe9a8';
   sparks.forEach(s => ctx.fillRect(s.x - camX, s.y, 2.5, 2.5));
+  drawWeather();
 
   // 이름표 (림월드처럼 발밑)
   labelUnder(player, character.name, '#f3e6c8');
@@ -698,6 +762,17 @@ function draw(){
   const vg = ctx.createRadialGradient(W/2, H*0.62, H*0.25, W/2, H*0.62, Math.max(W,H)*0.8);
   vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.7)');
   ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+
+  if (flash > 0){ ctx.fillStyle = `rgba(230,235,255,${flash})`; ctx.fillRect(0,0,W,H); }
+  if (caption){
+    ctx.globalAlpha = Math.min(1, caption.life, (caption.max - caption.life) * 3);
+    ctx.font = `${Math.round(Math.max(20, T*0.42))}px "Do Hyeon",sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.8)';
+    ctx.strokeText(caption.text, W/2, H*0.3);
+    ctx.fillStyle = '#eadfcb'; ctx.fillText(caption.text, W/2, H*0.3);
+    ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+  }
 }
 
 function drawWall(){
@@ -1145,6 +1220,328 @@ function updateBar(near){
   barItems.karius.job.textContent = lab(karius);
   barItems.goblin.job.textContent = lab(goblin);
   for (const id of ['rebecca','karius','goblin']) barItems[id].el.classList.toggle('near', !!near && near.id === id);
+}
+
+
+/* =========================================================
+   턴 · 창고 · 낙하
+   낙하 목록은 data/drops.csv (엑셀로 편집 가능)
+   ========================================================= */
+const TURN_SEC = 20;          // 1턴 = 실제 20초 (▶ 기준)
+const TURNS_PER_DAY = 4;      // 6시간 = 1턴
+const DROP_EVERY = 10;        // 10배수 턴마다 낙하
+const STORE_CAP = 100;
+const WORLD_KEY = 'cave-game.world.v1';
+const RES = [ ['🍖','식량'], ['🥫','통조림'], ['🪵','목재'], ['🪨','석재'], ['⚙️','금속'], ['🔥','장작'], ['🌿','약재'], ['💉','약품'] ];
+const WEATHER = { 비:'🌧️', 뇌우:'🌩️', 눈:'❄️' };
+// data/drops.csv 를 못 읽었을 때만 쓰는 최소 목록
+const FALLBACK_CSV = `종류,이모지,이름,설명,변동,가중치,최소턴,최대턴,마지막칸
+물건,🛡️,낡은 방패,쪼개면 장작이 됩니다.,🪵+2,8,1,,
+시체,💀,기사의 시체,죽었습니다. 명복을.,🍖+2 ⚙️+2,8,1,,
+물건,🪵,젖은 통나무,마르면 쓸 만합니다.,🔥+3,9,1,,
+물건,🥫,제7구역 배급 통조림,유통기한이 달력 세 종류로 적혀 있습니다.,🥫+3,8,1,,`;
+
+let world = null, DROPS = [], dropSource = '', falling = null, caption = null, rain = [], flash = 0;
+const evEl = document.getElementById('event');
+const storeEl = document.getElementById('store');
+
+function newWorld(ch){
+  return { owner: ch.name, turn: 1, clock: 0, speed: 1, opened: false, weather: null,
+    res: { '🍖':10, '🥫':2, '🪵':4, '🪨':6, '⚙️':2, '🔥':6, '🌿':1, '💉':0 },
+    items: {}, relics: [], stock: { '🐌':3 } };
+}
+function loadWorld(ch){
+  try {
+    const w = JSON.parse(localStorage.getItem(WORLD_KEY) || 'null');
+    if (w && w.owner === ch.name && w.res) return w;
+  } catch(e){}
+  return newWorld(ch);
+}
+function saveWorld(){ try { localStorage.setItem(WORLD_KEY, JSON.stringify(world)); } catch(e){} }
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  text = text.replace(/^﻿/, '');
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if (q){
+      if (ch === '"'){ if (text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === ','){ row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r'){
+      if (ch === '\r' && text[i+1] === '\n') i++;
+      row.push(cell); rows.push(row); row = []; cell = '';
+    } else cell += ch;
+  }
+  if (cell || row.length){ row.push(cell); rows.push(row); }
+  const head = rows.shift().map(h => h.trim());
+  return rows.filter(r => r.some(c => c.trim()))
+    .map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] || '').trim()])));
+}
+function toDrop(o){
+  return { type: o['종류'], emoji: o['이모지'] || '❔', name: o['이름'], desc: o['설명'], fx: o['변동'] || '',
+    weight: +o['가중치'] || 0, min: +o['최소턴'] || 1, max: o['최대턴'] ? +o['최대턴'] : Infinity,
+    last: /^y/i.test(o['마지막칸'] || '') };
+}
+async function loadDrops(){
+  try {
+    const r = await fetch('data/drops.csv', { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    DROPS = parseCSV(await r.text()).map(toDrop);
+    dropSource = `data/drops.csv · ${DROPS.length}종`;
+  } catch(e){
+    DROPS = parseCSV(FALLBACK_CSV).map(toDrop);
+    dropSource = '기본 목록 사용 중 (data/drops.csv 를 못 읽음)';
+  }
+}
+const dropsReady = loadDrops();
+
+/* ---------- 뽑기 ---------- */
+function pickWeighted(pool){
+  const tot = pool.reduce((a, d) => a + d.weight, 0);
+  if (tot <= 0) return null;
+  let r = Math.random() * tot;
+  for (const d of pool){ r -= d.weight; if (r <= 0) return d; }
+  return pool[pool.length - 1];
+}
+function rollDrop(turn){
+  const owned = new Set(world.relics.map(r => r.name));
+  const ok = d => turn >= d.min && turn <= d.max && !(d.type === '유물' && owned.has(d.name));
+  const out = DROPS.filter(d => d.min === turn && d.max === turn && ok(d));   // 그 턴 고정 등장
+  const count = Math.max(out.length, 3 + Math.floor(Math.random() * 8));     // 3~10개
+  const pool = DROPS.filter(d => ok(d) && d.weight > 0 && !d.last);
+  let relics = out.filter(d => d.type === '유물').length;
+  for (let guard = 0; out.length < count - 1 && guard < 200; guard++){
+    const d = pickWeighted(pool.filter(x => x.type !== '유물' || (relics < 2 && !out.includes(x))));
+    if (!d) break;
+    if (d.type === '유물') relics++;
+    out.push(d);
+  }
+  // 마지막 칸: 가끔 날씨나 특수 이벤트
+  if (out.length < count){
+    const lastPool = DROPS.filter(d => ok(d) && d.weight > 0 && d.last);
+    const d = (Math.random() < 0.35 && pickWeighted(lastPool)) || pickWeighted(pool.filter(x => x.type !== '유물'));
+    if (d) out.push(d);
+  }
+  return out;
+}
+function applyDrop(d){
+  const chips = [];
+  for (const tok of d.fx.split(/\s+/).filter(Boolean)){
+    let m;
+    if (tok === '유물'){
+      world.relics.push({ emoji: d.emoji, name: d.name, desc: d.desc, turn: world.turn });
+      chips.push('🌟 보관');
+    } else if (tok === '보관'){
+      const it = world.items[d.name] || (world.items[d.name] = { emoji: d.emoji, name: d.name, desc: d.desc, n: 0 });
+      it.n++; chips.push(`${d.emoji}x1`);
+    } else if ((m = tok.match(/^날씨:(.+):(\d+)$/))){
+      world.weather = { kind: m[1], turns: +m[2] };
+      chips.push(`${WEATHER[m[1]] || ''}/${m[2]}턴`);
+    } else if ((m = tok.match(/^(.+?)([+-]\d+)$/))){
+      const k = m[1], v = +m[2];
+      const bag = k === '🐌' ? world.stock : world.res;
+      bag[k] = Math.max(0, (bag[k] || 0) + v);
+      chips.push(`${k}${v > 0 ? '+' : ''}${v}`);
+    }
+  }
+  return chips;
+}
+function storeUsed(){
+  return Object.values(world.res).reduce((a, b) => a + b, 0)
+    + Object.values(world.items).reduce((a, b) => a + b.n, 0) + world.relics.length;
+}
+
+/* ---------- 턴 ---------- */
+function tickTurn(dt){
+  if (!world || falling || !evEl.hidden || dialog) return;
+  world.clock += dt * world.speed;
+  if (world.clock >= TURN_SEC){ world.clock -= TURN_SEC; nextTurn(); }
+}
+function nextTurn(){
+  world.turn++;
+  if (world.weather && --world.weather.turns <= 0){
+    caption = { text: '날씨가 잦아듭니다.', life: 2.2, max: 2.2 };
+    world.weather = null;
+  }
+  if (world.turn % DROP_EVERY === 0) startDrop();
+  saveWorld();
+}
+function syncSpeed(){
+  document.querySelectorAll('#speed button').forEach(b => b.classList.toggle('on', +b.dataset.s === world.speed));
+}
+document.querySelectorAll('#speed button').forEach(b => b.onclick = () => { world.speed = +b.dataset.s; syncSpeed(); saveWorld(); });
+let hudCache = '';
+function updateHud(){
+  const w = world;
+  const day = Math.floor((w.turn - 1) / TURNS_PER_DAY) + 1;
+  const wx = w.weather ? ` | ${WEATHER[w.weather.kind] || ''}/${w.weather.turns}턴` : '';
+  const left = DROP_EVERY - (w.turn % DROP_EVERY);
+  const line = `📅 ${day}일차 | turn ${w.turn} | 굴${wx}`;
+  const nd = falling ? '🔥 낙하 중…' : `다음 낙하까지 ${left}턴`;
+  if (line + nd !== hudCache){
+    hudCache = line + nd;
+    document.getElementById('mapline').textContent = line;
+    document.getElementById('nextdrop').textContent = nd;
+  }
+  document.querySelector('#turnbar i').style.width = (w.clock / TURN_SEC * 100).toFixed(1) + '%';
+}
+
+/* ---------- 낙하 연출: 모닥불로 떨어짐 ---------- */
+async function startDrop(){
+  if (falling || !player || gameEl.hidden) return;
+  falling = { list: [], items: [], t: 0, done: false };
+  caption = { text: '공기를 가르는 소리가 들립니다.', life: 2.6, max: 2.6 };
+  await dropsReady;
+  const list = rollDrop(world.turn);
+  falling.list = list;
+  falling.items = list.map((d, i) => ({ d, delay: 1.4 + i * 0.3, y: null, vy: 0, landed: false,
+    rot: (Math.random() - 0.5) * 2, dx: (Math.random() - 0.5) * 0.9 }));
+  addFloater('…?', goblin, '#c7eec9');
+}
+function updateFalling(dt){
+  if (!falling || !falling.items.length) return;
+  falling.t += dt;
+  const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
+  let all = true;
+  for (const it of falling.items){
+    if (it.landed) continue;
+    all = false;
+    if (falling.t < it.delay) continue;
+    if (it.y === null){ it.y = -T; it.vy = 250; }
+    it.vy += 1500 * dt; it.y += it.vy * dt; it.rot += dt * 7 * Math.sign(it.rot || 1);
+    if (it.y >= f.y - T * 0.25){
+      it.y = f.y - T * 0.25; it.landed = true;
+      const x = f.x + it.dx * T;
+      for (let i = 0; i < 12; i++) sparks.push({ x: x + camX, y: f.y - T*0.25, vx: (Math.random()-0.5)*300, vy: -Math.random()*280, life: 0.55 });
+      shake = Math.max(shake, 0.12);
+    }
+  }
+  if (all && !falling.done){ falling.done = true; falling.t = 0; }
+  if (falling.done && falling.t > 0.8){ const list = falling.list; falling = null; showDropWindow(list); }
+}
+function drawFalling(){
+  if (!falling) return;
+  const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
+  for (const it of falling.items){
+    if (it.y === null) continue;
+    emoji(it.d.emoji, f.x + it.dx * T, it.y, T * 0.55, it.landed ? it.rot * 0.2 : it.rot);
+  }
+}
+
+/* ---------- 이벤트 창 (화면 가운데) ---------- */
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function showDropWindow(list){
+  const first = !world.opened;
+  const rows = list.map(d => ({ d, chips: applyDrop(d) }));
+  world.opened = true;
+  saveWorld();
+  evEl.innerHTML = '';
+  evEl.appendChild(el('div', 'ev-narr', '공기를 가르는 소리가 들립니다. 오늘의 쓰레기들입니다.'));
+  const box = el('div', 'ev-box');
+  box.appendChild(el('div', 'ev-tag', `낙하 · turn ${world.turn} · ${list.length}개${first ? ' · 첫 낙하' : ''}`));
+  for (const { d, chips } of rows){
+    const row = el('div', 'ev-row' + (d.type === '유물' ? ' relic' : d.type === '날씨' ? ' weather' : ''));
+    row.appendChild(el('div', 'ev-em', d.emoji));
+    const main = el('div', 'ev-main');
+    main.appendChild(el('div', 'ev-name', `[${d.name}]`));
+    main.appendChild(el('div', 'ev-desc', d.desc));
+    row.appendChild(main);
+    row.appendChild(el('div', 'ev-chips', chips.join(' ')));
+    box.appendChild(row);
+  }
+  evEl.appendChild(box);
+  const foot = el('div', 'ev-foot');
+  const used = storeUsed();
+  foot.appendChild(el('span', '', `◆창고 [${used}/${STORE_CAP}]${used >= 80 ? ' · 공간이 부족합니다' : ''}`));
+  const ok = el('button', '', '확인 [Space]');
+  ok.onclick = closeEvent;
+  foot.appendChild(ok);
+  evEl.appendChild(foot);
+  evEl.hidden = false;
+  ok.focus({ preventScroll: true });
+  // 반응
+  const hasRelic = list.some(d => d.type === '유물');
+  const hasFood = rows.some(r => r.chips.some(c => c.startsWith('🍖') || c.startsWith('🥫')));
+  setTimeout(() => {
+    addFloater(hasRelic ? '아우..예쁘다!!' : hasFood ? '대장..먹을 거다!!' : '바보인가?? 전부 쓰레기다.', goblin, '#c7eec9');
+    addFloater(['…쓰레기군.', '…불에 넣지 마라.', '…또 떨어졌군.'][Math.floor(Math.random()*3)], karius, '#bfe0f5');
+    addFloater('뭐가 떨어졌어요?!', rebecca, '#ffc2cc', -1.5);
+  }, 200);
+}
+function closeEvent(){ evEl.hidden = true; evEl.innerHTML = ''; }
+
+/* ---------- 창고 창 ---------- */
+function toggleStore(){
+  if (!storeEl.hidden){ storeEl.hidden = true; return; }
+  closeInv();
+  renderStore();
+  storeEl.hidden = false;
+}
+function renderStore(){
+  storeEl.innerHTML = '';
+  storeEl.appendChild(el('h3', '', `◆창고 [${storeUsed()}/${STORE_CAP}]`));
+  const res = el('div', 'res');
+  for (const [k, name] of RES){
+    const d = el('div', '', `${k} ${world.res[k] || 0}`);
+    d.appendChild(el('small', '', name));
+    res.appendChild(d);
+  }
+  storeEl.appendChild(res);
+  storeEl.appendChild(el('h4', '', '가축'));
+  storeEl.appendChild(el('div', 'list', Object.entries(world.stock).map(([k, v]) => `${k} [인광달팽이] x${v}`).join('  ') || '없음'));
+  storeEl.appendChild(el('h4', '', '물건'));
+  const items = Object.values(world.items);
+  const il = el('div', 'list');
+  if (!items.length) il.textContent = '없음';
+  items.forEach(it => il.appendChild(el('div', '', `${it.emoji} [${it.name}] x${it.n}`)));
+  storeEl.appendChild(il);
+  storeEl.appendChild(el('h4', '', '🌟 유물 (눌러서 조사)'));
+  const info = el('div', 'info', '');
+  info.hidden = true;
+  if (!world.relics.length) storeEl.appendChild(el('div', 'list', '없음'));
+  world.relics.forEach(r => {
+    const b = el('button', 'relic', `🌟 [${r.name}]`);
+    b.onclick = () => { info.hidden = false; info.textContent = `INFO\n[${r.name}]\n${r.desc}\n(turn ${r.turn} 낙하)`; };
+    storeEl.appendChild(b);
+  });
+  storeEl.appendChild(info);
+  storeEl.appendChild(el('div', 'src', `낙하 데이터: ${dropSource} · [C] 또는 Esc 로 닫기`));
+}
+document.getElementById('btn-store').onclick = toggleStore;
+document.getElementById('btn-drop').onclick = () => startDrop();
+
+/* ---------- 날씨 (우물 입구로 들어옴) ---------- */
+function updateWeather(dt){
+  flash = Math.max(0, flash - dt * 2.5);
+  const w = world && world.weather;
+  if (w){
+    const mc = P(LOBBY_COLS / 2, 2.5);
+    const rate = w.kind === '눈' ? 50 : w.kind === '뇌우' ? 260 : 140;
+    const n = Math.floor(rate * dt + Math.random());
+    for (let i = 0; i < n; i++){
+      const x = mc.x + (Math.random() - 0.5) * T * 5.2;
+      rain.push({ x, y: -10, vx: w.kind === '눈' ? 0 : -40, vy: w.kind === '눈' ? 40 + Math.random()*30 : 700 + Math.random()*200,
+        end: floorTop + Math.random() * rowH * ROWS, snow: w.kind === '눈', ph: Math.random() * 6 });
+    }
+    if (w.kind === '뇌우' && Math.random() < dt * 0.12){ flash = 0.55; shake = Math.max(shake, 0.1); }
+  }
+  for (const d of rain){ d.y += d.vy * dt; d.x += (d.snow ? Math.sin(time*2 + d.ph) * 20 : d.vx) * dt; }
+  rain = rain.filter(d => d.y < d.end);
+}
+function drawWeather(){
+  if (!rain.length) return;
+  ctx.strokeStyle = 'rgba(170,200,255,.45)'; ctx.lineWidth = 1;
+  ctx.fillStyle = 'rgba(240,245,255,.85)';
+  ctx.beginPath();
+  for (const d of rain){
+    if (d.snow) continue;
+    ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.5, d.y - 12);
+  }
+  ctx.stroke();
+  for (const d of rain) if (d.snow) ctx.fillRect(d.x, d.y, 2.5, 2.5);
 }
 
 /* ---------- 루프 ---------- */
