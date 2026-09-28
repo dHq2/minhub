@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v2.7
+  version v2.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -263,6 +263,7 @@
       <label class="bt-check"><input type="checkbox" id="bt-rain"> 🌧️ 비 오는 필드 (천벌이 맵 전체 감전)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
+      <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
     </div>
@@ -282,7 +283,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v2.7';
+const VERSION = 'v2.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -576,6 +577,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyC' && mode === 'lobby') toggleStore();
   if (e.code === 'KeyL' && mode === 'lobby') toggleCodex();
   if (e.code === 'KeyP') toggleStats();
+  if (e.code === 'KeyR' && mode === 'battle' && !e.repeat) restartLastSetup();
   if (e.code === 'KeyB' && !scene) mode === 'battle' ? exitBattle() : enterBattle();
   if (e.code === 'Escape'){ closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }
 });
@@ -2328,7 +2330,38 @@ function buildBtTools(){
   syncTools();
 }
 function syncTools(){ document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.classList.toggle('on', b.dataset.tool === battle.tool)); }
+/* ---------- 마지막 세팅 (가장 최근에 시작한 전투의 배치 + 설정) ---------- */
+let lastSetup = null;
+try { lastSetup = JSON.parse(localStorage.getItem('cave.lastSetup') || 'null'); } catch (e) { lastSetup = null; }
+const BT_FLAGS = [['water', 'bt-water'], ['rain', 'bt-rain'], ['parryTest', 'bt-parry'], ['playerAuto', 'bt-auto']];
+function saveLastSetup(){
+  const b = battle;
+  lastSetup = {
+    units: b.units.filter(u => !u.dead && !u.summoner).map(u => ({ id: u.id, x: u.x, y: u.y, side: u.side, face: u.face })),
+    flags: Object.fromEntries(BT_FLAGS.map(([k]) => [k, !!b[k]])), speed: b.speed };
+  b.fresh = false;
+  try { localStorage.setItem('cave.lastSetup', JSON.stringify(lastSetup)); } catch (e) {}
+}
+function restartLastSetup(){
+  if (!battle) return;
+  if (!lastSetup || !lastSetup.units.length){ logLine('아직 시작한 전투가 없어요. ▶ 전투 시작을 한 번 누르면 그 세팅이 기억돼요.', 'sys'); return; }
+  const b = battle;
+  b.units = []; b.over = null; b.running = false; b.pending = []; b.fx = []; b.proj = []; b.stars = []; b.drops = [];
+  b.hitstop = 0; b.redFlash = 0; b.rainFlash = 0;
+  floaters = []; sparks = [];
+  for (const [k, id] of BT_FLAGS){ b[k] = !!lastSetup.flags[k]; document.getElementById(id).checked = b[k]; }
+  b.speed = lastSetup.speed || 1;
+  for (const s of lastSetup.units){
+    const u = spawnUnit(s.id, s.x, s.y);
+    if (u){ u.side = s.side; u.face = s.face; }
+  }
+  b.log = [];
+  logLine(`⟲ 마지막 세팅으로 재시작 (${lastSetup.units.length}명)`, 'sys');
+  b.fresh = false;
+  toggleRun();
+}
 function defaultSetup(){
+  battle.fresh = true;
   battle.units = []; battle.over = null; battle.running = false; battle.pending = []; battle.fx = []; battle.proj = [];
   spawnUnit('player', 1, 2); spawnUnit('rebecca', 3, 1); spawnUnit('karius', 3, 3); spawnUnit('goblin', 2, 4);
   spawnUnit('enemyGoblin', 8, 1); spawnUnit('enemyGoblin', 8, 3); spawnUnit('enemyGoblin', 9, 2);
@@ -2371,6 +2404,7 @@ function toggleRun(){
   if (!battle.running){
     const a = battle.units.some(u => u.side === 'ally' && !u.dead), e = battle.units.some(u => u.side === 'enemy' && !u.dead);
     if (!a || !e){ logLine('양쪽 모두 한 명 이상 배치해야 해요.', 'sys'); return; }
+    if (battle.fresh !== false || battle.over) saveLastSetup();   // 새 전투를 시작할 때만 기억 (일시정지 후 재개는 제외)
     battle.over = null;
     caption = { text: '전투 개시', life: 1.4, max: 1.4 };
     logLine('— 전투 개시 —', 'sys');
@@ -2381,7 +2415,8 @@ function toggleRun(){
 document.getElementById('bt-run').onclick = toggleRun;
 document.getElementById('bt-speed').onclick = () => { battle.speed = battle.speed === 1 ? 2 : battle.speed === 2 ? 4 : 1; syncRun(); };
 document.getElementById('bt-reset').onclick = () => defaultSetup();
-document.getElementById('bt-clear').onclick = () => { battle.units = []; battle.running = false; battle.over = null; logLine('모두 치웠어요.', 'sys'); syncRun(); };
+document.getElementById('bt-last').onclick = () => restartLastSetup();
+document.getElementById('bt-clear').onclick = () => { battle.fresh = true; battle.units = []; battle.running = false; battle.over = null; logLine('모두 치웠어요.', 'sys'); syncRun(); };
 document.getElementById('bt-stats').onclick = toggleStats;
 document.getElementById('bt-exit').onclick = exitBattle;
 document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTest = e.target.checked; };
