@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v7.2
+  version v7.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v7.2';
+const VERSION = 'v7.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3322,6 +3322,16 @@ function updateBattle(dt){
       if (u.st.revive && b.running && u.deadT > u.st.revive && b.units.some(o => o !== u && !o.dead && o.side === u.side)) reviveUnit(u);   // 편이 전멸했으면 부활 불가
       continue;
     }
+    if (u.enter){
+      const e = u.enter, dx = e.tx - u.x, dy = e.ty - u.y, d = Math.hypot(dx, dy);
+      const sp = u.st.spd * RUN_MUL * 1.25 * sdt;
+      if (d <= sp){ u.x = e.tx; u.y = e.ty; u.enter = null; fxText(u, '찍찍!', '#9dff7a', 'big', 0.2); }
+      else { u.x += dx / d * sp; u.y += dy / d * sp; u.face = Math.sign(dx) || u.face; }
+      u.moving = true; u.walkClock = (u.walkClock || 0) + sdt * 1.6; u.vx = u.vy = 0;
+      e.dustT -= sdt;
+      if (e.dustT <= 0){ e.dustT = 0.07 + Math.random() * 0.05; const q = P(u.x + 0.5, u.y + 0.5); b.fx.push({ type: 'dust', wx: q.x + camX - u.face * T * 0.2, y: q.y - 2, s: 0.6 + Math.random() * 0.6, life: 0.55, max: 0.55 }); }
+      continue;
+    }
     if (u.st.regen && u.hp < u.st.hp){
       u.regenAcc += u.st.regen * sdt;
       if (u.regenAcc >= 1){ const n = Math.floor(u.regenAcc); u.regenAcc -= n; u.hp = Math.min(u.st.hp, u.hp + n); }
@@ -3413,7 +3423,7 @@ function updateBattle(dt){
     }
     let tgt = null, dist = Infinity, taunt = null, tauntD = Infinity;
     for (const o of b.units){
-      if (o.side === u.side || o.dead) continue;
+      if (o.side === u.side || o.dead || o.enter) continue;   // 화면 밖에서 달려오는 중인 쥐는 아직 노리지 않음
       const d = Math.hypot(o.x - u.x, o.y - u.y);
       if (d < dist){ dist = d; tgt = o; }
       if (o.st.taunt && d <= o.st.taunt && d < tauntD){ tauntD = d; taunt = o; }
@@ -3723,7 +3733,7 @@ function updateCamera(dt){
   const maxT = Math.min(70, W / 5.2, availH / 6.2);
   // 따라갈 곳: 살아 있는 폰들 (쥐 떼는 무게 낮게), 전투 전엔 맵 전체
   let tT = fitT, cx = curCols / 2;
-  const alive = b.units.filter(u => !u.dead);
+  const alive = b.units.filter(u => !u.dead && !u.enter);   // 화면 밖에서 달려오는 쥐는 카메라에서 뺌
   if (b.running && alive.length){
     const main = alive.filter(u => !u.st.summon || u.id === 'ratKnight');
     const xs = (main.length ? main : alive).map(u => u.x).sort((a, c) => a - c);
@@ -3848,6 +3858,9 @@ function drawBattle(){
       for (let i = 0; i < 2; i++){
         ctx.beginPath(); ctx.arc(cx, cy, w * (0.8 + i * 0.35 + (1 - k) * 0.6), -1.1 + (f.u.face < 0 ? Math.PI : 0), 1.1 + (f.u.face < 0 ? Math.PI : 0)); ctx.stroke();
       }
+    } else if (f.type === 'dust'){
+      ctx.fillStyle = `rgba(176,164,146,${0.6 * k})`;
+      ctx.beginPath(); ctx.arc(f.wx - camX, f.y - (1 - k) * T * 0.12, T * (0.1 + (1 - k) * 0.16) * f.s, 0, Math.PI * 2); ctx.fill();
     } else if (f.type === 'ratmark'){
       drawRatMark(f);
     } else if (f.type === 'gspin'){
@@ -4206,7 +4219,6 @@ function bossUpdate(u, sdt, tgt, dist){
       const t = foes.reduce((best, o) => (byAtk ? o.st.atk > best.st.atk || (o.st.atk === best.st.atk && o.hp > best.hp)
                                                 : o.hp > best.hp) ? o : best, foes[0]);
       u.cast = { type: 'thunder', t: 0, dur: 2.0, target: t, x: t.x, y: t.y, locked: false };
-      if (t.st.skills && t.st.skills.includes('legion')) t.fortWant = 1.1;   // 낙뢰가 떨어지기 직전에 방진
       skillPop(u, 'thunder');
       logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name} · ${byAtk ? '가장 강한 자' : '가장 질긴 자'})`, 'crit');
       return true;
@@ -4654,7 +4666,7 @@ const SKILLS = {
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
-    desc:'체력이 40% 아래거나 강공이 날아오면, 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 곁의 쥐가 대신 맞는다.\n끝에 대검을 뽑으며 한 바퀴 휘두른다: 1.8칸 안의 적에게 공격력 + 희생된 쥐 1마리당 4.' },
+    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 곁의 쥐가 대신 맞는다.\n끝에 대검을 뽑으며 두 바퀴 휘두른다: 1.8칸 안의 적에게 공격력 + 희생된 쥐 1마리당 4.' },
   ratLadder: { name:'쥐 사다리', kind:'액티브', icon:'🌊',
     desc:'3~8칸 떨어진 적에게, 쥐 4마리가 발밑에 모이고 포렌이 그 위에 올라타 파도처럼 미끄러져 들어간다 (대기 10초).\n도착하면 내려찍는다: 1.3칸 안의 적에게 공격력 x1.5 + 경직.' },
   ratBind:   { name:'쥐 포박', kind:'액티브', icon:'🪢',
@@ -4812,7 +4824,7 @@ function drawSkillPop(f){
   ctx.fillStyle = `rgb(${col})`; ctx.fillText(S.name, cx, cy + sz / 2 + T * 0.28);
   ctx.restore();
 }
-function summonRat(owner, id = rollRat()){
+function summonRat(owner, id = rollRat(), fromEdge = false){
   const b = battle;
   const mine = b.units.filter(o => o.summoner === owner && !o.dead).length;
   if (mine >= LOYALTY_MAX) return null;
@@ -4826,6 +4838,13 @@ function summonRat(owner, id = rollRat()){
   const row = Math.max(0, Math.min(ROWS - 1, anchor.y + (Math.random() - 0.5) * 2));
   const r = spawnUnit(id, col, row);
   r.side = owner.side; r.summoner = owner; r.face = fwd;
+  if (fromEdge){
+    // 어디선가: 아군 쪽 화면 밖에서 먼지를 일으키며 호다닥 달려 들어옴
+    const ey = Math.random() * (ROWS - 1);
+    r.x = fwd > 0 ? -1.5 - Math.random() * 0.8 : BATTLE_COLS + 0.5 + Math.random() * 0.8; r.y = ey;
+    r.enter = { tx: fwd > 0 ? 0.4 + Math.random() * 1.2 : BATTLE_COLS - 1.4 - Math.random() * 1.2, ty: Math.max(0, Math.min(ROWS - 1, ey + (Math.random() - 0.5))), dustT: 0 };
+    return r;
+  }
   r.kbx = fwd * (2 + Math.random() * 2);             // 진형 안에서 앞으로 튀어나오듯
   const big = id === 'ratL' || id === 'ratKnight', pop = big || id === 'ratM';
   const q = P(col + 0.5, row + 0.5);
@@ -4859,8 +4878,8 @@ function ratAssault(p, t){
   p.assaultCd = battle.clock + RAT_ASSAULT.cd;
   t.ratMark = { p, until: battle.clock + RAT_ASSAULT.dur };
   for (let i = 0; i < RAT_ASSAULT.extra; i++){                   // 어디선가 쥐 3마리가 더 튀어나옴 (포렌의 쥐 보충)
-    const r = summonRat(p);
-    if (r){ rats.push(r); fxText(r, '찍찍!', '#9dff7a', 'big', 0.2); }
+    const r = summonRat(p, undefined, true);
+    if (r) rats.push(r);
   }
   rats.forEach((r, i) => { joinSwarm(r, t); r.slotA = i / rats.length * Math.PI * 2 + Math.random() * 0.3; });
   battle.fx.push({ type: 'ratmark', t, life: RAT_ASSAULT.dur, max: RAT_ASSAULT.dur });
@@ -4932,7 +4951,6 @@ function fortAbsorb(d, dmg){
 function porenUpdate(u, sdt, tgt, dist){
   const b = battle;
   u.cloak = cloakCount(u);
-  if (u.fortWant > 0){ u.fortWant -= sdt; if (u.fortWant <= 0){ u.fortWant = 0; if (!u.fort) porenFort(u, 'strong'); } }
   // 쥐 방진 진행: 대검을 꽂고 움직이지 않음 → 끝에 뽑으며 휘두름 (희생된 쥐 수만큼 강해짐)
   if (u.fort){
     const f = u.fort; f.t += sdt; u.vx = u.vy = 0; u.stun = 0;
