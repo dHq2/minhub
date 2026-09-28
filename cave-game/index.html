@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v6.3
+  version v6.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -312,7 +312,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v6.3';
+const VERSION = 'v6.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2057,7 +2057,7 @@ const STYLES = {
   enemyGoblin: { approach:3, hitrun:3, strafe:2, guard:2, hold:1, retreat:1 },
   goblinArcher: { kite:6, strafe:2, retreat:1 },
   morningstar: { approach:3, hitrun:3, strafe:1, hold:2, guard:0.5, retreat:0.5 },
-  poren:       { approach:3, hold:5, guard:4, strafe:0.5 },
+  poren:       { approach:5, hold:4, guard:1.5 },   // 쥐 군단의 왕: 막고 서 있기보다 밀고 들어감 (막기는 방진 · 반응으로)
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
 };
@@ -3269,7 +3269,8 @@ function updateBattle(dt){
       u.loyal.full = full;
       if (b.running && !full){
         if (!u.loyal.started){ u.loyal.started = true; skillPop(u, 'loyalty'); }
-        u.loyal.t += sdt;
+        const few = b.units.filter(o => o.summoner === u && !o.dead).length < 3;
+        u.loyal.t += sdt * (few ? 2.5 : 1);                   // 쥐가 모자라면 더 급하게 부름
         if (u.loyal.t >= u.loyal.dur){
           summonRat(u, u.loyal.next);
           const id = rollRat();
@@ -3285,7 +3286,9 @@ function updateBattle(dt){
       u.shock.clock += sdt;
       if (u.shock.clock >= SHOCK_TICK){
         u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
-        const K = SHOCKS[u.shock.kind], dmg = K.dmg * (u.shock.stacks || 1);
+        const K = SHOCKS[u.shock.kind];
+        let dmg = K.dmg * (u.shock.stacks || 1);
+        if (u.fort) dmg = fortAbsorb(u, dmg);                   // 방진: 쥐들이 전기도 나눠 받음
         u.hp = Math.max(0, u.hp - dmg); u.stun = Math.max(u.stun, 0.25);
         fxText(u, `${dmg}`, K.color, u.shock.stacks > 2 ? 'big' : null);
         const q = P(u.x + 0.5, u.y + 0.5);
@@ -3745,7 +3748,7 @@ function drawBattle(){
     const k = f.life / f.max;
     if (f.type === 'bolt'){
       const a = P(f.a.x + 0.5, f.a.y + 0.5), d = P(f.d.x + 0.5, f.d.y + 0.5);
-      ctx.strokeStyle = `rgba(170,140,255,${k})`; ctx.lineWidth = 4 * k + 1;
+      ctx.strokeStyle = `rgba(${f.color || '170,140,255'},${k})`; ctx.lineWidth = 4 * k + 1;
       ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.6); ctx.lineTo(d.x, d.y - T * 0.6); ctx.stroke();
     } else if (f.type === 'bubble'){
       drawBubble(f);
@@ -4050,6 +4053,7 @@ function bossUpdate(u, sdt, tgt, dist){
       const t = foes.reduce((best, o) => (byAtk ? o.st.atk > best.st.atk || (o.st.atk === best.st.atk && o.hp > best.hp)
                                                 : o.hp > best.hp) ? o : best, foes[0]);
       u.cast = { type: 'thunder', t: 0, dur: 2.0, target: t, x: t.x, y: t.y, locked: false };
+      if (t.st.skills && t.st.skills.includes('legion')) t.fortWant = 1.1;   // 낙뢰가 떨어지기 직전에 방진
       skillPop(u, 'thunder');
       logLine(`⚡ ${u.name}이(가) 손을 번쩍 든다… (${t.name} · ${byAtk ? '가장 강한 자' : '가장 질긴 자'})`, 'crit');
       return true;
@@ -4075,6 +4079,7 @@ function bossUpdate(u, sdt, tgt, dist){
       const wall = Math.abs(ex - rx) > 0.01 || Math.abs(ey - ry) > 0.01;   // 발이 벽에 부딪히는 경로
       u.cast = { type: 'kick', t: 0, phase: 'prep', sx: u.x, sy: u.y, ex, ey, dx: n.x, dy: n.y, wall, hit: new Set() };
       ratWall(tgt, u);
+      braceFor(tgt, 1.4);
       u.face = Math.sign(n.x) || u.face;
       u.kkCd = 5 + Math.random() * 2;
       logLine(`${u.name}이(가) 몸을 웅크린다`, 'sys');
@@ -4182,12 +4187,13 @@ function kickHit(u, o, c){
     fxText(o, `${pinned ? '짓뭉개짐! ' : '치명타! '}${dmg}`, pinned ? '#ff3b3b' : '#ffd35a', 'crit');
     logLine(`🦶 ${u.name}의 날아차기 → ${o.name}: ${pinned ? '벽 사이에 짓뭉개짐, ' : ''}치명타 ${dmg}`, 'crit');
   }
+  if (o.fort) dmg = fortAbsorb(o, dmg);
   o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3;
   o.windup = 0; o.atkTarget = null; o.guarding = false; o.cast = null;
   if (o.kc && !['agony', 'cut', 'heretic'].includes(o.kc.type)) o.kc = null;   // 하던 기술도 끊김
   b.hitstop = Math.max(b.hitstop, 0.16); shake = Math.max(shake, 0.55); b.redFlash = Math.max(b.redFlash, 0.3);
   if (o.hp <= 0){ killUnit(o, '날아차기'); if (o.dead) return; }
-  if (o.superArmor){                                            // 근성의 카리우스: 날아가진 않고 크게 밀려남
+  if (o.superArmor || o.fort){                                  // 근성의 카리우스 · 대검을 꽂은 포렌: 날아가진 않고 밀려남
     o.kbx += c.dx * 18; o.kby += c.dy * 18;
     fxText(o, '버팀!', '#ff6a5a', 'big', 0.6);
     return;
@@ -4277,7 +4283,7 @@ function strikeBolt(u, bo){
     if (o.dead) continue;
     const opp = o.side !== u.side, air = (o.lift || 0) > 0.05;
     if (opp && Math.hypot(o.x - bo.x, o.y - bo.y) < 0.55){
-      o.hp = Math.max(0, o.hp - BOLT_RAIN.direct); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.0); o.charT = Math.max(o.charT, 1.2);
+      o.hp = Math.max(0, o.hp - (o.fort ? fortAbsorb(o, BOLT_RAIN.direct) : BOLT_RAIN.direct)); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.0); o.charT = Math.max(o.charT, 1.2);
       o.windup = 0; o.atkTarget = null;
       fxText(o, `직격 ${BOLT_RAIN.direct}`, '#ff4a4a', 'big');
       logLine(`⛈️ 번개비 직격 → ${o.name}: ${BOLT_RAIN.direct}`, 'crit');
@@ -4308,7 +4314,7 @@ function strikeThunder(u, c){
     const hitDirect = opp && Math.hypot(o.x - c.x, o.y - c.y) < 0.55;
     if (hitDirect){
       direct = true;
-      const dmg = u.st.thunderAtk;
+      const dmg = o.fort ? fortAbsorb(o, u.st.thunderAtk) : u.st.thunderAtk;
       o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.6); o.charT = 2.2;
       o.windup = 0; o.atkTarget = null;
       fxText(o, `직격! ${dmg}`, '#ff4a4a', 'crit');
@@ -4316,7 +4322,7 @@ function strikeThunder(u, c){
       applyShock(o, 'red');                               // 감전: 적뢰 (붉은 번개)
     } else if (b.rain ? !airborne(o) : (opp && inArea(o))){
       // 범위: 살짝 약한 방사 피해 + 잔류. 비 오는 날엔 맵 전체 확정 (피아 불문, 공중이면 면역)
-      const dmg = u.st.residualAtk;
+      const dmg = o.fort ? fortAbsorb(o, u.st.residualAtk) : u.st.residualAtk;
       o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.2; o.stun = Math.max(o.stun, 0.5);
       fxText(o, `방사 ${dmg}`, '#ff8f8f');
       if (!b.rain) logLine(`⚡ 방사 → ${o.name}: ${dmg}`);
@@ -4704,6 +4710,12 @@ function ratWall(g, a){
 }
 
 /* ---------- 강공 판정: 보스이거나, 방어력을 빼고도 15 이상 또는 상대 최대 체력의 20% 이상 들어갈 공격 ---------- */
+// 피할 수 없는 큰 공격이 조준되면: 포렌은 대검을 꽂고 방진, 방패 캐릭터는 막기 자세
+function braceFor(t, dur){
+  if (!t || t.dead || t.manual) return;
+  if (t.st.skills && t.st.skills.includes('legion') && porenFort(t, 'strong')) return;
+  if (t.st.shield && !t.st.berserk && !t.phase2 && !t.lastStand && Math.random() < t.st.react){ t.state = 'guard'; t.stateT = dur; t.guardT = dur; }
+}
 function strongAttack(a, d, atk){
   if (a.st.boss) return true;
   const est = (atk ?? a.st.atk) * (1 - defCut(effDef(d)));
@@ -4738,13 +4750,15 @@ function fortAbsorb(d, dmg){
   if (!near.length) return dmg;
   const share = Math.round(dmg * FORT.share), r = near[Math.floor(Math.random() * near.length)];
   r.hp = Math.max(0, r.hp - share); r.hurt = 0.2; f.absorbed += share;
-  fxText(r, `대신 ${share}`, '#9dff7a');
+  fxText(r, `대신 ${share}`, '#9dff7a', 'big');
+  battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.3, max: 0.3, color: '157,255,122' });
   if (r.hp <= 0){ killUnit(r, '방진'); f.dead++; }
   return dmg - share;
 }
 function porenUpdate(u, sdt, tgt, dist){
   const b = battle;
   u.cloak = cloakCount(u);
+  if (u.fortWant > 0){ u.fortWant -= sdt; if (u.fortWant <= 0){ u.fortWant = 0; if (!u.fort) porenFort(u, 'strong'); } }
   // 쥐 방진 진행: 대검을 꽂고 움직이지 않음 → 끝에 뽑으며 휘두름 (희생된 쥐 수만큼 강해짐)
   if (u.fort){
     const f = u.fort; f.t += sdt; u.vx = u.vy = 0; u.stun = 0;
