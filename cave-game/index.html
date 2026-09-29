@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v10.1
+  version v10.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -318,7 +318,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v10.1';
+const VERSION = 'v10.2';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -501,7 +501,7 @@ function setView(v){
   const el = document.getElementById('bq-view'); if (el) el.textContent = v === 'board' ? '▦ 보드' : '⛰ 굴';
 }
 // 카메라: 보드 가운데를 PITCH 각도로 내려다봄, DIST = 카메라까지 거리 (타일 단위). 원근 세기는 DIST가 정함
-const BOARD = { PITCH: 52 * Math.PI / 180, DIST: 11, FRAME: 0.38, DRIFT: 0.35 };
+const BOARD = { PITCH: 60 * Math.PI / 180, DIST: 11, FRAME: 0.38, DRIFT: 0.35 };
 const BV = { F: 0, cx: 0, cy: 0, sin: Math.sin(BOARD.PITCH), cos: Math.cos(BOARD.PITCH) };
 function boardPad(){                                   // 세로 화면: 아래 로그·조작 버튼 자리를 비움
   if (H > W * 1.15) return { top: 70, bottom: H * (document.body.classList.contains('manual') ? 0.36 : 0.2) };
@@ -4307,11 +4307,11 @@ function drawBattle(){
     }
     const p = P(u.x + 0.5, u.y + 0.5);
     const top = p.y - unitHeight(u) * T * depthScale(u.y) - T * 0.2;
-    const w = T * (u.id === 'jeokroe' ? 1.8 : u.id === 'karius' ? 1.2 : 0.8);
-    ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, top - 1, w + 2, 7);
+    const w = T * (u.id === 'jeokroe' ? 1.3 : u.id === 'karius' ? 0.9 : 0.55);   // 체력바: 얇고 짧게 (v10.2)
+    ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(p.x - w / 2 - 1, top - 1, w + 2, 5);
     ctx.fillStyle = u.side === 'ally' ? '#5cc26a' : '#e2443a';
-    ctx.fillRect(p.x - w / 2, top, w * u.hp / u.st.hp, 5);
-    ctx.font = `${Math.max(9, Math.round(T * (u.st.summon && u.id !== 'ratKnight' ? 0.13 : 0.16)))}px "Nanum Gothic Coding",monospace`;   // 체력 숫자
+    ctx.fillRect(p.x - w / 2, top, w * u.hp / u.st.hp, 3);
+    ctx.font = `${Math.max(8, Math.round(T * (u.st.summon && u.id !== 'ratKnight' ? 0.1 : 0.12)))}px "Nanum Gothic Coding",monospace`;   // 체력 숫자
     ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.85)';
     const hpTxt = `${Math.ceil(u.hp)}/${u.st.hp}`;
     ctx.strokeText(hpTxt, p.x, top - 3); ctx.fillStyle = '#fff'; ctx.fillText(hpTxt, p.x, top - 3);
