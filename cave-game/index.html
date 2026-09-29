@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.7
+  version v8.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.7';
+const VERSION = 'v8.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4847,7 +4847,7 @@ const SKILLS = {
   ratCloak:  { name:'쥐 망토', kind:'패시브', icon:'🧥',
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
-    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두르는 반격: 1.8칸 안의 적에게 공격력 + 쥐들이 대신 맞은 피해의 60%, 치명타 25%.\n곁에 적이 없으면: 살아남은 방진 쥐가 3마리 이상일 때만 그 쥐들을 타고 가장 위험한 적 (8칸 안)에게 날아가 거기서 휘두른다. 모자라면 제자리에서 허탕.' },
+    desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두르는 반격: 1.8칸 안의 적에게 공격력 + 쥐들이 대신 맞은 피해의 60% + 버틴 무게 (포렌 x4 + 둘러선 쥐들)의 10%, 치명타 25% (피해 x3).\n곁에 적이 없으면: 살아남은 방진 쥐가 3마리 이상일 때만 그 쥐들을 타고 가장 위험한 적 (8칸 안)에게 날아가 거기서 휘두른다. 모자라면 제자리에서 허탕.' },
   ratLadder: { name:'쥐 사다리', kind:'액티브', icon:'🌊',
     desc:'2.5~8칸 떨어진 적에게, 쥐 3마리가 발밑에 모이고 포렌이 그 위에 올라타 파도처럼 미끄러져 들어간다 (대기 7초).\n도착하면 내려찍는다: 1.3칸 안의 적에게 공격력 x1.5 + 경직 (무거운 상대는 버틸 수 있음).' },
   ratBind:   { name:'쥐 포박', kind:'액티브', icon:'🪢',
@@ -5099,7 +5099,7 @@ function strongAttack(a, d, atk){
 }
 /* ---------- 포렌: 쥐 망토 · 쥐 방진 · 쥐 사다리 · 쥐 포박 ---------- */
 const CLOAK = { r: 1.6, per: 2, max: 10 };
-const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, critChance: 0.25, spinR: 1.8, onThunder: true };   // 천벌 방진: 하이리스크 하이리턴 (켜 둠)   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
+const FORT = { cd: 14, dur: 2.5, share: 0.7, lowHp: 0.4, maxRats: 8, counter: 0.6, weightPower: 0.1, critChance: 0.25, spinR: 1.8, onThunder: true };   // 천벌 방진: 하이리스크 하이리턴 (켜 둠)   // counter: 쥐들이 대신 맞은 피해 x0.6 만큼 회전 공격에 더함
 const LADDER = { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3 };
 const BIND = { cd: 12, range: 4.5, rats: 5, per: 22, max: 100, drain: 22, dur: 4.5 };
 const legionRats = p => battle.units.filter(r => !r.dead && r.summoner === p);   // 포렌의 군대 전부 (쥐 기사 포함)
@@ -5132,7 +5132,7 @@ function fortSpin(u, cn){
   shake = Math.max(shake, 0.35); ringAt(u, '157,255,122'); burst(u, 30, '#9dff7a', 420);
   b.fx.push({ type: 'gspin', u, dir: u.face || 1, life: 0.6, max: 0.6 });
   fxText(u, hits.length ? `${cn.crit ? '치명 ' : ''}대검 회전! ${cn.atk}` : '허탕…', hits.length ? (cn.crit ? '#ffd35a' : '#9dff7a') : '#b8b0a4', hits.length ? 'crit' : 'big', 0.6);
-  logLine(`🗡 ${u.name}이(가) 대검을 휘두른다 — 쥐들이 대신 맞은 피해 ${cn.absorbed}를 되갚아 공격 ${cn.atk}${cn.crit ? ' (치명타)' : ''} (${hits.length}명, 쓰러진 쥐 ${cn.dead})${hits.length ? '' : ' — 허탕'}`, 'crit');
+  logLine(`🗡 ${u.name}이(가) 대검을 휘두른다 — 쥐들이 대신 맞은 피해 ${cn.absorbed}와 버틴 무게 ${cn.w}kg을 실어 공격 ${cn.atk}${cn.crit ? ' (치명타)' : ''} (${hits.length}명, 쓰러진 쥐 ${cn.dead})${hits.length ? '' : ' — 허탕'}`, 'crit');
 }
 function fortAbsorb(d, dmg){
   const f = d.fort, near = fortRats(d);
@@ -5160,7 +5160,8 @@ function porenUpdate(u, sdt, tgt, dist){
     const f = u.fort; f.t += sdt; u.vx = u.vy = 0; u.stun = 0;
     if (f.t >= FORT.dur){
       // 반격: 쥐들이 대신 맞은 만큼 되갚는 대검 회전 (치명타 25%)
-      const cn = { atk: u.st.atk + Math.round(f.absorbed * FORT.counter), crit: Math.random() < FORT.critChance, absorbed: f.absorbed, dead: f.dead };
+      const fw = braceW(u);                                       // 굳건히 버틴 무게 (포렌 x4 + 둘러선 쥐들)를 실어 휘두름
+      const cn = { atk: u.st.atk + Math.round(f.absorbed * FORT.counter) + Math.round(fw * FORT.weightPower), crit: Math.random() < FORT.critChance, absorbed: f.absorbed, dead: f.dead, w: fw };
       const near = b.units.some(o => !o.dead && o.side !== u.side && Math.hypot(o.x - u.x, o.y - u.y) < FORT.spinR);
       const alive = f.rats.filter(r => !r.dead);
       // 곁에 적이 없으면: 살아남은 방진 쥐가 사다리를 놓을 만큼 (3마리) 있을 때만 쥐 무리를 타고 날아가 거기서 회전. 모자라면 제자리 허탕
