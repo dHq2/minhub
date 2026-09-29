@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.8
+  version v8.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.8';
+const VERSION = 'v8.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2124,7 +2124,7 @@ const ENEMIES = {
 };
 const STAT_ROWS = [
   ['atk', '⚔ 공격력', ''],
-  ['guard', '🛡 막기율', '방어 자세에서 맞으면 이 확률로 막음 → 방패 60% · 맨몸 30% 감소, 그중 10%는 튕겨냄(0)'],
+  ['guard', '🛡 막기율', '방어 자세에서 맞으면 이 확률로 막음 → 방패 60% · 맨몸 30% 감소 (강공은 절반만). 맞기 직전 0.08초 안에 올린 막기는 저스트 패리: 튕겨냄 (0) + 역전의 찬스'],
   ['def', '방어력', '피해 감소 = 방어력÷(방어력+30). 총알·화살은 방패(방탄)가 있을 때만'],
   ['shield', '🛡️ 방패 · 방탄', '막기 60% 감소, 총알·화살에도 방어력이 늘 먹힘, 튕겨내면 탄이 튕겨 나감'],
   ['crit', '치명타율', '치명타는 피해 x3'], ['eva', '회피율', ''],
@@ -2151,7 +2151,7 @@ const guardSkill = s => Math.max(0, Math.min(90, Math.round(s.block * 100)));   
 // 방어 규칙
 //  방어력: 피해 감소율 = 방어력 ÷ (방어력 + 30). 총알·화살은 방패(= 방탄)가 있을 때만
 //  막기: 방어 자세에서 막기율 확률로 성공 → 방패 60% / 맨몸 30% 감소. 성공 중 10%는 정확한 타이밍 → 튕겨냄 (피해 0)
-const DEF_K = 30, BLOCK_SHIELD = 0.6, BLOCK_BARE = 0.3, PERFECT_P = 0.1;
+const DEF_K = 30, BLOCK_SHIELD = 0.6, BLOCK_BARE = 0.3;
 const defCut = def => def > 0 ? def / (def + DEF_K) : 0;
 const bulletproof = d => !!d.st.shield;   // 방패 = 방탄: 방패를 가졌으면 늘 총알·화살에도 방어력이 먹힘
 // 회피 스텝 대기시간 (초). 몸에 맞게: 날쌘 쪽은 짧고, 중갑은 길게 (중요한 순간 한두 번), 거구는 없음
@@ -2965,6 +2965,26 @@ function reactTo(d, a){
   if (d.dead || d.stun > 0 || d.windup > 0 || d.manual) return;
   if (d.phase2 || d.lastStand) return;                 // 불경자 ~ 근성: 아예 막지 않음
   if (Math.random() >= d.st.react) return;
+  // 반응 시간: 공격을 보고 몸이 움직이기까지 (반응이 좋을수록 빠름). 맞기 직전에 맞춰 반응하면 저스트
+  (battle.reacts = battle.reacts || []).push({ t: reactDelay(d, a), d, a });
+}
+// 반응 타이밍: 보고 몸이 움직이기까지 최소 시간 (지각) 이후, 맞는 순간에 맞춰 막거나 피하려 함.
+// 반응이 좋을수록 지각이 빠르고 맞추는 타이밍이 정확함 → 맞기 직전 JUST초 안이면 저스트. 준비가 너무 짧은 공격 (적뢰 주먹 0.15초)은 지각보다 빨라 못 막음
+const JUST = 0.08;
+function reactDelay(d, a){
+  const k = 1 - (d.st.react || 0);
+  const perceive = 0.12 + k * 0.15 + Math.random() * 0.06;
+  const aim = a.windup - Math.random() * (0.2 + k * 0.5);   // 맞기 직전을 노림 (어긋남은 반응이 나쁠수록 큼)
+  return Math.max(perceive, aim);
+}
+function updateReacts(sdt){
+  const L = battle.reacts || [];
+  for (const r of L){ r.t -= sdt; if (r.t <= 0) doReact(r.d, r.a); }
+  battle.reacts = L.filter(r => r.t > 0);
+}
+function doReact(d, a){
+  if (d.dead || a.dead || d.stun > 0 || d.windup > 0 || d.manual || !battle.units.includes(d)) return;
+  if (!(a.windup > 0 && a.atkTarget === d)) return;      // 이미 맞았거나 공격이 끊김: 늦음
   if (d.summoner && ['wall', 'assault', 'fort', 'ladder', 'bind', 'bindRun'].includes(d.state) && d.stateT > 0) return;   // 군단 임무 중인 쥐 (쥐 기사 포함)는 막지 않고 버팀
   if (d.st.berserk){                                   // 쥐 떼는 막지 않고 바퀴벌레처럼 옆으로 쌩
     const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
@@ -2975,7 +2995,10 @@ function reactTo(d, a){
   // 공격 · 막기 · 회피 삼각형: 강공이면 스텝 (준비됐을 때), 아니면 막기
   if (strongAttack(a, d) && stepAway(d, a)) return;
   if ((STYLES[d.id] || {}).dodge){ d.state = 'retreat'; d.stateT = 0.45; d.running = true; }
-  else { d.state = 'guard'; d.stateT = a.windup + 0.35; d.guardT = d.stateT; }
+  else {
+    d.state = 'guard'; d.stateT = a.windup + 0.35; d.guardT = d.stateT;
+    if (!d.guarding && !d.phase2 && !d.lastStand){ d.guarding = true; d.wasGuarding = true; d.guardSince = battle.clock; }   // 막기는 반응한 그 순간부터 (한 프레임 늦어 맞지 않게)
+  }
 }
 
 /* ---------- 공격 · 피격 ---------- */
@@ -3071,7 +3094,7 @@ function releaseAttack(u){
   }
   if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.range + 0.5){
     if (strongAttack(u, d) && !u.superArmor){ u.stun = Math.max(u.stun, WHIFF_GAP); fxText(u, '빈틈!', '#ffe27a', 'big', 0.5); }   // 헛친 강공: 틈이 생김 (카운터 기회)
-    if (battle.clock - (d.lastStepAt ?? -99) < 0.8){ d.counterT = 1.2; d.cd = Math.min(d.cd, 0.1); }   // 스텝으로 흘렸으면 역습 준비: 다음 한 방은 치명타
+    if (battle.clock - (d.lastStepAt ?? -99) <= JUST + 0.24){ d.counterT = 1.2; d.cd = Math.min(d.cd, 0.1); fxText(d, '저스트 회피!', '#ffe27a', 'big', 0.6); }   // 저스트 회피 (맞기 직전 스텝)만 역전의 찬스: 다음 한 방은 치명타
     fxText(u, '헛침', '#b8b0a4');
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
   } else {
@@ -3120,7 +3143,7 @@ function perfectBlock(d, a, opts = {}){
   b.hitstop = Math.max(b.hitstop, 0.14);
   ringAt(d, '143,232,255');
   fxText(d, '튕겨냄!', '#8fe8ff', 'big', 0.5);
-  if (!opts.ranged) stagger(a, 0.35, braceW(d) * 4);                        // 튕겨냄: 큰 반동
+  if (!opts.ranged){ stagger(a, 0.35, braceW(d) * 4); d.counterT = 1.2; d.cd = Math.min(d.cd, 0.1); }   // 튕겨냄: 큰 반동 + 역전의 찬스 (다음 한 방 치명타)
   const rico = opts.ranged && !!d.st.shield;
   if (rico) ricochet(d, a);
   logLine(`✨ ${a.name} → ${d.name}: 튕겨냄 (0)${rico ? ' — 탄이 튕겨 나감' : ''}`, 'parry');
@@ -3216,7 +3239,7 @@ function resolveHit(a, d, opts = {}){
   let blockCut = 0;
   if (d.guarding && !opts.forceCrit && !opts.grab){
     if (Math.random() < d.st.guard / 100){
-      if (Math.random() < PERFECT_P){ perfectBlock(d, a, opts); return; }   // 정확한 타이밍
+      if (b.clock - (d.guardSince ?? -99) <= JUST){ perfectBlock(d, a, opts); return; }   // 저스트 패리: 맞기 직전 0.2초 안에 올린 막기
       blockCut = d.st.shield ? BLOCK_SHIELD : BLOCK_BARE;
       if (!opts.ranged && strongAttack(a, d, opts.atk)){ blockCut /= 2; fxText(d, '강공! 막기 반감', '#ffb36a', null, 0.4); }   // 강공은 막기를 뚫는다
       guardFx(d, a, opts);
@@ -3523,6 +3546,7 @@ function updateBattle(dt){
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge')) && !u.phase2 && !u.lastStand;   // 돌격 중엔 방패를 앞세워 상시 방어, 불경자 ~ 근성은 막지 않음
     if (b.running && !u.manual) autoStep(u, tgt, dist, sdt);
     if (u.counterT > 0) u.counterT -= sdt;
+    if (u.guarding && !u.wasGuarding) u.guardSince = b.clock; u.wasGuarding = u.guarding;   // 막기를 올린 순간 (저스트 판정용)
     let dir = null, speed = u.st.spd;
     if (u.stun > 0){
       dir = null;
@@ -3805,6 +3829,7 @@ function updateBattle(dt){
   }
   b.units = b.units.filter(u => !(u.dead && u.st.summon && u.deadT > 4));   // 소환된 쥐 시체는 4초 뒤 사라짐
   b.pending.forEach(p => { p.t -= sdt; if (p.t <= 0) resolveHit(p.a, p.d, p.opts); });
+  if (b.running) updateReacts(sdt);
   updateProjectiles(sdt);
   if (b.running) updateBinds(sdt);
   if (b.running) updateStorms(sdt);
@@ -4879,7 +4904,7 @@ const SKILLS = {
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
     desc:'페이즈 2: 체력이 10% 남으면 (400이면 40) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (무거운 상대는 버틸 수 있음, 대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 공격속도 1.5배, 모든 공격이 치명타. 슈퍼아머: 경직이 아예 없고, 버티기 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
-    desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%).\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
+    desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%, 강공은 그 절반).\n저스트 패리: 맞기 직전에 맞춰 올린 막기는 튕겨냄 (피해 0), 상대는 휘청이고 다음 한 방은 치명타 (역전의 찬스). 보스도 똑같다.\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
     desc:'전열에서 창 길이만큼 거리를 두고 방어를 자주 올린다.\n적이 멀어지면 가끔 소리치며 방패를 앞세우고 돌격해 0.8초 동안 행동을 끊는다 (피해 16).\n돌격 중엔 방어가 늘 켜져 있고, 뚫리면 돌격이 저지된다.' },
   leader:    { name:'대장', kind:'패시브', icon:'⭐',
