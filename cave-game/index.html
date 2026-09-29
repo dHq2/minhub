@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.4
+  version v9.5
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.4';
+const VERSION = 'v9.5';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3099,8 +3099,11 @@ function drawProjectiles(){
 // 딱! 튕김 · 회피 반격 연출: 잠깐 멈춤 (히트스톱) + 진동 + 그 자리로 시선 모으기 (주변 어둡게, 모바일은 줌인)
 function clashFx(d, a, blue){
   const b = battle, mx = a ? (d.x + a.x) / 2 : d.x, my = a ? (d.y + a.y) / 2 : d.y;
-  b.hitstop = Math.max(b.hitstop, 0.24); shake = Math.max(shake, 0.4);
-  camFocus(mx, my, 1.6, 0.75);
+  b.hitstop = Math.max(b.hitstop, 0.1); shake = Math.max(shake, 0.4);       // 딱 멈췄다가
+  b.slowmo = Math.max(b.slowmo || 0, 0.7);                                   // 슬로우 (0.3배)
+  b.clash = { t: 0, dur: 0.55 };                                              // 이 동안 화면이 뚝뚝 끊기며 단계적으로 확대
+  loop.stut = 1;                                                              // 첫 장면은 바로 그림
+  camFocus(mx, my, 1.6, 1.1);
   b.fx.push({ type: 'clash', x: mx, y: my, h: unitHeight(d) * 0.55, blue: !!blue, life: 0.45, max: 0.45, seed: Math.random() * 6 });
   try { if (navigator.vibrate) navigator.vibrate(blue ? [18, 30, 18] : 35); } catch (e) {}
 }
@@ -3966,7 +3969,9 @@ function drawBattle(){
   if (shake > 0) ctx.translate((Math.random() - 0.5) * 8 * shake / 0.18, (Math.random() - 0.5) * 5 * shake / 0.18);
   ctx.fillStyle = '#060408'; ctx.fillRect(-10, -10, W + 20, H + 20);
   if (!cam.on && b.camFocus && b.camFocus.t > 0){                // 가로 화면 카메라 워킹: 큰 순간에 그 자리로 확 줌인했다가 천천히 풀림
-    const f = b.camFocus, k = f.t / f.max, e = k > 0.8 ? (1 - k) / 0.2 : easeOut(k / 0.8);
+    const f = b.camFocus, k = f.t / f.max;
+    let e = k > 0.8 ? (1 - k) / 0.2 : easeOut(k / 0.8);
+    if (b.clash && b.clash.t < b.clash.dur) e = [0.4, 0.7, 1][Math.min(2, Math.floor(b.clash.t / 0.09))];   // 딱! 순간: 확대가 세 단계로 뚝뚝
     const z = 1 + (f.k - 1) * e, p = P(f.x + 0.5, f.y + 0.5), fy = p.y - T * 0.7;
     const tx = p.x + (W / 2 - p.x) * 0.45 * e, ty = fy + (H * 0.55 - fy) * 0.45 * e;   // 그 자리를 화면 가운데 쪽으로 끌어옴
     ctx.translate(tx, ty); ctx.scale(z, z); ctx.translate(-p.x, -fy);
@@ -5856,7 +5861,12 @@ let last = performance.now();
 function loop(now){
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (player && !gameEl.hidden){
-    if (mode === 'battle'){ updateBattle(dt); updateCamera(dt); drawBattle(); }
+    if (mode === 'battle'){
+      updateBattle(dt); updateCamera(dt);
+      const c = battle && battle.clash;                                           // 딱! 순간엔 끊어지는 프레임 (초당 12장 정도)
+      if (c && c.t < c.dur){ c.t += dt; loop.stut = (loop.stut || 0) + dt; if (loop.stut >= 0.08){ loop.stut = 0; drawBattle(); } }
+      else drawBattle();
+    }
     else { update(dt); draw(); }
   }
   requestAnimationFrame(loop);
