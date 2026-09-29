@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.5
+  version v9.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -287,6 +287,7 @@
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-water"> 물 바닥 (천벌 범위 안 전원 감전)</label>
       <label class="bt-check"><input type="checkbox" id="bt-rain"> 🌧️ 비 오는 필드 (천벌이 맵 전체 감전)</label>
+      <label class="bt-check"><input type="checkbox" id="bt-seal"> ⛓ 신성 제약 필드 (신성 특성이 꺼짐: 카리우스 개조된 신체)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
       <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
       <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
@@ -316,7 +317,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.5';
+const VERSION = 'v9.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2078,8 +2079,9 @@ const HEROES = {
   karius: { name:'카리우스', grade:'★★★★★', color:'#6fb8e8', sub:'Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯',
     hp:400, atk:12, def:10, block:0.65, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
     shield:'🧬 개조된 신체 (특성)',
+    divine:{ name:'개조된 신체', dr:0.6, bleedRes:0.5 },   // 신성 특성: 신이 빚은 육체. 모든 피해 60% 감소 (전기 · 낙뢰 포함), 출혈 확률 절반. 신성 제약이면 꺼짐
     sweepAtk:30, grabAtk:30, slamAtk:40, swatAtk:35,
-    tags:['괴력A'], trait:'🔆 개조된 신체 — 광대, 노인, 여자가 하나로 붙은 몸. 상태이상에 강하다 (출혈 확률 절반). 팔이 많아 한 번에 두 번 친다.',
+    tags:['괴력A'], trait:'🔆 개조된 신체 (신성) — 광대, 노인, 여자가 하나로 붙은, 신이 빚은 몸. 모든 피해 60% 감소, 출혈 확률 절반. 신성이 제약되면 이 단단함이 사라진다. 팔이 많아 한 번에 두 번 친다.',
     equip:{ 무기:'✊ 맨손 (팔 넷)', 머리:'👓 둥근 안경', 몸:'⛓ 쇠사슬 가죽 결박구', 장신구:'—' } },
   goblin: { name:'청광묵', grade:'★★', color:'#5cc26a', sub:'고블린 생존 전사 · 130cm',
     hp:70, atk:9, def:2, block:0.12, crit:0.15, eva:0.20, spd:3.6, range:1.15, cd:0.8, windup:0.22, hits:1, weight:30, react:0.35,
@@ -2445,7 +2447,7 @@ function enterBattle(){
   ['hud-tl','bar','hud-tr','prompt'].forEach(id => document.getElementById(id).hidden = true);
   battle = { units: [], running: false, speed: 1, tool: 'enemyGoblin', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [],
-    parryTest: document.getElementById('bt-parry').checked, ricos: [], water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
+    parryTest: document.getElementById('bt-parry').checked, ricos: [], water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, sealDivine: document.getElementById('bt-seal').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
   buildBtTools();
   defaultSetup();
   btUi.hidden = false;
@@ -2541,7 +2543,7 @@ function syncTools(){ document.querySelectorAll('#bt-panel [data-tool]').forEach
 /* ---------- 마지막 세팅 (가장 최근에 시작한 전투의 배치 + 설정) ---------- */
 let lastSetup = null;
 try { lastSetup = JSON.parse(localStorage.getItem('cave.lastSetup') || 'null'); } catch (e) { lastSetup = null; }
-const BT_FLAGS = [['water', 'bt-water'], ['rain', 'bt-rain'], ['parryTest', 'bt-parry'], ['playerAuto', 'bt-auto']];
+const BT_FLAGS = [['water', 'bt-water'], ['rain', 'bt-rain'], ['sealDivine', 'bt-seal'], ['parryTest', 'bt-parry'], ['playerAuto', 'bt-auto']];
 function saveLastSetup(){
   const b = battle;
   lastSetup = {
@@ -2701,6 +2703,7 @@ function pressDodge(){
 document.getElementById('tb-dodge').addEventListener('pointerdown', e => { e.preventDefault(); pressDodge(); });
 document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); pressAttack(); });
 document.getElementById('bt-water').onchange = e => { if (battle) battle.water = e.target.checked; };
+document.getElementById('bt-seal').onchange = e => { if (battle) battle.sealDivine = e.target.checked; };
 document.getElementById('bt-rain').onchange = e => { if (battle){ battle.rain = e.target.checked; battle.drops = []; } };
 document.getElementById('bt-auto').onchange = e => { if (battle) battle.playerAuto = e.target.checked; };
 // 공격 입력: 0.35초 동안 버퍼 (공격 간격이 끝나는 순간에 맞춰 나감)
@@ -3122,6 +3125,10 @@ function counterAttack(d, a, opts, delay){
   } else battle.pending.push({ t: delay, a: d, d: a, opts: { forceCrit: true, counter: true } });
 }
 
+// 신성 특성: 신이 빚은 몸 · 축복. 신성 제약 (필드 또는 신성을 봉인하는 적)이면 꺼진다
+const divineSealed = u => !!(battle && (battle.sealDivine || battle.units.some(e => !e.dead && e.side !== u.side && e.st.sealDivine)));
+const divineOn = u => !!(u.st.divine && !divineSealed(u));
+const divineCut = (u, dmg) => divineOn(u) && u.st.divine.dr ? Math.max(1, Math.round(dmg * (1 - u.st.divine.dr))) : dmg;
 const WHIFF_GAP = 0.45;
 const MELEE_TOL = 0.3;    // 근접 판정 여유: 치는 순간 사거리 + 0.3칸 밖이면 헛침 (이동회피의 기준)   // 강공이 헛치면 생기는 틈 (초)
 function releaseAttack(u){
@@ -3315,6 +3322,7 @@ function resolveHit(a, d, opts = {}){
   const armor = !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
   dmg = Math.max(1, Math.round(dmg * (1 - armor) * (1 - blockCut)));
   if (d.id === 'karius' && !d.phase2 && d.hp > 1 && dmg >= d.hp) dmg = d.hp - 1;        // 페이즈 2 전엔 한 방에 쓰러지지 않음
+  dmg = divineCut(d, dmg);                                                                // 신성 특성 (개조된 신체)
   if (d.kc && d.kc.type === 'heretic') dmg = Math.min(dmg, Math.max(0, d.hp - 1));       // 변신 중엔 버팀
   if (d.fort) dmg = fortAbsorb(d, dmg);                                                   // 쥐 방진: 쥐들이 대신 맞음
   d.hp = Math.max(0, d.hp - dmg);
@@ -3333,7 +3341,7 @@ function resolveHit(a, d, opts = {}){
   }
   // 출혈
   let bc = crit ? BLEED.critChance : BLEED.chance;
-  if (d.id === 'karius') bc *= 0.5;
+  if (divineOn(d) && d.st.divine.bleedRes) bc *= 1 - d.st.divine.bleedRes;   // 신성 특성: 출혈에 강함
   if (d.hp > 0 && !blockCut && Math.random() < bc) applyBleed(d);   // 막았으면 출혈 없음
   // 무게: 버틸지 밀려날지 (막았으면 버팀)
   const aw = braceW(a), dw = braceW(d);
@@ -3505,7 +3513,7 @@ function updateBattle(dt){
       if (u.shock.clock >= SHOCK_TICK){
         u.shock.clock -= SHOCK_TICK; u.shock.ticks--;
         const K = SHOCKS[u.shock.kind];
-        let dmg = K.dmg * (u.shock.stacks || 1);
+        let dmg = divineCut(u, K.dmg * (u.shock.stacks || 1));
         if (u.fort) dmg = fortAbsorb(u, dmg);                   // 방진: 쥐들이 전기도 나눠 받음
         u.hp = Math.max(0, u.hp - dmg); u.stun = Math.max(u.stun, 0.25);
         fxText(u, `${dmg}`, K.color, u.shock.stacks > 2 ? 'big' : null);
@@ -4175,6 +4183,11 @@ function drawBattle(){
       ctx.fillStyle = '#7dff9a'; ctx.fillRect(p.x - w / 2, gy, w * k, 4);
     }
     if (u.cloak){ ctx.font = `${Math.max(9, Math.round(T * 0.16))}px "Nanum Gothic Coding",monospace`; ctx.textAlign = 'left'; ctx.fillStyle = '#9dff7a'; ctx.fillText(`🐀방어+${u.cloak * CLOAK.per}`, p.x + w / 2 + 3, top + 17); }
+    if (u.st.divine){                                         // 신성 특성: 켜져 있으면 작은 빛, 제약이면 봉인 표시
+      ctx.font = `${Math.max(9, Math.round(T * 0.16))}px "Nanum Gothic Coding",monospace`; ctx.textAlign = 'left';
+      const on = divineOn(u); ctx.fillStyle = on ? '#e8dcff' : '#8a7f94';
+      ctx.fillText(on ? `✦신성 -${Math.round(u.st.divine.dr * 100)}%` : '⛓신성 봉인', p.x + w / 2 + 3, top + 17);
+    }
     if (u.bind){
       // 쥐 포박 게이지: 매달린 쥐 수만큼 차고, 버둥거릴수록 줄어듦. 달려오는 쥐 수도 표시
       const bd = u.bind, gy = top + 8, k = Math.max(0, Math.min(1, bd.gauge / BIND.max));
@@ -4655,6 +4668,7 @@ function kickHit(u, o, c){
     fxText(o, `${pinned ? '짓뭉개짐! ' : '치명타! '}${dmg}`, pinned ? '#ff3b3b' : '#ffd35a', 'crit');
     logLine(`🦶 ${u.name}의 날아차기 → ${o.name}: ${pinned ? '벽 사이에 짓뭉개짐, ' : ''}치명타 ${dmg}`, 'crit');
   }
+  dmg = divineCut(o, dmg);
   if (o.fort) dmg = fortAbsorb(o, dmg);
   const held = braceW(o) >= KICK_HOLD_W;                        // 버티기 무게로 버팀 (근성 · 대검을 꽂은 포렌 · 막는 카리우스)
   o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3;
@@ -4679,7 +4693,7 @@ function bounceHit(u, o, w){
   const b = battle;
   w.chain.n++; w.chain.hit.add(o);
   const crit = Math.random() < BOUNCE.crit;
-  const dmg = Math.round((BOUNCE.flat + o.st.hp * BOUNCE.pct) * (crit ? 3 : 1) * Math.pow(BOUNCE.keep, w.chain.n - 1));
+  const dmg = divineCut(o, Math.round((BOUNCE.flat + o.st.hp * BOUNCE.pct) * (crit ? 3 : 1) * Math.pow(BOUNCE.keep, w.chain.n - 1)));
   o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3;
   o.windup = 0; o.atkTarget = null; o.guarding = false; o.cast = null;
   if (o.kc && !['agony', 'cut', 'heretic'].includes(o.kc.type)) o.kc = null;
@@ -4752,13 +4766,13 @@ function strikeBolt(u, bo){
     if (o.dead) continue;
     const opp = o.side !== u.side, air = (o.lift || 0) > 0.05;
     if (opp && Math.hypot(o.x - bo.x, o.y - bo.y) < 0.55){
-      o.hp = Math.max(0, o.hp - (o.fort ? fortAbsorb(o, BOLT_RAIN.direct) : BOLT_RAIN.direct)); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.0); o.charT = Math.max(o.charT, 1.2);
+      o.hp = Math.max(0, o.hp - (o.fort ? fortAbsorb(o, divineCut(o, BOLT_RAIN.direct)) : divineCut(o, BOLT_RAIN.direct))); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.0); o.charT = Math.max(o.charT, 1.2);
       o.windup = 0; o.atkTarget = null;
       fxText(o, `직격 ${BOLT_RAIN.direct}`, '#ff4a4a', 'big');
       logLine(`⛈️ 번개비 직격 → ${o.name}: ${BOLT_RAIN.direct}`, 'crit');
       applyShock(o, 'redHalf', true);
     } else if (opp && inArea(o)){
-      o.hp = Math.max(0, o.hp - BOLT_RAIN.radial); o.hurt = 0.2; o.stun = Math.max(o.stun, 0.4);
+      o.hp = Math.max(0, o.hp - divineCut(o, BOLT_RAIN.radial)); o.hurt = 0.2; o.stun = Math.max(o.stun, 0.4);
       fxText(o, `방사 ${BOLT_RAIN.radial}`, '#ff8f8f');
       if (!air) applyShock(o, 'resHalf', true);
     } else if (b.water && inArea(o) && !air) applyShock(o, 'resHalf', true);
@@ -4789,7 +4803,7 @@ function strikeThunder(u, c){
     if (hitDirect){
       direct = true;
       const crit = Math.random() < (u.st.crit || 0);              // 치명타: 적뢰의 치명타율 (5%), 피해 x3
-      const raw = u.st.thunderAtk * (crit ? 3 : 1);
+      const raw = divineCut(o, u.st.thunderAtk * (crit ? 3 : 1));
       const dmg = o.fort ? fortAbsorb(o, raw) : raw;
       o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.3; o.stun = Math.max(o.stun, 1.6); o.charT = 2.2;
       o.windup = 0; o.atkTarget = null;
@@ -4799,7 +4813,7 @@ function strikeThunder(u, c){
       applyShock(o, 'red');                               // 감전: 적뢰 (붉은 번개)
     } else if (b.rain ? !airborne(o) : (opp && inArea(o))){
       // 범위: 살짝 약한 방사 피해 + 잔류. 비 오는 날엔 맵 전체 확정 (피아 불문, 공중이면 면역)
-      const dmg = o.fort ? fortAbsorb(o, u.st.residualAtk) : u.st.residualAtk;
+      const dmg = o.fort ? fortAbsorb(o, divineCut(o, u.st.residualAtk)) : divineCut(o, u.st.residualAtk);
       o.hp = Math.max(0, o.hp - dmg); o.hurt = 0.2; o.stun = Math.max(o.stun, 0.5);
       fxText(o, `방사 ${dmg}`, '#ff8f8f');
       if (!b.rain) logLine(`⚡ 방사 → ${o.name}: ${dmg}`);
@@ -5009,7 +5023,7 @@ const SKILLS = {
   undying:   { name:'불사', kind:'패시브', icon:'♾️',
     desc:'늘 초당 체력 2씩 차오른다.\n쓰러져도 누운 채로 계속 재생해서, 체력이 30이 되면 서서히 일어난다 (1.6초, 그동안 행동 불가). 단, 편이 전멸한 상태면 일어나지 못한다.\n일어난 직후엔 가능하면 뒤로 빠져서 정비한다 (6초 또는 체력 절반까지).\n아픈 건 똑같이 아프다.' },
   modified:  { name:'개조된 신체', kind:'패시브', icon:'🧬',
-    desc:'상태이상에 강하다 (출혈 확률 절반).\n팔이 넷이라 한 번 공격에 두 번 친다.' },
+    desc:'✦ 신성 특성 — 신이 빚은 육체. 모든 피해 60% 감소 (평타 · 기술 · 전기 · 낙뢰 · 날아차기 모두), 출혈 확률 절반. 머리 위에 "✦신성 -60%".\n⛓ 신성을 제약하는 필드나 적 앞에서는 꺼진다 ("⛓신성 봉인").\n팔이 넷이라 한 번 공격에 두 번 친다.' },
   ignite:    { name:'발화', kind:'패시브', icon:'🔥',
     desc:'손바닥에서 불을 피운다. 열이 나면 금방 배고파진다.\n적이 치려고 하면 방어 대신 뒤로 빠진다.' },
   madness:   { name:'광기', kind:'패시브', icon:'⛓',
