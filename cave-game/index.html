@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v8.9
+  version v9.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v8.9';
+const VERSION = 'v9.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3804,6 +3804,7 @@ function updateBattle(dt){
         u.aimShot = !u.stab && u.state === 'aim' && u.aiming;
         if (u.aimShot){ u.windup = u.windupMax = u.st.windup * 2; fxText(u, '조준', '#e8e0b0', null, 0.3); }
         u.atkTarget = tgt; u.noHitT = 0; u.lungeTo = u.st.lunge ? { x: tgt.x, y: tgt.y } : null;
+        if (u.st.quake) b.fx.push({ type: 'fist', u, t: tgt, wind: u.windupMax, life: u.windupMax + 0.4, max: u.windupMax + 0.4 });   // 대리석 주먹: 치켜들었다 내리꽂는 그림
         const n = norm(tgt.x - u.x, tgt.y - u.y); u.lx = n.x; u.ly = n.y; u.face = Math.sign(n.x) || u.face;
         reactTo(tgt, u);
         dir = null;
@@ -4014,6 +4015,8 @@ function drawBattle(){
       for (let i = 0; i < 2; i++){
         ctx.beginPath(); ctx.arc(cx, cy, w * (0.8 + i * 0.35 + (1 - k) * 0.6), -1.1 + (f.u.face < 0 ? Math.PI : 0), 1.1 + (f.u.face < 0 ? Math.PI : 0)); ctx.stroke();
       }
+    } else if (f.type === 'fist'){
+      drawMarbleFist(f);
     } else if (f.type === 'quake'){
       const q = P(f.x + 0.5, f.y + 0.5), e = 1 - k, rx = T * f.r * (0.4 + e * 0.8), ry = rowH * f.r * (0.4 + e * 0.8);
       ctx.strokeStyle = `rgba(220,200,180,${0.8 * k})`; ctx.lineWidth = 3 + 4 * k;
@@ -4220,6 +4223,44 @@ function drawPorenAura(o, p, dsc){
     ctx.strokeStyle = `rgba(157,255,122,${0.3 + 0.4 * k})`; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 1.1 * dsc, T * 0.42 * dsc, 0, 0, Math.PI * 2); ctx.stroke();
   }
+}
+// 적뢰의 대리석 주먹: 준비 동안 머리 위로 치솟고, 치는 순간 대상에게 내리꽂힘 (잔상 줄), 그 뒤 흐려짐
+function drawMarbleFist(f){
+  const u = f.u, t = f.t; if (u.dead) { f.life = 0; return; }
+  const age = f.max - f.life, dsc = depthScale(u.y), p = P(u.x + 0.5, u.y + 0.5), h = unitHeight(u) * T * dsc, face = u.face || -1;
+  const up = { x: p.x + face * T * 0.35 * dsc, y: p.y - h * 1.02 };            // 머리 위 치켜든 자리
+  const sh = { x: p.x + face * T * 0.25 * dsc, y: p.y - h * 0.62 };             // 어깨
+  let x, y, ang, sc = T * 1.05 * dsc, alpha = 1, streak = 0;
+  if (age < f.wind){
+    const k = easeOut(age / f.wind);
+    x = sh.x + (up.x - sh.x) * k; y = sh.y + (up.y - sh.y) * k; ang = -Math.PI / 2 * k; sc *= 0.8 + 0.25 * k;   // 주먹이 위로 치솟음 (손마디가 하늘로)
+  } else {
+    const q = t && !t.dead ? P(t.x + 0.5, t.y + 0.5) : P((u.lungeTo || u).x + 0.5, (u.lungeTo || u).y + 0.5);
+    const hit = { x: q.x, y: q.y - T * 0.35 * dsc };
+    const s2 = age - f.wind, m = Math.min(1, s2 / 0.07);
+    x = up.x + (hit.x - up.x) * m; y = up.y + (hit.y - up.y) * m; ang = Math.PI / 2; sc *= 1.05;   // 손마디가 땅으로
+    streak = m < 1 ? 1 : 0.5 * Math.max(0, 1 - (s2 - 0.07) / 0.15);
+    alpha = s2 < 0.12 ? 1 : Math.max(0, 1 - (s2 - 0.12) / 0.2);
+    if (streak > 0){                                                      // 내리꽂는 잔상 줄
+      ctx.strokeStyle = `rgba(240,236,230,${0.55 * streak})`; ctx.lineCap = 'round';
+      for (let i = -1; i <= 1; i++){ ctx.lineWidth = sc * (i ? 0.12 : 0.22); ctx.beginPath(); ctx.moveTo(up.x + i * sc * 0.25, up.y - sc * 0.2); ctx.lineTo(x + i * sc * 0.25, y - sc * 0.3); ctx.stroke(); }
+    }
+  }
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.strokeStyle = "rgba(236,230,222,.9)"; ctx.lineWidth = sc * 0.26; ctx.lineCap = "round";   // 팔
+  ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(x, y); ctx.stroke();
+  ctx.translate(x, y); ctx.rotate(ang);
+  const w = sc * 0.62, hh = sc * 0.5;
+  ctx.fillStyle = '#b3122a'; ctx.fillRect(-w * 0.55, -hh * 0.62, w * 0.3, hh * 1.24);         // 손목의 붉은 천
+  ctx.fillStyle = '#ece6de'; ctx.strokeStyle = '#2a2224'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-w * 0.3, -hh / 2, w * 0.75, hh, hh * 0.28) : ctx.rect(-w * 0.3, -hh / 2, w * 0.75, hh); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#8f8680'; ctx.lineWidth = 1.5;                                           // 손마디 · 손가락 금
+  for (let i = 1; i < 4; i++){ const yy = -hh / 2 + hh * i / 4; ctx.beginPath(); ctx.moveTo(w * 0.12, yy); ctx.lineTo(w * 0.45, yy); ctx.stroke(); }
+  ctx.fillStyle = '#d8d0c8'; ctx.beginPath(); ctx.ellipse(-w * 0.05, hh * 0.42, w * 0.2, hh * 0.14, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();   // 엄지
+  ctx.strokeStyle = 'rgba(179,18,42,.7)'; ctx.lineWidth = 1.2;                                  // 대리석 결 (붉은 실금)
+  ctx.beginPath(); ctx.moveTo(-w * 0.2, -hh * 0.3); ctx.lineTo(w * 0.05, -hh * 0.05); ctx.lineTo(-w * 0.05, hh * 0.2); ctx.stroke();
+  ctx.restore();
 }
 // 쥐 표식: 대상 발밑의 도는 초록 고리 + 머리 위 쥐 머리 문양과 포위한 쥐 수
 function drawRatMark(f){
