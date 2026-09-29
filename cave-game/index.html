@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.3
+  version v11.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.3';
+const VERSION = 'v11.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2260,10 +2260,10 @@ Object.assign(ENEMIES, {
     look:{ kind:'hole' },
     tags:[], trait:'웃고, 울고, 깔깔거린다. 움직이지 않는다. 가까이 오는 것을 붙잡아 할퀸다.', equip:{ 무기:'손가락', 머리:'—', 몸:'구멍', 장신구:'—' } },
   cesar: { name:'세자르', grade:'BOSS', color:'#9fc6ff', sub:'1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관',
-    hp:1100, atk:26, def:14, block:0.55, crit:0.08, eva:0, spd:1.4, range:1.7, cd:1.9, windup:0.55, hits:1, weight:420, react:0.35, radius:0.55, height:1.75,
-    boss:true,
+    hp:1100, atk:26, def:14, block:0.55, crit:0.08, eva:0.15, spd:1.4, range:1.7, cd:1.9, windup:0.5, hits:1, weight:420, react:0.3, radius:0.55, height:1.75,
+    boss:true, brain:'cesar', noTell:true, lunge:2.6, stepCd:2.5, sever:0.35, frostbite:0.25,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 권위 — 전투가 시작되면 홀에 눈이 내린다. 신성이 극도로 제한된다 (신성 특성이 꺼짐). 크게 휘청이면 권위가 흔들려 6초 동안 눈이 멎고 신성이 돌아온다.\n❄ 서리 베기 — 가끔 검에 서리를 감아 크게 휘두른다. 앞의 2.3칸 안 모두에게 공격력의 1.3배.\n👑 일어나라 — 체력이 절반 아래로 떨어지면 손을 들어 죽은 전사 둘을 부른다.',
+    tags:[], trait:'🔆 명군의 무위 — 예고 없이 천천히 다가와 간격을 잰다. 빙글빙글 돌며 압박하다 순식간에 파고들어 크게 벤다. 잘 피한다.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 밀어낸다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없다. 맨 앞은 들어 올려 내던진다.\n👑 일어나라 — 체력이 절반 아래면 죽은 전사 둘을 부른다.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -3550,6 +3550,10 @@ function resolveHit(a, d, opts = {}){
   let bc = crit ? BLEED.critChance : BLEED.chance;
   if (divineOn(d) && d.st.divine.bleedRes) bc *= 1 - d.st.divine.bleedRes;   // 신성 특성: 출혈에 강함
   if (d.hp > 0 && !blockCut && Math.random() < bc) applyBleed(d);   // 막았으면 출혈 없음
+  if (d.hp > 0 && !blockCut){                                   // 공격자 특성: 절단 · 동상 (확률은 공격자 설정값)
+    if (a.st.sever && Math.random() < (crit ? a.st.sever * 2 : a.st.sever)) applySever(d);
+    if (a.st.frostbite && Math.random() < a.st.frostbite) applyFrost(d, 4);
+  }
   // 무게: 버틸지 밀려날지 (막았으면 버팀)
   const aw = braceW(a), dw = braceW(d);
   let hold = dw / (dw + aw * (crit ? 2.5 : 1));                 // 치명타는 2.5배의 힘으로 밀어붙임
@@ -3590,6 +3594,14 @@ function drawBubble(f){
   ctx.fillStyle = '#b3122a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(f.text, p.x + jx, y + hh / 2 + 1);
   ctx.restore();
+}
+function applySever(d){
+  d.sever = { ticks: 5, clock: 0 };
+  fxText(d, '✂절단', '#ff3b5c', 'big'); logLine(`✂ ${d.name} 절단 — 5초 동안 크게 피를 흘림`, 'bleed');
+}
+function applyFrost(d, t){
+  d.frostT = Math.max(d.frostT || 0, t);
+  fxText(d, '❄동상', '#9fd8ff'); logLine(`❄ ${d.name} 동상 — ${t}초 동안 느려짐`, 'miss');
 }
 function applyBleed(d){
   if (!d.bleed) d.bleed = { stacks: 0, ticks: 0, clock: 0 };
@@ -3764,7 +3776,18 @@ function updateBattle(dt){
       if (u.ghostClock <= 0){ u.ghostClock = 0.05; b.fx.push({ type: 'ghost', snap: { ...u, lunge: 0, windup: 0 }, life: 0.25, max: 0.25 }); }
     }
     u.stateT -= sdt;
-    u.cd -= sdt;
+    u.cd -= sdt * (u.frostT > 0 ? 0.6 : 1);                     // 동상: 공격이 느려짐
+    if (u.frostT > 0) u.frostT -= sdt;
+    if (u.sever && b.running){                                   // 절단: 아주 큰 출혈 (1초마다 최대 체력 5% + 4, 5번)
+      u.sever.clock += sdt;
+      if (u.sever.clock >= 1){
+        u.sever.clock -= 1;
+        const dmg = Math.round(u.st.hp * 0.05) + 4;
+        u.hp = Math.max(0, u.hp - dmg); fxText(u, `✂${dmg}`, '#ff3b5c'); burst(u, 8, '#b3122a', 140);
+        if (--u.sever.ticks <= 0) u.sever = null;
+        if (u.hp <= 0){ killUnit(u, '절단'); continue; }
+      }
+    }
     // 출혈 (1초 = 1턴)
     if (u.bleed && b.running){
       u.bleed.clock += sdt;
@@ -3821,6 +3844,7 @@ function updateBattle(dt){
     if (u.st.skills && u.st.skills.includes('firstAid') && b.running && !u.manual && medicUpdate(u, sdt)){ u.guarding = false; continue; }
     if (u.st.skills && u.st.skills.includes('legion') && b.running && porenUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
     if (u.id === 'karius' && (b.running || (u.lastStand && !u.p2End)) && kariusUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
+    if (u.st.brain && b.running && BRAINS[u.st.brain](u, sdt, tgt, dist)){ u.guarding = false; u.t = 1; continue; }   // 전용 두뇌 (세자르)
     if (u.st.thunderAtk && b.running && (u.stun <= 0 || (u.cast && u.cast.type === 'kick')) && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge')) && !u.phase2 && !u.lastStand;   // 돌격 중엔 방패를 앞세워 상시 방어, 불경자 ~ 근성은 막지 않음
     if (b.running && !u.manual) autoStep(u, tgt, dist, sdt);
@@ -4076,6 +4100,7 @@ function updateBattle(dt){
         }
       }
       if (u.guarding && u.state !== 'charge') speed *= 0.7;   // 방어 중 이동 30% 감소 (방패 돌격은 제외)
+      if (u.frostT > 0) speed *= 0.55;                            // 동상: 발이 얼어 느려짐
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
@@ -4306,7 +4331,7 @@ function drawBattle(){
       ctx.beginPath(); ctx.arc(ax, cy, h * 0.42, a0, a1); ctx.stroke();
       emoji('🛡️', cx, cy, T * (0.3 + fl * 0.2));
     }
-    if (u.windup > 0){
+    if (u.windup > 0 && !u.st.noTell){
       ctx.font = `${Math.round(T * 0.38)}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
       ctx.lineWidth = 3; ctx.strokeStyle = '#3a1a00'; ctx.strokeText('!', p.x, p.y - h - T * 0.45);
       ctx.fillStyle = '#ffd35a'; ctx.fillText('!', p.x, p.y - h - T * 0.45);
@@ -4400,6 +4425,12 @@ function drawBattle(){
       drawRatMark(f);
     } else if (f.type === 'bindBreak'){
       drawBindBreak(f);
+    } else if (f.type === 'frostArc'){
+      drawFrostArc(f, k);
+    } else if (f.type === 'slash'){
+      const q = P(f.x + 0.5, f.y + 0.5), L = T * 0.9;
+      ctx.strokeStyle = `rgba(235,245,255,${k})`; ctx.lineWidth = 3 * k + 1;
+      ctx.beginPath(); ctx.moveTo(q.x - Math.cos(f.a) * L, q.y - T * 0.6 - Math.sin(f.a) * L); ctx.lineTo(q.x + Math.cos(f.a) * L, q.y - T * 0.6 + Math.sin(f.a) * L); ctx.stroke();
     } else if (f.type === 'gspin'){
       drawGreatswordSpin(f);
     } else if (f.type === 'ring'){
@@ -4443,6 +4474,11 @@ function drawBattle(){
     if (u.bleed){
       ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'left'; ctx.fillStyle = '#ff8f8f';
       ctx.fillText(`🩸${u.bleed.stacks}·${u.bleed.ticks}`, p.x + w / 2 + 3, top + 6);
+    }
+    if (u.sever || u.frostT > 0){
+      ctx.font = `${Math.round(T * 0.18)}px sans-serif`; ctx.textAlign = 'right';
+      ctx.fillStyle = u.sever ? '#ff3b5c' : '#9fd8ff';
+      ctx.fillText(`${u.sever ? '✂' + u.sever.ticks : ''}${u.frostT > 0 ? '❄' : ''}`, p.x - w / 2 - 3, top + 6);
     }
     if (u.loyal){
       const gy = top + 8, k = Math.min(1, u.loyal.t / u.loyal.dur);
@@ -4518,6 +4554,7 @@ function drawBattle(){
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   drawBossBar();
   if (b.locked) drawCmdUi();
+  if (b.cutin) drawCutin(b.cutin);
   if (b.drops.length){
     ctx.strokeStyle = 'rgba(170,200,255,.4)'; ctx.lineWidth = 1; ctx.beginPath();
     for (const d of b.drops) if (!d.snow){ ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.5, d.y - 12); }
@@ -4574,7 +4611,6 @@ function poseOf(o, S){
   if (o.dodgeT > 0 || o.state === 'retreat') return 'back';
   if (o.windup > 0) return 'prep';
   if (o.lunge > 0) return 'strike';
-  if (o.moving) return 'prep';                                        // 거리를 좁히며 다가옴
   return 'idle';
 }
 
@@ -4718,8 +4754,10 @@ function drawSpriteUnit(o){
   if (S.poses){
     let q = S.poses[poseOf(o, S)]; if (!imgReady(q.img)) q = S.poses.idle;
     const breath = q === S.poses.idle ? 1 + Math.sin(time * 1.8 + (o.uid || 0)) * 0.012 : 1;
+    const wob = o.moving && q === S.poses.idle ? Math.sin((o.walkClock || time) * 7) : 0;   // 걸을 땐 대기 원화로 살짝 뒤뚱
     ctx.save();
-    ctx.translate(p.x, p.y - (o.lift || 0) * T);
+    ctx.translate(p.x, p.y - (o.lift || 0) * T - Math.abs(wob) * T * 0.04);
+    ctx.rotate(wob * 0.05);
     if ((o.face || S.baseFace) !== S.baseFace) ctx.scale(-1, 1);
     if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
     if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
@@ -6744,8 +6782,7 @@ async function floor1(){
   king.poseName = 'raise'; king.poseUntil = time + 99; shake = 0.2;
   DG.snowOn = true; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.8, max: 2.8 }; await dgWait(2.4);
   removeActor(king); DG.lock = false; DG.focus = null;
-  const auth = { shaken: 0, cool: 0, called: false };
-  await fightOrDie({ title: '세자르', enemies: [{ id: 'cesar', x: 9, y: 2 }], snow: true, seal: true, xp: 130, tick: sdt => cesarTick(auth, sdt) });
+  await fightOrDie({ title: '세자르', enemies: [{ id: 'cesar', x: 9, y: 2 }], snow: true, seal: true, xp: 130 });
   DG.snowOn = false;
   dgSub('왕이 무너지자 눈이 멎습니다.');
   await dgWait(1.6);
@@ -6755,35 +6792,237 @@ async function floor1(){
   await dgReward('1층 · 세자르의 무덤', [['👑', '세자르의 왕관', '녹슬지 않는 왕관. 아직 아무 효과 없음'], ['❄️', '녹지 않는 눈 한 줌', '손바닥 위에서도 녹지 않는다. 아직 아무 효과 없음'], ...DG.gifts], '관 속으로 내려간다');
   DG.focus = null;
 }
-// 세자르의 권위: 눈 = 신성 제약. 크게 휘청이면 6초 동안 흔들림 (눈이 멎고 신성이 돌아옴). 절반 아래에서 한 번 "일어나라"
-function cesarTick(a, sdt){
-  const b = battle, k = b.units.find(u => u.id === 'cesar');
-  if (!k) return;
-  if (k.dead){ b.snow = false; b.sealDivine = false; return; }
-  a.cool -= sdt;
-  if (a.shaken > 0){
-    a.shaken -= sdt;
-    if (a.shaken <= 0){ b.snow = true; b.sealDivine = true; a.cool = 4; fxText(k, '권위', '#cfe6ff', 'big'); logLine('❄ 권위가 다시 홀을 채운다. 눈이 내린다', 'crit'); }
-  } else if (k.stun >= 0.4 && a.cool <= 0){
-    a.shaken = 6; b.snow = false; b.sealDivine = false;
+/* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
+   권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
+const CZ = { circleR: 2.7, ult: 22, wave: 9, spin: 6, shoulder: 7, thrust: 12 };
+const BRAINS = { cesar: cesarBrain };
+function czPose(u, name, dur){ u.poseName = name; u.poseUntil = time + dur; }
+function czGhost(u){ battle.fx.push({ type: 'ghost', snap: { ...u, lunge: 0, windup: 0 }, life: 0.3, max: 0.3 }); }
+function czFoes(u){ return battle.units.filter(o => !o.dead && o.side !== u.side && !o.enter); }
+function cesarBrain(u, sdt, tgt, dist){
+  const b = battle;
+  const z = u.cz || (u.cz = { mode: 'circle', modeT: 1.5 + Math.random(), orbit: Math.random() < 0.5 ? 1 : -1,
+    ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 7, auth: b.snow ? -1 : 0.6, shaken: 0, cool: 0, called: false, act: null });
+  for (const k of ['ult', 'wave', 'spin', 'shoulder', 'thrust']) z[k] -= sdt;
+  // 권위: 흔들림 (크게 휘청이면 6초 동안 눈이 멎고 신성이 돌아옴)
+  z.cool -= sdt;
+  if (z.shaken > 0){
+    z.shaken -= sdt;
+    if (z.shaken <= 0){ b.snow = true; b.sealDivine = true; z.cool = 4; fxText(u, '권위', '#cfe6ff', 'big'); logLine('❄ 권위가 다시 홀을 채운다. 눈이 내린다', 'crit'); }
+  } else if (b.snow && u.stun >= 0.4 && z.cool <= 0){
+    z.shaken = 6; b.snow = false; b.sealDivine = false;
     caption = { text: '권위가 흔들린다', life: 1.8, max: 1.8 };
     logLine('👑 세자르가 휘청인다 — 6초 동안 눈이 멎고 신성이 돌아온다', 'crit');
   }
-  a.frost = (a.frost ?? 7) - sdt;
-  if (a.frost <= 0 && k.stun <= 0 && k.windup <= 0){
-    const hit = b.units.filter(o => !o.dead && o.side !== k.side && Math.hypot(o.x - k.x, o.y - k.y) < 2.3 && Math.sign(o.x - k.x || 1) === Math.sign(k.face || -1));
-    if (hit.length){
-      a.frost = 9; k.poseName = 'special'; k.poseUntil = time + 0.9; k.cd = Math.max(k.cd, 1.2);
-      shout(k, '얼어라'); shake = Math.max(shake, 0.3);
-      hit.forEach(o => { resolveHit(k, o, { atk: Math.round(k.st.atk * 1.3) }); ringAt(o, '160,220,255'); });
-      logLine(`❄ 세자르의 서리 베기 — ${hit.length}명`, 'crit');
-    }
-  }
-  if (!a.called && k.hp < k.st.hp * 0.5){
-    a.called = true; shout(k, '일어나라'); k.poseName = 'raise'; k.poseUntil = time + 1.4;
-    for (const id of ['deadAxe', 'deadSword']){ const u = spawnUnit(id, BATTLE_COLS - 0.6, 0.5 + Math.random() * 3, 'enemy'); fxText(u, '합류', '#cfd6de', 'big'); }
+  if (!z.called && u.hp < u.st.hp * 0.5 && !z.act){
+    z.called = true; shout(u, '일어나라'); czPose(u, 'raise', 1.4);
+    for (const id of ['deadAxe', 'deadSword']){ const m = spawnUnit(id, BATTLE_COLS - 0.6, 0.5 + Math.random() * 3, 'enemy'); fxText(m, '합류', '#cfd6de', 'big'); }
     logLine('👑 "일어나라." 죽은 전사들이 다시 일어선다', 'crit');
   }
+  if (z.act) return czRun(u, z, sdt);
+  if (u.stun > 0 || !tgt) return false;
+  if (z.auth >= 0 && !b.snow){ z.auth -= sdt; if (z.auth <= 0){ z.act = { type: 'auth', t: 0 }; logLine('👑 세자르가 천천히 손을 든다…', 'crit'); return true; } }
+  const foes = czFoes(u), near = foes.filter(o => Math.hypot(o.x - u.x, o.y - u.y) < 1.7);
+  if (near.length && z.spin <= 0){ z.act = { type: 'spin', t: 0 }; return true; }
+  if (z.ult <= 0 && dist < 6){ z.act = { type: 'ult', t: 0, tgt, hits: 0 }; return true; }
+  if (z.thrust <= 0 && dist > 1.3 && dist < 4){ z.act = { type: 'thrust', t: 0, tgt }; return true; }
+  if (z.wave <= 0 && dist >= 2.2 && dist <= 5){ z.act = { type: 'wave', t: 0, tgt }; return true; }
+  if (z.shoulder <= 0 && dist > 1.5 && dist < 3.3 && Math.random() < sdt * 1.5){ z.act = { type: 'shoulder', t: 0, tgt }; return true; }
+  if (z.mode === 'circle'){                                       // 빙글빙글: 간격을 두고 돌며 압박
+    z.modeT -= sdt;
+    const a = Math.atan2(u.y - tgt.y, u.x - tgt.x) + z.orbit * sdt * 0.55;
+    let gx = tgt.x + Math.cos(a) * CZ.circleR, gy = tgt.y + Math.sin(a) * CZ.circleR * 0.8;
+    if (gy < 0.1 || gy > ROWS - 1.1 || gx < 0.1 || gx > BATTLE_COLS - 1.1) z.orbit *= -1;
+    gx = Math.max(0, Math.min(BATTLE_COLS - 1, gx)); gy = Math.max(0, Math.min(ROWS - 1, gy));
+    const d = Math.hypot(gx - u.x, gy - u.y), sp = u.st.spd * 0.8 * (u.frostT > 0 ? 0.55 : 1);
+    if (d > 0.05){ u.x += (gx - u.x) / d * Math.min(d, sp * sdt); u.y += (gy - u.y) / d * Math.min(d, sp * sdt); u.moving = true; u.walkClock = (u.walkClock || 0) + sdt; }
+    else u.moving = false;
+    u.face = Math.sign(tgt.x - u.x) || u.face;
+    autoStep(u, tgt, dist, sdt);                                  // 돌면서도 피할 건 피함
+    if (z.modeT <= 0){ z.mode = 'engage'; z.modeT = 3; }
+    return true;
+  }
+  // 파고들기: 기본 공격 (예고 없이 쑥 들어와 크게 베기)에 맡기고, 한 번 베면 다시 돈다
+  z.modeT -= sdt;
+  if (u.lunge > 0) z.swung = true;
+  if (z.modeT <= 0 || (z.swung && u.lunge <= 0 && u.windup <= 0)){ z.mode = 'circle'; z.modeT = 1.2 + Math.random() * 1.8; z.swung = false; z.orbit = Math.random() < 0.5 ? 1 : -1; }
+  return false;
+}
+function czRun(u, z, sdt){
+  const b = battle, A = z.act;
+  A.t += sdt;
+  const end = () => { z.act = null; u.superArmor = false; u.moving = false; };
+  const broken = () => u.stun > 0.05 && !u.superArmor;
+  if (A.type === 'auth'){                                         // 권위: 손들기 준비 1.1초 (때릴 수 있음) → 손을 듦
+    czPose(u, A.t < 1.1 ? 'raiseWait' : 'raise', 0.2);
+    if (A.t < 1.1 && broken()){ fxText(u, '끊김', '#b8b0a4'); logLine('👑 권위가 끊겼다', 'miss'); z.auth = 6; end(); return false; }
+    if (!A.done && A.t >= 1.1){ A.done = true; b.snow = true; b.sealDivine = true; shake = 0.25; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.4, max: 2.4 }; logLine('❄ 권위 발동 — 눈이 내리고 신성이 막힌다', 'crit'); }
+    if (A.t >= 1.6){ z.auth = -1; end(); }
+    return true;
+  }
+  if (A.type === 'spin'){                                         // 원형 베기: 가까이 붙은 것들을 밀어냄
+    czPose(u, A.t < 0.35 ? 'prep' : 'special', 0.2);
+    if (A.t < 0.35 && broken()){ z.spin = 3; end(); return false; }
+    if (!A.done && A.t >= 0.35){
+      A.done = true; z.spin = CZ.spin; shake = Math.max(shake, 0.3);
+      b.fx.push({ type: 'frostArc', x: u.x, y: u.y, r: 2.2, a0: 0, a1: Math.PI * 2, life: 0.5, max: 0.5 });
+      for (const o of czFoes(u)) if (Math.hypot(o.x - u.x, o.y - u.y) < 2.2){ resolveHit(u, o, { atk: Math.round(u.st.atk * 1.2) }); pushUnit(o, u, 1.1); applyFrost(o, 2); }
+      logLine('🌀 세자르의 원형 베기', 'crit');
+    }
+    if (A.t >= 0.85) end();
+    return true;
+  }
+  if (A.type === 'shoulder'){                                     // 어깨 박치기: 잔상을 남기며 들이받음
+    const t = A.tgt;
+    if (!t || t.dead){ end(); return false; }
+    czPose(u, 'prep', 0.2);
+    const d = Math.hypot(t.x - u.x, t.y - u.y);
+    if (!A.hit && d > 0.8 && A.t < 0.45){
+      const n = norm(t.x - u.x, t.y - u.y), sp = 9;
+      u.x += n.x * sp * sdt; u.y += n.y * sp * sdt; u.face = Math.sign(n.x) || u.face;
+      if ((A.g = (A.g || 0) - sdt) <= 0){ A.g = 0.03; czGhost(u); }
+      return true;
+    }
+    if (!A.hit){
+      A.hit = true; z.shoulder = CZ.shoulder;
+      resolveHit(u, t, { atk: Math.round(u.st.atk * 0.6) }); pushUnit(t, u, 1.2); stagger(t, 0.7, braceW(u) * 2);
+      b.hitstop = Math.max(b.hitstop, 0.08); shake = Math.max(shake, 0.25); fxText(t, '쾅!', '#ffe0a0', 'big');
+    }
+    czPose(u, 'strike', 0.3);
+    if (A.t >= 0.75) end();
+    return true;
+  }
+  if (A.type === 'thrust'){                                       // 관통 찌르기: 모으기 (슈퍼아머) → 순식간에 일직선 관통 → 맨 앞을 들어 올려 내던짐
+    const t = A.tgt;
+    if (A.t < 0.6){
+      u.superArmor = true; czPose(u, 'prep', 0.2);
+      if (t && !t.dead){ A.dir = norm(t.x - u.x, t.y - u.y); u.face = Math.sign(A.dir.x) || u.face; }
+      if (Math.random() < sdt * 20) sparks.push({ x: P(u.x + 0.5, u.y + 0.5).x + camX + u.face * T * 0.6, y: P(u.x + 0.5, u.y + 0.5).y - T * 0.9, vx: (Math.random() - 0.5) * 60, vy: -40, life: 0.3, c: '#e8f4ff' });
+      return true;
+    }
+    if (!A.done){
+      A.done = true; z.thrust = CZ.thrust;
+      const dir = A.dir || { x: u.face, y: 0 }, x0 = u.x, y0 = u.y, len = 3.6;
+      for (let i = 1; i <= 6; i++) b.fx.push({ type: 'ghost', snap: { ...u, x: x0 + dir.x * len * i / 7, y: y0 + dir.y * len * i / 7, lunge: 0, windup: 0 }, life: 0.35, max: 0.35 });
+      u.x = Math.max(0, Math.min(BATTLE_COLS - 1, x0 + dir.x * len)); u.y = Math.max(0, Math.min(ROWS - 1, y0 + dir.y * len));
+      const hits = czFoes(u).filter(o => { const px = o.x - x0, py = o.y - y0, along = px * dir.x + py * dir.y; return along > -0.2 && along < len + 0.6 && Math.abs(px * dir.y - py * dir.x) < 0.6; })
+        .sort((p1, p2) => ((p1.x - x0) * dir.x + (p1.y - y0) * dir.y) - ((p2.x - x0) * dir.x + (p2.y - y0) * dir.y));
+      hits.forEach((o, i) => {
+        resolveHit(u, o, { atk: Math.round(u.st.atk * 1.5), grab: true });
+        if (i === 0 && !o.dead){ o.stun = Math.max(o.stun, 1.1); pushUnit(o, u, 2.2); o.lift = 0.9; fxText(o, '관통!', '#ffb3a8', 'big'); }
+      });
+      b.hitstop = Math.max(b.hitstop, 0.12); shake = Math.max(shake, 0.4);
+      logLine(`🗡 세자르의 관통 찌르기 — ${hits.length}명 꿰뚫음`, 'crit');
+      u.superArmor = false;
+    }
+    czPose(u, 'strike', 0.2);
+    b.units.forEach(o => { if (o.lift > 0 && !o.fly) o.lift = Math.max(0, o.lift - sdt * 2); });
+    if (A.t >= 1.1) end();
+    return true;
+  }
+  if (A.type === 'wave'){                                         // 냉기 참격: 느리고 묵직하게 모았다가 5칸 부채꼴
+    const t = A.tgt;
+    if (A.t < 0.8){
+      czPose(u, 'prep', 0.2);
+      if (t && !t.dead){ A.dir = Math.atan2(t.y - u.y, t.x - u.x); u.face = Math.sign(t.x - u.x) || u.face; }
+      if (broken()){ z.wave = 4; end(); return false; }
+      return true;
+    }
+    if (!A.done){
+      A.done = true; z.wave = CZ.wave;
+      const a = A.dir ?? (u.face > 0 ? 0 : Math.PI), half = 1.3;
+      b.fx.push({ type: 'frostArc', x: u.x, y: u.y, r: 5, a0: a - half, a1: a + half, life: 0.7, max: 0.7 });
+      shake = Math.max(shake, 0.45); b.hitstop = Math.max(b.hitstop, 0.1);
+      let n = 0;
+      for (const o of czFoes(u)){
+        const d = Math.hypot(o.x - u.x, o.y - u.y), da = Math.abs(((Math.atan2(o.y - u.y, o.x - u.x) - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+        if (d < 5.2 && da < half){ resolveHit(u, o, { atk: Math.round(u.st.atk * 1.8) }); applyFrost(o, 4); n++; }
+      }
+      logLine(`❄ 세자르의 냉기 참격 — ${n}명`, 'crit');
+    }
+    czPose(u, 'special', 0.2);
+    if (A.t >= 1.5) end();
+    return true;
+  }
+  if (A.type === 'ult'){                                          // 마구 베기: 컷인 · 줌 → 잔상 돌진 (끊을 수 없음) → 12번 베기 (모두 치명타, 휘청이면 끊김)
+    if (!A.intro){
+      A.intro = true; z.ult = CZ.ult;
+      b.cutin = { img: SPRITES.cesar.faceImg, name: '세자르', skill: '마구 베기', t: 0, dur: 1.3 };
+      camFocus(u.x, u.y, 1.6, 1.3); shout(u, '…');
+      logLine('⚔ 세자르 — 마구 베기', 'crit');
+    }
+    if (A.t < 1.0){
+      czPose(u, 'prep', 0.2);
+      if (broken()){ fxText(u, '끊김', '#b8b0a4'); end(); return false; }
+      return true;
+    }
+    let t = A.tgt;
+    if (!t || t.dead){ t = A.tgt = czFoes(u).sort((p1, p2) => Math.hypot(p1.x - u.x, p1.y - u.y) - Math.hypot(p2.x - u.x, p2.y - u.y))[0]; if (!t){ end(); return false; } }
+    if (!A.arrived){
+      u.superArmor = true;
+      const gx = t.x - Math.sign(t.x - u.x || 1) * 0.8, gy = t.y, d = Math.hypot(gx - u.x, gy - u.y);
+      czPose(u, 'prep', 0.2);
+      if (d > 0.15 && A.t < 1.5){
+        const n = norm(gx - u.x, gy - u.y), sp = 14;
+        u.x += n.x * Math.min(d, sp * sdt); u.y += n.y * Math.min(d, sp * sdt); u.face = Math.sign(t.x - u.x) || u.face;
+        if ((A.g = (A.g || 0) - sdt) <= 0){ A.g = 0.025; czGhost(u); }
+        return true;
+      }
+      A.arrived = true; A.next = 0; u.superArmor = false;
+    }
+    if (broken()){ fxText(u, '마구 베기 끊김!', '#9fd8ff', 'big'); logLine(`⚔ 마구 베기가 ${A.hits}번째에서 끊겼다`, 'miss'); end(); return false; }
+    A.next -= sdt;
+    if (A.next <= 0 && A.hits < 12){
+      A.next = 0.1; A.hits++;
+      czPose(u, A.hits % 2 ? 'strike' : 'special', 0.12);
+      if (Math.hypot(t.x - u.x, t.y - u.y) > 1.6){ const n = norm(t.x - u.x, t.y - u.y); u.x = t.x - n.x * 0.8; u.y = t.y - n.y * 0.8; czGhost(u); }
+      resolveHit(u, t, { atk: Math.round(u.st.atk * 0.3), forceCrit: true });
+      b.fx.push({ type: 'slash', x: t.x, y: t.y, a: (Math.random() - 0.5) * 2.4, life: 0.15, max: 0.15 });
+    }
+    if (A.hits >= 12 && A.next <= -0.3) end();
+    return true;
+  }
+  end(); return false;
+}
+// 냉기 궤적: 검은 그대로인데, 그 궤도를 따라 멀리까지 얼음이 벤다
+function drawFrostArc(f, k){
+  const c = P(f.x + 0.5, f.y + 0.5), rx = f.r * T, ry = f.r * rowH, e = 1 - k;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 3; i++){
+    const rr = 0.55 + i * 0.22 + e * 0.1;
+    ctx.strokeStyle = `rgba(${i === 1 ? '235,250,255' : '140,215,255'},${k * (0.8 - i * 0.2)})`;
+    ctx.lineWidth = T * (0.28 - i * 0.07) * k + 1;
+    ctx.beginPath(); ctx.ellipse(c.x, c.y - T * 0.4, rx * rr, ry * rr, 0, f.a0, f.a1); ctx.stroke();
+  }
+  for (let i = 0; i < 10; i++){
+    const a = f.a0 + (f.a1 - f.a0) * hash(i, 3), rr = 0.5 + hash(i, 5) * 0.5;
+    ctx.fillStyle = `rgba(210,240,255,${k})`;
+    ctx.fillRect(c.x + Math.cos(a) * rx * rr, c.y - T * 0.4 + Math.sin(a) * ry * rr - e * T * 0.5, 3, 3);
+  }
+  ctx.restore();
+}
+// 필살 컷인: 화면 아래에서 큰 초상화가 슥, 가로 스피드라인
+function drawCutin(c){
+  c.t += 1 / 60;
+  if (c.t >= c.dur){ battle.cutin = null; return; }
+  const k = c.t / c.dur, inK = Math.min(1, c.t / 0.18), outK = Math.min(1, (c.dur - c.t) / 0.2), a = Math.min(inK, outK);
+  ctx.save();
+  ctx.globalAlpha = a * 0.55; ctx.fillStyle = '#000'; ctx.fillRect(0, H * 0.58, W, H * 0.3);
+  ctx.globalAlpha = a;
+  for (let i = 0; i < 38; i++){                                  // 스피드라인
+    const y = H * 0.58 + hash(i, 7) * H * 0.3, len = W * (0.15 + hash(i, 2) * 0.35);
+    const x = ((hash(i, 9) * W * 2 - c.t * W * (3 + hash(i, 4) * 3)) % (W * 1.6)) + W * 0.8;
+    ctx.fillStyle = `rgba(230,240,255,${0.25 + hash(i, 5) * 0.5})`; ctx.fillRect(x - len, y, len, 1 + hash(i, 6) * 3);
+  }
+  const sz = Math.min(W * 0.42, H * 0.36), x = -sz + (sz + 24) * easeOut(inK) - (1 - outK) * sz, y = H * 0.88 - sz;
+  if (imgReady(c.img)){ ctx.drawImage(c.img, x, y, sz, sz); ctx.strokeStyle = '#9fc6ff'; ctx.lineWidth = 3; ctx.strokeRect(x, y, sz, sz); }
+  ctx.font = `${Math.round(Math.max(26, sz * 0.2))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.lineWidth = 5; ctx.strokeStyle = '#000';
+  ctx.strokeText(c.skill, x + sz + 20, H * 0.73); ctx.fillStyle = '#e8f4ff'; ctx.fillText(c.skill, x + sz + 20, H * 0.73);
+  ctx.font = `${Math.round(Math.max(15, sz * 0.09))}px "Do Hyeon",sans-serif`;
+  ctx.strokeText(c.name, x + sz + 22, H * 0.73 - sz * 0.18); ctx.fillStyle = '#9fc6ff'; ctx.fillText(c.name, x + sz + 22, H * 0.73 - sz * 0.18);
+  ctx.textBaseline = 'alphabetic';
+  ctx.restore();
 }
 
 /* ---------- 층 2: 안개 늪 → 방앗간 (오르소) ---------- */
