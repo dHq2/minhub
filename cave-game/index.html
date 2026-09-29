@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.8
+  version v9.9
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -317,7 +317,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.8';
+const VERSION = 'v9.9';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2862,7 +2862,8 @@ function slotPoint(u, tgt){
 /* ---------- 움직임 결정 (성향표에서 뽑기) ---------- */
 // 전력 = 살아 있는 폰의 체력 + 공격력×8. 우리 전력 ÷ 상대 전력 = 우세 비율
 // 버티기 무게: 지면에 기대어 버티기로 작정하면 무거워진다 (막기 x2, 근성 x4, 방진은 대검을 꽂고 x4 + 둘러선 쥐들의 무게)
-const braceW = u => u.fort ? u.st.weight * 4 + fortRats(u).reduce((a, r) => a + r.st.weight, 0)   // 방진: 대검을 꽂고 x4 + 방진 쥐들의 무게까지
+const braceW = u => u.state === 'shieldWall' && u.summoner && u.summoner.cmd ? u.summoner.cmd.rats.reduce((a, r) => a + (r.dead ? 0 : r.st.weight), 0) * 1.5   // 쥐 방패: 구성원 무게를 모아 버팀
+                 : u.fort ? u.st.weight * 4 + fortRats(u).reduce((a, r) => a + r.st.weight, 0)   // 방진: 대검을 꽂고 x4 + 방진 쥐들의 무게까지
                            : u.st.weight * (u.superArmor ? 4 : u.guarding ? 2 : 1);
 // 경직 판정: 물리 충격은 무게로 버틴다. 충격의 힘(kg) 대 버티기 무게 → 경직 확률 = 힘 / (힘 + 무게)
 // (감전 · 낙뢰는 몸을 타고 흐르는 전기라 무게와 상관없이 경직)
@@ -3022,7 +3023,7 @@ function updateReacts(sdt){
 function doReact(d, a){
   if (d.dead || a.dead || d.stun > 0 || d.windup > 0 || d.manual || !battle.units.includes(d)) return;
   if (!(a.windup > 0 && a.atkTarget === d)) return;      // 이미 맞았거나 공격이 끊김: 늦음
-  if (d.summoner && ['wall', 'assault', 'fort', 'ladder', 'bind', 'bindRun'].includes(d.state) && d.stateT > 0) return;   // 군단 임무 중인 쥐 (쥐 기사 포함)는 막지 않고 버팀
+  if (d.summoner && ['wall', 'assault', 'fort', 'ladder', 'bind', 'bindRun', 'shieldWall'].includes(d.state) && d.stateT > 0) return;   // 군단 임무 중인 쥐 (쥐 기사 포함)는 막지 않고 버팀
   if (d.st.berserk){                                   // 쥐 떼는 막지 않고 바퀴벌레처럼 옆으로 쌩
     const n = norm(d.x - a.x, d.y - a.y), sgn = Math.random() < 0.5 ? 1 : -1;
     d.skDir = norm(-n.y * sgn + n.x * 0.3, n.x * sgn + n.y * 0.3);
@@ -3335,6 +3336,7 @@ function resolveHit(a, d, opts = {}){
   dmg = divineCut(d, dmg);                                                                // 신성 특성 (개조된 신체)
   if (d.kc && d.kc.type === 'heretic') dmg = Math.min(dmg, Math.max(0, d.hp - 1));       // 변신 중엔 버팀
   if (d.fort) dmg = fortAbsorb(d, dmg);                                                   // 쥐 방진: 쥐들이 대신 맞음
+  if (d.state === 'shieldWall') dmg = wallShare(d, dmg);                                   // 쥐 방패: 구성원이 충격을 나눠 받음
   d.hp = Math.max(0, d.hp - dmg);
   d.hurt = 0.18;
   if (crit){
@@ -3713,6 +3715,16 @@ function updateBattle(dt){
           speed *= 1.5; u.running = false;
           if (Math.random() < sdt * 1.5) fxText(u, Math.random() < 0.5 ? '찍!' : '콱!', '#cfe8cf', null, 0.2);
         }
+        else if (u.state === 'shieldWall'){
+          // 쥐 방패: 정해진 자리로 가서 온몸으로 막고 멈춤. 밀려나도 다시 그 자리로
+          const sl = u.wallSlot;
+          if (sl && u.summoner && u.summoner.cmd){
+            const d2 = Math.hypot(sl.x - u.x, sl.y - u.y);
+            if (d2 > 0.12){ dir = norm(sl.x - u.x, sl.y - u.y); speed *= d2 > 0.6 ? 1.6 : 1; u.running = false; }
+            else { dir = null; u.x += (sl.x - u.x) * 0.3; u.y += (sl.y - u.y) * 0.3; }
+            u.face = Math.sign(u.summoner.cmd.ex - u.x) || u.face;
+          } else u.stateT = 0;
+        }
         else if (u.state === 'fort'){
           // 방진: 포렌 둘레에 원으로 붙음
           const P0 = u.fortOf;
@@ -3849,8 +3861,9 @@ function updateBattle(dt){
           }
           for (const o of b.units){
             if (o === u || o.dead) continue;
-            const dx = u.x - o.x, dy = u.y - o.y, d = Math.hypot(dx, dy), rr = unitRadius(u) + unitRadius(o);
-            if (d > 0 && d < rr){ dir.x += dx / d * (rr - d) * 1.5; dir.y += dy / d * (rr - d) * 1.5; }
+            const wallO = o.state === 'shieldWall' && o.side !== u.side;           // 쥐 방패: 적에게는 넘을 수 없는 벽
+            const dx = u.x - o.x, dy = u.y - o.y, d = Math.hypot(dx, dy), rr = (unitRadius(u) + unitRadius(o)) * (wallO ? 1.35 : 1);
+            if (d > 0 && d < rr){ const f = wallO ? 4 : 1.5; dir.x += dx / d * (rr - d) * f; dir.y += dy / d * (rr - d) * f; }
           }
           const m = Math.min(1, Math.hypot(dir.x, dir.y)); const nd = norm(dir.x, dir.y); dir = { x: nd.x * m, y: nd.y * m };
         }
@@ -3870,7 +3883,7 @@ function updateBattle(dt){
         dir = null;
       }
       const breakAway = u.state === 'snipe' && dist < 2.2 && !u.cornered;   // 사수: 붙으면 쏘기보다 먼저 빠져나감
-      if (!handOnly && b.running && tgt && !u.guarding && !retreating && !breakAway && u.state !== 'bindRun' && u.cd <= 0 && dist <= (u.st.lunge || u.st.range) + 0.05 &&   // 묶으러 가는 중엔 치지 않고 달라붙음
+      if (!handOnly && b.running && tgt && !u.guarding && !retreating && !breakAway && u.state !== 'bindRun' && u.state !== 'shieldWall' && u.cd <= 0 && dist <= (u.st.lunge || u.st.range) + 0.05 &&   // 묶으러 가는 중엔 치지 않고 달라붙음
           (canShoot(u) || (u.st.melee && dist <= u.st.melee.range + 0.05))){   // 재장전 중엔 붙은 적만 개머리판
         u.stab = !!(u.st.melee && dist <= u.st.melee.range + 0.05);
         u.windup = u.windupMax = u.stab ? u.st.melee.windup : u.st.windup;
@@ -4065,6 +4078,19 @@ function drawBattle(){
       ctx.fillStyle = '#ffd35a'; ctx.fillText('!', p.x, p.y - h - T * 0.45);
     }
     if (u.stun > 0.25 && !u.rise) emoji('💫', p.x, p.y - h - T * 0.45, T * 0.3, time * 4);
+  }
+  // 쥐 방패: 구성원 사이를 잇는 푸른 빛줄 + 머리 위 빛나는 방패
+  for (const P0 of b.units){
+    const c = P0.cmd; if (!c || P0.dead) continue;
+    const mem = c.rats.filter(r => !r.dead && r.state === 'shieldWall').sort((a, z) => (a.wallSlot && z.wallSlot) ? (a.wallSlot.x * 7 + a.wallSlot.y) - (z.wallSlot.x * 7 + z.wallSlot.y) : 0);
+    ctx.save(); ctx.strokeStyle = `rgba(150,200,255,${0.35 + 0.2 * Math.sin(time * 6)})`; ctx.lineWidth = 3;
+    for (let i = 1; i < mem.length; i++){ const a = P(mem[i - 1].x + 0.5, mem[i - 1].y + 0.5), z = P(mem[i].x + 0.5, mem[i].y + 0.5); if (Math.hypot(a.x - z.x, a.y - z.y) < T * 1.3){ ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.2); ctx.lineTo(z.x, z.y - T * 0.2); ctx.stroke(); } }
+    for (const r of mem){ const q = P(r.x + 0.5, r.y + 0.5), g = 0.6 + 0.4 * Math.sin(time * 8 + r.uid); ctx.shadowColor = '#9fd3ff'; ctx.shadowBlur = 12 * g; emoji('🛡️', q.x, q.y - unitHeight(r) * T * depthScale(r.y) - T * 0.3, T * (0.26 + 0.04 * g)); }
+    ctx.shadowBlur = 0;
+    const q0 = P(P0.x + 0.5, P0.y + 0.5);                          // 지휘하는 포렌: 발밑 푸른 고리
+    ctx.strokeStyle = `rgba(150,200,255,${0.5 + 0.3 * Math.sin(time * 5)})`; ctx.setLineDash([6, 4]); ctx.lineDashOffset = -time * 20;
+    ctx.beginPath(); ctx.ellipse(q0.x, q0.y, T * 0.7, T * 0.27, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
   }
   // 쥐 포박: 묶으러 달려가는 쥐와 대상 사이의 초록 점선 (밧줄)
   for (const t of b.units){
@@ -5020,6 +5046,8 @@ const SKILLS = {
     desc:'포렌 곁 1.6칸 안의 쥐 1마리당 방어력 +2 (최대 +10).\n발밑의 초록 고리가 진해지고, 곁의 쥐 수만큼 빛 점이 돈다. 체력바 옆에 "🐀방어+N".\n쥐들이 흩어지면 약해진다. 적은 쥐를 먼저 치우는 게 좋다.' },
   ratFort:   { name:'쥐 방진', kind:'액티브', icon:'🗡',
     desc:'체력이 40% 아래거나 강공 · 날아차기가 날아오면 (천벌에는 쓰지 않음: 제자리에 서 있으면 직격을 맞으니 피하는 게 낫다), 대검을 땅에 꽂고 2.5초 동안 버틴다 (움직이지 않음, 대기 14초).\n가까운 쥐 (최대 8마리)가 둘레에 원으로 붙고, 포렌이 받는 피해의 70%를 방진 안의 쥐 전원이 똑같이 나눠 받는다 (포렌은 30%).\n대검을 꽂은 포렌은 무게 x4에 둘러선 쥐들의 무게까지 더해 굳건히 버틴다 (날아차기에도 날아가지 않음).\n끝에 대검을 뽑으며 두 바퀴 휘두르는 반격: 1.8칸 안의 적에게 공격력 + 쥐들이 대신 맞은 피해의 60% + 버틴 무게 (포렌 x4 + 둘러선 쥐들)의 10%, 치명타 25% (피해 x3).\n곁에 적이 없으면: 살아남은 방진 쥐가 3마리 이상일 때만 그 쥐들을 타고 가장 위험한 적 (8칸 안)에게 날아가 거기서 휘두른다. 모자라면 제자리에서 허탕.' },
+  ratShield: { name:'쥐 방패', kind:'액티브', icon:'🛡',
+    desc:'쥐 방진의 응용. 동료가 위험하면 (체력 45% 아래, 3칸 안에 적) 또는 포렌 자신이 위험하면 (체력 50% 아래, 2칸 안에 적) 발동 (쥐 1마리부터, 대기 16초).\n포렌이 뒤로 점프해 빠지고, 6초 동안 (또는 큰 경직을 받을 때까지) 그 자리에서 지휘에 집중한다.\n쥐들 (최대 12마리)은 적과 지킬 대상 사이에 한 줄로 (7마리부터 두 줄 사각형으로) 서서 모든 움직임을 멈추고 온몸으로 막는다. 머리 위 방패가 빛난다. 밀려나도 제자리로 돌아와 사수한다.\n공격은 하지 않고 막기도 아니라서 피해는 그대로 들어온다. 대신 쥐가 많을수록 서로 방진: 구성원 무게를 모아 버티고 (x1.5), 맞은 충격을 곁의 구성원이 똑같이 나눠 받는다.\n강제로 전선을 만드는 지원 · 구원 기술.' },
   ratLadder: { name:'쥐 사다리', kind:'액티브', icon:'🌊',
     desc:'2.5~8칸 떨어진 적에게, 쥐 3마리가 발밑에 모이고 포렌이 그 위에 올라타 파도처럼 미끄러져 들어간다 (대기 7초).\n도착하면 내려찍는다: 1.3칸 안의 적에게 공격력 x1.5 + 경직 (무거운 상대는 버틸 수 있음).' },
   ratBind:   { name:'쥐 포박', kind:'액티브', icon:'🪢',
@@ -5065,7 +5093,7 @@ HEROES.rebecca.skills = ['undying', 'shieldBP'];
 HEROES.karius.skills = ['modified', 'oldArm', 'tearGrab', 'heretic', 'shieldBP'];
 HEROES.goblin.skills = ['ignite'];
 HEROES.morningstar.skills = ['madness'];
-HEROES.poren.skills = ['loyalty', 'legion', 'ratCloak', 'ratFort', 'ratLadder', 'ratBind', 'ratking', 'shieldBP'];
+HEROES.poren.skills = ['loyalty', 'legion', 'ratCloak', 'ratFort', 'ratShield', 'ratLadder', 'ratBind', 'ratking', 'shieldBP'];
 HEROES.norman.skills = ['firstAid', 'medic'];
 ENEMIES.jeokroe.skills = ['thunder', 'boltRain', 'dropkick', 'shieldBP'];
 for (const k of Object.values(SKILLS)) if (k.img){ k.image = new Image(); k.image.src = k.img; }
@@ -5211,7 +5239,7 @@ function summonRat(owner, id = rollRat(), fromEdge = false){
 }
 
 /* ---------- 포렌: 쥐 군단 (쥐 표식 · 방벽) ---------- */
-const BUSY_RAT = ['wall', 'fort', 'ladder', 'bind', 'bindRun'];   // 다른 임무 중인 쥐는 빼고
+const BUSY_RAT = ['wall', 'fort', 'ladder', 'bind', 'bindRun', 'shieldWall'];   // 다른 임무 중인 쥐는 빼고
 // 쥐 표식 ("물어라!"): 포렌이 적에게 쥐 표식을 새기면, 표식이 남은 동안 모든 쥐가 우르르 달려들어 둘러싸고 물어뜯는다.
 // 쥐 하나하나의 힘은 그대로, 몰려든 쥐가 많을수록 그만큼 많이 물 뿐. 새길 때마다 어디선가 쥐 3마리가 더 튀어나온다 (충성과 같은 확률: 운 좋으면 큰 쥐 · 쥐 기사)
 const RAT_ASSAULT = { cd: 12, dur: 5, extra: 3, maxRats: 99 }, RAT_WALL = { cd: 6, dur: 3, minAtk: 15 };
@@ -5323,9 +5351,79 @@ function fortAbsorb(d, dmg){
   fxText(d, `나눠 받음 ${share} ÷ ${near.length}`, '#9dff7a', 'big', 0.4);
   return dmg - share;
 }
+// 쥐 방패: 포렌이 뒤로 점프해 빠지고 지휘. 쥐들이 적과 지킬 대상 사이에 줄 (많으면 두 줄 사각형)로 서서 온몸으로 막음
+const RAT_SHIELD = { cd: 16, dur: 6, jump: 2.2, maxRats: 12, gap: 0.55, bigStun: 0.5, ahead: 1.1 };
+function wallShare(d, dmg){
+  const c = d.summoner && d.summoner.cmd; if (!c) return dmg;
+  const mem = c.rats.filter(r => !r.dead && r.state === 'shieldWall' && Math.hypot(r.x - d.x, r.y - d.y) < 2.5);
+  if (mem.length < 2) return dmg;
+  const part = Math.max(1, Math.round(dmg / mem.length));
+  mem.forEach(r => { if (r === d) return; r.hp = Math.max(0, r.hp - part); r.hurt = 0.15; battle.fx.push({ type: 'bolt', a: d, d: r, life: 0.2, max: 0.2, color: '157,200,255' }); if (r.hp <= 0) killUnit(r, '쥐 방패'); });
+  return part;
+}
+function shieldSlots(cmd){
+  const b = battle, P0 = cmd.protect.dead ? cmd.p : cmd.protect;
+  const foes = b.units.filter(o => !o.dead && o.side !== cmd.p.side && Math.hypot(o.x - P0.x, o.y - P0.y) < 6);
+  if (foes.length){ cmd.ex = foes.reduce((a, o) => a + o.x, 0) / foes.length; cmd.ey = foes.reduce((a, o) => a + o.y, 0) / foes.length; }
+  const n = norm(cmd.ex - P0.x, cmd.ey - P0.y), px = -n.y, py = n.x;
+  const dE = Math.hypot(cmd.ex - P0.x, cmd.ey - P0.y), lead = Math.min(RAT_SHIELD.ahead, Math.max(0.55, dE * 0.55));   // 적이 코앞이면 그 사이로 끼어듦
+  const rats = cmd.rats.filter(r => !r.dead), k = rats.length, rows = k > 6 ? 2 : 1, per = Math.ceil(k / rows);
+  rats.forEach((r, i) => {
+    const row = Math.floor(i / per), col = i % per, cnt = Math.min(per, k - row * per), off = (col - (cnt - 1) / 2) * RAT_SHIELD.gap;
+    const ahead = lead + (rows === 2 ? (row ? 0 : 0.5) : 0);   // 두 줄이면 앞줄이 적 쪽
+    r.wallSlot = { x: Math.max(0, Math.min(BATTLE_COLS - 1, P0.x + n.x * ahead + px * off)), y: Math.max(0, Math.min(ROWS - 1, P0.y + n.y * ahead * 0.8 + py * off * 0.8)) };
+  });
+}
+function ratShield(u){
+  const b = battle;
+  if ((u.shieldCd || 0) > b.clock || u.cmd || u.fort || u.ladder) return false;
+  const rats = legionRats(u).filter(r => !BUSY_RAT.includes(r.state) && !r.enter);
+  if (!rats.length) return false;
+  // 지킬 대상: 위험한 동료 (체력 45% 아래, 3칸 안에 적) 또는 포렌 자신 (체력 50% 아래, 2칸 안에 적)
+  const foesNear = (o, r) => b.units.some(e => !e.dead && e.side !== o.side && Math.hypot(e.x - o.x, e.y - o.y) < r);
+  const allies = b.units.filter(o => !o.dead && o.side === u.side && !o.summoner && o !== u && o.hp < o.st.hp * 0.45 && foesNear(o, 3));
+  let protect = allies.sort((a, c) => a.hp / a.st.hp - c.hp / c.st.hp)[0];
+  if (!protect && u.hp < u.st.hp * 0.5 && foesNear(u, 2)) protect = u;
+  if (!protect) return false;
+  u.shieldCd = b.clock + RAT_SHIELD.cd;
+  const foe = b.units.filter(e => !e.dead && e.side !== u.side).sort((a, c) => Math.hypot(a.x - u.x, a.y - u.y) - Math.hypot(c.x - u.x, c.y - u.y))[0];
+  const away = foe ? norm(u.x - foe.x, u.y - foe.y) : { x: -u.face, y: 0 };
+  const tx = Math.max(0, Math.min(BATTLE_COLS - 1, u.x + away.x * RAT_SHIELD.jump)), ty = Math.max(0, Math.min(ROWS - 1, u.y + away.y * RAT_SHIELD.jump * 0.6));
+  const use = rats.sort((a, c) => Math.hypot(a.x - protect.x, a.y - protect.y) - Math.hypot(c.x - protect.x, c.y - protect.y)).slice(0, RAT_SHIELD.maxRats);
+  u.cmd = { p: u, protect, rats: use, t: 0, phase: 'jump', sx: u.x, sy: u.y, tx, ty, ex: foe ? foe.x : u.x + u.face, ey: foe ? foe.y : u.y };
+  if (protect !== u && !protect.manual){ protect.state = 'retreat'; protect.stateT = 1.1; protect.running = true; protect.guarding = false; fxText(protect, '물러나!', '#bfe0ff', null, 0.4); }   // 구원: 지킬 동료는 잠깐 뒤로 빠지고 쥐들이 틈을 메움
+  use.forEach(r => { r.state = 'shieldWall'; r.stateT = RAT_SHIELD.dur + 1; r.guarding = false; fxText(r, '🛡', '#bfe0ff', 'big', 0.4); });
+  shieldSlots(u.cmd);
+  u.windup = 0; u.atkTarget = null; u.guarding = false;
+  skillPop(u, 'ratShield'); shout(u, '막아라!');
+  logLine(`🛡 ${u.name}이(가) 뒤로 물러나 지휘한다 — 쥐 ${use.length}마리가 ${protect === u ? '포렌' : protect.name} 앞을 온몸으로 막는다`, 'guard');
+  return true;
+}
+function endRatShield(u, why){
+  const c = u.cmd; if (!c) return;
+  c.rats.forEach(r => { if (!r.dead && r.state === 'shieldWall'){ r.stateT = 0; r.wallSlot = null; } });
+  u.cmd = null; u.lift = 0;
+  if (why) fxText(u, why, '#ffb3a8', 'big', 0.4);
+}
 function porenUpdate(u, sdt, tgt, dist){
   const b = battle;
   u.cloak = cloakCount(u);
+  // 쥐 방패 진행: 뒤로 점프 → 그 자리에서 지휘 (지속시간이 끝나거나 큰 경직을 받으면 끝)
+  if (u.cmd){
+    const c = u.cmd; c.t += sdt;
+    if (u.stun >= RAT_SHIELD.bigStun){ endRatShield(u, '지휘 끊김!'); return false; }
+    if (c.phase === 'jump'){
+      const k = Math.min(1, c.t / 0.4);
+      u.x = c.sx + (c.tx - c.sx) * easeOut(k); u.y = c.sy + (c.ty - c.sy) * easeOut(k); u.lift = Math.sin(k * Math.PI) * 0.6; u.moving = true;
+      if (k >= 1){ c.phase = 'hold'; c.t = 0; u.lift = 0; }
+      return true;
+    }
+    u.vx = u.vy = 0; u.guarding = false; u.windup = 0;
+    if (Math.random() < sdt * 0.3 && !b.fx.some(f => f.type === 'bubble' && f.u === u)) shout(u, ['버텨!', '막아라!', '한 발도 물러서지 마!'][Math.floor(Math.random() * 3)]);
+    shieldSlots(c);
+    if (c.t >= RAT_SHIELD.dur || !c.rats.some(r => !r.dead)){ endRatShield(u); return false; }
+    return true;
+  }
   if (u.fortWant > 0){ u.fortWant -= sdt; if (u.fortWant <= 0){ u.fortWant = 0; if (!u.fort) porenFort(u, 'strong'); } }
   // 쥐 방진 진행: 대검을 꽂고 움직이지 않음 → 끝에 뽑으며 휘두름 (쥐들이 대신 맞은 만큼 강해짐)
   if (u.fort){
@@ -5389,6 +5487,8 @@ function porenUpdate(u, sdt, tgt, dist){
     }
   }
   if (u.stun > 0 || u.windup > 0) return false;
+  // 쥐 방패: 위험한 동료 (또는 포렌 자신)를 쥐들로 가림
+  if (ratShield(u)) return true;
   // 위기: 체력 40% 아래면 대검을 꽂고 쥐 방진
   if (u.hp < u.st.hp * FORT.lowHp && porenFort(u, 'low')) return true;
   // 쥐 포박: 가까운 적 하나에게 쥐들이 달라붙어 묶음
