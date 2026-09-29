@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v10.0
+  version v10.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -318,7 +318,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v10.0';
+const VERSION = 'v10.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4273,6 +4273,8 @@ function drawBattle(){
       ctx.beginPath(); ctx.arc(f.wx - camX, f.y - (1 - k) * T * 0.12, T * (0.1 + (1 - k) * 0.16) * f.s, 0, Math.PI * 2); ctx.fill();
     } else if (f.type === 'ratmark'){
       drawRatMark(f);
+    } else if (f.type === 'bindBreak'){
+      drawBindBreak(f);
     } else if (f.type === 'gspin'){
       drawGreatswordSpin(f);
     } else if (f.type === 'ring'){
@@ -4336,18 +4338,14 @@ function drawBattle(){
       ctx.fillText(on ? `✦신성 -${Math.round(u.st.divine.dr * 100)}%` : '⛓신성 봉인', p.x + w / 2 + 3, top + 17);
     }
     if (u.bind){
-      // 쥐 포박 게이지: 매달린 쥐 수만큼 차고, 버둥거릴수록 줄어듦. 달려오는 쥐 수도 표시
-      const bd = u.bind, gy = top + 8, k = Math.max(0, Math.min(1, bd.gauge / BIND.max));
-      const running = b.units.filter(r => !r.dead && r.state === 'bindRun' && r.bindTo === u).length, hang = bd.rats.length;
-      const bw = Math.max(w, T * 1.1), held = bd.gauge > 0;
-      ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillRect(p.x - bw / 2 - 2, gy - 2, bw + 4, 10);
-      ctx.fillStyle = held ? '#6fdc4a' : '#6a5a4a'; ctx.fillRect(p.x - bw / 2, gy, bw * k, 6);
-      ctx.strokeStyle = '#9dff7a'; ctx.lineWidth = 1; ctx.strokeRect(p.x - bw / 2 - 2, gy - 2, bw + 4, 10);
-      for (let i = 1; i < 5; i++){ ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillRect(p.x - bw / 2 + bw * i / 5, gy, 1, 6); }   // 쥐 한 마리 몫 눈금
+      // 쥐 포박: 머리 위엔 상태 글씨, 몸 한가운데엔 게이지 배지 (drawBindBadge)
+      const bd = u.bind, held = bd.gauge > 0, hang = bd.rats.length;
+      const running = b.units.filter(r => !r.dead && r.state === 'bindRun' && r.bindTo === u).length;
       ctx.font = `${Math.max(10, Math.round(T * 0.18))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
       const label = held ? `🐀 포박! x${hang}` : hang ? '🐀 뿌리치는 중…' : `🐀 묶으러 가는 중 ${running}`;
       ctx.lineWidth = 3; ctx.strokeStyle = '#0a1a08'; ctx.strokeText(label, p.x, top - T * 0.3);
       ctx.fillStyle = held ? '#c8ffb0' : '#d8d0c0'; ctx.fillText(label, p.x, top - T * 0.3);
+      drawBindBadge(u, p);
     }
     if (u.st.mag && !(u.medic && u.medic.phase === 'kneel')){
       const gy = top + 8;
@@ -5644,11 +5642,12 @@ function updateBinds(sdt){
       if (r.dead || r.state !== 'bindRun' || r.bindTo !== t) continue;
       if (Math.hypot(r.x - t.x, r.y - t.y) < unitRadius(t) + 0.35){
         r.state = 'bind'; r.stateT = BIND.dur; bd.rats.push(r);
-        bd.gauge = Math.min(BIND.max, bd.gauge + BIND.per);
+        bd.gauge = Math.min(BIND.max, bd.gauge + BIND.per); bd.pop = 0.25;
         fxText(t, '찍!', '#9dff7a', null, 0.2);
       }
     }
     bd.rats = bd.rats.filter(r => !r.dead);
+    if (bd.pop) bd.pop = Math.max(0, bd.pop - sdt);
     bd.rats.forEach((r, i) => {                                      // 대상에 주렁주렁 매달림
       const a = i / Math.max(1, bd.rats.length) * Math.PI * 2 + bd.t * 2;
       r.x = t.x + Math.cos(a) * 0.35; r.y = t.y + Math.sin(a) * 0.25; r.stun = 0; r.kbx = r.kby = 0;
@@ -5659,10 +5658,60 @@ function updateBinds(sdt){
     const over = t.dead || bd.t > BIND.dur || (bd.t > 1.2 && bd.gauge <= 0) || (bd.t > 2.5 && !bd.rats.length);
     if (over){
       bd.rats.forEach(r => { if (!r.dead){ r.state = 'assist'; r.stateT = 0; pushUnit(r, t, 0.8); } });
-      if (!t.dead && bd.rats.length){ fxText(t, '뿌리침!', '#ffb3a8', 'big'); logLine(`${t.name}이(가) 쥐들을 뿌리친다`, 'miss'); }
+      if (!t.dead && bd.rats.length){
+        fxText(t, '뿌리침!', '#ffb3a8', 'big'); logLine(`${t.name}이(가) 쥐들을 뿌리친다`, 'miss');
+        const q = P(t.x + 0.5, t.y + 0.5);
+        battle.fx.push({ type: 'bindBreak', wx: q.x + camX, y: bindBadgeY(t, q), r: bindBadgeR(t), life: 0.5, max: 0.5 });
+      }
       t.bind = null;
     }
   }
+}
+
+// 포박 배지: 몸 가운데에 🪢 아이콘 + 둘레 게이지 (쥐 한 마리 몫 눈금 5칸).
+// 쥐가 달라붙을 때마다 톡 커지고, 대상이 버둥거리는 만큼 떨림 (게이지가 바닥날수록 더 심하게, 빨갛게 깜빡)
+const bindBadgeR = u => T * 0.36 * (u.st.boss ? 1.35 : 1);
+const bindBadgeY = (u, p) => p.y - unitHeight(u) * T * depthScale(u.y) * 0.5;
+function drawBindBadge(u, p){
+  const bd = u.bind, held = bd.gauge > 0, k = Math.max(0, Math.min(1, bd.gauge / BIND.max));
+  const R = bindBadgeR(u) * (1 + (bd.pop || 0) * 1.6), low = held && k < 0.3;
+  const amp = bd.rats.length ? T * (0.02 + 0.05 * (1 - k)) : 0;
+  const x = p.x + (Math.random() - 0.5) * 2 * amp, y = bindBadgeY(u, p) + (Math.random() - 0.5) * 2 * amp;
+  const col = low && Math.floor(time * 10) % 2 ? '#ff7a4a' : '#7dff5a';
+  ctx.save();
+  ctx.shadowColor = held ? col : 'rgba(0,0,0,0)'; ctx.shadowBlur = held ? T * 0.25 : 0;
+  ctx.fillStyle = 'rgba(8,20,6,.88)'; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = Math.max(3, R * 0.2);
+  ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.stroke();
+  if (held){                                                   // 남은 게이지: 위에서 시계 방향
+    ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(x, y, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k); ctx.stroke();
+  } else {                                                     // 아직 안 붙음: 도는 점선 (묶으러 가는 중)
+    ctx.setLineDash([R * 0.35, R * 0.3]); ctx.lineDashOffset = -time * R * 3;
+    ctx.strokeStyle = 'rgba(200,220,190,.6)'; ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.strokeStyle = 'rgba(8,20,6,.9)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i < 5; i++){
+    const a = -Math.PI / 2 + i / 5 * Math.PI * 2, r0 = R - ctx.lineWidth * 2.5, r1 = R + R * 0.12;
+    ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); ctx.lineTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1); ctx.stroke();
+  }
+  ctx.globalAlpha = held ? 1 : 0.55;
+  ctx.font = `${Math.round(R * 1.1)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(SKILLS.ratBind.icon, x, y + R * 0.05);
+  ctx.restore();
+}
+// 뿌리침: 배지가 조각나 튀며 사라짐
+function drawBindBreak(f){
+  const k = f.life / f.max, e = 1 - k, x = f.wx - camX;
+  ctx.save();
+  ctx.strokeStyle = `rgba(125,255,90,${k})`; ctx.lineWidth = Math.max(2, f.r * 0.2) * k;
+  for (let i = 0; i < 5; i++){
+    const a = -Math.PI / 2 + i / 5 * Math.PI * 2 + 0.3, d = f.r * (1 + e * 1.8);
+    ctx.beginPath(); ctx.arc(x + Math.cos(a + 0.6) * f.r * e * 1.2, f.y + Math.sin(a + 0.6) * f.r * e * 1.2 + e * e * T * 0.5, d, a, a + 0.9); ctx.stroke();
+  }
+  ctx.globalAlpha = k; ctx.font = `${Math.round(f.r * 1.1 * (1 + e * 0.5))}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.translate(x, f.y - e * T * 0.3); ctx.rotate(e * 0.8); ctx.fillText(SKILLS.ratBind.icon, 0, 0);
+  ctx.restore();
 }
 
 /* ---------- 쥐 그리기 (검은 털, 초록으로 빛나는 눈) ---------- */
