@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.0
+  version v11.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -105,6 +105,10 @@
   @keyframes dgIn{to{opacity:1}}
   #dg-hud{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;font-size:12px;color:#cfc4b4;background:rgba(10,8,12,.72);border:1px solid var(--line);border-radius:4px;padding:6px 10px;line-height:1.65;pointer-events:none;z-index:4;white-space:pre;}
   body.dgfight #bt-panel, body.dgfight #bq-last, body.dgfight #bq-panel{display:none !important;}
+  #bq-manual{display:none;} body.dgfight #bq-manual{display:inline-block;}
+  #event .ev-chips button{background:#15111a;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:6px 9px;margin-left:4px;font-size:12px;cursor:pointer;min-width:44px;}
+  #event .ev-chips button.on{border-color:#8fe0a0;color:#bff5c8;}
+  #event .ev-chips button:disabled{opacity:.5;cursor:default;}
   #event .ev-box{flex:1;overflow-y:auto;background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:6px 10px;}
   #event .ev-tag{font-size:11px;color:var(--ink-dim);letter-spacing:1px;padding:4px 0 6px;border-bottom:1px dashed var(--line);}
   #event .ev-row{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed #221c25;}
@@ -311,6 +315,7 @@
       <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
       <button id="bq-speed">x1</button>
       <button id="bq-view" title="보드 시점 ↔ 예전 굴 시점 [V]">▦ 보드</button>
+      <button id="bq-manual" title="주인공을 직접 조작 ↔ 자동">🤖 자동</button>
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
     </div>
     <div id="bt-log"></div>
@@ -330,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.0';
+const VERSION = 'v11.1';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -581,6 +586,7 @@ function startGame(ch){
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
   resize();
   world = loadWorld(ch);
+  if (!world.rebeccaFree){ world.rebeccaFree = true; world.opened = true; saveWorld(); }   // v11.1: 적뢰 프롤로그는 잠시 건너뜀 — 레베카는 처음부터 굴에 있음
   pStats = getStats('player');
   setupLobby();
   buildBar();
@@ -2263,8 +2269,37 @@ Object.assign(ENEMIES, {
     tags:[], trait:'🔆 맷돌질 — 크게 내려찍어 주변 1.4칸에 절반 피해와 땅울림.\n🌾 곱게 갈아 주지 — 싸우는 동안 색을 잃은 자들이 모여든다.',
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
   heron: { name:'낙오자 헤론', grade:'', color:'#9fc3c9', sub:'2층 · 안개 늪 · 반쯤 색이 남은 사람',
-    hp:50, atk:3, def:0, block:0, crit:0, eva:0, spd:1.5, range:1, cd:1, windup:0.3, hits:1, weight:60, react:0.5,
-    look:{ skin:'#c8bfb4', cloth:'#5d7a80', eye:'#2a2a2a', alpha:0.92 }, tags:[], trait:'', equip:{ 무기:'—', 머리:'—', 몸:'젖은 외투', 장신구:'—' } },
+    hp:90, atk:9, def:3, block:0.2, crit:0.05, eva:0.05, spd:2.3, range:1.6, cd:1.2, windup:0.35, hits:1, weight:60, react:0.4,
+    look:{ skin:'#c8bfb4', cloth:'#5d7a80', eye:'#2a2a2a', weapon:'spear', alpha:0.92 }, tags:[], trait:'🔆 반쯤 남은 색 — 낡은 어부의 작살로 길게 찌른다.', equip:{ 무기:'🔱 낡은 어부의 작살', 머리:'—', 몸:'젖은 외투', 장신구:'—' } },
+});
+
+/* ---------- 깡통 동료들 (던전에서 만나 영입. 모양은 look 하나로) ---------- */
+Object.assign(HEROES, {
+  dolsoe: { name:'돌쇠', grade:'', color:'#d9b08c', sub:'조금 힘센 일반인 · 사랑을 한 죄 · 망치',
+    hp:140, atk:13, def:6, block:0.3, crit:0.05, eva:0, spd:2.4, range:1.2, cd:1.4, windup:0.45, hits:1, weight:95, react:0.35,
+    look:{ skin:'#d9b08c', cloth:'#6b5b3e', weapon:'axe', wstyle:{ blade:'#8a8f96' }, bw:1.25 },
+    tags:[], trait:'🔆 힘 — 무겁고 단단하다. 잘 밀리지 않는다.', equip:{ 무기:'🔨 쇠망치', 머리:'—', 몸:'헤진 작업복', 장신구:'—' } },
+  moro: { name:'모로', grade:'', color:'#9fbf5a', sub:'곤충 + 인간 · 먹은 죄 · 꽤 강함',
+    hp:110, atk:11, def:4, block:0.1, crit:0.12, eva:0.15, spd:3.2, range:1.1, cd:0.9, windup:0.2, hits:2, weight:50, react:0.25,
+    look:{ skin:'#7c8f4a', cloth:'#2f3a22', weapon:'dagger', wstyle:{ blade:'#d8e070' }, eye:'#ffd23f', antenna:true },
+    tags:[], trait:'🔆 여러 개의 팔 — 한 번에 두 번 찌른다. 빠르고 잘 피한다.', equip:{ 무기:'🦗 앞다리 칼날', 머리:'더듬이', 몸:'딱딱한 껍질', 장신구:'—' } },
+  piel: { name:'피엘', grade:'', color:'#aebfd4', sub:'견습 기사 · 기사단의 마지막 한 명',
+    hp:110, atk:11, def:8, block:0.5, crit:0.05, eva:0.05, spd:2.6, range:1.2, cd:1.1, windup:0.3, hits:1, weight:70, react:0.3,
+    look:{ skin:'#f0d2b4', cloth:'#8a9bb0', weapon:'sword', shield:true },
+    tags:[], trait:'🔆 방패 — 잘 막는다.', equip:{ 무기:'🗡️ 견습 기사검', 머리:'—', 몸:'가벼운 사슬갑옷', 장신구:'—' } },
+  odo: { name:'오도', grade:'', color:'#b6c28a', sub:'늙은 창병 · 창은 아직 잘 든다',
+    hp:95, atk:12, def:4, block:0.25, crit:0.08, eva:0.05, spd:2.4, range:1.7, cd:1.3, windup:0.35, hits:1, weight:60, react:0.3,
+    look:{ skin:'#e2c4a8', cloth:'#5a6b3a', weapon:'spear', beard:true },
+    tags:[], trait:'🔆 긴 창 — 멀리서 먼저 찌른다.', equip:{ 무기:'🔱 오래된 창', 머리:'—', 몸:'누비옷', 장신구:'—' } },
+  gur: { name:'구르', grade:'', color:'#e0b090', sub:'드워프 광부 · 곡괭이로 은혜를 갚는다',
+    hp:130, atk:12, def:5, block:0.2, crit:0.06, eva:0, spd:2.2, range:1.2, cd:1.3, windup:0.4, hits:1, weight:80, react:0.35,
+    look:{ skin:'#e0b090', cloth:'#7d5836', weapon:'pickaxe', beard:true, beardColor:'#8a4a24', bw:1.2, scale:0.9 },
+    tags:[], trait:'🔆 곡괭이 — 단단한 것도 깬다.', equip:{ 무기:'⛏️ 곡괭이', 머리:'—', 몸:'가죽 앞치마', 장신구:'—' } },
+  tehera: { name:'테헤라', grade:'', color:'#cfe8d0', sub:'잠자리 날개의 요정 · 어느 종족의 왕이었다',
+    hp:75, atk:10, def:2, block:0.1, crit:0.1, eva:0.2, spd:3.0, range:4.5, cd:1.5, windup:0.45, hits:1, weight:25, react:0.3,
+    projectile:'arrow', ranged:true, melee:{ atk:5, range:1.1, windup:0.25, cd:0.9 },
+    look:{ skin:'#e8eef0', cloth:'#b7c9a8', weapon:'staff', wings:true, eye:'#6fd0c0' },
+    tags:[], trait:'🔆 빛가루 — 멀리서 빛의 화살을 쏜다. 붙으면 지팡이로 친다.', equip:{ 무기:'✨ 빛가루 지팡이', 머리:'—', 몸:'이끼 옷', 장신구:'잠자리 날개' } },
 });
 
 const STAT_ROWS = [
@@ -2932,7 +2967,7 @@ cv.addEventListener('pointerleave', () => { hoverTile = null; if (!drag) hoverUn
 cv.addEventListener('pointerdown', e => {
   if (mode !== 'battle' || anyPanel()) return;
   const u = unitAtScreen(e);
-  if (battle.locked){ if (u && e.button === 0) openSheet(u.id, 'status', u); return; }   // 던전 전투: 배치 편집 없음, 살펴보기만
+  if (battle.locked){ if (e.button === 0) dgCommandClick(e, u); return; }   // 던전 전투: 배치 편집 없음. 동료를 누르고 → 칸 (버텨) / 적 (노려)
   if (e.button === 2){ if (u) removeUnit(u); return; }
   if (e.button !== 0) return;
   if (u){
@@ -3763,6 +3798,10 @@ function updateBattle(dt){
       if (f && !f.dead){ tgt = f; dist = Math.hypot(f.x - u.x, f.y - u.y); }
       else if (['assault', 'wall', 'bind', 'bindRun'].includes(u.state)) u.stateT = 0;
     }
+    if (u.order){                                                  // 지휘: 노려 (그 적만) / 버텨 (그 자리). 버티기는 12초
+      if (u.order.type === 'focus'){ const f = u.order.target; if (f && !f.dead && b.units.includes(f)){ tgt = f; dist = Math.hypot(f.x - u.x, f.y - u.y); } else u.order = null; }
+      else if (b.running && (u.order.t -= sdt) <= 0) u.order = null;
+    }
     u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
     const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
@@ -3992,6 +4031,10 @@ function updateBattle(dt){
           else if (dist < 2.2){ dir = { x: -to.x, y: -to.y }; u.running = true; }
           else if (dist > u.st.range * 0.95){ dir = to; u.running = false; }
           else { u.running = false; if (u.cd > 0.4) dir = { x: -to.y * u.strafeDir * 0.45, y: to.x * u.strafeDir * 0.45 }; }
+        }
+        if (u.order && u.order.type === 'hold'){                   // 버텨: 그 자리로 달려가서 머묾. 사거리 안의 적만 침
+          const o = u.order, dx = o.x - u.x, dy = o.y - u.y, d = Math.hypot(dx, dy);
+          if (d > 0.2){ dir = norm(dx, dy); u.running = d > 1.5; } else { dir = null; u.running = false; }
         }
         const dd = dangerDir(u);
         if (dd && u.st.berserk && u.state !== 'skitter'){ u.skDir = dd; u.state = 'skitter'; u.stateT = 0.3; }   // 낙뢰 · 날아차기: 옆으로 쌩
@@ -4467,6 +4510,7 @@ function drawBattle(){
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)');
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   drawBossBar();
+  if (b.locked) drawCmdUi();
   if (b.drops.length){
     ctx.strokeStyle = 'rgba(170,200,255,.4)'; ctx.lineWidth = 1; ctx.beginPath();
     for (const d of b.drops) if (!d.snow){ ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.5, d.y - 12); }
@@ -6233,7 +6277,11 @@ try { DGP = Object.assign(DGP, JSON.parse(localStorage.getItem(DG_KEY) || '{}'))
 function saveDGP(){ try { localStorage.setItem(DG_KEY, JSON.stringify(DGP)); } catch (e) {} }
 const lvOf = id => DGP.lv[id] || 1;
 const lvMul = id => 1 + LV.grow * (lvOf(id) - 1);
-const PARTY = ['player', 'rebecca', 'karius', 'goblin'];
+const PARTY_BASE = ['player', 'rebecca', 'goblin', 'karius'];   // 처음부터 함께인 넷 (고정)
+DGP.roster = DGP.roster || []; DGP.rows = DGP.rows || {}; DGP.manual = !!DGP.manual;
+const nameOf = id => id === 'player' ? character.name : getStats(id).name;
+const owned = () => [...PARTY_BASE, ...DGP.roster.filter(id => !PARTY_BASE.includes(id))];
+const rowOf = id => DGP.rows[id] || (getStats(id).projectile || id === 'goblin' || id === 'norman' ? 'back' : 'front');
 const DG = { active: false, area: null, pawns: [], actors: [], props: [], waits: [], conds: [], interact: null,
   narrR: null, talkR: null, choiceOpen: false, sub: null, snowOn: false, flakes: [], lock: false, focus: null, camX: 0,
   hp: {}, inFight: false, floor: 0, gifts: [], hudCache: '' };
@@ -6306,6 +6354,142 @@ function dgAction(){
   const it = DG.interact;
   if (it && Math.abs(lead().x - it.x) < it.r){ DG.interact = null; it.res(); }
 }
+/* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열 ---------- */
+function dgFormation(){
+  return new Promise(res => {
+    const all = owned();
+    DGP.party = (DGP.party || [...PARTY_BASE]).filter(id => all.includes(id));
+    if (!DGP.party.includes('player')) DGP.party.unshift('player');
+    const render = () => {
+      evEl.innerHTML = '';
+      evEl.appendChild(el('div', 'ev-narr', '편성 — 석문 아래로 데려갈 동료 (최대 5명)'));
+      const box = el('div', 'ev-box');
+      box.appendChild(el('div', 'ev-tag', `참가 ${DGP.party.length}/5 · 전열은 앞에서 맞서고, 후열은 뒤에서 시작`));
+      for (const id of all){
+        const st = getStats(id), on = DGP.party.includes(id), m = lvMul(id);
+        const row = el('div', 'ev-row');
+        row.appendChild(el('div', 'ev-em', on ? '✔' : '·'));
+        const main = el('div', 'ev-main');
+        main.appendChild(el('div', 'ev-name', `${nameOf(id)}  Lv${lvOf(id)}`));
+        main.appendChild(el('div', 'ev-desc', `♥${Math.round(st.hp * m)} ⚔${Math.round(st.atk * m)} · ${st.sub}`));
+        row.appendChild(main);
+        const ctl = el('div', 'ev-chips');
+        const b1 = el('button', on ? 'on' : '', on ? '참가' : '대기');
+        b1.disabled = id === 'player';
+        b1.onclick = () => { if (on) DGP.party = DGP.party.filter(x => x !== id); else if (DGP.party.length < 5) DGP.party.push(id); render(); };
+        const b2 = el('button', '', rowOf(id) === 'back' ? '후열' : '전열');
+        b2.onclick = () => { DGP.rows[id] = rowOf(id) === 'back' ? 'front' : 'back'; render(); };
+        ctl.append(b1, b2); row.appendChild(ctl); box.appendChild(row);
+      }
+      evEl.appendChild(box);
+      const opts = el('div', 'ev-opts'), go = el('button', '', `⬇ 출발 (${DGP.party.length}명)`);
+      go.onclick = () => { closeEvent(); DG.choiceOpen = false; saveDGP(); res(); };
+      opts.appendChild(go); evEl.appendChild(opts);
+      evEl.hidden = false; DG.choiceOpen = true;
+    };
+    render();
+  });
+}
+/* ---------- 영입: 길가의 인물을 만나 데려감. 자리가 차면 굴로 먼저 올라가 기다림 ---------- */
+const RECRUIT = {
+  dolsoe: { narr: ['회색 바위 뒤에서 덩치 큰 사내가 몸을 웅크리고 있습니다.', '"…사람이다. 진짜 사람이야."'], talk: ['돌쇠라고 합니다. 여기 떨어진 지… 모르겠어요.', '사랑을 한 죄래요. 웃기죠. 힘은 좀 씁니다. 데려가 주세요.'] },
+  piel:   { narr: ['부러진 창들 사이에 견습 기사 하나가 앉아 있습니다.', '방패만은 꼭 끌어안고 있습니다.'], talk: ['피엘입니다. 기사단은 전부… 저 말 없는 기사에게.', '혼자 남는 건 싫어요. 같이 가게 해 주세요.'] },
+  odo:    { narr: ['창을 지팡이 삼아 서 있는 늙은 창병.', '회색 먼지를 뒤집어써서 하마터면 바위인 줄 알았습니다.'], talk: ['오도. 창은 아직 잘 들지.', '늙은이 걸음이 느리다고 두고 가진 마.'] },
+  moro:   { narr: ['관 하나가 열려 있습니다. 안에서 무언가 씹는 소리.', '곤충의 다리를 가진 사람이 고개를 듭니다. 입가가 번들거립니다.'], talk: ['…먹은 죄로 여기 왔어. 배가 고팠거든.', '너희는 안 먹어. 약속하지. 아마도.'] },
+  gur:    { narr: ['늪 한가운데, 곡괭이를 든 드워프가 무릎까지 빠져 있습니다.'], talk: ['구르다. 좀 꺼내 주면 은혜는 곡괭이로 갚지.', '…빨리. 발가락 색이 빠지는 느낌이야.'] },
+  tehera: { narr: ['안개 위로 빛가루가 흩날립니다. 잠자리 같은 날개.', '그것이 당신들을 흥미롭게 바라봅니다. 필시 어느 종족의 왕이었겠지요.'], talk: ['테헤라. 왕이었지. 지금은 그냥 날개 달린 것.', '재미있어 보이는 쪽으로 가겠어. 너희 쪽.'] },
+  norman: { narr: ['쓰러진 낙오자 곁에 무릎 꿇은 군인이 있습니다. 붕대를 감고 있습니다.', '낙오자는 이미 색이 다 빠졌습니다. 그래도 감습니다.'], talk: ['…노먼. 위생병.', '…가지.'] },
+  poren:  { narr: ['안개 속에서 쥐 떼가 길을 비킵니다.', '에메랄드빛 갑옷의 작은 거인이 대검에 기대 서 있습니다.'], talk: ['포렌이다. 쥐들의 왕.', '왕을 쓰러뜨렸다고? …좋다. 군대가 필요하겠군.'] },
+};
+async function recruitEvent(pool, x, y){
+  const cand = pool.filter(id => !DGP.roster.includes(id));
+  if (!cand.length) return;
+  const id = cand[Math.floor(Math.random() * cand.length)], R = RECRUIT[id], st = getStats(id);
+  const u = newUnit(id, x - 0.5, y - 0.5, 'ally'); u.face = -1; u.name = st.name;
+  const prop = addProp({ kind: 'figure', x, y, u, name: st.name });
+  await dgUntil(() => lead().x > x - 3.2);
+  DG.lock = true; DG.focus = x - 1;
+  await dgNarr(R.narr);
+  await dgTalk(st.name, st.color, R.talk);
+  const c = await dgChoose(`${st.name}을(를) 데려갈까요?\n${st.sub}`, ['🤝 함께 간다', '🚶 두고 간다']);
+  DG.lock = false; DG.focus = null;
+  if (c === 0) recruit(id, prop);
+  else { removeProp(prop); dgSub(`${st.name}은(는) 그 자리에 남았습니다. 다음에 또 만날지도 모릅니다.`); }
+}
+function recruit(id, prop){
+  const st = getStats(id);
+  if (!DGP.roster.includes(id)) DGP.roster.push(id);
+  if (prop) removeProp(prop);
+  if (DG.party.length < 5){
+    DG.party.push(id); DGP.party = [...DG.party];
+    const u = prop ? prop.u : newUnit(id, lead().x - 1.5, 2, 'ally');
+    u.side = 'ally'; u.name = st.name; u.face = 1;
+    DG.pawns.push(u);
+    dgSub(`${st.name}이(가) 합류했습니다.`);
+  } else dgSub(`${st.name}은(는) 굴로 먼저 올라가 기다립니다. 편성에서 넣을 수 있습니다.`);
+  saveDGP();
+}
+/* ---------- 지휘 (던전 전투): 동료를 누르고 → 칸을 누르면 그 자리에서 버텨, 적을 누르면 그 적을 노려
+   지휘관은 주인공. 주인공이 쓰러지거나 휘청이면 지휘가 끊김. 한 전투에 4번 ---------- */
+function dgCommandClick(e, u){
+  const b = battle;
+  if (u && u.side === 'ally' && !u.dead){ b.sel = b.sel === u ? null : u; return; }
+  if (!b.sel){ if (u) openSheet(u.id, 'status', u); return; }
+  const s = b.sel; b.sel = null;
+  const cmd = b.units.find(o => o.id === 'player');
+  if (!cmd || cmd.dead || cmd.stun > 0){ logLine('⚑ 지휘가 끊겼다 (주인공이 쓰러졌거나 휘청이는 중)', 'miss'); return; }
+  if (b.cmdLeft <= 0){ logLine('⚑ 지휘력이 바닥났다', 'miss'); return; }
+  if (s.dead) return;
+  b.cmdLeft--;
+  if (u && u.side !== s.side && !u.dead){ s.order = { type: 'focus', target: u }; shout(s, '저놈!'); logLine(`⚑ ${s.name} → ${u.name}만 노린다`, 'crit'); }
+  else {
+    const pt = screenToPoint(e);
+    s.order = { type: 'hold', x: Math.max(0, Math.min(BATTLE_COLS - 1, pt.fx)), y: Math.max(0, Math.min(ROWS - 1, pt.fy)), t: 12 };
+    shout(s, '여기서 버틴다!'); logLine(`⚑ ${s.name} → 그 자리에서 버틴다 (12초)`, 'crit');
+  }
+  s.stateT = 0;
+}
+function drawCmdUi(){
+  const b = battle;
+  ctx.save(); ctx.setLineDash([5, 5]); ctx.lineDashOffset = -time * 30; ctx.lineWidth = 2;
+  for (const u of b.units){
+    if (u.dead || !u.order) continue;
+    const p = P(u.x + 0.5, u.y + 0.5);
+    if (u.order.type === 'hold'){
+      const q = P(u.order.x + 0.5, u.order.y + 0.5);
+      ctx.strokeStyle = 'rgba(232,195,90,.7)'; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      ctx.setLineDash([]); ctx.fillStyle = '#e8c35a';
+      ctx.fillRect(q.x - 1, q.y - T * 0.55, 2, T * 0.55);
+      ctx.beginPath(); ctx.moveTo(q.x + 1, q.y - T * 0.55); ctx.lineTo(q.x + T * 0.3, q.y - T * 0.45); ctx.lineTo(q.x + 1, q.y - T * 0.35); ctx.fill();
+      ctx.setLineDash([5, 5]);
+    } else {
+      const t = u.order.target, q = P(t.x + 0.5, t.y + 0.5), r = T * 0.35;
+      ctx.strokeStyle = 'rgba(255,90,80,.75)'; ctx.beginPath(); ctx.moveTo(p.x, p.y - T * 0.3); ctx.lineTo(q.x, q.y - T * 0.3); ctx.stroke();
+      ctx.setLineDash([]); ctx.beginPath(); ctx.arc(q.x, q.y - T * 0.3, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(q.x - r * 1.3, q.y - T * 0.3); ctx.lineTo(q.x + r * 1.3, q.y - T * 0.3); ctx.moveTo(q.x, q.y - T * 0.3 - r * 1.3); ctx.lineTo(q.x, q.y - T * 0.3 + r * 1.3); ctx.stroke();
+      ctx.setLineDash([5, 5]);
+    }
+  }
+  ctx.setLineDash([]);
+  if (b.sel && !b.sel.dead){
+    const p = P(b.sel.x + 0.5, b.sel.y + 0.5), k = 1 + Math.sin(time * 8) * 0.08;
+    ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.5 * k, T * 0.2 * k, 0, 0, Math.PI * 2); ctx.stroke();
+  }
+  const txt = `⚑ 지휘 ${b.cmdLeft}  ·  ${b.sel ? `${b.sel.name} → 칸: 버텨 / 적: 노려` : '동료를 눌러 지휘'}`;
+  ctx.font = '14px "Do Hyeon",sans-serif'; ctx.textAlign = 'left';
+  const w = ctx.measureText(txt).width + 18, y0 = W <= 640 ? 58 : 14;
+  ctx.fillStyle = 'rgba(10,8,12,.78)'; ctx.fillRect(12, y0, w, 26);
+  ctx.fillStyle = b.cmdLeft ? '#ffe08a' : '#8a8190'; ctx.fillText(txt, 21, y0 + 18);
+  ctx.restore();
+}
+document.getElementById('bq-manual').onclick = () => {
+  if (!battle) return;
+  DGP.manual = !DGP.manual; saveDGP();
+  battle.playerAuto = !DGP.manual;
+  document.getElementById('bq-manual').textContent = DGP.manual ? '🎮 직접' : '🤖 자동';
+  syncManual();
+};
 function nearGate(){ return !!player && player.x >= LOBBY_COLS - 1.8; }
 function addProp(o){ DG.props.push(o); return o; }
 function removeProp(o){ DG.props = DG.props.filter(p => p !== o); }
@@ -6332,11 +6516,14 @@ function dgSolid(nx, ny){
 
 async function startRun(){
   closePanels(); endDialog(); closeEvent();
-  DG.active = true; DG.area = null; DG.hp = {}; DG.floor = 1; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
-  DG.pawns = PARTY.map(id => { const u = newUnit(id, 0, 2, 'ally'); u.name = id === 'player' ? character.name : u.st.name; return u; });
+  DG.active = true; DG.area = null; DG.pawns = []; DG.hp = {}; DG.floor = 1; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
   mode = 'dungeon'; document.body.classList.add('dungeon');
   ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
-  dgHud.hidden = false; floaters = []; sparks = []; held.clear();
+  floaters = []; sparks = []; held.clear();
+  await dgFormation();
+  DG.party = [...DGP.party];
+  DG.pawns = DG.party.map(id => { const u = newUnit(id, 0, 2, 'ally'); u.name = nameOf(id); return u; });
+  dgHud.hidden = false;
   let dead = false;
   try {
     await floor1();
@@ -6373,14 +6560,17 @@ function dgFight(cfg){
       redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [], ricos: [], drops: [],
       parryTest: false, water: false, rain: false, snow: !!cfg.snow, sealDivine: !!cfg.seal, playerAuto: document.getElementById('bt-auto').checked,
       locked: true, fresh: true, intro: { t: 0, dur: 2.0 } };
-    const spots = [[1.5, 2], [2.4, 1], [2.4, 3], [1.2, 3.6]];
-    PARTY.forEach((id, i) => {
-      const u = spawnUnit(id, spots[i][0], spots[i][1], 'ally');
+    battle.cmdLeft = 4;   // 지휘력: 한 전투에 4번
+    const put = (list, x) => list.forEach((id, i) => spawnMember(id, x, (i + 1) * ROWS / (list.length + 1) - 0.5));   // 편성: 전열 · 후열
+    const spawnMember = (id, x, y) => {
+      const u = spawnUnit(id, x, y, 'ally');
       const m = lvMul(id);
       if (m > 1) u.st = { ...u.st, hp: Math.round(u.st.hp * m), atk: Math.round(u.st.atk * m) };
       u.hp = Math.min(u.st.hp, DG.hp[id] ?? u.st.hp);
-      u.name = id === 'player' ? character.name : u.st.name;
-    });
+      u.name = nameOf(id);
+    };
+    put(DG.party.filter(id => rowOf(id) === 'front'), 2.9); put(DG.party.filter(id => rowOf(id) === 'back'), 1.2);
+    battle.playerAuto = !DGP.manual; document.getElementById('bq-manual').textContent = DGP.manual ? '🎮 직접' : '🤖 자동';
     for (const e of cfg.enemies) spawnUnit(e.id, e.x, e.y, 'enemy');
     const joins = (cfg.joins || []).map(j => ({ ...j }));
     battle.tick = sdt => {
@@ -6449,6 +6639,7 @@ async function floor1(){
   for (let i = 0; i < 16; i++) addProp({ kind: 'stone', x: 3 + i * 2.5 + hash(i, 3) * 1.5, y: hash(i, 7) * 4.5, s: 0.5 + hash(i, 9) });
   await dgUntil(() => lead().x > 5);
   dgSub('빛이 없습니다. 그런데도 보입니다. 모든 것이 회색입니다.');
+  await recruitEvent(['dolsoe', 'piel', 'odo'], 10, 3.6);
   await dgUntil(() => lead().x > 13);
   const knight = addActor('deadKnight', 27, 1.5, -1); knight.walkTo = 0; knight.walkSpd = 0.75;
   dgSub('저 멀리, 무언가 천천히 걸어옵니다.');
@@ -6470,6 +6661,7 @@ async function floor1(){
   const hole = addProp({ kind: 'hole', x: 26.3, y: 2, u: newUnit('fingerHole', 25.8, 1.5, 'enemy') });
   await dgUntil(() => lead().x > 4);
   dgSub('기둥들이 줄지어 있습니다. 불꽃은 차갑고, 푸릅니다.');
+  await recruitEvent(['moro'], 11, 0.8);
   await dgUntil(() => lead().x > 17);
   dgSub('문 앞에 무언가 있습니다. 기기기기기기.');
   await dgInteract(hole.x, 3, '[Space] 구멍을 들여다본다');
@@ -6561,16 +6753,22 @@ async function floor2(){
   dgSub('길을 잃은 점 같은 낙오자들이 신입들을 봅니다. 대다수는 이미 포기했습니다.');
   await dgInteract(heron.x, 2.2, '[Space] 말을 건다');
   await dgTalk('낙오자 헤론', '#9fc3c9', ['…새 얼굴이군. 관을 타고 왔나.', '여기선 오래 서 있으면 색이 빠져. 저 사람들처럼.', '난 아직 반쯤은 남았지. 반쯤은.']);
-  const c = await dgChoose('헤론이 젖은 모닥불 자리를 가리킵니다.', ['🔥 쉬어 간다 (모두 체력 절반 회복)', '👂 소문을 듣는다 (모두 경험치 +30)', '🚶 그냥 지나간다']);
-  if (c === 0){
-    for (const id of PARTY){ const mx = Math.round(getStats(id).hp * lvMul(id)); DG.hp[id] = Math.min(mx, (DG.hp[id] ?? mx) + mx * 0.5); }
+  const opts = ['🔥 쉬어 간다 (모두 체력 절반 회복)', '👂 소문을 듣는다 (모두 경험치 +30)', '🚶 그냥 지나간다'];
+  if (!DGP.roster.includes('heron')) opts.push('🤝 같이 가자고 한다');
+  const c = await dgChoose('헤론이 젖은 모닥불 자리를 가리킵니다.', opts);
+  if (c === 3){
+    await dgTalk('낙오자 헤론', '#9fc3c9', ['…나를? 반쯤 빠진 나를?', '…그래. 서 있으면 다 빠지니까. 걷자.']);
+    recruit('heron', heron);
+  } else if (c === 0){
+    for (const id of DG.party){ const mx = Math.round(getStats(id).hp * lvMul(id)); DG.hp[id] = Math.min(mx, (DG.hp[id] ?? mx) + mx * 0.5); }
     await dgTalk('낙오자 헤론', '#9fc3c9', ['…불이 붙을 리가 있나. 그래도 앉아 있으면 좀 낫지.']);
     dgSub('모두 체력을 절반 회복했습니다.');
   } else if (c === 1){
     await dgTalk('낙오자 헤론', '#9fc3c9', ['관리자? 이름이 여럿 돌아. 여우, 왕자, 토끼, 여름.', '누구는 토끼가 진짜라더군. 토끼가 누굴 기다린다는 얘기도 있고. 앨리스라나.', '…믿지 마. 여기서 들은 건 다 절반만 믿어.']);
-    const g = PARTY.flatMap(id => giveXp(id, 30));
+    const g = DG.party.flatMap(id => giveXp(id, 30));
     dgSub(g.length ? g.join(' · ') : '소문도 경험입니다. 모두 경험치 +30');
   } else dgSub('헤론은 붙잡지 않습니다.');
+  await recruitEvent(['gur', 'tehera', 'norman', 'poren'], 20, 3.7);
   await dgUntil(() => lead().x > 29);
   DG.lock = true;
   dgSub('서 있던 낙오자들이 고개를 돌립니다. 모두 같은 쪽으로. 당신들 쪽으로.', 3);
@@ -6596,6 +6794,12 @@ async function floor2(){
   await fightOrDie({ title: '방앗간지기 오르소', enemies: [{ id: 'miller', x: 9, y: 2 }], joins: [{ t: 12, id: 'faded' }, { t: 20, id: 'faded' }, { t: 28, id: 'faded' }], xp: 140 });
   await dgWait(1.2);
   await dgNarr(['맷돌이 멈춥니다.', '방앗간 바닥, 회색 가루 아래로 문이 하나 있습니다.']);
+  if (!DGP.roster.includes('morningstar')){
+    await dgNarr(['방앗간 창고 문이 안에서 쾅쾅 울립니다.', '문을 열자 철퇴를 든 여자가 튀어나옵니다.']);
+    await dgTalk('모닝스타', '#c9c9d6', ['슈퍼스타 등장! …갇혀 있었던 거 아니야. 쉬고 있었던 거야.', '따라가 줄게. 무대가 필요하거든.']);
+    const c = await dgChoose('모닝스타가 철퇴를 어깨에 걸칩니다.', ['🤝 함께 간다', '🚶 문을 도로 닫는다']);
+    if (c === 0) recruit('morningstar'); else dgSub('창고 안에서 욕설이 들립니다.');
+  }
   DGP.best = Math.max(DGP.best, 2); saveDGP();
   await dgReward('2층 · 안개 늪의 방앗간', [['🌾', '회색 가루 한 줌', '무엇을 갈았던 걸까요. 아직 아무 효과 없음'], ['⚙️', '멈춘 맷돌 조각', '아직 아무 효과 없음']]);
 }
@@ -6606,12 +6810,13 @@ function updateDungeon(dt){
   for (const w of DG.waits) w.t -= dt;
   const doneW = DG.waits.filter(w => w.t <= 0); DG.waits = DG.waits.filter(w => w.t > 0); doneW.forEach(w => w.r());
   const doneC = DG.conds.filter(c => c.fn()); DG.conds = DG.conds.filter(c => !doneC.includes(c)); doneC.forEach(c => c.r());
+  if (!DG.pawns.length) return;   // 편성 중
   const busy = DG.lock || DG.narrR || DG.talkR || DG.choiceOpen || anyPanel();
   const L = lead(), spd = 3.0 * (held.has('run') ? RUN_MUL : 1);
   stepMover(L, dt, busy ? null : moveInput(), spd, dgSolid);
   DG.pawns.forEach((f, i) => {
     if (!i) return;
-    const tx = L.x - 1.05 * i, ty = [2, 1, 3, 2.7][i];
+    const tx = L.x - 1.05 * i, ty = [2, 1, 3, 2.7, 1.6][i] ?? 2;
     const dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx, dy);
     stepMover(f, dt, d > 0.35 ? { x: dx / d, y: dy / d } : null, d > 2 ? 3.8 : 2.6, dgSolid);
   });
@@ -6647,9 +6852,9 @@ function updateDungeon(dt){
   const show = it && !busy && Math.abs(L.x - it.x) < it.r;
   pr.hidden = !show; if (show) pr.textContent = it.label;
   if (!DG.area) return;
-  const hud = [`${DG.area.name}`, ...PARTY.map(id => {
+  const hud = [`${DG.area.name}`, ...DG.party.map(id => {
     const mx = Math.round(getStats(id).hp * lvMul(id)), hp = Math.round(Math.min(mx, DG.hp[id] ?? mx));
-    return `${id === 'player' ? character.name : getStats(id).name} Lv${lvOf(id)}  ♥${hp}/${mx}  ✦${DGP.xp[id] || 0}/${LV.need(lvOf(id))}`;
+    return `${nameOf(id)} Lv${lvOf(id)}  ♥${hp}/${mx}  ✦${DGP.xp[id] || 0}/${LV.need(lvOf(id))}`;
   })].join('\n');
   if (hud !== DG.hudCache){ DG.hudCache = hud; dgHud.textContent = hud; }
 }
@@ -6883,17 +7088,24 @@ function drawLookUnit(o){
   if (L.alpha) ctx.globalAlpha *= L.alpha;
   shadowAt(x, p.y, u * 0.32);
   if (L.cloak) shape(() => { ctx.moveTo(x - u * 0.22, y - u * 0.62); ctx.lineTo(x + u * 0.22, y - u * 0.62); ctx.lineTo(x + u * 0.32 - face * u * 0.18, y - u * 0.02); ctx.lineTo(x - u * 0.32 - face * u * 0.18, y - u * 0.02); ctx.closePath(); }, L.cloak);
+  if (L.wings){                                                  // 잠자리 날개 (몸 뒤)
+    ctx.fillStyle = 'rgba(200,240,235,.35)'; ctx.strokeStyle = 'rgba(160,220,215,.7)'; ctx.lineWidth = 1;
+    for (const [dx, dy, a] of [[-0.35, -0.75, -0.5], [-0.4, -0.55, -0.2], [0.35, -0.75, 0.5], [0.4, -0.55, 0.2]]){
+      ctx.beginPath(); ctx.ellipse(x + dx * u, y + dy * u + Math.sin(time * 20) * u * 0.02, u * 0.34, u * 0.1, a, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+  }
   if (L.shield && !o.guarding) drawKiteShield(x - face * u * 0.2, y - u * 0.44, u * 0.9, face);
   drawHumanoid({ x, y, u, face, skin: L.skin, cloth: L.cloth, bw: L.bw || 1.05, female: false, race: 'human', eye: L.eye,
     weapon: L.weapon || null, wstyle: L.wstyle || {}, pose: o });
   if (L.shield && o.guarding) drawKiteShield(x + face * u * 0.3, y - u * 0.55, u, face);
   const hx = x + face * u * 0.02, hy = y - u * 0.8, hr = u * 0.21;
-  if (L.beard) shape(() => { ctx.moveTo(hx - hr * 0.7, hy + hr * 0.2); ctx.quadraticCurveTo(hx + face * hr * 0.2, hy + hr * 2.4, hx + hr * 0.7, hy + hr * 0.2); ctx.closePath(); }, '#e8e4dc', 1.2);
+  if (L.beard) shape(() => { ctx.moveTo(hx - hr * 0.7, hy + hr * 0.2); ctx.quadraticCurveTo(hx + face * hr * 0.2, hy + hr * 2.4, hx + hr * 0.7, hy + hr * 0.2); ctx.closePath(); }, L.beardColor || '#e8e4dc', 1.2);
   if (L.helm){
     shape(() => { ctx.arc(hx, hy, hr * 1.1, Math.PI * 0.95, Math.PI * 2.05); ctx.lineTo(hx + hr * 1.1, hy + hr * 0.35); ctx.lineTo(hx - hr * 1.1, hy + hr * 0.35); ctx.closePath(); }, '#5b6168', 1.4);
     ctx.fillStyle = '#0c0d10'; ctx.fillRect(hx + face * hr * 0.1 - hr * 0.55, hy - hr * 0.08, hr * 1.1, hr * 0.16);
     ctx.fillStyle = L.eye || '#9fe8ff'; ctx.fillRect(hx + face * hr * 0.35 - hr * 0.08, hy - hr * 0.05, hr * 0.16, hr * 0.1);
   }
+  if (L.antenna){ ctx.strokeStyle = OUTC; ctx.lineWidth = Math.max(1.5, u * 0.03); for (const s2 of [-1, 1]){ ctx.beginPath(); ctx.moveTo(hx + s2 * hr * 0.35, hy - hr * 0.8); ctx.quadraticCurveTo(hx + s2 * hr * 0.9, hy - hr * 2.2, hx + s2 * hr * 1.4 + face * hr * 0.4, hy - hr * 1.9); ctx.stroke(); } }
   if (L.hood) shape(() => { ctx.arc(hx, hy, hr * 1.15, Math.PI * 0.9, Math.PI * 2.1); ctx.lineTo(hx + hr * 1.1, hy + hr * 0.6); ctx.lineTo(hx - hr * 1.1, hy + hr * 0.6); ctx.closePath(); }, L.hood, 1.3);
   if (L.crown){
     const cy = hy - hr * 0.85, cw = hr * 1.3;
