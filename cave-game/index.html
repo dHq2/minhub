@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.3
+  version v9.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -316,7 +316,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.3';
+const VERSION = 'v9.4';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -3100,7 +3100,7 @@ function drawProjectiles(){
 function clashFx(d, a, blue){
   const b = battle, mx = a ? (d.x + a.x) / 2 : d.x, my = a ? (d.y + a.y) / 2 : d.y;
   b.hitstop = Math.max(b.hitstop, 0.24); shake = Math.max(shake, 0.4);
-  camFocus(mx, my, 1.45, 0.6);
+  camFocus(mx, my, 1.6, 0.75);
   b.fx.push({ type: 'clash', x: mx, y: my, h: unitHeight(d) * 0.55, blue: !!blue, life: 0.45, max: 0.45, seed: Math.random() * 6 });
   try { if (navigator.vibrate) navigator.vibrate(blue ? [18, 30, 18] : 35); } catch (e) {}
 }
@@ -3243,7 +3243,7 @@ function reversal(d, a, opts = {}){
 }
 function parry(d, a, opts = {}){
   const b = battle;
-  b.hitstop = 0.22; shake = 0.25; camFocus(d.x, d.y, 1.35, 0.8);
+  clashFx(d, a, false); b.hitstop = Math.max(b.hitstop, 0.26);
   a.stun = 0.9; a.windup = 0; a.atkTarget = null;
   if (!opts.ranged) pushUnit(a, d, 0.35);
   ringAt(d, '143,232,255');
@@ -3922,7 +3922,7 @@ const cam = { T: 0, x: 0, top: 0, on: false };
 function camFocus(x, y, k = 1.35, t = 0.9){ if (battle) battle.camFocus = { x, y, k, t, max: t }; }
 function updateCamera(dt){
   const b = battle, portrait = H > W * 1.15;
-  if (!portrait){ if (cam.on){ cam.on = false; resize(); } return; }
+  if (!portrait){ if (cam.on){ cam.on = false; resize(); } if (b.camFocus && b.camFocus.t > 0) b.camFocus.t -= dt; return; }   // 가로 화면: 줌인은 그리기에서 (아래 drawBattle)
   const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
   const panelEl = document.getElementById('bt-panel');
   const panelOpen = !panelEl.classList.contains('collapsed');
@@ -3965,6 +3965,12 @@ function drawBattle(){
   ctx.save();
   if (shake > 0) ctx.translate((Math.random() - 0.5) * 8 * shake / 0.18, (Math.random() - 0.5) * 5 * shake / 0.18);
   ctx.fillStyle = '#060408'; ctx.fillRect(-10, -10, W + 20, H + 20);
+  if (!cam.on && b.camFocus && b.camFocus.t > 0){                // 가로 화면 카메라 워킹: 큰 순간에 그 자리로 확 줌인했다가 천천히 풀림
+    const f = b.camFocus, k = f.t / f.max, e = k > 0.8 ? (1 - k) / 0.2 : easeOut(k / 0.8);
+    const z = 1 + (f.k - 1) * e, p = P(f.x + 0.5, f.y + 0.5), fy = p.y - T * 0.7;
+    const tx = p.x + (W / 2 - p.x) * 0.45 * e, ty = fy + (H * 0.55 - fy) * 0.45 * e;   // 그 자리를 화면 가운데 쪽으로 끌어옴
+    ctx.translate(tx, ty); ctx.scale(z, z); ctx.translate(-p.x, -fy);
+  }
   drawWall();
   drawFloor();
   const placeTool = b.dragTool || b.tool;
