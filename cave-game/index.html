@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.7
+  version v9.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -317,7 +317,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.7';
+const VERSION = 'v9.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2077,7 +2077,7 @@ const HEROES = {
     tags:['축복:불사A'], trait:'🔆 불사 — 초당 체력 2씩 재생한다. 쓰러져도 누운 채로 계속 재생해서, 체력이 30이 되면 서서히 일어나 다시 싸운다. 편이 전멸하면 일어나지 못한다.',
     equip:{ 무기:'🗡️ 낡은 장검', 방패:'🛡️ 기사 방패', 머리:'—', 몸:'낡은 판금 갑옷', 장신구:'—' } },
   karius: { name:'카리우스', grade:'★★★★★', color:'#6fb8e8', sub:'Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯',
-    hp:400, atk:12, def:10, block:0.65, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
+    hp:500, atk:12, def:10, block:0.65, crit:0.05, eva:0, spd:2.0, range:1.6, cd:1.4, windup:0.45, hits:2, weight:300, react:0.2,
     shield:'🧬 개조된 신체 (특성)',
     divine:{ name:'개조된 신체', dr:0.6, bleedRes:0.5 },   // 신성 특성: 신이 빚은 육체. 모든 피해 60% 감소 (전기 · 낙뢰 포함), 출혈 확률 절반. 신성 제약이면 꺼짐
     sweepAtk:30, grabAtk:30, slamAtk:40, swatAtk:35,
@@ -2108,7 +2108,7 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
-    hp:1500, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.22, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
+    hp:2000, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.22, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
     splash:0.5, splashR:1.2, quake:true,   // 대리석 주먹 내리찍기: 거의 예고 없이 (0.22초) 내리찍고, 주변 1.2칸에 땅울림 (절반 피해). 드문드문 (2.4초마다) 번개처럼
     lunge:2.8,                             // 천천히 걷다가 2.8칸 안이면 순식간에 파고들며 침
     boss:true, thunderAtk:90, thunderRest:6, residualAtk:20, kickAtk:40, shield:'🗿 대리석 피부 (특성)',
@@ -3099,20 +3099,31 @@ function drawProjectiles(){
     ctx.restore();
   }
 }
+// 반격이 꽂히면: 슬로우가 천천히 풀리고 (0.9초), 끊어지는 프레임이 끝나고, 줌도 천천히 풀림
+const SLOW_HOLD_MAX = 1.2, SLOW_REL = 0.9;
+function releaseSlow(){
+  const b = battle; if (!b || !(b.slowHold > 0)) return;
+  b.slowHold = 0; b.slowRel = SLOW_REL;
+  if (b.clash) b.clash.dur = b.clash.t + 0.1;
+  if (b.camFocus) b.camFocus.t = Math.min(b.camFocus.t, b.camFocus.max * 0.8);
+}
 // 딱! 튕김 · 회피 반격 연출: 잠깐 멈춤 (히트스톱) + 진동 + 그 자리로 시선 모으기 (주변 어둡게, 모바일은 줌인)
 function clashFx(d, a, blue){
   const b = battle, mx = a ? (d.x + a.x) / 2 : d.x, my = a ? (d.y + a.y) / 2 : d.y;
-  b.hitstop = Math.max(b.hitstop, 0.1); shake = Math.max(shake, 0.4);       // 딱 멈췄다가
-  b.slowmo = Math.max(b.slowmo || 0, 0.7);                                   // 슬로우 (0.3배)
-  b.clash = { t: 0, dur: 0.55 };                                              // 이 동안 화면이 뚝뚝 끊기며 단계적으로 확대
+  b.hitstop = Math.max(b.hitstop, 0.06); shake = Math.max(shake, 0.4);      // 딱
+  b.slowHold = SLOW_HOLD_MAX; b.slowRel = 0;                                  // 반격이 꽂힐 때까지 슬로우 (0.2배)
+  b.clash = { t: 0, dur: 99 };                                                // 그동안 화면이 뚝뚝 끊기며 단계적으로 확대
   loop.stut = 1;                                                              // 첫 장면은 바로 그림
-  camFocus(mx, my, 1.6, 1.1);
+  camFocus(mx, my, 1.6, 1.4);
   b.fx.push({ type: 'clash', x: mx, y: my, h: unitHeight(d) * 0.55, blue: !!blue, life: 0.45, max: 0.45, seed: Math.random() * 6 });
   try { if (navigator.vibrate) navigator.vibrate(blue ? [18, 30, 18] : 35); } catch (e) {}
 }
 // 저스트 패리 · 저스트 회피 뒤 확정 반격 (모든 캐릭터 · 보스 공통): 근접이면 한 발 파고들어 치고, 원거리면 되쏜다. 푸른 별
 function aiCounter(d, a){
   if (d.dead || a.dead || d.stun > 0) return;
+  const reach = isRangedUnit(d) ? 3 : d.st.range + 1.2;           // 근접 거리일 때만 반격 (멀리서 피하거나 막았으면 반격 · 연출 없음)
+  if (Math.hypot(a.x - d.x, a.y - d.y) > reach) return;
+  clashFx(d, a, true);                                             // 딱! 반격이 나가는 순간부터 슬로우
   if (isRangedUnit(d)){ fxText(d, '되받아침!', '#8fd3ff', 'big', 0.6); fireArrow(d, a, { forceCrit: true, counter: true, blue: true }); return; }
   d.guarding = false; d.state = 'hold'; d.stateT = 0.4; d.windup = 0;
   battle.pending.push({ t: 0.15, a: d, d: a, opts: { forceCrit: true, counter: true, blue: true, dash: true } });
@@ -3154,7 +3165,7 @@ function releaseAttack(u){
   }
   if (Math.hypot(d.x - u.x, d.y - u.y) > u.st.range + MELEE_TOL){
     if (strongAttack(u, d) && !u.superArmor){ u.stun = Math.max(u.stun, WHIFF_GAP); fxText(u, '빈틈!', '#ffe27a', 'big', 0.5); }   // 헛친 강공: 틈이 생김 (카운터 기회)
-    if (battle.clock - (d.lastStepAt ?? -99) <= JUST + 0.24 && !d.dead){ fxText(d, '저스트 회피!', '#8fd3ff', 'big', 0.6); clashFx(d, null, true); aiCounter(d, u); }   // 저스트 회피 (맞기 직전 스텝으로 범위를 벗어남) → 확정 반격
+    if (battle.clock - (d.lastStepAt ?? -99) <= JUST + 0.24 && !d.dead){ fxText(d, '저스트 회피!', '#8fd3ff', 'big', 0.6); aiCounter(d, u); }   // 저스트 회피 (맞기 직전 스텝으로 범위를 벗어남) → 확정 반격
     fxText(u, '헛침', '#b8b0a4');
     logLine(`${u.name}의 공격이 허공을 가름`, 'miss');
   } else {
@@ -3200,7 +3211,6 @@ function guardFx(d, a, opts = {}){
 function perfectBlock(d, a, opts = {}){
   const b = battle;
   guardFx(d, a, opts);
-  clashFx(d, opts.ranged ? null : a, false);                       // 딱!
   ringAt(d, '143,232,255');
   fxText(d, '튕겨냄!', '#8fe8ff', 'big', 0.5);
   if (!opts.ranged){ stagger(a, 0.35, braceW(d) * 4); if (d.id !== 'player' || battle.playerAuto) aiCounter(d, a); }   // 튕겨냄: 큰 반동 + 확정 반격 (푸른 별)
@@ -3239,7 +3249,7 @@ function starBurst(u, n = 22, blue){
 }
 function reversal(d, a, opts = {}){
   const b = battle;
-  clashFx(d, a, true);
+  clashFx(d, a, false);
   b.hitstop = 0.32; shake = 0.2;
   a.stun = 0.8; a.windup = 0; a.atkTarget = null;
   ringAt(d, '255,226,122');
@@ -3272,7 +3282,7 @@ function resolveHit(a, d, opts = {}){
     fxText(d, '무적', '#d8d2c0'); return;
   }
   const b = battle;
-  if (opts.counter){ if (!opts.ranged) a.lunge = 0.25; fxText(a, '반격!', '#ffe27a', 'big', 0.6); }
+  if (opts.counter){ if (!opts.ranged) a.lunge = 0.25; fxText(a, '반격!', '#ffe27a', 'big', 0.6); releaseSlow(); }
   if (opts.swing){ a.lunge = 0.25; a.altArm = !a.altArm; }
   // 저스트 방어 (주인공이 맞기 직전에 방어를 눌렀을 때)
   if (d.id === 'player' && !opts.counter){
@@ -3425,6 +3435,8 @@ function updateBattle(dt){
   let sdt = dt;
   if (b.hitstop > 0){ b.hitstop -= dt; sdt = dt * 0.1; }
   if (b.slowmo > 0){ b.slowmo -= dt; sdt *= 0.3; }          // 카리우스의 최후: 슬로우모션
+  if (b.slowHold > 0){ b.slowHold -= dt; sdt *= 0.2; if (b.slowHold <= 0) releaseSlow(); }   // 반격이 꽂히기까지 슬로우 (안전장치: 최대 1.2초)
+  else if (b.slowRel > 0){ sdt *= 0.2 + 0.8 * (1 - b.slowRel / SLOW_REL); b.slowRel -= dt; }   // 꽂힌 뒤 천천히 풀림
   sdt *= b.speed;
   if (b.running) b.clock += sdt;
   else b.clock += dt;
@@ -3933,7 +3945,7 @@ const cam = { T: 0, x: 0, top: 0, on: false };
 function camFocus(x, y, k = 1.35, t = 0.9){ if (battle) battle.camFocus = { x, y, k, t, max: t }; }
 function updateCamera(dt){
   const b = battle, portrait = H > W * 1.15;
-  if (!portrait){ if (cam.on){ cam.on = false; resize(); } if (b.camFocus && b.camFocus.t > 0) b.camFocus.t -= dt; return; }   // 가로 화면: 줌인은 그리기에서 (아래 drawBattle)
+  if (!portrait){ if (cam.on){ cam.on = false; resize(); } if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt; return; }   // 가로 화면: 줌인은 그리기에서 (아래 drawBattle)
   const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
   const panelEl = document.getElementById('bt-panel');
   const panelOpen = !panelEl.classList.contains('collapsed');
@@ -3957,7 +3969,7 @@ function updateCamera(dt){
   }
   if (b.camFocus && b.camFocus.t > 0){                        // 큰 순간: 잠깐 줌인
     const f = b.camFocus, k = Math.sin(Math.min(1, f.t / f.max) * Math.PI) ;
-    f.t -= dt;
+    if (!(b.slowHold > 0)) f.t -= dt;
     tT = Math.min(maxT * 1.3, tT * (1 + (f.k - 1) * k)); cx = cx + (f.x + 0.5 - cx) * k * 0.8;
   }
   if (!cam.on){ cam.on = true; cam.T = T; cam.x = cx; cam.top = floorTop; }
@@ -5037,7 +5049,7 @@ const SKILLS = {
   tearGrab:  { name:'잡아찢기', kind:'액티브', icon:'🤡',
     desc:'광대 쪽에서 수십 개의 팔이 돋아나 가까운 적 하나를 낚아채 끌어오고, 광대의 파일이 배를 뚫어버린다.\n피해 30, 50% 확률로 치명타 (x3). 잡히면 피할 수도 막을 수도 없다 (대기 11초).' },
   heretic:   { name:'불경자 카리우스', kind:'패시브', icon:'👓',
-    desc:'페이즈 2: 체력이 15% 남으면 (400이면 60) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x1.5 · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 40 피해 + 경직 (무거운 상대는 버틸 수 있음, 대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (35 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 공격속도 1.5배, 모든 공격이 치명타. 슈퍼아머: 경직이 아예 없고, 버티기 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
+    desc:'페이즈 2: 체력이 15% 남으면 (500이면 75) 0.5초 만에 얼굴에 그림자가 지고 자세가 낮아진다.\n얼굴이 새까매지고 안경만 빛나며 이를 악문다. 움직일 때마다 쿵쿵. 전장의 흥분으로 저돌적이 되고, 이때부터 쓰러질 때까지 아예 막지 않는다.\n노인의 팔이 늘 거대해지고, 공격력 x2.5 (기술 피해도 x2.5) · 방어력 +50 · 이동속도 x1.4 · 공격 간격 x0.8.\n내려찍기: 앞 1.3칸에 100 피해 + 경직 (무거운 상대는 버틸 수 있음, 대기 5초)\n돌진: 적 진형을 밀고 나가다 노인의 팔로 후려쳐 날려버린다 (88 피해, 여럿이 한꺼번에 날아감, 대기 8초)\n\n마지막 항전: 체력이 0이 되면 3초 동안 무적으로 꿈틀꿈틀 괴로워한다. 안경 빛은 꺼진다. 죽은 줄 알았는데 안광이 살아나 다시 빛나고, 크게 울부짖으며 7초 동안 무슨 일이 있어도 쓰러지지 않고 날뛴다 (근성).\n근성 동안 공격속도 1.5배, 모든 공격이 치명타. 슈퍼아머: 경직이 아예 없고, 버티기 무게가 4배 (300 → 1200kg)가 되어 넉백은 받지만 훨씬 덜 밀린다. 날아차기에도 날아가지 않고 밀리기만 한다.\n7초가 되면 실이 끊긴 것처럼 안경 빛이 사라지고, 슬로우모션 속에서 선 채로 고개를 떨구고 죽는다. 싸움에서 이겨도 마찬가지다.' },
   shieldBP:  { name:'방패 · 방탄', kind:'패시브', icon:'🛡️',
     desc:'방패 = 방탄. 방패를 가진 캐릭터는 늘 방탄이다.\n막기 성공 시 피해 60% 감소 (맨몸은 30%, 강공은 그 절반).\n저스트 패리: 맞기 직전에 맞춰 올린 막기는 튕겨냄 (피해 0), 상대는 휘청이고 곧바로 확정 반격 (치명타, 푸른 별). 보스도 똑같다.\n총알·화살에도 방어력이 늘 먹힌다 (방패가 없으면 무방비로 쏘일 때 갑옷도 소용없음).\n튕겨냄 때 총알·화살이 튕겨서 맵 밖으로 날아간다.\n어디서 왔는지는 스탯의 "방패 · 방탄" 줄에 (장비 또는 특성).\n레베카: 기사 방패 · 포렌: 에메랄드 대검 · 쥐 기사: 방패 · 카리우스: 개조된 신체 · 적뢰: 대리석 피부' },
   knightCharge: { name:'방패 돌격', kind:'패시브', icon:'🔱',
@@ -5502,12 +5514,14 @@ function drawRatUnit(o){
 /* ---------- 카리우스: 노인의 팔 · 잡아찢기 · 불경자 (2페이즈: 내려찍기 · 돌진) ---------- */
 const LAST_STAND = 7;   // 불경자: 최후의 7초 (근성)
 const HERETIC_AT = 0.15;   // 불경자 발동: 체력 15% 이하
+const HERETIC_ATK = 2.5;   // 불경자 · 근성 공격력 배수 (평타 · 노인의 팔 · 잡아찢기 · 내려찍기 · 돌진)
 function kariusPhase2(u){
   if (u.phase2) return;
   u.phase2 = true; u.p2k = 1;
   const s0 = u.st;
-  u.st = { ...s0, atk: Math.round(s0.atk * 1.5), def: s0.def + 50, spd: +(s0.spd * 1.4).toFixed(2), cd: +(s0.cd * 0.8).toFixed(2), windup: +(s0.windup * 0.8).toFixed(2),
-    sweepAtk: Math.round(s0.sweepAtk * 1.5), run: +(s0.spd * 1.4 * RUN_MUL).toFixed(1), atkSpd: +(1 / (s0.cd * 0.8)).toFixed(2) };
+  const m = HERETIC_ATK;                                         // 불경자 · 근성: 공격력 (기술 포함) 크게 오름
+  u.st = { ...s0, atk: Math.round(s0.atk * m), def: s0.def + 50, spd: +(s0.spd * 1.4).toFixed(2), cd: +(s0.cd * 0.8).toFixed(2), windup: +(s0.windup * 0.8).toFixed(2),
+    sweepAtk: Math.round(s0.sweepAtk * m), grabAtk: Math.round(s0.grabAtk * m), slamAtk: Math.round(s0.slamAtk * m), swatAtk: Math.round(s0.swatAtk * m), run: +(s0.spd * 1.4 * RUN_MUL).toFixed(1), atkSpd: +(1 / (s0.cd * 0.8)).toFixed(2) };
 }
 function kariusFoes(u){ return battle.units.filter(o => !o.dead && o.side !== u.side); }
 function inSweep(u, o){ const rel = (o.x - u.x) * u.face; return rel > 0.15 && rel < 2.7 && Math.abs(o.y - u.y) <= 1.3; }
@@ -5524,7 +5538,7 @@ function kariusUpdate(u, sdt, tgt, dist){
       u.kc = { type: 'cut', t: 0, dur: 1.2 }; u.vx = u.vy = 0; battle.slowmo = 4.5; camFocus(u.x, u.y, 1.6, 4.5);   // 슬로우모션 속에서 서서 고개를 떨굼
     }
   }
-  // 페이즈 2 (불경자): 체력 15% (400이면 60)부터
+  // 페이즈 2 (불경자): 체력 15% (500이면 75)부터
   if (!u.phase2 && !u.lastStand && !(u.kc && u.kc.type === 'heretic') && u.hp <= u.st.hp * HERETIC_AT){
     u.kc = { type: 'heretic', t: 0, dur: 0.5 };
     u.stun = 0; u.kbx = u.kby = 0;
