@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v9.9
+  version v10.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -298,6 +298,7 @@
       <button id="bq-run" class="primary">▶ 시작</button>
       <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
       <button id="bq-speed">x1</button>
+      <button id="bq-view" title="보드 시점 ↔ 예전 굴 시점 [V]">▦ 보드</button>
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
     </div>
     <div id="bt-log"></div>
@@ -317,7 +318,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v9.9';
+const VERSION = 'v10.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -478,6 +479,7 @@ function resize(){
   W = cv.clientWidth; H = cv.clientHeight;
   cv.width = W * DPR; cv.height = H * DPR;
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  if (boardOn()){ boardFit(boardFitT(), true); return; }
   T = Math.min(84, H / 7.4, (W - 40) / (curCols + ROWS * 0.42 + 1.2));
   rowH = T * 0.6;
   skew = rowH * 0.7;
@@ -487,10 +489,54 @@ function resize(){
 }
 window.addEventListener('resize', () => { if (!gameEl.hidden) resize(); });
 
+/* ---------- 시점: 'board' (보드판 + 원근 카메라, 전투 맵) / 'classic' (예전 굴 비스듬 시점) ----------
+   좌표계는 그대로 두고 타일 → 화면 투영(P)만 바꿈. 언제든 되돌리기: 전투 화면 "시점" 버튼 또는 V 키 */
+let VIEW = 'board';
+try { VIEW = localStorage.getItem('cave.view') === 'classic' ? 'classic' : 'board'; } catch (e) {}
+function boardOn(){ return VIEW === 'board' && mode === 'battle'; }
+function setView(v){
+  VIEW = v; try { localStorage.setItem('cave.view', v); } catch (e) {}
+  cam.bT = 0;
+  cam.on = false; resize();
+  const el = document.getElementById('bq-view'); if (el) el.textContent = v === 'board' ? '▦ 보드' : '⛰ 굴';
+}
+// 카메라: 보드 가운데를 PITCH 각도로 내려다봄, DIST = 카메라까지 거리 (타일 단위). 원근 세기는 DIST가 정함
+const BOARD = { PITCH: 52 * Math.PI / 180, DIST: 11, FRAME: 0.38, DRIFT: 0.35 };
+const BV = { F: 0, cx: 0, cy: 0, sin: Math.sin(BOARD.PITCH), cos: Math.cos(BOARD.PITCH) };
+function boardPad(){                                   // 세로 화면: 아래 로그·조작 버튼 자리를 비움
+  if (H > W * 1.15) return { top: 70, bottom: H * (document.body.classList.contains('manual') ? 0.36 : 0.2) };
+  return { top: 64, bottom: Math.max(24, H * 0.06) };
+}
+const boardNear = () => BOARD.DIST / (BOARD.DIST - ROWS / 2 * BV.cos);   // 맨 앞줄이 가운데보다 커 보이는 배율
+function boardFitT(cols = curCols + BOARD.FRAME * 2 + 1){   // 가로 cols칸(+1: 카메라가 흘러도 끝이 안 잘리게) + 보드 세로 + 위로 큰 폰 자리가 한 화면에
+  const pad = boardPad();
+  const vert = ROWS * BV.sin * BOARD.DIST * (1 / (BOARD.DIST - ROWS / 2 * BV.cos) / 2 + 1 / (BOARD.DIST + ROWS / 2 * BV.cos) / 2);
+  return Math.min(96, (W - 24) / (cols * boardNear()), (H - pad.top - pad.bottom) / (vert + 3.0));
+}
+// T = 보드 가운데 줄에서 한 칸 너비. 보드 앞 가장자리가 화면 아래 여백에 닿게 놓음
+function boardFit(t, center){
+  T = t; BV.F = T * BOARD.DIST; BV.cx = W / 2;
+  const zn = ROWS / 2 + BOARD.FRAME, pad = boardPad();
+  BV.cy = H - pad.bottom - T * 0.25 - zn * BV.sin * BV.F / (BOARD.DIST - zn * BV.cos);
+  floorTop = P(0, 0).y; rowH = (P(0, ROWS).y - floorTop) / ROWS; skew = 0;
+  if (center) camX = 0;
+}
+function boardProj(c, r){
+  const X = c - curCols / 2, Z = r - ROWS / 2, s = BV.F / (BOARD.DIST - Z * BV.cos);
+  return { x: BV.cx + X * s, y: BV.cy + Z * BV.sin * s, s };
+}
+function boardUnproj(px, py){                          // 화면 → 타일 좌표 (boardProj의 역)
+  const dy = py - BV.cy, Z = dy * BOARD.DIST / (BV.sin * BV.F + dy * BV.cos), s = BV.F / (BOARD.DIST - Z * BV.cos);
+  return { c: (px + camX - BV.cx) / s + curCols / 2, r: Z + ROWS / 2 };
+}
+
 // 타일 좌표 → 화면. c: 가로(열), r: 세로(행, 0 = 뒤쪽 벽)
 let camX = 0;
-function P(c, r){ return { x: c*T - camX - r*skew + 2.5*skew, y: floorTop + r*rowH }; }
-function depthScale(r){ return 0.88 + r * 0.06; }
+function P(c, r){
+  if (boardOn()){ const q = boardProj(c, r); return { x: q.x - camX, y: q.y }; }
+  return { x: c*T - camX - r*skew + 2.5*skew, y: floorTop + r*rowH };
+}
+function depthScale(r){ return boardOn() ? 1.03 * BOARD.DIST / (BOARD.DIST - (r - ROWS / 2) * BV.cos) : 0.88 + r * 0.06; }
 
 const gameEl = document.getElementById('game');
 let player, karius, goblin, rebecca, floaters, sparks, embers, time = 0, dialog = null, character = null;
@@ -612,6 +658,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyL' && mode === 'lobby') toggleCodex();
   if (e.code === 'KeyP') toggleStats();
   if (e.code === 'KeyR' && mode === 'battle' && !e.repeat) restartLastSetup();
+  if (e.code === 'KeyV' && mode === 'battle' && !e.repeat) setView(VIEW === 'board' ? 'classic' : 'board');
   if (e.code === 'KeyB' && !scene) mode === 'battle' ? exitBattle() : enterBattle();
   if (e.code === 'Escape'){ closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }
 });
@@ -983,6 +1030,7 @@ function draw(){
 }
 
 function drawWall(){
+  if (boardOn()){ drawBoardTable(); return; }
   const a = P(0,0), b = P(curCols,0);
   const top = floorTop - T * 3.4;
   const g = ctx.createLinearGradient(0, top, 0, floorTop);
@@ -1023,6 +1071,7 @@ function drawWall(){
 }
 
 function drawFloor(){
+  if (boardOn()){ drawBoardTiles(); return; }
   for (let r = 0; r < ROWS; r++){
     for (let c = 0; c < curCols; c++){
       const a = P(c,r), b = P(c+1,r), d = P(c+1,r+1), e = P(c,r+1);
@@ -1043,6 +1092,40 @@ function drawFloor(){
   const f0 = P(0,ROWS), f1 = P(curCols,ROWS);
   ctx.fillStyle = '#1b1519';
   ctx.fillRect(f0.x, f0.y, f1.x - f0.x, 12);
+}
+
+/* ---------- 보드 시점 바닥: 어두운 탁자 위 체스판 (칸 사이 틈 + 두께 + 테두리) ---------- */
+const BOARD_COL = { light: '#e9e6dc', dark: '#24262d', lightSide: '#a9a59a', darkSide: '#101116', frame: '#1a1c24', frameSide: '#0d0f14', rim: '#2c2f3a', table: '#171a22', bg: '#10141d' };
+const boardQuad = (c0, r0, c1, r1) => [P(c0, r0), P(c1, r0), P(c1, r1), P(c0, r1)];
+function fillQuad(q, col){ ctx.fillStyle = col; ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.fill(); }
+function drawBoardTable(){
+  const m = P(curCols / 2, ROWS / 2);
+  const g = ctx.createRadialGradient(m.x, m.y, T, m.x, m.y, Math.max(W, H) * 0.75);
+  g.addColorStop(0, BOARD_COL.table); g.addColorStop(1, '#07090d');
+  ctx.fillStyle = g; ctx.fillRect(-W, -H, W * 3, H * 3);
+  const F = BOARD.FRAME, thick = T * 0.32 * BV.cos;       // 판 테두리 + 앞면 두께
+  const fr = boardQuad(-F, -F, curCols + F, ROWS + F);
+  ctx.fillStyle = 'rgba(0,0,0,.45)';                      // 탁자에 드리운 그림자
+  ctx.beginPath(); fr.forEach((p, i) => i ? ctx.lineTo(p.x + T * 0.12, p.y + thick + T * 0.18) : ctx.moveTo(p.x + T * 0.12, p.y + thick + T * 0.18)); ctx.closePath(); ctx.fill();
+  const [, , n1, n0] = fr;
+  fillQuad([n0, n1, { x: n1.x, y: n1.y + thick }, { x: n0.x, y: n0.y + thick }], BOARD_COL.frameSide);
+  fillQuad([fr[1], n1, { x: n1.x, y: n1.y + thick }, { x: fr[1].x, y: fr[1].y + thick }], '#0a0c10');
+  fillQuad([fr[0], n0, { x: n0.x, y: n0.y + thick }, { x: fr[0].x, y: fr[0].y + thick }], '#0a0c10');
+  fillQuad(fr, BOARD_COL.frame);
+  ctx.strokeStyle = BOARD_COL.rim; ctx.lineWidth = 1.5;
+  ctx.beginPath(); fr.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.stroke();
+}
+function drawBoardTiles(){
+  const gap = 0.02, h = T * 0.09 * BV.cos;               // 칸 틈, 칸 앞면 두께
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < curCols; c++){
+      const light = (c + r) % 2 === 0;
+      const q = boardQuad(c + gap, r + gap, c + 1 - gap, r + 1 - gap);
+      if (q[1].x < -T || q[0].x > W + T) continue;
+      fillQuad([q[3], q[2], { x: q[2].x, y: q[2].y + h }, { x: q[3].x, y: q[3].y + h }], light ? BOARD_COL.lightSide : BOARD_COL.darkSide);
+      fillQuad(q, light ? BOARD_COL.light : BOARD_COL.dark);
+    }
+  }
 }
 
 function drawGate(){
@@ -2657,6 +2740,8 @@ function syncManual(){
 document.getElementById('bq-run').onclick = () => toggleRun();
 document.getElementById('bq-last').onclick = () => restartLastSetup();
 document.getElementById('bq-speed').onclick = () => document.getElementById('bt-speed').click();
+document.getElementById('bq-view').onclick = () => setView(VIEW === 'board' ? 'classic' : 'board');
+document.getElementById('bq-view').textContent = VIEW === 'board' ? '▦ 보드' : '⛰ 굴';
 document.getElementById('bq-panel').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
 function toggleRun(){
   if (!battle) return;
@@ -2717,16 +2802,18 @@ function pressAttack(){ if (mode === 'battle' && battle) battle.attackPressAt = 
 function screenToTile(e){
   const rect = cv.getBoundingClientRect();
   const px = e.clientX - rect.left, py = e.clientY - rect.top;
-  const rr = (py - floorTop) / rowH;
-  const cc = (px + camX + rr * skew - 2.5 * skew) / T;
+  const q = boardOn() ? boardUnproj(px, py) : null;
+  const rr = q ? q.r : (py - floorTop) / rowH;
+  const cc = q ? q.c : (px + camX + rr * skew - 2.5 * skew) / T;
   if (rr < 0 || rr >= ROWS || cc < 0 || cc >= curCols) return null;
   return { c: Math.floor(cc), r: Math.floor(rr), fx: cc - 0.5, fy: rr - 0.5 };
 }
 function screenToPoint(e){
   const rect = cv.getBoundingClientRect();
   const px = e.clientX - rect.left, py = e.clientY - rect.top;
-  const rr = (py - floorTop) / rowH;
-  const cc = (px + camX + rr * skew - 2.5 * skew) / T;
+  const q = boardOn() ? boardUnproj(px, py) : null;
+  const rr = q ? q.r : (py - floorTop) / rowH;
+  const cc = q ? q.c : (px + camX + rr * skew - 2.5 * skew) / T;
   return { px, py, fx: cc - 0.5, fy: rr - 0.5 };
 }
 // 화면에서 폰의 몸통 영역으로 판정 (키 큰 카리우스도 몸을 누르면 잡힘), 살아 있는 폰 우선
@@ -3958,6 +4045,7 @@ const cam = { T: 0, x: 0, top: 0, on: false };
 function camFocus(x, y, k = 1.35, t = 0.9){ if (battle) battle.camFocus = { x, y, k, t, max: t }; }
 function updateCamera(dt){
   const b = battle, portrait = H > W * 1.15;
+  if (boardOn()){ updateBoardCamera(dt, portrait); return; }
   if (!portrait){ if (cam.on){ cam.on = false; resize(); } if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt; return; }   // 가로 화면: 줌인은 그리기에서 (아래 drawBattle)
   const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
   const panelEl = document.getElementById('bt-panel');
@@ -3995,6 +4083,27 @@ function updateCamera(dt){
   const half = W / 2, mapW = curCols * T;
   camX = Math.max(-T * 1.2, Math.min(mapW - W + T * 1.2 + skew * 2.5, cam.x * T - half));
   if (mapW + skew * 3 < W) camX = mapW / 2 - half;
+}
+// 보드 시점 카메라: 싸우는 곳을 살짝 따라 흐름 (가로 화면 DRIFT, 세로 화면은 확대해서 끝까지 따라감). 큰 순간 줌인은 drawBattle에서
+function updateBoardCamera(dt, portrait){
+  const b = battle;
+  cam.on = false;
+  if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt;
+  const tT = portrait && b.running ? boardFitT(6.4) : boardFitT();   // 세로 화면: 배치할 땐 판 전체, 싸울 땐 확대
+  let fx = curCols / 2;
+  const alive = b.units.filter(u => !u.dead && !u.enter);
+  if (b.running && alive.length){
+    let sx = 0, sw = 0;
+    for (const u of alive){ const wgt = u.st.summon && u.id !== 'ratKnight' ? 0.3 : 1; sx += (u.x + 0.5) * wgt; sw += wgt; }
+    fx = sx / sw;
+  }
+  if (!cam.bT){ cam.bT = tT; cam.bx = fx; }
+  const a = Math.min(1, dt * 3.2);
+  cam.bT += (tT - cam.bT) * a; cam.bx += (fx - cam.bx) * a;
+  boardFit(cam.bT, false);
+  const room = Math.max(0, (curCols / 2 + BOARD.FRAME) * T * boardNear() - W / 2 + 12);   // 보드 끝이 화면 안쪽으로 들어오지 않게
+  const want = (cam.bx - curCols / 2) * T * (portrait ? 1 : BOARD.DRIFT);
+  camX = portrait ? Math.max(-room, Math.min(room, want)) : want;
 }
 function drawBattle(){
   const b = battle;
