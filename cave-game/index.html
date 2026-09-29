@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.1
+  version v11.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.1';
+const VERSION = 'v11.2';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2253,10 +2253,10 @@ Object.assign(ENEMIES, {
     look:{ kind:'hole' },
     tags:[], trait:'웃고, 울고, 깔깔거린다. 움직이지 않는다. 가까이 오는 것을 붙잡아 할퀸다.', equip:{ 무기:'손가락', 머리:'—', 몸:'구멍', 장신구:'—' } },
   cesar: { name:'세자르', grade:'BOSS', color:'#9fc6ff', sub:'1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관',
-    hp:1100, atk:26, def:14, block:0.55, crit:0.08, eva:0, spd:1.4, range:1.7, cd:1.9, windup:0.55, hits:1, weight:420, react:0.35, radius:0.55, height:1.55,
+    hp:1100, atk:26, def:14, block:0.55, crit:0.08, eva:0, spd:1.4, range:1.7, cd:1.9, windup:0.55, hits:1, weight:420, react:0.35, radius:0.55, height:1.75,
     boss:true,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 권위 — 전투가 시작되면 홀에 눈이 내린다. 신성이 극도로 제한된다 (신성 특성이 꺼짐). 크게 휘청이면 권위가 흔들려 6초 동안 눈이 멎고 신성이 돌아온다.\n👑 일어나라 — 체력이 절반 아래로 떨어지면 죽은 전사 둘을 부른다.',
+    tags:[], trait:'🔆 권위 — 전투가 시작되면 홀에 눈이 내린다. 신성이 극도로 제한된다 (신성 특성이 꺼짐). 크게 휘청이면 권위가 흔들려 6초 동안 눈이 멎고 신성이 돌아온다.\n❄ 서리 베기 — 가끔 검에 서리를 감아 크게 휘두른다. 앞의 2.3칸 안 모두에게 공격력의 1.3배.\n👑 일어나라 — 체력이 절반 아래로 떨어지면 손을 들어 죽은 전사 둘을 부른다.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -4545,15 +4545,31 @@ const SPRITES = {
                  heightTiles:1.25, baseFace:1, fps:6, anims:{ idle:[0, 9] } },  // 원화가 오른쪽을 봄
   norman:      { src:'assets/norman.png', face:'assets/norman_face.png', frames:16, fw:268, fh:332, ax:139, ay:332, idleH:330,
                  heightTiles:1.4, baseFace:1, fps:10, anims:{ idle:[0, 8], heal:[9, 14], shoot:[15, 15] } },   // 대기 9 · 응급처치 6 · 사격 1
+  // 포즈 원화 (장면별 한 장씩): 대기 · 준비(다가감) · 공격 · 필살 · 방어 · 백스텝 · 손들기 · 손들기 준비 · 피격. 원화가 왼쪽을 봄
+  cesar:       { face:'assets/cesar_face.png', heightTiles:1.85, baseFace:-1, idleH:440,
+                 poses:{ idle:{ src:'assets/cesar_idle.png', ax:168, ay:440 }, prep:{ src:'assets/cesar_prep.png', ax:198, ay:405 }, strike:{ src:'assets/cesar_strike.png', ax:173, ay:383 }, special:{ src:'assets/cesar_special.png', ax:175, ay:420 }, guard:{ src:'assets/cesar_guard.png', ax:178, ay:430 }, back:{ src:'assets/cesar_back.png', ax:167, ay:326 }, raise:{ src:'assets/cesar_raise.png', ax:169, ay:437 }, raiseWait:{ src:'assets/cesar_raiseWait.png', ax:171, ay:415 }, hurt:{ src:'assets/cesar_hurt.png', ax:161, ay:366 } } },
 };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
-  S.img = new Image(); S.img.src = S.src;
+  if (S.src){ S.img = new Image(); S.img.src = S.src; }
+  if (S.poses) for (const q of Object.values(S.poses)){ q.img = new Image(); q.img.src = q.src; }
   S.faceImg = new Image(); S.faceImg.src = S.face;
   if (S.hurt){ S.hurt.img = new Image(); S.hurt.img.src = S.hurt.src; }
   S.faceImg.onload = () => portraitWaiters.filter(w => w.id === id).forEach(w => drawPortrait(w.c, id));
 }
-const spriteReady = S => S.img.complete && S.img.naturalWidth > 0;
+const imgReady = im => !!im && im.complete && im.naturalWidth > 0;
+const spriteReady = S => imgReady(S.poses ? S.poses.idle.img : S.img);
+// 포즈 원화를 가진 폰: 지금 상태에 맞는 한 장을 고름 (규칙 하나로 모든 포즈형 캐릭터 공통)
+function poseOf(o, S){
+  if (o.poseName && o.poseUntil > time && S.poses[o.poseName]) return o.poseName;   // 기술 · 연출이 잠깐 정한 포즈
+  if (o.dead || o.stun > 0.05) return 'hurt';
+  if (o.guarding || o.guardFlash > 0) return 'guard';
+  if (o.dodgeT > 0 || o.state === 'retreat') return 'back';
+  if (o.windup > 0) return 'prep';
+  if (o.lunge > 0) return 'strike';
+  if (o.moving) return 'prep';                                        // 거리를 좁히며 다가옴
+  return 'idle';
+}
 
 // 포렌: 쥐 망토 (발밑 초록 고리 + 곁의 쥐 수만큼 빛 점) · 쥐 방진 (땅에 꽂힌 대검 + 원)
 function drawPorenAura(o, p, dsc){
@@ -4692,6 +4708,18 @@ function drawSpriteUnit(o){
   if (o.id === 'poren' && !o.dead) drawPorenAura(o, p, dsc);
   if (!spriteReady(S)){ circle(p.x, p.y - T * 0.6, T * 0.3, getStats(o.id).color); return; }
   const k = S.heightTiles * T * dsc / S.idleH;
+  if (S.poses){
+    let q = S.poses[poseOf(o, S)]; if (!imgReady(q.img)) q = S.poses.idle;
+    const breath = q === S.poses.idle ? 1 + Math.sin(time * 1.8 + (o.uid || 0)) * 0.012 : 1;
+    ctx.save();
+    ctx.translate(p.x, p.y - (o.lift || 0) * T);
+    if ((o.face || S.baseFace) !== S.baseFace) ctx.scale(-1, 1);
+    if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
+    if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
+    ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
+    ctx.restore();
+    return;
+  }
   let frame;
   if (o.spriteAnim){
     const [a, b] = S.anims[o.spriteAnim.name];
@@ -6704,7 +6732,9 @@ async function floor1(){
   king.walkTo = coffin.x - 0.5 + king.face * 2; king.walkSpd = 0.9;
   await dgWait(2.4);
   dgSub('기둥, 돌, 그리고 당신들은 그에게 불경합니다.', 3); await dgWait(2.8);
+  king.poseName = 'raiseWait'; king.poseUntil = time + 99;
   dgSub('폐하의 앙상한 팔이 분노로 일그러집니다.', 3); await dgWait(2.4);
+  king.poseName = 'raise'; king.poseUntil = time + 99; shake = 0.2;
   DG.snowOn = true; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.8, max: 2.8 }; await dgWait(2.4);
   removeActor(king); DG.lock = false; DG.focus = null;
   const auth = { shaken: 0, cool: 0, called: false };
@@ -6732,8 +6762,18 @@ function cesarTick(a, sdt){
     caption = { text: '권위가 흔들린다', life: 1.8, max: 1.8 };
     logLine('👑 세자르가 휘청인다 — 6초 동안 눈이 멎고 신성이 돌아온다', 'crit');
   }
+  a.frost = (a.frost ?? 7) - sdt;
+  if (a.frost <= 0 && k.stun <= 0 && k.windup <= 0){
+    const hit = b.units.filter(o => !o.dead && o.side !== k.side && Math.hypot(o.x - k.x, o.y - k.y) < 2.3 && Math.sign(o.x - k.x || 1) === Math.sign(k.face || -1));
+    if (hit.length){
+      a.frost = 9; k.poseName = 'special'; k.poseUntil = time + 0.9; k.cd = Math.max(k.cd, 1.2);
+      shout(k, '얼어라'); shake = Math.max(shake, 0.3);
+      hit.forEach(o => { resolveHit(k, o, { atk: Math.round(k.st.atk * 1.3) }); ringAt(o, '160,220,255'); });
+      logLine(`❄ 세자르의 서리 베기 — ${hit.length}명`, 'crit');
+    }
+  }
   if (!a.called && k.hp < k.st.hp * 0.5){
-    a.called = true; shout(k, '일어나라');
+    a.called = true; shout(k, '일어나라'); k.poseName = 'raise'; k.poseUntil = time + 1.4;
     for (const id of ['deadAxe', 'deadSword']){ const u = spawnUnit(id, BATTLE_COLS - 0.6, 0.5 + Math.random() * 3, 'enemy'); fxText(u, '합류', '#cfd6de', 'big'); }
     logLine('👑 "일어나라." 죽은 전사들이 다시 일어선다', 'crit');
   }
@@ -6870,11 +6910,11 @@ function drawDungeon(){
   drawDgFloor(A);
   const list = [];
   for (const u of DG.pawns) list.push({ y: u.y, fn: () => { drawUnitBody(u); } });
-  for (const u of DG.actors) list.push({ y: u.y + 0.5, fn: () => drawUnitBody(u) });
+  for (const u of DG.actors) list.push({ y: u.y + 0.5 + (DG.lock ? 100 : 0), fn: () => drawUnitBody(u) });   // 연출 중엔 주인공 격인 인물을 맨 앞에
   for (const p of DG.props){
     if (p.kind === 'coffin'){
       list.push({ y: p.y - 0.45, fn: () => drawCoffin(p, 'back') });
-      if (p.king) list.push({ y: p.y - 0.05, fn: () => drawRisingKing(p) });
+      if (p.king) list.push({ y: p.y - 0.05 + (DG.lock ? 100 : 0), fn: () => drawRisingKing(p) });
       list.push({ y: p.y + 0.45, fn: () => drawCoffin(p, 'front') });
     } else list.push({ y: p.y - (p.kind === 'door' || p.kind === 'throne' ? 9 : 0.5), fn: () => drawDgProp(p) });
   }
