@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.4
+  version v12.5
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -241,14 +241,20 @@
   body.battle #act{display:none !important;}
   body.battle:not(.manual) #pad, body.battle:not(.manual) #bt-touch{display:none !important;}
   @media (pointer:coarse){
-    body.battle #pad{bottom:calc(20% + 14px);left:10px;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);opacity:.8;}
+    body.battle #pad{bottom:calc(20% + 14px);left:10px;opacity:.85;}
     body.battle #bt-touch{bottom:calc(20% + 14px);right:10px;display:grid;grid-template-columns:repeat(2,58px);gap:6px;opacity:.85;}
     body.battle #bt-touch button{width:58px;height:44px;}
   }
-  #pad{position:absolute;bottom:calc(96px + env(safe-area-inset-bottom,0px));left:16px;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);gap:4px;}
+  #pad{position:absolute;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:14px;display:none;width:136px;height:136px;touch-action:none;}
+  #pad .joy-base{position:absolute;inset:0;border-radius:50%;background:rgba(23,18,26,.55);border:1px solid var(--line);}
+  #pad .joy-knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(240,195,90,.35);border:2px solid rgba(240,195,90,.8);transition:transform .08s;}
+  #pad.on .joy-knob{transition:none;background:rgba(240,195,90,.55);}
+  /* 모바일: 길게 눌러도 글자 선택 · 복사 메뉴가 뜨지 않게 */
+  #game, #game *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+  #game input, #game textarea{-webkit-user-select:text;user-select:text;}
   #pad button,#act{background:rgba(23,18,26,.72);border:1px solid var(--line);color:var(--ink);border-radius:6px;font-size:17px;touch-action:none;}
   #act{position:absolute;right:20px;bottom:calc(110px + env(safe-area-inset-bottom,0px));width:64px;height:64px;border-radius:50%;display:none;font-size:14px;}
-  @media (pointer:coarse){ #pad{display:grid;} #act{display:block;} #prompt{bottom:auto;top:calc(110px + env(safe-area-inset-top,0px));} }
+  @media (pointer:coarse){ #pad{display:block;} #act{display:block;} #prompt{bottom:auto;top:calc(110px + env(safe-area-inset-top,0px));} }
 </style>
 
 <!-- 1. 텍스트 캐릭터 생성 -->
@@ -322,11 +328,7 @@
     <button id="bt-log-new">↓ 최신 로그</button>
     <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>시작/정지</b> Space</div>
   </div>
-  <div id="pad">
-    <span></span><button data-k="up" aria-label="위">▲</button><span></span>
-    <button data-k="left" aria-label="왼쪽">◀</button><span></span><button data-k="right" aria-label="오른쪽">▶</button>
-    <span></span><button data-k="down" aria-label="아래">▼</button><span></span>
-  </div>
+  <div id="pad" aria-label="이동 조이스틱"><div class="joy-base"></div><div class="joy-knob"></div></div>
   <button id="act">대화</button>
   <div id="bt-touch"><button id="tb-attack">⚔ 공격</button><button id="tb-guard">🛡 방어</button><button id="tb-dodge">💨 회피</button><button id="tb-run">🏃 달리기</button></div>
 </section>
@@ -335,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.4';
+const VERSION = 'v12.5';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -718,7 +720,26 @@ function stepPawn(p, dc, dr){
 }
 
 /* ---------- 연속 이동: 속도값으로 걷고, 키를 떼면 관성으로 조금 미끄러짐 ---------- */
+// 모바일 조이스틱: 누른 채 끌면 그 방향 · 세기로 이동 (가장자리 = 최대 속도)
+const JOY = { on: false, x: 0, y: 0, id: null };
+(() => {
+  const pad = document.getElementById('pad'), knob = pad.querySelector('.joy-knob');
+  const R = 50;
+  const upd = e => {
+    const r = pad.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+    const d = Math.hypot(dx, dy), k = d > R ? R / d : 1;
+    knob.style.transform = `translate(${dx * k}px, ${dy * k}px)`;
+    const m = Math.min(1, d / R);
+    JOY.x = d ? dx / d * m : 0; JOY.y = d ? dy / d * m : 0;
+  };
+  pad.addEventListener('pointerdown', e => { e.preventDefault(); JOY.on = true; JOY.id = e.pointerId; pad.classList.add('on'); try { pad.setPointerCapture(e.pointerId); } catch (err) {} upd(e); });
+  pad.addEventListener('pointermove', e => { if (JOY.on && e.pointerId === JOY.id) upd(e); });
+  const off = e => { if (e.pointerId !== JOY.id) return; JOY.on = false; JOY.x = JOY.y = 0; pad.classList.remove('on'); knob.style.transform = ''; };
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => pad.addEventListener(ev, off));
+  document.getElementById('game').addEventListener('contextmenu', e => e.preventDefault());
+})();
 function moveInput(){
+  if (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.18) return { x: JOY.x, y: JOY.y };
   let dx = 0, dy = 0;
   if (held.has('left')) dx--; if (held.has('right')) dx++;
   if (held.has('up')) dy--;   if (held.has('down')) dy++;
