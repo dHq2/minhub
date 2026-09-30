@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.9
+  version v12.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.9';
+const VERSION = 'v12.0';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4271,21 +4271,26 @@ function updateBoardCamera(dt, portrait){
   const it = b.intro, pitch = it && it.t < it.dur ? 0.1 + (BOARD.PITCH - 0.1) * (1 - Math.pow(1 - it.t / it.dur, 3)) : BOARD.PITCH;   // 던전 전투 시작: 옆모습에서 천천히 내려다보는 각도로
   BV.sin = Math.sin(pitch); BV.cos = Math.cos(pitch);
   if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt;
-  const tT = portrait && b.running ? boardFitT(6.4) : boardFitT();   // 세로 화면: 배치할 땐 판 전체, 싸울 땐 확대
-  let fx = curCols / 2;
+  // 전투 카메라 워킹: 싸우는 무리 (가운데 80%)를 감싸도록 확대하고 그 가운데를 따라감. 보스는 비중 2배. 배치 중엔 판 전체
+  let tT = boardFitT(), fx = curCols / 2;
   const alive = b.units.filter(u => !u.dead && !u.enter);
   if (b.running && alive.length){
+    const main = alive.filter(u => !u.st.summon || u.id === 'ratKnight');
+    const xs = (main.length ? main : alive).map(u => u.x + 0.5).sort((p1, p2) => p1 - p2);
+    const q = k => xs[Math.min(xs.length - 1, Math.max(0, Math.round((xs.length - 1) * k)))];
+    const span = q(0.9) - q(0.1);
     let sx = 0, sw = 0;
-    for (const u of alive){ const wgt = u.st.summon && u.id !== 'ratKnight' ? 0.3 : 1; sx += (u.x + 0.5) * wgt; sw += wgt; }
-    fx = sx / sw;
+    for (const u of alive){ const wgt = u.st.boss ? 2 : u.st.summon && u.id !== 'ratKnight' ? 0.3 : 1; sx += (u.x + 0.5) * wgt; sw += wgt; }
+    fx = (sx / sw) * 0.6 + (q(0.1) + q(0.9)) / 2 * 0.4;
+    tT = boardFitT(Math.max(portrait ? 6.4 : 7.5, span + (portrait ? 3 : 4.5)));
   }
   if (!cam.bT){ cam.bT = tT; cam.bx = fx; }
-  const a = Math.min(1, dt * 3.2);
-  cam.bT += (tT - cam.bT) * a; cam.bx += (fx - cam.bx) * a;
+  const a = Math.min(1, dt * 2.2), az = Math.min(1, dt * 1.4);   // 확대는 따라가기보다 느긋하게
+  cam.bT += (tT - cam.bT) * az; cam.bx += (fx - cam.bx) * a;
   boardFit(cam.bT, false);
   const room = Math.max(0, (curCols / 2 + BOARD.FRAME) * T * boardNear() - W / 2 + 12);   // 보드 끝이 화면 안쪽으로 들어오지 않게
-  const want = (cam.bx - curCols / 2) * T * (portrait ? 1 : BOARD.DRIFT);
-  camX = portrait ? Math.max(-room, Math.min(room, want)) : want;
+  const sway = b.running ? Math.sin(time * 0.45) * T * 0.08 : 0;   // 살짝 흔들리는 핸드헬드 느낌
+  camX = Math.max(-room, Math.min(room, (cam.bx - curCols / 2) * T + sway));
 }
 function drawBattle(){
   const b = battle;
