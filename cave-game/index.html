@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.5
+  version v11.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.5';
+const VERSION = 'v11.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2260,10 +2260,10 @@ Object.assign(ENEMIES, {
     look:{ kind:'hole' },
     tags:[], trait:'웃고, 울고, 깔깔거린다. 움직이지 않는다. 가까이 오는 것을 붙잡아 할퀸다.', equip:{ 무기:'손가락', 머리:'—', 몸:'구멍', 장신구:'—' } },
   cesar: { name:'세자르', grade:'BOSS', color:'#9fc6ff', sub:'1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관',
-    hp:500, atk:26, def:20, block:0.6, crit:0.08, eva:0.45, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
+    hp:500, atk:24, def:20, block:0.6, crit:0.08, eva:0.4, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
     boss:true, brain:'cesar', noTell:true, silent:true, lunge:2.6, stepCd:1.6, dodgeCounter:0.6, hitStagger:0.45, combo:0.35, sever:0.35, frostbite:0.25,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 예고 없이 천천히 다가와 간격을 잰다. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 45%), 피하면 60% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 밀어낸다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.\n👑 부름 — 체력이 절반 아래면 말없이 손을 들어 죽은 전사 둘을 일으킨다.',
+    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 예고 없이 천천히 걸으며 늘 간격 (2.3칸)을 유지한다. 뜬금없이 3배 속도로 우회해 뒤를 노리고, 가끔 뛰어서 들어오며, 붙으면 밀쳐내거나 백스텝을 연달아 밟아 순식간에 거리를 벌린다. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 40%), 피하면 60% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 밀어낸다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.\n👑 부름 — 체력이 절반 아래면 말없이 손을 들어 죽은 전사 둘을 일으킨다.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -6808,7 +6808,7 @@ async function floor1(){
 }
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
-const CZ = { liftMax: 500, circleR: 2.7, ult: 22, wave: 9, spin: 6, shoulder: 7, thrust: 12 };
+const CZ = { liftMax: 500, keep: 2.3, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 3.5, flank: 5, rush: 5, runMul: 3 };
 const BRAINS = { cesar: cesarBrain };
 function czPose(u, name, dur){ u.poseName = name; u.poseUntil = time + dur; }
 function czGhost(u){ battle.fx.push({ type: 'ghost', snap: { ...u, lunge: 0, windup: 0 }, life: 0.3, max: 0.3 }); }
@@ -6816,8 +6816,8 @@ function czFoes(u){ return battle.units.filter(o => !o.dead && o.side !== u.side
 function cesarBrain(u, sdt, tgt, dist){
   const b = battle;
   const z = u.cz || (u.cz = { mode: 'circle', modeT: 1.5 + Math.random(), orbit: Math.random() < 0.5 ? 1 : -1,
-    ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 7, auth: b.snow ? -1 : 0.6, shaken: 0, cool: 0, called: false, act: null });
-  for (const k of ['ult', 'wave', 'spin', 'shoulder', 'thrust']) z[k] -= sdt;
+    ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 4, back: 0, flank: 3, rush: 5, auth: b.snow ? -1 : 0.6, shaken: 0, cool: 0, called: false, act: null });
+  for (const k of ['ult', 'wave', 'spin', 'shoulder', 'thrust', 'back']) z[k] -= sdt;
   // 권위: 흔들림 (크게 휘청이면 6초 동안 눈이 멎고 신성이 돌아옴)
   z.cool -= sdt;
   if (z.shaken > 0){
@@ -6839,28 +6839,26 @@ function cesarBrain(u, sdt, tgt, dist){
   const foes = czFoes(u), near = foes.filter(o => Math.hypot(o.x - u.x, o.y - u.y) < 1.7);
   if (near.length && z.spin <= 0){ z.act = { type: 'spin', t: 0 }; return true; }
   if (z.ult <= 0 && dist < 6){ z.act = { type: 'ult', t: 0, tgt, hits: 0 }; return true; }
-  if (z.thrust <= 0 && dist > 1.3 && dist < 4){ z.act = { type: 'thrust', t: 0, tgt }; return true; }
+  if (z.thrust <= 0 && dist > 1.3 && dist < 4.5){ z.act = { type: 'thrust', t: 0, tgt }; return true; }
   if (z.wave <= 0 && dist >= 2.2 && dist <= 5){ z.act = { type: 'wave', t: 0, tgt }; return true; }
   if (z.shoulder <= 0 && dist < 3.3 && Math.random() < sdt * 1.5){ z.act = { type: 'shoulder', t: 0, tgt }; return true; }   // 멀면 어깨 박치기, 붙어 있으면 밀쳐내기
-  if (z.mode === 'circle'){                                       // 빙글빙글: 간격을 두고 돌며 압박
-    z.modeT -= sdt;
-    const a = Math.atan2(u.y - tgt.y, u.x - tgt.x) + z.orbit * sdt * 0.55;
-    let gx = tgt.x + Math.cos(a) * CZ.circleR, gy = tgt.y + Math.sin(a) * CZ.circleR * 0.8;
-    if (gy < 0.1 || gy > ROWS - 1.1 || gx < 0.1 || gx > BATTLE_COLS - 1.1) z.orbit *= -1;
-    gx = Math.max(0, Math.min(BATTLE_COLS - 1, gx)); gy = Math.max(0, Math.min(ROWS - 1, gy));
-    const d = Math.hypot(gx - u.x, gy - u.y), sp = u.st.spd * 0.8 * (u.frostT > 0 ? 0.55 : 1);
-    if (d > 0.05){ u.x += (gx - u.x) / d * Math.min(d, sp * sdt); u.y += (gy - u.y) / d * Math.min(d, sp * sdt); u.moving = true; u.walkClock = (u.walkClock || 0) + sdt; }
-    else u.moving = false;
-    u.face = Math.sign(tgt.x - u.x) || u.face;
-    autoStep(u, tgt, dist, sdt);                                  // 돌면서도 피할 건 피함
-    if (z.modeT <= 0){ z.mode = 'engage'; z.modeT = 3.5; }
-    return true;
-  }
-  // 파고들기: 기본 공격 (예고 없이 쑥 들어와 크게 베기)에 맡기고, 한 번 베면 다시 돈다
-  z.modeT -= sdt;
-  if (u.lunge > 0) z.swung = true;
-  if (z.modeT <= 0 || (z.swung && u.lunge <= 0 && u.windup <= 0)){ z.mode = 'circle'; z.modeT = 0.8 + Math.random() * 0.8; z.swung = false; z.orbit = Math.random() < 0.5 ? 1 : -1; }
-  return false;
+  const close = foes.filter(o => Math.hypot(o.x - u.x, o.y - u.y) < 1.5);
+  if (close.length && z.back <= 0){ z.act = { type: 'backsteps', t: 0, n: 2 + (Math.random() < 0.5 ? 1 : 0), from: close[0] }; return true; }   // 붙으면 백스텝 연달아
+  z.flank -= sdt; z.rush -= sdt;
+  if (z.flank <= 0 && Math.random() < sdt * 1.2){ z.act = { type: 'flank', t: 0, tgt }; return true; }   // 뜬금없이 우회해 뒤를 노림
+  if (z.rush <= 0 && dist > 2.4 && Math.random() < sdt * 1.0){ z.act = { type: 'rush', t: 0, tgt }; return true; }   // 가끔 뛰어서 들어옴
+  // 평소: 천천히 걸으며 간격 유지 (사거리 끝 2.2칸 언저리). 사거리 안이고 벨 수 있으면 기본 공격에 맡김
+  if (dist <= u.st.range + 0.05 && u.cd <= 0) return false;
+  const want = CZ.keep, n = norm(u.x - tgt.x, u.y - tgt.y);
+  let gx = tgt.x + n.x * want + (-n.y) * z.orbit * 0.6, gy = tgt.y + n.y * want * 0.9 + n.x * z.orbit * 0.6;
+  if (gy < 0.1 || gy > ROWS - 1.1) z.orbit *= -1;
+  gx = Math.max(0, Math.min(BATTLE_COLS - 1, gx)); gy = Math.max(0, Math.min(ROWS - 1, gy));
+  const d = Math.hypot(gx - u.x, gy - u.y), sp = u.st.spd * 0.75 * (u.frostT > 0 ? 0.55 : 1);
+  if (d > 0.08){ u.x += (gx - u.x) / d * Math.min(d, sp * sdt); u.y += (gy - u.y) / d * Math.min(d, sp * sdt); u.moving = true; u.walkClock = (u.walkClock || 0) + sdt; }
+  else u.moving = false;
+  u.face = Math.sign(tgt.x - u.x) || u.face;
+  autoStep(u, tgt, dist, sdt);
+  return true;
 }
 function czRun(u, z, sdt){
   const b = battle, A = z.act;
@@ -6872,6 +6870,49 @@ function czRun(u, z, sdt){
     if (A.t < 1.1 && broken()){ fxText(u, '끊김', '#b8b0a4'); logLine('👑 권위가 끊겼다', 'miss'); z.auth = 6; end(); return false; }
     if (!A.done && A.t >= 1.1){ A.done = true; b.snow = true; b.sealDivine = true; shake = 0.25; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.4, max: 2.4 }; logLine('❄ 권위 발동 — 눈이 내리고 신성이 막힌다', 'crit'); }
     if (A.t >= 1.6){ z.auth = -1; end(); }
+    return true;
+  }
+  const run = (gx, gy, mul) => {                                  // 3배 속도로 달림 (잔상)
+    const d = Math.hypot(gx - u.x, gy - u.y), sp = u.st.spd * mul * (u.frostT > 0 ? 0.55 : 1);
+    if (d < 0.12) return true;
+    u.x = Math.max(0, Math.min(BATTLE_COLS - 1, u.x + (gx - u.x) / d * Math.min(d, sp * sdt)));
+    u.y = Math.max(0, Math.min(ROWS - 1, u.y + (gy - u.y) / d * Math.min(d, sp * sdt)));
+    u.moving = true; u.walkClock = (u.walkClock || 0) + sdt * 2; u.face = Math.sign(gx - u.x) || u.face;
+    if ((A.g = (A.g || 0) - sdt) <= 0){ A.g = 0.06; czGhost(u); }
+    return false;
+  };
+  if (A.type === 'backsteps'){                                    // 백스텝 연달아: 순식간에 거리를 벌림
+    const f = A.from;
+    if (A.t >= (A.i || 0) * 0.22){
+      A.i = (A.i || 0) + 1;
+      const n = f && !f.dead ? norm(u.x - f.x, u.y - f.y) : { x: -u.face, y: 0 };
+      const side = (Math.random() - 0.5) * 0.8;
+      A.dx = n.x - n.y * side; A.dy = n.y + n.x * side;
+      if (u.x < 0.8 && A.dx < 0 || u.x > BATTLE_COLS - 1.8 && A.dx > 0){ A.dx = 0; A.dy = u.y < ROWS / 2 ? 1 : -1; }
+      u.dodgeT = 0.2; czGhost(u);
+    }
+    czPose(u, 'back', 0.2);
+    if (A.t - (A.i - 1) * 0.22 < 0.16){ u.x = Math.max(0, Math.min(BATTLE_COLS - 1, u.x + A.dx * 7 * sdt)); u.y = Math.max(0, Math.min(ROWS - 1, u.y + A.dy * 7 * sdt)); }
+    if (A.i >= A.n && A.t >= A.n * 0.22){ z.back = CZ.back; end(); }
+    return true;
+  }
+  if (A.type === 'flank'){                                        // 우회: 크게 돌아 뒤로 달려가서 벤다
+    const t = A.tgt;
+    if (!t || t.dead || A.t > 2.5){ z.flank = CZ.flank; end(); return false; }
+    if (!A.side) A.side = Math.random() < 0.5 ? 1 : -1;
+    const allies = czFoes(u), cx = allies.reduce((a, o) => a + o.x, 0) / allies.length;
+    const bx = Math.sign(t.x - cx) || -Math.sign(u.x - t.x) || 1;   // 적 무리 반대편이 "뒤"
+    const gx = Math.max(0, Math.min(BATTLE_COLS - 1, t.x + bx * 1.2)), gy = Math.max(0, Math.min(ROWS - 1, t.y + A.side * 1.4 * (A.t < 0.6 ? 1 : 0.3)));
+    czPose(u, 'idle', 0.1);
+    if (run(gx, gy, CZ.runMul)){ u.face = Math.sign(t.x - u.x) || u.face; z.flank = CZ.flank; u.cd = Math.min(u.cd, 0); end(); logLine('👑 세자르가 뒤로 돌아 들어온다', 'crit'); return false; }
+    return true;
+  }
+  if (A.type === 'rush'){                                         // 뛰어서 들어옴 → 기본 공격
+    const t = A.tgt;
+    if (!t || t.dead || A.t > 1.5){ z.rush = CZ.rush; end(); return false; }
+    const n = norm(u.x - t.x, u.y - t.y);
+    czPose(u, 'prep', 0.1);
+    if (run(t.x + n.x * 1.6, t.y + n.y * 1.6, CZ.runMul)){ u.face = Math.sign(t.x - u.x) || u.face; z.rush = CZ.rush; u.cd = Math.min(u.cd, 0); end(); return false; }
     return true;
   }
   if (A.type === 'spin'){                                         // 원형 베기: 가까이 붙은 것들을 밀어냄
