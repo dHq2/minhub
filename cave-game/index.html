@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.2
+  version v12.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.2';
+const VERSION = 'v12.3';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -496,7 +496,7 @@ function resize(){
   W = cv.clientWidth; H = cv.clientHeight;
   cv.width = W * DPR; cv.height = H * DPR;
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  if (boardOn()){ boardFit(boardFitT(), true); return; }
+  if (boardOn()){ if (mode === 'dungeon') sideFit(); else boardFit(boardFitT(), true); return; }
   const viewCols = mode === 'dungeon' ? (H > W ? 6.5 : 12) : curCols;   // 던전은 긴 길을 따라 카메라가 흐름: 한 화면에 12칸 (세로 화면 6.5칸)
   T = Math.min(84, H / 7.4, (W - 40) / (viewCols + ROWS * 0.42 + 1.2));
   rowH = T * 0.6;
@@ -511,7 +511,15 @@ window.addEventListener('resize', () => { if (!gameEl.hidden) resize(); });
    좌표계는 그대로 두고 타일 → 화면 투영(P)만 바꿈. 언제든 되돌리기: 전투 화면 "시점" 버튼 또는 V 키 */
 let VIEW = 'board';
 try { VIEW = localStorage.getItem('cave.view') === 'classic' ? 'classic' : 'board'; } catch (e) {}
-function boardOn(){ return VIEW === 'board' && mode === 'battle'; }
+function boardOn(){ return VIEW === 'board' && (mode === 'battle' || mode === 'dungeon'); }
+// 걷기 (던전): 같은 카메라를 거의 옆에서 봄 (완전 측면에 가까운 횡스크롤). 전투로 들어가면 이 각도에서 60도로 스르륵 돌아감
+const SIDE_PITCH = 0.2;
+function sideFit(){
+  BV.sin = Math.sin(SIDE_PITCH); BV.cos = Math.cos(SIDE_PITCH);
+  T = Math.min(96, H / 6.2, W / (H > W ? 6.5 : 12));
+  BV.F = T * BOARD.DIST; BV.cx = W / 2; BV.cy = H * (H > W ? 0.56 : 0.68);
+  floorTop = P(0, 0).y; rowH = (P(0, ROWS).y - floorTop) / ROWS; skew = 0;
+}
 function setView(v){
   VIEW = v; try { localStorage.setItem('cave.view', v); } catch (e) {}
   cam.bT = 0;
@@ -4268,7 +4276,7 @@ function updateCamera(dt){
 function updateBoardCamera(dt, portrait){
   const b = battle;
   cam.on = false;
-  const it = b.intro, pitch = it && it.t < it.dur ? 0.1 + (BOARD.PITCH - 0.1) * (1 - Math.pow(1 - it.t / it.dur, 3)) : BOARD.PITCH;   // 던전 전투 시작: 옆모습에서 천천히 내려다보는 각도로
+  const it = b.intro, pitch = it && it.t < it.dur ? SIDE_PITCH + (BOARD.PITCH - SIDE_PITCH) * (1 - Math.pow(1 - it.t / it.dur, 3)) : BOARD.PITCH;   // 던전 전투 시작: 옆모습에서 천천히 내려다보는 각도로
   BV.sin = Math.sin(pitch); BV.cos = Math.cos(pitch);
   if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt;
   // 전투 카메라 워킹: 싸우는 무리 (가운데 80%)를 감싸도록 확대하고 그 가운데를 따라감. 보스는 비중 2배. 배치 중엔 판 전체
@@ -6613,7 +6621,7 @@ function setArea(key){
   resize();
   DG.flakes = [];
   DG.pawns.forEach((u, i) => { u.x = Math.max(0, 3.2 - i * 0.9); u.y = [2, 1, 3, 2.6][i]; u.vx = u.vy = 0; u.face = 1; });
-  DG.camX = -T; camX = DG.camX;
+  DG.camX = boardOn() ? W / 2 - (curCols / 2) * T - T * 0.6 : -T; camX = DG.camX;
   caption = { text: DG.area.name, life: 2.4, max: 2.4 };
 }
 function dgSolid(nx, ny){
@@ -6664,13 +6672,15 @@ async function fightOrDie(cfg){
 function dgFight(cfg){
   return new Promise(res => {
     DG.inFight = true; dgHud.hidden = true; document.getElementById('prompt').hidden = true;
+    const walkT = T;                                               // 걷던 화면 크기에서 이어서 돌아가게
     mode = 'battle'; curCols = BATTLE_COLS; resize();
+    cam.bT = walkT; cam.bx = 2.5;
     document.body.classList.add('battle', 'dgfight');
     floaters = []; sparks = []; held.clear(); caption = null;
     battle = { units: [], running: false, speed: 1, tool: 'select', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
       redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [], ricos: [], drops: [],
       parryTest: false, water: false, rain: false, snow: !!cfg.snow, sealDivine: !!cfg.seal, playerAuto: document.getElementById('bt-auto').checked,
-      locked: true, fresh: true, intro: { t: 0, dur: 2.0 } };
+      locked: true, fresh: true, intro: { t: 0, dur: 2.4 } };
     battle.cmdLeft = 4;   // 지휘력: 한 전투에 4번
     const put = (list, x) => list.forEach((id, i) => spawnMember(id, x, (i + 1) * ROWS / (list.length + 1) - 0.5));   // 편성: 전열 · 후열
     const spawnMember = (id, x, y) => {
@@ -7260,8 +7270,10 @@ function updateDungeon(dt){
   }
   // 카메라: 선두를 따라감 (컷씬 중엔 지정한 곳)
   const fx = DG.focus != null ? DG.focus : L.x + 0.5 + L.face * 1.2;
-  const want = fx * T + 0.5 * skew - W / 2;
-  const lo = -T * 0.6, hi = Math.max(lo, curCols * T - W + T * 0.6 + skew * 2.5);
+  const side = boardOn();
+  const want = side ? (fx - curCols / 2) * T : fx * T + 0.5 * skew - W / 2;
+  let lo = side ? W / 2 - (curCols / 2) * T - T * 0.6 : -T * 0.6, hi = side ? (curCols / 2) * T - W / 2 + T * 0.6 : Math.max(lo, curCols * T - W + T * 0.6 + skew * 2.5);
+  if (hi < lo) lo = hi = 0;
   DG.camX += (Math.max(lo, Math.min(hi, want)) - DG.camX) * Math.min(1, dt * 3.5);
   camX = DG.camX;
   // 눈
