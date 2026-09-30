@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v11.7
+  version v11.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -335,7 +335,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v11.7';
+const VERSION = 'v11.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2260,10 +2260,10 @@ Object.assign(ENEMIES, {
     look:{ kind:'hole' },
     tags:[], trait:'웃고, 울고, 깔깔거린다. 움직이지 않는다. 가까이 오는 것을 붙잡아 할퀸다.', equip:{ 무기:'손가락', 머리:'—', 몸:'구멍', 장신구:'—' } },
   cesar: { name:'세자르', grade:'BOSS', color:'#9fc6ff', sub:'1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관',
-    hp:500, atk:24, def:20, block:0.6, crit:0.08, eva:0.4, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
-    boss:true, brain:'cesar', noTell:true, silent:true, lunge:2.6, stepCd:1.6, dodgeCounter:0.6, hitStagger:0.45, combo:0.35, sever:0.35, frostbite:0.25,
+    hp:500, atk:24, def:20, block:0.6, crit:0.08, eva:0.32, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
+    boss:true, brain:'cesar', noTell:true, silent:true, lunge:2.6, stepCd:1.6, blink:1.8, dodgeCounter:0.5, hitStagger:0.45, combo:0.35, sever:0.35, frostbite:0.25,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 예고 없이 천천히 걸으며 늘 간격 (2.3칸)을 유지한다. 뜬금없이 3배 속도로 우회해 뒤를 노리고, 가끔 뛰어서 들어오며, 붙으면 밀쳐내거나 백스텝을 연달아 밟아 순식간에 거리를 벌린다. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 40%), 피하면 60% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 밀어낸다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.\n👑 부름 — 체력이 절반 아래면 말없이 손을 들어 죽은 전사 둘을 일으킨다.',
+    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 예고 없이 천천히 걸으며 늘 간격 (2.3칸)을 유지한다. 뜬금없이 3배 속도로 우회해 뒤를 노리고, 가끔 뛰어서 들어오며, 붙으면 밀쳐내거나 백스텝을 연달아 밟아 순식간에 거리를 벌린다. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 32% + 순간이동급 스텝), 피하면 50% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 밀어낸다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.\n👑 부름 — 체력이 절반 아래면 말없이 손을 들어 죽은 전사 둘을 일으킨다.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -3130,7 +3130,7 @@ function decide(u, dist){
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 // 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상. 대기시간이 있어 남발 못 함
 const stepReady = d => !!d.st.stepCd && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !d.cast && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
-const stepDist = d => d.st.spd * 2.6 * 0.24 * 0.9;      // 스텝 한 번에 가는 거리 (칸)
+const stepDist = d => d.st.blink || d.st.spd * 2.6 * 0.24 * 0.9;      // 스텝 한 번에 가는 거리 (칸). 순간이동급 스텝 (blink)이면 그 거리
 // 그 자리로 갈 수 있나: 맵 안이고, 가는 길과 도착 자리에 다른 몸이 없어야 함 (둘러싸이면 못 피함)
 function stepFree(d, nx, ny, ignore){
   if (nx < 0 || nx > BATTLE_COLS - 1 || ny < 0 || ny > ROWS - 1) return false;
@@ -3141,11 +3141,27 @@ function stepFree(d, nx, ny, ignore){
   }
   return true;
 }
+// 순간이동급 스텝: 거의 한순간에 멀리 → 끝에서 살짝 느려짐 (easeOut), 촘촘한 잔상
+const BLINK_DUR = 0.16;
+function startBlink(d, tx, ty){
+  d.blink = { sx: d.x, sy: d.y, tx: Math.max(0, Math.min(BATTLE_COLS - 1, tx)), ty: Math.max(0, Math.min(ROWS - 1, ty)), t: 0, g: 0 };
+  d.dodgeT = Math.max(d.dodgeT || 0, BLINK_DUR + 0.05);
+}
+function tickBlink(u, sdt){
+  const B = u.blink; if (!B) return false;
+  B.t += sdt;
+  const k = Math.min(1, B.t / BLINK_DUR), e = 1 - Math.pow(1 - k, 4);
+  u.x = B.sx + (B.tx - B.sx) * e; u.y = B.sy + (B.ty - B.sy) * e; u.vx = u.vy = 0;
+  if ((B.g -= sdt) <= 0){ B.g = 0.015; battle.fx.push({ type: 'ghost', snap: { ...u, blink: null, lunge: 0, windup: 0 }, life: 0.32, max: 0.32 }); }
+  if (k >= 1) u.blink = null;
+  return true;
+}
 function doStep(d, vx, vy, label = '스텝'){
   if (!stepReady(d)) return false;
   const n0 = norm(vx, vy), L = stepDist(d);
   if (!stepFree(d, d.x + n0.x * L, d.y + n0.y * L)) return false;   // 막혀 있으면 못 밟음
   d.skDir = n0; d.state = 'skitter'; d.stateT = 0.24; d.stepT = 0.24; d.guarding = false;
+  if (d.st.blink) startBlink(d, d.x + n0.x * L, d.y + n0.y * L);
   d.stepReadyAt = battle.clock + d.st.stepCd; d.lastStepAt = battle.clock;
   fxText(d, label, '#d8d0c0', null, 0.3);
   return true;
@@ -3858,6 +3874,7 @@ function updateBattle(dt){
     if (u.st.skills && u.st.skills.includes('firstAid') && b.running && !u.manual && medicUpdate(u, sdt)){ u.guarding = false; continue; }
     if (u.st.skills && u.st.skills.includes('legion') && b.running && porenUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
     if (u.id === 'karius' && (b.running || (u.lastStand && !u.p2End)) && kariusUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.windup = 0; u.t = 1; continue; }
+    if (u.blink && tickBlink(u, sdt)){ u.guarding = false; u.t = 1; continue; }   // 순간이동급 스텝 중
     if (u.st.brain && b.running && BRAINS[u.st.brain](u, sdt, tgt, dist)){ u.guarding = false; u.t = 1; continue; }   // 전용 두뇌 (세자르)
     if (u.st.thunderAtk && b.running && (u.stun <= 0 || (u.cast && u.cast.type === 'kick')) && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge')) && !u.phase2 && !u.lastStand;   // 돌격 중엔 방패를 앞세워 상시 방어, 불경자 ~ 근성은 막지 않음
@@ -6808,7 +6825,7 @@ async function floor1(){
 }
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
-const CZ = { liftMax: 500, keep: 2.3, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 3.5, flank: 5, rush: 5, runMul: 3 };
+const CZ = { liftMax: 500, backDist: 2.3, keep: 2.3, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 3.5, flank: 5, rush: 5, runMul: 3 };
 const BRAINS = { cesar: cesarBrain };
 function czPose(u, name, dur){ u.poseName = name; u.poseUntil = time + dur; }
 function czGhost(u){ battle.fx.push({ type: 'ghost', snap: { ...u, lunge: 0, windup: 0 }, life: 0.3, max: 0.3 }); }
@@ -6888,19 +6905,19 @@ function czRun(u, z, sdt){
     if ((A.g = (A.g || 0) - sdt) <= 0){ A.g = 0.06; czGhost(u); }
     return false;
   };
-  if (A.type === 'backsteps'){                                    // 백스텝 연달아: 순식간에 거리를 벌림
-    const f = A.from;
-    if (A.t >= (A.i || 0) * 0.22){
-      A.i = (A.i || 0) + 1;
-      const n = f && !f.dead ? norm(u.x - f.x, u.y - f.y) : { x: -u.face, y: 0 };
-      const side = (Math.random() - 0.5) * 0.8;
-      A.dx = n.x - n.y * side; A.dy = n.y + n.x * side;
-      if (u.x < 0.8 && A.dx < 0 || u.x > BATTLE_COLS - 1.8 && A.dx > 0){ A.dx = 0; A.dy = u.y < ROWS / 2 ? 1 : -1; }
-      u.dodgeT = 0.2; czGhost(u);
-    }
-    czPose(u, 'back', 0.2);
-    if (A.t - (A.i - 1) * 0.22 < 0.16){ u.x = Math.max(0, Math.min(BATTLE_COLS - 1, u.x + A.dx * 7 * sdt)); u.y = Math.max(0, Math.min(ROWS - 1, u.y + A.dy * 7 * sdt)); }
-    if (A.i >= A.n && A.t >= A.n * 0.22){ z.back = CZ.back; end(); }
+  if (A.type === 'backsteps'){                                    // 백스텝 연달아: 순간이동급으로 멀리 튀어 거리를 벌림
+    if (u.blink) return true;
+    if ((A.i || 0) >= A.n){ if ((A.rest = (A.rest || 0) + sdt) > 0.12){ z.back = CZ.back; end(); } return true; }
+    if (A.i && (A.gap = (A.gap || 0) - sdt) > 0) return true;
+    A.i = (A.i || 0) + 1; A.gap = 0.06;
+    const f = A.from, n = f && !f.dead ? norm(u.x - f.x, u.y - f.y) : { x: -u.face, y: 0 };
+    const side = (Math.random() - 0.5) * 0.8;
+    let dx = n.x - n.y * side, dy = n.y + n.x * side; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const L = CZ.backDist;
+    if (u.x + dx * L < 0.3 || u.x + dx * L > BATTLE_COLS - 1.3){ dx *= 0.2; dy = u.y < ROWS / 2 ? 1 : -1; }   // 벽이면 옆으로
+    czPose(u, 'back', BLINK_DUR * 2);
+    startBlink(u, u.x + dx * L, u.y + dy * L * 0.8);
+    tickBlink(u, sdt);
     return true;
   }
   if (A.type === 'flank'){                                        // 우회: 크게 돌아 뒤로 달려가서 벤다
