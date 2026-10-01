@@ -1,8 +1,8 @@
 <meta charset="utf-8">
 <title>굴의 프롤로그</title>
 <!--
-  굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.23
+  굴의 프롤로그
+  version v12.24
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -31,23 +31,7 @@
   button{font:inherit;cursor:pointer;}
   button:focus-visible,input:focus-visible{outline:2px solid var(--fire);outline-offset:2px;}
 
-  /* ---------- 1. 텍스트 캐릭터 생성 ---------- */
-  #creator{position:fixed;inset:0;display:flex;flex-direction:column;padding:max(20px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;}
-  #creator h1{margin:0;font-family:var(--display);font-weight:400;font-size:30px;color:var(--fire);letter-spacing:1px;}
-  #creator .sub{color:var(--ink-dim);font-size:12px;margin:2px 0 14px;letter-spacing:1px;}
-  #log{flex:1;overflow-y:auto;font-size:15px;line-height:1.75;white-space:pre-wrap;padding-right:6px;}
-  #log .sys{color:var(--ink-dim);}
-  #log .q{color:var(--fire);}
-  #log .me{color:#9fd3ff;}
-  #log .ok{color:#8ee08e;}
-  #opts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
-  #opts button{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 12px;border-radius:4px;}
-  #opts button:hover{border-color:var(--fire);color:var(--fire);}
-  #inrow{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:10px;}
-  #inrow span{color:var(--fire);padding-top:8px;}
-  #cin{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font:inherit;font-size:16px;padding:8px 0;}
-
-  /* ---------- 2. 굴 ---------- */
+  /* ---------- 굴 ---------- */
   #game{position:fixed;inset:0;}
   canvas{display:block;width:100%;height:100%;}
   .hud{position:absolute;pointer-events:none;font-size:12px;}
@@ -74,22 +58,6 @@
   #dialog .who{font-family:var(--display);font-size:18px;margin-bottom:4px;}
   #dialog .txt{font-size:15px;line-height:1.65;min-height:48px;}
   #dialog .nx{position:absolute;right:12px;bottom:6px;font-size:11px;color:var(--ink-dim);}
-
-  #inv{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(360px,calc(100% - 32px));
-    background:rgba(18,14,20,.97);border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:14px;}
-  #inv h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:20px;color:var(--fire);}
-  #inv .slot{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:6px 0;}
-  #inv .slot span:first-child{color:var(--ink-dim);}
-  #inv .stat{margin-top:10px;color:var(--ink-dim);font-size:12px;line-height:1.6;}
-
-  /* 턴 · 속도 */
-  #mapline{color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums;}
-  #nextdrop{color:var(--ink-dim);font-size:11px;}
-  #turnbar{width:150px;height:3px;background:var(--line);margin:5px 0 6px;border-radius:2px;overflow:hidden;}
-  #turnbar i{display:block;height:100%;width:0;background:var(--fire);}
-  #speed{display:flex;gap:4px;pointer-events:auto;}
-  #speed button{background:rgba(23,18,26,.88);color:var(--ink-dim);border:1px solid var(--line);padding:3px 8px;border-radius:3px;font-size:11px;}
-  #speed button.on{color:var(--fire);border-color:var(--fire);}
 
   /* 이벤트 창 (화면 가운데) */
   #event{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 32px));max-height:min(80%,640px);
@@ -286,33 +254,16 @@
   @media (pointer:coarse){ #pad{display:block;} #act{display:block;} #prompt{bottom:auto;top:calc(110px + env(safe-area-inset-top,0px));} }
 </style>
 
-<!-- 1. 텍스트 캐릭터 생성 -->
-<section id="creator">
-  <h1>굴의 프롤로그</h1>
-  <div class="sub">프롤로그 · 노말모드 · 캐릭터 생성</div>
-  <div id="log"></div>
-  <div id="opts"></div>
-  <div id="inrow"><span>&gt;</span><input id="cin" autocomplete="off" placeholder="번호나 텍스트 입력 후 Enter"></div>
-</section>
-
-<!-- 2. 굴 (로비) -->
+<!-- 굴 (로비) · 훈련장 · 던전 -->
 <section id="game" hidden>
   <canvas id="cv"></canvas>
-  <div class="hud" id="hud-tl"><b>프롤로그</b> · 노말모드
+  <div class="hud" id="hud-tl"><b>굴의 프롤로그</b>
     <div id="mapline"></div>
-    <div id="nextdrop"></div>
-    <div id="turnbar"><i></i></div>
-    <div id="speed"><button data-s="0" aria-label="일시정지">⏸</button><button data-s="1" aria-label="보통 속도">▶</button><button data-s="4" aria-label="빠르게">▶▶</button></div>
   </div>
   <div class="hud" id="bar"></div>
   <div class="hud" id="hud-tr">
-    <button id="btn-store">창고 [C]</button>
-    <button id="btn-codex">낙하 목록 [L]</button>
     <button id="btn-stats">스탯 [P]</button>
-    <button id="btn-inv">장비 [I]</button>
     <button id="btn-battle">훈련장 [B]</button>
-    <button id="btn-drop">낙하 테스트</button>
-    <button id="btn-remake" hidden>캐릭터 다시</button>
   </div>
   <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
   <div class="hud" id="ver"></div>
@@ -320,12 +271,9 @@
   <div id="dg-narr" hidden></div>
   <div id="enc" hidden></div>
   <div id="dg-hud" hidden></div>
-  <div id="inv" hidden></div>
-  <div id="store" hidden></div>
   <div id="event" hidden></div>
   <div id="sheet" class="panel" hidden></div>
   <div id="stats" class="panel" hidden></div>
-  <div id="codex" class="panel" hidden></div>
   <div id="bt-ui" hidden>
     <div id="bt-panel">
       <div class="bt-title" id="bt-title">훈련장 <small>접기</small></div>
@@ -351,7 +299,6 @@
       <button id="bq-run" class="primary">▶ 시작</button>
       <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
       <button id="bq-speed">x1</button>
-      <button id="bq-view" title="보드 시점 ↔ 예전 굴 시점 [V]">▦ 보드</button>
       <button id="bq-manual" title="주인공을 직접 조작 ↔ 자동">🤖 자동</button>
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
     </div>
@@ -368,8 +315,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.23';
-const SAVE_KEY = 'cave-game.character.v1';
+const VERSION = 'v12.24';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -379,145 +325,11 @@ let OUTC = OUT, OUTW = 1; // 커서를 올린 폰은 외곽선을 굵게
 
 document.getElementById('ver').textContent = VERSION;
 
-/* =========================================================
-   1. 텍스트 캐릭터 생성
-   ========================================================= */
-const GENDERS = [ { id:'f', name:'여자 (단발)' }, { id:'m', name:'남자 (대머리)' } ];
-const RACES = [
-  { id:'human',  name:'인간',   skin:'#eec39a', scale:1.0,  w:1.0 },
-  { id:'goblin', name:'고블린', skin:'#78b84e', scale:0.78, w:1.0 },
-  { id:'elf',    name:'엘프',   skin:'#f4dcc2', scale:1.07, w:0.9 },
-  { id:'dwarf',  name:'드워프', skin:'#dca47c', scale:0.8,  w:1.3 },
-];
-const JOBS = [
-  { id:'knight', name:'기사',   weapon:{ name:'녹슨 롱소드', icon:'🗡️' }, body:'낡은 사슬갑옷', stat:{힘:6,민첩:3,지능:2} },
-  { id:'miner',  name:'광부',   weapon:{ name:'곡괭이',      icon:'⛏️' }, body:'가죽 앞치마',   stat:{힘:5,민첩:3,지능:3} },
-  { id:'mage',   name:'마법사', weapon:{ name:'나무 지팡이', icon:'🪄' }, body:'해진 로브',     stat:{힘:2,민첩:3,지능:6} },
-  { id:'rogue',  name:'도적',   weapon:{ name:'단검',        icon:'🔪' }, body:'검은 두건',     stat:{힘:3,민첩:6,지능:2} },
-  { id:'drifter', name:'떨어진 자', weapon:{ name:'낡은 어부의 창', icon:'🔱' }, body:'줄무늬 셔츠 · 배낭', stat:{힘:4,민첩:5,지능:3} },
-];
-const HAIRS  = [ {name:'검정',c:'#1f1a17'}, {name:'금발',c:'#e3bd55'}, {name:'빨강',c:'#b8392a'}, {name:'은발',c:'#cfd3d9'} ];
-const CLOTHS = [ {name:'남색',c:'#34508f'}, {name:'초록',c:'#3f7b46'}, {name:'자주',c:'#7c3f7c'}, {name:'갈색',c:'#7d5836'} ];
-
-const STEPS = [
-  { key:'name',   q:'이름이 뭐야?', free:true, def:'무명' },
-  { key:'gender', q:'성별은?', list:GENDERS },
-  { key:'race',   q:'종족을 골라.', list:RACES },
-  { key:'job',    q:'직업은?', list:JOBS },
-  { key:'hair',   q:'머리색은?', list:HAIRS, when:d => d.gender === 0 },
-  { key:'cloth',  q:'옷 색은?', list:CLOTHS },
-  { key:'motto',  q:'마지막으로, 한마디. (비워도 됨)', free:true, def:'' },
-];
-
-const logEl = document.getElementById('log');
-const optsEl = document.getElementById('opts');
-const cin = document.getElementById('cin');
-let stepIdx = 0, draft = {}, onAnswer = null;
-
-function say(text, cls='sys'){
-  const d = document.createElement('div'); d.className = cls; d.textContent = text;
-  logEl.appendChild(d); logEl.scrollTop = logEl.scrollHeight;
-}
-function setOptions(list, cb){
-  optsEl.innerHTML = '';
-  list.forEach((label, i) => {
-    const b = document.createElement('button'); b.textContent = `${i+1}. ${label}`;
-    b.onclick = () => cb(String(i+1)); optsEl.appendChild(b);
-  });
-}
-function visibleSteps(){ return STEPS.filter(s => !s.when || s.when(draft)); }
-function ask(){
-  while (stepIdx < STEPS.length && STEPS[stepIdx].when && !STEPS[stepIdx].when(draft)) stepIdx++;
-  if (stepIdx >= STEPS.length) return summary();
-  const s = STEPS[stepIdx];
-  const vs = visibleSteps();
-  say('');
-  say(`[${vs.indexOf(s)+1}/${vs.length}] ${s.q}`, 'q');
-  if (s.list){
-    s.list.forEach((o,i) => say(`  ${i+1}. ${o.name}`));
-    setOptions(s.list.map(o=>o.name), handle);
-  } else {
-    optsEl.innerHTML = '';
-    if (s.def) say(`  (그냥 Enter 치면 "${s.def}")`);
-  }
-  cin.focus();
-}
-function handle(raw){
-  const v = raw.trim();
-  if (onAnswer) return onAnswer(v);
-  const s = STEPS[stepIdx];
-  if (!s) return;
-  if (s.list){
-    let idx = parseInt(v,10) - 1;
-    if (isNaN(idx)) idx = s.list.findIndex(o => o.name.startsWith(v) && v);
-    if (idx < 0 || idx >= s.list.length){ say(`  1~${s.list.length} 중에서 골라줘.`); return; }
-    say(`> ${s.list[idx].name}`, 'me');
-    draft[s.key] = idx;
-  } else {
-    const val = (v || s.def).slice(0, 16);
-    say(`> ${val || '(없음)'}`, 'me');
-    draft[s.key] = val;
-  }
-  stepIdx++;
-  ask();
-}
-function describe(c){
-  const r = RACES[c.race], j = JOBS[c.job], female = c.gender === 0;
-  return [
-    `  이름   : ${c.name}`,
-    `  성별   : ${female ? '여자' : '남자'}`,
-    `  종족   : ${r.name}`,
-    `  직업   : ${j.name}  (시작 장비: ${j.weapon.icon} ${j.weapon.name})`,
-    `  머리   : ${female ? HAIRS[c.hair ?? 0].name + ' 단발' : '대머리'}`,
-    `  옷 색  : ${CLOTHS[c.cloth].name}`,
-    c.motto ? `  한마디 : "${c.motto}"` : null,
-  ].filter(Boolean).join('\n');
-}
-function summary(){
-  say('');
-  say('── 캐릭터 확인 ──', 'q');
-  say(describe(draft));
-  say('이대로 굴에 들어갈까?  1. 들어간다   2. 처음부터 다시', 'q');
-  setOptions(['들어간다','처음부터 다시'], handle);
-  onAnswer = v => {
-    if (v === '1' || /^y/i.test(v)){
-      onAnswer = null; optsEl.innerHTML = '';
-      say('> 들어간다', 'me'); say('…어두운 굴 속, 모닥불 냄새가 난다.', 'ok');
-      const ch = { ...draft, v: VERSION };
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(ch)); localStorage.removeItem(WORLD_KEY); } catch(e){}
-      setTimeout(() => startGame(ch), 700);
-    } else if (v === '2' || /^n/i.test(v)){
-      onAnswer = null; say('> 다시', 'me'); beginCreator(false);
-    } else say('  1 또는 2.');
-  };
-}
-function beginCreator(offerLoad=true){
-  stepIdx = 0; draft = {}; onAnswer = null;
-  let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch(e){}
-  if (saved && saved.gender === undefined) saved = null;   // v1.0 저장본은 성별이 없어서 새로 만듦
-  if (offerLoad && saved){
-    say('저장된 캐릭터가 있어.', 'q');
-    say(describe(saved));
-    say('1. 이 캐릭터로 계속   2. 새로 만들기', 'q');
-    setOptions(['이 캐릭터로 계속','새로 만들기'], handle);
-    onAnswer = v => {
-      if (v === '1'){ onAnswer = null; optsEl.innerHTML = ''; say('> 계속', 'me'); setTimeout(() => startGame(saved), 400); }
-      else if (v === '2'){ onAnswer = null; say('> 새로', 'me'); beginCreator(false); }
-      else say('  1 또는 2.');
-    };
-    cin.focus();
-    return;
-  }
-  say('── 새 캐릭터 ──', 'q');
-  ask();
-}
-cin.addEventListener('keydown', e => {
-  if (e.key === 'Enter'){ const v = cin.value; cin.value = ''; handle(v); }
-});
+// 주인공: 인주 (고정). 몸은 원화 (SPRITES.player), 원화가 아직 안 불러졌을 때만 사람 모양으로 그림
+const HERO = { name:'인주', skin:'#eec39a', cloth:'#34508f', hair:'#1f1a17', weapon:'spear', weaponName:'🔱 낡은 어부의 창' };
 
 /* =========================================================
-   2. 굴 (로비) — 5행 타일 × 긴 가로, 2.5D 횡스크롤
+   굴 (로비) — 5행 타일 × 긴 가로, 2.5D 횡스크롤
    ========================================================= */
 const cv = document.getElementById('cv');
 let ctx = cv.getContext('2d');
@@ -541,11 +353,8 @@ function resize(){
 }
 window.addEventListener('resize', () => { if (!gameEl.hidden) resize(); });
 
-/* ---------- 시점: 'board' (보드판 + 원근 카메라, 전투 맵) / 'classic' (예전 굴 비스듬 시점) ----------
-   좌표계는 그대로 두고 타일 → 화면 투영(P)만 바꿈. 언제든 되돌리기: 전투 화면 "시점" 버튼 또는 V 키 */
-let VIEW = 'board';
-try { VIEW = localStorage.getItem('cave.view') === 'classic' ? 'classic' : 'board'; } catch (e) {}
-function boardOn(){ return VIEW === 'board' && (mode === 'battle' || mode === 'dungeon'); }
+/* ---------- 시점: 굴은 비스듬한 2.5D, 전투 · 던전은 보드판 + 원근 카메라 (타일 → 화면 투영 P만 다름) ---------- */
+function boardOn(){ return mode === 'battle' || mode === 'dungeon'; }
 // 걷기 (던전): 같은 카메라를 거의 옆에서 봄 (완전 측면에 가까운 횡스크롤). 전투로 들어가면 이 각도에서 60도로 스르륵 돌아감
 const SIDE_PITCH = 0.2;
 function sideFit(){
@@ -553,12 +362,6 @@ function sideFit(){
   T = Math.min(96, H / 6.2, W / (H > W ? 6.5 : 12));
   BV.F = T * BOARD.DIST; BV.cx = W / 2; BV.cy = H * (H > W ? 0.56 : 0.68);
   floorTop = P(0, 0).y; rowH = (P(0, ROWS).y - floorTop) / ROWS; skew = 0;
-}
-function setView(v){
-  VIEW = v; try { localStorage.setItem('cave.view', v); } catch (e) {}
-  cam.bT = 0;
-  cam.on = false; resize();
-  const el = document.getElementById('bq-view'); if (el) el.textContent = v === 'board' ? '▦ 보드' : '⛰ 굴';
 }
 // 카메라: 보드 가운데를 PITCH 각도로 내려다봄, DIST = 카메라까지 거리 (타일 단위). 원근 세기는 DIST가 정함
 const BOARD = { PITCH: 60 * Math.PI / 180, DIST: 11, FRAME: 0.38, DRIFT: 0.35 };
@@ -600,7 +403,7 @@ function P(c, r){
 function depthScale(r){ return boardOn() ? 1.03 * BOARD.DIST / (BOARD.DIST - (r - ROWS / 2) * BV.cos) : 0.88 + r * 0.06; }
 
 const gameEl = document.getElementById('game');
-let player, karius, goblin, rebecca, floaters, sparks, embers, time = 0, dialog = null, character = null;
+let player, karius, goblin, rebecca, floaters, sparks, embers, time = 0, dialog = null;
 let shift = 'goblin', shiftT = 0;
 const blocked = new Set();
 const keyOf = (c,r) => c + ',' + r;
@@ -619,24 +422,16 @@ const SPOTS = {
 const SHIFT_LEN = { goblin: 40, karius: 24 };
 const KIND_LABEL = { dig:'곡괭이질', fire:'모닥불 곁 휴식', meditate:'명상 중', wander:'어슬렁거림', idle:'멍하니 서 있음', sky:'하늘 바라보기', lying:'누워서 하늘 보기' };
 
-function startGame(ch){
-  character = ch;
-  document.getElementById('creator').hidden = true;
-  document.getElementById('creator').style.display = 'none';
+function startGame(){
   gameEl.hidden = false;
-  mode = 'lobby'; curCols = LOBBY_COLS; battle = null; scene = null;
+  mode = 'lobby'; curCols = LOBBY_COLS; battle = null;
   document.getElementById('bt-ui').hidden = true;
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
   resize();
-  world = loadWorld(ch);
-  if (!world.rebeccaFree){ world.rebeccaFree = true; world.opened = true; saveWorld(); }   // v11.1: 적뢰 프롤로그는 잠시 건너뜀 — 레베카는 처음부터 굴에 있음
   pStats = getStats('player');
   setupLobby();
   buildBar();
-  falling = null; caption = null; rain = []; evEl.hidden = true; storeEl.hidden = true;
-  syncSpeed();
-  if (!world.opened){ if (DROPS_ON) setTimeout(() => startDrop(), 2500); else { world.opened = true; saveWorld(); } }
-  try { window.claude?.hot?.snapshot?.(() => ({ character })); } catch(e){}
+  caption = null; evEl.hidden = true;
   if (!startGame.looping){ startGame.looping = true; requestAnimationFrame(loop); }
 }
 
@@ -646,12 +441,10 @@ function makePawn(o){
 }
 
 function setupLobby(){
-  const race = RACES[character.race];
-  player = makePawn({ id:'player', c:3, r:3, race, stepTime:0.15, vx:0, vy:0, moving:false });
+  player = makePawn({ id:'player', c:3, r:3, stepTime:0.15, vx:0, vy:0, moving:false });
   karius = makePawn({ id:'karius', name:'카리우스', raw:'#6fb8e8', c:SPOTS.kariusFire.c, r:SPOTS.kariusFire.r, face:-1, stepTime:0.55, kind:'fire', timer:14 });
   goblin = makePawn({ id:'goblin', name:'청광묵', raw:'#5cc26a', c:SPOTS.goblinDig.c, r:SPOTS.goblinDig.r, face:1, stepTime:0.28, kind:'dig' });
-  rebecca = world.rebeccaFree ? makeFreeRebecca(SPOTS.rebeccaFire.c, SPOTS.rebeccaFire.r, 'fire')
-                              : { id:'rebecca', name:'레베카', raw:'#e0435a', c:1, r:0, freed:false };
+  rebecca = makePawn({ id:'rebecca', name:'레베카', raw:'#e0435a', c:SPOTS.rebeccaFire.c, r:SPOTS.rebeccaFire.r, face:1, stepTime:0.32, kind:'fire', timer:10, moving:false });
   floaters = []; sparks = []; embers = []; dialog = null;
   shift = 'goblin'; shiftT = SHIFT_LEN.goblin;
   blocked.clear();
@@ -660,14 +453,7 @@ function setupLobby(){
 
 /* ---------- NPC 대사 ---------- */
 function linesFor(n){
-  const name = character.name, w = JOBS[character.job].weapon;
-  if (n === rebecca && !rebecca.freed) return [
-    '(벽 속에서) 읍! 으읍!!',
-    '…거기 누구 있어요? 발소리 들렸어요!',
-    '기사 레베카예요. 부끄럽지만… 벽에 끼어 버렸어요.',
-    '주변 흙을 조금씩 파내 주시면 나갈 수 있을 것 같아요. 부탁해요!',
-    '…그리고 엉덩이는 쳐다보지 말아 주세요.',
-  ];
+  const name = HERO.name;
   if (n === rebecca) return ({
     fire: ['(검을 무릎에 올려두고 불을 쬐고 있다)', `${name} 님, 오늘도 살아남았네요. 잘했어요.`, '…배가 좀 고파요. 재생하고 나면 금방 홀쭉해지거든요.'],
     sky:  ['(우물 입구를 올려다보고 있다)', '2년 만에 보는 하늘이에요. 조금 작지만요.', '언젠가 저기로 다 같이 나가요. 꼭이요.'],
@@ -675,7 +461,7 @@ function linesFor(n){
   if (n === goblin) return n.kind === 'dig' ? [
     '캉! 캉! …뭐야, 방해하지 마.',
     '이 석문 너머에 뭐가 있냐고? 그걸 알려고 파는 거야.',
-    `${w.icon} ${w.name}? 흥, 그걸로 이 돌은 못 깨.`,
+    `${HERO.weaponName}? 흥, 그걸로 이 돌은 못 깨.`,
     '(다시 곡괭이를 든다) 캉!',
   ] : [
     '(불 앞에서 손을 녹이는 중) …지금 교대 시간이야.',
@@ -715,13 +501,9 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyZ' && !e.repeat) pressDodge();
   if (e.code === 'KeyC' && !e.repeat) pressAttack();
   if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
-  if (e.code === 'KeyI') toggleInv();
-  if (e.code === 'KeyC' && mode === 'lobby') toggleStore();
-  if (e.code === 'KeyL' && mode === 'lobby') toggleCodex();
   if (e.code === 'KeyP') toggleStats();
   if (e.code === 'KeyR' && mode === 'battle' && !DG.active && !e.repeat) restartLastSetup();
-  if (e.code === 'KeyV' && mode === 'battle' && !e.repeat) setView(VIEW === 'board' ? 'classic' : 'board');
-  if (e.code === 'KeyB' && !scene && !DG.active) mode === 'battle' ? exitBattle() : enterBattle();
+  if (e.code === 'KeyB' && !DG.active) mode === 'battle' ? exitBattle() : enterBattle();
   if (e.code === 'Escape'){ closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }
 });
 window.addEventListener('keyup', e => { if (KEYMAP[e.code]) held.delete(KEYMAP[e.code]); });
@@ -732,18 +514,11 @@ document.querySelectorAll('#pad button').forEach(b => {
   ['pointerup','pointerleave','pointercancel'].forEach(ev => b.addEventListener(ev, () => held.delete(k)));
 });
 document.getElementById('act').addEventListener('pointerdown', e => { e.preventDefault(); action(); });
-document.getElementById('btn-inv').onclick = toggleInv;
-document.getElementById('btn-remake').onclick = () => {
-  if (mode === 'battle') exitBattle();
-  gameEl.hidden = true; endDialog(); closePanels(); closeEvent(); falling = null; scene = null;
-  const cr = document.getElementById('creator'); cr.hidden = false; cr.style.display = 'flex';
-  logEl.innerHTML = ''; beginCreator(false);
-};
 
 function occupied(c, r, self){
   if (c < 0 || c >= LOBBY_COLS || r < 0 || r >= ROWS) return true;
   if (blocked.has(keyOf(c,r))) return true;
-  for (const p of [player, karius, goblin, rebecca]) if (p.freed !== false && p !== self && p.c === c && p.r === r) return true;
+  for (const p of [player, karius, goblin, rebecca]) if (p !== self && p.c === c && p.r === r) return true;
   return false;
 }
 
@@ -799,8 +574,7 @@ function stepMover(m, dt, input, speed, solid){
 }
 function lobbySolid(nx, ny, ox, oy){
   if (nx < 0 || nx > LOBBY_COLS - 1 || ny < 0 || ny > ROWS - 1) return true;
-  const obs = [[FIRE.c, FIRE.r, 0.7], [karius.x, karius.y, 0.95], [goblin.x, goblin.y, 0.55]];
-  if (rebecca.freed) obs.push([rebecca.x, rebecca.y, 0.55]);
+  const obs = [[FIRE.c, FIRE.r, 0.7], [karius.x, karius.y, 0.95], [goblin.x, goblin.y, 0.55], [rebecca.x, rebecca.y, 0.55]];
   for (const [cx, cy, r] of obs){
     const dn = Math.hypot(nx - cx, ny - cy), d0 = Math.hypot(ox - cx, oy - cy);
     if (dn < r && dn < d0) return true;   // 멀어지는 방향은 허용
@@ -809,7 +583,7 @@ function lobbySolid(nx, ny, ox, oy){
 }
 let pStats = null;
 function updatePlayerLobby(dt){
-  const locked = dialog || scene || anyPanel();
+  const locked = dialog || anyPanel();
   player.running = held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95);   // 조이스틱을 끝까지 밀면 달림
   stepMover(player, dt, locked ? null : moveInput(), pStats.spd * (player.running ? RUN_MUL : 1), lobbySolid);
   player.c = Math.round(player.x); player.r = Math.round(player.y);
@@ -817,8 +591,7 @@ function updatePlayerLobby(dt){
 
 function nearestNpc(){
   const d = p => Math.hypot(p.x - player.x, p.y - player.y);
-  if (!rebecca.freed){ if (player.y <= 1.4 && Math.abs(player.x - rebecca.c) <= 1.4) return rebecca; }
-  else if (d(rebecca) <= 1.4) return rebecca;
+  if (d(rebecca) <= 1.4) return rebecca;
   if (d(goblin) <= 1.4) return goblin;
   if (d(karius) <= 2.1) return karius;
   return null;
@@ -828,7 +601,6 @@ function nearestNpc(){
 const dlgEl = document.getElementById('dialog');
 function action(){
   if (DG.active && mode === 'dungeon') return dgAction();
-  if (scene) return nextSceneStep();
   if (!evEl.hidden) return closeEvent();
   if (closeTopPanel()) return;
   if (mode === 'battle') return toggleRun();
@@ -840,8 +612,7 @@ function action(){
   const n = nearestNpc();
   if (!n && nearGate()) return startRun();
   if (!n) return;
-  if (n === rebecca && !rebecca.freed && world.rescueAsked) return digRebecca();
-  if (n !== rebecca || rebecca.freed) n.face = Math.sign(player.x - n.x) || n.face;
+  n.face = Math.sign(player.x - n.x) || n.face;
   dialog = { npc:n, i:0, lines:linesFor(n) };
   dlgEl.hidden = false;
   showLine();
@@ -852,18 +623,7 @@ function showLine(){
   who.textContent = n.name; who.style.color = n.raw;
   dlgEl.querySelector('.txt').textContent = dialog.lines[dialog.i];
 }
-function endDialog(){
-  if (dialog && dialog.npc === rebecca && !rebecca.freed && !world.rescueAsked){ world.rescueAsked = true; saveWorld(); }
-  dialog = null; dlgEl.hidden = true;
-}
-
-/* ---------- 장비창 ---------- */
-const invEl = document.getElementById('inv');
-function closeInv(){ invEl.hidden = true; }
-function toggleInv(){
-  if (!sheetEl.hidden && sheetEl.dataset.id === 'player'){ sheetEl.hidden = true; return; }
-  openSheet('player', 'equip');
-}
+function endDialog(){ dialog = null; dlgEl.hidden = true; }
 
 /* =========================================================
    자유 행동 AI (림월드식)
@@ -925,7 +685,7 @@ function director(dt){
     else                   { assign(goblin, 'dig'); assign(karius, 'fire'); addFloater('교대!', goblin, '#ffd28a'); }
   }
   // 레베카 (합류 후): 모닥불 → 하늘 바라보기 → 산책
-  if (rebecca.freed && !scene && rebecca.busy && rebecca.kind !== 'lying' && rebecca.timer <= 0){
+  if (rebecca.busy && rebecca.timer <= 0){
     assign(rebecca, { fire:'sky', sky:'wander', wander:'fire' }[rebecca.kind] || 'fire');
   }
   // 카리우스가 쉬는 차례면 모닥불 → 명상 → 산책 순환
@@ -962,13 +722,11 @@ function update(dt){
   director(dt);
   updatePawn(karius, dt);
   updatePawn(goblin, dt);
-  if (rebecca.freed) updatePawn(rebecca, dt);
-  digClock = Math.max(0, digClock - dt);
+  updatePawn(rebecca, dt);
   digEffects(karius, dt);
   digEffects(goblin, dt);
 
   if (karius.kind === 'meditate' && karius.busy && Math.random() < dt * 0.4) addFloater('…옴', karius, '#9fd0ff');
-  if (!rebecca.freed && Math.random() < dt * 0.22) addFloater(['읍!','으읍!!','꺼내줘요…!','(꿈틀꿈틀)'][Math.floor(Math.random()*4)], rebecca, '#ff9aa8', -1.5);
 
   // 모닥불 불티
   if (Math.random() < dt * 14){
@@ -983,9 +741,6 @@ function update(dt){
   embers.forEach(e => { e.life -= dt; e.wx += e.vx * dt; e.y += e.vy * dt; });
   embers = embers.filter(e => e.life > 0);
   shake = Math.max(0, shake - dt);
-  tickTurn(dt);
-  updateFalling(dt);
-  updateWeather(dt);
   if (caption){ caption.life -= dt; if (caption.life <= 0) caption = null; }
   updateHud();
 
@@ -995,13 +750,12 @@ function update(dt){
   const gate = !n && !dialog && nearGate();
   pr.hidden = !n && !gate;
   if (gate) pr.textContent = `[Space] 석문 아래로 (던전 1~2층)`;
-  if (n) pr.textContent = n === rebecca && !rebecca.freed && world.rescueAsked ? `[Space] 흙 파내기 (${world.rescue || 0}%)` : `[Space] ${n.name}에게 말걸기`;
+  if (n) pr.textContent = `[Space] ${n.name}에게 말걸기`;
   updateBar(n);
 }
 function addFloater(text, who, color, lift=-1){
   if (mode !== 'lobby') return;   // 굴 대사가 전투 화면에 새지 않게
-  const isR = who === rebecca && !rebecca.freed;
-  const p = P((isR ? who.c : who.x) + 0.5, isR ? 0 : who.y + 0.5);
+  const p = P(who.x + 0.5, who.y + 0.5);
   const h = who === karius ? 3.4 : who === goblin ? 1.2 : 1.15;
   floaters.push({ text, wx: p.x + camX, y: p.y + T * (lift < -1 ? lift : -h), color, life: 1.2 });
 }
@@ -1038,7 +792,6 @@ function draw(){
 
   drawWall();
   drawFloor();
-  if (!rebecca.freed) drawRebecca();
   drawGate();
 
   const list = [
@@ -1046,11 +799,10 @@ function draw(){
     { y: karius.y, fn: () => drawKarius(karius) },
     { y: goblin.y, fn: () => drawGoblin(goblin) },
     { y: FIRE.r - 0.01, fn: drawFire },
+    { y: rebecca.y, fn: () => drawRebeccaFigure(rebecca) },
   ];
-  if (rebecca.freed) list.push({ y: rebecca.y, fn: () => drawRebeccaFigure(rebecca) });
   list.sort((a,b) => a.y - b.y);
   list.forEach(o => o.fn());
-  drawFalling();
 
   // 불빛 (가산 합성)
   const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
@@ -1071,22 +823,12 @@ function draw(){
   ctx.globalCompositeOperation = 'source-over';
 
   sparks.forEach(s => { ctx.fillStyle = s.c || '#ffe9a8'; ctx.fillRect(s.x - camX, s.y, 2.5, 2.5); });
-  drawWeather();
 
   // 이름표 (림월드처럼 발밑)
-  labelUnder(player, character.name, '#f3e6c8');
+  labelUnder(player, HERO.name, '#f3e6c8');
   labelUnder(karius, '카리우스', '#bfe0f5');
   labelUnder(goblin, '청광묵', '#c7eec9');
-  if (rebecca.freed) labelUnder(rebecca, '레베카', '#ffc2cc');
-  else {
-    const rp = P(rebecca.c + 0.5, 0.35);
-    tag('레베카', rp.x, rp.y + T*0.1, '#ffc2cc');
-    if (world.rescue){
-      const bw = T*0.9;
-      ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(rp.x - bw/2, rp.y + T*0.3, bw, 5);
-      ctx.fillStyle = '#c9a36a'; ctx.fillRect(rp.x - bw/2, rp.y + T*0.3, bw * world.rescue / 100, 5);
-    }
-  }
+  labelUnder(rebecca, '레베카', '#ffc2cc');
 
   ctx.textAlign = 'center';
   floaters.forEach(fl => {
@@ -1103,7 +845,6 @@ function draw(){
   vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.7)');
   ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
 
-  if (flash > 0){ ctx.fillStyle = `rgba(230,235,255,${flash})`; ctx.fillRect(0,0,W,H); }
   if (caption){
     ctx.globalAlpha = Math.min(1, caption.life, (caption.max - caption.life) * 3);
     ctx.font = `${Math.round(Math.max(20, T*0.42))}px "Do Hyeon",sans-serif`;
@@ -1139,15 +880,6 @@ function drawWall(){
   // 벽 아래 턱
   ctx.fillStyle = '#1c161d';
   ctx.fillRect(a.x, floorTop - 4, b.x - a.x, 4);
-  // 레베카 옆 갈라진 틈 (구불구불)
-  const cr = P(2.5,0);
-  ctx.strokeStyle = '#0c090d'; ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i <= 12; i++){
-    const y = floorTop - i * T * 0.26, x = cr.x + Math.sin(i * 1.4) * 6;
-    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-  }
-  ctx.stroke();
   // 좌우 끝 암벽
   ctx.fillStyle = '#09070b';
   const l0 = P(0,0), l1 = P(0,ROWS);
@@ -1323,53 +1055,15 @@ function drawFire(){
   });
 }
 
-/* ---------- 레베카: 벽에 박혀 꿈틀 ---------- */
-function drawRebecca(){
-  const p = P(rebecca.c + 0.5, 0);
-  const cx = p.x + Math.sin(time * 5) * T * 0.03, wallY = p.y - T*0.95;
-  const u = T;
-  // 벽 구멍
-  ctx.fillStyle = '#0b080c';
-  const grow = 1 + (world.rescue || 0) / 250;
-  ctx.beginPath(); ctx.ellipse(p.x, wallY - u*0.05, u*0.44*grow, u*0.38*grow, 0, 0, Math.PI*2); ctx.fill();
-  // 구멍 틈으로 흘러나온 루비색 장발
-  for (let i = 0; i < 7; i++){
-    const sx = p.x + (i - 3) * u*0.12, side = i < 3.5 ? -1 : 1;
-    const sway = Math.sin(time*2.4 + i) * u*0.04;
-    ctx.beginPath();
-    ctx.moveTo(sx, wallY - u*0.3);
-    ctx.quadraticCurveTo(sx + side*u*0.35, wallY + u*0.1, sx + side*u*(0.25 + Math.abs(i-3)*0.06) + sway, p.y - u*0.05 - (i%3)*u*0.08);
-    ctx.strokeStyle = i % 2 ? '#9e1731' : '#c2253f'; ctx.lineWidth = u*0.07; ctx.lineCap = 'round'; ctx.stroke();
-  }
-  // 다리 (판금 정강이, 번갈아 버둥)
-  const k1 = Math.sin(time * 8) * u*0.07, k2 = Math.sin(time * 8 + 2) * u*0.07;
-  limb(cx - u*0.13, wallY + u*0.15, cx - u*0.2, wallY + u*0.5, cx - u*0.22 + k1, p.y - u*0.12, u*0.12, '#b7bec8');
-  limb(cx + u*0.13, wallY + u*0.15, cx + u*0.2, wallY + u*0.5, cx + u*0.24 + k2, p.y - u*0.16, u*0.12, '#b7bec8');
-  shape(() => rrect(cx - u*0.32 + k1, p.y - u*0.18, u*0.2, u*0.1, u*0.03), '#5c616b', 1.5);
-  shape(() => rrect(cx + u*0.14 + k2, p.y - u*0.22, u*0.2, u*0.1, u*0.03), '#5c616b', 1.5);
-  // 엉덩이 판금 + 루비 천
-  const wob = Math.sin(time * 8) * 1.5;
-  shape(() => { ctx.moveTo(cx - u*0.36, wallY - u*0.12); ctx.lineTo(cx + u*0.36, wallY - u*0.12); ctx.lineTo(cx + u*0.3, wallY + u*0.25); ctx.lineTo(cx - u*0.3, wallY + u*0.25); ctx.closePath(); }, '#a01c35', 2);
-  circle(cx - u*0.15, wallY + wob, u*0.2, '#c9d0d8', 2);
-  circle(cx + u*0.15, wallY - wob, u*0.2, '#c9d0d8', 2);
-  ctx.fillStyle = 'rgba(255,255,255,.55)';
-  ctx.beginPath(); ctx.ellipse(cx - u*0.2, wallY - u*0.08 + wob, u*0.06, u*0.03, -0.5, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(cx + u*0.1, wallY - u*0.08 - wob, u*0.06, u*0.03, -0.5, 0, Math.PI*2); ctx.fill();
-}
-
-/* ---------- 플레이어: 여자 단발 / 남자 대머리 ---------- */
+/* ---------- 주인공 (원화가 아직 안 불러졌을 때만 사람 모양) ---------- */
 function drawPlayerPawn(){ drawPlayerFigure(player); }
 function walkBob(o){ return o.moving ? Math.abs(Math.sin(o.walkClock * 11)) * T * 0.025 : Math.sin(time*2) * T * 0.006; }
 function drawPlayerFigure(o){
   if (SPRITES.player && spriteReady(SPRITES.player)) return drawSpriteUnit(Object.assign(o, { id: 'player' }));
-  const race = RACES[character.race];
   const p = P(o.x + 0.5, o.y + 0.5);
-  const u = T * depthScale(o.y) * race.scale;
+  const u = T * depthScale(o.y);
   shadowAt(p.x, p.y, u*0.3);
-  drawHumanoid({
-    x: p.x, y: p.y - walkBob(o), u, face: o.face, skin: race.skin, cloth: CLOTHS[character.cloth].c, bw: race.w,
-    female: character.gender === 0, hair: HAIRS[character.hair ?? 0].c, race: race.id, weapon: WEAPON_OF[JOBS[character.job].id], pose: o,
-  });
+  drawHumanoid({ x: p.x, y: p.y - walkBob(o), u, face: o.face, skin: HERO.skin, cloth: HERO.cloth, bw: 1, female: true, hair: HERO.hair, race: 'human', weapon: HERO.weapon, pose: o });
 }
 /* ---------- 레베카 (합류 후): 루비색 장발, 판금 갑옷, 장검 ---------- */
 const REBECCA_LOOK = { skin:'#f3d5c0', cloth:'#c3cad3', bw:1.0, female:true, longHair:true, hair:'#c2253f', race:'human', weapon:'longsword', wstyle:{ blade:'#eef2f6', guard:'#9e1731' }, armor:true };
@@ -1377,12 +1071,6 @@ function drawRebeccaFigure(o){
   const p = P(o.x + 0.5, o.y + 0.5);
   const u = T * depthScale(o.y) * 0.95;
   shadowAt(p.x, p.y, u*0.3);
-  if (o.kind === 'lying' && o.busy !== false){
-    ctx.save(); ctx.translate(p.x, p.y - u*0.12); ctx.rotate(-Math.PI/2);
-    drawHumanoid({ ...REBECCA_LOOK, x: 0, y: u*0.35, u, face: 1, weapon: null });
-    ctx.restore();
-    return;
-  }
   const y = p.y - walkBob(o), up = o.guarding || (o.guardFlash > 0);
   if (!up) drawKiteShield(p.x - o.face * u * 0.2, y - u * 0.44, u * 0.95, o.face);        // 평소엔 등 쪽 팔에
   drawHumanoid({ ...REBECCA_LOOK, x: p.x, y, u, face: o.face, pose: o });
@@ -1445,7 +1133,6 @@ function drawEnemyGoblin(o){
 }
 
 /* ---------- 무기와 팔 동작: 준비(뒤로 들어올림) → 휘두르기(베기 궤적) / 방어(앞으로 세움) ---------- */
-const WEAPON_OF = { drifter:'spear', knight:'sword', miner:'pickaxe', mage:'staff', rogue:'dagger' };
 const WEAPON_LEN = { axe:0.55, sword:0.55, longsword:0.66, dagger:0.3, pickaxe:0.5, staff:0.66, spear:1.0 };
 const easeOut = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
 function atkPose(o){
@@ -1870,7 +1557,7 @@ const barEl = document.getElementById('bar');
 const barItems = {};
 function buildBar(){
   barEl.innerHTML = '';
-  [['player', character.name], ['rebecca','레베카'], ['karius','카리우스'], ['goblin','청광묵']].forEach(([id, name]) => {
+  [['player', HERO.name], ['rebecca','레베카'], ['karius','카리우스'], ['goblin','청광묵']].forEach(([id, name]) => {
     const d = document.createElement('div'); d.className = 'pi';
     d.onclick = () => openSheet(id);
     const c = document.createElement('canvas'); c.width = 80; c.height = 80;
@@ -1907,10 +1594,7 @@ function drawPortrait(c, id){
   g.clearRect(0,0,80,80);
   // 같은 그리기 함수를 초상화용 캔버스로 재사용
   withCtx(g, () => {
-    if (id === 'player'){
-      const r = RACES[character.race];
-      drawHumanoid({ x:40, y:120, u:95*r.scale, face:1, skin:r.skin, cloth:CLOTHS[character.cloth].c, bw:r.w, female:character.gender === 0, hair:HAIRS[character.hair ?? 0].c, race:r.id });
-    } else if (id === 'rebecca'){
+    if (id === 'rebecca'){
       drawHumanoid({ ...REBECCA_LOOK, x:40, y:120, u:95, face:1, weapon:null });
     } else if (id === 'goblinArcher'){
       drawHumanoid({ x:40, y:118, u:88, face:1, skin:'#6f9e3f', cloth:'#3f5a2c', bw:1.0, female:false, race:'goblin', eye:'#e2443a' });
@@ -1947,333 +1631,28 @@ function updateBar(near){
   if (!barItems.player) return;
   const lab = p => KIND_LABEL[p.kind] + (p.target ? ' (이동)' : '');
   barItems.player.job.textContent = '자유 행동';
-  barItems.rebecca.job.textContent = rebecca.freed ? lab(rebecca) : world.rescue ? `구출 ${world.rescue}%` : '꿈틀거리는 중';
+  barItems.rebecca.job.textContent = lab(rebecca);
   barItems.karius.job.textContent = lab(karius);
   barItems.goblin.job.textContent = lab(goblin);
   for (const id of ['rebecca','karius','goblin']) barItems[id].el.classList.toggle('near', !!near && near.id === id);
 }
 
 
-/* =========================================================
-   턴 · 창고 · 낙하
-   낙하 목록은 data/drops.csv (엑셀로 편집 가능)
-   ========================================================= */
-const TURN_SEC = 20;          // 1턴 = 실제 20초 (▶ 기준)
-const TURNS_PER_DAY = 4;      // 6시간 = 1턴
-const DROP_EVERY = 20;        // 20배수 턴마다 낙하
-const DROPS_ON = false;       // v11.0: 낙하 잠시 끔 (지금 쓰지 않음). true면 다시 켜짐
-const STORE_CAP = 100;
-const WORLD_KEY = 'cave-game.world.v1';
-const RES = [ ['🍖','식량'], ['🥫','통조림'], ['🪵','목재'], ['🪨','석재'], ['⚙️','금속'], ['🔥','장작'], ['🌿','약재'], ['💉','약품'] ];
-const WEATHER = { 비:'🌧️', 뇌우:'🌩️', 눈:'❄️' };
-// data/drops.csv 를 못 읽었을 때만 쓰는 최소 목록
-const FALLBACK_CSV = `종류,이모지,이름,설명,변동,가중치,최소턴,최대턴,마지막칸
-물건,🛡️,낡은 방패,쪼개면 장작이 됩니다.,🪵+2,8,1,,
-시체,💀,기사의 시체,죽었습니다. 명복을.,🍖+2 ⚙️+2,8,1,,
-물건,🪵,젖은 통나무,마르면 쓸 만합니다.,🔥+3,9,1,,
-물건,🥫,제7구역 배급 통조림,유통기한이 달력 세 종류로 적혀 있습니다.,🥫+3,8,1,,`;
-
-let world = null, DROPS = [], dropSource = '', falling = null, caption = null, rain = [], flash = 0;
+/* ---------- 굴 화면 위 글 · 가운데 창 ---------- */
+let caption = null;
 const evEl = document.getElementById('event');
-const storeEl = document.getElementById('store');
-
-function newWorld(ch){
-  return { owner: ch.name, turn: 1, clock: 0, speed: 1, opened: false, weather: null,
-    res: { '🍖':10, '🥫':2, '🪵':4, '🪨':6, '⚙️':2, '🔥':6, '🌿':1, '💉':0 },
-    items: {}, relics: [], stock: { '🐌':3 } };
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function closeEvent(){ evEl.hidden = true; evEl.innerHTML = ''; }
+function updateHud(){
+  const t = `석문 → 던전 (최고 ${DGP.best}층)`;
+  const ml = document.getElementById('mapline'); if (ml.textContent !== t) ml.textContent = t;
 }
-function loadWorld(ch){
-  try {
-    const w = JSON.parse(localStorage.getItem(WORLD_KEY) || 'null');
-    if (w && w.owner === ch.name && w.res) return w;
-  } catch(e){}
-  return newWorld(ch);
-}
-function saveWorld(){ try { localStorage.setItem(WORLD_KEY, JSON.stringify(world)); } catch(e){} }
-
-/* ---------- CSV ---------- */
-function parseCSV(text){
-  text = text.replace(/^﻿/, '');
-  const rows = []; let row = [], cell = '', q = false;
-  for (let i = 0; i < text.length; i++){
-    const ch = text[i];
-    if (q){
-      if (ch === '"'){ if (text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
-      else cell += ch;
-    } else if (ch === '"') q = true;
-    else if (ch === ','){ row.push(cell); cell = ''; }
-    else if (ch === '\n' || ch === '\r'){
-      if (ch === '\r' && text[i+1] === '\n') i++;
-      row.push(cell); rows.push(row); row = []; cell = '';
-    } else cell += ch;
-  }
-  if (cell || row.length){ row.push(cell); rows.push(row); }
-  const head = rows.shift().map(h => h.trim());
-  return rows.filter(r => r.some(c => c.trim()))
-    .map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] || '').trim()])));
-}
-function toDrop(o){
-  return { type: o['종류'], emoji: o['이모지'] || '❔', name: o['이름'], desc: o['설명'], fx: o['변동'] || '',
-    weight: +o['가중치'] || 0, min: +o['최소턴'] || 1, max: o['최대턴'] ? +o['최대턴'] : Infinity,
-    last: /^y/i.test(o['마지막칸'] || '') };
-}
-async function loadDrops(){
-  try {
-    const r = await fetch('data/drops.csv', { cache: 'no-store' });
-    if (!r.ok) throw new Error(r.status);
-    DROPS = parseCSV(await r.text()).map(toDrop);
-    dropSource = `data/drops.csv · ${DROPS.length}종`;
-  } catch(e){
-    DROPS = parseCSV(FALLBACK_CSV).map(toDrop);
-    dropSource = '기본 목록 사용 중 (data/drops.csv 를 못 읽음)';
-  }
-}
-const dropsReady = loadDrops();
-
-/* ---------- 뽑기 ---------- */
 function pickWeighted(pool){
   const tot = pool.reduce((a, d) => a + d.weight, 0);
   if (tot <= 0) return null;
   let r = Math.random() * tot;
   for (const d of pool){ r -= d.weight; if (r <= 0) return d; }
   return pool[pool.length - 1];
-}
-function rollDrop(turn){
-  const owned = new Set(world.relics.map(r => r.name));
-  const ok = d => turn >= d.min && turn <= d.max && !(d.type === '유물' && owned.has(d.name));
-  const out = DROPS.filter(d => d.min === turn && d.max === turn && ok(d));   // 그 턴 고정 등장
-  const count = Math.max(out.length, 3 + Math.floor(Math.random() * 8));     // 3~10개
-  const pool = DROPS.filter(d => ok(d) && d.weight > 0 && !d.last);
-  let relics = out.filter(d => d.type === '유물').length;
-  for (let guard = 0; out.length < count - 1 && guard < 200; guard++){
-    const d = pickWeighted(pool.filter(x => x.type !== '유물' || (relics < 2 && !out.includes(x))));
-    if (!d) break;
-    if (d.type === '유물') relics++;
-    out.push(d);
-  }
-  // 마지막 칸: 가끔 날씨나 특수 이벤트
-  if (out.length < count){
-    const lastPool = DROPS.filter(d => ok(d) && d.weight > 0 && d.last);
-    const d = (Math.random() < 0.35 && pickWeighted(lastPool)) || pickWeighted(pool.filter(x => x.type !== '유물'));
-    if (d) out.push(d);
-  }
-  return out;
-}
-function applyDrop(d){
-  const chips = [];
-  for (const tok of d.fx.split(/\s+/).filter(Boolean)){
-    let m;
-    if (tok === '유물'){
-      world.relics.push({ emoji: d.emoji, name: d.name, desc: d.desc, turn: world.turn });
-      chips.push('🌟 보관');
-    } else if (tok === '보관'){
-      const it = world.items[d.name] || (world.items[d.name] = { emoji: d.emoji, name: d.name, desc: d.desc, n: 0 });
-      it.n++; chips.push(`${d.emoji}x1`);
-    } else if ((m = tok.match(/^날씨:(.+):(\d+)$/))){
-      world.weather = { kind: m[1], turns: +m[2] };
-      chips.push(`${WEATHER[m[1]] || ''}/${m[2]}턴`);
-    } else if ((m = tok.match(/^(.+?)([+-]\d+)$/))){
-      const k = m[1], v = +m[2];
-      const bag = k === '🐌' ? world.stock : world.res;
-      bag[k] = Math.max(0, (bag[k] || 0) + v);
-      chips.push(`${k}${v > 0 ? '+' : ''}${v}`);
-    }
-  }
-  return chips;
-}
-function storeUsed(){
-  return Object.values(world.res).reduce((a, b) => a + b, 0)
-    + Object.values(world.items).reduce((a, b) => a + b.n, 0) + world.relics.length;
-}
-
-/* ---------- 턴 ---------- */
-function tickTurn(dt){
-  if (!world || falling || !evEl.hidden || dialog || scene) return;
-  world.clock += dt * world.speed;
-  if (world.clock >= TURN_SEC){ world.clock -= TURN_SEC; nextTurn(); }
-}
-function nextTurn(){
-  world.turn++;
-  if (world.weather && --world.weather.turns <= 0){
-    caption = { text: '날씨가 잦아듭니다.', life: 2.2, max: 2.2 };
-    world.weather = null;
-  }
-  if (DROPS_ON && world.turn % DROP_EVERY === 0) startDrop();
-  saveWorld();
-}
-function syncSpeed(){
-  document.querySelectorAll('#speed button').forEach(b => b.classList.toggle('on', +b.dataset.s === world.speed));
-}
-document.querySelectorAll('#speed button').forEach(b => b.onclick = () => { world.speed = +b.dataset.s; syncSpeed(); saveWorld(); });
-let hudCache = '';
-function updateHud(){
-  const w = world;
-  const day = Math.floor((w.turn - 1) / TURNS_PER_DAY) + 1;
-  const wx = w.weather ? ` | ${WEATHER[w.weather.kind] || ''}/${w.weather.turns}턴` : '';
-  const left = DROP_EVERY - (w.turn % DROP_EVERY);
-  const line = `📅 ${day}일차 | turn ${w.turn} | 굴${wx}`;
-  const nd = !DROPS_ON ? `석문 → 던전 (최고 ${DGP.best}층)` : falling ? '🔥 낙하 중…' : `다음 낙하까지 ${left}턴`;
-  if (line + nd !== hudCache){
-    hudCache = line + nd;
-    document.getElementById('mapline').textContent = line;
-    document.getElementById('nextdrop').textContent = nd;
-  }
-  document.querySelector('#turnbar i').style.width = (w.clock / TURN_SEC * 100).toFixed(1) + '%';
-}
-
-/* ---------- 낙하 연출: 모닥불로 떨어짐 ---------- */
-async function startDrop(){
-  if (falling || !player || gameEl.hidden) return;
-  falling = { list: [], items: [], t: 0, done: false };
-  caption = { text: '공기를 가르는 소리가 들립니다.', life: 2.6, max: 2.6 };
-  await dropsReady;
-  const list = rollDrop(world.turn);
-  falling.list = list;
-  falling.items = list.map((d, i) => ({ d, delay: 1.4 + i * 0.3, y: null, vy: 0, landed: false,
-    rot: (Math.random() - 0.5) * 2, dx: (Math.random() - 0.5) * 0.9 }));
-  addFloater('…?', goblin, '#c7eec9');
-}
-function updateFalling(dt){
-  if (!falling || !falling.items.length) return;
-  falling.t += dt;
-  const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
-  let all = true;
-  for (const it of falling.items){
-    if (it.landed) continue;
-    all = false;
-    if (falling.t < it.delay) continue;
-    if (it.y === null){ it.y = -T; it.vy = 250; }
-    it.vy += 1500 * dt; it.y += it.vy * dt; it.rot += dt * 7 * Math.sign(it.rot || 1);
-    if (it.y >= f.y - T * 0.25){
-      it.y = f.y - T * 0.25; it.landed = true;
-      const x = f.x + it.dx * T;
-      for (let i = 0; i < 12; i++) sparks.push({ x: x + camX, y: f.y - T*0.25, vx: (Math.random()-0.5)*300, vy: -Math.random()*280, life: 0.55 });
-      shake = Math.max(shake, 0.12);
-    }
-  }
-  if (all && !falling.done){ falling.done = true; falling.t = 0; }
-  if (falling.done && falling.t > 0.8){ const list = falling.list; falling = null; showDropWindow(list); }
-}
-function drawFalling(){
-  if (!falling) return;
-  const f = P(FIRE.c + 0.5, FIRE.r + 0.5);
-  for (const it of falling.items){
-    if (it.y === null) continue;
-    emoji(it.d.emoji, f.x + it.dx * T, it.y, T * 0.55, it.landed ? it.rot * 0.2 : it.rot);
-  }
-}
-
-/* ---------- 이벤트 창 (화면 가운데) ---------- */
-function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-function showDropWindow(list){
-  const first = !world.opened;
-  const rows = list.map(d => ({ d, chips: applyDrop(d) }));
-  world.opened = true;
-  saveWorld();
-  evEl.innerHTML = '';
-  evEl.appendChild(el('div', 'ev-narr', '공기를 가르는 소리가 들립니다. 오늘의 쓰레기들입니다.'));
-  const box = el('div', 'ev-box');
-  box.appendChild(el('div', 'ev-tag', `낙하 · turn ${world.turn} · ${list.length}개${first ? ' · 첫 낙하' : ''}`));
-  for (const { d, chips } of rows){
-    const row = el('div', 'ev-row' + (d.type === '유물' ? ' relic' : d.type === '날씨' ? ' weather' : ''));
-    row.appendChild(el('div', 'ev-em', d.emoji));
-    const main = el('div', 'ev-main');
-    main.appendChild(el('div', 'ev-name', `[${d.name}]`));
-    main.appendChild(el('div', 'ev-desc', d.desc));
-    row.appendChild(main);
-    row.appendChild(el('div', 'ev-chips', chips.join(' ')));
-    box.appendChild(row);
-  }
-  evEl.appendChild(box);
-  const foot = el('div', 'ev-foot');
-  const used = storeUsed();
-  foot.appendChild(el('span', '', `◆창고 [${used}/${STORE_CAP}]${used >= 80 ? ' · 공간이 부족합니다' : ''}`));
-  const ok = el('button', '', '확인 [Space]');
-  ok.onclick = closeEvent;
-  foot.appendChild(ok);
-  evEl.appendChild(foot);
-  evEl.hidden = false;
-  ok.focus({ preventScroll: true });
-  // 반응
-  const hasRelic = list.some(d => d.type === '유물');
-  const hasFood = rows.some(r => r.chips.some(c => c.startsWith('🍖') || c.startsWith('🥫')));
-  setTimeout(() => {
-    addFloater(hasRelic ? '아우..예쁘다!!' : hasFood ? '대장..먹을 거다!!' : '바보인가?? 전부 쓰레기다.', goblin, '#c7eec9');
-    addFloater(['…쓰레기군.', '…불에 넣지 마라.', '…또 떨어졌군.'][Math.floor(Math.random()*3)], karius, '#bfe0f5');
-    addFloater('뭐가 떨어졌어요?!', rebecca, '#ffc2cc', -1.5);
-  }, 200);
-}
-function closeEvent(){ evEl.hidden = true; evEl.innerHTML = ''; }
-
-/* ---------- 창고 창 ---------- */
-function toggleStore(){
-  if (!storeEl.hidden){ storeEl.hidden = true; return; }
-  closeInv();
-  renderStore();
-  storeEl.hidden = false;
-}
-function renderStore(){
-  storeEl.innerHTML = '';
-  storeEl.appendChild(el('h3', '', `◆창고 [${storeUsed()}/${STORE_CAP}]`));
-  const res = el('div', 'res');
-  for (const [k, name] of RES){
-    const d = el('div', '', `${k} ${world.res[k] || 0}`);
-    d.appendChild(el('small', '', name));
-    res.appendChild(d);
-  }
-  storeEl.appendChild(res);
-  storeEl.appendChild(el('h4', '', '가축'));
-  storeEl.appendChild(el('div', 'list', Object.entries(world.stock).map(([k, v]) => `${k} [인광달팽이] x${v}`).join('  ') || '없음'));
-  storeEl.appendChild(el('h4', '', '물건'));
-  const items = Object.values(world.items);
-  const il = el('div', 'list');
-  if (!items.length) il.textContent = '없음';
-  items.forEach(it => il.appendChild(el('div', '', `${it.emoji} [${it.name}] x${it.n}`)));
-  storeEl.appendChild(il);
-  storeEl.appendChild(el('h4', '', '🌟 유물 (눌러서 조사)'));
-  const info = el('div', 'info', '');
-  info.hidden = true;
-  if (!world.relics.length) storeEl.appendChild(el('div', 'list', '없음'));
-  world.relics.forEach(r => {
-    const b = el('button', 'relic', `🌟 [${r.name}]`);
-    b.onclick = () => { info.hidden = false; info.textContent = `INFO\n[${r.name}]\n${r.desc}\n(turn ${r.turn} 낙하)`; };
-    storeEl.appendChild(b);
-  });
-  storeEl.appendChild(info);
-  storeEl.appendChild(el('div', 'src', `낙하 데이터: ${dropSource} · [C] 또는 Esc 로 닫기`));
-}
-document.getElementById('btn-store').onclick = toggleStore;
-document.getElementById('btn-drop').onclick = () => startDrop();
-
-/* ---------- 날씨 (우물 입구로 들어옴) ---------- */
-function updateWeather(dt){
-  flash = Math.max(0, flash - dt * 2.5);
-  const w = world && world.weather;
-  if (w){
-    const mc = P(LOBBY_COLS / 2, 2.5);
-    const rate = w.kind === '눈' ? 50 : w.kind === '뇌우' ? 260 : 140;
-    const n = Math.floor(rate * dt + Math.random());
-    for (let i = 0; i < n; i++){
-      const x = mc.x + (Math.random() - 0.5) * T * 5.2;
-      rain.push({ x, y: -10, vx: w.kind === '눈' ? 0 : -40, vy: w.kind === '눈' ? 40 + Math.random()*30 : 700 + Math.random()*200,
-        end: floorTop + Math.random() * rowH * ROWS, snow: w.kind === '눈', ph: Math.random() * 6 });
-    }
-    if (w.kind === '뇌우' && Math.random() < dt * 0.12){ flash = 0.55; shake = Math.max(shake, 0.1); }
-  }
-  for (const d of rain){ d.y += d.vy * dt; d.x += (d.snow ? Math.sin(time*2 + d.ph) * 20 : d.vx) * dt; }
-  rain = rain.filter(d => d.y < d.end);
-}
-function drawWeather(){
-  if (!rain.length) return;
-  ctx.strokeStyle = 'rgba(170,200,255,.45)'; ctx.lineWidth = 1;
-  ctx.fillStyle = 'rgba(240,245,255,.85)';
-  ctx.beginPath();
-  for (const d of rain){
-    if (d.snow) continue;
-    ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.5, d.y - 12);
-  }
-  ctx.stroke();
-  for (const d of rain) if (d.snow) ctx.fillRect(d.x, d.y, 2.5, 2.5);
 }
 
 /* =========================================================
@@ -2284,11 +1663,6 @@ function drawWeather(){
    방어 기술% = 방어율×100 + 방어력×2 + 무게/10 (최대 90) → 방어 중에 맞으면 이 확률로 피해 0
    ========================================================= */
 const RUN_MUL = 1.5;
-const BASE_STATS = { hp:100, atk:10, def:5, block:0.32, crit:0.05, eva:0.05, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:65, react:0.3 };
-const JOB_MOD  = { knight:{ atk:2, def:3, block:0.10, weight:15 }, miner:{ atk:3, def:1, hp:10, weight:5 },
-                   mage:{ atk:6, def:-2, range:2.0, cd:0.3, windup:0.1, ranged:true }, rogue:{ crit:0.10, eva:0.10, spd:0.5, cd:-0.25, windup:-0.08, weight:-5 },
-                   drifter:{ atk:3, range:0.5, eva:0.05, spd:0.3, weight:-10 } };   // 인주: 낡은 어부의 창 (사거리 1.65칸)
-const RACE_MOD = { human:{ atk:1 }, goblin:{ hp:-10, eva:0.05, spd:0.4, weight:-25 }, elf:{ crit:0.05, spd:0.2, weight:-10 }, dwarf:{ hp:20, def:2, spd:-0.3, weight:15 } };
 // 전투 성향: 매 순간 어떤 움직임을 고를지의 비중 (dodge: 반응할 때 방어 대신 뒤로 빠짐)
 // 쥐 떼 성격: 따르는 쥐 (70%)는 포렌 둘레를 우글우글 따라다니다 포렌이 붙은 적에게 몰려들고, 떠돌이 쥐 (30%)는 맵을 싸돌아다니며 아무나 문다
 const RAT_FOLLOW = { follow:6, assist:2, flee:0.6, roam:0.3 };
@@ -2314,6 +1688,11 @@ const STYLES = {
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
 };
 const HEROES = {
+  player: { name:'인주', grade:'SPECIAL', color:'#f0c35a', sub:'떨어진 자 · 굴의 대장',
+    hp:100, atk:14, def:5, block:0.32, crit:0.05, eva:0.10, spd:3.3, range:1.65, cd:1.0, windup:0.3, hits:1, weight:55, react:0.3,
+    tags:[], trait:'🔆 대장 — 굴의 모두가 당신을 대장이라 부른다. 맞기 직전에 방어를 누르면 가끔 튕겨낸다.',
+    skills:['leader', 'justGuard', 'reversal'],
+    equip:{ 무기:'🔱 낡은 어부의 창', 머리:'—', 몸:'줄무늬 셔츠 · 배낭', 장신구:'—' } },
   rebecca: { name:'레베카', grade:'★★', color:'#e0435a', sub:'루비색 장발의 소녀 기사 · 158cm · 27세',
     hp:100, atk:14, def:8, block:0.51, crit:0.05, eva:0.05, spd:2.7, range:1.15, cd:1.1, windup:0.3, hits:1, weight:50, react:0.45,
     regen:2, reviveAt:30, riseT:1.6, shield:'🛡️ 기사 방패 (장비)',
@@ -2530,16 +1909,6 @@ function withDerived(s){
   return { ...s, stepCd: s.stepCd ?? STEP_CD[s.id], guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
 }
 function getStats(id){
-  if (id === 'player'){
-    const j = JOBS[character.job], r = RACES[character.race];
-    const s = { ...BASE_STATS };
-    for (const m of [JOB_MOD[j.id], RACE_MOD[r.id]])
-      for (const k in m) s[k] = typeof m[k] === 'number' ? +((s[k] || 0) + m[k]).toFixed(2) : m[k];
-    return withDerived({ ...s, id, side:'ally', name:character.name, grade:'SPECIAL', color:'#f0c35a', sub:`${r.name} ${j.name} · 굴의 대장`,
-      tags:[], trait:'🔆 대장 — 굴의 모두가 당신을 대장이라 부른다. 맞기 직전에 방어를 누르면 가끔 튕겨낸다.',
-      skills:['leader', 'justGuard', 'reversal'],
-      equip:{ 무기:`${j.weapon.icon} ${j.weapon.name}`, 머리:'—', 몸:j.body, 장신구:'—' } });
-  }
   if (HEROES[id]) return withDerived({ ...HEROES[id], id, side:'ally' });
   return withDerived({ ...ENEMIES[id], id, side:'enemy' });
 }
@@ -2551,8 +1920,7 @@ function gradeEl(g){
 /* ---------- 공용 창 ---------- */
 const sheetEl = document.getElementById('sheet');
 const statsEl = document.getElementById('stats');
-const codexEl = document.getElementById('codex');
-const PANEL_ELS = () => [sheetEl, statsEl, codexEl, storeEl, invEl];
+const PANEL_ELS = () => [sheetEl, statsEl];
 function anyPanel(){ return PANEL_ELS().some(p => !p.hidden) || !evEl.hidden || !document.getElementById('enc').hidden; }
 function closePanels(){ PANEL_ELS().forEach(p => p.hidden = true); }
 function closeTopPanel(){
@@ -2618,7 +1986,6 @@ function openSheet(id, tab = 'status', unit = null){
         const row = el('div', 'srow'); row.appendChild(el('span', '', slot)); row.appendChild(el('b', '', v));
         body.appendChild(row);
       }
-      body.appendChild(el('div', 'trait', '장비 교체는 다음 버전에서. 창고의 🌟 유물을 장착할 수 있게 할 예정.'));
     }
   };
   [['status','상태'], ['equip','장비']].forEach(([t, label]) => {
@@ -2654,142 +2021,7 @@ function toggleStats(){
   statsEl.hidden = false;
 }
 
-/* ---------- 낙하 목록 (분류별) ---------- */
-const TYPE_ORDER = ['물건', '시체', '유물', '날씨', '특수'];
-async function toggleCodex(cat){
-  if (!codexEl.hidden && !cat){ codexEl.hidden = true; return; }
-  await dropsReady;
-  closePanels();
-  cat = cat || '전체';
-  panelHead(codexEl, '낙하 목록', `${dropSource} · ${DROP_EVERY}턴마다 모닥불로 3~10개`);
-  const types = [...new Set(DROPS.map(d => d.type))].sort((a, b) => (TYPE_ORDER.indexOf(a) + 99) % 99 - (TYPE_ORDER.indexOf(b) + 99) % 99);
-  const tabs = el('div', 'tabs');
-  ['전체', ...types].forEach(tp => {
-    const n = tp === '전체' ? DROPS.length : DROPS.filter(d => d.type === tp).length;
-    const b = el('button', tp === cat ? 'on' : '', `${tp} ${n}`);
-    b.onclick = () => toggleCodex(tp);
-    tabs.appendChild(b);
-  });
-  codexEl.appendChild(tabs);
-  const normal = DROPS.filter(d => d.weight > 0 && !d.last), last = DROPS.filter(d => d.weight > 0 && d.last);
-  const sumN = normal.reduce((a, d) => a + d.weight, 0), sumL = last.reduce((a, d) => a + d.weight, 0);
-  const owned = new Set(world.relics.map(r => r.name));
-  const list = DROPS.filter(d => cat === '전체' || d.type === cat)
-    .sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || b.weight - a.weight);
-  const wrap = el('div', 'tbl'), t = el('table');
-  const hr = el('tr'); ['', '이름', '변동', '비중', '등장'].forEach(h => hr.appendChild(el('th', '', h))); t.appendChild(hr);
-  for (const d of list){
-    const tr = el('tr');
-    tr.appendChild(el('td', 'em', d.emoji));
-    const nm = el('td');
-    const title = el('div', '', `[${d.name}]${owned.has(d.name) ? ' ✔ 보유' : ''}`);
-    if (d.type === '유물') title.style.color = '#ffd76a';
-    nm.appendChild(title); nm.appendChild(el('div', 'd', `${d.type} · ${d.desc}`));
-    tr.appendChild(nm);
-    tr.appendChild(el('td', 'num', d.fx));
-    const pct = d.weight <= 0 ? '고정' : d.last ? `끝칸 ${(d.weight / sumL * 35).toFixed(1)}%` : `${(d.weight / sumN * 100).toFixed(1)}%`;
-    tr.appendChild(el('td', 'num', pct));
-    const when = d.min === d.max ? `turn ${d.min}` : isFinite(d.max) ? `${d.min}~${d.max}턴` : d.min > 1 ? `${d.min}턴~` : '항상';
-    tr.appendChild(el('td', 'num', when));
-    t.appendChild(tr);
-  }
-  wrap.appendChild(t);
-  codexEl.appendChild(wrap);
-  codexEl.hidden = false;
-}
-document.getElementById('btn-codex').onclick = () => toggleCodex();
 document.getElementById('btn-stats').onclick = toggleStats;
-
-/* =========================================================
-   레베카 구출 (강제 스토리)
-   ========================================================= */
-let digClock = 0, scene = null;
-function makeFreeRebecca(c, r, kind){
-  return makePawn({ id:'rebecca', name:'레베카', raw:'#e0435a', c, r, face:1, stepTime:0.32, kind, busy:true, timer:10, freed:true, moving:false });
-}
-function digRebecca(){
-  if (digClock > 0) return;
-  digClock = 0.35;
-  world.rescue = Math.min(100, (world.rescue || 0) + 20);
-  const p = P(rebecca.c + 0.5, 0);
-  for (let i = 0; i < 14; i++) sparks.push({ x: p.x + camX + (Math.random()-0.5)*T*0.8, y: p.y - T*0.7, vx: (Math.random()-0.5)*220, vy: -Math.random()*200, life: 0.6, c: '#8a6a45' });
-  addFloater(`파바박! ${world.rescue}%`, rebecca, '#e0c08a', -1.8);
-  shake = Math.max(shake, 0.08);
-  saveWorld();
-  if (world.rescue >= 100) setTimeout(startRescue, 500);
-}
-function startRescue(){
-  if (scene || rebecca.freed) return;
-  endDialog(); closePanels();
-  const name = character.name;
-  const say = (who, text, fn) => ({ who, text, fn });
-  scene = { i: -1, steps: [
-    say(null, '흙더미가 한꺼번에 무너집니다.', () => {
-      shake = 0.45;
-      const p = P(rebecca.c + 0.5, 0);
-      for (let i = 0; i < 40; i++) sparks.push({ x: p.x + camX + (Math.random()-0.5)*T*1.4, y: p.y - T*(0.3 + Math.random()), vx: (Math.random()-0.5)*300, vy: -Math.random()*260, life: 0.9, c: i % 3 ? '#8a6a45' : '#c2253f' });
-      world.rebeccaFree = true; saveWorld();
-      rebecca = makeFreeRebecca(1, 1, 'lying');
-    }),
-    say(goblin, '대장..! 뭔가 나왔다!!', () => { goblin.kind = 'wander'; goblin.busy = false; goblin.target = { c:2, r:2, face:-1 }; }),
-    say(karius, '……벽을 긁던 소리의 주인이군.', () => { karius.kind = 'wander'; karius.busy = false; karius.target = { c:3, r:1, face:-1 }; }),
-    say(rebecca, '…하늘이다.'),
-    say(null, '레베카는 대자로 누워 우물 입구를 올려다봅니다. 소리 없이 웁니다.'),
-    say(rebecca, '…죄송해요. 조금만, 이러고 있을게요.'),
-    say(null, '한참 뒤, 그녀가 일어납니다. 흙투성이 판금 갑옷, 루비색 머리카락.', () => { rebecca.kind = 'idle'; rebecca.busy = true; rebecca.timer = 3; }),
-    say(rebecca, `기사 레베카입니다. 꺼내 주셔서 고마워요, ${name} 님.`),
-    say(goblin, '아우..예쁘다!!'),
-    say(rebecca, '오늘부터 이 굴의 기사가 되어 드릴게요. 괜찮죠?'),
-    say(null, '레베카가 합류했습니다.', showJoinWindow),
-  ]};
-  nextSceneStep();
-}
-function nextSceneStep(){
-  scene.i++;
-  const st = scene.steps[scene.i];
-  if (!st){
-    scene = null; dlgEl.hidden = true;
-    assign(goblin, shift === 'goblin' ? 'dig' : 'fire');
-    assign(karius, shift === 'karius' ? 'dig' : 'fire');
-    buildBar();
-    return;
-  }
-  if (st.fn) st.fn();
-  const who = dlgEl.querySelector('.who');
-  who.textContent = st.who ? st.who.name : '';
-  who.style.color = st.who ? st.who.raw : '';
-  const txt = dlgEl.querySelector('.txt');
-  txt.textContent = st.text;
-  txt.style.color = st.who ? '' : 'var(--ink-dim)';
-  dlgEl.hidden = false;
-}
-function showJoinWindow(){
-  const s = getStats('rebecca');
-  evEl.innerHTML = '';
-  evEl.appendChild(el('div', 'ev-narr', '레베카가 합류했습니다.'));
-  const box = el('div', 'ev-box');
-  box.appendChild(el('div', 'ev-tag', `동료 · ${s.grade}`));
-  const rows = [
-    ['🗡️', `[${s.name}]`, s.sub, s.grade],
-    ['🫀', `체력 ${s.hp}`, `공격 ${s.atk} · 방어 ${s.def} · 방어율 ${fmtStat('block', s.block)}`, ''],
-    ['✨', s.tags.join(', '), s.trait, ''],
-    ['🔥', '행동: 자유', '모닥불, 하늘 바라보기, 산책을 스스로 오가요.', ''],
-  ];
-  for (const [em, name, desc, chip] of rows){
-    const row = el('div', 'ev-row' + (em === '🗡️' ? ' relic' : ''));
-    row.appendChild(el('div', 'ev-em', em));
-    const m = el('div', 'ev-main'); m.appendChild(el('div', 'ev-name', name)); m.appendChild(el('div', 'ev-desc', desc)); row.appendChild(m);
-    row.appendChild(el('div', 'ev-chips', chip));
-    box.appendChild(row);
-  }
-  evEl.appendChild(box);
-  const foot = el('div', 'ev-foot');
-  foot.appendChild(el('span', '', '캐릭터 바에서 상태창을 열 수 있어요'));
-  const ok = el('button', '', '확인 [Space]'); ok.onclick = () => { if (scene) nextSceneStep(); closeEvent(); };
-  foot.appendChild(ok);
-  evEl.appendChild(foot);
-  evEl.hidden = false;
-}
 
 /* =========================================================
    전투 테스트 (자동 전투 · 난전)
@@ -2806,8 +2038,6 @@ const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
 const BLEED = { chance: 0.12, critChance: 0.5, ticks: 5, maxStacks: 3 };   // 틱당 피해 = 중첩 × (2 + 최대체력 2%, 최대 6)
 
 function enterBattle(){
-  if (scene || falling) return;
-  if (world && world.weather && (world.weather.kind === '비' || world.weather.kind === '뇌우')) document.getElementById('bt-rain').checked = true;   // 굴에 비가 오면 전투도 비
   closePanels(); endDialog(); closeEvent();
   mode = 'battle'; curCols = BATTLE_COLS; resize();
   document.body.classList.add('battle');
@@ -3030,8 +2260,6 @@ function syncManual(){
 document.getElementById('bq-run').onclick = () => toggleRun();
 document.getElementById('bq-last').onclick = () => restartLastSetup();
 document.getElementById('bq-speed').onclick = () => document.getElementById('bt-speed').click();
-document.getElementById('bq-view').onclick = () => setView(VIEW === 'board' ? 'classic' : 'board');
-document.getElementById('bq-view').textContent = VIEW === 'board' ? '▦ 보드' : '⛰ 굴';
 document.getElementById('bq-panel').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
 function toggleRun(){
   if (!battle) return;
@@ -4424,47 +3652,7 @@ function drawUnitBody(v){
 /* ---------- 전투 카메라 (세로 화면): 싸우는 곳을 따라가며 확대, 큰 순간엔 줌인 ---------- */
 const cam = { T: 0, x: 0, top: 0, on: false };
 function camFocus(x, y, k = 1.35, t = 0.9){ if (battle) battle.camFocus = { x, y, k, t, max: t }; }
-function updateCamera(dt){
-  const b = battle, portrait = H > W * 1.15;
-  if (boardOn()){ updateBoardCamera(dt, portrait); return; }
-  if (!portrait){ if (cam.on){ cam.on = false; resize(); } if (b.camFocus && b.camFocus.t > 0 && !(b.slowHold > 0)) b.camFocus.t -= dt; return; }   // 가로 화면: 줌인은 그리기에서 (아래 drawBattle)
-  const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
-  const panelEl = document.getElementById('bt-panel');
-  const panelOpen = !panelEl.classList.contains('collapsed');
-  const topReserve = (panelOpen ? panelEl.getBoundingClientRect().bottom : 58) + 8 + (b.units.some(u => u.st.boss && !u.dead) ? (n => n > 1 ? n * 30 + 6 : 40)(bossesOf(b).length) : 0);   // 보스 체력바 자리 (여럿이면 줄 수만큼)
-  const bottomReserve = H * (document.body.classList.contains('manual') ? 0.36 : 0.17);
-  const availH = Math.max(120, H - topReserve - bottomReserve);
-  const maxT = Math.min(70, W / 5.2, availH / 6.2);
-  // 따라갈 곳: 살아 있는 폰들 (쥐 떼는 무게 낮게), 전투 전엔 맵 전체
-  let tT = fitT, cx = curCols / 2;
-  const alive = b.units.filter(u => !u.dead && !u.enter);   // 화면 밖에서 달려오는 쥐는 카메라에서 뺌
-  if (b.running && alive.length){
-    const main = alive.filter(u => !u.st.summon || u.id === 'ratKnight');
-    const xs = (main.length ? main : alive).map(u => u.x).sort((a, c) => a - c);
-    const q = k => xs[Math.min(xs.length - 1, Math.max(0, Math.round((xs.length - 1) * k)))];
-    const x0 = q(0.1), x1 = q(0.9);                                   // 가운데 80%가 싸우는 곳
-    let sx = 0, sw = 0;
-    for (const u of alive){ const wgt = u.st.summon && u.id !== 'ratKnight' ? 0.3 : 1; sx += u.x * wgt; sw += wgt; }
-    const span = Math.max(4.5, x1 - x0 + 2.5) + ROWS * 0.42;
-    tT = Math.max(fitT, Math.min(maxT, W / span));
-    cx = (sx / sw) * 0.5 + (x0 + x1) / 2 * 0.5 + 0.5;
-  }
-  if (b.camFocus && b.camFocus.t > 0){                        // 큰 순간: 잠깐 줌인
-    const f = b.camFocus, k = Math.sin(Math.min(1, f.t / f.max) * Math.PI) ;
-    if (!(b.slowHold > 0)) f.t -= dt;
-    tT = Math.min(maxT * 1.3, tT * (1 + (f.k - 1) * k)); cx = cx + (f.x + 0.5 - cx) * k * 0.8;
-  }
-  if (!cam.on){ cam.on = true; cam.T = T; cam.x = cx; cam.top = floorTop; }
-  const a = Math.min(1, dt * 3.2);
-  cam.T += (tT - cam.T) * a; cam.x += (cx - cam.x) * a;
-  T = cam.T; rowH = T * 0.6; skew = rowH * 0.7;
-  // 세로 자리: 바닥 띠가 남은 공간 아래쪽에, 위로 큰 폰이 설 자리 (약 2.6칸)를 둠
-  const wantTop = Math.max(topReserve + T * 2.6, Math.min(H - bottomReserve - ROWS * rowH - T * 0.35, topReserve + availH * 0.62 - ROWS * rowH * 0.5));
-  cam.top += (wantTop - cam.top) * a; floorTop = cam.top;
-  const half = W / 2, mapW = curCols * T;
-  camX = Math.max(-T * 1.2, Math.min(mapW - W + T * 1.2 + skew * 2.5, cam.x * T - half));
-  if (mapW + skew * 3 < W) camX = mapW / 2 - half;
-}
+function updateCamera(dt){ updateBoardCamera(dt, H > W * 1.15); }
 // 보드 시점 카메라: 싸우는 곳을 살짝 따라 흐름 (가로 화면 DRIFT, 세로 화면은 확대해서 끝까지 따라감). 큰 순간 줌인은 drawBattle에서
 function updateBoardCamera(dt, portrait){
   const b = battle;
@@ -4900,7 +4088,7 @@ for (const [id, S] of Object.entries(SPRITES)){
 const imgReady = im => !!im && im.complete && im.naturalWidth > 0;
 const spriteReady = S => imgReady(S.poses ? S.poses.idle.img : S.img);
 // 포즈 원화를 가진 폰: 지금 상태에 맞는 한 장을 고름 (규칙 하나로 모든 포즈형 캐릭터 공통)
-const hasSpear = o => o.id === 'player' && character && JOBS[character.job] && JOBS[character.job].id === 'drifter';
+const hasSpear = o => o.id === 'player';
 function poseOf(o, S){
   if (o.poseName && o.poseUntil > time && S.poses[o.poseName]) return o.poseName;   // 기술 · 연출이 잠깐 정한 포즈
   if (o.dead || o.stun > 0.05) return 'hurt';
@@ -6681,7 +5869,7 @@ const lvOf = id => DGP.lv[id] || 1;
 const lvMul = id => 1 + LV.grow * (lvOf(id) - 1);
 const PARTY_BASE = ['player', 'rebecca', 'goblin', 'karius'];   // 처음부터 함께인 넷 (고정)
 DGP.roster = DGP.roster || []; DGP.rows = DGP.rows || {}; DGP.manual = !!DGP.manual;
-const nameOf = id => id === 'player' ? character.name : getStats(id).name;
+const nameOf = id => getStats(id).name;
 const owned = () => [...PARTY_BASE, ...DGP.roster.filter(id => !PARTY_BASE.includes(id))];
 const rowOf = id => DGP.rows[id] || (getStats(id).projectile || id === 'goblin' || id === 'norman' ? 'back' : 'front');
 const DG = { active: false, area: null, pawns: [], actors: [], props: [], waits: [], conds: [], interact: null,
@@ -6979,7 +6167,7 @@ function setArea(key){
   resize();
   DG.flakes = [];
   DG.pawns.forEach((u, i) => { u.x = Math.max(0, 3.2 - i * 0.9); u.y = [2, 1, 3, 2.6][i]; u.vx = u.vy = 0; u.face = 1; });
-  DG.camX = boardOn() ? W / 2 - (curCols / 2) * T - T * 0.6 : -T; camX = DG.camX;
+  DG.camX = W / 2 - (curCols / 2) * T - T * 0.6; camX = DG.camX;
   caption = { text: DG.area.name, life: 2.4, max: 2.4 };
 }
 function dgSolid(nx, ny){
@@ -7109,7 +6297,7 @@ function giveXp(id, n){
   while (DGP.xp[id] >= LV.need(lvOf(id))){
     DGP.xp[id] -= LV.need(lvOf(id));
     DGP.lv[id] = lvOf(id) + 1;
-    const nm = id === 'player' ? character.name : getStats(id).name;
+    const nm = getStats(id).name;
     out.push(`${nm} Lv${DGP.lv[id]}!`);
     DG.hp[id] = Math.round((DG.hp[id] ?? 0) + getStats(id).hp * LV.grow);   // 레벨이 오르면 늘어난 만큼 체력도 참
   }
@@ -7835,9 +7023,8 @@ function updateDungeon(dt){
   }
   // 카메라: 선두를 따라감 (컷씬 중엔 지정한 곳)
   const fx = DG.focus != null ? DG.focus : L.x + 0.5 + L.face * 1.2;
-  const side = boardOn();
-  const want = side ? (fx - curCols / 2) * T : fx * T + 0.5 * skew - W / 2;
-  let lo = side ? W / 2 - (curCols / 2) * T - T * 0.6 : -T * 0.6, hi = side ? (curCols / 2) * T - W / 2 + T * 0.6 : Math.max(lo, curCols * T - W + T * 0.6 + skew * 2.5);
+  const want = (fx - curCols / 2) * T;
+  let lo = W / 2 - (curCols / 2) * T - T * 0.6, hi = (curCols / 2) * T - W / 2 + T * 0.6;
   if (hi < lo) lo = hi = 0;
   DG.camX += (Math.max(lo, Math.min(hi, want)) - DG.camX) * Math.min(1, dt * 3.5);
   camX = DG.camX;
@@ -8177,7 +7364,6 @@ function loop(now){
 }
 
 // v12.6: 캐릭터 생성 없음. 정해진 주인공 인주로 시작
-const INJU = { name:'인주', gender:0, race:0, job:JOBS.findIndex(j => j.id === 'drifter'), hair:0, cloth:0, v: VERSION };
-function boot(){ startGame(INJU); }
+function boot(){ startGame(); }
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
 </script>
