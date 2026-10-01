@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.2
+  version v13.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -344,7 +344,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.2';
+const VERSION = 'v13.3';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -7059,7 +7059,7 @@ const BOSS = {
     const jr = addActor('jeokroe', 12, 2, -1);
     await narrOnce('boss5b', ['붉은 날개의 천사. 성해포를 두른 대리석의 몸.', '그는 말이 없습니다.', '빗속에서 그의 손이 천천히 올라갑니다.']);
     DG.lock = false; DG.focus = null; removeActor(jr);
-    await fightOrDie({ title: '적뢰', enemies: [{ id: 'jeokroe', x: 9, y: 2, mul: 0.8 }], xp: 300, tick: () => {   // 우물에 막 내려선 적뢰 (원래 세기의 80%). 반쯤 무너지면 폭우: 천벌이 맵 전체로
+    await fightOrDie({ title: '적뢰', enemies: [{ id: 'jeokroe', x: 9, y: 2 }], xp: 300, tick: () => {   // 마지막 보스는 원래 세기 그대로. 반쯤 무너지면 폭우: 천벌이 맵 전체로
       const b = battle, j = b.units.find(o => o.id === 'jeokroe');
       if (!b.rain && j && j.hp < j.st.hp * 0.5){ b.rain = true; b.drops = []; shake = 0.4; caption = { text: '폭우 — 천벌이 맵 전체로 번집니다', life: 3, max: 3 }; logLine('🌧 폭우가 쏟아진다. 이제 천벌은 맵 전체에', 'crit'); }
     } });
