@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.13
+  version v12.14
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.13';
+const VERSION = 'v12.14';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1149,14 +1149,58 @@ function drawFloor(){
 }
 
 /* ---------- 보드 시점 바닥: 어두운 탁자 위 체스판 (칸 사이 틈 + 두께 + 테두리) ---------- */
-const BOARD_COL = { light: '#e9e6dc', dark: '#24262d', lightSide: '#a9a59a', darkSide: '#101116', frame: '#1a1c24', frameSide: '#0d0f14', rim: '#2c2f3a', table: '#171a22', bg: '#10141d' };
+const BOARD_COLS = { light: '#e9e6dc', dark: '#24262d', lightSide: '#a9a59a', darkSide: '#101116', frame: '#1a1c24', frameSide: '#0d0f14', rim: '#2c2f3a', table: '#171a22', bg: '#10141d' };
 const boardQuad = (c0, r0, c1, r1) => [P(c0, r0), P(c1, r0), P(c1, r1), P(c0, r1)];
 function fillQuad(q, col){ ctx.fillStyle = col; ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.fill(); }
+// 보스룸: 판 뒤 멀리 세운 배경 그림 + 판 둘레 바닥. 둘 다 판과 같은 원근 (boardProj)이라 카메라가 돌면 같이 기울어짐
+const ROOMS = {
+  cathedral: { src: 'assets/cathedral_back.jpg', far: -2.5, wide: 30, floorAt: 0.93,   // 그림의 바닥선 (위에서 93%)을 far 줄에 맞춤
+    sky: ['#f2f2f2', '#c9c9c9'], ground: ['#d6d4d0', '#a9a6a1'], sigil: '178,14,26',
+    col: { light: '#e4e1dc', dark: '#a29e98', lightSide: '#b9b5af', darkSide: '#77736e', frame: '#5f5a55', frameSide: '#3f3b37', rim: '#8b1a22', table: '#cfcdc9', bg: '#d8d6d2' } },
+};
+for (const R of Object.values(ROOMS)){ R.img = new Image(); R.img.src = R.src; }
+const ROOM_OF = { agnes: 'cathedral' };   // 이 보스가 있는 전투는 그 방에서
+function curRoom(){
+  if (mode !== 'battle' || !battle) return null;
+  for (const u of battle.units){ const k = ROOM_OF[u.id]; if (k) return ROOMS[k]; }
+  return null;
+}
+function drawRoomBack(R){
+  const top = P(curCols / 2, R.far), sc = boardProj(curCols / 2, R.far).s;
+  const g = ctx.createLinearGradient(0, -H, 0, top.y);
+  g.addColorStop(0, R.sky[0]); g.addColorStop(1, R.sky[1]);
+  ctx.fillStyle = g; ctx.fillRect(-W, -H, W * 3, H * 3);
+  const near = Math.min(ROWS + 4, ROWS / 2 + (BOARD.DIST - 1) / Math.max(0.05, BV.cos));   // 바닥 앞쪽 끝 (카메라 뒤로 넘어가지 않게)
+  const gq = [P(-60, R.far), P(curCols + 60, R.far), P(curCols + 60, near), P(-60, near)];
+  const gg = ctx.createLinearGradient(0, gq[0].y, 0, gq[2].y);
+  gg.addColorStop(0, R.ground[0]); gg.addColorStop(1, R.ground[1]);
+  ctx.fillStyle = gg; ctx.beginPath(); gq.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.lineTo(gq[2].x, H * 3); ctx.lineTo(gq[3].x, H * 3); ctx.closePath(); ctx.fill();
+  if (imgReady(R.img)){
+    const w = R.wide * sc, h = w * R.img.naturalHeight / R.img.naturalWidth;
+    ctx.drawImage(R.img, top.x - w / 2, top.y - h * R.floorAt, w, h);
+    const fade = ctx.createLinearGradient(0, top.y - h * (R.floorAt - 0.9) - h * 0.1, 0, top.y + T * 0.2);   // 그림 아래 끝을 바닥색으로 녹임
+    fade.addColorStop(0, 'rgba(214,212,208,0)'); fade.addColorStop(1, R.ground[0]);
+    ctx.fillStyle = fade; ctx.fillRect(top.x - w / 2, top.y - h * 0.1, w, h * 0.1 + T * 0.2);
+  }
+  // 바닥의 붉은 가시 문장: 판 가운데를 중심으로 동심원 · 방사선 · 가시 (바닥 좌표로 그려서 원근 그대로)
+  const cx = curCols / 2, cy = ROWS / 2, line = (pts, wd, a) => {
+    ctx.strokeStyle = `rgba(${R.sigil},${a})`; ctx.lineWidth = wd; ctx.beginPath();
+    pts.forEach(([c, r], i) => { const q = P(c, r); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); }); ctx.stroke();
+  };
+  for (const rad of [2.2, 5.5, 9]) line(Array.from({ length: 61 }, (_, i) => [cx + Math.cos(i / 60 * Math.PI * 2) * rad, cy + Math.sin(i / 60 * Math.PI * 2) * rad * 0.8]), rad < 3 ? 2.5 : 1.5, 0.55);
+  for (let i = 0; i < 12; i++){
+    const a = i / 12 * Math.PI * 2, L = i % 3 === 0 ? 14 : 9, dx = Math.cos(a), dy = Math.sin(a) * 0.8;
+    line([[cx + dx * 1.2, cy + dy * 1.2], [cx + dx * L, cy + dy * L]], i % 3 === 0 ? 2.5 : 1.2, 0.5);
+    for (let t = 2; t < L; t += 1.6){ const px = cx + dx * t, py = cy + dy * t, nx = -dy * 0.35, ny = dx * 0.35; line([[px + nx, py + ny], [px - nx + dx * 0.3, py - ny + dy * 0.3]], 1, 0.4); }
+  }
+}
 function drawBoardTable(){
+  const R = curRoom(), BOARD_COL = R ? R.col : BOARD_COLS;
+  if (R) drawRoomBack(R);
   const m = P(curCols / 2, ROWS / 2);
   const g = ctx.createRadialGradient(m.x, m.y, T, m.x, m.y, Math.max(W, H) * 0.75);
   g.addColorStop(0, BOARD_COL.table); g.addColorStop(1, '#07090d');
-  ctx.fillStyle = g; ctx.fillRect(-W, -H, W * 3, H * 3);
+  if (!R){ ctx.fillStyle = g; ctx.fillRect(-W, -H, W * 3, H * 3); }
   const F = BOARD.FRAME, thick = T * 0.32 * BV.cos;       // 판 테두리 + 앞면 두께
   const fr = boardQuad(-F, -F, curCols + F, ROWS + F);
   ctx.fillStyle = 'rgba(0,0,0,.45)';                      // 탁자에 드리운 그림자
@@ -1170,6 +1214,7 @@ function drawBoardTable(){
   ctx.beginPath(); fr.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.stroke();
 }
 function drawBoardTiles(){
+  const R = curRoom(), BOARD_COL = R ? R.col : BOARD_COLS;
   const gap = 0.02, h = T * 0.09 * BV.cos;               // 칸 틈, 칸 앞면 두께
   for (let r = 0; r < ROWS; r++){
     for (let c = 0; c < curCols; c++){
@@ -2228,6 +2273,7 @@ const STYLES = {
   poren:       { approach:3, hold:4, guard:2, retreat:1 },   // 쥐 군단의 왕: 혼자선 버티다 빠지고, 쥐들이 모이면 함께 밀고 들어감 (뭉침)
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
+  tomoe:       { approach:4, hitrun:1, strafe:1, guard:1, hold:3, retreat:0 },   // 여장부: 정면으로 걸어 들어가 삽으로 후려침
   rosina:      { approach:2, hitrun:4, strafe:3, guard:0, hold:1, retreat:1, dodge:true },   // 춤꾼: 스텝 밟다 뿔로 파고듦
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
 };
@@ -2267,6 +2313,11 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
   tags:['의무B', '사격B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🎯 사수 — 멀리서 뒤로 빠지며 견제 사격. 가끔 앞으로 살짝 나가 멈춰 서서 조준 사격.',
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
+HEROES.tomoe = { name:'도모에', grade:'★★★★', color:'#c23a3a', sub:'삽을 든 여장부 · 등에 용 문신 · 안대 · 군모',
+  hp:260, atk:24, def:12, block:0.35, crit:0.15, eva:0.1, spd:2.4, range:1.5, cd:1.3, windup:0.4, hits:1, weight:75, react:0.25,
+  hitStagger:0.35, splash:0.4, splashR:0.9,
+  tags:['근접A', '통솔B'], trait:'🔆 묻어 주마 — 정면으로 성큼 걸어 들어가 삽으로 후려친다. 맞으면 잘 휘청이고 (35%), 바로 옆 0.9칸에도 절반 피해.\n뒤로 물러서지 않는다.',
+  equip:{ 무기:'⛏ 야전삽', 머리:'군모 · 안대', 몸:'검은 코트 (등 트임)', 장신구:'—' } };
 HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러',
   hp:80, atk:7, def:2, block:0, crit:0.12, eva:0.18, spd:3.4, range:1.1, cd:0.8, windup:0.18, hits:2, weight:48, react:0.5,
   brain:'yellow', face:'assets/yellow_face.png',
@@ -2325,6 +2376,15 @@ Object.assign(ENEMIES, {
     look:{ scale:1.4, skin:'#b8a58a', cloth:'#6a5a44', weapon:'axe', wstyle:{ blade:'#8f8a80' }, hood:'#4d4234', eye:'#f0e6c0', bw:1.35 },
     tags:[], trait:'🔆 맷돌질 — 크게 내려찍어 주변 1.4칸에 절반 피해와 땅울림.\n🌾 곱게 갈아 주지 — 싸우는 동안 색을 잃은 자들이 모여든다.',
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
+  odile: { name:'오딜', grade:'', color:'#d8d2c8', sub:'만남 · 붉은 소파에 다리를 꼬고 앉은 가면의 소녀',
+    hp:150, atk:6, def:4, block:0, crit:0, eva:0.1, spd:0, range:1.2, cd:2.0, windup:0.5, hits:1, weight:45, react:0.6, height:1.3,
+    tags:['중립'], trait:'소파에서 일어나지 않는다. 가면 너머로 지켜볼 뿐. 바로 곁에 오는 것만 가볍게 밀어낸다. (만남 NPC, 아직 정해진 대사 없음)',
+    equip:{ 무기:'—', 머리:'흰 가면 · 검은 꽃', 몸:'검은 레이스 드레스', 장신구:'🛋 붉은 소파' } },
+  agnes: { name:'아그네스', grade:'BOSS', color:'#e0202a', sub:'붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다',
+    hp:900, atk:24, def:12, block:0.2, crit:0.1, eva:0.1, spd:1.2, range:3.0, cd:1.6, windup:0.5, hits:1, weight:300, react:0.2, radius:0.6, height:1.9,
+    boss:true, brain:'agnes', sever:0.3,
+    tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 아그네스가 있는 전투는 성당에서 벌어진다.',
+    equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
   rosina: { name:'로시나', grade:'', color:'#8a6a9a', sub:'"외뿔" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다',
     hp:380, atk:18, def:8, block:0.15, crit:0.12, eva:0.25, spd:2.6, range:1.6, cd:1.2, windup:0.35, hits:1, weight:55, react:0.35, height:1.5,
     lunge:2.4,
@@ -2683,8 +2743,8 @@ function showJoinWindow(){
 let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
-const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella'];
+const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4396,6 +4456,7 @@ function drawBattle(){
   drawWaterFloor();
   drawBossTelegraphs();
   drawCesarTelegraphs();
+  drawAgnesSigils();
   drawKariusTelegraphs();
   const list = [...b.units].sort((a, c) => a.y - c.y);
   for (const u of list){
@@ -4736,6 +4797,12 @@ SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace
   poses:{ idle:{ src:'assets/umbrella_idle.png', ax:114, ay:440, f:-1 } } };
 SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, idleH:400,       // 로시나: 한 장, 원화가 왼쪽을 봄 (외뿔이 앞)
   poses:{ idle:{ src:'assets/horn_idle.png', ax:207, ay:400, f:-1 } } };
+SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 한 장, 원화가 왼쪽을 봄
+  poses:{ idle:{ src:'assets/odile_idle.png', ax:165, ay:380, f:-1 } } };
+SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:440,       // 도모에: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
+  poses:{ idle:{ src:'assets/tomoe_idle.png', ax:125, ay:440, f:-1 } } };
+SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 아그네스: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
+  poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
@@ -6964,7 +7031,63 @@ async function floor1(){
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
-const BRAINS = { cesar: cesarBrain, yellow: yellowBrain };
+const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain };
+// 아그네스: 걷기 · 기본 공격은 보통 두뇌. 6초마다 상대 발밑에 가시 문장 (1초 예고 뒤 솟음)
+const AG = { cd: 6, tele: 1.0, r: 1.5, atk: 1.4, root: 0.8 };
+function agnesBrain(u, sdt, tgt, dist){
+  const b = battle;
+  b.sigils = b.sigils || []; b.thorns = b.thorns || [];
+  u.sigCd = (u.sigCd ?? 3) - sdt;
+  for (const g of b.sigils){
+    if (g.owner !== u || g.done || (g.t += sdt) < AG.tele) continue;
+    g.done = true;
+    b.thorns.push({ x: g.x, y: g.y, life: 0.7, max: 0.7 });
+    shake = Math.max(shake, 0.12);
+    for (const o of b.units){
+      if (o.dead || o.side === u.side || Math.hypot(o.x - g.x, o.y - g.y) > AG.r) continue;
+      resolveHit(u, o, { atk: Math.round(u.st.atk * AG.atk) });
+      if (o.dead) continue;
+      o.stun = Math.max(o.stun, AG.root); o.windup = 0; o.atkTarget = null;
+      fxText(o, '가시에 묶임', '#ff4a5a');
+      if (Math.random() < 0.5) applySever(o);
+    }
+  }
+  b.sigils = b.sigils.filter(g => !g.done);
+  if (u.sigCd > 0 || u.stun > 0 || u.windup > 0) return false;
+  const foes = b.units.filter(o => !o.dead && o.side !== u.side && !o.enter);
+  if (!foes.length) return false;
+  u.sigCd = AG.cd;
+  const n = u.hp < u.st.hp * 0.5 ? 2 : 1;
+  for (let i = 0; i < Math.min(n, foes.length); i++){
+    const t = foes.splice(Math.floor(Math.random() * foes.length), 1)[0];
+    b.sigils.push({ owner: u, x: t.x, y: t.y, t: 0 });
+  }
+  fxText(u, '✝ 가시 문장', '#ff4a5a', 'big', 0.4);
+  logLine(`✝ ${u.name}, 가시 문장을 새긴다 (${n}개) — 1초 뒤 가시가 솟는다`, 'crit');
+  return false;
+}
+// 가시 문장 예고 (붉은 원 + 십자) · 솟은 가시
+function drawAgnesSigils(){
+  const b = battle;
+  for (const g of b.sigils || []){
+    const k = Math.min(1, g.t / AG.tele);
+    floorShape(fanPts(g.x, g.y, AG.r, 0, Math.PI * 2, 30).slice(1), k, '255,40,60');
+    const c = P(g.x + 0.5, g.y + 0.5), L = AG.r * T * 0.8;
+    ctx.strokeStyle = `rgba(255,60,70,${0.4 + k * 0.6})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(c.x - L, c.y); ctx.lineTo(c.x + L, c.y); ctx.moveTo(c.x, c.y - L * 0.45); ctx.lineTo(c.x, c.y + L * 0.45); ctx.stroke();
+  }
+  for (const f of b.thorns || []){
+    f.life -= 1 / 60; if (f.life <= 0) continue;
+    const k = f.life / f.max, e = 1 - k;
+    for (let i = 0; i < 9; i++){
+      const a = i / 9 * Math.PI * 2 + f.x, rr = AG.r * (0.2 + hash(i, f.y | 0) * 0.75);
+      const p = P(f.x + 0.5 + Math.cos(a) * rr, f.y + 0.5 + Math.sin(a) * rr * 0.85), h = T * (0.5 + hash(i, 7) * 0.7) * Math.min(1, e * 4);
+      ctx.fillStyle = `rgba(200,16,30,${k})`; ctx.strokeStyle = `rgba(40,0,6,${k})`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(p.x - T * 0.06, p.y); ctx.lineTo(p.x, p.y - h); ctx.lineTo(p.x + T * 0.06, p.y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+  }
+  b.thorns = (b.thorns || []).filter(f => f.life > 0);
+}
 // 옐로: 기본은 힐러. 다친 동료에게 쌩 달려가 꿰매고 휙 빠짐. 나머지는 보통 두뇌 (치고 빠지기)
 const YELLOW = { cd: 4.5, low: 0.7, reach: 4, amt: 0.18, flat: 6, dashMul: 2.2, out: 0.55 };
 function yellowBrain(u, sdt, tgt, dist){
