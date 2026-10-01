@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.0
+  version v13.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -36,6 +36,7 @@
   canvas{display:block;width:100%;height:100%;}
   .hud{position:absolute;pointer-events:none;font-size:12px;}
   #hud-tl{top:calc(10px + env(safe-area-inset-top,0px));left:12px;color:var(--ink-dim);line-height:1.5;}
+  #mapline{white-space:pre-line;}
   #hud-tl b{font-family:var(--display);font-weight:400;font-size:18px;color:var(--fire);}
   #hud-tr{top:calc(10px + env(safe-area-inset-top,0px));right:12px;display:flex;flex-direction:column;align-items:stretch;gap:5px;pointer-events:auto;}
   #hud-tr button{background:rgba(23,18,26,.88);color:var(--ink);border:1px solid var(--line);padding:5px 9px;border-radius:4px;font-size:12px;}
@@ -171,6 +172,7 @@
   .tbl table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
   .tbl th,.tbl td{padding:6px 6px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top;}
   .tbl th{color:var(--ink-dim);font-weight:400;white-space:nowrap;}
+  .tbl tr.sec td{color:var(--fire);font-family:var(--display);font-size:13px;padding-top:12px;border-bottom:1px solid var(--line);}
   .tbl td.em{font-size:18px;width:28px;text-align:center;}
   .tbl td .d{color:var(--ink-dim);font-size:11px;line-height:1.5;}
   .tbl tr.click{cursor:pointer;} .tbl tr.click:hover td{background:#1a151d;}
@@ -339,7 +341,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.0';
+const VERSION = 'v13.1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -572,6 +574,9 @@ const JOY = { on: false, x: 0, y: 0, id: null };
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => pad.addEventListener(ev, off));
   document.getElementById('game').addEventListener('contextmenu', e => e.preventDefault());
 })();
+// 안내 글의 [Space]: 터치 화면에선 오른쪽 아래 버튼 이름으로 (굴: 대화 · 던전: 확인)
+const TOUCH = matchMedia('(pointer:coarse)').matches;
+const keyLabel = t => TOUCH ? t.replace('[Space]', `[${document.getElementById('act').textContent}]`) : t;
 function moveInput(){
   if (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.18) return { x: JOY.x, y: JOY.y };
   let dx = 0, dy = 0;
@@ -775,8 +780,8 @@ function update(dt){
   const n = dialog || gate ? null : nearestNpc();
   const pr = document.getElementById('prompt');
   pr.hidden = !n && !gate;
-  if (gate) pr.textContent = `[Space] 석문 아래로 (다섯 층)`;
-  if (n) pr.textContent = `[Space] ${n.name}에게 말걸기`;
+  if (gate) pr.textContent = keyLabel(`[Space] 석문 아래로 (다섯 층)`);
+  if (n) pr.textContent = keyLabel(`[Space] ${n.name}에게 말걸기`);
   updateBar(n);
 }
 function addFloater(text, who, color, lift=-1){
@@ -1669,8 +1674,8 @@ let caption = null;
 const evEl = document.getElementById('event');
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function closeEvent(){ evEl.hidden = true; evEl.innerHTML = ''; }
-function updateHud(){
-  const t = `석문 → 다섯 층 · 최고 ${DGP.best}층${DGP.clears ? ` · 돌파 ${DGP.clears}` : ''} · 동료 ${owned().length}`;
+function updateHud(){                                             // 두 줄: 석문 · 최고 층 / 돌파 · 깊이 · 동료 (좁은 화면에서도 버튼에 안 가리게)
+  const t = `석문 → 다섯 층 · 최고 ${DGP.best}층\n${DGP.clears ? `돌파 ${DGP.clears} · 깊이 ${DGP.clears} (적 +${DGP.clears * 15}%) · ` : ''}동료 ${owned().length}`;
   const ml = document.getElementById('mapline'); if (ml.textContent !== t) ml.textContent = t;
 }
 function pickWeighted(pool){
@@ -1807,7 +1812,7 @@ Object.assign(ENEMIES, {
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
   odile: { name:'오딜', grade:'', color:'#d8d2c8', sub:'만남 · 붉은 소파에 다리를 꼬고 앉은 가면의 소녀',
     hp:150, atk:6, def:4, block:0, crit:0, eva:0.1, spd:0, range:1.2, cd:2.0, windup:0.5, hits:1, weight:45, react:0.6, height:1.3,
-    tags:['중립'], trait:'소파에서 일어나지 않는다. 가면 너머로 지켜볼 뿐. 바로 곁에 오는 것만 가볍게 밀어낸다. (만남 NPC, 아직 정해진 대사 없음)',
+    tags:['중립'], trait:'소파에서 일어나지 않는다. 가면 너머로 지켜볼 뿐. 바로 곁에 오는 것만 가볍게 밀어낸다.\n🎭 만남 (4층 오딜의 방): 쉬었다 가면 모두 체력 60%, 가면을 물으면 반반으로 오딜의 가면 (★★★★)',
     equip:{ 무기:'—', 머리:'흰 가면 · 검은 꽃', 몸:'검은 레이스 드레스', 장신구:'🛋 붉은 소파' } },
   agnes: { name:'로젤', grade:'BOSS', color:'#e0202a', sub:'붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다',
     hp:900, atk:24, def:12, block:0.2, crit:0.1, eva:0.1, spd:1.2, range:3.0, cd:1.6, windup:0.5, hits:1, weight:300, react:0.2, radius:0.6, height:1.9,
@@ -1852,7 +1857,7 @@ Object.assign(ENEMIES, {
     equip:{ 무기:'🦄 가면의 외뿔', 머리:'작은 왕관 · 뿔 가면', 몸:'해진 망토 · 사슬', 장신구:'—' } },
   umbrella: { name:'우산 소녀', grade:'', color:'#e0302a', sub:'중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다',
     hp:120, atk:9, def:4, block:0.2, crit:0.05, eva:0.2, spd:1.6, range:1.3, cd:1.4, windup:0.4, hits:1, weight:40, react:0.4, height:1.6,
-    tags:['중립'], trait:'붉은 우산 아래 얼굴이 보이지 않는다. 아무 말도 하지 않는다. (아직 정해진 역할 없음)',
+    tags:['중립'], trait:'붉은 우산 아래 얼굴이 보이지 않는다. 아무 말도 하지 않는다.\n🏮 만남 (2 · 3 · 5층): 붉은 등불을 내민다. 받으면 동료 하나의 최대 체력 20%를 두고 ★★★ 유물을 고른다',
     equip:{ 무기:'☂ 붉은 우산', 머리:'—', 몸:'검은 옷 · 붉은 치마', 장신구:'—' } },
   benkin: { name:'벤킨', grade:'', color:'#e09a9a', sub:'사슬에 감긴 가시관의 여자 · 도끼와 낫',
     hp:420, atk:20, def:10, block:0.3, crit:0.1, eva:0.1, spd:2.0, range:2.4, cd:1.5, windup:0.45, hits:1, weight:120, react:0.3, radius:0.5, height:1.8,
@@ -2027,21 +2032,24 @@ function openSheet(id, tab = 'status', unit = null){
 function toggleStats(){
   if (!statsEl.hidden){ statsEl.hidden = true; return; }
   closePanels();
-  panelHead(statsEl, '스탯', '줄을 누르면 상태창이 열려요. 방어 기술 = 방어율 + 방어력×2 + 무게/10 (최대 90%).');
+  panelHead(statsEl, '스탯', '줄을 누르면 상태창이 열려요. 동료의 🫀 · ⚔는 지금 레벨 기준. 방어 기술 = 방어율 + 방어력×2 + 무게/10 (최대 90%).');
   const wrap = el('div', 'tbl'), t = el('table');
   const hr = el('tr');
   ['', '이름', '🫀', '⚔', '방어기술', '치명', '회피', '이동', '공속', '무게'].forEach(h => hr.appendChild(el('th', '', h)));
   t.appendChild(hr);
-  const addRow = id => {
-    const s = getStats(id), tr = el('tr', 'click');
+  const addSec = txt => { const tr = el('tr', 'sec'), td = el('td', '', txt); td.colSpan = 10; tr.appendChild(td); t.appendChild(tr); };
+  const addRow = (id, ally) => {
+    const s = getStats(id), tr = el('tr', 'click'), m = ally ? lvMul(id) : 1;
     tr.onclick = () => openSheet(id);
     const g = el('td', 'grade', gradeShort(s.grade));
     tr.appendChild(g);
-    const n = el('td', '', s.name); n.style.color = s.color; tr.appendChild(n);
-    ['hp','atk','guard','crit','eva','spd','atkSpd','weight'].forEach(k => tr.appendChild(el('td', 'num', fmtStat(k, s[k]))));
+    const n = el('td', '', ally ? `${s.name} Lv${lvOf(id)}` : s.name); n.style.color = s.color; tr.appendChild(n);
+    ['hp','atk','guard','crit','eva','spd','atkSpd','weight'].forEach(k => tr.appendChild(el('td', 'num', fmtStat(k, k === 'hp' || k === 'atk' ? Math.round(s[k] * m) : s[k]))));
     t.appendChild(tr);
   };
-  ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'enemyGoblin', 'goblinArcher', 'jeokroe'].forEach(addRow);
+  addSec('동료'); owned().forEach(id => addRow(id, true));
+  addSec('다섯 층의 적'); ['swordsman', 'shieldman', 'spearman', 'archer', 'brute', 'faded', 'enemyGoblin', 'goblinArcher', 'benkin', 'dandalo', 'rosina'].forEach(id => addRow(id));
+  addSec('보스'); ['cesar', 'miller', 'agnes', 'hargen', 'jeokroe'].forEach(id => addRow(id));
   wrap.appendChild(t);
   statsEl.appendChild(wrap);
   statsEl.hidden = false;
@@ -6475,6 +6483,7 @@ const RELICS = {
   purse:   { g: 0, curse: true, em: '👛', name: '텅 빈 지갑', d: '금화 -50%' },
 };
 const STARS = ['저주', '★', '★★', '★★★', '★★★★'];
+const deepMul = () => 1 + 0.15 * (DGP.clears || 0);              // 깊이: 다섯 층을 돌파할 때마다 다음 판의 적 (보스 포함) +15%
 let RUN = null;
 const has = id => !!(RUN && DG.active && RUN.relics.includes(id));
 function newRun(){ return { floor: 1, step: 0, gold: 0, goldAll: 0, won: 0, lv0: {}, relics: [], train: {}, used: {}, seen: [] }; }
@@ -6497,7 +6506,7 @@ function runSummary(dead){
     const lv = el('div', 'tags');
     for (const id of DG.party){ const a = RUN.lv0[id] ?? lvOf(id), c = lvOf(id); lv.appendChild(el('span', c > a ? 'up' : '', `${nameOf(id)} Lv${a}${c > a ? ` → Lv${c}` : ''}`)); }
     box.appendChild(lv);
-    box.appendChild(el('div', 'sub', dead ? '유물 · 금화 · 단련은 두고 왔습니다. 레벨과 동료는 남습니다.' : '굴로 돌아갑니다. 다음엔 더 깊이.'));
+    box.appendChild(el('div', 'sub', dead ? '유물 · 금화 · 단련은 두고 왔습니다. 레벨과 동료는 남습니다.' : `굴로 돌아갑니다. 다음 판은 깊이 ${DGP.clears}: 적이 ${DGP.clears * 15}% 더 강합니다.`));
     const ok = el('button', 'ok', '굴로 돌아간다'); box.appendChild(ok);
     let closed = false;
     const key = e => { if (e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); e.stopPropagation(); done(); } };
@@ -6530,7 +6539,7 @@ function runStats(u){
     if (has('heavy')) s.spd = +(s.spd * 0.9).toFixed(2);
     if (u.id === 'player') s.javMul = 1 + 0.3 * (tr.jav || 0) + (has('blue') ? 0.25 : 0);
   } else if (RUN){
-    const k = s.boss ? (u.bossMul || 1) : 1 + 0.12 * (RUN.floor - 1);   // 일반 적은 층마다 +12%, 보스는 장면에서 정한 세기
+    const k = (s.boss ? (u.bossMul || 1) : 1 + 0.16 * (RUN.floor - 1)) * deepMul();   // 일반 적은 층마다 +16%, 보스는 장면에서 정한 세기. 돌파할수록 (깊이) 모두 더 강해짐
     s.hp = Math.round(s.hp * k);
     for (const key in s) if (key === 'atk' || key.endsWith('Atk')) s[key] = Math.round(s[key] * k);   // 기술 피해 (천벌 · 날아차기 …)도 같이
     if (has('dust')) s.spd = +(s.spd * 0.92).toFixed(2);
@@ -7615,7 +7624,7 @@ function updateDungeon(dt){
   if (DG.sub){ DG.sub.life -= dt; if (DG.sub.life <= 0) DG.sub = null; }
   const it = DG.interact, pr = document.getElementById('prompt');
   const show = it && !busy && Math.abs(L.x - it.x) < it.r;
-  pr.hidden = !show; if (show) pr.textContent = it.label;
+  pr.hidden = !show; if (show) pr.textContent = keyLabel(it.label);
   if (!DG.area) return;
   const hud = dgHudHtml();
   if (hud !== DG.hudCache){ DG.hudCache = hud; dgHud.innerHTML = hud; }
