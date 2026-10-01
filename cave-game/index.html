@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.5
+  version v13.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -350,7 +350,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.5';
+const VERSION = 'v13.6';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -4209,7 +4209,7 @@ const SPRITES = {
   // 포즈 원화 (장면별 한 장씩): 대기 · 준비(다가감) · 공격 · 필살 · 방어 · 백스텝 · 손들기 · 손들기 준비 · 피격. 원화가 왼쪽을 봄
   // 인주 (주인공): 대기 · 걷기 · 뛰기는 움직이는 원화 (가로로 이어진 프레임), 나머지는 한 장씩. f = 원화가 보는 쪽
   player:      { face:'assets/inju_face.png', heightTiles:1.25, baseFace:1, idleH:354, weapon:{ src:'assets/weapon_fisher_spear.png', len:1.55, grip:0.36 },
-                 alias:{ prep:'charge', strike:'attack', guard:'charge', back:'run', special:'attack', thrust:'charge' },
+                 alias:{ prep:'charge', strike:'charge', guard:'charge', back:'run', special:'attack', thrust:'charge' },   // 준비 = 창을 뒤로 당김, 타격 = 그 순간 찌름 (맞는 순간)
                  poses:{ idle:{ src:'assets/inju_idle.png', fw:211, n:20, fps:4.2, ax:107, ay:354, f:-1 },
                          walk:{ src:'assets/inju_walk.png', fw:305, n:8, fps:7, ax:144, ay:360, f:1 },
                          run:{ src:'assets/inju_run.png', fw:393, n:8, fps:12, ax:193, ay:340, f:1 },
@@ -4230,7 +4230,7 @@ SPRITES.dandalo = { face:'assets/dandalo_face.png', heightTiles:2.0, baseFace:1,
 SPRITES.yellow = { face:'assets/yellow_face.png', heightTiles:1.3, baseFace:-1, idleH:420,   // 옐로: 한 장, 원화가 왼쪽을 봄 (할퀴는 손을 뻗음)
   poses:{ idle:{ src:'assets/yellow_idle_anim.webp', fw:281, fh:420, n:40, cols:8, fps:12.5, ax:145, ay:420, f:-1 } } };   // 움직이는 대기 40프레임
 SPRITES.benkin = { face:'assets/benkin_face.png', heightTiles:1.95, baseFace:1, idleH:460,     // 벤킨: 대기 · 방어 (피격도 같은 그림) · 공격 (준비 · 기술도 같은 그림)
-  alias:{ prep:'attack', strike:'attack', special:'attack', hurt:'guard', back:'idle' },
+  alias:{ strike:'attack', special:'attack', hurt:'guard', back:'idle' },   // 공격 그림은 맞는 순간에만 (준비는 대기에서 몸을 젖힘)
   poses:{ idle:{ src:'assets/benkin_idle.png', ax:145, ay:460, f:1 }, guard:{ src:'assets/benkin_guard.png', ax:200, ay:392, f:1 },
           attack:{ src:'assets/benkin_attack.png', ax:90, ay:460, f:1 } } };
 SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace:-1, idleH:440,   // 우산 소녀: 한 장 (원화의 붉은 등불은 빼고 소녀와 우산만), 원화가 왼쪽을 봄
@@ -4240,7 +4240,7 @@ SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, id
 SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 움직이는 대기 (48프레임, 8칸씩 6줄), 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/odile_idle_anim.webp', fw:332, fh:380, n:48, cols:8, fps:16, ax:165, ay:380, f:-1 } } };
 SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
-  alias:{ prep:'swing', strike:'swing', special:'swing', guard:'dig', back:'dig', run:'dig' },   // 휘두르기 (준비 · 타격) · 돌진 / 방어 / 파내기 (한 장)
+  alias:{ strike:'swing', special:'swing', guard:'dig', back:'dig', run:'dig' },   // 휘두르기 (맞는 순간) · 돌진 / 방어 / 파내기 (한 장). 준비는 대기에서 몸을 젖힘
   poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 },   // 대기 16프레임
           swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
@@ -4252,7 +4252,7 @@ SPRITES.spearman = { face:'assets/spear_face.png', heightTiles:1.75, baseFace:-1
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/spear_idle.png', ax:245, ay:460, f:-1 }, attack:{ src:'assets/spear_attack.png', ax:225, ay:282, f:-1 } } };
 SPRITES.shieldman = { face:'assets/shield_face.png', heightTiles:1.6, baseFace:1, idleH:440,  // 검방패병: 대기 (방패 앞) · 치켜듦 (준비 · 벰), 원화가 오른쪽을 봄
-  alias:{ prep:'attack', strike:'attack', special:'attack' },
+  alias:{ prep:'attack', special:'attack' },   // 치켜든 그림은 준비, 맞는 순간은 대기에서 몸을 앞으로 내지름
   poses:{ idle:{ src:'assets/shield_idle.png', ax:165, ay:440, f:1 }, attack:{ src:'assets/shield_attack.png', ax:185, ay:436, f:1 } } };
 SPRITES.brute = { face:'assets/brute_face.png', heightTiles:3.0, baseFace:-1, idleH:480,      // 곤봉 거한: 대기 · 공격 (내려찍기), 원화가 왼쪽을 봄
   alias:{ strike:'attack', special:'attack' },
@@ -4434,7 +4434,7 @@ function drawSpriteUnit(o){
     ctx.save();
     ctx.translate(p.x, p.y - (o.lift || 0) * T - Math.abs(wob) * T * 0.04);
     let lean = 0;
-    if (q === S.poses.idle && pn !== 'idle' && !o.dead){            // 원화가 한 장뿐인 동작은 몸을 기울여 보여 줌: 준비 = 뒤로, 타격 = 앞으로, 피격 · 방어 = 젖힘
+    if ((q === S.poses.idle || (q === S.poses.charge && (pn === 'prep' || pn === 'strike'))) && pn !== 'idle' && !o.dead){            // 원화가 한 장뿐인 동작은 몸을 기울여 보여 줌: 준비 = 뒤로, 타격 = 앞으로, 피격 · 방어 = 젖힘
       const f = o.face || S.baseFace;
       if (pn === 'prep') lean = -f * 0.08 * Math.min(1, Math.max(0, 1 - o.windup / (o.windupMax || 0.3)));
       else if (pn === 'strike' || pn === 'special') lean = f * 0.13 * Math.sin(Math.min(1, (o.lunge || 0) / 0.25) * Math.PI);
@@ -4459,10 +4459,15 @@ function drawSpriteUnit(o){
       if (guardPose) a = -Math.PI / 2 + 0.12;                     // 끝을 위로, 살짝 앞으로 기울여 막음
       else if (q === S.poses.attack){ const kk = o.lunge > 0 ? 1 - o.lunge / 0.25 : 1; a = -1.1 + kk * 1.4; }
       else if (q === S.poses.throw) a = -0.5;
+      let jab = 0;                                                 // 찌르기: 준비 동안 창을 뒤로 당겼다가, 맞는 순간 앞으로 쭉
+      if (q === S.poses.charge && !guardPose){
+        if (pn === 'prep') jab = -0.32 * Math.min(1, Math.max(0, 1 - o.windup / (o.windupMax || 0.3)));
+        else if (pn === 'strike') jab = 0.22 * Math.min(1, (o.lunge || 0) / 0.25);
+      }
       ctx.translate((q.hand[0] - q.ax) * k, (q.hand[1] - q.ay) * k);
       if (qf < 0) ctx.scale(-1, 1);                               // 원화가 왼쪽을 보면 창도 왼쪽으로
       ctx.rotate(a);
-      ctx.drawImage(Wp.img, -L * Wp.grip, -h / 2, L, h);
+      ctx.drawImage(Wp.img, -L * Wp.grip + jab * L, -h / 2, L, h);
     }
     ctx.restore();
     return;
