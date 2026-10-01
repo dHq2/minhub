@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.19
+  version v12.20
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -368,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.19';
+const VERSION = 'v12.20';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2306,7 +2306,9 @@ const STYLES = {
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
   tomoe:       { approach:4, hitrun:1, strafe:1, guard:1, hold:3, retreat:0 },   // 여장부: 정면으로 걸어 들어가 삽으로 후려침
-  brute:       { approach:6, hold:1 },          // 곤봉 거한: 그냥 밀고 들어옴
+  brute:       { approach:6, hold:1 },
+  spearman:    { keep:4, guard:3, hold:1, strafe:1 },   // 창병: 창 길이만큼 거리를 두고 방패를 세움
+  shieldman:   { approach:3, guard:4, hold:2, strafe:1 },   // 검방패병: 막으면서 다가가 벰          // 곤봉 거한: 그냥 밀고 들어옴
   archer:      { snipe:4, aim:3 },              // 붉은 망토 궁수: 거리를 두고 멈춰 서서 겨눔
   rosina:      { approach:2, hitrun:4, strafe:3, guard:0, hold:1, retreat:1, dodge:true },   // 춤꾼: 스텝 밟다 뿔로 파고듦
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
@@ -2419,6 +2421,16 @@ Object.assign(ENEMIES, {
     boss:true, brain:'agnes', sever:0.3,
     tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 로젤이 있는 전투는 성당에서 벌어진다.',
     equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
+  spearman: { name:'창병', grade:'', color:'#9a3a44', sub:'1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패',
+    hp:150, atk:16, def:10, block:0.45, crit:0.08, eva:0, spd:1.8, range:2.2, cd:1.6, windup:0.45, hits:1, weight:110, react:0.3, height:1.7,
+    lunge:2.0, shield:'🛡 둥근 방패',
+    tags:[], trait:'창 길이 (2.2칸)만큼 거리를 두고 방패를 세운다. 틈이 보이면 몸을 낮춰 쭉 뻗어 찌른다 (2칸 밖에서도 파고듦). 방패라 화살 · 총알에도 방어력이 먹힌다.',
+    equip:{ 무기:'🔱 녹슨 창', 머리:'가시관', 몸:'비늘 판금 · 붉은 망토', 장신구:'🛡 둥근 방패' } },
+  shieldman: { name:'검방패병', grade:'', color:'#3f4f8a', sub:'1층의 적 · 뿔 투구의 늙은 병사 · 검과 큰 방패',
+    hp:170, atk:14, def:12, block:0.6, crit:0.06, eva:0, spd:2.0, range:1.3, cd:1.2, windup:0.35, hits:1, weight:100, react:0.3, height:1.6,
+    shield:'🛡 큰 방패',
+    tags:[], trait:'큰 방패로 잘 막는다 (막기 60%). 막으면서 다가가 검을 치켜들었다 벤다. 방패라 화살 · 총알에도 방어력이 먹힌다.',
+    equip:{ 무기:'🗡 장검', 머리:'뿔 투구', 몸:'사슬 · 푸른 겉옷', 장신구:'🛡 큰 방패' } },
   brute: { name:'곤봉 거한', grade:'', color:'#8a7fa8', sub:'1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다',
     hp:420, atk:24, def:12, block:0.15, crit:0.06, eva:0, spd:1.7, range:1.9, cd:2.0, windup:0.6, hits:1, weight:650, react:0.1, radius:0.65, height:2.9,
     splash:0.5, splashR:1.2, brain:'brute',
@@ -2794,7 +2806,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen', 'brute', 'archer'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen', 'brute', 'archer', 'spearman', 'shieldman'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4856,6 +4868,12 @@ SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, i
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
 const ENC_FACES = {};
+SPRITES.spearman = { face:'assets/spear_face.png', heightTiles:1.75, baseFace:-1, idleH:460,   // 창병: 대기 (창 · 방패) · 찌르기, 원화가 왼쪽을 봄
+  alias:{ strike:'attack', special:'attack' },
+  poses:{ idle:{ src:'assets/spear_idle.png', ax:245, ay:460, f:-1 }, attack:{ src:'assets/spear_attack.png', ax:225, ay:282, f:-1 } } };
+SPRITES.shieldman = { face:'assets/shield_face.png', heightTiles:1.6, baseFace:1, idleH:440,  // 검방패병: 대기 (방패 앞) · 치켜듦 (준비 · 벰), 원화가 오른쪽을 봄
+  alias:{ prep:'attack', strike:'attack', special:'attack' },
+  poses:{ idle:{ src:'assets/shield_idle.png', ax:165, ay:440, f:1 }, attack:{ src:'assets/shield_attack.png', ax:185, ay:436, f:1 } } };
 SPRITES.brute = { face:'assets/brute_face.png', heightTiles:3.0, baseFace:-1, idleH:480,      // 곤봉 거한: 대기 · 공격 (내려찍기), 원화가 왼쪽을 봄
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/brute_idle.png', ax:245, ay:480, f:-1 }, attack:{ src:'assets/brute_attack.png', ax:250, ay:355, f:-1 } } };
