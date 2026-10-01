@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.9
+  version v12.10
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.9';
+const VERSION = 'v12.10';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4712,6 +4712,8 @@ SPRITES.dandalo = { face:'assets/dandalo_face.png', heightTiles:2.0, baseFace:1,
   alt:{ strike:['strike', 'slam'] },
   poses:{ idle:{ src:'assets/dandalo_idle.png', ax:178, ay:440, f:1 }, prep:{ src:'assets/dandalo_prep.png', ax:176, ay:441, f:1 },
           strike:{ src:'assets/dandalo_strike.png', ax:165, ay:391, f:1 }, slam:{ src:'assets/dandalo_slam.png', ax:165, ay:424, f:1 } } };
+SPRITES.yellow = { face:'assets/yellow_face.png', heightTiles:1.3, baseFace:-1, idleH:420,   // 옐로: 한 장, 원화가 왼쪽을 봄 (할퀴는 손을 뻗음)
+  poses:{ idle:{ src:'assets/yellow_idle.png', ax:150, ay:420, f:-1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
