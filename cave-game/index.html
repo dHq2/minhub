@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.18
+  version v12.19
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -345,7 +345,7 @@
       <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
-      <div class="bt-row"><button id="bt-enc">🃏 만남 · 로딩 미리보기</button></div>
+      <div class="bt-row"><button id="bt-enc">🃏 만남 · 로딩 미리보기</button><button id="bt-room">🛋 소녀의 방</button></div>
     </div>
     <div id="bt-quick">
       <button id="bq-run" class="primary">▶ 시작</button>
@@ -368,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.18';
+const VERSION = 'v12.19';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2306,6 +2306,8 @@ const STYLES = {
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
   tomoe:       { approach:4, hitrun:1, strafe:1, guard:1, hold:3, retreat:0 },   // 여장부: 정면으로 걸어 들어가 삽으로 후려침
+  brute:       { approach:6, hold:1 },          // 곤봉 거한: 그냥 밀고 들어옴
+  archer:      { snipe:4, aim:3 },              // 붉은 망토 궁수: 거리를 두고 멈춰 서서 겨눔
   rosina:      { approach:2, hitrun:4, strafe:3, guard:0, hold:1, retreat:1, dodge:true },   // 춤꾼: 스텝 밟다 뿔로 파고듦
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
 };
@@ -2417,6 +2419,17 @@ Object.assign(ENEMIES, {
     boss:true, brain:'agnes', sever:0.3,
     tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 로젤이 있는 전투는 성당에서 벌어진다.',
     equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
+  brute: { name:'곤봉 거한', grade:'', color:'#8a7fa8', sub:'1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다',
+    hp:420, atk:24, def:12, block:0.15, crit:0.06, eva:0, spd:1.7, range:1.9, cd:2.0, windup:0.6, hits:1, weight:650, react:0.1, radius:0.65, height:2.9,
+    splash:0.5, splashR:1.2, brain:'brute',
+    tags:[], trait:'🔆 무대뽀 — 피하지도 막지도 않고 앞으로 걷는다. 몸에 닿는 상대는 그대로 밀려난다 (자기보다 가벼우면).\n🪨 내려찍기 — 곤봉으로 땅을 찍어 맞은 자를 1.5칸 밀쳐내고 휘청이게 한다. 주변 1.2칸에 절반 피해.',
+    equip:{ 무기:'⛓ 사슬 곤봉', 머리:'뿔 투구', 몸:'돌비늘 갑옷', 장신구:'보라 휘장' } },
+  archer: { name:'붉은 망토 궁수', grade:'', color:'#b0303a', sub:'1층의 적 · 판금 궁수 · 멀리서 겨눠 쏜다',
+    hp:110, atk:16, def:8, block:0.1, crit:0.12, eva:0.08, spd:2.2, range:6.0, cd:2.0, windup:0.8, hits:1, weight:80, react:0.25,
+    projectile:'arrow', ranged:true,
+    melee:{ atk:9, range:1.2, windup:0.3, cd:1.0 },
+    tags:[], trait:'멀리서 멈춰 서서 활시위를 길게 당겨 쏜다 (사거리 6칸, 준비 0.8초). 화살은 날아가는 동안 대상이 자리를 뜨면 빗나간다. 붙으면 뒤로 빠지며, 빠지지 못하면 주먹으로 친다.',
+    equip:{ 무기:'🏹 긴 활', 머리:'판금 투구', 몸:'판금 · 붉은 망토', 장신구:'화살통' } },
   hargen: { name:'하르겐', grade:'BOSS', color:'#6f8fd8', sub:'왕관을 쓴 푸른 얼굴의 왕 · 하늘만 올려다본다 · 푸른 장검',
     hp:1800, atk:34, def:22, block:0.55, crit:0.15, eva:0.08, spd:1.3, range:2.3, cd:1.5, windup:0.5, hits:1, weight:520, react:0.1, radius:0.6, height:2.0,
     boss:true, brain:'hargen', hitStagger:0.4, silent:true,
@@ -2781,7 +2794,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen', 'brute', 'archer'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4843,6 +4856,12 @@ SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, i
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
 const ENC_FACES = {};
+SPRITES.brute = { face:'assets/brute_face.png', heightTiles:3.0, baseFace:-1, idleH:480,      // 곤봉 거한: 대기 · 공격 (내려찍기), 원화가 왼쪽을 봄
+  alias:{ strike:'attack', special:'attack' },
+  poses:{ idle:{ src:'assets/brute_idle.png', ax:245, ay:480, f:-1 }, attack:{ src:'assets/brute_attack.png', ax:250, ay:355, f:-1 } } };
+SPRITES.archer = { face:'assets/archer_face.png', heightTiles:1.85, baseFace:1, idleH:440,     // 붉은 망토 궁수: 대기 · 겨눔 (준비 · 사격 · 근접 모두), 원화가 오른쪽을 봄
+  alias:{ shoot:'aim', prep:'aim', strike:'aim' },
+  poses:{ idle:{ src:'assets/archer_idle.png', ax:110, ay:440, f:1 }, aim:{ src:'assets/archer_aim.png', ax:145, ay:432, f:1 } } };
 SPRITES.hargen = { face:'assets/enc_crown_face.png', heightTiles:2.05, baseFace:1, idleH:460,   // 하르겐: 한 장, 원화가 오른쪽을 봄. 초상화는 앞서 받은 푸른 얼굴 · 왕관 그림
   poses:{ idle:{ src:'assets/hargen_idle.png', ax:155, ay:460, f:1 } } };
 const portraitWaiters = [];
@@ -6648,6 +6667,7 @@ narrEl.onclick = () => DG.narrR && DG.narrR();
 dlgEl.addEventListener('click', () => DG.talkR && DG.talkR());
 
 const AREAS = {
+  odileRoom: { name: '소녀의 방', cols: 8, back: 'assets/room_odile.jpg', backFloor: 0.74, floor: [46, 38, 30], floorAlpha: 0.28, dark: 0.12 },   // 아주 작은 방. 그림 한 장을 판 뒤에 세움
   grey:   { name: '1층 · 회색 대지', cols: 44, sky: ['#141518', '#3a3b40'], hills: ['#26272b', '#303136'], floor: [66, 66, 68], dark: 0.62 },
   tomb:   { name: '1층 · 무덤', cols: 30, wall: '#24232c', floor: [56, 54, 62], pillars: '#34323e', torch: '127,184,255', dark: 0.42 },
   throne: { name: '1층 · 알현실', cols: 26, wall: '#1d1b27', floor: [50, 46, 58], pillars: '#2e2a3a', torch: '159,198,255', carpet: '#5a1624', dark: 0.38 },
@@ -6784,6 +6804,7 @@ async function encPreview(){
   await loadScreen({ bg: 'assets/load_red.jpg', lines: ['붉은 가시가 도시를 덮었다.', '그녀는 한 번도 뒤돌아보지 않았다.'] });
 }
 document.getElementById('bt-enc').onclick = () => { if (encEl.hidden) encPreview(); };
+document.getElementById('bt-room').onclick = () => { exitBattle(); visitRoom('odileRoom'); };
 
 /* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열 ---------- */
 function dgFormation(){
@@ -6945,6 +6966,30 @@ function dgSolid(nx, ny){
   return false;
 }
 
+// 작은 방 들르기 (편성 없이 주인공 혼자). 소품은 ROOM_PROPS에 { src, x, y, h, solid?, flip? }로 넣으면 그 자리에 섬
+const ROOM_PROPS = { odileRoom: [] };
+async function visitRoom(key = 'odileRoom'){
+  closePanels(); endDialog(); closeEvent();
+  DG.active = true; DG.area = null; DG.hp = {}; DG.floor = 0; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
+  mode = 'dungeon'; document.body.classList.add('dungeon');
+  ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
+  floaters = []; sparks = []; held.clear();
+  DG.party = ['player'];
+  DG.pawns = DG.party.map(id => { const u = newUnit(id, 0, 2, 'ally'); u.name = nameOf(id); return u; });
+  dgHud.hidden = false;
+  setArea(key);
+  for (const pr of ROOM_PROPS[key] || []) addProp({ kind: 'img', ...pr });
+  const od = addActor('odile', 5.6, 1.4, -1); od.name = '오딜';
+  await dgNarr(['좁은 방입니다. 촛불이 젖은 바닥에 비칩니다.', '붉은 소파 위에서, 가면이 이쪽을 봅니다.']);
+  for (;;){
+    await dgInteract(od.x, 2.6, '오딜');
+    const k = await encScene({ bg: 'assets/enc_odile.jpg', lines: ['소녀는 일어나지 않습니다. 가면이 조금 기울어집니다.'],
+      cards: [{ suit: '♥', red: true, t: '인사한다', d: '' }, { suit: '♠', t: '가면을 묻는다', d: '' }, { suit: '♣', t: '방을 나간다', d: '' }] });
+    if (k === 2) break;
+    await dgTalk('오딜', '#d8d2c8', [k === 0 ? '……' : '…가면 아래에도, 가면.']);
+  }
+  dgExit();
+}
 async function startRun(){
   closePanels(); endDialog(); closeEvent();
   DG.active = true; DG.area = null; DG.pawns = []; DG.hp = {}; DG.floor = 1; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
@@ -7155,7 +7200,23 @@ async function floor1(){
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
-const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain, hargen: hargenBrain };
+const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain, hargen: hargenBrain, brute: bruteBrain };
+// 곤봉 거한: 걷기 · 공격은 보통 두뇌. 몸에 닿는 가벼운 상대를 밀어내고, 내려찍은 상대는 크게 밀쳐냄
+function bruteBrain(u, sdt){
+  for (const o of battle.units){
+    if (o.dead || o.side === u.side || (o.st.weight || 60) >= u.st.weight) continue;
+    const d = Math.hypot(o.x - u.x, o.y - u.y);
+    if (d < unitRadius(u) + unitRadius(o) + 0.25) pushUnit(o, u, sdt * 2.2);
+  }
+  if (u.lunge > 0 && !u.slammed){
+    u.slammed = true;
+    const t = u.lastTarget;
+    if (t && !t.dead && Math.hypot(t.x - u.x, t.y - u.y) < u.st.range + 0.6){ pushUnit(t, u, 1.5); stagger(t, 0.4, braceW(u) * 2); shake = Math.max(shake, 0.1); }
+  }
+  if (u.lunge <= 0) u.slammed = false;
+  if (u.atkTarget) u.lastTarget = u.atkTarget;
+  return false;
+}
 // 하르겐: 청검 일섬 (일직선 예고 → 한 번에 벰). 나머지는 보통 두뇌
 const HG = { cd: 7, cdLow: 4.5, charge: 0.9, len: 6, w: 0.7, atk: 2.2, stun: 0.5 };
 function hargenBrain(u, sdt, tgt, dist){
@@ -7833,7 +7894,23 @@ function drawDungeon(){
     lines.forEach((l, i) => txt(l, y0 + i * size * 1.35, size, '#d8cfc2', Math.min(1, DG.sub.life, (DG.sub.max - DG.sub.life) * 3)));
   }
 }
+const DG_IMG = {};
+const dgImg = src => DG_IMG[src] || (DG_IMG[src] = Object.assign(new Image(), { src }));
 function drawDgBack(A){
+  if (A.back){                                                   // 그림 배경: 바닥선 (backFloor)을 판 뒤쪽 끝에 맞춰 세움
+    ctx.fillStyle = '#0a0806'; ctx.fillRect(-W, -H, W * 3, H * 3);
+    const im = dgImg(A.back);
+    if (imgReady(im)){
+      const a = P(0, 0), b = P(curCols, 0), w = (b.x - a.x) * (A.backW || 1.3), h = w * im.naturalHeight / im.naturalWidth, x0 = (a.x + b.x) / 2 - w / 2;   // 방 크기에 맞춤 (작은 방은 작게)
+      ctx.drawImage(im, x0, floorTop - h * A.backFloor, w, h);
+      for (const [x, d] of [[x0, -1], [x0 + w, 1]]){                // 그림 바깥은 어둠으로 녹임
+        const g = ctx.createLinearGradient(x - d * T * 0.2, 0, x + d * T * 1.5, 0);
+        g.addColorStop(0, 'rgba(10,8,6,0)'); g.addColorStop(1, 'rgba(10,8,6,1)');
+        ctx.fillStyle = g; ctx.fillRect(d < 0 ? x - W * 2 : x - T * 0.2, -H, W * 2 + T * 0.2, H * 3);
+      }
+    }
+    return;
+  }
   if (A.sky){
     const g = ctx.createLinearGradient(0, 0, 0, floorTop);
     g.addColorStop(0, A.sky[0]); g.addColorStop(1, A.sky[1]);
@@ -7895,16 +7972,24 @@ function drawDgFloor(A){
     const a = P(c, r), b = P(c + 1, r), d = P(c + 1, r + 1), e = P(c, r + 1);
     if (b.x < -T * 3 || a.x > W + T * 3) continue;
     const hv = hash(c, r), v = (hv - 0.5) * 10 + r * 2;
-    let col = `rgb(${R + v | 0},${G + v | 0},${B + v | 0})`;
+    let col = A.floorAlpha ? `rgba(${R + v | 0},${G + v | 0},${B + v | 0},${A.floorAlpha})` : `rgb(${R + v | 0},${G + v | 0},${B + v | 0})`;   // 그림 배경이면 칸을 비쳐 보이게
     if (A.carpet && r === 2) col = A.carpet;
     if (A.puddles && hv > 0.8) col = `rgb(${R - 8},${G + 6},${B + 14})`;
     fillQuad([a, b, d, e], col);
     ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1; ctx.stroke();
   }
   const f0 = P(0, ROWS), f1 = P(curCols, ROWS);
-  ctx.fillStyle = '#0c0a0e'; ctx.fillRect(f0.x - W, f0.y, f1.x - f0.x + W * 2, H);
+  ctx.fillStyle = A.back ? 'rgba(12,10,14,.6)' : '#0c0a0e'; ctx.fillRect(f0.x - W, f0.y, f1.x - f0.x + W * 2, H);
 }
 function drawDgProp(p){
+  if (p.kind === 'img'){                                         // 소품 그림: 바닥 자리 (x, y)에 세우고 키 h칸
+    const im = dgImg(p.src), q = P(p.x, p.y + 0.5), dsc = depthScale(p.y + 0.5);
+    if (!imgReady(im)) return;
+    const h = p.h * T * dsc, w = h * im.naturalWidth / im.naturalHeight;
+    shadowAt(q.x, q.y, w * 0.4);
+    ctx.save(); ctx.translate(q.x, q.y); if (p.flip) ctx.scale(-1, 1); ctx.drawImage(im, -w * (p.ax ?? 0.5), -h, w, h); ctx.restore();
+    return;
+  }
   if (p.kind === 'stone'){
     const q = P(p.x, p.y + 0.5);
     ctx.fillStyle = '#4b4c50'; ctx.beginPath(); ctx.ellipse(q.x, q.y - T * 0.08 * p.s, T * 0.28 * p.s, T * 0.16 * p.s, 0, 0, Math.PI * 2); ctx.fill();
