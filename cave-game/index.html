@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.17
+  version v12.18
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -100,6 +100,35 @@
   #event .ev-opts button:hover{border-color:#c9a36a;}
   #dg-narr{position:absolute;inset:0;background:#050406;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:30;padding:24px;text-align:center;font-family:var(--display);color:#e6dccb;font-size:22px;cursor:pointer;}
   #dg-narr[hidden]{display:none;}
+  /* 만남 장면 · 로딩 화면: 그림 한 장 + 나레이션 + (선택지 카드) */
+  #enc{position:absolute;inset:0;z-index:40;background:#050407;overflow:hidden;cursor:pointer;font-family:var(--display);color:#eee4d4;}
+  #enc[hidden]{display:none;}
+  #enc .bg{position:absolute;inset:-3%;background-size:cover;background-position:center;filter:blur(18px) brightness(.4);}   /* 화면을 채우는 흐린 바탕 */
+  #enc .art{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center 30%;animation:encKb 16s ease-out forwards;}   /* 그림 전체 (잘리지 않게) */
+  #enc.has-cards .art{background-position:center top;}
+  #enc.has-cards .cut{max-height:38%;bottom:calc(8% + 330px);}
+  @keyframes encKb{from{transform:scale(1)}to{transform:scale(1.07)}}
+  #enc .glow{position:absolute;left:50%;top:44%;width:80vmin;height:80vmin;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,190,90,.22),transparent);animation:encFl 3s ease-in-out infinite alternate;}
+  @keyframes encFl{from{opacity:.65}to{opacity:1}}
+  #enc .cut{position:absolute;left:50%;bottom:30%;transform:translateX(-50%);max-height:60%;max-width:86%;animation:encCut 1.4s ease-out backwards;filter:drop-shadow(0 10px 30px rgba(0,0,0,.8));}
+  #enc .shade{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.15) 30%,rgba(0,0,0,.88) 78%);}
+  #enc .narr{position:absolute;left:0;right:0;bottom:calc(8% + env(safe-area-inset-bottom,0px));padding:0 20px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font-size:19px;line-height:1.5;}
+  #enc .narr .l{opacity:0;animation:encIn .9s forwards;text-wrap:balance;max-width:640px;text-shadow:0 2px 8px #000;}
+  #enc .narr .l.talk{color:#ffd78a;}
+  #enc.has-cards .narr{bottom:calc(8% + 200px);}
+  #enc .cards{position:absolute;left:0;right:0;bottom:calc(5% + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:12px;padding:0 12px;}
+  #enc .card{width:min(128px,28vw);height:min(184px,40vw);border-radius:9px;background:linear-gradient(#f6efdd,#e0d2b2);color:#2b1d14;border:2px solid #b8925a;box-shadow:0 10px 24px rgba(0,0,0,.65);padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;cursor:pointer;animation:encDeal .55s cubic-bezier(.2,.8,.3,1.2) backwards;transition:transform .15s;}
+  #enc .card:hover{transform:translateY(-10px) rotate(-1.5deg);}
+  #enc .card .suit{font-size:28px;line-height:1;}
+  #enc .card .suit.red{color:#c0182c;}
+  #enc .card .t{font-size:16px;}
+  #enc .card .d{font-size:11px;color:#5a4a3a;line-height:1.35;font-family:sans-serif;}
+  @keyframes encDeal{from{opacity:0;transform:translateY(60px) rotate(8deg) scale(.8)}}
+  @keyframes encIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+  @keyframes encCut{from{opacity:0;transform:translate(-50%,14px)}}
+  #enc .bar{position:absolute;left:10%;right:10%;bottom:calc(4% + env(safe-area-inset-bottom,0px));height:3px;background:rgba(255,255,255,.15);}
+  #enc .bar i{display:block;height:100%;width:0;background:#e8d3a8;}
+  #enc .hint{position:absolute;right:16px;bottom:calc(10px + env(safe-area-inset-bottom,0px));font-size:12px;color:#9a8f9e;}
   #dg-narr .l{opacity:0;animation:dgIn 1s forwards;text-wrap:balance;}
   #dg-narr .hint{position:absolute;bottom:calc(36px + env(safe-area-inset-bottom,0px));font-size:13px;color:#8a8190;}
   @keyframes dgIn{to{opacity:1}}
@@ -289,6 +318,7 @@
   <div class="hud" id="ver"></div>
   <div id="dialog" hidden><div class="who"></div><div class="txt"></div><div class="nx">Space ▶</div></div>
   <div id="dg-narr" hidden></div>
+  <div id="enc" hidden></div>
   <div id="dg-hud" hidden></div>
   <div id="inv" hidden></div>
   <div id="store" hidden></div>
@@ -315,6 +345,7 @@
       <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
+      <div class="bt-row"><button id="bt-enc">🃏 만남 · 로딩 미리보기</button></div>
     </div>
     <div id="bt-quick">
       <button id="bq-run" class="primary">▶ 시작</button>
@@ -337,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.17';
+const VERSION = 'v12.18';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2386,6 +2417,11 @@ Object.assign(ENEMIES, {
     boss:true, brain:'agnes', sever:0.3,
     tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 로젤이 있는 전투는 성당에서 벌어진다.',
     equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
+  hargen: { name:'하르겐', grade:'BOSS', color:'#6f8fd8', sub:'왕관을 쓴 푸른 얼굴의 왕 · 하늘만 올려다본다 · 푸른 장검',
+    hp:1800, atk:34, def:22, block:0.55, crit:0.15, eva:0.08, spd:1.3, range:2.3, cd:1.5, windup:0.5, hits:1, weight:520, react:0.1, radius:0.6, height:2.0,
+    boss:true, brain:'hargen', hitStagger:0.4, silent:true,
+    tags:[], trait:'🔆 왕의 무게 — 무겁고 단단하다 (방어 22 · 막기 55%). 웬만해서는 흔들리지 않는다. 맞으면 잘 휘청인다 (40%).\n🗡 청검 일섬 — 7초마다 (체력 절반 아래면 4.5초) 0.9초 동안 칼을 거두며 일직선 (6칸)을 바닥에 예고한 뒤 한 번에 벤다. 공격력 2.2배, 막을 수 없음, 0.5초 경직. 체력 절반 아래면 두 번 연달아 (두 번째는 비스듬히).',
+    equip:{ 무기:'🗡 푸른 장검', 머리:'👑 왕관', 몸:'검은 두건 망토', 장신구:'—' } },
   rosina: { name:'로시나', grade:'', color:'#8a6a9a', sub:'"외뿔" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다',
     hp:380, atk:18, def:8, block:0.15, crit:0.12, eva:0.25, spd:2.6, range:1.6, cd:1.2, windup:0.35, hits:1, weight:55, react:0.35, height:1.5,
     lunge:2.4,
@@ -2499,7 +2535,7 @@ const sheetEl = document.getElementById('sheet');
 const statsEl = document.getElementById('stats');
 const codexEl = document.getElementById('codex');
 const PANEL_ELS = () => [sheetEl, statsEl, codexEl, storeEl, invEl];
-function anyPanel(){ return PANEL_ELS().some(p => !p.hidden) || !evEl.hidden; }
+function anyPanel(){ return PANEL_ELS().some(p => !p.hidden) || !evEl.hidden || !document.getElementById('enc').hidden; }
 function closePanels(){ PANEL_ELS().forEach(p => p.hidden = true); }
 function closeTopPanel(){
   for (const p of PANEL_ELS()) if (!p.hidden){ p.hidden = true; return true; }
@@ -2745,7 +2781,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4458,6 +4494,7 @@ function drawBattle(){
   drawBossTelegraphs();
   drawCesarTelegraphs();
   drawAgnesSigils();
+  drawHargen();
   drawKariusTelegraphs();
   const list = [...b.units].sort((a, c) => a.y - c.y);
   for (const u of list){
@@ -4805,7 +4842,9 @@ SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, id
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
-const ENC_FACES = { crown: 'assets/enc_crown_face.png' };   // 불꽃 왕관을 쓴 푸른 얼굴
+const ENC_FACES = {};
+SPRITES.hargen = { face:'assets/enc_crown_face.png', heightTiles:2.05, baseFace:1, idleH:460,   // 하르겐: 한 장, 원화가 오른쪽을 봄. 초상화는 앞서 받은 푸른 얼굴 · 왕관 그림
+  poses:{ idle:{ src:'assets/hargen_idle.png', ax:155, ay:460, f:1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
@@ -6673,6 +6712,79 @@ function dgAction(){
   const it = DG.interact;
   if (it && Math.abs(lead().x - it.x) < it.r){ DG.interact = null; it.res(); }
 }
+/* ---------- 만남 장면 · 로딩 화면 (그림 한 장 + 나레이션 + 선택지 카드) ----------
+   encScene({ bg, cut, glow, lines, cards }) → 고른 카드 번호 (카드가 없으면 끝까지 본 뒤 -1)
+   lines: 문자열 (나레이션) 또는 ['"대사"', 'talk'] 꼴. cards: [{ suit, red, t, d }]
+   loadScreen({ bg, lines, ms }) → 막대가 다 차면 끝 (터치하면 다음) */
+const encEl = document.getElementById('enc');
+function encOpen(o){
+  encEl.innerHTML = ''; encEl.className = ''; held.clear();
+  if (o.bg){ for (const k of ['bg', 'art']){ const b = el('div', k); b.style.backgroundImage = `url(${o.bg})`; encEl.appendChild(b); } }
+  if (o.glow) encEl.appendChild(el('div', 'glow'));
+  if (o.cut){ const c = el('img', 'cut'); c.src = o.cut; encEl.appendChild(c); }
+  encEl.appendChild(el('div', 'shade'));
+  const narr = el('div', 'narr'); encEl.appendChild(narr);
+  (o.lines || []).forEach((t, i) => { const [txt, kind] = Array.isArray(t) ? t : [t]; const d = el('div', 'l' + (kind ? ' ' + kind : ''), txt); d.style.animationDelay = (0.6 + i * 1.1) + 's'; narr.appendChild(d); });
+  encEl.hidden = false;
+  return narr;
+}
+function encWaitTap(){
+  return new Promise(r => {
+    const t0 = performance.now();
+    const go = e => { if (performance.now() - t0 < 350) return; if (e.type === 'keydown' && !['Space', 'Enter', 'KeyE'].includes(e.code)) return; e.preventDefault && e.preventDefault(); off(); r(); };
+    const off = () => { encEl.removeEventListener('pointerdown', go); window.removeEventListener('keydown', go, true); };
+    encEl.addEventListener('pointerdown', go); window.addEventListener('keydown', go, true);
+  });
+}
+async function encScene(o){
+  const narr = encOpen(o), n = (o.lines || []).length;
+  await Promise.race([new Promise(r => setTimeout(r, 600 + n * 1100)), encWaitTap()]);
+  narr.querySelectorAll('.l').forEach(d => { d.style.animationDelay = '0s'; });   // 다 보이게
+  let pick = -1;
+  if (o.cards && o.cards.length){
+    encEl.classList.add('has-cards');
+    const box = el('div', 'cards');
+    pick = await new Promise(res => {
+      const r = i => { window.removeEventListener('keydown', key, true); res(i); };
+      o.cards.forEach((c, i) => {
+        const cd = el('div', 'card'); cd.style.animationDelay = (i * 0.12) + 's';
+        cd.appendChild(el('div', 'suit' + (c.red ? ' red' : ''), c.suit || '✦'));
+        cd.appendChild(el('div', 't', c.t)); cd.appendChild(el('div', 'd', c.d || ''));
+        cd.addEventListener('pointerdown', e => { e.stopPropagation(); r(i); });
+        box.appendChild(cd);
+      });
+      encEl.appendChild(box);
+      const key = e => { const k = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3 }[e.code]; if (k != null && k < o.cards.length) r(k); };   // 키보드: 1 · 2 · 3
+      window.addEventListener('keydown', key, true);
+    });
+  } else { encEl.appendChild(el('div', 'hint', '터치 / Space ▶')); await encWaitTap(); }
+  encEl.hidden = true; encEl.innerHTML = '';
+  return pick;
+}
+async function loadScreen(o){
+  encOpen(o);
+  const bar = el('div', 'bar'), fill = el('i'); bar.appendChild(fill); encEl.appendChild(bar);
+  const ms = o.ms || 3200;
+  fill.animate([{ width: '0%' }, { width: '100%' }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
+  await new Promise(r => setTimeout(r, ms));
+  encEl.appendChild(el('div', 'hint', '터치 / Space ▶'));
+  await encWaitTap();
+  encEl.hidden = true; encEl.innerHTML = '';
+}
+// 미리보기: 받은 그림들로 로딩 · 만남 장면을 차례로 (아직 던전 흐름에는 넣지 않음)
+async function encPreview(){
+  await loadScreen({ bg: 'assets/load_moon.jpg', lines: ['달에는 길이 없었다.', '지도만 있었다.'] });
+  const a = await encScene({ cut: 'assets/candle_full.png', glow: true,
+    lines: ['촛불 왕관을 쓴 눈먼 사내가 카드를 펼쳐 놓고 앉아 있습니다.', ['"…한 장 골라라."', 'talk'], ['"무엇이 나오든, 네가 고른 것이다."', 'talk']],
+    cards: [{ suit: '♠', t: '검', d: '사내의 칼을 청한다' }, { suit: '♦', red: true, t: '금화', d: '가진 것을 건다' }, { suit: '♣', t: '지나간다', d: '카드를 덮고 떠난다' }] });
+  await encScene({ cut: 'assets/candle_full.png', glow: true, lines: [['"' + ['좋은 패다. …베어 봐라.', '잃는 것도 고르는 것이다.', '그래. 지나가는 것도 패다.'][a] + '"', 'talk'], '촛불이 한 번 흔들립니다.'] });
+  await encScene({ bg: 'assets/enc_odile.jpg',
+    lines: ['무너진 극장. 붉은 소파 위에서 가면이 고개를 기울입니다.', '소녀는 일어나지 않습니다.'],
+    cards: [{ suit: '♥', red: true, t: '인사한다', d: '' }, { suit: '♠', t: '가면을 묻는다', d: '' }, { suit: '♣', t: '지나간다', d: '' }] });
+  await loadScreen({ bg: 'assets/load_red.jpg', lines: ['붉은 가시가 도시를 덮었다.', '그녀는 한 번도 뒤돌아보지 않았다.'] });
+}
+document.getElementById('bt-enc').onclick = () => { if (encEl.hidden) encPreview(); };
+
 /* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열 ---------- */
 function dgFormation(){
   return new Promise(res => {
@@ -7043,7 +7155,57 @@ async function floor1(){
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
-const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain };
+const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain, hargen: hargenBrain };
+// 하르겐: 청검 일섬 (일직선 예고 → 한 번에 벰). 나머지는 보통 두뇌
+const HG = { cd: 7, cdLow: 4.5, charge: 0.9, len: 6, w: 0.7, atk: 2.2, stun: 0.5 };
+function hargenBrain(u, sdt, tgt, dist){
+  const b = battle;
+  b.hgFx = b.hgFx || [];
+  u.hgCd = (u.hgCd ?? 3) - sdt;
+  const A = u.hg;
+  if (A){
+    if (u.stun > 0.3){ u.hg = null; return false; }                // 크게 휘청이면 끊김
+    u.vx = u.vy = 0; A.t += sdt;
+    if (A.t < HG.charge) return true;
+    const d = A.dir, ex = u.x + d.x * HG.len, ey = u.y + d.y * HG.len;
+    for (const o of b.units){
+      if (o.dead || o.side === u.side) continue;
+      const px = o.x - u.x, py = o.y - u.y, along = px * d.x + py * d.y, side = Math.abs(px * d.y - py * d.x);
+      if (along < -0.3 || along > HG.len + 0.3 || side > HG.w + unitRadius(o) * 0.5) continue;
+      resolveHit(u, o, { atk: Math.round(u.st.atk * HG.atk), grab: true });
+      if (!o.dead){ o.stun = Math.max(o.stun, HG.stun); o.windup = 0; o.atkTarget = null; }
+    }
+    b.hgFx.push({ x0: u.x, y0: u.y, x1: ex, y1: ey, life: 0.45, max: 0.45 });
+    shake = Math.max(shake, 0.16); u.lunge = 0.25; u.face = Math.sign(d.x) || u.face;
+    if (A.twice){ const a = Math.atan2(d.y, d.x) + (Math.random() < 0.5 ? 0.6 : -0.6); u.hg = { t: HG.charge * 0.45, dir: { x: Math.cos(a), y: Math.sin(a) } }; }
+    else { u.hg = null; u.hgCd = u.hp < u.st.hp * 0.5 ? HG.cdLow : HG.cd; }
+    return true;
+  }
+  if (u.hgCd > 0 || !tgt || dist > HG.len || u.stun > 0 || u.windup > 0) return false;
+  u.hg = { t: 0, dir: norm(tgt.x - u.x, tgt.y - u.y), twice: u.hp < u.st.hp * 0.5 };
+  u.face = Math.sign(tgt.x - u.x) || u.face;
+  logLine(`🗡 ${u.name}, 칼을 거둔다 — 청검 일섬`, 'crit');
+  return true;
+}
+function drawHargen(){
+  const b = battle;
+  for (const u of b.units){
+    const A = u.hg; if (!A || u.dead) continue;
+    const k = Math.min(1, A.t / HG.charge), d = A.dir, L = HG.len, w = HG.w, nx = -d.y * w, ny = d.x * w;
+    floorShape([[u.x + nx, u.y + ny], [u.x + d.x * L + nx, u.y + d.y * L + ny], [u.x + d.x * L - nx, u.y + d.y * L - ny], [u.x - nx, u.y - ny]], k, '120,160,255');
+  }
+  for (const f of b.hgFx || []){
+    f.life -= 1 / 60; if (f.life <= 0) continue;
+    const k = f.life / f.max, p0 = P(f.x0 + 0.5, f.y0 + 0.5), p1 = P(f.x1 + 0.5, f.y1 + 0.5), lift = T * 0.7;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+    for (const [wd, c] of [[T * 0.32 * k, '80,120,255'], [T * 0.12 * k, '200,220,255'], [3, '255,255,255']]){
+      ctx.strokeStyle = `rgba(${c},${k})`; ctx.lineWidth = wd;
+      ctx.beginPath(); ctx.moveTo(p0.x, p0.y - lift); ctx.lineTo(p1.x, p1.y - lift); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  b.hgFx = (b.hgFx || []).filter(f => f.life > 0);
+}
 // 로젤: 걷기 · 기본 공격은 보통 두뇌. 6초마다 상대 발밑에 가시 문장 (1초 예고 뒤 솟음)
 const AG = { cd: 6, tele: 1.0, r: 1.5, atk: 1.4, root: 0.8 };
 function agnesBrain(u, sdt, tgt, dist){
