@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.6
+  version v12.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.6';
+const VERSION = 'v12.7';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2874,7 +2874,7 @@ function syncRun(){
 }
 // 직접 조작할 주인공이 있을 때만 방향키 · 공격 버튼을 보여줌
 function syncManual(){
-  const on = mode === 'battle' && battle && battle.running && !battle.playerAuto && battle.units.some(u => u.id === 'player' && !u.dead);
+  const on = mode === 'battle' && battle && battle.running && battle.units.some(u => u.id === 'player' && !u.dead);   // 자동이어도 손을 대면 바로 직접 조작이라 늘 보여줌
   document.body.classList.toggle('manual', !!on);
 }
 document.getElementById('bq-run').onclick = () => toggleRun();
@@ -2907,14 +2907,17 @@ document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTe
 document.getElementById('btn-battle').onclick = enterBattle;
 document.getElementById('bt-title').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
 document.getElementById('bt-auto').addEventListener('change', () => setTimeout(syncManual, 0));
-function pressGuard(){ if (mode === 'battle' && battle) battle.guardPressAt = battle.clock; }
+// 자동 전투 중에도 손을 대면 그때부터 직접 조작, 1.5초 동안 손을 떼면 다시 자동
+const HAND_HOLD = 1.5;
+function grabHand(){ if (battle) battle.handUntil = battle.clock + HAND_HOLD; }
+function pressGuard(){ if (mode === 'battle' && battle){ battle.guardPressAt = battle.clock; grabHand(); } }
 // 회피 스텝: 누른 방향 (없으면 가장 가까운 적 반대쪽)으로 짧게 몸을 뺌
 function pressDodge(){
   if (mode !== 'battle' || !battle) return;
   const u = battle.units.find(o => o.id === 'player' && !o.dead);
   if (!u || u.stun > 0 || u.dodgeCd > 0) return;
-  if (u.guarding || held.has('guard')){ fxText(u, '방어 중', '#9fd3ff'); return; }   // 방어를 풀어야 회피 가능
-  battle.dodgePressAt = battle.clock;
+  if (held.has('guard')){ fxText(u, '방어 중', '#9fd3ff'); return; }   // 방어를 풀어야 회피 가능
+  battle.dodgePressAt = battle.clock; grabHand();
   if (u.windup > 0){ u.windup = 0; u.atkTarget = null; }
   let dir = moveInput();
   if (!dir){
@@ -2932,7 +2935,7 @@ document.getElementById('bt-seal').onchange = e => { if (battle) battle.sealDivi
 document.getElementById('bt-rain').onchange = e => { if (battle){ battle.rain = e.target.checked; battle.drops = []; } };
 document.getElementById('bt-auto').onchange = e => { if (battle) battle.playerAuto = e.target.checked; };
 // 공격 입력: 0.35초 동안 버퍼 (공격 간격이 끝나는 순간에 맞춰 나감)
-function pressAttack(){ if (mode === 'battle' && battle) battle.attackPressAt = battle.clock; }
+function pressAttack(){ if (mode === 'battle' && battle){ battle.attackPressAt = battle.clock; grabHand(); } }
 [['tb-guard', 'guard'], ['tb-run', 'run']].forEach(([id, k]) => {
   const b = document.getElementById(id);
   b.addEventListener('pointerdown', e => { e.preventDefault(); held.add(k); if (k === 'guard') pressGuard(); });
@@ -3738,7 +3741,9 @@ function updateBattle(dt){
   b.adv = { ally: sA / Math.max(1, sE), enemy: sE / Math.max(1, sA) };
   const free = !anyPanel();
   const input = free ? moveInput() : null;
-  const guardHeld = free && held.has('guard'), runHeld = held.has('run');
+  const guardHeld = free && held.has('guard'), runHeld = free && (held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95));   // 조이스틱을 끝까지 밀면 달림
+  if (b.running && (input || guardHeld || runHeld)) grabHand();
+  const handNow = !b.playerAuto || b.clock < (b.handUntil || 0);
   for (const u of b.units){
     if (drag && drag.moved && drag.u === u) continue;
     if (u.dead){
@@ -3896,8 +3901,8 @@ function updateBattle(dt){
       if (u.order.type === 'focus'){ const f = u.order.target; if (f && !f.dead && b.units.includes(f)){ tgt = f; dist = Math.hypot(f.x - u.x, f.y - u.y); } else u.order = null; }
       else if (b.running && (u.order.t -= sdt) <= 0) u.order = null;
     }
-    u.manual = u.id === 'player' && (!b.playerAuto || !!(input || guardHeld));
-    const handOnly = u.id === 'player' && !b.playerAuto;   // 이동도 공격도 전부 직접
+    u.manual = u.id === 'player' && handNow;
+    const handOnly = u.manual;   // 이동도 공격도 전부 직접
     u.closeIn = !!(u.st.melee && dist < 1.6);
     tickAmmo(u, b.running ? sdt : 0, dist);
     if (u.aided){
@@ -3934,7 +3939,8 @@ function updateBattle(dt){
     } else {
       if (u.manual){
         dir = input;
-        if (runHeld) speed *= RUN_MUL;
+        u.running = !!(runHeld && input);
+        if (u.running) speed *= RUN_MUL;
       } else if (b.running && tgt){
         if (u.regroupT > 0){
           u.regroupT -= sdt;
@@ -4171,7 +4177,9 @@ function updateBattle(dt){
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
       if (handOnly && b.running && !u.guarding && u.cd <= 0 && b.clock - b.attackPressAt <= 0.35){
         b.attackPressAt = -99;
-        const inRange = tgt && dist <= u.st.range + 0.3;
+        let near = null, nd = u.st.range + 0.3;                   // 지금 닿는 적 중 가장 가까운 쪽 (AI가 고른 목표와 무관)
+        for (const o of b.units){ if (o.side === u.side || o.dead) continue; const d = Math.hypot(o.x - u.x, o.y - u.y); if (d <= nd){ nd = d; near = o; } }
+        const inRange = !!near; tgt = near || tgt;
         u.stab = false;
         u.windup = u.windupMax = u.st.windup;
         u.atkTarget = inRange ? tgt : null;
@@ -4207,6 +4215,7 @@ function updateBattle(dt){
     }
     u.t = u.moving ? 0 : 1;
     if (tgt && !u.moving && u.stun <= 0 && u.windup <= 0 && !handOnly) u.face = Math.sign(tgt.x - u.x) || u.face;
+    if (tgt && handOnly && u.guarding && !(input && Math.abs(input.x) > 0.3)) u.face = Math.sign(tgt.x - u.x) || u.face;   // 직접 조작: 방어는 적 쪽을 보고 막음
     if (u.moving && speed > u.st.spd * 1.2 && Math.random() < sdt * 12){
       const p = P(u.x + 0.5, u.y + 0.5);
       sparks.push({ x: p.x + camX, y: p.y - 2, vx: -u.vx * 12 + (Math.random() - 0.5) * 30, vy: -Math.random() * 40, life: 0.35, c: '#7a6a58' });
@@ -4855,12 +4864,13 @@ function drawSpriteUnit(o){
       const fi = Math.floor(t * q.fps) % q.n;
       ctx.drawImage(q.img, fi * q.fw, 0, q.fw, q.img.naturalHeight, -q.ax * k, -q.ay * k, q.fw * k, q.img.naturalHeight * k);
     } else ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
-    // 무기 (창): 손 위치에 맞춰 듦. 돌격 = 앞으로 겨눔, 기본 공격 = 휘두름, 던지기 = 머리 위로
-    const Wp = S.weapon;
+    // 무기 (창): 손 위치에 맞춰 듦. 돌격 = 앞으로 겨눔, 기본 공격 = 휘두름, 던지기 = 머리 위로, 방어 = 몸 앞에 세움 (모든 무기 공통)
+    const Wp = S.weapon, guardPose = pn === 'guard' && !S.poses.guard;
     if (Wp && q.hand && imgReady(Wp.img) && hasSpear(o) && (q === S.poses.charge || q === S.poses.attack || q === S.poses.throw)){
       const L = Wp.len * T * dsc, h = L * Wp.img.naturalHeight / Wp.img.naturalWidth;
       let a = 0;
-      if (q === S.poses.attack){ const kk = o.lunge > 0 ? 1 - o.lunge / 0.25 : 1; a = -1.1 + kk * 1.4; }
+      if (guardPose) a = -Math.PI / 2 + 0.12;                     // 끝을 위로, 살짝 앞으로 기울여 막음
+      else if (q === S.poses.attack){ const kk = o.lunge > 0 ? 1 - o.lunge / 0.25 : 1; a = -1.1 + kk * 1.4; }
       else if (q === S.poses.throw) a = -0.5;
       ctx.translate((q.hand[0] - q.ax) * k, (q.hand[1] - q.ay) * k);
       if (qf < 0) ctx.scale(-1, 1);                               // 원화가 왼쪽을 보면 창도 왼쪽으로
