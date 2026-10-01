@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.11
+  version v12.12
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.11';
+const VERSION = 'v12.12';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2324,6 +2324,10 @@ Object.assign(ENEMIES, {
     look:{ scale:1.4, skin:'#b8a58a', cloth:'#6a5a44', weapon:'axe', wstyle:{ blade:'#8f8a80' }, hood:'#4d4234', eye:'#f0e6c0', bw:1.35 },
     tags:[], trait:'🔆 맷돌질 — 크게 내려찍어 주변 1.4칸에 절반 피해와 땅울림.\n🌾 곱게 갈아 주지 — 싸우는 동안 색을 잃은 자들이 모여든다.',
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
+  umbrella: { name:'우산 소녀', grade:'', color:'#e0302a', sub:'중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다',
+    hp:120, atk:9, def:4, block:0.2, crit:0.05, eva:0.2, spd:1.6, range:1.3, cd:1.4, windup:0.4, hits:1, weight:40, react:0.4, height:1.6,
+    tags:['중립'], trait:'붉은 우산 아래 얼굴이 보이지 않는다. 아무 말도 하지 않는다. (아직 정해진 역할 없음)',
+    equip:{ 무기:'☂ 붉은 우산', 머리:'—', 몸:'검은 옷 · 붉은 치마', 장신구:'—' } },
   benkin: { name:'벤킨', grade:'', color:'#e09a9a', sub:'사슬에 감긴 가시관의 여자 · 도끼와 낫',
     hp:420, atk:20, def:10, block:0.3, crit:0.1, eva:0.1, spd:2.0, range:2.4, cd:1.5, windup:0.45, hits:1, weight:120, react:0.3, radius:0.5, height:1.8,
     tags:[], trait:'몸에 감은 사슬로 도끼와 낫을 휘두른다. 사슬 덕에 팔보다 멀리 닿는다 (사거리 2.4칸). 막을 땐 낫을 크게 돌려 쳐낸다.',
@@ -2674,7 +2678,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'benkin'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'benkin', 'umbrella'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4722,6 +4726,8 @@ SPRITES.benkin = { face:'assets/benkin_face.png', heightTiles:1.95, baseFace:1, 
   alias:{ prep:'attack', strike:'attack', special:'attack', hurt:'guard', back:'idle' },
   poses:{ idle:{ src:'assets/benkin_idle.png', ax:145, ay:460, f:1 }, guard:{ src:'assets/benkin_guard.png', ax:200, ay:392, f:1 },
           attack:{ src:'assets/benkin_attack.png', ax:90, ay:460, f:1 } } };
+SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace:-1, idleH:440,   // 우산 소녀: 한 장 (원화의 붉은 등불은 빼고 소녀와 우산만), 원화가 왼쪽을 봄
+  poses:{ idle:{ src:'assets/umbrella_idle.png', ax:114, ay:440, f:-1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
