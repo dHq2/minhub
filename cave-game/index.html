@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.20
+  version v12.21
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -368,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.20';
+const VERSION = 'v12.21';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -707,7 +707,7 @@ function linesFor(n){
 /* ---------- 입력 ---------- */
 const held = new Set();
 const KEYMAP = { ArrowUp:'up', KeyW:'up', ArrowDown:'down', KeyS:'down', ArrowLeft:'left', KeyA:'left', ArrowRight:'right', KeyD:'right',
-  ShiftLeft:'run', ShiftRight:'run', KeyX:'guard' };
+  ShiftLeft:'run', ShiftRight:'run', KeyX:'guard', KeyC:'attack' };   // 공격 (C)은 누르고 있으면 계속 나감
 window.addEventListener('keydown', e => {
   if (!player || gameEl.hidden) return;
   if (KEYMAP[e.code]){ held.add(KEYMAP[e.code]); e.preventDefault(); }
@@ -3086,13 +3086,21 @@ function pressDodge(){
   u.dodgeT = 0.3; u.dodgeCd = 0.7; u.ghostClock = 0;
 }
 document.getElementById('tb-dodge').addEventListener('pointerdown', e => { e.preventDefault(); pressDodge(); });
-document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); pressAttack(); });
+document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); held.add('attack'); pressAttack(); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.getElementById('tb-attack').addEventListener(ev, () => held.delete('attack')));
 document.getElementById('bt-water').onchange = e => { if (battle) battle.water = e.target.checked; };
 document.getElementById('bt-seal').onchange = e => { if (battle) battle.sealDivine = e.target.checked; };
 document.getElementById('bt-rain').onchange = e => { if (battle){ battle.rain = e.target.checked; battle.drops = []; } };
 document.getElementById('bt-auto').onchange = e => { if (battle) battle.playerAuto = e.target.checked; };
 // 공격 입력: 0.35초 동안 버퍼 (공격 간격이 끝나는 순간에 맞춰 나감)
-function pressAttack(){ if (mode === 'battle' && battle){ battle.attackPressAt = battle.clock; grabHand(); } }
+// 공격 간격 (쿨다운) 중에 누르면 한 번 예약: 간격이 끝나는 순간 나감 (최대 1.2초 앞까지). 전에는 0.35초 안에 간격이 안 끝나면 그냥 버려졌음
+function pressAttack(){
+  if (mode !== 'battle' || !battle) return;
+  const u = battle.units.find(o => o.id === 'player' && !o.dead);
+  const wait = u ? Math.max(0, u.cd) + Math.max(0, u.windup) + Math.max(0, u.lunge || 0) + Math.max(0, u.stun) : 0;   // 휘청이는 중에 눌러도 풀리면 나감
+  battle.attackPressAt = battle.clock + Math.min(1.2, wait);
+  grabHand();
+}
 [['tb-guard', 'guard'], ['tb-run', 'run']].forEach(([id, k]) => {
   const b = document.getElementById(id);
   b.addEventListener('pointerdown', e => { e.preventDefault(); held.add(k); if (k === 'guard') pressGuard(); });
@@ -3900,7 +3908,7 @@ function updateBattle(dt){
   const free = !anyPanel();
   const input = free ? moveInput() : null;
   const guardHeld = free && held.has('guard'), runHeld = free && (held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95));   // 조이스틱을 끝까지 밀면 달림
-  if (b.running && (input || guardHeld || runHeld)) grabHand();
+  if (b.running && (input || guardHeld || runHeld || (free && held.has('attack')))) grabHand();
   const handNow = !b.playerAuto || b.clock < (b.handUntil || 0);
   for (const u of b.units){
     if (drag && drag.moved && drag.u === u) continue;
@@ -4333,7 +4341,7 @@ function updateBattle(dt){
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
-      if (handOnly && b.running && !u.guarding && u.cd <= 0 && b.clock - b.attackPressAt <= 0.35){
+      if (handOnly && b.running && !u.guarding && u.cd <= 0 && (b.clock - b.attackPressAt <= 0.35 || (free && held.has('attack')))){
         b.attackPressAt = -99;
         let near = null, nd = u.st.range + 0.3;                   // 지금 닿는 적 중 가장 가까운 쪽 (AI가 고른 목표와 무관)
         for (const o of b.units){ if (o.side === u.side || o.dead) continue; const d = Math.hypot(o.x - u.x, o.y - u.y); if (d <= nd){ nd = d; near = o; } }
@@ -4858,12 +4866,12 @@ SPRITES.benkin = { face:'assets/benkin_face.png', heightTiles:1.95, baseFace:1, 
           attack:{ src:'assets/benkin_attack.png', ax:90, ay:460, f:1 } } };
 SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace:-1, idleH:440,   // 우산 소녀: 한 장 (원화의 붉은 등불은 빼고 소녀와 우산만), 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/umbrella_idle.png', ax:114, ay:440, f:-1 } } };
-SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, idleH:400,       // 로시나: 한 장, 원화가 왼쪽을 봄 (외뿔이 앞)
-  poses:{ idle:{ src:'assets/horn_idle.png', ax:207, ay:400, f:-1 } } };
+SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, idleH:380,       // 로시나: 떠 있는 대기 (24프레임), 원화가 왼쪽을 봄 (외뿔이 앞)
+  poses:{ idle:{ src:'assets/horn_idle_anim.webp', fw:378, n:24, fps:12.5, ax:196, ay:380, f:-1 } } };
 SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 한 장, 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/odile_idle.png', ax:165, ay:380, f:-1 } } };
-SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:440,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
-  poses:{ idle:{ src:'assets/tomoe_idle.png', ax:125, ay:440, f:-1 } } };
+SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
+  poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 } } };   // 대기 16프레임
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
