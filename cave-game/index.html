@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.7
+  version v12.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.7';
+const VERSION = 'v12.8';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -1805,7 +1805,7 @@ function buildBar(){
   });
 }
 function drawPortrait(c, id){
-  if (id.startsWith('rat')){
+  if (id.startsWith('rat') && !SPRITES[id]){
     const g = c.getContext('2d'); g.clearRect(0, 0, c.width, c.height);
     withCtx(g, () => { if (id === 'ratKnight') drawRatKnightShape(40, 116, 86, 1, null); else drawRatShape(34, 62, 62, 1, 0); });
     return;
@@ -2308,6 +2308,11 @@ Object.assign(ENEMIES, {
     look:{ scale:1.4, skin:'#b8a58a', cloth:'#6a5a44', weapon:'axe', wstyle:{ blade:'#8f8a80' }, hood:'#4d4234', eye:'#f0e6c0', bw:1.35 },
     tags:[], trait:'🔆 맷돌질 — 크게 내려찍어 주변 1.4칸에 절반 피해와 땅울림.\n🌾 곱게 갈아 주지 — 싸우는 동안 색을 잃은 자들이 모여든다.',
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
+  dandalo: { name:'단달로', grade:'', color:'#c9a86a', sub:'"경전" · 중립 · 큰 도끼를 든 가면의 사내',
+    hp:700, atk:26, def:16, block:0.3, crit:0.08, eva:0.05, spd:1.5, range:2.0, cd:2.0, windup:0.6, hits:1, weight:380, react:0.3, radius:0.55, height:1.9,
+    splash:0.5, splashR:1.3,
+    tags:['중립'], trait:'누구의 편도 아니다. 큰 도끼를 머리 위로 치켜들었다가 (준비), 옆으로 크게 휘두르고, 다음엔 내려찍는다 (번갈아). 맞은 자리 주변 1.3칸에 절반 피해.',
+    equip:{ 무기:'🪓 경전의 도끼', 머리:'뿔 가면', 몸:'해진 검은 법의', 장신구:'—' } },
 });
 
 /* ---------- 깡통 동료들 (던전에서 만나 영입. 모양은 look 하나로) ---------- */
@@ -2649,7 +2654,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -3392,6 +3397,7 @@ const WHIFF_GAP = 0.45;
 const MELEE_TOL = 0.3;    // 근접 판정 여유: 치는 순간 사거리 + 0.3칸 밖이면 헛침 (이동회피의 기준)   // 강공이 헛치면 생기는 틈 (초)
 function releaseAttack(u){
   let d = u.atkTarget; u.atkTarget = null;
+  u.swings = (u.swings || 0) + 1;
   const stab = u.stab;
   u.cd = stab ? u.st.melee.cd : u.st.cd;
   if (u.id === 'karius' && u.last5) u.cd /= 1.5;              // 근성: 공격속도 1.5배
@@ -4684,6 +4690,12 @@ const SPRITES = {
   cesar:       { face:'assets/cesar_face.png', heightTiles:1.85, baseFace:-1, idleH:440,
                  poses:{ idle:{ src:'assets/cesar_idle.png', ax:168, ay:440 }, prep:{ src:'assets/cesar_prep.png', ax:198, ay:405 }, strike:{ src:'assets/cesar_strike.png', ax:173, ay:383 }, special:{ src:'assets/cesar_special.png', ax:175, ay:420 }, guard:{ src:'assets/cesar_guard.png', ax:178, ay:430 }, back:{ src:'assets/cesar_back.png', ax:167, ay:326 }, raise:{ src:'assets/cesar_raise.png', ax:169, ay:437 }, raiseWait:{ src:'assets/cesar_raiseWait.png', ax:171, ay:415 }, hurt:{ src:'assets/cesar_hurt.png', ax:161, ay:366 }, thrust:{ src:'assets/cesar_thrust.png', ax:283, ay:237 } } },
 };
+SPRITES.ratKnight = { face:'assets/ratknight_face.png', heightTiles:1.05, baseFace:1, idleH:380,   // 쥐 기사: 한 장 (창 · 방패), 원화가 오른쪽을 봄
+  poses:{ idle:{ src:'assets/ratknight_idle.png', ax:184, ay:380, f:1 } } };
+SPRITES.dandalo = { face:'assets/dandalo_face.png', heightTiles:2.0, baseFace:1, idleH:440,         // 단달로: 대기 · 준비 (치켜듦) · 휘두르기 · 내려찍기. 휘두르기와 내려찍기는 번갈아
+  alt:{ strike:['strike', 'slam'] },
+  poses:{ idle:{ src:'assets/dandalo_idle.png', ax:178, ay:440, f:1 }, prep:{ src:'assets/dandalo_prep.png', ax:176, ay:441, f:1 },
+          strike:{ src:'assets/dandalo_strike.png', ax:165, ay:391, f:1 }, slam:{ src:'assets/dandalo_slam.png', ax:165, ay:424, f:1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
@@ -4704,7 +4716,7 @@ function poseOf(o, S){
   if (o.dodgeT > 0 || o.state === 'retreat') return 'back';
   const shooter = o.st && o.st.projectile && !o.stab;
   if (o.windup > 0) return shooter ? 'shoot' : 'prep';
-  if (o.lunge > 0) return shooter ? 'shoot' : 'strike';
+  if (o.lunge > 0){ const al = S.alt && S.alt.strike; return shooter ? 'shoot' : al ? al[Math.max(0, (o.swings || 1) - 1) % al.length] : 'strike'; }   // 번갈아 쓰는 공격 원화
   if (o.throwT > 0) return 'throw';
   if (o.moving && S.poses.walk) return o.running ? 'run' : 'walk';
   return 'idle';
