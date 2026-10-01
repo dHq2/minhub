@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.21
+  version v12.22
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -368,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.21';
+const VERSION = 'v12.22';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -4859,17 +4859,17 @@ SPRITES.dandalo = { face:'assets/dandalo_face.png', heightTiles:2.0, baseFace:1,
   poses:{ idle:{ src:'assets/dandalo_idle.png', ax:178, ay:440, f:1 }, prep:{ src:'assets/dandalo_prep.png', ax:176, ay:441, f:1 },
           strike:{ src:'assets/dandalo_strike.png', ax:165, ay:391, f:1 }, slam:{ src:'assets/dandalo_slam.png', ax:165, ay:424, f:1 } } };
 SPRITES.yellow = { face:'assets/yellow_face.png', heightTiles:1.3, baseFace:-1, idleH:420,   // 옐로: 한 장, 원화가 왼쪽을 봄 (할퀴는 손을 뻗음)
-  poses:{ idle:{ src:'assets/yellow_idle.png', ax:150, ay:420, f:-1 } } };
+  poses:{ idle:{ src:'assets/yellow_idle_anim.webp', fw:281, fh:420, n:40, cols:8, fps:12.5, ax:145, ay:420, f:-1 } } };   // 움직이는 대기 40프레임
 SPRITES.benkin = { face:'assets/benkin_face.png', heightTiles:1.95, baseFace:1, idleH:460,     // 벤킨: 대기 · 방어 (피격도 같은 그림) · 공격 (준비 · 기술도 같은 그림)
   alias:{ prep:'attack', strike:'attack', special:'attack', hurt:'guard', back:'idle' },
   poses:{ idle:{ src:'assets/benkin_idle.png', ax:145, ay:460, f:1 }, guard:{ src:'assets/benkin_guard.png', ax:200, ay:392, f:1 },
           attack:{ src:'assets/benkin_attack.png', ax:90, ay:460, f:1 } } };
 SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace:-1, idleH:440,   // 우산 소녀: 한 장 (원화의 붉은 등불은 빼고 소녀와 우산만), 원화가 왼쪽을 봄
-  poses:{ idle:{ src:'assets/umbrella_idle.png', ax:114, ay:440, f:-1 } } };
+  poses:{ idle:{ src:'assets/umbrella_idle_anim.webp', fw:230, fh:440, n:48, cols:8, fps:12, ax:118, ay:440, f:-1 } } };   // 숨 쉬는 대기 48프레임 (붉은 등불은 빼고)
 SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, idleH:380,       // 로시나: 떠 있는 대기 (24프레임), 원화가 왼쪽을 봄 (외뿔이 앞)
   poses:{ idle:{ src:'assets/horn_idle_anim.webp', fw:378, n:24, fps:12.5, ax:196, ay:380, f:-1 } } };
-SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 한 장, 원화가 왼쪽을 봄
-  poses:{ idle:{ src:'assets/odile_idle.png', ax:165, ay:380, f:-1 } } };
+SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 움직이는 대기 (48프레임, 8칸씩 6줄), 원화가 왼쪽을 봄
+  poses:{ idle:{ src:'assets/odile_idle_anim.webp', fw:332, fh:380, n:48, cols:8, fps:16, ax:165, ay:380, f:-1 } } };
 SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
   poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 } } };   // 대기 16프레임
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
@@ -5068,7 +5068,8 @@ function drawSpriteUnit(o){
     if (q.n){                                                      // 움직이는 원화: 가로로 이어진 프레임
       const t = (o.moving ? (o.walkClock || time) * (q === S.poses.run ? 1.3 : 1) : time) + (o.uid || 0) * 0.37;
       const fi = Math.floor(t * q.fps) % q.n;
-      ctx.drawImage(q.img, fi * q.fw, 0, q.fw, q.img.naturalHeight, -q.ax * k, -q.ay * k, q.fw * k, q.img.naturalHeight * k);
+      const cols = q.cols || q.n, fh = q.fh || q.img.naturalHeight;   // 가로 한 줄, 또는 cols칸씩 여러 줄 (프레임이 많을 때)
+      ctx.drawImage(q.img, (fi % cols) * q.fw, Math.floor(fi / cols) * fh, q.fw, fh, -q.ax * k, -q.ay * k, q.fw * k, fh * k);
     } else ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
     // 무기 (창): 손 위치에 맞춰 듦. 돌격 = 앞으로 겨눔, 기본 공격 = 휘두름, 던지기 = 머리 위로, 방어 = 몸 앞에 세움 (모든 무기 공통)
     const Wp = S.weapon, guardPose = pn === 'guard' && !S.poses.guard;
