@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.12
+  version v12.13
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.12';
+const VERSION = 'v12.13';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2228,6 +2228,7 @@ const STYLES = {
   poren:       { approach:3, hold:4, guard:2, retreat:1 },   // 쥐 군단의 왕: 혼자선 버티다 빠지고, 쥐들이 모이면 함께 밀고 들어감 (뭉침)
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
+  rosina:      { approach:2, hitrun:4, strafe:3, guard:0, hold:1, retreat:1, dodge:true },   // 춤꾼: 스텝 밟다 뿔로 파고듦
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
 };
 const HEROES = {
@@ -2324,6 +2325,11 @@ Object.assign(ENEMIES, {
     look:{ scale:1.4, skin:'#b8a58a', cloth:'#6a5a44', weapon:'axe', wstyle:{ blade:'#8f8a80' }, hood:'#4d4234', eye:'#f0e6c0', bw:1.35 },
     tags:[], trait:'🔆 맷돌질 — 크게 내려찍어 주변 1.4칸에 절반 피해와 땅울림.\n🌾 곱게 갈아 주지 — 싸우는 동안 색을 잃은 자들이 모여든다.',
     equip:{ 무기:'맷돌 도끼', 머리:'가루 묻은 두건', 몸:'앞치마', 장신구:'—' } },
+  rosina: { name:'로시나', grade:'', color:'#8a6a9a', sub:'"외뿔" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다',
+    hp:380, atk:18, def:8, block:0.15, crit:0.12, eva:0.25, spd:2.6, range:1.6, cd:1.2, windup:0.35, hits:1, weight:55, react:0.35, height:1.5,
+    lunge:2.4,
+    tags:['중립'], trait:'단달로와 함께 다니는 가면의 춤꾼. 가볍게 스텝을 밟다가 가면의 외뿔로 순식간에 파고들어 찌른다 (2.4칸 밖에서도 뛰어듦). 잘 피한다.',
+    equip:{ 무기:'🦄 가면의 외뿔', 머리:'작은 왕관 · 뿔 가면', 몸:'해진 망토 · 사슬', 장신구:'—' } },
   umbrella: { name:'우산 소녀', grade:'', color:'#e0302a', sub:'중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다',
     hp:120, atk:9, def:4, block:0.2, crit:0.05, eva:0.2, spd:1.6, range:1.3, cd:1.4, windup:0.4, hits:1, weight:40, react:0.4, height:1.6,
     tags:['중립'], trait:'붉은 우산 아래 얼굴이 보이지 않는다. 아무 말도 하지 않는다. (아직 정해진 역할 없음)',
@@ -2678,7 +2684,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'benkin', 'umbrella'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -4728,6 +4734,8 @@ SPRITES.benkin = { face:'assets/benkin_face.png', heightTiles:1.95, baseFace:1, 
           attack:{ src:'assets/benkin_attack.png', ax:90, ay:460, f:1 } } };
 SPRITES.umbrella = { face:'assets/umbrella_face.png', heightTiles:1.75, baseFace:-1, idleH:440,   // 우산 소녀: 한 장 (원화의 붉은 등불은 빼고 소녀와 우산만), 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/umbrella_idle.png', ax:114, ay:440, f:-1 } } };
+SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, idleH:400,       // 로시나: 한 장, 원화가 왼쪽을 봄 (외뿔이 앞)
+  poses:{ idle:{ src:'assets/horn_idle.png', ax:207, ay:400, f:-1 } } };
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
