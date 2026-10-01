@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.1
+  version v13.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -172,6 +172,9 @@
   .tbl table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
   .tbl th,.tbl td{padding:6px 6px;border-bottom:1px dashed var(--line);text-align:left;vertical-align:top;}
   .tbl th{color:var(--ink-dim);font-weight:400;white-space:nowrap;}
+  .tbl td{white-space:nowrap;}                                     /* 좁은 화면에선 줄을 꺾지 않고 옆으로 밀어 봄 */
+  .panel .hist{margin-top:12px;font-size:12px;color:var(--ink-dim);line-height:1.8;}
+  .panel .hist h4{margin:0 0 2px;font-weight:400;color:var(--fire);font-family:var(--display);font-size:13px;}
   .tbl tr.sec td{color:var(--fire);font-family:var(--display);font-size:13px;padding-top:12px;border-bottom:1px solid var(--line);}
   .tbl td.em{font-size:18px;width:28px;text-align:center;}
   .tbl td .d{color:var(--ink-dim);font-size:11px;line-height:1.5;}
@@ -341,7 +344,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.1';
+const VERSION = 'v13.2';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2052,6 +2055,11 @@ function toggleStats(){
   addSec('보스'); ['cesar', 'miller', 'agnes', 'hargen', 'jeokroe'].forEach(id => addRow(id));
   wrap.appendChild(t);
   statsEl.appendChild(wrap);
+  if ((DGP.history || []).length){                               // 최근 판: 어디까지 갔는지 · 깊이 · 이긴 싸움 · 레벨 · 유물
+    const h = el('div', 'hist'); h.appendChild(el('h4', '', '최근 판'));
+    for (const r of DGP.history) h.appendChild(el('div', '', `${r.n}번째 · ${r.clear ? '다섯 층 돌파' : `${r.f}층에서 쓰러짐`}${r.deep ? ` · 깊이 ${r.deep}` : ''} · 이긴 싸움 ${r.won} · 인주 Lv${r.lv} · ${r.rel || '유물 없음'}`));
+    statsEl.appendChild(h);
+  }
   statsEl.hidden = false;
 }
 
@@ -6508,6 +6516,8 @@ function runSummary(dead){
     box.appendChild(lv);
     box.appendChild(el('div', 'sub', dead ? '유물 · 금화 · 단련은 두고 왔습니다. 레벨과 동료는 남습니다.' : `굴로 돌아갑니다. 다음 판은 깊이 ${DGP.clears}: 적이 ${DGP.clears * 15}% 더 강합니다.`));
     const ok = el('button', 'ok', '굴로 돌아간다'); box.appendChild(ok);
+    DGP.history = [{ n: DGP.runs, f: RUN.floor, clear: !dead, won: RUN.won, lv: lvOf('player'), deep: (DGP.clears || 0) - (dead ? 0 : 1), rel: RUN.relics.map(id => RELICS[id].em).join('') }, ...(DGP.history || [])].slice(0, 8);   // 최근 판 기록 (스탯표 아래)
+    saveDGP();
     let closed = false;
     const key = e => { if (e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); e.stopPropagation(); done(); } };
     const done = () => { if (closed) return; closed = true; window.removeEventListener('keydown', key, true); encEl.hidden = true; encEl.innerHTML = ''; encEl.className = ''; res(); };
