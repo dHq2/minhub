@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.4
+  version v13.5
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -213,6 +213,11 @@
   .bt-tools button canvas.face.sd-ally{border-color:#5cc26a;}
   .bt-tools button canvas.face.sd-enemy{border-color:#e2443a;}
   .bt-tools button.swapped{font-style:italic;}
+  /* 모바일: 훈련장 메뉴 오른쪽의 스크롤 막대 (영웅 칸은 끌어 배치하느라 손가락 스크롤이 안 먹어서) */
+  #bt-scroll{display:none;position:absolute;width:28px;pointer-events:auto;touch-action:none;background:rgba(10,8,12,.85);border:1px solid var(--line);border-radius:14px;z-index:5;}
+  #bt-scroll i{position:absolute;left:4px;right:4px;min-height:36px;background:var(--fire);border-radius:10px;opacity:.85;}
+  #bt-scroll.on{display:block;}
+  @media (pointer:coarse){ #bt-panel{padding-right:46px;} }
   /* 스킬 아이콘: 모두 같은 금테 */
   .sk-title{margin:12px 0 6px;font-size:11px;color:var(--ink-dim);letter-spacing:1px;}
   .sk-row{display:flex;flex-wrap:wrap;gap:8px;}
@@ -324,6 +329,7 @@
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
     </div>
+    <div id="bt-scroll"><i></i></div>
     <div id="bt-quick">
       <button id="bq-run" class="primary">▶ 시작</button>
       <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
@@ -344,7 +350,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.4';
+const VERSION = 'v13.5';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2325,6 +2331,29 @@ document.getElementById('bt-stats').onclick = toggleStats;
 document.getElementById('bt-exit').onclick = exitBattle;
 document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTest = e.target.checked; };
 document.getElementById('btn-battle').onclick = enterBattle;
+// 모바일 스크롤 막대: 메뉴 오른쪽 안쪽에 붙어서, 막대를 끌거나 누르면 메뉴가 그만큼 스크롤됨
+(() => {
+  const panel = document.getElementById('bt-panel'), bar = document.getElementById('bt-scroll'), thumb = bar.querySelector('i');
+  const sync = () => {
+    const show = TOUCH && mode === 'battle' && !document.getElementById('bt-ui').hidden && !panel.classList.contains('collapsed') && getComputedStyle(panel).display !== 'none' && panel.scrollHeight > panel.clientHeight + 4;
+    bar.classList.toggle('on', show);
+    if (!show) return;
+    const r = panel.getBoundingClientRect(), pr = panel.parentElement.getBoundingClientRect();
+    bar.style.left = (r.right - pr.left - 36) + 'px'; bar.style.top = (r.top - pr.top + 40) + 'px'; bar.style.height = Math.max(60, r.height - 50) + 'px';
+    const h = bar.clientHeight, th = Math.max(36, h * panel.clientHeight / panel.scrollHeight);
+    thumb.style.height = th + 'px'; thumb.style.top = ((h - th) * panel.scrollTop / (panel.scrollHeight - panel.clientHeight)) + 'px';
+  };
+  const go = e => {
+    const r = bar.getBoundingClientRect(), th = thumb.offsetHeight;
+    const k = Math.min(1, Math.max(0, (e.clientY - r.top - th / 2) / Math.max(1, r.height - th)));
+    panel.scrollTop = k * (panel.scrollHeight - panel.clientHeight); sync();
+  };
+  bar.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); bar.setPointerCapture(e.pointerId); go(e); });
+  bar.addEventListener('pointermove', e => { if (bar.hasPointerCapture(e.pointerId)) go(e); });
+  panel.addEventListener('scroll', sync);
+  window.addEventListener('resize', sync);
+  setInterval(sync, 300);
+})();
 document.getElementById('bt-title').onclick = () => document.getElementById('bt-panel').classList.toggle('collapsed');
 document.getElementById('bt-auto').addEventListener('change', () => setTimeout(syncManual, 0));
 // 자동 전투 중에도 손을 대면 그때부터 직접 조작, 1.5초 동안 손을 떼면 다시 자동
