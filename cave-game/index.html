@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.22
+  version v12.23
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -368,7 +368,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.22';
+const VERSION = 'v12.23';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2351,8 +2351,8 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
 HEROES.tomoe = { name:'용묘화', grade:'★★★★', color:'#c23a3a', sub:'삽을 든 여장부 · 등에 용 문신 · 안대 · 군모',
   hp:260, atk:24, def:12, block:0.35, crit:0.15, eva:0.1, spd:2.4, range:1.5, cd:1.3, windup:0.4, hits:1, weight:75, react:0.25,
-  hitStagger:0.35, splash:0.4, splashR:0.9,
-  tags:['근접A', '통솔B'], trait:'🔆 묻어 주마 — 정면으로 성큼 걸어 들어가 삽으로 후려친다. 맞으면 잘 휘청이고 (35%), 바로 옆 0.9칸에도 절반 피해.\n뒤로 물러서지 않는다.',
+  hitStagger:0.35, splash:0.4, splashR:0.9, charger:true, chargeAtk:22, chargeStun:0.6,
+  tags:['근접A', '통솔B'], trait:'🔆 묻어 주마 — 정면으로 성큼 걸어 들어가 삽으로 후려친다. 맞으면 잘 휘청이고 (35%), 바로 옆 0.9칸에도 절반 피해.\n⛏ 돌진 — 적이 멀어지면 삽을 앞세워 들이받아 0.6초 행동을 끊는다 (돌진 중엔 삽으로 막음).\n뒤로 물러서지 않는다.',
   equip:{ 무기:'⛏ 야전삽', 머리:'군모 · 안대', 몸:'검은 코트 (등 트임)', 장신구:'—' } };
 HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러',
   hp:80, atk:7, def:2, block:0, crit:0.12, eva:0.18, spd:3.4, range:1.1, cd:0.8, windup:0.18, hits:2, weight:48, react:0.5,
@@ -2380,18 +2380,6 @@ const ENEMIES = {
 };
 /* ---------- 던전 1~2층의 적과 인물 (look: 사람 모양 그림 설정. 모양은 drawLookUnit 하나가 그림) ---------- */
 Object.assign(ENEMIES, {
-  deadKnight: { name:'말 없는 기사', grade:'', color:'#9aa3ad', sub:'1층 · 회색 대지 · 죽은 자 · 말이 없다',
-    hp:180, atk:15, def:12, block:0.5, crit:0.05, eva:0, spd:1.7, range:1.25, cd:1.4, windup:0.4, hits:1, weight:95, react:0.3,
-    look:{ skin:'#8b8f94', cloth:'#3c4048', weapon:'sword', helm:true, eye:'#9fe8ff', shield:true },
-    tags:[], trait:'말이 없다. 죽은 뒤에도 걷는다. 방패로 잘 막는다.', equip:{ 무기:'녹슨 기사검', 머리:'찌그러진 투구', 몸:'녹슨 사슬갑옷', 장신구:'—' } },
-  deadAxe: { name:'죽은 전사 (도끼)', grade:'', color:'#a39486', sub:'1층 · 회색 대지 · 기사를 따르던 자',
-    hp:90, atk:14, def:4, block:0.2, crit:0.08, eva:0, spd:2.0, range:1.2, cd:1.6, windup:0.5, hits:1, weight:70, react:0.4,
-    look:{ skin:'#8a8580', cloth:'#4a3b30', weapon:'axe', eye:'#9fe8ff' },
-    tags:[], trait:'느리지만 세게 찍는다.', equip:{ 무기:'이 빠진 도끼', 머리:'—', 몸:'썩은 가죽', 장신구:'—' } },
-  deadSword: { name:'죽은 전사 (검)', grade:'', color:'#a39486', sub:'1층 · 회색 대지 · 기사를 따르던 자',
-    hp:80, atk:10, def:4, block:0.3, crit:0.05, eva:0.05, spd:2.3, range:1.2, cd:1.1, windup:0.3, hits:1, weight:60, react:0.35,
-    look:{ skin:'#8a8580', cloth:'#3f4236', weapon:'sword', eye:'#9fe8ff' },
-    tags:[], trait:'', equip:{ 무기:'부러진 검', 머리:'—', 몸:'썩은 가죽', 장신구:'—' } },
   fingerHole: { name:'손가락 구멍', grade:'', color:'#d9a89a', sub:'1층 · 알현실 문 앞 · 수천 개의 손가락',
     hp:260, atk:7, def:0, block:0, crit:0.05, eva:0, spd:0, range:1.8, cd:0.9, windup:0.25, hits:2, weight:5000, react:0.5, radius:0.7, height:0.6,
     look:{ kind:'hole' },
@@ -2421,6 +2409,11 @@ Object.assign(ENEMIES, {
     boss:true, brain:'agnes', sever:0.3,
     tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 로젤이 있는 전투는 성당에서 벌어진다.',
     equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
+  swordsman: { name:'검사', grade:'', color:'#b8a27a', sub:'1층의 적 · 등에 검 세 자루를 멘 해골 투구의 검사 · 말이 없다',
+    hp:160, atk:15, def:8, block:0.35, crit:0.1, eva:0.05, spd:2.2, range:1.6, cd:1.3, windup:0.4, hits:1, weight:110, react:0.3, height:1.8,
+    splash:0.4, splashR:1.1,
+    tags:[], trait:'말이 없다. 큰 검을 낮게 쥐고 걸어와 땅을 쓸듯 크게 벤다 (곁 1.1칸에도 절반 피해). 등에 멘 검 세 자루는 아직 뽑지 않았다.',
+    equip:{ 무기:'🗡 큰 검 (등에 셋 더)', 머리:'해골 투구', 몸:'가시 어깨 · 누더기 망토', 장신구:'해골 사슬' } },
   spearman: { name:'창병', grade:'', color:'#9a3a44', sub:'1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패',
     hp:150, atk:16, def:10, block:0.45, crit:0.08, eva:0, spd:1.8, range:2.2, cd:1.6, windup:0.45, hits:1, weight:110, react:0.3, height:1.7,
     lunge:2.0, shield:'🛡 둥근 방패',
@@ -2432,7 +2425,7 @@ Object.assign(ENEMIES, {
     tags:[], trait:'큰 방패로 잘 막는다 (막기 60%). 막으면서 다가가 검을 치켜들었다 벤다. 방패라 화살 · 총알에도 방어력이 먹힌다.',
     equip:{ 무기:'🗡 장검', 머리:'뿔 투구', 몸:'사슬 · 푸른 겉옷', 장신구:'🛡 큰 방패' } },
   brute: { name:'곤봉 거한', grade:'', color:'#8a7fa8', sub:'1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다',
-    hp:420, atk:24, def:12, block:0.15, crit:0.06, eva:0, spd:1.7, range:1.9, cd:2.0, windup:0.6, hits:1, weight:650, react:0.1, radius:0.65, height:2.9,
+    hp:340, atk:20, def:10, block:0.15, crit:0.06, eva:0, spd:1.7, range:1.9, cd:2.2, windup:0.65, hits:1, weight:650, react:0.1, radius:0.65, height:2.9,
     splash:0.5, splashR:1.2, brain:'brute',
     tags:[], trait:'🔆 무대뽀 — 피하지도 막지도 않고 앞으로 걷는다. 몸에 닿는 상대는 그대로 밀려난다 (자기보다 가벼우면).\n🪨 내려찍기 — 곤봉으로 땅을 찍어 맞은 자를 1.5칸 밀쳐내고 휘청이게 한다. 주변 1.2칸에 절반 피해.',
     equip:{ 무기:'⛓ 사슬 곤봉', 머리:'뿔 투구', 몸:'돌비늘 갑옷', 장신구:'보라 휘장' } },
@@ -2806,7 +2799,7 @@ let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
 const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
-const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'deadKnight', 'deadAxe', 'deadSword', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen', 'brute', 'archer', 'spearman', 'shieldman'];
+const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'swordsman', 'shieldman', 'spearman', 'archer', 'brute', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
 const REVERSAL_CHANCE = 0.03; // 저스트 회피 시 '역전의 기회' 확률
@@ -3798,7 +3791,7 @@ function chargeHit(u, d){
   pushUnit(d, u, 0.5 * braceW(u) / (braceW(u) + braceW(d)) + 0.15);
   battle.hitstop = Math.max(battle.hitstop, 0.08); shake = Math.max(shake, 0.15);
   fxText(d, '행동 끊김', '#ffd28a', 'big', 0.3);
-  logLine(`🔱 ${u.name}의 돌격 → ${d.name} (0.8초 행동 끊김)`, 'crit');
+  logLine(`${u.id === 'tomoe' ? '⛏' : '🔱'} ${u.name}의 돌격 → ${d.name} (${u.st.chargeStun}초 행동 끊김)`, 'crit');
   resolveHit(u, d, { atk: u.st.chargeAtk });
 }
 function shout(u, text){ if (u.st.silent) return; battle.fx.push({ type: 'bubble', u, text, life: 1.3, max: 1.3 }); }
@@ -4871,11 +4864,16 @@ SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, id
 SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 움직이는 대기 (48프레임, 8칸씩 6줄), 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/odile_idle_anim.webp', fw:332, fh:380, n:48, cols:8, fps:16, ax:165, ay:380, f:-1 } } };
 SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
-  poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 } } };   // 대기 16프레임
+  alias:{ prep:'swing', strike:'swing', special:'swing', guard:'dig', back:'dig', run:'dig' },   // 휘두르기 (준비 · 타격) · 돌진 / 방어 / 파내기 (한 장)
+  poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 },   // 대기 16프레임
+          swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
 const ENC_FACES = {};
+SPRITES.swordsman = { face:'assets/sword_face.png', heightTiles:1.9, baseFace:-1, idleH:460,  // 검사: 대기 · 베기 (준비는 대기 그대로), 원화가 왼쪽을 봄
+  alias:{ strike:'attack', special:'attack' },
+  poses:{ idle:{ src:'assets/sword_idle.png', ax:197, ay:460, f:-1 }, attack:{ src:'assets/sword_attack.png', ax:209, ay:430, f:-1 } } };
 SPRITES.spearman = { face:'assets/spear_face.png', heightTiles:1.75, baseFace:-1, idleH:460,   // 창병: 대기 (창 · 방패) · 찌르기, 원화가 왼쪽을 봄
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/spear_idle.png', ax:245, ay:460, f:-1 }, attack:{ src:'assets/spear_attack.png', ax:225, ay:282, f:-1 } } };
@@ -4912,7 +4910,7 @@ function poseOf(o, S){
   if (o.windup > 0) return shooter ? 'shoot' : 'prep';
   if (o.lunge > 0){ const al = S.alt && S.alt.strike; return shooter ? 'shoot' : al ? al[Math.max(0, (o.swings || 1) - 1) % al.length] : 'strike'; }   // 번갈아 쓰는 공격 원화
   if (o.throwT > 0) return 'throw';
-  if (o.moving && S.poses.walk) return o.running ? 'run' : 'walk';
+  if (o.moving && (S.poses.walk || (o.running && (S.poses.run || (S.alias || {}).run)))) return o.running ? 'run' : 'walk';
   return 'idle';
 }
 
@@ -7146,18 +7144,18 @@ async function floor1(){
   dgSub('빛이 없습니다. 그런데도 보입니다. 모든 것이 회색입니다.');
   await recruitEvent(['dolsoe', 'piel', 'odo'], 10, 3.6);
   await dgUntil(() => lead().x > 13);
-  const knight = addActor('deadKnight', 27, 1.5, -1); knight.walkTo = 0; knight.walkSpd = 0.75;
+  const knight = addActor('swordsman', 27, 1.5, -1); knight.walkTo = 0; knight.walkSpd = 0.75;
   dgSub('저 멀리, 무언가 천천히 걸어옵니다.');
   await dgUntil(() => knight.x - lead().x < 4.5);
   knight.walkTo = null; DG.lock = true;
-  dgSub('기사입니다. 그는 말이 없습니다.', 2.6);
+  dgSub('검사입니다. 등에 검 세 자루. 그는 말이 없습니다.', 2.6);
   await dgWait(1.8);
   DG.lock = false;
   removeActor(knight);
-  await fightOrDie({ title: '말 없는 기사', enemies: [{ id: 'deadKnight', x: 9, y: 2 }],
-    joins: [{ t: 3, id: 'deadAxe' }, { t: 6, id: 'deadSword' }, { t: 10, id: 'deadAxe' }], xp: 45 });
+  await fightOrDie({ title: '말 없는 검사', enemies: [{ id: 'swordsman', x: 9, y: 2 }, { id: 'shieldman', x: 9.6, y: 3.4 }],
+    joins: [{ t: 4, id: 'spearman' }, { t: 8, id: 'archer' }], xp: 50 });
   await dgWait(1.2);
-  dgSub('기사는 끝까지 아무 말도 하지 않았습니다.');
+  dgSub('검사는 끝까지 아무 말도 하지 않았습니다. 등의 검은 하나도 뽑히지 않았습니다.');
   await dgUntil(() => lead().x > DG.area.cols - 2.5);
   await dgNarr(['회색 대지의 끝, 무너진 입구가 땅 아래로 입을 벌리고 있습니다.', '무덤입니다. 누군가의, 아주 오래된.']);
 
@@ -7167,6 +7165,12 @@ async function floor1(){
   await dgUntil(() => lead().x > 4);
   dgSub('기둥들이 줄지어 있습니다. 불꽃은 차갑고, 푸릅니다.');
   await recruitEvent(['moro'], 11, 0.8);
+  await dgUntil(() => lead().x > 13);
+  shake = 0.2; dgSub('기둥 하나가 움직입니다. 기둥이 아닙니다.', 3);
+  await dgWait(1.4);
+  await fightOrDie({ title: '곤봉 거한', enemies: [{ id: 'brute', x: 9, y: 2 }], xp: 40 });
+  await dgWait(1);
+  dgSub('거한이 무릎을 꿇습니다. 사슬이 바닥에 길게 끌립니다.');
   await dgUntil(() => lead().x > 17);
   dgSub('문 앞에 무언가 있습니다. 기기기기기기.');
   await dgInteract(hole.x, 3, '[Space] 구멍을 들여다본다');
