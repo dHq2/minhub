@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.5
+  version v12.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -283,7 +283,7 @@
     <button id="btn-inv">장비 [I]</button>
     <button id="btn-battle">훈련장 [B]</button>
     <button id="btn-drop">낙하 테스트</button>
-    <button id="btn-remake">캐릭터 다시</button>
+    <button id="btn-remake" hidden>캐릭터 다시</button>
   </div>
   <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
   <div class="hud" id="ver"></div>
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.5';
+const VERSION = 'v12.6';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -363,6 +363,7 @@ const JOBS = [
   { id:'miner',  name:'광부',   weapon:{ name:'곡괭이',      icon:'⛏️' }, body:'가죽 앞치마',   stat:{힘:5,민첩:3,지능:3} },
   { id:'mage',   name:'마법사', weapon:{ name:'나무 지팡이', icon:'🪄' }, body:'해진 로브',     stat:{힘:2,민첩:3,지능:6} },
   { id:'rogue',  name:'도적',   weapon:{ name:'단검',        icon:'🔪' }, body:'검은 두건',     stat:{힘:3,민첩:6,지능:2} },
+  { id:'drifter', name:'떨어진 자', weapon:{ name:'낡은 어부의 창', icon:'🔱' }, body:'줄무늬 셔츠 · 배낭', stat:{힘:4,민첩:5,지능:3} },
 ];
 const HAIRS  = [ {name:'검정',c:'#1f1a17'}, {name:'금발',c:'#e3bd55'}, {name:'빨강',c:'#b8392a'}, {name:'은발',c:'#cfd3d9'} ];
 const CLOTHS = [ {name:'남색',c:'#34508f'}, {name:'초록',c:'#3f7b46'}, {name:'자주',c:'#7c3f7c'}, {name:'갈색',c:'#7d5836'} ];
@@ -777,7 +778,8 @@ function lobbySolid(nx, ny, ox, oy){
 let pStats = null;
 function updatePlayerLobby(dt){
   const locked = dialog || scene || anyPanel();
-  stepMover(player, dt, locked ? null : moveInput(), pStats.spd * (held.has('run') ? RUN_MUL : 1), lobbySolid);
+  player.running = held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95);   // 조이스틱을 끝까지 밀면 달림
+  stepMover(player, dt, locked ? null : moveInput(), pStats.spd * (player.running ? RUN_MUL : 1), lobbySolid);
   player.c = Math.round(player.x); player.r = Math.round(player.y);
 }
 
@@ -1282,6 +1284,7 @@ function drawRebecca(){
 function drawPlayerPawn(){ drawPlayerFigure(player); }
 function walkBob(o){ return o.moving ? Math.abs(Math.sin(o.walkClock * 11)) * T * 0.025 : Math.sin(time*2) * T * 0.006; }
 function drawPlayerFigure(o){
+  if (SPRITES.player && spriteReady(SPRITES.player)) return drawSpriteUnit(Object.assign(o, { id: 'player' }));
   const race = RACES[character.race];
   const p = P(o.x + 0.5, o.y + 0.5);
   const u = T * depthScale(o.y) * race.scale;
@@ -1365,7 +1368,7 @@ function drawEnemyGoblin(o){
 }
 
 /* ---------- 무기와 팔 동작: 준비(뒤로 들어올림) → 휘두르기(베기 궤적) / 방어(앞으로 세움) ---------- */
-const WEAPON_OF = { knight:'sword', miner:'pickaxe', mage:'staff', rogue:'dagger' };
+const WEAPON_OF = { drifter:'spear', knight:'sword', miner:'pickaxe', mage:'staff', rogue:'dagger' };
 const WEAPON_LEN = { axe:0.55, sword:0.55, longsword:0.66, dagger:0.3, pickaxe:0.5, staff:0.66, spear:1.0 };
 const easeOut = t => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
 function atkPose(o){
@@ -2197,7 +2200,8 @@ function drawWeather(){
 const RUN_MUL = 1.5;
 const BASE_STATS = { hp:100, atk:10, def:5, block:0.32, crit:0.05, eva:0.05, spd:3.0, range:1.15, cd:1.0, windup:0.3, hits:1, weight:65, react:0.3 };
 const JOB_MOD  = { knight:{ atk:2, def:3, block:0.10, weight:15 }, miner:{ atk:3, def:1, hp:10, weight:5 },
-                   mage:{ atk:6, def:-2, range:2.0, cd:0.3, windup:0.1, ranged:true }, rogue:{ crit:0.10, eva:0.10, spd:0.5, cd:-0.25, windup:-0.08, weight:-5 } };
+                   mage:{ atk:6, def:-2, range:2.0, cd:0.3, windup:0.1, ranged:true }, rogue:{ crit:0.10, eva:0.10, spd:0.5, cd:-0.25, windup:-0.08, weight:-5 },
+                   drifter:{ atk:3, range:0.5, eva:0.05, spd:0.3, weight:-10 } };   // 인주: 낡은 어부의 창 (사거리 1.65칸)
 const RACE_MOD = { human:{ atk:1 }, goblin:{ hp:-10, eva:0.05, spd:0.4, weight:-25 }, elf:{ crit:0.05, spd:0.2, weight:-10 }, dwarf:{ hp:20, def:2, spd:-0.3, weight:15 } };
 // 전투 성향: 매 순간 어떤 움직임을 고를지의 비중 (dodge: 반응할 때 방어 대신 뒤로 빠짐)
 // 쥐 떼 성격: 따르는 쥐 (70%)는 포렌 둘레를 우글우글 따라다니다 포렌이 붙은 적에게 몰려들고, 떠돌이 쥐 (30%)는 맵을 싸돌아다니며 아무나 문다
@@ -4657,6 +4661,17 @@ const SPRITES = {
   norman:      { src:'assets/norman.png', face:'assets/norman_face.png', frames:16, fw:268, fh:332, ax:139, ay:332, idleH:330,
                  heightTiles:1.4, baseFace:1, fps:10, anims:{ idle:[0, 8], heal:[9, 14], shoot:[15, 15] } },   // 대기 9 · 응급처치 6 · 사격 1
   // 포즈 원화 (장면별 한 장씩): 대기 · 준비(다가감) · 공격 · 필살 · 방어 · 백스텝 · 손들기 · 손들기 준비 · 피격. 원화가 왼쪽을 봄
+  // 인주 (주인공): 대기 · 걷기 · 뛰기는 움직이는 원화 (가로로 이어진 프레임), 나머지는 한 장씩. f = 원화가 보는 쪽
+  player:      { face:'assets/inju_face.png', heightTiles:1.25, baseFace:1, idleH:354, weapon:{ src:'assets/weapon_fisher_spear.png', len:1.55, grip:0.36 },
+                 alias:{ prep:'charge', strike:'attack', guard:'charge', back:'run', special:'attack', thrust:'charge' },
+                 poses:{ idle:{ src:'assets/inju_idle.png', fw:211, n:20, fps:4.2, ax:107, ay:354, f:-1 },
+                         walk:{ src:'assets/inju_walk.png', fw:305, n:8, fps:7, ax:144, ay:360, f:1 },
+                         run:{ src:'assets/inju_run.png', fw:393, n:8, fps:12, ax:193, ay:340, f:1 },
+                         charge:{ src:'assets/inju_charge.png', ax:141, ay:267, f:1, hand:[267, 58] },
+                         throw:{ src:'assets/inju_throw.png', ax:118, ay:338, f:1, hand:[190, 153] },
+                         shoot:{ src:'assets/inju_shoot.png', ax:133, ay:340, f:-1, hand:[13, 46] },
+                         attack:{ src:'assets/inju_attack.png', ax:125, ay:337, f:-1, hand:[9, 72] },
+                         hurt:{ src:'assets/inju_hurt.png', ax:106, ay:343, f:1 } } },
   cesar:       { face:'assets/cesar_face.png', heightTiles:1.85, baseFace:-1, idleH:440,
                  poses:{ idle:{ src:'assets/cesar_idle.png', ax:168, ay:440 }, prep:{ src:'assets/cesar_prep.png', ax:198, ay:405 }, strike:{ src:'assets/cesar_strike.png', ax:173, ay:383 }, special:{ src:'assets/cesar_special.png', ax:175, ay:420 }, guard:{ src:'assets/cesar_guard.png', ax:178, ay:430 }, back:{ src:'assets/cesar_back.png', ax:167, ay:326 }, raise:{ src:'assets/cesar_raise.png', ax:169, ay:437 }, raiseWait:{ src:'assets/cesar_raiseWait.png', ax:171, ay:415 }, hurt:{ src:'assets/cesar_hurt.png', ax:161, ay:366 }, thrust:{ src:'assets/cesar_thrust.png', ax:283, ay:237 } } },
 };
@@ -4664,6 +4679,7 @@ const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
   if (S.poses) for (const q of Object.values(S.poses)){ q.img = new Image(); q.img.src = q.src; }
+  if (S.weapon){ S.weapon.img = new Image(); S.weapon.img.src = S.weapon.src; }
   S.faceImg = new Image(); S.faceImg.src = S.face;
   if (S.hurt){ S.hurt.img = new Image(); S.hurt.img.src = S.hurt.src; }
   S.faceImg.onload = () => portraitWaiters.filter(w => w.id === id).forEach(w => drawPortrait(w.c, id));
@@ -4671,13 +4687,17 @@ for (const [id, S] of Object.entries(SPRITES)){
 const imgReady = im => !!im && im.complete && im.naturalWidth > 0;
 const spriteReady = S => imgReady(S.poses ? S.poses.idle.img : S.img);
 // 포즈 원화를 가진 폰: 지금 상태에 맞는 한 장을 고름 (규칙 하나로 모든 포즈형 캐릭터 공통)
+const hasSpear = o => o.id === 'player' && character && JOBS[character.job] && JOBS[character.job].id === 'drifter';
 function poseOf(o, S){
   if (o.poseName && o.poseUntil > time && S.poses[o.poseName]) return o.poseName;   // 기술 · 연출이 잠깐 정한 포즈
   if (o.dead || o.stun > 0.05) return 'hurt';
   if (o.guarding || o.guardFlash > 0) return 'guard';
   if (o.dodgeT > 0 || o.state === 'retreat') return 'back';
-  if (o.windup > 0) return 'prep';
-  if (o.lunge > 0) return 'strike';
+  const shooter = o.st && o.st.projectile && !o.stab;
+  if (o.windup > 0) return shooter ? 'shoot' : 'prep';
+  if (o.lunge > 0) return shooter ? 'shoot' : 'strike';
+  if (o.throwT > 0) return 'throw';
+  if (o.moving && S.poses.walk) return o.running ? 'run' : 'walk';
   return 'idle';
 }
 
@@ -4819,16 +4839,34 @@ function drawSpriteUnit(o){
   if (!spriteReady(S)){ circle(p.x, p.y - T * 0.6, T * 0.3, getStats(o.id).color); return; }
   const k = S.heightTiles * T * dsc / S.idleH;
   if (S.poses){
-    let q = S.poses[poseOf(o, S)]; if (!imgReady(q.img)) q = S.poses.idle;
-    const breath = q === S.poses.idle ? 1 + Math.sin(time * 1.8 + (o.uid || 0)) * 0.012 : 1;
-    const wob = o.moving && q === S.poses.idle ? Math.sin((o.walkClock || time) * 7) : 0;   // 걸을 땐 대기 원화로 살짝 뒤뚱
+    const pn = poseOf(o, S);
+    let q = S.poses[pn] || S.poses[(S.alias || {})[pn]] || S.poses.idle; if (!imgReady(q.img)) q = S.poses.idle;
+    const breath = q === S.poses.idle && !q.n ? 1 + Math.sin(time * 1.8 + (o.uid || 0)) * 0.012 : 1;
+    const wob = o.moving && q === S.poses.idle ? Math.sin((o.walkClock || time) * 7) : 0;   // 걷기 원화가 없으면 대기 원화로 살짝 뒤뚱
+    const qf = q.f || S.baseFace;
     ctx.save();
     ctx.translate(p.x, p.y - (o.lift || 0) * T - Math.abs(wob) * T * 0.04);
     ctx.rotate(wob * 0.05);
-    if ((o.face || S.baseFace) !== S.baseFace) ctx.scale(-1, 1);
+    if ((o.face || S.baseFace) !== qf) ctx.scale(-1, 1);
     if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
     if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
-    ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
+    if (q.n){                                                      // 움직이는 원화: 가로로 이어진 프레임
+      const t = (o.moving ? (o.walkClock || time) * (q === S.poses.run ? 1.3 : 1) : time) + (o.uid || 0) * 0.37;
+      const fi = Math.floor(t * q.fps) % q.n;
+      ctx.drawImage(q.img, fi * q.fw, 0, q.fw, q.img.naturalHeight, -q.ax * k, -q.ay * k, q.fw * k, q.img.naturalHeight * k);
+    } else ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
+    // 무기 (창): 손 위치에 맞춰 듦. 돌격 = 앞으로 겨눔, 기본 공격 = 휘두름, 던지기 = 머리 위로
+    const Wp = S.weapon;
+    if (Wp && q.hand && imgReady(Wp.img) && hasSpear(o) && (q === S.poses.charge || q === S.poses.attack || q === S.poses.throw)){
+      const L = Wp.len * T * dsc, h = L * Wp.img.naturalHeight / Wp.img.naturalWidth;
+      let a = 0;
+      if (q === S.poses.attack){ const kk = o.lunge > 0 ? 1 - o.lunge / 0.25 : 1; a = -1.1 + kk * 1.4; }
+      else if (q === S.poses.throw) a = -0.5;
+      ctx.translate((q.hand[0] - q.ax) * k, (q.hand[1] - q.ay) * k);
+      if (qf < 0) ctx.scale(-1, 1);                               // 원화가 왼쪽을 보면 창도 왼쪽으로
+      ctx.rotate(a);
+      ctx.drawImage(Wp.img, -L * Wp.grip, -h / 2, L, h);
+    }
     ctx.restore();
     return;
   }
@@ -7269,13 +7307,16 @@ function updateDungeon(dt){
   const doneC = DG.conds.filter(c => c.fn()); DG.conds = DG.conds.filter(c => !doneC.includes(c)); doneC.forEach(c => c.r());
   if (!DG.pawns.length) return;   // 편성 중
   const busy = DG.lock || DG.narrR || DG.talkR || DG.choiceOpen || anyPanel();
-  const L = lead(), spd = 3.0 * (held.has('run') ? RUN_MUL : 1);
+  const runOn = held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95);   // 조이스틱을 끝까지 밀면 달림
+  const L = lead(), spd = 3.0 * (runOn ? RUN_MUL : 1);
   stepMover(L, dt, busy ? null : moveInput(), spd, dgSolid);
+  L.running = runOn;
   DG.pawns.forEach((f, i) => {
     if (!i) return;
     const tx = L.x - 1.05 * i, ty = [2, 1, 3, 2.7, 1.6][i] ?? 2;
     const dx = tx - f.x, dy = ty - f.y, d = Math.hypot(dx, dy);
     stepMover(f, dt, d > 0.35 ? { x: dx / d, y: dy / d } : null, d > 2 ? 3.8 : 2.6, dgSolid);
+    f.running = d > 2;
   });
   for (const a of DG.actors){
     if (a.walkTo != null && Math.abs(a.walkTo - a.x) > 0.05){
@@ -7609,9 +7650,8 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-function boot(data){
-  if (data && data.character) startGame(data.character);
-  else beginCreator(true);
-}
+// v12.6: 캐릭터 생성 없음. 정해진 주인공 인주로 시작
+const INJU = { name:'인주', gender:0, race:0, job:JOBS.findIndex(j => j.id === 'drifter'), hair:0, cloth:0, v: VERSION };
+function boot(){ startGame(INJU); }
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
 </script>
