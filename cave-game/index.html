@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v12.24
+  version v13.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -96,11 +96,54 @@
   @keyframes encCut{from{opacity:0;transform:translate(-50%,14px)}}
   #enc .bar{position:absolute;left:10%;right:10%;bottom:calc(4% + env(safe-area-inset-bottom,0px));height:3px;background:rgba(255,255,255,.15);}
   #enc .bar i{display:block;height:100%;width:0;background:#e8d3a8;}
+  /* 카드 고르기 (갈림길 · 운명의 카드 · 유물): 게임 화면 위 반투명 덮개 */
+  #enc.over{background:rgba(5,4,7,.62);}
+  #enc .fate{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:14px;padding:16px;cursor:default;overflow-y:auto;}
+  #enc .fate.many .fc{width:min(112px,22vw);height:min(158px,31vw);}                       /* 카드가 많을 땐 (유물 바치기) 작게 */
+  #enc .fate.many .fc .em{font-size:24px;} #enc .fate.many .fc .nm{font-size:13px;} #enc .fate.many .fc .ds{font-size:9.5px;line-height:1.25;}
+  #enc .fc .fb{overflow:hidden;}
+  #enc .fate.many .row{gap:8px;max-width:760px;}
+  #enc .fate h2{margin:0;font-weight:400;font-size:24px;color:#f3e2bf;text-shadow:0 2px 10px #000;text-align:center;}
+  #enc .fate .sub{font-size:15px;color:#cdbfa8;max-width:560px;text-align:center;text-wrap:balance;text-shadow:0 2px 8px #000;line-height:1.5;}
+  #enc .fate .row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  #enc .fc{width:min(140px,27vw);height:min(200px,40vw);perspective:800px;cursor:pointer;animation:encDeal .5s cubic-bezier(.2,.8,.3,1.2) backwards;}
+  #enc .fc .in{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d;}
+  #enc .fc:hover .in{transform:translateY(-8px);}
+  #enc .fc.flip .in{transform:rotateY(180deg);}
+  #enc .fc.flip:hover .in{transform:rotateY(180deg) translateY(-8px);}
+  #enc .fc .fa,#enc .fc .fb{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.65);}
+  #enc .fc .fa{background:repeating-linear-gradient(45deg,#3b1c23 0 9px,#2a1218 9px 18px);border:2px solid #b8925a;color:#e8c98a;font-size:36px;}
+  #enc .fc .fb{transform:rotateY(180deg);background:linear-gradient(#f6efdd,#e0d2b2);border:2px solid #b8925a;color:#2b1d14;}
+  #enc .fc .fb.g2{border-color:#4f8fd8;}
+  #enc .fc .fb.g3{border-color:#9b6bff;box-shadow:0 0 20px rgba(155,107,255,.75);}
+  #enc .fc .fb.g4{border-color:#ffb020;box-shadow:0 0 30px rgba(255,176,32,.95);background:linear-gradient(#fff6d8,#f0d9a0);}
+  #enc .fc .fb.g0{background:linear-gradient(#3a2a30,#1e1418);color:#ead2d8;border-color:#8a2a3a;}
+  #enc .fc .st{font-size:13px;color:#a57b2c;letter-spacing:1px;}
+  #enc .fc .fb.g0 .st{color:#ff8a9a;}
+  #enc .fc .em{font-size:32px;line-height:1.1;}
+  #enc .fc .nm{font-size:16px;line-height:1.2;}
+  #enc .fc .ds{font-size:11px;font-family:sans-serif;opacity:.82;line-height:1.35;white-space:pre-line;}
+  #enc .fc.pick .fb,#enc .fc.pick .fa{outline:3px solid #ffe08a;}
+  #enc .fc.dim{opacity:.5;filter:grayscale(.5);}
+  #enc .fate .tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:600px;}
+  #enc .fate .tags span{background:rgba(20,16,22,.85);border:1px solid #6a5a44;border-radius:5px;padding:3px 9px;font-size:13px;color:#e8dcc4;}
+  #enc .fate .tags span.curse{border-color:#8a2a3a;color:#ffb0bc;}
+  #enc .fate .tags span.up{border-color:#c9a23a;color:#ffe08a;}
+  #enc .fate .ok{margin-top:6px;background:#2a1d14;color:#ffe2a8;border:1px solid #b8925a;border-radius:6px;padding:10px 26px;font-family:var(--display);font-size:17px;}
   #enc .hint{position:absolute;right:16px;bottom:calc(10px + env(safe-area-inset-bottom,0px));font-size:12px;color:#9a8f9e;}
   #dg-narr .l{opacity:0;animation:dgIn 1s forwards;text-wrap:balance;}
   #dg-narr .hint{position:absolute;bottom:calc(36px + env(safe-area-inset-bottom,0px));font-size:13px;color:#8a8190;}
   @keyframes dgIn{to{opacity:1}}
-  #dg-hud{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;font-size:12px;color:#cfc4b4;background:rgba(10,8,12,.72);border:1px solid var(--line);border-radius:4px;padding:6px 10px;line-height:1.65;pointer-events:none;z-index:4;white-space:pre;}
+  #dg-hud{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;font-size:12px;color:#cfc4b4;background:rgba(10,8,12,.72);border:1px solid var(--line);border-radius:4px;padding:7px 10px;line-height:1.5;z-index:4;min-width:170px;}
+  #dg-hud .t1{font-family:var(--display);font-size:16px;color:#f3e2bf;}
+  #dg-hud .t2{font-size:12px;color:#d8c9ad;margin:1px 0 3px;letter-spacing:1px;}
+  #dg-hud .rel{display:flex;flex-wrap:wrap;gap:3px;margin:3px 0 5px;max-width:250px;}
+  #dg-hud .rel span{font-size:16px;cursor:pointer;line-height:1;padding:3px;border-radius:4px;background:rgba(255,255,255,.07);}
+  #dg-hud .rel span.c{background:rgba(160,40,60,.4);}
+  #dg-hud .pm{display:grid;grid-template-columns:auto 64px auto;gap:1px 7px;align-items:center;font-size:11px;}
+  #dg-hud .pm i{display:block;height:5px;background:#3a2a2e;border-radius:3px;overflow:hidden;}
+  #dg-hud .pm i b{display:block;height:100%;background:#8ee08e;}
+  #dg-hud .pm small{color:#9a8f9e;font-size:10px;}
   body.dgfight #bt-panel, body.dgfight #bq-last, body.dgfight #bq-panel{display:none !important;}
   #bq-manual{display:none;} body.dgfight #bq-manual{display:inline-block;}
   #event .ev-chips button{background:#15111a;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:6px 9px;margin-left:4px;font-size:12px;cursor:pointer;min-width:44px;}
@@ -114,24 +157,6 @@
   #event .ev-name{font-size:14px;color:var(--ink);}
   #event .ev-desc{font-size:12px;color:var(--ink-dim);line-height:1.5;}
   #event .ev-chips{font-size:12px;color:#9fe0a8;text-align:right;white-space:nowrap;}
-  #event .ev-row.relic .ev-name{color:#ffd76a;}
-  #event .ev-row.weather .ev-name{color:#9fd3ff;}
-  #event .ev-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--ink-dim);}
-  #event .ev-foot button{background:var(--fire);color:#1a1008;border:none;border-radius:3px;padding:7px 14px;font-size:13px;}
-
-  /* 창고 */
-  #store{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));max-height:80%;overflow-y:auto;
-    background:rgba(14,11,16,.97);border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:13px;z-index:4;}
-  #store h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:20px;color:var(--fire);}
-  #store h4{margin:12px 0 6px;font-weight:400;font-size:12px;color:var(--ink-dim);letter-spacing:1px;}
-  #store .res{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-  #store .res div{background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:5px 6px;font-variant-numeric:tabular-nums;}
-  #store .res small{display:block;font-size:10px;color:var(--ink-dim);}
-  #store .list div{padding:3px 0;}
-  #store .relic{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px dashed var(--line);color:#ffd76a;padding:5px 0;}
-  #store .info{margin-top:8px;background:#0a080c;border:1px solid var(--line);border-radius:3px;padding:8px 10px;white-space:pre-wrap;line-height:1.6;font-size:12px;}
-  #store .src{margin-top:12px;font-size:10px;color:#5d5361;}
-  @media (max-width:640px){ #store .res{grid-template-columns:repeat(3,1fr);} }
 
   /* 공용 창 */
   .panel{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 32px));max-height:82%;overflow-y:auto;
@@ -293,29 +318,28 @@
       <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
       <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
-      <div class="bt-row"><button id="bt-enc">🃏 만남 · 로딩 미리보기</button><button id="bt-room">🛋 소녀의 방</button></div>
     </div>
     <div id="bt-quick">
       <button id="bq-run" class="primary">▶ 시작</button>
       <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
       <button id="bq-speed">x1</button>
-      <button id="bq-manual" title="주인공을 직접 조작 ↔ 자동">🤖 자동</button>
+      <button id="bq-manual" title="주인공을 직접 조작 ↔ 자동 (Q)">🤖 자동</button>
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
     </div>
     <div id="bt-log"></div>
     <button id="bt-log-new">↓ 최신 로그</button>
-    <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>시작/정지</b> Space</div>
+    <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>투창</b> F <b>자동/직접</b> Q <b>시작/정지</b> Space</div>
   </div>
   <div id="pad" aria-label="이동 조이스틱"><div class="joy-base"></div><div class="joy-knob"></div></div>
   <button id="act">대화</button>
-  <div id="bt-touch"><button id="tb-attack">⚔ 공격</button><button id="tb-guard">🛡 방어</button><button id="tb-dodge">💨 회피</button><button id="tb-run">🏃 달리기</button></div>
+  <div id="bt-touch"><button id="tb-attack">⚔ 공격</button><button id="tb-guard">🛡 방어</button><button id="tb-dodge">💨 회피</button><button id="tb-run">🏃 달리기</button><button id="tb-throw">🔱 투창</button></div>
 </section>
 
 <script>
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.24';
+const VERSION = 'v13.0';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -500,6 +524,8 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyX' && !e.repeat) pressGuard();
   if (e.code === 'KeyZ' && !e.repeat) pressDodge();
   if (e.code === 'KeyC' && !e.repeat) pressAttack();
+  if (e.code === 'KeyF' && !e.repeat) pressThrow();
+  if (e.code === 'KeyQ' && !e.repeat && mode === 'battle' && DG.active) document.getElementById('bq-manual').click();   // 던전 전투: 자동 ↔ 직접
   if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
   if (e.code === 'KeyP') toggleStats();
   if (e.code === 'KeyR' && mode === 'battle' && !DG.active && !e.repeat) restartLastSetup();
@@ -609,8 +635,8 @@ function action(){
     if (dialog.i >= dialog.lines.length) endDialog(); else showLine();
     return;
   }
+  if (nearGate()) return startRun();                 // 석문 앞에서는 석문이 먼저 (곁에서 곡괭이질하는 동료가 있어도)
   const n = nearestNpc();
-  if (!n && nearGate()) return startRun();
   if (!n) return;
   n.face = Math.sign(player.x - n.x) || n.face;
   dialog = { npc:n, i:0, lines:linesFor(n) };
@@ -745,11 +771,11 @@ function update(dt){
   updateHud();
 
 
-  const n = dialog ? null : nearestNpc();
+  const gate = !dialog && nearGate();
+  const n = dialog || gate ? null : nearestNpc();
   const pr = document.getElementById('prompt');
-  const gate = !n && !dialog && nearGate();
   pr.hidden = !n && !gate;
-  if (gate) pr.textContent = `[Space] 석문 아래로 (던전 1~2층)`;
+  if (gate) pr.textContent = `[Space] 석문 아래로 (다섯 층)`;
   if (n) pr.textContent = `[Space] ${n.name}에게 말걸기`;
   updateBar(n);
 }
@@ -1032,8 +1058,8 @@ function drawGate(){
   });
 }
 
-function drawFire(){
-  const p = P(FIRE.c + 0.5, FIRE.r + 0.5);
+function drawFire(c = FIRE.c, r = FIRE.r){
+  const p = P(c + 0.5, r + 0.5);
   // 돌 테두리
   for (let i = 0; i < 8; i++){
     const a = i / 8 * Math.PI * 2;
@@ -1644,7 +1670,7 @@ const evEl = document.getElementById('event');
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function closeEvent(){ evEl.hidden = true; evEl.innerHTML = ''; }
 function updateHud(){
-  const t = `석문 → 던전 (최고 ${DGP.best}층)`;
+  const t = `석문 → 다섯 층 · 최고 ${DGP.best}층${DGP.clears ? ` · 돌파 ${DGP.clears}` : ''} · 동료 ${owned().length}`;
   const ml = document.getElementById('mapline'); if (ml.textContent !== t) ml.textContent = t;
 }
 function pickWeighted(pool){
@@ -1680,9 +1706,9 @@ const STYLES = {
   norman:      { snipe:6, aim:2 },   // 사수: 뒤로 빠지며 견제, 가끔 앞으로 나가 조준 사격
   jeokroe:     { approach:4, hold:3 },
   tomoe:       { approach:4, hitrun:1, strafe:1, guard:1, hold:3, retreat:0 },   // 여장부: 정면으로 걸어 들어가 삽으로 후려침
-  brute:       { approach:6, hold:1 },
+  brute:       { approach:6, hold:1 },              // 곤봉 거한: 그냥 밀고 들어옴
   spearman:    { keep:4, guard:3, hold:1, strafe:1 },   // 창병: 창 길이만큼 거리를 두고 방패를 세움
-  shieldman:   { approach:3, guard:4, hold:2, strafe:1 },   // 검방패병: 막으면서 다가가 벰          // 곤봉 거한: 그냥 밀고 들어옴
+  shieldman:   { approach:3, guard:4, hold:2, strafe:1 },   // 검방패병: 막으면서 다가가 벰
   archer:      { snipe:4, aim:3 },              // 붉은 망토 궁수: 거리를 두고 멈춰 서서 겨눔
   rosina:      { approach:2, hitrun:4, strafe:3, guard:0, hold:1, retreat:1, dodge:true },   // 춤꾼: 스텝 밟다 뿔로 파고듦
   yellow:      { approach:1, hitrun:5, strafe:3, guard:0, hold:0, retreat:2, dodge:true },   // 짐승처럼: 파고들어 할퀴고 바로 빠짐
@@ -1757,7 +1783,7 @@ const ENEMIES = {
     hp:100, atk:10, def:5, block:0.35, crit:0.05, eva:0.05, spd:2.4, range:1.15, cd:1.2, windup:0.32, hits:1, weight:45, react:0.25,
     tags:[], trait:'', equip:{ 무기:'🔪 녹슨 칼', 머리:'—', 몸:'누더기', 장신구:'—' } },
 };
-/* ---------- 던전 1~2층의 적과 인물 (look: 사람 모양 그림 설정. 모양은 drawLookUnit 하나가 그림) ---------- */
+/* ---------- 던전의 적과 인물 (look: 사람 모양 그림 설정. 모양은 drawLookUnit 하나가 그림) ---------- */
 Object.assign(ENEMIES, {
   fingerHole: { name:'손가락 구멍', grade:'', color:'#d9a89a', sub:'1층 · 알현실 문 앞 · 수천 개의 손가락',
     hp:260, atk:7, def:0, block:0, crit:0.05, eva:0, spd:0, range:1.8, cd:0.9, windup:0.25, hits:2, weight:5000, react:0.5, radius:0.7, height:0.6,
@@ -2154,7 +2180,7 @@ function restartLastSetup(){
   if (!battle) return;
   if (!lastSetup || !lastSetup.units.length){ logLine('아직 시작한 전투가 없어요. ▶ 전투 시작을 한 번 누르면 그 세팅이 기억돼요.', 'sys'); return; }
   const b = battle;
-  b.units = []; b.over = null; b.running = false; b.pending = []; b.fx = []; b.proj = []; b.stars = []; b.drops = [];
+  b.units = []; b.over = null; b.running = false; b.pending = []; b.fx = []; b.proj = []; b.stars = []; b.drops = []; b.spears = [];
   b.hitstop = 0; b.redFlash = 0; b.rainFlash = 0;
   floaters = []; sparks = [];
   for (const [k, id] of BT_FLAGS){ b[k] = !!lastSetup.flags[k]; document.getElementById(id).checked = b[k]; }
@@ -2275,7 +2301,7 @@ function toggleRun(){
   syncRun();
 }
 document.getElementById('bt-run').onclick = toggleRun;
-document.getElementById('bt-speed').onclick = () => { battle.speed = battle.speed === 1 ? 2 : battle.speed === 2 ? 4 : 1; syncRun(); };
+document.getElementById('bt-speed').onclick = () => { battle.speed = battle.speed === 1 ? 2 : battle.speed === 2 ? 4 : 1; if (DG.active){ DGP.speed = battle.speed; saveDGP(); } syncRun(); };   // 던전 전투 속도는 기억
 document.getElementById('bt-reset').onclick = () => defaultSetup();
 document.getElementById('bt-last').onclick = () => restartLastSetup();
 document.getElementById('bt-clear').onclick = () => { battle.fresh = true; battle.units = []; battle.running = false; battle.over = null; logLine('모두 치웠어요.', 'sys'); syncRun(); };
@@ -2307,6 +2333,7 @@ function pressDodge(){
   u.dodgeT = 0.3; u.dodgeCd = 0.7; u.ghostClock = 0;
 }
 document.getElementById('tb-dodge').addEventListener('pointerdown', e => { e.preventDefault(); pressDodge(); });
+document.getElementById('tb-throw').addEventListener('pointerdown', e => { e.preventDefault(); pressThrow(); });
 document.getElementById('tb-attack').addEventListener('pointerdown', e => { e.preventDefault(); held.add('attack'); pressAttack(); });
 ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.getElementById('tb-attack').addEventListener(ev, () => held.delete('attack')));
 document.getElementById('bt-water').onchange = e => { if (battle) battle.water = e.target.checked; };
@@ -2973,6 +3000,10 @@ function resolveHit(a, d, opts = {}){
   if (crit) dmg *= 3;
   const armor = !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
   dmg = Math.max(1, Math.round(dmg * (1 - armor) * (1 - blockCut)));
+  if (d.side === 'ally' && RUN && DG.active){                       // 유물: 붉은 등불 (시작 4초 절반) · 깨진 거울 (+10%)
+    if (has('lantern') && b.clock - (b.startClock ?? 0) < 4) dmg = Math.max(1, Math.ceil(dmg / 2));
+    if (has('mirror')) dmg = Math.round(dmg * 1.1);
+  }
   if (d.id === 'karius' && !d.phase2 && d.hp > 1 && dmg >= d.hp) dmg = d.hp - 1;        // 페이즈 2 전엔 한 방에 쓰러지지 않음
   dmg = divineCut(d, dmg);                                                                // 신성 특성 (개조된 신체)
   if (d.kc && d.kc.type === 'heretic') dmg = Math.min(dmg, Math.max(0, d.hp - 1));       // 변신 중엔 버팀
@@ -2991,6 +3022,10 @@ function resolveHit(a, d, opts = {}){
     burst(d, 10, '#e2443a');
     fxText(d, String(dmg), '#f3e6c8');
     logLine(`${blockCut ? '🛡 ' : ''}${a.name} → ${d.name}: ${dmg}${blockCut ? ` (막기 -${blockCut * 100}%)` : d.guarding ? ' (방어 뚫림)' : ''}`, blockCut ? 'guard' : '');
+  }
+  if (d.hp > 0 && a.side === 'ally' && d.side === 'enemy' && has('chain') && Math.random() < 0.12) stagger(d, 0.4, braceW(a) * 3);   // 쇠사슬 고리
+  if (d.side === 'ally' && a.side === 'enemy' && has('rose') && !opts.ranged && !a.dead){                                        // 가시 장미
+    a.hp = Math.max(0, a.hp - 4); fxText(a, '🥀4', '#ff9aa8'); if (a.hp <= 0) killUnit(a, '가시 장미');
   }
   // 출혈
   let bc = crit ? BLEED.critChance : BLEED.chance;
@@ -3021,6 +3056,93 @@ function chargeHit(u, d){
   fxText(d, '행동 끊김', '#ffd28a', 'big', 0.3);
   logLine(`${u.id === 'tomoe' ? '⛏' : '🔱'} ${u.name}의 돌격 → ${d.name} (${u.st.chargeStun}초 행동 끊김)`, 'crit');
   resolveHit(u, d, { atk: u.st.chargeAtk });
+}
+/* ---------- 투창 (인주): F · 🔱. 던지면 맨손 (주먹), 꽂힌 창을 지나가면 주움 ---------- */
+const JAV = { windup: 0.3, speed: 14, range: 7, mul: 2.4, stun: 0.5, fistMul: 0.6, fistRange: 1.0, fistCd: 0.7, pick: 0.75, back: 2.5 };
+function canThrow(u){ return u.id === 'player' && !u.spearOut && !u.dead && !u.rise && u.stun <= 0 && u.windup <= 0 && !(u.throwT > 0) && !u.guarding && !u.aided; }
+function pressThrow(){ if (mode === 'battle' && battle){ battle.throwPressAt = battle.clock; grabHand(); } }
+function throwAim(u, input, tgt){
+  if (input) return norm(input.x, input.y);
+  let best = null, bd = Infinity;
+  for (const o of battle.units){
+    if (o.dead || o.side === u.side || o.enter) continue;
+    const dx = o.x - u.x, dy = o.y - u.y, d = Math.hypot(dx, dy);
+    if (d > JAV.range + 1) continue;
+    const k = d + (Math.sign(dx) === u.face ? 0 : 2.5);            // 바라보는 쪽의 적을 먼저
+    if (k < bd){ bd = k; best = o; }
+  }
+  const t = best || tgt;
+  return t ? norm(t.x - u.x, t.y - u.y) : { x: u.face, y: 0 };
+}
+function startThrow(u, dir){
+  u.throwT = JAV.windup; u.throwDir = dir; u.face = Math.sign(dir.x) || u.face;
+  u.cd = Math.max(u.cd, JAV.windup + 0.25); u.windup = 0; u.atkTarget = null;
+}
+function releaseSpear(u){
+  const b = battle, d = u.throwDir || { x: u.face, y: 0 };
+  (b.spears = b.spears || []).push({ owner: u, x: u.x, y: u.y, dx: d.x, dy: d.y, dist: 0, ground: false, t: 0 });
+  u.spearOut = true; u.stSpear = u.st;
+  u.st = withDerived({ ...u.st, range: JAV.fistRange, atk: Math.max(1, Math.round(u.st.atk * JAV.fistMul)), cd: JAV.fistCd, windup: 0.18 });   // 맨손: 주먹
+  u.lunge = 0.25; u.lx = d.x; u.ly = d.y;
+  logLine(`🔱 ${u.name}, 창을 던진다`, 'crit');
+}
+function spearHome(sp, why){
+  const u = sp.owner; sp.done = true;
+  if (!u.spearOut) return;
+  u.spearOut = false; u.throwCd = 2.5; if (u.stSpear){ u.st = u.stSpear; u.stSpear = null; }
+  if (!u.dead) fxText(u, why, '#e8d3a8');
+}
+function updateSpears(sdt){
+  const b = battle; if (!b.spears || !b.spears.length) return;
+  for (const sp of b.spears){
+    if (sp.done) continue;
+    if (b.over || !b.units.includes(sp.owner)){ spearHome(sp, '창을 챙겼다'); continue; }
+    if (!sp.ground){
+      const step = JAV.speed * sdt; sp.x += sp.dx * step; sp.y += sp.dy * step; sp.dist += step;
+      for (const o of b.units){
+        if (o.dead || o.side === sp.owner.side || o.enter || (o.lift || 0) > 0.3) continue;   // 높이 뜬 적은 맞지 않음
+        if (Math.hypot(o.x - sp.x, o.y - sp.y) > unitRadius(o) + 0.32) continue;
+        const a = sp.owner, base = a.stSpear || a.st;
+        fxText(o, '투창!', '#ffe08a', 'big', 0.4);
+        resolveHit(a, o, { atk: Math.round(base.atk * JAV.mul * (base.javMul || 1)), ranged: true });
+        if (!o.dead){
+          stagger(o, JAV.stun, braceW(a) * 4);
+          pushUnit(o, { x: o.x - sp.dx, y: o.y - sp.dy }, 0.4);
+          if (has('net')){ o.stun = Math.max(o.stun, 1.5); o.windup = 0; o.atkTarget = null; fxText(o, '🕸 그물', '#d8d2c0'); }
+        }
+        shake = Math.max(shake, 0.12); b.hitstop = Math.max(b.hitstop, 0.06);
+        sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, o.x - sp.dx * 0.7)); sp.y = Math.max(0, Math.min(ROWS - 1, o.y - sp.dy * 0.7 + 0.25));   // 맞고 튕겨 그 적 바로 앞에 떨어짐
+        break;
+      }
+      if (!sp.ground && (sp.dist >= JAV.range || sp.x < -0.3 || sp.x > BATTLE_COLS - 0.7 || sp.y < -0.3 || sp.y > ROWS - 0.7)){
+        sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, sp.x)); sp.y = Math.max(0, Math.min(ROWS - 1, sp.y));
+      }
+      continue;
+    }
+    sp.t += sdt;
+    if (has('boomer') && sp.t >= JAV.back){ spearHome(sp, '창이 돌아왔다'); continue; }
+    if (!sp.owner.dead && Math.hypot(sp.owner.x - sp.x, sp.owner.y - sp.y) < JAV.pick) spearHome(sp, '창을 주웠다');
+  }
+  b.spears = b.spears.filter(sp => !sp.done);
+}
+function drawSpears(){
+  const b = battle; if (!b.spears) return;
+  const Wp = SPRITES.player && SPRITES.player.weapon;
+  const spearImg = (L, from) => {
+    if (Wp && imgReady(Wp.img)){ const h = L * Wp.img.naturalHeight / Wp.img.naturalWidth; ctx.drawImage(Wp.img, -L * from, -h / 2, L, h); }
+    else { ctx.strokeStyle = '#8a6a45'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-L * from, 0); ctx.lineTo(L * (1 - from), 0); ctx.stroke(); }
+  };
+  for (const sp of b.spears){
+    const p = P(sp.x + 0.5, sp.y + 0.5), dsc = depthScale(sp.y), L = (Wp ? Wp.len : 1.5) * T * dsc;
+    if (!sp.ground){
+      const q = P(sp.x + sp.dx * 0.2 + 0.5, sp.y + sp.dy * 0.2 + 0.5), lift = T * 0.75 * dsc;
+      ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.3 * dsc, T * 0.08 * dsc, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(p.x, p.y - lift); ctx.rotate(Math.atan2(q.y - p.y, q.x - p.x)); spearImg(L, 0.6); ctx.restore();
+      continue;
+    }
+    ctx.save(); ctx.translate(p.x, p.y); ctx.scale(sp.dx >= 0 ? 1 : -1, 1); ctx.rotate(1.1); spearImg(L, 0.85); ctx.restore();   // 창끝이 바닥에 꽂힘
+    if (!b.playerAuto || sp.owner.manual){ ctx.globalAlpha = 0.8; emoji('🔱', p.x, p.y - T * 1.25 + Math.sin(time * 5) * T * 0.05, T * 0.3); ctx.globalAlpha = 1; }
+  }
 }
 function shout(u, text){ if (u.st.silent) return; battle.fx.push({ type: 'bubble', u, text, life: 1.3, max: 1.3 }); }
 function drawBubble(f){
@@ -3067,6 +3189,12 @@ function killUnit(d, why){
       skillPop(d, 'heretic');
       logLine(`👓 ${d.name}이(가) 쓰러지지 않는다… 꿈틀꿈틀 괴로워한다`, 'crit');
     }
+    return;
+  }
+  if (d.side === 'ally' && !d.st.summon && !d.st.reviveAt && has('feather')){   // 붉은 날개 깃털: 한 번 쓰면 사라짐. 그 자리에서 일어남 (스스로 일어나는 레베카에겐 안 씀)
+    RUN.relics = RUN.relics.filter(x => x !== 'feather');
+    d.hp = Math.round(d.st.hp * 0.5); d.stun = 0; d.bleed = null;
+    fxText(d, '🪶 일어선다', '#ff9a8a', 'big'); burst(d, 26, '#ff6a5a', 380); logLine(`🪶 붉은 날개 깃털 — ${d.name}이(가) 그 자리에서 일어난다`, 'heal');
     return;
   }
   d.dead = true; d.deadT = 0; d.hp = 0;
@@ -3303,6 +3431,10 @@ function updateBattle(dt){
     if (u.blink && tickBlink(u, sdt)){ u.guarding = false; u.t = 1; continue; }   // 순간이동급 스텝 중
     if (u.st.brain && b.running && BRAINS[u.st.brain](u, sdt, tgt, dist)){ u.guarding = false; u.t = 1; continue; }   // 전용 두뇌 (세자르)
     if (u.st.thunderAtk && b.running && (u.stun <= 0 || (u.cast && u.cast.type === 'kick')) && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
+    if (u.throwT > 0){                                              // 투창: 들어 올렸다가 던짐 (휘청이면 끊김)
+      if (u.stun > 0) u.throwT = 0;
+      else { u.throwT -= sdt; u.guarding = false; u.vx *= 0.8; u.vy *= 0.8; if (u.throwT <= 0) releaseSpear(u); u.t = 1; continue; }
+    }
     u.guarding = u.stun <= 0 && u.windup <= 0 && (u.manual ? guardHeld : ((u.state === 'guard' && u.guardT > 0 && b.running) || u.state === 'charge')) && !u.phase2 && !u.lastStand;   // 돌격 중엔 방패를 앞세워 상시 방어, 불경자 ~ 근성은 막지 않음
     if (b.running && !u.manual) autoStep(u, tgt, dist, sdt);
     if (u.counterT > 0) u.counterT -= sdt;
@@ -3528,6 +3660,10 @@ function updateBattle(dt){
         const dd = dangerDir(u);
         if (dd && u.st.berserk && u.state !== 'skitter'){ u.skDir = dd; u.state = 'skitter'; u.stateT = 0.3; }   // 낙뢰 · 날아차기: 옆으로 쌩
         if (dd){ dir = dd; u.running = true; }
+        if (u.id === 'player' && u.spearOut && !dd && dist > 1.8){         // 자동 인주: 붙은 적이 없으면 꽂힌 창을 주우러 감
+          const sp = (b.spears || []).find(q => q.ground && q.owner === u);
+          if (sp && Math.hypot(sp.x - u.x, sp.y - u.y) > 0.2){ dir = norm(sp.x - u.x, sp.y - u.y); u.running = true; }
+        }
         if (u.running) speed *= RUN_MUL;
         if (dir){
           // 길막: 가는 길 앞 1.6칸 안에 몸이 막고 있으면 옆으로 돌아감 (한 번 정한 쪽으로 계속)
@@ -3561,6 +3697,11 @@ function updateBattle(dt){
       if (u.frostT > 0) speed *= 0.55;                            // 동상: 발이 얼어 느려짐
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
+      if (u.id === 'player') u.throwCd = Math.max(0, (u.throwCd || 0) - sdt);
+      if (u.id === 'player' && b.running && canThrow(u)){                // 투창: 직접은 F, 자동은 2.6~7칸 떨어진 적에게 (주운 뒤 2.5초는 쉼)
+        const want = handOnly ? b.clock - (b.throwPressAt ?? -99) <= 0.35 : (tgt && dist >= 2.6 && dist <= JAV.range && !(u.throwCd > 0) && Math.random() < sdt * 2.5);
+        if (want){ b.throwPressAt = -99; startThrow(u, throwAim(u, handOnly ? input : null, tgt)); dir = null; }
+      }
       // 직접 공격 (C): 사거리 안의 가장 가까운 적을 향해, 없으면 바라보는 쪽으로 헛스윙
       if (handOnly && b.running && !u.guarding && u.cd <= 0 && (b.clock - b.attackPressAt <= 0.35 || (free && held.has('attack')))){
         b.attackPressAt = -99;
@@ -3618,6 +3759,7 @@ function updateBattle(dt){
     resolveHit(p.a, p.d, p.opts); } });
   if (b.running) updateReacts(sdt);
   updateProjectiles(sdt);
+  updateSpears(sdt);
   if (b.running) updateBinds(sdt);
   if (b.running) updateStorms(sdt);
   if (b.running && b.tick) b.tick(sdt);   // 던전 전투의 층별 규칙 (합류, 권위 등)
@@ -3869,6 +4011,7 @@ function drawBattle(){
   }
   drawBossSky();
   drawProjectiles();
+  drawSpears();
   drawRicos(1 / 60);
   sparks.forEach(s => { ctx.fillStyle = s.c || '#ffe9a8'; ctx.fillRect(s.x - camX, s.y, 2.5, 2.5); });
   for (const st of b.stars){
@@ -4057,8 +4200,6 @@ SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, id
           swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
-// 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
-const ENC_FACES = {};
 SPRITES.swordsman = { face:'assets/sword_face.png', heightTiles:1.9, baseFace:-1, idleH:460,  // 검사: 대기 · 베기 (준비는 대기 그대로), 원화가 왼쪽을 봄
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/sword_idle.png', ax:197, ay:460, f:-1 }, attack:{ src:'assets/sword_attack.png', ax:209, ay:430, f:-1 } } };
@@ -4088,7 +4229,7 @@ for (const [id, S] of Object.entries(SPRITES)){
 const imgReady = im => !!im && im.complete && im.naturalWidth > 0;
 const spriteReady = S => imgReady(S.poses ? S.poses.idle.img : S.img);
 // 포즈 원화를 가진 폰: 지금 상태에 맞는 한 장을 고름 (규칙 하나로 모든 포즈형 캐릭터 공통)
-const hasSpear = o => o.id === 'player';
+const hasSpear = o => o.id === 'player' && !o.spearOut;   // 던졌으면 맨손 (돌격 원화 그대로 주먹)
 function poseOf(o, S){
   if (o.poseName && o.poseUntil > time && S.poses[o.poseName]) return o.poseName;   // 기술 · 연출이 잠깐 정한 포즈
   if (o.dead || o.stun > 0.05) return 'hurt';
@@ -4247,7 +4388,15 @@ function drawSpriteUnit(o){
     const qf = q.f || S.baseFace;
     ctx.save();
     ctx.translate(p.x, p.y - (o.lift || 0) * T - Math.abs(wob) * T * 0.04);
-    ctx.rotate(wob * 0.05);
+    let lean = 0;
+    if (q === S.poses.idle && pn !== 'idle' && !o.dead){            // 원화가 한 장뿐인 동작은 몸을 기울여 보여 줌: 준비 = 뒤로, 타격 = 앞으로, 피격 · 방어 = 젖힘
+      const f = o.face || S.baseFace;
+      if (pn === 'prep') lean = -f * 0.08 * Math.min(1, Math.max(0, 1 - o.windup / (o.windupMax || 0.3)));
+      else if (pn === 'strike' || pn === 'special') lean = f * 0.13 * Math.sin(Math.min(1, (o.lunge || 0) / 0.25) * Math.PI);
+      else if (pn === 'hurt') lean = -f * 0.09;
+      else if (pn === 'guard') lean = -f * 0.04;
+    }
+    ctx.rotate(wob * 0.05 + lean);
     if ((o.face || S.baseFace) !== qf) ctx.scale(-1, 1);
     if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
     if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
@@ -5857,7 +6006,7 @@ function medicMeetPoint(u, t, m){
 /* ---------- 루프 ---------- */
 let last = performance.now();
 /* =========================================================
-   던전 (1~2층, v11.0): 2D로 걷다가 → 장면 → 카메라가 돌며 전투 (기존 전투 그대로) → 다시 걷기
+   던전 (다섯 층): 걷다가 → 장면 → 카메라가 돌며 전투 (기존 전투 그대로) → 다시 걷기
    성장: 이긴 전투마다 경험치, 레벨마다 체력 · 공격력 +12%. 레벨은 판을 넘어 남음 (죽어도)
    ========================================================= */
 const DG_KEY = 'cave-game.dungeon.v1';
@@ -5874,7 +6023,7 @@ const owned = () => [...PARTY_BASE, ...DGP.roster.filter(id => !PARTY_BASE.inclu
 const rowOf = id => DGP.rows[id] || (getStats(id).projectile || id === 'goblin' || id === 'norman' ? 'back' : 'front');
 const DG = { active: false, area: null, pawns: [], actors: [], props: [], waits: [], conds: [], interact: null,
   narrR: null, talkR: null, choiceOpen: false, sub: null, snowOn: false, flakes: [], lock: false, focus: null, camX: 0,
-  hp: {}, inFight: false, floor: 0, gifts: [], hudCache: '' };
+  hp: {}, inFight: false, floor: 0, hudCache: '' };
 const narrEl = document.getElementById('dg-narr'), dgHud = document.getElementById('dg-hud');
 narrEl.onclick = () => DG.narrR && DG.narrR();
 dlgEl.addEventListener('click', () => DG.talkR && DG.talkR());
@@ -5885,6 +6034,9 @@ const AREAS = {
   tomb:   { name: '1층 · 무덤', cols: 30, wall: '#24232c', floor: [56, 54, 62], pillars: '#34323e', torch: '127,184,255', dark: 0.42 },
   throne: { name: '1층 · 알현실', cols: 26, wall: '#1d1b27', floor: [50, 46, 58], pillars: '#2e2a3a', torch: '159,198,255', carpet: '#5a1624', dark: 0.38 },
   mist:   { name: '2층 · 안개 늪', cols: 46, sky: ['#0c2129', '#2c5563'], hills: ['#163540', '#1d4350'], floor: [44, 66, 70], fog: '150,200,210', mills: true, puddles: true, dark: 0.4 },
+  cathedral: { name: '3층 · 붉은 가시 성당', cols: 30, back: 'assets/cathedral_back.jpg', backFloor: 0.93, backW: 1.25, floor: [74, 66, 66], floorAlpha: 0.3, dark: 0.16 },
+  gallery:   { name: '4층 · 왕관의 회랑', cols: 30, wall: '#151b2c', floor: [46, 50, 64], pillars: '#232c46', torch: '120,170,255', carpet: '#1d2f5a', crowns: true, dark: 0.4 },
+  well:      { name: '5층 · 하늘 우물', cols: 26, sky: ['#14060a', '#46101a'], hills: ['#1c0a0d', '#270d12'], floor: [56, 48, 50], dark: 0.3 },
   mill:   { name: '2층 · 방앗간', cols: 22, sky: ['#0d2027', '#2a4c58'], hills: ['#163540', '#1d4350'], floor: [66, 64, 58], fog: '170,190,180', mills: true, dark: 0.34 },
 };
 
@@ -5902,39 +6054,19 @@ function dgNarr(lines){
     DG.narrR = () => { if (performance.now() - t0 < 400) return; narrEl.hidden = true; DG.narrR = null; r(); };
   });
 }
+// 처음 보는 장면은 나레이션 전부, 다시 보는 장면 (다음 판)은 첫 줄만 자막으로
+async function narrOnce(key, lines){
+  DGP.seen = DGP.seen || [];
+  if (DGP.seen.includes(key)){ dgSub(lines[0], 2.8); await dgWait(1.2); return; }
+  DGP.seen.push(key); saveDGP();
+  await dgNarr(lines);
+}
 function dgTalk(name, color, lines){
   return new Promise(r => {
     let i = 0;
     const show = () => { const who = dlgEl.querySelector('.who'); who.textContent = name; who.style.color = color; dlgEl.querySelector('.txt').textContent = lines[i]; };
     dlgEl.hidden = false; show(); held.clear();
     DG.talkR = () => { i++; if (i >= lines.length){ dlgEl.hidden = true; DG.talkR = null; r(); } else show(); };
-  });
-}
-function dgChoose(text, opts){
-  return new Promise(r => {
-    evEl.innerHTML = '';
-    evEl.appendChild(el('div', 'ev-narr', text));
-    const box = el('div', 'ev-opts');
-    opts.forEach((o, i) => { const b = el('button', '', o); b.onclick = () => { closeEvent(); DG.choiceOpen = false; r(i); }; box.appendChild(b); });
-    evEl.appendChild(box); evEl.hidden = false; DG.choiceOpen = true; held.clear();
-  });
-}
-function dgReward(title, items, btn = '받는다'){
-  return new Promise(r => {
-    evEl.innerHTML = '';
-    evEl.appendChild(el('div', 'ev-narr', title));
-    const box = el('div', 'ev-box');
-    for (const [em, name, desc] of items){
-      const row = el('div', 'ev-row relic');
-      row.appendChild(el('div', 'ev-em', em));
-      const main = el('div', 'ev-main'); main.appendChild(el('div', 'ev-name', `[${name}]`)); main.appendChild(el('div', 'ev-desc', desc));
-      row.appendChild(main); row.appendChild(el('div', 'ev-chips', ''));
-      box.appendChild(row);
-    }
-    evEl.appendChild(box);
-    const opts = el('div', 'ev-opts'); const b = el('button', '', btn);
-    b.onclick = () => { closeEvent(); DG.choiceOpen = false; r(); };
-    opts.appendChild(b); evEl.appendChild(opts); evEl.hidden = false; DG.choiceOpen = true; held.clear();
   });
 }
 function dgInteract(x, r, label){ return new Promise(res => { DG.interact = { x, r, label, res }; }); }
@@ -5948,7 +6080,7 @@ function dgAction(){
 /* ---------- 만남 장면 · 로딩 화면 (그림 한 장 + 나레이션 + 선택지 카드) ----------
    encScene({ bg, cut, glow, lines, cards }) → 고른 카드 번호 (카드가 없으면 끝까지 본 뒤 -1)
    lines: 문자열 (나레이션) 또는 ['"대사"', 'talk'] 꼴. cards: [{ suit, red, t, d }]
-   loadScreen({ bg, lines, ms }) → 막대가 다 차면 끝 (터치하면 다음) */
+   loadScreen({ bg, lines, ms }) → 막대가 다 차면 끝 (터치하면 바로) */
 const encEl = document.getElementById('enc');
 function encOpen(o){
   encEl.innerHTML = ''; encEl.className = ''; held.clear();
@@ -5961,17 +6093,23 @@ function encOpen(o){
   encEl.hidden = false;
   return narr;
 }
-function encWaitTap(){
+// 터치 / Space를 기다림 (ms를 주면 그 시간이 지나도 끝). 끝나면 듣기를 바로 걷고, 기다리는 동안 Space가 뒤 장면으로 새지 않게
+function encWaitTap(ms){
   return new Promise(r => {
-    const t0 = performance.now();
-    const go = e => { if (performance.now() - t0 < 350) return; if (e.type === 'keydown' && !['Space', 'Enter', 'KeyE'].includes(e.code)) return; e.preventDefault && e.preventDefault(); off(); r(); };
-    const off = () => { encEl.removeEventListener('pointerdown', go); window.removeEventListener('keydown', go, true); };
+    const t0 = performance.now(); let timer = null;
+    const off = () => { clearTimeout(timer); encEl.removeEventListener('pointerdown', go); window.removeEventListener('keydown', go, true); };
+    const go = e => {
+      if (e.type === 'keydown'){ if (!['Space', 'Enter', 'KeyE'].includes(e.code)) return; e.preventDefault(); e.stopPropagation(); }
+      if (performance.now() - t0 < 350) return;
+      off(); r();
+    };
+    if (ms) timer = setTimeout(() => { off(); r(); }, ms);
     encEl.addEventListener('pointerdown', go); window.addEventListener('keydown', go, true);
   });
 }
 async function encScene(o){
   const narr = encOpen(o), n = (o.lines || []).length;
-  await Promise.race([new Promise(r => setTimeout(r, 600 + n * 1100)), encWaitTap()]);
+  await encWaitTap(600 + n * 1100);
   narr.querySelectorAll('.l').forEach(d => { d.style.animationDelay = '0s'; });   // 다 보이게
   let pick = -1;
   if (o.cards && o.cards.length){
@@ -5987,7 +6125,11 @@ async function encScene(o){
         box.appendChild(cd);
       });
       encEl.appendChild(box);
-      const key = e => { const k = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3 }[e.code]; if (k != null && k < o.cards.length) r(k); };   // 키보드: 1 · 2 · 3
+      const key = e => {                                           // 키보드: 1 · 2 · 3 (Space는 뒤 장면으로 새지 않게 막기만)
+        const k = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3, Numpad1: 0, Numpad2: 1, Numpad3: 2, Numpad4: 3 }[e.code];
+        if (k != null && k < o.cards.length){ e.preventDefault(); e.stopPropagation(); r(k); }
+        else if (['Space', 'Enter', 'KeyE'].includes(e.code)){ e.preventDefault(); e.stopPropagation(); }
+      };
       window.addEventListener('keydown', key, true);
     });
   } else { encEl.appendChild(el('div', 'hint', '터치 / Space ▶')); await encWaitTap(); }
@@ -5999,25 +6141,10 @@ async function loadScreen(o){
   const bar = el('div', 'bar'), fill = el('i'); bar.appendChild(fill); encEl.appendChild(bar);
   const ms = o.ms || 3200;
   fill.animate([{ width: '0%' }, { width: '100%' }], { duration: ms, easing: 'ease-in-out', fill: 'forwards' });
-  await new Promise(r => setTimeout(r, ms));
   encEl.appendChild(el('div', 'hint', '터치 / Space ▶'));
-  await encWaitTap();
+  await encWaitTap(ms + 500);                                     // 막대가 다 차면 저절로, 터치하면 바로 넘어감
   encEl.hidden = true; encEl.innerHTML = '';
 }
-// 미리보기: 받은 그림들로 로딩 · 만남 장면을 차례로 (아직 던전 흐름에는 넣지 않음)
-async function encPreview(){
-  await loadScreen({ bg: 'assets/load_moon.jpg', lines: ['달에는 길이 없었다.', '지도만 있었다.'] });
-  const a = await encScene({ cut: 'assets/candle_full.png', glow: true,
-    lines: ['촛불 왕관을 쓴 눈먼 사내가 카드를 펼쳐 놓고 앉아 있습니다.', ['"…한 장 골라라."', 'talk'], ['"무엇이 나오든, 네가 고른 것이다."', 'talk']],
-    cards: [{ suit: '♠', t: '검', d: '사내의 칼을 청한다' }, { suit: '♦', red: true, t: '금화', d: '가진 것을 건다' }, { suit: '♣', t: '지나간다', d: '카드를 덮고 떠난다' }] });
-  await encScene({ cut: 'assets/candle_full.png', glow: true, lines: [['"' + ['좋은 패다. …베어 봐라.', '잃는 것도 고르는 것이다.', '그래. 지나가는 것도 패다.'][a] + '"', 'talk'], '촛불이 한 번 흔들립니다.'] });
-  await encScene({ bg: 'assets/enc_odile.jpg',
-    lines: ['무너진 극장. 붉은 소파 위에서 가면이 고개를 기울입니다.', '소녀는 일어나지 않습니다.'],
-    cards: [{ suit: '♥', red: true, t: '인사한다', d: '' }, { suit: '♠', t: '가면을 묻는다', d: '' }, { suit: '♣', t: '지나간다', d: '' }] });
-  await loadScreen({ bg: 'assets/load_red.jpg', lines: ['붉은 가시가 도시를 덮었다.', '그녀는 한 번도 뒤돌아보지 않았다.'] });
-}
-document.getElementById('bt-enc').onclick = () => { if (encEl.hidden) encPreview(); };
-document.getElementById('bt-room').onclick = () => { exitBattle(); visitRoom('odileRoom'); };
 
 /* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열 ---------- */
 function dgFormation(){
@@ -6065,22 +6192,10 @@ const RECRUIT = {
   tehera: { narr: ['안개 위로 빛가루가 흩날립니다. 잠자리 같은 날개.', '그것이 당신들을 흥미롭게 바라봅니다. 필시 어느 종족의 왕이었겠지요.'], talk: ['테헤라. 왕이었지. 지금은 그냥 날개 달린 것.', '재미있어 보이는 쪽으로 가겠어. 너희 쪽.'] },
   norman: { narr: ['쓰러진 낙오자 곁에 무릎 꿇은 군인이 있습니다. 붕대를 감고 있습니다.', '낙오자는 이미 색이 다 빠졌습니다. 그래도 감습니다.'], talk: ['…노먼. 위생병.', '…가지.'] },
   poren:  { narr: ['안개 속에서 쥐 떼가 길을 비킵니다.', '에메랄드빛 갑옷의 작은 거인이 대검에 기대 서 있습니다.'], talk: ['포렌이다. 쥐들의 왕.', '왕을 쓰러뜨렸다고? …좋다. 군대가 필요하겠군.'] },
+  yellow: { narr: ['바퀴 굴러가는 소리. 무언가 당신들 둘레를 빙글빙글 돕니다.', '간호 모자를 쓴 소녀가 롤러스케이트로 한 바퀴를 더 돌고서야 멈춥니다.'], talk: ['옐로! 간호사야. 진짜야. 모자 봐.', '다쳤어? 안 다쳤어? 그럼 다치면 불러. 꿰매 줄게~', '…심심했거든. 따라갈래.'] },
+  tomoe:  { narr: ['삽 끝이 돌바닥을 긁는 소리.', '군모를 눌러쓴 여자가 무언가를 묻고 있습니다. 등의 용 문신이 꿈틀거립니다.'], talk: ['…보지 마. 구덩이는 깊을수록 좋아.', '용묘화다. 이 밑에 묻을 게 아직 많아.', '가는 길이 같으면 같이 가지. 삽은 내가 든다.'] },
+  morningstar: { narr: ['회랑 끝, 누군가 혼자 박수를 받고 있습니다. 관객은 녹슨 왕관들뿐.', '철퇴를 든 여자가 고개 숙여 인사합니다.'], talk: ['슈퍼스타 등장! …관객이 좀 적네.', '너희가 새 관객? 아니, 새 무대구나. 따라가 줄게.'] },
 };
-async function recruitEvent(pool, x, y){
-  const cand = pool.filter(id => !DGP.roster.includes(id));
-  if (!cand.length) return;
-  const id = cand[Math.floor(Math.random() * cand.length)], R = RECRUIT[id], st = getStats(id);
-  const u = newUnit(id, x - 0.5, y - 0.5, 'ally'); u.face = -1; u.name = st.name;
-  const prop = addProp({ kind: 'figure', x, y, u, name: st.name });
-  await dgUntil(() => lead().x > x - 3.2);
-  DG.lock = true; DG.focus = x - 1;
-  await dgNarr(R.narr);
-  await dgTalk(st.name, st.color, R.talk);
-  const c = await dgChoose(`${st.name}을(를) 데려갈까요?\n${st.sub}`, ['🤝 함께 간다', '🚶 두고 간다']);
-  DG.lock = false; DG.focus = null;
-  if (c === 0) recruit(id, prop);
-  else { removeProp(prop); dgSub(`${st.name}은(는) 그 자리에 남았습니다. 다음에 또 만날지도 모릅니다.`); }
-}
 function recruit(id, prop){
   const st = getStats(id);
   if (!DGP.roster.includes(id)) DGP.roster.push(id);
@@ -6146,6 +6261,12 @@ function drawCmdUi(){
   const w = ctx.measureText(txt).width + 18, y0 = W <= 640 ? 58 : 14;
   ctx.fillStyle = 'rgba(10,8,12,.78)'; ctx.fillRect(12, y0, w, 26);
   ctx.fillStyle = b.cmdLeft ? '#ffe08a' : '#8a8190'; ctx.fillText(txt, 21, y0 + 18);
+  if (RUN && RUN.relics.length){                                 // 이번 판의 유물 (전투 중에도 보이게)
+    const rt = RUN.relics.map(id => RELICS[id].em).join(' ');
+    ctx.font = '15px sans-serif'; const rw = ctx.measureText(rt).width + 16;
+    ctx.fillStyle = 'rgba(10,8,12,.62)'; ctx.fillRect(12, y0 + 30, rw, 24);
+    ctx.fillStyle = '#e8dcc4'; ctx.fillText(rt, 20, y0 + 48);
+  }
   ctx.restore();
 }
 document.getElementById('bq-manual').onclick = () => {
@@ -6161,14 +6282,14 @@ function removeProp(o){ DG.props = DG.props.filter(p => p !== o); }
 function addActor(id, x, y, face){ const u = newUnit(id, x, y, 'enemy'); u.face = face; DG.actors.push(u); return u; }
 function removeActor(u){ DG.actors = DG.actors.filter(a => a !== u); }
 
-function setArea(key){
-  DG.area = { ...AREAS[key], key };
+function setArea(key, over){
+  DG.area = { ...AREAS[key], ...(over || {}), key };
   curCols = DG.area.cols; DG.props = []; DG.actors = []; DG.interact = null; DG.focus = null;
   resize();
   DG.flakes = [];
   DG.pawns.forEach((u, i) => { u.x = Math.max(0, 3.2 - i * 0.9); u.y = [2, 1, 3, 2.6][i]; u.vx = u.vy = 0; u.face = 1; });
   DG.camX = W / 2 - (curCols / 2) * T - T * 0.6; camX = DG.camX;
-  caption = { text: DG.area.name, life: 2.4, max: 2.4 };
+  if (!(over && over.quiet)) caption = { text: DG.area.name, life: 2.4, max: 2.4 };
 }
 function dgSolid(nx, ny){
   if (nx < 0 || nx > curCols - 1 || ny < 0 || ny > ROWS - 1) return true;
@@ -6179,50 +6300,35 @@ function dgSolid(nx, ny){
   return false;
 }
 
-// 작은 방 들르기 (편성 없이 주인공 혼자). 소품은 ROOM_PROPS에 { src, x, y, h, solid?, flip? }로 넣으면 그 자리에 섬
+// 방 소품: ROOM_PROPS[방]에 { src, x, y, h, solid?, flip? }로 넣으면 그 방에 들어갈 때 그 자리에 섬
 const ROOM_PROPS = { odileRoom: [] };
-async function visitRoom(key = 'odileRoom'){
-  closePanels(); endDialog(); closeEvent();
-  DG.active = true; DG.area = null; DG.hp = {}; DG.floor = 0; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
-  mode = 'dungeon'; document.body.classList.add('dungeon');
-  ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
-  floaters = []; sparks = []; held.clear();
-  DG.party = ['player'];
-  DG.pawns = DG.party.map(id => { const u = newUnit(id, 0, 2, 'ally'); u.name = nameOf(id); return u; });
-  dgHud.hidden = false;
-  setArea(key);
-  for (const pr of ROOM_PROPS[key] || []) addProp({ kind: 'img', ...pr });
-  const od = addActor('odile', 5.6, 1.4, -1); od.name = '오딜';
-  await dgNarr(['좁은 방입니다. 촛불이 젖은 바닥에 비칩니다.', '붉은 소파 위에서, 가면이 이쪽을 봅니다.']);
-  for (;;){
-    await dgInteract(od.x, 2.6, '오딜');
-    const k = await encScene({ bg: 'assets/enc_odile.jpg', lines: ['소녀는 일어나지 않습니다. 가면이 조금 기울어집니다.'],
-      cards: [{ suit: '♥', red: true, t: '인사한다', d: '' }, { suit: '♠', t: '가면을 묻는다', d: '' }, { suit: '♣', t: '방을 나간다', d: '' }] });
-    if (k === 2) break;
-    await dgTalk('오딜', '#d8d2c8', [k === 0 ? '……' : '…가면 아래에도, 가면.']);
-  }
-  dgExit();
-}
 async function startRun(){
   closePanels(); endDialog(); closeEvent();
-  DG.active = true; DG.area = null; DG.pawns = []; DG.hp = {}; DG.floor = 1; DG.gifts = []; DG.snowOn = false; DG.flakes = [];
+  DG.active = true; DG.area = null; DG.pawns = []; DG.hp = {}; DG.floor = 1; DG.snowOn = false; DG.rainOn = false; DG.flakes = [];
   mode = 'dungeon'; document.body.classList.add('dungeon');
   ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
   floaters = []; sparks = []; held.clear();
   await dgFormation();
+  RUN = newRun();
   DG.party = [...DGP.party];
+  for (const id of DG.party) RUN.lv0[id] = lvOf(id);
   DG.pawns = DG.party.map(id => { const u = newUnit(id, 0, 2, 'ally'); u.name = nameOf(id); return u; });
   dgHud.hidden = false;
+  DGP.runs = (DGP.runs || 0) + 1; saveDGP();
+  document.getElementById('act').textContent = '확인';            // 모바일 버튼: 던전에선 넘기기 · 살펴보기
   let dead = false;
   try {
-    await floor1();
-    await floor2();
-    await dgNarr(['2층 돌파.', '방앗간 바닥의 문 아래로, 또 계단이 이어집니다.', '…3층은 아직 없습니다. 굴로 돌아갑니다.']);
+    for (let f = 1; f <= 5; f++) await runFloor(f);
+    DGP.clears = (DGP.clears || 0) + 1; DGP.best = 5; saveDGP();
+    await dgNarr(['적뢰가 무너집니다. 대리석이 빗속에서 식어 갑니다.', '우물 위의 하늘이 아주 조금, 가까워졌습니다.', '다섯 층의 끝.', '…굴로 돌아갑니다. 다음엔 더 깊이.']);
   } catch (e){ if (e !== 'dead') throw e; dead = true; }
+  await runSummary(dead);
+  RUN = null;
   dgExit(dead);
 }
 function dgExit(){
-  DG.active = false; DG.inFight = false; DG.snowOn = false;
+  DG.active = false; DG.inFight = false; DG.snowOn = false; DG.rainOn = false;
+  document.getElementById('act').textContent = '대화';
   mode = 'lobby'; curCols = LOBBY_COLS; resize();
   document.body.classList.remove('dungeon');
   dgHud.hidden = true; dlgEl.hidden = true; narrEl.hidden = true;
@@ -6249,41 +6355,51 @@ function dgFight(cfg){
     floaters = []; sparks = []; held.clear(); caption = null;
     battle = { units: [], running: false, speed: 1, tool: 'select', log: [], over: null, hitstop: 0, fx: [], pending: [], proj: [], adv: { ally: 1, enemy: 1 },
       redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [], ricos: [], drops: [],
-      parryTest: false, water: false, rain: false, snow: !!cfg.snow, sealDivine: !!cfg.seal, playerAuto: document.getElementById('bt-auto').checked,
+      parryTest: false, water: false, rain: !!cfg.rain, snow: !!cfg.snow, sealDivine: !!cfg.seal, playerAuto: document.getElementById('bt-auto').checked,
       locked: true, fresh: true, intro: { t: 0, dur: 2.4 } };
     battle.cmdLeft = 4;   // 지휘력: 한 전투에 4번
+    battle.speed = DGP.speed || 1;   // 고른 속도 그대로 (다음 전투에도)
     const put = (list, x) => list.forEach((id, i) => spawnMember(id, x, (i + 1) * ROWS / (list.length + 1) - 0.5));   // 편성: 전열 · 후열
     const spawnMember = (id, x, y) => {
       const u = spawnUnit(id, x, y, 'ally');
-      const m = lvMul(id);
-      if (m > 1) u.st = { ...u.st, hp: Math.round(u.st.hp * m), atk: Math.round(u.st.atk * m) };
+      runStats(u);                                                   // 레벨 · 단련 · 유물
       u.hp = Math.min(u.st.hp, DG.hp[id] ?? u.st.hp);
       u.name = nameOf(id);
     };
     put(DG.party.filter(id => rowOf(id) === 'front'), 2.9); put(DG.party.filter(id => rowOf(id) === 'back'), 1.2);
     battle.playerAuto = !DGP.manual; document.getElementById('bq-manual').textContent = DGP.manual ? '🎮 직접' : '🤖 자동';
-    for (const e of cfg.enemies) spawnUnit(e.id, e.x, e.y, 'enemy');
+    for (const e of cfg.enemies){ const u = spawnUnit(e.id, e.x, e.y, 'enemy'); u.bossMul = e.mul; runStats(u); u.hp = u.st.hp; }   // 층이 깊을수록 단단해짐
     const joins = (cfg.joins || []).map(j => ({ ...j }));
     battle.tick = sdt => {
       for (const j of joins) if (!j.done && battle.clock >= j.t){
         j.done = true;
         const u = spawnUnit(j.id, BATTLE_COLS - 0.6, j.y ?? (0.5 + Math.random() * 3), 'enemy');
+        runStats(u); u.hp = u.st.hp;
         fxText(u, '합류', '#cfd6de', 'big'); logLine(`${u.name}이(가) 합류한다`, 'crit');
+      }
+      if (has('wick')){                                              // 촛불 심지: 아군 초당 체력 1
+        battle.wickT = (battle.wickT || 0) + sdt;
+        for (; battle.wickT >= 1; battle.wickT -= 1) for (const u of battle.units) if (u.side === 'ally' && !u.dead && !u.st.summon) u.hp = Math.min(u.st.hp, u.hp + 1);
       }
       if (cfg.tick) cfg.tick(sdt);
     };
     battle.log = []; logLine(`— ${cfg.title} —`, 'sys');
+    DGP.seen = DGP.seen || [];
+    if (!DGP.seen.includes('tipManual')){ DGP.seen.push('tipManual'); saveDGP(); logLine('팁: 위쪽 🤖 자동 (Q)을 누르면 🎮 직접 — 인주를 직접 움직임 (방향키 · C 공격 · X 방어 · Z 회피 · F 투창)', 'sys'); }
     btUi.hidden = false; cam.on = false;
     syncRun();
     battle.onOver = over => {
       setTimeout(() => {
         const gains = [];
-        for (const u of battle.units.filter(o => o.side === 'ally')){
-          DG.hp[u.id] = u.dead ? Math.round(u.st.hp * 0.2) : Math.round(u.hp);
+        for (const u of battle.units.filter(o => o.side === 'ally' && DG.party.includes(o.id))){
+          const down = u.dead || u.hp < 1;                            // 근성으로 버티던 카리우스 (체력 0)도 쓰러진 것으로
+          DG.hp[u.id] = down ? Math.round(u.st.hp * (has('bandage') ? 0.35 : 0.2)) : Math.round(u.hp);
+          if (over === '승리' && has('ash')) DG.hp[u.id] = Math.min(u.st.hp, DG.hp[u.id] + Math.round(u.st.hp * 0.1));   // 모닥불 재
           if (over === '승리') gains.push(...giveXp(u.id, cfg.xp || 40));
         }
         dgBackFromFight();
         if (over === '승리'){
+          if (RUN) RUN.won++;
           dgSub(gains.length ? gains.join(' · ') : `경험치 +${cfg.xp || 40}`, 4);
         }
         res(over);
@@ -6291,15 +6407,25 @@ function dgFight(cfg){
     };
   });
 }
+// 던전 전투가 시작되는 순간: 오딜의 가면 (적 하나 3초 멍함), 붉은 등불 (시작 시각 기록)
+function runBattleStart(){
+  const b = battle; b.startClock = b.clock;
+  if (has('mask')){
+    const foes = b.units.filter(u => u.side === 'enemy' && !u.dead);
+    const t = foes.sort((a, c) => c.st.hp - a.st.hp)[0];
+    if (t){ t.stun = Math.max(t.stun, 3); t.windup = 0; t.atkTarget = null; fxText(t, '🎭 멍함', '#e8e0f0', 'big'); logLine(`🎭 오딜의 가면 — ${t.name}이(가) 3초 동안 멍해진다`, 'crit'); }
+  }
+  if (has('lantern')) logLine('🏮 붉은 등불 — 4초 동안 받는 피해 절반', 'heal');
+}
 function giveXp(id, n){
   const out = [];
   DGP.xp[id] = (DGP.xp[id] || 0) + n;
   while (DGP.xp[id] >= LV.need(lvOf(id))){
     DGP.xp[id] -= LV.need(lvOf(id));
+    const before = maxHpOf(id), cur = DG.hp[id] ?? before;
     DGP.lv[id] = lvOf(id) + 1;
-    const nm = getStats(id).name;
-    out.push(`${nm} Lv${DGP.lv[id]}!`);
-    DG.hp[id] = Math.round((DG.hp[id] ?? 0) + getStats(id).hp * LV.grow);   // 레벨이 오르면 늘어난 만큼 체력도 참
+    out.push(`${getStats(id).name} Lv${DGP.lv[id]}!`);
+    DG.hp[id] = Math.min(maxHpOf(id), Math.round(cur + maxHpOf(id) - before));   // 레벨이 오르면 늘어난 최대 체력만큼 체력도 참
   }
   saveDGP();
   return out;
@@ -6318,104 +6444,616 @@ function dgFightTick(dt){
   const it = b.intro;
   if (it.t < it.dur){
     it.t += dt;
-    if (it.t >= it.dur && !b.running && !b.over){ b.fresh = true; toggleRun(); }
+    if (it.t >= it.dur && !b.running && !b.over){ b.fresh = true; toggleRun(); runBattleStart(); }
   }
 }
 
-/* ---------- 층 1: 회색 대지 → 무덤 → 알현실 (세자르) ---------- */
-async function floor1(){
-  DG.floor = 1;
-  await dgNarr(['석문이 열렸습니다.', '계단은 생각보다 길었습니다. 셀 수 없을 만큼.', '발소리가 돌아오지 않습니다. 아래로, 아래로.']);
-  setArea('grey');
-  for (let i = 0; i < 16; i++) addProp({ kind: 'stone', x: 3 + i * 2.5 + hash(i, 3) * 1.5, y: hash(i, 7) * 4.5, s: 0.5 + hash(i, 9) });
-  await dgUntil(() => lead().x > 5);
-  dgSub('빛이 없습니다. 그런데도 보입니다. 모든 것이 회색입니다.');
-  await recruitEvent(['dolsoe', 'piel', 'odo'], 10, 3.6);
-  await dgUntil(() => lead().x > 13);
-  const knight = addActor('swordsman', 27, 1.5, -1); knight.walkTo = 0; knight.walkSpd = 0.75;
-  dgSub('저 멀리, 무언가 천천히 걸어옵니다.');
-  await dgUntil(() => knight.x - lead().x < 4.5);
-  knight.walkTo = null; DG.lock = true;
-  dgSub('검사입니다. 등에 검 세 자루. 그는 말이 없습니다.', 2.6);
-  await dgWait(1.8);
-  DG.lock = false;
-  removeActor(knight);
-  await fightOrDie({ title: '말 없는 검사', enemies: [{ id: 'swordsman', x: 9, y: 2 }, { id: 'shieldman', x: 9.6, y: 3.4 }],
-    joins: [{ t: 4, id: 'spearman' }, { t: 8, id: 'archer' }], xp: 50 });
-  await dgWait(1.2);
-  dgSub('검사는 끝까지 아무 말도 하지 않았습니다. 등의 검은 하나도 뽑히지 않았습니다.');
-  await dgUntil(() => lead().x > DG.area.cols - 2.5);
-  await dgNarr(['회색 대지의 끝, 무너진 입구가 땅 아래로 입을 벌리고 있습니다.', '무덤입니다. 누군가의, 아주 오래된.']);
+/* =========================================================
+   다섯 층 판 (v13): 층마다 갈림길 3번 → 보스. 유물 · 금화 · 운명의 카드 · 단련 (이번 판), 레벨 · 동료 (영구)
+   ========================================================= */
+const RELICS = {
+  helm:    { g: 1, em: '⛑', name: '녹슨 투구', d: '아군 방어 +2' },
+  ash:     { g: 1, em: '🔥', name: '모닥불 재', d: '이기면 아군 체력 10% 회복' },
+  coin:    { g: 1, em: '💰', name: '빵 부스러기 동전', d: '금화 +25%' },
+  finger:  { g: 1, em: '☝', name: '굳은 손가락', d: '아군 치명타 +4%' },
+  bandage: { g: 1, em: '🩹', name: '낡은 붕대', d: '쓰러졌던 동료가 20% 대신 35%로 일어남' },
+  dust:    { g: 1, em: '🌫', name: '회색 가루', d: '적 이동 -8%' },
+  chain:   { g: 2, em: '⛓', name: '쇠사슬 고리', d: '아군 공격 12%로 적이 휘청 (0.4초)' },
+  lantern: { g: 2, em: '🏮', name: '붉은 등불', d: '전투 시작 4초 동안 아군이 받는 피해 절반' },
+  net:     { g: 2, em: '🕸', name: '어부의 그물', d: '투창에 맞은 적 1.5초 묶임' },
+  mill:    { g: 2, em: '⚙', name: '멈춘 맷돌 조각', d: '아군 무게 +25 (덜 밀리고 덜 휘청)' },
+  rose:    { g: 2, em: '🥀', name: '가시 장미', d: '맞으면 때린 적에게 피해 4' },
+  mist:    { g: 2, em: '💨', name: '안개 주머니', d: '아군 회피 +5%' },
+  boomer:  { g: 3, em: '🔱', name: '되돌아오는 창', d: '던진 창이 2.5초 뒤 손으로 돌아옴' },
+  crown:   { g: 3, em: '👑', name: '녹슬지 않는 왕관 조각', d: '아군 공격력 +12%' },
+  wick:    { g: 3, em: '🕯', name: '촛불 심지', d: '전투 중 아군 초당 체력 1 회복' },
+  blue:    { g: 3, em: '🗡', name: '청검 파편', d: '인주 공격력 +25%, 투창 +25%' },
+  feather: { g: 4, em: '🪶', name: '붉은 날개 깃털', d: '판에 한 번, 쓰러진 동료가 그 자리에서 일어남' },
+  mask:    { g: 4, em: '🎭', name: '오딜의 가면', d: '전투 시작마다 적 하나가 3초 동안 멍함' },
+  mirror:  { g: 0, curse: true, em: '🪞', name: '깨진 거울', d: '아군이 받는 피해 +10%' },
+  heavy:   { g: 0, curse: true, em: '⚓', name: '무거운 닻', d: '아군 이동 -10%' },
+  purse:   { g: 0, curse: true, em: '👛', name: '텅 빈 지갑', d: '금화 -50%' },
+};
+const STARS = ['저주', '★', '★★', '★★★', '★★★★'];
+let RUN = null;
+const has = id => !!(RUN && DG.active && RUN.relics.includes(id));
+function newRun(){ return { floor: 1, step: 0, gold: 0, goldAll: 0, won: 0, lv0: {}, relics: [], train: {}, used: {}, seen: [] }; }
+function goldGain(n){
+  const k = 1 + (has('coin') ? 0.25 : 0) - (has('purse') ? 0.5 : 0);
+  const g = Math.max(1, Math.round(n * k)); RUN.gold += g; RUN.goldAll += g; return g;
+}
+// 판이 끝나면 (전멸이든 돌파든): 어디까지 갔는지 · 이긴 싸움 · 유물 · 레벨 변화
+function runSummary(dead){
+  return new Promise(res => {
+    encEl.innerHTML = ''; encEl.className = 'over'; held.clear();
+    const box = el('div', 'fate sum');
+    box.appendChild(el('h2', '', dead ? `${FLOORS[RUN.floor].name}에서 쓰러졌습니다` : '다섯 층 돌파'));
+    box.appendChild(el('div', 'sub', `이긴 싸움 ${RUN.won} · 모은 금화 ${RUN.goldAll} · 최고 ${DGP.best}층${DGP.clears ? ` · 돌파 ${DGP.clears}번` : ''}`));
+    if (RUN.relics.length){
+      const rel = el('div', 'tags');
+      for (const id of RUN.relics) rel.appendChild(el('span', RELICS[id].curse ? 'curse' : '', `${RELICS[id].em} ${RELICS[id].name}`));
+      box.appendChild(rel);
+    }
+    const lv = el('div', 'tags');
+    for (const id of DG.party){ const a = RUN.lv0[id] ?? lvOf(id), c = lvOf(id); lv.appendChild(el('span', c > a ? 'up' : '', `${nameOf(id)} Lv${a}${c > a ? ` → Lv${c}` : ''}`)); }
+    box.appendChild(lv);
+    box.appendChild(el('div', 'sub', dead ? '유물 · 금화 · 단련은 두고 왔습니다. 레벨과 동료는 남습니다.' : '굴로 돌아갑니다. 다음엔 더 깊이.'));
+    const ok = el('button', 'ok', '굴로 돌아간다'); box.appendChild(ok);
+    let closed = false;
+    const key = e => { if (e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); e.stopPropagation(); done(); } };
+    const done = () => { if (closed) return; closed = true; window.removeEventListener('keydown', key, true); encEl.hidden = true; encEl.innerHTML = ''; encEl.className = ''; res(); };
+    ok.onclick = done;
+    setTimeout(() => { if (!closed) window.addEventListener('keydown', key, true); }, 500);   // 막 끝난 전투의 Space가 바로 닫지 않게 (닫힌 뒤엔 붙이지 않음)
+    encEl.appendChild(box); encEl.hidden = false;
+  });
+}
+function addRelic(id){ if (RUN && !RUN.relics.includes(id)) RUN.relics.push(id); }
+const relicsOf = g => Object.keys(RELICS).filter(id => RELICS[id].g === g && !RUN.relics.includes(id));
+const curses = () => RUN.relics.filter(id => RELICS[id].curse);
+const maxHpOf = id => Math.round(getStats(id).hp * lvMul(id) * (1 + 0.15 * ((RUN && RUN.train[id] || {}).hp || 0)) * ((RUN && RUN.cut && RUN.cut[id]) || 1));
+function healAll(k){ for (const id of DG.party){ const mx = maxHpOf(id); DG.hp[id] = Math.min(mx, Math.round((DG.hp[id] ?? mx) + mx * k)); } }
 
-  setArea('tomb');
-  const door = addProp({ kind: 'door', x: 28.5, y: 0, open: false });
-  const hole = addProp({ kind: 'hole', x: 26.3, y: 2, u: newUnit('fingerHole', 25.8, 1.5, 'enemy') });
-  await dgUntil(() => lead().x > 4);
-  dgSub('기둥들이 줄지어 있습니다. 불꽃은 차갑고, 푸릅니다.');
-  await recruitEvent(['moro'], 11, 0.8);
-  await dgUntil(() => lead().x > 13);
-  shake = 0.2; dgSub('기둥 하나가 움직입니다. 기둥이 아닙니다.', 3);
-  await dgWait(1.4);
-  await fightOrDie({ title: '곤봉 거한', enemies: [{ id: 'brute', x: 9, y: 2 }], xp: 40 });
-  await dgWait(1);
-  dgSub('거한이 무릎을 꿇습니다. 사슬이 바닥에 길게 끌립니다.');
-  await dgUntil(() => lead().x > 17);
-  dgSub('문 앞에 무언가 있습니다. 기기기기기기.');
-  await dgInteract(hole.x, 3, '[Space] 구멍을 들여다본다');
-  const c = await dgChoose('알현실 문 아래, 구멍 하나.\n수천 개의 손가락이 기어 나와 웃고, 울고, 깔깔거립니다.\n무언가를 달라는 듯 손바닥을 펼칩니다.',
-    ['🍞 빵 한 조각을 준다', '☝ 손가락 하나를 준다', '⚔ 죽인다']);
-  if (c === 0){
-    await dgNarr(['손가락들이 빵을 잘게 뜯어 나눠 갖습니다. 순식간입니다.', '깔깔.', '손가락들이 구멍 속으로 사라지고, 문이 스르르 열립니다.']);
-    DG.gifts.push(['🪙', '빵 부스러기 묻은 동전', '손가락들의 답례. 아직 아무 효과 없음']);
-  } else if (c === 1){
-    await dgNarr(['당신은 새끼손가락 하나를 내밉니다.', '손가락들이 박수를 칩니다. 수천 번.', '문이 열립니다. 아프냐고요? 네.']);
-    DG.gifts.push(['☝', '잃어버린 손가락', '이제 굴 어딘가에 당신의 손가락이 있습니다. 아직 아무 효과 없음']);
-  } else {
+// 이번 판의 능력치: 레벨 · 단련 · 유물 (아군), 층 깊이 (적). 던전 전투에 들어가는 폰마다 한 번
+function runStats(u){
+  const s = { ...u.st };
+  if (u.side === 'ally'){
+    const tr = (RUN && RUN.train[u.id]) || {};
+    const m = lvMul(u.id);
+    s.hp = maxHpOf(u.id); s.atk = Math.round(s.atk * m * (1 + 0.1 * (tr.atk || 0)));
+    s.def = (s.def || 0) + 3 * (tr.def || 0);
+    if (has('helm')) s.def += 2;
+    if (has('finger')) s.crit = +(s.crit + 0.04).toFixed(2);
+    if (has('mill')) s.weight += 25;
+    if (has('mist')) s.eva = +(s.eva + 0.05).toFixed(2);
+    if (has('crown')) s.atk = Math.round(s.atk * 1.12);
+    if (has('blue') && u.id === 'player') s.atk = Math.round(s.atk * 1.25);
+    if (has('heavy')) s.spd = +(s.spd * 0.9).toFixed(2);
+    if (u.id === 'player') s.javMul = 1 + 0.3 * (tr.jav || 0) + (has('blue') ? 0.25 : 0);
+  } else if (RUN){
+    const k = s.boss ? (u.bossMul || 1) : 1 + 0.12 * (RUN.floor - 1);   // 일반 적은 층마다 +12%, 보스는 장면에서 정한 세기
+    s.hp = Math.round(s.hp * k);
+    for (const key in s) if (key === 'atk' || key.endsWith('Atk')) s[key] = Math.round(s[key] * k);   // 기술 피해 (천벌 · 날아차기 …)도 같이
+    if (has('dust')) s.spd = +(s.spd * 0.92).toFixed(2);
+  }
+  u.st = withDerived(s);
+}
+
+/* ---------- 카드 고르기 (갈림길 · 운명의 카드 · 유물 고르기): 게임 화면 위에 반투명하게 ---------- */
+// cards: [{ em, t, d, g, top }]. faceDown이면 뒷면으로 깔렸다가 고른 카드가 뒤집히고, 나머지도 뒤집혀 보여 줌 (놓친 것)
+function pickCards({ title, sub, cards, faceDown = false, okText = '받는다' }){
+  return new Promise(res => {
+    encEl.innerHTML = ''; encEl.className = 'over'; held.clear();
+    const box = el('div', 'fate' + (cards.length > 4 ? ' many' : ''));
+    box.appendChild(el('h2', '', title));
+    if (sub) box.appendChild(el('div', 'sub', sub));
+    const row = el('div', 'row'); box.appendChild(row);
+    let picked = -1;
+    const els = cards.map((c, i) => {
+      const fc = el('div', 'fc' + (faceDown ? '' : ' flip')); fc.style.animationDelay = (i * 0.1) + 's';
+      const inn = el('div', 'in'), fa = el('div', 'fa', '✦'), fb = el('div', 'fb g' + (c.g ?? 1));
+      if (c.top) fb.appendChild(el('div', 'st', c.top));
+      fb.appendChild(el('div', 'em', c.em || '✦')); fb.appendChild(el('div', 'nm', c.t)); fb.appendChild(el('div', 'ds', c.d || ''));
+      inn.append(fa, fb); fc.appendChild(inn); row.appendChild(fc);
+      fc.addEventListener('pointerdown', e => { e.stopPropagation(); choose(i); });
+      return fc;
+    });
+    const key = e => { const m = /^(Digit|Numpad)([1-9])$/.exec(e.code), k = m ? +m[2] - 1 : null; if (k != null && k < cards.length){ e.preventDefault(); e.stopPropagation(); choose(k); }
+      else if (e.code === 'Space' || e.code === 'Enter'){ e.preventDefault(); e.stopPropagation(); if (picked >= 0 && box.querySelector('.ok')) done(); } };   // 카드 고르는 중엔 Space가 뒤의 장면으로 새지 않게
+    window.addEventListener('keydown', key, true);
+    const done = () => { window.removeEventListener('keydown', key, true); encEl.hidden = true; encEl.innerHTML = ''; encEl.className = ''; res(picked); };
+    function choose(i){
+      if (picked >= 0) return;
+      picked = i;
+      if (!faceDown){ els[i].classList.add('pick'); setTimeout(done, 260); return; }
+      els[i].classList.add('flip', 'pick');
+      setTimeout(() => els.forEach((e, j) => { if (j !== i) e.classList.add('flip', 'dim'); }), 700);
+      setTimeout(() => { const ok = el('button', 'ok', okText); ok.onclick = done; box.appendChild(ok); }, 1000);
+    }
+    encEl.appendChild(box); encEl.hidden = false;
+  });
+}
+// 운명의 카드 한 장 만들기: 등급 → 내용 (유물 · 금화 · 회복 · 저주)
+function rollGrade(){ const r = Math.random(); return r < 0.02 ? 4 : r < 0.12 ? 3 : r < 0.40 ? 2 : 1; }
+function fateCard(minG = 1){
+  if (minG <= 1 && Math.random() < 0.06){
+    const c = Object.keys(RELICS).filter(id => RELICS[id].curse && !RUN.relics.includes(id));
+    if (c.length){ const id = c[Math.floor(Math.random() * c.length)]; return { g: 0, kind: 'curse', id, gold: 45, em: RELICS[id].em, t: RELICS[id].name, d: RELICS[id].d + ' · 대신 금화 45', top: '저주' }; }
+  }
+  let g = Math.max(minG, rollGrade());
+  const gold = n => ({ g, kind: 'gold', n, em: '🪙', t: `금화 ${n}`, d: '', top: STARS[g] });
+  const r = Math.random();                                         // ★: 회복 40% · 금화 35% · 유물 25% / ★★: 금화 40% · 유물 60%
+  if (g === 1 && r < 0.75) return r < 0.4 ? { g, kind: 'heal', em: '🍖', t: '모두 회복 25%', d: '', top: STARS[g] } : gold(15 + Math.floor(Math.random() * 11));
+  if (g === 2 && r < 0.4) return gold(30 + Math.floor(Math.random() * 16));
+  for (let k = g; k >= 1; k--){
+    const pool = relicsOf(k);
+    if (pool.length){ const id = pool[Math.floor(Math.random() * pool.length)]; return { g: k, kind: 'relic', id, em: RELICS[id].em, t: RELICS[id].name, d: RELICS[id].d, top: STARS[k] }; }
+  }
+  return gold(40);
+}
+function takeCard(c){
+  if (c.kind === 'relic'){ addRelic(c.id); return `${c.em} ${c.t}`; }
+  if (c.kind === 'curse'){ addRelic(c.id); const g = goldGain(c.gold); return `${c.em} 저주: ${c.t} · 🪙 +${g}`; }
+  if (c.kind === 'gold'){ const g = goldGain(c.n); return `🪙 +${g}`; }
+  if (c.kind === 'heal'){ healAll(0.25); return '모두 체력 25% 회복'; }
+  return '';
+}
+async function fateDraw(title = '운명의 카드', minG = 1){
+  const cards = [fateCard(minG), fateCard(minG), fateCard(minG)];
+  const i = await pickCards({ title, sub: '엎어진 카드 한 장을 뒤집으세요', cards, faceDown: true });
+  const got = takeCard(cards[i]); dgSub(got, 4);
+  return cards[i];
+}
+async function relicChoice(title, minG = 2){
+  const ids = [];
+  for (let k = 0; k < 3; k++){
+    let g = Math.max(minG, rollGrade()), id = null;
+    for (let gg = g; gg >= 1 && !id; gg--){ const pool = relicsOf(gg).filter(x => !ids.includes(x)); if (pool.length) id = pool[Math.floor(Math.random() * pool.length)]; }
+    if (id) ids.push(id);
+  }
+  if (!ids.length){ const g = goldGain(50); dgSub(`남은 유물이 없습니다. 🪙 +${g}`); return; }
+  const i = await pickCards({ title, sub: '하나를 고르세요', cards: ids.map(id => ({ g: RELICS[id].g, em: RELICS[id].em, t: RELICS[id].name, d: RELICS[id].d, top: STARS[RELICS[id].g] })) });
+  addRelic(ids[i]); dgSub(`${RELICS[ids[i]].em} ${RELICS[ids[i]].name}`, 4);
+}
+
+/* ---------- 층 · 갈림길 ---------- */
+const FLOORS = {
+  1: { name: '1층 · 왕의 무덤', walk: ['grey', 'tomb'], color: '#b8bcc4',
+       fights: [['swordsman', 'shieldman'], ['spearman', 'spearman', 'archer'], ['shieldman', 'swordsman', 'archer'], ['swordsman', 'spearman']],
+       elite: [['brute', 'archer'], ['brute', 'spearman']], events: ['finger', 'recruit'], recruit: ['dolsoe', 'piel', 'odo', 'moro'] },
+  2: { name: '2층 · 안개 늪', walk: ['mist'], color: '#9fc3c9',
+       fights: [['faded', 'faded', 'faded', 'faded', 'faded'], ['enemyGoblin', 'enemyGoblin', 'enemyGoblin', 'goblinArcher'], ['faded', 'faded', 'enemyGoblin', 'goblinArcher', 'goblinArcher'], ['faded', 'faded', 'faded', 'goblinArcher', 'goblinArcher']],
+       elite: [['benkin', 'enemyGoblin', 'goblinArcher', 'faded'], ['benkin', 'faded', 'faded', 'faded']], events: ['heron', 'umbrella', 'recruit'], recruit: ['gur', 'tehera', 'norman', 'poren', 'yellow'] },
+  3: { name: '3층 · 붉은 가시 성당', walk: ['cathedral'], color: '#e0606a',
+       fights: [['spearman', 'archer', 'swordsman'], ['shieldman', 'spearman', 'archer', 'archer'], ['swordsman', 'swordsman', 'archer'], ['spearman', 'spearman', 'shieldman']],
+       elite: [['brute', 'spearman', 'archer'], ['brute', 'shieldman', 'archer']], events: ['candle', 'umbrella', 'duo', 'recruit'], recruit: ['yellow', 'tomoe'] },
+  4: { name: '4층 · 왕관의 회랑', walk: ['gallery'], color: '#8fa8e8',
+       fights: [['brute', 'shieldman'], ['benkin', 'spearman', 'archer'], ['shieldman', 'shieldman', 'archer', 'swordsman'], ['brute', 'archer', 'archer']],
+       elite: [['benkin', 'brute'], ['brute', 'brute', 'spearman']], events: ['odile', 'duo', 'recruit'], recruit: ['tomoe', 'morningstar'] },
+  5: { name: '5층 · 하늘 우물', walk: ['well'], color: '#ff6a6a',
+       fights: [['brute', 'benkin'], ['swordsman', 'shieldman', 'spearman', 'archer'], ['benkin', 'archer', 'archer']],
+       elite: [['brute', 'brute', 'archer'], ['benkin', 'benkin', 'archer']], events: ['feather', 'umbrella', 'candle'], recruit: [] },
+};
+const NODE = {
+  fight:  { em: '⚔', t: '싸움', d: '운명의 카드 · 금화' },
+  elite:  { em: '☠', t: '강적', d: '유물 고르기 · 금화 많이' },
+  event:  { em: '❓', t: '만남', d: '무엇이 있을지 모름' },
+  rest:   { em: '🔥', t: '모닥불', d: '쉬기 · 단련 · 정화 중 하나' },
+  altar:  { em: '🎴', t: '운명의 제단', d: '금화로 카드 뒤집기 · 유물 바치기' },
+};
+function crossroads(f, step){
+  const F = FLOORS[f], kinds = [];
+  const evLeft = F.events.filter(e => e === 'recruit' ? recruitCand(f).length : !RUN.seen.includes(e));
+  const opts = { fight: 4, elite: step >= 2 ? 2.2 : 0.6, event: evLeft.length ? 3 : 0, rest: RUN.used['rest' + f] ? 0 : (step >= 2 ? 2.4 : 0.8), altar: RUN.used['altar' + f] || (RUN.gold < altarPrice() && !RUN.relics.some(id => !RELICS[id].curse && RELICS[id].g < 4)) ? 0 : 1.6 };
+  if (f === 1 && step === 1) return ['fight', Math.random() < 0.6 ? 'fight' : 'elite'];   // 첫 갈림길은 싸움 둘 중 하나 (보스 전에 몸을 풀게)
+  const pick = () => { const pool = Object.entries(opts).filter(([k, w]) => w > 0 && !kinds.includes(k)).map(([k, w]) => ({ k, weight: w })); const d = pickWeighted(pool); return d && d.k; };
+  kinds.push(Math.random() < 0.75 ? 'fight' : 'elite');
+  while (kinds.length < 3){ const k = pick(); if (!k) break; kinds.push(k); }
+  return kinds.sort(() => Math.random() - 0.5);
+}
+const pickOf = a => a[Math.floor(Math.random() * a.length)];
+const groupName = g => Object.entries(g.reduce((m, id) => (m[id] = (m[id] || 0) + 1, m), {})).map(([id, n]) => getStats(id).name + (n > 1 ? ` ×${n}` : '')).join(' · ');
+function recruitCand(f){ return FLOORS[f].recruit.filter(id => !DG.party.includes(id) && !DGP.roster.includes(id)); }
+
+async function runFloor(f){
+  const F = FLOORS[f];
+  RUN.floor = f; DG.floor = f; RUN.step = 0;
+  await floorIntro(f);
+  for (let step = 1; step <= 3; step++){
+    RUN.step = step;
+    walkArea(f);
+    await dgWait(0.6);
+    const deck = { fight: [...F.fights].sort(() => Math.random() - 0.5), elite: [...F.elite].sort(() => Math.random() - 0.5) };   // 같은 무리가 두 번 나오지 않게
+    const plans = crossroads(f, step).map(k => ({ k, g: deck[k] ? deck[k].shift() || pickOf(k === 'elite' ? F.elite : F.fights) : null }));
+    const i = await pickCards({ title: `${F.name} · 갈림길 ${step}/3`, sub: '어느 쪽으로 갈까요', cards: plans.map(p => ({ ...NODE[p.k], d: p.g ? `${groupName(p.g)}\n— ${NODE[p.k].d}` : NODE[p.k].d, g: p.k === 'elite' ? 3 : 1 })) });
+    await runNode(f, plans[i]);
+  }
+  RUN.step = 4;
+  await bossCamp(f);
+  await BOSS[f]();
+  DGP.best = Math.max(DGP.best, f); saveDGP();
+}
+async function floorIntro(f){
+  const lines = {
+    1: ['석문이 열렸습니다.', '계단은 생각보다 길었습니다. 셀 수 없을 만큼.', '발소리가 돌아오지 않습니다. 아래로, 아래로.'],
+    2: ['관 아래 계단은 축축했습니다.', '내려갈수록 공기가 푸르게 식어갑니다.'],
+    3: ['맷돌 아래 문을 열자, 붉은 빛이 새어 나옵니다.', '어디선가 가시가 자라는 소리가 들립니다.'],
+    4: ['성당의 제단 뒤, 좁은 회랑.', '벽마다 녹슨 왕관이 걸려 있습니다. 주인은 모두 하늘을 보고 죽었습니다.'],
+    5: ['마지막 계단입니다.', '빗소리. 아주 높은 곳에서 떨어지는 비.', '굴의 바닥에서, 하늘이 보입니다.'],
+  }[f];
+  if (f === 1) await loadScreen({ bg: 'assets/load_moon.jpg', lines: ['달에는 길이 없었다.', '지도만 있었다.'], ms: 2400 });
+  if (f === 3) await loadScreen({ bg: 'assets/load_red.jpg', lines: ['붉은 가시가 도시를 덮었다.', '그녀는 한 번도 뒤돌아보지 않았다.'], ms: 2400 });
+  await narrOnce('floor' + f, lines);
+}
+function walkArea(f, key){ setArea(key || FLOORS[f].walk[Math.floor(Math.random() * FLOORS[f].walk.length)], { cols: 18, quiet: RUN.step > 1 }); DG.rainOn = f === 5; }
+
+async function runNode(f, { k: kind, g }){
+  if (kind === 'fight') return nodeFight(f, false, g);
+  if (kind === 'elite') return nodeFight(f, true, g);
+  if (kind === 'rest'){ RUN.used['rest' + f] = true; return nodeRest(f); }
+  if (kind === 'altar'){ RUN.used['altar' + f] = true; return nodeAltar(f); }
+  const F = FLOORS[f];
+  const pool = F.events.filter(e => e === 'recruit' ? recruitCand(f).length : !RUN.seen.includes(e));
+  const ev = pool[Math.floor(Math.random() * pool.length)] || 'recruit';
+  if (ev !== 'recruit') RUN.seen.push(ev);
+  return EVENT[ev](f);
+}
+// 싸움: 적이 걸어와 마주치면 카메라가 돌며 전투
+async function nodeFight(f, elite, g){
+  const lead0 = addActor(g[0], 15.5, 2, -1); lead0.walkTo = 9; lead0.walkSpd = 0.9;
+  await dgUntil(() => lead0.x - lead().x < 4.6 || lead0.x <= 9.05);
+  DG.lock = true; dgSub(elite ? '공기가 무거워집니다.' : (getStats(g[0]).name + (g.length > 1 ? ' 무리' : '') + '와 마주쳤습니다.'), 2.2); await dgWait(1.0);
+  DG.lock = false; removeActor(lead0);
+  const ys = [2, 0.8, 3.2, 1.4, 2.8];
+  await fightOrDie({ title: elite ? `강적 · ${getStats(g[0]).name}` : getStats(g[0]).name + (g.length > 1 ? ' 무리' : ''),
+    enemies: g.map((id, i) => ({ id, x: 8.6 + (i % 2) * 0.9 + (getStats(id).ranged ? 1.4 : 0), y: ys[i % ys.length] })), xp: elite ? 64 + f * 6 : 40 + f * 4 });
+  const gold = goldGain(elite ? 30 + f * 4 : 10 + Math.floor(Math.random() * 11) + f * 2);
+  if (elite){ dgSub(`🪙 +${gold}`, 2.5); await relicChoice('강적의 유물', 2); }
+  else { dgSub(`🪙 +${gold}`, 2.5); await fateDraw(); }
+}
+// 모닥불: 쉬기 · 단련 · 정화 중 하나. 갈림길에서 고르거나, 보스 문 앞에서 언제나
+async function nodeRest(f, title = '모닥불', sub = '불 앞에서 무엇을 할까요'){
+  const fire = addProp({ kind: 'campfire', x: 10, y: 2.2 });
+  await dgUntil(() => lead().x > 7.5);
+  DG.lock = true;
+  const opts = [{ em: '🛏', t: '쉰다', d: '모두 체력 40% 회복', g: 1 }, { em: '⚒', t: '단련', d: '동료 하나를 골라 단련 카드 1장', g: 2 }];
+  if (curses().length) opts.push({ em: '✨', t: '정화', d: '저주 하나를 불에 던짐', g: 3 });
+  const i = await pickCards({ title, sub, cards: opts });
+  if (i === 0){ healAll(0.4); dgSub('모두 체력을 40% 회복했습니다.'); }
+  else if (i === 1) await trainMember();
+  else { const c = curses()[0]; RUN.relics = RUN.relics.filter(x => x !== c); dgSub(`${RELICS[c].em} ${RELICS[c].name}이(가) 불 속에서 타 버렸습니다.`); }
+  DG.lock = false; removeProp(fire);
+}
+async function bossCamp(f){
+  walkArea(f);
+  await nodeRest(f, `${FLOORS[f].name} · 보스 문 앞`, '문 너머에서 무언가 기다립니다. 불 앞에서 잠깐 숨을 고릅니다.');
+}
+async function trainMember(){
+  const ids = DG.party;
+  const who = await pickCards({ title: '누구를 단련할까요', cards: ids.map(id => ({ em: '🧍', t: nameOf(id), d: `Lv${lvOf(id)} · ♥${Math.round(DG.hp[id] ?? maxHpOf(id))}/${maxHpOf(id)}`, g: 1 })) });
+  const id = ids[who], tr = RUN.train[id] || (RUN.train[id] = {});
+  const cards = [{ k: 'hp', em: '🫀', t: '질긴 몸', d: '최대 체력 +15%' }, { k: 'atk', em: '⚔', t: '날 선 손', d: '공격력 +10%' }, { k: 'def', em: '🛡', t: '단단한 살갗', d: '방어 +3' }];
+  if (id === 'player') cards.push({ k: 'jav', em: '🔱', t: '창끝 단련', d: '투창 피해 +30%' });
+  const k = await pickCards({ title: `${nameOf(id)} · 단련`, cards: cards.map(c => ({ ...c, g: 2 })) });
+  tr[cards[k].k] = (tr[cards[k].k] || 0) + 1;
+  if (cards[k].k === 'hp'){ const mx = maxHpOf(id); DG.hp[id] = Math.min(mx, (DG.hp[id] ?? mx) + Math.round(mx * 0.13)); }
+  dgSub(`${nameOf(id)}: ${cards[k].t} (${cards[k].d})`);
+}
+const altarPrice = () => 30 + 10 * ((RUN && RUN.altarN) || 0);   // 운명의 제단: 이번 판에 뒤집을 때마다 10씩 비싸짐
+// 유물을 바침: 고른 유물은 사라지고, 한 등급 위 유물 카드 3장이 엎어져 깔림 → 하나를 뒤집음 (그 등급이 바닥나면 같은 등급)
+async function altarGive(offer){
+  const back = { em: '🚶', t: '그만둔다', d: '', g: 1 };
+  const k = await pickCards({ title: '무엇을 바칠까요', sub: '바친 유물은 불 속으로 사라집니다', cards: [...offer.map(id => ({ g: RELICS[id].g, em: RELICS[id].em, t: RELICS[id].name, d: RELICS[id].d, top: STARS[RELICS[id].g] })), back] });
+  if (k >= offer.length) return;
+  const id = offer[k], g0 = RELICS[id].g;
+  RUN.relics = RUN.relics.filter(x => x !== id);
+  let pool = relicsOf(g0 + 1).filter(x => x !== id);
+  if (!pool.length) pool = relicsOf(g0).filter(x => x !== id);
+  if (!pool.length){ dgSub(`${RELICS[id].em} ${RELICS[id].name}이(가) 타 버렸습니다. 제단은 답이 없습니다. 🪙 +${goldGain(60)}`); return; }
+  const ids = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+  const cards = ids.map(r => ({ g: RELICS[r].g, em: RELICS[r].em, t: RELICS[r].name, d: RELICS[r].d, top: STARS[RELICS[r].g] }));
+  const i = await pickCards({ title: `${RELICS[id].em} ${RELICS[id].name}을(를) 바쳤습니다`, sub: '엎어진 카드 한 장을 뒤집으세요', cards, faceDown: true });
+  addRelic(ids[i]); dgSub(`${RELICS[ids[i]].em} ${RELICS[ids[i]].name}`, 4);
+}
+async function nodeAltar(f){
+  const altar = addProp({ kind: 'altar', x: 10, y: 1.6 });
+  await dgUntil(() => lead().x > 7.5);
+  DG.lock = true;
+  for (;;){
+    const price = altarPrice(), can = RUN.gold >= price, offer = RUN.relics.filter(id => !RELICS[id].curse && RELICS[id].g < 4);
+    const cards = [{ k: 'draw', em: '🎴', t: can ? '한 장 뒤집는다' : '금화가 모자람', d: `금화 ${price} (뒤집을 때마다 +10)`, g: can ? 3 : 0 }];
+    if (offer.length) cards.push({ k: 'give', em: '🔥', t: '유물을 바친다', d: '가진 유물 하나 → 한 등급 위 유물 카드 3장이 엎어짐', g: 2 });
+    cards.push({ k: 'go', em: '🚶', t: '떠난다', d: '', g: 1 });
+    const c = cards[await pickCards({ title: '운명의 제단', sub: `가진 금화 ${RUN.gold}`, cards })];
+    if (c.k === 'draw' && can){ RUN.gold -= price; RUN.altarN = (RUN.altarN || 0) + 1; await fateDraw('운명의 제단'); }
+    else if (c.k === 'give') await altarGive(offer);
+    else break;
+  }
+  DG.lock = false; removeProp(altar);
+}
+
+/* ---------- 만남 ---------- */
+const EVENT = {
+  // 손가락 구멍 (요구): 빵 · 손가락 · 죽인다
+  async finger(f){
+    const hole = addProp({ kind: 'hole', x: 11, y: 2, u: newUnit('fingerHole', 10.5, 1.5, 'enemy') });
+    await dgInteract(hole.x, 3, '[Space] 구멍을 들여다본다');
+    DG.lock = true;
+    const i = await pickCards({ title: '손가락 구멍', sub: '수천 개의 손가락이 기어 나와 웃고, 울고, 깔깔거립니다. 무언가를 달라는 듯 손바닥을 펼칩니다.', cards: [
+      { em: '🍞', t: '빵을 준다', d: '금화 15', g: 1 }, { em: '☝', t: '손가락을 준다', d: '인주 최대 체력 -10 · ★★ 유물', g: 2 }, { em: '⚔', t: '죽인다', d: '전투', g: 1 }] });
+    DG.lock = false;
+    if (i === 0){ RUN.gold = Math.max(0, RUN.gold - 15); await dgNarr(['손가락들이 빵을 잘게 뜯어 나눠 갖습니다. 순식간입니다.', '깔깔.']); }
+    else if (i === 1){
+      RUN.cut = RUN.cut || {}; RUN.cut.player = (RUN.cut.player || 1) * (1 - 10 / maxHpOf('player'));
+      DG.hp.player = Math.min(DG.hp.player ?? maxHpOf('player'), maxHpOf('player'));
+      await dgNarr(['당신은 새끼손가락 하나를 내밉니다.', '손가락들이 박수를 칩니다. 수천 번.', '아프냐고요? 네.']);
+      await relicChoice('손가락들의 답례', 2);
+    } else {
+      removeProp(hole);
+      await fightOrDie({ title: '손가락 구멍', enemies: [{ id: 'fingerHole', x: 8, y: 2 }], xp: 40 });
+      dgSub('손가락들이 하나씩 굳어갑니다. 마지막 하나가 아래를 가리키고 멈춥니다.');
+      await fateDraw();
+    }
     removeProp(hole);
-    await fightOrDie({ title: '손가락 구멍', enemies: [{ id: 'fingerHole', x: 8, y: 2 }], xp: 40 });
-    await dgWait(1);
-    dgSub('손가락들이 하나씩 굳어갑니다. 마지막 하나가 문을 가리키고 멈춥니다.');
-    DG.gifts.push(['🖐', '굳은 손가락', '문을 가리키던 손가락. 아직 아무 효과 없음']);
-  }
-  removeProp(hole); door.open = true;
-  await dgUntil(() => lead().x > 27);
-
-  setArea('throne');
-  const coffin = addProp({ kind: 'coffin', x: 12, y: 2, state: 'closed', solid: 1.3, k: 0 });
-  addProp({ kind: 'throne', x: 23.5, y: 0.4 });
-  dgSub('천장이 보이지 않을 만큼 높습니다. 가운데에 관 하나.');
-  await dgInteract(coffin.x, 2.4, '[Space] 관을 연다');
-  coffin.state = 'open'; DG.focus = coffin.x;
-  await dgNarr(['관 뚜껑이 무겁게 밀려납니다.', '늙은 왕이 누워 있습니다. 앙상한 손이 검을 쥐고 있습니다.', '머리 위의 왕관만은 녹슬지 않았습니다.', '죽어 있습니다. 확실히.']);
-  coffin.state = 'closed'; DG.focus = null;
-  dgSub('관을 닫았습니다. 왕의 무덤이라면, 어딘가 출구가 있을 텐데요.', 5);
-  await dgUntil(() => Math.abs(lead().x - coffin.x) > 5);        // 관의 시야를 벗어나는 순간
-  DG.lock = true; DG.focus = coffin.x;
-  await dgWait(1.3);
-  coffin.state = 'rattle'; await dgWait(1.0);
-  coffin.state = 'hand'; shake = 0.25; dgSub('툭.', 1.6); await dgWait(1.6);
-  coffin.state = 'rise'; coffin.k = 0; coffin.king = newUnit('cesar', coffin.x - 0.5, 1.5, 'enemy'); coffin.king.face = Math.sign(lead().x - coffin.x) || -1;
-  await dgUntil(() => coffin.k >= 1);
-  coffin.state = 'empty';
-  const king = addActor('cesar', coffin.x - 0.5, 1.5, coffin.king.face); coffin.king = null;
-  king.walkTo = coffin.x - 0.5 + king.face * 2; king.walkSpd = 0.9;
-  await dgWait(2.4);
-  dgSub('기둥, 돌, 그리고 당신들은 그에게 불경합니다.', 3); await dgWait(2.8);
-  king.poseName = 'raiseWait'; king.poseUntil = time + 99;
-  dgSub('폐하의 앙상한 팔이 분노로 일그러집니다.', 3); await dgWait(2.4);
-  king.poseName = 'raise'; king.poseUntil = time + 99; shake = 0.2;
-  DG.snowOn = true; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.8, max: 2.8 }; await dgWait(2.4);
-  removeActor(king); DG.lock = false; DG.focus = null;
-  await fightOrDie({ title: '세자르', enemies: [{ id: 'cesar', x: 9, y: 2 }], snow: true, seal: true, xp: 130 });
-  DG.snowOn = false;
-  dgSub('왕이 무너지자 눈이 멎습니다.');
-  await dgWait(1.6);
-  DG.focus = coffin.x; coffin.state = 'stairs'; await dgWait(1.4);
-  await dgNarr(['빈 관 바닥이 비스듬히 꺼져 있습니다.', '아래로 이어지는 계단.', '출구를 찾을 수 없던 이유 — 관이 다음 층의 입구였습니다.']);
-  DGP.best = Math.max(DGP.best, 1); saveDGP();
-  await dgReward('1층 · 세자르의 무덤', [['👑', '세자르의 왕관', '녹슬지 않는 왕관. 아직 아무 효과 없음'], ['❄️', '녹지 않는 눈 한 줌', '손바닥 위에서도 녹지 않는다. 아직 아무 효과 없음'], ...DG.gifts], '관 속으로 내려간다');
-  DG.focus = null;
+  },
+  // 영입: 그 층 영입 풀에서 한 명
+  async recruit(f){
+    const cand = recruitCand(f);
+    if (!cand.length){ dgSub('아무도 없습니다. 바람 소리뿐.'); return; }
+    await recruitEvent(cand, 11, 2.2);
+  },
+  // 낙오자 헤론 (통과): 쉬기 · 소문 · 영입
+  async heron(f){
+    const heron = addProp({ kind: 'figure', x: 11, y: 1.3, name: '낙오자 헤론', u: (() => { const u = newUnit('heron', 10.5, 0.8, 'enemy'); u.face = -1; return u; })() });
+    await dgInteract(heron.x, 2.4, '[Space] 말을 건다');
+    DG.lock = true;
+    await dgTalk('낙오자 헤론', '#9fc3c9', ['…새 얼굴이군. 관을 타고 왔나.', '여기선 오래 서 있으면 색이 빠져. 저 사람들처럼.', '난 아직 반쯤은 남았지. 반쯤은.']);
+    const cards = [{ em: '🔥', t: '쉬어 간다', d: '모두 체력 50% 회복', g: 1 }, { em: '👂', t: '소문을 듣는다', d: '모두 경험치 +30', g: 1 }];
+    const canJoin = !DGP.roster.includes('heron') && !DG.party.includes('heron');
+    if (canJoin) cards.push({ em: '🤝', t: '같이 가자고 한다', d: '헤론 영입', g: 2 });
+    const c = await pickCards({ title: '낙오자 헤론', sub: '헤론이 젖은 모닥불 자리를 가리킵니다.', cards });
+    if (c === 2){ await dgTalk('낙오자 헤론', '#9fc3c9', ['…나를? 반쯤 빠진 나를?', '…그래. 서 있으면 다 빠지니까. 걷자.']); recruit('heron', heron); }
+    else if (c === 0){ healAll(0.5); await dgTalk('낙오자 헤론', '#9fc3c9', ['…불이 붙을 리가 있나. 그래도 앉아 있으면 좀 낫지.']); dgSub('모두 체력을 절반 회복했습니다.'); removeProp(heron); }
+    else { await dgTalk('낙오자 헤론', '#9fc3c9', ['관리자? 이름이 여럿 돌아. 여우, 왕자, 토끼, 여름.', '누구는 토끼가 진짜라더군. 토끼가 누굴 기다린다는 얘기도 있고. 앨리스라나.', '…믿지 마. 여기서 들은 건 다 절반만 믿어.']);
+      const g = DG.party.flatMap(id => giveXp(id, 30)); dgSub(g.length ? g.join(' · ') : '소문도 경험입니다. 모두 경험치 +30'); removeProp(heron); }
+    DG.lock = false;
+  },
+  // 우산 소녀 (대가): 붉은 등불을 받으면 한 명의 최대 체력 20% → ★★★ 유물
+  async umbrella(f){
+    const girl = addActor('umbrella', 11, 1.4, -1); girl.name = '우산 소녀';
+    await dgInteract(girl.x, 2.6, '[Space] 우산 아래를 본다');
+    DG.lock = true;
+    await narrOnce('umbrella', ['붉은 우산 아래, 얼굴이 보이지 않는 소녀.', '등불 하나를 내밉니다. 손이 차갑습니다.', '받으면 무언가를 두고 가야 할 것 같습니다.']);
+    const i = await pickCards({ title: '우산 소녀', sub: '붉은 등불을 받을까요', cards: [{ em: '🏮', t: '등불을 받는다', d: '동료 하나의 최대 체력 -20% · ★★★ 유물', g: 3 }, { em: '🚶', t: '지나간다', d: '', g: 1 }] });
+    if (i === 0){
+      const who = await pickCards({ title: '누가 대가를 치를까요', cards: DG.party.map(id => ({ em: '🩸', t: nameOf(id), d: `최대 체력 ${maxHpOf(id)} → ${Math.round(maxHpOf(id) * 0.8)}`, g: 0 })) });
+      const id = DG.party[who]; RUN.cut = RUN.cut || {}; RUN.cut[id] = (RUN.cut[id] || 1) * 0.8;
+      DG.hp[id] = Math.min(DG.hp[id] ?? maxHpOf(id), maxHpOf(id));
+      dgSub(`${nameOf(id)}의 색이 조금 빠졌습니다.`);
+      await relicChoice('붉은 등불이 비추는 것', 3);
+    } else dgSub('소녀는 붙잡지 않습니다. 빗소리만.');
+    DG.lock = false; removeActor(girl);
+  },
+  // 촛불 왕의 카드판 (도박)
+  async candle(f){
+    for (let round = 0; round < 3; round++){                        // 세 판까지 (초가 다 탐)
+      const bets = [30, 60].filter(n => RUN.gold >= n);
+      const cards = [...bets.map(n => ({ em: '🪙', t: `금화 ${n}을 건다`, d: n > 30 ? '대박이면 ★★★ 유물 3장 중 고름' : '대박이면 ★★★ 유물 하나', g: n > 30 ? 3 : 2 })), { em: '🚶', t: '일어선다', d: `남은 초 ${3 - round}`, g: 1 }];
+      const i = await encScene({ cut: 'assets/candle_full.png', glow: true,
+        lines: round ? [['"…한 장 더?"', 'talk']] : ['촛불 왕관을 쓴 눈먼 사내가 카드를 펼쳐 놓고 앉아 있습니다.', ['"…한 장 골라라."', 'talk'], ['"무엇이 나오든, 네가 고른 것이다."', 'talk']], cards });
+      if (i >= bets.length) break;
+      const bet = bets[i]; RUN.gold -= bet;
+      const deck = [{ g: 3, kind: 'jack', em: '👑', t: '대박', d: '★★★ 유물', top: '♠ K' }, { g: 2, kind: 'double', em: '🪙', t: '두 배', d: `금화 ${bet * 2}`, top: '♦ 7' }, { g: 0, kind: 'curse', em: '💀', t: '꽝', d: '저주 하나', top: '♣ 2' }].sort(() => Math.random() - 0.5);
+      const k = await pickCards({ title: '촛불 왕의 카드판', sub: `건 금화 ${bet}`, cards: deck, faceDown: true, okText: '확인' });
+      const c = deck[k];
+      if (c.kind === 'jack'){
+        if (bet > 30) await relicChoice('촛불 왕의 대박', 3);
+        else { const pool = relicsOf(3); if (pool.length){ const id = pickOf(pool); addRelic(id); dgSub(`${RELICS[id].em} ${RELICS[id].name}`); } else dgSub(`🪙 +${goldGain(bet * 3)}`); }
+      }
+      else if (c.kind === 'double') dgSub(`🪙 +${goldGain(bet * 2)}`);
+      else { const cs = Object.keys(RELICS).filter(id => RELICS[id].curse && !RUN.relics.includes(id)); if (cs.length){ const id = cs[Math.floor(Math.random() * cs.length)]; addRelic(id); dgSub(`저주: ${RELICS[id].em} ${RELICS[id].name}`); } else dgSub('촛불이 한 번 흔들립니다. 아무 일도 없습니다.'); }
+      await encScene({ cut: 'assets/candle_full.png', glow: true, lines: [['"' + (c.kind === 'jack' ? '좋은 패다.' : c.kind === 'double' ? '…운도 실력이다.' : '잃는 것도 고르는 것이다.') + '"', 'talk']] });
+    }
+  },
+  // 단달로 & 로시나 (시험): 싸운다 · 통행료 · 춤을 청한다
+  async duo(f){
+    const da = addActor('dandalo', 12, 1.2, -1), ro = addActor('rosina', 12.4, 3, -1);
+    await dgUntil(() => lead().x > 8);
+    DG.lock = true;
+    await narrOnce('duo', ['좁은 길 한가운데, 두 사람이 춤을 추고 있습니다.', '큰 도끼를 든 사내와, 외뿔 가면의 여자.', '길을 비켜 줄 생각은 없어 보입니다.']);
+    const cards = [{ em: '⚔', t: '싸운다', d: '강적 둘 · ★★★ 유물', g: 3 }];
+    if (RUN.gold >= 40) cards.push({ em: '🪙', t: '통행료', d: '금화 40', g: 1 });
+    cards.push({ em: '💃', t: '춤을 청한다', d: '반반: 축복 또는 한 명 부상', g: 2 });
+    const i = await pickCards({ title: '"경전" 단달로 & "외뿔" 로시나', cards });
+    DG.lock = false;
+    const kind = cards[i].t;
+    if (kind === '싸운다'){
+      removeActor(da); removeActor(ro);
+      await fightOrDie({ title: '단달로 & 로시나', enemies: [{ id: 'dandalo', x: 9, y: 1.4 }, { id: 'rosina', x: 9.6, y: 3 }], xp: 90 });
+      await relicChoice('춤이 끝난 자리', 3);
+    } else if (kind === '통행료'){ RUN.gold -= 40; dgSub('단달로가 금화를 받고 도끼를 거둡니다. 로시나가 길을 터 줍니다.'); }
+    else if (Math.random() < 0.5){
+      for (const id of DG.party){ const tr = RUN.train[id] || (RUN.train[id] = {}); tr.atk = (tr.atk || 0) + 1; }
+      dgSub('함께 춤을 췄습니다. 모두 공격력 +10% (이번 판)');
+    } else {
+      const id = DG.party[Math.floor(Math.random() * DG.party.length)];
+      DG.hp[id] = Math.max(1, Math.round((DG.hp[id] ?? maxHpOf(id)) * 0.5));
+      dgSub(`${nameOf(id)}이(가) 로시나의 뿔에 걸려 넘어졌습니다. 체력 절반.`);
+    }
+    removeActor(da); removeActor(ro);
+  },
+  // 오딜의 방 (축복): 쉬기 · 가면
+  async odile(f){
+    setArea('odileRoom');
+    for (const pr of ROOM_PROPS.odileRoom) addProp({ kind: 'img', ...pr });
+    const od = addActor('odile', 5.6, 1.4, -1); od.name = '오딜';
+    await narrOnce('odile', ['좁은 방입니다. 촛불이 젖은 바닥에 비칩니다.', '붉은 소파 위에서, 가면이 이쪽을 봅니다.']);
+    await dgInteract(od.x, 2.6, '[Space] 오딜에게 다가간다');
+    const k = await encScene({ bg: 'assets/enc_odile.jpg', lines: ['소녀는 일어나지 않습니다. 가면이 조금 기울어집니다.'],
+      cards: [{ suit: '♥', red: true, t: '쉬었다 간다', d: '모두 체력 60% 회복' }, { suit: '♠', t: '가면을 묻는다', d: '무언가 얻거나, 아무것도' }] });
+    if (k === 0){ healAll(0.6); dgSub('소파 곁에서 잠깐 잠들었습니다. 모두 체력 60% 회복.'); }
+    else {
+      await dgTalk('오딜', '#d8d2c8', ['…가면 아래에도, 가면.']);
+      if (Math.random() < 0.5 && !RUN.relics.includes('mask')){ addRelic('mask'); dgSub('🎭 오딜의 가면을 받았습니다.'); }
+      else dgSub('오딜은 더 말하지 않습니다.');
+    }
+    removeActor(od);
+  },
+  // 붉은 깃털 (5층, 대가): 적뢰의 깃털 — 줍으면 ★★★★ 깃털과 저주 하나, 태우면 모두 회복
+  async feather(f){
+    const pl = addProp({ kind: 'feather', x: 10.5, y: 2 });
+    await dgInteract(pl.x, 2.6, '[Space] 깃털을 본다');
+    DG.lock = true;
+    await narrOnce('feather', ['빗물 웅덩이에 붉은 깃털 하나가 떠 있습니다.', '사람 키만 합니다. 아직 따뜻합니다.']);
+    const cards = [];
+    if (!RUN.relics.includes('feather')) cards.push({ em: '🪶', t: '줍는다', d: '★★★★ 붉은 날개 깃털 · 대신 저주 하나', g: 4 });
+    cards.push({ em: '🔥', t: '태운다', d: '모두 체력 35% 회복', g: 1 }, { em: '🚶', t: '두고 간다', d: '', g: 1 });
+    const i = await pickCards({ title: '붉은 깃털', sub: '빗속에서도 깃털은 젖지 않습니다.', cards });
+    const t = cards[i].t;
+    if (t === '줍는다'){
+      addRelic('feather');
+      const cs = Object.keys(RELICS).filter(id => RELICS[id].curse && !RUN.relics.includes(id));
+      const c = cs.length ? cs[Math.floor(Math.random() * cs.length)] : null;
+      if (c) addRelic(c);
+      dgSub(`🪶 붉은 날개 깃털${c ? ` · 저주: ${RELICS[c].em} ${RELICS[c].name}` : ''}`, 5);
+    } else if (t === '태운다'){ healAll(0.35); dgSub('깃털이 소리 없이 탑니다. 따뜻합니다. 모두 체력 35% 회복.'); }
+    else dgSub('깃털은 빗물을 따라 우물 아래로 흘러갑니다.');
+    DG.lock = false; removeProp(pl);
+  },
+};
+async function recruitEvent(pool, x, y){
+  const cand = pool.filter(id => !DGP.roster.includes(id) && !DG.party.includes(id));
+  if (!cand.length) return;
+  const id = cand[Math.floor(Math.random() * cand.length)], R = RECRUIT[id], st = getStats(id);
+  const u = newUnit(id, x - 0.5, y - 0.5, 'ally'); u.face = -1; u.name = st.name;
+  const prop = addProp({ kind: 'figure', x, y, u, name: st.name });
+  await dgUntil(() => lead().x > x - 3.2);
+  DG.lock = true; DG.focus = x - 1;
+  await dgNarr(R.narr);
+  await dgTalk(st.name, st.color, R.talk);
+  const c = await pickCards({ title: `${st.name} ${st.grade || ''}`, sub: st.sub, cards: [{ em: '🤝', t: '함께 간다', d: DG.party.length < 5 ? '바로 합류' : '자리가 없음: 굴에서 기다림', g: 2 }, { em: '🚶', t: '두고 간다', d: '', g: 1 }] });
+  DG.lock = false; DG.focus = null;
+  if (c === 0) recruit(id, prop);
+  else { removeProp(prop); dgSub(`${st.name}은(는) 그 자리에 남았습니다.`); }
 }
+
+/* ---------- 보스 ---------- */
+const BOSS = {
+  // 1층: 알현실의 관 → 세자르
+  async 1(){
+    setArea('throne');
+    const coffin = addProp({ kind: 'coffin', x: 12, y: 2, state: 'closed', solid: 1.3, k: 0 });
+    addProp({ kind: 'throne', x: 23.5, y: 0.4 });
+    const again = (DGP.seen || []).includes('boss1'), w = again ? 0.5 : 1;   // 다시 보는 판이면 관을 열지 않고 짧게
+    if (!again){
+      dgSub('천장이 보이지 않을 만큼 높습니다. 가운데에 관 하나.');
+      await dgInteract(coffin.x, 2.4, '[Space] 관을 연다');
+      coffin.state = 'open'; DG.focus = coffin.x;
+      await narrOnce('boss1', ['관 뚜껑이 무겁게 밀려납니다.', '늙은 왕이 누워 있습니다. 앙상한 손이 검을 쥐고 있습니다.', '머리 위의 왕관만은 녹슬지 않았습니다.', '죽어 있습니다. 확실히.']);
+      coffin.state = 'closed'; DG.focus = null;
+      dgSub('관을 닫았습니다. 왕의 무덤이라면, 어딘가 출구가 있을 텐데요.', 5);
+      await dgUntil(() => Math.abs(lead().x - coffin.x) > 5);      // 관의 시야를 벗어나는 순간
+    } else {
+      dgSub('관 하나. 왕관은 아직 녹슬지 않았습니다.', 3);
+      await dgUntil(() => lead().x > coffin.x - 4.5);
+    }
+    DG.lock = true; DG.focus = coffin.x;
+    await dgWait(1.3 * w);
+    coffin.state = 'rattle'; await dgWait(1.0 * w);
+    coffin.state = 'hand'; shake = 0.25; dgSub('툭.', 1.6); await dgWait(1.6 * w);
+    coffin.state = 'rise'; coffin.k = 0; coffin.king = newUnit('cesar', coffin.x - 0.5, 1.5, 'enemy'); coffin.king.face = Math.sign(lead().x - coffin.x) || -1;
+    await dgUntil(() => coffin.k >= 1);
+    coffin.state = 'empty';
+    const king = addActor('cesar', coffin.x - 0.5, 1.5, coffin.king.face); coffin.king = null;
+    king.walkTo = coffin.x - 0.5 + king.face * 2; king.walkSpd = 0.9;
+    await dgWait(2.4 * w);
+    dgSub('기둥, 돌, 그리고 당신들은 그에게 불경합니다.', 3); await dgWait(2.8 * w);
+    king.poseName = 'raiseWait'; king.poseUntil = time + 99;
+    dgSub('폐하의 앙상한 팔이 분노로 일그러집니다.', 3); await dgWait(2.4 * w);
+    king.poseName = 'raise'; king.poseUntil = time + 99; shake = 0.2;
+    DG.snowOn = true; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.8, max: 2.8 }; await dgWait(2.4 * w);
+    removeActor(king); DG.lock = false; DG.focus = null;
+    await fightOrDie({ title: '세자르', enemies: [{ id: 'cesar', x: 9, y: 2, mul: 0.85 }], snow: true, seal: true, xp: 130 });   // 첫 보스: 원래 세기의 85%
+    DG.snowOn = false;
+    dgSub('왕이 무너지자 눈이 멎습니다.');
+    await dgWait(1.6);
+    DG.focus = coffin.x; coffin.state = 'stairs'; await dgWait(1.4);
+    await narrOnce('boss1b', ['빈 관 바닥이 비스듬히 꺼져 있습니다.', '아래로 이어지는 계단.', '관이 다음 층의 입구였습니다.']);
+    DG.focus = null;
+    await bossReward(1);
+  },
+  // 2층: 방앗간 → 오르소
+  async 2(){
+    setArea('mill');
+    const stone = addProp({ kind: 'millstone', x: 16, y: 1.2, solid: 1.4, spin: 1 });
+    const miller = addActor('miller', 14.2, 2.1, -1);
+    dgSub('누군가 거대한 맷돌을 돌리고 있습니다. 무엇을 갈고 있는지는 묻지 않는 게 좋겠습니다.');
+    await dgUntil(() => lead().x > 7);
+    DG.lock = true; DG.focus = 12; stone.spin = 0;
+    dgSub('방앗간지기가 손을 멈춥니다.', 2); await dgWait(1.8);
+    await dgTalk('방앗간지기 오르소', '#c9b28a', ['…색이 아직 남았군.', '괜찮아. 곱게 갈아 주지. 다들 그렇게 됐어.']);
+    DG.lock = false; DG.focus = null; removeActor(miller);
+    await fightOrDie({ title: '방앗간지기 오르소', enemies: [{ id: 'miller', x: 9, y: 2 }], joins: [{ t: 12, id: 'faded' }, { t: 20, id: 'faded' }, { t: 28, id: 'faded' }], xp: 150 });
+    await dgWait(1.2);
+    await narrOnce('boss2b', ['맷돌이 멈춥니다.', '방앗간 바닥, 회색 가루 아래로 문이 하나 있습니다.']);
+    if (!DGP.roster.includes('morningstar') && !DG.party.includes('morningstar')){
+      await dgNarr(['방앗간 창고 문이 안에서 쾅쾅 울립니다.', '문을 열자 철퇴를 든 여자가 튀어나옵니다.']);
+      await dgTalk('모닝스타', '#c9c9d6', ['슈퍼스타 등장! …갇혀 있었던 거 아니야. 쉬고 있었던 거야.', '따라가 줄게. 무대가 필요하거든.']);
+      const c = await pickCards({ title: '모닝스타 ★★', sub: '모닝스타가 철퇴를 어깨에 걸칩니다.', cards: [{ em: '🤝', t: '함께 간다', d: '', g: 2 }, { em: '🚶', t: '문을 도로 닫는다', d: '', g: 1 }] });
+      if (c === 0) recruit('morningstar'); else dgSub('창고 안에서 욕설이 들립니다.');
+    }
+    await bossReward(2);
+  },
+  // 3층: 붉은 가시 성당 → 로젤
+  async 3(){
+    setArea('cathedral');
+    const rz = addActor('agnes', 15, 1.8, -1);
+    dgSub('바닥의 붉은 금이 발밑에서 맥박처럼 뜁니다.');
+    await dgUntil(() => lead().x > 8);
+    DG.lock = true; DG.focus = 13;
+    await narrOnce('boss3', ['붉은 머리의 여자가 등을 돌리고 서 있습니다.', '그녀의 치맛자락이 바닥의 가시 문장으로 이어집니다.', '그녀는 한 번도 뒤돌아보지 않습니다. 지금도.']);
+    shake = 0.2; await dgWait(0.8);
+    DG.lock = false; DG.focus = null; removeActor(rz);
+    await fightOrDie({ title: '로젤', enemies: [{ id: 'agnes', x: 9, y: 2 }], xp: 170 });
+    await narrOnce('boss3b', ['가시가 시들어 바닥으로 스며듭니다.', '제단 뒤로 좁은 회랑이 열립니다.']);
+    await bossReward(3);
+  },
+  // 4층: 왕관의 회랑 → 하르겐
+  async 4(){
+    setArea('gallery');
+    const hg = addActor('hargen', 15, 2, -1);
+    dgSub('회랑 끝, 천장에 구멍이 뚫려 있습니다. 왕 하나가 그 구멍을 올려다보고 있습니다.');
+    await dgUntil(() => lead().x > 8);
+    DG.lock = true; DG.focus = 13;
+    await narrOnce('boss4', ['왕관을 쓴 푸른 얼굴의 왕.', '그는 당신들을 보지 않습니다. 하늘만 봅니다.', '…그런데도 칼끝은 정확히 이쪽을 향합니다.']);
+    DG.lock = false; DG.focus = null; removeActor(hg);
+    await fightOrDie({ title: '하르겐', enemies: [{ id: 'hargen', x: 9, y: 2 }], xp: 200 });
+    await narrOnce('boss4b', ['푸른 왕이 무릎을 꿇습니다. 끝까지 하늘을 본 채로.', '천장의 구멍에서 빗방울이 떨어집니다.']);
+    await bossReward(4);
+  },
+  // 5층: 하늘 우물 → 적뢰
+  async 5(){
+    setArea('well'); DG.rainOn = true;
+    await dgUntil(() => lead().x > 7);
+    DG.lock = true; DG.focus = 12;
+    await narrOnce('boss5', ['우물 위, 아주 작은 하늘.', '붉은 빛 하나가 떨어집니다. 별이 아닙니다.']);
+    shake = 0.5; dgSub('쿠웅.', 2); await dgWait(1.2);
+    const jr = addActor('jeokroe', 12, 2, -1);
+    await narrOnce('boss5b', ['붉은 날개의 천사. 성해포를 두른 대리석의 몸.', '그는 말이 없습니다.', '빗속에서 그의 손이 천천히 올라갑니다.']);
+    DG.lock = false; DG.focus = null; removeActor(jr);
+    await fightOrDie({ title: '적뢰', enemies: [{ id: 'jeokroe', x: 9, y: 2, mul: 0.8 }], xp: 300, tick: () => {   // 우물에 막 내려선 적뢰 (원래 세기의 80%). 반쯤 무너지면 폭우: 천벌이 맵 전체로
+      const b = battle, j = b.units.find(o => o.id === 'jeokroe');
+      if (!b.rain && j && j.hp < j.st.hp * 0.5){ b.rain = true; b.drops = []; shake = 0.4; caption = { text: '폭우 — 천벌이 맵 전체로 번집니다', life: 3, max: 3 }; logLine('🌧 폭우가 쏟아진다. 이제 천벌은 맵 전체에', 'crit'); }
+    } });
+    DG.rainOn = false;
+  },
+};
+async function bossReward(f){
+  const g = goldGain(40 + f * 10);
+  dgSub(`🪙 +${g}`, 2.5);
+  await relicChoice(`${FLOORS[f].name} · 보스의 유물`, 3);
+  healAll(0.3);
+}
+
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
@@ -6924,71 +7562,6 @@ function drawCutin(c){
   ctx.restore();
 }
 
-/* ---------- 층 2: 안개 늪 → 방앗간 (오르소) ---------- */
-async function floor2(){
-  DG.floor = 2; DG.gifts = [];
-  await dgNarr(['관 아래 계단은 축축했습니다.', '내려갈수록 공기가 푸르게 식어갑니다.']);
-  setArea('mist');
-  const standers = [7, 9.5, 12, 15, 19, 22.5, 33, 34.5, 36, 37.2].map((x, i) => addProp({ kind: 'figure', x, y: [0.6, 3.8, 1.2, 4.1, 0.8, 3.6, 0.7, 3.9, 1.1, 3.4][i], u: (() => { const u = newUnit('faded', x - 0.5, 0, 'enemy'); u.face = -1; return u; })() }));
-  standers.forEach(p => p.u.y = p.y - 0.5);
-  const heron = addProp({ kind: 'figure', x: 26, y: 1.3, name: '낙오자 헤론', u: (() => { const u = newUnit('heron', 25.5, 0.8, 'enemy'); u.face = -1; return u; })() });
-  await dgUntil(() => lead().x > 4);
-  dgSub('축축한 푸른 안개 속, 거대한 풍차 같은 것들이 희미하게 돌아갑니다.');
-  await dgUntil(() => lead().x > 10);
-  dgSub('길을 잃은 점 같은 낙오자들이 신입들을 봅니다. 대다수는 이미 포기했습니다.');
-  await dgInteract(heron.x, 2.2, '[Space] 말을 건다');
-  await dgTalk('낙오자 헤론', '#9fc3c9', ['…새 얼굴이군. 관을 타고 왔나.', '여기선 오래 서 있으면 색이 빠져. 저 사람들처럼.', '난 아직 반쯤은 남았지. 반쯤은.']);
-  const opts = ['🔥 쉬어 간다 (모두 체력 절반 회복)', '👂 소문을 듣는다 (모두 경험치 +30)', '🚶 그냥 지나간다'];
-  if (!DGP.roster.includes('heron')) opts.push('🤝 같이 가자고 한다');
-  const c = await dgChoose('헤론이 젖은 모닥불 자리를 가리킵니다.', opts);
-  if (c === 3){
-    await dgTalk('낙오자 헤론', '#9fc3c9', ['…나를? 반쯤 빠진 나를?', '…그래. 서 있으면 다 빠지니까. 걷자.']);
-    recruit('heron', heron);
-  } else if (c === 0){
-    for (const id of DG.party){ const mx = Math.round(getStats(id).hp * lvMul(id)); DG.hp[id] = Math.min(mx, (DG.hp[id] ?? mx) + mx * 0.5); }
-    await dgTalk('낙오자 헤론', '#9fc3c9', ['…불이 붙을 리가 있나. 그래도 앉아 있으면 좀 낫지.']);
-    dgSub('모두 체력을 절반 회복했습니다.');
-  } else if (c === 1){
-    await dgTalk('낙오자 헤론', '#9fc3c9', ['관리자? 이름이 여럿 돌아. 여우, 왕자, 토끼, 여름.', '누구는 토끼가 진짜라더군. 토끼가 누굴 기다린다는 얘기도 있고. 앨리스라나.', '…믿지 마. 여기서 들은 건 다 절반만 믿어.']);
-    const g = DG.party.flatMap(id => giveXp(id, 30));
-    dgSub(g.length ? g.join(' · ') : '소문도 경험입니다. 모두 경험치 +30');
-  } else dgSub('헤론은 붙잡지 않습니다.');
-  await recruitEvent(['gur', 'tehera', 'norman', 'poren'], 20, 3.7);
-  await dgUntil(() => lead().x > 29);
-  DG.lock = true;
-  dgSub('서 있던 낙오자들이 고개를 돌립니다. 모두 같은 쪽으로. 당신들 쪽으로.', 3);
-  await dgWait(2.4);
-  DG.lock = false;
-  standers.slice(6).forEach(removeProp);
-  await fightOrDie({ title: '색을 잃은 자들', enemies: [{ id: 'faded', x: 8, y: 1 }, { id: 'faded', x: 9, y: 3 }, { id: 'faded', x: 10, y: 2 }, { id: 'faded', x: 10.5, y: 0.5 }],
-    joins: [{ t: 4, id: 'faded' }, { t: 7, id: 'faded' }, { t: 11, id: 'faded' }], xp: 50 });
-  await dgWait(1.2);
-  dgSub('그들은 쓰러지면서도 아무 소리도 내지 않았습니다.');
-  await dgUntil(() => lead().x > DG.area.cols - 2.5);
-  await dgNarr(['안개 끝, 멈추지 않는 방아 소리.', '방앗간입니다.']);
-
-  setArea('mill');
-  const stone = addProp({ kind: 'millstone', x: 16, y: 1.2, solid: 1.4, spin: 1 });
-  const miller = addActor('miller', 14.2, 2.1, -1);
-  dgSub('누군가 거대한 맷돌을 돌리고 있습니다. 무엇을 갈고 있는지는 묻지 않는 게 좋겠습니다.');
-  await dgUntil(() => lead().x > 7);
-  DG.lock = true; DG.focus = 12; stone.spin = 0;
-  dgSub('방앗간지기가 손을 멈춥니다.', 2); await dgWait(1.8);
-  await dgTalk('방앗간지기 오르소', '#c9b28a', ['…색이 아직 남았군.', '괜찮아. 곱게 갈아 주지. 다들 그렇게 됐어.']);
-  DG.lock = false; DG.focus = null; removeActor(miller);
-  await fightOrDie({ title: '방앗간지기 오르소', enemies: [{ id: 'miller', x: 9, y: 2 }], joins: [{ t: 12, id: 'faded' }, { t: 20, id: 'faded' }, { t: 28, id: 'faded' }], xp: 140 });
-  await dgWait(1.2);
-  await dgNarr(['맷돌이 멈춥니다.', '방앗간 바닥, 회색 가루 아래로 문이 하나 있습니다.']);
-  if (!DGP.roster.includes('morningstar')){
-    await dgNarr(['방앗간 창고 문이 안에서 쾅쾅 울립니다.', '문을 열자 철퇴를 든 여자가 튀어나옵니다.']);
-    await dgTalk('모닝스타', '#c9c9d6', ['슈퍼스타 등장! …갇혀 있었던 거 아니야. 쉬고 있었던 거야.', '따라가 줄게. 무대가 필요하거든.']);
-    const c = await dgChoose('모닝스타가 철퇴를 어깨에 걸칩니다.', ['🤝 함께 간다', '🚶 문을 도로 닫는다']);
-    if (c === 0) recruit('morningstar'); else dgSub('창고 안에서 욕설이 들립니다.');
-  }
-  DGP.best = Math.max(DGP.best, 2); saveDGP();
-  await dgReward('2층 · 안개 늪의 방앗간', [['🌾', '회색 가루 한 줌', '무엇을 갈았던 걸까요. 아직 아무 효과 없음'], ['⚙️', '멈춘 맷돌 조각', '아직 아무 효과 없음']]);
-}
-
 /* ---------- 던전 걷기: 업데이트 ---------- */
 function updateDungeon(dt){
   time += dt;
@@ -6999,8 +7572,10 @@ function updateDungeon(dt){
   const busy = DG.lock || DG.narrR || DG.talkR || DG.choiceOpen || anyPanel();
   const runOn = held.has('run') || (JOY.on && Math.hypot(JOY.x, JOY.y) > 0.95);   // 조이스틱을 끝까지 밀면 달림
   const L = lead(), spd = 3.0 * (runOn ? RUN_MUL : 1);
-  stepMover(L, dt, busy ? null : moveInput(), spd, dgSolid);
+  const mv = busy ? null : moveInput();
+  stepMover(L, dt, mv, spd, dgSolid);
   L.running = runOn;
+  DG.idleT = busy || mv || !encEl.hidden ? 0 : (DG.idleT || 0) + dt;   // 가만히 서 있는 시간 (오른쪽 표시용)
   DG.pawns.forEach((f, i) => {
     if (!i) return;
     const tx = L.x - 1.05 * i, ty = [2, 1, 3, 2.7, 1.6][i] ?? 2;
@@ -7030,7 +7605,8 @@ function updateDungeon(dt){
   camX = DG.camX;
   // 눈
   if (DG.snowOn) for (let i = 0; i < Math.floor(60 * dt + Math.random()); i++) DG.flakes.push({ x: Math.random() * (W + 60), y: -8, vy: 40 + Math.random() * 50, ph: Math.random() * 6 });
-  DG.flakes.forEach(f => { f.y += f.vy * dt; f.x += Math.sin(time * 1.5 + f.ph) * 16 * dt; });
+  if (DG.rainOn) for (let i = 0; i < Math.floor(200 * dt + Math.random()); i++) DG.flakes.push({ rain: true, x: Math.random() * (W + 80), y: -10, vy: 650 + Math.random() * 250, ph: 0 });
+  DG.flakes.forEach(f => { f.y += f.vy * dt; f.x += f.rain ? -40 * dt : Math.sin(time * 1.5 + f.ph) * 16 * dt; });
   DG.flakes = DG.flakes.filter(f => f.y < H + 10);
   floaters.forEach(f => { f.life -= dt; f.y -= 22 * dt; }); floaters = floaters.filter(f => f.life > 0);
   sparks.forEach(s => { s.life -= dt; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 520 * dt; }); sparks = sparks.filter(s => s.life > 0);
@@ -7041,12 +7617,24 @@ function updateDungeon(dt){
   const show = it && !busy && Math.abs(L.x - it.x) < it.r;
   pr.hidden = !show; if (show) pr.textContent = it.label;
   if (!DG.area) return;
-  const hud = [`${DG.area.name}`, ...DG.party.map(id => {
-    const mx = Math.round(getStats(id).hp * lvMul(id)), hp = Math.round(Math.min(mx, DG.hp[id] ?? mx));
-    return `${nameOf(id)} Lv${lvOf(id)}  ♥${hp}/${mx}  ✦${DGP.xp[id] || 0}/${LV.need(lvOf(id))}`;
-  })].join('\n');
-  if (hud !== DG.hudCache){ DG.hudCache = hud; dgHud.textContent = hud; }
+  const hud = dgHudHtml();
+  if (hud !== DG.hudCache){ DG.hudCache = hud; dgHud.innerHTML = hud; }
 }
+
+function dgHudHtml(){
+  let t2 = '';
+  if (RUN){
+    const dots = [1, 2, 3].map(k => k < RUN.step ? '●' : k === RUN.step ? '◉' : '○').join('') + (RUN.step >= 4 ? ' ◉👑' : ' ○👑');
+    t2 = `${dots} · 🪙 ${RUN.gold}`;
+  }
+  const rel = RUN ? RUN.relics.map(id => `<span class="${RELICS[id].curse ? 'c' : ''}" data-r="${id}" title="${RELICS[id].name}: ${RELICS[id].d}">${RELICS[id].em}</span>`).join('') : '';
+  const pm = DG.party.map(id => {
+    const mx = maxHpOf(id), hp = Math.round(Math.min(mx, DG.hp[id] ?? mx));
+    return `<span>${nameOf(id)} Lv${lvOf(id)}</span><i><b style="width:${Math.max(0, Math.round(hp / mx * 100))}%"></b></i><small>${hp}</small>`;
+  }).join('');
+  return `<div class="t1">${DG.area.name}</div>${t2 ? `<div class="t2">${t2}</div>` : ''}${rel ? `<div class="rel">${rel}</div>` : ''}<div class="pm">${pm}</div>`;
+}
+dgHud.addEventListener('click', e => { const r = e.target.dataset && e.target.dataset.r; if (r) dgSub(`${RELICS[r].em} ${RELICS[r].name} — ${RELICS[r].d}`, 3.5); });
 
 /* ---------- 던전 걷기: 그리기 ---------- */
 function drawDungeon(){
@@ -7094,13 +7682,24 @@ function drawDungeon(){
   const vg = ctx.createRadialGradient(fxp.x, fxp.y - T, T * 2, fxp.x, fxp.y - T, Math.max(W, H) * 0.75);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, `rgba(0,0,0,${Math.min(0.92, A.dark + 0.3)})`);
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-  if (DG.flakes.length){ ctx.fillStyle = 'rgba(235,240,250,.85)'; DG.flakes.forEach(f => ctx.fillRect(f.x, f.y, 2.5, 2.5)); }
+  if (DG.flakes.length){
+    ctx.fillStyle = 'rgba(235,240,250,.85)'; DG.flakes.forEach(f => { if (!f.rain) ctx.fillRect(f.x, f.y, 2.5, 2.5); });
+    ctx.strokeStyle = 'rgba(190,200,230,.45)'; ctx.lineWidth = 1; ctx.beginPath();
+    DG.flakes.forEach(f => { if (f.rain){ ctx.moveTo(f.x, f.y); ctx.lineTo(f.x + 2, f.y - 14); } }); ctx.stroke();
+  }
   const txt = (t, y, size, color, a) => {
     ctx.globalAlpha = a; ctx.font = `${size}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.85)'; ctx.strokeText(t, W / 2, y); ctx.fillStyle = color; ctx.fillText(t, W / 2, y);
     ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
   };
   if (caption) txt(caption.text, H * 0.2, Math.round(Math.max(22, T * 0.44)), '#eadfcb', Math.min(1, caption.life, (caption.max - caption.life) * 3));
+  const it = DG.interact, L = lead();
+  if (L && DG.idleT > 2.5 && L.x < curCols - 2.5 && !(it && Math.abs(L.x - it.x) < it.r)){   // 한참 가만히 있으면: 오른쪽으로 가라는 표시
+    const a = Math.min(1, (DG.idleT - 2.5) * 2) * (0.6 + Math.sin(time * 4) * 0.25);
+    ctx.globalAlpha = a; ctx.fillStyle = '#f3e2bf'; ctx.font = `${Math.round(Math.max(26, T * 0.55))}px sans-serif`; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText('›››', W - 16 + Math.sin(time * 4) * 6, floorTop + rowH * ROWS * 0.5);
+    ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  }
   if (DG.sub){                                                   // 자막: 바닥 바로 아래, 좁으면 두 줄로
     const size = Math.round(Math.max(15, Math.min(22, T * 0.26))), y0 = H > W ? H * 0.3 : Math.min(H * 0.8, floorTop + rowH * ROWS + size * 1.6);   // 세로 화면은 위쪽 (아래엔 조작 패드)
     ctx.font = `${size}px "Do Hyeon",sans-serif`;
@@ -7168,6 +7767,7 @@ function drawDgBack(A){
   for (let c = 1.5; c < curCols; c += 4){
     const p = P(c, 0), w = T * 0.5;
     if (p.x < -T || p.x > W + T) continue;
+    if (A.crowns){ const q = P(c + 2, 0); ctx.globalAlpha = 0.55; emoji('👑', q.x, floorTop - T * 2.7, T * 0.42); ctx.globalAlpha = 1; }
     ctx.fillStyle = A.pillars; ctx.fillRect(p.x - w / 2, top, w, floorTop - top);
     ctx.fillStyle = 'rgba(255,255,255,.05)'; ctx.fillRect(p.x - w / 2, top, w * 0.25, floorTop - top);
     ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.fillRect(p.x + w * 0.25, top, w * 0.25, floorTop - top);
@@ -7200,6 +7800,39 @@ function drawDgFloor(A){
   ctx.fillStyle = A.back ? 'rgba(12,10,14,.6)' : '#0c0a0e'; ctx.fillRect(f0.x - W, f0.y, f1.x - f0.x + W * 2, H);
 }
 function drawDgProp(p){
+  if (p.kind === 'campfire'){
+    drawFire(p.x - 0.5, p.y - 0.5);
+    const q = P(p.x, p.y), fl = 0.85 + Math.sin(time * 13) * 0.08;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(q.x, q.y - T * 0.3, 0, q.x, q.y - T * 0.3, T * 3 * fl);
+    g.addColorStop(0, 'rgba(255,150,60,.3)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(q.x - T * 3, q.y - T * 3.3, T * 6, T * 6);
+    ctx.restore(); return;
+  }
+  if (p.kind === 'altar'){                                       // 운명의 제단: 돌 받침 위에 떠 있는 카드
+    const q = P(p.x, p.y), bob = Math.sin(time * 2) * T * 0.06;
+    shadowAt(q.x, q.y, T * 0.5);
+    shape(() => rrect(q.x - T * 0.45, q.y - T * 0.75, T * 0.9, T * 0.75, T * 0.06), '#4a4452');
+    shape(() => rrect(q.x - T * 0.55, q.y - T * 0.85, T * 1.1, T * 0.14, T * 0.04), '#5c5566');
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(q.x, q.y - T * 1.3, 0, q.x, q.y - T * 1.3, T * 1.4);
+    g.addColorStop(0, 'rgba(200,150,255,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(q.x - T * 1.5, q.y - T * 2.8, T * 3, T * 3);
+    ctx.restore();
+    shape(() => rrect(q.x - T * 0.2, q.y - T * 1.6 + bob, T * 0.4, T * 0.56, T * 0.05), '#3b1c23');
+    ctx.strokeStyle = '#e8c98a'; ctx.lineWidth = 1.5; ctx.strokeRect(q.x - T * 0.15, q.y - T * 1.55 + bob, T * 0.3, T * 0.46);
+    return;
+  }
+  if (p.kind === 'feather'){                                     // 붉은 깃털: 빗물 웅덩이에 뜬 사람 키만 한 깃털
+    const q = P(p.x, p.y), bob = Math.sin(time * 1.6) * T * 0.02, L = T * 0.95;
+    ctx.fillStyle = 'rgba(70,90,120,.35)'; ctx.beginPath(); ctx.ellipse(q.x, q.y, T * 1.15, T * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, T * 1.3);
+    g.addColorStop(0, 'rgba(255,60,60,.3)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(q.x - T * 1.4, q.y - T * 1.4, T * 2.8, T * 2.8);
+    ctx.restore();
+    ctx.save(); ctx.translate(q.x, q.y - T * 0.06 + bob); ctx.rotate(-0.12);
+    ctx.fillStyle = '#b8202a'; ctx.beginPath(); ctx.moveTo(-L, 0); ctx.quadraticCurveTo(-L * 0.2, -T * 0.34, L * 0.8, -T * 0.05); ctx.quadraticCurveTo(-L * 0.1, T * 0.22, -L, 0); ctx.fill();
+    ctx.strokeStyle = '#ffb0a0'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-L * 1.12, T * 0.02); ctx.quadraticCurveTo(0, -T * 0.06, L * 0.85, -T * 0.05); ctx.stroke();
+    ctx.restore(); return;
+  }
   if (p.kind === 'img'){                                         // 소품 그림: 바닥 자리 (x, y)에 세우고 키 h칸
     const im = dgImg(p.src), q = P(p.x, p.y + 0.5), dsc = depthScale(p.y + 0.5);
     if (!imgReady(im)) return;
@@ -7363,7 +7996,7 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-// v12.6: 캐릭터 생성 없음. 정해진 주인공 인주로 시작
+// 정해진 주인공 인주로 바로 시작
 function boot(){ startGame(); }
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
 </script>
