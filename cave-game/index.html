@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.15
+  version v12.16
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.15';
+const VERSION = 'v12.16';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -2314,7 +2314,7 @@ HEROES.norman = { name:'노먼', grade:'★★', color:'#b8b2a2', sub:'초능력
   melee:{ atk:6, range:1.3, windup:0.3, cd:1.0 },   // 붙으면 개머리판
   tags:['의무B', '사격B'], trait:'🔆 응급처치 — 다친 동료에게 달려가 3초 동안 무릎 꿇고 치료한다 (최대 체력 40%, 전투당 3회).\n🎯 사수 — 멀리서 뒤로 빠지며 견제 사격. 가끔 앞으로 살짝 나가 멈춰 서서 조준 사격.',
   equip:{ 무기:'🔫 소총 / 개머리판', 머리:'—', 몸:'전술 조끼 · 무릎 보호대', 장신구:'⛑️ 응급 가방' } };
-HEROES.tomoe = { name:'도모에', grade:'★★★★', color:'#c23a3a', sub:'삽을 든 여장부 · 등에 용 문신 · 안대 · 군모',
+HEROES.tomoe = { name:'용묘화', grade:'★★★★', color:'#c23a3a', sub:'삽을 든 여장부 · 등에 용 문신 · 안대 · 군모',
   hp:260, atk:24, def:12, block:0.35, crit:0.15, eva:0.1, spd:2.4, range:1.5, cd:1.3, windup:0.4, hits:1, weight:75, react:0.25,
   hitStagger:0.35, splash:0.4, splashR:0.9,
   tags:['근접A', '통솔B'], trait:'🔆 묻어 주마 — 정면으로 성큼 걸어 들어가 삽으로 후려친다. 맞으면 잘 휘청이고 (35%), 바로 옆 0.9칸에도 절반 피해.\n뒤로 물러서지 않는다.',
@@ -2381,10 +2381,10 @@ Object.assign(ENEMIES, {
     hp:150, atk:6, def:4, block:0, crit:0, eva:0.1, spd:0, range:1.2, cd:2.0, windup:0.5, hits:1, weight:45, react:0.6, height:1.3,
     tags:['중립'], trait:'소파에서 일어나지 않는다. 가면 너머로 지켜볼 뿐. 바로 곁에 오는 것만 가볍게 밀어낸다. (만남 NPC, 아직 정해진 대사 없음)',
     equip:{ 무기:'—', 머리:'흰 가면 · 검은 꽃', 몸:'검은 레이스 드레스', 장신구:'🛋 붉은 소파' } },
-  agnes: { name:'아그네스', grade:'BOSS', color:'#e0202a', sub:'붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다',
+  agnes: { name:'로젤', grade:'BOSS', color:'#e0202a', sub:'붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다',
     hp:900, atk:24, def:12, block:0.2, crit:0.1, eva:0.1, spd:1.2, range:3.0, cd:1.6, windup:0.5, hits:1, weight:300, react:0.2, radius:0.6, height:1.9,
     boss:true, brain:'agnes', sever:0.3,
-    tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 아그네스가 있는 전투는 성당에서 벌어진다.',
+    tags:[], trait:'🔆 가시 — 천천히 걸으며 바닥에서 가시를 솟게 해 멀리서 찌른다 (사거리 3칸, 30% 절단).\n✝ 가시 문장 — 6초마다 상대의 발밑에 붉은 문장을 새긴다 (체력이 절반 아래면 두 개). 1초 뒤 가시가 솟아 큰 피해 (공격력 1.4배) + 0.8초 묶임 + 50% 절단. 문장 밖으로 빠지면 피한다.\n🏛 붉은 가시 성당 — 로젤이 있는 전투는 성당에서 벌어진다.',
     equip:{ 무기:'✝ 가시 문장', 머리:'—', 몸:'검은 법의 · 붉은 가시 자수', 장신구:'—' } },
   rosina: { name:'로시나', grade:'', color:'#8a6a9a', sub:'"외뿔" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다',
     hp:380, atk:18, def:8, block:0.15, crit:0.12, eva:0.25, spd:2.6, range:1.6, cd:1.2, windup:0.35, hits:1, weight:55, react:0.35, height:1.5,
@@ -4800,9 +4800,9 @@ SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, id
   poses:{ idle:{ src:'assets/horn_idle.png', ax:207, ay:400, f:-1 } } };
 SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 한 장, 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/odile_idle.png', ax:165, ay:380, f:-1 } } };
-SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:440,       // 도모에: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
+SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:440,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
   poses:{ idle:{ src:'assets/tomoe_idle.png', ax:125, ay:440, f:-1 } } };
-SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 아그네스: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
+SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
 // 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
 const ENC_FACES = { crown: 'assets/enc_crown_face.png' };   // 불꽃 왕관을 쓴 푸른 얼굴
@@ -7044,7 +7044,7 @@ async function floor1(){
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
 const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain };
-// 아그네스: 걷기 · 기본 공격은 보통 두뇌. 6초마다 상대 발밑에 가시 문장 (1초 예고 뒤 솟음)
+// 로젤: 걷기 · 기본 공격은 보통 두뇌. 6초마다 상대 발밑에 가시 문장 (1초 예고 뒤 솟음)
 const AG = { cd: 6, tele: 1.0, r: 1.5, atk: 1.4, root: 0.8 };
 function agnesBrain(u, sdt, tgt, dist){
   const b = battle;
