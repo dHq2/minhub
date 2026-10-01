@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그 — 프롤로그 : 노말모드
-  version v12.14
+  version v12.15
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -337,7 +337,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v12.14';
+const VERSION = 'v12.15';
 const SAVE_KEY = 'cave-game.character.v1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
@@ -532,9 +532,10 @@ function setView(v){
 // 카메라: 보드 가운데를 PITCH 각도로 내려다봄, DIST = 카메라까지 거리 (타일 단위). 원근 세기는 DIST가 정함
 const BOARD = { PITCH: 60 * Math.PI / 180, DIST: 11, FRAME: 0.38, DRIFT: 0.35 };
 const BV = { F: 0, cx: 0, cy: 0, sin: Math.sin(BOARD.PITCH), cos: Math.cos(BOARD.PITCH) };
-function boardPad(){                                   // 세로 화면: 아래 로그·조작 버튼 자리를 비움
-  if (H > W * 1.15) return { top: 70, bottom: H * (document.body.classList.contains('manual') ? 0.36 : 0.2) };
-  return { top: 64, bottom: Math.max(24, H * 0.06) };
+function boardPad(){                                   // 세로 화면: 아래 로그·조작 버튼 자리를 비움. 보스가 여럿이면 체력바 줄 수만큼 위를 더 비움
+  const nb = mode === 'battle' && battle ? battle.units.filter(u => u.st.boss && !u.dead).length : 0, extra = nb > 1 ? (nb - 1) * 30 : 0;
+  if (H > W * 1.15) return { top: 70 + extra, bottom: H * (document.body.classList.contains('manual') ? 0.36 : 0.2) };
+  return { top: 64 + extra, bottom: Math.max(24, H * 0.06) };
 }
 const boardNear = () => BOARD.DIST / (BOARD.DIST - ROWS / 2 * BV.cos);   // 맨 앞줄이 가운데보다 커 보이는 배율
 function boardFitT(cols = curCols + BOARD.FRAME * 2 + 1){   // 가로 cols칸(+1: 카메라가 흘러도 끝이 안 잘리게) + 보드 세로 + 위로 큰 폰 자리가 한 화면에
@@ -4368,7 +4369,7 @@ function updateCamera(dt){
   const fitT = Math.min(84, H / 7.4, (W - 24) / (curCols + ROWS * 0.42 + 0.6));
   const panelEl = document.getElementById('bt-panel');
   const panelOpen = !panelEl.classList.contains('collapsed');
-  const topReserve = (panelOpen ? panelEl.getBoundingClientRect().bottom : 58) + 8 + (b.units.some(u => u.st.boss && !u.dead) ? 40 : 0);   // 보스 체력바 자리
+  const topReserve = (panelOpen ? panelEl.getBoundingClientRect().bottom : 58) + 8 + (b.units.some(u => u.st.boss && !u.dead) ? (n => n > 1 ? n * 30 + 6 : 40)(bossesOf(b).length) : 0);   // 보스 체력바 자리 (여럿이면 줄 수만큼)
   const bottomReserve = H * (document.body.classList.contains('manual') ? 0.36 : 0.17);
   const availH = Math.max(120, H - topReserve - bottomReserve);
   const maxT = Math.min(70, W / 5.2, availH / 6.2);
@@ -4803,6 +4804,8 @@ SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, id
   poses:{ idle:{ src:'assets/tomoe_idle.png', ax:125, ay:440, f:-1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 아그네스: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
+// 이름이 아직 없는 만남 인물의 초상화 (몸 원화 · 이름이 정해지면 인물로 옮김)
+const ENC_FACES = { crown: 'assets/enc_crown_face.png' };   // 불꽃 왕관을 쓴 푸른 얼굴
 const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
@@ -5559,14 +5562,23 @@ function drawWaterFloor(){
     ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.25, T * 0.07, 0, 0, Math.PI * 2); ctx.stroke();
   }
 }
+// 보스 체력바: 판 위의 보스를 전부 따라감 (여럿이면 위에서부터 차례로 쌓음, 쓰러진 보스는 흐리게 남김)
+const bossesOf = b => b.units.filter(u => u.st.boss && !(u.dead && u.st.summon));
 function drawBossBar(){
-  const boss = battle.units.find(u => u.st.boss && !u.dead);
-  if (!boss) return;
-  const small = W <= 640, w = small ? W - 24 : Math.min(520, W * 0.42), x = W / 2 - w / 2, y = small ? 62 : 18;   // 좁은 화면: 빠른 버튼 줄 아래
-  ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(x - 2, y - 2, w + 4, 14);
-  ctx.fillStyle = '#b3122a'; ctx.fillRect(x, y, w * boss.hp / boss.st.hp, 10);
-  ctx.font = `15px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffb3a8'; ctx.fillText(`${boss.name}  ${Math.ceil(boss.hp)} / ${boss.st.hp}`, W / 2, y + 30);
+  const list = bossesOf(battle);
+  if (!list.some(u => !u.dead)) return;
+  const small = W <= 640, many = list.length > 1, w = small ? W - 24 : Math.min(520, W * 0.42), x = W / 2 - w / 2, y0 = small ? 62 : 18, gap = many ? 30 : 34;   // 좁은 화면: 빠른 버튼 줄 아래
+  list.forEach((boss, i) => {
+    const y = y0 + i * gap, k = Math.max(0, boss.hp) / boss.st.hp, ally = boss.side === 'ally';
+    ctx.globalAlpha = boss.dead ? 0.4 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(x - 8, y - 6, w + 16, gap - 2);   // 밝은 배경 (보스룸)에서도 읽히게 뒤판
+    ctx.fillStyle = 'rgba(0,0,0,.7)'; ctx.fillRect(x - 2, y - 2, w + 4, many ? 10 : 14);
+    ctx.fillStyle = ally ? '#2f7fbf' : '#b3122a'; ctx.fillRect(x, y, w * k, many ? 6 : 10);
+    ctx.font = `${many ? 13 : 15}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
+    ctx.fillStyle = ally ? '#bfe0ff' : '#ffb3a8';
+    ctx.fillText(boss.dead ? `${boss.name}  쓰러짐` : `${boss.name}  ${Math.ceil(boss.hp)} / ${boss.st.hp}`, W / 2, y + (many ? 21 : 30));
+  });
+  ctx.globalAlpha = 1;
 }
 
 /* =========================================================
