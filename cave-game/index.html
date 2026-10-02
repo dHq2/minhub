@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.12
+  version v13.13
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -354,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.12';
+const VERSION = 'v13.13';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -545,7 +545,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyP') toggleStats();
   if (e.code === 'KeyR' && mode === 'battle' && !DG.active && !e.repeat) restartLastSetup();
   if (e.code === 'KeyB' && !DG.active) mode === 'battle' ? exitBattle() : enterBattle();
-  if (e.code === 'Escape'){ closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }
+  if (e.code === 'Escape'){ if (DG.formBack){ DG.formBack(); return; } closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }   // 편성 창: Esc = 굴로 돌아가기
 });
 window.addEventListener('keyup', e => { if (KEYMAP[e.code]) held.delete(KEYMAP[e.code]); });
 window.addEventListener('blur', () => held.clear());
@@ -6504,7 +6504,7 @@ async function loadScreen(o){
   encEl.hidden = true; encEl.innerHTML = '';
 }
 
-/* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열 ---------- */
+/* ---------- 편성: 석문 앞에서 데려갈 동료 (최대 5명, 주인공 필수)와 전열 · 후열. 출발하면 true, 굴로 돌아가면 (버튼 · Esc) false ---------- */
 function dgFormation(){
   return new Promise(res => {
     const all = owned();
@@ -6532,9 +6532,12 @@ function dgFormation(){
         ctl.append(b1, b2); row.appendChild(ctl); box.appendChild(row);
       }
       evEl.appendChild(box);
-      const opts = el('div', 'ev-opts'), go = el('button', '', `⬇ 출발 (${DGP.party.length}명)`);
-      go.onclick = () => { closeEvent(); DG.choiceOpen = false; saveDGP(); res(); };
-      opts.appendChild(go); evEl.appendChild(opts);
+      const opts = el('div', 'ev-opts'), go = el('button', '', `⬇ 출발 (${DGP.party.length}명)`), back = el('button', '', '← 굴로 돌아가기 (Esc)');
+      const done = ok => { closeEvent(); DG.choiceOpen = false; DG.formBack = null; saveDGP(); res(ok); };
+      go.onclick = () => done(true);
+      back.onclick = () => done(false);
+      DG.formBack = () => done(false);
+      opts.append(go, back); evEl.appendChild(opts);
       evEl.hidden = false; DG.choiceOpen = true;
     };
     render();
@@ -6666,7 +6669,7 @@ async function startRun(){
   mode = 'dungeon'; document.body.classList.add('dungeon');
   ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
   floaters = []; sparks = []; held.clear();
-  await dgFormation();
+  if (!(await dgFormation())){ dgExit(); return; }                  // 편성에서 굴로 돌아감 (판은 시작 안 함)
   RUN = newRun();
   DG.party = [...DGP.party];
   for (const id of DG.party) RUN.lv0[id] = lvOf(id);
