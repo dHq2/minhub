@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.5
+  version v14.6
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -380,7 +380,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.5';
+const VERSION = 'v14.6';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -5925,7 +5925,7 @@ function summonRat(owner, id = rollRat(), fromEdge = false){
   const b = battle;
   const mine = b.units.filter(o => o.summoner === owner && !o.dead).length;
   if (mine >= LOYALTY_MAX) return null;
-  // 아군 진형 안에서 튀어나옴: 앞 방향 = 적 무리 쪽, 무작위 아군 곁 조금 뒤에서
+  // 앞 방향 = 적 무리 쪽. 자리 = 무작위 아군 곁 조금 뒤 (그 자리까지 화면 밖에서 달려옴)
   const friends = b.units.filter(o => !o.dead && o.side === owner.side && !o.summoner);
   const foes = b.units.filter(o => !o.dead && o.side !== owner.side);
   const avg = (arr, k) => arr.reduce((a, o) => a + o[k], 0) / arr.length;
@@ -5936,21 +5936,14 @@ function summonRat(owner, id = rollRat(), fromEdge = false){
   const r = spawnUnit(id, col, row);
   r.side = owner.side; r.summoner = owner; r.face = fwd;
   r.wild = Math.random() < RAT_WILD_P;               // 떠돌이 쥐
-  if (fromEdge){
-    // 어디선가: 아군 쪽 화면 밖에서 먼지를 일으키며 호다닥 달려 들어옴
-    const ey = Math.random() * (ROWS - 1);
-    r.x = fwd > 0 ? -1.5 - Math.random() * 0.8 : BATTLE_COLS + 0.5 + Math.random() * 0.8; r.y = ey;
-    r.enter = { tx: fwd > 0 ? 0.4 + Math.random() * 1.2 : BATTLE_COLS - 1.4 - Math.random() * 1.2, ty: Math.max(0, Math.min(ROWS - 1, ey + (Math.random() - 0.5))), dustT: 0 };
-    return r;
-  }
-  r.kbx = fwd * (2 + Math.random() * 2);             // 진형 안에서 앞으로 튀어나오듯
+  // 모든 쥐 소환: 발밑에서 솟지 않고, 아군 쪽 화면 밖에서 먼지를 일으키며 호다닥 달려 들어옴
+  const ey = Math.random() * (ROWS - 1);
+  r.x = fwd > 0 ? -2.5 - Math.random() * 1.0 : BATTLE_COLS + 1.5 + Math.random() * 1.0; r.y = ey;
+  r.enter = fromEdge ? { tx: fwd > 0 ? 0.4 + Math.random() * 1.2 : BATTLE_COLS - 1.4 - Math.random() * 1.2, ty: Math.max(0, Math.min(ROWS - 1, ey + (Math.random() - 0.5))), dustT: 0 }
+                     : { tx: col, ty: row, dustT: 0 };   // 충성: 아군 진형 안 자리까지 달려옴
   const big = id === 'ratL' || id === 'ratKnight', pop = big || id === 'ratM';
-  const q = P(col + 0.5, row + 0.5);
-  for (let i = 0; i < (big ? 22 : 8); i++) sparks.push({ x: q.x + camX, y: q.y - T * 0.2, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 220, life: 0.45, c: i % 2 ? '#9dff7a' : '#2b5a2b' });
-  if (pop) skillPop(owner, 'loyalty');              // 쥐 · 큰 쥐 · 쥐 기사가 나올 때 충성 아이콘
-  if (big){
-    logLine(`🐀 충성: ${r.name}${id === 'ratKnight' ? ' (드물다!)' : ''}이(가) 달려왔다`, id === 'ratKnight' ? 'crit' : 'heal');
-  }
+  if (pop && !fromEdge) skillPop(owner, 'loyalty');   // 쥐 · 큰 쥐 · 쥐 기사를 부를 때 충성 아이콘
+  if (big) logLine(`🐀 충성: ${r.name}${id === 'ratKnight' ? ' (드물다!)' : ''}이(가) 달려온다`, id === 'ratKnight' ? 'crit' : 'heal');
   return r;
 }
 
