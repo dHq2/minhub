@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.10
+  version v13.11
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -145,7 +145,7 @@
   #dg-hud .pm i{display:block;height:5px;background:#3a2a2e;border-radius:3px;overflow:hidden;}
   #dg-hud .pm i b{display:block;height:100%;background:#8ee08e;}
   #dg-hud .pm small{color:#9a8f9e;font-size:10px;}
-  body.dgfight #bt-panel, body.dgfight #bq-last, body.dgfight #bq-panel{display:none !important;}
+  body.dgfight #bt-panel, body.dgfight #bq-last, body.dgfight #bq-panel, body.dgfight #bq-clear, body.dgfight #bq-save{display:none !important;}
   #bq-manual{display:none;} body.dgfight #bq-manual{display:inline-block;}
   #event .ev-chips button{background:#15111a;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:6px 9px;margin-left:4px;font-size:12px;cursor:pointer;min-width:44px;}
   #event .ev-chips button.on{border-color:#8fe0a0;color:#bff5c8;}
@@ -209,7 +209,7 @@
   #bt-allies button,#bt-enemies button,#bt-summons button{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;gap:4px;padding:4px 5px;letter-spacing:-.3px;}
   .bt-tools button canvas.face{width:28px;height:28px;border-radius:50%;background:#0a080c;border:1px solid var(--line);flex:none;}
   .bt-tools button.on canvas.face{border-color:var(--fire);}
-  .bt-tools button canvas.face{cursor:pointer;border-width:2px;}
+  .bt-tools button canvas.face{cursor:pointer;border-width:2px;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;}
   .bt-tools button canvas.face.sd-ally{border-color:#5cc26a;}
   .bt-tools button canvas.face.sd-enemy{border-color:#e2443a;}
   .bt-tools button.swapped{font-style:italic;}
@@ -263,9 +263,11 @@
   #bt-quick button{background:rgba(18,14,20,.92);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 11px;font-size:13px;font-family:var(--display);min-height:38px;}
   #bt-quick button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
   #bt-quick #bq-last{border-color:#8fe0a0;color:#bff5c8;}
+  #bt-quick button i.ic{font-style:normal;}
   @media (max-width:640px){
     #bt-quick{left:12px;right:12px;justify-content:stretch;}
-    #bt-quick button{flex:1;padding:9px 4px;font-size:14px;}
+    #bt-quick button{flex:1;padding:9px 2px;font-size:13px;white-space:nowrap;min-width:0;}
+    #bt-quick button i.ic{display:none;}   /* 좁은 화면: 아이콘 빼고 글자만 (한 줄에 여섯 개) */
     #bt-panel{top:calc(58px + env(safe-area-inset-top,0px));max-height:52%;}
     #bt-panel.collapsed{display:none;}
     #bt-log{bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:15%;font-size:11px;background:rgba(10,8,12,.62);pointer-events:auto;}
@@ -316,23 +318,25 @@
       <div class="bt-sec">적</div><div class="bt-tools" id="bt-enemies"></div>
       <div class="bt-sec">소환수 (포렌의 충성)</div><div class="bt-tools" id="bt-summons"></div>
       <div class="bt-sec">도구</div>
-      <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
-      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 초상화를 누르면 아군 ↔ 적군 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
+      <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button><button id="bt-sides" title="아군 ↔ 적군으로 바꿔 둔 것을 모두 원래 편으로">⇄ 편 되돌리기</button></div>
+      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 초상화를 누르면 상세 (스탯 · 스킬 · 장비) · 초상화 우클릭 (모바일은 꾹 누르기) = 아군 ↔ 적군 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
         적 머리 위 "!" 뜨고 맞기 직전 X 또는 Z: 저스트 (3% 확정 치명타 반격)</div>
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-water"> 물 바닥 (천벌 범위 안 전원 감전)</label>
       <label class="bt-check"><input type="checkbox" id="bt-rain"> 🌧️ 비 오는 필드 (천벌이 맵 전체 감전)</label>
       <label class="bt-check"><input type="checkbox" id="bt-seal"> ⛓ 신성 제약 필드 (신성 특성이 꺼짐: 카리우스 개조된 신체)</label>
       <label class="bt-check"><input type="checkbox" id="bt-parry"> 튕겨내기 · 역전의 기회 100% (테스트용)</label>
-      <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-speed">속도 x1</button></div>
+      <div class="bt-row"><button id="bt-run" class="primary">▶ 전투 시작</button><button id="bt-clear">🧹 비우기</button><button id="bt-save" title="지금 배치와 설정을 저장 — 훈련장에 들어오면 이 배치로 시작">💾 배치 저장</button></div>
       <div class="bt-row"><button id="bt-last" class="primary" title="가장 최근에 시작한 전투의 배치와 설정으로 다시 시작">⟲ 마지막 세팅 재시작 [R]</button></div>
-      <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-clear">비우기</button></div>
+      <div class="bt-row"><button id="bt-reset">↺ 기본 배치</button><button id="bt-load">📂 저장한 배치</button><button id="bt-speed">속도 x1</button></div>
       <div class="bt-row"><button id="bt-stats">스탯표 [P]</button><button id="bt-exit">굴로 [B]</button></div>
     </div>
     <div id="bt-scroll"><i></i></div>
     <div id="bt-quick">
       <button id="bq-run" class="primary">▶ 시작</button>
-      <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]">⟲ 재시작</button>
+      <button id="bq-clear" title="모두 치우기"><i class="ic">🧹 </i>비우기</button>
+      <button id="bq-save" title="지금 배치를 저장 — 훈련장에 들어오면 이 배치로 시작"><i class="ic">💾 </i>저장</button>
+      <button id="bq-last" title="마지막 세팅으로 다시 시작 [R]"><i class="ic">⟲ </i>재시작</button>
       <button id="bq-speed">x1</button>
       <button id="bq-manual" title="주인공을 직접 조작 ↔ 자동 (Q)">🤖 자동</button>
       <button id="bq-panel" title="편성 · 설정 열기">☰ 편성</button>
@@ -350,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.10';
+const VERSION = 'v13.11';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2097,7 +2101,7 @@ function enterBattle(){
     redFlash: 0, clock: 0, guardPressAt: -99, dodgePressAt: -99, attackPressAt: -99, stars: [],
     parryTest: document.getElementById('bt-parry').checked, ricos: [], water: document.getElementById('bt-water').checked, rain: document.getElementById('bt-rain').checked, sealDivine: document.getElementById('bt-seal').checked, drops: [], playerAuto: document.getElementById('bt-auto').checked };
   buildBtTools();
-  defaultSetup();
+  if (savedSetup && savedSetup.units.length) loadMySetup(); else defaultSetup();   // 저장한 배치가 있으면 그걸로 시작
   btUi.hidden = false;
   cam.on = false;
   if (W <= 640) document.getElementById('bt-panel').classList.remove('collapsed');
@@ -2170,9 +2174,14 @@ function buildBtTools(){
     const face = document.createElement('canvas'); face.width = 80; face.height = 80; face.className = 'face';
     drawPortrait(face, id);
     face.classList.add(side === 'ally' ? 'sd-ally' : 'sd-enemy');
-    face.title = '초상화를 누르면 아군 ↔ 적군';
-    face.addEventListener('pointerdown', e => e.stopPropagation());
-    face.addEventListener('click', e => { e.stopPropagation(); toggleSide(id); });
+    face.title = '누르면 상세 (스탯 · 스킬 · 장비) · 우클릭 (모바일은 꾹) = 아군 ↔ 적군';
+    face.addEventListener('pointerdown', e => {                   // 모바일: 꾹 누르기 (0.5초) = 아군 ↔ 적군
+      e.stopPropagation(); face._touch = e.pointerType !== 'mouse'; face._lp = false; clearTimeout(face._lt);
+      if (face._touch) face._lt = setTimeout(() => { face._lp = true; toggleSide(id); }, 500);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => face.addEventListener(ev, () => clearTimeout(face._lt)));
+    face.addEventListener('click', e => { e.stopPropagation(); if (face._lp) return; openSheet(id); });
+    face.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); if (!face._touch) toggleSide(id); });
     b.appendChild(face);
     b.addEventListener('pointerdown', e => startPaletteDrag(e, id));
     b.appendChild(document.createTextNode(s.name));
@@ -2181,7 +2190,7 @@ function buildBtTools(){
   };
   const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies'), sm = document.getElementById('bt-summons');
   a.innerHTML = ''; e.innerHTML = ''; sm.innerHTML = '';
-  // 목록은 절반으로: 위는 아군, 아래는 적군. 초상화를 누르면 반대쪽 절반으로 옮겨 감
+  // 목록은 절반으로: 위는 아군, 아래는 적군. 초상화 우클릭 (꾹)이면 반대쪽 절반으로 옮겨 감
   [...BT_ALLIES, ...BT_ENEMIES].forEach(id => mk(id, sideOf(id) === 'ally' ? a : e));
   ['ratS', 'ratM', 'ratL', 'ratKnight'].forEach(id => mk(id, sm));
   document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.onclick = () => { battle.tool = b.dataset.tool; syncTools(); });
@@ -2192,31 +2201,56 @@ function syncTools(){ document.querySelectorAll('#bt-panel [data-tool]').forEach
 let lastSetup = null;
 try { lastSetup = JSON.parse(localStorage.getItem('cave.lastSetup') || 'null'); } catch (e) { lastSetup = null; }
 const BT_FLAGS = [['water', 'bt-water'], ['rain', 'bt-rain'], ['sealDivine', 'bt-seal'], ['parryTest', 'bt-parry'], ['playerAuto', 'bt-auto']];
-function saveLastSetup(){
+// 저장한 배치 (💾): 직접 저장할 때만 바뀜. 훈련장에 들어오면 이 배치로 시작, 📂로 언제든 불러옴
+let savedSetup = null;
+try { savedSetup = JSON.parse(localStorage.getItem('cave.savedSetup') || 'null'); } catch (e) { savedSetup = null; }
+function snapSetup(){
   const b = battle;
-  lastSetup = {
-    units: b.units.filter(u => !u.dead && !u.summoner).map(u => ({ id: u.id, x: u.x, y: u.y, side: u.side, face: u.face })),
+  return { units: b.units.filter(u => !u.dead && !u.summoner).map(u => ({ id: u.id, x: u.x, y: u.y, side: u.side, face: u.face })),
     flags: Object.fromEntries(BT_FLAGS.map(([k]) => [k, !!b[k]])), speed: b.speed };
-  b.fresh = false;
+}
+function saveLastSetup(){
+  lastSetup = snapSetup(); battle.fresh = false;
   try { localStorage.setItem('cave.lastSetup', JSON.stringify(lastSetup)); } catch (e) {}
 }
-function restartLastSetup(){
+function saveMySetup(){
   if (!battle) return;
-  if (!lastSetup || !lastSetup.units.length){ logLine('아직 시작한 전투가 없어요. ▶ 전투 시작을 한 번 누르면 그 세팅이 기억돼요.', 'sys'); return; }
+  const s = snapSetup();
+  if (!s.units.length){ logLine('저장할 배치가 없어요.', 'sys'); return; }
+  savedSetup = s;
+  try { localStorage.setItem('cave.savedSetup', JSON.stringify(s)); } catch (e) {}
+  logLine(`💾 지금 배치를 저장했어요 (${s.units.length}명). 훈련장에 들어오면 이 배치로 시작하고, 📂 저장한 배치로 언제든 불러와요.`, 'sys');
+}
+function clearField(){
   const b = battle;
-  b.units = []; b.over = null; b.running = false; b.pending = []; b.fx = []; b.proj = []; b.stars = []; b.drops = []; b.spears = [];
+  b.units = []; b.over = null; b.running = false; b.pending = []; b.fx = []; b.proj = []; b.stars = []; b.drops = []; b.spears = []; b.words = [];
   b.hitstop = 0; b.redFlash = 0; b.rainFlash = 0;
   floaters = []; sparks = [];
-  for (const [k, id] of BT_FLAGS){ b[k] = !!lastSetup.flags[k]; document.getElementById(id).checked = b[k]; }
-  b.speed = lastSetup.speed || 1;
-  for (const s of lastSetup.units){
+}
+// 배치 불러오기 (마지막 세팅 · 저장한 배치 공용). run이면 바로 시작
+function loadSetup(setup, msg, run){
+  const b = battle;
+  clearField();
+  for (const [k, id] of BT_FLAGS){ b[k] = !!setup.flags[k]; document.getElementById(id).checked = b[k]; }
+  b.speed = setup.speed || 1;
+  for (const s of setup.units){
     const u = spawnUnit(s.id, s.x, s.y);
     if (u){ u.side = s.side; u.face = s.face; }
   }
   b.log = [];
-  logLine(`⟲ 마지막 세팅으로 재시작 (${lastSetup.units.length}명)`, 'sys');
-  b.fresh = false;
-  toggleRun();
+  logLine(msg, 'sys');
+  b.fresh = !run;
+  if (run) toggleRun(); else syncRun();
+}
+function restartLastSetup(){
+  if (!battle) return;
+  if (!lastSetup || !lastSetup.units.length){ logLine('아직 시작한 전투가 없어요. ▶ 전투 시작을 한 번 누르면 그 세팅이 기억돼요.', 'sys'); return; }
+  loadSetup(lastSetup, `⟲ 마지막 세팅으로 재시작 (${lastSetup.units.length}명)`, true);
+}
+function loadMySetup(){
+  if (!battle) return;
+  if (!savedSetup || !savedSetup.units.length){ logLine('저장한 배치가 없어요. 💾 저장을 먼저 눌러 주세요.', 'sys'); return; }
+  loadSetup(savedSetup, `📂 저장한 배치 (${savedSetup.units.length}명). ▶ 전투 시작 (Space)`, false);
 }
 function defaultSetup(){
   battle.fresh = true;
@@ -2328,7 +2362,18 @@ document.getElementById('bt-run').onclick = toggleRun;
 document.getElementById('bt-speed').onclick = () => { battle.speed = battle.speed === 1 ? 2 : battle.speed === 2 ? 4 : 1; if (DG.active){ DGP.speed = battle.speed; saveDGP(); } syncRun(); };   // 던전 전투 속도는 기억
 document.getElementById('bt-reset').onclick = () => defaultSetup();
 document.getElementById('bt-last').onclick = () => restartLastSetup();
-document.getElementById('bt-clear').onclick = () => { battle.fresh = true; battle.units = []; battle.running = false; battle.over = null; logLine('모두 치웠어요.', 'sys'); syncRun(); };
+const clearAll = () => { clearField(); battle.fresh = true; logLine('모두 치웠어요.', 'sys'); syncRun(); };
+document.getElementById('bt-clear').onclick = clearAll;
+document.getElementById('bq-clear').onclick = clearAll;
+document.getElementById('bt-save').onclick = saveMySetup;
+document.getElementById('bq-save').onclick = saveMySetup;
+document.getElementById('bt-load').onclick = loadMySetup;
+document.getElementById('bt-sides').onclick = () => {                 // 편 되돌리기: 아군 ↔ 적군으로 바꿔 둔 것을 모두 원래대로
+  const n = Object.keys(btSide).length;
+  if (!n){ logLine('바꿔 둔 편이 없어요.', 'sys'); return; }
+  btSide = {}; try { localStorage.setItem('cave.btSide', '{}'); } catch (e) {}
+  buildBtTools(); logLine(`⇄ ${n}명을 원래 편으로 되돌렸어요.`, 'sys');
+};
 document.getElementById('bt-stats').onclick = toggleStats;
 document.getElementById('bt-exit').onclick = exitBattle;
 document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTest = e.target.checked; };
