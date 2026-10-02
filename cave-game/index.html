@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.14
+  version v13.15
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -354,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.14';
+const VERSION = 'v13.15';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1785,6 +1785,10 @@ HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케
   look:{ skin:'#f3dcc8', cloth:'#ece8e0', weapon:'dagger', wstyle:{ blade:'#3f9c98', guard:'#c23a3a' }, hood:'#f4f1ea', eye:'#c9a23a' },
   tags:['의무C', '민첩B'], trait:'🔆 꿰매 줄게~ — 다친 동료 (체력 70% 아래, 4칸 안)에게 롤러스케이트로 쌩 달려가 그 자리에서 꿰맨다 (최대 체력 18% + 6, 출혈 멈춤). 꿰매고 나면 바로 휙 빠짐. 4.5초마다.\n🐾 짐승 — 기본은 힐러. 틈나면 파고들어 두 번 할퀴고 바로 빠진다. 아주 빠르고 잘 피한다.',
   equip:{ 무기:'🩹 할퀴는 의수', 머리:'간호 모자', 몸:'찢어진 간호복', 장신구:'🧰 구급상자 · 촛대' } };
+HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열',   // 틀만 (기술은 나중에)
+  hp:300, atk:28, def:10, block:0.3, crit:0.1, eva:0.15, spd:3.0, range:1.5, cd:1.1, windup:0.35, hits:1, weight:70, react:0.3,
+  tags:['번개'], trait:'⚡ 기술 준비 중',
+  equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:2000, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.22, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
@@ -2084,7 +2088,7 @@ document.getElementById('btn-stats').onclick = toggleStats;
 let battle = null, uidSeq = 0, hoverTile = null;
 const btUi = document.getElementById('bt-ui');
 const btLog = document.getElementById('bt-log');
-const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron'];
+const BT_ALLIES = ['player', 'rebecca', 'karius', 'goblin', 'morningstar', 'poren', 'norman', 'yellow', 'tomoe', 'dolsoe', 'piel', 'odo', 'moro', 'gur', 'tehera', 'heron', 'goodwill'];
 const BT_ENEMIES = ['enemyGoblin', 'goblinArcher', 'jeokroe', 'swordsman', 'shieldman', 'spearman', 'archer', 'brute', 'fingerHole', 'cesar', 'faded', 'miller', 'dandalo', 'rosina', 'benkin', 'umbrella', 'odile', 'agnes', 'hargen'];
 const PARRY_CHANCE = 0.03;   // 저스트 방어 성공 시 튕겨낼 확률
 const JUST_WINDOW = 0.35;    // 맞기 직전 이 시간(초) 안에 방어/회피를 누르면 저스트
@@ -4554,6 +4558,8 @@ SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, id
           swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
+SPRITES.goodwill = { face:'assets/goodwill_face.png', heightTiles:1.95, baseFace:1, idleH:578,   // GOOD WILL: 서 있는 한 장, 얼굴은 오른쪽 (동작은 몸 기울이기)
+  poses:{ idle:{ src:'assets/goodwill_idle.png', ax:105, ay:578, f:1 } } };
 SPRITES.swordsman = { face:'assets/sword_face.png', heightTiles:1.9, baseFace:-1, idleH:460,  // 검사: 대기 · 베기 (준비는 대기 그대로). 대기 원화는 오른쪽을 보고, 베기 원화는 왼쪽으로 벰
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/sword_idle.png', ax:197, ay:460, f:1 }, attack:{ src:'assets/sword_attack.png', ax:209, ay:430, f:-1 } } };
