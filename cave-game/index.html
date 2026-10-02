@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.13
+  version v13.14
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -354,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.13';
+const VERSION = 'v13.14';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -3176,13 +3176,16 @@ function chargeHit(u, d){
   resolveHit(u, d, { atk: u.st.chargeAtk });
 }
 /* ---------- 투창 (인주): F · 🔱 누르고 있으면 힘을 모음 (꾸구국) → 떼면 던짐 (파앙) → 날아감 (쐐액). 던지면 맨손 (주먹), 꽂힌 창을 지나가면 주움 ---------- */
-// 힘 p (0~1) = 모은 시간 ÷ chargeT. 다 모인 뒤 perfect초 안에 떼면 "완벽": 확정 치명타 (회피 · 막기 무시) + 줄 위의 적을 모두 꿰뚫음.
-// 그 뒤에 떼면 "힘껏": 힘은 가득이지만 치명타는 운대로, 처음 맞은 적 앞에 떨어짐. hold초를 넘기면 저절로 던짐
+// 힘 p (0~1) = 모은 시간 ÷ chargeT. 다 차기 직전 아주 짧은 구간에 떼면 "완벽": 확정 치명타 (회피 · 막기 무시) + 줄 위의 적을 꿰뚫음.
+// 놓쳐서 다 차면 저절로 던짐 = "힘껏": 힘은 가득이지만 치명타는 운대로
 // 피해 = 공격력 x mul x (0.6 + 0.4p): 가득 (힘껏 · 완벽의 기본)은 레벨 1 인주 (14)로 50 = 세자르 (500)를 10방. 완벽은 여기에 치명타 x3
 // 창은 놓은 순간의 방향으로 곧게 날아감 (유도 없음). 날아가는 길 (선분)이 몸에 닿아야 맞음: 그 사이 비켜선 적은 빗나감
-const JAV = { chargeT: 0.8, perfect: 0.22, hold: 1.0, wind: 0.28, snap: 0.12, speed: 11, speedUp: 7, range: 6.5, rangeUp: 2.5, mul: 3.6, stun: 0.4, hitPad: 0.12,
+const JAV = { chargeT: 0.8, perfect: 0.06, perfectUp: 0.02, wind: 0.28, snap: 0.12, speed: 11, speedUp: 7, range: 6.5, rangeUp: 2.5, mul: 3.6, stun: 0.4, hitPad: 0.12,
   fistMul: 0.6, fistRange: 1.0, fistCd: 0.7, pick: 0.75, back: 2.5 };
 const javRange = p => JAV.range + JAV.rangeUp * p;
+// 완벽 구간: 게이지가 다 차기 직전 javWin초 (기본 0.06초 ≈ 네 프레임). 창끝 단련마다 +0.02초. 다 차면 그대로 저절로 던짐 (힘껏)
+const javWin = u => (u.stSpear || u.st).javWin || JAV.perfect;
+const javInWin = (u, J) => J.t >= JAV.chargeT - javWin(u) && J.t < JAV.chargeT;
 function canThrow(u){ return u.id === 'player' && !u.spearOut && !u.dead && !u.rise && u.stun <= 0 && u.windup <= 0 && !u.jav && !u.guarding && !u.aided; }
 function pressThrow(){
   if (mode !== 'battle' || !battle) return;
@@ -3207,8 +3210,11 @@ function throwAim(u, input){
   return want || { x: u.face, y: 0 };
 }
 function startThrow(u, manual){
-  const J = u.jav = { t: 0, c: 0, snap: 0, snapMax: 0, manual, fullAt: null, perfect: false, dust: 0, dir: throwAim(u, null) };
-  if (!manual){ const pf = Math.random() < 0.12; J.goalT = pf ? JAV.chargeT + 0.04 + Math.random() * 0.12 : JAV.chargeT * (0.35 + Math.random() * 0.6); }   // 자동: 가끔은 딱 좋은 순간까지 모음
+  const J = u.jav = { t: 0, c: 0, snap: 0, snapMax: 0, manual, winAt: null, perfect: false, dust: 0, dir: throwAim(u, null) };
+  if (!manual){                                                    // 자동: 드물게 완벽 (구간이 넓어질수록 자주), 가끔 끝까지 (힘껏), 보통은 반쯤
+    const w = javWin(u), r = Math.random();
+    J.goalT = r < 0.05 * w / JAV.perfect ? JAV.chargeT - w * (0.2 + Math.random() * 0.6) : r < 0.3 ? JAV.chargeT : JAV.chargeT * 0.35 + Math.random() * (JAV.chargeT * 0.65 - w - 0.02);
+  }
   u.face = Math.sign(J.dir.x) || u.face; u.windup = 0; u.atkTarget = null;
 }
 // 꾸구국: 힘을 모으며 겨눔 (움직이지 않음, 방향키 · 조이스틱은 겨누기). 떼면 짧게 휘둘러 던짐 (탭이어도 처음부터 wind초는 걸림)
@@ -3217,7 +3223,7 @@ function chargeSpear(u, sdt, input, dist){
   if (J.snap > 0){ J.snap -= sdt; if (J.snap <= 0) releaseSpear(u); return; }
   J.t += J.manual ? sdt / (battle.speed || 1) : sdt;               // 직접 모을 땐 전투 속도 (x2 · x4)와 상관없이 같은 손맛
   const was = J.c; J.c = Math.min(1, J.t / JAV.chargeT);
-  if (J.c >= 1 && was < 1){ J.fullAt = J.t; ringAt(u, '255,211,90'); }                  // 번쩍: 지금 떼면 완벽
+  if (!J.winAt && javInWin(u, J)){ J.winAt = J.t; ringAt(u, '255,211,90'); }   // 번쩍: 지금 떼면 완벽 (아주 짧음)
   J.dir = throwAim(u, J.manual ? input : null);
   u.face = Math.sign(J.dir.x) || u.face;
   J.dust -= sdt;
@@ -3226,9 +3232,9 @@ function chargeSpear(u, sdt, input, dist){
     const q = P(u.x + 0.5 - u.face * 0.2, u.y + 0.5);
     battle.fx.push({ type: 'dust', wx: q.x + camX + (Math.random() - 0.5) * T * 0.3, y: q.y - 2, s: 0.4 + J.c * 0.5, life: 0.45, max: 0.45 });
   }
-  const go = J.manual ? !held.has('throw') || J.t >= JAV.chargeT + JAV.hold : J.t >= J.goalT || dist < 1.4;   // 자동은 적이 붙으면 모으다 말고 던짐
+  const go = J.t >= JAV.chargeT || (J.manual ? !held.has('throw') : J.t >= J.goalT || dist < 1.4);   // 다 차면 저절로 던짐. 자동은 적이 붙으면 모으다 말고 던짐
   if (go){
-    J.perfect = J.fullAt != null && J.t - J.fullAt <= JAV.perfect;
+    J.perfect = javInWin(u, J);
     J.snap = J.snapMax = Math.max(JAV.snap, JAV.wind - J.t);
   }
 }
@@ -3237,7 +3243,7 @@ function wordAt(x, y, text, color, size, opt = {}){ (battle.words = battle.words
 function handAt(u){ const p = P(u.x + 0.5, u.y + 0.5), h = unitHeight(u) * T * depthScale(u.y); return { x: p.x + u.face * T * 0.3 * depthScale(u.y), y: p.y - h * 0.62 }; }
 // 파앙: 손끝에서 터짐 (고리 · 불티 · 흙먼지 · 흔들림 · 짧은 멈춤), 완벽이면 금빛 + 카메라가 다가감
 function releaseSpear(u){
-  const b = battle, J = u.jav, d = J.dir, p = J.c;
+  const b = battle, J = u.jav, d = J.dir, p = J.perfect ? 1 : J.c;
   u.jav = null;
   (b.spears = b.spears || []).push({ owner: u, x: u.x, y: u.y, dx: d.x, dy: d.y, dist: 0, ground: false, t: 0, p, perfect: J.perfect,
     speed: JAV.speed + JAV.speedUp * p, range: javRange(p), hits: [] });
@@ -3373,8 +3379,8 @@ function drawThrowFx(){
   for (const u of b.units){
     const J = u.jav; if (!J || u.dead) continue;
     const p = P(u.x + 0.5, u.y + 0.5), dsc = depthScale(u.y), h = unitHeight(u) * T * dsc, c = J.c;
-    const inWin = J.fullAt != null && J.t - J.fullAt <= JAV.perfect, over = J.fullAt != null && !inWin;
-    const col = inWin ? '255,211,90' : over ? '255,140,90' : '235,240,255';
+    const inWin = javInWin(u, J), wk = javWin(u) / JAV.chargeT;
+    const col = inWin ? '255,211,90' : '235,240,255';
     // 조준선: 바닥에 이 힘으로 닿는 곳까지
     const R = javRange(c), e = P(u.x + 0.5 + J.dir.x * R, u.y + 0.5 + J.dir.y * R);
     ctx.save();
@@ -3398,16 +3404,17 @@ function drawThrowFx(){
     }
     if (inWin){ ctx.fillStyle = `rgba(255,220,120,${0.35 + 0.3 * Math.sin(time * 40)})`; ctx.beginPath(); ctx.arc(hd.x, hd.y, T * 0.22, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
-    // 게이지 (머리 위): 차오름 → 금빛 = 지금! → 넘기면 주황
+    // 게이지 (머리 위): 차오름 → 끝의 금빛 칸 = 지금! (아주 짧음) → 다 차면 저절로 던짐
     const bw = Math.max(40, T * 1.0), bh = Math.max(5, T * 0.09), bx = p.x - bw / 2, by = p.y - h - T * 0.2 - 8 - Math.max(8, T * 0.12) - bh;   // 체력 숫자 바로 위
     ctx.fillStyle = 'rgba(10,8,12,.75)'; ctx.fillRect(bx - 2, by - 2, bw + 4, bh + 4);
-    ctx.fillStyle = inWin ? '#ffd35a' : over ? '#ff8a5a' : `rgb(${235},${Math.round(240 - 60 * c)},${Math.round(255 - 150 * c)})`;
+    ctx.fillStyle = 'rgba(255,211,90,.28)'; ctx.fillRect(bx + bw * (1 - wk), by - 2, bw * wk, bh + 4);   // 완벽 칸 (끝의 좁은 금빛)
+    ctx.fillStyle = inWin ? '#ffd35a' : `rgb(${235},${Math.round(240 - 60 * c)},${Math.round(255 - 150 * c)})`;
     ctx.fillRect(bx, by, bw * c, bh);
-    ctx.fillStyle = 'rgba(255,211,90,.9)'; ctx.fillRect(bx + bw - 3, by - 3, 3, bh + 6);
-    if (J.fullAt != null){                                          // 가득 찬 뒤: 금빛 = 지금 떼면 완벽, 그 뒤는 힘껏 (치명타 없음)
-      const lb = inWin ? '지금!' : '힘껏', ly = by - Math.max(6, T * 0.1);
-      ctx.font = `${Math.max(11, Math.round(T * (inWin ? 0.26 : 0.18)))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,20,0,.85)';
-      ctx.strokeText(lb, p.x, ly); ctx.fillStyle = inWin ? '#ffd35a' : '#ff9a6a'; ctx.fillText(lb, p.x, ly);
+    ctx.fillStyle = 'rgba(255,211,90,.9)'; ctx.fillRect(bx + bw * (1 - wk) - 1, by - 3, 2, bh + 6);
+    if (inWin){
+      const ly = by - Math.max(6, T * 0.1);
+      ctx.font = `${Math.max(11, Math.round(T * 0.26))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(40,20,0,.85)';
+      ctx.strokeText('지금!', p.x, ly); ctx.fillStyle = '#ffd35a'; ctx.fillText('지금!', p.x, ly);
     }
     if (inWin){                                                     // 반짝 (창끝)
       const gx = hd.x + u.face * T * 0.75, gy = hd.y - T * 0.3, r = T * (0.16 + 0.08 * Math.sin(time * 30));
@@ -3416,7 +3423,7 @@ function drawThrowFx(){
       ctx.restore();
     }
     // 꾸구국…
-    const txt = c < 0.12 ? '' : c < 0.42 ? '꾸' : c < 0.72 ? '꾸구' : c < 1 ? '꾸구국' : '꾸구국…!';
+    const txt = c < 0.12 ? '' : c < 0.42 ? '꾸' : c < 0.72 ? '꾸구' : '꾸구국…';
     if (txt){
       const m = T * 0.03 * (0.4 + c), tx = p.x - u.face * T * 0.9 + (Math.random() - 0.5) * m * 2, ty = p.y - h * 0.6 + (Math.random() - 0.5) * m;   // 등 뒤 어깨 높이
       ctx.save(); ctx.translate(tx, ty); ctx.rotate(-u.face * 0.12);
@@ -6892,7 +6899,7 @@ function runStats(u){
     if (has('crown')) s.atk = Math.round(s.atk * 1.12);
     if (has('blue') && u.id === 'player') s.atk = Math.round(s.atk * 1.25);
     if (has('heavy')) s.spd = +(s.spd * 0.9).toFixed(2);
-    if (u.id === 'player') s.javMul = 1 + 0.3 * (tr.jav || 0) + (has('blue') ? 0.25 : 0);
+    if (u.id === 'player'){ s.javMul = 1 + 0.3 * (tr.jav || 0) + (has('blue') ? 0.25 : 0); s.javWin = JAV.perfect + JAV.perfectUp * (tr.jav || 0); }   // 창끝 단련: 피해 +30% · 완벽 구간 +0.02초
   } else if (RUN){
     const k = (s.boss ? (u.bossMul || 1) : 1 + 0.16 * (RUN.floor - 1)) * deepMul();   // 일반 적은 층마다 +16%, 보스는 장면에서 정한 세기. 돌파할수록 (깊이) 모두 더 강해짐
     s.hp = Math.round(s.hp * k);
@@ -7096,7 +7103,7 @@ async function trainMember(){
   const who = await pickCards({ title: '누구를 단련할까요', cards: ids.map(id => ({ em: '🧍', t: nameOf(id), d: `Lv${lvOf(id)} · ♥${Math.round(DG.hp[id] ?? maxHpOf(id))}/${maxHpOf(id)}`, g: 1 })) });
   const id = ids[who], tr = RUN.train[id] || (RUN.train[id] = {});
   const cards = [{ k: 'hp', em: '🫀', t: '질긴 몸', d: '최대 체력 +15%' }, { k: 'atk', em: '⚔', t: '날 선 손', d: '공격력 +10%' }, { k: 'def', em: '🛡', t: '단단한 살갗', d: '방어 +3' }];
-  if (id === 'player') cards.push({ k: 'jav', em: '🔱', t: '창끝 단련', d: '투창 피해 +30%' });
+  if (id === 'player') cards.push({ k: 'jav', em: '🔱', t: '창끝 단련', d: '투창 피해 +30% · 완벽 구간 +0.02초' });
   const k = await pickCards({ title: `${nameOf(id)} · 단련`, cards: cards.map(c => ({ ...c, g: 2 })) });
   tr[cards[k].k] = (tr[cards[k].k] || 0) + 1;
   if (cards[k].k === 'hp'){ const mx = maxHpOf(id); DG.hp[id] = Math.min(mx, (DG.hp[id] ?? mx) + Math.round(mx * 0.13)); }
