@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.9
+  version v13.10
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -350,7 +350,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.9';
+const VERSION = 'v13.10';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -3224,6 +3224,25 @@ function updateSpears(sdt){
   for (const sp of b.spears){
     if (sp.done) continue;
     if (b.over || !b.units.includes(sp.owner)){ spearHome(sp, '창을 챙겼다'); continue; }
+    if (sp.stuck){                                                  // 적에게 박힘: 곁에 붙으면 뽑음, 그 적이 쓰러지면 그 자리에 떨어짐
+      const o = sp.stuck; sp.t += sdt;
+      if (o.dead || !b.units.includes(o)){ sp.stuck = null; sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, o.x - sp.dx * 0.4)); sp.y = Math.max(0, Math.min(ROWS - 1, o.y + 0.2)); continue; }
+      sp.x = o.x; sp.y = o.y;
+      if (has('boomer') && sp.t >= JAV.back){ spearHome(sp, '창이 돌아왔다'); continue; }
+      if (!sp.owner.dead && Math.hypot(sp.owner.x - o.x, sp.owner.y - o.y) < unitRadius(o) + 0.9){ spearHome(sp, '창을 뽑았다'); fxText(o, '쑥!', '#e8d3a8'); }
+      continue;
+    }
+    if (sp.bounce){                                                 // 튕겨 나가는 중: 날아가 꽂힐 때까지는 못 주움
+      const B = sp.bounce; B.t += sdt; const k = Math.min(1, B.t / B.dur);
+      sp.x = B.x0 + (B.x1 - B.x0) * k; sp.y = B.y0 + (B.y1 - B.y0) * k;
+      if (k >= 1){
+        sp.bounce = null; sp.ground = true;
+        const q = P(sp.x + 0.5, sp.y + 0.5);
+        for (let i = 0; i < 6; i++) sparks.push({ x: q.x + camX, y: q.y - 2, vx: (Math.random() - 0.5) * 150, vy: -Math.random() * 130, life: 0.35, c: '#7a6a58' });
+        b.fx.push({ type: 'dust', wx: q.x + camX, y: q.y - 2, s: 0.9, life: 0.5, max: 0.5 });
+      }
+      continue;
+    }
     if (!sp.ground){
       const step = sp.speed * sdt; sp.x += sp.dx * step; sp.y += sp.dy * step; sp.dist += step;
       for (const o of b.units){
@@ -3242,14 +3261,16 @@ function updateSpears(sdt){
         }
         shake = Math.max(shake, sp.perfect ? 0.3 : 0.12 + 0.1 * sp.p); b.hitstop = Math.max(b.hitstop, sp.perfect ? 0.11 : 0.05 + 0.04 * sp.p);
         if (sp.perfect && sp.hits.length === 1) camFocus(o.x, o.y, 1.3, 0.6);   // 완벽: 처음 꿰뚫는 적에게 확 다가감
+        const stick = sp.perfect ? 0.1 + 0.05 * sp.hits.length : 0.05 + 0.1 * sp.p;   // 박힘: 힘에 따라 5~15%, 완벽은 꿰뚫을수록 15 → 20 → 25%…
+        if (!o.dead && Math.random() < stick){ stickSpear(sp, o); break; }
         if (sp.perfect) continue;                                    // 완벽: 멈추지 않고 줄 위의 적을 모두 꿰뚫음
-        sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, o.x - sp.dx * 0.7)); sp.y = Math.max(0, Math.min(ROWS - 1, o.y - sp.dy * 0.7 + 0.25));   // 맞고 튕겨 그 적 바로 앞에 떨어짐
+        bounceSpear(sp, o);
         break;
       }
-      if (!sp.ground && (sp.dist >= sp.range || sp.x < -0.3 || sp.x > BATTLE_COLS - 0.7 || sp.y < -0.3 || sp.y > ROWS - 0.7)){
+      if (!sp.ground && !sp.bounce && !sp.stuck && (sp.dist >= sp.range || sp.x < -0.3 || sp.x > BATTLE_COLS - 0.7 || sp.y < -0.3 || sp.y > ROWS - 0.7)){
         sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, sp.x)); sp.y = Math.max(0, Math.min(ROWS - 1, sp.y));
       }
-      if (sp.ground){ const q = P(sp.x + 0.5, sp.y + 0.5); for (let i = 0; i < 5; i++) sparks.push({ x: q.x + camX, y: q.y - 2, vx: (Math.random() - 0.5) * 140, vy: -Math.random() * 120, life: 0.35, c: '#7a6a58' }); }
+      if (sp.ground && !sp.bounce){ const q = P(sp.x + 0.5, sp.y + 0.5); for (let i = 0; i < 5; i++) sparks.push({ x: q.x + camX, y: q.y - 2, vx: (Math.random() - 0.5) * 140, vy: -Math.random() * 120, life: 0.35, c: '#7a6a58' }); }
       continue;
     }
     sp.t += sdt;
@@ -3257,6 +3278,29 @@ function updateSpears(sdt){
     if (!sp.owner.dead && Math.hypot(sp.owner.x - sp.x, sp.owner.y - sp.y) < JAV.pick) spearHome(sp, '창을 주웠다');
   }
   b.spears = b.spears.filter(sp => !sp.done);
+}
+// 적에게 박힘: 몸통 높이에 창이 꽂힌 채 따라다님 (자루는 던진 쪽으로)
+function stickSpear(sp, o){
+  sp.stuck = o; sp.sh = 0.5 + Math.random() * 0.18; sp.tilt = -0.1 - Math.random() * 0.25;   // 가슴 높이, 자루는 조금 처짐 sp.x = o.x; sp.y = o.y; sp.t = 0;
+  sp.dx = Math.sign(sp.dx) || 1; sp.dy = 0;
+  const q = P(o.x + 0.5, o.y + 0.5);
+  wordAt(q.x, q.y - unitHeight(o) * T * depthScale(o.y) * 0.85, '푹!', '#ffb0a0', 0.42, { life: 0.5 });
+  fxText(o, '박힘!', '#ff9a8a', 'big', 0.75);
+  logLine(`🔱 창이 ${o.name}에게 박혔다 (곁에 붙으면 뽑음)`, 'crit');
+}
+// 맞고 튕겨 나감: 한 바퀴 반 빙글 돌며 2.5~4.5칸 떨어진 아무 데나 (판 안) 날아가 꽂힘
+function bounceSpear(sp, o){
+  const x0 = Math.max(0, Math.min(BATTLE_COLS - 1, sp.x)), y0 = Math.max(0, Math.min(ROWS - 1, sp.y));   // 맞은 자리에서 튐
+  let tx = x0, ty = y0;
+  for (let i = 0; i < 12; i++){
+    const a = Math.random() * Math.PI * 2, r = 2.5 + Math.random() * 2;
+    tx = x0 + Math.cos(a) * r; ty = y0 + Math.sin(a) * r * 0.7;
+    if (tx >= 0 && tx <= BATTLE_COLS - 1 && ty >= 0 && ty <= ROWS - 1) break;
+  }
+  tx = Math.max(0, Math.min(BATTLE_COLS - 1, tx)); ty = Math.max(0, Math.min(ROWS - 1, ty));
+  const spin = Math.sign(tx - x0) || 1;
+  sp.bounce = { x0, y0, x1: tx, y1: ty, t: 0, dur: 0.75, spin };
+  sp.x = x0; sp.y = y0; sp.dx = spin; sp.dy = 0;                  // 꽂힐 때 기우는 쪽 = 날아가는 쪽
 }
 function spearImg(L, from){
   const Wp = SPRITES.player && SPRITES.player.weapon;
@@ -3336,6 +3380,27 @@ function drawThrowFx(){
   // 날아가는 창: 가늘어지는 꼬리 + 곁을 스치는 선 (쐐액)
   if (b.spears) for (const sp of b.spears){
     if (sp.ground || sp.done) continue;
+    if (sp.stuck){                                                  // 박힌 창: 몸통에 꽂혀 부르르 떨림
+      const o = sp.stuck, dsc = depthScale(o.y), p = P(o.x + 0.5, o.y + 0.5), L = spearLen(o.y) * 0.95, wob = Math.sin(time * 22) * 0.04 * Math.max(0, 1 - sp.t * 1.5);
+      ctx.save(); ctx.translate(p.x - sp.dx * T * 0.08 * dsc, p.y - unitHeight(o) * T * dsc * sp.sh); if (sp.dx < 0) ctx.scale(-1, 1); ctx.rotate(sp.tilt + wob);
+      ctx.fillStyle = 'rgba(120,10,20,.75)'; ctx.beginPath(); ctx.ellipse(0, 0, T * 0.07 * dsc, T * 0.1 * dsc, 0, 0, Math.PI * 2); ctx.fill();   // 박힌 자리
+      ctx.shadowColor = 'rgba(255,236,190,.95)'; ctx.shadowBlur = 5;   // 어두운 적 위에서도 보이게 옅은 테두리
+      spearImg(L, 0.78); ctx.restore();
+      if (!b.playerAuto || sp.owner.manual){ ctx.globalAlpha = 0.8; emoji('🔱', p.x, p.y - unitHeight(o) * T * dsc - T * 0.75 + Math.sin(time * 5) * T * 0.05, T * 0.28); ctx.globalAlpha = 1; }
+      continue;
+    }
+    if (sp.bounce){                                                 // 튕겨 나감: 포물선 + 한 바퀴 반, 끝에 창끝부터 꽂힘
+      const B = sp.bounce, k = Math.min(1, B.t / B.dur), dsc = depthScale(sp.y), L = spearLen(sp.y), p = P(sp.x + 0.5, sp.y + 0.5);
+      const lift = T * dsc * (0.75 * (1 - k) + 1.9 * 4 * k * (1 - k)), from = 0.5 + 0.35 * k * k;
+      ctx.fillStyle = `rgba(0,0,0,${0.12 + 0.18 * (1 - lift / (T * 2))})`; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.3 * dsc, T * 0.08 * dsc, 0, 0, Math.PI * 2); ctx.fill();
+      for (let g = 2; g >= 0; g--){                                  // 잔상 둘 + 본체
+        const kg = Math.max(0, k - g * 0.035);
+        ctx.save(); ctx.globalAlpha = g ? 0.18 / g : 1;
+        ctx.translate(p.x, p.y - lift); if (B.spin < 0) ctx.scale(-1, 1); ctx.rotate(1.1 - Math.PI * 3 * (1 - kg));
+        spearImg(L, from); ctx.restore();
+      }
+      continue;
+    }
     const dsc = depthScale(sp.y), lift = T * 0.75 * dsc, L = spearLen(sp.y);
     const p = P(sp.x + 0.5, sp.y + 0.5), q = P(sp.x + sp.dx * 0.2 + 0.5, sp.y + sp.dy * 0.2 + 0.5);
     const tl = Math.min(sp.dist, 1.4 + 2.2 * sp.p), t0 = P(sp.x - sp.dx * tl + 0.5, sp.y - sp.dy * tl + 0.5);
@@ -3888,8 +3953,8 @@ function updateBattle(dt){
         const dd = dangerDir(u);
         if (dd && u.st.berserk && u.state !== 'skitter'){ u.skDir = dd; u.state = 'skitter'; u.stateT = 0.3; }   // 낙뢰 · 날아차기: 옆으로 쌩
         if (dd){ dir = dd; u.running = true; }
-        if (u.id === 'player' && u.spearOut && !dd && dist > 1.8){         // 자동 인주: 붙은 적이 없으면 꽂힌 창을 주우러 감
-          const sp = (b.spears || []).find(q => q.ground && q.owner === u);
+        if (u.id === 'player' && u.spearOut && !dd && dist > 1.8){         // 자동 인주: 붙은 적이 없으면 꽂힌 창을 주우러 (박혔으면 뽑으러) 감
+          const sp = (b.spears || []).find(q => (q.ground || q.stuck) && q.owner === u);   // 박혔으면 그 적에게
           if (sp && Math.hypot(sp.x - u.x, sp.y - u.y) > 0.2){ dir = norm(sp.x - u.x, sp.y - u.y); u.running = true; }
         }
         if (u.running) speed *= RUN_MUL;
@@ -4427,9 +4492,9 @@ SPRITES.rosina = { face:'assets/horn_face.png', heightTiles:1.5, baseFace:-1, id
   poses:{ idle:{ src:'assets/horn_idle_anim.webp', fw:378, n:24, fps:12.5, ax:196, ay:380, f:-1 } } };
 SPRITES.odile = { face:'assets/odile_face.png', heightTiles:1.35, baseFace:-1, idleH:380,      // 오딜: 소파째 움직이는 대기 (48프레임, 8칸씩 6줄), 원화가 왼쪽을 봄
   poses:{ idle:{ src:'assets/odile_idle_anim.webp', fw:332, fh:380, n:48, cols:8, fps:16, ax:165, ay:380, f:-1 } } };
-SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 한 장, 고개는 왼쪽
+SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, idleH:400,       // 용묘화: 등을 보이고 삽에 기댄 대기, 고개 (선글라스 옆얼굴)는 오른쪽
   alias:{ strike:'swing', special:'swing', guard:'dig', back:'dig', run:'dig' },   // 휘두르기 (맞는 순간) · 돌진 / 방어 / 파내기 (한 장). 준비는 대기에서 몸을 젖힘
-  poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:-1 },   // 대기 16프레임
+  poses:{ idle:{ src:'assets/tomoe_idle_anim.webp', fw:238, n:16, fps:8.3, ax:112, ay:400, f:1 },   // 대기 16프레임
           swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
