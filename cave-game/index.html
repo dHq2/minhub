@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.16
+  version v13.17
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -354,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.16';
+const VERSION = 'v13.17';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1785,9 +1785,10 @@ HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케
   look:{ skin:'#f3dcc8', cloth:'#ece8e0', weapon:'dagger', wstyle:{ blade:'#3f9c98', guard:'#c23a3a' }, hood:'#f4f1ea', eye:'#c9a23a' },
   tags:['의무C', '민첩B'], trait:'🔆 꿰매 줄게~ — 다친 동료 (체력 70% 아래, 4칸 안)에게 롤러스케이트로 쌩 달려가 그 자리에서 꿰맨다 (최대 체력 18% + 6, 출혈 멈춤). 꿰매고 나면 바로 휙 빠짐. 4.5초마다.\n🐾 짐승 — 기본은 힐러. 틈나면 파고들어 두 번 할퀴고 바로 빠진다. 아주 빠르고 잘 피한다.',
   equip:{ 무기:'🩹 할퀴는 의수', 머리:'간호 모자', 몸:'찢어진 간호복', 장신구:'🧰 구급상자 · 촛대' } };
-HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열',   // 틀만 (기술은 나중에)
-  hp:300, atk:28, def:10, block:0.3, crit:0.1, eva:0.15, spd:3.0, range:1.5, cd:1.1, windup:0.35, hits:1, weight:70, react:0.3,
-  tags:['번개'], trait:'⚡ 기술 준비 중',
+HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터',
+  hp:300, atk:28, def:8, block:0.2, crit:0.2, eva:0.3, spd:4.2, range:1.4, cd:0.9, windup:0.25, hits:1, weight:70, react:0.8,
+  brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
+  tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 늘 빠르게 뛰어다니고, 공격이 오면 번개처럼 비켜선다 (회피 30%, 순간이동급 스텝).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 — 순식간에 달려들어 빠아악! 강한 경직. 치명타면 헤드 니킥: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
   equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
@@ -2609,6 +2610,15 @@ const braceW = u => u.state === 'shieldWall' && u.summoner && u.summoner.cmd ? u
                            : u.st.weight * (u.superArmor ? 4 : u.guarding ? 2 : 1);
 // 경직 판정: 물리 충격은 무게로 버틴다. 충격의 힘(kg) 대 버티기 무게 → 경직 확률 = 힘 / (힘 + 무게)
 // (감전 · 낙뢰는 몸을 타고 흐르는 전기라 무게와 상관없이 경직)
+// 다운: 쓰러져 있다가 일어남 (그동안 경직 = 딜타임). 무게가 limit을 넘으면 안 넘어짐
+function knockDown(o, dur, limit = 600){
+  if (o.dead || (o.st.weight || 60) > limit){ if (!o.dead) fxText(o, '버팀', '#d8d0c0', null, 0.3); return false; }
+  o.stun = Math.max(o.stun, dur); o.downT = Math.max(o.downT || 0, dur); o.windup = 0; o.atkTarget = null; o.cast = null;
+  fxText(o, '다운!', '#ffb36a', 'big', 0.6); logLine(`💫 ${o.name} 다운 (${dur.toFixed(1)}초)`, 'crit');
+  return true;
+}
+// 다운 기울기: 뒤로 넘어졌다가 (0.15초) 누워 있고, 끝 0.3초에 일어남
+const downTilt = o => o.downT > 0 ? -(o.face || 1) * 1.25 * Math.min(1, o.downT / 0.3) : 0;
 function stagger(o, dur, power){
   if (o.dead || o.superArmor) return false;
   if (Math.random() < power / (power + braceW(o))){ o.stun = Math.max(o.stun, dur); return true; }
@@ -3696,6 +3706,8 @@ function updateBattle(dt){
     }
     u.lunge = Math.max(0, u.lunge - sdt);
     u.stun = Math.max(0, u.stun - sdt);
+    if (u.downT > 0) u.downT = Math.max(0, u.downT - sdt);
+    if (u.anim && (u.dead || !u.gw || !u.gw.act)) u.anim = null;
     if (u.superArmor) u.stun = 0;                          // 슈퍼아머: 경직 없음
     u.guardT = Math.max(0, u.guardT - sdt);
     u.guardFlash = Math.max(0, u.guardFlash - dt);
@@ -4292,7 +4304,22 @@ function drawBattle(){
   }
   for (const f of b.fx){
     const k = f.life / f.max;
-    if (f.type === 'bolt'){
+    if (f.type === 'zbolt'){                                      // Z자 천둥 (굿윌의 딱)
+      const p = P(f.x + 0.5, f.y + 0.5), hy = p.y - f.h * T * depthScale(f.y) * 0.55, top = hy - T * 5;
+      const r = (i) => Math.sin(f.seed + i * 7.3) * T * 0.25, w = (f.big ? T * 0.9 : T * 0.5);
+      const pts = [[p.x - w + r(1), top], [p.x + w + r(2), top + (hy - top) * 0.36], [p.x - w * 0.8 + r(3), top + (hy - top) * 0.62], [p.x + w * 0.5 + r(4), top + (hy - top) * 0.86], [p.x, hy]];
+      ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      for (const [lw, c] of [[f.big ? 22 : 10, `rgba(127,212,255,${0.3 * k})`], [f.big ? 10 : 5, `rgba(190,240,255,${0.9 * k})`], [f.big ? 3.5 : 2, `rgba(255,255,255,${k})`]]){
+        ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+      }
+      ctx.fillStyle = `rgba(190,240,255,${0.5 * k})`; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.6 * k, T * 0.2 * k, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if (f.type === 'gwMark'){                              // 손바닥 표식: 노린 자리 (벗어나면 빗나감)
+      const p = P(f.x + 0.5, f.y + 0.5), r = T * (0.5 + 0.4 * k);
+      ctx.save(); ctx.strokeStyle = `rgba(127,212,255,${0.4 + 0.5 * (1 - k)})`; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(p.x, p.y, r, r * 0.36, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.9 * 0.9, T * 0.9 * 0.32, 0, 0, Math.PI * 2); ctx.setLineDash([6, 5]); ctx.stroke(); ctx.restore();
+    } else if (f.type === 'bolt'){
       const a = P(f.a.x + 0.5, f.a.y + 0.5), d = P(f.d.x + 0.5, f.d.y + 0.5);
       ctx.strokeStyle = `rgba(${f.color || '170,140,255'},${k})`; ctx.lineWidth = 4 * k + 1;
       ctx.beginPath(); ctx.moveTo(a.x, a.y - T * 0.6); ctx.lineTo(d.x, d.y - T * 0.6); ctx.stroke();
@@ -4558,8 +4585,20 @@ SPRITES.tomoe = { face:'assets/tomoe_face.png', heightTiles:1.4, baseFace:-1, id
           swing:{ src:'assets/tomoe_swing.png', ax:196, ay:382, f:1 }, dig:{ src:'assets/tomoe_dig.png', ax:184, ay:308, f:1 } } };
 SPRITES.agnes = { face:'assets/agnes_face.png', heightTiles:1.95, baseFace:-1, idleH:350,      // 로젤: 한 장. 발밑 가시 문장은 발 앞으로 퍼지게 (ay = 치맛자락)
   poses:{ idle:{ src:'assets/agnes_idle.png', ax:150, ay:350, f:-1 } } };
-SPRITES.goodwill = { face:'assets/goodwill_face.png', heightTiles:1.95, baseFace:1, idleH:578,   // GOOD WILL: 서 있는 한 장, 얼굴은 오른쪽 (동작은 몸 기울이기)
-  poses:{ idle:{ src:'assets/goodwill_idle.png', ax:105, ay:578, f:1 } } };
+SPRITES.goodwill = { face:'assets/goodwill_face.png', heightTiles:1.95, baseFace:1, idleH:300,   // GOOD WILL: 모든 그림이 오른쪽을 봄. 키 300px 기준으로 맞춘 띠 그림
+  alias:{ prep:'attack', strike:'attack', special:'attack', walk:'run', back:'run', guard:'attack' },   // 기본 공격 = 손 휘두르기, 걷기도 늘 뛰기 (스프린터)
+  poses:{ idle:{ src:'assets/gw_idle.webp', fw:107, n:9, fps:7, ax:50, ay:302, f:1 },
+          attack:{ src:'assets/gw_attack.webp', ax:136, ay:268, f:1 },
+          run:{ src:'assets/gw_run.webp', ax:130, ay:254, f:1 } },
+  // 기술 동작 (o.anim = { name, t }): 프레임마다 길이 (ms), hit = 맞는 프레임
+  anims:{ snap1:{"src":"assets/gw_snap1.webp","fw":270,"fh":372,"n":13,"ax":125,"ay":363,"dur":[110,110,110,110,220,330,110,110,110,110,110,110,440],"hit":6},
+    snap3:{"src":"assets/gw_snap3.webp","fw":210,"fh":315,"n":17,"ax":120,"ay":307,"dur":[110,110,110,110,220,110,110,110,110,110,110,110,110,110,110,110,440],"hit":[6,10,14]},
+    palm:{"src":"assets/gw_palm.webp","fw":643,"fh":400,"n":10,"ax":297,"ay":389,"dur":[110,110,110,110,110,110,110,110,110,330],"hit":4},
+    knee:{"src":"assets/gw_knee.webp","fw":673,"fh":376,"n":14,"ax":427,"ay":365,"dur":[110,110,110,110,110,110,110,110,110,110,110,110,110,110],"hit":6},
+    kneeHead:{"src":"assets/gw_kneeHead.webp","fw":761,"fh":476,"n":15,"ax":471,"ay":465,"dur":[110,110,110,110,110,110,110,110,110,110,110,110,110,110,110],"hit":5},
+    slam:{"src":"assets/gw_slam.webp","fw":571,"fh":476,"n":20,"ax":278,"ay":465,"dur":[330,220,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,330],"hit":13},
+    rise:{"src":"assets/gw_rise.webp","fw":379,"fh":476,"n":14,"ax":148,"ay":465,"dur":[110,220,110,110,110,110,110,110,110,110,110,110,110,110],"hit":10},
+    dash:{"src":"assets/gw_dash.webp","fw":606,"fh":278,"n":7,"ax":471,"ay":267,"dur":[110,110,110,110,110,110,110]} } };
 SPRITES.swordsman = { face:'assets/sword_face.png', heightTiles:1.9, baseFace:-1, idleH:460,  // 검사: 대기 · 베기 (준비는 대기 그대로). 대기 원화는 오른쪽을 보고, 베기 원화는 왼쪽으로 벰
   alias:{ strike:'attack', special:'attack' },
   poses:{ idle:{ src:'assets/sword_idle.png', ax:197, ay:460, f:1 }, attack:{ src:'assets/sword_attack.png', ax:209, ay:430, f:-1 } } };
@@ -4581,6 +4620,7 @@ const portraitWaiters = [];
 for (const [id, S] of Object.entries(SPRITES)){
   if (S.src){ S.img = new Image(); S.img.src = S.src; }
   if (S.poses) for (const q of Object.values(S.poses)){ q.img = new Image(); q.img.src = q.src; }
+  if (S.anims && !Array.isArray(Object.values(S.anims)[0])) for (const q of Object.values(S.anims)){ q.img = new Image(); q.img.src = q.src; }   // 기술 동작 띠 (굿윌)
   if (S.weapon){ S.weapon.img = new Image(); S.weapon.img.src = S.weapon.src; }
   S.faceImg = new Image(); S.faceImg.src = S.face;
   if (S.hurt){ S.hurt.img = new Image(); S.hurt.img.src = S.hurt.src; }
@@ -4740,6 +4780,17 @@ function drawSpriteUnit(o){
   if (o.id === 'poren' && !o.dead) drawPorenAura(o, p, dsc);
   if (!spriteReady(S)){ circle(p.x, p.y - T * 0.6, T * 0.3, getStats(o.id).color); return; }
   const k = S.heightTiles * T * dsc / S.idleH;
+  const A = o.anim && S.anims && S.anims[o.anim.name];
+  if (A && A.img && imgReady(A.img)){                              // 기술 동작 (굿윌): 지난 시간으로 프레임을 고름
+    let fi = 0, acc = 0; const ms = o.anim.t * 1000;
+    while (fi < A.n - 1 && acc + A.dur[fi] <= ms){ acc += A.dur[fi]; fi++; }
+    ctx.save(); ctx.translate(p.x, p.y - (o.lift || 0) * T);
+    if ((o.face || 1) < 0) ctx.scale(-1, 1);
+    if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
+    ctx.drawImage(A.img, fi * A.fw, 0, A.fw, A.fh, -A.ax * k, -A.ay * k, A.fw * k, A.fh * k);
+    ctx.restore();
+    return;
+  }
   if (S.poses){
     const pn = poseOf(o, S);
     let q = S.poses[pn] || S.poses[(S.alias || {})[pn]] || S.poses.idle; if (!imgReady(q.img)) q = S.poses.idle;
@@ -4759,7 +4810,7 @@ function drawSpriteUnit(o){
       else if (pn === 'hurt') lean = -f * 0.09;
       else if (pn === 'guard') lean = -f * 0.04;
     }
-    ctx.rotate(wob * 0.05 + lean);
+    ctx.rotate(wob * 0.05 + lean + downTilt(o));
     if (J && !(J.snap > 0)) ctx.scale(1 + 0.03 * J.c, 1 - 0.05 * J.c);   // 몸을 웅크려 힘을 모음
     if ((o.face || S.baseFace) !== qf) ctx.scale(-1, 1);
     if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
@@ -4812,7 +4863,7 @@ function drawSpriteUnit(o){
   ctx.save();
   ctx.translate(p.x, p.y - (o.lift || 0) * T);
   if (flip) ctx.scale(-1, 1);
-  ctx.rotate(rot);
+  ctx.rotate(rot + downTilt(o) * (flip ? -1 : 1));
   if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
   if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
   const H = S.hurt;
@@ -5201,7 +5252,7 @@ function strikeThunder(u, c){
 }
 // 감전 두 가지: 적뢰(직격, 붉은 번개) 10씩 5턴 · 잔류(범위) 5씩 5턴. 1턴 = 1초. 강한 쪽이 약한 쪽을 덮어씀
 const SHOCK_TICK = 1;
-const SHOCKS = { red: { name:'감전: 적뢰', dmg:10, turns:5, color:'#ff4a4a', tag:'⚡적뢰' }, res: { name:'잔류', dmg:5, turns:5, color:'#ffb45a', tag:'⚡잔류' },
+const SHOCKS = { blue: { name:'감전: 푸른 번개', dmg:6, turns:4, color:'#7fd4ff', tag:'⚡푸른' }, red: { name:'감전: 적뢰', dmg:10, turns:5, color:'#ff4a4a', tag:'⚡적뢰' }, res: { name:'잔류', dmg:5, turns:5, color:'#ffb45a', tag:'⚡잔류' },
   redHalf: { name:'감전: 적뢰 (약)', dmg:7, turns:5, color:'#ff6a5a', tag:'⚡적뢰' }, resHalf: { name:'잔류 (약)', dmg:4, turns:5, color:'#ffc27a', tag:'⚡잔류' } };
 const SHOCK_MAX = 5;   // 감전 · 잔류는 겹칠수록 중첩 (최대 5중첩, 틱 피해 x중첩)
 function applyShock(o, kind = 'res', quiet){
@@ -7434,7 +7485,146 @@ async function bossReward(f){
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
-const BRAINS = { cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain, hargen: hargenBrain, brute: bruteBrain };
+/* ---------- GOOD WILL: 빠른 스프린터 · 회피 · 1대1 육탄전. 기술은 대기시간마다 골라 씀 (안 쓸 땐 손 휘두르기 + 스텝 회피) ---------- */
+const GW = {
+  palm:  { cd: 7, reach: 4.5, min: 0.8, tele: 0.45, slip: 0.9, mul: 2.6, miss: 0.9 },   // 표식 0.45초, 그 사이 0.9칸 넘게 벗어나면 빗나감 → 굿윌 빈틈 0.9초
+  knee:  { cd: 5.5, reach: 4.5, min: 1.3, mul: 2.0, stun: 1.0, down: 2.2, downW: 600 },
+  snap1: { cd: 8, reach: 7, min: 2.2, mul: 2.4, stun: 0.5 },
+  snap3: { cd: 6.5, reach: 7, min: 1.8, mul: 0.75, stun: 0.25 },
+  slam:  { cd: 11, reach: 5, r: 1.7, mul: 1.6, stun: 0.7, lift: 1.6 },
+  rise:  { cd: 4.5, reach: 1.5, mul: 1.5, downP: 0.35, down: 0.9 },
+};
+const gwAnimT = (name, i) => SPRITES.goodwill.anims[name].dur.slice(0, i).reduce((a, v) => a + v, 0) / 1000;   // i번째 프레임이 시작하는 때
+const gwAnimLen = name => gwAnimT(name, SPRITES.goodwill.anims[name].n);
+function gwZap(o, big){                                           // Z자 천둥: 위에서 노린 자에게 내리꽂히고 천천히 사라짐
+  battle.fx.push({ type: 'zbolt', x: o.x, y: o.y, h: unitHeight(o), life: big ? 0.9 : 0.5, max: big ? 0.9 : 0.5, big: !!big, seed: Math.random() * 99 });
+}
+function goodwillBrain(u, sdt, tgt, dist){
+  const g = u.gw || (u.gw = { cd: { palm: 2, knee: 1.2, snap1: 3, snap3: 2, slam: 5, rise: 1 }, act: null });
+  for (const k in g.cd) g.cd[k] -= sdt;
+  if (u.stun > 0 || u.dead){ if (g.act){ g.act = null; u.anim = null; u.lift = 0; } return false; }
+  if (g.act) return gwAct(u, g, sdt);
+  if (!tgt || u.windup > 0 || u.blink || Math.random() > sdt * 2.2) return false;
+  const near = battle.units.filter(o => !o.dead && o.side !== u.side && !o.enter && Math.hypot(o.x - tgt.x, o.y - tgt.y) < GW.slam.r).length;
+  const can = k => g.cd[k] <= 0 && dist <= GW[k].reach && dist >= (GW[k].min || 0);
+  const opts = [];
+  if (can('slam') && near >= 2) opts.push('slam', 'slam');
+  if (can('palm')) opts.push('palm');
+  if (can('knee')) opts.push('knee', 'knee');
+  if (can('rise')) opts.push('rise');
+  if (can('snap1')) opts.push('snap1');
+  if (can('snap3')) opts.push('snap3');
+  if (!opts.length) return false;
+  const type = opts[Math.floor(Math.random() * opts.length)];
+  g.act = { type, t: 0, tgt, sx: u.x, sy: u.y, mx: tgt.x, my: tgt.y, done: 0, crit: false };
+  u.face = Math.sign(tgt.x - u.x) || u.face; u.windup = 0; u.atkTarget = null; u.vx = u.vy = 0;
+  if (type === 'palm'){ battle.fx.push({ type: 'gwMark', x: tgt.x, y: tgt.y, life: GW.palm.tele, max: GW.palm.tele }); fxText(u, '✋', '#7fd4ff', null, 0.5); u.poseName = 'attack'; u.poseUntil = time + GW.palm.tele; }
+  else if (type === 'knee'){ g.act.crit = Math.random() < Math.max(u.st.crit, 0.25); u.anim = { name: g.act.crit ? 'kneeHead' : 'knee', t: 0 }; }
+  else u.anim = { name: type, t: 0 };
+  return true;
+}
+function gwHit(u, o, mul, opts = {}){ if (!o || o.dead) return; resolveHit(u, o, { atk: Math.round(u.st.atk * mul), ...opts }); }
+function gwAct(u, g, sdt){
+  const A = g.act, o = A.tgt, b = battle;
+  A.t += sdt; u.vx = u.vy = 0; u.guarding = false;
+  if (u.anim) u.anim.t = A.t - (A.t0 || 0);
+  const at = (name, i) => (A.t0 || 0) + gwAnimT(name, i);
+  const end = () => { g.cd[A.type] = GW[A.type].cd; g.act = null; u.anim = null; u.lift = 0; u.cd = Math.max(u.cd, 0.25); return true; };
+  if (A.type === 'palm'){
+    if (!A.go){                                                    // 표식: 노린 자리
+      if (A.t < GW.palm.tele) return true;
+      A.go = true; A.t0 = A.t;
+      const slipped = o.dead || Math.hypot(o.x - A.mx, o.y - A.my) > GW.palm.slip;
+      A.miss = slipped;
+      const tx = slipped ? A.mx : o.x, ty = slipped ? A.my : o.y, n = norm(tx - u.x, ty - u.y);
+      startBlink(u, tx - n.x * 0.7, ty - n.y * 0.7); u.face = Math.sign(n.x) || u.face;
+      u.anim = { name: 'palm', t: 0 };
+      if (!slipped){ o.stun = Math.max(o.stun, gwAnimT('palm', SPRITES.goodwill.anims.palm.hit) + 0.25); o.windup = 0; o.atkTarget = null; fxText(o, '붙잡힘!', '#7fd4ff', 'big', 0.5); }
+      return true;
+    }
+    if (!A.done && A.t >= at('palm', SPRITES.goodwill.anims.palm.hit)){
+      A.done = 1;
+      if (A.miss){ fxText(u, '빗나감 — 빈틈!', '#ffe27a', 'big', 0.5); logLine(`✋ ${u.name}의 손바닥이 허공을 짚었다 (빈틈)`, 'miss'); }
+      else {
+        const q = P(o.x + 0.5, o.y + 0.5); wordAt(q.x, q.y - unitHeight(o) * T * depthScale(o.y) * 0.6, '파직!', '#bfefff', 0.5, { life: 0.5 });
+        gwHit(u, o, GW.palm.mul, { grab: true }); if (!o.dead){ applyShock(o, 'blue', true); pushUnit(o, u, 1.2); }
+        shake = Math.max(shake, 0.3); b.hitstop = Math.max(b.hitstop, 0.08); ringAt(o, '127,212,255');
+        logLine(`✋⚡ ${u.name}의 손바닥이 ${o.name}에게서 터졌다`, 'crit');
+      }
+    }
+    if (A.t >= (A.t0 || 0) + gwAnimLen('palm')){ const miss = A.miss; end(); if (miss) u.stun = Math.max(u.stun, GW.palm.miss); return true; }
+    return true;
+  }
+  if (A.type === 'knee'){
+    const nm = A.crit ? 'kneeHead' : 'knee', S = SPRITES.goodwill.anims[nm];
+    if (!A.dashed && A.t >= at(nm, S.hit - 2)){                    // 순식간에 달려듦
+      A.dashed = true;
+      if (!o.dead){ const n = norm(o.x - u.x, o.y - u.y); startBlink(u, o.x - n.x * 0.8, o.y - n.y * 0.8); u.face = Math.sign(n.x) || u.face; }
+    }
+    if (!A.done && A.t >= at(nm, S.hit)){
+      A.done = 1;
+      if (!o.dead && Math.hypot(o.x - u.x, o.y - u.y) < 1.6){
+        const q = P(o.x + 0.5, o.y + 0.5); wordAt(q.x, q.y - unitHeight(o) * T * depthScale(o.y) * (A.crit ? 0.9 : 0.6), '빠아악!', A.crit ? '#ffd35a' : '#ffe9d0', A.crit ? 0.6 : 0.48, { life: 0.55, rot: -0.12 });
+        gwHit(u, o, GW.knee.mul, { forceCrit: A.crit });
+        if (!o.dead){ stagger(o, GW.knee.stun, braceW(u) * 6); if (A.crit) knockDown(o, GW.knee.down, GW.knee.downW); }
+        shake = Math.max(shake, A.crit ? 0.45 : 0.3); b.hitstop = Math.max(b.hitstop, A.crit ? 0.14 : 0.08);
+        if (A.crit) camFocus(o.x, o.y, 1.3, 0.6);
+      } else fxText(u, '헛침', '#b8b0a4');
+    }
+    if (A.t >= gwAnimLen(nm)) return end();
+    return true;
+  }
+  if (A.type === 'snap1' || A.type === 'snap3'){
+    const S = SPRITES.goodwill.anims[A.type], hits = [].concat(S.hit);
+    while (A.done < hits.length && A.t >= at(A.type, hits[A.done])){
+      A.done++;
+      if (o.dead) continue;
+      const big = A.type === 'snap1';
+      gwZap(o, big); gwHit(u, o, GW[A.type].mul, { ranged: true });
+      if (!o.dead){ applyShock(o, 'blue', true); stagger(o, GW[A.type].stun, braceW(u) * (big ? 4 : 1.5)); }
+      shake = Math.max(shake, big ? 0.3 : 0.12); if (big) b.rainFlash = Math.max(b.rainFlash || 0, 0.25);
+    }
+    if (A.t >= gwAnimLen(A.type)) return end();
+    return true;
+  }
+  if (A.type === 'slam'){                                          // 뛰어올라 (2~12프레임) 노린 자리로 날아가 내리꽂힘 (13)
+    const S = SPRITES.goodwill.anims.slam, t0 = at('slam', 2), t1 = at('slam', S.hit);
+    if (!A.done && !o.dead){ A.mx = o.x; A.my = o.y; }
+    if (A.t > t0 && !A.done){
+      const k = Math.min(1, (A.t - t0) / (t1 - t0)), n = norm(A.mx - A.sx, A.my - A.sy), d = Math.max(0, Math.hypot(A.mx - A.sx, A.my - A.sy) - 0.6);
+      u.x = A.sx + n.x * d * k; u.y = A.sy + n.y * d * k;
+    }
+    if (!A.done && A.t >= t1){
+      A.done = 1;
+      const q = P(u.x + 0.5, u.y + 0.5);
+      shake = Math.max(shake, 0.45); b.hitstop = Math.max(b.hitstop, 0.1); b.rainFlash = Math.max(b.rainFlash || 0, 0.3);
+      b.fx.push({ type: 'quake', x: u.x, y: u.y, r: GW.slam.r, life: 0.5, max: 0.5 });
+      for (let i = 0; i < 10; i++){ const a = i / 10 * Math.PI * 2; b.fx.push({ type: 'dust', wx: q.x + camX + Math.cos(a) * T * 0.9, y: q.y + Math.sin(a) * rowH * 0.5, s: 0.9, life: 0.6, max: 0.6 }); }
+      wordAt(q.x, q.y - T * 1.6, '콰르릉!', '#bfefff', 0.55, { life: 0.6 });
+      for (const e of b.units){
+        if (e.dead || e.side === u.side || e.enter || Math.hypot(e.x - u.x, e.y - u.y) > GW.slam.r) continue;
+        gwHit(u, e, GW.slam.mul); if (!e.dead){ applyShock(e, 'blue', true); stagger(e, GW.slam.stun, braceW(u) * 5); }
+      }
+    }
+    if (A.t >= gwAnimLen('slam')) return end();
+    return true;
+  }
+  if (A.type === 'rise'){
+    const S = SPRITES.goodwill.anims.rise;
+    if (!A.done && A.t >= at('rise', S.hit)){
+      A.done = 1;
+      if (!o.dead && Math.hypot(o.x - u.x, o.y - u.y) < GW.rise.reach + 0.4){
+        gwHit(u, o, GW.rise.mul);
+        if (!o.dead && Math.random() < GW.rise.downP) knockDown(o, GW.rise.down, GW.knee.downW);
+        shake = Math.max(shake, 0.2);
+      } else fxText(u, '헛침', '#b8b0a4');
+    }
+    if (A.t >= gwAnimLen('rise')) return end();
+    return true;
+  }
+  return end();
+}
+const BRAINS = { goodwill: goodwillBrain, cesar: cesarBrain, yellow: yellowBrain, agnes: agnesBrain, hargen: hargenBrain, brute: bruteBrain };
 // 곤봉 거한: 걷기 · 공격은 보통 두뇌. 몸에 닿는 가벼운 상대를 밀어내고, 내려찍은 상대는 크게 밀쳐냄
 function bruteBrain(u, sdt){
   for (const o of battle.units){
