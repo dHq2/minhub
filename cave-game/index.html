@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.2
+  version v14.3
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -380,7 +380,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.2';
+const VERSION = 'v14.3';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -3054,6 +3054,7 @@ function aiCounter(d, a){
   battle.pending.push({ t: 0.15, a: d, d: a, opts: { forceCrit: true, counter: true, blue: true, dash: true } });
 }
 // 저스트 방어/회피 뒤 반격: 근접이면 바로 치고, 화살이면 되던진다
+const midAir = u => !!(u.blink || (u.gw && u.gw.act) || u.lift > 0);   // 도약 · 순간이동 · 기술 도중: 회피는 되지만 반격은 없음
 function counterAttack(d, a, opts, delay){
   if (opts && opts.ranged){
     fxText(d, '되받아침!', '#ffe27a', 'big', 0.6);
@@ -3276,7 +3277,7 @@ function resolveHit(a, d, opts = {}){
   if (!opts.forceCrit && !opts.grab && Math.random() < eva){
     fxText(d, '회피', '#b8b0a4');
     logLine(`${a.name} → ${d.name}: 회피`, 'miss');
-    if (d.st.dodgeCounter && !opts.ranged && !opts.counter && !d.dead && d.stun <= 0 && Math.random() < d.st.dodgeCounter && Math.hypot(a.x - d.x, a.y - d.y) < d.st.range + 0.8){
+    if (d.st.dodgeCounter && !opts.ranged && !opts.counter && !d.dead && d.stun <= 0 && !midAir(d) && Math.random() < d.st.dodgeCounter && Math.hypot(a.x - d.x, a.y - d.y) < d.st.range + 0.8){
       fxText(d, '회피 반격', '#8fd3ff', 'big', 0.6); counterAttack(d, a, {}, 0.12);   // 피하면서 바로 벤다 (회피 반격 확률은 설정값)
     }
     return;
@@ -4330,6 +4331,7 @@ function updateBattle(dt){
   }
   b.units = b.units.filter(u => !(u.dead && u.st.summon && u.deadT > 4));   // 소환된 쥐 시체는 4초 뒤 사라짐
   b.pending.forEach(p => { p.t -= sdt; if (p.t <= 0){
+    if (p.opts && p.opts.counter && midAir(p.a)) return;             // 반격 직전에 도약 · 기술로 들어갔으면 반격 취소
     if (p.opts && p.opts.dash && !p.a.dead && !p.d.dead){           // 확정 반격: 사거리 밖이면 한 발 파고듦 (잔상)
       const dx = p.d.x - p.a.x, dy = p.d.y - p.a.y, dd = Math.hypot(dx, dy), want = p.a.st.range * 0.8;
       if (dd > want){ b.fx.push({ type: 'ghost', snap: { ...p.a, lunge: 0, windup: 0 }, life: 0.25, max: 0.25 }); p.a.x += dx / dd * (dd - want); p.a.y += dy / dd * (dd - want); }
