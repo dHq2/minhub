@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.3
+  version v14.4
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -380,7 +380,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.3';
+const VERSION = 'v14.4';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2817,7 +2817,7 @@ function decide(u, dist){
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 // 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상. 대기시간이 있어 남발 못 함
-const stepReady = d => !!d.st.stepCd && !(d.hobbleT > 0) && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !d.cast && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
+const stepReady = d => !!d.st.stepCd && !(d.hobbleT > 0) && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !casting(d) && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
 const stepDist = d => d.st.blink || d.st.spd * 2.6 * 0.24 * 0.9;      // 스텝 한 번에 가는 거리 (칸). 순간이동급 스텝 (blink)이면 그 거리
 // 그 자리로 갈 수 있나: 맵 안이고, 가는 길과 도착 자리에 다른 몸이 없어야 함 (둘러싸이면 못 피함)
 function stepFree(d, nx, ny, ignore){
@@ -3054,7 +3054,9 @@ function aiCounter(d, a){
   battle.pending.push({ t: 0.15, a: d, d: a, opts: { forceCrit: true, counter: true, blue: true, dash: true } });
 }
 // 저스트 방어/회피 뒤 반격: 근접이면 바로 치고, 화살이면 되던진다
-const midAir = u => !!(u.blink || (u.gw && u.gw.act) || u.lift > 0);   // 도약 · 순간이동 · 기술 도중: 회피는 되지만 반격은 없음
+const CZ_CAST = new Set(['auth', 'shoulder', 'spin', 'thrust', 'ult', 'upcut', 'wave']);   // 세자르의 기술 (뒷걸음 · 우회 · 돌진은 이동이라 제외)
+const casting = u => !!((u.gw && u.gw.act) || (u.cz && u.cz.act && CZ_CAST.has(u.cz.act.type)) || u.cast || u.hg);   // 기술 시전 중: 회피 불가 (무적 구간은 따로)
+const midAir = u => !!(casting(u) || u.lift > 0 || (u.blink && u.st.hopper));   // 기술 · 굿윌 도약 도중엔 반격 없음 (세자르 스텝은 반격 가능)
 function counterAttack(d, a, opts, delay){
   if (opts && opts.ranged){
     fxText(d, '되받아침!', '#ffe27a', 'big', 0.6);
@@ -3273,7 +3275,7 @@ function resolveHit(a, d, opts = {}){
       return;
     }
   }
-  const eva = d.dodgeT > 0 ? Math.max(d.st.eva, 0.5) : d.st.eva;
+  const eva = casting(d) ? 0 : d.dodgeT > 0 ? Math.max(d.st.eva, 0.5) : d.st.eva;   // 기술을 시전하는 동안엔 피하지 못함
   if (!opts.forceCrit && !opts.grab && Math.random() < eva){
     fxText(d, '회피', '#b8b0a4');
     logLine(`${a.name} → ${d.name}: 회피`, 'miss');
