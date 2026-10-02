@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.6
+  version v13.7
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -350,7 +350,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.6';
+const VERSION = 'v13.7';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2813,13 +2813,37 @@ function releaseSlow(){
   if (b.clash) b.clash.dur = b.clash.t + 0.1;
   if (b.camFocus) b.camFocus.t = Math.min(b.camFocus.t, b.camFocus.max * 0.8);
 }
+// 집중선: 튕겨냄 · 반격 슬로우 동안 화면 가장자리에서 그 자리로 모이는 가는 선 (매 프레임 새로 그려 살아 움직임). 반격이 꽂히면 슬로우가 풀리는 만큼 옅어짐
+function drawSpeedLines(b){
+  const c = b.clash; if (!c) return;
+  const a = b.slowHold > 0 ? 1 : b.slowRel > 0 ? b.slowRel / SLOW_REL : 0;
+  if (a <= 0.01){ if (!(b.slowHold > 0)) b.clash = null; return; }
+  let cx, cy;
+  if (b.focusScr){ cx = b.focusScr.x; cy = b.focusScr.y; }
+  else { const q = P(c.x + 0.5, c.y + 0.5); cx = q.x; cy = q.y - c.h * T; }
+  const R = Math.hypot(W, H), r0 = Math.min(W, H) * 0.22, n = 64, col = c.blue ? '200,235,255' : '255,250,235';
+  ctx.save();
+  const g = ctx.createRadialGradient(cx, cy, r0 * 0.8, cx, cy, R * 0.6);          // 가장자리를 살짝 어둡게 (시선이 가운데로)
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${0.35 * a})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < n; i++){
+    const ang = (i + Math.random() * 0.8) / n * Math.PI * 2, w = (0.004 + Math.random() * 0.012) * Math.PI;
+    const inner = r0 * (1 + Math.random() * 0.9);
+    ctx.fillStyle = `rgba(${col},${(0.25 + Math.random() * 0.4) * a})`;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(ang) * inner, cy + Math.sin(ang) * inner);
+    ctx.lineTo(cx + Math.cos(ang - w) * R, cy + Math.sin(ang - w) * R);
+    ctx.lineTo(cx + Math.cos(ang + w) * R, cy + Math.sin(ang + w) * R);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
 // 딱! 튕김 · 회피 반격 연출: 잠깐 멈춤 (히트스톱) + 진동 + 그 자리로 시선 모으기 (주변 어둡게, 모바일은 줌인)
 function clashFx(d, a, blue){
   const b = battle, mx = a ? (d.x + a.x) / 2 : d.x, my = a ? (d.y + a.y) / 2 : d.y;
   b.hitstop = Math.max(b.hitstop, 0.06); shake = Math.max(shake, 0.4);      // 딱
   b.slowHold = SLOW_HOLD_MAX; b.slowRel = 0;                                  // 반격이 꽂힐 때까지 슬로우 (0.2배)
-  b.clash = { t: 0, dur: 99 };                                                // 그동안 화면이 뚝뚝 끊기며 단계적으로 확대
-  loop.stut = 1;                                                              // 첫 장면은 바로 그림
+  b.clash = { t: 0, dur: 99, x: mx, y: my, h: unitHeight(d) * 0.55, blue: !!blue };   // 그동안 집중선 (만화처럼 화면 가장자리에서 그 자리로 모이는 선)
   camFocus(mx, my, 1.6, 1.4);
   b.fx.push({ type: 'clash', x: mx, y: my, h: unitHeight(d) * 0.55, blue: !!blue, life: 0.45, max: 0.45, seed: Math.random() * 6 });
   try { if (navigator.vibrate) navigator.vibrate(blue ? [18, 30, 18] : 35); } catch (e) {}
@@ -2924,7 +2948,7 @@ function perfectBlock(d, a, opts = {}){
   guardFx(d, a, opts);
   ringAt(d, '143,232,255');
   fxText(d, '튕겨냄!', '#8fe8ff', 'big', 0.5);
-  if (!opts.ranged){ stagger(a, 0.35, braceW(d) * 4); if (d.id !== 'player' || battle.playerAuto) aiCounter(d, a); }   // 튕겨냄: 큰 반동 + 확정 반격 (푸른 별)
+  if (!opts.ranged){ stagger(a, 0.35, braceW(d) * 4); aiCounter(d, a); }   // 튕겨냄: 큰 반동 + 확정 반격 (푸른 별) · 슬로우. 직접 조작 중인 주인공도 똑같이 자동 반격
   const rico = opts.ranged && !!d.st.shield;
   if (rico) ricochet(d, a);
   logLine(`✨ ${a.name} → ${d.name}: 튕겨냄 (0)${rico ? ' — 탄이 튕겨 나감' : ''}`, 'parry');
@@ -3876,11 +3900,12 @@ function drawBattle(){
   if (!cam.on && b.camFocus && b.camFocus.t > 0){                // 가로 화면 카메라 워킹: 큰 순간에 그 자리로 확 줌인했다가 천천히 풀림
     const f = b.camFocus, k = f.t / f.max;
     let e = k > 0.8 ? (1 - k) / 0.2 : easeOut(k / 0.8);
-    if (b.clash && b.clash.t < b.clash.dur) e = [0.4, 0.7, 1][Math.min(2, Math.floor(b.clash.t / 0.09))];   // 딱! 순간: 확대가 세 단계로 뚝뚝
+    if (b.clash && b.clash.t < b.clash.dur) e = easeOut(Math.min(1, b.clash.t / 0.14));   // 딱! 순간: 확 다가감 (부드럽게)
     const z = 1 + (f.k - 1) * e, p = P(f.x + 0.5, f.y + 0.5), fy = p.y - T * 0.7;
     const tx = p.x + (W / 2 - p.x) * 0.45 * e, ty = fy + (H * 0.55 - fy) * 0.45 * e;   // 그 자리를 화면 가운데 쪽으로 끌어옴
     ctx.translate(tx, ty); ctx.scale(z, z); ctx.translate(-p.x, -fy);
-  }
+    b.focusScr = { x: tx, y: ty };
+  } else b.focusScr = null;
   drawWall();
   drawFloor();
   const placeTool = b.dragTool || b.tool;
@@ -4165,6 +4190,7 @@ function drawBattle(){
   });
   ctx.globalAlpha = 1;
   ctx.restore();
+  drawSpeedLines(b);
 
   const vg = ctx.createRadialGradient(W / 2, H * 0.62, H * 0.25, W / 2, H * 0.62, Math.max(W, H) * 0.8);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)');
@@ -8038,9 +8064,9 @@ function loop(now){
   if (player && !gameEl.hidden){
     if (mode === 'battle'){
       updateBattle(dt); updateCamera(dt);
-      const c = battle && battle.clash;                                           // 딱! 순간엔 끊어지는 프레임 (초당 12장 정도)
-      if (c && c.t < c.dur){ c.t += dt; loop.stut = (loop.stut || 0) + dt; if (loop.stut >= 0.08){ loop.stut = 0; drawBattle(); } }
-      else drawBattle();
+      const c = battle && battle.clash;
+      if (c && c.t < c.dur) c.t += dt;
+      drawBattle();
     }
     else if (mode === 'dungeon'){ updateDungeon(dt); drawDungeon(); }
     else { update(dt); draw(); }
