@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.0
+  version v14.1
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -376,7 +376,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.0';
+const VERSION = 'v14.1';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1811,7 +1811,7 @@ HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케
 HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터',
   hp:300, atk:28, def:8, block:0.2, crit:0.2, eva:0.3, spd:4.2, range:1.4, cd:0.9, windup:0.25, hits:1, weight:70, react:0.8,
   brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45, hopper:true,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
-  tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 늘 빠르게 뛰어다니고, 공격이 오면 번개처럼 비켜선다 (회피 30%, 순간이동급 스텝).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 — 순식간에 달려들어 빠아악! 강한 경직. 치명타면 헤드 니킥: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
+  tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 치고 빠지기. 평소엔 3~5칸에서 전기로 괴롭히고, 상대가 치려 하면 이미 뒤로 쓩, 가끔 파고들어 한 대 치고 바로 빠진다 (회피 30%, 순간이동 도약).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 (죽창 한 방) — 뒤로 살짝 물러났다가 반동으로 박차고 튀어나가 빠아악! (공격력 x3) 강한 경직. 빈틈 (공격 중 · 휘청 · 다운)을 노리면 헤드샷 60%. 헤드샷 = 치명타 x3 + 갑옷 무시: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
   equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
 /* ---------- 장비 (그림 · 이름 · 특성만, 효과는 나중에). 🔆 = 그 인물만 가진 특성을 물려받은 것 ---------- */
 const ITEMS = {
@@ -3298,7 +3298,7 @@ function resolveHit(a, d, opts = {}){
   if (counter){ a.counterT = 0; fxText(a, '역습!', '#ffe27a', 'big', 0.6); }
   const crit = opts.forceCrit || counter || (a.id === 'karius' && a.last5) || Math.random() < a.st.crit;   // 근성의 카리우스: 모든 공격 치명타
   if (crit) dmg *= 3;
-  const armor = !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
+  const armor = opts.pierceArmor ? 0 : !opts.ranged || bulletproof(d) ? defCut(effDef(d)) : 0;   // 헤드샷 (굿윌 니킥)은 갑옷을 무시   // 무방비로 총알·화살을 받으면 갑옷도 소용없음
   dmg = Math.max(1, Math.round(dmg * (1 - armor) * (1 - blockCut)));
   if (d.side === 'ally' && RUN && DG.active){                       // 유물: 붉은 등불 (시작 4초 절반) · 깨진 거울 (+10%)
     if (has('lantern') && b.clock - (b.startClock ?? 0) < 4) dmg = Math.max(1, Math.ceil(dmg / 2));
@@ -7762,9 +7762,10 @@ const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, 
 /* ---------- GOOD WILL: 빠른 스프린터 · 회피 · 1대1 육탄전. 기술은 대기시간마다 골라 씀 (안 쓸 땐 손 휘두르기 + 스텝 회피) ---------- */
 const GW = {
   palm:  { cd: 7, reach: 4.5, min: 0.8, tele: 0.45, slip: 0.9, mul: 2.6, miss: 0.9 },   // 표식 0.45초, 그 사이 0.9칸 넘게 벗어나면 빗나감 → 굿윌 빈틈 0.9초
-  knee:  { cd: 5.5, reach: 4.5, min: 1.3, mul: 2.0, stun: 1.0, down: 2.2, downW: 600 },
-  snap1: { cd: 8, reach: 7, min: 2.2, mul: 2.4, stun: 0.5 },
-  snap3: { cd: 6.5, reach: 7, min: 1.8, mul: 0.75, stun: 0.25 },
+  knee:  { cd: 6, reach: 6, min: 1.3, mul: 3.0, stun: 1.0, down: 2.2, downW: 600 },   // 죽창 한 방: 멀리서도 보이지 않는 속도로 날아와 꽂음
+  snap1: { cd: 6, reach: 7, min: 2.2, mul: 2.4, stun: 0.5 },
+  snap3: { cd: 4, reach: 7, min: 1.8, mul: 0.75, stun: 0.25 },   // 전기로 계속 괴롭힘
+  kite:  { lo: 3.0, hi: 5.0, dive: 2.6, evade: 0.55 },            // 평소 거리 3~5칸, 2.6초마다 한 번 파고들어 치고 빠짐, 공격이 오면 0.55초마다 쓩 빠짐
   slam:  { cd: 7, reach: 5, r: 2.5, mul: 1.6, stun: 1.4 },   // 평소에도 씀, 3~5칸 밖에서도 날아와 내리꽂음 + 번개 한 줄기
   rise:  { cd: 4.5, reach: 1.5, mul: 1.5, downP: 0.35, down: 0.9 },
 };
@@ -7787,22 +7788,47 @@ function goodwillBrain(u, sdt, tgt, dist){
   for (const k in g.cd) g.cd[k] -= sdt;
   if (u.stun > 0 || u.dead){ if (g.act){ g.act = null; u.anim = null; u.lift = 0; } return false; }
   if (g.act) return gwAct(u, g, sdt);
-  if (!tgt || u.windup > 0 || u.blink || Math.random() > sdt * 2.2) return false;
+  if (!tgt || u.windup > 0 || u.blink) return false;
+  // 치고 빠지기: 공격이 오면 뒤로 쓩, 한 대 치면 바로 쓩, 평소엔 3~5칸에서 전기로 괴롭힘, 틈이 보이면 멀리서 니킥
+  g.evade = (g.evade || 0) - sdt; g.diveT = (g.diveT ?? 1.5) - sdt;
+  const away = (L = 3) => {                                       // 노린 자 반대쪽 (조금 옆으로) 순간이동 도약
+    const n = norm(u.x - tgt.x, u.y - tgt.y);
+    for (const sd of [0, 0.6, -0.6, 1.2, -1.2]){
+      const d = norm(n.x - n.y * sd, n.y + n.x * sd), tx = u.x + d.x * L, ty = u.y + d.y * L;
+      if (stepFree(u, tx, ty)){ startBlink(u, tx, ty); return true; }
+    }
+    return false;
+  };
+  const threat = battle.units.find(o => !o.dead && o.side !== u.side && o.windup > 0 && o.atkTarget === u && Math.hypot(o.x - u.x, o.y - u.y) < (o.st.range || 1.5) + 1.2);
+  if (threat && g.evade <= 0 && away(2.8)){ g.evade = GW.kite.evade; g.dive = false; return true; }   // 상대가 칠 땐 이미 뒤에
+  if (u.lunge > 0.12 && g.evade <= 0){ g.dive = false; g.diveT = GW.kite.dive; g.evade = 0.3; if (away(3)) return true; }   // 한 대 치고 바로 빠짐
+  if (Math.random() > sdt * 3){                                    // 기술을 안 고르는 틈: 거리 조절
+    if (g.dive) return false;                                     // 파고드는 중: 기본 공격에 맡김
+    if (g.diveT <= 0 && dist < 4){ g.dive = true; return false; }
+    if (dist < GW.kite.lo && g.evade <= 0 && away(2.6)){ g.evade = GW.kite.evade; return true; }   // 너무 붙었으면 빠짐
+    return false;
+  }
   const near = battle.units.filter(o => !o.dead && o.side !== u.side && !o.enter && Math.hypot(o.x - tgt.x, o.y - tgt.y) < GW.slam.r).length;
   const can = k => g.cd[k] <= 0 && dist <= GW[k].reach && dist >= (GW[k].min || 0);
   const opts = [];
   if (can('slam')) opts.push('slam', ...(near >= 2 || dist >= 2.5 ? ['slam'] : []));   // 멀거나 뭉쳤으면 더 자주
   if (can('palm')) opts.push('palm');
-  if (can('knee')) opts.push('knee', 'knee');
+  if (can('knee')) opts.push(...((tgt.windup > 0 || tgt.stun > 0.1 || tgt.downT > 0) ? ['knee', 'knee', 'knee', 'knee'] : dist >= 2.2 ? ['knee', 'knee'] : ['knee']));   // 틈 (공격 중 · 휘청 · 다운)이면 거의 니킥
   if (can('rise')) opts.push('rise');
-  if (can('snap1')) opts.push('snap1');
-  if (can('snap3')) opts.push('snap3');
+  if (can('snap1')) opts.push('snap1', ...(dist >= 3 ? ['snap1'] : []));
+  if (can('snap3')) opts.push('snap3', ...(dist >= 3 ? ['snap3', 'snap3'] : []));   // 떨어져 있을 땐 전기로
   if (!opts.length) return false;
   const type = opts[Math.floor(Math.random() * opts.length)];
   g.act = { type, t: 0, tgt, sx: u.x, sy: u.y, mx: tgt.x, my: tgt.y, done: 0, crit: false };
   u.face = Math.sign(tgt.x - u.x) || u.face; u.windup = 0; u.atkTarget = null; u.vx = u.vy = 0;
   if (type === 'palm'){ battle.fx.push({ type: 'gwMark', x: tgt.x, y: tgt.y, life: GW.palm.tele, max: GW.palm.tele }); fxText(u, '✋', '#7fd4ff', null, 0.5); u.poseName = 'attack'; u.poseUntil = time + GW.palm.tele; }
-  else if (type === 'knee'){ g.act.crit = Math.random() < Math.max(u.st.crit, 0.25); u.anim = { name: g.act.crit ? 'kneeHead' : 'knee', t: 0 }; }
+  else if (type === 'knee'){                                      // 니킥: 뒤로 살짝 물러났다가 (반동) 박차고 튀어나가 빈틈을 쑤심. 빈틈 (공격 중 · 휘청 · 다운)이면 헤드샷 60%
+    const opening = tgt.windup > 0 || tgt.stun > 0.1 || tgt.downT > 0;
+    g.act.crit = Math.random() < (opening ? 0.6 : Math.max(u.st.crit, 0.25));
+    u.anim = { name: g.act.crit ? 'kneeHead' : 'knee', t: 0 };
+    if (dist < 4.2) away(1.4);                                     // 반동을 위한 뒷걸음 (팟)
+    if (opening) fxText(u, '빈틈!', '#bfefff', null, 0.5);
+  }
   else u.anim = { name: type, t: 0 };
   return true;
 }
@@ -7848,7 +7874,7 @@ function gwAct(u, g, sdt){
       A.done = 1;
       if (!o.dead && Math.hypot(o.x - u.x, o.y - u.y) < 1.6){
         const q = P(o.x + 0.5, o.y + 0.5); wordAt(q.x, q.y - unitHeight(o) * T * depthScale(o.y) * (A.crit ? 0.9 : 0.6), '빠아악!', A.crit ? '#ffd35a' : '#ffe9d0', A.crit ? 0.6 : 0.48, { life: 0.55, rot: -0.12 });
-        gwHit(u, o, GW.knee.mul, { forceCrit: A.crit });
+        gwHit(u, o, GW.knee.mul, { forceCrit: A.crit, pierceArmor: A.crit });   // 헤드샷: 치명타 x3 + 갑옷 무시 → 전황을 뒤집는 한 방
         if (!o.dead){ stagger(o, GW.knee.stun, braceW(u) * 6); if (A.crit) knockDown(o, GW.knee.down, GW.knee.downW); }
         shake = Math.max(shake, A.crit ? 0.45 : 0.3); b.hitstop = Math.max(b.hitstop, A.crit ? 0.14 : 0.08);
         if (A.crit) camFocus(o.x, o.y, 1.3, 0.6);
