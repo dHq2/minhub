@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.19
+  version v13.21
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -353,7 +353,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.19';
+const VERSION = 'v13.21';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1789,6 +1789,15 @@ HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', 
   brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45, hopper:true,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
   tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 늘 빠르게 뛰어다니고, 공격이 오면 번개처럼 비켜선다 (회피 30%, 순간이동급 스텝).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 — 순식간에 달려들어 빠아악! 강한 경직. 치명타면 헤드 니킥: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
   equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
+/* ---------- 장비 (그림 · 이름 · 특성만, 효과는 나중에). 🔆 = 그 인물만 가진 특성을 물려받은 것 ---------- */
+const ITEMS = {
+  princeNecklace: { name:'황태자의 목걸이', img:'assets/items/necklace.png', slot:'장신구', tags:['가호:바람'], d:'태자의 행복을 바란 마음.' },
+  fisherRing:     { name:'어부의 반지', img:'assets/items/ring.png', slot:'장신구', tags:['축복:바다'], d:'' },
+  oldCrown:       { name:'노인의 왕관', img:'assets/items/crown.png', slot:'머리', tags:['🔆권위'], from:'cesar', d:'세자르의 왕관. 신성을 약하게 누른다 (세자르 만큼은 아님).' },
+  oldSword:       { name:'노인의 검', img:'assets/items/sword.png', slot:'무기', tags:['냉기E'], from:'cesar', d:'평범하게 잘 만들어진 검. 아주 약간의 냉기가 남아 있다 (세자르는 냉기 A).' },
+  holyShroud:     { name:'성해포', img:'assets/items/robe.png', slot:'몸', tags:['신성E'], from:'jeokroe', d:'적뢰를 쓰러뜨리면. 약간의 신성을 얻는다.' },
+};
+for (const it of Object.values(ITEMS)){ it.imgEl = new Image(); it.imgEl.src = it.img; }
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:2000, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.22, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
@@ -1817,7 +1826,7 @@ Object.assign(ENEMIES, {
     hp:500, atk:30, def:24, block:0.75, crit:0.08, eva:0.32, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
     boss:true, brain:'cesar', silent:true, lunge:2.6, stepCd:5, blink:1.4, dodgeCounter:0.5, hitStagger:0.45, combo:0.35, sever:0.35, frostbite:0.25,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 모든 공격은 머리 위 "!"와 바닥 범위로 예고된다. 탐색 (4.5~7초): 아주 천천히 걸으며 간격 (2.6칸)을 재고 상대를 살핀다. 붙으면 투욱, 투욱 무게 실린 뒷걸음 점프로 거리를 벌린다. 가끔 잠깐 뛰어 자리를 옮긴다. 회피 스텝은 공격이 올 때만. 딜타임 (4.5초): 휘몰아친다 — 3배 속도 우회로 뒤를 노리고, 뛰어 들어오고, 기술을 쏟아낸다. 빈틈 (휘청이거나 공격 직후인 자)은 탐색 중에도 절대 놓치지 않고 즉시 파고들어 3연격. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 32% + 순간이동급 스텝), 피하면 50% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 (레벨 1 기준) 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 (반경 2.6칸, 공격력 2배) 2칸 밀어내고 휘청이게 한다. 탐색 중에도 붙으면 백스텝 대신 쓰기도 한다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.',
+    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 모든 공격은 머리 위 "!"와 바닥 범위로 예고된다. 탐색 (4.5~7초): 아주 천천히 걸으며 간격 (2.6칸)을 재고 상대를 살핀다. 붙으면 투욱, 투욱 무게 실린 뒷걸음 점프로 거리를 벌린다. 가끔 잠깐 뛰어 자리를 옮긴다. 회피 스텝은 공격이 올 때만. 딜타임 (4.5초): 휘몰아친다 — 3배 속도 우회로 뒤를 노리고, 뛰어 들어오고, 기술을 쏟아낸다. 빈틈 (휘청이거나 공격 직후인 자)은 탐색 중에도 절대 놓치지 않고 즉시 파고들어 3연격. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 32% + 순간이동급 스텝), 피하면 50% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 (레벨 1 기준) 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 (반경 2.6칸, 공격력 2배) 2칸 밀어내고 휘청이게 한다. 탐색 중에도 붙으면 백스텝 대신 쓰기도 한다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n⚔ 하늘 가르기 (필살) — 제자리에서 검을 늘어뜨리고 기운을 모았다가 (슈퍼아머) 세로로 크게 올려벤다. 7칸 직선 위의 모두 (공중 포함) 절단 → 경직 → 풀리며 쓰러지고 10초 이동 제약 (느리게 걷기만, 스텝 불가).\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -2666,7 +2675,7 @@ function decide(u, dist){
 }
 // 누가 나를 치려고 준비하면: 성향에 따라 방어를 올리거나 뒤로 빠짐
 // 회피 스텝: 옆 (조금 뒤)으로 재빠르게, 잔상. 대기시간이 있어 남발 못 함
-const stepReady = d => !!d.st.stepCd && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !d.cast && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
+const stepReady = d => !!d.st.stepCd && !(d.hobbleT > 0) && (d.stepReadyAt || 0) <= battle.clock && !d.manual && !d.cast && !d.fort && !d.kc && !d.ladder && !d.rise && !d.bind && d.stun <= 0 && d.windup <= 0;
 const stepDist = d => d.st.blink || d.st.spd * 2.6 * 0.24 * 0.9;      // 스텝 한 번에 가는 거리 (칸). 순간이동급 스텝 (blink)이면 그 거리
 // 그 자리로 갈 수 있나: 맵 안이고, 가는 길과 도착 자리에 다른 몸이 없어야 함 (둘러싸이면 못 피함)
 function stepFree(d, nx, ny, ignore){
@@ -3057,6 +3066,7 @@ function parry(d, a, opts = {}){
 }
 function resolveHit(a, d, opts = {}){
   if (d.dead || (a.dead && !opts.ranged)) return;
+  if (d.gw && d.gw.act && d.gw.act.type === 'slam' && d.gw.act.air){ fxText(d, '무적', '#bfefff'); return; }   // 굿윌 내려찍기: 뛰어올라 떠 있는 동안 무적 (내리꽂은 뒤엔 맞음)
   if (d.cast && d.cast.type === 'kick' && (d.cast.phase === 'leap' || d.cast.phase === 'fly')){   // 날아오는 돌덩이: 무적
     fxText(d, '무적', '#d8d2c0'); return;
   }
@@ -3689,6 +3699,8 @@ function updateBattle(dt){
     u.lunge = Math.max(0, u.lunge - sdt);
     u.stun = Math.max(0, u.stun - sdt);
     if (u.downT > 0) u.downT = Math.max(0, u.downT - sdt);
+    if (u.upcutT > 0){ u.upcutT -= sdt; if (u.upcutT <= 0 && !u.dead){ knockDown(u, CZ.upDown, Infinity); u.hobbleT = CZ.hobble; fxText(u, '⛓ 이동 제약', '#cfe6ff', null, 0.9); } }   // 하늘 가르기: 경직이 풀리며 쓰러지고 10초 이동 제약
+    if (u.hobbleT > 0) u.hobbleT = Math.max(0, u.hobbleT - sdt);
     if (u.anim && (u.dead || !u.gw || !u.gw.act)) u.anim = null;
     if (u.superArmor) u.stun = 0;                          // 슈퍼아머: 경직 없음
     u.guardT = Math.max(0, u.guardT - sdt);
@@ -4042,6 +4054,7 @@ function updateBattle(dt){
       }
       if (u.guarding && u.state !== 'charge') speed *= 0.7;   // 방어 중 이동 30% 감소 (방패 돌격은 제외)
       if (u.frostT > 0) speed *= 0.55;                            // 동상: 발이 얼어 느려짐
+      if (u.hobbleT > 0){ speed *= 0.4; u.running = false; }        // 이동 제약 (하늘 가르기): 느리게 걷기만
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
       if (u.id === 'player') u.throwCd = Math.max(0, (u.throwCd || 0) - sdt);
@@ -4077,14 +4090,30 @@ function updateBattle(dt){
         dir = null;
       }
     }
-    if (u.st.hopper){                                               // 굿윌: 팟 · 팟 도약하듯 이동 (뛰는 동안 빠르게 + 몸이 뜸, 착지 사이 잠깐 멈칫)
+    if (u.st.hopper){                                               // 굿윌: 미끄러지듯 순간이동하는 도약으로 이동 (팟. 팟. 거의 3칸씩). 도약 중엔 피함 (이동 = 회피)
+      u.lift = 0; u.hopCd = (u.hopCd || 0) - sdt;
       if (dir && Math.hypot(dir.x, dir.y) > 0.1){
-        const was = u.hopT || 0; u.hopT = was + sdt; const ph = (u.hopT % 0.4) / 0.4;
-        if (Math.floor(u.hopT / 0.4) !== Math.floor(was / 0.4)){ const q = P(u.x + 0.5, u.y + 0.5); b.fx.push({ type: 'dust', wx: q.x + camX, y: q.y - 2, s: 0.7, life: 0.35, max: 0.35 }); if (Math.random() < 0.35) fxText(u, '팟', '#bfefff', null, -0.2); }
-        speed *= ph < 0.62 ? 1.6 : 0.12; u.lift = ph < 0.62 ? Math.sin(ph / 0.62 * Math.PI) * 0.32 : 0;
-      } else if (!(u.gw && u.gw.act)) u.lift = 0;
+        if (u.hopCd <= 0 && !u.blink){
+          const n = norm(dir.x, dir.y), toward = tgt && (n.x * (tgt.x - u.x) + n.y * (tgt.y - u.y)) > 0;
+          let L = 3; if (toward) L = Math.min(L, dist - u.st.range * 0.8);   // 다가갈 땐 사거리 앞에서 멈춤
+          if (L > 0.6 && stepFree(u, u.x + n.x * L, u.y + n.y * L)){ startBlink(u, u.x + n.x * L, u.y + n.y * L); u.hopCd = 0.45 + Math.random() * 0.2; }
+          else u.hopCd = 0.15;
+        }
+        speed *= 0.25;                                              // 도약 사이엔 거의 서 있음
+      }
     }
     stepMover(u, sdt, dir, speed, battleSolid(u));
+    if (!u.summoner && !u.st.summon && Math.hypot(u.vx, u.vy) > 0.6){   // 포렌의 쥐: 동료 (주인공 포함)가 가는 길에 있으면 명령 중이어도 호다닥 비켜 줌
+      const v = norm(u.vx, u.vy);
+      for (const r of b.units){
+        if (r.dead || r.side !== u.side || !r.summoner || r.id === 'ratKnight' || (r.yieldCd || 0) > b.clock) continue;
+        const dx = r.x - u.x, dy = r.y - u.y, ahead = dx * v.x + dy * v.y, side = dx * v.y - dy * v.x;
+        if (ahead < 0 || ahead > 1.3 || Math.abs(side) > 0.75) continue;
+        const sg = side >= 0 ? 1 : -1;
+        r.kbx += v.y * sg * 8 + v.x * 1.5; r.kby += -v.x * sg * 8 + v.y * 1.5; r.yieldCd = b.clock + 0.5;
+        if (Math.random() < 0.3) fxText(r, '찍!', '#9dff7a', null, -0.3);
+      }
+    }
     // 같은 편끼리는 서로 밀어냄
     for (const o of b.units){
       if (o === u || o.dead || o.side !== u.side) continue;
@@ -4302,7 +4331,26 @@ function drawBattle(){
   }
   for (const f of b.fx){
     const k = f.life / f.max;
-    if (f.type === 'zbolt'){                                      // Z자 천둥 (굿윌): 하늘 끝에서 지그재그로 내리꽂힘 + 가지 + 깜빡임 + 땅 번쩍
+    if (f.type === 'upcut'){                                      // 하늘 가르기: 얇은 세로 칼날이 직선을 따라 순식간에 지나가고, 지나간 자리에 가는 빛줄기가 남음
+      const e = Math.min(1, (f.max - f.life) / 0.26), a0 = P(f.x + 0.5, f.y + 0.5), a1 = P(f.x + f.dx * f.len * e + 0.5, f.y + f.dy * f.len * e + 0.5);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+      ctx.strokeStyle = `rgba(200,230,255,${0.9 * k})`; ctx.lineWidth = 3 + 5 * k;
+      ctx.beginPath(); ctx.moveTo(a0.x, a0.y); ctx.lineTo(a1.x, a1.y); ctx.stroke();        // 바닥의 베인 선
+      const n = 7;
+      for (let i = 0; i <= n; i++){                                 // 지나간 자리마다 세로로 선 빛 (뒤쪽일수록 옅음)
+        const tt = i / n * e, q = P(f.x + f.dx * f.len * tt + 0.5, f.y + f.dy * f.len * tt + 0.5), hgt = T * (3.2 + 1.2 * (1 - tt)), al = k * (0.25 + 0.75 * (tt / Math.max(0.01, e)));
+        ctx.strokeStyle = `rgba(235,248,255,${Math.min(1, al * 1.2)})`; ctx.lineWidth = 2.5 + (i === n ? 4 : 0);
+        ctx.beginPath(); ctx.moveTo(q.x, q.y + T * 0.2); ctx.lineTo(q.x + f.dx * T * 0.25, q.y - hgt); ctx.stroke();
+      }
+      if (e < 1 || k > 0.75){                                       // 칼날 머리: 길쭉한 초승달
+        const q = a1, h = T * 4.2;
+        ctx.fillStyle = `rgba(245,252,255,${Math.min(1, k * 1.3)})`; ctx.shadowColor = '#bfe6ff'; ctx.shadowBlur = 18;
+        ctx.beginPath(); ctx.moveTo(q.x, q.y + T * 0.3);
+        ctx.quadraticCurveTo(q.x + f.dx * T * 0.9, q.y - h * 0.5, q.x + f.dx * T * 0.2, q.y - h);
+        ctx.quadraticCurveTo(q.x + f.dx * T * 0.45, q.y - h * 0.5, q.x, q.y + T * 0.3); ctx.fill();
+      }
+      ctx.restore();
+    } else if (f.type === 'zbolt'){                                      // Z자 천둥 (굿윌): 하늘 끝에서 지그재그로 내리꽂힘 + 가지 + 깜빡임 + 땅 번쩍
       const p = P(f.x + 0.5, f.y + 0.5), hy = p.y - f.h * T * depthScale(f.y) * 0.55, top = -T * 0.5, sc = f.big ? 1.6 : 1;
       const age = f.max - f.life, fl = age < 0.35 ? (Math.sin(age * 90) > -0.2 ? 1 : 0.25) : 1;   // 처음엔 번쩍번쩍
       const a = Math.min(1, k * 1.6) * fl, r = i => Math.sin(f.seed + i * 7.3), w = T * 0.55 * sc;
@@ -5534,10 +5582,10 @@ function renderSkills(body, ids){
    ========================================================= */
 Object.assign(HEROES, {
   ratS: { name:'작은 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 작은 쥐',
-    hp:15, atk:3, def:0, block:0, crit:0.05, eva:0.30, spd:3.8, range:0.9, cd:0.7, windup:0.15, hits:1, weight:3, react:0.55,
+    hp:15, atk:3, def:0, block:0, crit:0.01, eva:0.30, spd:3.8, range:0.9, cd:0.7, windup:0.15, hits:1, weight:3, react:0.55,
     summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratM: { name:'쥐', grade:'', color:'#6fdc6f', sub:'충성 · 포렌이 부른 쥐',
-    hp:40, atk:7, def:1, block:0, crit:0.05, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0.4,
+    hp:40, atk:7, def:1, block:0, crit:0.01, eva:0.15, spd:3.2, range:1.0, cd:0.9, windup:0.2, hits:1, weight:12, react:0.4,
     summon:true, berserk:true, tags:[], trait:'', equip:{ 무기:'이빨', 머리:'—', 몸:'—', 장신구:'—' } },
   ratL: { name:'큰 쥐', grade:'', color:'#6fdc6f', sub:'충성 · 사람만 한 쥐',
     hp:200, atk:14, def:4, block:0, crit:0.08, eva:0.05, spd:2.6, range:1.2, cd:1.2, windup:0.35, hits:1, weight:70, react:0,
@@ -7493,7 +7541,8 @@ async function bossReward(f){
 
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
-const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3 };
+const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3,
+  upcut: 20, upLen: 7, upW: 0.55, upCharge: 1.2, upStun: 1.0, upDown: 1.6, hobble: 10 };   // 하늘 가르기 (세로 올려베기): 필살
 /* ---------- GOOD WILL: 빠른 스프린터 · 회피 · 1대1 육탄전. 기술은 대기시간마다 골라 씀 (안 쓸 땐 손 휘두르기 + 스텝 회피) ---------- */
 const GW = {
   palm:  { cd: 7, reach: 4.5, min: 0.8, tele: 0.45, slip: 0.9, mul: 2.6, miss: 0.9 },   // 표식 0.45초, 그 사이 0.9칸 넘게 벗어나면 빗나감 → 굿윌 빈틈 0.9초
@@ -7608,6 +7657,7 @@ function gwAct(u, g, sdt){
   if (A.type === 'slam'){                                          // 뛰어올라 (2~12프레임) 노린 자리로 날아가 내리꽂힘 (13)
     const S = SPRITES.goodwill.anims.slam, t0 = at('slam', 2), t1 = at('slam', S.hit);
     if (!A.done && !o.dead){ A.mx = o.x; A.my = o.y; }
+    A.air = A.t > t0 && !A.done;                                     // 뛰어올라 내리꽂기 전까지 = 체공 (무적)
     if (A.t > t0 && !A.done){
       const k = Math.min(1, (A.t - t0) / (t1 - t0)), n = norm(A.mx - A.sx, A.my - A.sy), d = Math.max(0, Math.hypot(A.mx - A.sx, A.my - A.sy) - 0.6);
       u.x = A.sx + n.x * d * k; u.y = A.sy + n.y * d * k;
@@ -7829,8 +7879,8 @@ function czFoes(u){ return battle.units.filter(o => !o.dead && o.side !== u.side
 function cesarBrain(u, sdt, tgt, dist){
   const b = battle;
   const z = u.cz || (u.cz = { mode: 'circle', modeT: 1.5 + Math.random(), orbit: Math.random() < 0.5 ? 1 : -1,
-    ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 4, back: 0, flank: 3, rush: 5, auth: b.snow ? -1 : 0.6, shaken: 0, cool: 0, act: null });
-  for (const k of ['ult', 'wave', 'spin', 'shoulder', 'thrust', 'back', 'punish']) z[k] = (z[k] || 0) - sdt;
+    ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 4, back: 0, flank: 3, rush: 5, upcut: 8, auth: b.snow ? -1 : 0.6, shaken: 0, cool: 0, act: null });
+  for (const k of ['ult', 'wave', 'spin', 'shoulder', 'thrust', 'back', 'punish', 'upcut']) z[k] = (z[k] || 0) - sdt;
   // 권위: 흔들림 (크게 휘청이면 6초 동안 눈이 멎고 신성이 돌아옴)
   z.cool -= sdt;
   if (z.shaken > 0){
@@ -7861,6 +7911,7 @@ function cesarBrain(u, sdt, tgt, dist){
   if (z.fury){                                                    // 딜타임에만 기술을 쏟아냄
     if (near.length && z.spin <= 0){ z.act = { type: 'spin', t: 0 }; return true; }
     if (z.ult <= 0){ const fr = czFront(u); if (fr && Math.hypot(fr.x - u.x, fr.y - u.y) < 6){ z.act = { type: 'ult', t: 0, tgt: fr, hits: 0 }; return true; } }   // 마구 베기는 최전방만
+    if (z.upcut <= 0 && dist > 1.5 && dist < CZ.upLen){ z.act = { type: 'upcut', t: 0, tgt }; logLine('👑 세자르가 검을 낮게 늘어뜨리고 숨을 고른다…', 'crit'); return true; }   // 하늘 가르기 (필살)
     if (z.thrust <= 0 && dist > 1.3 && dist < 4.5){ z.act = { type: 'thrust', t: 0, tgt }; return true; }
     if (z.wave <= 0 && dist >= 2.2 && dist <= 5){ z.act = { type: 'wave', t: 0, tgt }; return true; }
     if (z.shoulder <= 0 && dist < 3.3 && Math.random() < sdt * 1.5){ z.act = { type: 'shoulder', t: 0, tgt }; return true; }
@@ -7976,6 +8027,35 @@ function czRun(u, z, sdt){
     if (A.t >= 0.75) end();
     return true;
   }
+  if (A.type === 'upcut'){                                        // 하늘 가르기: 제자리에서 모음 (슈퍼아머) → 세로로 크게 올려벰. 일직선 위 모두 (공중 포함) 절단 → 경직 → 풀리며 다운 + 10초 이동 제약
+    const t = A.tgt;
+    if (A.t < CZ.upCharge){
+      u.superArmor = true; czPose(u, 'prep', 0.2);
+      if (t && !t.dead){ A.dir = norm(t.x - u.x, t.y - u.y); u.face = Math.sign(A.dir.x) || u.face; }
+      if (Math.random() < sdt * 30){ const q = P(u.x + 0.5, u.y + 0.5), a = Math.random() * Math.PI * 2, r = T * (1.2 + Math.random() * 0.6); sparks.push({ x: q.x + camX + Math.cos(a) * r, y: q.y - T * 0.8 + Math.sin(a) * r * 0.6, vx: -Math.cos(a) * 150, vy: -Math.sin(a) * 90, life: 0.35, c: '#e8f4ff' }); }   // 기운이 모임
+      if (A.t > 0.1 && !A.cut){ A.cut = true; b.cutin = { img: SPRITES.cesar.faceImg, name: '세자르', skill: '하늘 가르기', t: 0, dur: 0.95 }; }   // 컷인은 모으는 동안 (베는 순간은 가리지 않게)
+      return true;
+    }
+    if (!A.done){
+      A.done = true; z.upcut = CZ.upcut;
+      const dir = A.dir || { x: u.face, y: 0 }, x0 = u.x, y0 = u.y, L = CZ.upLen;
+      b.fx.push({ type: 'upcut', x: x0, y: y0, dx: dir.x, dy: dir.y, len: L, life: 0.9, max: 0.9 });
+      const hits = czFoes(u).filter(o => { const px = o.x - x0, py = o.y - y0, al = px * dir.x + py * dir.y; return al > -0.2 && al < L + 0.4 && Math.abs(px * dir.y - py * dir.x) < CZ.upW + unitRadius(o) * 0.5; });   // 공중 (뜬 자)도 벤다
+      for (const o of hits){
+        resolveHit(u, o, { atk: Math.round(u.st.atk * 2.2), grab: true });
+        if (o.dead) continue;
+        applySever(o); o.stun = Math.max(o.stun, CZ.upStun); o.upcutT = CZ.upStun; o.windup = 0; o.atkTarget = null;
+        if (o.lift > 0){ o.lift = 0; o.toss = null; }
+        fxText(o, '절단!', '#e8f4ff', 'big', 0.5);
+      }
+      b.hitstop = Math.max(b.hitstop, 0.16); shake = Math.max(shake, 0.5); b.zapFlash = Math.max(b.zapFlash || 0, 0.5);
+      logLine(`⚔ 세자르의 하늘 가르기 — ${hits.length}명 절단`, 'crit');
+      u.superArmor = false;
+    }
+    czPose(u, 'special', 0.2);
+    if (A.t >= CZ.upCharge + 0.8) end();
+    return true;
+  }
   if (A.type === 'thrust'){                                       // 관통 찌르기: 모으기 (슈퍼아머) → 순식간에 일직선 관통 → 맨 앞을 들어 올려 내던짐
     const t = A.tgt;
     if (A.t < 0.6){
@@ -8074,7 +8154,7 @@ function czRun(u, z, sdt){
   end(); return false;
 }
 // 세자르 예고: 모으는 동안 바닥에 범위가 차오름 (공격 준비 · 원형 베기 · 관통 찌르기 · 냉기 참격 · 마구 베기 대상)
-const CZ_CHARGE = { spin: 0.35, thrust: 0.6, wave: 0.8, ult: 1.0 };
+const CZ_CHARGE = { spin: 0.35, thrust: 0.6, wave: 0.8, ult: 1.0, upcut: 1.2 };
 function czCharging(u){ const A = u.cz && u.cz.act; return !!(A && CZ_CHARGE[A.type] && A.t < CZ_CHARGE[A.type]); }
 function floorShape(pts, k, rgb){
   const q = pts.map(([c, r]) => P(c + 0.5, r + 0.5));
@@ -8095,6 +8175,10 @@ function drawCesarTelegraphs(){
     const k = A.t / CZ_CHARGE[A.type];
     if (A.type === 'spin') floorShape(fanPts(u.x, u.y, CZ.spinR, 0, Math.PI * 2, 28).slice(1), k, '160,220,255');
     else if (A.type === 'wave'){ const a = A.dir ?? (u.face > 0 ? 0 : Math.PI); floorShape(fanPts(u.x, u.y, 5.2, a - 1.3, a + 1.3), k, '140,210,255'); }
+    else if (A.type === 'upcut'){                                   // 하늘 가르기: 가는 직선 (끝까지)
+      const d = A.dir || { x: u.face, y: 0 }, L = CZ.upLen, w = 0.18 + 0.3 * k, nx = -d.y * w, ny = d.x * w;
+      floorShape([[u.x + nx, u.y + ny], [u.x + d.x * L + nx, u.y + d.y * L + ny], [u.x + d.x * L - nx, u.y + d.y * L - ny], [u.x - nx, u.y - ny]], k, '235,245,255');
+    }
     else if (A.type === 'thrust'){
       const d = A.dir || { x: u.face, y: 0 }, L = 3.6 + 0.6, w = 0.6, nx = -d.y * w, ny = d.x * w;
       floorShape([[u.x + nx, u.y + ny], [u.x + d.x * L + nx, u.y + d.y * L + ny], [u.x + d.x * L - nx, u.y + d.y * L - ny], [u.x - nx, u.y - ny]], k, '255,200,200');
