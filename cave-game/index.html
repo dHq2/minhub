@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.21
+  version v14.0
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -258,6 +258,26 @@
   @media (max-width:640px){ #bt-panel{width:calc(100% - 24px);max-height:44%;} #bt-log{left:12px;right:12px;width:auto;max-height:20%;} }
 
   /* 빠른 버튼 줄: 전투 중 늘 보임 */
+  /* 스킬 줄: 정사각형 그림 + 외곽선 (색 = 하는 일, 얇은 테 = 기본 스킬, 굵은 테 + 게이지 = 무기 스킬, 금테 두 줄 = 유물) */
+  #skillbar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(44px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;pointer-events:auto;z-index:3;}
+  #skillbar .sk{position:relative;width:56px;height:56px;border-radius:6px;border:2px solid #888;background:#111;overflow:hidden;cursor:pointer;touch-action:none;}
+  #skillbar .sk.weap{border-width:4px;}
+  #skillbar .sk.relic{border:3px double #ffd35a;box-shadow:0 0 0 2px #7a5a10, 0 0 10px rgba(255,211,90,.6);}
+  #skillbar .sk img{width:100%;height:100%;object-fit:cover;display:block;}
+  #skillbar .sk .cd{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.62);height:0;}
+  #skillbar .sk b{position:absolute;left:3px;top:1px;font-size:11px;color:#fff;text-shadow:0 0 3px #000;}
+  #skillbar .sk span{position:absolute;left:0;right:0;bottom:1px;text-align:center;font-size:10px;color:#fff;text-shadow:0 0 3px #000,0 0 2px #000;font-family:var(--display);}
+  @media (max-width:640px){ #skillbar{left:12px;transform:none;bottom:auto;top:calc(104px + env(safe-area-inset-top,0px));} #skillbar .sk{width:44px;height:44px;} }
+  /* 인주 장비 칸 */
+  .eq-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;}
+  .eq-slot{display:flex;gap:8px;align-items:center;background:#0d0a10;border:1px solid var(--line);border-radius:4px;padding:6px;cursor:default;min-height:52px;}
+  .eq-slot.dev{cursor:pointer;} .eq-slot.dev:hover{border-color:#c9a36a;}
+  .eq-slot img{width:44px;height:44px;object-fit:contain;flex:none;background:#151018;border-radius:3px;}
+  .eq-slot small{display:block;color:#a99;font-size:11px;} .eq-slot .nm{font-size:13px;}
+  .eq-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;margin:6px 0 10px;}
+  .eq-pick button{display:flex;gap:6px;align-items:center;background:#15111a;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:5px;text-align:left;font-size:12px;}
+  .eq-pick button.on{border-color:var(--fire);} .eq-pick img{width:30px;height:30px;object-fit:contain;}
+  .eq-note{font-size:11px;color:#9a8f86;margin:2px 0 6px;}
   #bt-quick{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:12px;display:flex;gap:6px;z-index:3;}
   #bt-quick button{background:rgba(18,14,20,.92);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 11px;font-size:13px;font-family:var(--display);min-height:38px;}
   #bt-quick button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
@@ -300,6 +320,8 @@
   <div class="hud" id="hud-tr">
     <button id="btn-stats">스탯 [P]</button>
     <button id="btn-battle">훈련장 [B]</button>
+    <button id="btn-equip">🎒 인주 [I]</button>
+    <button id="btn-dev">🛠 개발자: 끔</button>
   </div>
   <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
   <div class="hud" id="ver"></div>
@@ -342,7 +364,8 @@
     </div>
     <div id="bt-log"></div>
     <button id="bt-log-new">↓ 최신 로그</button>
-    <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>투창</b> F (누르고 있으면 힘, 방향키로 겨눔) <b>자동/직접</b> Q <b>시작/정지</b> Space</div>
+    <div id="skillbar" hidden><div class="sk" id="sk-basic"><img alt=""><b>C</b><span></span></div><div class="sk" id="sk-skill"><img alt=""><i class="cd"></i><b>F</b><span></span></div></div>
+    <div id="bt-keys"><b>이동</b> 방향키 <b>달리기</b> Shift <b>공격</b> C <b>방어</b> X <b>회피</b> Z <b>무기 스킬</b> F (투척은 누르고 있으면 힘, 방향키로 겨눔) <b>자동/직접</b> Q <b>시작/정지</b> Space</div>
   </div>
   <div id="pad" aria-label="이동 조이스틱"><div class="joy-base"></div><div class="joy-knob"></div></div>
   <button id="act">대화</button>
@@ -353,7 +376,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.21';
+const VERSION = 'v14.0';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -542,6 +565,7 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyQ' && !e.repeat && mode === 'battle' && DG.active) document.getElementById('bq-manual').click();   // 던전 전투: 자동 ↔ 직접
   if (e.code === 'Space' || e.code === 'Enter' || e.code === 'KeyE'){ e.preventDefault(); if (!e.repeat) action(); }
   if (e.code === 'KeyP') toggleStats();
+  if (e.code === 'KeyI' && !e.repeat){ if (!sheetEl.hidden && sheetEl.dataset.id === 'player') sheetEl.hidden = true; else openSheet('player'); }
   if (e.code === 'KeyR' && mode === 'battle' && !DG.active && !e.repeat) restartLastSetup();
   if (e.code === 'KeyB' && !DG.active) mode === 'battle' ? exitBattle() : enterBattle();
   if (e.code === 'Escape'){ if (DG.formBack){ DG.formBack(); return; } closePanels(); if (!evEl.hidden) closeEvent(); if (dialog) endDialog(); }   // 편성 창: Esc = 굴로 돌아가기
@@ -1793,11 +1817,11 @@ HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', 
 const ITEMS = {
   princeNecklace: { name:'황태자의 목걸이', img:'assets/items/necklace.png', slot:'장신구', tags:['가호:바람'], d:'태자의 행복을 바란 마음.' },
   fisherRing:     { name:'어부의 반지', img:'assets/items/ring.png', slot:'장신구', tags:['축복:바다'], d:'' },
-  oldCrown:       { name:'노인의 왕관', img:'assets/items/crown.png', slot:'머리', tags:['🔆권위'], from:'cesar', d:'세자르의 왕관. 신성을 약하게 누른다 (세자르 만큼은 아님).' },
+  oldCrown:       { name:'노인의 왕관', img:'assets/items/crown.png', view:'assets/items/crown_R.png', slot:'머리', tags:['🔆권위'], from:'cesar', d:'세자르의 왕관. 신성을 약하게 누른다 (세자르 만큼은 아님).' },
   oldSword:       { name:'노인의 검', img:'assets/items/sword.png', slot:'무기', tags:['냉기E'], from:'cesar', d:'평범하게 잘 만들어진 검. 아주 약간의 냉기가 남아 있다 (세자르는 냉기 A).' },
-  holyShroud:     { name:'성해포', img:'assets/items/robe.png', slot:'몸', tags:['신성E'], from:'jeokroe', d:'적뢰를 쓰러뜨리면. 약간의 신성을 얻는다.' },
+  holyShroud:     { name:'성해포', img:'assets/items/robe.png', view:'assets/items/robe_R.png', slot:'몸', tags:['신성E'], from:'jeokroe', d:'적뢰를 쓰러뜨리면. 약간의 신성을 얻는다.' },
 };
-for (const it of Object.values(ITEMS)){ it.imgEl = new Image(); it.imgEl.src = it.img; }
+for (const it of Object.values(ITEMS)){ it.imgEl = new Image(); it.imgEl.src = it.img; if (it.view){ it.viewImg = new Image(); it.viewImg.src = it.view; } }
 const ENEMIES = {
   jeokroe: { name:'적뢰', grade:'BOSS', color:'#ff4a4a', sub:'붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다',
     hp:2000, atk:30, def:12, block:0.59, crit:0.05, eva:0, spd:1.6, range:1.7, cd:2.4, windup:0.22, hits:1, weight:2000, react:0.35,   // 대리석 몸, 몇 톤
@@ -1967,7 +1991,56 @@ const STEP_CD = { goblin:3, jeokroe:4, goblinArcher:5, morningstar:5, norman:6, 
 function withDerived(s){
   return { ...s, stepCd: s.stepCd ?? STEP_CD[s.id], guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
 }
+/* ---------- 인주의 장비 (무기 · 머리 · 몸 · 장신구). 굴의 개발자 모드면 무엇이든 입힘 ---------- */
+let EQUIP = {}; try { EQUIP = JSON.parse(localStorage.getItem('cave.equip') || '{}') || {}; } catch (e) { EQUIP = {}; }
+if (!EQUIP.weapon) EQUIP.weapon = 'fisher';
+let DEV = false; try { DEV = localStorage.getItem('cave.dev') === '1'; } catch (e) {}
+const saveEquip = () => { try { localStorage.setItem('cave.equip', JSON.stringify(EQUIP)); } catch (e) {} };
+// 무기: 기본 스킬 (공격, 게이지 없음) + 무기 스킬 (F). 외곽선 색 = 하는 일 (빨강 베기 · 노랑 찌르기 · 주황 사격 · 보라 던지기 · 귤색 광역 · 파랑 막기 · 분홍 반격)
+// h = 가로 그림 (끝이 오른쪽), len = 칸, grip = 쥐는 자리 (0 = 뒤끝). throw = 던질 수 있음 (같은 투창 규칙, 무기마다 피해 배율)
+const SK_COL = { slash: '#e2443a', thrust: '#f2c94c', shoot: '#f08a2a', throw: '#9b6bff', quake: '#ff7a2a', guard: '#4a8cff', counter: '#e64ca8' };
+const WEAPONS = {
+  spear:    { name:'낡은 창', em:'🗡', h:'assets/weapons/h_spear.png', len:1.55, grip:0.36, mul:1.0, range:1.65,
+              basic:{ icon:'thrust', act:'thrust', name:'찌르기' }, skill:{ icon:'thrust', act:'throw', name:'투척', cd:0 }, throw:{ mul:0.8 }, d:'평범한 창. 던질 수 있다.' },
+  fisher:   { name:'낡은 어부의 창', em:'🔱', h:'assets/weapon_fisher_spear.png', len:1.55, grip:0.36, mul:1.0, range:1.65, relic:true, holy:1.5,
+              basic:{ icon:'thrust', act:'thrust', name:'찌르기' }, skill:{ icon:'fisher', act:'throw', name:'투창', cd:0 }, throw:{ mul:1.0 }, d:'유물. 신성 특공 (신성을 지닌 자에게 x1.5). 투창이 더 강하다.' },
+  axe:      { name:'손도끼', em:'🪓', h:'assets/weapons/h_axe.png', len:0.8, grip:0.12, mul:1.1, range:1.35, cd:1.1,
+              basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'throwaxe', act:'throw', name:'도끼 던지기', cd:0 }, throw:{ mul:1.1, spin:true, stick:0.25 }, d:'빙글빙글 돌며 날아가 잘 박힌다.' },
+  sword:    { name:'녹슨 검', em:'⚔', h:'assets/weapons/h_sword.png', len:1.05, grip:0.12, mul:1.1, range:1.55,
+              basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'cross', act:'counter', name:'반격 자세', cd:5 }, d:'던질 수 없다. 반격 자세: 0.9초 안에 들어온 근접 공격을 흘리고 확정 치명타로 되벤다.' },
+  oldSword: { name:'노인의 검', em:'⚔', h:'assets/weapons/h_oldSword.png', len:1.15, grip:0.12, mul:1.25, range:1.65, frost:0.08, tags:['냉기E'],
+              basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'cross', act:'counter', name:'반격 자세', cd:5 }, d:'세자르의 검. 잘 만든 검, 아주 약간의 냉기 (8%로 동상).' },
+  hammer:   { name:'망치', em:'🔨', h:'assets/weapons/h_hammer.png', len:0.85, grip:0.12, mul:1.35, range:1.3, cd:1.4, windup:0.45, stagger:0.45,
+              basic:{ icon:'quake', act:'smash', name:'내려찍기' }, skill:{ icon:'quake', act:'quake', name:'땅울림', cd:7 }, d:'느리지만 무겁다 (45% 휘청). 땅울림: 주변 1.8칸.' },
+  shield:   { name:'둥근 방패', em:'🛡', h:'assets/weapons/h_shield.png', len:0.62, grip:0.5, mul:0.8, range:1.2, block:0.3, def:6, upright:true,
+              basic:{ icon:'guard', act:'bash', name:'밀치기' }, skill:{ icon:'guard', act:'guardUp', name:'막기 강화', cd:9 }, d:'막기 +30% · 방어 +6. 막기 강화: 4초 동안 받는 피해 절반.' },
+  bow:      { name:'활', em:'🏹', h:'assets/weapons/h_bow.png', len:1.0, grip:0.5, mul:0.9, range:6.5, cd:1.3, ranged:'arrow', upright:true,
+              basic:{ icon:'shoot', act:'shoot', name:'쏘기' }, skill:{ icon:'shoot', act:'aim', name:'조준 사격', cd:6 }, d:'멀리서 쏜다. 조준 사격: 0.6초 겨눈 뒤 확정 치명타.' },
+  pistol:   { name:'권총', em:'🔫', h:'assets/weapons/h_pistol.png', len:0.4, grip:0.3, mul:0.7, range:5, cd:0.7, ranged:'bullet', upright:true,
+              basic:{ icon:'shoot', act:'shoot', name:'쏘기' }, skill:{ icon:'shoot', act:'aim', name:'조준 사격', cd:6 }, d:'빠르게 쏜다.' },
+  lever:    { name:'레버액션', em:'🔫', h:'assets/weapons/h_lever.png', len:1.0, grip:0.25, mul:1.4, range:7, cd:1.5, ranged:'bullet',
+              basic:{ icon:'shoot', act:'shoot', name:'쏘기' }, skill:{ icon:'shoot', act:'aim', name:'조준 사격', cd:6 }, d:'한 발이 무겁다.' },
+  shotgun:  { name:'산탄총', em:'🔫', h:'assets/weapons/h_shotgun.png', len:1.0, grip:0.25, mul:0.45, range:3.5, cd:1.4, ranged:'bullet', hits:4,
+              basic:{ icon:'shoot', act:'shoot', name:'쏘기' }, skill:{ icon:'shoot', act:'aim', name:'조준 사격', cd:6 }, d:'가까이서 네 발.' },
+  rifle:    { name:'소총', em:'🔫', h:'assets/weapons/h_rifle.png', len:1.0, grip:0.3, mul:0.55, range:8, cd:0.55, ranged:'bullet', hits:2,
+              basic:{ icon:'shoot', act:'shoot', name:'쏘기' }, skill:{ icon:'shoot', act:'aim', name:'조준 사격', cd:6 }, d:'멀리서 두 발씩.' },
+};
+for (const [k, W] of Object.entries(WEAPONS)){ W.id = k; W.img = new Image(); W.img.src = W.h; }
+const curWeapon = () => WEAPONS[EQUIP.weapon] || WEAPONS.spear;
+function applyWeapon(b){
+  const W = curWeapon(), s = { ...b };
+  s.atk = Math.round(b.atk * W.mul); s.range = W.range; if (W.cd) s.cd = W.cd; if (W.windup) s.windup = W.windup;
+  if (W.ranged){ s.projectile = W.ranged; s.ranged = true; s.hits = W.hits || 1; s.melee = { atk: Math.max(1, Math.round(b.atk * 0.6)), range: 1.2, windup: 0.25, cd: 0.9 }; }
+  if (W.block) s.block = Math.min(0.9, (b.block || 0) + W.block);
+  if (W.def) s.def = (b.def || 0) + W.def;
+  if (W.stagger) s.hitStagger = W.stagger;
+  if (W.frost) s.frostbite = W.frost;
+  s.holy = W.holy || 0; s.throwable = !!W.throw; s.throwMul = W.throw ? W.throw.mul : 0; s.wskill = W.skill.act; s.weapon = W.id;
+  s.equip = { ...b.equip, 무기: `${W.em} ${W.name}`, 머리: EQUIP.head ? ITEMS[EQUIP.head].name : '—', 몸: EQUIP.body ? ITEMS[EQUIP.body].name : '줄무늬 셔츠 · 배낭', 장신구: EQUIP.acc ? ITEMS[EQUIP.acc].name : '—' };
+  return s;
+}
 function getStats(id){
+  if (id === 'player') return withDerived({ ...applyWeapon(HEROES.player), id, side:'ally' });
   if (HEROES[id]) return withDerived({ ...HEROES[id], id, side:'ally' });
   return withDerived({ ...ENEMIES[id], id, side:'enemy' });
 }
@@ -1994,6 +2067,63 @@ function panelHead(panel, title, sub){
   if (sub) panel.appendChild(el('div', 'sub', sub));
 }
 
+// 스킬 줄: 인주가 있을 때만. 기본 스킬 (얇은 테) · 무기 스킬 (굵은 테 + 대기 게이지, 유물은 금테)
+const SK_ACT_COL = { thrust: 'thrust', slash: 'slash', smash: 'quake', bash: 'guard', shoot: 'shoot', throw: 'throw', counter: 'counter', quake: 'quake', guardUp: 'guard', aim: 'shoot' };
+let skLast = '';
+function syncSkillBar(b){
+  const bar = document.getElementById('skillbar'), u = b && b.units.find(o => o.id === 'player' && !o.dead);
+  if (!u){ if (!bar.hidden) bar.hidden = true; skLast = ''; return; }
+  const W = curWeaponOf(u), out = !!u.spearOut, cd = W.skill.act === 'throw' ? (out ? 1 : Math.min(1, (u.throwCd || 0) / 2.5)) : Math.min(1, (u.wsCd || 0) / (W.skill.cd || 1));
+  const key = `${W.id}|${out}|${cd.toFixed(2)}|${u.jav ? 1 : 0}`;
+  if (key === skLast && !bar.hidden) return; skLast = key; bar.hidden = false;
+  const B = document.getElementById('sk-basic'), K = document.getElementById('sk-skill');
+  const setImg = (box, ic) => { const im = box.querySelector('img'), src = `assets/skills/${ic}.png`; if (!im.src.endsWith(src)) im.src = src; };
+  setImg(B, out ? 'slash' : W.basic.icon); B.style.borderColor = SK_COL[SK_ACT_COL[out ? 'slash' : W.basic.act]]; B.querySelector('span').textContent = out ? '주먹' : W.basic.name;
+  setImg(K, W.skill.icon); K.className = 'sk weap' + (W.relic ? ' relic' : ''); if (!W.relic) K.style.borderColor = SK_COL[SK_ACT_COL[W.skill.act]]; else K.style.borderColor = '';
+  K.querySelector('.cd').style.height = `${Math.round(cd * 100)}%`;
+  K.querySelector('span').textContent = out ? (W.skill.act === 'throw' ? '주우러' : W.skill.name) : u.jav ? '꾸구국…' : W.skill.name;
+  const tb = document.getElementById('tb-throw'), tl = `${W.em} ${W.skill.name}`; if (tb.textContent !== tl) tb.textContent = tl;   // 모바일 버튼도 든 무기의 스킬로
+}
+document.getElementById('sk-basic').addEventListener('pointerdown', e => { e.preventDefault(); held.add('attack'); pressAttack(); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.getElementById('sk-basic').addEventListener(ev, () => held.delete('attack')));
+document.getElementById('sk-skill').addEventListener('pointerdown', e => { e.preventDefault(); held.add('throw'); pressThrow(); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => document.getElementById('sk-skill').addEventListener(ev, () => held.delete('throw')));
+/* ---------- 인주 장비 칸: 무기 · 머리 · 몸 · 장신구. 개발자 모드면 누르면 골라 입힘 ---------- */
+const EQ_SLOTS = [['weapon', '무기'], ['head', '머리'], ['body', '몸'], ['acc', '장신구']];
+function eqOptions(slot){
+  if (slot === 'weapon') return Object.entries(WEAPONS).map(([k, W]) => ({ k, name: W.name, img: W.h, tags: W.relic ? ['유물', '신성 특공'] : W.tags || [], d: W.d, sk: `${W.basic.name} · F ${W.skill.name}` }));
+  const want = { head: '머리', body: '몸', acc: '장신구' }[slot];
+  return Object.entries(ITEMS).filter(([, it]) => it.slot === want).map(([k, it]) => ({ k, name: it.name, img: it.img, tags: it.tags, d: it.d }));
+}
+function equipBlock(){
+  const box = el('div');
+  box.appendChild(el('div', 'eq-note', DEV ? '🛠 개발자 모드: 칸을 누르면 바꿔 입힘 (장비 효과는 아직 무기만)' : '장비 바꾸기는 굴의 🛠 개발자 모드에서 (장비 효과는 아직 무기만)'));
+  const grid = el('div', 'eq-grid'), pick = el('div', 'eq-pick'); pick.hidden = true;
+  for (const [slot, label] of EQ_SLOTS){
+    const cur = EQUIP[slot], o = cur ? eqOptions(slot).find(x => x.k === cur) : null;
+    const c = el('div', 'eq-slot' + (DEV ? ' dev' : ''));
+    const im = document.createElement('img'); if (o) im.src = o.img; c.appendChild(im);
+    const t = el('div'); t.appendChild(el('small', '', label)); t.appendChild(el('div', 'nm', o ? o.name : '—'));
+    if (o && (o.tags || []).length) t.appendChild(el('small', '', o.tags.map(x => `[${x}]`).join(' ')));
+    if (o && o.sk) t.appendChild(el('small', '', o.sk));
+    c.appendChild(t); c.title = o ? o.d || '' : '';
+    if (DEV) c.onclick = () => {
+      pick.innerHTML = ''; pick.hidden = false;
+      const opts = eqOptions(slot); if (slot !== 'weapon') opts.unshift({ k: null, name: '벗기', img: '', tags: [] });
+      for (const x of opts){
+        const bt = el('button', x.k === (EQUIP[slot] || null) ? 'on' : '');
+        if (x.img){ const ii = document.createElement('img'); ii.src = x.img; bt.appendChild(ii); }
+        bt.appendChild(el('span', '', x.name + ((x.tags || []).length ? ` [${x.tags.join(', ')}]` : '')));
+        bt.title = x.d || '';
+        bt.onclick = () => { if (x.k) EQUIP[slot] = x.k; else delete EQUIP[slot]; saveEquip(); openSheet('player'); };
+        pick.appendChild(bt);
+      }
+    };
+    grid.appendChild(c);
+  }
+  box.appendChild(grid); box.appendChild(pick);
+  return box;
+}
 /* ---------- 캐릭터 상태창 · 장비창 ---------- */
 function openSheet(id, tab = 'status', unit = null){
   closePanels();
@@ -2050,6 +2180,7 @@ function openSheet(id, tab = 'status', unit = null){
   [['status','상태'], ['equip','장비']].forEach(([t, label]) => {
     const b = el('button', '', label); b.dataset.t = t; b.onclick = () => render(t); tabs.appendChild(b);
   });
+  if (id === 'player') sheetEl.appendChild(equipBlock());          // 인주: 상태 + 장비를 한 창에
   sheetEl.appendChild(tabs);
   sheetEl.appendChild(body);
   render(tab);
@@ -2089,6 +2220,10 @@ function toggleStats(){
 }
 
 document.getElementById('btn-stats').onclick = toggleStats;
+document.getElementById('btn-equip').onclick = () => openSheet('player');
+const syncDevBtn = () => { const b = document.getElementById('btn-dev'); b.textContent = `🛠 개발자: ${DEV ? '켬' : '끔'}`; b.style.borderColor = DEV ? 'var(--fire)' : ''; };
+document.getElementById('btn-dev').onclick = () => { DEV = !DEV; try { localStorage.setItem('cave.dev', DEV ? '1' : '0'); } catch (e) {} syncDevBtn(); caption = { text: DEV ? '개발자 모드 — 인주가 모든 장비를 입을 수 있어요 (🎒 인주)' : '개발자 모드 끔', life: 2.2, max: 2.2 }; };
+syncDevBtn();
 
 /* =========================================================
    전투 테스트 (자동 전투 · 난전)
@@ -3064,8 +3199,48 @@ function parry(d, a, opts = {}){
   const n = norm(a.x - d.x, a.y - d.y); d.lx = n.x; d.ly = n.y; d.face = Math.sign(n.x) || d.face;
   counterAttack(d, a, opts, 0.12);
 }
+// 무기 스킬 (F): 반격 자세 (검) · 땅울림 (망치) · 막기 강화 (방패) · 조준 사격 (활 · 총). 창 · 도끼는 투척 (위)
+function startWSkill(u, sk, tgt){
+  const W = curWeaponOf(u); u.wsCd = W.skill.cd || 5;
+  if (sk === 'guardUp'){ u.guardUpT = 4; fxText(u, '🛡 막기 강화', '#9fc6ff', 'big', 0.5); ringAt(u, '120,170,255'); logLine(`🛡 ${u.name}, 막기 강화 (4초 동안 받는 피해 절반)`, 'guard'); return; }
+  if (sk === 'counter'){ u.ws = { type: sk, t: 0, dur: 0.9 }; u.counterStance = 0.9; fxText(u, '반격 자세', '#ff9ad5', null, 0.5); return; }
+  if (sk === 'quake'){ u.ws = { type: sk, t: 0, dur: 0.75, at: 0.4 }; fxText(u, '들어 올림…', '#ffc28a', null, 0.5); return; }
+  if (sk === 'aim'){ u.ws = { type: sk, t: 0, dur: 0.85, at: 0.6, tgt }; fxText(u, '조준', '#ffd28a', null, 0.5); if (tgt) u.face = Math.sign(tgt.x - u.x) || u.face; }
+}
+const curWeaponOf = u => WEAPONS[u.st && u.st.weapon] || curWeapon();
+function tickWSkill(u, sdt){
+  const S = u.ws, b = battle; S.t += sdt;
+  if (S.type === 'counter') u.poseName = 'guard', u.poseUntil = time + 0.1;
+  if (S.type === 'quake' || S.type === 'aim'){ u.poseName = S.t < S.at ? 'prep' : 'strike'; u.poseUntil = time + 0.1; }
+  if (S.at && !S.done && S.t >= S.at){
+    S.done = true;
+    if (S.type === 'quake'){
+      const q = P(u.x + 0.5, u.y + 0.5); shake = Math.max(shake, 0.35); b.hitstop = Math.max(b.hitstop, 0.08);
+      b.fx.push({ type: 'quake', x: u.x, y: u.y, r: 1.8, life: 0.5, max: 0.5 });
+      for (let i = 0; i < 10; i++){ const a = i / 10 * Math.PI * 2; b.fx.push({ type: 'dust', wx: q.x + camX + Math.cos(a) * T * 0.9, y: q.y + Math.sin(a) * rowH * 0.5, s: 0.9, life: 0.6, max: 0.6 }); }
+      wordAt(q.x, q.y - T * 1.4, '쿵!', '#ffd8a8', 0.5, { life: 0.5 });
+      for (const e of b.units){ if (e.dead || e.side === u.side || e.enter || Math.hypot(e.x - u.x, e.y - u.y) > 1.8) continue; resolveHit(u, e, { atk: Math.round(u.st.atk * 1.4) }); if (!e.dead) stagger(e, 0.8, braceW(u) * 3); }
+    } else if (S.type === 'aim'){
+      const t = S.tgt && !S.tgt.dead ? S.tgt : null;
+      if (t){ fireArrow(u, t, { forceCrit: true }); shake = Math.max(shake, 0.15); }
+    }
+  }
+  if (S.t >= S.dur){ u.ws = null; u.counterStance = 0; }
+}
+function wsAutoWant(u, sk, tgt, dist, sdt){
+  if (!tgt) return false;
+  if (sk === 'counter') return tgt.windup > 0 && tgt.atkTarget === u && dist < 2.4 && Math.random() < sdt * 6;
+  if (sk === 'quake') return battle.units.some(e => !e.dead && e.side !== u.side && Math.hypot(e.x - u.x, e.y - u.y) < 1.7) && Math.random() < sdt * 1.2;
+  if (sk === 'guardUp') return u.hp < u.st.hp * 0.65 && dist < 2.6 && Math.random() < sdt * 1.5;
+  if (sk === 'aim') return dist > 2 && dist <= u.st.range && Math.random() < sdt * 0.8;
+  return false;
+}
 function resolveHit(a, d, opts = {}){
   if (d.dead || (a.dead && !opts.ranged)) return;
+  if (d.counterStance > 0 && !opts.ranged && a !== d && !a.dead && !opts.counter){   // 반격 자세: 근접 공격을 흘리고 확정 치명타로 되벰
+    d.counterStance = 0; d.ws = null; fxText(d, '간파!', '#ff9ad5', 'big', 0.5); logLine(`⚔ ${d.name}, ${a.name}의 공격을 흘리고 되벤다`, 'parry');
+    battle.pending.push({ t: 0.12, a: d, d: a, opts: { forceCrit: true, counter: true, dash: true } }); return;
+  }
   if (d.gw && d.gw.act && d.gw.act.type === 'slam' && d.gw.act.air){ fxText(d, '무적', '#bfefff'); return; }   // 굿윌 내려찍기: 뛰어올라 떠 있는 동안 무적 (내리꽂은 뒤엔 맞음)
   if (d.cast && d.cast.type === 'kick' && (d.cast.phase === 'leap' || d.cast.phase === 'fly')){   // 날아오는 돌덩이: 무적
     fxText(d, '무적', '#d8d2c0'); return;
@@ -3117,6 +3292,8 @@ function resolveHit(a, d, opts = {}){
     }
   }
   let dmg = opts.atk ?? a.st.atk;
+  if (a.st.holy && (d.st.tags || []).some(t => t.includes('신성'))){ dmg *= a.st.holy; fxText(d, '신성 특공!', '#fff2a8', null, 0.7); }   // 어부의 창: 신성을 지닌 자에게 x1.5
+  if (d.guardUpT > 0) dmg *= 0.5;                                  // 방패 막기 강화
   const counter = a.counterT > 0 && !opts.ranged;             // 역습: 스텝으로 강공을 흘린 직후의 한 방
   if (counter){ a.counterT = 0; fxText(a, '역습!', '#ffe27a', 'big', 0.6); }
   const crit = opts.forceCrit || counter || (a.id === 'karius' && a.last5) || Math.random() < a.st.crit;   // 근성의 카리우스: 모든 공격 치명타
@@ -3191,12 +3368,13 @@ const javRange = p => JAV.range + JAV.rangeUp * p;
 // 완벽 구간: 게이지가 다 차기 직전 javWin초 (기본 0.06초 ≈ 네 프레임). 창끝 단련마다 +0.02초. 다 차면 그대로 저절로 던짐 (힘껏)
 const javWin = u => (u.stSpear || u.st).javWin || JAV.perfect;
 const javInWin = (u, J) => J.t >= JAV.chargeT - javWin(u) && J.t < JAV.chargeT;
-function canThrow(u){ return u.id === 'player' && !u.spearOut && !u.dead && !u.rise && u.stun <= 0 && u.windup <= 0 && !u.jav && !u.guarding && !u.aided; }
+function canThrow(u){ return u.id === 'player' && u.st.throwable && !u.spearOut && !u.dead && !u.rise && u.stun <= 0 && u.windup <= 0 && !u.jav && !u.guarding && !u.aided; }
 function pressThrow(){
   if (mode !== 'battle' || !battle) return;
   battle.throwPressAt = battle.clock; grabHand();
   const u = battle.units.find(o => o.id === 'player' && !o.dead);
-  if (u && u.spearOut && battle.clock - (u.noSpearAt ?? -9) > 1){ u.noSpearAt = battle.clock; fxText(u, '창이 없다 (🔱를 주우러)', '#e8d3a8'); }
+  if (u && u.spearOut && battle.clock - (u.noSpearAt ?? -9) > 1){ u.noSpearAt = battle.clock; fxText(u, '무기가 없다 (주우러)', '#e8d3a8'); }
+  else if (u && u.wsCd > 0 && battle.clock - (u.noSpearAt ?? -9) > 0.6){ u.noSpearAt = battle.clock; fxText(u, `대기 ${u.wsCd.toFixed(1)}초`, '#b8b0a4', null, 0.3); }
 }
 // 겨누기: 누른 방향 (그 방향 ±17도 안에 적이 있으면 그 적에게 붙음), 없으면 바라보는 쪽의 가까운 적
 function throwAim(u, input){
@@ -3250,7 +3428,7 @@ function handAt(u){ const p = P(u.x + 0.5, u.y + 0.5), h = unitHeight(u) * T * d
 function releaseSpear(u){
   const b = battle, J = u.jav, d = J.dir, p = J.perfect ? 1 : J.c;
   u.jav = null;
-  (b.spears = b.spears || []).push({ owner: u, x: u.x, y: u.y, dx: d.x, dy: d.y, dist: 0, ground: false, t: 0, p, perfect: J.perfect,
+  (b.spears = b.spears || []).push({ owner: u, w: u.st.weapon, x: u.x, y: u.y, dx: d.x, dy: d.y, dist: 0, ground: false, t: 0, p, perfect: J.perfect,
     speed: JAV.speed + JAV.speedUp * p, range: javRange(p), hits: [] });
   u.spearOut = true; u.stSpear = u.st;
   u.st = withDerived({ ...u.st, range: JAV.fistRange, atk: Math.max(1, Math.round(u.st.atk * JAV.fistMul)), cd: JAV.fistCd, windup: 0.18 });   // 맨손: 주먹
@@ -3312,7 +3490,7 @@ function updateSpears(sdt){
         fxText(o, sp.perfect ? '꿰뚫음!' : '투창!', sp.perfect ? '#ffd35a' : '#ffe08a', 'big', 0.4);
         const hp0 = P(o.x + 0.5, o.y + 0.5), hh = unitHeight(o) * T * depthScale(o.y);
         wordAt(hp0.x - sp.dx * T * 0.3, hp0.y - hh * 0.55, sp.perfect ? '콰직!' : '퍽!', sp.perfect ? '#ffd35a' : '#ffe9d0', sp.perfect ? 0.5 : 0.3 + 0.12 * sp.p, { life: 0.45, rot: (Math.random() - 0.5) * 0.3 });
-        resolveHit(a, o, { atk: Math.round(base.atk * JAV.mul * (0.6 + 0.4 * sp.p) * (base.javMul || 1)), ranged: true, forceCrit: sp.perfect });   // 완벽: 확정 치명타 (x3, 회피 · 막기 무시)
+        resolveHit(a, o, { atk: Math.round(base.atk * JAV.mul * (0.6 + 0.4 * sp.p) * (base.javMul || 1) * (base.throwMul || 1)), ranged: true, forceCrit: sp.perfect });   // 완벽: 확정 치명타 (x3, 회피 · 막기 무시)
         if (!o.dead){
           stagger(o, JAV.stun + 0.4 * sp.p, braceW(a) * 4);
           pushUnit(o, { x: o.x - sp.dx, y: o.y - sp.dy }, 0.4 + 0.3 * sp.p);
@@ -3320,7 +3498,7 @@ function updateSpears(sdt){
         }
         shake = Math.max(shake, sp.perfect ? 0.3 : 0.12 + 0.1 * sp.p); b.hitstop = Math.max(b.hitstop, sp.perfect ? 0.11 : 0.05 + 0.04 * sp.p);
         if (sp.perfect && sp.hits.length === 1) camFocus(o.x, o.y, 1.3, 0.6);   // 완벽: 처음 꿰뚫는 적에게 확 다가감
-        const stick = sp.perfect ? 0.1 + 0.05 * sp.hits.length : 0.05 + 0.1 * sp.p;   // 박힘: 힘에 따라 5~15%, 완벽은 꿰뚫을수록 15 → 20 → 25%…
+        const stick = (sp.perfect ? 0.1 + 0.05 * sp.hits.length : 0.05 + 0.1 * sp.p) + ((WEAPONS[sp.w] || {}).throw || {}).stick || 0;   // 박힘: 힘에 따라 5~15%, 완벽은 꿰뚫을수록 15 → 20 → 25%…
         if (!o.dead && Math.random() < stick){ stickSpear(sp, o); break; }
         if (sp.perfect) continue;                                    // 완벽: 멈추지 않고 줄 위의 적을 모두 꿰뚫음
         bounceSpear(sp, o);
@@ -3362,19 +3540,19 @@ function bounceSpear(sp, o){
   sp.bounce = { x0, y0, x1: tx, y1: ty, t: 0, dur: 0.75, spin };
   sp.x = x0; sp.y = y0; sp.dx = spin; sp.dy = 0;                  // 꽂힐 때 기우는 쪽 = 날아가는 쪽
 }
-function spearImg(L, from){
-  const Wp = SPRITES.player && SPRITES.player.weapon;
+function spearImg(L, from, wid){
+  const Wp = WEAPONS[wid] || curWeapon();
   if (Wp && imgReady(Wp.img)){ const h = L * Wp.img.naturalHeight / Wp.img.naturalWidth; ctx.drawImage(Wp.img, -L * from, -h / 2, L, h); }
   else { ctx.strokeStyle = '#8a6a45'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-L * from, 0); ctx.lineTo(L * (1 - from), 0); ctx.stroke(); }
 }
-const spearLen = y => ((SPRITES.player && SPRITES.player.weapon) ? SPRITES.player.weapon.len : 1.5) * T * depthScale(y);
+const spearLen = (y, wid) => ((WEAPONS[wid] || curWeapon()).len) * T * depthScale(y);
 // 꽂힌 창 (유닛 아래). 날아가는 창은 drawThrowFx에서 유닛 위로
 function drawSpears(){
   const b = battle; if (!b.spears) return;
   for (const sp of b.spears){
     if (!sp.ground) continue;
-    const p = P(sp.x + 0.5, sp.y + 0.5), L = spearLen(sp.y);
-    ctx.save(); ctx.translate(p.x, p.y); ctx.scale(sp.dx >= 0 ? 1 : -1, 1); ctx.rotate(1.1); spearImg(L, 0.85); ctx.restore();   // 창끝이 바닥에 꽂힘
+    const p = P(sp.x + 0.5, sp.y + 0.5), L = spearLen(sp.y, sp.w);
+    ctx.save(); ctx.translate(p.x, p.y); ctx.scale(sp.dx >= 0 ? 1 : -1, 1); ctx.rotate(1.1); spearImg(L, 0.85, sp.w); ctx.restore();   // 창끝이 바닥에 꽂힘
     if (!b.playerAuto || sp.owner.manual){ ctx.globalAlpha = 0.8; emoji('🔱', p.x, p.y - T * 1.25 + Math.sin(time * 5) * T * 0.05, T * 0.3); ctx.globalAlpha = 1; }
   }
 }
@@ -3442,27 +3620,27 @@ function drawThrowFx(){
   if (b.spears) for (const sp of b.spears){
     if (sp.ground || sp.done) continue;
     if (sp.stuck){                                                  // 박힌 창: 몸통에 꽂혀 부르르 떨림
-      const o = sp.stuck, dsc = depthScale(o.y), p = P(o.x + 0.5, o.y + 0.5), L = spearLen(o.y) * 0.95, wob = Math.sin(time * 22) * 0.04 * Math.max(0, 1 - sp.t * 1.5);
+      const o = sp.stuck, dsc = depthScale(o.y), p = P(o.x + 0.5, o.y + 0.5), L = spearLen(o.y, sp.w) * 0.95, wob = Math.sin(time * 22) * 0.04 * Math.max(0, 1 - sp.t * 1.5);
       ctx.save(); ctx.translate(p.x - sp.dx * T * 0.08 * dsc, p.y - unitHeight(o) * T * dsc * sp.sh); if (sp.dx < 0) ctx.scale(-1, 1); ctx.rotate(sp.tilt + wob);
       ctx.fillStyle = 'rgba(120,10,20,.75)'; ctx.beginPath(); ctx.ellipse(0, 0, T * 0.07 * dsc, T * 0.1 * dsc, 0, 0, Math.PI * 2); ctx.fill();   // 박힌 자리
       ctx.shadowColor = 'rgba(255,236,190,.95)'; ctx.shadowBlur = 5;   // 어두운 적 위에서도 보이게 옅은 테두리
-      spearImg(L, 0.78); ctx.restore();
+      spearImg(L, 0.78, sp.w); ctx.restore();
       if (!b.playerAuto || sp.owner.manual){ ctx.globalAlpha = 0.8; emoji('🔱', p.x, p.y - unitHeight(o) * T * dsc - T * 0.75 + Math.sin(time * 5) * T * 0.05, T * 0.28); ctx.globalAlpha = 1; }
       continue;
     }
     if (sp.bounce){                                                 // 튕겨 나감: 포물선 + 한 바퀴 반, 끝에 창끝부터 꽂힘
-      const B = sp.bounce, k = Math.min(1, B.t / B.dur), dsc = depthScale(sp.y), L = spearLen(sp.y), p = P(sp.x + 0.5, sp.y + 0.5);
+      const B = sp.bounce, k = Math.min(1, B.t / B.dur), dsc = depthScale(sp.y), L = spearLen(sp.y, sp.w), p = P(sp.x + 0.5, sp.y + 0.5);
       const lift = T * dsc * (0.75 * (1 - k) + 1.9 * 4 * k * (1 - k)), from = 0.5 + 0.35 * k * k;
       ctx.fillStyle = `rgba(0,0,0,${0.12 + 0.18 * (1 - lift / (T * 2))})`; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.3 * dsc, T * 0.08 * dsc, 0, 0, Math.PI * 2); ctx.fill();
       for (let g = 2; g >= 0; g--){                                  // 잔상 둘 + 본체
         const kg = Math.max(0, k - g * 0.035);
         ctx.save(); ctx.globalAlpha = g ? 0.18 / g : 1;
         ctx.translate(p.x, p.y - lift); if (B.spin < 0) ctx.scale(-1, 1); ctx.rotate(1.1 - Math.PI * 3 * (1 - kg));
-        spearImg(L, from); ctx.restore();
+        spearImg(L, from, sp.w); ctx.restore();
       }
       continue;
     }
-    const dsc = depthScale(sp.y), lift = T * 0.75 * dsc, L = spearLen(sp.y);
+    const dsc = depthScale(sp.y), lift = T * 0.75 * dsc, L = spearLen(sp.y, sp.w);
     const p = P(sp.x + 0.5, sp.y + 0.5), q = P(sp.x + sp.dx * 0.2 + 0.5, sp.y + sp.dy * 0.2 + 0.5);
     const tl = Math.min(sp.dist, 1.4 + 2.2 * sp.p), t0 = P(sp.x - sp.dx * tl + 0.5, sp.y - sp.dy * tl + 0.5);
     const hx = p.x, hy = p.y - lift, tx = t0.x, ty = t0.y - T * 0.75 * depthScale(sp.y - sp.dy * tl);
@@ -3481,9 +3659,9 @@ function drawThrowFx(){
       ctx.strokeStyle = `rgba(${rgb},${0.25 + Math.random() * 0.35})`; ctx.lineWidth = 1 + Math.random() * 1.5;
       ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx2, by2); ctx.stroke();
     }
-    ctx.translate(hx, hy); ctx.rotate(ang);
+    ctx.translate(hx, hy); ctx.rotate(ang + (((WEAPONS[sp.w] || {}).throw || {}).spin ? sp.dist * 4 : 0));   // 도끼는 빙글빙글
     if (sp.perfect){ ctx.shadowColor = '#ffd35a'; ctx.shadowBlur = 10; }
-    spearImg(L * (1 + 0.08 * sp.p), 0.6);
+    spearImg(L * (1 + 0.08 * sp.p), 0.6, sp.w);
     ctx.restore();
   }
   // 낱말
@@ -3699,6 +3877,7 @@ function updateBattle(dt){
     u.lunge = Math.max(0, u.lunge - sdt);
     u.stun = Math.max(0, u.stun - sdt);
     if (u.downT > 0) u.downT = Math.max(0, u.downT - sdt);
+    if (u.guardUpT > 0) u.guardUpT = Math.max(0, u.guardUpT - sdt);
     if (u.upcutT > 0){ u.upcutT -= sdt; if (u.upcutT <= 0 && !u.dead){ knockDown(u, CZ.upDown, Infinity); u.hobbleT = CZ.hobble; fxText(u, '⛓ 이동 제약', '#cfe6ff', null, 0.9); } }   // 하늘 가르기: 경직이 풀리며 쓰러지고 10초 이동 제약
     if (u.hobbleT > 0) u.hobbleT = Math.max(0, u.hobbleT - sdt);
     if (u.anim && (u.dead || !u.gw || !u.gw.act)) u.anim = null;
@@ -3790,6 +3969,10 @@ function updateBattle(dt){
     if (u.blink && tickBlink(u, sdt)){ u.guarding = false; u.t = 1; continue; }   // 순간이동급 스텝 중
     if (u.st.brain && b.running && BRAINS[u.st.brain](u, sdt, tgt, dist)){ u.guarding = false; u.t = 1; continue; }   // 전용 두뇌 (세자르)
     if (u.st.thunderAtk && b.running && (u.stun <= 0 || (u.cast && u.cast.type === 'kick')) && bossUpdate(u, sdt, tgt, dist)){ u.guarding = false; u.vx = u.vy = 0; u.t = 1; continue; }
+    if (u.ws){                                                      // 무기 스킬 중 (반격 자세 · 땅울림 · 조준): 제자리
+      if (u.stun > 0 || !b.running){ u.ws = null; u.counterStance = 0; }
+      else { tickWSkill(u, sdt); u.vx *= 0.8; u.vy *= 0.8; u.t = 1; continue; }
+    }
     if (u.jav){                                                     // 투창: 힘을 모으다가 (꾸구국) 던짐 (파앙). 휘청이거나 전투가 멈추면 끊김
       if (u.stun > 0 || !b.running){ u.jav = null; if (u.stun > 0) fxText(u, '투창 끊김', '#ffb3a8'); }
       else { u.guarding = false; u.vx *= 0.8; u.vy *= 0.8; chargeSpear(u, sdt, input, dist); u.t = 1; continue; }
@@ -4057,7 +4240,11 @@ function updateBattle(dt){
       if (u.hobbleT > 0){ speed *= 0.4; u.running = false; }        // 이동 제약 (하늘 가르기): 느리게 걷기만
       // 공격 시작 (준비 동작 → "!" → 타격)
       const retreating = !u.manual && (u.state === 'retreat' || u.state === 'flee' || u.state === 'skitter' || (u.state === 'regroup' && dist > 1.2) || (u.state === 'rally' && dist > 1.2) || (u.state === 'toMedic' && dist > 1.2));
-      if (u.id === 'player') u.throwCd = Math.max(0, (u.throwCd || 0) - sdt);
+      if (u.id === 'player'){ u.throwCd = Math.max(0, (u.throwCd || 0) - sdt); u.wsCd = Math.max(0, (u.wsCd || 0) - sdt); }
+      if (u.id === 'player' && b.running && !u.st.throwable && u.st.wskill && !(u.wsCd > 0) && !u.ws && u.windup <= 0 && u.stun <= 0){   // 무기 스킬 (F): 던질 수 없는 무기
+        const want = handOnly ? b.clock - (b.throwPressAt ?? -99) <= 0.35 : wsAutoWant(u, u.st.wskill, tgt, dist, sdt);
+        if (want){ b.throwPressAt = -99; startWSkill(u, u.st.wskill, tgt); dir = null; }
+      }
       if (u.id === 'player' && b.running && canThrow(u)){                // 투창: 직접은 F (누르고 있으면 모음), 자동은 2.6~6.5칸 떨어진 적에게 (주운 뒤 2.5초는 쉼)
         const want = handOnly ? b.clock - (b.throwPressAt ?? -99) <= 0.35 : (tgt && dist >= 2.6 && dist <= JAV.range && !(u.throwCd > 0) && Math.random() < sdt * 2.5);
         if (want){ b.throwPressAt = -99; startThrow(u, handOnly); dir = null; }
@@ -4560,6 +4747,7 @@ function drawBattle(){
   ctx.globalAlpha = 1;
   ctx.restore();
   drawSpeedLines(b);
+  syncSkillBar(b);
 
   const vg = ctx.createRadialGradient(W / 2, H * 0.62, H * 0.25, W / 2, H * 0.62, Math.max(W, H) * 0.8);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.7)');
@@ -4686,7 +4874,10 @@ for (const [id, S] of Object.entries(SPRITES)){
 const imgReady = im => !!im && im.complete && im.naturalWidth > 0;
 const spriteReady = S => imgReady(S.poses ? S.poses.idle.img : S.img);
 // 포즈 원화를 가진 폰: 지금 상태에 맞는 한 장을 고름 (규칙 하나로 모든 포즈형 캐릭터 공통)
-const hasSpear = o => o.id === 'player' && !o.spearOut;   // 던졌으면 맨손 (돌격 원화 그대로 주먹)
+const hasSpear = o => o.id === 'player' && !o.spearOut;
+// 인주 원화 프레임마다 [머리 가운데 x, 머리 꼭대기 y, 머리 폭, 몸통 가운데 x, 어깨 y, 몸통 폭, 키] (장비를 겹쳐 그릴 자리)
+const INJU_ANCHOR = {"idle":[[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352],[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352]],"walk":[[176,9,98,144,79,189,350],[151,6,99,123,76,181,352],[166,9,98,135,79,192,350],[153,0,97,135,71,165,359],[173,2,103,147,73,191,357],[150,6,99,122,76,181,352],[167,0,100,139,71,182,359],[151,0,97,133,71,165,359]],"run":[[241,21,113,189,84,232,317],[256,15,115,208,79,170,324],[240,12,115,191,77,211,327],[240,0,114,202,62,207,311],[240,19,115,193,82,231,319],[256,15,115,208,79,170,324],[240,12,115,191,77,211,327],[239,0,113,194,63,223,317]],"charge":[[152,0,74,118,53,155,266]],"attack":[[136,0,72,147,67,138,336]],"throw":[[98,0,70,126,67,128,337]],"shoot":[[143,0,158,149,67,110,339]],"hurt":[[59,0,100,106,68,140,342]]};
+const playerWeaponArt = o => WEAPONS[o.st && o.st.weapon] || curWeapon();   // 던졌으면 맨손 (돌격 원화 그대로 주먹)
 function poseOf(o, S){
   if (o.poseName && o.poseUntil > time && S.poses[o.poseName]) return o.poseName;   // 기술 · 연출이 잠깐 정한 포즈
   if (o.dead || o.stun > 0.05) return 'hurt';
@@ -4872,15 +5063,35 @@ function drawSpriteUnit(o){
     if ((o.face || S.baseFace) !== qf) ctx.scale(-1, 1);
     if (OUTC !== OUT){ ctx.shadowColor = '#f0c35a'; ctx.shadowBlur = 16; }
     if (o.hurt > 0.08 && ctx.filter === 'none') ctx.filter = 'brightness(1.9)';
+    const pkey = o.id === 'player' ? Object.keys(S.poses).find(kk => S.poses[kk] === q) : null;
+    const inHand = q === S.poses.charge || q === S.poses.attack || q === S.poses.throw || q === S.poses.shoot;
+    const fiA = q.n ? Math.floor(((o.moving ? (o.walkClock || time) * (q === S.poses.run ? 1.3 : 1) : time) + (o.uid || 0) * 0.37) * q.fps) % q.n : 0;
+    const anc = pkey && INJU_ANCHOR[pkey] && INJU_ANCHOR[pkey][fiA];
+    if (anc && hasSpear(o) && !inHand && !o.dead){                  // 무기는 평소 등에 (몸 뒤에 먼저 그림)
+      const Wb = playerWeaponArt(o); if (imgReady(Wb.img)){
+        const H = anc[6], L = Wb.len * T * dsc * 0.85, hh = L * Wb.img.naturalHeight / Wb.img.naturalWidth;
+        ctx.save(); ctx.translate((anc[3] - q.ax - qf * 0.1 * H) * k, (anc[4] - q.ay + 0.16 * H) * k);
+        if (qf < 0) ctx.scale(-1, 1);
+        ctx.rotate(Wb.upright ? -0.3 : -Math.PI / 2 - 0.45);
+        if (Wb.upright){ const h2 = L, w2 = h2 * Wb.img.naturalWidth / Wb.img.naturalHeight; ctx.drawImage(Wb.img, -w2 / 2, -h2 / 2, w2, h2); } else ctx.drawImage(Wb.img, -L * 0.5, -hh / 2, L, hh);
+        ctx.restore();
+      }
+    }
     if (q.n){                                                      // 움직이는 원화: 가로로 이어진 프레임
       const t = (o.moving ? (o.walkClock || time) * (q === S.poses.run ? 1.3 : 1) : time) + (o.uid || 0) * 0.37;
       const fi = Math.floor(t * q.fps) % q.n;
       const cols = q.cols || q.n, fh = q.fh || q.img.naturalHeight;   // 가로 한 줄, 또는 cols칸씩 여러 줄 (프레임이 많을 때)
       ctx.drawImage(q.img, (fi % cols) * q.fw, Math.floor(fi / cols) * fh, q.fw, fh, -q.ax * k, -q.ay * k, q.fw * k, fh * k);
     } else ctx.drawImage(q.img, -q.ax * k, -q.ay * k * breath, q.img.naturalWidth * k, q.img.naturalHeight * k * breath);
+    if (anc && !o.dead){                                           // 장비 겹쳐 입힘 (어색해도 시험용): 몸 = 성해포, 머리 = 왕관. 원화가 보는 쪽 그림을 씀
+      const H = anc[6], put = (img, cx, top, w) => { if (!imgReady(img)) return; const hh = w * img.naturalHeight / img.naturalWidth; ctx.save(); ctx.translate(cx, top); if (qf < 0) ctx.scale(-1, 1); ctx.drawImage(img, -w / 2, 0, w, hh); ctx.restore(); };
+      const bodyIt = EQUIP.body && ITEMS[EQUIP.body], headIt = EQUIP.head && ITEMS[EQUIP.head];
+      if (bodyIt && bodyIt.viewImg) put(bodyIt.viewImg, (anc[3] - q.ax) * k, (anc[4] - q.ay - 0.03 * H) * k, 0.46 * H * k);
+      if (headIt && headIt.viewImg){ const w = 0.3 * H * k, hh = w * headIt.viewImg.naturalHeight / Math.max(1, headIt.viewImg.naturalWidth); put(headIt.viewImg, (anc[0] - q.ax) * k, (anc[1] - q.ay + 0.1 * H) * k - hh, w); }
+    }
     // 무기 (창): 손 위치에 맞춰 듦. 돌격 = 앞으로 겨눔, 기본 공격 = 휘두름, 던지기 = 머리 위로, 방어 = 몸 앞에 세움 (모든 무기 공통)
-    const Wp = S.weapon, guardPose = pn === 'guard' && !S.poses.guard;
-    if (Wp && q.hand && imgReady(Wp.img) && hasSpear(o) && (q === S.poses.charge || q === S.poses.attack || q === S.poses.throw)){
+    const Wp = o.id === 'player' ? playerWeaponArt(o) : S.weapon, guardPose = pn === 'guard' && !S.poses.guard;
+    if (Wp && q.hand && imgReady(Wp.img) && hasSpear(o) && inHand){
       const L = Wp.len * T * dsc, h = L * Wp.img.naturalHeight / Wp.img.naturalWidth;
       let a = 0;
       if (guardPose) a = -Math.PI / 2 + 0.12;                     // 끝을 위로, 살짝 앞으로 기울여 막음
@@ -4895,8 +5106,8 @@ function drawSpriteUnit(o){
       const hand = pn === 'cock' && q.back ? q.back : q.hand;
       ctx.translate((hand[0] - q.ax) * k, (hand[1] - q.ay) * k);
       if (qf < 0) ctx.scale(-1, 1);                               // 원화가 왼쪽을 보면 창도 왼쪽으로
-      ctx.rotate(a);
-      ctx.drawImage(Wp.img, -L * Wp.grip + jab * L, -h / 2, L, h);
+      if (Wp.upright){ const hh = L * 0.9, ww = hh * Wp.img.naturalWidth / Wp.img.naturalHeight; ctx.drawImage(Wp.img, -ww / 2, -hh / 2, ww, hh); }   // 활 · 방패 · 권총: 세운 그대로 손에
+      else { ctx.rotate(a); ctx.drawImage(Wp.img, -L * Wp.grip + jab * L, -h / 2, L, h); }
     }
     ctx.restore();
     return;
@@ -6791,6 +7002,7 @@ async function startRun(){
   ['hud-tl', 'bar', 'hud-tr', 'prompt'].forEach(id => document.getElementById(id).hidden = true);
   floaters = []; sparks = []; held.clear();
   if (!(await dgFormation())){ dgExit(); return; }                  // 편성에서 굴로 돌아감 (판은 시작 안 함)
+  if (!DEV){ EQUIP.weapon = 'spear'; saveEquip(); }                 // 판은 낡은 창으로 시작 (개발자 모드면 고른 그대로)
   RUN = newRun();
   DG.party = [...DGP.party];
   for (const id of DG.party) RUN.lv0[id] = lvOf(id);
@@ -7458,6 +7670,10 @@ const BOSS = {
     DG.snowOn = true; caption = { text: '권위 — 신성이 극도로 제한됩니다', life: 2.8, max: 2.8 }; await dgWait(2.4 * w);
     removeActor(king); DG.lock = false; DG.focus = null;
     await fightOrDie({ title: '세자르', enemies: [{ id: 'cesar', x: 9, y: 2, mul: 0.85 }], snow: true, seal: true, xp: 130 });   // 첫 보스: 원래 세기의 85%
+    if (EQUIP.weapon !== 'fisher'){                                 // 첫 유물: 어부의 창 (유물이란 무엇인지 + 적뢰의 열쇠)
+      EQUIP.weapon = 'fisher'; saveEquip();
+      await dgNarr(['세자르의 관 옆, 바닥에 낡은 창 하나가 꽂혀 있습니다.', '어부의 창. 손에 쥐자 낮게 웁니다. 무언가 높은 것을 기억하는 듯이.', '— 첫 유물: 🔱 어부의 창 (투창이 더 강함 · 신성 특공 x1.5)']);
+    }
     DG.snowOn = false;
     dgSub('왕이 무너지자 눈이 멎습니다.');
     await dgWait(1.6);
