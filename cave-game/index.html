@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.17
+  version v13.19
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -212,7 +212,6 @@
   .bt-tools button canvas.face{cursor:pointer;border-width:2px;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;}
   .bt-tools button canvas.face.sd-ally{border-color:#5cc26a;}
   .bt-tools button canvas.face.sd-enemy{border-color:#e2443a;}
-  .bt-tools button.swapped{font-style:italic;}
   /* 모바일: 훈련장 메뉴 오른쪽의 스크롤 막대 (영웅 칸은 끌어 배치하느라 손가락 스크롤이 안 먹어서) */
   #bt-scroll{display:none;position:absolute;width:28px;pointer-events:auto;touch-action:none;background:rgba(10,8,12,.85);border:1px solid var(--line);border-radius:14px;z-index:5;}
   #bt-scroll i{position:absolute;left:4px;right:4px;min-height:36px;background:var(--fire);border-radius:10px;opacity:.85;}
@@ -318,8 +317,8 @@
       <div class="bt-sec">적</div><div class="bt-tools" id="bt-enemies"></div>
       <div class="bt-sec">소환수 (포렌의 충성)</div><div class="bt-tools" id="bt-summons"></div>
       <div class="bt-sec">도구</div>
-      <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button><button id="bt-sides" title="아군 ↔ 적군으로 바꿔 둔 것을 모두 원래 편으로">⇄ 편 되돌리기</button></div>
-      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 초상화를 누르면 상세 (스탯 · 스킬 · 장비) · 초상화 우클릭 (모바일은 꾹 누르기) = 아군 ↔ 적군 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
+      <div class="bt-tools" id="bt-misc"><button data-tool="select">🔍 살펴보기</button><button data-tool="erase">🧹 지우기</button></div>
+      <div class="bt-hint">얼굴을 바닥으로 끌어 배치 · 초상화를 누르면 상세 (스탯 · 스킬 · 장비) · 판 왼쪽 절반에 놓으면 아군, 오른쪽 절반은 적군 · 바닥 클릭 소환 · 폰 클릭 복사 · 우클릭 삭제 · 폰 드래그 이동<br>
         적 머리 위 "!" 뜨고 맞기 직전 X 또는 Z: 저스트 (3% 확정 치명타 반격)</div>
       <label class="bt-check"><input type="checkbox" id="bt-auto"> 주인공 자동 전투 (끄면 100% 직접 조작)</label>
       <label class="bt-check"><input type="checkbox" id="bt-water"> 물 바닥 (천벌 범위 안 전원 감전)</label>
@@ -354,7 +353,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.17';
+const VERSION = 'v13.19';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1787,7 +1786,7 @@ HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케
   equip:{ 무기:'🩹 할퀴는 의수', 머리:'간호 모자', 몸:'찢어진 간호복', 장신구:'🧰 구급상자 · 촛대' } };
 HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터',
   hp:300, atk:28, def:8, block:0.2, crit:0.2, eva:0.3, spd:4.2, range:1.4, cd:0.9, windup:0.25, hits:1, weight:70, react:0.8,
-  brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
+  brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45, hopper:true,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
   tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 늘 빠르게 뛰어다니고, 공격이 오면 번개처럼 비켜선다 (회피 30%, 순간이동급 스텝).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 — 순식간에 달려들어 빠아악! 강한 경직. 치명타면 헤드 니킥: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
   equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
 const ENEMIES = {
@@ -2120,17 +2119,8 @@ function exitBattle(){
   btUi.hidden = true;
   ['hud-tl','bar','hud-tr'].forEach(id => document.getElementById(id).hidden = false);
 }
-/* ---------- 훈련장 편 토글: 누른 캐릭터는 반대 편 목록으로 옮겨 가고, 그 편으로 소환됨 ---------- */
-let btSide = {};
-try { btSide = JSON.parse(localStorage.getItem('cave.btSide') || '{}') || {}; } catch (e) { btSide = {}; }
-const sideOf = id => btSide[id] || getStats(id).side;
-function toggleSide(id){
-  const nat = getStats(id).side, next = sideOf(id) === 'ally' ? 'enemy' : 'ally';
-  if (next === nat) delete btSide[id]; else btSide[id] = next;
-  try { localStorage.setItem('cave.btSide', JSON.stringify(btSide)); } catch (e) {}
-  logLine(`${getStats(id).name} → 이제 ${next === 'ally' ? '아군' : '적군'}으로 소환`, 'sys');
-  buildBtTools();
-}
+/* ---------- 훈련장 편: 놓는 자리로 정함. 판 왼쪽 절반 = 아군, 오른쪽 절반 = 적군 (PC · 모바일 같음) ---------- */
+const fieldSide = c => c < BATTLE_COLS / 2 ? 'ally' : 'enemy';
 /* ---------- 목록에서 얼굴을 끌어다 바닥에 놓으면 배치 ---------- */
 let palDrag = null;
 function startPaletteDrag(e, id){
@@ -2165,28 +2155,23 @@ function onPalUp(e){
   battle.dragTool = null;
   const t = e.type === 'pointerup' ? screenToTile(e) : null;
   if (t){
-    const u = spawnUnit(d.id, t.c, t.r, sideOf(d.id));
-    logLine(`${u.name} 배치 (${t.c}, ${t.r})`, 'sys');
+    const u = spawnUnit(d.id, t.c, t.r, fieldSide(t.c));
+    u.face = u.side === 'ally' ? 1 : -1;
+    logLine(`${u.name} 배치 (${t.c}, ${t.r}) · ${u.side === 'ally' ? '아군' : '적군'}`, 'sys');
     battle.tool = d.id; syncTools();
   }
   hoverTile = null;
 }
 function buildBtTools(){
   const mk = (id, wrap) => {
-    const s = getStats(id), side = sideOf(id);
+    const s = getStats(id), side = s.side;
     const b = el('button'); b.dataset.tool = id;
-    if (side !== s.side) b.classList.add('swapped');
     const face = document.createElement('canvas'); face.width = 80; face.height = 80; face.className = 'face';
     drawPortrait(face, id);
     face.classList.add(side === 'ally' ? 'sd-ally' : 'sd-enemy');
-    face.title = '누르면 상세 (스탯 · 스킬 · 장비) · 우클릭 (모바일은 꾹) = 아군 ↔ 적군';
-    face.addEventListener('pointerdown', e => {                   // 모바일: 꾹 누르기 (0.5초) = 아군 ↔ 적군
-      e.stopPropagation(); face._touch = e.pointerType !== 'mouse'; face._lp = false; clearTimeout(face._lt);
-      if (face._touch) face._lt = setTimeout(() => { face._lp = true; toggleSide(id); }, 500);
-    });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => face.addEventListener(ev, () => clearTimeout(face._lt)));
-    face.addEventListener('click', e => { e.stopPropagation(); if (face._lp) return; openSheet(id); });
-    face.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); if (!face._touch) toggleSide(id); });
+    face.title = '누르면 상세 (스탯 · 스킬 · 장비). 끌어다 판 왼쪽에 놓으면 아군, 오른쪽에 놓으면 적군';
+    face.addEventListener('pointerdown', e => e.stopPropagation());
+    face.addEventListener('click', e => { e.stopPropagation(); openSheet(id); });
     b.appendChild(face);
     b.addEventListener('pointerdown', e => startPaletteDrag(e, id));
     b.appendChild(document.createTextNode(s.name));
@@ -2195,8 +2180,8 @@ function buildBtTools(){
   };
   const a = document.getElementById('bt-allies'), e = document.getElementById('bt-enemies'), sm = document.getElementById('bt-summons');
   a.innerHTML = ''; e.innerHTML = ''; sm.innerHTML = '';
-  // 목록은 절반으로: 위는 아군, 아래는 적군. 초상화 우클릭 (꾹)이면 반대쪽 절반으로 옮겨 감
-  [...BT_ALLIES, ...BT_ENEMIES].forEach(id => mk(id, sideOf(id) === 'ally' ? a : e));
+  // 목록은 원래 편대로 (위 아군 · 아래 적군). 어느 편으로 싸울지는 놓는 자리로 정함
+  BT_ALLIES.forEach(id => mk(id, a)); BT_ENEMIES.forEach(id => mk(id, e));
   ['ratS', 'ratM', 'ratL', 'ratKnight'].forEach(id => mk(id, sm));
   document.querySelectorAll('#bt-panel [data-tool]').forEach(b => b.onclick = () => { battle.tool = b.dataset.tool; syncTools(); });
   syncTools();
@@ -2373,12 +2358,6 @@ document.getElementById('bq-clear').onclick = clearAll;
 document.getElementById('bt-save').onclick = saveMySetup;
 document.getElementById('bq-save').onclick = saveMySetup;
 document.getElementById('bt-load').onclick = loadMySetup;
-document.getElementById('bt-sides').onclick = () => {                 // 편 되돌리기: 아군 ↔ 적군으로 바꿔 둔 것을 모두 원래대로
-  const n = Object.keys(btSide).length;
-  if (!n){ logLine('바꿔 둔 편이 없어요.', 'sys'); return; }
-  btSide = {}; try { localStorage.setItem('cave.btSide', '{}'); } catch (e) {}
-  buildBtTools(); logLine(`⇄ ${n}명을 원래 편으로 되돌렸어요.`, 'sys');
-};
 document.getElementById('bt-stats').onclick = toggleStats;
 document.getElementById('bt-exit').onclick = exitBattle;
 document.getElementById('bt-parry').onchange = e => { if (battle) battle.parryTest = e.target.checked; };
@@ -2533,8 +2512,8 @@ cv.addEventListener('pointerdown', e => {
   }
   const t = screenToTile(e);
   if (!t || battle.tool === 'select' || battle.tool === 'erase') return;
-  const nu = spawnUnit(battle.tool, t.c, t.r, sideOf(battle.tool));
-  logLine(`${nu.name} 배치 (${t.c}, ${t.r})`, 'sys');
+  const nu = spawnUnit(battle.tool, t.c, t.r, fieldSide(t.c)); nu.face = nu.side === 'ally' ? 1 : -1;
+  logLine(`${nu.name} 배치 (${t.c}, ${t.r}) · ${nu.side === 'ally' ? '아군' : '적군'}`, 'sys');
 });
 cv.addEventListener('pointerup', () => {
   if (!drag) return;
@@ -2542,7 +2521,8 @@ cv.addEventListener('pointerup', () => {
   if (d.moved){
     d.u.x = Math.round(d.u.x); d.u.y = Math.round(d.u.y);
     d.u.slotT = 0;
-    logLine(`${d.u.name} 이동 (${d.u.x}, ${d.u.y})`, 'sys');
+    if (!DG.active && !battle.running){ const sd = fieldSide(d.u.x); if (sd !== d.u.side){ d.u.side = sd; d.u.face = sd === 'ally' ? 1 : -1; } }   // 배치 중엔 옮긴 쪽 편이 됨
+    logLine(`${d.u.name} 이동 (${d.u.x}, ${d.u.y}) · ${d.u.side === 'ally' ? '아군' : '적군'}`, 'sys');
   } else if (battle.tool === 'select') openSheet(d.u.id, 'status', d.u);
   else copyUnit(d.u);
 });
@@ -2701,6 +2681,7 @@ function stepFree(d, nx, ny, ignore){
 // 순간이동급 스텝: 거의 한순간에 멀리 → 끝에서 살짝 느려짐 (easeOut), 촘촘한 잔상
 const BLINK_DUR = 0.16;
 function startBlink(d, tx, ty){
+  if (d.st.hopper){ fxText(d, '팟!', '#bfefff', null, -0.2); const q = P(d.x + 0.5, d.y + 0.5); battle.fx.push({ type: 'dust', wx: q.x + camX, y: q.y - 2, s: 1, life: 0.4, max: 0.4 }); }
   d.blink = { sx: d.x, sy: d.y, tx: Math.max(0, Math.min(BATTLE_COLS - 1, tx)), ty: Math.max(0, Math.min(ROWS - 1, ty)), t: 0, g: 0 };
   d.dodgeT = Math.max(d.dodgeT || 0, BLINK_DUR + 0.05);
 }
@@ -3589,6 +3570,7 @@ function updateBattle(dt){
   shake = Math.max(0, shake - dt);
   b.redFlash = Math.max(0, b.redFlash - dt * 1.5);
   b.rainFlash = Math.max(0, (b.rainFlash || 0) - dt * 1.5);
+  b.zapFlash = Math.max(0, (b.zapFlash || 0) - dt * 2.4);
   if (b.rain){
     const n = Math.floor(220 * dt + Math.random());
     for (let i = 0; i < n; i++) b.drops.push({ x: Math.random() * (W + 80), y: -10, vy: 700 + Math.random() * 200, end: floorTop + Math.random() * rowH * ROWS });
@@ -4095,6 +4077,13 @@ function updateBattle(dt){
         dir = null;
       }
     }
+    if (u.st.hopper){                                               // 굿윌: 팟 · 팟 도약하듯 이동 (뛰는 동안 빠르게 + 몸이 뜸, 착지 사이 잠깐 멈칫)
+      if (dir && Math.hypot(dir.x, dir.y) > 0.1){
+        const was = u.hopT || 0; u.hopT = was + sdt; const ph = (u.hopT % 0.4) / 0.4;
+        if (Math.floor(u.hopT / 0.4) !== Math.floor(was / 0.4)){ const q = P(u.x + 0.5, u.y + 0.5); b.fx.push({ type: 'dust', wx: q.x + camX, y: q.y - 2, s: 0.7, life: 0.35, max: 0.35 }); if (Math.random() < 0.35) fxText(u, '팟', '#bfefff', null, -0.2); }
+        speed *= ph < 0.62 ? 1.6 : 0.12; u.lift = ph < 0.62 ? Math.sin(ph / 0.62 * Math.PI) * 0.32 : 0;
+      } else if (!(u.gw && u.gw.act)) u.lift = 0;
+    }
     stepMover(u, sdt, dir, speed, battleSolid(u));
     // 같은 편끼리는 서로 밀어냄
     for (const o of b.units){
@@ -4206,12 +4195,21 @@ function drawBattle(){
   } else b.focusScr = null;
   drawWall();
   drawFloor();
+  if (!DG.active && !b.running){                                // 훈련장 배치 중: 가운데 경계 (왼쪽 아군 · 오른쪽 적군)
+    const m0 = P(BATTLE_COLS / 2, 0), m1 = P(BATTLE_COLS / 2, ROWS);
+    ctx.save(); ctx.setLineDash([8, 6]); ctx.strokeStyle = 'rgba(240,200,120,.55)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(m0.x, m0.y); ctx.lineTo(m1.x, m1.y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = `${Math.max(11, Math.round(T * 0.2))}px "Do Hyeon",sans-serif`; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(120,220,140,.8)'; ctx.fillText('◀ 아군', m1.x - T * 0.9, m1.y + T * 0.32);
+    ctx.fillStyle = 'rgba(240,120,110,.85)'; ctx.fillText('적군 ▶', m1.x + T * 0.9, m1.y + T * 0.32);
+    ctx.restore();
+  }
   const placeTool = b.dragTool || b.tool;
   if (hoverTile && placeTool !== 'select' && placeTool !== 'erase'){
     const { c, r } = hoverTile;
     const q = [P(c, r), P(c + 1, r), P(c + 1, r + 1), P(c, r + 1)];
     ctx.beginPath(); q.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
-    ctx.fillStyle = sideOf(placeTool) === 'ally' ? `rgba(92,194,106,${b.dragTool ? .45 : .25})` : `rgba(226,68,58,${b.dragTool ? .45 : .25})`;
+    ctx.fillStyle = fieldSide(c) === 'ally' ? `rgba(92,194,106,${b.dragTool ? .45 : .25})` : `rgba(226,68,58,${b.dragTool ? .45 : .25})`;
     ctx.fill();
   }
   drawWaterFloor();
@@ -4304,15 +4302,24 @@ function drawBattle(){
   }
   for (const f of b.fx){
     const k = f.life / f.max;
-    if (f.type === 'zbolt'){                                      // Z자 천둥 (굿윌의 딱)
-      const p = P(f.x + 0.5, f.y + 0.5), hy = p.y - f.h * T * depthScale(f.y) * 0.55, top = hy - T * 5;
-      const r = (i) => Math.sin(f.seed + i * 7.3) * T * 0.25, w = (f.big ? T * 0.9 : T * 0.5);
-      const pts = [[p.x - w + r(1), top], [p.x + w + r(2), top + (hy - top) * 0.36], [p.x - w * 0.8 + r(3), top + (hy - top) * 0.62], [p.x + w * 0.5 + r(4), top + (hy - top) * 0.86], [p.x, hy]];
+    if (f.type === 'zbolt'){                                      // Z자 천둥 (굿윌): 하늘 끝에서 지그재그로 내리꽂힘 + 가지 + 깜빡임 + 땅 번쩍
+      const p = P(f.x + 0.5, f.y + 0.5), hy = p.y - f.h * T * depthScale(f.y) * 0.55, top = -T * 0.5, sc = f.big ? 1.6 : 1;
+      const age = f.max - f.life, fl = age < 0.35 ? (Math.sin(age * 90) > -0.2 ? 1 : 0.25) : 1;   // 처음엔 번쩍번쩍
+      const a = Math.min(1, k * 1.6) * fl, r = i => Math.sin(f.seed + i * 7.3), w = T * 0.55 * sc;
+      const seg = 7, pts = [];
+      for (let i = 0; i <= seg; i++){ const t = i / seg; pts.push([p.x + (i === seg ? 0 : (i % 2 ? 1 : -1) * w * (0.55 + 0.45 * Math.abs(r(i))) * (1 - t * 0.5)), top + (hy - top) * t]); }
+      const branch = [];
+      for (let j = 1; j <= (f.big ? 4 : 2); j++){ const i = 1 + Math.floor(Math.abs(r(j * 3)) * (seg - 2)); const [bx, by] = pts[i], d = r(j * 5) > 0 ? 1 : -1; branch.push([[bx, by], [bx + d * w * 0.9, by + T * 0.6 * sc], [bx + d * w * 1.5, by + T * 1.3 * sc]]); }
       ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-      for (const [lw, c] of [[f.big ? 22 : 10, `rgba(127,212,255,${0.3 * k})`], [f.big ? 10 : 5, `rgba(190,240,255,${0.9 * k})`], [f.big ? 3.5 : 2, `rgba(255,255,255,${k})`]]){
-        ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, T * 2.2 * sc); g.addColorStop(0, `rgba(200,240,255,${0.55 * a})`); g.addColorStop(1, 'rgba(120,200,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 2.2 * sc, T * 0.8 * sc, 0, 0, Math.PI * 2); ctx.fill();   // 땅이 번쩍
+      for (const [lw, c] of [[30 * sc, `rgba(110,200,255,${0.18 * a})`], [14 * sc, `rgba(127,212,255,${0.45 * a})`], [6 * sc, `rgba(200,245,255,${0.95 * a})`], [2.5 * sc, `rgba(255,255,255,${a})`]]){
+        ctx.strokeStyle = c; ctx.lineWidth = lw;
+        ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+        for (const br of branch){ ctx.lineWidth = lw * 0.45; ctx.beginPath(); br.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.lineWidth = lw; }
       }
-      ctx.fillStyle = `rgba(190,240,255,${0.5 * k})`; ctx.beginPath(); ctx.ellipse(p.x, p.y, T * 0.6 * k, T * 0.2 * k, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = `rgba(190,240,255,${0.6 * k})`; ctx.lineWidth = 3;                 // 땅에 퍼지는 고리
+      ctx.beginPath(); ctx.ellipse(p.x, p.y, T * (0.4 + (1 - k) * 2.2) * sc, T * (0.14 + (1 - k) * 0.75) * sc, 0, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
     } else if (f.type === 'gwMark'){                              // 손바닥 표식: 노린 자리 (벗어나면 빗나감)
       const p = P(f.x + 0.5, f.y + 0.5), r = T * (0.5 + 0.4 * k);
@@ -4521,6 +4528,7 @@ function drawBattle(){
   }
   if (b.redFlash > 0){ ctx.fillStyle = `rgba(200,30,20,${b.redFlash * 0.35})`; ctx.fillRect(0, 0, W, H); }
   if (b.rainFlash > 0){ ctx.fillStyle = `rgba(255,228,90,${b.rainFlash * 0.3})`; ctx.fillRect(0, 0, W, H); }
+  if (b.zapFlash > 0){ ctx.fillStyle = `rgba(215,240,255,${b.zapFlash * (Math.sin(time * 70) > 0 ? 0.38 : 0.16)})`; ctx.fillRect(0, 0, W, H); }   // 천둥: 번쩍번쩍
   if (caption){
     ctx.globalAlpha = Math.min(1, caption.life, (caption.max - caption.life) * 3);
     ctx.font = `${Math.round(Math.max(24, T * 0.6))}px "Do Hyeon",sans-serif`;
@@ -4597,7 +4605,8 @@ SPRITES.goodwill = { face:'assets/goodwill_face.png', heightTiles:1.95, baseFace
     knee:{"src":"assets/gw_knee.webp","fw":673,"fh":376,"n":14,"ax":427,"ay":365,"dur":[110,110,110,110,110,110,110,110,110,110,110,110,110,110],"hit":6},
     kneeHead:{"src":"assets/gw_kneeHead.webp","fw":761,"fh":476,"n":15,"ax":471,"ay":465,"dur":[110,110,110,110,110,110,110,110,110,110,110,110,110,110,110],"hit":5},
     slam:{"src":"assets/gw_slam.webp","fw":571,"fh":476,"n":20,"ax":278,"ay":465,"dur":[330,220,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,330],"hit":13},
-    rise:{"src":"assets/gw_rise.webp","fw":379,"fh":476,"n":14,"ax":148,"ay":465,"dur":[110,220,110,110,110,110,110,110,110,110,110,110,110,110],"hit":10},
+    // 올려차기: 원래 1.65초 → 0.94초 (맞는 순간 1.2초 → 0.54초). 웅크렸다 튀어 오르는 실루엣을 빠르게
+    rise:{"src":"assets/gw_rise.webp","fw":379,"fh":476,"n":14,"ax":148,"ay":465,"dur":[60,80,50,50,50,50,50,50,50,50,80,90,90,140],"hit":10},
     dash:{"src":"assets/gw_dash.webp","fw":606,"fh":278,"n":7,"ax":471,"ay":267,"dur":[110,110,110,110,110,110,110]} } };
 SPRITES.swordsman = { face:'assets/sword_face.png', heightTiles:1.9, baseFace:-1, idleH:460,  // 검사: 대기 · 베기 (준비는 대기 그대로). 대기 원화는 오른쪽을 보고, 베기 원화는 왼쪽으로 벰
   alias:{ strike:'attack', special:'attack' },
@@ -7491,13 +7500,22 @@ const GW = {
   knee:  { cd: 5.5, reach: 4.5, min: 1.3, mul: 2.0, stun: 1.0, down: 2.2, downW: 600 },
   snap1: { cd: 8, reach: 7, min: 2.2, mul: 2.4, stun: 0.5 },
   snap3: { cd: 6.5, reach: 7, min: 1.8, mul: 0.75, stun: 0.25 },
-  slam:  { cd: 11, reach: 5, r: 1.7, mul: 1.6, stun: 0.7, lift: 1.6 },
+  slam:  { cd: 7, reach: 5, r: 2.5, mul: 1.6, stun: 1.4 },   // 평소에도 씀, 3~5칸 밖에서도 날아와 내리꽂음 + 번개 한 줄기
   rise:  { cd: 4.5, reach: 1.5, mul: 1.5, downP: 0.35, down: 0.9 },
 };
 const gwAnimT = (name, i) => SPRITES.goodwill.anims[name].dur.slice(0, i).reduce((a, v) => a + v, 0) / 1000;   // i번째 프레임이 시작하는 때
 const gwAnimLen = name => gwAnimT(name, SPRITES.goodwill.anims[name].n);
-function gwZap(o, big){                                           // Z자 천둥: 위에서 노린 자에게 내리꽂히고 천천히 사라짐
-  battle.fx.push({ type: 'zbolt', x: o.x, y: o.y, h: unitHeight(o), life: big ? 0.9 : 0.5, max: big ? 0.9 : 0.5, big: !!big, seed: Math.random() * 99 });
+function gwZap(o, big){                                           // Z자 천둥: 하늘에서 노린 자에게 내리꽂히고 (가지 · 깜빡임) 천천히 사라짐. 크면 우르릉 쾅!
+  const b = battle, h = o.h ?? unitHeight(o);
+  b.fx.push({ type: 'zbolt', x: o.x, y: o.y, h, life: big ? 1.3 : 0.55, max: big ? 1.3 : 0.55, big: !!big, seed: Math.random() * 99 });
+  const q = P(o.x + 0.5, o.y + 0.5);
+  for (let i = 0; i < (big ? 18 : 6); i++){ const a = Math.random() * Math.PI * 2, v = 120 + Math.random() * (big ? 360 : 160); sparks.push({ x: q.x + camX, y: q.y - 4, vx: Math.cos(a) * v, vy: -Math.abs(Math.sin(a)) * v, life: 0.5, c: i % 2 ? '#e8faff' : '#7fd4ff' }); }
+  if (big){
+    b.zapFlash = Math.max(b.zapFlash || 0, 0.9); shake = Math.max(shake, 0.4);
+    wordAt(q.x - T * 0.9, q.y - T * 3.4, '우르릉…', '#cfefff', 0.32, { life: 1.0, rot: -0.1 });
+    wordAt(q.x + T * 0.4, q.y - T * 1.5, '쾅!!', '#ffffff', 0.7, { life: 0.7, delay: 0.05, rot: 0.08 });
+    b.fx.push({ type: 'ring', wx: q.x + camX, y: q.y - 4, life: 0.5, max: 0.5, color: '170,230,255' });
+  }
 }
 function goodwillBrain(u, sdt, tgt, dist){
   const g = u.gw || (u.gw = { cd: { palm: 2, knee: 1.2, snap1: 3, snap3: 2, slam: 5, rise: 1 }, act: null });
@@ -7508,7 +7526,7 @@ function goodwillBrain(u, sdt, tgt, dist){
   const near = battle.units.filter(o => !o.dead && o.side !== u.side && !o.enter && Math.hypot(o.x - tgt.x, o.y - tgt.y) < GW.slam.r).length;
   const can = k => g.cd[k] <= 0 && dist <= GW[k].reach && dist >= (GW[k].min || 0);
   const opts = [];
-  if (can('slam') && near >= 2) opts.push('slam', 'slam');
+  if (can('slam')) opts.push('slam', ...(near >= 2 || dist >= 2.5 ? ['slam'] : []));   // 멀거나 뭉쳤으면 더 자주
   if (can('palm')) opts.push('palm');
   if (can('knee')) opts.push('knee', 'knee');
   if (can('rise')) opts.push('rise');
@@ -7582,7 +7600,7 @@ function gwAct(u, g, sdt){
       const big = A.type === 'snap1';
       gwZap(o, big); gwHit(u, o, GW[A.type].mul, { ranged: true });
       if (!o.dead){ applyShock(o, 'blue', true); stagger(o, GW[A.type].stun, braceW(u) * (big ? 4 : 1.5)); }
-      shake = Math.max(shake, big ? 0.3 : 0.12); if (big) b.rainFlash = Math.max(b.rainFlash || 0, 0.25);
+      shake = Math.max(shake, big ? 0.35 : 0.12);
     }
     if (A.t >= gwAnimLen(A.type)) return end();
     return true;
@@ -7597,10 +7615,10 @@ function gwAct(u, g, sdt){
     if (!A.done && A.t >= t1){
       A.done = 1;
       const q = P(u.x + 0.5, u.y + 0.5);
-      shake = Math.max(shake, 0.45); b.hitstop = Math.max(b.hitstop, 0.1); b.rainFlash = Math.max(b.rainFlash || 0, 0.3);
+      shake = Math.max(shake, 0.5); b.hitstop = Math.max(b.hitstop, 0.12);
       b.fx.push({ type: 'quake', x: u.x, y: u.y, r: GW.slam.r, life: 0.5, max: 0.5 });
       for (let i = 0; i < 10; i++){ const a = i / 10 * Math.PI * 2; b.fx.push({ type: 'dust', wx: q.x + camX + Math.cos(a) * T * 0.9, y: q.y + Math.sin(a) * rowH * 0.5, s: 0.9, life: 0.6, max: 0.6 }); }
-      wordAt(q.x, q.y - T * 1.6, '콰르릉!', '#bfefff', 0.55, { life: 0.6 });
+      gwZap({ x: u.x, y: u.y, h: 0.2 }, true);                     // 내리꽂는 순간 번개 한 줄기
       for (const e of b.units){
         if (e.dead || e.side === u.side || e.enter || Math.hypot(e.x - u.x, e.y - u.y) > GW.slam.r) continue;
         gwHit(u, e, GW.slam.mul); if (!e.dead){ applyShock(e, 'blue', true); stagger(e, GW.slam.stun, braceW(u) * 5); }
