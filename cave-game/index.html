@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.1
+  version v14.2
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -278,6 +278,10 @@
   .eq-pick button{display:flex;gap:6px;align-items:center;background:#15111a;border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:5px;text-align:left;font-size:12px;}
   .eq-pick button.on{border-color:var(--fire);} .eq-pick img{width:30px;height:30px;object-fit:contain;}
   .eq-note{font-size:11px;color:#9a8f86;margin:2px 0 6px;}
+  /* 장비 등급 배경: 유물 = 청록, 보스 장비 = 핏빛 */
+  .eq-slot img.rk-relic,.eq-pick img.rk-relic{background:radial-gradient(circle at 50% 45%,#2f7f78 0%,#123a3a 70%);box-shadow:inset 0 0 0 1px #6fe0d0;border-radius:3px;}
+  .eq-slot img.rk-boss,.eq-pick img.rk-boss{background:radial-gradient(circle at 50% 45%,#8a2a2a 0%,#3a1016 70%);box-shadow:inset 0 0 0 1px #ff8a6a;border-radius:3px;}
+  .eq-slot small.rk-t.rk-relic{color:#7fe8d8;} .eq-slot small.rk-t.rk-boss{color:#ff9a80;}
   #bt-quick{pointer-events:auto;position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:12px;display:flex;gap:6px;z-index:3;}
   #bt-quick button{background:rgba(18,14,20,.92);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 11px;font-size:13px;font-family:var(--display);min-height:38px;}
   #bt-quick button.primary{background:var(--fire);color:#1a1008;border-color:var(--fire);}
@@ -376,7 +380,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.1';
+const VERSION = 'v14.2';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1810,16 +1814,16 @@ HEROES.yellow = { name:'옐로', grade:'★', color:'#f2c94c', sub:'롤러스케
   equip:{ 무기:'🩹 할퀴는 의수', 머리:'간호 모자', 몸:'찢어진 간호복', 장신구:'🧰 구급상자 · 촛대' } };
 HEROES.goodwill = { name:'GOOD WILL', grade:'★★★★★', color:'#7fd4ff', sub:'푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터',
   hp:300, atk:28, def:8, block:0.2, crit:0.2, eva:0.3, spd:4.2, range:1.4, cd:0.9, windup:0.25, hits:1, weight:70, react:0.8,
-  brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45, hopper:true,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
-  tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 치고 빠지기. 평소엔 3~5칸에서 전기로 괴롭히고, 상대가 치려 하면 이미 뒤로 쓩, 가끔 파고들어 한 대 치고 바로 빠진다 (회피 30%, 순간이동 도약).\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 (죽창 한 방) — 뒤로 살짝 물러났다가 반동으로 박차고 튀어나가 빠아악! (공격력 x3) 강한 경직. 빈틈 (공격 중 · 휘청 · 다운)을 노리면 헤드샷 60%. 헤드샷 = 치명타 x3 + 갑옷 무시: 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 주변 1.7칸 감전 + 경직.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
+  brain:'goodwill', stepCd:1.6, blink:1.8, dodgeCounter:0.45, hopper:true, flanker:true,   // 세자르처럼 잘 피함 (순간이동급 스텝, 피하면 45% 반격)
+  tags:['번개', '육탄S'], trait:'⚡ 스프린터 — 중거리 기본. 3~5칸에서 전기로 괴롭히며 계속 상대의 옆 · 뒤 (사각)로 팟팟 옮겨 다닌다. 상대가 치려 하면 이미 뒤로 쓩. 육탄전도 마다하지 않아 사각으로 파고들어 한두 대 치고 빠진다 (회피 30%, 순간이동 도약).\n👁 사각 — 등 뒤에서 친 근접 공격은 막을 수 없다.\n✋ 손바닥 (잡기) — 노린 적 발밑에 푸른 표식, 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트린다 (붙잡힌 동안 경직, 회피 · 막기 무시). 표식이 뜬 사이 그 자리를 벗어나면 빗나가고, 굿윌이 빈틈을 보인다.\n🦵 니킥 (죽창 한 방) — 뒤로 살짝 물러났다가 반동으로 박차고 튀어나가 빠아악! (공격력 x3) 강한 경직. 상대의 옆 · 뒤로 꽂힌다. 빈틈 (공격 중 · 휘청 · 다운)을 노리면 헤드샷 60%. 헤드샷 = 확정 치명타 + 갑옷 무시 (레벨 1 세자르에게 약 140): 무게 600 이하 (카리우스까지)는 완전히 다운 (일어날 때까지 딜타임). 적뢰처럼 무거우면 다운 없음.\n⚡ 딱 — 손가락을 한 번 튕기면 Z자 천둥이 노린 적에게 즉시 내리꽂힌다.\n⚡ 딱딱딱 — 약한 천둥 세 번 (짧은 경직).\n👊 내려찍기 — 뛰어올라 적에게 내리꽂는다. 거의 유일한 광역기: 3~5칸 밖에서도 날아와 주변 2.5칸 감전 + 경직, 내리꽂는 순간 번개. 떠 있는 동안 무적.\n🦶 올려차기 — 붙은 적을 차올려, 35%로 잠깐 다운.',
   equip:{ 무기:'⚡ 푸른 번개 (맨손)', 머리:'마스크', 몸:'찢어진 검은 겉옷', 장신구:'—' } };
 /* ---------- 장비 (그림 · 이름 · 특성만, 효과는 나중에). 🔆 = 그 인물만 가진 특성을 물려받은 것 ---------- */
 const ITEMS = {
-  princeNecklace: { name:'황태자의 목걸이', img:'assets/items/necklace.png', slot:'장신구', tags:['가호:바람'], d:'태자의 행복을 바란 마음.' },
-  fisherRing:     { name:'어부의 반지', img:'assets/items/ring.png', slot:'장신구', tags:['축복:바다'], d:'' },
-  oldCrown:       { name:'노인의 왕관', img:'assets/items/crown.png', view:'assets/items/crown_R.png', slot:'머리', tags:['🔆권위'], from:'cesar', d:'세자르의 왕관. 신성을 약하게 누른다 (세자르 만큼은 아님).' },
-  oldSword:       { name:'노인의 검', img:'assets/items/sword.png', slot:'무기', tags:['냉기E'], from:'cesar', d:'평범하게 잘 만들어진 검. 아주 약간의 냉기가 남아 있다 (세자르는 냉기 A).' },
-  holyShroud:     { name:'성해포', img:'assets/items/robe.png', view:'assets/items/robe_R.png', slot:'몸', tags:['신성E'], from:'jeokroe', d:'적뢰를 쓰러뜨리면. 약간의 신성을 얻는다.' },
+  princeNecklace: { name:'황태자의 목걸이', img:'assets/items/necklace.png', slot:'장신구', rank:'relic', tags:['가호:바람'], d:'태자의 행복을 바란 마음.' },
+  fisherRing:     { name:'어부의 반지', img:'assets/items/ring.png', slot:'장신구', rank:'relic', tags:['축복:바다'], d:'' },
+  oldCrown:       { name:'노인의 왕관', img:'assets/items/crown.png', view:'assets/items/crown_R.png', slot:'머리', tags:['🔆권위'], from:'cesar', rank:'boss', d:'세자르의 왕관. 신성을 약하게 누른다 (세자르 만큼은 아님).' },
+  oldSword:       { name:'노인의 검', img:'assets/items/sword.png', slot:'무기', tags:['냉기E'], from:'cesar', rank:'boss', d:'평범하게 잘 만들어진 검. 아주 약간의 냉기가 남아 있다 (세자르는 냉기 A).' },
+  holyShroud:     { name:'성해포', img:'assets/items/robe.png', view:'assets/items/robe_R.png', slot:'몸', tags:['신성E'], from:'jeokroe', rank:'boss', d:'적뢰를 쓰러뜨리면. 약간의 신성을 얻는다.' },
 };
 for (const it of Object.values(ITEMS)){ it.imgEl = new Image(); it.imgEl.src = it.img; if (it.view){ it.viewImg = new Image(); it.viewImg.src = it.view; } }
 const ENEMIES = {
@@ -2002,13 +2006,13 @@ const SK_COL = { slash: '#e2443a', thrust: '#f2c94c', shoot: '#f08a2a', throw: '
 const WEAPONS = {
   spear:    { name:'낡은 창', em:'🗡', h:'assets/weapons/h_spear.png', len:1.55, grip:0.36, mul:1.0, range:1.65,
               basic:{ icon:'thrust', act:'thrust', name:'찌르기' }, skill:{ icon:'thrust', act:'throw', name:'투척', cd:0 }, throw:{ mul:0.8 }, d:'평범한 창. 던질 수 있다.' },
-  fisher:   { name:'낡은 어부의 창', em:'🔱', h:'assets/weapon_fisher_spear.png', len:1.55, grip:0.36, mul:1.0, range:1.65, relic:true, holy:1.5,
+  fisher:   { name:'낡은 어부의 창', em:'🔱', h:'assets/weapon_fisher_spear.png', len:1.55, grip:0.36, mul:1.0, range:1.65, relic:true, rank:'relic', holy:1.5,
               basic:{ icon:'thrust', act:'thrust', name:'찌르기' }, skill:{ icon:'fisher', act:'throw', name:'투창', cd:0 }, throw:{ mul:1.0 }, d:'유물. 신성 특공 (신성을 지닌 자에게 x1.5). 투창이 더 강하다.' },
   axe:      { name:'손도끼', em:'🪓', h:'assets/weapons/h_axe.png', len:0.8, grip:0.12, mul:1.1, range:1.35, cd:1.1,
               basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'throwaxe', act:'throw', name:'도끼 던지기', cd:0 }, throw:{ mul:1.1, spin:true, stick:0.25 }, d:'빙글빙글 돌며 날아가 잘 박힌다.' },
   sword:    { name:'녹슨 검', em:'⚔', h:'assets/weapons/h_sword.png', len:1.05, grip:0.12, mul:1.1, range:1.55,
               basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'cross', act:'counter', name:'반격 자세', cd:5 }, d:'던질 수 없다. 반격 자세: 0.9초 안에 들어온 근접 공격을 흘리고 확정 치명타로 되벤다.' },
-  oldSword: { name:'노인의 검', em:'⚔', h:'assets/weapons/h_oldSword.png', len:1.15, grip:0.12, mul:1.25, range:1.65, frost:0.08, tags:['냉기E'],
+  oldSword: { name:'노인의 검', em:'⚔', h:'assets/weapons/h_oldSword.png', len:1.15, grip:0.12, mul:1.25, range:1.65, frost:0.08, tags:['냉기E'], rank:'boss', from:'cesar',
               basic:{ icon:'slash', act:'slash', name:'베기' }, skill:{ icon:'cross', act:'counter', name:'반격 자세', cd:5 }, d:'세자르의 검. 잘 만든 검, 아주 약간의 냉기 (8%로 동상).' },
   hammer:   { name:'망치', em:'🔨', h:'assets/weapons/h_hammer.png', len:0.85, grip:0.12, mul:1.35, range:1.3, cd:1.4, windup:0.45, stagger:0.45,
               basic:{ icon:'quake', act:'smash', name:'내려찍기' }, skill:{ icon:'quake', act:'quake', name:'땅울림', cd:7 }, d:'느리지만 무겁다 (45% 휘청). 땅울림: 주변 1.8칸.' },
@@ -2091,10 +2095,12 @@ document.getElementById('sk-skill').addEventListener('pointerdown', e => { e.pre
 /* ---------- 인주 장비 칸: 무기 · 머리 · 몸 · 장신구. 개발자 모드면 누르면 골라 입힘 ---------- */
 const EQ_SLOTS = [['weapon', '무기'], ['head', '머리'], ['body', '몸'], ['acc', '장신구']];
 function eqOptions(slot){
-  if (slot === 'weapon') return Object.entries(WEAPONS).map(([k, W]) => ({ k, name: W.name, img: W.h, tags: W.relic ? ['유물', '신성 특공'] : W.tags || [], d: W.d, sk: `${W.basic.name} · F ${W.skill.name}` }));
+  if (slot === 'weapon') return Object.entries(WEAPONS).map(([k, W]) => ({ k, name: W.name, img: W.h, rank: W.rank, from: W.from, tags: W.relic ? ['신성 특공'] : W.tags || [], d: W.d, sk: `${W.basic.name} · F ${W.skill.name}` }));
   const want = { head: '머리', body: '몸', acc: '장신구' }[slot];
-  return Object.entries(ITEMS).filter(([, it]) => it.slot === want).map(([k, it]) => ({ k, name: it.name, img: it.img, tags: it.tags, d: it.d }));
+  return Object.entries(ITEMS).filter(([, it]) => it.slot === want).map(([k, it]) => ({ k, name: it.name, img: it.img, rank: it.rank, from: it.from, tags: it.tags, d: it.d }));
 }
+const RANK_NM = { relic: '유물', boss: '보스 장비' }, BOSS_NM = { cesar: '세자르', jeokroe: '적뢰' };
+const rankTxt = o => o.rank === 'boss' ? `보스 장비 · ${BOSS_NM[o.from] || ''}` : RANK_NM[o.rank] || '';
 function equipBlock(){
   const box = el('div');
   box.appendChild(el('div', 'eq-note', DEV ? '🛠 개발자 모드: 칸을 누르면 바꿔 입힘 (장비 효과는 아직 무기만)' : '장비 바꾸기는 굴의 🛠 개발자 모드에서 (장비 효과는 아직 무기만)'));
@@ -2102,8 +2108,9 @@ function equipBlock(){
   for (const [slot, label] of EQ_SLOTS){
     const cur = EQUIP[slot], o = cur ? eqOptions(slot).find(x => x.k === cur) : null;
     const c = el('div', 'eq-slot' + (DEV ? ' dev' : ''));
-    const im = document.createElement('img'); if (o) im.src = o.img; c.appendChild(im);
+    const im = document.createElement('img'); if (o){ im.src = o.img; if (o.rank) im.className = 'rk-' + o.rank; } c.appendChild(im);
     const t = el('div'); t.appendChild(el('small', '', label)); t.appendChild(el('div', 'nm', o ? o.name : '—'));
+    if (o && o.rank) t.appendChild(el('small', 'rk-t rk-' + o.rank, rankTxt(o)));
     if (o && (o.tags || []).length) t.appendChild(el('small', '', o.tags.map(x => `[${x}]`).join(' ')));
     if (o && o.sk) t.appendChild(el('small', '', o.sk));
     c.appendChild(t); c.title = o ? o.d || '' : '';
@@ -2112,7 +2119,7 @@ function equipBlock(){
       const opts = eqOptions(slot); if (slot !== 'weapon') opts.unshift({ k: null, name: '벗기', img: '', tags: [] });
       for (const x of opts){
         const bt = el('button', x.k === (EQUIP[slot] || null) ? 'on' : '');
-        if (x.img){ const ii = document.createElement('img'); ii.src = x.img; bt.appendChild(ii); }
+        if (x.img){ const ii = document.createElement('img'); ii.src = x.img; if (x.rank) ii.className = 'rk-' + x.rank; bt.appendChild(ii); }
         bt.appendChild(el('span', '', x.name + ((x.tags || []).length ? ` [${x.tags.join(', ')}]` : '')));
         bt.title = x.d || '';
         bt.onclick = () => { if (x.k) EQUIP[slot] = x.k; else delete EQUIP[slot]; saveEquip(); openSheet('player'); };
@@ -3275,7 +3282,9 @@ function resolveHit(a, d, opts = {}){
     return;
   }
   let blockCut = 0;
-  if (d.guarding && !opts.forceCrit && !opts.grab){
+  const blindHit = a.st.flanker && !opts.ranged && d.face && Math.sign(a.x - d.x) === -Math.sign(d.face);   // 사각: 등 뒤에서 친 근접 공격은 막을 수 없음 (굿윌)
+  if (blindHit && d.guarding) fxText(d, '사각!', '#bfefff', null, 0.5);
+  if (d.guarding && !opts.forceCrit && !opts.grab && !blindHit){
     if (Math.random() < d.st.guard / 100){
       if (b.clock - (d.guardSince ?? -99) <= JUST){ perfectBlock(d, a, opts); return; }   // 저스트 패리: 맞기 직전 0.2초 안에 올린 막기
       blockCut = d.st.shield ? BLOCK_SHIELD : BLOCK_BARE;
@@ -7762,10 +7771,10 @@ const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, 
 /* ---------- GOOD WILL: 빠른 스프린터 · 회피 · 1대1 육탄전. 기술은 대기시간마다 골라 씀 (안 쓸 땐 손 휘두르기 + 스텝 회피) ---------- */
 const GW = {
   palm:  { cd: 7, reach: 4.5, min: 0.8, tele: 0.45, slip: 0.9, mul: 2.6, miss: 0.9 },   // 표식 0.45초, 그 사이 0.9칸 넘게 벗어나면 빗나감 → 굿윌 빈틈 0.9초
-  knee:  { cd: 6, reach: 6, min: 1.3, mul: 3.0, stun: 1.0, down: 2.2, downW: 600 },   // 죽창 한 방: 멀리서도 보이지 않는 속도로 날아와 꽂음
+  knee:  { cd: 6, reach: 6, min: 1.3, mul: 3.0, head: 1.67, stun: 1.0, down: 2.2, downW: 600 },   // 죽창 한 방: 멀리서도 보이지 않는 속도로 날아와 꽂음
   snap1: { cd: 6, reach: 7, min: 2.2, mul: 2.4, stun: 0.5 },
   snap3: { cd: 4, reach: 7, min: 1.8, mul: 0.75, stun: 0.25 },   // 전기로 계속 괴롭힘
-  kite:  { lo: 3.0, hi: 5.0, dive: 2.6, evade: 0.55 },            // 평소 거리 3~5칸, 2.6초마다 한 번 파고들어 치고 빠짐, 공격이 오면 0.55초마다 쓩 빠짐
+  kite:  { lo: 3.0, hi: 5.0, dive: 2.6, evade: 0.55, circle: 1.7 },   // circle: 1.7초마다 사각 (옆 · 뒤)으로 자리를 옮김            // 평소 거리 3~5칸, 2.6초마다 한 번 파고들어 치고 빠짐, 공격이 오면 0.55초마다 쓩 빠짐
   slam:  { cd: 7, reach: 5, r: 2.5, mul: 1.6, stun: 1.4 },   // 평소에도 씀, 3~5칸 밖에서도 날아와 내리꽂음 + 번개 한 줄기
   rise:  { cd: 4.5, reach: 1.5, mul: 1.5, downP: 0.35, down: 0.9 },
 };
@@ -7799,13 +7808,40 @@ function goodwillBrain(u, sdt, tgt, dist){
     }
     return false;
   };
+  const blind = (L, back) => {                                     // 사각: 노린 자의 옆 · 뒤 L칸 (등 뒤 우선, 가까운 쪽부터)
+    const f = (tgt.face || 1) > 0 ? 0 : Math.PI, side = Math.sign(u.y - tgt.y) || (Math.random() < 0.5 ? 1 : -1);
+    const angs = back ? [Math.PI, Math.PI * 0.75 * side, -Math.PI * 0.75 * side, Math.PI * 0.5 * side, -Math.PI * 0.5 * side]
+                      : [Math.PI * 0.75 * side, Math.PI * 0.5 * side, Math.PI, -Math.PI * 0.75 * side, -Math.PI * 0.5 * side];
+    for (const a of angs){
+      const tx = tgt.x + Math.cos(f + a) * L, ty = tgt.y + Math.sin(f + a) * L * 0.8;
+      if (Math.hypot(tx - u.x, ty - u.y) > 0.6 && stepFree(u, tx, ty)) return { x: tx, y: ty };
+    }
+    return null;
+  };
+  g.circleT = (g.circleT ?? GW.kite.circle) - sdt;
   const threat = battle.units.find(o => !o.dead && o.side !== u.side && o.windup > 0 && o.atkTarget === u && Math.hypot(o.x - u.x, o.y - u.y) < (o.st.range || 1.5) + 1.2);
   if (threat && g.evade <= 0 && away(2.8)){ g.evade = GW.kite.evade; g.dive = false; return true; }   // 상대가 칠 땐 이미 뒤에
-  if (u.lunge > 0.12 && g.evade <= 0){ g.dive = false; g.diveT = GW.kite.dive; g.evade = 0.3; if (away(3)) return true; }   // 한 대 치고 바로 빠짐
+  if (u.lunge > 0.12 && !g.hitMark){                               // 한 대 쳤다: 육탄전도 마다하지 않음 (상대가 휘청이면 한 대 더), 아니면 바로 빠짐
+    g.hitMark = true; g.hits = (g.hits || 0) + 1;
+    if (g.evade <= 0 && (g.hits >= 2 || !(tgt.stun > 0.1 || tgt.downT > 0) && Math.random() < 0.6)){
+      g.dive = false; g.hits = 0; g.diveT = GW.kite.dive; g.evade = 0.3;
+      const p = blind(3.4, false); if (p){ startBlink(u, p.x, p.y); return true; }
+      if (away(3)) return true;
+    }
+  }
+  if (u.lunge <= 0) g.hitMark = false;
   if (Math.random() > sdt * 3){                                    // 기술을 안 고르는 틈: 거리 조절
     if (g.dive) return false;                                     // 파고드는 중: 기본 공격에 맡김
-    if (g.diveT <= 0 && dist < 4){ g.dive = true; return false; }
+    if (g.diveT <= 0 && dist < 5.5){                               // 사각 (등 뒤)으로 순간이동해 파고듦
+      g.dive = true; g.hits = 0;
+      const p = blind(1.1, true); if (p){ startBlink(u, p.x, p.y); return true; }
+      return false;
+    }
     if (dist < GW.kite.lo && g.evade <= 0 && away(2.6)){ g.evade = GW.kite.evade; return true; }   // 너무 붙었으면 빠짐
+    if (g.circleT <= 0 && dist <= GW.kite.hi + 1){                // 중거리에서 계속 옆 · 뒤로 옮겨 다님 (팟. 팟.)
+      g.circleT = GW.kite.circle * (0.7 + Math.random() * 0.6);
+      const p = blind(3.2 + Math.random() * 1.2, false); if (p){ startBlink(u, p.x, p.y); return true; }
+    }
     return false;
   }
   const near = battle.units.filter(o => !o.dead && o.side !== u.side && !o.enter && Math.hypot(o.x - tgt.x, o.y - tgt.y) < GW.slam.r).length;
@@ -7868,13 +7904,17 @@ function gwAct(u, g, sdt){
     const nm = A.crit ? 'kneeHead' : 'knee', S = SPRITES.goodwill.anims[nm];
     if (!A.dashed && A.t >= at(nm, S.hit - 2)){                    // 순식간에 달려듦
       A.dashed = true;
-      if (!o.dead){ const n = norm(o.x - u.x, o.y - u.y); startBlink(u, o.x - n.x * 0.8, o.y - n.y * 0.8); u.face = Math.sign(n.x) || u.face; }
+      if (!o.dead){                                                // 옆 · 뒤 (사각)로 꽂힘
+        const bx = o.x - (o.face || 1) * 0.6, by = o.y + (Math.sign(u.y - o.y) || 1) * 0.45;
+        const n = norm(o.x - u.x, o.y - u.y), ok = stepFree(u, bx, by);
+        startBlink(u, ok ? bx : o.x - n.x * 0.8, ok ? by : o.y - n.y * 0.8); u.face = Math.sign(o.x - u.x) || u.face;
+      }
     }
     if (!A.done && A.t >= at(nm, S.hit)){
       A.done = 1;
       if (!o.dead && Math.hypot(o.x - u.x, o.y - u.y) < 1.6){
         const q = P(o.x + 0.5, o.y + 0.5); wordAt(q.x, q.y - unitHeight(o) * T * depthScale(o.y) * (A.crit ? 0.9 : 0.6), '빠아악!', A.crit ? '#ffd35a' : '#ffe9d0', A.crit ? 0.6 : 0.48, { life: 0.55, rot: -0.12 });
-        gwHit(u, o, GW.knee.mul, { forceCrit: A.crit, pierceArmor: A.crit });   // 헤드샷: 치명타 x3 + 갑옷 무시 → 전황을 뒤집는 한 방
+        gwHit(u, o, A.crit ? GW.knee.head : GW.knee.mul, { forceCrit: A.crit, pierceArmor: A.crit });   // 헤드샷: 확정 치명타 + 갑옷 무시 (레벨 1 세자르에게 약 140) → 전황을 뒤집는 한 방
         if (!o.dead){ stagger(o, GW.knee.stun, braceW(u) * 6); if (A.crit) knockDown(o, GW.knee.down, GW.knee.downW); }
         shake = Math.max(shake, A.crit ? 0.45 : 0.3); b.hitstop = Math.max(b.hitstop, A.crit ? 0.14 : 0.08);
         if (A.crit) camFocus(o.x, o.y, 1.3, 0.6);
