@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v14.7
+  version v14.8
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -380,7 +380,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.7';
+const VERSION = 'v14.8';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1854,7 +1854,7 @@ Object.assign(ENEMIES, {
     hp:500, atk:30, def:24, block:0.75, crit:0.08, eva:0.32, spd:1.4, range:2.2, cd:1.8, windup:0.5, hits:1, weight:420, react:0.18, radius:0.55, height:1.75,
     boss:true, brain:'cesar', silent:true, lunge:2.6, stepCd:5, blink:1.4, dodgeCounter:0.5, hitStagger:0.45, combo:0.35, sever:0.35, frostbite:0.25,
     look:{ scale:1.3, skin:'#cfc6bb', cloth:'#2f3f7a', weapon:'longsword', wstyle:{ blade:'#e8eef6', guard:'#d4a93a' }, crown:true, beard:true, cloak:'#24346e', eye:'#9fd0ff' },
-    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 모든 공격은 머리 위 "!"와 바닥 범위로 예고된다. 탐색 (4.5~7초): 아주 천천히 걸으며 간격 (2.6칸)을 재고 상대를 살핀다. 붙으면 투욱, 투욱 무게 실린 뒷걸음 점프로 거리를 벌린다. 가끔 잠깐 뛰어 자리를 옮긴다. 회피 스텝은 공격이 올 때만. 딜타임 (4.5초): 휘몰아친다 — 3배 속도 우회로 뒤를 노리고, 뛰어 들어오고, 기술을 쏟아낸다. 빈틈 (휘청이거나 공격 직후인 자)은 탐색 중에도 절대 놓치지 않고 즉시 파고들어 3연격. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 32% + 순간이동급 스텝), 피하면 50% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 (레벨 1 기준) 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 (반경 2.6칸, 공격력 2배) 2칸 밀어내고 휘청이게 한다. 탐색 중에도 붙으면 백스텝 대신 쓰기도 한다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n⚔ 하늘 가르기 (필살) — 제자리에서 검을 늘어뜨리고 기운을 모았다가 (슈퍼아머) 세로로 크게 올려벤다. 7칸 직선 위의 모두 (공중 포함)를 두부처럼 썰어 절단 → 경직 → 풀리며 쓰러지고 10초 이동 제약 (느리게 걷기만, 스텝 불가). 하늘까지 닿는 빛과 함께 땅이 갈라지고 진동이 3초 넘게 이어지며, 2초 뒤 갈라진 자리에서 짧은 폭풍 (콰아아—)이 터져 근처 적을 바깥으로 밀어낸다.\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.',
+    tags:[], trait:'🔆 명군의 무위 — 말이 없다. 모든 공격은 머리 위 "!"와 바닥 범위로 예고된다. 탐색 (4.5~7초): 아주 천천히 걸으며 간격 (2.6칸)을 재고 상대를 살핀다. 붙으면 투욱, 투욱 무게 실린 뒷걸음 점프로 거리를 벌린다. 가끔 잠깐 뛰어 자리를 옮긴다. 회피 스텝은 공격이 올 때만. 딜타임 (4.5초): 휘몰아친다 — 3배 속도 우회로 뒤를 노리고, 뛰어 들어오고, 기술을 쏟아낸다. 빈틈 (휘청이거나 공격 직후인 자)은 탐색 중에도 절대 놓치지 않고 즉시 파고들어 3연격. 긴 검으로 다가오지 못하게 하고 (사거리 2.2칸, 맞으면 잘 휘청임), 가끔 빠른 연격 (2~3번). 빙글빙글 돌며 압박하다 파고들어 난전 · 밀쳐내기 · 방어로 카운터를 노린다. 아주 잘 피하고 (회피 32% + 순간이동급 스텝), 피하면 50% 확률로 바로 반격.\n✂ 절단 (35%, 치명타면 두 배) — 5초 동안 (레벨 1 기준) 최대 체력 5% + 4씩. ❄ 동상 — 느려지고 공격이 늦어짐.\n👑 권위 — 손을 들어 눈을 내린다. 신성이 극도로 제한된다. 손을 드는 동안 때릴 수 있다 (던전에선 연출로 이미 내림). 크게 휘청이면 6초 동안 흔들림.\n⚔ 마구 베기 (필살) — 전열 붕괴. 적 무리의 최전방 (가장 앞에 나선 자)에게만 잔상을 남기며 돌진 (끊을 수 없음) 후 12번 베기, 모두 치명타. 쓰러지면 다음 최전방으로. 베는 도중엔 휘청이면 끊김.\n❄ 냉기 참격 — 묵직하게 크게 휘둘러 5칸 앞까지 부채꼴로 벤다. 아주 큰 피해 + 동상.\n🌀 원형 베기 — 가까이 붙으면 크게 돌려 베어 (반경 2.6칸, 공격력 2배) 2칸 밀어내고 휘청이게 한다. 탐색 중에도 붙으면 백스텝 대신 쓰기도 한다.\n🧱 어깨 박치기 — 잔상을 남기며 들이받아 휘청이게 한다.\n⚔ 하늘 가르기 (필살) — 제자리에서 검을 늘어뜨리고 기운을 모았다가 (슈퍼아머) 세로로 크게 올려벤다. 7칸 직선 위의 모두 (공중 포함)를 두부처럼 썰어 절단 → 경직 → 풀리며 쓰러지고 10초 이동 제약 (느리게 걷기만, 스텝 불가). 리듬: 1초 모음 → 0.7초 싹 (하늘까지 닿는 빛, 땅이 갈라지고 큰 진동) → 0.7초 콰아아 (갈라진 자리에서 폭풍, 근처 적을 바깥으로 밀어냄).\n🗡 관통 찌르기 — 제자리에서 힘을 모았다가 (슈퍼아머) 순식간에 튀어나가 일직선의 모두를 꿰뚫는다. 막을 수 없고 치명타 50%. 맨 앞이 버티는 무게 500kg 이하면 꿰어 들어 올렸다가 내던진다 (떨어질 때 추가 피해). 더 무거우면 큰 경직.',
     equip:{ 무기:'왕의 장검', 머리:'👑 녹슬지 않는 왕관', 몸:'푸른 왕의 망토', 장신구:'—' } },
   faded: { name:'색을 잃은 자', grade:'', color:'#9a9a9a', sub:'2층 · 안개 늪 · 포기한 낙오자',
     hp:60, atk:8, def:2, block:0.1, crit:0.05, eva:0.05, spd:1.9, range:1.1, cd:1.3, windup:0.4, hits:1, weight:55, react:0.45,
@@ -4535,7 +4535,7 @@ function drawBattle(){
     const k = f.life / f.max;
     if (f.type === 'upcut'){                                      // 하늘 가르기: 칼날이 직선을 지나가며 하늘까지 닿는 빛기둥 → 갈라진 땅이 오래 빛남
       const age = f.max - f.life, e = Math.min(1, age / 0.22), a0 = P(f.x + 0.5, f.y + 0.5), a1 = P(f.x + f.dx * f.len * e + 0.5, f.y + f.dy * f.len * e + 0.5);
-      const fl = 0.75 + 0.25 * Math.sin(time * 40 + f.x), glow = Math.max(0, 1 - age / 0.9);   // glow: 처음 0.9초의 강한 빛
+      const fl = 0.75 + 0.25 * Math.sin(time * 40 + f.x), glow = Math.max(0, 1 - age / 0.6);   // glow: 처음 0.9초의 강한 빛
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
       // 갈라진 땅: 넓은 푸른 번짐 + 가운데 흰 균열 (끝까지 깜빡이며 남음)
       ctx.strokeStyle = `rgba(120,180,255,${(0.35 + 0.4 * glow) * Math.min(1, k * 2)})`; ctx.lineWidth = T * (0.25 + 0.5 * glow);
@@ -4575,13 +4575,13 @@ function drawBattle(){
       ctx.restore();
     } else if (f.type === 'gale'){                                 // 폭풍 같은 여운: 갈라진 선에서 양옆으로 휘몰아치는 바람줄기 + 소용돌이 흙먼지
       const age = f.max - f.life, r = i => { const v = Math.sin(f.seed + i * 12.9898) * 43758.5453; return v - Math.floor(v); };
-      const fade = Math.min(1, age / 0.06) * Math.min(1, f.life / 0.45);
+      const fade = Math.min(1, age / 0.05) * Math.min(1, f.life / 0.35);
       ctx.save(); ctx.lineCap = 'round';
       const a0 = P(f.x + 0.5, f.y + 0.5), a1 = P(f.x + f.dx * f.len + 0.5, f.y + f.dy * f.len + 0.5);
       ctx.strokeStyle = `rgba(150,190,240,${0.28 * fade})`; ctx.lineWidth = T * (1.6 + 0.6 * Math.sin(age * 9));   // 선을 따라 일렁이는 바람 띠
       ctx.beginPath(); ctx.moveTo(a0.x, a0.y - T * 0.5); ctx.lineTo(a1.x, a1.y - T * 0.5); ctx.stroke();
       for (let i = 0; i < 70; i++){
-        const tt = r(i), sd = i % 2 ? 1 : -1, sp = 0.7 + r(i + 50) * 1.0, d = Math.min(3.4, age * sp * 7 + r(i + 90) * 0.8);   // 한 번에 확 퍼져 나감
+        const tt = r(i), sd = i % 2 ? 1 : -1, sp = 0.7 + r(i + 50) * 1.0, d = Math.min(3.4, age * sp * 9 + r(i + 90) * 0.8);   // 한 번에 확 퍼져 나감
         const bx = f.x + f.dx * f.len * tt + f.dy * sd * d, by = f.y + f.dy * f.len * tt - f.dx * sd * d * 0.8;
         const q = P(bx + 0.5, by + 0.5), lift = T * (0.2 + r(i + 7) * 2.8), len = T * (0.8 + r(i + 3) * 1.4);
         const al = fade * Math.min(1, (1 - d / 3.4) * 1.6), dir = Math.abs(f.dy) > 0.5 ? (sd * Math.sign(f.dy || 1)) : sd;
@@ -7810,7 +7810,7 @@ async function bossReward(f){
 /* ---------- 세자르의 두뇌: 간격을 잰다. 돌며 압박 → 파고들어 베기 · 원형 베기 · 어깨 박치기 · 관통 찌르기 · 냉기 참격 · 마구 베기
    권위 (눈 = 신성 제약): 던전에선 연출로 이미 내림, 훈련장에선 손을 들어 직접 (그동안 때릴 수 있음) ---------- */
 const CZ = { spinR: 2.6, spinAtk: 2.0, probe: [4.5, 7], fury: 4.5, punish: 2.2, liftMax: 500, backDist: 1.25, keep: 2.6, ult: 22, wave: 9, spin: 8, shoulder: 5, thrust: 6, back: 6, flank: 5, rush: 5, runMul: 3,
-  upcut: 20, upLen: 7, upW: 0.55, upCharge: 1.2, upStun: 1.0, upDown: 1.6, hobble: 10 };   // 하늘 가르기 (세로 올려베기): 필살
+  upcut: 20, upLen: 7, upW: 0.55, upCharge: 1.0, upStun: 1.0, upDown: 1.6, hobble: 10 };   // 하늘 가르기 (세로 올려베기): 필살
 /* ---------- GOOD WILL: 빠른 스프린터 · 회피 · 1대1 육탄전. 기술은 대기시간마다 골라 씀 (안 쓸 땐 손 휘두르기 + 스텝 회피) ---------- */
 const GW = {
   palm:  { cd: 7, reach: 4.5, min: 0.8, tele: 0.45, slip: 0.9, mul: 2.6, miss: 0.9 },   // 표식 0.45초, 그 사이 0.9칸 넘게 벗어나면 빗나감 → 굿윌 빈틈 0.9초
@@ -8207,15 +8207,15 @@ function upcutBurst(x0, y0, dir, L){                               // 하늘 가
     for (const sd of [-1, 1]) sparks.push({ x: q.x + camX, y: q.y, vx: -dir.y * sd * (160 + Math.random() * 260) + dir.x * 60, vy: -(120 + Math.random() * 320), life: 0.7 + Math.random() * 0.5, c: i % 3 ? '#e8f4ff' : '#9fc6ff' });
     if (i % 2 === 0) b.fx.push({ type: 'dust', wx: q.x + camX + (Math.random() - 0.5) * T * 0.6, y: q.y, s: 1.6, life: 1.2, max: 1.2 });
   }
-  wordAt(m.x, m.y - T * 3.0, '싹', '#ffffff', 1.0, { life: 1.0, rot: -0.12, skew: 0.2 });
+  wordAt(m.x, m.y - T * 3.0, '싹', '#ffffff', 1.0, { life: 0.7, rot: -0.12, skew: 0.2 });
 }
 function upcutStorm(A){                                              // 2초 뒤: 갈라진 자리에서 폭풍이 터져 나옴 (피해 없음, 근처 적은 밀려남)
   const b = battle, m = P(A.x0 + A.dir.x * A.L * 0.5 + 0.5, A.y0 + A.dir.y * A.L * 0.5 + 0.5);
-  b.fx.push({ type: 'gale', x: A.x0, y: A.y0, dx: A.dir.x, dy: A.dir.y, len: A.L, seed: Math.random() * 99, life: 0.9, max: 0.9 });   // 짧게: 콰아아—
+  b.fx.push({ type: 'gale', x: A.x0, y: A.y0, dx: A.dir.x, dy: A.dir.y, len: A.L, seed: Math.random() * 99, life: 0.7, max: 0.7 });   // 짧게: 콰아아—
   for (let i = 0; i < 30; i++){ const t = Math.random(), q = P(A.x0 + A.dir.x * A.L * t + 0.5, A.y0 + A.dir.y * A.L * t + 0.5), sd = Math.random() < 0.5 ? 1 : -1; sparks.push({ x: q.x + camX, y: q.y - T * Math.random() * 1.5, vx: (A.dir.y ? sd * 300 : (Math.random() - 0.5) * 120), vy: -(60 + Math.random() * 200), life: 0.9, c: i % 3 ? '#e8f4ff' : '#b8a888' }); }
-  b.rumble = { t: 0.8, max: 0.8, amp: Math.max(0.6, b.rumble ? b.rumble.amp * b.rumble.t / b.rumble.max : 0) };
+  b.rumble = { t: 0.7, max: 0.7, amp: Math.max(0.6, b.rumble ? b.rumble.amp * b.rumble.t / b.rumble.max : 0) };
   b.zapFlash = Math.max(b.zapFlash || 0, 0.5);
-  wordAt(m.x, m.y - T * 2.6, '콰아아—', '#ffffff', 0.85, { life: 0.9, rot: 0.06, vx: 60 });
+  wordAt(m.x, m.y - T * 2.6, '콰아아—', '#ffffff', 0.85, { life: 0.7, rot: 0.06, vx: 60 });
   for (const o of b.units){
     if (o.dead || o.enter || o.side === A.side) continue;
     const px = o.x - A.x0, py = o.y - A.y0, al = px * A.dir.x + py * A.dir.y, off = px * A.dir.y - py * A.dir.x;
@@ -8382,13 +8382,13 @@ function czRun(u, z, sdt){
       u.superArmor = true; czPose(u, 'prep', 0.2);
       if (t && !t.dead){ A.dir = norm(t.x - u.x, t.y - u.y); u.face = Math.sign(A.dir.x) || u.face; }
       if (Math.random() < sdt * 30){ const q = P(u.x + 0.5, u.y + 0.5), a = Math.random() * Math.PI * 2, r = T * (1.2 + Math.random() * 0.6); sparks.push({ x: q.x + camX + Math.cos(a) * r, y: q.y - T * 0.8 + Math.sin(a) * r * 0.6, vx: -Math.cos(a) * 150, vy: -Math.sin(a) * 90, life: 0.35, c: '#e8f4ff' }); }   // 기운이 모임
-      if (A.t > 0.1 && !A.cut){ A.cut = true; b.cutin = { img: SPRITES.cesar.faceImg, name: '세자르', skill: '하늘 가르기', t: 0, dur: 0.95 }; }   // 컷인은 모으는 동안 (베는 순간은 가리지 않게)
+      if (A.t > 0.1 && !A.cut){ A.cut = true; b.cutin = { img: SPRITES.cesar.faceImg, name: '세자르', skill: '하늘 가르기', t: 0, dur: 0.85 }; }   // 컷인은 모으는 동안 (베는 순간은 가리지 않게)
       return true;
     }
     if (!A.done){
       A.done = true; z.upcut = CZ.upcut;
       const dir = A.dir || { x: u.face, y: 0 }, x0 = u.x, y0 = u.y, L = CZ.upLen;
-      b.fx.push({ type: 'upcut', x: x0, y: y0, dx: dir.x, dy: dir.y, len: L, life: 3.0, max: 3.0 });   // 갈라진 땅은 폭풍이 지날 때까지 빛남
+      b.fx.push({ type: 'upcut', x: x0, y: y0, dx: dir.x, dy: dir.y, len: L, life: 1.4, max: 1.4 });   // 싹 0.7 + 콰아 0.7 동안 빛남   // 갈라진 땅은 폭풍이 지날 때까지 빛남
       upcutBurst(x0, y0, dir, L);
       const hits = czFoes(u).filter(o => { const px = o.x - x0, py = o.y - y0, al = px * dir.x + py * dir.y; return al > -0.2 && al < L + 0.4 && Math.abs(px * dir.y - py * dir.x) < CZ.upW + unitRadius(o) * 0.5; });   // 공중 (뜬 자)도 벤다
       for (const o of hits){
@@ -8400,13 +8400,13 @@ function czRun(u, z, sdt){
         b.fx.push({ type: 'slice', x: o.x, y: o.y, h: unitHeight(o), dx: dir.x, life: 1.4, max: 1.4 });   // 두부처럼: 몸을 가르는 선
       }
       b.hitstop = Math.max(b.hitstop, 0.3); b.zapFlash = Math.max(b.zapFlash || 0, 1.1);
-      b.rumble = { t: 3.2, max: 3.2, amp: 0.65 };                   // 큰 진동이 몇 초간 이어짐
-      (b.upAfter = b.upAfter || []).push({ t: 2.0, x0, y0, dir, L, side: u.side });   // 2초 뒤 폭풍 같은 여운
+      b.rumble = { t: 0.7, max: 0.7, amp: 0.65 };                   // 싹: 0.7초 큰 진동
+      (b.upAfter = b.upAfter || []).push({ t: 0.7, x0, y0, dir, L, side: u.side });   // 2초 뒤 폭풍 같은 여운
       logLine(`⚔ 세자르의 하늘 가르기 — ${hits.length}명 절단`, 'crit');
       u.superArmor = false;
     }
     czPose(u, 'special', 0.2);
-    if (A.t >= CZ.upCharge + 0.8) end();
+    if (A.t >= CZ.upCharge + 0.7) end();
     return true;
   }
   if (A.type === 'thrust'){                                       // 관통 찌르기: 모으기 (슈퍼아머) → 순식간에 일직선 관통 → 맨 앞을 들어 올려 내던짐
@@ -8507,7 +8507,7 @@ function czRun(u, z, sdt){
   end(); return false;
 }
 // 세자르 예고: 모으는 동안 바닥에 범위가 차오름 (공격 준비 · 원형 베기 · 관통 찌르기 · 냉기 참격 · 마구 베기 대상)
-const CZ_CHARGE = { spin: 0.35, thrust: 0.6, wave: 0.8, ult: 1.0, upcut: 1.2 };
+const CZ_CHARGE = { spin: 0.35, thrust: 0.6, wave: 0.8, ult: 1.0, upcut: 1.0 };
 function czCharging(u){ const A = u.cz && u.cz.act; return !!(A && CZ_CHARGE[A.type] && A.t < CZ_CHARGE[A.type]); }
 function floorShape(pts, k, rgb){
   const q = pts.map(([c, r]) => P(c + 0.5, r + 0.5));
