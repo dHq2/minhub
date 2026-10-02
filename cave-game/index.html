@@ -2,7 +2,7 @@
 <title>굴의 프롤로그</title>
 <!--
   굴의 프롤로그
-  version v13.11
+  version v13.12
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -354,7 +354,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v13.11';
+const VERSION = 'v13.12';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -3178,7 +3178,9 @@ function chargeHit(u, d){
 /* ---------- 투창 (인주): F · 🔱 누르고 있으면 힘을 모음 (꾸구국) → 떼면 던짐 (파앙) → 날아감 (쐐액). 던지면 맨손 (주먹), 꽂힌 창을 지나가면 주움 ---------- */
 // 힘 p (0~1) = 모은 시간 ÷ chargeT. 다 모인 뒤 perfect초 안에 떼면 "완벽": 확정 치명타 (회피 · 막기 무시) + 줄 위의 적을 모두 꿰뚫음.
 // 그 뒤에 떼면 "힘껏": 힘은 가득이지만 치명타는 운대로, 처음 맞은 적 앞에 떨어짐. hold초를 넘기면 저절로 던짐
-const JAV = { chargeT: 0.8, perfect: 0.22, hold: 1.0, wind: 0.28, snap: 0.12, speed: 13, speedUp: 13, range: 6.5, rangeUp: 2.5, mul: 2.4, stun: 0.4,
+// 피해 = 공격력 x mul x (0.6 + 0.4p): 가득 (힘껏 · 완벽의 기본)은 레벨 1 인주 (14)로 50 = 세자르 (500)를 10방. 완벽은 여기에 치명타 x3
+// 창은 놓은 순간의 방향으로 곧게 날아감 (유도 없음). 날아가는 길 (선분)이 몸에 닿아야 맞음: 그 사이 비켜선 적은 빗나감
+const JAV = { chargeT: 0.8, perfect: 0.22, hold: 1.0, wind: 0.28, snap: 0.12, speed: 11, speedUp: 7, range: 6.5, rangeUp: 2.5, mul: 3.6, stun: 0.4, hitPad: 0.12,
   fistMul: 0.6, fistRange: 1.0, fistCd: 0.7, pick: 0.75, back: 2.5 };
 const javRange = p => JAV.range + JAV.rangeUp * p;
 function canThrow(u){ return u.id === 'player' && !u.spearOut && !u.dead && !u.rise && u.stun <= 0 && u.windup <= 0 && !u.jav && !u.guarding && !u.aided; }
@@ -3289,16 +3291,17 @@ function updateSpears(sdt){
       continue;
     }
     if (!sp.ground){
-      const step = sp.speed * sdt; sp.x += sp.dx * step; sp.y += sp.dy * step; sp.dist += step;
+      const step = sp.speed * sdt, px = sp.x, py = sp.y; sp.x += sp.dx * step; sp.y += sp.dy * step; sp.dist += step;
       for (const o of b.units){
         if (o.dead || o.side === sp.owner.side || o.enter || (o.lift || 0) > 0.3 || sp.hits.includes(o)) continue;   // 높이 뜬 적은 맞지 않음
-        if (Math.hypot(o.x - sp.x, o.y - sp.y) > unitRadius(o) + 0.32) continue;
+        const k = Math.max(0, Math.min(1, ((o.x - px) * sp.dx + (o.y - py) * sp.dy) / (step || 1e-6)));   // 이번 프레임에 지나간 선분에서 가장 가까운 점 (빠르면 건너뛰지 않게)
+        if (Math.hypot(o.x - (px + sp.dx * step * k), o.y - (py + sp.dy * step * k)) > unitRadius(o) + JAV.hitPad) continue;
         const a = sp.owner, base = a.stSpear || a.st;
         sp.hits.push(o);
         fxText(o, sp.perfect ? '꿰뚫음!' : '투창!', sp.perfect ? '#ffd35a' : '#ffe08a', 'big', 0.4);
         const hp0 = P(o.x + 0.5, o.y + 0.5), hh = unitHeight(o) * T * depthScale(o.y);
         wordAt(hp0.x - sp.dx * T * 0.3, hp0.y - hh * 0.55, sp.perfect ? '콰직!' : '퍽!', sp.perfect ? '#ffd35a' : '#ffe9d0', sp.perfect ? 0.5 : 0.3 + 0.12 * sp.p, { life: 0.45, rot: (Math.random() - 0.5) * 0.3 });
-        resolveHit(a, o, { atk: Math.round(base.atk * JAV.mul * (0.85 + 0.45 * sp.p) * (base.javMul || 1)), ranged: true, forceCrit: sp.perfect });   // 완벽: 확정 치명타 (x3, 회피 · 막기 무시)
+        resolveHit(a, o, { atk: Math.round(base.atk * JAV.mul * (0.6 + 0.4 * sp.p) * (base.javMul || 1)), ranged: true, forceCrit: sp.perfect });   // 완벽: 확정 치명타 (x3, 회피 · 막기 무시)
         if (!o.dead){
           stagger(o, JAV.stun + 0.4 * sp.p, braceW(a) * 4);
           pushUnit(o, { x: o.x - sp.dx, y: o.y - sp.dy }, 0.4 + 0.3 * sp.p);
@@ -3314,6 +3317,7 @@ function updateSpears(sdt){
       }
       if (!sp.ground && !sp.bounce && !sp.stuck && (sp.dist >= sp.range || sp.x < -0.3 || sp.x > BATTLE_COLS - 0.7 || sp.y < -0.3 || sp.y > ROWS - 0.7)){
         sp.ground = true; sp.x = Math.max(0, Math.min(BATTLE_COLS - 1, sp.x)); sp.y = Math.max(0, Math.min(ROWS - 1, sp.y));
+        if (!sp.hits.length){ const q = P(sp.x + 0.5, sp.y + 0.5); floaters.push({ text: '빗나감', wx: q.x + camX, y: q.y - T * 0.9, color: '#b8b0a4', life: 0.9 }); }
       }
       if (sp.ground && !sp.bounce){ const q = P(sp.x + 0.5, sp.y + 0.5); for (let i = 0; i < 5; i++) sparks.push({ x: q.x + camX, y: q.y - 2, vx: (Math.random() - 0.5) * 140, vy: -Math.random() * 120, life: 0.35, c: '#7a6a58' }); }
       continue;
