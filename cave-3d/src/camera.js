@@ -1,18 +1,22 @@
-/* camera.js v0.1 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
-   우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동) */
+/* camera.js v0.3 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
+   우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
+   v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감 */
 'use strict';
 const CAM = {
   base: { y: 9.5, back: 8.2 },     // 평소: 따라가는 점 위 9.5, 뒤로 8.2
   look: { y: 0.4, fwd: 0.6 },
   follow: { x: 0, z: 0 },          // 실제로 따라가는 점 (느슨한 스프링으로 뒤따라감)
+  yaw: 0, yawT: 0,                 // 0 = 남쪽에서 북쪽을 봄
   zoomTarget: 0, zoomBoost: 0, zoomDist: 2.4, zoomHeight: 1.6,
   shakeUntil: -1, shakeAmp: 0,
   critUntil: -1, critPos: null, critLook: null,
   focusUntil: -1, focusAt: null, focusH: 2.6, focusBack: 3.2, focusK: 0.06,
   sideUntil: -1, sideStart: 0, sideAt: null, sideAxis: null,
   wide: null,                      // 넓게 보여주기 (장면 시작): { x, z, h, back, until }
+  track: null, trackUntil: -1,     // 완벽 투창: 날아가는 창
 };
 let camera;
+const camOff = (yaw, d) => ({ x: Math.sin(yaw) * d, z: Math.cos(yaw) * d });
 function initCamera(){
   camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
   camera.position.set(0, CAM.base.y, CAM.base.back);
@@ -20,25 +24,45 @@ function initCamera(){
 function camZoomPulse(k = 1){ CAM.zoomTarget = Math.max(CAM.zoomTarget, k); }
 function camShake(amp, sec){ CAM.shakeAmp = Math.max(amp, G.t < CAM.shakeUntil ? CAM.shakeAmp : 0); CAM.shakeUntil = Math.max(CAM.shakeUntil, G.t + sec); }
 function camCrit(x, z, y = 0.6, sec = 0.4){
-  const side = Math.random() < 0.5 ? 1 : -1;
-  CAM.critPos = { x: x + side * 1.6, y: y + 0.9, z: z + 2.2 };
-  CAM.critLook = { x: x - side * 0.15, y: y + 0.5, z };
+  const side = Math.random() < 0.5 ? 1 : -1, o = camOff(CAM.yaw, 2.2), r = camOff(CAM.yaw + Math.PI / 2, 1.6 * side);
+  CAM.critPos = { x: x + o.x + r.x, y: y + 0.9, z: z + o.z + r.z };
+  CAM.critLook = { x, y: y + 0.5, z };
   CAM.critUntil = G.t + sec;
 }
-function camFocus(x, z, sec, h = 2.6, back = 3.2, k = 0.06){ CAM.focusAt = { x, z }; CAM.focusUntil = G.t + sec; CAM.focusH = h; CAM.focusBack = back; CAM.focusK = k; }
-function camFocusOff(){ CAM.focusUntil = -1; }
+// 락온: 가려져 있으면 잘 보이는 쪽으로 돌아감 (돌고 나면 원래 각도로)
+function camFocus(x, z, sec, h = 2.6, back = 3.2, k = 0.06, autoYaw = true){
+  CAM.focusAt = { x, z }; CAM.focusUntil = G.t + sec; CAM.focusH = h; CAM.focusBack = back; CAM.focusK = k;
+  if (autoYaw){ const y = bestYaw(x, z); if (y !== CAM.yawT){ CAM.yawBefore = CAM.yawT; setYaw(y); } }
+}
+function camFocusOff(){ CAM.focusUntil = -1; if (CAM.yawBefore != null){ setYaw(CAM.yawBefore); CAM.yawBefore = null; } }
 function camSide(a, b, sec, scale = 1){
   CAM.sideScale = scale;
   const mx = (a.x + b.x) / 2, mz = (a.z + b.z) / 2;
   let dx = b.x - a.x, dz = b.z - a.z; if (!dx && !dz) dx = 1;
-  const l = Math.hypot(dx, dz), sx = -dz / l, sz = dx / l, sign = sz >= 0 ? 1 : -1;
+  const l = Math.hypot(dx, dz), sx = -dz / l, sz = dx / l, cam = camOff(CAM.yaw, 1), sign = sx * cam.x + sz * cam.z >= 0 ? 1 : -1;
   CAM.sideAt = { x: mx, z: mz }; CAM.sideAxis = { x: sx * sign, z: sz * sign }; CAM.sideStart = G.t; CAM.sideUntil = G.t + sec;
 }
 function camWide(x, z, h, back, sec){ CAM.wide = { x, z, h, back, until: G.t + sec }; }
-function camSnapTo(x, z){ CAM.follow.x = x; CAM.follow.z = z; camera.position.set(x, CAM.base.y, z + CAM.base.back); }
+function camSnapTo(x, z){ CAM.follow.x = x; CAM.follow.z = z; const o = camOff(CAM.yaw, CAM.base.back); camera.position.set(x + o.x, CAM.base.y, z + o.z); }
+function setYaw(y){ CAM.yawT = y; if (G.map && G.map.wallInfo) layoutWalls(G.map, y); }
+function rotateCam(dir){ setYaw(CAM.yawT + dir * Math.PI / 2); CAM.yawBefore = null; }
+// 그 자리를 가장 덜 가리는 방향 (카메라 쪽 4칸 안의 벽 수가 가장 적은 쪽)
+function bestYaw(x, z){
+  let best = CAM.yawT, bv = 1e9;
+  for (let k = 0; k < 4; k++){
+    const y = Math.round(CAM.yawT / (Math.PI / 2)) * Math.PI / 2 + k * Math.PI / 2, o = camOff(y, 1); let v = k ? 0.5 : 0;
+    for (let s = 1; s <= 5; s++) for (const side of [-0.6, 0, 0.6]){
+      const px = x + o.x * s + o.z * side, pz = z + o.z * s - o.x * side;
+      if (solidAt(G.map, px, pz)) v += 6 - s;
+    }
+    if (v < bv){ bv = v; best = y; }
+  }
+  return best;
+}
 
 function updateCamera(dt, target){
   const k = 1 - Math.pow(1 - 0.08, dt * 60);   // 프레임과 무관한 느슨한 스프링 (60fps에서 0.08)
+  CAM.yaw += angDiff(CAM.yawT, CAM.yaw) * Math.min(1, dt * 5);
   camera.up.set(0, 1, 0);
   // 1. 횡스크롤 전환: 두 사람을 잇는 선의 옆에서 낮게, 거리를 벌리며 빠짐
   if (G.t < CAM.sideUntil && CAM.sideAt){
@@ -61,29 +85,34 @@ function updateCamera(dt, target){
   const W = CAM.wide && G.t < CAM.wide.until ? CAM.wide : null;
   if (W || (G.t < CAM.focusUntil && CAM.focusAt)){
     const F = W ? { x: W.x, z: W.z } : CAM.focusAt, H = W ? W.h : CAM.focusH, B = W ? W.back : CAM.focusBack, kk = 1 - Math.pow(1 - (W ? 0.035 : CAM.focusK), dt * 60);
-    const fy = heightAt(G.map, F.x, F.z);
-    camera.position.x += (F.x - camera.position.x) * kk;
+    const fy = heightAt(G.map, F.x, F.z), o = camOff(CAM.yaw, B);
+    camera.position.x += (F.x + o.x - camera.position.x) * kk;
     camera.position.y += (fy + H - camera.position.y) * kk;
-    camera.position.z += (F.z + B - camera.position.z) * kk;
+    camera.position.z += (F.z + o.z - camera.position.z) * kk;
     camera.lookAt(F.x, fy + 0.7, F.z);
     CAM.follow.x = F.x; CAM.follow.z = F.z;
     if (G.t < CAM.shakeUntil) camera.position.add(new THREE.Vector3(rnd(-0.5, 0.5), rnd(-0.3, 0.3), rnd(-0.5, 0.5)).multiplyScalar(CAM.shakeAmp));
     return;
   }
-  // 4. 평소: 따라가는 점을 느슨하게 + 스스로 풀리는 줌 펄스 + 잔진동
-  CAM.follow.x += (target.x - CAM.follow.x) * k;
-  CAM.follow.z += (target.z - CAM.follow.z) * k;
+  // 4. 평소: 따라가는 점을 느슨하게 + 스스로 풀리는 줌 펄스 + 잔진동. 완벽 투창이 날아가는 동안엔 창을 따라감 (살짝 당김)
+  let tg = target, kf = k;
+  if (CAM.track && G.t < CAM.trackUntil){ tg = { x: CAM.track.x, z: CAM.track.z }; kf = 1 - Math.pow(1 - 0.16, dt * 60); CAM.zoomTarget = Math.max(CAM.zoomTarget, 0.55); }
+  else CAM.track = null;
+  CAM.follow.x += (tg.x - CAM.follow.x) * kf;
+  CAM.follow.z += (tg.z - CAM.follow.z) * kf;
   CAM.zoomTarget = Math.max(0, CAM.zoomTarget - 2.1 * dt);
   CAM.zoomBoost += (CAM.zoomTarget - CAM.zoomBoost) * (1 - Math.pow(1 - 0.18, dt * 60));
   const air = G.boss && !G.boss.dead && G.boss.lift > 0.5 ? Math.min(1, G.boss.lift / 3) : 0;
   CAM.air = (CAM.air || 0) + (air - (CAM.air || 0)) * k;
   const fy = heightAt(G.map, CAM.follow.x, CAM.follow.z) * 0.6, far = 1 + CAM.air * 0.35;
-  const tx = CAM.follow.x, tz = CAM.follow.z + CAM.base.back * far - CAM.zoomBoost * CAM.zoomDist, ty = fy + CAM.base.y * far - CAM.zoomBoost * CAM.zoomHeight;
-  camera.position.x += (tx - camera.position.x) * k;
+  const o = camOff(CAM.yaw, CAM.base.back * far - CAM.zoomBoost * CAM.zoomDist);
+  const tx = CAM.follow.x + o.x, tz = CAM.follow.z + o.z, ty = fy + CAM.base.y * far - CAM.zoomBoost * CAM.zoomHeight;
+  camera.position.x += (tx - camera.position.x) * Math.max(k, kf * 0.8);
   camera.position.y += (ty - camera.position.y) * k;
-  camera.position.z += (tz - camera.position.z) * k;
+  camera.position.z += (tz - camera.position.z) * Math.max(k, kf * 0.8);
   if (G.t < CAM.shakeUntil){ const a = CAM.shakeAmp; camera.position.x += rnd(-0.5, 0.5) * a; camera.position.y += rnd(-0.5, 0.5) * a * 0.6; camera.position.z += rnd(-0.5, 0.5) * a; }
-  camera.lookAt(CAM.follow.x, fy + CAM.look.y + CAM.air * 1.6, CAM.follow.z + CAM.look.fwd - CAM.air * 1.2);
+  const lf = camOff(CAM.yaw, -(CAM.look.fwd - CAM.air * 1.2));
+  camera.lookAt(CAM.follow.x - lf.x * -1 * 0 + camOff(CAM.yaw, CAM.look.fwd - CAM.air * 1.2).x, fy + CAM.look.y + CAM.air * 1.6, CAM.follow.z + camOff(CAM.yaw, CAM.look.fwd - CAM.air * 1.2).z);
 }
 // 화면 좌표 ↔ 세계
 const _v = new THREE.Vector3();

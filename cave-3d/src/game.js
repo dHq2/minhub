@@ -1,4 +1,4 @@
-/* game.js v0.1 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
+/* game.js v0.3 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
 'use strict';
 const LOBBY = [
   '################',
@@ -89,13 +89,14 @@ function clearLevel(){
   for (const u of [...G.units]) removeUnit(u);
   for (const d of G.decals) G.scene.remove(d.g); for (const p of G.projs) G.scene.remove(p.m); for (const f of G.fx) G.scene.remove(f.g || f.s);
   for (const o of G.props) G.scene.remove(o);
-  G.texts.forEach(t => t.el.remove());
+  G.texts.forEach(t => t.el.remove()); marks.forEach(m => m.remove()); marks.length = 0;
   Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
   if (G.map) G.scene.remove(G.map.group);
   if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false;
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
 }
 function loadLevel(rows, theme){
+  CAM.yaw = CAM.yawT = 0; CAM.yawBefore = null; CAM.track = null;
   G.map = buildWorld(rows, theme); G.scene.add(G.map.group);
   G.scene.background = new THREE.Color(theme.bg); G.scene.fog = new THREE.Fog(theme.bg, theme.fogNear, theme.fogFar);
   hemi.intensity = theme.hemi; moon.intensity = theme.moon;
@@ -151,7 +152,7 @@ function startFloor1(){
   const x = sp('x')[0], m = sp('m')[0], fire = G.map.fires[0];
   G.inspect.push({ x: x.x, z: x.z, r: 1.3, label: '시체를 살핀다', fn: async () => { camFocus(x.x, x.z, 99, 2.4, 3.2, 0.05); await textbox('', ['모닥불 곁에 앉은 채로 굳은 시체.', '…그는 찾지 못한 듯하다.']); camFocusOff(); } });
   G.inspect.push({ x: m.x, z: m.z, r: 1.2, label: '바닥의 글씨를 읽는다', fn: async () => { camFocus(m.x, m.z, 99, 2.2, 2.6, 0.05); await textbox('', ['바닥에 손톱으로 긁어 쓴 글씨.', '"겁쟁이!"', '누가, 누구에게 쓴 걸까요.']); camFocusOff(); } });
-  G.inspect.push({ x: fire.x, z: fire.z, r: 1.6, once: true, label: '모닥불 곁에서 쉰다', fn: rest });
+  G.inspect.push({ x: fire.x, z: fire.z, r: 1.6, once: true, label: '모닥불 곁에서 쉰다', mark: '모닥불 (쉬기)', far: 40, fn: rest });
   G.onKill = (u) => { if (u === G.boss) bossDown(u); };
   // 넓게 먼저: 저 멀리 붉은 빛 (우물) → 천천히 인주에게
   G.lock = true; letterbox(true);
@@ -280,7 +281,7 @@ function nearestInspect(){
 /* ---------- 화면 위 정보 ---------- */
 function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
-  $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}</small></div>`).join('')
+  $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
     + (G.mode === 'floor' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
@@ -288,6 +289,26 @@ function updateHud(){
   const it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   $('prompt').hidden = !it; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}`;
   G.nearIt = it;
+  updateMarks();
+}
+
+// 살펴볼 수 있는 것: 멀리서도 ◆ + 이름이 떠 있음 (벽에 가려져도 보임). 가까이 가면 E 안내로 바뀜
+const marks = [];
+function updateMarks(){
+  const list = G.player && !G.lock && (G.mode === 'floor' || G.mode === 'lobby') ? G.inspect.filter(it => !it.used) : [];
+  while (marks.length < list.length){ const d = document.createElement('div'); d.className = 'mark'; UI.layer.appendChild(d); marks.push(d); }
+  marks.forEach((m, i) => {
+    const it = list[i]; if (!it){ m.hidden = true; return; }
+    const x = it.unit ? it.unit.x : it.x, z = it.unit ? it.unit.z : it.z, d = Math.hypot(G.player.x - x, G.player.z - z);
+    if (it === G.nearIt || d > (it.far || 16)){ m.hidden = true; return; }
+    const y = heightAt(G.map, x, z) + (it.unit ? bodyH(it.unit) + 1.0 : 1.6), p = toScreen(x, y, z, UI.W, UI.H);
+    if (p.behind){ m.hidden = true; return; }
+    // 화면 밖이면 가장자리에 붙여서 (멀리 있는 모닥불도 처음부터 보이게)
+    const px = clamp(p.x, 60, UI.W - 60), py = clamp(p.y, 70, UI.H - 150), edge = px !== p.x || py !== p.y;
+    if (edge && !it.far){ m.hidden = true; return; }
+    m.hidden = false; m.style.transform = `translate(${px}px,${py}px) translateX(-50%)`; m.style.opacity = edge || d > 11 ? 0.6 : 1;
+    const label = it.unit ? '' : it.mark || it.label.split(' — ')[0]; if (m.textContent !== label) m.textContent = label;
+  });
 }
 
 /* ---------- 한 프레임 ---------- */
@@ -305,6 +326,7 @@ function loop(now){
   else if (!G.lock && G.nearIt && hit('KeyE')){ const it = G.nearIt; if (it.once) it.used = true; it.fn(); }
   if (hit('Digit1')) order('follow'); if (hit('Digit2')) order('focus'); if (hit('Digit3')) order('free');
   if (hit('KeyH')) $('help').hidden = !$('help').hidden;
+  if (!G.lock && !G.waitInput){ if (hit('KeyZ')) rotateCam(-1); if (hit('KeyC')) rotateCam(1); }
   const frozen = waiting || !!G.waitInput;
   if ((G.mode === 'lobby' || G.mode === 'floor') && !frozen){
     const pl = G.player;
@@ -336,12 +358,12 @@ function loop(now){
     moon.position.set(camera.position.x - 6, 14, camera.position.z - 2); moon.target.position.set(CAM.follow.x, 0, CAM.follow.z);
   }
   G.rain.freeze = Math.max(0, G.rain.freeze - dt); G.rain.update(dt, CAM.follow.x, CAM.follow.z);
-  // 기둥 뒤에 서면 기둥을 반투명하게
-  if (G.map) for (const p of G.map.pillars){
-    const hide = G.units.some(u => u.side === 'ally' && !u.dead && Math.abs(u.x - p.position.x) < 0.9 && u.z < p.position.z && u.z > p.position.z - 2.4);
+  // 기둥 뒤에 서면 기둥을 반투명하게 (카메라가 어느 쪽에 있든)
+  if (G.map){ const o = camOff(CAM.yaw, 1); for (const p of G.map.pillars){
+    const hide = G.units.some(u => { if (u.side !== 'ally' || u.dead) return false; const dx = p.position.x - u.x, dz = p.position.z - u.z, along = dx * o.x + dz * o.z, side = Math.abs(dx * o.z - dz * o.x); return along > 0 && along < 2.4 && side < 0.9; });
     p.material.opacity += ((hide ? 0.28 : 1) - p.material.opacity) * Math.min(1, dt * 10);
     p.material.depthWrite = p.material.opacity > 0.9;
-  }
+  } }
   if (G.map) for (const f of G.map.fires){ f.light.intensity = 1.9 + Math.sin(G.t * 13) * 0.2 + Math.random() * 0.35; f.flame.scale.set(1 + Math.sin(G.t * 9) * 0.06, 1 + Math.random() * 0.12, 1); f.flame.rotation.y = Math.atan2(camera.position.x - f.x, camera.position.z - f.z); }
   if (G.player) updateChargeRing(G.player);
   updateFocusRing();

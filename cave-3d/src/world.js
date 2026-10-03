@@ -1,4 +1,4 @@
-/* world.js v0.1 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
+/* world.js v0.3 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
    # 벽 · . 바닥 · ^ 높은 바닥 (0.8) · / 경사 (0.4) · o 기둥 (시야 막음) · r 바위 (발은 막고 시야는 안 막음)
    f 모닥불 · G 석문 · 그 밖의 글자는 바닥 위의 표시 (P 시작, s 검사, p 창병, d 검방패병, b 곤봉 거한, A 높은 곳 궁수, J 적뢰, x 시체, m 메모, R 레베카, M 모닝스타, N 노먼, D 허수아비) */
 'use strict';
@@ -6,14 +6,14 @@ const HIGH = 0.8, RAMP = 0.4;
 
 function buildWorld(rows, opt = {}){
   const h = rows.length, w = Math.max(...rows.map(r => r.length));
-  const map = { w, h, rows: rows.map(r => r.padEnd(w, '#')), hgt: new Float32Array(w * h), solid: new Uint8Array(w * h), los: new Uint8Array(w * h),
+  const map = { w, h, rows: rows.map(r => r.padEnd(w, '#')), hgt: new Float32Array(w * h), solid: new Uint8Array(w * h), los: new Uint8Array(w * h), low: new Uint8Array(w * h),
     group: new THREE.Group(), spawns: [], pillars: [], lights: [], fires: [], gate: null };
   const at = (x, z) => (x < 0 || z < 0 || x >= w || z >= h) ? '#' : map.rows[z][x];
   for (let z = 0; z < h; z++) for (let x = 0; x < w; x++){
     const c = at(x, z), i = z * w + x;
     if (c === '#' || c === 'G'){ map.solid[i] = 1; map.los[i] = 1; }
     else if (c === 'o'){ map.solid[i] = 1; map.los[i] = 1; }
-    else if (c === 'r' || c === 'f'){ map.solid[i] = 1; }
+    else if (c === 'r' || c === 'f'){ map.solid[i] = 1; if (c === 'r') map.low[i] = 1; }   // 바위는 낮음: 뛰어넘을 수 있음
     if (c === '^' || c === 'A') map.hgt[i] = HIGH;
     else if (c === '/') map.hgt[i] = RAMP;
     if ('PspdbAJmxRMND'.includes(c)) map.spawns.push({ c, x, z });
@@ -37,17 +37,14 @@ function buildWorld(rows, opt = {}){
   // 바닥 아래 틈 메움 (틈이 공허로 보이지 않게)
   const under = new THREE.Mesh(new THREE.PlaneGeometry(w + 6, h + 6), new THREE.MeshStandardMaterial({ color: 0x0b0a0d, roughness: 1 }));
   under.rotation.x = -Math.PI / 2; under.position.set(w / 2 - 0.5, -0.19, h / 2 - 0.5); map.group.add(under);
-  // 벽: 북쪽에 바닥이 있는 벽 (= 카메라 쪽 벽)은 낮게, 나머지는 높게. 바깥 덩어리 바위는 윗면만 어둡게
+  // 벽: 카메라 쪽을 막는 벽은 낮게 (카메라가 돌면 다시 계산), 나머지는 높게. 바깥 덩어리 바위는 낮고 어둡게
   const wallMesh = new THREE.InstancedMesh(box, new THREE.MeshStandardMaterial({ roughness: 0.95 }), wallTiles.length);
   const wc = new THREE.Color(opt.wall || 0x26232c);
-  wallTiles.forEach(([x, z], k) => {
-    const open = c => c !== '#' && c !== 'G';
-    const nearFloor = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]].some(([dx, dz]) => open(at(x + dx, z + dz)));
-    const southWall = open(at(x, z - 1)) && !open(at(x, z + 1));
-    const hh = !nearFloor ? 2.6 : southWall ? 0.5 : 2.4;
-    m4.makeScale(1, hh, 1); m4.setPosition(x, hh / 2 - 0.2, z); wallMesh.setMatrixAt(k, m4);
-    fc.copy(wc).multiplyScalar(nearFloor ? 0.9 + Math.random() * 0.25 : 0.45); wallMesh.setColorAt(k, fc);
-  });
+  const open = c => c !== '#' && c !== 'G';
+  map.wallInfo = wallTiles.map(([x, z]) => ({ x, z, near: [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]].some(([dx, dz]) => open(at(x + dx, z + dz))) }));
+  map.wallInfo.forEach((w, k) => { fc.copy(wc).multiplyScalar(w.near ? 0.9 + Math.random() * 0.25 : 0.4); wallMesh.setColorAt(k, fc); });
+  map.wallMesh = wallMesh; map.at = at; map.open = open;
+  layoutWalls(map, 0);
   wallMesh.castShadow = true; wallMesh.receiveShadow = true; map.group.add(wallMesh);
   // 기둥 (각자 재질: 뒤에 누가 서면 반투명)
   const pg = new THREE.CylinderGeometry(0.36, 0.42, 2.6, 10);
@@ -75,6 +72,49 @@ function buildWorld(rows, opt = {}){
     s.rotation.x = -Math.PI / 2; s.position.set(x, RAMP + 0.01, z); map.group.add(s);
   }
   return map;
+}
+// 카메라가 보는 방향 (yaw: 0 = 남쪽에서 북쪽을 봄)에 따라 카메라 쪽 벽을 낮춤
+function layoutWalls(map, yaw){
+  const dx = Math.round(Math.sin(yaw)), dz = Math.round(Math.cos(yaw)), m4 = new THREE.Matrix4();
+  map.wallInfo.forEach((w, k) => {
+    const low = map.open(map.at(w.x - dx, w.z - dz)) && !map.open(map.at(w.x + dx, w.z + dz));
+    const hh = !w.near ? 1.5 : low ? 0.5 : 2.3;
+    m4.makeScale(1, hh, 1); m4.setPosition(w.x, hh / 2 - 0.2, w.z); map.wallMesh.setMatrixAt(k, m4);
+  });
+  map.wallMesh.instanceMatrix.needsUpdate = true;
+  map.wallYaw = yaw;
+}
+/* ---------- 길찾기: 목표 칸에서 퍼져 나가는 거리 지도 (0.5초마다 다시). 막힌 칸 · 높이 차 0.45 넘는 칸은 못 감, 모서리는 못 자름 ---------- */
+function passable(map, i, j){ return i >= 0 && j >= 0 && i < map.w && j < map.h && !map.solid[j * map.w + i]; }
+function navField(map, tx, tz){
+  const ti = Math.round(tx), tj = Math.round(tz), key = tj * map.w + ti;
+  map.nav = map.nav || {};
+  const c = map.nav[key]; if (c && G.t - c.t < 0.5) return c.d;
+  const d = new Int16Array(map.w * map.h).fill(-1), q = [];
+  if (!passable(map, ti, tj)) return null;
+  d[key] = 0; q.push(key);
+  for (let h = 0; h < q.length; h++){
+    const k = q[h], i = k % map.w, j = (k / map.w) | 0, hk = map.hgt[k];
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]){
+      const ni = i + di, nj = j + dj; if (!passable(map, ni, nj)) continue;
+      if (di && dj && (!passable(map, i + di, j) || !passable(map, i, j + dj))) continue;
+      const nk = nj * map.w + ni; if (d[nk] >= 0 || Math.abs(map.hgt[nk] - hk) > 0.45) continue;
+      d[nk] = d[k] + 1; q.push(nk);
+    }
+  }
+  map.nav[key] = { t: G.t, d };
+  return d;
+}
+// 다음 걸음: 이웃 중 목표에 더 가까운 칸 (같으면 지금 방향 유지)
+function navNext(map, field, x, z){
+  const i = Math.round(x), j = Math.round(z), here = field[j * map.w + i];
+  let best = null, bd = here >= 0 ? here : 1e9;
+  for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]){
+    const ni = i + di, nj = j + dj; if (!passable(map, ni, nj)) continue;
+    if (di && dj && (!passable(map, i + di, j) || !passable(map, i, j + dj))) continue;
+    const v = field[nj * map.w + ni]; if (v >= 0 && v < bd){ bd = v; best = { x: ni, z: nj }; }
+  }
+  return best;
 }
 function makeFire(map, x, z){
   const g = new THREE.Group(); g.position.set(x, 0, z);
