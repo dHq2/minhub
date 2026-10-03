@@ -1,4 +1,4 @@
-# people.py v1.8 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.9 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -18,7 +18,7 @@ CH = [
  ('benkin','벤킨','적 · 보스'),('dandalo','단달로','적 · 보스'),('ratKnight','쥐 기사','적 · 보스'),('rats','쥐 (작은 · 보통 · 큰)','적 · 보스'),
  ('goblinArcher','고블린 궁수','적 · 보스'),('enemyGoblin','일반 고블린','적 · 보스'),('slime','슬라임녀','적 · 보스'),('cultist','광신도','적 · 보스'),('jellygreen','젤리 괴물 (녹색)','적 · 보스'),('giant_beast','거대 괴수','적 · 보스'),('ancient_angel','고대천사 (적)','적 · 보스'),('little_devil','꼬마악마','적 · 보스'),('little_fairy','꼬마요정','적 · 보스'),('beast_a','괴수 A','적 · 보스'),('demoness','마족녀','적 · 보스'),('darkrider','승마 기사','적 · 보스'),('hyalqueen','고대 몬스터 햘 (개미여왕)','적 · 보스'),('heugu','흑우 (거대 괴수)','적 · 보스'),('ghost','귀신 유령 A · B','적 · 보스'),('ddongdog','똥개','적 · 보스'),('crabmon','게 몬스터 (큼)','적 · 보스'),('daedura','고대 몬스터 대두라','적 · 보스'),('bluefat','푸른 뚱보','적 · 보스'),('eyemon','눈깔괴물','적 · 보스'),('goryu','고대 악마 고류 (전투 없음)','적 · 보스'),
  ('blocker','막아서는 자','적 · 보스'),('mech','기체 A · B','적 · 보스'),
- ('cs','청승 (도깨비 자매)','역할 미정'),('jakyak','작약 (도깨비 자매)','역할 미정'),('bogwang','보광','역할 미정'),('borama','보라마','역할 미정'),('kwangnyang','광냥','역할 미정'),
+ ('cs','청승 (도깨비 자매)','역할 미정'),('jakyak','작약 (도깨비 자매)','역할 미정'),('bogwang','보광','역할 미정'),('borama','보르마','역할 미정'),('kwangnyang','광냥','역할 미정'),
  ('sealed','봉인된 그녀','역할 미정'),('knightcommander','기사단장','역할 미정'),('nursechief','간호사장','역할 미정'),('gaius','가이우스','역할 미정'),
  ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),
 ]
@@ -80,7 +80,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.52', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.53', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:

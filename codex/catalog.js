@@ -1,4 +1,4 @@
-/* catalog.js v1.52 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.53 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -10544,8 +10544,8 @@ const CATALOG = [
 {
 "id": "F-borama",
 "cat": "char",
-"sub": "보라마 · 역할 미정 · 원화 + 연출",
-"name": "보라마 초상화",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 초상화",
 "src": "img/face/borama_portrait.webp",
 "note": "받은 초상화",
 "rank": "",
@@ -10555,10 +10555,10 @@ const CATALOG = [
 {
 "id": "N-032",
 "cat": "char",
-"sub": "보라마 · 역할 미정 · 원화 + 연출",
-"name": "보라마",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마",
 "src": "img/npc/N-032.webp",
-"note": "드라이브 NPC 폴더 · 보라마.png",
+"note": "드라이브 NPC 폴더 · 보라마.png · 예전 이름 보라마",
 "rank": "",
 "on": false,
 "g": "borama"
@@ -10566,10 +10566,65 @@ const CATALOG = [
 {
 "id": "N-033",
 "cat": "char",
-"sub": "보라마 · 역할 미정 · 원화 + 연출",
-"name": "보라마공격",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 공격",
 "src": "img/npc/N-033.webp",
 "note": "드라이브 NPC 폴더 · 보라마공격.png",
+"rank": "",
+"on": false,
+"g": "borama"
+},
+{
+"id": "P-borama-idle",
+"cat": "char",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 대기 (8장, v1.1)",
+"src": "img/char/borama_idle.webp",
+"note": "borama_idle v1.1 (드라이브 보르마 폴더 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "borama"
+},
+{
+"id": "P-borama-light_attack",
+"cat": "char",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 가벼운 공격 (9장)",
+"src": "img/char/borama_light_attack.webp",
+"note": "borama_light_attack v1 (드라이브 보르마 폴더 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "borama"
+},
+{
+"id": "P-borama-light_near",
+"cat": "char",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 가벼운 근접 공격 (9장, v1.1)",
+"src": "img/char/borama_light_nearattack.webp",
+"note": "borama_light_nearattack v1.1 (드라이브 보르마 폴더 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "borama"
+},
+{
+"id": "P-borama-heavy_skill",
+"cat": "char",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 강공격 · 스킬 (14장)",
+"src": "img/char/borama_heavy_attackandskill.webp",
+"note": "borama_heavy_attackandskill v1 (드라이브 보르마 폴더 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "borama"
+},
+{
+"id": "P-borama-heavy_near",
+"cat": "char",
+"sub": "보르마 · 역할 미정 · 동작 그림",
+"name": "보르마 · 강한 근접 공격 (14장, v1.1)",
+"src": "img/char/borama_heavy_nearattack.webp",
+"note": "borama_heavy_nearattack v1.1 (드라이브 보르마 폴더 2026-10-03)",
 "rank": "",
 "on": false,
 "g": "borama"
