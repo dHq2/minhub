@@ -1,4 +1,4 @@
-/* catalog.js v1.32 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.33 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3199,86 +3199,6 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": false
-},
-{
-"id": "JR-kick",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "날아차기 (다시 편집)",
-"src": "img/anim/jr_flying_kick_reedit.webp",
-"note": "38장 · 서 있음 → 먹 웅크림 → 날개 펼침 → 먹 돌진 · 회전 → 발끝에 붉은 번개 폭발",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-punch",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "땅 내리찍기",
-"src": "img/anim/jr_ground_punch.webp",
-"note": "17장 · 손을 들어 붉은 불꽃 → 먹 → 땅을 가르는 붉은 번개 → 웅크려 내리찍은 자세",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-raise",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "손을 번쩍 (천벌)",
-"src": "img/anim/jr_light_raise.webp",
-"note": "24장 · 손을 들고 → 빛줄기가 내려오는 검은 장면 → 점점 어두워짐",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-round",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "돌려차기",
-"src": "img/anim/jr_roundhouse.webp",
-"note": "19장 · 다리에 붉은 번개가 차오름 → 먹 → 돌려차기 + 붉은 번개 고리",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-laser",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "뛰어올라 붉은 창 레이저",
-"src": "img/anim/jr_spear_laser.webp",
-"note": "19장 · 웅크림 → 날아올라 창을 만듦 → 먹 → 붉은 레이저",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-laserS",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "서서 붉은 창 레이저",
-"src": "img/anim/jr_spear_laser_stand.webp",
-"note": "19장 · 선 채로 손을 들어 창을 만듦 → 먹 → 붉은 레이저",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-fspear",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "공중에서 붉은 창 (2페이즈)",
-"src": "img/anim/jr_flying_spear.webp",
-"note": "22장 · 날고 있는 자세 → 창을 만듦 → 먹 → 던진 뒤 공중에서 웅크림",
-"rank": "",
-"on": true
-},
-{
-"id": "JR-fly",
-"cat": "anim",
-"sub": "적뢰 팩 (2026-10-03, 드라이브)",
-"name": "나는 적뢰 (2페이즈 자세)",
-"src": "img/anim/jr_fly.webp",
-"note": "한 장 · 2페이즈에서 날고 있을 때",
-"rank": "",
-"on": true
 },
 {
 "id": "H-004",
@@ -7992,6 +7912,94 @@ const CATALOG = [
 "note": "붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다",
 "rank": "",
 "on": false,
+"g": "jeokroe"
+},
+{
+"id": "JR-kick",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "날아차기 (다시 편집)",
+"src": "img/anim/jr_flying_kick_reedit.webp",
+"note": "38장 · 서 있음 → 먹 웅크림 → 날개 펼침 → 먹 돌진 · 회전 → 발끝에 붉은 번개 폭발",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-punch",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "땅 내리찍기",
+"src": "img/anim/jr_ground_punch.webp",
+"note": "17장 · 손을 들어 붉은 불꽃 → 먹 → 땅을 가르는 붉은 번개 → 웅크려 내리찍은 자세",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-raise",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "손을 번쩍 (천벌)",
+"src": "img/anim/jr_light_raise.webp",
+"note": "24장 · 손을 들고 → 빛줄기가 내려오는 검은 장면 → 점점 어두워짐",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-round",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "돌려차기",
+"src": "img/anim/jr_roundhouse.webp",
+"note": "19장 · 다리에 붉은 번개가 차오름 → 먹 → 돌려차기 + 붉은 번개 고리",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-laser",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "뛰어올라 붉은 창 레이저",
+"src": "img/anim/jr_spear_laser.webp",
+"note": "19장 · 웅크림 → 날아올라 창을 만듦 → 먹 → 붉은 레이저",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-laserS",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "서서 붉은 창 레이저",
+"src": "img/anim/jr_spear_laser_stand.webp",
+"note": "19장 · 선 채로 손을 들어 창을 만듦 → 먹 → 붉은 레이저",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-fspear",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "공중에서 붉은 창 (2페이즈)",
+"src": "img/anim/jr_flying_spear.webp",
+"note": "22장 · 날고 있는 자세 → 창을 만듦 → 먹 → 던진 뒤 공중에서 웅크림",
+"rank": "",
+"on": true,
+"g": "jeokroe"
+},
+{
+"id": "JR-fly",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "나는 적뢰 (2페이즈 자세)",
+"src": "img/anim/jr_fly.webp",
+"note": "한 장 · 2페이즈에서 날고 있을 때",
+"rank": "",
+"on": true,
 "g": "jeokroe"
 },
 {

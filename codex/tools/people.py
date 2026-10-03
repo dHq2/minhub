@@ -1,4 +1,4 @@
-# people.py v1.3 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.4 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -25,7 +25,7 @@ CH = [
 NAME = {k:(n,r) for k,n,r in CH}; ORDER = [k for k,_,_ in CH]
 NID = {'008':'odile','010':'kwangnyang','011':'kwangnyang','012':'kwangnyang','028':'bogwang','029':'bogwang','030':'bogwang','031':'bogwang',
        '032':'borama','033':'borama','039':'cs','052':'cs','053':'cs'}
-RULES = [(r'^O-player-','player'),(r'rebecca','rebecca'),(r'karius','karius'),(r'^O-goblin-shape','goblin'),(r'morningstar|^F-ms-','morningstar'),
+RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'karius','karius'),(r'^O-goblin-shape','goblin'),(r'morningstar|^F-ms-','morningstar'),
  (r'poren','poren'),(r'norman','norman'),(r'tomoe','tomoe'),(r'^O-yellow','yellow'),(r'goodwill','goodwill'),
  (r'dolsoe','dolsoe'),(r'piel','piel'),(r'-odo-','odo'),(r'moro','moro'),(r'-gur-','gur'),(r'tehera','tehera'),(r'heron','heron'),
  (r'nursechief','nursechief'),(r'nurse','nurse'),(r'gothic|^P-bk-','gothic'),(r'^P-yellow','npcyellow'),(r'ycat','ycat'),(r'mari-','mari'),(r'wakin','wakin'),
@@ -45,8 +45,8 @@ def who(e):
     for pat,k in RULES:
         if re.search(pat, e['id']): return k
     return None
-people = [e for e in cat if e['cat'] in ('char','old2d','face')]
-rest = [e for e in cat if e['cat'] not in ('char','old2d','face')]
+people = [e for e in cat if e['cat'] in ('char','old2d','face','anim')]
+rest = [e for e in cat if e['cat'] not in ('char','old2d','face','anim')]
 missing = []
 for e in people:
     e['_who'] = who(e)
@@ -80,7 +80,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.32', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.33', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:
