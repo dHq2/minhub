@@ -1,4 +1,4 @@
-/* catalog.js v1.6 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.7 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3137,6 +3137,36 @@ const CATALOG = [
 "name": "노랑고양 · 원화",
 "src": "img/char/npc_yellowcat_art.webp",
 "note": "원화 (스프라이트는 아직). 검은 전신 슈트 · 노란 가슴판 · 뿔 · 가시 꼬리 · 권총 · 이빨 웃음 · 뒤에 연기 형체",
+"rank": "",
+"on": false
+},
+{
+"id": "P-gothic-art",
+"cat": "char",
+"sub": "고딕 기사 · 3성 영웅 (2026-10-03)",
+"name": "고딕 기사 · 원화",
+"src": "img/char/gothic_art.webp",
+"note": "원화 (서 있음). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-gothic-cutin",
+"cat": "char",
+"sub": "고딕 기사 · 3성 영웅 (2026-10-03)",
+"name": "고딕 기사 · 스킬 컷신 (배경 지움)",
+"src": "img/char/gothic_cutin.webp",
+"note": "스킬 컷신: 세자르 필살기처럼 스피드선과 함께 띄울 그림. 노란 배경을 지운 판. 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-gothic-cutinY",
+"cat": "char",
+"sub": "고딕 기사 · 3성 영웅 (2026-10-03)",
+"name": "고딕 기사 · 스킬 컷신 (노란 배경 원본)",
+"src": "img/char/gothic_cutin_yellow.webp",
+"note": "스킬 컷신 원본 (노란 배경). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
 "rank": "",
 "on": false
 },
