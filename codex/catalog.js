@@ -1,4 +1,4 @@
-/* catalog.js v1.49 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.50 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -9700,6 +9700,116 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "ddongdog"
+},
+{
+"id": "F-auto-crabmon",
+"cat": "char",
+"sub": "게 몬스터 (큼) · 적 · 보스 · 원화 + 연출",
+"name": "게 몬스터 기본 초상화",
+"src": "img/face/auto_crabmon.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "crabmon"
+},
+{
+"id": "P-crabmon",
+"cat": "char",
+"sub": "게 몬스터 (큼) · 적 · 보스 · 원화 + 연출",
+"name": "게 몬스터",
+"src": "img/char/crabmon.webp",
+"note": "큰 적. 배경 · 흰 외곽선 바깥은 지움 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "crabmon"
+},
+{
+"id": "F-auto-daedura",
+"cat": "char",
+"sub": "고대 몬스터 대두라 · 적 · 보스 · 원화 + 연출",
+"name": "고대 몬스터 대두라 기본 초상화",
+"src": "img/face/auto_daedura.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "daedura"
+},
+{
+"id": "P-daedura",
+"cat": "char",
+"sub": "고대 몬스터 대두라 · 적 · 보스 · 원화 + 연출",
+"name": "고대 몬스터 대두라",
+"src": "img/char/daedura.webp",
+"note": "배경을 지움. 아래는 원본에서 잘림 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "daedura"
+},
+{
+"id": "F-auto-bluefat",
+"cat": "char",
+"sub": "푸른 뚱보 · 적 · 보스 · 원화 + 연출",
+"name": "푸른 뚱보 기본 초상화",
+"src": "img/face/auto_bluefat.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "bluefat"
+},
+{
+"id": "P-bluefat",
+"cat": "char",
+"sub": "푸른 뚱보 · 적 · 보스 · 원화 + 연출",
+"name": "푸른 뚱보",
+"src": "img/char/bluefat.webp",
+"note": "배경 (골목 · 전봇대)을 지움 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "bluefat"
+},
+{
+"id": "F-auto-eyemon",
+"cat": "char",
+"sub": "눈깔괴물 · 적 · 보스 · 원화 + 연출",
+"name": "눈깔괴물 기본 초상화",
+"src": "img/face/auto_eyemon.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "eyemon"
+},
+{
+"id": "P-eyemon",
+"cat": "char",
+"sub": "눈깔괴물 · 적 · 보스 · 원화 + 연출",
+"name": "눈깔괴물",
+"src": "img/char/eyemon.webp",
+"note": "배경 (안개 골목)을 지움 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "eyemon"
+},
+{
+"id": "F-auto-goryu",
+"cat": "char",
+"sub": "고대 악마 고류 (전투 없음) · 적 · 보스 · 원화 + 연출",
+"name": "고대 악마 고류 기본 초상화",
+"src": "img/face/auto_goryu.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "goryu"
+},
+{
+"id": "P-goryu",
+"cat": "char",
+"sub": "고대 악마 고류 (전투 없음) · 적 · 보스 · 원화 + 연출",
+"name": "고대 악마 고류",
+"src": "img/char/goryu.webp",
+"note": "멀리서 보이기만 하고 전투 없음. 거의 산 하나 크기. 맵 저 멀리 배경 오브제로 씀 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "goryu"
 },
 {
 "id": "F-blocker",
