@@ -1,4 +1,4 @@
-/* catalog.js v1.19 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.20 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3391,11 +3391,11 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "P-jeogyeong-art",
+"id": "P-jakyak-art",
 "cat": "char",
-"sub": "도깨비 자매 · 적영 (2026-10-03)",
-"name": "적영 원화 (도끼)",
-"src": "img/char/jeogyeong_art.webp",
+"sub": "도깨비 자매 · 작약 (2026-10-03)",
+"name": "작약 원화 (도끼)",
+"src": "img/char/jakyak_art.webp",
 "note": "기본만 씀. 받은 그림에서 옆 인물 (날개 · 청승)을 빼고 자름",
 "rank": "",
 "on": false
@@ -3427,6 +3427,16 @@ const CATALOG = [
 "name": "방랑 서랍",
 "src": "img/char/drawer_art.webp",
 "note": "서랍장을 진 떠돌이 (눈 달린 서랍 · 초 · 등불 지팡이). 적 또는 NPC",
+"rank": "",
+"on": false
+},
+{
+"id": "P-arian-art",
+"cat": "char",
+"sub": "퀸 아리안 · NPC (2026-10-03)",
+"name": "퀸 아리안",
+"src": "img/char/arian_art.webp",
+"note": "NPC. 분홍 머리 · 보석 눈가리개 · 흰 깃 망토, 실로 인형을 조종. 청록 바탕을 지운 가공본",
 "rank": "",
 "on": false
 },
@@ -4511,16 +4521,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "F-jeogyeong",
-"cat": "face",
-"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
-"name": "적영 기본 초상화",
-"src": "img/face/jeogyeong_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
 "id": "F-odile",
 "cat": "face",
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
@@ -4546,6 +4546,16 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "방랑 서랍 기본 초상화",
 "src": "img/face/drawer_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-arian",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "퀸 아리안 기본 초상화",
+"src": "img/face/arian_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false
