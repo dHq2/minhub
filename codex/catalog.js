@@ -1,4 +1,4 @@
-/* catalog.js v1.5 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.5: 간호사 4 */
+/* catalog.js v1.6 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1267,6 +1267,16 @@ const CATALOG = [
 "name": "왕관 쓴 푸른 얼굴",
 "src": "img/scene/crown_face.webp",
 "note": "2D판 조우 얼굴의 원본",
+"rank": "",
+"on": false
+},
+{
+"id": "S-4",
+"cat": "scene",
+"sub": "컷씬",
+"name": "적뢰 연출 · 붉은 옷자락과 비",
+"src": "img/scene/jr_cutscene_robe.webp",
+"note": "적뢰 연출용 컷씬 (세로 432×768)",
 "rank": "",
 "on": false
 },
@@ -3107,6 +3117,16 @@ const CATALOG = [
 "name": "간호사 · 공격 / 치료",
 "src": "img/char/nurse_attack.webp",
 "note": "공격 · 치료: 주사기를 내지름. 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
+"rank": "",
+"on": false
+},
+{
+"id": "P-ycat-art",
+"cat": "char",
+"sub": "노랑고양 · NPC (2026-10-03)",
+"name": "노랑고양 · 원화",
+"src": "img/char/npc_yellowcat_art.webp",
+"note": "원화 (스프라이트는 아직). 검은 전신 슈트 · 노란 가슴판 · 뿔 · 가시 꼬리 · 권총 · 이빨 웃음 · 뒤에 연기 형체",
 "rank": "",
 "on": false
 },
