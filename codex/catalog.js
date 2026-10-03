@@ -1,4 +1,4 @@
-/* catalog.js v1.26 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.27 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1547,6 +1547,16 @@ const CATALOG = [
 "name": "푸른 무기의 영웅 (동료 영입 가능)",
 "src": "img/card/enc_blue_hero.webp",
 "note": "같은 시트에 있던 그림, 따로 말은 없었음. 시트 표시: 동료 영입 가능. 글: 그 영웅은 어둠속에서 푸르게 빛나는 무기를 들었습니다. 즐거운겁니다. 당신의 모든 것이.",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-giant-goddess-corpse",
+"cat": "card",
+"sub": "인카운터",
+"name": "거대 여신 시체",
+"src": "img/card/enc_giant_goddess_corpse.webp",
+"note": "드라이브 NPC 폴더 · 인카운터 - 거대여신 시체.png. 그림 그대로",
 "rank": "",
 "on": false
 },
@@ -3791,6 +3801,646 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "P-bogwang-idle",
+"cat": "char",
+"sub": "보광 · 동작 (2026-10-03, 드라이브)",
+"name": "보광 · 대기 (9장)",
+"src": "img/bg_anim/bogwang_idle.webp",
+"note": "bogwang_idle_v1.webp · 원본 900×820",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bogwang-attack",
+"cat": "char",
+"sub": "보광 · 동작 (2026-10-03, 드라이브)",
+"name": "보광 · 공격 (9장)",
+"src": "img/bg_anim/bogwang_attack.webp",
+"note": "bogwang_attack_v1.1.webp. 중간 검은 실루엣 장면은 원본 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bogwang-groove",
+"cat": "char",
+"sub": "보광 · 동작 (2026-10-03, 드라이브)",
+"name": "보광 · 전투모드 리듬 (12장)",
+"src": "img/bg_anim/bogwang_groove.webp",
+"note": "bogwang2_groove_v1.2.webp. 흥분하면 리듬 타며 전투모드로 바뀜",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bogwang-attack2",
+"cat": "char",
+"sub": "보광 · 동작 (2026-10-03, 드라이브)",
+"name": "보광 · 전투모드 공격 (12장)",
+"src": "img/bg_anim/bogwang_attack2.webp",
+"note": "bogwang2_attack_v1.webp",
+"rank": "",
+"on": false
+},
+{
+"id": "P-slave-art",
+"cat": "char",
+"sub": "노예노예 (2026-10-03)",
+"name": "노예노예",
+"src": "img/char/slave_art.webp",
+"note": "스프라이트용. 양옆의 하프 · 십자가는 뺌. 드라이브 NPC 폴더의 노예노예.png와 같은 그림",
+"rank": "",
+"on": false
+},
+{
+"id": "P-silhouette-a",
+"cat": "char",
+"sub": "일반인 실루엣 (2026-10-03)",
+"name": "실루엣 · 쇠지렛대 남자",
+"src": "img/char/silhouette_a.webp",
+"note": "일반인 실루엣. 앞으로 잘라서 범용으로 씀",
+"rank": "",
+"on": false
+},
+{
+"id": "P-silhouette-b",
+"cat": "char",
+"sub": "일반인 실루엣 (2026-10-03)",
+"name": "실루엣 · 후드 · 밧줄",
+"src": "img/char/silhouette_b.webp",
+"note": "일반인 실루엣. 오른발 옆 반짝이 표시는 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "N-coral-deer",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "고대사슴 산호",
+"src": "img/npc/N-coral-deer.webp",
+"note": "드라이브 NPC 폴더 · 고대사슴 산호.png. 배경째 그림이라 그대로 둠",
+"rank": "",
+"on": false
+},
+{
+"id": "N-001",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "가지마소녀",
+"src": "img/npc/N-001.webp",
+"note": "드라이브 NPC 폴더 · 가지마소녀.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-002",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "개",
+"src": "img/npc/N-002.webp",
+"note": "드라이브 NPC 폴더 · 개.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-003",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "개2",
+"src": "img/npc/N-003.webp",
+"note": "드라이브 NPC 폴더 · 개2.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-004",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "거지",
+"src": "img/npc/N-004.webp",
+"note": "드라이브 NPC 폴더 · 거지.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-005",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "검방흑기사",
+"src": "img/npc/N-005.webp",
+"note": "드라이브 NPC 폴더 · 검방흑기사.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-006",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "경찰",
+"src": "img/npc/N-006.webp",
+"note": "드라이브 NPC 폴더 · 경찰.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-007",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "곤충괴",
+"src": "img/npc/N-007.webp",
+"note": "드라이브 NPC 폴더 · 곤충괴.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-008",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "과거의 오딜",
+"src": "img/npc/N-008.webp",
+"note": "드라이브 NPC 폴더 · 과거의 오딜.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-009",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "관남기본",
+"src": "img/npc/N-009.webp",
+"note": "드라이브 NPC 폴더 · 관남기본.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-010",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "광냥-적으로",
+"src": "img/npc/N-010.webp",
+"note": "드라이브 NPC 폴더 · 광냥-적으로.png · 광냥이 적일 때",
+"rank": "",
+"on": false
+},
+{
+"id": "N-011",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "광냥기본",
+"src": "img/npc/N-011.webp",
+"note": "드라이브 NPC 폴더 · 광냥기본.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-012",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "광냥적-공격",
+"src": "img/npc/N-012.webp",
+"note": "드라이브 NPC 폴더 · 광냥적-공격.png · 광냥이 적일 때 공격",
+"rank": "",
+"on": false
+},
+{
+"id": "N-013",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "군마",
+"src": "img/npc/N-013.webp",
+"note": "드라이브 NPC 폴더 · 군마.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-014",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "노숙악마",
+"src": "img/npc/N-014.webp",
+"note": "드라이브 NPC 폴더 · 노숙악마.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-015",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "니드런",
+"src": "img/npc/N-015.webp",
+"note": "드라이브 NPC 폴더 · 니드런.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-016",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "대장간",
+"src": "img/npc/N-016.webp",
+"note": "드라이브 NPC 폴더 · 대장간.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-017",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "동네 마법사",
+"src": "img/npc/N-017.webp",
+"note": "드라이브 NPC 폴더 · 동네 마법사.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-018",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "동네야전의사아저씨",
+"src": "img/npc/N-018.webp",
+"note": "드라이브 NPC 폴더 · 동네야전의사아저씨(착함).png · 착함",
+"rank": "",
+"on": false
+},
+{
+"id": "N-019",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "두건",
+"src": "img/npc/N-019.webp",
+"note": "드라이브 NPC 폴더 · 두건.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-020",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "들쥐",
+"src": "img/npc/N-020.webp",
+"note": "드라이브 NPC 폴더 · 들쥐.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-021",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "멧돼지방패병",
+"src": "img/npc/N-021.webp",
+"note": "드라이브 NPC 폴더 · 멧돼지방패병.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-022",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "무서운아재",
+"src": "img/npc/N-022.webp",
+"note": "드라이브 NPC 폴더 · 무서운아재.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-023",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "물레, 콜라이더",
+"src": "img/npc/N-023.webp",
+"note": "드라이브 NPC 폴더 · 물레, 콜라이더.png · 한 장에 둘 이상. 사진 같은 그림이라 배경을 못 지움, 그대로 둠",
+"rank": "",
+"on": false
+},
+{
+"id": "N-024",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "방패곤봉",
+"src": "img/npc/N-024.webp",
+"note": "드라이브 NPC 폴더 · 방패곤봉.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-025",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "방패대검",
+"src": "img/npc/N-025.webp",
+"note": "드라이브 NPC 폴더 · 방패대검.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-026",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "배달부, 요리사",
+"src": "img/npc/N-026.webp",
+"note": "드라이브 NPC 폴더 · 배달부, 요리사.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-027",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "벌키우는남자, 테레비신도",
+"src": "img/npc/N-027.webp",
+"note": "드라이브 NPC 폴더 · 벌키우는남자, 테레비신도.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-028",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보광-신나공격",
+"src": "img/npc/N-028.webp",
+"note": "드라이브 NPC 폴더 · 보광-신나공격.png · 보광 전투모드 (흥분하면 리듬 타며 바뀜)",
+"rank": "",
+"on": false
+},
+{
+"id": "N-029",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보광-전투대기",
+"src": "img/npc/N-029.webp",
+"note": "드라이브 NPC 폴더 · 보광-전투대기.png · 보광 전투모드 대기",
+"rank": "",
+"on": false
+},
+{
+"id": "N-030",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보광공격",
+"src": "img/npc/N-030.webp",
+"note": "드라이브 NPC 폴더 · 보광공격.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-031",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보광기본",
+"src": "img/npc/N-031.webp",
+"note": "드라이브 NPC 폴더 · 보광기본.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-032",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보라마",
+"src": "img/npc/N-032.webp",
+"note": "드라이브 NPC 폴더 · 보라마.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-033",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "보라마공격",
+"src": "img/npc/N-033.webp",
+"note": "드라이브 NPC 폴더 · 보라마공격.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-034",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "복서",
+"src": "img/npc/N-034.webp",
+"note": "드라이브 NPC 폴더 · 복서.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-035",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "봉인된 시체",
+"src": "img/npc/N-035.webp",
+"note": "드라이브 NPC 폴더 · 봉인된 시체(개쎔).png · 파일 이름: 개쎔",
+"rank": "",
+"on": false
+},
+{
+"id": "N-036",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "샷건",
+"src": "img/npc/N-036.webp",
+"note": "드라이브 NPC 폴더 · 샷건.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-037",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "석상1",
+"src": "img/npc/N-037.webp",
+"note": "드라이브 NPC 폴더 · 석상1.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-038",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "성방패",
+"src": "img/npc/N-038.webp",
+"note": "드라이브 NPC 폴더 · 성방패.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-039",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "청승 (스크린샷)",
+"src": "img/npc/N-039.webp",
+"note": "드라이브 NPC 폴더 · 스크린샷 2026-10-03 222614.png · 파일 이름이 스크린샷. 청승으로 보임 (파란 피부 · 대검)",
+"rank": "",
+"on": false
+},
+{
+"id": "N-040",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "스팅요",
+"src": "img/npc/N-040.webp",
+"note": "드라이브 NPC 폴더 · 스팅요.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-041",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "아해",
+"src": "img/npc/N-041.webp",
+"note": "드라이브 NPC 폴더 · 아해.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-042",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "요리라임",
+"src": "img/npc/N-042.webp",
+"note": "드라이브 NPC 폴더 · 요리라임.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-043",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "일반개비",
+"src": "img/npc/N-043.webp",
+"note": "드라이브 NPC 폴더 · 일반개비.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-044",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "일반개비적",
+"src": "img/npc/N-044.webp",
+"note": "드라이브 NPC 폴더 · 일반개비적.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-045",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "일반적괴물",
+"src": "img/npc/N-045.webp",
+"note": "드라이브 NPC 폴더 · 일반적괴물.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-046",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "장군님",
+"src": "img/npc/N-046.webp",
+"note": "드라이브 NPC 폴더 · 장군님.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-047",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "저격총수",
+"src": "img/npc/N-047.webp",
+"note": "드라이브 NPC 폴더 · 저격총수.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-048",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "적기사",
+"src": "img/npc/N-048.webp",
+"note": "드라이브 NPC 폴더 · 적기사.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-049",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "정령연",
+"src": "img/npc/N-049.webp",
+"note": "드라이브 NPC 폴더 · 정령연.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-050",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "지키는자",
+"src": "img/npc/N-050.webp",
+"note": "드라이브 NPC 폴더 · 지키는자.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-051",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "창병2",
+"src": "img/npc/N-051.webp",
+"note": "드라이브 NPC 폴더 · 창병2.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-052",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "청승공격",
+"src": "img/npc/N-052.webp",
+"note": "드라이브 NPC 폴더 · 청승공격.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-053",
+"cat": "char",
+"sub": "미등장 NPC · 이름 있는 인물",
+"name": "칼들기 청승",
+"src": "img/npc/N-053.webp",
+"note": "드라이브 NPC 폴더 · 칼들기 청승.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-054",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "탐사중",
+"src": "img/npc/N-054.webp",
+"note": "드라이브 NPC 폴더 · 탐사중.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-055",
+"cat": "char",
+"sub": "미등장 NPC · 일반",
+"name": "휠체어할배",
+"src": "img/npc/N-055.webp",
+"note": "드라이브 NPC 폴더 · 휠체어할배.png",
+"rank": "",
+"on": false
+},
+{
+"id": "N-056",
+"cat": "char",
+"sub": "미등장 NPC · 적",
+"name": "흑기사창병",
+"src": "img/npc/N-056.webp",
+"note": "드라이브 NPC 폴더 · 흑기사창병.png",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-idle",
 "cat": "old2d",
 "sub": "인주 · SPECIAL",
@@ -4884,9 +5534,9 @@ const CATALOG = [
 "id": "F-slime",
 "cat": "face",
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
-"name": "슬라임 기본 초상화",
+"name": "슬라임녀 초상화",
 "src": "img/face/slime_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
+"note": "받은 초상화 (2026-10-03). 전의 기본 초상화를 바꿈",
 "rank": "",
 "on": false
 },
@@ -5046,6 +5696,476 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "칼 기본 초상화",
 "src": "img/face/kal_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-bogwang",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "보광 초상화",
+"src": "img/face/bogwang_portrait.webp",
+"note": "받은 초상화",
+"rank": "",
+"on": false
+},
+{
+"id": "F-borama",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "보라마 초상화",
+"src": "img/face/borama_portrait.webp",
+"note": "받은 초상화",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-001",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "가지마소녀 기본 초상화",
+"src": "img/face/N-001_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-002",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "개 기본 초상화",
+"src": "img/face/N-002_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-003",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "개2 기본 초상화",
+"src": "img/face/N-003_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-004",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "거지 기본 초상화",
+"src": "img/face/N-004_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-005",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "검방흑기사 기본 초상화",
+"src": "img/face/N-005_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-006",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "경찰 기본 초상화",
+"src": "img/face/N-006_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-007",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "곤충괴 기본 초상화",
+"src": "img/face/N-007_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-008",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "과거의 오딜 기본 초상화",
+"src": "img/face/N-008_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-009",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "관남기본 기본 초상화",
+"src": "img/face/N-009_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-011",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "광냥기본 기본 초상화",
+"src": "img/face/N-011_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-013",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "군마 기본 초상화",
+"src": "img/face/N-013_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-014",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "노숙악마 기본 초상화",
+"src": "img/face/N-014_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-015",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "니드런 기본 초상화",
+"src": "img/face/N-015_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-016",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "대장간 기본 초상화",
+"src": "img/face/N-016_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-017",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "동네 마법사 기본 초상화",
+"src": "img/face/N-017_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-018",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "동네야전의사아저씨 기본 초상화",
+"src": "img/face/N-018_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-019",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "두건 기본 초상화",
+"src": "img/face/N-019_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-020",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "들쥐 기본 초상화",
+"src": "img/face/N-020_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-021",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "멧돼지방패병 기본 초상화",
+"src": "img/face/N-021_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-022",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "무서운아재 기본 초상화",
+"src": "img/face/N-022_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-023",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "물레, 콜라이더 기본 초상화",
+"src": "img/face/N-023_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-024",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "방패곤봉 기본 초상화",
+"src": "img/face/N-024_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-025",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "방패대검 기본 초상화",
+"src": "img/face/N-025_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-026",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "배달부, 요리사 기본 초상화",
+"src": "img/face/N-026_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-027",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "벌키우는남자, 테레비신도 기본 초상화",
+"src": "img/face/N-027_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-034",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "복서 기본 초상화",
+"src": "img/face/N-034_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-035",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "봉인된 시체 기본 초상화",
+"src": "img/face/N-035_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-036",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "샷건 기본 초상화",
+"src": "img/face/N-036_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-037",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "석상1 기본 초상화",
+"src": "img/face/N-037_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-038",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "성방패 기본 초상화",
+"src": "img/face/N-038_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-040",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "스팅요 기본 초상화",
+"src": "img/face/N-040_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-041",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "아해 기본 초상화",
+"src": "img/face/N-041_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-042",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "요리라임 기본 초상화",
+"src": "img/face/N-042_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-043",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "일반개비 기본 초상화",
+"src": "img/face/N-043_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-044",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "일반개비적 기본 초상화",
+"src": "img/face/N-044_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-045",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "일반적괴물 기본 초상화",
+"src": "img/face/N-045_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-046",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "장군님 기본 초상화",
+"src": "img/face/N-046_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-047",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "저격총수 기본 초상화",
+"src": "img/face/N-047_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-048",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "적기사 기본 초상화",
+"src": "img/face/N-048_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-049",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "정령연 기본 초상화",
+"src": "img/face/N-049_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-050",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "지키는자 기본 초상화",
+"src": "img/face/N-050_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-051",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "창병2 기본 초상화",
+"src": "img/face/N-051_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-054",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "탐사중 기본 초상화",
+"src": "img/face/N-054_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-055",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "휠체어할배 기본 초상화",
+"src": "img/face/N-055_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-N-056",
+"cat": "face",
+"sub": "미등장 NPC 기본 초상화 (2026-10-03)",
+"name": "흑기사창병 기본 초상화",
+"src": "img/face/N-056_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false

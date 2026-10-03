@@ -3,7 +3,7 @@
 import os, json
 from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DIRS = ['relic', 'equip', 'card', 'skill', 'tile', 'prop', 'face']
+DIRS = ['relic', 'equip', 'card', 'skill', 'tile', 'prop', 'face', 'npc']
 W, HMAX, PAD = 2048, 4096, 2
 os.makedirs(f'{ROOT}/pack', exist_ok=True)
 for f in os.listdir(f'{ROOT}/pack'): os.remove(f'{ROOT}/pack/{f}')
