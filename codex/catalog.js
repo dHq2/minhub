@@ -1,4 +1,4 @@
-/* catalog.js v1.38 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.39 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3223,6 +3223,50 @@ const CATALOG = [
 "pin": 2
 },
 {
+"id": "H-005-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "침대 · 색 변형 (파랑)",
+"src": "img/prop/H-005-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-005"
+},
+{
+"id": "H-005-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "침대 · 색 변형 (초록)",
+"src": "img/prop/H-005-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-005"
+},
+{
+"id": "H-005-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "침대 · 색 변형 (보라)",
+"src": "img/prop/H-005-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-005"
+},
+{
+"id": "H-005-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "침대 · 색 변형 (금색)",
+"src": "img/prop/H-005-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-005"
+},
+{
 "id": "H-044",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -3234,12 +3278,56 @@ const CATALOG = [
 "pin": 8
 },
 {
+"id": "H-044-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "이층 침대 · 색 변형 (파랑)",
+"src": "img/prop/H-044-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-044"
+},
+{
+"id": "H-044-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "이층 침대 · 색 변형 (초록)",
+"src": "img/prop/H-044-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-044"
+},
+{
+"id": "H-044-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "이층 침대 · 색 변형 (보라)",
+"src": "img/prop/H-044-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-044"
+},
+{
+"id": "H-044-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "이층 침대 · 색 변형 (금색)",
+"src": "img/prop/H-044-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-044"
+},
+{
 "id": "H-045",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
 "name": "원탁과 의자 둘",
 "src": "img/prop/H-045.webp",
-"note": "",
+"note": "의미 없는 문양 지움 · 색 팔레트 살짝 바꿈",
 "rank": "",
 "on": true,
 "pin": 6
@@ -3300,6 +3388,50 @@ const CATALOG = [
 "pin": 12
 },
 {
+"id": "H-099-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대 2 · 색 변형 (파랑)",
+"src": "img/prop/H-099-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-099"
+},
+{
+"id": "H-099-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대 2 · 색 변형 (초록)",
+"src": "img/prop/H-099-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-099"
+},
+{
+"id": "H-099-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대 2 · 색 변형 (보라)",
+"src": "img/prop/H-099-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-099"
+},
+{
+"id": "H-099-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대 2 · 색 변형 (금색)",
+"src": "img/prop/H-099-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-099"
+},
+{
 "id": "H-120",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -3355,6 +3487,50 @@ const CATALOG = [
 "pin": 17
 },
 {
+"id": "H-131-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "왕좌 · 색 변형 (파랑)",
+"src": "img/prop/H-131-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-131"
+},
+{
+"id": "H-131-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "왕좌 · 색 변형 (초록)",
+"src": "img/prop/H-131-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-131"
+},
+{
+"id": "H-131-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "왕좌 · 색 변형 (보라)",
+"src": "img/prop/H-131-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-131"
+},
+{
+"id": "H-131-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "왕좌 · 색 변형 (금색)",
+"src": "img/prop/H-131-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-131"
+},
+{
 "id": "H-135",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -3375,35 +3551,59 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "H-172",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "고딕 기도 의자",
-"src": "img/prop/H-172.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
 "id": "H-180",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
 "name": "붉은 고딕 왕좌 2",
 "src": "img/prop/H-180.webp",
-"note": "",
+"note": "의미 없는 문양 지움",
 "rank": "",
 "on": true,
 "pin": 35
 },
 {
-"id": "H-181",
+"id": "H-180-c1",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
-"name": "붉은 긴 소파",
-"src": "img/prop/H-181.webp",
-"note": "",
+"name": "붉은 고딕 왕좌 2 · 색 변형 (파랑)",
+"src": "img/prop/H-180-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
 "rank": "",
-"on": false
+"on": false,
+"parent": "H-180"
+},
+{
+"id": "H-180-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 고딕 왕좌 2 · 색 변형 (초록)",
+"src": "img/prop/H-180-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-180"
+},
+{
+"id": "H-180-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 고딕 왕좌 2 · 색 변형 (보라)",
+"src": "img/prop/H-180-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-180"
+},
+{
+"id": "H-180-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 고딕 왕좌 2 · 색 변형 (금색)",
+"src": "img/prop/H-180-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-180"
 },
 {
 "id": "H-182",
@@ -3428,14 +3628,48 @@ const CATALOG = [
 "pin": 33
 },
 {
-"id": "H-189",
+"id": "H-185-c1",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
-"name": "붉은 스툴",
-"src": "img/prop/H-189.webp",
-"note": "",
+"name": "기둥 네 개 침대 · 색 변형 (파랑)",
+"src": "img/prop/H-185-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
 "rank": "",
-"on": false
+"on": false,
+"parent": "H-185"
+},
+{
+"id": "H-185-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "기둥 네 개 침대 · 색 변형 (초록)",
+"src": "img/prop/H-185-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-185"
+},
+{
+"id": "H-185-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "기둥 네 개 침대 · 색 변형 (보라)",
+"src": "img/prop/H-185-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-185"
+},
+{
+"id": "H-185-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "기둥 네 개 침대 · 색 변형 (금색)",
+"src": "img/prop/H-185-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-185"
 },
 {
 "id": "H-214",
@@ -3458,6 +3692,50 @@ const CATALOG = [
 "rank": "",
 "on": true,
 "pin": 36
+},
+{
+"id": "H-239-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 방석 나무 의자 · 색 변형 (파랑)",
+"src": "img/prop/H-239-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-239"
+},
+{
+"id": "H-239-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 방석 나무 의자 · 색 변형 (초록)",
+"src": "img/prop/H-239-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-239"
+},
+{
+"id": "H-239-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 방석 나무 의자 · 색 변형 (보라)",
+"src": "img/prop/H-239-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-239"
+},
+{
+"id": "H-239-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 방석 나무 의자 · 색 변형 (금색)",
+"src": "img/prop/H-239-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-239"
 },
 {
 "id": "H-240",
@@ -3540,12 +3818,56 @@ const CATALOG = [
 "id": "H-248",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
-"name": "붉은 소파 3",
+"name": "범용 소파",
 "src": "img/prop/H-248.webp",
-"note": "",
+"note": "원래 이름: 붉은 소파 3",
 "rank": "",
 "on": true,
 "pin": 18
+},
+{
+"id": "H-248-c1",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "범용 소파 · 색 변형 (파랑)",
+"src": "img/prop/H-248-c1.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-248"
+},
+{
+"id": "H-248-c2",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "범용 소파 · 색 변형 (초록)",
+"src": "img/prop/H-248-c2.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-248"
+},
+{
+"id": "H-248-c3",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "범용 소파 · 색 변형 (보라)",
+"src": "img/prop/H-248-c3.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-248"
+},
+{
+"id": "H-248-c4",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "범용 소파 · 색 변형 (금색)",
+"src": "img/prop/H-248-c4.webp",
+"note": "메모 '색상변경 랜덤'대로 자동으로 바꾼 색 (주된 색만 돌림)",
+"rank": "",
+"on": false,
+"parent": "H-248"
 },
 {
 "id": "H-251",
@@ -3747,9 +4069,10 @@ const CATALOG = [
 "sub": "수납",
 "name": "고딕 협탁장",
 "src": "img/prop/H-178.webp",
-"note": "",
+"note": "의미 없는 문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 42
 },
 {
 "id": "H-183",
@@ -3792,16 +4115,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "H-219",
-"cat": "prop",
-"sub": "수납",
-"name": "고딕 옷장 · 리본",
-"src": "img/prop/H-219.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
 "id": "H-249",
 "cat": "prop",
 "sub": "수납",
@@ -3809,7 +4122,8 @@ const CATALOG = [
 "src": "img/prop/H-249.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 38
 },
 {
 "id": "H-250",
@@ -3819,7 +4133,8 @@ const CATALOG = [
 "src": "img/prop/H-250.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 39
 },
 {
 "id": "H-258",
@@ -3829,7 +4144,8 @@ const CATALOG = [
 "src": "img/prop/H-258.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 40
 },
 {
 "id": "H-259",
@@ -3839,7 +4155,8 @@ const CATALOG = [
 "src": "img/prop/H-259.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 41
 },
 {
 "id": "H-114",
@@ -5207,26 +5524,6 @@ const CATALOG = [
 "sub": "도시 · 현대물",
 "name": "부서진 자판기",
 "src": "img/prop/H-073.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-076",
-"cat": "prop",
-"sub": "도시 · 현대물",
-"name": "경광등 바리케이드 2",
-"src": "img/prop/H-076.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-079",
-"cat": "prop",
-"sub": "도시 · 현대물",
-"name": "배관 · 밸브 2",
-"src": "img/prop/H-079.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -6625,6 +6922,17 @@ const CATALOG = [
 "note": "원래 이름: 둥근 오토만",
 "rank": "",
 "on": false
+},
+{
+"id": "H-219",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 고딕 옷장 · 리본",
+"src": "img/prop/H-219.webp",
+"note": "원래 이름: 고딕 옷장 · 리본",
+"rank": "",
+"on": true,
+"pin": 37
 },
 {
 "id": "O-player-face",

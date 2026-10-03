@@ -314,7 +314,7 @@ function tile(e){
     <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
     <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
-    ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">표정 ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
+    ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">${BY_ID[KIDS[e.id][0]].name.includes('색 변형') ? '색' : '표정'} ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${memo}</div>`;
 }
 /* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
