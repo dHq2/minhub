@@ -1,4 +1,4 @@
-/* catalog.js v1.15 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.16 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -4581,6 +4581,66 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-172",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "고딕 기도 의자",
+"src": "img/prop/H-172.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-180",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 고딕 왕좌 2",
+"src": "img/prop/H-180.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-181",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 긴 소파",
+"src": "img/prop/H-181.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-182",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "촛대 책상",
+"src": "img/prop/H-182.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-185",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "기둥 네 개 침대",
+"src": "img/prop/H-185.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-189",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 스툴",
+"src": "img/prop/H-189.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-016",
 "cat": "prop",
 "sub": "수납",
@@ -4721,6 +4781,56 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-171",
+"cat": "prop",
+"sub": "수납",
+"name": "고딕 책장 · 촛불",
+"src": "img/prop/H-171.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-178",
+"cat": "prop",
+"sub": "수납",
+"name": "고딕 협탁장",
+"src": "img/prop/H-178.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-183",
+"cat": "prop",
+"sub": "수납",
+"name": "서랍장",
+"src": "img/prop/H-183.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-187",
+"cat": "prop",
+"sub": "수납",
+"name": "유리 장식장 2",
+"src": "img/prop/H-187.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-188",
+"cat": "prop",
+"sub": "수납",
+"name": "열린 선반",
+"src": "img/prop/H-188.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-114",
 "cat": "prop",
 "sub": "상자 · 통",
@@ -4766,6 +4876,16 @@ const CATALOG = [
 "sub": "상자 · 통",
 "name": "군용 상자 더미",
 "src": "img/prop/H-145.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-170",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "보급품 더미",
+"src": "img/prop/H-170.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4886,6 +5006,26 @@ const CATALOG = [
 "sub": "조명 · 불",
 "name": "붉은 불꽃 화로 2",
 "src": "img/prop/H-148.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-158",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "깃발 등불 기둥",
+"src": "img/prop/H-158.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-186",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "술 달린 스탠드",
+"src": "img/prop/H-186.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5121,6 +5261,56 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-161",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "부서진 수레 · 깃발",
+"src": "img/prop/H-161.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-162",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "말뚝 방책 2",
+"src": "img/prop/H-162.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-165",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "찢어진 깃발 장대",
+"src": "img/prop/H-165.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-168",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "피 묻은 나무 들것",
+"src": "img/prop/H-168.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-199",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "부서진 철문 담장 2",
+"src": "img/prop/H-199.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-010",
 "cat": "prop",
 "sub": "무기 더미 · 거치대",
@@ -5186,6 +5376,26 @@ const CATALOG = [
 "sub": "무기 더미 · 거치대",
 "name": "방패 · 화살 더미",
 "src": "img/prop/H-113.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-163",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "창 다발",
+"src": "img/prop/H-163.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-164",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "방패 · 투구 더미",
+"src": "img/prop/H-164.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5306,6 +5516,56 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "검은 관 · 붉은 천",
 "src": "img/prop/H-100.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-166",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "갑옷 기사 시체",
+"src": "img/prop/H-166.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-169",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "해골 · 투구 더미",
+"src": "img/prop/H-169.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-191",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "금 간 묘비 둘",
+"src": "img/prop/H-191.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-194",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "해골 더미 · 가시나무",
+"src": "img/prop/H-194.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-198",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "석관 · 붉은 천",
+"src": "img/prop/H-198.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5651,6 +5911,146 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-153",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "후광 베일 석상",
+"src": "img/prop/H-153.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-154",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "종루 2",
+"src": "img/prop/H-154.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-155",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "별 문양 석문",
+"src": "img/prop/H-155.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-156",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "사슬 감긴 바위 더미",
+"src": "img/prop/H-156.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-159",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "촛불 제단 원진",
+"src": "img/prop/H-159.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-160",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "가시관 · 가면 더미",
+"src": "img/prop/H-160.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-175",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "가면 · 장미 더미",
+"src": "img/prop/H-175.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-177",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "깃발 걸이 기둥",
+"src": "img/prop/H-177.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-196",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "촛불 감실",
+"src": "img/prop/H-196.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-197",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "머리 없는 천사상 2",
+"src": "img/prop/H-197.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-152",
+"cat": "prop",
+"sub": "우물 · 분수",
+"name": "고딕 우물 (도르래)",
+"src": "img/prop/H-152.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-157",
+"cat": "prop",
+"sub": "우물 · 분수",
+"name": "마른 분수",
+"src": "img/prop/H-157.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-173",
+"cat": "prop",
+"sub": "우물 · 분수",
+"name": "낡은 우물",
+"src": "img/prop/H-173.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-174",
+"cat": "prop",
+"sub": "우물 · 분수",
+"name": "석상 분수",
+"src": "img/prop/H-174.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-095",
 "cat": "prop",
 "sub": "방 꾸밈",
@@ -5676,6 +6076,26 @@ const CATALOG = [
 "sub": "방 꾸밈",
 "name": "화장대",
 "src": "img/prop/H-097.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-184",
+"cat": "prop",
+"sub": "방 꾸밈",
+"name": "거울 화장대",
+"src": "img/prop/H-184.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-190",
+"cat": "prop",
+"sub": "방 꾸밈",
+"name": "접이 칸막이 2",
+"src": "img/prop/H-190.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5766,6 +6186,86 @@ const CATALOG = [
 "sub": "폐허 · 자연물",
 "name": "철근 콘크리트 잔해",
 "src": "img/prop/H-150.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-151",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "등나무 고목",
+"src": "img/prop/H-151.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-167",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "부서진 바퀴 2",
+"src": "img/prop/H-167.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-176",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "창 난 무너진 벽 2",
+"src": "img/prop/H-176.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-179",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "사슬 감긴 돌기둥",
+"src": "img/prop/H-179.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-192",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "무너진 아치 3",
+"src": "img/prop/H-192.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-193",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "돌무더기 2",
+"src": "img/prop/H-193.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-195",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "부러진 돌기둥",
+"src": "img/prop/H-195.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-200",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "가시 고목",
+"src": "img/prop/H-200.webp",
 "note": "",
 "rank": "",
 "on": false
