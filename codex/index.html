@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.35 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.36 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -89,6 +89,10 @@ h3.hit,.pnav.hit{animation:hit 1.2s}
 .renamed{display:inline-block;font:600 10.5px var(--body);color:#fff;background:#b06a12;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .namein{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;font:15px var(--body)}
 .namein:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.search{display:flex;align-items:center;gap:6px;flex:1 1 220px;min-width:0}
+.search input{flex:1;min-width:0;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font:14px var(--body)}
+.search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#qn{font:500 12px var(--mono);color:var(--accent);white-space:nowrap}
 .empty{color:var(--dim);font-size:14px;padding:20px 0}
 /* 크게 보기 */
 .view{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;padding:16px}
@@ -117,6 +121,7 @@ main{touch-action:pan-x pan-y}
 .view .hint{font-size:11px;color:var(--dim)}
 /* 휴대폰 */
 @media (max-width:640px){
+  .search{flex:1 1 100%} .search input{font-size:16px;padding:8px 10px}
   .wrap{padding-block:12px 90px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(calc(100px*var(--z)),1fr))}
   .grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,calc(165px*var(--z))),1fr))}
@@ -166,6 +171,7 @@ main{touch-action:pan-x pan-y}
 
   <div class="bar" id="bar">
     <div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
+    <div class="search"><input id="q" type="search" placeholder="찾기: 번호 (h076) · 이름 · 메모 · 묶음" autocomplete="off" aria-label="찾기"><span id="qn"></span></div>
     <div class="tools">
       <span class="zoom" aria-label="그림 크기"><button type="button" id="zOut" aria-label="작게">−</button><span id="zVal">100%</span><button type="button" id="zIn" aria-label="크게">+</button></span>
       <span class="count" id="count">체크 0</span>
@@ -292,7 +298,11 @@ function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.
 const KIDS = {}; for (const e of CATALOG) if (e.parent) (KIDS[e.parent] = KIDS[e.parent] || []).push(e.id);
 let opened = {}; try { opened = JSON.parse(localStorage.getItem('codex-open') || '{}'); } catch (e) {}
 function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID[e.parent] || !visible(BY_ID[e.parent])); }
-function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || (showSt === 'ren' ? renamed(e) : stOf(e) === showSt)); }
+/* 찾기: 번호는 하이픈 · 대소문자 무시 (h076 = H-076). 찾는 동안은 모든 분류에서 */
+let q = '';
+const norm = t => String(t || '').toLowerCase().replace(/[-\s]/g, '');
+function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(m.name).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.note).includes(n); }
+function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || (showSt === 'ren' ? renamed(e) : stOf(e) === showSt)); }
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
   const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
@@ -328,14 +338,15 @@ function render(){
   }).join('');
   let html = '';
   for (const c of CATS){
-    if (cat !== 'all' && cat !== c.key) continue;
+    if (!q && cat !== 'all' && cat !== c.key) continue;
+    if (q && !CATALOG.some(e => e.cat === c.key && visible(e))) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs0 = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
     const pinned = CATALOG.filter(e => e.cat === c.key && e.pin).sort((a, b) => a.pin - b.pin);
     const subs = pinned.length ? [PIN, ...subs0] : subs0;
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
-    if (c.key === 'char') html += peopleNav(subs0);
+    if (c.key === 'char' && !q) html += peopleNav(subs0);
     let any = false;
     for (const s of subs){
       const list = s === PIN ? pinned.filter(e => items.includes(e)) : items.filter(e => e.sub === s && !e.pin); if (!list.length) continue; any = true;
@@ -433,6 +444,9 @@ $('main').addEventListener('click', e => {
   const t = e.target.closest('.tile'); if (t) openView(t.dataset.id);
 });
 $('main').addEventListener('keydown', e => { const t = e.target.closest('.tile'); if (!t) return; if (e.key === 'Enter'){ openView(t.dataset.id); } if (e.key === ' '){ e.preventDefault(); put(t.dataset.id, { checked: !(marks[t.dataset.id] && marks[t.dataset.id].checked) }); } });
+let qT = 0;
+$('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { q = $('q').value.trim(); render(); const n = q ? CATALOG.filter(visible).length : 0; $('qn').textContent = q ? `${n}개` : ''; if (q) scrollTo({ top: $('main').offsetTop - $('bar').offsetHeight - 8 }); }, 150); });
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229){ e.preventDefault(); const f = CATALOG.find(visible); if (f) openView(f.id); } if (e.key === 'Escape'){ $('q').value = ''; q = ''; $('qn').textContent = ''; render(); } });
 $('onlyChecked').addEventListener('change', e => { onlyChecked = e.target.checked; render(); });
 $('copyBtn').onclick = copyList; $('saveBtn').onclick = saveBackup; $('clearBtn').onclick = askClear;
 $('loadBtn').onclick = () => $('loadFile').click();
