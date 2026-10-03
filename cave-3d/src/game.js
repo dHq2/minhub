@@ -295,7 +295,7 @@ function updateHud(){
   const it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   $('prompt').hidden = !it; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}`;
   G.nearIt = it;
-  updateMarks();
+  updateMarks(); updateSpearMark();
 }
 
 // 살펴볼 수 있는 것: 멀리서도 ◆ + 이름이 떠 있음 (벽에 가려져도 보임). 가까이 가면 E 안내로 바뀜
@@ -315,6 +315,28 @@ function updateMarks(){
     m.hidden = false; m.style.transform = `translate(${px}px,${py}px) translateX(-50%)`; m.style.opacity = edge || d > 11 ? 0.6 : 1;
     const label = it.unit ? '' : it.mark || it.label.split(' — ')[0]; if (m.textContent !== label) m.textContent = label;
   });
+}
+
+// 던진 창 찾기: 땅에 박힌 창 위에 금빛 기둥 + 화면에는 "창 · n칸". 화면 밖이면 가장자리에 그쪽을 가리키는 화살표
+function updateSpearMark(){
+  const el = $('spearMark'), o = P.spearObj, pl = G.player;
+  if (!o || !pl || G.lock || G.waitInput || !(G.mode === 'floor' || G.mode === 'lobby')){ el.hidden = true; return; }
+  const d = Math.hypot(o.x - pl.x, o.z - pl.z), y = heightAt(G.map, o.x, o.z);
+  if (o.pillar) o.pillar.material.opacity = 0.18 + 0.17 * (0.5 + 0.5 * Math.sin(G.t * 4));
+  if (d < 1.4){ el.hidden = true; return; }
+  let p = toScreen(o.x, y + 1.6, o.z, UI.W, UI.H);
+  const m = 46, cx = UI.W / 2, cy = UI.H / 2;
+  if (p.behind){ p = { x: cx - (p.x - cx) * 9, y: UI.H }; }   // 카메라 뒤면 아래쪽 가장자리로
+  const off = p.x < m || p.x > UI.W - m || p.y < m + 60 || p.y > UI.H - m - 110;
+  let x = p.x, yy = p.y, ang = 0;
+  if (off){
+    const dx = p.x - cx, dy = p.y - cy, sx = (UI.W / 2 - m) / Math.abs(dx || 1e-6), sy = ((dy < 0 ? UI.H / 2 - m - 60 : UI.H / 2 - m - 110)) / Math.abs(dy || 1e-6), k = Math.min(sx, sy);
+    x = cx + dx * k; yy = cy + dy * k; ang = Math.atan2(dy, dx) * 180 / Math.PI;
+  }
+  el.hidden = false; el.classList.toggle('off', off);
+  el.style.transform = `translate(${x}px,${yy}px) translate(-50%,-50%)`;
+  el.querySelector('i').style.transform = `rotate(${ang}deg)`;
+  el.querySelector('b').textContent = `창 · ${Math.round(d)}칸`;
 }
 
 /* ---------- 한 프레임 ---------- */

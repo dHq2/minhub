@@ -195,8 +195,11 @@ function dropSpear(x, z, a){
   m.position.set(x, y + 0.5, z); m.rotation.z = (Math.cos(a) > 0 ? -1 : 1) * 0.6; m.rotation.y = rnd(-0.3, 0.3);
   const glow = new THREE.Mesh(new THREE.RingGeometry(0.25, 0.32, 24), new THREE.MeshBasicMaterial({ color: 0xffd35a, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }));
   glow.rotation.x = -Math.PI / 2; glow.position.set(x, y + 0.03, z);
+  // 멀리서도 보이는 금빛 기둥 (벽 · 기둥에 가려도 보임)
+  const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.18, 6, 10, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd35a, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, side: THREE.DoubleSide }));
+  pillar.position.set(x, y + 3, z); pillar.renderOrder = 40; g.add(pillar);
   g.add(m); g.add(glow); G.scene.add(g);
-  P.spearObj = { x, z, m: g };
+  P.spearObj = { x, z, m: g, pillar };
 }
 // 잔상 (구르기 · 적뢰 스텝)
 function ghost(u){
