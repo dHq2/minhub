@@ -1,4 +1,4 @@
-/* catalog.js v1.55 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.56 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -550,6 +550,836 @@ const CATALOG = [
 "src": "img/relic/r54.webp",
 "note": "",
 "rank": "relic",
+"on": false
+},
+{
+"id": "R-S001",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "수정 창",
+"src": "img/relic/rs001.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S002",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "비늘 흉갑",
+"src": "img/relic/rs002.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S003",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "피 묻은 갈고리",
+"src": "img/relic/rs003.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S004",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "톱니 건틀릿",
+"src": "img/relic/rs004.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S005",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "물약 가방",
+"src": "img/relic/rs005.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S006",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "늑대 방패",
+"src": "img/relic/rs006.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S007",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "룬 마도서",
+"src": "img/relic/rs007.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S008",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "활과 화살통",
+"src": "img/relic/rs008.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S009",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "증기 고글",
+"src": "img/relic/rs009.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S010",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "연기 나는 랜턴",
+"src": "img/relic/rs010.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S011",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "불타는 대검",
+"src": "img/relic/rs011.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S012",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "가시 가죽 갑옷",
+"src": "img/relic/rs012.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S013",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "플린트락 권총",
+"src": "img/relic/rs013.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S014",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "루비 단검",
+"src": "img/relic/rs014.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S015",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "검은 가시 왕관",
+"src": "img/relic/rs015.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S016",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "가죽 배낭",
+"src": "img/relic/rs016.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S017",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "룬 돌",
+"src": "img/relic/rs017.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S018",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "촉수 머리 문장",
+"src": "img/relic/rs018.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S019",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "룬 도끼",
+"src": "img/relic/rs019.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S020",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "판금 장갑",
+"src": "img/relic/rs020.webp",
+"note": "유물 모음 시트 1에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S021",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "룬 장검",
+"src": "img/relic/rs021.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S022",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "증기 소총",
+"src": "img/relic/rs022.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S023",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "뼈 손잡이 도끼",
+"src": "img/relic/rs023.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S024",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "피 묻은 칼날",
+"src": "img/relic/rs024.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S025",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "구슬 지팡이",
+"src": "img/relic/rs025.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S026",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "쌍 철퇴 도리깨",
+"src": "img/relic/rs026.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S027",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "미래 권총",
+"src": "img/relic/rs027.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S028",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "꿰맨 가죽 가면",
+"src": "img/relic/rs028.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S029",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "황동 고글",
+"src": "img/relic/rs029.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S030",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "해골 투구",
+"src": "img/relic/rs030.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S031",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "늑대 문장 흉갑",
+"src": "img/relic/rs031.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S032",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "고문 도구 걸이",
+"src": "img/relic/rs032.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S033",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "활과 화살통 2",
+"src": "img/relic/rs033.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S034",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "촉수 머리 방패",
+"src": "img/relic/rs034.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S035",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "장궁과 화살통",
+"src": "img/relic/rs035.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S036",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "물약 병 모음",
+"src": "img/relic/rs036.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S037",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "빛나는 룬 돌",
+"src": "img/relic/rs037.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S038",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "톱니 나침반",
+"src": "img/relic/rs038.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S039",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "사슬로 묶인 눈 책",
+"src": "img/relic/rs039.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S040",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "빛나는 기계 원반",
+"src": "img/relic/rs040.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S041",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "기계 팔",
+"src": "img/relic/rs041.webp",
+"note": "유물 모음 시트 2에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S042",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "살덩이 기계 흉갑",
+"src": "img/relic/rs042.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S043",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "저주의 낫",
+"src": "img/relic/rs043.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S044",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "사이버 건틀릿",
+"src": "img/relic/rs044.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S045",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "박쥐 루비 반지",
+"src": "img/relic/rs045.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S046",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "녹색 룬 석판",
+"src": "img/relic/rs046.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S047",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "잠수 투구",
+"src": "img/relic/rs047.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S048",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "가시덩굴 활",
+"src": "img/relic/rs048.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S049",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "불꽃 망치",
+"src": "img/relic/rs049.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S050",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "잘린 짐승 손",
+"src": "img/relic/rs050.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S051",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "불사조 흉갑",
+"src": "img/relic/rs051.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S052",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "보라 수정 단검",
+"src": "img/relic/rs052.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S053",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "연금술 가방",
+"src": "img/relic/rs053.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S054",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "저주 인형",
+"src": "img/relic/rs054.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S055",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "천구 고리 반지",
+"src": "img/relic/rs055.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S056",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "해골 도끼",
+"src": "img/relic/rs056.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S057",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "미니 홀로그램 반지",
+"src": "img/relic/rs057.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S058",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "기계 매",
+"src": "img/relic/rs058.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S059",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "저주받은 눈 부적",
+"src": "img/relic/rs059.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S060",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "그림자 건틀릿",
+"src": "img/relic/rs060.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S061",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "나노머신 주사기",
+"src": "img/relic/rs061.webp",
+"note": "유물 모음 시트 3에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S062",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "저주받은 뼈 거울",
+"src": "img/relic/rs062.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S063",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "꿰맨 가죽 망토",
+"src": "img/relic/rs063.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S064",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "피 약병 목걸이",
+"src": "img/relic/rs064.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S065",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "철의 처녀 투구",
+"src": "img/relic/rs065.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S066",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "톱니 도끼",
+"src": "img/relic/rs066.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S067",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "압력 고글",
+"src": "img/relic/rs067.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S068",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "압력 고글 2",
+"src": "img/relic/rs068.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S069",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "테슬라 코일 팔찌",
+"src": "img/relic/rs069.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S070",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "태엽 장화",
+"src": "img/relic/rs070.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S071",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "버섯 지팡이",
+"src": "img/relic/rs071.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S072",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "기괴한 산호 갑옷",
+"src": "img/relic/rs072.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S073",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "만드라고라 술병",
+"src": "img/relic/rs073.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S074",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "플라스마 대검",
+"src": "img/relic/rs074.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S075",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "데이터 격자 두루마리",
+"src": "img/relic/rs075.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S076",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "중력 반지",
+"src": "img/relic/rs076.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S077",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "중력 반지 2",
+"src": "img/relic/rs077.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S078",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "음파 대포",
+"src": "img/relic/rs078.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S079",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "아틀란티스 건틀릿",
+"src": "img/relic/rs079.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S080",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "점성술 원반",
+"src": "img/relic/rs080.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S081",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "그림자 단검",
+"src": "img/relic/rs081.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S082",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "용의 심장 주머니",
+"src": "img/relic/rs082.webp",
+"note": "유물 모음 시트 4에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-S083",
+"cat": "relic",
+"sub": "유물 모음 (아이콘 시트)",
+"name": "도끼기사의 도끼",
+"src": "img/relic/rs083.webp",
+"note": "도끼기사 인카운터 그림에서 도끼만 잘라 유물로 (다리에 가려진 자루는 이어 그림)",
+"rank": "",
 "on": false
 },
 {
@@ -1649,6 +2479,26 @@ const CATALOG = [
 "name": "거대한 무희 셋",
 "src": "img/card/enc_dancers.webp",
 "note": "3m쯤 되는 무희 3명이 춤추는 인카운터. 글: 거대한 무희들이 춤을 춥니다. 그들은 무아에 빠져있습니다. 향은 독할정도로 농염합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md 무희는 한 명만 잘라 셋으로 복제 (11 가구 · 소품 → 인카운터 오브제 · NPC, H-348)",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-pig-god",
+"cat": "scene",
+"sub": "인카운터",
+"name": "돼지들의 신",
+"src": "img/card/enc_piggod.webp",
+"note": "스프라이트는 8 인물 → 돼지들의 신. 글: 돼지들의 신입니다. 생각보다 다정한 듯 합니다. 냄새는 나지만요, 그건 그렇고, 왜 자꾸 고깃덩이 돼지들을 \"싸는\"겁니까?.... 선물? 충고하자면, 먹지 말지? 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-axe-knight",
+"cat": "scene",
+"sub": "인카운터",
+"name": "푸른 구멍의 도끼기사",
+"src": "img/card/enc_axeknight.webp",
+"note": "스프라이트는 8 인물 → 도끼기사, 도끼는 1 유물 → 유물 모음 (R-S083 도끼기사의 도끼). 글: 그 알갱이들의 산 속에서, 푸른 구멍 앞을 그가 지키고 있었습니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
 "rank": "",
 "on": false
 },
@@ -10072,6 +10922,28 @@ const CATALOG = [
 "g": "cheonggap"
 },
 {
+"id": "F-auto-piggod",
+"cat": "char",
+"sub": "돼지들의 신 · NPC · 원화 + 연출",
+"name": "돼지들의 신 기본 초상화",
+"src": "img/face/auto_piggod.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "piggod"
+},
+{
+"id": "P-piggod",
+"cat": "char",
+"sub": "돼지들의 신 · NPC · 원화 + 연출",
+"name": "돼지들의 신",
+"src": "img/char/piggod.webp",
+"note": "돼지들의 신 인카운터에서 자른 스프라이트. 흰 바탕은 지움",
+"rank": "",
+"on": false,
+"g": "piggod"
+},
+{
 "id": "F-auto-deadhero",
 "cat": "char",
 "sub": "죽은 영웅 · NPC · 원화 + 연출",
@@ -11390,6 +12262,28 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "ahae"
+},
+{
+"id": "F-auto-axeknight",
+"cat": "char",
+"sub": "도끼기사 · 적 · 보스 · 원화 + 연출",
+"name": "도끼기사 기본 초상화",
+"src": "img/face/auto_axeknight.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "axeknight"
+},
+{
+"id": "P-axeknight",
+"cat": "char",
+"sub": "도끼기사 · 적 · 보스 · 원화 + 연출",
+"name": "도끼기사",
+"src": "img/char/axeknight.webp",
+"note": "푸른 구멍 앞을 지키는 기사. 인카운터에서 자른 스프라이트, 발밑 알갱이 산은 지움. 도끼 유물은 R-S083",
+"rank": "",
+"on": false,
+"g": "axeknight"
 },
 {
 "id": "F-blocker",
