@@ -1,4 +1,4 @@
-/* catalog.js v1.12 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.13 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -4421,6 +4421,56 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-072",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대",
+"src": "img/prop/H-072.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-080",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "병원 침대 · 수액",
+"src": "img/prop/H-080.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-091",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "촛불 협탁",
+"src": "img/prop/H-091.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-098",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "초록 안락의자",
+"src": "img/prop/H-098.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-099",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "철제 침대 2",
+"src": "img/prop/H-099.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-016",
 "cat": "prop",
 "sub": "수납",
@@ -4446,6 +4496,66 @@ const CATALOG = [
 "sub": "수납",
 "name": "책장",
 "src": "img/prop/H-042.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-075",
+"cat": "prop",
+"sub": "수납",
+"name": "유리 장식장 (해골 · 책)",
+"src": "img/prop/H-075.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-083",
+"cat": "prop",
+"sub": "수납",
+"name": "옷장 2",
+"src": "img/prop/H-083.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-087",
+"cat": "prop",
+"sub": "수납",
+"name": "초승달 책장",
+"src": "img/prop/H-087.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-090",
+"cat": "prop",
+"sub": "수납",
+"name": "옷장 3",
+"src": "img/prop/H-090.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-092",
+"cat": "prop",
+"sub": "수납",
+"name": "책장 2",
+"src": "img/prop/H-092.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-094",
+"cat": "prop",
+"sub": "수납",
+"name": "그릇 진열장",
+"src": "img/prop/H-094.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4486,6 +4596,26 @@ const CATALOG = [
 "sub": "조명 · 불",
 "name": "연기 나는 모닥불 솥",
 "src": "img/prop/H-050.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-082",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "네온 가로등",
+"src": "img/prop/H-082.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-093",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "돌 벽난로 · 거울",
+"src": "img/prop/H-093.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4611,6 +4741,16 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-057",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "부서진 철문 담장",
+"src": "img/prop/H-057.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-010",
 "cat": "prop",
 "sub": "무기 더미 · 거치대",
@@ -4646,6 +4786,16 @@ const CATALOG = [
 "sub": "무기 더미 · 거치대",
 "name": "창 · 도끼 거치대 · 방패",
 "src": "img/prop/H-048.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-084",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "대포",
+"src": "img/prop/H-084.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4726,6 +4876,36 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "담쟁이 관",
 "src": "img/prop/H-049.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-052",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "켈트 십자 묘비들",
+"src": "img/prop/H-052.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-055",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "납골당",
+"src": "img/prop/H-055.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-056",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "검 꽂힌 해골 더미",
+"src": "img/prop/H-056.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4821,6 +5001,66 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-065",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "통신탑",
+"src": "img/prop/H-065.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-073",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "부서진 자판기",
+"src": "img/prop/H-073.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-076",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "경광등 바리케이드 2",
+"src": "img/prop/H-076.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-079",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "배관 · 밸브 2",
+"src": "img/prop/H-079.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-085",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "버스 정류장 2",
+"src": "img/prop/H-085.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-088",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "기름통 더미",
+"src": "img/prop/H-088.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-031",
 "cat": "prop",
 "sub": "신비 · 장식",
@@ -4876,6 +5116,256 @@ const CATALOG = [
 "sub": "신비 · 장식",
 "name": "작은 예배당",
 "src": "img/prop/H-040.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-053",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "두건 석상 감실 · 촛불",
+"src": "img/prop/H-053.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-054",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "촛불 제단 · 붉은 천",
+"src": "img/prop/H-054.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-058",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "머리 없는 천사상",
+"src": "img/prop/H-058.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-077",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "도리이",
+"src": "img/prop/H-077.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-081",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "천사상 분수",
+"src": "img/prop/H-081.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-089",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "눈 달린 살덩이 나무",
+"src": "img/prop/H-089.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-095",
+"cat": "prop",
+"sub": "방 꾸밈",
+"name": "접이 칸막이",
+"src": "img/prop/H-095.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-096",
+"cat": "prop",
+"sub": "방 꾸밈",
+"name": "욕조",
+"src": "img/prop/H-096.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-097",
+"cat": "prop",
+"sub": "방 꾸밈",
+"name": "화장대",
+"src": "img/prop/H-097.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-051",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "무너진 고딕 아치",
+"src": "img/prop/H-051.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-059",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "창 난 무너진 벽",
+"src": "img/prop/H-059.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-060",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "썩은 나무 그루터기",
+"src": "img/prop/H-060.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-071",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "무너진 고딕 아치 2",
+"src": "img/prop/H-071.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-074",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "돌무더기",
+"src": "img/prop/H-074.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-061",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "인체 배양 캡슐",
+"src": "img/prop/H-061.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-062",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "단말기 콘솔",
+"src": "img/prop/H-062.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-063",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "발전 기둥",
+"src": "img/prop/H-063.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-064",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "금속 보안문",
+"src": "img/prop/H-064.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-066",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "집게 캡슐",
+"src": "img/prop/H-066.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-067",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "의료 캡슐 (초록 액체)",
+"src": "img/prop/H-067.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-068",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "매달린 로봇 눈",
+"src": "img/prop/H-068.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-069",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "서버 랙",
+"src": "img/prop/H-069.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-070",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "보라 수정 캡슐",
+"src": "img/prop/H-070.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-078",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "단말기 콘솔 2",
+"src": "img/prop/H-078.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-086",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "기계 관 (백합)",
+"src": "img/prop/H-086.webp",
 "note": "",
 "rank": "",
 "on": false
