@@ -1,4 +1,4 @@
-/* catalog.js v1.44 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.45 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -9375,6 +9375,116 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "jellygreen"
+},
+{
+"id": "F-auto-giant_beast",
+"cat": "char",
+"sub": "거대 괴수 · 적 · 보스 · 원화 + 연출",
+"name": "거대 괴수 기본 초상화",
+"src": "img/face/auto_giant_beast.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "giant_beast"
+},
+{
+"id": "P-giant_beast",
+"cat": "char",
+"sub": "거대 괴수 · 적 · 보스 · 원화 + 연출",
+"name": "거대 괴수",
+"src": "img/char/giant_beast.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "giant_beast"
+},
+{
+"id": "F-auto-ancient_angel",
+"cat": "char",
+"sub": "고대천사 (적) · 적 · 보스 · 원화 + 연출",
+"name": "고대천사 (적) 기본 초상화",
+"src": "img/face/auto_ancient_angel.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "ancient_angel"
+},
+{
+"id": "P-ancient_angel",
+"cat": "char",
+"sub": "고대천사 (적) · 적 · 보스 · 원화 + 연출",
+"name": "고대천사 (적)",
+"src": "img/char/ancient_angel.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "ancient_angel"
+},
+{
+"id": "F-auto-little_devil",
+"cat": "char",
+"sub": "꼬마악마 · 적 · 보스 · 원화 + 연출",
+"name": "꼬마악마 기본 초상화",
+"src": "img/face/auto_little_devil.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "little_devil"
+},
+{
+"id": "P-little_devil",
+"cat": "char",
+"sub": "꼬마악마 · 적 · 보스 · 원화 + 연출",
+"name": "꼬마악마",
+"src": "img/char/little_devil.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "little_devil"
+},
+{
+"id": "F-auto-little_fairy",
+"cat": "char",
+"sub": "꼬마요정 · 적 · 보스 · 원화 + 연출",
+"name": "꼬마요정 기본 초상화",
+"src": "img/face/auto_little_fairy.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "little_fairy"
+},
+{
+"id": "P-little_fairy",
+"cat": "char",
+"sub": "꼬마요정 · 적 · 보스 · 원화 + 연출",
+"name": "꼬마요정",
+"src": "img/char/little_fairy.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "little_fairy"
+},
+{
+"id": "F-auto-beast_a",
+"cat": "char",
+"sub": "괴수 A · 적 · 보스 · 원화 + 연출",
+"name": "괴수 A 기본 초상화",
+"src": "img/face/auto_beast_a.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "beast_a"
+},
+{
+"id": "P-beast_a",
+"cat": "char",
+"sub": "괴수 A · 적 · 보스 · 원화 + 연출",
+"name": "괴수 A",
+"src": "img/char/beast_a.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "beast_a"
 },
 {
 "id": "F-blocker",
