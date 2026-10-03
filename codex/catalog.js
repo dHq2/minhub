@@ -1,4 +1,4 @@
-/* catalog.js v1.47 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.48 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1509,6 +1509,46 @@ const CATALOG = [
 "name": "거대 여신 시체",
 "src": "img/card/enc_giant_goddess_corpse.webp",
 "note": "드라이브 NPC 폴더 · 인카운터 - 거대여신 시체.png. 그림 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-tehera",
+"cat": "scene",
+"sub": "인카운터",
+"name": "우주의 테헤라 (동료 영입 가능)",
+"src": "img/card/enc_tehera.webp",
+"note": "인카운터 → 맵: 우주 한가운데 앉아 있는 테헤라 스프라이트 (8 인물 → 테헤라). 시트 표시: 동료 영입 가능. 글: 그것은 잠자리같은 날개와 비현실적인 아름다움으로 어두운 하늘에 빛가루를 흩날립니다. 당신을 흥미롭게 바라봅니다. 필시 어느 종족의 왕이였겠지요. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-crab-chef",
+"cat": "scene",
+"sub": "인카운터",
+"name": "게 요리사",
+"src": "img/card/enc_crab_chef.webp",
+"note": "상인 인카운터. 스프라이트는 8 인물 → 게 요리사. 글: 그것은 게.. 이자 사람..이었습니다. 혹시 음식을 사고싶은지, 웃으며 물어봅니다. 요리의 냄새가 납니다. ...재료는 무엇이었을까요?",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-distant-god",
+"cat": "scene",
+"sub": "인카운터",
+"name": "감옥의 신",
+"src": "img/card/enc_distant_god.webp",
+"note": "맵 저 멀리 거대한 신이 앉아 있는 연출로 끝. 신은 11 가구 · 소품 → 인카운터 오브제 · NPC (H-340). 글: 별하늘이 빛나는 밤, 저 멀리 한 신이 앉아있습니다. 맙소사. 이곳이 정녕 감옥일까요?",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-smoker",
+"cat": "scene",
+"sub": "인카운터",
+"name": "담배 피는 노인",
+"src": "img/card/enc_smoker.webp",
+"note": "인카운터 NPC. 노인은 11 가구 · 소품 → 인카운터 오브제 · NPC (H-341). 글: 어두운 풀숲에서 담배냄새가 납니다. 그는 눈을 꿈뻑거립니다.",
 "rank": "",
 "on": false
 },
@@ -6646,6 +6686,26 @@ const CATALOG = [
 "pin": 302
 },
 {
+"id": "H-340",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "거대한 신 (감옥의 신)",
+"src": "img/prop/H-340.webp",
+"note": "맵 저 멀리 배치하는 배경 오브제. 아래는 지평선에서 잘림",
+"rank": "",
+"on": false
+},
+{
+"id": "H-341",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "담배 피는 노인",
+"src": "img/prop/H-341.webp",
+"note": "담배 피는 노인 인카운터 NPC. 연기는 지움 (게임에서 효과로)",
+"rank": "",
+"on": false
+},
+{
 "id": "H-212",
 "cat": "prop",
 "sub": "오딜 방 소품",
@@ -7887,7 +7947,7 @@ const CATALOG = [
 "sub": "테헤라 · 동료 · 원화 + 연출",
 "name": "테헤라 기본 초상화",
 "src": "img/face/auto_tehera.webp",
-"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"note": "새 인카운터 그림 (앉은 모습)에서 얼굴을 정사각형으로 자름 (예전 것은 도형 그림에서 자름)",
 "rank": "",
 "on": false,
 "g": "tehera"
@@ -7899,6 +7959,17 @@ const CATALOG = [
 "name": "테헤라 · 도형 그림",
 "src": "img/old2d/shape_tehera.webp",
 "note": "잠자리 날개의 요정 · 어느 종족의 왕이었다",
+"rank": "",
+"on": false,
+"g": "tehera"
+},
+{
+"id": "P-tehera-sit",
+"cat": "char",
+"sub": "테헤라 · 동료 · 원화 + 연출",
+"name": "테헤라 · 앉은 모습",
+"src": "img/char/tehera_sit.webp",
+"note": "인카운터 그림에서 자른 스프라이트. 우주 한가운데 바위에 앉아 있는 맵에 씀 (바위는 맵에서 따로)",
 "rank": "",
 "on": false,
 "g": "tehera"
@@ -8441,6 +8512,28 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "horsehead"
+},
+{
+"id": "F-auto-crabchef",
+"cat": "char",
+"sub": "게 요리사 (상인) · NPC · 원화 + 연출",
+"name": "게 요리사 기본 초상화",
+"src": "img/face/auto_crabchef.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "crabchef"
+},
+{
+"id": "P-crabchef",
+"cat": "char",
+"sub": "게 요리사 (상인) · NPC · 원화 + 연출",
+"name": "게 요리사 (상인)",
+"src": "img/char/crabchef.webp",
+"note": "게 등에 탄 신사 요리사. 상인 NPC 스프라이트 · 인카운터 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "crabchef"
 },
 {
 "id": "F-auto-deadhero",
@@ -9442,6 +9535,50 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "beast_a"
+},
+{
+"id": "F-auto-demoness",
+"cat": "char",
+"sub": "마족녀 · 적 · 보스 · 원화 + 연출",
+"name": "마족녀 기본 초상화",
+"src": "img/face/auto_demoness.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "demoness"
+},
+{
+"id": "P-demoness",
+"cat": "char",
+"sub": "마족녀 · 적 · 보스 · 원화 + 연출",
+"name": "마족녀",
+"src": "img/char/demoness.webp",
+"note": "적 스프라이트 (2026-10-03). 바닥 그림자는 지움",
+"rank": "",
+"on": false,
+"g": "demoness"
+},
+{
+"id": "F-auto-darkrider",
+"cat": "char",
+"sub": "승마 기사 · 적 · 보스 · 원화 + 연출",
+"name": "승마 기사 기본 초상화",
+"src": "img/face/auto_darkrider.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "darkrider"
+},
+{
+"id": "P-darkrider",
+"cat": "char",
+"sub": "승마 기사 · 적 · 보스 · 원화 + 연출",
+"name": "승마 기사",
+"src": "img/char/darkrider.webp",
+"note": "말 탄 흑기사. 대충 잘라 적으로 씀 (2026-10-03). 아래쪽은 그림 끝에서 잘림",
+"rank": "",
+"on": false,
+"g": "darkrider"
 },
 {
 "id": "F-blocker",
