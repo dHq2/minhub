@@ -1,4 +1,4 @@
-/* catalog.js v1.25 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.26 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1467,6 +1467,86 @@ const CATALOG = [
 "name": "천장의 구멍",
 "src": "img/card/enc_ceiling_hole.webp",
 "note": "인카운터 → 맵. 길고 넓고 어두운 맵, 끝 천장에 사각 구멍. 주변 적을 죽여 시체로 탑 (계단)을 쌓아 올라가야 클리어. 몇몇은 구경만 함. 글: 유일한 빛은 천장의 사각형이었습니다. … 날개가 뜯기기 전에. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-eye-room",
+"cat": "card",
+"sub": "인카운터",
+"name": "눈알방",
+"src": "img/card/enc_eye_room.webp",
+"note": "인카운터 → 맵. 매우 좁고 그로테스크한 방. 눈알은 따로 만들어 눈동자가 따라보고 움찔, 밟으면 터지고 다시 자람. 글: 눈들이 일제히 당신을 쳐다봅니다. 너무 좁습니다. 발을 밟을때마다, 몇개의 눈이 액체를 터뜨리며 깨지고 다시 자라납니다. 그만. 그만 쳐다봐. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-knowledge-skeleton",
+"cat": "card",
+"sub": "인카운터",
+"name": "지식의 계단 · 해골",
+"src": "img/card/enc_knowledge_skeleton.webp",
+"note": "지식의 계단 맨 아래 입구를 지키는 해골. 분리: H-335. \"뭐 재밌는 읽을거리라도 없나? 쳇, 없으면 가라.\" 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-knowledge-stairs",
+"cat": "card",
+"sub": "인카운터",
+"name": "지식의 계단 · 직원",
+"src": "img/card/enc_knowledge_stairs.webp",
+"note": "나선형 지식의 계단, 중간의 피곤한 직원. 분리: H-336. 메이플스토리식으로 빙빙 내려감. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-long-beach",
+"cat": "card",
+"sub": "인카운터",
+"name": "기나긴 해변",
+"src": "img/card/enc_long_beach.webp",
+"note": "가로로 긴 해변을 달려 지나감. 말대가리는 심드렁, 무시. 분리: H-337 · 스프라이트 P-horsehead. 글: 그는 파도가 치는 해변에 누워있었습니다. 별로 관심이 없는 듯 합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-altar",
+"cat": "card",
+"sub": "인카운터",
+"name": "제단",
+"src": "img/card/enc_altar.webp",
+"note": "피와 내장의 땅, 눈 달린 오벨리스크. 분리: H-338. 글: 세상은 피와 내장이었고, 제단은 불경하게 당신을 바라봅니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-riddle",
+"cat": "card",
+"sub": "인카운터",
+"name": "수수께끼 (아템)",
+"src": "img/card/enc_riddle.webp",
+"note": "이미지만. 글: 그는 거대한 몸과, 목에 빛나는 보석을 달고 있습니다. 그는 즐거운듯 몸을 움직입니다. \"나의 수수께끼를 풀어다오!\" 장난스러운 그가 심오한 질문들을 준비합니다.. 문제1. 리만가설을 설명하고 해답을 요구 / 문제2. 주의 모든 사건이 물리 법칙으로 정해져 있다면, 인간에게 스스로 선택할 자유가 존재하는가 / 문제3. 무생물인 화학 물질로부터 어떻게 스스로 복제하고 진화하는 최초의 '생명'이 탄생했는가. 무슨 얘기를 하든 땡이다!",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-his-face",
+"cat": "card",
+"sub": "인카운터",
+"name": "그의 얼굴",
+"src": "img/card/enc_his_face.webp",
+"note": "이미지만. 글: 그의 안면이 출구였습니다. 그는 깨달았습니다. 자신의 미래를 직감하고, 누런 눈은 충격으로 물듭니다. 당신이 그에게 저지를 일을 알고 있습니다.",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-blue-hero",
+"cat": "card",
+"sub": "인카운터",
+"name": "푸른 무기의 영웅 (동료 영입 가능)",
+"src": "img/card/enc_blue_hero.webp",
+"note": "같은 시트에 있던 그림, 따로 말은 없었음. 시트 표시: 동료 영입 가능. 글: 그 영웅은 어둠속에서 푸르게 빛나는 무기를 들었습니다. 즐거운겁니다. 당신의 모든 것이.",
 "rank": "",
 "on": false
 },
@@ -3697,6 +3777,16 @@ const CATALOG = [
 "name": "죽은 영웅",
 "src": "img/char/deadhero.webp",
 "note": "죽은 영웅 인카운터에서 분리한 스프라이트. 빛의 고리 포함. 인게임에서 지나쳐 감",
+"rank": "",
+"on": false
+},
+{
+"id": "P-horsehead",
+"cat": "char",
+"sub": "말대가리 (2026-10-03)",
+"name": "말대가리",
+"src": "img/char/horsehead.webp",
+"note": "기나긴 해변. 스프라이트로도 씀 (지금은 비치 의자 포함)",
 "rank": "",
 "on": false
 },
@@ -8297,6 +8387,56 @@ const CATALOG = [
 "name": "지껄이는 입",
 "src": "img/prop/H-334.webp",
 "note": "지껄임 인카운터. 입만 분리, 앞의 두 사람은 지움 (아래쪽 자국 조금)",
+"rank": "",
+"on": false
+},
+{
+"id": "H-335",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "보석 해골 (지식의 계단 문지기)",
+"src": "img/prop/H-335.webp",
+"note": "대충 분리 (배경 지우기 모델)",
+"rank": "",
+"on": false
+},
+{
+"id": "H-336",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "직원 아저씨 (지식의 계단)",
+"src": "img/prop/H-336.webp",
+"note": "대충 분리, 아래 몸은 책상에 가려 잘림",
+"rank": "",
+"on": false
+},
+{
+"id": "H-337",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "말대가리 · 비치 의자 (기나긴 해변)",
+"src": "img/prop/H-337.webp",
+"note": "비치 의자 · 탁자 포함",
+"rank": "",
+"on": false
+},
+{
+"id": "H-338",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "눈 달린 제단 (제단)",
+"src": "img/prop/H-338.webp",
+"note": "오벨리스크, 밑동 내장 일부",
+"rank": "",
+"on": false
+},
+{
+"id": "H-339",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "웅크린 남자 (눈알방)",
+"src": "img/prop/H-339.webp",
+"note": "눈알방 가운데 남자. 눈알은 게임에서 따로 그림",
 "rank": "",
 "on": false
 }
