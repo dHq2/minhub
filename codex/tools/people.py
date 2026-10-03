@@ -1,4 +1,4 @@
-# people.py v1.0 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.1 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -48,7 +48,7 @@ rest = [e for e in cat if e['cat'] not in ('char','old2d','face')]
 missing = []
 for e in people:
     e['_who'] = who(e)
-    e['_portrait'] = e['cat'] == 'face' or e['id'].endswith('-face')
+    e['_portrait'] = e['cat'] == 'face' or e['id'].startswith('F-') or e['id'].endswith('-face')
     if e['_who'] is None and not re.match(r'^(F-)?N-', e['id']): missing.append(e['id'])
 assert not missing, missing
 def method(k):
@@ -71,14 +71,14 @@ for r in ROLES[:4]:
             if e['_who'] == k and not e['_portrait']: e['sub'] = f'{NAME[k][0]} · {r} · {method(k)}'; out.append(e)
 for kind in ('적','일반'):
     for e in people:
-        if e['_who'] is None and not e['_portrait'] and e['sub'].endswith(kind): e['sub'] = f'미등장 NPC · {kind} · 원화 + 연출'; out.append(e)
-assert len(out) == len(people), (len(out), len(people))
+        if e['_who'] is None and not e['_portrait'] and re.search(r'미등장 NPC · '+kind+r'( ·|$)', e['sub']): e['sub'] = f'미등장 NPC · {kind} · 원화 + 연출'; out.append(e)
+miss=[e["id"] for e in people if e not in out]; assert not miss, miss[:10]
 for e in out:
     if e['id'] == 'O-rebecca-shape': e['note'] = (e['note'] + ' · ' if e['note'] else '') + '새 그림 (대기 · 걷기 · 뛰기)으로 대체'
     if e['id'] == 'O-karius-shape': e['note'] = (e['note'] + ' · ' if e['note'] else '') + '몸 · 로직은 2D판 그대로 씀'
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.29', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.30', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:

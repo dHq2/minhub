@@ -1,4 +1,4 @@
-/* catalog.js v1.29 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.30 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -7746,7 +7746,7 @@ const CATALOG = [
 "sub": "레베카 · 동료 · 동작 그림 (도형 그림은 새 그림으로 대체)",
 "name": "레베카 · 도형 그림",
 "src": "img/old2d/shape_rebecca.webp",
-"note": "루비색 장발의 소녀 기사 · 158cm · 27세 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체",
+"note": "루비색 장발의 소녀 기사 · 158cm · 27세 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체",
 "rank": "",
 "on": true
 },
@@ -7766,7 +7766,7 @@ const CATALOG = [
 "sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
 "name": "카리우스 · 도형 그림",
 "src": "img/old2d/shape_karius.webp",
-"note": "Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯 · 몸 · 로직은 2D판 그대로 씀",
+"note": "Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯 · 몸 · 로직은 2D판 그대로 씀 · 몸 · 로직은 2D판 그대로 씀",
 "rank": "",
 "on": false
 },
@@ -8213,10 +8213,20 @@ const CATALOG = [
 {
 "id": "P-ycat-art",
 "cat": "char",
-"sub": "노랑고양 · NPC · 원화 + 연출",
+"sub": "노랑고양 · NPC · 동작 그림",
 "name": "노랑고양 · 원화",
 "src": "img/char/npc_yellowcat_art.webp",
 "note": "원화 (스프라이트는 아직). 검은 전신 슈트 · 노란 가슴판 · 뿔 · 가시 꼬리 · 권총 · 이빨 웃음 · 뒤에 연기 형체",
+"rank": "",
+"on": false
+},
+{
+"id": "P-ycat-rhythm",
+"cat": "char",
+"sub": "노랑고양 · NPC · 동작 그림",
+"name": "노랑고양 · 리듬 (28장)",
+"src": "img/rhythm/rhythm_norang.webp",
+"note": "드라이브 gif 미궁 폴더 rhythmnorang.webp (리듬노랑) · 원본 640×800",
 "rank": "",
 "on": false
 },
