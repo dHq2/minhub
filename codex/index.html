@@ -1,21 +1,21 @@
 <title>굴의 도감</title>
-<!-- codex v1.3 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.4 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* 배치: 위에 고정된 장부 띠 (분류 · 체크 수 · 백업), 아래로 분류별 진열장. 그림 칸마다 번호표 (스샷으로 집어 말할 수 있게) */
 :root{
   --bg:#141116; --panel:#1d1920; --well:#25202a; --line:#3a3240; --fg:#ece4d6; --dim:#a39a8c;
-  --accent:#d9a94e; --check:#e8564a; --relic:#2f7f78; --relic-edge:#6fe0d0; --boss:#7a1f22; --boss-edge:#ff8a70;
+  --accent:#d9a94e; --check:#e8564a; --in:#3fbf6a; --out:#d8443a; --relic:#2f7f78; --relic-edge:#6fe0d0; --boss:#7a1f22; --boss-edge:#ff8a70;
   --display:"Nanum Myeongjo","Batang",serif; --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
   --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
-  --accent:#9a6a12; --check:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; } }
+  --accent:#9a6a12; --check:#c2352a; --in:#2e9a52; --out:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; } }
 :root[data-theme="light"]{
   --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
-  --accent:#9a6a12; --check:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; }
+  --accent:#9a6a12; --check:#c2352a; --in:#2e9a52; --out:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; }
 *{box-sizing:border-box} [hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);margin:0}
 .wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
@@ -51,6 +51,7 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .grid.cards .pic{aspect-ratio:3/4}
 .grid.anim .pic{aspect-ratio:468/328}
 .grid.anim img{object-fit:contain}
+.grid.tall{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))} .grid.tall .pic{aspect-ratio:3/4}
 .tile img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .grid.wide img,.grid.cards img{width:100%;height:100%;object-fit:cover}
 .tile.relic .pic{background:radial-gradient(circle at 50% 45%,var(--relic) 0%,#123a3a 75%);box-shadow:inset 0 0 0 1px var(--relic-edge)}
@@ -61,6 +62,8 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .memo-dot{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .box{position:absolute;top:10px;left:10px;width:24px;height:24px;border-radius:5px;border:2px solid var(--dim);background:var(--bg);display:grid;place-items:center;font:700 15px var(--body);color:transparent;cursor:pointer}
 .tile.on{border-color:var(--check);box-shadow:0 0 0 1px var(--check)}
+.st{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
+.st.out{background:var(--out)} .st.in{background:var(--in)}
 .tile.on .box{background:var(--check);border-color:var(--check);color:#fff}
 .tile.on .id{color:var(--check)}
 .empty{color:var(--dim);font-size:14px;padding:20px 0}
@@ -85,13 +88,14 @@ pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);bor
 <div class="wrap">
   <header class="top">
     <h1>굴의 도감</h1>
-    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 체크와 메모는 이 페이지에 저장되어 Claude가 바로 읽을 수 있어요.</p>
+    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 오른쪽 위 동그라미는 등장 표시예요 (초록 = 등장 확정, 빨강 = 미등장, 누르면 바뀜). 체크 · 등장 표시 · 메모는 누르거나 쓰는 즉시 자동 저장되고 Claude가 바로 읽을 수 있어요.</p>
   </header>
 
   <div class="bar" id="bar">
     <div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
     <div class="tools">
       <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
+      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option></select>
       <span class="count" id="count">체크 0</span>
       <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
       <button class="btn" id="saveBtn" type="button">백업 저장</button>
@@ -114,6 +118,7 @@ pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);bor
       <p id="vSub"></p>
       <p id="vNote"></p>
       <label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
+      <label class="only" for="vSt"><input type="checkbox" id="vSt"> 등장 확정 (초록)</label>
       <label for="vMemo" class="memo-dot">메모 (어떻게 할지: 지우기 · 이름 · 다듬기 …)</label>
       <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
       <div class="row"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vNext" type="button">다음 →</button><button class="btn" id="vClose" type="button">닫기</button></div>
@@ -135,11 +140,12 @@ const CATS = [
   { key:'card', no:'6', name:'카드 · 인카운터 등', note:'조우 그림, 인카운터 카드 20장, 흑백 이야기 그림 120장, 스킬 아이콘.' },
   { key:'anim', no:'7', name:'동작', note:'움직이는 그림 (원본은 936×656 프레임 묶음, 여기선 절반 크기로 재생). 게임에 넣을 때는 프레임을 잘라 씀.' },
   { key:'char', no:'8', name:'인물', note:'게임에 들어갈 인물 그림 (배경을 지운 가공본).' },
+  { key:'old2d', no:'9', name:'2D판 인물', note:'옛 2D판의 인물 그림 전부: 원화 동작 (움직이는 것은 재생) · 얼굴 · 도형으로 그린 인물. 인물마다 묶음. 버릴 것 · 쓸 것은 오른쪽 동그라미로.' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
 const $ = id => document.getElementById(id);
 let marks = {};             // id → { checked, memo, at }
-let cat = 'all', onlyChecked = false, store = null, viewing = null;
+let cat = 'all', onlyChecked = false, store = null, viewing = null, synced = false, showSt = 'all';
 
 /* ---------- 저장: db (Claude가 읽음) · 안 되면 이 브라우저에만 ---------- */
 const LS = 'codex-marks-v1';
@@ -154,30 +160,38 @@ async function connect(){
   store = db.collection('marks');
   store.onSnapshot(snap => {
     const next = {};
-    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', at: v.at || '' }; });
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', at: v.at || '' }; });
+    // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
+    if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if (BY_ID[id] && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
     marks = next; lsWrite(); render(); if (viewing) fillView();
-    status('저장됨 · 체크와 메모는 Claude가 바로 읽을 수 있어요');
+    status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
 }
-async function put(id, patch){
-  const cur = marks[id] || { checked:false, memo:'' };
+const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', at: v.at || new Date().toISOString() });
+const empty = v => !v.checked && !v.memo && !v.status;
+async function put(id, patch, quiet){
+  const cur = marks[id] || { checked:false, memo:'', status:'' };
   const v = { ...cur, ...patch, at: new Date().toISOString() };
-  if (!v.checked && !v.memo) delete marks[id]; else marks[id] = v;
-  lsWrite(); render();
-  if (!store) return;
+  if (empty(v)) delete marks[id]; else marks[id] = v;
+  lsWrite(); if (!quiet) render();
+  if (!store){ status('이 브라우저에 자동 저장됨 ' + new Date().toLocaleTimeString()); return; }
   try {
-    if (!v.checked && !v.memo) await store.doc(id).delete();
-    else await store.doc(id).set({ checked: v.checked, memo: v.memo, at: v.at });
-  } catch (e){ status('저장 실패: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있어요.', true); }
+    if (empty(v)) await store.doc(id).delete();
+    else await store.doc(id).set(docOf(v));
+    status('자동 저장됨 ' + new Date().toLocaleTimeString());
+  } catch (e){ status('저장소에 못 올림: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있고, 다시 열면 자동으로 올라가요.', true); }
 }
+// 등장 표시: 초록 = 등장 확정, 빨강 = 미등장. 바꾸지 않았으면 지금 게임에 들어가 있는지 (catalog의 on)로
+const stOf = e => (marks[e.id] && marks[e.id].status) || (e.on ? 'in' : 'out');
 
 /* ---------- 그리기 ---------- */
-function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)); }
+function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || stOf(e) === showSt); }
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
   const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
   return `<div class="tile ${e.rank} ${on ? 'on' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
+    <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
     <div class="pic"><img loading="lazy" src="${e.src}" alt="${esc(e.name)}"></div>
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
 }
@@ -194,7 +208,7 @@ function render(){
     if (cat !== 'all' && cat !== c.key) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
-    const cls = c.key === 'anim' || c.key === 'char' ? 'grid wide anim' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
+    const cls = c.key === 'anim' || c.key === 'char' ? 'grid wide anim' : c.key === 'old2d' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     let any = false;
     for (const s of subs){
@@ -216,7 +230,7 @@ function fillView(){
   const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
   $('vImg').src = e.src; $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
   $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
-  $('vCheck').checked = !!m.checked;
+  $('vCheck').checked = !!m.checked; $('vSt').checked = stOf(e) === 'in';
   if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
 }
 function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; fillView(); } }
@@ -227,7 +241,7 @@ function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; }
 function listText(){
   const rows = CATALOG.filter(e => marks[e.id] && (marks[e.id].checked || marks[e.id].memo));
   if (!rows.length) return '체크하거나 메모한 그림이 없어요.';
-  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${e.id}  ${e.name}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
+  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${stOf(e) === 'in' ? '●등장' : '○미등장'} ${e.id}  ${e.name}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
 }
 function sheet(html){ const s = $('sheet'); s.innerHTML = html; s.hidden = false; }
 function closeSheet(){ $('sheet').hidden = true; }
@@ -249,7 +263,7 @@ function loadBackup(file){
     let j; try { j = JSON.parse(r.result); } catch (e){ status('백업 파일을 읽지 못했어요. 이 도감에서 저장한 .json 파일인지 확인해 주세요.', true); return; }
     const m = j && j.marks; if (!m || typeof m !== 'object'){ status('백업 파일에 체크 정보가 없어요.', true); return; }
     const ids = Object.keys(m).filter(id => BY_ID[id]);
-    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '' });
+    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '', status: m[id].status || '' }, true); render();
     status(`백업에서 ${ids.length}개를 되살렸어요`);
   };
   r.readAsText(file);
@@ -264,6 +278,7 @@ function askClear(){
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
+  const st = e.target.closest('[data-st]'); if (st){ e.stopPropagation(); const it = BY_ID[st.dataset.st]; put(it.id, { status: stOf(it) === 'in' ? 'out' : 'in' }); return; }
   const c = e.target.closest('[data-check]'); if (c){ e.stopPropagation(); const id = c.dataset.check; put(id, { checked: !(marks[id] && marks[id].checked) }); return; }
   const t = e.target.closest('.tile'); if (t) openView(t.dataset.id);
 });
@@ -274,7 +289,12 @@ $('loadBtn').onclick = () => $('loadFile').click();
 $('loadFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadBackup(f); e.target.value = ''; });
 $('sheet').addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
 $('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.checked }));
+$('vSt').addEventListener('change', e => put(viewing, { status: e.target.checked ? 'in' : 'out' }));
 $('vMemo').addEventListener('blur', saveMemo);
+let memoT = null;
+$('vMemo').addEventListener('input', () => { clearTimeout(memoT); memoT = setTimeout(() => { if (!viewing) return; const v = $('vMemo').value.trim(); if (v !== ((marks[viewing] || {}).memo || '')) put(viewing, { memo: v }, true); }, 500); });   // 쓰는 도중에도 0.5초마다 자동 저장
+addEventListener('pagehide', saveMemo); document.addEventListener('visibilitychange', () => { if (document.hidden) saveMemo(); });
+$('stFilter').addEventListener('change', e => { showSt = e.target.value; render(); });
 $('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = closeView;
 $('view').addEventListener('click', e => { if (e.target === $('view')) closeView(); });
 addEventListener('keydown', e => { if ($('view').hidden) return; if (e.key === 'Escape') closeView(); if (document.activeElement === $('vMemo')) return; if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
