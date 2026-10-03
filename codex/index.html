@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.28 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.29 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -200,9 +200,7 @@ const CATS = [
   { key:'bg', no:'5', name:'배경', note:'장소 그림.' },
   { key:'card', no:'6', name:'카드 · 인카운터 등', note:'조우 그림, 인카운터 카드 20장, 흑백 이야기 그림 120장, 스킬 아이콘.' },
   { key:'anim', no:'7', name:'동작', note:'움직이는 그림 (원본은 936×656 프레임 묶음, 여기선 절반 크기로 재생). 게임에 넣을 때는 프레임을 잘라 씀.' },
-  { key:'char', no:'8', name:'인물', note:'게임에 들어갈 인물 그림 (배경을 지운 가공본).' },
-  { key:'old2d', no:'9', name:'2D판 인물', note:'옛 2D판의 인물 그림 전부: 원화 동작 (움직이는 것은 재생) · 얼굴 · 도형으로 그린 인물. 인물마다 묶음. 버릴 것 · 쓸 것은 오른쪽 동그라미로.' },
-  { key:'face', no:'10', name:'표정', note:'대화 · 초상화에 쓰는 인물 표정. 인물마다 묶음. 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화.' },
+  { key:'char', no:'8', name:'인물', note:'모든 인물을 한곳에. 맨 위는 초상화 모음 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC), 그 아래 인물마다 묶음: 새 그림 · 2D판 그림 · 얼굴이 함께. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화.' },
   { key:'prop', no:'11', name:'가구 · 소품', note:'맵에 놓을 가구 · 소품 (받은 시트를 하나씩 잘라 배경을 지움). 분류만 해 둠, 전부 빨강 (미등장). 쳐낼 것은 체크 · 동그라미로.' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
@@ -287,13 +285,13 @@ function render(){
     if (cat !== 'all' && cat !== c.key) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
-    const cls = c.key === 'anim' || c.key === 'char' ? 'grid wide anim' : c.key === 'old2d' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
+    const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     let any = false;
     for (const s of subs){
       const list = items.filter(e => e.sub === s); if (!list.length) continue; any = true;
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
-      const g = s === '인카운터 카드' ? 'grid cards' : cls;
+      const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
       html += `<h3><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</h3><div class="${g}">${list.map(tile).join('')}</div>`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
