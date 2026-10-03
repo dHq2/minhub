@@ -1,4 +1,4 @@
-/* catalog.js v1.54 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.55 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -7370,6 +7370,1076 @@ const CATALOG = [
 "pin": 256
 },
 {
+"id": "I-001",
+"cat": "item",
+"sub": "현대 물건",
+"name": "다이얼 전화기",
+"src": "img/item/I-001.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-002",
+"cat": "item",
+"sub": "현대 물건",
+"name": "공중전화",
+"src": "img/item/I-002.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-003",
+"cat": "item",
+"sub": "현대 물건",
+"name": "스마트폰",
+"src": "img/item/I-003.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-004",
+"cat": "item",
+"sub": "현대 물건",
+"name": "태블릿 (지도)",
+"src": "img/item/I-004.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-005",
+"cat": "item",
+"sub": "현대 물건",
+"name": "노트북",
+"src": "img/item/I-005.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-009",
+"cat": "item",
+"sub": "현대 물건",
+"name": "배터리 (가득)",
+"src": "img/item/I-009.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-010",
+"cat": "item",
+"sub": "현대 물건",
+"name": "배터리 (충전)",
+"src": "img/item/I-010.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-011",
+"cat": "item",
+"sub": "현대 물건",
+"name": "배터리 (낡음)",
+"src": "img/item/I-011.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-012",
+"cat": "item",
+"sub": "현대 물건",
+"name": "휴대폰 (파랑)",
+"src": "img/item/I-012.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-013",
+"cat": "item",
+"sub": "현대 물건",
+"name": "게임패드",
+"src": "img/item/I-013.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-014",
+"cat": "item",
+"sub": "현대 물건",
+"name": "헤드폰",
+"src": "img/item/I-014.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-015",
+"cat": "item",
+"sub": "현대 물건",
+"name": "컵라면",
+"src": "img/item/I-015.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-016",
+"cat": "item",
+"sub": "현대 물건",
+"name": "캔음료 (POW)",
+"src": "img/item/I-016.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-017",
+"cat": "item",
+"sub": "현대 물건",
+"name": "콜라병",
+"src": "img/item/I-017.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-018",
+"cat": "item",
+"sub": "현대 물건",
+"name": "광선총 (권총)",
+"src": "img/item/I-018.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-019",
+"cat": "item",
+"sub": "현대 물건",
+"name": "광선총 (소총)",
+"src": "img/item/I-019.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-026",
+"cat": "item",
+"sub": "현대 물건",
+"name": "토스터",
+"src": "img/item/I-026.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-027",
+"cat": "item",
+"sub": "현대 물건",
+"name": "카메라",
+"src": "img/item/I-027.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-028",
+"cat": "item",
+"sub": "현대 물건",
+"name": "리모컨",
+"src": "img/item/I-028.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-006",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "검",
+"src": "img/item/I-006.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-007",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "도끼",
+"src": "img/item/I-007.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-008",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "활",
+"src": "img/item/I-008.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-020",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "단검",
+"src": "img/item/I-020.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-021",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "수류탄",
+"src": "img/item/I-021.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-036",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "기사 투구",
+"src": "img/item/I-036.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-039",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "장검",
+"src": "img/item/I-039.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-040",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "마법 지팡이",
+"src": "img/item/I-040.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-078",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "장화",
+"src": "img/item/I-078.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-079",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "철 장화",
+"src": "img/item/I-079.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-080",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "가죽 장화",
+"src": "img/item/I-080.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-081",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "장갑 (검정)",
+"src": "img/item/I-081.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-082",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "장갑 (가죽)",
+"src": "img/item/I-082.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-083",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "투구",
+"src": "img/item/I-083.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-084",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "마법사 모자",
+"src": "img/item/I-084.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-085",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "마법사 모자 (보라)",
+"src": "img/item/I-085.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-087",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "빨간 망토",
+"src": "img/item/I-087.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-088",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "벨트",
+"src": "img/item/I-088.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-089",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "파란 망토",
+"src": "img/item/I-089.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-090",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "판금 갑옷",
+"src": "img/item/I-090.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-091",
+"cat": "item",
+"sub": "무기 · 방어구",
+"name": "은 갑옷",
+"src": "img/item/I-091.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-037",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "빨간 물약",
+"src": "img/item/I-037.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-038",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "파란 물약",
+"src": "img/item/I-038.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-043",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "고기",
+"src": "img/item/I-043.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-046",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "초록 물약",
+"src": "img/item/I-046.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-048",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "보라 물약",
+"src": "img/item/I-048.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-049",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "초록 물약 병",
+"src": "img/item/I-049.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-050",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "빵",
+"src": "img/item/I-050.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-051",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "햄",
+"src": "img/item/I-051.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-052",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "생선",
+"src": "img/item/I-052.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-053",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "사과",
+"src": "img/item/I-053.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-054",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "치즈",
+"src": "img/item/I-054.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-059",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "구급상자 (흰)",
+"src": "img/item/I-059.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-060",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "구급상자 (빨강)",
+"src": "img/item/I-060.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-061",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "붕대",
+"src": "img/item/I-061.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-064",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "빨간 물약 (큰)",
+"src": "img/item/I-064.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-065",
+"cat": "item",
+"sub": "물약 · 음식",
+"name": "파란 물약 (큰)",
+"src": "img/item/I-065.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-025",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "배낭",
+"src": "img/item/I-025.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-030",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "금화 더미",
+"src": "img/item/I-030.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-031",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "은화 더미",
+"src": "img/item/I-031.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-032",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "광석",
+"src": "img/item/I-032.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-033",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "가죽",
+"src": "img/item/I-033.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-034",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "나무 판자",
+"src": "img/item/I-034.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-035",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "두루마리 천",
+"src": "img/item/I-035.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-044",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "색 광석",
+"src": "img/item/I-044.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-045",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "철광석",
+"src": "img/item/I-045.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-047",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "곡괭이",
+"src": "img/item/I-047.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-055",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "가죽 2",
+"src": "img/item/I-055.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-057",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "판자 더미",
+"src": "img/item/I-057.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-058",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "파란 천",
+"src": "img/item/I-058.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-062",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "밧줄",
+"src": "img/item/I-062.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-063",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "밧줄 2",
+"src": "img/item/I-063.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-066",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "삽",
+"src": "img/item/I-066.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-067",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "돋보기",
+"src": "img/item/I-067.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-068",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "렌치",
+"src": "img/item/I-068.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-069",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "망치",
+"src": "img/item/I-069.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-095",
+"cat": "item",
+"sub": "재료 · 도구 · 돈",
+"name": "가죽 조각",
+"src": "img/item/I-095.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-029",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "열쇠 꾸러미",
+"src": "img/item/I-029.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-041",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "보물 지도",
+"src": "img/item/I-041.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-042",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "보물 지도 2",
+"src": "img/item/I-042.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-056",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "책",
+"src": "img/item/I-056.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-070",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "잠긴 두루마리",
+"src": "img/item/I-070.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-071",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "양피지",
+"src": "img/item/I-071.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-072",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "회중시계",
+"src": "img/item/I-072.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-073",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "금 열쇠",
+"src": "img/item/I-073.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-074",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "은 열쇠",
+"src": "img/item/I-074.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-075",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "열쇠 그림 책",
+"src": "img/item/I-075.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-076",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "마법서",
+"src": "img/item/I-076.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-077",
+"cat": "item",
+"sub": "열쇠 · 책 · 지도",
+"name": "수정구",
+"src": "img/item/I-077.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-022",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무 상자",
+"src": "img/item/I-022.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-023",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무통",
+"src": "img/item/I-023.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-024",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무 상자 2",
+"src": "img/item/I-024.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-086",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "보물 상자",
+"src": "img/item/I-086.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-092",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무 상자 3",
+"src": "img/item/I-092.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-093",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무 상자 4",
+"src": "img/item/I-093.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-094",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무통 2",
+"src": "img/item/I-094.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-096",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무통 3",
+"src": "img/item/I-096.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-097",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "나무통 4",
+"src": "img/item/I-097.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-098",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 1",
+"src": "img/item/I-098.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-099",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 2",
+"src": "img/item/I-099.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-100",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 3",
+"src": "img/item/I-100.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-101",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 4",
+"src": "img/item/I-101.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-102",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 5",
+"src": "img/item/I-102.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-103",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "표지판 6",
+"src": "img/item/I-103.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-104",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "횃불",
+"src": "img/item/I-104.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-105",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "기둥 랜턴",
+"src": "img/item/I-105.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-106",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "횃불 2",
+"src": "img/item/I-106.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-107",
+"cat": "item",
+"sub": "상자 · 표지판 · 조명",
+"name": "랜턴",
+"src": "img/item/I-107.webp",
+"note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-face",
 "cat": "char",
 "sub": "인주 · 동료 · 동작 그림",
@@ -10289,6 +11359,39 @@ const CATALOG = [
 "g": "goryu"
 },
 {
+"id": "F-N-041",
+"cat": "char",
+"sub": "아해 · 적 · 보스 · 원화 + 연출",
+"name": "아해 초상화",
+"src": "img/face/ahae_portrait.webp",
+"note": "새 원화 (기본 스프라이트)에서 얼굴을 자름",
+"rank": "",
+"on": false,
+"g": "ahae"
+},
+{
+"id": "N-041",
+"cat": "char",
+"sub": "아해 · 적 · 보스 · 원화 + 연출",
+"name": "아해 · 예전 그림",
+"src": "img/npc/N-041.webp",
+"note": "드라이브 NPC 폴더 · 아해.png",
+"rank": "",
+"on": false,
+"g": "ahae"
+},
+{
+"id": "P-ahae",
+"cat": "char",
+"sub": "아해 · 적 · 보스 · 원화 + 연출",
+"name": "아해",
+"src": "img/char/ahae.webp",
+"note": "아해 원화를 잘라 기본 스프라이트로 씀 (2026-10-03). 등 뒤 붉은 손 · 꼬리와 발밑 검은 얼룩까지 포함",
+"rank": "",
+"on": false,
+"g": "ahae"
+},
+{
 "id": "F-blocker",
 "cat": "char",
 "sub": "막아서는 자 · 적 · 보스 · 원화 + 연출",
@@ -11255,28 +12358,6 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "N-040"
-},
-{
-"id": "F-N-041",
-"cat": "char",
-"sub": "아해 · 미등장 NPC (적) · 원화 + 연출",
-"name": "아해 기본 초상화",
-"src": "img/face/N-041_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false,
-"g": "N-041"
-},
-{
-"id": "N-041",
-"cat": "char",
-"sub": "아해 · 미등장 NPC (적) · 원화 + 연출",
-"name": "아해",
-"src": "img/npc/N-041.webp",
-"note": "드라이브 NPC 폴더 · 아해.png",
-"rank": "",
-"on": false,
-"g": "N-041"
 },
 {
 "id": "F-N-044",
