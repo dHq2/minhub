@@ -1,4 +1,4 @@
-/* catalog.js v1.30 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.31 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -6698,7 +6698,8 @@ const CATALOG = [
 "src": "img/face/ms_face1.webp",
 "note": "대화 · 초상화용 표정",
 "rank": "",
-"on": false
+"on": false,
+"parent": "O-morningstar-face"
 },
 {
 "id": "F-ms-2",
@@ -6708,7 +6709,8 @@ const CATALOG = [
 "src": "img/face/ms_face2.webp",
 "note": "대화 · 초상화용 표정",
 "rank": "",
-"on": false
+"on": false,
+"parent": "O-morningstar-face"
 },
 {
 "id": "F-ms-3",
@@ -6718,7 +6720,8 @@ const CATALOG = [
 "src": "img/face/ms_face3.webp",
 "note": "대화 · 초상화용 표정",
 "rank": "",
-"on": false
+"on": false,
+"parent": "O-morningstar-face"
 },
 {
 "id": "F-ms-4",
@@ -6728,7 +6731,8 @@ const CATALOG = [
 "src": "img/face/ms_face4.webp",
 "note": "대화 · 초상화용 표정",
 "rank": "",
-"on": false
+"on": false,
+"parent": "O-morningstar-face"
 },
 {
 "id": "O-poren-face",
