@@ -1,4 +1,4 @@
-/* catalog.js v1.8 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.9 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3187,6 +3187,36 @@ const CATALOG = [
 "name": "레베카 · 원화 2",
 "src": "img/char/rebecca_art2.webp",
 "note": "원화. 허리에 손 · 반짝이는 눈 · 얼룩진 판금 · 허리 뒤로 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-rebecca-idle",
+"cat": "char",
+"sub": "레베카 (2026-10-03)",
+"name": "레베카 · 대기 (22장)",
+"src": "img/char/rebecca_idle.webp",
+"note": "움직이는 대기. 3D 굴에 들어감. 드라이브 레베카 폴더 (redknight)",
+"rank": "",
+"on": true
+},
+{
+"id": "P-rebecca-walk",
+"cat": "char",
+"sub": "레베카 (2026-10-03)",
+"name": "레베카 · 걷기 (8장)",
+"src": "img/char/rebecca_walk.webp",
+"note": "걷기. 드라이브 레베카 폴더 (redknight)",
+"rank": "",
+"on": false
+},
+{
+"id": "P-rebecca-run",
+"cat": "char",
+"sub": "레베카 (2026-10-03)",
+"name": "레베카 · 뛰기 (8장)",
+"src": "img/char/rebecca_run.webp",
+"note": "뛰기. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
 "on": false
 },

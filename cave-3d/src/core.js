@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.9';
+const VERSION = 'v0.9.1';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -166,6 +166,7 @@ function drawDummy(g, w, h){
   g.strokeStyle = '#8a6a32'; g.lineWidth = 4; g.beginPath(); g.moveTo(-34, -126); g.lineTo(34, -126); g.stroke();
   g.strokeStyle = '#b3162b'; g.lineWidth = 3; g.beginPath(); g.arc(0, -110, 12, 0, Math.PI * 2); g.stroke();
 }
-SPR.rebecca = { h0: 210, tall: 1.3, poses: { idle: { canvas: drawRebecca, w: 140, h: 214, ax: 70, ay: 214, f: 1 } } };
+// 레베카: 움직이는 대기 22장 (2026-10-03 원화, 반 크기 314칸 · 가로 8칸). 걷기 · 뛰기 그림도 있음 (도감)
+SPR.rebecca = { h0: 305, tall: 1.3, poses: { idle: { src: 'art/char/rebecca_idle.webp', w: 314, h: 314, cols: 8, rows: 3, n: 24, from: 0, count: 22, fps: 9, ax: 171, ay: 310, f: 1 } } };
 SPR.dummy = { h0: 190, tall: 1.2, poses: { idle: { canvas: drawDummy, w: 120, h: 190, ax: 60, ay: 190, f: 1 } } };
 const SPRITE_SCALE = 1.3;   // 3D에서 조금 크게 (카메라가 멀리 있음)
