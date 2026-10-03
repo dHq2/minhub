@@ -1,4 +1,4 @@
-/* catalog.js v1.20 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.21 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1297,6 +1297,16 @@ const CATALOG = [
 "name": "마리 · 와킨 함께 선 컷씬",
 "src": "img/scene/mari_wakin_cutscene.webp",
 "note": "인게임 컷씬. 마리 (창을 내지름) · 와킨 (철퇴). 배경 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "S-6",
+"cat": "scene",
+"sub": "컷씬",
+"name": "봉인된 그녀 · 인카운터 컷씬",
+"src": "img/scene/sealed_encounter.webp",
+"note": "원화 그대로 (분홍 바탕). 인카운터 컷씬으로 씀",
 "rank": "",
 "on": false
 },
@@ -3441,6 +3451,56 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "P-sealed-art",
+"cat": "char",
+"sub": "봉인된 그녀 (2026-10-03)",
+"name": "봉인된 그녀",
+"src": "img/char/sealed_art.webp",
+"note": "스프라이트로 씀. 원화는 4 컷씬 (인카운터 컷씬)에. 시계 · 열쇠 후광, 사슬 · 주사위 몸, 검은 날개",
+"rank": "",
+"on": false
+},
+{
+"id": "P-knightcommander-art",
+"cat": "char",
+"sub": "기사단장 (2026-10-03)",
+"name": "기사단장",
+"src": "img/char/knightcommander_art.webp",
+"note": "스프라이트로 씀. 그려진 하늘 바탕을 지움. 발밑 바위는 남김, 왼쪽 망토에 새 두 마리가 붙어 있음",
+"rank": "",
+"on": false
+},
+{
+"id": "P-nursechief-art",
+"cat": "char",
+"sub": "간호사장 (2026-10-03)",
+"name": "간호사장",
+"src": "img/char/nursechief_art.webp",
+"note": "스프라이트로 씀. 디자인이 좋음. 바이올린은 그냥 들어간 것, 큰 의미 없음. 떠다니는 작은 인형은 빼고 발치 하나만 붙어 남음",
+"rank": "",
+"on": false
+},
+{
+"id": "P-general-art",
+"cat": "char",
+"sub": "대장군 · NPC (2026-10-03)",
+"name": "대장군",
+"src": "img/char/general_art.webp",
+"note": "NPC · 스프라이트로 씀. 가시 왕관 투구 · 푸른 도포 · 어깨에 멘 대검 · 꼬리",
+"rank": "",
+"on": false
+},
+{
+"id": "P-gaius-art",
+"cat": "char",
+"sub": "가이우스 (2026-10-03)",
+"name": "가이우스",
+"src": "img/char/gaius_art.webp",
+"note": "스프라이트로 씀. 뒤의 검은 그림자 인물까지 한 장. 남색 바탕을 지움",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-idle",
 "cat": "old2d",
 "sub": "인주 · SPECIAL",
@@ -4556,6 +4616,56 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "퀸 아리안 기본 초상화",
 "src": "img/face/arian_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-sealed",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "봉인된 그녀 기본 초상화",
+"src": "img/face/sealed_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-knightcommander",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "기사단장 기본 초상화",
+"src": "img/face/knightcommander_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-nursechief",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "간호사장 기본 초상화",
+"src": "img/face/nursechief_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-general",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "대장군 기본 초상화",
+"src": "img/face/general_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-gaius",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "가이우스 기본 초상화",
+"src": "img/face/gaius_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false
