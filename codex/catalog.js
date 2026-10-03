@@ -1,4 +1,4 @@
-/* catalog.js v1.17 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.18 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3347,6 +3347,16 @@ const CATALOG = [
 "name": "와킨 원화",
 "src": "img/char/wakin_art.webp",
 "note": "부족 전사 NPC. 마리와 사실혼 관계 (파트너). 가시 박힌 철퇴 · 사슬. 흰 바탕을 지운 가공본 (왼쪽 끝에 걸친 마리 조각은 뺌)",
+"rank": "",
+"on": false
+},
+{
+"id": "P-poren-guard",
+"cat": "char",
+"sub": "포렌 (2026-10-03)",
+"name": "방어 포렌",
+"src": "img/char/poren_guard_art.webp",
+"note": "방어 자세 포렌. 왕관 · 털 망토 · 대검을 세워 짚음. 받은 그림이 이미 배경 없음",
 "rank": "",
 "on": false
 },
