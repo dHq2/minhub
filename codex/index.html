@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.33 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.34 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -86,6 +86,9 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .toNav{margin-left:auto;font:500 11px var(--body);color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:2px 8px;cursor:pointer}
 h3.hit,.pnav.hit{animation:hit 1.2s}
 @keyframes hit{0%{background:color-mix(in srgb,var(--accent) 35%,transparent)}100%{background:transparent}}
+.renamed{display:inline-block;font:600 10.5px var(--body);color:#fff;background:#b06a12;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.namein{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;font:15px var(--body)}
+.namein:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .empty{color:var(--dim);font-size:14px;padding:20px 0}
 /* 크게 보기 */
 .view{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;padding:16px}
@@ -169,7 +172,7 @@ main{touch-action:pan-x pan-y}
       <button class="btn toolsBtn" id="toolsBtn" type="button" aria-expanded="false">도구 ▾</button>
       <span class="more">
       <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
-      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option></select>
+      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option></select>
       <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
       <button class="btn" id="saveBtn" type="button">백업 저장</button>
       <button class="btn" id="loadBtn" type="button">백업 불러오기</button>
@@ -189,6 +192,9 @@ main{touch-action:pan-x pan-y}
     <div class="side">
       <span class="id" id="vId"></span>
       <h4 id="vName"></h4>
+      <label for="vNameIn" class="memo-dot">이름 (고치면 바로 저장 · 원래 이름과 다르면 '이름 바뀜' 표시)</label>
+      <input id="vNameIn" class="namein" type="text" autocomplete="off">
+      <span class="renamed" id="vOrig" hidden></span>
       <p id="vSub"></p>
       <p id="vNote"></p>
       <label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
@@ -197,7 +203,7 @@ main{touch-action:pan-x pan-y}
       <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
       <div class="row acts"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vClose" type="button">닫기</button><button class="btn" id="vNext" type="button">다음 →</button>
       <button class="btn warn" id="vDel" type="button">삭제 표시 (체크 + 메모)</button></div>
-      <span class="hint">그림을 좌우로 밀면 넘어가요 · 두 번 누르면 확대</span>
+      <span class="hint">메모 · 이름에서 엔터 = 저장하고 다음 그림 (줄바꿈은 Shift + 엔터) · 그림을 좌우로 밀면 넘어가요 · 두 번 누르면 확대</span>
     </div>
   </div>
 </div>
@@ -236,15 +242,18 @@ async function connect(){
   store = db.collection('marks');
   store.onSnapshot(snap => {
     const next = {};
-    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', at: v.at || '' }; });
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', at: v.at || '' }; });
     // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
     if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if (BY_ID[id] && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
     marks = next; lsWrite(); render(); if (viewing) fillView();
     status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
 }
-const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', at: v.at || new Date().toISOString() });
-const empty = v => !v.checked && !v.memo && !v.status;
+const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', at: v.at || new Date().toISOString() });
+const empty = v => !v.checked && !v.memo && !v.status && !v.name;
+// 이름 바꾸기: 바꾼 이름은 marks에 (원래 이름은 catalog 그대로). 바뀐 칸은 '이름 바뀜' 표시 → Claude가 나중에 catalog에 적용
+const nameOf = e => (marks[e.id] && marks[e.id].name) || e.name;
+const renamed = e => !!(marks[e.id] && marks[e.id].name && marks[e.id].name !== e.name);
 async function put(id, patch, quiet){
   const cur = marks[id] || { checked:false, memo:'', status:'' };
   const v = { ...cur, ...patch, at: new Date().toISOString() };
@@ -280,7 +289,7 @@ function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.
 const KIDS = {}; for (const e of CATALOG) if (e.parent) (KIDS[e.parent] = KIDS[e.parent] || []).push(e.id);
 let opened = {}; try { opened = JSON.parse(localStorage.getItem('codex-open') || '{}'); } catch (e) {}
 function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID[e.parent] || !visible(BY_ID[e.parent])); }
-function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || stOf(e) === showSt); }
+function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || (showSt === 'ren' ? renamed(e) : stOf(e) === showSt)); }
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
   const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
@@ -290,7 +299,7 @@ function tile(e){
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
     <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
     ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">표정 ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
-    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
+    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${memo}</div>`;
 }
 /* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
 const isFace = e => e.id.startsWith('F-') || e.id.endsWith('-face');
@@ -345,21 +354,24 @@ function openView(id){ viewing = id; $('view').hidden = false; fillView(); $('vM
 function fillView(){
   const bg = document.querySelector('.view .big'); if (bg) bg.classList.remove('zoomed');
   const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
-  setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
+  setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = nameOf(e);
+  if (document.activeElement !== $('vNameIn')) $('vNameIn').value = nameOf(e);
+  $('vOrig').hidden = !renamed(e); $('vOrig').textContent = '이름 바뀜 · 원래 이름: ' + e.name;
   $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
   $('vCheck').checked = !!m.checked; $('vSt').checked = stOf(e) === 'in';
   $('vDel').textContent = isDel(e.id) ? '삭제 표시 풀기' : '삭제 표시 (체크 + 메모)';
   if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
 }
-function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; fillView(); } }
-function saveMemo(){ if (!viewing) return; const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
+function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; $('vNameIn').value = nameOf(n); fillView(); if (enterNext) $(enterNext).focus({ preventScroll:true }); } }
+function saveName(){ if (!viewing) return; const e = BY_ID[viewing], v = $('vNameIn').value.trim(), want = v && v !== e.name ? v : ''; if (want !== ((marks[viewing] || {}).name || '')) put(viewing, { name: want }); }
+function saveMemo(){ if (!viewing) return; saveName(); const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
 function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; }
 
 /* ---------- 목록 복사 · 백업 ---------- */
 function listText(){
-  const rows = CATALOG.filter(e => marks[e.id] && (marks[e.id].checked || marks[e.id].memo));
+  const rows = CATALOG.filter(e => marks[e.id] && (marks[e.id].checked || marks[e.id].memo || renamed(e)));
   if (!rows.length) return '체크하거나 메모한 그림이 없어요.';
-  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${stOf(e) === 'in' ? '●등장' : '○미등장'} ${e.id}  ${e.name}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
+  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${stOf(e) === 'in' ? '●등장' : '○미등장'} ${e.id}  ${e.name}${renamed(e) ? '  → 이름: ' + marks[e.id].name : ''}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
 }
 function sheet(html){ const s = $('sheet'); s.innerHTML = html; s.hidden = false; }
 function closeSheet(){ $('sheet').hidden = true; }
@@ -381,7 +393,7 @@ function loadBackup(file){
     let j; try { j = JSON.parse(r.result); } catch (e){ status('백업 파일을 읽지 못했어요. 이 도감에서 저장한 .json 파일인지 확인해 주세요.', true); return; }
     const m = j && j.marks; if (!m || typeof m !== 'object'){ status('백업 파일에 체크 정보가 없어요.', true); return; }
     const ids = Object.keys(m).filter(id => BY_ID[id]);
-    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '', status: m[id].status || '' }, true); render();
+    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '', status: m[id].status || '', name: m[id].name || '' }, true); render();
     status(`백업에서 ${ids.length}개를 되살렸어요`);
   };
   r.readAsText(file);
@@ -425,6 +437,13 @@ $('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.che
 $('vSt').addEventListener('change', e => put(viewing, { status: e.target.checked ? 'in' : 'out' }));
 $('vMemo').addEventListener('blur', saveMemo);
 let memoT = null;
+// 엔터 = 저장하고 다음 (Shift + 엔터는 줄바꿈). 한글 조합 중 엔터는 무시
+let enterNext = null;
+for (const id of ['vMemo', 'vNameIn']) $(id).addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229) return;
+  e.preventDefault(); enterNext = id; step(1); enterNext = null;
+});
+$('vNameIn').addEventListener('change', saveName);
 $('vMemo').addEventListener('input', () => { clearTimeout(memoT); memoT = setTimeout(() => { if (!viewing) return; const v = $('vMemo').value.trim(); if (v !== ((marks[viewing] || {}).memo || '')) put(viewing, { memo: v }, true); }, 500); });   // 쓰는 도중에도 0.5초마다 자동 저장
 addEventListener('pagehide', saveMemo); document.addEventListener('visibilitychange', () => { if (document.hidden) saveMemo(); });
 $('stFilter').addEventListener('change', e => { showSt = e.target.value; render(); });
