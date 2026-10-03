@@ -1,4 +1,4 @@
-/* catalog.js v1.56 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.57 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1383,6 +1383,26 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "R-E01",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "현자의 검 (기본)",
+"src": "img/relic/re01.webp",
+"note": "오닐 인카운터 유물. 기본으로 얻는 검. 바탕은 인카운터 유물 표시용 금빛 카드 (그림에서 검만 잘라 얹음). 인카운터 카드: 4 → 인카운터 카드 → 오닐",
+"rank": "",
+"on": false
+},
+{
+"id": "R-E02",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "오닐의 검 (히든)",
+"src": "img/relic/re02.webp",
+"note": "오닐 인카운터 히든 유물. 금빛 카드 바탕. 원본의 망토 자락은 지움",
+"rank": "",
+"on": false
+},
+{
 "id": "B-1",
 "cat": "equip",
 "sub": "보스 장비 · 세자르",
@@ -2699,6 +2719,16 @@ const CATALOG = [
 "name": "까마귀",
 "src": "img/card/c20.webp",
 "note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-oneil",
+"cat": "scene",
+"sub": "인카운터 카드",
+"name": "오닐 (검을 쥔 손)",
+"src": "img/card/enc_oneil.webp",
+"note": "오닐 인카운터 카드. 얻는 유물: 현자의 검 (기본) · 오닐의 검 (히든) → 1 유물 → 인카운터 유물",
 "rank": "",
 "on": false
 },
@@ -9286,6 +9316,1136 @@ const CATALOG = [
 "name": "랜턴",
 "src": "img/item/I-107.webp",
 "note": "일반 에셋 아이콘 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-108",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "젖소",
+"src": "img/item/I-108.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-109",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "돼지",
+"src": "img/item/I-109.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-110",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "양",
+"src": "img/item/I-110.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-111",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "수탉",
+"src": "img/item/I-111.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-112",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "암탉",
+"src": "img/item/I-112.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-113",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "고양이",
+"src": "img/item/I-113.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-114",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "개",
+"src": "img/item/I-114.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-115",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "말",
+"src": "img/item/I-115.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-116",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "오리",
+"src": "img/item/I-116.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-117",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "당나귀",
+"src": "img/item/I-117.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-118",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "염소",
+"src": "img/item/I-118.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-119",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "토끼",
+"src": "img/item/I-119.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-120",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "알파카",
+"src": "img/item/I-120.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-121",
+"cat": "item",
+"sub": "생물 · 가축",
+"name": "벌집과 벌",
+"src": "img/item/I-121.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-122",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "사자",
+"src": "img/item/I-122.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-123",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "호랑이",
+"src": "img/item/I-123.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-124",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "불곰",
+"src": "img/item/I-124.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-125",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "늑대",
+"src": "img/item/I-125.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-126",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "여우",
+"src": "img/item/I-126.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-127",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "다람쥐",
+"src": "img/item/I-127.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-128",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "부엉이",
+"src": "img/item/I-128.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-129",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "매",
+"src": "img/item/I-129.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-130",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "뱀",
+"src": "img/item/I-130.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-131",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "악어",
+"src": "img/item/I-131.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-132",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "코끼리",
+"src": "img/item/I-132.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-133",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "기린",
+"src": "img/item/I-133.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-134",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "코뿔소",
+"src": "img/item/I-134.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-135",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "하마",
+"src": "img/item/I-135.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-136",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "사자 2",
+"src": "img/item/I-136.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-137",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "호랑이 2",
+"src": "img/item/I-137.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-138",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "불곰 2",
+"src": "img/item/I-138.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-139",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "늑대 2",
+"src": "img/item/I-139.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-140",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "여우 2",
+"src": "img/item/I-140.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-141",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "사슴",
+"src": "img/item/I-141.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-142",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "다람쥐 2",
+"src": "img/item/I-142.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-143",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "초록 뱀",
+"src": "img/item/I-143.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-144",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "파랑 앵무새",
+"src": "img/item/I-144.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-145",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "얼룩말",
+"src": "img/item/I-145.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-146",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "하마 2",
+"src": "img/item/I-146.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-147",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "원숭이",
+"src": "img/item/I-147.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-148",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "여우원숭이",
+"src": "img/item/I-148.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-149",
+"cat": "item",
+"sub": "생물 · 야생 동물",
+"name": "나무늘보",
+"src": "img/item/I-149.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-150",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "상어",
+"src": "img/item/I-150.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-151",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "고래",
+"src": "img/item/I-151.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-152",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "돌고래",
+"src": "img/item/I-152.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-153",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "문어",
+"src": "img/item/I-153.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-154",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "바다거북",
+"src": "img/item/I-154.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-155",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "가오리",
+"src": "img/item/I-155.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-156",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "해파리",
+"src": "img/item/I-156.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-157",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "게",
+"src": "img/item/I-157.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-158",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "갈매기",
+"src": "img/item/I-158.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-159",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "빨강 앵무새",
+"src": "img/item/I-159.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-160",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "벌새",
+"src": "img/item/I-160.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-161",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "플라밍고",
+"src": "img/item/I-161.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-162",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "독수리",
+"src": "img/item/I-162.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-163",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "나비",
+"src": "img/item/I-163.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-164",
+"cat": "item",
+"sub": "생물 · 바다 · 하늘",
+"name": "잠자리",
+"src": "img/item/I-164.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-165",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "고블린",
+"src": "img/item/I-165.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-166",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "코볼트",
+"src": "img/item/I-166.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-167",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "해골 전사",
+"src": "img/item/I-167.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-168",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "좀비",
+"src": "img/item/I-168.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-169",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "슬라임",
+"src": "img/item/I-169.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-170",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "거미",
+"src": "img/item/I-170.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-171",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "쥐",
+"src": "img/item/I-171.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-172",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "박쥐",
+"src": "img/item/I-172.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-173",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "박쥐 떼",
+"src": "img/item/I-173.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-174",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "작은 악마",
+"src": "img/item/I-174.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-175",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "미믹 (보물 상자)",
+"src": "img/item/I-175.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-176",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "그림자 유령",
+"src": "img/item/I-176.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-177",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "그림자 악마",
+"src": "img/item/I-177.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-178",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "딱정벌레",
+"src": "img/item/I-178.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-179",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "고블린 2",
+"src": "img/item/I-179.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-180",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "코볼트 2",
+"src": "img/item/I-180.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-181",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "해골 전사 2",
+"src": "img/item/I-181.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-182",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "좀비 2",
+"src": "img/item/I-182.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-183",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "거미 2",
+"src": "img/item/I-183.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-184",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "쥐 2",
+"src": "img/item/I-184.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-185",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "박쥐 2",
+"src": "img/item/I-185.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-186",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "요정",
+"src": "img/item/I-186.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-187",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "요정 2",
+"src": "img/item/I-187.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-188",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "노움",
+"src": "img/item/I-188.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-189",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "트롤",
+"src": "img/item/I-189.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-190",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "풍뎅이",
+"src": "img/item/I-190.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-191",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "사마귀",
+"src": "img/item/I-191.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-192",
+"cat": "item",
+"sub": "생물 · 몬스터",
+"name": "초록 딱정벌레",
+"src": "img/item/I-192.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-193",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "미노타우로스",
+"src": "img/item/I-193.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-194",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "켄타우로스",
+"src": "img/item/I-194.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-195",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "거인",
+"src": "img/item/I-195.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-196",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "메두사",
+"src": "img/item/I-196.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-197",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "거대 독수리",
+"src": "img/item/I-197.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-198",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "불사조",
+"src": "img/item/I-198.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-199",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "페가수스",
+"src": "img/item/I-199.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-200",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "만티코어",
+"src": "img/item/I-200.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-201",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "키메라",
+"src": "img/item/I-201.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-202",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "그리핀",
+"src": "img/item/I-202.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-203",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "초록 드래곤",
+"src": "img/item/I-203.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-204",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "불 드래곤",
+"src": "img/item/I-204.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-205",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "얼음 드래곤",
+"src": "img/item/I-205.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-206",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "와이번",
+"src": "img/item/I-206.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-207",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "크라켄",
+"src": "img/item/I-207.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-208",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "바다뱀",
+"src": "img/item/I-208.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-209",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "청룡",
+"src": "img/item/I-209.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-210",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "동양 용",
+"src": "img/item/I-210.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-211",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "나무 정령",
+"src": "img/item/I-211.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-212",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "돌 골렘",
+"src": "img/item/I-212.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-213",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "물 정령",
+"src": "img/item/I-213.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-214",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "불 정령",
+"src": "img/item/I-214.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-215",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "바람 정령",
+"src": "img/item/I-215.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-216",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "리치",
+"src": "img/item/I-216.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-217",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "미라",
+"src": "img/item/I-217.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-218",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "박쥐 날개 악마",
+"src": "img/item/I-218.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-219",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "붉은 악마",
+"src": "img/item/I-219.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "I-220",
+"cat": "item",
+"sub": "생물 · 신화 생물",
+"name": "히드라",
+"src": "img/item/I-220.webp",
+"note": "일반 생물 에셋 시트에서 자름 (2026-10-03)",
 "rank": "",
 "on": false
 },
