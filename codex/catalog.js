@@ -1,4 +1,4 @@
-/* catalog.js v1.7 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.8 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3167,6 +3167,36 @@ const CATALOG = [
 "name": "고딕 기사 · 스킬 컷신 (노란 배경 원본)",
 "src": "img/char/gothic_cutin_yellow.webp",
 "note": "스킬 컷신 원본 (노란 배경). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-rebecca-art1",
+"cat": "char",
+"sub": "레베카 (2026-10-03)",
+"name": "레베카 · 원화 1",
+"src": "img/char/rebecca_art1.webp",
+"note": "원화. 루비색 장발 · 분홍 눈 · 낡은 판금 · 등에 큰 검 · 배에 손을 모으고 웃음",
+"rank": "",
+"on": false
+},
+{
+"id": "P-rebecca-art2",
+"cat": "char",
+"sub": "레베카 (2026-10-03)",
+"name": "레베카 · 원화 2",
+"src": "img/char/rebecca_art2.webp",
+"note": "원화. 허리에 손 · 반짝이는 눈 · 얼룩진 판금 · 허리 뒤로 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-karius-art",
+"cat": "char",
+"sub": "카리우스 (2026-10-03)",
+"name": "카리우스 · 원화",
+"src": "img/char/karius_art.webp",
+"note": "원화. 안경 쓴 대머리 몸 · 광대 얼굴 · 노인 얼굴 · 쇠사슬 · 길고 뼈 같은 팔 · 갈고리 손",
 "rank": "",
 "on": false
 },
