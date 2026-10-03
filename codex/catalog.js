@@ -1,4 +1,4 @@
-/* catalog.js v1.42 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.43 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -6,7 +6,7 @@ const CATALOG = [
 "sub": "이름 있는 유물",
 "name": "황태자의 목걸이",
 "src": "a/items/necklace.png",
-"note": "가호: 바람. 태자의 행복을 바란 마음.",
+"note": "초반 획득 가능한 유물 중 하나. 어린 태자가 자유롭고 안전하길 바랐던 누군가의 염원이 담겨 있다. 주인은 옛적에 죽었다. (가호: 바람)",
 "rank": "relic",
 "on": false
 },
@@ -16,7 +16,7 @@ const CATALOG = [
 "sub": "이름 있는 유물",
 "name": "어부의 반지",
 "src": "a/items/ring.png",
-"note": "축복: 바다.",
+"note": "바다의 사랑을 받은 나그네의 반지. (축복: 바다)",
 "rank": "relic",
 "on": false
 },
@@ -56,16 +56,6 @@ const CATALOG = [
 "sub": "받은 유물 그림",
 "name": "유물 04",
 "src": "img/relic/r04.webp",
-"note": "",
-"rank": "relic",
-"on": false
-},
-{
-"id": "R05",
-"cat": "relic",
-"sub": "받은 유물 그림",
-"name": "유물 05",
-"src": "img/relic/r05.webp",
 "note": "",
 "rank": "relic",
 "on": false
