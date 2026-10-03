@@ -163,6 +163,7 @@ function allyThink(u, dt){
     }
   }
   if (u.st === 'windup'){ return; }
+  if (u.burst && u.st === 'strike'){ u.stT -= dt; tickBurst(u, dt); if (!u.burst && u.stT <= 0){ u.st = 'idle'; setPose(u, 'idle'); } return; }
   if (u.st === 'strike' || u.st === 'heal'){ u.stT -= dt; if (u.stT <= 0){ u.st = 'idle'; setPose(u, 'idle'); } return; }
   u.moving = false;
   const pl = G.player;
@@ -202,14 +203,30 @@ function allyThink(u, dt){
     const R = u.D.ranged, see = sees(u, tgt);
     if (d > R.range || !see) navTo(u, tgt.x, tgt.z, u.spd, dt, 3);
     else if (d < 3.5) steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd, dt);
+    // 점사 (2D판 그대로): 기본 2발, 10%는 손가락이 늦게 떨어져 6발 "드르르륵!" (0.09초 간격)
+    if (u.burst){ tickBurst(u, dt); return; }
     if (u.cd <= 0 && d <= R.range && see){
-      setAim(u, tgt.x, tgt.z); u.cd = R.cd; u.st = 'strike'; u.stT = 0.3; setPose(u, 'shoot');
-      const y0 = u.y + 1.1, sp = 40;
-      shoot({ x: u.x, y: y0, z: u.z, a: ang + rnd(-0.03, 0.03), speed: sp, range: R.range + 2, side: 'ally', len: 0.35, thick: 0.04, color: 0xffe08a, glow: 0xffc860, hitsAir: true, dy: aimDy(u.x, y0, u.z, tgt, sp),
-        onHit: (p, t) => hurt(u, t, u.atk, { from: u, hitsAir: true, ranged: true, crit: Math.random() < 0.1 }) });
-      spark(u.x + Math.cos(ang) * 0.5, u.y + 1.1, u.z + Math.sin(ang) * 0.5, 0xffd080, 4, 2, 0.15, 0.15);
+      const n = Math.random() < 0.1 ? 6 : 2;
+      u.cd = R.cd + (n === 6 ? 0.5 : 0); u.burst = { tgt, left: n, t: 0 };
+      if (n === 6) popText(u.x, u.y + 2.2, u.z, '드르르륵!', 'big', 0.6);
+      tickBurst(u, 0);
     }
   }
+}
+function tickBurst(u, dt){
+  const bu = u.burst, t = bu.tgt;
+  if (u.downed || u.st === 'hurt' || !t || t.dead || t.downed){ u.burst = null; return; }
+  bu.t -= dt;
+  while (bu.t <= 0 && bu.left > 0){ fireBullet(u, t); bu.left--; bu.t += 0.09; }
+  if (bu.left <= 0) u.burst = null;
+}
+function fireBullet(u, tgt){
+  const ang = Math.atan2(tgt.z - u.z, tgt.x - u.x);
+  setAim(u, tgt.x, tgt.z); u.st = 'strike'; u.stT = 0.25; setPose(u, 'shoot');
+  const y0 = u.y + 1.1, sp = 40;
+  shoot({ x: u.x, y: y0, z: u.z, a: ang + rnd(-0.04, 0.04), speed: sp, range: u.D.ranged.range + 2, side: 'ally', len: 0.35, thick: 0.04, color: 0xffe08a, glow: 0xffc860, hitsAir: true, dy: aimDy(u.x, y0, u.z, tgt, sp),
+    onHit: (p, t) => hurt(u, t, u.atk * 0.65, { from: u, hitsAir: true, ranged: true, crit: Math.random() < 0.1 }) });
+  spark(u.x + Math.cos(ang) * 0.5, u.y + 1.1, u.z + Math.sin(ang) * 0.5, 0xffd080, 4, 2, 0.15, 0.12);
 }
 // 싸움이 끝나고 4초 조용하면 쓰러진 동료가 30%로 일어남
 function reviveCheck(dt){

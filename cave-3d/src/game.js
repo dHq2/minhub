@@ -355,7 +355,7 @@ function loop(now){
   if (G.player){
     let tx = G.player.x, tz = G.player.z;
     const foe = G.boss && !G.boss.dead ? G.boss : nearest(G.player, foes().filter(e => e.alert), 9);
-    if (foe){ const w = G.boss ? 0.35 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
+    if (foe){ const w = G.boss ? 0.45 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
     if (!G.lock) updateCamZone(G.player);
     updateCamera(dt, { x: tx, z: tz });
     moon.position.set(camera.position.x - 6, 14, camera.position.z - 2); moon.target.position.set(CAM.follow.x, 0, CAM.follow.z);

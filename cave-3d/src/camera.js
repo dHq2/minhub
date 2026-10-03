@@ -95,17 +95,32 @@ function updateCamera(dt, target){
     if (G.t < CAM.shakeUntil) camera.position.add(new THREE.Vector3(rnd(-0.5, 0.5), rnd(-0.3, 0.3), rnd(-0.5, 0.5)).multiplyScalar(CAM.shakeAmp));
     return;
   }
-  // 4. 평소: 따라가는 점을 느슨하게 + 스스로 풀리는 줌 펄스 + 잔진동. 완벽 투창이 날아가는 동안엔 창을 따라감 (살짝 당김)
-  let tg = target, kf = k;
-  if (CAM.track && G.t < CAM.trackUntil){ tg = { x: CAM.track.x, z: CAM.track.z }; kf = 1 - Math.pow(1 - 0.16, dt * 60); CAM.zoomTarget = Math.max(CAM.zoomTarget, 0.55); }
-  else CAM.track = null;
+  // 3.5 완벽 투창이 적에게 닿는 순간: 그 자리를 살짝 당겨 봄 (각도는 그대로, 짧게)
+  if (CAM.punch && G.t < CAM.punch.until){
+    const P2 = CAM.punch, fy = heightAt(G.map, P2.x, P2.z), o = camOff(CAM.yaw, CAM.base.back * 0.5), kp = 1 - Math.pow(1 - 0.22, dt * 60);
+    camera.position.x += (P2.x + o.x - camera.position.x) * kp; camera.position.y += (fy + CAM.base.y * 0.5 - camera.position.y) * kp; camera.position.z += (P2.z + o.z - camera.position.z) * kp;
+    CAM.follow.x += (P2.x - CAM.follow.x) * kp; CAM.follow.z += (P2.z - CAM.follow.z) * kp;
+    camera.lookAt(CAM.follow.x, fy + 0.9, CAM.follow.z);
+    return;
+  }
+  // 4. 평소: 따라가는 점을 느슨하게 + 스스로 풀리는 줌 펄스 + 잔진동
+  //    완벽 투창이 날아가는 동안엔 인주와 창 사이를 보며 뒤로 물러남 (줌아웃) → 적에게 닿기 직전 3.5로
+  let tg = target, kf = k, out = 0;
+  if (CAM.track && G.t < CAM.trackUntil){
+    const s = CAM.track; tg = { x: (target.x + s.x) / 2, z: (target.z + s.z) / 2 }; out = 0.45;
+    if (!CAM.punch){ const f = foes().find(e => !e.dead && Math.hypot(e.x - s.x, e.z - s.z) < 1.8); if (f){ CAM.punch = { x: f.x, z: f.z, until: G.t + 0.4 }; CAM.track = null; } }
+  } else CAM.track = null;
+  CAM.out = (CAM.out || 0) + (out - (CAM.out || 0)) * (1 - Math.pow(1 - (out ? 0.2 : 0.05), dt * 60));
+  // 보스전: 인주와 보스가 멀어지면 둘 다 화면에 들어오게 물러남
+  const bs = G.boss && !G.boss.dead && G.player ? Math.max(0, Math.min(0.8, (Math.hypot(G.boss.x - G.player.x, G.boss.z - G.player.z) - 4) * 0.09)) : 0;
+  CAM.fit = (CAM.fit || 0) + (bs - (CAM.fit || 0)) * k;
   CAM.follow.x += (tg.x - CAM.follow.x) * kf;
   CAM.follow.z += (tg.z - CAM.follow.z) * kf;
   CAM.zoomTarget = Math.max(0, CAM.zoomTarget - 2.1 * dt);
   CAM.zoomBoost += (CAM.zoomTarget - CAM.zoomBoost) * (1 - Math.pow(1 - 0.18, dt * 60));
   const air = G.boss && !G.boss.dead && G.boss.lift > 0.5 ? Math.min(1, G.boss.lift / 3) : 0;
   CAM.air = (CAM.air || 0) + (air - (CAM.air || 0)) * k;
-  const fy = heightAt(G.map, CAM.follow.x, CAM.follow.z) * 0.6, far = 1 + CAM.air * 0.35;
+  const fy = heightAt(G.map, CAM.follow.x, CAM.follow.z) * 0.6, far = 1 + CAM.air * 0.35 + CAM.out + CAM.fit;
   const o = camOff(CAM.yaw, CAM.base.back * far - CAM.zoomBoost * CAM.zoomDist);
   const tx = CAM.follow.x + o.x, tz = CAM.follow.z + o.z, ty = fy + CAM.base.y * far - CAM.zoomBoost * CAM.zoomHeight;
   camera.position.x += (tx - camera.position.x) * Math.max(k, kf * 0.8);

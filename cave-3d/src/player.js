@@ -152,19 +152,16 @@ function throwSpear(u, k, perfect){
   if (perfect){ popText(u.x, u.y + 2.2, u.z, '완벽!', 'crit', 1); ring(u.x, u.z, 0x5ab4ff, 2.2, 0.4); G.hitstop = 0.08; }
   else if (k >= 1) popText(u.x, u.y + 2.1, u.z, '힘껏', 'big', 0.7);
   spark(u.x + Math.cos(a) * 0.6, u.y + 1.3, u.z + Math.sin(a) * 0.6, perfect ? 0x7fc8ff : 0xfff0d0, perfect ? 16 : 6, 4);
-  camZoomPulse(perfect ? 0.6 : 0.3);
-  let first = true;
   const p = shoot({ x: u.x, y: y0, z: u.z, a, speed, range: len, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
     glow: perfect ? 0x5ab4ff : null, pierce: perfect, hitsAir: true, trail: perfect ? 0x5ab4ff : null,
     dy: tp && tp.S ? aimDy(u.x, y0, u.z, tp, speed) : 0,
     onHit: (p, t) => {
-      hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: p.x - Math.cos(a), z: p.z - Math.sin(a) }, crit: perfect, critMul: 2.5, pierce: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
-      if (perfect && first){ camCrit(t.x, t.z, t.y + 0.4 + (t.lift || 0), 0.38); first = false; }
+      hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: p.x - Math.cos(a), z: p.z - Math.sin(a) }, crit: perfect, critMul: 2.5, pierce: perfect, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
       if (G.cmd === 'focus') G.focusTarget = t;
     },
     end: (p, x, z, wall, t) => { if (CAM.track === p) CAM.trackUntil = G.t + 0.25; dropSpear(t ? t.x + rnd(-0.6, 0.6) : x - Math.cos(a) * (wall ? 0.4 : 0), t ? t.z + rnd(0.3, 0.9) : z - Math.sin(a) * (wall ? 0.4 : 0), a); } });
-  // 완벽: 카메라가 살짝 당겨 창을 따라감
-  if (perfect){ CAM.track = p; CAM.trackUntil = G.t + 1.2; }
+  // 보통은 카메라가 그대로. 완벽이면 화면이 물러나 (줌아웃) 푸른 점 궤적이 보이고, 적에게 닿는 순간만 그 자리를 살짝 당겨 봄 (각도는 그대로)
+  if (perfect){ CAM.track = p; CAM.trackUntil = G.t + 1.4; CAM.punch = null; }
 }
 function dropSpear(x, z, a){
   if (solidAt(G.map, x, z)){ x = G.player.x; z = G.player.z; }

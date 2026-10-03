@@ -221,6 +221,11 @@ function inShape(d, u){
 
 /* ---------- 불꽃 · 먼지 ---------- */
 const sparkTex = canvasTex(32, 32, (c, w, h) => { const g = c.createRadialGradient(16, 16, 0, 16, 16, 16); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.4, 'rgba(255,255,255,0.6)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
+function dot(x, y, z, color, size = 0.2, life = 0.9){
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  s.position.set(x + rnd(-0.04, 0.04), y + rnd(-0.04, 0.04), z + rnd(-0.04, 0.04)); s.scale.setScalar(size); G.scene.add(s);
+  G.fx.push({ s, vx: 0, vy: 0, vz: 0, t: 0, life, size, grav: 0 });
+}
 function spark(x, y, z, color, n = 8, speed = 4, size = 0.18, life = 0.35){
   for (let i = 0; i < n; i++){
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -301,7 +306,7 @@ function hurt(att, tgt, base, o = {}){
   popText(tgt.x, tgt.y + tgt.S.tall * SPRITE_SCALE * 0.7 + tgt.lift, tgt.z, tag + dmg, (tgt.side === 'ally' ? 'hurt ' : '') + (o.crit ? 'crit' : big ? 'big' : ''), o.crit ? 1.2 : 0.9);
   spark(tgt.x, tgt.y + 0.9 + tgt.lift, tgt.z, o.crit ? 0xffd35a : tgt.side === 'ally' ? 0xff6a5a : 0xfff0d0, o.crit ? 16 : 7, o.crit ? 6 : 4);
   G.hitstop = Math.max(G.hitstop, o.crit ? 0.09 : big ? 0.06 : 0.035);
-  if (o.crit) camZoomPulse(1);
+  if (o.crit && !o.noCam) camZoomPulse(1);
   // 밀려남 (무게에 따라)
   if (o.kb && !tgt.D.heavy && !tgt.D.dummy){
     const s = src || att, n = s ? norm(tgt.x - s.x, tgt.z - s.z) : { x: 0, z: 0 }, k = o.kb * 60 / Math.max(40, tgt.D.weight);
@@ -343,7 +348,7 @@ function updateProjs(dt){
     if (p.dy){ p.y = Math.max(0.6, p.y + p.dy * dt); p.m.rotation.z = Math.atan2(p.dy, p.speed); }
     if (!losClear(G.map, p.x, p.z, nx, nz) || p.travelled > p.range){ p.end && p.end(p, p.x, p.z, true); G.scene.remove(p.m); return false; }
     p.x = nx; p.z = nz; p.travelled += step; p.m.position.set(p.x, p.y, p.z);
-    if (p.trail){ p.trT = (p.trT || 0) - dt; if (p.trT <= 0){ p.trT = 0.012; spark(p.x, p.y, p.z, p.trail, 2, 0.6, 0.22, 0.45); } }   // 푸른 궤적
+    if (p.trail){ p.trT = (p.trT || 0) - dt; if (p.trT <= 0){ p.trT = 0.012; dot(p.x, p.y, p.z, p.trail, 0.17, 1.1); } }   // 푸른 점 궤적 (지나간 자리에 점이 남았다 사라짐)
     for (const u of G.units){
       if (u.dead || u.downed || u.side === p.side || u.side === 'neutral' && !u.D.dummy || p.hits.has(u)) continue;
       if (u.airborne && !p.hitsAir) continue;
