@@ -1274,9 +1274,19 @@ const CATALOG = [
 "id": "S-4",
 "cat": "scene",
 "sub": "컷씬",
-"name": "적뢰 연출 · 석상과 비 (80장)",
+"name": "적뢰 연출 · 석상과 폭풍 (v1.1, 80장)",
+"src": "img/scene/jr_cutscene_storm.webp",
+"note": "적뢰 연출용 컷씬 v1.1 (statue storm). 비 속의 날개 달린 석상 전신 → 얼굴로 다가감. 움직이는 그림, 세로 432×768",
+"rank": "",
+"on": false
+},
+{
+"id": "S-4a",
+"cat": "scene",
+"sub": "컷씬",
+"name": "적뢰 연출 · 석상과 비 (이전 판 v1, 80장)",
 "src": "img/scene/jr_cutscene_robe.webp",
-"note": "적뢰 연출용 컷씬. 움직이는 그림 (빗줄기), 세로 432×768. 드라이브 jeokroe_statue_rain_v1",
+"note": "이전 판 (statue rain v1). 붉은 옷자락과 비만 보임",
 "rank": "",
 "on": false
 },
