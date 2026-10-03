@@ -1,4 +1,4 @@
-/* player.js v0.3 — 인주 직접 조작
+/* player.js v0.4 — 인주 직접 조작
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -34,8 +34,10 @@ function inputDir(){
   let ix = 0, iy = 0;
   if (down('KeyW') || down('ArrowUp')) iy += 1; if (down('KeyS') || down('ArrowDown')) iy -= 1;
   if (down('KeyA') || down('ArrowLeft')) ix -= 1; if (down('KeyD') || down('ArrowRight')) ix += 1;
-  if (!ix && !iy) return null;
-  const y = CAM.yaw || 0, fx = -Math.sin(y), fz = -Math.cos(y), rx = Math.cos(y), rz = -Math.sin(y);
+  if (!ix && !iy){ P.inYaw = null; return null; }
+  // 누르고 있는 동안 카메라가 돌아도 (구역 · Z · C) 방향 기준은 누르기 시작한 때 그대로 → 손을 떼면 새 각도로
+  if (P.inYaw == null) P.inYaw = CAM.yawT || 0;
+  const y = P.inYaw, fx = -Math.sin(y), fz = -Math.cos(y), rx = Math.cos(y), rz = -Math.sin(y);
   return norm(rx * ix + fx * iy, rz * ix + fz * iy);
 }
 function playerUpdate(u, dt){
@@ -99,7 +101,7 @@ function playerUpdate(u, dt){
   if (!P.spear && (hit('Mouse2') || hit('KeyK'))) popText(u.x, u.y + 2, u.z, '창이 없음 — 주워야 함', 'miss', 0.9);
   if (P.aiming){
     P.charge = Math.min(THROW.full, P.charge + dt);
-    const tp = throwTarget(u); if (tp) setAim(u, tp.x, tp.z);
+    aimPath(u);
     setPose(u, 'aim');
     if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt);
     const full = P.charge >= THROW.full;
@@ -128,8 +130,21 @@ function throwTarget(u){
   const ap = aimPoint(u); if (ap) return ap;
   return nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.1 && losClear(G.map, u.x, u.z, e.x, e.z)), THROW.range);
 }
+// 조준선 (궁수 활과 같은 식): 마우스 쪽으로, 마우스까지의 거리만큼 (2 ~ 13칸). 적 위에서 누르면 그 적까지. 벽 · 기둥에서 끊김
+// 놓는 순간의 이 선 그대로 날아가고, 아무도 안 맞으면 선 끝에 박힘
+function aimPath(u){
+  const tp = throwTarget(u);
+  let a = u.aim, L = THROW.range;
+  if (tp){ a = Math.atan2(tp.z - u.z, tp.x - u.x); L = clamp(Math.hypot(tp.x - u.x, tp.z - u.z) + (tp.S ? 1.2 : 0), 2, THROW.range); }
+  setAim(u, u.x + Math.cos(a), u.z + Math.sin(a));
+  const m = G.map; let d = 0.3;
+  for (; d < L; d += 0.15){ const x = u.x + Math.cos(a) * d, z = u.z + Math.sin(a) * d, i = Math.round(x), j = Math.round(z), k = j * m.w + i;
+    if (i < 0 || j < 0 || i >= m.w || j >= m.h || (m.solid[k] && !m.low[k])) break; }
+  P.aimA = a; P.aimLen = Math.min(L, d); P.aimT = tp && tp.S ? tp : null;
+}
 function throwSpear(u, k, perfect){
-  const tp = throwTarget(u), a = tp ? Math.atan2(tp.z - u.z, tp.x - u.x) : u.aim;
+  if (P.aimA == null) aimPath(u);
+  const tp = P.aimT, a = P.aimA, len = P.aimLen; P.aimA = null;
   setAim(u, u.x + Math.cos(a), u.z + Math.sin(a));
   setPose(u, 'throw'); u.st = 'strike'; u.stT = 0.3;
   P.spear = false;
@@ -139,7 +154,7 @@ function throwSpear(u, k, perfect){
   spark(u.x + Math.cos(a) * 0.6, u.y + 1.3, u.z + Math.sin(a) * 0.6, perfect ? 0x7fc8ff : 0xfff0d0, perfect ? 16 : 6, 4);
   camZoomPulse(perfect ? 0.6 : 0.3);
   let first = true;
-  const p = shoot({ x: u.x, y: y0, z: u.z, a, speed, range: THROW.range, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
+  const p = shoot({ x: u.x, y: y0, z: u.z, a, speed, range: len, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
     glow: perfect ? 0x5ab4ff : null, pierce: perfect, hitsAir: true, trail: perfect ? 0x5ab4ff : null,
     dy: tp && tp.S ? aimDy(u.x, y0, u.z, tp, speed) : 0,
     onHit: (p, t) => {
@@ -168,8 +183,26 @@ function ghost(u){
   G.fx.push({ s: { position: { x: 0, y: 0, z: 0 }, material: m.material, scale: { setScalar(){} } }, g, t: 0, life: 0.25, ghost: true, vx: 0, vy: 0, vz: 0 });
 }
 // 머리 위 게이지 (투창: 금색 → 완벽 구간에서 하얗게) · 방어 중엔 앞에 푸른 반원
-let guardArc = null;
+let guardArc = null, aimLine = null;
+function updateAimLine(u){
+  if (!aimLine){
+    const mat = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
+    const geo = () => { const g = new THREE.PlaneGeometry(1, 1); g.translate(0.5, 0, 0); g.rotateX(-Math.PI / 2); return g; };
+    aimLine = new THREE.Group(); aimLine.renderOrder = 50;
+    aimLine.base = new THREE.Mesh(geo(), mat(0xffd35a, 0.22)); aimLine.fill = new THREE.Mesh(geo(), mat(0xffd35a, 0.75));
+    aimLine.tip = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.32, 24).rotateX(-Math.PI / 2), mat(0xffd35a, 0.9));
+    [aimLine.base, aimLine.fill, aimLine.tip].forEach(m => { m.renderOrder = 50; aimLine.add(m); }); G.scene.add(aimLine);
+  }
+  aimLine.visible = !!P.aiming && P.aimA != null;
+  if (!aimLine.visible) return;
+  const k = Math.min(1, P.charge / THROW.full), win = P.charge >= THROW.full - THROW.perfect, w = win ? 0.3 : 0.16, c = win ? 0xffffff : 0xffd35a;
+  aimLine.position.set(u.x, u.y + 0.06, u.z); aimLine.rotation.y = -P.aimA;
+  aimLine.base.scale.set(P.aimLen, 1, w); aimLine.fill.scale.set(Math.max(0.01, P.aimLen * k), 1, w);
+  aimLine.tip.position.set(P.aimLen, 0, 0);
+  aimLine.fill.material.color.setHex(c); aimLine.tip.material.color.setHex(win ? 0x8fd8ff : c);
+}
 function updateChargeRing(u){
+  updateAimLine(u);
   const el = document.getElementById('gauge');
   if (P.aiming){
     const k = P.charge / THROW.full, inWin = P.charge >= THROW.full - THROW.perfect;

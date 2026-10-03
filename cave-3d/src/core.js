@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.3';
+const VERSION = 'v0.4';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -29,13 +29,19 @@ addEventListener('keydown', e => {
   keys.add(e.code);
 });
 addEventListener('keyup', e => keys.delete(e.code));
-addEventListener('blur', () => keys.clear());
+// 창이 포커스를 잃거나 (우클릭 메뉴 · 다른 창) 숨으면 눌린 키 · 버튼을 모두 놓은 것으로 (키가 눌린 채 남아 엉뚱하게 움직이던 것)
+function releaseAll(){ keys.clear(); mouse.left = mouse.right = false; }
+addEventListener('blur', releaseAll);
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
+// 우클릭 (투창)이 어디서 떨어지든 브라우저 메뉴 (복사 · 붙여넣기)가 뜨지 않게, 글자도 드래그로 선택되지 않게
+addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('selectstart', e => { if (!e.target.closest || !e.target.closest('input,textarea')) e.preventDefault(); });
 const hit = code => pressed.has(code);
 const down = code => keys.has(code);
 function bindMouse(el){
   el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.moved = G.t; mouse.inside = true; });
   el.addEventListener('mouseleave', () => { mouse.inside = false; });
-  el.addEventListener('mousedown', e => { if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } });
+  el.addEventListener('mousedown', e => { e.preventDefault(); if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } });
   addEventListener('mouseup', e => { if (e.button === 0) mouse.left = false; if (e.button === 2) mouse.right = false; });
   el.addEventListener('contextmenu', e => e.preventDefault());
 }

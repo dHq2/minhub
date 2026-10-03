@@ -1,4 +1,4 @@
-/* game.js v0.3 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
+/* game.js v0.4 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
 'use strict';
 const LOBBY = [
   '################',
@@ -96,7 +96,7 @@ function clearLevel(){
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
 }
 function loadLevel(rows, theme){
-  CAM.yaw = CAM.yawT = 0; CAM.yawBefore = null; CAM.track = null;
+  CAM.yaw = CAM.yawT = 0; CAM.yawBefore = null; CAM.track = null; CAM.zone = null;
   G.map = buildWorld(rows, theme); G.scene.add(G.map.group);
   G.scene.background = new THREE.Color(theme.bg); G.scene.fog = new THREE.Fog(theme.bg, theme.fogNear, theme.fogFar);
   hemi.intensity = theme.hemi; moon.intensity = theme.moon;
@@ -152,6 +152,8 @@ function startFloor1(){
   const x = sp('x')[0], m = sp('m')[0], fire = G.map.fires[0];
   G.inspect.push({ x: x.x, z: x.z, r: 1.3, label: '시체를 살핀다', fn: async () => { camFocus(x.x, x.z, 99, 2.4, 3.2, 0.05); await textbox('', ['모닥불 곁에 앉은 채로 굳은 시체.', '…그는 찾지 못한 듯하다.']); camFocusOff(); } });
   G.inspect.push({ x: m.x, z: m.z, r: 1.2, label: '바닥의 글씨를 읽는다', fn: async () => { camFocus(m.x, m.z, 99, 2.2, 2.6, 0.05); await textbox('', ['바닥에 손톱으로 긁어 쓴 글씨.', '"겁쟁이!"', '누가, 누구에게 쓴 걸까요.']); camFocusOff(); } });
+  // 모닥불 곁방: 들어가면 카메라가 동쪽 (입구 쪽)으로 돌아 안을 보여줌, 나오면 원래대로
+  G.map.zones = [{ x0: 5.6, x1: 11.7, z0: 20.6, z1: 23.4, yaw: Math.PI / 2, cut: true }];
   G.inspect.push({ x: fire.x, z: fire.z, r: 1.6, once: true, label: '모닥불 곁에서 쉰다', mark: '모닥불 (쉬기)', far: 40, fn: rest });
   G.onKill = (u) => { if (u === G.boss) bossDown(u); };
   // 넓게 먼저: 저 멀리 붉은 빛 (우물) → 천천히 인주에게
@@ -354,6 +356,7 @@ function loop(now){
     let tx = G.player.x, tz = G.player.z;
     const foe = G.boss && !G.boss.dead ? G.boss : nearest(G.player, foes().filter(e => e.alert), 9);
     if (foe){ const w = G.boss ? 0.35 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
+    if (!G.lock) updateCamZone(G.player);
     updateCamera(dt, { x: tx, z: tz });
     moon.position.set(camera.position.x - 6, 14, camera.position.z - 2); moon.target.position.set(CAM.follow.x, 0, CAM.follow.z);
   }

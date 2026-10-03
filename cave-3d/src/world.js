@@ -77,7 +77,13 @@ function buildWorld(rows, opt = {}){
 function layoutWalls(map, yaw){
   const dx = Math.round(Math.sin(yaw)), dz = Math.round(Math.cos(yaw)), m4 = new THREE.Matrix4();
   map.wallInfo.forEach((w, k) => {
-    const low = map.open(map.at(w.x - dx, w.z - dz)) && !map.open(map.at(w.x + dx, w.z + dz));
+    let low = map.open(map.at(w.x - dx, w.z - dz)) && !map.open(map.at(w.x + dx, w.z + dz));
+    // 카메라 구역 (곁방 같은 곳)에 들어가 있으면: 그 구역을 둘러싼 벽 중 카메라 쪽 것은 낮게 (안이 보이게)
+    const C = map.cut;
+    if (C && !low && w.x >= C.x0 - 1.5 && w.x <= C.x1 + 1.5 && w.z >= C.z0 - 1.5 && w.z <= C.z1 + 1.5){
+      const vx = w.x - clamp(w.x, C.x0, C.x1), vz = w.z - clamp(w.z, C.z0, C.z1);
+      if (vx * dx + vz * dz > 0.1) low = true;
+    }
     const hh = !w.near ? 1.5 : low ? 0.5 : 2.3;
     m4.makeScale(1, hh, 1); m4.setPosition(w.x, hh / 2 - 0.2, w.z); map.wallMesh.setMatrixAt(k, m4);
   });

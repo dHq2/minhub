@@ -1,6 +1,7 @@
-/* camera.js v0.3 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
+/* camera.js v0.4 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
-   v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감 */
+   v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
+   v0.4: 카메라 구역 — 지도에 적어 둔 구역 (곁방 등)에 들어가면 정해진 각도로 돌고 둘레 벽을 깎음, 나오면 들어가기 전 각도로 */
 'use strict';
 const CAM = {
   base: { y: 9.5, back: 8.2 },     // 평소: 따라가는 점 위 9.5, 뒤로 8.2
@@ -32,7 +33,7 @@ function camCrit(x, z, y = 0.6, sec = 0.4){
 // 락온: 가려져 있으면 잘 보이는 쪽으로 돌아감 (돌고 나면 원래 각도로)
 function camFocus(x, z, sec, h = 2.6, back = 3.2, k = 0.06, autoYaw = true){
   CAM.focusAt = { x, z }; CAM.focusUntil = G.t + sec; CAM.focusH = h; CAM.focusBack = back; CAM.focusK = k;
-  if (autoYaw){ const y = bestYaw(x, z); if (y !== CAM.yawT){ CAM.yawBefore = CAM.yawT; setYaw(y); } }
+  if (autoYaw && !CAM.zone){ const y = bestYaw(x, z); if (y !== CAM.yawT){ CAM.yawBefore = CAM.yawT; setYaw(y); } }
 }
 function camFocusOff(){ CAM.focusUntil = -1; if (CAM.yawBefore != null){ setYaw(CAM.yawBefore); CAM.yawBefore = null; } }
 function camSide(a, b, sec, scale = 1){
@@ -113,6 +114,22 @@ function updateCamera(dt, target){
   if (G.t < CAM.shakeUntil){ const a = CAM.shakeAmp; camera.position.x += rnd(-0.5, 0.5) * a; camera.position.y += rnd(-0.5, 0.5) * a * 0.6; camera.position.z += rnd(-0.5, 0.5) * a; }
   const lf = camOff(CAM.yaw, -(CAM.look.fwd - CAM.air * 1.2));
   camera.lookAt(CAM.follow.x - lf.x * -1 * 0 + camOff(CAM.yaw, CAM.look.fwd - CAM.air * 1.2).x, fy + CAM.look.y + CAM.air * 1.6, CAM.follow.z + camOff(CAM.yaw, CAM.look.fwd - CAM.air * 1.2).z);
+}
+// 카메라 구역: map.zones = [{ x0, x1, z0, z1, yaw (없으면 가장 덜 가리는 쪽), cut (둘레 벽 깎기) }]
+// 나갈 때는 0.4칸 여유 (문턱에서 왔다 갔다 하지 않게). 층마다 기믹을 붙일 자리
+function updateCamZone(p){
+  const Z = G.map && G.map.zones; if (!Z || !p) return;
+  const inside = (z, m) => p.x >= z.x0 - m && p.x <= z.x1 + m && p.z >= z.z0 - m && p.z <= z.z1 + m;
+  if (CAM.zone){
+    if (inside(CAM.zone, 0.4)) return;
+    CAM.zone = null; G.map.cut = null; setYaw(CAM.zoneBefore); CAM.yawBefore = null; return;
+  }
+  for (const z of Z) if (inside(z, 0)){
+    CAM.zone = z; CAM.zoneBefore = CAM.yawBefore != null ? CAM.yawBefore : CAM.yawT; CAM.yawBefore = null;
+    G.map.cut = z.cut ? z : null;
+    setYaw(z.yaw != null ? Math.round(CAM.yawT / (Math.PI * 2)) * Math.PI * 2 + z.yaw : bestYaw((z.x0 + z.x1) / 2, (z.z0 + z.z1) / 2));
+    return;
+  }
 }
 // 화면 좌표 ↔ 세계
 const _v = new THREE.Vector3();

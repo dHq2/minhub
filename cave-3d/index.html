@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D 시제품  version v0.3 -->
+<!-- 굴의 프롤로그 3D 시제품  version v0.4 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -68,11 +68,13 @@
   body::before{top:0;} body::after{bottom:0;}
   body.cine::before,body.cine::after{height:9vh;}
   body.cine #party,body.cine #cmd,body.cine #prompt{opacity:0;}
-  #help{left:50%;top:72px;transform:translateX(-50%);width:max-content;max-width:min(860px,88vw);text-align:center;line-height:1.7;font-size:12.5px;color:var(--dim);background:rgba(8,6,10,.72);padding:8px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.06);}
+  #help{pointer-events:none;left:50%;top:auto;bottom:16px;transform:translateX(-50%);width:max-content;max-width:min(760px,calc(100vw - 520px));text-align:center;line-height:1.7;font-size:12.5px;color:var(--dim);background:rgba(8,6,10,.72);padding:8px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.06);}
   #help b{color:var(--ink);font-weight:700;}
   #ver{left:auto;right:10px;top:auto;bottom:4px;font-size:10px;color:#4a4450;}
   #boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Do Hyeon";font-size:22px;color:var(--dim);background:#050406;z-index:30;}
   [hidden]{display:none !important;}
+  body{-webkit-user-select:none;user-select:none;}
+  @media (max-width:900px){ #help{max-width:88vw;bottom:auto;top:12px;} }
 </style>
 </head>
 <body>
