@@ -1,4 +1,4 @@
-/* catalog.js v1.9 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.10 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3167,6 +3167,96 @@ const CATALOG = [
 "name": "고딕 기사 · 스킬 컷신 (노란 배경 원본)",
 "src": "img/char/gothic_cutin_yellow.webp",
 "note": "스킬 컷신 원본 (노란 배경). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-idle",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 대기 (9장)",
+"src": "img/bk/bk_idle.webp",
+"note": "드라이브 흑기사 폴더 knight_idle_v1.1.webp · 원본 1000×720",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-walk",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 걷기 (6장)",
+"src": "img/bk/bk_walk.webp",
+"note": "드라이브 흑기사 폴더 black_knight_walk_v1.1.webp · 원본 1254×1254",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-run",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 뛰기 (8장)",
+"src": "img/bk/bk_run.webp",
+"note": "드라이브 흑기사 폴더 black_knight_run_v1.1.webp · 원본 1792×1440",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-ready_enter",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 등장 · 자세 잡기 (6장)",
+"src": "img/bk/bk_ready_enter.webp",
+"note": "드라이브 흑기사 폴더 knight_ready_enter_v1.1.webp · 원본 1254×1254",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-double_slash",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 두 번 베기 (13장)",
+"src": "img/bk/bk_double_slash.webp",
+"note": "드라이브 흑기사 폴더 knight_double_slash_v1.3.webp · 원본 1000×720",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-heavy_slash",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 내려 베기 (11장)",
+"src": "img/bk/bk_heavy_slash.webp",
+"note": "드라이브 흑기사 폴더 knight_heavy_slash_v1.3.webp · 원본 1000×720",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-thrust",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 찌르기 (13장)",
+"src": "img/bk/bk_thrust.webp",
+"note": "드라이브 흑기사 폴더 knight_thrust_v1.3.webp · 원본 1000×720",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-roundhouse",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 돌려차기 (12장)",
+"src": "img/bk/bk_roundhouse.webp",
+"note": "드라이브 흑기사 폴더 knight_roundhouse_v1.1.webp · 원본 1000×720",
+"rank": "",
+"on": false
+},
+{
+"id": "P-bk-shoulder_bash",
+"cat": "char",
+"sub": "고딕 기사 (흑기사) · 동작 (2026-10-03, 드라이브)",
+"name": "흑기사 · 어깨 박치기 (12장)",
+"src": "img/bk/bk_shoulder_bash.webp",
+"note": "드라이브 흑기사 폴더 knight_shoulder_bash_v1.3.webp · 원본 1000×720",
 "rank": "",
 "on": false
 },
