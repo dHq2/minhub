@@ -1,4 +1,4 @@
-/* catalog.js v1.4 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.4: 2D판 인물 102 */
+/* catalog.js v1.5 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.5: 간호사 4 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3067,6 +3067,46 @@ const CATALOG = [
 "name": "가면 (특별한 적)",
 "src": "img/char/mask_special.webp",
 "note": "왕관 쓴 광대 가면 · 해골 몸 · 주황 망토 · 푸른 수정검 · 나비. 쓰임새는 아직 미정",
+"rank": "",
+"on": false
+},
+{
+"id": "P-nurse-art",
+"cat": "char",
+"sub": "간호사 · 1성 영웅 (2026-10-03)",
+"name": "간호사 · 원화",
+"src": "img/char/nurse_art.webp",
+"note": "원화 (그림체 기준). 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
+"rank": "",
+"on": false
+},
+{
+"id": "P-nurse-idle",
+"cat": "char",
+"sub": "간호사 · 1성 영웅 (2026-10-03)",
+"name": "간호사 · 기본",
+"src": "img/char/nurse_idle.webp",
+"note": "기본 (대기). 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
+"rank": "",
+"on": false
+},
+{
+"id": "P-nurse-prep",
+"cat": "char",
+"sub": "간호사 · 1성 영웅 (2026-10-03)",
+"name": "간호사 · 치료 준비",
+"src": "img/char/nurse_prep.webp",
+"note": "치료 준비: 주사기에 피를 채움. 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
+"rank": "",
+"on": false
+},
+{
+"id": "P-nurse-attack",
+"cat": "char",
+"sub": "간호사 · 1성 영웅 (2026-10-03)",
+"name": "간호사 · 공격 / 치료",
+"src": "img/char/nurse_attack.webp",
+"note": "공격 · 치료: 주사기를 내지름. 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
 "rank": "",
 "on": false
 },
