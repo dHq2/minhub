@@ -129,6 +129,7 @@ pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);bor
 <div class="sheet" id="sheet" hidden></div>
 
 <script src="catalog.js"></script>
+<script src="packs.js"></script>
 <script>
 'use strict';
 // 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
@@ -186,6 +187,21 @@ async function put(id, patch, quiet){
 // 등장 표시: 초록 = 등장 확정, 빨강 = 미등장. 바꾸지 않았으면 지금 게임에 들어가 있는지 (catalog의 on)로
 const stOf = e => (marks[e.id] && marks[e.id].status) || (e.on ? 'in' : 'out');
 
+/* ---------- 묶음 그림: 게시 파일 수 한도 (511) 때문에 작은 그림은 pack/*.webp에서 잘라 씀 (packs.js, tools/pack.py) ---------- */
+const PK = typeof PACKED === 'object' ? PACKED : {};
+const sheetP = {}, cutP = {};
+let seen = null;
+function packImg(i){ return sheetP[i] || (sheetP[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = PACKS[i]; })); }
+function picUrl(src){
+  const p = PK[src]; if (!p) return Promise.resolve(src);
+  return cutP[src] || (cutP[src] = packImg(p[0]).then(im => {
+    const c = document.createElement('canvas'); c.width = p[3]; c.height = p[4];
+    c.getContext('2d').drawImage(im, p[1], p[2], p[3], p[4], 0, 0, p[3], p[4]);
+    return c.toDataURL('image/webp', 0.92);
+  }).catch(() => src));
+}
+function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.dataset.k === src) img.src = u; }); }
+
 /* ---------- 그리기 ---------- */
 function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && (showSt === 'all' || stOf(e) === showSt); }
 function tile(e){
@@ -194,7 +210,7 @@ function tile(e){
   return `<div class="tile ${e.rank} ${on ? 'on' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
-    <div class="pic"><img loading="lazy" src="${e.src}" alt="${esc(e.name)}"></div>
+    <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
@@ -223,6 +239,9 @@ function render(){
     html += `</section>`;
   }
   $('main').innerHTML = html;
+  if (seen) seen.disconnect();
+  seen = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const x of es) if (x.isIntersecting){ seen.unobserve(x.target); setPic(x.target, x.target.dataset.pk); } }, { rootMargin:'600px' }) : null;
+  for (const im of $('main').querySelectorAll('img[data-pk]')) seen ? seen.observe(im) : setPic(im, im.dataset.pk);
 }
 
 /* ---------- 크게 보기 ---------- */
@@ -230,7 +249,7 @@ function order(){ return CATALOG.filter(visible); }
 function openView(id){ viewing = id; $('view').hidden = false; fillView(); $('vMemo').focus({ preventScroll:true }); }
 function fillView(){
   const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
-  $('vImg').src = e.src; $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
+  setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
   $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
   $('vCheck').checked = !!m.checked; $('vSt').checked = stOf(e) === 'in';
   if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
