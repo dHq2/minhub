@@ -1,4 +1,4 @@
-/* catalog.js v1.23 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.24 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1397,6 +1397,36 @@ const CATALOG = [
 "name": "거인의 머리",
 "src": "img/card/enc_giant_head.webp",
 "note": "인카운터 그림 (2026-10-03). 그림 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-beyond",
+"cat": "card",
+"sub": "인카운터",
+"name": "저 너머",
+"src": "img/card/enc_beyond.webp",
+"note": "인카운터 그림 (2026-10-03). 그림 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-want-to-tell",
+"cat": "card",
+"sub": "인카운터",
+"name": "말하고 싶어",
+"src": "img/card/enc_want_to_tell.webp",
+"note": "인카운터 그림 (2026-10-03), 그림만 자름. 글: 그는 어둠속에서 기괴한 가면을 쓰고, 그의 머리엔 신성한 붉은 빛이 원을 그립니다. 당신에게 꼭 설명하고 싶을겁니다. 귀신과 당신, 그리고 신에 대하여",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-sages",
+"cat": "card",
+"sub": "인카운터",
+"name": "현자들 (오 닐 · 칼)",
+"src": "img/card/enc_sages.webp",
+"note": "인카운터 그림 (2026-10-03), 두 그림만 자름. 왼쪽 오 닐 (여, 검 마법사) · 오른쪽 칼 (남, 지팡이). 글: 그들은 여행자를 축복합니다. 우주의 아름다운 빛들이 그들과 함께하고 있었습니다. 그들과 함께하는 모든 순간은 당신의 이성과 빛을 한층 넓혀주고, 그 방의 모든 악한것들은 재처럼 흩어질 뿐이었습니다.",
 "rank": "",
 "on": false
 },
@@ -3581,6 +3611,46 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "P-blocker-art",
+"cat": "char",
+"sub": "막아서는 자 · 적 (2026-10-03)",
+"name": "막아서는 자",
+"src": "img/char/blocker_art.webp",
+"note": "적. 아래 글은 빼고 자름. 글: 비루한 그는 막아섰습니다. 그것이 그의 존재이유인듯",
+"rank": "",
+"on": false
+},
+{
+"id": "P-mechA-art",
+"cat": "char",
+"sub": "기체 · 적 (2026-10-03)",
+"name": "기체 A (다리 여러 개)",
+"src": "img/char/mechA_art.webp",
+"note": "적. 대충 잘라서 씀 (배경 지우기 모델, 가장자리 거칢)",
+"rank": "",
+"on": false
+},
+{
+"id": "P-mechB-art",
+"cat": "char",
+"sub": "기체 · 적 (2026-10-03)",
+"name": "기체 B (쌍검)",
+"src": "img/char/mechB_art.webp",
+"note": "적. 대충 잘라서 씀 (배경 지우기 모델)",
+"rank": "",
+"on": false
+},
+{
+"id": "P-kal-art",
+"cat": "char",
+"sub": "현자 칼 (2026-10-03)",
+"name": "칼 (남, 지팡이)",
+"src": "img/char/kal_art.webp",
+"note": "현자들 인카운터의 칼. 인게임에서는 칼이 스프라이트로 나옴. 검은 바탕을 지움",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-idle",
 "cat": "old2d",
 "sub": "인주 · SPECIAL",
@@ -4796,6 +4866,46 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "광신도 기본 초상화",
 "src": "img/face/cultist_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-blocker",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "막아서는 자 기본 초상화",
+"src": "img/face/blocker_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-mechA",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "기체 A 기본 초상화",
+"src": "img/face/mechA_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-mechB",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "기체 B 기본 초상화",
+"src": "img/face/mechB_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-kal",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "칼 기본 초상화",
+"src": "img/face/kal_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false
