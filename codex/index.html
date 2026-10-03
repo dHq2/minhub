@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.4 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.11 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -141,6 +141,7 @@ const CATS = [
   { key:'anim', no:'7', name:'동작', note:'움직이는 그림 (원본은 936×656 프레임 묶음, 여기선 절반 크기로 재생). 게임에 넣을 때는 프레임을 잘라 씀.' },
   { key:'char', no:'8', name:'인물', note:'게임에 들어갈 인물 그림 (배경을 지운 가공본).' },
   { key:'old2d', no:'9', name:'2D판 인물', note:'옛 2D판의 인물 그림 전부: 원화 동작 (움직이는 것은 재생) · 얼굴 · 도형으로 그린 인물. 인물마다 묶음. 버릴 것 · 쓸 것은 오른쪽 동그라미로.' },
+  { key:'face', no:'10', name:'표정', note:'대화 · 초상화에 쓰는 인물 표정. 인물마다 묶음.' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
 const $ = id => document.getElementById(id);

@@ -1,4 +1,4 @@
-/* catalog.js v1.10 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.11 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -4337,6 +4337,46 @@ const CATALOG = [
 "name": "단달로 · 얼굴",
 "src": "img/old2d/dandalo_face.webp",
 "note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
+"rank": "",
+"on": false
+},
+{
+"id": "F-ms-1",
+"cat": "face",
+"sub": "모닝스타 (2026-10-03)",
+"name": "모닝스타 · 표정 1 · 눈을 치켜뜨고 씩 웃음",
+"src": "img/face/ms_face1.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false
+},
+{
+"id": "F-ms-2",
+"cat": "face",
+"sub": "모닝스타 (2026-10-03)",
+"name": "모닝스타 · 표정 2 · 눈 감고 웃음",
+"src": "img/face/ms_face2.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false
+},
+{
+"id": "F-ms-3",
+"cat": "face",
+"sub": "모닝스타 (2026-10-03)",
+"name": "모닝스타 · 표정 3 · 이를 드러내고 비웃음",
+"src": "img/face/ms_face3.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false
+},
+{
+"id": "F-ms-4",
+"cat": "face",
+"sub": "모닝스타 (2026-10-03)",
+"name": "모닝스타 · 표정 4 · 고개 숙이고 음흉하게 웃음",
+"src": "img/face/ms_face4.webp",
+"note": "대화 · 초상화용 표정",
 "rank": "",
 "on": false
 }
