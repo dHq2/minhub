@@ -1,4 +1,4 @@
-/* catalog.js v1.21 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.22 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1367,6 +1367,16 @@ const CATALOG = [
 "name": "왕관 얼굴",
 "src": "a/enc_crown_face.png",
 "note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-oldman-suit",
+"cat": "card",
+"sub": "인카운터",
+"name": "노인과 양복",
+"src": "img/card/enc_oldman_suit.webp",
+"note": "인카운터 그림 (2026-10-03). 왕관 · 눈가리개 · 담배 연기. 검은 바탕 그대로",
 "rank": "",
 "on": false
 },
@@ -3501,6 +3511,46 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "P-hiddenkkaebi-art",
+"cat": "char",
+"sub": "히든깨비 (2026-10-03)",
+"name": "히든깨비",
+"src": "img/char/hiddenkkaebi_art.webp",
+"note": "보라 바탕을 지움. 머리 위 검은 고양이 · 긴 칼",
+"rank": "",
+"on": false
+},
+{
+"id": "P-girlprisoner-art",
+"cat": "char",
+"sub": "소녀와 죄수 (2026-10-03)",
+"name": "소녀와 죄수",
+"src": "img/char/girlprisoner_art.webp",
+"note": "촉수 달린 거인 (죄수)과 그 앞의 땋은 머리 소녀. 그려진 바탕은 배경 지우기 모델로 지움",
+"rank": "",
+"on": false
+},
+{
+"id": "P-leonas-art",
+"cat": "char",
+"sub": "레오나스 (2026-10-03)",
+"name": "레오나스",
+"src": "img/char/leonas_art.webp",
+"note": "사슴뿔 왕관 · 웃는 가면 · 파란 망토 · 검. 발밑 먹물 튐은 남김",
+"rank": "",
+"on": false
+},
+{
+"id": "P-hyal-art",
+"cat": "char",
+"sub": "고대천사 햘 (2026-10-03)",
+"name": "고대천사 햘",
+"src": "img/char/hyal_art.webp",
+"note": "스티커 모양 흰 외곽선은 남김. 둥근 갈색 바탕은 지움",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-idle",
 "cat": "old2d",
 "sub": "인주 · SPECIAL",
@@ -4666,6 +4716,46 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "가이우스 기본 초상화",
 "src": "img/face/gaius_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-hiddenkkaebi",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "히든깨비 기본 초상화",
+"src": "img/face/hiddenkkaebi_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-girlprisoner",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "소녀와 죄수 기본 초상화",
+"src": "img/face/girlprisoner_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-leonas",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "레오나스 기본 초상화",
+"src": "img/face/leonas_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-hyal",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "고대천사 햘 기본 초상화",
+"src": "img/face/hyal_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false
