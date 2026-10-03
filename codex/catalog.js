@@ -1,4 +1,4 @@
-/* catalog.js v1.1 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음). v1.1: 적뢰 팩 7종 */
+/* catalog.js v1.2 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음). v1.1: 적뢰 팩 7종 · v1.2: 나는 적뢰 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -2734,6 +2734,15 @@ const CATALOG = [
 "name": "공중에서 붉은 창 (2페이즈)",
 "src": "img/anim/jr_flying_spear.webp",
 "note": "22장 · 날고 있는 자세 → 창을 만듦 → 먹 → 던진 뒤 공중에서 웅크림",
+"rank": ""
+},
+{
+"id": "JR-fly",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "나는 적뢰 (2페이즈 자세)",
+"src": "img/anim/jr_fly.webp",
+"note": "한 장 · 2페이즈에서 날고 있을 때",
 "rank": ""
 }
 ];
