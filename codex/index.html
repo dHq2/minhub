@@ -1,0 +1,279 @@
+<title>굴의 도감</title>
+<!-- codex v1 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 배치: 위에 고정된 장부 띠 (분류 · 체크 수 · 백업), 아래로 분류별 진열장. 그림 칸마다 번호표 (스샷으로 집어 말할 수 있게) */
+:root{
+  --bg:#141116; --panel:#1d1920; --well:#25202a; --line:#3a3240; --fg:#ece4d6; --dim:#a39a8c;
+  --accent:#d9a94e; --check:#e8564a; --relic:#2f7f78; --relic-edge:#6fe0d0; --boss:#7a1f22; --boss-edge:#ff8a70;
+  --display:"Nanum Myeongjo","Batang",serif; --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
+  --accent:#9a6a12; --check:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; } }
+:root[data-theme="light"]{
+  --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
+  --accent:#9a6a12; --check:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; }
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+h1{font:800 34px/1.1 var(--display);margin:0;letter-spacing:1px;text-wrap:balance}
+.lede{color:var(--dim);margin:0;max-width:62ch;font-size:14px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 auto;min-width:0}
+.tab{font:500 13px var(--body);color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+.tab b{font:500 11px var(--mono);color:var(--dim);margin-left:4px}
+.tab[aria-pressed="true"]{color:var(--fg);border-color:var(--accent);background:var(--panel)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{font:500 13px var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 11px;cursor:pointer}
+.btn:hover,.tab:hover{border-color:var(--accent)}
+.btn:focus-visible,.tab:focus-visible,.tile:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.warn{color:var(--check)}
+.count{font:500 13px var(--mono);color:var(--check);padding-inline:4px;font-variant-numeric:tabular-nums}
+.only{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim);cursor:pointer}
+.status{font-size:12px;color:var(--dim);width:100%}
+.status.err{color:var(--check)}
+section.cat{margin-top:34px}
+section.cat > h2{font:700 22px/1.2 var(--display);margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+section.cat > h2 small{font:500 12px var(--mono);color:var(--dim)}
+.cat-note{color:var(--dim);font-size:13px;margin:0 0 12px;max-width:70ch}
+h3{font:600 13px var(--body);color:var(--dim);letter-spacing:.06em;margin:20px 0 8px;display:flex;gap:8px;align-items:center}
+h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.grid.cards{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.tile{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:5px;cursor:pointer;min-width:0}
+.tile .pic{aspect-ratio:1/1;max-width:100%;border-radius:4px;background:var(--well);display:grid;place-items:center;overflow:hidden}
+.grid.wide .pic{aspect-ratio:16/10}
+.grid.cards .pic{aspect-ratio:3/4}
+.tile img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.grid.wide img,.grid.cards img{width:100%;height:100%;object-fit:cover}
+.tile.relic .pic{background:radial-gradient(circle at 50% 45%,var(--relic) 0%,#123a3a 75%);box-shadow:inset 0 0 0 1px var(--relic-edge)}
+.tile.boss .pic{background:radial-gradient(circle at 50% 45%,var(--boss) 0%,#2a0a0c 78%);box-shadow:inset 0 0 0 1px var(--boss-edge)}
+.meta{display:flex;align-items:baseline;gap:6px;min-width:0}
+.id{font:500 11px var(--mono);color:var(--accent);flex:none}
+.nm{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.memo-dot{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.box{position:absolute;top:10px;left:10px;width:24px;height:24px;border-radius:5px;border:2px solid var(--dim);background:var(--bg);display:grid;place-items:center;font:700 15px var(--body);color:transparent;cursor:pointer}
+.tile.on{border-color:var(--check);box-shadow:0 0 0 1px var(--check)}
+.tile.on .box{background:var(--check);border-color:var(--check);color:#fff}
+.tile.on .id{color:var(--check)}
+.empty{color:var(--dim);font-size:14px;padding:20px 0}
+/* 크게 보기 */
+.view{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;padding:16px}
+.view .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-width:min(920px,100%);max-height:100%;overflow:auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;padding:16px}
+.view .big{background:var(--well);border-radius:6px;display:grid;place-items:center;min-height:260px}
+.view .big img{max-height:70vh;object-fit:contain}
+.view .side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.view .side .id{font-size:14px}
+.view .side h4{font:700 22px/1.25 var(--display);margin:0}
+.view .side p{margin:0;color:var(--dim);font-size:13.5px}
+textarea{width:100%;min-height:110px;resize:vertical;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:14px/1.5 var(--body)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.sheet{position:fixed;inset:auto 0 0 0;z-index:25;background:var(--panel);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sheet p{margin:0;flex:1 1 260px}
+pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;max-height:200px;overflow:auto;width:100%;margin:0}
+@media (max-width:640px){ .view .card{grid-template-columns:1fr} h1{font-size:28px} }
+@media (prefers-reduced-motion:no-preference){ .tile{transition:border-color .15s,box-shadow .15s} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>굴의 도감</h1>
+    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 체크와 메모는 이 페이지에 저장되어 Claude가 바로 읽을 수 있어요.</p>
+  </header>
+
+  <div class="bar" id="bar">
+    <div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
+    <div class="tools">
+      <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
+      <span class="count" id="count">체크 0</span>
+      <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
+      <button class="btn" id="saveBtn" type="button">백업 저장</button>
+      <button class="btn" id="loadBtn" type="button">백업 불러오기</button>
+      <input type="file" id="loadFile" accept="application/json,.json" hidden>
+      <button class="btn warn" id="clearBtn" type="button">체크 모두 해제</button>
+    </div>
+    <div class="status" id="status">저장소에 연결하는 중…</div>
+  </div>
+
+  <main id="main"></main>
+</div>
+
+<div class="view" id="view" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="vName">
+    <div class="big"><img id="vImg" alt=""></div>
+    <div class="side">
+      <span class="id" id="vId"></span>
+      <h4 id="vName"></h4>
+      <p id="vSub"></p>
+      <p id="vNote"></p>
+      <label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
+      <label for="vMemo" class="memo-dot">메모 (어떻게 할지: 지우기 · 이름 · 다듬기 …)</label>
+      <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
+      <div class="row"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vNext" type="button">다음 →</button><button class="btn" id="vClose" type="button">닫기</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden></div>
+
+<script src="catalog.js"></script>
+<script>
+'use strict';
+// 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
+const CATS = [
+  { key:'relic', no:'1', name:'유물', note:'청록 바탕 = 유물. 이름 있는 것은 2D판에서 이미 쓰는 유물, 나머지는 받은 유물 그림 54장.' },
+  { key:'equip', no:'2', name:'장비', note:'핏빛 바탕 = 보스 등급 장비 (세자르 · 적뢰). 나머지는 기본으로 얻을 수 있는 장비 후보: 2D판 무기 10종과 받은 장비 그림 55장 (무기 17 · 방어구 · 옷 24 · 장신구 14).' },
+  { key:'scene', no:'4', name:'컷씬', note:'로딩 · 장면 전환에 쓰는 그림.' },
+  { key:'bg', no:'5', name:'배경', note:'장소 그림.' },
+  { key:'card', no:'6', name:'카드 · 인카운터 등', note:'조우 그림, 인카운터 카드 20장, 흑백 이야기 그림 120장, 스킬 아이콘.' },
+];
+const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
+const $ = id => document.getElementById(id);
+let marks = {};             // id → { checked, memo, at }
+let cat = 'all', onlyChecked = false, store = null, viewing = null;
+
+/* ---------- 저장: db (Claude가 읽음) · 안 되면 이 브라우저에만 ---------- */
+const LS = 'codex-marks-v1';
+function lsRead(){ try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
+function lsWrite(){ try { localStorage.setItem(LS, JSON.stringify(marks)); } catch (e) {} }
+function status(msg, err){ const s = $('status'); s.textContent = msg; s.classList.toggle('err', !!err); }
+async function connect(){
+  marks = lsRead(); render();
+  let db = null;
+  try { db = window.claude && claude.use ? await claude.use('db') : null; } catch (e) { db = null; }
+  if (!db){ status('이 화면에서는 공유 저장소를 쓸 수 없어 이 브라우저에만 저장됩니다. 백업 저장으로 파일을 남겨 두세요.'); return; }
+  store = db.collection('marks');
+  store.onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', at: v.at || '' }; });
+    marks = next; lsWrite(); render(); if (viewing) fillView();
+    status('저장됨 · 체크와 메모는 Claude가 바로 읽을 수 있어요');
+  }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
+}
+async function put(id, patch){
+  const cur = marks[id] || { checked:false, memo:'' };
+  const v = { ...cur, ...patch, at: new Date().toISOString() };
+  if (!v.checked && !v.memo) delete marks[id]; else marks[id] = v;
+  lsWrite(); render();
+  if (!store) return;
+  try {
+    if (!v.checked && !v.memo) await store.doc(id).delete();
+    else await store.doc(id).set({ checked: v.checked, memo: v.memo, at: v.at });
+  } catch (e){ status('저장 실패: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있어요.', true); }
+}
+
+/* ---------- 그리기 ---------- */
+function visible(e){ return (cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)); }
+function tile(e){
+  const m = marks[e.id], on = m && m.checked;
+  const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
+  return `<div class="tile ${e.rank} ${on ? 'on' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
+    <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
+    <div class="pic"><img loading="lazy" src="${e.src}" alt="${esc(e.name)}"></div>
+    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
+function render(){
+  const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
+  $('count').textContent = `체크 ${checked}`;
+  $('tabs').innerHTML = [{ key:'all', no:'', name:'전체' }, ...CATS].map(c => {
+    const n = c.key === 'all' ? CATALOG.length : CATALOG.filter(e => e.cat === c.key).length;
+    return `<button class="tab" type="button" data-cat="${c.key}" aria-pressed="${cat === c.key}">${c.no ? c.no + '. ' : ''}${c.name}<b>${n}</b></button>`;
+  }).join('');
+  let html = '';
+  for (const c of CATS){
+    if (cat !== 'all' && cat !== c.key) continue;
+    const items = CATALOG.filter(e => e.cat === c.key && visible(e));
+    const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
+    const cls = c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
+    html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
+    let any = false;
+    for (const s of subs){
+      const list = items.filter(e => e.sub === s); if (!list.length) continue; any = true;
+      const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
+      const g = s === '인카운터 카드' ? 'grid cards' : cls;
+      html += `<h3><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</h3><div class="${g}">${list.map(tile).join('')}</div>`;
+    }
+    if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
+    html += `</section>`;
+  }
+  $('main').innerHTML = html;
+}
+
+/* ---------- 크게 보기 ---------- */
+function order(){ return CATALOG.filter(visible); }
+function openView(id){ viewing = id; $('view').hidden = false; fillView(); $('vMemo').focus({ preventScroll:true }); }
+function fillView(){
+  const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
+  $('vImg').src = e.src; $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
+  $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
+  $('vCheck').checked = !!m.checked;
+  if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
+}
+function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; fillView(); } }
+function saveMemo(){ if (!viewing) return; const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
+function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; }
+
+/* ---------- 목록 복사 · 백업 ---------- */
+function listText(){
+  const rows = CATALOG.filter(e => marks[e.id] && (marks[e.id].checked || marks[e.id].memo));
+  if (!rows.length) return '체크하거나 메모한 그림이 없어요.';
+  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${e.id}  ${e.name}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
+}
+function sheet(html){ const s = $('sheet'); s.innerHTML = html; s.hidden = false; }
+function closeSheet(){ $('sheet').hidden = true; }
+async function copyList(){
+  const t = listText();
+  try { await navigator.clipboard.writeText(t); status('체크 목록을 복사했어요'); }
+  catch (e){ sheet(`<p>복사가 막혀 있어요. 아래 글을 직접 선택해 복사하세요.</p><button class="btn" type="button" data-close>닫기</button><pre class="copy" id="copyText"></pre>`); $('copyText').textContent = t; const r = document.createRange(); r.selectNodeContents($('copyText')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+}
+async function saveBackup(){
+  const data = JSON.stringify({ kind:'codex-marks', version:1, savedAt:new Date().toISOString(), marks }, null, 1);
+  let dl = null; try { dl = window.claude && claude.use ? await claude.use('downloads') : null; } catch (e) {}
+  const name = 'codex-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  if (dl){ try { await dl.save({ filename:name, data }); status('백업 파일을 저장했어요: ' + name); return; } catch (e){ if (e && e.code === 'declined'){ status('백업 저장을 취소했어요'); return; } } }
+  sheet(`<p>파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 ${name} 로 저장하면 그게 백업이에요.</p><button class="btn" type="button" data-close>닫기</button><pre class="copy" id="copyText"></pre>`); $('copyText').textContent = data;
+}
+function loadBackup(file){
+  const r = new FileReader();
+  r.onload = async () => {
+    let j; try { j = JSON.parse(r.result); } catch (e){ status('백업 파일을 읽지 못했어요. 이 도감에서 저장한 .json 파일인지 확인해 주세요.', true); return; }
+    const m = j && j.marks; if (!m || typeof m !== 'object'){ status('백업 파일에 체크 정보가 없어요.', true); return; }
+    const ids = Object.keys(m).filter(id => BY_ID[id]);
+    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '' });
+    status(`백업에서 ${ids.length}개를 되살렸어요`);
+  };
+  r.readAsText(file);
+}
+function askClear(){
+  const n = Object.keys(marks).filter(id => marks[id].checked).length;
+  if (!n){ status('해제할 체크가 없어요'); return; }
+  sheet(`<p>체크 ${n}개를 모두 해제할까요? 메모는 남아요.</p><button class="btn warn" type="button" id="doClear">모두 해제</button><button class="btn" type="button" data-close>그만두기</button>`);
+  $('doClear').onclick = async () => { closeSheet(); for (const id of Object.keys(marks)) if (marks[id].checked) await put(id, { checked:false }); status('체크를 모두 해제했어요'); };
+}
+
+/* ---------- 이벤트 ---------- */
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
+$('main').addEventListener('click', e => {
+  const c = e.target.closest('[data-check]'); if (c){ e.stopPropagation(); const id = c.dataset.check; put(id, { checked: !(marks[id] && marks[id].checked) }); return; }
+  const t = e.target.closest('.tile'); if (t) openView(t.dataset.id);
+});
+$('main').addEventListener('keydown', e => { const t = e.target.closest('.tile'); if (!t) return; if (e.key === 'Enter'){ openView(t.dataset.id); } if (e.key === ' '){ e.preventDefault(); put(t.dataset.id, { checked: !(marks[t.dataset.id] && marks[t.dataset.id].checked) }); } });
+$('onlyChecked').addEventListener('change', e => { onlyChecked = e.target.checked; render(); });
+$('copyBtn').onclick = copyList; $('saveBtn').onclick = saveBackup; $('clearBtn').onclick = askClear;
+$('loadBtn').onclick = () => $('loadFile').click();
+$('loadFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadBackup(f); e.target.value = ''; });
+$('sheet').addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
+$('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.checked }));
+$('vMemo').addEventListener('blur', saveMemo);
+$('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = closeView;
+$('view').addEventListener('click', e => { if (e.target === $('view')) closeView(); });
+addEventListener('keydown', e => { if ($('view').hidden) return; if (e.key === 'Escape') closeView(); if (document.activeElement === $('vMemo')) return; if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+try { const t = localStorage.getItem('codex-tab'); if (t && (t === 'all' || CATS.some(c => c.key === t))) cat = t; } catch (e) {}
+render(); connect();
+</script>
