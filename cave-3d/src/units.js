@@ -364,24 +364,22 @@ function shoot(o){
   G.projs.push(p);
   return p;
 }
+// 빠른 투사체는 0.4칸씩 나눠 움직이며 판정 (프레임이 느려도 몸을 건너뛰지 않게)
 function updateProjs(dt){
   G.projs = G.projs.filter(p => {
+    const n = Math.max(1, Math.ceil(p.speed * dt / 0.4));
+    for (let i = 0; i < n; i++) if (!stepProj(p, dt / n)) return false;
+    return true;
+  });
+}
+function stepProj(p, dt){
+  {
     const step = p.speed * dt, nx = p.x + Math.cos(p.a) * step, nz = p.z + Math.sin(p.a) * step;
     p.t += dt;
     if (p.fall){ p.y = Math.max(p.yEnd ?? 0.2, p.y + p.vy * dt); p.vy -= 9 * dt; }
     if (p.dy){ p.y = Math.max(0.6, p.y + p.dy * dt); p.m.rotation.z = Math.atan2(p.dy, p.speed); }
-    // 포물선 (투창): 중력으로 떨어지다 땅 (높은 바닥 포함)에 닿으면 박힘. 보정: 노린 적 쪽으로 살짝 꺾임
+    // 포물선 (투창): 중력으로 떨어지다 땅 (높은 바닥 포함)에 닿으면 박힘. 꺾이지 않음
     if (p.g){
-      const H = p.homing;
-      if (H && !H.dead && !H.downed && !p.hits.has(H)){
-        const want = Math.atan2(H.z - p.z, H.x - p.x), da = angDiff(want, p.a), Lr = Math.hypot(H.x - p.x, H.z - p.z);
-        if (Math.abs(da) < 1.0){
-          p.a += clamp(da, -2.6 * dt, 2.6 * dt); p.m.rotation.y = -p.a;
-          // 높이도: 남은 거리로 다시 계산한 포물선 쪽으로 (다가오거나 물러나는 적도 몸통에 꽂히게)
-          const Tr = Math.max(0.06, Lr / p.speed), ty = H.y + (H.lift || 0) + (H.jy || 0) + bodyH(H) * 0.55;
-          p.vy += ((ty - p.y) / Tr + p.g * Tr / 2 - p.vy) * Math.min(1, dt * 8);
-        }
-      }
       p.vy -= p.g * dt; p.y += p.vy * dt; p.m.rotation.z = Math.atan2(p.vy, p.speed);
       const gh = heightAt(G.map, nx, nz);
       if (p.y <= gh + 0.08){ p.end && p.end(p, nx, nz, false); G.scene.remove(p.m); return false; }
@@ -400,5 +398,5 @@ function updateProjs(dt){
       }
     }
     return true;
-  });
+  }
 }

@@ -187,30 +187,24 @@ async function bossIntro(){
   G.units.filter(u => u.side === 'ally').forEach((u, i) => { u.x = 14.5 + (i - 1) * 1.1; u.z = 8.6 + (i ? 0.3 : 0); u.kx = u.kz = 0; });
   camWide(C.x, C.z + 2, 9, 10, 99);
   G.rain.on = true;
-  await wait(0.5); flashScreen('#ffffff', 0.5); camShake(0.15, 0.3);
-  await wait(0.9); flashScreen('#ffe8e8', 0.6); camShake(0.2, 0.3);
+  await wait(0.5); flashScreen('#ffffff', 0.5); camShake(0.15, 0.3); SFX.thunder();
+  await wait(0.9); flashScreen('#ffe8e8', 0.6); camShake(0.2, 0.3); SFX.thunder();
   await wait(0.7);
   // 붉은 빛 하나가 떨어짐
   const streak = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color: 0xff3020, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   streak.scale.set(1.2, 6, 1); streak.position.set(C.x, 24, C.z); G.scene.add(streak);
   const t0 = G.t; await waitUntil(() => { const k = Math.min(1, (G.t - t0) / 0.4); streak.position.y = 24 - 21 * k; return k >= 1; });
   G.scene.remove(streak);
-  flashScreen('#ffffff', 0.9); camShake(0.6, 0.5); ring(C.x, C.z, 0xff5040, 5, 0.6); dust(C.x, C.z, 24); spark(C.x, 1, C.z, 0xff8060, 30, 9);
+  flashScreen('#ffffff', 0.9); camShake(0.6, 0.5); ring(C.x, C.z, 0xff5040, 5, 0.6); dust(C.x, C.z, 24); spark(C.x, 1, C.z, 0xff8060, 30, 9); smoke(C.x, C.z, 16, 1.6, 2.2); SFX.boom(1.6);
   const boss = spawn('jeokroe', C.x, C.z, 'enemy'); G.boss = boss; boss.alert = true; boss.band = 'boss'; setAim(boss, G.player.x, G.player.z);
   // 정적: 빗방울이 멈춘 듯
   G.rain.freeze = 1.3; camFocus(boss.x, boss.z, 99, 3.4, 6.5, 0.07);
   await wait(1.3);
-  // 예고 없이: 날아차기
+  // 정적이 끝나면 바로 전투. 첫 패턴은 무조건 날아차기 (예고 장판 있음)
   camFocusOff(); CAM.wide = null;
-  const pl = G.player, a = Math.atan2(pl.z - boss.z, pl.x - boss.x), L = Math.max(0, dist(boss, pl) - 1);
-  setPose(boss, 'leap');
-  const t1 = G.t; await waitUntil(() => { const k = Math.min(1, (G.t - t1) / 0.22); boss.x = C.x + Math.cos(a) * L * k; boss.z = C.z + Math.sin(a) * L * k; boss.lift = Math.sin(Math.PI * k) * 1.2; return k >= 1; });
-  boss.lift = 0; setPose(boss, 'kick');
-  hurt(boss, pl, 22, { kb: 3, from: boss, stun: 0.7, unblockable: true });
-  camShake(0.65, 0.5);   // 확대 · 앵글 없이 진동만
   bossInit(boss, C);
+  boss.B.act = { type: 'kick', t: 0, tgt: G.player, phase: 0 };
   $('bossbar').hidden = false; $('bossname').textContent = '적뢰 — 붉은 날개의 천사';
-  await wait(0.5);
   letterbox(false); G.lock = false;
 }
 async function bossDown(u){

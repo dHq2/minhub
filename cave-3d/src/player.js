@@ -1,4 +1,4 @@
-/* player.js v0.6 — 인주 직접 조작
+/* player.js v0.7 — 인주 직접 조작
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -6,7 +6,7 @@
    앉기: 자세 (u.posture = 'stand' | 'crouch')만 마련해 둠. 몸 키 (bodyH)가 자세를 따름 → 나중에 Ctrl로 붙이면 됨 */
 'use strict';
 const THROW = { full: 1.25, perfect: 0.065, speed: 26, range: 13 };
-const P = { spear: true, spearObj: null, combo: 0, comboT: 0, atkCd: 0, dodgeCd: 0, charge: 0, aiming: false, lockT: null, ghostT: 0 };
+const P = { spear: true, spearObj: null, combo: 0, comboT: 0, atkCd: 0, dodgeCd: 0, charge: 0, aiming: false, ghostT: 0 };
 const JUMP = { v: 5.8, g: 16 };
 
 function aimPoint(u){
@@ -23,7 +23,8 @@ function mouseOverEnemy(){
     if (f.behind) continue;
     const hh = Math.max(30, f.y - h.y), hw = Math.max(22, hh * 0.32);
     if (mouse.x < f.x - hw || mouse.x > f.x + hw || mouse.y < h.y - 10 || mouse.y > f.y + 12) continue;
-    const d = Math.abs(mouse.x - f.x) + Math.abs(mouse.y - (f.y + h.y) / 2) * 0.5;
+    let d = Math.abs(mouse.x - f.x) + Math.abs(mouse.y - (f.y + h.y) / 2) * 0.5;
+    if (e.airborne || (e.lift || 0) > 0.5) d *= 0.6;   // 겹쳐 보이면 나는 적 쪽 (위를 가리키면 자연스럽게 공중)
     if (d < bd){ bd = d; best = e; }
   }
   return best;
@@ -101,7 +102,7 @@ function playerUpdate(u, dt){
   }
   // 투창: 누르고 있기
   const holding = !G.lock && (mouse.right || down('KeyK'));
-  if (!P.aiming && P.spear && (hit('Mouse2') || hit('KeyK'))){ P.aiming = true; P.charge = 0; P.lockT = mouse.over; if (P.lockT) popText(P.lockT.x, P.lockT.y + bodyH(P.lockT) + 0.6 + P.lockT.lift, P.lockT.z, '조준', 'aim', 0.6); }
+  if (!P.aiming && P.spear && (hit('Mouse2') || hit('KeyK'))){ P.aiming = true; P.charge = 0; }
   if (!P.spear && (hit('Mouse2') || hit('KeyK'))) popText(u.x, u.y + 2, u.z, '창이 없음 — 주워야 함', 'miss', 0.9);
   if (P.aiming){
     P.charge = Math.min(THROW.full, P.charge + dt);
@@ -129,21 +130,21 @@ function playerUpdate(u, dt){
     G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, '창을 주움', 'heal', 0.7);
   }
 }
-// 투창 궤적 (포물선): 마우스가 가리키는 곳 (2 ~ 13칸)에 떨어지게 계산. 그 근처 (1.4칸)에 적이 있으면 그 적의 몸통을 노림 (보정)
-// 적 위에서 누르면 그 적. 마우스를 안 쓰면 앞의 가까운 적. 모을수록 빠르고 낮게 날아감. 놓는 순간의 궤적 그대로 날아감
-const ARC = { g: 16, v0: 10, v1: 7, assist: 1.4 };
+// 투창 궤적: 보정 없음. 마우스가 가리키는 곳 그대로
+//  - 바닥을 가리키면 그 자리 (2 ~ 13칸)에 꽂히는, 빠르고 거의 곧은 포물선 (살짝 떨어짐)
+//  - 적의 그림 (날고 있으면 하늘에 있는 그 그림)을 가리키면 그 그림의 가리킨 높이로 곧장 → 빗나가면 지나가서 떨어짐
+//  - 날아가는 중엔 꺾이지 않음 (움직이는 적은 빗나갈 수 있음). 마우스를 안 쓰면 바라보는 쪽 끝까지
+//  모을수록 빠름. 놓는 순간의 궤적 그대로 날아감
+const ARC = { g: 6, v0: 22, v1: 10 };
 function aimPath(u){
-  let tp = P.lockT && !P.lockT.dead ? P.lockT : null, gp = null;
-  if (!tp) tp = mouse.over && !mouse.over.dead ? mouse.over : null;   // 그림 위에 마우스 → 그 적 (날고 있으면 하늘의 몸통)
-  if (!tp){
-    gp = aimPoint(u);
-    if (gp){ let bd = ARC.assist; for (const e of foes()){ if (e.dead || e.downed) continue; const d = Math.hypot(e.x - gp.x, e.z - gp.z) - e.r; if (d < bd && Math.hypot(e.x - u.x, e.z - u.z) <= THROW.range + 1){ bd = d; tp = e; } } }
-    else tp = nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.1 && losClear(G.map, u.x, u.z, e.x, e.z)), THROW.range);
-  }
-  let tx, tz, ty;
-  if (tp){ tx = tp.x; tz = tp.z; ty = tp.y + (tp.lift || 0) + (tp.jy || 0) + bodyH(tp) * 0.55; }
-  else {
-    if (!gp) gp = { x: u.x + Math.cos(u.aim) * THROW.range, z: u.z + Math.sin(u.aim) * THROW.range };
+  let tx, tz, ty, tp = null;
+  const e = mouse.over && !mouse.over.dead ? mouse.over : null;
+  if (e){
+    const base = e.y + (e.lift || 0) + (e.jy || 0), f = toScreen(e.x, base, e.z, UI.W, UI.H), h = toScreen(e.x, base + bodyH(e), e.z, UI.W, UI.H);
+    const fr = clamp((f.y - mouse.y) / Math.max(1, f.y - h.y), 0.15, 0.95);
+    tp = e; tx = e.x; tz = e.z; ty = base + bodyH(e) * fr;
+  } else {
+    const gp = aimPoint(u) || { x: u.x + Math.cos(u.aim) * THROW.range, z: u.z + Math.sin(u.aim) * THROW.range };
     const a = Math.atan2(gp.z - u.z, gp.x - u.x), L = clamp(Math.hypot(gp.x - u.x, gp.z - u.z), 2, THROW.range);
     tx = u.x + Math.cos(a) * L; tz = u.z + Math.sin(a) * L; ty = heightAt(G.map, tx, tz);
   }
@@ -158,7 +159,7 @@ function aimPath(u){
   for (let i = 0; i <= n; i++){
     const t = Tmax * i / n, x = u.x + Math.cos(a) * vh * t, z = u.z + Math.sin(a) * vh * t, y = y0 + vy * t - ARC.g * t * t / 2;
     // 날아가는 길에 닿는 적의 그림 (몸통 기둥): 거기서 끊고 "맞음"으로 보여줌
-    if (i > 0){ const b = bodies.find(e => { const base = e.y + (e.lift || 0) + (e.jy || 0); return Math.hypot(e.x - x, e.z - z) < e.r + 0.4 && y > base - 0.1 && y < base + bodyH(e) + 0.2; });
+    if (i > 0){ const b = bodies.find(e => { const base = e.y + (e.lift || 0) + (e.jy || 0); return Math.hypot(e.x - x, e.z - z) < e.r + 0.3 && y > base - 0.35 && y < base + bodyH(e) + 0.35; });   // 실제 판정과 같게
       if (b){ hit = b; land = { x, y, z }; pts.push(land); break; } }
     const ti = Math.round(x), tj = Math.round(z), tk = tj * m.w + ti;
     if (ti < 0 || tj < 0 || ti >= m.w || tj >= m.h || (m.solid[tk] && !m.low[tk] && y < 2.4)){ land = pts[pts.length - 1] || { x: u.x, y: y0, z: u.z }; break; }
@@ -177,7 +178,7 @@ function throwSpear(u, k, perfect){
   if (perfect){ popText(u.x, u.y + 2.2, u.z, '완벽!', 'crit', 1); ring(u.x, u.z, 0x5ab4ff, 2.2, 0.4); G.hitstop = 0.08; }
   else if (k >= 1) popText(u.x, u.y + 2.1, u.z, '힘껏', 'big', 0.7);
   spark(u.x + Math.cos(a) * 0.6, u.y + 1.3, u.z + Math.sin(a) * 0.6, perfect ? 0x7fc8ff : 0xfff0d0, perfect ? 16 : 6, 4);
-  const p = shoot({ x: u.x, y: A.y0, z: u.z, a, speed: A.vh, vy: A.vy, g: ARC.g, homing: A.hit, hitR: 0.4, range: THROW.range * 2, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
+  const p = shoot({ x: u.x, y: A.y0, z: u.z, a, speed: A.vh, vy: A.vy, g: ARC.g, hitR: 0.3, range: THROW.range * 2, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
     glow: perfect ? 0x5ab4ff : null, pierce: perfect, hitsAir: true, trail: perfect ? 0x5ab4ff : null,
     onHit: (p, t) => {
       hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, crit: perfect, critMul: 2.5, pierce: perfect, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
@@ -226,7 +227,7 @@ function updateAimLine(u){
   // 맞는 적이 있으면 그 발밑에 고리 + 머리 위 "맞음", 없으면 떨어질 자리에 작은 고리 (노린 적이 있는데 안 맞으면 붉게)
   aimLine.land.visible = !A.hit; aimLine.land.position.set(A.land.x, heightAt(G.map, A.land.x, A.land.z) + 0.05, A.land.z); aimLine.land.material.color.setHex(A.tp ? 0xff6a5a : win ? 0x8fd8ff : c);
   aimLine.foe.visible = !!A.hit; if (A.hit){ aimLine.foe.position.set(A.hit.x, A.hit.y + 0.05, A.hit.z); aimLine.foe.scale.setScalar(A.hit.r / 0.6 + 0.4); aimLine.foe.material.color.setHex(win ? 0x8fd8ff : c); }
-  const el = document.getElementById('aimtag'); if (el){ const t = A.hit || (A.tp ? null : null); el.hidden = !A.hit && !A.tp;
+  const el = document.getElementById('aimtag'); if (el){ el.hidden = !A.hit && !A.tp;
     if (!el.hidden){ const e = A.hit || A.tp, sp = toScreen(e.x, e.y + (e.lift || 0) + bodyH(e) + 0.3, e.z, UI.W, UI.H); el.style.transform = `translate(${sp.x}px,${sp.y}px) translate(-50%,-100%)`; el.textContent = A.hit ? '맞음' : '안 닿음'; el.className = A.hit ? 'ok' : 'no'; } }
 }
 function updateChargeRing(u){
