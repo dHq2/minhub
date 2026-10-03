@@ -1,4 +1,4 @@
-/* catalog.js v1.41 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.42 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3212,61 +3212,6 @@ const CATALOG = [
 "pin": 1
 },
 {
-"id": "H-005",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "침대",
-"src": "img/prop/H-005.webp",
-"note": "",
-"rank": "",
-"on": true,
-"pin": 2
-},
-{
-"id": "H-005-c1",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "침대 · 색 변형 (먼지 낀 남색)",
-"src": "img/prop/H-005-c1.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-005"
-},
-{
-"id": "H-005-c2",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "침대 · 색 변형 (이끼색)",
-"src": "img/prop/H-005-c2.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-005"
-},
-{
-"id": "H-005-c3",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "침대 · 색 변형 (바랜 자주)",
-"src": "img/prop/H-005-c3.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-005"
-},
-{
-"id": "H-005-c4",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "침대 · 색 변형 (흙빛 황토)",
-"src": "img/prop/H-005-c4.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-005"
-},
-{
 "id": "H-044",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -3275,7 +3220,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 8
+"pin": 7
 },
 {
 "id": "H-044-c1",
@@ -3330,7 +3275,7 @@ const CATALOG = [
 "note": "의미 없는 문양 지움 · 색 팔레트 살짝 바꿈",
 "rank": "",
 "on": true,
-"pin": 6
+"pin": 5
 },
 {
 "id": "H-072",
@@ -3341,7 +3286,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 7
+"pin": 6
 },
 {
 "id": "H-080",
@@ -3352,7 +3297,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 9
+"pin": 8
 },
 {
 "id": "H-091",
@@ -3363,7 +3308,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 10
+"pin": 9
 },
 {
 "id": "H-098",
@@ -3374,7 +3319,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 11
+"pin": 10
 },
 {
 "id": "H-099",
@@ -3385,7 +3330,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 12
+"pin": 11
 },
 {
 "id": "H-099-c1",
@@ -3440,7 +3385,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 13
+"pin": 12
 },
 {
 "id": "H-121",
@@ -3451,7 +3396,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 14
+"pin": 13
 },
 {
 "id": "H-122",
@@ -3462,7 +3407,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 15
+"pin": 14
 },
 {
 "id": "H-125",
@@ -3473,7 +3418,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 16
+"pin": 15
 },
 {
 "id": "H-131",
@@ -3484,7 +3429,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 17
+"pin": 16
 },
 {
 "id": "H-131-c1",
@@ -3531,26 +3476,6 @@ const CATALOG = [
 "parent": "H-131"
 },
 {
-"id": "H-135",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "교회 신도석",
-"src": "img/prop/H-135.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-146",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "촛대 책상 · 파란 천",
-"src": "img/prop/H-146.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
 "id": "H-180",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -3559,7 +3484,7 @@ const CATALOG = [
 "note": "의미 없는 문양 지움",
 "rank": "",
 "on": true,
-"pin": 35
+"pin": 34
 },
 {
 "id": "H-180-c1",
@@ -3614,7 +3539,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 32
+"pin": 31
 },
 {
 "id": "H-185",
@@ -3625,7 +3550,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 33
+"pin": 32
 },
 {
 "id": "H-185-c1",
@@ -3680,7 +3605,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 3
+"pin": 2
 },
 {
 "id": "H-239",
@@ -3691,7 +3616,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 36
+"pin": 35
 },
 {
 "id": "H-239-c1",
@@ -3746,7 +3671,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 22
+"pin": 21
 },
 {
 "id": "H-241",
@@ -3757,7 +3682,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 19
+"pin": 18
 },
 {
 "id": "H-243",
@@ -3768,7 +3693,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 29
+"pin": 28
 },
 {
 "id": "H-244",
@@ -3779,7 +3704,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 28
+"pin": 27
 },
 {
 "id": "H-245",
@@ -3790,7 +3715,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 27
+"pin": 26
 },
 {
 "id": "H-246",
@@ -3801,7 +3726,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 26
+"pin": 25
 },
 {
 "id": "H-247",
@@ -3812,7 +3737,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 25
+"pin": 24
 },
 {
 "id": "H-248",
@@ -3823,7 +3748,7 @@ const CATALOG = [
 "note": "원래 이름: 붉은 소파 3",
 "rank": "",
 "on": true,
-"pin": 18
+"pin": 17
 },
 {
 "id": "H-248-c1",
@@ -3878,7 +3803,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 24
+"pin": 23
 },
 {
 "id": "H-252",
@@ -3889,7 +3814,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 23
+"pin": 22
 },
 {
 "id": "H-266",
@@ -3900,7 +3825,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 31
+"pin": 30
 },
 {
 "id": "H-271",
@@ -3911,7 +3836,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 30
+"pin": 29
 },
 {
 "id": "H-016",
@@ -3921,7 +3846,8 @@ const CATALOG = [
 "src": "img/prop/H-016.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 55
 },
 {
 "id": "H-041",
@@ -3931,17 +3857,8 @@ const CATALOG = [
 "src": "img/prop/H-041.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-042",
-"cat": "prop",
-"sub": "수납",
-"name": "책장",
-"src": "img/prop/H-042.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 42
 },
 {
 "id": "H-075",
@@ -3951,7 +3868,8 @@ const CATALOG = [
 "src": "img/prop/H-075.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 57
 },
 {
 "id": "H-083",
@@ -3961,17 +3879,8 @@ const CATALOG = [
 "src": "img/prop/H-083.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-087",
-"cat": "prop",
-"sub": "수납",
-"name": "초승달 책장",
-"src": "img/prop/H-087.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 52
 },
 {
 "id": "H-090",
@@ -3981,27 +3890,8 @@ const CATALOG = [
 "src": "img/prop/H-090.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-092",
-"cat": "prop",
-"sub": "수납",
-"name": "책장 2",
-"src": "img/prop/H-092.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-094",
-"cat": "prop",
-"sub": "수납",
-"name": "그릇 진열장",
-"src": "img/prop/H-094.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 54
 },
 {
 "id": "H-103",
@@ -4011,7 +3901,8 @@ const CATALOG = [
 "src": "img/prop/H-103.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 47
 },
 {
 "id": "H-124",
@@ -4021,7 +3912,8 @@ const CATALOG = [
 "src": "img/prop/H-124.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 43
 },
 {
 "id": "H-126",
@@ -4031,7 +3923,8 @@ const CATALOG = [
 "src": "img/prop/H-126.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 51
 },
 {
 "id": "H-127",
@@ -4041,7 +3934,8 @@ const CATALOG = [
 "src": "img/prop/H-127.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 50
 },
 {
 "id": "H-149",
@@ -4051,7 +3945,8 @@ const CATALOG = [
 "src": "img/prop/H-149.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 44
 },
 {
 "id": "H-171",
@@ -4061,7 +3956,8 @@ const CATALOG = [
 "src": "img/prop/H-171.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 49
 },
 {
 "id": "H-178",
@@ -4072,7 +3968,7 @@ const CATALOG = [
 "note": "의미 없는 문양 지움",
 "rank": "",
 "on": true,
-"pin": 42
+"pin": 41
 },
 {
 "id": "H-183",
@@ -4082,7 +3978,8 @@ const CATALOG = [
 "src": "img/prop/H-183.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 84
 },
 {
 "id": "H-187",
@@ -4092,7 +3989,8 @@ const CATALOG = [
 "src": "img/prop/H-187.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 53
 },
 {
 "id": "H-188",
@@ -4102,17 +4000,8 @@ const CATALOG = [
 "src": "img/prop/H-188.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-217",
-"cat": "prop",
-"sub": "수납",
-"name": "장식 서랍장 (꽃병 · 촛대)",
-"src": "img/prop/H-217.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 46
 },
 {
 "id": "H-249",
@@ -4123,7 +4012,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 38
+"pin": 37
 },
 {
 "id": "H-250",
@@ -4134,7 +4023,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 39
+"pin": 38
 },
 {
 "id": "H-258",
@@ -4145,7 +4034,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 40
+"pin": 39
 },
 {
 "id": "H-259",
@@ -4156,7 +4045,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 41
+"pin": 40
 },
 {
 "id": "H-114",
@@ -4166,7 +4055,8 @@ const CATALOG = [
 "src": "img/prop/H-114.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 63
 },
 {
 "id": "H-115",
@@ -4176,7 +4066,8 @@ const CATALOG = [
 "src": "img/prop/H-115.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 64
 },
 {
 "id": "H-128",
@@ -4186,7 +4077,8 @@ const CATALOG = [
 "src": "img/prop/H-128.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 65
 },
 {
 "id": "H-130",
@@ -4196,7 +4088,8 @@ const CATALOG = [
 "src": "img/prop/H-130.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 66
 },
 {
 "id": "H-145",
@@ -4206,7 +4099,8 @@ const CATALOG = [
 "src": "img/prop/H-145.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 67
 },
 {
 "id": "H-170",
@@ -4246,7 +4140,8 @@ const CATALOG = [
 "src": "img/prop/H-255.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 86
 },
 {
 "id": "H-256",
@@ -4256,7 +4151,8 @@ const CATALOG = [
 "src": "img/prop/H-256.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 85
 },
 {
 "id": "H-257",
@@ -4266,17 +4162,19 @@ const CATALOG = [
 "src": "img/prop/H-257.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 62
 },
 {
 "id": "H-268",
 "cat": "prop",
 "sub": "상자 · 통",
-"name": "방독면 상자",
+"name": "물자상자",
 "src": "img/prop/H-268.webp",
-"note": "",
+"note": "원래 이름: 방독면 상자",
 "rank": "",
-"on": false
+"on": true,
+"pin": 61
 },
 {
 "id": "H-278",
@@ -4286,7 +4184,8 @@ const CATALOG = [
 "src": "img/prop/H-278.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 60
 },
 {
 "id": "H-302",
@@ -4296,7 +4195,8 @@ const CATALOG = [
 "src": "img/prop/H-302.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 59
 },
 {
 "id": "H-304",
@@ -4306,7 +4206,8 @@ const CATALOG = [
 "src": "img/prop/H-304.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 58
 },
 {
 "id": "H-231",
@@ -4314,9 +4215,10 @@ const CATALOG = [
 "sub": "생활 소품",
 "name": "붉은 책 더미",
 "src": "img/prop/H-231.webp",
-"note": "",
+"note": "오딜 방에도 배치",
 "rank": "",
-"on": false
+"on": true,
+"pin": 82
 },
 {
 "id": "H-234",
@@ -4326,7 +4228,8 @@ const CATALOG = [
 "src": "img/prop/H-234.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 81
 },
 {
 "id": "H-235",
@@ -4336,7 +4239,8 @@ const CATALOG = [
 "src": "img/prop/H-235.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 79
 },
 {
 "id": "H-294",
@@ -4346,7 +4250,8 @@ const CATALOG = [
 "src": "img/prop/H-294.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 78
 },
 {
 "id": "H-295",
@@ -4356,7 +4261,8 @@ const CATALOG = [
 "src": "img/prop/H-295.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 72
 },
 {
 "id": "H-296",
@@ -4366,7 +4272,8 @@ const CATALOG = [
 "src": "img/prop/H-296.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 73
 },
 {
 "id": "H-297",
@@ -4376,7 +4283,8 @@ const CATALOG = [
 "src": "img/prop/H-297.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 74
 },
 {
 "id": "H-298",
@@ -4386,7 +4294,8 @@ const CATALOG = [
 "src": "img/prop/H-298.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 75
 },
 {
 "id": "H-299",
@@ -4396,7 +4305,8 @@ const CATALOG = [
 "src": "img/prop/H-299.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 76
 },
 {
 "id": "H-300",
@@ -4406,7 +4316,8 @@ const CATALOG = [
 "src": "img/prop/H-300.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 77
 },
 {
 "id": "H-301",
@@ -4416,7 +4327,8 @@ const CATALOG = [
 "src": "img/prop/H-301.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 83
 },
 {
 "id": "H-303",
@@ -4424,9 +4336,10 @@ const CATALOG = [
 "sub": "생활 소품",
 "name": "선물 상자",
 "src": "img/prop/H-303.webp",
-"note": "",
+"note": "색을 더 화려하게",
 "rank": "",
-"on": false
+"on": true,
+"pin": 68
 },
 {
 "id": "H-305",
@@ -4436,7 +4349,8 @@ const CATALOG = [
 "src": "img/prop/H-305.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 80
 },
 {
 "id": "H-306",
@@ -4446,7 +4360,8 @@ const CATALOG = [
 "src": "img/prop/H-306.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 69
 },
 {
 "id": "H-307",
@@ -4456,7 +4371,8 @@ const CATALOG = [
 "src": "img/prop/H-307.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 70
 },
 {
 "id": "H-308",
@@ -4466,7 +4382,8 @@ const CATALOG = [
 "src": "img/prop/H-308.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 71
 },
 {
 "id": "H-018",
@@ -4476,7 +4393,8 @@ const CATALOG = [
 "src": "img/prop/H-018.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 93
 },
 {
 "id": "H-030",
@@ -4486,7 +4404,8 @@ const CATALOG = [
 "src": "img/prop/H-030.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 92
 },
 {
 "id": "H-043",
@@ -4494,7 +4413,7 @@ const CATALOG = [
 "sub": "조명 · 불",
 "name": "돌 벽난로",
 "src": "img/prop/H-043.webp",
-"note": "",
+"note": "깃발 지움",
 "rank": "",
 "on": false
 },
@@ -4506,7 +4425,8 @@ const CATALOG = [
 "src": "img/prop/H-050.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 91
 },
 {
 "id": "H-082",
@@ -4516,7 +4436,8 @@ const CATALOG = [
 "src": "img/prop/H-082.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 90
 },
 {
 "id": "H-093",
@@ -4526,7 +4447,8 @@ const CATALOG = [
 "src": "img/prop/H-093.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 89
 },
 {
 "id": "H-101",
@@ -4536,7 +4458,8 @@ const CATALOG = [
 "src": "img/prop/H-101.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 88
 },
 {
 "id": "H-104",
@@ -4546,7 +4469,8 @@ const CATALOG = [
 "src": "img/prop/H-104.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 87
 },
 {
 "id": "H-107",
@@ -4556,7 +4480,8 @@ const CATALOG = [
 "src": "img/prop/H-107.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 94
 },
 {
 "id": "H-123",
@@ -4566,7 +4491,8 @@ const CATALOG = [
 "src": "img/prop/H-123.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 95
 },
 {
 "id": "H-129",
@@ -4576,7 +4502,8 @@ const CATALOG = [
 "src": "img/prop/H-129.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 105
 },
 {
 "id": "H-148",
@@ -4584,9 +4511,10 @@ const CATALOG = [
 "sub": "조명 · 불",
 "name": "붉은 불꽃 화로 2",
 "src": "img/prop/H-148.webp",
-"note": "",
+"note": "불 색 바꿈 (푸른 불)",
 "rank": "",
-"on": false
+"on": true,
+"pin": 104
 },
 {
 "id": "H-158",
@@ -4596,17 +4524,8 @@ const CATALOG = [
 "src": "img/prop/H-158.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-186",
-"cat": "prop",
-"sub": "조명 · 불",
-"name": "술 달린 스탠드",
-"src": "img/prop/H-186.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 103
 },
 {
 "id": "H-206",
@@ -4616,27 +4535,8 @@ const CATALOG = [
 "src": "img/prop/H-206.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-221",
-"cat": "prop",
-"sub": "조명 · 불",
-"name": "리본 촛대",
-"src": "img/prop/H-221.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-222",
-"cat": "prop",
-"sub": "조명 · 불",
-"name": "붉은 갓 스탠드",
-"src": "img/prop/H-222.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 102
 },
 {
 "id": "H-236",
@@ -4646,7 +4546,8 @@ const CATALOG = [
 "src": "img/prop/H-236.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 98
 },
 {
 "id": "H-292",
@@ -4656,7 +4557,8 @@ const CATALOG = [
 "src": "img/prop/H-292.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 97
 },
 {
 "id": "H-293",
@@ -4666,7 +4568,8 @@ const CATALOG = [
 "src": "img/prop/H-293.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 96
 },
 {
 "id": "H-319",
@@ -4676,7 +4579,8 @@ const CATALOG = [
 "src": "img/prop/H-319.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 106
 },
 {
 "id": "H-320",
@@ -4686,7 +4590,8 @@ const CATALOG = [
 "src": "img/prop/H-320.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 107
 },
 {
 "id": "H-001",
@@ -4696,7 +4601,8 @@ const CATALOG = [
 "src": "img/prop/H-001.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 108
 },
 {
 "id": "H-002",
@@ -4704,9 +4610,10 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "행상 수레",
 "src": "img/prop/H-002.webp",
-"note": "",
+"note": "문양 · 깃발 지움, 색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 111
 },
 {
 "id": "H-003",
@@ -4714,9 +4621,10 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "초록 차양 노점",
 "src": "img/prop/H-003.webp",
-"note": "",
+"note": "문양 · 매단 간판 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 110
 },
 {
 "id": "H-019",
@@ -4724,9 +4632,10 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "가판대",
 "src": "img/prop/H-019.webp",
-"note": "",
+"note": "누군가의 거점으로 좋을 듯",
 "rank": "",
-"on": false
+"on": true,
+"pin": 109
 },
 {
 "id": "H-035",
@@ -4736,7 +4645,8 @@ const CATALOG = [
 "src": "img/prop/H-035.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 112
 },
 {
 "id": "H-136",
@@ -4746,17 +4656,8 @@ const CATALOG = [
 "src": "img/prop/H-136.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-139",
-"cat": "prop",
-"sub": "상점 · 작업대",
-"name": "줄무늬 노점 2",
-"src": "img/prop/H-139.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 113
 },
 {
 "id": "H-263",
@@ -4764,9 +4665,10 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "행상 수레 2",
 "src": "img/prop/H-263.webp",
-"note": "",
+"note": "색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 114
 },
 {
 "id": "H-264",
@@ -4776,7 +4678,8 @@ const CATALOG = [
 "src": "img/prop/H-264.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 115
 },
 {
 "id": "H-265",
@@ -4784,7 +4687,7 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "대장간 (모루 · 작업대)",
 "src": "img/prop/H-265.webp",
-"note": "",
+"note": "천 색 바꿈",
 "rank": "",
 "on": false
 },
@@ -4796,7 +4699,8 @@ const CATALOG = [
 "src": "img/prop/H-006.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 116
 },
 {
 "id": "H-020",
@@ -4806,7 +4710,8 @@ const CATALOG = [
 "src": "img/prop/H-020.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 117
 },
 {
 "id": "H-021",
@@ -4816,7 +4721,8 @@ const CATALOG = [
 "src": "img/prop/H-021.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 118
 },
 {
 "id": "H-022",
@@ -4826,7 +4732,8 @@ const CATALOG = [
 "src": "img/prop/H-022.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 119
 },
 {
 "id": "H-029",
@@ -4834,9 +4741,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "망루",
 "src": "img/prop/H-029.webp",
-"note": "",
+"note": "깃발 문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 120
 },
 {
 "id": "H-046",
@@ -4846,7 +4754,8 @@ const CATALOG = [
 "src": "img/prop/H-046.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 121
 },
 {
 "id": "H-047",
@@ -4854,9 +4763,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "깃발 나무 울타리",
 "src": "img/prop/H-047.webp",
-"note": "",
+"note": "깃발 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 122
 },
 {
 "id": "H-057",
@@ -4866,7 +4776,8 @@ const CATALOG = [
 "src": "img/prop/H-057.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 123
 },
 {
 "id": "H-106",
@@ -4876,7 +4787,8 @@ const CATALOG = [
 "src": "img/prop/H-106.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 124
 },
 {
 "id": "H-110",
@@ -4886,7 +4798,8 @@ const CATALOG = [
 "src": "img/prop/H-110.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 125
 },
 {
 "id": "H-111",
@@ -4894,9 +4807,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "나무 말뚝 방책",
 "src": "img/prop/H-111.webp",
-"note": "",
+"note": "깃발 색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 126
 },
 {
 "id": "H-116",
@@ -4904,9 +4818,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "찢어진 천막",
 "src": "img/prop/H-116.webp",
-"note": "",
+"note": "색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 127
 },
 {
 "id": "H-117",
@@ -4916,7 +4831,8 @@ const CATALOG = [
 "src": "img/prop/H-117.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 128
 },
 {
 "id": "H-119",
@@ -4926,7 +4842,8 @@ const CATALOG = [
 "src": "img/prop/H-119.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 129
 },
 {
 "id": "H-132",
@@ -4934,9 +4851,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "야영 천막",
 "src": "img/prop/H-132.webp",
-"note": "",
+"note": "깃발 문양 지움 · 색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 130
 },
 {
 "id": "H-140",
@@ -4944,9 +4862,10 @@ const CATALOG = [
 "sub": "야영 · 방어물",
 "name": "고철 바리케이드",
 "src": "img/prop/H-140.webp",
-"note": "",
+"note": "깃발 문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 131
 },
 {
 "id": "H-161",
@@ -4956,7 +4875,8 @@ const CATALOG = [
 "src": "img/prop/H-161.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 132
 },
 {
 "id": "H-162",
@@ -4966,7 +4886,8 @@ const CATALOG = [
 "src": "img/prop/H-162.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 133
 },
 {
 "id": "H-165",
@@ -4976,7 +4897,8 @@ const CATALOG = [
 "src": "img/prop/H-165.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 134
 },
 {
 "id": "H-168",
@@ -4986,7 +4908,8 @@ const CATALOG = [
 "src": "img/prop/H-168.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 135
 },
 {
 "id": "H-199",
@@ -4996,7 +4919,8 @@ const CATALOG = [
 "src": "img/prop/H-199.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 136
 },
 {
 "id": "H-274",
@@ -5006,7 +4930,8 @@ const CATALOG = [
 "src": "img/prop/H-274.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 137
 },
 {
 "id": "H-275",
@@ -5016,7 +4941,8 @@ const CATALOG = [
 "src": "img/prop/H-275.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 138
 },
 {
 "id": "H-291",
@@ -5025,6 +4951,17 @@ const CATALOG = [
 "name": "부서진 수레 3",
 "src": "img/prop/H-291.webp",
 "note": "",
+"rank": "",
+"on": true,
+"pin": 139
+},
+{
+"id": "H-135",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "성벽 울타리 · 담장",
+"src": "img/prop/H-135.webp",
+"note": "원래 이름: 교회 신도석 · 문양 · 꼭대기 십자 지움",
 "rank": "",
 "on": false
 },
@@ -5036,7 +4973,8 @@ const CATALOG = [
 "src": "img/prop/H-010.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 140
 },
 {
 "id": "H-025",
@@ -5044,9 +4982,10 @@ const CATALOG = [
 "sub": "무기 더미 · 거치대",
 "name": "무기 · 방패 더미",
 "src": "img/prop/H-025.webp",
-"note": "",
+"note": "문양을 다른 것으로, 색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 141
 },
 {
 "id": "H-028",
@@ -5054,9 +4993,10 @@ const CATALOG = [
 "sub": "무기 더미 · 거치대",
 "name": "무기 거치대",
 "src": "img/prop/H-028.webp",
-"note": "",
+"note": "방패 문양을 다른 것으로, 깃발 문양 지움, 색 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 142
 },
 {
 "id": "H-048",
@@ -5066,7 +5006,8 @@ const CATALOG = [
 "src": "img/prop/H-048.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 143
 },
 {
 "id": "H-084",
@@ -5076,7 +5017,8 @@ const CATALOG = [
 "src": "img/prop/H-084.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 144
 },
 {
 "id": "H-112",
@@ -5086,7 +5028,8 @@ const CATALOG = [
 "src": "img/prop/H-112.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 145
 },
 {
 "id": "H-113",
@@ -5096,7 +5039,8 @@ const CATALOG = [
 "src": "img/prop/H-113.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 146
 },
 {
 "id": "H-163",
@@ -5106,7 +5050,8 @@ const CATALOG = [
 "src": "img/prop/H-163.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 147
 },
 {
 "id": "H-164",
@@ -5116,17 +5061,8 @@ const CATALOG = [
 "src": "img/prop/H-164.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-166",
-"cat": "prop",
-"sub": "무기 더미 · 거치대",
-"name": "기사 갑옷 더미",
-"src": "img/prop/H-166.webp",
-"note": "시체가 아니라 갑옷 더미 (메모대로 옮김)",
-"rank": "",
-"on": false
+"on": true,
+"pin": 148
 },
 {
 "id": "H-007",
@@ -5134,9 +5070,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "검 꽂힌 묘비 · 백합",
 "src": "img/prop/H-007.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 150
 },
 {
 "id": "H-008",
@@ -5146,7 +5083,8 @@ const CATALOG = [
 "src": "img/prop/H-008.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 151
 },
 {
 "id": "H-009",
@@ -5156,7 +5094,8 @@ const CATALOG = [
 "src": "img/prop/H-009.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 152
 },
 {
 "id": "H-023",
@@ -5164,19 +5103,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "피 웅덩이 속 갑옷 시체",
 "src": "img/prop/H-023.webp",
-"note": "",
+"note": "문양 지움, 색 바꿈",
 "rank": "",
-"on": false
-},
-{
-"id": "H-024",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "붉은 망토 해골",
-"src": "img/prop/H-024.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 153
 },
 {
 "id": "H-026",
@@ -5184,7 +5114,7 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "검 꽂힌 바위 (무덤)",
 "src": "img/prop/H-026.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
 "on": false
 },
@@ -5196,7 +5126,8 @@ const CATALOG = [
 "src": "img/prop/H-027.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 154
 },
 {
 "id": "H-049",
@@ -5204,9 +5135,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "담쟁이 관",
 "src": "img/prop/H-049.webp",
-"note": "",
+"note": "십자 대신 다른 문양",
 "rank": "",
-"on": false
+"on": true,
+"pin": 155
 },
 {
 "id": "H-052",
@@ -5216,17 +5148,8 @@ const CATALOG = [
 "src": "img/prop/H-052.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-055",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "납골당",
-"src": "img/prop/H-055.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 156
 },
 {
 "id": "H-056",
@@ -5236,17 +5159,8 @@ const CATALOG = [
 "src": "img/prop/H-056.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-100",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "검은 관 · 붉은 천",
-"src": "img/prop/H-100.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 158
 },
 {
 "id": "H-169",
@@ -5256,7 +5170,8 @@ const CATALOG = [
 "src": "img/prop/H-169.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 159
 },
 {
 "id": "H-191",
@@ -5266,7 +5181,8 @@ const CATALOG = [
 "src": "img/prop/H-191.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 160
 },
 {
 "id": "H-194",
@@ -5276,7 +5192,8 @@ const CATALOG = [
 "src": "img/prop/H-194.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 161
 },
 {
 "id": "H-198",
@@ -5284,9 +5201,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "석관 · 붉은 천",
 "src": "img/prop/H-198.webp",
-"note": "",
+"note": "깃발을 돌 색으로",
 "rank": "",
-"on": false
+"on": true,
+"pin": 162
 },
 {
 "id": "H-205",
@@ -5294,9 +5212,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "십자 묘비 · 돌",
 "src": "img/prop/H-205.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 163
 },
 {
 "id": "H-207",
@@ -5306,27 +5225,19 @@ const CATALOG = [
 "src": "img/prop/H-207.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-238",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "관 · 쿠션 더미",
-"src": "img/prop/H-238.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 164
 },
 {
 "id": "H-281",
 "cat": "prop",
 "sub": "무덤 · 시체",
-"name": "부서진 문 · 검 꽂힌 투구 더미",
+"name": "검 꽂힌 투구 더미",
 "src": "img/prop/H-281.webp",
-"note": "",
+"note": "원래 이름: 부서진 문 · 검 꽂힌 투구 더미 · 부서진 문 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 166
 },
 {
 "id": "H-283",
@@ -5334,9 +5245,10 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "묘비 2",
 "src": "img/prop/H-283.webp",
-"note": "",
+"note": "문양 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 167
 },
 {
 "id": "H-284",
@@ -5346,7 +5258,8 @@ const CATALOG = [
 "src": "img/prop/H-284.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 168
 },
 {
 "id": "H-286",
@@ -5356,7 +5269,8 @@ const CATALOG = [
 "src": "img/prop/H-286.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 169
 },
 {
 "id": "H-287",
@@ -5366,7 +5280,8 @@ const CATALOG = [
 "src": "img/prop/H-287.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 170
 },
 {
 "id": "H-288",
@@ -5376,7 +5291,8 @@ const CATALOG = [
 "src": "img/prop/H-288.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 171
 },
 {
 "id": "H-289",
@@ -5386,17 +5302,8 @@ const CATALOG = [
 "src": "img/prop/H-289.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-290",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "검은 천 쓴 시체",
-"src": "img/prop/H-290.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 172
 },
 {
 "id": "H-327",
@@ -5406,7 +5313,8 @@ const CATALOG = [
 "src": "img/prop/H-327.webp",
 "note": "오브제 (2026-10-03). 회색 바탕을 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 173
 },
 {
 "id": "H-328",
@@ -5416,7 +5324,19 @@ const CATALOG = [
 "src": "img/prop/H-328.webp",
 "note": "오브제 (2026-10-03). 검은 바탕을 지움, 가운데 구멍은 그림 그대로",
 "rank": "",
-"on": false
+"on": true,
+"pin": 174
+},
+{
+"id": "H-166",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "장렬히 전사한 기사 시체",
+"src": "img/prop/H-166.webp",
+"note": "시체가 아니라 갑옷 더미 (메모대로 옮김) · 원래 이름: 기사 갑옷 더미",
+"rank": "",
+"on": true,
+"pin": 149
 },
 {
 "id": "H-011",
@@ -5426,7 +5346,8 @@ const CATALOG = [
 "src": "img/prop/H-011.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 175
 },
 {
 "id": "H-012",
@@ -5436,7 +5357,8 @@ const CATALOG = [
 "src": "img/prop/H-012.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 176
 },
 {
 "id": "H-013",
@@ -5446,7 +5368,8 @@ const CATALOG = [
 "src": "img/prop/H-013.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 177
 },
 {
 "id": "H-014",
@@ -5456,7 +5379,8 @@ const CATALOG = [
 "src": "img/prop/H-014.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 178
 },
 {
 "id": "H-015",
@@ -5466,7 +5390,8 @@ const CATALOG = [
 "src": "img/prop/H-015.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 179
 },
 {
 "id": "H-017",
@@ -5476,7 +5401,8 @@ const CATALOG = [
 "src": "img/prop/H-017.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 180
 },
 {
 "id": "H-036",
@@ -5486,7 +5412,8 @@ const CATALOG = [
 "src": "img/prop/H-036.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 181
 },
 {
 "id": "H-037",
@@ -5496,7 +5423,8 @@ const CATALOG = [
 "src": "img/prop/H-037.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 182
 },
 {
 "id": "H-039",
@@ -5506,7 +5434,8 @@ const CATALOG = [
 "src": "img/prop/H-039.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 183
 },
 {
 "id": "H-065",
@@ -5516,7 +5445,8 @@ const CATALOG = [
 "src": "img/prop/H-065.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 184
 },
 {
 "id": "H-073",
@@ -5526,7 +5456,8 @@ const CATALOG = [
 "src": "img/prop/H-073.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 185
 },
 {
 "id": "H-085",
@@ -5536,7 +5467,8 @@ const CATALOG = [
 "src": "img/prop/H-085.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 186
 },
 {
 "id": "H-088",
@@ -5546,7 +5478,8 @@ const CATALOG = [
 "src": "img/prop/H-088.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 187
 },
 {
 "id": "H-133",
@@ -5556,7 +5489,8 @@ const CATALOG = [
 "src": "img/prop/H-133.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 188
 },
 {
 "id": "H-141",
@@ -5566,7 +5500,8 @@ const CATALOG = [
 "src": "img/prop/H-141.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 189
 },
 {
 "id": "H-147",
@@ -5576,7 +5511,8 @@ const CATALOG = [
 "src": "img/prop/H-147.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 190
 },
 {
 "id": "H-269",
@@ -5586,7 +5522,8 @@ const CATALOG = [
 "src": "img/prop/H-269.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 191
 },
 {
 "id": "H-272",
@@ -5596,7 +5533,8 @@ const CATALOG = [
 "src": "img/prop/H-272.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 192
 },
 {
 "id": "H-321",
@@ -5606,7 +5544,8 @@ const CATALOG = [
 "src": "img/prop/H-321.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 193
 },
 {
 "id": "H-322",
@@ -5616,7 +5555,8 @@ const CATALOG = [
 "src": "img/prop/H-322.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 194
 },
 {
 "id": "H-323",
@@ -5626,7 +5566,8 @@ const CATALOG = [
 "src": "img/prop/H-323.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 195
 },
 {
 "id": "H-324",
@@ -5636,7 +5577,8 @@ const CATALOG = [
 "src": "img/prop/H-324.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 196
 },
 {
 "id": "H-325",
@@ -5646,7 +5588,8 @@ const CATALOG = [
 "src": "img/prop/H-325.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 197
 },
 {
 "id": "H-326",
@@ -5656,7 +5599,8 @@ const CATALOG = [
 "src": "img/prop/H-326.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 198
 },
 {
 "id": "H-031",
@@ -5666,7 +5610,8 @@ const CATALOG = [
 "src": "img/prop/H-031.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 199
 },
 {
 "id": "H-032",
@@ -5676,17 +5621,19 @@ const CATALOG = [
 "src": "img/prop/H-032.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 200
 },
 {
 "id": "H-033",
 "cat": "prop",
 "sub": "신비 · 장식",
-"name": "깃발 달린 기묘한 제단",
+"name": "기묘한 제단",
 "src": "img/prop/H-033.webp",
-"note": "",
+"note": "원래 이름: 깃발 달린 기묘한 제단 · 깃발 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 201
 },
 {
 "id": "H-034",
@@ -5696,7 +5643,8 @@ const CATALOG = [
 "src": "img/prop/H-034.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 202
 },
 {
 "id": "H-038",
@@ -5706,17 +5654,8 @@ const CATALOG = [
 "src": "img/prop/H-038.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-040",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "작은 예배당",
-"src": "img/prop/H-040.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 203
 },
 {
 "id": "H-053",
@@ -5726,17 +5665,8 @@ const CATALOG = [
 "src": "img/prop/H-053.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-054",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "촛불 제단 · 붉은 천",
-"src": "img/prop/H-054.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 205
 },
 {
 "id": "H-058",
@@ -5746,7 +5676,8 @@ const CATALOG = [
 "src": "img/prop/H-058.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 206
 },
 {
 "id": "H-077",
@@ -5756,7 +5687,8 @@ const CATALOG = [
 "src": "img/prop/H-077.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 207
 },
 {
 "id": "H-081",
@@ -5766,7 +5698,8 @@ const CATALOG = [
 "src": "img/prop/H-081.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 208
 },
 {
 "id": "H-089",
@@ -5776,7 +5709,8 @@ const CATALOG = [
 "src": "img/prop/H-089.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 209
 },
 {
 "id": "H-102",
@@ -5786,7 +5720,8 @@ const CATALOG = [
 "src": "img/prop/H-102.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 210
 },
 {
 "id": "H-105",
@@ -5796,7 +5731,8 @@ const CATALOG = [
 "src": "img/prop/H-105.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 211
 },
 {
 "id": "H-108",
@@ -5806,7 +5742,8 @@ const CATALOG = [
 "src": "img/prop/H-108.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 212
 },
 {
 "id": "H-109",
@@ -5814,9 +5751,10 @@ const CATALOG = [
 "sub": "신비 · 장식",
 "name": "촛불 의식 원진",
 "src": "img/prop/H-109.webp",
-"note": "",
+"note": "좋다",
 "rank": "",
-"on": false
+"on": true,
+"pin": 213
 },
 {
 "id": "H-153",
@@ -5826,7 +5764,8 @@ const CATALOG = [
 "src": "img/prop/H-153.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 214
 },
 {
 "id": "H-154",
@@ -5836,7 +5775,8 @@ const CATALOG = [
 "src": "img/prop/H-154.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 217
 },
 {
 "id": "H-155",
@@ -5846,7 +5786,8 @@ const CATALOG = [
 "src": "img/prop/H-155.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 215
 },
 {
 "id": "H-156",
@@ -5856,7 +5797,8 @@ const CATALOG = [
 "src": "img/prop/H-156.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 216
 },
 {
 "id": "H-159",
@@ -5866,7 +5808,8 @@ const CATALOG = [
 "src": "img/prop/H-159.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 226
 },
 {
 "id": "H-160",
@@ -5876,17 +5819,8 @@ const CATALOG = [
 "src": "img/prop/H-160.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-175",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "가면 · 장미 더미",
-"src": "img/prop/H-175.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 225
 },
 {
 "id": "H-177",
@@ -5894,9 +5828,10 @@ const CATALOG = [
 "sub": "신비 · 장식",
 "name": "깃발 걸이 기둥",
 "src": "img/prop/H-177.webp",
-"note": "",
+"note": "십자 대신 다른 문양",
 "rank": "",
-"on": false
+"on": true,
+"pin": 223
 },
 {
 "id": "H-196",
@@ -5904,9 +5839,10 @@ const CATALOG = [
 "sub": "신비 · 장식",
 "name": "촛불 감실",
 "src": "img/prop/H-196.webp",
-"note": "",
+"note": "문양 바꿈",
 "rank": "",
-"on": false
+"on": true,
+"pin": 222
 },
 {
 "id": "H-197",
@@ -5916,7 +5852,8 @@ const CATALOG = [
 "src": "img/prop/H-197.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 221
 },
 {
 "id": "H-208",
@@ -5926,37 +5863,8 @@ const CATALOG = [
 "src": "img/prop/H-208.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-224",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "까마귀 새장",
-"src": "img/prop/H-224.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-237",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "가면 받침",
-"src": "img/prop/H-237.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-309",
-"cat": "prop",
-"sub": "신비 · 장식",
-"name": "검은 고양이",
-"src": "img/prop/H-309.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 220
 },
 {
 "id": "H-310",
@@ -5966,7 +5874,8 @@ const CATALOG = [
 "src": "img/prop/H-310.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 227
 },
 {
 "id": "H-152",
@@ -5976,7 +5885,8 @@ const CATALOG = [
 "src": "img/prop/H-152.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 228
 },
 {
 "id": "H-157",
@@ -5986,7 +5896,8 @@ const CATALOG = [
 "src": "img/prop/H-157.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 229
 },
 {
 "id": "H-173",
@@ -5996,7 +5907,8 @@ const CATALOG = [
 "src": "img/prop/H-173.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 230
 },
 {
 "id": "H-174",
@@ -6006,7 +5918,8 @@ const CATALOG = [
 "src": "img/prop/H-174.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 231
 },
 {
 "id": "H-209",
@@ -6014,29 +5927,10 @@ const CATALOG = [
 "sub": "우물 · 분수",
 "name": "검은 물 수반",
 "src": "img/prop/H-209.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
-"on": false
-},
-{
-"id": "H-095",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "접이 칸막이",
-"src": "img/prop/H-095.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-096",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "욕조",
-"src": "img/prop/H-096.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 232
 },
 {
 "id": "H-097",
@@ -6046,17 +5940,8 @@ const CATALOG = [
 "src": "img/prop/H-097.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-184",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "거울 화장대",
-"src": "img/prop/H-184.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 235
 },
 {
 "id": "H-190",
@@ -6064,39 +5949,10 @@ const CATALOG = [
 "sub": "방 꾸밈",
 "name": "접이 칸막이 2",
 "src": "img/prop/H-190.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
-"on": false
-},
-{
-"id": "H-215",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "삼면 거울 화장대 · 의자",
-"src": "img/prop/H-215.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-220",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "장미 전신 거울",
-"src": "img/prop/H-220.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-225",
-"cat": "prop",
-"sub": "방 꾸밈",
-"name": "카메오 칸막이",
-"src": "img/prop/H-225.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 240
 },
 {
 "id": "H-311",
@@ -6106,7 +5962,8 @@ const CATALOG = [
 "src": "img/prop/H-311.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 241
 },
 {
 "id": "H-312",
@@ -6116,7 +5973,8 @@ const CATALOG = [
 "src": "img/prop/H-312.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 242
 },
 {
 "id": "H-313",
@@ -6126,7 +5984,8 @@ const CATALOG = [
 "src": "img/prop/H-313.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 243
 },
 {
 "id": "H-314",
@@ -6136,7 +5995,8 @@ const CATALOG = [
 "src": "img/prop/H-314.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 244
 },
 {
 "id": "H-315",
@@ -6146,7 +6006,8 @@ const CATALOG = [
 "src": "img/prop/H-315.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 245
 },
 {
 "id": "H-316",
@@ -6156,7 +6017,8 @@ const CATALOG = [
 "src": "img/prop/H-316.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 246
 },
 {
 "id": "H-317",
@@ -6166,7 +6028,8 @@ const CATALOG = [
 "src": "img/prop/H-317.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 247
 },
 {
 "id": "H-318",
@@ -6176,37 +6039,8 @@ const CATALOG = [
 "src": "img/prop/H-318.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-226",
-"cat": "prop",
-"sub": "액자 · 그림",
-"name": "나비 표본 액자",
-"src": "img/prop/H-226.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-227",
-"cat": "prop",
-"sub": "액자 · 그림",
-"name": "성 그림 타원 액자",
-"src": "img/prop/H-227.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-229",
-"cat": "prop",
-"sub": "액자 · 그림",
-"name": "꽃 액자 · 타원 액자",
-"src": "img/prop/H-229.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 248
 },
 {
 "id": "H-230",
@@ -6216,37 +6050,8 @@ const CATALOG = [
 "src": "img/prop/H-230.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-232",
-"cat": "prop",
-"sub": "액자 · 그림",
-"name": "백합 액자",
-"src": "img/prop/H-232.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-233",
-"cat": "prop",
-"sub": "액자 · 그림",
-"name": "장미 액자",
-"src": "img/prop/H-233.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-051",
-"cat": "prop",
-"sub": "폐허 · 자연물",
-"name": "무너진 고딕 아치",
-"src": "img/prop/H-051.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 252
 },
 {
 "id": "H-059",
@@ -6256,7 +6061,8 @@ const CATALOG = [
 "src": "img/prop/H-059.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 255
 },
 {
 "id": "H-060",
@@ -6266,7 +6072,8 @@ const CATALOG = [
 "src": "img/prop/H-060.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 256
 },
 {
 "id": "H-071",
@@ -6276,7 +6083,8 @@ const CATALOG = [
 "src": "img/prop/H-071.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 257
 },
 {
 "id": "H-074",
@@ -6286,7 +6094,8 @@ const CATALOG = [
 "src": "img/prop/H-074.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 258
 },
 {
 "id": "H-118",
@@ -6296,7 +6105,8 @@ const CATALOG = [
 "src": "img/prop/H-118.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 262
 },
 {
 "id": "H-137",
@@ -6306,7 +6116,8 @@ const CATALOG = [
 "src": "img/prop/H-137.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 261
 },
 {
 "id": "H-144",
@@ -6316,7 +6127,8 @@ const CATALOG = [
 "src": "img/prop/H-144.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 260
 },
 {
 "id": "H-150",
@@ -6326,7 +6138,8 @@ const CATALOG = [
 "src": "img/prop/H-150.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 263
 },
 {
 "id": "H-151",
@@ -6336,7 +6149,8 @@ const CATALOG = [
 "src": "img/prop/H-151.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 264
 },
 {
 "id": "H-167",
@@ -6346,7 +6160,8 @@ const CATALOG = [
 "src": "img/prop/H-167.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 274
 },
 {
 "id": "H-176",
@@ -6356,7 +6171,8 @@ const CATALOG = [
 "src": "img/prop/H-176.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 273
 },
 {
 "id": "H-179",
@@ -6366,7 +6182,8 @@ const CATALOG = [
 "src": "img/prop/H-179.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 272
 },
 {
 "id": "H-192",
@@ -6376,7 +6193,8 @@ const CATALOG = [
 "src": "img/prop/H-192.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 271
 },
 {
 "id": "H-193",
@@ -6386,7 +6204,8 @@ const CATALOG = [
 "src": "img/prop/H-193.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 270
 },
 {
 "id": "H-195",
@@ -6396,7 +6215,8 @@ const CATALOG = [
 "src": "img/prop/H-195.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 269
 },
 {
 "id": "H-200",
@@ -6406,7 +6226,8 @@ const CATALOG = [
 "src": "img/prop/H-200.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 268
 },
 {
 "id": "H-201",
@@ -6416,7 +6237,8 @@ const CATALOG = [
 "src": "img/prop/H-201.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 267
 },
 {
 "id": "H-202",
@@ -6426,7 +6248,8 @@ const CATALOG = [
 "src": "img/prop/H-202.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 266
 },
 {
 "id": "H-203",
@@ -6436,7 +6259,8 @@ const CATALOG = [
 "src": "img/prop/H-203.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 265
 },
 {
 "id": "H-204",
@@ -6446,7 +6270,8 @@ const CATALOG = [
 "src": "img/prop/H-204.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 275
 },
 {
 "id": "H-210",
@@ -6456,7 +6281,8 @@ const CATALOG = [
 "src": "img/prop/H-210.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 276
 },
 {
 "id": "H-211",
@@ -6466,7 +6292,8 @@ const CATALOG = [
 "src": "img/prop/H-211.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 277
 },
 {
 "id": "H-273",
@@ -6476,7 +6303,8 @@ const CATALOG = [
 "src": "img/prop/H-273.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 278
 },
 {
 "id": "H-276",
@@ -6486,7 +6314,8 @@ const CATALOG = [
 "src": "img/prop/H-276.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 279
 },
 {
 "id": "H-277",
@@ -6496,7 +6325,8 @@ const CATALOG = [
 "src": "img/prop/H-277.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 280
 },
 {
 "id": "H-279",
@@ -6506,7 +6336,8 @@ const CATALOG = [
 "src": "img/prop/H-279.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 295
 },
 {
 "id": "H-280",
@@ -6516,7 +6347,8 @@ const CATALOG = [
 "src": "img/prop/H-280.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 281
 },
 {
 "id": "H-282",
@@ -6526,7 +6358,8 @@ const CATALOG = [
 "src": "img/prop/H-282.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 282
 },
 {
 "id": "H-285",
@@ -6536,7 +6369,8 @@ const CATALOG = [
 "src": "img/prop/H-285.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 283
 },
 {
 "id": "H-061",
@@ -6546,7 +6380,8 @@ const CATALOG = [
 "src": "img/prop/H-061.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 284
 },
 {
 "id": "H-062",
@@ -6556,7 +6391,8 @@ const CATALOG = [
 "src": "img/prop/H-062.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 286
 },
 {
 "id": "H-063",
@@ -6566,7 +6402,8 @@ const CATALOG = [
 "src": "img/prop/H-063.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 285
 },
 {
 "id": "H-064",
@@ -6576,7 +6413,8 @@ const CATALOG = [
 "src": "img/prop/H-064.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 287
 },
 {
 "id": "H-066",
@@ -6586,7 +6424,8 @@ const CATALOG = [
 "src": "img/prop/H-066.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 288
 },
 {
 "id": "H-067",
@@ -6596,7 +6435,8 @@ const CATALOG = [
 "src": "img/prop/H-067.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 289
 },
 {
 "id": "H-068",
@@ -6606,7 +6446,8 @@ const CATALOG = [
 "src": "img/prop/H-068.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 290
 },
 {
 "id": "H-069",
@@ -6616,7 +6457,8 @@ const CATALOG = [
 "src": "img/prop/H-069.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 291
 },
 {
 "id": "H-070",
@@ -6626,7 +6468,8 @@ const CATALOG = [
 "src": "img/prop/H-070.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 292
 },
 {
 "id": "H-078",
@@ -6636,7 +6479,8 @@ const CATALOG = [
 "src": "img/prop/H-078.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 293
 },
 {
 "id": "H-086",
@@ -6644,9 +6488,10 @@ const CATALOG = [
 "sub": "기계 · 실험실",
 "name": "기계 관 (백합)",
 "src": "img/prop/H-086.webp",
-"note": "",
+"note": "문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 303
 },
 {
 "id": "H-134",
@@ -6656,7 +6501,8 @@ const CATALOG = [
 "src": "img/prop/H-134.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 302
 },
 {
 "id": "H-138",
@@ -6666,7 +6512,8 @@ const CATALOG = [
 "src": "img/prop/H-138.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 301
 },
 {
 "id": "H-143",
@@ -6676,7 +6523,8 @@ const CATALOG = [
 "src": "img/prop/H-143.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 300
 },
 {
 "id": "H-260",
@@ -6686,7 +6534,8 @@ const CATALOG = [
 "src": "img/prop/H-260.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 299
 },
 {
 "id": "H-261",
@@ -6696,7 +6545,8 @@ const CATALOG = [
 "src": "img/prop/H-261.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 298
 },
 {
 "id": "H-262",
@@ -6706,7 +6556,8 @@ const CATALOG = [
 "src": "img/prop/H-262.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 297
 },
 {
 "id": "H-267",
@@ -6716,7 +6567,8 @@ const CATALOG = [
 "src": "img/prop/H-267.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 296
 },
 {
 "id": "H-270",
@@ -6726,117 +6578,129 @@ const CATALOG = [
 "src": "img/prop/H-270.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 294
 },
 {
 "id": "H-329",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "액자 속 뇌",
 "src": "img/prop/H-329.webp",
 "note": "액자 인카운터. 사각 자름 (벽 포함)",
 "rank": "",
-"on": false
+"on": true,
+"pin": 304
 },
 {
 "id": "H-330",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "노인 1 (흰 가운 · 바구니)",
 "src": "img/prop/H-330.webp",
 "note": "액자 인카운터. 대충 분리, 말풍선으로 토론",
 "rank": "",
-"on": false
+"on": true,
+"pin": 306
 },
 {
 "id": "H-331",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "노인 2 (흰 가운)",
 "src": "img/prop/H-331.webp",
 "note": "액자 인카운터. 대충 분리",
 "rank": "",
-"on": false
+"on": true,
+"pin": 307
 },
 {
 "id": "H-332",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "노인 3 (트렌치코트)",
 "src": "img/prop/H-332.webp",
 "note": "액자 인카운터. 대충 분리",
 "rank": "",
-"on": false
+"on": true,
+"pin": 308
 },
 {
 "id": "H-333",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "소파 (앉은 노인)",
 "src": "img/prop/H-333.webp",
 "note": "액자 인카운터. 소파와 앉은 노인 한 장, 가장자리 거칢",
 "rank": "",
-"on": false
+"on": true,
+"pin": 309
 },
 {
 "id": "H-334",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "지껄이는 입",
 "src": "img/prop/H-334.webp",
 "note": "지껄임 인카운터. 입만 분리, 앞의 두 사람은 지움 (아래쪽 자국 조금)",
 "rank": "",
-"on": false
+"on": true,
+"pin": 310
 },
 {
 "id": "H-335",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "보석 해골 (지식의 계단 문지기)",
 "src": "img/prop/H-335.webp",
 "note": "대충 분리 (배경 지우기 모델)",
 "rank": "",
-"on": false
+"on": true,
+"pin": 311
 },
 {
 "id": "H-336",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "직원 아저씨 (지식의 계단)",
 "src": "img/prop/H-336.webp",
 "note": "대충 분리, 아래 몸은 책상에 가려 잘림",
 "rank": "",
-"on": false
+"on": true,
+"pin": 312
 },
 {
 "id": "H-337",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "말대가리 · 비치 의자 (기나긴 해변)",
 "src": "img/prop/H-337.webp",
 "note": "비치 의자 · 탁자 포함",
 "rank": "",
-"on": false
+"on": true,
+"pin": 313
 },
 {
 "id": "H-338",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "눈 달린 제단 (제단)",
 "src": "img/prop/H-338.webp",
-"note": "오벨리스크, 밑동 내장 일부",
+"note": "오벨리스크, 밑동 내장 일부 · 원본에서 뿌리까지 다시 자름",
 "rank": "",
-"on": false
+"on": true,
+"pin": 314
 },
 {
 "id": "H-339",
 "cat": "prop",
-"sub": "인카운터 맵 오브제",
+"sub": "인카운터 오브제 · NPC",
 "name": "웅크린 남자 (눈알방)",
 "src": "img/prop/H-339.webp",
 "note": "눈알방 가운데 남자. 눈알은 게임에서 따로 그림",
 "rank": "",
-"on": false
+"on": true,
+"pin": 305
 },
 {
 "id": "H-212",
@@ -6867,7 +6731,7 @@ const CATALOG = [
 "note": "원래 이름: 붉은 고딕 안락의자",
 "rank": "",
 "on": true,
-"pin": 34
+"pin": 33
 },
 {
 "id": "H-242",
@@ -6878,7 +6742,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 20
+"pin": 19
 },
 {
 "id": "H-216",
@@ -6889,7 +6753,7 @@ const CATALOG = [
 "note": "원래 이름: 붉은 쿠션 스툴",
 "rank": "",
 "on": true,
-"pin": 4
+"pin": 3
 },
 {
 "id": "H-218",
@@ -6900,7 +6764,7 @@ const CATALOG = [
 "note": "원래 이름: 캐노피 침대",
 "rank": "",
 "on": true,
-"pin": 5
+"pin": 4
 },
 {
 "id": "H-223",
@@ -6911,7 +6775,7 @@ const CATALOG = [
 "note": "원래 이름: 티 테이블",
 "rank": "",
 "on": true,
-"pin": 21
+"pin": 20
 },
 {
 "id": "H-228",
@@ -6932,7 +6796,281 @@ const CATALOG = [
 "note": "원래 이름: 고딕 옷장 · 리본",
 "rank": "",
 "on": true,
-"pin": 37
+"pin": 36
+},
+{
+"id": "H-309",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 검은 고양이",
+"src": "img/prop/H-309.webp",
+"note": "원래 이름: 검은 고양이",
+"rank": "",
+"on": true,
+"pin": 219
+},
+{
+"id": "H-222",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 붉은 갓 스탠드",
+"src": "img/prop/H-222.webp",
+"note": "원래 이름: 붉은 갓 스탠드",
+"rank": "",
+"on": true,
+"pin": 99
+},
+{
+"id": "H-094",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 그릇 진열장",
+"src": "img/prop/H-094.webp",
+"note": "원래 이름: 그릇 진열장",
+"rank": "",
+"on": true,
+"pin": 56
+},
+{
+"id": "H-042",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 책장",
+"src": "img/prop/H-042.webp",
+"note": "원래 이름: 책장",
+"rank": "",
+"on": true,
+"pin": 48
+},
+{
+"id": "H-229",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 꽃 액자 · 타원 액자",
+"src": "img/prop/H-229.webp",
+"note": "원래 이름: 꽃 액자 · 타원 액자",
+"rank": "",
+"on": true,
+"pin": 251
+},
+{
+"id": "H-175",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 가면 · 장미 더미",
+"src": "img/prop/H-175.webp",
+"note": "원래 이름: 가면 · 장미 더미",
+"rank": "",
+"on": true,
+"pin": 224
+},
+{
+"id": "H-233",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 장미 액자",
+"src": "img/prop/H-233.webp",
+"note": "원래 이름: 장미 액자",
+"rank": "",
+"on": true,
+"pin": 253
+},
+{
+"id": "H-238",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 쿠션 더미",
+"src": "img/prop/H-238.webp",
+"note": "원래 이름: 관 · 쿠션 더미 · 관 지우고 쿠션만",
+"rank": "",
+"on": true,
+"pin": 165
+},
+{
+"id": "H-215",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 삼면 거울 화장대 · 의자",
+"src": "img/prop/H-215.webp",
+"note": "원래 이름: 삼면 거울 화장대 · 의자",
+"rank": "",
+"on": true,
+"pin": 237
+},
+{
+"id": "H-184",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 거울 화장대",
+"src": "img/prop/H-184.webp",
+"note": "원래 이름: 거울 화장대",
+"rank": "",
+"on": true,
+"pin": 236
+},
+{
+"id": "H-226",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 나비 표본 액자",
+"src": "img/prop/H-226.webp",
+"note": "원래 이름: 나비 표본 액자",
+"rank": "",
+"on": true,
+"pin": 249
+},
+{
+"id": "H-095",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 접이 칸막이",
+"src": "img/prop/H-095.webp",
+"note": "원래 이름: 접이 칸막이",
+"rank": "",
+"on": true,
+"pin": 233
+},
+{
+"id": "H-232",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의백합 액자",
+"src": "img/prop/H-232.webp",
+"note": "원래 이름: 백합 액자",
+"rank": "",
+"on": true,
+"pin": 254
+},
+{
+"id": "H-096",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 욕조",
+"src": "img/prop/H-096.webp",
+"note": "원래 이름: 욕조",
+"rank": "",
+"on": true,
+"pin": 234
+},
+{
+"id": "H-186",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 술 달린 스탠드",
+"src": "img/prop/H-186.webp",
+"note": "원래 이름: 술 달린 스탠드",
+"rank": "",
+"on": true,
+"pin": 101
+},
+{
+"id": "H-220",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 장미 전신 거울",
+"src": "img/prop/H-220.webp",
+"note": "원래 이름: 장미 전신 거울",
+"rank": "",
+"on": true,
+"pin": 239
+},
+{
+"id": "H-221",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 리본 촛대",
+"src": "img/prop/H-221.webp",
+"note": "원래 이름: 리본 촛대",
+"rank": "",
+"on": true,
+"pin": 100
+},
+{
+"id": "H-227",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 성 그림 타원 액자",
+"src": "img/prop/H-227.webp",
+"note": "원래 이름: 성 그림 타원 액자",
+"rank": "",
+"on": true,
+"pin": 250
+},
+{
+"id": "H-217",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 장식장",
+"src": "img/prop/H-217.webp",
+"note": "원래 이름: 장식 서랍장 (꽃병 · 촛대)",
+"rank": "",
+"on": true,
+"pin": 45
+},
+{
+"id": "H-237",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜쪽의 가면 받침",
+"src": "img/prop/H-237.webp",
+"note": "원래 이름: 가면 받침",
+"rank": "",
+"on": true,
+"pin": 218
+},
+{
+"id": "H-224",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 까마귀 새장",
+"src": "img/prop/H-224.webp",
+"note": "원래 이름: 까마귀 새장",
+"rank": "",
+"on": false
+},
+{
+"id": "H-225",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 카메오 칸막이",
+"src": "img/prop/H-225.webp",
+"note": "원래 이름: 카메오 칸막이",
+"rank": "",
+"on": true,
+"pin": 238
+},
+{
+"id": "H-055",
+"cat": "prop",
+"sub": "건축물",
+"name": "납골당",
+"src": "img/prop/H-055.webp",
+"note": "건축물 = 말 그대로 아주 큰 것. 3D 상자에 앞면만 그림으로 붙이거나 그림을 세워 붙이는 식",
+"rank": "",
+"on": true,
+"pin": 157
+},
+{
+"id": "H-040",
+"cat": "prop",
+"sub": "건축물",
+"name": "작은 예배당",
+"src": "img/prop/H-040.webp",
+"note": "",
+"rank": "",
+"on": true,
+"pin": 204
+},
+{
+"id": "H-051",
+"cat": "prop",
+"sub": "건축물",
+"name": "무너진 고딕 아치",
+"src": "img/prop/H-051.webp",
+"note": "",
+"rank": "",
+"on": true,
+"pin": 259
 },
 {
 "id": "O-player-face",
