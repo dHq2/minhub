@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.14 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.15 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -64,6 +64,10 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .tile.on{border-color:var(--check);box-shadow:0 0 0 1px var(--check)}
 .st{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
 .st.out{background:var(--out)} .st.in{background:var(--in)}
+.trash{position:absolute;top:8px;right:38px;width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--dim);display:grid;place-items:center;cursor:pointer;padding:0;opacity:.55}
+.trash svg{width:16px;height:16px}
+.tile:hover .trash,.trash:focus-visible{opacity:1;border-color:var(--line);background:var(--bg)}
+.trash.del{opacity:1;color:#fff;background:var(--check);border-color:var(--check)}
 .tile.on .box{background:var(--check);border-color:var(--check);color:#fff}
 .tile.on .id{color:var(--check)}
 .empty{color:var(--dim);font-size:14px;padding:20px 0}
@@ -122,6 +126,7 @@ pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);bor
       <label for="vMemo" class="memo-dot">메모 (어떻게 할지: 지우기 · 이름 · 다듬기 …)</label>
       <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
       <div class="row"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vNext" type="button">다음 →</button><button class="btn" id="vClose" type="button">닫기</button></div>
+      <button class="btn warn" id="vDel" type="button">삭제 표시 (체크 + 메모)</button>
     </div>
   </div>
 </div>
@@ -209,6 +214,7 @@ function tile(e){
   const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
   return `<div class="tile ${e.rank} ${on ? 'on' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
+    <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
     <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
@@ -252,6 +258,7 @@ function fillView(){
   setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = e.name;
   $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
   $('vCheck').checked = !!m.checked; $('vSt').checked = stOf(e) === 'in';
+  $('vDel').textContent = isDel(e.id) ? '삭제 표시 풀기' : '삭제 표시 (체크 + 메모)';
   if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
 }
 function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; fillView(); } }
@@ -296,9 +303,20 @@ function askClear(){
   $('doClear').onclick = async () => { closeSheet(); for (const id of Object.keys(marks)) if (marks[id].checked) await put(id, { checked:false }); status('체크를 모두 해제했어요'); };
 }
 
+/* ---------- 쓰레기통: 한 번에 체크 + 메모에 '삭제'. 다시 누르면 풀림 (원래 메모는 남김) ---------- */
+const DEL = '삭제';
+function isDel(id){ const m = marks[id]; return !!(m && m.checked && (m.memo || '').startsWith(DEL)); }
+function toggleDel(id){
+  const memo = ((marks[id] || {}).memo || '').trim();
+  if (isDel(id)){ const rest = memo.slice(DEL.length).replace(/^\s*·\s*/, '').trim(); put(id, { checked:false, memo:rest }); if (viewing === id) $('vMemo').value = rest; }
+  else { const m = memo.startsWith(DEL) ? memo : memo ? DEL + ' · ' + memo : DEL; put(id, { checked:true, memo:m }); if (viewing === id) $('vMemo').value = m; }
+  if (viewing === id) fillView();
+}
+
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
+  const d = e.target.closest('[data-del]'); if (d){ e.stopPropagation(); toggleDel(d.dataset.del); return; }
   const st = e.target.closest('[data-st]'); if (st){ e.stopPropagation(); const it = BY_ID[st.dataset.st]; put(it.id, { status: stOf(it) === 'in' ? 'out' : 'in' }); return; }
   const c = e.target.closest('[data-check]'); if (c){ e.stopPropagation(); const id = c.dataset.check; put(id, { checked: !(marks[id] && marks[id].checked) }); return; }
   const t = e.target.closest('.tile'); if (t) openView(t.dataset.id);
@@ -309,6 +327,7 @@ $('copyBtn').onclick = copyList; $('saveBtn').onclick = saveBackup; $('clearBtn'
 $('loadBtn').onclick = () => $('loadFile').click();
 $('loadFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadBackup(f); e.target.value = ''; });
 $('sheet').addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
+$('vDel').addEventListener('click', () => { saveMemo(); toggleDel(viewing); });
 $('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.checked }));
 $('vSt').addEventListener('change', e => put(viewing, { status: e.target.checked ? 'in' : 'out' }));
 $('vMemo').addEventListener('blur', saveMemo);

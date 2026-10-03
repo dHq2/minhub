@@ -1,4 +1,4 @@
-/* catalog.js v1.14 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.15 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -4501,6 +4501,86 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-120",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "낡은 나무 침대",
+"src": "img/prop/H-120.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-121",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "나무 스툴",
+"src": "img/prop/H-121.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-122",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "나무 벤치",
+"src": "img/prop/H-122.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-125",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "촛불 나무 책상",
+"src": "img/prop/H-125.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-131",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "왕좌",
+"src": "img/prop/H-131.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-135",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "교회 신도석",
+"src": "img/prop/H-135.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-142",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "붉은 고딕 안락의자",
+"src": "img/prop/H-142.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-146",
+"cat": "prop",
+"sub": "침대 · 의자 · 탁자",
+"name": "촛대 책상 · 파란 천",
+"src": "img/prop/H-146.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-016",
 "cat": "prop",
 "sub": "수납",
@@ -4591,6 +4671,106 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-103",
+"cat": "prop",
+"sub": "수납",
+"name": "고딕 성물함 (해골 · 잔)",
+"src": "img/prop/H-103.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-124",
+"cat": "prop",
+"sub": "수납",
+"name": "낡은 옷장",
+"src": "img/prop/H-124.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-126",
+"cat": "prop",
+"sub": "수납",
+"name": "낡은 찬장 · 등불",
+"src": "img/prop/H-126.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-127",
+"cat": "prop",
+"sub": "수납",
+"name": "약병 선반",
+"src": "img/prop/H-127.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-149",
+"cat": "prop",
+"sub": "수납",
+"name": "열린 사물함",
+"src": "img/prop/H-149.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-114",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "나무 상자 · 자루 · 등불",
+"src": "img/prop/H-114.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-115",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "술통 더미",
+"src": "img/prop/H-115.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-128",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "철 띠 궤짝",
+"src": "img/prop/H-128.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-130",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "상자 · 통 · 항아리",
+"src": "img/prop/H-130.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-145",
+"cat": "prop",
+"sub": "상자 · 통",
+"name": "군용 상자 더미",
+"src": "img/prop/H-145.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-018",
 "cat": "prop",
 "sub": "조명 · 불",
@@ -4651,6 +4831,66 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-101",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "다섯 갈래 촛대",
+"src": "img/prop/H-101.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-104",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "붉은 불꽃 화로",
+"src": "img/prop/H-104.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-107",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "벽걸이 등불",
+"src": "img/prop/H-107.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-123",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "매달린 촛불 샹들리에",
+"src": "img/prop/H-123.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-129",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "솥 걸이 모닥불",
+"src": "img/prop/H-129.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-148",
+"cat": "prop",
+"sub": "조명 · 불",
+"name": "붉은 불꽃 화로 2",
+"src": "img/prop/H-148.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-001",
 "cat": "prop",
 "sub": "상점 · 작업대",
@@ -4696,6 +4936,26 @@ const CATALOG = [
 "sub": "상점 · 작업대",
 "name": "줄무늬 노점",
 "src": "img/prop/H-035.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-136",
+"cat": "prop",
+"sub": "상점 · 작업대",
+"name": "공방 작업대",
+"src": "img/prop/H-136.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-139",
+"cat": "prop",
+"sub": "상점 · 작업대",
+"name": "줄무늬 노점 2",
+"src": "img/prop/H-139.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4781,6 +5041,86 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-106",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "사슬 감긴 철문",
+"src": "img/prop/H-106.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-110",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "부서진 수레",
+"src": "img/prop/H-110.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-111",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "나무 말뚝 방책",
+"src": "img/prop/H-111.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-116",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "찢어진 천막",
+"src": "img/prop/H-116.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-117",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "깃발 창",
+"src": "img/prop/H-117.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-119",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "사슬 형틀 기둥",
+"src": "img/prop/H-119.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-132",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "야영 천막",
+"src": "img/prop/H-132.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-140",
+"cat": "prop",
+"sub": "야영 · 방어물",
+"name": "고철 바리케이드",
+"src": "img/prop/H-140.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-010",
 "cat": "prop",
 "sub": "무기 더미 · 거치대",
@@ -4826,6 +5166,26 @@ const CATALOG = [
 "sub": "무기 더미 · 거치대",
 "name": "대포",
 "src": "img/prop/H-084.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-112",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "창 · 도끼 거치대 2",
+"src": "img/prop/H-112.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-113",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "방패 · 화살 더미",
+"src": "img/prop/H-113.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -4936,6 +5296,16 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "검 꽂힌 해골 더미",
 "src": "img/prop/H-056.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-100",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "검은 관 · 붉은 천",
+"src": "img/prop/H-100.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5091,6 +5461,36 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-133",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "부서진 에스컬레이터",
+"src": "img/prop/H-133.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-141",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "덩굴 자판기",
+"src": "img/prop/H-141.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-147",
+"cat": "prop",
+"sub": "도시 · 현대물",
+"name": "쓰러진 신호등",
+"src": "img/prop/H-147.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-031",
 "cat": "prop",
 "sub": "신비 · 장식",
@@ -5211,6 +5611,46 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-102",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "매달린 새장",
+"src": "img/prop/H-102.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-105",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "피 묻은 돌 수반",
+"src": "img/prop/H-105.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-108",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "종루",
+"src": "img/prop/H-108.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-109",
+"cat": "prop",
+"sub": "신비 · 장식",
+"name": "촛불 의식 원진",
+"src": "img/prop/H-109.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
 "id": "H-095",
 "cat": "prop",
 "sub": "방 꾸밈",
@@ -5286,6 +5726,46 @@ const CATALOG = [
 "sub": "폐허 · 자연물",
 "name": "돌무더기",
 "src": "img/prop/H-074.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-118",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "부서진 바퀴",
+"src": "img/prop/H-118.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-137",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "거대 버섯",
+"src": "img/prop/H-137.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-144",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "흰 돌 아치 (꽃 덩굴)",
+"src": "img/prop/H-144.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-150",
+"cat": "prop",
+"sub": "폐허 · 자연물",
+"name": "철근 콘크리트 잔해",
+"src": "img/prop/H-150.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -5396,6 +5876,36 @@ const CATALOG = [
 "sub": "기계 · 실험실",
 "name": "기계 관 (백합)",
 "src": "img/prop/H-086.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-134",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "보관 캡슐 03",
+"src": "img/prop/H-134.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-138",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "발전기",
+"src": "img/prop/H-138.webp",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-143",
+"cat": "prop",
+"sub": "기계 · 실험실",
+"name": "단말 거치대",
+"src": "img/prop/H-143.webp",
 "note": "",
 "rank": "",
 "on": false
