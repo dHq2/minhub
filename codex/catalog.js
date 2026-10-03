@@ -1,4 +1,4 @@
-/* catalog.js v1.53 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.54 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -9829,7 +9829,7 @@ const CATALOG = [
 {
 "id": "F-slime",
 "cat": "char",
-"sub": "슬라임녀 · 적 · 보스 · 원화 + 연출",
+"sub": "슬라임녀 · 적 · 보스 · 동작 그림",
 "name": "슬라임녀 초상화",
 "src": "img/face/slime_portrait.webp",
 "note": "받은 초상화 (2026-10-03). 전의 기본 초상화를 바꿈",
@@ -9840,10 +9840,21 @@ const CATALOG = [
 {
 "id": "P-slime-art",
 "cat": "char",
-"sub": "슬라임녀 · 적 · 보스 · 원화 + 연출",
+"sub": "슬라임녀 · 적 · 보스 · 동작 그림",
 "name": "슬라임 적",
 "src": "img/char/slime_art.webp",
 "note": "노란 슬라임 여인. 떨어진 방울도 함께 둠",
+"rank": "",
+"on": false,
+"g": "slime"
+},
+{
+"id": "P-slime-idle",
+"cat": "char",
+"sub": "슬라임녀 · 적 · 보스 · 동작 그림",
+"name": "슬라임녀 · 대기 (30장)",
+"src": "img/char/slime_idle.webp",
+"note": "slime_idle v1 (드라이브 NPC 폴더 2026-10-03)",
 "rank": "",
 "on": false,
 "g": "slime"
