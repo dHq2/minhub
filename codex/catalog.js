@@ -1,4 +1,4 @@
-/* catalog.js v1.51 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.52 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1313,6 +1313,36 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "S-8",
+"cat": "scene",
+"sub": "컷씬",
+"name": "햘 등장 ~ 루프 (50장)",
+"src": "img/scene/hyal_entry_loop.webp",
+"note": "고대 몬스터 햘 컷씬 루프 v1.2 (드라이브 2026-10-03). 햘 초상화도 이 그림에서 자름. 등장 미리보기 v1.2 (12.6MB)는 드라이브 내려받기 한도 (10MB)를 넘어 아직 못 받음",
+"rank": "",
+"on": false
+},
+{
+"id": "S-9",
+"cat": "scene",
+"sub": "컷씬",
+"name": "기사 돌격 일러스트 (24장)",
+"src": "img/scene/knight_charge.webp",
+"note": "cutscene_knight v1.2 (드라이브 2026-10-03). 로딩 화면에 쓸 예정",
+"rank": "",
+"on": false
+},
+{
+"id": "S-10",
+"cat": "scene",
+"sub": "컷씬",
+"name": "마리 · 와킨 컷씬 (움직임, 36장)",
+"src": "img/scene/mari_wakin_duo.webp",
+"note": "cutscene_duo v1.3 (드라이브 2026-10-03). 로딩 또는 이벤트용. 예전 정지 그림은 S-5",
+"rank": "",
+"on": false
+},
+{
 "id": "C-O",
 "cat": "scene",
 "sub": "인카운터",
@@ -1618,7 +1648,7 @@ const CATALOG = [
 "sub": "인카운터",
 "name": "거대한 무희 셋",
 "src": "img/card/enc_dancers.webp",
-"note": "3m쯤 되는 무희 3명이 춤추는 인카운터. 글: 거대한 무희들이 춤을 춥니다. 그들은 무아에 빠져있습니다. 향은 독할정도로 농염합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"note": "3m쯤 되는 무희 3명이 춤추는 인카운터. 글: 거대한 무희들이 춤을 춥니다. 그들은 무아에 빠져있습니다. 향은 독할정도로 농염합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md 무희는 한 명만 잘라 셋으로 복제 (11 가구 · 소품 → 인카운터 오브제 · NPC, H-348)",
 "rank": "",
 "on": false
 },
@@ -1859,6 +1889,126 @@ const CATALOG = [
 "name": "촛대",
 "src": "a/candle_full.png",
 "note": "소품",
+"rank": "",
+"on": false
+},
+{
+"id": "G-5",
+"cat": "scene",
+"sub": "배경",
+"name": "공허",
+"src": "img/scene/bg_void.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-6",
+"cat": "scene",
+"sub": "배경",
+"name": "과학",
+"src": "img/scene/bg_science.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-7",
+"cat": "scene",
+"sub": "배경",
+"name": "기계 구조물",
+"src": "img/scene/bg_machine.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-8",
+"cat": "scene",
+"sub": "배경",
+"name": "마법",
+"src": "img/scene/bg_magic.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-9",
+"cat": "scene",
+"sub": "배경",
+"name": "마법계",
+"src": "img/scene/bg_magicrealm.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-10",
+"cat": "scene",
+"sub": "배경",
+"name": "멀리 보이는 구조물의 차원",
+"src": "img/scene/bg_farstructure.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-11",
+"cat": "scene",
+"sub": "배경",
+"name": "붉음",
+"src": "img/scene/bg_red.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-12",
+"cat": "scene",
+"sub": "배경",
+"name": "심연",
+"src": "img/scene/bg_abyss.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-13",
+"cat": "scene",
+"sub": "배경",
+"name": "자연 · 영웅",
+"src": "img/scene/bg_naturehero.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-14",
+"cat": "scene",
+"sub": "배경",
+"name": "정령",
+"src": "img/scene/bg_spirit.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-15",
+"cat": "scene",
+"sub": "배경",
+"name": "차원",
+"src": "img/scene/bg_dimension.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
+"rank": "",
+"on": false
+},
+{
+"id": "G-16",
+"cat": "scene",
+"sub": "배경",
+"name": "폐허",
+"src": "img/scene/bg_ruins.webp",
+"note": "드라이브 배경 폴더 (드라이브 2026-10-03) · 1536 × 640",
 "rank": "",
 "on": false
 },
@@ -6836,6 +6986,16 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-348",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "거대한 무희 (셋으로 복제)",
+"src": "img/prop/H-348.webp",
+"note": "거대한 무희 인카운터. 가운데 한 명만 잘라서 세 명으로 복제해 씀 (3m쯤). 발밑 바닥 일부 남음",
+"rank": "",
+"on": false
+},
+{
 "id": "H-212",
 "cat": "prop",
 "sub": "오딜 방 소품",
@@ -7725,7 +7885,18 @@ const CATALOG = [
 "sub": "옐로 · 동료 · 동작 그림",
 "name": "옐로 · 대기 (40장)",
 "src": "img/old2d/yellow_idle.webp",
-"note": "롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러",
+"note": "롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러 · 새 대기 (골반 튕기기 v1.1)가 따로 있음",
+"rank": "",
+"on": false,
+"g": "yellow"
+},
+{
+"id": "O-yellow-idle-new",
+"cat": "char",
+"sub": "옐로 · 동료 · 동작 그림",
+"name": "옐로 · 대기 골반 튕기기 (32장, v1.1)",
+"src": "img/char/yellow_idle_v11.webp",
+"note": "yellow_idle v1.1 (드라이브 2026-10-03). 새 대기 동작",
 "rank": "",
 "on": false,
 "g": "yellow"
@@ -8664,6 +8835,171 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "crabchef"
+},
+{
+"id": "F-auto-aiten",
+"cat": "char",
+"sub": "아이텐 (상인) · NPC · 원화 + 연출",
+"name": "아이텐 기본 초상화",
+"src": "img/face/auto_aiten.webp",
+"note": "기본 그림에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "aiten"
+},
+{
+"id": "P-aiten-art",
+"cat": "char",
+"sub": "아이텐 (상인) · NPC · 원화 + 연출",
+"name": "아이텐 (상인)",
+"src": "img/char/aiten.webp",
+"note": "마차를 끌고 여기저기 다니는 상인. 청갑이 호위. 기본 그림 하나만 씀 (원화 + 연출). 흰 바탕은 지움",
+"rank": "",
+"on": false,
+"g": "aiten"
+},
+{
+"id": "F-heukryong",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 초상화",
+"src": "img/face/heukryong_portrait.webp",
+"note": "원화에서 얼굴을 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-art",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 원화",
+"src": "img/char/heukryong_art.webp",
+"note": "아이텐의 조수. 토끼마차 2호점 운영 중. 사실상 수양딸 (어릴 때부터 아이텐이 키움). 아이텐과 별개의 공간에서 활동하지만 가끔 같이 다님",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-ref",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 설정화 (앞 · 뒤)",
+"src": "img/char/heukryong_ref.webp",
+"note": "앞 · 뒤 모습과 색",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-stand",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 서기",
+"src": "img/char/heukryong_stand.webp",
+"note": "지원 흑룡 스프라이트 (짐 가방)",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-attack",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 공격",
+"src": "img/char/heukryong_attack.webp",
+"note": "지원 흑룡 스프라이트",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-charge",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 돌격",
+"src": "img/char/heukryong_charge.webp",
+"note": "지원 흑룡 스프라이트",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-sit",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 앉기",
+"src": "img/char/heukryong_sit.webp",
+"note": "지원 흑룡 스프라이트",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "P-heukryong-jump",
+"cat": "char",
+"sub": "흑룡 (상인, 아이텐의 조수) · NPC · 원화 + 연출",
+"name": "흑룡 · 점프",
+"src": "img/char/heukryong_jump.webp",
+"note": "지원 흑룡 스프라이트",
+"rank": "",
+"on": false,
+"g": "heukryong"
+},
+{
+"id": "F-auto-yuris",
+"cat": "char",
+"sub": "유리스 (상인) · NPC · 원화 + 연출",
+"name": "유리스 기본 초상화",
+"src": "img/face/auto_yuris.webp",
+"note": "상반신 그림에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "yuris"
+},
+{
+"id": "P-yuris",
+"cat": "char",
+"sub": "유리스 (상인) · NPC · 원화 + 연출",
+"name": "유리스 (상인)",
+"src": "img/char/yuris.webp",
+"note": "코트 안에서 뭔가를 꺼내 파는 상인. 바둑판 바탕은 지움",
+"rank": "",
+"on": false,
+"g": "yuris"
+},
+{
+"id": "P-yuris-bust",
+"cat": "char",
+"sub": "유리스 (상인) · NPC · 원화 + 연출",
+"name": "유리스 · 상반신",
+"src": "img/char/yuris_bust.webp",
+"note": "상인 유리스 그림. 바둑판 바탕은 지움",
+"rank": "",
+"on": false,
+"g": "yuris"
+},
+{
+"id": "F-auto-cheonggap",
+"cat": "char",
+"sub": "청갑 (아이텐의 호위) · NPC · 원화 + 연출",
+"name": "청갑 기본 초상화",
+"src": "img/face/auto_cheonggap.webp",
+"note": "스프라이트에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "cheonggap"
+},
+{
+"id": "P-cheonggap",
+"cat": "char",
+"sub": "청갑 (아이텐의 호위) · NPC · 원화 + 연출",
+"name": "청갑",
+"src": "img/char/cheonggap.webp",
+"note": "아이텐의 호위. 격자 바탕은 지움",
+"rank": "",
+"on": false,
+"g": "cheonggap"
 },
 {
 "id": "F-auto-deadhero",
@@ -9715,8 +10051,8 @@ const CATALOG = [
 "cat": "char",
 "sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
 "name": "고대 몬스터 햘 기본 초상화",
-"src": "img/face/auto_hyal_queen.webp",
-"note": "스탠딩에서 정사각형으로 자름",
+"src": "img/face/hyal_queen_portrait.webp",
+"note": "햘 등장 ~ 루프 컷씬 (S-8)에서 얼굴을 자름",
 "rank": "",
 "on": false,
 "g": "hyalqueen"
