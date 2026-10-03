@@ -1,4 +1,4 @@
-/* catalog.js v1.45 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.47 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -8,7 +8,8 @@ const CATALOG = [
 "src": "a/items/necklace.png",
 "note": "초반 획득 가능한 유물 중 하나. 어린 태자가 자유롭고 안전하길 바랐던 누군가의 염원이 담겨 있다. 주인은 옛적에 죽었다. (가호: 바람)",
 "rank": "relic",
-"on": false
+"on": true,
+"pin": 318
 },
 {
 "id": "R-B",
@@ -18,7 +19,8 @@ const CATALOG = [
 "src": "a/items/ring.png",
 "note": "바다의 사랑을 받은 나그네의 반지. (축복: 바다)",
 "rank": "relic",
-"on": false
+"on": true,
+"pin": 319
 },
 {
 "id": "R01",
@@ -3210,7 +3212,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 7
+"pin": 323
 },
 {
 "id": "H-044-c1",
@@ -3253,8 +3255,9 @@ const CATALOG = [
 "src": "img/prop/H-044-c4.webp",
 "note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
 "rank": "",
-"on": false,
-"parent": "H-044"
+"on": true,
+"parent": "H-044",
+"pin": 322
 },
 {
 "id": "H-045",
@@ -3287,7 +3290,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 8
+"pin": 7
 },
 {
 "id": "H-091",
@@ -3298,7 +3301,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 9
+"pin": 8
 },
 {
 "id": "H-098",
@@ -3309,7 +3312,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 10
+"pin": 9
 },
 {
 "id": "H-099",
@@ -3320,7 +3323,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 11
+"pin": 10
 },
 {
 "id": "H-099-c1",
@@ -3375,7 +3378,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 12
+"pin": 11
 },
 {
 "id": "H-121",
@@ -3386,7 +3389,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 13
+"pin": 12
 },
 {
 "id": "H-122",
@@ -3397,7 +3400,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 14
+"pin": 13
 },
 {
 "id": "H-125",
@@ -3408,62 +3411,18 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 15
-},
-{
-"id": "H-131",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "왕좌",
-"src": "img/prop/H-131.webp",
-"note": "",
-"rank": "",
-"on": true,
-"pin": 16
-},
-{
-"id": "H-131-c1",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "왕좌 · 색 변형 (먼지 낀 남색)",
-"src": "img/prop/H-131-c1.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-131"
-},
-{
-"id": "H-131-c2",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "왕좌 · 색 변형 (이끼색)",
-"src": "img/prop/H-131-c2.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-131"
+"pin": 14
 },
 {
 "id": "H-131-c3",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
-"name": "왕좌 · 색 변형 (바랜 자주)",
+"name": "왕좌 (바랜 자주)",
 "src": "img/prop/H-131-c3.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
+"note": "원래 왕좌는 삭제, 이 색만 남김",
 "rank": "",
-"on": false,
-"parent": "H-131"
-},
-{
-"id": "H-131-c4",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "왕좌 · 색 변형 (흙빛 황토)",
-"src": "img/prop/H-131-c4.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
-"rank": "",
-"on": false,
-"parent": "H-131"
+"on": true,
+"pin": 320
 },
 {
 "id": "H-180",
@@ -3474,7 +3433,7 @@ const CATALOG = [
 "note": "의미 없는 문양 지움",
 "rank": "",
 "on": true,
-"pin": 34
+"pin": 31
 },
 {
 "id": "H-180-c1",
@@ -3529,7 +3488,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 31
+"pin": 28
 },
 {
 "id": "H-185",
@@ -3540,7 +3499,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 32
+"pin": 29
 },
 {
 "id": "H-185-c1",
@@ -3606,7 +3565,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 35
+"pin": 32
 },
 {
 "id": "H-239-c1",
@@ -3661,7 +3620,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 21
+"pin": 18
 },
 {
 "id": "H-241",
@@ -3672,7 +3631,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 18
+"pin": 15
 },
 {
 "id": "H-243",
@@ -3683,7 +3642,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 28
+"pin": 25
 },
 {
 "id": "H-244",
@@ -3694,7 +3653,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 27
+"pin": 24
 },
 {
 "id": "H-245",
@@ -3705,7 +3664,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 26
+"pin": 23
 },
 {
 "id": "H-246",
@@ -3716,7 +3675,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 25
+"pin": 22
 },
 {
 "id": "H-247",
@@ -3727,29 +3686,18 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 24
-},
-{
-"id": "H-248",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "범용 소파",
-"src": "img/prop/H-248.webp",
-"note": "원래 이름: 붉은 소파 3",
-"rank": "",
-"on": true,
-"pin": 17
+"pin": 21
 },
 {
 "id": "H-248-c1",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
-"name": "범용 소파 · 색 변형 (먼지 낀 남색)",
+"name": "범용 소파 (먼지 낀 남색)",
 "src": "img/prop/H-248-c1.webp",
-"note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
+"note": "원래 범용 소파 (붉은 소파 3)는 삭제, 이 색을 대표로. 나머지 색 변형은 이 밑에 접힘",
 "rank": "",
-"on": false,
-"parent": "H-248"
+"on": true,
+"pin": 321
 },
 {
 "id": "H-248-c2",
@@ -3760,7 +3708,7 @@ const CATALOG = [
 "note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
 "rank": "",
 "on": false,
-"parent": "H-248"
+"parent": "H-248-c1"
 },
 {
 "id": "H-248-c3",
@@ -3771,7 +3719,7 @@ const CATALOG = [
 "note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
 "rank": "",
 "on": false,
-"parent": "H-248"
+"parent": "H-248-c1"
 },
 {
 "id": "H-248-c4",
@@ -3782,7 +3730,7 @@ const CATALOG = [
 "note": "메모 '색상변경 랜덤'대로 바꾼 색. 탁한 색 (주된 천 색만 돌림)",
 "rank": "",
 "on": false,
-"parent": "H-248"
+"parent": "H-248-c1"
 },
 {
 "id": "H-251",
@@ -3793,7 +3741,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 23
+"pin": 20
 },
 {
 "id": "H-252",
@@ -3804,7 +3752,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 22
+"pin": 19
 },
 {
 "id": "H-266",
@@ -3815,7 +3763,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 30
+"pin": 27
 },
 {
 "id": "H-271",
@@ -3826,7 +3774,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 29
+"pin": 26
 },
 {
 "id": "H-016",
@@ -3837,7 +3785,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 55
+"pin": 52
 },
 {
 "id": "H-041",
@@ -3848,7 +3796,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 42
+"pin": 39
 },
 {
 "id": "H-075",
@@ -3859,7 +3807,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 57
+"pin": 54
 },
 {
 "id": "H-083",
@@ -3870,7 +3818,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 52
+"pin": 49
 },
 {
 "id": "H-090",
@@ -3881,7 +3829,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 54
+"pin": 51
 },
 {
 "id": "H-103",
@@ -3892,7 +3840,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 47
+"pin": 44
 },
 {
 "id": "H-124",
@@ -3903,7 +3851,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 43
+"pin": 40
 },
 {
 "id": "H-126",
@@ -3914,7 +3862,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 51
+"pin": 48
 },
 {
 "id": "H-127",
@@ -3925,7 +3873,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 50
+"pin": 47
 },
 {
 "id": "H-149",
@@ -3936,7 +3884,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 44
+"pin": 41
 },
 {
 "id": "H-171",
@@ -3947,7 +3895,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 49
+"pin": 46
 },
 {
 "id": "H-178",
@@ -3958,7 +3906,7 @@ const CATALOG = [
 "note": "의미 없는 문양 지움",
 "rank": "",
 "on": true,
-"pin": 41
+"pin": 38
 },
 {
 "id": "H-183",
@@ -3969,7 +3917,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 84
+"pin": 81
 },
 {
 "id": "H-187",
@@ -3980,7 +3928,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 53
+"pin": 50
 },
 {
 "id": "H-188",
@@ -3991,7 +3939,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 46
+"pin": 43
 },
 {
 "id": "H-249",
@@ -4002,7 +3950,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 37
+"pin": 34
 },
 {
 "id": "H-250",
@@ -4013,7 +3961,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 38
+"pin": 35
 },
 {
 "id": "H-258",
@@ -4024,7 +3972,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 39
+"pin": 36
 },
 {
 "id": "H-259",
@@ -4035,7 +3983,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 40
+"pin": 37
 },
 {
 "id": "H-114",
@@ -4046,7 +3994,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 63
+"pin": 60
 },
 {
 "id": "H-115",
@@ -4057,7 +4005,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 64
+"pin": 61
 },
 {
 "id": "H-128",
@@ -4068,7 +4016,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 65
+"pin": 62
 },
 {
 "id": "H-130",
@@ -4079,7 +4027,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 66
+"pin": 63
 },
 {
 "id": "H-145",
@@ -4090,7 +4038,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 67
+"pin": 64
 },
 {
 "id": "H-170",
@@ -4100,7 +4048,8 @@ const CATALOG = [
 "src": "img/prop/H-170.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 326
 },
 {
 "id": "H-253",
@@ -4110,7 +4059,8 @@ const CATALOG = [
 "src": "img/prop/H-253.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 325
 },
 {
 "id": "H-254",
@@ -4120,7 +4070,8 @@ const CATALOG = [
 "src": "img/prop/H-254.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 324
 },
 {
 "id": "H-255",
@@ -4131,7 +4082,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 86
+"pin": 83
 },
 {
 "id": "H-256",
@@ -4142,7 +4093,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 85
+"pin": 82
 },
 {
 "id": "H-257",
@@ -4153,7 +4104,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 62
+"pin": 59
 },
 {
 "id": "H-268",
@@ -4164,7 +4115,7 @@ const CATALOG = [
 "note": "원래 이름: 방독면 상자",
 "rank": "",
 "on": true,
-"pin": 61
+"pin": 58
 },
 {
 "id": "H-278",
@@ -4175,7 +4126,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 60
+"pin": 57
 },
 {
 "id": "H-302",
@@ -4186,7 +4137,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 59
+"pin": 56
 },
 {
 "id": "H-304",
@@ -4197,7 +4148,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 58
+"pin": 55
 },
 {
 "id": "H-231",
@@ -4208,7 +4159,7 @@ const CATALOG = [
 "note": "오딜 방에도 배치",
 "rank": "",
 "on": true,
-"pin": 82
+"pin": 79
 },
 {
 "id": "H-234",
@@ -4219,7 +4170,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 81
+"pin": 78
 },
 {
 "id": "H-235",
@@ -4230,7 +4181,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 79
+"pin": 76
 },
 {
 "id": "H-294",
@@ -4241,7 +4192,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 78
+"pin": 75
 },
 {
 "id": "H-295",
@@ -4252,7 +4203,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 72
+"pin": 69
 },
 {
 "id": "H-296",
@@ -4263,7 +4214,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 73
+"pin": 70
 },
 {
 "id": "H-297",
@@ -4274,7 +4225,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 74
+"pin": 71
 },
 {
 "id": "H-298",
@@ -4285,7 +4236,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 75
+"pin": 72
 },
 {
 "id": "H-299",
@@ -4296,7 +4247,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 76
+"pin": 73
 },
 {
 "id": "H-300",
@@ -4307,7 +4258,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 77
+"pin": 74
 },
 {
 "id": "H-301",
@@ -4318,7 +4269,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 83
+"pin": 80
 },
 {
 "id": "H-303",
@@ -4329,7 +4280,7 @@ const CATALOG = [
 "note": "색을 더 화려하게",
 "rank": "",
 "on": true,
-"pin": 68
+"pin": 65
 },
 {
 "id": "H-305",
@@ -4340,7 +4291,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 80
+"pin": 77
 },
 {
 "id": "H-306",
@@ -4351,7 +4302,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 69
+"pin": 66
 },
 {
 "id": "H-307",
@@ -4362,7 +4313,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 70
+"pin": 67
 },
 {
 "id": "H-308",
@@ -4373,7 +4324,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 71
+"pin": 68
 },
 {
 "id": "H-018",
@@ -4384,7 +4335,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 93
+"pin": 90
 },
 {
 "id": "H-030",
@@ -4395,7 +4346,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 92
+"pin": 89
 },
 {
 "id": "H-043",
@@ -4416,7 +4367,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 91
+"pin": 88
 },
 {
 "id": "H-082",
@@ -4427,7 +4378,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 90
+"pin": 87
 },
 {
 "id": "H-093",
@@ -4438,7 +4389,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 89
+"pin": 86
 },
 {
 "id": "H-101",
@@ -4449,7 +4400,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 88
+"pin": 85
 },
 {
 "id": "H-104",
@@ -4460,7 +4411,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 87
+"pin": 84
 },
 {
 "id": "H-107",
@@ -4471,7 +4422,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 94
+"pin": 91
 },
 {
 "id": "H-123",
@@ -4482,7 +4433,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 95
+"pin": 92
 },
 {
 "id": "H-129",
@@ -4493,7 +4444,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 105
+"pin": 102
 },
 {
 "id": "H-148",
@@ -4504,7 +4455,7 @@ const CATALOG = [
 "note": "불 색 바꿈 (푸른 불)",
 "rank": "",
 "on": true,
-"pin": 104
+"pin": 101
 },
 {
 "id": "H-158",
@@ -4515,7 +4466,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 103
+"pin": 100
 },
 {
 "id": "H-206",
@@ -4526,7 +4477,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 102
+"pin": 99
 },
 {
 "id": "H-236",
@@ -4537,7 +4488,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 98
+"pin": 95
 },
 {
 "id": "H-292",
@@ -4548,7 +4499,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 97
+"pin": 94
 },
 {
 "id": "H-293",
@@ -4559,7 +4510,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 96
+"pin": 93
 },
 {
 "id": "H-319",
@@ -4570,7 +4521,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 106
+"pin": 103
 },
 {
 "id": "H-320",
@@ -4581,7 +4532,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 107
+"pin": 104
 },
 {
 "id": "H-001",
@@ -4592,7 +4543,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 108
+"pin": 105
 },
 {
 "id": "H-002",
@@ -4603,7 +4554,7 @@ const CATALOG = [
 "note": "문양 · 깃발 지움, 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 111
+"pin": 108
 },
 {
 "id": "H-003",
@@ -4614,7 +4565,7 @@ const CATALOG = [
 "note": "문양 · 매단 간판 지움",
 "rank": "",
 "on": true,
-"pin": 110
+"pin": 107
 },
 {
 "id": "H-019",
@@ -4625,7 +4576,7 @@ const CATALOG = [
 "note": "누군가의 거점으로 좋을 듯",
 "rank": "",
 "on": true,
-"pin": 109
+"pin": 106
 },
 {
 "id": "H-035",
@@ -4636,7 +4587,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 112
+"pin": 109
 },
 {
 "id": "H-136",
@@ -4647,7 +4598,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 113
+"pin": 110
 },
 {
 "id": "H-263",
@@ -4658,7 +4609,7 @@ const CATALOG = [
 "note": "색 바꿈",
 "rank": "",
 "on": true,
-"pin": 114
+"pin": 111
 },
 {
 "id": "H-264",
@@ -4669,7 +4620,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 115
+"pin": 112
 },
 {
 "id": "H-265",
@@ -4690,7 +4641,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 116
+"pin": 113
 },
 {
 "id": "H-020",
@@ -4701,7 +4652,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 117
+"pin": 114
 },
 {
 "id": "H-021",
@@ -4712,7 +4663,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 118
+"pin": 115
 },
 {
 "id": "H-022",
@@ -4723,7 +4674,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 119
+"pin": 116
 },
 {
 "id": "H-029",
@@ -4734,7 +4685,7 @@ const CATALOG = [
 "note": "깃발 문양 지움",
 "rank": "",
 "on": true,
-"pin": 120
+"pin": 117
 },
 {
 "id": "H-046",
@@ -4745,7 +4696,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 121
+"pin": 118
 },
 {
 "id": "H-047",
@@ -4756,7 +4707,7 @@ const CATALOG = [
 "note": "깃발 지움",
 "rank": "",
 "on": true,
-"pin": 122
+"pin": 119
 },
 {
 "id": "H-057",
@@ -4767,7 +4718,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 123
+"pin": 120
 },
 {
 "id": "H-106",
@@ -4778,7 +4729,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 124
+"pin": 121
 },
 {
 "id": "H-110",
@@ -4789,7 +4740,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 125
+"pin": 122
 },
 {
 "id": "H-111",
@@ -4800,7 +4751,7 @@ const CATALOG = [
 "note": "깃발 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 126
+"pin": 123
 },
 {
 "id": "H-116",
@@ -4811,7 +4762,7 @@ const CATALOG = [
 "note": "색 바꿈",
 "rank": "",
 "on": true,
-"pin": 127
+"pin": 124
 },
 {
 "id": "H-117",
@@ -4822,7 +4773,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 128
+"pin": 125
 },
 {
 "id": "H-119",
@@ -4833,7 +4784,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 129
+"pin": 126
 },
 {
 "id": "H-132",
@@ -4844,7 +4795,7 @@ const CATALOG = [
 "note": "깃발 문양 지움 · 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 130
+"pin": 127
 },
 {
 "id": "H-140",
@@ -4855,7 +4806,7 @@ const CATALOG = [
 "note": "깃발 문양 지움",
 "rank": "",
 "on": true,
-"pin": 131
+"pin": 128
 },
 {
 "id": "H-161",
@@ -4866,7 +4817,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 132
+"pin": 129
 },
 {
 "id": "H-162",
@@ -4877,7 +4828,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 133
+"pin": 130
 },
 {
 "id": "H-165",
@@ -4888,7 +4839,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 134
+"pin": 131
 },
 {
 "id": "H-168",
@@ -4899,7 +4850,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 135
+"pin": 132
 },
 {
 "id": "H-199",
@@ -4910,7 +4861,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 136
+"pin": 133
 },
 {
 "id": "H-274",
@@ -4921,7 +4872,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 137
+"pin": 134
 },
 {
 "id": "H-275",
@@ -4932,7 +4883,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 138
+"pin": 135
 },
 {
 "id": "H-291",
@@ -4943,7 +4894,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 139
+"pin": 136
 },
 {
 "id": "H-135",
@@ -4953,7 +4904,8 @@ const CATALOG = [
 "src": "img/prop/H-135.webp",
 "note": "원래 이름: 교회 신도석 · 문양 · 꼭대기 십자 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 312
 },
 {
 "id": "H-010",
@@ -4964,7 +4916,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 140
+"pin": 137
 },
 {
 "id": "H-025",
@@ -4975,7 +4927,7 @@ const CATALOG = [
 "note": "문양을 다른 것으로, 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 141
+"pin": 138
 },
 {
 "id": "H-028",
@@ -4986,7 +4938,7 @@ const CATALOG = [
 "note": "방패 문양을 다른 것으로, 깃발 문양 지움, 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 142
+"pin": 139
 },
 {
 "id": "H-048",
@@ -4997,7 +4949,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 143
+"pin": 140
 },
 {
 "id": "H-084",
@@ -5008,7 +4960,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 144
+"pin": 141
 },
 {
 "id": "H-112",
@@ -5019,7 +4971,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 145
+"pin": 142
 },
 {
 "id": "H-113",
@@ -5030,7 +4982,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 146
+"pin": 143
 },
 {
 "id": "H-163",
@@ -5041,7 +4993,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 147
+"pin": 144
 },
 {
 "id": "H-164",
@@ -5052,7 +5004,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 148
+"pin": 145
 },
 {
 "id": "H-007",
@@ -5063,7 +5015,7 @@ const CATALOG = [
 "note": "문양 지움",
 "rank": "",
 "on": true,
-"pin": 150
+"pin": 147
 },
 {
 "id": "H-008",
@@ -5074,7 +5026,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 151
+"pin": 148
 },
 {
 "id": "H-009",
@@ -5085,7 +5037,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 152
+"pin": 149
 },
 {
 "id": "H-023",
@@ -5096,7 +5048,7 @@ const CATALOG = [
 "note": "문양 지움, 색 바꿈",
 "rank": "",
 "on": true,
-"pin": 153
+"pin": 150
 },
 {
 "id": "H-026",
@@ -5106,7 +5058,8 @@ const CATALOG = [
 "src": "img/prop/H-026.webp",
 "note": "문양 지움",
 "rank": "",
-"on": false
+"on": true,
+"pin": 313
 },
 {
 "id": "H-027",
@@ -5117,7 +5070,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 154
+"pin": 151
 },
 {
 "id": "H-049",
@@ -5128,7 +5081,7 @@ const CATALOG = [
 "note": "십자 대신 다른 문양",
 "rank": "",
 "on": true,
-"pin": 155
+"pin": 152
 },
 {
 "id": "H-052",
@@ -5139,7 +5092,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 156
+"pin": 153
 },
 {
 "id": "H-056",
@@ -5150,7 +5103,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 158
+"pin": 155
 },
 {
 "id": "H-169",
@@ -5161,7 +5114,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 159
+"pin": 156
 },
 {
 "id": "H-191",
@@ -5172,7 +5125,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 160
+"pin": 157
 },
 {
 "id": "H-194",
@@ -5183,7 +5136,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 161
+"pin": 158
 },
 {
 "id": "H-198",
@@ -5194,7 +5147,7 @@ const CATALOG = [
 "note": "깃발을 돌 색으로",
 "rank": "",
 "on": true,
-"pin": 162
+"pin": 159
 },
 {
 "id": "H-205",
@@ -5205,7 +5158,7 @@ const CATALOG = [
 "note": "문양 지움",
 "rank": "",
 "on": true,
-"pin": 163
+"pin": 160
 },
 {
 "id": "H-207",
@@ -5216,7 +5169,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 164
+"pin": 161
 },
 {
 "id": "H-281",
@@ -5227,7 +5180,7 @@ const CATALOG = [
 "note": "원래 이름: 부서진 문 · 검 꽂힌 투구 더미 · 부서진 문 지움",
 "rank": "",
 "on": true,
-"pin": 166
+"pin": 163
 },
 {
 "id": "H-283",
@@ -5238,7 +5191,7 @@ const CATALOG = [
 "note": "문양 바꿈",
 "rank": "",
 "on": true,
-"pin": 167
+"pin": 164
 },
 {
 "id": "H-284",
@@ -5249,7 +5202,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 168
+"pin": 165
 },
 {
 "id": "H-286",
@@ -5260,7 +5213,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 169
+"pin": 166
 },
 {
 "id": "H-287",
@@ -5271,7 +5224,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 170
+"pin": 167
 },
 {
 "id": "H-288",
@@ -5282,7 +5235,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 171
+"pin": 168
 },
 {
 "id": "H-289",
@@ -5293,7 +5246,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 172
+"pin": 169
 },
 {
 "id": "H-327",
@@ -5304,7 +5257,7 @@ const CATALOG = [
 "note": "오브제 (2026-10-03). 회색 바탕을 지움",
 "rank": "",
 "on": true,
-"pin": 173
+"pin": 170
 },
 {
 "id": "H-328",
@@ -5315,7 +5268,7 @@ const CATALOG = [
 "note": "오브제 (2026-10-03). 검은 바탕을 지움, 가운데 구멍은 그림 그대로",
 "rank": "",
 "on": true,
-"pin": 174
+"pin": 171
 },
 {
 "id": "H-166",
@@ -5326,7 +5279,7 @@ const CATALOG = [
 "note": "시체가 아니라 갑옷 더미 (메모대로 옮김) · 원래 이름: 기사 갑옷 더미",
 "rank": "",
 "on": true,
-"pin": 149
+"pin": 146
 },
 {
 "id": "H-011",
@@ -5337,7 +5290,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 175
+"pin": 172
 },
 {
 "id": "H-012",
@@ -5348,7 +5301,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 176
+"pin": 173
 },
 {
 "id": "H-013",
@@ -5359,7 +5312,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 177
+"pin": 174
 },
 {
 "id": "H-014",
@@ -5370,7 +5323,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 178
+"pin": 175
 },
 {
 "id": "H-015",
@@ -5381,7 +5334,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 179
+"pin": 176
 },
 {
 "id": "H-017",
@@ -5392,7 +5345,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 180
+"pin": 177
 },
 {
 "id": "H-036",
@@ -5403,7 +5356,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 181
+"pin": 178
 },
 {
 "id": "H-037",
@@ -5414,7 +5367,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 182
+"pin": 179
 },
 {
 "id": "H-039",
@@ -5425,7 +5378,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 183
+"pin": 180
 },
 {
 "id": "H-065",
@@ -5436,7 +5389,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 184
+"pin": 181
 },
 {
 "id": "H-073",
@@ -5447,7 +5400,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 185
+"pin": 182
 },
 {
 "id": "H-085",
@@ -5458,7 +5411,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 186
+"pin": 183
 },
 {
 "id": "H-088",
@@ -5469,7 +5422,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 187
+"pin": 184
 },
 {
 "id": "H-133",
@@ -5480,7 +5433,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 188
+"pin": 185
 },
 {
 "id": "H-141",
@@ -5491,7 +5444,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 189
+"pin": 186
 },
 {
 "id": "H-147",
@@ -5502,7 +5455,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 190
+"pin": 187
 },
 {
 "id": "H-269",
@@ -5513,7 +5466,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 191
+"pin": 188
 },
 {
 "id": "H-272",
@@ -5524,7 +5477,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 192
+"pin": 189
 },
 {
 "id": "H-321",
@@ -5535,7 +5488,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 193
+"pin": 190
 },
 {
 "id": "H-322",
@@ -5546,7 +5499,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 194
+"pin": 191
 },
 {
 "id": "H-323",
@@ -5557,7 +5510,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 195
+"pin": 192
 },
 {
 "id": "H-324",
@@ -5568,7 +5521,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 196
+"pin": 193
 },
 {
 "id": "H-325",
@@ -5579,7 +5532,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 197
+"pin": 194
 },
 {
 "id": "H-326",
@@ -5590,7 +5543,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 198
+"pin": 195
 },
 {
 "id": "H-031",
@@ -5601,7 +5554,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 199
+"pin": 196
 },
 {
 "id": "H-032",
@@ -5612,7 +5565,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 200
+"pin": 197
 },
 {
 "id": "H-033",
@@ -5623,7 +5576,7 @@ const CATALOG = [
 "note": "원래 이름: 깃발 달린 기묘한 제단 · 깃발 지움",
 "rank": "",
 "on": true,
-"pin": 201
+"pin": 198
 },
 {
 "id": "H-034",
@@ -5634,7 +5587,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 202
+"pin": 199
 },
 {
 "id": "H-038",
@@ -5645,7 +5598,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 203
+"pin": 200
 },
 {
 "id": "H-053",
@@ -5656,7 +5609,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 205
+"pin": 202
 },
 {
 "id": "H-058",
@@ -5667,7 +5620,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 206
+"pin": 203
 },
 {
 "id": "H-077",
@@ -5678,7 +5631,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 207
+"pin": 204
 },
 {
 "id": "H-081",
@@ -5689,7 +5642,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 208
+"pin": 205
 },
 {
 "id": "H-089",
@@ -5700,7 +5653,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 209
+"pin": 206
 },
 {
 "id": "H-102",
@@ -5711,7 +5664,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 210
+"pin": 207
 },
 {
 "id": "H-105",
@@ -5722,7 +5675,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 211
+"pin": 208
 },
 {
 "id": "H-108",
@@ -5733,7 +5686,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 212
+"pin": 209
 },
 {
 "id": "H-109",
@@ -5744,7 +5697,7 @@ const CATALOG = [
 "note": "좋다",
 "rank": "",
 "on": true,
-"pin": 213
+"pin": 210
 },
 {
 "id": "H-153",
@@ -5755,7 +5708,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 214
+"pin": 211
 },
 {
 "id": "H-154",
@@ -5766,7 +5719,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 217
+"pin": 214
 },
 {
 "id": "H-155",
@@ -5777,7 +5730,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 215
+"pin": 212
 },
 {
 "id": "H-156",
@@ -5788,7 +5741,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 216
+"pin": 213
 },
 {
 "id": "H-159",
@@ -5799,7 +5752,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 226
+"pin": 223
 },
 {
 "id": "H-160",
@@ -5810,7 +5763,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 225
+"pin": 222
 },
 {
 "id": "H-177",
@@ -5821,7 +5774,7 @@ const CATALOG = [
 "note": "십자 대신 다른 문양",
 "rank": "",
 "on": true,
-"pin": 223
+"pin": 220
 },
 {
 "id": "H-196",
@@ -5832,7 +5785,7 @@ const CATALOG = [
 "note": "문양 바꿈",
 "rank": "",
 "on": true,
-"pin": 222
+"pin": 219
 },
 {
 "id": "H-197",
@@ -5843,7 +5796,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 221
+"pin": 218
 },
 {
 "id": "H-208",
@@ -5854,7 +5807,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 220
+"pin": 217
 },
 {
 "id": "H-310",
@@ -5865,7 +5818,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 227
+"pin": 224
 },
 {
 "id": "H-152",
@@ -5876,7 +5829,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 228
+"pin": 225
 },
 {
 "id": "H-157",
@@ -5887,7 +5840,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 229
+"pin": 226
 },
 {
 "id": "H-173",
@@ -5898,7 +5851,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 230
+"pin": 227
 },
 {
 "id": "H-174",
@@ -5909,7 +5862,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 231
+"pin": 228
 },
 {
 "id": "H-209",
@@ -5920,7 +5873,7 @@ const CATALOG = [
 "note": "문양 지움",
 "rank": "",
 "on": true,
-"pin": 232
+"pin": 229
 },
 {
 "id": "H-097",
@@ -5931,7 +5884,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 235
+"pin": 232
 },
 {
 "id": "H-190",
@@ -5942,7 +5895,7 @@ const CATALOG = [
 "note": "문양 지움",
 "rank": "",
 "on": true,
-"pin": 240
+"pin": 237
 },
 {
 "id": "H-311",
@@ -5953,7 +5906,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 241
+"pin": 238
 },
 {
 "id": "H-312",
@@ -5964,7 +5917,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 242
+"pin": 239
 },
 {
 "id": "H-313",
@@ -5975,7 +5928,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 243
+"pin": 240
 },
 {
 "id": "H-314",
@@ -5986,7 +5939,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 244
+"pin": 241
 },
 {
 "id": "H-315",
@@ -5997,7 +5950,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 245
+"pin": 242
 },
 {
 "id": "H-316",
@@ -6008,7 +5961,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 246
+"pin": 243
 },
 {
 "id": "H-317",
@@ -6019,7 +5972,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 247
+"pin": 244
 },
 {
 "id": "H-318",
@@ -6030,7 +5983,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 248
+"pin": 245
 },
 {
 "id": "H-230",
@@ -6041,7 +5994,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 252
+"pin": 249
 },
 {
 "id": "H-059",
@@ -6052,7 +6005,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 255
+"pin": 252
 },
 {
 "id": "H-060",
@@ -6063,7 +6016,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 256
+"pin": 253
 },
 {
 "id": "H-071",
@@ -6074,7 +6027,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 257
+"pin": 254
 },
 {
 "id": "H-074",
@@ -6085,7 +6038,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 258
+"pin": 255
 },
 {
 "id": "H-118",
@@ -6096,7 +6049,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 262
+"pin": 259
 },
 {
 "id": "H-137",
@@ -6107,7 +6060,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 261
+"pin": 258
 },
 {
 "id": "H-144",
@@ -6118,7 +6071,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 260
+"pin": 257
 },
 {
 "id": "H-150",
@@ -6129,7 +6082,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 263
+"pin": 260
 },
 {
 "id": "H-151",
@@ -6140,7 +6093,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 264
+"pin": 261
 },
 {
 "id": "H-167",
@@ -6151,7 +6104,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 274
+"pin": 271
 },
 {
 "id": "H-176",
@@ -6162,7 +6115,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 273
+"pin": 270
 },
 {
 "id": "H-179",
@@ -6173,7 +6126,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 272
+"pin": 269
 },
 {
 "id": "H-192",
@@ -6184,7 +6137,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 271
+"pin": 268
 },
 {
 "id": "H-193",
@@ -6195,7 +6148,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 270
+"pin": 267
 },
 {
 "id": "H-195",
@@ -6206,7 +6159,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 269
+"pin": 266
 },
 {
 "id": "H-200",
@@ -6217,7 +6170,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 268
+"pin": 265
 },
 {
 "id": "H-201",
@@ -6228,7 +6181,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 267
+"pin": 264
 },
 {
 "id": "H-202",
@@ -6239,7 +6192,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 266
+"pin": 263
 },
 {
 "id": "H-203",
@@ -6250,7 +6203,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 265
+"pin": 262
 },
 {
 "id": "H-204",
@@ -6261,7 +6214,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 275
+"pin": 272
 },
 {
 "id": "H-210",
@@ -6272,7 +6225,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 276
+"pin": 273
 },
 {
 "id": "H-211",
@@ -6283,7 +6236,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 277
+"pin": 274
 },
 {
 "id": "H-273",
@@ -6294,7 +6247,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 278
+"pin": 275
 },
 {
 "id": "H-276",
@@ -6305,7 +6258,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 279
+"pin": 276
 },
 {
 "id": "H-277",
@@ -6316,7 +6269,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 280
+"pin": 277
 },
 {
 "id": "H-279",
@@ -6327,7 +6280,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 295
+"pin": 292
 },
 {
 "id": "H-280",
@@ -6338,7 +6291,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 281
+"pin": 278
 },
 {
 "id": "H-282",
@@ -6349,7 +6302,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 282
+"pin": 279
 },
 {
 "id": "H-285",
@@ -6360,7 +6313,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 283
+"pin": 280
 },
 {
 "id": "H-061",
@@ -6371,7 +6324,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 284
+"pin": 281
 },
 {
 "id": "H-062",
@@ -6382,7 +6335,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 286
+"pin": 283
 },
 {
 "id": "H-063",
@@ -6393,7 +6346,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 285
+"pin": 282
 },
 {
 "id": "H-064",
@@ -6404,7 +6357,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 287
+"pin": 284
 },
 {
 "id": "H-066",
@@ -6415,7 +6368,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 288
+"pin": 285
 },
 {
 "id": "H-067",
@@ -6426,7 +6379,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 289
+"pin": 286
 },
 {
 "id": "H-068",
@@ -6437,7 +6390,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 290
+"pin": 287
 },
 {
 "id": "H-069",
@@ -6448,7 +6401,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 291
+"pin": 288
 },
 {
 "id": "H-070",
@@ -6459,7 +6412,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 292
+"pin": 289
 },
 {
 "id": "H-078",
@@ -6470,7 +6423,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 293
+"pin": 290
 },
 {
 "id": "H-086",
@@ -6481,7 +6434,7 @@ const CATALOG = [
 "note": "문양 지움",
 "rank": "",
 "on": true,
-"pin": 303
+"pin": 300
 },
 {
 "id": "H-134",
@@ -6492,7 +6445,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 302
+"pin": 299
 },
 {
 "id": "H-138",
@@ -6503,7 +6456,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 301
+"pin": 298
 },
 {
 "id": "H-143",
@@ -6514,7 +6467,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 300
+"pin": 297
 },
 {
 "id": "H-260",
@@ -6525,7 +6478,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 299
+"pin": 296
 },
 {
 "id": "H-261",
@@ -6536,7 +6489,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 298
+"pin": 295
 },
 {
 "id": "H-262",
@@ -6547,7 +6500,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 297
+"pin": 294
 },
 {
 "id": "H-267",
@@ -6558,7 +6511,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 296
+"pin": 293
 },
 {
 "id": "H-270",
@@ -6569,7 +6522,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 294
+"pin": 291
 },
 {
 "id": "H-329",
@@ -6580,7 +6533,7 @@ const CATALOG = [
 "note": "액자 인카운터. 사각 자름 (벽 포함)",
 "rank": "",
 "on": true,
-"pin": 304
+"pin": 301
 },
 {
 "id": "H-330",
@@ -6591,7 +6544,7 @@ const CATALOG = [
 "note": "액자 인카운터. 대충 분리, 말풍선으로 토론",
 "rank": "",
 "on": true,
-"pin": 306
+"pin": 303
 },
 {
 "id": "H-331",
@@ -6602,7 +6555,7 @@ const CATALOG = [
 "note": "액자 인카운터. 대충 분리",
 "rank": "",
 "on": true,
-"pin": 307
+"pin": 304
 },
 {
 "id": "H-332",
@@ -6613,7 +6566,7 @@ const CATALOG = [
 "note": "액자 인카운터. 대충 분리",
 "rank": "",
 "on": true,
-"pin": 308
+"pin": 305
 },
 {
 "id": "H-333",
@@ -6624,7 +6577,7 @@ const CATALOG = [
 "note": "액자 인카운터. 소파와 앉은 노인 한 장, 가장자리 거칢",
 "rank": "",
 "on": true,
-"pin": 309
+"pin": 306
 },
 {
 "id": "H-334",
@@ -6635,7 +6588,7 @@ const CATALOG = [
 "note": "지껄임 인카운터. 입만 분리, 앞의 두 사람은 지움 (아래쪽 자국 조금)",
 "rank": "",
 "on": true,
-"pin": 310
+"pin": 307
 },
 {
 "id": "H-335",
@@ -6646,7 +6599,7 @@ const CATALOG = [
 "note": "대충 분리 (배경 지우기 모델)",
 "rank": "",
 "on": true,
-"pin": 311
+"pin": 308
 },
 {
 "id": "H-336",
@@ -6657,7 +6610,7 @@ const CATALOG = [
 "note": "대충 분리, 아래 몸은 책상에 가려 잘림",
 "rank": "",
 "on": true,
-"pin": 312
+"pin": 309
 },
 {
 "id": "H-337",
@@ -6668,7 +6621,7 @@ const CATALOG = [
 "note": "비치 의자 · 탁자 포함",
 "rank": "",
 "on": true,
-"pin": 313
+"pin": 310
 },
 {
 "id": "H-338",
@@ -6679,7 +6632,7 @@ const CATALOG = [
 "note": "오벨리스크, 밑동 내장 일부 · 원본에서 뿌리까지 다시 자름",
 "rank": "",
 "on": true,
-"pin": 314
+"pin": 311
 },
 {
 "id": "H-339",
@@ -6690,7 +6643,7 @@ const CATALOG = [
 "note": "눈알방 가운데 남자. 눈알은 게임에서 따로 그림",
 "rank": "",
 "on": true,
-"pin": 305
+"pin": 302
 },
 {
 "id": "H-212",
@@ -6700,7 +6653,8 @@ const CATALOG = [
 "src": "img/prop/H-212.webp",
 "note": "오딜이 없을 때 오딜 소파는 이걸로",
 "rank": "",
-"on": false
+"on": true,
+"pin": 314
 },
 {
 "id": "H-213",
@@ -6710,7 +6664,8 @@ const CATALOG = [
 "src": "img/prop/H-213.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 315
 },
 {
 "id": "H-142",
@@ -6721,7 +6676,7 @@ const CATALOG = [
 "note": "원래 이름: 붉은 고딕 안락의자",
 "rank": "",
 "on": true,
-"pin": 33
+"pin": 30
 },
 {
 "id": "H-242",
@@ -6732,7 +6687,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 19
+"pin": 16
 },
 {
 "id": "H-216",
@@ -6765,7 +6720,7 @@ const CATALOG = [
 "note": "원래 이름: 티 테이블",
 "rank": "",
 "on": true,
-"pin": 20
+"pin": 17
 },
 {
 "id": "H-228",
@@ -6775,7 +6730,8 @@ const CATALOG = [
 "src": "img/prop/H-228.webp",
 "note": "원래 이름: 둥근 오토만",
 "rank": "",
-"on": false
+"on": true,
+"pin": 316
 },
 {
 "id": "H-219",
@@ -6786,7 +6742,7 @@ const CATALOG = [
 "note": "원래 이름: 고딕 옷장 · 리본",
 "rank": "",
 "on": true,
-"pin": 36
+"pin": 33
 },
 {
 "id": "H-309",
@@ -6797,7 +6753,7 @@ const CATALOG = [
 "note": "원래 이름: 검은 고양이",
 "rank": "",
 "on": true,
-"pin": 219
+"pin": 216
 },
 {
 "id": "H-222",
@@ -6808,7 +6764,7 @@ const CATALOG = [
 "note": "원래 이름: 붉은 갓 스탠드",
 "rank": "",
 "on": true,
-"pin": 99
+"pin": 96
 },
 {
 "id": "H-094",
@@ -6819,7 +6775,7 @@ const CATALOG = [
 "note": "원래 이름: 그릇 진열장",
 "rank": "",
 "on": true,
-"pin": 56
+"pin": 53
 },
 {
 "id": "H-042",
@@ -6830,7 +6786,7 @@ const CATALOG = [
 "note": "원래 이름: 책장",
 "rank": "",
 "on": true,
-"pin": 48
+"pin": 45
 },
 {
 "id": "H-229",
@@ -6841,7 +6797,7 @@ const CATALOG = [
 "note": "원래 이름: 꽃 액자 · 타원 액자",
 "rank": "",
 "on": true,
-"pin": 251
+"pin": 248
 },
 {
 "id": "H-175",
@@ -6852,7 +6808,7 @@ const CATALOG = [
 "note": "원래 이름: 가면 · 장미 더미",
 "rank": "",
 "on": true,
-"pin": 224
+"pin": 221
 },
 {
 "id": "H-233",
@@ -6863,7 +6819,7 @@ const CATALOG = [
 "note": "원래 이름: 장미 액자",
 "rank": "",
 "on": true,
-"pin": 253
+"pin": 250
 },
 {
 "id": "H-238",
@@ -6874,7 +6830,7 @@ const CATALOG = [
 "note": "원래 이름: 관 · 쿠션 더미 · 관 지우고 쿠션만",
 "rank": "",
 "on": true,
-"pin": 165
+"pin": 162
 },
 {
 "id": "H-215",
@@ -6885,7 +6841,7 @@ const CATALOG = [
 "note": "원래 이름: 삼면 거울 화장대 · 의자",
 "rank": "",
 "on": true,
-"pin": 237
+"pin": 234
 },
 {
 "id": "H-184",
@@ -6896,7 +6852,7 @@ const CATALOG = [
 "note": "원래 이름: 거울 화장대",
 "rank": "",
 "on": true,
-"pin": 236
+"pin": 233
 },
 {
 "id": "H-226",
@@ -6907,7 +6863,7 @@ const CATALOG = [
 "note": "원래 이름: 나비 표본 액자",
 "rank": "",
 "on": true,
-"pin": 249
+"pin": 246
 },
 {
 "id": "H-095",
@@ -6918,7 +6874,7 @@ const CATALOG = [
 "note": "원래 이름: 접이 칸막이",
 "rank": "",
 "on": true,
-"pin": 233
+"pin": 230
 },
 {
 "id": "H-232",
@@ -6929,7 +6885,7 @@ const CATALOG = [
 "note": "원래 이름: 백합 액자",
 "rank": "",
 "on": true,
-"pin": 254
+"pin": 251
 },
 {
 "id": "H-096",
@@ -6940,7 +6896,7 @@ const CATALOG = [
 "note": "원래 이름: 욕조",
 "rank": "",
 "on": true,
-"pin": 234
+"pin": 231
 },
 {
 "id": "H-186",
@@ -6951,7 +6907,7 @@ const CATALOG = [
 "note": "원래 이름: 술 달린 스탠드",
 "rank": "",
 "on": true,
-"pin": 101
+"pin": 98
 },
 {
 "id": "H-220",
@@ -6962,7 +6918,7 @@ const CATALOG = [
 "note": "원래 이름: 장미 전신 거울",
 "rank": "",
 "on": true,
-"pin": 239
+"pin": 236
 },
 {
 "id": "H-221",
@@ -6973,7 +6929,7 @@ const CATALOG = [
 "note": "원래 이름: 리본 촛대",
 "rank": "",
 "on": true,
-"pin": 100
+"pin": 97
 },
 {
 "id": "H-227",
@@ -6984,7 +6940,7 @@ const CATALOG = [
 "note": "원래 이름: 성 그림 타원 액자",
 "rank": "",
 "on": true,
-"pin": 250
+"pin": 247
 },
 {
 "id": "H-217",
@@ -6995,7 +6951,7 @@ const CATALOG = [
 "note": "원래 이름: 장식 서랍장 (꽃병 · 촛대)",
 "rank": "",
 "on": true,
-"pin": 45
+"pin": 42
 },
 {
 "id": "H-237",
@@ -7006,7 +6962,7 @@ const CATALOG = [
 "note": "원래 이름: 가면 받침",
 "rank": "",
 "on": true,
-"pin": 218
+"pin": 215
 },
 {
 "id": "H-224",
@@ -7016,7 +6972,8 @@ const CATALOG = [
 "src": "img/prop/H-224.webp",
 "note": "원래 이름: 까마귀 새장",
 "rank": "",
-"on": false
+"on": true,
+"pin": 317
 },
 {
 "id": "H-225",
@@ -7027,7 +6984,7 @@ const CATALOG = [
 "note": "원래 이름: 카메오 칸막이",
 "rank": "",
 "on": true,
-"pin": 238
+"pin": 235
 },
 {
 "id": "H-055",
@@ -7038,7 +6995,7 @@ const CATALOG = [
 "note": "건축물 = 말 그대로 아주 큰 것. 3D 상자에 앞면만 그림으로 붙이거나 그림을 세워 붙이는 식",
 "rank": "",
 "on": true,
-"pin": 157
+"pin": 154
 },
 {
 "id": "H-040",
@@ -7049,7 +7006,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 204
+"pin": 201
 },
 {
 "id": "H-051",
@@ -7060,7 +7017,7 @@ const CATALOG = [
 "note": "",
 "rank": "",
 "on": true,
-"pin": 259
+"pin": 256
 },
 {
 "id": "O-player-face",

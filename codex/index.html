@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.37 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.47 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -74,6 +74,7 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .fold.on{background:var(--fg);color:var(--bg)}
 .tile.folder .pic{box-shadow:4px 4px 0 -1px var(--panel),4px 4px 0 0 var(--line),8px 8px 0 -1px var(--panel),8px 8px 0 0 var(--line)}
 .tile.kid{border-style:dashed;border-color:var(--accent)}
+.tile.kid.keep{border-style:solid}
 .pnav{display:flex;flex-direction:column;gap:10px;margin:6px 0 18px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
 .prow > b{display:block;font:600 12px var(--body);color:var(--dim);margin-bottom:6px}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(62px*var(--zoom,1)),1fr));gap:6px}
@@ -245,12 +246,16 @@ async function connect(){
   try { db = window.claude && claude.use ? await claude.use('db') : null; } catch (e) { db = null; }
   if (!db){ status('이 화면에서는 공유 저장소를 쓸 수 없어 이 브라우저에만 저장됩니다. 백업 저장으로 파일을 남겨 두세요.'); return; }
   store = db.collection('marks');
+  let first = true;
   store.onSnapshot(snap => {
     const next = {};
     snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', inAt: v.inAt || '', at: v.at || '' }; });
     // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
     if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if (BY_ID[id] && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
+    // 아직 저장소에 올라가는 중인 내 수정은 저장소 내용으로 덮지 않음 (예전엔 여기서 방금 고친 게 날아갈 수 있었음)
+    for (const [id, v] of Object.entries(pending)){ if (v) next[id] = v; else delete next[id]; }
     marks = next; lsWrite(); render(); if (viewing) fillView();
+    if (first){ first = false; flushAll(); }
     for (const [id, v] of Object.entries(marks)) if (v.memo && !v.checked && !v.autoChk){ v.autoChk = true; put(id, { checked: true }, true); }   // 예전에 메모만 하고 체크 안 한 것도 체크
     status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
@@ -270,13 +275,31 @@ async function put(id, patch, quiet){
   if (empty(v)) delete marks[id]; else marks[id] = v;
   if (viewing === id && $('vCheck')) $('vCheck').checked = !!v.checked;
   lsWrite(); if (!quiet) render();
+  pending[id] = empty(v) ? null : v; lsPending();
   if (!store){ status('이 브라우저에 자동 저장됨 ' + new Date().toLocaleTimeString()); return; }
-  try {
-    if (empty(v)) await store.doc(id).delete();
-    else await store.doc(id).set(docOf(v));
-    status('자동 저장됨 ' + new Date().toLocaleTimeString());
-  } catch (e){ status('저장소에 못 올림: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있고, 다시 열면 자동으로 올라가요.', true); }
+  send(id);
 }
+/* 저장 대기열: 고친 것은 저장소에 올라갈 때까지 pending에 (이 브라우저에도 기록). 한 칸씩 차례로 올리고, 실패하면 2 · 4 · 8 … 초 뒤 다시 */
+const LSP = LS + '-pending';
+let pending = (() => { try { return JSON.parse(localStorage.getItem(LSP) || '{}'); } catch (e) { return {}; } })();
+const sending = {};
+function lsPending(){ try { localStorage.setItem(LSP, JSON.stringify(pending)); } catch (e) {} }
+function saveState(){ const n = Object.keys(pending).length; if (n) status('저장 중… (' + n + ')'); else status('자동 저장됨 ' + new Date().toLocaleTimeString()); }
+async function send(id, tries){
+  if (!store || !(id in pending)) return;
+  if (sending[id]){ sending[id].again = true; return; }
+  const v = pending[id]; sending[id] = { again:false };
+  saveState();
+  let ok = true;
+  try { if (v) await store.doc(id).set(docOf(v)); else await store.doc(id).delete(); }
+  catch (e){ ok = false; status('저장소에 못 올림: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있고, 곧 다시 올려요.', true); }
+  const again = sending[id].again; delete sending[id];
+  if (ok && pending[id] === v){ delete pending[id]; lsPending(); }
+  if (again || (ok && id in pending)) return send(id, 0);
+  if (!ok){ const n = (tries || 0) + 1; setTimeout(() => send(id, n), Math.min(30000, 2000 * 2 ** (n - 1))); return; }
+  saveState();
+}
+function flushAll(){ for (const id of Object.keys(pending)) send(id, 0); }
 // 등장 표시: 초록 = 등장 확정, 빨강 = 미등장. 바꾸지 않았으면 지금 게임에 들어가 있는지 (catalog의 on)로
 const stOf = e => (marks[e.id] && marks[e.id].status) || (e.on ? 'in' : 'out');
 
@@ -308,7 +331,7 @@ function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && 
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
   const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
-  return `<div class="tile ${e.rank} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
+  return `<div class="tile ${e.rank} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${e.parent && keepKid(e) ? 'keep' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
     <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
@@ -332,13 +355,15 @@ function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ beha
 /* 묶음 안 순서: (인물은 초상화 먼저) → 등장 확정 (판을 낼 때 누른 순서로 매긴 pin) → 나머지 원래 순서.
    표정 · 색 변형 (parent 있음)은 대표 바로 뒤, 펴 놓았을 때만. 크게 보기의 이전 · 다음도 이 순서 (FLAT) */
 let FLAT = [];
+// 체크 · 등장 확정한 변형은 접혀 있어도 라인업에 남김 (실선)
+const keepKid = k => !!(marks[k.id] && (marks[k.id].checked || marks[k.id].status === 'in'));
 function arrange(list, ck){
   const inL = new Set(list);
   const tops = list.filter(e => !e.parent || !inL.has(BY_ID[e.parent]));
   const key = e => [ck === 'char' && isFace(e) ? 0 : 1, e.pin ? 0 : 1, e.pin || 0, CATALOG.indexOf(e)];
   tops.sort((a, b) => { const x = key(a), y = key(b); for (let i = 0; i < 4; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; });
   const out = [];
-  for (const e of tops){ out.push(e); if (KIDS[e.id] && opened[e.id]) out.push(...KIDS[e.id].map(id => BY_ID[id]).filter(k => inL.has(k))); }
+  for (const e of tops){ out.push(e); if (KIDS[e.id]) out.push(...KIDS[e.id].map(id => BY_ID[id]).filter(k => inL.has(k) && (opened[e.id] || keepKid(k)))); }
   return out;
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
@@ -476,8 +501,11 @@ for (const id of ['vMemo', 'vNameIn']) $(id).addEventListener('keydown', e => {
   e.preventDefault(); enterNext = id; step(1); enterNext = null;
 });
 $('vNameIn').addEventListener('change', saveName);
+let nameT = null; $('vNameIn').addEventListener('input', () => { clearTimeout(nameT); nameT = setTimeout(saveName, 600); });   // 이름도 쓰는 도중 자동 저장
 $('vMemo').addEventListener('input', () => { clearTimeout(memoT); memoT = setTimeout(() => { if (!viewing) return; const v = $('vMemo').value.trim(); if (v !== ((marks[viewing] || {}).memo || '')) put(viewing, { memo: v }, true); }, 500); });   // 쓰는 도중에도 0.5초마다 자동 저장
-addEventListener('pagehide', saveMemo); document.addEventListener('visibilitychange', () => { if (document.hidden) saveMemo(); });
+addEventListener('pagehide', () => { saveMemo(); flushAll(); }); document.addEventListener('visibilitychange', () => { if (document.hidden){ saveMemo(); flushAll(); } });
+addEventListener('online', flushAll);
+addEventListener('beforeunload', e => { if (Object.keys(pending).length){ flushAll(); e.preventDefault(); e.returnValue = ''; } });
 $('stFilter').addEventListener('change', e => { showSt = e.target.value; render(); });
 /* ---------- 크기 조절: + − 버튼 · 두 손가락 오므리기/벌리기 · 기억 ---------- */
 let zoom = 1;
