@@ -1,4 +1,4 @@
-/* catalog.js v1.24 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.25 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1427,6 +1427,46 @@ const CATALOG = [
 "name": "현자들 (오 닐 · 칼)",
 "src": "img/card/enc_sages.webp",
 "note": "인카운터 그림 (2026-10-03), 두 그림만 자름. 왼쪽 오 닐 (여, 검 마법사) · 오른쪽 칼 (남, 지팡이). 글: 그들은 여행자를 축복합니다. 우주의 아름다운 빛들이 그들과 함께하고 있었습니다. 그들과 함께하는 모든 순간은 당신의 이성과 빛을 한층 넓혀주고, 그 방의 모든 악한것들은 재처럼 흩어질 뿐이었습니다.",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-dead-hero",
+"cat": "card",
+"sub": "인카운터",
+"name": "죽은 영웅",
+"src": "img/card/enc_dead_hero.webp",
+"note": "인카운터 → 맵. 인게임에서는 실제로 옆을 지나쳐 감. 스프라이트는 8 인물에 따로. 글: 그 영웅은 발부터 세상의 바닥에 얼어붙은듯 묶여있었습니다. 아마 죽은듯 합니다. 그 너머로 원 형태의 빛의 고리, 영웅은 출구를 바라보고 있었습니다. 그의 이야기는 궁금하지만, 우리는 어서 지나가야합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-brain-frame",
+"cat": "card",
+"sub": "인카운터",
+"name": "액자 (뇌)",
+"src": "img/card/enc_brain_frame.webp",
+"note": "인카운터 → 맵. 객체 분리: 11 가구 · 소품 H-329~H-333. 배경은 단순한 도형으로, 노인들이 말풍선으로 토론. 글: 머리가 아픕니다. 저들은 당신의 뇌를 액자에 걸어놓고, 그것에 관하여 토론중이었습니다. 돌려받아야합니다. 빨리. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-chatter",
+"cat": "card",
+"sub": "인카운터",
+"name": "지껄임 (입)",
+"src": "img/card/enc_chatter.webp",
+"note": "인카운터 → 맵. 입만 분리 (H-334), 나머지는 그래픽으로. 입은 계속 말풍선으로 지껄임. 글: 입이 지껄이기 시작합니다. 당신과, 동료들에 대한 모든것들을. 저 입을 닫치게 해야합니다. 오, 진실이란 배신적입니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-ceiling-hole",
+"cat": "card",
+"sub": "인카운터",
+"name": "천장의 구멍",
+"src": "img/card/enc_ceiling_hole.webp",
+"note": "인카운터 → 맵. 길고 넓고 어두운 맵, 끝 천장에 사각 구멍. 주변 적을 죽여 시체로 탑 (계단)을 쌓아 올라가야 클리어. 몇몇은 구경만 함. 글: 유일한 빛은 천장의 사각형이었습니다. … 날개가 뜯기기 전에. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
 "rank": "",
 "on": false
 },
@@ -3647,6 +3687,16 @@ const CATALOG = [
 "name": "칼 (남, 지팡이)",
 "src": "img/char/kal_art.webp",
 "note": "현자들 인카운터의 칼. 인게임에서는 칼이 스프라이트로 나옴. 검은 바탕을 지움",
+"rank": "",
+"on": false
+},
+{
+"id": "P-deadhero",
+"cat": "char",
+"sub": "죽은 영웅 (2026-10-03)",
+"name": "죽은 영웅",
+"src": "img/char/deadhero.webp",
+"note": "죽은 영웅 인카운터에서 분리한 스프라이트. 빛의 고리 포함. 인게임에서 지나쳐 감",
 "rank": "",
 "on": false
 },
@@ -8187,6 +8237,66 @@ const CATALOG = [
 "name": "기둥형 기계",
 "src": "img/prop/H-270.webp",
 "note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-329",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "액자 속 뇌",
+"src": "img/prop/H-329.webp",
+"note": "액자 인카운터. 사각 자름 (벽 포함)",
+"rank": "",
+"on": false
+},
+{
+"id": "H-330",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "노인 1 (흰 가운 · 바구니)",
+"src": "img/prop/H-330.webp",
+"note": "액자 인카운터. 대충 분리, 말풍선으로 토론",
+"rank": "",
+"on": false
+},
+{
+"id": "H-331",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "노인 2 (흰 가운)",
+"src": "img/prop/H-331.webp",
+"note": "액자 인카운터. 대충 분리",
+"rank": "",
+"on": false
+},
+{
+"id": "H-332",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "노인 3 (트렌치코트)",
+"src": "img/prop/H-332.webp",
+"note": "액자 인카운터. 대충 분리",
+"rank": "",
+"on": false
+},
+{
+"id": "H-333",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "소파 (앉은 노인)",
+"src": "img/prop/H-333.webp",
+"note": "액자 인카운터. 소파와 앉은 노인 한 장, 가장자리 거칢",
+"rank": "",
+"on": false
+},
+{
+"id": "H-334",
+"cat": "prop",
+"sub": "인카운터 맵 오브제",
+"name": "지껄이는 입",
+"src": "img/prop/H-334.webp",
+"note": "지껄임 인카운터. 입만 분리, 앞의 두 사람은 지움 (아래쪽 자국 조금)",
 "rank": "",
 "on": false
 }
