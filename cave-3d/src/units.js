@@ -63,7 +63,9 @@ function updateSprite(u, dt){
   // 쓰러짐: 옆으로 눕힘
   const tiltT = u.downed || u.dead ? Math.PI / 2 * 0.92 * -u.face : 0;
   u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
-  u.pivot.rotation.z = u.tilt;
+  u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
+  if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);
+  u.pivot.rotation.z = u.tilt + u.lean * -u.face;
   u.pivot.position.y = u.lift + (u.tilt ? -0.05 : 0);
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
@@ -82,13 +84,27 @@ function faceToward(u, ax, az){
 function setAim(u, tx, tz){ u.aim = Math.atan2(tz - u.z, tx - u.x); faceToward(u, Math.cos(u.aim), Math.sin(u.aim)); }
 
 /* ---------- 이동: 벽은 막고, 높이 차는 경사로만. 막혀도 달리는 동작은 이어짐 (제자리 달리기 대신 미끄러지듯 벽을 따라감) ---------- */
+// 원 (몸) 대 칸 (벽): 일단 움직이고, 겹친 막힌 칸에서 밀려 나옴 → 벽을 따라 미끄러짐, 끼어도 빠져나옴
+// 높이 차가 0.45 넘는 칸 (경사를 거치지 않은 높은 바닥 · 낭떠러지)도 벽처럼
+function blockedFor(m, i, j, h0){
+  if (i < 0 || j < 0 || i >= m.w || j >= m.h) return true;
+  const k = j * m.w + i; return !!m.solid[k] || Math.abs(m.hgt[k] - h0) > 0.45;
+}
 function moveBy(u, dx, dz){
-  const m = G.map, h0 = heightAt(m, u.x, u.z);
-  if (solidAt(m, u.x, u.z)){ u.x += dx; u.z += dz; return true; }   // 벽 칸 안에 끼었으면 빠져나오게
-  let movedX = false, movedZ = false;
-  if (dx && standable(m, u.x + dx, u.z, h0, u.r * 0.8)){ u.x += dx; movedX = true; }
-  if (dz && standable(m, u.x, u.z + dz, h0, u.r * 0.8)){ u.z += dz; movedZ = true; }
-  return movedX || movedZ;
+  const m = G.map, h0 = heightAt(m, u.x, u.z), r = u.r * 0.85, ox = u.x, oz = u.z;
+  let x = u.x + dx, z = u.z + dz;
+  for (let pass = 0; pass < 2; pass++){
+    const ci = Math.round(x), cj = Math.round(z);
+    for (let j = cj - 1; j <= cj + 1; j++) for (let i = ci - 1; i <= ci + 1; i++){
+      if (!blockedFor(m, i, j, h0)) continue;
+      const px = clamp(x, i - 0.5, i + 0.5), pz = clamp(z, j - 0.5, j + 0.5), ddx = x - px, ddz = z - pz, d = Math.hypot(ddx, ddz);
+      if (d >= r) continue;
+      if (d > 1e-5){ x += ddx / d * (r - d); z += ddz / d * (r - d); }
+      else { const ex = x - i, ez = z - j; if (Math.abs(ex) > Math.abs(ez)) x = i + Math.sign(ex || 1) * (0.5 + r); else z = j + Math.sign(ez || 1) * (0.5 + r); }
+    }
+  }
+  u.x = x; u.z = z;
+  return Math.hypot(x - ox, z - oz) > Math.hypot(dx, dz) * 0.25;
 }
 // 길 찾기 대신: 곧장 가다 막히면 ±45° · ±90°로 비켜 감
 function steerTo(u, tx, tz, speed, dt, stopAt = 0){

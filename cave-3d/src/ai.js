@@ -11,12 +11,17 @@ function alertGroup(u, by){
 // 한 번 휘두르기 · 찌르기 · 내려찍기: 예고 장판이 다 차는 순간 그 안의 상대가 맞음
 function windup(u, shape, o, onHit, color = RED){
   u.st = 'windup';
+  if (!u.S.poses.windup && !u.S.poses.attack) u.leanT = -0.16;
   u.decal = decal(shape, { ...o, color, dur: o.windup, onDone: d => {
     u.decal = null;
     if (u.dead || u.downed || u.st !== 'windup') return;
     const targets = G.units.filter(t => !t.dead && !t.downed && t.side !== u.side && t.side !== 'neutral' && !t.airborne && inShape(d, t));
     if (u.side === 'ally') for (const t of G.units) if (t.D.dummy && inShape(d, t)) targets.push(t);
     targets.forEach(t => onHit(t, d));
+    if (!u.S.poses.attack){
+      u.leanT = 0.2; moveBy(u, Math.cos(d.a ?? u.aim) * 0.35, Math.sin(d.a ?? u.aim) * 0.35);
+      if (shape === 'sector') for (let k = -2; k <= 2; k++){ const a = (d.a ?? u.aim) + k * (o.arc || 1) / 5; spark(u.x + Math.cos(a) * (o.r || 1.2) * 0.8, u.y + 0.8, u.z + Math.sin(a) * (o.r || 1.2) * 0.8, color === BLUE ? 0x9fd0ff : 0xffb0a0, 2, 1.5, 0.16, 0.2); }
+    }
     u.st = 'strike'; u.stT = 0.3; setPose(u, u.S.poses.attack ? 'attack' : 'idle');
     o.after && o.after(d, targets);
   } });
@@ -124,7 +129,9 @@ function allyThink(u, dt){
   if (!tgt){
     // 따라감: 인주 뒤 자리 (앞서가면 호다닥, 가까우면 천천히 둘러봄)
     const i = allies().filter(a => a !== pl).indexOf(u), side = i % 2 ? 1 : -1;
-    const bx = pl.x + side * (1.1 + i * 0.3) - Math.cos(pl.aim) * 0.9, bz = pl.z + 1.2 + i * 0.4 - Math.sin(pl.aim) * 0.6;
+    let bx = pl.x + side * (1.1 + i * 0.3) - Math.cos(pl.aim) * 0.9, bz = pl.z + 0.7 + i * 0.3 - Math.sin(pl.aim) * 0.6;
+    if (solidAt(G.map, bx, bz)){ bx = pl.x + side * 1.1; bz = pl.z; }
+    if (solidAt(G.map, bx, bz)){ bx = pl.x - Math.cos(pl.aim); bz = pl.z - Math.sin(pl.aim); }
     const d = Math.hypot(bx - u.x, bz - u.z);
     if (d > 0.6) steerTo(u, bx, bz, d > 4 ? u.spd * 1.7 : u.spd, dt, 0.4);
     else { u.lookT = (u.lookT || 0) - dt; if (u.lookT <= 0){ u.lookT = rnd(1.5, 3.5); u.face = -u.face; } }   // 두리번

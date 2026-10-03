@@ -105,8 +105,8 @@ function loadLevel(rows, theme){
 }
 function spawnParty(x, z){
   G.player = spawn('player', x, z, 'ally');
-  spawn('morningstar', x - 1, z + 0.8, 'ally');
-  spawn('norman', x + 1, z + 0.8, 'ally');
+  spawn('morningstar', x - 1, z - 0.6, 'ally');
+  spawn('norman', x + 1, z - 0.6, 'ally');
 }
 
 /* ---------- 굴 (로비) ---------- */
@@ -303,7 +303,7 @@ function loop(now){
   const waiting = !!G.waitInput;
   if (G.waitInput){ if (act) G.waitInput(); }
   else if (!G.lock && G.nearIt && hit('KeyE')){ const it = G.nearIt; if (it.once) it.used = true; it.fn(); }
-  if (hit('Digit1')) G.cmd = 'follow'; if (hit('Digit2')) G.cmd = 'focus'; if (hit('Digit3')) G.cmd = 'free';
+  if (hit('Digit1')) order('follow'); if (hit('Digit2')) order('focus'); if (hit('Digit3')) order('free');
   if (hit('KeyH')) $('help').hidden = !$('help').hidden;
   const frozen = waiting || !!G.waitInput;
   if ((G.mode === 'lobby' || G.mode === 'floor') && !frozen){
@@ -344,11 +344,26 @@ function loop(now){
   }
   if (G.map) for (const f of G.map.fires){ f.light.intensity = 1.9 + Math.sin(G.t * 13) * 0.2 + Math.random() * 0.35; f.flame.scale.set(1 + Math.sin(G.t * 9) * 0.06, 1 + Math.random() * 0.12, 1); f.flame.rotation.y = Math.atan2(camera.position.x - f.x, camera.position.z - f.z); }
   if (G.player) updateChargeRing(G.player);
+  updateFocusRing();
   updateBars(); updateTexts(dt); updateHud();
   const rf = $('redflash'); rf.style.opacity = Math.max(0, (+rf.style.opacity || 0) - dt * 1.6);
   if (G.scene.fog && G.map){ const cd = camera.position.distanceTo(new THREE.Vector3(CAM.follow.x, 0, CAM.follow.z)); G.scene.fog.near = cd * 0.95; G.scene.fog.far = cd * 1.9 + 6; }
   G.renderer.render(G.scene, camera);
   pressed.clear();
 }
-document.querySelectorAll('#cmd [data-c]').forEach(b => b.addEventListener('click', () => { G.cmd = b.dataset.c; }));
+document.querySelectorAll('#cmd [data-c]').forEach(b => b.addEventListener('click', () => order(b.dataset.c)));
+// 지시: 동료가 대답하고, "내 목표"면 마우스 아래 적 (없으면 가장 가까운 적)을 금색 고리로 표시
+const ORDER_SAY = { follow: ['따라와!', '알겠어', '…뒤에 붙는다'], focus: ['저놈이다!', '맡겨', '…조준'], free: ['알아서 싸워!', '신난다', '…자유 사격'] };
+function order(c){
+  G.cmd = c;
+  if (G.player) popText(G.player.x, G.player.y + 2.3, G.player.z, ORDER_SAY[c][0], 'aim', 0.9);
+  G.units.filter(u => u.side === 'ally' && u.kind !== 'player' && !u.downed).forEach((u, i) => popText(u.x, u.y + 2.1, u.z, ORDER_SAY[c][1 + (i % 2)], 'miss', 0.9));
+  if (c === 'focus') G.focusTarget = mouse.over || (G.player && nearest(G.player, foes().filter(e => e.alert || dist(e, G.player) < 9), 14)) || G.focusTarget;
+}
+let focusRing = null;
+function updateFocusRing(){
+  if (!focusRing){ focusRing = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.86, 40), new THREE.MeshBasicMaterial({ color: 0xffd35a, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })); focusRing.rotation.x = -Math.PI / 2; G.scene.add(focusRing); }
+  const t = G.focusTarget; focusRing.visible = G.cmd === 'focus' && !!t && !t.dead && G.mode === 'floor';
+  if (focusRing.visible){ focusRing.position.set(t.x, t.y + 0.05, t.z); focusRing.scale.setScalar(t.r * 1.6 * (1 + Math.sin(G.t * 6) * 0.06)); }
+}
 init();
