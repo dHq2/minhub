@@ -1,4 +1,4 @@
-/* catalog.js v1.58 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.59 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1403,6 +1403,46 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "R-E03",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "어떤 보석",
+"src": "img/relic/re03.webp",
+"note": "인카운터 유물. 금빛 카드 바탕. 투명 배경 원본은 11 가구 · 소품 → 인카운터 오브제 · NPC (H-349)",
+"rank": "",
+"on": false
+},
+{
+"id": "R-E04",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "펫: 꼬마마녀요정",
+"src": "img/relic/re04.webp",
+"note": "인카운터 유물 · 펫. 펫은 더 진한 금빛 카드. 스프라이트는 8 인물 → 꼬마마녀요정",
+"rank": "",
+"on": false
+},
+{
+"id": "R-E05",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "펫: 흑토끼기사",
+"src": "img/relic/re05.webp",
+"note": "인카운터 유물 · 펫. 더 진한 금빛 카드. 스프라이트는 8 인물 → 흑토끼기사",
+"rank": "",
+"on": false
+},
+{
+"id": "R-E06",
+"cat": "relic",
+"sub": "인카운터 유물",
+"name": "불타는 심장",
+"src": "img/relic/re06.webp",
+"note": "인카운터 유물. 금빛 카드 바탕. 받친 손은 빼고 심장만. 투명 배경 원본은 H-350",
+"rank": "",
+"on": false
+},
+{
 "id": "B-1",
 "cat": "equip",
 "sub": "보스 장비 · 세자르",
@@ -2189,6 +2229,56 @@ const CATALOG = [
 "name": "마리 · 와킨 컷씬 (움직임, 36장)",
 "src": "img/scene/mari_wakin_duo.webp",
 "note": "cutscene_duo v1.3 (드라이브 2026-10-03). 로딩 또는 이벤트용. 예전 정지 그림은 S-5",
+"rank": "",
+"on": false
+},
+{
+"id": "S-11",
+"cat": "scene",
+"sub": "컷씬",
+"name": "현자의 검 획득 · 시작 (31장)",
+"src": "img/scene/sword_get_intro.webp",
+"note": "오닐 이벤트 컷씬 · cutscene_sword_get_intro v1 (드라이브 2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "S-12",
+"cat": "scene",
+"sub": "컷씬",
+"name": "현자의 검 획득 · 반복 (30장)",
+"src": "img/scene/sword_get_loop.webp",
+"note": "오닐 이벤트 컷씬 · cutscene_sword_get_loop v1 (드라이브 2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "S-13",
+"cat": "scene",
+"sub": "컷씬",
+"name": "오닐의 검 (히든) · 시작 (55장)",
+"src": "img/scene/sword_hidden_intro.webp",
+"note": "오닐 이벤트 컷씬 · cutscene_sword_hidden_intro v1 (드라이브 2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "S-14",
+"cat": "scene",
+"sub": "컷씬",
+"name": "오닐의 검 (히든) · 반복 (40장)",
+"src": "img/scene/sword_hidden_loop.webp",
+"note": "오닐 이벤트 컷씬 · cutscene_sword_hidden_loop v1 (드라이브 2026-10-03)",
+"rank": "",
+"on": false
+},
+{
+"id": "S-15",
+"cat": "scene",
+"sub": "컷씬",
+"name": "봉인된 그녀 · 인형 반복 (48장)",
+"src": "img/scene/doll_loop.webp",
+"note": "봉인된 그녀 이벤트 컷씬 · cutscene_doll_loop v1 (드라이브 2026-10-03). 시작 (doll_intro, 8MB)은 드라이브 연결 한도로 아직 못 받음",
 "rank": "",
 "on": false
 },
@@ -7876,6 +7966,26 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-349",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "어떤 보석",
+"src": "img/prop/H-349.webp",
+"note": "인카운터 유물 (R-E03) 그림에서 보석만 분리. 주변 금빛 결정 조각 일부 남음",
+"rank": "",
+"on": false
+},
+{
+"id": "H-350",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "불타는 심장",
+"src": "img/prop/H-350.webp",
+"note": "인카운터 유물 (R-E06) 그림에서 심장만 분리 (손은 뺌)",
+"rank": "",
+"on": false
+},
+{
 "id": "H-212",
 "cat": "prop",
 "sub": "오딜 방 소품",
@@ -12104,6 +12214,50 @@ const CATALOG = [
 "g": "piggod"
 },
 {
+"id": "F-auto-witchfairy",
+"cat": "char",
+"sub": "꼬마마녀요정 (펫) · NPC · 원화 + 연출",
+"name": "꼬마마녀요정 기본 초상화",
+"src": "img/face/auto_witchfairy.webp",
+"note": "스프라이트에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "witchfairy"
+},
+{
+"id": "P-witchfairy",
+"cat": "char",
+"sub": "꼬마마녀요정 (펫) · NPC · 원화 + 연출",
+"name": "꼬마마녀요정 (펫)",
+"src": "img/char/witchfairy.webp",
+"note": "인카운터 유물 펫 (R-E04) 그림에서 분리한 스프라이트. 배경 · 바위는 지움",
+"rank": "",
+"on": false,
+"g": "witchfairy"
+},
+{
+"id": "F-auto-blackrabbit",
+"cat": "char",
+"sub": "흑토끼기사 (펫) · NPC · 원화 + 연출",
+"name": "흑토끼기사 기본 초상화",
+"src": "img/face/auto_blackrabbit.webp",
+"note": "스프라이트에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "blackrabbit"
+},
+{
+"id": "P-blackrabbit",
+"cat": "char",
+"sub": "흑토끼기사 (펫) · NPC · 원화 + 연출",
+"name": "흑토끼기사 (펫)",
+"src": "img/char/blackrabbit.webp",
+"note": "인카운터 유물 펫 (R-E05) 그림에서 분리한 스프라이트. 배경은 지움",
+"rank": "",
+"on": false,
+"g": "blackrabbit"
+},
+{
 "id": "F-auto-deadhero",
 "cat": "char",
 "sub": "죽은 영웅 · NPC · 원화 + 연출",
@@ -13162,7 +13316,7 @@ const CATALOG = [
 {
 "id": "F-auto-hyalqueen",
 "cat": "char",
-"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
 "name": "고대 몬스터 햘 기본 초상화",
 "src": "img/face/hyal_queen_portrait.webp",
 "note": "햘 등장 ~ 루프 컷씬 (S-8)에서 얼굴을 자름",
@@ -13173,7 +13327,7 @@ const CATALOG = [
 {
 "id": "P-hyalqueen",
 "cat": "char",
-"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
 "name": "고대 몬스터 햘 (개미여왕)",
 "src": "img/char/hyal_queen.webp",
 "note": "적 스프라이트 (2026-10-03). 개미여왕. 검은 바탕 · 작은 유령 · 바닥은 지움, 모자이크는 원본 그대로. 설정: 햘전에서 납치되거나 사망한 아군 (주로 여성)은 모체가 됨. 장면은 없고 암시만",
@@ -13184,7 +13338,7 @@ const CATALOG = [
 {
 "id": "P-hyalqueen-ant",
 "cat": "char",
-"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
 "name": "햘의 개미",
 "src": "img/char/hyal_ant.webp",
 "note": "햘의 개미 스프라이트. 작은 크기로 몇십 ~ 100 단위로 등장",
@@ -13195,10 +13349,32 @@ const CATALOG = [
 {
 "id": "P-hyalqueen-ant2",
 "cat": "char",
-"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
 "name": "햘의 개미 2 (아래 잘림)",
 "src": "img/char/hyal_ant_small.webp",
 "note": "같은 그림 아래쪽 개미. 원본에서 몸 아래가 잘려 있음",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "P-hyalqueen-idle",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
+"name": "고대 몬스터 햘 · 대기 (12장)",
+"src": "img/char/hyal_queen_idle.webp",
+"note": "antqueen_idle v1 (드라이브 햘 폴더)",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "P-hyalqueen-stretch",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 동작 그림",
+"name": "고대 몬스터 햘 · 기지개 (32장)",
+"src": "img/char/hyal_queen_stretch.webp",
+"note": "antqueen_stretch v1 (드라이브 햘 폴더)",
 "rank": "",
 "on": false,
 "g": "hyalqueen"
@@ -13591,7 +13767,7 @@ const CATALOG = [
 {
 "id": "F-jakyak",
 "cat": "char",
-"sub": "작약 (도깨비 자매) · 역할 미정 · 원화 + 연출",
+"sub": "작약 (도깨비 자매) · 역할 미정 · 동작 그림",
 "name": "작약 초상화",
 "src": "img/face/jakyak_portrait.webp",
 "note": "받은 초상화 (도깨비 자매)",
@@ -13602,10 +13778,21 @@ const CATALOG = [
 {
 "id": "P-jakyak-art",
 "cat": "char",
-"sub": "작약 (도깨비 자매) · 역할 미정 · 원화 + 연출",
+"sub": "작약 (도깨비 자매) · 역할 미정 · 동작 그림",
 "name": "작약 원화 (도끼)",
 "src": "img/char/jakyak_art.webp",
 "note": "기본만 씀. 받은 그림에서 옆 인물 (날개 · 청승)을 빼고 자름",
+"rank": "",
+"on": false,
+"g": "jakyak"
+},
+{
+"id": "P-jakyak-ready_idle",
+"cat": "char",
+"sub": "작약 (도깨비 자매) · 역할 미정 · 동작 그림",
+"name": "작약 · 대기 (24장, v1.4)",
+"src": "img/char/jakyak_ready_idle.webp",
+"note": "작약 ready_idle v1.4 (드라이브 2026-10-03)",
 "rank": "",
 "on": false,
 "g": "jakyak"
@@ -14038,6 +14225,72 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "coraldeer"
+},
+{
+"id": "F-auto-catwarrior",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 기본 초상화",
+"src": "img/face/auto_catwarrior.webp",
+"note": "대기 첫 장에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "catwarrior"
+},
+{
+"id": "P-catwarrior-idle",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 · 대기 (12장, v1.1)",
+"src": "img/char/catwarrior_idle.webp",
+"note": "cat_idle 스프라이트 (드라이브 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "catwarrior"
+},
+{
+"id": "P-catwarrior-calm_idle",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 · 차분한 대기 (20장)",
+"src": "img/char/catwarrior_calm_idle.webp",
+"note": "cat_calm_idle 스프라이트 (드라이브 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "catwarrior"
+},
+{
+"id": "P-catwarrior-scratch",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 · 할퀴기 (8장)",
+"src": "img/char/catwarrior_scratch.webp",
+"note": "cat_scratch 스프라이트 (드라이브 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "catwarrior"
+},
+{
+"id": "P-catwarrior-triple_scratch",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 · 세 번 할퀴기 (14장)",
+"src": "img/char/catwarrior_triple_scratch.webp",
+"note": "cat_triple_scratch 스프라이트 (드라이브 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "catwarrior"
+},
+{
+"id": "P-catwarrior-pounce",
+"cat": "char",
+"sub": "고양이 전사녀 · 역할 미정 · 동작 그림",
+"name": "고양이 전사녀 · 덮쳐 찢기 (13장)",
+"src": "img/char/catwarrior_pounce.webp",
+"note": "cat_pounce 스프라이트 (드라이브 2026-10-03)",
+"rank": "",
+"on": false,
+"g": "catwarrior"
 },
 {
 "id": "F-N-002",
