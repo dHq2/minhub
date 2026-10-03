@@ -1,4 +1,4 @@
-/* player.js v0.4 — 인주 직접 조작
+/* player.js v0.6 — 인주 직접 조작
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -13,12 +13,17 @@ function aimPoint(u){
   if (mouse.inside && G.t - mouse.moved < 4){ const g = screenToGround(mouse.x, mouse.y, UI.W, UI.H, u.y); if (g) return g; }
   return null;
 }
+// 마우스가 적의 그림 (발 ~ 머리, 날고 있으면 하늘에 있는 그 그림) 위에 있나: 화면에서 그림 상자로 판단
 function mouseOverEnemy(){
   if (!mouse.inside) return null;
-  let best = null, bd = 46;
+  let best = null, bd = 1e9;
   for (const e of G.units){
     if (e.side !== 'enemy' || e.dead) continue;
-    const p = toScreen(e.x, e.y + bodyH(e) * 0.5 + e.lift, e.z, UI.W, UI.H), d = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+    const base = e.y + (e.lift || 0) + (e.jy || 0), f = toScreen(e.x, base, e.z, UI.W, UI.H), h = toScreen(e.x, base + bodyH(e), e.z, UI.W, UI.H);
+    if (f.behind) continue;
+    const hh = Math.max(30, f.y - h.y), hw = Math.max(22, hh * 0.32);
+    if (mouse.x < f.x - hw || mouse.x > f.x + hw || mouse.y < h.y - 10 || mouse.y > f.y + 12) continue;
+    const d = Math.abs(mouse.x - f.x) + Math.abs(mouse.y - (f.y + h.y) / 2) * 0.5;
     if (d < bd){ bd = d; best = e; }
   }
   return best;
@@ -125,43 +130,63 @@ function playerUpdate(u, dt){
     G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, '창을 주움', 'heal', 0.7);
   }
 }
-function throwTarget(u){
-  if (P.lockT && !P.lockT.dead) return P.lockT;
-  const ap = aimPoint(u); if (ap) return ap;
-  return nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.1 && losClear(G.map, u.x, u.z, e.x, e.z)), THROW.range);
-}
-// 조준선 (궁수 활과 같은 식): 마우스 쪽으로, 마우스까지의 거리만큼 (2 ~ 13칸). 적 위에서 누르면 그 적까지. 벽 · 기둥에서 끊김
-// 놓는 순간의 이 선 그대로 날아가고, 아무도 안 맞으면 선 끝에 박힘
+// 투창 궤적 (포물선): 마우스가 가리키는 곳 (2 ~ 13칸)에 떨어지게 계산. 그 근처 (1.4칸)에 적이 있으면 그 적의 몸통을 노림 (보정)
+// 적 위에서 누르면 그 적. 마우스를 안 쓰면 앞의 가까운 적. 모을수록 빠르고 낮게 날아감. 놓는 순간의 궤적 그대로 날아감
+const ARC = { g: 16, v0: 10, v1: 7, assist: 1.4 };
 function aimPath(u){
-  const tp = throwTarget(u);
-  let a = u.aim, L = THROW.range;
-  if (tp){ a = Math.atan2(tp.z - u.z, tp.x - u.x); L = clamp(Math.hypot(tp.x - u.x, tp.z - u.z) + (tp.S ? 1.2 : 0), 2, THROW.range); }
+  let tp = P.lockT && !P.lockT.dead ? P.lockT : null, gp = null;
+  if (!tp) tp = mouse.over && !mouse.over.dead ? mouse.over : null;   // 그림 위에 마우스 → 그 적 (날고 있으면 하늘의 몸통)
+  if (!tp){
+    gp = aimPoint(u);
+    if (gp){ let bd = ARC.assist; for (const e of foes()){ if (e.dead || e.downed) continue; const d = Math.hypot(e.x - gp.x, e.z - gp.z) - e.r; if (d < bd && Math.hypot(e.x - u.x, e.z - u.z) <= THROW.range + 1){ bd = d; tp = e; } } }
+    else tp = nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.1 && losClear(G.map, u.x, u.z, e.x, e.z)), THROW.range);
+  }
+  let tx, tz, ty;
+  if (tp){ tx = tp.x; tz = tp.z; ty = tp.y + (tp.lift || 0) + (tp.jy || 0) + bodyH(tp) * 0.55; }
+  else {
+    if (!gp) gp = { x: u.x + Math.cos(u.aim) * THROW.range, z: u.z + Math.sin(u.aim) * THROW.range };
+    const a = Math.atan2(gp.z - u.z, gp.x - u.x), L = clamp(Math.hypot(gp.x - u.x, gp.z - u.z), 2, THROW.range);
+    tx = u.x + Math.cos(a) * L; tz = u.z + Math.sin(a) * L; ty = heightAt(G.map, tx, tz);
+  }
+  const a = Math.atan2(tz - u.z, tx - u.x), L = Math.max(0.5, Math.hypot(tx - u.x, tz - u.z));
   setAim(u, u.x + Math.cos(a), u.z + Math.sin(a));
-  const m = G.map; let d = 0.3;
-  for (; d < L; d += 0.15){ const x = u.x + Math.cos(a) * d, z = u.z + Math.sin(a) * d, i = Math.round(x), j = Math.round(z), k = j * m.w + i;
-    if (i < 0 || j < 0 || i >= m.w || j >= m.h || (m.solid[k] && !m.low[k])) break; }
-  P.aimA = a; P.aimLen = Math.min(L, d); P.aimT = tp && tp.S ? tp : null;
+  const k = Math.min(1, (P.charge || 0) / THROW.full), vh = ARC.v0 + ARC.v1 * k, T = L / vh, y0 = u.y + (u.jy || 0) + 1.25;
+  const vy = (ty - y0) / T + ARC.g * T / 2;
+  // 미리 날려 보기: 벽 · 땅 (높은 바닥 포함)에 닿는 곳까지
+  const pts = [], m = G.map, n = 28, Tmax = T * 1.6;
+  let land = null, hit = null;
+  const bodies = G.units.filter(e => !e.dead && !e.downed && (e.side === 'enemy' || e.D.dummy));
+  for (let i = 0; i <= n; i++){
+    const t = Tmax * i / n, x = u.x + Math.cos(a) * vh * t, z = u.z + Math.sin(a) * vh * t, y = y0 + vy * t - ARC.g * t * t / 2;
+    // 날아가는 길에 닿는 적의 그림 (몸통 기둥): 거기서 끊고 "맞음"으로 보여줌
+    if (i > 0){ const b = bodies.find(e => { const base = e.y + (e.lift || 0) + (e.jy || 0); return Math.hypot(e.x - x, e.z - z) < e.r + 0.4 && y > base - 0.1 && y < base + bodyH(e) + 0.2; });
+      if (b){ hit = b; land = { x, y, z }; pts.push(land); break; } }
+    const ti = Math.round(x), tj = Math.round(z), tk = tj * m.w + ti;
+    if (ti < 0 || tj < 0 || ti >= m.w || tj >= m.h || (m.solid[tk] && !m.low[tk] && y < 2.4)){ land = pts[pts.length - 1] || { x: u.x, y: y0, z: u.z }; break; }
+    if (i > 0 && y <= heightAt(m, x, z) + 0.05){ land = { x, y: heightAt(m, x, z), z }; pts.push(land); break; }
+    pts.push({ x, y, z });
+  }
+  if (!land) land = pts[pts.length - 1];
+  P.aim = { a, vh, vy, y0, T, tp, pts, land, hit };
 }
 function throwSpear(u, k, perfect){
-  if (P.aimA == null) aimPath(u);
-  const tp = P.aimT, a = P.aimA, len = P.aimLen; P.aimA = null;
-  setAim(u, u.x + Math.cos(a), u.z + Math.sin(a));
+  aimPath(u);
+  const A = P.aim, tp = A.tp, a = A.a; P.aim = null;
   setPose(u, 'throw'); u.st = 'strike'; u.stT = 0.3;
   P.spear = false;
-  const dmg = u.atk * (1.2 + 1.6 * k), speed = THROW.speed * (0.8 + 0.4 * k), y0 = u.y + (u.jy || 0) + 1.25;
+  const dmg = u.atk * (1.2 + 1.6 * k);
   if (perfect){ popText(u.x, u.y + 2.2, u.z, '완벽!', 'crit', 1); ring(u.x, u.z, 0x5ab4ff, 2.2, 0.4); G.hitstop = 0.08; }
   else if (k >= 1) popText(u.x, u.y + 2.1, u.z, '힘껏', 'big', 0.7);
   spark(u.x + Math.cos(a) * 0.6, u.y + 1.3, u.z + Math.sin(a) * 0.6, perfect ? 0x7fc8ff : 0xfff0d0, perfect ? 16 : 6, 4);
-  const p = shoot({ x: u.x, y: y0, z: u.z, a, speed, range: len, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
+  const p = shoot({ x: u.x, y: A.y0, z: u.z, a, speed: A.vh, vy: A.vy, g: ARC.g, homing: A.hit, hitR: 0.4, range: THROW.range * 2, side: 'ally', len: 1.5, thick: 0.035, tip: true, color: perfect ? 0xd8eeff : 0xc8b8a0,
     glow: perfect ? 0x5ab4ff : null, pierce: perfect, hitsAir: true, trail: perfect ? 0x5ab4ff : null,
-    dy: tp && tp.S ? aimDy(u.x, y0, u.z, tp, speed) : 0,
     onHit: (p, t) => {
-      hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: p.x - Math.cos(a), z: p.z - Math.sin(a) }, crit: perfect, critMul: 2.5, pierce: perfect, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
+      hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, crit: perfect, critMul: 2.5, pierce: perfect, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
       if (G.cmd === 'focus') G.focusTarget = t;
     },
-    end: (p, x, z, wall, t) => { if (CAM.track === p) CAM.trackUntil = G.t + 0.25; dropSpear(t ? t.x + rnd(-0.6, 0.6) : x - Math.cos(a) * (wall ? 0.4 : 0), t ? t.z + rnd(0.3, 0.9) : z - Math.sin(a) * (wall ? 0.4 : 0), a); } });
+    end: (p, x, z, wall, t) => { if (CAM.track === p) CAM.trackUntil = G.t + 0.25; dropSpear(t ? t.x + rnd(-0.6, 0.6) : x - Math.cos(p.a) * (wall ? 0.4 : 0), t ? t.z + rnd(0.3, 0.9) : z - Math.sin(p.a) * (wall ? 0.4 : 0), p.a); } });
   // 보통은 카메라가 그대로. 완벽이면 화면이 물러나 (줌아웃) 푸른 점 궤적이 보이고, 적에게 닿는 순간만 그 자리를 살짝 당겨 봄 (각도는 그대로)
-  if (perfect){ CAM.track = p; CAM.trackUntil = G.t + 1.4; CAM.punch = null; }
+  if (perfect){ CAM.track = p; CAM.trackUntil = G.t + 1.6; CAM.punch = null; }
 }
 function dropSpear(x, z, a){
   if (solidAt(G.map, x, z)){ x = G.player.x; z = G.player.z; }
@@ -181,22 +206,29 @@ function ghost(u){
 }
 // 머리 위 게이지 (투창: 금색 → 완벽 구간에서 하얗게) · 방어 중엔 앞에 푸른 반원
 let guardArc = null, aimLine = null;
+// 궤적 표시: 점선 포물선 (모은 만큼 밝아짐, 완벽 구간에선 하얗게) + 떨어질 자리 고리 · 노린 적은 발밑 고리. 무엇에 가려도 보임
 function updateAimLine(u){
   if (!aimLine){
     const mat = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
-    const geo = () => { const g = new THREE.PlaneGeometry(1, 1); g.translate(0.5, 0, 0); g.rotateX(-Math.PI / 2); return g; };
-    aimLine = new THREE.Group(); aimLine.renderOrder = 50;
-    aimLine.base = new THREE.Mesh(geo(), mat(0xffd35a, 0.22)); aimLine.fill = new THREE.Mesh(geo(), mat(0xffd35a, 0.75));
-    aimLine.tip = new THREE.Mesh(new THREE.RingGeometry(0.22, 0.32, 24).rotateX(-Math.PI / 2), mat(0xffd35a, 0.9));
-    [aimLine.base, aimLine.fill, aimLine.tip].forEach(m => { m.renderOrder = 50; aimLine.add(m); }); G.scene.add(aimLine);
+    aimLine = { dots: [], g: new THREE.Group() };
+    for (let i = 0; i < 29; i++){ const d = new THREE.Mesh(new THREE.SphereGeometry(0.055, 6, 4), mat(0xffd35a, 0.9)); d.renderOrder = 50; aimLine.dots.push(d); aimLine.g.add(d); }
+    aimLine.land = new THREE.Mesh(new THREE.RingGeometry(0.25, 0.36, 24).rotateX(-Math.PI / 2), mat(0xffd35a, 0.9)); aimLine.land.renderOrder = 50; aimLine.g.add(aimLine.land);
+    aimLine.foe = new THREE.Mesh(new THREE.RingGeometry(0.62, 0.74, 32).rotateX(-Math.PI / 2), mat(0xffd35a, 0.85)); aimLine.foe.renderOrder = 50; aimLine.g.add(aimLine.foe);
+    G.scene.add(aimLine.g);
   }
-  aimLine.visible = !!P.aiming && P.aimA != null;
-  if (!aimLine.visible) return;
-  const k = Math.min(1, P.charge / THROW.full), win = P.charge >= THROW.full - THROW.perfect, w = win ? 0.3 : 0.16, c = win ? 0xffffff : 0xffd35a;
-  aimLine.position.set(u.x, u.y + 0.06, u.z); aimLine.rotation.y = -P.aimA;
-  aimLine.base.scale.set(P.aimLen, 1, w); aimLine.fill.scale.set(Math.max(0.01, P.aimLen * k), 1, w);
-  aimLine.tip.position.set(P.aimLen, 0, 0);
-  aimLine.fill.material.color.setHex(c); aimLine.tip.material.color.setHex(win ? 0x8fd8ff : c);
+  aimLine.g.visible = !!P.aiming && !!P.aim;
+  if (!aimLine.g.visible){ const el = document.getElementById('aimtag'); if (el) el.hidden = true; return; }
+  const A = P.aim, k = Math.min(1, P.charge / THROW.full), win = P.charge >= THROW.full - THROW.perfect, c = win ? 0xffffff : 0xffd35a;
+  aimLine.dots.forEach((d, i) => {
+    const p = A.pts[i]; d.visible = !!p && i > 0; if (!d.visible) return;
+    d.position.set(p.x, p.y, p.z); d.material.color.setHex(c); d.material.opacity = i / A.pts.length <= k ? 0.95 : 0.3;
+    d.scale.setScalar(win ? 1.4 : 1);
+  });
+  // 맞는 적이 있으면 그 발밑에 고리 + 머리 위 "맞음", 없으면 떨어질 자리에 작은 고리 (노린 적이 있는데 안 맞으면 붉게)
+  aimLine.land.visible = !A.hit; aimLine.land.position.set(A.land.x, heightAt(G.map, A.land.x, A.land.z) + 0.05, A.land.z); aimLine.land.material.color.setHex(A.tp ? 0xff6a5a : win ? 0x8fd8ff : c);
+  aimLine.foe.visible = !!A.hit; if (A.hit){ aimLine.foe.position.set(A.hit.x, A.hit.y + 0.05, A.hit.z); aimLine.foe.scale.setScalar(A.hit.r / 0.6 + 0.4); aimLine.foe.material.color.setHex(win ? 0x8fd8ff : c); }
+  const el = document.getElementById('aimtag'); if (el){ const t = A.hit || (A.tp ? null : null); el.hidden = !A.hit && !A.tp;
+    if (!el.hidden){ const e = A.hit || A.tp, sp = toScreen(e.x, e.y + (e.lift || 0) + bodyH(e) + 0.3, e.z, UI.W, UI.H); el.style.transform = `translate(${sp.x}px,${sp.y}px) translate(-50%,-100%)`; el.textContent = A.hit ? '맞음' : '안 닿음'; el.className = A.hit ? 'ok' : 'no'; } }
 }
 function updateChargeRing(u){
   updateAimLine(u);

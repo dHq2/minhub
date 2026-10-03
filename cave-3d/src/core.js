@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.5';
+const VERSION = 'v0.6';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -26,6 +26,7 @@ const mouse = { x: 0, y: 0, left: false, right: false, moved: -99, wx: 0, wz: 0,
 addEventListener('keydown', e => {
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
   if (!keys.has(e.code)) pressed.add(e.code);
+  SFX.wake();
   keys.add(e.code);
 });
 addEventListener('keyup', e => keys.delete(e.code));
@@ -35,16 +36,43 @@ addEventListener('blur', releaseAll);
 document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 // 우클릭 (투창)이 어디서 떨어지든 브라우저 메뉴 (복사 · 붙여넣기)가 뜨지 않게, 글자도 드래그로 선택되지 않게
 addEventListener('contextmenu', e => e.preventDefault());
+// 게임 화면 어디든 누르면 키보드가 이 화면으로 옴 (다른 창 · 입력칸에 글자가 들어가던 것). 소리도 이때 깨움
+addEventListener('pointerdown', () => { try { window.focus(); if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); } catch (e) {} SFX.wake(); }, true);
 addEventListener('selectstart', e => { if (!e.target.closest || !e.target.closest('input,textarea')) e.preventDefault(); });
 const hit = code => pressed.has(code);
 const down = code => keys.has(code);
 function bindMouse(el){
   el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.moved = G.t; mouse.inside = true; });
   el.addEventListener('mouseleave', () => { mouse.inside = false; });
-  el.addEventListener('mousedown', e => { e.preventDefault(); if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } });
+  el.addEventListener('mousedown', e => { if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } });
   addEventListener('mouseup', e => { if (e.button === 0) mouse.left = false; if (e.button === 2) mouse.right = false; });
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
+
+/* ---------- 소리 (WebAudio로 즉석 합성: 천둥 · 쿵 · 바람) ---------- */
+const SFX = {
+  ctx: null, noise: null,
+  wake(){ try { if (!this.ctx){ const C = window.AudioContext || window.webkitAudioContext; if (!C) return; this.ctx = new C(); const n = this.ctx.sampleRate * 3, b = this.ctx.createBuffer(1, n, this.ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; this.noise = b; } if (this.ctx.state === 'suspended') this.ctx.resume(); } catch (e) {} },
+  // 걸러낸 잡음 한 덩이: type (lowpass · highpass · bandpass), f 주파수 (→ f2로 미끄러짐), 크기, 올라오는 시간, 사라지는 시간, 늦게 시작
+  burst({ type = 'lowpass', f = 400, f2 = null, q = 0.7, gain = 0.5, att = 0.005, dec = 0.5, delay = 0 }){
+    const c = this.ctx; if (!c || !this.noise) return;
+    const t = c.currentTime + delay, src = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+    src.buffer = this.noise; src.playbackRate.value = rnd(0.8, 1.2); fl.type = type; fl.frequency.setValueAtTime(f, t); if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + att + dec); fl.Q.value = q;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec);
+    src.connect(fl).connect(g).connect(c.destination); src.start(t, Math.random() * 1.5); src.stop(t + att + dec + 0.05);
+  },
+  thump(f = 60, gain = 0.6, dec = 0.5, delay = 0){
+    const c = this.ctx; if (!c) return; const t = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
+    o.frequency.setValueAtTime(f * 2, t); o.frequency.exponentialRampToValueAtTime(f * 0.5, t + dec); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dec + 0.05);
+  },
+  // 천둥: 쩍 (갈라지는 소리) → 쾅 → 우르르릉 (길게 굴러감)
+  thunder(){ this.burst({ type: 'highpass', f: 1800, gain: 0.7, dec: 0.18 }); this.burst({ type: 'lowpass', f: 900, f2: 200, gain: 0.9, att: 0.01, dec: 0.6 }); this.thump(55, 0.9, 0.7);
+    for (let i = 0; i < 4; i++) this.burst({ type: 'lowpass', f: 260 - i * 30, gain: 0.55 - i * 0.08, att: 0.15, dec: 1.0 + i * 0.4, delay: 0.25 + i * 0.35 }); },
+  boom(big = 1){ this.thump(48, 0.8 * big, 0.6 * big); this.burst({ type: 'lowpass', f: 300, f2: 80, gain: 0.7 * big, dec: 0.7 * big }); },
+  whoosh(){ this.burst({ type: 'bandpass', f: 300, f2: 2400, q: 1.5, gain: 0.45, att: 0.25, dec: 0.25 }); },
+  hit(){ this.burst({ type: 'bandpass', f: 1200, q: 1, gain: 0.25, dec: 0.08 }); this.thump(110, 0.3, 0.12); },
+};
 
 /* ---------- 텍스처 ---------- */
 const texCache = {};

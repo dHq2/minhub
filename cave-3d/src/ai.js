@@ -1,5 +1,6 @@
 /* ai.js v0.3 — 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
+const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
 const foes = () => G.units.filter(u => u.side === 'enemy' && !u.dead);
 function nearest(u, list, max = 99){ let b = null, bd = max; for (const o of list){ const d = dist(u, o); if (d < bd){ bd = d; b = o; } } return b; }
@@ -168,18 +169,26 @@ function allyThink(u, dt){
   u.moving = false;
   const pl = G.player;
   const enemiesNear = foes().filter(e => e.alert && dist(e, pl) < 14);
-  // 노먼: 다친 동료 (60% 아래)가 있으면 응급처치
-  if (u.D.medic && u.healCd <= 0){
-    const hurtOne = allies().filter(a => a.hp < a.max * 0.6).sort((a, b) => a.hp / a.max - b.hp / b.max)[0];
+  // 노먼: 구급상자 (판당 5번, 대기 5초). 쓰러진 동료를 먼저 일으키고 (40%), 아니면 가장 다친 동료 (65% 아래)를 40% 치료
+  if (u.D.medic && u.healCd <= 0 && G.kits > 0){
+    const team = G.units.filter(a => a.side === 'ally' && !a.dead && a !== u && (a.downed || a.hp < a.max * 0.65) || a === u && a.hp < a.max * 0.65);
+    const hurtOne = team.sort((a, b) => (b.downed ? 1 : 0) - (a.downed ? 1 : 0) || a.hp / a.max - b.hp / b.max)[0];
     if (hurtOne){
-      if (dist(u, hurtOne) > 1.4){ navTo(u, hurtOne.x, hurtOne.z, u.spd * 1.3, dt, 1.2); return; }
-      u.st = 'heal'; u.stT = 1.1; setPose(u, 'heal'); u.healCd = 7;
-      setTimeout(() => { if (!u.downed && !hurtOne.downed){ const h = Math.round(hurtOne.max * 0.3); hurtOne.hp = Math.min(hurtOne.max, hurtOne.hp + h); popText(hurtOne.x, hurtOne.y + 1.8, hurtOne.z, '+' + h, 'heal'); ring(hurtOne.x, hurtOne.z, 0x7dffa0, 1.2, 0.5); } }, 900);
+      if (hurtOne !== u && dist(u, hurtOne) > 1.4){ navTo(u, hurtOne.x, hurtOne.z, u.spd * 1.4, dt, 1.2); return; }
+      u.st = 'heal'; u.stT = 0.85; setPose(u, 'heal'); u.healCd = MEDIC.cd; G.kits--;
+      popText(u.x, u.y + 2.2, u.z, `구급상자 (${G.kits}/${MEDIC.kits})`, 'heal', 0.9);
+      wait(0.7).then(() => {
+        if (u.downed || hurtOne.dead) return;
+        const h = Math.round(hurtOne.max * MEDIC.heal);
+        if (hurtOne.downed){ hurtOne.downed = false; hurtOne.st = 'idle'; hurtOne.hp = h; popText(hurtOne.x, hurtOne.y + 1.8, hurtOne.z, '일으킴 +' + h, 'heal'); }
+        else { hurtOne.hp = Math.min(hurtOne.max, hurtOne.hp + h); popText(hurtOne.x, hurtOne.y + 1.8, hurtOne.z, '+' + h, 'heal'); }
+        ring(hurtOne.x, hurtOne.z, 0x7dffa0, 1.4, 0.5); spark(hurtOne.x, hurtOne.y + 1, hurtOne.z, 0x8dffb0, 10, 3);
+      });
       return;
     }
   }
   let tgt = null;
-  if (G.cmd !== 'follow' && enemiesNear.length){
+  if ((G.cmd !== 'follow' || (G.player && G.player.downed)) && enemiesNear.length){   // 인주가 쓰러지면 '따라와'여도 싸움
     tgt = G.cmd === 'focus' && G.focusTarget && !G.focusTarget.dead ? G.focusTarget : nearest(u, enemiesNear);
   }
   if (!tgt){
@@ -232,5 +241,5 @@ function fireBullet(u, tgt){
 function reviveCheck(dt){
   const busy = foes().some(e => e.alert);
   G.calmT = busy ? 0 : (G.calmT || 0) + dt;
-  if (G.calmT > 4) for (const u of G.units) if (u.side === 'ally' && u.downed && u.kind !== 'player'){ u.downed = false; u.hp = Math.round(u.max * 0.3); u.st = 'idle'; popText(u.x, u.y + 1.6, u.z, '일어남', 'heal'); }
+  if (G.calmT > 4) for (const u of G.units) if (u.side === 'ally' && u.downed){ u.downed = false; u.hp = Math.round(u.max * 0.3); u.st = 'idle'; popText(u.x, u.y + 1.6, u.z, '일어남', 'heal'); }
 }

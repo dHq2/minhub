@@ -12,7 +12,7 @@ const DEFS = {
   shieldman:   { spr: 'shieldman', name: '검방패병', hp: 150, atk: 11, spd: 2.3, r: 0.38, weight: 130, block: 0.25, melee: { range: 1.4, arc: 1.6, windup: 0.45, cd: 1.6, mul: 1, kb: 1.4 } },
   archer:      { spr: 'archer', name: '붉은 망토 궁수', hp: 75, atk: 17, spd: 3.6, r: 0.32, weight: 60, bow: { range: 10, windup: 0.5, cd: 1.6, speed: 30 }, leap: 4.2 },
   brute:       { spr: 'brute', name: '곤봉 거한', hp: 360, atk: 28, spd: 1.9, r: 0.6, weight: 900, armor: 0.4, heavy: true, slam: { r: 2.0, windup: 0.95, cd: 2.4, mul: 1, kb: 2.2, stun: 0.9 } },
-  jeokroe:     { spr: 'jeokroe', name: '적뢰', hp: 1100, atk: 30, spd: 1.7, r: 0.8, weight: 2000, heavy: true, boss: true, marble: true },
+  jeokroe:     { spr: 'jeokroe', name: '적뢰', hp: 1100, atk: 35, spd: 2.3, r: 0.8, weight: 2000, heavy: true, boss: true, marble: true },
 };
 
 /* ---------- 인물 ---------- */
@@ -90,9 +90,17 @@ function blockedFor(m, i, j, h0, jy = 0){
   if (i < 0 || j < 0 || i >= m.w || j >= m.h) return true;
   const k = j * m.w + i;
   if (m.solid[k] && !(m.low[k] && jy > 0.5)) return true;   // 점프 중이면 바위를 넘음
-  return Math.abs(m.hgt[k] - h0) > 0.45 + jy;               // 점프하면 높은 바닥에 오르거나 뛰어내림
+  return m.hgt[k] - h0 > 0.45 + jy;                          // 오르는 것만 막힘 (점프하면 높은 바닥에 오름). 내려가는 건 그냥 뛰어내림
 }
+// 한 번에 0.3칸씩 나눠 움직임 (빠른 돌진 · 날아차기 · 밀려남이 얇은 벽을 뚫고 맵 밖으로 나가던 것)
 function moveBy(u, dx, dz){
+  const L = Math.hypot(dx, dz), n = Math.ceil(L / 0.3);
+  if (n <= 1) return moveStep(u, dx, dz);
+  const ox = u.x, oz = u.z;
+  for (let i = 0; i < n; i++) moveStep(u, dx / n, dz / n);
+  return Math.hypot(u.x - ox, u.z - oz) > L * 0.25;
+}
+function moveStep(u, dx, dz){
   const m = G.map, h0 = heightAt(m, u.x, u.z), r = u.r * 0.85, ox = u.x, oz = u.z;
   let x = u.x + dx, z = u.z + dz;
   for (let pass = 0; pass < 2; pass++){
@@ -105,8 +113,8 @@ function moveBy(u, dx, dz){
       else { const ex = x - i, ez = z - j; if (Math.abs(ex) > Math.abs(ez)) x = i + Math.sign(ex || 1) * (0.5 + r); else z = j + Math.sign(ez || 1) * (0.5 + r); }
     }
   }
-  u.x = x; u.z = z;
-  return Math.hypot(x - ox, z - oz) > Math.hypot(dx, dz) * 0.25;
+  u.x = clamp(x, 1, m.w - 2); u.z = clamp(z, 1, m.h - 2);
+  return Math.hypot(u.x - ox, u.z - oz) > Math.hypot(dx, dz) * 0.25;
 }
 // 길 찾기 대신: 곧장 가다 막히면 ±45° · ±90°로 비켜 감
 function steerTo(u, tx, tz, speed, dt, stopAt = 0){
@@ -125,12 +133,18 @@ function walkable(m, ax, az, bx, bz){
   for (let k = 1; k <= n; k++){
     const x = ax + (bx - ax) * k / n, z = az + (bz - az) * k / n;
     for (const [ox, oz] of [[0.25, 0], [-0.25, 0], [0, 0.25], [0, -0.25]]) if (solidAt(m, x + ox, z + oz)) return false;
-    const hh = heightAt(m, x, z); if (Math.abs(hh - h) > 0.45) return false; h = hh;
+    const hh = heightAt(m, x, z); if (hh - h > 0.45) return false; h = hh;   // 내려가는 건 괜찮음
   }
   return true;
 }
 function navTo(u, tx, tz, speed, dt, stopAt = 0){
   if (Math.hypot(tx - u.x, tz - u.z) <= stopAt) return false;
+  // 동료: 목표가 바로 위 높은 바닥이면 (경사로 돌아가는 길이 멀면) 점프해서 올라감
+  if (u.side === 'ally' && u.kind !== 'player' && u.jy > 0.2) return steerTo(u, tx, tz, speed, dt, stopAt);   // 뛰는 중엔 곧장
+  if (u.side === 'ally' && u.kind !== 'player' && !u.jy && !u.jv){
+    const a = Math.atan2(tz - u.z, tx - u.x), ax = u.x + Math.cos(a) * 0.9, az = u.z + Math.sin(a) * 0.9, h0 = heightAt(G.map, u.x, u.z), h1 = heightAt(G.map, ax, az);
+    if (h1 - h0 > 0.45 && h1 - h0 < 0.95 && !solidAt(G.map, ax, az) && Math.hypot(tx - u.x, tz - u.z) < 6){ u.jv = JUMP.v; u.jy = 0.01; dust(u.x, u.z, 3); }
+  }
   if (walkable(G.map, u.x, u.z, tx, tz)) return steerTo(u, tx, tz, speed, dt, stopAt);
   const f = navField(G.map, tx, tz), nx = f && navNext(G.map, f, u.x, u.z);
   if (!nx) return steerTo(u, tx, tz, speed, dt, stopAt);
@@ -226,6 +240,16 @@ function dot(x, y, z, color, size = 0.2, life = 0.9){
   s.position.set(x + rnd(-0.04, 0.04), y + rnd(-0.04, 0.04), z + rnd(-0.04, 0.04)); s.scale.setScalar(size); G.scene.add(s);
   G.fx.push({ s, vx: 0, vy: 0, vz: 0, t: 0, life, size, grav: 0 });
 }
+// 연기: 부풀며 천천히 오르다 사라지는 회색 덩이 (더하기가 아닌 보통 섞기라 어둡게 보임)
+function smoke(x, z, n = 8, size = 1.2, spread = 1.2, color = 0x6a6470, life = 1.8){
+  const y0 = heightAt(G.map, x, z);
+  for (let i = 0; i < n; i++){
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color, transparent: true, opacity: 0.5, depthWrite: false }));
+    const a = Math.random() * Math.PI * 2, r = Math.random() * spread;
+    s.position.set(x + Math.cos(a) * r, y0 + rnd(0.2, 0.9), z + Math.sin(a) * r); s.scale.setScalar(size); G.scene.add(s);
+    G.fx.push({ s, vx: Math.cos(a) * rnd(0.3, 1.4), vy: rnd(0.3, 0.9), vz: Math.sin(a) * rnd(0.3, 1.4), t: 0, life: life * rnd(0.7, 1.2), size, grow: 1.6, grav: -0.2 });
+  }
+}
 function spark(x, y, z, color, n = 8, speed = 4, size = 0.18, life = 0.35){
   for (let i = 0; i < n; i++){
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
@@ -277,7 +301,7 @@ function hurt(att, tgt, base, o = {}){
   if (tgt.guard && front && !o.unblockable){
     if (G.t - (tgt.guardAt || -9) <= 0.2){
       popText(tgt.x, tgt.y + 2, tgt.z, '튕겨냄!', 'crit', 1); spark(tgt.x + Math.cos(tgt.aim) * 0.5, tgt.y + 1, tgt.z + Math.sin(tgt.aim) * 0.5, 0x8fd8ff, 18, 6); ring(tgt.x, tgt.z, 0x8fd8ff, 1.8, 0.35);
-      G.hitstop = Math.max(G.hitstop, 0.12); camZoomPulse(0.7);
+      G.hitstop = Math.max(G.hitstop, 0.12); camShake(0.25, 0.15);
       if (att && !att.dead){ if (att.D.boss){ att.parried = 0.9; if (att.B) att.B.act = null; interrupt(att); att.lift = att.airborne ? att.lift : 0; } else { interrupt(att); att.st = 'hurt'; att.stT = 0.9; setPose(att, 'hurt'); } popText(att.x, att.y + 2.4 + (att.lift || 0), att.z, '휘청', 'miss'); }
       return 0;
     }
@@ -306,7 +330,7 @@ function hurt(att, tgt, base, o = {}){
   popText(tgt.x, tgt.y + tgt.S.tall * SPRITE_SCALE * 0.7 + tgt.lift, tgt.z, tag + dmg, (tgt.side === 'ally' ? 'hurt ' : '') + (o.crit ? 'crit' : big ? 'big' : ''), o.crit ? 1.2 : 0.9);
   spark(tgt.x, tgt.y + 0.9 + tgt.lift, tgt.z, o.crit ? 0xffd35a : tgt.side === 'ally' ? 0xff6a5a : 0xfff0d0, o.crit ? 16 : 7, o.crit ? 6 : 4);
   G.hitstop = Math.max(G.hitstop, o.crit ? 0.09 : big ? 0.06 : 0.035);
-  if (o.crit && !o.noCam) camZoomPulse(1);
+  if (o.crit && !o.noCam) camShake(0.28, 0.2);   // 치명타: 확대 · 앵글 없이 진동만
   // 밀려남 (무게에 따라)
   if (o.kb && !tgt.D.heavy && !tgt.D.dummy){
     const s = src || att, n = s ? norm(tgt.x - s.x, tgt.z - s.z) : { x: 0, z: 0 }, k = o.kb * 60 / Math.max(40, tgt.D.weight);
@@ -346,13 +370,31 @@ function updateProjs(dt){
     p.t += dt;
     if (p.fall){ p.y = Math.max(p.yEnd ?? 0.2, p.y + p.vy * dt); p.vy -= 9 * dt; }
     if (p.dy){ p.y = Math.max(0.6, p.y + p.dy * dt); p.m.rotation.z = Math.atan2(p.dy, p.speed); }
-    if (!losClear(G.map, p.x, p.z, nx, nz) || p.travelled > p.range){ p.end && p.end(p, p.x, p.z, true); G.scene.remove(p.m); return false; }
+    // 포물선 (투창): 중력으로 떨어지다 땅 (높은 바닥 포함)에 닿으면 박힘. 보정: 노린 적 쪽으로 살짝 꺾임
+    if (p.g){
+      const H = p.homing;
+      if (H && !H.dead && !H.downed && !p.hits.has(H)){
+        const want = Math.atan2(H.z - p.z, H.x - p.x), da = angDiff(want, p.a), Lr = Math.hypot(H.x - p.x, H.z - p.z);
+        if (Math.abs(da) < 1.0){
+          p.a += clamp(da, -2.6 * dt, 2.6 * dt); p.m.rotation.y = -p.a;
+          // 높이도: 남은 거리로 다시 계산한 포물선 쪽으로 (다가오거나 물러나는 적도 몸통에 꽂히게)
+          const Tr = Math.max(0.06, Lr / p.speed), ty = H.y + (H.lift || 0) + (H.jy || 0) + bodyH(H) * 0.55;
+          p.vy += ((ty - p.y) / Tr + p.g * Tr / 2 - p.vy) * Math.min(1, dt * 8);
+        }
+      }
+      p.vy -= p.g * dt; p.y += p.vy * dt; p.m.rotation.z = Math.atan2(p.vy, p.speed);
+      const gh = heightAt(G.map, nx, nz);
+      if (p.y <= gh + 0.08){ p.end && p.end(p, nx, nz, false); G.scene.remove(p.m); return false; }
+      const ti = Math.round(nx), tj = Math.round(nz), tk = tj * G.map.w + ti;
+      if (ti < 0 || tj < 0 || ti >= G.map.w || tj >= G.map.h || (G.map.solid[tk] && !G.map.low[tk] && p.y < 2.4) || p.travelled > p.range){ p.end && p.end(p, p.x, p.z, true); G.scene.remove(p.m); return false; }
+    }
+    else if (!losClear(G.map, p.x, p.z, nx, nz) || p.travelled > p.range){ p.end && p.end(p, p.x, p.z, true); G.scene.remove(p.m); return false; }
     p.x = nx; p.z = nz; p.travelled += step; p.m.position.set(p.x, p.y, p.z);
     if (p.trail){ p.trT = (p.trT || 0) - dt; if (p.trT <= 0){ p.trT = 0.012; dot(p.x, p.y, p.z, p.trail, 0.17, 1.1); } }   // 푸른 점 궤적 (지나간 자리에 점이 남았다 사라짐)
     for (const u of G.units){
       if (u.dead || u.downed || u.side === p.side || u.side === 'neutral' && !u.D.dummy || p.hits.has(u)) continue;
       if (u.airborne && !p.hitsAir) continue;
-      if (Math.hypot(u.x - p.x, u.z - p.z) < u.r + 0.2 && Math.abs((u.y + u.lift + (u.jy || 0) + bodyH(u) * 0.5) - p.y) < bodyH(u) * 0.5 + 0.35){
+      if (Math.hypot(u.x - p.x, u.z - p.z) < u.r + (p.hitR || 0.2) && Math.abs((u.y + u.lift + (u.jy || 0) + bodyH(u) * 0.5) - p.y) < bodyH(u) * 0.5 + 0.35){
         p.hits.add(u); p.onHit && p.onHit(p, u);
         if (!p.pierce){ p.end && p.end(p, p.x, p.z, false, u); G.scene.remove(p.m); return false; }
       }

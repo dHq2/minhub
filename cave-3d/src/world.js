@@ -104,7 +104,7 @@ function navField(map, tx, tz){
     for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]){
       const ni = i + di, nj = j + dj; if (!passable(map, ni, nj)) continue;
       if (di && dj && (!passable(map, i + di, j) || !passable(map, i, j + dj))) continue;
-      const nk = nj * map.w + ni; if (d[nk] >= 0 || Math.abs(map.hgt[nk] - hk) > 0.45) continue;
+      const nk = nj * map.w + ni; if (d[nk] >= 0 || hk - map.hgt[nk] > 0.45) continue;   // nk → k 로 갈 수 있나: 오르막만 0.45까지, 내리막은 뛰어내림
       d[nk] = d[k] + 1; q.push(nk);
     }
   }

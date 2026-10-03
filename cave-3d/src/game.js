@@ -1,4 +1,4 @@
-/* game.js v0.4 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
+/* game.js v0.6 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
 'use strict';
 const LOBBY = [
   '################',
@@ -105,6 +105,7 @@ function loadLevel(rows, theme){
   return sp;
 }
 function spawnParty(x, z){
+  G.kits = MEDIC.kits;   // 노먼 구급상자: 판 (층)마다 다시 채움
   G.player = spawn('player', x, z, 'ally');
   spawn('morningstar', x - 1, z - 0.6, 'ally');
   spawn('norman', x + 1, z - 0.6, 'ally');
@@ -206,7 +207,7 @@ async function bossIntro(){
   const t1 = G.t; await waitUntil(() => { const k = Math.min(1, (G.t - t1) / 0.22); boss.x = C.x + Math.cos(a) * L * k; boss.z = C.z + Math.sin(a) * L * k; boss.lift = Math.sin(Math.PI * k) * 1.2; return k >= 1; });
   boss.lift = 0; setPose(boss, 'kick');
   hurt(boss, pl, 22, { kb: 3, from: boss, stun: 0.7, unblockable: true });
-  camCrit(pl.x, pl.z, pl.y + 0.3, 0.45); camShake(0.5, 0.4);
+  camShake(0.65, 0.5);   // 확대 · 앵글 없이 진동만
   bossInit(boss, C);
   $('bossbar').hidden = false; $('bossname').textContent = '적뢰 — 붉은 날개의 천사';
   await wait(0.5);
@@ -281,9 +282,18 @@ function nearestInspect(){
 }
 
 /* ---------- 화면 위 정보 ---------- */
+// 왼쪽 아래: 노먼 구급상자 (남은 수 · 다시 쓸 수 있을 때까지 도는 고리)
+function medicHud(){
+  const n = G.mode === 'floor' && G.units.find(u => u.D.medic && u.side === 'ally');
+  if (!n) return '';
+  const left = G.kits || 0, ready = Math.max(0, Math.min(1, 1 - (n.healCd || 0) / MEDIC.cd)), off = n.downed || !left;
+  const pips = Array.from({ length: MEDIC.kits }, (_, i) => `<em class="${i < left ? 'on' : ''}"></em>`).join('');
+  return `<div class="sk ${off ? 'off' : ready >= 1 ? 'ready' : ''}"><span class="cd" style="--p:${(off ? 0 : ready) * 360}deg"><i>✚</i></span><span>노먼 · 구급상자</span><span class="pips">${pips}</span><small>${n.downed ? '쓰러짐' : left ? (ready >= 1 ? '준비' : Math.ceil(n.healCd) + '초') : '없음'}</small></div>`;
+}
 function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
   $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
+    + medicHud()
     + (G.mode === 'floor' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
@@ -338,6 +348,7 @@ function loop(now){
       if (u.side === 'enemy' && !G.lock){ if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
       else if (u.side === 'ally' && G.mode === 'floor' && !G.lock) allyThink(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
+      if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
       u.y += (heightAt(G.map, u.x, u.z) - u.y) * Math.min(1, dt * 12);
       if (u.kind !== 'player' && u.S.poses.walk == null && u.st === 'idle' && !u.D.boss) setPose(u, u.pose === 'shoot' || u.pose === 'heal' ? u.pose : 'idle');
@@ -345,7 +356,10 @@ function loop(now){
     separate(dt);
     if (G.mode === 'floor'){
       reviveCheck(dt);
-      if (pl.downed) defeat();
+      // 인주가 쓰러져도 싸움은 계속 (동료가 싸움). 모두 쓰러져야 끝
+      if (pl.downed && !G.flags.plDown){ G.flags.plDown = true; caption('인주 쓰러짐', '동료가 버티는 동안 싸움이 끝나면 일어남'); }
+      if (!pl.downed) G.flags.plDown = false;
+      if (G.units.filter(u => u.side === 'ally').every(u => u.downed || u.dead)) defeat();
       if (!G.flags.boss && pl.z < 10.6) bossIntro();
     }
   }
@@ -353,8 +367,9 @@ function loop(now){
   if (!frozen){ updateDecals(dt); updateProjs(dt); } updateFx(dt); runWaits();
   // 카메라: 평소엔 인주, 싸움 중엔 가까운 적 쪽으로 조금
   if (G.player){
-    let tx = G.player.x, tz = G.player.z;
-    const foe = G.boss && !G.boss.dead ? G.boss : nearest(G.player, foes().filter(e => e.alert), 9);
+    const eye = G.player.downed ? (allies()[0] || G.player) : G.player;   // 인주가 쓰러지면 버티는 동료를 봄
+    let tx = eye.x, tz = eye.z;
+    const foe = G.boss && !G.boss.dead ? G.boss : nearest(eye, foes().filter(e => e.alert), 9);
     if (foe){ const w = G.boss ? 0.45 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
     if (!G.lock) updateCamZone(G.player);
     updateCamera(dt, { x: tx, z: tz });
@@ -371,6 +386,8 @@ function loop(now){
   if (G.player) updateChargeRing(G.player);
   updateFocusRing();
   updateBars(); updateTexts(dt); updateHud();
+  // 키보드가 다른 곳 (채팅 입력칸 등)으로 가 있으면 알려줌 → 화면을 누르면 돌아옴
+  $('focusnote').hidden = document.hasFocus() || !!G.waitInput || G.mode === 'boot';
   const rf = $('redflash'); rf.style.opacity = Math.max(0, (+rf.style.opacity || 0) - dt * 1.6);
   if (G.scene.fog && G.map){ const cd = camera.position.distanceTo(new THREE.Vector3(CAM.follow.x, 0, CAM.follow.z)); G.scene.fog.near = cd * 0.95; G.scene.fog.far = cd * 1.9 + 6; }
   G.renderer.render(G.scene, camera);
