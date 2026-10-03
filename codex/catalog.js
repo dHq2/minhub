@@ -1,4 +1,4 @@
-/* catalog.js v1.33 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.35 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3431,26 +3431,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "H-212",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "붉은 로코코 소파",
-"src": "img/prop/H-212.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-213",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "붉은 안락의자 2",
-"src": "img/prop/H-213.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
 "id": "H-214",
 "cat": "prop",
 "sub": "침대 · 의자 · 탁자",
@@ -4851,6 +4831,16 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-166",
+"cat": "prop",
+"sub": "무기 더미 · 거치대",
+"name": "기사 갑옷 더미",
+"src": "img/prop/H-166.webp",
+"note": "시체가 아니라 갑옷 더미 (메모대로 옮김)",
+"rank": "",
+"on": false
+},
+{
 "id": "H-007",
 "cat": "prop",
 "sub": "무덤 · 시체",
@@ -4966,16 +4956,6 @@ const CATALOG = [
 "sub": "무덤 · 시체",
 "name": "검은 관 · 붉은 천",
 "src": "img/prop/H-100.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-166",
-"cat": "prop",
-"sub": "무덤 · 시체",
-"name": "갑옷 기사 시체",
-"src": "img/prop/H-166.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -6587,6 +6567,26 @@ const CATALOG = [
 "name": "웅크린 남자 (눈알방)",
 "src": "img/prop/H-339.webp",
 "note": "눈알방 가운데 남자. 눈알은 게임에서 따로 그림",
+"rank": "",
+"on": false
+},
+{
+"id": "H-212",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "붉은 로코코 소파",
+"src": "img/prop/H-212.webp",
+"note": "오딜이 없을 때 오딜 소파는 이걸로",
+"rank": "",
+"on": false
+},
+{
+"id": "H-213",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "붉은 안락의자 2",
+"src": "img/prop/H-213.webp",
+"note": "",
 "rank": "",
 "on": false
 },

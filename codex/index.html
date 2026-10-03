@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.34 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.35 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -242,21 +242,24 @@ async function connect(){
   store = db.collection('marks');
   store.onSnapshot(snap => {
     const next = {};
-    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', at: v.at || '' }; });
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', inAt: v.inAt || '', at: v.at || '' }; });
     // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
     if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if (BY_ID[id] && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
     marks = next; lsWrite(); render(); if (viewing) fillView();
     status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
 }
-const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', at: v.at || new Date().toISOString() });
+const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', inAt: v.inAt || '', at: v.at || new Date().toISOString() });
 const empty = v => !v.checked && !v.memo && !v.status && !v.name;
 // 이름 바꾸기: 바꾼 이름은 marks에 (원래 이름은 catalog 그대로). 바뀐 칸은 '이름 바뀜' 표시 → Claude가 나중에 catalog에 적용
 const nameOf = e => (marks[e.id] && marks[e.id].name) || e.name;
 const renamed = e => !!(marks[e.id] && marks[e.id].name && marks[e.id].name !== e.name);
 async function put(id, patch, quiet){
   const cur = marks[id] || { checked:false, memo:'', status:'' };
-  const v = { ...cur, ...patch, at: new Date().toISOString() };
+  const now = new Date().toISOString();
+  if (patch.status === 'in' && cur.status !== 'in') patch = { ...patch, inAt: now };   // 등장 확정을 누른 때 → 다음 판에 이 순서로 분류 맨 위
+  if (patch.status === 'out') patch = { ...patch, inAt: '' };
+  const v = { ...cur, ...patch, at: now };
   if (empty(v)) delete marks[id]; else marks[id] = v;
   lsWrite(); if (!quiet) render();
   if (!store){ status('이 브라우저에 자동 저장됨 ' + new Date().toLocaleTimeString()); return; }
@@ -314,6 +317,7 @@ function peopleNav(subs){
   return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${Object.entries(by).map(([r, bs]) => `<div class="prow"><b>${esc(r)} · ${bs.length}</b><div class="pgrid">${bs.join('')}</div></div>`).join('')}</nav>`;
 }
 function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+const PIN = '★ 등장 확정 (누른 순서)';   // 판을 새로 낼 때 Claude가 등장 확정 누른 순서대로 catalog의 pin을 매김 (tools/apply_marks.py)
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
 function render(){
   const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
@@ -326,16 +330,18 @@ function render(){
   for (const c of CATS){
     if (cat !== 'all' && cat !== c.key) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
-    const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
+    const subs0 = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
+    const pinned = CATALOG.filter(e => e.cat === c.key && e.pin).sort((a, b) => a.pin - b.pin);
+    const subs = pinned.length ? [PIN, ...subs0] : subs0;
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
-    if (c.key === 'char') html += peopleNav(subs);
+    if (c.key === 'char') html += peopleNav(subs0);
     let any = false;
     for (const s of subs){
-      const list = items.filter(e => e.sub === s); if (!list.length) continue; any = true;
+      const list = s === PIN ? pinned.filter(e => items.includes(e)) : items.filter(e => e.sub === s && !e.pin); if (!list.length) continue; any = true;
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
       const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
-      const gi = c.key === 'char' ? ` id="who-${subs.indexOf(s)}"` : '';
+      const gi = c.key === 'char' && subs0.includes(s) ? ` id="who-${subs0.indexOf(s)}"` : '';
       html += `<h3${gi}><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}${c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : ''}</h3><div class="${g}">${list.filter(shown).map(tile).join('')}</div>`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
