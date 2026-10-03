@@ -1274,9 +1274,9 @@ const CATALOG = [
 "id": "S-4",
 "cat": "scene",
 "sub": "컷씬",
-"name": "적뢰 연출 · 붉은 옷자락과 비",
+"name": "적뢰 연출 · 석상과 비 (80장)",
 "src": "img/scene/jr_cutscene_robe.webp",
-"note": "적뢰 연출용 컷씬 (세로 432×768)",
+"note": "적뢰 연출용 컷씬. 움직이는 그림 (빗줄기), 세로 432×768. 드라이브 jeokroe_statue_rain_v1",
 "rank": "",
 "on": false
 },
