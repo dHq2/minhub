@@ -330,7 +330,18 @@ function peopleNav(subs){
   return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${Object.entries(by).map(([r, bs]) => `<div class="prow"><b>${esc(r)} · ${bs.length}</b><div class="pgrid">${bs.join('')}</div></div>`).join('')}</nav>`;
 }
 function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
-const PIN = '★ 등장 확정 (누른 순서)';   // 판을 새로 낼 때 Claude가 등장 확정 누른 순서대로 catalog의 pin을 매김 (tools/apply_marks.py)
+/* 묶음 안 순서: (인물은 초상화 먼저) → 등장 확정 (판을 낼 때 누른 순서로 매긴 pin) → 나머지 원래 순서.
+   표정 · 색 변형 (parent 있음)은 대표 바로 뒤, 펴 놓았을 때만. 크게 보기의 이전 · 다음도 이 순서 (FLAT) */
+let FLAT = [];
+function arrange(list, ck){
+  const inL = new Set(list);
+  const tops = list.filter(e => !e.parent || !inL.has(BY_ID[e.parent]));
+  const key = e => [ck === 'char' && isFace(e) ? 0 : 1, e.pin ? 0 : 1, e.pin || 0, CATALOG.indexOf(e)];
+  tops.sort((a, b) => { const x = key(a), y = key(b); for (let i = 0; i < 4; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; });
+  const out = [];
+  for (const e of tops){ out.push(e); if (KIDS[e.id] && opened[e.id]) out.push(...KIDS[e.id].map(id => BY_ID[id]).filter(k => inL.has(k))); }
+  return out;
+}
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
 function render(){
   const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
@@ -339,24 +350,23 @@ function render(){
     const n = c.key === 'all' ? CATALOG.length : CATALOG.filter(e => e.cat === c.key).length;
     return `<button class="tab" type="button" data-cat="${c.key}" aria-pressed="${cat === c.key}">${c.no ? c.no + '. ' : ''}${c.name}<b>${n}</b></button>`;
   }).join('');
-  let html = '';
+  let html = ''; FLAT = [];
   for (const c of CATS){
     if (!q && cat !== 'all' && cat !== c.key) continue;
     if (q && !CATALOG.some(e => e.cat === c.key && visible(e))) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs0 = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
-    const pinned = CATALOG.filter(e => e.cat === c.key && e.pin).sort((a, b) => a.pin - b.pin);
-    const subs = pinned.length ? [PIN, ...subs0] : subs0;
+    const subs = subs0;
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     if (c.key === 'char' && !q) html += peopleNav(subs0);
     let any = false;
     for (const s of subs){
-      const list = s === PIN ? pinned.filter(e => items.includes(e)) : items.filter(e => e.sub === s && !e.pin); if (!list.length) continue; any = true;
+      const list = arrange(items.filter(e => e.sub === s), c.key); if (!list.length) continue; any = true; FLAT.push(...list);
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
       const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
       const gi = c.key === 'char' && subs0.includes(s) ? ` id="who-${subs0.indexOf(s)}"` : '';
-      html += `<h3${gi}><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}${c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : ''}</h3><div class="${g}">${list.filter(shown).map(tile).join('')}</div>`;
+      html += `<h3${gi}><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}${c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : ''}</h3><div class="${g}">${list.map(tile).join('')}</div>`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
     html += `</section>`;
@@ -369,7 +379,7 @@ function render(){
 }
 
 /* ---------- 크게 보기 ---------- */
-function order(){ return CATALOG.filter(shown); }
+function order(){ return FLAT; }
 function openView(id){ viewing = id; $('view').hidden = false; fillView(); $('vMemo').focus({ preventScroll:true }); }
 function fillView(){
   const bg = document.querySelector('.view .big'); if (bg) bg.classList.remove('zoomed');
