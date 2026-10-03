@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.36 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.37 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -252,6 +252,7 @@ async function connect(){
     // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
     if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if (BY_ID[id] && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
     marks = next; lsWrite(); render(); if (viewing) fillView();
+    for (const [id, v] of Object.entries(marks)) if (v.memo && !v.checked && !v.autoChk){ v.autoChk = true; put(id, { checked: true }, true); }   // 예전에 메모만 하고 체크 안 한 것도 체크
     status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
 }
@@ -265,8 +266,10 @@ async function put(id, patch, quiet){
   const now = new Date().toISOString();
   if (patch.status === 'in' && cur.status !== 'in') patch = { ...patch, inAt: now };   // 등장 확정을 누른 때 → 다음 판에 이 순서로 분류 맨 위
   if (patch.status === 'out') patch = { ...patch, inAt: '' };
+  if (patch.memo && patch.memo !== (cur.memo || '') && patch.checked === undefined) patch = { ...patch, checked: true };   // 메모를 쓰면 자동으로 체크
   const v = { ...cur, ...patch, at: now };
   if (empty(v)) delete marks[id]; else marks[id] = v;
+  if (viewing === id && $('vCheck')) $('vCheck').checked = !!v.checked;
   lsWrite(); if (!quiet) render();
   if (!store){ status('이 브라우저에 자동 저장됨 ' + new Date().toLocaleTimeString()); return; }
   try {
@@ -382,7 +385,7 @@ function fillView(){
 function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; $('vNameIn').value = nameOf(n); fillView(); if (enterNext) $(enterNext).focus({ preventScroll:true }); } }
 function saveName(){ if (!viewing) return; const e = BY_ID[viewing], v = $('vNameIn').value.trim(), want = v && v !== e.name ? v : ''; if (want !== ((marks[viewing] || {}).name || '')) put(viewing, { name: want }); }
 function saveMemo(){ if (!viewing) return; saveName(); const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
-function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; }
+function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; render(); }
 
 /* ---------- 목록 복사 · 백업 ---------- */
 function listText(){

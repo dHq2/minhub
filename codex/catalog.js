@@ -1,4 +1,4 @@
-/* catalog.js v1.35 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.38 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -3208,7 +3208,8 @@ const CATALOG = [
 "src": "img/prop/H-004.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 1
 },
 {
 "id": "H-005",
@@ -3218,7 +3219,8 @@ const CATALOG = [
 "src": "img/prop/H-005.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 2
 },
 {
 "id": "H-044",
@@ -3228,7 +3230,8 @@ const CATALOG = [
 "src": "img/prop/H-044.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 8
 },
 {
 "id": "H-045",
@@ -3238,7 +3241,8 @@ const CATALOG = [
 "src": "img/prop/H-045.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 6
 },
 {
 "id": "H-072",
@@ -3248,7 +3252,8 @@ const CATALOG = [
 "src": "img/prop/H-072.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 7
 },
 {
 "id": "H-080",
@@ -3258,7 +3263,8 @@ const CATALOG = [
 "src": "img/prop/H-080.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 9
 },
 {
 "id": "H-091",
@@ -3268,7 +3274,8 @@ const CATALOG = [
 "src": "img/prop/H-091.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 10
 },
 {
 "id": "H-098",
@@ -3278,7 +3285,8 @@ const CATALOG = [
 "src": "img/prop/H-098.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 11
 },
 {
 "id": "H-099",
@@ -3288,7 +3296,8 @@ const CATALOG = [
 "src": "img/prop/H-099.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 12
 },
 {
 "id": "H-120",
@@ -3298,7 +3307,8 @@ const CATALOG = [
 "src": "img/prop/H-120.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 13
 },
 {
 "id": "H-121",
@@ -3308,7 +3318,8 @@ const CATALOG = [
 "src": "img/prop/H-121.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 14
 },
 {
 "id": "H-122",
@@ -3318,7 +3329,8 @@ const CATALOG = [
 "src": "img/prop/H-122.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 15
 },
 {
 "id": "H-125",
@@ -3328,7 +3340,8 @@ const CATALOG = [
 "src": "img/prop/H-125.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 16
 },
 {
 "id": "H-131",
@@ -3338,7 +3351,8 @@ const CATALOG = [
 "src": "img/prop/H-131.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 17
 },
 {
 "id": "H-135",
@@ -3346,16 +3360,6 @@ const CATALOG = [
 "sub": "침대 · 의자 · 탁자",
 "name": "교회 신도석",
 "src": "img/prop/H-135.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-142",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "붉은 고딕 안락의자",
-"src": "img/prop/H-142.webp",
 "note": "",
 "rank": "",
 "on": false
@@ -3388,7 +3392,8 @@ const CATALOG = [
 "src": "img/prop/H-180.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 35
 },
 {
 "id": "H-181",
@@ -3408,7 +3413,8 @@ const CATALOG = [
 "src": "img/prop/H-182.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 32
 },
 {
 "id": "H-185",
@@ -3418,7 +3424,8 @@ const CATALOG = [
 "src": "img/prop/H-185.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 33
 },
 {
 "id": "H-189",
@@ -3438,47 +3445,8 @@ const CATALOG = [
 "src": "img/prop/H-214.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-216",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "붉은 쿠션 스툴",
-"src": "img/prop/H-216.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-218",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "캐노피 침대",
-"src": "img/prop/H-218.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-223",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "티 테이블",
-"src": "img/prop/H-223.webp",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "H-228",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "둥근 오토만",
-"src": "img/prop/H-228.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 3
 },
 {
 "id": "H-239",
@@ -3488,7 +3456,8 @@ const CATALOG = [
 "src": "img/prop/H-239.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 36
 },
 {
 "id": "H-240",
@@ -3498,7 +3467,8 @@ const CATALOG = [
 "src": "img/prop/H-240.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 22
 },
 {
 "id": "H-241",
@@ -3508,17 +3478,8 @@ const CATALOG = [
 "src": "img/prop/H-241.webp",
 "note": "",
 "rank": "",
-"on": false
-},
-{
-"id": "H-242",
-"cat": "prop",
-"sub": "침대 · 의자 · 탁자",
-"name": "붉은 쿠션 스툴함",
-"src": "img/prop/H-242.webp",
-"note": "",
-"rank": "",
-"on": false
+"on": true,
+"pin": 19
 },
 {
 "id": "H-243",
@@ -3528,7 +3489,8 @@ const CATALOG = [
 "src": "img/prop/H-243.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 29
 },
 {
 "id": "H-244",
@@ -3538,7 +3500,8 @@ const CATALOG = [
 "src": "img/prop/H-244.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 28
 },
 {
 "id": "H-245",
@@ -3548,7 +3511,8 @@ const CATALOG = [
 "src": "img/prop/H-245.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 27
 },
 {
 "id": "H-246",
@@ -3558,7 +3522,8 @@ const CATALOG = [
 "src": "img/prop/H-246.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 26
 },
 {
 "id": "H-247",
@@ -3568,7 +3533,8 @@ const CATALOG = [
 "src": "img/prop/H-247.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 25
 },
 {
 "id": "H-248",
@@ -3578,7 +3544,8 @@ const CATALOG = [
 "src": "img/prop/H-248.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 18
 },
 {
 "id": "H-251",
@@ -3588,7 +3555,8 @@ const CATALOG = [
 "src": "img/prop/H-251.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 24
 },
 {
 "id": "H-252",
@@ -3598,7 +3566,8 @@ const CATALOG = [
 "src": "img/prop/H-252.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 23
 },
 {
 "id": "H-266",
@@ -3608,7 +3577,8 @@ const CATALOG = [
 "src": "img/prop/H-266.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 31
 },
 {
 "id": "H-271",
@@ -3618,7 +3588,8 @@ const CATALOG = [
 "src": "img/prop/H-271.webp",
 "note": "",
 "rank": "",
-"on": false
+"on": true,
+"pin": 30
 },
 {
 "id": "H-016",
@@ -6591,6 +6562,71 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "H-142",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 붉은 고딕 안락의자",
+"src": "img/prop/H-142.webp",
+"note": "원래 이름: 붉은 고딕 안락의자",
+"rank": "",
+"on": true,
+"pin": 34
+},
+{
+"id": "H-242",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "붉은 쿠션 스툴함",
+"src": "img/prop/H-242.webp",
+"note": "",
+"rank": "",
+"on": true,
+"pin": 20
+},
+{
+"id": "H-216",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜 붉은 쿠션 스툴",
+"src": "img/prop/H-216.webp",
+"note": "원래 이름: 붉은 쿠션 스툴",
+"rank": "",
+"on": true,
+"pin": 4
+},
+{
+"id": "H-218",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜의 침대",
+"src": "img/prop/H-218.webp",
+"note": "원래 이름: 캐노피 침대",
+"rank": "",
+"on": true,
+"pin": 5
+},
+{
+"id": "H-223",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜 티 테이블",
+"src": "img/prop/H-223.webp",
+"note": "원래 이름: 티 테이블",
+"rank": "",
+"on": true,
+"pin": 21
+},
+{
+"id": "H-228",
+"cat": "prop",
+"sub": "오딜 방 소품",
+"name": "오딜 둥근 오토만",
+"src": "img/prop/H-228.webp",
+"note": "원래 이름: 둥근 오토만",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-face",
 "cat": "char",
 "sub": "인주 · 동료 · 동작 그림",
@@ -6903,12 +6939,144 @@ const CATALOG = [
 "g": "morningstar"
 },
 {
+"id": "F-auto-poren",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 초상화 (야광)",
+"src": "img/face/auto_poren.webp",
+"note": "야광 대기 원화에서 정사각형으로 자름. 이제 포렌은 야광",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
 "id": "O-poren-face",
 "cat": "char",
 "sub": "포렌 · 동료 · 동작 그림",
 "name": "포렌 · 얼굴",
 "src": "img/old2d/poren_face.webp",
-"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm",
+"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm · 예전 색 (야광 전)",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-idle",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 대기 (11장, 야광)",
+"src": "img/foren/foren_idle.webp",
+"note": "드라이브 gif 미궁/조잡한 포렌 · foren_idle_v1.webp. 이제 포렌은 야광",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-swing",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 휘두르기 (13장)",
+"src": "img/foren/foren_swing.webp",
+"note": "foren_swing_v1.webp. 중간 검은 실루엣은 원본 연출",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-downstrike",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 내려찍기 (13장)",
+"src": "img/foren/foren_downstrike.webp",
+"note": "foren_downstrike_v1.webp",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-rising_slash",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 올려 베기 (10장)",
+"src": "img/foren/foren_rising_slash.webp",
+"note": "foren_rising_slash_v1.webp",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-dash_spin",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 돌진 회전 (10장)",
+"src": "img/foren/foren_dash_spin.webp",
+"note": "foren_dash_spin_v1.webp",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-guard-anim",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 방어 (13장)",
+"src": "img/foren/foren_guard.webp",
+"note": "foren_guard_v1.webp · 예전 색 (야광 전)",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-command",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 지휘 (12장)",
+"src": "img/foren/foren_command.webp",
+"note": "foren_command_v1.webp",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-idle-color",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 대기 원화 (야광)",
+"src": "img/foren/foren_idle_color.webp",
+"note": "foren_idle_color_v1.png",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-hold-color",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 대검 짚기 원화 (야광)",
+"src": "img/foren/foren_hold_color.webp",
+"note": "foren_hold_color_v1.png",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-cmd-color",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 지휘 원화 (야광)",
+"src": "img/foren/foren_cmd_color.webp",
+"note": "foren_cmd_color_v1.png",
+"rank": "",
+"on": false,
+"g": "poren"
+},
+{
+"id": "P-poren-shoulder-color",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 대검 메기 원화 (야광)",
+"src": "img/foren/foren_shoulder_color.webp",
+"note": "foren_shoulder_color_v1.png",
 "rank": "",
 "on": false,
 "g": "poren"
@@ -6919,7 +7087,7 @@ const CATALOG = [
 "sub": "포렌 · 동료 · 동작 그림",
 "name": "방어 포렌",
 "src": "img/char/poren_guard_art.webp",
-"note": "방어 자세 포렌. 왕관 · 털 망토 · 대검을 세워 짚음. 받은 그림이 이미 배경 없음",
+"note": "방어 자세 포렌. 왕관 · 털 망토 · 대검을 세워 짚음. 받은 그림이 이미 배경 없음 · 예전 색 (야광 전)",
 "rank": "",
 "on": false,
 "g": "poren"
@@ -6930,7 +7098,7 @@ const CATALOG = [
 "sub": "포렌 · 동료 · 동작 그림",
 "name": "포렌 · 전체 동작 (10장)",
 "src": "img/old2d/poren_all.webp",
-"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm",
+"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm · 예전 색 (야광 전)",
 "rank": "",
 "on": false,
 "g": "poren"
@@ -6991,12 +7159,67 @@ const CATALOG = [
 "g": "tomoe"
 },
 {
+"id": "P-tomoe-idle",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 대기 (16장, 리뉴얼)",
+"src": "img/tomoe/tomoe_idle.webp",
+"note": "드라이브 gif 미궁/용묘화 · uniform_idle_transparent_v1.webp",
+"rank": "",
+"on": false,
+"g": "tomoe"
+},
+{
+"id": "P-tomoe-basic_attack",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 기본 공격 (7장)",
+"src": "img/tomoe/tomoe_basic_attack.webp",
+"note": "uniform_basic_attack_v1.webp",
+"rank": "",
+"on": false,
+"g": "tomoe"
+},
+{
+"id": "P-tomoe-dash_smash",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 돌진 내려치기 (13장)",
+"src": "img/tomoe/tomoe_dash_smash.webp",
+"note": "uniform_dash_smash_v1.webp. 중간 검은 실루엣은 원본 연출",
+"rank": "",
+"on": false,
+"g": "tomoe"
+},
+{
+"id": "P-tomoe-charge_smash",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 모아 내려치기 (18장)",
+"src": "img/tomoe/tomoe_charge_smash.webp",
+"note": "uniform_charge_smash_v1.webp. 붉은 원 연출",
+"rank": "",
+"on": false,
+"g": "tomoe"
+},
+{
+"id": "P-tomoe-dig",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 파내기 (17장, 리뉴얼)",
+"src": "img/tomoe/tomoe_dig.webp",
+"note": "uniform_dig_v1.1.webp",
+"rank": "",
+"on": false,
+"g": "tomoe"
+},
+{
 "id": "O-tomoe-idle",
 "cat": "char",
 "sub": "용묘화 · 동료 · 동작 그림",
 "name": "용묘화 · 대기 (16장)",
 "src": "img/old2d/tomoe_idle.webp",
-"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
+"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모 · 옛 동작 (리뉴얼 전)",
 "rank": "",
 "on": false,
 "g": "tomoe"
@@ -7007,7 +7230,7 @@ const CATALOG = [
 "sub": "용묘화 · 동료 · 동작 그림",
 "name": "용묘화 · 휘두르기",
 "src": "img/old2d/tomoe_swing.webp",
-"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
+"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모 · 옛 동작 (리뉴얼 전)",
 "rank": "",
 "on": false,
 "g": "tomoe"
@@ -7018,7 +7241,7 @@ const CATALOG = [
 "sub": "용묘화 · 동료 · 동작 그림",
 "name": "용묘화 · 파내기",
 "src": "img/old2d/tomoe_dig.webp",
-"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
+"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모 · 옛 동작 (리뉴얼 전)",
 "rank": "",
 "on": false,
 "g": "tomoe"
