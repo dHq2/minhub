@@ -53,7 +53,7 @@ function updateSprite(u, dt){
   if (u.mat.map !== t){ u.mat.map = t; u.mat.needsUpdate = true; }
   if (P.n){
     const cnt = P.count || P.n, from = P.from || 0;
-    let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : fi % cnt;
+    let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(fi % (2 * cnt - 2) - (cnt - 1)) : fi % cnt;   // pingpong: 끝에서 거꾸로
     if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
     else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }

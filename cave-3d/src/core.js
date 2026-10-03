@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.8';
+const VERSION = 'v0.8.1';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -143,7 +143,7 @@ const SPR = {
     jumpShot:  jr('jlaser', 3, 12, 7, 12, 310),
     flyUp:     jr('fspear', 3, 7, 8, 9, 341, true, -1, 312),
     flyShot:   jr('fspear', 3, 15, 7, 10, 341, true, -1, 312),
-    fly:       { src: 'art/jr/fly.webp', w: 602, h: 602, ax: 300, ay: 480, f: -1, scale: 0.66 },
+    fly:       { ...jr('fspear', 3, 0, 7, 8, 341, false, -1, 312), pingpong: true },   // 날고 있음: 날면서 창 던지기의 앞 7장을 왕복 재생
     hurt:      { src: A + 'jeokroe_hurt.png', w: 217, h: 300, ax: 108, ay: 299, f: -1, scale: 0.95 * 250 / 300 } } },
 };
 // 그림 없는 인물 (레베카 · 허수아비): 캔버스로 대충 그림 (자리 잡기용)
