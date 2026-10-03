@@ -1,4 +1,4 @@
-/* catalog.js v1 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음) */
+/* catalog.js v1.1 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음). v1.1: 적뢰 팩 7종 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -2671,6 +2671,69 @@ const CATALOG = [
 "name": "스킬 그림 10",
 "src": "img/skill/s10.webp",
 "note": "",
+"rank": ""
+},
+{
+"id": "JR-kick",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "날아차기 (다시 편집)",
+"src": "img/anim/jr_flying_kick_reedit.webp",
+"note": "38장 · 서 있음 → 먹 웅크림 → 날개 펼침 → 먹 돌진 · 회전 → 발끝에 붉은 번개 폭발",
+"rank": ""
+},
+{
+"id": "JR-punch",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "땅 내리찍기",
+"src": "img/anim/jr_ground_punch.webp",
+"note": "17장 · 손을 들어 붉은 불꽃 → 먹 → 땅을 가르는 붉은 번개 → 웅크려 내리찍은 자세",
+"rank": ""
+},
+{
+"id": "JR-raise",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "손을 번쩍 (천벌)",
+"src": "img/anim/jr_light_raise.webp",
+"note": "24장 · 손을 들고 → 빛줄기가 내려오는 검은 장면 → 점점 어두워짐",
+"rank": ""
+},
+{
+"id": "JR-round",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "돌려차기",
+"src": "img/anim/jr_roundhouse.webp",
+"note": "19장 · 다리에 붉은 번개가 차오름 → 먹 → 돌려차기 + 붉은 번개 고리",
+"rank": ""
+},
+{
+"id": "JR-laser",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "뛰어올라 붉은 창 레이저",
+"src": "img/anim/jr_spear_laser.webp",
+"note": "19장 · 웅크림 → 날아올라 창을 만듦 → 먹 → 붉은 레이저",
+"rank": ""
+},
+{
+"id": "JR-laserS",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "서서 붉은 창 레이저",
+"src": "img/anim/jr_spear_laser_stand.webp",
+"note": "19장 · 선 채로 손을 들어 창을 만듦 → 먹 → 붉은 레이저",
+"rank": ""
+},
+{
+"id": "JR-fspear",
+"cat": "anim",
+"sub": "적뢰 팩 (2026-10-03, 드라이브)",
+"name": "공중에서 붉은 창 (2페이즈)",
+"src": "img/anim/jr_flying_spear.webp",
+"note": "22장 · 날고 있는 자세 → 창을 만듦 → 먹 → 던진 뒤 공중에서 웅크림",
 "rank": ""
 }
 ];
