@@ -1,4 +1,4 @@
-/* catalog.js v1.50 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.51 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1549,6 +1549,76 @@ const CATALOG = [
 "name": "담배 피는 노인",
 "src": "img/card/enc_smoker.webp",
 "note": "인카운터 NPC. 노인은 11 가구 · 소품 → 인카운터 오브제 · NPC (H-341). 글: 어두운 풀숲에서 담배냄새가 납니다. 그는 눈을 꿈뻑거립니다.",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-blood-trio",
+"cat": "scene",
+"sub": "인카운터",
+"name": "피의 바다의 셋 (기사 · 신 · 도깨비)",
+"src": "img/card/enc_trio.webp",
+"note": "글: 피의 바다에서, 세명이 걸어옵니다. 기사와, 신과, 도깨비. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-white-room",
+"cat": "scene",
+"sub": "인카운터",
+"name": "하얀 방 (흘러넘치는 피)",
+"src": "img/card/enc_whiteroom.webp",
+"note": "하얀 방과 가구, 가운데 잔에서 흘러나오는 피. 누구의 피인가? 글: 온통 하얀색이었습니다. 질감은 마치 석영처럼 단단했습니다. 성스러운 와인잔에서 피가 조금씩 넘칩니다. 동료중 한명이 경악과 함께 창백해지고 있습니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-rooftops",
+"cat": "scene",
+"sub": "인카운터",
+"name": "빌딩 옥상의 길",
+"src": "img/card/enc_rooftops.webp",
+"note": "매우 긴 빌딩들 옥상 위에서 벌어지는 맵. 내려다보면 끝없는 절벽. 글: 기괴할정도로 높은, 일정한 간격의, 벽같은 빌딩들이었습니다. 우리는 그 옥상의 열을, 길이라고 착각한 것이었습니다. 이곳에서 떨어지면, 그곳은 평범한 세상일까요. 평범한 사람들이 사는 곳일까요. 그럴리가 없겠죠. 비어있겠죠? 늘 그렇듯 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-conveyor",
+"cat": "scene",
+"sub": "인카운터",
+"name": "끝없는 줄 (컨베이어 벨트)",
+"src": "img/card/enc_conveyor.webp",
+"note": "매우 긴 컨베이어 벨트에서 시작하는 탈출 방. 줄 선 인물은 잘라서 전용 스프라이트 (11 가구 · 소품 → 인카운터 오브제 · NPC, H-342 ~ H-347), 상호작용 불가. 글: 당신은 긴 줄에 서 있습니다. 끝은 보이지 않습니다. 당신의 앞 뒤로 처음 보는 존재들이 미동도 없이 서 있습니다. 그들은 살아있을까요? 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-neon-toilet",
+"cat": "scene",
+"sub": "인카운터",
+"name": "네온 화장실",
+"src": "img/card/enc_neontoilet.webp",
+"note": "네온 화장실 방. 글: 녹슨 벽, 조명, 전화기, 그리고 변기. 뚜껑을 열어볼까요? 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-salt-king",
+"cat": "scene",
+"sub": "인카운터",
+"name": "소금의 왕",
+"src": "img/card/enc_saltking.webp",
+"note": "소금의 왕 (500m 정도 크기) 인카운터. 글: 소금의 왕이 강림하였느니. 당신은 안쪽부터 부식됩니다. 당신의 알량한 의지와 함께.. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-dancers",
+"cat": "scene",
+"sub": "인카운터",
+"name": "거대한 무희 셋",
+"src": "img/card/enc_dancers.webp",
+"note": "3m쯤 되는 무희 3명이 춤추는 인카운터. 글: 거대한 무희들이 춤을 춥니다. 그들은 무아에 빠져있습니다. 향은 독할정도로 농염합니다. 맵 계획: cave-3d/ENCOUNTER_MAPS.md",
 "rank": "",
 "on": false
 },
@@ -6702,6 +6772,66 @@ const CATALOG = [
 "name": "담배 피는 노인",
 "src": "img/prop/H-341.webp",
 "note": "담배 피는 노인 인카운터 NPC. 연기는 지움 (게임에서 효과로)",
+"rank": "",
+"on": false
+},
+{
+"id": "H-342",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 1 · 하얀 옷 아이 (가방) (컨베이어)",
+"src": "img/prop/H-342.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
+"rank": "",
+"on": false
+},
+{
+"id": "H-343",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 2 · 하얀 원피스 소녀 (컨베이어)",
+"src": "img/prop/H-343.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
+"rank": "",
+"on": false
+},
+{
+"id": "H-344",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 3 · 고양이 귀 모자 아이 (컨베이어)",
+"src": "img/prop/H-344.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
+"rank": "",
+"on": false
+},
+{
+"id": "H-345",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 4 · 토끼 머리 (컨베이어)",
+"src": "img/prop/H-345.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
+"rank": "",
+"on": false
+},
+{
+"id": "H-346",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 5 · 노란 원피스 소녀 (컨베이어)",
+"src": "img/prop/H-346.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
+"rank": "",
+"on": false
+},
+{
+"id": "H-347",
+"cat": "prop",
+"sub": "인카운터 오브제 · NPC",
+"name": "줄 선 존재 6 · 회색 옷 아이 (종이) (컨베이어)",
+"src": "img/prop/H-347.webp",
+"note": "끝없는 줄 인카운터. 컨베이어 위에 미동도 없이 서 있음, 상호작용 불가",
 "rank": "",
 "on": false
 },
