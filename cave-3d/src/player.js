@@ -39,10 +39,9 @@ function inputDir(){
   let ix = 0, iy = 0;
   if (down('KeyW') || down('ArrowUp')) iy += 1; if (down('KeyS') || down('ArrowDown')) iy -= 1;
   if (down('KeyA') || down('ArrowLeft')) ix -= 1; if (down('KeyD') || down('ArrowRight')) ix += 1;
-  if (!ix && !iy){ P.inYaw = null; return null; }
-  // 누르고 있는 동안 카메라가 돌아도 (구역 · Z · C) 방향 기준은 누르기 시작한 때 그대로 → 손을 떼면 새 각도로
-  if (P.inYaw == null) P.inYaw = CAM.yawT || 0;
-  const y = P.inYaw, fx = -Math.sin(y), fz = -Math.cos(y), rx = Math.cos(y), rz = -Math.sin(y);
+  if (!ix && !iy) return null;
+  // 지금 화면 각도 그대로 (카메라가 도는 동안에도 매 순간 맞춰 바뀜) → W는 언제나 화면 위
+  const y = CAM.yaw || 0, fx = -Math.sin(y), fz = -Math.cos(y), rx = Math.cos(y), rz = -Math.sin(y);
   return norm(rx * ix + fx * iy, rz * ix + fz * iy);
 }
 function playerUpdate(u, dt){
