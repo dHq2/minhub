@@ -291,7 +291,7 @@ function updateHud(){
     + (G.mode === 'floor' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
-  if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; $('bossphase').textContent = G.boss.B && G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 기둥 뒤에 숨기)' : ''; }
+  if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; $('bossphase').textContent = G.boss.B && G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
   const it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   $('prompt').hidden = !it; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}`;
   G.nearIt = it;

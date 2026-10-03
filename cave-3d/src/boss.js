@@ -1,4 +1,4 @@
-/* boss.js v0.6 — 적뢰 (튜토리얼 보스). 1페이즈는 2D판 적뢰를 그대로 옮김
+/* boss.js v0.8 — 적뢰 (튜토리얼 보스). 1페이즈는 2D판 적뢰를 그대로 옮김
    1페이즈
    - 대리석 주먹: 천천히 걸어오다 2.8칸 안이면 거의 예고 없이 (0.35초) 파고들어 내리찍음 (30) + 둘레 땅울림 (절반)
    - 천벌: 손을 들면 붉은 기운이 몸을 감싸고 머리 위로 번개가 튐. 2초 동안 가장 질긴 자를 따라가다 마지막 0.6초는 멈춤
@@ -8,11 +8,13 @@
    - 대리석 피부 · 회피 스텝은 units.js hurt()
    2페이즈 (체력 55% 아래): 날아오름 (근접이 닿지 않음, 투창 · 총은 닿음). 하늘에서 붉은 창 (기둥 뒤에 숨으면 막힘) · 천벌
    10초마다 내려꽂히고 4초 숨을 고름 = 근접 딜 타임
+   v0.8 (적뢰 팩): 그림을 새 동작으로 · 돌려차기 (카운터 · 치명이면 한 방에 넉다운, 평소엔 크게 밀려남) ·
+   창은 두 가지: 바닥으로 쏘는 창 (1페이즈는 뛰어올라서, 2페이즈는 날면서) · 정면으로 던지는 창 (선 채로 일직선). 2페이즈는 나는 그림
    튕겨냄 (F 저스트): 하던 것이 끊기고 0.9초 휘청 */
 'use strict';
-const JR = { punchCd: 2.2, thunderRest: 5, thunderCd: 3, rainCd: 18, kickCd: 5, spearCd: 3.4, descendCd: 10, kickSpeed: 30, kickDmg: 80 };
+const JR = { roundCd: 5, laserCd: 7, jumpCd: 9, punchCd: 2.2, thunderRest: 5, thunderCd: 3, rainCd: 18, kickCd: 5, spearCd: 3.4, descendCd: 10, kickSpeed: 30, kickDmg: 80 };
 function bossInit(u, center){
-  u.B = { phase: 1, act: null, cd: { punch: 1.2, thunder: 4, rain: 11, kick: 6, back: 1, spears: 2, descend: JR.descendCd }, center, orbit: 0 };
+  u.B = { phase: 1, act: null, cd: { punch: 1.2, thunder: 4, rain: 11, kick: 6, back: 1, spears: 2, descend: JR.descendCd, round: 3, laser: 8, jump: 12 }, center, orbit: 0 };
   u.r = 0.8; G.storms = []; G.shocks = [];
 }
 function bossThink(u, dt){
@@ -35,6 +37,10 @@ function bossThink(u, dt){
     if (B.cd.kick <= 0 && d > 3.5 && losClear(G.map, u.x, u.z, tgt.x, tgt.z)) return start(u, 'kick', tgt);   // 거리 상관없이: 맵 끝까지 날아옴
     // 근접전 중엔 가끔 (매초 25%) 뒤로 크게 뛰어 물러난 뒤 날아차기
     if (B.cd.kick <= 0 && d < 3 && B.cd.back <= 0){ B.cd.back = 1; if (Math.random() < 0.25) return start(u, 'kick', tgt, true); }
+    const see = losClear(G.map, u.x, u.z, tgt.x, tgt.z);
+    if (B.cd.laser <= 0 && d > 4 && d < 15 && see) return start(u, 'laser', tgt);        // 정면으로 던지는 창
+    if (B.cd.jump <= 0 && d > 3 && d < 12) return start(u, 'jump', tgt);                 // 뛰어올라 바닥으로 쏘는 창
+    if (d < 2.6 && B.cd.round <= 0 && Math.random() < 0.5){ B.cd.round = 1; return start(u, 'round', tgt); }   // 돌려차기
     if (d < 2.8 && B.cd.punch <= 0) return start(u, 'punch', tgt);
     if (d > 2.2) navTo(u, tgt.x, tgt.z, u.spd, dt, 2.0); else u.moving = false;
     setAim(u, tgt.x, tgt.z); setPose(u, 'idle');
@@ -44,7 +50,7 @@ function bossThink(u, dt){
     const ox = clamp(B.center.x + Math.cos(B.orbit) * 4.5, 2, G.map.w - 3), oz = clamp(B.center.z + Math.sin(B.orbit) * 3.2, 2, 9);
     u.x += (ox - u.x) * Math.min(1, dt * 1.2); u.z += (oz - u.z) * Math.min(1, dt * 1.2);
     u.lift += (3 - u.lift) * Math.min(1, dt * 2);
-    setAim(u, tgt.x, tgt.z); setPose(u, 'idle');
+    setAim(u, tgt.x, tgt.z); setPose(u, 'fly');
     if (B.cd.descend <= 0) return start(u, 'descend');
     if (B.cd.thunder <= 0) return start(u, 'thunder');
     if (B.cd.spears <= 0) return start(u, 'spears');
@@ -64,12 +70,12 @@ function bossAct(u, A, dt){
   const B = u.B; A.t += dt;
   if (A.type === 'punch'){
     if (A.phase === 0){
-      A.phase = 1; setAim(u, A.tgt.x, A.tgt.z); u.leanT = 0.35;
+      A.phase = 1; setAim(u, A.tgt.x, A.tgt.z); setPose(u, 'punchUp');
       const px = A.tgt.x, pz = A.tgt.z;
       u.decal = bossDecal('circle', { x: px, z: pz, r: 1.3, dur: 0.35, onDone: d => {
         u.decal = null;
         const n = norm(px - u.x, pz - u.z), L = Math.max(0, Math.hypot(px - u.x, pz - u.z) - 1.0);
-        moveBy(u, n.x * L, n.z * L); u.flash = 0.6;
+        moveBy(u, n.x * L, n.z * L); u.flash = 0.6; setPose(u, 'punchHit');
         const quake = { shape: 'circle', x: px, z: pz, r: 2.5 };
         for (const t of allies()){
           if (inShape(d, t)) hurt(u, t, u.atk, { kb: 2.2, from: u, stun: 0.5 });
@@ -79,12 +85,12 @@ function bossAct(u, A, dt){
         A.phase = 2; A.t = 0;
       } });
     }
-    if (A.phase === 2 && A.t > 0.45){ B.cd.punch = JR.punchCd; endAct(u); }
+    if (A.phase === 2 && A.t > 0.55){ B.cd.punch = JR.punchCd; endAct(u); }
     return;
   }
   if (A.type === 'thunder'){
     if (A.phase === 0){
-      A.phase = 1; setPose(u, 'idle'); u.redTint = true; u.moving = false;
+      A.phase = 1; setPose(u, B.phase === 2 ? 'fly' : 'raise'); u.moving = false;
       const team = allies().filter(t => !t.downed); const tgt = team.sort((a, b) => b.hp - a.hp)[0] || G.player;
       A.tgt = tgt; popText(u.x, u.y + u.lift + 4.6, u.z, '손을 번쩍 든다', 'alert', 1.2);
       u.decal = bossDecal('circle', { x: tgt.x, z: tgt.z, r: 1.0, dur: 2.0, follow: tgt, onDone: d => { u.decal = null; A.cross && A.cross.forEach(c => c.done = true); strikeThunder(u, d); } });
@@ -96,11 +102,12 @@ function bossAct(u, A, dt){
       A.cross = [0, Math.PI / 2, Math.PI, -Math.PI / 2].map(a => bossDecal('line', { x: d.x, z: d.z, len: 4, w: 0.8, a, dur: 0.6, color: 0xff6040 }));
       A.cross.push(bossDecal('circle', { x: d.x, z: d.z, r: 2.5, dur: 0.6, color: 0xff6040 }));
     }
+    if (A.t > 2.0 && B.phase === 1) setPose(u, 'raiseEnd');
     if (A.t > 2.3){ B.cd.thunder = JR.thunderRest + (B.phase === 1 ? JR.thunderCd : 1); u.redTint = false; endAct(u); }
     return;
   }
   if (A.type === 'rain'){
-    if (A.phase === 0){ A.phase = 1; u.redTint = true; u.moving = false; popText(u.x, u.y + 4.6, u.z, '두 손을 치켜든다', 'alert', 1.2); camShake(0.1, 0.8); }
+    if (A.phase === 0){ A.phase = 1; setPose(u, 'raise'); u.moving = false; popText(u.x, u.y + 4.6, u.z, '두 손을 치켜든다', 'alert', 1.2); camShake(0.1, 0.8); }
     castAura(u, dt);
     if (A.t > 0.8){ u.redTint = false; G.storms.push({ waves: 0, next: 0 }); B.cd.rain = JR.rainCd; endAct(u); }
     return;
@@ -146,47 +153,115 @@ function bossAct(u, A, dt){
   }
   if (A.type === 'ascend'){
     if (A.phase === 0){
-      A.phase = 1; u.inv = 99; setPose(u, 'idle'); u.redTint = true; camFocus(u.x, u.z, 2.4, 6.5, 7.5, 0.05); camShake(0.2, 2.2);
+      A.phase = 1; u.inv = 99; setPose(u, 'jumpUp'); camFocus(u.x, u.z, 2.4, 6.5, 7.5, 0.05); camShake(0.2, 2.2);
       popText(u.x, u.y + 4.5, u.z, '…', 'alert', 1.5); G.rain && (G.rain.on = true);
       flashScreen('#fff', 0.5);
     }
     castAura(u, dt);
-    if (A.t > 0.8){ u.lift = Math.min(3, (A.t - 0.8) * 2.2); if (u.lift > 1) u.airborne = true; }
-    if (A.t > 2.4){ B.phase = 2; u.inv = 0; u.redTint = false; B.cd.spears = 1; B.cd.thunder = 4; B.cd.descend = JR.descendCd; setPose(u, 'idle'); endAct(u); G.onBossPhase && G.onBossPhase(2); }
+    if (A.t > 0.8){ setPose(u, 'fly'); u.lift = Math.min(3, (A.t - 0.8) * 2.2); if (u.lift > 1) u.airborne = true; }
+    if (A.t > 2.4){ B.phase = 2; u.inv = 0; u.redTint = false; B.cd.spears = 1; B.cd.thunder = 4; B.cd.descend = JR.descendCd; setPose(u, 'fly'); endAct(u); G.onBossPhase && G.onBossPhase(2); }
     return;
   }
   if (A.type === 'spears'){
+    // 2페이즈 바닥으로 쏘는 창: 날면서 최대 3명의 발밑으로 (원이 다 차면 하늘에서 붉은 창이 꽂힘)
     if (A.phase === 0){
-      A.phase = 1; setPose(u, 'idle');
-      const team = allies().sort(() => Math.random() - 0.5).slice(0, 3);
-      A.lines = team.map((t, i) => {
-        const a = Math.atan2(t.z - u.z, t.x - u.x), len = Math.min(16, dist(u, t) + 3);
-        return bossDecal('line', { x: u.x, z: u.z, len, w: 0.55, a, dur: 0.85 + i * 0.12, color: 0xff2030, onDone: d => {
-          const y0 = u.y + u.lift + 2, time = len / 30;
-          shoot({ x: u.x, y: y0, z: u.z, a, speed: 30, range: len + 1, side: 'enemy', len: 1.8, thick: 0.05, tip: true, color: 0xff3040, glow: 0xff2020, dy: (1.0 - y0) / time,
-            onHit: (p, tt) => hurt(u, tt, 26, { from: { x: p.x - Math.cos(a), z: p.z - Math.sin(a) }, kb: 1.2 }),
-            end: (p, x, z) => { ring(x, z, 0xff3040, 1.1, 0.3); dust(x, z, 5, 0x803030); } });
-        } });
-      });
+      A.phase = 1; setPose(u, 'flyUp'); popText(u.x, u.y + u.lift + 4.2, u.z, '붉은 창', 'alert', 1.0);
+      allies().sort(() => Math.random() - 0.5).slice(0, 3).forEach((t, i) => bossDecal('circle', { x: t.x, z: t.z, r: 1.5, dur: 1.0 + i * 0.18, color: 0xff2030, onDone: d => { setPose(u, 'flyShot'); floorSpear(u, d, 32); } }));
     }
-    if (A.t > 1.3){ B.cd.spears = JR.spearCd; endAct(u); }
+    if (A.t > 1.9){ B.cd.spears = JR.spearCd; setPose(u, 'fly'); endAct(u); }
+    return;
+  }
+  if (A.type === 'jump'){
+    // 1페이즈 바닥으로 쏘는 창: 웅크렸다 뛰어올라 (그림이 하늘에 있음 · 근접이 닿지 않음) 상대 발밑으로. 원은 0.6초 따라가다 멈춤
+    if (A.phase === 0){
+      A.phase = 1; setPose(u, 'jumpUp'); setAim(u, A.tgt.x, A.tgt.z); u.moving = false;
+      u.decal = bossDecal('circle', { x: A.tgt.x, z: A.tgt.z, r: 1.8, dur: 1.2, follow: A.tgt, color: 0xff2030, onDone: d => { u.decal = null; setPose(u, 'jumpShot'); floorSpear(u, d, 45); A.phase = 2; A.t = 0; } });
+    }
+    if (A.phase === 1){ if (A.t > 0.6 && u.decal) u.decal.follow = null; if (A.t > 0.35) u.airborne = true; }
+    if (A.phase === 2 && A.t > 0.9){ u.airborne = false; B.cd.jump = JR.jumpCd; endAct(u); }
+    return;
+  }
+  if (A.type === 'laser'){
+    // 정면으로 던지는 창: 선 채로 손을 들어 창을 만들고 (0.9초, 기둥 · 벽까지 이어진 일직선) → 붉은 창이 일직선으로 꿰뚫음
+    if (A.phase === 0){
+      A.phase = 1; setPose(u, 'laserUp'); setAim(u, A.tgt.x, A.tgt.z); u.moving = false;
+      A.a = u.aim; A.len = losReach(u, A.a, 16);
+      u.decal = bossDecal('line', { x: u.x, z: u.z, len: A.len, w: 1.1, a: A.a, dur: 0.9, color: 0xff2030, onDone: d => {
+        u.decal = null; setPose(u, 'laserShot'); A.phase = 2; A.t = 0;
+        const y0 = u.y + 2.4, ex = u.x + Math.cos(A.a) * A.len, ez = u.z + Math.sin(A.a) * A.len;
+        beam(u.x + Math.cos(A.a) * 0.6, y0, u.z + Math.sin(A.a) * 0.6, ex, heightAt(G.map, ex, ez) + 1.0, ez, 0.16, 0.5);
+        for (let s = 1; s < A.len; s += 0.8) spark(u.x + Math.cos(A.a) * s, 1.2, u.z + Math.sin(A.a) * s, 0xff4040, 2, 2, 0.2, 0.3);
+        ring(ex, ez, 0xff3040, 1.4, 0.4); smoke(ex, ez, 5, 1.0, 0.8); camShake(0.35, 0.3); SFX.burst({ type: 'highpass', f: 900, f2: 3000, gain: 0.5, dec: 0.3 }); SFX.boom(0.7);
+        for (const t of allies()) if (inShape(d, t)) hurt(u, t, 40, { from: u, kb: 1.8, stun: 0.35 });
+      } });
+    }
+    if (A.phase === 2 && A.t > 0.8){ B.cd.laser = JR.laserCd; endAct(u); }
+    return;
+  }
+  if (A.type === 'round'){
+    // 돌려차기: 다리에 붉은 번개가 차오름 (0.5초, 앞쪽 부채꼴) → 크게 밀려남. 상대가 치는 중이면 (카운터) 또는 치명이면 한 방에 넉다운
+    if (A.phase === 0){
+      A.phase = 1; setPose(u, 'roundUp'); setAim(u, A.tgt.x, A.tgt.z); u.moving = false;
+      u.decal = bossDecal('sector', { x: u.x, z: u.z, r: 2.8, a: u.aim, arc: 2.4, dur: 0.5, onDone: d => {
+        u.decal = null; setPose(u, 'roundHit'); A.phase = 2; A.t = 0; SFX.whoosh(); camShake(0.3, 0.25);
+        spark(u.x + Math.cos(u.aim) * 1.6, u.y + 1.6, u.z + Math.sin(u.aim) * 1.6, 0xff4040, 16, 6); ring(u.x, u.z, 0xff4040, 2.8, 0.35);
+        for (const t of allies()) if (inShape(d, t)) roundHit(u, t);
+      } });
+    }
+    if (A.phase === 2 && A.t > 0.7){ B.cd.round = JR.roundCd; endAct(u); }
     return;
   }
   if (A.type === 'descend'){
-    if (A.phase === 0){ A.phase = 1; setPose(u, 'idle'); A.d = bossDecal('circle', { x: u.x, z: u.z, r: 2.6, dur: 1.0 }); }
+    if (A.phase === 0){ A.phase = 1; setPose(u, 'fly'); A.d = bossDecal('circle', { x: u.x, z: u.z, r: 2.6, dur: 1.0 }); }
     if (A.phase === 1 && A.t > 1.0){
-      A.phase = 2; A.t = 0; u.lift = 0; u.airborne = false; setPose(u, 'kick');
+      A.phase = 2; A.t = 0; u.lift = 0; u.airborne = false; setPose(u, 'punchHit');
       for (const t of allies()) if (inShape(A.d, t) && !(t.jy > 0.45)) hurt(u, t, 35, { kb: 2.6, from: u, stun: 0.5 });
       camShake(0.6, 0.45); ring(u.x, u.z, 0xff6a5a, 3, 0.5); dust(u.x, u.z, 18); smoke(u.x, u.z, 14, 1.4, 2.0); SFX.boom(1.3);
       popText(u.x, u.y + 3.8, u.z, '숨을 고른다', 'heal', 1.4);
     }
     if (A.phase === 1) u.lift = Math.max(0, 3 * (1 - A.t / 1.0));
     if (A.phase === 2 && A.t > 0.4) setPose(u, 'hurt');
-    if (A.phase === 2 && A.t > 4){ A.phase = 3; A.t = 0; setPose(u, 'idle'); }
+    if (A.phase === 2 && A.t > 4){ A.phase = 3; A.t = 0; setPose(u, 'fly'); }
     if (A.phase === 3){ u.lift = Math.min(3, A.t * 2.5); if (u.lift > 1) u.airborne = true; if (A.t > 1.2){ B.cd.descend = JR.descendCd; endAct(u); } }
     return;
   }
   endAct(u);
+}
+// 돌려차기 맞음
+function roundHit(u, t){
+  const guarded = t.guard && Math.abs(angDiff(Math.atan2(u.z - t.z, u.x - t.x), t.aim)) < 1.25;
+  const counter = t.st === 'windup' || t.st === 'strike' || (t.kind === 'player' && P.atkCd > 0.05);
+  const crit = Math.random() < 0.12;
+  SFX.hit();
+  if (!guarded && (counter || crit)){
+    popText(t.x, t.y + 2.8, t.z, counter ? '카운터! 넉다운' : '치명! 넉다운', 'crit', 1.4); smoke(t.x, t.z, 6, 1.0, 0.6); SFX.boom(0.9);
+    hurt(u, t, t.hp * 1.25 + 10, { from: u, unblockable: true, kb: 5, noCam: true }); G.hitstop = Math.max(G.hitstop, 0.12); camShake(0.6, 0.4);
+  } else hurt(u, t, 50, { from: u, kb: 4.5, stun: 0.4 });
+}
+// 바닥으로 쏘는 창이 꽂힘: 하늘 (적뢰의 손)에서 원 한가운데로 붉은 창
+function floorSpear(u, d, dmg){
+  const gy = heightAt(G.map, d.x, d.z), hy = u.y + (u.lift || 0) + 3.2;
+  beam(u.x, hy, u.z, d.x, gy, d.z, 0.14, 0.45);
+  ring(d.x, d.z, 0xff3040, d.r + 0.4, 0.4); spark(d.x, gy + 0.4, d.z, 0xff6050, 18, 6); smoke(d.x, d.z, 6, 1.1, 1.0); camShake(0.4, 0.3);
+  SFX.burst({ type: 'highpass', f: 1400, gain: 0.45, dec: 0.15 }); SFX.boom(0.8);
+  const scorch = new THREE.Mesh(new THREE.CircleGeometry(d.r * 0.7, 20).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x1a0606, transparent: true, opacity: 0.75, depthWrite: false }));
+  scorch.position.set(d.x, gy + 0.02, d.z); G.scene.add(scorch); G.fx.push({ s: scorch, vx: 0, vy: 0, vz: 0, t: 0, life: 4, size: 1, grav: 0 });
+  for (const t of allies()) if (inShape(d, t) && !(t.jy > 0.45)) hurt(u, t, dmg, { from: { x: d.x, z: d.z }, kb: 2, stun: 0.4 });
+}
+// 붉은 빛줄기 (두 점 사이): 겉은 붉게 퍼지고 속은 하얗게
+function beam(x1, y1, z1, x2, y2, z2, w, life){
+  const a = new THREE.Vector3(x1, y1, z1), b = new THREE.Vector3(x2, y2, z2), L = a.distanceTo(b), dir = b.clone().sub(a).normalize();
+  for (const [ww, col, op, lf] of [[w * 2.6, 0xff2a2a, 0.55, life], [w, 0xffd0d0, 0.95, life * 0.7]]){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(ww, ww, L, 10, 1, true), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+    m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir); G.scene.add(m);
+    G.fx.push({ s: m, vx: 0, vy: 0, vz: 0, t: 0, life: lf, size: 1, grav: 0 });
+  }
+}
+// 정면 창이 닿는 길 끝: 벽 · 기둥 (바위는 넘음)까지
+function losReach(u, a, max){
+  const m = G.map; let d = 0.5;
+  for (; d < max; d += 0.2){ const i = Math.round(u.x + Math.cos(a) * d), j = Math.round(u.z + Math.sin(a) * d); if (i < 0 || j < 0 || i >= m.w || j >= m.h || m.los[j * m.w + i]) break; }
+  return Math.max(1.5, d);
 }
 // 날아차기가 닿는 길 끝: 벽 (바위는 넘음)까지, 최대 18칸
 function kickReach(u, a){

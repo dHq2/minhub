@@ -54,7 +54,8 @@ function updateSprite(u, dt){
   if (P.n){
     const cnt = P.count || P.n, from = P.from || 0;
     let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : fi % cnt;
-    t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0);
+    if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
+    else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }
   const k = u.S.tall * SPRITE_SCALE / u.S.h0 * (P.scale || 1), w = P.w * k, h = P.h * k;
   const flip = (P.f || 1) === u.face ? 1 : -1;

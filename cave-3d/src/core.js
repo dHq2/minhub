@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.7';
+const VERSION = 'v0.8';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -93,6 +93,8 @@ function canvasTex(w, h, draw){
    pose: src · w,h (그림 한 칸 크기) · n (가로 칸 수) · fps · ax,ay (발 기준점) · f (원화가 보는 쪽: 1 오른쪽, -1 왼쪽)
    h0: 대기 그림 속 키 (px), tall: 실제 키 (칸) */
 const A = 'assets/';
+// 적뢰 팩 묶음 그림의 한 동작: 파일 · 줄 수 · 시작 칸 · 장수 · 초당 장수 · 발 x · 한 번만 · 원화가 보는 쪽 · 발 y
+const jr = (file, rows, from, count, fps, ax, once = true, f = -1, ay = 324) => ({ src: 'art/jr/' + file + '.webp', w: 468, h: 328, cols: 8, rows, n: 8 * rows, from, count, fps, ax, ay, f, once });
 const SPR = {
   player: { h0: 354, tall: 1.25, poses: {
     idle:   { src: A + 'inju_idle.png',   w: 211, h: 354, n: 20, fps: 4.2, ax: 107, ay: 354, f: -1 },
@@ -123,12 +125,26 @@ const SPR = {
   brute: { h0: 480, tall: 3.0, poses: {
     idle:   { src: A + 'brute_idle.png',   w: 385, h: 480, ax: 245, ay: 480, f: -1 },
     attack: { src: A + 'brute_attack.png', w: 394, h: 411, ax: 250, ay: 355, f: -1 } } },
-  jeokroe: { h0: 274, tall: 3.6, poses: {
-    idle:  { src: A + 'jeokroe.png', w: 494, h: 361, n: 39, from: 0,  count: 12, fps: 9, ax: 299, ay: 317, f: -1 },
-    prep:  { src: A + 'jeokroe.png', w: 494, h: 361, n: 39, from: 12, count: 8,  fps: 9, ax: 299, ay: 317, f: -1, once: true },
-    leap:  { src: A + 'jeokroe.png', w: 494, h: 361, n: 39, from: 20, count: 13, fps: 14, ax: 299, ay: 317, f: -1, once: true },
-    kick:  { src: A + 'jeokroe.png', w: 494, h: 361, n: 39, from: 33, count: 6,  fps: 12, ax: 299, ay: 317, f: -1, once: true },
-    hurt:  { src: A + 'jeokroe_hurt.png', w: 217, h: 300, ax: 108, ay: 299, f: -1, scale: 0.95 * 274 / 300 } } },
+  // 적뢰: 적뢰 팩 (2026-10-03). 묶음 그림 = 468x328 칸, 가로 8칸. 발 기준점은 대기 자세의 발 (가운데 x, 아래 y)
+  jeokroe: { h0: 250, tall: 3.6, poses: {
+    idle:      jr('kick', 5, 0, 12, 9, 290, false),
+    prep:      jr('kick', 5, 12, 7, 8.75, 290),
+    leap:      jr('kick', 5, 19, 5, 20, 290),
+    kick:      jr('kick', 5, 24, 14, 22, 290),
+    punchUp:   jr('punch', 3, 4, 5, 14, 233),
+    punchHit:  jr('punch', 3, 9, 8, 14, 233),
+    raise:     jr('raise', 3, 11, 10, 5, 233),
+    raiseEnd:  jr('raise', 3, 21, 3, 8, 233),
+    roundUp:   jr('round', 3, 5, 4, 8, 190, true, 1),
+    roundHit:  jr('round', 3, 9, 10, 16, 190, true, 1),
+    laserUp:   jr('laser', 3, 4, 7, 8, 320),
+    laserShot: jr('laser', 3, 11, 8, 12, 320),
+    jumpUp:    jr('jlaser', 3, 4, 8, 8, 310),
+    jumpShot:  jr('jlaser', 3, 12, 7, 12, 310),
+    flyUp:     jr('fspear', 3, 7, 8, 9, 341, true, -1, 312),
+    flyShot:   jr('fspear', 3, 15, 7, 10, 341, true, -1, 312),
+    fly:       { src: 'art/jr/fly.webp', w: 602, h: 602, ax: 300, ay: 480, f: -1, scale: 0.66 },
+    hurt:      { src: A + 'jeokroe_hurt.png', w: 217, h: 300, ax: 108, ay: 299, f: -1, scale: 0.95 * 250 / 300 } } },
 };
 // 그림 없는 인물 (레베카 · 허수아비): 캔버스로 대충 그림 (자리 잡기용)
 function drawRebecca(g, w, h){
