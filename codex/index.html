@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.1 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.3 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -134,6 +134,7 @@ const CATS = [
   { key:'bg', no:'5', name:'배경', note:'장소 그림.' },
   { key:'card', no:'6', name:'카드 · 인카운터 등', note:'조우 그림, 인카운터 카드 20장, 흑백 이야기 그림 120장, 스킬 아이콘.' },
   { key:'anim', no:'7', name:'동작', note:'움직이는 그림 (원본은 936×656 프레임 묶음, 여기선 절반 크기로 재생). 게임에 넣을 때는 프레임을 잘라 씀.' },
+  { key:'char', no:'8', name:'인물', note:'게임에 들어갈 인물 그림 (배경을 지운 가공본).' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
 const $ = id => document.getElementById(id);
@@ -193,7 +194,7 @@ function render(){
     if (cat !== 'all' && cat !== c.key) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
-    const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
+    const cls = c.key === 'anim' || c.key === 'char' ? 'grid wide anim' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     let any = false;
     for (const s of subs){

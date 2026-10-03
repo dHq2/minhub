@@ -1,4 +1,4 @@
-/* catalog.js v1.2 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음). v1.1: 적뢰 팩 7종 · v1.2: 나는 적뢰 */
+/* catalog.js v1.3 — 도감 항목. id는 바뀌지 않음 (체크 · 메모가 id에 붙음). v1.1 적뢰 팩 · v1.2 나는 적뢰 · v1.3 인물 그림 2 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -2743,6 +2743,24 @@ const CATALOG = [
 "name": "나는 적뢰 (2페이즈 자세)",
 "src": "img/anim/jr_fly.webp",
 "note": "한 장 · 2페이즈에서 날고 있을 때",
+"rank": ""
+},
+{
+"id": "P-yellow",
+"cat": "char",
+"sub": "인물 그림 (2026-10-03)",
+"name": "노랑 (NPC)",
+"src": "img/char/npc_yellow.webp",
+"note": "촛대 왕관 · 붕대 눈 · 검은 털망토 · 앉아 있음. NPC",
+"rank": ""
+},
+{
+"id": "P-mask",
+"cat": "char",
+"sub": "인물 그림 (2026-10-03)",
+"name": "가면 (특별한 적)",
+"src": "img/char/mask_special.webp",
+"note": "왕관 쓴 광대 가면 · 해골 몸 · 주황 망토 · 푸른 수정검 · 나비. 쓰임새는 아직 미정",
 "rank": ""
 }
 ];
