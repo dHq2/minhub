@@ -1,4 +1,4 @@
-/* catalog.js v1.13 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.14 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1287,6 +1287,16 @@ const CATALOG = [
 "name": "적뢰 연출 · 석상과 비 (이전 판 v1, 80장)",
 "src": "img/scene/jr_cutscene_robe.webp",
 "note": "이전 판 (statue rain v1). 붉은 옷자락과 비만 보임",
+"rank": "",
+"on": false
+},
+{
+"id": "S-5",
+"cat": "scene",
+"sub": "컷씬",
+"name": "마리 · 와킨 함께 선 컷씬",
+"src": "img/scene/mari_wakin_cutscene.webp",
+"note": "인게임 컷씬. 마리 (창을 내지름) · 와킨 (철퇴). 배경 그대로",
 "rank": "",
 "on": false
 },
@@ -3317,6 +3327,26 @@ const CATALOG = [
 "name": "카리우스 · 원화",
 "src": "img/char/karius_art.webp",
 "note": "원화. 안경 쓴 대머리 몸 · 광대 얼굴 · 노인 얼굴 · 쇠사슬 · 길고 뼈 같은 팔 · 갈고리 손",
+"rank": "",
+"on": false
+},
+{
+"id": "P-mari-art",
+"cat": "char",
+"sub": "마리 · 와킨 · 부족 전사 NPC (2026-10-03)",
+"name": "마리 원화",
+"src": "img/char/mari_art.webp",
+"note": "부족 전사 NPC. 와킨과 사실혼 관계 (파트너). 창. 검은 바탕을 지운 가공본",
+"rank": "",
+"on": false
+},
+{
+"id": "P-wakin-art",
+"cat": "char",
+"sub": "마리 · 와킨 · 부족 전사 NPC (2026-10-03)",
+"name": "와킨 원화",
+"src": "img/char/wakin_art.webp",
+"note": "부족 전사 NPC. 마리와 사실혼 관계 (파트너). 가시 박힌 철퇴 · 사슬. 흰 바탕을 지운 가공본 (왼쪽 끝에 걸친 마리 조각은 뺌)",
 "rank": "",
 "on": false
 },
