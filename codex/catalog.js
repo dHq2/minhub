@@ -1,4 +1,4 @@
-/* catalog.js v1.22 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.23 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1311,6 +1311,16 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "S-7",
+"cat": "scene",
+"sub": "컷씬",
+"name": "어딘가의 여신",
+"src": "img/scene/goddess_somewhere.webp",
+"note": "인카운터 · 컷씬. 그림 그대로",
+"rank": "",
+"on": false
+},
+{
 "id": "G-1",
 "cat": "bg",
 "sub": "배경",
@@ -1377,6 +1387,16 @@ const CATALOG = [
 "name": "노인과 양복",
 "src": "img/card/enc_oldman_suit.webp",
 "note": "인카운터 그림 (2026-10-03). 왕관 · 눈가리개 · 담배 연기. 검은 바탕 그대로",
+"rank": "",
+"on": false
+},
+{
+"id": "ENC-giant-head",
+"cat": "card",
+"sub": "인카운터",
+"name": "거인의 머리",
+"src": "img/card/enc_giant_head.webp",
+"note": "인카운터 그림 (2026-10-03). 그림 그대로",
 "rank": "",
 "on": false
 },
@@ -3551,6 +3571,16 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "P-cultist-art",
+"cat": "char",
+"sub": "광신도 · 적 (2026-10-03)",
+"name": "광신도",
+"src": "img/char/cultist_art.webp",
+"note": "적으로 씀. 가지 뿔 · 푸른 십자 · 검은 로브. 발밑 얼룩은 남김",
+"rank": "",
+"on": false
+},
+{
 "id": "O-player-idle",
 "cat": "old2d",
 "sub": "인주 · SPECIAL",
@@ -4756,6 +4786,16 @@ const CATALOG = [
 "sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
 "name": "고대천사 햘 기본 초상화",
 "src": "img/face/hyal_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false
+},
+{
+"id": "F-cultist",
+"cat": "face",
+"sub": "초상화 (2026-10-03) · 따로 안 받으면 정사각형으로 자른 것이 기본",
+"name": "광신도 기본 초상화",
+"src": "img/face/cultist_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
 "on": false
@@ -6687,6 +6727,26 @@ const CATALOG = [
 "name": "검은 천 쓴 시체",
 "src": "img/prop/H-290.webp",
 "note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "H-327",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "부패한 시체",
+"src": "img/prop/H-327.webp",
+"note": "오브제 (2026-10-03). 회색 바탕을 지움",
+"rank": "",
+"on": false
+},
+{
+"id": "H-328",
+"cat": "prop",
+"sub": "무덤 · 시체",
+"name": "고깃덩어리",
+"src": "img/prop/H-328.webp",
+"note": "오브제 (2026-10-03). 검은 바탕을 지움, 가운데 구멍은 그림 그대로",
 "rank": "",
 "on": false
 },
