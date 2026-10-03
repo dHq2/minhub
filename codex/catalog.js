@@ -1,4 +1,4 @@
-/* catalog.js v1.48 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.49 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -9581,6 +9581,127 @@ const CATALOG = [
 "g": "darkrider"
 },
 {
+"id": "F-auto-hyalqueen",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"name": "고대 몬스터 햘 기본 초상화",
+"src": "img/face/auto_hyal_queen.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "P-hyalqueen",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"name": "고대 몬스터 햘 (개미여왕)",
+"src": "img/char/hyal_queen.webp",
+"note": "적 스프라이트 (2026-10-03). 개미여왕. 검은 바탕 · 작은 유령 · 바닥은 지움, 모자이크는 원본 그대로. 설정: 햘전에서 납치되거나 사망한 아군 (주로 여성)은 모체가 됨. 장면은 없고 암시만",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "P-hyalqueen-ant",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"name": "햘의 개미",
+"src": "img/char/hyal_ant.webp",
+"note": "햘의 개미 스프라이트. 작은 크기로 몇십 ~ 100 단위로 등장",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "P-hyalqueen-ant2",
+"cat": "char",
+"sub": "고대 몬스터 햘 (개미여왕) · 적 · 보스 · 원화 + 연출",
+"name": "햘의 개미 2 (아래 잘림)",
+"src": "img/char/hyal_ant_small.webp",
+"note": "같은 그림 아래쪽 개미. 원본에서 몸 아래가 잘려 있음",
+"rank": "",
+"on": false,
+"g": "hyalqueen"
+},
+{
+"id": "F-auto-heugu",
+"cat": "char",
+"sub": "흑우 (거대 괴수) · 적 · 보스 · 원화 + 연출",
+"name": "흑우 기본 초상화",
+"src": "img/face/auto_heugu.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "heugu"
+},
+{
+"id": "P-heugu",
+"cat": "char",
+"sub": "흑우 (거대 괴수) · 적 · 보스 · 원화 + 연출",
+"name": "흑우",
+"src": "img/char/heugu.webp",
+"note": "거대 괴수 적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "heugu"
+},
+{
+"id": "F-auto-ghost",
+"cat": "char",
+"sub": "귀신 유령 A · B · 적 · 보스 · 원화 + 연출",
+"name": "귀신 유령 기본 초상화",
+"src": "img/face/auto_ghost.webp",
+"note": "유령 A에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "ghost"
+},
+{
+"id": "P-ghost-a",
+"cat": "char",
+"sub": "귀신 유령 A · B · 적 · 보스 · 원화 + 연출",
+"name": "귀신 유령 A",
+"src": "img/char/ghost_a.webp",
+"note": "A · B 세트. 증식함 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "ghost"
+},
+{
+"id": "P-ghost-b",
+"cat": "char",
+"sub": "귀신 유령 A · B · 적 · 보스 · 원화 + 연출",
+"name": "귀신 유령 B",
+"src": "img/char/ghost_b.webp",
+"note": "A · B 세트. 증식함",
+"rank": "",
+"on": false,
+"g": "ghost"
+},
+{
+"id": "F-auto-ddongdog",
+"cat": "char",
+"sub": "똥개 · 적 · 보스 · 원화 + 연출",
+"name": "똥개 기본 초상화",
+"src": "img/face/auto_ddongdog.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "ddongdog"
+},
+{
+"id": "P-ddongdog",
+"cat": "char",
+"sub": "똥개 · 적 · 보스 · 원화 + 연출",
+"name": "똥개",
+"src": "img/char/ddongdog.webp",
+"note": "적 스프라이트 (2026-10-03)",
+"rank": "",
+"on": false,
+"g": "ddongdog"
+},
+{
 "id": "F-blocker",
 "cat": "char",
 "sub": "막아서는 자 · 적 · 보스 · 원화 + 연출",
@@ -10078,8 +10199,8 @@ const CATALOG = [
 {
 "id": "F-hyal",
 "cat": "char",
-"sub": "고대천사 햘 · 역할 미정 · 원화 + 연출",
-"name": "고대천사 햘 기본 초상화",
+"sub": "렉사임 · 역할 미정 · 원화 + 연출",
+"name": "렉사임 기본 초상화",
 "src": "img/face/hyal_portrait.webp",
 "note": "스탠딩에서 정사각형으로 자름",
 "rank": "",
@@ -10089,10 +10210,10 @@ const CATALOG = [
 {
 "id": "P-hyal-art",
 "cat": "char",
-"sub": "고대천사 햘 · 역할 미정 · 원화 + 연출",
-"name": "고대천사 햘",
+"sub": "렉사임 · 역할 미정 · 원화 + 연출",
+"name": "렉사임",
 "src": "img/char/hyal_art.webp",
-"note": "스티커 모양 흰 외곽선은 남김. 둥근 갈색 바탕은 지움",
+"note": "스티커 모양 흰 외곽선은 남김. 둥근 갈색 바탕은 지움 · 예전 이름 고대천사 햘 (오해였음, 진짜 햘은 고대 몬스터 햘 개미여왕)",
 "rank": "",
 "on": false,
 "g": "hyal"

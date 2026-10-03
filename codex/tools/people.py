@@ -1,4 +1,4 @@
-# people.py v1.5 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.6 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -16,11 +16,11 @@ CH = [
  ('faded','색을 잃은 자','적 · 보스'),('fingerHole','손가락 구멍','적 · 보스'),('mask','가면 (특별한 적)','적 · 보스'),
  ('swordsman','검사','적 · 보스'),('spearman','창병','적 · 보스'),('shieldman','검방패병','적 · 보스'),('brute','곤봉 거한','적 · 보스'),('archer','붉은 망토 궁수','적 · 보스'),
  ('benkin','벤킨','적 · 보스'),('dandalo','단달로','적 · 보스'),('ratKnight','쥐 기사','적 · 보스'),('rats','쥐 (작은 · 보통 · 큰)','적 · 보스'),
- ('goblinArcher','고블린 궁수','적 · 보스'),('enemyGoblin','일반 고블린','적 · 보스'),('slime','슬라임녀','적 · 보스'),('cultist','광신도','적 · 보스'),('jellygreen','젤리 괴물 (녹색)','적 · 보스'),('giant_beast','거대 괴수','적 · 보스'),('ancient_angel','고대천사 (적)','적 · 보스'),('little_devil','꼬마악마','적 · 보스'),('little_fairy','꼬마요정','적 · 보스'),('beast_a','괴수 A','적 · 보스'),('demoness','마족녀','적 · 보스'),('darkrider','승마 기사','적 · 보스'),
+ ('goblinArcher','고블린 궁수','적 · 보스'),('enemyGoblin','일반 고블린','적 · 보스'),('slime','슬라임녀','적 · 보스'),('cultist','광신도','적 · 보스'),('jellygreen','젤리 괴물 (녹색)','적 · 보스'),('giant_beast','거대 괴수','적 · 보스'),('ancient_angel','고대천사 (적)','적 · 보스'),('little_devil','꼬마악마','적 · 보스'),('little_fairy','꼬마요정','적 · 보스'),('beast_a','괴수 A','적 · 보스'),('demoness','마족녀','적 · 보스'),('darkrider','승마 기사','적 · 보스'),('hyalqueen','고대 몬스터 햘 (개미여왕)','적 · 보스'),('heugu','흑우 (거대 괴수)','적 · 보스'),('ghost','귀신 유령 A · B','적 · 보스'),('ddongdog','똥개','적 · 보스'),
  ('blocker','막아서는 자','적 · 보스'),('mech','기체 A · B','적 · 보스'),
  ('cs','청승 (도깨비 자매)','역할 미정'),('jakyak','작약 (도깨비 자매)','역할 미정'),('bogwang','보광','역할 미정'),('borama','보라마','역할 미정'),('kwangnyang','광냥','역할 미정'),
  ('sealed','봉인된 그녀','역할 미정'),('knightcommander','기사단장','역할 미정'),('nursechief','간호사장','역할 미정'),('gaius','가이우스','역할 미정'),
- ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','고대천사 햘','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),
+ ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),
 ]
 NAME = {k:(n,r) for k,n,r in CH}; ORDER = [k for k,_,_ in CH]
 NID = {'008':'odile','010':'kwangnyang','011':'kwangnyang','012':'kwangnyang','028':'bogwang','029':'bogwang','030':'bogwang','031':'bogwang',
@@ -33,7 +33,7 @@ RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'
  (r'horsehead','horsehead'),(r'deadhero','deadhero'),(r'slave','slave'),(r'silhouette','silhouette'),(r'jeokroe','jeokroe'),(r'cesar','cesar'),
  (r'agnes','agnes'),(r'hargen','hargen'),(r'miller','miller'),(r'faded','faded'),(r'fingerHole','fingerHole'),(r'^P-mask','mask'),
  (r'swordsman','swordsman'),(r'spearman','spearman'),(r'shieldman','shieldman'),(r'brute','brute'),(r'archer','archer'),(r'benkin','benkin'),(r'dandalo','dandalo'),
- (r'ratKnight','ratKnight'),(r'-rat[SML]-','rats'),(r'goblinArcher','goblinArcher'),(r'enemyGoblin','enemyGoblin'),(r'slime','slime'),(r'cultist','cultist'),(r'jelly','jellygreen'),(r'giant_beast','giant_beast'),(r'ancient_angel','ancient_angel'),(r'little_devil','little_devil'),(r'little_fairy','little_fairy'),(r'beast_a','beast_a'),(r'demoness','demoness'),(r'darkrider','darkrider'),(r'crabchef','crabchef'),
+ (r'ratKnight','ratKnight'),(r'-rat[SML]-','rats'),(r'goblinArcher','goblinArcher'),(r'enemyGoblin','enemyGoblin'),(r'slime','slime'),(r'cultist','cultist'),(r'jelly','jellygreen'),(r'giant_beast','giant_beast'),(r'ancient_angel','ancient_angel'),(r'little_devil','little_devil'),(r'little_fairy','little_fairy'),(r'beast_a','beast_a'),(r'demoness','demoness'),(r'darkrider','darkrider'),(r'crabchef','crabchef'),(r'hyalqueen','hyalqueen'),(r'heugu','heugu'),(r'-ghost-|auto-ghost','ghost'),(r'ddongdog','ddongdog'),
  (r'blocker','blocker'),(r'mech','mech'),(r'^P-cs-|cheongseung','cs'),(r'jakyak','jakyak'),(r'bogwang','bogwang'),(r'borama','borama'),
  (r'sealed','sealed'),(r'knightcommander','knightcommander'),(r'gaius','gaius'),(r'hiddenkkaebi','hiddenkkaebi'),(r'girlprisoner','girlprisoner'),
  (r'leonas','leonas'),(r'hyal','hyal'),(r'coral','coraldeer')]
@@ -80,7 +80,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.48', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.49', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:
