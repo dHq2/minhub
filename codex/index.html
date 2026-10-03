@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.31 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.32 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -74,6 +74,18 @@ h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
 .fold.on{background:var(--fg);color:var(--bg)}
 .tile.folder .pic{box-shadow:4px 4px 0 -1px var(--panel),4px 4px 0 0 var(--line),8px 8px 0 -1px var(--panel),8px 8px 0 0 var(--line)}
 .tile.kid{border-style:dashed;border-color:var(--accent)}
+.pnav{display:flex;flex-direction:column;gap:10px;margin:6px 0 18px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.prow > b{display:block;font:600 12px var(--body);color:var(--dim);margin-bottom:6px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(62px*var(--zoom,1)),1fr));gap:6px}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;padding:2px;cursor:pointer;color:var(--fg);min-width:0}
+.pbtn .pp{width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:var(--well);border:1px solid var(--line);display:grid;place-items:center}
+.pbtn img{width:100%;height:100%;object-fit:cover;display:block}
+.pbtn:hover .pp,.pbtn:focus-visible .pp{border-color:var(--accent)}
+.pn{font-size:10.5px;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cat-char h3,.pnav{scroll-margin-top:var(--barH,120px)}
+.toNav{margin-left:auto;font:500 11px var(--body);color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:2px 8px;cursor:pointer}
+h3.hit,.pnav.hit{animation:hit 1.2s}
+@keyframes hit{0%{background:color-mix(in srgb,var(--accent) 35%,transparent)}100%{background:transparent}}
 .empty{color:var(--dim);font-size:14px;padding:20px 0}
 /* 크게 보기 */
 .view{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;padding:16px}
@@ -204,7 +216,7 @@ const CATS = [
   { key:'bg', no:'5', name:'배경', note:'장소 그림.' },
   { key:'card', no:'6', name:'카드 · 인카운터 등', note:'조우 그림, 인카운터 카드 20장, 흑백 이야기 그림 120장, 스킬 아이콘.' },
   { key:'anim', no:'7', name:'동작', note:'움직이는 그림 (원본은 936×656 프레임 묶음, 여기선 절반 크기로 재생). 게임에 넣을 때는 프레임을 잘라 씀.' },
-  { key:'char', no:'8', name:'인물', note:'모든 인물을 한곳에. 맨 위는 초상화 모음 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC), 그 아래 인물마다 묶음: 새 그림 · 2D판 그림 · 얼굴이 함께. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화.' },
+  { key:'char', no:'8', name:'인물', note:'모든 인물을 한곳에. 맨 위 초상화 버튼 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC)을 누르면 그 인물 묶음으로 내려감. 묶음마다 초상화가 맨 앞, 그 뒤로 새 그림 · 2D판 그림. 묶음 제목의 ↑ 초상화로 다시 위로. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화.' },
   { key:'prop', no:'11', name:'가구 · 소품', note:'맵에 놓을 가구 · 소품 (받은 시트를 하나씩 잘라 배경을 지움). 분류만 해 둠, 전부 빨강 (미등장). 쳐낼 것은 체크 · 동그라미로.' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
@@ -281,6 +293,19 @@ function tile(e){
     ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">표정 ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(e.name)}</span></div>${memo}</div>`;
 }
+/* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
+const isFace = e => e.id.startsWith('F-') || e.id.endsWith('-face');
+function roleOf(sub){ if (sub.includes('미등장 NPC')) return '미등장 NPC'; for (const r of ['동료', 'NPC', '적 · 보스', '역할 미정']) if (sub.includes(' · ' + r + ' · ')) return r; return '기타'; }
+function peopleNav(subs){
+  const by = {};
+  subs.forEach((s, i) => {
+    const ms = CATALOG.filter(e => e.cat === 'char' && e.sub === s); if (!ms.length) return;
+    const f = ms.find(isFace) || ms[0], role = roleOf(s);
+    (by[role] = by[role] || []).push(`<button class="pbtn" type="button" data-jump="who-${i}" title="${esc(s)}"><span class="pp"><img ${PK[f.src] ? `data-pk="${esc(f.src)}"` : `loading="lazy" src="${f.src}"`} alt=""></span><span class="pn">${esc(s.split(' · ')[0])}</span></button>`);
+  });
+  return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${Object.entries(by).map(([r, bs]) => `<div class="prow"><b>${esc(r)} · ${bs.length}</b><div class="pgrid">${bs.join('')}</div></div>`).join('')}</nav>`;
+}
+function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
 function render(){
   const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
@@ -296,12 +321,14 @@ function render(){
     const subs = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
+    if (c.key === 'char') html += peopleNav(subs);
     let any = false;
     for (const s of subs){
       const list = items.filter(e => e.sub === s); if (!list.length) continue; any = true;
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
       const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
-      html += `<h3><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</h3><div class="${g}">${list.filter(shown).map(tile).join('')}</div>`;
+      const gi = c.key === 'char' ? ` id="who-${subs.indexOf(s)}"` : '';
+      html += `<h3${gi}><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}${c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : ''}</h3><div class="${g}">${list.filter(shown).map(tile).join('')}</div>`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
     html += `</section>`;
@@ -309,6 +336,7 @@ function render(){
   $('main').innerHTML = html;
   if (seen) seen.disconnect();
   seen = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const x of es) if (x.isIntersecting){ seen.unobserve(x.target); setPic(x.target, x.target.dataset.pk); } }, { rootMargin:'600px' }) : null;
+  document.documentElement.style.setProperty('--barH', ($('bar').offsetHeight + 8) + 'px');
   for (const im of $('main').querySelectorAll('img[data-pk]')) seen ? seen.observe(im) : setPic(im, im.dataset.pk);
 }
 
@@ -379,6 +407,8 @@ function toggleDel(id){
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
+  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); jumpTo(jb.dataset.jump); return; }
+  if (e.target.closest('[data-tonav]')){ e.stopPropagation(); jumpTo('pnav'); return; }
   const fo = e.target.closest('[data-fold]'); if (fo){ e.stopPropagation(); const id = fo.dataset.fold; opened[id] = !opened[id]; try { localStorage.setItem('codex-open', JSON.stringify(opened)); } catch (er) {} render(); return; }
   const d = e.target.closest('[data-del]'); if (d){ e.stopPropagation(); toggleDel(d.dataset.del); return; }
   const st = e.target.closest('[data-st]'); if (st){ e.stopPropagation(); const it = BY_ID[st.dataset.st]; put(it.id, { status: stOf(it) === 'in' ? 'out' : 'in' }); return; }

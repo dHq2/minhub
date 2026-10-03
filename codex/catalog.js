@@ -1,4 +1,4 @@
-/* catalog.js v1.31 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.32 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -6673,936 +6673,13 @@ const CATALOG = [
 {
 "id": "O-player-face",
 "cat": "char",
-"sub": "초상화 · 동료",
+"sub": "인주 · 동료 · 동작 그림",
 "name": "인주 · 얼굴",
 "src": "img/old2d/player_face.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
-},
-{
-"id": "O-morningstar-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "모닝스타 · 얼굴",
-"src": "img/old2d/morningstar_face.webp",
-"note": "\"슈퍼스타\" · 철퇴를 휘두르는 광기의 근딜 · 160cm",
-"rank": "",
-"on": true
-},
-{
-"id": "F-ms-1",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "모닝스타 · 표정 1 · 눈을 치켜뜨고 씩 웃음",
-"src": "img/face/ms_face1.webp",
-"note": "대화 · 초상화용 표정",
-"rank": "",
-"on": false,
-"parent": "O-morningstar-face"
-},
-{
-"id": "F-ms-2",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "모닝스타 · 표정 2 · 눈 감고 웃음",
-"src": "img/face/ms_face2.webp",
-"note": "대화 · 초상화용 표정",
-"rank": "",
-"on": false,
-"parent": "O-morningstar-face"
-},
-{
-"id": "F-ms-3",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "모닝스타 · 표정 3 · 이를 드러내고 비웃음",
-"src": "img/face/ms_face3.webp",
-"note": "대화 · 초상화용 표정",
-"rank": "",
-"on": false,
-"parent": "O-morningstar-face"
-},
-{
-"id": "F-ms-4",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "모닝스타 · 표정 4 · 고개 숙이고 음흉하게 웃음",
-"src": "img/face/ms_face4.webp",
-"note": "대화 · 초상화용 표정",
-"rank": "",
-"on": false,
-"parent": "O-morningstar-face"
-},
-{
-"id": "O-poren-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "포렌 · 얼굴",
-"src": "img/old2d/poren_face.webp",
-"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm",
-"rank": "",
-"on": false
-},
-{
-"id": "O-norman-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "노먼 · 얼굴",
-"src": "img/old2d/norman_face.webp",
-"note": "초능력자들이 날뛰는 세계의 평범한 베테랑 군인 · 위생병 · 말수가 적다 · 172cm",
-"rank": "",
-"on": true
-},
-{
-"id": "O-yellow-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "옐로 · 얼굴",
-"src": "img/old2d/yellow_face.webp",
-"note": "롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러",
-"rank": "",
-"on": false
-},
-{
-"id": "O-tomoe-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "용묘화 · 얼굴",
-"src": "img/old2d/tomoe_face.webp",
-"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
-"rank": "",
-"on": false
-},
-{
-"id": "O-goodwill-face",
-"cat": "char",
-"sub": "초상화 · 동료",
-"name": "GOOD WILL · 얼굴",
-"src": "img/old2d/goodwill_face.webp",
-"note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
-"rank": "",
-"on": false
-},
-{
-"id": "F-arian",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "퀸 아리안 기본 초상화",
-"src": "img/face/arian_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-general",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "대장군 기본 초상화",
-"src": "img/face/general_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-kal",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "칼 기본 초상화",
-"src": "img/face/kal_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "O-odile-face",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "오딜 · 얼굴",
-"src": "img/old2d/odile_face.webp",
-"note": "만남 · 붉은 소파에 다리를 꼬고 앉은 가면의 소녀",
-"rank": "",
-"on": false
-},
-{
-"id": "F-odile",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "오딜 기본 초상화",
-"src": "img/face/odile_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-008",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "과거의 오딜 기본 초상화",
-"src": "img/face/N-008_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "O-rosina-face",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "로시나 · 얼굴",
-"src": "img/old2d/rosina_face.webp",
-"note": "\"외뿔\" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다",
-"rank": "",
-"on": false
-},
-{
-"id": "O-umbrella-face",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "우산 소녀 · 얼굴",
-"src": "img/old2d/umbrella_face.webp",
-"note": "중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다",
-"rank": "",
-"on": false
-},
-{
-"id": "F-drawer",
-"cat": "char",
-"sub": "초상화 · NPC",
-"name": "방랑 서랍 기본 초상화",
-"src": "img/face/drawer_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "O-jeokroe-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "적뢰 · 얼굴",
-"src": "img/old2d/jeokroe_face.webp",
-"note": "붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다",
-"rank": "",
-"on": false
-},
-{
-"id": "O-cesar-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "세자르 · 얼굴",
-"src": "img/old2d/cesar_face.webp",
-"note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
-"rank": "",
-"on": false
-},
-{
-"id": "O-agnes-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "로젤 · 얼굴",
-"src": "img/old2d/agnes_face.webp",
-"note": "붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다",
-"rank": "",
-"on": false
-},
-{
-"id": "O-hargen-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "하르겐 · 얼굴",
-"src": "img/old2d/hargen_face.webp",
-"note": "왕관을 쓴 푸른 얼굴의 왕 · 하늘만 올려다본다 · 푸른 장검",
-"rank": "",
-"on": false
-},
-{
-"id": "O-swordsman-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "검사 · 얼굴",
-"src": "img/old2d/swordsman_face.webp",
-"note": "1층의 적 · 등에 검 세 자루를 멘 해골 투구의 검사 · 말이 없다",
-"rank": "",
-"on": true
-},
-{
-"id": "O-spearman-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "창병 · 얼굴",
-"src": "img/old2d/spearman_face.webp",
-"note": "1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패",
-"rank": "",
-"on": true
-},
-{
-"id": "O-shieldman-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "검방패병 · 얼굴",
-"src": "img/old2d/shieldman_face.webp",
-"note": "1층의 적 · 뿔 투구의 늙은 병사 · 검과 큰 방패",
-"rank": "",
-"on": true
-},
-{
-"id": "O-brute-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "곤봉 거한 · 얼굴",
-"src": "img/old2d/brute_face.webp",
-"note": "1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다",
-"rank": "",
-"on": true
-},
-{
-"id": "O-archer-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "붉은 망토 궁수 · 얼굴",
-"src": "img/old2d/archer_face.webp",
-"note": "1층의 적 · 판금 궁수 · 멀리서 겨눠 쏜다",
-"rank": "",
-"on": true
-},
-{
-"id": "O-benkin-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "벤킨 · 얼굴",
-"src": "img/old2d/benkin_face.webp",
-"note": "사슬에 감긴 가시관의 여자 · 도끼와 낫",
-"rank": "",
-"on": false
-},
-{
-"id": "O-dandalo-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "단달로 · 얼굴",
-"src": "img/old2d/dandalo_face.webp",
-"note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
-"rank": "",
-"on": false
-},
-{
-"id": "O-ratKnight-face",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "쥐 기사 · 얼굴",
-"src": "img/old2d/ratKnight_face.webp",
-"note": "충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사",
-"rank": "",
-"on": false
-},
-{
-"id": "F-slime",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "슬라임녀 초상화",
-"src": "img/face/slime_portrait.webp",
-"note": "받은 초상화 (2026-10-03). 전의 기본 초상화를 바꿈",
-"rank": "",
-"on": false
-},
-{
-"id": "F-cultist",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "광신도 기본 초상화",
-"src": "img/face/cultist_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-blocker",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "막아서는 자 기본 초상화",
-"src": "img/face/blocker_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-mechA",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "기체 A 기본 초상화",
-"src": "img/face/mechA_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-mechB",
-"cat": "char",
-"sub": "초상화 · 적 · 보스",
-"name": "기체 B 기본 초상화",
-"src": "img/face/mechB_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-cheongseung",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "청승 초상화",
-"src": "img/face/cheongseung_portrait.webp",
-"note": "받은 초상화 (도깨비 자매)",
-"rank": "",
-"on": false
-},
-{
-"id": "F-jakyak",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "작약 초상화",
-"src": "img/face/jakyak_portrait.webp",
-"note": "받은 초상화 (도깨비 자매)",
-"rank": "",
-"on": false
-},
-{
-"id": "F-bogwang",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "보광 초상화",
-"src": "img/face/bogwang_portrait.webp",
-"note": "받은 초상화",
-"rank": "",
-"on": false
-},
-{
-"id": "F-borama",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "보라마 초상화",
-"src": "img/face/borama_portrait.webp",
-"note": "받은 초상화",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-011",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "광냥기본 기본 초상화",
-"src": "img/face/N-011_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-sealed",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "봉인된 그녀 기본 초상화",
-"src": "img/face/sealed_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-knightcommander",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "기사단장 기본 초상화",
-"src": "img/face/knightcommander_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-nursechief",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "간호사장 기본 초상화",
-"src": "img/face/nursechief_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-gaius",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "가이우스 기본 초상화",
-"src": "img/face/gaius_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-hiddenkkaebi",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "히든깨비 기본 초상화",
-"src": "img/face/hiddenkkaebi_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-girlprisoner",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "소녀와 죄수 기본 초상화",
-"src": "img/face/girlprisoner_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-leonas",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "레오나스 기본 초상화",
-"src": "img/face/leonas_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-hyal",
-"cat": "char",
-"sub": "초상화 · 역할 미정",
-"name": "고대천사 햘 기본 초상화",
-"src": "img/face/hyal_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-001",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "가지마소녀 기본 초상화",
-"src": "img/face/N-001_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-002",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "개 기본 초상화",
-"src": "img/face/N-002_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-003",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "개2 기본 초상화",
-"src": "img/face/N-003_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-004",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "거지 기본 초상화",
-"src": "img/face/N-004_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-005",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "검방흑기사 기본 초상화",
-"src": "img/face/N-005_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-006",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "경찰 기본 초상화",
-"src": "img/face/N-006_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-007",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "곤충괴 기본 초상화",
-"src": "img/face/N-007_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-009",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "관남기본 기본 초상화",
-"src": "img/face/N-009_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-013",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "군마 기본 초상화",
-"src": "img/face/N-013_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-014",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "노숙악마 기본 초상화",
-"src": "img/face/N-014_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-015",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "니드런 기본 초상화",
-"src": "img/face/N-015_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-016",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "대장간 기본 초상화",
-"src": "img/face/N-016_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-017",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "동네 마법사 기본 초상화",
-"src": "img/face/N-017_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-018",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "동네야전의사아저씨 기본 초상화",
-"src": "img/face/N-018_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-019",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "두건 기본 초상화",
-"src": "img/face/N-019_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-020",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "들쥐 기본 초상화",
-"src": "img/face/N-020_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-021",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "멧돼지방패병 기본 초상화",
-"src": "img/face/N-021_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-022",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "무서운아재 기본 초상화",
-"src": "img/face/N-022_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-023",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "물레, 콜라이더 기본 초상화",
-"src": "img/face/N-023_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-024",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "방패곤봉 기본 초상화",
-"src": "img/face/N-024_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-025",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "방패대검 기본 초상화",
-"src": "img/face/N-025_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-026",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "배달부, 요리사 기본 초상화",
-"src": "img/face/N-026_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-027",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "벌키우는남자, 테레비신도 기본 초상화",
-"src": "img/face/N-027_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-034",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "복서 기본 초상화",
-"src": "img/face/N-034_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-035",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "봉인된 시체 기본 초상화",
-"src": "img/face/N-035_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-036",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "샷건 기본 초상화",
-"src": "img/face/N-036_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-037",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "석상1 기본 초상화",
-"src": "img/face/N-037_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-038",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "성방패 기본 초상화",
-"src": "img/face/N-038_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-040",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "스팅요 기본 초상화",
-"src": "img/face/N-040_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-041",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "아해 기본 초상화",
-"src": "img/face/N-041_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-042",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "요리라임 기본 초상화",
-"src": "img/face/N-042_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-043",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "일반개비 기본 초상화",
-"src": "img/face/N-043_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-044",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "일반개비적 기본 초상화",
-"src": "img/face/N-044_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-045",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "일반적괴물 기본 초상화",
-"src": "img/face/N-045_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-046",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "장군님 기본 초상화",
-"src": "img/face/N-046_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-047",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "저격총수 기본 초상화",
-"src": "img/face/N-047_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-048",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "적기사 기본 초상화",
-"src": "img/face/N-048_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-049",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "정령연 기본 초상화",
-"src": "img/face/N-049_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-050",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "지키는자 기본 초상화",
-"src": "img/face/N-050_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-051",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "창병2 기본 초상화",
-"src": "img/face/N-051_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-054",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "탐사중 기본 초상화",
-"src": "img/face/N-054_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-055",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "휠체어할배 기본 초상화",
-"src": "img/face/N-055_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
-},
-{
-"id": "F-N-056",
-"cat": "char",
-"sub": "초상화 · 미등장 NPC",
-"name": "흑기사창병 기본 초상화",
-"src": "img/face/N-056_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-idle",
@@ -7612,7 +6689,8 @@ const CATALOG = [
 "src": "img/old2d/player_idle.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-walk",
@@ -7622,7 +6700,8 @@ const CATALOG = [
 "src": "img/old2d/player_walk.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-run",
@@ -7632,7 +6711,8 @@ const CATALOG = [
 "src": "img/old2d/player_run.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-charge",
@@ -7642,7 +6722,8 @@ const CATALOG = [
 "src": "img/old2d/player_charge.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-throw",
@@ -7652,7 +6733,8 @@ const CATALOG = [
 "src": "img/old2d/player_throw.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-shoot",
@@ -7662,7 +6744,8 @@ const CATALOG = [
 "src": "img/old2d/player_shoot.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-attack",
@@ -7672,7 +6755,8 @@ const CATALOG = [
 "src": "img/old2d/player_attack.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-hurt",
@@ -7682,7 +6766,8 @@ const CATALOG = [
 "src": "img/old2d/player_hurt.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
 },
 {
 "id": "O-player-weapon",
@@ -7692,7 +6777,19 @@ const CATALOG = [
 "src": "img/old2d/player_weapon.webp",
 "note": "떨어진 자 · 굴의 대장",
 "rank": "",
-"on": true
+"on": true,
+"g": "player"
+},
+{
+"id": "F-auto-rebecca",
+"cat": "char",
+"sub": "레베카 · 동료 · 동작 그림 (도형 그림은 새 그림으로 대체)",
+"name": "레베카 기본 초상화",
+"src": "img/face/auto_rebecca.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "rebecca"
 },
 {
 "id": "P-rebecca-art1",
@@ -7702,7 +6799,8 @@ const CATALOG = [
 "src": "img/char/rebecca_art1.webp",
 "note": "원화. 루비색 장발 · 분홍 눈 · 낡은 판금 · 등에 큰 검 · 배에 손을 모으고 웃음",
 "rank": "",
-"on": false
+"on": false,
+"g": "rebecca"
 },
 {
 "id": "P-rebecca-art2",
@@ -7712,7 +6810,8 @@ const CATALOG = [
 "src": "img/char/rebecca_art2.webp",
 "note": "원화. 허리에 손 · 반짝이는 눈 · 얼룩진 판금 · 허리 뒤로 검",
 "rank": "",
-"on": false
+"on": false,
+"g": "rebecca"
 },
 {
 "id": "P-rebecca-idle",
@@ -7722,7 +6821,8 @@ const CATALOG = [
 "src": "img/char/rebecca_idle.webp",
 "note": "움직이는 대기. 3D 굴에 들어감. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
-"on": true
+"on": true,
+"g": "rebecca"
 },
 {
 "id": "P-rebecca-walk",
@@ -7732,7 +6832,8 @@ const CATALOG = [
 "src": "img/char/rebecca_walk.webp",
 "note": "걷기. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
-"on": false
+"on": false,
+"g": "rebecca"
 },
 {
 "id": "P-rebecca-run",
@@ -7742,7 +6843,8 @@ const CATALOG = [
 "src": "img/char/rebecca_run.webp",
 "note": "뛰기. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
-"on": false
+"on": false,
+"g": "rebecca"
 },
 {
 "id": "O-rebecca-shape",
@@ -7750,9 +6852,21 @@ const CATALOG = [
 "sub": "레베카 · 동료 · 동작 그림 (도형 그림은 새 그림으로 대체)",
 "name": "레베카 · 도형 그림",
 "src": "img/old2d/shape_rebecca.webp",
-"note": "루비색 장발의 소녀 기사 · 158cm · 27세 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체",
+"note": "루비색 장발의 소녀 기사 · 158cm · 27세 · 새 그림 (대기 · 걷기 · 뛰기)으로 대체",
 "rank": "",
-"on": true
+"on": true,
+"g": "rebecca"
+},
+{
+"id": "F-auto-karius",
+"cat": "char",
+"sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
+"name": "카리우스 기본 초상화",
+"src": "img/face/auto_karius.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "karius"
 },
 {
 "id": "P-karius-art",
@@ -7762,7 +6876,8 @@ const CATALOG = [
 "src": "img/char/karius_art.webp",
 "note": "원화. 안경 쓴 대머리 몸 · 광대 얼굴 · 노인 얼굴 · 쇠사슬 · 길고 뼈 같은 팔 · 갈고리 손",
 "rank": "",
-"on": false
+"on": false,
+"g": "karius"
 },
 {
 "id": "O-karius-shape",
@@ -7770,9 +6885,21 @@ const CATALOG = [
 "sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
 "name": "카리우스 · 도형 그림",
 "src": "img/old2d/shape_karius.webp",
-"note": "Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯 · 몸 · 로직은 2D판 그대로 씀 · 몸 · 로직은 2D판 그대로 씀",
+"note": "Sir. 3m 융합 실험체 E-07 · 광대 · 노인 · 여자가 붙은 몸 · 팔 넷, 다리 여섯 · 몸 · 로직은 2D판 그대로 씀",
 "rank": "",
-"on": false
+"on": false,
+"g": "karius"
+},
+{
+"id": "F-auto-goblin",
+"cat": "char",
+"sub": "청광묵 · 동료 · 원화 + 연출",
+"name": "청광묵 기본 초상화",
+"src": "img/face/auto_goblin.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "goblin"
 },
 {
 "id": "O-goblin-shape",
@@ -7782,7 +6909,67 @@ const CATALOG = [
 "src": "img/old2d/shape_goblin.webp",
 "note": "고블린 생존 전사 · 130cm",
 "rank": "",
-"on": false
+"on": false,
+"g": "goblin"
+},
+{
+"id": "O-morningstar-face",
+"cat": "char",
+"sub": "모닝스타 · 동료 · 동작 그림",
+"name": "모닝스타 · 얼굴",
+"src": "img/old2d/morningstar_face.webp",
+"note": "\"슈퍼스타\" · 철퇴를 휘두르는 광기의 근딜 · 160cm",
+"rank": "",
+"on": true,
+"g": "morningstar"
+},
+{
+"id": "F-ms-1",
+"cat": "char",
+"sub": "모닝스타 · 동료 · 동작 그림",
+"name": "모닝스타 · 표정 1 · 눈을 치켜뜨고 씩 웃음",
+"src": "img/face/ms_face1.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false,
+"parent": "O-morningstar-face",
+"g": "morningstar"
+},
+{
+"id": "F-ms-2",
+"cat": "char",
+"sub": "모닝스타 · 동료 · 동작 그림",
+"name": "모닝스타 · 표정 2 · 눈 감고 웃음",
+"src": "img/face/ms_face2.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false,
+"parent": "O-morningstar-face",
+"g": "morningstar"
+},
+{
+"id": "F-ms-3",
+"cat": "char",
+"sub": "모닝스타 · 동료 · 동작 그림",
+"name": "모닝스타 · 표정 3 · 이를 드러내고 비웃음",
+"src": "img/face/ms_face3.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false,
+"parent": "O-morningstar-face",
+"g": "morningstar"
+},
+{
+"id": "F-ms-4",
+"cat": "char",
+"sub": "모닝스타 · 동료 · 동작 그림",
+"name": "모닝스타 · 표정 4 · 고개 숙이고 음흉하게 웃음",
+"src": "img/face/ms_face4.webp",
+"note": "대화 · 초상화용 표정",
+"rank": "",
+"on": false,
+"parent": "O-morningstar-face",
+"g": "morningstar"
 },
 {
 "id": "O-morningstar-all",
@@ -7792,7 +6979,19 @@ const CATALOG = [
 "src": "img/old2d/morningstar_all.webp",
 "note": "\"슈퍼스타\" · 철퇴를 휘두르는 광기의 근딜 · 160cm",
 "rank": "",
-"on": true
+"on": true,
+"g": "morningstar"
+},
+{
+"id": "O-poren-face",
+"cat": "char",
+"sub": "포렌 · 동료 · 동작 그림",
+"name": "포렌 · 얼굴",
+"src": "img/old2d/poren_face.webp",
+"note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm",
+"rank": "",
+"on": false,
+"g": "poren"
 },
 {
 "id": "P-poren-guard",
@@ -7802,7 +7001,8 @@ const CATALOG = [
 "src": "img/char/poren_guard_art.webp",
 "note": "방어 자세 포렌. 왕관 · 털 망토 · 대검을 세워 짚음. 받은 그림이 이미 배경 없음",
 "rank": "",
-"on": false
+"on": false,
+"g": "poren"
 },
 {
 "id": "O-poren-all",
@@ -7812,7 +7012,19 @@ const CATALOG = [
 "src": "img/old2d/poren_all.webp",
 "note": "\"쥐왕\" · 에메랄드 피부, 전신 중갑의 대검 탱커 · 140cm",
 "rank": "",
-"on": false
+"on": false,
+"g": "poren"
+},
+{
+"id": "O-norman-face",
+"cat": "char",
+"sub": "노먼 · 동료 · 동작 그림",
+"name": "노먼 · 얼굴",
+"src": "img/old2d/norman_face.webp",
+"note": "초능력자들이 날뛰는 세계의 평범한 베테랑 군인 · 위생병 · 말수가 적다 · 172cm",
+"rank": "",
+"on": true,
+"g": "norman"
 },
 {
 "id": "O-norman-all",
@@ -7822,7 +7034,19 @@ const CATALOG = [
 "src": "img/old2d/norman_all.webp",
 "note": "초능력자들이 날뛰는 세계의 평범한 베테랑 군인 · 위생병 · 말수가 적다 · 172cm",
 "rank": "",
-"on": true
+"on": true,
+"g": "norman"
+},
+{
+"id": "O-yellow-face",
+"cat": "char",
+"sub": "옐로 · 동료 · 동작 그림",
+"name": "옐로 · 얼굴",
+"src": "img/old2d/yellow_face.webp",
+"note": "롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러",
+"rank": "",
+"on": false,
+"g": "yellow"
 },
 {
 "id": "O-yellow-idle",
@@ -7832,7 +7056,19 @@ const CATALOG = [
 "src": "img/old2d/yellow_idle.webp",
 "note": "롤러스케이트를 탄 장난꾸러기 간호사 · 근접 힐러",
 "rank": "",
-"on": false
+"on": false,
+"g": "yellow"
+},
+{
+"id": "O-tomoe-face",
+"cat": "char",
+"sub": "용묘화 · 동료 · 동작 그림",
+"name": "용묘화 · 얼굴",
+"src": "img/old2d/tomoe_face.webp",
+"note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
+"rank": "",
+"on": false,
+"g": "tomoe"
 },
 {
 "id": "O-tomoe-idle",
@@ -7842,7 +7078,8 @@ const CATALOG = [
 "src": "img/old2d/tomoe_idle.webp",
 "note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
 "rank": "",
-"on": false
+"on": false,
+"g": "tomoe"
 },
 {
 "id": "O-tomoe-swing",
@@ -7852,7 +7089,8 @@ const CATALOG = [
 "src": "img/old2d/tomoe_swing.webp",
 "note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
 "rank": "",
-"on": false
+"on": false,
+"g": "tomoe"
 },
 {
 "id": "O-tomoe-dig",
@@ -7862,7 +7100,19 @@ const CATALOG = [
 "src": "img/old2d/tomoe_dig.webp",
 "note": "삽을 든 여장부 · 등에 용 문신 · 안대 · 군모",
 "rank": "",
-"on": false
+"on": false,
+"g": "tomoe"
+},
+{
+"id": "O-goodwill-face",
+"cat": "char",
+"sub": "GOOD WILL · 동료 · 동작 그림",
+"name": "GOOD WILL · 얼굴",
+"src": "img/old2d/goodwill_face.webp",
+"note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
+"rank": "",
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-idle",
@@ -7872,7 +7122,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_idle.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-attack",
@@ -7882,7 +7133,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_attack.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-run",
@@ -7892,7 +7144,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_run.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_snap1",
@@ -7902,7 +7155,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_snap1.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_snap3",
@@ -7912,7 +7166,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_snap3.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_palm",
@@ -7922,7 +7177,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_palm.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_knee",
@@ -7932,7 +7188,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_knee.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_kneeHead",
@@ -7942,7 +7199,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_kneeHead.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_slam",
@@ -7952,7 +7210,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_slam.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_rise",
@@ -7962,7 +7221,8 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_rise.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
 },
 {
 "id": "O-goodwill-anim_dash",
@@ -7972,7 +7232,19 @@ const CATALOG = [
 "src": "img/old2d/goodwill_anim_dash.webp",
 "note": "푸른 번개 · 흰 머리, 빛나는 눈, 몸을 가르는 번개 균열 · 스프린터",
 "rank": "",
-"on": false
+"on": false,
+"g": "goodwill"
+},
+{
+"id": "F-auto-dolsoe",
+"cat": "char",
+"sub": "돌쇠 · 동료 · 원화 + 연출",
+"name": "돌쇠 기본 초상화",
+"src": "img/face/auto_dolsoe.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "dolsoe"
 },
 {
 "id": "O-dolsoe-shape",
@@ -7982,7 +7254,19 @@ const CATALOG = [
 "src": "img/old2d/shape_dolsoe.webp",
 "note": "조금 힘센 일반인 · 사랑을 한 죄 · 망치",
 "rank": "",
-"on": false
+"on": false,
+"g": "dolsoe"
+},
+{
+"id": "F-auto-piel",
+"cat": "char",
+"sub": "피엘 · 동료 · 원화 + 연출",
+"name": "피엘 기본 초상화",
+"src": "img/face/auto_piel.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "piel"
 },
 {
 "id": "O-piel-shape",
@@ -7992,7 +7276,19 @@ const CATALOG = [
 "src": "img/old2d/shape_piel.webp",
 "note": "견습 기사 · 기사단의 마지막 한 명",
 "rank": "",
-"on": false
+"on": false,
+"g": "piel"
+},
+{
+"id": "F-auto-odo",
+"cat": "char",
+"sub": "오도 · 동료 · 원화 + 연출",
+"name": "오도 기본 초상화",
+"src": "img/face/auto_odo.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "odo"
 },
 {
 "id": "O-odo-shape",
@@ -8002,7 +7298,19 @@ const CATALOG = [
 "src": "img/old2d/shape_odo.webp",
 "note": "늙은 창병 · 창은 아직 잘 든다",
 "rank": "",
-"on": false
+"on": false,
+"g": "odo"
+},
+{
+"id": "F-auto-moro",
+"cat": "char",
+"sub": "모로 · 동료 · 원화 + 연출",
+"name": "모로 기본 초상화",
+"src": "img/face/auto_moro.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "moro"
 },
 {
 "id": "O-moro-shape",
@@ -8012,7 +7320,19 @@ const CATALOG = [
 "src": "img/old2d/shape_moro.webp",
 "note": "곤충 + 인간 · 먹은 죄 · 꽤 강함",
 "rank": "",
-"on": false
+"on": false,
+"g": "moro"
+},
+{
+"id": "F-auto-gur",
+"cat": "char",
+"sub": "구르 · 동료 · 원화 + 연출",
+"name": "구르 기본 초상화",
+"src": "img/face/auto_gur.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "gur"
 },
 {
 "id": "O-gur-shape",
@@ -8022,7 +7342,19 @@ const CATALOG = [
 "src": "img/old2d/shape_gur.webp",
 "note": "드워프 광부 · 곡괭이로 은혜를 갚는다",
 "rank": "",
-"on": false
+"on": false,
+"g": "gur"
+},
+{
+"id": "F-auto-tehera",
+"cat": "char",
+"sub": "테헤라 · 동료 · 원화 + 연출",
+"name": "테헤라 기본 초상화",
+"src": "img/face/auto_tehera.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "tehera"
 },
 {
 "id": "O-tehera-shape",
@@ -8032,7 +7364,19 @@ const CATALOG = [
 "src": "img/old2d/shape_tehera.webp",
 "note": "잠자리 날개의 요정 · 어느 종족의 왕이었다",
 "rank": "",
-"on": false
+"on": false,
+"g": "tehera"
+},
+{
+"id": "F-auto-heron",
+"cat": "char",
+"sub": "낙오자 헤론 · 동료 · 원화 + 연출",
+"name": "낙오자 헤론 기본 초상화",
+"src": "img/face/auto_heron.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "heron"
 },
 {
 "id": "O-heron-shape",
@@ -8042,7 +7386,19 @@ const CATALOG = [
 "src": "img/old2d/shape_heron.webp",
 "note": "2층 · 안개 늪 · 반쯤 색이 남은 사람",
 "rank": "",
-"on": false
+"on": false,
+"g": "heron"
+},
+{
+"id": "F-auto-nurse",
+"cat": "char",
+"sub": "간호사 (1성 영웅) · 동료 · 원화 + 연출",
+"name": "간호사 (1성 영웅) 기본 초상화",
+"src": "img/face/auto_nurse.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "nurse"
 },
 {
 "id": "P-nurse-art",
@@ -8052,7 +7408,8 @@ const CATALOG = [
 "src": "img/char/nurse_art.webp",
 "note": "원화 (그림체 기준). 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
 "rank": "",
-"on": false
+"on": false,
+"g": "nurse"
 },
 {
 "id": "P-nurse-idle",
@@ -8062,7 +7419,8 @@ const CATALOG = [
 "src": "img/char/nurse_idle.webp",
 "note": "기본 (대기). 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
 "rank": "",
-"on": false
+"on": false,
+"g": "nurse"
 },
 {
 "id": "P-nurse-prep",
@@ -8072,7 +7430,8 @@ const CATALOG = [
 "src": "img/char/nurse_prep.webp",
 "note": "치료 준비: 주사기에 피를 채움. 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
 "rank": "",
-"on": false
+"on": false,
+"g": "nurse"
 },
 {
 "id": "P-nurse-attack",
@@ -8082,7 +7441,19 @@ const CATALOG = [
 "src": "img/char/nurse_attack.webp",
 "note": "공격 · 치료: 주사기를 내지름. 흰 간호복 · 앞머리로 가린 눈 · 붕대 감은 팔에 붉은 끈 · 피 시험관과 주사기",
 "rank": "",
-"on": false
+"on": false,
+"g": "nurse"
+},
+{
+"id": "F-auto-gothic",
+"cat": "char",
+"sub": "고딕 기사 (흑기사, 3성 영웅) · 동료 · 동작 그림",
+"name": "고딕 기사 (흑기사, 3성 영웅) 기본 초상화",
+"src": "img/face/auto_gothic.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-gothic-art",
@@ -8092,7 +7463,8 @@ const CATALOG = [
 "src": "img/char/gothic_art.webp",
 "note": "원화 (서 있음). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-gothic-cutin",
@@ -8102,7 +7474,8 @@ const CATALOG = [
 "src": "img/char/gothic_cutin.webp",
 "note": "스킬 컷신: 세자르 필살기처럼 스피드선과 함께 띄울 그림. 노란 배경을 지운 판. 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-gothic-cutinY",
@@ -8112,7 +7485,8 @@ const CATALOG = [
 "src": "img/char/gothic_cutin_yellow.webp",
 "note": "스킬 컷신 원본 (노란 배경). 검은 판금 · 얼굴 없는 투구 · 흰 천 자락 · 긴 검",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-idle",
@@ -8122,7 +7496,8 @@ const CATALOG = [
 "src": "img/bk/bk_idle.webp",
 "note": "드라이브 흑기사 폴더 knight_idle_v1.1.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-walk",
@@ -8132,7 +7507,8 @@ const CATALOG = [
 "src": "img/bk/bk_walk.webp",
 "note": "드라이브 흑기사 폴더 black_knight_walk_v1.1.webp · 원본 1254×1254",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-run",
@@ -8142,7 +7518,8 @@ const CATALOG = [
 "src": "img/bk/bk_run.webp",
 "note": "드라이브 흑기사 폴더 black_knight_run_v1.1.webp · 원본 1792×1440",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-ready_enter",
@@ -8152,7 +7529,8 @@ const CATALOG = [
 "src": "img/bk/bk_ready_enter.webp",
 "note": "드라이브 흑기사 폴더 knight_ready_enter_v1.1.webp · 원본 1254×1254",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-double_slash",
@@ -8162,7 +7540,8 @@ const CATALOG = [
 "src": "img/bk/bk_double_slash.webp",
 "note": "드라이브 흑기사 폴더 knight_double_slash_v1.3.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-heavy_slash",
@@ -8172,7 +7551,8 @@ const CATALOG = [
 "src": "img/bk/bk_heavy_slash.webp",
 "note": "드라이브 흑기사 폴더 knight_heavy_slash_v1.3.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-thrust",
@@ -8182,7 +7562,8 @@ const CATALOG = [
 "src": "img/bk/bk_thrust.webp",
 "note": "드라이브 흑기사 폴더 knight_thrust_v1.3.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-roundhouse",
@@ -8192,7 +7573,8 @@ const CATALOG = [
 "src": "img/bk/bk_roundhouse.webp",
 "note": "드라이브 흑기사 폴더 knight_roundhouse_v1.1.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
 },
 {
 "id": "P-bk-shoulder_bash",
@@ -8202,7 +7584,19 @@ const CATALOG = [
 "src": "img/bk/bk_shoulder_bash.webp",
 "note": "드라이브 흑기사 폴더 knight_shoulder_bash_v1.3.webp · 원본 1000×720",
 "rank": "",
-"on": false
+"on": false,
+"g": "gothic"
+},
+{
+"id": "F-auto-npcyellow",
+"cat": "char",
+"sub": "노랑 · NPC · 원화 + 연출",
+"name": "노랑 기본 초상화",
+"src": "img/face/auto_npcyellow.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "npcyellow"
 },
 {
 "id": "P-yellow",
@@ -8212,7 +7606,19 @@ const CATALOG = [
 "src": "img/char/npc_yellow.webp",
 "note": "촛대 왕관 · 붕대 눈 · 검은 털망토 · 앉아 있음. NPC",
 "rank": "",
-"on": false
+"on": false,
+"g": "npcyellow"
+},
+{
+"id": "F-auto-ycat",
+"cat": "char",
+"sub": "노랑고양 · NPC · 동작 그림",
+"name": "노랑고양 기본 초상화",
+"src": "img/face/auto_ycat.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "ycat"
 },
 {
 "id": "P-ycat-art",
@@ -8222,7 +7628,8 @@ const CATALOG = [
 "src": "img/char/npc_yellowcat_art.webp",
 "note": "원화 (스프라이트는 아직). 검은 전신 슈트 · 노란 가슴판 · 뿔 · 가시 꼬리 · 권총 · 이빨 웃음 · 뒤에 연기 형체",
 "rank": "",
-"on": false
+"on": false,
+"g": "ycat"
 },
 {
 "id": "P-ycat-rhythm",
@@ -8232,7 +7639,19 @@ const CATALOG = [
 "src": "img/rhythm/rhythm_norang.webp",
 "note": "드라이브 gif 미궁 폴더 rhythmnorang.webp (리듬노랑) · 원본 640×800",
 "rank": "",
-"on": false
+"on": false,
+"g": "ycat"
+},
+{
+"id": "F-auto-mari",
+"cat": "char",
+"sub": "마리 · NPC · 원화 + 연출",
+"name": "마리 기본 초상화",
+"src": "img/face/auto_mari.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "mari"
 },
 {
 "id": "P-mari-art",
@@ -8242,7 +7661,19 @@ const CATALOG = [
 "src": "img/char/mari_art.webp",
 "note": "부족 전사 NPC. 와킨과 사실혼 관계 (파트너). 창. 검은 바탕을 지운 가공본",
 "rank": "",
-"on": false
+"on": false,
+"g": "mari"
+},
+{
+"id": "F-auto-wakin",
+"cat": "char",
+"sub": "와킨 · NPC · 원화 + 연출",
+"name": "와킨 기본 초상화",
+"src": "img/face/auto_wakin.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "wakin"
 },
 {
 "id": "P-wakin-art",
@@ -8252,7 +7683,19 @@ const CATALOG = [
 "src": "img/char/wakin_art.webp",
 "note": "부족 전사 NPC. 마리와 사실혼 관계 (파트너). 가시 박힌 철퇴 · 사슬. 흰 바탕을 지운 가공본 (왼쪽 끝에 걸친 마리 조각은 뺌)",
 "rank": "",
-"on": false
+"on": false,
+"g": "wakin"
+},
+{
+"id": "F-arian",
+"cat": "char",
+"sub": "퀸 아리안 · NPC · 원화 + 연출",
+"name": "퀸 아리안 기본 초상화",
+"src": "img/face/arian_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "arian"
 },
 {
 "id": "P-arian-art",
@@ -8262,7 +7705,19 @@ const CATALOG = [
 "src": "img/char/arian_art.webp",
 "note": "NPC. 분홍 머리 · 보석 눈가리개 · 흰 깃 망토, 실로 인형을 조종. 청록 바탕을 지운 가공본",
 "rank": "",
-"on": false
+"on": false,
+"g": "arian"
+},
+{
+"id": "F-general",
+"cat": "char",
+"sub": "대장군 · NPC · 원화 + 연출",
+"name": "대장군 기본 초상화",
+"src": "img/face/general_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "general"
 },
 {
 "id": "P-general-art",
@@ -8272,7 +7727,19 @@ const CATALOG = [
 "src": "img/char/general_art.webp",
 "note": "NPC · 스프라이트로 씀. 가시 왕관 투구 · 푸른 도포 · 어깨에 멘 대검 · 꼬리",
 "rank": "",
-"on": false
+"on": false,
+"g": "general"
+},
+{
+"id": "F-kal",
+"cat": "char",
+"sub": "칼 (현자) · NPC · 원화 + 연출",
+"name": "칼 기본 초상화",
+"src": "img/face/kal_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "kal"
 },
 {
 "id": "P-kal-art",
@@ -8282,7 +7749,41 @@ const CATALOG = [
 "src": "img/char/kal_art.webp",
 "note": "현자들 인카운터의 칼. 인게임에서는 칼이 스프라이트로 나옴. 검은 바탕을 지움",
 "rank": "",
-"on": false
+"on": false,
+"g": "kal"
+},
+{
+"id": "O-odile-face",
+"cat": "char",
+"sub": "오딜 · NPC · 동작 그림",
+"name": "오딜 · 얼굴",
+"src": "img/old2d/odile_face.webp",
+"note": "만남 · 붉은 소파에 다리를 꼬고 앉은 가면의 소녀",
+"rank": "",
+"on": false,
+"g": "odile"
+},
+{
+"id": "F-odile",
+"cat": "char",
+"sub": "오딜 · NPC · 동작 그림",
+"name": "오딜 기본 초상화",
+"src": "img/face/odile_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "odile"
+},
+{
+"id": "F-N-008",
+"cat": "char",
+"sub": "오딜 · NPC · 동작 그림",
+"name": "과거의 오딜 기본 초상화",
+"src": "img/face/N-008_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "odile"
 },
 {
 "id": "P-odile-stand",
@@ -8292,7 +7793,8 @@ const CATALOG = [
 "src": "img/char/odile_stand.webp",
 "note": "가면 · 검은 드레스. 배경을 지운 가공본",
 "rank": "",
-"on": false
+"on": false,
+"g": "odile"
 },
 {
 "id": "N-008",
@@ -8302,7 +7804,8 @@ const CATALOG = [
 "src": "img/npc/N-008.webp",
 "note": "드라이브 NPC 폴더 · 과거의 오딜.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "odile"
 },
 {
 "id": "O-odile-idle",
@@ -8312,7 +7815,19 @@ const CATALOG = [
 "src": "img/old2d/odile_idle.webp",
 "note": "만남 · 붉은 소파에 다리를 꼬고 앉은 가면의 소녀",
 "rank": "",
-"on": false
+"on": false,
+"g": "odile"
+},
+{
+"id": "O-rosina-face",
+"cat": "char",
+"sub": "로시나 · NPC · 동작 그림",
+"name": "로시나 · 얼굴",
+"src": "img/old2d/rosina_face.webp",
+"note": "\"외뿔\" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다",
+"rank": "",
+"on": false,
+"g": "rosina"
 },
 {
 "id": "O-rosina-idle",
@@ -8322,7 +7837,19 @@ const CATALOG = [
 "src": "img/old2d/rosina_idle.webp",
 "note": "\"외뿔\" · 중립 · 단달로의 동료 · 뿔 달린 가면과 작은 왕관, 춤추듯 걷는다",
 "rank": "",
-"on": false
+"on": false,
+"g": "rosina"
+},
+{
+"id": "O-umbrella-face",
+"cat": "char",
+"sub": "우산 소녀 · NPC · 동작 그림",
+"name": "우산 소녀 · 얼굴",
+"src": "img/old2d/umbrella_face.webp",
+"note": "중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다",
+"rank": "",
+"on": false,
+"g": "umbrella"
 },
 {
 "id": "O-umbrella-idle",
@@ -8332,7 +7859,19 @@ const CATALOG = [
 "src": "img/old2d/umbrella_idle.webp",
 "note": "중립 · 붉은 우산을 쓴 검은 옷의 소녀 · 말이 없다",
 "rank": "",
-"on": false
+"on": false,
+"g": "umbrella"
+},
+{
+"id": "F-drawer",
+"cat": "char",
+"sub": "방랑 서랍 (적 또는 NPC) · NPC · 원화 + 연출",
+"name": "방랑 서랍 기본 초상화",
+"src": "img/face/drawer_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "drawer"
 },
 {
 "id": "P-drawer-art",
@@ -8342,7 +7881,19 @@ const CATALOG = [
 "src": "img/char/drawer_art.webp",
 "note": "서랍장을 진 떠돌이 (눈 달린 서랍 · 초 · 등불 지팡이). 적 또는 NPC",
 "rank": "",
-"on": false
+"on": false,
+"g": "drawer"
+},
+{
+"id": "F-auto-horsehead",
+"cat": "char",
+"sub": "말대가리 · NPC · 원화 + 연출",
+"name": "말대가리 기본 초상화",
+"src": "img/face/auto_horsehead.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "horsehead"
 },
 {
 "id": "P-horsehead",
@@ -8352,7 +7903,19 @@ const CATALOG = [
 "src": "img/char/horsehead.webp",
 "note": "기나긴 해변. 스프라이트로도 씀 (지금은 비치 의자 포함)",
 "rank": "",
-"on": false
+"on": false,
+"g": "horsehead"
+},
+{
+"id": "F-auto-deadhero",
+"cat": "char",
+"sub": "죽은 영웅 · NPC · 원화 + 연출",
+"name": "죽은 영웅 기본 초상화",
+"src": "img/face/auto_deadhero.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "deadhero"
 },
 {
 "id": "P-deadhero",
@@ -8362,7 +7925,19 @@ const CATALOG = [
 "src": "img/char/deadhero.webp",
 "note": "죽은 영웅 인카운터에서 분리한 스프라이트. 빛의 고리 포함. 인게임에서 지나쳐 감",
 "rank": "",
-"on": false
+"on": false,
+"g": "deadhero"
+},
+{
+"id": "F-auto-slave",
+"cat": "char",
+"sub": "노예노예 · NPC · 원화 + 연출",
+"name": "노예노예 기본 초상화",
+"src": "img/face/auto_slave.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "slave"
 },
 {
 "id": "P-slave-art",
@@ -8372,7 +7947,19 @@ const CATALOG = [
 "src": "img/char/slave_art.webp",
 "note": "스프라이트용. 양옆의 하프 · 십자가는 뺌. 드라이브 NPC 폴더의 노예노예.png와 같은 그림",
 "rank": "",
-"on": false
+"on": false,
+"g": "slave"
+},
+{
+"id": "F-auto-silhouette",
+"cat": "char",
+"sub": "일반인 실루엣 · NPC · 원화 + 연출",
+"name": "일반인 실루엣 기본 초상화",
+"src": "img/face/auto_silhouette.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "silhouette"
 },
 {
 "id": "P-silhouette-a",
@@ -8382,7 +7969,8 @@ const CATALOG = [
 "src": "img/char/silhouette_a.webp",
 "note": "일반인 실루엣. 앞으로 잘라서 범용으로 씀",
 "rank": "",
-"on": false
+"on": false,
+"g": "silhouette"
 },
 {
 "id": "P-silhouette-b",
@@ -8392,7 +7980,19 @@ const CATALOG = [
 "src": "img/char/silhouette_b.webp",
 "note": "일반인 실루엣. 오른발 옆 반짝이 표시는 그대로",
 "rank": "",
-"on": false
+"on": false,
+"g": "silhouette"
+},
+{
+"id": "O-jeokroe-face",
+"cat": "char",
+"sub": "적뢰 · 적 · 보스 · 동작 그림",
+"name": "적뢰 · 얼굴",
+"src": "img/old2d/jeokroe_face.webp",
+"note": "붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다",
+"rank": "",
+"on": false,
+"g": "jeokroe"
 },
 {
 "id": "O-jeokroe-all",
@@ -8402,7 +8002,8 @@ const CATALOG = [
 "src": "img/old2d/jeokroe_all.webp",
 "note": "붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다",
 "rank": "",
-"on": false
+"on": false,
+"g": "jeokroe"
 },
 {
 "id": "O-jeokroe-hurt",
@@ -8412,7 +8013,19 @@ const CATALOG = [
 "src": "img/old2d/jeokroe_hurt.webp",
 "note": "붉은 날개의 천사 · 성해포를 둘렀다 · 말이 없다",
 "rank": "",
-"on": false
+"on": false,
+"g": "jeokroe"
+},
+{
+"id": "O-cesar-face",
+"cat": "char",
+"sub": "세자르 · 적 · 보스 · 원화 + 연출",
+"name": "세자르 · 얼굴",
+"src": "img/old2d/cesar_face.webp",
+"note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
+"rank": "",
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-idle",
@@ -8422,7 +8035,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_idle.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-prep",
@@ -8432,7 +8046,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_prep.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-strike",
@@ -8442,7 +8057,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_strike.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-special",
@@ -8452,7 +8068,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_special.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-guard",
@@ -8462,7 +8079,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_guard.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-back",
@@ -8472,7 +8090,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_back.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-raise",
@@ -8482,7 +8101,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_raise.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-raiseWait",
@@ -8492,7 +8112,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_raiseWait.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-hurt",
@@ -8502,7 +8123,8 @@ const CATALOG = [
 "src": "img/old2d/cesar_hurt.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
 },
 {
 "id": "O-cesar-thrust",
@@ -8512,7 +8134,19 @@ const CATALOG = [
 "src": "img/old2d/cesar_thrust.webp",
 "note": "1층의 왕 · 관 속의 늙은 왕 · 녹슬지 않는 왕관",
 "rank": "",
-"on": false
+"on": false,
+"g": "cesar"
+},
+{
+"id": "O-agnes-face",
+"cat": "char",
+"sub": "로젤 · 적 · 보스 · 원화 + 연출",
+"name": "로젤 · 얼굴",
+"src": "img/old2d/agnes_face.webp",
+"note": "붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다",
+"rank": "",
+"on": false,
+"g": "agnes"
 },
 {
 "id": "O-agnes-idle",
@@ -8522,7 +8156,19 @@ const CATALOG = [
 "src": "img/old2d/agnes_idle.webp",
 "note": "붉은 가시 성당의 주인 · 바닥에 가시 문장을 펼친다",
 "rank": "",
-"on": false
+"on": false,
+"g": "agnes"
+},
+{
+"id": "O-hargen-face",
+"cat": "char",
+"sub": "하르겐 · 적 · 보스 · 원화 + 연출",
+"name": "하르겐 · 얼굴",
+"src": "img/old2d/hargen_face.webp",
+"note": "왕관을 쓴 푸른 얼굴의 왕 · 하늘만 올려다본다 · 푸른 장검",
+"rank": "",
+"on": false,
+"g": "hargen"
 },
 {
 "id": "O-hargen-idle",
@@ -8532,7 +8178,19 @@ const CATALOG = [
 "src": "img/old2d/hargen_idle.webp",
 "note": "왕관을 쓴 푸른 얼굴의 왕 · 하늘만 올려다본다 · 푸른 장검",
 "rank": "",
-"on": false
+"on": false,
+"g": "hargen"
+},
+{
+"id": "F-auto-miller",
+"cat": "char",
+"sub": "방앗간지기 오르소 · 적 · 보스 · 원화 + 연출",
+"name": "방앗간지기 오르소 기본 초상화",
+"src": "img/face/auto_miller.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "miller"
 },
 {
 "id": "O-miller-shape",
@@ -8542,7 +8200,19 @@ const CATALOG = [
 "src": "img/old2d/shape_miller.webp",
 "note": "2층의 주인 · 거대한 맷돌을 돌리는 자",
 "rank": "",
-"on": false
+"on": false,
+"g": "miller"
+},
+{
+"id": "F-auto-faded",
+"cat": "char",
+"sub": "색을 잃은 자 · 적 · 보스 · 원화 + 연출",
+"name": "색을 잃은 자 기본 초상화",
+"src": "img/face/auto_faded.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "faded"
 },
 {
 "id": "O-faded-shape",
@@ -8552,7 +8222,19 @@ const CATALOG = [
 "src": "img/old2d/shape_faded.webp",
 "note": "2층 · 안개 늪 · 포기한 낙오자",
 "rank": "",
-"on": false
+"on": false,
+"g": "faded"
+},
+{
+"id": "F-auto-fingerHole",
+"cat": "char",
+"sub": "손가락 구멍 · 적 · 보스 · 원화 + 연출",
+"name": "손가락 구멍 기본 초상화",
+"src": "img/face/auto_fingerHole.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "fingerHole"
 },
 {
 "id": "O-fingerHole-shape",
@@ -8562,7 +8244,19 @@ const CATALOG = [
 "src": "img/old2d/shape_fingerHole.webp",
 "note": "1층 · 알현실 문 앞 · 수천 개의 손가락",
 "rank": "",
-"on": false
+"on": false,
+"g": "fingerHole"
+},
+{
+"id": "F-auto-mask",
+"cat": "char",
+"sub": "가면 (특별한 적) · 적 · 보스 · 원화 + 연출",
+"name": "가면 (특별한 적) 기본 초상화",
+"src": "img/face/auto_mask.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "mask"
 },
 {
 "id": "P-mask",
@@ -8572,7 +8266,19 @@ const CATALOG = [
 "src": "img/char/mask_special.webp",
 "note": "왕관 쓴 광대 가면 · 해골 몸 · 주황 망토 · 푸른 수정검 · 나비. 쓰임새는 아직 미정",
 "rank": "",
-"on": false
+"on": false,
+"g": "mask"
+},
+{
+"id": "O-swordsman-face",
+"cat": "char",
+"sub": "검사 · 적 · 보스 · 원화 + 연출",
+"name": "검사 · 얼굴",
+"src": "img/old2d/swordsman_face.webp",
+"note": "1층의 적 · 등에 검 세 자루를 멘 해골 투구의 검사 · 말이 없다",
+"rank": "",
+"on": true,
+"g": "swordsman"
 },
 {
 "id": "O-swordsman-idle",
@@ -8582,7 +8288,8 @@ const CATALOG = [
 "src": "img/old2d/swordsman_idle.webp",
 "note": "1층의 적 · 등에 검 세 자루를 멘 해골 투구의 검사 · 말이 없다",
 "rank": "",
-"on": true
+"on": true,
+"g": "swordsman"
 },
 {
 "id": "O-swordsman-attack",
@@ -8592,7 +8299,19 @@ const CATALOG = [
 "src": "img/old2d/swordsman_attack.webp",
 "note": "1층의 적 · 등에 검 세 자루를 멘 해골 투구의 검사 · 말이 없다",
 "rank": "",
-"on": true
+"on": true,
+"g": "swordsman"
+},
+{
+"id": "O-spearman-face",
+"cat": "char",
+"sub": "창병 · 적 · 보스 · 원화 + 연출",
+"name": "창병 · 얼굴",
+"src": "img/old2d/spearman_face.webp",
+"note": "1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패",
+"rank": "",
+"on": true,
+"g": "spearman"
 },
 {
 "id": "O-spearman-idle",
@@ -8602,7 +8321,8 @@ const CATALOG = [
 "src": "img/old2d/spearman_idle.webp",
 "note": "1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패",
 "rank": "",
-"on": true
+"on": true,
+"g": "spearman"
 },
 {
 "id": "O-spearman-attack",
@@ -8612,7 +8332,19 @@ const CATALOG = [
 "src": "img/old2d/spearman_attack.webp",
 "note": "1층의 적 · 가시관을 쓴 판금 창병 · 창과 둥근 방패",
 "rank": "",
-"on": true
+"on": true,
+"g": "spearman"
+},
+{
+"id": "O-shieldman-face",
+"cat": "char",
+"sub": "검방패병 · 적 · 보스 · 원화 + 연출",
+"name": "검방패병 · 얼굴",
+"src": "img/old2d/shieldman_face.webp",
+"note": "1층의 적 · 뿔 투구의 늙은 병사 · 검과 큰 방패",
+"rank": "",
+"on": true,
+"g": "shieldman"
 },
 {
 "id": "O-shieldman-idle",
@@ -8622,7 +8354,8 @@ const CATALOG = [
 "src": "img/old2d/shieldman_idle.webp",
 "note": "1층의 적 · 뿔 투구의 늙은 병사 · 검과 큰 방패",
 "rank": "",
-"on": true
+"on": true,
+"g": "shieldman"
 },
 {
 "id": "O-shieldman-attack",
@@ -8632,7 +8365,19 @@ const CATALOG = [
 "src": "img/old2d/shieldman_attack.webp",
 "note": "1층의 적 · 뿔 투구의 늙은 병사 · 검과 큰 방패",
 "rank": "",
-"on": true
+"on": true,
+"g": "shieldman"
+},
+{
+"id": "O-brute-face",
+"cat": "char",
+"sub": "곤봉 거한 · 적 · 보스 · 원화 + 연출",
+"name": "곤봉 거한 · 얼굴",
+"src": "img/old2d/brute_face.webp",
+"note": "1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다",
+"rank": "",
+"on": true,
+"g": "brute"
 },
 {
 "id": "O-brute-idle",
@@ -8642,7 +8387,8 @@ const CATALOG = [
 "src": "img/old2d/brute_idle.webp",
 "note": "1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다",
 "rank": "",
-"on": true
+"on": true,
+"g": "brute"
 },
 {
 "id": "O-brute-attack",
@@ -8652,7 +8398,19 @@ const CATALOG = [
 "src": "img/old2d/brute_attack.webp",
 "note": "1층의 적 · 3m 거구 전사 · 무작정 밀고 들어온다",
 "rank": "",
-"on": true
+"on": true,
+"g": "brute"
+},
+{
+"id": "O-archer-face",
+"cat": "char",
+"sub": "붉은 망토 궁수 · 적 · 보스 · 원화 + 연출",
+"name": "붉은 망토 궁수 · 얼굴",
+"src": "img/old2d/archer_face.webp",
+"note": "1층의 적 · 판금 궁수 · 멀리서 겨눠 쏜다",
+"rank": "",
+"on": true,
+"g": "archer"
 },
 {
 "id": "O-archer-idle",
@@ -8662,7 +8420,8 @@ const CATALOG = [
 "src": "img/old2d/archer_idle.webp",
 "note": "1층의 적 · 판금 궁수 · 멀리서 겨눠 쏜다",
 "rank": "",
-"on": true
+"on": true,
+"g": "archer"
 },
 {
 "id": "O-archer-aim",
@@ -8672,7 +8431,19 @@ const CATALOG = [
 "src": "img/old2d/archer_aim.webp",
 "note": "1층의 적 · 판금 궁수 · 멀리서 겨눠 쏜다",
 "rank": "",
-"on": true
+"on": true,
+"g": "archer"
+},
+{
+"id": "O-benkin-face",
+"cat": "char",
+"sub": "벤킨 · 적 · 보스 · 원화 + 연출",
+"name": "벤킨 · 얼굴",
+"src": "img/old2d/benkin_face.webp",
+"note": "사슬에 감긴 가시관의 여자 · 도끼와 낫",
+"rank": "",
+"on": false,
+"g": "benkin"
 },
 {
 "id": "O-benkin-idle",
@@ -8682,7 +8453,8 @@ const CATALOG = [
 "src": "img/old2d/benkin_idle.webp",
 "note": "사슬에 감긴 가시관의 여자 · 도끼와 낫",
 "rank": "",
-"on": false
+"on": false,
+"g": "benkin"
 },
 {
 "id": "O-benkin-guard",
@@ -8692,7 +8464,8 @@ const CATALOG = [
 "src": "img/old2d/benkin_guard.webp",
 "note": "사슬에 감긴 가시관의 여자 · 도끼와 낫",
 "rank": "",
-"on": false
+"on": false,
+"g": "benkin"
 },
 {
 "id": "O-benkin-attack",
@@ -8702,7 +8475,19 @@ const CATALOG = [
 "src": "img/old2d/benkin_attack.webp",
 "note": "사슬에 감긴 가시관의 여자 · 도끼와 낫",
 "rank": "",
-"on": false
+"on": false,
+"g": "benkin"
+},
+{
+"id": "O-dandalo-face",
+"cat": "char",
+"sub": "단달로 · 적 · 보스 · 원화 + 연출",
+"name": "단달로 · 얼굴",
+"src": "img/old2d/dandalo_face.webp",
+"note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
+"rank": "",
+"on": false,
+"g": "dandalo"
 },
 {
 "id": "O-dandalo-idle",
@@ -8712,7 +8497,8 @@ const CATALOG = [
 "src": "img/old2d/dandalo_idle.webp",
 "note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
 "rank": "",
-"on": false
+"on": false,
+"g": "dandalo"
 },
 {
 "id": "O-dandalo-prep",
@@ -8722,7 +8508,8 @@ const CATALOG = [
 "src": "img/old2d/dandalo_prep.webp",
 "note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
 "rank": "",
-"on": false
+"on": false,
+"g": "dandalo"
 },
 {
 "id": "O-dandalo-strike",
@@ -8732,7 +8519,8 @@ const CATALOG = [
 "src": "img/old2d/dandalo_strike.webp",
 "note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
 "rank": "",
-"on": false
+"on": false,
+"g": "dandalo"
 },
 {
 "id": "O-dandalo-slam",
@@ -8742,7 +8530,19 @@ const CATALOG = [
 "src": "img/old2d/dandalo_slam.webp",
 "note": "\"경전\" · 중립 · 큰 도끼를 든 가면의 사내",
 "rank": "",
-"on": false
+"on": false,
+"g": "dandalo"
+},
+{
+"id": "O-ratKnight-face",
+"cat": "char",
+"sub": "쥐 기사 · 적 · 보스 · 원화 + 연출",
+"name": "쥐 기사 · 얼굴",
+"src": "img/old2d/ratKnight_face.webp",
+"note": "충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사",
+"rank": "",
+"on": false,
+"g": "ratKnight"
 },
 {
 "id": "O-ratKnight-idle",
@@ -8752,7 +8552,19 @@ const CATALOG = [
 "src": "img/old2d/ratKnight_idle.webp",
 "note": "충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사",
 "rank": "",
-"on": false
+"on": false,
+"g": "ratKnight"
+},
+{
+"id": "F-auto-rats",
+"cat": "char",
+"sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
+"name": "쥐 (작은 · 보통 · 큰) 기본 초상화",
+"src": "img/face/auto_rats.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "rats"
 },
 {
 "id": "O-ratS-shape",
@@ -8762,7 +8574,8 @@ const CATALOG = [
 "src": "img/old2d/shape_ratS.webp",
 "note": "충성 · 포렌이 부른 작은 쥐",
 "rank": "",
-"on": false
+"on": false,
+"g": "rats"
 },
 {
 "id": "O-ratM-shape",
@@ -8772,7 +8585,8 @@ const CATALOG = [
 "src": "img/old2d/shape_ratM.webp",
 "note": "충성 · 포렌이 부른 쥐",
 "rank": "",
-"on": false
+"on": false,
+"g": "rats"
 },
 {
 "id": "O-ratL-shape",
@@ -8782,7 +8596,19 @@ const CATALOG = [
 "src": "img/old2d/shape_ratL.webp",
 "note": "충성 · 사람만 한 쥐",
 "rank": "",
-"on": false
+"on": false,
+"g": "rats"
+},
+{
+"id": "F-auto-goblinArcher",
+"cat": "char",
+"sub": "고블린 궁수 · 적 · 보스 · 원화 + 연출",
+"name": "고블린 궁수 기본 초상화",
+"src": "img/face/auto_goblinArcher.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "goblinArcher"
 },
 {
 "id": "O-goblinArcher-shape",
@@ -8792,7 +8618,19 @@ const CATALOG = [
 "src": "img/old2d/shape_goblinArcher.webp",
 "note": "굴 밖의 적 · 거리를 벌리고 활을 쏜다",
 "rank": "",
-"on": false
+"on": false,
+"g": "goblinArcher"
+},
+{
+"id": "F-auto-enemyGoblin",
+"cat": "char",
+"sub": "일반 고블린 · 적 · 보스 · 원화 + 연출",
+"name": "일반 고블린 기본 초상화",
+"src": "img/face/auto_enemyGoblin.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "enemyGoblin"
 },
 {
 "id": "O-enemyGoblin-shape",
@@ -8802,7 +8640,19 @@ const CATALOG = [
 "src": "img/old2d/shape_enemyGoblin.webp",
 "note": "굴 밖의 적 · 무리 지어 다닌다",
 "rank": "",
-"on": false
+"on": false,
+"g": "enemyGoblin"
+},
+{
+"id": "F-slime",
+"cat": "char",
+"sub": "슬라임녀 · 적 · 보스 · 원화 + 연출",
+"name": "슬라임녀 초상화",
+"src": "img/face/slime_portrait.webp",
+"note": "받은 초상화 (2026-10-03). 전의 기본 초상화를 바꿈",
+"rank": "",
+"on": false,
+"g": "slime"
 },
 {
 "id": "P-slime-art",
@@ -8812,7 +8662,19 @@ const CATALOG = [
 "src": "img/char/slime_art.webp",
 "note": "노란 슬라임 여인. 떨어진 방울도 함께 둠",
 "rank": "",
-"on": false
+"on": false,
+"g": "slime"
+},
+{
+"id": "F-cultist",
+"cat": "char",
+"sub": "광신도 · 적 · 보스 · 원화 + 연출",
+"name": "광신도 기본 초상화",
+"src": "img/face/cultist_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "cultist"
 },
 {
 "id": "P-cultist-art",
@@ -8822,7 +8684,41 @@ const CATALOG = [
 "src": "img/char/cultist_art.webp",
 "note": "적으로 씀. 가지 뿔 · 푸른 십자 · 검은 로브. 발밑 얼룩은 남김",
 "rank": "",
-"on": false
+"on": false,
+"g": "cultist"
+},
+{
+"id": "F-auto-jellygreen",
+"cat": "char",
+"sub": "젤리 괴물 (녹색) · 적 · 보스 · 원화 + 연출",
+"name": "젤리 괴물 (녹색) 기본 초상화",
+"src": "img/face/auto_jellygreen.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "jellygreen"
+},
+{
+"id": "P-jelly-green",
+"cat": "char",
+"sub": "젤리 괴물 (녹색) · 적 · 보스 · 원화 + 연출",
+"name": "젤리 괴물 (녹색)",
+"src": "img/char/jelly_green.webp",
+"note": "적 (2026-10-03). 분홍 바탕 · 뒤 인물을 빼고 대충 자름",
+"rank": "",
+"on": false,
+"g": "jellygreen"
+},
+{
+"id": "F-blocker",
+"cat": "char",
+"sub": "막아서는 자 · 적 · 보스 · 원화 + 연출",
+"name": "막아서는 자 기본 초상화",
+"src": "img/face/blocker_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "blocker"
 },
 {
 "id": "P-blocker-art",
@@ -8832,7 +8728,30 @@ const CATALOG = [
 "src": "img/char/blocker_art.webp",
 "note": "적. 아래 글은 빼고 자름. 글: 비루한 그는 막아섰습니다. 그것이 그의 존재이유인듯",
 "rank": "",
-"on": false
+"on": false,
+"g": "blocker"
+},
+{
+"id": "F-mechA",
+"cat": "char",
+"sub": "기체 A · B · 적 · 보스 · 원화 + 연출",
+"name": "기체 A 기본 초상화",
+"src": "img/face/mechA_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "mech"
+},
+{
+"id": "F-mechB",
+"cat": "char",
+"sub": "기체 A · B · 적 · 보스 · 원화 + 연출",
+"name": "기체 B 기본 초상화",
+"src": "img/face/mechB_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "mech"
 },
 {
 "id": "P-mechA-art",
@@ -8842,7 +8761,8 @@ const CATALOG = [
 "src": "img/char/mechA_art.webp",
 "note": "적. 대충 잘라서 씀 (배경 지우기 모델, 가장자리 거칢)",
 "rank": "",
-"on": false
+"on": false,
+"g": "mech"
 },
 {
 "id": "P-mechB-art",
@@ -8852,7 +8772,19 @@ const CATALOG = [
 "src": "img/char/mechB_art.webp",
 "note": "적. 대충 잘라서 씀 (배경 지우기 모델)",
 "rank": "",
-"on": false
+"on": false,
+"g": "mech"
+},
+{
+"id": "F-cheongseung",
+"cat": "char",
+"sub": "청승 (도깨비 자매) · 역할 미정 · 동작 그림",
+"name": "청승 초상화",
+"src": "img/face/cheongseung_portrait.webp",
+"note": "받은 초상화 (도깨비 자매)",
+"rank": "",
+"on": false,
+"g": "cs"
 },
 {
 "id": "P-cs-idle",
@@ -8862,7 +8794,8 @@ const CATALOG = [
 "src": "img/cs/cs_idle.webp",
 "note": "드라이브 청승 폴더 cheongseung_idle_v1.webp · 원본 900×780",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
 },
 {
 "id": "P-cs-chop",
@@ -8872,7 +8805,8 @@ const CATALOG = [
 "src": "img/cs/cs_chop.webp",
 "note": "cheongseung_chop_v1.webp · 원본 900×780",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
 },
 {
 "id": "P-cs-jump-chop",
@@ -8882,7 +8816,8 @@ const CATALOG = [
 "src": "img/cs/cs_jump_chop.webp",
 "note": "cheongseung_jump_chop_v1.webp · 원본 900×780",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
 },
 {
 "id": "N-039",
@@ -8892,7 +8827,8 @@ const CATALOG = [
 "src": "img/npc/N-039.webp",
 "note": "드라이브 NPC 폴더 · 스크린샷 2026-10-03 222614.png · 파일 이름이 스크린샷. 청승으로 보임 (파란 피부 · 대검)",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
 },
 {
 "id": "N-052",
@@ -8902,7 +8838,8 @@ const CATALOG = [
 "src": "img/npc/N-052.webp",
 "note": "드라이브 NPC 폴더 · 청승공격.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
 },
 {
 "id": "N-053",
@@ -8912,7 +8849,19 @@ const CATALOG = [
 "src": "img/npc/N-053.webp",
 "note": "드라이브 NPC 폴더 · 칼들기 청승.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "cs"
+},
+{
+"id": "F-jakyak",
+"cat": "char",
+"sub": "작약 (도깨비 자매) · 역할 미정 · 원화 + 연출",
+"name": "작약 초상화",
+"src": "img/face/jakyak_portrait.webp",
+"note": "받은 초상화 (도깨비 자매)",
+"rank": "",
+"on": false,
+"g": "jakyak"
 },
 {
 "id": "P-jakyak-art",
@@ -8922,7 +8871,19 @@ const CATALOG = [
 "src": "img/char/jakyak_art.webp",
 "note": "기본만 씀. 받은 그림에서 옆 인물 (날개 · 청승)을 빼고 자름",
 "rank": "",
-"on": false
+"on": false,
+"g": "jakyak"
+},
+{
+"id": "F-bogwang",
+"cat": "char",
+"sub": "보광 · 역할 미정 · 동작 그림",
+"name": "보광 초상화",
+"src": "img/face/bogwang_portrait.webp",
+"note": "받은 초상화",
+"rank": "",
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "P-bogwang-idle",
@@ -8932,7 +8893,8 @@ const CATALOG = [
 "src": "img/bg_anim/bogwang_idle.webp",
 "note": "bogwang_idle_v1.webp · 원본 900×820",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "P-bogwang-attack",
@@ -8942,7 +8904,8 @@ const CATALOG = [
 "src": "img/bg_anim/bogwang_attack.webp",
 "note": "bogwang_attack_v1.1.webp. 중간 검은 실루엣 장면은 원본 그대로",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "P-bogwang-groove",
@@ -8952,7 +8915,8 @@ const CATALOG = [
 "src": "img/bg_anim/bogwang_groove.webp",
 "note": "bogwang2_groove_v1.2.webp. 흥분하면 리듬 타며 전투모드로 바뀜",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "P-bogwang-attack2",
@@ -8962,7 +8926,8 @@ const CATALOG = [
 "src": "img/bg_anim/bogwang_attack2.webp",
 "note": "bogwang2_attack_v1.webp",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "N-028",
@@ -8972,7 +8937,8 @@ const CATALOG = [
 "src": "img/npc/N-028.webp",
 "note": "드라이브 NPC 폴더 · 보광-신나공격.png · 보광 전투모드 (흥분하면 리듬 타며 바뀜)",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "N-029",
@@ -8982,7 +8948,8 @@ const CATALOG = [
 "src": "img/npc/N-029.webp",
 "note": "드라이브 NPC 폴더 · 보광-전투대기.png · 보광 전투모드 대기",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "N-030",
@@ -8992,7 +8959,8 @@ const CATALOG = [
 "src": "img/npc/N-030.webp",
 "note": "드라이브 NPC 폴더 · 보광공격.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
 },
 {
 "id": "N-031",
@@ -9002,7 +8970,19 @@ const CATALOG = [
 "src": "img/npc/N-031.webp",
 "note": "드라이브 NPC 폴더 · 보광기본.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "bogwang"
+},
+{
+"id": "F-borama",
+"cat": "char",
+"sub": "보라마 · 역할 미정 · 원화 + 연출",
+"name": "보라마 초상화",
+"src": "img/face/borama_portrait.webp",
+"note": "받은 초상화",
+"rank": "",
+"on": false,
+"g": "borama"
 },
 {
 "id": "N-032",
@@ -9012,7 +8992,8 @@ const CATALOG = [
 "src": "img/npc/N-032.webp",
 "note": "드라이브 NPC 폴더 · 보라마.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "borama"
 },
 {
 "id": "N-033",
@@ -9022,7 +9003,19 @@ const CATALOG = [
 "src": "img/npc/N-033.webp",
 "note": "드라이브 NPC 폴더 · 보라마공격.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "borama"
+},
+{
+"id": "F-N-011",
+"cat": "char",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"name": "광냥기본 기본 초상화",
+"src": "img/face/N-011_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "kwangnyang"
 },
 {
 "id": "N-010",
@@ -9032,7 +9025,8 @@ const CATALOG = [
 "src": "img/npc/N-010.webp",
 "note": "드라이브 NPC 폴더 · 광냥-적으로.png · 광냥이 적일 때",
 "rank": "",
-"on": false
+"on": false,
+"g": "kwangnyang"
 },
 {
 "id": "N-011",
@@ -9042,7 +9036,8 @@ const CATALOG = [
 "src": "img/npc/N-011.webp",
 "note": "드라이브 NPC 폴더 · 광냥기본.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "kwangnyang"
 },
 {
 "id": "N-012",
@@ -9052,7 +9047,19 @@ const CATALOG = [
 "src": "img/npc/N-012.webp",
 "note": "드라이브 NPC 폴더 · 광냥적-공격.png · 광냥이 적일 때 공격",
 "rank": "",
-"on": false
+"on": false,
+"g": "kwangnyang"
+},
+{
+"id": "F-sealed",
+"cat": "char",
+"sub": "봉인된 그녀 · 역할 미정 · 원화 + 연출",
+"name": "봉인된 그녀 기본 초상화",
+"src": "img/face/sealed_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "sealed"
 },
 {
 "id": "P-sealed-art",
@@ -9062,7 +9069,19 @@ const CATALOG = [
 "src": "img/char/sealed_art.webp",
 "note": "스프라이트로 씀. 원화는 4 컷씬 (인카운터 컷씬)에. 시계 · 열쇠 후광, 사슬 · 주사위 몸, 검은 날개",
 "rank": "",
-"on": false
+"on": false,
+"g": "sealed"
+},
+{
+"id": "F-knightcommander",
+"cat": "char",
+"sub": "기사단장 · 역할 미정 · 원화 + 연출",
+"name": "기사단장 기본 초상화",
+"src": "img/face/knightcommander_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "knightcommander"
 },
 {
 "id": "P-knightcommander-art",
@@ -9072,7 +9091,19 @@ const CATALOG = [
 "src": "img/char/knightcommander_art.webp",
 "note": "스프라이트로 씀. 그려진 하늘 바탕을 지움. 발밑 바위는 남김, 왼쪽 망토에 새 두 마리가 붙어 있음",
 "rank": "",
-"on": false
+"on": false,
+"g": "knightcommander"
+},
+{
+"id": "F-nursechief",
+"cat": "char",
+"sub": "간호사장 · 역할 미정 · 원화 + 연출",
+"name": "간호사장 기본 초상화",
+"src": "img/face/nursechief_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "nursechief"
 },
 {
 "id": "P-nursechief-art",
@@ -9082,7 +9113,19 @@ const CATALOG = [
 "src": "img/char/nursechief_art.webp",
 "note": "스프라이트로 씀. 디자인이 좋음. 바이올린은 그냥 들어간 것, 큰 의미 없음. 떠다니는 작은 인형은 빼고 발치 하나만 붙어 남음",
 "rank": "",
-"on": false
+"on": false,
+"g": "nursechief"
+},
+{
+"id": "F-gaius",
+"cat": "char",
+"sub": "가이우스 · 역할 미정 · 원화 + 연출",
+"name": "가이우스 기본 초상화",
+"src": "img/face/gaius_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "gaius"
 },
 {
 "id": "P-gaius-art",
@@ -9092,7 +9135,19 @@ const CATALOG = [
 "src": "img/char/gaius_art.webp",
 "note": "스프라이트로 씀. 뒤의 검은 그림자 인물까지 한 장. 남색 바탕을 지움",
 "rank": "",
-"on": false
+"on": false,
+"g": "gaius"
+},
+{
+"id": "F-hiddenkkaebi",
+"cat": "char",
+"sub": "히든깨비 · 역할 미정 · 원화 + 연출",
+"name": "히든깨비 기본 초상화",
+"src": "img/face/hiddenkkaebi_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "hiddenkkaebi"
 },
 {
 "id": "P-hiddenkkaebi-art",
@@ -9102,7 +9157,19 @@ const CATALOG = [
 "src": "img/char/hiddenkkaebi_art.webp",
 "note": "보라 바탕을 지움. 머리 위 검은 고양이 · 긴 칼",
 "rank": "",
-"on": false
+"on": false,
+"g": "hiddenkkaebi"
+},
+{
+"id": "F-girlprisoner",
+"cat": "char",
+"sub": "소녀와 죄수 · 역할 미정 · 원화 + 연출",
+"name": "소녀와 죄수 기본 초상화",
+"src": "img/face/girlprisoner_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "girlprisoner"
 },
 {
 "id": "P-girlprisoner-art",
@@ -9112,7 +9179,19 @@ const CATALOG = [
 "src": "img/char/girlprisoner_art.webp",
 "note": "촉수 달린 거인 (죄수)과 그 앞의 땋은 머리 소녀. 그려진 바탕은 배경 지우기 모델로 지움",
 "rank": "",
-"on": false
+"on": false,
+"g": "girlprisoner"
+},
+{
+"id": "F-leonas",
+"cat": "char",
+"sub": "레오나스 · 역할 미정 · 원화 + 연출",
+"name": "레오나스 기본 초상화",
+"src": "img/face/leonas_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "leonas"
 },
 {
 "id": "P-leonas-art",
@@ -9122,7 +9201,19 @@ const CATALOG = [
 "src": "img/char/leonas_art.webp",
 "note": "사슴뿔 왕관 · 웃는 가면 · 파란 망토 · 검. 발밑 먹물 튐은 남김",
 "rank": "",
-"on": false
+"on": false,
+"g": "leonas"
+},
+{
+"id": "F-hyal",
+"cat": "char",
+"sub": "고대천사 햘 · 역할 미정 · 원화 + 연출",
+"name": "고대천사 햘 기본 초상화",
+"src": "img/face/hyal_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "hyal"
 },
 {
 "id": "P-hyal-art",
@@ -9132,7 +9223,19 @@ const CATALOG = [
 "src": "img/char/hyal_art.webp",
 "note": "스티커 모양 흰 외곽선은 남김. 둥근 갈색 바탕은 지움",
 "rank": "",
-"on": false
+"on": false,
+"g": "hyal"
+},
+{
+"id": "F-auto-coraldeer",
+"cat": "char",
+"sub": "고대사슴 산호 · 역할 미정 · 원화 + 연출",
+"name": "고대사슴 산호 기본 초상화",
+"src": "img/face/auto_coraldeer.webp",
+"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
+"rank": "",
+"on": false,
+"g": "coraldeer"
 },
 {
 "id": "N-coral-deer",
@@ -9142,436 +9245,953 @@ const CATALOG = [
 "src": "img/npc/N-coral-deer.webp",
 "note": "드라이브 NPC 폴더 · 고대사슴 산호.png. 배경째 그림이라 그대로 둠",
 "rank": "",
-"on": false
+"on": false,
+"g": "coraldeer"
+},
+{
+"id": "F-N-002",
+"cat": "char",
+"sub": "개 · 미등장 NPC (적) · 원화 + 연출",
+"name": "개 기본 초상화",
+"src": "img/face/N-002_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-002"
 },
 {
 "id": "N-002",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "개 · 미등장 NPC (적) · 원화 + 연출",
 "name": "개",
 "src": "img/npc/N-002.webp",
 "note": "드라이브 NPC 폴더 · 개.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-002"
+},
+{
+"id": "F-N-003",
+"cat": "char",
+"sub": "개2 · 미등장 NPC (적) · 원화 + 연출",
+"name": "개2 기본 초상화",
+"src": "img/face/N-003_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-003"
 },
 {
 "id": "N-003",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "개2 · 미등장 NPC (적) · 원화 + 연출",
 "name": "개2",
 "src": "img/npc/N-003.webp",
 "note": "드라이브 NPC 폴더 · 개2.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-003"
+},
+{
+"id": "F-N-005",
+"cat": "char",
+"sub": "검방흑기사 · 미등장 NPC (적) · 원화 + 연출",
+"name": "검방흑기사 기본 초상화",
+"src": "img/face/N-005_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-005"
 },
 {
 "id": "N-005",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "검방흑기사 · 미등장 NPC (적) · 원화 + 연출",
 "name": "검방흑기사",
 "src": "img/npc/N-005.webp",
 "note": "드라이브 NPC 폴더 · 검방흑기사.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-005"
+},
+{
+"id": "F-N-006",
+"cat": "char",
+"sub": "경찰 · 미등장 NPC (적) · 원화 + 연출",
+"name": "경찰 기본 초상화",
+"src": "img/face/N-006_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-006"
 },
 {
 "id": "N-006",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "경찰 · 미등장 NPC (적) · 원화 + 연출",
 "name": "경찰",
 "src": "img/npc/N-006.webp",
 "note": "드라이브 NPC 폴더 · 경찰.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-006"
+},
+{
+"id": "F-N-007",
+"cat": "char",
+"sub": "곤충괴 · 미등장 NPC (적) · 원화 + 연출",
+"name": "곤충괴 기본 초상화",
+"src": "img/face/N-007_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-007"
 },
 {
 "id": "N-007",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "곤충괴 · 미등장 NPC (적) · 원화 + 연출",
 "name": "곤충괴",
 "src": "img/npc/N-007.webp",
 "note": "드라이브 NPC 폴더 · 곤충괴.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-007"
+},
+{
+"id": "F-N-013",
+"cat": "char",
+"sub": "군마 · 미등장 NPC (적) · 원화 + 연출",
+"name": "군마 기본 초상화",
+"src": "img/face/N-013_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-013"
 },
 {
 "id": "N-013",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "군마 · 미등장 NPC (적) · 원화 + 연출",
 "name": "군마",
 "src": "img/npc/N-013.webp",
 "note": "드라이브 NPC 폴더 · 군마.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-013"
+},
+{
+"id": "F-N-014",
+"cat": "char",
+"sub": "노숙악마 · 미등장 NPC (적) · 원화 + 연출",
+"name": "노숙악마 기본 초상화",
+"src": "img/face/N-014_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-014"
 },
 {
 "id": "N-014",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "노숙악마 · 미등장 NPC (적) · 원화 + 연출",
 "name": "노숙악마",
 "src": "img/npc/N-014.webp",
 "note": "드라이브 NPC 폴더 · 노숙악마.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-014"
+},
+{
+"id": "F-N-015",
+"cat": "char",
+"sub": "니드런 · 미등장 NPC (적) · 원화 + 연출",
+"name": "니드런 기본 초상화",
+"src": "img/face/N-015_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-015"
 },
 {
 "id": "N-015",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "니드런 · 미등장 NPC (적) · 원화 + 연출",
 "name": "니드런",
 "src": "img/npc/N-015.webp",
 "note": "드라이브 NPC 폴더 · 니드런.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-015"
+},
+{
+"id": "F-N-020",
+"cat": "char",
+"sub": "들쥐 · 미등장 NPC (적) · 원화 + 연출",
+"name": "들쥐 기본 초상화",
+"src": "img/face/N-020_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-020"
 },
 {
 "id": "N-020",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "들쥐 · 미등장 NPC (적) · 원화 + 연출",
 "name": "들쥐",
 "src": "img/npc/N-020.webp",
 "note": "드라이브 NPC 폴더 · 들쥐.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-020"
+},
+{
+"id": "F-N-021",
+"cat": "char",
+"sub": "멧돼지방패병 · 미등장 NPC (적) · 원화 + 연출",
+"name": "멧돼지방패병 기본 초상화",
+"src": "img/face/N-021_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-021"
 },
 {
 "id": "N-021",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "멧돼지방패병 · 미등장 NPC (적) · 원화 + 연출",
 "name": "멧돼지방패병",
 "src": "img/npc/N-021.webp",
 "note": "드라이브 NPC 폴더 · 멧돼지방패병.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-021"
+},
+{
+"id": "F-N-024",
+"cat": "char",
+"sub": "방패곤봉 · 미등장 NPC (적) · 원화 + 연출",
+"name": "방패곤봉 기본 초상화",
+"src": "img/face/N-024_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-024"
 },
 {
 "id": "N-024",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "방패곤봉 · 미등장 NPC (적) · 원화 + 연출",
 "name": "방패곤봉",
 "src": "img/npc/N-024.webp",
 "note": "드라이브 NPC 폴더 · 방패곤봉.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-024"
+},
+{
+"id": "F-N-025",
+"cat": "char",
+"sub": "방패대검 · 미등장 NPC (적) · 원화 + 연출",
+"name": "방패대검 기본 초상화",
+"src": "img/face/N-025_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-025"
 },
 {
 "id": "N-025",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "방패대검 · 미등장 NPC (적) · 원화 + 연출",
 "name": "방패대검",
 "src": "img/npc/N-025.webp",
 "note": "드라이브 NPC 폴더 · 방패대검.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-025"
+},
+{
+"id": "F-N-035",
+"cat": "char",
+"sub": "봉인된 시체 · 미등장 NPC (적) · 원화 + 연출",
+"name": "봉인된 시체 기본 초상화",
+"src": "img/face/N-035_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-035"
 },
 {
 "id": "N-035",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "봉인된 시체 · 미등장 NPC (적) · 원화 + 연출",
 "name": "봉인된 시체",
 "src": "img/npc/N-035.webp",
 "note": "드라이브 NPC 폴더 · 봉인된 시체(개쎔).png · 파일 이름: 개쎔",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-035"
+},
+{
+"id": "F-N-036",
+"cat": "char",
+"sub": "샷건 · 미등장 NPC (적) · 원화 + 연출",
+"name": "샷건 기본 초상화",
+"src": "img/face/N-036_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-036"
 },
 {
 "id": "N-036",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "샷건 · 미등장 NPC (적) · 원화 + 연출",
 "name": "샷건",
 "src": "img/npc/N-036.webp",
 "note": "드라이브 NPC 폴더 · 샷건.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-036"
+},
+{
+"id": "F-N-037",
+"cat": "char",
+"sub": "석상1 · 미등장 NPC (적) · 원화 + 연출",
+"name": "석상1 기본 초상화",
+"src": "img/face/N-037_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-037"
 },
 {
 "id": "N-037",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "석상1 · 미등장 NPC (적) · 원화 + 연출",
 "name": "석상1",
 "src": "img/npc/N-037.webp",
 "note": "드라이브 NPC 폴더 · 석상1.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-037"
+},
+{
+"id": "F-N-038",
+"cat": "char",
+"sub": "성방패 · 미등장 NPC (적) · 원화 + 연출",
+"name": "성방패 기본 초상화",
+"src": "img/face/N-038_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-038"
 },
 {
 "id": "N-038",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "성방패 · 미등장 NPC (적) · 원화 + 연출",
 "name": "성방패",
 "src": "img/npc/N-038.webp",
 "note": "드라이브 NPC 폴더 · 성방패.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-038"
+},
+{
+"id": "F-N-040",
+"cat": "char",
+"sub": "스팅요 · 미등장 NPC (적) · 원화 + 연출",
+"name": "스팅요 기본 초상화",
+"src": "img/face/N-040_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-040"
 },
 {
 "id": "N-040",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "스팅요 · 미등장 NPC (적) · 원화 + 연출",
 "name": "스팅요",
 "src": "img/npc/N-040.webp",
 "note": "드라이브 NPC 폴더 · 스팅요.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-040"
+},
+{
+"id": "F-N-041",
+"cat": "char",
+"sub": "아해 · 미등장 NPC (적) · 원화 + 연출",
+"name": "아해 기본 초상화",
+"src": "img/face/N-041_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-041"
 },
 {
 "id": "N-041",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "아해 · 미등장 NPC (적) · 원화 + 연출",
 "name": "아해",
 "src": "img/npc/N-041.webp",
 "note": "드라이브 NPC 폴더 · 아해.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-041"
+},
+{
+"id": "F-N-044",
+"cat": "char",
+"sub": "일반개비적 · 미등장 NPC (적) · 원화 + 연출",
+"name": "일반개비적 기본 초상화",
+"src": "img/face/N-044_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-044"
 },
 {
 "id": "N-044",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "일반개비적 · 미등장 NPC (적) · 원화 + 연출",
 "name": "일반개비적",
 "src": "img/npc/N-044.webp",
 "note": "드라이브 NPC 폴더 · 일반개비적.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-044"
+},
+{
+"id": "F-N-045",
+"cat": "char",
+"sub": "일반적괴물 · 미등장 NPC (적) · 원화 + 연출",
+"name": "일반적괴물 기본 초상화",
+"src": "img/face/N-045_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-045"
 },
 {
 "id": "N-045",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "일반적괴물 · 미등장 NPC (적) · 원화 + 연출",
 "name": "일반적괴물",
 "src": "img/npc/N-045.webp",
 "note": "드라이브 NPC 폴더 · 일반적괴물.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-045"
+},
+{
+"id": "F-N-046",
+"cat": "char",
+"sub": "장군님 · 미등장 NPC (적) · 원화 + 연출",
+"name": "장군님 기본 초상화",
+"src": "img/face/N-046_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-046"
 },
 {
 "id": "N-046",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "장군님 · 미등장 NPC (적) · 원화 + 연출",
 "name": "장군님",
 "src": "img/npc/N-046.webp",
 "note": "드라이브 NPC 폴더 · 장군님.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-046"
+},
+{
+"id": "F-N-047",
+"cat": "char",
+"sub": "저격총수 · 미등장 NPC (적) · 원화 + 연출",
+"name": "저격총수 기본 초상화",
+"src": "img/face/N-047_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-047"
 },
 {
 "id": "N-047",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "저격총수 · 미등장 NPC (적) · 원화 + 연출",
 "name": "저격총수",
 "src": "img/npc/N-047.webp",
 "note": "드라이브 NPC 폴더 · 저격총수.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-047"
+},
+{
+"id": "F-N-048",
+"cat": "char",
+"sub": "적기사 · 미등장 NPC (적) · 원화 + 연출",
+"name": "적기사 기본 초상화",
+"src": "img/face/N-048_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-048"
 },
 {
 "id": "N-048",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "적기사 · 미등장 NPC (적) · 원화 + 연출",
 "name": "적기사",
 "src": "img/npc/N-048.webp",
 "note": "드라이브 NPC 폴더 · 적기사.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-048"
+},
+{
+"id": "F-N-050",
+"cat": "char",
+"sub": "지키는자 · 미등장 NPC (적) · 원화 + 연출",
+"name": "지키는자 기본 초상화",
+"src": "img/face/N-050_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-050"
 },
 {
 "id": "N-050",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "지키는자 · 미등장 NPC (적) · 원화 + 연출",
 "name": "지키는자",
 "src": "img/npc/N-050.webp",
 "note": "드라이브 NPC 폴더 · 지키는자.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-050"
+},
+{
+"id": "F-N-051",
+"cat": "char",
+"sub": "창병2 · 미등장 NPC (적) · 원화 + 연출",
+"name": "창병2 기본 초상화",
+"src": "img/face/N-051_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-051"
 },
 {
 "id": "N-051",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "창병2 · 미등장 NPC (적) · 원화 + 연출",
 "name": "창병2",
 "src": "img/npc/N-051.webp",
 "note": "드라이브 NPC 폴더 · 창병2.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-051"
+},
+{
+"id": "F-N-054",
+"cat": "char",
+"sub": "탐사중 · 미등장 NPC (적) · 원화 + 연출",
+"name": "탐사중 기본 초상화",
+"src": "img/face/N-054_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-054"
 },
 {
 "id": "N-054",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "탐사중 · 미등장 NPC (적) · 원화 + 연출",
 "name": "탐사중",
 "src": "img/npc/N-054.webp",
 "note": "드라이브 NPC 폴더 · 탐사중.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-054"
+},
+{
+"id": "F-N-056",
+"cat": "char",
+"sub": "흑기사창병 · 미등장 NPC (적) · 원화 + 연출",
+"name": "흑기사창병 기본 초상화",
+"src": "img/face/N-056_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-056"
 },
 {
 "id": "N-056",
 "cat": "char",
-"sub": "미등장 NPC · 적 · 원화 + 연출",
+"sub": "흑기사창병 · 미등장 NPC (적) · 원화 + 연출",
 "name": "흑기사창병",
 "src": "img/npc/N-056.webp",
 "note": "드라이브 NPC 폴더 · 흑기사창병.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-056"
+},
+{
+"id": "F-N-001",
+"cat": "char",
+"sub": "가지마소녀 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "가지마소녀 기본 초상화",
+"src": "img/face/N-001_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-001"
 },
 {
 "id": "N-001",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "가지마소녀 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "가지마소녀",
 "src": "img/npc/N-001.webp",
 "note": "드라이브 NPC 폴더 · 가지마소녀.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-001"
+},
+{
+"id": "F-N-004",
+"cat": "char",
+"sub": "거지 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "거지 기본 초상화",
+"src": "img/face/N-004_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-004"
 },
 {
 "id": "N-004",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "거지 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "거지",
 "src": "img/npc/N-004.webp",
 "note": "드라이브 NPC 폴더 · 거지.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-004"
+},
+{
+"id": "F-N-009",
+"cat": "char",
+"sub": "관남기본 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "관남기본 기본 초상화",
+"src": "img/face/N-009_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-009"
 },
 {
 "id": "N-009",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "관남기본 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "관남기본",
 "src": "img/npc/N-009.webp",
 "note": "드라이브 NPC 폴더 · 관남기본.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-009"
+},
+{
+"id": "F-N-016",
+"cat": "char",
+"sub": "대장간 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "대장간 기본 초상화",
+"src": "img/face/N-016_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-016"
 },
 {
 "id": "N-016",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "대장간 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "대장간",
 "src": "img/npc/N-016.webp",
 "note": "드라이브 NPC 폴더 · 대장간.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-016"
+},
+{
+"id": "F-N-017",
+"cat": "char",
+"sub": "동네 마법사 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "동네 마법사 기본 초상화",
+"src": "img/face/N-017_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-017"
 },
 {
 "id": "N-017",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "동네 마법사 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "동네 마법사",
 "src": "img/npc/N-017.webp",
 "note": "드라이브 NPC 폴더 · 동네 마법사.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-017"
+},
+{
+"id": "F-N-018",
+"cat": "char",
+"sub": "동네야전의사아저씨 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "동네야전의사아저씨 기본 초상화",
+"src": "img/face/N-018_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-018"
 },
 {
 "id": "N-018",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "동네야전의사아저씨 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "동네야전의사아저씨",
 "src": "img/npc/N-018.webp",
 "note": "드라이브 NPC 폴더 · 동네야전의사아저씨(착함).png · 착함",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-018"
+},
+{
+"id": "F-N-019",
+"cat": "char",
+"sub": "두건 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "두건 기본 초상화",
+"src": "img/face/N-019_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-019"
 },
 {
 "id": "N-019",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "두건 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "두건",
 "src": "img/npc/N-019.webp",
 "note": "드라이브 NPC 폴더 · 두건.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-019"
+},
+{
+"id": "F-N-022",
+"cat": "char",
+"sub": "무서운아재 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "무서운아재 기본 초상화",
+"src": "img/face/N-022_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-022"
 },
 {
 "id": "N-022",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "무서운아재 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "무서운아재",
 "src": "img/npc/N-022.webp",
 "note": "드라이브 NPC 폴더 · 무서운아재.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-022"
+},
+{
+"id": "F-N-023",
+"cat": "char",
+"sub": "물레, 콜라이더 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "물레, 콜라이더 기본 초상화",
+"src": "img/face/N-023_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-023"
 },
 {
 "id": "N-023",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "물레, 콜라이더 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "물레, 콜라이더",
 "src": "img/npc/N-023.webp",
 "note": "드라이브 NPC 폴더 · 물레, 콜라이더.png · 한 장에 둘 이상. 사진 같은 그림이라 배경을 못 지움, 그대로 둠",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-023"
+},
+{
+"id": "F-N-026",
+"cat": "char",
+"sub": "배달부, 요리사 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "배달부, 요리사 기본 초상화",
+"src": "img/face/N-026_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-026"
 },
 {
 "id": "N-026",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "배달부, 요리사 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "배달부, 요리사",
 "src": "img/npc/N-026.webp",
 "note": "드라이브 NPC 폴더 · 배달부, 요리사.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-026"
+},
+{
+"id": "F-N-027",
+"cat": "char",
+"sub": "벌키우는남자, 테레비신도 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "벌키우는남자, 테레비신도 기본 초상화",
+"src": "img/face/N-027_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-027"
 },
 {
 "id": "N-027",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "벌키우는남자, 테레비신도 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "벌키우는남자, 테레비신도",
 "src": "img/npc/N-027.webp",
 "note": "드라이브 NPC 폴더 · 벌키우는남자, 테레비신도.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-027"
+},
+{
+"id": "F-N-034",
+"cat": "char",
+"sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "복서 기본 초상화",
+"src": "img/face/N-034_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-034"
 },
 {
 "id": "N-034",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "복서",
 "src": "img/npc/N-034.webp",
 "note": "드라이브 NPC 폴더 · 복서.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-034"
+},
+{
+"id": "F-N-042",
+"cat": "char",
+"sub": "요리라임 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "요리라임 기본 초상화",
+"src": "img/face/N-042_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-042"
 },
 {
 "id": "N-042",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "요리라임 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "요리라임",
 "src": "img/npc/N-042.webp",
 "note": "드라이브 NPC 폴더 · 요리라임.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-042"
+},
+{
+"id": "F-N-043",
+"cat": "char",
+"sub": "일반개비 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "일반개비 기본 초상화",
+"src": "img/face/N-043_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-043"
 },
 {
 "id": "N-043",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "일반개비 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "일반개비",
 "src": "img/npc/N-043.webp",
 "note": "드라이브 NPC 폴더 · 일반개비.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-043"
+},
+{
+"id": "F-N-049",
+"cat": "char",
+"sub": "정령연 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "정령연 기본 초상화",
+"src": "img/face/N-049_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-049"
 },
 {
 "id": "N-049",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "정령연 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "정령연",
 "src": "img/npc/N-049.webp",
 "note": "드라이브 NPC 폴더 · 정령연.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-049"
+},
+{
+"id": "F-N-055",
+"cat": "char",
+"sub": "휠체어할배 · 미등장 NPC (일반) · 원화 + 연출",
+"name": "휠체어할배 기본 초상화",
+"src": "img/face/N-055_portrait.webp",
+"note": "스탠딩에서 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "N-055"
 },
 {
 "id": "N-055",
 "cat": "char",
-"sub": "미등장 NPC · 일반 · 원화 + 연출",
+"sub": "휠체어할배 · 미등장 NPC (일반) · 원화 + 연출",
 "name": "휠체어할배",
 "src": "img/npc/N-055.webp",
 "note": "드라이브 NPC 폴더 · 휠체어할배.png",
 "rank": "",
-"on": false
+"on": false,
+"g": "N-055"
 }
 ];
