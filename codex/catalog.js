@@ -1,4 +1,4 @@
-/* catalog.js v1.43 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.44 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -1311,48 +1311,8 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "G-1",
-"cat": "bg",
-"sub": "배경",
-"name": "성당 뒤 (가로)",
-"src": "a/cathedral_back.jpg",
-"note": "2D판 배경",
-"rank": "",
-"on": false
-},
-{
-"id": "G-2",
-"cat": "bg",
-"sub": "배경",
-"name": "핏빛 바닥의 고딕 도시 (원본)",
-"src": "img/scene/city_full.webp",
-"note": "G-1의 원본",
-"rank": "",
-"on": false
-},
-{
-"id": "G-3",
-"cat": "bg",
-"sub": "배경",
-"name": "오딜의 방",
-"src": "a/room_odile.jpg",
-"note": "",
-"rank": "",
-"on": false
-},
-{
-"id": "G-4",
-"cat": "bg",
-"sub": "배경",
-"name": "촛대",
-"src": "a/candle_full.png",
-"note": "소품",
-"rank": "",
-"on": false
-},
-{
 "id": "C-O",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "오딜 (붉은 소파)",
 "src": "a/enc_odile.jpg",
@@ -1362,7 +1322,7 @@ const CATALOG = [
 },
 {
 "id": "C-K",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "왕관 얼굴",
 "src": "a/enc_crown_face.png",
@@ -1372,7 +1332,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-oldman-suit",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "노인과 양복",
 "src": "img/card/enc_oldman_suit.webp",
@@ -1382,7 +1342,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-giant-head",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "거인의 머리",
 "src": "img/card/enc_giant_head.webp",
@@ -1392,7 +1352,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-beyond",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "저 너머",
 "src": "img/card/enc_beyond.webp",
@@ -1402,7 +1362,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-want-to-tell",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "말하고 싶어",
 "src": "img/card/enc_want_to_tell.webp",
@@ -1412,7 +1372,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-sages",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "현자들 (오 닐 · 칼)",
 "src": "img/card/enc_sages.webp",
@@ -1422,7 +1382,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-dead-hero",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "죽은 영웅",
 "src": "img/card/enc_dead_hero.webp",
@@ -1432,7 +1392,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-brain-frame",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "액자 (뇌)",
 "src": "img/card/enc_brain_frame.webp",
@@ -1442,7 +1402,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-chatter",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "지껄임 (입)",
 "src": "img/card/enc_chatter.webp",
@@ -1452,7 +1412,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-ceiling-hole",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "천장의 구멍",
 "src": "img/card/enc_ceiling_hole.webp",
@@ -1462,7 +1422,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-eye-room",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "눈알방",
 "src": "img/card/enc_eye_room.webp",
@@ -1472,7 +1432,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-knowledge-skeleton",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "지식의 계단 · 해골",
 "src": "img/card/enc_knowledge_skeleton.webp",
@@ -1482,7 +1442,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-knowledge-stairs",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "지식의 계단 · 직원",
 "src": "img/card/enc_knowledge_stairs.webp",
@@ -1492,7 +1452,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-long-beach",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "기나긴 해변",
 "src": "img/card/enc_long_beach.webp",
@@ -1502,7 +1462,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-altar",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "제단",
 "src": "img/card/enc_altar.webp",
@@ -1512,7 +1472,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-riddle",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "수수께끼 (아템)",
 "src": "img/card/enc_riddle.webp",
@@ -1522,7 +1482,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-his-face",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "그의 얼굴",
 "src": "img/card/enc_his_face.webp",
@@ -1532,7 +1492,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-blue-hero",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "푸른 무기의 영웅 (동료 영입 가능)",
 "src": "img/card/enc_blue_hero.webp",
@@ -1542,7 +1502,7 @@ const CATALOG = [
 },
 {
 "id": "ENC-giant-goddess-corpse",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터",
 "name": "거대 여신 시체",
 "src": "img/card/enc_giant_goddess_corpse.webp",
@@ -1552,7 +1512,7 @@ const CATALOG = [
 },
 {
 "id": "C01",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "모닥불",
 "src": "img/card/c01.webp",
@@ -1562,7 +1522,7 @@ const CATALOG = [
 },
 {
 "id": "C02",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "보물상자",
 "src": "img/card/c02.webp",
@@ -1572,7 +1532,7 @@ const CATALOG = [
 },
 {
 "id": "C03",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "상인",
 "src": "img/card/c03.webp",
@@ -1582,7 +1542,7 @@ const CATALOG = [
 },
 {
 "id": "C04",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "짐승의 습격",
 "src": "img/card/c04.webp",
@@ -1592,7 +1552,7 @@ const CATALOG = [
 },
 {
 "id": "C05",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "샘",
 "src": "img/card/c05.webp",
@@ -1602,7 +1562,7 @@ const CATALOG = [
 },
 {
 "id": "C06",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "함정",
 "src": "img/card/c06.webp",
@@ -1612,7 +1572,7 @@ const CATALOG = [
 },
 {
 "id": "C07",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "석상",
 "src": "img/card/c07.webp",
@@ -1622,7 +1582,7 @@ const CATALOG = [
 },
 {
 "id": "C08",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "차원문",
 "src": "img/card/c08.webp",
@@ -1632,7 +1592,7 @@ const CATALOG = [
 },
 {
 "id": "C09",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "제단",
 "src": "img/card/c09.webp",
@@ -1642,7 +1602,7 @@ const CATALOG = [
 },
 {
 "id": "C10",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "나그네",
 "src": "img/card/c10.webp",
@@ -1652,7 +1612,7 @@ const CATALOG = [
 },
 {
 "id": "C11",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "부서진 시계",
 "src": "img/card/c11.webp",
@@ -1662,7 +1622,7 @@ const CATALOG = [
 },
 {
 "id": "C12",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "유령들",
 "src": "img/card/c12.webp",
@@ -1672,7 +1632,7 @@ const CATALOG = [
 },
 {
 "id": "C13",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "붉은 일식",
 "src": "img/card/c13.webp",
@@ -1682,7 +1642,7 @@ const CATALOG = [
 },
 {
 "id": "C14",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "난파선",
 "src": "img/card/c14.webp",
@@ -1692,7 +1652,7 @@ const CATALOG = [
 },
 {
 "id": "C15",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "미믹",
 "src": "img/card/c15.webp",
@@ -1702,7 +1662,7 @@ const CATALOG = [
 },
 {
 "id": "C16",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "독 가마솥",
 "src": "img/card/c16.webp",
@@ -1712,7 +1672,7 @@ const CATALOG = [
 },
 {
 "id": "C17",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "문과 계단",
 "src": "img/card/c17.webp",
@@ -1722,7 +1682,7 @@ const CATALOG = [
 },
 {
 "id": "C18",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "심장 나무",
 "src": "img/card/c18.webp",
@@ -1732,7 +1692,7 @@ const CATALOG = [
 },
 {
 "id": "C19",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "거울",
 "src": "img/card/c19.webp",
@@ -1742,11 +1702,51 @@ const CATALOG = [
 },
 {
 "id": "C20",
-"cat": "card",
+"cat": "scene",
 "sub": "인카운터 카드",
 "name": "까마귀",
 "src": "img/card/c20.webp",
 "note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "G-1",
+"cat": "scene",
+"sub": "배경",
+"name": "성당 뒤 (가로)",
+"src": "a/cathedral_back.jpg",
+"note": "2D판 배경",
+"rank": "",
+"on": false
+},
+{
+"id": "G-2",
+"cat": "scene",
+"sub": "배경",
+"name": "핏빛 바닥의 고딕 도시 (원본)",
+"src": "img/scene/city_full.webp",
+"note": "G-1의 원본",
+"rank": "",
+"on": false
+},
+{
+"id": "G-3",
+"cat": "scene",
+"sub": "배경",
+"name": "오딜의 방",
+"src": "a/room_odile.jpg",
+"note": "",
+"rank": "",
+"on": false
+},
+{
+"id": "G-4",
+"cat": "scene",
+"sub": "배경",
+"name": "촛대",
+"src": "a/candle_full.png",
+"note": "소품",
 "rank": "",
 "on": false
 },
