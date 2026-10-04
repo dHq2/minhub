@@ -398,7 +398,7 @@ async function startCave(cine = false){
   const ch = spawn('cheongNpc', Cc.x, Cc.z, 'neutral'); ch.face = 1;
   const snails = sp('S').map(s => { const n = spawn('snail', s.x, s.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; } n.face = Math.random() < 0.5 ? 1 : -1; return n; });
   snails.splice(0, Math.min(PRO.snailLost, snails.length)).forEach(removeUnit);
-  PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5, dropT: 30, dropped: false };
+  PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5, dropT: 30, dropped: PRO.dropDay === PRO.day };   // v0.30: 원정에서 돌아와도 오늘의 낙하는 한 번
   if (!PRO.weather) PRO.weather = rollWeather();
   PRO.pigs = [];
   buildStage(); applyWeather();
@@ -572,7 +572,7 @@ function landDrop(d, b, t, i){
   addLoose(d, b, t.x, t.z);
 }
 async function todayFall(){
-  const Cv = PRO.cave; if (Cv.dropped) return; Cv.dropped = true;
+  const Cv = PRO.cave; if (Cv.dropped) return; Cv.dropped = true; PRO.dropDay = PRO.day;
   G.lock = true; letterbox(true); guide('');
   const C = LOBBY_C;
   // 예고: 우르르 · 천장 먼지 · 빛기둥 (천장의 구멍)
@@ -1666,11 +1666,11 @@ function buildRubble(){
 function doorLabel(){
   if (PRO.dig < 100) return `석문 앞 돌무더기를 판다 (${Math.floor(PRO.dig)}%${apTag()})`;
   if (!PRO.jrDone) return '석문을 연다 — 적뢰가 강림한다 (준비가 됐으면)';
-  return '석문 너머 (계단)';
+  return '석문 너머 — 원정을 떠난다';
 }
 async function doorAction(){
   if (PRO.dig >= 100){
-    if (PRO.jrDone){ await textbox('', ['석문 너머로 끝없는 계단이 이어진다.', '— 굴 시제품은 여기까지. (그 아래는 다음 이야기)']); return; }
+    if (PRO.jrDone){ if (PRO.ap <= 0) return textbox('', ['오늘은 너무 지쳤다. 원정은 내일 아침에.']); return expPrepOpen(); }
     return jeokroeDescend();
   }
   if (!spendAp()) return;
@@ -1715,6 +1715,8 @@ async function jrDown(u){
   for (const e of foes()) removeUnit(e);
   await textbox('', ['적뢰가 무너집니다.', '대리석이 빗속에서 식어 갑니다.', '석문이 천천히 열립니다. 아래로 끝없는 계단.']);
   PRO.jrDone = true; endLobbyFight(true); letterbox(false); G.lock = false;
+  if (typeof proSave === 'function') proSave();
+  setTimeout(() => G.mode === 'cave' && guide('석문이 열렸다 — <em>석문</em>에서 <em>원정</em>을 떠날 수 있다 · <em>I</em> 가방 · 장비', 7), 1500);
 }
 
 /* ---------- v0.20 창고 창: 먹기 · 물약 / 붕대 (치료 스킬 대신) · 장비 장착 · 가구 꺼내 놓기 ---------- */
@@ -1725,6 +1727,8 @@ const hasPlaced = (k, near, r) => PRO.placed.some(p => p.k === k && (!near || Ma
 function applyEquip(fill){
   const pl = G.player; if (!pl) return; const w = PRO.equip.weapon && EQUIP[PRO.equip.weapon.k], a = PRO.equip.armor && EQUIP[PRO.equip.armor.k];
   const max = DEFS.player.hp + (a ? a.hp : 0), ratio = pl.hp / pl.max;
+  // v0.30: 인주 수치는 RPG (rpg.js)가 정함. 창고의 옛 장비는 RPG 장비로 바뀜
+  if (typeof applyHero === 'function'){ applyHero(pl, hero('inju')); return; }
   pl.atk = DEFS.player.atk + (w ? w.atk : 0); pl.max = max; pl.hp = fill ? max * Math.min(1, ratio) : Math.min(max, pl.hp);
 }
 function openStore(){ if (PRO.menu) return; PRO.menu = true; G.lock = true; renderStore(); $p('storeMenu').hidden = false; }
@@ -1735,7 +1739,8 @@ function renderStore(){
   PRO.store.forEach((d, i) => { const key = d.name; if (!groups.has(key)) groups.set(key, { d, idx: [], n: 0, food: 0 }); const g = groups.get(key); g.idx.push(i); g.n++; g.food += d.raw ? 0 : d.food || 0; });
   const fed = PRO.meal.inju.fed, E = PRO.equip;
   const eqRow = (slot, t) => E[slot] ? `<div class="sm-eq"><span>${t}</span><img src="${PA + E[slot].k}.webp" alt=""><b>${E[slot].name}</b><small>${EQUIP[E[slot].k].note}</small><button data-a="unequip" data-s="${slot}">벗기</button></div>` : `<div class="sm-eq off"><span>${t}</span><b>없음</b></div>`;
-  let h = `<div class="sm-equip">${eqRow('weapon', '무기')}${eqRow('armor', '갑옷')}</div>`;
+  const hj = typeof hero === 'function' ? hero('inju') : null, wq = hj && hj.eq.weapon ? itemDef(hj.eq.weapon).n : '맨손';
+  let h = `<div class="sm-equip"><div class="sm-eq"><span>장비</span><b>${wq}</b><small>I 키 — 가방 · 장비 창</small></div></div>`;
   if (!groups.size) h += '<div class="sm-empty">창고가 비어 있다.</div>';
   for (const [name, g] of groups){
     const d = g.d, [tn, tc] = d.wood ? ['땔감', 'twood'] : DROP_TYPE[d.type] || ['', ''];
@@ -1758,7 +1763,8 @@ $p('storeMenu').addEventListener('click', e => {
   if (a === 'heal'){ const d = storeTake(i), k = HEAL[d.k], w = b.dataset.w;
     if (w === 'inju') pl.hp = Math.min(pl.max, pl.hp + pl.max * k); else PRO.hpf[w] = Math.min(1, PRO.hpf[w] + k);
     const u = w === 'inju' ? pl : PRO.cave[w]; popText(u.x, u.y + 2, u.z, `+${k * 100}% (${d.name})`, 'heal', 1.3); spark(u.x, 1, u.z, 0x8fffb0, 10, 2); }
-  if (a === 'equip'){ const d = storeTake(i), sl = EQUIP[d.k].slot; if (PRO.equip[sl]){ PRO.store.push(PRO.equip[sl]); pileAdd(PRO.equip[sl], PRO.store.length - 1); } PRO.equip[sl] = d; applyEquip(); popText(pl.x, pl.y + 2, pl.z, `장착: ${d.name}`, 'crit', 1.3); SFX.clink(0.5); }
+  if (a === 'equip'){ const d = storeTake(i), it = typeof makeItem === 'function' && makeItem(d.k.replace('d_', ''));
+    if (it){ RPG.bag.push(it); equip(hero('inju'), it); popText(pl.x, pl.y + 2, pl.z, `장착: ${itemDef(it).n} (I에서 바꿈)`, 'crit', 1.3); } SFX.clink(0.5); }
   if (a === 'unequip'){ const sl = b.dataset.s, d = PRO.equip[sl]; PRO.equip[sl] = null; PRO.store.push(d); pileAdd(d, PRO.store.length - 1); applyEquip(); }
   if (a === 'take'){ const d = storeTake(i); closeStore(); const bb = bill(PA + d.k + '.webp', pl.x, pl.z, d.h, { fit: 1.0, tint: 0.95 }); const it = addLoose(d, bb, pl.x, pl.z); pickUp(it, pl); guide('놓을 자리에서 <em>E</em> (빈 칸)', 4); return; }
   renderStore();

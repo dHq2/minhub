@@ -1,5 +1,6 @@
-/* game.js v0.7 — 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰
-   주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (1층)를 붙이면 바로 그 장면부터 */
+/* game.js v0.8 — 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+   주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
+   v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
 const LOBBY = [
   '################',
@@ -78,7 +79,11 @@ function init(){
 }
 function startGame(){
   const h = location.hash;
-  if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave(); else startPrologue();
+  const ex = /^#exp(\d*)$/.exec(h);
+  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave();
+  else if (h === '#new'){ newGame(); }
+  else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기
+  else startPrologue();
 }
 function resize(){
   const w = innerWidth, h = innerHeight; UI.W = w; UI.H = h;
@@ -86,6 +91,7 @@ function resize(){
 }
 function preload(){
   const srcs = new Set(); for (const S of Object.values(SPR)) for (const P of Object.values(S.poses)) if (P.src) srcs.add(P.src);
+  if (typeof ITEM_ART !== 'undefined') for (const s of ITEM_ART.held.sheets) srcs.add(s);
   return Promise.all([...srcs].map(src => new Promise(res => { const t = texLoader.load(src, () => res(), undefined, () => res()); t.encoding = THREE.sRGBEncoding; texCache[src] = t; })));
 }
 
@@ -98,7 +104,9 @@ function clearLevel(){
   if (typeof proClear === 'function') proClear();
   Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, camAnchor: null, fogK: 1, lobbyFight: false, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
   if (G.map) G.scene.remove(G.map.group);
-  if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false;
+  if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false; P.burst = null; P.reloadT = 0; P.wall = 0; P.focus = false;
+  if (typeof clearPicks === 'function') clearPicks();
+  if (typeof DUN !== 'undefined'){ DUN.items = []; DUN.sources = []; DUN.bills = []; }
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
 }
 function loadLevel(rows, theme){
@@ -309,7 +317,8 @@ function updateHud(){
     + medicHud() + (typeof proHud === 'function' ? proHud() : '')
     + (G.mode === 'floor' || G.mode === 'prologue' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
-  $('cmd').hidden = G.mode !== 'floor';
+  $('cmd').hidden = G.mode !== 'floor' && G.mode !== 'exp';
+  if (typeof uiSkillBar === 'function') uiSkillBar();
   if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; if (G.boss.B) $('bossphase').textContent = G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
   let it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   const alt = !G.lock && !G.waitInput && typeof proFreeE === 'function' ? proFreeE() : null;   // 가구를 들고 있으면 "여기에 놓는다" (아주 가까운 대상이 없을 때)
@@ -362,11 +371,14 @@ function updateSpearMark(){
 }
 
 /* ---------- 한 프레임 ---------- */
-const PLAY_MODES = new Set(['lobby', 'floor', 'prologue', 'cave']);
+const PLAY_MODES = new Set(['lobby', 'floor', 'prologue', 'cave', 'exp']);
 let last = performance.now();
 function loop(now){
   requestAnimationFrame(loop);
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
+  // 가방 · 확인 · 결과 창: 키를 먼저 가로챔. 멈춰 있으면 그림만 그림
+  if (typeof uiKeys === 'function' && uiKeys()){ if (G.paused){ G.renderer.render(G.scene, camera); pressed.clear(); return; } pressed.clear(); }
+  if (G.paused){ G.renderer.render(G.scene, camera); pressed.clear(); return; }
   if (G.hitstop > 0){ G.hitstop -= dt; dt *= 0.06; }
   dt *= G.slow;
   G.t += dt; G.dt = dt;
@@ -387,7 +399,7 @@ function loop(now){
     for (const u of G.units){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; if (u.shadow) u.shadow.material.opacity = 0.42 * u.mat.opacity; } continue; }
       if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
-      else if (u.side === 'ally' && (G.mode === 'floor' || G.lobbyFight) && !G.lock) (u.D.think || allyThink)(u, dt);
+      else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock) (u.D.think || allyThink)(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
@@ -406,6 +418,9 @@ function loop(now){
     if (G.mode === 'prologue' && pl && pl.downed) proEaten();   // 프롤로그: 쓰러지면 먹힘
   }
   for (const u of G.units) updateSprite(u, dt);
+  if (G.mode === 'exp' && !frozen && typeof expTick === 'function') expTick(dt); else if (G.mode === 'exp' && typeof tickLights === 'function' && EXP) tickLights(0, EXP.vision || 4.7, EXP.lit);
+  if (typeof heldUpdate === 'function') heldUpdate(dt);
+  if (PLAY_MODES.has(G.mode) && !frozen && typeof rpgTick === 'function') rpgTick(dt);
   if (typeof proTick === 'function') proTick(dt);   // 프롤로그 · 굴 연출 (글상자가 떠 있어도 움직임)
   if (!frozen){ updateDecals(dt); updateProjs(dt); } updateFx(dt); runWaits();
   // 카메라: 평소엔 인주, 싸움 중엔 가까운 적 쪽으로 조금
@@ -451,7 +466,7 @@ function order(c){
 let focusRing = null;
 function updateFocusRing(){
   if (!focusRing){ focusRing = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.86, 40), new THREE.MeshBasicMaterial({ color: 0xffd35a, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })); focusRing.rotation.x = -Math.PI / 2; G.scene.add(focusRing); }
-  const t = G.focusTarget; focusRing.visible = G.cmd === 'focus' && !!t && !t.dead && G.mode === 'floor';
+  const t = G.focusTarget; focusRing.visible = G.cmd === 'focus' && !!t && !t.dead && (G.mode === 'floor' || G.mode === 'exp');
   if (focusRing.visible){ focusRing.position.set(t.x, t.y + 0.05, t.z); focusRing.scale.setScalar(t.r * 1.6 * (1 + Math.sin(G.t * 6) * 0.06)); }
 }
 init();

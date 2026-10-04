@@ -1,4 +1,4 @@
-/* player.js v0.7 — 인주 직접 조작
+/* player.js v0.8 — 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -47,6 +47,7 @@ function inputDir(){
 }
 function playerUpdate(u, dt){
   P.atkCd -= dt; P.dodgeCd -= dt; P.comboT -= dt; u.inv = Math.max(0, u.inv - dt);
+  if (!G.lock && (hit('Mouse0') || hit('KeyJ'))) P.atkBuf = G.t + 0.28;   // 공격 입력 기억 (weapons.js)
   u.posture = u.posture || 'stand';
   mouse.over = mouseOverEnemy();
   document.body.style.cursor = mouse.over ? 'crosshair' : 'default';
@@ -73,61 +74,30 @@ function playerUpdate(u, dt){
   const guarding = !G.lock && down('KeyF') && u.st !== 'windup' && u.st !== 'strike' && !P.aiming;
   if (guarding && !u.guard) u.guardAt = G.t;
   u.guard = guarding;
+  u.guardMul = typeof W !== 'undefined' && W.def.guard != null ? W.def.guard : Math.max(0.05, 0.3 - ((u.rpg && u.rpg.block) || 0));
   if (u.guard){
     const ap = aimPoint(u), t = mouse.over || nearest(u, foes().filter(e => e.alert), 6);
     if (t) setAim(u, t.x, t.z); else if (ap) setAim(u, ap.x, ap.z);
     if (mv) moveBy(u, mv.x * u.spd * 0.4 * dt, mv.z * u.spd * 0.4 * dt);
-    setPose(u, 'windup');
+    setPose(u, 'aim');
     return;
   }
   // 찌르기
   if (u.st === 'windup'){ return; }
   if (u.st === 'strike'){ u.stT -= dt; if (mv) moveBy(u, mv.x * 0.8 * dt, mv.z * 0.8 * dt); if (u.stT <= 0) u.st = 'idle'; return; }
-  const wantAtk = !G.lock && (hit('Mouse0') || hit('KeyJ'));
-  if (wantAtk && P.atkCd <= 0 && !P.aiming){
-    const ap = aimPoint(u), tgt = mouse.over || (!ap && nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.2), 3));
-    if (tgt) setAim(u, tgt.x, tgt.z); else if (ap) setAim(u, ap.x, ap.z); else if (mv) setAim(u, u.x + mv.x, u.z + mv.z);
-    if (tgt && G.cmd === 'focus') G.focusTarget = tgt;
-    P.combo = P.comboT > 0 ? (P.combo + 1) % 3 : 0; P.comboT = 0.75;
-    const third = P.combo === 2, armed = P.spear;
-    const M = armed ? { r: third ? 2.2 : 1.9, arc: third ? 1.2 : 1.6, mul: third ? 1.6 : 1, kb: third ? 1.4 : 0.5, wind: third ? 0.2 : 0.11 } : { r: 1.25, arc: 1.4, mul: 0.55, kb: 0.8, wind: 0.12 };
-    setPose(u, 'windup'); P.atkCd = third ? 0.55 : 0.32;
-    windup(u, 'sector', { x: u.x, z: u.z, r: M.r, a: u.aim, arc: M.arc, windup: M.wind, follow: u }, (t) => {
-      const crit = Math.random() < 0.1;
-      hurt(u, t, u.atk * M.mul, { kb: M.kb, from: u, crit, strong: third && armed, stun: third && !t.D.heavy ? 0.35 : 0, hitsAir: u.jy > 0.6 });
-      if (t.side === 'enemy' && G.cmd === 'focus') G.focusTarget = t;
-    }, armed ? GOLD : 0xb0a090);
-    u.decal.onDone = ((orig) => (d) => { d.a = u.aim; d.x = u.x; d.z = u.z; orig(d); u.stT = third ? 0.28 : 0.16; setPose(u, armed ? 'attack' : 'throw'); spark(u.x + Math.cos(u.aim) * 1.3, u.y + 0.9, u.z + Math.sin(u.aim) * 1.3, 0xffe2a0, 3, 2, 0.14, 0.12); })(u.decal.onDone);
-    return;
-  }
-  // 투창: 누르고 있기
-  const holding = !G.lock && (mouse.right || down('KeyK'));
-  if (!P.aiming && P.spear && (hit('Mouse2') || hit('KeyK'))){ P.aiming = true; P.charge = 0; }
-  if (!P.spear && (hit('Mouse2') || hit('KeyK'))) popText(u.x, u.y + 2, u.z, '창이 없음 — 주워야 함', 'miss', 0.9);
-  if (P.aiming){
-    P.charge = Math.min(THROW.full, P.charge + dt);
-    aimPath(u);
-    setPose(u, 'aim');
-    if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt);
-    const full = P.charge >= THROW.full;
-    if (!holding || full){
-      const perfect = !full && P.charge >= THROW.full - THROW.perfect;
-      if (P.charge < 0.25 && !full){ P.aiming = false; P.charge = 0; return; }
-      throwSpear(u, P.charge / THROW.full, perfect);
-      P.aiming = false; P.charge = 0;
-    }
-    return;
-  }
+  // 공격 · 무기 스킬: 무기마다 (weapons.js)
+  if (weaponInput(u, dt, mv)) return;
   // 걷기 · 달리기 (벽에 막혀도 미끄러지며 계속 감)
   if (mv){
     const run = down('ShiftLeft') || down('ShiftRight'), sp = u.spd * (run ? 1.55 : 1);
     moveBy(u, mv.x * sp * dt, mv.z * sp * dt);
-    u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z);
-    setPose(u, u.jy ? 'run' : run ? 'run' : 'walk');
-  } else setPose(u, u.jy ? 'run' : 'idle');
+    const shooting = G.t < (P.shootT || 0);
+    if (!shooting){ u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z); }
+    setPose(u, shooting ? 'shoot' : u.jy ? 'run' : run ? 'run' : 'walk');
+  } else setPose(u, G.t < (P.shootT || 0) ? 'shoot' : u.jy ? 'run' : 'idle');
   // 창 줍기
   if (!P.spear && P.spearObj && Math.hypot(P.spearObj.x - u.x, P.spearObj.z - u.z) < 0.9){
-    G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, '창을 주움', 'heal', 0.7);
+    G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, `${W.def.d ? W.def.d.n : '창'}을 주움`, 'heal', 0.7);
   }
 }
 // 투창 궤적: 보정 없음. 마우스가 가리키는 곳 그대로
@@ -236,7 +206,7 @@ function updateAimLine(u){
 function updateChargeRing(u){
   updateAimLine(u);
   const el = document.getElementById('gauge');
-  if (P.aiming){
+  if (P.aiming && P.aimMode !== 'focus'){
     const k = P.charge / THROW.full, inWin = P.charge >= THROW.full - THROW.perfect;
     const p = toScreen(u.x, u.y + (u.jy || 0) + bodyH(u) + 0.55, u.z, UI.W, UI.H);
     el.hidden = false; el.style.transform = `translate(${p.x}px,${p.y}px) translate(-50%,-100%)`;

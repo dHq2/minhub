@@ -54,6 +54,7 @@ function updateSprite(u, dt){
   if (P.n){
     const cnt = P.count || P.n, from = P.from || 0;
     let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(fi % (2 * cnt - 2) - (cnt - 1)) : fi % cnt;   // pingpong: 끝에서 거꾸로
+    u.fi = fi;
     if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
     else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }
@@ -185,9 +186,9 @@ function updateBars(){
   for (const u of G.units){
     const top = u.S.tall * SPRITE_SCALE + 0.25 + u.lift + (u.jy || 0);
     const p = toScreen(u.x, u.y + top, u.z, UI.W, UI.H);
-    const show = !u.dead && !p.behind && (u.side === 'ally' || u.D.dummy || u.alert || u.hp < u.max);
+    const show = !u.dead && !p.behind && !u.dark && (u.side === 'ally' || u.D.dummy || u.alert || u.hp < u.max);
     if (u.bar){ u.bar.style.display = show && !u.D.boss ? 'block' : 'none'; if (show){ u.bar.style.transform = `translate(${p.x}px,${p.y}px) translate(-50%,0)`; u.bar.firstChild.style.width = Math.max(0, u.hp / u.max * 100) + '%'; if (u.side === 'ally'){ const t = Math.max(0, Math.ceil(u.hp)) + ''; if (u.bar.dataset.n !== t){ u.bar.dataset.n = t; } } } }
-    if (u.tag){ u.tag.style.display = !u.dead && !p.behind ? 'block' : 'none'; u.tag.style.transform = `translate(${p.x}px,${p.y - 14}px) translate(-50%,0)`; u.tag.classList.toggle('down', !!u.downed); }
+    if (u.tag){ u.tag.style.display = !u.dead && !p.behind && !u.dark ? 'block' : 'none'; u.tag.style.transform = `translate(${p.x}px,${p.y - 14}px) translate(-50%,0)`; u.tag.classList.toggle('down', !!u.downed); }
   }
 }
 
@@ -310,7 +311,8 @@ function hurt(att, tgt, base, o = {}){
       if (att && !att.dead){ if (att.D.boss){ att.parried = 0.9; if (att.B) att.B.act = null; interrupt(att); att.lift = att.airborne ? att.lift : 0; } else { interrupt(att); att.st = 'hurt'; att.stT = 0.9; setPose(att, 'hurt'); } popText(att.x, att.y + 2.4 + (att.lift || 0), att.z, '휘청', 'miss'); }
       return 0;
     }
-    dmg *= 0.3; tag = '막음 '; spark(tgt.x + Math.cos(tgt.aim) * 0.5, tgt.y + 1, tgt.z + Math.sin(tgt.aim) * 0.5, 0x9fc8ff, 8, 4);
+    dmg *= tgt.guardMul ?? 0.3; tag = '막음 '; spark(tgt.x + Math.cos(tgt.aim) * 0.5, tgt.y + 1, tgt.z + Math.sin(tgt.aim) * 0.5, 0x9fc8ff, 8, 4);
+    if (tgt.fx && tgt.fx.reflectP && att && !att.dead && !o.ranged) setTimeout(() => !att.dead && hurt(tgt, att, base * tgt.fx.reflectP / 100, { noCrit: true, dot: true }), 0);
   }
   // 적뢰: 대리석 피부 (강공이 아니면 59%로 막음) · 강공 (치명 · 완벽 투창 · 3타째)이 오면 옆으로 스텝 (4초마다)
   if (tgt.D.marble && !o.unblockable){
@@ -397,6 +399,9 @@ function stepProj(p, dt){
     for (const u of G.units){
       if (u.dead || u.downed || u.side === p.side || u.side === 'neutral' && !u.D.dummy && !u.D.hittable || p.hits.has(u)) continue;
       if (u.airborne && !p.hitsAir) continue;
+      // 방패 올리기 (되받아침): 앞에서 오는 적의 화살 · 탄을 돌려보냄
+      if (u.reflectT > G.t && p.side === 'enemy' && Math.hypot(u.x - p.x, u.z - p.z) < u.r + 0.6 && Math.abs(angDiff(Math.atan2(p.z - u.z, p.x - u.x), u.aim)) < 1.4){
+        p.a += Math.PI + rnd(-0.15, 0.15); p.side = u.side; p.hits.clear(); p.travelled = 0; p.m.rotation.y = -p.a; spark(p.x, p.y, p.z, 0x9fd8ff, 8, 4); popText(u.x, u.y + 2, u.z, '되받아침', 'aim', 0.6); return true; }
       if (Math.hypot(u.x - p.x, u.z - p.z) < u.r + (p.hitR || 0.2) && Math.abs((u.y + u.lift + (u.jy || 0) + bodyH(u) * 0.5) - p.y) < bodyH(u) * 0.5 + 0.35){
         p.hits.add(u); p.onHit && p.onHit(p, u);
         if (!p.pierce){ p.end && p.end(p, p.x, p.z, false, u); G.scene.remove(p.m); return false; }
