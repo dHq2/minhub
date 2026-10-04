@@ -1,4 +1,4 @@
-/* camera.js v0.7 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
+/* camera.js v0.8 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
    v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
    v0.4: 카메라 구역 — 지도에 적어 둔 구역 (곁방 등)에 들어가면 정해진 각도로 돌고 둘레 벽을 깎음, 나오면 들어가기 전 각도로 */
@@ -42,6 +42,13 @@ function camSide(a, b, sec, scale = 1){
   let dx = b.x - a.x, dz = b.z - a.z; if (!dx && !dz) dx = 1;
   const l = Math.hypot(dx, dz), sx = -dz / l, sz = dx / l, cam = camOff(CAM.yaw, 1), sign = sx * cam.x + sz * cam.z >= 0 ? 1 : -1;
   CAM.sideAt = { x: mx, z: mz }; CAM.sideAxis = { x: sx * sign, z: sz * sign }; CAM.sideStart = G.t; CAM.sideUntil = G.t + sec;
+}
+// 장면이 바뀔 때: 붙잡아 둔 연출 카메라 (락온 · 넓게 · 옆에서 · 크리티컬 · 창 따라가기 · 줌)를 모두 풂
+// (v0.8: 99초짜리 락온 · 넓게 보여주기가 다음 장면까지 남아 카메라가 한 자리에 굳던 것)
+function camReset(){
+  CAM.focusUntil = -1; CAM.focusAt = null; CAM.wide = null; CAM.sideUntil = -1; CAM.critUntil = -1;
+  CAM.track = null; CAM.trackUntil = -1; CAM.punch = null; CAM.zoomTarget = CAM.zoomBoost = 0; CAM.shakeUntil = -1;
+  CAM.out = 0; CAM.fit = 0; CAM.air = 0; CAM.yawBefore = null;
 }
 function camWide(x, z, h, back, sec){ CAM.wide = { x, z, h, back, until: G.t + sec }; }
 function camSnapTo(x, z){ CAM.follow.x = x; CAM.follow.z = z; const o = camOff(CAM.yaw, CAM.base.back); camera.position.set(x + o.x, CAM.base.y, z + o.z); }

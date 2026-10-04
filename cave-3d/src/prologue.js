@@ -575,7 +575,7 @@ async function todayFall(){
 function proSkip(){
   G.waits = []; G.waitInput = null; G.slow = 1; G.hitstop = 0;
   $p('textbox').hidden = true; $p('fallres').hidden = true; $p('load').hidden = true;
-  dark(0, 0); mid(''); letterbox(false); PRO.caveIntro = false;
+  dark(0, 0); mid(''); letterbox(false); PRO.caveIntro = false; camReset();
   startCave(false);
 }
 $p('skipBtn').addEventListener('click', e => { e.stopPropagation(); proSkip(); });

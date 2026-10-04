@@ -102,7 +102,7 @@ function clearLevel(){
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
 }
 function loadLevel(rows, theme){
-  CAM.yaw = CAM.yawT = 0; CAM.yawBefore = null; CAM.track = null; CAM.zone = null;
+  camReset(); CAM.yaw = CAM.yawT = 0; CAM.zone = null;
   G.map = buildWorld(rows, theme); G.scene.add(G.map.group);
   G.scene.background = new THREE.Color(theme.bg); G.scene.fog = new THREE.Fog(theme.bg, theme.fogNear, theme.fogFar);
   hemi.intensity = theme.hemi; moon.intensity = theme.moon;
