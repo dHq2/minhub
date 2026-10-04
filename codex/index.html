@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.62 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.63 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -161,6 +161,25 @@ main{touch-action:pan-x pan-y}
   .view .side .acts #vDel{grid-column:1 / -1}
   textarea{min-height:80px;font-size:16px}
 }
+/* v1.63 목차 · 묶음 접기 */
+.gbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px}
+.gbar .btn{padding:4px 10px;font-size:12px}
+.gcount{font:500 12px var(--mono);color:var(--dim)}
+.toc{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;scroll-margin-top:var(--barH,120px)}
+.tocrow{display:grid;grid-template-columns:minmax(90px,150px) 1fr;gap:4px 10px;align-items:start}
+.tocrow > b{font:600 12.5px var(--body);color:var(--fg);padding-top:3px}
+.tocrow > b i,.tchip i{font:500 10.5px var(--mono);color:var(--dim);font-style:normal;margin-left:5px}
+.tocrow > span{display:flex;flex-wrap:wrap;gap:5px}
+.tchip{font:500 12px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+.tchip:hover,.tchip:focus-visible{border-color:var(--accent)}
+.tchip.on{border-color:var(--accent);color:var(--accent)}
+h3.gh{margin:6px 0;scroll-margin-top:var(--barH,120px)}
+h3.gh.open{margin-top:18px}
+.gt{display:flex;gap:8px;align-items:center;font:600 13px var(--body);color:var(--dim);letter-spacing:.06em;background:transparent;border:0;padding:4px 2px;cursor:pointer;text-align:left}
+.gt:hover,.gh.open .gt{color:var(--fg)}
+.car{width:12px;color:var(--accent)}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;font:600 13px var(--body);color:var(--bg);background:var(--accent);border:0;border-radius:999px;padding:9px 14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+@media (max-width:640px){ .tocrow{grid-template-columns:1fr} .fab{bottom:calc(70px + env(safe-area-inset-bottom,0px))} }
 @media (prefers-reduced-motion:no-preference){ .tile{transition:border-color .15s,box-shadow .15s} }
 </style>
 
@@ -216,6 +235,7 @@ main{touch-action:pan-x pan-y}
 </div>
 
 <div class="sheet" id="sheet" hidden></div>
+<button class="fab" id="fab" type="button" hidden aria-label="이 분류의 목차로">↑ 목차</button>
 
 <script src="catalog.js"></script>
 <script src="packs.js"></script>
@@ -323,6 +343,16 @@ function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.
 /* 표정 묶음: parent가 있는 그림 (표정)은 대표 초상화 밑에 접어 둠. 대표 칸의 '표정 n'을 누르면 바로 뒤에 펴짐 */
 const KIDS = {}; for (const e of CATALOG) if (e.parent) (KIDS[e.parent] = KIDS[e.parent] || []).push(e.id);
 let opened = {}; try { opened = JSON.parse(localStorage.getItem('codex-open') || '{}'); } catch (e) {}
+/* v1.63 묶음 접기: 처음엔 모두 접힘 (목차처럼 한눈에). 묶음 제목 · 목차 · 초상화 버튼을 누르면 펴짐. 찾기 · 거르기 중엔 모두 펴서 보여 줌 */
+let gOpen = {}; try { gOpen = JSON.parse(localStorage.getItem('codex-gopen') || '{}'); } catch (e) {}
+const gKey = (ck, s) => ck + '|' + s;
+const filtering = () => !!(q || onlyChecked || showSt !== 'all');
+const isOpenG = k => filtering() || !!gOpen[k];
+function setOpenG(k, v){ if (v) gOpen[k] = 1; else delete gOpen[k]; try { localStorage.setItem('codex-gopen', JSON.stringify(gOpen)); } catch (e) {} }
+// 목차 묶음: 알려진 앞머리 (무기 · 의상 · 조우 장면 …)끼리 모음. 나머지는 분류마다 '기본' 줄로
+const KNOWN = ['무기','장비','의상 세트','의상','장신구','보스 장비','받은 장비 그림','조우 장면','빈 맵 틀','스킬 아이콘','생물','가구','생활 소품','상호작용 소품','소품','환경 소품','환경','폐허','건축물','유물 모음 2 (1.59)'];
+const BASE = { relic:'유물', equip:'기본 무기', scene:'컷씬 · 인카운터 · 배경', card:'이야기 · 스킬 그림', prop:'처음 받은 가구 · 소품', item:'아이템' };
+const clusterOf = (s, ck) => { const p = s.includes(' · ') ? s.split(' · ')[0] : s; return KNOWN.includes(p) ? p : (BASE[ck] || '기본'); };
 function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID[e.parent] || !visible(BY_ID[e.parent])); }
 /* 찾기: 번호는 하이픈 · 대소문자 무시 (h076 = H-076). 찾는 동안은 모든 분류에서 */
 let q = '';
@@ -385,13 +415,25 @@ function render(){
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     if (c.key === 'char' && !q) html += peopleNav(subs0);
+    const shown = subs.filter(s => items.some(e => e.sub === s));
+    if (shown.length > 1){
+      const nOpen = shown.filter(s => isOpenG(gKey(c.key, s))).length;
+      html += `<div class="gbar"><button class="btn" type="button" data-all="${c.key}" data-v="1">모두 펴기</button><button class="btn" type="button" data-all="${c.key}" data-v="0">모두 접기</button><span class="gcount">묶음 ${shown.length} · 펴짐 ${filtering() ? '전부 (찾기 · 거르기 중)' : nOpen}</span></div>`;
+      if (c.key !== 'char'){
+        const cl = {}; for (const s of shown) (cl[clusterOf(s, c.key)] = cl[clusterOf(s, c.key)] || []).push(s);
+        html += `<nav class="toc" id="toc-${c.key}" aria-label="${esc(c.name)} 목차">${Object.entries(cl).map(([k, ss]) => `<div class="tocrow"><b>${esc(k)}<i>${ss.reduce((a, s) => a + items.filter(e => e.sub === s).length, 0)}</i></b><span>${ss.map(s => { const r = s.startsWith(k + ' · ') ? s.slice(k.length + 3) : s; const n = items.filter(e => e.sub === s).length; return `<button type="button" class="tchip ${isOpenG(gKey(c.key, s)) ? 'on' : ''}" data-goto="${esc(gKey(c.key, s))}">${esc(r)} <i>${n}</i></button>`; }).join('')}</span></div>`).join('')}</nav>`;
+      }
+    }
     let any = false;
     for (const s of subs){
-      const list = arrange(items.filter(e => e.sub === s), c.key); if (!list.length) continue; any = true; FLAT.push(...list);
+      const list0 = items.filter(e => e.sub === s); if (!list0.length) continue; any = true;
+      const k = gKey(c.key, s), op = isOpenG(k) || shown.length === 1;
+      const list = op ? arrange(list0, c.key) : list0; if (op) FLAT.push(...list);
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : 'var(--line)';
       const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
-      const gi = c.key === 'char' && subs0.includes(s) ? ` id="who-${subs0.indexOf(s)}"` : '';
-      html += `<h3${gi}><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}${c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : ''}</h3><div class="${g}">${list.map(tile).join('')}</div>`;
+      const gi = c.key === 'char' && subs0.includes(s) ? `who-${subs0.indexOf(s)}` : 'g-' + c.key + '-' + subs0.indexOf(s);
+      const back = c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : shown.length > 1 ? `<button class="toNav" type="button" data-totoc="toc-${c.key}" aria-label="목차로">↑ 목차</button>` : '';
+      html += `<h3 id="${gi}" class="gh ${op ? 'open' : ''}" data-g="${esc(k)}"><button class="gt" type="button" data-tog="${esc(k)}" aria-expanded="${op}"><span class="car">${op ? '▾' : '▸'}</span><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</button>${back}</h3>${op ? `<div class="${g}">${list.map(tile).join('')}</div>` : ''}`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
     html += `</section>`;
@@ -473,8 +515,12 @@ function toggleDel(id){
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
-  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); jumpTo(jb.dataset.jump); return; }
+  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
   if (e.target.closest('[data-tonav]')){ e.stopPropagation(); jumpTo('pnav'); return; }
+  const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); jumpTo(tt.dataset.totoc); return; }
+  const tg = e.target.closest('[data-tog]'); if (tg){ e.stopPropagation(); const k = tg.dataset.tog; if (filtering()) return; setOpenG(k, !gOpen[k]); const h = tg.closest('h3'), id = h && h.id, y = h ? h.getBoundingClientRect().top : 0; render(); const n = id && $(id); if (n) scrollBy(0, n.getBoundingClientRect().top - y); return; }
+  const go = e.target.closest('[data-goto]'); if (go){ e.stopPropagation(); const k = go.dataset.goto; setOpenG(k, true); render(); const h = [...document.querySelectorAll('h3[data-g]')].find(x => x.dataset.g === k); if (h) jumpTo(h.id); return; }
+  const al = e.target.closest('[data-all]'); if (al){ e.stopPropagation(); const ck = al.dataset.all, v = al.dataset.v === '1'; for (const s of new Set(CATALOG.filter(x => x.cat === ck).map(x => x.sub))) setOpenG(gKey(ck, s), v); render(); return; }
   const fo = e.target.closest('[data-fold]'); if (fo){ e.stopPropagation(); const id = fo.dataset.fold; opened[id] = !opened[id]; try { localStorage.setItem('codex-open', JSON.stringify(opened)); } catch (er) {} render(); return; }
   const d = e.target.closest('[data-del]'); if (d){ e.stopPropagation(); toggleDel(d.dataset.del); return; }
   const st = e.target.closest('[data-st]'); if (st){ e.stopPropagation(); const it = BY_ID[st.dataset.st]; put(it.id, { status: stOf(it) === 'in' ? 'out' : 'in' }); return; }
@@ -539,6 +585,10 @@ $('zOut').onclick = () => setZoom(zoom / 1.2);
   // 컴퓨터: Ctrl + 휠
   $('main').addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive:false });
 })();
+/* 떠 있는 버튼: 지금 보는 분류의 목차 (인물은 초상화 버튼)로 */
+function curSection(){ const top = $('bar').offsetHeight + 12; let cur = null; for (const sct of document.querySelectorAll('section.cat')) if (sct.getBoundingClientRect().top <= top) cur = sct; return cur; }
+let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900; }); }, { passive:true });
+$('fab').onclick = () => { const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
 $('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
 document.querySelector('.lede').addEventListener('click', e => e.currentTarget.classList.toggle('open'));
 /* 크게 보기: 좌우로 밀어 넘기기 · 두 번 눌러 확대 */
