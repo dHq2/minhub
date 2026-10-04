@@ -1,4 +1,4 @@
-# people.py v1.12 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.13 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -20,7 +20,7 @@ CH = [
  ('blocker','막아서는 자','적 · 보스'),('mech','기체 A · B','적 · 보스'),
  ('cs','청승 (도깨비 자매)','역할 미정'),('jakyak','작약 (도깨비 자매)','역할 미정'),('bogwang','보광','역할 미정'),('borama','보르마','역할 미정'),('kwangnyang','광냥','역할 미정'),
  ('sealed','봉인된 그녀','역할 미정'),('knightcommander','기사단장','역할 미정'),('nursechief','간호사장','역할 미정'),('gaius','가이우스','역할 미정'),
- ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),('catwarrior','고양이 전사녀','역할 미정'),
+ ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),('catwarrior','검냥이','역할 미정'),
 ]
 NAME = {k:(n,r) for k,n,r in CH}; ORDER = [k for k,_,_ in CH]
 NID = {'008':'odile','010':'kwangnyang','011':'kwangnyang','012':'kwangnyang','028':'bogwang','029':'bogwang','030':'bogwang','031':'bogwang',
@@ -80,7 +80,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.60', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.61', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:
