@@ -224,7 +224,7 @@ function updateDecals(dt){
     d.t += dt; const p = Math.min(1, d.t / d.dur);
     if (d.shape === 'line') d.fill.scale.set(p, 1, 1); else d.fill.scale.setScalar(Math.max(0.001, p));
     if (d.follow){ d.g.position.x = d.follow.x; d.g.position.z = d.follow.z; d.x = d.follow.x; d.z = d.follow.z; }
-    if (d.t >= d.dur){ d.done = true; d.onDone && d.onDone(d); }
+    if (d.t >= d.dur){ d.done = true; d.onDone && d.onDone(d); if (d.hostile && G.onArea) G.onArea(d); }
     return true;
   });
 }
