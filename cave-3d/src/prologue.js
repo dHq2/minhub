@@ -121,7 +121,7 @@ function updateFallers(){
 /* ---------- 정리 (clearLevel이 부름) ---------- */
 function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
-  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, pigs: [], blizzard: null, eggBills: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null, bar: null, woodBill: null, stains: [] });
+  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, pigs: [], blizzard: null, eggBills: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null, bar: null, woodBill: null, stains: [], bossCam: false });
   guide(''); mid(''); $p('dream').classList.remove('on');
   for (const el of Object.values(PRO.todoEls || {})) el.remove(); PRO.todoEls = {}; if (PRO.menu) closeStore();
   camPreset(); if (camera.view && camera.view.enabled) camera.clearViewOffset(); PRO.barH = PRO.barHs = 0; if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
@@ -484,6 +484,7 @@ function proTick(dt){
     Cv.zzzT -= dt; if (!PRO.rebOut && Cv.zzzT <= 0){ Cv.zzzT = 2.4; say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, 'z z z…', 'zzz', 2.2); }
     // 달팽이: 집 근처를 아주 천천히 기어다님
     if (!G.waitInput) tickSnails(dt);
+    if (PRO.carry && !G.lock && !G.waitInput && hit('KeyG')) dropHere();
     tickStorage(dt); tickFlies(dt); tickStage(dt); tickPigs(dt); tickStorm(dt); tickFire(dt); tickBody(dt); tickHungry(dt);
     // 오늘의 낙하: 움직일 수 있게 된 뒤 30초
     if (!Cv.dropped && !G.lock && !G.waitInput){ Cv.dropT -= dt; if (Cv.dropT <= 0) todayFall(); }
@@ -757,7 +758,7 @@ async function endDay(){
   dayNews.forEach((t, i) => setTimeout(() => say(Cv.ch, t, 'soft', 2.6), 2800 + i * 2600));
   letterbox(false); G.lock = false;
   if (PRO.day >= 3 && Math.random() < 0.25) setTimeout(nightRaid, 1800);
-  setTimeout(() => G.mode === 'cave' && guide(`아침 — 행동 <em>${AP_MAX}</em>번: <em>불</em> · <em>달팽이 먹이</em> · <em>묻기</em> · <em>석문 파기</em> (밥 · 나르기는 공짜)`, 7), 2600);
+  setTimeout(() => G.mode === 'cave' && guide(`아침 — <em>밥</em> · <em>불</em>은 언제든 · 행동 <em>${AP_MAX}</em>번: <em>달팽이 먹이</em> · <em>묻기</em> · <em>석문 파기</em> · <em>레베카</em>`, 7), 2600);
   caption(`${PRO.day}일째 · ${WEATHER[PRO.weather].icon} ${WEATHER[PRO.weather].name}`, rotNow ? '어디선가 썩는 냄새가 난다' : WEATHER[PRO.weather].note);
   if (PRO.weather === 'rain' && PRO.tentGoneNow) setTimeout(() => say(Cv.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1800);
 }
@@ -832,7 +833,7 @@ function helperTick(h, dt){
   if (h.wander){ const W = h.wander; if (Math.hypot(W.x - h.x, W.z - h.z) > 0.3 && W.t > 0){ navTo(h, W.x, W.z, sp * 0.6, dt, 0.2); moving = true; } W.t -= dt; if (W.t <= -W.stay) h.wander = null; return hMove(h, moving); }
   h.restT = (h.restT || 0) - dt;
   if (!h.job && h.restT <= 0 && !G.lock){
-    const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done && !(it.d.raw && (isCh || !PRO.fireLit)));   // 청광묵은 죽은 달팽이를 못 만짐
+    const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done && !(it.heldT > G.t) && !(it.d.raw && (isCh || !PRO.fireLit)));   // 청광묵은 죽은 달팽이를 못 만짐
     const it = nearest(h, free, 30);
     if (it){
       const r = Math.random();
@@ -1016,7 +1017,7 @@ async function lobbyDefeat(){
   if (PRO.lobbyLost) return; PRO.lobbyLost = true; G.lock = true; letterbox(true);
   dark(1, 1.2); await wait(1.4);
   for (const e of foes()) removeUnit(e);
-  const wasJr = !!G.boss; if (G.boss){ $('bossbar').hidden = true; G.boss = null; G.rain.on = PRO.storm === 'downpour'; }
+  const wasJr = !!G.boss; if (G.boss){ $('bossbar').hidden = true; G.boss = null; G.rain.on = PRO.storm === 'downpour'; bossCam(false); }
   const pl = G.player; pl.downed = false; pl.st = 'idle'; pl.hp = Math.round(pl.max * 0.5);
   endLobbyFight(false);
   dark(0, 1.2); await textbox('', wasJr ? ['…눈을 뜨니 잠자리 위.', '적뢰는 하늘로 돌아갔다. 석문은 그대로 열려 있다.', '(준비가 되면 다시 석문 앞에서)'] : ['…눈을 뜨니 잠자리 위.', '청광묵이 끌어다 놓은 모양이다. 놈들은 어디론가 사라졌다.']);
@@ -1333,8 +1334,8 @@ function buildFire(){
       if (c && c.d.raw) return PRO.fireLit ? `${eul(c.d.name)} 굽는다` : '불이 꺼져 있어 구울 수 없다';
       if (c) return '불에 넣을 수 없는 것';
       if (PRO.fireLit) return `모닥불 (오늘 피움 · 장작 더미 ${PRO.wood}) — 곁에 있으면 빨리 회복`;
-      return PRO.wood >= FIRE_COST ? `불을 피운다 (장작 ${FIRE_COST} / 더미 ${PRO.wood}${apTag()})` : `불이 꺼졌다 — 장작이 모자람 (${PRO.wood}/${FIRE_COST}, 천 · 판자를 가져오기)`; },
-    fn: () => { const c = PRO.carry; if (c){ if (c.d.wood) return feedWood(c); if (c.d.raw && PRO.fireLit) return roast(c); return; } if (!PRO.fireLit && PRO.wood >= FIRE_COST && spendAp()) lightFire(); } });
+      return PRO.wood >= FIRE_COST ? `불을 피운다 (장작 ${FIRE_COST} / 더미 ${PRO.wood})` : `불이 꺼졌다 — 장작이 모자람 (${PRO.wood}/${FIRE_COST}, 천 · 판자를 가져오기)`; },
+    fn: () => { const c = PRO.carry; if (c){ if (c.d.wood) return feedWood(c); if (c.d.raw && PRO.fireLit) return roast(c); return; } if (!PRO.fireLit && PRO.wood >= FIRE_COST) lightFire(); } });
 }
 function woodPile(){
   if (PRO.woodBill){ G.scene.remove(PRO.woodBill.g); PRO.woodBill = null; }
@@ -1525,7 +1526,7 @@ function barTalk(name, text, life){
   B.talk.classList.add('on'); B.talkT = G.t + life;
 }
 function caveBar(){
-  const B = PRO.bar, el = $p('cavebar'), on = G.mode === 'cave' && !!PRO.cave && !PRO.caveIntro && !!B;
+  const B = PRO.bar, el = $p('cavebar'), on = G.mode === 'cave' && !!PRO.cave && !PRO.caveIntro && !!B && !PRO.bossCam;
   el.hidden = !on; document.body.classList.toggle('cavebar', on);
   PRO.barH = on && !document.body.classList.contains('cine') ? el.offsetHeight + 14 : 0;
   $p('prompt').style.bottom = on ? (el.offsetHeight + 46) + 'px' : ''; $p('guide').style.bottom = on ? (el.offsetHeight + 96) + 'px' : '';
@@ -1548,7 +1549,7 @@ function caveBar(){
   const ck = (ok, t) => `<span class="${ok ? 'ok' : 'todo'}">${ok ? '✔' : '☐'} ${t}</span>`;
   const apDots = '●'.repeat(PRO.ap) + '○'.repeat(Math.max(0, AP_MAX - PRO.ap)), E = PRO.equip;
   const html = `<div class="ap-row">행동 <b>${apDots}</b> <small>${PRO.ap}/${AP_MAX}</small> · ⛏ 석문 <b>${Math.floor(PRO.dig)}%</b>${PRO.dig >= 100 && !PRO.jrDone ? ' <b class="bad">열 수 있음</b>' : ''}</div><div class="todo-row">${ck(fedN === nMeal, `밥 ${fedN}/${nMeal}`)}${ck(PRO.fireLit, '불')}${ck(PRO.penFood >= need, '달팽이 먹이')}${PRO.trash.length ? ck(PRO.didBury, '묻기') : ''}</div>`
-    + `<div><i>📦</i> 창고 ${PRO.store.length} · 끼니 ${meals()}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}${E.weapon || E.armor ? ` · ${E.weapon ? '🗡' : ''}${E.armor ? '🛡' : ''}` : ''}</div>`
+    + `<div><i>📦</i> 창고 ${PRO.store.length} · 끼니 ${meals()}${PRO.carry ? ` · ✋ ${PRO.carry.d.name} <b class="warn">(G 내려놓기)</b>` : ''}${E.weapon || E.armor ? ` · ${E.weapon ? '🗡' : ''}${E.armor ? '🛡' : ''}` : ''}</div>`
     + `<div><i>🔥</i> ${PRO.fireLit ? '불 피움' : '<b class="bad">불 꺼짐</b>'} · 장작 ${PRO.wood}${PRO.trash.length ? ` · 🗑 ${PRO.trash.length}${rot ? ` <b class="warn">(썩음 ${rot})</b>` : ''}` : ''}</div>`
     + `<div><i>🐌</i> ${Cv.snails.filter(s => !s.baby).length}${PRO.babies ? `+${PRO.babies}` : ''} · 먹이 <b class="${PRO.penFood >= need ? '' : 'warn'}">${PRO.penFood}/${need}</b>${PRO.snailHd ? ` <b class="bad">굶음 ${PRO.snailHd}일</b>` : ''}${PRO.eggs.length ? ` · 🥚 ${PRO.eggs.length}` : ''}${pigs ? ` · 🐷 ${pigs}` : ''}</div>`
     + `<div class="day"><i>☾</i> ${PRO.day}일째 · ${W.icon} ${W.name} · ${Cv.dropped ? '낙하 끝 — 잠자리에서 하루를 마침' : `낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}</div>`;
@@ -1627,11 +1628,13 @@ function todoMarks(){
     !PRO.fireLit && PRO.wood >= FIRE_COST && ['fire', '불', FIRE.x, FIRE.z],
     PRO.penFood < need && ['pen', '먹이', 12, 10],
     PRO.trash.length && !PRO.didBury && ['bury', '묻기', PIT.x, PIT.z],
-    readyToSleep() && ['sleep', '잠 (하루 마치기)', BED.x, BED.z],
   ].filter(Boolean);
-  if (show && readyToSleep() && !PRO.sleepHint){ PRO.sleepHint = true; say(Cv.ch, PRO.ap <= 0 ? '대장! 오늘은 지쳤다! 이제 자자!' : '대장! 할 일 다 했다! 이제 자자!', 'soft', 2.6); guide('<em>잠자리</em>에서 <em>E</em> — 하루를 마치고 다음 날로', 6); }
-  const keep = new Set(list.map(l => l[0]));
-  for (const k of Object.keys(PRO.todoEls)) if (!keep.has(k)){ PRO.todoEls[k].remove(); delete PRO.todoEls[k]; if (PRO.todoRings && PRO.todoRings[k]){ G.scene.remove(PRO.todoRings[k]); delete PRO.todoRings[k]; } }
+  const allDone = show && readyToSleep() && (PRO.ap <= 0 ? !list.some(l => l[0] === 'meal' || l[0] === 'fire') : true);
+  if (allDone) list.splice(0, list.length, ['sleep', '잠자리', BED.x, BED.z]);   // 다 했으면 잠자리만
+  if (allDone && !PRO.sleepHint){ PRO.sleepHint = true; guide(PRO.ap <= 0 ? '너무 피곤합니다. 더 이상 할 수 있는 것이 없습니다. — <em>잠자리</em>로' : '할 일을 다 한 것 같습니다. 더 이상 할 수 있는 것이 없습니다. 너무 피곤합니다. — <em>잠자리</em>로', 7); }
+  const keep = () => new Set(list.map(l => l[0]));
+  const kept = keep();
+  for (const k of Object.keys(PRO.todoEls)) if (!kept.has(k)){ PRO.todoEls[k].remove(); delete PRO.todoEls[k]; if (PRO.todoRings && PRO.todoRings[k]){ G.scene.remove(PRO.todoRings[k]); delete PRO.todoRings[k]; } }
   PRO.todoRings = PRO.todoRings || {};
   for (const [k, t, x, z] of list){
     let el = PRO.todoEls[k]; if (!el){ el = PRO.todoEls[k] = document.createElement('div'); el.className = 'todoMark'; el.textContent = t; host.appendChild(el); }
@@ -1644,7 +1647,7 @@ function todoMarks(){
 
 
 /* ---------- v0.20 하루 행동 수: 큰 일 (불 · 달팽이 먹이 채우기 · 쓰레기 묻기 · 천막 · 석문 파기)은 하루 4번까지. 밥 · 나르기 · 창고는 공짜 ---------- */
-const AP_MAX = 4;
+const AP_MAX = 4;   // v0.22: 불 피우기 · 장작 넣기는 행동을 안 씀 (지쳐도 불은 피움)
 const apTag = () => PRO.ap > 0 ? ' · 행동 1' : ' — 오늘은 지쳤다';
 function spendAp(){
   const pl = G.player;
@@ -1698,7 +1701,7 @@ async function jeokroeDescend(){
   flashScreen('#ffffff', 0.9); camShake(0.6, 0.5); ring(C.x, C.z, 0xff5040, 5, 0.6); dust(C.x, C.z, 24); spark(C.x, 1, C.z, 0xff8060, 30, 9); SFX.boom(1.6);
   const boss = spawn('jeokroe', C.x, C.z, 'enemy'); G.boss = boss; boss.alert = true; boss.band = 'lobby'; setAim(boss, G.player.x, G.player.z);
   G.rain.freeze = 1.3; await wait(1.3);
-  CAM.wide = null;
+  CAM.wide = null; bossCam(true);
   startLobbyFight();
   const prev = G.onKill; G.onKill = u => { if (u === G.boss) jrDown(u); else if (prev) prev(u); };
   bossInit(boss, { x: C.x, z: C.z }); boss.B.act = { type: 'kick', t: 0, tgt: G.player, phase: 0 };
@@ -1708,7 +1711,7 @@ async function jeokroeDescend(){
 async function jrDown(u){
   G.slow = 0.25; setPose(u, 'hurt'); u.lift = 0; u.airborne = false;
   await wait(0.6); G.slow = 1; G.lock = true; letterbox(true); await wait(1.2);
-  $('bossbar').hidden = true; G.boss = null; G.rain.on = PRO.storm === 'downpour';
+  $('bossbar').hidden = true; G.boss = null; G.rain.on = PRO.storm === 'downpour'; bossCam(false);
   for (const e of foes()) removeUnit(e);
   await textbox('', ['적뢰가 무너집니다.', '대리석이 빗속에서 식어 갑니다.', '석문이 천천히 열립니다. 아래로 끝없는 계단.']);
   PRO.jrDone = true; endLobbyFight(true); letterbox(false); G.lock = false;
@@ -1762,8 +1765,18 @@ $p('storeMenu').addEventListener('click', e => {
 });
 // 가구 놓기: 들고 있을 때 주변에 E 대상이 없으면 "여기에 놓는다"
 function proFreeE(){
-  const c = PRO.carry; if (G.mode !== 'cave' || !c || c.pig || !(c.d.type === 'furn' || c.d.k === 'd_H-402') || c.d.toilet) return null;
-  return { label: `${eul(c.d.name)} 여기에 놓는다`, fn: placeFurn };
+  const c = PRO.carry; if (G.mode !== 'cave' || !c) return null;
+  if (!c.pig && (c.d.type === 'furn' || c.d.k === 'd_H-402') && !c.d.toilet) return { label: `${eul(c.d.name)} 여기에 놓는다 (두 칸)`, fn: placeFurn };
+  return { label: `${eul(c.d.name)} 여기에 내려놓는다`, fn: dropHere };
+}
+// v0.22 들고 있는 것을 아무 데나 잠시 내려놓기 (G · 빈 곳에서 E). 동료는 30초 동안 손대지 않음
+function dropHere(){
+  const c = PRO.carry, pl = G.player; if (!c) return;
+  if (c.pig){ const u = c.pig; u.carrier = null; u.lift = 0; PRO.carry = null; say(u, '꿀!', 'soft', 0.8); return; }
+  const x = pl.x + Math.cos(pl.aim) * 0.55, z = pl.z + Math.sin(pl.aim) * 0.55, bad = solidAt(G.map, x, z), tx = bad ? pl.x : x, tz = bad ? pl.z : z;
+  c.carrier = null; c.claimed = null; c.x = tx; c.z = tz; c.heldT = G.t + 30;
+  c.b.g.position.set(tx, heightAt(G.map, tx, tz), tz); c.insp.x = tx; c.insp.z = tz; PRO.carry = null;
+  SFX.thump(110, 0.2, 0.12); dust(tx, tz, 3);
 }
 function placeFurn(){
   const c = PRO.carry, pl = G.player, m = G.map;
@@ -1928,5 +1941,18 @@ function stuckFoes(){
     const near = G.units.some(u => u.side === 'ally' && !u.downed && Math.hypot(u.x - e.x, u.z - e.z) < 2.5);
     if (near){ c.t = G.t; continue; }
     if (G.t - c.t > 20){ popText(e.x, 1.6, e.z, '도망쳤다', 'miss', 1.2); escapeFoe(e); }
+  }
+}
+
+// v0.22 적뢰전 카메라: 굴 전체를 멀리서 보던 것 → 프롤로그처럼 인주를 따라가는 3D 전투 화면 (아래 창은 숨김). 끝나면 굴 화면으로
+function bossCam(on){
+  PRO.bossCam = on;
+  if (on){
+    G.camAnchor = null; PRO.barH = PRO.barHs = 0; if (camera.view && camera.view.enabled) camera.clearViewOffset();
+    camPreset(); camera.fov = 40; camera.updateProjectionMatrix(); G.map.wallH = 2.2; layoutWalls(G.map, CAM.yawT);
+  } else {
+    camPreset({ y: 8.4, back: 12.8 }, { y: 0.6, fwd: 0.6 });
+    G.camAnchor = { x: LOBBY_C.x, z: LOBBY_C.z - 0.4, k: 0.12, sway: 0.18 };
+    camera.fov = CAVE_CAM.fov; camera.updateProjectionMatrix(); G.map.wallH = 3.2; layoutWalls(G.map, CAM.yawT); fitCaveCam();
   }
 }
