@@ -96,7 +96,7 @@ function clearLevel(){
   for (const o of G.props) G.scene.remove(o);
   G.texts.forEach(t => t.el.remove()); marks.forEach(m => m.remove()); marks.length = 0;
   if (typeof proClear === 'function') proClear();
-  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, camAnchor: null, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
+  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, camAnchor: null, fogK: 1, lobbyFight: false, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
   if (G.map) G.scene.remove(G.map.group);
   if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false;
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
@@ -373,7 +373,7 @@ function loop(now){
     for (const u of G.units){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; } continue; }
       if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
-      else if (u.side === 'ally' && G.mode === 'floor' && !G.lock) allyThink(u, dt);
+      else if (u.side === 'ally' && (G.mode === 'floor' || G.lobbyFight) && !G.lock) allyThink(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
@@ -421,7 +421,7 @@ function loop(now){
   // 키보드가 다른 곳 (채팅 입력칸 등)으로 가 있으면 알려줌 → 화면을 누르면 돌아옴
   $('focusnote').hidden = document.hasFocus() || !!G.waitInput || G.mode === 'boot';
   const rf = $('redflash'); rf.style.opacity = Math.max(0, (+rf.style.opacity || 0) - dt * 1.6);
-  if (G.scene.fog && G.map){ const cd = camera.position.distanceTo(new THREE.Vector3(CAM.follow.x, 0, CAM.follow.z)); G.scene.fog.near = cd * 0.95; G.scene.fog.far = cd * 1.9 + 6; }
+  if (G.scene.fog && G.map){ const cd = camera.position.distanceTo(new THREE.Vector3(CAM.follow.x, 0, CAM.follow.z)); G.scene.fog.near = cd * 0.95 * (G.fogK || 1); G.scene.fog.far = (cd * 1.9 + 6) * (G.fogK || 1); }
   G.renderer.render(G.scene, camera);
   pressed.clear();
 }

@@ -186,7 +186,7 @@ function throwSpear(u, k, perfect){
     },
     end: (p, x, z, wall, t) => { if (CAM.track === p) CAM.trackUntil = G.t + 0.25; dropSpear(t ? t.x + rnd(-0.6, 0.6) : x - Math.cos(p.a) * (wall ? 0.4 : 0), t ? t.z + rnd(0.3, 0.9) : z - Math.sin(p.a) * (wall ? 0.4 : 0), p.a); } });
   // 보통은 카메라가 그대로. 완벽이면 화면이 물러나 (줌아웃) 푸른 점 궤적이 보이고, 적에게 닿는 순간만 그 자리를 살짝 당겨 봄 (각도는 그대로)
-  if (perfect){ CAM.track = p; CAM.trackUntil = G.t + 1.6; CAM.punch = null; }
+  if (perfect && !G.camAnchor){ CAM.track = p; CAM.trackUntil = G.t + 1.6; CAM.punch = null; }   // 로비 (고정 카메라)에선 앵글 그대로
 }
 function dropSpear(x, z, a){
   if (solidAt(G.map, x, z)){ x = G.player.x; z = G.player.z; }

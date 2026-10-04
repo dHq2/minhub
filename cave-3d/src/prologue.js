@@ -1,4 +1,4 @@
-/* prologue.js v0.9 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.10 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -117,7 +117,7 @@ function updateFallers(){
 /* ---------- 정리 (clearLevel이 부름) ---------- */
 function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
-  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
+  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
   guide(''); mid(''); $p('dream').classList.remove('on');
   camPreset(); if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
@@ -393,6 +393,8 @@ async function startCave(cine = false){
   const ch = spawn('cheongNpc', Cc.x, Cc.z, 'neutral'); ch.face = 1;
   const snails = sp('S').map(s => { const n = spawn('snail', s.x, s.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; } n.face = Math.random() < 0.5 ? 1 : -1; return n; });
   PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5, dropT: 30, dropped: false };
+  if (!PRO.weather) PRO.weather = rollWeather();
+  buildStage(); applyWeather();
   // 벽에 머리만 내민 레베카 (얼굴은 하늘을 봄) + 둘레 돌
   tileProp(PA + 'rebecca_head.webp', B.x, B.z, 0.62, { y: 0.02, tint: 0.95 });
   // 소품 (도감 에셋): 하나가 한 칸씩 (칸 가운데, 칸 폭 안). 버섯 · 바위 · 상자 · 등불 · 곡괭이 · 물그릇 · 통나무 · 풀 · 흰 바위
@@ -470,7 +472,7 @@ function proTick(dt){
     Cv.zzzT -= dt; if (Cv.zzzT <= 0){ Cv.zzzT = 2.4; say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, 'z z z…', 'zzz', 2.2); }
     // 달팽이: 집 근처를 아주 천천히 기어다님
     if (!G.waitInput) tickSnails(dt);
-    tickStorage(dt); tickFlies(dt);
+    tickStorage(dt); tickFlies(dt); tickStage(dt);
     // 오늘의 낙하: 움직일 수 있게 된 뒤 30초
     if (!Cv.dropped && !G.lock && !G.waitInput){ Cv.dropT -= dt; if (Cv.dropT <= 0) todayFall(); }
     if (PRO.shaft){ const k = clamp((G.t - PRO.shaft.t0) / 7, 0, 1); PRO.shaft.m.material.opacity = 0.13 * Math.sin(Math.PI * Math.min(1, k * 1.15)); PRO.shaft.l.intensity = 2.2 * (1 - k); }
@@ -535,16 +537,17 @@ function proHud(){
   return `<div class="sp">📦 창고 ${PRO.store.length} (🍖 식량 ${food}) · 🗑 쓰레기 ${PRO.trash.length}${rot ? ` (썩는 중 ${rot})` : ''}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}</div>`
     + `<div class="sp">${PRO.day}일째 · ${Cv.dropped ? '오늘의 낙하 끝 · 잠자리에서 하루를 마침' : `오늘의 낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}${PRO.didBury ? ' · 오늘 묻기 끝' : ''}</div>`;
 }
-function fallPanel(n){
-  const el = $p('fallres'); el.hidden = false; el.querySelector('b').textContent = `오늘의 낙하 · ${PRO.day}일째`;
-  el.querySelector('.slots').innerHTML = Array.from({ length: 10 }, (_, i) => `<div class="slot${i < n ? ' wait' : ''}"></div>`).join('');
-  el.querySelector('small').hidden = true;
+// 오늘의 낙하 = 큰 목록: 한 줄씩 채워짐 (날씨가 맨 위, 떨어질 때마다 한 줄, 적은 붉은 줄)
+function fallPanel(){
+  const el = $p('fallres'); el.hidden = false; el.querySelector('b').textContent = `${PRO.day}일째 · 오늘의 낙하`;
+  el.querySelector('.rows').innerHTML = ''; el.querySelector('small').hidden = true;
 }
-function fallSlot(i, d){
-  const s = $p('fallres').querySelectorAll('.slot')[i]; if (!s) return;
-  const [tn, tc] = DROP_TYPE[d.type];
-  s.className = 'slot on ' + d.type; s.innerHTML = `<img src="${PA + d.k}.webp" alt=""><span class="tag ${tc}">${tn}</span><em>${d.name}</em>`;
+function listRow(icon, name, tagText, tagCls, note = '', cls = ''){
+  const row = document.createElement('div'); row.className = 'row ' + cls;
+  row.innerHTML = `<span class="ic">${icon}</span><span class="nm">${name}</span><span class="tag ${tagCls}">${tagText}</span><span class="nt">${note}</span>`;
+  const rows = $p('fallres').querySelector('.rows'); rows.appendChild(row); rows.scrollTop = rows.scrollHeight; SFX.clink(0.18);   // 넘치면 새 줄이 보이게
 }
+function fallSlot(i, d){ const [tn, tc] = DROP_TYPE[d.type]; listRow(`<img src="${PA + d.k}.webp" alt="">`, d.name, tn, tc, d.toilet ? '변소 자리에 설치' : d.type === 'junk' ? '구덩이로' : d.type === 'food' ? `식량 ${d.food}` : '창고로'); }
 // 받침 있으면 을, 없으면 를
 const eul = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c < 11172 && c % 28 ? '을' : '를'); };
 function landDrop(d, b, t, i){
@@ -564,22 +567,34 @@ async function todayFall(){
   for (let i = 0; i < 4; i++) dust(C.x + rnd(-2, 2), C.z + rnd(-2, 2), 5);
   await wait(1.8);
   const picks = rollDrops(), tiles = freeTiles(picks.length);
-  fallPanel(picks.length);
+  fallPanel();
+  const W = WEATHER[PRO.weather]; listRow(W.icon, `날씨: ${W.name}`, '날씨', 'tweather', W.note, 'weather');
+  await wait(0.7);
   picks.forEach((d, i) => { const t = tiles[i]; if (!t) return;
     const b = bill(PA + d.k + '.webp', t.x, t.z, d.h, { fit: 0.92, tint: 0.95 });
-    fallObj(b.g, 14, 0.2 + i * 0.5, 0.75, t, () => landDrop(d, b, t, i)); });
-  await wait(0.2 + picks.length * 0.5 + 1.1);
+    fallObj(b.g, 14, 0.2 + i * 0.6, 0.75, t, () => landDrop(d, b, t, i)); });
+  await wait(0.2 + picks.length * 0.6 + 0.9);
+  // 적: 가벼운 적 5 (첫날은 꼭, 그 뒤로는 가끔)
+  const foesToday = PRO.day === 1 || Math.random() < 0.4;
+  if (foesToday){
+    const kinds = Object.keys(FOES), ft = freeTiles(kinds.length);
+    kinds.forEach((k, i) => { const t = ft[i]; if (!t) return; const e = spawn(k, t.x, t.z, 'enemy'); e.band = 'lobby'; e.face = rnd(0, 1) < 0.5 ? 1 : -1; fallUnit(e, 16, 0.15 + i * 0.3, 0.7, () => { dust(e.x, e.z, 10); camShake(0.15, 0.15); }); });
+    await wait(0.2 + kinds.length * 0.3 + 0.9);
+    listRow('⚠', '적: ' + kinds.map(k => DEFS[k].name).join(' · '), `적 ${kinds.length}`, 'tfoe', '떨어지자마자 덤빔', 'foe');
+    SFX.roar(0.6); await wait(0.6);
+  }
   // 결과: E · 클릭으로 닫음
   const el = $p('fallres'); el.querySelector('small').hidden = false;
   await new Promise(res => { const t0 = G.t; G.waitInput = () => { if (G.t - t0 < 0.6) return; G.waitInput = null; el.hidden = true; res(); }; });
   letterbox(false); G.lock = false;
-  guide('<em>E</em>로 들어서 창고 (팔레트)로 · 쓰레기는 구덩이로 — 가만히 있으면 동료들도 정리함', 6);
+  if (foes().length) startLobbyFight();
+  else guide('<em>E</em>로 들어서 창고 (팔레트)로 · 쓰레기는 구덩이로 — 가만히 있으면 동료들도 정리함', 6);
 }
 
 /* ---------- 프롤로그 건너뛰기: 오른쪽 위 버튼 (프롤로그 · 굴 첫 장면 동안). 기다리던 연출 · 글상자를 모두 버리고 바로 굴 (로비)로 ---------- */
 function proSkip(){
   G.waits = []; G.waitInput = null; G.slow = 1; G.hitstop = 0;
-  $p('textbox').hidden = true; $p('fallres').hidden = true; $p('load').hidden = true;
+  $p('textbox').hidden = true; $p('fallres').hidden = true; $p('load').hidden = true; G.lobbyFight = false;
   dark(0, 0); mid(''); letterbox(false); PRO.caveIntro = false; camReset();
   startCave(false);
 }
@@ -630,7 +645,7 @@ function buildStorage(){
     // 변소 구덩이: 묽은 똥 (늘 있음) + 앞을 가리는 찢어진 천막 + 큰 똥 (볼일 본 만큼) + 파리
     PRO.latrine.push(bill(PA + 'poop_runny.webp', TOILET.x - 0.05, TOILET.z - 0.1, 0.2, { fit: 0.7, y: 0.03 }));
     for (let i = 0; i < (PRO.bigPoop || 0); i++) PRO.latrine.push(bill(PA + 'poop_big.webp', TOILET.x + rnd(-0.25, 0.2), TOILET.z - 0.15 + rnd(-0.1, 0.1), 0.26, { fit: 0.4, y: 0.04 }));
-    PRO.latrine.push(PRO.tent = bill(PA + 'd_H-116.webp', TOILET.x, TOILET.z + 0.38, 1.05, { fit: 1.05, tint: 0.85 }));
+    if (!PRO.tentGone) PRO.latrine.push(PRO.tent = bill(PA + 'd_H-116.webp', TOILET.x, TOILET.z + 0.38, 1.05, { fit: 1.05, tint: 0.85 }));
   }
   makeFlies(TOILET.x, TOILET.z, PRO.hasToilet ? 1 : 3 + Math.min(4, PRO.bigPoop || 0));
   tileProp(PA + 'd_H-402.webp', BED.x, BED.z, 0.45, { tint: 0.9 });                                    // 잠자리 (담요)
@@ -638,14 +653,15 @@ function buildStorage(){
   PRO.storeBills = []; PRO.trashBills = [];
   PRO.store.forEach((d, i) => pileAdd(d, i)); PRO.trash.forEach((t, i) => trashAdd(t, i));
   // 창고 · 구덩이 · 화장실 · 잠자리 (글씨는 들고 있는지에 따라 바뀜)
-  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 30, get label(){ return PRO.carry ? (PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : `창고를 본다 (${PRO.store.length}개)`; },
+  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 6, get label(){ return PRO.carry ? (PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : `창고를 본다 (${PRO.store.length}개)`; },
     fn: () => { const c = PRO.carry; if (!c) return showStore(); if (c.d.toilet) return popText(G.player.x, G.player.y + 2, G.player.z, '화장실은 변소 구덩이 자리로!', 'miss', 1.2); if (c.d.type === 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓰레기는 구덩이로!', 'miss', 1.2); putStore(c); } });
-  G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 30, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개, 하루 한 번)`) : '쓰레기 구덩이 (비었음)'; },
+  G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 6, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개, 하루 한 번)`) : '쓰레기 구덩이 (비었음)'; },
     fn: () => { const c = PRO.carry; if (c){ if (c.d.type !== 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓸 만한 건 창고로!', 'miss', 1.2); return putTrash(c); } if (PRO.trash.length && !PRO.didBury) buryTrash(); } });
-  G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, far: 30, get mark(){ return PRO.hasToilet ? '화장실' : '변소 구덩이'; },
-    get label(){ const c = PRO.carry; return c && c.d.toilet ? '간이 화장실을 설치한다' : c ? '여기엔 둘 수 없음' : PRO.hasToilet ? '화장실에 들어간다' : '변소 구덩이에서 볼일을 본다'; },
+  G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, far: 6, get mark(){ return PRO.hasToilet ? '화장실' : '변소 구덩이'; },
+    get label(){ const c = PRO.carry; return c && c.d.toilet ? '간이 화장실을 설치한다' : c ? '여기엔 둘 수 없음' : PRO.hasToilet ? '화장실에 들어간다' : PRO.tentGone ? '천막을 다시 친다 (비에 쓸려 감)' : '변소 구덩이에서 볼일을 본다'; },
     fn: async () => {
       const c = PRO.carry; if (c){ if (c.d.toilet) installToilet(c); return; }
+      if (!PRO.hasToilet && PRO.tentGone){ await rebuildTent(); return; }
       G.lock = true;
       if (PRO.hasToilet){ G.player.group.visible = false; SFX.thump(120, 0.3, 0.2); await wait(1.4); SFX.burst({ type: 'bandpass', f: 600, f2: 200, gain: 0.35, att: 0.1, dec: 0.9 }); await wait(1.0); G.player.group.visible = true; await textbox('', ['(개운하다)']); }
       else { G.player.group.visible = false; SFX.thump(90, 0.25, 0.2); await wait(1.6); G.player.group.visible = true;   // 천막 뒤로
@@ -653,14 +669,14 @@ function buildStorage(){
         addFly(TOILET.x, TOILET.z);
         await textbox('', ['(구덩이에 볼일을 봤다)', '…제대로 된 화장실이 하나 떨어지면 좋겠다.']); }
       G.lock = false; } });
-  G.inspect.push({ x: BED.x, z: BED.z, r: 1.5, mark: '잠자리', far: 30, get label(){ return PRO.cave && PRO.cave.dropped ? '잠자리에 눕는다 — 하루를 마친다' : '잠자리 (오늘의 낙하가 아직)'; },
+  G.inspect.push({ x: BED.x, z: BED.z, r: 1.5, mark: '잠자리', far: 6, get label(){ return PRO.cave && PRO.cave.dropped ? '잠자리에 눕는다 — 하루를 마친다' : '잠자리 (오늘의 낙하가 아직)'; },
     fn: () => { if (!PRO.cave.dropped) return popText(G.player.x, G.player.y + 2, G.player.z, '아직 낙하가 오지 않았다', 'miss', 1.2); endDay(); } });
 }
 // 떨어져 있는 물건: 누가 들기 전까지 바닥에. 인주는 E로 들고, 동료는 가만히 있을 때 알아서 듦
 function addLoose(d, b, x, z){
   const it = { d, b, x, z, carrier: null, claimed: null, age: 0 };
   it.gl = d.type === 'equip' ? glowAt(x, z) : null;
-  it.insp = { x, z, r: 1.0, mark: d.name, far: 9, get label(){ return PRO.carry ? '한 번에 하나만 들 수 있음' : `${eul(d.name)} 든다`; }, get used(){ return !!it.carrier || it.done || !!PRO.carry; }, set used(v){},
+  it.insp = { x, z, r: 1.0, mark: d.name, far: 3.5, get label(){ return PRO.carry ? '한 번에 하나만 들 수 있음' : `${eul(d.name)} 든다`; }, get used(){ return !!it.carrier || it.done || !!PRO.carry; }, set used(v){},
     fn: () => { if (PRO.carry || it.carrier) return; pickUp(it, G.player); } };
   G.inspect.push(it.insp); PRO.loose.push(it);
   return it;
@@ -701,6 +717,7 @@ async function endDay(){
   const Cv = PRO.cave; G.lock = true; letterbox(true); guide('');
   G.player.lying = true; dark(1, 1.4); await wait(1.6);
   PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
+  PRO.weather = rollWeather(); applyWeather(true);
   let rotNow = 0;
   for (const t of PRO.trash){ t.rot++; rotTint(t); rotNow++; }
   for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
@@ -709,7 +726,8 @@ async function endDay(){
   dark(0, 1.6); await wait(1.2); G.player.lying = false;
   if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
   letterbox(false); G.lock = false;
-  caption(`${PRO.day}일째`, rotNow ? '어디선가 썩는 냄새가 난다' : '오늘은 무엇이 떨어질까');
+  caption(`${PRO.day}일째 · ${WEATHER[PRO.weather].icon} ${WEATHER[PRO.weather].name}`, rotNow ? '어디선가 썩는 냄새가 난다' : WEATHER[PRO.weather].note);
+  if (PRO.weather === 'rain' && PRO.tentGoneNow) setTimeout(() => say(Cv.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1800);
 }
 // 매 프레임: 들고 있는 것 · 동료 정리 · 썩는 쓰레기 (파리)
 function tickStorage(dt){
@@ -729,6 +747,7 @@ function helperTick(h, dt){
   if (!h) return;
   h.home = h.home || { x: h.x, z: h.z };
   const sp = h === PRO.cave.ch ? 3.1 : 2.2;
+  if (G.lobbyFight){ if (h !== PRO.cave.ch){ h.lift = 0; } return; }   // 싸우는 중엔 정리 안 함 (청광묵은 싸움)
   if (h === PRO.cave.ch && snailRescue(h, sp, dt)) return;   // 달팽이 탈출이 먼저
   if (!h.job && PRO.idleT > 2 && !G.lock){
     const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done);
@@ -846,4 +865,96 @@ function tickFlies(dt){
   // 가까이 가면 윙윙
   if (pl && PRO.flies.length){ const near = PRO.flies.some(f => Math.hypot(f.g.position.x - pl.x, f.g.position.z - pl.z) < 2); PRO.buzzT = (PRO.buzzT || 0) - dt;
     if (near && PRO.buzzT <= 0){ PRO.buzzT = rnd(0.8, 1.6); SFX.burst({ type: 'bandpass', f: rnd(190, 260), q: 9, gain: 0.08, att: 0.15, dec: 0.5 }); } }
+}
+
+/* ---------- 가벼운 적 5: 오늘의 낙하에 섞여 떨어짐 → 바로 덤빔. 카메라 앵글은 그대로 (로비 고정). 청광묵도 같이 싸움
+   쓰러진 적은 사체 (쓰레기)로 남음 → 구덩이로 */
+const FOES = {
+  foeJelly:   { spr: 'foeJelly', name: '녹색 젤리', hp: 40, atk: 8, spd: 1.6, r: 0.4, weight: 60, melee: { range: 1.3, arc: 1.7, windup: 0.6, cd: 1.7, mul: 1, kb: 0.5 } },
+  foeDevil:   { spr: 'foeDevil', name: '꼬마악마', hp: 28, atk: 7, spd: 3.6, r: 0.3, weight: 35, melee: { range: 1.35, arc: 1.4, windup: 0.32, cd: 1.1, mul: 1, kb: 0.4 } },
+  foeFairy:   { spr: 'foeFairy', name: '꼬마요정', hp: 24, atk: 7, spd: 3.0, r: 0.3, weight: 25, bow: { range: 7, windup: 0.6, cd: 1.9, speed: 15 }, leap: 3 },
+  foeSlime:   { spr: 'foeSlime', name: '슬라임', hp: 55, atk: 10, spd: 1.5, r: 0.45, weight: 90, melee: { range: 1.6, arc: 2.2, windup: 0.75, cd: 2.0, mul: 1, kb: 1.0 } },
+  foeCultist: { spr: 'foeCultist', name: '광신도', hp: 32, atk: 8, spd: 2.4, r: 0.32, weight: 55, line: { len: 4.2, w: 0.55, windup: 0.75, cd: 1.9, mul: 1, kb: 0.6 } },
+};
+Object.assign(DEFS, FOES);
+const foeSpr = (file, w, h, tall) => ({ h0: h, tall, poses: { idle: { src: PA + file + '.webp', w, h, ax: w / 2, ay: h - 2, f: 1 } } });
+Object.assign(SPR, { foeJelly: foeSpr('foe_jelly', 370, 311, 0.7), foeDevil: foeSpr('foe_devil', 157, 384, 1.0), foeFairy: foeSpr('foe_fairy', 167, 384, 0.95), foeSlime: foeSpr('foe_slime', 304, 328, 1.05), foeCultist: foeSpr('foe_cultist', 294, 384, 1.35) });
+const FOE_FILE = { foeJelly: 'foe_jelly', foeDevil: 'foe_devil', foeFairy: 'foe_fairy', foeSlime: 'foe_slime', foeCultist: 'foe_cultist' };
+DEFS.cheongAlly = { spr: 'cheong', name: '청광묵', hp: 140, atk: 12, spd: 3.3, r: 0.34, weight: 60, melee: { range: 1.5, arc: 1.8, windup: 0.35, cd: 1.0, mul: 1, kb: 0.6 } };
+function startLobbyFight(){
+  G.lobbyFight = true; G.cmd = 'free';
+  for (const e of foes()){ e.alert = true; e.seen = G.t; e.home = { x: LOBBY_C.x, z: LOBBY_C.z }; }
+  const ch = PRO.cave.ch; ch.side = 'ally'; ch.D = DEFS.cheongAlly; ch.hp = ch.max = DEFS.cheongAlly.hp; ch.atk = DEFS.cheongAlly.atk; ch.spd = DEFS.cheongAlly.spd; ch.job = null; ch.rescue = null; ch.lift = 0;
+  say(ch, '대장! 적이다! 청광묵도 싸운다!', 'soft', 2);
+  guide('적이다! <em>좌클릭</em> 찌르기 · <em>우클릭</em> 투창 · <em>Q</em> 구르기 · <em>F</em> 방어', 5);
+  G.onKill = (u) => { if (u.side === 'enemy' && G.mode === 'cave'){
+    const d = { k: FOE_FILE[u.kind], name: u.D.name + ' 사체', type: 'junk', h: 0.45 };
+    setTimeout(() => { if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', u.x, u.z, d.h, { fit: 0.8, tint: 0.45 }); b.m.rotation.z = Math.PI / 2 * 0.9; addLoose(d, b, u.x, u.z); }, 2600);
+  } };
+}
+function endLobbyFight(win){
+  G.lobbyFight = false;
+  const ch = PRO.cave.ch; ch.side = 'neutral'; ch.D = DEFS.cheongNpc; ch.downed = false; ch.st = 'idle'; ch.tilt = 0;
+  if (win){ say(ch, '대장! 다 잡았다!', 'soft', 2.2); caption('정리', '사체는 쓰레기 구덩이로'); }
+}
+// 로비에서 인주가 쓰러지면: 암전 → 적은 사라지고, 반쯤 회복
+async function lobbyDefeat(){
+  if (PRO.lobbyLost) return; PRO.lobbyLost = true; G.lock = true; letterbox(true);
+  dark(1, 1.2); await wait(1.4);
+  for (const e of foes()) removeUnit(e);
+  const pl = G.player; pl.downed = false; pl.st = 'idle'; pl.hp = Math.round(pl.max * 0.5);
+  endLobbyFight(false);
+  dark(0, 1.2); await textbox('', ['…눈을 뜨니 잠자리 위.', '청광묵이 끌어다 놓은 모양이다. 놈들은 어디론가 사라졌다.']);
+  pl.x = BED.x + 1; pl.z = BED.z; letterbox(false); G.lock = false; PRO.lobbyLost = false;
+}
+
+/* ---------- 날씨 (그날의 날씨): 맑음 · 흐림 · 비 · 눈 · 안개. 굴 가운데 천장 구멍으로 무대 조명처럼 은은한 빛이 내려옴 (날씨에 따라 색 · 세기)
+   비 · 눈은 그 빛기둥 안으로만 내림. 비가 오면 변소 천막이 쓸려 감 → 다시 쳐야 함 */
+const WEATHER = {
+  clear:  { name: '맑음', icon: '☀', note: '구멍으로 햇살이 내려온다', col: 0xffe6b8, I: 2.6, op: 0.07, w: 3 },
+  cloudy: { name: '흐림', icon: '☁', note: '빛이 희미하다', col: 0xc8ccd8, I: 1.3, op: 0.04, w: 3 },
+  rain:   { name: '비', icon: '☂', note: '구멍으로 빗물이 쏟아진다', col: 0x9fb8e8, I: 1.5, op: 0.05, w: 2 },
+  snow:   { name: '눈', icon: '❄', note: '눈송이가 천천히 내려온다', col: 0xe8f0ff, I: 1.9, op: 0.06, w: 1.5 },
+  fog:    { name: '안개', icon: '≋', note: '안개가 깔렸다', col: 0xd8d0f0, I: 1.1, op: 0.09, w: 1.5 },
+};
+function rollWeather(){ const ks = Object.keys(WEATHER), tot = ks.reduce((a, k) => a + WEATHER[k].w, 0); let r = Math.random() * tot; for (const k of ks){ r -= WEATHER[k].w; if (r <= 0) return k; } return 'clear'; }
+function buildStage(){
+  const C = LOBBY_C;
+  const spot = new THREE.SpotLight(0xffffff, 2, 30, 0.3, 0.85, 1.2); spot.position.set(C.x, 17, C.z); spot.target.position.set(C.x, 0, C.z);
+  G.scene.add(spot); G.scene.add(spot.target); G.props.push(spot, spot.target);
+  const cone = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 3.0, 17, 40, 1, true), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }));
+  cone.position.set(C.x, 8.5, C.z); G.scene.add(cone); G.props.push(cone);
+  const poolTex = canvasTex(256, 256, (c, w, h) => { const g = c.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(0.6, 'rgba(255,255,255,.18)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
+  const pool = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 6.4), new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  pool.rotation.x = -Math.PI / 2; pool.position.set(C.x, 0.02, C.z); G.scene.add(pool); G.props.push(pool);
+  // 빛기둥 안의 비 (선) · 눈 (점)
+  const N = 260, rp = new Float32Array(N * 6), rg = new THREE.BufferGeometry(); rg.setAttribute('position', new THREE.BufferAttribute(rp, 3));
+  const rain = new THREE.LineSegments(rg, new THREE.LineBasicMaterial({ color: 0xbfd4ff, transparent: true, opacity: 0.5 })); rain.frustumCulled = false; G.scene.add(rain); G.props.push(rain);
+  const sp = new Float32Array(N * 3), sg = new THREE.BufferGeometry(); sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  const snow = new THREE.Points(sg, new THREE.PointsMaterial({ size: 0.09, map: sparkTex, color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false })); snow.frustumCulled = false; G.scene.add(snow); G.props.push(snow);
+  const drops = Array.from({ length: N }, () => { const a = rnd(0, 6.3), r = Math.sqrt(Math.random()) * 2.4; return { x: C.x + Math.cos(a) * r, z: C.z + Math.sin(a) * r, y: rnd(0, 12), v: rnd(9, 13), p: rnd(0, 6.3) }; });
+  PRO.stage = { spot, cone, pool, rain, rg, rp, snow, sg, sp, drops };
+}
+function applyWeather(newDay){
+  const W = WEATHER[PRO.weather], S = PRO.stage; if (!S) return;
+  S.spot.color.setHex(W.col); S.spot.intensity = W.I; S.cone.material.color.setHex(W.col); S.cone.material.opacity = W.op; S.pool.material.color.setHex(W.col); S.pool.material.opacity = 0.25 + W.I * 0.12;
+  S.rain.visible = PRO.weather === 'rain'; S.snow.visible = PRO.weather === 'snow';
+  G.fogK = PRO.weather === 'fog' ? 0.62 : 1;   // 안개: 화면 안개를 당김 (game.js 한 프레임 끝에서 씀)
+  // 비: 변소 천막이 쓸려 감
+  PRO.tentGoneNow = false;
+  if (newDay && PRO.weather === 'rain' && !PRO.hasToilet && !PRO.tentGone){ PRO.tentGone = true; PRO.tentGoneNow = true; if (PRO.tent){ G.scene.remove(PRO.tent.g); PRO.tent = null; } }
+}
+function tickStage(dt){
+  const S = PRO.stage; if (!S) return;
+  if (S.rain.visible){ const a = S.rp; S.drops.forEach((d, k) => { d.y -= d.v * dt; if (d.y < 0){ d.y = rnd(10, 13); if (Math.random() < 0.3) dust(d.x, d.z, 1, 0x9fb8e8); } a[k * 6] = d.x; a[k * 6 + 1] = d.y; a[k * 6 + 2] = d.z; a[k * 6 + 3] = d.x; a[k * 6 + 4] = d.y - 0.45; a[k * 6 + 5] = d.z; }); S.rg.attributes.position.needsUpdate = true; }
+  if (S.snow.visible){ const a = S.sp; S.drops.forEach((d, k) => { d.y -= d.v * 0.07 * dt; if (d.y < 0) d.y = rnd(10, 13); a[k * 3] = d.x + Math.sin(G.t * 0.8 + d.p) * 0.25; a[k * 3 + 1] = d.y; a[k * 3 + 2] = d.z + Math.cos(G.t * 0.6 + d.p) * 0.25; }); S.sg.attributes.position.needsUpdate = true; }
+  S.cone.material.opacity = WEATHER[PRO.weather].op * (0.85 + 0.15 * Math.sin(G.t * 0.7));   // 은은하게 숨 쉼
+  // 싸움 끝 · 쓰러짐
+  if (G.lobbyFight){ if (!foes().length) endLobbyFight(true); else if (G.player && G.player.downed) lobbyDefeat(); }
+}
+async function rebuildTent(){
+  const pl = G.player; G.lock = true;
+  for (let k = 0; k < 3; k++){ pl.leanT = 0.3; SFX.thump(150, 0.3, 0.15); dust(TOILET.x, TOILET.z + 0.3, 5); await wait(0.5); }
+  PRO.tentGone = false; PRO.latrine.push(PRO.tent = bill(PA + 'd_H-116.webp', TOILET.x, TOILET.z + 0.38, 1.05, { fit: 1.05, tint: 0.85 }));
+  popText(TOILET.x, 1.6, TOILET.z, '천막을 다시 쳤다', 'heal', 1.3); G.lock = false;
 }
