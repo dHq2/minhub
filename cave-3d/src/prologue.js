@@ -1,4 +1,4 @@
-/* prologue.js v0.6 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.7 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -70,6 +70,13 @@ function sizeBills(){
     // v0.2: 소품은 카메라 쪽 (각도)만 봄 → 카메라가 돌지 않는 한 그대로 서 있음 (따라 돌지 않음)
     if (!b.flat) b.g.rotation.y = CAM.yaw;
   }
+}
+// 벽에 붙이는 그림: 벽 앞면에 납작한 판 (남쪽을 봄). 소품처럼 돌지 않음
+function wallSprite(src, x, z, w, h, tint = 1){
+  const mat = new THREE.MeshBasicMaterial({ map: loadTex(src), transparent: true, alphaTest: 0.25, fog: true });
+  mat.color.setScalar(tint);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); m.position.set(x, h / 2 - 0.02, z);
+  G.scene.add(m); G.props.push(m); return m;
 }
 // 한 칸을 차지하는 소품: 칸 가운데에 세우고, 그 칸은 막힘 (지나갈 수 없음)
 function tileProp(src, i, j, h, o = {}){
@@ -405,7 +412,8 @@ async function startCave(cine = false){
   G.inspect.push({ x: B.x, z: B.z, r: 1.6, label: '레베카에게 말을 건다', fn: async () => { camFocus(B.x, B.z, 99, ...lens(2.4, 3.4), 0.05); await textbox('레베카', ['...음냐..음냐...', '(자고 있는 모양이다)']); camFocusOff(); } });
   G.inspect.push({ unit: snails[0], r: 1.6, label: '인광달팽이를 본다', fn: async () => { await textbox('', ['인광달팽이. 껍데기에서 청록빛이 은은하게 번진다.', '…알을 낳을 때까지는 먹으면 안 된다고 한다.']); } });
   // 석문: 높이 5m쯤 되는 엄청 단단한 문. 지금은 막혀 있음
-  const door = bill(PA + 'stonedoor.webp', 9, 1.45, 5.0, { fit: 3.6, tint: 0.85 });
+  // 굴 끝 벽 (z = 1)의 앞면 (z = 1.5)에 납작하게 붙임: 카메라를 따라 돌지 않고 벽 앞에 딱 (굴 폭 3칸 = 문 폭, 높이 약 4.6)
+  wallSprite(PA + 'stonedoor.webp', 9, 1.5 + 0.02, 3.0, 4.6, 0.85);
   G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '석문을 살핀다', mark: '석문', fn: async () => { camFocus(9, 2.4, 99, ...lens(3.2, 6.5), 0.05);
     await textbox('', ['높이 5미터쯤 되는 석문. 별 문양이 새겨져 있다.', '밀어도, 두드려도 꿈쩍하지 않는다.', '(카리우스가 그 옆을 파고 있다)']); camFocusOff(); } });
   buildStorage();
