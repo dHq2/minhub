@@ -1,4 +1,4 @@
-/* catalog.js v1.65 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.66 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -26840,7 +26840,7 @@ const CATALOG = [
 {
 "id": "F-auto-tehera",
 "cat": "char",
-"sub": "테헤라 · 동료 · 원화 + 연출",
+"sub": "테헤라 · 동료 · 동작 그림",
 "name": "테헤라 기본 초상화",
 "src": "img/face/auto_tehera.webp",
 "note": "새 인카운터 그림 (앉은 모습)에서 얼굴을 정사각형으로 자름 (예전 것은 도형 그림에서 자름)",
@@ -26851,7 +26851,7 @@ const CATALOG = [
 {
 "id": "O-tehera-shape",
 "cat": "char",
-"sub": "테헤라 · 동료 · 원화 + 연출",
+"sub": "테헤라 · 동료 · 동작 그림",
 "name": "테헤라 · 도형 그림",
 "src": "img/old2d/shape_tehera.webp",
 "note": "잠자리 날개의 요정 · 어느 종족의 왕이었다",
@@ -26862,7 +26862,7 @@ const CATALOG = [
 {
 "id": "P-tehera-sit",
 "cat": "char",
-"sub": "테헤라 · 동료 · 원화 + 연출",
+"sub": "테헤라 · 동료 · 동작 그림",
 "name": "테헤라 · 앉은 모습",
 "src": "img/char/tehera_sit.webp",
 "note": "인카운터 그림에서 자른 스프라이트. 우주 한가운데 바위에 앉아 있는 맵에 씀 (바위는 맵에서 따로)",
@@ -26873,7 +26873,7 @@ const CATALOG = [
 {
 "id": "P-tehera-sit2",
 "cat": "char",
-"sub": "테헤라 · 동료 · 원화 + 연출",
+"sub": "테헤라 · 동료 · 동작 그림",
 "name": "테헤라 · 앉은 모습 (새 그림)",
 "src": "img/char/tehera_sit2.webp",
 "note": "드라이브 tehera 폴더 · 앉은 테헤라.png (드라이브 2026-10-04)",
@@ -26884,10 +26884,32 @@ const CATALOG = [
 {
 "id": "P-tehera-fly",
 "cat": "char",
-"sub": "테헤라 · 동료 · 원화 + 연출",
+"sub": "테헤라 · 동료 · 동작 그림",
 "name": "테헤라 · 나는 모습",
 "src": "img/char/tehera_fly.webp",
 "note": "드라이브 tehera 폴더 · 플라잉테헤라.png (드라이브 2026-10-04)",
+"rank": "",
+"on": false,
+"g": "tehera"
+},
+{
+"id": "P-tehera-fly_idle",
+"cat": "char",
+"sub": "테헤라 · 동료 · 동작 그림",
+"name": "테헤라 · 날며 대기 (30장)",
+"src": "img/char/tehera_fly_idle.webp",
+"note": "드라이브 테헤라 폴더 · tehera_fly_idle_v1.webp (2026-10-04)",
+"rank": "",
+"on": false,
+"g": "tehera"
+},
+{
+"id": "P-tehera-sit_idle",
+"cat": "char",
+"sub": "테헤라 · 동료 · 동작 그림",
+"name": "테헤라 · 앉아 대기 (28장)",
+"src": "img/char/tehera_sit_idle.webp",
+"note": "드라이브 테헤라 폴더 · tehera_sit_idle_v1.webp (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "tehera"
