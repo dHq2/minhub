@@ -1,4 +1,4 @@
-/* catalog.js v1.67 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.68 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -27639,6 +27639,39 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "cheonggap"
+},
+{
+"id": "F-auto-glowsnail",
+"cat": "char",
+"sub": "인광달팽이 (가축) · NPC · 원화 + 연출",
+"name": "인광달팽이 기본 초상화",
+"src": "img/face/auto_glowsnail.webp",
+"note": "평소 그림에서 머리 · 더듬이를 정사각형으로 자름",
+"rank": "",
+"on": false,
+"g": "glowsnail"
+},
+{
+"id": "P-glowsnail-art",
+"cat": "char",
+"sub": "인광달팽이 (가축) · NPC · 원화 + 연출",
+"name": "인광달팽이 · 평소 (가축)",
+"src": "img/char/glowsnail_art.webp",
+"note": "굴에서 기르는 가축. 껍데기와 발에 청록 인광 무늬. 바탕 지움 (2026-10-04)",
+"rank": "",
+"on": false,
+"g": "glowsnail"
+},
+{
+"id": "P-glowsnail-angry",
+"cat": "char",
+"sub": "인광달팽이 (가축) · NPC · 원화 + 연출",
+"name": "개빡친 인광달팽이 (흥분)",
+"src": "img/char/glowsnail_angry.webp",
+"note": "흥분하면 껍데기에 가시가 돋고 인광이 줄무늬로 번지며 콧김을 뿜고 달려듦. 콧김 두 덩이 살림 (2026-10-04)",
+"rank": "",
+"on": false,
+"g": "glowsnail"
 },
 {
 "id": "F-auto-piggod",

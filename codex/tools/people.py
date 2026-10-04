@@ -1,4 +1,4 @@
-# people.py v1.16 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.17 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -11,7 +11,7 @@ CH = [
  ('nurse','간호사 (1성 영웅)','동료'),('gothic','고딕 기사 (흑기사, 3성 영웅)','동료'),
  ('npcyellow','노랑','NPC'),('ycat','노랑고양','NPC'),('mari','마리','NPC'),('wakin','와킨','NPC'),('arian','퀸 아리안','NPC'),('general','대장군','NPC'),
  ('kal','칼 (현자)','NPC'),('odile','오딜','NPC'),('rosina','로시나','NPC'),('umbrella','우산 소녀','NPC'),('drawer','방랑 서랍 (적 또는 NPC)','NPC'),
- ('horsehead','말대가리','NPC'),('crabchef','게 요리사 (상인)','NPC'),('aiten','아이텐 (상인)','NPC'),('heukryong','흑룡 (상인, 아이텐의 조수)','NPC'),('yuris','유리스 (상인)','NPC'),('cheonggap','청갑 (아이텐의 호위)','NPC'),('piggod','돼지들의 신','NPC'),('witchfairy','꼬마마녀요정 (펫)','NPC'),('blackrabbit','흑토끼기사 (펫)','NPC'),('deadhero','죽은 영웅','NPC'),('slave','노예노예','NPC'),('silhouette','일반인 실루엣','NPC'),
+ ('horsehead','말대가리','NPC'),('crabchef','게 요리사 (상인)','NPC'),('aiten','아이텐 (상인)','NPC'),('heukryong','흑룡 (상인, 아이텐의 조수)','NPC'),('yuris','유리스 (상인)','NPC'),('cheonggap','청갑 (아이텐의 호위)','NPC'),('glowsnail','인광달팽이 (가축)','NPC'),('piggod','돼지들의 신','NPC'),('witchfairy','꼬마마녀요정 (펫)','NPC'),('blackrabbit','흑토끼기사 (펫)','NPC'),('deadhero','죽은 영웅','NPC'),('slave','노예노예','NPC'),('silhouette','일반인 실루엣','NPC'),
  ('jeokroe','적뢰','적 · 보스'),('cesar','세자르','적 · 보스'),('agnes','로젤','적 · 보스'),('hargen','하르겐','적 · 보스'),('miller','방앗간지기 오르소','적 · 보스'),
  ('faded','색을 잃은 자','적 · 보스'),('fingerHole','손가락 구멍','적 · 보스'),('mask','가면 (특별한 적)','적 · 보스'),
  ('swordsman','검사','적 · 보스'),('spearman','창병','적 · 보스'),('shieldman','검방패병','적 · 보스'),('brute','곤봉 거한','적 · 보스'),('archer','붉은 망토 궁수','적 · 보스'),
@@ -33,7 +33,7 @@ RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'
  (r'horsehead','horsehead'),(r'deadhero','deadhero'),(r'slave','slave'),(r'silhouette','silhouette'),(r'jeokroe','jeokroe'),(r'cesar','cesar'),
  (r'agnes','agnes'),(r'hargen','hargen'),(r'miller','miller'),(r'faded','faded'),(r'fingerHole','fingerHole'),(r'^P-mask','mask'),
  (r'swordsman','swordsman'),(r'spearman','spearman'),(r'shieldman','shieldman'),(r'brute','brute'),(r'archer','archer'),(r'benkin','benkin'),(r'dandalo','dandalo'),
- (r'ratKnight','ratKnight'),(r'-rat[SML]-','rats'),(r'goblinArcher','goblinArcher'),(r'enemyGoblin','enemyGoblin'),(r'slime','slime'),(r'cultist','cultist'),(r'jelly','jellygreen'),(r'giant_beast','giant_beast'),(r'ancient_angel','ancient_angel'),(r'little_devil','little_devil'),(r'little_fairy','little_fairy'),(r'beast_a','beast_a'),(r'demoness','demoness'),(r'darkrider','darkrider'),(r'crabchef','crabchef'),(r'aiten','aiten'),(r'heukryong','heukryong'),(r'yuris','yuris'),(r'cheonggap','cheonggap'),(r'hyalqueen','hyalqueen'),(r'heugu','heugu'),(r'-ghost-|auto-ghost','ghost'),(r'ddongdog','ddongdog'),(r'crabmon','crabmon'),(r'daedura','daedura'),(r'bluefat','bluefat'),(r'eyemon','eyemon'),(r'goryu','goryu'),(r'ahae','ahae'),(r'piggod','piggod'),(r'witchfairy','witchfairy'),(r'blackrabbit','blackrabbit'),(r'catwarrior','catwarrior'),(r'axeknight','axeknight'),
+ (r'ratKnight','ratKnight'),(r'-rat[SML]-','rats'),(r'goblinArcher','goblinArcher'),(r'enemyGoblin','enemyGoblin'),(r'slime','slime'),(r'cultist','cultist'),(r'jelly','jellygreen'),(r'giant_beast','giant_beast'),(r'ancient_angel','ancient_angel'),(r'little_devil','little_devil'),(r'little_fairy','little_fairy'),(r'beast_a','beast_a'),(r'demoness','demoness'),(r'darkrider','darkrider'),(r'crabchef','crabchef'),(r'aiten','aiten'),(r'heukryong','heukryong'),(r'yuris','yuris'),(r'cheonggap','cheonggap'),(r'glowsnail','glowsnail'),(r'hyalqueen','hyalqueen'),(r'heugu','heugu'),(r'-ghost-|auto-ghost','ghost'),(r'ddongdog','ddongdog'),(r'crabmon','crabmon'),(r'daedura','daedura'),(r'bluefat','bluefat'),(r'eyemon','eyemon'),(r'goryu','goryu'),(r'ahae','ahae'),(r'piggod','piggod'),(r'witchfairy','witchfairy'),(r'blackrabbit','blackrabbit'),(r'catwarrior','catwarrior'),(r'axeknight','axeknight'),
  (r'blocker','blocker'),(r'mech','mech'),(r'^P-cs-|cheongseung','cs'),(r'jakyak','jakyak'),(r'bogwang','bogwang'),(r'borama','borama'),
  (r'sealed','sealed'),(r'knightcommander','knightcommander'),(r'gaius','gaius'),(r'hiddenkkaebi','hiddenkkaebi'),(r'girlprisoner','girlprisoner'),
  (r'eopong','eopong'),(r'cheonsasl','cheonsasl'),(r'cheoncheon','cheoncheon'),(r'chinchilla','chinchilla'),(r'traka','traka'),(r'pehto','pehto'),(r'regina','regina'),(r'balyong','balyong'),(r'leonas','leonas'),(r'hyal','hyal'),(r'coral','coraldeer')]
@@ -90,7 +90,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.66', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.68', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:
