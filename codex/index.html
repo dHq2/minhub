@@ -1,5 +1,6 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.63 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.64 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -101,6 +102,7 @@ h3.hit,.pnav.hit{animation:hit 1.2s}
 .view .big{background:var(--well);border-radius:6px;display:grid;place-items:center;min-height:260px}
 .view .big img{max-height:70vh;object-fit:contain}
 .view .side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.chk2{display:flex;flex-direction:column;gap:10px}
 .view .side .id{font-size:14px}
 .view .side h4{font:700 22px/1.25 var(--display);margin:0}
 .view .side p{margin:0;color:var(--dim);font-size:13.5px}
@@ -179,7 +181,28 @@ h3.gh.open{margin-top:18px}
 .gt:hover,.gh.open .gt{color:var(--fg)}
 .car{width:12px;color:var(--accent)}
 .fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;font:600 13px var(--body);color:var(--bg);background:var(--accent);border:0;border-radius:999px;padding:9px 14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.4)}
-@media (max-width:640px){ .tocrow{grid-template-columns:1fr} .fab{bottom:calc(70px + env(safe-area-inset-bottom,0px))} }
+@media (max-width:640px){
+  .tocrow{grid-template-columns:1fr} .fab{bottom:calc(18px + env(safe-area-inset-bottom,0px));padding:11px 16px;font-size:14px}
+  /* v1.64 손가락 크기: 접기 제목 · 목차 칩 · 버튼을 넉넉하게 */
+  .gt{min-height:44px;flex:1;font-size:14px;letter-spacing:.02em} h3.gh{margin:2px 0;border-bottom:1px solid var(--line)} h3.gh.open{margin-top:12px}
+  .toNav{padding:6px 10px;font-size:12px}
+  .tchip{padding:7px 12px;font-size:13.5px} .tocrow > span{gap:7px}
+  .gbar .btn{padding:8px 12px;font-size:13px}
+  /* 고정 띠를 얇게: 상태 글은 오류일 때만, 내려가는 동안엔 도구 줄을 숨김 */
+  .status:not(.err){display:none}
+  .bar.mini .tools{display:none}
+  .bar{transition:padding .15s}
+  /* 그림 칸: 쓰레기통은 크게 보기 안에서만 (등장 동그라미 옆이라 잘못 눌림). 삭제 표시된 것은 작은 표만 */
+  .tile .trash{display:none} .tile .trash.del{display:grid;pointer-events:none;width:22px;height:22px;top:auto;bottom:34px;right:8px}
+  .pbtn .pp{border-radius:10px}
+  /* 크게 보기: 그림 조금 줄이고 체크 · 등장을 큰 버튼처럼, 이름은 입력칸 하나만 */
+  .view .big{height:44vh} .view .big img{max-height:44vh}
+  .view .side h4{display:none}
+  .view .side label.only{min-height:46px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:15px;color:var(--fg);gap:10px}
+  .view .side label.only input{width:22px;height:22px;accent-color:var(--accent)}
+  .view .side label.only:has(input:checked){border-color:var(--accent)}
+  .view .side .chk2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+}
 @media (prefers-reduced-motion:no-preference){ .tile{transition:border-color .15s,box-shadow .15s} }
 </style>
 
@@ -223,8 +246,8 @@ h3.gh.open{margin-top:18px}
       <span class="renamed" id="vOrig" hidden></span>
       <p id="vSub"></p>
       <p id="vNote"></p>
-      <label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
-      <label class="only" for="vSt"><input type="checkbox" id="vSt"> 등장 확정 (초록)</label>
+      <div class="chk2"><label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
+      <label class="only" for="vSt"><input type="checkbox" id="vSt"> 등장 확정</label></div>
       <label for="vMemo" class="memo-dot">메모 (어떻게 할지: 지우기 · 이름 · 다듬기 …)</label>
       <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
       <div class="row acts"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vClose" type="button">닫기</button><button class="btn" id="vNext" type="button">다음 →</button>
@@ -447,7 +470,8 @@ function render(){
 
 /* ---------- 크게 보기 ---------- */
 function order(){ return FLAT; }
-function openView(id){ viewing = id; $('view').hidden = false; fillView(); $('vMemo').focus({ preventScroll:true }); }
+const coarse = matchMedia('(pointer:coarse)').matches;
+function openView(id){ const was = !$('view').hidden; viewing = id; $('view').hidden = false; fillView(); if (!coarse) $('vMemo').focus({ preventScroll:true }); if (!was) try { history.pushState({ codexView:1 }, ''); } catch (e) {} }
 function fillView(){
   const bg = document.querySelector('.view .big'); if (bg) bg.classList.remove('zoomed');
   const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
@@ -462,7 +486,13 @@ function fillView(){
 function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; $('vNameIn').value = nameOf(n); fillView(); if (enterNext) $(enterNext).focus({ preventScroll:true }); } }
 function saveName(){ if (!viewing) return; const e = BY_ID[viewing], v = $('vNameIn').value.trim(), want = v && v !== e.name ? v : ''; if (want !== ((marks[viewing] || {}).name || '')) put(viewing, { name: want }); }
 function saveMemo(){ if (!viewing) return; saveName(); const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
-function closeView(){ saveMemo(); $('view').hidden = true; viewing = null; render(); }
+function keepPlace(fn){   // 다시 그려도 보던 자리 그대로 (화면 가운데 그림을 기준으로)
+  const mid = document.elementFromPoint(innerWidth / 2, innerHeight / 2), t = mid && mid.closest('.tile, h3');
+  const key = t && (t.dataset.id ? '.tile[data-id="' + t.dataset.id + '"]' : t.id ? '#' + CSS.escape(t.id) : null), y = t && t.getBoundingClientRect().top;
+  fn(); const n = key && document.querySelector(key); if (n) scrollBy(0, n.getBoundingClientRect().top - y);
+}
+function closeView(fromPop){ if ($('view').hidden) return; saveMemo(); $('view').hidden = true; const was = viewing; viewing = null; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); keepPlace(render); const tl = document.querySelector('.tile[data-id="' + was + '"]'); if (tl){ const r = tl.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) tl.scrollIntoView({ block:'center' }); } if (!fromPop && history.state && history.state.codexView) try { history.back(); } catch (e) {} }
+addEventListener('popstate', () => { if (!$('view').hidden) closeView(true); });
 
 /* ---------- 목록 복사 · 백업 ---------- */
 function listText(){
@@ -587,7 +617,9 @@ $('zOut').onclick = () => setZoom(zoom / 1.2);
 })();
 /* 떠 있는 버튼: 지금 보는 분류의 목차 (인물은 초상화 버튼)로 */
 function curSection(){ const top = $('bar').offsetHeight + 12; let cur = null; for (const sct of document.querySelectorAll('section.cat')) if (sct.getBoundingClientRect().top <= top) cur = sct; return cur; }
-let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900; }); }, { passive:true });
+const narrow = matchMedia('(max-width:640px)'); let lastY = scrollY;
+let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900;
+  if (narrow.matches && !$('bar').classList.contains('open')){ const dy = scrollY - lastY; if (Math.abs(dy) > 6){ $('bar').classList.toggle('mini', dy > 0 && scrollY > 200); lastY = scrollY; } } else $('bar').classList.remove('mini'); }); }, { passive:true });
 $('fab').onclick = () => { const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
 $('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
 document.querySelector('.lede').addEventListener('click', e => e.currentTarget.classList.toggle('open'));
@@ -603,7 +635,7 @@ document.querySelector('.lede').addEventListener('click', e => e.currentTarget.c
   }, { passive:true });
   big.addEventListener('dblclick', () => big.classList.toggle('zoomed'));
 })();
-$('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = closeView;
+$('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = () => closeView();
 $('view').addEventListener('click', e => { if (e.target === $('view')) closeView(); });
 addEventListener('keydown', e => { if ($('view').hidden) return; if (e.key === 'Escape') closeView(); if (document.activeElement === $('vMemo')) return; if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
 try { const t = localStorage.getItem('codex-tab'); if (t && (t === 'all' || CATS.some(c => c.key === t))) cat = t; } catch (e) {}
