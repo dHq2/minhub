@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D 시제품  version v0.18 -->
+<!-- 굴의 프롤로그 3D 시제품  version v0.19 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -95,19 +95,22 @@
   .tag.gD{color:#06140c;background:#5fd38a;border-color:#9ae8b6;} .tag.gE{color:#111;background:#9aa0a8;border-color:#c4c8cc;} .tag.gF{color:#ddd;background:#4a4f58;border-color:#6a6f78;}
   .tag.curse{color:#f0c8ff;background:#2a0f2e;border-color:#a54bd1;}
   #bossname .tag{font-size:12px;}
-  /* v0.18 굴 아래 창: 초상화 · 체력 · 배부름 · 대사 · 창고 요약 */
-  #cavebar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:5;pointer-events:none;width:min(760px,calc(100vw - 32px));background:rgba(10,8,16,.88);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:10px;align-items:center;font-family:"Do Hyeon",sans-serif;color:#e8dcc8;box-shadow:0 4px 18px rgba(0,0,0,.5);}
-  #cavebar .who{display:flex;gap:7px;align-items:center;flex:1 1 0;min-width:0;}
-  #cavebar .who img{width:44px;height:44px;flex:none;border-radius:5px;object-fit:cover;object-position:50% 15%;border:1px solid rgba(255,255,255,.18);background:#1a1424;}
-  #cavebar .bars{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
-  #cavebar .nm{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} #cavebar .nm small{font-size:11.5px;color:#a8c8a0;margin-left:3px;} #cavebar .nm small.warn{color:#f0b060;} #cavebar .nm small.bad{color:#ff6a5a;}
-  #cavebar .g{position:relative;height:7px;background:rgba(0,0,0,.65);border:1px solid rgba(0,0,0,.8);border-radius:2px;overflow:hidden;} #cavebar .g b{display:block;height:100%;transition:width .3s;}
-  #cavebar .g.hp b{background:#7fd47f;} #cavebar .g.hp i{position:absolute;right:3px;top:-3px;font-size:9.5px;font-style:normal;color:#e8ffe8;text-shadow:0 1px 2px #000;}
-  #cavebar .g.fd{height:5px;} #cavebar .g.fd b{background:#e0a050;} #cavebar .g.fd.low b{background:#e2443a;}
-  #cavebar .st{flex:1.35 1 0;min-width:0;font-size:12.5px;line-height:1.5;color:#d8ccb8;border-left:1px solid var(--line);padding-left:10px;white-space:nowrap;overflow:hidden;} #cavebar .st .day{color:var(--gold);} #cavebar .st b{font-weight:normal;} #cavebar .st .warn{color:#f0b060;} #cavebar .st .bad{color:#ff6a5a;}
+  /* v0.19 굴 아래 창 (민수 스케치): 화면 아래를 넓게 — 왼쪽 초상화 세로 셋 + 줄, 오른쪽 아이콘 목록 */
+  #cavebar{position:fixed;left:12px;right:12px;bottom:10px;z-index:5;pointer-events:none;max-width:980px;margin:0 auto;background:linear-gradient(180deg,rgba(14,11,22,.93),rgba(8,6,12,.96));border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:12px;align-items:stretch;font-family:"Do Hyeon",sans-serif;color:#e8dcc8;box-shadow:0 -2px 22px rgba(0,0,0,.55);}
+  #cavebar .people{flex:1.15 1 0;min-width:0;display:flex;flex-direction:column;gap:5px;}
+  #cavebar .who{display:grid;grid-template-columns:36px 1fr 1.25fr;grid-template-rows:auto auto;column-gap:8px;row-gap:2px;align-items:center;}
+  #cavebar .who img{grid-row:1/3;width:36px;height:36px;border-radius:4px;object-fit:cover;object-position:50% 15%;border:1px solid rgba(255,255,255,.18);background:#1a1424;}
+  #cavebar .nm{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} #cavebar .nm small{font-size:12px;color:#a8c8a0;margin-left:5px;}
+  #cavebar .g{grid-column:3;grid-row:1;position:relative;height:9px;background:rgba(0,0,0,.65);border:1px solid rgba(0,0,0,.8);border-radius:2px;overflow:hidden;} #cavebar .g b{display:block;height:100%;background:#7fd47f;transition:width .3s;}
+  #cavebar .g i{position:absolute;right:3px;top:-2px;font-size:10px;font-style:normal;color:#eaffea;text-shadow:0 1px 2px #000;}
+  #cavebar .meal{grid-column:2/4;grid-row:2;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} #cavebar .meal.ok{color:#9ad89a;} #cavebar .meal.warn{color:#f0b060;} #cavebar .meal.bad{color:#ff7a6a;}
+  #cavebar .st{flex:1 1 0;min-width:0;font-size:13px;line-height:1.55;color:#d8ccb8;border-left:1px solid var(--line);padding-left:12px;white-space:nowrap;overflow:hidden;}
+  #cavebar .st i{display:inline-block;width:20px;font-style:normal;} #cavebar .st .day{color:var(--gold);} #cavebar .st b{font-weight:normal;} #cavebar .st .warn{color:#f0b060;} #cavebar .st .bad{color:#ff6a5a;}
+  #cavebar .todo-row{display:flex;gap:9px;margin-bottom:2px;} #cavebar .todo-row .ok{color:#8fd08f;} #cavebar .todo-row .todo{color:#ffd27a;}
   #cavebar .talk{position:absolute;left:10px;bottom:100%;margin-bottom:6px;max-width:calc(100% - 20px);background:rgba(20,16,34,.92);border:1px solid rgba(160,220,255,.35);border-radius:6px;padding:5px 12px;font-size:15px;color:#d8f0ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .4s;} #cavebar .talk.on{opacity:1;} #cavebar .talk em{font-style:normal;color:var(--gold);margin-right:7px;}
-  body.cavebar #prompt{bottom:124px;} body.cine #cavebar{opacity:0;}
-  @media (max-width:640px){ #cavebar{flex-wrap:wrap;gap:6px;} #cavebar .who{flex:1 1 30%;} #cavebar .who img{width:34px;height:34px;} #cavebar .st{flex-basis:100%;border-left:0;border-top:1px solid var(--line);padding:4px 0 0;white-space:normal;} body.cavebar #prompt{bottom:196px;} body.cavebar #guide{bottom:240px;} }
+  .bubble.emo{font-size:26px;padding:2px 8px;background:rgba(240,246,255,.92);} .bubble.emo::after{border-top-color:rgba(240,246,255,.92);}
+  body.cine #cavebar{opacity:0;}
+  @media (max-width:640px){ #cavebar{flex-direction:column;gap:6px;left:8px;right:8px;} #cavebar .people{flex:none;} #cavebar .st{flex:none;border-left:0;border-top:1px solid var(--line);padding:5px 0 0;white-space:normal;font-size:12.5px;} }
   .tag.twood{color:#1a0e04;background:#d88a3a;border-color:#f0b070;}
   .bubble{position:absolute;font-family:"Do Hyeon",sans-serif;font-size:18px;color:#1a1418;background:#f4ede2;padding:6px 12px;border-radius:12px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.6);transform:translate(-50%,-100%);}
   .bubble::after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#f4ede2;}

@@ -20,7 +20,7 @@ const TAG = (txt, cls) => `<span class="tag ${cls}">${txt}</span>`;
 const CHEONG_TAGS = () => (PRO.cursed ? TAG('저주: 실명 · 좌안', 'curse') : '') + TAG('발화 A', 'gA');
 const FACE = { cheong: PA + 'goblin_face.webp', karius: PA + 'karius_face.webp' };
 
-const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false, pigData: [], pigs: [], eggs: [], babies: 0, eggBills: [], full: { inju: 80, ch: 80, ka: 80 }, hpf: { ch: 1, ka: 1 }, fuel: 60, wood: 0, snailLost: 0 };
+const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false, pigData: [], pigs: [], eggs: [], babies: 0, eggBills: [], meal: { inju: { fed: false, hd: 0 }, ch: { fed: false, hd: 0 }, ka: { fed: false, hd: 0 } }, hpf: { ch: 1, ka: 1 }, fireLit: true, wood: 30, snailLost: 0, penFood: 4, snailHd: 0 };
 
 /* ---------- 소리 ---------- */
 SFX.clink = function(v = 1){ this.burst({ type: 'bandpass', f: 3400, q: 9, gain: 0.5 * v, dec: 0.22 }); this.burst({ type: 'bandpass', f: 1900, q: 5, gain: 0.3 * v, dec: 0.12 }); this.thump(240, 0.25 * v, 0.1); };
@@ -59,7 +59,7 @@ function bill(src, x, z, h, o = {}){
   const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
   const g = new THREE.Group(); g.add(m); g.position.set(x, (o.y || 0) + heightAt(G.map, x, z), z);
   G.scene.add(g); G.props.push(g);
-  const b = { g, m, t, h, x, z, flat: !!o.flat, sized: false, fit: o.fit || 0 };
+  const b = { g, m, t, h, x, z, flat: !!o.flat, sized: false, fit: o.fit || 0, lie: o.lie || 0 };
   if (o.flat) m.rotation.x = -Math.PI / 2;
   PRO.bills.push(b); return b;
 }
@@ -69,6 +69,7 @@ function sizeBills(){
       const r = b.t.image.width / b.t.image.height; let h = b.h, w = h * r;
       if (b.fit && w > b.fit){ w = b.fit; h = w / r; }   // 한 칸 폭을 넘지 않게
       b.m.scale.set(w, h, 1); b.m.position.y = b.flat ? 0.02 : h / 2; b.sized = true;
+      if (b.lie){ b.m.rotation.z = b.lie * Math.PI / 2 * 0.94; b.m.position.y = w / 2 * 0.9 + 0.01; }   // 옆으로 누운 시체: 바닥에 닿게
     }
     // v0.2: 소품은 카메라 쪽 (각도)만 봄 → 카메라가 돌지 않는 한 그대로 서 있음 (따라 돌지 않음)
     if (!b.flat) b.g.rotation.y = CAM.yaw;
@@ -120,9 +121,9 @@ function updateFallers(){
 /* ---------- 정리 (clearLevel이 부름) ---------- */
 function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
-  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, pigs: [], blizzard: null, eggBills: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null, bar: null, woodBill: null });
+  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, pigs: [], blizzard: null, eggBills: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null, bar: null, woodBill: null, stains: [] });
   guide(''); mid(''); $p('dream').classList.remove('on');
-  camPreset(); if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
+  camPreset(); if (camera.view && camera.view.enabled) camera.clearViewOffset(); PRO.barH = PRO.barHs = 0; if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
 }
 
@@ -446,7 +447,7 @@ function proTick(dt){
   updateSkip();
   if (G.mode === 'cave' && G.camAnchor) fitCaveCam();
   if (!PRO.bills.length && !PRO.bubbles.length && G.mode !== 'prologue' && G.mode !== 'cave') return;
-  sizeBills(); updateFallers(); updateBubbles();
+  sizeBills(); updateFallers(); updateBubbles(); tickStains();
   for (const g of PRO.glows) g.pillar.material.opacity = 0.18 + 0.14 * (0.5 + 0.5 * Math.sin(G.t * 4));
   const pl = G.player;
   if (PRO.lamp && pl) PRO.lamp.position.set(pl.x, pl.y + 1.7 + (pl.lift || 0), pl.z + 0.4);
@@ -475,7 +476,7 @@ function proTick(dt){
     if (atDig && Cv.ka.pose !== 'dig'){ setPose(Cv.ka, 'dig'); Cv.digT = 0.85; } if (!atDig && Cv.ka.pose === 'dig') setPose(Cv.ka, 'idle');
     Cv.digT -= dt; if (Cv.digT <= 0 && atDig){ Cv.digT = 8 / 7; const k = Cv.ka; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
     // 청광묵: 달팽이를 보며 가끔 "아우.... 귀여워!"
-    Cv.cuteT -= dt; if (Cv.cuteT <= 0 && Cv.ch.sadT > 0){ Cv.cuteT = rnd(7, 11); if (Cv.ch.sadT < 45) say(Cv.ch, ['…달팽이…', '흑…', '…청광묵 괜찮다…', '……'][Math.floor(Math.random() * 4)], 'soft', 2.2); }
+    Cv.cuteT -= dt; if (Cv.cuteT <= 0 && Cv.ch.sadT > 0){ Cv.cuteT = rnd(3, 5); say(Cv.ch, Cv.ch.sadT > 45 ? '😭' : '😢', 'emo', 2.4); }
     else if (Cv.cuteT <= 0 && !hBusy(Cv.ch)){ Cv.cuteT = rnd(6, 9); const s = Cv.snails[0]; if (s) Cv.ch.face = Math.sign(s.x - Cv.ch.x) || 1; say(Cv.ch, '아우.... 귀여워!', 'soft', 2.4); }
     // 레베카: zzz
     Cv.zzzT -= dt; if (Cv.zzzT <= 0){ Cv.zzzT = 2.4; say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, 'z z z…', 'zzz', 2.2); }
@@ -628,7 +629,9 @@ function updateSkip(){ $p('skipBtn').hidden = !(G.mode === 'prologue' || (G.mode
 const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.7, spanZ: 16.4, wallH: 5.0 };   // wallH: 화면에 넣을 높이 (뒤쪽 5m 석문까지)
 const lens = (h, back) => { const k = Math.tan(20 * Math.PI / 180) / Math.tan(CAVE_CAM.fov / 2 * Math.PI / 180); return [h * k, back * k]; };   // 다가가 보기 (말 걸기 등)도 같은 화면 크기로
 function fitCaveCam(){
-  const tv = Math.tan(camera.fov / 2 * Math.PI / 180), th = tv * camera.aspect, e = CAVE_CAM.elev;
+  const H = innerHeight, W = innerWidth; PRO.barHs = lerp(PRO.barHs || 0, PRO.barH || 0, 0.12); const bh = Math.min(PRO.barHs, H * 0.45), kv = (H - bh) / H;
+  if (bh > 1) camera.setViewOffset(W, H, 0, bh / 2, W, H); else if (camera.view && camera.view.enabled) camera.clearViewOffset();   // 아래 창만큼 화면을 위로
+  const tv = Math.tan(camera.fov / 2 * Math.PI / 180) * kv, th = tv / kv * camera.aspect, e = CAVE_CAM.elev;
   const needV = (CAVE_CAM.spanZ * Math.sin(e) + CAVE_CAM.wallH * Math.cos(e)) / 2 + 1.2;
   const D = Math.max(CAVE_CAM.halfW / th, needV / tv);
   CAM.base.y = D * Math.sin(e); CAM.base.back = D * Math.cos(e); CAM.look.y = 1.0; CAM.look.fwd = 0;
@@ -719,7 +722,7 @@ function trashAdd(t, i){
   t.b = b; if (t.rot) rotTint(t); PRO.trashBills.push(b);
 }
 function dropCarried(it){ G.scene.remove(it.b.g); it.done = true; it.carrier = null; PRO.loose = PRO.loose.filter(o => o !== it); if (PRO.carry === it) PRO.carry = null; }
-function putStore(it){ dropCarried(it); PRO.store.push(it.d); pileAdd(it.d, PRO.store.length - 1); SFX.thump(140, 0.3, 0.15); spark(STORE.cx, 0.6, STORE.cz, 0xffe0b0, 6, 2); popText(STORE.cx, 1.4, STORE.cz, `창고 +1 (${PRO.store.length})`, 'heal', 1); }
+function putStore(it){ dropCarried(it); PRO.store.push({ ...it.d }); pileAdd(it.d, PRO.store.length - 1); SFX.thump(140, 0.3, 0.15); spark(STORE.cx, 0.6, STORE.cz, 0xffe0b0, 6, 2); popText(STORE.cx, 1.4, STORE.cz, `창고 +1 (${PRO.store.length})`, 'heal', 1); }
 function putTrash(it){ dropCarried(it); const t = { d: it.d, rot: it.age > 0 ? 1 : 0 }; PRO.trash.push(t); trashAdd(t, PRO.trash.length - 1); SFX.thump(90, 0.3, 0.2); dust(PIT.x, PIT.z, 6); popText(PIT.x, 1.3, PIT.z, '버림', 'miss', 0.9); }
 async function showStore(){
   if (!PRO.store.length) return textbox('', ['창고 자리가 비어 있다.']);
@@ -741,7 +744,7 @@ async function endDay(){
   G.player.lying = true; dark(1, 1.4); await wait(1.6);
   PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
   endStorm(); PRO.weather = rollWeather(); applyWeather(true);
-  const dayNews = dayLivestock().concat(dayBody());
+  const dayNews = dayLivestock().concat(dayBody()); ageStains();
   let rotNow = 0;
   for (const t of PRO.trash){ t.rot++; rotTint(t); rotNow++; }
   for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
@@ -751,6 +754,7 @@ async function endDay(){
   if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
   dayNews.forEach((t, i) => setTimeout(() => say(Cv.ch, t, 'soft', 2.6), 2800 + i * 2600));
   letterbox(false); G.lock = false;
+  setTimeout(() => G.mode === 'cave' && guide('아침 — <em>밥</em> 먹기 · <em>불</em> 피우기 · <em>달팽이 먹이</em> 넣기', 6), 2600);
   caption(`${PRO.day}일째 · ${WEATHER[PRO.weather].icon} ${WEATHER[PRO.weather].name}`, rotNow ? '어디선가 썩는 냄새가 난다' : WEATHER[PRO.weather].note);
   if (PRO.weather === 'rain' && PRO.tentGoneNow) setTimeout(() => say(Cv.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1800);
 }
@@ -770,8 +774,8 @@ function tickStorage(dt){
 // 동료 정리 (v0.17): 인주가 뭘 하든 낙하 뒤엔 기본으로 정리함. 단 약간 랜덤 — 그냥 가만히 있기도, 바로 정리하기도, 정리하다 딴 데로 새기도
 // 동료도 화장실에 감 (가끔. 변소 구덩이면 큰 똥 · 파리가 늘어남)
 const hBusy = h => !!(h.job || h.potty || h.wander || h.pigJob || h.rescue || h.ready || h.eat || h.stopPl || h.sadT > 45);
-const HSAY = { ch: { work: ['정리한다!', '청광묵 돕는다!', '영차!'], hungry: ['배고프다! 먹는다!', '청광묵 밥 먹는다!'], ate: ['맛있다!', '배부르다! 대장!'], starve: ['대장… 배고프다…', '꼬르륵… 청광묵 배고프다…'], off: ['어? 저거 뭐냐', '달팽이 보고 온다!', '킁킁…', '배고프다…'], potty: ['청광묵 똥 싸러 간다!', '급하다!'], done: ['시원하다!', '대장! 개운하다!'] },
-               ka: { work: ['.....', '…'], hungry: ['.....'], ate: ['…'], starve: ['…(꼬르륵)'], off: ['.....', '캉.'], potty: ['.....'], done: ['…'] } };
+const HSAY = { ch: { work: ['정리한다!', '청광묵 돕는다!', '영차!'], hungry: ['배고프다! 밥!', '청광묵 아침 먹는다!'], ate: ['맛있다!', '배부르다! 대장!'], starve: ['먹을 거… 먹을 거…', '대장… 먹을 거 없다…', '꼬르륵…'], forage: ['…버섯… 조금만…', '배고프다… 달팽이 거 조금만…'], off: ['어? 저거 뭐냐', '달팽이 보고 온다!', '킁킁…', '배고프다…'], potty: ['청광묵 똥 싸러 간다!', '급하다!'], done: ['시원하다!', '대장! 개운하다!'] },
+               ka: { work: ['.....', '…'], hungry: ['.....'], ate: ['…'], starve: ['…(꼬르륵)'], forage: ['.....'], off: ['.....', '캉.'], potty: ['.....'], done: ['…'] } };
 function helperTick(h, dt){
   if (!h) return;
   h.home = h.home || { x: h.x, z: h.z };
@@ -799,20 +803,32 @@ function helperTick(h, dt){
       say(h, pick(L.done), 'soft', 1.4); } }
     return hMove(h, moving);
   }
-  // 배고프면 창고에 가서 먹음 (35 아래)
-  const key = isCh ? 'ch' : 'ka';
-  if (!h.eat && !(h.job && h.job.it) && PRO.full[key] < 35 && edible() && !G.lock){ if (h.job){ h.job.target.claimed = null; h.job = null; } h.wander = null; h.eat = true; say(h, pick(L.hungry), 'soft', 1.4); }
+  // 끼니 (하루 한 번): 일어나면 먹을 걸 찾아다님. 창고에 있으면 창고, 없으면 한참 찾다가 우리의 버섯 · 이끼를 따 먹음 (달팽이 먹이가 줄어듦)
+  const key = isCh ? 'ch' : 'ka', M = PRO.meal[key];
+  if (!M.fed && !h.eat && !(h.job && h.job.it) && !G.lock){
+    h.mealT = (h.mealT ?? rnd(1, 6)) - dt;
+    if (h.mealT <= 0){
+      const src = edible() ? 'store' : PRO.penFood > 0 && (h.seekT = (h.seekT || 0) + 1) > 2 ? 'pen' : null;
+      h.mealT = rnd(8, 14);
+      if (src){ if (h.job){ h.job.target.claimed = null; h.job = null; } h.wander = null; h.eat = src; say(h, src === 'pen' ? pick(L.forage) : pick(L.hungry), 'soft', 1.6); }
+      else if (!h.eat){ say(h, pick(L.starve), 'soft', 2); const a = rnd(0, 6.3); h.wander = { x: clamp(LOBBY_C.x + Math.cos(a) * rnd(1, 4), 3, 15), z: clamp(LOBBY_C.z + Math.sin(a) * rnd(1, 3.5), 6, 14), t: 3, stay: 1 }; }
+    }
+  }
   if (h.eat){
-    const D = { x: STORE.cx + 1.4, z: STORE.cz + 0.5 };
+    const D = h.eat === 'pen' ? { x: PRO.pen.x0 - 0.9, z: (PRO.pen.z0 + PRO.pen.z1) / 2 + (isCh ? 0.6 : -0.6) } : { x: STORE.cx + 1.4, z: STORE.cz + 0.5 };
     if (Math.hypot(D.x - h.x, D.z - h.z) > 0.5){ navTo(h, D.x, D.z, sp * 0.9, dt, 0.3); moving = true; }
-    else { h.eat = false; const d = takeFood(100 - PRO.full[key]); if (d){ PRO.full[key] = Math.min(100, PRO.full[key] + d.food * FOOD_PT); say(h, pick(L.ate), 'soft', 1.6); popText(h.x, h.y + 2, h.z, `냠 (${d.name})`, 'heal', 1.2); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); } h.restT = rnd(2, 5); }
+    else {
+      const ok = h.eat === 'pen' ? pickPenFood() : takeMeal();
+      if (ok){ M.fed = true; h.seekT = 0; say(h, h.eat === 'pen' ? (isCh ? '…달팽이 미안하다…' : '…') : pick(L.ate), 'soft', 1.8); popText(h.x, h.y + 2, h.z, h.eat === 'pen' ? '버섯 냠 (달팽이 먹이 -1)' : '냠 (끼니)', 'heal', 1.3); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); }
+      h.eat = false; h.restT = rnd(2, 5);
+    }
     return hMove(h, moving);
   }
   // 딴짓: 아무 데나 갔다가 잠깐 서 있음
   if (h.wander){ const W = h.wander; if (Math.hypot(W.x - h.x, W.z - h.z) > 0.3 && W.t > 0){ navTo(h, W.x, W.z, sp * 0.6, dt, 0.2); moving = true; } W.t -= dt; if (W.t <= -W.stay) h.wander = null; return hMove(h, moving); }
   h.restT = (h.restT || 0) - dt;
   if (!h.job && h.restT <= 0 && !G.lock){
-    const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done && !(it.d.raw && (isCh || PRO.fuel <= 0)));   // 청광묵은 죽은 달팽이를 못 만짐
+    const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done && !(it.d.raw && (isCh || !PRO.fireLit)));   // 청광묵은 죽은 달팽이를 못 만짐
     const it = nearest(h, free, 30);
     if (it){
       const r = Math.random();
@@ -881,7 +897,7 @@ function tickSnails(dt){
       if (s.wT <= 0){ s.wT = rnd(3, 6); const a = rnd(0, 6.3); s.goal = { x: clamp(s.home.x + Math.cos(a) * 0.8, pen.x0 + 0.7, pen.x1 - 0.7), z: clamp(s.home.z + Math.sin(a) * 0.8, pen.z0 + 0.7, pen.z1 - 0.7) }; }
       if (s.goal && Math.hypot(s.goal.x - s.x, s.goal.z - s.z) > 0.1){ const n = norm(s.goal.x - s.x, s.goal.z - s.z); moveBy(s, n.x * 0.16 * dt, n.z * 0.16 * dt); faceToward(s, n.x, n.z); }
       // 알: 가끔 우리 안에 낳음 (한 번에 무더기 셋까지)
-      s.eggT = (s.eggT ?? rnd(45, 100)) - dt; if (s.eggT <= 0){ s.eggT = rnd(60, 130); if (PRO.eggs.length < 3 && !s.baby) layEgg(s); }
+      s.eggT = (s.eggT ?? rnd(45, 100)) - dt; if (s.eggT <= 0){ s.eggT = rnd(60, 130); if (PRO.eggs.length < 3 && !s.baby && !PRO.snailHd) layEgg(s); }
       // 탈출: 한 번에 한 마리만
       if (!G.lock){ s.escT -= dt; if (s.escT <= 0 && !Cv.snails.some(o => o !== s && o.st2 !== 'pen')) startEscape(s); }
     } else if (s.st2 === 'climb'){
@@ -978,8 +994,9 @@ function startLobbyFight(){
   setTimeout(() => G.lobbyFight && say(ka, '.....', 'soft', 1.4), 1500);
   guide('적이다! <em>좌클릭</em> 찌르기 · <em>우클릭</em> 투창 · <em>Q</em> 구르기 · <em>F</em> 방어', 5);
   G.onKill = (u) => { if (u.side === 'enemy' && G.mode === 'cave'){
-    const d = { k: FOE_FILE[u.kind], name: u.D.name + ' 사체', type: 'junk', h: 0.45 };
-    setTimeout(() => { removeUnit(u); if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', u.x, u.z, d.h, { fit: 0.8, tint: 0.45 }); b.m.rotation.z = Math.PI / 2 * 0.9; addLoose(d, b, u.x, u.z); }, 2600);
+    const d = { k: FOE_FILE[u.kind], name: u.D.name + ' 사체', type: 'junk', h: bodyH(u), lie: -u.face || 1 };   // v0.19: 몸 크기 그대로
+    bloodBurst(u.x, u.z, bodyH(u)); bloodPool(u.x, u.z, 0.45 + bodyH(u) * 0.35, 2.4);
+    setTimeout(() => { removeUnit(u); if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', u.x, u.z, d.h, { tint: 0.6, lie: d.lie }); addLoose(d, b, u.x, u.z); }, 2600);
   } };
 }
 function endLobbyFight(win){
@@ -1118,6 +1135,7 @@ function startStorm(type){ PRO.storm = type; applyStorm(true); }
 function applyStorm(fresh){
   const S = PRO.storm; if (!S) return;
   if (S === 'downpour'){
+    if (PRO.fireLit){ PRO.fireLit = false; if (fresh) setTimeout(() => PRO.cave && say(PRO.cave.ch, '대장! 비 때문에 불 꺼졌다!', 'soft', 2.4), 2800); }
     G.rain.on = true; if (PRO.hemi0 == null) PRO.hemi0 = hemi.intensity; hemi.intensity = 0.26;
     if (!PRO.hasToilet && !PRO.tentGone){ PRO.tentGone = true; if (PRO.tent){ G.scene.remove(PRO.tent.g); PRO.tent = null; } if (fresh) setTimeout(() => PRO.cave && say(PRO.cave.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1500); }
   }
@@ -1205,11 +1223,11 @@ function tickPigs(dt){
       continue;
     }
     // 냅두면 창고 식량을 훔쳐먹으러 감 (15초마다 하나)
-    if (PRO.store.some(x => x.food)){
+    if (!d.fed && edible()){
       const T = { x: STORE.cx + 1.35, z: STORE.cz };
       if (Math.hypot(T.x - u.x, T.z - u.z) > 0.5){ navTo(u, T.x, T.z, 1.6, dt, 0.3); continue; }
       u.eatT = (u.eatT ?? 1.5) - dt;
-      if (u.eatT <= 0){ u.eatT = 15; if (eatFromStore()){ d.fed = true; d.hungry = 0; say(u, '냠냠 꿀꿀', 'soft', 1.6); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); } }
+      if (u.eatT <= 0){ u.eatT = 15; if (takeMeal()){ d.fed = true; d.hungry = 0; say(u, '냠냠 꿀꿀', 'soft', 1.6); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); } }
       continue;
     }
     u.wT = (u.wT || 0) - dt; if (u.wT <= 0){ u.wT = rnd(2, 4); const a = rnd(0, 6.3); u.goal = { x: u.x + Math.cos(a) * 1.5, z: u.z + Math.sin(a) * 1.5 }; }
@@ -1224,16 +1242,18 @@ function penPig(u){
 const penPigs = () => PRO.pigs.filter(u => !u.dead && u.pig.penned);
 function penLabel(){
   if (PRO.carry && PRO.carry.pig) return '돼지를 우리에 넣는다';
+  const fl = penFeedLabel(); if (fl) return fl;
   if (PRO.carry) return '우리 (들고 있는 건 다른 곳으로)';
   const hungry = penPigs().filter(u => !u.pig.fed);
-  if (hungry.length) return PRO.store.some(d => d.food) ? `돼지에게 먹이를 준다 (식량 -1)` : '돼지가 배고프다 (창고에 식량이 없음)';
+  if (hungry.length) return edible() ? `돼지에게 먹이를 준다 (식량 -1)` : '돼지가 배고프다 (창고에 식량이 없음)';
   return '우리를 본다';
 }
 async function penAction(){
   if (PRO.carry && PRO.carry.pig) return penPig(PRO.carry.pig);
+  if (penFeedLabel()) return penFeed();
   if (PRO.carry) return;
   const hungry = penPigs().filter(u => !u.pig.fed);
-  if (hungry.length && eatFromStore()){ for (const u of hungry){ u.pig.fed = true; u.pig.hungry = 0; say(u, '냠냠 꿀꿀!', 'soft', 1.4); } return; }
+  if (hungry.length && takeMeal()){ for (const u of hungry){ u.pig.fed = true; u.pig.hungry = 0; say(u, '냠냠 꿀꿀!', 'soft', 1.4); } return; }
   const n = PRO.cave.snails.length, pigs = penPigs().length;
   await textbox('', [`우리: 인광달팽이 ${n}마리${PRO.babies ? ` (새끼 ${PRO.babies})` : ''}${pigs ? ` · 돼지 ${pigs}` : ''}${PRO.eggs.length ? ` · 알 무더기 ${PRO.eggs.length}` : ''}`, '(낮은 나무 울타리. Space로 뛰어넘을 수 있다)']);
 }
@@ -1267,7 +1287,7 @@ function dayLivestock(){
     if (d.dead) continue;
     if (!d.fed) d.hungry++;
     d.fed = false;
-    if (d.hungry > 5){ d.dead = true; const u = d.u; if (u && !u.dead){ removeUnit(u); u.dead = true; const dd = { k: 'pig_big', name: '돼지 사체', type: 'junk', h: 0.4 }; const b = bill(PA + dd.k + '.webp', u.x, u.z, dd.h, { fit: 0.8, tint: 0.45 }); b.m.rotation.z = Math.PI / 2; addLoose(dd, b, u.x, u.z); } news.push('대장… 돼지가 굶어 죽었다…'); }
+    if (d.hungry > 5){ d.dead = true; const u = d.u; if (u && !u.dead){ removeUnit(u); u.dead = true; const dd = { k: 'pig_big', name: '돼지 사체', type: 'junk', h: bodyH(u), lie: 1 }; const b = bill(PA + dd.k + '.webp', u.x, u.z, dd.h, { tint: 0.55, lie: 1 }); addLoose(dd, b, u.x, u.z); } news.push('대장… 돼지가 굶어 죽었다…'); }
     else if (d.hungry >= 3) news.push(`대장! 돼지가 ${d.hungry}일째 굶었다!`);
   }
   PRO.pigs = PRO.pigs.filter(u => !u.dead);
@@ -1288,30 +1308,42 @@ function livestockHud(){
 }
 
 
-/* ---------- v0.18 모닥불 · 장작: 굴 왼쪽 안 (천장 구멍에서 먼 곳 · 비를 안 맞음)
-   불은 천천히 탐 (7초에 1, 폭우면 2배, 밤새 20). 땔감 쓰레기 (천 쪼가리 · 판자)를 넣으면 장작 +. 넘치면 옆 장작 더미에 쌓았다가 불이 줄면 알아서 넣음
-   불이 있으면: 곁 (2.8칸)에서 회복 2배 · 죽은 달팽이를 구울 수 있음 (→ 달팽이구이) */
-const FIRE = { x: 5, z: 8 }, WOOD_MAX = 200, FOOD_PT = 22;
+/* ---------- v0.19 하루 루틴: 끼니 · 불 · 달팽이 먹이 (실시간으로 줄지 않음. 하루가 지날 때만 갱신)
+   - 끼니: 각자 그날 한 번 먹어야 함 (창고 식량 1 = 끼니 1, 음식 그릇은 셋이 나눠 먹음). 안 먹고 하루를 넘기면 굶은 날 +1
+     먹은 날: 자연 회복 (싸움 밖, 1초에 최대 체력 0.6%, 모닥불 곁 2배) · 잠에 35% 회복 / 굶은 날: 회복 없음 · 밤마다 체력 15% 잃음 (1까지)
+   - 불: 아침마다 꺼져 있음 → 장작 더미 20으로 다시 피움 (E). 땔감 쓰레기 (천 쪼가리 · 판자)는 장작 더미로. 폭우가 오면 꺼짐
+     불이 있는 날: 곁에서 회복 2배 · 죽은 달팽이를 구울 수 있음 (→ 달팽이구이)
+   - 달팽이 먹이: 우리에 이끼 · 버섯이 자람 (아침마다 +2, 최대 8). 밤에 달팽이가 먹음 (어른 1 · 새끼 4마리에 1)
+     모자라면 달팽이가 굶음 (알을 안 낳음, 3일 굶으면 한 마리 죽음). 창고 식량 1 = 먹이 2로 넣어 줄 수 있음
+     배고프다고 우리 버섯을 따 먹으면 (사람 · 동료) 달팽이 먹이가 줄어듦 */
+const FIRE = { x: 5, z: 8 }, WOOD_MAX = 200, FIRE_COST = 20, PEN_MAX = 8;
 const RAW_SNAIL = { k: 'snail', name: '죽은 인광달팽이', type: 'food', raw: true, food: 0, h: 0.12 };
 const ROAST = { k: 'snail_roast', name: '달팽이구이', type: 'food', food: 2, h: 0.14 };
 function buildFire(){
-  PRO.woodBill = null; woodPile();
+  PRO.woodBill = null; woodPile(); penGarden();
   G.inspect.push({ x: FIRE.x, z: FIRE.z, r: 1.55, far: 6, mark: '모닥불',
     get label(){ const c = PRO.carry;
-      if (c && c.d.wood) return `${eul(c.d.name)} 불에 넣는다 (장작 +${c.d.wood})`;
-      if (c && c.d.raw) return PRO.fuel > 0 ? `${eul(c.d.name)} 굽는다` : '불이 꺼져 있어 구울 수 없다';
+      if (c && c.d.wood) return `${eul(c.d.name)} 장작 더미에 (장작 +${c.d.wood})`;
+      if (c && c.d.raw) return PRO.fireLit ? `${eul(c.d.name)} 굽는다` : '불이 꺼져 있어 구울 수 없다';
       if (c) return '불에 넣을 수 없는 것';
-      return PRO.fuel > 0 ? `모닥불 (불 ${Math.ceil(PRO.fuel)}% · 장작 더미 ${PRO.wood}) — 곁에 있으면 빨리 회복` : '불이 꺼졌다 — 땔감 (천 · 판자)을 넣어야 함'; },
-    fn: () => { const c = PRO.carry; if (!c) return; if (c.d.wood) return feedWood(c); if (c.d.raw && PRO.fuel > 0) return roast(c); } });
+      if (PRO.fireLit) return `모닥불 (오늘 피움 · 장작 더미 ${PRO.wood}) — 곁에 있으면 빨리 회복`;
+      return PRO.wood >= FIRE_COST ? `불을 피운다 (장작 ${FIRE_COST} / 더미 ${PRO.wood})` : `불이 꺼졌다 — 장작이 모자람 (${PRO.wood}/${FIRE_COST}, 천 · 판자를 가져오기)`; },
+    fn: () => { const c = PRO.carry; if (c){ if (c.d.wood) return feedWood(c); if (c.d.raw && PRO.fireLit) return roast(c); return; } if (!PRO.fireLit && PRO.wood >= FIRE_COST) lightFire(); } });
 }
 function woodPile(){
   if (PRO.woodBill){ G.scene.remove(PRO.woodBill.g); PRO.woodBill = null; }
   if (PRO.wood > 0) PRO.woodBill = bill(PA + 'log.webp', FIRE.x - 0.55, FIRE.z + 0.75, 0.22 + Math.min(0.3, PRO.wood / 400), { fit: 0.75, tint: 0.85 });
 }
 function feedWood(it){
-  dropCarried(it); const w = it.d.wood, relit = PRO.fuel <= 0;
-  if (PRO.fuel + w <= 100){ PRO.fuel += w; popText(FIRE.x, 1.6, FIRE.z, relit ? '불이 붙었다!' : `불 +${w}`, 'heal', 1.1); spark(FIRE.x, 0.8, FIRE.z, 0xffb050, 14, 3); SFX.burst({ type: 'bandpass', f: 900, f2: 300, gain: 0.3, att: 0.02, dec: 0.6 }); }
-  else { PRO.wood = Math.min(WOOD_MAX, PRO.wood + w); woodPile(); popText(FIRE.x, 1.6, FIRE.z, `장작 더미 +${w}`, 'heal', 1.1); SFX.thump(150, 0.25, 0.15); }
+  dropCarried(it); PRO.wood = Math.min(WOOD_MAX, PRO.wood + it.d.wood); woodPile();
+  popText(FIRE.x, 1.6, FIRE.z, `장작 +${it.d.wood} (${PRO.wood})`, 'heal', 1.1); SFX.thump(150, 0.25, 0.15);
+}
+async function lightFire(){
+  const pl = G.player; G.lock = true;
+  for (let k = 0; k < 3; k++){ pl.leanT = 0.3; SFX.clink(0.3); spark(FIRE.x, 0.4, FIRE.z, 0xffc070, 6, 2); await wait(0.4); }
+  PRO.wood -= FIRE_COST; PRO.fireLit = true; woodPile();
+  spark(FIRE.x, 0.8, FIRE.z, 0xffb050, 18, 3.5); SFX.burst({ type: 'bandpass', f: 900, f2: 300, gain: 0.35, att: 0.02, dec: 0.8 }); popText(FIRE.x, 1.7, FIRE.z, '불이 붙었다!', 'heal', 1.3);
+  G.lock = false;
 }
 function roast(it){
   dropCarried(it); let n = 0;
@@ -1323,81 +1355,99 @@ function roast(it){
     clearInterval(iv);
     const x = FIRE.x + 0.85, z = FIRE.z + 0.55, b = bill(PA + ROAST.k + '.webp', x, z, ROAST.h, { fit: 0.4, tint: 0.95 });
     addLoose(ROAST, b, x, z); popText(x, 1.2, z, '달팽이구이!', 'crit', 1.4);
-    const ch = PRO.cave.ch; if (ch.sadT > 0) setTimeout(() => say(ch, '…흑. 냄새는… 좋다…', 'soft', 2.4), 800);
+    const ch = PRO.cave.ch; if (ch.sadT > 0) setTimeout(() => say(ch, '😢', 'emo', 2.4), 800);
   }, 450);
 }
 function tickFire(dt){
   const f = G.map && G.map.fires[0]; if (!f) return;
-  if (!G.lock) PRO.fuel = Math.max(0, PRO.fuel - dt / 7 * (PRO.storm === 'downpour' ? 2 : 1));
-  if (PRO.fuel < 50 && PRO.wood > 0){ const k = Math.min(PRO.wood, 25); PRO.wood -= k; PRO.fuel += k; woodPile(); spark(FIRE.x, 0.8, FIRE.z, 0xffb050, 8, 2.5); }   // 장작 더미에서 알아서
-  const lit = PRO.fuel > 0; f.k = lit ? 0.4 + 0.6 * Math.min(1, PRO.fuel / 50) : 0; f.flame.visible = lit;
-  if (!lit && Math.random() < dt * 3) dot(f.x + rnd(-0.1, 0.1), rnd(0.2, 0.9), f.z, 0x55506a, 0.06, 1.4);   // 꺼진 불: 연기만
-  const ch = PRO.cave.ch;
-  if (lit && PRO.fuel < 15 && !PRO.fireWarn){ PRO.fireWarn = true; say(ch, '대장! 불 꺼진다! 장작!', 'soft', 2.4); }
-  if (!lit && !PRO.fireOut){ PRO.fireOut = true; say(ch, '대장… 불 꺼졌다…', 'soft', 2.4); }
-  if (PRO.fuel > 25) PRO.fireWarn = false; if (lit) PRO.fireOut = false;
+  const lit = PRO.fireLit; f.k = lit ? 1 : 0; f.flame.visible = lit;
+  if (!lit && Math.random() < dt * 2) dot(f.x + rnd(-0.1, 0.1), rnd(0.2, 0.9), f.z, 0x55506a, 0.06, 1.4);   // 꺼진 불: 연기만
 }
-
-/* ---------- 허기 · 자연 회복 (치료 스킬이 없음 → 로비에서 쉬며 회복)
-   배부름 100 → 0: 굴에서 10초에 1 (싸움 중 2배) · 잠 (하루) 18. 식량 1 = 22 (빵 · 사과 22 · 고기 · 달팽이구이 44 · 음식 그릇 66)
-   회복 (싸움 밖): 배부름 30 이상이면 1초에 최대 체력 0.6% (70 이상 1.5배 · 모닥불 곁 2배) / 30 아래는 회복 없음 / 0이면 굶주림 (체력이 줄어듦, 1까지)
-   잠 (하루를 마침): 배부름 30 이상이면 체력 35% 회복 */
-const fullWord = f => f >= 70 ? '배부름' : f >= 30 ? '보통' : f > 0 ? '배고픔' : '굶주림';
+// 우리 안 이끼 · 버섯 (달팽이 먹이): 보이는 만큼 그림으로
+function penGarden(){
+  for (const b of PRO.gardenBills || []) G.scene.remove(b.g);
+  PRO.gardenBills = []; const pen = PRO.pen; if (!pen) return;
+  const spots = [[0.6, 0.5], [2.2, 0.7], [1.3, 1.6], [0.5, 2.6], [2.4, 2.4], [1.6, 3.0], [0.9, 1.1], [2.0, 1.4]];
+  for (let i = 0; i < Math.min(PEN_MAX, PRO.penFood); i++){
+    const [dx, dz] = spots[i], k = ['mush1', 'grass', 'mush3', 'grass', 'mush2', 'mush4', 'grass', 'mush1'][i];
+    PRO.gardenBills.push(bill(PA + k + '.webp', pen.x0 + 0.5 + dx, pen.z0 + 0.5 + dz, k === 'grass' ? 0.16 : 0.22, { fit: 0.3, tint: 0.85 }));
+  }
+}
+function pickPenFood(){ if (PRO.penFood <= 0) return false; PRO.penFood--; penGarden(); return true; }
+const snailNeed = () => { const Cv = PRO.cave; if (!Cv) return 0; const a = Cv.snails.filter(s => !s.baby).length; return a + Math.ceil(PRO.babies / 4); };
 const edible = () => PRO.store.some(d => d.food && !d.raw);
-function takeFood(need){   // 필요한 만큼에 가장 가까운 것
-  let best = -1, bd = 1e9;
-  PRO.store.forEach((d, i) => { if (!d.food || d.raw) return; const v = Math.abs(d.food * FOOD_PT - need); if (v < bd){ bd = v; best = i; } });
+const meals = () => PRO.store.reduce((a, d) => a + (d.raw ? 0 : d.food || 0), 0);
+function takeMeal(){   // 끼니 하나: 작은 것부터 (음식 그릇은 여럿이 나눠 먹음)
+  let best = -1;
+  PRO.store.forEach((d, i) => { if (d.food && !d.raw && (best < 0 || d.food < PRO.store[best].food)) best = i; });
   if (best < 0) return null;
-  const d = PRO.store.splice(best, 1)[0];
-  for (const b of PRO.storeBills) G.scene.remove(b.g); PRO.storeBills = []; PRO.store.forEach((x, k) => pileAdd(x, k));
+  const d = PRO.store[best];
+  if (d.food > 1) PRO.store[best] = { ...d, food: d.food - 1 };
+  else { PRO.store.splice(best, 1); for (const b of PRO.storeBills) G.scene.remove(b.g); PRO.storeBills = []; PRO.store.forEach((x, k) => pileAdd(x, k)); }
   return d;
 }
 function storeIdleLabel(){
-  const f = PRO.full.inju;
-  if (edible() && f < 90){ const d = PRO.store.filter(x => x.food && !x.raw).sort((a, b) => Math.abs(a.food * FOOD_PT - (100 - f)) - Math.abs(b.food * FOOD_PT - (100 - f)))[0]; return `창고에서 먹는다 (${d.name} +${d.food * FOOD_PT})`; }
-  return `창고를 본다 (${PRO.store.length}개)`;
+  if (!PRO.meal.inju.fed && edible()) return '창고에서 밥을 먹는다 (오늘 끼니)';
+  return `창고를 본다 (${PRO.store.length}개 · 끼니 ${meals()})`;
 }
 async function storeIdle(){
-  if (!(edible() && PRO.full.inju < 90)) return showStore();
-  const d = takeFood(100 - PRO.full.inju); if (!d) return;
-  const pl = G.player; G.lock = true; pl.leanT = 0.3; SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.25, dec: 0.3 }); await wait(0.5); pl.leanT = 0.3; SFX.burst({ type: 'bandpass', f: 520, q: 3, gain: 0.25, dec: 0.3 }); await wait(0.5);
-  PRO.full.inju = Math.min(100, PRO.full.inju + d.food * FOOD_PT); popText(pl.x, pl.y + 2, pl.z, `냠 (${d.name})`, 'heal', 1.2); G.lock = false;
+  if (PRO.meal.inju.fed || !edible()) return showStore();
+  const pl = G.player; G.lock = true;
+  for (let k = 0; k < 2; k++){ pl.leanT = 0.3; SFX.burst({ type: 'bandpass', f: 500 + k * 20, q: 3, gain: 0.25, dec: 0.3 }); await wait(0.5); }
+  const d = takeMeal(); if (d){ PRO.meal.inju.fed = true; popText(pl.x, pl.y + 2, pl.z, `냠 (${d.name})`, 'heal', 1.2); }
+  G.lock = false;
 }
-const nearFire = u => PRO.fuel > 0 && Math.hypot(u.x - FIRE.x, u.z - FIRE.z) < 2.8;
-function regenRate(f, u){ return f >= 30 ? 0.006 * (f >= 70 ? 1.5 : 1) * (nearFire(u) ? 2 : 1) : 0; }
+const nearFire = u => PRO.fireLit && Math.hypot(u.x - FIRE.x, u.z - FIRE.z) < 2.8;
+const regenRate = (k, u) => PRO.meal[k].fed ? 0.006 * (nearFire(u) ? 2 : 1) : 0;
 function tickBody(dt){
   const Cv = PRO.cave, pl = G.player; if (!Cv || !pl) return;
-  if (G.lock && !G.lobbyFight) return;
-  const drain = dt / 10 * (G.lobbyFight ? 2 : 1);
-  for (const k of ['inju', 'ch', 'ka']) PRO.full[k] = Math.max(0, PRO.full[k] - drain);
-  if (!G.lobbyFight){
-    const f = PRO.full.inju;
-    if (!pl.downed){ if (f > 0) pl.hp = Math.min(pl.max, pl.hp + pl.max * regenRate(f, pl) * dt); else pl.hp = Math.max(1, pl.hp - 0.5 * dt); }
-    for (const [k, h] of [['ch', Cv.ch], ['ka', Cv.ka]]){
-      const fk = PRO.full[k];
-      PRO.hpf[k] = fk > 0 ? Math.min(1, PRO.hpf[k] + regenRate(fk, h) * dt) : Math.max(0.05, PRO.hpf[k] - 0.004 * dt);
-      if (fk < 22 && !edible()){ h.starveT = (h.starveT ?? 5) - dt; if (h.starveT <= 0){ h.starveT = rnd(28, 45); say(h, (k === 'ch' ? HSAY.ch : HSAY.ka).starve[Math.floor(Math.random() * 2) % (k === 'ch' ? 2 : 1)], 'soft', 2.2); } }
-    }
+  if (!G.lobbyFight && !(G.lock && !G.waitInput)){
+    if (!pl.downed) pl.hp = Math.min(pl.max, pl.hp + pl.max * regenRate('inju', pl) * dt);
+    for (const [k, h] of [['ch', Cv.ch], ['ka', Cv.ka]]) PRO.hpf[k] = Math.min(1, PRO.hpf[k] + regenRate(k, h) * dt);
     for (const s of Cv.snails) if (!s.dead && s.hp < s.max) s.hp = Math.min(s.max, s.hp + 0.4 * dt);
-    if (f < 25 && !PRO.hungryHint){ PRO.hungryHint = true; guide('배가 고프다 — <em>창고</em>에서 <em>E</em>로 먹기', 5); }
-    if (f > 40) PRO.hungryHint = false;
   }
   // 청광묵: 펄쩍 (놀람) · 눈물
   const ch = Cv.ch;
   if (ch.hop > 0){ ch.hop -= dt; ch.lift = Math.max(0, Math.sin((1 - ch.hop / 0.5) * Math.PI)) * 0.7; }
   if (ch.sadT > 45 && Math.random() < dt * 8) dot(ch.x + rnd(-0.18, 0.18), ch.y + bodyH(ch) * 0.62, ch.z + 0.05, 0x7fc8ff, 0.05, 0.5);
 }
+// 우리 (12, 10)에서: 들고 있는 식량을 먹이로 · 창고 식량으로 먹이 · 배고프면 버섯을 따 먹기
+function penFeedLabel(){
+  const c = PRO.carry, need = snailNeed();
+  if (c && c.d.type === 'food' && !c.d.raw) return `${eul(c.d.name)} 달팽이 먹이로 넣는다 (먹이 +${c.d.food * 2})`;
+  if (!c && PRO.penFood < need && edible()) return `창고 식량으로 달팽이 먹이 (끼니 1 → 먹이 2 · 지금 ${PRO.penFood}/${need})`;
+  if (!c && !PRO.meal.inju.fed && !edible() && PRO.penFood > 0) return `우리 버섯을 따 먹는다 (달팽이 먹이 -1 · ${PRO.penFood}/${need})`;
+  return null;
+}
+function penFeed(){
+  const c = PRO.carry, pl = G.player, need = snailNeed();
+  if (c && c.d.type === 'food' && !c.d.raw){ dropCarried(c); PRO.penFood += c.d.food * 2; }
+  else if (!c && PRO.penFood < need && edible()){ takeMeal(); PRO.penFood += 2; }
+  else if (!c && !PRO.meal.inju.fed && PRO.penFood > 0){ pickPenFood(); PRO.meal.inju.fed = true; popText(pl.x, pl.y + 2, pl.z, '버섯 냠 (끼니)', 'heal', 1.2); if (Math.hypot(PRO.cave.ch.x - pl.x, PRO.cave.ch.z - pl.z) < 6) say(PRO.cave.ch, '대장! 그거 달팽이 밥이다!', 'soft', 2); return; }
+  penGarden(); popText(12, 1.2, 10, `달팽이 먹이 ${PRO.penFood}/${need}`, 'heal', 1.2); SFX.burst({ type: 'lowpass', f: 600, gain: 0.25, dec: 0.3 });
+}
+// 하루가 지날 때 (잠): 끼니 · 불 · 달팽이 먹이 정산
 function dayBody(){
-  const news = [];
-  for (const k of ['inju', 'ch', 'ka']) PRO.full[k] = Math.max(0, PRO.full[k] - 18);
-  const pl = G.player; if (PRO.full.inju >= 30) pl.hp = Math.min(pl.max, pl.hp + pl.max * 0.35);
-  for (const k of ['ch', 'ka']) if (PRO.full[k] >= 30) PRO.hpf[k] = Math.min(1, PRO.hpf[k] + 0.35);
-  PRO.fuel = Math.max(0, PRO.fuel - 20);   // 밤새 탐
-  if (PRO.full.ch < 30) news.push('대장… 배고프다… 밥 먹자…');
-  if (PRO.fuel <= 0 && PRO.wood <= 0) news.push('대장! 불이 꺼졌다! 땔감 필요하다!');
+  const news = [], pl = G.player, Cv = PRO.cave;
+  for (const k of ['inju', 'ch', 'ka']){
+    const M = PRO.meal[k];
+    if (M.fed){ M.hd = 0; if (k === 'inju') pl.hp = Math.min(pl.max, pl.hp + pl.max * 0.35); else PRO.hpf[k] = Math.min(1, PRO.hpf[k] + 0.35); }
+    else { M.hd++; if (k === 'inju') pl.hp = Math.max(1, pl.hp - pl.max * 0.15); else PRO.hpf[k] = Math.max(0.05, PRO.hpf[k] - 0.15); }
+    M.fed = false;
+  }
+  for (const h of [Cv.ch, Cv.ka]){ h.mealT = rnd(2, 8); h.seekT = 0; }
+  if (PRO.meal.ch.hd) news.push(`대장… 어제 못 먹었다… (${PRO.meal.ch.hd}일째)`);
+  // 달팽이: 밤에 우리 먹이를 먹음
+  const need = snailNeed();
+  if (need){
+    if (PRO.penFood >= need){ PRO.penFood -= need; PRO.snailHd = 0; }
+    else { PRO.penFood = 0; PRO.snailHd++; news.push(`대장! 달팽이들 배고프다! (${PRO.snailHd}일째)`);
+      if (PRO.snailHd >= 3){ const s = Cv.snails.find(x => !x.baby) || Cv.snails[0]; if (s){ kill(s, null); snailDie(s); news.push('…달팽이가 굶어 죽었다…'); } PRO.snailHd = 1; } }
+  }
+  PRO.penFood = Math.min(PEN_MAX, PRO.penFood + 2); penGarden();   // 밤새 이끼 · 버섯이 자람
+  PRO.fireLit = false;   // 아침이면 불이 꺼져 있음
   return news;
 }
-
 /* ---------- 달팽이 체력 (싸움 · 인주가 때릴 때)
    인주가 때리면: 청광묵이 펄쩍 놀라며 "뭐하는거냣! 대장! 아직 안된다!" → 달려와 말림 (밀어내고 잠깐 못 때리게)
    그래도 죽이면: 청광묵이 주저앉아 엉엉 욺 (한동안 슬픔). 죽은 달팽이는 모닥불에 구우면 달팽이구이 */
@@ -1405,6 +1455,7 @@ const _hurtBase = hurt;
 hurt = function(att, tgt, base, o){
   const was = tgt.dead, r = _hurtBase(att, tgt, base, o);
   if (tgt.D && tgt.D.hittable && G.mode === 'cave' && PRO.cave) snailHit(att, tgt, !was && tgt.dead);
+  if (r > 0 && (G.mode === 'cave' || G.mode === 'prologue') && !tgt.D.hittable && !tgt.D.dummy){ bloodHit(tgt, r); }
   return r;
 };
 function snailHit(att, s, died){
@@ -1426,12 +1477,13 @@ function snailDie(s){
   if (s.baby) PRO.babies = Math.max(0, PRO.babies - 1); else PRO.snailLost++;
   if (s.carrier){ s.carrier = null; } if (ch.rescue && ch.rescue.s === s) ch.rescue = null;
   setTimeout(() => removeUnit(s), 900);
-  const d = s.baby ? { ...RAW_SNAIL, name: '죽은 새끼 달팽이', h: 0.07 } : RAW_SNAIL, x = s.x, z = s.z;
-  setTimeout(() => { if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', x, z, d.h, { fit: 0.35, tint: 0.5 }); b.m.rotation.z = Math.PI * 0.92; addLoose(d, b, x, z); }, 900);
+  const d = { ...RAW_SNAIL, name: s.baby ? '죽은 새끼 달팽이' : RAW_SNAIL.name, h: bodyH(s) }, x = s.x, z = s.z;
+  bloodBurst(x, z, 0.3, 0x2fbfa0); bloodPool(x, z, 0.28, 1.2, 0x1f7f6a);   // 달팽이 체액 (청록)
+  setTimeout(() => { if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', x, z, d.h, { tint: 0.5 }); b.m.rotation.z = Math.PI * 0.94; addLoose(d, b, x, z); }, 900);
   ch.stopPl = null; ch.sadT = 75; ch.hop = 0; ch.job = null;
   say(ch, '아…', 'soft', 1.2);
   setTimeout(() => PRO.cave && say(ch, '달팽이…!! 으아아아앙!!', 'big', 2.6), 1300);
-  setTimeout(() => PRO.cave && say(ch, '흐아앙… 대장… 너무하다…', 'soft', 2.6), 4600);
+  setTimeout(() => PRO.cave && say(ch, '😭', 'emo', 2.6), 4200); PRO.cave.cuteT = 7;
 }
 function stopPlayer(h, sp, dt){
   const S = h.stopPl, pl = G.player; S.t -= dt;
@@ -1450,12 +1502,13 @@ function stopPlayer(h, sp, dt){
   hMove(h, moving);
 }
 
-/* ---------- 아래 창 (사각형): 초상화 · 체력 · 배부름 · 가끔 그 위로 대사 · 창고 요약 ---------- */
+/* ---------- 아래 창 (v0.19, 민수 스케치): 화면 아래를 넓게. 왼쪽 = 초상화 세로 셋 + 옆에 체력 · 끼니 줄 / 오른쪽 = 아이콘 목록 (오늘 할 일 · 창고 · 불 · 달팽이 · 날)
+   가끔 그 위로 대사. 3D 화면은 이 창 위쪽에 맞춰 그림 (굴 전체가 창에 가리지 않게) */
 const BAR_WHO = [['inju', '인주', 'assets/inju_face.png'], ['ch', '청광묵', PA + 'goblin_face.webp'], ['ka', '카리우스', PA + 'karius_face.webp']];
 function caveBarInit(){
   const el = $p('cavebar');
-  el.innerHTML = '<div class="talk"><em></em><span></span></div>' + BAR_WHO.map(([k, n, src]) => `<div class="who" data-k="${k}"><img src="${src}" alt=""><div class="bars"><div class="nm">${n} <small></small></div><div class="g hp"><b></b><i></i></div><div class="g fd"><b></b></div></div></div>`).join('') + '<div class="st"></div>';
-  PRO.bar = { el, talk: el.querySelector('.talk'), rows: Object.fromEntries(BAR_WHO.map(([k]) => { const r = el.querySelector(`[data-k="${k}"]`); return [k, { st: r.querySelector('small'), hp: r.querySelector('.hp b'), hpn: r.querySelector('.hp i'), fd: r.querySelector('.fd b'), fdw: r.querySelector('.fd'), r }]; })), st: el.querySelector('.st'), talkT: 0, last: '' };
+  el.innerHTML = '<div class="talk"><em></em><span></span></div><div class="people">' + BAR_WHO.map(([k, n, src]) => `<div class="who" data-k="${k}"><img src="${src}" alt=""><div class="nm">${n}<small></small></div><div class="g hp"><b></b><i></i></div><div class="meal"></div></div>`).join('') + '</div><div class="st"></div>';
+  PRO.bar = { el, talk: el.querySelector('.talk'), rows: Object.fromEntries(BAR_WHO.map(([k]) => { const r = el.querySelector(`[data-k="${k}"]`); return [k, { st: r.querySelector('small'), hp: r.querySelector('.hp b'), hpn: r.querySelector('.hp i'), meal: r.querySelector('.meal'), r }]; })), st: el.querySelector('.st'), talkT: 0, last: '', lastP: {} };
 }
 function barTalk(name, text, life){
   const B = PRO.bar; if (!B) return;
@@ -1464,23 +1517,69 @@ function barTalk(name, text, life){
 }
 function caveBar(){
   const B = PRO.bar, el = $p('cavebar'), on = G.mode === 'cave' && !!PRO.cave && !PRO.caveIntro && !!B;
-  el.hidden = !on; document.body.classList.toggle('cavebar', on); if (!on) return;
+  el.hidden = !on; document.body.classList.toggle('cavebar', on);
+  PRO.barH = on && !document.body.classList.contains('cine') ? el.offsetHeight + 14 : 0;
+  $p('prompt').style.bottom = on ? (el.offsetHeight + 46) + 'px' : ''; $p('guide').style.bottom = on ? (el.offsetHeight + 96) + 'px' : '';
+  if (!on) return;
   const Cv = PRO.cave, pl = G.player;
   const hp = { inju: [pl.hp, pl.max], ch: G.lobbyFight ? [Cv.ch.hp, Cv.ch.max] : [PRO.hpf.ch * DEFS.cheongAlly.hp, DEFS.cheongAlly.hp], ka: G.lobbyFight ? [Cv.ka.hp, Cv.ka.max] : [PRO.hpf.ka * DEFS.kariusAlly.hp, DEFS.kariusAlly.hp] };
   for (const [k] of BAR_WHO){
-    const R = B.rows[k], [h, m] = hp[k], f = PRO.full[k];
+    const R = B.rows[k], [h, m] = hp[k], M = PRO.meal[k];
     R.hp.style.width = Math.max(0, h / m * 100) + '%'; R.hpn.textContent = `${Math.max(0, Math.round(h))}/${m}`;
-    R.fd.style.width = f + '%'; R.fdw.classList.toggle('low', f < 30);
     const sad = k === 'ch' && Cv.ch.sadT > 0, down = (k === 'ch' && Cv.ch.downed) || (k === 'ka' && Cv.ka.downed) || (k === 'inju' && pl.downed);
-    R.st.textContent = down ? '쓰러짐' : sad ? '슬픔' : fullWord(f) + (k !== 'inju' && hp[k][0] < hp[k][1] * 0.999 && !G.lobbyFight && f >= 30 ? ' · 회복 중' : '');
-    R.st.className = f <= 0 || down ? 'bad' : f < 30 || sad ? 'warn' : '';
+    const st = down ? '쓰러짐' : sad ? '😢' : (M.fed && h < m * 0.999 && !G.lobbyFight ? '회복 중' : '');
+    const meal = M.fed ? '🍖 오늘 먹음' : M.hd ? `🍖 아직 · 굶은 지 ${M.hd}일` : '🍖 아직 안 먹음';
+    const key = st + '|' + meal;
+    if (B.lastP[k] !== key){ B.lastP[k] = key; R.st.textContent = st; R.meal.textContent = meal; R.meal.className = 'meal ' + (M.fed ? 'ok' : M.hd ? 'bad' : 'warn'); }
   }
   if (B.talkT && G.t > B.talkT){ B.talk.classList.remove('on'); B.talkT = 0; }
-  const food = PRO.store.reduce((a, d) => a + (d.raw ? 0 : d.food || 0), 0), rot = PRO.trash.filter(t => t.rot > 0).length, W = PRO.storm ? STORMS[PRO.storm] : WEATHER[PRO.weather];
-  const pigs = PRO.pigs.filter(u => !u.dead).length;
-  const html = `<div>📦 창고 ${PRO.store.length} · 🍖 식량 ${food}${food ? ` (${Math.round(food * FOOD_PT)})` : ' — 없음'}</div>`
-    + `<div>${PRO.fuel > 0 ? `🔥 불 ${Math.ceil(PRO.fuel)}%` : '🔥 <b class="bad">꺼짐</b>'} · 🪵 ${PRO.wood} · 🗑 ${PRO.trash.length}${rot ? ` <b class="warn">(썩음 ${rot})</b>` : ''}</div>`
-    + `<div>🐌 ${Cv.snails.filter(s => !s.baby).length}${PRO.babies ? `+${PRO.babies}` : ''}${PRO.eggs.length ? ` · 🥚 ${PRO.eggs.length}` : ''}${pigs ? ` · 🐷 ${pigs}` : ''}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}</div>`
-    + `<div class="day">${PRO.day}일째 · ${W.icon} ${W.name} · ${Cv.dropped ? '낙하 끝 — 잠자리에서 하루를 마침' : `낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}${PRO.didBury ? ' · 묻기 끝' : ''}</div>`;
+  const W = PRO.storm ? STORMS[PRO.storm] : WEATHER[PRO.weather], need = snailNeed(), fedN = ['inju', 'ch', 'ka'].filter(k => PRO.meal[k].fed).length;
+  const pigs = PRO.pigs.filter(u => !u.dead).length, rot = PRO.trash.filter(t => t.rot > 0).length;
+  const ck = (ok, t) => `<span class="${ok ? 'ok' : 'todo'}">${ok ? '✔' : '☐'} ${t}</span>`;
+  const html = `<div class="todo-row">${ck(fedN === 3, `밥 ${fedN}/3`)}${ck(PRO.fireLit, '불')}${ck(PRO.penFood >= need, '달팽이 먹이')}${PRO.trash.length ? ck(PRO.didBury, '묻기') : ''}</div>`
+    + `<div><i>📦</i> 창고 ${PRO.store.length} · 끼니 ${meals()}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}</div>`
+    + `<div><i>🔥</i> ${PRO.fireLit ? '불 피움' : '<b class="bad">불 꺼짐</b>'} · 장작 ${PRO.wood}${PRO.trash.length ? ` · 🗑 ${PRO.trash.length}${rot ? ` <b class="warn">(썩음 ${rot})</b>` : ''}` : ''}</div>`
+    + `<div><i>🐌</i> ${Cv.snails.filter(s => !s.baby).length}${PRO.babies ? `+${PRO.babies}` : ''} · 먹이 <b class="${PRO.penFood >= need ? '' : 'warn'}">${PRO.penFood}/${need}</b>${PRO.snailHd ? ` <b class="bad">굶음 ${PRO.snailHd}일</b>` : ''}${PRO.eggs.length ? ` · 🥚 ${PRO.eggs.length}` : ''}${pigs ? ` · 🐷 ${pigs}` : ''}</div>`
+    + `<div class="day"><i>☾</i> ${PRO.day}일째 · ${W.icon} ${W.name} · ${Cv.dropped ? '낙하 끝 — 잠자리에서 하루를 마침' : `낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}</div>`;
   if (html !== B.last){ B.st.innerHTML = html; B.last = html; }
+
+}
+
+
+/* ---------- v0.19 피: 맞으면 튐 (방울 + 바닥에 작은 자국) · 쓰러지면 크게 튀고 바닥에 웅덩이가 천천히 번짐
+   핏자국은 시체를 치워도 남음 → 하루가 지날 때마다 바래고 이틀 뒤 사라짐 */
+let bloodTex = null;
+function bloodTexture(){
+  if (bloodTex) return bloodTex;
+  bloodTex = canvasTex(256, 256, (c, w, h) => {
+    const blob = (x, y, r, a) => { const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.7, `rgba(255,255,255,${a * 0.9})`); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); };
+    blob(128, 128, 78, 0.95);
+    for (let i = 0; i < 14; i++){ const a = Math.random() * 6.3, d = 50 + Math.random() * 55; blob(128 + Math.cos(a) * d, 128 + Math.sin(a) * d * 0.8, 10 + Math.random() * 26, 0.9); }
+    for (let i = 0; i < 22; i++){ const a = Math.random() * 6.3, d = 95 + Math.random() * 25; blob(128 + Math.cos(a) * d, 128 + Math.sin(a) * d * 0.85, 3 + Math.random() * 6, 0.85); }
+  });
+  return bloodTex;
+}
+function bloodPool(x, z, r, grow = 2, color = 0x3a0407){
+  if (!G.scene) return;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: bloodTexture(), color, transparent: true, opacity: 0.92, depthWrite: false, fog: false }));
+  m.rotation.x = -Math.PI / 2; m.rotation.z = rnd(0, 6.3); m.position.set(x, 0.012 + Math.random() * 0.004, z); m.scale.setScalar(0.01);
+  G.scene.add(m); G.props.push(m);
+  const st = { m, r: r * 2, t0: G.t, grow, age: 0 }; (PRO.stains = PRO.stains || []).push(st);
+  if (!PRO.stainTick){ PRO.stainTick = true; }
+  return st;
+}
+function bloodBurst(x, z, hgt, color = 0x9a0f16){
+  spark(x, Math.max(0.4, hgt * 0.55), z, color, 26, 4.5); spark(x, Math.max(0.3, hgt * 0.4), z, 0x5a080c, 14, 2.6);
+  for (let i = 0; i < 6; i++){ const a = rnd(0, 6.3), d = rnd(0.4, 1.3); bloodPool(x + Math.cos(a) * d, z + Math.sin(a) * d, rnd(0.05, 0.13), 0.25, color === 0x9a0f16 ? 0x5a0a0e : 0x1f7f6a); }
+}
+function bloodHit(u, dmg){
+  if (u.dead && u.fading) return;
+  spark(u.x, u.y + bodyH(u) * 0.55, u.z, 0xa0101a, Math.min(16, 4 + Math.round(dmg / 3)), 3.2);
+  if (Math.random() < 0.55) bloodPool(u.x + rnd(-0.35, 0.35), u.z + rnd(-0.35, 0.35), rnd(0.06, 0.12) + Math.min(0.12, dmg / 250), 0.3);
+}
+function tickStains(){
+  for (const st of PRO.stains || []){ if (st.done) continue; const k = clamp((G.t - st.t0) / st.grow, 0, 1), e = 1 - (1 - k) * (1 - k); st.m.scale.setScalar(Math.max(0.01, st.r * e)); if (k >= 1) st.done = true; }
+}
+function ageStains(){
+  PRO.stains = (PRO.stains || []).filter(st => { st.age++; if (st.age >= 2){ G.scene.remove(st.m); return false; } st.m.material.opacity *= 0.5; st.m.material.color.multiplyScalar(0.8); return true; });
 }
