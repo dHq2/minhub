@@ -371,7 +371,7 @@ function loop(now){
     const pl = G.player;
     if (pl) playerUpdate(pl, dt);
     for (const u of G.units){
-      if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; } continue; }
+      if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; if (u.shadow) u.shadow.material.opacity = 0.42 * u.mat.opacity; } continue; }
       if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
       else if (u.side === 'ally' && (G.mode === 'floor' || G.lobbyFight) && !G.lock) (u.D.think || allyThink)(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
