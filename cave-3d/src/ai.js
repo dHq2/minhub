@@ -25,7 +25,7 @@ function windup(u, shape, o, onHit, color = RED){
   u.decal = decal(shape, { ...o, color, hostile: u.side === 'enemy', dur: o.windup, onDone: d => {
     u.decal = null;
     if (u.dead || u.downed || u.st !== 'windup') return;
-    const targets = G.units.filter(t => !t.dead && !t.downed && t.side !== u.side && t.side !== 'neutral' && !t.airborne && (t.jy || 0) < 0.45 && inShape(d, t));
+    const targets = G.units.filter(t => !t.dead && !t.downed && t.side !== u.side && (t.side !== 'neutral' || t.D.hittable && (u.side === 'enemy' || u.kind === 'player')) && !t.airborne && (t.jy || 0) < 0.45 && inShape(d, t));
     if (u.side === 'ally') for (const t of G.units) if (t.D.dummy && inShape(d, t)) targets.push(t);
     targets.forEach(t => onHit(t, d));
     if (!u.S.poses.attack){

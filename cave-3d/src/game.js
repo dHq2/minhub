@@ -278,7 +278,7 @@ function runWaits(){ G.waits = G.waits.filter(w => { if (w.fn ? w.fn() : G.t >= 
 function nearestInspect(){
   const p = G.player; let best = null, bd = 99;
   for (const it of G.inspect){
-    if (it.used) continue;
+    if (it.used || (it.unit && it.unit.dead)) continue;
     const x = it.unit ? it.unit.x : it.x, z = it.unit ? it.unit.z : it.z, d = Math.hypot(p.x - x, p.z - z);
     if (d < it.r && d < bd){ bd = d; best = it; }
   }
@@ -296,6 +296,8 @@ function medicHud(){
 }
 function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
+  if (typeof caveBar === 'function') caveBar();
+  if (G.mode === 'cave' && PRO.bar && !PRO.caveIntro) $('party').innerHTML = ''; else
   $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
     + medicHud() + (typeof proHud === 'function' ? proHud() : '')
     + (G.mode === 'floor' || G.mode === 'prologue' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
@@ -414,7 +416,7 @@ function loop(now){
     p.material.opacity += ((hide ? 0.28 : 1) - p.material.opacity) * Math.min(1, dt * 10);
     p.material.depthWrite = p.material.opacity > 0.9;
   } }
-  if (G.map) for (const f of G.map.fires){ f.light.intensity = 1.9 + Math.sin(G.t * 13) * 0.2 + Math.random() * 0.35; f.flame.scale.set(1 + Math.sin(G.t * 9) * 0.06, 1 + Math.random() * 0.12, 1); f.flame.rotation.y = Math.atan2(camera.position.x - f.x, camera.position.z - f.z); }
+  if (G.map) for (const f of G.map.fires){ const fk = f.k ?? 1; f.light.intensity = (1.9 + Math.sin(G.t * 13) * 0.2 + Math.random() * 0.35) * fk; f.flame.scale.set((1 + Math.sin(G.t * 9) * 0.06) * (0.4 + 0.6 * fk), (1 + Math.random() * 0.12) * (0.4 + 0.6 * fk), 1); f.flame.rotation.y = Math.atan2(camera.position.x - f.x, camera.position.z - f.z); }
   if (G.player) updateChargeRing(G.player);
   updateFocusRing();
   updateBars(); updateTexts(dt); updateHud();

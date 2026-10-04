@@ -31,7 +31,7 @@ function spawn(kind, x, z, side){
   const sh = new THREE.Mesh(new THREE.CircleGeometry(1, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.42, depthWrite: false }));
   sh.rotation.x = -Math.PI / 2; sh.scale.setScalar(D.r * 1.15); sh.position.y = 0.02; u.group.add(sh); u.shadow = sh;
   G.scene.add(u.group);
-  if (side !== 'neutral' || D.dummy){
+  if (side !== 'neutral' || D.dummy || D.hittable){
     u.bar = document.createElement('div'); u.bar.className = 'hpbar ' + side + (D.boss ? ' boss' : ''); u.bar.innerHTML = '<i></i>';
     UI.layer.appendChild(u.bar);
   }
@@ -395,7 +395,7 @@ function stepProj(p, dt){
     p.x = nx; p.z = nz; p.travelled += step; p.m.position.set(p.x, p.y, p.z);
     if (p.trail){ p.trT = (p.trT || 0) - dt; if (p.trT <= 0){ p.trT = 0.012; dot(p.x, p.y, p.z, p.trail, 0.17, 1.1); } }   // 푸른 점 궤적 (지나간 자리에 점이 남았다 사라짐)
     for (const u of G.units){
-      if (u.dead || u.downed || u.side === p.side || u.side === 'neutral' && !u.D.dummy || p.hits.has(u)) continue;
+      if (u.dead || u.downed || u.side === p.side || u.side === 'neutral' && !u.D.dummy && !u.D.hittable || p.hits.has(u)) continue;
       if (u.airborne && !p.hitsAir) continue;
       if (Math.hypot(u.x - p.x, u.z - p.z) < u.r + (p.hitR || 0.2) && Math.abs((u.y + u.lift + (u.jy || 0) + bodyH(u) * 0.5) - p.y) < bodyH(u) * 0.5 + 0.35){
         p.hits.add(u); p.onHit && p.onHit(p, u);
