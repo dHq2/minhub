@@ -1,4 +1,4 @@
-# people.py v1.13 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
+# people.py v1.14 — 8 인물 · 9 2D판 인물 · 10 표정을 '인물' 하나로 합침. 맨 위 초상화 모음, 아래 인물마다 묶음. id는 그대로
 import json, re
 P = 'catalog.js'
 src = open(P).read(); head, body = src.split('const CATALOG = ', 1); cat = json.loads(body.strip().rstrip(';'))
@@ -20,12 +20,12 @@ CH = [
  ('blocker','막아서는 자','적 · 보스'),('mech','기체 A · B','적 · 보스'),
  ('cs','청승 (도깨비 자매)','역할 미정'),('jakyak','작약 (도깨비 자매)','역할 미정'),('bogwang','보광','역할 미정'),('borama','보르마','역할 미정'),('kwangnyang','광냥','역할 미정'),
  ('sealed','봉인된 그녀','역할 미정'),('knightcommander','기사단장','역할 미정'),('nursechief','간호사장','역할 미정'),('gaius','가이우스','역할 미정'),
- ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),('catwarrior','검냥이','역할 미정'),
+ ('hiddenkkaebi','히든깨비','역할 미정'),('girlprisoner','소녀와 죄수','역할 미정'),('leonas','레오나스','역할 미정'),('hyal','렉사임','역할 미정'),('coraldeer','고대사슴 산호','역할 미정'),('catwarrior','검냥이','역할 미정'),('eopong','어퐁','역할 미정'),('cheonsasl','천사슬','역할 미정'),('cheoncheon','천천','역할 미정'),('chinchilla','친칠라','역할 미정'),('traka','트라카','역할 미정'),
 ]
 NAME = {k:(n,r) for k,n,r in CH}; ORDER = [k for k,_,_ in CH]
 NID = {'008':'odile','010':'kwangnyang','011':'kwangnyang','012':'kwangnyang','028':'bogwang','029':'bogwang','030':'bogwang','031':'bogwang',
        '032':'borama','033':'borama','041':'ahae','039':'cs','052':'cs','053':'cs'}
-RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'karius','karius'),(r'^O-goblin-shape','goblin'),(r'morningstar|^F-ms-','morningstar'),
+RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'karius','karius'),(r'^O-goblin-shape|^P-goblin-art','goblin'),(r'morningstar|^F-ms-','morningstar'),
  (r'poren','poren'),(r'norman','norman'),(r'tomoe','tomoe'),(r'^O-yellow','yellow'),(r'goodwill','goodwill'),
  (r'dolsoe','dolsoe'),(r'piel','piel'),(r'-odo-','odo'),(r'moro','moro'),(r'-gur-','gur'),(r'tehera','tehera'),(r'heron','heron'),
  (r'nursechief','nursechief'),(r'nurse','nurse'),(r'gothic|^P-bk-','gothic'),(r'^P-yellow','npcyellow'),(r'ycat','ycat'),(r'mari-','mari'),(r'wakin','wakin'),
@@ -36,8 +36,15 @@ RULES = [(r'^JR-','jeokroe'),(r'^O-player-','player'),(r'rebecca','rebecca'),(r'
  (r'ratKnight','ratKnight'),(r'-rat[SML]-','rats'),(r'goblinArcher','goblinArcher'),(r'enemyGoblin','enemyGoblin'),(r'slime','slime'),(r'cultist','cultist'),(r'jelly','jellygreen'),(r'giant_beast','giant_beast'),(r'ancient_angel','ancient_angel'),(r'little_devil','little_devil'),(r'little_fairy','little_fairy'),(r'beast_a','beast_a'),(r'demoness','demoness'),(r'darkrider','darkrider'),(r'crabchef','crabchef'),(r'aiten','aiten'),(r'heukryong','heukryong'),(r'yuris','yuris'),(r'cheonggap','cheonggap'),(r'hyalqueen','hyalqueen'),(r'heugu','heugu'),(r'-ghost-|auto-ghost','ghost'),(r'ddongdog','ddongdog'),(r'crabmon','crabmon'),(r'daedura','daedura'),(r'bluefat','bluefat'),(r'eyemon','eyemon'),(r'goryu','goryu'),(r'ahae','ahae'),(r'piggod','piggod'),(r'witchfairy','witchfairy'),(r'blackrabbit','blackrabbit'),(r'catwarrior','catwarrior'),(r'axeknight','axeknight'),
  (r'blocker','blocker'),(r'mech','mech'),(r'^P-cs-|cheongseung','cs'),(r'jakyak','jakyak'),(r'bogwang','bogwang'),(r'borama','borama'),
  (r'sealed','sealed'),(r'knightcommander','knightcommander'),(r'gaius','gaius'),(r'hiddenkkaebi','hiddenkkaebi'),(r'girlprisoner','girlprisoner'),
- (r'leonas','leonas'),(r'hyal','hyal'),(r'coral','coraldeer')]
+ (r'eopong','eopong'),(r'cheonsasl','cheonsasl'),(r'cheoncheon','cheoncheon'),(r'chinchilla','chinchilla'),(r'traka','traka'),(r'leonas','leonas'),(r'hyal','hyal'),(r'coral','coraldeer')]
+# v1.14: 팩션 NPC · 적 무리 (드라이브 일반NPC 시트를 잘라 낸 것). id = X-<키>-NN
+FX = []
+try:
+    FX = [tuple(l.rstrip('\n').split('\t')) for l in open('tools/factions.tsv', encoding='utf-8') if l.strip() and not l.startswith('#')]
+except FileNotFoundError: pass
 def who(e):
+    x = re.match(r'^X-([a-z0-9]+)-', e['id'])
+    if x: return 'X-' + x.group(1)
     a = re.match(r'^F-auto-(.+)', e['id'])
     if a: return a.group(1)
     m = re.match(r'^(?:F-)?N-(\d+)', e['id'])
@@ -68,6 +75,9 @@ for r in ROLES[:4]:
         if NAME[k][1] != r: continue
         ms = [e for e in people if e['_who'] == k]
         if ms: grp(k, f'{NAME[k][0]} · {r} · {method(k)}', ms)
+for fk, fname, frole in FX:
+    ms = [e for e in people if e['_who'] == 'X-' + fk]
+    if ms: grp('X-' + fk, f'{fname} · {frole} · 원화', ms)
 for kind in ('적', '일반'):
     for e in people:
         if e['_who'] is None and not e['_portrait'] and re.search(r'미등장 NPC(?: · | \()' + kind + r'(?: ·|\)|$)', e['sub']):
@@ -80,7 +90,7 @@ for e in out:
     e['g'] = e['_who'] or re.sub(r'^F-', '', e['id'])
     e['cat'] = 'char'; e.pop('_who'); e.pop('_portrait')
 cat = rest + out
-head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.61', head, 1)
+head = re.sub(r'catalog\.js v[\d.]+', 'catalog.js v1.62', head, 1)
 open(P,'w').write(head + 'const CATALOG = [\n' + ",\n".join(json.dumps(o, ensure_ascii=False, indent=0) for o in cat) + "\n];\n")
 subs = []
 for e in out:

@@ -1,0 +1,31 @@
+# factions.tsv v1.0 — 팩션 NPC · 적 무리 묶음 (people.py v1.14가 읽음). 키 · 이름 · 역할. 순서 = 보이는 순서. 시트 번호는 드라이브 일반NPC 폴더 (2026-10-04)
+maritribe	마리의 부족민	팩션 NPC
+redtribe	붉은 부족	팩션 NPC
+redclay	붉은 점토 부족 생존자	팩션 NPC
+blackash	검은 재 마법 생존자	팩션 NPC
+abyssshadow	심연의 그림자 생존자	팩션 NPC
+beastsurv	야수 생존자	팩션 NPC
+beastknight	수인족 기사	팩션 NPC
+beastmajin	짐승 마인	팩션 NPC
+stoneskin	돌피부 인간	팩션 NPC
+ironremnant	철의 잔재 · 빈 갑옷 기사	팩션 NPC
+straggler	낙오 방랑자	팩션 NPC
+wanderer	떠돌이 · 슬픈 사람들	팩션 NPC
+commoner1	일반인 1	팩션 NPC
+commoner2	일반인 2	팩션 NPC
+mechman	기계인간	팩션 NPC
+mechangel	기계천사	팩션 NPC
+coralangel	산호천사	팩션 NPC
+fairy	요정	팩션 NPC
+fairydevil	요정악마	팩션 NPC
+devil	악마	팩션 NPC
+demonkin1	마족 1	팩션 NPC
+demonkin2	마족 2	팩션 NPC
+flame	화염 · 용암	팩션 NPC
+alien	외계	팩션 NPC
+crossroad	이세계 교차로의 기묘한 적	적 무리
+alienodd	이질적인 기묘한 적	적 무리
+oddhuman	기묘한 휴머노이드 적	적 무리
+oddgame	기묘한 게임 적	적 무리
+oddcreature	기묘한 적 생물	적 무리
+oddrare	기묘한 희귀 몬스터	적 무리

@@ -1,5 +1,5 @@
 <title>굴의 도감</title>
-<!-- codex v1.61 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.62 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -227,7 +227,7 @@ const CATS = [
   { key:'equip', no:'2', name:'장비', note:'핏빛 바탕 = 보스 등급 장비 (세자르 · 적뢰). 나머지는 기본으로 얻을 수 있는 장비 후보: 2D판 무기 10종, 받은 장비 그림 55장 (무기 17 · 방어구 · 옷 24 · 장신구 14), 드라이브 장비 시트를 하나씩 잘라 낸 600장 (무기 180 · 장비 260 · 의상 140 · 장신구 20). 시트 이름에 보스가 붙은 묶음도 등급은 아직 안 정함.' },
   { key:'scene', no:'4', name:'컷씬 · 인카운터 · 배경', note:'장면 그림을 한곳에: 컷씬 (로딩 · 장면 전환) · 인카운터 그림과 카드 · 배경 (장소) · 조우 장면 카드 160장 · 빈 맵 틀 28장. 인카운터를 맵으로 만드는 계획은 cave-3d/ENCOUNTER_MAPS.md.' },
   { key:'card', no:'6', name:'스킬 · 이야기 그림', note:'흑백 이야기 그림 120장, 스킬 아이콘 (2D판 14 · 받은 스킬 그림 10 · 드라이브 아이콘 시트 120).' },
-  { key:'char', no:'8', name:'인물', note:'모든 인물을 한곳에. 맨 위 초상화 버튼 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC)을 누르면 그 인물 묶음으로 내려감. 묶음마다 초상화가 맨 앞, 그 뒤로 새 그림 · 2D판 그림. 묶음 제목의 ↑ 초상화로 다시 위로. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화.' },
+  { key:'char', no:'8', name:'인물', note:'모든 인물을 한곳에. 맨 위 초상화 버튼 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC)을 누르면 그 인물 묶음으로 내려감. 묶음마다 초상화가 맨 앞, 그 뒤로 새 그림 · 2D판 그림. 묶음 제목의 ↑ 초상화로 다시 위로. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화. 팩션 NPC · 적 무리는 드라이브 일반NPC 시트를 한 명씩 잘라 팩션마다 묶음.' },
   { key:'prop', no:'11', name:'가구 · 소품', note:'맵에 놓을 가구 · 소품 (받은 시트를 하나씩 잘라 배경을 지움). 분류만 해 둠, 전부 빨강 (미등장). 쳐낼 것은 체크 · 동그라미로. 아래쪽 묶음 (가구 · 생활 소품 · 상호작용 소품 · 환경 · 폐허 · 건축물) 288개는 드라이브 시트에서.' },
   { key:'item', no:'12', name:'일반 에셋', note:'게임 곳곳에 쓰는 일반 아이콘. 생물 (가축 · 야생 동물 · 바다 · 하늘 · 몬스터 · 신화 생물)과 아이템 (현대 물건 · 무기 · 방어구 · 물약 · 음식 · 재료 · 열쇠 · 책 · 상자 · 표지판 · 조명), 기묘한 물건 · 기묘한 소형 생물 · 작은 픽업. 받은 아이콘 시트를 하나씩 잘라 배경을 지움.' },
 ];
@@ -342,7 +342,7 @@ function tile(e){
 }
 /* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
 const isFace = e => e.id.startsWith('F-') || e.id.endsWith('-face');
-function roleOf(sub){ if (sub.includes('미등장 NPC')) return '미등장 NPC'; for (const r of ['동료', 'NPC', '적 · 보스', '역할 미정']) if (sub.includes(' · ' + r + ' · ')) return r; return '기타'; }
+function roleOf(sub){ if (sub.includes('미등장 NPC')) return '미등장 NPC'; for (const r of ['동료', 'NPC', '적 · 보스', '역할 미정', '팩션 NPC', '적 무리']) if (sub.includes(' · ' + r + ' · ')) return r; return '기타'; }
 function peopleNav(subs){
   const by = {};
   subs.forEach((s, i) => {
