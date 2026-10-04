@@ -375,7 +375,7 @@ async function startCave(cine = false){
     lights: [{ x: 13.2, z: 10.5, c: 0x5fffd8, i: 1.5, d: 6.5 }, { x: 8.5, z: 3, c: 0xffb070, i: 1.3, d: 6 }, { x: 3.6, z: 10, c: 0xc8a0ff, i: 0.9, d: 5 }, { x: 9, z: 10, c: 0x9f8cff, i: 0.7, d: 10 }] });
   hemi.color.setHex(0xb8a0ff); hemi.groundColor.setHex(0x1a1030);
   camPreset({ y: 8.4, back: 12.8 }, { y: 0.6, fwd: 0.6 });   // 로비 한눈에: 가운데를 고정해서 봄 (인주를 따라가지 않음)
-  G.camAnchor = { x: LOBBY_C.x, z: LOBBY_C.z - 0.4 };
+  G.camAnchor = { x: LOBBY_C.x, z: LOBBY_C.z - 0.4, k: 0.12, sway: 0.18 };   // 아주 살짝만 움직임
   camera.fov = CAVE_CAM.fov; camera.updateProjectionMatrix(); fitCaveCam();
   G.map.wallH = 3.2; G.map.round = LOBBY_C; layoutWalls(G.map, CAM.yawT);
   $p('dream').classList.add('on');
@@ -582,11 +582,11 @@ $p('skipBtn').addEventListener('click', e => { e.stopPropagation(); proSkip(); }
 function updateSkip(){ $p('skipBtn').hidden = !(G.mode === 'prologue' || (G.mode === 'cave' && PRO.caveIntro)); }
 
 /* ---------- 굴 카메라: 낮은 각도 + 좁은 화각 (멀리서 당겨 봄 → 원근감이 약함). 창 크기 (가로 · 세로 비)에 맞춰 거리를 정해 방 전체가 늘 다 보이게 ---------- */
-const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.1, spanZ: 16.4, wallH: 3.2 };
+const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.7, spanZ: 16.4, wallH: 3.2 };
 const lens = (h, back) => { const k = Math.tan(20 * Math.PI / 180) / Math.tan(CAVE_CAM.fov / 2 * Math.PI / 180); return [h * k, back * k]; };   // 다가가 보기 (말 걸기 등)도 같은 화면 크기로
 function fitCaveCam(){
   const tv = Math.tan(camera.fov / 2 * Math.PI / 180), th = tv * camera.aspect, e = CAVE_CAM.elev;
-  const needV = (CAVE_CAM.spanZ * Math.sin(e) + CAVE_CAM.wallH * Math.cos(e)) / 2 + 0.9;
+  const needV = (CAVE_CAM.spanZ * Math.sin(e) + CAVE_CAM.wallH * Math.cos(e)) / 2 + 1.2;
   const D = Math.max(CAVE_CAM.halfW / th, needV / tv);
   CAM.base.y = D * Math.sin(e); CAM.base.back = D * Math.cos(e); CAM.look.y = 1.0; CAM.look.fwd = 0;
 }

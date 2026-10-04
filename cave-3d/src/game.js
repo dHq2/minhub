@@ -400,7 +400,9 @@ function loop(now){
     let tx = eye.x, tz = eye.z;
     const foe = G.boss && !G.boss.dead ? G.boss : nearest(eye, foes().filter(e => e.alert), 9);
     if (foe){ const w = G.boss ? 0.45 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
-    if (G.camAnchor){ tx = G.camAnchor.x; tz = G.camAnchor.z; }   // 로비: 한눈에 (가운데 고정)
+    // 로비: 한눈에 (가운데 기준). 인주 쪽으로 아주 살짝 (k) 따라가고, 숨 쉬듯 천천히 흔들림
+    if (G.camAnchor){ const A = G.camAnchor, k = A.k || 0;
+      tx = A.x + (eye.x - A.x) * k + Math.sin(G.t * 0.21) * (A.sway || 0); tz = A.z + (eye.z - A.z) * k * 0.6 + Math.sin(G.t * 0.13 + 1.3) * (A.sway || 0) * 0.5; }
     if (!G.lock) updateCamZone(G.player);
     updateCamera(dt, { x: tx, z: tz });
     moon.position.set(camera.position.x - 6, 14, camera.position.z - 2); moon.target.position.set(CAM.follow.x, 0, CAM.follow.z);
