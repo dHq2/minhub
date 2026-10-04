@@ -84,7 +84,7 @@ function layoutWalls(map, yaw){
       const vx = w.x - clamp(w.x, C.x0, C.x1), vz = w.z - clamp(w.z, C.z0, C.z1);
       if (vx * dx + vz * dz > 0.1) low = true;
     }
-    const hh = !w.near ? 1.5 : low ? 0.5 : 2.3;
+    const hh = !w.near ? 1.5 : low ? 0.5 : (map.wallH || 2.3);   // map.wallH: 장면마다 벽 높이 (굴은 높게, 낮은 카메라의 배경)
     m4.makeScale(1, hh, 1); m4.setPosition(w.x, hh / 2 - 0.2, w.z); map.wallMesh.setMatrixAt(k, m4);
   });
   map.wallMesh.instanceMatrix.needsUpdate = true;

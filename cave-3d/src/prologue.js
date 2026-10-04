@@ -1,4 +1,4 @@
-/* prologue.js v0.1 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.2 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -56,16 +56,30 @@ function bill(src, x, z, h, o = {}){
   const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
   const g = new THREE.Group(); g.add(m); g.position.set(x, (o.y || 0) + heightAt(G.map, x, z), z);
   G.scene.add(g); G.props.push(g);
-  const b = { g, m, t, h, x, z, flat: !!o.flat, sized: false };
+  const b = { g, m, t, h, x, z, flat: !!o.flat, sized: false, fit: o.fit || 0 };
   if (o.flat) m.rotation.x = -Math.PI / 2;
   PRO.bills.push(b); return b;
 }
 function sizeBills(){
   for (const b of PRO.bills){
-    if (!b.sized && b.t.image && b.t.image.width){ const w = b.h * b.t.image.width / b.t.image.height; b.m.scale.set(w, b.h, 1); b.m.position.y = b.flat ? 0.02 : b.h / 2; b.sized = true; }
-    if (!b.flat) b.g.rotation.y = Math.atan2(camera.position.x - b.g.position.x, camera.position.z - b.g.position.z);
+    if (!b.sized && b.t.image && b.t.image.width){
+      const r = b.t.image.width / b.t.image.height; let h = b.h, w = h * r;
+      if (b.fit && w > b.fit){ w = b.fit; h = w / r; }   // 한 칸 폭을 넘지 않게
+      b.m.scale.set(w, h, 1); b.m.position.y = b.flat ? 0.02 : h / 2; b.sized = true;
+    }
+    // v0.2: 소품은 카메라 쪽 (각도)만 봄 → 카메라가 돌지 않는 한 그대로 서 있음 (따라 돌지 않음)
+    if (!b.flat) b.g.rotation.y = CAM.yaw;
   }
 }
+// 한 칸을 차지하는 소품: 칸 가운데에 세우고, 그 칸은 막힘 (지나갈 수 없음)
+function tileProp(src, i, j, h, o = {}){
+  const b = bill(src, i, j, h, { fit: 0.92, ...o });
+  G.map.solid[j * G.map.w + i] = 1; G.map.nav = {};
+  return b;
+}
+// 장면마다 카메라 높이 · 거리 (굴은 낮게: 오딜방처럼 옆에서 보는 느낌)
+const CAM_DEF = { base: { ...CAM.base }, look: { ...CAM.look } };
+function camPreset(base, look){ Object.assign(CAM.base, base || CAM_DEF.base); Object.assign(CAM.look, look || CAM_DEF.look); }
 // 빛나는 장비 표시: 바닥 고리 + 엷은 금빛 기둥 (창은 dropSpear가 같은 것을 만듦)
 function glowAt(x, z){
   const g = new THREE.Group();
@@ -98,6 +112,7 @@ function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
   Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
   guide(''); mid(''); $p('dream').classList.remove('on');
+  camPreset();
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
 }
 
@@ -361,6 +376,8 @@ async function startCave(cine = false){
   const sp = loadLevel(CAVE, { bg: 0x110c1c, fogNear: 12, fogFar: 28, hemi: 0.45, moon: 0.12, floor: 0x3b3448, wall: 0x261f33,
     lights: [{ x: 13.5, z: 5.5, c: 0x5fffd8, i: 1.5, d: 6.5 }, { x: 5, z: 2.4, c: 0xffb070, i: 1.3, d: 6 }, { x: 2, z: 3.2, c: 0xc8a0ff, i: 0.9, d: 5 }, { x: 8, z: 6, c: 0x9f8cff, i: 0.6, d: 9 }] });
   hemi.color.setHex(0xb8a0ff); hemi.groundColor.setHex(0x1a1030);
+  camPreset({ y: 4.3, back: 8.8 }, { y: 1.15, fwd: 0.6 });   // 낮은 카메라 (오딜방처럼)
+  G.map.wallH = 3.2; layoutWalls(G.map, CAM.yawT);
   $p('dream').classList.add('on');
   const p = sp('P')[0], K = sp('K')[0], Cc = sp('C')[0], B = sp('B')[0];
   P.spear = true;
@@ -370,12 +387,11 @@ async function startCave(cine = false){
   const snails = sp('S').map(s => { const n = spawn('snail', s.x, s.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; } n.face = Math.random() < 0.5 ? 1 : -1; return n; });
   PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5 };
   // 벽에 머리만 내민 레베카 (얼굴은 하늘을 봄) + 둘레 돌
-  bill(PA + 'rebecca_head.webp', B.x - 0.4, B.z, 0.62, { y: 0.02, tint: 0.95 });
-  bill(PA + 'rock3.webp', B.x - 0.3, B.z + 0.32, 0.36, { tint: 0.7 });
-  // 소품을 이어 붙여 꾸밈 (도감 에셋): 버섯 · 바위 · 상자 · 등불 · 물그릇 · 통나무 · 풀
-  [['mush1', 14.6, 2.4, 1.2], ['mush2', 2.3, 7.6, 1.5], ['mush3', 16.3, 8.0, 1.4], ['mush4', 9.3, 8.3, 0.9], ['rock1', 3.2, 2.3, 0.9], ['crates', 16.0, 2.5, 1.0],
-   ['lantern', 5.6, 1.6, 1.1], ['basin', 14.0, 5.2, 0.6], ['log', 6.6, 8.0, 0.6], ['grass', 11.6, 8.3, 0.8], ['pillars', 1.8, 5.8, 0.9], ['pick', 6.1, 2.6, 0.42], ['grass', 3.8, 8.4, 0.7]]
-    .forEach(([k, x, z, h]) => bill(PA + k + '.webp', x, z, h));
+  tileProp(PA + 'rebecca_head.webp', B.x, B.z, 0.62, { y: 0.02, tint: 0.95 });
+  // 소품 (도감 에셋): 하나가 한 칸씩 (칸 가운데, 칸 폭 안). 버섯 · 바위 · 상자 · 등불 · 곡괭이 · 물그릇 · 통나무 · 풀 · 흰 바위
+  [['mush1', 14, 2, 1.2], ['crates', 16, 2, 1.0], ['rock1', 3, 2, 0.9], ['pick', 4, 2, 0.45], ['lantern', 7, 2, 1.1], ['basin', 13, 4, 0.6],
+   ['pillars', 1, 6, 0.9], ['mush2', 2, 8, 1.4], ['grass', 4, 8, 0.7], ['log', 6, 8, 0.6], ['mush4', 9, 8, 0.9], ['grass', 11, 8, 0.8], ['mush3', 16, 8, 1.3]]
+    .forEach(([k, i, j, h]) => tileProp(PA + k + '.webp', i, j, h));
   // 발광 이끼 (바닥에 번지는 빛)
   [[13.6, 5.6, 2.4, 0x5fffd8], [4.2, 7.4, 1.6, 0x9f7cff], [9.5, 3.4, 1.4, 0x7fd8ff], [15.6, 7.6, 1.5, 0x5fffd8], [2.2, 3.4, 1.2, 0xc8a0ff], [7.5, 6.2, 1.8, 0x8f7cff]]
     .forEach(([x, z, r, c]) => moss(x, z, r, c));
