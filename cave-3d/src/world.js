@@ -1,4 +1,4 @@
-/* world.js v0.3 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
+/* world.js v0.4 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
    # 벽 · . 바닥 · ^ 높은 바닥 (0.8) · / 경사 (0.4) · o 기둥 (시야 막음) · r 바위 (발은 막고 시야는 안 막음)
    f 모닥불 · G 석문 · 그 밖의 글자는 바닥 위의 표시 (P 시작, s 검사, p 창병, d 검방패병, b 곤봉 거한, A 높은 곳 궁수, J 적뢰, x 시체, m 메모, R 레베카, M 모닝스타, N 노먼, D 허수아비) */
 'use strict';
@@ -16,7 +16,7 @@ function buildWorld(rows, opt = {}){
     else if (c === 'r' || c === 'f'){ map.solid[i] = 1; if (c === 'r') map.low[i] = 1; }   // 바위는 낮음: 뛰어넘을 수 있음
     if (c === '^' || c === 'A') map.hgt[i] = HIGH;
     else if (c === '/') map.hgt[i] = RAMP;
-    if ('PspdbAJmxRMND'.includes(c)) map.spawns.push({ c, x, z });
+    if ('PspdbAJmxRMNDKCSBQ'.includes(c)) map.spawns.push({ c, x, z });   // v0.4: K 카리우스 · C 청광묵 · S 인광달팽이 · B 벽에 박힌 레베카 · Q 소품
   }
   // 바닥 · 높은 바닥 (한 칸씩 살짝 다른 돌 색, 사이에 어두운 틈 → 체스판 아님)
   const box = new THREE.BoxGeometry(1, 1, 1);
@@ -33,7 +33,7 @@ function buildWorld(rows, opt = {}){
     const v = 0.78 + Math.random() * 0.22 + (hh > 0 ? 0.14 : 0) + ((x * 7 + z * 13) % 5 === 0 ? -0.08 : 0);
     fc.copy(base).multiplyScalar(v); floorMesh.setColorAt(k, fc);
   });
-  floorMesh.receiveShadow = true; map.group.add(floorMesh);
+  floorMesh.receiveShadow = true; map.group.add(floorMesh); map.floorMesh = floorMesh;
   // 바닥 아래 틈 메움 (틈이 공허로 보이지 않게)
   const under = new THREE.Mesh(new THREE.PlaneGeometry(w + 6, h + 6), new THREE.MeshStandardMaterial({ color: 0x0b0a0d, roughness: 1 }));
   under.rotation.x = -Math.PI / 2; under.position.set(w / 2 - 0.5, -0.19, h / 2 - 0.5); map.group.add(under);

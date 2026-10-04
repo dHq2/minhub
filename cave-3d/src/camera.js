@@ -1,4 +1,4 @@
-/* camera.js v0.6 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
+/* camera.js v0.7 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
    v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
    v0.4: 카메라 구역 — 지도에 적어 둔 구역 (곁방 등)에 들어가면 정해진 각도로 돌고 둘레 벽을 깎음, 나오면 들어가기 전 각도로 */
@@ -113,7 +113,8 @@ function updateCamera(dt, target){
   CAM.out = (CAM.out || 0) + (out - (CAM.out || 0)) * (1 - Math.pow(1 - (out ? 0.2 : 0.05), dt * 60));
   // 보스전: 인주와 보스가 멀어지면 둘 다 화면에 들어오게 물러남
   // 보스전: 늘 조금 물러나 보스 전신이 보이게 + 멀어질수록 더
-  const bs = G.boss && !G.boss.dead && G.player ? 0.32 + Math.max(0, Math.min(0.8, (Math.hypot(G.boss.x - G.player.x, G.boss.z - G.player.z) - 4) * 0.09)) : 0;
+  // v0.7: G.bossFit로 물러나는 정도를 장면마다 (프롤로그 청광묵은 작아서 덜 물러남)
+  const bs = G.boss && !G.boss.dead && G.player ? (0.32 + Math.max(0, Math.min(0.8, (Math.hypot(G.boss.x - G.player.x, G.boss.z - G.player.z) - 4) * 0.09))) * (G.bossFit ?? 1) : 0;
   CAM.fit = (CAM.fit || 0) + (bs - (CAM.fit || 0)) * k;
   CAM.follow.x += (tg.x - CAM.follow.x) * kf;
   CAM.follow.z += (tg.z - CAM.follow.z) * kf;

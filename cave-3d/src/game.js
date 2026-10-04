@@ -1,4 +1,5 @@
-/* game.js v0.6 — 장면: 굴 (로비) → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰 */
+/* game.js v0.7 — 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 로딩 (입력을 기다림) → 1층 (맵이 곧 전장) → 적뢰
+   주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (1층)를 붙이면 바로 그 장면부터 */
 'use strict';
 const LOBBY = [
   '################',
@@ -73,7 +74,11 @@ function init(){
   bindMouse(G.renderer.domElement);
   addEventListener('resize', resize); resize();
   $('ver').textContent = VERSION;
-  preload().then(() => { $('boot').remove(); startLobby(); requestAnimationFrame(loop); });
+  preload().then(() => { $('boot').remove(); startGame(); requestAnimationFrame(loop); });
+}
+function startGame(){
+  const h = location.hash;
+  if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave(); else startPrologue();
 }
 function resize(){
   const w = innerWidth, h = innerHeight; UI.W = w; UI.H = h;
@@ -90,7 +95,8 @@ function clearLevel(){
   for (const d of G.decals) G.scene.remove(d.g); for (const p of G.projs) G.scene.remove(p.m); for (const f of G.fx) G.scene.remove(f.g || f.s);
   for (const o of G.props) G.scene.remove(o);
   G.texts.forEach(t => t.el.remove()); marks.forEach(m => m.remove()); marks.length = 0;
-  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
+  if (typeof proClear === 'function') proClear();
+  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
   if (G.map) G.scene.remove(G.map.group);
   if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false;
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
@@ -215,26 +221,30 @@ async function bossDown(u){
   for (const e of G.units) if (e.side === 'enemy') e.alert = false;
   await wait(1.6);
   await textbox('', ['적뢰가 무너집니다.', '대리석이 빗속에서 식어 갑니다.', '— 1층 시제품은 여기까지입니다. 굴로 돌아갑니다.']);
-  startLobby();
+  startCave();
 }
 async function defeat(){
   if (G.flags.defeat) return; G.flags.defeat = true;
   G.slow = 0.3; G.lock = true; letterbox(true);
   await wait(0.8); G.slow = 1;
   await textbox('', ['…', '눈을 뜨니 굴입니다.', '누군가 당신들을 끌고 올라왔습니다.']);
-  startLobby();
+  startCave();
 }
 
 /* ---------- 글상자 · 로딩 · 자막 · 화면 효과 ---------- */
 // 글상자: 한 줄씩. 줄마다 최소 0.5초는 머묾 (눌러도 넘어가지 않음), 그 뒤 E · Space · 클릭으로 다음
-function textbox(who, lines){
+// v0.7 o: face (초상화 그림) · tags (특성 태그 HTML) · hold (줄마다 머무는 최소 초, 프롤로그 연출은 3초). 머무는 동안엔 ▼가 안 보임
+function textbox(who, lines, o = {}){
   return new Promise(res => {
-    const box = $('textbox'); box.hidden = false; let i = -1, shownAt = 0;
+    const box = $('textbox'); box.hidden = false; let i = -1, shownAt = 0, timer = 0;
+    const hold = o.hold || 0.5;
     const next = () => {
-      if (G.t - shownAt < 0.5 && i >= 0) return;
-      i++; if (i >= lines.length){ box.hidden = true; G.waitInput = null; res(); return; }
-      box.innerHTML = `${who ? `<b>${who}</b>` : ''}<p>${lines[i]}</p><span class="more">${i < lines.length - 1 ? '▼' : '■'}</span>`;
+      if (G.t - shownAt < hold && i >= 0) return;
+      i++; if (i >= lines.length){ box.hidden = true; box.classList.remove('hasface'); G.waitInput = null; clearTimeout(timer); res(); return; }
+      box.classList.toggle('hasface', !!o.face);
+      box.innerHTML = `${o.face ? `<img class="face" src="${o.face}" alt="">` : ''}${who ? `<b>${who}${o.tags ? ' ' + o.tags : ''}</b>` : ''}<p>${lines[i]}</p><span class="more"${hold > 0.6 ? ' hidden' : ''}>${i < lines.length - 1 ? '▼' : '■'}</span>`;
       box.querySelector('p').classList.add('in'); shownAt = G.t;
+      if (hold > 0.6){ clearTimeout(timer); timer = setTimeout(() => { const m = box.querySelector('.more'); if (m) m.hidden = false; }, hold * 1000 / Math.max(0.2, G.slow)); }
     };
     G.waitInput = next; next();
   });
@@ -288,10 +298,10 @@ function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
   $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
     + medicHud()
-    + (G.mode === 'floor' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
+    + (G.mode === 'floor' || G.mode === 'prologue' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
-  if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; $('bossphase').textContent = G.boss.B && G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
+  if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; if (G.boss.B) $('bossphase').textContent = G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
   const it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   $('prompt').hidden = !it; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}`;
   G.nearIt = it;
@@ -301,7 +311,7 @@ function updateHud(){
 // 살펴볼 수 있는 것: 멀리서도 ◆ + 이름이 떠 있음 (벽에 가려져도 보임). 가까이 가면 E 안내로 바뀜
 const marks = [];
 function updateMarks(){
-  const list = G.player && !G.lock && (G.mode === 'floor' || G.mode === 'lobby') ? G.inspect.filter(it => !it.used) : [];
+  const list = G.player && !G.lock && PLAY_MODES.has(G.mode) ? G.inspect.filter(it => !it.used) : [];
   while (marks.length < list.length){ const d = document.createElement('div'); d.className = 'mark'; UI.layer.appendChild(d); marks.push(d); }
   marks.forEach((m, i) => {
     const it = list[i]; if (!it){ m.hidden = true; return; }
@@ -320,7 +330,7 @@ function updateMarks(){
 // 던진 창 찾기: 땅에 박힌 창 위에 금빛 기둥 + 화면에는 "창 · n칸". 화면 밖이면 가장자리에 그쪽을 가리키는 화살표
 function updateSpearMark(){
   const el = $('spearMark'), o = P.spearObj, pl = G.player;
-  if (!o || !pl || G.lock || G.waitInput || !(G.mode === 'floor' || G.mode === 'lobby')){ el.hidden = true; return; }
+  if (!o || !pl || G.lock || G.waitInput || !PLAY_MODES.has(G.mode)){ el.hidden = true; return; }
   const d = Math.hypot(o.x - pl.x, o.z - pl.z), y = heightAt(G.map, o.x, o.z);
   if (o.pillar) o.pillar.material.opacity = 0.18 + 0.17 * (0.5 + 0.5 * Math.sin(G.t * 4));
   if (d < 1.4){ el.hidden = true; return; }
@@ -340,6 +350,7 @@ function updateSpearMark(){
 }
 
 /* ---------- 한 프레임 ---------- */
+const PLAY_MODES = new Set(['lobby', 'floor', 'prologue', 'cave']);
 let last = performance.now();
 function loop(now){
   requestAnimationFrame(loop);
@@ -356,12 +367,12 @@ function loop(now){
   if (hit('KeyH')) $('help').hidden = !$('help').hidden;
   if (!G.lock && !G.waitInput){ if (hit('KeyZ')) rotateCam(-1); if (hit('KeyC')) rotateCam(1); }
   const frozen = waiting || !!G.waitInput;
-  if ((G.mode === 'lobby' || G.mode === 'floor') && !frozen){
+  if (PLAY_MODES.has(G.mode) && !frozen){
     const pl = G.player;
     if (pl) playerUpdate(pl, dt);
     for (const u of G.units){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; } continue; }
-      if (u.side === 'enemy' && !G.lock){ if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
+      if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
       else if (u.side === 'ally' && G.mode === 'floor' && !G.lock) allyThink(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
@@ -378,8 +389,10 @@ function loop(now){
       if (G.units.filter(u => u.side === 'ally').every(u => u.downed || u.dead)) defeat();
       if (!G.flags.boss && pl.z < 10.6) bossIntro();
     }
+    if (G.mode === 'prologue' && pl && pl.downed) proEaten();   // 프롤로그: 쓰러지면 먹힘
   }
   for (const u of G.units) updateSprite(u, dt);
+  if (typeof proTick === 'function') proTick(dt);   // 프롤로그 · 굴 연출 (글상자가 떠 있어도 움직임)
   if (!frozen){ updateDecals(dt); updateProjs(dt); } updateFx(dt); runWaits();
   // 카메라: 평소엔 인주, 싸움 중엔 가까운 적 쪽으로 조금
   if (G.player){

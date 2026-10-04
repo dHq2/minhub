@@ -1,4 +1,4 @@
-/* units.js v0.1 — 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.2 — 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -61,9 +61,12 @@ function updateSprite(u, dt){
   const flip = (P.f || 1) === u.face ? 1 : -1;
   u.mesh.scale.set(w * flip, h, 1);
   u.mesh.position.set((P.w / 2 - P.ax) * k * flip, (P.ay - P.h / 2) * k, 0);
+  // v0.2 털썩 주저앉음: 발을 땅에 둔 채 세로로 눌러 줌
+  if (u.sit){ u.mesh.scale.y *= 0.68; u.mesh.position.y *= 0.68; }
   // 쓰러짐: 옆으로 눕힘
-  const tiltT = u.downed || u.dead ? Math.PI / 2 * 0.92 * -u.face : 0;
-  u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
+  // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
+  const tiltT = u.downed || u.dead || u.lying ? Math.PI / 2 * 0.92 * -u.face : 0;
+  if (u.tiltOverride != null) u.tilt = u.tiltOverride; else u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);
   u.pivot.rotation.z = u.tilt + u.lean * -u.face;
