@@ -135,7 +135,7 @@ function startLobby(){
   caption('굴', '떨어진 자들이 모여 사는 곳');
   if (!G.seenHelp){ $('help').hidden = false; G.seenHelp = true; }
 }
-function talkable(u, lines){ G.inspect.push({ unit: u, r: 1.6, label: `${u.D.name}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, 3.2, 4.6, 0.05); await textbox(u.D.name, lines); camFocusOff(); } }); }
+function talkable(u, lines){ G.inspect.push({ unit: u, r: 1.6, talk: true, label: `${u.D.name}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, 3.2, 4.6, 0.05); await textbox(u.D.name, lines); camFocusOff(); } }); }
 async function descend(){
   G.lock = true;
   camFocus(G.player.x, 2, 1.2, 3.5, 4.5, 0.04); await wait(1.0);
@@ -275,14 +275,21 @@ function waitUntil(fn){ return new Promise(r => G.waits.push({ fn, r })); }
 function runWaits(){ G.waits = G.waits.filter(w => { if (w.fn ? w.fn() : G.t >= w.until){ w.r(); return false; } return true; }); }
 
 /* ---------- 살펴보기 · 대화 ---------- */
+// v0.20: 일 (창고 · 우리 · 불 …)이 말 걸기보다 먼저 (말 걸기는 0.9칸 손해). 싸움 중엔 말 걸기 숨김. 여럿이면 Tab으로 바꿈
+let inspUid = 0;
 function nearestInspect(){
-  const p = G.player; let best = null, bd = 99;
+  const p = G.player, c = [];
   for (const it of G.inspect){
     if (it.used || (it.unit && it.unit.dead)) continue;
+    if (G.lobbyFight && !it.fightOk) continue;   // 싸움 중엔 E 일거리 숨김
     const x = it.unit ? it.unit.x : it.x, z = it.unit ? it.unit.z : it.z, d = Math.hypot(p.x - x, p.z - z);
-    if (d < it.r && d < bd){ bd = d; best = it; }
+    if (d < it.r){ it._id = it._id || ++inspUid; c.push({ it, s: d + (it.talk ? 1.6 : 0) }); }
   }
-  return best;
+  G.inspN = c.length; if (!c.length) return null;
+  c.sort((a, b) => a.s - b.s);
+  const key = c.map(o => o.it._id).sort((a, b) => a - b).join(',');
+  if (key !== G.inspKey){ G.inspKey = key; G.inspIdx = 0; }
+  const pick = c[(G.inspIdx || 0) % c.length]; G.inspD = pick.s; return pick.it;
 }
 
 /* ---------- 화면 위 정보 ---------- */
@@ -304,8 +311,11 @@ function updateHud(){
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
   if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; if (G.boss.B) $('bossphase').textContent = G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
-  const it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
-  $('prompt').hidden = !it; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}`;
+  let it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
+  const alt = !G.lock && !G.waitInput && typeof proFreeE === 'function' ? proFreeE() : null;   // 가구를 들고 있으면 "여기에 놓는다" (아주 가까운 대상이 없을 때)
+  if (alt && it && G.inspD > 0.9) it = null;   // 아무것도 없을 때 E (가구 놓기 등)
+  $('prompt').hidden = !it && !alt; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}${G.inspN > 1 ? ` <small class="tab"><kbd>Tab</kbd> 다른 것 (${G.inspN})</small>` : ''}`; else if (alt) $('prompt').innerHTML = `<kbd>E</kbd> ${alt.label}`;
+  G.freeE = alt;
   G.nearIt = it;
   updateMarks(); updateSpearMark();
 }
@@ -324,8 +334,8 @@ function updateMarks(){
     // 화면 밖이면 가장자리에 붙여서 (멀리 있는 모닥불도 처음부터 보이게)
     const px = clamp(p.x, 60, UI.W - 60), py = clamp(p.y, 70, UI.H - 150), edge = px !== p.x || py !== p.y;
     if (edge && !it.far){ m.hidden = true; return; }
-    m.hidden = false; m.style.transform = `translate(${px}px,${py}px) translateX(-50%)`; m.style.opacity = edge || d > 11 ? 0.6 : 1;
-    const label = it.unit ? '' : it.mark || it.label.split(' — ')[0]; if (m.textContent !== label) m.textContent = label;
+    m.hidden = false; m.style.transform = `translate(${px}px,${py}px) translateX(-50%)`; m.style.opacity = edge ? 0.5 : d < 3.5 ? 1 : Math.max(0.35, 1 - (d - 3.5) / 9);
+    const label = it.unit ? '' : it.mark || (it.talk ? '' : it.label.split(' — ')[0]); if (m.textContent !== label) m.textContent = label;
   });
 }
 
@@ -361,10 +371,12 @@ function loop(now){
   dt *= G.slow;
   G.t += dt; G.dt = dt;
   // 입력: 글상자 · 로딩이 떠 있으면 거기로
+  if (hit('Tab')) G.inspIdx = (G.inspIdx || 0) + 1;
   const act = hit('KeyE') || hit('Space') || hit('Enter') || hit('Mouse0');
   const waiting = !!G.waitInput;
   if (G.waitInput){ if (act) G.waitInput(); }
   else if (!G.lock && G.nearIt && hit('KeyE')){ const it = G.nearIt; if (it.once) it.used = true; it.fn(); }
+  else if (!G.lock && !G.nearIt && G.freeE && hit('KeyE')) G.freeE.fn();
   if (hit('Digit1')) order('follow'); if (hit('Digit2')) order('focus'); if (hit('Digit3')) order('free');
   if (hit('KeyH')) $('help').hidden = !$('help').hidden;
   if (!G.lock && !G.waitInput){ if (hit('KeyZ')) rotateCam(-1); if (hit('KeyC')) rotateCam(1); }

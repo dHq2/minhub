@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.19';
+const VERSION = 'v0.20';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,
@@ -24,7 +24,7 @@ const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 const keys = new Set(), pressed = new Set();
 const mouse = { x: 0, y: 0, left: false, right: false, moved: -99, wx: 0, wz: 0, over: null, inside: false };
 addEventListener('keydown', e => {
-  if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
+  if (['Space', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
   if (!keys.has(e.code)) pressed.add(e.code);
   SFX.wake();
   keys.add(e.code);
