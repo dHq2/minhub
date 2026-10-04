@@ -1,4 +1,4 @@
-/* catalog.js v1.59 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
+/* catalog.js v1.60 — 도감 항목. id는 바뀌지 않음 (체크 · 메모 · 등장 표시가 id에 붙음). on = 지금 3D에 들어가 있음 (기본 초록). v1.6: 노랑고양 원화 · 적뢰 컷씬 */
 const CATALOG = [
 {
 "id": "R-A",
@@ -2203,12 +2203,22 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "S-8a",
+"cat": "scene",
+"sub": "컷씬",
+"name": "햘 등장 · 시작 (184장, 가벼운 판)",
+"src": "img/scene/hyal_entry_intro.webp",
+"note": "가벼운 햘 인트로 (드라이브 2026-10-04). 등장 장면 전체 → 이어서 S-8 루프",
+"rank": "",
+"on": false
+},
+{
 "id": "S-8",
 "cat": "scene",
 "sub": "컷씬",
-"name": "햘 등장 ~ 루프 (50장)",
+"name": "햘 등장 · 반복 (50장)",
 "src": "img/scene/hyal_entry_loop.webp",
-"note": "고대 몬스터 햘 컷씬 루프 v1.2 (드라이브 2026-10-03). 햘 초상화도 이 그림에서 자름. 등장 미리보기 v1.2 (12.6MB)는 드라이브 내려받기 한도 (10MB)를 넘어 아직 못 받음",
+"note": "고대 몬스터 햘 컷씬 루프 v1.2 (드라이브 2026-10-03). 앞의 등장 시작은 S-8a. 햘 초상화도 이 그림에서 자름",
 "rank": "",
 "on": false
 },
@@ -2273,12 +2283,22 @@ const CATALOG = [
 "on": false
 },
 {
+"id": "S-15a",
+"cat": "scene",
+"sub": "컷씬",
+"name": "봉인된 그녀 · 인형 시작 (60장, 가벼운 판)",
+"src": "img/scene/doll_intro.webp",
+"note": "가벼운 cutscene_doll_intro v1.0.1 (드라이브 2026-10-04) → 이어서 S-15 반복",
+"rank": "",
+"on": false
+},
+{
 "id": "S-15",
 "cat": "scene",
 "sub": "컷씬",
 "name": "봉인된 그녀 · 인형 반복 (48장)",
 "src": "img/scene/doll_loop.webp",
-"note": "봉인된 그녀 이벤트 컷씬 · cutscene_doll_loop v1 (드라이브 2026-10-03). 시작 (doll_intro, 8MB)은 드라이브 연결 한도로 아직 못 받음",
+"note": "봉인된 그녀 이벤트 컷씬 · cutscene_doll_loop v1 (드라이브 2026-10-03). 앞의 시작은 S-15a",
 "rank": "",
 "on": false
 },
