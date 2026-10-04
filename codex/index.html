@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.67 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.68 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -163,6 +163,11 @@ main{touch-action:pan-x pan-y}
   .view .side .acts #vDel{grid-column:1 / -1}
   textarea{min-height:80px;font-size:16px}
 }
+/* v1.68 초상화 두 번 누르기: 한 번 누르면 테두리 · 이름 강조, 한 번 더 누르면 이동 */
+.pbtn.armed .pp{border:2px solid var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.pbtn.armed .pn{color:var(--accent);font-weight:700}
+.pbtn{position:relative}
+.pbtn.armed::after{content:'한 번 더';position:absolute;left:50%;top:4px;transform:translateX(-50%);white-space:nowrap;font:600 10px var(--body);color:var(--bg);background:var(--accent);border-radius:999px;padding:1px 6px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 /* v1.66 뒤로 버튼 */
 .tab.back{color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:600;flex:none}
 @media (max-width:640px){ .tab.back{padding:7px 12px} .bar:has(#backBtn:not([hidden])) .tabs{flex:1 1 0;margin-left:0;padding-left:0} }
@@ -555,7 +560,12 @@ function toggleDel(id){
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; if (b.dataset.cat !== cat) pushNav('tab'); cat = b.dataset.cat; scrollTo({ top: 0 }); render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
-  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
+  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation();
+    // v1.68 휴대폰: 초상화는 두 번 눌러야 이동 (한 번 = 고름 · 이름 크게). 스크롤하다 잘못 눌려 튀는 것 막기
+    if (coarse && jb.classList.contains('pbtn') && !(jb.classList.contains('armed') && Date.now() - (jb._armT || 0) < 1500)){
+      document.querySelectorAll('.pbtn.armed').forEach(x => x.classList.remove('armed')); jb.classList.add('armed'); jb._armT = Date.now(); return;
+    }
+    jb.classList.remove('armed'); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
   if (e.target.closest('[data-tonav]')){ e.stopPropagation(); pushNav('jump'); jumpTo('pnav'); return; }
   const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); pushNav('jump'); jumpTo(tt.dataset.totoc); return; }
   const tg = e.target.closest('[data-tog]'); if (tg){ e.stopPropagation(); const k = tg.dataset.tog; if (filtering()) return; setOpenG(k, !gOpen[k]); const h = tg.closest('h3'), id = h && h.id, y = h ? h.getBoundingClientRect().top : 0; render(); const n = id && $(id); if (n) scrollBy(0, n.getBoundingClientRect().top - y); return; }
