@@ -1,4 +1,4 @@
-/* prologue.js v0.5 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.6 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -18,7 +18,7 @@ const TAG = (txt, cls) => `<span class="tag ${cls}">${txt}</span>`;
 const CHEONG_TAGS = () => (PRO.cursed ? TAG('저주: 실명 · 좌안', 'curse') : '') + TAG('발화 A', 'gA');
 const FACE = { cheong: PA + 'goblin_face.webp', karius: PA + 'karius_face.webp' };
 
-const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, bag: { food: 0, items: [] }, day: 1 };
+const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false };
 
 /* ---------- 소리 ---------- */
 SFX.clink = function(v = 1){ this.burst({ type: 'bandpass', f: 3400, q: 9, gain: 0.5 * v, dec: 0.22 }); this.burst({ type: 'bandpass', f: 1900, q: 5, gain: 0.3 * v, dec: 0.12 }); this.thump(240, 0.25 * v, 0.1); };
@@ -110,7 +110,7 @@ function updateFallers(){
 /* ---------- 정리 (clearLevel이 부름) ---------- */
 function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
-  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
+  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
   guide(''); mid(''); $p('dream').classList.remove('on');
   camPreset(); if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
@@ -351,7 +351,7 @@ const LOBBY_C = { x: 9, z: 10 };
 function lobbyRows(){
   const W = 19, H = 18, g = [];
   for (let z = 0; z < H; z++){ const r = []; for (let x = 0; x < W; x++) r.push(Math.hypot(x - LOBBY_C.x, z - LOBBY_C.z) <= 6.4 || (x >= 8 && x <= 10 && z >= 2 && z <= 4) ? '.' : '#'); g.push(r); }
-  g[1][9] = 'G';
+  // 굴 끝 (1, 9)은 벽: 그 앞에 높이 5칸 (약 5m) 석문 그림을 세움 (막혀 있음)
   for (const [c, x, z] of [['P', 9, 11], ['K', 8, 2], ['C', 11, 10], ['S', 13, 9], ['S', 13, 11], ['S', 14, 11], ['B', 3, 10]]) g[z][x] = c;
   return g.map(r => r.join(''));
 }
@@ -390,7 +390,7 @@ async function startCave(cine = false){
   tileProp(PA + 'rebecca_head.webp', B.x, B.z, 0.62, { y: 0.02, tint: 0.95 });
   // 소품 (도감 에셋): 하나가 한 칸씩 (칸 가운데, 칸 폭 안). 버섯 · 바위 · 상자 · 등불 · 곡괭이 · 물그릇 · 통나무 · 풀 · 흰 바위
   [['mush1', 5, 6, 1.2], ['crates', 13, 6, 1.0], ['rock1', 4, 8, 0.9], ['pick', 10, 2, 0.45], ['lantern', 7, 4, 1.1], ['basin', 14, 9, 0.5],
-   ['pillars', 4, 13, 0.9], ['mush2', 6, 15, 1.4], ['grass', 8, 16, 0.7], ['log', 11, 16, 0.6], ['mush4', 13, 14, 0.9], ['grass', 5, 14, 0.8], ['mush3', 3, 12, 1.3]]
+   ['pillars', 4, 13, 0.9], ['mush2', 6, 15, 1.4], ['grass', 8, 16, 0.7], ['log', 11, 16, 0.6], ['mush4', 12, 15, 0.9], ['grass', 5, 14, 0.8], ['mush3', 3, 12, 1.3]]
     .forEach(([k, i, j, h]) => tileProp(PA + k + '.webp', i, j, h));
   buildPen(12, 8, 15, 12);
   // 발광 이끼 (바닥에 번지는 빛)
@@ -404,7 +404,11 @@ async function startCave(cine = false){
     await textbox('청광묵', ['대장! 아직 먹으면 안된다! 알! 낳아야한다!'], { face: FACE.cheong, tags: CHEONG_TAGS() }); camFocusOff(); } });
   G.inspect.push({ x: B.x, z: B.z, r: 1.6, label: '레베카에게 말을 건다', fn: async () => { camFocus(B.x, B.z, 99, ...lens(2.4, 3.4), 0.05); await textbox('레베카', ['...음냐..음냐...', '(자고 있는 모양이다)']); camFocusOff(); } });
   G.inspect.push({ unit: snails[0], r: 1.6, label: '인광달팽이를 본다', fn: async () => { await textbox('', ['인광달팽이. 껍데기에서 청록빛이 은은하게 번진다.', '…알을 낳을 때까지는 먹으면 안 된다고 한다.']); } });
-  G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '굴 끝의 석문을 연다 — 아래로 (시제품 1층)', mark: '굴 (석문)', fn: descend });
+  // 석문: 높이 5m쯤 되는 엄청 단단한 문. 지금은 막혀 있음
+  const door = bill(PA + 'stonedoor.webp', 9, 1.45, 5.0, { fit: 3.6, tint: 0.85 });
+  G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '석문을 살핀다', mark: '석문', fn: async () => { camFocus(9, 2.4, 99, ...lens(3.2, 6.5), 0.05);
+    await textbox('', ['높이 5미터쯤 되는 석문. 별 문양이 새겨져 있다.', '밀어도, 두드려도 꿈쩍하지 않는다.', '(카리우스가 그 옆을 파고 있다)']); camFocusOff(); } });
+  buildStorage();
   G.inspect.push({ x: 12, z: 10, r: 1.2, label: '달팽이 우리를 본다', mark: '달팽이 우리', far: 0.1, fn: async () => { await textbox('', ['인광달팽이 우리. 낮은 나무 울타리.', '(Space로 뛰어넘을 수 있다)']); } });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
   // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
@@ -451,7 +455,7 @@ function proTick(dt){
   const Cv = PRO.cave;
   if (G.mode === 'cave' && Cv){
     // 카리우스: 캉. 캉. (굴을 팜)
-    Cv.digT -= dt; if (Cv.digT <= 0){ Cv.digT = 1.35; const k = Cv.ka; k.leanT = 0.22; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
+    Cv.digT -= dt; if (Cv.digT <= 0 && !Cv.ka.job && Math.hypot(Cv.ka.x - Cv.K.x, Cv.ka.z - Cv.K.z) < 0.5){ Cv.digT = 1.35; const k = Cv.ka; k.leanT = 0.22; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
     // 청광묵: 달팽이를 보며 가끔 "아우.... 귀여워!"
     Cv.cuteT -= dt; if (Cv.cuteT <= 0){ Cv.cuteT = rnd(6, 9); const s = Cv.snails[0]; if (s) Cv.ch.face = Math.sign(s.x - Cv.ch.x) || 1; say(Cv.ch, '아우.... 귀여워!', 'soft', 2.4); }
     // 레베카: zzz
@@ -462,6 +466,7 @@ function proTick(dt){
       if (s.wT <= 0){ s.wT = rnd(3, 6); const a = rnd(0, 6.3); s.goal = { x: s.home.x + Math.cos(a) * 0.8, z: s.home.z + Math.sin(a) * 0.8 }; }
       if (s.goal && Math.hypot(s.goal.x - s.x, s.goal.z - s.z) > 0.1){ const n = norm(s.goal.x - s.x, s.goal.z - s.z); moveBy(s, n.x * 0.16 * dt, n.z * 0.16 * dt); faceToward(s, n.x, n.z); }
     }
+    tickStorage(dt);
     // 오늘의 낙하: 움직일 수 있게 된 뒤 30초
     if (!Cv.dropped && !G.lock && !G.waitInput){ Cv.dropT -= dt; if (Cv.dropT <= 0) todayFall(); }
     if (PRO.shaft){ const k = clamp((G.t - PRO.shaft.t0) / 7, 0, 1); PRO.shaft.m.material.opacity = 0.13 * Math.sin(Math.PI * Math.min(1, k * 1.15)); PRO.shaft.l.intensity = 2.2 * (1 - k); }
@@ -510,6 +515,7 @@ function freeTiles(n){
     if (Math.hypot(x - C.x, z - C.z) > 3.6 || G.map.solid[z * G.map.w + x]) continue;
     if (PRO.pen && x >= PRO.pen.x0 && x <= PRO.pen.x1 && z >= PRO.pen.z0 && z <= PRO.pen.z1) continue;   // 달팽이 우리 안은 빼고
     if (G.units.some(u => Math.hypot(u.x - x, u.z - z) < 0.9)) continue;
+    if (PRO.loose.some(it => !it.carrier && Math.hypot(it.x - x, it.z - z) < 0.6)) continue;
     list.push({ x, z });
   }
   for (let i = list.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
@@ -517,8 +523,9 @@ function freeTiles(n){
 }
 function proHud(){
   if (G.mode !== 'cave' || !PRO.cave) return '';
-  const Cv = PRO.cave, bag = PRO.bag;
-  return `<div class="sp">🍖 식량 ${bag.food} · 🎒 가방 ${bag.items.length}</div>` + `<div class="sp">${Cv.dropped ? `${PRO.day}일째 · 오늘의 낙하 끝` : `${PRO.day}일째 · 오늘의 낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}</div>`;
+  const Cv = PRO.cave, food = PRO.store.reduce((a, d) => a + (d.food || 0), 0), rot = PRO.trash.filter(t => t.rot > 0).length;
+  return `<div class="sp">📦 창고 ${PRO.store.length} (🍖 식량 ${food}) · 🗑 쓰레기 ${PRO.trash.length}${rot ? ` (썩는 중 ${rot})` : ''}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}</div>`
+    + `<div class="sp">${PRO.day}일째 · ${Cv.dropped ? '오늘의 낙하 끝 · 잠자리에서 하루를 마침' : `오늘의 낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}${PRO.didBury ? ' · 오늘 묻기 끝' : ''}</div>`;
 }
 function fallPanel(n){
   const el = $p('fallres'); el.hidden = false; el.querySelector('b').textContent = `오늘의 낙하 · ${PRO.day}일째`;
@@ -534,17 +541,7 @@ function fallSlot(i, d){
 const eul = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c < 11172 && c % 28 ? '을' : '를'); };
 function landDrop(d, b, t, i){
   fallSlot(i, d); spark(t.x, 0.4, t.z, 0xd8c8ff, 8, 2.5);
-  if (d.type === 'furn'){ G.map.solid[t.z * G.map.w + t.x] = 1; G.map.nav = {}; return; }   // 가구는 그 칸에 남음
-  const gl = d.type === 'equip' ? glowAt(t.x, t.z) : null;
-  const label = d.type === 'junk' ? `${eul(d.name)} 치운다` : `${eul(d.name)} 줍는다`;
-  G.inspect.push({ x: t.x, z: t.z, r: 1.0, once: true, label, mark: d.name, far: 9, fn: () => {
-    G.scene.remove(b.g); if (gl) G.scene.remove(gl); b.gone = true;
-    const pl = G.player;
-    if (d.type === 'food'){ PRO.bag.food += d.food; popText(pl.x, pl.y + 2.1, pl.z, `${d.name} · 식량 +${d.food}`, 'heal', 1.2); }
-    else if (d.type === 'junk'){ popText(pl.x, pl.y + 2.1, pl.z, '치웠다', 'miss', 1); dust(t.x, t.z, 6); }
-    else { PRO.bag.items.push(d.name); popText(pl.x, pl.y + 2.1, pl.z, d.name, d.type === 'equip' ? 'crit' : 'heal', 1.3); }
-    SFX.clink(0.4);
-  } });
+  addLoose(d, b, t.x, t.z);
 }
 async function todayFall(){
   const Cv = PRO.cave; if (Cv.dropped) return; Cv.dropped = true;
@@ -568,7 +565,7 @@ async function todayFall(){
   const el = $p('fallres'); el.querySelector('small').hidden = false;
   await new Promise(res => { const t0 = G.t; G.waitInput = () => { if (G.t - t0 < 0.6) return; G.waitInput = null; el.hidden = true; res(); }; });
   letterbox(false); G.lock = false;
-  guide('떨어진 것은 <em>E</em>로 줍기 · 가구는 그 자리에 남음', 5);
+  guide('<em>E</em>로 들어서 창고 (팔레트)로 · 쓰레기는 구덩이로 — 가만히 있으면 동료들도 정리함', 6);
 }
 
 /* ---------- 프롤로그 건너뛰기: 오른쪽 위 버튼 (프롤로그 · 굴 첫 장면 동안). 기다리던 연출 · 글상자를 모두 버리고 바로 굴 (로비)로 ---------- */
@@ -582,7 +579,7 @@ $p('skipBtn').addEventListener('click', e => { e.stopPropagation(); proSkip(); }
 function updateSkip(){ $p('skipBtn').hidden = !(G.mode === 'prologue' || (G.mode === 'cave' && PRO.caveIntro)); }
 
 /* ---------- 굴 카메라: 낮은 각도 + 좁은 화각 (멀리서 당겨 봄 → 원근감이 약함). 창 크기 (가로 · 세로 비)에 맞춰 거리를 정해 방 전체가 늘 다 보이게 ---------- */
-const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.7, spanZ: 16.4, wallH: 3.2 };
+const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.7, spanZ: 16.4, wallH: 5.0 };   // wallH: 화면에 넣을 높이 (뒤쪽 5m 석문까지)
 const lens = (h, back) => { const k = Math.tan(20 * Math.PI / 180) / Math.tan(CAVE_CAM.fov / 2 * Math.PI / 180); return [h * k, back * k]; };   // 다가가 보기 (말 걸기 등)도 같은 화면 크기로
 function fitCaveCam(){
   const tv = Math.tan(camera.fov / 2 * Math.PI / 180), th = tv * camera.aspect, e = CAVE_CAM.elev;
@@ -606,4 +603,124 @@ function buildPen(x0, z0, x1, z1){
   }
   g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = true; } });
   G.map.group.add(g); m.nav = {};
+}
+
+/* ---------- 로비 = 창고 (v0.13)
+   떨어진 것은 들어서 (E) 한 곳으로 모음: 창고 (팔레트 자리) — 놓을수록 겹쳐 쌓임. 쓰레기 (시체 · 깡통)는 쓰레기 구덩이로
+   하루에 한 번 쓰레기를 묻을 수 있음 (구덩이에서 E). 안 묻고 하루를 넘기면 다음날부터 상하기 시작 (파리 · 냄새, 날이 갈수록 심해짐)
+   가만히 있으면 (2초) 동료 (청광묵 · 카리우스)가 발발 돌아다니며 같이 정리함. 잠자리 (담요)에서 하루를 마침 → 다음 날, 오늘의 낙하 30초 다시
+   화장실 (간이 화장실)도 하나 */
+const STORE = { x0: 6, z0: 12, x1: 7, z1: 13, cx: 6.5, cz: 12.5 }, PIT = { x: 12, z: 14 }, TOILET = { x: 14, z: 13 }, BED = { x: 4, z: 11 };
+function buildStorage(){
+  const m = G.map;
+  for (let z = STORE.z0; z <= STORE.z1; z++) for (let x = STORE.x0; x <= STORE.x1; x++) m.solid[z * m.w + x] = 1;
+  bill(PA + 'd_H-467.webp', STORE.cx, STORE.cz + 0.35, 0.55, { fit: 2.0, tint: 0.85 });              // 팔레트 (창고 자리)
+  tileProp(PA + 'd_H-655.webp', PIT.x, PIT.z, 0.9, { tint: 0.85 });                                    // 쓰레기 구덩이
+  tileProp(PA + 'd_H-036.webp', TOILET.x, TOILET.z, 1.6);                                              // 간이 화장실
+  tileProp(PA + 'd_H-402.webp', BED.x, BED.z, 0.45, { tint: 0.9 });                                    // 잠자리 (담요)
+  m.nav = {};
+  PRO.storeBills = []; PRO.trashBills = [];
+  PRO.store.forEach((d, i) => pileAdd(d, i)); PRO.trash.forEach((t, i) => trashAdd(t, i));
+  // 창고 · 구덩이 · 화장실 · 잠자리 (글씨는 들고 있는지에 따라 바뀜)
+  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 30, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : `창고를 본다 (${PRO.store.length}개)`; },
+    fn: () => { const c = PRO.carry; if (!c) return showStore(); if (c.d.type === 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓰레기는 구덩이로!', 'miss', 1.2); putStore(c); } });
+  G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 30, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개, 하루 한 번)`) : '쓰레기 구덩이 (비었음)'; },
+    fn: () => { const c = PRO.carry; if (c){ if (c.d.type !== 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓸 만한 건 창고로!', 'miss', 1.2); return putTrash(c); } if (PRO.trash.length && !PRO.didBury) buryTrash(); } });
+  G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, label: '화장실에 들어간다', mark: '화장실', far: 30, fn: async () => { G.lock = true; G.player.group.visible = false; SFX.thump(120, 0.3, 0.2); await wait(1.4); SFX.burst({ type: 'bandpass', f: 600, f2: 200, gain: 0.35, att: 0.1, dec: 0.9 }); await wait(1.0); G.player.group.visible = true; await textbox('', ['(개운하다)']); G.lock = false; } });
+  G.inspect.push({ x: BED.x, z: BED.z, r: 1.5, mark: '잠자리', far: 30, get label(){ return PRO.cave && PRO.cave.dropped ? '잠자리에 눕는다 — 하루를 마친다' : '잠자리 (오늘의 낙하가 아직)'; },
+    fn: () => { if (!PRO.cave.dropped) return popText(G.player.x, G.player.y + 2, G.player.z, '아직 낙하가 오지 않았다', 'miss', 1.2); endDay(); } });
+}
+// 떨어져 있는 물건: 누가 들기 전까지 바닥에. 인주는 E로 들고, 동료는 가만히 있을 때 알아서 듦
+function addLoose(d, b, x, z){
+  const it = { d, b, x, z, carrier: null, claimed: null, age: 0 };
+  it.gl = d.type === 'equip' ? glowAt(x, z) : null;
+  it.insp = { x, z, r: 1.0, mark: d.name, far: 9, get label(){ return PRO.carry ? '한 번에 하나만 들 수 있음' : `${eul(d.name)} 든다`; }, get used(){ return !!it.carrier || it.done || !!PRO.carry; }, set used(v){},
+    fn: () => { if (PRO.carry || it.carrier) return; pickUp(it, G.player); } };
+  G.inspect.push(it.insp); PRO.loose.push(it);
+  return it;
+}
+function pickUp(it, who){
+  it.carrier = who; it.claimed = who; if (it.gl){ G.scene.remove(it.gl); it.gl = null; }
+  if (who === G.player) PRO.carry = it; else who.job.it = it;
+  SFX.clink(0.3); dust(it.x, it.z, 3);
+}
+// 창고에 쌓기: 팔레트 위 2x2칸 안에 이리저리, 놓을수록 위로 겹침
+function pileAdd(d, i){
+  const b = bill(PA + d.k + '.webp', STORE.x0 + 0.1 + ((i * 0.618) % 1) * 1.0 + rnd(-0.08, 0.08), STORE.z0 + 0.15 + ((i * 0.382 + 0.3) % 1) * 1.0, d.h * 0.8, { fit: 0.8, y: 0.12 + Math.floor(i / 4) * 0.16, tint: 0.92 });
+  PRO.storeBills.push(b);
+}
+function trashAdd(t, i){
+  const b = bill(PA + t.d.k + '.webp', PIT.x + rnd(-0.25, 0.25), PIT.z + rnd(-0.2, 0.15), t.d.h * 0.7, { fit: 0.75, y: 0.05 + i * 0.05, tint: 0.85 });
+  t.b = b; if (t.rot) rotTint(t); PRO.trashBills.push(b);
+}
+function dropCarried(it){ G.scene.remove(it.b.g); it.done = true; it.carrier = null; PRO.loose = PRO.loose.filter(o => o !== it); if (PRO.carry === it) PRO.carry = null; }
+function putStore(it){ dropCarried(it); PRO.store.push(it.d); pileAdd(it.d, PRO.store.length - 1); SFX.thump(140, 0.3, 0.15); spark(STORE.cx, 0.6, STORE.cz, 0xffe0b0, 6, 2); popText(STORE.cx, 1.4, STORE.cz, `창고 +1 (${PRO.store.length})`, 'heal', 1); }
+function putTrash(it){ dropCarried(it); const t = { d: it.d, rot: it.age > 0 ? 1 : 0 }; PRO.trash.push(t); trashAdd(t, PRO.trash.length - 1); SFX.thump(90, 0.3, 0.2); dust(PIT.x, PIT.z, 6); popText(PIT.x, 1.3, PIT.z, '버림', 'miss', 0.9); }
+async function showStore(){
+  if (!PRO.store.length) return textbox('', ['창고 자리가 비어 있다.']);
+  const cnt = {}; PRO.store.forEach(d => cnt[d.name] = (cnt[d.name] || 0) + 1);
+  await textbox('', ['창고: ' + Object.entries(cnt).map(([n, c]) => c > 1 ? `${n} x${c}` : n).join(' · ')]);
+}
+// 쓰레기 묻기 (하루 한 번): 구덩이에 흙을 덮음
+async function buryTrash(){
+  const pl = G.player; G.lock = true; PRO.didBury = true;
+  for (let k = 0; k < 4; k++){ pl.leanT = 0.3; SFX.burst({ type: 'lowpass', f: 380, gain: 0.45, dec: 0.25 }); dust(PIT.x + rnd(-0.4, 0.4), PIT.z + rnd(-0.3, 0.3), 7); await wait(0.45); }
+  for (const t of PRO.trash) if (t.b) G.scene.remove(t.b.g);
+  PRO.buried += PRO.trash.length; PRO.trash = []; PRO.trashBills = [];
+  popText(PIT.x, 1.4, PIT.z, '묻었다', 'heal', 1.2); G.lock = false;
+}
+function rotTint(t){ if (t.b) t.b.m.material.color.setRGB(0.62 + 0.1 / t.rot, 0.78, 0.45); }
+// 하루를 마침: 암전 → 다음 날. 안 묻은 쓰레기 (구덩이 · 바닥)는 상하기 시작 (날마다 더)
+async function endDay(){
+  const Cv = PRO.cave; G.lock = true; letterbox(true); guide('');
+  G.player.lying = true; dark(1, 1.4); await wait(1.6);
+  PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
+  let rotNow = 0;
+  for (const t of PRO.trash){ t.rot++; rotTint(t); rotNow++; }
+  for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
+  for (const it of PRO.loose) if (it.d.type !== 'junk') it.age++;
+  mid(`${PRO.day}일째`); await wait(1.6); mid('');
+  dark(0, 1.6); await wait(1.2); G.player.lying = false;
+  if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
+  letterbox(false); G.lock = false;
+  caption(`${PRO.day}일째`, rotNow ? '어디선가 썩는 냄새가 난다' : '오늘은 무엇이 떨어질까');
+}
+// 매 프레임: 들고 있는 것 · 동료 정리 · 썩는 쓰레기 (파리)
+function tickStorage(dt){
+  const pl = G.player, Cv = PRO.cave;
+  for (const it of PRO.loose) if (it.carrier){ const c = it.carrier; it.b.g.position.set(c.x, c.y + bodyH(c) * (c === pl ? 0.95 : 0.85) + 0.05 + Math.abs(Math.sin(G.t * 9)) * 0.04, c.z + 0.05); it.x = c.x; it.z = c.z; }
+  // 가만히 있는지: 움직임 · 키 입력이 없으면 쌓임
+  const busy = !!inputDir() || keys.size > 0 || G.lock || G.waitInput;
+  PRO.idleT = busy ? 0 : PRO.idleT + dt;
+  for (const h of [Cv.ch, Cv.ka]) helperTick(h, dt);
+  // 썩는 쓰레기: 파리 · 가끔 냄새
+  const rotten = PRO.trash.filter(t => t.rot > 0).concat(PRO.loose.filter(it => it.d.type === 'junk' && it.age > 0));
+  for (const t of rotten){ if (Math.random() < dt * (2 + (t.rot || t.age || 1) * 2)){ const x = (t.b ? t.b.g.position.x : t.x) + rnd(-0.4, 0.4), z = (t.b ? t.b.g.position.z : t.z) + rnd(-0.4, 0.4); dot(x, rnd(0.3, 0.9), z, 0x2a3a1a, 0.07, 0.6); } }
+  if (rotten.length){ Cv.smellT = (Cv.smellT || 4) - dt; if (Cv.smellT <= 0){ Cv.smellT = rnd(7, 11); const t = rotten[0]; say({ x: t.b ? t.b.g.position.x : t.x, y: 1.0, z: t.b ? t.b.g.position.z : t.z }, '(썩는 냄새)', 'zzz', 2); } }
+}
+// 동료 정리: 인주가 2초 넘게 가만히 있으면 주인 없는 물건을 골라 들고 창고 · 구덩이로 (발발). 하던 건 끝까지. 일이 없으면 제자리로
+function helperTick(h, dt){
+  if (!h) return;
+  h.home = h.home || { x: h.x, z: h.z };
+  const sp = h === PRO.cave.ch ? 3.1 : 2.2;
+  if (!h.job && PRO.idleT > 2 && !G.lock){
+    const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done);
+    const it = nearest(h, free, 30);
+    if (it){ it.claimed = h; h.job = { target: it, it: null }; if (h === PRO.cave.ch && Math.random() < 0.5) say(h, ['정리한다!', '청광묵 돕는다!', '영차!'][Math.floor(Math.random() * 3)], 'soft', 1.2); }
+  }
+  let moving = false;
+  if (h.job){
+    const J = h.job;
+    if (!J.it){
+      const it = J.target;
+      if (it.carrier || it.done){ h.job = null; return; }   // 인주가 먼저 들었음
+      if (Math.hypot(it.x - h.x, it.z - h.z) > 0.75){ navTo(h, it.x, it.z, sp, dt, 0.6); moving = true; }
+      else pickUp(it, h);
+    } else {
+      const junk = J.it.d.type === 'junk', D = junk ? { x: PIT.x, z: PIT.z - 1 } : { x: STORE.cx + 1.4, z: STORE.cz - 0.4 };
+      if (Math.hypot(D.x - h.x, D.z - h.z) > 0.6){ navTo(h, D.x, D.z, sp * 0.85, dt, 0.4); moving = true; }
+      else { if (junk) putTrash(J.it); else putStore(J.it); h.job = null; }
+    }
+  } else if (Math.hypot(h.home.x - h.x, h.home.z - h.z) > 0.3){ navTo(h, h.home.x, h.home.z, sp * 0.7, dt, 0.2); moving = true; }
+  h.lift = moving ? Math.abs(Math.sin(G.t * (h === PRO.cave.ch ? 16 : 9))) * (h === PRO.cave.ch ? 0.09 : 0.05) : 0;   // 발발
 }
