@@ -1,4 +1,4 @@
-/* prologue.js v0.10 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.11 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -6,7 +6,9 @@
 'use strict';
 const PA = 'art/pro/';
 SPR.cheong = { h0: 512, tall: 1.3, poses: { idle: { src: PA + 'goblin.webp', w: 205, h: 512, ax: 102, ay: 510, f: 1 } } };
-SPR.karius = { h0: 512, tall: 1.9, poses: { idle: { src: PA + 'karius.webp', w: 328, h: 512, ax: 150, ay: 512, f: 1 } } };   // 원화 배경 지움
+// 카리우스: 2D판 그림 (drawKarius)을 프레임별로 뜬 시트 (8 x 8칸, 한 칸 180 x 160). 줄: 대기 · 걷기 · 굴 파기 · 두 번 치기 · 노인의 팔 쓸기 · 잡아찢기 · 내려찍기 (불경자) · 불경자 대기
+const kp = (row, fps, once = false) => ({ src: PA + 'karius2d.webp', w: 180, h: 160, cols: 8, rows: 8, n: 64, from: row * 8, count: 8, fps, ax: 90, ay: 156, f: 1, once });
+SPR.karius = { h0: 94, tall: 2.4, poses: { idle: kp(0, 2.2), walk: kp(1, 9), dig: kp(2, 7), punch: kp(3, 16, true), sweep: kp(4, 7, true), grab: kp(5, 5.7, true), slam: kp(6, 7, true), heretic: kp(7, 2.2) } };
 SPR.snail = { h0: 342, tall: 0.24, poses: { idle: { src: PA + 'snail.webp', w: 512, h: 342, ax: 256, ay: 336, f: 1 } } };
 DEFS.cheong = { spr: 'cheong', name: '청광묵', hp: 220, atk: 18, spd: 2.8, r: 0.34, weight: 60, think: cheongThink };
 DEFS.cheongNpc = { spr: 'cheong', name: '청광묵', hp: 100, atk: 0, spd: 0, r: 0.34, weight: 60 };
@@ -18,7 +20,7 @@ const TAG = (txt, cls) => `<span class="tag ${cls}">${txt}</span>`;
 const CHEONG_TAGS = () => (PRO.cursed ? TAG('저주: 실명 · 좌안', 'curse') : '') + TAG('발화 A', 'gA');
 const FACE = { cheong: PA + 'goblin_face.webp', karius: PA + 'karius_face.webp' };
 
-const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false };
+const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false, pigData: [], pigs: [], eggs: [], babies: 0, eggBills: [] };
 
 /* ---------- 소리 ---------- */
 SFX.clink = function(v = 1){ this.burst({ type: 'bandpass', f: 3400, q: 9, gain: 0.5 * v, dec: 0.22 }); this.burst({ type: 'bandpass', f: 1900, q: 5, gain: 0.3 * v, dec: 0.12 }); this.thump(240, 0.25 * v, 0.1); };
@@ -117,7 +119,7 @@ function updateFallers(){
 /* ---------- 정리 (clearLevel이 부름) ---------- */
 function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
-  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
+  Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, flies: [], stage: null, pigs: [], blizzard: null, eggBills: [], loose: [], carry: null, storeBills: [], trashBills: [], idleT: 0, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
   guide(''); mid(''); $p('dream').classList.remove('on');
   camPreset(); if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
@@ -394,6 +396,7 @@ async function startCave(cine = false){
   const snails = sp('S').map(s => { const n = spawn('snail', s.x, s.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; } n.face = Math.random() < 0.5 ? 1 : -1; return n; });
   PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5, dropT: 30, dropped: false };
   if (!PRO.weather) PRO.weather = rollWeather();
+  PRO.pigs = [];
   buildStage(); applyWeather();
   // 벽에 머리만 내민 레베카 (얼굴은 하늘을 봄) + 둘레 돌
   tileProp(PA + 'rebecca_head.webp', B.x, B.z, 0.62, { y: 0.02, tint: 0.95 });
@@ -402,6 +405,7 @@ async function startCave(cine = false){
    ['pillars', 4, 13, 0.9], ['mush2', 6, 15, 1.4], ['grass', 8, 16, 0.7], ['log', 11, 16, 0.6], ['mush4', 12, 15, 0.9], ['grass', 5, 14, 0.8], ['mush3', 3, 12, 1.3]]
     .forEach(([k, i, j, h]) => tileProp(PA + k + '.webp', i, j, h));
   buildPen(12, 8, 15, 12);
+  restoreLivestock();
   // 발광 이끼 (바닥에 번지는 빛)
   [[13.4, 10.6, 2.2, 0x5fffd8], [5, 13.6, 1.6, 0x9f7cff], [9, 3.4, 1.3, 0x7fd8ff], [6.2, 7, 1.4, 0x5fffd8], [3.8, 10.2, 1.2, 0xc8a0ff], [9, 10, 2.4, 0x8f7cff]]
     .forEach(([x, z, r, c]) => moss(x, z, r, c));
@@ -419,7 +423,7 @@ async function startCave(cine = false){
   G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '석문을 살핀다', mark: '석문', fn: async () => { camFocus(9, 2.4, 99, ...lens(3.2, 6.5), 0.05);
     await textbox('', ['높이 5미터쯤 되는 석문. 별 문양이 새겨져 있다.', '밀어도, 두드려도 꿈쩍하지 않는다.', '(카리우스가 그 옆을 파고 있다)']); camFocusOff(); } });
   buildStorage();
-  G.inspect.push({ x: 12, z: 10, r: 1.2, label: '달팽이 우리를 본다', mark: '달팽이 우리', far: 0.1, fn: async () => { await textbox('', ['인광달팽이 우리. 낮은 나무 울타리.', '(Space로 뛰어넘을 수 있다)']); } });
+  G.inspect.push({ x: 12, z: 10, r: 1.3, mark: '우리', far: 0.1, get label(){ return penLabel(); }, fn: penAction });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
   // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
   pl.lying = true; G.lock = true; letterbox(true); dark(1, 0); PRO.caveIntro = true;
@@ -465,14 +469,16 @@ function proTick(dt){
   const Cv = PRO.cave;
   if (G.mode === 'cave' && Cv){
     // 카리우스: 캉. 캉. (굴을 팜)
-    Cv.digT -= dt; if (Cv.digT <= 0 && !Cv.ka.job && Math.hypot(Cv.ka.x - Cv.K.x, Cv.ka.z - Cv.K.z) < 0.5){ Cv.digT = 1.35; const k = Cv.ka; k.leanT = 0.22; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
+    const atDig = !Cv.ka.job && !G.lobbyFight && Math.hypot(Cv.ka.x - Cv.K.x, Cv.ka.z - Cv.K.z) < 0.5;
+    if (atDig && Cv.ka.pose !== 'dig'){ setPose(Cv.ka, 'dig'); Cv.digT = 0.85; } if (!atDig && Cv.ka.pose === 'dig') setPose(Cv.ka, 'idle');
+    Cv.digT -= dt; if (Cv.digT <= 0 && atDig){ Cv.digT = 8 / 7; const k = Cv.ka; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
     // 청광묵: 달팽이를 보며 가끔 "아우.... 귀여워!"
     Cv.cuteT -= dt; if (Cv.cuteT <= 0){ Cv.cuteT = rnd(6, 9); const s = Cv.snails[0]; if (s) Cv.ch.face = Math.sign(s.x - Cv.ch.x) || 1; say(Cv.ch, '아우.... 귀여워!', 'soft', 2.4); }
     // 레베카: zzz
     Cv.zzzT -= dt; if (Cv.zzzT <= 0){ Cv.zzzT = 2.4; say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, 'z z z…', 'zzz', 2.2); }
     // 달팽이: 집 근처를 아주 천천히 기어다님
     if (!G.waitInput) tickSnails(dt);
-    tickStorage(dt); tickFlies(dt); tickStage(dt);
+    tickStorage(dt); tickFlies(dt); tickStage(dt); tickPigs(dt); tickStorm(dt);
     // 오늘의 낙하: 움직일 수 있게 된 뒤 30초
     if (!Cv.dropped && !G.lock && !G.waitInput){ Cv.dropT -= dt; if (Cv.dropT <= 0) todayFall(); }
     if (PRO.shaft){ const k = clamp((G.t - PRO.shaft.t0) / 7, 0, 1); PRO.shaft.m.material.opacity = 0.13 * Math.sin(Math.PI * Math.min(1, k * 1.15)); PRO.shaft.l.intensity = 2.2 * (1 - k); }
@@ -495,7 +501,7 @@ const DROP_TABLE = [
   { k: 'd_I-053', name: '사과', type: 'food', h: 0.26, w: 6, food: 1 },
   { k: 'd_I-052', name: '생선', type: 'food', h: 0.28, w: 5, food: 1 },
   { k: 'd_I-054', name: '치즈', type: 'food', h: 0.26, w: 4, food: 1 },
-  { k: 'pig', name: '돼지', type: 'food', h: 0.4, w: 3, food: 4 },
+  { k: 'pig_big', name: '돼지', type: 'live', h: 0.6, w: 3 },   // 살아 있는 가축: 떨어지면 뽈뽈 돌아다님 → 우리로
   { k: 'd_I-037', name: '빨간 물약', type: 'supply', h: 0.32, w: 4 },
   { k: 'd_I-061', name: '붕대', type: 'supply', h: 0.28, w: 4 },
   { k: 'd_I-073', name: '금 열쇠', type: 'supply', h: 0.3, w: 2 },
@@ -508,7 +514,7 @@ const DROP_TABLE = [
   { k: 'corpse3', name: '쓰러진 시체', type: 'junk', h: 0.35, w: 3 },
   { k: 'd_H-305', name: '작은 깡통', type: 'junk', h: 0.22, w: 4 },
 ];
-const DROP_TYPE = { furn: ['가구', 'tfurn'], food: ['식량', 'tfood'], supply: ['보급', 'tsup'], equip: ['장비', 'tequip'], junk: ['잡동사니', 'tjunk'] };
+const DROP_TYPE = { live: ['가축', 'tlive'], furn: ['가구', 'tfurn'], food: ['식량', 'tfood'], supply: ['보급', 'tsup'], equip: ['장비', 'tequip'], junk: ['잡동사니', 'tjunk'] };
 function rollDrops(){
   const n = 4 + Math.floor(Math.random() * 3), total = DROP_TABLE.reduce((a, d) => a + d.w, 0), out = [];
   for (let i = 0; i < n; i++){ let r = Math.random() * total; for (const d of DROP_TABLE){ r -= d.w; if (r <= 0){ out.push(d); break; } } }
@@ -535,6 +541,7 @@ function proHud(){
   if (G.mode !== 'cave' || !PRO.cave) return '';
   const Cv = PRO.cave, food = PRO.store.reduce((a, d) => a + (d.food || 0), 0), rot = PRO.trash.filter(t => t.rot > 0).length;
   return `<div class="sp">📦 창고 ${PRO.store.length} (🍖 식량 ${food}) · 🗑 쓰레기 ${PRO.trash.length}${rot ? ` (썩는 중 ${rot})` : ''}${PRO.carry ? ` · ✋ ${PRO.carry.d.name}` : ''}</div>`
+    + livestockHud()
     + `<div class="sp">${PRO.day}일째 · ${Cv.dropped ? '오늘의 낙하 끝 · 잠자리에서 하루를 마침' : `오늘의 낙하까지 ${Math.max(0, Math.ceil(Cv.dropT))}초`}${PRO.didBury ? ' · 오늘 묻기 끝' : ''}</div>`;
 }
 // 오늘의 낙하 = 큰 목록: 한 줄씩 채워짐 (날씨가 맨 위, 떨어질 때마다 한 줄, 적은 붉은 줄)
@@ -547,7 +554,7 @@ function listRow(icon, name, tagText, tagCls, note = '', cls = ''){
   row.innerHTML = `<span class="ic">${icon}</span><span class="nm">${name}</span><span class="tag ${tagCls}">${tagText}</span><span class="nt">${note}</span>`;
   const rows = $p('fallres').querySelector('.rows'); rows.appendChild(row); rows.scrollTop = rows.scrollHeight; SFX.clink(0.18);   // 넘치면 새 줄이 보이게
 }
-function fallSlot(i, d){ const [tn, tc] = DROP_TYPE[d.type]; listRow(`<img src="${PA + d.k}.webp" alt="">`, d.name, tn, tc, d.toilet ? '변소 자리에 설치' : d.type === 'junk' ? '구덩이로' : d.type === 'food' ? `식량 ${d.food}` : '창고로'); }
+function fallSlot(i, d){ const [tn, tc] = DROP_TYPE[d.type]; listRow(`<img src="${PA + d.k}.webp" alt="">`, d.name, tn, tc, d.toilet ? '변소 자리에 설치' : d.type === 'live' ? '우리로' : d.type === 'junk' ? '구덩이로' : d.type === 'food' ? `식량 ${d.food}` : '창고로'); }
 // 받침 있으면 을, 없으면 를
 const eul = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c < 11172 && c % 28 ? '을' : '를'); };
 function landDrop(d, b, t, i){
@@ -571,9 +578,13 @@ async function todayFall(){
   const W = WEATHER[PRO.weather]; listRow(W.icon, `날씨: ${W.name}`, '날씨', 'tweather', W.note, 'weather');
   await wait(0.7);
   picks.forEach((d, i) => { const t = tiles[i]; if (!t) return;
+    if (d.type === 'live'){ const data = { penned: false, hungry: 0, fed: false }; PRO.pigData.push(data); const u = spawnPig(data, t.x, t.z); fallUnit(u, 14, 0.2 + i * 0.6, 0.75, () => { fallSlot(i, d); say(u, '꿀꿀!!', 'soft', 1.2); }); return; }
     const b = bill(PA + d.k + '.webp', t.x, t.z, d.h, { fit: 0.92, tint: 0.95 });
     fallObj(b.g, 14, 0.2 + i * 0.6, 0.75, t, () => landDrop(d, b, t, i)); });
   await wait(0.2 + picks.length * 0.6 + 0.9);
+  // 날씨 인카운터 (최대 1개): 갑자기 폭우 · 폭설 (나중에 적뢰 기믹에도 씀)
+  let storm = null;
+  if (!PRO.storm && Math.random() < 0.3){ storm = Math.random() < 0.5 ? 'downpour' : 'blizzard'; const S = STORMS[storm]; listRow(S.icon, `날씨 인카운터: ${S.name}!`, '날씨 인카운터', 'tstorm', S.note, 'storm'); SFX.roar(0.4); await wait(0.6); }
   // 적: 가벼운 적 5 (첫날은 꼭, 그 뒤로는 가끔)
   const foesToday = PRO.day === 1 || Math.random() < 0.4;
   if (foesToday){
@@ -587,6 +598,7 @@ async function todayFall(){
   const el = $p('fallres'); el.querySelector('small').hidden = false;
   await new Promise(res => { const t0 = G.t; G.waitInput = () => { if (G.t - t0 < 0.6) return; G.waitInput = null; el.hidden = true; res(); }; });
   letterbox(false); G.lock = false;
+  if (storm) startStorm(storm);
   if (foes().length) startLobbyFight();
   else guide('<em>E</em>로 들어서 창고 (팔레트)로 · 쓰레기는 구덩이로 — 가만히 있으면 동료들도 정리함', 6);
 }
@@ -653,10 +665,10 @@ function buildStorage(){
   PRO.storeBills = []; PRO.trashBills = [];
   PRO.store.forEach((d, i) => pileAdd(d, i)); PRO.trash.forEach((t, i) => trashAdd(t, i));
   // 창고 · 구덩이 · 화장실 · 잠자리 (글씨는 들고 있는지에 따라 바뀜)
-  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 6, get label(){ return PRO.carry ? (PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : `창고를 본다 (${PRO.store.length}개)`; },
-    fn: () => { const c = PRO.carry; if (!c) return showStore(); if (c.d.toilet) return popText(G.player.x, G.player.y + 2, G.player.z, '화장실은 변소 구덩이 자리로!', 'miss', 1.2); if (c.d.type === 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓰레기는 구덩이로!', 'miss', 1.2); putStore(c); } });
+  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 6, get label(){ return PRO.carry ? (PRO.carry.pig ? '돼지는 우리로' : PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : `창고를 본다 (${PRO.store.length}개)`; },
+    fn: () => { const c = PRO.carry; if (!c) return showStore(); if (c.pig) return popText(G.player.x, G.player.y + 2, G.player.z, '돼지는 우리로!', 'miss', 1.2); if (c.d.toilet) return popText(G.player.x, G.player.y + 2, G.player.z, '화장실은 변소 구덩이 자리로!', 'miss', 1.2); if (c.d.type === 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓰레기는 구덩이로!', 'miss', 1.2); putStore(c); } });
   G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 6, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개, 하루 한 번)`) : '쓰레기 구덩이 (비었음)'; },
-    fn: () => { const c = PRO.carry; if (c){ if (c.d.type !== 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓸 만한 건 창고로!', 'miss', 1.2); return putTrash(c); } if (PRO.trash.length && !PRO.didBury) buryTrash(); } });
+    fn: () => { const c = PRO.carry; if (c){ if (c.pig) return popText(G.player.x, G.player.y + 2, G.player.z, '돼지는 우리로!', 'miss', 1.2); if (c.d.type !== 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓸 만한 건 창고로!', 'miss', 1.2); return putTrash(c); } if (PRO.trash.length && !PRO.didBury) buryTrash(); } });
   G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, far: 6, get mark(){ return PRO.hasToilet ? '화장실' : '변소 구덩이'; },
     get label(){ const c = PRO.carry; return c && c.d.toilet ? '간이 화장실을 설치한다' : c ? '여기엔 둘 수 없음' : PRO.hasToilet ? '화장실에 들어간다' : PRO.tentGone ? '천막을 다시 친다 (비에 쓸려 감)' : '변소 구덩이에서 볼일을 본다'; },
     fn: async () => {
@@ -717,7 +729,8 @@ async function endDay(){
   const Cv = PRO.cave; G.lock = true; letterbox(true); guide('');
   G.player.lying = true; dark(1, 1.4); await wait(1.6);
   PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
-  PRO.weather = rollWeather(); applyWeather(true);
+  endStorm(); PRO.weather = rollWeather(); applyWeather(true);
+  const dayNews = dayLivestock();
   let rotNow = 0;
   for (const t of PRO.trash){ t.rot++; rotTint(t); rotNow++; }
   for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
@@ -725,6 +738,7 @@ async function endDay(){
   mid(`${PRO.day}일째`); await wait(1.6); mid('');
   dark(0, 1.6); await wait(1.2); G.player.lying = false;
   if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
+  dayNews.forEach((t, i) => setTimeout(() => say(Cv.ch, t, 'soft', 2.6), 2800 + i * 2600));
   letterbox(false); G.lock = false;
   caption(`${PRO.day}일째 · ${WEATHER[PRO.weather].icon} ${WEATHER[PRO.weather].name}`, rotNow ? '어디선가 썩는 냄새가 난다' : WEATHER[PRO.weather].note);
   if (PRO.weather === 'rain' && PRO.tentGoneNow) setTimeout(() => say(Cv.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1800);
@@ -749,6 +763,7 @@ function helperTick(h, dt){
   const sp = h === PRO.cave.ch ? 3.1 : 2.2;
   if (G.lobbyFight){ if (h !== PRO.cave.ch){ h.lift = 0; } return; }   // 싸우는 중엔 정리 안 함 (청광묵은 싸움)
   if (h === PRO.cave.ch && snailRescue(h, sp, dt)) return;   // 달팽이 탈출이 먼저
+  if (h === PRO.cave.ch && pigRescue(h, sp, dt)) return;      // 그다음 돼지
   if (!h.job && PRO.idleT > 2 && !G.lock){
     const free = PRO.loose.filter(it => !it.claimed && !it.carrier && !it.done);
     const it = nearest(h, free, 30);
@@ -768,7 +783,8 @@ function helperTick(h, dt){
       else { if (d.toilet) installToilet(J.it); else if (junk) putTrash(J.it); else putStore(J.it); h.job = null; }
     }
   } else if (Math.hypot(h.home.x - h.x, h.home.z - h.z) > 0.3){ navTo(h, h.home.x, h.home.z, sp * 0.7, dt, 0.2); moving = true; }
-  h.lift = moving ? Math.abs(Math.sin(G.t * (h === PRO.cave.ch ? 16 : 9))) * (h === PRO.cave.ch ? 0.09 : 0.05) : 0;   // 발발
+  h.lift = h === PRO.cave.ch && moving ? Math.abs(Math.sin(G.t * 16)) * 0.09 : 0;   // 발발 (청광묵)
+  if (h === PRO.cave.ka){ if (moving) setPose(h, 'walk'); else if (h.pose === 'walk') setPose(h, 'idle'); }
 }
 
 // 간이 화장실 설치: 변소 구덩이 그림을 화장실로 바꿈 (이후로는 화장실이 다시 떨어지지 않음)
@@ -794,6 +810,8 @@ function tickSnails(dt){
       s.wT = (s.wT || 0) - dt;
       if (s.wT <= 0){ s.wT = rnd(3, 6); const a = rnd(0, 6.3); s.goal = { x: clamp(s.home.x + Math.cos(a) * 0.8, pen.x0 + 0.7, pen.x1 - 0.7), z: clamp(s.home.z + Math.sin(a) * 0.8, pen.z0 + 0.7, pen.z1 - 0.7) }; }
       if (s.goal && Math.hypot(s.goal.x - s.x, s.goal.z - s.z) > 0.1){ const n = norm(s.goal.x - s.x, s.goal.z - s.z); moveBy(s, n.x * 0.16 * dt, n.z * 0.16 * dt); faceToward(s, n.x, n.z); }
+      // 알: 가끔 우리 안에 낳음 (한 번에 무더기 셋까지)
+      s.eggT = (s.eggT ?? rnd(45, 100)) - dt; if (s.eggT <= 0){ s.eggT = rnd(60, 130); if (PRO.eggs.length < 3 && !s.baby) layEgg(s); }
       // 탈출: 한 번에 한 마리만
       if (!G.lock){ s.escT -= dt; if (s.escT <= 0 && !Cv.snails.some(o => o !== s && o.st2 !== 'pen')) startEscape(s); }
     } else if (s.st2 === 'climb'){
@@ -886,6 +904,8 @@ function startLobbyFight(){
   for (const e of foes()){ e.alert = true; e.seen = G.t; e.home = { x: LOBBY_C.x, z: LOBBY_C.z }; }
   const ch = PRO.cave.ch; ch.side = 'ally'; ch.D = DEFS.cheongAlly; ch.hp = ch.max = DEFS.cheongAlly.hp; ch.atk = DEFS.cheongAlly.atk; ch.spd = DEFS.cheongAlly.spd; ch.job = null; ch.rescue = null; ch.lift = 0;
   say(ch, '대장! 적이다! 청광묵도 싸운다!', 'soft', 2);
+  const ka = PRO.cave.ka; Object.assign(ka, { side: 'ally', D: DEFS.kariusAlly, hp: DEFS.kariusAlly.hp, max: DEFS.kariusAlly.hp, atk: DEFS.kariusAlly.atk, spd: DEFS.kariusAlly.spd, job: null, kc: null, p2: false, cd: 0.5, swCd: 2.5, grCd: 4, slCd: 2, rsCd: 3 }); setPose(ka, 'idle');
+  setTimeout(() => say(ka, '.....', 'soft', 1.4), 900);
   guide('적이다! <em>좌클릭</em> 찌르기 · <em>우클릭</em> 투창 · <em>Q</em> 구르기 · <em>F</em> 방어', 5);
   G.onKill = (u) => { if (u.side === 'enemy' && G.mode === 'cave'){
     const d = { k: FOE_FILE[u.kind], name: u.D.name + ' 사체', type: 'junk', h: 0.45 };
@@ -895,6 +915,7 @@ function startLobbyFight(){
 function endLobbyFight(win){
   G.lobbyFight = false;
   const ch = PRO.cave.ch; ch.side = 'neutral'; ch.D = DEFS.cheongNpc; ch.downed = false; ch.st = 'idle'; ch.tilt = 0;
+  const ka = PRO.cave.ka; if (ka.kc && ka.kc.dec) cancelDecal(ka.kc.dec); Object.assign(ka, { side: 'neutral', D: DEFS.karius, hp: DEFS.karius.hp, max: DEFS.karius.hp, downed: false, st: 'idle', tilt: 0, kc: null, p2: false }); setPose(ka, 'idle');
   if (win){ say(ch, '대장! 다 잡았다!', 'soft', 2.2); caption('정리', '사체는 쓰레기 구덩이로'); }
 }
 // 로비에서 인주가 쓰러지면: 암전 → 적은 사라지고, 반쯤 회복
@@ -957,4 +978,241 @@ async function rebuildTent(){
   for (let k = 0; k < 3; k++){ pl.leanT = 0.3; SFX.thump(150, 0.3, 0.15); dust(TOILET.x, TOILET.z + 0.3, 5); await wait(0.5); }
   PRO.tentGone = false; PRO.latrine.push(PRO.tent = bill(PA + 'd_H-116.webp', TOILET.x, TOILET.z + 0.38, 1.05, { fit: 1.05, tint: 0.85 }));
   popText(TOILET.x, 1.6, TOILET.z, '천막을 다시 쳤다', 'heal', 1.3); G.lock = false;
+}
+
+/* ---------- 카리우스 전투 (2D판 kariusUpdate 그대로 옮김, 3D 장판으로)
+   체력 500 · 개조된 신체 (모든 피해 60% 감소) · 느림 · 무거움. 기본: 두 번 치기 (팔이 많아 한 번에 두 대)
+   노인의 팔 쓸기 (앞 2.7칸 부채꼴, 30 · 밀침 · 경직, 4초) · 잡아찢기 (1.9칸 안 하나를 끌어와 광대의 파일로 30, 치명 50%, 11초)
+   체력 15% 아래: 불경자 카리우스 (공격력 1.6배 · 빠름 · 걸을 때 쿵쿵) + 내려찍기 (앞 1.3칸 원, 40 · 경직) · 돌진 (일직선으로 밀고 나가 후려침, 35) */
+DEFS.kariusAlly = { spr: 'karius', name: '카리우스', hp: 500, atk: 12, spd: 2.0, r: 0.6, weight: 300, dr: 0.6, think: kariusThink };
+function kariusThink(u, dt){
+  if (u.downed) return;
+  for (const k of ['cd', 'swCd', 'grCd', 'slCd', 'rsCd']) u[k] = (u[k] ?? 0) - dt;
+  const m = u.p2 ? 1.6 : 1, K = u.kc;
+  if (K){ K.t += dt; kariusSkill(u, K, m, dt); return; }
+  if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; return; }
+  if (!u.p2 && u.hp <= u.max * 0.15){   // 불경자
+    u.kc = { type: 'heretic', t: 0 }; setPose(u, 'heretic'); popText(u.x, u.y + 3.4, u.z, '불경자 카리우스', 'crit', 1.6); camShake(0.4, 0.4); ring(u.x, u.z, 0xfff6c0, 3, 0.5); return;
+  }
+  const list = foes().filter(e => e.alert && !e.dead), tg = nearest(u, list, 30);
+  if (!tg){ setPose(u, u.p2 ? 'heretic' : 'idle'); return; }
+  const d = dist(u, tg), a = Math.atan2(tg.z - u.z, tg.x - u.x);
+  setAim(u, tg.x, tg.z);
+  const front = o => { const dd = Math.hypot(o.x - u.x, o.z - u.z); return dd < 2.7 && Math.abs(angDiff(Math.atan2(o.z - u.z, o.x - u.x), a)) < 1.2; };
+  if (u.p2 && u.rsCd <= 0 && d > 2.8 && d < 7){ u.rsCd = 8; u.kc = { type: 'rush', t: 0, a, dec: decal('line', { x: u.x, z: u.z, len: 4.5, w: 1.3, a, dur: 0.5, color: BLUE }), hit: new Set() }; say(u, '우오오오!', 'soft', 0.8); return; }
+  if (u.p2 && u.slCd <= 0 && d <= 2.3){ u.slCd = 5; const px = u.x + Math.cos(a) * 1.3, pz = u.z + Math.sin(a) * 1.3; u.kc = { type: 'slam', t: 0, px, pz, dec: decal('circle', { x: px, z: pz, r: 1.3, dur: 0.7, color: BLUE }) }; u.poseT = 0; setPose(u, 'slam'); return; }
+  if (u.grCd <= 0 && d <= 1.9){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg }; u.poseT = 0; setPose(u, 'grab'); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
+  if (u.swCd <= 0 && list.some(front)){ u.swCd = 4; u.kc = { type: 'sweep', t: 0, a, dec: decal('sector', { x: u.x, z: u.z, r: 2.7, a, arc: 2.4, dur: 0.5, color: BLUE }) }; u.poseT = 0; setPose(u, 'sweep'); return; }
+  if (d > 1.8){ navTo(u, tg.x, tg.z, u.spd * (u.p2 ? 1.4 : 1), dt, 1.5); setPose(u, 'walk'); if (u.p2){ u.stomp = (u.stomp || 0) - dt; if (u.stomp <= 0){ u.stomp = 0.42; camShake(0.08, 0.1); dust(u.x, u.z, 4); } } return; }
+  setPose(u, u.p2 ? 'heretic' : 'idle');
+  if (u.cd <= 0){ u.cd = u.p2 ? 1.1 : 1.4; u.kc = { type: 'punch', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.5, dur: 0.45, color: BLUE }) }; setPose(u, 'punch'); u.poseT = 0; }
+}
+function kariusSkill(u, K, m, dt){
+  const hitIn = (pred, dmg, o) => { for (const e of foes()) if (!e.dead && pred(e)) hurt(u, e, dmg * m, { from: u, ...o }); };
+  const inDec = e => K.dec && inShape(K.dec, e);
+  if (K.type === 'heretic'){ if (K.t >= 0.6){ u.kc = null; u.p2 = true; u.atk = DEFS.kariusAlly.atk * 1.6; say(u, '으으으…', 'soft', 1.2); camShake(0.5, 0.3); } return; }
+  if (K.type === 'punch'){   // 팔이 많아 한 번에 두 대
+    if (K.n === 0 && K.t >= 0.45){ K.n = 1; hitIn(inDec, u.atk / m, { kb: 0.4 }); }
+    if (K.n === 1 && K.t >= 0.6){ K.n = 2; hitIn(inDec, u.atk / m, { kb: 0.7 }); spark(u.x + Math.cos(K.a) * 1.4, 1.3, u.z + Math.sin(K.a) * 1.4, 0xd8d0e8, 6, 3); }
+    if (K.t >= 0.8) u.kc = null; return;
+  }
+  if (K.type === 'sweep'){   // 노인의 팔: 쓸어버림
+    if (!K.hit && K.t >= 0.62){ K.hit = true; camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); hitIn(inDec, 30, { kb: 1.6, stun: 0.5 }); SFX.boom(0.5); }
+    if (K.t >= 1.15) u.kc = null; return;
+  }
+  if (K.type === 'grab'){    // 잡아찢기: 끌어와 광대의 파일로
+    const t = K.tg; if (!t || t.dead){ u.kc = null; return; }
+    t.st = 'hurt'; t.stT = 0.3; interrupt(t);
+    if (K.t > 0.4 && K.t < 1.0){ const gx = u.x + Math.cos(u.aim) * 0.9, gz = u.z + Math.sin(u.aim) * 0.9, k = Math.min(1, dt * 8); t.x += (gx - t.x) * k; t.z += (gz - t.z) * k; }
+    if (!K.hit && K.t >= 1.0){ K.hit = true; hurt(u, t, 30 * m, { from: u, crit: Math.random() < 0.5, critMul: 2 }); spark(t.x, 1, t.z, 0xb3122a, 22, 5); camShake(0.35, 0.2); }
+    if (K.t >= 1.45){ u.kc = null; } return;
+  }
+  if (K.type === 'slam'){
+    if (!K.hit && K.t >= 0.7){ K.hit = true; camShake(0.55, 0.3); G.hitstop = Math.max(G.hitstop, 0.12); hitIn(e => Math.hypot(e.x - K.px, e.z - K.pz) < 1.3 + e.r, 40, { kb: 0.8, stun: 0.6 }); dust(K.px, K.pz, 16); popText(K.px, 1.4, K.pz, '쾅!', 'big', 0.6); SFX.boom(0.9); }
+    if (K.t >= 1.15) u.kc = null; return;
+  }
+  if (K.type === 'rush'){    // 몸을 낮췄다가 일직선으로 밀고 나가 후려침
+    if (K.t < 0.5) return;
+    setPose(u, 'walk');
+    if (K.t < 1.0){ moveBy(u, Math.cos(K.a) * 9 * dt, Math.sin(K.a) * 9 * dt); dust(u.x, u.z, 1); if (Math.random() < dt * 20) camShake(0.12, 0.08);
+      for (const e of foes()) if (!e.dead && !K.hit.has(e) && Math.hypot(e.x - u.x, e.z - u.z) < 1.1){ K.hit.add(e); hurt(u, e, 35 * m, { from: u, kb: 3, stun: 1.0 }); } }
+    else u.kc = null;
+  }
+}
+
+/* ---------- 날씨 인카운터: 낙하에 가끔 (최대 1개) 섞여 갑자기 몰아침. 그날 하루 내내
+   폭우: 굴 전체에 비 · 어두워짐 · 가끔 천둥 · 변소 천막 날아감 / 폭설: 굴 전체에 눈보라 · 걸음 느려짐 (70%) */
+const STORMS = { downpour: { name: '폭우', icon: '⛈', note: '굴 전체에 비가 쏟아진다' }, blizzard: { name: '폭설', icon: '🌨', note: '눈보라 · 걸음이 느려짐' } };
+function startStorm(type){ PRO.storm = type; applyStorm(true); }
+function applyStorm(fresh){
+  const S = PRO.storm; if (!S) return;
+  if (S === 'downpour'){
+    G.rain.on = true; if (PRO.hemi0 == null) PRO.hemi0 = hemi.intensity; hemi.intensity = 0.26;
+    if (!PRO.hasToilet && !PRO.tentGone){ PRO.tentGone = true; if (PRO.tent){ G.scene.remove(PRO.tent.g); PRO.tent = null; } if (fresh) setTimeout(() => PRO.cave && say(PRO.cave.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1500); }
+  }
+  if (S === 'blizzard' && !PRO.blizzard){
+    const N = 1400, pos = new Float32Array(N * 3), geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.26, map: sparkTex, color: 0xffffff, transparent: true, opacity: 1, depthWrite: false })); pts.frustumCulled = false;
+    G.scene.add(pts); G.props.push(pts);
+    PRO.blizzard = { pts, geo, pos, f: Array.from({ length: N }, () => ({ x: rnd(1, 17), z: rnd(1, 17), y: rnd(0, 9), v: rnd(1.6, 3), p: rnd(0, 6.3) })) };
+    G.fogK = Math.min(G.fogK || 1, 0.8);
+  }
+  if (fresh){ const W = STORMS[S]; caption(`${W.icon} ${W.name}`, W.note); camShake(0.2, 0.8); if (S === 'downpour'){ SFX.thunder(); flashScreen('#cfd8ff', 0.5); } else SFX.burst({ type: 'highpass', f: 1500, f2: 600, gain: 0.3, att: 0.6, dec: 2.4 }); }
+}
+function endStorm(){
+  if (!PRO.storm) return;
+  PRO.storm = null; G.rain.on = false; if (PRO.hemi0 != null){ hemi.intensity = PRO.hemi0; PRO.hemi0 = null; }
+  if (PRO.blizzard){ G.scene.remove(PRO.blizzard.pts); PRO.blizzard = null; }
+  applyWeather();
+}
+function tickStorm(dt){
+  const S = PRO.storm;
+  if (S === 'downpour'){ PRO.thunderT = (PRO.thunderT ?? 6) - dt; if (PRO.thunderT <= 0){ PRO.thunderT = rnd(8, 16); SFX.thunder(); flashScreen('#cfd8ff', 0.35); camShake(0.12, 0.3); } }
+  const B = PRO.blizzard;
+  if (B){ B.f.forEach((f, i) => { f.y -= f.v * dt; if (f.y < 0) f.y = rnd(7, 9); B.pos[i * 3] = f.x + Math.sin(G.t * 1.7 + f.p) * 0.6 + G.t * 0.8 % 1; B.pos[i * 3 + 1] = f.y; B.pos[i * 3 + 2] = f.z + Math.cos(G.t * 1.3 + f.p) * 0.4; }); B.geo.attributes.position.needsUpdate = true; }
+  // 걸음: 폭설이면 느려짐, 돼지를 들면 많이 느려짐
+  if (G.player) G.player.spd = DEFS.player.spd * (S === 'blizzard' ? 0.7 : 1) * (PRO.carry && PRO.carry.pig ? 0.42 : 1);
+}
+
+/* ---------- 가축 (돼지): 낙하로 떨어짐. 뽈뽈 도망 다니고 (가까이 오면 달아남), 냅두면 창고 식량을 훔쳐먹으러 감
+   E로 잡으면 많이 무거움 (걸음 42%, 꿀꿀!). 우리에 넣으면 못 나감. 우리 앞에서 E로 먹이 (창고 식량 1)
+   청광묵도 가만히 냅두면 잡아서 우리에 넣음. 하루 동안 못 먹으면 굶은 날 +1, 5일을 넘기면 굶어 죽음 */
+DEFS.pig = { spr: 'pig', name: '돼지', hp: 60, atk: 0, spd: 2.3, r: 0.3, weight: 120 };
+SPR.pig = { h0: 196, tall: 0.62, poses: { idle: { src: PA + 'pig_big.webp', w: 244, h: 196, ax: 122, ay: 192, f: 1 } } };
+DEFS.snailBaby = { spr: 'snailBaby', name: '새끼 달팽이', hp: 10, atk: 0, spd: 0.2, r: 0.1, weight: 8 };
+SPR.snailBaby = { h0: 342, tall: 0.13, poses: { idle: { src: PA + 'snail.webp', w: 512, h: 342, ax: 256, ay: 336, f: 1 } } };
+const PEN_AT = () => ({ x: rnd(PRO.pen.x0 + 0.8, PRO.pen.x1 - 0.8), z: rnd(PRO.pen.z0 + 0.8, PRO.pen.z1 - 0.8) });
+function spawnPig(data, x, z){
+  const u = spawn('pig', x, z, 'neutral'); if (u.tag){ u.tag.remove(); u.tag = null; }
+  u.pig = data; data.u = u; PRO.pigs.push(u);
+  G.inspect.push({ unit: u, r: 1.25, label: '돼지를 잡는다 (무거움)', get used(){ return !!u.carrier || u.pig.penned || !!PRO.carry || u.dead; }, set used(v){},
+    fn: () => { if (PRO.carry || u.carrier || u.pig.penned) return; u.carrier = G.player; PRO.carry = { d: { name: '돼지', type: 'live' }, pig: u }; say(u, '꿀꿀!!', 'soft', 1); SFX.thump(120, 0.3, 0.2); } });
+  return u;
+}
+function restoreLivestock(){
+  PRO.pigData = PRO.pigData.filter(d => !d.dead);
+  for (const d of PRO.pigData){ const at = d.penned ? PEN_AT() : { x: LOBBY_C.x + rnd(-2, 2), z: LOBBY_C.z + rnd(-1, 2) }; spawnPig(d, at.x, at.z); }
+  for (let i = 0; i < PRO.babies; i++) spawnBaby();
+  PRO.eggBills = PRO.eggs.map(e => bill(PA + 'snail_eggs.webp', e.x, e.z, 0.16, { fit: 0.4, y: 0.01 }));
+}
+function spawnBaby(){
+  const at = PEN_AT(), n = spawn('snailBaby', at.x, at.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; }
+  n.baby = true; n.home = { x: at.x, z: at.z }; n.face = Math.random() < 0.5 ? 1 : -1; PRO.cave.snails.push(n); return n;
+}
+function layEgg(s){
+  const e = { x: clamp(s.x, PRO.pen.x0 + 0.7, PRO.pen.x1 - 0.7), z: clamp(s.z, PRO.pen.z0 + 0.7, PRO.pen.z1 - 0.7), day: PRO.day };
+  PRO.eggs.push(e); PRO.eggBills.push(bill(PA + 'snail_eggs.webp', e.x, e.z, 0.16, { fit: 0.4, y: 0.01 }));
+  say({ x: e.x, y: 0.5, z: e.z }, '뽀글…', 'zzz', 1.8);
+}
+function eatFromStore(){
+  const i = PRO.store.findIndex(d => d.food); if (i < 0) return false;
+  PRO.store.splice(i, 1);
+  for (const b of PRO.storeBills) G.scene.remove(b.g); PRO.storeBills = []; PRO.store.forEach((d, k) => pileAdd(d, k));
+  return true;
+}
+function tickPigs(dt){
+  const Cv = PRO.cave; if (!Cv) return;
+  for (const u of PRO.pigs){
+    if (u.dead) continue;
+    const d = u.pig;
+    u.oinkT = (u.oinkT ?? rnd(3, 8)) - dt;
+    if (u.carrier){ const c = u.carrier; u.x = c.x; u.z = c.z + 0.02; u.lift = bodyH(c) * 0.72; if (u.oinkT <= 0){ u.oinkT = rnd(0.8, 1.4); say(u, '꿀꿀!', 'soft', 0.8); SFX.burst({ type: 'bandpass', f: 420, f2: 260, q: 4, gain: 0.25, att: 0.03, dec: 0.25 }); } continue; }
+    u.lift = 0;
+    if (d.penned){   // 우리 안: 못 나감
+      u.wT = (u.wT || 0) - dt; if (u.wT <= 0){ u.wT = rnd(2, 5); u.goal = PEN_AT(); }
+      if (u.goal && Math.hypot(u.goal.x - u.x, u.goal.z - u.z) > 0.1){ const n = norm(u.goal.x - u.x, u.goal.z - u.z); moveBy(u, n.x * 0.6 * dt, n.z * 0.6 * dt); faceToward(u, n.x, n.z); }
+      if (u.oinkT <= 0){ u.oinkT = rnd(6, 12); say(u, d.hungry > 0 ? '꿀… (배고픔)' : '꿀꿀', 'soft', 1.2); }
+      continue;
+    }
+    // 뽈뽈 도망: 인주 · 청광묵이 가까이 오면
+    const threat = [G.player, Cv.ch].find(o => o && Math.hypot(o.x - u.x, o.z - u.z) < 2.6);
+    if (threat){
+      const n = norm(u.x - threat.x, u.z - threat.z), sp = 2.4 * dt;
+      if (!moveBy(u, n.x * sp, n.z * sp)){ const side = (u.uid % 2 ? 1 : -1); moveBy(u, -n.z * sp * side, n.x * sp * side); }
+      faceToward(u, n.x, n.z); u.lift = Math.abs(Math.sin(G.t * 18)) * 0.06;
+      if (u.oinkT <= 0){ u.oinkT = rnd(1.2, 2.2); say(u, '꿀꿀!', 'soft', 0.8); }
+      continue;
+    }
+    // 냅두면 창고 식량을 훔쳐먹으러 감 (15초마다 하나)
+    if (PRO.store.some(x => x.food)){
+      const T = { x: STORE.cx + 1.35, z: STORE.cz };
+      if (Math.hypot(T.x - u.x, T.z - u.z) > 0.5){ navTo(u, T.x, T.z, 1.6, dt, 0.3); continue; }
+      u.eatT = (u.eatT ?? 1.5) - dt;
+      if (u.eatT <= 0){ u.eatT = 15; if (eatFromStore()){ d.fed = true; d.hungry = 0; say(u, '냠냠 꿀꿀', 'soft', 1.6); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); } }
+      continue;
+    }
+    u.wT = (u.wT || 0) - dt; if (u.wT <= 0){ u.wT = rnd(2, 4); const a = rnd(0, 6.3); u.goal = { x: u.x + Math.cos(a) * 1.5, z: u.z + Math.sin(a) * 1.5 }; }
+    if (u.goal){ const n = norm(u.goal.x - u.x, u.goal.z - u.z); moveBy(u, n.x * 0.9 * dt, n.z * 0.9 * dt); faceToward(u, n.x, n.z); }
+  }
+}
+function penPig(u){
+  u.carrier = null; u.pig.penned = true; const at = PEN_AT(); u.x = at.x; u.z = at.z; u.lift = 0;
+  if (PRO.carry && PRO.carry.pig === u) PRO.carry = null;
+  dust(u.x, u.z, 8); say(u, '꿀…', 'soft', 1.2); popText(u.x, 1.4, u.z, '우리에 넣음', 'heal', 1.1);
+}
+const penPigs = () => PRO.pigs.filter(u => !u.dead && u.pig.penned);
+function penLabel(){
+  if (PRO.carry && PRO.carry.pig) return '돼지를 우리에 넣는다';
+  if (PRO.carry) return '우리 (들고 있는 건 다른 곳으로)';
+  const hungry = penPigs().filter(u => !u.pig.fed);
+  if (hungry.length) return PRO.store.some(d => d.food) ? `돼지에게 먹이를 준다 (식량 -1)` : '돼지가 배고프다 (창고에 식량이 없음)';
+  return '우리를 본다';
+}
+async function penAction(){
+  if (PRO.carry && PRO.carry.pig) return penPig(PRO.carry.pig);
+  if (PRO.carry) return;
+  const hungry = penPigs().filter(u => !u.pig.fed);
+  if (hungry.length && eatFromStore()){ for (const u of hungry){ u.pig.fed = true; u.pig.hungry = 0; say(u, '냠냠 꿀꿀!', 'soft', 1.4); } return; }
+  const n = PRO.cave.snails.length, pigs = penPigs().length;
+  await textbox('', [`우리: 인광달팽이 ${n}마리${PRO.babies ? ` (새끼 ${PRO.babies})` : ''}${pigs ? ` · 돼지 ${pigs}` : ''}${PRO.eggs.length ? ` · 알 무더기 ${PRO.eggs.length}` : ''}`, '(낮은 나무 울타리. Space로 뛰어넘을 수 있다)']);
+}
+// 청광묵: 밖에서 돌아다니는 돼지를 잡아 우리로 (가만히 있을 때 시작, 하던 건 끝까지). 무거워서 느려짐
+function pigRescue(h, sp, dt){
+  if (h.job && h.job.it) return false;
+  let R = h.pigJob;
+  if (!R){
+    if (PRO.idleT < 2) return false;
+    const u = PRO.pigs.find(p => !p.dead && !p.pig.penned && !p.carrier);
+    if (!u) return false;
+    if (h.job){ if (h.job.target) h.job.target.claimed = null; h.job = null; }
+    R = h.pigJob = { u, phase: 'go' }; say(h, '돼지! 거기 서라!', 'soft', 1.4);
+  }
+  const u = R.u, pen = PRO.pen, gate = { x: pen.x0 - 1, z: (pen.z0 + pen.z1) / 2 };
+  let moving = false;
+  if (R.phase === 'go'){
+    if (u.dead || u.pig.penned || (u.carrier && u.carrier !== h)){ h.pigJob = null; return false; }
+    if (Math.hypot(u.x - h.x, u.z - h.z) > 0.65){ navTo(h, u.x, u.z, sp * 1.05, dt, 0.5); moving = true; }
+    else { u.carrier = h; R.phase = 'back'; say(h, '무겁다!', 'soft', 1.2); }
+  } else if (R.phase === 'back'){
+    if (Math.hypot(gate.x - h.x, gate.z - h.z) > 0.5){ navTo(h, gate.x, gate.z, 1.4, dt, 0.3); moving = true; }
+    else { penPig(u); h.pigJob = null; say(h, '들어가라 돼지!', 'soft', 1.4); return false; }
+  }
+  h.lift = moving ? Math.abs(Math.sin(G.t * 16)) * (R.phase === 'back' ? 0.04 : 0.09) : 0;
+  return true;
+}
+// 하루가 지날 때: 돼지 허기 (5일 넘게 굶으면 죽음) · 달팽이 알 부화 (3일 뒤 새끼 3 ~ 6)
+function dayLivestock(){
+  const news = [];
+  for (const d of PRO.pigData){
+    if (d.dead) continue;
+    if (!d.fed) d.hungry++;
+    d.fed = false;
+    if (d.hungry > 5){ d.dead = true; const u = d.u; if (u && !u.dead){ removeUnit(u); u.dead = true; const dd = { k: 'pig_big', name: '돼지 사체', type: 'junk', h: 0.4 }; const b = bill(PA + dd.k + '.webp', u.x, u.z, dd.h, { fit: 0.8, tint: 0.45 }); b.m.rotation.z = Math.PI / 2; addLoose(dd, b, u.x, u.z); } news.push('대장… 돼지가 굶어 죽었다…'); }
+    else if (d.hungry >= 3) news.push(`대장! 돼지가 ${d.hungry}일째 굶었다!`);
+  }
+  PRO.pigs = PRO.pigs.filter(u => !u.dead);
+  const hatch = PRO.eggs.filter(e => PRO.day - e.day >= 3);
+  if (hatch.length){
+    let n = 0;
+    for (const e of hatch){ const k = 3 + Math.floor(Math.random() * 4); n += k; for (let i = 0; i < k; i++) spawnBaby(); }
+    PRO.babies += n; PRO.eggs = PRO.eggs.filter(e => !hatch.includes(e));
+    for (const b of PRO.eggBills) G.scene.remove(b.g); PRO.eggBills = PRO.eggs.map(e => bill(PA + 'snail_eggs.webp', e.x, e.z, 0.16, { fit: 0.4, y: 0.01 }));
+    news.unshift(`대장! 새끼 달팽이다! ${n}마리!`);
+  }
+  return news;
+}
+function livestockHud(){
+  const pigs = PRO.pigs.filter(u => !u.dead), maxH = Math.max(0, ...PRO.pigData.filter(d => !d.dead).map(d => d.hungry));
+  if (!pigs.length && !PRO.eggs.length && !PRO.babies) return '';
+  return `<div class="sp">${pigs.length ? `🐷 돼지 ${pigs.length} (우리 ${penPigs().length}${maxH ? ` · 굶은 지 ${maxH}일` : ''})` : ''}${PRO.eggs.length ? ` · 🥚 알 ${PRO.eggs.length}` : ''}${PRO.babies ? ` · 🐌 새끼 ${PRO.babies}` : ''}</div>`;
 }

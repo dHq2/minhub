@@ -298,6 +298,7 @@ function hurt(att, tgt, base, o = {}){
   else if (tgt.inv > 0 && !o.unblockable){ popText(tgt.x, tgt.y + 1.6 + tgt.lift, tgt.z, tgt.D.boss ? '무적' : '회피', 'miss'); return 0; }
   if (tgt.airborne && !o.hitsAir){ popText(tgt.x, tgt.y + 2, tgt.z, '닿지 않음', 'miss'); return 0; }
   let dmg = base * rnd(0.9, 1.1), tag = '';
+  if (tgt.D.dr && !o.pierce){ dmg *= 1 - tgt.D.dr; }   // 카리우스: 개조된 신체 (모든 피해 60% 감소)
   const src = o.from || att;
   let back = false, front = true;
   if (src){ const toSrc = Math.atan2(src.z - tgt.z, src.x - tgt.x), ad = Math.abs(angDiff(toSrc, tgt.aim)); back = !tgt.D.boss && ad > 1.9; front = ad < 1.25; }
