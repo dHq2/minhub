@@ -1,4 +1,4 @@
-/* prologue.js v0.4 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.5 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -112,7 +112,7 @@ function proClear(){
   PRO.bubbles.forEach(b => b.el.remove());
   Object.assign(PRO, { bills: [], fallers: [], bubbles: [], glows: [], motes: null, lamp: null, shaft: null, fly: null, collapse: null, crawl: null, fight: false, over: false, won: false, cave: null, pl: null });
   guide(''); mid(''); $p('dream').classList.remove('on');
-  camPreset();
+  camPreset(); if (camera.fov !== 40){ camera.fov = 40; camera.updateProjectionMatrix(); } PRO.pen = null;
   if (typeof hemi !== 'undefined' && hemi){ hemi.color.setHex(0x8fa6d8); hemi.groundColor.setHex(0x1a120d); }
 }
 
@@ -352,7 +352,7 @@ function lobbyRows(){
   const W = 19, H = 18, g = [];
   for (let z = 0; z < H; z++){ const r = []; for (let x = 0; x < W; x++) r.push(Math.hypot(x - LOBBY_C.x, z - LOBBY_C.z) <= 6.4 || (x >= 8 && x <= 10 && z >= 2 && z <= 4) ? '.' : '#'); g.push(r); }
   g[1][9] = 'G';
-  for (const [c, x, z] of [['P', 9, 11], ['K', 8, 2], ['C', 12, 10], ['S', 13, 8], ['S', 14, 11], ['S', 12, 13], ['B', 3, 10]]) g[z][x] = c;
+  for (const [c, x, z] of [['P', 9, 11], ['K', 8, 2], ['C', 11, 10], ['S', 13, 9], ['S', 13, 11], ['S', 14, 11], ['B', 3, 10]]) g[z][x] = c;
   return g.map(r => r.join(''));
 }
 let mossTex = null;
@@ -375,7 +375,8 @@ async function startCave(cine = false){
     lights: [{ x: 13.2, z: 10.5, c: 0x5fffd8, i: 1.5, d: 6.5 }, { x: 8.5, z: 3, c: 0xffb070, i: 1.3, d: 6 }, { x: 3.6, z: 10, c: 0xc8a0ff, i: 0.9, d: 5 }, { x: 9, z: 10, c: 0x9f8cff, i: 0.7, d: 10 }] });
   hemi.color.setHex(0xb8a0ff); hemi.groundColor.setHex(0x1a1030);
   camPreset({ y: 8.4, back: 12.8 }, { y: 0.6, fwd: 0.6 });   // 로비 한눈에: 가운데를 고정해서 봄 (인주를 따라가지 않음)
-  G.camAnchor = { x: LOBBY_C.x, z: LOBBY_C.z + 0.4 };
+  G.camAnchor = { x: LOBBY_C.x, z: LOBBY_C.z - 0.4 };
+  camera.fov = CAVE_CAM.fov; camera.updateProjectionMatrix(); fitCaveCam();
   G.map.wallH = 3.2; G.map.round = LOBBY_C; layoutWalls(G.map, CAM.yawT);
   $p('dream').classList.add('on');
   const p = sp('P')[0], K = sp('K')[0], Cc = sp('C')[0], B = sp('B')[0];
@@ -388,29 +389,31 @@ async function startCave(cine = false){
   // 벽에 머리만 내민 레베카 (얼굴은 하늘을 봄) + 둘레 돌
   tileProp(PA + 'rebecca_head.webp', B.x, B.z, 0.62, { y: 0.02, tint: 0.95 });
   // 소품 (도감 에셋): 하나가 한 칸씩 (칸 가운데, 칸 폭 안). 버섯 · 바위 · 상자 · 등불 · 곡괭이 · 물그릇 · 통나무 · 풀 · 흰 바위
-  [['mush1', 5, 6, 1.2], ['crates', 13, 6, 1.0], ['rock1', 4, 8, 0.9], ['pick', 10, 2, 0.45], ['lantern', 7, 4, 1.1], ['basin', 15, 10, 0.6],
-   ['pillars', 4, 13, 0.9], ['mush2', 6, 15, 1.4], ['grass', 8, 16, 0.7], ['log', 11, 16, 0.6], ['mush4', 13, 14, 0.9], ['grass', 15, 9, 0.8], ['mush3', 3, 12, 1.3]]
+  [['mush1', 5, 6, 1.2], ['crates', 13, 6, 1.0], ['rock1', 4, 8, 0.9], ['pick', 10, 2, 0.45], ['lantern', 7, 4, 1.1], ['basin', 14, 9, 0.5],
+   ['pillars', 4, 13, 0.9], ['mush2', 6, 15, 1.4], ['grass', 8, 16, 0.7], ['log', 11, 16, 0.6], ['mush4', 13, 14, 0.9], ['grass', 5, 14, 0.8], ['mush3', 3, 12, 1.3]]
     .forEach(([k, i, j, h]) => tileProp(PA + k + '.webp', i, j, h));
+  buildPen(12, 8, 15, 12);
   // 발광 이끼 (바닥에 번지는 빛)
   [[13.4, 10.6, 2.2, 0x5fffd8], [5, 13.6, 1.6, 0x9f7cff], [9, 3.4, 1.3, 0x7fd8ff], [6.2, 7, 1.4, 0x5fffd8], [3.8, 10.2, 1.2, 0xc8a0ff], [9, 10, 2.4, 0x8f7cff]]
     .forEach(([x, z, r, c]) => moss(x, z, r, c));
   makeMotes(G.map.w, G.map.h);
   // 말 걸기
-  const talk = (u, who, lines, o) => G.inspect.push({ unit: u, r: 1.7, label: `${who}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, 3.0, 4.4, 0.05); await textbox(who, lines, o); camFocusOff(); } });
+  const talk = (u, who, lines, o) => G.inspect.push({ unit: u, r: 1.7, label: `${who}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, ...lens(3.0, 4.4), 0.05); await textbox(who, lines, o); camFocusOff(); } });
   talk(ka, '카리우스', ['...캉. 캉.'], { face: FACE.karius });
-  G.inspect.push({ unit: ch, r: 1.7, label: '청광묵에게 말을 건다', fn: async () => { ch.face = Math.sign(G.player.x - ch.x) || ch.face; camFocus(ch.x, ch.z, 99, 3.0, 4.4, 0.05);
+  G.inspect.push({ unit: ch, r: 1.7, label: '청광묵에게 말을 건다', fn: async () => { ch.face = Math.sign(G.player.x - ch.x) || ch.face; camFocus(ch.x, ch.z, 99, ...lens(3.0, 4.4), 0.05);
     await textbox('청광묵', ['대장! 아직 먹으면 안된다! 알! 낳아야한다!'], { face: FACE.cheong, tags: CHEONG_TAGS() }); camFocusOff(); } });
-  G.inspect.push({ x: B.x, z: B.z, r: 1.6, label: '레베카에게 말을 건다', fn: async () => { camFocus(B.x, B.z, 99, 2.4, 3.4, 0.05); await textbox('레베카', ['...음냐..음냐...', '(자고 있는 모양이다)']); camFocusOff(); } });
+  G.inspect.push({ x: B.x, z: B.z, r: 1.6, label: '레베카에게 말을 건다', fn: async () => { camFocus(B.x, B.z, 99, ...lens(2.4, 3.4), 0.05); await textbox('레베카', ['...음냐..음냐...', '(자고 있는 모양이다)']); camFocusOff(); } });
   G.inspect.push({ unit: snails[0], r: 1.6, label: '인광달팽이를 본다', fn: async () => { await textbox('', ['인광달팽이. 껍데기에서 청록빛이 은은하게 번진다.', '…알을 낳을 때까지는 먹으면 안 된다고 한다.']); } });
   G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '굴 끝의 석문을 연다 — 아래로 (시제품 1층)', mark: '굴 (석문)', fn: descend });
+  G.inspect.push({ x: 12, z: 10, r: 1.2, label: '달팽이 우리를 본다', mark: '달팽이 우리', far: 0.1, fn: async () => { await textbox('', ['인광달팽이 우리. 낮은 나무 울타리.', '(Space로 뛰어넘을 수 있다)']); } });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
   // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
   pl.lying = true; G.lock = true; letterbox(true); dark(1, 0); PRO.caveIntro = true;
-  camSnapTo(K.x, K.z + 2.5); camWide(K.x + 0.6, K.z + 1.2, 5.5, 6.5, 99);
+  camSnapTo(K.x, K.z + 2.5); camWide(K.x + 0.6, K.z + 1.2, ...lens(5.5, 6.5), 99);
   await wait(0.3); dark(0, 3.4); await wait(3.6);
   await textbox('카리우스', ['.....'], { face: FACE.karius, hold: 1.2 });
   await textbox('', ['(굴을 파는 중이다)']);
-  camWide(Cc.x, Cc.z, 4.6, 6, 99); await wait(1.8);
+  camWide(Cc.x, Cc.z, ...lens(4.6, 6), 99); await wait(1.8);
   await textbox('', ['(청광묵의 왼눈에 흉터가 남아 있다)']);
   await textbox('청광묵', ['대장! 일어났나!'], { face: FACE.cheong, tags: CHEONG_TAGS() });
   pl.lying = false; CAM.wide = null; letterbox(false); G.lock = false; PRO.caveIntro = false;
@@ -421,6 +424,7 @@ async function startCave(cine = false){
 /* ---------- 매 프레임 (글상자가 떠 있어도 돎) ---------- */
 function proTick(dt){
   updateSkip();
+  if (G.mode === 'cave' && G.camAnchor) fitCaveCam();
   if (!PRO.bills.length && !PRO.bubbles.length && G.mode !== 'prologue' && G.mode !== 'cave') return;
   sizeBills(); updateFallers(); updateBubbles();
   for (const g of PRO.glows) g.pillar.material.opacity = 0.18 + 0.14 * (0.5 + 0.5 * Math.sin(G.t * 4));
@@ -504,6 +508,7 @@ function freeTiles(n){
   const C = LOBBY_C, list = [];
   for (let z = C.z - 4; z <= C.z + 4; z++) for (let x = C.x - 4; x <= C.x + 4; x++){
     if (Math.hypot(x - C.x, z - C.z) > 3.6 || G.map.solid[z * G.map.w + x]) continue;
+    if (PRO.pen && x >= PRO.pen.x0 && x <= PRO.pen.x1 && z >= PRO.pen.z0 && z <= PRO.pen.z1) continue;   // 달팽이 우리 안은 빼고
     if (G.units.some(u => Math.hypot(u.x - x, u.z - z) < 0.9)) continue;
     list.push({ x, z });
   }
@@ -575,3 +580,30 @@ function proSkip(){
 }
 $p('skipBtn').addEventListener('click', e => { e.stopPropagation(); proSkip(); });
 function updateSkip(){ $p('skipBtn').hidden = !(G.mode === 'prologue' || (G.mode === 'cave' && PRO.caveIntro)); }
+
+/* ---------- 굴 카메라: 낮은 각도 + 좁은 화각 (멀리서 당겨 봄 → 원근감이 약함). 창 크기 (가로 · 세로 비)에 맞춰 거리를 정해 방 전체가 늘 다 보이게 ---------- */
+const CAVE_CAM = { fov: 15, elev: 21 * Math.PI / 180, halfW: 8.1, spanZ: 16.4, wallH: 3.2 };
+const lens = (h, back) => { const k = Math.tan(20 * Math.PI / 180) / Math.tan(CAVE_CAM.fov / 2 * Math.PI / 180); return [h * k, back * k]; };   // 다가가 보기 (말 걸기 등)도 같은 화면 크기로
+function fitCaveCam(){
+  const tv = Math.tan(camera.fov / 2 * Math.PI / 180), th = tv * camera.aspect, e = CAVE_CAM.elev;
+  const needV = (CAVE_CAM.spanZ * Math.sin(e) + CAVE_CAM.wallH * Math.cos(e)) / 2 + 0.9;
+  const D = Math.max(CAVE_CAM.halfW / th, needV / tv);
+  CAM.base.y = D * Math.sin(e); CAM.base.back = D * Math.cos(e); CAM.look.y = 1.0; CAM.look.fwd = 0;
+}
+/* ---------- 달팽이 우리: 낮은 나무 울타리 (바위처럼 막지만 점프로 넘음). x0..x1 · z0..z1 테두리 칸이 울타리 ---------- */
+function buildPen(x0, z0, x1, z1){
+  PRO.pen = { x0, z0, x1, z1 };
+  const wood = new THREE.MeshStandardMaterial({ color: 0x8a6440, roughness: 0.9 }), g = new THREE.Group();
+  const post = new THREE.BoxGeometry(0.1, 0.5, 0.1), m = G.map;
+  const isF = (x, z) => (x === x0 || x === x1 || z === z0 || z === z1) && x >= x0 && x <= x1 && z >= z0 && z <= z1;
+  for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++){
+    if (!isF(x, z)) continue;
+    const k = z * m.w + x; m.solid[k] = 1; m.low[k] = 1;   // 막힘 · 낮음 (점프로 넘음) · 시야는 안 막음
+    const p = new THREE.Mesh(post, wood); p.position.set(x, 0.25, z); g.add(p);
+    for (const [dx, dz] of [[1, 0], [0, 1]]) if (isF(x + dx, z + dz)){
+      for (const y of [0.18, 0.38]){ const r = new THREE.Mesh(new THREE.BoxGeometry(dx ? 1 : 0.06, 0.06, dz ? 1 : 0.06), wood); r.position.set(x + dx / 2, y, z + dz / 2); g.add(r); }
+    }
+  }
+  g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = true; } });
+  G.map.group.add(g); m.nav = {};
+}
