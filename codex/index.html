@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.66 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.67 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -163,6 +163,9 @@ main{touch-action:pan-x pan-y}
   .view .side .acts #vDel{grid-column:1 / -1}
   textarea{min-height:80px;font-size:16px}
 }
+/* v1.66 뒤로 버튼 */
+.tab.back{color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:600;flex:none}
+@media (max-width:640px){ .tab.back{padding:7px 12px} .bar:has(#backBtn:not([hidden])) .tabs{flex:1 1 0;margin-left:0;padding-left:0} }
 /* v1.63 목차 · 묶음 접기 */
 .gbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px}
 .gbar .btn{padding:4px 10px;font-size:12px}
@@ -213,7 +216,7 @@ h3.gh.open{margin-top:18px}
   </header>
 
   <div class="bar" id="bar">
-    <div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
+    <button class="tab back" id="backBtn" type="button" hidden aria-label="뒤로">← 뒤로</button><div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
     <div class="search"><input id="q" type="search" placeholder="찾기: 번호 (h076) · 이름 · 메모 · 묶음" autocomplete="off" aria-label="찾기"><span id="qn"></span></div>
     <div class="tools">
       <span class="zoom" aria-label="그림 크기"><button type="button" id="zOut" aria-label="작게">−</button><span id="zVal">100%</span><button type="button" id="zIn" aria-label="크게">+</button></span>
@@ -405,6 +408,13 @@ function peopleNav(subs){
   });
   return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${Object.entries(by).map(([r, bs]) => `<div class="prow"><b>${esc(r)} · ${bs.length}</b><div class="pgrid">${bs.join('')}</div></div>`).join('')}</nav>`;
 }
+/* v1.66 뒤로 가기: 분류 바꾸기 · 목차 · 초상화 이동 · 그림 열기마다 발자국. 휴대폰 뒤로 가기 · 도감 안 '← 뒤로' 버튼이 한 단계씩 되돌림 */
+const navStack = [];
+function pushNav(kind){ navStack.push({ kind, cat, y: scrollY }); try { history.pushState({ codexNav: navStack.length }, ''); } catch (e) {} updBack(); }
+function updBack(){ const b = $('backBtn'); if (b) b.hidden = !navStack.length; }
+function goBack(){ if (!navStack.length) return; let moved = false; try { if (history.state && history.state.codexNav){ history.back(); moved = true; } } catch (e) {} if (!moved) restoreNav(); }
+function restoreNav(){ const s = navStack.pop(); updBack(); if (!s) return; if (!$('view').hidden){ closeView(true); return; } if (s.cat !== cat){ cat = s.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (e) {} } scrollTo({ top: s.y }); }
+addEventListener('popstate', () => { if (skipPop){ skipPop = false; return; } restoreNav(); });
 function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
 /* 묶음 안 순서: (인물은 초상화 먼저) → 등장 확정 (판을 낼 때 누른 순서로 매긴 pin) → 나머지 원래 순서.
    표정 · 색 변형 (parent 있음)은 대표 바로 뒤, 펴 놓았을 때만. 크게 보기의 이전 · 다음도 이 순서 (FLAT) */
@@ -471,7 +481,7 @@ function render(){
 /* ---------- 크게 보기 ---------- */
 function order(){ return FLAT; }
 const coarse = matchMedia('(pointer:coarse)').matches;
-function openView(id){ const was = !$('view').hidden; viewing = id; $('view').hidden = false; fillView(); if (!coarse) $('vMemo').focus({ preventScroll:true }); if (!was) try { history.pushState({ codexView:1 }, ''); } catch (e) {} }
+function openView(id){ const was = !$('view').hidden; viewing = id; $('view').hidden = false; fillView(); if (!coarse) $('vMemo').focus({ preventScroll:true }); if (!was) pushNav('view'); }
 function fillView(){
   const bg = document.querySelector('.view .big'); if (bg) bg.classList.remove('zoomed');
   const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
@@ -491,8 +501,8 @@ function keepPlace(fn){   // 다시 그려도 보던 자리 그대로 (화면 �
   const key = t && (t.dataset.id ? '.tile[data-id="' + t.dataset.id + '"]' : t.id ? '#' + CSS.escape(t.id) : null), y = t && t.getBoundingClientRect().top;
   fn(); const n = key && document.querySelector(key); if (n) scrollBy(0, n.getBoundingClientRect().top - y);
 }
-function closeView(fromPop){ if ($('view').hidden) return; saveMemo(); $('view').hidden = true; const was = viewing; viewing = null; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); keepPlace(render); const tl = document.querySelector('.tile[data-id="' + was + '"]'); if (tl){ const r = tl.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) tl.scrollIntoView({ block:'center' }); } if (!fromPop && history.state && history.state.codexView) try { history.back(); } catch (e) {} }
-addEventListener('popstate', () => { if (!$('view').hidden) closeView(true); });
+function closeView(fromPop){ if ($('view').hidden) return; saveMemo(); $('view').hidden = true; const was = viewing; viewing = null; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); keepPlace(render); const tl = document.querySelector('.tile[data-id="' + was + '"]'); if (tl){ const r = tl.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) tl.scrollIntoView({ block:'center' }); } if (!fromPop && navStack.length && navStack[navStack.length - 1].kind === 'view'){ navStack.pop(); updBack(); try { if (history.state && history.state.codexNav) history.back(); } catch (e) {} skipPop = true; } }
+let skipPop = false;
 
 /* ---------- 목록 복사 · 백업 ---------- */
 function listText(){
@@ -543,13 +553,13 @@ function toggleDel(id){
 }
 
 /* ---------- 이벤트 ---------- */
-$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; cat = b.dataset.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; if (b.dataset.cat !== cat) pushNav('tab'); cat = b.dataset.cat; scrollTo({ top: 0 }); render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
-  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
-  if (e.target.closest('[data-tonav]')){ e.stopPropagation(); jumpTo('pnav'); return; }
-  const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); jumpTo(tt.dataset.totoc); return; }
+  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation(); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
+  if (e.target.closest('[data-tonav]')){ e.stopPropagation(); pushNav('jump'); jumpTo('pnav'); return; }
+  const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); pushNav('jump'); jumpTo(tt.dataset.totoc); return; }
   const tg = e.target.closest('[data-tog]'); if (tg){ e.stopPropagation(); const k = tg.dataset.tog; if (filtering()) return; setOpenG(k, !gOpen[k]); const h = tg.closest('h3'), id = h && h.id, y = h ? h.getBoundingClientRect().top : 0; render(); const n = id && $(id); if (n) scrollBy(0, n.getBoundingClientRect().top - y); return; }
-  const go = e.target.closest('[data-goto]'); if (go){ e.stopPropagation(); const k = go.dataset.goto; setOpenG(k, true); render(); const h = [...document.querySelectorAll('h3[data-g]')].find(x => x.dataset.g === k); if (h) jumpTo(h.id); return; }
+  const go = e.target.closest('[data-goto]'); if (go){ e.stopPropagation(); pushNav('jump'); const k = go.dataset.goto; setOpenG(k, true); render(); const h = [...document.querySelectorAll('h3[data-g]')].find(x => x.dataset.g === k); if (h) jumpTo(h.id); return; }
   const al = e.target.closest('[data-all]'); if (al){ e.stopPropagation(); const ck = al.dataset.all, v = al.dataset.v === '1'; for (const s of new Set(CATALOG.filter(x => x.cat === ck).map(x => x.sub))) setOpenG(gKey(ck, s), v); render(); return; }
   const fo = e.target.closest('[data-fold]'); if (fo){ e.stopPropagation(); const id = fo.dataset.fold; opened[id] = !opened[id]; try { localStorage.setItem('codex-open', JSON.stringify(opened)); } catch (er) {} render(); return; }
   const d = e.target.closest('[data-del]'); if (d){ e.stopPropagation(); toggleDel(d.dataset.del); return; }
@@ -620,7 +630,8 @@ function curSection(){ const top = $('bar').offsetHeight + 12; let cur = null; f
 const narrow = matchMedia('(max-width:640px)'); let lastY = scrollY;
 let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900;
   if (narrow.matches && !$('bar').classList.contains('open')){ const dy = scrollY - lastY; if (Math.abs(dy) > 6){ $('bar').classList.toggle('mini', dy > 0 && scrollY > 200); lastY = scrollY; } } else $('bar').classList.remove('mini'); }); }, { passive:true });
-$('fab').onclick = () => { const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
+$('backBtn').onclick = goBack;
+$('fab').onclick = () => { pushNav('jump'); const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
 $('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
 document.querySelector('.lede').addEventListener('click', e => e.currentTarget.classList.toggle('open'));
 /* 크게 보기: 좌우로 밀어 넘기기 · 두 번 눌러 확대 */
