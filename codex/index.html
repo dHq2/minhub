@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.68 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
+<!-- codex v1.69 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -420,7 +420,21 @@ function updBack(){ const b = $('backBtn'); if (b) b.hidden = !navStack.length; 
 function goBack(){ if (!navStack.length) return; let moved = false; try { if (history.state && history.state.codexNav){ history.back(); moved = true; } } catch (e) {} if (!moved) restoreNav(); }
 function restoreNav(){ const s = navStack.pop(); updBack(); if (!s) return; if (!$('view').hidden){ closeView(true); return; } if (s.cat !== cat){ cat = s.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (e) {} } scrollTo({ top: s.y }); }
 addEventListener('popstate', () => { if (skipPop){ skipPop = false; return; } restoreNav(); });
-function jumpTo(id){ const el = $(id); if (!el) return; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+/* v1.69 자동 스크롤: 브라우저 smooth 대신 직접 굴림 (앱 안에서도 쭉 내려가는 게 보이게). 매 프레임 목표 위치를 다시 재서 그림이 늦게 떠 밀려도 따라감. 손가락이 닿으면 멈춤 */
+let autoScr = 0;
+function stopAuto(){ if (autoScr){ cancelAnimationFrame(autoScr); autoScr = 0; } }
+['touchstart','wheel','keydown'].forEach(t => addEventListener(t, stopAuto, { passive:true }));
+function glideTo(el, done){
+  stopAuto();
+  const goal = () => Math.max(0, Math.min(el.getBoundingClientRect().top + scrollY - ($('bar').offsetHeight + 8), document.documentElement.scrollHeight - innerHeight));
+  const y0 = scrollY, dist = Math.abs(goal() - y0), dur = Math.min(1100, 380 + dist * 0.12), t0 = performance.now();
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const step = now => { const t = Math.min(1, (now - t0) / dur); scrollTo(0, y0 + (goal() - y0) * ease(t)); if (t < 1) autoScr = requestAnimationFrame(step); else { done && done(); done = null; settle(now); } };
+  // 도착 뒤 1.5초 동안 위쪽 그림이 늦게 떠서 밀리면 다시 맞춤
+  const settle = s0 => { const g = goal(); if (Math.abs(g - scrollY) > 2) scrollTo(0, g); autoScr = performance.now() - s0 < 1500 ? requestAnimationFrame(() => settle(s0)) : 0; };
+  autoScr = requestAnimationFrame(step);
+}
+function jumpTo(id){ const el = $(id); if (!el) return; el.classList.remove('hit'); glideTo(el, () => { void el.offsetWidth; el.classList.add('hit'); }); }
 /* 묶음 안 순서: (인물은 초상화 먼저) → 등장 확정 (판을 낼 때 누른 순서로 매긴 pin) → 나머지 원래 순서.
    표정 · 색 변형 (parent 있음)은 대표 바로 뒤, 펴 놓았을 때만. 크게 보기의 이전 · 다음도 이 순서 (FLAT) */
 let FLAT = [];
@@ -639,7 +653,7 @@ $('zOut').onclick = () => setZoom(zoom / 1.2);
 function curSection(){ const top = $('bar').offsetHeight + 12; let cur = null; for (const sct of document.querySelectorAll('section.cat')) if (sct.getBoundingClientRect().top <= top) cur = sct; return cur; }
 const narrow = matchMedia('(max-width:640px)'); let lastY = scrollY;
 let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900;
-  if (narrow.matches && !$('bar').classList.contains('open')){ const dy = scrollY - lastY; if (Math.abs(dy) > 6){ $('bar').classList.toggle('mini', dy > 0 && scrollY > 200); lastY = scrollY; } } else $('bar').classList.remove('mini'); }); }, { passive:true });
+  if (autoScr){ lastY = scrollY; } else if (narrow.matches && !$('bar').classList.contains('open')){ const dy = scrollY - lastY; if (Math.abs(dy) > 6){ $('bar').classList.toggle('mini', dy > 0 && scrollY > 200); lastY = scrollY; } } else $('bar').classList.remove('mini'); }); }, { passive:true });
 $('backBtn').onclick = goBack;
 $('fab').onclick = () => { pushNav('jump'); const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
 $('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
