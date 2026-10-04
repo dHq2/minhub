@@ -96,7 +96,7 @@ function clearLevel(){
   for (const o of G.props) G.scene.remove(o);
   G.texts.forEach(t => t.el.remove()); marks.forEach(m => m.remove()); marks.length = 0;
   if (typeof proClear === 'function') proClear();
-  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
+  Object.assign(G, { units: [], decals: [], projs: [], fx: [], props: [], inspect: [], texts: [], boss: null, bossFit: 1, camAnchor: null, focusTarget: null, flags: {}, lock: false, onKill: null, onBossPhase: null });
   if (G.map) G.scene.remove(G.map.group);
   if (P.spearObj){ G.scene.remove(P.spearObj.m); P.spearObj = null; } P.spear = true; P.aiming = false;
   G.rain.on = false; $('bossbar').hidden = true; letterbox(false);
@@ -297,7 +297,7 @@ function medicHud(){
 function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
   $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
-    + medicHud()
+    + medicHud() + (typeof proHud === 'function' ? proHud() : '')
     + (G.mode === 'floor' || G.mode === 'prologue' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
   document.querySelectorAll('#cmd [data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === G.cmd));
   $('cmd').hidden = G.mode !== 'floor';
@@ -400,6 +400,7 @@ function loop(now){
     let tx = eye.x, tz = eye.z;
     const foe = G.boss && !G.boss.dead ? G.boss : nearest(eye, foes().filter(e => e.alert), 9);
     if (foe){ const w = G.boss ? 0.45 : 0.3; tx = lerp(tx, foe.x, w); tz = lerp(tz, foe.z, w); }
+    if (G.camAnchor){ tx = G.camAnchor.x; tz = G.camAnchor.z; }   // 로비: 한눈에 (가운데 고정)
     if (!G.lock) updateCamZone(G.player);
     updateCamera(dt, { x: tx, z: tz });
     moon.position.set(camera.position.x - 6, 14, camera.position.z - 2); moon.target.position.set(CAM.follow.x, 0, CAM.follow.z);

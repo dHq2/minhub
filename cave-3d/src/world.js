@@ -1,4 +1,4 @@
-/* world.js v0.4 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
+/* world.js v0.5 — 맵: 글자 지도 → 3D 판. 맵은 절대 움직이지 않음 (움직이는 건 카메라뿐)
    # 벽 · . 바닥 · ^ 높은 바닥 (0.8) · / 경사 (0.4) · o 기둥 (시야 막음) · r 바위 (발은 막고 시야는 안 막음)
    f 모닥불 · G 석문 · 그 밖의 글자는 바닥 위의 표시 (P 시작, s 검사, p 창병, d 검방패병, b 곤봉 거한, A 높은 곳 궁수, J 적뢰, x 시체, m 메모, R 레베카, M 모닝스타, N 노먼, D 허수아비) */
 'use strict';
@@ -79,6 +79,8 @@ function layoutWalls(map, yaw){
   map.wallInfo.forEach((w, k) => {
     let low = map.open(map.at(w.x - dx, w.z - dz)) && !map.open(map.at(w.x + dx, w.z + dz));
     // 카메라 구역 (곁방 같은 곳)에 들어가 있으면: 그 구역을 둘러싼 벽 중 카메라 쪽 것은 낮게 (안이 보이게)
+    // 둥근 방 (map.round = 가운데): 가운데보다 카메라 쪽에 있는 벽은 모두 낮게 (대각선 벽이 시야를 막지 않게)
+    if (map.round && ((w.x - map.round.x) * dx + (w.z - map.round.z) * dz) > 0.5) low = true;
     const C = map.cut;
     if (C && !low && w.x >= C.x0 - 1.5 && w.x <= C.x1 + 1.5 && w.z >= C.z0 - 1.5 && w.z <= C.z1 + 1.5){
       const vx = w.x - clamp(w.x, C.x0, C.x1), vz = w.z - clamp(w.z, C.z0, C.z1);

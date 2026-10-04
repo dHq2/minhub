@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D 시제품  version v0.10.1 -->
+<!-- 굴의 프롤로그 3D 시제품  version v0.11 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -108,6 +108,20 @@
   #dream.on{opacity:1;}
   #mid{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:11;pointer-events:none;font-family:"Do Hyeon",sans-serif;font-size:34px;letter-spacing:6px;color:#cfc6b8;opacity:0;transition:opacity .25s;}
   #mid.on{opacity:1;}
+  /* v0.11 오늘의 낙하 결과 (10칸) · 낙하물 종류 태그 */
+  #fallres{position:fixed;left:50%;top:13%;transform:translateX(-50%);z-index:12;pointer-events:none;background:linear-gradient(rgba(14,10,22,.94),rgba(8,6,12,.96));border:1px solid var(--line);border-radius:10px;padding:14px 18px 12px;text-align:center;}
+  #fallres > b{display:block;font-family:"Do Hyeon";font-weight:400;font-size:22px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;}
+  #fallres .slots{display:grid;grid-template-columns:repeat(5,86px);gap:8px;}
+  #fallres .slot{height:104px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:rgba(255,255,255,.03);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;padding:4px 3px 5px;box-sizing:border-box;overflow:hidden;}
+  #fallres .slot.wait{border-style:dashed;border-color:rgba(232,194,122,.35);animation:blink 1s infinite;}
+  #fallres .slot.on{animation:pop .35s ease;} #fallres .slot.equip{border-color:#ffd35a;box-shadow:0 0 10px rgba(255,211,90,.45) inset;}
+  #fallres .slot img{max-width:70px;max-height:48px;object-fit:contain;margin-bottom:auto;margin-top:4px;}
+  #fallres .slot em{font-style:normal;font-size:11px;line-height:1.25;color:var(--ink);max-width:80px;}
+  #fallres .slot .tag{margin:0;font-size:10px;padding:0 5px;}
+  #fallres small{display:block;margin-top:9px;font-size:12px;color:var(--gold);animation:blink 1.2s infinite;}
+  @keyframes pop{0%{transform:scale(1.25);background:rgba(255,240,200,.25);}100%{transform:none;}}
+  .tag.tfurn{color:#fff;background:#7a5634;border-color:#a8805a;} .tag.tfood{color:#06140c;background:#5fd38a;border-color:#9ae8b6;}
+  .tag.tsup{color:#06121a;background:#4ab0ff;border-color:#8fd0ff;} .tag.tequip{color:#1a1206;background:#ffcf4a;border-color:#ffe08a;} .tag.tjunk{color:#ddd;background:#4a4f58;border-color:#6a6f78;}
   [hidden]{display:none !important;}
   body{-webkit-user-select:none;user-select:none;}
   @media (max-width:900px){ #help{max-width:88vw;bottom:auto;top:12px;} }
@@ -129,6 +143,7 @@
 <div id="textbox" hidden></div>
 <div id="load" hidden><div class="lines"></div><div class="go" hidden>▶ 계속 (E · 클릭)</div></div>
 <div id="flash"></div><div id="redflash"></div>
+<div id="fallres" hidden><b>오늘의 낙하</b><div class="slots"></div><small>▶ E · 클릭으로 닫기</small></div>
 <div id="guide"></div><div id="dream"></div><div id="dark"></div><div id="mid"></div>
 <div id="ver"></div>
 <div id="boot">굴로 내려가는 중…</div>
