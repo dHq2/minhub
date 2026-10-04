@@ -1,4 +1,4 @@
-/* prologue.js v0.3 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.4 — 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -405,7 +405,7 @@ async function startCave(cine = false){
   G.inspect.push({ x: 9, z: 2.3, r: 1.5, label: '굴 끝의 석문을 연다 — 아래로 (시제품 1층)', mark: '굴 (석문)', fn: descend });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
   // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
-  pl.lying = true; G.lock = true; letterbox(true); dark(1, 0);
+  pl.lying = true; G.lock = true; letterbox(true); dark(1, 0); PRO.caveIntro = true;
   camSnapTo(K.x, K.z + 2.5); camWide(K.x + 0.6, K.z + 1.2, 5.5, 6.5, 99);
   await wait(0.3); dark(0, 3.4); await wait(3.6);
   await textbox('카리우스', ['.....'], { face: FACE.karius, hold: 1.2 });
@@ -413,13 +413,14 @@ async function startCave(cine = false){
   camWide(Cc.x, Cc.z, 4.6, 6, 99); await wait(1.8);
   await textbox('', ['(청광묵의 왼눈에 흉터가 남아 있다)']);
   await textbox('청광묵', ['대장! 일어났나!'], { face: FACE.cheong, tags: CHEONG_TAGS() });
-  pl.lying = false; CAM.wide = null; letterbox(false); G.lock = false;
+  pl.lying = false; CAM.wide = null; letterbox(false); G.lock = false; PRO.caveIntro = false;
   caption('굴', '떨어진 자들이 사는 곳');
   guide('<em>WASD</em> 움직이기 · <em>E</em> 말 걸기', 5);
 }
 
 /* ---------- 매 프레임 (글상자가 떠 있어도 돎) ---------- */
 function proTick(dt){
+  updateSkip();
   if (!PRO.bills.length && !PRO.bubbles.length && G.mode !== 'prologue' && G.mode !== 'cave') return;
   sizeBills(); updateFallers(); updateBubbles();
   for (const g of PRO.glows) g.pillar.material.opacity = 0.18 + 0.14 * (0.5 + 0.5 * Math.sin(G.t * 4));
@@ -564,3 +565,13 @@ async function todayFall(){
   letterbox(false); G.lock = false;
   guide('떨어진 것은 <em>E</em>로 줍기 · 가구는 그 자리에 남음', 5);
 }
+
+/* ---------- 프롤로그 건너뛰기: 오른쪽 위 버튼 (프롤로그 · 굴 첫 장면 동안). 기다리던 연출 · 글상자를 모두 버리고 바로 굴 (로비)로 ---------- */
+function proSkip(){
+  G.waits = []; G.waitInput = null; G.slow = 1; G.hitstop = 0;
+  $p('textbox').hidden = true; $p('fallres').hidden = true; $p('load').hidden = true;
+  dark(0, 0); mid(''); letterbox(false); PRO.caveIntro = false;
+  startCave(false);
+}
+$p('skipBtn').addEventListener('click', e => { e.stopPropagation(); proSkip(); });
+function updateSkip(){ $p('skipBtn').hidden = !(G.mode === 'prologue' || (G.mode === 'cave' && PRO.caveIntro)); }

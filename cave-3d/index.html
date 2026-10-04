@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D 시제품  version v0.11 -->
+<!-- 굴의 프롤로그 3D 시제품  version v0.11.1 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -122,6 +122,8 @@
   @keyframes pop{0%{transform:scale(1.25);background:rgba(255,240,200,.25);}100%{transform:none;}}
   .tag.tfurn{color:#fff;background:#7a5634;border-color:#a8805a;} .tag.tfood{color:#06140c;background:#5fd38a;border-color:#9ae8b6;}
   .tag.tsup{color:#06121a;background:#4ab0ff;border-color:#8fd0ff;} .tag.tequip{color:#1a1206;background:#ffcf4a;border-color:#ffe08a;} .tag.tjunk{color:#ddd;background:#4a4f58;border-color:#6a6f78;}
+  #skipBtn{position:fixed;right:16px;top:16px;z-index:13;font-family:"Do Hyeon",sans-serif;font-size:15px;color:var(--ink);background:rgba(8,6,10,.78);border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer;pointer-events:auto;}
+  #skipBtn:hover{color:var(--gold);border-color:var(--gold);}
   [hidden]{display:none !important;}
   body{-webkit-user-select:none;user-select:none;}
   @media (max-width:900px){ #help{max-width:88vw;bottom:auto;top:12px;} }
@@ -144,6 +146,7 @@
 <div id="load" hidden><div class="lines"></div><div class="go" hidden>▶ 계속 (E · 클릭)</div></div>
 <div id="flash"></div><div id="redflash"></div>
 <div id="fallres" hidden><b>오늘의 낙하</b><div class="slots"></div><small>▶ E · 클릭으로 닫기</small></div>
+<button id="skipBtn" type="button" hidden>프롤로그 건너뛰기 ▶▶</button>
 <div id="guide"></div><div id="dream"></div><div id="dark"></div><div id="mid"></div>
 <div id="ver"></div>
 <div id="boot">굴로 내려가는 중…</div>
