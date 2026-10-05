@@ -1,4 +1,4 @@
-/* tackle.js v1.1 — (v1.1: 다리후리기 · 슬라이딩 · 넘어뜨리기) (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
+/* tackle.js v1.11 — (v1.11: 대련 더미에도 걸림) (v1.1: 다리후리기 · 슬라이딩 · 넘어뜨리기) (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
    · T: 바라보는 쪽으로 직선 예고 (0.3초) → 돌진. Shift를 누르고 있으면 더 멀리 · 더 세게 (피해 ×1.5, 기절 80%)
    · 부딪힌 적은 앞에 겹쳐 붙어 같이 감 (부딪힐 때 공격의 50% · 40%로 기절)
    · 같이 벽 (바위 · 기둥 포함)에 박으면: 30 + 공격의 절반, 기절 1.2초. 여럿이면 맨 앞놈이 머릿수만큼 더 (한 명당 +20%), 나머지는 옆으로 흩어짐. 인주는 한 칸 튕겨 나옴
@@ -40,8 +40,8 @@ function tackleInput(u, dt){
   S.carry = S.carry.filter(e => !e.dead);
   // 새로 부딪힘
   const lead = S.carry.length ? S.carry[S.carry.length - 1] : u;
-  for (const e of foes()){
-    if (S.hit.has(e) || e.dead || e.airborne || e.D.dummy) continue;
+  for (const e of fightTargets()){
+    if (S.hit.has(e) || e.dead || e.airborne || (e.D.dummy && !e.D.spar)) continue;
     if (Math.hypot(e.x - lead.x, e.z - lead.z) > lead.r + e.r + 0.15) continue;
     S.hit.add(e);
     const myW = (u.D.weight || 55) + ((u.rpg && u.rpg.A.str) || 5) * 3, theirW = e.D.weight || 60;
@@ -126,7 +126,7 @@ function trip(u, e, how){
 function legSweep(u){
   P.sweepCd = LEG.sweepCd; P.atkBuf = 0; u.st = 'strike'; u.stT = 0.45; setPose(u, 'sweep'); u.guard = false;
   ring(u.x, u.z, 0xffcf80, LEG.sweepR, 0.3); dust(u.x, u.z, 12); SFX.whoosh && SFX.whoosh();
-  for (const e of foes()) if (!e.dead && dist(e, u) < LEG.sweepR + e.r) trip(u, e, 'sweep');
+  for (const e of fightTargets()) if (!e.dead && dist(e, u) < LEG.sweepR + e.r) trip(u, e, 'sweep');
 }
 function slideStart(u, mv){
   P.slideCd = LEG.slideCd; P.atkBuf = 0; u.st = 'slide'; u.stT = LEG.slideT; u.dvx = mv.x * LEG.slideV; u.dvz = mv.z * LEG.slideV; u.slideHit = new Set();
@@ -136,9 +136,26 @@ function slideTick(u, dt){
   u.stT -= dt; const k = Math.max(0, u.stT / LEG.slideT), sp = 0.3 + 0.7 * k;
   moveBy(u, u.dvx * sp * dt, u.dvz * sp * dt); u.posture = 'crouch'; setPose(u, 'slide');
   if (Math.random() < 0.5) dust(u.x, u.z, 1);
-  for (const e of foes()) if (!e.dead && !u.slideHit.has(e) && dist(e, u) < u.r + e.r + 0.35){
+  for (const e of fightTargets()) if (!e.dead && !u.slideHit.has(e) && dist(e, u) < u.r + e.r + 0.35){
     u.slideHit.add(e);
     if (!trip(u, e, 'slide') && tooBig(u, e)){ u.stT = Math.min(u.stT, 0.08); const n = norm(u.x - e.x, u.z - e.z); u.kx += n.x * 4; u.kz += n.z * 4; }   // 큰 놈에 막힘
   }
   if (u.stT <= 0){ u.st = 'idle'; u.posture = 'stand'; }
+}
+
+/* ---------- v1.11 대련 더미 (굴): 맞으면 숫자만 뜨고 안 죽음. 넘어지고 · 잡히고 · 밀리고, 가만 두면 제자리로 걸어 돌아옴 ---------- */
+DEFS.spar = { spr: 'dummy', name: '대련 더미', hp: 99999, atk: 0, spd: 1.6, r: 0.35, weight: 60, dummy: true, spar: true };
+function sparSpawn(){
+  const cand = [[6, 8], [5, 8], [7, 8.5], [5.5, 7], [8, 7.5], [6, 6]];
+  const ok = ([x, z]) => !solidAt(G.map, x, z) && !G.inspect.some(it => it.x != null && Math.hypot(it.x - x, it.z - z) < 1.6) && !G.units.some(o => Math.hypot(o.x - x, o.z - z) < 1.2);
+  const [x, z] = cand.find(ok) || cand[0];
+  const u = spawn('spar', x, z, 'neutral'); u.home = { x, z }; u.alert = true; u.face = 1;
+  return u;
+}
+function sparThink(u, dt){
+  if (u.lock) return;
+  if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; return; }
+  if (u.lying) return;
+  const d = Math.hypot(u.home.x - u.x, u.home.z - u.z);
+  if (d > 0.3){ const n = norm(u.home.x - u.x, u.home.z - u.z); moveBy(u, n.x * u.spd * dt, n.z * u.spd * dt); }
 }

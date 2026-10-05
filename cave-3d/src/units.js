@@ -1,4 +1,4 @@
-/* units.js v0.23 — (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.24 — (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -163,8 +163,8 @@ function separate(dt){
     const a = us[i], b = us[j], dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz), m = (a.r + b.r) * 0.85;
     if (d >= m || d < 1e-4) continue;
     const push = (m - d) * Math.min(1, dt * 8), wa = b.D.weight / (a.D.weight + b.D.weight), nx = dx / d, nz = dz / d;
-    if (!a.D.dummy) moveBy(a, -nx * push * wa, -nz * push * wa);
-    if (!b.D.dummy) moveBy(b, nx * push * (1 - wa), nz * push * (1 - wa));
+    if (!a.D.dummy || a.D.spar) moveBy(a, -nx * push * wa, -nz * push * wa);
+    if (!b.D.dummy || b.D.spar) moveBy(b, nx * push * (1 - wa), nz * push * (1 - wa));
   }
 }
 
@@ -342,7 +342,7 @@ function hurt(att, tgt, base, o = {}){
   G.hitstop = Math.max(G.hitstop, o.crit ? 0.09 : big ? 0.06 : 0.035);
   if (o.crit && !o.noCam) camShake(0.28, 0.2);   // 치명타: 확대 · 앵글 없이 진동만
   // 밀려남 (무게에 따라)
-  if (o.kb && !tgt.D.heavy && !tgt.D.dummy){
+  if (o.kb && !tgt.D.heavy && (!tgt.D.dummy || tgt.D.spar)){
     const s = src || att, n = s ? norm(tgt.x - s.x, tgt.z - s.z) : { x: 0, z: 0 }, k = o.kb * 60 / Math.max(40, tgt.D.weight);
     tgt.kx += n.x * k * 8; tgt.kz += n.z * k * 8;
   }

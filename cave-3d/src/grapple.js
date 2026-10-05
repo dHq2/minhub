@@ -1,4 +1,4 @@
-/* grapple.js v1.7 — (v1.7: 여섯째 묶음 그림 · 굴 (로비)에서도 잡기) (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.8 — (v1.8: 일곱째 묶음 그림 · 대련 더미도 잡힘 · fightTargets) (v1.7: 여섯째 묶음 그림 · 굴 (로비)에서도 잡기) (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -28,7 +28,14 @@ Object.assign(SPR.player.poses, {
 Object.assign(SPR.player.poses, {
   hop: { src: 'art/inju/hop.webp', w: 302, h: 586, ax: 151, ay: 583, f: 1, scale: 0.494 }, flyKnee: { src: 'art/inju/flyKnee.webp', w: 484, h: 688, ax: 242, ay: 685, f: 1, scale: 0.495 },
   stomp: { src: 'art/inju/stomp.webp', w: 694, h: 698, ax: 347, ay: 695, f: 1, scale: 0.49 }, rollUp: { src: 'art/inju/rollUp.webp', w: 556, h: 336, ax: 278, ay: 333, f: 1, scale: 0.497 },
-  carry: { src: 'art/inju/carry.webp', w: 204, h: 650, ax: 102, ay: 647, f: 1, scale: 0.53 }, raise: { src: 'art/inju/raise.webp', w: 254, h: 756, ax: 127, ay: 753, f: 1, scale: 0.53 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
+  carry: { src: 'art/inju/carry.webp', w: 204, h: 650, ax: 102, ay: 647, f: 1, scale: 0.53 }, raise: { src: 'art/inju/raise.webp', w: 254, h: 756, ax: 127, ay: 753, f: 1, scale: 0.53 } });
+// 일곱째 묶음 (v1.8): 어퍼컷 · 드롭킥 1 (뛰어오름) · 2 (중간) · 3 (마지막, 몸이 눕듯 뻗음) · 붕권 (나중에 스킬로)
+Object.assign(SPR.player.poses, {
+  uppercut: { src: 'art/inju/uppercut.webp', w: 446, h: 730, ax: 223, ay: 727, f: 1, scale: 0.5 }, bungkwon: { src: 'art/inju/bungkwon.webp', w: 588, h: 618, ax: 294, ay: 615, f: -1, scale: 0.5 },
+  dk1: { src: 'art/inju/dk1.webp', w: 422, h: 680, ax: 211, ay: 677, f: -1, scale: 0.5 }, dk2: { src: 'art/inju/dk2.webp', w: 598, h: 496, ax: 299, ay: 493, f: -1, scale: 0.486 },
+  dk3: { src: 'art/inju/dk3.webp', w: 602, h: 292, ax: 301, ay: 289, f: -1, scale: 0.5 } });
+// 격투 기술이 닿는 대상: 적 + 굴의 대련 더미 (중립이라 굴 싸움 판정 · 동료 AI에는 안 걸림)
+const fightTargets = () => G.units.filter(u => !u.dead && (u.side === 'enemy' || (u.D.spar && !u.downed)));   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
 Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });
 // 인주에게 있는 자세면 그걸로, 없으면 대신할 자세로
 const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
@@ -36,7 +43,7 @@ const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
 G.locks = [];
 const grStr = u => (u.rpg ? u.rpg.A.str : 5 + (u.D.weight || 60) / 40) + (u.D.weight || 60) / 60;
 function canGrab(a, d){
-  return d && a && !d.dead && !d.downed && !d.lock && !a.lock && d.side !== a.side && d.side !== 'neutral' && !d.D.boss && !d.airborne && !d.D.dummy && (d.D.weight || 60) < 800 && (d.lift || 0) < 0.4;
+  return d && a && !d.dead && !d.downed && !d.lock && !a.lock && d.side !== a.side && (d.side !== 'neutral' || d.D.spar) && !d.D.boss && !d.airborne && (!d.D.dummy || d.D.spar) && (d.D.weight || 60) < 800 && (d.lift || 0) < 0.4;
 }
 function grab(a, d, o = {}){
   if (!canGrab(a, d)) return null;
@@ -187,7 +194,7 @@ function grBusy(u){ return !!u.lock; }
 // 인주: V 잡기
 function playerGrabInput(u){
   if (!hit('KeyV') || u.lock || u.st === 'windup' || G.lock) return false;
-  const t = mouse.over && dist(mouse.over, u) < GR.range + 0.6 ? mouse.over : nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.3), GR.range + 0.3);
+  const t = mouse.over && dist(mouse.over, u) < GR.range + 0.6 ? mouse.over : nearest(u, fightTargets().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.3), GR.range + 0.3);
   if (!t){ popText(u.x, u.y + 2.2, u.z, '잡을 게 없다', 'miss', 0.6); return true; }
   if (!canGrab(u, t)){ popText(u.x, u.y + 2.2, u.z, t.D.boss ? '잡을 수 없다' : '너무 크다', 'miss', 0.7); return true; }
   setPose(u, grPose(u, 'grabReady', 'windup')); grab(u, t); pressed.delete('KeyV'); return true;   // 잡은 그 프레임에 V가 밀쳐내기로 또 읽히지 않게

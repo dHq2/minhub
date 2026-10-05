@@ -1,4 +1,4 @@
-/* game.js v0.83 — (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.84 — (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -404,6 +404,7 @@ function loop(now){
       else if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
       else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock){ if (!(typeof heroCombat === 'function' && heroCombat(u, dt))) (u.D.think || allyThink)(u, dt); }   // v0.33: 활 · 총 든 동료는 쏨
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
+      else if (u.D.spar && !G.lock && typeof sparThink === 'function') sparThink(u, dt);
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
       u.y += (heightAt(G.map, u.x, u.z) - u.y) * Math.min(1, dt * 12);

@@ -1,4 +1,4 @@
-/* player.js v0.85 — (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
+/* player.js v0.86 — (v0.86: 드롭킥 세 프레임 (뛰어오름 → 중간 → 마지막) · 치명이면 화면 · 기기 진동, 숙여 피한 뒤 J는 어퍼컷 (숙인 채라도), 격투 기술이 대련 더미에도) (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -46,22 +46,28 @@ function inputDir(){
   return norm(rx * ix + fx * iy, rz * ix + fz * iy);
 }
 // v0.83 공중: 점프 그림 · 맨손으로 싸울 때 (원정 · 경계한 적이 9칸 안): 복싱 스텝 (통통 뜀은 units.js)
-const airPose = u => G.t < (u.dropT || 0) && u.S.poses.slide ? 'slide' : G.t < (u.kneeT || 0) && u.S.poses.knee ? (u.S.poses.flyKnee && G.t > u.kneeT - 0.3 ? 'flyKnee' : 'knee') : u.S.poses.hop && u.jv > 2.6 ? 'hop' : u.S.poses.jump && u.jy > 0.08 ? 'jump' : 'run';
+const airPose = u => u.dropLand && u.S.poses.dk1 ? (G.t - u.dropAt < 0.1 ? 'dk1' : G.t - u.dropAt < 0.25 ? 'dk2' : 'dk3') : G.t < (u.dropT || 0) && u.S.poses.slide ? 'slide' : G.t < (u.kneeT || 0) && u.S.poses.knee ? (u.S.poses.flyKnee && G.t > u.kneeT - 0.3 ? 'flyKnee' : 'knee') : u.S.poses.hop && u.jv > 2.6 ? 'hop' : u.S.poses.jump && u.jy > 0.08 ? 'jump' : 'run';
 // 맨손: 맨손이거나, 창을 던져 손이 비었을 때
 const fistNow = () => typeof W !== 'undefined' && W.def && (W.def.kind === 'fist' || (!P.spear && W.def.skill === 'throw'));
 // v0.85 격투가 되는 곳: 원정 · 굴 (로비) · 옛 층. 굴에서 짐을 들고 있으면 G는 내려놓기라 막음
 const fightMode = () => PLAY_MODES.has(G.mode) && !(typeof PRO !== 'undefined' && PRO.carry && G.mode !== 'exp');
 // v0.85 드롭킥: 달리면서 점프한 채 J → 두 발로 날아 차 크게 날림 (×1.6 · 기절 0.9초). 착지하면 등으로 뒹굴어 0.6초 못 움직임
 function dropKick(u){
-  u.airAtk = true; u.dropT = G.t + 0.45; u.dropLand = true; P.atkBuf = 0; P.atkCd = 0.5; setPose(u, 'slide');
+  u.airAtk = true; u.dropT = G.t + 0.45; u.dropAt = G.t; u.dropLand = true; P.atkBuf = 0; P.atkCd = 0.5; setPose(u, u.S.poses.dk1 ? 'dk1' : 'slide');
   u.kx += Math.cos(u.aim) * 9; u.kz += Math.sin(u.aim) * 9; u.jv = Math.max(u.jv || 0, 1.2);
   let n = 0;
-  for (const e of foes()) if (!e.dead && dist(e, u) < 2.2 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.7){
-    const big = typeof tooBig === 'function' && tooBig(u, e);
-    hurt(u, e, u.atk * 1.6, { from: u, kb: big ? 0.5 : 5, stun: big ? 0 : 0.9, hitsAir: true }); n++;
+  let crit = false;
+  for (const e of fightTargets()) if (!e.dead && dist(e, u) < 2.2 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.7){
+    const big = typeof tooBig === 'function' && tooBig(u, e), had = !!u.critNext || !!P.critNext;
+    const o = { from: u, kb: big ? 0.5 : 5, stun: big ? 0 : 0.9, hitsAir: true, crit: P.critNext ? true : undefined };
+    hurt(u, e, u.atk * 1.6, o); n++; if (o.crit || had) crit = true;
   }
-  SFX.whoosh && SFX.whoosh(); if (n){ camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); if (typeof clashLog === 'function') clashLog('달려와 두 발로 날아 찼다.'); }
+  P.critNext = false;
+  SFX.whoosh && SFX.whoosh(); if (n){ camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); if (typeof clashLog === 'function') clashLog(crit ? '달려와 두 발로 날아 찼다 — 정통으로 꽂혔다!' : '달려와 두 발로 날아 찼다.'); }
+  if (crit){ camShake(0.75, 0.42); G.hitstop = Math.max(G.hitstop, 0.16); buzz([70, 40, 120]); }   // v0.86 치명 드롭킥: 크게 흔들림 + 기기 진동
 }
+// 기기 진동 (휴대폰 · 되는 기기만)
+function buzz(p){ try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
 // v0.85 발목 부수기: 넘어진 놈 (다리후리기 · 슬라이딩)이 앞에 있으면 J가 짓밟기로 (×1.6 · 5초 느려짐)
 function stompAnkle(u, e){
   P.atkBuf = 0; P.atkCd = 0.45; u.st = 'strike'; u.stT = 0.4; setAim(u, e.x, e.z); setPose(u, 'stomp');
@@ -74,10 +80,10 @@ function flyingKnee(u){
   u.airAtk = true; u.kneeT = G.t + 0.4; P.atkBuf = 0; P.atkCd = 0.35; setPose(u, 'knee');
   u.kx += Math.cos(u.aim) * 4; u.kz += Math.sin(u.aim) * 4; u.jv = Math.max(u.jv || 0, 1.5);
   let n = 0;
-  for (const e of foes()) if (!e.dead && dist(e, u) < 1.6 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.9){ hurt(u, e, u.atk * 1.3, { from: u, kb: 2, stun: e.D.heavy ? 0 : 0.5, hitsAir: true }); n++; }
+  for (const e of fightTargets()) if (!e.dead && dist(e, u) < 1.6 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.9){ hurt(u, e, u.atk * 1.3, { from: u, kb: 2, stun: e.D.heavy ? 0 : 0.5, hitsAir: true }); n++; }
   SFX.whoosh && SFX.whoosh(); if (n){ camShake(0.15, 0.12); if (typeof clashLog === 'function') clashLog('뛰어올라 무릎을 꽂았다.'); }
 }
-function boxing(u){ return fightMode() && u.S.poses.box && fistNow() && foes().some(e => e.alert && !e.dead && dist(e, u) < 9); }
+function boxing(u){ return fightMode() && u.S.poses.box && fistNow() && fightTargets().some(e => e.alert && !e.dead && dist(e, u) < 9); }
 // v0.85 굴에서 짐 (가구 · 낙하물 · 돼지)을 들고 있으면 두 손으로 받쳐 듦
 const carrying = u => u.S.poses.carry && typeof PRO !== 'undefined' && !!PRO.carry && G.mode !== 'exp';
 // v0.83 E로 줍기 · 뒤지기 · 파기는 잠깐 쪼그려 앉음, 쉬기는 앉음
@@ -140,6 +146,7 @@ function playerUpdate(u, dt){
   if (fightMode() && !G.lock && hit('KeyG') && mv && (down('ShiftLeft') || down('ShiftRight')) && (P.slideCd || 0) <= 0 && u.S.poses.slide && u.st !== 'windup' && u.st !== 'strike'){ slideStart(u, mv); return; }
   const ducking = fightMode() && !G.lock && down('KeyG') && u.st !== 'windup' && u.st !== 'strike' && u.S.poses.duck;
   u.posture = ducking ? 'crouch' : 'stand';
+  if (ducking && G.t < (u.upT || 0) && fistNow() && (hit('Mouse0') || hit('KeyJ'))){ u.posture = 'stand'; P.atkBuf = G.t + 0.28; weaponInput(u, dt, mv); return; }   // v0.86 숙여 피한 직후: 일어나며 어퍼컷
   if (ducking && (hit('Mouse0') || hit('KeyJ')) && (P.sweepCd || 0) <= 0 && u.S.poses.sweep){ legSweep(u); return; }   // v0.83 숙인 채 공격: 다리후리기
   if (ducking){ u.guard = false; if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt); setPose(u, 'duck'); return; }
   if (!G.lock && typeof gearSwapInput === 'function' && gearSwapInput(u)) return;   // v0.33 X: 무기 ↔ 보조 무기
@@ -149,7 +156,7 @@ function playerUpdate(u, dt){
     if ((down('ShiftLeft') || down('ShiftRight')) && u.S.poses.slide && u.S.poses.rollUp){ dropKick(u); return; }
     if (u.S.poses.knee){ flyingKnee(u); return; }
   }
-  if (atkHit && !u.jy && u.S.poses.stomp && fightMode()){ const e = foes().find(f => f.lying && !f.dead && !f.downed && dist(f, u) < 1.7 + f.r); if (e){ stompAnkle(u, e); return; } }   // v0.85 발목 부수기
+  if (atkHit && !u.jy && u.S.poses.stomp && fightMode()){ const e = fightTargets().find(f => f.lying && !f.dead && !f.downed && dist(f, u) < 1.7 + f.r); if (e){ stompAnkle(u, e); return; } }   // v0.85 발목 부수기
   if (weaponInput(u, dt, mv)) return;
   // 걷기 · 달리기 (벽에 막혀도 미끄러지며 계속 감)
   if (mv){

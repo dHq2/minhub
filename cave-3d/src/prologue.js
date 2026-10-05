@@ -1,4 +1,4 @@
-/* prologue.js v0.111 — (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.112 — (v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -398,6 +398,7 @@ async function startCave(cine = false){
   const ch = spawn('cheongNpc', Cc.x, Cc.z, 'neutral'); ch.face = 1;
   const snails = sp('S').map(s => { const n = spawn('snail', s.x, s.z, 'neutral'); if (n.tag){ n.tag.remove(); n.tag = null; } n.face = Math.random() < 0.5 ? 1 : -1; return n; });
   snails.splice(0, Math.min(PRO.snailLost, snails.length)).forEach(removeUnit);
+  if (typeof sparSpawn === 'function') sparSpawn();   // v0.40 대련 더미 (격투 연습)
   PRO.cave = { ka, ch, snails, B, K, digT: 1, cuteT: 4, zzzT: 1.5, dropT: 30, dropped: PRO.dropDay === PRO.day };   // v0.30: 원정에서 돌아와도 오늘의 낙하는 한 번
   if (!PRO.weather) PRO.weather = rollWeather();
   PRO.pigs = [];

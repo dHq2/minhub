@@ -66,7 +66,7 @@ const _hurtW = hurt;
 hurt = function(att, tgt, base, o = {}){
   // v0.35 숙이기: 높은 공격은 머리 위로 지나감 → 빈틈의 대가 (다음 공격 확정 치명)
   if (o.high && tgt && tgt.posture === 'crouch' && !tgt.dead && !tgt.downed){
-    popText(tgt.x, tgt.y + 1.2, tgt.z, '숙여 피함!', 'aim', 1); tgt.critNext = true; G.hitstop = Math.max(G.hitstop, 0.06);
+    popText(tgt.x, tgt.y + 1.2, tgt.z, '숙여 피함!', 'aim', 1); tgt.critNext = true; tgt.upT = G.t + 1.2;   /* v0.40: 1.2초 안에 맨손 J = 어퍼컷 */ G.hitstop = Math.max(G.hitstop, 0.06);
     if (att && typeof clashLog === 'function') clashLog(`${att.D.name}의 일격이 숙인 머리 위로 빗나갔다. 빈틈의 대가는 크다 —`);
     return 0;
   }
