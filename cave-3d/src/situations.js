@@ -78,7 +78,7 @@ async function rescueDone(u){
   else if (c.give === 'food'){ for (let i = 0; i < 3; i++) dropLootAt(u.x, u.z, R2(['I-050', 'I-043', 'I-053'])); }
   else dropLootAt(u.x, u.z, { gold: Math.round((30 + Math.random() * 20) * F) });
   for (const a of allies()) if (a.hero) a.hero.san = Math.min(derive(a.hero).maxSan, (a.hero.san ?? 50) + c.san);
-  gainXp(25 * F, 'rescue'); RPG.meta.rescued = (RPG.meta.rescued || 0) + 1;
+  gainXp(25 * F, 'rescue'); typeof heroCount === 'function' && heroCount(hero('inju'), 'rescue'); RPG.meta.rescued = (RPG.meta.rescued || 0) + 1;
   caption('구출작전 성공', `${c.name} — 줄을 타고 올라갔다 · 정신도 +${c.san}`);
   // 줄을 타고 올라감
   const y0 = u.y; u.side = 'neutral'; u.bar && u.bar.remove(); u.bar = null;
@@ -169,7 +169,7 @@ function fortFill(r, gen, tiles, band, lights, deco){
 function fortRout(band, r){
   caption('깃발을 뽑았다', '사기 붕괴 — 적이 흔들린다 (공격 · 속도 ↓, 몇은 달아남)');
   camShake(0.25, 0.3); SFX.thump(90, 0.6, 0.3);
-  gainXp(15 * EXP.F, 'flag');
+  gainXp(15 * EXP.F, 'flag'); typeof heroCount === 'function' && heroCount(hero('inju'), 'flag');
   for (const e of foes().filter(e => e.band === band)){
     e.atk = Math.round(e.atk * 0.7); e.spd *= 0.85; e.baseSpd = e.spd; e.wall = false; e.routed = true; e.alert = true;
     popText(e.x, e.y + bodyH(e) + 0.3, e.z, Math.random() < 0.5 ? '깃발이…!' : '물러서!', 'miss', 1);

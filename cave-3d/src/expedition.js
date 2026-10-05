@@ -112,7 +112,7 @@ function expStart(o = {}){
   lootPools();
   const party = o.party || ['inju', 'cheong', 'karius'];
   RPG.party = party.slice();
-  for (const k of party){ const h = hero(k); if (h.hp == null || h.hp <= 0) h.hp = null; if (h.san == null) h.san = derive(h).maxSan; }
+  for (const k of party){ const h = hero(k); if (h.hp == null || h.hp <= 0) h.hp = null; if (h.san == null) h.san = derive(h).maxSan; h.tripDay = PRO.day; }
   EXP = { F: o.F || 1, startF: o.F || 1, seed: (Math.random() * 0xffffffff) >>> 0, torches: o.torches ?? 3, torchT: EXP_TORCH, food: o.food ?? party.length, hungry: (o.food ?? party.length) < party.length,
     kills: 0, gold0: RPG.gold, xp0: party.map(k => hero(k).lv * 1000 + hero(k).xp), got: [], test: !!o.test, deepest: o.F || 1, t0: G.t, day: PRO.day };
   if (o.test && !RPG.meta.testKit){ RPG.meta.testKit = 1; RPG.ammo.arrow += 20; RPG.ammo.bullet += 30; RPG.ammo.shell += 8; ['I-037', 'I-037', 'I-061', 'I-061', 'I-104'].forEach(id => addItem(id)); RPG.quick = ['I-037', 'I-061', null, null]; }
@@ -147,6 +147,7 @@ async function expLoadFloor(F, how){
   G.cmd = 'free';
   camSnapTo(px, pz); CAM.yaw = CAM.yawT = 0;
   caption(`${F}층 · ${D.name}`, D.sub);
+  if (F >= 5 && typeof heroCount === 'function') for (const k of RPG.party) heroCount(hero(k), 'deep');
   if (how === 'start' && !RPG.meta.expHelp){ RPG.meta.expHelp = 1; setTimeout(() => guide('어둡다. <em>횃불</em>이 다 타기 전에 · <em>계단</em>은 가장 먼 방 · <em>귀환 줄</em>로 굴로 · <em>I</em> 가방 · <em>M</em> 지도', 9), 1500); }
   uiExpHud(true);
 }

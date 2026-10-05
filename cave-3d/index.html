@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D  version v0.32 -->
+<!-- 굴의 프롤로그 3D  version v0.33 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -203,7 +203,7 @@
   .rw-mid{display:flex;flex-direction:column;gap:10px;align-items:center;} .rw-mid.wide{grid-column:2 / 4;align-items:stretch;}
   .rw-doll{position:relative;width:320px;height:300px;} .rw-fig{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:150px;} .rw-fig img{width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:50% 15%;border:2px solid var(--line);box-shadow:0 0 30px rgba(232,194,122,.15);} .rw-fig b{display:block;font-family:"Do Hyeon";font-weight:normal;font-size:20px;color:var(--gold);} .rw-fig small{font-size:11px;color:var(--dim);}
   .rw-slot{position:absolute;width:60px;height:60px;border:1px dashed rgba(232,194,122,.35);border-radius:8px;display:grid;place-items:center;cursor:pointer;background:rgba(0,0,0,.25);} .rw-slot span{font-size:11px;color:var(--dim);font-family:"Do Hyeon";text-align:center;} .rw-slot.sel{outline:2px solid #fff;} .rw-slot.lock{opacity:.5;cursor:default;}
-  .s-head{left:130px;top:0;} .s-body{left:20px;top:80px;} .s-legs{left:20px;top:170px;} .s-weapon{right:20px;top:80px;} .s-acc1{right:20px;top:170px;} .s-acc2{left:130px;top:236px;}
+  .s-head{left:130px;top:0;} .s-body{left:20px;top:80px;} .s-legs{left:20px;top:170px;} .s-weapon{right:20px;top:20px;} .s-off{right:20px;top:100px;} .s-acc1{right:20px;top:180px;} .s-acc2{left:130px;top:236px;} .rw-slot.innate span{color:#e8c27a;font-size:10px;line-height:1.25;padding:2px;}
   .rw-core{display:grid;grid-template-columns:1fr 1fr;gap:3px 16px;width:320px;font-size:13px;} .rw-core div{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);} .rw-core span{color:var(--dim);} .rw-core b{font-weight:normal;} .rw-core small{color:var(--dim);}
   .rw-bag{display:flex;flex-direction:column;gap:6px;} .rw-sub{font-family:"Do Hyeon";font-size:15px;color:var(--gold);} .rw-sub small{color:var(--dim);}
   .rw-grid{display:grid;grid-template-columns:repeat(6,54px);gap:5px;} .rw-grid.st{max-height:180px;overflow:auto;} .rw-cell{width:54px;height:54px;border-radius:7px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;} .rw-cell.sel{outline:2px solid #fff;} .rw-none{grid-column:1/-1;color:var(--dim);}
@@ -241,6 +241,9 @@
   .hc-b{display:grid;grid-template-columns:1fr 30px;gap:6px;align-items:center;} .hc-b small{font-size:11px;color:#cbbfa9;text-align:right;} .hc .bar{position:relative;height:9px;} .hc .bar.san{height:5px;}
   .hc .bar.hp s{background:linear-gradient(90deg,#3f9a4f,#8fe08a);} .hc.low .bar.hp s{background:linear-gradient(90deg,#a0281e,#ff6a4a);} .hc .bar u{position:absolute;left:0;top:0;height:100%;background:rgba(143,216,255,.55);}
   .hc-st{display:flex;flex-wrap:wrap;gap:3px;} .hc-st em{font-style:normal;font-size:10.5px;padding:0 5px;border-radius:3px;color:#120c10;background:var(--c,#aaa);} .hc-sk{display:flex;gap:3px;} .hc-sk em{background:rgba(255,255,255,.1);color:#7a8a9a;} .hc-sk em.on{background:#9fe0ff;color:#0a1420;}
+  .hc-st em.wd{background:#5a0a14;color:#ffb0a8;border:1px solid #a0202c;} .hc-st.wds{justify-content:center;margin-top:3px;}
+  .rw-tt{margin-top:10px;display:flex;flex-direction:column;gap:4px;} .tt-row{display:grid;grid-template-columns:40px 120px 1fr;gap:8px;align-items:center;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:5px;font-size:13px;} .tt-row b{font-family:"Do Hyeon";font-weight:normal;font-size:15px;} .tt-row small{color:var(--dim);} .tt-row.got{border-left:2px solid #ffd35a;} .tt-row.got b{color:#ffd35a;} .tt-row.off{opacity:.5;}
+  .tt-k{font-size:11px;text-align:center;border-radius:3px;padding:1px 0;background:#3a3446;color:#cbbfa9;} .tt-k.b{background:#5a2a1a;color:#ffb08a;} .tt-k.s{background:#2a3a5a;color:#a8c8ff;} .tt-k.t{background:#5a4a1a;color:#ffd35a;}
   .hc.cap{grid-template-columns:1fr;border-left-color:#bfd8ff;padding:4px 9px;} .hc.cap .bar{height:5px;}
   #grap{position:fixed;left:0;top:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:"Do Hyeon";}
   #grap b{font-weight:normal;font-size:15px;color:#ffcf80;text-shadow:0 1px 3px #000;letter-spacing:1px;} #grap.held b{color:#ff9ad8;}
@@ -265,7 +268,7 @@
 <div id="focusnote" hidden>화면을 클릭하면 조작할 수 있어요</div>
 <div id="bossbar" hidden><div id="bossname"></div><div id="bosstrack"><div id="bossfill"></div></div><div id="bossphase"></div></div>
 <div id="caption"></div>
-<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 도움말</div>
+<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>X</b> 무기 ↔ 보조 무기 · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>T</b> 바디 태클 (Shift와 함께면 더 세게 · 벽에 같이 박으면 큰 피해) · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 도움말</div>
 <div id="textbox" hidden></div>
 <div id="load" hidden><div class="lines"></div><div class="go" hidden>▶ 계속 (E · 클릭)</div></div>
 <div id="flash"></div><div id="redflash"></div>
@@ -303,6 +306,10 @@
 <script src="src/heroes.js"></script>
 <script src="src/foes.js"></script>
 <script src="src/situations.js"></script>
+<script src="src/wounds.js"></script>
+<script src="src/tackle.js"></script>
+<script src="src/gear.js"></script>
+<script src="src/titles.js"></script>
 <script src="src/ui_rpg.js"></script>
 <script src="src/save.js"></script>
 <script src="src/game.js"></script>

@@ -86,7 +86,7 @@ function sigAcid(u, tgt){
 function sigCurse(u, tgt){
   const d = dist(u, tgt); if (d > 6) return false;
   const a = Math.atan2(tgt.z - u.z, tgt.x - u.x); setAim(u, tgt.x, tgt.z); sigSay(u, '…저주를');
-  windup(u, 'line', { x: u.x, z: u.z, len: 6.5, w: 0.7, a, windup: 0.8 }, t => { hurt(u, t, u.atk * 0.6, { from: u, ranged: true }); addStatus(t, 'slow', { k: 0.4, t: 2.5 }); if (t.hero){ t.hero.san = Math.max(0, (t.hero.san ?? 50) - 7); popText(t.x, t.y + 2, t.z, '정신도 -7', 'san', 0.9); } }, 0xb06aff);
+  windup(u, 'line', { x: u.x, z: u.z, len: 6.5, w: 0.7, a, windup: 0.8 }, t => { hurt(u, t, u.atk * 0.6, { from: u, ranged: true }); addStatus(t, 'slow', { k: 0.4, t: 2.5 }); addStatus(t, 'confuse', { t: 2.5 }); if (t.hero){ t.hero.san = Math.max(0, (t.hero.san ?? 50) - 7); popText(t.x, t.y + 2, t.z, '정신도 -7', 'san', 0.9); } }, 0xb06aff);
   return true;
 }
 // 죽을 때: 젤리 분열 · 광신도 광분 · 꼬마악마가 훔친 금화

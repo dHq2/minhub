@@ -1,4 +1,4 @@
-/* rpg.js v1.0 — RPG 핵심
+/* rpg.js v1.1 — RPG 핵심. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
    영웅 기록 (레벨 · 경험 · 속성 다섯 · 장비 여섯 칸 · 체력 · 정신도) · 아이템 (등급 · 품질 · 덧붙은 효과) · 공용 가방 · 굴 보관함
    파생 수치 (스탯이 실제로 먹힘) · 피해 공식 (방어 · 회피 · 치명 · 흡혈 · 가시 · 상태 이상) · 경험 · 레벨업 · 저장 (localStorage)
    ITEMS (data_items.js)를 씀. 피해는 units.js의 hurt를 한 겹 감쌈 */
@@ -8,8 +8,10 @@ const RAR = [
   { n: '영웅', c: '#b673ff' }, { n: '전설', c: '#ffc23a' }, { n: '보스', c: '#ff3b3b' }];
 const ATTR_N = { str: '힘', dex: '민첩', vit: '체력', wil: '정신', per: '감각' };
 const ATTR_D = { str: '근접 공격 · 휘청 버팀', dex: '공격 속도 · 회피 · 활 · 자물쇠', vit: '최대 체력 (+8)', wil: '정신도 (+3) · 스킬 대기', per: '시야 · 치명 · 총 · 함정 발견' };
-const SLOT_N = { weapon: '무기', head: '머리', body: '몸', legs: '다리', acc1: '장신구', acc2: '장신구' };
-const SLOTS = ['weapon', 'head', 'body', 'legs', 'acc1', 'acc2'];
+const SLOT_N = { weapon: '무기', off: '보조', head: '머리', body: '몸', legs: '다리', acc1: '장신구', acc2: '장신구' };
+const SLOTS = ['weapon', 'off', 'head', 'body', 'legs', 'acc1', 'acc2'];
+const ONE_HAND = new Set(['sword', 'dagger', 'axe', 'hammer', 'pistol', 'spear']);   // 보조 칸에 들 수 있는 무기 (방패는 보조 칸 전용)
+const RANGED = new Set(['bow', 'crossbow', 'pistol', 'shotgun', 'lever', 'assault']);
 const WT_N = { spear: '창', sword: '검', greatsword: '대검', dagger: '단검', axe: '도끼', hammer: '망치', shield: '방패', staff: '지팡이', bow: '활', crossbow: '석궁', pistol: '권총', shotgun: '산탄총', lever: '레버액션', assault: '돌격소총' };
 const CAT_N = { weapon: '무기', armor: '방어구', acc: '장신구', relic: '유물', use: '소모품', potion: '물약', food: '식량', ammo: '탄약', ammoRaw: '탄약', gold: '돈', mat: '재료', tool: '도구', key: '열쇠', book: '책 · 지도', light: '빛', junk: '잡동사니', furn: '가구 유물', pet: '펫' };
 // 효과 이름 (툴팁): [이름, 단위]
@@ -48,9 +50,10 @@ const AMMO_N = { arrow: '화살', bullet: '총알', shell: '산탄', cell: '광�
 
 // 영웅 (v0.30: 지금 굴에 있는 사람). unit = DEFS 종류
 const HERO_DEF = {
-  inju:   { name: '인주', unit: 'player', face: 'assets/inju_face.png', attr: { str: 5, dex: 6, vit: 5, wil: 5, per: 6 }, hp0: 80, weapon: 'O-player-weapon', note: '말이 없음. 든 무기로 싸움' },
-  cheong: { name: '청광묵', unit: 'cheongAlly', face: 'art/pro/goblin_face.webp', attr: { str: 7, dex: 6, vit: 6, wil: 3, per: 4 }, note: '단순 · 충직. 달팽이를 사랑함. 손톱 · 손바닥' },
-  karius: { name: '카리우스', unit: 'kariusAlly', face: 'art/pro/karius_face.webp', attr: { str: 9, dex: 2, vit: 9, wil: 6, per: 2 }, note: '침묵. 땅만 팜. 모든 피해 60% 감소' },
+  // innate: 고유 무기 (칸이 비면 이걸로 싸움, 벗길 수 없음) · wts: 들 수 있는 무기 (shield = 보조 칸 방패)
+  inju:   { name: '인주', unit: 'player', face: 'assets/inju_face.png', attr: { str: 5, dex: 6, vit: 5, wil: 5, per: 6 }, hp0: 80, weapon: 'O-player-weapon', note: '말이 없음. 든 무기로 싸움', innate: '맨손', wts: 'all' },
+  cheong: { name: '청광묵', unit: 'cheongAlly', face: 'art/pro/goblin_face.webp', attr: { str: 7, dex: 6, vit: 6, wil: 3, per: 4 }, note: '단순 · 충직. 달팽이를 사랑함. 손톱 · 손바닥', innate: '청광묵의 손톱', wts: ['dagger', 'sword', 'axe', 'spear', 'bow', 'crossbow', 'pistol', 'shield'] },
+  karius: { name: '카리우스', unit: 'kariusAlly', face: 'art/pro/karius_face.webp', attr: { str: 9, dex: 2, vit: 9, wil: 6, per: 2 }, note: '침묵. 땅만 팜. 모든 피해 60% 감소', innate: '카리우스의 손 (여덟 팔)', wts: ['hammer', 'axe', 'greatsword', 'shield'] },
 };
 
 const RPG = {
@@ -101,7 +104,7 @@ function itemName(it){ return itemDef(it).n; }
 /* ---------- 영웅 ---------- */
 function newHero(key){
   const H = HERO_DEF[key];
-  const h = { id: key, name: H.name, lv: 1, xp: 0, pts: 0, attr: { ...H.attr }, eq: { weapon: null, head: null, body: null, legs: null, acc1: null, acc2: null }, hp: null, san: null, st: 'ok', kills: 0, trips: 0, bond: 0 };
+  const h = { id: key, name: H.name, lv: 1, xp: 0, pts: 0, attr: { ...H.attr }, eq: { weapon: null, off: null, head: null, body: null, legs: null, acc1: null, acc2: null }, hp: null, san: null, st: 'ok', kills: 0, trips: 0, bond: 0 };
   if (H.weapon) h.eq.weapon = makeItem(H.weapon, { q: 1, aff: [] });
   return h;
 }
@@ -115,7 +118,7 @@ function gearFx(h){
     else fx[k] = v;
   };
   let atk = 0, def = 0;
-  for (const s of SLOTS){ const it = h.eq[s]; if (!it) continue; const S = itemStats(it); if (s !== 'weapon') atk += S.atk; def += S.def; for (const [k, v] of Object.entries(S.fx)) add(k, v); }
+  for (const s of SLOTS){ const it = h.eq[s]; if (!it) continue; const S = itemStats(it); if (s !== 'weapon' && !(s === 'off' && itemDef(it).wt !== 'shield')) atk += S.atk; def += S.def; for (const [k, v] of Object.entries(S.fx)) add(k, v); }
   if (h.id === 'inju') for (const it of RPG.bag){ const d = itemDef(it); if (d.s === 'carry') for (const [k, v] of Object.entries(d.fx || {})) add(k, v); }
   // 세트 (같은 set 셋)
   const sets = {}; for (const s of SLOTS){ const it = h.eq[s]; const st = it && itemDef(it).fx && itemDef(it).fx.set; if (st) sets[st] = (sets[st] || 0) + 1; }
@@ -138,7 +141,7 @@ function derive(h){
     S.spd0 = D.spd;
   } else {
     S.maxHp = Math.round(D.hp * (1 + 0.08 * (h.lv - 1)) + (A.vit - HERO_DEF[h.id].attr.vit) * 8 + n('hp'));
-    S.atk = Math.round((D.atk * (1 + 0.06 * (h.lv - 1)) * (1 + (A.str - HERO_DEF[h.id].attr.str) * 0.04) + G2.atk) * (1 + n('atkP') / 100));
+    S.atk = Math.round((D.atk * (1 + 0.06 * (h.lv - 1)) * (1 + (A.str - HERO_DEF[h.id].attr.str) * 0.04) + G2.atk + (w ? itemStats(w).atk * 0.8 : 0)) * (1 + n('atkP') / 100));
     S.spd0 = D.spd;
   }
   S.maxHp = Math.round(S.maxHp * (1 + n('hpP') / 100));
@@ -152,7 +155,9 @@ function derive(h){
   S.atkSpd = 1 + A.dex * 0.004 + n('atkSpd') / 100;
   S.cdMul = Math.max(0.5, 1 - A.wil * 0.008 - n('skillCd') / 100);
   S.reload = Math.max(0.4, 1 - n('reload') / 100);
-  S.block = n('block') / 100;
+  const off = h.eq.off, offD = off ? itemDef(off) : null;
+  S.offShield = !!(offD && offD.wt === 'shield'); S.offWt = offD ? offD.wt : null;
+  S.block = n('block') / 100 + (S.offShield ? 0.15 : 0);
   S.lifesteal = n('lifesteal') / 100;
   S.regen = n('regen');
   S.thorns = n('thorns');
@@ -216,19 +221,27 @@ function removeItem(it, list = RPG.bag, n = it.n){
   return true;
 }
 // 장착: 영웅의 칸에 끼움 (원래 것은 가방으로). 동료는 무기 칸이 없음
-function canEquip(h, it){
+const heroWts = h => (HERO_DEF[h.id] || {}).wts || [];
+function canWield(h, wt){ const W2 = heroWts(h); return W2 === 'all' || W2.includes(wt); }
+function canEquip(h, it, slot){
   const d = itemDef(it);
-  if (d.s === 'weapon') return h.id === 'inju';
+  if (d.s === 'weapon'){
+    if (!canWield(h, d.wt)) return false;
+    if (slot === 'off') return d.wt === 'shield' || ONE_HAND.has(d.wt);
+    return true;
+  }
   return ['head', 'body', 'legs', 'acc'].includes(d.s);
 }
+function whyNot(h, it){ const d = itemDef(it); return d.s === 'weapon' && !canWield(h, d.wt) ? `${h.name}는 ${WT_N[d.wt] || '이것'}을 못 다룸` : '끼울 수 없음'; }
 function slotFor(h, it){
-  const s = itemDef(it).s;
+  const d = itemDef(it), s = d.s;
   if (s === 'acc') return !h.eq.acc1 ? 'acc1' : !h.eq.acc2 ? 'acc2' : 'acc1';
+  if (s === 'weapon' && d.wt === 'shield') return 'off';   // 방패는 보조 칸
   return s;
 }
 function equip(h, it, from = RPG.bag, slot){
-  if (!canEquip(h, it)) return false;
   slot = slot || slotFor(h, it);
+  if (!canEquip(h, it, slot)) return false;
   const old = h.eq[slot];
   removeItem(it, from);
   h.eq[slot] = it;

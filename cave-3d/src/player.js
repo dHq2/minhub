@@ -52,7 +52,8 @@ function playerUpdate(u, dt){
   mouse.over = mouseOverEnemy();
   document.body.style.cursor = mouse.over ? 'crosshair' : 'default';
   updateJump(u, dt);
-  if (u.downed){ u.guard = false; return; }
+  if (u.downed){ u.guard = false; if (TKS && TKS.st) tkEnd(u, true); return; }
+  if (G.mode === 'exp' && typeof tackleInput === 'function' && !u.lock && u.st !== 'hurt' && tackleInput(u, dt)) return;   // v0.33 바디 태클 (T)
   if (u.lock){ u.guard = false; return; }   // 잡거나 잡힘: grapple.js
   if (u.st === 'hurt'){ u.stT -= dt; u.guard = false; if (u.stT <= 0){ u.st = 'idle'; } setPose(u, 'hurt'); return; }
   const mv = G.lock ? null : inputDir();
@@ -87,6 +88,7 @@ function playerUpdate(u, dt){
   if (u.st === 'windup'){ return; }
   if (u.st === 'strike'){ u.stT -= dt; if (mv) moveBy(u, mv.x * 0.8 * dt, mv.z * 0.8 * dt); if (u.stT <= 0) u.st = 'idle'; return; }
   // 공격 · 무기 스킬: 무기마다 (weapons.js)
+  if (!G.lock && typeof gearSwapInput === 'function' && gearSwapInput(u)) return;   // v0.33 X: 무기 ↔ 보조 무기
   if (!G.lock && typeof playerGrabInput === 'function' && G.mode === 'exp' && playerGrabInput(u)) return;
   if (weaponInput(u, dt, mv)) return;
   // 걷기 · 달리기 (벽에 막혀도 미끄러지며 계속 감)

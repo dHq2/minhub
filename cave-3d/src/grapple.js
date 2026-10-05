@@ -66,7 +66,7 @@ function grHit(L, k){
     L.phase = 'ground'; L.t = 0; d.lying = true;
     hurt(a, d, a.atk * mul, { from: a, crit: Math.random() < 0.25 || undefined, grapple: true });
     camShake(0.35, 0.25); dust(d.x, d.z, 16); ring(d.x, d.z, 0xffcf80, 1.8, 0.35); SFX.boom(0.5); G.hitstop = Math.max(G.hitstop, 0.1);
-    popText(d.x, d.y + 1.4, d.z, '메쳤다!', 'big', 0.9);
+    popText(d.x, d.y + 1.4, d.z, '메쳤다!', 'big', 0.9); typeof heroCount === 'function' && a.hero && heroCount(a.hero, 'throw');
   }
   if (k === 'push'){ hurt(a, d, a.atk * mul, { from: a, grapple: true }); grRelease(L, 'push'); if (!d.dead){ const n = norm(d.x - a.x, d.z - a.z); d.kx += n.x * 9; d.kz += n.z * 9; d.st = 'hurt'; d.stT = 0.7; setPose(d, 'hurt'); } return; }
   if (k === 'pound'){ hurt(a, d, a.atk * mul, { from: a, noCam: true, grapple: true }); L.esc = Math.max(0, L.esc + A.esc); dust(d.x, d.z, 3); SFX.thump(120, 0.35, 0.12); L.hits++; }

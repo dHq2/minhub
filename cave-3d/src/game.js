@@ -401,7 +401,7 @@ function loop(now){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; if (u.shadow) u.shadow.material.opacity = 0.42 * u.mat.opacity; } continue; }
       if (u.lock){ /* 레슬링 중: grapple.js */ }
       else if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
-      else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock) (u.D.think || allyThink)(u, dt);
+      else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock){ if (!(typeof heroCombat === 'function' && heroCombat(u, dt))) (u.D.think || allyThink)(u, dt); }   // v0.33: 활 · 총 든 동료는 쏨
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
@@ -424,6 +424,8 @@ function loop(now){
   if (typeof heldUpdate === 'function') heldUpdate(dt);
   if (PLAY_MODES.has(G.mode) && !frozen && typeof rpgTick === 'function') rpgTick(dt);
   if (G.mode === 'exp' && !frozen && !G.lock && typeof grappleTick === 'function') grappleTick(dt);
+  if (G.mode === 'exp' && !frozen && !G.lock && typeof woundTick === 'function') woundTick(dt);
+  if (G.mode === 'exp' && !frozen && !G.lock && typeof titleTick === 'function'){ titleTick(); brightTick(dt); }
   if (typeof proTick === 'function') proTick(dt);   // 프롤로그 · 굴 연출 (글상자가 떠 있어도 움직임)
   if (!frozen){ updateDecals(dt); updateProjs(dt); } updateFx(dt); runWaits();
   // 카메라: 평소엔 인주, 싸움 중엔 가까운 적 쪽으로 조금
