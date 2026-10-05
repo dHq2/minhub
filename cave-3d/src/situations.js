@@ -231,7 +231,7 @@ function meetTick(){
 }
 async function meetTalk(M){
   const u = M.u, face = HERO_DEF.goodwill.face;
-  G.lock = true; letterbox(true); camFocus((u.x + G.player.x) / 2, (u.z + G.player.z) / 2, 99, 2.4, 3.8, 0.04);
+  G.lock = true; letterbox(true); camFocus((u.x + G.player.x) / 2, (u.z + G.player.z) / 2, 99, 4.2, 6.5, 0.04);
   if (u.downed){ u.downed = false; u.st = 'idle'; u.hp = Math.round(u.max * 0.3); }
   await textbox('GOOD WILL', ['하하! 살았다! 고마워, 고마워!', '난 GOOD WILL. 이 아래로 뭐가 있는지 보러 왔지. 혼자는… 좀 많더라고.', '너네 원정대지? 좋아, 좋아! 같이 가자! 주먹이랑 번개는 내가 맡을게!'], { face });
   M.done = true; RPG.meta.gw = 1;

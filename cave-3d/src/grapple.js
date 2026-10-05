@@ -1,4 +1,4 @@
-/* grapple.js v1.0 — 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.1 — (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -49,7 +49,7 @@ const GACT = {
   up:     { wind: 0.15, mul: 0, esc: 0, name: '일어섬' },
 };
 function grDo(L, k){
-  if (L.act || L.cd > 0) return false;
+  if (L.act || L.cd > 0){ if (L.a === G.player) L.next = k; return false; }
   if (k === 'throw' && (L.phase !== 'clinch' || L.heavy)){ if (L.heavy && L.a === G.player) popText(L.a.x, L.a.y + 2.2, L.a.z, '너무 무겁다', 'miss', 0.8); return false; }
   if ((k === 'pound' || k === 'finish' || k === 'up') && L.phase !== 'ground') return false;
   if ((k === 'knee' || k === 'push') && L.phase !== 'clinch') return false;
@@ -119,7 +119,8 @@ function grappleTick(dt){
       if (L.act.t >= A.wind){ const k = L.act.k; L.act = null; L.cd = 0.18; setPose(a, a.S.poses.attack ? 'attack' : 'idle'); a.leanT = 0.25; grHit(L, k); if (!a.lock) continue; }
       else { a.leanT = -0.18; }
     } else if (a === G.player){
-      if (hit('Mouse0') || hit('KeyJ')) grDo(L, L.phase === 'clinch' ? 'knee' : 'pound');
+      if (L.next && L.cd <= 0){ const k = L.next; L.next = null; grDo(L, k === 'knee' && L.phase === 'ground' ? 'pound' : k === 'throw' && L.phase === 'ground' ? 'finish' : k); }
+      else if (hit('Mouse0') || hit('KeyJ')) grDo(L, L.phase === 'clinch' ? 'knee' : 'pound');
       else if (hit('Mouse2') || hit('KeyK')) grDo(L, L.phase === 'clinch' ? 'throw' : 'finish');
       else if (hit('KeyQ') || hit('KeyV')) grDo(L, L.phase === 'clinch' ? 'push' : 'up');
       P.atkBuf = 0;
