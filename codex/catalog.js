@@ -1,4 +1,4 @@
-/* catalog.js v1.78 — v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
+/* catalog.js v1.79 — v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
 const CATALOG = [
 {
 "id": "R-A",
@@ -29695,13 +29695,26 @@ const CATALOG = [
 "cat": "char",
 "sub": "인주 · 동료 · 동작 그림",
 "cid": "C-001",
-"name": "인주 · 돌 던지기",
+"name": "인주 · 던지기 전 (돌을 쥠)",
 "src": "img/inju/throw.webp",
 "note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
 "rank": "",
 "on": true,
 "g": "player",
-"game": "게임: 돌 · 수류탄 던질 때"
+"game": "게임: 지금은 안 씀 — 던지는 순간은 던진 뒤 그림으로 바뀜"
+},
+{
+"id": "O-inju-throwRel",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 던진 뒤",
+"src": "img/inju/throwRel.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 투창 · 돌 · 수류탄을 놓는 순간 (손끝으로 목표를 가리킴)"
 },
 {
 "id": "O-inju-throwHard",
