@@ -1,0 +1,54 @@
+/* mapfx.js v1.0 — 원정 층의 땅 기믹 (dungeon.js v1.1이 자리를 정함)
+   · 가시 함정 (2층 · 8층): 복도 바닥의 쇠판. 2.4초마다 덜컥 (0.5초 전에 살짝 솟으며 덜그럭) → 가시가 솟음 (0.6초). 그 위에 있으면 최대 체력 12% (점프 중이면 안 맞음)
+     적도 똑같이 찔림 — 태클 · 밀쳐내기로 밀어 넣으면 좋음
+   · 물웅덩이 (3층): 느려짐 ×0.72 · 물결. 진흙 (6층): 느려짐 ×0.55
+   · 느려짐은 units.js moveStep이 G.map.slow를 봄 (점프 중엔 안 느려짐) */
+'use strict';
+const MFX = { traps: [], pools: [] };
+const SPIKE = { cycle: 2.4, warn: 0.5, up: 0.6, dmg: 0.12 };
+const plateTex = canvasTex(64, 64, (c, w, h) => {
+  c.fillStyle = '#3a3634'; c.fillRect(2, 2, w - 4, h - 4); c.strokeStyle = '#1c1a19'; c.lineWidth = 3; c.strokeRect(3, 3, w - 6, h - 6);
+  c.fillStyle = '#121010'; for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++){ c.beginPath(); c.arc(14 + i * 18, 14 + j * 18, 4, 0, 6.3); c.fill(); }
+});
+function mapFxBuild(gen){
+  MFX.traps = []; MFX.pools = [];
+  const m = G.map; m.slow = new Float32Array(m.w * m.h);
+  const coneG = new THREE.ConeGeometry(0.07, 0.42, 6), coneM = new THREE.MeshStandardMaterial({ color: 0x9a9690, metalness: 0.6, roughness: 0.4 });
+  for (const t of gen.traps || []){
+    const k = t.z * m.w + t.x; if (m.solid[k] || m.hgt[k]) continue;
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.92), new THREE.MeshStandardMaterial({ map: plateTex, roughness: 0.8 }));
+    plate.rotation.x = -Math.PI / 2; plate.position.set(t.x, 0.012, t.z); G.scene.add(plate); G.props.push(plate);
+    const sp = new THREE.Group(); for (let j = 0; j < 3; j++) for (let i = 0; i < 3; i++){ const c = new THREE.Mesh(coneG, coneM); c.position.set((i - 1) * 0.28, 0.21, (j - 1) * 0.28); sp.add(c); }
+    sp.position.set(t.x, -0.45, t.z); G.scene.add(sp); G.props.push(sp);
+    MFX.traps.push({ x: t.x, z: t.z, sp, ph: Math.random() * SPIKE.cycle, hit: false });
+  }
+  for (const p of gen.pools || []){
+    const water = p.kind === 'water', cells = [];
+    for (let j = p.z0; j <= p.z1; j++) for (let i = p.x0; i <= p.x1; i++){ const k = j * m.w + i; if (i < 0 || j < 0 || i >= m.w || j >= m.h || m.solid[k] || m.hgt[k]) continue; cells.push([i, j]); m.slow[k] = water ? 0.72 : 0.55; }
+    if (!cells.length) continue;
+    const mat = new THREE.MeshStandardMaterial({ color: water ? 0x3d6f8f : 0x4a3a26, emissive: water ? 0x0e2a3c : 0x1a1208, roughness: water ? 0.15 : 0.95, metalness: water ? 0.3 : 0, transparent: true, opacity: water ? 0.62 : 0.85 });   // 어둠 속에서도 희미하게 보이게
+    for (const [i, j] of cells){ const q = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.0), mat); q.rotation.x = -Math.PI / 2; q.position.set(i, 0.015, j); G.scene.add(q); G.props.push(q); }
+    MFX.pools.push({ mat, water, ph: Math.random() * 6 });
+  }
+}
+function mapFxTick(dt){
+  for (const p of MFX.pools) if (p.water){ p.ph += dt; p.mat.opacity = 0.55 + Math.sin(p.ph * 1.7) * 0.07; }
+  for (const t of MFX.traps){
+    const prev = t.ph; t.ph = (t.ph + dt) % SPIKE.cycle;
+    const upAt = SPIKE.cycle - SPIKE.up, warnAt = upAt - SPIKE.warn;
+    let y = -0.45;
+    if (t.ph >= upAt){ y = 0; if (prev < upAt || prev > t.ph) t.hit = false; }
+    else if (t.ph >= warnAt){ y = -0.36 + Math.sin(G.t * 60) * 0.02; }
+    t.sp.position.y += (y - t.sp.position.y) * Math.min(1, dt * 30);
+    if (t.ph >= upAt && !t.hit){
+      t.hit = true; SFX.thump && SFX.thump(300, 0.15, 0.05);
+      for (const u of G.units){
+        if (u.dead || u.downed || (u.jy || 0) > 0.3 || u.D.boss || u.airborne) continue;
+        if (Math.abs(u.x - t.x) > 0.55 || Math.abs(u.z - t.z) > 0.55) continue;
+        hurt(null, u, Math.max(4, u.max * SPIKE.dmg), { noCrit: true, unblockable: true, pierce: true });
+        spark(u.x, u.y + 0.3, u.z, 0xd0c8c0, 8, 3); popText(u.x, u.y + 1.6, u.z, '가시!', 'hurt', 0.7);
+        if (typeof clashLog === 'function' && u === G.player) clashLog('바닥에서 가시가 솟았다.');
+      }
+    }
+  }
+}

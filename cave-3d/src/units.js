@@ -1,4 +1,4 @@
-/* units.js v0.24 — (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.25 — (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -108,6 +108,7 @@ function moveBy(u, dx, dz){
 }
 function moveStep(u, dx, dz){
   const m = G.map, h0 = heightAt(m, u.x, u.z), r = u.r * 0.85, ox = u.x, oz = u.z;
+  if (m.slow && !((u.jy || 0) > 0.2) && !u.D.boss){ const sl = m.slow[Math.round(u.z) * m.w + Math.round(u.x)]; if (sl){ dx *= sl; dz *= sl; } }   // v0.25 물 · 진흙 (mapfx.js)
   let x = u.x + dx, z = u.z + dz;
   for (let pass = 0; pass < 2; pass++){
     const ci = Math.round(x), cj = Math.round(z);

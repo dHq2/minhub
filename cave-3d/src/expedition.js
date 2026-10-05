@@ -1,4 +1,4 @@
-/* expedition.js v1.11 — 원정 (한 번의 런). v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.12 — 원정 (한 번의 런). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -130,6 +130,7 @@ async function expLoadFloor(F, how){
   G.map.wallH = 2.4; layoutWalls(G.map, CAM.yawT || 0);
   Object.assign(DUN, { bills: [], sources: [], items: [], marks: [], seen: new Uint8Array(gen.W * gen.H), rooms: gen.rooms });
   setupDarkness(D); G.fogK = D.fog || 0.9;
+  if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
   EXP.reveal = false; EXP.radar = false; EXP.lit = true; EXP.meet = null; G.locks = [];
   // 원정대
   const s = gen.start, px = Math.round(s.cx), pz = Math.round(s.cz) + 1;
@@ -179,15 +180,16 @@ function fillRoom(r, gen){
     makeStairs(Math.round(r.cx), Math.round(r.cz)); lights(2); deco(2);
     if (F >= 2 || R() < 0.5) spawnGroup(r, gen, tiles, 2 + Math.floor(F / 3), band);
   } else if (r.type === 'fight'){
+    if (r.build === 'tower' && r.top){ const a = spawnFoe('archer', r.top.x, r.top.z, F, band); a.post = { x: r.top.x, z: r.top.z }; }   // 망루 위 궁수 (자리를 지킴)
     spawnGroup(r, gen, tiles, Math.min(7, 2 + Math.floor((F + 1) / 2) + (R() < 0.4 ? 1 : 0)), band); lights(R() < 0.7 ? 1 : 2); deco(2 + Math.floor(R() * 3));
     if (R() < 0.35){ const t = takeTile(tiles, R); if (t) corpseProp(t.x, t.z, R); }
   } else if (r.type === 'elite'){
     const t = takeTile(tiles, R) || { x: Math.round(r.cx), z: Math.round(r.cz) };
-    const e = spawnFoe(R.pick(D.elite), r.cx, r.cz, F, band, true);
+    const ep = r.top || { x: r.cx, z: r.cz }, e = spawnFoe(R.pick(D.elite), ep.x, ep.z, F, band, true);   // 단상이 있으면 그 위에
     spawnGroup(r, gen, tiles, 1 + Math.floor(R() * 2), band);
     lights(2); deco(2); r.reward = true;
   } else if (r.type === 'treasure'){
-    const n = R() < 0.35 ? 2 : 1; for (let i = 0; i < n; i++){ const t = takeTile(tiles, R); if (t) makeChest(t.x, t.z, F, { locked: R() < 0.35, bonus: 0.15 }); }
+    const n = R() < 0.35 ? 2 : 1; for (let i = 0; i < n; i++){ const t = i === 0 && r.top ? { x: Math.round(r.top.x), z: Math.round(r.top.z) } : takeTile(tiles, R); if (t) makeChest(t.x, t.z, F, { locked: R() < 0.35, bonus: 0.15 }); }   // 단상 위 상자
     if (R() < 0.45) spawnGroup(r, gen, tiles, 1 + Math.floor(F / 3), band);
     lights(1); deco(1);
     DUN.marks.push({ x: r.cx, z: r.cz, icon: '◆', col: '#ffd35a', treasure: true });
@@ -351,6 +353,7 @@ function expTick(dt){
   if (!EXP || G.mode !== 'exp') return;
   const pl = G.player; if (!pl) return;
   sizeDBills();
+  if (typeof mapFxTick === 'function') mapFxTick(dt);
   // 횃불
   if (EXP.torchT > 0){ EXP.torchT -= dt; if (EXP.torchT <= 0){ if (EXP.torches > 0){ EXP.torches--; EXP.torchT = EXP_TORCH; popText(pl.x, pl.y + 2.4, pl.z, '새 횃불을 켰다', 'heal', 1.2); } else { EXP.torchT = 0; caption('횃불이 꺼졌다', '어둠이 가까워진다 — 시야 2칸, 정신도가 빨리 줆'); } } }
   EXP.lit = EXP.torchT > 0;

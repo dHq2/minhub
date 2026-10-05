@@ -1,4 +1,4 @@
-/* dungeon.js v1.0 — 원정 층 만들기
+/* dungeon.js v1.1 — 원정 층 만들기 (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
    · 절차 생성: 방 7 ~ 11개 (겹치지 않게) + 2칸 복도 (가장 짧게 잇고 + 고리 몇 개) → 글자 지도 → buildWorld (굴 · 1층과 같은 판)
    · 방 종류: 시작 (귀환 줄) · 계단 (가장 먼 방) · 싸움 · 강적 · 보물 · 쉼터 (모닥불) · 무덤 (1층) · 제단 (4층)
    · 층 테마 10: 땅 · 벽 · 빛 색 · 적 · 소품 (도감 소품 75종, art/dun)
@@ -10,10 +10,10 @@ const FLOOR_DEF = [null,
   { name: '무덤 어귀', sub: '회색 대지 · 무덤 · 촛불', floor: 0x46434d, wall: 0x2b2831, pillar: 0x56515f, glow: 0xffb070,
     foes: { swordsman: 3, spearman: 3, shieldman: 2, foeJelly: 1 }, elite: ['brute'], rooms: [7, 9], graves: 3,
     props: ['H-007', 'H-027', 'H-052', 'H-191', 'H-205', 'H-283', 'H-009', 'H-289', 'H-287', 'H-195', 'H-074', 'H-286'], lights: ['H-101', 'H-236', 'H-196'] },
-  { name: '뼈의 회랑', sub: '좁은 회랑 · 뼈 무더기 · 궁수 진형', floor: 0x4a4440, wall: 0x2c2724, pillar: 0x5a524c, glow: 0xffa060,
+  { name: '뼈의 회랑', sub: '좁은 회랑 · 뼈 무더기 · 가시 함정 · 궁수 진형', floor: 0x4a4440, wall: 0x2c2724, pillar: 0x5a524c, glow: 0xffa060, spikes: 9,
     foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 }, elite: ['benkin'], rooms: [8, 9],
     props: ['H-056', 'H-169', 'H-194', 'H-207', 'H-289', 'H-009', 'H-286', 'H-179', 'H-119', 'H-168'], lights: ['H-206', 'H-107', 'H-158'] },
-  { name: '젖은 묘지', sub: '비 · 물웅덩이 · 늪', floor: 0x3c4446, wall: 0x262d30, pillar: 0x4c585a, glow: 0x9fd0ff, wet: true,
+  { name: '젖은 묘지', sub: '비 · 물웅덩이 · 늪', floor: 0x3c4446, wall: 0x262d30, pillar: 0x4c585a, glow: 0x9fd0ff, wet: true, pools: 'water',
     foes: { foeSlime: 3, foeJelly: 3, foeFairy: 2, swordsman: 1 }, elite: ['dandalo', 'brute'], rooms: [8, 10], graves: 2,
     props: ['H-027', 'H-049', 'H-288', 'H-198', 'H-372', 'H-137', 'H-200', 'H-202', 'H-205'], lights: ['H-293', 'H-236', 'H-196'] },
   { name: '지하 예배당', sub: '제단 · 촛대 · 핏자국', floor: 0x463c44, wall: 0x2c232b, pillar: 0x5c4c58, glow: 0xff8a6a,
@@ -22,19 +22,19 @@ const FLOOR_DEF = [null,
   { name: '세자르의 알현실', sub: '관 · 신성 봉인 · 기둥', floor: 0x4c4650, wall: 0x2e2834, pillar: 0x66606e, glow: 0xffd8a0,
     foes: { swordsman: 3, shieldman: 3, archer: 2, foeCultist: 2 }, elite: ['dandalo', 'brute'], rooms: [8, 10],
     props: ['H-198', 'H-049', 'H-288', 'H-195', 'H-058', 'H-153', 'H-166', 'H-023'], lights: ['H-101', 'H-206', 'H-196'] },
-  { name: '안개 늪', sub: '안개 · 진흙 · 도깨비불', floor: 0x3a4238, wall: 0x232a22, pillar: 0x4a5448, glow: 0x9fffb0, fog: 0.75, wet: true,
+  { name: '안개 늪', sub: '안개 · 진흙 · 도깨비불', floor: 0x3a4238, wall: 0x232a22, pillar: 0x4a5448, glow: 0x9fffb0, fog: 0.75, wet: true, pools: 'mud',
     foes: { foeSlime: 3, foeFairy: 3, foeJelly: 2, archer: 2 }, elite: ['benkin', 'brute'], rooms: [9, 10],
     props: ['H-137', 'H-200', 'H-202', 'H-372', 'H-151', 'H-074', 'H-193'], lights: ['H-293', 'H-236'] },
   { name: '도깨비 시장', sub: '등불 · 노점 · 북소리', floor: 0x4a3c34, wall: 0x2e231c, pillar: 0x5e4a3c, glow: 0xffc070,
     foes: { foeDevil: 4, foeCultist: 2, swordsman: 2, archer: 2 }, elite: ['dandalo', 'benkin'], rooms: [9, 11],
     props: ['H-130', 'H-115', 'H-254', 'H-255', 'H-110', 'H-165', 'H-117'], lights: ['H-158', 'H-107', 'H-206'] },
-  { name: '쇠의 진지', sub: '목책 · 깃발 · 진형', floor: 0x44403c, wall: 0x2a2622, pillar: 0x585048, glow: 0xffa050,
+  { name: '쇠의 진지', sub: '목책 · 망루 · 깃발 · 진형', floor: 0x44403c, wall: 0x2a2622, pillar: 0x585048, glow: 0xffa050, towers: true, spikes: 5,
     foes: { shieldman: 4, spearman: 3, archer: 3, swordsman: 2 }, elite: ['dandalo', 'brute'], rooms: [9, 11],
     props: ['H-006', 'H-021', 'H-047', 'H-117', 'H-119', 'H-165', 'H-168', 'H-057'], lights: ['H-158', 'H-206'] },
   { name: '눈알의 굴', sub: '짙은 어둠 · 지껄임', floor: 0x3a3442, wall: 0x221d29, pillar: 0x4a4256, glow: 0xd08aff, dark: 0.7,
     foes: { foeCultist: 3, foeDevil: 3, foeSlime: 2, archer: 2 }, elite: ['benkin', 'dandalo'], rooms: [9, 11],
     props: ['H-160', 'H-156', 'H-105', 'H-109', 'H-033', 'H-327', 'H-008'], lights: ['H-196', 'H-293'] },
-  { name: '대장군의 전장', sub: '넓은 벌판 · 깃발 · 군단', floor: 0x48423a, wall: 0x2c2620, pillar: 0x5c5448, glow: 0xffa040,
+  { name: '대장군의 전장', sub: '넓은 벌판 · 깃발 · 군단', floor: 0x48423a, wall: 0x2c2620, pillar: 0x5c5448, glow: 0xffa040, wide: true, towers: true,
     foes: { swordsman: 3, spearman: 3, shieldman: 3, archer: 3 }, elite: ['dandalo', 'benkin'], rooms: [10, 12],
     props: ['H-006', 'H-021', 'H-165', 'H-117', 'H-166', 'H-023', 'H-110', 'H-057'], lights: ['H-158', 'H-206'] },
 ];
@@ -55,15 +55,23 @@ function rngOf(seed){
 /* ---------- 층 만들기 ---------- */
 function genDungeon(F, seed){
   const R = rngOf(seed), D = FLOOR_DEF[Math.min(F, FLOOR_DEF.length - 1)];
-  const W = Math.min(60, 42 + F * 2), H = W;
+  const W = D.wide ? 70 : Math.min(60, 42 + F * 2), H = W;
   const g = Array.from({ length: H }, () => new Array(W).fill('#'));
   const nRooms = R.int(D.rooms[0], D.rooms[1]), rooms = [];
   for (let tries = 0; rooms.length < nRooms && tries < 600; tries++){
-    const w = R.int(6, 11), h = R.int(6, 9), x = R.int(2, W - w - 3), z = R.int(2, H - h - 3);
+    const big = D.wide ? 4 : 0, w = R.int(6 + big, 11 + big), h = R.int(6 + big, 10 + big), x = R.int(2, W - w - 3), z = R.int(2, H - h - 3);
     if (rooms.some(r => x < r.x + r.w + 3 && x + w + 3 > r.x && z < r.z + r.h + 3 && z + h + 3 > r.z)) continue;
     rooms.push({ id: rooms.length, x, z, w, h, cx: x + (w - 1) / 2, cz: z + (h - 1) / 2, type: 'fight', links: [] });
   }
   for (const r of rooms) for (let j = r.z; j < r.z + r.h; j++) for (let i = r.x; i < r.x + r.w; i++) g[j][i] = '.';
+  // v1.1 방 모양: 둥근 방 (모서리를 깎음) · 십자 방 (네 귀퉁이를 네모로 뺌). 복도는 그 뒤에 파니 늘 이어짐
+  for (const r of rooms){
+    const p = R();
+    if (p < 0.35 && r.w >= 7 && r.h >= 7){ r.shape = 'round'; const k = Math.max(2, Math.floor(Math.min(r.w, r.h) / 3));
+      for (let j = 0; j < r.h; j++) for (let i = 0; i < r.w; i++){ const di = Math.min(i, r.w - 1 - i), dj = Math.min(j, r.h - 1 - j); if (di + dj < k - 0.5) g[r.z + j][r.x + i] = '#'; } }
+    else if (p < 0.55 && r.w >= 9 && r.h >= 8){ r.shape = 'cross'; const cw = Math.floor(r.w / 4), ch = Math.floor(r.h / 4);
+      for (let j = 0; j < r.h; j++) for (let i = 0; i < r.w; i++){ const di = Math.min(i, r.w - 1 - i), dj = Math.min(j, r.h - 1 - j); if (di < cw && dj < ch) g[r.z + j][r.x + i] = '#'; } }
+  }
   // 잇기: 가장 짧은 나무 (Prim) + 고리 몇 개
   const dd = (a, b) => Math.abs(a.cx - b.cx) + Math.abs(a.cz - b.cz), edges = [], inT = new Set([0]);
   while (inT.size < rooms.length){
@@ -75,9 +83,10 @@ function genDungeon(F, seed){
     if (edges.some(e => (e.a === i && e.b === j) || (e.a === j && e.b === i))) continue;
     if (dd(rooms[i], rooms[j]) < 22 && R() < 0.16) edges.push({ a: i, b: j, d: dd(rooms[i], rooms[j]) });
   }
-  const carve = (i, j) => { for (let dj = 0; dj < 2; dj++) for (let di = 0; di < 2; di++){ const x = i + di, z = j + dj; if (x > 0 && z > 0 && x < W - 1 && z < H - 1 && g[z][x] === '#') g[z][x] = ','; } };
+  const path = new Set(); let cw = 2;   // 복도가 지나간 칸 (방 안 포함): 구조물이 길을 막지 않게
+  const carve = (i, j) => { for (let dj = 0; dj < cw; dj++) for (let di = 0; di < cw; di++){ const x = i + di, z = j + dj; if (x > 0 && z > 0 && x < W - 1 && z < H - 1){ path.add(z * W + x); if (g[z][x] === '#') g[z][x] = ','; } } };
   for (const e of edges){
-    const a = rooms[e.a], b = rooms[e.b]; a.links.push(b.id); b.links.push(a.id);
+    const a = rooms[e.a], b = rooms[e.b]; a.links.push(b.id); b.links.push(a.id); cw = R() < (D.wide ? 0.6 : 0.25) ? 3 : 2;   // 가끔 세 칸 너비
     let x = Math.round(a.cx), z = Math.round(a.cz); const tx = Math.round(b.cx), tz = Math.round(b.cz), hFirst = R() < 0.5;
     const stepX = () => { while (x !== tx){ carve(x, z); x += Math.sign(tx - x); } }, stepZ = () => { while (z !== tz){ carve(x, z); z += Math.sign(tz - z); } };
     if (hFirst){ stepX(); stepZ(); } else { stepZ(); stepX(); }
@@ -103,19 +112,80 @@ function genDungeon(F, seed){
   if (F >= 2) take('fort', 1, r => r.w >= 8 && r.h >= 7);
   if (F >= 3 && R() < 0.75) take('artillery', 1, r => r.w >= 8);
   if (F >= 2 && R() < 0.6) take('ambush', 1);
-  // 꾸밈: 큰 방에 기둥, 가끔 바위 (문을 막지 않게 벽에서 한 칸 띄움)
+  // v1.1 구조물 (길 · 문 앞은 비워 둠): 진지 목책 · 기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루 · 바위
+  // 지켜야 할 길: 방 밖의 복도 + 방 가장자리 두 칸 안의 복도 (문 앞). 방 한가운데를 지나는 길은 돌아가도 됨 (단상은 경사로 오르내림)
+  const inner = (i, j) => rooms.some(r => i >= r.x + 2 && i <= r.x + r.w - 3 && j >= r.z + 2 && j <= r.z + r.h - 3);
+  const keep = new Set([...path].filter(k => !inner(k % W, Math.floor(k / W))));
+  const free = (i, j) => g[j] && g[j][i] === '.' && !keep.has(j * W + i);
+  const freeBox = (i0, j0, i1, j1, pad = 1) => { for (let j = j0 - pad; j <= j1 + pad; j++) for (let i = i0 - pad; i <= i1 + pad; i++){ if (j < 0 || i < 0 || j >= H || i >= W) return false; if (keep.has(j * W + i)) return false; if (j >= j0 && j <= j1 && i >= i0 && i <= i1 && g[j][i] !== '.') return false; } return true; };
+  const raise = (i0, j0, i1, j1) => {   // 높은 바닥 + 네 변 가운데에 경사
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) g[j][i] = '^';
+    const mi = Math.round((i0 + i1) / 2), mj = Math.round((j0 + j1) / 2);
+    for (const [i, j] of [[mi, j0 - 1], [mi, j1 + 1], [i0 - 1, mj], [i1 + 1, mj]]) if (g[j] && g[j][i] === '.') g[j][i] = '/';
+  };
   for (const r of rooms){
-    if (r.w >= 9 && r.h >= 8 && r.type !== 'start' && R() < 0.6) for (const [i, j] of [[r.x + 2, r.z + 2], [r.x + r.w - 3, r.z + 2], [r.x + 2, r.z + r.h - 3], [r.x + r.w - 3, r.z + r.h - 3]]) g[j][i] = 'o';
+    r.build = null;
+    const ix = r.x + 1, iz = r.z + 1, ex = r.x + r.w - 2, ez = r.z + r.h - 2, cx = Math.round(r.cx), cz = Math.round(r.cz);
     if (r.type === 'fort'){   // 목책 한 줄 (뛰어넘을 수 있음, 화살은 넘어감) · 가운데 두 칸은 문
       const j = r.z + Math.floor(r.h * 0.45), gap = R.int(r.x + 2, r.x + r.w - 4);
-      for (let i = r.x + 1; i < r.x + r.w - 1; i++) if (i !== gap && i !== gap + 1 && g[j][i] === '.') g[j][i] = 'r';
-      r.wallZ = j;
+      for (let i = r.x + 1; i < r.x + r.w - 1; i++) if (i !== gap && i !== gap + 1 && g[j][i] === '.' && !path.has(j * W + i)) g[j][i] = 'r';
+      r.wallZ = j; continue;
     }
-    if (r.type === 'fight' && R() < 0.5){ const i = R.int(r.x + 2, r.x + r.w - 3), j = R.int(r.z + 2, r.z + r.h - 3); if (g[j][i] === '.') g[j][i] = 'r'; }
+    if (r.type === 'start' || r.type === 'rest' || r.type === 'artillery' || r.type === 'rescue' || r.type === 'meet') continue;
+    const opts = [];
+    if (r.w >= 9 && r.h >= 7) opts.push('hall');
+    if (r.w >= 7 && r.h >= 7 && r.type !== 'stairs') opts.push('dais', 'dais');
+    if (r.w >= 10 && r.type === 'fight') opts.push('split');
+    if (r.type === 'fight' || r.type === 'elite') opts.push('ruins', 'ruins');
+    if (D.towers && r.type === 'fight' && r.w >= 8) opts.push('tower', 'tower');
+    if (!opts.length || R() < 0.2) { if (r.type === 'fight' && R() < 0.5){ const i = R.int(ix + 1, ex - 1), j = R.int(iz + 1, ez - 1); if (free(i, j)) g[j][i] = 'r'; } continue; }
+    const k = R.pick(opts);
+    if (k === 'hall'){   // 기둥 두 줄 (긴 쪽을 따라)
+      const along = r.w >= r.h;
+      for (let t = 2; t < (along ? r.w : r.h) - 2; t += 3){
+        for (const side of [0, 1]){
+          const i = along ? r.x + t : (side ? ex - 1 : ix + 1), j = along ? (side ? ez - 1 : iz + 1) : r.z + t;
+          if (free(i, j)) g[j][i] = 'o';
+        }
+      }
+      r.build = 'hall';
+    } else if (k === 'dais'){   // 가운데 단상 (3×3 · 4×3)
+      const w2 = r.w >= 10 ? 4 : 3, h2 = 3, i0 = cx - Math.floor(w2 / 2), j0 = cz - 1;
+      if (freeBox(i0, j0, i0 + w2 - 1, j0 + h2 - 1)){ raise(i0, j0, i0 + w2 - 1, j0 + h2 - 1); r.build = 'dais'; r.top = { x: i0 + (w2 - 1) / 2, z: j0 + 1 }; }
+    } else if (k === 'split'){   // 방의 한쪽 1/3이 높음, 경사 두 개
+      const hi = R() < 0.5, i0 = hi ? ix : ex - Math.floor(r.w / 3) + 1, i1 = hi ? ix + Math.floor(r.w / 3) - 1 : ex;
+      if (freeBox(i0, iz, i1, ez, 0)){
+        for (let j = iz; j <= ez; j++) for (let i = i0; i <= i1; i++) g[j][i] = '^';
+        const ri = hi ? i1 + 1 : i0 - 1; for (const j of [iz + 1, ez - 1]) if (g[j][ri] === '.') g[j][ri] = '/';
+        r.build = 'split'; r.top = { x: (i0 + i1) / 2, z: r.cz };
+      }
+    } else if (k === 'ruins'){   // 무너진 벽 조각 2 ~ 4개 (엄폐물, 시야를 막음)
+      const n = R.int(2, 4);
+      for (let q = 0; q < n; q++){
+        const horiz = R() < 0.5, len = R.int(2, 3), i = R.int(ix + 1, ex - 1 - (horiz ? len : 0)), j = R.int(iz + 1, ez - 1 - (horiz ? 0 : len));
+        const cells = Array.from({ length: len }, (_, t) => horiz ? [i + t, j] : [i, j + t]);
+        if (cells.every(([a, b]) => freeBox(a, b, a, b, 1))) for (const [a, b] of cells) if (free(a, b)) g[b][a] = R() < 0.25 ? 'r' : '#';
+      }
+      r.build = 'ruins';
+    } else if (k === 'tower'){   // 망루 (2×2 높은 곳, 경사 하나): 궁수가 올라감
+      const cs = [[ix, iz], [ex - 1, iz], [ix, ez - 1], [ex - 1, ez - 1], [ix + 1, iz + 1], [ex - 2, ez - 2]].filter(([a, b]) => freeBox(a, b, a + 1, b + 1, 0)), corner = cs.length ? R.pick(cs) : null, [i0, j0] = corner || [0, 0];
+      if (corner){
+        for (let j = j0; j <= j0 + 1; j++) for (let i = i0; i <= i0 + 1; i++) g[j][i] = '^';
+        const ri = i0 === ix ? i0 + 2 : i0 - 1; if (g[j0] && g[j0][ri] === '.') g[j0][ri] = '/';
+        r.build = 'tower'; r.top = { x: i0 + 0.5, z: j0 + 0.5 };
+      }
+    }
+  }
+  // v1.1 층 기믹 칸 (mapfx.js가 그림 · 판정): 가시 함정 (복도 · 방 입구) · 물웅덩이 · 진흙
+  const traps = [], pools = [];
+  if (D.spikes){ const cand = [...path].filter(k => g[Math.floor(k / W)][k % W] === ','); for (let q = 0; q < D.spikes && cand.length; q++){ const k = cand.splice(Math.floor(R() * cand.length), 1)[0]; traps.push({ x: k % W, z: Math.floor(k / W) }); } }
+  if (D.pools){
+    for (const r of rooms){ if (r.type === 'start' || R() > 0.55) continue;
+      const n = R.int(1, 2); for (let q = 0; q < n; q++){ const pw = R.int(2, 4), ph = R.int(2, 3), i0 = R.int(r.x + 1, r.x + r.w - 1 - pw), j0 = R.int(r.z + 1, r.z + r.h - 1 - ph); pools.push({ x0: i0, z0: j0, x1: i0 + pw - 1, z1: j0 + ph - 1, kind: D.pools }); } }
   }
   // 복도 표시 (,)는 바닥으로
   const rows = g.map(row => row.join('').replace(/,/g, '.'));
-  return { F, W, H, rows, rooms, start, stairs, R, D, dist };
+  return { F, W, H, rows, rooms, start, stairs, R, D, dist, traps, pools };
 }
 
 /* ---------- 그림 (빌보드 소품): 카메라 각도만 봄, 빛까지 거리로 어둡게 ---------- */
