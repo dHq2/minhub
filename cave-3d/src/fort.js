@@ -1,4 +1,4 @@
-/* fort.js v1.0 — (v0.57) 진지 · 엄폐 · 계획 (훈련장 규칙. "계획이 거의 절반인 게임")
+/* fort.js v1.1 — (v1.1, v0.59: 진지 계획 (L)은 훈련장에서만 · 엄폐 규칙은 1층에도) (v1.0, v0.57) 진지 · 엄폐 · 계획 (훈련장 규칙. "계획이 거의 절반인 게임")
    ■ 재료: 둘레의 나무 · 바위 · 잔해 (부서진 수레)에서 모음 — 동료가 알아서 캐 오고, 인주는 곁에서 E
    ■ 계획 (L): 시간이 0.25배로 느려짐 (멈추진 않음 — 빨리 생각해야 함). 땅을 찍어 설계도를 놓음 (누른 채 끌면 줄줄이)
      · 나무 바리케이드 (나무 2) · 잔해 더미 (잔해 2): 낮은 엄폐. 걸어서는 못 넘음 (점프로 넘음) · 시야는 안 막음
@@ -422,7 +422,7 @@ uiKeys = function(){
     if (hit('KeyR')){ fortRotate(); return true; }
     for (let k = 1; k <= 7; k++) if (hit('Digit' + k)){ FORT.tool = FORT_TOOLS[k - 1][0]; planGhost(FPLAN.cell); fortBarRender(); return true; }
   }
-  if (FORT.on && !G.lock && hit('KeyL') && !(typeof DP !== 'undefined' && DP.open)){ fortPlan(true); return true; }
+  if (FORT.on && G.mode === 'drill' && !G.lock && hit('KeyL') && !(typeof DP !== 'undefined' && DP.open)){ fortPlan(true); return true; }
   // E: 곁의 재료 캐기 · 설계도 돕기 (쓰러진 동료 일으키기가 먼저)
   if (FORT.on && G.player && down('KeyE') && hit('KeyE') && !G.lock && !G.units.some(u => u.side === 'ally' && u.downed && dist(u, G.player) < 1.8)){
     const pl = G.player, p = FORT.pieces.filter(p => !p.built && dist(pl, p) < 1.6)[0], n = FORT.nodes.filter(n => n.amt > 0 && dist(pl, n) < 1.6)[0];

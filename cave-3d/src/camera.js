@@ -1,4 +1,4 @@
-/* camera.js v0.9 — (v0.9: 층마다 카메라 모드 — iso (기본) · side (낮게 옆에서, 횡스크롤처럼) · top (높이서 내려다봄) · drift (천천히 돎). camMode(). side · top은 Z · C로 못 돌림)
+/* camera.js v0.10 — (v0.10, v0.59: greyside — 1층 대지를 옆에서 멀찍이, 하늘 · 언덕이 보이게) (v0.9: 층마다 카메라 모드 — iso (기본) · side (낮게 옆에서, 횡스크롤처럼) · top (높이서 내려다봄) · drift (천천히 돎). camMode(). side · top은 Z · C로 못 돌림)
    v0.8 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
    v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
@@ -22,7 +22,7 @@ const CAM_MODES = { iso: { base: { y: 9.5, back: 8.2 }, look: { y: 0.4, fwd: 0.6
 // 층 카메라: 모드 + (drift) 1초에 도는 각도. side · top은 각도 고정
 function camMode(mode = 'iso', drift = 0){
   const M = CAM_MODES[mode] || CAM_MODES.iso; CAM.mode = mode; Object.assign(CAM.base, M.base); Object.assign(CAM.look, M.look);
-  CAM.drift = drift; CAM.lockYaw = mode === 'side' || mode === 'top';
+  CAM.drift = drift; CAM.lockYaw = mode === 'side' || mode === 'top' || mode === 'greyside';
   if (CAM.lockYaw) setYaw(0);
 }
 let camera;

@@ -1,4 +1,4 @@
-/* prowl.js v1.0 — (v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
+/* prowl.js v1.1 — (v1.1, v0.59: 사각 · 암살 구역 표시는 훈련장에서만 — 원정은 표시 없이) (v1.0, v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
    ■ 자객 (적): 무리와 따로 움직이며 우리 편을 사냥함. 숙여 구부린 걸음으로 경계가 비는 쪽 — 맨 뒤 · 떨어진 놈 · 싸우느라 한눈 판 놈의 등 뒤로 돌아 들어옴
      · 우리 편 누구의 시야 (앞 ±65°, 어두우면 짧음)에도 안 걸리는 자리만 밟음. 다 막혀 있으면 어둠 속에서 기다림
      · 등 뒤에 닿으면: 목 따기 (즉사 — 동료는 전사, 인주는 위독) · 한 번에 쓰러뜨림 · 치명상. 거구 (카리우스 · 판금)는 목이 안 닿음
@@ -210,7 +210,7 @@ TICKS.push(dt => {
   for (const u of G.units){
     if (u.side === 'neutral') continue;
     let want = false, col = 0;
-    if (PRW.show && !u.dead && !u.downed){
+    if (PRW.show && G.mode === 'drill' && !u.dead && !u.downed){   // 사각 표시는 훈련장에서만
       if (u.side === 'ally'){ if (re) u._bk = !backCovered(u); want = u._bk; col = 0xff3020; }
       else if (!u.alert && !isProwler(u) && sneaking && dist(u, pl) < 12){ want = true; col = 0x40d0ff; }
     }

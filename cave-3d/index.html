@@ -399,6 +399,11 @@
   body.fortplan #fortHud{display:none;}
   @media (max-width:700px){ #fortBar .fb-tools{grid-template-columns:repeat(4,1fr);} #fortBar button{font-size:12.5px;padding:5px 2px;} #fortBar .fb-note{display:none;} }
   @media (max-height:430px){ #fortBar{padding:5px 8px;} #fortBar .fb-tools{grid-template-columns:repeat(7,1fr);} #fortBar button small{display:none;} #fortBar .fb-note{display:none;} }
+  /* v0.59 1층 달 그림 (greyland.js) */
+  #moonCard{position:fixed;inset:0;z-index:40;background:#050507;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:1;transition:opacity 1.4s ease;pointer-events:none;}
+  #moonCard.off{opacity:0;} #moonCard[hidden]{display:none;}
+  #moonCard img{max-width:min(520px,80vw);max-height:60vh;border-radius:4px;box-shadow:0 0 60px rgba(160,180,220,.15);}
+  #moonCard p{font-family:"Nanum Myeongjo","Do Hyeon",serif;color:#cfd3dc;font-size:clamp(16px,2.6vw,22px);letter-spacing:.06em;margin:0;}
 </style>
 </head>
 <body>
@@ -481,6 +486,7 @@
 <script src="src/drill.js"></script>
 <script src="src/fort.js"></script>
 <script src="src/prowl.js"></script>
+<script src="src/greyland.js"></script>
 <script src="src/game.js"></script>
 </body>
 </html>

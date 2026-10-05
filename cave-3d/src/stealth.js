@@ -1,4 +1,4 @@
-/* stealth.js v1.1 — (v1.1, v0.58: 어둠 · 엄폐 뒤 숙임이 발견을 막음) (v1.0, v0.56, 은밀히: 시야 안이면 시야 둘레로 크게 돌아 등 쪽으로) 은신 · 암살 · 방어가 중요한 싸움 · 숙이기 (훈련장 규칙)
+/* stealth.js v1.2 — (v1.2, v0.59: 시야 부채꼴 표시는 훈련장에서만) (v1.1, v0.58: 어둠 · 엄폐 뒤 숙임이 발견을 막음) (v1.0, v0.56, 은밀히: 시야 안이면 시야 둘레로 크게 돌아 등 쪽으로) 은신 · 암살 · 방어가 중요한 싸움 · 숙이기 (훈련장 규칙)
    ■ 은신: 들키지 않은 적은 제자리에서 두리번거림. 앞쪽 (±65°)만 봄 + 바로 곁 발소리
      · 보이면 의심 (?)이 차오름 — 다 차면 ! (무리가 깨어남). 숙이면 (G · 동료는 '은밀히') 보이는 거리 절반, 은신 적성마다 7%씩 더 줄어듦
      · 달리면 4칸 안의 적이 발소리를 들음. 총소리는 벽 너머까지 (sol.js)
@@ -168,7 +168,7 @@ TICKS.push(() => {
 // 시야 표시 (훈련장): 들키지 않은 적 앞에 보는 부채꼴 — 노랑 → 의심이 찰수록 주황 · 빨강
 const STLV = { show: true };
 TICKS.push(() => {
-  const on = typeof SQ !== 'undefined' && SQ.on && STLV.show;
+  const on = typeof SQ !== 'undefined' && SQ.on && STLV.show && G.mode === 'drill';   // 시야 부채꼴은 훈련장에서만
   for (const e of G.units){
     if (e.side !== 'enemy') continue;
     const want = on && !e.alert && !e.dead && !e.D.boss && !e.prowl && G.player && dist(e, G.player) < 18;
