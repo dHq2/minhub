@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.88 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 (catalog v1.75) -->
+<!-- codex v1.89 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -351,12 +351,12 @@ h3.gh.open{margin-top:18px}
 // 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
 const CATS = [
   { key:'relic', no:'1', name:'유물', note:'묶음은 착용 가능 · 등장 미정 · 착용 불가 셋뿐입니다 (시트별 묶음은 없앴고, 원래 출처는 찾기로 나옵니다). 분류 모드를 켜고 칸을 누를 때마다 착용 가능 → 착용 불가 → 등장 미정 순으로 돌며, 그동안은 칸이 자리를 안 옮깁니다. 모드를 끄면 세 통으로 갈립니다. 소모품 (한 번 쓰면 없어지는 것)은 크게 보기에서 따로 켜는 표라, 착용 가능이든 불가든 같이 달 수 있습니다. 금빛 바탕 = 보스 · 특별 유물 (칼의 현자 세트 · 페흐토의 망토 · 도끼기사의 도끼).' },
-  { key:'equip', no:'2', name:'장비', note:'핏빛 바탕 = 보스 등급 장비 (세자르 · 적뢰 · 발용 · 레지나). 나머지는 기본으로 얻을 수 있는 장비 후보: 2D판 무기 10종, 받은 장비 그림 55장 (무기 17 · 방어구 · 옷 24 · 장신구 14), 드라이브 장비 시트를 하나씩 잘라 낸 600장 (무기 180 · 장비 260 · 의상 140 · 장신구 20). 시트 이름에 보스가 붙은 묶음도 등급은 아직 안 정함. 유물에서 옮김 = 유물 탭에서 장비로 옮긴 것.' },
-  { key:'scene', no:'4', name:'컷씬 · 인카운터 · 배경', note:'장면 그림을 한곳에: 컷씬 (로딩 · 장면 전환) · 인카운터 그림과 카드 · 배경 (장소) · 조우 장면 카드 160장 · 빈 맵 틀 28장. 인카운터를 맵으로 만드는 계획은 cave-3d/ENCOUNTER_MAPS.md.' },
-  { key:'card', no:'6', name:'스킬 · 이야기 그림', note:'흑백 이야기 그림 120장, 스킬 아이콘 (2D판 14 · 받은 스킬 그림 10 · 드라이브 아이콘 시트 120).' },
+  { key:'equip', no:'2', name:'장비', note:'게임에서 끼우는 칸대로 나눴습니다 — 무기 (종류별: 검 · 대검 · 단검 · 도끼 · 망치 · 창 · 지팡이 · 활 · 석궁 · 권총 · 산탄총 · 레버액션 · 돌격소총) · 보조 (방패) · 방어구 (머리 · 몸 · 다리) · 장신구. 칸과 종류는 게임 데이터 (cave-3d)와 같고, 크게 보기에 게임 속 칸 · 등급 · 수치가 나옵니다. 원래 받은 묶음 (시트 이름)은 크게 보기 · 찾기에 남아 있어요. 핏빛 바탕 = 보스 등급 장비 (세자르 · 적뢰 · 발용 · 레지나).' },
+  { key:'scene', no:'4', name:'컷씬 · 인카운터 · 배경', note:'쓰는 곳대로: 컷씬 (로딩 · 장면 전환) · 인카운터 (그림 · 카드 · 조우 장면 카드 160장) · 배경 (장소) · 빈 맵 틀 28장. 인카운터를 맵으로 만드는 계획은 cave-3d/ENCOUNTER_MAPS.md.' },
+  { key:'card', no:'6', name:'스킬 · 이야기 그림', note:'스킬 아이콘은 하는 일대로: 무기 공격 · 맨손 · 레슬링 · 방어 · 회피 · 회복 · 지원 · 마법 · 이능 · 탐색 · 도구 · 기묘한 술수. 흑백 이야기 그림 120장은 그림 내용대로 이름을 붙였습니다 (글상자 · 로딩 · 회상에 씀).' },
   { key:'char', no:'8', name:'인물', note:'꼬리표 두 개가 있습니다 — 대각선 금띠는 영입 가능 (동료가 될 수 있는 NPC, 동료와 NPC 사이 중립지대), 초록 테두리는 무리 · 여럿 (한 그림에 여러 명이라 그 무리 · 팩션 전체의 등급). 얼굴을 톡 누르거나 크게 보기에서 답니다. 파워밸런스 격자를 켜면 위에 아직 안 나눈 인물 더미가, 아래에 세로 등급 × 가로 구분(펫 · 동료 · NPC · 적) 표가 열립니다. 더미에서 칸으로 끌어다 놓으면 구분과 등급이 한 번에 정해지고, 다시 더미로 끌면 되돌아갑니다 (폰에서는 꾹 눌러 집고, 톡 누르면 고르는 창). 등급은 하나의 눈금입니다 — 1 잡몹 · 2 중몹 · 3 강적 · 4 중간보스 · 5 보스 · 6 최강 · 7 초월이고, 펫 · 동료는 같은 눈금을 ★1~★7로 읽습니다. 인물마다 공통 설정 칸이 있습니다 — 그림을 열면 맨 위에 인물 공통 설정이 뜨고, 거기 적은 설정 · 스토리 · 스탯은 그 인물의 모든 그림이 같이 봅니다 (묶음 제목 밑에도 표시). 모든 인물을 한곳에. 맨 위 초상화 버튼 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC)을 누르면 그 인물 묶음으로 내려감. 묶음마다 초상화가 맨 앞, 그 뒤로 새 그림 · 2D판 그림. 묶음 제목의 ↑ 초상화로 다시 위로. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화. 팩션 NPC · 적 무리는 드라이브 일반NPC 시트를 한 명씩 잘라 팩션마다 묶음.' },
-  { key:'prop', no:'11', name:'가구 · 소품', note:'맵에 놓을 가구 · 소품 (받은 시트를 하나씩 잘라 배경을 지움). 분류만 해 둠, 전부 빨강 (미등장). 쳐낼 것은 체크 · 동그라미로. 아래쪽 묶음 (가구 · 생활 소품 · 상호작용 소품 · 환경 · 폐허 · 건축물) 288개는 드라이브 시트에서.' },
-  { key:'item', no:'12', name:'일반 에셋', note:'게임 곳곳에 쓰는 일반 아이콘. 생물 (가축 · 야생 동물 · 바다 · 하늘 · 몬스터 · 신화 생물)과 아이템 (현대 물건 · 무기 · 방어구 · 물약 · 음식 · 재료 · 열쇠 · 책 · 상자 · 표지판 · 조명), 기묘한 물건 · 기묘한 소형 생물 · 작은 픽업. 유물에서 옮김 (가방 · 걸이 · 인형 · 화살통). 탄약 4종 (상자 · 기본 묶음 · 샷건탄 · 무더기) — 탄약은 종류 통일이고 샷건탄만 따로. 받은 아이콘 시트를 하나씩 잘라 배경을 지움.' },
+  { key:'prop', no:'11', name:'가구 · 소품', note:'놓는 곳대로 나눴습니다 — 굴 가구 (침대 · 의자 · 탁자 · 수납 · 방 꾸밈 · 생활 소품 · 오딜의 방) · 던전 (빛 · 불 · 상자 · 통 · 보급 · 무덤 · 시체 · 방어물 · 야영 · 제단 · 성물 · 우물) · 상점 · 작업대 · 도시 · 현대 · 기계 · 건축물 · 지형 · 인카운터 오브제 · 팩션 지형. 초록 동그라미 = 지금 원정 던전에 놓이는 것. 색 변형은 대표 그림 밑에 접혀 있어요.' },
+  { key:'item', no:'12', name:'일반 에셋', note:'쓰는 일대로: 회복 (물약 · 붕대) · 음식 · 탄약 · 빛 · 열쇠 · 책 · 지도 · 쓰는 물건 (던짐 · 부적 · 신호) · 도구 · 재료 · 돈 · 지니는 물건 · 장비 아이콘 · 상자 · 통 · 표지판 · 잡동사니 · 현대 물건 · 생물 (가축 · 야생 · 바다 · 하늘 · 몬스터 · 신화 · 기묘한 소형). 거의 같은 그림 (횃불 · 통 · 동물 다른 자세)은 대표 밑에 변형으로 접었어요.' },
 ];
 const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
 /* v1.83 인물 공통 설정: cid 한 줄에 적어 두고 그 인물의 그림 전부가 같이 읽음 */
@@ -479,14 +479,14 @@ const filtering = () => !!(q || onlyChecked || showSt !== 'all');
 const isOpenG = k => filtering() || !!gOpen[k];
 function setOpenG(k, v){ if (v) gOpen[k] = 1; else delete gOpen[k]; try { localStorage.setItem('codex-gopen', JSON.stringify(gOpen)); } catch (e) {} }
 // 목차 묶음: 알려진 앞머리 (무기 · 의상 · 조우 장면 …)끼리 모음. 나머지는 분류마다 '기본' 줄로
-const KNOWN = ['무기','장비','의상 세트','의상','장신구','보스 장비','받은 장비 그림','조우 장면','빈 맵 틀','스킬 아이콘','생물','가구','생활 소품','상호작용 소품','소품','환경 소품','환경','폐허','건축물','유물 모음 2 (1.59)','범용 팩션 지형','인물 유물','탄약',WEAR_Y,WEAR_N,WEAR_Q];
-const BASE = { relic:'유물', equip:'기본 무기', scene:'컷씬 · 인카운터 · 배경', card:'이야기 · 스킬 그림', prop:'처음 받은 가구 · 소품', item:'아이템' };
+const KNOWN = ['무기','보조','방어구','장신구','보스 장비','장비','컷씬','인카운터','배경','빈 맵 틀','스킬','이야기 그림 (흑백)','굴 가구','던전','지형','인카운터 오브제','팩션 지형','생물',WEAR_Y,WEAR_N,WEAR_Q];
+const BASE = { relic:'유물', equip:'장비', scene:'장면', card:'그림', prop:'그 밖의 소품', item:'물건' };
 const clusterOf = (s, ck) => { const p = s.includes(' · ') ? s.split(' · ')[0] : s; return KNOWN.includes(p) ? p : (BASE[ck] || '기본'); };
 function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID[e.parent] || !visible(BY_ID[e.parent])); }
 /* 찾기: 번호는 하이픈 · 대소문자 무시 (h076 = H-076). 찾는 동안은 모든 분류에서 */
 let q = '';
 const norm = t => String(t || '').toLowerCase().replace(/[-\s]/g, '');
-function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(m.name).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.note).includes(n) || norm(e.spec).includes(n) || norm(cspecOf(e)).includes(n); }
+function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(m.name).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.pk).includes(n) || norm(e.was).includes(n) || norm(e.game).includes(n) || norm(e.note).includes(n) || norm(e.spec).includes(n) || norm(cspecOf(e)).includes(n); }
 function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); default: return stOf(e) === showSt; } }
 function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && stPass(e); }
 function tile(e){
@@ -500,7 +500,7 @@ function tile(e){
     <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
     <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
-    ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">${BY_ID[KIDS[e.id][0]].name.includes('색 변형') ? '색' : '표정'} ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
+    ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">${BY_ID[KIDS[e.id][0]].name.includes('색 변형') ? '색' : /변형|자세/.test(BY_ID[KIDS[e.id][0]].name) ? '변형' : '표정'} ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
     <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${sch}${memo}${wch}${cch}</div>`;
 }
 /* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
@@ -656,7 +656,7 @@ function render(){
       const k = gKey(c.key, s), op = isOpenG(k) || shown.length === 1 || c.key === 'relic';
       const list = op ? arrange(list0, c.key) : list0; if (op) FLAT.push(...list);
       const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : list[0].rank === 'gold' ? '#d4a93a' : 'var(--line)';
-      const g = s === '인카운터 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
+      const g = s === '인카운터 카드' || s === '인카운터 · 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
       const gi = c.key === 'char' && subs0.includes(s) ? `who-${subs0.indexOf(s)}` : 'g-' + c.key + '-' + subs.indexOf(s);
       const bulk = c.key === 'relic' ? `<button class="toNav" type="button" data-bulk="" data-bs="${esc(s)}">전부 아직으로</button>` : '';
       const back = c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : (c.key !== 'relic' && shown.length > 1) ? `<button class="toNav" type="button" data-totoc="toc-${c.key}" aria-label="목차로">↑ 목차</button>` : '';
@@ -684,7 +684,7 @@ function fillView(){
   setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = nameOf(e);
   if (document.activeElement !== $('vNameIn')) $('vNameIn').value = nameOf(e);
   $('vOrig').hidden = !renamed(e); $('vOrig').textContent = '이름 바뀜 · 원래 이름: ' + e.name;
-  $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub; $('vNote').textContent = e.note || '';
+  $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub + (e.pk && e.pk !== e.sub ? '  (받은 묶음: ' + e.pk + ')' : '') + (e.was ? '  · 예전 이름: ' + e.was : ''); $('vNote').textContent = (e.game ? e.game + (e.note ? ' — ' : '') : '') + (e.note || '');
   $('vSpec').textContent = e.spec || ''; $('vSpec').hidden = !e.spec;
   const hasC = e.cat === 'char' && !!e.cid;
   $('vCSpecLab').hidden = !hasC; $('vCSpec').hidden = !hasC;
