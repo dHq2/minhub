@@ -227,7 +227,7 @@ function meetTick(){
   // 아직 싸우는 중이면 GOOD WILL은 제자리에서 버팀 (원정대가 오기 전까지 쓰러지지 않게)
   const left = foes().filter(e => e.band === M.band);
   if (left.length && dist(u, pl) > 12){ u.hp = Math.max(u.hp, u.max * 0.25); return; }
-  if (!left.length && dist(u, pl) < 4 && !G.lock && !M.talking){ M.talking = true; meetTalk(M); }
+  if (!left.length && dist(u, pl) < 6.5 && !G.lock && !M.talking){ M.talking = true; meetTalk(M); }
 }
 async function meetTalk(M){
   const u = M.u, face = HERO_DEF.goodwill.face;
