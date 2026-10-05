@@ -106,6 +106,8 @@ function genDungeon(F, seed){
   if (rooms.length >= 7) take('rest', 1, r => dist.get(r.id) >= 2);
   if (D.graves) take('graves', 1);
   if (D.altar) take('altar', 1);
+  // v1.1 인카운터 방 (encounters.js): 층마다 한두 개
+  take('enc', R() < 0.35 ? 2 : 1, r => dist.get(r.id) >= 1 && r.w >= 7 && r.h >= 6);
   // v0.31 상황 방: 만남 · 구출작전 · 진지전 · 포격전 · 각개전투 (매복)
   if (F >= 2 && (F === 2 || R() < 0.35)) take('meet', 1, r => dist.get(r.id) >= 1);
   if (R() < 0.55) take('rescue', 1, r => dist.get(r.id) >= 2);
@@ -131,7 +133,7 @@ function genDungeon(F, seed){
       for (let i = r.x + 1; i < r.x + r.w - 1; i++) if (i !== gap && i !== gap + 1 && g[j][i] === '.' && !path.has(j * W + i)) g[j][i] = 'r';
       r.wallZ = j; continue;
     }
-    if (r.type === 'start' || r.type === 'rest' || r.type === 'artillery' || r.type === 'rescue' || r.type === 'meet') continue;
+    if (r.type === 'start' || r.type === 'rest' || r.type === 'enc' || r.type === 'artillery' || r.type === 'rescue' || r.type === 'meet') continue;
     const opts = [];
     if (r.w >= 9 && r.h >= 7) opts.push('hall');
     if (r.w >= 7 && r.h >= 7 && r.type !== 'stairs') opts.push('dais', 'dais');

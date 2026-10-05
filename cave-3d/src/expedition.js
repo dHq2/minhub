@@ -131,7 +131,7 @@ async function expLoadFloor(F, how){
   Object.assign(DUN, { bills: [], sources: [], items: [], marks: [], seen: new Uint8Array(gen.W * gen.H), rooms: gen.rooms });
   setupDarkness(D); G.fogK = D.fog || 0.9;
   if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
-  EXP.reveal = false; EXP.radar = false; EXP.lit = true; EXP.meet = null; G.locks = [];
+  EXP.reveal = false; EXP.radar = !!EXP.tehera; EXP.encs = []; EXP.lit = true; EXP.meet = null; G.locks = [];
   // 원정대
   const s = gen.start, px = Math.round(s.cx), pz = Math.round(s.cz) + 1;
   for (const [i, k] of RPG.party.entries()){
@@ -208,7 +208,8 @@ function fillRoom(r, gen){
     addSource(x, z, 4, 0xff6a5a, 0.8, 1.6);
     G.inspect.push({ x, z, r: 1.9, mark: '제단', far: 9, label: '제단에 기도한다 (축복 · 저주)', once: true, fn: () => altarPray(x, z, F) });
     spawnGroup(r, gen, tiles, 2, band); lights(2); deco(2);
-  } else if (typeof sitFill === 'function') sitFill(r, gen, tiles, edges, band, lights, deco);
+  } else if (r.type === 'enc' && typeof encFill === 'function'){ encFill(r, gen, tiles, edges, band, lights, deco); lights(1); }   // v1.12 인카운터 방 (encounters.js)
+  else if (typeof sitFill === 'function') sitFill(r, gen, tiles, edges, band, lights, deco);
 }
 function spawnFoe(kind, x, z, F, band, elite){
   const e = spawn(kind, x, z, 'enemy');
@@ -356,11 +357,12 @@ function expTick(dt){
   sizeDBills();
   if (typeof mapFxTick === 'function') mapFxTick(dt);
   if (typeof bossTick === 'function') bossTick(dt);
+  if (typeof encTick === 'function') encTick(dt);
   // 횃불
   if (EXP.torchT > 0){ EXP.torchT -= dt; if (EXP.torchT <= 0){ if (EXP.torches > 0){ EXP.torches--; EXP.torchT = EXP_TORCH; popText(pl.x, pl.y + 2.4, pl.z, '새 횃불을 켰다', 'heal', 1.2); } else { EXP.torchT = 0; caption('횃불이 꺼졌다', '어둠이 가까워진다 — 시야 2칸, 정신도가 빨리 줆'); } } }
   EXP.lit = EXP.torchT > 0;
   EXP.visT = (EXP.visT || 0) - dt;
-  if (EXP.visT <= 0){ EXP.visT = 0.5; EXP.vision = pl.rpg ? pl.rpg.vision : 4.7; EXP.radar = EXP.radar || !!(pl.fx && pl.fx.radar); }
+  if (EXP.visT <= 0){ EXP.visT = 0.5; EXP.vision = (pl.rpg ? pl.rpg.vision : 4.7) + (EXP.tehera ? 1.5 : 0); EXP.radar = EXP.radar || !!(pl.fx && pl.fx.radar); }
   const vision = EXP.vision || 4.7;
   tickLights(dt, vision, EXP.lit);
   // 지도
