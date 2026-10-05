@@ -270,7 +270,7 @@
 <div id="focusnote" hidden>화면을 클릭하면 조작할 수 있어요</div>
 <div id="bossbar" hidden><div id="bossname"></div><div id="bosstrack"><div id="bossfill"></div></div><div id="bossphase"></div></div>
 <div id="caption"></div>
-<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>X</b> 무기 ↔ 보조 무기 · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>G</b> 숙이기 (높은 공격을 피하면 다음 공격 확정 치명 · 피한 직후 맨손 J = 어퍼컷 · 숙인 채 J = 다리후리기) · <b>Shift+G</b> 슬라이딩 (닿은 적을 넘어뜨림) · 맨손 J 연타 = 잽 · 주먹 · 앞차기 · 회전 하이킥 · 점프 중 J = 날아 무릎 (달리며 뛰었으면 드롭킥 — 날아가서 발끝에 걸리면 빠아악!) · 넘어진 적에게 J = 발목 부수기 · 맨손 F = 무에타이 가드 · <b>T</b> 바디 태클 (Shift와 함께면 더 세게 · 벽에 같이 박으면 큰 피해) · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 도움말</div>
+<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>X</b> 무기 ↔ 보조 무기 · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>G</b> 숙이기 (높은 공격을 피하면 다음 공격 확정 치명 · 피한 직후 맨손 J = 어퍼컷 · 숙인 채 J = 다리후리기) · <b>Shift+G</b> 슬라이딩 (닿은 적을 넘어뜨림) · 맨손 J 연타 = 잽 · 주먹 · 앞차기 · 회전 하이킥 · 점프 중 J = 날아 무릎 (달리며 뛰었으면 드롭킥 — 날아가서 발끝에 걸리면 빠아악!) · 넘어진 적에게 J = 발목 부수기 · 맨손 F = 무에타이 가드 · <b>T</b> 바디 태클 (Shift와 함께면 더 세게 · 벽에 같이 박으면 큰 피해) · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 기술표</div>
 <div id="textbox" hidden></div>
 <div id="load" hidden><div class="lines"></div><div class="go" hidden>▶ 계속 (E · 클릭)</div></div>
 <div id="flash"></div><div id="redflash"></div>
@@ -279,7 +279,7 @@
 <div id="guide"></div><div id="dream"></div><div id="dark"></div><div id="mid"></div>
 <div id="expHud" hidden></div>
 <div id="mmwrap" hidden><canvas id="minimap"></canvas><small>M 큰 지도</small></div>
-<div id="bigwrap" hidden><canvas id="bigmap"></canvas><small>M 닫기 · ▼ 계단 · ↑ 귀환 줄 · ♨ 모닥불 · ◆ 보물 · ⚑ 진지 · ✸ 포대 · ☗ 포로 · ★ 만남</small></div>
+<div id="bigwrap" hidden><canvas id="bigmap"></canvas><small>M 닫기 · ▼ 계단 · ↑ 귀환 줄 · ♨ 모닥불 · ◆ 보물 · ? 인카운터 · ♛ 보스 · ⚑ 진지 · ✸ 포대 · ☗ 포로 · ★ 만남</small></div>
 <div id="vig"></div>
 <div id="grap" hidden></div>
 <div id="clash"></div>
@@ -313,6 +313,7 @@
 <script src="src/foe_sheets.js"></script>
 <script src="src/foes2.js"></script>
 <script src="src/encounters.js"></script>
+<script src="src/qol.js"></script>
 <script src="src/wounds.js"></script>
 <script src="src/tackle.js"></script>
 <script src="src/gear.js"></script>

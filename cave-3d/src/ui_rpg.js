@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.12 — RPG 화면 (v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.13 — RPG 화면 (v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -259,7 +259,7 @@ function uiVignette(a, sk){
 }
 
 /* ---------- 원정 준비 (굴의 석문에서) ---------- */
-const PREP = { pick: { cheong: true, karius: true, goodwill: true }, torches: 2 };
+const PREP = { pick: { cheong: true, karius: true, goodwill: true }, torches: 2, startF: 1 };
 const prepMates = () => ['cheong', 'karius'].concat(RPG.meta.gw ? ['goodwill'] : []);
 function expPrepOpen(){
   G.paused = true; const el = $r('prep');
@@ -274,12 +274,14 @@ function expPrepOpen(){
       <div class="pp-sub">누가 가나</div><div class="pp-party">${['inju'].concat(prepMates()).map(card).join('')}</div>
       <div class="pp-row"><span>식량</span><b>${need}끼 필요 · 창고 ${foodHave}끼</b>${foodHave < need ? '<em class="bad">모자람 → 배고픔 (최대 체력 -15%)</em>' : '<em>각자 한 끼씩 챙김</em>'}</div>
       <div class="pp-row"><span>횃불</span><b><button data-t="-">−</button> ${PREP.torches + 1} <button data-t="+">+</button></b><em>하나는 기본 · 더 들면 땔감 10씩 (땔감 ${PRO.wood || 0}) · 하나에 4분</em></div>
+      ${(RPG.meta.shortcut || 1) > 1 ? `<div class="pp-row"><span>출발</span><b>${[1].concat((RPG.meta.shortcut || 1) >= 6 ? [6] : []).concat((RPG.meta.shortcut || 1) >= 11 ? [10] : []).map(f => `<button data-f="${f}" style="${PREP.startF === f ? 'outline:2px solid #ffd35a' : ''}">${f}층</button>`).join(' ')}</b><em>지름길: 쓰러뜨린 보스 아래층부터</em></div>` : ''}
       <div class="pp-row"><span>가방</span><b>${RPG.bag.length}/${bagCap()}</b><em>탄약: 화살 ${RPG.ammo.arrow} · 총알 ${RPG.ammo.bullet} · 산탄 ${RPG.ammo.shell} · I로 장비를 고르고 오기</em></div>
       <div class="pp-btns"><button data-a="go">떠난다</button><button data-a="eq">장비 (I)</button><button data-a="no">아직</button></div></div>`;
   };
   render(); el.hidden = false;
   el.onclick = e => {
-    e.stopPropagation(); const k = e.target.closest('[data-k]'), t = e.target.closest('[data-t]'), a = e.target.closest('[data-a]');
+    e.stopPropagation(); const k = e.target.closest('[data-k]'), t = e.target.closest('[data-t]'), a = e.target.closest('[data-a]'), fb = e.target.closest('[data-f]');
+    if (fb) PREP.startF = +fb.dataset.f;
     if (k && k.dataset.k !== 'inju') PREP.pick[k.dataset.k] = !PREP.pick[k.dataset.k];
     if (t) PREP.torches = Math.max(0, Math.min(Math.floor((PRO.wood || 0) / 10), PREP.torches + (t.dataset.t === '+' ? 1 : -1)));
     if (a){ if (a.dataset.a === 'no'){ el.hidden = true; G.paused = false; return; } if (a.dataset.a === 'eq'){ el.hidden = true; G.paused = false; rpgWinOpen('eq'); return; }
@@ -300,7 +302,7 @@ async function expGoFromCave(party, food){
   await loadScreen('assets/load_moon.jpg', ['석문 너머로 계단이 이어진다.', '횃불이 흔들린다. 청광묵이 침을 삼킨다.', '아래로, 아래로.']);
   letterbox(false); G.lock = false;
   for (const k of party){ const h = hero(k); if (h.hpRatio != null){ h.hp = Math.max(1, Math.round(derive(h).maxHp * h.hpRatio)); h.hpMax = derive(h).maxHp; delete h.hpRatio; } }
-  expStart({ party, food, torches: PREP.torches, F: 1 });
+  expStart({ party, food, torches: PREP.torches, F: PREP.startF || 1 });
 }
 
 /* ---------- 키 ---------- */
