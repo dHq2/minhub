@@ -1,4 +1,4 @@
-/* drill.js v1.2 — (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.3 — (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -186,7 +186,7 @@ function crewRow(u){
   const wsel = isP ? sel('pw', pOpts, curW) : sel('main', [['', '없음 (근접만)'], ...Object.entries(RW).map(([k, R]) => [k, `${R.n} (${FAM[R.fam]})`])], curW);
   return `<div class="dp-u"><div class="dp-id"><img src="${face}" alt=""><div><b>${u.D.name}</b><small>${TAGS[S.tag].n} · 훈련 점수 <em>${S.pts}</em></small><small class="pas">${S.pas[0]} — ${S.pas[1]}</small></div></div>
     <div class="dp-set"><label>보직 ${sel('role', Object.entries(ROLES), S.role)}</label><label>조 ${isP ? '<b>1조 조장</b>' : sel('sq', [[1, '1조'], [2, '2조'], [0, '단독']], S.sq)}</label>
-      <label>무기 ${wsel}</label>${isP ? '' : `<label>사격 ${sel('fire', [['free', '아끼지 않음'], ['save', '아낌 (쏠 만한 놈만)']], S.fire || 'free')}</label>`}${isP ? '' : `<label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="shield" ${S.kit.shield ? 'checked' : ''}> 방패</label>`}</div>
+      <label>무기 ${wsel}</label>${isP ? '' : `<label>사격 ${sel('fire', [['free', '아끼지 않음'], ['save', '아낌 (쏠 만한 놈만)']], S.fire || 'free')}</label>`}${isP ? '' : `<label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="shield" ${S.kit.shield ? 'checked' : ''}> 방패</label><label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="watch" ${S.watch ? 'checked' : ''}> 경계 (뒤를 봄)</label>`}</div>
     <div class="dp-apt">${FAMS.map(f => `<div><span>${FAM[f]}</span>${aptBar(u, f)}<b>${aptOf(u, f)}</b><button data-u="${u.uid}" data-tr="${f}" data-d="-1">−</button><button data-u="${u.uid}" data-tr="${f}" data-d="1" title="비용 ${aptOf(u, f) < 5 ? trainCost(u, f) : '-'}">+${aptOf(u, f) < 5 ? `<small>${trainCost(u, f)}</small>` : ''}</button></div>`).join('')}</div>
     ${isP ? '' : `<div class="dp-pack">소지품 <b>${packUsed(u)}/${packSlots(u)}칸</b> ${Object.keys(AMMO_SLOT).map(k => `<span>${AMMO_KN[k]} ${S.ammo[k]} <button data-u="${u.uid}" data-pk="${k}" data-d="-1">−</button><button data-u="${u.uid}" data-pk="${k}" data-d="1">+</button></span>`).join('')}<small>한 칸 = 총알 20 · 화살 30 · 산탄 8</small></div>`}
     <div class="dp-st">사격 ${S.stat.shots} · 명중 ${S.stat.shots ? Math.round(S.stat.hits / S.stat.shots * 100) : 0}% · 끊기 ${S.stat.cuts}</div></div>`;
@@ -202,7 +202,7 @@ function drillPanelRender(){
     <div class="dp-row"><button data-act="fplan">진지 계획 (L)</button><button data-act="fmat">재료 더미 받기 (나무 · 돌 · 잔해 +6)</button><button data-act="fclear">진지 · 설계도 모두 치우기</button></div>`;
   if (DP.tab === 'rule'){
     const S = SOLS;
-    body = `<div class="dp-row"><button data-act="eng" class="${ENG.on ? 'on' : ''}">교전 자리 규칙 ${ENG.on ? '켜짐' : '꺼짐'}</button><button data-act="engshow" class="${ENG.show ? 'on' : ''}">자리 표시 ${ENG.show ? '켜짐' : '꺼짐'}</button><button data-act="slots">한 사람당 자리 ${ENG.slots}</button><button data-act="lethal" class="${STL.lethal ? 'on' : ''}">방어 중요 (안 막으면 1.35배) ${STL.lethal ? '켜짐' : '꺼짐'}</button><button data-act="ammo" class="${SOLAMMO.inf ? 'on' : ''}">탄약 ${SOLAMMO.inf ? '무한' : '실제 (소지품 칸)'}</button><button data-act="refill">탄약 상자 — 모두 채우기</button></div>
+    body = `<div class="dp-row"><button data-act="eng" class="${ENG.on ? 'on' : ''}">교전 자리 규칙 ${ENG.on ? '켜짐' : '꺼짐'}</button><button data-act="engshow" class="${ENG.show ? 'on' : ''}">자리 표시 ${ENG.show ? '켜짐' : '꺼짐'}</button><button data-act="slots">한 사람당 자리 ${ENG.slots}</button><button data-act="lethal" class="${STL.lethal ? 'on' : ''}">방어 중요 (안 막으면 1.35배) ${STL.lethal ? '켜짐' : '꺼짐'}</button><button data-act="ammo" class="${SOLAMMO.inf ? 'on' : ''}">탄약 ${SOLAMMO.inf ? '무한' : '실제 (소지품 칸)'}</button><button data-act="refill">탄약 상자 — 모두 채우기</button><button data-act="blind" class="${PRW.show ? 'on' : ''}">사각 · 암살 구역 표시 ${PRW.show ? '켜짐' : '꺼짐'}</button><button data-act="preveal" class="${PRW.reveal ? 'on' : ''}">자객 늘 보이기 (연습) ${PRW.reveal ? '켜짐' : '꺼짐'}</button></div>
     <p class="dp-note">교전 자리를 끄면 적이 한꺼번에 몰려들어 일대일 기술 교환이 끊김 — 켜고 꺼서 비교. 자리 표시: 빨강 = 자리 잡음 · 회색 = 둘레를 돌며 기다림 · 주황 = 등이 열려 들어옴.</p>
     <table class="dp-tb"><tr><th>사격</th><td>${S.shots}</td><th>명중</th><td>${S.hits} (${S.shots ? Math.round(S.hits / S.shots * 100) : 0}%)</td><th>예고 끊기</th><td>${S.cuts}</td></tr>
     <tr><th>피함 (날랜 놈)</th><td>${S.dodged}</td><th>방패에 막힘</th><td>${S.blocked}</td><th>약점</th><td>${S.weak}</td></tr>
@@ -211,7 +211,8 @@ function drillPanelRender(){
     <tr><th>암살</th><td>${STL.stat.kills} (실패 ${STL.stat.fails})</td><th>들킴</th><td>${STL.stat.spotted}</td><th>기습 사격</th><td>${STL.stat.sneakShots}</td></tr>
     <tr><th>동료 막기</th><td>${STL.stat.guards}</td><th>동료 숙임</th><td>${STL.stat.ducks}</td><th>막기 깨짐</th><td>${STL.stat.breaks}</td></tr>
     <tr><th>지은 진지</th><td>${FORT.stat.built} (부서짐 ${FORT.stat.broken})</td><th>엄폐가 막음</th><td>${FORT.stat.blocked}</td><th>머리 · 투구 뚫림</th><td>${FORT.stat.heads}</td></tr>
-    <tr><th>대기 사격</th><td>${FORT.stat.ambush}</td><th>모은 재료</th><td>${FORT.stat.harvested}</td><th></th><td></td></tr></table>
+    <tr><th>대기 사격</th><td>${FORT.stat.ambush}</td><th>모은 재료</th><td>${FORT.stat.harvested}</td><th>자객 잡음</th><td>${PRW.stat.caught}</td></tr>
+    <tr><th>자객에게 당함</th><td>${PRW.stat.execs}</td><th>목 따임 · 쓰러짐</th><td>${PRW.stat.slain} · ${PRW.stat.downs}</td><th>치명상</th><td>${PRW.stat.wounds}</td></tr></table>
     <div class="dp-row"><button data-act="reset">기록 지우기</button><button data-act="exit">훈련장 나가기 (굴로)</button></div>`;
   }
   if (DP.tab === 'help') body = `<div class="dp-help">
@@ -227,6 +228,9 @@ function drillPanelRender(){
     <h4>진지 · 엄폐 (L)</h4><p>L = 계획 (시간 0.25배, 멈추진 않음). 바리케이드 · 잔해 더미 (낮은 엄폐) · 돌담 (시야까지 막음) · 말뚝 (밟으면 찔림) · 조 진지 (지킬 자리, R로 방향). 설계도는 동료가 둘레의 나무 · 바위 · 수레에서 재료를 모아 지음 — 인주도 곁에서 E. 막힌 적은 엄폐를 부숨.</p>
     <p>엄폐 바로 뒤에서 숙여 있으면 그 너머의 사격이 다 막힘. 쏘는 순간엔 머리를 내밀어 40%가 지나오고 맞으면 머리 (투구 뚫림, 치명). 서 있으면 70%. 거구는 숙여도 소용없음. 적도 똑같음.</p>
     <p>대기 사격: 1초 넘게 가만히 있다가 새로 보인 적을 1.5초 안에 쏘면 1.5배 — 벽 모퉁이에서 기다렸다 나오는 놈을 쏨. 적 궁수도 그렇게 기다림.</p>
+    <h4>자객 · 경계 · 어둠</h4><p>적 자객은 무리와 따로 우리를 사냥함 — 아무의 시야에도 안 걸리는 길로 숨어 와서 맨 뒤 · 떨어진 · 싸우느라 한눈 판 동료의 등 뒤에서 목을 따거나 (즉사) 한 번에 쓰러뜨리거나 치명상. 우리 편 시야 밖에선 화면에도 안 보임. 아무도 못 보면 소리 없이 끝나고, 누가 쓰러진 걸 발견해야 외침.</p>
+    <p>막는 법: 동료에게 '경계 (뒤를 봄)'를 맡김 (편성 탭) · 등맞대기 진형 · 서로 붙어 다니기. 등을 아무도 못 보는 동료는 발밑 뒤쪽이 붉게 표시됨. 자객이 시야에 들면 의심 → "뒤다!" 하고 드러남.</p>
+    <p>어두운 곳 (골목 · 원정의 빛 없는 곳)에서는 서로 보이는 거리가 짧음. 엄폐 뒤에 숙인 자는 너머에서 안 보임. 숙이면 (G) 들키지 않은 적의 등 뒤에 푸른 암살 구역이 보임.</p>
     <h4>기절 · 연계</h4><p>쓰러진 동료는 누가 일으켜야 함 (곁에서 E, 1.3초). 쓰러진 · 잡힌 · 사격으로 끊긴 · 벽에 박힌 놈을 치면 연계. 슬라이딩 · 드롭킥은 정면에서 보고 있는 적에게 읽힘.</p></div>`;
   el.innerHTML = `<div class="dp-box"><div class="dp-head"><b>훈련 창</b><div class="dp-tabs">${tabs.map(([k, n]) => `<button data-tab="${k}" class="${DP.tab === k ? 'on' : ''}">${n}</button>`).join('')}</div><button data-act="close">닫기 (P)</button></div><div class="dp-body">${body}</div></div>`;
 }
@@ -234,7 +238,7 @@ function drillPanelClick(e){
   const b = e.target.closest('button'); if (!b) { if (e.target.id === 'drillPanel') drillPanel(false); return; }
   e.stopPropagation();
   if (b.dataset.tab){ DP.tab = b.dataset.tab; return drillPanelRender(); }
-  if (b.dataset.pk){ const u = G.units.find(o => o.uid === +b.dataset.u); if (u && !packAdd(u, b.dataset.pk, +b.dataset.d)) popText(u.x, u.y + 2, u.z, +b.dataset.d > 0 ? '소지품 칸이 가득' : '더 뺄 게 없음', 'miss', 0.6); return drillPanelRender(); }
+  if (b.dataset.pk){ const u = G.units.find(o => o.uid === +b.dataset.u); if (u && !packAdd(u, b.dataset.pk, +b.dataset.d)) popText(u.x, u.y + 2, u.z, +b.dataset.d > 0 ? '소지품 칸이 가득' : '더 뺄 게 없음', 'miss', 0.6); solSaveAll(); return drillPanelRender(); }
   if (b.dataset.tr){ const u = G.units.find(o => o.uid === +b.dataset.u); if (u && !solTrain(u, b.dataset.tr, +b.dataset.d)) popText(u.x, u.y + 2, u.z, +b.dataset.d > 0 ? '훈련 점수가 모자람' : '더 못 내림', 'miss', 0.6); return drillPanelRender(); }
   if (b.dataset.sc){ const s = DRILL_SC.find(o => o.k === b.dataset.sc); drillPanel(false); s && s.go(); return; }
   const a = b.dataset.act;
@@ -244,12 +248,13 @@ function drillPanelClick(e){
   if (a === 'eng'){ ENG.on = !ENG.on; ENG.tok.clear(); } if (a === 'engshow') ENG.show = !ENG.show; if (a === 'slots') ENG.slots = ENG.slots >= 3 ? 1 : ENG.slots + 1;
   if (a === 'ammo') SOLAMMO.inf = !SOLAMMO.inf;
   if (a === 'lethal') STL.lethal = !STL.lethal;
+  if (a === 'blind') PRW.show = !PRW.show; if (a === 'preveal') PRW.reveal = !PRW.reveal;
   if (a === 'fplan'){ drillPanel(false); return fortPlan(true); }
   if (a === 'fmat'){ for (const k in FORT.stock) FORT.stock[k] += 6; fortBarRender(); }
   if (a === 'fclear'){ fortClearAll(); FORT.wave = null; fortHudRender(); }
   if (a === 'refill') for (const u of G.units) if (u.sol && u.kind !== 'player') packFill(u);
-  if (a === 'reset'){ for (const k in SOLS) SOLS[k] = 0; for (const k in STL.stat) STL.stat[k] = 0; for (const k in FORT.stat) FORT.stat[k] = 0; ENG.stat.waits = ENG.stat.flanks = 0; for (const u of G.units) if (u.sol) u.sol.stat = { shots: 0, hits: 0, cuts: 0 }; }
-  if (a === 'exit') return drillExit();
+  if (a === 'reset'){ for (const k in SOLS) SOLS[k] = 0; for (const k in STL.stat) STL.stat[k] = 0; for (const k in FORT.stat) FORT.stat[k] = 0; for (const k in PRW.stat) PRW.stat[k] = 0; ENG.stat.waits = ENG.stat.flanks = 0; for (const u of G.units) if (u.sol) u.sol.stat = { shots: 0, hits: 0, cuts: 0 }; }
+  if (a === 'exit'){ solSaveAll(); return drillExit(); }
   drillPanelRender();
 }
 function drillPanelChange(e){
@@ -260,8 +265,9 @@ function drillPanelChange(e){
   if (k === 'sq') S.sq = +t.value;
   if (k === 'main'){ S.kit.main = t.value || null; S.mode = 'melee'; S.awk = false; solGear(u); const R = RW[S.kit.main]; if (R && R.ammo && !S.ammo[R.ammo]){ packAdd(u, R.ammo, 1); packAdd(u, R.ammo, 1); } }
   if (k === 'shield'){ S.kit.shield = t.checked; solGear(u); }
+  if (k === 'watch') S.watch = t.checked;
   if (k === 'pw'){ const h = hero('inju'); h.eq.weapon = t.value ? makeItem(t.value) : null; refreshHero(h); }
-  drillPanelRender(); sqHudRender();
+  drillPanelRender(); sqHudRender(); solSaveAll();
 }
 const _uiKeysDrill = uiKeys;
 uiKeys = function(){

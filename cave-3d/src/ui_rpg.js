@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.15 — RPG 화면 (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.16 — RPG 화면 (v1.16, v0.58: 고른 영웅의 배낭을 보여 줌 · 동료끼리 넘겨주기 · 가방 칸 수는 원정대 모두 · 포로 칸 삭제) (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -76,8 +76,8 @@ function rpgRender(){
     ${slot('head')}${slot('body')}${slot('legs')}${slot('weapon')}${slot('off')}${slot('acc1')}${slot('acc2')}</div>
     <div class="rw-core">${core.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>`;
   // 오른쪽: 가방 (+ 보관함)
-  const cap = bagCap();
-  let bag = ''; for (let i = 0; i < cap; i++){ const it = RPG.bag[i]; bag += `<div class="rw-cell ${it && UIR.sel && UIR.sel.it === it ? 'sel' : ''}" ${it ? `data-bag="${i}"` : ''}>${it ? iconHtml(it, 50) : ''}</div>`; }
+  const B = bagOf(h), cap = capOf(h);
+  let bag = ''; for (let i = 0; i < cap; i++){ const it = B[i]; bag += `<div class="rw-cell ${it && UIR.sel && UIR.sel.it === it ? 'sel' : ''}" ${it ? `data-bag="${i}"` : ''}>${it ? iconHtml(it, 50) : ''}</div>`; }
   let stash = '';
   if (inCave){ stash = `<div class="rw-sub">보관함 <small>${RPG.stash.length}</small></div><div class="rw-grid st">${RPG.stash.map((it, i) => `<div class="rw-cell ${UIR.sel && UIR.sel.it === it ? 'sel' : ''}" data-st="${i}">${iconHtml(it, 50)}</div>`).join('') || '<small class="rw-none">비었음 — 원정에서 가져온 장비를 넣어 두는 곳</small>'}</div>`; }
   const ammo = `<div class="rw-ammo">${Object.entries(AMMO_N).map(([k, n]) => `<span>${n} <b>${RPG.ammo[k] || 0}</b></span>`).join('')}<span>금화 <b class="gold">${RPG.gold}</b></span></div>`;
@@ -93,7 +93,8 @@ function rpgRender(){
         if (d.s === 'weapon' && d.wt !== 'shield' && canEquip(h, sel.it, 'off')) btn.push(['equipOff', '보조 칸으로']); }
       if (['potion', 'use', 'food', 'book', 'light'].includes(d.c) || (d.c === 'relic' && d.s === 'use')) btn.push(['use', '쓰기']);
       if (['potion', 'use', 'food'].includes(d.c)) for (let k = 0; k < 4; k++) btn.push(['quick' + k, `칸 ${k + 4}${RPG.quick[k] === sel.it.id ? ' ✓' : ''}`]);
-      if (inCave) btn.push(sel.from === 'st' ? ['tobag', '가방으로'] : ['tost', '보관함으로']);
+      if (inCave) btn.push(sel.from === 'st' ? ['tobag', h.id === 'inju' ? '가방으로' : '배낭으로'] : ['tost', '보관함으로']);
+      if (sel.from === 'bag') for (const k of RPG.party) if (k !== h.id && RPG.heroes[k] && !(G.mode === 'exp' && !G.units.some(o => o.hero === RPG.heroes[k] && !o.dead))) btn.push(['give:' + k, `${RPG.heroes[k].name}에게`]);
       else btn.push(['drop', '버리기']);
     }
     tip = `<div class="rw-tip">${tipHtml(sel.it, cmp)}</div><div class="rw-btns">${btn.map(([a, n, dis]) => `<button data-a="${a}" ${dis ? 'disabled' : ''}>${n}</button>`).join('')}</div>`;
@@ -110,7 +111,7 @@ function rpgRender(){
   $r('rpgWin').innerHTML = `<div class="rw-box">
     <div class="rw-head"><button class="tab ${UIR.tab === 'eq' ? 'on' : ''}" data-tab="eq">가방 · 장비</button><button class="tab ${UIR.tab === 'st' ? 'on' : ''}" data-tab="st">상태${heroOn().pts ? ' <em>●</em>' : ''}</button><span class="sp"></span>${ammo}${G.mode === 'cave' ? '<button class="x new" data-a="new">처음부터</button>' : ''}<button class="x" data-a="close">닫기 (I)</button></div>
     <div class="rw-main"><div class="rw-party">${left}</div>
-      ${UIR.tab === 'eq' ? `<div class="rw-mid">${mid}</div><div class="rw-bag"><div class="rw-sub">가방 <small>${RPG.bag.length}/${cap}</small></div><div class="rw-grid">${bag}</div>${stash}</div>` : `<div class="rw-mid wide">${stat()}</div>`}
+      ${UIR.tab === 'eq' ? `<div class="rw-mid">${mid}</div><div class="rw-bag"><div class="rw-sub">${h.id === 'inju' ? '가방' : h.name + '의 배낭'} <small>${B.length}/${cap}</small></div><div class="rw-grid">${bag}</div>${stash}</div>` : `<div class="rw-mid wide">${stat()}</div>`}
     </div>
     ${UIR.tab === 'eq' ? `<div class="rw-foot">${tip}</div>` : ''}
   </div>`;
@@ -123,14 +124,14 @@ $r('rpgWin') && $r('rpgWin').addEventListener('click', e => {
   else if (t.dataset.h){ UIR.hero = t.dataset.h; UIR.sel = null; }
   else if (t.dataset.up){ if (h.pts > 0){ h.attr[t.dataset.up]++; h.pts--; refreshHero(h); SFX.thump(300, 0.1, 0.08); } }
   else if (t.dataset.slot){ const it = h.eq[t.dataset.slot]; UIR.sel = it ? { it, from: 'eq', slot: t.dataset.slot } : null; }
-  else if (t.dataset.bag != null){ const it = RPG.bag[+t.dataset.bag]; if (UIR.sel && UIR.sel.it === it && e.detail >= 2){ quickAct(it, 'bag'); } else UIR.sel = { it, from: 'bag' }; }
-  else if (t.dataset.st != null){ const it = RPG.stash[+t.dataset.st]; if (UIR.sel && UIR.sel.it === it && e.detail >= 2){ moveItem(it, RPG.stash, RPG.bag); UIR.sel = null; } else UIR.sel = { it, from: 'st' }; }
+  else if (t.dataset.bag != null){ const it = bagOf(h)[+t.dataset.bag]; if (UIR.sel && UIR.sel.it === it && e.detail >= 2){ quickAct(it, 'bag'); } else UIR.sel = { it, from: 'bag' }; }
+  else if (t.dataset.st != null){ const it = RPG.stash[+t.dataset.st]; if (UIR.sel && UIR.sel.it === it && e.detail >= 2){ moveItem(it, RPG.stash, bagOf(h)); UIR.sel = null; } else UIR.sel = { it, from: 'st' }; }
   else if (t.dataset.a){ doAct(t.dataset.a); }
   if (UIR.open) rpgRender();
 });
 function quickAct(it, from){
   const d = itemDef(it), h = heroOn();
-  if (isGear(d) && canEquip(h, it, slotFor(h, it))){ equip(h, it, from === 'st' ? RPG.stash : RPG.bag); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
+  if (isGear(d) && canEquip(h, it, slotFor(h, it))){ equip(h, it, from === 'st' ? RPG.stash : bagOf(h)); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
   else if (['potion', 'use', 'food', 'book', 'light'].includes(d.c)){ useFromWin(it); }
 }
 function useFromWin(it){
@@ -139,22 +140,23 @@ function useFromWin(it){
   if (!useItem(it, u)) uiToast('지금은 쓸 수 없다', 'warn'); UIR.sel = null;
 }
 function moveItem(it, from, to){
-  if (to === RPG.bag && RPG.bag.length >= bagCap() && !(stackOf(itemDef(it)) > 1 && RPG.bag.some(o => o.id === it.id))){ uiToast('가방이 가득', 'warn'); return false; }
-  removeItem(it, from); addItem(it, to, to === RPG.bag ? bagCap() : 9999); return true;
+  if (to.length >= listCap(to) && !(stackOf(itemDef(it)) > 1 && to.some(o => o.id === it.id))){ uiToast('가방이 가득', 'warn'); return false; }
+  removeItem(it, from); addItem(it, to, listCap(to)); return true;
 }
 function doAct(a){
   const h = heroOn(), sel = UIR.sel, it = sel && sel.it;
   if (a === 'close') return rpgWinClose();
   if (a === 'new'){ rpgWinClose(); return uiConfirm('처음부터 할까요?', '굴의 하루 · 가방 · 장비 · 레벨이 모두 지워지고 프롤로그부터 다시 시작합니다.', '지우고 처음부터', newGame); }
   if (!it) return;
-  if (a === 'equip'){ equip(h, it, sel.from === 'st' ? RPG.stash : RPG.bag); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
-  else if (a === 'equipOff'){ equip(h, it, sel.from === 'st' ? RPG.stash : RPG.bag, 'off'); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
-  else if (a === 'unequip'){ const to = (G.mode === 'cave' && RPG.bag.length >= bagCap()) ? RPG.stash : RPG.bag; if (!unequip(h, sel.slot, to)) uiToast('가방이 가득', 'warn'); UIR.sel = null; }
+  if (a === 'equip'){ equip(h, it, sel.from === 'st' ? RPG.stash : bagOf(h)); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
+  else if (a === 'equipOff'){ equip(h, it, sel.from === 'st' ? RPG.stash : bagOf(h), 'off'); UIR.sel = null; SFX.clink && SFX.clink(0.4); }
+  else if (a === 'unequip'){ const to = (G.mode === 'cave' && bagOf(h).length >= capOf(h)) ? RPG.stash : bagOf(h); if (!unequip(h, sel.slot, to)) uiToast('가방이 가득', 'warn'); UIR.sel = null; }
   else if (a === 'use') useFromWin(it);
   else if (a.startsWith('quick')){ const k = +a.slice(5); RPG.quick = RPG.quick.map(q => q === it.id ? null : q); RPG.quick[k] = it.id; }
-  else if (a === 'tost'){ moveItem(it, RPG.bag, RPG.stash); UIR.sel = null; }
-  else if (a === 'tobag'){ moveItem(it, RPG.stash, RPG.bag); UIR.sel = null; }
-  else if (a === 'drop'){ removeItem(it, RPG.bag); if (G.player && typeof dropLootAt === 'function' && EXP) dropLootAt(G.player.x, G.player.z, it, { spread: 0.9 }); UIR.sel = null; }
+  else if (a === 'tost'){ moveItem(it, bagOf(h), RPG.stash); UIR.sel = null; }
+  else if (a.startsWith('give:')){ const to = hero(a.slice(5)); if (moveItem(it, bagOf(h), bagOf(to))) UIR.sel = null; }
+  else if (a === 'tobag'){ moveItem(it, RPG.stash, bagOf(h)); UIR.sel = null; }
+  else if (a === 'drop'){ removeItem(it, bagOf(h)); if (G.player && typeof dropLootAt === 'function' && EXP) dropLootAt(G.player.x, G.player.z, it, { spread: 0.9 }); UIR.sel = null; }
   saveRpg();
 }
 
@@ -222,16 +224,15 @@ function uiExpHud(force){
   const html = `<div class="eh-f"><b>${EXP.F}층</b> ${EXP.gen.D.name}</div>
     <div class="eh-r"><span>🔥</span><i class="bar torch ${EXP.lit ? '' : 'out'}"><s style="width:${tk * 100}%"></s></i><small>${EXP.lit ? `${mm}:${String(ss).padStart(2, '0')}` : '꺼짐'} · 횃불 ${EXP.torches}</small></div>
     <div class="eh-r"><span>◐</span><i class="bar san ${san / sMax < 0.3 ? 'low' : ''}"><s style="width:${san / sMax * 100}%"></s></i><small>정신도 ${san}/${sMax}</small></div>
-    <div class="eh-r g"><span>●</span><small>금화 ${RPG.gold} · 가방 ${RPG.bag.length}/${bagCap()}${EXP.blessing ? ' · ' + EXP.blessing : ''}${EXP.hungry ? ' · 배고픔 (최대 체력 -15%)' : ''}</small></div>`;
+    <div class="eh-r g"><span>●</span><small>금화 ${RPG.gold} · 가방 ${partyBagTxt()}${EXP.blessing ? ' · ' + EXP.blessing : ''}${EXP.hungry ? ' · 배고픔 (최대 체력 -15%)' : ''}</small></div>`;
   if (el.dataset.h !== html){ el.dataset.h = html; el.innerHTML = html; }
 }
 /* ---------- 영웅 칸 (v1.1): 얼굴 · 레벨 · 체력 (+방패) · 정신도 · 상태 · 잡힘/쓰러짐 · GOOD WILL 기술 준비 ---------- */
 const HERO_ROLE = { inju: '창 · 지휘', cheong: '손톱 · 날쌤', karius: '두 무기 · 짓밟기', goodwill: '레슬러 · 번개', rebecca: '장검 · 선봉 · 불사' };
 const GW_SK = [['palm', '손'], ['knee', '무릎'], ['slam', '꽂기'], ['snap1', '번개']];
 function uiHeroPanel(){
-  const units = G.units.filter(u => u.side === 'ally' && !u.dead && (u.hero || u.captive));
+  const units = G.units.filter(u => u.side === 'ally' && !u.dead && u.hero);
   return '<div class="hp-wrap">' + units.map(u => {
-    if (u.captive) return `<div class="hc cap ${u.downed ? 'down' : ''}"><div class="hc-m"><div class="hc-n"><b>${u.D.name}</b><small>포로 · 귀환 줄로</small></div><i class="bar hp"><s style="width:${u.hp / u.max * 100}%"></s></i></div></div>`;
     const h = u.hero, S = u.rpg || derive(h), san = Math.round(h.san ?? S.maxSan), sk = san / S.maxSan, hk = u.hp / u.max;
     const L = u.lock, st = u.downed ? [u.halfDead ? '반시체' : '쓰러짐', 'down'] : L && L.d === u ? ['잡힘!', 'held'] : L && L.a === u ? [L.phase === 'ground' ? '그라운드' : '클린치', 'grab'] : u.guest ? ['손님', 'guest'] : null;
     const chips = (typeof woundChips === 'function' ? woundChips(h) : '') + Object.entries(u.sts || {}).filter(([k, v]) => v && v.t > 0 && STS_N[k]).map(([k, v]) => `<em style="--c:${STS_N[k][1]}">${STS_N[k][0]} ${Math.ceil(v.t)}</em>`).join('');
@@ -277,7 +278,7 @@ function expPrepOpen(){
       <div class="pp-row"><span>횃불</span><b><button data-t="-">−</button> ${PREP.torches + 1} <button data-t="+">+</button></b><em>하나는 기본 · 더 들면 땔감 10씩 (땔감 ${PRO.wood || 0}) · 하나에 4분</em></div>
       ${(RPG.meta.shortcut || 1) > 1 ? `<div class="pp-row"><span>출발</span><b>${[1].concat((RPG.meta.shortcut || 1) >= 6 ? [6] : []).concat((RPG.meta.shortcut || 1) >= 11 ? [10] : []).map(f => `<button data-f="${f}" style="${PREP.startF === f ? 'outline:2px solid #ffd35a' : ''}">${f}층</button>`).join(' ')}</b><em>지름길: 쓰러뜨린 보스 아래층부터</em></div>` : ''}
       <div class="pp-row"><span>난이도</span><b>${['easy', 'normal', 'hard'].map(k => `<button data-d="${k}" style="${(RPG.meta.diff || 'normal') === k ? 'outline:2px solid #ffd35a' : ''}">${{ easy: '쉬움', normal: '보통', hard: '어려움' }[k]}</button>`).join(' ')}</b><em>적 체력 · 공격 (쉬움 75% · 70%, 어려움 125% · 120%)</em></div>
-      <div class="pp-row"><span>가방</span><b>${RPG.bag.length}/${bagCap()}</b><em>탄약: 화살 ${RPG.ammo.arrow} · 총알 ${RPG.ammo.bullet} · 산탄 ${RPG.ammo.shell} · I로 장비를 고르고 오기</em></div>
+      <div class="pp-row"><span>가방 (모두)</span><b>${partyBagTxt()}</b><em>탄약: 화살 ${RPG.ammo.arrow} · 총알 ${RPG.ammo.bullet} · 산탄 ${RPG.ammo.shell} · I로 장비를 고르고 오기</em></div>
       <div class="pp-btns"><button data-a="go">떠난다</button><button data-a="eq">장비 (I)</button><button data-a="no">아직</button></div></div>`;
   };
   render(); el.hidden = false;

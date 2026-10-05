@@ -1,4 +1,4 @@
-/* rpg.js v1.21 — RPG 핵심. v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
+/* rpg.js v1.22 — RPG 핵심. v1.22 (v0.58): 동료 배낭 — 저마다 따로, 크기 다름 (BAG_CAP), 인주 가방이 차면 곁의 동료 배낭으로 · 적성 저장 (RPG.sol). v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
    영웅 기록 (레벨 · 경험 · 속성 다섯 · 장비 여섯 칸 · 체력 · 정신도) · 아이템 (등급 · 품질 · 덧붙은 효과) · 공용 가방 · 굴 보관함
    파생 수치 (스탯이 실제로 먹힘) · 피해 공식 (방어 · 회피 · 치명 · 흡혈 · 가시 · 상태 이상) · 경험 · 레벨업 · 저장 (localStorage)
    ITEMS (data_items.js)를 씀. 피해는 units.js의 hurt를 한 겹 감쌈 */
@@ -201,9 +201,28 @@ function autoSpend(h){
 
 /* ---------- 가방 · 보관함 ---------- */
 const bagCap = () => derive(hero('inju')).carry;
+// v0.58 동료 배낭: 저마다 따로 (= 원정에서 주워 올 수 있는 총량). 크기는 덩치 · 힘 따라
+const BAG_CAP = { cheong: 8, karius: 16, rebecca: 10, goodwill: 12, angel: 6, goldknight: 10, gangster: 9 };
+function bagOf(h){ if (!h || h.id === 'inju') return RPG.bag; return (h.bag = h.bag || []); }
+function capOf(h){ if (!h || h.id === 'inju') return bagCap(); return (BAG_CAP[h.id] || 8) + Math.max(0, derive(h).carry - 12); }
+// 원정에서 인주 가방이 차면 곁에 살아 있는 동료 배낭으로
+function addToParty(it){
+  for (const k of RPG.party){
+    if (k === 'inju') continue; const h = RPG.heroes[k]; if (!h) continue;
+    const u = G.units.find(o => o.hero === h && !o.dead && !o.downed && !o.guest); if (!u) continue;
+    const r = addItem(it, bagOf(h)); if (r){ popText(u.x, u.y + bodyH(u) + 0.5, u.z, `${h.name} 배낭에`, 'heal', 0.9); return r; }
+  }
+  return false;
+}
+function partyBagTxt(){
+  let n = RPG.bag.length, c = bagCap();
+  for (const k of RPG.party){ if (k === 'inju' || !RPG.heroes[k]) continue; n += bagOf(RPG.heroes[k]).length; c += capOf(RPG.heroes[k]); }
+  return `${n}/${c}`;
+}
+function listCap(list){ if (list === RPG.bag) return bagCap(); for (const h of Object.values(RPG.heroes)) if (h.bag === list) return capOf(h); return 9999; }
 function bagCount(){ return RPG.bag.length; }
 // 넣기: 쌓을 수 있으면 쌓고, 칸이 없으면 false. 탄약 · 돈은 바로 계산
-function addItem(it, list = RPG.bag, cap = list === RPG.bag ? bagCap() : 9999){
+function addItem(it, list = RPG.bag, cap = listCap(list)){
   if (typeof it === 'string') it = makeItem(it); if (!it) return false;
   const d = itemDef(it);
   if (d.c === 'gold'){ const g = Array.isArray(d.fx.gold) ? Math.round(d.fx.gold[0] + Math.random() * (d.fx.gold[1] - d.fx.gold[0])) : 10; RPG.gold += g * it.n; return { gold: g * it.n }; }
@@ -253,7 +272,7 @@ function equip(h, it, from = RPG.bag, slot){
 }
 function unequip(h, slot, to = RPG.bag){
   const it = h.eq[slot]; if (!it) return false;
-  if (to === RPG.bag && RPG.bag.length >= bagCap()) return false;
+  if (to.length >= listCap(to)) return false;
   h.eq[slot] = null; to.push(it); refreshHero(h); return true;
 }
 function refreshHero(h){

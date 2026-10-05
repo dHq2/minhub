@@ -1,4 +1,4 @@
-/* stealth.js v1.0 — (v0.56, 은밀히: 시야 안이면 시야 둘레로 크게 돌아 등 쪽으로) 은신 · 암살 · 방어가 중요한 싸움 · 숙이기 (훈련장 규칙)
+/* stealth.js v1.1 — (v1.1, v0.58: 어둠 · 엄폐 뒤 숙임이 발견을 막음) (v1.0, v0.56, 은밀히: 시야 안이면 시야 둘레로 크게 돌아 등 쪽으로) 은신 · 암살 · 방어가 중요한 싸움 · 숙이기 (훈련장 규칙)
    ■ 은신: 들키지 않은 적은 제자리에서 두리번거림. 앞쪽 (±65°)만 봄 + 바로 곁 발소리
      · 보이면 의심 (?)이 차오름 — 다 차면 ! (무리가 깨어남). 숙이면 (G · 동료는 '은밀히') 보이는 거리 절반, 은신 적성마다 7%씩 더 줄어듦
      · 달리면 4칸 안의 적이 발소리를 들음. 총소리는 벽 너머까지 (sol.js)
@@ -30,11 +30,11 @@ enemyThink = function(e, dt){
   for (const a of G.units){
     if (a.side !== 'ally' || a.dead || a.downed) continue;
     const d = dist(a, e), cr = isCrouched(a), mv = a === G.player ? !!inputDir() : a.moving;
-    let R = visR(e) * (cr ? 0.5 : 1) * Math.max(0.5, 1 - stealthOf(a) * 0.06) * (mv ? 1.15 : 0.85);
+    let R = visR(e) * (cr ? 0.5 : 1) * Math.max(0.5, 1 - stealthOf(a) * 0.06) * (mv ? 1.15 : 0.85) * (typeof lightMul === 'function' ? lightMul(a.x, a.z) : 1);   // v1.1 어두우면 덜 보임 (prowl.js)
     const steps = a === G.player ? plRunning() && d < 4 : false;
     if (d > R && !steps) continue;
     const ang = Math.abs(angDiff(Math.atan2(a.z - e.z, a.x - e.x), e.aim)), see = sees(e, a);
-    const inCone = ang < 1.15 && see && d <= R, near = d < (cr ? 0.8 : 1.5);
+    const inCone = ang < 1.15 && see && d <= R && !(typeof hiddenFrom === 'function' && hiddenFrom(a, e)), near = d < (cr ? 0.8 : 1.5);
     if (!inCone && !near && !steps) continue;
     const rate = (inCone ? (1 - d / R) * 2.4 + 0.45 : 0) + (near ? 1.2 : 0) + (steps ? 1.6 : 0);
     if (rate > best){ best = rate; who = a; }
@@ -171,7 +171,7 @@ TICKS.push(() => {
   const on = typeof SQ !== 'undefined' && SQ.on && STLV.show;
   for (const e of G.units){
     if (e.side !== 'enemy') continue;
-    const want = on && !e.alert && !e.dead && !e.D.boss && G.player && dist(e, G.player) < 18;
+    const want = on && !e.alert && !e.dead && !e.D.boss && !e.prowl && G.player && dist(e, G.player) < 18;
     if (!want){ if (e.cone) e.cone.visible = false; continue; }
     if (!e.cone){ e.cone = new THREE.Mesh(new THREE.CircleGeometry(1, 24, -1.15, 2.3), new THREE.MeshBasicMaterial({ color: 0xffe070, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })); e.cone.rotation.x = -Math.PI / 2; e.cone.position.y = 0.04; e.group.add(e.cone); }
     const R = visR(e), k = Math.min(1, e.sus || 0);

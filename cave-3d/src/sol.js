@@ -1,4 +1,4 @@
-/* sol.js v1.1 — (v1.1, v0.56: 은신 적성 · 돌팔매 (무한) · 사격 규율 아낌/아끼지 않음) (v1.0, v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
+/* sol.js v1.2 — (v1.2, v0.58: 저장 — 적성 · 보직 · 소지품을 남겨 키움, 레벨마다 훈련 점수 +1 · 소지품 칸 = 동료 배낭 크기) (v1.1, v0.56: 은신 적성 · 돌팔매 (무한) · 사격 규율 아낌/아끼지 않음) (v1.0, v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
    "누구나 보직을 받을 수 있다. 효율은 적성이 정한다"
    · 적성 0~5 (계열 다섯: 근접 · 창과 투척 · 활 · 총 · 마법). 0이면 억지로 쥠 — 조준이 떨리고 (명중 25%) 탄이 걸리기도 함. 5면 고유 기술
    · 성향 (훈련받은 군인 · 마법 계열 · 야수 · 기사 · 싸움꾼)이 훈련 비용을 정함: 잘 맞는 계열은 싸게, 안 맞는 계열은 비싸게
@@ -55,7 +55,9 @@ const SHIELD_ITEM = 'W-shield';
 const AMMO_SLOT = { bullet: 20, arrow: 30, shell: 8 };
 const AMMO_KN = { bullet: '총알', arrow: '화살', shell: '산탄' };
 const SOLAMMO = { inf: false };
-const packSlots = u => Math.min(10, Math.max(4, Math.round(4 + (u.D.weight || 60) / 40))) + (u.sol && u.sol.tag === 'soldier' ? 1 : 0);
+// v1.2 소지품 칸 = 그 인물의 배낭 크기 (rpg.js BAG_CAP · 인주는 가방)
+const PACK_HERO = { player: 'inju', cheongAlly: 'cheong', kariusAlly: 'karius', rebeccaAlly: 'rebecca', angelAlly: 'angel', goldknightAlly: 'goldknight', gangsterAlly: 'gangster', goodwillAlly: 'goodwill' };
+const packSlots = u => { const k = PACK_HERO[u.kind]; if (k === 'inju') return bagCap(); if (k && BAG_CAP[k]) return BAG_CAP[k]; return Math.min(10, Math.max(4, Math.round(4 + (u.D.weight || 60) / 40))) + (u.sol && u.sol.tag === 'soldier' ? 1 : 0); };
 const packUsed = u => Object.entries(u.sol.ammo).reduce((s, [k, n]) => s + Math.ceil(n / AMMO_SLOT[k]), 0);
 function packAdd(u, k, slots){   // 한 칸씩 넣고 빼기
   const S = u.sol, cap = packSlots(u);
@@ -245,3 +247,22 @@ TICKS.push(dt => {
     u.sol.mp = Math.min(u.sol.mpMax, u.sol.mp + dt * 1.6);
   }
 });
+
+/* ---------- v1.2 저장: 적성 훈련 · 보직 · 조 · 사격 규율 · 경계 · 무기 · 소지품을 남겨 키워 감 (RPG.sol, 인물 종류마다)
+   훈련 점수 = 8 + (영웅 레벨 − 1). 쓴 만큼 (spent) 저장 ---------- */
+const SOL_HERO = { player: 'inju', cheongAlly: 'cheong', kariusAlly: 'karius', rebeccaAlly: 'rebecca' };
+const solLvBonus = u => { const k = SOL_HERO[u.kind]; return k && RPG.heroes[k] ? Math.max(0, (RPG.heroes[k].lv || 1) - 1) : 0; };
+function solSave(u){ if (!u.sol) return; const S = u.sol; RPG.sol = RPG.sol || {}; RPG.sol[solKey(u)] = { train: { ...S.train }, role: S.role, sq: S.sq, fire: S.fire || 'free', watch: !!S.watch, kit: { ...S.kit }, spent: S.spent || 0, ammo: { ...S.ammo } }; }
+function solSaveAll(){ for (const u of G.units) if (u.sol) solSave(u); if (typeof saveRpg === 'function') saveRpg(); }
+{
+  const _solInitS = solInit;
+  solInit = function(u, o = {}){
+    const s = RPG.sol && RPG.sol[solKey(u)];
+    const S = _solInitS(u, s ? { ...o, main: s.kit.main, shield: s.kit.shield, role: s.role, sq: s.sq } : o);
+    if (s){ S.train = { ...S.train, ...s.train }; S.fire = s.fire; S.watch = s.watch; S.spent = s.spent || 0; S.ammo = { ...S.ammo, ...s.ammo }; }
+    S.pts = 8 + solLvBonus(u) - (S.spent || 0);
+    return S;
+  };
+  const _solTrainS = solTrain;
+  solTrain = function(u, f, dir){ const r = _solTrainS(u, f, dir); if (r && u.sol){ u.sol.spent = 8 + solLvBonus(u) - u.sol.pts; solSaveAll(); } return r; };
+}

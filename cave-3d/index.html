@@ -251,7 +251,6 @@
   .tt-k{font-size:11px;text-align:center;border-radius:3px;padding:1px 0;background:#3a3446;color:#cbbfa9;} .tt-k.b{background:#5a2a1a;color:#ffb08a;} .tt-k.s{background:#2a3a5a;color:#a8c8ff;} .tt-k.t{background:#5a4a1a;color:#ffd35a;}
   #clash{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:min(720px,92vw);}
   #clash .cl{font-family:"Nanum Myeongjo",serif;font-size:15px;color:#ece4d6;text-shadow:0 1px 3px #000,0 0 8px #000;background:linear-gradient(90deg,transparent,rgba(8,6,10,.75),transparent);padding:3px 40px;animation:tin .3s ease both;transition:opacity .7s;} #clash .cl.out{opacity:0;}
-  .hc.cap{grid-template-columns:1fr;border-left-color:#bfd8ff;padding:4px 9px;} .hc.cap .bar{height:5px;}
   #grap{position:fixed;left:0;top:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:"Do Hyeon";}
   #grap b{font-weight:normal;font-size:15px;color:#ffcf80;text-shadow:0 1px 3px #000;letter-spacing:1px;} #grap.held b{color:#ff9ad8;}
   #grap i{display:block;width:110px;height:8px;background:rgba(0,0,0,.7);border:1px solid #000;border-radius:4px;overflow:hidden;} #grap i s{display:block;height:100%;background:linear-gradient(90deg,#c0c8d8,#ffffff);} #grap.held i{width:150px;height:11px;border-color:#ff7ad0;} #grap.held i s{background:linear-gradient(90deg,#ff7ad0,#ffe0f4);}
@@ -425,7 +424,7 @@
 <div id="guide"></div><div id="dream"></div><div id="dark"></div><div id="mid"></div>
 <div id="expHud" hidden></div>
 <div id="mmwrap" hidden><canvas id="minimap"></canvas><small>M 큰 지도</small></div>
-<div id="bigwrap" hidden><canvas id="bigmap"></canvas><small>M 닫기 · ▼ 계단 · ↑ 귀환 줄 · ♨ 모닥불 · ◆ 보물 · ? 인카운터 · ♛ 보스 · ⚑ 진지 · ✸ 포대 · ☗ 포로 · ★ 만남</small></div>
+<div id="bigwrap" hidden><canvas id="bigmap"></canvas><small>M 닫기 · ▼ 계단 · ↑ 귀환 줄 · ♨ 모닥불 · ◆ 보물 · ? 인카운터 · ♛ 보스 · ⚑ 진지 · ✸ 포대 · ★ 만남</small></div>
 <div id="vig"></div>
 <div id="grap" hidden></div>
 <div id="clash"></div>
@@ -481,6 +480,7 @@
 <script src="src/stealth.js"></script>
 <script src="src/drill.js"></script>
 <script src="src/fort.js"></script>
+<script src="src/prowl.js"></script>
 <script src="src/game.js"></script>
 </body>
 </html>

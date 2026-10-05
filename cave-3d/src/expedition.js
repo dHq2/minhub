@@ -1,4 +1,4 @@
-/* expedition.js v1.14 — 원정 (한 번의 런). v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.15 — 원정 (한 번의 런). v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -89,8 +89,8 @@ function tickLoot(dt){
     if (!pl || pl.downed || k < 1) return true;
     if (Math.hypot(pl.x - o.x, pl.z - o.z) > 0.85) return true;
     if (o.gold){ RPG.gold += o.gold; popText(o.x, 1.2, o.z, `+${o.gold} 금화`, 'gold', 0.8); SFX.burst({ type: 'bandpass', f: 2400, q: 6, gain: 0.14, dec: 0.12 }); G.scene.remove(o.g); return false; }
-    const d = itemDef(o.it), res = addItem(o.it);
-    if (!res){ if (G.t - (EXP.fullT || -9) > 3){ EXP.fullT = G.t; popText(pl.x, pl.y + 2.4, pl.z, '가방이 가득 (I로 정리)', 'miss', 1.4); } return true; }
+    const d = itemDef(o.it), res = addItem(o.it) || addToParty(o.it);
+    if (!res){ if (G.t - (EXP.fullT || -9) > 3){ EXP.fullT = G.t; popText(pl.x, pl.y + 2.4, pl.z, '모두의 가방이 가득 (I로 정리)', 'miss', 1.4); } return true; }
     EXP.got.push(o.it.id);
     if (res.ammo) popText(o.x, 1.3, o.z, Object.entries(res.ammo).map(([k, v]) => `+${v} ${AMMO_N[k]}`).join(' '), 'heal', 0.9);
     if (res.gold) popText(o.x, 1.3, o.z, `+${res.gold} 금화`, 'gold', 0.9);
@@ -426,7 +426,8 @@ async function expWipe(){
   G.slow = 0.3; G.lock = true; letterbox(true); if (G.player) G.player.poseHold = 'dead'; await wait(1.2); G.slow = 1;   // 전멸: 인주가 대자로 뻗음
   dark(1, 1.2); await wait(1.3);
   // 가방은 이 층 바닥에
-  RPG.lost = { F: EXP.F, items: RPG.bag.slice(), day: PRO.day }; RPG.bag = [];
+  const comp = RPG.party.filter(k => k !== 'inju' && RPG.heroes[k]).flatMap(k => { const B = bagOf(RPG.heroes[k]), L = B.slice(); B.length = 0; return L; });   // v0.58 동료 배낭도 이 층 바닥에
+  RPG.lost = { F: EXP.F, items: RPG.bag.slice().concat(comp), day: PRO.day }; RPG.bag = [];
   for (const k of RPG.party){ const h = hero(k); h.hp = Math.round((h.hpMax || 100) * 0.1); h.san = Math.max(0, (h.san ?? 40) - 25); }
   const sum = expSummary('wipe');
   await uiResult(sum);
@@ -437,8 +438,8 @@ function expSummary(kind){
   const party = RPG.party.map(k => { const h = hero(k); return { name: h.name, lv: h.lv, hp: h.hp, hpMax: h.hpMax, san: Math.round(h.san ?? 0) }; });
   const toCave = { food: 0, wood: 0, snail: 0, items: [] };
   if (kind === 'return'){
-    for (const it of RPG.bag.slice()){
-      const d = itemDef(it), fx = d.fx || {};
+    for (const [B, it] of [RPG.bag, ...RPG.party.filter(k => k !== 'inju' && RPG.heroes[k]).map(k => bagOf(RPG.heroes[k]))].flatMap(B => B.slice().map(it => [B, it]))){
+      const d = itemDef(it), fx = d.fx || {}, removeItem = (x) => { const i = B.indexOf(x); if (i >= 0) B.splice(i, 1); };
       if (d.c === 'food' && fx.food){ for (let i = 0; i < it.n; i++) toCave.items.push({ k: 'd_' + (['I-043', 'I-050', 'I-052', 'I-053', 'I-054'].includes(it.id) ? it.id : 'I-050'), name: d.n, type: 'food', food: fx.food }); toCave.food += fx.food * it.n; removeItem(it); }
       else if (fx.wood){ toCave.wood += fx.wood * it.n; removeItem(it); }
       else if (fx.snail){ toCave.snail += fx.snail * it.n; removeItem(it); }

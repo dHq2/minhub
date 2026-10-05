@@ -1,4 +1,4 @@
-/* dungeon.js v1.2 — 원정 층 만들기 (v1.2: 층 배치 — linear (방이 한 줄로, 횡스크롤 카메라) · ascent (남→북으로 오르막, 마지막 방이 높은 단 위 = 세자르) · cam (층 카메라 모드 · drift)) (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
+/* dungeon.js v1.3 — 원정 층 만들기 (v1.3, v0.58: 구출작전 방 삭제) (v1.2: 층 배치 — linear (방이 한 줄로, 횡스크롤 카메라) · ascent (남→북으로 오르막, 마지막 방이 높은 단 위 = 세자르) · cam (층 카메라 모드 · drift)) (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
    · 절차 생성: 방 7 ~ 11개 (겹치지 않게) + 2칸 복도 (가장 짧게 잇고 + 고리 몇 개) → 글자 지도 → buildWorld (굴 · 1층과 같은 판)
    · 방 종류: 시작 (귀환 줄) · 계단 (가장 먼 방) · 싸움 · 강적 · 보물 · 쉼터 (모닥불) · 무덤 (1층) · 제단 (4층)
    · 층 테마 10: 땅 · 벽 · 빛 색 · 적 · 소품 (도감 소품 75종, art/dun)
@@ -117,9 +117,8 @@ function genDungeon(F, seed){
   if (D.altar) take('altar', 1);
   // v1.1 인카운터 방 (encounters.js): 층마다 한두 개
   take('enc', R() < 0.35 ? 2 : 1, r => dist.get(r.id) >= 1 && r.w >= 7 && r.h >= 6);
-  // v0.31 상황 방: 만남 · 구출작전 · 진지전 · 포격전 · 각개전투 (매복)
+  // v0.31 상황 방: 만남 · 진지전 · 포격전 · 각개전투 (매복)
   if (F >= 2 && (F === 2 || R() < 0.35)) take('meet', 1, r => dist.get(r.id) >= 1);
-  if (R() < 0.55) take('rescue', 1, r => dist.get(r.id) >= 2);
   if (F >= 2) take('fort', 1, r => r.w >= 8 && r.h >= 7);
   if (F >= 3 && R() < 0.75) take('artillery', 1, r => r.w >= 8);
   if (F >= 2 && R() < 0.6) take('ambush', 1);
@@ -142,7 +141,7 @@ function genDungeon(F, seed){
       for (let i = r.x + 1; i < r.x + r.w - 1; i++) if (i !== gap && i !== gap + 1 && g[j][i] === '.' && !path.has(j * W + i)) g[j][i] = 'r';
       r.wallZ = j; continue;
     }
-    if (r.type === 'start' || r.type === 'rest' || r.type === 'enc' || r.type === 'artillery' || r.type === 'rescue' || r.type === 'meet') continue;
+    if (r.type === 'start' || r.type === 'rest' || r.type === 'enc' || r.type === 'artillery' || r.type === 'meet') continue;
     const opts = [];
     if (r.w >= 9 && r.h >= 7) opts.push('hall');
     if (r.w >= 7 && r.h >= 7 && r.type !== 'stairs') opts.push('dais', 'dais');
