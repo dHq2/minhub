@@ -1,4 +1,4 @@
-/* foes.js v1.0 — 적마다 고유 기술 (평소 공격 위에 하나씩 얹음). 모두 붉은 예고 장판이 보이고, 읽으면 피할 수 있음
+/* foes.js v1.1 — (v1.1: 휩쓸기 · 돌진 베기는 높은 공격 — 숙이면 머리 위로) 적마다 고유 기술 (평소 공격 위에 하나씩 얹음). 모두 붉은 예고 장판이 보이고, 읽으면 피할 수 있음
    검사: 돌진 베기 (줄) · 창병: 휩쓸기 (넓은 부채꼴) · 검방패병: 방패 밀치기 (휘청) + 방패벽 (둘이 붙으면 더 단단)
    궁수: 화살비 (원 셋) · 곤봉 거한 · 단달로: 붙잡기 (grapple.js) · 벤킨: 사슬 당기기
    녹색 젤리: 죽으면 둘로 갈라짐 · 꼬마악마: 인주를 치면 금화를 훔쳐 달아남 (잡으면 돌려받음) · 꼬마요정: 꽃가루 (둔화)
@@ -32,7 +32,7 @@ function sigDash(u, tgt){
   u.decal.onDone = ((orig) => (dd) => {
     u.decal = null; if (u.dead || u.st !== 'windup') return;
     const hitS = new Set();
-    for (let s = 0; s < len; s += 0.3){ const x = u.x + Math.cos(dd.a) * 0.3, z = u.z + Math.sin(dd.a) * 0.3; if (solidAt(G.map, x, z)) break; u.x = x; u.z = z; for (const t of allies()) if (!hitS.has(t) && dist(t, u) < t.r + 0.6 && (t.jy || 0) < 0.45){ hitS.add(t); hurt(u, t, u.atk * 1.3, { from: u, kb: 1.2 }); } }
+    for (let s = 0; s < len; s += 0.3){ const x = u.x + Math.cos(dd.a) * 0.3, z = u.z + Math.sin(dd.a) * 0.3; if (solidAt(G.map, x, z)) break; u.x = x; u.z = z; for (const t of allies()) if (!hitS.has(t) && dist(t, u) < t.r + 0.6 && (t.jy || 0) < 0.45){ hitS.add(t); hurt(u, t, u.atk * 1.3, { from: u, kb: 1.2, high: true }); } }
     dust(u.x, u.z, 8); u.st = 'strike'; u.stT = 0.45; setPose(u, u.S.poses.attack ? 'attack' : 'idle');
   })(u.decal.onDone);
   return true;
@@ -40,7 +40,7 @@ function sigDash(u, tgt){
 function sigSweep(u, tgt){
   if (dist(u, tgt) > 2.7) return false;
   setAim(u, tgt.x, tgt.z); sigSay(u, '휩쓸기');
-  windup(u, 'sector', { x: u.x, z: u.z, r: 2.8, a: u.aim, arc: 3.6, windup: 0.75 }, t => hurt(u, t, u.atk * 1.05, { from: u, kb: 1.6, stun: 0.35 }));
+  windup(u, 'sector', { x: u.x, z: u.z, r: 2.8, a: u.aim, arc: 3.6, windup: 0.75 }, t => hurt(u, t, u.atk * 1.05, { from: u, kb: 1.6, stun: 0.35, high: true }));
   return true;
 }
 function sigBash(u, tgt){

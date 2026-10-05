@@ -1,11 +1,14 @@
-/* weapons.js v1.01 — 인주의 무기 (v1.01: 돌 · 수류탄은 던지기 자세 그림)
+/* weapons.js v1.02 — 인주의 무기 (v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
    · 손에 보이는 무기: 도감 그림 (art/atlas/held*.webp)을 손 자리에 붙임. 평소엔 등에 메고, 공격할 때 손에 들고 실제로 휘두름 (궤적이 남음)
    · 무기 14종마다 기본 공격 (좌클릭 · J)과 무기 스킬 (우클릭 · K)이 다름. 변형 (레이피어 · 일본도 · 낫 · 도끼창 · 채찍 · 대포 · 광선총 …)은 수치와 작은 효과
    · 화살: 맞으면 몸에 박힌 채 보임 → 죽으면 둘레에 떨어짐 (일부 부러짐). 갑옷 · 방패 · 막기에 맞으면 튕겨 나가 바닥에. 빗나가면 바닥 · 벽에 꽂힘. 위를 지나가면 주움
    · 총알 · 산탄: 탄창 · 재장전 (R). 쏘면 사라짐 (못 주움) */
 'use strict';
 // 인주 포즈의 손 (그림 픽셀, 2D판 자료 그대로). 3D 포즈 이름 기준: attack = 내지름 (inju_charge) · windup = 당김 (inju_attack)
-const HAND = { attack: [267, 58], throw: [190, 153], shoot: [13, 46], windup: [214, 134], aim: [9, 72], hurt: [140, 150] };
+const HAND = { attack: [267, 58], throw: [190, 153], shoot: [13, 46], windup: [214, 134], aim: [9, 72], hurt: [140, 150], rifle: [262, 82], pistol: [300, 84] };
+// 쏠 때 자세: 권총은 한 손으로 뻗음, 소총 · 산탄총 · 석궁은 두 손으로 겨눔 (그림이 있으면), 활은 그대로
+const shootPose = () => { const k = typeof W !== 'undefined' && W.def ? W.def.kind : ''; const P2 = G.player && G.player.S.poses; return k === 'pistol' && P2 && P2.pistol ? 'pistol' : ['lever', 'assault', 'shotgun', 'crossbow'].includes(k) && P2 && P2.rifle ? 'rifle' : 'shoot'; };
+const NO_HELD = new Set(['grabReady', 'dash', 'clinch', 'lob', 'pound', 'duck', 'groundGuard', 'block']);   // 레슬링 · 맨몸 자세: 손에 든 무기를 숨김
 // 대기 · 걷기 · 뛰기 그림마다 등 (무기를 메는 자리): [머리x, 머리y, ?, 등x, 등y, ?, 키]
 const INJU_ANC = {"idle":[[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352],[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352]],
   "walk":[[176,9,98,144,79,189,350],[151,6,99,123,76,181,352],[166,9,98,135,79,192,350],[153,0,97,135,71,165,359],[173,2,103,147,73,191,357],[150,6,99,122,76,181,352],[167,0,100,139,71,182,359],[151,0,97,133,71,165,359]],
@@ -174,14 +177,14 @@ function heldUpdate(dt){
   tickPickups(dt);
   if (!HW_.g) return;
   const m = HW_.mesh, g = HW_.g, ud = m.userData, w = W.def;
-  g.visible = P.spear && !u.dead && !u.downed && PLAY_MODES.has(G.mode);
+  g.visible = P.spear && !u.dead && !u.downed && PLAY_MODES.has(G.mode) && !NO_HELD.has(u.pose);
   m.material.color.copy(u.mat.color);
   g.scale.x = u.face;
   const pose = u.pose, Wa = P.wa;
   let anchor, th = 0, z = 0.03, jab = 0, centered = false;
   const long = ['spear', 'staff', 'greatsword', 'lever', 'assault', 'shotgun', 'crossbow'].includes(w.kind);
-  if (['attack', 'throw', 'windup', 'shoot', 'aim'].includes(pose) && !(pose === 'throw' && !P.spear)){
-    if (pose === 'shoot'){ anchor = poseLocal(u, 'shoot', ...HAND.shoot); th = 0; jab = -(P.recoil || 0) * 0.15; th += (P.recoil || 0) * 0.35; }
+  if (['attack', 'throw', 'windup', 'shoot', 'aim', 'rifle', 'pistol'].includes(pose) && !(pose === 'throw' && !P.spear)){
+    if (pose === 'shoot' || pose === 'rifle' || pose === 'pistol'){ anchor = poseLocal(u, pose, ...HAND[pose]); th = 0; jab = -(P.recoil || 0) * 0.15; th += (P.recoil || 0) * 0.35; }
     else if (pose === 'aim'){
       const guard = u.guard || (u.counterT > G.t) || P.wall > G.t;
       if (guard){ anchor = poseLocal(u, 'aim', ...HAND.aim); th = ud.up ? 0 : 1.35; z = 0.05; }
@@ -366,7 +369,7 @@ function fireGun(u, w, tgt, o){
   const nP = w.pellets || 1, sp = o.spread ?? (w.spread || 0) * (w.auto ? 1 + 3 * (P.heat || 0) : 1) * (P.focus ? 0.3 : 1);
   const mul = (w.shotMul || 1) * (o.mul || 1) * (P.focus ? 1.15 : 1);
   const am = ammoKind(w);
-  setPose(u, 'shoot'); P.shootT = G.t + 0.45; P.flashAt = G.t; P.recoil = Math.min(1.4, (P.recoil || 0) + (w.kind === 'shotgun' ? 1 : w.kind === 'lever' ? 0.8 : 0.45));
+  setPose(u, shootPose()); P.shootT = G.t + 0.45; P.flashAt = G.t; P.recoil = Math.min(1.4, (P.recoil || 0) + (w.kind === 'shotgun' ? 1 : w.kind === 'lever' ? 0.8 : 0.45));
   P.lastFire = G.t;
   for (let i = 0; i < nP; i++){
     const a = u.aim + (nP > 1 ? (i / (nP - 1) - 0.5) * sp * 2 + rnd(-0.03, 0.03) : rnd(-sp, sp));
@@ -412,7 +415,7 @@ function boom(u, x, z, r, dmg){
 // 마력탄: 살짝 따라감
 function magicBolt(u, w, tgt, o = {}){
   const fx = u.fx || {}, n = fx.magicTriple ? 3 : 1, mz = muzzleWorld(u), y0 = Math.max(u.y + 0.8, mz.y);
-  setPose(u, 'shoot'); P.shootT = G.t + 0.45; P.flashAt = G.t; P.recoil = 0.3;
+  setPose(u, shootPose()); P.shootT = G.t + 0.45; P.flashAt = G.t; P.recoil = 0.3;
   for (let i = 0; i < n; i++){
     const a = u.aim + (i - (n - 1) / 2) * 0.22, holy = fx.holyP;
     const p = shoot({ x: mz.x, y: y0, z: mz.z, a, speed: w.speed || 15, range: w.range || 12, side: 'ally', len: 0.3, thick: 0.07, color: holy ? 0xfff2c0 : 0xc8a8ff, glow: holy ? 0xffe9a0 : 0xa070ff, hitsAir: true, trail: holy ? 0xffe9a0 : 0xa070ff,
@@ -435,7 +438,7 @@ function arrowMesh(){
 }
 function fireArrow(u, w, tgt, k, perfect, opt = {}){
   const mz = muzzleWorld(u), y0 = Math.max(u.y + 0.8, Math.min(u.y + 1.5, mz.y)), sp = (w.speed || 27) * (0.8 + 0.4 * k);
-  setPose(u, 'shoot'); P.shootT = G.t + 0.45; P.recoil = 0.25;
+  setPose(u, shootPose()); P.shootT = G.t + 0.45; P.recoil = 0.25;
   const mul = (w.shotMul || 1) * (0.9 + 0.1 * k) * (opt.mul || 1), stone = w.ammo === null;
   shoot({ x: mz.x, y: y0, z: mz.z, a: u.aim + rnd(-0.02, 0.02) * (1 - k), speed: sp, range: (w.range || 15) * (0.8 + 0.3 * k), side: 'ally', len: stone ? 0.12 : 0.7, thick: stone ? 0.06 : 0.02, tip: !stone, color: stone ? 0x8a8478 : 0x9a7a52, hitsAir: true,
     dy: tgt ? aimDy(mz.x, y0, mz.z, tgt, sp) : 0, pierce: !!opt.pierce, trail: perfect ? 0x5ab4ff : null,
@@ -541,7 +544,7 @@ function startSkill(u, mv){
     case 'blast': {
       if (!w.it.mag){ if (!startReload(u)) noAmmo(u, ammoKind(w)); return true; }
       P.skCd = cd; w.it.mag--; pickAim(u, mv, 3);
-      setPose(u, 'shoot'); P.shootT = G.t + 0.5; P.flashAt = G.t; P.recoil = 1.6;
+      setPose(u, shootPose()); P.shootT = G.t + 0.5; P.flashAt = G.t; P.recoil = 1.6;
       const d = { shape: 'sector', x: u.x, z: u.z, r: 2.7, a: u.aim, arc: 1.3 };
       for (const t of foes()) if (inShape(d, t)) hurt(u, t, u.atk * 2.6, { from: u, kb: 3.2, stun: t.D.heavy ? 0 : 0.6, ranged: true });
       for (let k = -3; k <= 3; k++){ const a = u.aim + k * 0.2; spark(u.x + Math.cos(a) * 1.6, u.y + 1, u.z + Math.sin(a) * 1.6, 0xffc060, 3, 4, 0.16, 0.2); }
@@ -564,7 +567,7 @@ function aimHold(u, dt, mv, holding){
     const tgt = pickAim(u, null, 14);
     if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt);
     if ((mouse.left || down('KeyJ')) && P.atkCd <= 0) rangedAttack(u, w, null);
-    setPose(u, 'shoot');
+    setPose(u, shootPose());
     return true;
   }
   P.charge = Math.min(THROW.full, P.charge + dt);
@@ -594,7 +597,7 @@ function aimHold(u, dt, mv, holding){
       const tgt = pickAim(u, null, 12), ap = aimPoint(u), tx = tgt ? tgt.x : ap ? ap.x : u.x + Math.cos(u.aim) * 5, tz = tgt ? tgt.z : ap ? ap.z : u.z + Math.sin(u.aim) * 5;
       const r = 1.5 + 1.2 * k, L = Math.min(9, Math.hypot(tx - u.x, tz - u.z)), cx = u.x + Math.cos(u.aim) * L, cz = u.z + Math.sin(u.aim) * L;
       P.skCd = (w.skillCd || 6) * cdMul(u);
-      setPose(u, 'shoot'); P.shootT = G.t + 0.5; P.flashAt = G.t;
+      setPose(u, shootPose()); P.shootT = G.t + 0.5; P.flashAt = G.t;
       windup(u, 'circle', { x: cx, z: cz, r, windup: 0.35 }, t => hurt(u, t, u.atk * (1.5 + 1.6 * k), { from: { x: cx, z: cz }, kb: 1.6, ranged: true, hitsAir: true }), 0xa070ff);
       u.decal.onDone = ((orig) => (d) => { orig(d); u.st = 'idle'; ring(cx, cz, 0xc8a8ff, r * 1.2, 0.5); spark(cx, 0.8, cz, 0xd0b0ff, 24, 6); SFX.boom(0.5); })(u.decal.onDone);
       u.st = 'idle';

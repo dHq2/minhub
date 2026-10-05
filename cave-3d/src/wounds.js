@@ -24,6 +24,7 @@ function addWound(u, k, why){
   if (h.wounds.some(w => w.k === k)){ const w = h.wounds.find(w => w.k === k); w.d = Math.max(w.d, WOUND[k].days); return; }
   h.wounds.push({ k, d: WOUND[k].days }); typeof heroCount === 'function' && heroCount(h, 'wound');
   popText(u.x, u.y + bodyH(u) + 0.9, u.z, WOUND[k].n + '!', 'hurt big', 1.8);
+  if (typeof clashLog === 'function') clashLog({ leg: `${h.name}의 다리가 꺾였다. 걸음이 무거워진다.`, heart: `${h.name}의 가슴에서 피가 솟는다.`, brain: `${h.name}의 눈이 잠깐 비었다. 무언가 망가졌다.`, neck: `${h.name}의 목에서 피가 쏟아진다.` }[k]);
   if (typeof uiToast === 'function') uiToast(`<b style="color:#ff5a4a">${h.name} — ${WOUND[k].n}</b> <small>${WOUND[k].note} · ${WOUND[k].days}일</small>`, 'warn');
   spark(u.x, u.y + bodyH(u) * 0.7, u.z, 0xb3122a, 20, 5); camShake(0.2, 0.25);
   if (k === 'heart' || k === 'neck') addStatus(u, 'bleed', { dps: k === 'heart' ? 7 : 5, t: 10 });
@@ -63,6 +64,12 @@ kill = function(u, by){
 };
 const _hurtW = hurt;
 hurt = function(att, tgt, base, o = {}){
+  // v0.35 숙이기: 높은 공격은 머리 위로 지나감 → 빈틈의 대가 (다음 공격 확정 치명)
+  if (o.high && tgt && tgt.posture === 'crouch' && !tgt.dead && !tgt.downed){
+    popText(tgt.x, tgt.y + 1.2, tgt.z, '숙여 피함!', 'aim', 1); tgt.critNext = true; G.hitstop = Math.max(G.hitstop, 0.06);
+    if (att && typeof clashLog === 'function') clashLog(`${att.D.name}의 일격이 숙인 머리 위로 빗나갔다. 빈틈의 대가는 크다 —`);
+    return 0;
+  }
   if (tgt && tgt.sts){
     if (tgt.sts.vuln && tgt.sts.vuln.t > 0 && !o.dot) base *= 1.4;
   }

@@ -218,7 +218,7 @@ function bossAct(u, A, dt){
         beam(u.x + Math.cos(A.a) * 0.6, y0, u.z + Math.sin(A.a) * 0.6, ex, heightAt(G.map, ex, ez) + 1.0, ez, 0.16, 0.5);
         for (let s = 1; s < A.len; s += 0.8) spark(u.x + Math.cos(A.a) * s, 1.2, u.z + Math.sin(A.a) * s, 0xff4040, 2, 2, 0.2, 0.3);
         ring(ex, ez, 0xff3040, 1.4, 0.4); smoke(ex, ez, 5, 1.0, 0.8); camShake(0.35, 0.3); SFX.burst({ type: 'highpass', f: 900, f2: 3000, gain: 0.5, dec: 0.3 }); SFX.boom(0.7);
-        for (const t of allies()) if (inShape(d, t)) hurt(u, t, 40, { from: u, kb: 1.8, stun: 0.35 });
+        for (const t of allies()) if (inShape(d, t)) hurt(u, t, 40, { from: u, kb: 1.8, stun: 0.35, high: true });
       } });
     }
     if (A.phase === 2 && A.t > 0.8){ B.cd.laser = JR.laserCd; endAct(u); }
@@ -261,8 +261,8 @@ function roundHit(u, t){
   SFX.hit();
   if (!guarded && (counter || crit)){
     popText(t.x, t.y + 2.8, t.z, counter ? '카운터! 넉다운' : '치명! 넉다운', 'crit', 1.4); smoke(t.x, t.z, 6, 1.0, 0.6); SFX.boom(0.9);
-    hurt(u, t, t.hp * 1.25 + 10, { from: u, unblockable: true, kb: 5, noCam: true }); G.hitstop = Math.max(G.hitstop, 0.12); camShake(0.6, 0.4);
-  } else hurt(u, t, 50, { from: u, kb: 4.5, stun: 0.4 });
+    hurt(u, t, t.hp * 1.25 + 10, { from: u, unblockable: true, kb: 5, noCam: true, high: true }); G.hitstop = Math.max(G.hitstop, 0.12); camShake(0.6, 0.4);
+  } else hurt(u, t, 50, { from: u, kb: 4.5, stun: 0.4, high: true });
 }
 // 바닥으로 쏘는 창이 꽂힘: 하늘 (적뢰의 손)에서 원 한가운데로 붉은 창
 function floorSpear(u, d, dmg){

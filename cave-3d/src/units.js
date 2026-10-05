@@ -66,7 +66,7 @@ function updateSprite(u, dt){
   if (u.sit){ u.mesh.scale.y *= 0.68; u.mesh.position.y *= 0.68; }
   // 쓰러짐: 옆으로 눕힘
   // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
-  const tiltT = u.downed || u.dead || u.lying ? Math.PI / 2 * 0.92 * -u.face : 0;
+  const tiltT = (u.downed || u.dead || u.lying) && u.pose !== 'groundGuard' ? Math.PI / 2 * 0.92 * -u.face : 0;   // 누운 그림 (그라운드 가드)은 이미 누워 있음
   if (u.tiltOverride != null) u.tilt = u.tiltOverride; else u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);

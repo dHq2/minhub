@@ -52,7 +52,7 @@ function playerUpdate(u, dt){
   mouse.over = mouseOverEnemy();
   document.body.style.cursor = mouse.over ? 'crosshair' : 'default';
   updateJump(u, dt);
-  if (u.downed){ u.guard = false; if (TKS && TKS.st) tkEnd(u, true); return; }
+  if (u.downed){ u.guard = false; u.posture = 'stand'; if (TKS && TKS.st) tkEnd(u, true); if (u.S.poses.groundGuard) setPose(u, 'groundGuard'); return; }
   if (G.mode === 'exp' && typeof tackleInput === 'function' && !u.lock && u.st !== 'hurt' && tackleInput(u, dt)) return;   // v0.33 바디 태클 (T)
   if (u.lock){ u.guard = false; return; }   // 잡거나 잡힘: grapple.js
   if (u.st === 'hurt'){ u.stT -= dt; u.guard = false; if (u.stT <= 0){ u.st = 'idle'; } setPose(u, 'hurt'); return; }
@@ -81,13 +81,17 @@ function playerUpdate(u, dt){
     const ap = aimPoint(u), t = mouse.over || nearest(u, foes().filter(e => e.alert), 6);
     if (t) setAim(u, t.x, t.z); else if (ap) setAim(u, ap.x, ap.z);
     if (mv) moveBy(u, mv.x * u.spd * 0.4 * dt, mv.z * u.spd * 0.4 * dt);
-    setPose(u, 'aim');
+    setPose(u, u.S.poses.block && !(typeof W !== 'undefined' && W.def && W.def.kind === 'shield') ? 'block' : 'aim');   // 맨몸 막기: 팔 엇걸기 (방패면 방패 자세)
     return;
   }
   // 찌르기
   if (u.st === 'windup'){ return; }
   if (u.st === 'strike'){ u.stT -= dt; if (mv) moveBy(u, mv.x * 0.8 * dt, mv.z * 0.8 * dt); if (u.stT <= 0) u.st = 'idle'; return; }
   // 공격 · 무기 스킬: 무기마다 (weapons.js)
+  // v0.35 숙이기 (G 누르고 있기, 원정): 몸이 낮아져 높은 공격 (휩쓸기 · 가로베기 · 돌려차기 · 정면 창)이 머리 위로 지나감. 피하면 다음 공격 확정 치명. 느리게 움직임
+  const ducking = G.mode === 'exp' && !G.lock && down('KeyG') && u.st !== 'windup' && u.st !== 'strike' && u.S.poses.duck;
+  u.posture = ducking ? 'crouch' : 'stand';
+  if (ducking){ u.guard = false; if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt); setPose(u, 'duck'); return; }
   if (!G.lock && typeof gearSwapInput === 'function' && gearSwapInput(u)) return;   // v0.33 X: 무기 ↔ 보조 무기
   if (!G.lock && typeof playerGrabInput === 'function' && G.mode === 'exp' && playerGrabInput(u)) return;
   if (weaponInput(u, dt, mv)) return;
@@ -97,8 +101,8 @@ function playerUpdate(u, dt){
     moveBy(u, mv.x * sp * dt, mv.z * sp * dt);
     const shooting = G.t < (P.shootT || 0);
     if (!shooting){ u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z); }
-    setPose(u, shooting ? 'shoot' : u.jy ? 'run' : run ? 'run' : 'walk');
-  } else setPose(u, G.t < (P.shootT || 0) ? 'shoot' : u.jy ? 'run' : 'idle');
+    setPose(u, shooting ? shootPose() : u.jy ? 'run' : run ? 'run' : 'walk');
+  } else setPose(u, G.t < (P.shootT || 0) ? shootPose() : u.jy ? 'run' : 'idle');
   // 창 줍기
   if (!P.spear && P.spearObj && Math.hypot(P.spearObj.x - u.x, P.spearObj.z - u.z) < 0.9){
     G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, `${W.def.d ? W.def.d.n : '창'}을 주움`, 'heal', 0.7);

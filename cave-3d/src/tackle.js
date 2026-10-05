@@ -80,6 +80,7 @@ function tkWall(u, S){
     }
   });
   typeof heroCount === 'function' && u.hero && heroCount(u.hero, 'wall');
+  if (typeof clashLog === 'function') clashLog(n >= 2 ? `${n}명을 한꺼번에 벽으로 밀어붙였다. 맨 앞의 ${S.carry[n - 1].D.name}가 짓눌렸다.` : `${S.carry[0].D.name}를 벽에 처박았다.`);
   const L = S.carry[n - 1]; popText(L.x, L.y + bodyH(L) + 0.4, L.z, n >= 2 ? `벽에 꽝! ×${n}` : '벽에 꽝!', 'crit', 1.2);
   dust(L.x + ca * 0.4, L.z + sa * 0.4, 18); ring(L.x, L.z, 0xffcf80, 1.6, 0.35);
   u.kx -= ca * 5; u.kz -= sa * 5;   // 한 칸 튕겨 나옴

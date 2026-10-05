@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 프롤로그 3D</title>
-<!-- 굴의 프롤로그 3D  version v0.34 -->
+<!-- 굴의 프롤로그 3D  version v0.35 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -244,6 +244,8 @@
   .hc-st em.wd{background:#5a0a14;color:#ffb0a8;border:1px solid #a0202c;} .hc-st.wds{justify-content:center;margin-top:3px;}
   .rw-tt{margin-top:10px;display:flex;flex-direction:column;gap:4px;} .tt-row{display:grid;grid-template-columns:40px 120px 1fr;gap:8px;align-items:center;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:5px;font-size:13px;} .tt-row b{font-family:"Do Hyeon";font-weight:normal;font-size:15px;} .tt-row small{color:var(--dim);} .tt-row.got{border-left:2px solid #ffd35a;} .tt-row.got b{color:#ffd35a;} .tt-row.off{opacity:.5;}
   .tt-k{font-size:11px;text-align:center;border-radius:3px;padding:1px 0;background:#3a3446;color:#cbbfa9;} .tt-k.b{background:#5a2a1a;color:#ffb08a;} .tt-k.s{background:#2a3a5a;color:#a8c8ff;} .tt-k.t{background:#5a4a1a;color:#ffd35a;}
+  #clash{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:min(720px,92vw);}
+  #clash .cl{font-family:"Nanum Myeongjo",serif;font-size:15px;color:#ece4d6;text-shadow:0 1px 3px #000,0 0 8px #000;background:linear-gradient(90deg,transparent,rgba(8,6,10,.75),transparent);padding:3px 40px;animation:tin .3s ease both;transition:opacity .7s;} #clash .cl.out{opacity:0;}
   .hc.cap{grid-template-columns:1fr;border-left-color:#bfd8ff;padding:4px 9px;} .hc.cap .bar{height:5px;}
   #grap{position:fixed;left:0;top:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:"Do Hyeon";}
   #grap b{font-weight:normal;font-size:15px;color:#ffcf80;text-shadow:0 1px 3px #000;letter-spacing:1px;} #grap.held b{color:#ff9ad8;}
@@ -268,7 +270,7 @@
 <div id="focusnote" hidden>화면을 클릭하면 조작할 수 있어요</div>
 <div id="bossbar" hidden><div id="bossname"></div><div id="bosstrack"><div id="bossfill"></div></div><div id="bossphase"></div></div>
 <div id="caption"></div>
-<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>X</b> 무기 ↔ 보조 무기 · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>T</b> 바디 태클 (Shift와 함께면 더 세게 · 벽에 같이 박으면 큰 피해) · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 도움말</div>
+<div id="help" hidden><b>WASD</b> 이동 · <b>Shift</b> 달리기 · <b>좌클릭/J</b> 기본 공격 · <b>우클릭/K</b> 무기 스킬 (창은 누르고 있다 놓기 = 투창) · <b>X</b> 무기 ↔ 보조 무기 · <b>R</b> 재장전 · <b>I</b> 가방 · 장비 · <b>4~7</b> 소모품 · <b>M</b> 지도 · <b>Space</b> 점프 · <b>Q</b> 구르기 · <b>F</b> 방어 (맞는 순간 누르면 튕겨냄) · <b>Z C</b> 카메라 돌리기 · <b>G</b> 숙이기 (높은 공격을 피하면 다음 공격 확정 치명) · <b>T</b> 바디 태클 (Shift와 함께면 더 세게 · 벽에 같이 박으면 큰 피해) · <b>V</b> 잡기 (클린치: J 무릎 · K 메치기 · Q 밀쳐내기 / 그라운드: J 파운딩 · K 끝내기 · 잡히면 Space 연타) · <b>E</b> 살펴보기 (◆) · <b>1 2 3</b> 동료 지시 · <b>H</b> 도움말</div>
 <div id="textbox" hidden></div>
 <div id="load" hidden><div class="lines"></div><div class="go" hidden>▶ 계속 (E · 클릭)</div></div>
 <div id="flash"></div><div id="redflash"></div>
@@ -280,6 +282,7 @@
 <div id="bigwrap" hidden><canvas id="bigmap"></canvas><small>M 닫기 · ▼ 계단 · ↑ 귀환 줄 · ♨ 모닥불 · ◆ 보물 · ⚑ 진지 · ✸ 포대 · ☗ 포로 · ★ 만남</small></div>
 <div id="vig"></div>
 <div id="grap" hidden></div>
+<div id="clash"></div>
 <div id="skillbar" hidden></div>
 <div id="toasts"></div>
 <div id="rpgWin" hidden></div>

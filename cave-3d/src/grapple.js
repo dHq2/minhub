@@ -1,4 +1,4 @@
-/* grapple.js v1.2 — (v1.2: 인주 레슬링 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.3 — (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -7,6 +7,7 @@
 'use strict';
 const GR = { range: 1.45, clinchMax: 5, groundMax: 4.5 };
 // 인주 레슬링 자세 (v1.1, 임시 그림 · art/inju · tools/inju_art.py): 잡으려 웅크림 · 태클 돌진 · 클린치 자세 · 돌 던지기 · 파운딩
+Object.assign(SPR.player.poses, { rifle: { src: 'art/inju/rifle.webp', w: 300, h: 448, ax: 150, ay: 445, f: 1, scale: 0.81 }, pistol: { src: 'art/inju/pistol.webp', w: 300, h: 446, ax: 150, ay: 443, f: 1, scale: 0.81 }, duck: { src: 'art/inju/duck.webp', w: 392, h: 522, ax: 196, ay: 519, f: 1, scale: 0.483 }, groundGuard: { src: 'art/inju/groundGuard.webp', w: 566, h: 360, ax: 283, ay: 357, f: 1, scale: 0.483 }, block: { src: 'art/inju/block.webp', w: 450, h: 718, ax: 225, ay: 715, f: 1, scale: 0.483 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
 Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });
 // 인주에게 있는 자세면 그걸로, 없으면 대신할 자세로
 const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
@@ -71,7 +72,7 @@ function grHit(L, k){
     L.phase = 'ground'; L.t = 0; d.lying = true;
     hurt(a, d, a.atk * mul, { from: a, crit: Math.random() < 0.25 || undefined, grapple: true });
     camShake(0.35, 0.25); dust(d.x, d.z, 16); ring(d.x, d.z, 0xffcf80, 1.8, 0.35); SFX.boom(0.5); G.hitstop = Math.max(G.hitstop, 0.1);
-    popText(d.x, d.y + 1.4, d.z, '메쳤다!', 'big', 0.9); typeof heroCount === 'function' && a.hero && heroCount(a.hero, 'throw');
+    popText(d.x, d.y + 1.4, d.z, '메쳤다!', 'big', 0.9); if (typeof clashLog === 'function' && (a === G.player || d === G.player)) clashLog(a === G.player ? `${d.D.name}의 허리를 감아 땅에 메다꽂았다.` : `${a.D.name}에게 들려 바닥에 내리꽂혔다.`); typeof heroCount === 'function' && a.hero && heroCount(a.hero, 'throw');
   }
   if (k === 'push'){ hurt(a, d, a.atk * mul, { from: a, grapple: true }); grRelease(L, 'push'); if (!d.dead){ const n = norm(d.x - a.x, d.z - a.z); d.kx += n.x * 9; d.kz += n.z * 9; d.st = 'hurt'; d.stT = 0.7; setPose(d, 'hurt'); } return; }
   if (k === 'pound'){ hurt(a, d, a.atk * mul, { from: a, noCam: true, grapple: true }); L.esc = Math.max(0, L.esc + A.esc); dust(d.x, d.z, 3); SFX.thump(120, 0.35, 0.12); L.hits++; }
@@ -106,7 +107,7 @@ function grappleTick(dt){
     const tx = a.x + Math.cos(ang) * gap, tz = a.z + Math.sin(ang) * gap;
     if (!solidAt(G.map, tx, tz)){ d.x += (tx - d.x) * Math.min(1, dt * 14); d.z += (tz - d.z) * Math.min(1, dt * 14); }
     a.kx = a.kz = d.kx = d.kz = 0; a.moving = d.moving = false;
-    if (L.phase === 'clinch'){ setPose(d, 'hurt'); d.lying = false; } else { d.lying = true; }
+    if (L.phase === 'clinch'){ setPose(d, 'hurt'); d.lying = false; } else if (d.S.poses.groundGuard){ d.lying = false; setPose(d, 'groundGuard'); } else { d.lying = true; }
     if (!L.act && a.S.poses.clinch) setPose(a, L.phase === 'clinch' ? 'clinch' : grPose(a, 'pound', 'idle'));   // 잡은 쪽 자세
     // 버둥
     const rate = 16 + (grStr(d) - grStr(a)) * 3 + (L.phase === 'ground' ? -4 : 0);

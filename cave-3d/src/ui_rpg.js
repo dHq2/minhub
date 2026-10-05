@@ -168,7 +168,7 @@ function uiSkillBar(){
   const basic = `<div class="sb k1"><kbd>좌클릭</kbd><b>${w.d ? w.d.n : '맨손'}</b><small>${WT_N[w.kind] || '주먹'}${!P.spear ? ' · 던짐 (주워야 함)' : ''}</small></div>`;
   let ammoTxt = '';
   if (am || w.mag){ const tot = am ? RPG.ammo[am] || 0 : '∞'; ammoTxt = `<div class="sb am ${P.reloadT > 0 ? 'rl' : ''}"><kbd>R</kbd><b>${w.mag ? `${w.it ? w.it.mag : 0}/${w.mag}` : ''} <small>${am ? AMMO_N[am] + ' ' + tot : ''}</small></b>${P.reloadT > 0 ? `<i class="rlbar"><s style="width:${(1 - P.reloadT / P.reloadMax) * 100}%"></s></i>` : ''}</div>`; }
-  const tk = G.mode === 'exp' && typeof TKS !== 'undefined' ? `<div class="sb ${TKS.cd > 0 ? 'cd' : ''}"><kbd>T</kbd><b>태클</b>${TKS.cd > 0 ? `<small>${Math.ceil(TKS.cd)}</small>` : ''}</div><div class="sb"><kbd>V</kbd><b>잡기</b></div>` : '';
+  const tk = G.mode === 'exp' && typeof TKS !== 'undefined' ? `<div class="sb ${TKS.cd > 0 ? 'cd' : ''}"><kbd>T</kbd><b>태클</b>${TKS.cd > 0 ? `<small>${Math.ceil(TKS.cd)}</small>` : ''}</div><div class="sb"><kbd>V</kbd><b>잡기</b></div><div class="sb ${G.player && G.player.posture === 'crouch' ? 'on' : ''}"><kbd>G</kbd><b>숙이기</b></div>` : '';
   const dodge = tk + `<div class="sb ${P.dodgeCd > 0 ? 'cd' : ''}"><kbd>Q</kbd><b>구르기</b></div><div class="sb ${pl.guard ? 'on' : ''}"><kbd>F</kbd><b>막기</b></div>`;
   const quick = RPG.quick.map((id, k) => { const it = id && RPG.bag.find(o => o.id === id); return `<div class="sb q ${it ? '' : 'empty'}" data-q="${k}"><kbd>${k + 4}</kbd>${it ? iconHtml(it, 34) : ''}</div>`; }).join('');
   const html = basic + sk + dodge + ammoTxt + `<div class="sb sep"></div>` + quick + `<div class="sb bag" data-q="bag"><kbd>I</kbd><b>가방</b><small>${RPG.bag.length}/${bagCap()}</small></div>`;
@@ -244,6 +244,13 @@ function uiHeroPanel(){
         <div class="hc-b"><i class="bar san ${sk < 0.3 ? 'low' : ''}"><s style="width:${sk * 100}%"></s></i><small>${san}</small></div>
         ${chips || gw ? `<div class="hc-st">${chips}${gw}</div>` : ''}</div></div>`;
   }).join('') + '</div>';
+}
+// 충돌 로그 (v0.35): 큰 장면에만 화면 아래 한 줄 서술 (반격 · 메치기 · 벽꽝 · 치명상). 4초 뒤 사라짐, 셋까지 쌓임
+function clashLog(txt){
+  const el = $r('clash'); if (!el) return;
+  const d = document.createElement('div'); d.className = 'cl'; d.textContent = txt; el.appendChild(d);
+  while (el.children.length > 3) el.firstChild.remove();
+  setTimeout(() => d.classList.add('out'), 3600); setTimeout(() => d.remove(), 4300);
 }
 function uiVignette(a, sk){
   const v = $r('vig'); if (!v) return;
