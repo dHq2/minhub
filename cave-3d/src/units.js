@@ -1,4 +1,4 @@
-/* units.js v0.22 — (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.23 — (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -72,7 +72,7 @@ function updateSprite(u, dt){
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);
   u.pivot.rotation.z = u.tilt + u.lean * -u.face;
-  u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0) + (u.pose === 'box' ? Math.abs(Math.sin(G.t * 7.5)) * 0.06 : 0);   // 복싱 스텝: 통통
+  u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0) + (u.pose === 'box' ? Math.abs(Math.sin(G.t * 7.5)) * 0.06 : u.pose === 'mtPose' ? Math.abs(Math.sin(G.t * 3.2)) * 0.035 : 0);   // 복싱 스텝: 통통
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
   u.pivot.rotation.y = Math.atan2(camera.position.x - u.x, camera.position.z - u.z);

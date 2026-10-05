@@ -1,4 +1,4 @@
-/* grapple.js v1.5 — (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.6 — (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -18,7 +18,12 @@ Object.assign(SPR.player.poses, {
   kick: { src: 'art/inju/kick.webp', w: 560, h: 694, ax: 280, ay: 691, f: -1, scale: 0.49 }, jump: { src: 'art/inju/jump.webp', w: 444, h: 604, ax: 222, ay: 601, f: 1, scale: 0.49 },
   clinch1: { src: 'art/inju/clinch1.webp', w: 322, h: 436, ax: 161, ay: 433, f: 1, scale: 0.8 }, sit: { src: 'art/inju/sit.webp', w: 272, h: 338, ax: 136, ay: 335, f: 1, scale: 0.6 },
   throwHard: { src: 'art/inju/throwHard.webp', w: 580, h: 640, ax: 290, ay: 637, f: 1, scale: 0.505 }, squat: { src: 'art/inju/squat.webp', w: 316, h: 472, ax: 158, ay: 469, f: 1, scale: 0.43 },
-  clinchPush: { src: 'art/inju/clinchPush.webp', w: 312, h: 430, ax: 156, ay: 427, f: 1, scale: 0.81 }, jab: { src: 'art/inju/jab.webp', w: 270, h: 444, ax: 135, ay: 441, f: 1, scale: 0.81 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
+  clinchPush: { src: 'art/inju/clinchPush.webp', w: 312, h: 430, ax: 156, ay: 427, f: 1, scale: 0.81 }, jab: { src: 'art/inju/jab.webp', w: 270, h: 444, ax: 135, ay: 441, f: 1, scale: 0.81 } });
+// 다섯째 묶음 (v1.6, 무에타이): 서 있는 자세 · 니킥 (날아 무릎) · 앞차기 앞 프레임 · 가드 (무릎 들고 머리 감쌈) · 하이킥 · 회전
+Object.assign(SPR.player.poses, {
+  mtPose: { src: 'art/inju/mtPose.webp', w: 388, h: 736, ax: 194, ay: 733, f: 1, scale: 0.48 }, knee: { src: 'art/inju/knee.webp', w: 338, h: 610, ax: 169, ay: 607, f: 1, scale: 0.49 },
+  kickPrep: { src: 'art/inju/kickPrep.webp', w: 534, h: 700, ax: 267, ay: 697, f: 1, scale: 0.49 }, mtGuard: { src: 'art/inju/mtGuard.webp', w: 386, h: 716, ax: 193, ay: 713, f: 1, scale: 0.49 },
+  highKick: { src: 'art/inju/highKick.webp', w: 454, h: 718, ax: 227, ay: 715, f: 1, scale: 0.483 }, spin: { src: 'art/inju/spin.webp', w: 470, h: 652, ax: 235, ay: 649, f: 1, scale: 0.49 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
 Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });
 // 인주에게 있는 자세면 그걸로, 없으면 대신할 자세로
 const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
@@ -136,7 +141,7 @@ function grappleTick(dt){
     if (L.act){
       L.act.t += dt;
       const A = GACT[L.act.k];
-      if (L.act.t >= A.wind){ const k = L.act.k; L.act = null; L.cd = 0.18; L.poseT = G.t + 0.25; setPose(a, k === 'pound' || k === 'finish' ? grPose(a, 'pound', 'attack') : k === 'knee' ? grPose(a, L.hits % 2 ? 'jab' : 'punch', a.S.poses.attack ? 'attack' : 'idle') : k === 'push' ? grPose(a, a.S.poses.clinchPush ? 'clinchPush' : 'shoulder', a.S.poses.attack ? 'attack' : 'idle') : a.S.poses.attack ? 'attack' : 'idle'); a.leanT = 0.25; grHit(L, k); if (!a.lock) continue; }
+      if (L.act.t >= A.wind){ const k = L.act.k; L.act = null; L.cd = 0.18; L.poseT = G.t + 0.25; setPose(a, k === 'pound' || k === 'finish' ? grPose(a, 'pound', 'attack') : k === 'knee' ? grPose(a, ['knee', 'punch', 'jab'][L.hits % 3], a.S.poses.attack ? 'attack' : 'idle') : k === 'push' ? grPose(a, a.S.poses.clinchPush ? 'clinchPush' : 'shoulder', a.S.poses.attack ? 'attack' : 'idle') : a.S.poses.attack ? 'attack' : 'idle'); a.leanT = 0.25; grHit(L, k); if (!a.lock) continue; }
       else { a.leanT = -0.18; }
     } else if (a === G.player){
       if (L.next && L.cd <= 0){ const k = L.next; L.next = null; grDo(L, k === 'knee' && L.phase === 'ground' ? 'pound' : k === 'throw' && L.phase === 'ground' ? 'finish' : k); }

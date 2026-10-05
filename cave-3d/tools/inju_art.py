@@ -1,4 +1,5 @@
-# inju_art.py v1.3 — (v1.3: 넷째 묶음 — 다리후리기 · 슬라이딩 · 구르기 · 복싱 스텝 · 발차기 · 점프 + 중간 묶음 (src_m*: 클린치 1 · 앉아 쉬기 · 강한 투창 · 쪼그려 앉기 · 클린치 싸움 두 칸, 파운딩은 겹쳐서 뺌))
+# inju_art.py v1.4 — (v1.4: 다섯째 묶음 — 무에타이 자세 · 니킥 · 킥 앞 프레임 · 무에타이 가드 · 하이킥 · 회전, ui = 칸 UI 지울 높이 (하이킥은 발끝이 위로 올라가 낮춤))
+# v1.3 — (v1.3: 넷째 묶음 — 다리후리기 · 슬라이딩 · 구르기 · 복싱 스텝 · 발차기 · 점프 + 중간 묶음 (src_m*: 클린치 1 · 앉아 쉬기 · 강한 투창 · 쪼그려 앉기 · 클린치 싸움 두 칸, 파운딩은 겹쳐서 뺌))
 # v1.2 — (v1.2: 셋째 묶음 — 주먹 · 어깨빵 · 죽음 · 잠 · 웅크림, 그림별 선택 (칸 UI 없음 · 워터마크 상자), 이름을 주면 그것만 다시 만듦)
 # v1.1 — (v1.1: 둘째 묶음 — 숙여 회피 · 소총 · 권총 · 그라운드 가드 · 막기, 두 칸이 붙은 캡처는 나눔)
 # v1.0 — 인주 레슬링 동작 그림 (민수가 준 도감 캡처) → art/inju/*.webp
@@ -15,10 +16,11 @@ SRC = {'crouch': ('src_crouch.png', None), 'dash': ('src_dash.png', None), 'thro
        'rifle': ('src_209.png', (0, 0, 186, 247)), 'pistol': ('src_209.png', (209, 0, 394, 247)), 'duck': ('src_210.png', None), 'groundGuard': ('src_211.png', None), 'block': ('src_212.png', None),
        'punch': ('src_213.png', None), 'shoulder': ('src_214.png', None), 'dead': ('src_215.png', None), 'sleep': ('src_216.png', None), 'curl': ('src_217.png', None),
        'sweep': ('src_218.png', None), 'slide': ('src_219.png', None), 'roll': ('src_220.png', None), 'box': ('src_221.png', (0, 0, 318, 411)), 'kick': ('src_222.png', (0, 0, 314, 418)), 'jump': ('src_222.png', (346, 0, 665, 418)),
-       'clinch1': ('src_m1.png', None), 'sit': ('src_m2.png', None), 'throwHard': ('src_m3.png', None), 'squat': ('src_m4.png', None), 'clinchPush': ('src_m5.png', (203, 0, 394, 246)), 'jab': ('src_m5.png', (0, 284, 188, 536))}
+       'clinch1': ('src_m1.png', None), 'sit': ('src_m2.png', None), 'throwHard': ('src_m3.png', None), 'squat': ('src_m4.png', None), 'clinchPush': ('src_m5.png', (203, 0, 394, 246)), 'jab': ('src_m5.png', (0, 284, 188, 536)),
+       'mtPose': ('src_223.png', None), 'knee': ('src_224.png', None), 'kickPrep': ('src_225.png', (0, 0, 314, 410)), 'mtGuard': ('src_226.png', None), 'highKick': ('src_227.png', (0, 0, 311, 412)), 'spin': ('src_227.png', (348, 0, 654, 412))}
 # 그림별 선택: noui = 칸 UI 없는 캡처, star = 제미나이 별 워터마크 상자 (자른 뒤 좌표, x0, y0, x1, y1), noholes = 안쪽 구멍 지우기 끔, killLight = (y0, x0) 오른쪽 아래의 밝은 흙먼지 지움
 # box는 카드 아래 흰 이름표 칸 (y 411~)을 잘라 냄 (바탕색 짐작이 틀어짐)
-OPT = {'sweep': {'killLight': (285, 80), 'noholes': 1}, 'box': {'noholes': 1}, 'throwHard': {'noholes': 1}, 'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
+OPT = {'highKick': {'ui': 34, 'noholes': 1}, 'mtPose': {'noholes': 1}, 'knee': {'noholes': 1}, 'kickPrep': {'noholes': 1}, 'mtGuard': {'noholes': 1}, 'spin': {'noholes': 1}, 'sweep': {'killLight': (285, 80), 'noholes': 1}, 'box': {'noholes': 1}, 'throwHard': {'noholes': 1}, 'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
 import sys
 NAMES = sys.argv[1:] or list(SRC)
 UP = 2
@@ -85,7 +87,7 @@ for nm in NAMES:
     a[:, -4:, 3] = 0; a[-4:, :, 3] = 0   # 남은 테두리 선
     h, w = a.shape[:2]
     o = OPT.get(nm, {})
-    if not o.get('noui'): u = max(30, h // 9); a[:u, :u + 6, 3] = 0; a[:u, w - int(u * 2.3):, 3] = 0        # 칸 UI (왼쪽 위 체크 상자 · 오른쪽 위 휴지통 · 동그라미)
+    if not o.get('noui'): u = o.get('ui') or max(30, h // 9); a[:u, :u + 6, 3] = 0; a[:u, w - int(u * 2.3):, 3] = 0        # 칸 UI (왼쪽 위 체크 상자 · 오른쪽 위 휴지통 · 동그라미)
     kill = None
     if nm == 'pistol':   # 제미나이 별 워터마크 (다리 사이): 바지 위에 걸친 부분은 바지색으로, 나머지 밝은 곳은 지움
         Y0, Y1, X0, X1 = 163, 207, 78, 121

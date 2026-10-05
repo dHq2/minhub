@@ -1,4 +1,4 @@
-/* weapons.js v1.04 — 인주의 무기 (v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
+/* weapons.js v1.05 — 인주의 무기 (v1.05: 맨손 4연타 — 잽 · 주먹 · 앞차기 · 회전 하이킥, 칸마다 예고 자세 (wpose). v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
    · 손에 보이는 무기: 도감 그림 (art/atlas/held*.webp)을 손 자리에 붙임. 평소엔 등에 메고, 공격할 때 손에 들고 실제로 휘두름 (궤적이 남음)
    · 무기 14종마다 기본 공격 (좌클릭 · J)과 무기 스킬 (우클릭 · K)이 다름. 변형 (레이피어 · 일본도 · 낫 · 도끼창 · 채찍 · 대포 · 광선총 …)은 수치와 작은 효과
    · 화살: 맞으면 몸에 박힌 채 보임 → 죽으면 둘레에 떨어짐 (일부 부러짐). 갑옷 · 방패 · 막기에 맞으면 튕겨 나가 바닥에. 빗나가면 바닥 · 벽에 꽂힘. 위를 지나가면 주움
@@ -8,7 +8,7 @@
 const HAND = { throwHard: [55, 118], attack: [267, 58], throw: [190, 153], shoot: [13, 46], windup: [214, 134], aim: [9, 72], hurt: [140, 150], rifle: [262, 82], pistol: [300, 84] };
 // 쏠 때 자세: 권총은 한 손으로 뻗음, 소총 · 산탄총 · 석궁은 두 손으로 겨눔 (그림이 있으면), 활은 그대로
 const shootPose = () => { const k = typeof W !== 'undefined' && W.def ? W.def.kind : ''; const P2 = G.player && G.player.S.poses; return k === 'pistol' && P2 && P2.pistol ? 'pistol' : ['lever', 'assault', 'shotgun', 'crossbow'].includes(k) && P2 && P2.rifle ? 'rifle' : 'shoot'; };
-const NO_HELD = new Set(['grabReady', 'dash', 'clinch', 'lob', 'pound', 'duck', 'groundGuard', 'block', 'punch', 'shoulder', 'dead', 'sleep', 'curl', 'sweep', 'slide', 'roll', 'box', 'kick', 'jump', 'clinch1', 'sit', 'squat', 'clinchPush', 'jab']);   // 레슬링 · 맨몸 자세: 손에 든 무기를 숨김
+const NO_HELD = new Set(['grabReady', 'dash', 'clinch', 'lob', 'pound', 'duck', 'groundGuard', 'block', 'punch', 'shoulder', 'dead', 'sleep', 'curl', 'sweep', 'slide', 'roll', 'box', 'kick', 'jump', 'clinch1', 'sit', 'squat', 'clinchPush', 'jab', 'mtPose', 'knee', 'kickPrep', 'mtGuard', 'highKick', 'spin']);   // 레슬링 · 맨몸 자세: 손에 든 무기를 숨김
 // 대기 · 걷기 · 뛰기 그림마다 등 (무기를 메는 자리): [머리x, 머리y, ?, 등x, 등y, ?, 키]
 const INJU_ANC = {"idle":[[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352],[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352]],
   "walk":[[176,9,98,144,79,189,350],[151,6,99,123,76,181,352],[166,9,98,135,79,192,350],[153,0,97,135,71,165,359],[173,2,103,147,73,191,357],[150,6,99,122,76,181,352],[167,0,100,139,71,182,359],[151,0,97,133,71,165,359]],
@@ -19,8 +19,9 @@ SPR.player.poses.shoot = { src: A + 'inju_shoot.png', w: 254, h: 340, ax: 133, a
 // ---------- 무기 종류 ----------
 // 근접 combo: r 사거리 · arc 폭 · mul 배율 · kb 밀침 · wind 예고 · cd 대기 · style (thrust 찌름 · slash 벰 · smash 내려찍음 · bash 밀침 · punch)
 const WK = {
-  fist: { name: '맨손', cls: 'melee', combo: [{ r: 1.25, arc: 1.4, mul: 0.5, kb: 0.6, wind: 0.1, cd: 0.26, style: 'punch', pose: 'jab' }, { r: 1.3, arc: 1.4, mul: 0.6, kb: 0.8, wind: 0.12, cd: 0.3, style: 'punch' },
-    { r: 1.6, arc: 1.3, mul: 1.0, kb: 2.4, wind: 0.18, cd: 0.5, stun: 0.3, style: 'kick', pose: 'kick', strong: 1 }], skill: null },   // v1.04 잽 · 주먹 · 발차기
+  fist: { name: '맨손', cls: 'melee', combo: [{ r: 1.25, arc: 1.4, mul: 0.5, kb: 0.25, wind: 0.1, cd: 0.26, style: 'punch', pose: 'jab', step: 0.35 }, { r: 1.3, arc: 1.4, mul: 0.6, kb: 0.35, wind: 0.12, cd: 0.3, style: 'punch', step: 0.45 },
+    { r: 1.6, arc: 1.3, mul: 0.9, kb: 2.0, wind: 0.16, cd: 0.4, stun: 0.25, style: 'kick', wpose: 'kickPrep', pose: 'kick', step: 0.4 },
+    { r: 1.8, arc: 2.6, mul: 1.5, kb: 3.2, wind: 0.24, cd: 0.6, stun: 0.6, style: 'kick', wpose: 'spin', pose: 'highKick', strong: 1, step: 0.7 }], skill: null },   // v1.05 잽 · 주먹 · 앞차기 · 회전 하이킥 (넓게 휩쓸고 기절)
   spear: { cls: 'melee', combo: [{ r: 1.9, arc: 1.6, mul: 1, kb: 0.5, wind: 0.11, cd: 0.32, style: 'thrust' }, { r: 1.9, arc: 1.6, mul: 1, kb: 0.5, wind: 0.11, cd: 0.32, style: 'thrust' },
     { r: 2.2, arc: 1.2, mul: 1.6, kb: 1.4, wind: 0.2, cd: 0.55, stun: 0.35, style: 'thrust', strong: 1 }], skill: 'throw', skillName: '투창', throwMul: [1.2, 1.6] },
   sword: { cls: 'melee', combo: [{ r: 1.6, arc: 2.0, mul: 1, kb: 0.4, wind: 0.08, cd: 0.26, style: 'slash' }, { r: 1.6, arc: 2.0, mul: 1.05, kb: 0.4, wind: 0.08, cd: 0.26, style: 'slash2' },
@@ -285,7 +286,8 @@ function meleeAttack(u, w, mv){
   P.combo = P.comboT > 0 ? (P.combo + 1) % n : 0; P.comboT = 0.75;
   const C = w.combo[P.combo], strong = !!C.strong;
   P.atkCd = C.cd / atkSpd(u);
-  setPose(u, w.kind === 'fist' && u.S.poses.box ? 'box' : 'windup');   // 맨손: 가드 올리고 들어감
+  if (C.step && tgt && dist(tgt, u) > 0.9){ const s = Math.min(C.step, dist(tgt, u) - 0.8) * 8; u.kx += Math.cos(u.aim) * s; u.kz += Math.sin(u.aim) * s; }   // 맨손: 한 걸음 파고들며 침 (밀린 놈을 따라감)
+  setPose(u, C.wpose && u.S.poses[C.wpose] ? C.wpose : w.kind === 'fist' && u.S.poses.box ? 'box' : 'windup');   // 맨손: 가드 올리고 들어감 (앞차기는 무릎 듦 · 하이킥은 몸을 돌림)
   const wind = C.wind / Math.min(1.5, atkSpd(u));
   P.wa = { style: C.style, t0: G.t, wind, t1: G.t + wind, color: strong ? 0xffd890 : 0xc8d8ff };
   const shape = C.shape || 'sector', off = C.off || 0;

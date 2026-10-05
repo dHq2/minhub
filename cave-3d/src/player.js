@@ -1,4 +1,4 @@
-/* player.js v0.83 — (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
+/* player.js v0.84 — (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -33,7 +33,7 @@ function mouseOverEnemy(){
 function updateJump(u, dt){
   if (!u.jv && !u.jy) return;
   u.jv -= JUMP.g * dt; u.jy = Math.max(0, (u.jy || 0) + u.jv * dt);
-  if (u.jy <= 0 && u.jv < 0){ u.jy = 0; u.jv = 0; dust(u.x, u.z, 4); }
+  if (u.jy <= 0 && u.jv < 0){ u.jy = 0; u.jv = 0; u.airAtk = false; dust(u.x, u.z, 4); }
 }
 // 화면 기준 입력 → 세계 방향 (카메라가 돌아도 W는 늘 화면 위)
 function inputDir(){
@@ -46,8 +46,17 @@ function inputDir(){
   return norm(rx * ix + fx * iy, rz * ix + fz * iy);
 }
 // v0.83 공중: 점프 그림 · 맨손으로 싸울 때 (원정 · 경계한 적이 9칸 안): 복싱 스텝 (통통 뜀은 units.js)
-const airPose = u => u.S.poses.jump && u.jy > 0.08 ? 'jump' : 'run';
-function boxing(u){ return G.mode === 'exp' && u.S.poses.box && typeof W !== 'undefined' && W.def && W.def.kind === 'fist' && foes().some(e => e.alert && !e.dead && dist(e, u) < 9); }
+const airPose = u => G.t < (u.kneeT || 0) && u.S.poses.knee ? 'knee' : u.S.poses.jump && u.jy > 0.08 ? 'jump' : 'run';
+const fistNow = () => typeof W !== 'undefined' && W.def && W.def.kind === 'fist';
+// v0.84 날아 무릎: 맨손으로 점프 중 J → 앞으로 튀어 나가며 무릎 (점프 한 번에 한 번, 공중의 적도 맞음)
+function flyingKnee(u){
+  u.airAtk = true; u.kneeT = G.t + 0.4; P.atkBuf = 0; P.atkCd = 0.35; setPose(u, 'knee');
+  u.kx += Math.cos(u.aim) * 4; u.kz += Math.sin(u.aim) * 4; u.jv = Math.max(u.jv || 0, 1.5);
+  let n = 0;
+  for (const e of foes()) if (!e.dead && dist(e, u) < 1.6 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.9){ hurt(u, e, u.atk * 1.3, { from: u, kb: 2, stun: e.D.heavy ? 0 : 0.5, hitsAir: true }); n++; }
+  SFX.whoosh && SFX.whoosh(); if (n){ camShake(0.15, 0.12); if (typeof clashLog === 'function') clashLog('뛰어올라 무릎을 꽂았다.'); }
+}
+function boxing(u){ return G.mode === 'exp' && u.S.poses.box && fistNow() && foes().some(e => e.alert && !e.dead && dist(e, u) < 9); }
 // v0.83 E로 줍기 · 뒤지기 · 파기는 잠깐 쪼그려 앉음, 쉬기는 앉음
 function crouchAct(u, it){
   if (!u || u.downed || !it || it.talk) return;
@@ -95,7 +104,7 @@ function playerUpdate(u, dt){
     const ap = aimPoint(u), t = mouse.over || nearest(u, foes().filter(e => e.alert), 6);
     if (t) setAim(u, t.x, t.z); else if (ap) setAim(u, ap.x, ap.z);
     if (mv) moveBy(u, mv.x * u.spd * 0.4 * dt, mv.z * u.spd * 0.4 * dt);
-    setPose(u, u.S.poses.block && !(typeof W !== 'undefined' && W.def && W.def.kind === 'shield') ? 'block' : 'aim');   // 맨몸 막기: 팔 엇걸기 (방패면 방패 자세)
+    setPose(u, fistNow() && u.S.poses.mtGuard ? 'mtGuard' : u.S.poses.block && !(typeof W !== 'undefined' && W.def && W.def.kind === 'shield') ? 'block' : 'aim');   // 맨손이면 무에타이 가드   // 맨몸 막기: 팔 엇걸기 (방패면 방패 자세)
     return;
   }
   // 찌르기
@@ -111,6 +120,7 @@ function playerUpdate(u, dt){
   if (ducking){ u.guard = false; if (mv) moveBy(u, mv.x * u.spd * 0.45 * dt, mv.z * u.spd * 0.45 * dt); setPose(u, 'duck'); return; }
   if (!G.lock && typeof gearSwapInput === 'function' && gearSwapInput(u)) return;   // v0.33 X: 무기 ↔ 보조 무기
   if (!G.lock && typeof playerGrabInput === 'function' && G.mode === 'exp' && playerGrabInput(u)) return;
+  if (!G.lock && u.jy > 0.25 && !u.airAtk && fistNow() && u.S.poses.knee && (hit('Mouse0') || hit('KeyJ'))){ flyingKnee(u); return; }   // v0.84 날아 무릎
   if (weaponInput(u, dt, mv)) return;
   // 걷기 · 달리기 (벽에 막혀도 미끄러지며 계속 감)
   if (mv){
@@ -119,7 +129,7 @@ function playerUpdate(u, dt){
     const shooting = G.t < (P.shootT || 0);
     if (!shooting){ u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z); }
     setPose(u, shooting ? shootPose() : u.jy ? airPose(u) : run ? 'run' : boxing(u) ? 'box' : 'walk');
-  } else setPose(u, G.t < (P.shootT || 0) ? shootPose() : u.jy ? airPose(u) : boxing(u) ? 'box' : G.mode !== 'exp' && u.stillT > 6 && u.S.poses.sit ? 'sit' : 'idle');
+  } else setPose(u, G.t < (P.shootT || 0) ? shootPose() : u.jy ? airPose(u) : boxing(u) ? (u.S.poses.mtPose ? 'mtPose' : 'box') : G.mode !== 'exp' && u.stillT > 6 && u.S.poses.sit ? 'sit' : 'idle');
   // 창 줍기
   if (!P.spear && P.spearObj && Math.hypot(P.spearObj.x - u.x, P.spearObj.z - u.z) < 0.9){
     G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, `${W.def.d ? W.def.d.n : '창'}을 주움`, 'heal', 0.7);
