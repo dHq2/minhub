@@ -1,4 +1,4 @@
-/* catalog.js v1.79 — v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
+/* catalog.js v1.81 — v1.81: 카리우스 옛 항목도 한 묶음 (초상화 모음에 둘 뜨던 것), 도감 인주 의자에 앉기. v1.80: 카리우스 새 그림 21자세 · 스킬 그림 4 · 컷씬 · 원화 2 (tools/kar_poses.py), 레베카 동작은 3D 동료로 씀. v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
 const CATALOG = [
 {
 "id": "R-A",
@@ -29288,6 +29288,19 @@ const CATALOG = [
 "game": "게임: 모닥불에서 쉬기 · 굴에서 6초 넘게 가만히"
 },
 {
+"id": "O-inju-seat",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 의자에 앉기",
+"src": "img/inju/seat.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 굴의 의자에서 E (움직이면 일어남 · 천천히 회복)"
+},
+{
 "id": "O-inju-sleep",
 "cat": "char",
 "sub": "인주 · 동료 · 동작 그림",
@@ -29814,7 +29827,8 @@ const CATALOG = [
 "note": "움직이는 대기. 3D 굴에 들어감. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
 "on": true,
-"g": "rebecca"
+"g": "rebecca",
+"game": "게임: 원정 동료 · 서 있을 때"
 },
 {
 "id": "P-rebecca-walk",
@@ -29825,8 +29839,9 @@ const CATALOG = [
 "src": "img/char/rebecca_walk.webp",
 "note": "걷기. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 걷기 · 굴에서 따라다님"
 },
 {
 "id": "P-rebecca-run",
@@ -29837,8 +29852,9 @@ const CATALOG = [
 "src": "img/char/rebecca_run.webp",
 "note": "뛰기. 드라이브 레베카 폴더 (redknight)",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 멀면 뜀"
 },
 {
 "id": "P-rebecca-shield_charge",
@@ -29849,8 +29865,9 @@ const CATALOG = [
 "src": "img/char/rebecca_shield_charge.webp",
 "note": "redknight_shield_charge_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 방패 돌진 (3~6칸)"
 },
 {
 "id": "P-rebecca-thrust",
@@ -29861,8 +29878,9 @@ const CATALOG = [
 "src": "img/char/rebecca_thrust.webp",
 "note": "redknight_thrust_v1.1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1.1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 찌르기 (방어 무시)"
 },
 {
 "id": "P-rebecca-spin_slash",
@@ -29873,8 +29891,9 @@ const CATALOG = [
 "src": "img/char/rebecca_spin_slash.webp",
 "note": "redknight_spin_slash_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 회전베기 (둘 이상 붙으면)"
 },
 {
 "id": "P-rebecca-shield_block",
@@ -29885,8 +29904,9 @@ const CATALOG = [
 "src": "img/char/rebecca_shield_block.webp",
 "note": "redknight_shield_block_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 방패 막기 · 맞을 때"
 },
 {
 "id": "P-rebecca-shoulder_bash",
@@ -29897,8 +29917,9 @@ const CATALOG = [
 "src": "img/char/rebecca_shoulder_bash.webp",
 "note": "redknight_shoulder_bash_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 어깨 박기 (벽 앞이면 짓눌림)"
 },
 {
 "id": "P-rebecca-slash_up",
@@ -29909,8 +29930,9 @@ const CATALOG = [
 "src": "img/char/rebecca_slash_up.webp",
 "note": "redknight_slash_up_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 올려베기"
 },
 {
 "id": "P-rebecca-slash_down",
@@ -29921,13 +29943,14 @@ const CATALOG = [
 "src": "img/char/rebecca_slash_down.webp",
 "note": "redknight_slash_down_v1 (드라이브 레베카 폴더 redknight, 2026-10-04). 공격 동작 v1",
 "rank": "",
-"on": false,
-"g": "rebecca"
+"on": true,
+"g": "rebecca",
+"game": "게임: 원정 동료 · 내려베기"
 },
 {
 "id": "F-auto-karius",
 "cat": "char",
-"sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
+"sub": "카리우스 · 동료 · 동작 그림",
 "cid": "C-003",
 "name": "카리우스 기본 초상화",
 "src": "img/face/auto_karius.webp",
@@ -29939,7 +29962,7 @@ const CATALOG = [
 {
 "id": "P-karius-art",
 "cat": "char",
-"sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
+"sub": "카리우스 · 동료 · 동작 그림",
 "cid": "C-003",
 "name": "카리우스 · 원화",
 "src": "img/char/karius_art.webp",
@@ -29951,7 +29974,7 @@ const CATALOG = [
 {
 "id": "O-karius-shape",
 "cat": "char",
-"sub": "카리우스 · 동료 · 2D 몸 · 로직 그대로",
+"sub": "카리우스 · 동료 · 동작 그림",
 "cid": "C-003",
 "name": "카리우스 · 도형 그림",
 "src": "img/old2d/shape_karius.webp",
@@ -29959,6 +29982,304 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "karius"
+},
+{
+"id": "P-karius-art2",
+"rank": "",
+"on": false,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 원화 2",
+"src": "img/karius/art2.webp",
+"note": "드라이브 카리우스 폴더 · 카리우스원화2.png (2026-10-05)"
+},
+{
+"id": "P-karius-cut",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "불경자 카리우스 · 컷씬",
+"src": "img/karius/cut_heretic.webp",
+"note": "드라이브 · 불경자 카리우스 컷씬&잘라서스킬이미지.PNG",
+"game": "게임: 불경자로 바뀔 때 화면을 가로지르는 컷씬 띠"
+},
+{
+"id": "O-kar-idle",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 기본",
+"src": "img/karius/idle.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 서 있을 때"
+},
+{
+"id": "O-kar-walk",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 걷기",
+"src": "img/karius/walk.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 걸을 때 (기본과 번갈아)"
+},
+{
+"id": "O-kar-hIdle",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 불경자 · 기본 (씩씩)",
+"src": "img/karius/hIdle.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 체력 15% 아래 불경자"
+},
+{
+"id": "O-kar-hWalk",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 불경자 · 걷기",
+"src": "img/karius/hWalk.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 불경자로 걸을 때 (쿵쿵)"
+},
+{
+"id": "O-kar-hRoar",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 불경자 · 우오오오",
+"src": "img/karius/hRoar.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 불경자로 바뀌는 순간"
+},
+{
+"id": "O-kar-grit",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 근성",
+"src": "img/karius/grit.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 근성 포효 직전"
+},
+{
+"id": "O-kar-gritRoar",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 근성 포효 · 우어어",
+"src": "img/karius/gritRoar.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 근성: 받는 피해 절반 · 회복 · 도발"
+},
+{
+"id": "O-kar-hurt",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 피격 · 라이트 준비",
+"src": "img/karius/hurt.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 맞았을 때 · 기본 주먹 예고"
+},
+{
+"id": "O-kar-upper",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 기본 라이트 어퍼",
+"src": "img/karius/upper.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 기본 주먹 (두 대)"
+},
+{
+"id": "O-kar-hookPrep",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 라이트 훅 준비 (다단히트)",
+"src": "img/karius/hookPrep.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 훅 · 후려치기 예고"
+},
+{
+"id": "O-kar-hook",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 라이트 훅",
+"src": "img/karius/hook.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 훅 세 번"
+},
+{
+"id": "O-kar-swat",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 후려치기",
+"src": "img/karius/swat.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 노인의 팔 쓸기"
+},
+{
+"id": "O-kar-sprout",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 광대 팔 돋기",
+"src": "img/karius/sprout.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 잡아뚫기 1 — 광대의 팔이 돋음"
+},
+{
+"id": "O-kar-grab",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 잡기",
+"src": "img/karius/grab.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 잡아뚫기 2 — 끌어옴"
+},
+{
+"id": "O-kar-pierce",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 레프트 꿰뚫기",
+"src": "img/karius/pierce.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 잡아뚫기 3 — 꿰뚫음 (방어 무시)"
+},
+{
+"id": "O-kar-raise",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 손 들어올리기",
+"src": "img/karius/raise.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 노인의 팔이 부풂 (철퇴 예고 · 굴 파기)"
+},
+{
+"id": "O-kar-mace",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 철퇴",
+"src": "img/karius/mace.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 내려찍기 · 굴 파기"
+},
+{
+"id": "O-kar-footUp",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 발 들기",
+"src": "img/karius/footUp.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 짓밟기 · 딥킥 예고"
+},
+{
+"id": "O-kar-kick",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 뻥 (딥킥)",
+"src": "img/karius/kick.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 딥킥 — 멀리 걷어참, 벽이면 짓뭉개짐"
+},
+{
+"id": "O-kar-tackle",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 돌진 몸박",
+"src": "img/karius/tackle.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 불경자 돌진 예고"
+},
+{
+"id": "O-kar-rush",
+"rank": "",
+"on": true,
+"cat": "char",
+"sub": "카리우스 · 동료 · 동작 그림",
+"cid": "C-003",
+"g": "karius",
+"name": "카리우스 · 돌진 몸박 2 (좌우 반전)",
+"src": "img/karius/rush.webp",
+"note": "3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)",
+"game": "게임: 불경자 돌진 — 밀려 날아간 놈은 벽에 짓뭉개짐"
 },
 {
 "id": "F-auto-goblin",
@@ -32314,7 +32635,8 @@ const CATALOG = [
 "note": "충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사",
 "rank": "",
 "on": false,
-"g": "ratKnight"
+"g": "ratKnight",
+"game": "게임: 적으로 안 나옴 (포렌의 소환수). 가끔 쥐들을 데리고 굴을 순찰"
 },
 {
 "id": "O-ratKnight-idle",
@@ -32326,7 +32648,8 @@ const CATALOG = [
 "note": "충성 · 쥐 귀와 꼬리를 가진 장발의 작은 여기사",
 "rank": "",
 "on": false,
-"g": "ratKnight"
+"g": "ratKnight",
+"game": "게임: 적으로 안 나옴 (포렌의 소환수). 가끔 쥐들을 데리고 굴을 순찰"
 },
 {
 "id": "F-auto-rats",
@@ -38700,5 +39023,49 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "N-055"
+},
+{
+"id": "SK-kar-body",
+"rank": "",
+"on": true,
+"cat": "card",
+"sub": "스킬 · 카리우스 고유",
+"name": "개조된 신체",
+"src": "img/karius/icon_body.webp",
+"note": "드라이브 카리우스 폴더 스킬 그림 (액자 안쪽을 자름)",
+"game": "게임: 고유 특성 — 모든 피해 60% 감소 · 상태 이상 절반 · 상태 창 (C) · 기술 알림"
+},
+{
+"id": "SK-kar-grit",
+"rank": "",
+"on": true,
+"cat": "card",
+"sub": "스킬 · 카리우스 고유",
+"name": "근성",
+"src": "img/karius/icon_grit.webp",
+"note": "드라이브 카리우스 폴더 스킬 그림 (액자 안쪽을 자름)",
+"game": "게임: 체력 45% 아래 포효 — 6초 받는 피해 절반 · 회복 · 도발 (30초) · 상태 창 (C) · 기술 알림"
+},
+{
+"id": "SK-kar-pierce",
+"rank": "",
+"on": true,
+"cat": "card",
+"sub": "스킬 · 카리우스 고유",
+"name": "잡아뚫기",
+"src": "img/karius/icon_pierce.webp",
+"note": "드라이브 카리우스 폴더 스킬 그림 (액자 안쪽을 자름)",
+"game": "게임: 광대의 팔로 붙잡아 끌어와 레프트로 꿰뚫음 (11초) · 상태 창 (C) · 기술 알림"
+},
+{
+"id": "SK-kar-heretic",
+"rank": "",
+"on": true,
+"cat": "card",
+"sub": "스킬 · 카리우스 고유",
+"name": "불경자",
+"src": "img/karius/icon_heretic.webp",
+"note": "드라이브 카리우스 폴더 스킬 그림 (액자 안쪽을 자름)",
+"game": "게임: 체력 15% 아래 — 공격력 1.6배 · 철퇴 · 돌진 몸박 · 상태 창 (C) · 기술 알림"
 }
 ];

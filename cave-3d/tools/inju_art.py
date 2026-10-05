@@ -1,4 +1,5 @@
-# inju_art.py v1.7 — (v1.7: 던진 뒤 (손끝으로 목표를 가리킴) — 대화 기록에서 꺼낸 그림)
+# inju_art.py v1.8 — (v1.8: 의자에 앉기 (seat, 민수 235) — 다리 옆 별 워터마크는 바탕색 쪽만 지움)
+# v1.7 — (v1.7: 던진 뒤 (손끝으로 목표를 가리킴) — 대화 기록에서 꺼낸 그림)
 # v1.6 — (v1.6: 일곱째 묶음 — 어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 (233은 네 칸이 붙은 캡처))
 # v1.5 — (v1.5: 여섯째 묶음 — 다리 기술 중간 · 플라잉 니킥 · 발목 부수기 · 구르기 뒤 (드롭킥 뒤) · 짐 들기 · 손 들기. twobg = 바탕이 위 · 아래 두 색 (바닥 띠))
 # v1.4 — (v1.4: 다섯째 묶음 — 무에타이 자세 · 니킥 · 킥 앞 프레임 · 무에타이 가드 · 하이킥 · 회전, ui = 칸 UI 지울 높이 (하이킥은 발끝이 위로 올라가 낮춤))
@@ -22,10 +23,10 @@ SRC = {'crouch': ('src_crouch.png', None), 'dash': ('src_dash.png', None), 'thro
        'clinch1': ('src_m1.png', None), 'sit': ('src_m2.png', None), 'throwHard': ('src_m3.png', None), 'squat': ('src_m4.png', None), 'clinchPush': ('src_m5.png', (203, 0, 394, 246)), 'jab': ('src_m5.png', (0, 284, 188, 536)),
        'mtPose': ('src_223.png', None), 'knee': ('src_224.png', None), 'kickPrep': ('src_225.png', (0, 0, 314, 410)), 'mtGuard': ('src_226.png', None), 'highKick': ('src_227.png', (0, 0, 311, 412)), 'spin': ('src_227.png', (348, 0, 654, 412)),
        'hop': ('src_228.png', None), 'flyKnee': ('src_229.png', None), 'stomp': ('src_230.png', None), 'rollUp': ('src_231.png', None), 'carry': ('src_232.png', (0, 0, 119, 413)), 'raise': ('src_232.png', (138, 0, 275, 413)),
-       'uppercut': ('src_233.png', (6, 0, 314, 417)), 'dk3': ('src_233.png', (349, 0, 660, 417)), 'dk1': ('src_233.png', (698, 0, 1011, 417)), 'bungkwon': ('src_233.png', (1044, 0, 1351, 417)), 'dk2': ('src_234.png', None), 'throwRel': ('src_235.png', None)}
+       'uppercut': ('src_233.png', (6, 0, 314, 417)), 'dk3': ('src_233.png', (349, 0, 660, 417)), 'dk1': ('src_233.png', (698, 0, 1011, 417)), 'bungkwon': ('src_233.png', (1044, 0, 1351, 417)), 'dk2': ('src_234.png', None), 'throwRel': ('src_235.png', None), 'seat': ('src_seat.png', None)}
 # 그림별 선택: noui = 칸 UI 없는 캡처, star = 제미나이 별 워터마크 상자 (자른 뒤 좌표, x0, y0, x1, y1), noholes = 안쪽 구멍 지우기 끔, killLight = (y0, x0) 오른쪽 아래의 밝은 흙먼지 지움
 # box는 카드 아래 흰 이름표 칸 (y 411~)을 잘라 냄 (바탕색 짐작이 틀어짐)
-OPT = {'throwRel': {'noholes': 1}, 'uppercut': {'noholes': 1}, 'dk3': {'noholes': 1}, 'dk1': {'noholes': 1}, 'bungkwon': {'noholes': 1}, 'dk2': {'noholes': 1}, 'hop': {'noui': 1, 'twobg': 1, 'noholes': 1}, 'flyKnee': {'noholes': 1}, 'stomp': {'noholes': 1}, 'rollUp': {'noholes': 1}, 'carry': {'ui': 18, 'noholes': 1}, 'raise': {'ui': 18, 'noholes': 1}, 'highKick': {'ui': 34, 'noholes': 1}, 'mtPose': {'noholes': 1}, 'knee': {'noholes': 1}, 'kickPrep': {'noholes': 1}, 'mtGuard': {'noholes': 1}, 'spin': {'noholes': 1}, 'sweep': {'killLight': (285, 80), 'noholes': 1}, 'box': {'noholes': 1}, 'throwHard': {'noholes': 1}, 'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
+OPT = {'seat': {'ui': 18, 'noholes': 1, 'starBg': (130, 278, 178, 330)}, 'throwRel': {'noholes': 1}, 'uppercut': {'noholes': 1}, 'dk3': {'noholes': 1}, 'dk1': {'noholes': 1}, 'bungkwon': {'noholes': 1}, 'dk2': {'noholes': 1}, 'hop': {'noui': 1, 'twobg': 1, 'noholes': 1}, 'flyKnee': {'noholes': 1}, 'stomp': {'noholes': 1}, 'rollUp': {'noholes': 1}, 'carry': {'ui': 18, 'noholes': 1}, 'raise': {'ui': 18, 'noholes': 1}, 'highKick': {'ui': 34, 'noholes': 1}, 'mtPose': {'noholes': 1}, 'knee': {'noholes': 1}, 'kickPrep': {'noholes': 1}, 'mtGuard': {'noholes': 1}, 'spin': {'noholes': 1}, 'sweep': {'killLight': (285, 80), 'noholes': 1}, 'box': {'noholes': 1}, 'throwHard': {'noholes': 1}, 'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
 import sys
 NAMES = sys.argv[1:] or list(SRC)
 UP = 2
@@ -109,6 +110,8 @@ for nm in NAMES:
         y0, x0 = o['killLight']; r = a[y0:, x0:, :3].astype(int)
         a[y0:, x0:, 3][(r.mean(2) > 135) & (r.max(2) - r.min(2) < 60)] = 0
     if o.get('star'): x0, y0, x1, y1 = o['star']; a[y0:y1, x0:x1, 3] = 0
+    if o.get('starBg'):   # 별 워터마크가 바탕 위에만 걸침: 밝고 색이 옅은 곳만 지움 (바지 · 신발은 어두워서 남음)
+        x0, y0, x1, y1 = o['starBg']; r = a[y0:y1, x0:x1, :3].astype(int); a[y0:y1, x0:x1, 3][(r.mean(2) > 175) & (r.max(2) - r.min(2) < 40)] = 0
     if nm == 'crouch':   # 위의 움찔 그림 (머리 · 몸통) 잘라 냄: 아래 그림 머리보다 위, 왼쪽 몸통
         yy, xx = np.mgrid[:h, :w]
         a[(yy < 64), 3] = 0

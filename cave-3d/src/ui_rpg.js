@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.14 — RPG 화면 (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.15 — RPG 화면 (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -105,7 +105,7 @@ function rpgRender(){
       ['공격 속도', '×' + S.atkSpd.toFixed(2)], ['스킬 대기', '×' + S.cdMul.toFixed(2)], ['재장전', '×' + S.reload.toFixed(2)], ['시야', S.vision.toFixed(1) + '칸'], ['정신도', S.maxSan], ['정신도 감소', '×' + S.sanDrain.toFixed(2)],
       ['이동', S.spd.toFixed(2)], ['흡혈', Math.round(S.lifesteal * 100) + '%'], ['초당 회복', S.regen.toFixed(1)], ['가시', S.thorns], ['푸른 체력', S.shield], ['가방', S.carry + '칸']];
     const wk = h.id === 'inju' ? (() => { const w = S.wt || 'fist'; return `<div class="rw-wk"><b>${h.eq.weapon ? itemDef(h.eq.weapon).n : '맨손'}</b> <small>${WT_N[w] || '맨손'}</small><p>${WK_D[w] || ''}</p></div>`; })() : `<div class="rw-wk"><b>${h.name}의 싸움</b> <small>${h.eq.weapon ? itemDef(h.eq.weapon).n : '고유: ' + (HERO_DEF[h.id].innate || '맨손')}</small><p>${HERO_DEF[h.id].note}<br>들 수 있는 무기: ${(() => { const w2 = heroWts(h); return w2 === 'all' ? '모두' : w2.length ? w2.map(k => WT_N[k]).join(' · ') : '없음 (주먹뿐)'; })()}${h.eq.weapon && RANGED.has(itemDef(h.eq.weapon).wt) ? ' · 탄약이 있으면 거리를 두고 쏨' : ''}</p></div>`;
-    return `<div class="rw-stat"><div class="rw-lv">Lv <b>${h.lv}</b> · 경험 ${h.xp}/${xpNeed(h.lv)} ${h.pts ? `· <em>속성 점수 ${h.pts}</em>` : ''}</div>${rows}<div class="rw-der">${der.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>${wk}${typeof titleHtml === 'function' ? titleHtml(h) : ''}</div>`;
+    return `<div class="rw-stat"><div class="rw-lv">Lv <b>${h.lv}</b> · 경험 ${h.xp}/${xpNeed(h.lv)} ${h.pts ? `· <em>속성 점수 ${h.pts}</em>` : ''}</div>${rows}<div class="rw-der">${der.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>${wk}${typeof heroSkillsHtml === 'function' ? heroSkillsHtml(h) : ''}${typeof titleHtml === 'function' ? titleHtml(h) : ''}</div>`;
   };
   $r('rpgWin').innerHTML = `<div class="rw-box">
     <div class="rw-head"><button class="tab ${UIR.tab === 'eq' ? 'on' : ''}" data-tab="eq">가방 · 장비</button><button class="tab ${UIR.tab === 'st' ? 'on' : ''}" data-tab="st">상태${heroOn().pts ? ' <em>●</em>' : ''}</button><span class="sp"></span>${ammo}${G.mode === 'cave' ? '<button class="x new" data-a="new">처음부터</button>' : ''}<button class="x" data-a="close">닫기 (I)</button></div>
@@ -226,14 +226,14 @@ function uiExpHud(force){
   if (el.dataset.h !== html){ el.dataset.h = html; el.innerHTML = html; }
 }
 /* ---------- 영웅 칸 (v1.1): 얼굴 · 레벨 · 체력 (+방패) · 정신도 · 상태 · 잡힘/쓰러짐 · GOOD WILL 기술 준비 ---------- */
-const HERO_ROLE = { inju: '창 · 지휘', cheong: '손톱 · 날쌤', karius: '방패 · 땅', goodwill: '레슬러 · 번개' };
+const HERO_ROLE = { inju: '창 · 지휘', cheong: '손톱 · 날쌤', karius: '두 무기 · 짓밟기', goodwill: '레슬러 · 번개', rebecca: '장검 · 선봉 · 불사' };
 const GW_SK = [['palm', '손'], ['knee', '무릎'], ['slam', '꽂기'], ['snap1', '번개']];
 function uiHeroPanel(){
   const units = G.units.filter(u => u.side === 'ally' && !u.dead && (u.hero || u.captive));
   return '<div class="hp-wrap">' + units.map(u => {
     if (u.captive) return `<div class="hc cap ${u.downed ? 'down' : ''}"><div class="hc-m"><div class="hc-n"><b>${u.D.name}</b><small>포로 · 귀환 줄로</small></div><i class="bar hp"><s style="width:${u.hp / u.max * 100}%"></s></i></div></div>`;
     const h = u.hero, S = u.rpg || derive(h), san = Math.round(h.san ?? S.maxSan), sk = san / S.maxSan, hk = u.hp / u.max;
-    const L = u.lock, st = u.downed ? ['쓰러짐', 'down'] : L && L.d === u ? ['잡힘!', 'held'] : L && L.a === u ? [L.phase === 'ground' ? '그라운드' : '클린치', 'grab'] : u.guest ? ['손님', 'guest'] : null;
+    const L = u.lock, st = u.downed ? [u.halfDead ? '반시체' : '쓰러짐', 'down'] : L && L.d === u ? ['잡힘!', 'held'] : L && L.a === u ? [L.phase === 'ground' ? '그라운드' : '클린치', 'grab'] : u.guest ? ['손님', 'guest'] : null;
     const chips = (typeof woundChips === 'function' ? woundChips(h) : '') + Object.entries(u.sts || {}).filter(([k, v]) => v && v.t > 0 && STS_N[k]).map(([k, v]) => `<em style="--c:${STS_N[k][1]}">${STS_N[k][0]} ${Math.ceil(v.t)}</em>`).join('');
     const gw = u.gw ? '<div class="hc-sk">' + GW_SK.map(([k, n]) => `<em class="${u.gw.cd[k] <= 0 ? 'on' : ''}">${n}</em>`).join('') + '</div>' : '';
     const sh = u.shieldMax ? `<u style="width:${Math.min(100, (u.shield || 0) / u.max * 100)}%"></u>` : '';
@@ -259,8 +259,9 @@ function uiVignette(a, sk){
 }
 
 /* ---------- 원정 준비 (굴의 석문에서) ---------- */
-const PREP = { pick: { cheong: true, karius: true, goodwill: true }, torches: 2, startF: 1 };
-const prepMates = () => ['cheong', 'karius'].concat(RPG.meta.gw ? ['goodwill'] : []);
+const HPF_KEY = { cheong: 'ch', karius: 'ka', rebecca: 'reb' };   // 굴의 동료 체력 비율 칸
+const PREP = { pick: { cheong: true, karius: true, goodwill: true, rebecca: true }, torches: 2, startF: 1 };
+const prepMates = () => ['cheong', 'karius'].concat(RPG.meta.gw ? ['goodwill'] : []).concat(PRO.rebOut && !(typeof rebResting === 'function' && rebResting()) ? ['rebecca'] : []);   // v1.15 레베카 (꺼낸 다음 날부터)
 function expPrepOpen(){
   G.paused = true; const el = $r('prep');
   const foodHave = PRO.store.reduce((a, d) => a + (d.raw ? 0 : d.food || 0), 0);
@@ -268,7 +269,7 @@ function expPrepOpen(){
     const party = ['inju'].concat(prepMates().filter(k => PREP.pick[k] && hero(k).st === 'ok'));
     const need = party.length, maxT = Math.floor((PRO.wood || 0) / 10);
     PREP.torches = Math.min(PREP.torches, maxT);
-    const card = k => { const h = hero(k), S = derive(h), hp = k === 'inju' ? (G.player ? G.player.hp / G.player.max : 1) : k === 'goodwill' ? (h.hp != null && h.hpMax ? h.hp / h.hpMax : 1) : PRO.hpf[k === 'cheong' ? 'ch' : 'ka'];
+    const card = k => { const h = hero(k), S = derive(h), hp = k === 'inju' ? (G.player ? G.player.hp / G.player.max : 1) : k === 'goodwill' ? (h.hp != null && h.hpMax ? h.hp / h.hpMax : 1) : PRO.hpf[HPF_KEY[k]];
       return `<div class="pp-h ${k === 'inju' || PREP.pick[k] ? 'on' : ''}" data-k="${k}"><img src="${HERO_DEF[k].face}" alt=""><b>${h.name}</b><small>Lv ${h.lv} · 체력 ${Math.round((hp ?? 1) * 100)}%</small>${typeof woundChips === 'function' && (h.wounds || []).length ? `<div class="hc-st wds">${woundChips(h)}</div>` : ''}${k === 'inju' ? '<em>고정</em>' : `<em>${PREP.pick[k] ? '간다' : '남는다'}</em>`}</div>`; };
     el.innerHTML = `<div class="pp-box"><b>원정 준비</b><small>석문 너머, 끝없는 계단 아래로. 해가 지기 전에 돌아온다.</small>
       <div class="pp-sub">누가 가나</div><div class="pp-party">${['inju'].concat(prepMates()).map(card).join('')}</div>
@@ -292,7 +293,7 @@ function expPrepOpen(){
         let food = 0; for (let i = 0; i < party.length; i++){ const j = PRO.store.findIndex(d => d.food && !d.raw); if (j < 0) break; const d = PRO.store[j]; if (d.food > 1) PRO.store[j] = { ...d, food: d.food - 1 }; else PRO.store.splice(j, 1); food++; }
         PRO.wood = Math.max(0, (PRO.wood || 0) - PREP.torches * 10);
         el.hidden = true; G.paused = false;
-        for (const k2 of party){ const h = hero(k2); if (k2 === 'inju' && G.player){ h.hp = G.player.hp; h.hpMax = G.player.max; } else if (k2 !== 'inju'){ const f = k2 === 'goodwill' ? (h.hp != null && h.hpMax ? Math.max(0.3, h.hp / h.hpMax) : 1) : PRO.hpf[k2 === 'cheong' ? 'ch' : 'ka'] ?? 1; h.hp = null; h.hpRatio = f; } }
+        for (const k2 of party){ const h = hero(k2); if (k2 === 'inju' && G.player){ h.hp = G.player.hp; h.hpMax = G.player.max; } else if (k2 !== 'inju'){ const f = k2 === 'goodwill' ? (h.hp != null && h.hpMax ? Math.max(0.3, h.hp / h.hpMax) : 1) : PRO.hpf[HPF_KEY[k2]] ?? 1; h.hp = null; h.hpRatio = f; } }
         expGoFromCave(party, food);
         return;
       } }

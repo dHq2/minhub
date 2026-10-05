@@ -1,4 +1,4 @@
-/* prologue.js v0.113 — (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.114 — (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -6,9 +6,7 @@
 'use strict';
 const PA = 'art/pro/';
 SPR.cheong = { h0: 512, tall: 1.3, poses: { idle: { src: PA + 'goblin.webp', w: 205, h: 512, ax: 102, ay: 510, f: 1 } } };
-// 카리우스: 2D판 그림 (drawKarius)을 프레임별로 뜬 시트 (8 x 8칸, 한 칸 180 x 160). 줄: 대기 · 걷기 · 굴 파기 · 두 번 치기 · 노인의 팔 쓸기 · 잡아찢기 · 내려찍기 (불경자) · 불경자 대기
-const kp = (row, fps, once = false) => ({ src: PA + 'karius2d.webp', w: 180, h: 160, cols: 8, rows: 8, n: 64, from: row * 8, count: 8, fps, ax: 90, ay: 156, f: 1, once });
-SPR.karius = { h0: 94, tall: 2.4, poses: { idle: kp(0, 2.2), walk: kp(1, 9), dig: kp(2, 7), punch: kp(3, 16, true), sweep: kp(4, 7, true), grab: kp(5, 5.7, true), slam: kp(6, 7, true), heretic: kp(7, 2.2) } };
+// 카리우스 그림 · 전투는 karius.js (v0.47)
 SPR.snail = { h0: 342, tall: 0.24, poses: { idle: { src: PA + 'snail.webp', w: 512, h: 342, ax: 256, ay: 336, f: 1 } } };
 DEFS.cheong = { spr: 'cheong', name: '청광묵', hp: 220, atk: 18, spd: 2.8, r: 0.34, weight: 60, think: cheongThink };
 DEFS.cheongNpc = { spr: 'cheong', name: '청광묵', hp: 100, atk: 0, spd: 0, r: 0.34, weight: 60 };
@@ -482,8 +480,8 @@ function proTick(dt){
     // 청광묵: 달팽이를 보며 가끔 "아우.... 귀여워!"
     Cv.cuteT -= dt; if (Cv.cuteT <= 0 && Cv.ch.sadT > 0){ Cv.cuteT = rnd(3, 5); say(Cv.ch, Cv.ch.sadT > 45 ? '😭' : '😢', 'emo', 2.4); }
     else if (Cv.cuteT <= 0 && !hBusy(Cv.ch)){ Cv.cuteT = rnd(6, 9); const s = Cv.snails[0]; if (s) Cv.ch.face = Math.sign(s.x - Cv.ch.x) || 1; say(Cv.ch, '아우.... 귀여워!', 'soft', 2.4); }
-    // 레베카: zzz
-    Cv.zzzT -= dt; if (!PRO.rebOut && Cv.zzzT <= 0){ Cv.zzzT = 2.4; say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, 'z z z…', 'zzz', 2.2); }
+    // 레베카 (벽 속): 흙을 긁는 소리 · 가끔 꺼내 달라고 조름 (v0.114 설정대로 — 자는 게 아님)
+    Cv.zzzT -= dt; if (!PRO.rebOut && Cv.zzzT <= 0){ Cv.zzzT = rnd(7, 12); say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, ['(사각… 사각…)', '…저기요, 혹시 꺼내 주실 수 있나요?', '(흙을 긁는 소리)', '…헤헤. 오늘도 하늘 냄새가 나요.'][Math.floor(Math.random() * 4)], 'zzz', 2.4); }
     // 달팽이: 집 근처를 아주 천천히 기어다님
     if (!G.waitInput) tickSnails(dt);
     if (PRO.carry && !G.lock && !G.waitInput && hit('KeyG')) dropHere();
@@ -1077,66 +1075,7 @@ async function rebuildTent(){
   popText(TOILET.x, 1.6, TOILET.z, '천막을 다시 쳤다', 'heal', 1.3); G.lock = false;
 }
 
-/* ---------- 카리우스 전투 (2D판 kariusUpdate 그대로 옮김, 3D 장판으로)
-   체력 500 · 개조된 신체 (모든 피해 60% 감소) · 느림 · 무거움. 기본: 두 번 치기 (팔이 많아 한 번에 두 대)
-   노인의 팔 쓸기 (앞 2.7칸 부채꼴, 30 · 밀침 · 경직, 4초) · 잡아찢기 (1.9칸 안 하나를 끌어와 광대의 파일로 30, 치명 50%, 11초)
-   체력 15% 아래: 불경자 카리우스 (공격력 1.6배 · 빠름 · 걸을 때 쿵쿵) + 내려찍기 (앞 1.3칸 원, 40 · 경직) · 돌진 (일직선으로 밀고 나가 후려침, 35) */
-DEFS.kariusAlly = { spr: 'karius', name: '카리우스', hp: 500, atk: 12, spd: 2.0, r: 0.6, weight: 300, dr: 0.6, think: kariusThink };
-function kariusThink(u, dt){
-  if (u.downed) return;
-  for (const k of ['cd', 'swCd', 'grCd', 'slCd', 'rsCd']) u[k] = (u[k] ?? 0) - dt;
-  const m = u.p2 ? 1.6 : 1, K = u.kc;
-  if (K){ K.t += dt; kariusSkill(u, K, m, dt); return; }
-  if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; return; }
-  if (!u.p2 && u.hp <= u.max * 0.15){   // 불경자
-    u.kc = { type: 'heretic', t: 0 }; setPose(u, 'heretic'); popText(u.x, u.y + 3.4, u.z, '불경자 카리우스', 'crit', 1.6); camShake(0.4, 0.4); ring(u.x, u.z, 0xfff6c0, 3, 0.5); return;
-  }
-  const list = foes().filter(e => e.alert && !e.dead), tg = nearest(u, list, 30);
-  if (!tg){ setPose(u, u.p2 ? 'heretic' : 'idle'); return; }
-  const d = dist(u, tg), a = Math.atan2(tg.z - u.z, tg.x - u.x);
-  setAim(u, tg.x, tg.z);
-  const front = o => { const dd = Math.hypot(o.x - u.x, o.z - u.z); return dd < 2.7 && Math.abs(angDiff(Math.atan2(o.z - u.z, o.x - u.x), a)) < 1.2; };
-  if (u.p2 && u.rsCd <= 0 && d > 2.8 && d < 7){ u.rsCd = 8; u.kc = { type: 'rush', t: 0, a, dec: decal('line', { x: u.x, z: u.z, len: 4.5, w: 1.3, a, dur: 0.5, color: BLUE }), hit: new Set() }; say(u, '우오오오!', 'soft', 0.8); return; }
-  if (u.p2 && u.slCd <= 0 && d <= 2.3){ u.slCd = 5; const px = u.x + Math.cos(a) * 1.3, pz = u.z + Math.sin(a) * 1.3; u.kc = { type: 'slam', t: 0, px, pz, dec: decal('circle', { x: px, z: pz, r: 1.3, dur: 0.7, color: BLUE }) }; u.poseT = 0; setPose(u, 'slam'); return; }
-  if (u.grCd <= 0 && d <= 1.9 && !tg.D.boss){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg }; u.poseT = 0; setPose(u, 'grab'); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
-  if (u.swCd <= 0 && list.some(front)){ u.swCd = 4; u.kc = { type: 'sweep', t: 0, a, dec: decal('sector', { x: u.x, z: u.z, r: 2.7, a, arc: 2.4, dur: 0.5, color: BLUE }) }; u.poseT = 0; setPose(u, 'sweep'); return; }
-  if (d > 1.8){ navTo(u, tg.x, tg.z, u.spd * (u.p2 ? 1.4 : 1), dt, 1.5); setPose(u, 'walk'); if (u.p2){ u.stomp = (u.stomp || 0) - dt; if (u.stomp <= 0){ u.stomp = 0.42; camShake(0.08, 0.1); dust(u.x, u.z, 4); } } return; }
-  setPose(u, u.p2 ? 'heretic' : 'idle');
-  if (u.cd <= 0){ u.cd = u.p2 ? 1.1 : 1.4; u.kc = { type: 'punch', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.5, dur: 0.45, color: BLUE }) }; setPose(u, 'punch'); u.poseT = 0; }
-}
-function kariusSkill(u, K, m, dt){
-  const hitIn = (pred, dmg, o) => { for (const e of foes()) if (!e.dead && pred(e)) hurt(u, e, dmg * m, { from: u, ...o }); };
-  const inDec = e => K.dec && inShape(K.dec, e);
-  if (K.type === 'heretic'){ if (K.t >= 0.6){ u.kc = null; u.p2 = true; u.atk = DEFS.kariusAlly.atk * 1.6; say(u, '으으으…', 'soft', 1.2); camShake(0.5, 0.3); } return; }
-  if (K.type === 'punch'){   // 팔이 많아 한 번에 두 대
-    if (K.n === 0 && K.t >= 0.45){ K.n = 1; hitIn(inDec, u.atk / m, { kb: 0.4 }); }
-    if (K.n === 1 && K.t >= 0.6){ K.n = 2; hitIn(inDec, u.atk / m, { kb: 0.7 }); spark(u.x + Math.cos(K.a) * 1.4, 1.3, u.z + Math.sin(K.a) * 1.4, 0xd8d0e8, 6, 3); }
-    if (K.t >= 0.8) u.kc = null; return;
-  }
-  if (K.type === 'sweep'){   // 노인의 팔: 쓸어버림
-    if (!K.hit && K.t >= 0.62){ K.hit = true; camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); hitIn(inDec, 30, { kb: 1.6, stun: 0.5 }); SFX.boom(0.5); }
-    if (K.t >= 1.15) u.kc = null; return;
-  }
-  if (K.type === 'grab'){    // 잡아찢기: 끌어와 광대의 파일로
-    const t = K.tg; if (!t || t.dead){ u.kc = null; return; }
-    if (t.D.boss){ u.kc = null; return; }   // v0.32: 보스는 잡히지 않음 (전엔 적뢰가 하던 동작이 끊긴 채 멈춤)
-    t.st = 'hurt'; t.stT = 0.3; interrupt(t);
-    if (K.t > 0.4 && K.t < 1.0){ const gx = u.x + Math.cos(u.aim) * 0.9, gz = u.z + Math.sin(u.aim) * 0.9, k = Math.min(1, dt * 8); t.x += (gx - t.x) * k; t.z += (gz - t.z) * k; }
-    if (!K.hit && K.t >= 1.0){ K.hit = true; hurt(u, t, 30 * m, { from: u, crit: Math.random() < 0.5, critMul: 2 }); spark(t.x, 1, t.z, 0xb3122a, 22, 5); camShake(0.35, 0.2); }
-    if (K.t >= 1.45){ u.kc = null; } return;
-  }
-  if (K.type === 'slam'){
-    if (!K.hit && K.t >= 0.7){ K.hit = true; camShake(0.55, 0.3); G.hitstop = Math.max(G.hitstop, 0.12); hitIn(e => Math.hypot(e.x - K.px, e.z - K.pz) < 1.3 + e.r, 40, { kb: 0.8, stun: 0.6 }); dust(K.px, K.pz, 16); popText(K.px, 1.4, K.pz, '쾅!', 'big', 0.6); SFX.boom(0.9); }
-    if (K.t >= 1.15) u.kc = null; return;
-  }
-  if (K.type === 'rush'){    // 몸을 낮췄다가 일직선으로 밀고 나가 후려침
-    if (K.t < 0.5) return;
-    setPose(u, 'walk');
-    if (K.t < 1.0){ moveBy(u, Math.cos(K.a) * 9 * dt, Math.sin(K.a) * 9 * dt); dust(u.x, u.z, 1); if (Math.random() < dt * 20) camShake(0.12, 0.08);
-      for (const e of foes()) if (!e.dead && !K.hit.has(e) && Math.hypot(e.x - u.x, e.z - u.z) < 1.1){ K.hit.add(e); hurt(u, e, 35 * m, { from: u, kb: 3, stun: 1.0 }); } }
-    else u.kc = null;
-  }
-}
+/* ---------- 카리우스 전투 → karius.js (v0.47: 새 그림 · 발 기술 · 짓뭉개짐 · 근성) ---------- */
 
 /* ---------- 날씨 인카운터: 낙하에 가끔 (최대 1개) 섞여 갑자기 몰아침. 그날 하루 내내
    폭우: 굴 전체에 비 · 어두워짐 · 가끔 천둥 · 변소 천막 날아감 / 폭설: 굴 전체에 눈보라 · 걸음 느려짐 (70%) */
@@ -1909,14 +1848,14 @@ function tickHungry(dt){
   }
 }
 
-/* ---------- v0.21 레베카 꺼내기: 벽에 박힌 머리 → 벽을 세 번 파면 (하루 행동 1씩) 쑥 빠져나옴. 그 뒤로 굴에 같이 삶 (정리 · 밥, 늘 졸림) ---------- */
+/* ---------- v0.21 레베카 꺼내기: 벽에 박힌 머리 → 벽을 세 번 파면 (하루 행동 1씩) 쑥 빠져나옴. 그 뒤로 굴에 같이 삶 (v0.114: 꺼낸 날은 누워 쉼 · 다음 날부터 따라다님 · 원정 동료 — rebecca.js) ---------- */
 async function digRebecca(){
   if (PRO.rebOut || !spendAp()) return;
   const B = PRO.cave.B, pl = G.player; G.lock = true;
   for (let k = 0; k < 4; k++){ pl.leanT = 0.3; SFX.clink(0.4); spark(B.x + 0.3, 0.6, B.z, 0xffe0b0, 6, 2.5); dust(B.x + 0.4, B.z, 6); await wait(0.4); }
   PRO.rebDig++; popText(B.x + 0.5, 1.4, B.z, `레베카 ${PRO.rebDig}/3`, 'heal', 1.2); G.lock = false;
-  if (PRO.rebDig === 1) say({ x: B.x, y: 0.8, z: B.z }, '…음냐…?', 'zzz', 2);
-  if (PRO.rebDig === 2) say({ x: B.x, y: 0.8, z: B.z }, '…으응… 시끄러…', 'zzz', 2);
+  if (PRO.rebDig === 1) say({ x: B.x, y: 0.8, z: B.z }, '…앗! 사람이다…!', 'zzz', 2);
+  if (PRO.rebDig === 2) say({ x: B.x, y: 0.8, z: B.z }, '조금만 더요…! 흙이 무너지고 있어요!', 'zzz', 2);
   if (PRO.rebDig >= 3) rebeccaOut();
 }
 async function rebeccaOut(){

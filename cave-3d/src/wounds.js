@@ -1,4 +1,4 @@
-/* wounds.js v1.0 — 치명상 · 상태 이상 정리 (v0.33)
+/* wounds.js v1.1 — 치명상 · 상태 이상 정리 (v0.33) (v1.1: 영웅 칸 칩에 영구 · 빈사 · 반시체 · 반병신 — 부위 치명상은 maim.js)
    치명상 (영웅에게 남는 상처, 굴에 돌아와도 안 나음):
    · 생기는 때: 쓰러질 때 25% · 한 방에 최대 체력 35% 넘게 맞을 때 7%
    · 다리: 이동 -15% (6일) · 심장: 최대 체력 -15%, 생길 때 크게 피 흘림 (8일) · 뇌: 정신도 -20, 가끔 혼란 · 헛소리 (10일) · 목: 생길 때 크게 피 흘림 (5일)
@@ -129,4 +129,5 @@ useItem = function(it, u = G.player){
   if (u && fx.cure && u.sts && u.sts.confuse) u.sts.confuse.t = 0;
   return r;
 };
-const woundChips = h => (h.wounds || []).map(w => `<em class="wd" title="${WOUND[w.k].note}">${WOUND[w.k].n.replace(' 치명상', '')} ${w.d}일</em>`).join('');
+const woundChips = h => (h.st === 'moribund' ? `<em class="wd" title="수술 뒤 회복 중 — 원정 못 감">빈사 ${h.moribund || 1}일</em>` : '') + (h.halfDead ? '<em class="wd" title="데리고 돌아가면 수술">반시체</em>' : '') + (typeof crippled === 'function' && crippled(h) ? '<em class="wd" title="영구 손상 · 골절이 겹침">반병신</em>' : '')
+  + (h.wounds || []).map(w => `<em class="wd" title="${WOUND[w.k].note}">${WOUND[w.k].n.replace(' 치명상', '')} ${WOUND[w.k].perm ? '영구' : w.d + '일'}</em>`).join('');   // v1.1: 영구 · 빈사 · 반시체 · 반병신 (maim.js)

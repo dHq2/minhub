@@ -1,6 +1,6 @@
-/* foes2.js v1.1 — (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.2 — (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
-   1 무덤 어귀: 쥐 기사 더함 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
+   1 무덤 어귀 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
    6 안개 늪: 검냥이 · 강적 보르마 · 7 도깨비 시장: 보광 · 광냥 · 강적 청승 · 작약 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
    9 눈알의 굴: 눈깔괴물 · 푸른 뚱보 · 강적 장군님 · 10 대장군의 전장: 흑기사 군단 · 보스 대장군 (군단과 함께, 쓰러뜨리면 원정 끝 — 지름길)
    고유 기술 (붉은 예고 장판, 읽으면 피함): 덮치기 (검냥이) · 뛰어 내려찍기 (청승) · 북소리 (보광: 주변 적 강해짐) · 마력 폭발 (보르마) · 응시 (눈깔괴물: 정신도) · 짓누르기 (푸른 뚱보)
@@ -53,8 +53,8 @@ Object.assign(FOE_DEF, { ratKnight: 2, slimeGirl: 6, catw: 4, borama: 8, bogwang
 // 층 구성 고쳐 씀
 (() => {
   const set = (F, o) => Object.assign(FLOOR_DEF[F], o);
-  set(1, { foes: { swordsman: 3, spearman: 3, shieldman: 2, foeJelly: 1, ratKnight: 2 } });
-  set(2, { foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1, ratKnight: 2 } });
+  set(1, { foes: { swordsman: 3, spearman: 3, shieldman: 2, foeJelly: 1 } });   // v1.2 쥐 기사는 적으로 안 나옴 (포렌의 소환수 · 굴 순찰은 qol.js)
+  set(2, { foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 } });
   set(3, { elite: ['slimeGirl', 'dandalo', 'brute'] });
   set(5, { boss: 'cesar' });
   set(6, { foes: { catw: 3, foeSlime: 2, foeFairy: 2, archer: 1 }, elite: ['borama', 'benkin'] });

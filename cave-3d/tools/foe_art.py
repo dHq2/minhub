@@ -1,4 +1,5 @@
-# foe_art.py v1.1 — (v1.1: 한 인물의 모든 자세를 같은 배율로 (대기 자세 높이 기준) — 자세마다 크기가 달라지던 것)
+# foe_art.py v1.2 — (v1.2: 원본 넷째 칸 = 자세 배율 (같은 인물인데 그림마다 크기가 다를 때) · 시트 가로 4096 넘지 않게 칸 수를 줄임 · 레베카 동료 동작 — 대기 · 걷기 · 달리기 · 방패 막기 · 방패 돌진 · 어깨 박기 · 내려베기 · 올려베기 · 회전베기 · 찌르기)
+# v1.1 — (v1.1: 한 인물의 모든 자세를 같은 배율로 (대기 자세 높이 기준) — 자세마다 크기가 달라지던 것)
 # v1.0 — 도감 (codex/img)의 적 · 보스 그림 → cave-3d/art/foe/<키>_<자세>.webp
 #  · 움직이는 webp (여러 장)는 한 장의 격자 시트로 (가로 최대 8칸). 모든 장의 그림 테두리를 합쳐 같은 크기로 잘라 발 위치가 흔들리지 않게
 #  · 한 장짜리 그림은 그대로 (테두리만 잘라 냄). 너무 크면 칸 높이를 MAXH로 줄임
@@ -25,6 +26,9 @@ SRC = [
     ('bkShield', 'idle', 'npc/N-005.webp'), ('bkSpear', 'idle', 'npc/N-056.webp'),
     ('crabchef', 'idle', 'char/crabchef.webp'), ('smoker', 'idle', 'prop/H-341.webp'), ('tehera', 'idle', 'char/tehera_sit.webp'),
     ('cesar', 'idle', '@assets/cesar_idle.png'), ('cesar', 'windup', '@assets/cesar_prep.png'), ('cesar', 'attack', '@assets/cesar_strike.png'), ('cesar', 'special', '@assets/cesar_special.png'),
+    ('rebecca', 'idle', 'char/rebecca_idle.webp'), ('rebecca', 'walk', 'char/rebecca_walk.webp'), ('rebecca', 'run', 'char/rebecca_run.webp'), ('rebecca', 'block', 'char/rebecca_shield_block.webp', 0.45),
+    ('rebecca', 'charge', 'char/rebecca_shield_charge.webp', 0.45), ('rebecca', 'bash', 'char/rebecca_shoulder_bash.webp', 0.45), ('rebecca', 'slashDown', 'char/rebecca_slash_down.webp', 0.45), ('rebecca', 'slashUp', 'char/rebecca_slash_up.webp', 0.45),
+    ('rebecca', 'spin', 'char/rebecca_spin_slash.webp', 0.45), ('rebecca', 'thrust', 'char/rebecca_thrust.webp', 0.45),
     ('cesar', 'guard', '@assets/cesar_guard.png'), ('cesar', 'back', '@assets/cesar_back.png'), ('cesar', 'raise', '@assets/cesar_raise.png'), ('cesar', 'hurt', '@assets/cesar_hurt.png'), ('cesar', 'thrust', '@assets/cesar_thrust.png'),
 ]
 def frames(path):
@@ -40,18 +44,18 @@ def load(src):
         b = f.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
         if b: box = b if not box else (min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3]))
     return fs, box
-for key, pose, src in SRC:   # 배율: 대기 자세 (첫 자세)의 높이로
+for key, pose, src, *_ in SRC:   # 배율: 대기 자세 (첫 자세)의 높이로
     if key not in KK: fs, box = load(src); KK[key] = min(1, MAXH / (box[3] - box[1]))
-for key, pose, src in SRC:
+for key, pose, src, *rest in SRC:
     fs, _ = load(src)
     box = None
     for f in fs:
         b = f.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
         if b: box = b if not box else (min(box[0], b[0]), min(box[1], b[1]), max(box[2], b[2]), max(box[3], b[3]))
     fs = [f.crop(box) for f in fs]
-    w, h = fs[0].size; k = KK[key]
+    w, h = fs[0].size; k = KK[key] * (rest[0] if rest else 1)
     if k < 1: fs = [f.resize((max(1, round(w * k)), max(1, round(h * k))), Image.LANCZOS) for f in fs]; w, h = fs[0].size
-    n = len(fs); cols = min(8, n); rows = (n + cols - 1) // cols
+    n = len(fs); cols = max(1, min(8, n, 4096 // w)); rows = (n + cols - 1) // cols
     sheet = Image.new('RGBA', (cols * w, rows * h), (0, 0, 0, 0))
     for i, f in enumerate(fs): sheet.paste(f, ((i % cols) * w, (i // cols) * h))
     name = f'{key}_{pose}.webp'; sheet.save(os.path.join(OUT, name), 'WEBP', quality=88, method=4)

@@ -1,9 +1,9 @@
-# pack.py v1.2 (inju 칸 추가) · v1.1 (item 칸 추가) — 작은 그림을 묶음 그림 (pack/*.webp)으로 합치고 packs.js에 자리를 적음.
+# pack.py v1.3 (karius 칸 추가) · v1.2 (inju 칸 추가) · v1.1 (item 칸 추가) — 작은 그림을 묶음 그림 (pack/*.webp)으로 합치고 packs.js에 자리를 적음.
 # 게시 파일 수 한도 (511) 때문. 움직이는 그림은 묶지 않음. 실행: python3 codex/tools/pack.py
 import os, json
 from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DIRS = ['relic', 'equip', 'card', 'skill', 'tile', 'prop', 'face', 'npc', 'item', 'inju']   # v1.2: inju (3D 인주 동작)
+DIRS = ['relic', 'equip', 'card', 'skill', 'tile', 'prop', 'face', 'npc', 'item', 'inju', 'karius']   # v1.2: inju (3D 인주 동작) · v1.3: karius (3D 카리우스 새 그림)
 W, HMAX, PAD = 2048, 4096, 2
 os.makedirs(f'{ROOT}/pack', exist_ok=True)
 for f in os.listdir(f'{ROOT}/pack'): os.remove(f'{ROOT}/pack/{f}')

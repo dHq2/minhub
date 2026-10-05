@@ -56,7 +56,7 @@
    "file": "catw_pounce.webp",
    "w": 561,
    "h": 337,
-   "cols": 8,
+   "cols": 7,
    "rows": 2,
    "n": 13,
    "ax": 234,
@@ -78,7 +78,7 @@
    "file": "cs_attack.webp",
    "w": 516,
    "h": 487,
-   "cols": 8,
+   "cols": 7,
    "rows": 2,
    "n": 11,
    "ax": 260,
@@ -88,7 +88,7 @@
    "file": "cs_jump.webp",
    "w": 516,
    "h": 541,
-   "cols": 8,
+   "cols": 7,
    "rows": 3,
    "n": 17,
    "ax": 260,
@@ -194,7 +194,7 @@
    "file": "bk_thrust.webp",
    "w": 571,
    "h": 339,
-   "cols": 8,
+   "cols": 7,
    "rows": 2,
    "n": 13,
    "ax": 262,
@@ -477,6 +477,108 @@
    "n": 1,
    "ax": 228,
    "ay": 193
+  }
+ },
+ "rebecca": {
+  "idle": {
+   "file": "rebecca_idle.webp",
+   "w": 188,
+   "h": 318,
+   "cols": 8,
+   "rows": 3,
+   "n": 22,
+   "ax": 89,
+   "ay": 317
+  },
+  "walk": {
+   "file": "rebecca_walk.webp",
+   "w": 347,
+   "h": 320,
+   "cols": 8,
+   "rows": 1,
+   "n": 8,
+   "ax": 192,
+   "ay": 319
+  },
+  "run": {
+   "file": "rebecca_run.webp",
+   "w": 372,
+   "h": 320,
+   "cols": 8,
+   "rows": 1,
+   "n": 8,
+   "ax": 201,
+   "ay": 319
+  },
+  "block": {
+   "file": "rebecca_block.webp",
+   "w": 275,
+   "h": 243,
+   "cols": 8,
+   "rows": 2,
+   "n": 10,
+   "ax": 172,
+   "ay": 242
+  },
+  "charge": {
+   "file": "rebecca_charge.webp",
+   "w": 778,
+   "h": 359,
+   "cols": 5,
+   "rows": 3,
+   "n": 13,
+   "ax": 379,
+   "ay": 358
+  },
+  "bash": {
+   "file": "rebecca_bash.webp",
+   "w": 618,
+   "h": 362,
+   "cols": 6,
+   "rows": 2,
+   "n": 12,
+   "ax": 326,
+   "ay": 361
+  },
+  "slashDown": {
+   "file": "rebecca_slashDown.webp",
+   "w": 526,
+   "h": 369,
+   "cols": 7,
+   "rows": 2,
+   "n": 12,
+   "ax": 212,
+   "ay": 368
+  },
+  "slashUp": {
+   "file": "rebecca_slashUp.webp",
+   "w": 513,
+   "h": 369,
+   "cols": 7,
+   "rows": 2,
+   "n": 12,
+   "ax": 212,
+   "ay": 368
+  },
+  "spin": {
+   "file": "rebecca_spin.webp",
+   "w": 485,
+   "h": 370,
+   "cols": 8,
+   "rows": 2,
+   "n": 13,
+   "ax": 216,
+   "ay": 369
+  },
+  "thrust": {
+   "file": "rebecca_thrust.webp",
+   "w": 628,
+   "h": 369,
+   "cols": 6,
+   "rows": 3,
+   "n": 13,
+   "ax": 246,
+   "ay": 368
   }
  }
 }

@@ -1,4 +1,4 @@
-/* grapple.js v1.81 — (v1.81: 던진 뒤 그림) (v1.8: 일곱째 묶음 그림 · 대련 더미도 잡힘 · fightTargets) (v1.7: 여섯째 묶음 그림 · 굴 (로비)에서도 잡기) (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.82 — (v1.82: 의자에 앉은 그림) (v1.81: 던진 뒤 그림) (v1.8: 일곱째 묶음 그림 · 대련 더미도 잡힘 · fightTargets) (v1.7: 여섯째 묶음 그림 · 굴 (로비)에서도 잡기) (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -34,7 +34,8 @@ Object.assign(SPR.player.poses, {
   uppercut: { src: 'art/inju/uppercut.webp', w: 446, h: 730, ax: 223, ay: 727, f: 1, scale: 0.5 }, bungkwon: { src: 'art/inju/bungkwon.webp', w: 588, h: 618, ax: 294, ay: 615, f: -1, scale: 0.5 },
   dk1: { src: 'art/inju/dk1.webp', w: 422, h: 680, ax: 211, ay: 677, f: -1, scale: 0.5 }, dk2: { src: 'art/inju/dk2.webp', w: 598, h: 496, ax: 299, ay: 493, f: -1, scale: 0.486 },
   dk3: { src: 'art/inju/dk3.webp', w: 602, h: 292, ax: 301, ay: 289, f: -1, scale: 0.5 },
-  throwRel: { src: 'art/inju/throwRel.webp', w: 560, h: 652, ax: 280, ay: 649, f: 1, scale: 0.49 } });   // 던진 뒤: 던진 손이 앞으로 내려와 손끝으로 목표를 가리킴 (돌 · 수류탄 · 투창 놓는 순간)
+  throwRel: { src: 'art/inju/throwRel.webp', w: 560, h: 652, ax: 280, ay: 649, f: 1, scale: 0.49 },
+  seat: { src: 'art/inju/seat.webp', w: 422, h: 712, ax: 200, ay: 709, f: -1, scale: 0.37 } });   // v1.82 의자에 앉기 (굴의 의자에서 E · 민수 235)   // 던진 뒤: 던진 손이 앞으로 내려와 손끝으로 목표를 가리킴 (돌 · 수류탄 · 투창 놓는 순간)
 // 격투 기술이 닿는 대상: 적 + 굴의 대련 더미 (중립이라 굴 싸움 판정 · 동료 AI에는 안 걸림)
 const fightTargets = () => G.units.filter(u => !u.dead && (u.side === 'enemy' || (u.D.spar && !u.downed)));   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
 Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });

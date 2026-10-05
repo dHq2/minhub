@@ -257,6 +257,16 @@
   [hidden]{display:none !important;}
   body{-webkit-user-select:none;user-select:none;}
   @media (max-width:900px){ #help{max-width:88vw;bottom:auto;top:12px;} }
+  .rw-sk{margin-top:10px;} .rw-ski{display:flex;gap:9px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);} .rw-ski img,.rw-ski i{flex:none;width:44px;height:44px;border-radius:6px;object-fit:cover;background:rgba(255,255,255,.05);} .rw-ski b{display:block;color:#ffd35a;font-family:"Do Hyeon";font-weight:normal;font-size:16px;} .rw-ski small{color:#c8bca8;font-size:12px;}
+  .pop.zone{font-size:17px;letter-spacing:1px;} .pop.zhigh{color:#ffb050;} .pop.zmid{color:#ff7a6a;} .pop.zlow{color:#c890ff;}   /* v0.48 공격 높이 표시 */
+  /* v0.47 기술 알림 (카리우스 · 레베카 스킬 그림) · 컷씬 띠 (불경자) */
+  #skcall{position:fixed;left:50%;top:92px;transform:translateX(-50%);z-index:9;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;}
+  #skcall .skc{display:flex;align-items:center;gap:9px;background:rgba(10,8,8,.84);border:1px solid #6a5a48;border-radius:8px;padding:4px 14px 4px 4px;animation:tin .25s ease both;transition:opacity .45s;}
+  #skcall .skc img{width:46px;height:46px;border-radius:6px;object-fit:cover;} #skcall .skc b{font-family:"Do Hyeon";font-weight:normal;font-size:19px;color:#ffd35a;} #skcall .skc small{color:#b8ac98;font-size:11px;} #skcall .skc.out{opacity:0;}
+  #cutin{position:fixed;left:0;right:0;top:28%;height:0;overflow:hidden;z-index:12;pointer-events:none;background:#000;box-shadow:0 0 40px #000;}
+  #cutin.show{animation:cutin 1.7s ease forwards;} @keyframes cutin{0%{height:0}12%{height:28vh}82%{height:28vh}100%{height:0}}
+  #cutin img{width:100%;height:100%;object-fit:cover;opacity:.92;} #cutin div{position:absolute;right:6%;bottom:12%;text-align:right;}
+  #cutin b{display:block;font-family:"Do Hyeon";font-weight:normal;font-size:clamp(24px,4vw,40px);color:#fff3c0;text-shadow:0 2px 10px #000;} #cutin span{color:#d8c8b0;font-size:14px;text-shadow:0 1px 4px #000;}
 </style>
 </head>
 <body>
@@ -316,9 +326,14 @@
 <script src="src/foe_sheets.js"></script>
 <script src="src/foes2.js"></script>
 <script src="src/encounters.js"></script>
-<script src="src/qol.js"></script>
 <script src="src/wounds.js"></script>
 <script src="src/tackle.js"></script>
+<script src="src/kar_sheets.js"></script>
+<script src="src/karius.js"></script>
+<script src="src/rebecca.js"></script>
+<script src="src/qol.js"></script>
+<script src="src/maim.js"></script>
+<script src="src/workers.js"></script>
 <script src="src/gear.js"></script>
 <script src="src/titles.js"></script>
 <script src="src/ui_rpg.js"></script>

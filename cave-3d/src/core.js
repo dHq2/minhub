@@ -1,7 +1,10 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.46';
+const VERSION = 'v0.49';
+// v0.49 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작 (민수: 진행 중 저장은 되게, 단 업데이트되면 초기화)
+let SAVE_RESET = null;
+try { const sv = localStorage.getItem('cave3d.ver'); if (sv && sv !== VERSION){ for (const k of ['cave3d.pro.v1', 'cave3d.rpg.v1', 'cave3d.exp.v1']) localStorage.removeItem(k); SAVE_RESET = sv; } localStorage.setItem('cave3d.ver', VERSION); } catch (e) {}
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,

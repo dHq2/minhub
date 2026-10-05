@@ -1,4 +1,4 @@
-/* game.js v0.86 — (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.88 — (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -82,8 +82,9 @@ function startGame(){
   const ex = /^#exp(\d*)$/.exec(h);
   if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave();
   else if (h === '#new'){ newGame(); }
-  else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기
+  else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ const ck = typeof expHasCheckpoint === 'function' && expHasCheckpoint(); if (ck) expResume(ck); else startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기 · v0.88 원정 중이었으면 그 층부터
   else startPrologue();
+  if (SAVE_RESET) setTimeout(() => typeof uiToast === 'function' && uiToast(`업데이트 (${SAVE_RESET} → ${VERSION}) — 저장을 새로 시작합니다`, 'warn'), 2500);
 }
 function resize(){
   const w = innerWidth, h = innerHeight; UI.W = w; UI.H = h;
@@ -405,6 +406,7 @@ function loop(now){
       else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock){ if (!(typeof heroCombat === 'function' && heroCombat(u, dt))) (u.D.think || allyThink)(u, dt); }   // v0.33: 활 · 총 든 동료는 쏨
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       else if (u.D.spar && !G.lock && typeof sparThink === 'function') sparThink(u, dt);
+      else if (u.D.wander && !G.lock && !G.waitInput) u.D.wander(u, dt);   // v0.87 굴 손님 (쥐 기사 순찰)
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
       if (Math.abs(u.kx) + Math.abs(u.kz) > 0.02){ moveBy(u, u.kx * dt, u.kz * dt); const f = Math.exp(-dt * 8); u.kx *= f; u.kz *= f; }
       u.y += (heightAt(G.map, u.x, u.z) - u.y) * Math.min(1, dt * 12);
@@ -412,6 +414,7 @@ function loop(now){
     }
     separate(dt);
     if (!G.lock && typeof orbTick === 'function') orbTick(dt);   // v0.84 대련 더미의 연습 공
+    if (!G.lock && typeof shoveTick === 'function') shoveTick(dt);   // v0.87 밀려 날아감 · 짓뭉개짐 (karius.js)
     if (G.mode === 'floor'){
       reviveCheck(dt);
       // 인주가 쓰러져도 싸움은 계속 (동료가 싸움). 모두 쓰러져야 끝

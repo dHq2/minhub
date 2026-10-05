@@ -1,4 +1,4 @@
-/* expedition.js v1.13 — 원정 (한 번의 런). v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.14 — 원정 (한 번의 런). v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -131,7 +131,7 @@ async function expLoadFloor(F, how){
   G.map.wallH = D.cam === 'side' ? 1.7 : 2.4; layoutWalls(G.map, CAM.yawT || 0);
   Object.assign(DUN, { bills: [], sources: [], items: [], marks: [], seen: new Uint8Array(gen.W * gen.H), rooms: gen.rooms });
   setupDarkness(D); G.fogK = D.fog || 0.9;
-  if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
+  EXP.seaView = false; if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
   EXP.reveal = false; EXP.radar = !!EXP.tehera; EXP.encs = []; EXP.lit = true; EXP.meet = null; G.locks = [];
   // 원정대
   const s = gen.start, px = Math.round(s.cx), pz = Math.round(s.cz) + 1;
@@ -149,7 +149,7 @@ async function expLoadFloor(F, how){
   G.onKill = expOnKill;
   G.cmd = 'free';
   camSnapTo(px, pz); CAM.yaw = CAM.yawT;
-  caption(`${F}층 · ${D.name}`, D.sub);
+  caption(`${F}층 · ${D.name}`, D.sub + (EXP.seaView ? ' · 멀리 바다가 보이는 절벽 길' : ''));
   if (F >= 5 && typeof heroCount === 'function') for (const k of RPG.party) heroCount(hero(k), 'deep');
   if (how === 'start' && !RPG.meta.expHelp){ RPG.meta.expHelp = 1; setTimeout(() => guide('어둡다. <em>횃불</em>이 다 타기 전에 · <em>계단</em>은 가장 먼 방 · <em>귀환 줄</em>로 굴로 · <em>I</em> 가방 · <em>M</em> 지도', 9), 1500); }
   uiExpHud(true);
@@ -454,6 +454,7 @@ function expToCave(sum){
   // 동료 체력 → 굴
   const hch = hero('cheong'), hka = hero('karius');
   if (hch.hpMax) PRO.hpf.ch = Math.max(0.05, hch.hp / hch.hpMax); if (hka.hpMax) PRO.hpf.ka = Math.max(0.05, hka.hp / hka.hpMax);
+  if (RPG.heroes.rebecca && RPG.heroes.rebecca.hpMax) PRO.hpf.reb = Math.max(0.3, RPG.heroes.rebecca.hp / RPG.heroes.rebecca.hpMax);   // v1.14 레베카 (불사라 금방 참)
   PRO.ap = 0;   // 원정은 하루를 씀
   EXP = null; uiExpHud(false); saveRpg();
   setTimeout(() => typeof proSave === 'function' && proSave(), 3000);

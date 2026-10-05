@@ -1,4 +1,5 @@
-# inju_poses.py v1.2 — (v1.2: 던진 뒤 그림, 돌 던지기 (던지기 전) 그림은 이제 안 씀)
+# inju_poses.py v1.3 — (v1.3: 의자에 앉기 (민수 235))
+# v1.2 — (v1.2: 던진 뒤 그림, 돌 던지기 (던지기 전) 그림은 이제 안 씀)
 # v1.1 — (v1.1: 어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권, 슬라이딩 쓰는 곳 고침)
 # v1.0 — 3D판 인주 동작 그림 (cave-3d/art/inju, 임시 그림)을 도감 인물 칸 '인주 · 동료 · 동작 그림'에 넣음
 #  · 그림: cave-3d/art/inju/<키>.webp → codex/img/inju/<키>.webp (높이 300으로 줄임, pack.py가 묶음)
@@ -14,7 +15,7 @@ POSES = [
     ('hop', '뛰어오름', 'Space 점프의 뛰어오르는 순간'), ('jump', '점프', 'Space 점프 (공중)'),
     ('roll', '구르기', 'Q 구르기 앞 반 (몸을 맒)'), ('rollUp', '구르기 뒤 · 드롭킥 착지', 'Q 구르기 뒤 반 · 드롭킥 뒤 등으로 떨어짐'),
     ('carry', '짐 들기', '굴에서 짐 (가구 · 낙하물 · 돼지)을 들고 다닐 때'), ('raise', '손 들기', '동료 지시 (1 2 3) · 소모품 · 마력 폭발'),
-    ('squat', '쪼그려 앉기', 'E 줍기 · 뒤지기 · 파기 · 상자'), ('sit', '앉아 쉬기', '모닥불에서 쉬기 · 굴에서 6초 넘게 가만히'), ('sleep', '잠', '밤에 잠자리에 들 때'),
+    ('squat', '쪼그려 앉기', 'E 줍기 · 뒤지기 · 파기 · 상자'), ('sit', '앉아 쉬기', '모닥불에서 쉬기 · 굴에서 6초 넘게 가만히'), ('seat', '의자에 앉기', '굴의 의자에서 E (움직이면 일어남 · 천천히 회복)'), ('sleep', '잠', '밤에 잠자리에 들 때'),
     ('duck', '숙여 회피', 'G 숙이기 (높은 공격이 머리 위로 지나감)'), ('block', '팔 엇걸기 막기', '무기를 든 채 F 막기'), ('mtGuard', '무에타이 가드', '맨손 F 막기 (무릎 들고 머리 감쌈)'),
     ('mtPose', '무에타이 자세', '맨손으로 싸우며 서 있을 때'), ('box', '복싱 스텝', '맨손으로 싸우며 움직일 때 · 잽 · 주먹 예고'),
     ('jab', '잽', '맨손 J 1타 · 클린치 J'), ('punch', '주먹', '맨손 J 2타 · 클린치 J'), ('kickPrep', '앞차기 앞 프레임', '맨손 J 3타 예고 (무릎 듦)'), ('kick', '앞차기', '맨손 J 3타'),
@@ -46,6 +47,6 @@ for k, name, use in POSES:
     new.append(e)
 at = max(i for i, e in enumerate(cat) if e['id'].startswith('O-player-') and e['cat'] == 'char') + 1
 cat[at:at] = new
-head = head.replace('/* catalog.js v1.76 —', '/* catalog.js v1.77 — v1.77: 3D판 인주 동작 그림 (O-inju-*, tools/inju_poses.py).', 1)
+pass   # v1.3: 판 번호는 kar_poses.py가 올림
 open(P, 'w').write(head + json.dumps(cat, ensure_ascii=False, indent=0) + ';\n')
 print(len(new), 'poses,', len(cat), 'entries')

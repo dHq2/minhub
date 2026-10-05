@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.92 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<!-- codex v1.93 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -110,6 +110,8 @@ html.csort .pbtn img,html.csort .pbtn .pp{-webkit-user-drag:none;user-drag:none;
 .tile.on{border-color:var(--check);box-shadow:0 0 0 1px var(--check)}
 .st{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
 .st.out{background:var(--out)} .st.in{background:var(--in)}
+.cdot{position:absolute;left:3px;top:3px;z-index:2;width:13px;height:13px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px rgba(0,0,0,.35)} .cdot.in{background:#3bd16f} .cdot.out{background:#e0433a}
+.cell .cdot,.tray .cdot{width:9px;height:9px;border-width:1.5px;left:2px;top:2px} .cspec .cdot{position:static;display:inline-block;vertical-align:-2px;margin-right:7px;width:14px;height:14px}
 .trash{position:absolute;top:8px;right:38px;width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--dim);display:grid;place-items:center;cursor:pointer;padding:0;opacity:.55}
 .trash svg{width:16px;height:16px}
 .tile:hover .trash,.trash:focus-visible{opacity:1;border-color:var(--line);background:var(--bg)}
@@ -285,7 +287,7 @@ h3.gh.open{margin-top:18px}
 <div class="wrap">
   <header class="top">
     <h1>굴의 도감</h1>
-    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 오른쪽 위 동그라미는 등장 표시예요 (초록 = 등장 확정, 빨강 = 미등장, 누르면 바뀜). 체크 · 등장 표시 · 메모는 누르거나 쓰는 즉시 자동 저장되고 Claude가 바로 읽을 수 있어요.</p>
+    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 오른쪽 위 동그라미는 등장 표시예요 (초록 = 등장 확정, 빨강 = 미등장, 누르면 바뀜). 맨 위 초상화 모음의 왼쪽 위 동그라미는 인물 전체의 등장이에요 (그 인물 그림 중 하나라도 등장이면 초록, 누르면 인물째로 바뀜 — 아래 인물 칸 · 등장 거르기와 같이 움직임). 체크 · 등장 표시 · 메모는 누르거나 쓰는 즉시 자동 저장되고 Claude가 바로 읽을 수 있어요.</p>
   </header>
 
   <div class="bar" id="bar">
@@ -435,6 +437,10 @@ async function send(id, tries){
 function flushAll(){ for (const id of Object.keys(pending)) send(id, 0); }
 // 등장 표시: 초록 = 등장 확정, 빨강 = 미등장. 바꾸지 않았으면 지금 게임에 들어가 있는지 (catalog의 on)로
 const stOf = e => (marks[e.id] && marks[e.id].status) || (e.on ? 'in' : 'out');
+// v1.93 인물 등장 (초상화 모음 동그라미): 인물에 직접 정한 것 (marks[cid].status)이 먼저, 없으면 그 인물 그림 중 하나라도 등장이면 등장. 그릴 때마다 새로 셈
+let CST = null;
+const charSt = cid => { if (!cid) return 'out'; if (!CST){ CST = {}; for (const e of CATALOG) if (e.cat === 'char' && e.cid && stOf(e) === 'in') CST[e.cid] = 'in'; } const m = marks[cid]; return (m && m.status) || CST[cid] || 'out'; };
+const cdotHtml = cid => cid ? `<span class="cdot ${charSt(cid)}" data-cst="${esc(cid)}" role="button" title="${charSt(cid) === 'in' ? '등장 (누르면 미등장)' : '미등장 (누르면 등장)'}" aria-label="${charSt(cid) === 'in' ? '등장' : '미등장'}"></span>` : '';
 /* v1.73 착용 분류: marks.slot — '' 아직 안 봄 · 'x' 착용 불가 · 그 밖 ('o', 나중엔 '목' · '손가락' 같은 부위)은 전부 착용 가능 */
 const WEAR_Y = '착용 가능', WEAR_N = '착용 불가', WEAR_Q = '등장 미정';
 let sorting = false;
@@ -538,12 +544,12 @@ function faceBtn(x, withTier){
   const pen = cspecOf(x.f) ? '<span class="pen" aria-label="설정 적힘">✎</span>' : '';
   const t = tierOf(x.cid);
   const tb = withTier && t ? `<span class="tb ${ALLY(x.role) ? '' : 'en'}">${esc(tLabel(t, x.role))}</span>` : '';
-  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}">${pen}${tb}<span class="pp"><img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
+  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}">${pen}${tb}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
 }
 /* 평소: 구분별 한 줄씩 (누르면 그 인물 묶음으로 내려감) */
 function peopleNav(subs){
   const by = {};
-  for (const x of charList(subs)) (by[x.role] = by[x.role] || []).push(x);
+  for (const x of charList(subs)) if (showSt !== 'in' && showSt !== 'out' || charSt(x.cid) === showSt) (by[x.role] = by[x.role] || []).push(x);   // v1.93 등장 거르기와 같이
   for (const k of Object.keys(LANES)) delete LANES[k];
   const rows = Object.entries(by).sort((a, b) => ROLES.indexOf(a[0]) - ROLES.indexOf(b[0]));
   return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${rows.map(([r, list]) => {
@@ -618,6 +624,7 @@ function arrange(list, ck){
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
 function render(){
+  CST = null;
   const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
   $('count').textContent = `체크 ${checked}`;
   $('tabs').innerHTML = [{ key:'all', no:'', name:'전체' }, ...CATS].map(c => {
@@ -660,7 +667,7 @@ function render(){
       const gi = c.key === 'char' && subs0.includes(s) ? `who-${subs0.indexOf(s)}` : 'g-' + c.key + '-' + subs.indexOf(s);
       const bulk = c.key === 'relic' ? `<button class="toNav" type="button" data-bulk="" data-bs="${esc(s)}">전부 아직으로</button>` : '';
       const back = c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : (c.key !== 'relic' && shown.length > 1) ? `<button class="toNav" type="button" data-totoc="toc-${c.key}" aria-label="목차로">↑ 목차</button>` : '';
-      const cs = c.key === 'char' && list[0].cid ? `<div class="cspec" id="cs-${list[0].cid}">${cspecOf(list[0]) ? esc(cspecOf(list[0])) : '<em>인물 설정 없음 — 그림을 열어 인물 공통 설정에 적으면 여기에 떠요</em>'}</div>` : '';
+      const cs = c.key === 'char' && list[0].cid ? `<div class="cspec" id="cs-${list[0].cid}">${cdotHtml(list[0].cid)}${cspecOf(list[0]) ? esc(cspecOf(list[0])) : '<em>인물 설정 없음 — 그림을 열어 인물 공통 설정에 적으면 여기에 떠요</em>'}</div>` : '';
       html += `<h3 id="${gi}" class="gh ${op ? 'open' : ''}" data-g="${esc(k)}"><button class="gt" type="button" data-tog="${esc(k)}" aria-expanded="${op}"><span class="car">${op ? '▾' : '▸'}</span><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</button>${bulk}${back}</h3>${op ? cs + `<div class="${g}">${list.map(tile).join('')}</div>` : ''}`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
@@ -908,7 +915,7 @@ function sortByName(){
   addEventListener('dragstart', e => { if (charSort && e.target.closest && e.target.closest('.pnav')) e.preventDefault(); });
   addEventListener('pointerdown', e => {
     if (!charSort) return;
-    const b = e.target.closest('.pbtn'); if (!b) return;
+    const b = e.target.closest('.pbtn'); if (!b || e.target.closest('[data-cst]')) return;
     const touch = e.pointerType !== 'mouse';
     st = { b, x: e.clientX, y: e.clientY, touch };
     if (!touch) e.preventDefault();                                  // 마우스: 글자 선택 · 기본 끌기 막기
@@ -938,6 +945,7 @@ function sortByName(){
 /* ---------- 이벤트 ---------- */
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; if (b.dataset.cat !== cat) pushNav('tab'); cat = b.dataset.cat; scrollTo({ top: 0 }); render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
 $('main').addEventListener('click', e => {
+  const cd = e.target.closest('[data-cst]'); if (cd){ e.stopPropagation(); e.preventDefault(); const id = cd.dataset.cst, y0 = scrollY; put(id, { status: charSt(id) === 'in' ? 'out' : 'in' }, true); render(); scrollTo(0, y0); return; }   // v1.93 인물 등장 동그라미
   const so2 = e.target.closest('[data-csort]'); if (so2){ e.stopPropagation(); setCharSort(!charSort); return; }
   if (e.target.closest('[data-sortname]')){ e.stopPropagation(); sortByName(); return; }
   if (charSort && e.target.closest('.pbtn')){ e.stopPropagation(); return; }

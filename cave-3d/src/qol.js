@@ -1,4 +1,4 @@
-/* qol.js v1.1 — 편의 · 굴 손님 (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
+/* qol.js v1.3 — 편의 · 굴 손님 (v1.3: 대련 더미 근접 공격이 하 · 중 · 상단으로) (v1.2: 아래 UI 비킴 · N 바로 먹기 · 굴 가구 옮기기 · 의자에 앉기 · 대련 더미 근접 공격 켜고 끄기 · 상인은 적뢰전 뒤에만 · 쥐 기사 순찰) (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
    · H: 기술표 창 (무리별: 움직임 · 막기 · 맨손 · 레슬링 · 무기 · 원정 · 굴). 열려 있는 동안 멈춤. H · Esc로 닫음
    · 지름길: 보스 (5층 세자르 · 10층 대장군)를 쓰러뜨리면 원정 준비 창에서 그 아래층부터 떠날 수 있음
    · 토끼마차 (아이텐): 사흘마다 아침에 굴에 들름 (그날 하루). 장비 셋 (그날 고른 것) · 탄약 · 물약 · 횃불을 판다 */
@@ -9,7 +9,7 @@ const MOVES = [
   ['맨손', [['J 연타', '잽 → 주먹 → 앞차기 → 회전 하이킥'], ['점프 중 J', '플라잉 니킥'], ['달리며 점프 중 J', '드롭킥 — 발끝에 걸리면 빠아악!'], ['G 숙인 채 J', '다리후리기 — 넘어뜨림'], ['넘어진 적에게 J', '발목 부수기 (느려짐)']]],
   ['레슬링', [['V', '잡기 → 클린치'], ['클린치 J · K · Q', '니킥 · 주먹 · 잽 / 메치기 / 두 손 밀기'], ['그라운드 J · K · Q', '파운딩 / 끝내기 / 일어섬'], ['잡혔을 때', 'Space · A · D 연타로 빠져나옴, 막대가 차면 Q로 구름']]],
   ['무기', [['J', '기본 공격 (무기마다 연타)'], ['K (누르고 있기)', '무기 스킬 · 투창 (끝까지 당기면 강한 투창)'], ['R', '재장전'], ['X', '무기 ↔ 보조 무기']]],
-  ['원정 · 굴', [['E', '살펴보기 · 줍기 · 대화'], ['I · C', '가방 · 장비 / 상태'], ['4 ~ 7', '소모품'], ['1 · 2 · 3', '동료 지시 (따라와 · 집중 · 자유)'], ['M', '큰 지도'], ['Z · C', '카메라 돌리기']]],
+  ['원정 · 굴', [['E', '살펴보기 · 줍기 · 대화 · 가구 옮기기 · 의자에 앉기'], ['N', '냠 — 바로 먹기 (굴: 창고 끼니 · 원정: 가방의 음식)'], ['I · C', '가방 · 장비 / 상태'], ['4 ~ 7', '소모품'], ['1 · 2 · 3', '동료 지시 (따라와 · 집중 · 자유)'], ['M', '큰 지도'], ['Z · C', '카메라 돌리기']]],
 ];
 function moveListToggle(force){
   let el = document.getElementById('movelist');
@@ -39,6 +39,8 @@ function wagonStock(){
 function caveVisitors(){
   if (G.mode !== 'cave') return;
   if (WAGON.at){ WAGON.at.g.parent && WAGON.at.g.parent.remove(WAGON.at.g); const i = G.inspect.indexOf(WAGON.insp); if (i >= 0) G.inspect.splice(i, 1); WAGON.at = null; }
+  ratPatrol();
+  if (!PRO.jrDone) return;   // v1.2 상인은 적뢰전 전엔 못 옴
   if (!PRO.day || PRO.day % WAGON.every !== 0) return;
   const cand = [[11, 4.5], [10.5, 5], [7.5, 4.5], [11, 6], [6, 5]], spot = cand.find(([x, z]) => !solidAt(G.map, x, z) && !G.units.some(u => Math.hypot(u.x - x, u.z - z) < 1)) || cand[0];
   WAGON.at = bill('art/enc/aiten.webp', spot[0], spot[1], 2.0, { fit: 1.3 });
@@ -65,4 +67,129 @@ function pauseOpen(){
     if (b.dataset.p === 'moves'){ UIR.confirm(false); moveListToggle(true); }
     if (b.dataset.p === 'cam'){ UIR.confirm(false); if (!CAM.lockYaw) setYaw(Math.round(CAM.yawT / (Math.PI * 2)) * Math.PI * 2); if (G.player) camSnapTo(G.player.x, G.player.z); }
     if (b.dataset.p === 'new'){ UIR.confirm(false); uiConfirm('처음부터?', '저장을 지우고 프롤로그부터 다시 시작합니다.', '지운다', () => newGame()); } };
+}
+
+/* ---------- v1.2 아래 UI 비킴: 스킬 줄과 가로로 겹치면 영웅 칸 · 지시 버튼을 스킬 줄 위로 올림 (크기 · 비율은 그대로) ---------- */
+function uiDodgeBar(){
+  const sb = document.getElementById('skillbar');
+  if (sb){ const k = Math.min(1, (innerWidth - 12) / Math.max(1, sb.scrollWidth)), t = k < 1 ? `translateX(-50%) scale(${k.toFixed(3)})` : ''; if (sb.style.transform !== t){ sb.style.transform = t; sb.style.transformOrigin = 'bottom center'; } }   // 창이 좁으면 스킬 줄만 줄여 화면 안에
+  const r = sb && getComputedStyle(sb).display !== 'none' ? sb.getBoundingClientRect() : null;
+  for (const id of ['party', 'cmd']){
+    const el = document.getElementById(id); if (!el) continue;
+    const e = el.getBoundingClientRect(), over = r && r.width > 0 && e.width > 0 && e.right > r.left - 8 && e.left < r.right + 8;
+    const want = over ? Math.round(innerHeight - r.top + 8) + 'px' : '';
+    if (el.style.bottom !== want) el.style.bottom = want;
+  }
+}
+setInterval(uiDodgeBar, 250); addEventListener('resize', uiDodgeBar);
+
+/* ---------- v1.2 N: 바로 먹기 ---------- */
+function quickEat(){
+  const pl = G.player; if (!pl || pl.downed || G.lock || G.paused) return;
+  if (G.mode === 'cave' && typeof PRO !== 'undefined' && PRO.cave){
+    if (PRO.meal.inju.fed) return popText(pl.x, pl.y + 2.2, pl.z, '배부르다 (오늘 끼니는 먹음)', 'miss', 1);
+    if (edible()){ const d = takeMeal(); PRO.meal.inju.fed = true; pl.hp = Math.min(pl.max, pl.hp + pl.max * 0.1); popText(pl.x, pl.y + 2, pl.z, `냠 (${d.name})`, 'heal', 1.2); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.25, dec: 0.3 }); pl.raiseT = G.t + 0.4; return; }
+    if (PRO.penFood > 0){ pickPenFood(); PRO.meal.inju.fed = true; popText(pl.x, pl.y + 2, pl.z, '버섯 냠 (달팽이 먹이 -1)', 'heal', 1.2); return; }
+    return popText(pl.x, pl.y + 2.2, pl.z, '먹을 게 없다', 'miss', 1);
+  }
+  const it = RPG.bag.find(o => itemDef(o).c === 'food');
+  if (!it) return popText(pl.x, pl.y + 2.2, pl.z, '가방에 먹을 게 없다', 'miss', 1);
+  if (!useItem(it, pl)) popText(pl.x, pl.y + 2.2, pl.z, '지금은 못 먹는다', 'miss', 0.8); else if (pl.S.poses.raise) pl.raiseT = G.t + 0.5;
+}
+
+/* ---------- v1.2 굴 가구: 다시 들어 옮기기 · 의자에 앉기 ---------- */
+const SEATS = new Set(['d_H-239']);   // 붉은 방석 나무 의자
+function furnInsp(p){
+  furnUninsp(p); p._insp = [];
+  const seat = SEATS.has(p.k), add = o => { G.inspect.push(o); p._insp.push(o); };
+  add({ x: p.x + (seat ? 0 : 0.5), z: p.z + 0.55, r: 1.25, far: 3, mark: p.name, keep: true, label: `${p.name} — 들어서 옮긴다`, fn: () => furnLift(p) });
+  if (seat) add({ x: p.x + 1, z: p.z + 0.55, r: 1.25, far: 3, mark: '의자', keep: true, talk: true, label: `${p.name}에 앉는다`, fn: () => seatOn(p) });
+}
+function furnUninsp(p){ for (const o of p._insp || []){ const i = G.inspect.indexOf(o); if (i >= 0) G.inspect.splice(i, 1); } p._insp = []; }
+function furnLift(p){
+  const pl = G.player; if (PRO.carry) return popText(pl.x, pl.y + 2, pl.z, '손이 비어야 든다', 'miss', 1);
+  if (pl.seatP) standUp(pl);
+  const m = G.map, d = DROP_TABLE.find(x => x.k === p.k) || { k: p.k, name: p.name, type: 'furn', h: p.h };
+  if (p._b) G.scene.remove(p._b.g); if (p._l) G.scene.remove(p._l);
+  m.solid[p.z * m.w + p.x] = 0; m.solid[p.z * m.w + p.x + 1] = 0; m.nav = {};
+  PRO.placed = PRO.placed.filter(o => o !== p); furnUninsp(p);
+  const bb = bill(PA + d.k + '.webp', pl.x, pl.z, d.h, { fit: 1.0, tint: 0.95 }), it = addLoose(d, bb, pl.x, pl.z); pickUp(it, pl);
+  SFX.thump(110, 0.25, 0.15); guide('놓을 자리에서 <em>E</em> (빈 두 칸) · <em>G</em> 잠깐 내려놓기', 4);
+}
+function seatOn(p){
+  const pl = G.player; if (PRO.carry) return popText(pl.x, pl.y + 2, pl.z, '들고는 못 앉는다', 'miss', 1);
+  pl.seatP = p; pl.seatBack = { x: pl.x, z: pl.z }; pl.x = p.x + 0.55; pl.z = p.z + 0.32; pl.lift = 0.12; pl.poseHold = 'seat'; pl.face = -1;
+  popText(pl.x, pl.y + 2, pl.z, '앉았다 — 움직이면 일어남', 'heal', 1.2);
+}
+function standUp(pl){
+  const p = pl.seatP; pl.seatP = null; if (pl.poseHold === 'seat') pl.poseHold = null; pl.lift = 0;
+  const b = pl.seatBack || { x: p.x + 1, z: p.z + 1 }; if (!solidAt(G.map, b.x, b.z)){ pl.x = b.x; pl.z = b.z; } else { pl.x = p.x + 0.5; pl.z = p.z + 1; }
+}
+if (typeof placeProp === 'function'){ const _placePropQ = placeProp; placeProp = function(p){ _placePropQ(p); furnInsp(p); }; }
+if (typeof breakProp === 'function'){ const _breakPropQ = breakProp; breakProp = function(p){ furnUninsp(p); if (G.player && G.player.seatP === p) standUp(G.player); return _breakPropQ(p); }; }
+// 앉은 동안: 움직이면 일어남 · 천천히 숨을 고름 (체력 회복). N 바로 먹기
+{ const _playerUpdateQ = playerUpdate;
+  playerUpdate = function(u, dt){
+    if (hit('KeyN')) quickEat();
+    if (u.seatP){
+      if (inputDir() || hit('Space') || hit('KeyQ') || G.mode !== 'cave' || u.downed) standUp(u);
+      else { u.hp = Math.min(u.max, u.hp + u.max * 0.006 * dt); u.lift = 0.12; }
+    }
+    return _playerUpdateQ(u, dt);
+  }; }
+
+/* ---------- v1.2 대련 더미: E로 근접 공격 켜고 끄기 (피해 0 — 막기 · 튕겨내기 · 숙이기 연습) ---------- */
+if (typeof sparSpawn === 'function'){
+  const _sparSpawnQ = sparSpawn;
+  sparSpawn = function(){
+    const u = _sparSpawnQ();
+    G.inspect.push({ unit: u, r: 1.6, talk: true, get label(){ return `대련 더미 — 근접 공격 ${RPG.meta.sparMelee ? '끄기' : '켜기'}`; },
+      fn: () => { RPG.meta.sparMelee = !RPG.meta.sparMelee; popText(u.x, u.y + 1.8, u.z, RPG.meta.sparMelee ? '근접 공격 켬 — 붉은 예고를 보고 막거나 피하기' : '근접 공격 끔', 'aim', 1.6); typeof saveRpg === 'function' && saveRpg(); } });
+    return u;
+  };
+}
+if (typeof sparThink === 'function'){
+  const _sparThinkQ = sparThink;
+  sparThink = function(u, dt){
+    if (u.st === 'windup') return;   // 예고 중
+    if (u.st === 'strike'){ u.stT -= dt; if (u.stT <= 0){ u.st = 'idle'; setPose(u, 'idle'); } return; }
+    const pl = G.player;
+    if (RPG.meta.sparMelee && pl && !pl.downed && !u.lock && !u.lying && u.st !== 'hurt' && dist(u, pl) < 1.8){
+      u.meleeCd = (u.meleeCd ?? 0.8) - dt;
+      if (u.meleeCd <= 0){
+        u.meleeCd = rnd(1.4, 2.2); setAim(u, pl.x, pl.z); const z = ['high', 'mid', 'low'][Math.floor(Math.random() * 3)], Z = typeof ZONE !== 'undefined' ? ZONE[z] : { c: RED, mark: '', cls: '' };
+        windup(u, 'sector', { x: u.x, z: u.z, r: 1.7, a: u.aim, arc: 1.5, windup: 0.55 }, t => { const hp0 = t.hp; hurt(u, t, 1, { from: u, noCrit: true, zone: z, kb: 0.3 }); t.hp = hp0; }, Z.c);   // v1.3 하 · 중 · 상단 연습
+        popText(u.x, u.y + 1.9, u.z, Z.mark, 'zone ' + Z.cls, 0.6);
+        return;
+      }
+    }
+    return _sparThinkQ(u, dt);
+  };
+}
+
+/* ---------- v1.2 쥐 기사 순찰: 적으로는 안 나옴 (포렌의 소환수). 가끔 쥐들을 데리고 굴을 한 바퀴 돌고 감 ---------- */
+SPR.ratV = { h0: 51, tall: 0.3, poses: { idle: { src: 'art/enc/rat.webp', w: 63, h: 51, ax: 31, ay: 50, f: -1 } } };
+DEFS.ratKnightV = { spr: 'ratKnight', name: '쥐 기사', hp: 80, atk: 0, spd: 1.5, r: 0.3, weight: 50, wander: ratWander };
+DEFS.ratV = { spr: 'ratV', name: '쥐', hp: 10, atk: 0, spd: 2.2, r: 0.16, weight: 3, wander: ratWander };
+const RATS = { list: [] };
+function ratPatrol(){
+  for (const u of RATS.list) if (G.units.includes(u)) removeUnit(u);
+  RATS.list = []; if (G.mode !== 'cave' || !PRO.day || PRO.day < 2 || Math.random() > 0.3) return;
+  const at = [[4, 10], [5, 10.5], [4.5, 11], [3.5, 10.6]].filter(([x, z]) => !solidAt(G.map, x, z));
+  if (!at.length) return;
+  const k = spawn('ratKnightV', at[0][0], at[0][1], 'neutral'); RATS.list.push(k);
+  for (let i = 1; i < Math.min(at.length, 1 + 2 + Math.floor(Math.random() * 2)); i++){ const r = spawn('ratV', at[i][0], at[i][1], 'neutral'); r.lead = k; r.tag && r.tag.remove(); r.tag = null; RATS.list.push(r); }
+  G.inspect.push({ unit: k, r: 1.4, talk: true, label: '쥐 기사에게 말을 건다', fn: () => vnTalk('쥐 기사', [['(꾸벅) …포렌 님의 명으로 순찰 중입니다.'], ['찍. 찍찍. (쥐들이 따라 운다)'], ['이 굴은 조용하네요. 좋은 곳입니다.']][Math.floor(Math.random() * 3)], { face: 'art/foe/ratKnight_idle.webp' }) });
+  setTimeout(() => G.mode === 'cave' && guide('<em>쥐 기사</em>가 쥐들을 데리고 굴을 돌고 있다', 5), 4200);
+}
+function ratWander(u, dt){
+  if (u.lead){   // 쥐: 기사 뒤를 졸졸
+    const L = u.lead, i = RATS.list.indexOf(u), bx = L.x - Math.cos(L.aim || 0) * (0.5 + i * 0.35), bz = L.z - Math.sin(L.aim || 0) * (0.5 + i * 0.35);
+    if (Math.hypot(bx - u.x, bz - u.z) > 0.25) steerTo(u, bx, bz, u.spd, dt); else u.moving = false; return;
+  }
+  u.wT = (u.wT ?? 0) - dt;
+  if (!u.wTo || u.wT <= 0 || Math.hypot(u.wTo.x - u.x, u.wTo.z - u.z) < 0.4){
+    u.wT = rnd(5, 9); for (let k = 0; k < 8; k++){ const x = rnd(3, 15), z = rnd(5, 14); if (!solidAt(G.map, x, z)){ u.wTo = { x, z }; break; } }
+  }
+  if (u.wTo && u.wT < 7.5) navTo(u, u.wTo.x, u.wTo.z, u.spd, dt, 0.4); else u.moving = false;
 }
