@@ -1,4 +1,4 @@
-/* game.js v0.8 — 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.81 — (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -313,6 +313,7 @@ function updateHud(){
   const party = G.units.filter(u => u.side === 'ally');
   if (typeof caveBar === 'function') caveBar();
   if (G.mode === 'cave' && PRO.bar && !PRO.caveIntro) $('party').innerHTML = ''; else
+  if (G.mode === 'exp' && typeof uiHeroPanel === 'function'){ const hh = uiHeroPanel(); if ($('party').dataset.h !== hh){ $('party').dataset.h = hh; $('party').innerHTML = hh; } } else
   $('party').innerHTML = party.map(u => `<div class="pm ${u.downed ? 'down' : ''}"><span>${u.D.name}</span><i><b style="width:${Math.max(0, u.hp / u.max * 100)}%"></b></i><small>${Math.max(0, Math.round(u.hp))}/${u.max}</small></div>`).join('')
     + medicHud() + (typeof proHud === 'function' ? proHud() : '')
     + (G.mode === 'floor' || G.mode === 'prologue' ? `<div class="sp">${P.spear ? '🔱 창을 쥠' : '창이 땅에 있음 (주워야 투창)'}</div>` : '');
@@ -398,7 +399,8 @@ function loop(now){
     if (pl) playerUpdate(pl, dt);
     for (const u of G.units){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; if (u.shadow) u.shadow.material.opacity = 0.42 * u.mat.opacity; } continue; }
-      if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
+      if (u.lock){ /* 레슬링 중: grapple.js */ }
+      else if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
       else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.lobbyFight) && !G.lock) (u.D.think || allyThink)(u, dt);
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       if (u !== pl && (u.jy || u.jv)) updateJump(u, dt);   // 동료 점프 (높은 바닥에 오름)
@@ -421,6 +423,7 @@ function loop(now){
   if (G.mode === 'exp' && !frozen && typeof expTick === 'function') expTick(dt); else if (G.mode === 'exp' && typeof tickLights === 'function' && EXP) tickLights(0, EXP.vision || 4.7, EXP.lit);
   if (typeof heldUpdate === 'function') heldUpdate(dt);
   if (PLAY_MODES.has(G.mode) && !frozen && typeof rpgTick === 'function') rpgTick(dt);
+  if (G.mode === 'exp' && !frozen && !G.lock && typeof grappleTick === 'function') grappleTick(dt);
   if (typeof proTick === 'function') proTick(dt);   // 프롤로그 · 굴 연출 (글상자가 떠 있어도 움직임)
   if (!frozen){ updateDecals(dt); updateProjs(dt); } updateFx(dt); runWaits();
   // 카메라: 평소엔 인주, 싸움 중엔 가까운 적 쪽으로 조금

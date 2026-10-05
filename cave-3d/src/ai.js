@@ -1,4 +1,4 @@
-/* ai.js v0.3 — 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.31 — (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -73,11 +73,17 @@ function enemyThink(u, dt){
   let tgt = nearest(u, vis.length ? vis : team, 30);
   const pl = G.player && !G.player.downed ? G.player : null;
   if (pl && tgt && dist(u, pl) < dist(u, tgt) + 1.5 && (sees(u, pl) || !vis.length)) tgt = pl;
+  const fo = u.focusOn; if (fo && !fo.dead && !fo.downed && fo.side !== u.side && dist(u, fo) < 9) tgt = fo;   // v0.31 매복 · 만남: 정해 둔 상대
   if (!tgt){ u.alert = false; return; }
   if (dist(u, tgt) < 13 && (sees(u, tgt) || dist(u, tgt) < 6)) u.seen = G.t;
   if (G.t - (u.seen || 0) > 3 && dist(u, u.home) > 4){ u.alert = false; u.hp = u.max; popText(u.x, u.y + 2, u.z, '…', 'miss'); return; }   // 놓치면 돌아감
   const d = dist(u, tgt), ang = Math.atan2(tgt.z - u.z, tgt.x - u.x);
   u.moving = false;
+  // v0.31 진지전: 자리 (post)를 지킴. 상대가 자리 가까이 오기 전엔 나가지 않음 (궁수는 자리에서 쏨)
+  if (u.post && !u.routed && !D.bow && dist(tgt, u.post) > (D.melee ? D.melee.range : 1.5) + 1.4){
+    if (dist(u, u.post) > 0.5) navTo(u, u.post.x, u.post.z, u.spd, dt, 0.3); else setAim(u, tgt.x, tgt.z);
+    return;
+  }
   if (D.melee){
     const M = D.melee;
     if (d > M.range * 0.8 || !sees(u, tgt)) navTo(u, tgt.x, tgt.z, u.spd, dt, M.range * 0.7);
@@ -97,7 +103,8 @@ function enemyThink(u, dt){
       if (best){ u.st = 'leap'; u.leapDur = 0.45; u.stT = 0.45; u.lvx = (best.x - u.x) / 0.45; u.lvz = (best.z - u.z) / 0.45; dust(u.x, u.z, 8); popText(u.x, u.y + 2, u.z, '휙', 'miss', 0.5); return; }
     }
     const seeIt = sees(u, tgt);
-    if (d > B.range || !seeIt) navTo(u, tgt.x, tgt.z, u.spd, dt, 2);
+    if (u.post && !u.routed){ if (dist(u, u.post) > 0.6) navTo(u, u.post.x, u.post.z, u.spd, dt, 0.3); }
+    else if (d > B.range || !seeIt) navTo(u, tgt.x, tgt.z, u.spd, dt, 2);
     else if (d < 4.5 && u.y < 0.3) steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd * 0.8, dt);
     if (u.cd <= 0 && d <= B.range && seeIt){
       setAim(u, tgt.x, tgt.z); u.cd = B.cd; setPose(u, 'aim');

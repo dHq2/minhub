@@ -1,4 +1,4 @@
-/* expedition.js v1.0 — 원정 (한 번의 런)
+/* expedition.js v1.1 — 원정 (한 번의 런). v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -130,7 +130,7 @@ async function expLoadFloor(F, how){
   G.map.wallH = 2.4; layoutWalls(G.map, CAM.yawT || 0);
   Object.assign(DUN, { bills: [], sources: [], items: [], marks: [], seen: new Uint8Array(gen.W * gen.H), rooms: gen.rooms });
   setupDarkness(D); G.fogK = D.fog || 0.9;
-  EXP.reveal = false; EXP.radar = false; EXP.lit = true;
+  EXP.reveal = false; EXP.radar = false; EXP.lit = true; EXP.meet = null; G.locks = [];
   // 원정대
   const s = gen.start, px = Math.round(s.cx), pz = Math.round(s.cz) + 1;
   for (const [i, k] of RPG.party.entries()){
@@ -204,7 +204,7 @@ function fillRoom(r, gen){
     addSource(x, z, 4, 0xff6a5a, 0.8, 1.6);
     G.inspect.push({ x, z, r: 1.9, mark: '제단', far: 9, label: '제단에 기도한다 (축복 · 저주)', once: true, fn: () => altarPray(x, z, F) });
     spawnGroup(r, gen, tiles, 2, band); lights(2); deco(2);
-  }
+  } else if (typeof sitFill === 'function') sitFill(r, gen, tiles, edges, band, lights, deco);
 }
 function spawnFoe(kind, x, z, F, band, elite){
   const e = spawn(kind, x, z, 'enemy');
@@ -377,8 +377,9 @@ function expTick(dt){
   uiVignette(EXP.lit ? 0.55 + (1 - sk) * 0.3 : 0.92, sk);
   tickLoot(dt);
   // 전멸 (모두 쓰러짐) — 일어나기보다 먼저 봄
-  if (allies().length === 0){ if (!EXP.ending) expWipe(); return; }
+  if (!allies().some(u => u.hero && !u.guest)){ if (!EXP.ending) expWipe(); return; }
   reviveCheck(dt);
+  if (typeof sitTick === 'function'){ sitTick(dt); meetTick(); }
   // 원정대가 같이 내려가지 않으면 떨어짐 방지: 너무 멀어진 동료는 순간 이동 (벽에 끼임 방지)
   for (const u of allies()) if (u !== pl && dist(u, pl) > 22 && !foes().some(e => e.alert)){ u.x = pl.x + rnd(-1, 1); u.z = pl.z + rnd(-1, 1); if (solidAt(G.map, u.x, u.z)){ u.x = pl.x; u.z = pl.z; } }
   uiExpHud(false);

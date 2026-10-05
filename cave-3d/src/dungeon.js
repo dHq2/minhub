@@ -11,31 +11,31 @@ const FLOOR_DEF = [null,
     foes: { swordsman: 3, spearman: 3, shieldman: 2, foeJelly: 1 }, elite: ['brute'], rooms: [7, 9], graves: 3,
     props: ['H-007', 'H-027', 'H-052', 'H-191', 'H-205', 'H-283', 'H-009', 'H-289', 'H-287', 'H-195', 'H-074', 'H-286'], lights: ['H-101', 'H-236', 'H-196'] },
   { name: '뼈의 회랑', sub: '좁은 회랑 · 뼈 무더기 · 궁수 진형', floor: 0x4a4440, wall: 0x2c2724, pillar: 0x5a524c, glow: 0xffa060,
-    foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 }, elite: ['brute'], rooms: [8, 9],
+    foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 }, elite: ['benkin'], rooms: [8, 9],
     props: ['H-056', 'H-169', 'H-194', 'H-207', 'H-289', 'H-009', 'H-286', 'H-179', 'H-119', 'H-168'], lights: ['H-206', 'H-107', 'H-158'] },
   { name: '젖은 묘지', sub: '비 · 물웅덩이 · 늪', floor: 0x3c4446, wall: 0x262d30, pillar: 0x4c585a, glow: 0x9fd0ff, wet: true,
-    foes: { foeSlime: 3, foeJelly: 3, foeFairy: 2, swordsman: 1 }, elite: ['brute'], rooms: [8, 10], graves: 2,
+    foes: { foeSlime: 3, foeJelly: 3, foeFairy: 2, swordsman: 1 }, elite: ['dandalo', 'brute'], rooms: [8, 10], graves: 2,
     props: ['H-027', 'H-049', 'H-288', 'H-198', 'H-372', 'H-137', 'H-200', 'H-202', 'H-205'], lights: ['H-293', 'H-236', 'H-196'] },
   { name: '지하 예배당', sub: '제단 · 촛대 · 핏자국', floor: 0x463c44, wall: 0x2c232b, pillar: 0x5c4c58, glow: 0xff8a6a,
-    foes: { foeCultist: 4, foeDevil: 3, swordsman: 2, archer: 1 }, elite: ['brute'], rooms: [8, 10], altar: true,
+    foes: { foeCultist: 4, foeDevil: 3, swordsman: 2, archer: 1 }, elite: ['dandalo', 'benkin'], rooms: [8, 10], altar: true,
     props: ['H-033', 'H-109', 'H-159', 'H-201', 'H-031', 'H-053', 'H-058', 'H-197', 'H-153', 'H-105', 'H-160'], lights: ['H-101', 'H-196', 'H-206'] },
   { name: '세자르의 알현실', sub: '관 · 신성 봉인 · 기둥', floor: 0x4c4650, wall: 0x2e2834, pillar: 0x66606e, glow: 0xffd8a0,
-    foes: { swordsman: 3, shieldman: 3, archer: 2, foeCultist: 2 }, elite: ['brute', 'brute'], rooms: [8, 10],
+    foes: { swordsman: 3, shieldman: 3, archer: 2, foeCultist: 2 }, elite: ['dandalo', 'brute'], rooms: [8, 10],
     props: ['H-198', 'H-049', 'H-288', 'H-195', 'H-058', 'H-153', 'H-166', 'H-023'], lights: ['H-101', 'H-206', 'H-196'] },
   { name: '안개 늪', sub: '안개 · 진흙 · 도깨비불', floor: 0x3a4238, wall: 0x232a22, pillar: 0x4a5448, glow: 0x9fffb0, fog: 0.75, wet: true,
-    foes: { foeSlime: 3, foeFairy: 3, foeJelly: 2, archer: 2 }, elite: ['brute'], rooms: [9, 10],
+    foes: { foeSlime: 3, foeFairy: 3, foeJelly: 2, archer: 2 }, elite: ['benkin', 'brute'], rooms: [9, 10],
     props: ['H-137', 'H-200', 'H-202', 'H-372', 'H-151', 'H-074', 'H-193'], lights: ['H-293', 'H-236'] },
   { name: '도깨비 시장', sub: '등불 · 노점 · 북소리', floor: 0x4a3c34, wall: 0x2e231c, pillar: 0x5e4a3c, glow: 0xffc070,
-    foes: { foeDevil: 4, foeCultist: 2, swordsman: 2, archer: 2 }, elite: ['brute'], rooms: [9, 11],
+    foes: { foeDevil: 4, foeCultist: 2, swordsman: 2, archer: 2 }, elite: ['dandalo', 'benkin'], rooms: [9, 11],
     props: ['H-130', 'H-115', 'H-254', 'H-255', 'H-110', 'H-165', 'H-117'], lights: ['H-158', 'H-107', 'H-206'] },
   { name: '쇠의 진지', sub: '목책 · 깃발 · 진형', floor: 0x44403c, wall: 0x2a2622, pillar: 0x585048, glow: 0xffa050,
-    foes: { shieldman: 4, spearman: 3, archer: 3, swordsman: 2 }, elite: ['brute', 'brute'], rooms: [9, 11],
+    foes: { shieldman: 4, spearman: 3, archer: 3, swordsman: 2 }, elite: ['dandalo', 'brute'], rooms: [9, 11],
     props: ['H-006', 'H-021', 'H-047', 'H-117', 'H-119', 'H-165', 'H-168', 'H-057'], lights: ['H-158', 'H-206'] },
   { name: '눈알의 굴', sub: '짙은 어둠 · 지껄임', floor: 0x3a3442, wall: 0x221d29, pillar: 0x4a4256, glow: 0xd08aff, dark: 0.7,
-    foes: { foeCultist: 3, foeDevil: 3, foeSlime: 2, archer: 2 }, elite: ['brute', 'brute'], rooms: [9, 11],
+    foes: { foeCultist: 3, foeDevil: 3, foeSlime: 2, archer: 2 }, elite: ['benkin', 'dandalo'], rooms: [9, 11],
     props: ['H-160', 'H-156', 'H-105', 'H-109', 'H-033', 'H-327', 'H-008'], lights: ['H-196', 'H-293'] },
   { name: '대장군의 전장', sub: '넓은 벌판 · 깃발 · 군단', floor: 0x48423a, wall: 0x2c2620, pillar: 0x5c5448, glow: 0xffa040,
-    foes: { swordsman: 3, spearman: 3, shieldman: 3, archer: 3 }, elite: ['brute', 'brute'], rooms: [10, 12],
+    foes: { swordsman: 3, spearman: 3, shieldman: 3, archer: 3 }, elite: ['dandalo', 'benkin'], rooms: [10, 12],
     props: ['H-006', 'H-021', 'H-165', 'H-117', 'H-166', 'H-023', 'H-110', 'H-057'], lights: ['H-158', 'H-206'] },
 ];
 const FOE_XP = { swordsman: 12, spearman: 12, shieldman: 15, archer: 12, brute: 55, foeJelly: 7, foeDevil: 8, foeFairy: 8, foeSlime: 10, foeCultist: 9 };
@@ -97,9 +97,20 @@ function genDungeon(F, seed){
   if (rooms.length >= 7) take('rest', 1, r => dist.get(r.id) >= 2);
   if (D.graves) take('graves', 1);
   if (D.altar) take('altar', 1);
+  // v0.31 상황 방: 만남 · 구출작전 · 진지전 · 포격전 · 각개전투 (매복)
+  if (F >= 2 && (F === 2 || R() < 0.35)) take('meet', 1, r => dist.get(r.id) >= 1);
+  if (R() < 0.55) take('rescue', 1, r => dist.get(r.id) >= 2);
+  if (F >= 2) take('fort', 1, r => r.w >= 8 && r.h >= 7);
+  if (F >= 3 && R() < 0.75) take('artillery', 1, r => r.w >= 8);
+  if (F >= 2 && R() < 0.6) take('ambush', 1);
   // 꾸밈: 큰 방에 기둥, 가끔 바위 (문을 막지 않게 벽에서 한 칸 띄움)
   for (const r of rooms){
     if (r.w >= 9 && r.h >= 8 && r.type !== 'start' && R() < 0.6) for (const [i, j] of [[r.x + 2, r.z + 2], [r.x + r.w - 3, r.z + 2], [r.x + 2, r.z + r.h - 3], [r.x + r.w - 3, r.z + r.h - 3]]) g[j][i] = 'o';
+    if (r.type === 'fort'){   // 목책 한 줄 (뛰어넘을 수 있음, 화살은 넘어감) · 가운데 두 칸은 문
+      const j = r.z + Math.floor(r.h * 0.45), gap = R.int(r.x + 2, r.x + r.w - 4);
+      for (let i = r.x + 1; i < r.x + r.w - 1; i++) if (i !== gap && i !== gap + 1 && g[j][i] === '.') g[j][i] = 'r';
+      r.wallZ = j;
+    }
     if (r.type === 'fight' && R() < 0.5){ const i = R.int(r.x + 2, r.x + r.w - 3), j = R.int(r.z + 2, r.z + r.h - 3); if (g[j][i] === '.') g[j][i] = 'r'; }
   }
   // 복도 표시 (,)는 바닥으로
