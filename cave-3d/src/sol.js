@@ -1,4 +1,4 @@
-/* sol.js v1.0 — (v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
+/* sol.js v1.1 — (v1.1, v0.56: 은신 적성 · 돌팔매 (무한) · 사격 규율 아낌/아끼지 않음) (v1.0, v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
    "누구나 보직을 받을 수 있다. 효율은 적성이 정한다"
    · 적성 0~5 (계열 다섯: 근접 · 창과 투척 · 활 · 총 · 마법). 0이면 억지로 쥠 — 조준이 떨리고 (명중 25%) 탄이 걸리기도 함. 5면 고유 기술
    · 성향 (훈련받은 군인 · 마법 계열 · 야수 · 기사 · 싸움꾼)이 훈련 비용을 정함: 잘 맞는 계열은 싸게, 안 맞는 계열은 비싸게
@@ -11,7 +11,7 @@
    · 보직: 선봉 (먼저 근접으로 나가 자리를 막음) · 사수 (멀리서 · 예고 끊기 우선) · 척후 (옆 · 등으로 돌아 침) · 지원 (쓰러진 동료 먼저, 조장 등 뒤를 지킴) · 지휘 (조원 적성 +1)
    · 인주: 손에 쥔 무기 (가방 · 장비)를 그대로 쓰되, 총 · 마법은 인주의 적성으로 흔들림 */
 'use strict';
-const FAM = { melee: '근접', spear: '창 · 투척', bow: '활', gun: '총', magic: '마법' };
+const FAM = { melee: '근접', spear: '창 · 투척', bow: '활', gun: '총', magic: '마법', stealth: '은신 · 암살' };
 const FAMS = Object.keys(FAM);
 const APT = {
   spread: [0.46, 0.25, 0.13, 0.07, 0.04, 0.02],   // 조준 흔들림 (라디안)
@@ -21,24 +21,24 @@ const APT = {
   jam:    [0.15, 0.04, 0, 0, 0, 0],
 };
 const TAGS = {
-  soldier: { n: '훈련받은 군인', cost: { gun: 0.6, bow: 0.8, melee: 1, spear: 0.9, magic: 2 } },
-  mage:    { n: '마법 계열', cost: { magic: 0.6, gun: 3, bow: 1.4, melee: 1.5, spear: 1.5 } },
-  beast:   { n: '야수', cost: { melee: 0.6, spear: 1, gun: 3, bow: 2, magic: 1.6 } },
-  knight:  { n: '기사', cost: { melee: 0.7, spear: 0.8, bow: 1, gun: 1.5, magic: 2 } },
-  brawler: { n: '싸움꾼', cost: { melee: 0.7, gun: 0.9, bow: 1.5, spear: 1.2, magic: 2.5 } },
+  soldier: { n: '훈련받은 군인', cost: { gun: 0.6, bow: 0.8, melee: 1, spear: 0.9, magic: 2, stealth: 1 } },
+  mage:    { n: '마법 계열', cost: { magic: 0.6, gun: 3, bow: 1.4, melee: 1.5, spear: 1.5, stealth: 1.4 } },
+  beast:   { n: '야수', cost: { melee: 0.6, spear: 1, gun: 3, bow: 2, magic: 1.6, stealth: 0.8 } },
+  knight:  { n: '기사', cost: { melee: 0.7, spear: 0.8, bow: 1, gun: 1.5, magic: 2, stealth: 2.2 } },
+  brawler: { n: '싸움꾼', cost: { melee: 0.7, gun: 0.9, bow: 1.5, spear: 1.2, magic: 2.5, stealth: 1 } },
 };
 const ROLES = { vanguard: '선봉', marksman: '사수', scout: '척후', support: '지원', leader: '지휘' };
 const ROLE_D = { vanguard: '먼저 근접으로 나가 적의 자리를 막음 · 일찍 칼로 바꿈', marksman: '멀리서 쏨 · 예고 중인 적부터 끊음 · 늦게까지 총을 쥠', scout: '적의 옆 · 등으로 돌아 들어감 · 빠름',
   support: '쓰러진 동료를 먼저 일으킴 (빠르게) · 조장 등 뒤를 지킴', leader: '조장 — 곁 6칸 조원의 적성 +1 · 바꿔 들기 빠름' };
 // 인물별 타고난 것 (DEFS 키 기준). 패시브는 실제로 작동함
 const SOLP = {
-  player:         { apt: { melee: 3, spear: 4, bow: 2, gun: 2, magic: 0 }, tag: 'soldier', pas: ['작은 몸', '구르기 무적이 조금 김 · 창은 적성 4부터'] },
-  cheongAlly:     { apt: { melee: 4, spear: 1, bow: 1, gun: 0, magic: 2 }, tag: 'beast', pas: ['날쌤', '근접에서 바꿔 들기가 매우 빠름 · 총은 이해 못 함 (0)'] },
-  kariusAlly:     { apt: { melee: 5, spear: 2, bow: 0, gun: 2, magic: 0 }, tag: 'beast', pas: ['괴력', '총 반동을 무시 — 총 적성 페널티 절반'] },
-  rebeccaAlly:    { apt: { melee: 4, spear: 3, bow: 2, gun: 1, magic: 0 }, tag: 'knight', pas: ['불사', '쓰러져도 일어남 · 방패로 잘 막음'] },
-  angelAlly:      { apt: { melee: 1, spear: 1, bow: 1, gun: 0, magic: 4 }, tag: 'mage', art: 'wand', pas: ['천사의 고리', '마력을 절반만 씀 · 마력탄이 한 놈을 꿰뚫음'] },
-  goldknightAlly: { apt: { melee: 4, spear: 3, bow: 2, gun: 1, magic: 0 }, tag: 'knight', pas: ['철벽', '방패를 들면 정면 피해 70% 감소 · 곁의 적이 금기사를 먼저 노림'] },
-  gangsterAlly:   { apt: { melee: 3, spear: 1, bow: 1, gun: 3, magic: 0 }, tag: 'brawler', pas: ['막싸움 권총', '3칸 안에서 총 명중 크게 오름 · 바꿔 들기 즉시'] },
+  player:         { apt: { melee: 3, spear: 4, bow: 2, gun: 2, magic: 0, stealth: 3 }, tag: 'soldier', pas: ['작은 몸', '구르기 무적이 조금 김 · 창은 적성 4부터'] },
+  cheongAlly:     { apt: { melee: 4, spear: 1, bow: 1, gun: 0, magic: 2, stealth: 4 }, tag: 'beast', pas: ['날쌤', '근접에서 바꿔 들기가 매우 빠름 · 총은 이해 못 함 (0)'] },
+  kariusAlly:     { apt: { melee: 5, spear: 2, bow: 0, gun: 2, magic: 0, stealth: 0 }, tag: 'beast', pas: ['괴력', '총 반동을 무시 — 총 적성 페널티 절반'] },
+  rebeccaAlly:    { apt: { melee: 4, spear: 3, bow: 2, gun: 1, magic: 0, stealth: 1 }, tag: 'knight', pas: ['불사', '쓰러져도 일어남 · 방패로 잘 막음'] },
+  angelAlly:      { apt: { melee: 1, spear: 1, bow: 1, gun: 0, magic: 4, stealth: 1 }, tag: 'mage', art: 'wand', pas: ['천사의 고리', '마력을 절반만 씀 · 마력탄이 한 놈을 꿰뚫음'] },
+  goldknightAlly: { apt: { melee: 4, spear: 3, bow: 2, gun: 1, magic: 0, stealth: 0 }, tag: 'knight', pas: ['철벽', '방패를 들면 정면 피해 70% 감소 · 곁의 적이 금기사를 먼저 노림'] },
+  gangsterAlly:   { apt: { melee: 3, spear: 1, bow: 1, gun: 3, magic: 0, stealth: 2 }, tag: 'brawler', pas: ['막싸움 권총', '3칸 안에서 총 명중 크게 오름 · 바꿔 들기 즉시'] },
 };
 // 원거리 무기 (동료가 듦). 피해는 낮게 · 대신 쓸모가 분명하게
 const RW = {
@@ -46,6 +46,7 @@ const RW = {
   rifle:   { n: '소총', fam: 'gun', ammo: 'bullet', item: 'W-lever', range: 15, cd: 1.35, dmg: 20, speed: 58, loud: 16, pierceArmor: 1 },
   shotgun: { n: '산탄총', fam: 'gun', ammo: 'shell', item: 'W-shotgun', range: 6, cd: 1.25, dmg: 6, pellets: 6, cone: 0.32, speed: 34, loud: 14, kb: 0.9 },
   bow:     { n: '활', fam: 'bow', ammo: 'arrow', item: 'W-bow', range: 12, cd: 1.1, dmg: 13, speed: 26, loud: 2, tip: 1 },
+  sling:   { n: '돌팔매 (무한)', fam: 'spear', range: 8, cd: 0.95, dmg: 6, speed: 22, loud: 3, inf: 1 },   // 돌은 어디에나 — 약하지만 끝없이
   wand:    { n: '완드', fam: 'magic', item: 'EW13', range: 10, cd: 0.9, dmg: 15, speed: 17, loud: 4, mp: 4 },
 };
 const SHIELD_ITEM = 'W-shield';
@@ -74,8 +75,8 @@ const SOLS = { shots: 0, hits: 0, cuts: 0, dodged: 0, blocked: 0, weak: 0, jams:
 /* ---------- 인물에 붙이기 ---------- */
 function solKey(u){ return u.kind === 'player' ? 'player' : u.kind; }
 function solInit(u, o = {}){
-  const P0 = SOLP[solKey(u)] || { apt: { melee: 2, spear: 1, bow: 1, gun: 1, magic: 0 }, tag: 'soldier', pas: ['—', ''] };
-  u.sol = { base: { ...P0.apt }, train: { melee: 0, spear: 0, bow: 0, gun: 0, magic: 0 }, tag: P0.tag, pas: P0.pas, kit: { main: o.main || null, shield: !!o.shield }, role: o.role || 'vanguard', sq: o.sq ?? 1,
+  const P0 = SOLP[solKey(u)] || { apt: { melee: 2, spear: 1, bow: 1, gun: 1, magic: 0, stealth: 1 }, tag: 'soldier', pas: ['—', ''] };
+  u.sol = { base: { ...P0.apt }, train: { melee: 0, spear: 0, bow: 0, gun: 0, magic: 0, stealth: 0 }, tag: P0.tag, pas: P0.pas, kit: { main: o.main || null, shield: !!o.shield }, role: o.role || 'vanguard', sq: o.sq ?? 1,
     mode: 'melee', swapT: 0, cd: rnd(0.2, 0.8), mp: 30, mpMax: 30, stat: { shots: 0, hits: 0, cuts: 0 }, pts: 8, ammo: { bullet: 0, arrow: 0, shell: 0 } };
   const R0 = RW[u.sol.kit.main]; if (R0 && R0.ammo){ packAdd(u, R0.ammo, 1); packAdd(u, R0.ammo, 1); }   // 처음엔 두 칸
   solGear(u); return u.sol;
@@ -154,7 +155,7 @@ function solShoot(u, tgt){
     const a = a0 + gauss() * spread + (n > 1 ? (i - (n - 1) / 2) * R.cone / (n - 1) : 0);
     let left = pierce;
     shoot({ x: u.x + Math.cos(a) * 0.4, y: y0, z: u.z + Math.sin(a) * 0.4, a, speed: R.speed, range: R.range + 1, side: u.side, len: f === 'magic' ? 0.32 : R.tip ? 0.7 : 0.35, tip: R.tip, thick: f === 'magic' ? 0.09 : 0.04,
-      color: f === 'magic' ? 0xc8a0ff : R.tip ? 0xd8c8a8 : 0xffe08a, glow: f === 'magic' ? 0xa070ff : f === 'gun' ? 0xffc860 : undefined, hitsAir: true, dy: aimDy(u.x, y0, u.z, tgt, R.speed), pierce: pierce || undefined,
+      color: f === 'magic' ? 0xc8a0ff : R.tip ? 0xd8c8a8 : f === 'spear' ? 0x9a948a : 0xffe08a, glow: f === 'magic' ? 0xa070ff : f === 'gun' ? 0xffc860 : undefined, hitsAir: true, dy: aimDy(u.x, y0, u.z, tgt, R.speed), pierce: pierce || undefined,
       onHit: (p, t) => { if (!shot.hit){ shot.hit = true; S.stat.hits++; SOLS.hits++; } const crit = Math.random() < ix(APT.crit, apt); hurt(u, t, R.dmg + u.atk * 0.3, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, ranged: true, fam: f, crit: crit || undefined, critMul: crit && apt >= 5 && f === 'gun' ? 2.6 : undefined, kb: R.kb, pierceArmor: R.pierceArmor }); if (crit) popText(t.x, t.y + bodyH(t) + 0.5, t.z, f === 'gun' ? '헤드샷' : '급소', 'crit', 0.8); } });
   }
   S.stat.shots++; SOLS.shots++;
@@ -175,15 +176,18 @@ function solRanged(u, dt, tgt){
   else if (d < want * 0.55 && d > 2.2){ const n = norm(u.x - tgt.x, u.z - tgt.z); steerTo(u, u.x + n.x * 2, u.z + n.z * 2, u.spd * 0.8, dt); }
   setAim(u, tgt.x, tgt.z);
   S.cd -= dt;
-  if (S.cd <= 0 && see && d <= R.range) solShoot(u, tgt);
+  const hold = S.fire === 'save' && R.ammo && !SOLAMMO.inf && !shotWorth(tgt);   // 아낌: 쏠 만한 놈에게만
+  if (S.cd <= 0 && see && d <= R.range && !hold) solShoot(u, tgt);
   setPose(u, u.S.poses.shoot ? 'shoot' : u.S.poses.aim ? 'aim' : u.moving ? (u.S.poses.walk ? 'walk' : 'idle') : 'idle');
   return true;
 }
+// 사격 규율 '아낌': 예고 중 · 궁수 · 주술사 · 거의 죽은 놈 · 누운 놈 · 묶인 날랜 놈에게만 쏨 (탄약이 귀하니까). 마나 · 돌팔매처럼 끝없는 무기는 상관없음
+const shotWorth = t => t.st === 'windup' || !!t.D.bow || t.kind === 'drillCaster' || t.hp < t.max * 0.3 || !!t.lying || (TRAIT[t.kind] === 'dodger' && engagedBy(t));
 // 바꿔 들기: 원거리 ↔ 근접. 가까우면 근접 돌입, 멀어지면 다시 꺼냄
 function solSwitch(u, dt, near){
   const S = u.sol; if (!S.kit.main || !ammoOk(u)){ S.mode = 'melee'; return; }
   if (S.swapT > 0){ S.swapT -= dt; return; }
-  const inAt = S.role === 'vanguard' ? 3.6 : S.role === 'marksman' ? 1.6 : 2.2, outAt = S.role === 'vanguard' ? 5.5 : 3.4;
+  const inAt = (S.role === 'vanguard' ? 3.6 : S.role === 'marksman' ? 1.6 : 2.2) + (S.fire === 'save' && !SOLAMMO.inf && RW[S.kit.main].ammo ? 1 : 0), outAt = S.role === 'vanguard' ? 5.5 : 3.4;
   const want = S.mode === 'ranged' ? (near < inAt ? 'melee' : 'ranged') : (near > outAt ? 'ranged' : 'melee');
   if (want === S.mode) return;
   const a = Math.max(aptEff(u, RW[S.kit.main].fam), aptEff(u, 'melee'));

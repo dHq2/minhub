@@ -1,4 +1,4 @@
-/* squad.js v1.0 — (v0.55) 조 · 진형 · 지휘 · 기절과 일으키기 · 상태 연계 · 슬라이딩 / 드롭킥 카운터
+/* squad.js v1.1 — (v1.1, v0.56: 지시 '은밀히' — stealth.js) (v1.0, v0.55) 조 · 진형 · 지휘 · 기절과 일으키기 · 상태 연계 · 슬라이딩 / 드롭킥 카운터
    ■ 조: 1조 (조장 = 인주) · 2조 (조장 = 보직이 '지휘'인 동료, 없으면 첫 조원) · 단독 (혼자 움직이는 전략병기)
    ■ 진형 (조장 기준 자리): 삼각 · 가로 · 종대 · 등맞대기 (서로 등을 막아 사각을 없앰) · 흩어짐 · 포위 (묶은 적 둘레)
    ■ 지휘 (O · 손가락 화면은 위 줄 깃발): 창이 열린 동안 시간이 느려짐 (0.2배). 조마다
@@ -238,7 +238,7 @@ function sqOrder(sq, k, tgt){
   if ((k === 'pin' || k === 'flank') && !sq.tgt){ sq.order = 'follow'; popText(pl.x, pl.y + 2.4, pl.z, '노릴 적이 없다', 'miss', 0.8); return; }
   if (k === 'retreat') for (const u of sqMembers(sq)) for (const e of foes()) if (e.focusOn === u) e.focusOn = null;
   const M = sqMembers(sq).filter(u => u.kind !== 'player' && !u.downed), sp = M[0];
-  if (sp) say(sp, pickR2({ follow: ['따라간다!', '붙는다'], hold: ['여기서 버틴다', '자리 지킴'], pin: ['저놈은 내가 붙든다!', '묶는다'], flank: ['돌아 들어간다', '등 뒤로'], retreat: ['빠진다!', '물러나!'], free: ['알아서 한다', '흩어져!'] }[k]), 'soft', 1.4);
+  if (sp) say(sp, pickR2({ follow: ['따라간다!', '붙는다'], hold: ['여기서 버틴다', '자리 지킴'], pin: ['저놈은 내가 붙든다!', '묶는다'], flank: ['돌아 들어간다', '등 뒤로'], retreat: ['빠진다!', '물러나!'], free: ['알아서 한다', '흩어져!'], sneak: ['…숙여.', '소리 내지 마'] }[k] || ['알겠다']), 'soft', 1.4);
   if (sq.tgt && (k === 'pin' || k === 'flank')) { ring(sq.tgt.x, sq.tgt.z, 0xffd35a, 1.4, 0.5); popText(sq.tgt.x, sq.tgt.y + bodyH(sq.tgt) + 0.6, sq.tgt.z, `${sq.n}: ${ORDERS[k]}`, 'aim', 1); }
   sqHudRender();
 }
