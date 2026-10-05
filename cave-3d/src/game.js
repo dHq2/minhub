@@ -323,7 +323,7 @@ function updateHud(){
   if (G.boss && !$('bossbar').hidden){ $('bossfill').style.width = Math.max(0, G.boss.hp / G.boss.max * 100) + '%'; if (G.boss.B) $('bossphase').textContent = G.boss.B.phase === 2 ? '2페이즈 — 하늘 (근접이 닿지 않음 · 붉은 원에서 벗어나기)' : ''; }
   let it = !G.lock && !G.waitInput && G.player ? nearestInspect() : null;
   const alt = !G.lock && !G.waitInput && typeof proFreeE === 'function' ? proFreeE() : null;   // 가구를 들고 있으면 "여기에 놓는다" (아주 가까운 대상이 없을 때)
-  if (alt && it && G.inspD > 0.9) it = null;   // 아무것도 없을 때 E (가구 놓기 등)
+  if (alt && it && G.inspD > 0.9 && !it.keep) it = null;   // v0.32: 창고 · 구덩이 · 화장실 · 우리는 들고 있어도 이김 (창고 팔레트는 막혀 있어 0.9 안까지 못 감)   // 아무것도 없을 때 E (가구 놓기 등)
   $('prompt').hidden = !it && !alt; if (it) $('prompt').innerHTML = `<kbd>E</kbd> ${it.label}${G.inspN > 1 ? ` <small class="tab"><kbd>Tab</kbd> 다른 것 (${G.inspN})</small>` : ''}`; else if (alt) $('prompt').innerHTML = `<kbd>E</kbd> ${alt.label}`;
   G.freeE = alt;
   G.nearIt = it;

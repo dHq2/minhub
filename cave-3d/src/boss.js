@@ -1,4 +1,5 @@
-/* boss.js v0.8 — 적뢰 (튜토리얼 보스). 1페이즈는 2D판 적뢰를 그대로 옮김
+/* boss.js v0.9 — 적뢰. v0.9: 동작이 끊기면 스스로 풀림 · 깔고 서지 않음 · 위협치로 표적 고름 (인주만 노리지 않음) · 강림 직후 2초 숨 · 날아차기는 체력 절반 넘는 자를 한 방에 못 죽임
+   (v0.8까지) (튜토리얼 보스). 1페이즈는 2D판 적뢰를 그대로 옮김
    1페이즈
    - 대리석 주먹: 천천히 걸어오다 2.8칸 안이면 거의 예고 없이 (0.35초) 파고들어 내리찍음 (30) + 둘레 땅울림 (절반)
    - 천벌: 손을 들면 붉은 기운이 몸을 감싸고 머리 위로 번개가 튐. 2초 동안 가장 질긴 자를 따라가다 마지막 0.6초는 멈춤
@@ -26,9 +27,12 @@ function bossThink(u, dt){
     u.parried -= dt; u.moving = false; setPose(u, 'hurt'); return;
   }
   B.wasParried = false;
+  unpin(u);
+  // 하던 동작이 끊김 (예고 장판이 취소됨 등): 너무 오래 걸리면 풀고 다시 고름
+  if (B.act && B.act.t > (B.act.type === 'descend' ? 7.5 : B.act.type === 'ascend' ? 3.5 : 4.5)){ if (B.phase === 1){ u.lift = 0; u.airborne = false; } u.inv = 0; u.decal = null; B.act = null; setPose(u, B.phase === 2 ? 'fly' : 'idle'); }
   if (B.act) return bossAct(u, B.act, dt);
   const team = allies(); if (!team.length) return;
-  let tgt = G.player && !G.player.downed ? G.player : nearest(u, team);
+  let tgt = bossTarget(u, team, dt);
   const d = dist(u, tgt);
   if (B.phase === 1){
     if (u.hp < u.max * 0.55){ return start(u, 'ascend'); }
@@ -54,6 +58,28 @@ function bossThink(u, dt){
     if (B.cd.descend <= 0) return start(u, 'descend');
     if (B.cd.thunder <= 0) return start(u, 'thunder');
     if (B.cd.spears <= 0) return start(u, 'spears');
+  }
+}
+// 위협치: 적뢰를 때린 만큼 쌓이고 (4초에 반씩 줆), 가까울수록 조금 더. 인주에게 약간 더 (주인공). 한 표적을 3초는 붙듦
+function bossTarget(u, team, dt){
+  const B = u.B; B.thr = B.thr || {}; B.tgtT = (B.tgtT || 0) - dt;
+  for (const k in B.thr) B.thr[k] *= Math.pow(0.5, dt / 4);
+  if (B.tgt && !B.tgt.dead && !B.tgt.downed && team.includes(B.tgt) && B.tgtT > 0) return B.tgt;
+  let best = null, bs = -1;
+  for (const t of team){ const sc = (B.thr[t.uid] || 0) + 30 / (1 + dist(u, t)) + (t === G.player ? 6 : 0) + Math.random() * 8; if (sc > bs){ bs = sc; best = t; } }
+  if (best !== B.tgt && best) popText(best.x, best.y + bodyH(best) + 0.6, best.z, '노려본다', 'alert', 0.7);
+  B.tgt = best; B.tgtT = 3; return best;
+}
+// 깔고 서지 않음: 몸 안으로 들어온 동료는 밖으로 밀어냄 (벽과 적뢰 사이에 끼어 못 움직이던 것)
+function unpin(u){
+  if (u.airborne) return;
+  for (const t of allies()){
+    const dx = t.x - u.x, dz = t.z - u.z, d = Math.hypot(dx, dz), need = u.r + t.r - 0.05;
+    if (d >= need) continue;
+    const n = d > 0.01 ? { x: dx / d, z: dz / d } : { x: Math.cos(u.aim + 1.6), z: Math.sin(u.aim + 1.6) };
+    let px = u.x + n.x * (need + 0.05), pz = u.z + n.z * (need + 0.05);
+    if (solidAt(G.map, px, pz)){ for (let a = 0.5; a < 6.3; a += 0.5){ const qx = u.x + Math.cos(Math.atan2(n.z, n.x) + a) * (need + 0.1), qz = u.z + Math.sin(Math.atan2(n.z, n.x) + a) * (need + 0.1); if (!solidAt(G.map, qx, qz)){ px = qx; pz = qz; break; } } }
+    t.x += (px - t.x) * 0.5; t.z += (pz - t.z) * 0.5;
   }
 }
 function start(u, type, tgt, back){ u.B.act = { type, t: 0, tgt, phase: 0, back }; }
@@ -275,12 +301,13 @@ function kickHit(u, t, a){
   const from = { x: t.x - Math.cos(a) * 2, z: t.z - Math.sin(a) * 2 };   // 날아차기 방향으로 날려버림
   const blocked = t.guard && Math.abs(angDiff(a + Math.PI, t.aim)) < 1.25;
   smoke(t.x, t.z, 6, 1.0, 0.6); SFX.hit(); SFX.boom(0.8);
-  if (!blocked && Math.random() < 0.05){
+  const full = t.hp > t.max * 0.5;   // v0.9: 멀쩡한 자는 한 방에 안 죽음 (1 남기고 쓰러짐)
+  if (!blocked && !full && Math.random() < 0.05){
     popText(t.x, t.y + 2.4, t.z, '머리가 터졌다', 'crit', 1.6); spark(t.x, t.y + bodyH(t), t.z, 0xff2020, 30, 7);
     hurt(u, t, 9999, { from, unblockable: true, kb: 6 });
   } else if (blocked){
     hurt(u, t, JR.kickDmg * 0.4, { from, unblockable: true, kb: 3.5, stun: 0.5 }); popText(t.x, t.y + 2.4, t.z, '막음', 'miss');
-  } else { hurt(u, t, JR.kickDmg / 2, { from, unblockable: true, crit: true, critMul: 2, kb: 6, stun: 1.3, noCam: true }); popText(t.x, t.y + 2.8, t.z, '쓰러짐', 'hurt', 1.0); }
+  } else { hurt(u, t, JR.kickDmg / 2, { from, unblockable: true, crit: true, critMul: 2, kb: 6, stun: 1.3, noCam: true, keep1: full }); if (full) popText(t.x, t.y + 3.3, t.z, '버텼다!', 'heal', 1.0); popText(t.x, t.y + 2.8, t.z, '쓰러짐', 'hurt', 1.0); }
   camShake(0.6, 0.4); G.hitstop = Math.max(G.hitstop, 0.1);
 }
 function strikeThunder(u, d){

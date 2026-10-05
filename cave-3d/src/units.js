@@ -331,6 +331,8 @@ function hurt(att, tgt, base, o = {}){
   if (att && att.y > tgt.y + 0.3) dmg *= 1.15;
   if (o.crit) dmg *= o.critMul || 2;
   dmg = Math.max(1, Math.round(dmg));
+  if (o.keep1 && tgt.hp - dmg < 1) dmg = Math.max(0, Math.floor(tgt.hp - 1));   // v0.32 적뢰 날아차기: 멀쩡한 자는 1 남김
+  if (tgt.B && att && att.uid){ tgt.B.thr = tgt.B.thr || {}; tgt.B.thr[att.uid] = (tgt.B.thr[att.uid] || 0) + dmg; }   // 보스 위협치
   if (!tgt.D.dummy) tgt.hp -= dmg;
   tgt.flash = 1;
   const big = o.crit || dmg >= 40;

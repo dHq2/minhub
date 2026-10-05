@@ -4,7 +4,7 @@
 'use strict';
 const PRO_SAVE = 'cave3d.pro.v1';
 const PRO_KEYS = ['day', 'store', 'trash', 'buried', 'wood', 'penFood', 'snailLost', 'snailHd', 'meal', 'hpf', 'fireLit', 'ap', 'dig', 'jrDone', 'rebOut', 'rebDig', 'placed',
-  'pigData', 'eggs', 'babies', 'weather', 'hasToilet', 'tentGone', 'necklace', 'dropDay', 'cursed', 'didBury'];
+  'pigData', 'eggs', 'babies', 'weather', 'hasToilet', 'tentGone', 'necklace', 'dropDay', 'cursed', 'didBury', 'mine'];
 const SKIP_K = new Set(['b', 'u', 'g', 'm', 'mesh', 'unit', 'bill', 'ring', 'insp', 'carrier', 'claimed']);
 function plainOf(v, depth = 0){
   if (v == null || typeof v !== 'object') return v;

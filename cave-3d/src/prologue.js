@@ -20,7 +20,7 @@ const TAG = (txt, cls) => `<span class="tag ${cls}">${txt}</span>`;
 const CHEONG_TAGS = () => (PRO.cursed ? TAG('저주: 실명 · 좌안', 'curse') : '') + TAG('발화 A', 'gA');
 const FACE = { cheong: PA + 'goblin_face.webp', karius: PA + 'karius_face.webp' };
 
-const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false, pigData: [], pigs: [], eggs: [], babies: 0, eggBills: [], meal: { inju: { fed: false, hd: 0 }, ch: { fed: false, hd: 0 }, ka: { fed: false, hd: 0 } }, hpf: { ch: 1, ka: 1 }, fireLit: true, wood: 30, snailLost: 0, penFood: 4, snailHd: 0, ap: 4, dig: 0, jrDone: false, rebOut: false, rebDig: 0, equip: { weapon: null, armor: null }, placed: [] };
+const PRO = { bills: [], fallers: [], bubbles: [], motes: null, glows: [], cursed: false, gob: null, tries: 0, store: [], trash: [], buried: 0, day: 1, didBury: false, pigData: [], pigs: [], eggs: [], babies: 0, eggBills: [], meal: { inju: { fed: false, hd: 0 }, ch: { fed: false, hd: 0 }, ka: { fed: false, hd: 0 } }, hpf: { ch: 1, ka: 1 }, fireLit: true, wood: 30, snailLost: 0, penFood: 4, snailHd: 0, ap: 10, dig: 0, jrDone: false, rebOut: false, rebDig: 0, equip: { weapon: null, armor: null }, placed: [] };
 
 /* ---------- 소리 ---------- */
 SFX.clink = function(v = 1){ this.burst({ type: 'bandpass', f: 3400, q: 9, gain: 0.5 * v, dec: 0.22 }); this.burst({ type: 'bandpass', f: 1900, q: 5, gain: 0.3 * v, dec: 0.12 }); this.thump(240, 0.25 * v, 0.1); };
@@ -428,7 +428,7 @@ async function startCave(cine = false){
   G.inspect.push({ x: 9, z: 2.5, r: 1.6, mark: '석문', far: 16, get label(){ return doorLabel(); }, fn: doorAction });
   buildRubble();
   buildStorage(); buildFire(); caveBarInit(); restorePlaced();
-  G.inspect.push({ x: 12, z: 10, r: 1.3, mark: '우리', far: 0.1, get label(){ return penLabel(); }, fn: penAction });
+  G.inspect.push({ x: 12, z: 10, r: 1.3, mark: '우리', far: 0.1, keep: true, get label(){ return penLabel(); }, fn: penAction });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
   // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
   pl.lying = true; G.lock = true; letterbox(true); dark(1, 0); PRO.caveIntro = true;
@@ -516,11 +516,11 @@ const DROP_TABLE = [
   { k: 'd_EQ-005', name: '초록 수정 붉은 창', type: 'equip', h: 0.6, w: 2 },
   { k: 'd_EQ-123', name: '돌덩이 머리 붉은 자루 망치', type: 'equip', h: 0.6, w: 2 },
   { k: 'd_EQ-340', name: '붉은 목도리 은빛 판금 갑옷', type: 'equip', h: 0.6, w: 2 },
-  { k: 'corpse1', name: '피 흘린 시체', type: 'junk', h: 0.5, w: 3 },
-  { k: 'corpse3', name: '쓰러진 시체', type: 'junk', h: 0.35, w: 3 },
-  { k: 'd_H-305', name: '작은 깡통', type: 'junk', h: 0.22, w: 4 },
-  { k: 'd_I-035', name: '천 쪼가리', type: 'junk', h: 0.24, w: 5, wood: 15 },     // 땔감이 되는 쓰레기 (모닥불로)
-  { k: 'd_I-058', name: '해진 파란 천', type: 'junk', h: 0.24, w: 4, wood: 15 },
+  { k: 'corpse1', name: '피 흘린 시체', type: 'junk', h: 0.5, w: 1 },
+  { k: 'corpse3', name: '쓰러진 시체', type: 'junk', h: 0.35, w: 1 },
+  { k: 'd_H-305', name: '작은 깡통', type: 'junk', h: 0.22, w: 2 },
+  { k: 'd_I-035', name: '천 쪼가리', type: 'junk', h: 0.24, w: 3, wood: 15 },     // 땔감이 되는 쓰레기 (모닥불로)
+  { k: 'd_I-058', name: '해진 파란 천', type: 'junk', h: 0.24, w: 2, wood: 15 },
   { k: 'd_I-034', name: '부서진 나무 판자', type: 'junk', h: 0.26, w: 5, wood: 25 },
   { k: 'd_I-057', name: '판자 더미', type: 'junk', h: 0.3, w: 3, wood: 40 },
 ];
@@ -681,11 +681,11 @@ function buildStorage(){
   PRO.storeBills = []; PRO.trashBills = [];
   PRO.store.forEach((d, i) => pileAdd(d, i)); PRO.trash.forEach((t, i) => trashAdd(t, i));
   // 창고 · 구덩이 · 화장실 · 잠자리 (글씨는 들고 있는지에 따라 바뀜)
-  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 6, get label(){ return PRO.carry ? (PRO.carry.pig ? '돼지는 우리로' : PRO.carry.d.raw ? '날것은 모닥불에 구워야 함' : PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : storeIdleLabel(); },
+  G.inspect.push({ x: STORE.cx, z: STORE.cz, r: 1.9, mark: '창고', far: 6, keep: true, get label(){ return PRO.carry ? (PRO.carry.pig ? '돼지는 우리로' : PRO.carry.d.raw ? '날것은 모닥불에 구워야 함' : PRO.carry.d.toilet ? '화장실은 변소 구덩이 자리로' : PRO.carry.d.type === 'junk' ? '쓰레기는 구덩이로 — 창고에 못 둠' : `${eul(PRO.carry.d.name)} 창고에 내려놓는다`) : storeIdleLabel(); },
     fn: () => { const c = PRO.carry; if (!c) return openStore(); if (c.d.raw) return popText(G.player.x, G.player.y + 2, G.player.z, '모닥불에 구워야 함!', 'miss', 1.2); if (c.pig) return popText(G.player.x, G.player.y + 2, G.player.z, '돼지는 우리로!', 'miss', 1.2); if (c.d.toilet) return popText(G.player.x, G.player.y + 2, G.player.z, '화장실은 변소 구덩이 자리로!', 'miss', 1.2); if (c.d.type === 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓰레기는 구덩이로!', 'miss', 1.2); putStore(c); } });
-  G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 6, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개${apTag()})`) : '쓰레기 구덩이 (비었음)'; },
+  G.inspect.push({ x: PIT.x, z: PIT.z, r: 1.6, mark: '쓰레기 구덩이', far: 6, keep: true, get label(){ return PRO.carry ? (PRO.carry.d.type === 'junk' ? `${eul(PRO.carry.d.name)} 구덩이에 버린다` : '쓸 만한 건 창고로') : PRO.trash.length ? (PRO.didBury ? '오늘은 이미 묻었다' : `쓰레기를 묻는다 (${PRO.trash.length}개${apTag()})`) : '쓰레기 구덩이 (비었음)'; },
     fn: () => { const c = PRO.carry; if (c){ if (c.pig) return popText(G.player.x, G.player.y + 2, G.player.z, '돼지는 우리로!', 'miss', 1.2); if (c.d.type !== 'junk') return popText(G.player.x, G.player.y + 2, G.player.z, '쓸 만한 건 창고로!', 'miss', 1.2); return putTrash(c); } if (PRO.trash.length && !PRO.didBury && spendAp()) buryTrash(); } });
-  G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, far: 6, get mark(){ return PRO.hasToilet ? '화장실' : '변소 구덩이'; },
+  G.inspect.push({ x: TOILET.x, z: TOILET.z, r: 1.5, far: 6, keep: true, get mark(){ return PRO.hasToilet ? '화장실' : '변소 구덩이'; },
     get label(){ const c = PRO.carry; return c && c.d.toilet ? '간이 화장실을 설치한다' : c ? '여기엔 둘 수 없음' : PRO.hasToilet ? '화장실에 들어간다' : PRO.tentGone ? `천막을 다시 친다 (비에 쓸려 감${apTag()})` : '변소 구덩이에서 볼일을 본다'; },
     fn: async () => {
       const c = PRO.carry; if (c){ if (c.d.toilet) installToilet(c); return; }
@@ -1096,7 +1096,7 @@ function kariusThink(u, dt){
   const front = o => { const dd = Math.hypot(o.x - u.x, o.z - u.z); return dd < 2.7 && Math.abs(angDiff(Math.atan2(o.z - u.z, o.x - u.x), a)) < 1.2; };
   if (u.p2 && u.rsCd <= 0 && d > 2.8 && d < 7){ u.rsCd = 8; u.kc = { type: 'rush', t: 0, a, dec: decal('line', { x: u.x, z: u.z, len: 4.5, w: 1.3, a, dur: 0.5, color: BLUE }), hit: new Set() }; say(u, '우오오오!', 'soft', 0.8); return; }
   if (u.p2 && u.slCd <= 0 && d <= 2.3){ u.slCd = 5; const px = u.x + Math.cos(a) * 1.3, pz = u.z + Math.sin(a) * 1.3; u.kc = { type: 'slam', t: 0, px, pz, dec: decal('circle', { x: px, z: pz, r: 1.3, dur: 0.7, color: BLUE }) }; u.poseT = 0; setPose(u, 'slam'); return; }
-  if (u.grCd <= 0 && d <= 1.9){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg }; u.poseT = 0; setPose(u, 'grab'); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
+  if (u.grCd <= 0 && d <= 1.9 && !tg.D.boss){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg }; u.poseT = 0; setPose(u, 'grab'); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
   if (u.swCd <= 0 && list.some(front)){ u.swCd = 4; u.kc = { type: 'sweep', t: 0, a, dec: decal('sector', { x: u.x, z: u.z, r: 2.7, a, arc: 2.4, dur: 0.5, color: BLUE }) }; u.poseT = 0; setPose(u, 'sweep'); return; }
   if (d > 1.8){ navTo(u, tg.x, tg.z, u.spd * (u.p2 ? 1.4 : 1), dt, 1.5); setPose(u, 'walk'); if (u.p2){ u.stomp = (u.stomp || 0) - dt; if (u.stomp <= 0){ u.stomp = 0.42; camShake(0.08, 0.1); dust(u.x, u.z, 4); } } return; }
   setPose(u, u.p2 ? 'heretic' : 'idle');
@@ -1117,6 +1117,7 @@ function kariusSkill(u, K, m, dt){
   }
   if (K.type === 'grab'){    // 잡아찢기: 끌어와 광대의 파일로
     const t = K.tg; if (!t || t.dead){ u.kc = null; return; }
+    if (t.D.boss){ u.kc = null; return; }   // v0.32: 보스는 잡히지 않음 (전엔 적뢰가 하던 동작이 끊긴 채 멈춤)
     t.st = 'hurt'; t.stT = 0.3; interrupt(t);
     if (K.t > 0.4 && K.t < 1.0){ const gx = u.x + Math.cos(u.aim) * 0.9, gz = u.z + Math.sin(u.aim) * 0.9, k = Math.min(1, dt * 8); t.x += (gx - t.x) * k; t.z += (gz - t.z) * k; }
     if (!K.hit && K.t >= 1.0){ K.hit = true; hurt(u, t, 30 * m, { from: u, crit: Math.random() < 0.5, critMul: 2 }); spark(t.x, 1, t.z, 0xb3122a, 22, 5); camShake(0.35, 0.2); }
@@ -1445,6 +1446,12 @@ function dayBody(){
   if (PRO.nightCold && !hasPlaced('d_H-402')) news.push('대장… 밤에 추웠다… 담요 있으면 좋겠다…');
   // 석문: 카리우스가 밤새 팜 (먹었으면 4, 굶었으면 1)
   if (PRO.dig < 100){ PRO.dig = Math.min(100, PRO.dig + (PRO.meal.ka.hd ? 1 : 4)); if (PRO.dig >= 100) setTimeout(doorDone, 4000); }
+  else if (PRO.jrDone && typeof RPG !== 'undefined'){   // v0.32 채굴: 석문을 연 뒤엔 카리우스가 밤마다 벽을 팜 (먹었을 때만). 금화 · 가끔 쓸 것 (보관함) · 굴 넓히기 진척
+    if (!PRO.meal.ka.hd){ const g = 4 + Math.floor(Math.random() * 9); RPG.gold += g; PRO.mine = (PRO.mine || 0) + 5;
+      let got = ''; if (Math.random() < 0.3 && typeof rollItem === 'function'){ const id = rollItem(Math.max(1, RPG.depth || 1), { type: 'cons' }), it = makeItem(id); if (it){ RPG.stash.push(it); got = ` · ${itemDef(it).n}`; } }
+      news.push(`카리우스가 밤새 팠다… 금화 ${g}${got} (넓히기 ${Math.min(100, PRO.mine)}%)`); if (typeof saveRpg === 'function') saveRpg(); }
+    else news.push('카리우스는 굶어서 파지 않았다…');
+  }
   PRO.ap = AP_MAX;
   if (PRO.meal.ch.hd) news.push(`대장… 어제 못 먹었다… (${PRO.meal.ch.hd}일째)`);
   // 달팽이: 밤에 우리 먹이를 먹음
@@ -1647,7 +1654,7 @@ function todoMarks(){
 
 
 /* ---------- v0.20 하루 행동 수: 큰 일 (불 · 달팽이 먹이 채우기 · 쓰레기 묻기 · 천막 · 석문 파기)은 하루 4번까지. 밥 · 나르기 · 창고는 공짜 ---------- */
-const AP_MAX = 4;   // v0.22: 불 피우기 · 장작 넣기는 행동을 안 씀 (지쳐도 불은 피움)
+const AP_MAX = 10;   // v0.32: 하루 행동 10 (초반은 넉넉하게). v0.22: 불 피우기 · 장작 넣기는 행동을 안 씀 (지쳐도 불은 피움)
 const apTag = () => PRO.ap > 0 ? ' · 행동 1' : ' — 오늘은 지쳤다';
 function spendAp(){
   const pl = G.player;
@@ -1704,7 +1711,8 @@ async function jeokroeDescend(){
   CAM.wide = null; bossCam(true);
   startLobbyFight();
   const prev = G.onKill; G.onKill = u => { if (u === G.boss) jrDown(u); else if (prev) prev(u); };
-  bossInit(boss, { x: C.x, z: C.z }); boss.B.act = { type: 'kick', t: 0, tgt: G.player, phase: 0 };
+  bossInit(boss, { x: C.x, z: C.z }); boss.B.cd.kick = 7; boss.B.cd.punch = 2; boss.B.cd.laser = 9; boss.B.cd.jump = 10;   // v0.32: 강림하자마자 날아차기 → 없앰 (숨 고르고 시작)
+  popText(boss.x, boss.y + 4.4, boss.z, '…', 'alert', 1.5);
   $('bossbar').hidden = false; $('bossname').textContent = '적뢰 — 붉은 날개의 천사';
   letterbox(false); G.lock = false;
 }
@@ -1721,6 +1729,7 @@ async function jrDown(u){
 
 /* ---------- v0.20 창고 창: 먹기 · 물약 / 붕대 (치료 스킬 대신) · 장비 장착 · 가구 꺼내 놓기 ---------- */
 const HEAL = { 'd_I-037': 0.5, 'd_I-061': 0.25 };
+const TAME = [['ch', '청광묵'], ['reb', '레베카']];   // v0.32 손으로 먹이를 줄 수 있는 (길들일 수 있는) 동료. 카리우스는 혼자 먹음. 청광묵은 받을 때마다 유대 +1 (3마다 힘 · 체력 +1)
 const EQUIP = { 'd_EQ-005': { slot: 'weapon', atk: 6, note: '공격 +6' }, 'd_EQ-123': { slot: 'weapon', atk: 9, dig: true, note: '공격 +9 · 석문 파기 +4' }, 'd_EQ-340': { slot: 'armor', hp: 50, note: '체력 +50' } };
 const FURN_NOTE = { 'd_H-120': '잠자리 곁에 두면 잠 회복 +20%', 'd_H-402': '눈 오는 밤 추위를 막음', 'd_H-101': '불빛 (굴이 밝아짐)' };
 const hasPlaced = (k, near, r) => PRO.placed.some(p => p.k === k && (!near || Math.hypot(p.x + 0.5 - near.x, p.z - near.z) <= r));
@@ -1745,7 +1754,7 @@ function renderStore(){
   for (const [name, g] of groups){
     const d = g.d, [tn, tc] = d.wood ? ['땔감', 'twood'] : DROP_TYPE[d.type] || ['', ''];
     let btn = '', note = '';
-    if (d.type === 'food' && !d.raw){ note = `끼니 ${g.food}`; btn = fed ? '<button disabled>오늘 먹음</button>' : `<button data-a="eat" data-i="${g.idx[0]}">먹기</button>`; }
+    if (d.type === 'food' && !d.raw){ note = `끼니 ${g.food}`; btn = (fed ? '<button disabled>오늘 먹음</button>' : `<button data-a="eat" data-i="${g.idx[0]}">먹기</button>`) + TAME.filter(([k]) => PRO.meal[k] && (k !== 'reb' || PRO.rebOut)).map(([k, n]) => PRO.meal[k].fed ? `<button disabled>${n} 먹음</button>` : `<button data-a="feed" data-w="${k}" data-i="${g.idx[0]}">${n}에게 주기</button>`).join(''); }
     else if (HEAL[d.k]){ note = `체력 +${HEAL[d.k] * 100}%`; btn = [['inju', '인주'], ['ch', '청광묵'], ['ka', '카리우스']].concat(PRO.rebOut ? [['reb', '레베카']] : []).map(([k, n]) => `<button data-a="heal" data-w="${k}" data-i="${g.idx[0]}">${n}</button>`).join(''); }
     else if (EQUIP[d.k]){ note = EQUIP[d.k].note; btn = `<button data-a="equip" data-i="${g.idx[0]}">장착</button>`; }
     else if (d.type === 'furn' || d.k === 'd_H-402'){ note = FURN_NOTE[d.k] || '굴 꾸미기'; btn = `<button data-a="take" data-i="${g.idx[0]}">꺼내 놓기</button>`; }
@@ -1760,6 +1769,12 @@ $p('storeMenu').addEventListener('click', e => {
   const a = b.dataset.a, i = +b.dataset.i, pl = G.player;
   if (a === 'close') return closeStore();
   if (a === 'eat'){ const d = PRO.store[i]; if (d.food > 1) PRO.store[i] = { ...d, food: d.food - 1 }; else storeTake(i); PRO.meal.inju.fed = true; popText(pl.x, pl.y + 2, pl.z, `냠 (${d.name})`, 'heal', 1.2); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.25, dec: 0.3 }); }
+  if (a === 'feed'){ const d = PRO.store[i], w = b.dataset.w, u = PRO.cave[w]; if (d.food > 1) PRO.store[i] = { ...d, food: d.food - 1 }; else storeTake(i); PRO.meal[w].fed = true;
+    const hk = w === 'ch' ? 'cheong' : null, h = hk && typeof hero === 'function' ? hero(hk) : null; let bond = 0;
+    if (h){ h.bond = (h.bond || 0) + 1; bond = h.bond; if (h.bond % 3 === 0){ h.attr.str++; h.attr.vit++; } }
+    if (u){ popText(u.x, u.y + 2.2, u.z, `냠! (${d.name})${bond ? ` · 유대 ${bond}` : ''}`, 'heal', 1.4); say(u, w === 'ch' ? ['대장이 줬다!', '대장… 맛있다…', '대장 최고다!'][Math.floor(Math.random() * 3)] : '…고마워.', 'soft', 1.8); }
+    if (bond && bond % 3 === 0) caption('유대', `${h.name} — 힘 +1 · 체력 +1 (유대 ${bond})`);
+    SFX.burst({ type: 'bandpass', f: 600, q: 3, gain: 0.25, dec: 0.3 }); }
   if (a === 'heal'){ const d = storeTake(i), k = HEAL[d.k], w = b.dataset.w;
     if (w === 'inju') pl.hp = Math.min(pl.max, pl.hp + pl.max * k); else PRO.hpf[w] = Math.min(1, PRO.hpf[w] + k);
     const u = w === 'inju' ? pl : PRO.cave[w]; popText(u.x, u.y + 2, u.z, `+${k * 100}% (${d.name})`, 'heal', 1.3); spark(u.x, 1, u.z, 0x8fffb0, 10, 2); }
