@@ -1,4 +1,4 @@
-/* grapple.js v1.1 — (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.2 — (v1.2: 인주 레슬링 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -6,6 +6,11 @@
    · 동료가 잡은 놈을 치면 +30% 피해, 버둥 +20. 잡고 있는 동안엔 다른 적에게 등을 보임 (+25% 피해) */
 'use strict';
 const GR = { range: 1.45, clinchMax: 5, groundMax: 4.5 };
+// 인주 레슬링 자세 (v1.1, 임시 그림 · art/inju · tools/inju_art.py): 잡으려 웅크림 · 태클 돌진 · 클린치 자세 · 돌 던지기 · 파운딩
+Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });
+// 인주에게 있는 자세면 그걸로, 없으면 대신할 자세로
+const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
+
 G.locks = [];
 const grStr = u => (u.rpg ? u.rpg.A.str : 5 + (u.D.weight || 60) / 40) + (u.D.weight || 60) / 60;
 function canGrab(a, d){
@@ -53,7 +58,7 @@ function grDo(L, k){
   if (k === 'throw' && (L.phase !== 'clinch' || L.heavy)){ if (L.heavy && L.a === G.player) popText(L.a.x, L.a.y + 2.2, L.a.z, '너무 무겁다', 'miss', 0.8); return false; }
   if ((k === 'pound' || k === 'finish' || k === 'up') && L.phase !== 'ground') return false;
   if ((k === 'knee' || k === 'push') && L.phase !== 'clinch') return false;
-  L.act = { k, t: 0 }; setPose(L.a, 'windup');
+  L.act = { k, t: 0 }; setPose(L.a, k === 'pound' || k === 'finish' ? grPose(L.a, 'pound', 'windup') : grPose(L.a, 'grabReady', 'windup'));
   if (k === 'finish') popText(L.a.x, L.a.y + 2.4, L.a.z, '끝내기…', 'crit', 0.9);
   return true;
 }
@@ -102,6 +107,7 @@ function grappleTick(dt){
     if (!solidAt(G.map, tx, tz)){ d.x += (tx - d.x) * Math.min(1, dt * 14); d.z += (tz - d.z) * Math.min(1, dt * 14); }
     a.kx = a.kz = d.kx = d.kz = 0; a.moving = d.moving = false;
     if (L.phase === 'clinch'){ setPose(d, 'hurt'); d.lying = false; } else { d.lying = true; }
+    if (!L.act && a.S.poses.clinch) setPose(a, L.phase === 'clinch' ? 'clinch' : grPose(a, 'pound', 'idle'));   // 잡은 쪽 자세
     // 버둥
     const rate = 16 + (grStr(d) - grStr(a)) * 3 + (L.phase === 'ground' ? -4 : 0);
     if (d !== G.player) L.esc += Math.max(4, rate) * dt;
@@ -116,7 +122,7 @@ function grappleTick(dt){
     if (L.act){
       L.act.t += dt;
       const A = GACT[L.act.k];
-      if (L.act.t >= A.wind){ const k = L.act.k; L.act = null; L.cd = 0.18; setPose(a, a.S.poses.attack ? 'attack' : 'idle'); a.leanT = 0.25; grHit(L, k); if (!a.lock) continue; }
+      if (L.act.t >= A.wind){ const k = L.act.k; L.act = null; L.cd = 0.18; setPose(a, k === 'pound' || k === 'finish' ? grPose(a, 'pound', 'attack') : a.S.poses.attack ? 'attack' : 'idle'); a.leanT = 0.25; grHit(L, k); if (!a.lock) continue; }
       else { a.leanT = -0.18; }
     } else if (a === G.player){
       if (L.next && L.cd <= 0){ const k = L.next; L.next = null; grDo(L, k === 'knee' && L.phase === 'ground' ? 'pound' : k === 'throw' && L.phase === 'ground' ? 'finish' : k); }
@@ -160,7 +166,7 @@ function playerGrabInput(u){
   const t = mouse.over && dist(mouse.over, u) < GR.range + 0.6 ? mouse.over : nearest(u, foes().filter(e => Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 1.3), GR.range + 0.3);
   if (!t){ popText(u.x, u.y + 2.2, u.z, '잡을 게 없다', 'miss', 0.6); return true; }
   if (!canGrab(u, t)){ popText(u.x, u.y + 2.2, u.z, t.D.boss ? '잡을 수 없다' : '너무 크다', 'miss', 0.7); return true; }
-  setPose(u, 'windup'); grab(u, t); return true;
+  setPose(u, grPose(u, 'grabReady', 'windup')); grab(u, t); return true;
 }
 // 적 레슬러: 가까우면 손을 뻗음 (붉은 원 예고 → 안에 있으면 붙잡힘)
 function enemyGrabTry(u, tgt, dt){

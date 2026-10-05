@@ -17,13 +17,13 @@ function tackleInput(u, dt){
     if (TKS.cd > 0){ popText(u.x, u.y + 2.2, u.z, `태클 ${Math.ceil(TKS.cd)}초`, 'miss', 0.6); return true; }
     const run = down('ShiftLeft') || down('ShiftRight'), a = u.aim, len = run ? TK.lenRun : TK.len;
     TKS.st = { t: 0, a, len, run, went: 0, carry: [], hit: new Set(), phase: 'wind', dec: decal('line', { x: u.x, z: u.z, len: len + 0.5, w: 1.0, a, dur: TK.wind, color: 0xffcf80 }) };
-    TKS.cd = TK.cd; u.st = 'tackle'; setPose(u, u.S.poses.windup ? 'windup' : 'idle'); u.leanT = -0.3;
+    TKS.cd = TK.cd; u.st = 'tackle'; setPose(u, u.S.poses.grabReady ? 'grabReady' : u.S.poses.windup ? 'windup' : 'idle'); u.leanT = -0.3;
     popText(u.x, u.y + 2.3, u.z, '태클!', 'aim', 0.6);
     return true;
   }
   if (u.st === 'hurt' || u.downed){ tkEnd(u, true); return false; }
   S.t += dt;
-  if (S.phase === 'wind'){ if (S.t >= TK.wind){ S.phase = 'go'; S.t = 0; SFX.whoosh && SFX.whoosh(); setPose(u, u.S.poses.attack ? 'attack' : 'idle'); } return true; }
+  if (S.phase === 'wind'){ if (S.t >= TK.wind){ S.phase = 'go'; S.t = 0; SFX.whoosh && SFX.whoosh(); setPose(u, u.S.poses.dash ? 'dash' : u.S.poses.attack ? 'attack' : 'idle'); } return true; }
   // 돌진 중 Q: 멈춤 (3초 둔화)
   if (hit('KeyQ')){ tkEnd(u); addStatus(u, 'slow', { k: 0.4, t: 3 }); popText(u.x, u.y + 2.2, u.z, '멈춤 (둔화)', 'miss', 0.8); return true; }
   const ca = Math.cos(S.a), sa = Math.sin(S.a), step = Math.min(S.len - S.went, TK.spd * dt);

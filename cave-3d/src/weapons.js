@@ -1,4 +1,4 @@
-/* weapons.js v1.0 — 인주의 무기
+/* weapons.js v1.01 — 인주의 무기 (v1.01: 돌 · 수류탄은 던지기 자세 그림)
    · 손에 보이는 무기: 도감 그림 (art/atlas/held*.webp)을 손 자리에 붙임. 평소엔 등에 메고, 공격할 때 손에 들고 실제로 휘두름 (궤적이 남음)
    · 무기 14종마다 기본 공격 (좌클릭 · J)과 무기 스킬 (우클릭 · K)이 다름. 변형 (레이피어 · 일본도 · 낫 · 도끼창 · 채찍 · 대포 · 광선총 …)은 수치와 작은 효과
    · 화살: 맞으면 몸에 박힌 채 보임 → 죽으면 둘레에 떨어짐 (일부 부러짐). 갑옷 · 방패 · 막기에 맞으면 튕겨 나가 바닥에. 빗나가면 바닥 · 벽에 꽂힘. 위를 지나가면 주움
@@ -652,7 +652,7 @@ function dropWeapon(x, z, a){
 function lobAt(u, onLand, color = 0x5a5a50){
   const ap = aimPoint(u) || { x: u.x + Math.cos(u.aim) * 6, z: u.z + Math.sin(u.aim) * 6 };
   const a = Math.atan2(ap.z - u.z, ap.x - u.x), L = clamp(Math.hypot(ap.x - u.x, ap.z - u.z), 2, 10), vh = 9, T = L / vh, y0 = u.y + 1.3, vy = (heightAt(G.map, ap.x, ap.z) - y0) / T + 9 * T / 2;
-  setAim(u, ap.x, ap.z); setPose(u, 'throw'); u.st = 'strike'; u.stT = 0.3;
+  setAim(u, ap.x, ap.z); setPose(u, u.S.poses.lob ? 'lob' : 'throw'); u.st = 'strike'; u.stT = 0.35;   // 돌 · 수류탄 던지기 자세
   const p = shoot({ x: u.x, y: y0, z: u.z, a, speed: vh, vy, g: 9, hitR: 0.1, range: 14, side: 'ally', len: 0.16, thick: 0.08, color, end: (pp, x, z) => onLand(x, z) });
   return p;
 }
