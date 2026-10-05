@@ -1,4 +1,5 @@
-# inju_poses.py v1.0 — 3D판 인주 동작 그림 (cave-3d/art/inju, 임시 그림)을 도감 인물 칸 '인주 · 동료 · 동작 그림'에 넣음
+# inju_poses.py v1.1 — (v1.1: 어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권, 슬라이딩 쓰는 곳 고침)
+# v1.0 — 3D판 인주 동작 그림 (cave-3d/art/inju, 임시 그림)을 도감 인물 칸 '인주 · 동료 · 동작 그림'에 넣음
 #  · 그림: cave-3d/art/inju/<키>.webp → codex/img/inju/<키>.webp (높이 300으로 줄임, pack.py가 묶음)
 #  · 항목: id O-inju-<키>, 이름 '인주 · <동작>', game = 게임에서 쓰는 곳 (키 · 상황), on = 3D에 들어감
 #  · 이미 있으면 이름 · 쓰는 곳만 고침 (체크 · 메모는 id에 붙어 있어 그대로). O-player-hurt 바로 뒤에 순서대로 둠
@@ -18,7 +19,9 @@ POSES = [
     ('jab', '잽', '맨손 J 1타 · 클린치 J'), ('punch', '주먹', '맨손 J 2타 · 클린치 J'), ('kickPrep', '앞차기 앞 프레임', '맨손 J 3타 예고 (무릎 듦)'), ('kick', '앞차기', '맨손 J 3타'),
     ('spin', '회전', '맨손 J 4타 예고 (몸을 돌림)'), ('highKick', '하이킥', '맨손 J 4타 (회전 하이킥)'),
     ('knee', '니킥 (무릎 당김)', '클린치 J · 날아 무릎 시작'), ('flyKnee', '플라잉 니킥', '점프 중 J'),
-    ('sweep', '다리후리기', 'G 숙인 채 J (넘어뜨림)'), ('slide', '슬라이딩', 'Shift+G · 드롭킥 (공중)'), ('stomp', '발목 부수기', '넘어진 적에게 J'),
+    ('sweep', '다리후리기', 'G 숙인 채 J (넘어뜨림)'), ('slide', '슬라이딩', 'Shift+G'), ('stomp', '발목 부수기', '넘어진 적에게 J'),
+    ('uppercut', '어퍼컷', '숙여 피한 뒤 1.2초 안에 맨손 J (반격, 확정 치명)'), ('dk1', '드롭킥 1 (뛰어오름)', '달리며 점프 중 J — 처음'), ('dk2', '드롭킥 2 (중간)', '드롭킥 — 가운데'), ('dk3', '드롭킥 3 (마지막)', '드롭킥 — 착지 전까지'),
+    ('bungkwon', '붕권', '아직 안 씀 (나중에 스킬로)'),
     ('crouch', '잡기 준비', 'V 잡기 · T 태클 예고 · 클린치 동작 예고'), ('dash', '레슬링 돌격', 'T 태클 돌진'), ('shoulder', '어깨빵', '태클이 부딪히는 순간'),
     ('clinch1', '클린치', '붙잡고 있을 때'), ('guard', '레슬링 가드', '클린치에 잡혔을 때 버팀'), ('clinchPush', '두 손 밀기', '클린치 Q 밀쳐내기'),
     ('pound', '파운딩', '그라운드 J 파운딩 · K 끝내기'), ('groundGuard', '그라운드 가드', '그라운드에 깔렸을 때'), ('curl', '웅크림', '쓰러졌을 때 · 깔려 맞는 순간'),
@@ -42,6 +45,6 @@ for k, name, use in POSES:
     new.append(e)
 at = max(i for i, e in enumerate(cat) if e['id'].startswith('O-player-') and e['cat'] == 'char') + 1
 cat[at:at] = new
-head = head.replace('/* catalog.js v1.76 —', '/* catalog.js v1.77 — v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py).', 1)
+head = head.replace('/* catalog.js v1.76 —', '/* catalog.js v1.77 — v1.77: 3D판 인주 동작 그림 (O-inju-*, tools/inju_poses.py).', 1)
 open(P, 'w').write(head + json.dumps(cat, ensure_ascii=False, indent=0) + ';\n')
 print(len(new), 'poses,', len(cat), 'entries')

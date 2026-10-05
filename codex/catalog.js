@@ -1,4 +1,4 @@
-/* catalog.js v1.77 — v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
+/* catalog.js v1.78 — v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
 const CATALOG = [
 {
 "id": "R-A",
@@ -29493,7 +29493,7 @@ const CATALOG = [
 "rank": "",
 "on": true,
 "g": "player",
-"game": "게임: Shift+G · 드롭킥 (공중)"
+"game": "게임: Shift+G"
 },
 {
 "id": "O-inju-stomp",
@@ -29507,6 +29507,71 @@ const CATALOG = [
 "on": true,
 "g": "player",
 "game": "게임: 넘어진 적에게 J"
+},
+{
+"id": "O-inju-uppercut",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 어퍼컷",
+"src": "img/inju/uppercut.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 숙여 피한 뒤 1.2초 안에 맨손 J (반격, 확정 치명)"
+},
+{
+"id": "O-inju-dk1",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 드롭킥 1 (뛰어오름)",
+"src": "img/inju/dk1.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 달리며 점프 중 J — 처음"
+},
+{
+"id": "O-inju-dk2",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 드롭킥 2 (중간)",
+"src": "img/inju/dk2.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 드롭킥 — 가운데"
+},
+{
+"id": "O-inju-dk3",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 드롭킥 3 (마지막)",
+"src": "img/inju/dk3.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 드롭킥 — 착지 전까지"
+},
+{
+"id": "O-inju-bungkwon",
+"cat": "char",
+"sub": "인주 · 동료 · 동작 그림",
+"cid": "C-001",
+"name": "인주 · 붕권",
+"src": "img/inju/bungkwon.webp",
+"note": "3D판 동작 그림 (임시 · 제미나이로 만든 것, cave-3d/art/inju)",
+"rank": "",
+"on": true,
+"g": "player",
+"game": "게임: 아직 안 씀 (나중에 스킬로)"
 },
 {
 "id": "O-inju-crouch",
