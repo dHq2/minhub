@@ -1,4 +1,4 @@
-/* touch.js v1.3 — (v1.3, v0.53: 버튼을 그림 (픽토그램)으로 · 점프 · 구르기 크게 · 👥 동료 · 상대 창 · 약한 조준 보정 — 조이스틱이 가리키는 쪽 ±26° · 12칸 안의 적에게 붙음, 노린 적 발밑에 노란 고리) (v1.2, v0.52: 화면이 잘 보이게 — 카메라를 가깝게 (굴은 인주를 따라감) · 조금 밝게 · 버튼 작고 옅게 · 굴 정보는 한 줄 (톡 = 펼침). 조준 · 투창은 조이스틱 방향 (손을 떼면 마지막 방향), 자동 조준 · 화면 톡 공격 없음) (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
+/* touch.js v1.4 — (v1.4, v0.54: 스킬 버튼 = 조준 스틱 — 누른 채 끌면 그쪽으로 조준 (투창 · 활 · 총), 왼손 스틱으로는 앞 · 뒤 · 옆으로 움직이면서. 손을 떼면 던짐. 버튼 배치: 아래 줄 숙이기 · 구르기 · 공격 · 점프 (크게), 그 위 스킬 (크게) + 막기 · 잡기 · 태클 (작게)) (v1.3, v0.53: 버튼을 그림 (픽토그램)으로 · 점프 · 구르기 크게 · 👥 동료 · 상대 창 · 약한 조준 보정 — 조이스틱이 가리키는 쪽 ±26° · 12칸 안의 적에게 붙음, 노린 적 발밑에 노란 고리) (v1.2, v0.52: 화면이 잘 보이게 — 카메라를 가깝게 (굴은 인주를 따라감) · 조금 밝게 · 버튼 작고 옅게 · 굴 정보는 한 줄 (톡 = 펼침). 조준 · 투창은 조이스틱 방향 (손을 떼면 마지막 방향), 자동 조준 · 화면 톡 공격 없음) (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
    · 켜지는 때: 손가락 화면 (pointer: coarse) · 주소에 ?touch. 일시정지 창에서 끄고 켬 (저장됨)
    · 왼쪽 아래 아무 데나 엄지를 대면 그 자리가 이동 스틱 (WASD). 끝까지 밀면 달리기 (Shift)
    · 오른쪽: 큰 공격 (J) + 스킬 (K, 누르고 있기 = 투창 당김) · 구르기 (Q) · 점프 (Space) · 막기 (F, 누르는 동안) · 숙이기 (G) · 잡기 (V) · 태클 (T)
@@ -15,9 +15,9 @@ function touchWanted(){
 }
 function vkDown(code){ if (!keys.has(code)) pressed.add(code); keys.add(code); TOUCH.held.add(code); SFX.wake && SFX.wake(); }
 function vkUp(code){ keys.delete(code); TOUCH.held.delete(code); }
-const TBTN = [   // [키, 글, 클래스, 누르고 있기]
-  ['KeyJ', '공격', 'big', true], ['KeyK', '스킬', 'k', true], ['KeyQ', '구르기', 'q', false], ['Space', '점프', 'sp', false],
-  ['KeyF', '막기', 'f', true], ['KeyG', '숙이기', 'g', true], ['KeyV', '잡기', 'v', false], ['KeyT', '태클', 't', false],
+const TBTN = [   // [키, 글, 클래스, 누르고 있기] — 아래 줄: 숙이기 · 구르기 · 공격 · 점프 (크게) / 위 줄: 스킬 (크게, 끌어서 조준) · 막기 · 잡기 · 태클 (작게)
+  ['KeyG', '숙이기', 'g', true], ['KeyQ', '구르기', 'q', false], ['KeyJ', '공격', 'big', true], ['Space', '점프', 'sp', false],
+  ['KeyK', '스킬', 'k', true], ['KeyF', '막기', 'f', true], ['KeyV', '잡기', 'v', false], ['KeyT', '태클', 't', false],
 ];
 const TTOP = [['FS', 'fs', '전체화면'], ['Escape', 'pause', '일시정지'], ['KeyU', 'party', '동료 · 상대'], ['KeyI', 'bag', '가방 · 장비'], ['KeyH', 'list', '기술표'], ['KeyM', 'map', '큰 지도'], ['KeyN', 'food', '바로 먹기'], ['KeyZ', 'ccw', '카메라 왼쪽'], ['KeyC', 'cw', '카메라 오른쪽']];
 // 픽토그램 (24칸, 선 그림 — 글자 없이도 알아보게)
@@ -60,6 +60,12 @@ function touchBuild(){
     b.addEventListener('mousedown', e => { e.stopPropagation(); press(b, true); if (!b.dataset.hold) setTimeout(() => press(b, false), 90); });
     b.addEventListener('mouseup', () => { if (b.dataset.hold) press(b, false); });
   });
+  // v1.4 스킬 버튼 끌기 = 조준
+  const kb = el.querySelector('#tPad [data-k="KeyK"]');
+  kb.addEventListener('touchstart', e => { const t = e.changedTouches[0]; TOUCH.drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, dx: 0, dy: 0, on: false }; }, { passive: false });
+  kb.addEventListener('touchmove', e => { const D = TOUCH.drag; if (!D) return; for (const t of e.changedTouches) if (t.identifier === D.id){ e.preventDefault(); D.dx = t.clientX - D.x0; D.dy = t.clientY - D.y0; if (Math.hypot(D.dx, D.dy) > 12) D.on = true; kb.style.setProperty('--ax', Math.max(-40, Math.min(40, D.dx)) + 'px'); kb.style.setProperty('--ay', Math.max(-40, Math.min(40, D.dy)) + 'px'); kb.classList.toggle('drag', D.on); } }, { passive: false });
+  const kEnd = () => { setTimeout(() => { TOUCH.drag = null; }, 120); kb.classList.remove('drag'); };   // 던지는 프레임까지 방향 유지
+  kb.addEventListener('touchend', kEnd); kb.addEventListener('touchcancel', kEnd);
   el.querySelectorAll('[data-q]').forEach(b => b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); typeof quickUse === 'function' && quickUse(+b.dataset.q); }, { passive: false }));
   // 이동 스틱: 왼쪽 아래 아무 데나
   const zone = el.querySelector('#tStickZone'), stick = el.querySelector('#tStick'), knob = stick.querySelector('i'), R = 44;
@@ -122,17 +128,25 @@ const _aimPointT = aimPoint;
 aimPoint = function(u){
   if (!TOUCH.on || u !== G.player) return _aimPointT(u);
   if (mouse.over && !mouse.over.dead) return { x: mouse.over.x, z: mouse.over.z };   // 조준 보정이 잡은 적
-  const mv = G.lock ? null : inputDir(), a = mv ? Math.atan2(mv.z, mv.x) : u.aim;
-  return { x: u.x + Math.cos(a) * THROW.range, z: u.z + Math.sin(a) * THROW.range };
+  const d = touchDragDir(), a = touchAimAngle(u), L = THROW.range * (d ? d.k : 1);   // 끈 길이 = 던질 거리
+  return { x: u.x + Math.cos(a) * L, z: u.z + Math.sin(a) * L };
 };
 const _mouseOverT = mouseOverEnemy;
 mouseOverEnemy = function(){ if (!TOUCH.on) return _mouseOverT(); const t = touchAssist(); touchMark(t); return t; };
 // v1.3 약한 조준 보정: 조이스틱 (놓았으면 마지막 방향)이 가리키는 쪽 ±26° · 12칸 안의 적 중 가장 각이 맞는 놈. 보이지 않는 (벽 너머) 적은 빼고
 //  고른 적은 마우스로 가리킨 것과 같게 다룸 (투창은 그 몸 가운데로, 공격 · 막기는 그쪽으로 돎). 발밑에 노란 고리
 const ASSIST = { arc: 0.45, range: 12 };
+// 조준 방향: 스킬 버튼을 끌고 있으면 그쪽 (화면 기준 → 세계), 아니면 이동 스틱, 아니면 바라보는 쪽
+function touchDragDir(){
+  const D = TOUCH.drag; if (!D || !D.on) return null;
+  const L = Math.hypot(D.dx, D.dy) || 1, ix = D.dx / L, iy = -D.dy / L, y = CAM.yaw || 0;
+  const v = norm(Math.cos(y) * ix - Math.sin(y) * iy, -Math.sin(y) * ix - Math.cos(y) * iy);
+  return { a: Math.atan2(v.z, v.x), k: Math.max(0.25, Math.min(1, L / 70)) };
+}
+function touchAimAngle(u){ const d = touchDragDir(); if (d) return d.a; const mv = G.lock ? null : inputDir(); return mv ? Math.atan2(mv.z, mv.x) : u.aim; }
 function touchAssist(){
   const u = G.player; if (!u || G.lock || !PLAY_MODES.has(G.mode)) return null;
-  const mv = inputDir(), a = mv ? Math.atan2(mv.z, mv.x) : u.aim;
+  const a = touchAimAngle(u);
   let best = null, bs = 1e9;
   for (const e of foes()){
     if (e.dead || e.downed || e.D.dummy && !e.D.spar) continue;

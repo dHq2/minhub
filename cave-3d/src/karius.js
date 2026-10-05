@@ -1,4 +1,4 @@
-/* karius.js v1.1 — (v1.1, v0.53: 불경자 · 근성을 2D판 원본대로 — 불경자 체력 15%: 공격력 ×2.5 (기술 포함) · 받는 피해 67% 더 감소 · 이동 ×1.4 · 공격 간격 ×0.8 · 철퇴 100 · 돌진 88. 근성 = 마지막 항전: 체력 0 → 3초 무적 발버둥 → 안광 → 7초 쓰러지지 않음 (공격속도 ×1.5 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐. 3D판에서 따로 만든 '체력 45% 포효 근성'은 뺌)
+/* karius.js v1.2 — (v1.2, v0.54: 광대의 팔 잡아뚫기는 공중에 뜬 적도 붙잡아 끌어내림 (3.4칸, 보스도 — 끌어내려 잠깐 휘청). 어퍼 둘째 · 훅 셋째 · 노인의 팔 · 꿰뚫기는 공중도 침) (v1.1, v0.53: 불경자 · 근성을 2D판 원본대로 — 불경자 체력 15%: 공격력 ×2.5 (기술 포함) · 받는 피해 67% 더 감소 · 이동 ×1.4 · 공격 간격 ×0.8 · 철퇴 100 · 돌진 88. 근성 = 마지막 항전: 체력 0 → 3초 무적 발버둥 → 안광 → 7초 쓰러지지 않음 (공격속도 ×1.5 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐. 3D판에서 따로 만든 '체력 45% 포효 근성'은 뺌)
    v1.0 — Sir. 카리우스 (v0.47: prologue.js에서 옮김 + 드라이브 새 그림 · 발 기술 · 짓뭉개짐 · 근성 · 개조된 신체)
    그림: art/kar (tools/kar_art.py가 드라이브 '카리우스' 폴더 그림을 정리). 3m 융합 거구 — 카이로스 경 (안경 대머리) · 광대 · 노인 · 슬픈 여자
    체력 500 · 개조된 신체 (모든 피해 60% 감소 + 상태 이상 절반) · 느림 · 무거움 (무게 300)
@@ -87,7 +87,8 @@ function kariusThink(u, dt){
   }
   if (u.p2 && u.rsCd <= 0 && d > 2.8 && d < 7){ u.rsCd = 8; u.kc = { type: 'rush', t: 0, a, dec: decal('line', { x: u.x, z: u.z, len: 4.5, w: 1.3, a, dur: 0.5, color: BLUE }), hit: new Set() }; setPose(u, 'tackle'); say(u, '우오오오!', 'soft', 0.8); return; }
   if (u.p2 && u.slCd <= 0 && d <= 2.3){ u.slCd = 5; const px = u.x + Math.cos(a) * 1.3, pz = u.z + Math.sin(a) * 1.3; u.kc = { type: 'slam', t: 0, px, pz, dec: decal('circle', { x: px, z: pz, r: 1.3, dur: 0.7, color: BLUE }) }; setPose(u, 'raise'); return; }
-  if (u.grCd <= 0 && d <= 1.9 && !tg.D.boss){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg }; setPose(u, 'sprout'); skillCall(u, KSK.pierce); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
+  const air = tg.airborne || (tg.lift || 0) > 0.6;   // v1.2 광대의 팔은 공중에 뜬 놈도 붙잡아 끌어내림 (보스도)
+  if (u.grCd <= 0 && (air ? d <= 3.4 : d <= 1.9 && !tg.D.boss)){ u.grCd = 11; u.kc = { type: 'grab', t: 0, tg, air }; setPose(u, 'sprout'); skillCall(u, KSK.pierce); popText(tg.x, tg.y + 1.8, tg.z, '잡힘!', 'hurt big', 1); return; }
   if (u.stCd <= 0 && d <= 1.6 && Math.random() < 0.3){ return kStomp(u, tg); }
   if (u.hkCd <= 0 && d <= 1.9){ u.hkCd = 6; u.kc = { type: 'hook', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.7, dur: 0.5, color: BLUE }) }; setPose(u, 'hookPrep'); return; }
   if (u.swCd <= 0 && list.some(front)){ u.swCd = 4; u.kc = { type: 'sweep', t: 0, a, dec: decal('sector', { x: u.x, z: u.z, r: 2.7, a, arc: 2.4, dur: 0.5, color: BLUE }) }; setPose(u, 'hookPrep'); return; }
@@ -133,25 +134,26 @@ function kariusSkill(u, K, m, dt){
   if (K.type === 'punch'){   // 라이트 준비 → 어퍼 (팔이 많아 두 대)
     if (K.n === 0 && K.t >= 0.42) setPose(u, 'upper');
     if (K.n === 0 && K.t >= 0.45){ K.n = 1; hitIn(inDec, u.atk / m, { kb: 0.4 }); }
-    if (K.n === 1 && K.t >= 0.6){ K.n = 2; hitIn(inDec, u.atk / m, { kb: 0.7 }); spark(u.x + Math.cos(K.a) * 1.4, 1.3, u.z + Math.sin(K.a) * 1.4, 0xd8d0e8, 6, 3); }
+    if (K.n === 1 && K.t >= 0.6){ K.n = 2; hitIn(inDec, u.atk / m, { kb: 0.7, hitsAir: true }); spark(u.x + Math.cos(K.a) * 1.4, 1.3, u.z + Math.sin(K.a) * 1.4, 0xd8d0e8, 6, 3); }
     if (K.t >= 0.85) done(); return;
   }
   if (K.type === 'hook'){    // 라이트 훅 다단히트: 세 번
     if (K.t >= 0.5) setPose(u, 'hook');
-    for (const [i, at] of [[0, 0.55], [1, 0.7], [2, 0.85]]) if (K.n === i && K.t >= at){ K.n++; hitIn(inDec, u.atk * 0.9 / m, { kb: i === 2 ? 1.0 : 0.2 }); spark(u.x + Math.cos(K.a) * 1.3, 1.4, u.z + Math.sin(K.a) * 1.3, 0xe8e0d0, 5, 3); }
+    for (const [i, at] of [[0, 0.55], [1, 0.7], [2, 0.85]]) if (K.n === i && K.t >= at){ K.n++; hitIn(inDec, u.atk * 0.9 / m, { kb: i === 2 ? 1.0 : 0.2, hitsAir: i === 2 }); spark(u.x + Math.cos(K.a) * 1.3, 1.4, u.z + Math.sin(K.a) * 1.3, 0xe8e0d0, 5, 3); }
     if (K.t >= 1.15) done(); return;
   }
   if (K.type === 'sweep'){   // 노인의 팔: 후려치기
     if (K.t >= 0.55) setPose(u, 'swat');
-    if (!K.hit && K.t >= 0.62){ K.hit = true; camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); hitIn(inDec, 30, { kb: 1.6, stun: 0.5 }); SFX.boom(0.5); }
+    if (!K.hit && K.t >= 0.62){ K.hit = true; camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); hitIn(inDec, 30, { kb: 1.6, stun: 0.5, hitsAir: true }); SFX.boom(0.5); }
     if (K.t >= 1.15) done(); return;
   }
   if (K.type === 'grab'){    // 잡아뚫기: 광대의 팔 → 끌어옴 → 레프트 꿰뚫기
-    const t = K.tg; if (!t || t.dead || t.D.boss){ done(); return; }
-    t.st = 'hurt'; t.stT = 0.3; interrupt(t);
+    const t = K.tg; if (!t || t.dead || (t.D.boss && !K.air)){ done(); return; }
+    if (t.D.boss){ if (K.t >= 0.4){ t.lift = Math.max(0, (t.lift || 0) - dt * 8); t.airborne = false; t.parried = Math.max(t.parried || 0, 0.4); if (t.B && t.B.act){ t.B.act = null; } t.inv = 0; if (t.decal){ cancelDecal(t.decal); t.decal = null; } if (!K.pulled){ K.pulled = true; popText(t.x, t.y + 3.5, t.z, '끌어내림!', 'crit', 1.2); camShake(0.4, 0.3); } } }
+    else { t.st = 'hurt'; t.stT = 0.3; interrupt(t); if (K.t >= 0.4){ t.lift = Math.max(0, (t.lift || 0) - dt * 10); if (t.lift < 0.3) t.airborne = false; } }
     if (K.t >= 0.4 && K.t < 1.0) setPose(u, 'grab');
-    if (K.t > 0.4 && K.t < 1.0){ const gx = u.x + Math.cos(u.aim) * 0.9, gz = u.z + Math.sin(u.aim) * 0.9, k = Math.min(1, dt * 8); t.x += (gx - t.x) * k; t.z += (gz - t.z) * k; }
-    if (!K.hit && K.t >= 1.0){ K.hit = true; setPose(u, 'pierce'); hurt(u, t, 30 * m, { from: u, crit: Math.random() < 0.5, critMul: 2, pierce: true }); spark(t.x, 1, t.z, 0xb3122a, 22, 5); camShake(0.35, 0.2); }
+    if (K.t > 0.4 && K.t < 1.0 && !t.D.boss){ const gx = u.x + Math.cos(u.aim) * 0.9, gz = u.z + Math.sin(u.aim) * 0.9, k = Math.min(1, dt * 8); t.x += (gx - t.x) * k; t.z += (gz - t.z) * k; }
+    if (!K.hit && K.t >= 1.0){ K.hit = true; setPose(u, 'pierce'); hurt(u, t, 30 * m, { from: u, crit: Math.random() < 0.5, critMul: 2, pierce: true, hitsAir: true, unblockable: !!t.D.boss }); spark(t.x, 1, t.z, 0xb3122a, 22, 5); camShake(0.35, 0.2); }
     if (K.t >= 1.5) done(); return;
   }
   if (K.type === 'slam'){    // 노인의 팔이 부풀어 철퇴처럼

@@ -1,4 +1,4 @@
-/* prologue.js v0.114 — (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.115 — (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -487,7 +487,7 @@ function proTick(dt){
     if (PRO.carry && !G.lock && !G.waitInput && hit('KeyG')) dropHere();
     tickStorage(dt); tickFlies(dt); tickStage(dt); tickPigs(dt); tickStorm(dt); tickFire(dt); tickBody(dt); tickHungry(dt);
     // 오늘의 낙하: 움직일 수 있게 된 뒤 30초
-    if (!Cv.dropped && !G.lock && !G.waitInput){ Cv.dropT -= dt; if (Cv.dropT <= 0) todayFall(); }
+    if (!Cv.dropped && !G.lock && !G.waitInput && !G.boss && !G.lobbyFight){ Cv.dropT -= dt; if (Cv.dropT <= 0){ if (jrComesToday()){ Cv.dropped = true; PRO.dropDay = PRO.day; jeokroeDescend(); } else todayFall(); } }   // v0.54 싸우는 중엔 멈춤 · 석문을 다 판 다음 날의 낙하 = 적뢰
     if (PRO.shaft){ const k = clamp((G.t - PRO.shaft.t0) / 7, 0, 1); PRO.shaft.m.material.opacity = 0.13 * Math.sin(Math.PI * Math.min(1, k * 1.15)); PRO.shaft.l.intensity = 2.2 * (1 - k); }
   }
   const M = PRO.motes;
@@ -1613,13 +1613,14 @@ function buildRubble(){
 }
 function doorLabel(){
   if (PRO.dig < 100) return `석문 앞 돌무더기를 판다 (${Math.floor(PRO.dig)}%${apTag()})`;
-  if (!PRO.jrDone) return '석문을 연다 — 적뢰가 강림한다 (준비가 됐으면)';
+  if (!PRO.jrDone) return PRO.jrSeen ? '석문을 연다 — 적뢰를 다시 부른다 (준비가 됐으면)' : '석문 — 하늘이 울고 있다 (내일 낙하 때 무언가 온다)';
   return '석문 너머 — 원정을 떠난다';
 }
 async function doorAction(){
   if (PRO.dig >= 100){
     if (PRO.jrDone){ if (PRO.ap <= 0) return textbox('', ['오늘은 너무 지쳤다. 원정은 내일 아침에.']); return expPrepOpen(); }
-    return jeokroeDescend();
+    if (!PRO.jrSeen) return textbox('', ['석문 너머에서 하늘이 운다.', '…내일, 낙하와 함께 무언가가 내려온다. 준비를 해 두자.']);
+    return jeokroeDescend();   // 한 번 지고 나면: 준비가 되면 석문에서 다시 부름
   }
   if (!spendAp()) return;
   const pl = G.player, w = PRO.equip.weapon && EQUIP[PRO.equip.weapon.k], gain = w && w.dig ? 12 : 8; G.lock = true;
@@ -1630,12 +1631,15 @@ async function doorAction(){
 }
 function doorDone(){
   if (G.mode !== 'cave' || !PRO.cave) return;
-  buildRubble(); caption('석문', '돌무더기를 다 걷어냈다 — 하늘이 운다');
+  buildRubble(); caption('석문', '돌무더기를 다 걷어냈다 — 하늘이 운다 (내일 낙하 때 적뢰가 온다)'); PRO.jrDay = PRO.day + 1;
   SFX.thunder(); flashScreen('#ffe8e8', 0.45); camShake(0.25, 0.6);
   setTimeout(() => PRO.cave && say(PRO.cave.ch, '대장… 하늘이 운다… 준비하고 열어라…', 'soft', 3), 1200);
 }
+// v0.54 적뢰는 '석문을 다 판 다음 날'의 낙하로 내려옴 (그날의 낙하 대신)
+const jrComesToday = () => PRO.dig >= 100 && !PRO.jrDone && !PRO.jrSeen && PRO.day >= (PRO.jrDay ?? 0);
 async function jeokroeDescend(){
-  const C = LOBBY_C; G.lock = true; letterbox(true);
+  const C = LOBBY_C; G.lock = true; letterbox(true); PRO.jrSeen = true; if (PRO.cave){ PRO.cave.dropped = true; PRO.dropDay = PRO.day; }
+  say(PRO.cave.ch, '대장! 낙하다…! 아니다, 저건…!', 'soft', 2.2);
   battleReady({ x: C.x, z: C.z });
   camWide(C.x, C.z + 1, ...lens(7, 9), 99);
   G.rain.on = true;

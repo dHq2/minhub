@@ -1,4 +1,4 @@
-/* qol.js v1.3 — 편의 · 굴 손님 (v1.3: 대련 더미 근접 공격이 하 · 중 · 상단으로) (v1.2: 아래 UI 비킴 · N 바로 먹기 · 굴 가구 옮기기 · 의자에 앉기 · 대련 더미 근접 공격 켜고 끄기 · 상인은 적뢰전 뒤에만 · 쥐 기사 순찰) (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
+/* qol.js v1.4 — 편의 · 굴 손님 (v1.4, v0.54: 쥐 기사 순찰이 자주 옴 — 하루 60%, 이틀 거르면 반드시 · 첫날부터) (v1.3: 대련 더미 근접 공격이 하 · 중 · 상단으로) (v1.2: 아래 UI 비킴 · N 바로 먹기 · 굴 가구 옮기기 · 의자에 앉기 · 대련 더미 근접 공격 켜고 끄기 · 상인은 적뢰전 뒤에만 · 쥐 기사 순찰) (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
    · H: 기술표 창 (무리별: 움직임 · 막기 · 맨손 · 레슬링 · 무기 · 원정 · 굴). 열려 있는 동안 멈춤. H · Esc로 닫음
    · 지름길: 보스 (5층 세자르 · 10층 대장군)를 쓰러뜨리면 원정 준비 창에서 그 아래층부터 떠날 수 있음
    · 토끼마차 (아이텐): 사흘마다 아침에 굴에 들름 (그날 하루). 장비 셋 (그날 고른 것) · 탄약 · 물약 · 횃불을 판다 */
@@ -174,7 +174,9 @@ DEFS.ratV = { spr: 'ratV', name: '쥐', hp: 10, atk: 0, spd: 2.2, r: 0.16, weigh
 const RATS = { list: [] };
 function ratPatrol(){
   for (const u of RATS.list) if (G.units.includes(u)) removeUnit(u);
-  RATS.list = []; if (G.mode !== 'cave' || !PRO.day || PRO.day < 2 || Math.random() > 0.3) return;
+  RATS.list = []; if (G.mode !== 'cave' || !PRO.day) return;
+  if (PRO.day - (PRO.ratLast ?? -9) < 2 && Math.random() > 0.6) return;   // v1.4 자주 옴: 60%, 이틀 거르면 반드시
+  PRO.ratLast = PRO.day;
   const at = [[4, 10], [5, 10.5], [4.5, 11], [3.5, 10.6]].filter(([x, z]) => !solidAt(G.map, x, z));
   if (!at.length) return;
   const k = spawn('ratKnightV', at[0][0], at[0][1], 'neutral'); RATS.list.push(k);

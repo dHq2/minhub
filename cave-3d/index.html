@@ -320,13 +320,19 @@
   /* v0.53 터치 버튼 = 픽토그램 + 작은 글씨 · 점프 · 구르기 크게 */
   #touchUI button svg{width:24px;height:24px;display:block;flex:none;}
   #tTop button{display:grid;place-items:center;padding:0;} #tTop button svg{width:18px;height:18px;}
-  #tPad{width:252px;height:222px;}
-  #tPad button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:58px;height:58px;padding:0;line-height:1;}
+  /* v0.54 버튼 배치: 아래 줄 숙이기 · 구르기 · 공격 · 점프 (크게) / 위 줄 스킬 (크게, 끌어서 조준) · 막기 · 잡기 · 태클 (작게) */
+  #tPad{width:336px;height:196px;}
+  #tPad button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:54px;height:54px;padding:0;line-height:1;}
   #tPad button small{font-size:10px;opacity:.85;}
-  #tPad .big{width:92px;height:92px;right:8px;bottom:8px;} #tPad .big svg{width:38px;height:38px;} #tPad .big small{font-size:13px;}
-  #tPad .q,#tPad .sp{width:72px;height:72px;background:rgba(40,70,110,.5);} #tPad .q svg,#tPad .sp svg{width:32px;height:32px;} #tPad .q small,#tPad .sp small{font-size:12px;}
-  #tPad .q{right:108px;bottom:4px;} #tPad .sp{right:18px;bottom:108px;}
-  #tPad .k{right:100px;bottom:90px;} #tPad .f{right:188px;bottom:4px;} #tPad .g{right:188px;bottom:70px;} #tPad .v{right:164px;bottom:140px;} #tPad .t{right:96px;bottom:160px;font-size:inherit;}
+  #tPad .big{width:94px;height:94px;right:84px;bottom:2px;} #tPad .big svg{width:38px;height:38px;} #tPad .big small{font-size:13px;}
+  #tPad .q,#tPad .sp,#tPad .g{width:72px;height:72px;background:rgba(40,70,110,.5);} #tPad .q svg,#tPad .sp svg,#tPad .g svg{width:30px;height:30px;} #tPad .q small,#tPad .sp small,#tPad .g small{font-size:12px;}
+  #tPad .sp{right:4px;bottom:12px;} #tPad .q{right:184px;bottom:10px;} #tPad .g{right:262px;bottom:14px;width:64px;height:64px;}
+  #tPad .k{width:80px;height:80px;right:92px;bottom:104px;background:rgba(160,110,30,.5);} #tPad .k svg{width:32px;height:32px;} #tPad .k small{font-size:12px;}
+  #tPad .k::after{content:'';position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;border-radius:50%;background:rgba(255,211,90,.9);opacity:0;transform:translate(var(--ax,0),var(--ay,0));pointer-events:none;} #tPad .k.drag::after{opacity:1;}
+  #tPad .f{right:14px;bottom:100px;} #tPad .v{right:184px;bottom:98px;} #tPad .t{right:250px;bottom:92px;}
+  #tE{bottom:166px;} #tQuick{right:calc(env(safe-area-inset-right) + 274px);}
+  body.touch #bossbar{top:calc(env(safe-area-inset-top) + 42px);transform:translateX(-50%) scale(.8);transform-origin:top center;}
+  @media (max-height:460px){ #tE{bottom:146px;} #tQuick{right:calc(env(safe-area-inset-right) + 244px);} }
   /* v0.53 동료 · 상대 창 (scout.js) · 상대 카드 */
   #scout{position:fixed;inset:0;z-index:17;background:rgba(0,0,0,.55);display:grid;place-items:center;font-family:"Do Hyeon",sans-serif;color:#e8dcc8;}
   #scout[hidden]{display:none;}
@@ -415,6 +421,7 @@
 <script src="src/ui_rpg.js"></script>
 <script src="src/save.js"></script>
 <script src="src/touch.js"></script>
+<script src="src/soulcam.js"></script>
 <script src="src/scout.js"></script>
 <script src="src/game.js"></script>
 </body>

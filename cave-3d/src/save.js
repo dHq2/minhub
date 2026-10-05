@@ -1,10 +1,10 @@
-/* save.js v1.1 — (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
+/* save.js v1.2 — (v1.2: 적뢰 오는 날 · 쥐 기사 순찰 날도 저장) (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
    · 새 아침 (잠에서 깸) · 원정에서 돌아옴 · 적뢰를 쓰러뜨림 · 굴에서 1분마다 저장
    · 주소에 아무것도 없이 열면: 저장이 있으면 굴에서 이어함 (프롤로그 건너뜀). I 창의 "처음부터"로 지움 */
 'use strict';
 const PRO_SAVE = 'cave3d.pro.v1';
 const PRO_KEYS = ['day', 'store', 'trash', 'buried', 'wood', 'penFood', 'snailLost', 'snailHd', 'meal', 'hpf', 'fireLit', 'ap', 'dig', 'jrDone', 'rebOut', 'rebDig', 'rebOutDay', 'autoCook', 'cookDay', 'placed',
-  'pigData', 'eggs', 'babies', 'weather', 'hasToilet', 'tentGone', 'necklace', 'dropDay', 'cursed', 'didBury', 'mine'];
+  'pigData', 'eggs', 'babies', 'weather', 'hasToilet', 'tentGone', 'necklace', 'dropDay', 'cursed', 'didBury', 'mine', 'jrDay', 'jrSeen', 'ratLast'];
 const SKIP_K = new Set(['b', 'u', 'g', 'm', 'mesh', 'unit', 'bill', 'ring', 'insp', 'carrier', 'claimed']);
 function plainOf(v, depth = 0){
   if (v == null || typeof v !== 'object') return v;
