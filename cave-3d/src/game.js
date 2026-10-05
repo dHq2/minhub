@@ -411,6 +411,7 @@ function loop(now){
       if (u.kind !== 'player' && u.S.poses.walk == null && u.st === 'idle' && !u.D.boss) setPose(u, u.pose === 'shoot' || u.pose === 'heal' ? u.pose : 'idle');
     }
     separate(dt);
+    if (!G.lock && typeof orbTick === 'function') orbTick(dt);   // v0.84 대련 더미의 연습 공
     if (G.mode === 'floor'){
       reviveCheck(dt);
       // 인주가 쓰러져도 싸움은 계속 (동료가 싸움). 모두 쓰러져야 끝

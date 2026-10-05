@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.40';
+const VERSION = 'v0.41';
 
 const G = {
   t: 0, dt: 0, scene: null, renderer: null,

@@ -1,4 +1,4 @@
-/* tackle.js v1.11 — (v1.11: 대련 더미에도 걸림) (v1.1: 다리후리기 · 슬라이딩 · 넘어뜨리기) (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
+/* tackle.js v1.12 — (v1.12: 대련 더미가 연습 공을 쏨 — 피해 0 · 경직 없음) (v1.11: 대련 더미에도 걸림) (v1.1: 다리후리기 · 슬라이딩 · 넘어뜨리기) (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
    · T: 바라보는 쪽으로 직선 예고 (0.3초) → 돌진. Shift를 누르고 있으면 더 멀리 · 더 세게 (피해 ×1.5, 기절 80%)
    · 부딪힌 적은 앞에 겹쳐 붙어 같이 감 (부딪힐 때 공격의 50% · 40%로 기절)
    · 같이 벽 (바위 · 기둥 포함)에 박으면: 30 + 공격의 절반, 기절 1.2초. 여럿이면 맨 앞놈이 머릿수만큼 더 (한 명당 +20%), 나머지는 옆으로 흩어짐. 인주는 한 칸 튕겨 나옴
@@ -145,7 +145,38 @@ function slideTick(u, dt){
 
 /* ---------- v1.11 대련 더미 (굴): 맞으면 숫자만 뜨고 안 죽음. 넘어지고 · 잡히고 · 밀리고, 가만 두면 제자리로 걸어 돌아옴 ---------- */
 DEFS.spar = { spr: 'dummy', name: '대련 더미', hp: 99999, atk: 0, spd: 1.6, r: 0.35, weight: 60, dummy: true, spar: true };
+/* 연습 공: 더미를 한 대 치면 15초 동안 2.2초마다 공을 굴려 보냄 (피해 0 · 경직 없음, 피하기 연습)
+   · 높은 공 (주황, 머리 높이) → G 숙여서 / 낮은 공 (하늘색, 발목 높이) → Space 뛰어서 / 가운데 공 (흰색) → F 막거나 Q 굴러서. 옆으로 비켜도 됨 */
+const ORB = { cd: 2.2, spd: 4.2, wake: 15, r: 0.22, kinds: { high: { y: 1.45, c: 0xffa040, how: '숙여' }, low: { y: 0.25, c: 0x6fd8ff, how: '뛰어' }, mid: { y: 0.85, c: 0xf4f0e0, how: '막거나 굴러' } } };
+let ORBS = [];
+function orbFire(u, pl){
+  const kk = Object.keys(ORB.kinds), k = kk[Math.floor(Math.random() * kk.length)], K = ORB.kinds[k];
+  const a = Math.atan2(pl.z - u.z, pl.x - u.x);
+  const m = new THREE.Mesh(new THREE.SphereGeometry(ORB.r, 14, 10), new THREE.MeshBasicMaterial({ color: K.c }));
+  const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color: K.c, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); gl.scale.set(0.9, 0.9, 1); m.add(gl);
+  const x = u.x + Math.cos(a) * 0.5, z = u.z + Math.sin(a) * 0.5; m.position.set(x, u.y + K.y, z); G.scene.add(m);
+  ORBS.push({ m, k, x, z, y: u.y + K.y, a, went: 0, done: false });
+  u.leanT = -0.3; ring(u.x, u.z, K.c, 0.9, 0.25);
+}
+function orbTick(dt){
+  const pl = G.player;
+  for (const o of ORBS){
+    if (o.dead) continue;
+    const step = ORB.spd * dt; o.x += Math.cos(o.a) * step; o.z += Math.sin(o.a) * step; o.went += step;
+    o.m.position.set(o.x, o.y + Math.sin(o.went * 3) * 0.04, o.z); o.m.rotation.y += dt * 4;
+    if (o.went > 11 || solidAt(G.map, o.x, o.z)){ o.dead = true; G.scene.remove(o.m); continue; }
+    if (!pl || o.done || Math.hypot(pl.x - o.x, pl.z - o.z) > pl.r + ORB.r) continue;
+    o.done = true;
+    const K = ORB.kinds[o.k];
+    const dodged = pl.inv > 0 || (o.k === 'high' && pl.posture === 'crouch') || (o.k === 'low' && (pl.jy || 0) > 0.3);
+    if (dodged){ popText(pl.x, pl.y + 2.0, pl.z, K.how + ' 피함!', 'aim', 0.7); continue; }   // 공은 그대로 지나감
+    if (o.k === 'mid' && pl.guard){ popText(pl.x, pl.y + 2.0, pl.z, '막음!', 'aim', 0.7); spark(o.x, o.y, o.z, K.c, 8, 3); o.dead = true; G.scene.remove(o.m); continue; }
+    popText(pl.x, pl.y + 2.0, pl.z, '맞음 (연습)', 'miss', 0.7); pl.flash = 0.6; spark(o.x, o.y, o.z, K.c, 10, 3); o.dead = true; G.scene.remove(o.m);
+  }
+  ORBS = ORBS.filter(o => !o.dead);
+}
 function sparSpawn(){
+  for (const o of ORBS) G.scene.remove(o.m); ORBS = [];
   const cand = [[6, 8], [5, 8], [7, 8.5], [5.5, 7], [8, 7.5], [6, 6]];
   const ok = ([x, z]) => !solidAt(G.map, x, z) && !G.inspect.some(it => it.x != null && Math.hypot(it.x - x, it.z - z) < 1.6) && !G.units.some(o => Math.hypot(o.x - x, o.z - z) < 1.2);
   const [x, z] = cand.find(ok) || cand[0];
@@ -153,6 +184,9 @@ function sparSpawn(){
   return u;
 }
 function sparThink(u, dt){
+  if (u.flash > (u.pf || 0) + 0.05) u.wakeT = G.t + ORB.wake; u.pf = u.flash;   // 맞으면 (번쩍이면) 깨어남
+  const pl = G.player;
+  if (G.t < (u.wakeT || 0) && pl && !pl.downed && !u.lock && !u.lying && u.st !== 'hurt' && dist(u, pl) < 9 && dist(u, pl) > 1.6){ u.orbCd = (u.orbCd ?? 1.2) - dt; if (u.orbCd <= 0){ u.orbCd = ORB.cd; orbFire(u, pl); } }
   if (u.lock) return;
   if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; return; }
   if (u.lying) return;

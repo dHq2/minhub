@@ -1,4 +1,4 @@
-/* player.js v0.86 — (v0.86: 드롭킥 세 프레임 (뛰어오름 → 중간 → 마지막) · 치명이면 화면 · 기기 진동, 숙여 피한 뒤 J는 어퍼컷 (숙인 채라도), 격투 기술이 대련 더미에도) (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
+/* player.js v0.87 — (v0.87: 드롭킥이 날아감 (적뢰 날아차기처럼 예고선 → 4.4칸 직선 비행), 발끝에 걸리면 빠아악! (확정 치명 · 크게 날림), 몸통 쪽은 보통. 던진 뒤 그림) (v0.86: 드롭킥 세 프레임 (뛰어오름 → 중간 → 마지막) · 치명이면 화면 · 기기 진동, 숙여 피한 뒤 J는 어퍼컷 (숙인 채라도), 격투 기술이 대련 더미에도) (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -51,20 +51,44 @@ const airPose = u => u.dropLand && u.S.poses.dk1 ? (G.t - u.dropAt < 0.1 ? 'dk1'
 const fistNow = () => typeof W !== 'undefined' && W.def && (W.def.kind === 'fist' || (!P.spear && W.def.skill === 'throw'));
 // v0.85 격투가 되는 곳: 원정 · 굴 (로비) · 옛 층. 굴에서 짐을 들고 있으면 G는 내려놓기라 막음
 const fightMode = () => PLAY_MODES.has(G.mode) && !(typeof PRO !== 'undefined' && PRO.carry && G.mode !== 'exp');
-// v0.85 드롭킥: 달리면서 점프한 채 J → 두 발로 날아 차 크게 날림 (×1.6 · 기절 0.9초). 착지하면 등으로 뒹굴어 0.6초 못 움직임
+// v0.87 드롭킥: 달리면서 (Shift) 점프한 채 J → 예고선과 함께 앞으로 날아감 (0.4초 · 4.4칸, 적뢰 날아차기처럼). 벽에 막히면 멈춤
+//   발끝 (몸 앞 0.8칸 넘어)에 걸리면 빠아악! — 확정 치명 · 크게 날림 · 진동. 몸통 쪽에 붙어 맞으면 보통 (×1.2). 첫 놈에 꽂히면 거기서 멈춤
+//   착지하면 등으로 떨어져 0.6초 못 움직임. 큰 놈 (보스 · 곤봉 거한 · 단달로)은 조금만 밀림
+const DK = { t: 0.4, spd: 11, reach: 1.35, tip: 0.8 };
 function dropKick(u){
-  u.airAtk = true; u.dropT = G.t + 0.45; u.dropAt = G.t; u.dropLand = true; P.atkBuf = 0; P.atkCd = 0.5; setPose(u, u.S.poses.dk1 ? 'dk1' : 'slide');
-  u.kx += Math.cos(u.aim) * 9; u.kz += Math.sin(u.aim) * 9; u.jv = Math.max(u.jv || 0, 1.2);
-  let n = 0;
-  let crit = false;
-  for (const e of fightTargets()) if (!e.dead && dist(e, u) < 2.2 + e.r && Math.abs(angDiff(Math.atan2(e.z - u.z, e.x - u.x), u.aim)) < 0.7){
-    const big = typeof tooBig === 'function' && tooBig(u, e), had = !!u.critNext || !!P.critNext;
-    const o = { from: u, kb: big ? 0.5 : 5, stun: big ? 0 : 0.9, hitsAir: true, crit: P.critNext ? true : undefined };
-    hurt(u, e, u.atk * 1.6, o); n++; if (o.crit || had) crit = true;
+  u.airAtk = true; u.dropT = G.t + DK.t; u.dropAt = G.t; u.dropLand = true; P.atkBuf = 0; P.atkCd = 0.5; setPose(u, u.S.poses.dk1 ? 'dk1' : 'slide');
+  u.dk = { a: u.aim, hit: false }; u.jv = Math.max(u.jv || 0, 3.2);
+  decal('line', { x: u.x, z: u.z, len: DK.spd * DK.t + DK.reach, w: 0.9, a: u.aim, dur: 0.16, color: 0xffcf80 });
+  SFX.whoosh && SFX.whoosh(); dust(u.x, u.z, 6);
+}
+function dropTick(u, dt){
+  const D = u.dk, ca = Math.cos(D.a), sa = Math.sin(D.a);
+  if (!D.hit){
+    const step = DK.spd * dt;
+    if (solidAt(G.map, u.x + ca * (u.r + step), u.z + sa * (u.r + step))){ u.dropT = G.t; dust(u.x, u.z, 8); return; }   // 벽: 멈춤
+    moveBy(u, ca * step, sa * step);
+    if (Math.random() < 0.7) spark(u.x, u.y + 0.6 + (u.jy || 0), u.z, 0xffe2b0, 1, 1, 0.12, 0.1);
+    for (const e of fightTargets()){
+      if (e.dead || e.downed) continue;
+      const dx = e.x - u.x, dz = e.z - u.z, along = dx * ca + dz * sa, perp = Math.abs(-dx * sa + dz * ca);
+      if (along < -0.2 || along > DK.reach + e.r || perp > e.r + 0.5) continue;
+      D.hit = true; dropHit(u, e, along >= DK.tip); break;
+    }
   }
-  P.critNext = false;
-  SFX.whoosh && SFX.whoosh(); if (n){ camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); if (typeof clashLog === 'function') clashLog(crit ? '달려와 두 발로 날아 찼다 — 정통으로 꽂혔다!' : '달려와 두 발로 날아 찼다.'); }
-  if (crit){ camShake(0.75, 0.42); G.hitstop = Math.max(G.hitstop, 0.16); buzz([70, 40, 120]); }   // v0.86 치명 드롭킥: 크게 흔들림 + 기기 진동
+}
+function dropHit(u, e, tip){
+  const big = typeof tooBig === 'function' && tooBig(u, e), had = !!u.critNext || !!P.critNext;
+  const o = { from: u, kb: big ? 0.6 : tip ? 7 : 4, stun: big ? 0 : tip ? 1.0 : 0.6, hitsAir: true, crit: tip || P.critNext ? true : undefined, critMul: tip ? 1.8 : 2 };
+  hurt(u, e, u.atk * (tip ? 1.4 : 1.2), o); P.critNext = false;
+  u.dropT = G.t; u.kx -= Math.cos(u.dk.a) * 3; u.kz -= Math.sin(u.dk.a) * 3;   // 꽂힌 반동으로 살짝 튕김
+  if (tip){
+    popText(e.x, e.y + bodyH(e) + 0.5, e.z, '빠아악!', 'crit', 1.3); ring(e.x, e.z, 0xffcf80, 2.4, 0.35); dust(e.x, e.z, 18);
+    camShake(0.75, 0.42); G.hitstop = Math.max(G.hitstop, 0.16); buzz([70, 40, 120]);
+    if (typeof clashLog === 'function') clashLog(`날아든 발끝이 ${e.D.name}에게 정통으로 꽂혔다 — 빠아악!`);
+  } else {
+    camShake(0.3, 0.2); G.hitstop = Math.max(G.hitstop, 0.08); if (o.crit || had){ camShake(0.6, 0.35); buzz(60); }
+    if (typeof clashLog === 'function') clashLog(`너무 붙어서 몸으로 들이받았다.`);
+  }
 }
 // 기기 진동 (휴대폰 · 되는 기기만)
 function buzz(p){ try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
@@ -115,6 +139,7 @@ function playerUpdate(u, dt){
     if (u.stT <= 0){ u.st = 'idle'; }
     setPose(u, u.S.poses.roll ? (u.stT > 0.11 || !u.S.poses.rollUp ? 'roll' : 'rollUp') : 'run'); return;   // 구르기: 앞 반은 몸을 말고, 뒤 반은 등으로 굴러 일어남
   }
+  if (u.dk && u.dropLand && G.t < (u.dropT || 0)){ dropTick(u, dt); setPose(u, airPose(u)); return; }   // v0.87 드롭킥 비행
   if (u.st === 'dropFall'){ u.stT -= dt; setPose(u, 'rollUp'); if (u.stT <= 0) u.st = 'idle'; return; }   // v0.85 드롭킥 뒤 뒹굶
   if (u.st === 'slide'){ slideTick(u, dt); return; }   // v0.83 슬라이딩 (tackle.js)
   if (!G.lock && hit('KeyQ') && P.dodgeCd <= 0 && u.st !== 'strike'){
@@ -213,7 +238,7 @@ function aimPath(u){
 function throwSpear(u, k, perfect){
   aimPath(u);
   const A = P.aim, tp = A.tp, a = A.a; P.aim = null;
-  setPose(u, 'throw'); u.st = 'strike'; u.stT = 0.3;
+  setPose(u, u.S.poses.throwRel ? 'throwRel' : 'throw'); u.st = 'strike'; u.stT = 0.35;
   P.spear = false;
   const dmg = u.atk * (1.2 + 1.6 * k);
   if (perfect){ popText(u.x, u.y + 2.2, u.z, '완벽!', 'crit', 1); ring(u.x, u.z, 0x5ab4ff, 2.2, 0.4); G.hitstop = 0.08; }
