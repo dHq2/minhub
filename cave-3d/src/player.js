@@ -1,4 +1,4 @@
-/* player.js v0.81 — (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
+/* player.js v0.82 — (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -52,7 +52,8 @@ function playerUpdate(u, dt){
   mouse.over = mouseOverEnemy();
   document.body.style.cursor = mouse.over ? 'crosshair' : 'default';
   updateJump(u, dt);
-  if (u.downed){ u.guard = false; u.posture = 'stand'; if (TKS && TKS.st) tkEnd(u, true); if (u.S.poses.groundGuard) setPose(u, 'groundGuard'); return; }
+  if (u.poseHold && u.S.poses[u.poseHold]){ u.guard = false; setPose(u, u.poseHold); return; }   // 연출이 정한 자세 (잠 · 죽음)
+  if (u.downed){ u.guard = false; u.posture = 'stand'; if (TKS && TKS.st) tkEnd(u, true); if (u.S.poses.curl || u.S.poses.groundGuard) setPose(u, u.S.poses.curl ? 'curl' : 'groundGuard'); return; }   // 쓰러짐: 웅크려 머리를 감쌈
   if (G.mode === 'exp' && typeof tackleInput === 'function' && !u.lock && u.st !== 'hurt' && tackleInput(u, dt)) return;   // v0.33 바디 태클 (T)
   if (u.lock){ u.guard = false; return; }   // 잡거나 잡힘: grapple.js
   if (u.st === 'hurt'){ u.stT -= dt; u.guard = false; if (u.stT <= 0){ u.st = 'idle'; } setPose(u, 'hurt'); return; }

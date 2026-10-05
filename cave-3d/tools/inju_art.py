@@ -1,4 +1,5 @@
-# inju_art.py v1.1 — (v1.1: 둘째 묶음 — 숙여 회피 · 소총 · 권총 · 그라운드 가드 · 막기, 두 칸이 붙은 캡처는 나눔)
+# inju_art.py v1.2 — (v1.2: 셋째 묶음 — 주먹 · 어깨빵 · 죽음 · 잠 · 웅크림, 그림별 선택 (칸 UI 없음 · 워터마크 상자), 이름을 주면 그것만 다시 만듦)
+# v1.1 — (v1.1: 둘째 묶음 — 숙여 회피 · 소총 · 권총 · 그라운드 가드 · 막기, 두 칸이 붙은 캡처는 나눔)
 # v1.0 — 인주 레슬링 동작 그림 (민수가 준 도감 캡처) → art/inju/*.webp
 # 바탕 (베이지)을 가장자리부터 지우고, 칸 UI (체크 상자 · 휴지통 · 동그라미)를 지우고, 2배로 키워 다듬음
 # crouch: 위에 겹친 움찔 그림은 잘라 내고 아래 웅크린 그림만 씀
@@ -10,12 +11,16 @@ import numpy as np
 D = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'art', 'inju')
 # 이름 → (원본, 자를 칸 (x0, y0, x1, y1) 또는 None)
 SRC = {'crouch': ('src_crouch.png', None), 'dash': ('src_dash.png', None), 'throw': ('src_throw.png', None), 'guard': ('src_guard.png', None), 'pound': ('src_pound.png', None),
-       'rifle': ('src_209.png', (0, 0, 186, 247)), 'pistol': ('src_209.png', (209, 0, 394, 247)), 'duck': ('src_210.png', None), 'groundGuard': ('src_211.png', None), 'block': ('src_212.png', None)}
-NAMES = list(SRC)
+       'rifle': ('src_209.png', (0, 0, 186, 247)), 'pistol': ('src_209.png', (209, 0, 394, 247)), 'duck': ('src_210.png', None), 'groundGuard': ('src_211.png', None), 'block': ('src_212.png', None),
+       'punch': ('src_213.png', None), 'shoulder': ('src_214.png', None), 'dead': ('src_215.png', None), 'sleep': ('src_216.png', None), 'curl': ('src_217.png', None)}
+# 그림별 선택: noui = 칸 UI 없는 캡처, star = 제미나이 별 워터마크 상자 (자른 뒤 좌표, x0, y0, x1, y1)
+OPT = {'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
+import sys
+NAMES = sys.argv[1:] or list(SRC)
 UP = 2
 TH = 15   # 바탕과 이만큼 가까운 색만 바탕 (피부 · 흰 셔츠가 바탕색과 비슷해서 낮게)
 
-def clear_bg(a):
+def clear_bg(a, holes=True):
     h, w = a.shape[:2]
     bg = np.median(np.concatenate([a[2:6, 40:w - 60, :3].reshape(-1, 3), a[h - 6:h - 2, :, :3].reshape(-1, 3)]), axis=0)
     diff = np.abs(a[:, :, :3].astype(int) - bg).sum(2)
@@ -31,7 +36,7 @@ def clear_bg(a):
         seen[y, x] = True
         q.extend(((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)))
     # 안쪽에 갇힌 바탕 (다리 사이 · 겨드랑이 · 별 워터마크): 바탕색 덩어리가 크면 지움
-    hole = (diff < 22) & ~seen
+    hole = (diff < 22) & ~seen & holes
     lab = np.zeros((h, w), int); k = 0
     for y0 in range(h):
         for x0 in range(w):
@@ -75,7 +80,8 @@ for nm in NAMES:
     a = a[5:-5, 5:-5].copy()   # 칸 테두리
     a[:, -4:, 3] = 0; a[-4:, :, 3] = 0   # 남은 테두리 선
     h, w = a.shape[:2]
-    u = max(30, h // 9); a[:u, :u + 6, 3] = 0; a[:u, w - int(u * 2.3):, 3] = 0        # 칸 UI (왼쪽 위 체크 상자 · 오른쪽 위 휴지통 · 동그라미)
+    o = OPT.get(nm, {})
+    if not o.get('noui'): u = max(30, h // 9); a[:u, :u + 6, 3] = 0; a[:u, w - int(u * 2.3):, 3] = 0        # 칸 UI (왼쪽 위 체크 상자 · 오른쪽 위 휴지통 · 동그라미)
     kill = None
     if nm == 'pistol':   # 제미나이 별 워터마크 (다리 사이): 바지 위에 걸친 부분은 바지색으로, 나머지 밝은 곳은 지움
         Y0, Y1, X0, X1 = 163, 207, 78, 121
@@ -83,8 +89,9 @@ for nm in NAMES:
         star = (lum > 120) & (sat < 30); onpants = star & (lum < 200)
         reg[onpants] = [88, 84, 100]; a[Y0:Y1, X0:X1, :3] = reg.astype(np.uint8)
         kill = np.zeros(a.shape[:2], bool); kill[Y0:Y1, X0:X1] = star & ~onpants
-    a = clear_bg(a)
+    a = clear_bg(a, not o.get('noholes'))   # noholes: 흰 셔츠가 바탕색과 같아서 안쪽 구멍 지우기를 끔
     if kill is not None: a[kill, 3] = 0
+    if o.get('star'): x0, y0, x1, y1 = o['star']; a[y0:y1, x0:x1, 3] = 0
     if nm == 'crouch':   # 위의 움찔 그림 (머리 · 몸통) 잘라 냄: 아래 그림 머리보다 위, 왼쪽 몸통
         yy, xx = np.mgrid[:h, :w]
         a[(yy < 64), 3] = 0

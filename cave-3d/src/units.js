@@ -1,4 +1,4 @@
-/* units.js v0.2 — 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.21 — (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -66,7 +66,7 @@ function updateSprite(u, dt){
   if (u.sit){ u.mesh.scale.y *= 0.68; u.mesh.position.y *= 0.68; }
   // 쓰러짐: 옆으로 눕힘
   // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
-  const tiltT = (u.downed || u.dead || u.lying) && u.pose !== 'groundGuard' ? Math.PI / 2 * 0.92 * -u.face : 0;   // 누운 그림 (그라운드 가드)은 이미 누워 있음
+  const tiltT = (u.downed || u.dead || u.lying) && !P.flat ? Math.PI / 2 * 0.92 * -u.face : 0;   // 누운 그림 (flat: 그라운드 가드 · 웅크림 · 죽음 · 잠)은 이미 누워 있음
   if (u.tiltOverride != null) u.tilt = u.tiltOverride; else u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);

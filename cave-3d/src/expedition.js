@@ -1,4 +1,4 @@
-/* expedition.js v1.1 — 원정 (한 번의 런). v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.11 — 원정 (한 번의 런). v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -414,14 +414,14 @@ async function expReturn(){
 }
 async function expWipe(){
   if (EXP.ending) return; EXP.ending = true;
-  G.slow = 0.3; G.lock = true; letterbox(true); await wait(1.2); G.slow = 1;
+  G.slow = 0.3; G.lock = true; letterbox(true); if (G.player) G.player.poseHold = 'dead'; await wait(1.2); G.slow = 1;   // 전멸: 인주가 대자로 뻗음
   dark(1, 1.2); await wait(1.3);
   // 가방은 이 층 바닥에
   RPG.lost = { F: EXP.F, items: RPG.bag.slice(), day: PRO.day }; RPG.bag = [];
   for (const k of RPG.party){ const h = hero(k); h.hp = Math.round((h.hpMax || 100) * 0.1); h.san = Math.max(0, (h.san ?? 40) - 25); }
   const sum = expSummary('wipe');
   await uiResult(sum);
-  letterbox(false);
+  letterbox(false); if (G.player) G.player.poseHold = null;
   expToCave(sum);
 }
 function expSummary(kind){

@@ -1,4 +1,4 @@
-/* prologue.js v0.11 — 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.111 — (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -744,7 +744,7 @@ function rotTint(t){ if (t.b) t.b.m.material.color.setRGB(0.62 + 0.1 / t.rot, 0.
 // 하루를 마침: 암전 → 다음 날. 안 묻은 쓰레기 (구덩이 · 바닥)는 상하기 시작 (날마다 더)
 async function endDay(){
   const Cv = PRO.cave; G.lock = true; letterbox(true); guide('');
-  G.player.lying = true; dark(1, 1.4); await wait(1.6);
+  G.player.lying = true; G.player.poseHold = 'sleep'; dark(1, 1.4); await wait(1.6);   // 잠든 인주
   PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
   PRO.nightCold = PRO.weather === 'snow' || PRO.storm === 'blizzard'; endStorm(); PRO.weather = rollWeather(); applyWeather(true);
   const dayNews = dayLivestock().concat(dayBody()); ageStains();
@@ -753,7 +753,7 @@ async function endDay(){
   for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
   for (const it of PRO.loose) if (it.d.type !== 'junk') it.age++;
   mid(`${PRO.day}일째`); await wait(1.6); mid('');
-  dark(0, 1.6); await wait(1.2); G.player.lying = false;
+  dark(0, 1.6); await wait(1.2); G.player.lying = false; G.player.poseHold = null;
   if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
   dayNews.forEach((t, i) => setTimeout(() => say(Cv.ch, t, 'soft', 2.6), 2800 + i * 2600));
   letterbox(false); G.lock = false;
@@ -1014,11 +1014,11 @@ function endLobbyFight(win){
 }
 // 로비에서 인주가 쓰러지면: 암전 → 적은 사라지고, 반쯤 회복
 async function lobbyDefeat(){
-  if (PRO.lobbyLost) return; PRO.lobbyLost = true; G.lock = true; letterbox(true);
+  if (PRO.lobbyLost) return; PRO.lobbyLost = true; G.lock = true; letterbox(true); G.player.poseHold = 'dead';
   dark(1, 1.2); await wait(1.4);
   for (const e of foes()) removeUnit(e);
   const wasJr = !!G.boss; if (G.boss){ $('bossbar').hidden = true; G.boss = null; G.rain.on = PRO.storm === 'downpour'; bossCam(false); }
-  const pl = G.player; pl.downed = false; pl.st = 'idle'; pl.hp = Math.round(pl.max * 0.5);
+  const pl = G.player; pl.downed = false; pl.st = 'idle'; pl.hp = Math.round(pl.max * 0.5); pl.poseHold = null;
   endLobbyFight(false);
   dark(0, 1.2); await textbox('', wasJr ? ['…눈을 뜨니 잠자리 위.', '적뢰는 하늘로 돌아갔다. 석문은 그대로 열려 있다.', '(준비가 되면 다시 석문 앞에서)'] : ['…눈을 뜨니 잠자리 위.', '청광묵이 끌어다 놓은 모양이다. 놈들은 어디론가 사라졌다.']);
   pl.x = BED.x + 1; pl.z = BED.z; letterbox(false); G.lock = false; PRO.lobbyLost = false;

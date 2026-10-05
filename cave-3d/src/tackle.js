@@ -1,4 +1,4 @@
-/* tackle.js v1.0 — 바디 태클 (T, v0.33)
+/* tackle.js v1.01 — (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
    · T: 바라보는 쪽으로 직선 예고 (0.3초) → 돌진. Shift를 누르고 있으면 더 멀리 · 더 세게 (피해 ×1.5, 기절 80%)
    · 부딪힌 적은 앞에 겹쳐 붙어 같이 감 (부딪힐 때 공격의 50% · 40%로 기절)
    · 같이 벽 (바위 · 기둥 포함)에 박으면: 30 + 공격의 절반, 기절 1.2초. 여럿이면 맨 앞놈이 머릿수만큼 더 (한 명당 +20%), 나머지는 옆으로 흩어짐. 인주는 한 칸 튕겨 나옴
@@ -53,6 +53,7 @@ function tackleInput(u, dt){
     }
     const mul = 0.5 * (S.run ? 1.5 : 1);
     hurt(u, e, u.atk * mul, { from: u, noCam: true, stun: Math.random() < (S.run ? 0.8 : 0.4) ? 0.8 : 0 });
+    if (!S.carry.length && u.S.poses.shoulder) setPose(u, 'shoulder');   // 부딪힘: 어깨빵
     S.carry.push(e); SFX.thump(140, 0.4, 0.15); camShake(0.15, 0.12);
     popText(e.x, e.y + bodyH(e) + 0.2, e.z, '쿵!', 'big', 0.6);
   }
