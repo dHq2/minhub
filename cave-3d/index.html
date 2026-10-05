@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>굴의 프롤로그 3D</title>
 <!-- 굴의 프롤로그 3D  version v0.35 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -267,6 +267,36 @@
   #cutin.show{animation:cutin 1.7s ease forwards;} @keyframes cutin{0%{height:0}12%{height:28vh}82%{height:28vh}100%{height:0}}
   #cutin img{width:100%;height:100%;object-fit:cover;opacity:.92;} #cutin div{position:absolute;right:6%;bottom:12%;text-align:right;}
   #cutin b{display:block;font-family:"Do Hyeon";font-weight:normal;font-size:clamp(24px,4vw,40px);color:#fff3c0;text-shadow:0 2px 10px #000;} #cutin span{color:#d8c8b0;font-size:14px;text-shadow:0 1px 4px #000;}
+  /* v0.50 터치 조작 (touch.js) */
+  #touchUI{position:fixed;inset:0;z-index:7;pointer-events:none;font-family:"Do Hyeon",sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+  #touchUI button{pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;font-family:inherit;color:#f3e7cf;background:rgba(14,10,18,.62);border:1.5px solid rgba(255,255,255,.22);border-radius:50%;}
+  #touchUI button.on{background:rgba(255,211,90,.45);border-color:#ffd35a;color:#1a1008;}
+  #tStickZone{position:absolute;left:0;bottom:0;width:44vw;height:62vh;pointer-events:auto;touch-action:none;}
+  #tStick{position:absolute;left:calc(env(safe-area-inset-left) + 34px);bottom:34px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.18);opacity:.55;display:grid;place-items:center;}
+  #tStick.on{opacity:1;bottom:auto;} #tStick i{width:60px;height:60px;border-radius:50%;background:rgba(255,231,180,.35);border:2px solid rgba(255,231,180,.6);}
+  #tPad{position:absolute;right:calc(env(safe-area-inset-right) + 14px);bottom:14px;width:246px;height:210px;} #tPad.dim{opacity:.35;}
+  #tPad button{position:absolute;width:58px;height:58px;font-size:14px;}
+  #tPad .big{width:92px;height:92px;right:8px;bottom:8px;font-size:21px;background:rgba(150,40,30,.55);}
+  #tPad .k{right:110px;bottom:4px;} #tPad .q{right:116px;bottom:70px;} #tPad .sp{right:66px;bottom:110px;} #tPad .f{right:2px;bottom:110px;}
+  #tPad .g{right:176px;bottom:12px;} #tPad .v{right:180px;bottom:80px;} #tPad .t{right:130px;bottom:140px;font-size:13px;}
+  #tE{position:absolute;right:calc(env(safe-area-inset-right) + 20px);bottom:236px;min-width:64px;height:52px;border-radius:26px !important;padding:0 16px 0 8px;display:flex;align-items:center;gap:8px;background:rgba(255,211,90,.78) !important;color:#1a1008 !important;font-size:15px;max-width:46vw;}
+  #tE b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#1a1008;color:#ffd35a;font-weight:normal;flex:none;} #tE span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tTop{position:absolute;top:calc(env(safe-area-inset-top) + 8px);left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+  #tTop button{width:40px;height:40px;font-size:18px;border-radius:10px;}
+  #tQuick{position:absolute;right:calc(env(safe-area-inset-right) + 270px);bottom:14px;display:flex;flex-direction:column;gap:5px;}
+  #tQuick button{width:58px;height:40px;border-radius:9px;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;} #tQuick button.empty{opacity:.35;} #tQuick kbd{font-family:inherit;color:#ffd35a;font-size:10px;}
+  #tTurn{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:rgba(8,6,10,.85);color:#f3e7cf;padding:10px 18px;border-radius:10px;font-size:16px;pointer-events:none;}
+  body.touch{touch-action:none;overscroll-behavior:none;}
+  body.touch #skillbar,body.touch #help,body.touch #aimtag{display:none !important;}
+  body.touch #party{transform:scale(.62);transform-origin:left bottom;left:6px;bottom:auto !important;top:calc(env(safe-area-inset-top) + 128px);transform-origin:left top;}
+  body.touch #cmd{bottom:auto !important;top:calc(env(safe-area-inset-top) + 100px);right:8px;transform:scale(.8);transform-origin:right top;}
+  body.touch #expHud{transform:scale(.72);transform-origin:left top;left:6px;top:6px;}
+  body.touch #mmwrap{transform:scale(.6);transform-origin:right top;right:6px;top:6px;}
+  body.touch #textbox{bottom:12px;width:min(720px,70vw);}
+  body.touch #guide{bottom:auto;top:30%;}
+  body.touch #cavebar{left:6px;right:auto;bottom:auto;top:calc(env(safe-area-inset-top) + 54px);width:640px;max-width:none;transform:scale(.56);transform-origin:left top;}
+  body.touch #prompt{display:none !important;}
+  @media (max-height:460px){ body.touch #party{transform:scale(.5);top:100px;} body.touch #tTop button{width:34px;height:34px;font-size:15px;} }
 </style>
 </head>
 <body>
@@ -338,6 +368,7 @@
 <script src="src/titles.js"></script>
 <script src="src/ui_rpg.js"></script>
 <script src="src/save.js"></script>
+<script src="src/touch.js"></script>
 <script src="src/game.js"></script>
 </body>
 </html>
