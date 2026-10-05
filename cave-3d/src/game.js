@@ -1,4 +1,4 @@
-/* game.js v0.82 — (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.83 — (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -97,6 +97,7 @@ function preload(){
 
 /* ---------- 판 정리 · 불러오기 ---------- */
 function clearLevel(){
+  G.locks = []; if (typeof TKS !== 'undefined') TKS.st = null;
   for (const u of [...G.units]) removeUnit(u);
   for (const d of G.decals) G.scene.remove(d.g); for (const p of G.projs) G.scene.remove(p.m); for (const f of G.fx) G.scene.remove(f.g || f.s);
   for (const o of G.props) G.scene.remove(o);
@@ -423,7 +424,7 @@ function loop(now){
   if (G.mode === 'exp' && !frozen && typeof expTick === 'function') expTick(dt); else if (G.mode === 'exp' && typeof tickLights === 'function' && EXP) tickLights(0, EXP.vision || 4.7, EXP.lit);
   if (typeof heldUpdate === 'function') heldUpdate(dt);
   if (PLAY_MODES.has(G.mode) && !frozen && typeof rpgTick === 'function') rpgTick(dt);
-  if (G.mode === 'exp' && !frozen && !G.lock && typeof grappleTick === 'function') grappleTick(dt);
+  if (PLAY_MODES.has(G.mode) && !frozen && !G.lock && typeof grappleTick === 'function') grappleTick(dt);   // v0.83 굴에서도
   if (G.mode === 'exp' && !frozen && !G.lock && typeof woundTick === 'function') woundTick(dt);
   if (G.mode === 'exp' && !frozen && !G.lock && typeof titleTick === 'function'){ titleTick(); brightTick(dt); }
   if (typeof proTick === 'function') proTick(dt);   // 프롤로그 · 굴 연출 (글상자가 떠 있어도 움직임)
@@ -463,7 +464,7 @@ document.querySelectorAll('#cmd [data-c]').forEach(b => b.addEventListener('clic
 // 지시: 동료가 대답하고, "내 목표"면 마우스 아래 적 (없으면 가장 가까운 적)을 금색 고리로 표시
 const ORDER_SAY = { follow: ['따라와!', '알겠어', '…뒤에 붙는다'], focus: ['저놈이다!', '맡겨', '…조준'], free: ['알아서 싸워!', '신난다', '…자유 사격'] };
 function order(c){
-  G.cmd = c;
+  G.cmd = c; if (G.player && G.player.S.poses.raise && !G.player.downed && !G.player.lock) G.player.raiseT = G.t + 0.6;   // 손을 들어 지시
   if (G.player) popText(G.player.x, G.player.y + 2.3, G.player.z, ORDER_SAY[c][0], 'aim', 0.9);
   G.units.filter(u => u.side === 'ally' && u.kind !== 'player' && !u.downed).forEach((u, i) => popText(u.x, u.y + 2.1, u.z, ORDER_SAY[c][1 + (i % 2)], 'miss', 0.9));
   if (c === 'focus') G.focusTarget = mouse.over || (G.player && nearest(G.player, foes().filter(e => e.alert || dist(e, G.player) < 9), 14)) || G.focusTarget;

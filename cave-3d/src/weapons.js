@@ -1,4 +1,4 @@
-/* weapons.js v1.05 — 인주의 무기 (v1.05: 맨손 4연타 — 잽 · 주먹 · 앞차기 · 회전 하이킥, 칸마다 예고 자세 (wpose). v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
+/* weapons.js v1.06 — 인주의 무기 (v1.06: 마력 폭발은 손 드는 자세. v1.05: 맨손 4연타 — 잽 · 주먹 · 앞차기 · 회전 하이킥, 칸마다 예고 자세 (wpose). v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
    · 손에 보이는 무기: 도감 그림 (art/atlas/held*.webp)을 손 자리에 붙임. 평소엔 등에 메고, 공격할 때 손에 들고 실제로 휘두름 (궤적이 남음)
    · 무기 14종마다 기본 공격 (좌클릭 · J)과 무기 스킬 (우클릭 · K)이 다름. 변형 (레이피어 · 일본도 · 낫 · 도끼창 · 채찍 · 대포 · 광선총 …)은 수치와 작은 효과
    · 화살: 맞으면 몸에 박힌 채 보임 → 죽으면 둘레에 떨어짐 (일부 부러짐). 갑옷 · 방패 · 막기에 맞으면 튕겨 나가 바닥에. 빗나가면 바닥 · 벽에 꽂힘. 위를 지나가면 주움
@@ -8,7 +8,7 @@
 const HAND = { throwHard: [55, 118], attack: [267, 58], throw: [190, 153], shoot: [13, 46], windup: [214, 134], aim: [9, 72], hurt: [140, 150], rifle: [262, 82], pistol: [300, 84] };
 // 쏠 때 자세: 권총은 한 손으로 뻗음, 소총 · 산탄총 · 석궁은 두 손으로 겨눔 (그림이 있으면), 활은 그대로
 const shootPose = () => { const k = typeof W !== 'undefined' && W.def ? W.def.kind : ''; const P2 = G.player && G.player.S.poses; return k === 'pistol' && P2 && P2.pistol ? 'pistol' : ['lever', 'assault', 'shotgun', 'crossbow'].includes(k) && P2 && P2.rifle ? 'rifle' : 'shoot'; };
-const NO_HELD = new Set(['grabReady', 'dash', 'clinch', 'lob', 'pound', 'duck', 'groundGuard', 'block', 'punch', 'shoulder', 'dead', 'sleep', 'curl', 'sweep', 'slide', 'roll', 'box', 'kick', 'jump', 'clinch1', 'sit', 'squat', 'clinchPush', 'jab', 'mtPose', 'knee', 'kickPrep', 'mtGuard', 'highKick', 'spin']);   // 레슬링 · 맨몸 자세: 손에 든 무기를 숨김
+const NO_HELD = new Set(['grabReady', 'dash', 'clinch', 'lob', 'pound', 'duck', 'groundGuard', 'block', 'punch', 'shoulder', 'dead', 'sleep', 'curl', 'sweep', 'slide', 'roll', 'box', 'kick', 'jump', 'clinch1', 'sit', 'squat', 'clinchPush', 'jab', 'mtPose', 'knee', 'kickPrep', 'mtGuard', 'highKick', 'spin', 'hop', 'flyKnee', 'stomp', 'rollUp', 'carry', 'raise']);   // 레슬링 · 맨몸 자세: 손에 든 무기를 숨김
 // 대기 · 걷기 · 뛰기 그림마다 등 (무기를 메는 자리): [머리x, 머리y, ?, 등x, 등y, ?, 키]
 const INJU_ANC = {"idle":[[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352],[104,2,80,110,72,123,351],[104,1,80,110,71,123,352],[104,1,79,109,71,123,352],[104,0,80,110,70,123,353],[104,0,79,110,70,123,353],[104,0,79,110,70,123,353],[104,0,80,109,70,123,353],[104,0,80,109,70,123,353],[104,1,79,110,71,123,352],[104,1,80,110,71,123,352]],
   "walk":[[176,9,98,144,79,189,350],[151,6,99,123,76,181,352],[166,9,98,135,79,192,350],[153,0,97,135,71,165,359],[173,2,103,147,73,191,357],[150,6,99,122,76,181,352],[167,0,100,139,71,182,359],[151,0,97,133,71,165,359]],
@@ -577,7 +577,7 @@ function aimHold(u, dt, mv, holding){
   P.charge = Math.min(THROW.full, P.charge + dt);
   const full = P.charge >= THROW.full;
   if (mode === 'throw'){ aimPath(u); setPose(u, P.charge >= THROW.full * 0.55 && u.S.poses.throwHard ? 'throwHard' : 'aim'); }   // 끝까지 당기면 강한 투창 자세
-  else { pickAim(u, null, 16); setPose(u, mode === 'nova' ? 'shoot' : mode === 'draw' ? 'shoot' : 'shoot'); }
+  else { pickAim(u, null, 16); setPose(u, mode === 'nova' && u.S.poses.raise ? 'raise' : 'shoot'); }
   const slow = mode === 'aimShot' ? 0.1 : 0.45;
   if (mv) moveBy(u, mv.x * u.spd * slow * dt, mv.z * u.spd * slow * dt);
   if (mode === 'aimShot' && mv) P.charge = Math.max(0, P.charge - dt * 2.5);   // 움직이면 조준이 풀림

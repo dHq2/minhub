@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.11 — RPG 화면 (v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.12 — RPG 화면 (v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -178,7 +178,7 @@ $r('skillbar') && $r('skillbar').addEventListener('click', e => { const q = e.ta
 function quickUse(k){
   const id = RPG.quick[k], pl = G.player; if (!id || !pl || pl.downed || G.lock) return;
   const it = RPG.bag.find(o => o.id === id); if (!it){ RPG.quick[k] = null; return; }
-  if (!useItem(it, pl)) popText(pl.x, pl.y + 2.2, pl.z, '지금은 쓸 수 없다', 'miss', 0.8);
+  if (!useItem(it, pl)) popText(pl.x, pl.y + 2.2, pl.z, '지금은 쓸 수 없다', 'miss', 0.8); else if (pl.S.poses.raise) pl.raiseT = G.t + 0.5;
 }
 
 /* ---------- 알림 · 확인 · 결과 ---------- */

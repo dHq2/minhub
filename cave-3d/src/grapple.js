@@ -1,4 +1,4 @@
-/* grapple.js v1.6 — (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
+/* grapple.js v1.7 — (v1.7: 여섯째 묶음 그림 · 굴 (로비)에서도 잡기) (v1.6: 다섯째 묶음 그림 (무에타이) · 클린치 J는 니킥 → 주먹 → 잽) (v1.5: 넷째 묶음 그림 · 클린치는 클린치 1 자세, 잡힌 인주는 레슬링 가드, 무릎은 잽 · 주먹 번갈아, 밀쳐내기는 두 손 밀기) (v1.4: 잡자마자 V가 밀쳐내기로 읽히던 것 고침 · 셋째 묶음 — 클린치 무릎은 주먹 자세 · 밀쳐내기는 어깨빵 · 깔려서 맞으면 웅크림) (v1.3: 그라운드에 깔리면 인주는 누운 가드 자세 · 둘째 묶음 자세 그림) (v1.1: 동작 중 누른 키는 기억했다가 이어서) 레슬링: 잡기 → 클린치 → 그라운드 · 빠져나오기
    · 잡기: 인주는 V (앞 1.4칸 안의 적, 보스 · 아주 무거운 것은 못 잡음). 레슬러 적 (곤봉 거한 · 단달로)과 GOOD WILL도 잡음
    · 클린치 (서로 붙듦): 잡은 쪽 — J 무릎 · K 메치기 (넘어뜨려 그라운드로) · Q 밀쳐내기 (휘청)
    · 그라운드 (깔고 앉음): J 파운딩 · K 끝내기 (체력 30% 아래면 목을 꺾음, 강적은 크게 다침) · Q 일어섬
@@ -23,7 +23,12 @@ Object.assign(SPR.player.poses, {
 Object.assign(SPR.player.poses, {
   mtPose: { src: 'art/inju/mtPose.webp', w: 388, h: 736, ax: 194, ay: 733, f: 1, scale: 0.48 }, knee: { src: 'art/inju/knee.webp', w: 338, h: 610, ax: 169, ay: 607, f: 1, scale: 0.49 },
   kickPrep: { src: 'art/inju/kickPrep.webp', w: 534, h: 700, ax: 267, ay: 697, f: 1, scale: 0.49 }, mtGuard: { src: 'art/inju/mtGuard.webp', w: 386, h: 716, ax: 193, ay: 713, f: 1, scale: 0.49 },
-  highKick: { src: 'art/inju/highKick.webp', w: 454, h: 718, ax: 227, ay: 715, f: 1, scale: 0.483 }, spin: { src: 'art/inju/spin.webp', w: 470, h: 652, ax: 235, ay: 649, f: 1, scale: 0.49 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
+  highKick: { src: 'art/inju/highKick.webp', w: 454, h: 718, ax: 227, ay: 715, f: 1, scale: 0.483 }, spin: { src: 'art/inju/spin.webp', w: 470, h: 652, ax: 235, ay: 649, f: 1, scale: 0.49 } });
+// 여섯째 묶음 (v1.7): 뛰어오름 (다리 기술 중간) · 플라잉 니킥 · 발목 부수기 · 구르기 뒤 (드롭킥 뒤 착지) · 짐 들기 · 손 들기
+Object.assign(SPR.player.poses, {
+  hop: { src: 'art/inju/hop.webp', w: 302, h: 586, ax: 151, ay: 583, f: 1, scale: 0.494 }, flyKnee: { src: 'art/inju/flyKnee.webp', w: 484, h: 688, ax: 242, ay: 685, f: 1, scale: 0.495 },
+  stomp: { src: 'art/inju/stomp.webp', w: 694, h: 698, ax: 347, ay: 695, f: 1, scale: 0.49 }, rollUp: { src: 'art/inju/rollUp.webp', w: 556, h: 336, ax: 278, ay: 333, f: 1, scale: 0.497 },
+  carry: { src: 'art/inju/carry.webp', w: 204, h: 650, ax: 102, ay: 647, f: 1, scale: 0.53 }, raise: { src: 'art/inju/raise.webp', w: 254, h: 756, ax: 127, ay: 753, f: 1, scale: 0.53 } });   // 둘째 묶음 (v1.3): 소총 · 권총 사격 · 숙여 회피 · 그라운드 가드 · 막기 (큰 칸 그림은 scale 작게)
 Object.assign(SPR.player.poses, { grabReady: { src: 'art/inju/crouch.webp', w: 370, h: 334, ax: 185, ay: 331, f: 1, scale: 0.81 }, dash: { src: 'art/inju/dash.webp', w: 364, h: 254, ax: 182, ay: 251, f: 1, scale: 0.81 }, clinch: { src: 'art/inju/guard.webp', w: 336, h: 314, ax: 168, ay: 311, f: 1, scale: 0.81 }, lob: { src: 'art/inju/throw.webp', w: 346, h: 440, ax: 173, ay: 437, f: 1, scale: 0.81 }, pound: { src: 'art/inju/pound.webp', w: 306, h: 316, ax: 153, ay: 313, f: 1, scale: 0.81 } });
 // 인주에게 있는 자세면 그걸로, 없으면 대신할 자세로
 const grPose = (u, k, alt) => (u.S.poses[k] ? k : alt);
