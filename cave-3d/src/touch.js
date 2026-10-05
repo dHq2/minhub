@@ -1,4 +1,4 @@
-/* touch.js v1.0 — (v0.50) 모바일 · 터치 조작
+/* touch.js v1.1 — (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
    · 켜지는 때: 손가락 화면 (pointer: coarse) · 주소에 ?touch. 일시정지 창에서 끄고 켬 (저장됨)
    · 왼쪽 아래 아무 데나 엄지를 대면 그 자리가 이동 스틱 (WASD). 끝까지 밀면 달리기 (Shift)
    · 오른쪽: 큰 공격 (J) + 스킬 (K, 누르고 있기 = 투창 당김) · 구르기 (Q) · 점프 (Space) · 막기 (F, 누르는 동안) · 숙이기 (G) · 잡기 (V) · 태클 (T)
@@ -19,7 +19,7 @@ const TBTN = [   // [키, 글, 클래스, 누르고 있기]
   ['KeyJ', '공격', 'big', true], ['KeyK', '스킬', 'k', true], ['KeyQ', '구르기', 'q', false], ['Space', '점프', 'sp', false],
   ['KeyF', '막기', 'f', true], ['KeyG', '숙이기', 'g', true], ['KeyV', '잡기', 'v', false], ['KeyT', '태클', 't', false],
 ];
-const TTOP = [['Escape', '⏸', '일시정지'], ['KeyI', '🎒', '가방 · 장비'], ['KeyH', '📜', '기술표'], ['KeyM', '🗺', '큰 지도'], ['KeyN', '🍖', '바로 먹기'], ['KeyZ', '↺', '카메라'], ['KeyC', '↻', '카메라']];
+const TTOP = [['FS', '⛶', '전체화면'], ['Escape', '⏸', '일시정지'], ['KeyI', '🎒', '가방 · 장비'], ['KeyH', '📜', '기술표'], ['KeyM', '🗺', '큰 지도'], ['KeyN', '🍖', '바로 먹기'], ['KeyZ', '↺', '카메라'], ['KeyC', '↻', '카메라']];
 function touchBuild(){
   if (document.getElementById('touchUI')) return;
   const el = document.createElement('div'); el.id = 'touchUI';
@@ -32,6 +32,10 @@ function touchBuild(){
   document.body.appendChild(el);
   // 버튼: 누르면 키 누름, 떼면 뗌 (여러 손가락)
   const press = (b, on) => { const k = b.dataset.k; if (!k) return; if (on){ vkDown(k); b.classList.add('on'); } else { vkUp(k); b.classList.remove('on'); } };
+  el.querySelector('[data-k="FS"]').removeAttribute('data-k');
+  const fsb = el.querySelector('#tTop button'); fsb.dataset.fs = '1';
+  fsb.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); goFull(); }, { passive: false });
+  fsb.addEventListener('click', e => { e.stopPropagation(); goFull(); });
   el.querySelectorAll('button[data-k]').forEach(b => {
     b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); press(b, true); if (!b.dataset.hold) setTimeout(() => press(b, false), 90); }, { passive: false });
     b.addEventListener('touchend', e => { e.preventDefault(); e.stopPropagation(); if (b.dataset.hold) press(b, false); }, { passive: false });
@@ -94,3 +98,17 @@ if (typeof pauseOpen === 'function'){
   };
 }
 touchSet(touchWanted());
+
+// 전체화면: 브라우저에선 됨. 앱 안의 미리보기 (iframe)에선 막혀 있을 수 있음 → 브라우저로 여는 법 안내
+async function goFull(){
+  const d = document, el = d.documentElement;
+  try {
+    if (d.fullscreenElement || d.webkitFullscreenElement){ await (d.exitFullscreen || d.webkitExitFullscreen).call(d); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!req || d.fullscreenEnabled === false) throw new Error('blocked');
+    await req.call(el, { navigationUI: 'hide' });
+    try { await screen.orientation.lock('landscape'); } catch (e) {}
+  } catch (e) {
+    typeof uiToast === 'function' && uiToast('이 화면 (앱 안 미리보기)에선 전체화면이 막혀 있어요 — 오른쪽 위 공유 → 링크를 크롬 같은 브라우저로 열면 ⛶로 꽉 찬 화면이 됩니다. 브라우저 메뉴의 "홈 화면에 추가"로 앱처럼 열 수도 있어요', 'warn');
+  }
+}
