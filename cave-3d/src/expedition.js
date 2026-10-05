@@ -143,6 +143,7 @@ async function expLoadFloor(F, how){
   if (!G.player){ G.player = spawn('player', px, pz, 'ally'); applyHero(G.player, hero('inju')); }
   // 방 채우기
   for (const r of gen.rooms) fillRoom(r, gen);
+  EXP.boss = null; if (typeof bossRoom === 'function') bossRoom(gen);   // 5층 세자르 · 10층 대장군 (foes2.js)
   if (RPG.lost && RPG.lost.F === F && PRO.day - RPG.lost.day <= 3) placeLostBag(gen);
   G.onKill = expOnKill;
   G.cmd = 'free';
@@ -354,6 +355,7 @@ function expTick(dt){
   const pl = G.player; if (!pl) return;
   sizeDBills();
   if (typeof mapFxTick === 'function') mapFxTick(dt);
+  if (typeof bossTick === 'function') bossTick(dt);
   // 횃불
   if (EXP.torchT > 0){ EXP.torchT -= dt; if (EXP.torchT <= 0){ if (EXP.torches > 0){ EXP.torches--; EXP.torchT = EXP_TORCH; popText(pl.x, pl.y + 2.4, pl.z, '새 횃불을 켰다', 'heal', 1.2); } else { EXP.torchT = 0; caption('횃불이 꺼졌다', '어둠이 가까워진다 — 시야 2칸, 정신도가 빨리 줆'); } } }
   EXP.lit = EXP.torchT > 0;
