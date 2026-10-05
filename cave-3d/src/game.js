@@ -1,4 +1,4 @@
-/* game.js v0.81 — (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.82 — (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -388,7 +388,7 @@ function loop(now){
   const act = hit('KeyE') || hit('Space') || hit('Enter') || hit('Mouse0');
   const waiting = !!G.waitInput;
   if (G.waitInput){ if (act) G.waitInput(); }
-  else if (!G.lock && G.nearIt && hit('KeyE')){ const it = G.nearIt; if (it.once) it.used = true; it.fn(); }
+  else if (!G.lock && G.nearIt && hit('KeyE')){ const it = G.nearIt; if (it.once) it.used = true; if (typeof crouchAct === 'function') crouchAct(G.player, it); it.fn(); }
   else if (!G.lock && !G.nearIt && G.freeE && hit('KeyE')) G.freeE.fn();
   if (hit('Digit1')) order('follow'); if (hit('Digit2')) order('focus'); if (hit('Digit3')) order('free');
   if (hit('KeyH')) $('help').hidden = !$('help').hidden;

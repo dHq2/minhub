@@ -1,4 +1,4 @@
-/* units.js v0.21 — (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.22 — (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -66,12 +66,13 @@ function updateSprite(u, dt){
   if (u.sit){ u.mesh.scale.y *= 0.68; u.mesh.position.y *= 0.68; }
   // 쓰러짐: 옆으로 눕힘
   // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
+  if (u.tripT && G.t > u.tripT){ u.tripT = 0; if (!u.downed && !u.dead) u.lying = false; }   // 다리후리기 · 슬라이딩으로 넘어진 놈이 일어남
   const tiltT = (u.downed || u.dead || u.lying) && !P.flat ? Math.PI / 2 * 0.92 * -u.face : 0;   // 누운 그림 (flat: 그라운드 가드 · 웅크림 · 죽음 · 잠)은 이미 누워 있음
   if (u.tiltOverride != null) u.tilt = u.tiltOverride; else u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);
   u.pivot.rotation.z = u.tilt + u.lean * -u.face;
-  u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0);
+  u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0) + (u.pose === 'box' ? Math.abs(Math.sin(G.t * 7.5)) * 0.06 : 0);   // 복싱 스텝: 통통
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
   u.pivot.rotation.y = Math.atan2(camera.position.x - u.x, camera.position.z - u.z);

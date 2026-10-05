@@ -1,4 +1,4 @@
-/* tackle.js v1.01 — (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
+/* tackle.js v1.1 — (v1.1: 다리후리기 · 슬라이딩 · 넘어뜨리기) (v1.01: 부딪히는 순간 어깨빵 자세) 바디 태클 (T, v0.33)
    · T: 바라보는 쪽으로 직선 예고 (0.3초) → 돌진. Shift를 누르고 있으면 더 멀리 · 더 세게 (피해 ×1.5, 기절 80%)
    · 부딪힌 적은 앞에 겹쳐 붙어 같이 감 (부딪힐 때 공격의 50% · 40%로 기절)
    · 같이 벽 (바위 · 기둥 포함)에 박으면: 30 + 공격의 절반, 기절 1.2초. 여럿이면 맨 앞놈이 머릿수만큼 더 (한 명당 +20%), 나머지는 옆으로 흩어짐. 인주는 한 칸 튕겨 나옴
@@ -104,4 +104,41 @@ function tkFinish(u, S){
 function tkEnd(u, keepHurt){
   const S = TKS.st; if (S && S.dec) S.dec.done = true;
   TKS.st = null; if (!keepHurt && u.st === 'tackle'){ u.st = 'idle'; setPose(u, 'idle'); }
+}
+
+/* ---------- v1.1 다리 기술 (원정) ----------
+   · 다리후리기: 숙인 채 (G) 공격 → 둘레 1.8칸을 낮게 쓸어 넘어뜨림 (1.3초 누움 · 취약). 대기 1.1초
+   · 슬라이딩: 달리면서 (Shift) G → 앞으로 미끄러짐 (0.5초). 몸이 낮아 높은 공격은 지나가고, 닿은 적은 넘어짐. 대기 1.2초
+   · 넘어뜨리기는 공중에 뜬 놈 · 보스 · 아주 무거운 놈 (나보다 2.4배 넘게)에겐 안 통함 ("꿈쩍 안 함", 슬라이딩은 거기서 멈춤) */
+const LEG = { sweepR: 1.8, sweepCd: 1.1, slideT: 0.5, slideV: 10, slideCd: 1.2, down: 1.3 };
+function tooBig(u, e){ return !!(e.D.boss || e.D.heavy || (e.D.weight || 60) > (u.D.weight || 55) * 2.4); }
+function trip(u, e, how){
+  if (e.dead || e.downed || e.airborne || (e.lift || 0) > 0.3 || (e.jy || 0) > 0.3) return false;
+  hurt(u, e, u.atk * (how === 'slide' ? 0.45 : 0.6), { from: u, kb: 0.3 });
+  if (tooBig(u, e)){ popText(e.x, e.y + bodyH(e) + 0.3, e.z, '꿈쩍 안 함', 'miss', 0.8); return false; }
+  if (e.dead) return true;
+  interrupt(e); e.st = 'hurt'; e.stT = LEG.down; e.lying = true; e.tripT = G.t + LEG.down; setPose(e, 'hurt');
+  if (typeof addStatus === 'function') addStatus(e, 'vuln', { t: LEG.down });
+  popText(e.x, e.y + 1.4, e.z, '넘어짐!', 'big', 0.8); dust(e.x, e.z, 10); SFX.thump(110, 0.35, 0.12); camShake(0.12, 0.12);
+  if (typeof clashLog === 'function') clashLog(how === 'slide' ? `미끄러져 들어가 ${e.D.name}의 발목을 걷어찼다.` : `몸을 낮춰 ${e.D.name}의 다리를 쓸었다.`);
+  return true;
+}
+function legSweep(u){
+  P.sweepCd = LEG.sweepCd; P.atkBuf = 0; u.st = 'strike'; u.stT = 0.45; setPose(u, 'sweep'); u.guard = false;
+  ring(u.x, u.z, 0xffcf80, LEG.sweepR, 0.3); dust(u.x, u.z, 12); SFX.whoosh && SFX.whoosh();
+  for (const e of foes()) if (!e.dead && dist(e, u) < LEG.sweepR + e.r) trip(u, e, 'sweep');
+}
+function slideStart(u, mv){
+  P.slideCd = LEG.slideCd; P.atkBuf = 0; u.st = 'slide'; u.stT = LEG.slideT; u.dvx = mv.x * LEG.slideV; u.dvz = mv.z * LEG.slideV; u.slideHit = new Set();
+  u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z); u.posture = 'crouch'; u.guard = false; setPose(u, 'slide'); dust(u.x, u.z, 8);
+}
+function slideTick(u, dt){
+  u.stT -= dt; const k = Math.max(0, u.stT / LEG.slideT), sp = 0.3 + 0.7 * k;
+  moveBy(u, u.dvx * sp * dt, u.dvz * sp * dt); u.posture = 'crouch'; setPose(u, 'slide');
+  if (Math.random() < 0.5) dust(u.x, u.z, 1);
+  for (const e of foes()) if (!e.dead && !u.slideHit.has(e) && dist(e, u) < u.r + e.r + 0.35){
+    u.slideHit.add(e);
+    if (!trip(u, e, 'slide') && tooBig(u, e)){ u.stT = Math.min(u.stT, 0.08); const n = norm(u.x - e.x, u.z - e.z); u.kx += n.x * 4; u.kz += n.z * 4; }   // 큰 놈에 막힘
+  }
+  if (u.stT <= 0){ u.st = 'idle'; u.posture = 'stand'; }
 }

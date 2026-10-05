@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.1 — RPG 화면 (v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.11 — RPG 화면 (v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -168,7 +168,7 @@ function uiSkillBar(){
   const basic = `<div class="sb k1"><kbd>좌클릭</kbd><b>${w.d ? w.d.n : '맨손'}</b><small>${WT_N[w.kind] || '주먹'}${!P.spear ? ' · 던짐 (주워야 함)' : ''}</small></div>`;
   let ammoTxt = '';
   if (am || w.mag){ const tot = am ? RPG.ammo[am] || 0 : '∞'; ammoTxt = `<div class="sb am ${P.reloadT > 0 ? 'rl' : ''}"><kbd>R</kbd><b>${w.mag ? `${w.it ? w.it.mag : 0}/${w.mag}` : ''} <small>${am ? AMMO_N[am] + ' ' + tot : ''}</small></b>${P.reloadT > 0 ? `<i class="rlbar"><s style="width:${(1 - P.reloadT / P.reloadMax) * 100}%"></s></i>` : ''}</div>`; }
-  const tk = G.mode === 'exp' && typeof TKS !== 'undefined' ? `<div class="sb ${TKS.cd > 0 ? 'cd' : ''}"><kbd>T</kbd><b>태클</b>${TKS.cd > 0 ? `<small>${Math.ceil(TKS.cd)}</small>` : ''}</div><div class="sb"><kbd>V</kbd><b>잡기</b></div><div class="sb ${G.player && G.player.posture === 'crouch' ? 'on' : ''}"><kbd>G</kbd><b>숙이기</b></div>` : '';
+  const tk = G.mode === 'exp' && typeof TKS !== 'undefined' ? `<div class="sb ${TKS.cd > 0 ? 'cd' : ''}"><kbd>T</kbd><b>태클</b>${TKS.cd > 0 ? `<small>${Math.ceil(TKS.cd)}</small>` : ''}</div><div class="sb"><kbd>V</kbd><b>잡기</b></div><div class="sb ${G.player && G.player.posture === 'crouch' ? 'on' : ''}"><kbd>G</kbd><b>숙이기</b></div><div class="sb ${(P.slideCd || 0) > 0 ? 'cd' : ''}"><kbd>⇧G</kbd><b>슬라이딩</b></div>` : '';
   const dodge = tk + `<div class="sb ${P.dodgeCd > 0 ? 'cd' : ''}"><kbd>Q</kbd><b>구르기</b></div><div class="sb ${pl.guard ? 'on' : ''}"><kbd>F</kbd><b>막기</b></div>`;
   const quick = RPG.quick.map((id, k) => { const it = id && RPG.bag.find(o => o.id === id); return `<div class="sb q ${it ? '' : 'empty'}" data-q="${k}"><kbd>${k + 4}</kbd>${it ? iconHtml(it, 34) : ''}</div>`; }).join('');
   const html = basic + sk + dodge + ammoTxt + `<div class="sb sep"></div>` + quick + `<div class="sb bag" data-q="bag"><kbd>I</kbd><b>가방</b><small>${RPG.bag.length}/${bagCap()}</small></div>`;

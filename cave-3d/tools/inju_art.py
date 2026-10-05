@@ -1,4 +1,5 @@
-# inju_art.py v1.2 — (v1.2: 셋째 묶음 — 주먹 · 어깨빵 · 죽음 · 잠 · 웅크림, 그림별 선택 (칸 UI 없음 · 워터마크 상자), 이름을 주면 그것만 다시 만듦)
+# inju_art.py v1.3 — (v1.3: 넷째 묶음 — 다리후리기 · 슬라이딩 · 구르기 · 복싱 스텝 · 발차기 · 점프 + 중간 묶음 (src_m*: 클린치 1 · 앉아 쉬기 · 강한 투창 · 쪼그려 앉기 · 클린치 싸움 두 칸, 파운딩은 겹쳐서 뺌))
+# v1.2 — (v1.2: 셋째 묶음 — 주먹 · 어깨빵 · 죽음 · 잠 · 웅크림, 그림별 선택 (칸 UI 없음 · 워터마크 상자), 이름을 주면 그것만 다시 만듦)
 # v1.1 — (v1.1: 둘째 묶음 — 숙여 회피 · 소총 · 권총 · 그라운드 가드 · 막기, 두 칸이 붙은 캡처는 나눔)
 # v1.0 — 인주 레슬링 동작 그림 (민수가 준 도감 캡처) → art/inju/*.webp
 # 바탕 (베이지)을 가장자리부터 지우고, 칸 UI (체크 상자 · 휴지통 · 동그라미)를 지우고, 2배로 키워 다듬음
@@ -12,9 +13,12 @@ D = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'a
 # 이름 → (원본, 자를 칸 (x0, y0, x1, y1) 또는 None)
 SRC = {'crouch': ('src_crouch.png', None), 'dash': ('src_dash.png', None), 'throw': ('src_throw.png', None), 'guard': ('src_guard.png', None), 'pound': ('src_pound.png', None),
        'rifle': ('src_209.png', (0, 0, 186, 247)), 'pistol': ('src_209.png', (209, 0, 394, 247)), 'duck': ('src_210.png', None), 'groundGuard': ('src_211.png', None), 'block': ('src_212.png', None),
-       'punch': ('src_213.png', None), 'shoulder': ('src_214.png', None), 'dead': ('src_215.png', None), 'sleep': ('src_216.png', None), 'curl': ('src_217.png', None)}
-# 그림별 선택: noui = 칸 UI 없는 캡처, star = 제미나이 별 워터마크 상자 (자른 뒤 좌표, x0, y0, x1, y1)
-OPT = {'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
+       'punch': ('src_213.png', None), 'shoulder': ('src_214.png', None), 'dead': ('src_215.png', None), 'sleep': ('src_216.png', None), 'curl': ('src_217.png', None),
+       'sweep': ('src_218.png', None), 'slide': ('src_219.png', None), 'roll': ('src_220.png', None), 'box': ('src_221.png', (0, 0, 318, 411)), 'kick': ('src_222.png', (0, 0, 314, 418)), 'jump': ('src_222.png', (346, 0, 665, 418)),
+       'clinch1': ('src_m1.png', None), 'sit': ('src_m2.png', None), 'throwHard': ('src_m3.png', None), 'squat': ('src_m4.png', None), 'clinchPush': ('src_m5.png', (203, 0, 394, 246)), 'jab': ('src_m5.png', (0, 284, 188, 536))}
+# 그림별 선택: noui = 칸 UI 없는 캡처, star = 제미나이 별 워터마크 상자 (자른 뒤 좌표, x0, y0, x1, y1), noholes = 안쪽 구멍 지우기 끔, killLight = (y0, x0) 오른쪽 아래의 밝은 흙먼지 지움
+# box는 카드 아래 흰 이름표 칸 (y 411~)을 잘라 냄 (바탕색 짐작이 틀어짐)
+OPT = {'sweep': {'killLight': (285, 80), 'noholes': 1}, 'box': {'noholes': 1}, 'throwHard': {'noholes': 1}, 'sleep': {'noui': 1, 'noholes': 1}, 'shoulder': {'noholes': 1}, 'curl': {'noholes': 1}, 'dead': {'star': (125, 272, 205, 345)}}
 import sys
 NAMES = sys.argv[1:] or list(SRC)
 UP = 2
@@ -91,6 +95,9 @@ for nm in NAMES:
         kill = np.zeros(a.shape[:2], bool); kill[Y0:Y1, X0:X1] = star & ~onpants
     a = clear_bg(a, not o.get('noholes'))   # noholes: 흰 셔츠가 바탕색과 같아서 안쪽 구멍 지우기를 끔
     if kill is not None: a[kill, 3] = 0
+    if o.get('killLight'):
+        y0, x0 = o['killLight']; r = a[y0:, x0:, :3].astype(int)
+        a[y0:, x0:, 3][(r.mean(2) > 135) & (r.max(2) - r.min(2) < 60)] = 0
     if o.get('star'): x0, y0, x1, y1 = o['star']; a[y0:y1, x0:x1, 3] = 0
     if nm == 'crouch':   # 위의 움찔 그림 (머리 · 몸통) 잘라 냄: 아래 그림 머리보다 위, 왼쪽 몸통
         yy, xx = np.mgrid[:h, :w]
