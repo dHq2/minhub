@@ -1,4 +1,4 @@
-/* touch.js v1.4 — (v1.4, v0.54: 스킬 버튼 = 조준 스틱 — 누른 채 끌면 그쪽으로 조준 (투창 · 활 · 총), 왼손 스틱으로는 앞 · 뒤 · 옆으로 움직이면서. 손을 떼면 던짐. 버튼 배치: 아래 줄 숙이기 · 구르기 · 공격 · 점프 (크게), 그 위 스킬 (크게) + 막기 · 잡기 · 태클 (작게)) (v1.3, v0.53: 버튼을 그림 (픽토그램)으로 · 점프 · 구르기 크게 · 👥 동료 · 상대 창 · 약한 조준 보정 — 조이스틱이 가리키는 쪽 ±26° · 12칸 안의 적에게 붙음, 노린 적 발밑에 노란 고리) (v1.2, v0.52: 화면이 잘 보이게 — 카메라를 가깝게 (굴은 인주를 따라감) · 조금 밝게 · 버튼 작고 옅게 · 굴 정보는 한 줄 (톡 = 펼침). 조준 · 투창은 조이스틱 방향 (손을 떼면 마지막 방향), 자동 조준 · 화면 톡 공격 없음) (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
+/* touch.js v1.5 — (v1.5, v0.55: 위 줄에 훈련 창 (과녁) · 지휘 (깃발) — 훈련장에서만 · 태클 버튼도 끌어서 조준) (v1.4, v0.54: 스킬 버튼 = 조준 스틱 — 누른 채 끌면 그쪽으로 조준 (투창 · 활 · 총), 왼손 스틱으로는 앞 · 뒤 · 옆으로 움직이면서. 손을 떼면 던짐. 버튼 배치: 아래 줄 숙이기 · 구르기 · 공격 · 점프 (크게), 그 위 스킬 (크게) + 막기 · 잡기 · 태클 (작게)) (v1.3, v0.53: 버튼을 그림 (픽토그램)으로 · 점프 · 구르기 크게 · 👥 동료 · 상대 창 · 약한 조준 보정 — 조이스틱이 가리키는 쪽 ±26° · 12칸 안의 적에게 붙음, 노린 적 발밑에 노란 고리) (v1.2, v0.52: 화면이 잘 보이게 — 카메라를 가깝게 (굴은 인주를 따라감) · 조금 밝게 · 버튼 작고 옅게 · 굴 정보는 한 줄 (톡 = 펼침). 조준 · 투창은 조이스틱 방향 (손을 떼면 마지막 방향), 자동 조준 · 화면 톡 공격 없음) (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
    · 켜지는 때: 손가락 화면 (pointer: coarse) · 주소에 ?touch. 일시정지 창에서 끄고 켬 (저장됨)
    · 왼쪽 아래 아무 데나 엄지를 대면 그 자리가 이동 스틱 (WASD). 끝까지 밀면 달리기 (Shift)
    · 오른쪽: 큰 공격 (J) + 스킬 (K, 누르고 있기 = 투창 당김) · 구르기 (Q) · 점프 (Space) · 막기 (F, 누르는 동안) · 숙이기 (G) · 잡기 (V) · 태클 (T)
@@ -19,7 +19,7 @@ const TBTN = [   // [키, 글, 클래스, 누르고 있기] — 아래 줄: 숙�
   ['KeyG', '숙이기', 'g', true], ['KeyQ', '구르기', 'q', false], ['KeyJ', '공격', 'big', true], ['Space', '점프', 'sp', false],
   ['KeyK', '스킬', 'k', true], ['KeyF', '막기', 'f', true], ['KeyV', '잡기', 'v', false], ['KeyT', '태클', 't', false],
 ];
-const TTOP = [['FS', 'fs', '전체화면'], ['Escape', 'pause', '일시정지'], ['KeyU', 'party', '동료 · 상대'], ['KeyI', 'bag', '가방 · 장비'], ['KeyH', 'list', '기술표'], ['KeyM', 'map', '큰 지도'], ['KeyN', 'food', '바로 먹기'], ['KeyZ', 'ccw', '카메라 왼쪽'], ['KeyC', 'cw', '카메라 오른쪽']];
+const TTOP = [['FS', 'fs', '전체화면'], ['Escape', 'pause', '일시정지'], ['KeyU', 'party', '동료 · 상대'], ['KeyP', 'drill', '훈련 창'], ['KeyO', 'flag', '지휘'], ['KeyI', 'bag', '가방 · 장비'], ['KeyH', 'list', '기술표'], ['KeyM', 'map', '큰 지도'], ['KeyN', 'food', '바로 먹기'], ['KeyZ', 'ccw', '카메라 왼쪽'], ['KeyC', 'cw', '카메라 오른쪽']];
 // 픽토그램 (24칸, 선 그림 — 글자 없이도 알아보게)
 const TICON = {
   KeyJ: '<path d="M19 4 8.5 14.5M19 4h-4.5M19 4v4.5M6 12l6 6M4 20l3.5-3.5"/>',
@@ -34,6 +34,8 @@ const TICON = {
   party: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14c2.8 0 4.5 2.2 4.5 5"/>',
   bag: '<path d="M5 8h14l-1.2 12H6.2zM9 8V6a3 3 0 0 1 6 0v2"/>', list: '<path d="M9 6h11M9 12h11M9 18h11M4 6h1M4 12h1M4 18h1"/>',
   map: '<path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20zM9 4v13.5M15 6.5V20"/>', food: '<path d="M3 11h18a9 8 0 0 1-18 0zM8 8c0-1.6 1.2-2 1.2-3.6M12 8c0-1.6 1.2-2 1.2-3.6M16 8c0-1.6 1.2-2 1.2-3.6"/>',
+  drill: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   ccw: '<path d="M4.5 13a7.5 7.5 0 1 0 2.4-6.4M4 3v4.5h4.5"/>', cw: '<path d="M19.5 13a7.5 7.5 0 1 1-2.4-6.4M20 3v4.5h-4.5"/>',
 };
 const ticon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${TICON[k] || ''}</svg>`;
@@ -61,11 +63,11 @@ function touchBuild(){
     b.addEventListener('mouseup', () => { if (b.dataset.hold) press(b, false); });
   });
   // v1.4 스킬 버튼 끌기 = 조준
-  const kb = el.querySelector('#tPad [data-k="KeyK"]');
+  for (const kb of el.querySelectorAll('#tPad [data-k="KeyK"], #tPad [data-k="KeyT"]')){
   kb.addEventListener('touchstart', e => { const t = e.changedTouches[0]; TOUCH.drag = { id: t.identifier, x0: t.clientX, y0: t.clientY, dx: 0, dy: 0, on: false }; }, { passive: false });
   kb.addEventListener('touchmove', e => { const D = TOUCH.drag; if (!D) return; for (const t of e.changedTouches) if (t.identifier === D.id){ e.preventDefault(); D.dx = t.clientX - D.x0; D.dy = t.clientY - D.y0; if (Math.hypot(D.dx, D.dy) > 12) D.on = true; kb.style.setProperty('--ax', Math.max(-40, Math.min(40, D.dx)) + 'px'); kb.style.setProperty('--ay', Math.max(-40, Math.min(40, D.dy)) + 'px'); kb.classList.toggle('drag', D.on); } }, { passive: false });
   const kEnd = () => { setTimeout(() => { TOUCH.drag = null; }, 120); kb.classList.remove('drag'); };   // 던지는 프레임까지 방향 유지
-  kb.addEventListener('touchend', kEnd); kb.addEventListener('touchcancel', kEnd);
+  kb.addEventListener('touchend', kEnd); kb.addEventListener('touchcancel', kEnd); }
   el.querySelectorAll('[data-q]').forEach(b => b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); typeof quickUse === 'function' && quickUse(+b.dataset.q); }, { passive: false }));
   // 이동 스틱: 왼쪽 아래 아무 데나
   const zone = el.querySelector('#tStickZone'), stick = el.querySelector('#tStick'), knob = stick.querySelector('i'), R = 44;
@@ -107,6 +109,7 @@ setInterval(() => {
   document.querySelectorAll('#tQuick [data-q]').forEach(b => { const id = RPG.quick[+b.dataset.q], it2 = id && RPG.bag.find(o => o.id === id); const s = b.querySelector('span'); const t = it2 ? (itemDef(it2).n || '').slice(0, 4) + (it2.n > 1 ? ' ×' + it2.n : '') : ''; if (s.textContent !== t) s.textContent = t; b.classList.toggle('empty', !it2); });
   const q = document.getElementById('tQuick'); if (q) q.hidden = G.mode !== 'exp';
   const tt = document.getElementById('tTurn'); if (tt) tt.hidden = innerWidth >= innerHeight;
+  document.querySelectorAll('#tTop [data-k="KeyP"],#tTop [data-k="KeyO"]').forEach(b => { b.hidden = G.mode !== 'drill'; });
   const pad = document.getElementById('tPad'); if (pad) pad.classList.toggle('dim', !PLAY_MODES.has(G.mode) || !!G.waitInput);
 }, 150);
 // 일시정지 창에 "터치 조작 켜기/끄기"

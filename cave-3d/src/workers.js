@@ -1,9 +1,9 @@
-/* workers.js v1.0 — (v0.49) 굴 일꾼
+/* workers.js v1.1 — (v1.1, v0.55: 일꾼 일에 '화살 깎기' — 밤마다 조잡한 화살 10, 땔감 6을 씀. 총알 · 산탄은 설비 · 재료가 없어 굴에서 못 만듦 (상점 · 원정에서만)) (v1.0, v0.49) 굴 일꾼
    청광묵 · 도축과 요리 (알아서): 창고 끼니가 사람 수 × 2보다 적고 우리에 돼지가 있으면 하루 한 번
      우리로 가서 한 마리를 잡고 ("…미안하다 돼지.") → 모닥불로 (꺼져 있으면 손바닥 발화로 붙임 — 설정: 발화 E) → 굽고 → 창고에 구운 고기 넷 (끼니 8)
      우리 앞에서 E로 켜고 끔 (처음엔 켜짐)
    구출한 생존자 = 일꾼: 원정의 구출작전에서 살린 사람은 줄을 타고 굴로 올라와 삶 (RPG.meta.staff)
-     · 굴을 돌아다니고, E로 말을 걸면 맡은 일이 바뀜: 재봉 (붕대) · 땔감 줍기 · 채집 (달팽이 먹이) · 요리 (절임) · 쉼
+     · 굴을 돌아다니고, E로 말을 걸면 맡은 일이 바뀜: 재봉 (붕대) · 땔감 줍기 · 화살 깎기 · 채집 (달팽이 먹이) · 요리 (절임) · 쉼
      · 밤마다 끼니 하나를 먹고 일한 것을 내놓음 (끼니가 없으면 굶어서 다음 날은 일 못 함) */
 'use strict';
 const COOKED = { k: 'd_I-043', name: '구운 고기', type: 'food', food: 2, h: 0.3 };
@@ -12,9 +12,10 @@ const STAFF_JOB = {
   scav:   { n: '땔감 줍기', d: '밤마다 땔감 15', out: () => { PRO.wood = Math.min(WOOD_MAX, (PRO.wood || 0) + 15); return '땔감 +15'; } },
   forage: { n: '채집', d: '밤마다 달팽이 먹이 2', out: () => { PRO.penFood = Math.min(PEN_MAX, (PRO.penFood || 0) + 2); if (typeof penGarden === 'function') penGarden(); return '달팽이 먹이 +2'; } },
   cook:   { n: '요리', d: '밤마다 절임 한 단지 (끼니 2)', out: () => { storePut({ k: 'd_H-788', name: '절임 단지', type: 'food', food: 2, h: 0.45 }); return '끼니 +2'; } },
+  fletch: { n: '화살 깎기', d: '밤마다 조잡한 화살 10 (땔감 6을 씀)', out: () => { if ((PRO.wood || 0) < 6) return '땔감이 없어 화살을 못 깎음'; PRO.wood -= 6; RPG.ammo.arrow = (RPG.ammo.arrow || 0) + 10; return '조잡한 화살 +10'; } },
   rest:   { n: '쉼', d: '쉰다 (끼니는 먹음)', out: () => null },
 };
-const JOB_ORDER = ['sew', 'scav', 'forage', 'cook', 'rest'];
+const JOB_ORDER = ['sew', 'scav', 'fletch', 'forage', 'cook', 'rest'];
 const STAFF_PREF = { 'X-blackash-07': 'sew', 'X-blackash-10': 'scav', 'X-redclay-08': 'forage', 'X-beastsurv-03': 'cook' };
 const STAFF_LINES = { 'X-blackash-07': ['붕대라도 지을게요. 수의보다는 낫죠.', '…여기 사람들은 아직 살아 있네요.'], 'X-blackash-10': ['형아! 나뭇가지 주워 왔어!', '(작은 짐승이 품에서 꼼지락거린다)'],
   'X-redclay-08': ['에구, 버섯은 이렇게 따는 거여.', '굶으면 귀신 된다니까.'], 'X-beastsurv-03': ['흠. 항아리에 절여 두면 오래 가지.', '아래로 내려가는 놈들 밥은 내가 챙기마.'] };
