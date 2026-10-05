@@ -299,7 +299,24 @@
   body.touch #cavebar{left:6px;right:auto;bottom:auto;top:calc(env(safe-area-inset-top) + 54px);width:640px;max-width:none;transform:scale(.56);transform-origin:left top;}
   body.touch #prompt,body.touch #focusnote{display:none !important;}
   #touchUI #tTop button[data-fs]{color:#ffd35a;}
-  @media (max-height:460px){ body.touch #party{transform:scale(.5);top:100px;} body.touch #tTop button{width:34px;height:34px;font-size:15px;} }
+  /* v0.52 터치: 화면을 덜 가림 — 버튼 작고 옅게, 굴 정보는 한 줄 (톡 = 펼침), 화면 조금 밝게 */
+  body.touch #stage canvas{filter:brightness(1.22) saturate(1.05);}
+  #touchUI button{background:rgba(14,10,18,.42);border-color:rgba(255,255,255,.18);}
+  #tTop{top:calc(env(safe-area-inset-top) + 6px);gap:4px;opacity:.85;}
+  #tTop button{width:32px;height:32px;font-size:14px;border-radius:8px;}
+  #tStick{width:112px;height:112px;left:calc(env(safe-area-inset-left) + 26px);bottom:26px;opacity:.4;} #tStick i{width:46px;height:46px;}
+  #tPad{transform:scale(.78);transform-origin:right bottom;bottom:8px;right:calc(env(safe-area-inset-right) + 8px);opacity:.88;}
+  #tPad .big{background:rgba(150,40,30,.45);}
+  #tE{bottom:178px;height:40px;min-width:48px;font-size:13px;padding:0 12px 0 5px;gap:6px;background:rgba(255,211,90,.66) !important;max-width:38vw;}
+  #tE b{width:28px;height:28px;font-size:13px;}
+  #tQuick{right:calc(env(safe-area-inset-right) + 214px);bottom:8px;gap:4px;} #tQuick button{width:48px;height:34px;}
+  body.touch #cavebar{top:calc(env(safe-area-inset-top) + 6px);left:6px;width:640px;transform:scale(.5);pointer-events:auto;background:rgba(10,8,16,.55);box-shadow:none;padding:6px 10px;}
+  body.touch #cavebar:not(.open) .people,body.touch #cavebar:not(.open) .st>div:not(.ap-row):not(.todo-row):not(.day){display:none;}
+  body.touch #cavebar:not(.open){width:auto;max-width:640px;} body.touch #cavebar:not(.open) .st{border-left:0;padding-left:0;}
+  body.touch #cavebar.open{background:rgba(10,8,16,.9);transform:scale(.56);}
+  body.touch #cavebar::after{content:'▾';position:absolute;right:6px;bottom:2px;font-size:16px;color:#a8a0b8;} body.touch #cavebar.open::after{content:'▴';}
+  body.touch #party{opacity:.9;}
+  @media (max-height:460px){ body.touch #party{transform:scale(.48);top:100px;} body.touch #cmd{transform:scale(.7);} body.touch #tTop button{width:30px;height:30px;font-size:13px;} #tPad{transform:scale(.7);} #tE{bottom:160px;} #tQuick{right:calc(env(safe-area-inset-right) + 190px);} }
 </style>
 </head>
 <body>

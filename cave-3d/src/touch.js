@@ -1,4 +1,4 @@
-/* touch.js v1.1 — (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
+/* touch.js v1.2 — (v1.2, v0.52: 화면이 잘 보이게 — 카메라를 가깝게 (굴은 인주를 따라감) · 조금 밝게 · 버튼 작고 옅게 · 굴 정보는 한 줄 (톡 = 펼침). 조준 · 투창은 조이스틱 방향 (손을 떼면 마지막 방향), 자동 조준 · 화면 톡 공격 없음) (v1.1: 전체화면 버튼 ⛶ · 가로 고정 시도, 막혀 있으면 브라우저로 여는 법 안내 · '화면을 클릭하면' 안내 숨김) (v1.0, v0.50) 모바일 · 터치 조작
    · 켜지는 때: 손가락 화면 (pointer: coarse) · 주소에 ?touch. 일시정지 창에서 끄고 켬 (저장됨)
    · 왼쪽 아래 아무 데나 엄지를 대면 그 자리가 이동 스틱 (WASD). 끝까지 밀면 달리기 (Shift)
    · 오른쪽: 큰 공격 (J) + 스킬 (K, 누르고 있기 = 투창 당김) · 구르기 (Q) · 점프 (Space) · 막기 (F, 누르는 동안) · 숙이기 (G) · 잡기 (V) · 태클 (T)
@@ -45,18 +45,18 @@ function touchBuild(){
   });
   el.querySelectorAll('[data-q]').forEach(b => b.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); typeof quickUse === 'function' && quickUse(+b.dataset.q); }, { passive: false }));
   // 이동 스틱: 왼쪽 아래 아무 데나
-  const zone = el.querySelector('#tStickZone'), stick = el.querySelector('#tStick'), knob = stick.querySelector('i'), R = 56;
+  const zone = el.querySelector('#tStickZone'), stick = el.querySelector('#tStick'), knob = stick.querySelector('i'), R = 44;
   const setDir = (dx, dy) => {
     const d = Math.hypot(dx, dy), k = Math.min(1, d / R), a = Math.atan2(dy, dx);
     knob.style.transform = `translate(${Math.cos(a) * k * R}px,${Math.sin(a) * k * R}px)`;
-    const on = d > 14, nx = dx / (d || 1), ny = dy / (d || 1);
+    const on = d > 10, nx = dx / (d || 1), ny = dy / (d || 1);
     const want = { KeyW: on && ny < -0.38, KeyS: on && ny > 0.38, KeyA: on && nx < -0.38, KeyD: on && nx > 0.38, ShiftLeft: on && k > 0.92 };
     for (const [c, w] of Object.entries(want)){ if (w && !keys.has(c)) vkDown(c); if (!w && TOUCH.held.has(c)) vkUp(c); }
   };
   zone.addEventListener('touchstart', e => {
     e.preventDefault(); if (TOUCH.stick) return; const t = e.changedTouches[0];
     TOUCH.stick = { id: t.identifier, x: t.clientX, y: t.clientY };
-    stick.style.left = (t.clientX - 70) + 'px'; stick.style.top = (t.clientY - 70) + 'px'; stick.classList.add('on'); setDir(0, 0);
+    stick.style.left = (t.clientX - 56) + 'px'; stick.style.top = (t.clientY - 56) + 'px'; stick.classList.add('on'); setDir(0, 0);
   }, { passive: false });
   const move = e => { const S = TOUCH.stick; if (!S) return; for (const t of e.changedTouches) if (t.identifier === S.id){ e.preventDefault(); setDir(t.clientX - S.x, t.clientY - S.y); } };
   const end = e => { const S = TOUCH.stick; if (!S) return; for (const t of e.changedTouches) if (t.identifier === S.id){ TOUCH.stick = null; setDir(0, 0); stick.classList.remove('on'); stick.style.left = stick.style.top = ''; for (const c of ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft']) vkUp(c); } };
@@ -98,6 +98,41 @@ if (typeof pauseOpen === 'function'){
   };
 }
 touchSet(touchWanted());
+
+// v1.2 조준: 손가락 화면에선 마우스 · 자동 조준 대신 조이스틱 방향 (손을 떼면 마지막으로 본 쪽)
+//  공격 · 투창 · 활 · 총 · 마력 폭발 모두 aimPoint → 이 점을 향함. 적 위를 가리키는 마우스 (mouse.over)도 끔
+const _aimPointT = aimPoint;
+aimPoint = function(u){
+  if (!TOUCH.on || u !== G.player) return _aimPointT(u);
+  const mv = G.lock ? null : inputDir(), a = mv ? Math.atan2(mv.z, mv.x) : u.aim;
+  return { x: u.x + Math.cos(a) * THROW.range, z: u.z + Math.sin(a) * THROW.range };
+};
+const _mouseOverT = mouseOverEnemy;
+mouseOverEnemy = function(){ return TOUCH.on ? null : _mouseOverT(); };
+// 화면 (그림판)을 톡 해도 마우스 클릭 (공격)이 되지 않게: 터치가 만드는 가짜 마우스를 막음
+(function(){
+  const cv = G.renderer && G.renderer.domElement;
+  const block = el => el.addEventListener('touchstart', e => { if (TOUCH.on && e.cancelable) e.preventDefault(); }, { passive: false });
+  if (cv) block(cv); else { const st = document.getElementById('stage'); st && block(st); }
+})();
+
+// v1.2 카메라: 손가락 화면은 작으니 가깝게. 굴 (한눈에 보는 고정 카메라)은 인주를 따라가며 절반 거리, 원정은 0.8배
+const _updCamT = updateCamera;
+updateCamera = function(dt, target){
+  if (!TOUCH.on) return _updCamT(dt, target);
+  const cave = !!G.camAnchor, b = CAM.base, y = b.y, back = b.back, k = cave ? 0.56 : 0.8;
+  if (cave && G.player && !G.lock) target = { x: lerp(target.x, G.player.x, 0.85), z: lerp(target.z, G.player.z, 0.85) };
+  b.y = y * k; b.back = back * k;
+  try { _updCamT(dt, target); } finally { b.y = y; b.back = back; }
+};
+// 굴 정보 창: 손가락 화면에선 위에 한 줄 → 아래 화면을 밀어 올리지 않음. 톡 하면 펼침 / 접음
+const _caveBarT = caveBar;
+caveBar = function(){
+  _caveBarT();
+  if (!TOUCH.on) return;
+  PRO.barH = 0; const pr = document.getElementById('prompt'), gd = document.getElementById('guide'); if (pr) pr.style.bottom = ''; if (gd) gd.style.bottom = '';
+};
+document.getElementById('cavebar').addEventListener('touchstart', e => { if (!TOUCH.on) return; e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.toggle('open'); }, { passive: false });
 
 // 전체화면: 브라우저에선 됨. 앱 안의 미리보기 (iframe)에선 막혀 있을 수 있음 → 브라우저로 여는 법 안내
 async function goFull(){
