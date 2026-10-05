@@ -317,6 +317,32 @@
   body.touch #cavebar::after{content:'▾';position:absolute;right:6px;bottom:2px;font-size:16px;color:#a8a0b8;} body.touch #cavebar.open::after{content:'▴';}
   body.touch #party{opacity:.9;}
   @media (max-height:460px){ body.touch #party{transform:scale(.48);top:100px;} body.touch #cmd{transform:scale(.7);} body.touch #tTop button{width:30px;height:30px;font-size:13px;} #tPad{transform:scale(.7);} #tE{bottom:160px;} #tQuick{right:calc(env(safe-area-inset-right) + 190px);} }
+  /* v0.53 터치 버튼 = 픽토그램 + 작은 글씨 · 점프 · 구르기 크게 */
+  #touchUI button svg{width:24px;height:24px;display:block;flex:none;}
+  #tTop button{display:grid;place-items:center;padding:0;} #tTop button svg{width:18px;height:18px;}
+  #tPad{width:252px;height:222px;}
+  #tPad button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:58px;height:58px;padding:0;line-height:1;}
+  #tPad button small{font-size:10px;opacity:.85;}
+  #tPad .big{width:92px;height:92px;right:8px;bottom:8px;} #tPad .big svg{width:38px;height:38px;} #tPad .big small{font-size:13px;}
+  #tPad .q,#tPad .sp{width:72px;height:72px;background:rgba(40,70,110,.5);} #tPad .q svg,#tPad .sp svg{width:32px;height:32px;} #tPad .q small,#tPad .sp small{font-size:12px;}
+  #tPad .q{right:108px;bottom:4px;} #tPad .sp{right:18px;bottom:108px;}
+  #tPad .k{right:100px;bottom:90px;} #tPad .f{right:188px;bottom:4px;} #tPad .g{right:188px;bottom:70px;} #tPad .v{right:164px;bottom:140px;} #tPad .t{right:96px;bottom:160px;font-size:inherit;}
+  /* v0.53 동료 · 상대 창 (scout.js) · 상대 카드 */
+  #scout{position:fixed;inset:0;z-index:17;background:rgba(0,0,0,.55);display:grid;place-items:center;font-family:"Do Hyeon",sans-serif;color:#e8dcc8;}
+  #scout[hidden]{display:none;}
+  .sc-box{width:min(940px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(180deg,rgba(18,14,26,.97),rgba(10,8,14,.98));border:1px solid var(--line);border-radius:10px;padding:10px 14px;}
+  .sc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;} .sc-head b{font-size:20px;color:var(--gold);font-weight:normal;} .sc-head button{background:none;border:1px solid var(--line);color:#c8bca8;border-radius:6px;padding:3px 10px;font-family:inherit;}
+  .sc-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;} .sc-cols h4{margin:4px 0 6px;font-weight:normal;color:#a8c8ff;font-size:15px;} .sc-cols section+section h4{color:#ff9a8a;}
+  .sc-u{display:flex;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.07);} .sc-u>img,.sc-u>i{flex:none;width:52px;height:52px;border-radius:6px;object-fit:cover;object-position:50% 15%;background:rgba(255,255,255,.05);}
+  .sc-b{flex:1;min-width:0;} .sc-b>b{font-weight:normal;font-size:16px;} .sc-tag{font-style:normal;font-size:11px;background:#5a2a6a;color:#f0d8ff;border-radius:3px;padding:0 5px;margin-left:4px;} .sc-tag.bad{background:#7a2020;}
+  .sc-hp{position:relative;height:12px;background:rgba(0,0,0,.6);border:1px solid rgba(0,0,0,.8);border-radius:3px;margin:3px 0;overflow:hidden;} .sc-hp span{display:block;height:100%;background:#7fd47f;} .sc-hp small{position:absolute;right:4px;top:-1px;font-size:10px;color:#fff;text-shadow:0 1px 2px #000;}
+  .sc-cols section+section .sc-hp span{background:#d46a5a;}
+  .sc-st{font-size:12.5px;color:#c8bca8;} .sc-st b{color:#ffd27a;font-weight:normal;} .sc-tr{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;} .sc-tr span{font-size:11px;background:rgba(255,255,255,.07);border-radius:3px;padding:1px 5px;color:#d8ccb8;}
+  .sc-b details{margin-top:3px;font-size:12px;} .sc-b summary{color:#8fd08f;cursor:pointer;} .sc-none{color:#8a8098;font-size:13px;}
+  @media (max-width:640px){ .sc-cols{grid-template-columns:1fr;} }
+  #scard{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 46px);transform:translateX(-50%);z-index:6;pointer-events:none;min-width:150px;max-width:240px;background:rgba(14,10,18,.72);border:1px solid rgba(255,140,120,.35);border-radius:7px;padding:4px 10px 5px;font-family:"Do Hyeon",sans-serif;color:#f0e4d0;font-size:14px;text-align:center;}
+  #scard[hidden]{display:none;} #scard em{font-style:normal;font-size:11px;color:#ffd35a;margin-left:6px;} #scard .sc-hp span{background:#d46a5a;} #scard>small{font-size:11px;color:#c8bca8;}
+  body:not(.touch) #scard{top:64px;} body.touch #scard{transform:translateX(-50%) scale(.72);transform-origin:top center;top:calc(env(safe-area-inset-top) + 42px);}
 </style>
 </head>
 <body>
@@ -389,6 +415,7 @@
 <script src="src/ui_rpg.js"></script>
 <script src="src/save.js"></script>
 <script src="src/touch.js"></script>
+<script src="src/scout.js"></script>
 <script src="src/game.js"></script>
 </body>
 </html>

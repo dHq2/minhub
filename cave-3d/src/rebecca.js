@@ -1,4 +1,4 @@
-/* rebecca.js v1.0 — 레베카 (v0.47: 꺼낸 뒤 굴에서 움직이고 따라다님 · 원정 동료)
+/* rebecca.js v1.1 — (v1.1, v0.53: 굴에 적이 들어오면 레베카도 같이 싸움 · 끝나면 다시 굴 주민) (v1.0, v0.47: 꺼낸 뒤 굴에서 움직이고 따라다님 · 원정 동료)
    설정 (민수): 루비색 장발 · 늘 조용한 눈웃음 · 158cm · 27세 · 낡은 판금 갑옷 · 장검. 순수한 절대선. 침착 · 백절불굴 · 희망을 잃지 않는 소녀 기사 (전투력은 평범, 심장 100)
      매사 긍정 · 존댓말. 던전 괴수와 함께 무너져 흙 속에 2년 — 불사가 한계까지 부서지고 다시 붙기를 반복. 꺼내지면 하늘을 보며 대자로 누워 소리 없이 운다 → 하루 쉬면 다 재생
    · 꺼낸 날: 누워서 쉼 (말을 걸면 짧게). 다음 날부터 일어나 굴을 돌아다님 — 끼니 · 화장실은 다른 동료처럼, 한가하면 인주 뒤를 따라다님
@@ -118,4 +118,23 @@ helperTick = function(h, dt){
   if (d > 0.9 && dp > 1.3){ navTo(h, bx, bz, d > 4 ? 4.4 : 2.8, dt, 0.5); setPose(h, d > 4 ? 'run' : 'walk'); }
   else { h.moving = false; setPose(h, 'idle'); h.face = Math.sign(pl.x - h.x) || h.face; }
   h.chatT = (h.chatT ?? rnd(20, 40)) - dt; if (h.chatT <= 0){ h.chatT = rnd(35, 60); say(h, pickR(['대장님, 어디 가세요?', '…같이 가요.', '(조용히 웃는다)', '오늘 하늘은 어떨까요.']), 'soft', 2); }
+};
+
+/* ---------- v1.1 굴 싸움 (적이 굴에 들어옴): 레베카도 같이 싸움 (꺼낸 날 누워 쉬는 중이면 빼고). 끝나면 다시 굴 주민으로 ---------- */
+const _startLobbyR = startLobbyFight;
+startLobbyFight = function(){
+  _startLobbyR();
+  const r = PRO.cave && PRO.cave.reb; if (!r || rebResting()) return;
+  const D = DEFS.rebeccaAlly; Object.assign(r, { side: 'ally', D, max: D.hp, hp: Math.max(1, Math.round(D.hp * (PRO.hpf.reb || 1))), atk: D.atk, spd: D.spd, job: null, lift: 0, lying: false, eat: null, wander: null, potty: null });
+  r.group.visible = true; r.reb = null; say(r, '!', 'alert', 1.1); setTimeout(() => G.lobbyFight && say(r, '제가 앞에 설게요!', 'soft', 1.8), 1300);
+};
+const _endLobbyR = endLobbyFight;
+endLobbyFight = function(win){
+  const r = PRO.cave && PRO.cave.reb;
+  if (r && r.side === 'ally'){
+    PRO.hpf.reb = r.downed ? 0.3 : Math.max(0.05, r.hp / r.max);
+    if (r.reb && r.reb.act && r.reb.act.dec) cancelDecal(r.reb.act.dec);
+    Object.assign(r, { side: 'neutral', D: DEFS.rebecca, downed: false, st: 'idle', tilt: 0, guardStance: false, reb: null, crushed: false }); setPose(r, 'idle');
+  }
+  _endLobbyR(win);
 };

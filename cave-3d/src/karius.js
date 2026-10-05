@@ -1,15 +1,16 @@
-/* karius.js v1.0 — Sir. 카리우스 (v0.47: prologue.js에서 옮김 + 드라이브 새 그림 · 발 기술 · 짓뭉개짐 · 근성 · 개조된 신체)
+/* karius.js v1.1 — (v1.1, v0.53: 불경자 · 근성을 2D판 원본대로 — 불경자 체력 15%: 공격력 ×2.5 (기술 포함) · 받는 피해 67% 더 감소 · 이동 ×1.4 · 공격 간격 ×0.8 · 철퇴 100 · 돌진 88. 근성 = 마지막 항전: 체력 0 → 3초 무적 발버둥 → 안광 → 7초 쓰러지지 않음 (공격속도 ×1.5 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐. 3D판에서 따로 만든 '체력 45% 포효 근성'은 뺌)
+   v1.0 — Sir. 카리우스 (v0.47: prologue.js에서 옮김 + 드라이브 새 그림 · 발 기술 · 짓뭉개짐 · 근성 · 개조된 신체)
    그림: art/kar (tools/kar_art.py가 드라이브 '카리우스' 폴더 그림을 정리). 3m 융합 거구 — 카이로스 경 (안경 대머리) · 광대 · 노인 · 슬픈 여자
    체력 500 · 개조된 신체 (모든 피해 60% 감소 + 상태 이상 절반) · 느림 · 무거움 (무게 300)
    기술 (동료 AI가 고름. 위에 있을수록 먼저):
    · 확인사살 짓밟기: 누운 적 (넘어짐 · 짓뭉개짐 · 그라운드)이 2.6칸 안 → 발 들기 → 쾅. 보스가 아니면 그 자리에서 죽음. 서 있는 놈에겐 26 · 넘어뜨림
-   · 근성 (액티브, 30초): 체력 45% 아래에서 포효 → 6초 동안 받는 피해 절반 · 체력 회복 (초당 5%) · 둘레 6칸 적이 카리우스만 노림
    · 딥킥 '뻥' (7초): 앞 2.2칸 한 놈을 멀리 걷어참 (무게로 거리). 날아가다 벽에 박으면 짓뭉개짐. 벽을 등진 놈을 먼저 노림
    · 잡아뚫기 (11초): 광대의 팔이 돋아 끌어와 → 레프트 꿰뚫기 (30, 치명 50%, 방어 무시)
    · 라이트 훅 다단히트 (6초): 팔 여럿으로 세 번 (부채꼴 1.9칸)
    · 노인의 팔 후려치기 (4초): 앞 2.7칸 부채꼴, 30 · 밀침 · 경직
    · 기본: 라이트 준비 → 어퍼 (두 대)
-   · 체력 15% 아래: 불경자 카리우스 (컷씬 · 공격력 1.6배 · 빠름 · 걸을 때 쿵쿵) + 노인의 팔 철퇴 (원 1.3칸, 40) · 돌진 몸박 (밀고 나가 벽에 짓뭉갬)
+   · 체력 15% 아래: 불경자 카리우스 (컷씬 · 공격력 2.5배 · 받는 피해 67% 더 감소 · 이동 1.4배 · 걸을 때 쿵쿵) + 노인의 팔 철퇴 (원 1.3칸, 100 · 경직) · 돌진 몸박 (88, 밀고 나가 벽에 짓뭉갬)
+   · 근성 (마지막 항전): 체력 0 → 3초 무적 발버둥 (안경 빛 꺼짐) → 안광이 살아나 울부짖음 → 7초 쓰러지지 않음 (공격속도 1.5배 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐
    · 벼락을 맞으면: 연기를 토하며 차갑게 미쳐 감 (6초 공격력 ×1.3)
    짓뭉개짐 (밀치기 공통 규칙, 누구든):
    · shove(시전자, 대상, 힘, 방향): 무게 비 (시전자 ÷ 대상)^0.6 만큼 날아감 (보스는 ¼). 날아가다 벽에 박으면 남은 기세만큼 짓뭉개짐 (치명 · 방어 무시 · 넘어짐 1.6초)
@@ -28,9 +29,9 @@ SPR.karius = { h0: 560, tall: 2.45, poses: {
 DEFS.kariusAlly = { spr: 'karius', name: '카리우스', hp: 500, atk: 12, spd: 2.0, r: 0.6, weight: 300, dr: 0.6, resist: 0.5, think: kariusThink };
 const KSK = {   // 기술 그림 · 이름 (상태 창 · 기술 알림)
   body:   { icon: KA + 'icon_body.webp', n: '개조된 신체', d: '고유 특성 — 모든 피해 60% 감소 · 상태 이상 (불 · 얼음 · 벼락 · 독 · 경직) 절반. 꿰맨 신의 정성으로 후유증이 없다' },
-  grit:   { icon: KA + 'icon_grit.webp', n: '근성', d: '체력 45% 아래에서 포효 — 6초 받는 피해 절반 · 초당 5% 회복 · 둘레 적이 카리우스만 노림 (30초)' },
+  grit:   { icon: KA + 'icon_grit.webp', n: '근성', d: '마지막 항전 — 체력이 0이 되면 3초 무적으로 꿈틀거리다 안광이 살아나 울부짖고, 7초 동안 무슨 일이 있어도 쓰러지지 않음. 공격속도 1.5배 · 모든 공격 치명타 · 슈퍼아머 (경직 없음 · 거의 안 밀림). 7초가 되면 실이 끊긴 듯 쓰러짐' },
   pierce: { icon: KA + 'icon_pierce.webp', n: '잡아뚫기', d: '광대의 팔이 돋아 붙잡아 끌어와 레프트로 꿰뚫음 — 30 · 치명 50% · 방어 무시 (11초)' },
-  heretic:{ icon: KA + 'icon_heretic.webp', n: '불경자', d: '체력 15% 아래 — 공격력 1.6배 · 빠름 · 철퇴 · 돌진 몸박' },
+  heretic:{ icon: KA + 'icon_heretic.webp', n: '불경자', d: '체력 15% 아래 — 얼굴이 새까매지고 안경만 빛남. 공격력 2.5배 (기술 포함) · 받는 피해 67% 더 감소 · 이동 1.4배 · 공격 간격 0.8배 · 막지 않음. 철퇴 (100 · 경직, 5초) · 돌진 몸박 (88, 8초)' },
   stomp:  { icon: KA + 'footUp.webp', n: '짓밟기', d: '누운 적은 확인사살 (보스 제외). 서 있으면 26 · 넘어뜨림' },
   kick:   { icon: KA + 'kick.webp', n: '딥킥', d: '앞의 한 놈을 멀리 걷어참 — 벽에 박으면 짓뭉개짐 (7초)' },
 };
@@ -56,9 +57,10 @@ function cutIn(src, big, small){
 /* ---------- 두뇌 ---------- */
 function kariusThink(u, dt){
   if (u.downed) return;
-  for (const k of KCD) u[k] = (u[k] ?? 0) - dt;
-  if (u.gutsT > G.t && u.hp < u.max) u.hp = Math.min(u.max, u.hp + u.max * 0.05 * dt);   // 근성: 회복
-  const m = (u.p2 ? 1.6 : 1) * (u.rageT > G.t ? 1.3 : 1), K = u.kc;
+  if (u.ls && kLastStand(u, dt)) return;   // 근성: 발버둥 중
+  if (u.p2 && !u.ls && u.hp > u.max * 0.5){ u.p2 = false; u.atk = DEFS.kariusAlly.atk; }   // 쉬어서 회복하면 원래대로
+  for (const k of KCD) u[k] = (u[k] ?? 0) - dt * (u.ls ? 1.5 : 1);   // 근성: 공격속도 1.5배
+  const m = (u.p2 ? KH.atk : 1) * (u.rageT > G.t ? 1.3 : 1), K = u.kc;
   if (K){ K.t += dt; kariusSkill(u, K, m, dt); return; }
   if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; return; }
   if (!u.p2 && u.hp <= u.max * 0.15){   // 불경자
@@ -70,8 +72,6 @@ function kariusThink(u, dt){
   const tg = G.mode === 'exp' && G.cmd === 'focus' && G.focusTarget && !G.focusTarget.dead ? G.focusTarget : nearest(u, list, 30);
   const follow = G.mode === 'exp' && G.cmd === 'follow' && pl && !pl.downed;
   if (!tg || follow){ if (G.mode === 'exp') return allyThink(u, dt); setPose(u, u.p2 ? 'heretic' : 'idle'); u.moving = false; return; }
-  // 근성: 몰리면 포효
-  if (u.gtCd <= 0 && u.hp < u.max * 0.45 && list.some(e => dist(e, u) < 5)){ u.gtCd = 30; u.kc = { type: 'grit', t: 0 }; setPose(u, 'grit'); skillCall(u, KSK.grit); return; }
   // 확인사살: 누운 적
   const down = list.filter(e => isLying(e) && dist(u, e) < 3.4).sort((a, b) => dist(u, a) - dist(u, b))[0];
   if (down && u.stCd <= 0){
@@ -93,7 +93,7 @@ function kariusThink(u, dt){
   if (u.swCd <= 0 && list.some(front)){ u.swCd = 4; u.kc = { type: 'sweep', t: 0, a, dec: decal('sector', { x: u.x, z: u.z, r: 2.7, a, arc: 2.4, dur: 0.5, color: BLUE }) }; setPose(u, 'hookPrep'); return; }
   if (d > 1.8){ navTo(u, tg.x, tg.z, u.spd * (u.p2 ? 1.4 : 1), dt, 1.5); setPose(u, u.p2 ? 'hWalk' : 'walk'); if (u.p2){ u.stomp = (u.stomp || 0) - dt; if (u.stomp <= 0){ u.stomp = 0.42; camShake(0.08, 0.1); dust(u.x, u.z, 4); } } return; }
   setPose(u, u.p2 ? 'heretic' : 'idle');
-  if (u.cd <= 0){ u.cd = u.p2 ? 1.1 : 1.4; u.kc = { type: 'punch', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.5, dur: 0.45, color: BLUE }) }; setPose(u, 'prep'); }
+  if (u.cd <= 0){ u.cd = u.p2 ? 1.4 * 0.8 : 1.4; u.kc = { type: 'punch', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.5, dur: 0.45, color: BLUE }) }; setPose(u, 'prep'); }
 }
 function kStomp(u, e){
   u.stCd = isLying(e) ? 4 : 8; setAim(u, e.x, e.z);
@@ -105,15 +105,7 @@ function kariusSkill(u, K, m, dt){
   const hitIn = (pred, dmg, o) => { for (const e of foes()) if (!e.dead && pred(e)) hurt(u, e, dmg * m, { from: u, ...o }); };
   const inDec = e => K.dec && inShape(K.dec, e);
   const done = () => { u.kc = null; setPose(u, u.p2 ? 'heretic' : 'idle'); };
-  if (K.type === 'heretic'){ if (K.t >= 1.1){ u.kc = null; u.p2 = true; u.atk = DEFS.kariusAlly.atk * 1.6; say(u, '으으으…', 'soft', 1.2); camShake(0.5, 0.3); setPose(u, 'heretic'); } return; }
-  if (K.type === 'grit'){
-    if (!K.roar && K.t >= 0.45){
-      K.roar = true; setPose(u, 'gritRoar'); u.gutsT = G.t + 6; camShake(0.45, 0.4); ring(u.x, u.z, 0xff8a5a, 6, 0.6); SFX.boom && SFX.boom(0.6);
-      popText(u.x, u.y + 3.3, u.z, '우어어어!', 'crit', 1.4);
-      for (const e of foes()) if (!e.dead && dist(e, u) < 6 && !e.D.boss){ e.focusOn = u; setTimeout(() => { if (e.focusOn === u) e.focusOn = null; }, 4000); }
-    }
-    if (K.t >= 1.6) done(); return;
-  }
+  if (K.type === 'heretic'){ if (K.t >= 0.5){ u.kc = null; u.p2 = true; u.atk = DEFS.kariusAlly.atk * KH.atk; say(u, '으으으…', 'soft', 1.2); camShake(0.5, 0.3); setPose(u, 'heretic'); } return; }
   if (K.type === 'stomp'){
     if (!K.hit && K.t >= 0.55){
       K.hit = true; setPose(u, 'step'); camShake(0.5, 0.3); G.hitstop = Math.max(G.hitstop, 0.12); dust(K.px, K.pz, 18); SFX.boom && SFX.boom(0.9);
@@ -223,9 +215,14 @@ function crush(att, tgt, a, k, o = {}, pinned){
 // 밀어내는 공격에 맞은 놈 바로 뒤가 벽 → 짓눌림 (시전자가 비슷하게 무거우면)
 const _hurtK = hurt;
 hurt = function(att, tgt, base, o = {}){
-  if (tgt && tgt.gutsT > G.t && !o.dot) base *= 0.5;   // 근성
+  const kar = tgt && tgt.D === DEFS.kariusAlly && !tgt.dead && !tgt.downed;
+  if (kar && tgt.ls && tgt.ls.ph === 'agony') return 0;   // 근성: 발버둥 3초는 무적
+  if (kar && !tgt.lsEnd){ o = { ...o, keep1: true }; if (tgt.ls) o = { ...o, stun: 0, kb: (o.kb || 0) / 4 }; }   // 체력 0 대신 근성 · 슈퍼아머 (경직 없음, 버티기 무게 4배)
+  if (kar && tgt.p2 && !o.pierce) base *= 1 - KH.def;   // 불경자: 방어력 +50 (받는 피해 67% 더 감소)
+  if (att && att.ls && att.ls.ph === 'last' && att.D === DEFS.kariusAlly) o = { ...o, crit: true };   // 근성: 모든 공격 치명타
   if (tgt && tgt.D.resist && o.stun) o = { ...o, stun: o.stun * (1 - tgt.D.resist) };   // 개조된 신체: 경직 절반
   const dmg = _hurtK(att, tgt, base, o);
+  if (kar && !tgt.ls && !tgt.lsEnd && dmg > 0 && tgt.hp <= 1) kLastStandStart(tgt);
   const s = o.from || att;
   if (dmg > 0 && o.kb >= 1 && !o.crush && s && s.D && tgt && !tgt.dead && !tgt.D.heavy && !tgt.D.boss && shoveW(s) >= shoveW(tgt) * 0.8){
     const a = Math.atan2(tgt.z - s.z, tgt.x - s.x);
@@ -240,3 +237,46 @@ addStatus = function(u, k, v){
   if (u && u.D === DEFS.kariusAlly && k === 'shock' && !(u.rageT > G.t)){ u.rageT = G.t + 6; smoke(u.x, u.z, 10, 1.2, 0.8, 0x4a4a52, 2.2); popText(u.x, u.y + 3.2, u.z, '…(연기를 토한다)', 'whisper', 1.6); }
   return _addStatusK(u, k, v);
 };
+
+/* ---------- v1.1 불경자 · 근성 (2D판 원본 그대로) ---------- */
+const KH = { atk: 2.5, def: 0.67, agony: 3, last: 7 };
+function kLastStandStart(u){
+  interrupt(u); u.kc = null; u.hp = 1; u.ls = { ph: 'agony', t: 0, tick: 0 };
+  if (!u.p2){ u.p2 = true; u.atk = DEFS.kariusAlly.atk * KH.atk; }
+  setPose(u, 'hurt'); popText(u.x, u.y + 3.2, u.z, '…안경 빛이 꺼진다', 'whisper', 1.6); camShake(0.3, 0.3);
+  if (typeof clashLog === 'function') clashLog('카리우스가 무너졌다… 꿈틀꿈틀 괴로워한다.');
+}
+// true = 이번 프레임은 근성이 다 씀 (발버둥 · 포효 · 끝)
+function kLastStand(u, dt){
+  const L = u.ls; L.t += dt; u.hp = Math.max(1, u.hp);
+  if (L.ph === 'agony'){
+    setPose(u, 'hurt'); u.moving = false; u.x += Math.sin(G.t * 31) * 0.006; if (Math.random() < dt * 2) say(u, '으으…', 'soft', 0.6);
+    if (L.t >= KH.agony){
+      L.ph = 'last'; L.t = 0; setPose(u, 'gritRoar'); skillCall(u, KSK.grit);
+      popText(u.x, u.y + 3.4, u.z, '우어어어어!', 'crit', 1.6); camShake(0.55, 0.5); ring(u.x, u.z, 0xff5a3a, 6, 0.6); SFX.boom && SFX.boom(0.8);
+      if (typeof clashLog === 'function') clashLog('카리우스의 안광이 살아난다 — 울부짖으며 최후의 7초 (근성).');
+    }
+    return true;
+  }
+  if (L.t < 0.8){ setPose(u, 'gritRoar'); return true; }   // 포효
+  if (L.t - L.tick >= 1){ L.tick = Math.floor(L.t); popText(u.x, u.y + 3.6, u.z, `근성 ${Math.max(0, KH.last - L.tick)}초 · 슈퍼아머`, 'hurt', 0.9); if (Math.random() < 0.35) say(u, '우오오…!', 'soft', 0.8); }
+  if (u.st === 'hurt'){ u.st = 'idle'; u.stT = 0; }   // 경직 없음
+  if (L.t >= KH.last){   // 실이 끊김
+    u.ls = null; u.lsEnd = true; u.kc = null; interrupt(u);
+    popText(u.x, u.y + 3.2, u.z, '…(안경 빛이 사라진다)', 'whisper', 2); G.hitstop = Math.max(G.hitstop, 0.25);
+    if (typeof clashLog === 'function') clashLog('실이 끊긴 것처럼, 카리우스가 선 채로 고개를 떨군다.');
+    kill(u, null); return true;
+  }
+  return false;
+}
+// 쓰러졌다 일어나면 (부활 · 다음 날) 근성도 다시 쓸 수 있음
+setInterval(() => { if (!G.units) return; for (const u of G.units) if (u.D === DEFS.kariusAlly && u.lsEnd && !u.downed && !u.dead){ u.lsEnd = false; u.ls = null; } }, 500);
+// 굴 싸움이 끝났는데 근성 중이었으면: 원본처럼 이겨도 쓰러짐 (굴 주민으로 돌아갈 때 체력 5%)
+if (typeof endLobbyFight === 'function'){
+  const _endLobbyK = endLobbyFight;
+  endLobbyFight = function(win){
+    const ka = PRO.cave && PRO.cave.ka;
+    if (ka && (ka.ls || ka.lsEnd)){ if (ka.ls) popText(ka.x, ka.y + 3.2, ka.z, '…(안경 빛이 사라진다)', 'whisper', 2); ka.ls = null; ka.lsEnd = false; ka.downed = true; }
+    _endLobbyK(win);
+  };
+}
