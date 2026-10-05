@@ -382,6 +382,24 @@
   @media (max-width:980px){ .dp-u{grid-template-columns:1fr 1fr;} .dp-apt{grid-column:1/-1;grid-template-columns:repeat(3,1fr);} }
   @media (max-width:600px){ .dp-u{grid-template-columns:1fr;} .dp-apt{grid-template-columns:1fr 1fr;} }
   body.touch.drill #stage canvas{filter:none;}
+  /* v0.57 진지 계획 (fort.js) */
+  #fortPad{position:fixed;inset:0;z-index:7;cursor:crosshair;touch-action:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(20,40,80,.28));}
+  #fortPad[hidden],#fortBar[hidden],#fortHud[hidden]{display:none;}
+  #fortBar{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 10px);transform:translateX(-50%);z-index:8;width:min(760px,calc(100vw - 24px));background:rgba(14,12,20,.88);border:1px solid rgba(160,200,255,.35);border-radius:10px;padding:8px 10px;font-family:"Do Hyeon",sans-serif;color:#e8dcc8;box-sizing:border-box;}
+  #fortBar .fb-top{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;font-size:15px;margin-bottom:6px;}
+  #fortBar .fb-top b{color:#a8c8ff;font-weight:normal;font-size:17px;}
+  #fortBar .fb-wave{color:#ff8a6a;margin-left:auto;}
+  #fortBar .fb-tools{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  #fortBar button{font-family:inherit;font-size:14px;color:#e8dcc8;background:rgba(60,56,80,.75);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:6px 4px;cursor:pointer;}
+  #fortBar button small{display:block;font-size:11px;color:#a89cb0;}
+  #fortBar button.on{background:rgba(90,130,200,.8);border-color:#a8c8ff;}
+  #fortBar .fb-row{display:flex;gap:6px;margin-top:6px;} #fortBar .fb-row button{flex:1;}
+  #fortBar .fb-note{margin:6px 0 0;font-size:12px;color:#8a8098;}
+  #fortHud{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:6;background:rgba(40,14,10,.72);border:1px solid rgba(255,140,100,.45);border-radius:7px;padding:4px 12px;font-family:"Do Hyeon",sans-serif;color:#ffd0b8;font-size:15px;pointer-events:none;}
+  body.fortplan #tPad,body.fortplan #tStickZone,body.fortplan #tQuick,body.fortplan #tE{visibility:hidden;}
+  body.fortplan #fortHud{display:none;}
+  @media (max-width:700px){ #fortBar .fb-tools{grid-template-columns:repeat(4,1fr);} #fortBar button{font-size:12.5px;padding:5px 2px;} #fortBar .fb-note{display:none;} }
+  @media (max-height:430px){ #fortBar{padding:5px 8px;} #fortBar .fb-tools{grid-template-columns:repeat(7,1fr);} #fortBar button small{display:none;} #fortBar .fb-note{display:none;} }
 </style>
 </head>
 <body>
@@ -462,6 +480,7 @@
 <script src="src/tackle2.js"></script>
 <script src="src/stealth.js"></script>
 <script src="src/drill.js"></script>
+<script src="src/fort.js"></script>
 <script src="src/game.js"></script>
 </body>
 </html>
