@@ -1,4 +1,4 @@
-/* game.js v0.85 — (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.86 — (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -97,7 +97,7 @@ function preload(){
 
 /* ---------- 판 정리 · 불러오기 ---------- */
 function clearLevel(){
-  G.locks = []; if (typeof TKS !== 'undefined') TKS.st = null;
+  G.locks = []; if (typeof camMode === 'function' && CAM.mode !== 'iso') camMode('iso', 0); CAM.drift = 0; if (typeof TKS !== 'undefined') TKS.st = null;
   for (const u of [...G.units]) removeUnit(u);
   for (const d of G.decals) G.scene.remove(d.g); for (const p of G.projs) G.scene.remove(p.m); for (const f of G.fx) G.scene.remove(f.g || f.s);
   for (const o of G.props) G.scene.remove(o);
@@ -249,8 +249,8 @@ function textbox(who, lines, o = {}){
     const hold = o.hold || 0.5;
     const next = () => {
       if (G.t - shownAt < hold && i >= 0) return;
-      i++; if (i >= lines.length){ box.hidden = true; box.classList.remove('hasface'); G.waitInput = null; clearTimeout(timer); res(); return; }
-      box.classList.toggle('hasface', !!o.face);
+      i++; if (i >= lines.length){ box.hidden = true; box.classList.remove('hasface'); box.classList.remove('vn'); G.waitInput = null; clearTimeout(timer); res(); return; }
+      box.classList.toggle('hasface', !!o.face); box.classList.toggle('vn', !!o.face && !!o.vn);
       box.innerHTML = `${o.face ? `<img class="face" src="${o.face}" alt="">` : ''}${who ? `<b>${who}${o.tags ? ' ' + o.tags : ''}</b>` : ''}<p>${lines[i]}</p><span class="more"${hold > 0.6 ? ' hidden' : ''}>${i < lines.length - 1 ? '▼' : '■'}</span>`;
       box.querySelector('p').classList.add('in'); shownAt = G.t;
       if (hold > 0.6){ clearTimeout(timer); timer = setTimeout(() => { const m = box.querySelector('.more'); if (m) m.hidden = false; }, hold * 1000 / Math.max(0.2, G.slow)); }

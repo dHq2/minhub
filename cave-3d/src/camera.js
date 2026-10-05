@@ -1,4 +1,5 @@
-/* camera.js v0.8 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
+/* camera.js v0.9 — (v0.9: 층마다 카메라 모드 — iso (기본) · side (낮게 옆에서, 횡스크롤처럼) · top (높이서 내려다봄) · drift (천천히 돎). camMode(). side · top은 Z · C로 못 돌림)
+   v0.8 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
    v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
    v0.4: 카메라 구역 — 지도에 적어 둔 구역 (곁방 등)에 들어가면 정해진 각도로 돌고 둘레 벽을 깎음, 나오면 들어가기 전 각도로 */
@@ -15,7 +16,15 @@ const CAM = {
   sideUntil: -1, sideStart: 0, sideAt: null, sideAxis: null,
   wide: null,                      // 넓게 보여주기 (장면 시작): { x, z, h, back, until }
   track: null, trackUntil: -1,     // 완벽 투창: 날아가는 창
+  mode: 'iso', drift: 0, lockYaw: false, wallT: 0,
 };
+const CAM_MODES = { iso: { base: { y: 9.5, back: 8.2 }, look: { y: 0.4, fwd: 0.6 } }, side: { base: { y: 3.6, back: 7.4 }, look: { y: 1.0, fwd: 0 } }, top: { base: { y: 14, back: 2.6 }, look: { y: 0.2, fwd: 0.2 } } };
+// 층 카메라: 모드 + (drift) 1초에 도는 각도. side · top은 각도 고정
+function camMode(mode = 'iso', drift = 0){
+  const M = CAM_MODES[mode] || CAM_MODES.iso; CAM.mode = mode; Object.assign(CAM.base, M.base); Object.assign(CAM.look, M.look);
+  CAM.drift = drift; CAM.lockYaw = mode === 'side' || mode === 'top';
+  if (CAM.lockYaw) setYaw(0);
+}
 let camera;
 const camOff = (yaw, d) => ({ x: Math.sin(yaw) * d, z: Math.cos(yaw) * d });
 function initCamera(){
@@ -53,7 +62,7 @@ function camReset(){
 function camWide(x, z, h, back, sec){ CAM.wide = { x, z, h, back, until: G.t + sec }; }
 function camSnapTo(x, z){ CAM.follow.x = x; CAM.follow.z = z; const o = camOff(CAM.yaw, CAM.base.back); camera.position.set(x + o.x, CAM.base.y, z + o.z); }
 function setYaw(y){ CAM.yawT = y; if (G.map && G.map.wallInfo) layoutWalls(G.map, y); }
-function rotateCam(dir){ setYaw(CAM.yawT + dir * Math.PI / 2); CAM.yawBefore = null; }
+function rotateCam(dir){ if (CAM.lockYaw){ popText && G.player && popText(G.player.x, G.player.y + 2.2, G.player.z, '이 층에선 카메라를 못 돌림', 'miss', 0.8); return; } setYaw(CAM.yawT + dir * Math.PI / 2); CAM.yawBefore = null; }
 // 그 자리를 가장 덜 가리는 방향 (카메라 쪽 4칸 안의 벽 수가 가장 적은 쪽)
 function bestYaw(x, z){
   let best = CAM.yawT, bv = 1e9;
@@ -70,6 +79,7 @@ function bestYaw(x, z){
 
 function updateCamera(dt, target){
   const k = 1 - Math.pow(1 - 0.08, dt * 60);   // 프레임과 무관한 느슨한 스프링 (60fps에서 0.08)
+  if (CAM.drift && !G.lock){ CAM.yawT += CAM.drift * dt; CAM.wallT -= dt; if (CAM.wallT <= 0){ CAM.wallT = 0.5; if (G.map && G.map.wallInfo) layoutWalls(G.map, CAM.yawT); } }   // v0.9 천천히 도는 층
   CAM.yaw += angDiff(CAM.yawT, CAM.yaw) * Math.min(1, dt * 5);
   camera.up.set(0, 1, 0);
   // 1. 횡스크롤 전환: 두 사람을 잇는 선의 옆에서 낮게, 거리를 벌리며 빠짐

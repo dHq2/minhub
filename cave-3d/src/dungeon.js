@@ -1,4 +1,4 @@
-/* dungeon.js v1.1 — 원정 층 만들기 (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
+/* dungeon.js v1.2 — 원정 층 만들기 (v1.2: 층 배치 — linear (방이 한 줄로, 횡스크롤 카메라) · ascent (남→북으로 오르막, 마지막 방이 높은 단 위 = 세자르) · cam (층 카메라 모드 · drift)) (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
    · 절차 생성: 방 7 ~ 11개 (겹치지 않게) + 2칸 복도 (가장 짧게 잇고 + 고리 몇 개) → 글자 지도 → buildWorld (굴 · 1층과 같은 판)
    · 방 종류: 시작 (귀환 줄) · 계단 (가장 먼 방) · 싸움 · 강적 · 보물 · 쉼터 (모닥불) · 무덤 (1층) · 제단 (4층)
    · 층 테마 10: 땅 · 벽 · 빛 색 · 적 · 소품 (도감 소품 75종, art/dun)
@@ -10,7 +10,7 @@ const FLOOR_DEF = [null,
   { name: '무덤 어귀', sub: '회색 대지 · 무덤 · 촛불', floor: 0x46434d, wall: 0x2b2831, pillar: 0x56515f, glow: 0xffb070,
     foes: { swordsman: 3, spearman: 3, shieldman: 2, foeJelly: 1 }, elite: ['brute'], rooms: [7, 9], graves: 3,
     props: ['H-007', 'H-027', 'H-052', 'H-191', 'H-205', 'H-283', 'H-009', 'H-289', 'H-287', 'H-195', 'H-074', 'H-286'], lights: ['H-101', 'H-236', 'H-196'] },
-  { name: '뼈의 회랑', sub: '좁은 회랑 · 뼈 무더기 · 가시 함정 · 궁수 진형', floor: 0x4a4440, wall: 0x2c2724, pillar: 0x5a524c, glow: 0xffa060, spikes: 9,
+  { name: '뼈의 회랑', sub: '좁은 회랑 · 뼈 무더기 · 가시 함정 · 궁수 진형', floor: 0x4a4440, wall: 0x2c2724, pillar: 0x5a524c, glow: 0xffa060, spikes: 9, layout: 'linear', cam: 'side',
     foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 }, elite: ['benkin'], rooms: [8, 9],
     props: ['H-056', 'H-169', 'H-194', 'H-207', 'H-289', 'H-009', 'H-286', 'H-179', 'H-119', 'H-168'], lights: ['H-206', 'H-107', 'H-158'] },
   { name: '젖은 묘지', sub: '비 · 물웅덩이 · 늪', floor: 0x3c4446, wall: 0x262d30, pillar: 0x4c585a, glow: 0x9fd0ff, wet: true, pools: 'water',
@@ -19,19 +19,19 @@ const FLOOR_DEF = [null,
   { name: '지하 예배당', sub: '제단 · 촛대 · 핏자국', floor: 0x463c44, wall: 0x2c232b, pillar: 0x5c4c58, glow: 0xff8a6a,
     foes: { foeCultist: 4, foeDevil: 3, swordsman: 2, archer: 1 }, elite: ['dandalo', 'benkin'], rooms: [8, 10], altar: true,
     props: ['H-033', 'H-109', 'H-159', 'H-201', 'H-031', 'H-053', 'H-058', 'H-197', 'H-153', 'H-105', 'H-160'], lights: ['H-101', 'H-196', 'H-206'] },
-  { name: '세자르의 알현실', sub: '관 · 신성 봉인 · 기둥', floor: 0x4c4650, wall: 0x2e2834, pillar: 0x66606e, glow: 0xffd8a0,
+  { name: '세자르의 알현실', sub: '관 · 신성 봉인 · 기둥 · 북쪽 단 위의 왕', floor: 0x4c4650, wall: 0x2e2834, pillar: 0x66606e, glow: 0xffd8a0, layout: 'ascent', cam: 'top',
     foes: { swordsman: 3, shieldman: 3, archer: 2, foeCultist: 2 }, elite: ['dandalo', 'brute'], rooms: [8, 10],
     props: ['H-198', 'H-049', 'H-288', 'H-195', 'H-058', 'H-153', 'H-166', 'H-023'], lights: ['H-101', 'H-206', 'H-196'] },
   { name: '안개 늪', sub: '안개 · 진흙 · 도깨비불', floor: 0x3a4238, wall: 0x232a22, pillar: 0x4a5448, glow: 0x9fffb0, fog: 0.75, wet: true, pools: 'mud',
     foes: { foeSlime: 3, foeFairy: 3, foeJelly: 2, archer: 2 }, elite: ['benkin', 'brute'], rooms: [9, 10],
     props: ['H-137', 'H-200', 'H-202', 'H-372', 'H-151', 'H-074', 'H-193'], lights: ['H-293', 'H-236'] },
-  { name: '도깨비 시장', sub: '등불 · 노점 · 북소리', floor: 0x4a3c34, wall: 0x2e231c, pillar: 0x5e4a3c, glow: 0xffc070,
+  { name: '도깨비 시장', sub: '등불 · 노점 · 북소리', floor: 0x4a3c34, wall: 0x2e231c, pillar: 0x5e4a3c, glow: 0xffc070, drift: 0.06,
     foes: { foeDevil: 4, foeCultist: 2, swordsman: 2, archer: 2 }, elite: ['dandalo', 'benkin'], rooms: [9, 11],
     props: ['H-130', 'H-115', 'H-254', 'H-255', 'H-110', 'H-165', 'H-117'], lights: ['H-158', 'H-107', 'H-206'] },
   { name: '쇠의 진지', sub: '목책 · 망루 · 깃발 · 진형', floor: 0x44403c, wall: 0x2a2622, pillar: 0x585048, glow: 0xffa050, towers: true, spikes: 5,
     foes: { shieldman: 4, spearman: 3, archer: 3, swordsman: 2 }, elite: ['dandalo', 'brute'], rooms: [9, 11],
     props: ['H-006', 'H-021', 'H-047', 'H-117', 'H-119', 'H-165', 'H-168', 'H-057'], lights: ['H-158', 'H-206'] },
-  { name: '눈알의 굴', sub: '짙은 어둠 · 지껄임', floor: 0x3a3442, wall: 0x221d29, pillar: 0x4a4256, glow: 0xd08aff, dark: 0.7,
+  { name: '눈알의 굴', sub: '짙은 어둠 · 지껄임', floor: 0x3a3442, wall: 0x221d29, pillar: 0x4a4256, glow: 0xd08aff, dark: 0.7, layout: 'linear', cam: 'side',
     foes: { foeCultist: 3, foeDevil: 3, foeSlime: 2, archer: 2 }, elite: ['benkin', 'dandalo'], rooms: [9, 11],
     props: ['H-160', 'H-156', 'H-105', 'H-109', 'H-033', 'H-327', 'H-008'], lights: ['H-196', 'H-293'] },
   { name: '대장군의 전장', sub: '넓은 벌판 · 깃발 · 군단', floor: 0x48423a, wall: 0x2c2620, pillar: 0x5c5448, glow: 0xffa040, wide: true, towers: true,
@@ -55,10 +55,19 @@ function rngOf(seed){
 /* ---------- 층 만들기 ---------- */
 function genDungeon(F, seed){
   const R = rngOf(seed), D = FLOOR_DEF[Math.min(F, FLOOR_DEF.length - 1)];
-  const W = D.wide ? 70 : Math.min(60, 42 + F * 2), H = W;
+  const lin = D.layout === 'linear', asc = D.layout === 'ascent';
+  const W = lin ? 96 : asc ? 34 : D.wide ? 70 : Math.min(60, 42 + F * 2), H = lin ? 22 : asc ? 96 : W;
   const g = Array.from({ length: H }, () => new Array(W).fill('#'));
   const nRooms = R.int(D.rooms[0], D.rooms[1]), rooms = [];
-  for (let tries = 0; rooms.length < nRooms && tries < 600; tries++){
+  if (lin || asc){   // 한 줄 배치: 복도 · 방이 차례로 (linear: 왼→오, ascent: 남→북)
+    let cur = 3;
+    while (rooms.length < nRooms){
+      const w = R.int(6, 10), h = R.int(6, 9), gap = R.int(3, 6);
+      if (lin){ if (cur + w + 3 > W) break; const z = R.int(3, H - h - 3); rooms.push({ id: rooms.length, x: cur, z, w, h, cx: cur + (w - 1) / 2, cz: z + (h - 1) / 2, type: 'fight', links: [] }); cur += w + gap; }
+      else { if (cur + h + 3 > H) break; const x = R.int(3, W - w - 3), z = H - cur - h; rooms.push({ id: rooms.length, x, z, w, h, cx: x + (w - 1) / 2, cz: z + (h - 1) / 2, type: 'fight', links: [] }); cur += h + gap; }
+    }
+  }
+  for (let tries = 0; rooms.length < nRooms && !(lin || asc) && tries < 600; tries++){
     const big = D.wide ? 4 : 0, w = R.int(6 + big, 11 + big), h = R.int(6 + big, 10 + big), x = R.int(2, W - w - 3), z = R.int(2, H - h - 3);
     if (rooms.some(r => x < r.x + r.w + 3 && x + w + 3 > r.x && z < r.z + r.h + 3 && z + h + 3 > r.z)) continue;
     rooms.push({ id: rooms.length, x, z, w, h, cx: x + (w - 1) / 2, cz: z + (h - 1) / 2, type: 'fight', links: [] });
@@ -93,11 +102,11 @@ function genDungeon(F, seed){
     carve(x, z);
   }
   // 방 종류: 시작 = 가장자리에 가까운 방, 계단 = 시작에서 (방 그래프로) 가장 먼 방
-  const start = rooms.reduce((b, r) => (r.cx + r.cz < b.cx + b.cz ? r : b), rooms[0]);
+  const start = lin || asc ? rooms[0] : rooms.reduce((b, r) => (r.cx + r.cz < b.cx + b.cz ? r : b), rooms[0]);
   const dist = new Map([[start.id, 0]]), q = [start.id];
   while (q.length){ const c = q.shift(); for (const n of rooms[c].links) if (!dist.has(n)){ dist.set(n, dist.get(c) + 1); q.push(n); } }
   const byFar = rooms.slice().sort((a, b) => dist.get(b.id) - dist.get(a.id) || dd(b, start) - dd(a, start));
-  const stairs = byFar[0];
+  const stairs = lin || asc ? rooms[rooms.length - 1] : byFar[0];
   start.type = 'start'; stairs.type = 'stairs';
   const rest = rooms.filter(r => r.type === 'fight' && r !== start && r !== stairs);
   const take = (type, n, pref) => { for (let k = 0; k < n && rest.length; k++){ const pool = pref ? rest.filter(pref) : rest; const r = (pool.length ? pool : rest)[Math.floor(R() * (pool.length ? pool : rest).length)]; r.type = type; rest.splice(rest.indexOf(r), 1); } };
@@ -177,6 +186,12 @@ function genDungeon(F, seed){
         r.build = 'tower'; r.top = { x: i0 + 0.5, z: j0 + 0.5 };
       }
     }
+  }
+  if (asc){   // 오르막 끝: 계단 (보스) 방 전체가 높은 단, 남쪽에서 들어오는 길에 경사 두 줄
+    const r = stairs; for (let j = r.z; j < r.z + r.h; j++) for (let i = r.x; i < r.x + r.w; i++) if (g[j][i] === '.' || g[j][i] === 'o') g[j][i] = '^';
+    for (let i = r.x - 1; i <= r.x + r.w; i++) for (const j of [r.z + r.h, r.z + r.h + 1]) if (g[j] && g[j][i] === ',') g[j][i] = '/';
+    for (let i = r.x; i < r.x + r.w; i++) if (g[r.z + r.h] && g[r.z + r.h][i] === '#' && g[r.z + r.h + 1] && g[r.z + r.h + 1][i] === ',') g[r.z + r.h][i] = '/';
+    r.build = null;
   }
   // v1.1 층 기믹 칸 (mapfx.js가 그림 · 판정): 가시 함정 (복도 · 방 입구) · 물웅덩이 · 진흙
   const traps = [], pools = [];

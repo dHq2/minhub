@@ -1,4 +1,4 @@
-/* expedition.js v1.12 — 원정 (한 번의 런). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.13 — 원정 (한 번의 런). v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -123,11 +123,12 @@ function syncPartyOut(){
   for (const u of G.units) if (u.hero && u.side === 'ally'){ syncHeroHp(u); if (u.downed) u.hero.hp = Math.round(u.max * 0.2); }
 }
 async function expLoadFloor(F, how){
-  syncPartyOut();
+  syncPartyOut(); if (typeof camMode === 'function') camMode('iso', 0);
   clearLevel(); G.mode = 'exp'; EXP.F = F; EXP.deepest = Math.max(EXP.deepest, F); RPG.depth = Math.max(RPG.depth, F);
   const gen = genDungeon(F, (EXP.seed + F * 977) >>> 0), D = gen.D; EXP.gen = gen;
   loadLevel(gen.rows, { bg: 0x030305, fogNear: 10, fogFar: 26, hemi: 0.1, moon: 0, floor: D.floor, wall: D.wall, pillar: D.pillar });
-  G.map.wallH = 2.4; layoutWalls(G.map, CAM.yawT || 0);
+  if (typeof camMode === 'function') camMode(D.cam || 'iso', D.drift || 0);
+  G.map.wallH = D.cam === 'side' ? 1.7 : 2.4; layoutWalls(G.map, CAM.yawT || 0);
   Object.assign(DUN, { bills: [], sources: [], items: [], marks: [], seen: new Uint8Array(gen.W * gen.H), rooms: gen.rooms });
   setupDarkness(D); G.fogK = D.fog || 0.9;
   if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
@@ -147,7 +148,7 @@ async function expLoadFloor(F, how){
   if (RPG.lost && RPG.lost.F === F && PRO.day - RPG.lost.day <= 3) placeLostBag(gen);
   G.onKill = expOnKill;
   G.cmd = 'free';
-  camSnapTo(px, pz); CAM.yaw = CAM.yawT = 0;
+  camSnapTo(px, pz); CAM.yaw = CAM.yawT;
   caption(`${F}층 · ${D.name}`, D.sub);
   if (F >= 5 && typeof heroCount === 'function') for (const k of RPG.party) heroCount(hero(k), 'deep');
   if (how === 'start' && !RPG.meta.expHelp){ RPG.meta.expHelp = 1; setTimeout(() => guide('어둡다. <em>횃불</em>이 다 타기 전에 · <em>계단</em>은 가장 먼 방 · <em>귀환 줄</em>로 굴로 · <em>I</em> 가방 · <em>M</em> 지도', 9), 1500); }
@@ -214,7 +215,8 @@ function fillRoom(r, gen){
 function spawnFoe(kind, x, z, F, band, elite){
   const e = spawn(kind, x, z, 'enemy');
   const hm = 1 + 0.15 * (F - 1), am = 1 + 0.12 * (F - 1);
-  e.max = e.hp = Math.round(e.D.hp * hm * (elite ? 1.35 : 1)); e.atk = Math.round(e.D.atk * am * (elite ? 1.15 : 1));
+  const DF = { easy: [0.75, 0.7], normal: [1, 1], hard: [1.25, 1.2] }[RPG.meta.diff || 'normal'] || [1, 1];   // 난이도 (원정 준비 창)
+  e.max = e.hp = Math.round(e.D.hp * hm * (elite ? 1.35 : 1) * DF[0]); e.atk = Math.round(e.D.atk * am * (elite ? 1.15 : 1) * DF[1]);
   e.def = Math.round((FOE_DEF[kind] || 0) * (1 + 0.12 * (F - 1))); e.critP = 0.04 + 0.005 * F;
   e.band = band; e.home = { x, z }; e.face = Math.random() < 0.5 ? 1 : -1; e.elite = !!elite;
   e.xp = Math.round((FOE_XP[kind] || 8) * (1 + 0.25 * (F - 1)) * (elite ? 1.6 : 1));

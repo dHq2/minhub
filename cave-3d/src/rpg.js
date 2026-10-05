@@ -1,4 +1,4 @@
-/* rpg.js v1.1 — RPG 핵심. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
+/* rpg.js v1.2 — RPG 핵심. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
    영웅 기록 (레벨 · 경험 · 속성 다섯 · 장비 여섯 칸 · 체력 · 정신도) · 아이템 (등급 · 품질 · 덧붙은 효과) · 공용 가방 · 굴 보관함
    파생 수치 (스탯이 실제로 먹힘) · 피해 공식 (방어 · 회피 · 치명 · 흡혈 · 가시 · 상태 이상) · 경험 · 레벨업 · 저장 (localStorage)
    ITEMS (data_items.js)를 씀. 피해는 units.js의 hurt를 한 겹 감쌈 */
@@ -118,7 +118,7 @@ function gearFx(h){
     else fx[k] = v;
   };
   let atk = 0, def = 0;
-  for (const s of SLOTS){ const it = h.eq[s]; if (!it) continue; const S = itemStats(it); if (s !== 'weapon' && !(s === 'off' && itemDef(it).wt !== 'shield')) atk += S.atk; def += S.def; for (const [k, v] of Object.entries(S.fx)) add(k, v); }
+  for (const s of SLOTS){ const it = h.eq[s]; if (!it) continue; const S = itemStats(it); if (s !== 'weapon' && !(s === 'off' && itemDef(it).wt !== 'shield' && h.id !== 'karius')) atk += S.atk; def += S.def; for (const [k, v] of Object.entries(S.fx)) add(k, v); }
   if (h.id === 'inju') for (const it of RPG.bag){ const d = itemDef(it); if (d.s === 'carry') for (const [k, v] of Object.entries(d.fx || {})) add(k, v); }
   // 세트 (같은 set 셋)
   const sets = {}; for (const s of SLOTS){ const it = h.eq[s]; const st = it && itemDef(it).fx && itemDef(it).fx.set; if (st) sets[st] = (sets[st] || 0) + 1; }
@@ -227,16 +227,18 @@ function canEquip(h, it, slot){
   const d = itemDef(it);
   if (d.s === 'weapon'){
     if (!canWield(h, d.wt)) return false;
-    if (slot === 'off') return d.wt === 'shield' || ONE_HAND.has(d.wt);
+    if (slot === 'off') return h.id === 'karius' || d.wt === 'shield' || ONE_HAND.has(d.wt);   // 카리우스: 팔이 여덟 — 보조 칸에도 아무 무기
     return true;
   }
+  if (h.id === 'karius' && (d.s === 'body' || d.s === 'legs')) return false;   // 카리우스: 몸에 맞는 갑옷이 없음 (투구는 됨)
   return ['head', 'body', 'legs', 'acc'].includes(d.s);
 }
-function whyNot(h, it){ const d = itemDef(it); return d.s === 'weapon' && !canWield(h, d.wt) ? `${h.name}는 ${WT_N[d.wt] || '이것'}을 못 다룸` : '끼울 수 없음'; }
+function whyNot(h, it){ const d = itemDef(it); return d.s === 'weapon' && !canWield(h, d.wt) ? `${h.name}는 ${WT_N[d.wt] || '이것'}을 못 다룸` : h.id === 'karius' && (d.s === 'body' || d.s === 'legs') ? '카리우스 몸에 맞는 갑옷은 없다 (투구만)' : '끼울 수 없음'; }
 function slotFor(h, it){
   const d = itemDef(it), s = d.s;
   if (s === 'acc') return !h.eq.acc1 ? 'acc1' : !h.eq.acc2 ? 'acc2' : 'acc1';
   if (s === 'weapon' && d.wt === 'shield') return 'off';   // 방패는 보조 칸
+  if (s === 'weapon' && h.id === 'karius' && h.eq.weapon && !h.eq.off) return 'off';   // 카리우스: 둘째 무기
   return s;
 }
 function equip(h, it, from = RPG.bag, slot){

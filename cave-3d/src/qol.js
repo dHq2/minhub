@@ -1,4 +1,4 @@
-/* qol.js v1.0 — 편의 · 굴 손님
+/* qol.js v1.1 — 편의 · 굴 손님 (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
    · H: 기술표 창 (무리별: 움직임 · 막기 · 맨손 · 레슬링 · 무기 · 원정 · 굴). 열려 있는 동안 멈춤. H · Esc로 닫음
    · 지름길: 보스 (5층 세자르 · 10층 대장군)를 쓰러뜨리면 원정 준비 창에서 그 아래층부터 떠날 수 있음
    · 토끼마차 (아이텐): 사흘마다 아침에 굴에 들름 (그날 하루). 장비 셋 (그날 고른 것) · 탄약 · 물약 · 횃불을 판다 */
@@ -47,3 +47,22 @@ function caveVisitors(){
   setTimeout(() => G.mode === 'cave' && guide('<em>토끼마차</em>가 왔다 — 아이텐이 장비 · 탄약을 판다 (오늘만)', 6), 3200);
 }
 if (typeof endDay === 'function'){ const _endDay = endDay; endDay = async function(...a){ const r = await _endDay.apply(this, a); caveVisitors(); return r; }; }
+
+/* ---------- v1.1 초상화 대화 (미연시처럼 큰 얼굴 + 이름) ---------- */
+const VN_FACE = { 인주: 'assets/inju_face.png', 청광묵: 'art/pro/goblin_face.webp', 카리우스: 'art/pro/karius_face.webp', 'GOOD WILL': 'assets/goodwill_face.png', 노먼: 'assets/norman_face.png', 모닝스타: 'assets/morningstar_face.png',
+  세자르: 'assets/cesar_face.png', 적뢰: 'assets/jeokroe_face.png', 벤킨: 'assets/benkin_face.png', 단달로: 'assets/dandalo_face.png', 테헤라: 'art/enc/tehera_sit.webp', '게 요리사': 'art/enc/crabchef.webp', 아이텐: 'art/enc/aiten.webp', '돼지들의 신': 'art/enc/piggod.webp', '담배 피는 노인': 'art/enc/H-341.webp' };
+function vnTalk(who, lines, o = {}){ return textbox(who, lines, { ...o, face: o.face || VN_FACE[who], vn: true }); }
+
+/* ---------- v1.1 Esc: 일시정지 창 (이어하기 · 기술표 · 처음부터) ---------- */
+function pauseOpen(){
+  const el = $r('confirm'); G.paused = true;
+  el.innerHTML = `<div class="cf-box"><b>잠깐</b><p>${G.mode === 'exp' ? `${EXP.F}층 · 횃불 ${EXP.torches} · 금화 ${RPG.gold}` : `${PRO.day || 1}일째 · 금화 ${RPG.gold}`}</p><div style="flex-direction:column;align-items:stretch">
+    <button data-a="ok">이어하기 (Esc)</button><button data-p="moves">기술표 (H)</button><button data-p="cam">카메라 되돌리기</button><button data-p="new">처음부터 (저장 지움)</button></div></div>`;
+  el.hidden = false;
+  UIR.confirm = (yes) => { el.hidden = true; UIR.confirm = null; G.paused = false; el.onclick = null; };
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
+    if (b.dataset.a === 'ok') return UIR.confirm(false);
+    if (b.dataset.p === 'moves'){ UIR.confirm(false); moveListToggle(true); }
+    if (b.dataset.p === 'cam'){ UIR.confirm(false); if (!CAM.lockYaw) setYaw(Math.round(CAM.yawT / (Math.PI * 2)) * Math.PI * 2); if (G.player) camSnapTo(G.player.x, G.player.z); }
+    if (b.dataset.p === 'new'){ UIR.confirm(false); uiConfirm('처음부터?', '저장을 지우고 프롤로그부터 다시 시작합니다.', '지운다', () => newGame()); } };
+}

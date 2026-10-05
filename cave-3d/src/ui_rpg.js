@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.13 — RPG 화면 (v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.14 — RPG 화면 (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -275,6 +275,7 @@ function expPrepOpen(){
       <div class="pp-row"><span>식량</span><b>${need}끼 필요 · 창고 ${foodHave}끼</b>${foodHave < need ? '<em class="bad">모자람 → 배고픔 (최대 체력 -15%)</em>' : '<em>각자 한 끼씩 챙김</em>'}</div>
       <div class="pp-row"><span>횃불</span><b><button data-t="-">−</button> ${PREP.torches + 1} <button data-t="+">+</button></b><em>하나는 기본 · 더 들면 땔감 10씩 (땔감 ${PRO.wood || 0}) · 하나에 4분</em></div>
       ${(RPG.meta.shortcut || 1) > 1 ? `<div class="pp-row"><span>출발</span><b>${[1].concat((RPG.meta.shortcut || 1) >= 6 ? [6] : []).concat((RPG.meta.shortcut || 1) >= 11 ? [10] : []).map(f => `<button data-f="${f}" style="${PREP.startF === f ? 'outline:2px solid #ffd35a' : ''}">${f}층</button>`).join(' ')}</b><em>지름길: 쓰러뜨린 보스 아래층부터</em></div>` : ''}
+      <div class="pp-row"><span>난이도</span><b>${['easy', 'normal', 'hard'].map(k => `<button data-d="${k}" style="${(RPG.meta.diff || 'normal') === k ? 'outline:2px solid #ffd35a' : ''}">${{ easy: '쉬움', normal: '보통', hard: '어려움' }[k]}</button>`).join(' ')}</b><em>적 체력 · 공격 (쉬움 75% · 70%, 어려움 125% · 120%)</em></div>
       <div class="pp-row"><span>가방</span><b>${RPG.bag.length}/${bagCap()}</b><em>탄약: 화살 ${RPG.ammo.arrow} · 총알 ${RPG.ammo.bullet} · 산탄 ${RPG.ammo.shell} · I로 장비를 고르고 오기</em></div>
       <div class="pp-btns"><button data-a="go">떠난다</button><button data-a="eq">장비 (I)</button><button data-a="no">아직</button></div></div>`;
   };
@@ -282,6 +283,7 @@ function expPrepOpen(){
   el.onclick = e => {
     e.stopPropagation(); const k = e.target.closest('[data-k]'), t = e.target.closest('[data-t]'), a = e.target.closest('[data-a]'), fb = e.target.closest('[data-f]');
     if (fb) PREP.startF = +fb.dataset.f;
+    const db = e.target.closest('[data-d]'); if (db){ RPG.meta.diff = db.dataset.d; saveRpg && saveRpg(); }
     if (k && k.dataset.k !== 'inju') PREP.pick[k.dataset.k] = !PREP.pick[k.dataset.k];
     if (t) PREP.torches = Math.max(0, Math.min(Math.floor((PRO.wood || 0) / 10), PREP.torches + (t.dataset.t === '+' ? 1 : -1)));
     if (a){ if (a.dataset.a === 'no'){ el.hidden = true; G.paused = false; return; } if (a.dataset.a === 'eq'){ el.hidden = true; G.paused = false; rpgWinOpen('eq'); return; }
@@ -312,6 +314,7 @@ function uiKeys(){
   if (!$r('prep').hidden){ if (hit('Escape')){ $r('prep').hidden = true; G.paused = false; } return true; }
   if (hit('KeyI') || hit('KeyB')){ rpgWinToggle('eq'); return true; }
   if (UIR.open){ if (hit('Escape')) rpgWinClose(); return true; }
+  if (hit('Escape') && !G.lock && !G.waitInput && PLAY_MODES.has(G.mode) && typeof pauseOpen === 'function' && !(typeof PRO !== 'undefined' && PRO.menu)){ pauseOpen(); return true; }   // v1.14 일시정지
   if (G.mode === 'exp' && hit('KeyM')){ const b = $r('bigwrap'); b.hidden = !b.hidden; if (!b.hidden) drawMinimap(true); }
   if (!G.lock && !G.waitInput) for (let k = 0; k < 4; k++) if (hit('Digit' + (k + 4))) quickUse(k);
   return false;

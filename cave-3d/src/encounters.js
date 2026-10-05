@@ -1,4 +1,4 @@
-/* encounters.js v1.0 — 인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
+/* encounters.js v1.1 — (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
    · 죽은 영웅 · 액자 (뇌를 훔치면 노인들이 덤빔) · 지껄임 (입: 동료 비밀을 떠듦, 때려서 닫음) · 기나긴 해변 (말대가리) · 눈알방 (밟으면 터지고 다시 자람, 정신도)
    · 우주의 테헤라 (따라옴: 이번 원정 시야 +1.5 · 적이 지도에) · 게 요리사 (상점) · 담배 피는 노인 (보물 방 · 정신도) · 거대한 무희 (정신도 회복 · 느려짐)
    · 돼지들의 신 (고깃덩이 선물: 먹으면 회복 + 정신도 · 혼란) · 푸른 구멍의 도끼기사 (강적, 도끼 유물) · 끝없는 줄 (줄 선 존재들 · 움직이는 바닥)
@@ -73,13 +73,13 @@ const ENC_FILL = {
     const b = dbill(EA + 'tehera_sit.webp', p.x, p.z, 1.3, { fit: 1.4, glow: 1, y: 0.55 }); addSource(p.x, p.z, 5, 0xc8e8ff, 0.8, 2);
     r.encData = { p, b };
     G.inspect.push({ x: p.x, z: p.z, r: 1.9, mark: '테헤라', far: 9, once: true, label: '테헤라에게 손을 내민다', fn: async () => {
-      await textbox('테헤라', ['…', '(빛가루가 손등에 내려앉는다)', '재미있는 냄새가 나는 아이들이네. 조금만 따라가 볼까.']);
+      await vnTalk('테헤라', ['…', '(빛가루가 손등에 내려앉는다)', '재미있는 냄새가 나는 아이들이네. 조금만 따라가 볼까.']);
       b.g.visible = false; EXP.tehera = true; EXP.radar = true; caption('테헤라가 따라온다', '이번 원정: 시야 +1.5 · 적이 지도에 보임');
     } });
   },
   crabChef(r){
     const p = encSpot(r); dbill(EA + 'crabchef.webp', p.x, p.z, 1.6, { fit: 1.6 }); G.map.solid[p.z * G.map.w + p.x] = 1; addSource(p.x, p.z, 4.5, 0xffc080, 0.8, 1.8);
-    G.inspect.push({ x: p.x, z: p.z, r: 1.9, mark: '게 요리사', far: 9, label: '게 요리사 — 음식을 산다', fn: () => encShop('게 요리사', ['I-043', 'I-051', 'I-015', 'I-037', 'I-061', 'I-104', 'I-038']) });
+    G.inspect.push({ x: p.x, z: p.z, r: 1.9, mark: '게 요리사', far: 9, label: '게 요리사 — 음식을 산다', fn: async () => { if (!EXP.chefMet){ EXP.chefMet = true; await vnTalk('게 요리사', ['어서 오십시오. 따끈한 게 있습니다.', '재료요? …묻지 않는 편이 맛있습니다.']); } encShop('게 요리사', ['I-043', 'I-051', 'I-015', 'I-037', 'I-061', 'I-104', 'I-038']); } });
   },
   smoker(r){
     const p = encSpot(r); dbill(EA + 'H-341.webp', p.x, p.z, 1.7, { fit: 1 }); G.map.solid[p.z * G.map.w + p.x] = 1;

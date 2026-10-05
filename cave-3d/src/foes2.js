@@ -1,4 +1,4 @@
-/* foes2.js v1.0 — 층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.1 — (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
    1 무덤 어귀: 쥐 기사 더함 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
    6 안개 늪: 검냥이 · 강적 보르마 · 7 도깨비 시장: 보광 · 광냥 · 강적 청승 · 작약 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
@@ -140,8 +140,8 @@ async function bossWake(){
   const u = spawnFoe(kind, B.x, B.z + (kind === 'cesar' ? 0.4 : 0), EXP.F, 'boss'); B.u = u; u.alert = true; u.elite = false;
   if (u.tag){ u.tag.remove(); u.tag = null; }
   G.boss = u; $('bossbar').hidden = false; $('bossname').textContent = kind === 'cesar' ? '세자르 — 관 속의 늙은 왕' : '대장군 — 열 번째 층의 주인'; $('bossphase').textContent = '';
-  if (kind === 'cesar'){ setPose(u, 'raise'); u.st = 'strike'; u.stT = 1.4; caption('세자르', '녹슬지 않는 왕관 · 관 속의 늙은 왕'); }
-  else { caption('대장군', '열 번째 층의 주인 · 군단'); for (const e of foes()) e.alert = true; }
+  if (kind === 'cesar'){ setPose(u, 'raise'); u.st = 'strike'; u.stT = 3; G.lock = true; camWide(u.x, u.z, 4.5, 6, 4); await vnTalk('세자르', ['…누가 내 잠을 깨우나.', '왕관은 녹슬지 않았다. 나도 그렇다.', '무릎을 꿇어라. 아니면 — 베인다.']); G.lock = false; u.st = 'idle'; caption('세자르', '녹슬지 않는 왕관 · 관 속의 늙은 왕'); }
+  else { G.lock = true; camWide(u.x, u.z, 6, 9, 3.5); await textbox('대장군', ['여기까지 내려온 자는 오랜만이군.', '군단이여 — 깃발 아래로.'], { face: 'art/foe/general_idle.webp', vn: true }); G.lock = false; caption('대장군', '열 번째 층의 주인 · 군단'); for (const e of foes()) e.alert = true; }
   SFX.roar && SFX.roar(0.5);
 }
 // 세자르: 평소 칼질 (enemyThink) 위에 큰 기술 넷
