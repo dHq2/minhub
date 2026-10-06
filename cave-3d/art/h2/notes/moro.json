@@ -1,0 +1,157 @@
+{
+ "slug": "moro",
+ "name": "모로",
+ "rank": "5성",
+ "folder": "3기-2/5성모로",
+ "role": "동료 (5성 = 높은 등급 동료. 파일에 역할 글자 없음 — 낫 팔 근접형으로 봄)",
+ "tall": 1.75,
+ "weight": 60,
+ "palette": [
+  "#3c3439",
+  "#eadfd6",
+  "#89858f",
+  "#8a5a62",
+  "#1e1c1e"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/moro/idle.webp",
+   "w": 393,
+   "h": 696,
+   "ax": 202,
+   "ay": 693,
+   "from": "5성모로.png 윗줄 1번",
+   "orig": "앞모습에 가깝게 서서 낫 팔과 날개를 몸 앞으로 모음 (3/4, 오른쪽)",
+   "scale": 1.63
+  },
+  "attack": {
+   "src": "art/h2/moro/attack.webp",
+   "w": 735,
+   "h": 717,
+   "ax": 384,
+   "ay": 714,
+   "from": "5성모로.png 윗줄 2번",
+   "orig": "몸을 돌리며 두 낫 팔을 크게 휘둘러 원을 그림 (베기 궤적)",
+   "scale": 1.63
+  },
+  "attack2": {
+   "src": "art/h2/moro/attack2.webp",
+   "w": 544,
+   "h": 689,
+   "ax": 243,
+   "ay": 686,
+   "from": "5성모로.png 윗줄 3번",
+   "orig": "오른손 손톱을 뻗어 여러 줄 할퀴기 궤적 (연속 할퀴기)",
+   "scale": 1.63
+  },
+  "skill": {
+   "src": "art/h2/moro/skill.webp",
+   "w": 931,
+   "h": 663,
+   "ax": 470,
+   "ay": 660,
+   "from": "5성모로.png 윗줄 4번",
+   "orig": "다리를 벌리고 긴 낫 팔을 앞으로 곧게 내찔러 뻗음 (찌르기 궤적)",
+   "scale": 1.63
+  },
+  "guard": {
+   "src": "art/h2/moro/guard.webp",
+   "w": 525,
+   "h": 655,
+   "ax": 263,
+   "ay": 652,
+   "from": "5성모로.png 아랫줄 1번",
+   "orig": "날개 네 장과 낫 팔로 몸을 감싸 웅크림 (막기)",
+   "scale": 1.63
+  },
+  "low": {
+   "src": "art/h2/moro/low.webp",
+   "w": 791,
+   "h": 649,
+   "ax": 532,
+   "ay": 646,
+   "from": "5성모로.png 아랫줄 2번",
+   "orig": "낮게 런지하며 낫 팔로 땅을 쓸어 벰 (발밑 궤적)",
+   "scale": 1.63
+  },
+  "crouch": {
+   "src": "art/h2/moro/crouch.webp",
+   "w": 986,
+   "h": 515,
+   "ax": 472,
+   "ay": 512,
+   "from": "5성모로.png 아랫줄 3번",
+   "orig": "날개를 펼친 채 한 손으로 땅을 짚고 웅크려 착지",
+   "scale": 1.63
+  },
+  "idle2": {
+   "src": "art/h2/moro/idle2.webp",
+   "w": 566,
+   "h": 681,
+   "ax": 346,
+   "ay": 678,
+   "from": "5성모로.png 아랫줄 4번",
+   "orig": "낫 팔을 들고 다른 손으로 입을 가리며 하품 (졸린 대기, 방울)",
+   "scale": 1.63
+  }
+ },
+ "portrait": "art/h2/moro/portrait.webp",
+ "face": "art/h2/moro/face.webp",
+ "portrait_from": "5성모로.png 윗줄 1번 · face 같은 그림 머리",
+ "wingspan": 3.2,
+ "missing": [
+  "walk",
+  "run",
+  "fly (날개로 날기)",
+  "hurt",
+  "down",
+  "dead",
+  "back"
+ ],
+ "kit": {
+  "basic": "낫 팔 휘두르기 (attack) — 앞 3m 부채꼴 160도, 2타",
+  "skills": [
+   {
+    "name": "난도질",
+    "pose": "attack2",
+    "desc": "앞 4m 부채꼴 90도 5연타 할퀴기 + 출혈 3초 (초당 공격력 20%)"
+   },
+   {
+    "name": "나방 찌르기",
+    "pose": "skill",
+    "desc": "돌진 · 줄 — 6m 앞으로 긴 낫 팔을 내찌르며 미끄러짐, 줄 위 적 모두 관통 피해"
+   },
+   {
+    "name": "가루 날개",
+    "pose": "guard",
+    "desc": "막기 — 2초 동안 날개로 몸을 감싸 모든 방향 피해 70% 감소, 끝날 때 반지름 4m 인분 가루 장판 4초 (안의 적 명중 -30%)"
+   },
+   {
+    "name": "급강하",
+    "pose": "crouch",
+    "desc": "도약 — 8m 앞 지점으로 날아 내려앉음, 반지름 3m 원 피해 + 넘어뜨림. 쓰러진 적에게는 low (쓸어베기) 로 확인사살 (피해 2배)"
+   }
+  ],
+  "passive": "밤나방: 어두운 곳 (동굴 · 밤) 에서 이동 +10% · 회피 +10%. 싸우지 않을 때는 idle2 (하품) 로 졸음"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 3
+ },
+ "tag": "beast",
+ "role_job": "척후",
+ "bag": 8,
+ "stats": {
+  "hp": 1300,
+  "atk": 48,
+  "spd": 6.5,
+  "weight_kg": 60,
+  "tall_m": 1.75
+ },
+ "desc": "더듬이와 흰 털 목도리, 회청 무늬 나방 날개 넷, 톱날 낫 같은 두 팔을 가진 5성 나방 여인. 늘 졸린 얼굴이지만 낫 팔로 휘몰아치듯 베는 근접형.",
+ "gen": 3
+}

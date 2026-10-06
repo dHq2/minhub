@@ -1,0 +1,155 @@
+{
+ "slug": "slra",
+ "name": "슬라 (산호천사)",
+ "rank": "미정",
+ "folder": "3기-2/기본슬라천사",
+ "role": "동료 (등급 글자 없음. 상냥한 젤리 천사 → 지원 동료, 싸울 때는 slra2 전투 모습으로 변신)",
+ "tall": 1.62,
+ "weight": 70,
+ "palette": [
+  "#f6f0ef",
+  "#c070d8",
+  "#e8d070",
+  "#f0f0b0",
+  "#d02a3a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/slra/idle.webp",
+   "w": 503,
+   "h": 699,
+   "ax": 256,
+   "ay": 696,
+   "from": "기본슬라천사.png 윗줄 1번",
+   "orig": "앞모습으로 두 팔을 살짝 벌리고 웃으며 서 있음 — 흰 젤리 드레스 (보라 · 노랑 얼룩, 금빛 방울), 산호 머리장식, 머리 위 고리",
+   "scale": 1.4
+  },
+  "bow": {
+   "src": "art/h2/slra/bow.webp",
+   "w": 469,
+   "h": 665,
+   "ax": 257,
+   "ay": 662,
+   "from": "기본슬라천사.png 윗줄 2번",
+   "orig": "두 손으로 젤리 치마를 들고 눈웃음 인사",
+   "scale": 1.4
+  },
+  "skill": {
+   "src": "art/h2/slra/skill.webp",
+   "w": 552,
+   "h": 707,
+   "ax": 325,
+   "ay": 704,
+   "from": "기본슬라천사.png 윗줄 3번",
+   "orig": "빙글 돌아 젤리 치마가 크게 퍼짐 (회전)",
+   "scale": 1.4
+  },
+  "wave": {
+   "src": "art/h2/slra/wave.webp",
+   "w": 413,
+   "h": 696,
+   "ax": 214,
+   "ay": 693,
+   "from": "기본슬라천사.png 윗줄 4번",
+   "orig": "한 손 가슴, 한 손 흔들며 인사",
+   "scale": 1.4
+  },
+  "walk": {
+   "src": "art/h2/slra/walk.webp",
+   "w": 552,
+   "h": 657,
+   "ax": 248,
+   "ay": 654,
+   "from": "기본슬라천사.png 아랫줄 1번",
+   "orig": "맨발로 사뿐 걸음",
+   "scale": 1.4
+  },
+  "special": {
+   "src": "art/h2/slra/special.webp",
+   "w": 486,
+   "h": 622,
+   "ax": 240,
+   "ay": 619,
+   "from": "기본슬라천사.png 아랫줄 2번",
+   "orig": "두 팔 활짝 벌리고 공중에 떠오름 (축복)",
+   "scale": 1.4
+  },
+  "sit": {
+   "src": "art/h2/slra/sit.webp",
+   "w": 571,
+   "h": 560,
+   "ax": 296,
+   "ay": 557,
+   "from": "기본슬라천사.png 아랫줄 3번",
+   "orig": "젤리 치마 위에 앉아 쉼",
+   "scale": 1.4
+  },
+  "summon": {
+   "src": "art/h2/slra/summon.webp",
+   "w": 507,
+   "h": 581,
+   "ax": 261,
+   "ay": 578,
+   "from": "기본슬라천사.png 아랫줄 4번",
+   "orig": "앉아서 손바닥 위의 작은 산호 싹을 들여다봄 (반짝 표시)",
+   "scale": 1.4
+  }
+ },
+ "portrait": "art/h2/slra/portrait.webp",
+ "face": "art/h2/slra/face.webp",
+ "portrait_from": "기본슬라천사.png 윗줄 1번 · face 같은 그림 머리",
+ "transform": "slra2",
+ "missing": [
+  "attack (그림 없음 — wave 로 대신)",
+  "hurt",
+  "down",
+  "dead",
+  "back"
+ ],
+ "kit": {
+  "basic": "산호 방울 던지기 (그림 없음 — wave 로 대신) — 8m 사격, 끈적 젤리 방울로 2초 이동 -20%",
+  "skills": [
+   {
+    "name": "산호 축복",
+    "pose": "special",
+    "desc": "떠오르며 반지름 7m 원 — 안의 아군 체력 20% 회복 + 4초 받는 피해 10% 감소"
+   },
+   {
+    "name": "젤리 회전",
+    "pose": "skill",
+    "desc": "빙글 돌아 반지름 3m 원 — 젤리 치마로 적을 3m 밀어내고 2초 이동 -30%"
+   },
+   {
+    "name": "산호 싹",
+    "pose": "summon",
+    "desc": "소환 — 앞 3m 에 산호 싹 15초, 반지름 4m 안 아군 초당 2% 회복 (싹은 체력 200, 적이 노림)"
+   },
+   {
+    "name": "산호 기사 변신",
+    "pose": "bow",
+    "desc": "변신 — 치마를 들어 인사하며 slra2 (산호 갑옷 + 장검) 로 25초 바뀜. 변신 동안 지원 기술 대신 근접 검술"
+   }
+  ],
+  "passive": "젤리 몸: 받는 근접 피해 15% 흡수, 앉아 쉬면 (sit) 회복 2배"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 4,
+  "stealth": 0
+ },
+ "tag": "mage",
+ "role_job": "지원",
+ "bag": 9,
+ "stats": {
+  "hp": 800,
+  "atk": 22,
+  "spd": 5.5,
+  "weight_kg": 70,
+  "tall_m": 1.62
+ },
+ "desc": "흰 젤리 드레스에 보라 · 노랑 얼룩과 금빛 방울이 흐르는 산호천사 슬라. 산호 머리장식과 머리 위 고리, 늘 웃는 상냥한 회복 지원 동료이며 싸울 때는 산호 기사 (slra2) 로 변신한다.",
+ "gen": 3
+}

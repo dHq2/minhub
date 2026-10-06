@@ -1,0 +1,152 @@
+{
+ "slug": "ancientdeer",
+ "name": "고대사슴",
+ "rank": "5성 이상",
+ "folder": "3기-2/고대사슴 5성이상",
+ "role": "동료 (5성 이상 = 높은 등급 동료로 봄. 덩치 큰 괴수라 적 · 보스로도 쓸 수 있음 → 둘 다 가능)",
+ "tall": 4.0,
+ "weight": 3000,
+ "palette": [
+  "#2a2a2c",
+  "#525152",
+  "#080a0b",
+  "#40d8d0",
+  "#a040c0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ancientdeer/idle.webp",
+   "w": 594,
+   "h": 739,
+   "ax": 305,
+   "ay": 736,
+   "from": "고대사슴 5성이상.png 윗줄 1번",
+   "orig": "네 발로 서서 목을 높이 세움, 나뭇가지 같은 검은 가시 뿔 · 등 가시, 청록 · 보라 빛 맥",
+   "scale": 1.6
+  },
+  "windup": {
+   "src": "art/h2/ancientdeer/windup.webp",
+   "w": 661,
+   "h": 514,
+   "ax": 323,
+   "ay": 511,
+   "from": "고대사슴 5성이상.png 윗줄 2번",
+   "orig": "머리를 낮추고 앞발을 벌려 돌진 준비",
+   "scale": 1.6
+  },
+  "dash": {
+   "src": "art/h2/ancientdeer/dash.webp",
+   "w": 800,
+   "h": 574,
+   "ax": 673,
+   "ay": 571,
+   "from": "고대사슴 5성이상.png 윗줄 3번",
+   "orig": "앞으로 몸을 날려 도약 돌진 (네 다리 뻗음)",
+   "scale": 1.6
+  },
+  "slam": {
+   "src": "art/h2/ancientdeer/slam.webp",
+   "w": 498,
+   "h": 755,
+   "ax": 176,
+   "ay": 752,
+   "from": "고대사슴 5성이상.png 윗줄 4번",
+   "orig": "뒷발로 일어서서 거대한 앞발 주먹을 높이 듦 (내려찍기 직전)",
+   "scale": 1.6
+  },
+  "low": {
+   "src": "art/h2/ancientdeer/low.webp",
+   "w": 637,
+   "h": 486,
+   "ax": 369,
+   "ay": 483,
+   "from": "고대사슴 5성이상.png 아랫줄 1번",
+   "orig": "몸을 낮추고 뿔 · 가시를 앞으로 세워 노려봄 (뿔 방벽)",
+   "scale": 1.6
+  },
+  "front": {
+   "src": "art/h2/ancientdeer/front.webp",
+   "w": 578,
+   "h": 781,
+   "ax": 319,
+   "ay": 778,
+   "from": "고대사슴 5성이상.png 아랫줄 2번",
+   "orig": "앞모습으로 목을 세우고 서 있음",
+   "scale": 1.6
+  },
+  "attack": {
+   "src": "art/h2/ancientdeer/attack.webp",
+   "w": 664,
+   "h": 688,
+   "ax": 335,
+   "ay": 685,
+   "from": "고대사슴 5성이상.png 아랫줄 3번",
+   "orig": "뒷발로 서서 앞발을 앞으로 크게 휘둘러 할큄",
+   "scale": 1.6
+  },
+  "crouch": {
+   "src": "art/h2/ancientdeer/crouch.webp",
+   "w": 605,
+   "h": 528,
+   "ax": 350,
+   "ay": 525,
+   "from": "고대사슴 5성이상.png 아랫줄 4번",
+   "orig": "낮게 웅크려 머리를 앞으로 내밀고 다가감 (사냥 자세)",
+   "scale": 1.6
+  }
+ },
+ "portrait": "art/h2/ancientdeer/portrait.webp",
+ "face": "art/h2/ancientdeer/face.webp",
+ "portrait_from": "고대사슴 5성이상.png 윗줄 1번 · face 같은 그림 머리",
+ "length": 4.5,
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "down",
+  "dead",
+  "back",
+  "roar (포효)"
+ ],
+ "kit": {
+  "basic": "앞발 할퀴기 (attack) — 뒷발로 서서 앞 4.5m 부채꼴 90도, 넘어뜨림",
+  "skills": [
+   {
+    "name": "가시뿔 돌진",
+    "pose": "dash",
+    "desc": "돌진 — windup 으로 0.6초 준비 뒤 12m 직선 돌진, 부딪힌 적 모두 넘어뜨리고 3m 밀어냄, 벽에 박으면 자기도 1초 멈춤"
+   },
+   {
+    "name": "대지 짓밟기",
+    "pose": "slam",
+    "desc": "뒷발로 일어서 앞발로 내려찍기 — 반지름 6m 원 피해 + 1초 기절, 그 자리에 가시 뿌리 장판 4초 (밟은 적 이동 -40%)"
+   },
+   {
+    "name": "뿔 방벽",
+    "pose": "low",
+    "desc": "막기 — 3초 동안 머리를 낮춰 뿔을 앞세움, 정면 150도 피해 60% 감소, 그 사이 다가온 근접 적은 가시 반격 (공격력 50%)"
+   }
+  ],
+  "passive": "고대의 가시: 받은 근접 피해 15% 되돌림. 체력 50% 아래면 청록 · 보라 맥이 밝게 빛나며 공격 +20%. 덩치가 커서 배낭 대신 짐 싣기 (bag 칸 큼)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 1
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 20,
+ "stats": {
+  "hp": 4000,
+  "atk": 90,
+  "spd": 6.5,
+  "weight_kg": 3000,
+  "tall_m": 4.0
+ },
+ "desc": "돌 비늘 갑각과 나뭇가지처럼 갈라진 검은 가시 뿔 · 등 가시를 가진 고대 사슴 괴수 (5성 이상). 몸에 청록 · 보라 빛 맥이 흐르고, 뒷발로 일어서 거대한 앞발로 내려찍는다.",
+ "gen": 3
+}
