@@ -1,4 +1,4 @@
-/* drill.js v1.3 — (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.4 — (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -194,7 +194,7 @@ function crewRow(u){
 function drillPanelRender(){
   const el = document.getElementById('drillPanel'); if (!el) return;
   const crew = G.units.filter(u => u.side === 'ally' && u.sol && !u.dead);
-  const tabs = [['crew', '편성 · 적성'], ['sc', '시나리오'], ['rule', '규칙 · 기록'], ['help', '도움말']];
+  const tabs = [['crew', '편성 · 적성'], ['sc', '시나리오'], ['rule', '규칙 · 기록'], ['h2', '2기'], ['help', '도움말']];
   let body = '';
   if (DP.tab === 'crew') body = `<p class="dp-note">적성 0~5 (진한 칸 = 타고남, 밝은 칸 = 훈련). 훈련 비용은 성향이 정함 — 군인은 총이 싸고, 마법 계열은 총이 비쌈. 5를 찍은 계열은 고유 기술이 열림 (총 5 헤드샷 · 활 5 꿰뚫기). 적성 0인 무기는 억지로 쥠.</p>` + crew.map(crewRow).join('');
   if (DP.tab === 'sc') body = `<div class="dp-sc">${DRILL_SC.map(s => `<button data-sc="${s.k}"><b>${s.n}</b><small>${s.d}</small></button>`).join('')}</div>
@@ -215,6 +215,7 @@ function drillPanelRender(){
     <tr><th>자객에게 당함</th><td>${PRW.stat.execs}</td><th>목 따임 · 쓰러짐</th><td>${PRW.stat.slain} · ${PRW.stat.downs}</td><th>치명상</th><td>${PRW.stat.wounds}</td></tr></table>
     <div class="dp-row"><button data-act="reset">기록 지우기</button><button data-act="exit">훈련장 나가기 (굴로)</button></div>`;
   }
+  if (DP.tab === 'h2' && typeof h2Panel === 'function') body = h2Panel();
   if (DP.tab === 'help') body = `<div class="dp-help">
     <h4>조작</h4><p>인주를 직접 조작, 동료는 조 단위 지시. <b>O</b> 지휘 창 (시간이 느려짐) — 조마다 따라와 · 여기 지켜 · 저놈 묶어 · 돌아 들어가 · 빠져 · 자유, 진형 삼각 · 가로 · 종대 · 등맞대기 · 흩어짐 · 포위. 바로: 8 · 9 (조 따라와) · 0 (모두 빠져).</p>
     <h4>태클 (T)</h4><p>달리면서 T = 어깨빵. 서서 T = 레슬링 자세 (천천히 걸음) → 공격으로 그래플링 태클 (성공하면 깔고 앉음 → J 파운딩 · K 끝내기). 정면에서 멀쩡한 적에게 들어가면 스프롤. 방향은 투창처럼 조준.</p>
@@ -240,6 +241,7 @@ function drillPanelClick(e){
   if (b.dataset.tab){ DP.tab = b.dataset.tab; return drillPanelRender(); }
   if (b.dataset.pk){ const u = G.units.find(o => o.uid === +b.dataset.u); if (u && !packAdd(u, b.dataset.pk, +b.dataset.d)) popText(u.x, u.y + 2, u.z, +b.dataset.d > 0 ? '소지품 칸이 가득' : '더 뺄 게 없음', 'miss', 0.6); solSaveAll(); return drillPanelRender(); }
   if (b.dataset.tr){ const u = G.units.find(o => o.uid === +b.dataset.u); if (u && !solTrain(u, b.dataset.tr, +b.dataset.d)) popText(u.x, u.y + 2, u.z, +b.dataset.d > 0 ? '훈련 점수가 모자람' : '더 못 내림', 'miss', 0.6); return drillPanelRender(); }
+  if (b.dataset.h2 && typeof h2PanelClick === 'function'){ h2PanelClick(b); return drillPanelRender(); }
   if (b.dataset.sc){ const s = DRILL_SC.find(o => o.k === b.dataset.sc); drillPanel(false); s && s.go(); return; }
   const a = b.dataset.act;
   if (a === 'close') return drillPanel(false);

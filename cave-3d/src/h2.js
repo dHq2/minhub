@@ -1,9 +1,11 @@
-/* h2.js v1.0 — (v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.1 — (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
    ■ 공통 기술 종류 (H2SK): slash 부채꼴 · thrust 찌르기 줄 · slam 둘레 내려찍기 · dash 돌진 줄 · leap 뛰어 내려찍기 · shot 쏘기 (n발)
      · volley 연사 · zone 지정 장판 (늦게 터짐) · heal 치유 · buff 힘 · guard 막기 자세 (+도발) · summon 소환 · finisher 확인사살 · backstep 뒤로
+     · pull 끌어오기 · transform 변신
+   ■ 패시브: H2PAS (pas[0] 이름 → in · out · tick · kb · dodge · last)
    ■ 훈련장 '2기' 탭: 인물마다 그림 · 노트 요약 · 동료로 부르기 / 적으로 부르기 */
 'use strict';
 const H2 = { list: [], sk: {} };
@@ -23,7 +25,7 @@ function h2Build(){
     for (const [eng, from] of Object.entries(H2POSE)) if (!poses[eng]){ const k = from.find(f => P[f]); if (k) poses[eng] = pose(P[k]); }
     SPR['h2_' + slug] = { h0: P.idle.h, tall: tallOf(o), poses };
     const K = H2K[slug] || {}, st = K.st || {}, w = o.weight || st.weight || 70, big = tallOf(o) > 2.4;
-    const base = { spr: 'h2_' + slug, name: o.name || slug, hp: st.hp || 120, atk: st.atk || 14, spd: st.spd || 3.0, r: st.r || (big ? 0.6 : 0.34), weight: w,
+    const base = { spr: 'h2_' + slug, name: (o.name || slug).replace(/\s*\(.*\)\s*$/, ''), hp: st.hp || 120, atk: st.atk || 14, spd: st.spd || 3.0, r: st.r || (big ? 0.6 : 0.34), weight: w,
       melee: st.melee || { range: 1.6, arc: 1.6, windup: 0.4, cd: 1.2, mul: 1, kb: 0.6 }, h2: slug, heavy: w >= 200 || big };
     if (st.bow) base.bow = st.bow;
     if (st.armor) base.armor = st.armor;
@@ -52,7 +54,7 @@ function h2Cast(u, s, tgt){
       windup(u, 'line', { x: u.x, z: u.z, len, w: s.w || 1.1, a, windup: W, after: () => { let k = 0; for (; k < len; k += 0.3) if (solidAt(G.map, u.x + Math.cos(a) * (k + 0.3), u.z + Math.sin(a) * (k + 0.3))) break; moveBy(u, Math.cos(a) * k, Math.sin(a) * k); dust(u.x, u.z, 8); if (s.type === 'leap'){ ring(u.x, u.z, 0xffd0a0, s.r || 2, 0.4); camShake(0.2, 0.2); for (const t of G.units) if (t.side !== u.side && !t.dead && !t.downed && t.side !== 'neutral' && dist(t, u) < (s.r || 2)) hurt(u, t, u.atk * (s.mul2 || 1.2), { from: u, kb: 2, stun: 0.5 }); } } }, hit(s.mul || 1.3, s));
       break; }
     case 'shot': case 'volley': {
-      const n = s.n || 1, gap = s.type === 'volley' ? (s.gap || 0.12) : 0;
+      const n = s.cnt || 1, gap = s.type === 'volley' ? (s.gap || 0.12) : 0;
       u.st = 'windup';
       setTimeout(() => {
         if (u.dead || u.downed) return; u.st = 'strike'; u.stT = 0.3 + n * gap; setPose(u, P(s.pose2 || 'attack'));
@@ -168,7 +170,7 @@ const ML = (range, mul = 1, windup = 0.4, cd = 1.2, arc = 1.6, kb = 0.6) => ({ r
 const H2K = {
   // ── 1성 ──
   bel: { st: { hp: 95, atk: 11, spd: 3.4, melee: ML(1.3, 0.6), bow: { range: 10, windup: 0.3, cd: 0.7, speed: 34 } }, pas: ['인공 후광', '아군 곁에서 명중 +10%'],
-    sk: [sk('barrage', '천사의 탄막', 'volley', 'jump', 7, 9, { n: 8, gap: 0.08, mul: 0.5, pose2: 'jump', spread: 0.25, color: 0xfff0b0, glow: 0xffe08a }), sk('low', '낮은 사격', 'shot', 'low', 4, 7, { n: 2, mul: 0.8, sts: 'slow' }), sk('cover', '엄호 자세', 'volley', 'crouch', 9, 10, { n: 5, gap: 0.15, mul: 0.6, pose2: 'crouch' })] },
+    sk: [sk('barrage', '천사의 탄막', 'volley', 'jump', 7, 9, { cnt: 8, gap: 0.08, mul: 0.5, pose2: 'jump', spread: 0.25, color: 0xfff0b0, glow: 0xffe08a }), sk('low', '낮은 사격', 'shot', 'low', 4, 7, { cnt: 2, mul: 0.8, sts: 'slow' }), sk('cover', '엄호 자세', 'volley', 'crouch', 9, 10, { cnt: 5, gap: 0.15, mul: 0.6, pose2: 'crouch' })] },
   gari: { st: { hp: 170, atk: 17, spd: 3.4, melee: ML(1.4, 0.9, 0.25, 0.75, 1.4) }, pas: ['뒷골목 맷집', '체력 30% 아래에서 공격 +20%'],
     sk: [sk('body', '바디블로', 'thrust', 'attack2', 4, 1.8, { len: 1.8, mul: 1.5, stun: 0.6 }), sk('elbow', '엘보 훅', 'slash', 'attack3', 6, 1.6, { r: 1.7, arc: 1.4, mul: 2, crit: true }), sk('hold', '버티기', 'guard', 'guard', 9, 2.5, { t: 2 })] },
   rook: { st: { hp: 180, atk: 15, spd: 2.8, melee: ML(2.4, 1, 0.45, 1.3, 0.9), armor: 0.8 }, pas: ['대방패', '정면 원거리 피해 40% 감소'],
@@ -176,11 +178,11 @@ const H2K = {
   goldknight: { st: { hp: 175, atk: 17, spd: 3.0, melee: ML(1.9, 1.1, 0.45, 1.25, 2.0) }, pas: ['기사의 맹세', '아군이 쓰러지면 공격 +25%'],
     sk: [sk('lunge', '관통 찌르기', 'thrust', 'attack2', 5, 3.2, { len: 3.4, mul: 1.6, windup: 0.45 }), sk('parry', '검 세우기', 'guard', 'guard', 8, 2.2, { t: 1.5 }), sk('breath', '숨 고르기', 'buff', 'windup', 14, 4, { k: 1.4, t: 5, r: 0.5 })] },
   pearl: { st: { hp: 110, atk: 14, spd: 3.6, melee: ML(1.4, 0.9, 0.3, 1.0, 1.4, 1.4) }, pas: ['타천 날개', '떨어져도 다치지 않음'],
-    sk: [sk('feather', '철 깃털', 'shot', 'special', 6, 8, { n: 5, spread: 0.12, mul: 0.6, color: 0xc8d0e0, len: 0.5, sts: 'bleed', fam: 'magic' }), sk('land', '꼬깃꼬깃 착지', 'leap', 'land', 8, 5, { len: 5, r: 2, mul: 0.6, mul2: 1.3 }), sk('wrap', '움츠리기', 'guard', 'crouch', 10, 2, { t: 2 })] },
+    sk: [sk('feather', '철 깃털', 'shot', 'special', 6, 8, { cnt: 5, spread: 0.12, mul: 0.6, color: 0xc8d0e0, len: 0.5, sts: 'bleed', fam: 'magic' }), sk('land', '꼬깃꼬깃 착지', 'leap', 'land', 8, 5, { len: 5, r: 2, mul: 0.6, mul2: 1.3 }), sk('wrap', '움츠리기', 'guard', 'crouch', 10, 2, { t: 2 })] },
   whistle: { st: { hp: 125, atk: 17, spd: 3.6, melee: ML(1.9, 1.1, 0.3, 0.95, 2.0) }, pas: ['무심', '첫 공격은 늘 치명'],
     sk: [sk('red', '붉은 검기', 'slash', 'attack', 5, 2.8, { r: 3, arc: 3.0, mul: 1.5, sts: 'bleed' }), sk('flash', '수평 일섬', 'dash', 'attack2', 6, 4, { len: 4, mul: 1.7, w: 0.8 }), sk('taunt', '도발', 'guard', 'taunt', 12, 4, { t: 2.5, taunt: true })] },
   gundevil: { st: { hp: 100, atk: 12, spd: 3.5, melee: ML(1.3, 0.6), bow: { range: 10, windup: 0.3, cd: 0.6, speed: 34 } }, pas: ['악마의 뿔', '어두운 곳에서 치명 +15%'],
-    sk: [sk('jumpfire', '도약 난사', 'volley', 'jump', 7, 9, { n: 6, gap: 0.08, mul: 0.55, pose2: 'jump', spread: 0.2 }), sk('ground', '발밑 사격', 'zone', 'low', 6, 4, { r: 1.8, delay: 0.4, mul: 1, color: 0xffb070, sts: 'slow' }), sk('prone', '엎드려쏴', 'volley', 'prone', 10, 11, { n: 4, gap: 0.2, mul: 0.9, pose2: 'prone' })] },
+    sk: [sk('jumpfire', '도약 난사', 'volley', 'jump', 7, 9, { cnt: 6, gap: 0.08, mul: 0.55, pose2: 'jump', spread: 0.2 }), sk('ground', '발밑 사격', 'zone', 'low', 6, 4, { r: 1.8, delay: 0.4, mul: 1, color: 0xffb070, sts: 'slow' }), sk('prone', '엎드려쏴', 'volley', 'prone', 10, 11, { cnt: 4, gap: 0.2, mul: 0.9, pose2: 'prone' })] },
   ohe: { st: { hp: 95, atk: 14, spd: 3.8, melee: ML(1.4, 1, 0.25, 0.85) }, pas: ['악마의 눈', '어둠에서 잘 봄 · 빛에 약함'],
     sk: [sk('claw', '뒤에서 할퀴기', 'slash', 'sneak', 4, 1.8, { r: 1.7, mul: 1.6, sts: 'bleed' })] },
   // ── 2성 ──
@@ -199,10 +201,10 @@ const H2K = {
   bishot: { st: { hp: 160, atk: 19, spd: 3.4, melee: ML(1.5, 1.1, 0.35, 0.95, 1.4) }, pas: ['초인계 마수', '불에 강함 · 주먹마다 화상'],
     sk: [sk('fire', '점핑파이어', 'slam', 'special', 7, 2, { r: 2, mul: 1.4, sts: 'burn', color: 0xff7030 }), sk('slam', '내려찍기', 'thrust', 'finisher', 7, 3, { len: 3, w: 1.4, mul: 1.6, sts: 'burn' }), sk('fin', '확인사살', 'finisher', 'finisher', 5, 2, { mul: 3 })] },
   gandu: { st: { hp: 120, atk: 13, spd: 3.3, melee: ML(1.3, 0.6), bow: { range: 12, windup: 0.4, cd: 0.9, speed: 36 } }, pas: ['의리파', '곁의 아군이 쓰러지면 5초 공격 +30%'],
-    sk: [sk('back', '백스텝 사격', 'backstep', 'backstep', 6, 2, { len: 3 }), sk('sit', '앉아쏴', 'volley', 'crouch', 8, 12, { n: 3, gap: 0.3, mul: 1.1, pose2: 'crouch', spread: 0.02 }), sk('fin', '확인사살', 'finisher', 'finisher', 5, 2, { mul: 3 })] },
+    sk: [sk('back', '백스텝 사격', 'backstep', 'backstep', 6, 2, { len: 3 }), sk('sit', '앉아쏴', 'volley', 'crouch', 8, 12, { cnt: 3, gap: 0.3, mul: 1.1, pose2: 'crouch', spread: 0.02 }), sk('fin', '확인사살', 'finisher', 'finisher', 5, 2, { mul: 3 })] },
   // ── 3성 ──
   sanddalgi: { st: { hp: 140, atk: 15, spd: 3.0, melee: ML(1.8, 0.9, 0.4, 1.2, 1.6, 1.0) }, pas: ['대정령의 숲', '곁의 아군 체력이 조금씩 참'],
-    sk: [sk('vine', '덩굴 속박', 'zone', 'skill', 7, 6, { r: 2, delay: 0.8, mul: 1.0, stun: 2, color: 0x7dff6a }), sk('leaf', '수정잎 방벽', 'guard', 'guard', 10, 4, { t: 3 }), sk('heal', '정령의 손짓', 'heal', 'cast', 9, 10, { r: 6, amt: 0.2 })] },
+    sk: [sk('vine', '덩굴 속박', 'zone', 'skill', 7, 9, { r: 2, delay: 0.8, mul: 1.0, stun: 2, color: 0x7dff6a }), sk('leaf', '수정잎 방벽', 'guard', 'guard', 10, 4, { t: 3 }), sk('heal', '정령의 손짓', 'heal', 'cast', 9, 10, { r: 6, amt: 0.2 })] },
   tanga: { st: { hp: 230, atk: 22, spd: 3.3, melee: ML(2.6, 1.2, 0.45, 1.2, 2.2, 1.0) }, pas: ['용사의 기세', '적을 쓰러뜨리면 다음 공격 +30%'],
     sk: [sk('air', '공중 참격', 'leap', 'jump', 8, 6, { len: 6, r: 2, mul: 0.8, mul2: 1.8 }), sk('hook', '갈고리 찌르기', 'pull', 'attack2', 7, 4, { len: 4, mul: 1.2 }), sk('flash', '일섬', 'dash', 'attack3', 9, 6, { len: 6, mul: 2.2, w: 1, windup: 0.7 }), sk('guard', '수비', 'guard', 'guard', 9, 2.5, { t: 2 })] },
   gallia: { st: { hp: 260, atk: 21, spd: 2.9, melee: ML(2.6, 1.2, 0.5, 1.3, 2.4, 1.2), armor: 0.75 }, pas: ['장군의 위엄', '곁 아군 방어 +10% · 넉백 면역'],
@@ -215,7 +217,7 @@ const H2K = {
     sk: [sk('abyss', '심연 내려찍기', 'slam', 'attack2', 7, 2.5, { r: 2.5, mul: 1.6, color: 0xb070ff }), sk('vortex', '보라 소용돌이', 'zone', 'skill', 10, 8, { r: 2.6, delay: 1.0, mul: 1.8, stun: 1, color: 0xb070ff }), sk('guard', '지팡이 막기', 'backstep', 'guard', 6, 1.5, { len: 2.5 })] },
   // ── 4성 ──
   levi: { st: { hp: 140, atk: 16, spd: 3.2, melee: ML(1.5, 0.9), bow: { range: 12, windup: 0.4, cd: 0.8, speed: 38 } }, pas: ['계약의 그림자', '위험하면 소환수가 나타나 막음'],
-    sk: [sk('beast', '그림자 용 소환', 'summon', 'summon', 18, 12, { what: 'levi_beast', t: 14, max: 1 }), sk('knee', '무릎 강타', 'slam', 'special', 7, 2, { r: 2.2, mul: 1.2, kb: 2.4 }), sk('kneel', '무릎 쏴', 'volley', 'crouch', 8, 13, { n: 3, gap: 0.35, mul: 1.3, pose2: 'crouch', spread: 0.02, speed: 44 })] },
+    sk: [sk('beast', '그림자 용 소환', 'summon', 'summon', 18, 12, { what: 'levi_beast', t: 14, max: 1 }), sk('knee', '무릎 강타', 'slam', 'special', 7, 2, { r: 2.2, mul: 1.2, kb: 2.4 }), sk('kneel', '무릎 쏴', 'volley', 'crouch', 8, 13, { cnt: 3, gap: 0.35, mul: 1.3, pose2: 'crouch', spread: 0.02, speed: 44 })] },
   levi_beast: { st: { hp: 260, atk: 24, spd: 4.2, melee: ML(2.2, 1.2, 0.35, 1.0, 2.0, 2.0), r: 0.7 }, pas: ['그림자 몸', '시간이 지나면 사라짐'],
     sk: [sk('dash', '돌진', 'dash', 'dash', 5, 8, { len: 8, mul: 1.5, kb: 3, trip: true, windup: 0.35 })] },
   joshua: { st: { hp: 340, atk: 20, spd: 2.8, melee: ML(1.8, 1.2, 0.4, 1.1, 1.4, 1.6), armor: 0.8, r: 0.48 }, pas: ['갑각 장갑', '물리 피해 -20% · 넉백 면역'],
@@ -223,9 +225,9 @@ const H2K = {
   yuli: { st: { hp: 130, atk: 17, spd: 3.3, melee: ML(1.4, 0.9), bow: { range: 9, windup: 0.4, cd: 1.0, speed: 20 } }, pas: ['얼굴 없는 자', '어둠 속에서 늦게 발견됨'],
     sk: [sk('orb', '중력구', 'zone', 'skill', 9, 8, { r: 2.8, delay: 1.1, mul: 1.4, stun: 1.6, color: 0x6040a0 }), sk('erupt', '그림자 분출', 'slam', 'special', 7, 2.5, { r: 2.5, mul: 1.4, sts: 'slow', color: 0x402060 }), sk('wall', '그림자 벽', 'guard', 'guard', 10, 6, { t: 3 }), sk('knife', '그림자 단검', 'thrust', 'ready', 5, 2, { len: 2, mul: 1.8, crit: true })] },
   sosucha: { st: { hp: 150, atk: 19, spd: 3.9, melee: ML(1.3, 1.0, 0.22, 0.7, 1.3) }, pas: ['악마의 몸', '빠르고 회피 +15%'],
-    sk: [sk('kick', '공중 옆차기', 'dash', 'attack3', 5, 4, { len: 4, mul: 1.4, kb: 2 }), sk('stomp', '진각', 'slam', 'attack2', 7, 2, { r: 2, mul: 1.2, trip: true }), sk('soul', '영혼검', 'thrust', 'windup', 9, 3.5, { len: 3.6, w: 1.2, mul: 2.2, windup: 0.6 }), sk('flame', '마젠타 불꽃', 'shot', 'skill', 6, 8, { n: 3, spread: 0.15, mul: 0.8, color: 0xff40c0, glow: 0xff40c0, sts: 'burn', fam: 'magic', speed: 18 })] },
+    sk: [sk('kick', '공중 옆차기', 'dash', 'attack3', 5, 4, { len: 4, mul: 1.4, kb: 2 }), sk('stomp', '진각', 'slam', 'attack2', 7, 2, { r: 2, mul: 1.2, trip: true }), sk('soul', '영혼검', 'thrust', 'windup', 9, 3.5, { len: 3.6, w: 1.2, mul: 2.2, windup: 0.6 }), sk('flame', '마젠타 불꽃', 'shot', 'skill', 6, 8, { cnt: 3, spread: 0.15, mul: 0.8, color: 0xff40c0, glow: 0xff40c0, sts: 'burn', fam: 'magic', speed: 18 })] },
   gun: { st: { hp: 200, atk: 19, spd: 3.3, melee: ML(2.2, 1.1, 0.4, 1.1, 1.0) }, pas: ['차원 영웅', '곤봉 · 조율봉 · 권총을 바꿔 듦'],
-    sk: [sk('swing', '브레이커 휘두르기', 'slash', 'attack2', 5, 2.5, { r: 2.6, arc: 2.6, mul: 1.3 }), sk('crush', '지면 분쇄', 'slam', 'special', 8, 2.5, { r: 2.6, mul: 1.5, sts: 'mark', stsT: 5 }), sk('tune', '차원 조율', 'buff', 'rod', 15, 8, { k: 1.25, t: 8 }), sk('pistol', '예비 권총', 'volley', 'pistol', 6, 9, { n: 3, gap: 0.18, mul: 0.7, pose2: 'pistol' })] },
+    sk: [sk('swing', '브레이커 휘두르기', 'slash', 'attack2', 5, 2.5, { r: 2.6, arc: 2.6, mul: 1.3 }), sk('crush', '지면 분쇄', 'slam', 'special', 8, 2.5, { r: 2.6, mul: 1.5, sts: 'mark', stsT: 5 }), sk('tune', '차원 조율', 'buff', 'rod', 15, 8, { k: 1.25, t: 8 }), sk('pistol', '예비 권총', 'volley', 'pistol', 6, 9, { cnt: 3, gap: 0.18, mul: 0.7, pose2: 'pistol' })] },
   // ── 가람 · 히라리 ──
   garam: { st: { hp: 150, atk: 19, spd: 3.7, melee: ML(2.1, 1.1, 0.3, 0.9, 1.0) }, pas: ['그림자 검사', '은신 · 포복 뒤 첫 공격 치명'],
     sk: [sk('rise', '청록 검기 올려베기', 'slash', 'special', 6, 3.5, { r: 4, arc: 1.6, mul: 1.7, windup: 0.35 }), sk('fin', '확인사살', 'finisher', 'finisher', 5, 2, { mul: 3.2 }), sk('guard', '사선 막기', 'guard', 'guard', 7, 2, { t: 1.2 })] },
@@ -248,12 +250,97 @@ const H2K = {
   cheonmyeong: { boss: true, st: { hp: 1700, atk: 32, spd: 2.6, melee: ML(3.0, 1.2, 0.6, 1.5, 2.4, 1.6), armor: 0.7, r: 0.6, weight: 300 }, pas: ['붕대 갑옷', '근접 피해 -20% · 불에 약함'],
     sk: [sk('helm', '하늘의 명령 (투구창)', 'thrust', 'special', 8, 7, { len: 7.5, w: 0.9, mul: 2.0, windup: 0.9, say: '명령이다.' }), sk('grab', '붙잡기', 'pull', 'special', 9, 6, { len: 6, mul: 0.8 }), sk('low', '낮은 베기', 'slash', 'attack', 5, 3, { r: 3, arc: 2.4, mul: 1.1, sts: 'slow' })] },
   ryang: { boss: true, st: { hp: 1300, atk: 30, spd: 2.4, melee: ML(2.0, 1.0, 0.5, 1.3, 2.0), r: 0.6, weight: 120 }, pas: ['유령 몸', '물리 피해 -30% · 빛에 약함'],
-    sk: [sk('ghosts', '유령 떼', 'volley', 'attack', 7, 9, { n: 10, gap: 0.08, mul: 0.4, spread: 0.35, color: 0xd8e8ff, glow: 0xa8c8ff, speed: 14, fam: 'magic', pose2: 'attack' }), sk('maw', '삼키는 망토', 'pull', 'special', 10, 5.5, { len: 5.5, w: 2.2, mul: 1.4, windup: 1.0 }), sk('fog', '망령 안개', 'zone', 'idle2', 9, 9, { r: 3, delay: 1.3, mul: 1.3, sts: 'slow', color: 0x8090c0 })] },
+    sk: [sk('ghosts', '유령 떼', 'volley', 'attack', 7, 9, { cnt: 10, gap: 0.08, mul: 0.4, spread: 0.35, color: 0xd8e8ff, glow: 0xa8c8ff, speed: 14, fam: 'magic', pose2: 'attack' }), sk('maw', '삼키는 망토', 'pull', 'special', 10, 5.5, { len: 5.5, w: 2.2, mul: 1.4, windup: 1.0 }), sk('fog', '망령 안개', 'zone', 'idle2', 9, 9, { r: 3, delay: 1.3, mul: 1.3, sts: 'slow', color: 0x8090c0 })] },
   mano: { boss: true, st: { hp: 1250, atk: 30, spd: 4.0, melee: ML(3.5, 1.0, 0.4, 1.0, 1.4), r: 0.5, weight: 90 }, pas: ['그림자 몸', '어둠에서 빠름 · 빛에 약함'],
     sk: [sk('scythe', '그림자 낫', 'slam', 'special', 9, 4, { r: 5, mul: 1.6, sts: 'bleed', windup: 0.9, say: '…' }), sk('reach', '늘어난 손', 'pull', 'attack', 6, 6, { len: 6, mul: 1.0 }), sk('crawl', '기어 다가오기', 'dash', 'walk', 7, 7, { len: 6, mul: 0.6 })] },
   ancientangel: { boss: true, st: { hp: 1900, atk: 33, spd: 2.6, melee: ML(2.6, 1.1, 0.6, 1.4, 2.6, 2.0), r: 0.8, weight: 220 }, pas: ['깃털 몸', '떠 있어 근접 피해 -25%'],
-    sk: [sk('rain', '깃털 비', 'volley', 'idle', 7, 11, { n: 12, gap: 0.06, mul: 0.45, spread: 0.5, color: 0xf0f0ff, glow: 0xfff0d0, speed: 24 }), sk('snatch', '갈퀴 낚아채기', 'pull', 'idle', 9, 5, { len: 5, w: 1.6, mul: 1.2 }), sk('gust', '고대의 날갯짓', 'slam', 'idle', 10, 4, { r: 4.5, mul: 1.0, kb: 4, windup: 1.0 })] },
+    sk: [sk('rain', '깃털 비', 'volley', 'idle', 7, 11, { cnt: 12, gap: 0.06, mul: 0.45, spread: 0.5, color: 0xf0f0ff, glow: 0xfff0d0, speed: 24 }), sk('snatch', '갈퀴 낚아채기', 'pull', 'idle', 9, 5, { len: 5, w: 1.6, mul: 1.2 }), sk('gust', '고대의 날갯짓', 'slam', 'idle', 10, 4, { r: 4.5, mul: 1.0, kb: 4, windup: 1.0 })] },
   mangak: { boss: true, st: { hp: 3200, atk: 40, spd: 2.2, melee: ML(5.5, 1.2, 0.8, 1.8, 2.0, 3.0), armor: 0.7, r: 2.2, weight: 18000 }, pas: ['비늘 깃털 갑옷', '정면 원거리 -30% · 옆구리 · 등이 약점'],
     sk: [sk('rush', '돌진 할퀴기', 'dash', 'attack', 8, 8, { len: 8, w: 2.4, mul: 1.6, trip: true, windup: 0.9 }), sk('maw', '망각의 아가리', 'slash', 'special', 12, 5.5, { r: 5.5, arc: 1.6, mul: 2.4, stun: 1.5, windup: 1.3, say: '(아가리가 네 갈래로 벌어진다)' }), sk('prowl', '어슬렁 포위', 'backstep', 'walk', 9, 3, { len: 4 })] },
 };
 h2Build();
+
+/* ---------- 훈련장 '2기' 탭 (drill.js가 부름) ----------
+   인물마다: 얼굴 · 이름 · 등급 · 보직 · 키 · 기술 이름 · 빠진 그림 + 동료로 (2조) / 적으로 / 보스로 부르기 */
+const H2UI = { f: 'all' };
+const h2Rank = o => { const m = /[1-4]성/.exec(o.rank || ''); return m ? m[0] : H2K[o.slug] && H2K[o.slug].boss ? '보스' : '기타'; };
+function h2Main(o){ const A = o.apt || {}; return A.gun >= 4 ? 'pistol' : A.bow >= 4 ? 'bow' : A.magic >= 4 ? 'wand' : null; }
+function h2Ally(slug, at){
+  const k = 'h2_' + slug; if (!DEFS[k]) return null;
+  const pl = G.player, c = at || { x: pl.x + rnd(-2, 2), z: pl.z + rnd(1.5, 3) };
+  const u = spawn(k, c.x, c.z, 'ally'); u.face = 1;
+  if (typeof solInit === 'function') solInit(u, { role: 'vanguard', sq: 2, main: h2Main(H2R[slug]) });
+  if (typeof BAG_CAP !== 'undefined') BAG_CAP['h2_' + slug] = (H2R[slug] && H2R[slug].bag) || 8;
+  dust(u.x, u.z, 8); popText(u.x, u.y + bodyH(u) + 0.4, u.z, u.D.name, 'heal', 1); return u;
+}
+function h2Foe(slug, boss){
+  const k = 'h2e_' + slug; if (!DEFS[k]) return null;
+  drillSpawn([k], { title: DEFS[k].name, sub: boss ? '보스' : '2기 — 적으로' });
+  const e = foes()[foes().length - 1]; if (e && boss){ e.max = e.hp = Math.round(e.max * 2.5); e.D = { ...e.D, boss: true }; }
+  return e;
+}
+function h2Panel(){
+  const groups = ['all', '1성', '2성', '3성', '4성', '보스', '기타'];
+  const L = H2.list.map(s => H2R[s]).filter(o => H2UI.f === 'all' || h2Rank(o) === H2UI.f);
+  const card = o => { const K = H2K[o.slug] || {}, sk = (K.sk || []).map(s => s.n).join(' · '), miss = (o.missing || []).map(m => String(m).split(' ')[0]).join(', ');
+    return `<div class="h2c"><img src="${o.face || o.portrait || o.poses.idle.src}" loading="lazy"><div><b>${DEFS['h2_' + o.slug].name}</b> <small>${h2Rank(o)} · ${o.role_job || o.role || ''} · ${o.tall || '?'}m</small>
+      <p>${K.pas ? `<em>${K.pas[0]}</em> ${K.pas[1]}<br>` : ''}기술: ${sk || '—'}<br><small>그림 ${Object.keys(o.poses).join(' · ')}${miss ? ` / 빠짐 ${miss}` : ''}</small></p>
+      <span><button data-h2="ally" data-s="${o.slug}">동료로</button><button data-h2="foe" data-s="${o.slug}">적으로</button>${K.boss ? `<button data-h2="boss" data-s="${o.slug}">보스로</button>` : ''}</span></div></div>`; };
+  return `<p class="dp-note">2기 멤버 1차 (드라이브 그림 ${H2.list.length}명). 동료는 2조로 들어옴 — 기술은 알아서 씀. 그림이 한 장씩이라 몸을 눌렀다 폈다 하며 움직임 (걷기 · 맞기 그림이 오면 바꿈).</p>
+    <div class="dp-row">${groups.map(g => `<button data-h2="f" data-s="${g}" class="${H2UI.f === g ? 'on' : ''}">${g === 'all' ? '전부' : g}</button>`).join('')}<button data-h2="mix">2기 혼전 (동료 넷 · 적 넷)</button><button data-h2="clr">2기 동료 돌려보내기</button></div>
+    <div class="h2g">${L.map(card).join('')}</div>`;
+}
+function h2PanelClick(b){
+  const a = b.dataset.h2, s = b.dataset.s;
+  if (a === 'f') H2UI.f = s;
+  if (a === 'ally') h2Ally(s);
+  if (a === 'foe' || a === 'boss'){ drillPanel(false); h2Foe(s, a === 'boss'); }
+  if (a === 'clr') for (const u of G.units.filter(u => u.side === 'ally' && u.D.h2)) removeUnit(u);
+  if (a === 'mix'){ drillPanel(false); const P = H2.list.filter(s => !(H2K[s] || {}).boss && s !== 'levi_beast' && s !== 'garam2' && s !== 'hirari2').sort(() => Math.random() - 0.5); P.slice(0, 4).forEach(s => h2Ally(s)); P.slice(4, 8).forEach(s => h2Foe(s)); caption('2기 혼전', '동료 넷 · 적 넷 — 기술이 섞임'); }
+}
+
+/* ---------- 패시브 (pas[0] 이름 → 실제 효과). 이름이 없는 것은 아직 글만 ----------
+   피해 받을 때 (in) · 줄 때 (out) · 매 순간 (tick) */
+const H2PAS = {
+  '뒷골목 맷집': { out: (u) => u.hp < u.max * 0.3 ? 1.2 : 1 },
+  '흉터': { out: (u) => u.hp < u.max * 0.3 ? 1.25 : 1 },
+  '무심': { out: (u, t) => { if (u._h2first) return 1; u._h2first = true; return 1.8; } },
+  '복면': { out: (u) => isCrouched(u) ? 1.4 : 1 },
+  '그림자 검사': { out: (u) => isCrouched(u) ? 1.6 : 1 },
+  '용사의 기세': { out: (u) => { if (!u._h2kill) return 1; u._h2kill = false; return 1.3; } },
+  '기사의 맹세': { out: (u) => u._h2rage > G.t ? 1.25 : 1, ally: 1 },
+  '의리파': { out: (u) => u._h2rage > G.t ? 1.3 : 1, ally: 1 },
+  '대방패': { in: (u, o) => o.ranged && h2Front(u, o.from) ? 0.6 : 1 },
+  '뼈갑옷': { in: (u, o) => o.ranged && h2Front(u, o.from) ? 0.7 : 1 },
+  '중장갑': { in: (u, o) => o.ranged ? 0.8 : 1, kb: 0.4 },
+  '갑각 장갑': { in: (u, o) => o.ranged || o.fam === 'magic' ? 1 : 0.8, kb: 0 },
+  '거구': { kb: 0.3 }, '장군의 위엄': { kb: 0 }, '청록 바이저': { kb: 0.5 },
+  '악마의 몸': { dodge: 0.15 }, '찢긴 망토': { dodge: 0.1 },
+  '성장한 천사': { in: (u) => u.h2form ? 0.8 : 1 },
+  '이계의 몸': { last: 1 },
+  '대정령의 숲': { tick: (u, dt) => { for (const o of G.units) if (o.side === u.side && !o.dead && !o.downed && o.hp < o.max && dist(o, u) < 5) o.hp = Math.min(o.max, o.hp + o.max * 0.012 * dt); } },
+  '황금 늑대 가면': { tick: (u, dt) => { if (G.units.some(o => o.D.h2 === 'dolsoe' && o.side === u.side && !o.dead && dist(o, u) < 6)) u.hp = Math.min(u.max, u.hp + u.max * 0.01 * dt); } },
+};
+const h2Front = (u, f) => !f || f.x == null ? false : Math.cos(Math.atan2(f.z - u.z, f.x - u.x) - (u.aim ?? 0)) > 0.3;
+const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2K[u.D.h2].pas[0]] : null;
+{
+  const _hurtH2 = hurt;
+  hurt = function(att, tgt, base, o = {}){
+    if (!tgt || tgt.dead || tgt.downed) return _hurtH2(att, tgt, base, o);
+    const A = h2P(att), T = h2P(tgt);
+    if (A && A.out) base *= A.out(att, tgt);
+    if (T){
+      if (T.dodge && Math.random() < T.dodge && !o.unblockable){ popText(tgt.x, tgt.y + 1.6, tgt.z, '회피', 'miss'); return 0; }
+      if (T.in) base *= T.in(tgt, o);
+      if (T.kb != null && o.kb) o = { ...o, kb: o.kb * T.kb, stun: T.kb === 0 ? 0 : o.stun };
+      if (T.last && !tgt._h2last && tgt.hp - base * 1.1 <= 0){ tgt._h2last = true; base = Math.max(0, tgt.hp - 1); popText(tgt.x, tgt.y + 2, tgt.z, '버팀!', 'alert', 1); }
+    }
+    const r = _hurtH2(att, tgt, base, o);
+    if (tgt.dead || tgt.downed){
+      if (A && att.D.h2 === 'tanga') att._h2kill = true;
+      for (const v of G.units) if (v.side === tgt.side && v !== tgt && !v.dead && dist(v, tgt) < 7){ const P = h2P(v); if (P && P.ally){ v._h2rage = G.t + 5; popText(v.x, v.y + 2, v.z, '분노', 'alert', 0.8); } }
+    }
+    return r;
+  };
+}
+TICKS.push(dt => { for (const u of G.units) if (u.D.h2 && !u.dead && !u.downed){ const P = h2P(u); if (P && P.tick) P.tick(u, dt); } });

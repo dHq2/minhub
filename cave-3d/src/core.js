@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.59';
+const VERSION = 'v0.60';
 const TICKS = [];   // v0.55 한 프레임마다 부르는 것들 (engage · sol · squad · drill이 넣음): f(dt)
 // v0.49 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작 (민수: 진행 중 저장은 되게, 단 업데이트되면 초기화)
 let SAVE_RESET = null;
