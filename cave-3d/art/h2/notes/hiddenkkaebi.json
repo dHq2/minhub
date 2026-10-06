@@ -1,0 +1,159 @@
+{
+ "slug": "hiddenkkaebi",
+ "name": "히든깨비",
+ "rank": "초강적",
+ "folder": "3기-2 (초강적 히든깨비.png)",
+ "role": "적 (파일 이름 '초강적' — 숨은 (히든) 강적 · 검객 보스급. 동료 그림체 아님)",
+ "tall": 2.4,
+ "weight": 130,
+ "palette": [
+  "#080304",
+  "#27181b",
+  "#4d1b1f",
+  "#662e2c",
+  "#d8322a",
+  "#5a2a5e"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hiddenkkaebi/idle.webp",
+   "w": 781,
+   "h": 731,
+   "ax": 368,
+   "ay": 728,
+   "from": "초강적 히든깨비.png 아래 넷째",
+   "orig": "칼을 오른쪽 아래로 늘어뜨리고 서 있음, 붉은 불티가 흩날림",
+   "scale": 1.8
+  },
+  "front": {
+   "src": "art/h2/hiddenkkaebi/front.webp",
+   "w": 727,
+   "h": 720,
+   "ax": 360,
+   "ay": 717,
+   "from": "초강적 히든깨비.png 위 첫째",
+   "orig": "앞모습, 칼을 낮게 들고 발밑에 붉은 기운이 소용돌이",
+   "scale": 1.8
+  },
+  "attack": {
+   "src": "art/h2/hiddenkkaebi/attack.webp",
+   "w": 911,
+   "h": 698,
+   "ax": 548,
+   "ay": 695,
+   "from": "초강적 히든깨비.png 위 둘째",
+   "orig": "깊게 내딛으며 왼쪽 위에서 오른쪽 아래로 크게 대각 베기, 붉은 궤적",
+   "scale": 1.8
+  },
+  "slam": {
+   "src": "art/h2/hiddenkkaebi/slam.webp",
+   "w": 850,
+   "h": 774,
+   "ax": 413,
+   "ay": 771,
+   "from": "초강적 히든깨비.png 위 셋째",
+   "orig": "칼을 두 손으로 거꾸로 쥐고 땅에 내리꽂음, 붉은 섬광 · 바위 파편",
+   "scale": 1.8
+  },
+  "dash": {
+   "src": "art/h2/hiddenkkaebi/dash.webp",
+   "w": 911,
+   "h": 481,
+   "ax": 448,
+   "ay": 478,
+   "from": "초강적 히든깨비.png 위 넷째",
+   "orig": "칼을 오른쪽으로 겨누고 잔상을 남기며 돌진 (보랏빛 잔상 · 흙먼지)",
+   "scale": 1.8
+  },
+  "skill": {
+   "src": "art/h2/hiddenkkaebi/skill.webp",
+   "w": 923,
+   "h": 772,
+   "ax": 380,
+   "ay": 769,
+   "from": "초강적 히든깨비.png 아래 첫째",
+   "orig": "손을 들어 붉은 단검 열두 자루를 몸 둘레에 띄움 (소환 단검 고리)",
+   "scale": 1.8
+  },
+  "attack2": {
+   "src": "art/h2/hiddenkkaebi/attack2.webp",
+   "w": 891,
+   "h": 808,
+   "ax": 346,
+   "ay": 805,
+   "from": "초강적 히든깨비.png 아래 둘째",
+   "orig": "칼을 오른쪽으로 곧게 찌름, 칼끝에 보랏빛 균열 (공간 찢기)",
+   "scale": 1.8
+  },
+  "attack3": {
+   "src": "art/h2/hiddenkkaebi/attack3.webp",
+   "w": 774,
+   "h": 803,
+   "ax": 380,
+   "ay": 800,
+   "from": "초강적 히든깨비.png 아래 셋째",
+   "orig": "한쪽 무릎을 꿇은 채 칼을 오른쪽 위로 올려 벰, 붉은 궤적 · 바위 파편",
+   "scale": 1.8
+  }
+ },
+ "portrait": "art/h2/hiddenkkaebi/portrait.webp",
+ "face": "art/h2/hiddenkkaebi/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "back"
+ ],
+ "kit": {
+  "basic": "대각 베기 (attack) — 앞 4m 부채꼴 120도, 붉은 궤적",
+  "skills": [
+   {
+    "name": "잔영 돌진",
+    "pose": "dash",
+    "desc": "잔상을 남기며 14m 순간 돌진 — 줄 위 모든 적 베기, 0.5초 뒤 잔상이 한 번 더 벰"
+   },
+   {
+    "name": "혈검 낙하",
+    "pose": "slam",
+    "desc": "칼을 거꾸로 쥐고 땅에 꽂음 — 반지름 5m 원 붉은 균열 + 바위 파편, 넘어뜨림"
+   },
+   {
+    "name": "혈단검 고리",
+    "pose": "skill",
+    "desc": "몸 둘레에 붉은 단검 12자루를 띄움 (5초) — 다가오는 적 자동으로 찌르고, 끝날 때 바깥으로 사방 발사 (15m 사격)"
+   },
+   {
+    "name": "공간 찢기",
+    "pose": "attack2",
+    "desc": "칼을 곧게 찔러 앞 6m 줄에 보랏빛 균열 — 2초 뒤 터지며 피해 + 끌어오기"
+   },
+   {
+    "name": "올려 베기",
+    "pose": "attack3",
+    "desc": "무릎 꿇었다가 위로 올려 벰 — 앞 3m, 맞은 적 띄움 · 바위 파편"
+   }
+  ],
+  "passive": "숨은 도깨비: 전투 밖에서는 보이지 않다가 (히든) 첫 공격이 확정 치명타, 체력 50% 아래에서 붉은 기운이 짙어져 공격 속도 +20%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 4
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 6,
+ "stats": {
+  "hp": 5200,
+  "atk": 78,
+  "spd": 4.6,
+  "weight_kg": 130,
+  "tall_m": 2.4
+ },
+ "desc": "검붉은 누더기 로브에 붉은 실 · 장신구를 칭칭 감고 붉은 탈 같은 얼굴을 한 키 큰 도깨비 검객. 몸에서 붉은 기운 · 불티가 흐르고, 칼 하나로 잔상 · 균열 · 단검 고리를 부린다.",
+ "gen": 3
+}

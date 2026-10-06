@@ -1,0 +1,153 @@
+{
+ "slug": "stagbeast",
+ "name": "사슴",
+ "rank": "초강적",
+ "folder": "3기-2 (초강적 사슴.png)",
+ "role": "적 (파일 이름 '초강적' — 맨손 격투형 괴수 강적, 보스 바로 아래. 동료 그림체 아님)",
+ "tall": 2.8,
+ "weight": 320,
+ "palette": [
+  "#1d1c1f",
+  "#3e3f43",
+  "#455056",
+  "#4fd6e8",
+  "#dcd7d1",
+  "#3a2a22"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/stagbeast/idle.webp",
+   "w": 501,
+   "h": 769,
+   "ax": 269,
+   "ay": 766,
+   "from": "초강적 사슴.png 위 첫째",
+   "orig": "앞모습으로 다리 벌려 섬, 두 손 갈퀴를 늘어뜨림 (가장 반듯한 선 모습)",
+   "scale": 1.57
+  },
+  "windup": {
+   "src": "art/h2/stagbeast/windup.webp",
+   "w": 663,
+   "h": 771,
+   "ax": 299,
+   "ay": 768,
+   "from": "초강적 사슴.png 위 둘째",
+   "orig": "주먹을 뒤로 크게 당기고 오른쪽으로 체중을 실음 (주먹 준비)",
+   "scale": 1.57
+  },
+  "attack": {
+   "src": "art/h2/stagbeast/attack.webp",
+   "w": 637,
+   "h": 779,
+   "ax": 396,
+   "ay": 776,
+   "from": "초강적 사슴.png 위 셋째",
+   "orig": "등을 보이며 오른쪽으로 팔꿈치 · 주먹을 내지름",
+   "scale": 1.57
+  },
+  "jump": {
+   "src": "art/h2/stagbeast/jump.webp",
+   "w": 491,
+   "h": 760,
+   "ax": 183,
+   "ay": 757,
+   "from": "초강적 사슴.png 위 넷째",
+   "orig": "무릎을 차올리며 뛰어오름, 갈퀴 손을 앞으로 (무릎 차기)",
+   "scale": 1.57
+  },
+  "dash": {
+   "src": "art/h2/stagbeast/dash.webp",
+   "w": 735,
+   "h": 755,
+   "ax": 594,
+   "ay": 752,
+   "from": "초강적 사슴.png 아래 첫째",
+   "orig": "몸을 낮추고 두 갈퀴를 벌린 채 오른쪽으로 돌진 (뒤로 흙먼지)",
+   "scale": 1.57
+  },
+  "slam": {
+   "src": "art/h2/stagbeast/slam.webp",
+   "w": 506,
+   "h": 750,
+   "ax": 293,
+   "ay": 747,
+   "from": "초강적 사슴.png 아래 둘째",
+   "orig": "발을 굴러 땅을 짓밟음, 바위 파편이 튐",
+   "scale": 1.57
+  },
+  "roar": {
+   "src": "art/h2/stagbeast/roar.webp",
+   "w": 736,
+   "h": 670,
+   "ax": 370,
+   "ay": 667,
+   "from": "초강적 사슴.png 아래 셋째",
+   "orig": "앞모습, 두 주먹을 쥐고 가슴을 펴 포효 (힘 모으기)",
+   "scale": 1.57
+  },
+  "claw": {
+   "src": "art/h2/stagbeast/claw.webp",
+   "w": 451,
+   "h": 766,
+   "ax": 242,
+   "ay": 763,
+   "from": "초강적 사슴.png 아래 넷째",
+   "orig": "몸을 틀어 등을 보이며 오른쪽으로 갈퀴 손을 치켜듦",
+   "scale": 1.57
+  }
+ },
+ "portrait": "art/h2/stagbeast/portrait.webp",
+ "face": "art/h2/stagbeast/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead"
+ ],
+ "kit": {
+  "basic": "뒤돌려 주먹 (attack) — 앞 3m, 2연타",
+  "skills": [
+   {
+    "name": "뿔소 돌진",
+    "pose": "dash",
+    "desc": "몸을 낮추고 12m 돌진 — 줄 위 적을 갈퀴로 긁고 밀쳐 넘어뜨림, 벽에 박으면 1.5초 기절"
+   },
+   {
+    "name": "대지 짓밟기",
+    "pose": "slam",
+    "desc": "발을 굴러 반지름 5m 원 충격파 + 바위 파편 3초 장판 (밟으면 피해 · 둔화)"
+   },
+   {
+    "name": "무릎 차올리기",
+    "pose": "jump",
+    "desc": "4m 뛰어들며 무릎으로 올려 침 — 맞은 적 공중에 띄움 1초 (windup 으로 이어 치기)"
+   },
+   {
+    "name": "숲의 포효",
+    "pose": "roar",
+    "desc": "반지름 10m 원 포효 — 적 2초 공포, 자신 8초 공격 +30% · 푸른 문양이 밝아짐"
+   }
+  ],
+  "passive": "고목의 뿔: 정면에서 받는 근접 피해 20% 감소, 체력 40% 아래에서 공격 속도 +25%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 4,
+ "stats": {
+  "hp": 4200,
+  "atk": 70,
+  "spd": 5.0,
+  "weight_kg": 320,
+  "tall_m": 2.8
+ },
+ "desc": "큰 사슴뿔이 달린 해골 가면 머리, 검은 깃털 갈기, 푸른 빛 문양이 흐르는 검푸른 근육질 몸의 암컷 괴수. 손목 · 정강이에 뼈 가시 팔찌, 맨손 갈퀴와 발굽 같은 발로 싸운다.",
+ "gen": 3
+}

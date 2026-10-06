@@ -1,0 +1,154 @@
+{
+ "slug": "blackrabbit",
+ "name": "흑토끼기사",
+ "rank": "1기 펫 · NPC (등급 글자 없음 — 파일 이름 '흑토끼', 도감: 펫 · 전설)",
+ "folder": "3기-2 (흑토끼.png)",
+ "role": "동료 (도감에서 인카운터 유물 펫 '흑토끼기사' — 소환 동료 · 펫. 검은 기사 모습이라 적 정예로도 가능)",
+ "tall": 1.75,
+ "weight": 85,
+ "palette": [
+  "#121211",
+  "#21201f",
+  "#3d3837",
+  "#564e4c",
+  "#e0203c",
+  "#d9d6d4"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/blackrabbit/idle.webp",
+   "w": 666,
+   "h": 698,
+   "ax": 229,
+   "ay": 695,
+   "from": "흑토끼.png 위 첫째",
+   "orig": "붉은 날 대검을 어깨에 메고 서 있음 (칼끝 오른쪽)",
+   "scale": 1.6
+  },
+  "walk": {
+   "src": "art/h2/blackrabbit/walk.webp",
+   "w": 704,
+   "h": 614,
+   "ax": 475,
+   "ay": 611,
+   "from": "흑토끼.png 위 둘째",
+   "orig": "대검을 앞으로 비스듬히 늘어뜨리고 오른쪽으로 걸음",
+   "scale": 1.6
+  },
+  "windup": {
+   "src": "art/h2/blackrabbit/windup.webp",
+   "w": 459,
+   "h": 768,
+   "ax": 262,
+   "ay": 765,
+   "from": "흑토끼.png 위 셋째",
+   "orig": "다리를 벌리고 대검을 두 손으로 머리 위로 높이 치켜듦",
+   "scale": 1.6
+  },
+  "attack": {
+   "src": "art/h2/blackrabbit/attack.webp",
+   "w": 690,
+   "h": 491,
+   "ax": 301,
+   "ay": 488,
+   "from": "흑토끼.png 위 넷째",
+   "orig": "깊게 내딛으며 대검을 오른쪽으로 수평 찌르기 · 베기",
+   "scale": 1.6
+  },
+  "front": {
+   "src": "art/h2/blackrabbit/front.webp",
+   "w": 507,
+   "h": 696,
+   "ax": 223,
+   "ay": 693,
+   "from": "흑토끼.png 아래 첫째",
+   "orig": "앞모습, 대검을 아래로 늘어뜨리고 왼손을 갈퀴처럼 뻗음 (도발)",
+   "scale": 1.6
+  },
+  "plunge": {
+   "src": "art/h2/blackrabbit/plunge.webp",
+   "w": 357,
+   "h": 646,
+   "ax": 312,
+   "ay": 643,
+   "from": "흑토끼.png 아래 둘째",
+   "orig": "공중에서 몸을 웅크리고 대검 끝을 아래로 (도약 내리꽂기)",
+   "scale": 1.6
+  },
+  "guard": {
+   "src": "art/h2/blackrabbit/guard.webp",
+   "w": 400,
+   "h": 704,
+   "ax": 231,
+   "ay": 701,
+   "from": "흑토끼.png 아래 셋째",
+   "orig": "대검을 땅에 꽂고 손잡이에 기대 섬 (반쯤 등을 보임)",
+   "scale": 1.6
+  },
+  "back": {
+   "src": "art/h2/blackrabbit/back.webp",
+   "w": 498,
+   "h": 722,
+   "ax": 265,
+   "ay": 719,
+   "from": "흑토끼.png 아래 넷째",
+   "orig": "뒷모습, 대검을 어깨에 멤 (칼끝 왼쪽)",
+   "scale": 1.6
+  }
+ },
+ "portrait": "art/h2/blackrabbit/portrait.webp",
+ "face": "art/h2/blackrabbit/face.webp",
+ "missing": [
+  "hurt",
+  "down",
+  "dead",
+  "dash"
+ ],
+ "kit": {
+  "basic": "대검 찌르기 (attack) — 앞 3.5m 줄, 붉은 날로 관통",
+  "skills": [
+   {
+    "name": "내리쪼개기",
+    "pose": "windup",
+    "desc": "0.5초 대검을 머리 위로 들었다가 앞 4m 줄로 내려침 — 피해 2.5배, 넘어뜨림"
+   },
+   {
+    "name": "토끼 도약",
+    "pose": "plunge",
+    "desc": "6m 앞으로 뛰어올라 칼끝으로 내리꽂음 — 떨어진 자리 반지름 2m 원 피해 + 0.8초 기절"
+   },
+   {
+    "name": "붉은 검 꽂기",
+    "pose": "guard",
+    "desc": "대검을 땅에 꽂고 버팀 — 2초 동안 앞 막기 (피해 70% 감소), 끝날 때 반지름 2.5m 원 붉은 충격"
+   },
+   {
+    "name": "도발",
+    "pose": "front",
+    "desc": "손짓으로 반지름 8m 적을 4초 동안 자기에게 끌어 붙임 (어그로)"
+   }
+  ],
+  "passive": "흑토끼의 충성: 주인 (플레이어) 이 맞으면 다음 공격 피해 +25%, 주인 체력 30% 아래면 이동 속도 +20%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 2
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 6,
+ "stats": {
+  "hp": 1250,
+  "atk": 36,
+  "spd": 4.8,
+  "weight_kg": 85,
+  "tall_m": 1.75
+ },
+ "desc": "검은 토끼 귀 투구 · 찢긴 검은 판금 치마 갑옷 · 긴 흑발의 여기사. 붉게 빛나는 날의 대검을 어깨에 메고 다닌다. 얼굴은 머리칼 그늘에 가려 붉은 눈만 보인다.",
+ "gen": 1,
+ "codex_g": "blackrabbit"
+}

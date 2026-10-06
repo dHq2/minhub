@@ -1,0 +1,156 @@
+{
+ "slug": "yongmyo",
+ "name": "용묘화",
+ "rank": "1기 동료 (등급 글자 없음 — 파일 이름 '용묘화1')",
+ "folder": "3기-2 (용묘화1.png)",
+ "role": "동료 (1기 동료 — 2D 판에서 성당 · 회랑에서 영입. 적 그림체 아님)",
+ "tall": 1.78,
+ "weight": 68,
+ "palette": [
+  "#141213",
+  "#302525",
+  "#624e48",
+  "#fad8bd",
+  "#a12a2a",
+  "#c9a24a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/yongmyo/idle.webp",
+   "w": 453,
+   "h": 696,
+   "ax": 236,
+   "ay": 693,
+   "from": "용묘화1.png 위 셋째",
+   "orig": "삽을 몸 앞에 비스듬히 쥐고 다리 벌려 선 자세 (3/4 앞, 얼굴 오른쪽)",
+   "scale": 1.48
+  },
+  "attack": {
+   "src": "art/h2/yongmyo/attack.webp",
+   "w": 749,
+   "h": 662,
+   "ax": 350,
+   "ay": 659,
+   "from": "용묘화1.png 위 첫째",
+   "orig": "두 손으로 삽을 오른쪽으로 길게 내지름 (삽날 찌르기 · 밀어치기), 코트 자락 펄럭",
+   "scale": 1.48
+  },
+  "hurt": {
+   "src": "art/h2/yongmyo/hurt.webp",
+   "w": 400,
+   "h": 681,
+   "ax": 263,
+   "ay": 678,
+   "from": "용묘화1.png 위 둘째",
+   "orig": "뒤로 젖혀지며 비틀거림, 삽 끝이 땅에 끌림 (맞고 밀림)",
+   "scale": 1.48
+  },
+  "down": {
+   "src": "art/h2/yongmyo/down.webp",
+   "w": 573,
+   "h": 456,
+   "ax": 473,
+   "ay": 453,
+   "from": "용묘화1.png 위 넷째",
+   "orig": "땅에 주저앉아 한 손으로 버팀, 삽은 옆에 눕힘 (쓰러짐)",
+   "scale": 1.48
+  },
+  "windup": {
+   "src": "art/h2/yongmyo/windup.webp",
+   "w": 451,
+   "h": 734,
+   "ax": 266,
+   "ay": 731,
+   "from": "용묘화1.png 아래 첫째",
+   "orig": "삽을 머리 위 뒤로 크게 치켜듦 (등이 보이는 각도, 모아 내려치기 준비)",
+   "scale": 1.48
+  },
+  "dig": {
+   "src": "art/h2/yongmyo/dig.webp",
+   "w": 669,
+   "h": 596,
+   "ax": 519,
+   "ay": 593,
+   "from": "용묘화1.png 아래 둘째",
+   "orig": "앞으로 깊게 내딛으며 삽날을 땅에 꽂아 퍼냄 (파내기 · 땅 찍기)",
+   "scale": 1.48
+  },
+  "attack2": {
+   "src": "art/h2/yongmyo/attack2.webp",
+   "w": 690,
+   "h": 709,
+   "ax": 240,
+   "ay": 706,
+   "from": "용묘화1.png 아래 셋째",
+   "orig": "등을 보이며 삽을 오른쪽으로 크게 휘둘러 내지름 (등의 용 문신 · 견장 보임)",
+   "scale": 1.48
+  },
+  "crouch": {
+   "src": "art/h2/yongmyo/crouch.webp",
+   "w": 582,
+   "h": 466,
+   "ax": 241,
+   "ay": 463,
+   "from": "용묘화1.png 아래 넷째",
+   "orig": "쪼그려 앉아 무릎 위에 삽을 가로로 걸침 (쉬기 · 매복)",
+   "scale": 1.48
+  }
+ },
+ "portrait": "art/h2/yongmyo/portrait.webp",
+ "face": "art/h2/yongmyo/face.webp",
+ "missing": [
+  "walk",
+  "dead",
+  "front",
+  "back",
+  "dash (돌진 — 2D 판에 있음)",
+  "guard (막기 — 2D 판에 있음)"
+ ],
+ "kit": {
+  "basic": "삽 찌르기 (attack) — 앞 2.8m 줄, 삽날로 내지름 · 밀어냄 0.5m",
+  "skills": [
+   {
+    "name": "모아 내려치기",
+    "pose": "windup",
+    "desc": "0.6초 삽을 치켜들었다가 (windup) 앞 3m 원 (반지름 1.6m) 을 내려찍음 (dig 그림으로 끝) — 피해 2.2배, 1초 기절"
+   },
+   {
+    "name": "파내기",
+    "pose": "dig",
+    "desc": "삽날을 땅에 꽂아 앞 4m 부채꼴 90도로 흙 · 돌을 퍼 던짐 — 피해 1.2배, 2초 둔화 40%, 작은 함정 · 덫을 없앰"
+   },
+   {
+    "name": "휘둘러 쳐내기",
+    "pose": "attack2",
+    "desc": "몸을 돌려 삽을 크게 휘두름 — 앞 3.2m 부채꼴 150도, 맞은 적 2m 밀쳐 냄 (둘러싸였을 때)"
+   },
+   {
+    "name": "매복",
+    "pose": "crouch",
+    "desc": "쪼그려 숨어 3초 동안 눈에 덜 띔 (발각 거리 반) — 다음 공격 피해 1.5배"
+   }
+  ],
+  "passive": "묘지기: 적을 쓰러뜨리면 그 자리를 '묻어' 체력 3% 회복, 쓰러진 적에게 주는 피해 +30% (확인사살)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 3,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 2
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 14,
+ "stats": {
+  "hp": 1150,
+  "atk": 32,
+  "spd": 4.6,
+  "weight_kg": 68,
+  "tall_m": 1.78
+ },
+ "desc": "龍墓花. 검은 군모 · 선글라스 · 검은 코트 (붉은 끈 바느질 · 금 견장) 의 여장부. 등과 팔에 용 문신, 큰 삽 하나로 싸우고 묻는다.",
+ "gen": 1,
+ "codex_g": "tomoe"
+}

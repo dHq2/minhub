@@ -1,0 +1,154 @@
+{
+ "slug": "magusgirl",
+ "name": "마도사녀",
+ "rank": "중적",
+ "folder": "3기-2 (중적 마도사녀.png)",
+ "role": "적 (파일 이름 '중적' — 중간급 적 마법사. 엘리트 · 소보스로 알맞음)",
+ "tall": 1.78,
+ "weight": 58,
+ "palette": [
+  "#17191c",
+  "#2a272a",
+  "#2b4fb0",
+  "#e02a2a",
+  "#e7e0e2",
+  "#5a1a1e"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/magusgirl/idle.webp",
+   "w": 557,
+   "h": 711,
+   "ax": 254,
+   "ay": 708,
+   "from": "중적 마도사녀.png 아래 셋째",
+   "orig": "한 손을 머리(뿔)에 얹고 지팡이를 세워 든 채 서 있음 (3/4 앞)",
+   "scale": 1.62
+  },
+  "front": {
+   "src": "art/h2/magusgirl/front.webp",
+   "w": 637,
+   "h": 705,
+   "ax": 344,
+   "ay": 702,
+   "from": "중적 마도사녀.png 위 첫째",
+   "orig": "앞모습, 도끼날 지팡이를 아래로 비스듬히 늘어뜨림",
+   "scale": 1.62
+  },
+  "cast": {
+   "src": "art/h2/magusgirl/cast.webp",
+   "w": 711,
+   "h": 661,
+   "ax": 361,
+   "ay": 658,
+   "from": "중적 마도사녀.png 위 둘째",
+   "orig": "지팡이를 짚고 오른팔을 뻗어 붉은 파편을 쏨",
+   "scale": 1.62
+  },
+  "guard": {
+   "src": "art/h2/magusgirl/guard.webp",
+   "w": 693,
+   "h": 635,
+   "ax": 318,
+   "ay": 632,
+   "from": "중적 마도사녀.png 위 셋째",
+   "orig": "손바닥을 내밀어 푸른 반달 방벽을 세움",
+   "scale": 1.62
+  },
+  "skill": {
+   "src": "art/h2/magusgirl/skill.webp",
+   "w": 685,
+   "h": 671,
+   "ax": 312,
+   "ay": 668,
+   "from": "중적 마도사녀.png 위 넷째",
+   "orig": "한쪽 무릎을 꿇고 손가락으로 바닥에 붉은 마법진을 그림",
+   "scale": 1.62
+  },
+  "dash": {
+   "src": "art/h2/magusgirl/dash.webp",
+   "w": 710,
+   "h": 573,
+   "ax": 263,
+   "ay": 570,
+   "from": "중적 마도사녀.png 아래 첫째",
+   "orig": "로브를 휘날리며 몸을 눕혀 오른쪽으로 미끄러지듯 날아감",
+   "scale": 1.62
+  },
+  "slam": {
+   "src": "art/h2/magusgirl/slam.webp",
+   "w": 512,
+   "h": 711,
+   "ax": 297,
+   "ay": 708,
+   "from": "중적 마도사녀.png 아래 둘째",
+   "orig": "공중에서 지팡이를 땅에 내리꽂아 붉은 폭발 · 파편",
+   "scale": 1.62
+  },
+  "attack": {
+   "src": "art/h2/magusgirl/attack.webp",
+   "w": 740,
+   "h": 624,
+   "ax": 331,
+   "ay": 621,
+   "from": "중적 마도사녀.png 아래 넷째",
+   "orig": "다리를 벌리고 지팡이를 오른쪽으로 내지름, 도끼날 끝에 붉은 소용돌이",
+   "scale": 1.62
+  }
+ },
+ "portrait": "art/h2/magusgirl/portrait.webp",
+ "face": "art/h2/magusgirl/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "back"
+ ],
+ "kit": {
+  "basic": "혈편 사격 (cast) — 앞 14m 부채꼴 20도로 붉은 파편 5발",
+  "skills": [
+   {
+    "name": "푸른 반달 방벽",
+    "pose": "guard",
+    "desc": "앞에 반달 방벽 3초 — 앞 120도 원거리 공격을 막고 화살 · 총알을 되튕김"
+   },
+   {
+    "name": "혈마법진",
+    "pose": "skill",
+    "desc": "1초 땅에 마법진을 그림 — 12m 안 지정 자리 반지름 3.5m 원 장판 4초, 초당 피해 + 둔화 30%"
+   },
+   {
+    "name": "지팡이 낙하",
+    "pose": "slam",
+    "desc": "떠올랐다가 지팡이를 땅에 내리꽂음 — 반지름 4m 원 붉은 폭발, 넘어뜨림"
+   },
+   {
+    "name": "붉은 소용돌이 찌르기",
+    "pose": "attack",
+    "desc": "도끼날 지팡이를 앞 4m 줄로 내지름, 끝에 소용돌이 — 맞은 적 2m 끌어오기"
+   }
+  ],
+  "passive": "마녀의 망토: 체력 50% 아래가 되면 한 번 dash 로 8m 뒤로 미끄러져 빠지고 2초 투명"
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 1
+ },
+ "tag": "mage",
+ "role_job": "사수",
+ "bag": 8,
+ "stats": {
+  "hp": 1500,
+  "atk": 34,
+  "spd": 4.4,
+  "weight_kg": 58,
+  "tall_m": 1.78
+ },
+ "desc": "긴 붉은 머리 · 머리 양옆의 검은 나선 뿔 · 푸른 무늬가 찢긴 검은 로브 · 흰 치마 · 검은 사이하이 부츠. 도끼날 달린 검은 지팡이로 붉은 피의 마법과 푸른 방벽을 쓴다.",
+ "gen": 3
+}

@@ -1,0 +1,313 @@
+{
+ "slug": "tehera",
+ "name": "테헤라",
+ "rank": "1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능)",
+ "folder": "3기-2 (테헤라1.png · 테헤라2.png · 테헤라3.png)",
+ "role": "동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형)",
+ "tall": 1.7,
+ "weight": 40,
+ "palette": [
+  "#d8c98a",
+  "#e4d8cf",
+  "#d58aa8",
+  "#c9a64a",
+  "#805e51",
+  "#f2eef0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/tehera/idle.webp",
+   "w": 454,
+   "h": 704,
+   "ax": 339,
+   "ay": 701,
+   "from": "테헤라3.png 위 첫째",
+   "orig": "하이힐로 서서 다리를 꼬고 고개를 오른쪽으로, 날개 접음 (가장 반듯한 선 모습)",
+   "scale": 1.41
+  },
+  "walk": {
+   "src": "art/h2/tehera/walk.webp",
+   "w": 543,
+   "h": 592,
+   "ax": 322,
+   "ay": 589,
+   "from": "테헤라3.png 위 둘째",
+   "orig": "날개를 펴고 오른쪽으로 성큼 걸음, 손을 앞으로",
+   "scale": 1.41
+  },
+  "rise": {
+   "src": "art/h2/tehera/rise.webp",
+   "w": 517,
+   "h": 735,
+   "ax": 187,
+   "ay": 732,
+   "from": "테헤라3.png 위 셋째",
+   "orig": "두 팔을 벌리고 위를 보며 떠오름 (드레스 휘날림)",
+   "scale": 1.41
+  },
+  "crouch": {
+   "src": "art/h2/tehera/crouch.webp",
+   "w": 509,
+   "h": 568,
+   "ax": 221,
+   "ay": 565,
+   "from": "테헤라3.png 위 넷째",
+   "orig": "몸을 낮춰 웅크리고 한 손을 땅에 뻗음",
+   "scale": 1.41
+  },
+  "walk2": {
+   "src": "art/h2/tehera/walk2.webp",
+   "w": 506,
+   "h": 685,
+   "ax": 259,
+   "ay": 682,
+   "from": "테헤라3.png 아래 첫째",
+   "orig": "날개를 세우고 걸음, 한 손을 뒤로",
+   "scale": 1.41
+  },
+  "dash": {
+   "src": "art/h2/tehera/dash.webp",
+   "w": 543,
+   "h": 633,
+   "ax": 228,
+   "ay": 630,
+   "from": "테헤라3.png 아래 둘째",
+   "orig": "몸을 눕혀 오른쪽으로 날아감, 두 팔을 앞뒤로 뻗음",
+   "scale": 1.41
+  },
+  "sit": {
+   "src": "art/h2/tehera/sit.webp",
+   "w": 664,
+   "h": 544,
+   "ax": 470,
+   "ay": 541,
+   "from": "테헤라3.png 아래 셋째",
+   "orig": "바닥에 앉아 손에 볼을 괴고 졸린 얼굴 (날개로 몸을 감쌈)",
+   "scale": 1.41
+  },
+  "front": {
+   "src": "art/h2/tehera/front.webp",
+   "w": 415,
+   "h": 694,
+   "ax": 277,
+   "ay": 691,
+   "from": "테헤라3.png 아래 넷째",
+   "orig": "앞모습, 두 손을 모으고 서 있음",
+   "scale": 1.41
+  },
+  "land": {
+   "src": "art/h2/tehera/land.webp",
+   "w": 622,
+   "h": 702,
+   "ax": 425,
+   "ay": 699,
+   "from": "테헤라1.png 위 첫째",
+   "orig": "날개를 크게 펴고 무릎 꿇듯 내려앉아 한 손을 땅에 짚음",
+   "scale": 1.41
+  },
+  "float": {
+   "src": "art/h2/tehera/float.webp",
+   "w": 393,
+   "h": 733,
+   "ax": 306,
+   "ay": 730,
+   "from": "테헤라1.png 위 둘째",
+   "orig": "발끝을 세운 채 똑바로 떠 있음, 고개 숙임 (맨발 · 뾰족한 발)",
+   "scale": 1.41
+  },
+  "walk3": {
+   "src": "art/h2/tehera/walk3.webp",
+   "w": 457,
+   "h": 722,
+   "ax": 348,
+   "ay": 719,
+   "from": "테헤라1.png 위 셋째",
+   "orig": "치맛자락을 쥐고 사뿐히 걸음",
+   "scale": 1.41
+  },
+  "drift": {
+   "src": "art/h2/tehera/drift.webp",
+   "w": 561,
+   "h": 702,
+   "ax": 254,
+   "ay": 699,
+   "from": "테헤라1.png 위 넷째",
+   "orig": "몸을 뒤로 눕힌 채 떠 있음, 팔을 늘어뜨림",
+   "scale": 1.41
+  },
+  "cast": {
+   "src": "art/h2/tehera/cast.webp",
+   "w": 550,
+   "h": 701,
+   "ax": 175,
+   "ay": 698,
+   "from": "테헤라1.png 아래 첫째",
+   "orig": "앞으로 날아가며 한 손을 아래로 뻗어 빛가루를 뿌림",
+   "scale": 1.41
+  },
+  "reach": {
+   "src": "art/h2/tehera/reach.webp",
+   "w": 454,
+   "h": 677,
+   "ax": 166,
+   "ay": 674,
+   "from": "테헤라1.png 아래 둘째",
+   "orig": "허리를 굽혀 아래로 손을 뻗음 (치유 · 축복)",
+   "scale": 1.41
+  },
+  "guard": {
+   "src": "art/h2/tehera/guard.webp",
+   "w": 385,
+   "h": 670,
+   "ax": 189,
+   "ay": 667,
+   "from": "테헤라1.png 아래 셋째",
+   "orig": "날개로 몸을 감싸고 손을 가슴에 얹음 (날개 방패)",
+   "scale": 1.41
+  },
+  "sit2": {
+   "src": "art/h2/tehera/sit2.webp",
+   "w": 687,
+   "h": 499,
+   "ax": 613,
+   "ay": 496,
+   "from": "테헤라1.png 아래 넷째",
+   "orig": "바닥에 앉아 한 무릎을 세움 (원본 왼쪽 보기 → 뒤집음)",
+   "scale": 1.41
+  },
+  "dash2": {
+   "src": "art/h2/tehera/dash2.webp",
+   "w": 681,
+   "h": 541,
+   "ax": 50,
+   "ay": 538,
+   "from": "테헤라2.png 위 첫째",
+   "orig": "몸을 쭉 펴고 오른쪽으로 쏜살같이 날아감",
+   "scale": 1.41
+  },
+  "jump": {
+   "src": "art/h2/tehera/jump.webp",
+   "w": 417,
+   "h": 743,
+   "ax": 23,
+   "ay": 740,
+   "from": "테헤라2.png 위 둘째",
+   "orig": "무릎을 들고 위로 솟구침, 고개를 쳐듦",
+   "scale": 1.41
+  },
+  "back": {
+   "src": "art/h2/tehera/back.webp",
+   "w": 494,
+   "h": 709,
+   "ax": 133,
+   "ay": 706,
+   "from": "테헤라2.png 위 셋째",
+   "orig": "뒷모습, 어깨 너머로 오른쪽을 봄 (드러난 등 · 날개)",
+   "scale": 1.41
+  },
+  "fly": {
+   "src": "art/h2/tehera/fly.webp",
+   "w": 399,
+   "h": 722,
+   "ax": 296,
+   "ay": 719,
+   "from": "테헤라2.png 위 넷째",
+   "orig": "무릎을 굽힌 채 떠서 날갯짓",
+   "scale": 1.41
+  },
+  "hurt": {
+   "src": "art/h2/tehera/hurt.webp",
+   "w": 578,
+   "h": 594,
+   "ax": 531,
+   "ay": 591,
+   "from": "테헤라2.png 아래 첫째",
+   "orig": "고개를 젖히고 뒤로 넘어가듯 떨어짐 (맞음 · 기절)",
+   "scale": 1.41
+  },
+  "low": {
+   "src": "art/h2/tehera/low.webp",
+   "w": 773,
+   "h": 613,
+   "ax": 514,
+   "ay": 610,
+   "from": "테헤라2.png 아래 둘째",
+   "orig": "다리를 길게 뻗고 한 손을 땅에 짚어 낮게 내려앉음, 다른 팔은 뒤로",
+   "scale": 1.41
+  },
+  "curl": {
+   "src": "art/h2/tehera/curl.webp",
+   "w": 364,
+   "h": 630,
+   "ax": 309,
+   "ay": 627,
+   "from": "테헤라2.png 아래 셋째",
+   "orig": "무릎을 끌어안고 날개로 몸을 감싸 공처럼 웅크림",
+   "scale": 1.41
+  },
+  "front2": {
+   "src": "art/h2/tehera/front2.webp",
+   "w": 460,
+   "h": 656,
+   "ax": 199,
+   "ay": 653,
+   "from": "테헤라2.png 아래 넷째",
+   "orig": "앞모습, 날개를 접고 공중에 서 있음",
+   "scale": 1.41
+  }
+ },
+ "portrait": "art/h2/tehera/portrait.webp",
+ "face": "art/h2/tehera/face.webp",
+ "missing": [
+  "attack (때리는 그림 없음 — cast · reach 로 대신)",
+  "dead (hurt · sit 으로 대신)",
+  "down"
+ ],
+ "kit": {
+  "basic": "빛가루 뿌리기 (cast) — 12m 앞 사격, 맞은 적 1초 둔화 20%",
+  "skills": [
+   {
+    "name": "요정의 축복",
+    "pose": "reach",
+    "desc": "허리 굽혀 손을 뻗음 — 4m 안 아군 하나 체력 25% 회복 + 4초 동안 받는 피해 15% 감소"
+   },
+   {
+    "name": "날개 방패",
+    "pose": "guard",
+    "desc": "날개로 몸을 감쌈 — 2초 동안 자신 피해 80% 감소, 끝날 때 반지름 3m 원 빛가루로 적 1초 눈멂"
+   },
+   {
+    "name": "은빛 비행",
+    "pose": "dash",
+    "desc": "몸을 눕혀 8m 날아 이동 (지나간 줄 위 적 0.8초 둔화), 벽 · 구덩이 넘음"
+   },
+   {
+    "name": "나른한 꿈",
+    "pose": "sit",
+    "desc": "자리에 앉아 졸음 — 반지름 6m 원 장판 5초, 안의 적 공격 속도 −40%, 아군 초당 체력 1% 회복 (본인은 못 움직임)"
+   }
+  ],
+  "passive": "요정 날개: 늘 떠 있어 함정 · 장판을 밟지 않음, 원거리 회피 15%"
+ },
+ "apt": {
+  "melee": 0,
+  "spear": 0,
+  "bow": 1,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 3
+ },
+ "tag": "mage",
+ "role_job": "지원",
+ "bag": 8,
+ "stats": {
+  "hp": 620,
+  "atk": 14,
+  "spd": 5.2,
+  "weight_kg": 40,
+  "tall_m": 1.7
+ },
+ "desc": "잠자리 같은 투명한 금테 날개 · 긴 금발 · 뾰족 귀 · 분홍 드레스의 요정. 우주 바위 위에 나른하게 앉아 빛가루를 흩날리는, 어느 종족의 왕이었을 법한 존재.",
+ "gen": 1,
+ "codex_g": "tehera"
+}
