@@ -28,7 +28,7 @@ def main():
         sheet = Image.new('RGBA', (W, H), (0, 0, 0, 0)); P = {}
         for n, w, h in items:
             im = ims[n] if k == 1 else ims[n].resize((w, h), Image.LANCZOS); x, y = pos[n]; sheet.paste(im, (x, y)); P[n] = [x, y, w, h]
-        sheet.save(os.path.join(OUT, slug + '.webp'), 'WEBP', quality=86, method=6)
+        sheet.save(os.path.join(OUT, slug + '.webp'), 'WEBP', quality=86, method=4)
         A[slug] = {'src': 'art/h2/atlas/' + slug + '.webp', 'W': W, 'H': H, 'k': round(k, 3), 'poses': P}
         print(f'{slug:14} {W}x{H} k={k:.2f} poses={len(P)} {os.path.getsize(os.path.join(OUT, slug + ".webp")) // 1024}KB')
     cell, cols = 128, 8; L = [s for s in R if R[s].get('face')]; rows = (len(L) + cols - 1) // cols

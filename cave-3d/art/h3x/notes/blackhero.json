@@ -1,0 +1,199 @@
+{
+ "slug": "blackhero",
+ "name": "흑영웅",
+ "codex_g": null,
+ "codex_cid": null,
+ "codex_sub": null,
+ "game_kind": null,
+ "files": [
+  "흑영웅1.png",
+  "흑영웅2.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "검은 뻗친 머리 (한쪽 눈 가림), 검은 가죽 재킷 · 어깨 갑 · 무릎 갑, 장갑 낀 맨손 격투가. 1번 장은 회색빛 갑, 2번 장은 더 검고 어깨 · 손목에 붉은 보석.",
+ "n_poses": 16,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/blackhero/idle.webp",
+   "w": 249,
+   "h": 600,
+   "ax": 127,
+   "ay": 597,
+   "orig": "검은 옷 · 회색 어깨갑, 선 자세",
+   "from": "흑영웅1.png 위 1",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "stance": {
+   "src": "art/h3x/blackhero/stance.webp",
+   "w": 392,
+   "h": 557,
+   "ax": 194,
+   "ay": 554,
+   "orig": "주먹 격투 자세",
+   "from": "흑영웅1.png 위 2",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "punch": {
+   "src": "art/h3x/blackhero/punch.webp",
+   "w": 537,
+   "h": 552,
+   "ax": 195,
+   "ay": 549,
+   "orig": "오른쪽 지르기",
+   "from": "흑영웅1.png 위 3",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "dash": {
+   "src": "art/h3x/blackhero/dash.webp",
+   "w": 471,
+   "h": 414,
+   "ax": 136,
+   "ay": 411,
+   "orig": "몸을 숙여 돌진",
+   "from": "흑영웅1.png 위 4",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "kick": {
+   "src": "art/h3x/blackhero/kick.webp",
+   "w": 547,
+   "h": 561,
+   "ax": 153,
+   "ay": 558,
+   "orig": "높이 옆차기",
+   "from": "흑영웅1.png 아래 1",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "crouch": {
+   "src": "art/h3x/blackhero/crouch.webp",
+   "w": 426,
+   "h": 382,
+   "ax": 124,
+   "ay": 379,
+   "orig": "착지하듯 웅크림 (주먹을 땅에)",
+   "from": "흑영웅1.png 아래 2",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/blackhero/hurt.webp",
+   "w": 340,
+   "h": 560,
+   "ax": 71,
+   "ay": 557,
+   "orig": "뒤로 젖혀지며 맞음",
+   "from": "흑영웅1.png 아래 3",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/blackhero/down.webp",
+   "w": 510,
+   "h": 323,
+   "ax": 275,
+   "ay": 320,
+   "orig": "앉아서 쓰러짐",
+   "from": "흑영웅1.png 아래 4",
+   "scale": 1.2048,
+   "flip": false
+  },
+  "idle_b": {
+   "src": "art/h3x/blackhero/idle_b.webp",
+   "w": 251,
+   "h": 600,
+   "ax": 123,
+   "ay": 597,
+   "orig": "어깨갑에 붉은 보석, 선 자세 (둘째 그림)",
+   "from": "흑영웅2.png 위 1",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "stance_b": {
+   "src": "art/h3x/blackhero/stance_b.webp",
+   "w": 464,
+   "h": 539,
+   "ax": 253,
+   "ay": 536,
+   "orig": "격투 자세",
+   "from": "흑영웅2.png 위 2",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "punch_b": {
+   "src": "art/h3x/blackhero/punch_b.webp",
+   "w": 485,
+   "h": 548,
+   "ax": 274,
+   "ay": 545,
+   "orig": "지르기",
+   "from": "흑영웅2.png 위 3",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "dash_b": {
+   "src": "art/h3x/blackhero/dash_b.webp",
+   "w": 455,
+   "h": 418,
+   "ax": 68,
+   "ay": 415,
+   "orig": "돌진",
+   "from": "흑영웅2.png 위 4",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "kick_b": {
+   "src": "art/h3x/blackhero/kick_b.webp",
+   "w": 516,
+   "h": 553,
+   "ax": 133,
+   "ay": 550,
+   "orig": "옆차기",
+   "from": "흑영웅2.png 아래 1",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "crouch_b": {
+   "src": "art/h3x/blackhero/crouch_b.webp",
+   "w": 335,
+   "h": 364,
+   "ax": 166,
+   "ay": 361,
+   "orig": "웅크림",
+   "from": "흑영웅2.png 아래 2",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "hurt_b": {
+   "src": "art/h3x/blackhero/hurt_b.webp",
+   "w": 442,
+   "h": 519,
+   "ax": 257,
+   "ay": 516,
+   "orig": "맞음",
+   "from": "흑영웅2.png 아래 3",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "down_b": {
+   "src": "art/h3x/blackhero/down_b.webp",
+   "w": 441,
+   "h": 324,
+   "ax": 177,
+   "ay": 321,
+   "orig": "앉아서 쓰러짐",
+   "from": "흑영웅2.png 아래 4",
+   "scale": 1.1765,
+   "flip": false
+  }
+ },
+ "odd": [
+  "도감에서 \"흑영웅\"을 못 찾음.",
+  "두 장이 같은 동작 순서 (서기 · 자세 · 지르기 · 돌진 · 옆차기 · 웅크림 · 맞기 · 쓰러짐)의 색 다른 판 — 2번 장은 _b.",
+  "장마다 idle 을 600px 로 맞춤."
+ ],
+ "v": 1
+}

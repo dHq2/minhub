@@ -1,0 +1,108 @@
+{
+ "slug": "eopong",
+ "name": "어퐁",
+ "codex_g": "eopong",
+ "codex_cid": "C-103",
+ "codex_sub": "어퐁 · 역할 미정 · 원화 + 연출",
+ "game_kind": null,
+ "files": [
+  "어퐁추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "곰 귀 모자 · 복면, 아주 근육질의 흰 피부 거구 여전사, 회색 긴 곱슬머리, 둥근 청동 방패 + 가시 철퇴, 검은 끈 비키니 · 큰 전투화.",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/eopong/idle.webp",
+   "w": 435,
+   "h": 600,
+   "ax": 231,
+   "ay": 597,
+   "orig": "둥근 방패와 철퇴를 들고 선 자세",
+   "from": "어퐁추가.png 위 1",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "guard": {
+   "src": "art/h3x/eopong/guard.webp",
+   "w": 442,
+   "h": 499,
+   "ax": 233,
+   "ay": 496,
+   "orig": "방패를 앞세운 막기 자세",
+   "from": "어퐁추가.png 위 2",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "bash": {
+   "src": "art/h3x/eopong/bash.webp",
+   "w": 591,
+   "h": 515,
+   "ax": 309,
+   "ay": 512,
+   "orig": "방패로 오른쪽을 밀쳐 치기",
+   "from": "어퐁추가.png 위 3",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "swing": {
+   "src": "art/h3x/eopong/swing.webp",
+   "w": 529,
+   "h": 559,
+   "ax": 270,
+   "ay": 556,
+   "orig": "철퇴를 오른쪽으로 휘두름 (등 쪽이 보임)",
+   "from": "어퐁추가.png 위 4",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "windup": {
+   "src": "art/h3x/eopong/windup.webp",
+   "w": 484,
+   "h": 600,
+   "ax": 258,
+   "ay": 597,
+   "orig": "철퇴를 머리 위로 치켜든 내려치기 준비",
+   "from": "어퐁추가.png 아래 1",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "kick": {
+   "src": "art/h3x/eopong/kick.webp",
+   "w": 601,
+   "h": 531,
+   "ax": 258,
+   "ay": 528,
+   "orig": "높이 앞차기",
+   "from": "어퐁추가.png 아래 2",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/eopong/hurt.webp",
+   "w": 369,
+   "h": 513,
+   "ax": 197,
+   "ay": 510,
+   "orig": "고개가 젖혀지며 맞음",
+   "from": "어퐁추가.png 아래 3",
+   "scale": 1.2474,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/eopong/down.webp",
+   "w": 543,
+   "h": 369,
+   "ax": 279,
+   "ay": 366,
+   "orig": "방패를 짚고 주저앉아 쓰러짐",
+   "from": "어퐁추가.png 아래 4",
+   "scale": 1.2474,
+   "flip": false
+  }
+ },
+ "odd": [
+  "2 · 3번 그림이 붙어 있어 (방패 · 철퇴가 맞닿음) 손으로 표식을 찍어 갈랐음. 3번 왼쪽 철퇴 머리가 2번 무릎과 겹치던 자리 — 경계가 약간 매끄럽지 않을 수 있음."
+ ],
+ "v": 1
+}

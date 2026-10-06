@@ -1,0 +1,99 @@
+{
+ "slug": "magentaroot",
+ "title": "마젠타 뿌리 군단의 10인 전투 도감-4.png",
+ "kind": "faction",
+ "name": "마젠타 뿌리 군단",
+ "desc": "흰 삼각 두건 가면에 검은 누더기, 몸 안팎으로 자홍 뿌리가 자라난 군단. 뿌리가 다리 · 팔을 대신하고 기계 무기를 붙여 쓴다.",
+ "items": [
+  {
+   "n": 1,
+   "src": "art/h3f/magentaroot/01.webp",
+   "w": 266,
+   "h": 399,
+   "name": "장총 척후",
+   "desc": "두건 가면, 뿌리 다리로 선 장총 병사.",
+   "role": "궁수"
+  },
+  {
+   "n": 2,
+   "src": "art/h3f/magentaroot/02.webp",
+   "w": 331,
+   "h": 348,
+   "name": "탑방패 도끼병",
+   "desc": "비대한 몸, 손도끼와 판자 탑방패.",
+   "role": "병사"
+  },
+  {
+   "n": 3,
+   "src": "art/h3f/magentaroot/03.webp",
+   "w": 244,
+   "h": 461,
+   "name": "장대다리 관측병",
+   "desc": "뿌리 다리가 길쭉한 키다리, 육분의를 든다.",
+   "role": "지원"
+  },
+  {
+   "n": 4,
+   "src": "art/h3f/magentaroot/04.webp",
+   "w": 413,
+   "h": 283,
+   "name": "개틀링 멧돼지",
+   "desc": "등에 개틀링을 얹은 뿌리 멧돼지, 흰 가면과 엄니.",
+   "role": "괴수"
+  },
+  {
+   "n": 5,
+   "src": "art/h3f/magentaroot/05.webp",
+   "w": 307,
+   "h": 337,
+   "name": "드릴팔 거구",
+   "desc": "붕대 감은 굵은 팔, 드릴 창을 쥔 짐 진 거구.",
+   "role": "병사"
+  },
+  {
+   "n": 6,
+   "src": "art/h3f/magentaroot/06.webp",
+   "w": 236,
+   "h": 421,
+   "name": "올가미 덫꾼",
+   "desc": "장대 끝 올가미와 곰덫을 든 여인.",
+   "role": "병사"
+  },
+  {
+   "n": 7,
+   "src": "art/h3f/magentaroot/07.webp",
+   "w": 346,
+   "h": 435,
+   "name": "통 짊은 거구",
+   "desc": "양옆에 통 묶음을 매단 비대한 운반병.",
+   "role": "지원"
+  },
+  {
+   "n": 8,
+   "src": "art/h3f/magentaroot/08.webp",
+   "w": 232,
+   "h": 418,
+   "name": "집게 간호수녀",
+   "desc": "흰 앞치마, 긴 집게와 약 가방.",
+   "role": "지원"
+  },
+  {
+   "n": 9,
+   "src": "art/h3f/magentaroot/09.webp",
+   "w": 300,
+   "h": 463,
+   "name": "톱칼 장교",
+   "desc": "흰 장발 견장 장교, 톱날 장검.",
+   "role": "지휘관"
+  },
+  {
+   "n": 10,
+   "src": "art/h3f/magentaroot/10.webp",
+   "w": 433,
+   "h": 503,
+   "name": "집게팔 뿌리 거상",
+   "desc": "거대한 기계 집게 팔 넷, 뿌리 덩어리 몸.",
+   "role": "괴수"
+  }
+ ]
+}

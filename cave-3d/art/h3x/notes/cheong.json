@@ -1,0 +1,108 @@
+{
+ "slug": "cheong",
+ "name": "청광묵",
+ "codex_g": "goblin",
+ "codex_cid": "C-004",
+ "codex_sub": "청광묵 · 동료 · 원화 + 연출",
+ "game_kind": "cheongAlly (동료 kind, SPR 키 cheong — prologue.js: SPR.cheong = art/pro/goblin.webp, DEFS.cheong · cheongNpc · cheongAlly)",
+ "files": [
+  "청광묵추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "연두 피부 고블린 소녀, 붉은 헝클어진 머리 · 긴 귀, 검은 누더기 원피스 · 가죽 띠, 붕대 감은 팔다리 · 흉터, 톱니 단검.",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/cheong/idle.webp",
+   "w": 299,
+   "h": 600,
+   "ax": 164,
+   "ay": 597,
+   "orig": "단검을 늘어뜨리고 선 자세",
+   "from": "청광묵추가.png 위 1",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "ready": {
+   "src": "art/h3x/cheong/ready.webp",
+   "w": 409,
+   "h": 539,
+   "ax": 201,
+   "ay": 536,
+   "orig": "단검을 앞에 쥐고 윙크하는 준비 자세",
+   "from": "청광묵추가.png 위 2",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "stab": {
+   "src": "art/h3x/cheong/stab.webp",
+   "w": 592,
+   "h": 532,
+   "ax": 223,
+   "ay": 529,
+   "orig": "단검을 오른쪽으로 찌름",
+   "from": "청광묵추가.png 위 3",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "slash": {
+   "src": "art/h3x/cheong/slash.webp",
+   "w": 440,
+   "h": 581,
+   "ax": 269,
+   "ay": 578,
+   "orig": "단검을 어깨 위로 거꾸로 쥐고 몸을 틀어 벰",
+   "from": "청광묵추가.png 위 4",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "pounce": {
+   "src": "art/h3x/cheong/pounce.webp",
+   "w": 389,
+   "h": 538,
+   "ax": 239,
+   "ay": 535,
+   "orig": "웅크렸다가 단검을 치켜드는 덮치기",
+   "from": "청광묵추가.png 아래 1",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "kick": {
+   "src": "art/h3x/cheong/kick.webp",
+   "w": 477,
+   "h": 542,
+   "ax": 141,
+   "ay": 539,
+   "orig": "앞차기",
+   "from": "청광묵추가.png 아래 2",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/cheong/hurt.webp",
+   "w": 372,
+   "h": 551,
+   "ax": 189,
+   "ay": 548,
+   "orig": "배를 감싸고 맞음",
+   "from": "청광묵추가.png 아래 3",
+   "scale": 1.2146,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/cheong/down.webp",
+   "w": 487,
+   "h": 389,
+   "ax": 272,
+   "ay": 386,
+   "orig": "주저앉아 쓰러짐",
+   "from": "청광묵추가.png 아래 4",
+   "scale": 1.2146,
+   "flip": false
+  }
+ },
+ "odd": [
+  "게임 SPR.cheong 은 지금 idle 한 장 (goblin.webp 205x512) 뿐 — 이번 8동작으로 3D 동료 동작을 채울 수 있음."
+ ],
+ "v": 1
+}

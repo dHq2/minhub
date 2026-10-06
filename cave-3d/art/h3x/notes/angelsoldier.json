@@ -1,0 +1,133 @@
+{
+ "slug": "angelsoldier",
+ "name": "천사 병사 10인",
+ "codex_g": null,
+ "codex_cid": null,
+ "codex_sub": null,
+ "game_kind": null,
+ "files": [
+  "천사 병사 10인의 전투 스프라이트.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "분홍 머리 · 흰 옷 (연보라 안감) · 금빛 장식으로 맞춘 천사 군대 10명. 칸마다 한 명, 각자 다른 무기 (지팡이 · 마법 지팡이 · 대포 · 활 · 부채 · 창방패 · 갈래 지팡이 · 쌍낫칼 · 기관총 · 큰 낫). 모두 선 자세 한 장씩.",
+ "n_poses": 10,
+ "poses": {
+  "s01": {
+   "src": "art/h3x/angelsoldier/s01.webp",
+   "w": 363,
+   "h": 576,
+   "ax": 165,
+   "ay": 573,
+   "orig": "분홍 단발 · 흰 원피스, 날개 달린 지팡이 (치유사?)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 위줄 1번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s02": {
+   "src": "art/h3x/angelsoldier/s02.webp",
+   "w": 377,
+   "h": 633,
+   "ax": 167,
+   "ay": 630,
+   "orig": "분홍 긴머리 · 날개 귀, 보라 구슬 지팡이 (마법사)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 위줄 2번째 칸",
+   "scale": 1.2552,
+   "flip": true
+  },
+  "s03": {
+   "src": "art/h3x/angelsoldier/s03.webp",
+   "w": 356,
+   "h": 621,
+   "ax": 180,
+   "ay": 618,
+   "orig": "근육질 남자, 큰 대포 (중화기)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 위줄 3번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s04": {
+   "src": "art/h3x/angelsoldier/s04.webp",
+   "w": 379,
+   "h": 626,
+   "ax": 176,
+   "ay": 623,
+   "orig": "분홍 땋은머리 · 큰 날개, 깃털 활 (궁수)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 위줄 4번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s05": {
+   "src": "art/h3x/angelsoldier/s05.webp",
+   "w": 364,
+   "h": 633,
+   "ax": 177,
+   "ay": 630,
+   "orig": "흰 가면 · 네 팔, 부채 (주술사)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 위줄 5번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s06": {
+   "src": "art/h3x/angelsoldier/s06.webp",
+   "w": 363,
+   "h": 600,
+   "ax": 162,
+   "ay": 597,
+   "orig": "분홍 옆머리 · 날개 방패와 창 (방패병)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 아래줄 1번째 칸",
+   "scale": 1.2552,
+   "flip": true
+  },
+  "s07": {
+   "src": "art/h3x/angelsoldier/s07.webp",
+   "w": 364,
+   "h": 587,
+   "ax": 153,
+   "ay": 584,
+   "orig": "분홍 머리 노인, 갈래 지팡이 · 탄띠 (기술자?)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 아래줄 2번째 칸",
+   "scale": 1.2552,
+   "flip": true
+  },
+  "s08": {
+   "src": "art/h3x/angelsoldier/s08.webp",
+   "w": 356,
+   "h": 550,
+   "ax": 169,
+   "ay": 547,
+   "orig": "갈색 피부 · 분홍 곱슬, 양손 낫칼 (쌍검)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 아래줄 3번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s09": {
+   "src": "art/h3x/angelsoldier/s09.webp",
+   "w": 379,
+   "h": 591,
+   "ax": 162,
+   "ay": 588,
+   "orig": "흰 새 머리 · 분홍 날개, 기관총 (사수)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 아래줄 4번째 칸",
+   "scale": 1.2552,
+   "flip": false
+  },
+  "s10": {
+   "src": "art/h3x/angelsoldier/s10.webp",
+   "w": 365,
+   "h": 600,
+   "ax": 183,
+   "ay": 597,
+   "orig": "분홍 긴머리 · 큰 날개, 큰 낫 (낫 전사)",
+   "from": "천사 병사 10인의 전투 스프라이트.png 아래줄 5번째 칸",
+   "scale": 1.2552,
+   "flip": true
+  }
+ },
+ "odd": [
+  "도감에 같은 무리가 없음 (기계천사 X-mechangel · 산호천사 X-coralangel 과는 다른 분홍 · 흰 천사들). 새 팩션으로 넣으면 될 듯.",
+  "칸 선이 그려진 그림이라 칸마다 따로 바탕을 지우고, 옆 칸에서 넘어온 날개 · 무기 조각은 버렸음. s04 왼쪽의 흐린 날개 선은 본인 날개 (스케치처럼 그려짐).",
+  "열 명 모두 같은 배율 (중앙값 높이 → 600px) — 키 차이가 그대로 남음.",
+  "왼쪽을 보는 s02 · s06 · s07 · s10 은 뒤집었음."
+ ],
+ "v": 1
+}

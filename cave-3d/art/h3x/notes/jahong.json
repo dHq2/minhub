@@ -1,0 +1,198 @@
+{
+ "slug": "jahong",
+ "name": "자홍",
+ "codex_g": null,
+ "codex_cid": null,
+ "codex_sub": null,
+ "game_kind": null,
+ "files": [
+  "자홍1.png",
+  "자홍2.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "붉은 · 자홍 뻗친 머리 소년, 검은 사무라이 갑옷 (자홍색 끈 · 격자 무늬), 통 넓은 바지. 첫 장은 맨손 격투, 둘째 장은 검은 일본도.",
+ "n_poses": 16,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/jahong/idle.webp",
+   "w": 237,
+   "h": 600,
+   "ax": 130,
+   "ay": 597,
+   "orig": "맨손으로 선 자세 (붉은 갑옷 · 앞모습)",
+   "from": "자홍1.png 위 1",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "stance": {
+   "src": "art/h3x/jahong/stance.webp",
+   "w": 347,
+   "h": 533,
+   "ax": 314,
+   "ay": 530,
+   "orig": "맨손 격투 자세",
+   "from": "자홍1.png 위 2",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "punch": {
+   "src": "art/h3x/jahong/punch.webp",
+   "w": 399,
+   "h": 548,
+   "ax": 249,
+   "ay": 545,
+   "orig": "몸을 틀어 주먹 지르기",
+   "from": "자홍1.png 위 3",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "knee": {
+   "src": "art/h3x/jahong/knee.webp",
+   "w": 323,
+   "h": 591,
+   "ax": 164,
+   "ay": 588,
+   "orig": "무릎 차올리기",
+   "from": "자홍1.png 위 4",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "sweep": {
+   "src": "art/h3x/jahong/sweep.webp",
+   "w": 536,
+   "h": 346,
+   "ax": 110,
+   "ay": 343,
+   "orig": "한 손 짚고 다리 쓸어차기",
+   "from": "자홍1.png 아래 1",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "crouch": {
+   "src": "art/h3x/jahong/crouch.webp",
+   "w": 374,
+   "h": 428,
+   "ax": 196,
+   "ay": 425,
+   "orig": "한 무릎 꿇고 웅크림 (팔을 뒤로 뻗음)",
+   "from": "자홍1.png 아래 2",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/jahong/hurt.webp",
+   "w": 316,
+   "h": 486,
+   "ax": 34,
+   "ay": 483,
+   "orig": "뒤로 젖혀지며 맞음",
+   "from": "자홍1.png 아래 3",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/jahong/down.webp",
+   "w": 526,
+   "h": 288,
+   "ax": 302,
+   "ay": 285,
+   "orig": "옆으로 누워 쓰러짐",
+   "from": "자홍1.png 아래 4",
+   "scale": 1.0811,
+   "flip": false
+  },
+  "katana_idle": {
+   "src": "art/h3x/jahong/katana_idle.webp",
+   "w": 369,
+   "h": 600,
+   "ax": 199,
+   "ay": 597,
+   "orig": "칼을 내려 들고 선 자세",
+   "from": "자홍2.png 위 1",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_ready": {
+   "src": "art/h3x/jahong/katana_ready.webp",
+   "w": 537,
+   "h": 523,
+   "ax": 293,
+   "ay": 520,
+   "orig": "양손으로 칼을 앞에 겨눔",
+   "from": "자홍2.png 위 2",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_thrust": {
+   "src": "art/h3x/jahong/katana_thrust.webp",
+   "w": 727,
+   "h": 494,
+   "ax": 284,
+   "ay": 491,
+   "orig": "한 손으로 칼을 길게 찌름",
+   "from": "자홍2.png 위 3",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_low": {
+   "src": "art/h3x/jahong/katana_low.webp",
+   "w": 500,
+   "h": 505,
+   "ax": 245,
+   "ay": 502,
+   "orig": "칼을 아래로 비스듬히 내린 낮은 자세",
+   "from": "자홍2.png 위 4",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_overhead": {
+   "src": "art/h3x/jahong/katana_overhead.webp",
+   "w": 471,
+   "h": 563,
+   "ax": 193,
+   "ay": 560,
+   "orig": "칼을 머리 위로 치켜듦",
+   "from": "자홍2.png 아래 1",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_draw": {
+   "src": "art/h3x/jahong/katana_draw.webp",
+   "w": 536,
+   "h": 491,
+   "ax": 168,
+   "ay": 488,
+   "orig": "허리를 숙여 칼을 뽑아 베는 자세",
+   "from": "자홍2.png 아래 2",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_hurt": {
+   "src": "art/h3x/jahong/katana_hurt.webp",
+   "w": 362,
+   "h": 535,
+   "ax": 33,
+   "ay": 532,
+   "orig": "칼을 쥔 채 맞아 몸을 웅크림",
+   "from": "자홍2.png 아래 3",
+   "scale": 1.2072,
+   "flip": false
+  },
+  "katana_kneel": {
+   "src": "art/h3x/jahong/katana_kneel.webp",
+   "w": 555,
+   "h": 404,
+   "ax": 338,
+   "ay": 401,
+   "orig": "한 무릎 꿇고 칼을 앞으로 겨눔",
+   "from": "자홍2.png 아래 4",
+   "scale": 1.2072,
+   "flip": false
+  }
+ },
+ "odd": [
+  "도감 (catalog.js)에서 \"자홍\" 이름을 못 찾음 — 새 인물이거나 다른 이름으로 들어가 있을 수 있음.",
+  "두 장의 그림 크기가 달라 (맨손 idle 555px · 칼 idle 497px) 장마다 idle 을 600px 로 맞춤."
+ ],
+ "v": 1
+}

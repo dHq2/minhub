@@ -1,0 +1,106 @@
+{
+ "slug": "chinchilla",
+ "name": "친칠라",
+ "codex_g": "chinchilla",
+ "codex_cid": "C-106",
+ "codex_sub": "친칠라 · 역할 미정 · 원화 + 연출",
+ "game_kind": null,
+ "files": [
+  "친칠라추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "푸른 피부 · 줄무늬 꼬리 (호랑이 같은 굵은 꼬리), 뾰족 귀, 곰 머리 가죽 망토, 검은 가죽 옷, 흰 무늬 나무 장궁 · 등에 화살통.",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/chinchilla/idle.webp",
+   "w": 413,
+   "h": 600,
+   "ax": 260,
+   "ay": 597,
+   "orig": "곰 가죽을 쓰고 활을 세워 든 선 자세",
+   "from": "친칠라추가.png 위 1",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "draw_arrow": {
+   "src": "art/h3x/chinchilla/draw_arrow.webp",
+   "w": 377,
+   "h": 543,
+   "ax": 243,
+   "ay": 540,
+   "orig": "등 뒤 화살통에서 화살을 뽑음",
+   "from": "친칠라추가.png 위 2",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "aim": {
+   "src": "art/h3x/chinchilla/aim.webp",
+   "w": 442,
+   "h": 622,
+   "ax": 265,
+   "ay": 619,
+   "orig": "활시위를 끝까지 당김",
+   "from": "친칠라추가.png 위 3",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "release": {
+   "src": "art/h3x/chinchilla/release.webp",
+   "w": 426,
+   "h": 623,
+   "ax": 241,
+   "ay": 620,
+   "orig": "쏜 뒤 손을 귀 옆에 둔 자세",
+   "from": "친칠라추가.png 위 4",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "kneel_shot": {
+   "src": "art/h3x/chinchilla/kneel_shot.webp",
+   "w": 457,
+   "h": 524,
+   "ax": 259,
+   "ay": 521,
+   "orig": "무릎 꿇고 쏨",
+   "from": "친칠라추가.png 아래 1",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "bow_guard": {
+   "src": "art/h3x/chinchilla/bow_guard.webp",
+   "w": 471,
+   "h": 495,
+   "ax": 176,
+   "ay": 492,
+   "orig": "활을 가로로 들어 막음",
+   "from": "친칠라추가.png 아래 2",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/chinchilla/hurt.webp",
+   "w": 415,
+   "h": 509,
+   "ax": 181,
+   "ay": 506,
+   "orig": "몸을 젖히며 맞음",
+   "from": "친칠라추가.png 아래 3",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/chinchilla/down.webp",
+   "w": 494,
+   "h": 317,
+   "ax": 274,
+   "ay": 314,
+   "orig": "옆으로 누워 쓰러짐",
+   "from": "친칠라추가.png 아래 4",
+   "scale": 1.2097,
+   "flip": false
+  }
+ },
+ "odd": [],
+ "v": 1
+}

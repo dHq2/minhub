@@ -1,4 +1,4 @@
-/* drill.js v1.5 — (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.6 — (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -121,7 +121,7 @@ function drillSpawn(list, o = {}){
     const a = (i / Math.max(1, list.length)) * Math.PI * 2 + rnd(-0.3, 0.3), R = list.length > 1 ? (o.spread || 1.6) + (i % 3) * 0.5 : 0;
     let x = c.x + Math.cos(a) * R, z = c.z + Math.sin(a) * R; if (solidAt(G.map, x, z)){ x = c.x; z = c.z; }
     const e = spawn(k, x, z, 'enemy'); e.band = 'drill'; e.home = { x, z }; e.alert = o.alert !== false; if (e.alert) e.seen = G.t;
-    if (e.D.boss && typeof bossInit === 'function' && k !== 'drillCaster') bossInit(e, { x, z });
+    if (e.D.boss && typeof bossInit === 'function' && k !== 'drillCaster' && !e.D.h2) bossInit(e, { x, z });
     dust(x, z, 6);
   });
   caption(o.title || '적이 나타났다', o.sub || '');

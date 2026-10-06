@@ -1,4 +1,4 @@
-/* h2.js v1.4 — (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.5 — (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -11,7 +11,7 @@
 const H2 = { list: [], sk: {} };
 // 엔진 동작 이름 ← 노트의 동작 이름 (먼저 있는 것)
 const H2POSE = {
-  idle: ['idle'], walk: ['walk', 'run', 'idle'], windup: ['windup', 'aim'], attack: ['attack', 'attack2', 'skill'],
+  idle: ['idle'], walk: ['walk', 'run', 'idle'], windup: ['windup', 'aim'], attack: ['attack', 'attack2', 'skill', 'windup', 'dash', 'cast', 'slam'],
   hurt: ['hurt', 'guard'], down: ['down', 'dead'], dead: ['dead', 'down'], squat: ['crouch', 'rest'], block: ['guard'], aim: ['aim', 'shoot', 'windup'],
 };
 const tallOf = o => Math.max(0.9, Math.min(9, (o.tall || 1.7) * 0.88));   // m → 게임 키 (인주 1.25 ≈ 1.42m)
@@ -84,9 +84,9 @@ function h2Cast(u, s, tgt){
       setTimeout(() => { u.guardStance = false; }, (s.t || 2.5) * 1000); break; }
     case 'summon': { u.st = 'strike'; u.stT = 0.8; setPose(u, P(s.pose || 'summon'));
       if ((u.minions || []).filter(m => !m.dead).length >= (s.max || 1)) break;
-      const k = (u.side === 'enemy' ? 'h2e_' : 'h2_') + s.what; if (!DEFS[k]) break;
+      const k = s.kind || (u.side === 'enemy' ? 'h2e_' : 'h2_') + s.what; if (!DEFS[k]) break;
       const m = spawn(k, u.x + Math.cos(a) * 1.5, u.z + Math.sin(a) * 1.5, u.side); m.summoner = u; m.alert = true; m.seen = G.t; (u.minions = u.minions || []).push(m);
-      if (u.side === 'enemy' && typeof spawnFoe === 'function' && EXP){ m.max = m.hp = Math.round(m.D.hp * 0.8); }
+      if (s.hpk) m.max = m.hp = Math.round(m.D.hp * s.hpk); else if (u.side === 'enemy' && typeof spawnFoe === 'function' && EXP){ m.max = m.hp = Math.round(m.D.hp * 0.8); }
       smoke(m.x, m.z, 6, 1, 1); dust(m.x, m.z, 10); if (s.t) setTimeout(() => { if (!m.dead){ smoke(m.x, m.z, 4, 0.8, 0.8); removeUnit(m); } }, s.t * 1000);
       break; }
     case 'finisher': windup(u, 'sector', { x: u.x, z: u.z, r: s.r || 1.6, a, arc: 1.2, windup: W }, t => hurt(u, t, u.atk * ((t.lying || t.downed || t.st === 'hurt') ? (s.mul || 3) : 1), { from: u, crit: !!(t.lying || t.st === 'hurt'), kb: 0.3 })); break;
@@ -295,6 +295,100 @@ const H2K = {
   mangak: { boss: true, st: { hp: 3200, atk: 40, spd: 2.2, melee: ML(5.5, 1.2, 0.8, 1.8, 2.0, 3.0), armor: 0.7, r: 2.2, weight: 18000 }, pas: ['비늘 깃털 갑옷', '정면 원거리 -30% · 옆구리 · 등이 약점'],
     sk: [sk('rush', '돌진 할퀴기', 'dash', 'attack', 8, 8, { len: 8, w: 2.4, mul: 1.6, trip: true, windup: 0.9 }), sk('maw', '망각의 아가리', 'slash', 'special', 12, 5.5, { r: 5.5, arc: 1.6, mul: 2.4, stun: 1.5, windup: 1.3, say: '(아가리가 네 갈래로 벌어진다)' }), sk('prowl', '어슬렁 포위', 'backstep', 'walk', 9, 3, { len: 4 })] },
 };
+/* ---------- 3기 1차 (v1.5) — 드라이브 '3기' 폴더 · 망향 새 시트. 기술은 그림 (동작)에 짝지음. 수치는 게임 기준 (노트의 제안 수치는 너무 커서 비율만 따옴)
+   등급 눈금: 졸개 정예 hp 300~450 · 강적 / 중간급 600~1100 · 장군 / 보스 1500~2400 · 거대 2600~5000 (2기 보스와 같은 줄) ---------- */
+Object.assign(H2K, {
+  // ── 둘 다 (동료로도) ──
+  blueflame: { st: { hp: 165, atk: 19, spd: 4.0, melee: ML(1.9, 0.9, 0.25, 0.6, 1.6) }, pas: ['사냥꾼의 눈', '끌어오거나 묶인 · 둔화된 적에게 +20%'],
+    sk: [sk('snare', '철사 올가미', 'pull', 'attack', 8, 8, { len: 8, w: 0.8, mul: 0.8, stun: 1 }), sk('flame', '푸른 불꽃', 'slash', 'attack', 7, 3.5, { r: 4, arc: 2.1, mul: 1.3, sts: 'burn', stsT: 4, color: 0x40e0d0 }),
+      sk('shade', '그림자 걸음', 'dash', 'front', 6, 5, { len: 5.5, mul: 1.1, w: 1.2, windup: 0.25 }), sk('chain', '올가미 연계', 'combo', 'attack', 14, 7, { sub: [{ type: 'pull', pose: 'attack', len: 8, w: 0.8, mul: 0.6, stun: 1, windup: 0.35 }, { type: 'slash', pose: 'attack', r: 2.6, arc: 2.0, mul: 1.8, sts: 'burn', windup: 0.2 }] })] },
+  jaru: { st: { hp: 120, atk: 14, spd: 3.2, melee: ML(2.2, 0.8, 0.35, 1.0, 1.6, 1.0), bow: { range: 12, windup: 0.35, cd: 1.0, speed: 26 } }, pas: ['수집가의 자루', '쓰러뜨린 적에게서 유물 · 아이템을 더 얻음 (원정)'],
+    sk: [sk('shard', '달빛 파편', 'shot', 'attack', 5, 12, { cnt: 3, spread: 0.18, mul: 0.8, sts: 'slow', color: 0xfff2b0, glow: 0xfff2b0, speed: 22, fam: 'magic' }), sk('spirit', '달 정령 소환', 'volley', 'front', 12, 10, { cnt: 6, gap: 0.5, mul: 0.5, color: 0xd8f0ff, glow: 0xd8f0ff, speed: 16, fam: 'magic' }),
+      sk('appraise', '유물 감정', 'buff', 'idle', 18, 9, { k: 1.2, t: 8, r: 6 })] },
+  vicky: { st: { hp: 110, atk: 15, spd: 3.4, melee: ML(2.0, 0.8, 0.3, 0.9, 0.9), bow: { range: 11, windup: 0.4, cd: 1.1, speed: 30 } }, pas: ['관측 기록', '같은 적을 맞힐 때마다 마법 피해 +5% (5번까지)'],
+    sk: [sk('beam', '차원 투사', 'beam', 'attack', 7, 10, { len: 10, w: 0.9, mul: 1.6, windup: 0.8, fam: 'magic', color: 0xb070ff }), sk('fix', '좌표 고정', 'trap', 'front', 10, 12, { r: 3, delay: 1.1, mul: 1.0, stun: 1.6, tag: '좌표 고정', color: 0xb070ff }),
+      sk('fold', '공간 접기', 'backstep', 'idle', 7, 3, { len: 6 })] },
+  stoneglove: { st: { hp: 230, atk: 20, spd: 3.3, melee: ML(1.8, 1.0, 0.25, 0.7, 1.4, 1.2), armor: 0.85 }, pas: ['돌갑주', '근접 피해 -20% · 넘어지지 않음'],
+    sk: [sk('leap', '도약 돌주먹', 'leap', 'attack', 8, 6, { len: 6, r: 2.5, mul: 0.8, mul2: 1.5, kb: 3 }), sk('rock', '바위 자세', 'guard', 'guard', 9, 2.5, { t: 2 }), sk('yell', '토끼 고함', 'guard', 'idle2', 16, 6, { t: 1.5, taunt: true, r: 6, say: '덤벼!!' }),
+      sk('jab', '돌주먹 연타', 'combo', 'guard', 6, 2, { sub: [{ type: 'thrust', pose: 'guard', len: 2, w: 1, mul: 0.8, windup: 0.15 }, { type: 'thrust', pose: 'attack', len: 2, w: 1, mul: 0.8, windup: 0.15 }, { type: 'slam', pose: 'attack', r: 1.8, mul: 1.2, trip: true, windup: 0.25 }], gap: 0.1 })] },
+  // ── 적 · 정예 · 강적 ──
+  majin: { st: { hp: 240, atk: 18, spd: 3.2, melee: ML(2.4, 1.0, 0.45, 1.2, 1.6, 1.0), r: 0.45, weight: 170 }, pas: ['마신족 무리', '곁의 마신족 하나마다 공격 +10% (3까지)'],
+    sk: [sk('smash', '마신 내려찍기', 'slam', 'windup', 7, 3, { r: 2, atTarget: true, mul: 1.6, trip: true, windup: 1.0 }), sk('sweep', '철퇴 쓸어치기', 'slash', 'front', 6, 3, { r: 3, arc: 2.8, mul: 1.1, kb: 2 }), sk('hop', '날개 뛰기', 'leap', 'idle', 10, 8, { len: 8, r: 2, mul: 0.5, mul2: 1.0 })] },
+  hammerknight: { st: { hp: 420, atk: 22, spd: 2.6, melee: ML(2.5, 1.1, 0.7, 1.4, 1.6, 2.0), armor: 0.75, r: 0.5, weight: 260 }, pas: ['두꺼운 판금', '근접 · 화살 -25% · 넘어짐 절반 · 마법에 약함'],
+    sk: [sk('quake', '대지 내려찍기', 'slam', 'windup', 8, 3, { r: 3, atTarget: true, mul: 1.8, trip: true, windup: 1.0, sts: 'slow' }), sk('brace', '해머 버티기', 'guard', 'front', 10, 2.5, { t: 2 }), sk('fin', '짓밟기 확인사살', 'finisher', 'windup', 5, 2, { mul: 2.5 })] },
+  wraitha: { st: { hp: 600, atk: 21, spd: 3.6, melee: ML(2.8, 1.0, 0.4, 1.0, 1.1) }, pas: ['망령', '물리 피해 -20% · 마법에 약함'],
+    sk: [sk('hook', '갈고리 낚아채기', 'pull', 'attack', 8, 7, { len: 7, mul: 0.9, stun: 1 }), sk('blink', '망령 걸음', 'dash', 'front', 7, 5, { len: 5, mul: 1.5, windup: 0.2 }), sk('veil', '넝마 장막', 'guard', 'front', 10, 2.5, { t: 2 })] },
+  redarmor: { st: { hp: 620, atk: 24, spd: 3.0, melee: ML(3.0, 1.1, 0.5, 1.2, 2.6, 1.2), armor: 0.8, r: 0.5, weight: 320 }, pas: ['붉은 갑주', '정면 -25% · 등은 +20%'],
+    sk: [sk('dash', '돌진 베기', 'dash', 'attack', 7, 6, { len: 6, w: 1.4, mul: 1.4, sts: 'bleed' }), sk('shell', '갑각 굳히기', 'guard', 'front', 10, 3, { t: 3 }), sk('exec', '붉은 처형', 'finisher', 'attack', 5, 2, { mul: 2.6 })] },
+  scythebeast: { st: { hp: 760, atk: 25, spd: 3.8, melee: ML(3.0, 1.1, 0.45, 1.1, 2.4, 1.0), r: 0.6, weight: 380 }, pas: ['가시 비늘', '근접으로 때린 적에게 10% 되돌림'],
+    sk: [sk('crescent', '초승 대참', 'slash', 'attack', 8, 4.5, { r: 5, arc: 3.14, mul: 1.8, trip: true, windup: 0.7 }), sk('leap', '도약 베기', 'leap', 'attack', 9, 8, { len: 8, r: 2.5, mul: 0.6, mul2: 1.6 }), sk('grin', '포식의 웃음', 'buff', 'front', 14, 6, { k: 1.2, t: 6, r: 1 })] },
+  hongdukkae: { st: { hp: 820, atk: 27, spd: 2.8, melee: ML(2.8, 1.2, 0.55, 1.3, 1.8, 2.0), r: 0.55, weight: 230 }, pas: ['오니 가면', '피 반 아래면 공격 +25%'],
+    sk: [sk('sweep', '홍두깨 휩쓸기', 'slash', 'attack', 7, 3.8, { r: 4, arc: 2.8, mul: 1.5, trip: true, windup: 0.6 }), sk('charge', '어깨 메고 돌진', 'dash', 'idle', 9, 7, { len: 7, w: 1.4, mul: 1.0, stun: 1.5 }), sk('fin', '오니의 확인사살', 'finisher', 'attack', 5, 2, { mul: 2.6 })] },
+  madosa: { st: { hp: 560, atk: 22, spd: 2.9, melee: ML(1.8, 0.7, 0.4, 1.2, 1.2), bow: { range: 14, windup: 0.5, cd: 1.3, speed: 22 } }, pas: ['얼굴 없는 자', '조준 · 표식이 가끔 빗나감 (회피 12%)'],
+    sk: [sk('curse', '저주의 창끝', 'beam', 'cast', 8, 14, { len: 16, w: 1.0, mul: 1.6, windup: 1.0, sts: 'mark', stsT: 4, color: 0xa040ff, fam: 'magic' }), sk('veil', '그림자 장막', 'zone', 'idle', 10, 6, { r: 4, delay: 0.6, mul: 0.6, sts: 'slow', color: 0x402060 }),
+      sk('call', '이빨 모자의 부름', 'summon', 'front', 20, 12, { what: 'wraitha', max: 2, t: 12, hpk: 0.35 }), sk('rain', '보랏빛 마탄 비', 'rain', 'cast', 12, 12, { cnt: 6, r: 1.3, spread: 3, mul: 0.9, delay: 0.8, color: 0xa040ff })] },
+  spore: { st: { hp: 880, atk: 22, spd: 3.0, melee: ML(2.4, 1.0, 0.4, 1.0, 1.8) }, pas: ['공허의 껍질', '몸통 피해 -20% · 천천히 아묾'],
+    sk: [sk('maw', '공허의 아가리', 'pull', 'attack', 8, 4.5, { len: 4.5, w: 1.6, mul: 1.6, stun: 1.5, windup: 0.6 }), sk('cloud', '황금 포자 구름', 'zone', 'front', 10, 5, { r: 5, delay: 0.8, mul: 0.7, sts: 'poison', stsT: 5, color: 0xd8c040 }),
+      sk('burst', '포자 터뜨리기', 'rain', 'idle', 12, 9, { cnt: 5, r: 1.6, spread: 3.5, mul: 0.7, delay: 1.0, color: 0xd8c040 })] },
+  khaki: { st: { hp: 960, atk: 24, spd: 3.0, melee: ML(2.4, 1.0, 0.4, 1.1, 1.8), armor: 0.85, r: 0.5, weight: 420 }, pas: ['초월 신체', '정면 근접 -25% · 넘어지지 않음'],
+    sk: [sk('claw', '신장 집게팔', 'pull', 'attack', 8, 9, { len: 9, w: 0.9, mul: 1.0, stun: 0.8 }), sk('cannon', '축전 포격', 'beam', 'attack', 10, 16, { len: 16, w: 1.0, mul: 2.2, windup: 1.2, color: 0x60c0ff }), sk('lens', '분석 렌즈', 'zone', 'front', 14, 10, { r: 5, delay: 0.5, mul: 0.2, sts: 'mark', stsT: 5, color: 0xff5050 })] },
+  rain: { st: { hp: 900, atk: 21, spd: 2.6, melee: ML(3.5, 1.0, 0.5, 1.2, 2.2), r: 0.6, weight: 260 }, pas: ['흐르는 몸', '물리 피해 -20% · 불에 약함'],
+    sk: [sk('stretch', '늘어나는 손', 'pull', 'attack', 7, 7, { len: 7, w: 1.2, mul: 1.0, sts: 'slow' }), sk('trail', '왕의 점액길', 'rain', 'idle', 11, 8, { cnt: 6, r: 1.6, spread: 2.5, mul: 0.5, delay: 0.5, gap: 0.35, color: 0x80ffb0 }),
+      sk('acid', '산성 왕관', 'wave', 'front', 12, 6, { cnt: 2, r: 3, mul: 0.8, color: 0xa0ff60 })] },
+  mintbeast: { st: { hp: 980, atk: 25, spd: 3.6, melee: ML(2.8, 1.1, 0.45, 1.1, 2.2), r: 0.7, weight: 240 }, pas: ['누더기 그림자', '어두운 곳에서 잘 안 맞음 (회피 12%)'],
+    sk: [sk('maw', '둥근 아가리', 'dash', 'attack', 8, 5, { len: 5, w: 1.6, mul: 1.8, stun: 1, windup: 0.5 }), sk('gaze', '외눈 응시', 'beam', 'front', 10, 12, { len: 12, w: 1.2, mul: 0.6, stun: 2, windup: 0.9, color: 0x60ffd0 }), sk('hide', '누더기 숨기', 'backstep', 'idle', 9, 3, { len: 4 })] },
+  grinvan: { st: { hp: 2200, atk: 30, spd: 2.2, melee: ML(3.5, 1.2, 0.7, 1.5, 1.8, 2.5), armor: 0.7, r: 1.2, weight: 3500 }, pas: ['무쇠 몸통', '넘어지지 않음 · 정면 -30% · 등이 약점'],
+    sk: [sk('shield', '방패 돌진', 'dash', 'dash', 9, 10, { len: 10, w: 2.4, mul: 1.4, trip: true, windup: 0.8 }), sk('wall', '성벽 방패', 'guard', 'idle', 12, 4, { t: 3, taunt: true, r: 8 }), sk('smile', '검은 미소', 'guard', 'front', 18, 8, { t: 4, taunt: true, r: 8, say: '(까만 얼굴 속에서 눈이 웃는다)' })] },
+  redrock: { st: { hp: 2600, atk: 34, spd: 2.0, melee: ML(4.0, 1.2, 0.8, 1.6, 2.0, 3.0), r: 1.4, weight: 9000 }, pas: ['붉은 암석 몸', '화살 · 총알 -40% · 둔기에 약함'],
+    sk: [sk('quake', '대지 내려찍기', 'wave', 'windup', 10, 6, { cnt: 3, r: 2, mul: 1.3, trip: true, windup: 1.2 }), sk('charge', '암석 돌진', 'dash', 'idle', 10, 10, { len: 10, w: 2.4, mul: 1.3, kb: 4, windup: 0.8 }), sk('skin', '바위 갑피', 'guard', 'front', 14, 4, { t: 5 })] },
+  // ── 장군 · 보스 ──
+  ted: { st: { hp: 950, atk: 26, spd: 3.4, melee: ML(3.2, 1.0, 0.3, 0.9, 0.8, 0.8), armor: 0.85, r: 0.45, weight: 95 }, pas: ['흑철 갑주', '정면 근접 -25% · 곁의 졸개가 쓰러질 때마다 공격 +5%'],
+    sk: [sk('lunge', '마계 돌격찌르기', 'dash', 'attack', 8, 8, { len: 8, w: 1.0, mul: 1.6, sts: 'bleed' }), sk('order', '사령관의 호령', 'buff', 'idle', 20, 12, { k: 1.2, t: 8, r: 12, say: '진격하라.' }), sk('exec', '처단', 'finisher', 'attack', 6, 3, { mul: 2.5 }),
+      sk('twin', '두 번 찌르기', 'combo', 'attack', 6, 3.5, { sub: [{ type: 'thrust', pose: 'attack', len: 3.5, w: 0.8, mul: 0.9, windup: 0.2 }, { type: 'thrust', pose: 'attack', len: 3.5, w: 0.8, mul: 1.1, windup: 0.15 }], gap: 0.1 })] },
+  haryu: { boss: true, st: { hp: 1600, atk: 31, spd: 3.6, melee: ML(3.0, 1.1, 0.45, 1.1, 2.1, 1.2), r: 0.5, weight: 68 }, pas: ['암계의 장군', '흑익이 곁에 있으면 둘 다 받는 피해 -15%'],
+    phase: { at: 0.5, k: 1.25, spd: 1.15, say: '흑익, 끝내자.' },
+    sk: [sk('rise', '암류 베어올리기', 'dash', 'attack', 7, 5, { len: 5, w: 1.2, mul: 1.6, trip: true }), sk('wave', '검은 물결', 'beam', 'front', 9, 8, { len: 8, w: 2.2, mul: 1.3, sts: 'slow', color: 0x302040 }), sk('exec', '처형 일섬', 'finisher', 'attack', 6, 2.5, { mul: 3 }),
+      sk('tide', '암계 해일', 'wave', 'front', 16, 6, { cnt: 3, r: 2.4, mul: 1.4, ph: 2, color: 0x402060, say: '가라앉아라.' })] },
+  heugik: { boss: true, st: { hp: 1550, atk: 30, spd: 3.8, melee: ML(3.0, 1.0, 0.3, 0.8, 0.8, 0.8), r: 0.5, weight: 95 }, pas: ['암계의 장군', '하류가 곁에 있으면 둘 다 받는 피해 -15%'],
+    phase: { at: 0.5, k: 1.25, spd: 1.2, say: '…날개를 편다.' },
+    sk: [sk('flash', '흑익 섬격', 'dash', 'attack', 6, 6, { len: 6, w: 1.0, mul: 1.6, sts: 'bleed' }), sk('cloak', '검은 날개 망토', 'guard', 'front', 9, 3, { t: 2 }), sk('exec', '확인사살', 'finisher', 'idle', 6, 2.5, { mul: 3 }),
+      sk('storm', '흑익 난무', 'combo', 'attack', 14, 6, { ph: 2, sub: [{ type: 'dash', pose: 'attack', len: 6, w: 1, mul: 1.2, windup: 0.25 }, { type: 'dash', pose: 'attack', len: 6, w: 1, mul: 1.2, windup: 0.2 }, { type: 'dash', pose: 'attack', len: 6, w: 1, mul: 1.6, sts: 'bleed', windup: 0.2 }] })] },
+  arkam: { boss: true, st: { hp: 1700, atk: 31, spd: 3.0, melee: ML(4.0, 1.1, 0.5, 1.2, 0.8, 1.0), r: 0.55, weight: 110 }, pas: ['긴 팔', '3m 밖 적에게 +15%'],
+    phase: { at: 0.5, k: 1.2, spd: 1.1, say: '별이 떨어진다.' },
+    sk: [sk('crescent', '초승 베기', 'pull', 'attack', 7, 4.5, { len: 4.5, w: 2.4, mul: 1.4, windup: 0.5 }), sk('charge', '성계 돌진', 'dash', 'attack', 9, 7, { len: 7, w: 1.0, mul: 1.6, trip: true }), sk('wall', '별의 창벽', 'guard', 'idle', 11, 4, { t: 3 }),
+      sk('stars', '유성 낙하', 'rain', 'front', 14, 12, { cnt: 7, r: 1.5, spread: 4, mul: 1.0, delay: 1.0, ph: 2, color: 0x80c0ff, say: '별이여.' })] },
+  goldmask: { boss: true, st: { hp: 1500, atk: 29, spd: 4.2, melee: ML(2.4, 1.0, 0.3, 0.8, 1.6) }, pas: ['빛나는 눈', '피 반 아래면 광폭 (공격 +25%)'],
+    phase: { at: 0.5, k: 1.3, spd: 1.2, say: '아하하하! 이제 재밌어지네!' },
+    sk: [sk('pounce', '악마의 덮치기', 'combo', 'attack', 9, 7, { sub: [{ type: 'dash', pose: 'attack', len: 7, w: 1.4, mul: 0.8, windup: 0.4 }, { type: 'slash', pose: 'attack', r: 3, arc: 1.8, mul: 0.9, sts: 'bleed', windup: 0.15 }, { type: 'slash', pose: 'attack', r: 3, arc: 1.8, mul: 1.1, sts: 'bleed', windup: 0.15 }], gap: 0.12 }),
+      sk('shadow', '그림자 자락', 'zone', 'front', 11, 5, { r: 5, delay: 0.7, mul: 0.6, sts: 'slow', color: 0x504020 }), sk('chain', '사슬 끌어오기', 'pull', 'idle', 8, 8, { len: 8, mul: 0.7 })] },
+  ghostgirl: { boss: true, st: { hp: 1400, atk: 26, spd: 3.4, melee: ML(2.0, 1.0, 0.35, 0.9, 1.4) }, pas: ['원령', '물리 피해 -40% · 마법에 약함'],
+    phase: { at: 0.45, k: 1.3, spd: 1.25, say: '…으아아아아아.' },
+    sk: [sk('lunge', '원령의 덮침', 'dash', 'attack', 7, 7, { len: 7, w: 1.5, mul: 1.4, stun: 1.2 }), sk('scream', '비명', 'wave', 'front', 14, 6, { cnt: 2, r: 3, mul: 0.6, stun: 1.5, color: 0xe0e0ff, say: '끼아아아악!!' }), sk('drift', '그림자 걸음', 'backstep', 'idle', 8, 3, { len: 5 }),
+      sk('hands', '무덤의 손', 'trap', 'front', 12, 10, { r: 2, delay: 1.0, mul: 0.8, stun: 2, ph: 2, tag: '붙잡힘', color: 0x203040 })] },
+  // ── 거대 ──
+  hornbeast: { boss: true, st: { hp: 3600, atk: 42, spd: 2.4, melee: ML(6.0, 1.2, 0.8, 1.7, 2.1, 3.0), r: 2.2, weight: 26000 }, pas: ['가시 털가죽', '근접으로 때린 적에게 15% 되돌림 · 원거리 -20%'],
+    phase: { at: 0.5, k: 1.25, spd: 1.15, say: '(땅이 울릴 만큼 울부짖는다)' },
+    sk: [sk('horn', '뿔 들이받기', 'dash', 'idle', 10, 14, { len: 14, w: 3, mul: 1.6, kb: 5, trip: true, windup: 1.1 }), sk('roar', '아가리 포효', 'wave', 'attack', 16, 9, { cnt: 3, r: 3.5, mul: 0.5, stun: 1.2, windup: 1.0 }),
+      sk('quake', '대지 내려찍기', 'slam', 'front', 12, 7, { r: 7, mul: 1.8, trip: true, windup: 1.4 }), sk('rubble', '바위 비', 'rain', 'front', 16, 14, { cnt: 8, r: 1.8, spread: 5, mul: 1.0, delay: 1.1, ph: 2, color: 0xc08040 })] },
+  colossus15: { boss: true, st: { hp: 5000, atk: 48, spd: 1.8, melee: ML(10, 1.2, 1.0, 2.2, 0.5, 3.0), armor: 0.7, r: 3.0, weight: 90000 }, pas: ['돌 거신', '넘어지지 않음 · 원거리 -25%'],
+    phase: { at: 0.5, k: 1.2, spd: 1.1, say: '(거신의 투구에서 푸른 불꽃이 치솟는다)' },
+    sk: [sk('pierce', '성벽 찌르기', 'beam', 'attack', 10, 18, { len: 18, w: 3, mul: 2.0, trip: true, windup: 1.4 }), sk('shield', '탑방패 내려찍기', 'slam', 'front', 12, 8, { r: 6, mul: 1.6, trip: true, windup: 1.3 }),
+      sk('march', '거인의 행군', 'wave', 'idle', 14, 6, { cnt: 2, r: 3, mul: 1.2, windup: 0.9 }), sk('flame', '푸른 불꽃 창비', 'rain', 'attack', 16, 16, { cnt: 9, r: 1.8, spread: 6, mul: 1.0, delay: 1.2, ph: 2, color: 0x60a0ff })] },
+});
+// 2기 인물의 3기 덧붙임: 새 그림 (동작) · 새 기술 · 2페이즈
+H2K.mangak.sk.push(sk('pounce', '갈퀴 덮치기', 'dash', 'attack_b', 12, 10, { len: 10, w: 3, mul: 1.8, trip: true, windup: 0.8 }), sk('shadow', '망각의 그림자', 'rain', 'walk_b', 14, 10, { cnt: 6, r: 1.5, spread: 4, mul: 0.8, delay: 0.9, ph: 2, color: 0x802020 }));
+H2K.mangak.phase = { at: 0.5, k: 1.2, spd: 1.15, say: '(망각의 눈이 붉게 타오른다)' };
+H2K.ancientangel.sk.push(sk('cage', '날개 감옥', 'guard', 'idle_b', 14, 4, { t: 2 }), sk('grab', '천상의 낚아채기', 'pull', 'attack', 10, 8, { len: 8, w: 1.4, mul: 1.2, stun: 1 }), sk('judg', '고대의 심판', 'rain', 'idle', 16, 12, { cnt: 8, r: 1.6, spread: 5, mul: 1.0, delay: 1.1, ph: 2, color: 0xfff0b0, say: '…심판.' }));
+H2K.ancientangel.phase = { at: 0.5, k: 1.2, spd: 1.1, pose: 'idle_b', say: '(고대천사가 날개를 접는다)' };
+H2K.manghyang.sk.push(sk('fall', '이계 낙하', 'leap', 'slam', 9, 6, { len: 6, r: 2.5, mul: 0.6, mul2: 1.6, stun: 0.8 }), sk('long', '향수의 손톱', 'buff', 'back', 14, 3, { k: 1.4, t: 6, r: 1 }));
+H2K.cheonmyeong.sk.push(sk('cage', '황금 감옥', 'trap', 'special', 14, 8, { r: 2, delay: 0.9, mul: 0.6, stun: 3, tag: '황금 감옥', color: 0xffd040 }), sk('exec', '공허의 처형', 'finisher', 'attack', 6, 3, { mul: 3 }));
+H2K.cheonmyeong.phase = { at: 0.5, k: 1.2, spd: 1.1, say: '집행한다.' };
+H2K.ryang.sk.push(sk('call', '뿔 왕관의 부름', 'summon', 'idle2', 22, 10, { what: 'wraitha', max: 3, t: 20, hpk: 0.3, ph: 2, say: '일어나라.' }), sk('ward', '망령 장벽', 'guard', 'idle', 12, 5, { t: 3 }));
+H2K.ryang.phase = { at: 0.5, k: 1.15, spd: 1.1, say: '…배가 고프구나.' };
+H2K.mano.sk.push(sk('hook', '공허 갈고리', 'dash', 'special', 9, 8, { len: 8, w: 1.2, mul: 1.2, stun: 1 }), sk('gaze', '푸른 눈 응시', 'beam', 'idle', 12, 6, { len: 6, w: 3, mul: 0.4, stun: 1.5, color: 0x60a0ff, windup: 0.6 }));
+H2K.mano.phase = { at: 0.5, k: 1.2, spd: 1.2, say: '…' };
+H2K.hadim.sk.push(sk('crown', '뿔 왕관 수직 강타', 'leap', 'special', 12, 5, { len: 5, r: 2.5, mul: 0.6, mul2: 2.0, trip: true, windup: 1.0, ph: 2, say: '무릎 꿇어라!' }), sk('order', '악마 장군의 호령', 'buff', 'idle', 25, 12, { k: 1.2, t: 10, r: 12 }));
+H2K.hadim.phase = { at: 0.5, k: 1.25, spd: 1.15, say: '크하하하하! 이제야 몸이 풀리는군!' };
 h2Build();
 
 /* ---------- 훈련장 '2기' 탭 (drill.js가 부름) ----------
@@ -322,14 +416,14 @@ function h2Foe(slug, boss){
   return e;
 }
 function h2Panel(){
-  const groups = ['all', '1성', '2성', '3성', '4성', '보스', '기타'];
-  const L = H2.list.map(s => H2R[s]).filter(o => H2UI.f === 'all' || h2Rank(o) === H2UI.f);
+  const groups = ['all', '3기', '1성', '2성', '3성', '4성', '보스', '기타'];
+  const L = H2.list.map(s => H2R[s]).filter(o => H2UI.f === 'all' || (H2UI.f === '3기' ? o.gen === 3 : h2Rank(o) === H2UI.f));
   const card = o => { const K = H2K[o.slug] || {}, sk = (K.sk || []).map(s => s.n).join(' · '), miss = (o.missing || []).map(m => String(m).split(' ')[0]).join(', ');
-    return `<div class="h2c">${h2FaceHtml(o)}<div><b>${DEFS['h2_' + o.slug].name}</b> <small>${h2Rank(o)} · ${o.role_job || o.role || ''} · ${o.tall || '?'}m</small>
+    return `<div class="h2c">${h2FaceHtml(o)}<div><b>${DEFS['h2_' + o.slug].name}</b> <small>${o.gen === 3 ? '3기 · ' + String(o.rank || '').split(' ')[0] : h2Rank(o)} · ${o.role_job || o.role || ''} · ${o.tall || '?'}m</small>
       <p>${K.pas ? `<em>${K.pas[0]}</em> ${K.pas[1]}<br>` : ''}기술: ${sk || '—'}<br><small>그림 ${Object.keys(o.poses).join(' · ')}${miss ? ` / 빠짐 ${miss}` : ''}</small></p>
       <span><button data-h2="ally" data-s="${o.slug}">동료로</button><button data-h2="foe" data-s="${o.slug}">적으로</button>${K.boss ? `<button data-h2="boss" data-s="${o.slug}">보스로</button>` : ''}</span></div></div>`; };
-  return `<p class="dp-note">2기 멤버 1차 (드라이브 그림 ${H2.list.length}명). 동료는 2조로 들어옴 — 기술은 알아서 씀. 그림이 한 장씩이라 몸을 눌렀다 폈다 하며 움직임 (걷기 · 맞기 그림이 오면 바꿈).</p>
-    <div class="dp-row">${groups.map(g => `<button data-h2="f" data-s="${g}" class="${H2UI.f === g ? 'on' : ''}">${g === 'all' ? '전부' : g}</button>`).join('')}<button data-h2="mix">2기 혼전 (동료 넷 · 적 넷)</button><button data-h2="clr">2기 동료 돌려보내기</button></div>
+  return `<p class="dp-note">2기 · 3기 멤버 (드라이브 그림 ${H2.list.length}명, 3기 ${H2.list.filter(x => H2R[x].gen === 3).length}명). 동료는 2조로 들어옴 — 기술은 알아서 씀. 그림이 한 장씩이라 몸을 눌렀다 폈다 하며 움직임 (걷기 · 맞기 그림이 오면 바꿈).</p>
+    <div class="dp-row">${groups.map(g => `<button data-h2="f" data-s="${g}" class="${H2UI.f === g ? 'on' : ''}">${g === 'all' ? '전부' : g}</button>`).join('')}<button data-h2="mix">혼전 (동료 넷 · 적 넷)</button><button data-h2="mix3">3기 적 습격 (강적 셋)</button><button data-h2="clr">2기 동료 돌려보내기</button></div>
     <div class="h2g">${L.map(card).join('')}</div>`;
 }
 function h2PanelClick(b){
@@ -338,6 +432,7 @@ function h2PanelClick(b){
   if (a === 'ally') h2Ally(s);
   if (a === 'foe' || a === 'boss'){ drillPanel(false); h2Foe(s, a === 'boss'); }
   if (a === 'clr') for (const u of G.units.filter(u => u.side === 'ally' && u.D.h2)) removeUnit(u);
+  if (a === 'mix3'){ drillPanel(false); const P = H2.list.filter(s => H2R[s].gen === 3 && !(H2K[s] || {}).boss).sort(() => Math.random() - 0.5); P.slice(0, 3).forEach(s => h2Foe(s)); caption('3기 적 습격', P.slice(0, 3).map(s => DEFS['h2e_' + s].name).join(' · ')); }
   if (a === 'mix'){ drillPanel(false); const P = H2.list.filter(s => !(H2K[s] || {}).boss && s !== 'levi_beast' && s !== 'garam2' && s !== 'hirari2').sort(() => Math.random() - 0.5); P.slice(0, 4).forEach(s => h2Ally(s)); P.slice(4, 8).forEach(s => h2Foe(s)); caption('2기 혼전', '동료 넷 · 적 넷 — 기술이 섞임'); }
 }
 
@@ -363,6 +458,35 @@ const H2PAS = {
   '대정령의 숲': { tick: (u, dt) => { for (const o of G.units) if (o.side === u.side && !o.dead && !o.downed && o.hp < o.max && dist(o, u) < 5) o.hp = Math.min(o.max, o.hp + o.max * 0.012 * dt); } },
   '황금 늑대 가면': { tick: (u, dt) => { if (G.units.some(o => o.D.h2 === 'dolsoe' && o.side === u.side && !o.dead && dist(o, u) < 6)) u.hp = Math.min(u.max, u.hp + u.max * 0.01 * dt); } },
 };
+
+// v1.5 3기 패시브
+const isPhys = o => o.fam !== 'magic';
+const near = (u, f, r = 10) => G.units.some(o => o !== u && o.side === u.side && !o.dead && o.D.h2 && f(o) && dist(o, u) < r);
+Object.assign(H2PAS, {
+  '사냥꾼의 눈': { out: (u, t) => t && (t.st === 'hurt' || t.lying || (t.sts && t.sts.slow && t.sts.slow.t > 0)) ? 1.2 : 1 },
+  '관측 기록': { out: (u, t) => { if (!t) return 1; if (u._obs !== t){ u._obs = t; u._obsN = 0; } u._obsN = Math.min(5, (u._obsN || 0) + 1); return 1 + 0.05 * (u._obsN - 1); } },
+  '돌갑주': { in: (u, o) => o.ranged ? 1 : 0.8, kb: 0 },
+  '마신족 무리': { out: (u) => 1 + 0.1 * Math.min(3, G.units.filter(o => o !== u && o.D.h2 === 'majin' && o.side === u.side && !o.dead && dist(o, u) < 10).length) },
+  '두꺼운 판금': { in: (u, o) => isPhys(o) ? 0.75 : 1.2, kb: 0.5 },
+  '망령': { in: (u, o) => isPhys(o) ? 0.8 : 1.3 },
+  '원령': { in: (u, o) => isPhys(o) ? 0.6 : 1.5 },
+  '붉은 갑주': { in: (u, o) => h2Front(u, o.from) ? 0.75 : 1.2 },
+  '무쇠 몸통': { in: (u, o) => h2Front(u, o.from) ? 0.7 : 1.3, kb: 0 },
+  '초월 신체': { in: (u, o) => !o.ranged && h2Front(u, o.from) ? 0.75 : 1, kb: 0 },
+  '가시 비늘': { thorn: 0.1 },
+  '가시 털가죽': { thorn: 0.15, in: (u, o) => o.ranged ? 0.8 : 1, kb: 0.2 },
+  '오니 가면': { out: (u) => u.hp < u.max * 0.5 ? 1.25 : 1 },
+  '빛나는 눈': { out: (u) => u.hp < u.max * 0.5 ? 1.25 : 1 },
+  '얼굴 없는 자': { dodge: 0.12 },
+  '누더기 그림자': { dodge: 0.12 },
+  '공허의 껍질': { in: (u, o) => isPhys(o) ? 0.8 : 1, tick: (u, dt) => { u.hp = Math.min(u.max, u.hp + u.max * 0.004 * dt); } },
+  '흐르는 몸': { in: (u, o) => o.fam === 'fire' || o.sts === 'burn' ? 1.25 : isPhys(o) ? 0.8 : 1 },
+  '붉은 암석 몸': { in: (u, o) => o.ranged ? 0.6 : 1.1, kb: 0.2 },
+  '돌 거신': { in: (u, o) => o.ranged ? 0.75 : 1, kb: 0 },
+  '암계의 장군': { in: (u) => near(u, o => o.D.h2 === (u.D.h2 === 'haryu' ? 'heugik' : 'haryu')) ? 0.85 : 1 },
+  '흑철 갑주': { in: (u, o) => !o.ranged && h2Front(u, o.from) ? 0.75 : 1, out: (u) => 1 + 0.05 * Math.min(5, u._h2fallen || 0) },
+  '긴 팔': { out: (u, t) => t && dist(u, t) > 3 ? 1.15 : 1 },
+});
 const h2Front = (u, f) => !f || f.x == null ? false : Math.cos(Math.atan2(f.z - u.z, f.x - u.x) - (u.aim ?? 0)) > 0.3;
 const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2K[u.D.h2].pas[0]] : null;
 {
@@ -378,9 +502,10 @@ const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2
       if (T.last && !tgt._h2last && tgt.hp - base * 1.1 <= 0){ tgt._h2last = true; base = Math.max(0, tgt.hp - 1); popText(tgt.x, tgt.y + 2, tgt.z, '버팀!', 'alert', 1); }
     }
     const r = _hurtH2(att, tgt, base, o);
+    if (T && T.thorn && att && !o.ranged && att !== tgt && att.D && !att.dead && r > 0 && !o._thorn) _hurtH2(tgt, att, r * T.thorn, { from: tgt, kb: 0, _thorn: true });
     if (tgt.dead || tgt.downed){
       if (A && att.D.h2 === 'tanga') att._h2kill = true;
-      for (const v of G.units) if (v.side === tgt.side && v !== tgt && !v.dead && dist(v, tgt) < 7){ const P = h2P(v); if (P && P.ally){ v._h2rage = G.t + 5; popText(v.x, v.y + 2, v.z, '분노', 'alert', 0.8); } }
+      for (const v of G.units) if (v.side === tgt.side && v !== tgt && !v.dead && dist(v, tgt) < 7){ const P = h2P(v); if (v.D.h2 === 'ted') v._h2fallen = (v._h2fallen || 0) + 1; if (P && P.ally){ v._h2rage = G.t + 5; popText(v.x, v.y + 2, v.z, '분노', 'alert', 0.8); } }
     }
     return r;
   };

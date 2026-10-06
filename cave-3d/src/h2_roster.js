@@ -74,6 +74,116 @@ const H2R = {
 "ax": 488,
 "ay": 698,
 "orig": "서 있음 (날개 펼침)"
+},
+"idle_b": {
+"src": "art/h2/ancientangel/idle_b.webp",
+"w": 620,
+"h": 704,
+"ax": 460,
+"ay": 701,
+"orig": "날개 접어 몸 뒤로 두르고 곧게 섬 (두 손 갈퀴 늘어뜨림)"
+},
+"attack": {
+"src": "art/h2/ancientangel/attack.webp",
+"w": 1045,
+"h": 607,
+"ax": 458,
+"ay": 604,
+"orig": "다리 넓게 벌리고 오른 날개를 앞으로 쭉 뻗어 날개 끝 갈퀴 손으로 낚아채기"
+}
+}
+},
+"arkam": {
+"slug": "arkam",
+"name": "아컴",
+"rank": "장군 (성계장군 — 시트 파일 이름 '성계 장군 아컴 보스 시트')",
+"folder": "창병B",
+"role": "보스 (성계 장군 — 시트 이름에 '보스'. 폴더는 '창병B' 지만 그림은 낫창 든 장군이라 보스로 봄. 암계 장군 흑익 · 하류와 맞서는 쪽 장군일 수 있음)",
+"tall": 2.3,
+"weight": 110,
+"palette": [
+"#14161c",
+"#232c44",
+"#2f4f8a",
+"#4a6fb0",
+"#3fe0d0"
+],
+"missing": [
+"back",
+"walk",
+"guard",
+"hurt",
+"down",
+"dead",
+"sweep (낫 휘둘러 베기)"
+],
+"kit": {
+"basic": "낫창 찌르기 (attack) — 앞 4m 줄 (폭 0.8m)",
+"skills": [
+{
+"name": "초승 베기",
+"pose": "attack",
+"desc": "낫날로 앞 4.5m 부채꼴 160도 크게 휘둘러 베기 + 낫으로 걸어 1.5m 끌어오기"
+},
+{
+"name": "성계 돌진",
+"pose": "attack",
+"desc": "7m 돌진 찌르기, 줄 위 적 관통 + 넘어뜨림 1초"
+},
+{
+"name": "별의 창벽",
+"pose": "idle",
+"desc": "낫창을 땅에 세워 3초 막기: 앞 140도 원거리 막기, 다가오는 적에게 자동 찌르기 반격 (4m)"
+}
+],
+"passive": "긴 팔: 공격 거리 +1m, 3m 밖 적에게 주는 피해 +15% (가까이 붙으면 약함)"
+},
+"apt": {
+"melee": 3,
+"spear": 5,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 1
+},
+"tag": "knight",
+"role_job": "지휘",
+"bag": 10,
+"stats": {
+"hp": 3800,
+"atk": 74,
+"spd": 5.2,
+"weight_kg": 110,
+"tall_m": 2.3
+},
+"desc": "뾰족 뿔 투구에 청록 눈빛, 검푸른 갑옷과 해진 파란 코트를 두른 성계의 장군. 초승달 낫이 달린 긴 창으로 멀리서 베고 걸어 당긴다.",
+"gen": 3,
+"portrait": "art/h2/arkam/portrait.webp",
+"face": "art/h2/arkam/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/arkam/idle.webp",
+"w": 304,
+"h": 702,
+"ax": 143,
+"ay": 699,
+"orig": "옆모습 (오른쪽 봄): 긴 낫창 (끝이 초승달 낫) 을 세워 쥐고 섬"
+},
+"front": {
+"src": "art/h2/arkam/front.webp",
+"w": 382,
+"h": 716,
+"ax": 202,
+"ay": 713,
+"orig": "3/4 앞모습: 뾰족 뿔 투구 (청록 눈빛), 검푸른 갑옷 + 해진 파란 긴 코트 (허리띠 · 버클), 길쭉한 몸"
+},
+"attack": {
+"src": "art/h2/arkam/attack.webp",
+"w": 763,
+"h": 524,
+"ax": 277,
+"ay": 521,
+"orig": "낮게 벌려 서서 낫창을 앞으로 길게 찌름 (끈 장식 휘날림, 코트 펄럭)"
 }
 }
 },
@@ -335,6 +445,99 @@ const H2R = {
 }
 }
 },
+"blueflame": {
+"slug": "blueflame",
+"name": "푸른불꽃",
+"rank": "미상 (폴더 이름 '푸른불꽃' 에 등급 글자 없음)",
+"folder": "푸른불꽃",
+"role": "둘 다 (토끼 가면의 쇠사슬 · 철사 고리 사냥꾼 — 적 강자로 먼저 나오고 영입 가능. 원본 참고 캡처가 만화 장면이라 이야기 인물로 봄)",
+"tall": 1.95,
+"weight": 72,
+"palette": [
+"#1e1e20",
+"#3a3a3c",
+"#b9b9b7",
+"#e2e2e0",
+"#3fd9d0"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"skill (푸른 불꽃 효과 — 이름의 근원, 그림에는 눈빛만 청록)"
+],
+"kit": {
+"basic": "갈퀴 손 할퀴기 (idle) — 앞 2m 부채꼴, 빠름 (0.5초)",
+"skills": [
+{
+"name": "철사 올가미",
+"pose": "attack",
+"desc": "앞 8m 줄로 고리를 던짐: 처음 맞은 적을 내 앞 1.5m 까지 끌어오기 + 묶기 1초"
+},
+{
+"name": "푸른 불꽃",
+"pose": "attack",
+"desc": "고리에 청록 불을 붙여 휘두름: 앞 4m 부채꼴 120도 불 피해 + 화상 4초 (매초 피해)"
+},
+{
+"name": "그림자 걸음",
+"pose": "idle",
+"desc": "몸을 숙여 5m 순간 돌진 (적 뒤로 지나감), 다음 할퀴기 피해 2배"
+}
+],
+"passive": "사냥꾼의 눈: 끌어오거나 묶인 적에게 주는 피해 +20%, 화상 걸린 적의 위치가 벽 너머로 보임"
+},
+"apt": {
+"melee": 4,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 3
+},
+"tag": "brawler",
+"role_job": "척후",
+"bag": 8,
+"stats": {
+"hp": 900,
+"atk": 44,
+"spd": 6.8,
+"weight_kg": 72,
+"tall_m": 1.95
+},
+"desc": "회색 토끼 해골 가면에 청록 눈빛, 해진 긴 코트를 입은 사냥꾼. 철사 고리로 적을 끌어와 푸른 불꽃으로 태운다.",
+"gen": 3,
+"portrait": "art/h2/blueflame/portrait.webp",
+"face": "art/h2/blueflame/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/blueflame/idle.webp",
+"w": 350,
+"h": 702,
+"ax": 181,
+"ay": 699,
+"orig": "옆모습 (오른쪽 봄): 등 굽히고 긴 갈퀴 손 늘어뜨림, 해진 긴 코트"
+},
+"front": {
+"src": "art/h2/blueflame/front.webp",
+"w": 394,
+"h": 784,
+"ax": 199,
+"ay": 781,
+"orig": "3/4 앞모습: 한 손 주머니, 회색 토끼 해골 가면 (청록 눈빛, 이빨 마스크), 흰 티 · 검은 바지 · 군화"
+},
+"attack": {
+"src": "art/h2/blueflame/attack.webp",
+"w": 666,
+"h": 670,
+"ax": 350,
+"ay": 667,
+"orig": "다리 벌려 한 손을 앞으로 휘둘러 철사 · 채찍 고리를 던짐 (올가미)"
+}
+}
+},
 "changra": {
 "slug": "changra",
 "name": "창라 (그림 파일에는 '차리')",
@@ -558,6 +761,100 @@ const H2R = {
 "ax": 440,
 "ay": 595,
 "orig": "투구 가면이 긴 창살 창으로 뻗어나감 + 손 뻗기"
+}
+}
+},
+"colossus15": {
+"slug": "colossus15",
+"name": "15M 거인병사",
+"rank": "미상 (폴더 이름 '15M 거인병사' — 등급 글자 없음, 거신병 병졸급으로 봄)",
+"folder": "15M 거인병사",
+"role": "적 (거인 병졸 — 키 15m 의 돌 갑옷 창병, 무리 전투에서 '움직이는 성벽' 역할. 보스전 배경 · 중간 보스로도 가능)",
+"tall": 15,
+"weight": 90000,
+"palette": [
+"#5b6470",
+"#798594",
+"#242830",
+"#7fa6d8",
+"#3b4451"
+],
+"missing": [
+"back",
+"walk",
+"guard",
+"hurt",
+"down",
+"dead",
+"stomp(밟기)"
+],
+"kit": {
+"basic": "거창 찌르기 (attack) — 앞 12m 줄 (폭 2m), 맞은 적 넘어뜨림",
+"skills": [
+{
+"name": "성벽 찌르기",
+"pose": "attack",
+"desc": "방패 뒤에서 창을 길게 내질러 앞 18m 줄 (폭 3m) 관통, 끝 4m 원 충격파"
+},
+{
+"name": "탑방패 내려찍기",
+"pose": "front",
+"desc": "탑방패를 땅에 내리찍어 앞 8m 부채꼴 120도 충격 + 흙먼지, 넘어뜨림 2초"
+},
+{
+"name": "거인의 행군",
+"pose": "idle",
+"desc": "천천히 6m 전진하며 발밑 4m 원을 밟음 (작은 적 큰 피해), 앞쪽 투사체는 방패로 막음"
+}
+],
+"passive": "돌 거신 — 넘어지지 않음, 크기 때문에 작은 적의 근접 공격은 다리 (아래 3m) 만 맞힐 수 있음, 원거리 피해 25% 감소"
+},
+"apt": {
+"melee": 4,
+"spear": 5,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 0,
+"stats": {
+"hp": 12000,
+"atk": 120,
+"spd": 3.0,
+"weight_kg": 90000,
+"tall_m": 15
+},
+"desc": "돌을 깎은 듯한 푸른 잿빛 판금의 15m 거인 병사. 투구 위로 푸른 불꽃 같은 장식이 흩날리고, 긴 창과 성벽 같은 탑방패로 전장을 밀고 나간다.",
+"gen": 3,
+"portrait": "art/h2/colossus15/portrait.webp",
+"face": "art/h2/colossus15/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/colossus15/idle.webp",
+"w": 392,
+"h": 760,
+"ax": 223,
+"ay": 757,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 창 세워 들고 큰 네모 탑방패"
+},
+"front": {
+"src": "art/h2/colossus15/front.webp",
+"w": 542,
+"h": 792,
+"ax": 325,
+"ay": 789,
+"orig": "앞모습 서 있음, 창 · 탑방패, 투구에서 푸른 불꽃 같은 장식이 흩날림"
+},
+"attack": {
+"src": "art/h2/colossus15/attack.webp",
+"w": 815,
+"h": 533,
+"ax": 369,
+"ay": 530,
+"orig": "몸 낮추고 방패 뒤에서 창을 오른쪽 아래로 찌름"
 }
 }
 },
@@ -1365,6 +1662,99 @@ const H2R = {
 }
 }
 },
+"ghostgirl": {
+"slug": "ghostgirl",
+"name": "귀신녀 (유령 보스)",
+"rank": "보스",
+"folder": "귀신녀1",
+"role": "적 · 보스 (원본 시트 파일 이름 '하리 유령 보스 캐릭터 시트'. 공포 원령형이라 동료보다 적이 어울림)",
+"tall": 1.75,
+"weight": 0,
+"palette": [
+"#0f1216",
+"#1b1f23",
+"#292d32",
+"#949aa0",
+"#e6e8ea"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"vanish(사라짐)"
+],
+"kit": {
+"basic": "손톱 할퀴기 (attack) — 근접 2m, 2연타",
+"skills": [
+{
+"name": "원령의 덮침",
+"pose": "attack",
+"desc": "벽 · 적을 통과하며 앞으로 7m 미끄러지듯 돌진 (폭 1.5m 줄), 맞은 적 피해 + 2초 공포 (뒤로 도망, 조작 불가 아님 — 공격 못함)"
+},
+{
+"name": "비명",
+"pose": "front",
+"desc": "정면으로 돌아 찢어진 입으로 비명: 반경 6m 원, 1.5초 기절 + 횃불 · 빛 아이템 꺼짐. 재사용 15초"
+},
+{
+"name": "그림자 걸음",
+"pose": "idle",
+"desc": "반투명 (알파 0.3) 이 되어 3초간 피해 받지 않고 떠다니다 가장 가까운 적 뒤 2m 로 순간이동 (그림 없음 — idle 흐리게)"
+}
+],
+"passive": "원령: 물리 피해 40% 감소, 마법 · 빛 피해 50% 더 받음. 바닥에 닿지 않아 함정 · 장판 무시"
+},
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 5
+},
+"tag": "mage",
+"role_job": "척후",
+"bag": 4,
+"stats": {
+"hp": 2400,
+"atk": 45,
+"spd": 5.5,
+"weight_kg": 0,
+"tall_m": 1.75
+},
+"desc": "발목까지 오는 검은 머리칼에 검은 드레스와 찢어진 흰 소매를 걸친 원령. 해골처럼 비어 있는 큰 눈과 찢어진 입으로 덮쳐 온다.",
+"gen": 3,
+"portrait": "art/h2/ghostgirl/portrait.webp",
+"face": "art/h2/ghostgirl/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ghostgirl/idle.webp",
+"w": 322,
+"h": 701,
+"ax": 144,
+"ay": 698,
+"orig": "옆모습으로 고개 숙이고 떠 있음 (오른쪽 봄)"
+},
+"front": {
+"src": "art/h2/ghostgirl/front.webp",
+"w": 351,
+"h": 719,
+"ax": 158,
+"ay": 716,
+"orig": "앞모습 (조금 오른쪽으로 튼 3/4), 두 손 갈퀴 늘어뜨림"
+},
+"attack": {
+"src": "art/h2/ghostgirl/attack.webp",
+"w": 482,
+"h": 596,
+"ax": 230,
+"ay": 593,
+"orig": "입 찢어지게 벌리고 두 손 갈퀴 뻗으며 앞으로 덮침 (머리칼 뒤로 휘날림)"
+}
+}
+},
 "goldknight": {
 "slug": "goldknight",
 "name": "금기사",
@@ -1475,6 +1865,194 @@ const H2R = {
 "ax": 405,
 "ay": 589,
 "orig": "한 손 앞찌르기 (런지)"
+}
+}
+},
+"goldmask": {
+"slug": "goldmask",
+"name": "노란악마녀",
+"rank": "보스",
+"folder": "노란악마녀",
+"role": "보스 (시트 파일 이름이 '보스 시트', 가면 · 뿔 · 갈퀴 손의 악마라 적 쪽 우두머리)",
+"tall": 1.8,
+"weight": 58,
+"palette": [
+"#e8d97a",
+"#1d1b1a",
+"#e0cca8",
+"#f2e86a",
+"#8a8a8a"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"cast(마법)",
+"jump"
+],
+"kit": {
+"basic": "갈퀴 손톱 할퀴기 (attack) — 앞 2.5m 부채꼴 90도, 2연타",
+"skills": [
+{
+"name": "악마의 덮치기",
+"pose": "attack",
+"desc": "앞으로 7m 돌진하며 두 손 갈퀴로 3연속 할퀴기 (앞 3m 부채꼴), 맞은 적 출혈 4초"
+},
+{
+"name": "그림자 자락",
+"pose": "front",
+"desc": "찢어진 치마 자락이 그림자로 퍼져 주위 5m 원 장판 5초: 안의 적 이동 -40%, 매초 작은 피해"
+},
+{
+"name": "사슬 끌어오기",
+"pose": "idle",
+"desc": "허리 사슬을 던져 줄 8m, 처음 맞은 적을 앞 1.5m 로 끌어옴 (뒤이어 할퀴기 연계)"
+}
+],
+"passive": "빛나는 눈 — 체력 50% 아래면 광폭: 이동 +20%, 공격 속도 +15%, 가면 눈빛이 짙어짐"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 3
+},
+"tag": "brawler",
+"role_job": "척후",
+"bag": 6,
+"stats": {
+"hp": 3200,
+"atk": 60,
+"spd": 7.0,
+"weight_kg": 58,
+"tall_m": 1.8
+},
+"desc": "검은 가면에 노란 눈빛, 길게 늘어진 금발과 작은 뿔의 악마녀. 갈퀴 손으로 덮쳐 찢는 날쌘 근접 보스.",
+"gen": 3,
+"portrait": "art/h2/goldmask/portrait.webp",
+"face": "art/h2/goldmask/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/goldmask/idle.webp",
+"w": 253,
+"h": 702,
+"ax": 149,
+"ay": 699,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 갈퀴 손 늘어뜨림"
+},
+"front": {
+"src": "art/h2/goldmask/front.webp",
+"w": 346,
+"h": 736,
+"ax": 197,
+"ay": 733,
+"orig": "앞모습 (조금 오른쪽) 서 있음, 찢어진 망토 치마 펼쳐짐"
+},
+"attack": {
+"src": "art/h2/goldmask/attack.webp",
+"w": 559,
+"h": 585,
+"ax": 358,
+"ay": 582,
+"orig": "앞으로 크게 내딛으며 갈퀴 손 뻗기 (할퀴기 · 덮치기)"
+}
+}
+},
+"grinvan": {
+"slug": "grinvan",
+"name": "선봉장 (검은 미소 거신)",
+"rank": "강적",
+"folder": "강적 선봉장",
+"role": "적 (폴더 '강적 선봉장' — 적 무리 맨 앞에서 방패로 막는 거구 정예, 보스 앞 관문지기)",
+"tall": 4.5,
+"weight": 3500,
+"palette": [
+"#c4c9cc",
+"#585757",
+"#1a1a1a",
+"#b49ab8",
+"#343334"
+],
+"missing": [
+"back",
+"walk",
+"attack(몽둥이 내려치기 끝 동작)",
+"guard",
+"hurt",
+"down",
+"dead"
+],
+"kit": {
+"basic": "몽둥이 내려치기 (dash 그림 재사용) — 앞 3.5m 부채꼴 100도, 넘어뜨림",
+"skills": [
+{
+"name": "방패 돌진",
+"pose": "dash",
+"desc": "방패 앞세워 10m 돌진, 부딪힌 적 밀쳐 넘어뜨리고 끝에서 몽둥이 휘두르기 (앞 4m 부채꼴)"
+},
+{
+"name": "성벽 방패",
+"pose": "idle",
+"desc": "타원 방패를 땅에 박아 3초 막기: 앞 150도 원거리 · 근접 피해 90% 막음, 뒤 아군도 가려 줌"
+},
+{
+"name": "검은 미소",
+"pose": "front",
+"desc": "까만 얼굴 속 웃는 눈이 빛남 — 주위 8m 원 도발 4초 (적이 선봉장만 노림), 그동안 받는 피해 -30%"
+}
+],
+"passive": "무쇠 몸통 — 넘어지지 않음 (밀치기 · 넘어뜨리기 면역), 정면 피해 30% 감소, 등은 약점 (+30%)"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 5200,
+"atk": 70,
+"spd": 3.5,
+"weight_kg": 3500,
+"tall_m": 4.5
+},
+"desc": "회백색 판금으로 몸을 감싼 뚱뚱한 거구. 투구 속은 새까만 얼굴에 웃는 눈만 떠 있다. 큰 타원 방패와 쇠 몽둥이로 적 무리 맨 앞을 막는 선봉장.",
+"gen": 3,
+"portrait": "art/h2/grinvan/portrait.webp",
+"face": "art/h2/grinvan/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/grinvan/idle.webp",
+"w": 468,
+"h": 739,
+"ax": 231,
+"ay": 736,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 몽둥이 늘어뜨리고 큰 타원 방패 세움"
+},
+"front": {
+"src": "art/h2/grinvan/front.webp",
+"w": 670,
+"h": 888,
+"ax": 279,
+"ay": 885,
+"orig": "앞모습 서 있음, 몽둥이 · 타원 방패, 허리 앞자락에 보라 문양"
+},
+"dash": {
+"src": "art/h2/grinvan/dash.webp",
+"w": 846,
+"h": 626,
+"ax": 529,
+"ay": 623,
+"orig": "방패 앞세워 오른쪽으로 돌진, 몽둥이 든 팔은 뒤로 젖힘 (휘두르기 직전)"
 }
 }
 },
@@ -1831,6 +2409,99 @@ const H2R = {
 }
 }
 },
+"hammerknight": {
+"slug": "hammerknight",
+"name": "해머기사 (이름 미상)",
+"rank": "미상 (폴더 이름 '해머기사 적' — 등급 글자 없음, 정예 졸개급으로 봄)",
+"folder": "해머기사 적",
+"role": "적 (폴더 이름이 '적'. 이름 없는 중장 해머 병사 — 무리 속 정예 · 관문지기. 대화 · 동료 요소 없음)",
+"tall": 2.25,
+"weight": 260,
+"palette": [
+"#5a5a5c",
+"#2f2f31",
+"#4a3b30",
+"#6b4a33",
+"#9a9a98"
+],
+"missing": [
+"attack (내려찍은 순간 — windup 다음 장면)",
+"back",
+"walk",
+"hurt",
+"down",
+"dead"
+],
+"kit": {
+"basic": "해머 휘두르기 (idle → windup 짧게) — 앞 2.5m 부채꼴 90도, 느림 (1.4초), 맞으면 밀려남 2m",
+"skills": [
+{
+"name": "대지 내려찍기",
+"pose": "windup",
+"desc": "1초 모은 뒤 앞 3m 원 (지름 3m) 내려찍기: 큰 피해 + 넘어뜨림 1.5초, 바닥에 돌 파편 장판 3초 (밟으면 둔화 30%)"
+},
+{
+"name": "해머 버티기",
+"pose": "front",
+"desc": "해머를 땅에 박고 2초 버팀: 받는 피해 50% 감소 + 밀려나지 않음, 끝날 때 주변 2m 원 충격파 (밀쳐냄)"
+},
+{
+"name": "짓밟기 확인사살",
+"pose": "windup",
+"desc": "쓰러진 적이 2m 안에 있으면 해머로 내리찍어 큰 피해 (쓰러진 대상 피해 2배)"
+}
+],
+"passive": "두꺼운 판금: 근접 · 화살 피해 25% 감소, 넘어뜨리기 · 밀치기에 강함 (지속 시간 절반). 대신 이동 느리고 마법 · 불 피해 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 14,
+"stats": {
+"hp": 1800,
+"atk": 58,
+"spd": 3.4,
+"weight_kg": 260,
+"tall_m": 2.25
+},
+"desc": "네모난 통 투구에 낡은 판금 · 털가죽 짐을 진 거구의 해머 병사. 말없이 거대한 돌망치를 끌고 다니며 앞을 막는다.",
+"gen": 3,
+"portrait": "art/h2/hammerknight/portrait.webp",
+"face": "art/h2/hammerknight/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/hammerknight/idle.webp",
+"w": 510,
+"h": 697,
+"ax": 268,
+"ay": 694,
+"orig": "옆모습: 대형 돌 해머를 한 손으로 비스듬히 끌듯 들고 섬, 등에 털가죽 짐"
+},
+"front": {
+"src": "art/h2/hammerknight/front.webp",
+"w": 616,
+"h": 877,
+"ax": 353,
+"ay": 874,
+"orig": "3/4 앞모습: 해머 머리를 땅에 짚고 섬, 통 투구 (네모 면갑, 눈구멍 검게 뚫림)"
+},
+"windup": {
+"src": "art/h2/hammerknight/windup.webp",
+"w": 757,
+"h": 892,
+"ax": 334,
+"ay": 889,
+"orig": "다리 크게 벌리고 두 손으로 해머를 머리 위로 치켜듦 (내려찍기 직전)"
+}
+}
+},
 "hari": {
 "slug": "hari",
 "name": "하리",
@@ -1957,6 +2628,194 @@ const H2R = {
 "ax": 161,
 "ay": 721,
 "orig": "전투 태세 (한 발 내딛음)"
+}
+}
+},
+"haryu": {
+"slug": "haryu",
+"name": "하류",
+"rank": "암계장군",
+"folder": "암계장군 하류",
+"role": "보스 (암계 장군 — 티어표 \"암계 장군 '흑익' & '하류'\" 둘 중 하류. 흑익과 짝 보스, 나중에 영입 가능한 둘 다 후보)",
+"tall": 1.85,
+"weight": 68,
+"palette": [
+"#1c1a1d",
+"#3a3238",
+"#8a8a8c",
+"#b5a9a3",
+"#e08a2a"
+],
+"missing": [
+"back",
+"walk",
+"guard",
+"hurt",
+"down",
+"dead",
+"skill (암계 효과)"
+],
+"kit": {
+"basic": "대검 베기 (idle) — 앞 3m 부채꼴 120도",
+"skills": [
+{
+"name": "암류 베어올리기",
+"pose": "attack",
+"desc": "5m 돌진하며 대검을 베어 올림: 앞 줄 (폭 1.2m) 피해 + 띄우기 1초 (공중 적에게 다음 공격 피해 +30%)"
+},
+{
+"name": "검은 물결",
+"pose": "front",
+"desc": "대검을 땅에 그어 앞 8m 부채꼴 60도로 검은 물결 파동: 피해 + 둔화 40% 3초"
+},
+{
+"name": "처형 일섬",
+"pose": "attack",
+"desc": "체력 30% 아래 적에게 4m 순간 이동 후 일섬 — 큰 피해 (확인사살), 처치 시 쿨 초기화 1번"
+}
+],
+"passive": "암계의 장군 (흑익과 짝): 흑익이 10m 안에 있으면 둘 다 받는 피해 15% 감소. 하류 혼자면 공격 속도 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 2
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 4000,
+"atk": 78,
+"spd": 6.0,
+"weight_kg": 68,
+"tall_m": 1.85
+},
+"desc": "숫양 뿔과 검은 복면, 주황 눈빛의 암계 장군. 자기 키만 한 외날 대검을 가볍게 휘두르는 흑익의 짝.",
+"gen": 3,
+"portrait": "art/h2/haryu/portrait.webp",
+"face": "art/h2/haryu/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/haryu/idle.webp",
+"w": 508,
+"h": 700,
+"ax": 172,
+"ay": 697,
+"orig": "옆모습 (오른쪽 봄): 대검을 한 손으로 비스듬히 아래로 늘어뜨림"
+},
+"front": {
+"src": "art/h2/haryu/front.webp",
+"w": 517,
+"h": 798,
+"ax": 219,
+"ay": 795,
+"orig": "3/4 앞모습: 숫양 뿔, 회색 긴 곱슬머리, 검은 복면 · 주황 눈, 트임 긴 검은 드레스, 판금 허벅지 장화 (하이힐), 큰 외날 대검"
+},
+"attack": {
+"src": "art/h2/haryu/attack.webp",
+"w": 732,
+"h": 658,
+"ax": 488,
+"ay": 655,
+"orig": "등을 보이며 몸을 틀어 두 손으로 대검을 앞 위로 길게 찌름 / 베어 올림, 머리 · 치마 휘날림"
+}
+}
+},
+"heugik": {
+"slug": "heugik",
+"name": "흑익",
+"rank": "암계장군",
+"folder": "암계장군 흑익",
+"role": "보스 (암계 장군 — 티어표 \"암계 장군 '흑익' & '하류'\" 둘 중 흑익. 나중에 영입 가능한 둘 다 후보)",
+"tall": 1.92,
+"weight": 95,
+"palette": [
+"#29292b",
+"#1b1b1c",
+"#878788",
+"#cfcdcc",
+"#f2f2f0"
+],
+"missing": [
+"back",
+"walk",
+"guard (막기)",
+"hurt",
+"down",
+"dead",
+"skill (어둠 날개 · 효과)"
+],
+"kit": {
+"basic": "세검 찌르기 (attack) — 앞 3.5m 줄 (폭 0.6m), 빠름",
+"skills": [
+{
+"name": "흑익 섬격",
+"pose": "attack",
+"desc": "6m 돌진 찌르기, 지나간 줄 위 적 모두 관통 피해 + 출혈 4초. 돌진 중 무적 0.2초"
+},
+{
+"name": "검은 날개 망토",
+"pose": "front",
+"desc": "망토를 펼쳐 2초 막기: 앞 150도 원거리 막기, 막는 동안 맞으면 즉시 찌르기 반격 (4m)"
+},
+{
+"name": "확인사살",
+"pose": "idle",
+"desc": "체력 25% 아래 적에게 순간 이동 3m 후 세검 내리찌르기 — 큰 피해 (처형)"
+}
+],
+"passive": "암계의 장군: 주변 10m 암계 아군 공격 +10%, 처치할 때마다 이동 속도 +15% 4초 (최대 3번)"
+},
+"apt": {
+"melee": 5,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 3
+},
+"tag": "knight",
+"role_job": "지휘",
+"bag": 10,
+"stats": {
+"hp": 4200,
+"atk": 72,
+"spd": 6.2,
+"weight_kg": 95,
+"tall_m": 1.92
+},
+"desc": "암계 장군 \"흑익\". 흰 장발에 얼굴 없는 검은 투구 가면, 늑골 무늬 검은 갑옷과 해진 망토, 가늘고 긴 세검을 쓰는 검사. 짝 장군은 \"하류\".",
+"gen": 3,
+"portrait": "art/h2/heugik/portrait.webp",
+"face": "art/h2/heugik/face.webp",
+"poses": {
+"front": {
+"src": "art/h2/heugik/front.webp",
+"w": 436,
+"h": 734,
+"ax": 206,
+"ay": 731,
+"orig": "앞모습: 늑골 무늬 검은 갑옷, 해진 긴 망토, 흰 장발, 검은 투구 가면 (흰 눈빛), 오른손에 긴 세검"
+},
+"idle": {
+"src": "art/h2/heugik/idle.webp",
+"w": 410,
+"h": 710,
+"ax": 178,
+"ay": 707,
+"orig": "옆모습 (오른쪽 봄): 세검을 비스듬히 아래로 내려 듦"
+},
+"attack": {
+"src": "art/h2/heugik/attack.webp",
+"w": 784,
+"h": 504,
+"ax": 391,
+"ay": 501,
+"orig": "다리를 크게 벌려 세검을 앞으로 길게 찌름 (런지), 머리 · 망토 휘날림"
 }
 }
 },
@@ -2249,6 +3108,194 @@ const H2R = {
 }
 }
 },
+"hongdukkae": {
+"slug": "hongdukkae",
+"name": "홍두깨",
+"rank": "강적 (폴더 이름 머리말 '강적' — 원본 참고에 글자 없음)",
+"folder": "강적 홍두깨",
+"role": "적 (붉은 오니 가면의 거구 둔기 전사 — 강적 · 중간 보스. 이름처럼 커다란 가시 쇠몽둥이가 상징)",
+"tall": 2.3,
+"weight": 230,
+"palette": [
+"#a3202a",
+"#d0262c",
+"#1e1a1c",
+"#3a3436",
+"#6e2a2a"
+],
+"missing": [
+"back",
+"walk",
+"windup (몽둥이 치켜들기)",
+"hurt",
+"down",
+"dead",
+"slam (위에서 내려찍기)"
+],
+"kit": {
+"basic": "쇠몽둥이 휘두르기 (attack) — 앞 3m 부채꼴 100도, 맞으면 밀려남 2m",
+"skills": [
+{
+"name": "홍두깨 휩쓸기",
+"pose": "attack",
+"desc": "한 걸음 내디디며 앞 4m 부채꼴 160도를 낮게 휩쓸어 넘어뜨림, 방패 막기를 무시 (막아도 50% 피해)"
+},
+{
+"name": "어깨 메고 돌진",
+"pose": "idle",
+"desc": "몽둥이를 어깨에 멘 채 7m 돌진, 부딪힌 적 1.5초 기절, 벽에 부딪히면 자신도 1초 멈춤"
+},
+{
+"name": "오니의 확인사살",
+"pose": "attack",
+"desc": "쓰러진 적에게만 쓰는 하단 내려치기 — 앞 2.5m, 큰 피해 (쓰러진 적 피해 2배)"
+}
+],
+"passive": "오니 가면: 체력 50% 아래에서 분노 — 공격 속도 +25%, 넘어뜨림 · 밀려남에 면역"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 6,
+"stats": {
+"hp": 2600,
+"atk": 70,
+"spd": 4.0,
+"weight_kg": 230,
+"tall_m": 2.3
+},
+"desc": "두 가닥 긴 뿔이 솟은 붉은 오니 가면을 쓰고, 해진 핏빛 트렌치코트에 검은 판금 팔다리를 두른 거구. 가시 박힌 거대한 쇠몽둥이 홍두깨를 어깨에 메고 다닌다.",
+"gen": 3,
+"portrait": "art/h2/hongdukkae/portrait.webp",
+"face": "art/h2/hongdukkae/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/hongdukkae/idle.webp",
+"w": 498,
+"h": 698,
+"ax": 285,
+"ay": 695,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 가시 쇠몽둥이를 오른쪽 어깨에 걸침"
+},
+"front": {
+"src": "art/h2/hongdukkae/front.webp",
+"w": 466,
+"h": 715,
+"ax": 173,
+"ay": 712,
+"orig": "앞모습 (3/4 정면) 서 있음, 쇠몽둥이를 오른손에 늘어뜨림"
+},
+"attack": {
+"src": "art/h2/hongdukkae/attack.webp",
+"w": 673,
+"h": 607,
+"ax": 305,
+"ay": 604,
+"orig": "몸을 낮추고 두 손으로 쇠몽둥이를 앞 아래로 크게 휘두름 (낮은 휩쓸기 · 내려치기 끝 자세), 해진 코트 자락이 뒤로 휘날림"
+}
+}
+},
+"hornbeast": {
+"slug": "hornbeast",
+"name": "거대괴수B (검은 뿔 괴수)",
+"rank": "거대괴수 (시트 제목 \"보스\")",
+"folder": "거대괴수B",
+"role": "보스 (거대괴수 — 맵 하나를 차지하는 큰 보스)",
+"tall": 7.5,
+"weight": 26000,
+"palette": [
+"#19191c",
+"#252428",
+"#333336",
+"#444447",
+"#b8b3a8"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"roar (따로)",
+"back",
+"charge (돌진)"
+],
+"kit": {
+"basic": "갈퀴 휘두르기 (attack) — 앞 7m 부채꼴 120도, 넘어뜨림",
+"skills": [
+{
+"name": "뿔 들이받기",
+"pose": "idle",
+"desc": "몸을 숙인 채 앞으로 14m 돌진 — 줄 위 적을 밀쳐 넘어뜨리고 벽에 박으면 2초 기절"
+},
+{
+"name": "아가리 포효",
+"pose": "attack",
+"desc": "입을 벌려 울부짖음 — 반지름 15m 원, 2초 공포 (뒤로 도망) + 방어 −20% 6초"
+},
+{
+"name": "대지 내려찍기",
+"pose": "front",
+"desc": "일어서서 두 팔로 땅을 침 — 반지름 9m 원 충격파, 가까울수록 큰 피해, 돌 파편이 3초 장판"
+}
+],
+"passive": "가시 털가죽: 근접 공격한 적에게 받은 피해 15% 되돌림, 원거리 피해 20% 감소"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 6,
+"stats": {
+"hp": 8000,
+"atk": 110,
+"spd": 4.0,
+"weight_kg": 26000,
+"tall_m": 7.5
+},
+"desc": "온몸이 검은 깃털 같은 비늘과 가시로 덮인 거대 괴수. 머리에 긴 뿔 네 가닥, 눈 없이 톱니 이빨만 드러낸다.",
+"gen": 3,
+"portrait": "art/h2/hornbeast/portrait.webp",
+"face": "art/h2/hornbeast/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/hornbeast/idle.webp",
+"w": 578,
+"h": 705,
+"ax": 284,
+"ay": 702,
+"orig": "옆모습, 앞으로 숙여 긴 팔을 땅에 드리우고 서 있음"
+},
+"front": {
+"src": "art/h2/hornbeast/front.webp",
+"w": 545,
+"h": 840,
+"ax": 224,
+"ay": 837,
+"orig": "앞모습 (3/4), 똑바로 서서 고개 숙임"
+},
+"attack": {
+"src": "art/h2/hornbeast/attack.webp",
+"w": 675,
+"h": 607,
+"ax": 412,
+"ay": 604,
+"orig": "낮게 웅크려 입을 쩍 벌리고 앞발 갈퀴를 휘두르기 직전 (포효 · 덮치기)"
+}
+}
+},
 "inclador": {
 "slug": "inclador",
 "name": "갱스터 잉끌레이도르",
@@ -2332,6 +3379,99 @@ const H2R = {
 "ax": 183,
 "ay": 688,
 "orig": "공격 그림 없음 — windup 을 앞으로 기울여 대신 (임시)"
+}
+}
+},
+"jaru": {
+"slug": "jaru",
+"name": "자루",
+"rank": "수집가 (등급 글자 없음 — 티어표에서 거신급 칸 아래 \"외계 유물학자 '자루'\")",
+"folder": "수집가 자루",
+"role": "둘 다 (외계 유물학자 · 수집가 NPC. 유물을 걸고 싸우는 중간 보스로도, 영입 동료 마법사로도)",
+"tall": 1.78,
+"weight": 70,
+"palette": [
+"#4a3a36",
+"#5e7f88",
+"#7a5a40",
+"#a8d8d4",
+"#c9a86a"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"cast 별도 효과 (빛 · 마법진)"
+],
+"kit": {
+"basic": "초승달 유물 휘두르기 (attack) — 앞 2.5m 부채꼴 90도, 맞은 적 1m 밀침",
+"skills": [
+{
+"name": "달빛 파편",
+"pose": "attack",
+"desc": "초승달을 앞으로 내질러 유물 조각 3개를 앞 12m 부채꼴 30도로 쏨. 조각마다 피해 + 2초 둔화 30%"
+},
+{
+"name": "유물 감정",
+"pose": "idle",
+"desc": "유물을 받쳐 들고 2초 집중 — 반경 8m 안 적 하나의 버프 하나를 빼앗아 자신에게 6초 옮김 (수집가)"
+},
+{
+"name": "달 정령 소환",
+"pose": "front",
+"desc": "초승달의 작은 정령을 떼어 내 15초 동안 곁에 둠: 1.5초마다 가까운 적에게 6m 빛 구슬 사격, 정령이 맞으면 사라짐"
+}
+],
+"passive": "수집가의 자루: 쓰러뜨린 적에게서 아이템을 1개 더 얻을 확률 +25%, 유물 장비 효과 +15%"
+},
+"apt": {
+"melee": 1,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 2
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 20,
+"stats": {
+"hp": 640,
+"atk": 30,
+"spd": 5.0,
+"weight_kg": 70,
+"tall_m": 1.78
+},
+"desc": "외계 유물을 모으는 학자 \"자루\". 얼굴 그린 작은 정령이 붙은 초승달 유물을 지팡이 삼아 싸우는 마스크 쓴 장발 여성.",
+"gen": 3,
+"portrait": "art/h2/jaru/portrait.webp",
+"face": "art/h2/jaru/face.webp",
+"poses": {
+"front": {
+"src": "art/h2/jaru/front.webp",
+"w": 480,
+"h": 754,
+"ax": 213,
+"ay": 751,
+"orig": "앞모습: 초승달 유물 (얼굴 그린 작은 정령이 붙음)을 왼손에 얹고 섬"
+},
+"idle": {
+"src": "art/h2/jaru/idle.webp",
+"w": 377,
+"h": 704,
+"ax": 150,
+"ay": 701,
+"orig": "옆모습 (오른쪽 봄): 초승달 유물을 두 손으로 받쳐 듦"
+},
+"attack": {
+"src": "art/h2/jaru/attack.webp",
+"w": 643,
+"h": 623,
+"ax": 339,
+"ay": 620,
+"orig": "초승달 유물을 지팡이처럼 앞으로 내지르며 다리 벌린 시전 자세"
 }
 }
 },
@@ -2579,6 +3719,99 @@ const H2R = {
 "ax": 441,
 "ay": 314,
 "orig": "죽음 그림 없음 — down 으로 대신"
+}
+}
+},
+"khaki": {
+"slug": "khaki",
+"name": "카키",
+"rank": "중간급",
+"folder": "중간급 카키",
+"role": "적 (보스급 중간 적 — 티어표 \"문명 초월의 기준 2명\" 의 SF초월인간. 지역 보스로 알맞음)",
+"tall": 2.3,
+"weight": 420,
+"palette": [
+"#1e2030",
+"#383b4c",
+"#4e5560",
+"#36e0f0",
+"#191a23"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"shoot (포신 발사 효과)"
+],
+"kit": {
+"basic": "기계 손 할퀴기 — 앞 2.5m 부채꼴 100도",
+"skills": [
+{
+"name": "신장 집게팔",
+"pose": "attack",
+"desc": "팔을 9m 줄로 뻗어 찌름. 맞은 적 하나를 집게로 잡아 3m 앞까지 끌어옴 (끌어오기)"
+},
+{
+"name": "축전 포격",
+"pose": "attack",
+"desc": "팔 끝 집게가 벌어지며 파란 광선 1.2초 충전 후 앞 16m 줄 (폭 1m) 관통 사격"
+},
+{
+"name": "분석 렌즈",
+"pose": "front",
+"desc": "외눈이 반경 10m 를 훑어 은신 · 투명 적을 드러내고 5초간 받는 피해 +15% (표식)"
+}
+],
+"passive": "초월 신체: 정면 근접 피해 25% 감소, 넘어뜨림 · 밀침 면역 (등 뒤 회로가 약점)"
+},
+"apt": {
+"melee": 4,
+"spear": 3,
+"bow": 0,
+"gun": 4,
+"magic": 1,
+"stealth": 1
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 3200,
+"atk": 58,
+"spd": 4.2,
+"weight_kg": 420,
+"tall_m": 2.3
+},
+"desc": "SF초월인간 \"카키\". 해진 남색 후드 망토 속은 파란 회로가 흐르는 기계 몸, 얼굴은 해골 + 외눈 렌즈. 팔을 길게 늘여 집게 창 · 포신으로 씀.",
+"gen": 3,
+"portrait": "art/h2/khaki/portrait.webp",
+"face": "art/h2/khaki/face.webp",
+"poses": {
+"front": {
+"src": "art/h2/khaki/front.webp",
+"w": 521,
+"h": 808,
+"ax": 196,
+"ay": 805,
+"orig": "앞모습: 해진 후드 망토, 해골 얼굴 + 파란 외눈 렌즈, 커다란 기계 손"
+},
+"idle": {
+"src": "art/h2/khaki/idle.webp",
+"w": 427,
+"h": 702,
+"ax": 270,
+"ay": 699,
+"orig": "옆모습 (오른쪽 봄): 구부정하게 서서 기계 팔을 늘어뜨림"
+},
+"attack": {
+"src": "art/h2/khaki/attack.webp",
+"w": 1070,
+"h": 548,
+"ax": 428,
+"ay": 545,
+"orig": "오른팔을 길게 늘여 집게 · 포신 달린 기계 창처럼 앞으로 내지름"
 }
 }
 },
@@ -3042,6 +4275,193 @@ const H2R = {
 }
 }
 },
+"madosa": {
+"slug": "madosa",
+"name": "마도사",
+"rank": "적 (원본 참고에 등급 글자 없음 — 폴더 이름 '마도사 적', 시트 파일 이름은 '자주색 망토 보스 3면 시트')",
+"folder": "마도사 적",
+"role": "적 (얼굴이 그림자에 가려 눈만 빛나는 정체불명의 마녀형 마법사 — 강적 · 중간 보스로 알맞음. 동료 그림체는 아님)",
+"tall": 2.15,
+"weight": 70,
+"palette": [
+"#3a2638",
+"#5b3f5a",
+"#7a2a3a",
+"#c9c6c8",
+"#ece4d0"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"마법 효과 (구체 · 빛줄기 그림 없음)"
+],
+"kit": {
+"basic": "지팡이 마탄 (cast) — 앞 줄 14m, 보랏빛 마탄 1발, 맞으면 0.5초 경직",
+"skills": [
+{
+"name": "저주의 창끝",
+"pose": "cast",
+"desc": "지팡이 끝을 겨눠 18m 줄 모양 관통 광선, 줄 위 모든 적 피해 + 4초 동안 받는 피해 15% 증가 (저주)"
+},
+{
+"name": "그림자 장막",
+"pose": "idle",
+"desc": "제자리에서 망토를 여미며 반지름 5m 원 장판 — 안쪽 적 이동 속도 40% 감소, 마도사는 3초 동안 원거리 피해 50% 감소"
+},
+{
+"name": "이빨 모자의 부름",
+"pose": "front",
+"desc": "지팡이로 땅을 짚어 앞 8m 지점에 그림자 졸개 2마리 소환 (10초 유지, 근접 할퀴기)"
+}
+],
+"passive": "얼굴 없는 자: 얼굴이 그림자에 가려 표식 · 조준 계열 효과가 50% 확률로 빗나감. 체력 30% 아래로 떨어지면 마탄 연사 속도 +30%"
+},
+"apt": {
+"melee": 1,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 3
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 8,
+"stats": {
+"hp": 1600,
+"atk": 48,
+"spd": 4.5,
+"weight_kg": 70,
+"tall_m": 2.15
+},
+"desc": "뾰족한 챙 넓은 마녀 모자에 하얀 이빨 장식을 두른 자주색 망토의 마도사. 얼굴은 검은 그림자 속에 노란 눈만 보이고, 은빛 갑옷 하이힐과 창끝 달린 가는 지팡이를 짚고 다닌다.",
+"gen": 3,
+"portrait": "art/h2/madosa/portrait.webp",
+"face": "art/h2/madosa/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/madosa/idle.webp",
+"w": 357,
+"h": 704,
+"ax": 181,
+"ay": 701,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 오른손으로 지팡이 짚음"
+},
+"front": {
+"src": "art/h2/madosa/front.webp",
+"w": 423,
+"h": 736,
+"ax": 198,
+"ay": 733,
+"orig": "앞모습 (3/4 정면) 서 있음, 지팡이 짚음"
+},
+"cast": {
+"src": "art/h2/madosa/cast.webp",
+"w": 709,
+"h": 576,
+"ax": 253,
+"ay": 573,
+"orig": "다리 벌리고 버틴 채 오른팔로 지팡이를 앞으로 곧게 겨눔 (마법 쏘기 · 지휘)"
+}
+}
+},
+"majin": {
+"slug": "majin",
+"name": "마신족 병사",
+"rank": "병사 (그림 제목은 \"마신족 보스\")",
+"folder": "마신족 병사",
+"role": "적 (마신족 병사 — 무리로 나오는 적. 크게 키우면 소보스로도)",
+"tall": 2.3,
+"weight": 170,
+"palette": [
+"#aa4e6d",
+"#7b3d50",
+"#433436",
+"#2b2b2b",
+"#e3d8bf"
+],
+"missing": [
+"attack (내려친 뒤)",
+"walk",
+"hurt",
+"down",
+"dead",
+"fly (날개)",
+"back"
+],
+"kit": {
+"basic": "철퇴 치기 (idle 에서 휘두름) — 앞 2.5m 부채꼴 90도",
+"skills": [
+{
+"name": "마신 내려찍기",
+"pose": "windup",
+"desc": "1초 치켜든 뒤 앞 3m 내려찍기 — 반지름 2m 원 큰 피해 + 넘어뜨림 (치켜드는 동안 맞으면 끊김)"
+},
+{
+"name": "철퇴 쓸어치기",
+"pose": "front",
+"desc": "두 손으로 자루를 잡고 옆으로 쓸기 — 앞 3m 부채꼴 160도, 맞은 적 2m 밀쳐냄"
+},
+{
+"name": "날개 뛰기",
+"pose": "idle",
+"desc": "날개를 펴 8m 도약해 적 뒤로 내려앉음 (날기 그림 없음 — idle 로 대신)"
+}
+],
+"passive": "마신족 무리: 근처 10m 에 다른 마신족이 있으면 공격 +10% (최대 3마리)"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 700,
+"atk": 40,
+"spd": 5.0,
+"weight_kg": 170,
+"tall_m": 2.3
+},
+"desc": "용 머리에 굽은 숫양 뿔, 박쥐 날개와 꼬리를 단 마신족 병사. 해진 자홍색 천을 두르고 가시 철퇴를 든다.",
+"gen": 3,
+"portrait": "art/h2/majin/portrait.webp",
+"face": "art/h2/majin/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/majin/idle.webp",
+"w": 593,
+"h": 686,
+"ax": 280,
+"ay": 683,
+"orig": "옆모습, 철퇴를 한 손으로 늘어뜨리고 서 있음"
+},
+"front": {
+"src": "art/h2/majin/front.webp",
+"w": 632,
+"h": 801,
+"ax": 345,
+"ay": 798,
+"orig": "앞모습 (3/4), 두 손으로 철퇴 자루를 비스듬히 쥠, 날개 펼침"
+},
+"windup": {
+"src": "art/h2/majin/windup.webp",
+"w": 684,
+"h": 853,
+"ax": 320,
+"ay": 850,
+"orig": "두 손으로 가시 철퇴를 머리 위로 치켜듦 (내려찍기 직전), 다리 벌려 낮춤"
+}
+}
+},
 "makarov": {
 "slug": "makarov",
 "name": "대전사 마카로프",
@@ -3251,6 +4671,22 @@ const H2R = {
 "ax": 420,
 "ay": 705,
 "orig": "턱 펼쳐 삼키기"
+},
+"walk_b": {
+"src": "art/h2/mangak/walk_b.webp",
+"w": 964,
+"h": 698,
+"ax": 500,
+"ay": 695,
+"orig": "어슬렁 서기 (꼬리 들고 네 발로 버팀, 망각2 walk 의 새 그림판)"
+},
+"attack_b": {
+"src": "art/h2/mangak/attack_b.webp",
+"w": 1162,
+"h": 686,
+"ax": 470,
+"ay": 683,
+"orig": "앞발 갈퀴 뻗어 뛰어들기 (입 벌림, 망각2 attack 의 새 그림판)"
 }
 }
 },
@@ -3348,6 +4784,22 @@ const H2R = {
 "ax": 370,
 "ay": 274,
 "orig": "엎드려 쓰러짐 (머리 오른쪽)"
+},
+"slam": {
+"src": "art/h2/manghyang/slam.webp",
+"w": 610,
+"h": 590,
+"ax": 300,
+"ay": 587,
+"orig": "한쪽 무릎 꿇고 착지하며 오른손 갈퀴로 땅 내리찍기 (검은 · 분홍 파편 폭발, 왼손 갈퀴 뒤로 치켜듦)"
+},
+"back": {
+"src": "art/h2/manghyang/back.webp",
+"w": 446,
+"h": 673,
+"ax": 234,
+"ay": 670,
+"orig": "등 돌려 어깨 너머로 보며 웃음, 두 갈퀴손에 분홍 기운을 모음 (검은 깃털 흩날림) — 뒷모습 · 기 모으기로 씀"
 }
 }
 },
@@ -3445,6 +4897,99 @@ const H2R = {
 "ax": 343,
 "ay": 593,
 "orig": "몸이 낫 모양 그림자 칼날로 변함"
+}
+}
+},
+"mintbeast": {
+"slug": "mintbeast",
+"name": "민트괴수 (민트 외눈 괴수)",
+"rank": "미정 (폴더에 등급 없음 · 그림 제목은 \"보스\")",
+"folder": "민트괴수",
+"role": "보스 (또는 강적 — 그림 제목이 보스 시트)",
+"tall": 3.1,
+"weight": 240,
+"palette": [
+"#1f2222",
+"#3b3f3f",
+"#687069",
+"#89a094",
+"#8fdcc0"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"back",
+"crawl (기어가기)"
+],
+"kit": {
+"basic": "갈퀴 할퀴기 — 앞 3m 부채꼴 120도",
+"skills": [
+{
+"name": "둥근 아가리",
+"pose": "attack",
+"desc": "5m 덮치며 둥근 이빨 입으로 물기 — 큰 피해 + 피해의 30% 회복, 맞은 적 1초 붙잡힘"
+},
+{
+"name": "외눈 응시",
+"pose": "front",
+"desc": "검은 눈구멍으로 바라봄 — 앞 12m 줄, 맞은 적 2초 굳음 (돌아서 있으면 안 걸림)"
+},
+{
+"name": "누더기 숨기",
+"pose": "idle",
+"desc": "몸을 숙여 4초 은신 이동 (반투명), 은신 뒤 첫 공격 피해 +50%"
+}
+],
+"passive": "누더기 그림자: 어두운 곳에서 받는 원거리 공격 명중 −30%, 등의 가지 뿔에 원거리 피해 15% 감소"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 4
+},
+"tag": "beast",
+"role_job": "척후",
+"bag": 6,
+"stats": {
+"hp": 2400,
+"atk": 55,
+"spd": 5.5,
+"weight_kg": 240,
+"tall_m": 3.1
+},
+"desc": "민트빛 긴 머리카락이 얼굴을 덮은 외눈 괴물. 비늘 몸에 누더기를 두르고 등에서 사슴뿔 같은 가지가 뻗으며, 머리카락 속 둥근 아가리로 문다.",
+"gen": 3,
+"portrait": "art/h2/mintbeast/portrait.webp",
+"face": "art/h2/mintbeast/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/mintbeast/idle.webp",
+"w": 371,
+"h": 698,
+"ax": 145,
+"ay": 695,
+"orig": "옆모습, 구부정히 숙이고 긴 팔과 갈퀴를 늘어뜨림"
+},
+"front": {
+"src": "art/h2/mintbeast/front.webp",
+"w": 432,
+"h": 752,
+"ax": 217,
+"ay": 749,
+"orig": "앞모습, 민트 머리카락 사이 검은 외눈 (구멍) 이 정면을 봄"
+},
+"attack": {
+"src": "art/h2/mintbeast/attack.webp",
+"w": 682,
+"h": 677,
+"ax": 319,
+"ay": 674,
+"orig": "낮게 덮치며 머리카락 사이 둥근 이빨 아가리를 벌리고 두 갈퀴손을 뻗음"
 }
 }
 },
@@ -3638,6 +5183,287 @@ const H2R = {
 "ax": 304,
 "ay": 254,
 "orig": "넘어짐 — 엎어져 아파함"
+}
+}
+},
+"rain": {
+"slug": "rain",
+"name": "레임 (외계 민달팽이왕)",
+"rank": "중간급",
+"folder": "중간급 레인",
+"role": "적 (보스급 중간 적 — 티어표 \"문명 초월의 기준 2명\" 의 외계 민달팽이왕. 여왕형 보스)",
+"tall": 2.2,
+"weight": 260,
+"palette": [
+"#f8ee2c",
+"#2c2c27",
+"#1d1910",
+"#fbf375",
+"#aba43c"
+],
+"missing": [
+"back",
+"walk (미끄러지기)",
+"hurt",
+"down",
+"dead (녹아내림)",
+"cast (점액 뿌리기)"
+],
+"kit": {
+"basic": "점액 갈퀴 (attack) — 앞 4m 부채꼴 120도, 1.5초 둔화 40%",
+"skills": [
+{
+"name": "늘어나는 손",
+"pose": "attack",
+"desc": "점액 팔을 7m 줄로 늘여 할퀴고, 맞은 적을 2m 끌어옴 + 끈적임 (3초 점프 · 구르기 불가)"
+},
+{
+"name": "왕의 점액길",
+"pose": "idle",
+"desc": "5초 동안 지나간 자리에 점액 장판 (폭 2m, 8초 유지): 적 둔화 50% + 초당 작은 산성 피해, 자신은 그 위에서 이동 +30%"
+},
+{
+"name": "산성 왕관",
+"pose": "front",
+"desc": "검은 뿔 왕관에서 산성 방울을 반경 6m 원으로 흩뿌림: 방어 -20% 6초 (갑옷 부식)"
+}
+],
+"passive": "흐르는 몸: 물리 피해 20% 감소, 불 피해 25% 더 받음. 바닥에 점액 흔적을 남김"
+},
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 1
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 0,
+"stats": {
+"hp": 3000,
+"atk": 48,
+"spd": 3.8,
+"weight_kg": 260,
+"tall_m": 2.2
+},
+"desc": "외계 민달팽이왕 \"레임\". 노란 점액이 흘러내리는 여왕 모습 (검은 얼굴 · 검은 뿔 왕관), 하체는 검은 드레스 같은 민달팽이 발 · 말린 꼬리.",
+"gen": 3,
+"portrait": "art/h2/rain/portrait.webp",
+"face": "art/h2/rain/face.webp",
+"poses": {
+"front": {
+"src": "art/h2/rain/front.webp",
+"w": 626,
+"h": 816,
+"ax": 324,
+"ay": 813,
+"orig": "앞모습: 노란 점액 몸 + 검은 드레스형 민달팽이 하체, 검은 뿔 왕관, 늘어진 긴 손가락"
+},
+"idle": {
+"src": "art/h2/rain/idle.webp",
+"w": 458,
+"h": 697,
+"ax": 230,
+"ay": 694,
+"orig": "옆모습 (오른쪽 봄): 고개 숙이고 점액을 흘리며 섬, 꼬리 끝이 뒤로 말림"
+},
+"attack": {
+"src": "art/h2/rain/attack.webp",
+"w": 905,
+"h": 510,
+"ax": 284,
+"ay": 507,
+"orig": "몸을 앞으로 숙이고 점액 팔을 길게 늘여 갈퀴처럼 할큄 (점액 방울 튐)"
+}
+}
+},
+"redarmor": {
+"slug": "redarmor",
+"name": "붉은갑주 (붉은 갑각 전사)",
+"rank": "강적",
+"folder": "강적 붉은갑주",
+"role": "적 (강적 — 중간 보스급)",
+"tall": 2.5,
+"weight": 320,
+"palette": [
+"#ba4c65",
+"#84384d",
+"#412530",
+"#e8c2b2",
+"#c7818a"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"attack2 (내려 베기)",
+"back"
+],
+"kit": {
+"basic": "갑각 낫 베기 (attack) — 앞 3.5m 부채꼴 150도",
+"skills": [
+{
+"name": "돌진 베기",
+"pose": "attack",
+"desc": "6m 앞으로 돌진하며 낫으로 쓸어 벰 — 줄 위 모든 적, 출혈 3초"
+},
+{
+"name": "갑각 굳히기",
+"pose": "front",
+"desc": "두 팔 벌려 버팀 3초 — 받는 피해 50% 감소, 그 동안 근접으로 친 적에게 반격 베기"
+},
+{
+"name": "붉은 처형",
+"pose": "attack",
+"desc": "쓰러진 적 · 체력 25% 아래 적에게 앞 2m 큰 내려 베기 (확인사살, 피해 2배)"
+}
+],
+"passive": "붉은 갑주: 정면 피해 25% 감소, 등 · 배 (살구빛 맨살) 는 약점 (+20% 피해)"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 1600,
+"atk": 62,
+"spd": 4.5,
+"weight_kg": 320,
+"tall_m": 2.5
+},
+"desc": "새우 · 가재 같은 붉은 갑각을 두른 거구 전사. 오른팔이 커다란 초승달 낫날로 되어 있고, 해골 같은 하얀 얼굴에 붉은 뿔 두 개.",
+"gen": 3,
+"portrait": "art/h2/redarmor/portrait.webp",
+"face": "art/h2/redarmor/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/redarmor/idle.webp",
+"w": 603,
+"h": 693,
+"ax": 304,
+"ay": 690,
+"orig": "옆 (3/4 오른쪽) 으로 서서 오른팔 갑각 낫을 늘어뜨림"
+},
+"front": {
+"src": "art/h2/redarmor/front.webp",
+"w": 520,
+"h": 811,
+"ax": 228,
+"ay": 808,
+"orig": "앞모습 (3/4), 두 팔 벌리고 똑바로 섬"
+},
+"attack": {
+"src": "art/h2/redarmor/attack.webp",
+"w": 738,
+"h": 601,
+"ax": 338,
+"ay": 598,
+"orig": "다리 넓게 디디고 몸을 틀어 오른팔 낫날을 앞으로 휘두름"
+}
+}
+},
+"redrock": {
+"slug": "redrock",
+"name": "붉은암석 (5M 붉은암석)",
+"rank": "강적 (폴더 이름 머리말 '강적' — 원본 참고에 글자 없음)",
+"folder": "강적 5M붉은암석",
+"role": "적 (키 5m 의 붉은 바위 거인 — 강적 · 동굴 관문 보스로 알맞음)",
+"tall": 5.0,
+"weight": 9000,
+"palette": [
+"#7a3b3a",
+"#9a5452",
+"#4a2224",
+"#2e1a1a",
+"#d8cdb4"
+],
+"missing": [
+"back",
+"walk",
+"attack (주먹 내지른 끝 자세)",
+"slam (땅 내려찍기)",
+"hurt",
+"down",
+"dead",
+"throw (바위 던지기)"
+],
+"kit": {
+"basic": "바위 주먹 (windup → 내지름) — 앞 4m 부채꼴, 넘어뜨림 (내지른 끝 그림이 없어 windup 그림을 앞으로 미는 연출로 대신)",
+"skills": [
+{
+"name": "대지 내려찍기",
+"pose": "windup",
+"desc": "1.2초 기 모은 뒤 두 주먹으로 땅을 찍어 반지름 6m 원 충격파, 안쪽 적 넘어짐 + 돌 파편 장판 4초 (밟으면 느려짐)"
+},
+{
+"name": "암석 돌진",
+"pose": "idle",
+"desc": "어깨를 앞세워 10m 직선 돌진, 길 위 적 밀쳐냄 · 나무 상자 같은 장애물 부숨"
+},
+{
+"name": "바위 갑피",
+"pose": "front",
+"desc": "제자리에 서서 5초 동안 받는 피해 50% 감소, 그동안 근접 공격한 적은 1m 튕겨남"
+}
+],
+"passive": "붉은 암석 몸: 화살 · 총알 피해 40% 감소, 대신 둔기 · 폭발 피해 30% 더 받음. 크고 느려서 회전이 느림 (뒤쪽이 약점)"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 0
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 0,
+"stats": {
+"hp": 5200,
+"atk": 95,
+"spd": 3.2,
+"weight_kg": 9000,
+"tall_m": 5.0
+},
+"desc": "붉은 바위 조각이 근육처럼 겹겹이 붙은 키 5m 의 암석 거인. 머리에 굽은 상아빛 뿔 두 개, 이빨을 드러낸 비웃음, 몸통만 한 바위 주먹이 특징.",
+"gen": 3,
+"portrait": "art/h2/redrock/portrait.webp",
+"face": "art/h2/redrock/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/redrock/idle.webp",
+"w": 356,
+"h": 797,
+"ax": 216,
+"ay": 794,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 거대한 바위 주먹 늘어뜨림"
+},
+"front": {
+"src": "art/h2/redrock/front.webp",
+"w": 583,
+"h": 801,
+"ax": 268,
+"ay": 798,
+"orig": "앞모습 (3/4 정면) 서 있음, 두 주먹 쥐고 히죽 웃음"
+},
+"windup": {
+"src": "art/h2/redrock/windup.webp",
+"w": 739,
+"h": 626,
+"ax": 311,
+"ay": 623,
+"orig": "몸을 낮추고 뒤쪽 주먹을 머리 위로 크게 끌어올림, 앞 주먹은 땅 가까이 — 큰 주먹질 직전 기 모으기 (입 벌려 포효)"
 }
 }
 },
@@ -3965,6 +5791,100 @@ const H2R = {
 }
 }
 },
+"scythebeast": {
+"slug": "scythebeast",
+"name": "보라빛 대낫 괴수 (이름 미상)",
+"rank": "강적",
+"folder": "암계 강적",
+"role": "적 (암계의 강적 괴수 — 이름 없는 정예 몬스터. 대화 · 동료 요소 없음)",
+"tall": 2.6,
+"weight": 380,
+"palette": [
+"#3e2f4c",
+"#241a2c",
+"#584968",
+"#8a7aa0",
+"#d8d0e8"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"windup (낫 치켜들기)",
+"jump"
+],
+"kit": {
+"basic": "대낫 베기 (attack) — 앞 3.5m 부채꼴 140도, 출혈 3초",
+"skills": [
+{
+"name": "초승 대참",
+"pose": "attack",
+"desc": "0.6초 몸을 낮춘 뒤 앞 5m 반원 (180도) 크게 베기. 큰 피해 + 넘어뜨림, 막기 자세면 막기 깨짐"
+},
+{
+"name": "도약 베기",
+"pose": "attack",
+"desc": "8m 앞으로 뛰어들어 착지 지점 반경 2.5m 원 베기 (jump 그림 없음 — attack 으로 대신)"
+},
+{
+"name": "포식의 웃음",
+"pose": "front",
+"desc": "이빨을 드러내며 포효: 반경 6m 적 1.5초 공포 (뒤로 물러남), 자신 공격속도 +20% 6초"
+}
+],
+"passive": "가시 비늘: 근접으로 때린 적에게 받은 피해 10% 되돌림, 체력 30% 아래에서 이동 속도 +25%"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 0,
+"stats": {
+"hp": 2400,
+"atk": 62,
+"spd": 5.5,
+"weight_kg": 380,
+"tall_m": 2.6
+},
+"desc": "암계에 사는 보라빛 비늘 괴수. 오른팔(그림 기준 왼쪽 팔)이 통째로 거대한 낫 날이고, 뿔 달린 머리에 이빨만 웃는 얼굴. 티어표에는 그림만 있고 이름 글자가 없음.",
+"gen": 3,
+"portrait": "art/h2/scythebeast/portrait.webp",
+"face": "art/h2/scythebeast/face.webp",
+"poses": {
+"front": {
+"src": "art/h2/scythebeast/front.webp",
+"w": 536,
+"h": 785,
+"ax": 213,
+"ay": 782,
+"orig": "앞모습: 왼팔이 거대한 낫 날로 이어짐, 이빨 드러낸 웃음"
+},
+"idle": {
+"src": "art/h2/scythebeast/idle.webp",
+"w": 290,
+"h": 773,
+"ax": 138,
+"ay": 770,
+"orig": "옆모습 (오른쪽 봄): 낫 팔을 몸 뒤로 늘어뜨리고 섬"
+},
+"attack": {
+"src": "art/h2/scythebeast/attack.webp",
+"w": 878,
+"h": 625,
+"ax": 350,
+"ay": 622,
+"orig": "몸을 낮추고 낫 팔을 앞으로 크게 휘두름"
+}
+}
+},
 "shedor": {
 "slug": "shedor",
 "name": "배신자 셰도르",
@@ -4223,6 +6143,200 @@ const H2R = {
 "ax": 391,
 "ay": 290,
 "orig": "오른쪽: 엎드려 기기 (무기 없음)"
+}
+}
+},
+"spore": {
+"slug": "spore",
+"name": "포자 (이름 미상)",
+"rank": "미상 (폴더 이름 '포자 적' — 등급 글자 없음. 시트 파일 이름에 '보스 포즈' 라 강적~보스급)",
+"folder": "포자 적",
+"role": "적 (폴더 이름이 '적', 시트 이름 '보스 포즈' — 지역 보스 · 강적. 사람 말 없는 괴물이라 동료 아님)",
+"tall": 2.4,
+"weight": 90,
+"palette": [
+"#2a2a2a",
+"#555555",
+"#8a8a88",
+"#c79a3a",
+"#c0304a"
+],
+"missing": [
+"back",
+"walk (미끄러지듯 이동으로 대신)",
+"hurt",
+"down",
+"dead",
+"cast (포자 뿌리기 효과)"
+],
+"kit": {
+"basic": "갈퀴 할퀴기 (idle) — 앞 2.5m 부채꼴 100도, 2연타",
+"skills": [
+{
+"name": "공허의 아가리",
+"pose": "attack",
+"desc": "4m 앞으로 덮쳐 머리 껍질을 벌려 물기: 큰 피해 + 붙잡기 1.5초 (그동안 매초 피해, 아군이 때리면 풀림)"
+},
+{
+"name": "황금 포자 구름",
+"pose": "front",
+"desc": "제자리에서 머리 구멍으로 포자를 뿜어 주변 5m 원 장판 6초: 매초 독 피해 + 시야 좁아짐 + 회복 50% 감소"
+},
+{
+"name": "포자 번식",
+"pose": "idle",
+"desc": "포자 장판 위에 쓰러진 적 · 시체에서 작은 포자 졸개 1~2마리 소환 (hp 낮음, 15초)"
+}
+],
+"passive": "공허의 껍질: 몸통 (로브) 은 피해 30% 감소, 머리 (황금 껍질) 를 맞히면 피해 1.5배 — 약점. 포자 장판 위에서 초당 체력 1% 회복"
+},
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 2
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 4,
+"stats": {
+"hp": 2600,
+"atk": 52,
+"spd": 4.8,
+"weight_kg": 90,
+"tall_m": 2.4
+},
+"desc": "황금빛 구멍투성이 버섯 껍질을 머리에 쓴 공허의 괴물. 해진 로브 아래 붉은 핏줄이 비치고, 머리 껍질이 갈라지며 모든 것을 삼킨다.",
+"gen": 3,
+"portrait": "art/h2/spore/portrait.webp",
+"face": "art/h2/spore/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/spore/idle.webp",
+"w": 394,
+"h": 699,
+"ax": 175,
+"ay": 696,
+"orig": "옆모습 (오른쪽 봄): 몸을 숙이고 긴 갈퀴 손을 앞으로 늘어뜨림"
+},
+"front": {
+"src": "art/h2/spore/front.webp",
+"w": 403,
+"h": 701,
+"ax": 185,
+"ay": 698,
+"orig": "3/4 앞모습: 해진 회흑 로브, 가슴 은 브로치, 노란 구멍 숭숭한 버섯 · 해골 머리, 검은 목에 붉은 핏줄"
+},
+"attack": {
+"src": "art/h2/spore/attack.webp",
+"w": 499,
+"h": 645,
+"ax": 214,
+"ay": 642,
+"orig": "웅크려 덮치기: 머리 (황금 포자 껍질) 가 크게 벌어져 검은 아가리, 두 갈퀴 손 뻗음"
+}
+}
+},
+"stoneglove": {
+"slug": "stoneglove",
+"name": "돌장갑",
+"rank": "미정 (폴더 이름에 등급 없음)",
+"folder": "돌장갑",
+"role": "동료 (적 격투가로도 가능)",
+"tall": 1.62,
+"weight": 95,
+"palette": [
+"#ecd8cf",
+"#e6e0d4",
+"#272422",
+"#7e7672",
+"#8a4fb0"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"slam (내려찍기)",
+"back"
+],
+"kit": {
+"basic": "돌주먹 연타 (guard 자세에서) — 앞 2m, 3타째 넘어뜨림",
+"skills": [
+{
+"name": "도약 돌주먹",
+"pose": "attack",
+"desc": "6m 앞으로 뛰어들며 주먹 — 맞은 적 4m 밀어냄, 착지 반지름 2.5m 원 넘어뜨림"
+},
+{
+"name": "바위 자세",
+"pose": "guard",
+"desc": "2초 동안 앞 120도 막기 (피해 70% 감소), 막는 동안 맞으면 반격 주먹"
+},
+{
+"name": "토끼 고함",
+"pose": "idle2",
+"desc": "입을 크게 벌려 소리침 — 반지름 6m 원 도발 (적이 3초간 자신을 노림)"
+}
+],
+"passive": "돌갑주: 팔다리 돌 장갑으로 근접 피해 20% 감소, 넘어지지 않음 (대신 이동 −10%)"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 950,
+"atk": 38,
+"spd": 5.0,
+"weight_kg": 95,
+"tall_m": 1.62
+},
+"desc": "흰 털 망토를 두른 토끼 귀 격투가. 바위로 깎은 큼직한 장갑과 정강이 갑옷으로 때리고 버틴다.",
+"gen": 3,
+"portrait": "art/h2/stoneglove/portrait.webp",
+"face": "art/h2/stoneglove/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/stoneglove/idle.webp",
+"w": 432,
+"h": 695,
+"ax": 206,
+"ay": 692,
+"orig": "서 있음 (입 조금 벌림), 돌장갑 낀 두 팔 늘어뜨림"
+},
+"idle2": {
+"src": "art/h2/stoneglove/idle2.webp",
+"w": 428,
+"h": 692,
+"ax": 204,
+"ay": 689,
+"orig": "서 있음 — idle 과 같은 자세에 입을 크게 벌림 (idle 중 가끔 바꿔 끼우는 입모양 그림)"
+},
+"guard": {
+"src": "art/h2/stoneglove/guard.webp",
+"w": 459,
+"h": 594,
+"ax": 242,
+"ay": 591,
+"orig": "다리 넓게 벌려 낮추고 두 돌주먹을 앞에 모은 격투 자세"
+},
+"attack": {
+"src": "art/h2/stoneglove/attack.webp",
+"w": 561,
+"h": 535,
+"ax": 230,
+"ay": 532,
+"orig": "뛰어들며 오른 돌주먹 내지르기 (공중, 발이 땅에 안 닿음)"
 }
 }
 },
@@ -4512,6 +6626,101 @@ const H2R = {
 }
 }
 },
+"ted": {
+"slug": "ted",
+"name": "테드 (마계 사령관)",
+"rank": "강적 (폴더 이름 '강적 사령관 테드', 시트 파일 이름 '마계 사령관 테드' — 원본 참고에 글자 없음)",
+"folder": "강적 사령관 테드",
+"role": "적 (마계 군대의 사령관 — 강적 · 지휘관 보스. 사람 모습의 미남 검사라 나중에 동료로 돌아서는 이야기도 가능해 둘 다 가능성 있음)",
+"tall": 1.85,
+"weight": 95,
+"palette": [
+"#2a2a2e",
+"#4a4a52",
+"#8a1c2c",
+"#5e1a26",
+"#d8d8dc"
+],
+"missing": [
+"back",
+"walk",
+"guard",
+"hurt",
+"down",
+"dead",
+"slash (베기)",
+"command (지휘 · 호령)"
+],
+"kit": {
+"basic": "장검 찌르기 (attack) — 앞 줄 3.5m, 빠른 2연 찌르기",
+"skills": [
+{
+"name": "마계 돌격찌르기",
+"pose": "attack",
+"desc": "검을 겨눈 채 8m 직선 돌진 찌르기, 첫 적 관통 후 그 뒤 적까지 피해 70%, 맞은 적 출혈 3초"
+},
+{
+"name": "사령관의 호령",
+"pose": "idle",
+"desc": "제자리 호령 — 반지름 12m 안 아군 마물 공격력 +20% · 이동 속도 +15% 8초 (호령 그림이 없어 idle 로 대신)"
+},
+{
+"name": "처단",
+"pose": "attack",
+"desc": "체력 25% 아래 또는 쓰러진 적에게 앞 3m 확인사살 찌르기, 피해 2.5배"
+}
+],
+"passive": "흑철 갑주: 정면 근접 피해 25% 감소. 근처 (10m) 졸개가 쓰러질 때마다 공격력 +5% (최대 5번)"
+},
+"apt": {
+"melee": 5,
+"spear": 3,
+"bow": 1,
+"gun": 0,
+"magic": 2,
+"stealth": 1
+},
+"tag": "knight",
+"role_job": "지휘",
+"bag": 10,
+"stats": {
+"hp": 2200,
+"atk": 62,
+"spd": 5.2,
+"weight_kg": 95,
+"tall_m": 1.85
+},
+"desc": "은백 머리에 무표정한 눈매의 마계 사령관. 가시 돋은 흑철 갑주와 톱니 모양 붉은 안감 깃, 끝이 찢긴 진홍 망토를 두르고, 붉은 보석 박힌 가는 장검으로 정확하게 찌른다.",
+"gen": 3,
+"portrait": "art/h2/ted/portrait.webp",
+"face": "art/h2/ted/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ted/idle.webp",
+"w": 454,
+"h": 703,
+"ax": 209,
+"ay": 700,
+"orig": "옆모습 (오른쪽 보기) 서 있음, 오른손에 가는 장검 비스듬히 아래로"
+},
+"front": {
+"src": "art/h2/ted/front.webp",
+"w": 510,
+"h": 802,
+"ax": 250,
+"ay": 799,
+"orig": "앞모습 (3/4 정면) 서 있음, 장검을 아래로 늘어뜨림"
+},
+"attack": {
+"src": "art/h2/ted/attack.webp",
+"w": 711,
+"h": 585,
+"ax": 393,
+"ay": 582,
+"orig": "다리 크게 벌리고 두 손으로 검을 어깨 높이에서 앞으로 길게 겨눔 (찌르기 · 돌진 찌르기 자세), 망토 뒤로 휘날림"
+}
+}
+},
 "venti": {
 "slug": "venti",
 "name": "중장 벤티",
@@ -4664,6 +6873,99 @@ const H2R = {
 }
 }
 },
+"vicky": {
+"slug": "vicky",
+"name": "비키 (보라빛 차원 연구자)",
+"rank": "미정 (폴더 머리말 \"연구가\", 등급 글자 없음)",
+"folder": "연구가 비키",
+"role": "둘 다 (연구가 — 동료 마법사로도, 이빨 드러낸 웃음 · 차원 장치로 보아 적 학자로도)",
+"tall": 1.68,
+"weight": 56,
+"palette": [
+"#3b3447",
+"#5c4a86",
+"#8b87a9",
+"#2a2534",
+"#b39a6a"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"cast (장치 펼쳐 띄우기)",
+"back"
+],
+"kit": {
+"basic": "측정기 찌르기 (attack) — 앞 2.5m 찌르기, 맞은 적에 차원 표식 1중첩",
+"skills": [
+{
+"name": "차원 투사",
+"pose": "attack",
+"desc": "펼친 측정기 끝에서 보라 광선 — 앞 10m 줄 관통 사격, 표식 중첩마다 피해 +15%"
+},
+{
+"name": "좌표 고정",
+"pose": "front",
+"desc": "12m 안 지점에 반지름 3m 원 장판 (보라 고리) 4초 — 안의 적 이동 −40%, 끝날 때 균열 폭발"
+},
+{
+"name": "공간 접기",
+"pose": "idle",
+"desc": "측정기를 내려 땅에 꽂는 순간 8m 순간이동 (뒤로 · 옆으로), 원래 자리에 1초 잔상 미끼"
+}
+],
+"passive": "관측 기록: 같은 적을 맞힐 때마다 그 적이 받는 마법 피해 +5% (최대 5중첩, 6초)"
+},
+"apt": {
+"melee": 1,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 2
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 12,
+"stats": {
+"hp": 480,
+"atk": 32,
+"spd": 5.5,
+"weight_kg": 56,
+"tall_m": 1.68
+},
+"desc": "보라 피부에 톱니 이빨로 웃는 차원 연구자. 컴퍼스 · 고리로 된 황동 측정기로 공간 좌표를 재고 찢는다.",
+"gen": 3,
+"portrait": "art/h2/vicky/portrait.webp",
+"face": "art/h2/vicky/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/vicky/idle.webp",
+"w": 252,
+"h": 693,
+"ax": 135,
+"ay": 690,
+"orig": "옆으로 서서 차원 측정기를 아래로 늘어뜨려 쥠"
+},
+"front": {
+"src": "art/h2/vicky/front.webp",
+"w": 331,
+"h": 781,
+"ax": 121,
+"ay": 778,
+"orig": "앞 (3/4) 으로 서서 별 모양 측정기를 어깨 높이로 들어 보임"
+},
+"attack": {
+"src": "art/h2/vicky/attack.webp",
+"w": 589,
+"h": 621,
+"ax": 352,
+"ay": 618,
+"orig": "다리 크게 벌리고 펼친 측정기 (컴퍼스 · 고리) 를 앞으로 내지름"
+}
+}
+},
 "whistle": {
 "slug": "whistle",
 "name": "휘슬",
@@ -4791,6 +7093,99 @@ const H2R = {
 "ax": 211,
 "ay": 701,
 "orig": "서 있음 — 원화 옷 (언더붑 재킷 · 끈 하의 · 사이하이 · 군화)"
+}
+}
+},
+"wraitha": {
+"slug": "wraitha",
+"name": "망령A",
+"rank": "보스",
+"folder": "망령A",
+"role": "적 (시트 이름은 '보스 시트'지만 폴더 이름이 '망령A' 라 같은 망령 무리의 하나 — 중간 보스 · 정예 적으로 알맞음)",
+"tall": 1.9,
+"weight": 70,
+"palette": [
+"#2b283a",
+"#3b3f8f",
+"#8a7a9a",
+"#a08460",
+"#4a3f3a"
+],
+"missing": [
+"back",
+"walk",
+"hurt",
+"down",
+"dead",
+"float(떠다니기)"
+],
+"kit": {
+"basic": "갈고리 베기 (attack) — 앞 3m 부채꼴 60도",
+"skills": [
+{
+"name": "갈고리 낚아채기",
+"pose": "attack",
+"desc": "기계 팔이 늘어나 줄 7m 앞으로 뻗음, 맞은 적을 붙잡아 1m 앞으로 끌어오고 1초 묶음"
+},
+{
+"name": "망령 걸음",
+"pose": "idle",
+"desc": "몸이 흐려지며 4m 순간 이동 (적 뒤로), 다음 공격 피해 +50%"
+},
+{
+"name": "넝마 장막",
+"pose": "front",
+"desc": "망토 자락을 펼쳐 앞 120도 2초 막기, 막는 동안 받은 근접 공격자에게 갈고리 반격"
+}
+],
+"passive": "망령 — 받는 물리 피해 20% 감소, 빛 · 불 속성 피해는 30% 더 받음"
+},
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 4
+},
+"tag": "brawler",
+"role_job": "척후",
+"bag": 6,
+"stats": {
+"hp": 1800,
+"atk": 42,
+"spd": 5.5,
+"weight_kg": 70,
+"tall_m": 1.9
+},
+"desc": "붕대 감은 보라 해골 얼굴에 둥근 고글 안경, 넝마 망토의 망령. 오른팔은 낫 갈고리 기계 팔로, 멀리서 낚아채 끌어온다.",
+"gen": 3,
+"portrait": "art/h2/wraitha/portrait.webp",
+"face": "art/h2/wraitha/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/wraitha/idle.webp",
+"w": 454,
+"h": 702,
+"ax": 232,
+"ay": 699,
+"orig": "옆모습 (오른쪽 보기) 구부정하게 서 있음, 기계 갈고리 팔 늘어뜨림"
+},
+"front": {
+"src": "art/h2/wraitha/front.webp",
+"w": 615,
+"h": 852,
+"ax": 274,
+"ay": 849,
+"orig": "앞모습 (조금 오른쪽) 서 있음, 갈고리 팔 · 넝마 망토"
+},
+"attack": {
+"src": "art/h2/wraitha/attack.webp",
+"w": 982,
+"h": 619,
+"ax": 432,
+"ay": 616,
+"orig": "몸 낮추고 기계 팔을 길게 뻗어 낫 같은 갈고리 집게를 벌림 (잡기 · 끌어오기)"
 }
 }
 },

@@ -1,0 +1,109 @@
+{
+ "slug": "cheoncheon",
+ "name": "천천",
+ "codex_g": "cheoncheon",
+ "codex_cid": "C-105",
+ "codex_sub": "천천 · 역할 미정 · 원화 + 연출",
+ "game_kind": null,
+ "files": [
+  "천천추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "검은 긴 포니테일 (청록 브리지 · 꽃 장식), 흰 큰 날개, 흰 · 검은 전투복 · 무릎 보호대, 청록 빛줄 큰 레일건 (장총).",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/cheoncheon/idle.webp",
+   "w": 413,
+   "h": 600,
+   "ax": 169,
+   "ay": 597,
+   "orig": "날개 달린 채 큰 총을 들고 선 자세",
+   "from": "천천추가.png 위 1",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "run": {
+   "src": "art/h3x/cheoncheon/run.webp",
+   "w": 497,
+   "h": 592,
+   "ax": 350,
+   "ay": 589,
+   "orig": "총을 들고 달림",
+   "from": "천천추가.png 위 2",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "aim": {
+   "src": "art/h3x/cheoncheon/aim.webp",
+   "w": 497,
+   "h": 565,
+   "ax": 258,
+   "ay": 562,
+   "orig": "서서 총을 겨눔",
+   "from": "천천추가.png 위 3",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "fire": {
+   "src": "art/h3x/cheoncheon/fire.webp",
+   "w": 508,
+   "h": 560,
+   "ax": 288,
+   "ay": 557,
+   "orig": "몸을 숙여 버티며 쏨",
+   "from": "천천추가.png 위 4",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "kneel_aim": {
+   "src": "art/h3x/cheoncheon/kneel_aim.webp",
+   "w": 478,
+   "h": 491,
+   "ax": 290,
+   "ay": 488,
+   "orig": "무릎 꿇고 겨눔",
+   "from": "천천추가.png 아래 1",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "reload": {
+   "src": "art/h3x/cheoncheon/reload.webp",
+   "w": 457,
+   "h": 510,
+   "ax": 143,
+   "ay": 507,
+   "orig": "무릎 꿇고 총을 만짐 (장전)",
+   "from": "천천추가.png 아래 2",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/cheoncheon/hurt.webp",
+   "w": 504,
+   "h": 555,
+   "ax": 259,
+   "ay": 552,
+   "orig": "눈을 감고 움찔함",
+   "from": "천천추가.png 아래 3",
+   "scale": 1.2097,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/cheoncheon/down.webp",
+   "w": 488,
+   "h": 472,
+   "ax": 173,
+   "ay": 469,
+   "orig": "주저앉아 쓰러짐",
+   "from": "천천추가.png 아래 4",
+   "scale": 1.2097,
+   "flip": false
+  }
+ },
+ "odd": [
+  "날개가 바탕과 가까운 흰색이라 바탕 문턱을 낮춰 (th 14) 잘랐음.",
+  "도감 game 칸에 \"굴의 의자에서 E (천천히 회복)\"이라는 다른 뜻의 \"천천\"도 있음 — 헷갈리지 않게."
+ ],
+ "v": 1
+}

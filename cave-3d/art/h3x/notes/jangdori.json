@@ -1,0 +1,288 @@
+{
+ "slug": "jangdori",
+ "name": "장도리",
+ "codex_g": null,
+ "codex_cid": null,
+ "codex_sub": null,
+ "game_kind": null,
+ "files": [
+  "장도리.png",
+  "장도리세트2.png",
+  "장도리세트3.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "금발 단발 · 이마에 꿰맨 흉터, 크게 웃는 미친 얼굴, 검은 정장 · 흰 셔츠 · 구두, 목수용 장도리 (망치). 세 장 모두 같은 인물, 표정 · 동작만 조금씩 다름.",
+ "n_poses": 24,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/jangdori/idle.webp",
+   "w": 244,
+   "h": 600,
+   "ax": 107,
+   "ay": 597,
+   "orig": "한 손은 주머니, 망치를 늘어뜨리고 웃음",
+   "from": "장도리.png 위 1",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "windup": {
+   "src": "art/h3x/jangdori/windup.webp",
+   "w": 380,
+   "h": 554,
+   "ax": 331,
+   "ay": 551,
+   "orig": "망치를 어깨 뒤로 들어 올림",
+   "from": "장도리.png 위 2",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "swing": {
+   "src": "art/h3x/jangdori/swing.webp",
+   "w": 573,
+   "h": 516,
+   "ax": 289,
+   "ay": 513,
+   "orig": "망치를 오른쪽으로 길게 휘두름",
+   "from": "장도리.png 위 3",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "overhead": {
+   "src": "art/h3x/jangdori/overhead.webp",
+   "w": 399,
+   "h": 585,
+   "ax": 255,
+   "ay": 582,
+   "orig": "망치를 머리 위로 들어 내려치기",
+   "from": "장도리.png 위 4",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "pull": {
+   "src": "art/h3x/jangdori/pull.webp",
+   "w": 429,
+   "h": 493,
+   "ax": 98,
+   "ay": 490,
+   "orig": "양손으로 망치를 쥐고 당기는 자세",
+   "from": "장도리.png 아래 1",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "kick": {
+   "src": "art/h3x/jangdori/kick.webp",
+   "w": 471,
+   "h": 560,
+   "ax": 137,
+   "ay": 557,
+   "orig": "높이 앞차기",
+   "from": "장도리.png 아래 2",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/jangdori/hurt.webp",
+   "w": 294,
+   "h": 531,
+   "ax": 126,
+   "ay": 528,
+   "orig": "이를 악물고 맞음",
+   "from": "장도리.png 아래 3",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/jangdori/down.webp",
+   "w": 522,
+   "h": 261,
+   "ax": 186,
+   "ay": 258,
+   "orig": "누워서 망치를 들고 웃음",
+   "from": "장도리.png 아래 4",
+   "scale": 1.1765,
+   "flip": false
+  },
+  "idle_b": {
+   "src": "art/h3x/jangdori/idle_b.webp",
+   "w": 268,
+   "h": 600,
+   "ax": 141,
+   "ay": 597,
+   "orig": "망치를 늘어뜨리고 선 자세 (둘째 묶음)",
+   "from": "장도리세트2.png 위 1",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "shoulder": {
+   "src": "art/h3x/jangdori/shoulder.webp",
+   "w": 360,
+   "h": 584,
+   "ax": 189,
+   "ay": 581,
+   "orig": "망치를 어깨에 걸치고 걸음",
+   "from": "장도리세트2.png 위 2",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "swing_b": {
+   "src": "art/h3x/jangdori/swing_b.webp",
+   "w": 541,
+   "h": 549,
+   "ax": 283,
+   "ay": 546,
+   "orig": "망치 휘두르기",
+   "from": "장도리세트2.png 위 3",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "overhead_b": {
+   "src": "art/h3x/jangdori/overhead_b.webp",
+   "w": 406,
+   "h": 612,
+   "ax": 222,
+   "ay": 609,
+   "orig": "망치 내려치기 준비",
+   "from": "장도리세트2.png 위 4",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "pull_b": {
+   "src": "art/h3x/jangdori/pull_b.webp",
+   "w": 411,
+   "h": 505,
+   "ax": 174,
+   "ay": 502,
+   "orig": "양손 망치 당기기",
+   "from": "장도리세트2.png 아래 1",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "kick_b": {
+   "src": "art/h3x/jangdori/kick_b.webp",
+   "w": 479,
+   "h": 510,
+   "ax": 214,
+   "ay": 507,
+   "orig": "앞차기",
+   "from": "장도리세트2.png 아래 2",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "hurt_b": {
+   "src": "art/h3x/jangdori/hurt_b.webp",
+   "w": 345,
+   "h": 511,
+   "ax": 158,
+   "ay": 508,
+   "orig": "화난 얼굴로 맞음",
+   "from": "장도리세트2.png 아래 3",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "down_b": {
+   "src": "art/h3x/jangdori/down_b.webp",
+   "w": 505,
+   "h": 334,
+   "ax": 330,
+   "ay": 331,
+   "orig": "앉아서 쓰러짐, 망치는 손에",
+   "from": "장도리세트2.png 아래 4",
+   "scale": 1.2024,
+   "flip": false
+  },
+  "idle_c": {
+   "src": "art/h3x/jangdori/idle_c.webp",
+   "w": 289,
+   "h": 600,
+   "ax": 168,
+   "ay": 597,
+   "orig": "망치를 늘어뜨리고 선 자세 (셋째 묶음)",
+   "from": "장도리세트3.png 위 1",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "throw": {
+   "src": "art/h3x/jangdori/throw.webp",
+   "w": 494,
+   "h": 594,
+   "ax": 295,
+   "ay": 591,
+   "orig": "등을 보이며 망치를 던지려 팔을 뒤로 젖힘",
+   "from": "장도리세트3.png 위 2",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "low_swing": {
+   "src": "art/h3x/jangdori/low_swing.webp",
+   "w": 589,
+   "h": 441,
+   "ax": 284,
+   "ay": 438,
+   "orig": "몸을 숙여 망치를 아래로 휘두름",
+   "from": "장도리세트3.png 위 3",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "grip": {
+   "src": "art/h3x/jangdori/grip.webp",
+   "w": 349,
+   "h": 520,
+   "ax": 87,
+   "ay": 517,
+   "orig": "망치를 가로로 쥐고 웅크린 자세",
+   "from": "장도리세트3.png 위 4",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "laugh_pull": {
+   "src": "art/h3x/jangdori/laugh_pull.webp",
+   "w": 540,
+   "h": 546,
+   "ax": 251,
+   "ay": 543,
+   "orig": "크게 웃으며 망치를 당김",
+   "from": "장도리세트3.png 아래 1",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "crouch": {
+   "src": "art/h3x/jangdori/crouch.webp",
+   "w": 382,
+   "h": 428,
+   "ax": 100,
+   "ay": 425,
+   "orig": "깊게 웅크리고 망치를 늘어뜨림",
+   "from": "장도리세트3.png 아래 2",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "hurt_c": {
+   "src": "art/h3x/jangdori/hurt_c.webp",
+   "w": 314,
+   "h": 590,
+   "ax": 124,
+   "ay": 587,
+   "orig": "배를 움켜쥐고 맞음",
+   "from": "장도리세트3.png 아래 3",
+   "scale": 1.1952,
+   "flip": false
+  },
+  "kneel": {
+   "src": "art/h3x/jangdori/kneel.webp",
+   "w": 381,
+   "h": 409,
+   "ax": 70,
+   "ay": 406,
+   "orig": "한 무릎 꿇고 한 손을 땅에 짚음",
+   "from": "장도리세트3.png 아래 4",
+   "scale": 1.1952,
+   "flip": false
+  }
+ },
+ "odd": [
+  "도감에서 \"장도리\" 이름을 못 찾음.",
+  "1 · 2번 장은 거의 같은 동작 (서기 · 들기 · 휘두르기 · 내려치기 · 당기기 · 차기 · 맞기 · 쓰러짐) — 2번 장은 _b, 3번 장은 _c 와 새 이름 (throw · low_swing · grip · laugh_pull · crouch · kneel).",
+  "장마다 idle 을 600px 로 맞춤."
+ ],
+ "v": 1
+}

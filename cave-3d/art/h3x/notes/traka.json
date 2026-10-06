@@ -1,0 +1,108 @@
+{
+ "slug": "traka",
+ "name": "트라카",
+ "codex_g": "traka",
+ "codex_cid": "C-107",
+ "codex_sub": "트라카 · 역할 미정 · 원화 + 연출",
+ "game_kind": null,
+ "files": [
+  "트라카 추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "연두 피부 고블린 여궁수, 아주 긴 적갈색 머리 · 긴 귀, 검은 짧은 윗옷 · 누더기 치마 · 천 허리띠, 맨발, 팔다리에 검은 무늬, 나무 활.",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/traka/idle.webp",
+   "w": 351,
+   "h": 600,
+   "ax": 216,
+   "ay": 597,
+   "orig": "활을 늘어뜨리고 선 자세",
+   "from": "트라카 추가.png 위 1",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "nock": {
+   "src": "art/h3x/traka/nock.webp",
+   "w": 405,
+   "h": 670,
+   "ax": 185,
+   "ay": 667,
+   "orig": "화살을 메김",
+   "from": "트라카 추가.png 위 2",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "aim": {
+   "src": "art/h3x/traka/aim.webp",
+   "w": 479,
+   "h": 698,
+   "ax": 215,
+   "ay": 695,
+   "orig": "활시위를 끝까지 당김",
+   "from": "트라카 추가.png 위 3",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "release": {
+   "src": "art/h3x/traka/release.webp",
+   "w": 428,
+   "h": 671,
+   "ax": 210,
+   "ay": 668,
+   "orig": "쏜 뒤 자세",
+   "from": "트라카 추가.png 위 4",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "kneel_shot": {
+   "src": "art/h3x/traka/kneel_shot.webp",
+   "w": 476,
+   "h": 557,
+   "ax": 229,
+   "ay": 554,
+   "orig": "무릎 꿇고 쏨",
+   "from": "트라카 추가.png 아래 1",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "bow_guard": {
+   "src": "art/h3x/traka/bow_guard.webp",
+   "w": 421,
+   "h": 558,
+   "ax": 283,
+   "ay": 555,
+   "orig": "활을 비스듬히 들어 막음",
+   "from": "트라카 추가.png 아래 2",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/traka/hurt.webp",
+   "w": 452,
+   "h": 535,
+   "ax": 240,
+   "ay": 532,
+   "orig": "이를 악물고 맞음",
+   "from": "트라카 추가.png 아래 3",
+   "scale": 1.3453,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/traka/down.webp",
+   "w": 490,
+   "h": 526,
+   "ax": 272,
+   "ay": 523,
+   "orig": "앉아서 활을 세워 듦",
+   "from": "트라카 추가.png 아래 4",
+   "scale": 1.3453,
+   "flip": false
+  }
+ },
+ "odd": [
+  "idle 그림이 이 장에서 가장 작게 그려져 있어 (446px) 배율이 커짐 (1.345) — 활 든 동작은 700px 근처."
+ ],
+ "v": 1
+}

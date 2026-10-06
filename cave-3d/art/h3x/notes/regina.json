@@ -1,0 +1,109 @@
+{
+ "slug": "regina",
+ "name": "레지나",
+ "codex_g": "regina",
+ "codex_cid": "C-085",
+ "codex_sub": "레지나 · 적 · 보스 · 원화 + 연출",
+ "game_kind": null,
+ "files": [
+  "레지나 추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "검은 깃털 망토 · 가시 박힌 검은 판금 갑옷 · 그물 스타킹, 고양이귀 같은 뾰족 투구에 얼굴은 그림자, 붉게 빛나는 장검 (도감 유물 '레지나의 검'과 같은 검으로 보임). 옥좌 그림이 있어 보스 연출용.",
+ "n_poses": 8,
+ "poses": {
+  "throne": {
+   "src": "art/h3x/regina/throne.webp",
+   "w": 472,
+   "h": 596,
+   "ax": 235,
+   "ay": 593,
+   "orig": "옥좌에 앉아 붉은 검을 세워 짚음 (앞모습)",
+   "from": "레지나 추가.png 위 1",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "rise": {
+   "src": "art/h3x/regina/rise.webp",
+   "w": 457,
+   "h": 585,
+   "ax": 229,
+   "ay": 582,
+   "orig": "옥좌 계단에서 일어나며 검을 늘어뜨림",
+   "from": "레지나 추가.png 위 2",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "idle": {
+   "src": "art/h3x/regina/idle.webp",
+   "w": 422,
+   "h": 600,
+   "ax": 193,
+   "ay": 597,
+   "orig": "선 자세, 검을 비스듬히 내림",
+   "from": "레지나 추가.png 위 3",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "thrust": {
+   "src": "art/h3x/regina/thrust.webp",
+   "w": 583,
+   "h": 512,
+   "ax": 467,
+   "ay": 509,
+   "orig": "몸을 낮춰 검을 오른쪽으로 길게 찌름",
+   "from": "레지나 추가.png 위 4",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "guard": {
+   "src": "art/h3x/regina/guard.webp",
+   "w": 473,
+   "h": 568,
+   "ax": 250,
+   "ay": 565,
+   "orig": "검을 몸 앞에 세워 든 낮은 자세",
+   "from": "레지나 추가.png 아래 1",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "reach": {
+   "src": "art/h3x/regina/reach.webp",
+   "w": 552,
+   "h": 578,
+   "ax": 292,
+   "ay": 575,
+   "orig": "왼손을 앞으로 뻗고 검은 뒤로 내린 위협 자세",
+   "from": "레지나 추가.png 아래 2",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "leap": {
+   "src": "art/h3x/regina/leap.webp",
+   "w": 469,
+   "h": 502,
+   "ax": 128,
+   "ay": 499,
+   "orig": "뛰어올라 검을 내리치려는 공중 자세",
+   "from": "레지나 추가.png 아래 3",
+   "scale": 1.2346,
+   "flip": false
+  },
+  "kneel": {
+   "src": "art/h3x/regina/kneel.webp",
+   "w": 543,
+   "h": 399,
+   "ax": 280,
+   "ay": 396,
+   "orig": "한 무릎 꿇고 검을 세워 짚음",
+   "from": "레지나 추가.png 아래 4",
+   "scale": 1.2346,
+   "flip": false
+  }
+ },
+ "odd": [
+  "1번 그림은 옥좌 (계단 · 첨탑)까지 붙어 있음 — 옥좌째 잘랐음 (보스 등장 연출용).",
+  "망토 깃털 사이 흰 틈은 구멍 메우기로 지웠지만 아주 가는 틈 몇 줄은 남음."
+ ],
+ "v": 1
+}

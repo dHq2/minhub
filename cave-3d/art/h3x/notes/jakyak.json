@@ -1,0 +1,108 @@
+{
+ "slug": "jakyak",
+ "name": "작약 (도깨비 자매)",
+ "codex_g": "jakyak",
+ "codex_cid": "C-089",
+ "codex_sub": "작약 (도깨비 자매) · 역할 미정 · 동작 그림",
+ "game_kind": "jakyak (foes2.js — 7 도깨비 시장의 강적 · foeSheet('jakyak'), 고유기 sigSweep)",
+ "files": [
+  "작약추가.png"
+ ],
+ "drive_folder": "3기멤버 / 추가 스프라이트 (1fLgxsObFWCAndirxUR_p-CapQOfapLwm)",
+ "look": "붉은 단발 · 검은 뿔 두 개 · 검은 입마스크, 붉은 피부, 짧은 검은 재킷 (붉은 끈), 검은 스타킹 · 두꺼운 붉은 밑창 부츠, 피 묻은 큰 도끼.",
+ "n_poses": 8,
+ "poses": {
+  "idle": {
+   "src": "art/h3x/jakyak/idle.webp",
+   "w": 292,
+   "h": 600,
+   "ax": 143,
+   "ay": 597,
+   "orig": "큰 도끼를 늘어뜨리고 선 자세",
+   "from": "작약추가.png 위 1",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "ready": {
+   "src": "art/h3x/jakyak/ready.webp",
+   "w": 394,
+   "h": 590,
+   "ax": 193,
+   "ay": 587,
+   "orig": "도끼를 비스듬히 들어 겨눔",
+   "from": "작약추가.png 위 2",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "swing": {
+   "src": "art/h3x/jakyak/swing.webp",
+   "w": 580,
+   "h": 498,
+   "ax": 282,
+   "ay": 495,
+   "orig": "도끼를 오른쪽으로 가로 휘두름",
+   "from": "작약추가.png 위 3",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "overhead": {
+   "src": "art/h3x/jakyak/overhead.webp",
+   "w": 372,
+   "h": 590,
+   "ax": 209,
+   "ay": 587,
+   "orig": "도끼를 머리 위로 치켜듦",
+   "from": "작약추가.png 위 4",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "sweep": {
+   "src": "art/h3x/jakyak/sweep.webp",
+   "w": 504,
+   "h": 427,
+   "ax": 388,
+   "ay": 424,
+   "orig": "몸을 낮춰 도끼를 길게 내뻗음",
+   "from": "작약추가.png 아래 1",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "kick": {
+   "src": "art/h3x/jakyak/kick.webp",
+   "w": 445,
+   "h": 511,
+   "ax": 201,
+   "ay": 508,
+   "orig": "높이 옆차기 (도끼는 아래)",
+   "from": "작약추가.png 아래 2",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "hurt": {
+   "src": "art/h3x/jakyak/hurt.webp",
+   "w": 347,
+   "h": 517,
+   "ax": 134,
+   "ay": 514,
+   "orig": "맞고 움찔함",
+   "from": "작약추가.png 아래 3",
+   "scale": 1.1152,
+   "flip": false
+  },
+  "down": {
+   "src": "art/h3x/jakyak/down.webp",
+   "w": 477,
+   "h": 478,
+   "ax": 389,
+   "ay": 475,
+   "orig": "주저앉아 도끼를 세워 듦",
+   "from": "작약추가.png 아래 4",
+   "scale": 1.1152,
+   "flip": false
+  }
+ },
+ "odd": [
+  "게임에 이미 적 jakyak 이 있음 (foe_sheets 그림). 이번 그림은 새 동작 묶음 — 기존 sheet 와 이름 겹침 확인 필요."
+ ],
+ "v": 1
+}
