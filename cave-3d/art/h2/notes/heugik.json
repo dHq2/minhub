@@ -1,0 +1,100 @@
+{
+ "slug": "heugik",
+ "name": "흑익",
+ "rank": "암계장군",
+ "folder": "암계장군 흑익",
+ "role": "보스 (암계 장군 — 티어표 \"암계 장군 '흑익' & '하류'\" 둘 중 흑익. 나중에 영입 가능한 둘 다 후보)",
+ "tall": 1.92,
+ "weight": 95,
+ "palette": [
+  "#29292b",
+  "#1b1b1c",
+  "#878788",
+  "#cfcdcc",
+  "#f2f2f0"
+ ],
+ "poses": {
+  "front": {
+   "src": "art/h2/heugik/front.webp",
+   "w": 436,
+   "h": 734,
+   "ax": 206,
+   "ay": 731,
+   "from": "흑의, 세 가지 전투 자세.png 왼쪽",
+   "orig": "앞모습: 늑골 무늬 검은 갑옷, 해진 긴 망토, 흰 장발, 검은 투구 가면 (흰 눈빛), 오른손에 긴 세검",
+   "scale": 0.9
+  },
+  "idle": {
+   "src": "art/h2/heugik/idle.webp",
+   "w": 410,
+   "h": 710,
+   "ax": 178,
+   "ay": 707,
+   "from": "흑의, 세 가지 전투 자세.png 가운데",
+   "orig": "옆모습 (오른쪽 봄): 세검을 비스듬히 아래로 내려 듦",
+   "scale": 0.9
+  },
+  "attack": {
+   "src": "art/h2/heugik/attack.webp",
+   "w": 784,
+   "h": 504,
+   "ax": 391,
+   "ay": 501,
+   "from": "흑의, 세 가지 전투 자세.png 오른쪽",
+   "orig": "다리를 크게 벌려 세검을 앞으로 길게 찌름 (런지), 머리 · 망토 휘날림",
+   "scale": 0.9
+  }
+ },
+ "portrait": "art/h2/heugik/portrait.webp",
+ "face": "art/h2/heugik/face.webp",
+ "missing": [
+  "back",
+  "walk",
+  "guard (막기)",
+  "hurt",
+  "down",
+  "dead",
+  "skill (어둠 날개 · 효과)"
+ ],
+ "kit": {
+  "basic": "세검 찌르기 (attack) — 앞 3.5m 줄 (폭 0.6m), 빠름",
+  "skills": [
+   {
+    "name": "흑익 섬격",
+    "pose": "attack",
+    "desc": "6m 돌진 찌르기, 지나간 줄 위 적 모두 관통 피해 + 출혈 4초. 돌진 중 무적 0.2초"
+   },
+   {
+    "name": "검은 날개 망토",
+    "pose": "front",
+    "desc": "망토를 펼쳐 2초 막기: 앞 150도 원거리 막기, 막는 동안 맞으면 즉시 찌르기 반격 (4m)"
+   },
+   {
+    "name": "확인사살",
+    "pose": "idle",
+    "desc": "체력 25% 아래 적에게 순간 이동 3m 후 세검 내리찌르기 — 큰 피해 (처형)"
+   }
+  ],
+  "passive": "암계의 장군: 주변 10m 암계 아군 공격 +10%, 처치할 때마다 이동 속도 +15% 4초 (최대 3번)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 3,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 3
+ },
+ "tag": "knight",
+ "role_job": "지휘",
+ "bag": 10,
+ "stats": {
+  "hp": 4200,
+  "atk": 72,
+  "spd": 6.2,
+  "weight_kg": 95,
+  "tall_m": 1.92
+ },
+ "desc": "암계 장군 \"흑익\". 흰 장발에 얼굴 없는 검은 투구 가면, 늑골 무늬 검은 갑옷과 해진 망토, 가늘고 긴 세검을 쓰는 검사. 짝 장군은 \"하류\".",
+ "gen": 3
+}

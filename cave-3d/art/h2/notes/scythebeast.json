@@ -1,0 +1,101 @@
+{
+ "slug": "scythebeast",
+ "name": "보라빛 대낫 괴수 (이름 미상)",
+ "rank": "강적",
+ "folder": "암계 강적",
+ "role": "적 (암계의 강적 괴수 — 이름 없는 정예 몬스터. 대화 · 동료 요소 없음)",
+ "tall": 2.6,
+ "weight": 380,
+ "palette": [
+  "#3e2f4c",
+  "#241a2c",
+  "#584968",
+  "#8a7aa0",
+  "#d8d0e8"
+ ],
+ "poses": {
+  "front": {
+   "src": "art/h2/scythebeast/front.webp",
+   "w": 536,
+   "h": 785,
+   "ax": 213,
+   "ay": 782,
+   "from": "보라빛 대낫 괴수 3면 콘셉트 시트.png 왼쪽",
+   "orig": "앞모습: 왼팔이 거대한 낫 날로 이어짐, 이빨 드러낸 웃음",
+   "scale": 1.0
+  },
+  "idle": {
+   "src": "art/h2/scythebeast/idle.webp",
+   "w": 290,
+   "h": 773,
+   "ax": 138,
+   "ay": 770,
+   "from": "보라빛 대낫 괴수 3면 콘셉트 시트.png 가운데",
+   "orig": "옆모습 (오른쪽 봄): 낫 팔을 몸 뒤로 늘어뜨리고 섬",
+   "scale": 1.0
+  },
+  "attack": {
+   "src": "art/h2/scythebeast/attack.webp",
+   "w": 878,
+   "h": 625,
+   "ax": 350,
+   "ay": 622,
+   "from": "보라빛 대낫 괴수 3면 콘셉트 시트.png 오른쪽",
+   "orig": "몸을 낮추고 낫 팔을 앞으로 크게 휘두름",
+   "scale": 1.0,
+   "ax_auto": 228
+  }
+ },
+ "portrait": "art/h2/scythebeast/portrait.webp",
+ "face": "art/h2/scythebeast/face.webp",
+ "missing": [
+  "back",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "windup (낫 치켜들기)",
+  "jump"
+ ],
+ "kit": {
+  "basic": "대낫 베기 (attack) — 앞 3.5m 부채꼴 140도, 출혈 3초",
+  "skills": [
+   {
+    "name": "초승 대참",
+    "pose": "attack",
+    "desc": "0.6초 몸을 낮춘 뒤 앞 5m 반원 (180도) 크게 베기. 큰 피해 + 넘어뜨림, 막기 자세면 막기 깨짐"
+   },
+   {
+    "name": "도약 베기",
+    "pose": "attack",
+    "desc": "8m 앞으로 뛰어들어 착지 지점 반경 2.5m 원 베기 (jump 그림 없음 — attack 으로 대신)"
+   },
+   {
+    "name": "포식의 웃음",
+    "pose": "front",
+    "desc": "이빨을 드러내며 포효: 반경 6m 적 1.5초 공포 (뒤로 물러남), 자신 공격속도 +20% 6초"
+   }
+  ],
+  "passive": "가시 비늘: 근접으로 때린 적에게 받은 피해 10% 되돌림, 체력 30% 아래에서 이동 속도 +25%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 0,
+ "stats": {
+  "hp": 2400,
+  "atk": 62,
+  "spd": 5.5,
+  "weight_kg": 380,
+  "tall_m": 2.6
+ },
+ "desc": "암계에 사는 보라빛 비늘 괴수. 오른팔(그림 기준 왼쪽 팔)이 통째로 거대한 낫 날이고, 뿔 달린 머리에 이빨만 웃는 얼굴. 티어표에는 그림만 있고 이름 글자가 없음.",
+ "gen": 3
+}
