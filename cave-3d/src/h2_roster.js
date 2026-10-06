@@ -1370,27 +1370,11 @@ const H2R = {
 },
 "hurt": {
 "src": "art/h2/garam/hurt.webp",
-"w": 733,
-"h": 641,
-"ax": 496,
-"ay": 638,
-"orig": "피격에 흔들림 (충격선 있음)"
-},
-"hurt2": {
-"src": "art/h2/garam/hurt2.webp",
-"w": 727,
-"h": 664,
-"ax": 422,
-"ay": 661,
-"orig": "피격 반응"
-},
-"hurt3": {
-"src": "art/h2/garam/hurt3.webp",
-"w": 731,
-"h": 642,
-"ax": 492,
-"ay": 639,
-"orig": "피격 (hurt 와 거의 같음, 충격선 없음)"
+"w": 791,
+"h": 644,
+"ax": 533,
+"ay": 641,
+"orig": "배를 움켜쥐고 휘청 (팔 안 꺾인 판)"
 },
 "special": {
 "src": "art/h2/garam/special.webp",
@@ -2922,27 +2906,11 @@ const H2R = {
 },
 "hurt": {
 "src": "art/h2/hirari/hurt.webp",
-"w": 718,
-"h": 671,
-"ax": 440,
-"ay": 668,
-"orig": "피격에 흔들림 (충격선)"
-},
-"hurt2": {
-"src": "art/h2/hirari/hurt2.webp",
-"w": 717,
-"h": 700,
-"ax": 462,
-"ay": 697,
-"orig": "피격 반응 (가슴에 손)"
-},
-"hurt3": {
-"src": "art/h2/hirari/hurt3.webp",
-"w": 718,
-"h": 671,
-"ax": 441,
-"ay": 668,
-"orig": "피격 (두 팔 자연스러운 수정판)"
+"w": 716,
+"h": 690,
+"ax": 467,
+"ay": 687,
+"orig": "손을 가슴에 대고 놀라 뒤로 젖힘 (새 판)"
 },
 "special": {
 "src": "art/h2/hirari/special.webp",

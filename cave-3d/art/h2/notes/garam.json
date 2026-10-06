@@ -52,30 +52,13 @@
   },
   "hurt": {
    "src": "art/h2/garam/hurt.webp",
-   "w": 733,
-   "h": 641,
-   "ax": 496,
-   "ay": 638,
-   "from": "피격에 흔들리는 검객과 별 마법사.png 왼쪽",
-   "orig": "피격에 흔들림 (충격선 있음)"
-  },
-  "hurt2": {
-   "src": "art/h2/garam/hurt2.webp",
-   "w": 727,
-   "h": 664,
-   "ax": 422,
-   "ay": 661,
-   "from": "검사와 별 마법사의 피격 반응.png 왼쪽",
-   "orig": "피격 반응"
-  },
-  "hurt3": {
-   "src": "art/h2/garam/hurt3.webp",
-   "w": 731,
-   "h": 642,
-   "ax": 492,
-   "ay": 639,
-   "from": "분홍 마법사의 자연스러운 두 팔.png 왼쪽",
-   "orig": "피격 (hurt 와 거의 같음, 충격선 없음)"
+   "w": 791,
+   "h": 644,
+   "ax": 533,
+   "ay": 641,
+   "from": "가람, 히라리 폴더 file_00000000e06c81f8a50cf87d6ec8f00b.png (2026-10-06 추가) 왼쪽",
+   "orig": "배를 움켜쥐고 휘청 (팔 안 꺾인 판)",
+   "scale": 0.8
   },
   "special": {
    "src": "art/h2/garam/special.webp",
