@@ -1,0 +1,238 @@
+{
+ "slug": "ahae2",
+ "name": "아해 (각성 모드 · 사슬낫)",
+ "rank": "4성",
+ "folder": "3기-2/4성 도깨비 아해",
+ "role": "동료 (아해 변신 후)",
+ "tall": 1.75,
+ "weight": 62,
+ "palette": [
+  "#60c0d8",
+  "#181818",
+  "#c8c4bc",
+  "#808080",
+  "#d01818"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ahae2/idle.webp",
+   "w": 480,
+   "h": 702,
+   "ax": 227,
+   "ay": 699,
+   "from": "각성 아해 2.png 아랫줄 4번",
+   "orig": "서 있음 — 두 손에 사슬낫 (낫 날 끝이 붉게 물듦) 늘어뜨림",
+   "scale": 1.58
+  },
+  "idle2": {
+   "src": "art/h2/ahae2/idle2.webp",
+   "w": 451,
+   "h": 706,
+   "ax": 232,
+   "ay": 703,
+   "from": "아해 각성모드.png 아랫줄 4번",
+   "orig": "서 있음 2 — 두 손에 사슬낫, 사슬 길게 늘어뜨림",
+   "scale": 1.47
+  },
+  "front": {
+   "src": "art/h2/ahae2/front.webp",
+   "w": 470,
+   "h": 691,
+   "ax": 226,
+   "ay": 688,
+   "from": "아해 각성모드.png 윗줄 1번",
+   "orig": "정면으로 다리 벌리고 사슬낫 두 자루 들고 섬",
+   "scale": 1.47
+  },
+  "ready": {
+   "src": "art/h2/ahae2/ready.webp",
+   "w": 512,
+   "h": 619,
+   "ax": 225,
+   "ay": 616,
+   "from": "아해 각성모드.png 윗줄 2번",
+   "orig": "사슬낫 하나 치켜들고 사슬을 몸에 감듯 늘인 전투 자세",
+   "scale": 1.47
+  },
+  "ready2": {
+   "src": "art/h2/ahae2/ready2.webp",
+   "w": 621,
+   "h": 596,
+   "ax": 284,
+   "ay": 593,
+   "from": "각성 아해 2.png 윗줄 1번",
+   "orig": "낮게 다리 벌린 자세, 두 손의 사슬낫 (붉은 날)",
+   "scale": 1.58
+  },
+  "throw": {
+   "src": "art/h2/ahae2/throw.webp",
+   "w": 1110,
+   "h": 679,
+   "ax": 238,
+   "ay": 676,
+   "from": "아해 각성모드.png 윗줄 3번",
+   "orig": "뒷모습, 사슬낫을 멀리 던짐 — 팔 뻗고 사슬이 쭉 뻗어 낫이 끝에 (긴 사거리)",
+   "scale": 1.47
+  },
+  "throw2": {
+   "src": "art/h2/ahae2/throw2.webp",
+   "w": 891,
+   "h": 618,
+   "ax": 278,
+   "ay": 615,
+   "from": "각성 아해 2.png 윗줄 2번",
+   "orig": "사슬낫 던지기 2 — 사슬을 앞으로 뿌리고 붉은 기운이 튐",
+   "scale": 1.58
+  },
+  "swing": {
+   "src": "art/h2/ahae2/swing.webp",
+   "w": 550,
+   "h": 554,
+   "ax": 246,
+   "ay": 551,
+   "from": "아해 각성모드.png 윗줄 4번",
+   "orig": "사슬을 당겨 낫을 옆으로 크게 휘돌림 (궤적 선)",
+   "scale": 1.47
+  },
+  "attack": {
+   "src": "art/h2/ahae2/attack.webp",
+   "w": 812,
+   "h": 564,
+   "ax": 246,
+   "ay": 561,
+   "from": "각성 아해 2.png 윗줄 3번",
+   "orig": "사슬낫 휘두르기 — 몸을 틀어 사슬을 크게 돌림, 붉은 궤적",
+   "scale": 1.58
+  },
+  "slash": {
+   "src": "art/h2/ahae2/slash.webp",
+   "w": 562,
+   "h": 557,
+   "ax": 198,
+   "ay": 554,
+   "from": "아해 각성모드.png 아랫줄 1번",
+   "orig": "낮게 웅크려 사슬낫으로 둥글게 베기, 붉은 베기 궤적",
+   "scale": 1.47
+  },
+  "spin": {
+   "src": "art/h2/ahae2/spin.webp",
+   "w": 803,
+   "h": 469,
+   "ax": 473,
+   "ay": 466,
+   "from": "각성 아해 2.png 윗줄 4번",
+   "orig": "웅크려 두 사슬낫을 몸 둘레로 돌림 — 붉은 원형 궤적 (회전 베기)",
+   "scale": 1.58
+  },
+  "dash": {
+   "src": "art/h2/ahae2/dash.webp",
+   "w": 818,
+   "h": 586,
+   "ax": 395,
+   "ay": 583,
+   "from": "각성 아해 2.png 아랫줄 1번",
+   "orig": "앞으로 몸을 날려 뛰어듦 (한 손 바닥 짚음), 머리 위로 사슬낫 붉은 큰 호",
+   "scale": 1.58
+  },
+  "pull": {
+   "src": "art/h2/ahae2/pull.webp",
+   "w": 663,
+   "h": 591,
+   "ax": 470,
+   "ay": 588,
+   "from": "아해 각성모드.png 아랫줄 3번",
+   "orig": "뒤로 몸을 젖혀 사슬을 끌어당김 — 사슬 끝 두 낫이 앞쪽 (끌어오기)",
+   "scale": 1.47
+  },
+  "bind": {
+   "src": "art/h2/ahae2/bind.webp",
+   "w": 687,
+   "h": 679,
+   "ax": 340,
+   "ay": 676,
+   "from": "각성 아해 2.png 아랫줄 2번",
+   "orig": "뒷모습, 사슬로 나무 기둥 (적 대신) 을 칭칭 감고 당김, 붉은 충격 선 (휘감기)",
+   "scale": 1.58
+  },
+  "slam": {
+   "src": "art/h2/ahae2/slam.webp",
+   "w": 781,
+   "h": 653,
+   "ax": 376,
+   "ay": 650,
+   "from": "각성 아해 2.png 아랫줄 3번",
+   "orig": "내려앉으며 한 무릎 · 발 쾅, 두 사슬낫을 양옆으로 펼침, 바닥 파편",
+   "scale": 1.58
+  },
+  "summon": {
+   "src": "art/h2/ahae2/summon.webp",
+   "w": 628,
+   "h": 710,
+   "ax": 287,
+   "ay": 707,
+   "from": "아해 각성모드.png 아랫줄 2번 (좌우 반전)",
+   "orig": "여러 팔 달린 큰 붉은 원념 무리를 불러냄 — 한 손 뻗음, 다른 손 사슬낫",
+   "scale": 1.47
+  }
+ },
+ "portrait": "art/h2/ahae2/portrait.webp",
+ "face": "art/h2/ahae2/face.webp",
+ "portrait_from": "ahae 와 같은 초상 (사슬 · 붉은 원념이 있어 각성 모습과도 맞음)",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "down",
+  "dead",
+  "guard",
+  "transform (변신 순간)"
+ ],
+ "kit": {
+  "basic": "사슬낫 휘두르기 (attack · swing) — 앞 4.5m 부채꼴 120도, 붉은 궤적에 맞은 적 출혈 3초",
+  "skills": [
+   {
+    "name": "사슬 던져 끌어오기",
+    "pose": "throw",
+    "desc": "끌어오기 — 사슬낫을 앞 10m 줄로 던져 처음 맞은 적을 꽂고 pull 로 아해 앞 1.5m 까지 끌어옴 (큰 적 · 보스는 반대로 아해가 그쪽으로 당겨짐)"
+   },
+   {
+    "name": "휘감아 묶기",
+    "pose": "bind",
+    "desc": "사슬로 앞 6m 안 적 하나를 칭칭 감아 2초 묶음 (움직임 · 공격 불가), 풀릴 때 피해"
+   },
+   {
+    "name": "붉은 회전베기",
+    "pose": "spin",
+    "desc": "원 — 두 사슬낫을 몸 둘레로 돌려 반지름 4m 원 안 적에게 3번 연속 피해, 끝에 slam 으로 내려앉아 반지름 3m 충격"
+   },
+   {
+    "name": "원념 무리",
+    "pose": "summon",
+    "desc": "소환 — 여러 팔 달린 큰 붉은 원념을 불러 앞 5m 부채꼴을 2초간 할큄 (ahae_wraith 3체 효과)"
+   }
+  ],
+  "passive": "각성: 변신 동안 공격 속도 +25%, 체력 흡수 10%. 20초가 지나거나 쓰러질 만큼 맞으면 ahae 로 돌아옴"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 3,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 10,
+ "stats": {
+  "hp": 1100,
+  "atk": 42,
+  "spd": 6.6,
+  "weight_kg": 62,
+  "tall_m": 1.75
+ },
+ "desc": "붉은 원념을 두른 아해의 각성 모습. 두 자루 사슬낫을 멀리 던져 적을 휘감아 끌어오고, 붉은 궤적으로 베어 낸다.",
+ "transform_of": "ahae",
+ "gen": 3,
+ "codex_g": "ahae"
+}

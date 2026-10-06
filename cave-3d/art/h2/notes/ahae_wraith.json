@@ -1,0 +1,99 @@
+{
+ "slug": "ahae_wraith",
+ "name": "아해의 원념 (붉은 원념 유령)",
+ "rank": "4성",
+ "folder": "3기-2/4성 도깨비 아해",
+ "role": "소환수 (아해 편)",
+ "tall": 1.6,
+ "weight": 0,
+ "palette": [
+  "#d80000",
+  "#a80000",
+  "#180000",
+  "#000000",
+  "#f0f0f0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ahae_wraith/idle.webp",
+   "w": 625,
+   "h": 651,
+   "ax": 284,
+   "ay": 648,
+   "from": "아해 소환 원념.png 윗줄 왼쪽",
+   "orig": "똬리 튼 꼬리로 떠 있음, 한 손 갈퀴 들고 다른 손으로 담배 (얼굴 없는 붉은 머리)",
+   "scale": 1.35
+  },
+  "attack": {
+   "src": "art/h2/ahae_wraith/attack.webp",
+   "w": 1303,
+   "h": 589,
+   "ax": 325,
+   "ay": 586,
+   "from": "아해 소환 원념.png 윗줄 오른쪽",
+   "orig": "몸을 길게 늘여 앞으로 팔을 쭉 뻗어 할큄 (긴 사거리 손)",
+   "scale": 1.35
+  },
+  "hurt": {
+   "src": "art/h2/ahae_wraith/hurt.webp",
+   "w": 752,
+   "h": 649,
+   "ax": 383,
+   "ay": 646,
+   "from": "아해 소환 원념.png 아랫줄 왼쪽",
+   "orig": "몸을 말아 웅크리고 두 손으로 머리를 감쌈 (괴로워함 · 맞음)",
+   "scale": 1.35
+  },
+  "attack2": {
+   "src": "art/h2/ahae_wraith/attack2.webp",
+   "w": 1152,
+   "h": 662,
+   "ax": 418,
+   "ay": 659,
+   "from": "아해 소환 원념.png 아랫줄 오른쪽",
+   "orig": "두 팔 갈퀴를 앞으로 뻗어 움켜쥐기 (붙잡기)",
+   "scale": 1.35
+  }
+ },
+ "portrait": "art/h2/ahae_wraith/portrait.webp",
+ "face": "art/h2/ahae_wraith/face.webp",
+ "portrait_from": "아해 소환 원념.png 윗줄 왼쪽 (흰 바탕 그대로)",
+ "missing": [
+  "appear (소환 연출)",
+  "dead (흩어짐)",
+  "dash (기본아해.png 맨 아랫줄 2번 — 작아서 안 자름)"
+ ],
+ "kit": {
+  "basic": "팔 늘여 할퀴기 (attack) — 앞 6m 줄",
+  "skills": [
+   {
+    "name": "움켜쥐기",
+    "pose": "attack2",
+    "desc": "끌어오기 — 두 팔로 앞 4m 안 적 하나를 붙잡아 1.5초 묶고 원념 쪽으로 2m 끌어옴"
+   }
+  ],
+  "passive": "원념: 12초 뒤 사라짐. 물리 피해 50% 덜 받음 (몸이 기운이라), 아해가 쓰러지면 함께 사라짐"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 2
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 0,
+ "stats": {
+  "hp": 250,
+  "atk": 22,
+  "spd": 5.0,
+  "weight_kg": 0,
+  "tall_m": 1.6
+ },
+ "desc": "얼굴 없는 붉은 머리에 길게 늘어나는 갈퀴 팔, 아래는 검은 연기 꼬리로 떠다니는 아해의 원념. 주인처럼 담배를 문다.",
+ "owner": "ahae",
+ "gen": 3,
+ "codex_g": "ahae"
+}
