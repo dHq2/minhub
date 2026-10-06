@@ -1,0 +1,140 @@
+{
+ "slug": "changra",
+ "name": "창라 (그림 파일에는 '차리')",
+ "rank": "3성",
+ "folder": "3성 창라",
+ "role": "둘 다 (거구 맨주먹 동료 · 적이면 중간 보스)",
+ "tall": 2.4,
+ "weight": 220,
+ "palette": [
+  "#444953",
+  "#191a1d",
+  "#8a8c8e",
+  "#e8de8a",
+  "#3ee8b0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/changra/idle.webp",
+   "w": 599,
+   "h": 700,
+   "ax": 289,
+   "ay": 697,
+   "from": "차리 기본, 차리 공격.png",
+   "orig": "차리 기본"
+  },
+  "attack": {
+   "src": "art/h2/changra/attack.webp",
+   "w": 777,
+   "h": 642,
+   "ax": 398,
+   "ay": 639,
+   "from": "차리 기본, 차리 공격.png",
+   "orig": "차리 공격"
+  },
+  "guard": {
+   "src": "art/h2/changra/guard.webp",
+   "w": 615,
+   "h": 666,
+   "ax": 286,
+   "ay": 663,
+   "from": "오른쪽을 겨누는 거대 전사 스프라이트.png",
+   "orig": "막기 (옆얼굴)"
+  },
+  "dead": {
+   "src": "art/h2/changra/dead.webp",
+   "w": 809,
+   "h": 331,
+   "ax": 436,
+   "ay": 328,
+   "from": "오른쪽을 겨누는 거대 전사 스프라이트.png",
+   "orig": "넘어짐 (눈 감음)"
+  },
+  "guardfront": {
+   "src": "art/h2/changra/guardfront.webp",
+   "w": 614,
+   "h": 663,
+   "ax": 286,
+   "ay": 660,
+   "from": "차리막기, 차리 넘어짐.png",
+   "orig": "차리막기 (정면 얼굴)"
+  },
+  "down": {
+   "src": "art/h2/changra/down.webp",
+   "w": 809,
+   "h": 331,
+   "ax": 436,
+   "ay": 328,
+   "from": "차리막기, 차리 넘어짐.png",
+   "orig": "차리 넘어짐"
+  },
+  "attack2": {
+   "src": "art/h2/changra/attack2.webp",
+   "w": 648,
+   "h": 480,
+   "ax": 386,
+   "ay": 477,
+   "from": "차리찍기, 차리 돌격.png",
+   "orig": "차리찍기"
+  },
+  "dash": {
+   "src": "art/h2/changra/dash.webp",
+   "w": 697,
+   "h": 498,
+   "ax": 194,
+   "ay": 495,
+   "from": "차리찍기, 차리 돌격.png",
+   "orig": "차리 돌격"
+  }
+ },
+ "portrait": "art/h2/changra/portrait.webp",
+ "face": "art/h2/changra/face.webp",
+ "portraits": {
+  "portrait": "art/h2/changra/portrait.webp",
+  "face": "art/h2/changra/face.webp"
+ },
+ "missing": [
+  "walk",
+  "hurt",
+  "jump"
+ ],
+ "kit": {
+  "basic": "바위 주먹 (attack) — 앞 2m, 강한 넉백",
+  "skills": [
+   {
+    "name": "대지 찍기",
+    "pose": "attack2",
+    "desc": "주먹으로 땅을 찍어 반경 3m 넘어뜨림 + 파편 피해"
+   },
+   {
+    "name": "돌격",
+    "pose": "dash",
+    "desc": "8m 일직선 돌진, 부딪힌 적 밀어내며 기절 1초"
+   },
+   {
+    "name": "바위 막기",
+    "pose": "guard",
+    "desc": "3초간 정면 피해 60% 감소, 끝날 때 주변 반격"
+   }
+  ],
+  "passive": "거구: 넉백 · 경직 면역, 들고 다닐 수 있는 무게 2배"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 2000,
+  "atk": 70,
+  "spd": 4,
+  "weight_kg": 220,
+  "tall_m": 2.4
+ }
+}

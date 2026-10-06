@@ -1,0 +1,156 @@
+{
+ "slug": "tanga",
+ "name": "탕아",
+ "rank": "3성 [영웅]",
+ "folder": "3성 [영웅] 탕아",
+ "role": "동료 (용사 · 대검 근접 딜러)",
+ "tall": 1.85,
+ "weight": 85,
+ "palette": [
+  "#e8c46a",
+  "#3e8f9f",
+  "#16191d",
+  "#d6d8dc",
+  "#2a5560"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/tanga/idle.webp",
+   "w": 452,
+   "h": 707,
+   "ax": 214,
+   "ay": 704,
+   "from": "금발 영웅과 비대칭 대검.png",
+   "orig": "서 있음 (대검 끌기)"
+  },
+  "stand": {
+   "src": "art/h2/tanga/stand.webp",
+   "w": 347,
+   "h": 699,
+   "ax": 153,
+   "ay": 696,
+   "from": "금빛 가시머리의 청록 전사.png",
+   "orig": "장검 들고 선 뒤 3/4 (다른 버전)"
+  },
+  "attack": {
+   "src": "art/h2/tanga/attack.webp",
+   "w": 611,
+   "h": 574,
+   "ax": 381,
+   "ay": 571,
+   "from": "거대 검사의 지상·공중 참격.png",
+   "orig": "지상 참격"
+  },
+  "jump": {
+   "src": "art/h2/tanga/jump.webp",
+   "w": 543,
+   "h": 594,
+   "ax": 257,
+   "ay": 591,
+   "from": "거대 검사의 지상·공중 참격.png",
+   "orig": "공중 참격"
+  },
+  "attack2": {
+   "src": "art/h2/tanga/attack2.webp",
+   "w": 756,
+   "h": 602,
+   "ax": 383,
+   "ay": 599,
+   "from": "금발 대검 검사의 두 전투 포즈.png",
+   "orig": "찌르기"
+  },
+  "guard": {
+   "src": "art/h2/tanga/guard.webp",
+   "w": 761,
+   "h": 518,
+   "ax": 287,
+   "ay": 515,
+   "from": "대검 전사의 수비와 쓰러짐.png",
+   "orig": "수비"
+  },
+  "down": {
+   "src": "art/h2/tanga/down.webp",
+   "w": 630,
+   "h": 349,
+   "ax": 285,
+   "ay": 346,
+   "from": "대검 전사의 수비와 쓰러짐.png",
+   "orig": "쓰러짐"
+  },
+  "windup": {
+   "src": "art/h2/tanga/windup.webp",
+   "w": 625,
+   "h": 520,
+   "ax": 299,
+   "ay": 517,
+   "from": "청록 갑옷 거대 검사의 두 전투 자세.png",
+   "orig": "검 낮춘 준비 자세"
+  },
+  "attack3": {
+   "src": "art/h2/tanga/attack3.webp",
+   "w": 744,
+   "h": 501,
+   "ax": 368,
+   "ay": 498,
+   "from": "청록 갑옷 거대 검사의 두 전투 자세.png",
+   "orig": "수평 찌르기 · 베기"
+  }
+ },
+ "portrait": "art/h2/tanga/portrait2.webp",
+ "face": "art/h2/tanga/face2.webp",
+ "portraits": {
+  "portrait": "art/h2/tanga/portrait.webp",
+  "face": "art/h2/tanga/face.webp",
+  "portrait2": "art/h2/tanga/portrait2.webp",
+  "face2": "art/h2/tanga/face2.webp"
+ },
+ "missing": [
+  "walk",
+  "hurt",
+  "dead"
+ ],
+ "kit": {
+  "basic": "대검 베기 (attack) — 앞 3m 부채꼴",
+  "skills": [
+   {
+    "name": "공중 참격",
+    "pose": "jump",
+    "desc": "뛰어올라 아래로 내려 베기, 착지 지점 반경 2m 피해 + 넘어뜨림"
+   },
+   {
+    "name": "갈고리 찌르기",
+    "pose": "attack2",
+    "desc": "앞 4m 찌르고 갈고리 끝으로 적을 앞으로 끌어옴"
+   },
+   {
+    "name": "일섬",
+    "pose": "windup",
+    "desc": "windup 으로 모았다가 attack3 로 앞 6m 일직선 관통 베기"
+   },
+   {
+    "name": "수비",
+    "pose": "guard",
+    "desc": "정면 피해 60% 감소, 막은 직후 반격 피해 +50%"
+   }
+  ],
+  "passive": "용사의 기세: 적을 쓰러뜨릴 때마다 다음 공격 피해 +30% (최대 3번 쌓임)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 2,
+  "bow": 1,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 10,
+ "stats": {
+  "hp": 1100,
+  "atk": 60,
+  "spd": 5.5,
+  "weight_kg": 85,
+  "tall_m": 1.85
+ }
+}

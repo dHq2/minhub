@@ -1,0 +1,144 @@
+{
+ "slug": "hari",
+ "name": "하리",
+ "rank": "천사 (성 표시 없음)",
+ "folder": "천사 하리",
+ "role": "동료 (깃털귀 천사 마법사, 원거리 딜러). 은신.png 목록에도 있음",
+ "tall": 1.72,
+ "weight": 60,
+ "palette": [
+  "#f08cc0",
+  "#f5f2ee",
+  "#a8202c",
+  "#5a5650",
+  "#a040e0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hari/idle.webp",
+   "w": 458,
+   "h": 709,
+   "ax": 258,
+   "ay": 706,
+   "from": "핑크 깃털귀 마법사 두 가지 전투 포즈.png",
+   "orig": "지팡이 세워 섬"
+  },
+  "attack": {
+   "src": "art/h2/hari/attack.webp",
+   "w": 880,
+   "h": 640,
+   "ax": 317,
+   "ay": 637,
+   "from": "핑크 깃털귀 마법사 두 가지 전투 포즈.png",
+   "orig": "지팡이 내질러 마법 발사"
+  },
+  "attack2": {
+   "src": "art/h2/hari/attack2.webp",
+   "w": 846,
+   "h": 608,
+   "ax": 565,
+   "ay": 605,
+   "from": "두 전투 자세의 핑크 깃털 마법사.png",
+   "orig": "내려찍기 폭발"
+  },
+  "skill": {
+   "src": "art/h2/hari/skill.webp",
+   "w": 657,
+   "h": 686,
+   "ax": 405,
+   "ay": 683,
+   "from": "두 전투 자세의 핑크 깃털 마법사.png",
+   "orig": "지팡이 들어 소용돌이"
+  },
+  "guard": {
+   "src": "art/h2/hari/guard.webp",
+   "w": 528,
+   "h": 576,
+   "ax": 243,
+   "ay": 573,
+   "from": "분홍 깃털귀 마법사 두 전투 포즈.png",
+   "orig": "지팡이 가로 막기"
+  },
+  "down": {
+   "src": "art/h2/hari/down.webp",
+   "w": 701,
+   "h": 240,
+   "ax": 386,
+   "ay": 237,
+   "from": "분홍 깃털귀 마법사 두 전투 포즈.png",
+   "orig": "쓰러짐 (눈 감음)"
+  },
+  "stand": {
+   "src": "art/h2/hari/stand.webp",
+   "w": 465,
+   "h": 708,
+   "ax": 216,
+   "ay": 705,
+   "from": "분홍 머리 마법사의 전투 자세.png",
+   "orig": "전투 자세 (원화와 같은 그림)"
+  },
+  "walk": {
+   "src": "art/h2/hari/walk.webp",
+   "w": 465,
+   "h": 724,
+   "ax": 161,
+   "ay": 721,
+   "from": "분홍 장발 마법사의 전투 태세.png",
+   "orig": "전투 태세 (한 발 내딛음)"
+  }
+ },
+ "portrait": "art/h2/hari/portrait2.webp",
+ "face": "art/h2/hari/face2.webp",
+ "portraits": {
+  "portrait": "art/h2/hari/portrait.webp",
+  "face": "art/h2/hari/face.webp",
+  "portrait2": "art/h2/hari/portrait2.webp",
+  "portrait3": "art/h2/hari/portrait3.webp",
+  "face2": "art/h2/hari/face2.webp"
+ },
+ "missing": [
+  "hurt",
+  "dead",
+  "jump",
+  "run"
+ ],
+ "kit": {
+  "basic": "보라 구슬 탄 (attack) — 10m 직선 마법탄",
+  "skills": [
+   {
+    "name": "심연 내려찍기",
+    "pose": "attack2",
+    "desc": "지팡이로 땅을 찍어 반경 2.5m 보라 폭발"
+   },
+   {
+    "name": "보라 소용돌이",
+    "pose": "skill",
+    "desc": "8m 지점에 소용돌이를 만들어 3초간 적을 끌어당기며 피해"
+   },
+   {
+    "name": "지팡이 막기",
+    "pose": "guard",
+    "desc": "근접 공격 1회 완전히 막고 뒤로 물러남"
+   }
+  ],
+  "passive": "깃털귀 천사: 낙하 피해 없음, 은신 중 첫 마법 피해 +40%"
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 3
+ },
+ "tag": "mage",
+ "role_job": "사수",
+ "bag": 10,
+ "stats": {
+  "hp": 750,
+  "atk": 55,
+  "spd": 5,
+  "weight_kg": 60,
+  "tall_m": 1.72
+ }
+}

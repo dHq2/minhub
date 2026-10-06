@@ -1,0 +1,156 @@
+{
+ "slug": "gallia",
+ "name": "갈리아",
+ "rank": "3성 장군",
+ "folder": "3성 장군 갈리아",
+ "role": "둘 다 (동료 장군 · 적 쪽이면 중간 보스). 중장 대검 기사",
+ "tall": 1.8,
+ "weight": 140,
+ "palette": [
+  "#4a4456",
+  "#261b29",
+  "#6e1f33",
+  "#2a2238",
+  "#a3a0a9"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/gallia/idle.webp",
+   "w": 589,
+   "h": 703,
+   "ax": 281,
+   "ay": 700,
+   "from": "보랏빛 중장기사의 두 가지 검격.png",
+   "orig": "대검 어깨에 메고 섬"
+  },
+  "attack": {
+   "src": "art/h2/gallia/attack.webp",
+   "w": 813,
+   "h": 620,
+   "ax": 351,
+   "ay": 617,
+   "from": "보랏빛 중장기사의 두 가지 검격.png",
+   "orig": "수평 휘두르기"
+  },
+  "windup": {
+   "src": "art/h2/gallia/windup.webp",
+   "w": 651,
+   "h": 667,
+   "ax": 361,
+   "ay": 664,
+   "from": "보라 갑옷 대검 전사의 두 포즈.png",
+   "orig": "대검 뒤로 치켜듦"
+  },
+  "rest": {
+   "src": "art/h2/gallia/rest.webp",
+   "w": 768,
+   "h": 383,
+   "ax": 335,
+   "ay": 380,
+   "from": "보라 갑옷 대검 전사의 두 포즈.png",
+   "orig": "팔꿈치 괴고 누움"
+  },
+  "attack2": {
+   "src": "art/h2/gallia/attack2.webp",
+   "w": 794,
+   "h": 607,
+   "ax": 207,
+   "ay": 604,
+   "from": "보라색 기사, 두 가지 전투 자세.png",
+   "orig": "찌르기"
+  },
+  "down": {
+   "src": "art/h2/gallia/down.webp",
+   "w": 819,
+   "h": 333,
+   "ax": 461,
+   "ay": 330,
+   "from": "보라색 기사, 두 가지 전투 자세.png",
+   "orig": "엎드려 쓰러짐"
+  },
+  "attack3": {
+   "src": "art/h2/gallia/attack3.webp",
+   "w": 908,
+   "h": 524,
+   "ax": 577,
+   "ay": 521,
+   "from": "보랏빛 갑옷 전사의 대검 이중 액션.png",
+   "orig": "내려찍기 (지면 파쇄)"
+  },
+  "jump": {
+   "src": "art/h2/gallia/jump.webp",
+   "w": 664,
+   "h": 670,
+   "ax": 403,
+   "ay": 667,
+   "from": "보랏빛 갑옷 전사의 대검 이중 액션.png",
+   "orig": "도약 내려베기"
+  },
+  "guard": {
+   "src": "art/h2/gallia/guard.webp",
+   "w": 476,
+   "h": 742,
+   "ax": 175,
+   "ay": 739,
+   "from": "보랏빛 중장기사의 전투 자세.png",
+   "orig": "대검 세운 대비 자세"
+  }
+ },
+ "portrait": "art/h2/gallia/portrait2.webp",
+ "face": "art/h2/gallia/face2.webp",
+ "portraits": {
+  "portrait": "art/h2/gallia/portrait.webp",
+  "face": "art/h2/gallia/face.webp",
+  "portrait2": "art/h2/gallia/portrait2.webp",
+  "face2": "art/h2/gallia/face2.webp"
+ },
+ "missing": [
+  "walk",
+  "hurt",
+  "dead"
+ ],
+ "kit": {
+  "basic": "대검 휘두르기 (attack) — 앞 3m 반원",
+  "skills": [
+   {
+    "name": "대지 가르기",
+    "pose": "attack3",
+    "desc": "대검을 내려찍어 앞 5m 일직선 충격파, 넘어뜨림"
+   },
+   {
+    "name": "도약 강타",
+    "pose": "jump",
+    "desc": "6m 안 지점으로 뛰어 내려베기, 착지 반경 2.5m"
+   },
+   {
+    "name": "장군의 찌르기",
+    "pose": "attack2",
+    "desc": "windup 으로 모은 뒤 4m 관통 찌르기, 방어 무시 30%"
+   },
+   {
+    "name": "철벽",
+    "pose": "guard",
+    "desc": "대검을 세워 정면 피해 70% 감소, 넉백 면역"
+   }
+  ],
+  "passive": "장군의 위엄: 곁 (5m) 아군 방어 +10%, 자신은 넉백 면역"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 3,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "지휘",
+ "bag": 12,
+ "stats": {
+  "hp": 1400,
+  "atk": 65,
+  "spd": 4,
+  "weight_kg": 140,
+  "tall_m": 1.8
+ }
+}

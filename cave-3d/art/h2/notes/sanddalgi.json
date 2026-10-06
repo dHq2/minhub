@@ -1,0 +1,126 @@
+{
+ "slug": "sanddalgi",
+ "name": "산딸기",
+ "rank": "3성 [대정령]",
+ "folder": "3성 [대정령] 산딸기",
+ "role": "동료 (식물 대정령 마법사, 딜 · 지원). 숲 지역 적 정령으로도 가능",
+ "tall": 1.75,
+ "weight": 58,
+ "palette": [
+  "#e8283c",
+  "#2a8592",
+  "#e6e6ea",
+  "#1c1e24",
+  "#4a3530"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/sanddalgi/idle.webp",
+   "w": 492,
+   "h": 700,
+   "ax": 257,
+   "ay": 697,
+   "from": "딸기머리 숲마녀의 두 전투 포즈.png",
+   "orig": "서 있음 (지팡이)"
+  },
+  "cast": {
+   "src": "art/h2/sanddalgi/cast.webp",
+   "w": 573,
+   "h": 691,
+   "ax": 399,
+   "ay": 688,
+   "from": "딸기머리 숲마녀의 두 전투 포즈.png",
+   "orig": "손 뻗어 주문"
+  },
+  "guard": {
+   "src": "art/h2/sanddalgi/guard.webp",
+   "w": 589,
+   "h": 605,
+   "ax": 258,
+   "ay": 602,
+   "from": "딸기머리 수호자의 두 포즈.png",
+   "orig": "수정잎 방패 (수호)"
+  },
+  "down": {
+   "src": "art/h2/sanddalgi/down.webp",
+   "w": 698,
+   "h": 383,
+   "ax": 342,
+   "ay": 380,
+   "from": "딸기머리 수호자의 두 포즈.png",
+   "orig": "옆으로 누움"
+  },
+  "attack": {
+   "src": "art/h2/sanddalgi/attack.webp",
+   "w": 540,
+   "h": 668,
+   "ax": 379,
+   "ay": 665,
+   "from": "붉은 머리 잎마법사의 두 전투 자세.png",
+   "orig": "지팡이 내려찍기"
+  },
+  "skill": {
+   "src": "art/h2/sanddalgi/skill.webp",
+   "w": 547,
+   "h": 627,
+   "ax": 362,
+   "ay": 624,
+   "from": "붉은 머리 잎마법사의 두 전투 자세.png",
+   "orig": "덩굴 소환"
+  }
+ },
+ "portrait": "art/h2/sanddalgi/portrait2.webp",
+ "face": "art/h2/sanddalgi/face3.webp",
+ "portraits": {
+  "portrait": "art/h2/sanddalgi/portrait.webp",
+  "portrait2": "art/h2/sanddalgi/portrait2.webp",
+  "face": "art/h2/sanddalgi/face.webp",
+  "face2": "art/h2/sanddalgi/face2.webp",
+  "face3": "art/h2/sanddalgi/face3.webp"
+ },
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "jump"
+ ],
+ "kit": {
+  "basic": "수정잎 지팡이 찍기 (attack) — 앞 2m 지면 충격, 작은 넉백",
+  "skills": [
+   {
+    "name": "덩굴 속박",
+    "pose": "skill",
+    "desc": "앞 5m 지점에 덩굴을 솟게 해 반경 2m 적을 2초 묶고 지속 피해"
+   },
+   {
+    "name": "수정잎 방벽",
+    "pose": "guard",
+    "desc": "앞에 잎 방패를 세워 3초간 정면 피해 흡수 (아군도 뒤에 숨을 수 있음)"
+   },
+   {
+    "name": "정령의 손짓",
+    "pose": "cast",
+    "desc": "손을 뻗어 주변 아군 회복 + 이동 속도 증가 (딜서폿)"
+   }
+  ],
+  "passive": "대정령의 숲: 흙 · 풀 바닥 위에서 마력 재생 +30%, 곁의 아군 체력 조금씩 회복"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 2
+ },
+ "tag": "mage",
+ "role_job": "지원",
+ "bag": 10,
+ "stats": {
+  "hp": 700,
+  "atk": 45,
+  "spd": 5,
+  "weight_kg": 58,
+  "tall_m": 1.75
+ }
+}

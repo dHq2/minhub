@@ -1,0 +1,123 @@
+{
+ "slug": "langpang",
+ "name": "랑팡",
+ "rank": "3성 NPC",
+ "folder": "NPC, 3성, 이계 탐험가 랑팡",
+ "role": "NPC (이계 탐험가 · 마력공학자). 영입하면 동료",
+ "tall": 1.6,
+ "weight": 48,
+ "palette": [
+  "#8fc8e8",
+  "#2f4a55",
+  "#2c2f35",
+  "#8a6a3a",
+  "#4ab0e8"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/langpang/idle.webp",
+   "w": 316,
+   "h": 702,
+   "ax": 145,
+   "ay": 699,
+   "from": "푸른 머리 마법 공학자의 두 전투 포즈.png",
+   "orig": "서 있음"
+  },
+  "attack": {
+   "src": "art/h2/langpang/attack.webp",
+   "w": 683,
+   "h": 650,
+   "ax": 434,
+   "ay": 647,
+   "from": "푸른 머리 마법 공학자의 두 전투 포즈.png",
+   "orig": "장갑 손바닥 내지르기"
+  },
+  "special": {
+   "src": "art/h2/langpang/special.webp",
+   "w": 536,
+   "h": 354,
+   "ax": 278,
+   "ay": 351,
+   "from": "푸른 머리 마법공학자 전투 스프라이트.png",
+   "orig": "땅 치기 방전"
+  },
+  "skill": {
+   "src": "art/h2/langpang/skill.webp",
+   "w": 379,
+   "h": 450,
+   "ax": 209,
+   "ay": 447,
+   "from": "푸른 머리 마법공학자 전투 스프라이트.png",
+   "orig": "톱니 마법진"
+  },
+  "crouch": {
+   "src": "art/h2/langpang/crouch.webp",
+   "w": 430,
+   "h": 391,
+   "ax": 169,
+   "ay": 388,
+   "from": "푸른 머리 마법공학자의 두 전투 포즈.png",
+   "orig": "웅크려 살피기"
+  },
+  "down": {
+   "src": "art/h2/langpang/down.webp",
+   "w": 576,
+   "h": 180,
+   "ax": 311,
+   "ay": 177,
+   "from": "푸른 머리 마법공학자의 두 전투 포즈.png",
+   "orig": "쓰러짐 (눈 감음)"
+  }
+ },
+ "portrait": "art/h2/langpang/portrait.webp",
+ "face": "art/h2/langpang/face.webp",
+ "portraits": {
+  "portrait": "art/h2/langpang/portrait.webp",
+  "face": "art/h2/langpang/face.webp"
+ },
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "jump"
+ ],
+ "kit": {
+  "basic": "마력 충격 (attack) — 앞 6m 충격파, 작은 넉백",
+  "skills": [
+   {
+    "name": "톱니 마법진",
+    "pose": "skill",
+    "desc": "앞에 회전 톱니 고리를 세워 5초간 투사체 막기 + 닿은 적 지속 피해"
+   },
+   {
+    "name": "지면 방전",
+    "pose": "special",
+    "desc": "땅을 쳐 반경 3m 감전, 1.5초 기절"
+   },
+   {
+    "name": "이계 탐지",
+    "pose": "crouch",
+    "desc": "웅크려 장갑으로 주변 10m 함정 · 숨은 적 · 유물 표시"
+   }
+  ],
+  "passive": "이계 탐험가: 함정 피해 50% 감소, 상자 · 유물에서 얻는 것 +1"
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 1,
+  "gun": 3,
+  "magic": 4,
+  "stealth": 3
+ },
+ "tag": "mage",
+ "role_job": "척후",
+ "bag": 16,
+ "stats": {
+  "hp": 650,
+  "atk": 40,
+  "spd": 5.5,
+  "weight_kg": 48,
+  "tall_m": 1.6
+ }
+}
