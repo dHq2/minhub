@@ -1,4 +1,4 @@
-# pack.py v1.5 (h3x 칸 · 빠른 압축 method 4) · v1.4 (h2 칸 추가 — 2기 멤버) · v1.3 (karius 칸 추가) · v1.2 (inju 칸 추가) · v1.1 (item 칸 추가) — 작은 그림을 묶음 그림 (pack/*.webp)으로 합치고 packs.js에 자리를 적음.
+# pack.py v1.6 (품질 90 → 78 — 도감 한 판 256MiB 한도) · v1.5 (h3x 칸 · 빠른 압축 method 4) · v1.4 (h2 칸 추가 — 2기 멤버) · v1.3 (karius 칸 추가) · v1.2 (inju 칸 추가) · v1.1 (item 칸 추가) — 작은 그림을 묶음 그림 (pack/*.webp)으로 합치고 packs.js에 자리를 적음.
 # 게시 파일 수 한도 (511) 때문. 움직이는 그림은 묶지 않음. 실행: python3 codex/tools/pack.py
 import os, json
 from PIL import Image
@@ -20,7 +20,7 @@ for d in DIRS:
         name = f'pack/{d}{n}.webp'
         for f, im, x, y in sheet:
             S.paste(im, (x, y)); where[f'img/{d}/{f}'] = [len(packs), x, y, im.width, im.height]
-        S.save(f'{ROOT}/{name}', 'WEBP', quality=90, method=4); packs.append(name); sheet.clear(); n += 1
+        S.save(f'{ROOT}/{name}', 'WEBP', quality=78, method=4); packs.append(name); sheet.clear(); n += 1
     x = y = rowh = 0
     for f, im in ims:
         if x + im.width > W: x, y, rowh = 0, y + rowh + PAD, 0

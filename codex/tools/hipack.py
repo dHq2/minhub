@@ -1,4 +1,4 @@
-# hipack.py v1.1 — (v1.1: 3기 추가 스프라이트 h3x · 추가팩션 h3f 원본) v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
+# hipack.py v1.2 — (v1.2: 품질 90 → 74 — 도감 한 판 256MiB 한도 안으로) (v1.1: 3기 추가 스프라이트 h3x · 추가팩션 h3f 원본) v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
 #  도감 그림 (img/*)은 목록용으로 줄여 둔 것. 원본이 저장소에 있는 그림만 원본 해상도로 다시 묶어 hi/hi<N>.webp + hipacks.js
 #   · img/h2/<slug>__<동작> → cave-3d/art/h2/<slug>/<동작>.webp (원화 · 은신 · 쌍권총 · 연금술사는 원래 자리)
 #   · img/face/h2_<slug> → 2기 얼굴 원본 · img/inju/<k> → cave-3d/art/inju/<k> · img/karius/<k> → cave-3d/art/kar/<k> (원화 2는 src/art2)
@@ -47,7 +47,7 @@ def flush():
     if not cur: return
     h = max(y + im.height for _, im, x, y in cur); S = Image.new('RGBA', (W, h), (0, 0, 0, 0)); n = len(sheets)
     for src, im, x, y in cur: S.paste(im, (x, y)); where[src] = [n, x, y, im.width, im.height]
-    S.save(f'{ROOT}/hi/hi{n}.webp', 'WEBP', quality=90, method=4); sheets.append(f'hi/hi{n}.webp'); cur.clear()
+    S.save(f'{ROOT}/hi/hi{n}.webp', 'WEBP', quality=74, method=4); sheets.append(f'hi/hi{n}.webp'); cur.clear()
 x = y = rowh = 0
 for src, im in items:
     if x + im.width > W: x, y, rowh = 0, y + rowh + PAD, 0
