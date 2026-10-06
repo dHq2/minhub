@@ -1,0 +1,122 @@
+{
+ "slug": "makarov",
+ "name": "대전사 마카로프",
+ "rank": "강적",
+ "folder": "강적 대전사 마카로프",
+ "role": "적 (강적)",
+ "tall": 2.2,
+ "weight": 180,
+ "palette": [
+  "#282320",
+  "#48403a",
+  "#726454",
+  "#92816d",
+  "#c4b19a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/makarov/idle.webp",
+   "w": 509,
+   "h": 706,
+   "ax": 304,
+   "ay": 703,
+   "from": "뿔 달린 뼈갑옷 전사의 두 전투 자세.png 왼쪽",
+   "orig": "서 있음 (철퇴 늘어뜨림)"
+  },
+  "windup": {
+   "src": "art/h2/makarov/windup.webp",
+   "w": 559,
+   "h": 691,
+   "ax": 249,
+   "ay": 688,
+   "from": "뿔 달린 뼈 전사의 두 전투 자세.png 왼쪽",
+   "orig": "철퇴 머리 위로 치켜들기"
+  },
+  "attack": {
+   "src": "art/h2/makarov/attack.webp",
+   "w": 921,
+   "h": 599,
+   "ax": 300,
+   "ay": 596,
+   "from": "뿔 달린 뼈갑옷 전사의 두 전투 자세.png 오른쪽",
+   "orig": "철퇴 옆으로 쓸어 땅 치기",
+   "ax_auto": 429
+  },
+  "attack2": {
+   "src": "art/h2/makarov/attack2.webp",
+   "w": 756,
+   "h": 612,
+   "ax": 330,
+   "ay": 609,
+   "from": "뿔 투구 전사의 두 전투 포즈.png 왼쪽",
+   "orig": "철퇴 내려찍기 (땅 터짐)",
+   "ax_auto": 457
+  },
+  "jump": {
+   "src": "art/h2/makarov/jump.webp",
+   "w": 733,
+   "h": 696,
+   "ax": 366,
+   "ay": 693,
+   "from": "뿔 투구 전사의 두 전투 포즈.png 오른쪽",
+   "orig": "뛰어올라 철퇴 휘두르기",
+   "ax_auto": 181
+  },
+  "down": {
+   "src": "art/h2/makarov/down.webp",
+   "w": 865,
+   "h": 289,
+   "ax": 432,
+   "ay": 286,
+   "from": "뿔 달린 뼈 전사의 두 전투 자세.png 오른쪽",
+   "orig": "뒤로 쓰러짐 (철퇴 쥔 채)",
+   "ax_auto": 682
+  }
+ },
+ "portrait": "art/h2/makarov/portrait.webp",
+ "face": "art/h2/makarov/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead(down 으로 대신 가능)"
+ ],
+ "kit": {
+  "basic": "철퇴 휘두르기 (attack) — 근접 2.5m",
+  "skills": [
+   {
+    "name": "내려찍기",
+    "pose": "windup→attack2",
+    "desc": "치켜들었다가 땅을 내려찍음, 앞 3m 범위 + 기절"
+   },
+   {
+    "name": "도약 강타",
+    "pose": "jump",
+    "desc": "6m 뛰어올라 착지하며 철퇴로 침"
+   },
+   {
+    "name": "쓸어치기",
+    "pose": "attack",
+    "desc": "옆으로 크게 쓸어 돌 파편을 튀김 (넓은 부채꼴)"
+   }
+  ],
+  "passive": "뼈갑옷: 앞에서 오는 화살 · 총알 피해 30% 감소"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 1400,
+  "atk": 60,
+  "spd": 4.5,
+  "weight_kg": 180,
+  "tall_m": 2.2
+ }
+}

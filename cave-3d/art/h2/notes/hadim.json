@@ -1,0 +1,104 @@
+{
+ "slug": "hadim",
+ "name": "대악마 하딤",
+ "rank": "보스",
+ "folder": "보스,강자들",
+ "role": "보스",
+ "tall": 2.6,
+ "weight": 260,
+ "palette": [
+  "#2a2727",
+  "#3e3437",
+  "#593f48",
+  "#b8285e",
+  "#e05a9a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hadim/idle.webp",
+   "w": 650,
+   "h": 700,
+   "ax": 266,
+   "ay": 697,
+   "from": "대악마 하딤.png",
+   "orig": "서 있음 (대검 끌기)"
+  },
+  "idle2": {
+   "src": "art/h2/hadim/idle2.webp",
+   "w": 492,
+   "h": 703,
+   "ax": 252,
+   "ay": 700,
+   "from": "하딤2.png 왼쪽",
+   "orig": "서 있음 (대검 아래로)"
+  },
+  "attack": {
+   "src": "art/h2/hadim/attack.webp",
+   "w": 951,
+   "h": 563,
+   "ax": 400,
+   "ay": 560,
+   "from": "하딤2.png 오른쪽",
+   "orig": "대검 내지르기 / 휘두르기",
+   "ax_auto": 712
+  },
+  "special": {
+   "src": "art/h2/hadim/special.webp",
+   "w": 899,
+   "h": 593,
+   "ax": 360,
+   "ay": 590,
+   "from": "하딤3.png",
+   "orig": "등뼈 날개 펼치고 대검 내려찍기 자세",
+   "ax_auto": 530
+  }
+ },
+ "portrait": "art/h2/hadim/portrait.webp",
+ "face": "art/h2/hadim/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "windup"
+ ],
+ "kit": {
+  "basic": "대검 휘두르기 (attack) — 근접 3m",
+  "skills": [
+   {
+    "name": "찢는 일격",
+    "pose": "attack",
+    "desc": "한 발 크게 내딛으며 대검을 앞으로 길게 휘둠, 출혈"
+   },
+   {
+    "name": "뼈날개 개방",
+    "pose": "special",
+    "desc": "등에서 갈퀴 같은 뼈 촉수 6개가 튀어나옴: 주변 4m 를 찌르고 대검으로 땅을 갈라 앞 6m 충격파"
+   },
+   {
+    "name": "비웃음",
+    "pose": "idle2",
+    "desc": "대검을 늘어뜨린 채 웃음: 주변 적 공포 (공격력 감소) — 별도 그림 없음"
+   }
+  ],
+  "passive": "찢긴 망토: 피가 반 아래면 공격 속도 +30%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 1
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 3200,
+  "atk": 85,
+  "spd": 5,
+  "weight_kg": 260,
+  "tall_m": 2.6
+ }
+}

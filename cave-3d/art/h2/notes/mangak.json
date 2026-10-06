@@ -1,0 +1,113 @@
+{
+ "slug": "mangak",
+ "name": "망각",
+ "rank": "보스",
+ "folder": "보스 망각",
+ "role": "보스",
+ "tall": 6.6,
+ "weight": 18000,
+ "palette": [
+  "#252420",
+  "#5f5f53",
+  "#7b7b6a",
+  "#c8202a",
+  "#e8d27a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/mangak/idle.webp",
+   "w": 1055,
+   "h": 699,
+   "ax": 545,
+   "ay": 696,
+   "from": "거대괴수 10M길이 [망각].png",
+   "orig": "서 있음 (네 발 웅크림)",
+   "ax_auto": 776
+  },
+  "walk": {
+   "src": "art/h2/mangak/walk.webp",
+   "w": 858,
+   "h": 695,
+   "ax": 458,
+   "ay": 692,
+   "from": "망각2.png 왼쪽",
+   "orig": "어슬렁 (네 발 걷기)"
+  },
+  "attack": {
+   "src": "art/h2/mangak/attack.webp",
+   "w": 1060,
+   "h": 695,
+   "ax": 420,
+   "ay": 692,
+   "from": "망각2.png 오른쪽",
+   "orig": "앞발 할퀴기 돌진",
+   "ax_auto": 180
+  },
+  "special": {
+   "src": "art/h2/mangak/special.webp",
+   "w": 1063,
+   "h": 708,
+   "ax": 420,
+   "ay": 705,
+   "from": "망각3.png",
+   "orig": "턱 펼쳐 삼키기",
+   "ax_auto": 692
+  }
+ },
+ "portrait": "art/h2/mangak/portrait.webp",
+ "face": "art/h2/mangak/face.webp",
+ "missing": [
+  "hurt",
+  "down",
+  "dead",
+  "roar(포효)",
+  "tail(꼬리 휘두르기)",
+  "turn(뒤돌기)"
+ ],
+ "kit": {
+  "basic": "앞발 할퀴기 (attack) — 앞 6m 부채꼴, 넘어뜨림",
+  "skills": [
+   {
+    "name": "돌진 할퀴기",
+    "pose": "attack",
+    "desc": "8m 앞으로 뛰어들며 앞발 갈퀴로 긁음, 맞으면 넘어짐"
+   },
+   {
+    "name": "망각의 아가리",
+    "pose": "special",
+    "desc": "턱이 네 갈래로 벌어지며 앞 5m 를 물어 삼킴: 큰 피해 + 잠깐 '망각' (기술 · 아이템 못 씀 3초)"
+   },
+   {
+    "name": "어슬렁 포위",
+    "pose": "walk",
+    "desc": "천천히 옆으로 돌며 꼬리 끝 가시로 뒤쪽 견제 (꼬리 그림 없음 — walk 로 대신)"
+   }
+  ],
+  "passive": "비늘 깃털 갑옷: 정면 원거리 피해 30% 감소, 옆구리 · 등은 약점"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 6,
+ "length": 10,
+ "billboard": {
+  "mode": "single_wide",
+  "note": "옆모습 그림이라 빌보드 한 장 (가로 약 1.5:1) 으로 됨. 게임 크기는 길이 10m 기준 (그림 가로 = 10m, 세로 약 6.6m). 판정은 빌보드가 아니라 길쭉한 상자/캡슐 (길이 9m, 폭 3m, 높이 5m) 로 따로 두고, 머리 쪽 (오른쪽 1/4) 에 공격 판정."
+ },
+ "ax_note": "네 발 짐승이라 ax 는 앞발 · 뒷발 사이 몸 가운데로 손으로 고침 (자동값은 ax_auto).",
+ "stats": {
+  "hp": 6000,
+  "atk": 90,
+  "spd": 4.5,
+  "weight_kg": 18000,
+  "tall_m": 6.6,
+  "length_m": 10
+ }
+}

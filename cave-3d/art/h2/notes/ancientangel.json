@@ -1,0 +1,78 @@
+{
+ "slug": "ancientangel",
+ "name": "고대천사",
+ "rank": "보스",
+ "folder": "보스,강자들",
+ "role": "보스",
+ "tall": 4.0,
+ "weight": 220,
+ "palette": [
+  "#503a3d",
+  "#77595c",
+  "#977578",
+  "#b08d8e",
+  "#c5a2a3"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ancientangel/idle.webp",
+   "w": 1060,
+   "h": 701,
+   "ax": 488,
+   "ay": 698,
+   "from": "고대천사 보스.png",
+   "orig": "서 있음 (날개 펼침)"
+  }
+ },
+ "portrait": "art/h2/ancientangel/portrait.webp",
+ "face": "art/h2/ancientangel/face.webp",
+ "missing": [
+  "attack",
+  "special",
+  "fly",
+  "hurt",
+  "down",
+  "dead",
+  "walk"
+ ],
+ "kit": {
+  "basic": "날개 깃털 쏘기 (그림 없음 — idle 로 대신) — 중거리 10m",
+  "skills": [
+   {
+    "name": "깃털 비",
+    "pose": "idle",
+    "desc": "날개를 펼쳐 깃털 칼날을 부채꼴로 쏨"
+   },
+   {
+    "name": "갈퀴 낚아채기",
+    "pose": "idle",
+    "desc": "날개 끝 갈퀴 손으로 앞 4m 적을 잡아 던짐"
+   },
+   {
+    "name": "고대의 날갯짓",
+    "pose": "idle",
+    "desc": "강한 바람으로 주변 적을 밀어냄"
+   }
+  ],
+  "passive": "깃털 몸: 공중에 떠 있는 동안 근접 피해 25% 감소"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 3,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 0
+ },
+ "tag": "mage",
+ "role_job": "지휘",
+ "bag": 8,
+ "wingspan": 6.0,
+ "stats": {
+  "hp": 4200,
+  "atk": 80,
+  "spd": 5,
+  "weight_kg": 220,
+  "tall_m": 4.0
+ }
+}

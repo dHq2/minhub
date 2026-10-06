@@ -1,0 +1,104 @@
+{
+ "slug": "mano",
+ "name": "마노",
+ "rank": "보스",
+ "folder": "보스,강자들",
+ "role": "보스",
+ "tall": 2.5,
+ "weight": 90,
+ "palette": [
+  "#151a23",
+  "#1c1f28",
+  "#27333c",
+  "#799dac",
+  "#9fd6ea"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/mano/idle.webp",
+   "w": 303,
+   "h": 700,
+   "ax": 150,
+   "ay": 697,
+   "from": "마노1.png",
+   "orig": "서 있음 (가늘고 긴 몸)",
+   "ax_auto": 110
+  },
+  "walk": {
+   "src": "art/h2/mano/walk.webp",
+   "w": 413,
+   "h": 525,
+   "ax": 250,
+   "ay": 522,
+   "from": "마노2.png 왼쪽",
+   "orig": "웅크려 기어오기",
+   "ax_auto": 127
+  },
+  "attack": {
+   "src": "art/h2/mano/attack.webp",
+   "w": 643,
+   "h": 495,
+   "ax": 310,
+   "ay": 492,
+   "from": "마노2.png 오른쪽",
+   "orig": "팔 뻗어 갈퀴 할퀴기",
+   "ax_auto": 468
+  },
+  "special": {
+   "src": "art/h2/mano/special.webp",
+   "w": 726,
+   "h": 596,
+   "ax": 343,
+   "ay": 593,
+   "from": "마노3.png",
+   "orig": "몸이 낫 모양 그림자 칼날로 변함"
+  }
+ },
+ "portrait": "art/h2/mano/portrait.webp",
+ "face": "art/h2/mano/face.webp",
+ "missing": [
+  "hurt",
+  "down",
+  "dead",
+  "jump"
+ ],
+ "kit": {
+  "basic": "긴 팔 할퀴기 (attack) — 근접 3.5m (팔이 길어 사거리 김)",
+  "skills": [
+   {
+    "name": "그림자 낫",
+    "pose": "special",
+    "desc": "팔다리가 초승달 칼날로 늘어나 주변 5m 를 휘감아 벰"
+   },
+   {
+    "name": "기어 다가오기",
+    "pose": "walk",
+    "desc": "낮게 웅크려 빠르게 접근, 이때 원거리 덜 맞음"
+   },
+   {
+    "name": "늘어난 손",
+    "pose": "attack",
+    "desc": "6m 떨어진 적까지 손을 뻗어 할퀴고 당김"
+   }
+  ],
+  "passive": "그림자 몸: 어두운 곳에서 이동 속도 +30%, 빛 피해 2배"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 5
+ },
+ "tag": "beast",
+ "role_job": "척후",
+ "bag": 6,
+ "stats": {
+  "hp": 2400,
+  "atk": 75,
+  "spd": 7,
+  "weight_kg": 90,
+  "tall_m": 2.5
+ }
+}

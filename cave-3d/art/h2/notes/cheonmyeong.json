@@ -1,0 +1,104 @@
+{
+ "slug": "cheonmyeong",
+ "name": "천명",
+ "rank": "보스",
+ "folder": "보스,강자들",
+ "role": "보스",
+ "tall": 2.4,
+ "weight": 300,
+ "palette": [
+  "#463126",
+  "#7b5b3e",
+  "#ac8357",
+  "#cca26c",
+  "#e2bb84"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/cheonmyeong/idle.webp",
+   "w": 654,
+   "h": 702,
+   "ax": 329,
+   "ay": 699,
+   "from": "천명1.png",
+   "orig": "서 있음 (옆, 대검 끌기)"
+  },
+  "idle2": {
+   "src": "art/h2/cheonmyeong/idle2.webp",
+   "w": 548,
+   "h": 699,
+   "ax": 263,
+   "ay": 696,
+   "from": "천명2.png 왼쪽",
+   "orig": "서 있음 (정면, 대검 아래로)"
+  },
+  "attack": {
+   "src": "art/h2/cheonmyeong/attack.webp",
+   "w": 832,
+   "h": 650,
+   "ax": 315,
+   "ay": 647,
+   "from": "천명2.png 오른쪽",
+   "orig": "낮은 자세 대검 베기",
+   "ax_auto": 418
+  },
+  "special": {
+   "src": "art/h2/cheonmyeong/special.webp",
+   "w": 906,
+   "h": 598,
+   "ax": 440,
+   "ay": 595,
+   "from": "천명3.png",
+   "orig": "투구 가면이 긴 창살 창으로 뻗어나감 + 손 뻗기",
+   "ax_auto": 343
+  }
+ },
+ "portrait": "art/h2/cheonmyeong/portrait.webp",
+ "face": "art/h2/cheonmyeong/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "windup"
+ ],
+ "kit": {
+  "basic": "대검 베기 (attack) — 근접 3m",
+  "skills": [
+   {
+    "name": "하늘의 명령 (투구창)",
+    "pose": "special",
+    "desc": "십자 가면 투구가 금빛 창살 창으로 7m 앞까지 뻗어 꿰뚫음, 관통"
+   },
+   {
+    "name": "붙잡기",
+    "pose": "special",
+    "desc": "뻗은 왼손으로 앞 적을 끌어당김 (special 그림 같이 씀)"
+   },
+   {
+    "name": "낮은 베기",
+    "pose": "attack",
+    "desc": "자세를 낮춰 다리를 베어 둔화"
+   }
+  ],
+  "passive": "붕대 갑옷: 받는 근접 피해 20% 감소, 불에 약함"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 4,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 3600,
+  "atk": 80,
+  "spd": 4,
+  "weight_kg": 300,
+  "tall_m": 2.4
+ }
+}

@@ -1,0 +1,102 @@
+{
+ "slug": "ryang",
+ "name": "아량",
+ "rank": "보스",
+ "folder": "보스,강자들",
+ "role": "보스",
+ "tall": 2.8,
+ "weight": 120,
+ "palette": [
+  "#2f3647",
+  "#7f93af",
+  "#a7bad7",
+  "#bfcde6",
+  "#d0dcf1"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ryang/idle.webp",
+   "w": 667,
+   "h": 700,
+   "ax": 318,
+   "ay": 697,
+   "from": "아량.png",
+   "orig": "서 있음 (정면, 유령 망토)"
+  },
+  "idle2": {
+   "src": "art/h2/ryang/idle2.webp",
+   "w": 636,
+   "h": 700,
+   "ax": 299,
+   "ay": 697,
+   "from": "아량2.png 왼쪽",
+   "orig": "서 있음 (손 모음)"
+  },
+  "attack": {
+   "src": "art/h2/ryang/attack.webp",
+   "w": 1045,
+   "h": 667,
+   "ax": 337,
+   "ay": 664,
+   "from": "아량2.png 오른쪽",
+   "orig": "유령 떼 내뿜기 (오른쪽으로)"
+  },
+  "special": {
+   "src": "art/h2/ryang/special.webp",
+   "w": 1054,
+   "h": 701,
+   "ax": 434,
+   "ay": 698,
+   "from": "아량3.png",
+   "orig": "유령 손 아가리 (오른쪽 큰 입)"
+  }
+ },
+ "portrait": "art/h2/ryang/portrait.webp",
+ "face": "art/h2/ryang/face.webp",
+ "missing": [
+  "walk(떠다니기)",
+  "hurt",
+  "down",
+  "dead",
+  "summon"
+ ],
+ "kit": {
+  "basic": "유령 손 할퀴기 — 근접 2m",
+  "skills": [
+   {
+    "name": "유령 떼",
+    "pose": "attack",
+    "desc": "망토 속 유령 수십이 앞으로 8m 쏟아져 나감, 여러 번 맞음"
+   },
+   {
+    "name": "삼키는 망토",
+    "pose": "special",
+    "desc": "망토가 손 가득한 큰 입으로 벌어져 앞 5m 적을 붙잡아 끌어들임"
+   },
+   {
+    "name": "유령 소환",
+    "pose": "idle2",
+    "desc": "작은 유령 3마리 소환 (따로 그림 없음)"
+   }
+  ],
+  "passive": "유령 몸: 물리 피해 30% 감소, 마법 · 빛에 약함, 떠 있어 함정 무시"
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 2
+ },
+ "tag": "mage",
+ "role_job": "지휘",
+ "bag": 10,
+ "stats": {
+  "hp": 2800,
+  "atk": 70,
+  "spd": 3.5,
+  "weight_kg": 120,
+  "tall_m": 2.8
+ }
+}

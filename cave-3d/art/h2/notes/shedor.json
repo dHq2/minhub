@@ -1,0 +1,122 @@
+{
+ "slug": "shedor",
+ "name": "배신자 셰도르",
+ "rank": "일반 적 NPC",
+ "folder": "일반 적 NPC 배신자 셰도르",
+ "role": "적 (NPC)",
+ "tall": 1.85,
+ "weight": 80,
+ "palette": [
+  "#222029",
+  "#3c313c",
+  "#a33a28",
+  "#ada7ae",
+  "#e2e2e6"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/shedor/idle.webp",
+   "w": 447,
+   "h": 700,
+   "ax": 219,
+   "ay": 697,
+   "from": "붉은 머리 가면 전사의 검술 포즈.png 왼쪽",
+   "orig": "서 있음 (장검 아래로)"
+  },
+  "attack": {
+   "src": "art/h2/shedor/attack.webp",
+   "w": 648,
+   "h": 657,
+   "ax": 331,
+   "ay": 654,
+   "from": "붉은 머리 가면 전사의 검술 포즈.png 오른쪽",
+   "orig": "장검 베기 (뒤로 휘두른 잔상)"
+  },
+  "windup": {
+   "src": "art/h2/shedor/windup.webp",
+   "w": 599,
+   "h": 700,
+   "ax": 350,
+   "ay": 697,
+   "from": "붉은 머리 가면 전사의 두 전투 포즈.png 오른쪽",
+   "orig": "장검 치켜들기 (왼손 앞으로)",
+   "ax_auto": 434
+  },
+  "guard": {
+   "src": "art/h2/shedor/guard.webp",
+   "w": 523,
+   "h": 511,
+   "ax": 195,
+   "ay": 508,
+   "from": "붉은 머리 가면 전사의 두 전투 자세.png 왼쪽",
+   "orig": "두 손 장검 겨눔 (방어 자세)",
+   "ax_auto": 149
+  },
+  "crouch": {
+   "src": "art/h2/shedor/crouch.webp",
+   "w": 549,
+   "h": 536,
+   "ax": 200,
+   "ay": 533,
+   "from": "붉은 머리 가면 전사의 두 전투 포즈.png 왼쪽",
+   "orig": "무릎 꿇고 장검 땅에 꽂음",
+   "ax_auto": 375
+  },
+  "dead": {
+   "src": "art/h2/shedor/dead.webp",
+   "w": 650,
+   "h": 211,
+   "ax": 325,
+   "ay": 208,
+   "from": "붉은 머리 가면 전사의 두 전투 자세.png 오른쪽",
+   "orig": "쓰러져 죽음 (머리 오른쪽)",
+   "ax_auto": 595
+  }
+ },
+ "portrait": "art/h2/shedor/portrait.webp",
+ "face": "art/h2/shedor/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down(dead 로 대신)"
+ ],
+ "kit": {
+  "basic": "장검 베기 (attack) — 근접 2m",
+  "skills": [
+   {
+    "name": "배신의 일격",
+    "pose": "windup→attack",
+    "desc": "치켜들었다 크게 베기, 등 뒤에서 맞히면 2배"
+   },
+   {
+    "name": "겨눔",
+    "pose": "guard",
+    "desc": "앞 근접 공격 막기, 막으면 반격"
+   },
+   {
+    "name": "무릎 꿇는 척",
+    "pose": "crouch",
+    "desc": "피가 적으면 항복하는 척 무릎 꿇음 — 다가오면 기습 (이야기용)"
+   }
+  ],
+  "passive": "웃는 가면: 대화 · 거래 중 속임수 (배신 이벤트)"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 1,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 3
+ },
+ "tag": "soldier",
+ "role_job": "척후",
+ "bag": 10,
+ "stats": {
+  "hp": 320,
+  "atk": 24,
+  "spd": 6,
+  "weight_kg": 80,
+  "tall_m": 1.85
+ }
+}

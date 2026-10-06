@@ -1,0 +1,102 @@
+{
+ "slug": "manghyang",
+ "name": "이계악마 망향",
+ "rank": "동료·적",
+ "folder": "동료·적 이계악마 망향",
+ "role": "둘 다 (동료 / 적)",
+ "tall": 1.8,
+ "weight": 75,
+ "palette": [
+  "#3e1f2e",
+  "#863959",
+  "#e26592",
+  "#d198ac",
+  "#f6dde5"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/manghyang/idle.webp",
+   "w": 390,
+   "h": 701,
+   "ax": 167,
+   "ay": 698,
+   "from": "분홍 악마 전투 스프라이트 시트.png 왼쪽",
+   "orig": "서 있음"
+  },
+  "attack": {
+   "src": "art/h2/manghyang/attack.webp",
+   "w": 631,
+   "h": 623,
+   "ax": 323,
+   "ay": 620,
+   "from": "분홍 악마 전투 스프라이트 시트.png 오른쪽",
+   "orig": "앞으로 뛰어들며 갈퀴손 할퀴기"
+  },
+  "guard": {
+   "src": "art/h2/manghyang/guard.webp",
+   "w": 459,
+   "h": 473,
+   "ax": 226,
+   "ay": 470,
+   "from": "두 포즈 게임 스프라이트 여백 보정.png 왼쪽",
+   "orig": "두 팔 X 자 막기 (넓게 버팀)"
+  },
+  "down": {
+   "src": "art/h2/manghyang/down.webp",
+   "w": 740,
+   "h": 277,
+   "ax": 370,
+   "ay": 274,
+   "from": "두 포즈 게임 스프라이트 여백 보정.png 오른쪽",
+   "orig": "엎드려 쓰러짐 (머리 오른쪽)",
+   "ax_auto": 343
+  }
+ },
+ "portrait": "art/h2/manghyang/portrait.webp",
+ "face": "art/h2/manghyang/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "skill"
+ ],
+ "kit": {
+  "basic": "갈퀴손 할퀴기 (attack) — 근접 1.8m, 2연타",
+  "skills": [
+   {
+    "name": "돌진 할퀴기",
+    "pose": "attack",
+    "desc": "4m 뛰어들며 할퀴어 출혈"
+   },
+   {
+    "name": "엑스 막기",
+    "pose": "guard",
+    "desc": "두 팔 교차 막기, 막은 뒤 다음 공격 강화"
+   },
+   {
+    "name": "그리움 (망향)",
+    "pose": "idle",
+    "desc": "근처 아군 수만큼 힘이 오름 (그림 없음)"
+   }
+  ],
+  "passive": "이계의 몸: 쓰러지면 한 번 피 1로 버팀"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 420,
+  "atk": 28,
+  "spd": 6.5,
+  "weight_kg": 75,
+  "tall_m": 1.8
+ }
+}
