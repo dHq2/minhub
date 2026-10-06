@@ -1,0 +1,148 @@
+{
+ "slug": "mstar",
+ "name": "모닝스타 (\"슈퍼스타\")",
+ "rank": "1기 동료 · E (등급 글자 없음 — 파일 이름 '모닝스타1'. LORE 원문 '##E' 칸, 도감: 모닝스타 · 동료)",
+ "folder": "3기-2 (모닝스타1.png)",
+ "role": "동료 (2D 판: 2층 보스 오르소를 이기면 영입 · 4층 영입 동료, LORE \"옛 1층 동료\". 게임 안 DEFS.morningstar 가 이미 있음 — 이 h2 slug 는 새 3D 전투 그림 묶음)",
+ "tall": 1.5,
+ "weight": 45,
+ "palette": [
+  "#110f0d",
+  "#4a4240",
+  "#f5e3db",
+  "#7a2e24",
+  "#d9b23c"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/mstar/idle.webp",
+   "w": 480,
+   "h": 696,
+   "ax": 185,
+   "ay": 693,
+   "from": "모닝스타1.png 위 둘째",
+   "orig": "철퇴를 땅에 늘어뜨린 채 서서 손톱 세운 손을 들고 송곳니를 드러냄 (광기 어린 대기)",
+   "scale": 1.65
+  },
+  "attack": {
+   "src": "art/h2/mstar/attack.webp",
+   "w": 833,
+   "h": 710,
+   "ax": 310,
+   "ay": 707,
+   "from": "모닝스타1.png 위 첫째",
+   "orig": "다리를 넓게 벌리고 두 손으로 사슬을 당겨 가시 철퇴를 옆으로 크게 휘두름, 씩 웃음",
+   "scale": 1.65
+  },
+  "attack2": {
+   "src": "art/h2/mstar/attack2.webp",
+   "w": 936,
+   "h": 614,
+   "ax": 397,
+   "ay": 611,
+   "from": "모닝스타1.png 아래 셋째",
+   "orig": "크게 내디디며 사슬을 앞으로 내던져 철퇴를 멀리 뻗음 (철퇴 던지기)",
+   "scale": 1.65
+  },
+  "windup": {
+   "src": "art/h2/mstar/windup.webp",
+   "w": 584,
+   "h": 870,
+   "ax": 265,
+   "ay": 867,
+   "from": "모닝스타1.png 아래 첫째",
+   "orig": "한 팔로 사슬을 높이 들어 철퇴를 머리 위로 치켜듦, 외침 (내려찍기 직전)",
+   "scale": 1.65
+  },
+  "spin": {
+   "src": "art/h2/mstar/spin.webp",
+   "w": 688,
+   "h": 822,
+   "ax": 280,
+   "ay": 819,
+   "from": "모닝스타1.png 아래 둘째",
+   "orig": "두 팔을 머리 위로 들어 사슬 철퇴를 머리 위에서 빙빙 돌림",
+   "scale": 1.65
+  },
+  "crouch": {
+   "src": "art/h2/mstar/crouch.webp",
+   "w": 526,
+   "h": 574,
+   "ax": 298,
+   "ay": 571,
+   "from": "모닝스타1.png 위 셋째",
+   "orig": "쭈그려 앉아 사슬을 몸에 감고 음흉하게 웃음 (철퇴는 발치에)",
+   "scale": 1.65
+  },
+  "down": {
+   "src": "art/h2/mstar/down.webp",
+   "w": 688,
+   "h": 393,
+   "ax": 295,
+   "ay": 390,
+   "from": "모닝스타1.png 위 넷째",
+   "orig": "옆으로 쓰러져 엎드린 채 이를 악물고 노려봄 (사슬 늘어짐)",
+   "scale": 1.65
+  },
+  "back": {
+   "src": "art/h2/mstar/back.webp",
+   "w": 559,
+   "h": 741,
+   "ax": 229,
+   "ay": 738,
+   "from": "모닝스타1.png 아래 넷째",
+   "orig": "뒷모습, 어깨 너머로 오른쪽을 보며 철퇴를 아래로 늘어뜨림",
+   "scale": 1.65
+  }
+ },
+ "portrait": "art/h2/mstar/portrait.webp",
+ "face": "art/h2/mstar/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신)",
+  "front"
+ ],
+ "kit": {
+  "basic": "사슬 철퇴 휘두르기 (attack) — 앞 3.5m 부채꼴 120도, 맞은 자리 반지름 1m 주변 피해 (2D splashR 그대로)",
+  "skills": [
+   {
+    "name": "철퇴 던지기",
+    "pose": "attack2",
+    "desc": "사슬을 7m 줄로 내던져 처음 맞은 적에게 피해 (공격력 1.5배) + 발 앞 1.5m 로 끌어오기. 재사용 8초"
+   },
+   {
+    "name": "광란의 회전",
+    "pose": "spin",
+    "desc": "3초 동안 철퇴를 머리 위로 돌려 반지름 3m 원 0.4초마다 피해, 돌면서 걸을 수 있음 (이동 속도 −30%), 원거리 투사체 30% 튕김"
+   },
+   {
+    "name": "별 떨어뜨리기",
+    "pose": "windup",
+    "desc": "0.6초 치켜든 뒤 앞 4m 지점 반지름 1.8m 원 내려찍기 — 넘어뜨림 + 1초 기절. 재사용 10초"
+   }
+  ],
+  "passive": "슈퍼스타의 광기: 잃은 체력 10%마다 공격력 +4%. 전투마다 한 번, 쓰러지면 (down) 2초 뒤 체력 20%로 웃으며 일어남"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 950,
+  "atk": 40,
+  "spd": 5.0,
+  "weight_kg": 45,
+  "tall_m": 1.5
+ },
+ "desc": "검은 트윈테일 · 노란 별 눈 · 송곳니의 작은 광기 소녀. 녹슨 가시 철퇴를 사슬째 휘두르는 근딜, 별명 \"슈퍼스타\".",
+ "gen": 1,
+ "codex_g": "morningstar"
+}
