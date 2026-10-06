@@ -1,0 +1,156 @@
+{
+ "slug": "knightcaptain",
+ "name": "기사단장",
+ "rank": "미정 (파일 이름에 등급 없음)",
+ "folder": "3기-2 / 기사단장.png (도감 1기 묶음 knightcommander 와 같은 인물)",
+ "role": "둘 다 (보스 · 동료) — 왕국 기사단장이라 적 쪽이면 기사단을 이끄는 보스, 아군이면 지휘형 동료. 도감에서도 역할 미정",
+ "tall": 1.85,
+ "weight": 95,
+ "palette": [
+  "#5e6571",
+  "#303139",
+  "#b3bac5",
+  "#8e95a1",
+  "#d6dce3"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/knightcaptain/idle.webp",
+   "w": 524,
+   "h": 687,
+   "ax": 253,
+   "ay": 684,
+   "from": "기사단장.png 위 줄 1번째",
+   "orig": "3/4 앞모습으로 똑바로 섬, 붉은 술 달린 장검을 땅에 세워 두 손으로 자루를 쥠, 흰 늑대 털망토 · 흰 천 망토가 발까지 늘어짐",
+   "scale": 1.55
+  },
+  "guard": {
+   "src": "art/h2/knightcaptain/guard.webp",
+   "w": 687,
+   "h": 617,
+   "ax": 297,
+   "ay": 614,
+   "from": "기사단장.png 위 줄 2번째",
+   "orig": "다리를 넓게 벌리고 허리 높이에서 두 손으로 장검을 오른쪽으로 길게 겨눈 겨눔 자세 (막기 자세)",
+   "scale": 1.55
+  },
+  "attack": {
+   "src": "art/h2/knightcaptain/attack.webp",
+   "w": 784,
+   "h": 615,
+   "ax": 382,
+   "ay": 612,
+   "from": "기사단장.png 위 줄 3번째",
+   "orig": "두 손 장검으로 오른쪽 가로베기, 흰 베기 궤적이 몸 앞을 휘감음, 머리칼 · 망토가 뒤로 휘날림 (오른쪽 끝에 섞인 4번째 그림 머리칼 · 망토 지움)",
+   "scale": 1.55
+  },
+  "attack2": {
+   "src": "art/h2/knightcaptain/attack2.webp",
+   "w": 668,
+   "h": 547,
+   "ax": 333,
+   "ay": 544,
+   "from": "기사단장.png 위 줄 4번째",
+   "orig": "오른팔을 쭉 뻗어 한 손 찌르기, 다리 넓게 벌린 깊은 자세, 붉은 술 나부낌 (왼쪽에 섞인 3번째 그림 칼끝 지움)",
+   "scale": 1.55
+  },
+  "low": {
+   "src": "art/h2/knightcaptain/low.webp",
+   "w": 604,
+   "h": 522,
+   "ax": 255,
+   "ay": 519,
+   "from": "기사단장.png 아래 줄 1번째",
+   "orig": "한 무릎 굽혀 낮게 웅크리고 장검을 오른쪽 아래로 비스듬히 내린 자세 — 반격 · 발도 준비",
+   "scale": 1.55
+  },
+  "windup": {
+   "src": "art/h2/knightcaptain/windup.webp",
+   "w": 622,
+   "h": 792,
+   "ax": 260,
+   "ay": 789,
+   "from": "기사단장.png 아래 줄 2번째",
+   "orig": "두 손으로 장검을 머리 위로 높이 치켜든 내려찍기 직전 자세, 붉은 술이 손잡이에서 늘어짐 (오른쪽에 섞인 3번째 그림 머리칼 지움)",
+   "scale": 1.55
+  },
+  "dash": {
+   "src": "art/h2/knightcaptain/dash.webp",
+   "w": 758,
+   "h": 620,
+   "ax": 368,
+   "ay": 617,
+   "from": "기사단장.png 아래 줄 3번째",
+   "orig": "앞으로 크게 내딛으며 한 손으로 장검을 오른쪽 아래로 뻗은 돌진 찌르기, 검은 머리 · 망토가 뒤로 길게 휘날림",
+   "scale": 1.55
+  },
+  "skill": {
+   "src": "art/h2/knightcaptain/skill.webp",
+   "w": 574,
+   "h": 797,
+   "ax": 226,
+   "ay": 794,
+   "from": "기사단장.png 아래 줄 4번째",
+   "orig": "왼손 주먹 쥐고 오른팔로 장검을 하늘 높이 치켜든 호령 자세 (기사단 지휘)",
+   "scale": 1.55
+  }
+ },
+ "portrait": "art/h2/knightcaptain/portrait.webp",
+ "face": "art/h2/knightcaptain/face.webp",
+ "portrait_from": "기사단장.png 위 줄 1번째 (idle) 상자 그대로 (흰 바탕) · face 는 그 투구 속 얼굴",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "back",
+  "옆모습 idle (idle 은 3/4 앞모습)"
+ ],
+ "kit": {
+  "basic": "장검 가로베기 (attack) — 앞 3m 부채꼴 140도. guard 자세로 막기 (정면 근접 막기, 막은 직후 low 자세에서 반격 베기 1회)",
+  "skills": [
+   {
+    "name": "일섬 찌르기",
+    "pose": "attack2",
+    "desc": "한 손으로 쭉 뻗는 찌르기 — 앞 6m 줄 관통, 방어 무시 30%"
+   },
+   {
+    "name": "돌진 베기",
+    "pose": "dash",
+    "desc": "8m 앞으로 돌진하며 찔러 들어감 — 줄 위 적 넘어뜨림, 마지막 적에게 추가 피해"
+   },
+   {
+    "name": "천근 내려찍기",
+    "pose": "windup",
+    "desc": "0.8초 장검을 치켜들었다 내려찍음 — 앞 3m 원 (반지름 2.5m) 큰 피해 + 1초 기절, 쓰러진 적에게 확인사살"
+   },
+   {
+    "name": "기사단 호령",
+    "pose": "skill",
+    "desc": "장검을 하늘로 들어 호령 — 반지름 10m 원 안 아군 공격 +20% · 방어 +15% 8초, 적은 2초 공포"
+   }
+  ],
+  "passive": "백랑 털망토: 정면에서 받는 피해 15% 감소, 체력 30% 아래로 떨어지면 공격 +20%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "지휘",
+ "bag": 14,
+ "stats": {
+  "hp": 2600,
+  "atk": 75,
+  "spd": 4.6,
+  "weight_kg": 95,
+  "tall_m": 1.85
+ },
+ "desc": "흰 늑대 털망토와 은빛 판금 갑옷을 두른 왕국 기사단장. 투구 아래로 검은 긴 머리를 늘어뜨리고, 붉은 술이 달린 장검 한 자루로 싸운다.",
+ "codex_g": "knightcommander",
+ "gen": 1
+}
