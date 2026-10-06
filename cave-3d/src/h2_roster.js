@@ -1,6 +1,616 @@
 /* h2_roster.js — 자동 생성 (tools/h2_roster.py). 손으로 고치지 말 것: art/h2/notes/*.json을 고치고 다시 돌림 */
 'use strict';
 const H2R = {
+"ahae": {
+"slug": "ahae",
+"name": "아해",
+"rank": "4성",
+"folder": "3기-2/4성 도깨비 아해",
+"role": "동료 (4성 = 영입 가능한 동료로 봄. 도감에는 예전 묶음 '아해 · 적 · 보스' 가 있어 적 · 보스로도 쓸 수 있음 → 둘 다 가능)",
+"tall": 1.75,
+"weight": 62,
+"palette": [
+"#60c0d8",
+"#181818",
+"#c0c0c0",
+"#909090",
+"#d01818"
+],
+"missing": [
+"dead (down 으로 대신)",
+"guard (막기)",
+"run",
+"catch (돌아온 차크람 받기)",
+"transform (변신 순간)"
+],
+"kit": {
+"basic": "갈고리 검 베기 · 찌르기 (attack) — 근접 2.5m 앞 부채꼴 90도, 3타째는 낮게 쓸어베기 (attack2) 로 넘어뜨림",
+"skills": [
+{
+"name": "차크람 던지기",
+"pose": "throw",
+"desc": "12m 줄 사격 — 차크람이 회전하며 날아가 줄 위 적을 모두 관통하고 끝에서 되돌아와 다시 한 번 벰 (돌아올 때 아해 손에 잡히면 재사용 대기 30% 감소). 대기 중엔 근접이 검만으로 바뀜 (throw2 · windup 으로 준비 동작)"
+},
+{
+"name": "원념 소환",
+"pose": "summon",
+"desc": "소환 — 붉은 원념 (ahae_wraith) 1체를 앞 3m 에 12초 부름. 원념은 6m 까지 팔을 늘여 할퀴고 (attack) 적 하나를 붙잡아 1.5초 묶음 (attack2). 아해가 cast 로 가리키면 그 적에게 달려듦"
+},
+{
+"name": "도약 내려치기",
+"pose": "jump",
+"desc": "도약 — 6m 앞 지점으로 뛰어올라 차크람을 내려침, 반지름 2.5m 원 피해 + 0.5초 경직. 쓰러진 적에게는 low 로 이어 확인사살 (피해 2배)"
+},
+{
+"name": "각성 — 사슬낫",
+"pose": "summon2",
+"desc": "변신 — 붉은 원념을 몸에 둘러 ahae2 (각성 모드, 사슬낫) 로 20초 바뀜. 체력 50% 아래에서만 쓸 수 있음, 쓰면 체력 15% 회복"
+}
+],
+"passive": "무기 바꿔 쥐기: 검 · 차크람 · 맨손을 그때그때 바꿔 쓰는 올라운더 — 같은 기술을 연달아 쓰지 않고 다른 무기 기술로 이으면 다음 공격 피해 +15% (최대 3겹)"
+},
+"apt": {
+"melee": 4,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 2
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 10,
+"stats": {
+"hp": 900,
+"atk": 32,
+"spd": 6.2,
+"weight_kg": 62,
+"tall_m": 1.75
+},
+"desc": "하늘색 피부에 외뿔 하나, 검은 긴 머리의 4성 도깨비. 늘 담배를 물고 다니며 갈고리 검 · 차크람 · 맨손을 바꿔 쓰는 올라운더, 등 뒤로 붉은 원념을 부린다.",
+"gen": 3,
+"codex_g": "ahae",
+"batch": "3기-2",
+"portrait": "art/h2/ahae/portrait.webp",
+"face": "art/h2/ahae/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ahae/idle.webp",
+"w": 389,
+"h": 699,
+"ax": 245,
+"ay": 696,
+"orig": "서 있음 — 오른손에 갈고리 검 (끝이 낫처럼 굽은 외날 검)을 늘어뜨리고 왼손 뒤로 차크람, 담배를 입에 묾 (기본 무장 대기)"
+},
+"idle2": {
+"src": "art/h2/ahae/idle2.webp",
+"w": 298,
+"h": 706,
+"ax": 211,
+"ay": 703,
+"orig": "서 있음 — 차크람만 들고 담배 피움 (검 없음)"
+},
+"idle3": {
+"src": "art/h2/ahae/idle3.webp",
+"w": 341,
+"h": 706,
+"ax": 221,
+"ay": 703,
+"orig": "서 있음 — 큰 초승달 차크람을 늘어뜨리고 담배 피움"
+},
+"smoke": {
+"src": "art/h2/ahae/smoke.webp",
+"w": 262,
+"h": 709,
+"ax": 102,
+"ay": 706,
+"orig": "맨손으로 서서 담배 피움 (무기 없는 평상 대기)"
+},
+"walk": {
+"src": "art/h2/ahae/walk.webp",
+"w": 504,
+"h": 672,
+"ax": 371,
+"ay": 669,
+"orig": "걷기 — 검을 아래로, 차크람을 옆으로 든 채 성큼 걸음"
+},
+"walk2": {
+"src": "art/h2/ahae/walk2.webp",
+"w": 506,
+"h": 675,
+"ax": 328,
+"ay": 672,
+"orig": "걷기 2 — 검 · 차크람 들고 걸음 (머리카락 휘날림)"
+},
+"ready": {
+"src": "art/h2/ahae/ready.webp",
+"w": 623,
+"h": 692,
+"ax": 287,
+"ay": 689,
+"orig": "맨손 전투 자세 — 다리 넓게 벌리고 두 손 갈퀴처럼 폄"
+},
+"ready2": {
+"src": "art/h2/ahae/ready2.webp",
+"w": 556,
+"h": 592,
+"ax": 304,
+"ay": 589,
+"orig": "맨손 자세 2 — 한쪽 다리 들어 옆걸음, 두 손 벌림 (피하기 · 옆걸음으로도)"
+},
+"ready3": {
+"src": "art/h2/ahae/ready3.webp",
+"w": 523,
+"h": 682,
+"ax": 298,
+"ay": 679,
+"orig": "차크람 낮게 쥐고 다른 손 앞으로 뻗은 전투 자세"
+},
+"cast": {
+"src": "art/h2/ahae/cast.webp",
+"w": 665,
+"h": 694,
+"ax": 426,
+"ay": 691,
+"orig": "뒷모습, 오른쪽으로 손바닥을 쭉 내밂 (장풍 · 원념 지시)"
+},
+"attack": {
+"src": "art/h2/ahae/attack.webp",
+"w": 767,
+"h": 568,
+"ax": 371,
+"ay": 565,
+"orig": "검 찌르기 — 크게 벌린 자세로 갈고리 검을 앞으로 쭉 뻗음, 뒷손에 차크람"
+},
+"attack2": {
+"src": "art/h2/ahae/attack2.webp",
+"w": 732,
+"h": 559,
+"ax": 333,
+"ay": 556,
+"orig": "검 낮게 쓸어베기 — 몸 숙여 다리 뻗고 검으로 바닥을 쓸며 휘두름 (궤적 선), 차크람은 위로"
+},
+"attack3": {
+"src": "art/h2/ahae/attack3.webp",
+"w": 600,
+"h": 600,
+"ax": 275,
+"ay": 597,
+"orig": "차크람 휘두르기 — 큰 초승달 차크람을 옆으로 크게 벰 (궤적 선)"
+},
+"attack4": {
+"src": "art/h2/ahae/attack4.webp",
+"w": 610,
+"h": 416,
+"ax": 374,
+"ay": 413,
+"orig": "낮게 뛰어들며 차크람으로 바닥 쓸기 (돌진 베기)"
+},
+"throw": {
+"src": "art/h2/ahae/throw.webp",
+"w": 567,
+"h": 574,
+"ax": 273,
+"ay": 571,
+"orig": "뒷모습, 차크람 던지기 — 팔을 뻗었고 차크람이 돌며 날아감, 다른 손엔 검"
+},
+"throw2": {
+"src": "art/h2/ahae/throw2.webp",
+"w": 591,
+"h": 684,
+"ax": 417,
+"ay": 681,
+"orig": "차크람 던지기 2 — 뒷모습, 손에서 막 떠난 차크람이 회전 (궤적)"
+},
+"windup": {
+"src": "art/h2/ahae/windup.webp",
+"w": 431,
+"h": 633,
+"ax": 336,
+"ay": 630,
+"orig": "차크람을 머리 위로 치켜들고 검은 아래로 — 던지기 · 내려치기 준비"
+},
+"low": {
+"src": "art/h2/ahae/low.webp",
+"w": 467,
+"h": 540,
+"ax": 253,
+"ay": 537,
+"orig": "몸을 숙여 검 끝으로 땅을 찍음 (검은 먹 튐) — 하단 공격 · 확인사살"
+},
+"low2": {
+"src": "art/h2/ahae/low2.webp",
+"w": 571,
+"h": 490,
+"ax": 376,
+"ay": 487,
+"orig": "하단 찍기 2 — 무릎 굽혀 검으로 땅 찍기 (먹 튐), 차크람 뒤로"
+},
+"kick": {
+"src": "art/h2/ahae/kick.webp",
+"w": 478,
+"h": 645,
+"ax": 233,
+"ay": 642,
+"orig": "담배 문 채 무릎 높이 들어 차기 (차크람 늘어뜨림)"
+},
+"jump": {
+"src": "art/h2/ahae/jump.webp",
+"w": 548,
+"h": 653,
+"ax": 512,
+"ay": 650,
+"orig": "뛰어오르며 차크람을 머리 위로 치켜듦 (공중 내려치기)"
+},
+"dash": {
+"src": "art/h2/ahae/dash.webp",
+"w": 569,
+"h": 626,
+"ax": 111,
+"ay": 623,
+"orig": "미끄러지며 멈춤 — 몸을 비틀어 검 · 차크람을 뒤로 감아 듦, 발밑 흙먼지"
+},
+"summon": {
+"src": "art/h2/ahae/summon.webp",
+"w": 529,
+"h": 591,
+"ax": 136,
+"ay": 588,
+"orig": "원념 부르기 — 담배 든 채 앞을 손가락으로 가리킴, 등 뒤에서 붉은 원념이 갈퀴 손을 뻗음"
+},
+"summon2": {
+"src": "art/h2/ahae/summon2.webp",
+"w": 561,
+"h": 594,
+"ax": 289,
+"ay": 591,
+"orig": "원념 부르기 2 — 낮은 자세로 손을 치켜듦, 뒤에서 붉은 원념의 두 팔"
+},
+"summon3": {
+"src": "art/h2/ahae/summon3.webp",
+"w": 466,
+"h": 674,
+"ax": 216,
+"ay": 671,
+"orig": "차크람 치켜들고 검 쥔 채 자세, 등 뒤에 붉은 원념 (흰 눈) 이 일어남"
+},
+"hurt": {
+"src": "art/h2/ahae/hurt.webp",
+"w": 367,
+"h": 403,
+"ax": 201,
+"ay": 400,
+"orig": "맞음 — 웅크려 앉아 한 손으로 머리 감쌈, 차크람 쥠"
+},
+"down": {
+"src": "art/h2/ahae/down.webp",
+"w": 778,
+"h": 350,
+"ax": 455,
+"ay": 347,
+"orig": "쓰러짐 — 옆으로 누워 기댐, 차크람 · 검 쥔 채"
+},
+"down2": {
+"src": "art/h2/ahae/down2.webp",
+"w": 795,
+"h": 337,
+"ax": 387,
+"ay": 334,
+"orig": "쓰러짐 2 — 누운 채 차크람 쳐들고 검은 바닥에"
+},
+"down3": {
+"src": "art/h2/ahae/down3.webp",
+"w": 845,
+"h": 393,
+"ax": 375,
+"ay": 390,
+"orig": "쓰러짐 3 — 누운 채 큰 차크람을 치켜듦"
+},
+"sit": {
+"src": "art/h2/ahae/sit.webp",
+"w": 583,
+"h": 412,
+"ax": 330,
+"ay": 409,
+"orig": "바닥에 앉아 무릎 세우고 담배 (쉬기 · 진영 대기)"
+}
+}
+},
+"ahae2": {
+"slug": "ahae2",
+"name": "아해 (각성 모드 · 사슬낫)",
+"rank": "4성",
+"folder": "3기-2/4성 도깨비 아해",
+"role": "동료 (아해 변신 후)",
+"tall": 1.75,
+"weight": 62,
+"palette": [
+"#60c0d8",
+"#181818",
+"#c8c4bc",
+"#808080",
+"#d01818"
+],
+"missing": [
+"walk",
+"run",
+"hurt",
+"down",
+"dead",
+"guard",
+"transform (변신 순간)"
+],
+"kit": {
+"basic": "사슬낫 휘두르기 (attack · swing) — 앞 4.5m 부채꼴 120도, 붉은 궤적에 맞은 적 출혈 3초",
+"skills": [
+{
+"name": "사슬 던져 끌어오기",
+"pose": "throw",
+"desc": "끌어오기 — 사슬낫을 앞 10m 줄로 던져 처음 맞은 적을 꽂고 pull 로 아해 앞 1.5m 까지 끌어옴 (큰 적 · 보스는 반대로 아해가 그쪽으로 당겨짐)"
+},
+{
+"name": "휘감아 묶기",
+"pose": "bind",
+"desc": "사슬로 앞 6m 안 적 하나를 칭칭 감아 2초 묶음 (움직임 · 공격 불가), 풀릴 때 피해"
+},
+{
+"name": "붉은 회전베기",
+"pose": "spin",
+"desc": "원 — 두 사슬낫을 몸 둘레로 돌려 반지름 4m 원 안 적에게 3번 연속 피해, 끝에 slam 으로 내려앉아 반지름 3m 충격"
+},
+{
+"name": "원념 무리",
+"pose": "summon",
+"desc": "소환 — 여러 팔 달린 큰 붉은 원념을 불러 앞 5m 부채꼴을 2초간 할큄 (ahae_wraith 3체 효과)"
+}
+],
+"passive": "각성: 변신 동안 공격 속도 +25%, 체력 흡수 10%. 20초가 지나거나 쓰러질 만큼 맞으면 ahae 로 돌아옴"
+},
+"apt": {
+"melee": 5,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 1
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 10,
+"stats": {
+"hp": 1100,
+"atk": 42,
+"spd": 6.6,
+"weight_kg": 62,
+"tall_m": 1.75
+},
+"desc": "붉은 원념을 두른 아해의 각성 모습. 두 자루 사슬낫을 멀리 던져 적을 휘감아 끌어오고, 붉은 궤적으로 베어 낸다.",
+"gen": 3,
+"codex_g": "ahae",
+"batch": "3기-2",
+"portrait": "art/h2/ahae2/portrait.webp",
+"face": "art/h2/ahae2/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ahae2/idle.webp",
+"w": 480,
+"h": 702,
+"ax": 227,
+"ay": 699,
+"orig": "서 있음 — 두 손에 사슬낫 (낫 날 끝이 붉게 물듦) 늘어뜨림"
+},
+"idle2": {
+"src": "art/h2/ahae2/idle2.webp",
+"w": 451,
+"h": 706,
+"ax": 232,
+"ay": 703,
+"orig": "서 있음 2 — 두 손에 사슬낫, 사슬 길게 늘어뜨림"
+},
+"front": {
+"src": "art/h2/ahae2/front.webp",
+"w": 470,
+"h": 691,
+"ax": 226,
+"ay": 688,
+"orig": "정면으로 다리 벌리고 사슬낫 두 자루 들고 섬"
+},
+"ready": {
+"src": "art/h2/ahae2/ready.webp",
+"w": 512,
+"h": 619,
+"ax": 225,
+"ay": 616,
+"orig": "사슬낫 하나 치켜들고 사슬을 몸에 감듯 늘인 전투 자세"
+},
+"ready2": {
+"src": "art/h2/ahae2/ready2.webp",
+"w": 621,
+"h": 596,
+"ax": 284,
+"ay": 593,
+"orig": "낮게 다리 벌린 자세, 두 손의 사슬낫 (붉은 날)"
+},
+"throw": {
+"src": "art/h2/ahae2/throw.webp",
+"w": 1110,
+"h": 679,
+"ax": 238,
+"ay": 676,
+"orig": "뒷모습, 사슬낫을 멀리 던짐 — 팔 뻗고 사슬이 쭉 뻗어 낫이 끝에 (긴 사거리)"
+},
+"throw2": {
+"src": "art/h2/ahae2/throw2.webp",
+"w": 891,
+"h": 618,
+"ax": 278,
+"ay": 615,
+"orig": "사슬낫 던지기 2 — 사슬을 앞으로 뿌리고 붉은 기운이 튐"
+},
+"swing": {
+"src": "art/h2/ahae2/swing.webp",
+"w": 550,
+"h": 554,
+"ax": 246,
+"ay": 551,
+"orig": "사슬을 당겨 낫을 옆으로 크게 휘돌림 (궤적 선)"
+},
+"attack": {
+"src": "art/h2/ahae2/attack.webp",
+"w": 812,
+"h": 564,
+"ax": 246,
+"ay": 561,
+"orig": "사슬낫 휘두르기 — 몸을 틀어 사슬을 크게 돌림, 붉은 궤적"
+},
+"slash": {
+"src": "art/h2/ahae2/slash.webp",
+"w": 562,
+"h": 557,
+"ax": 198,
+"ay": 554,
+"orig": "낮게 웅크려 사슬낫으로 둥글게 베기, 붉은 베기 궤적"
+},
+"spin": {
+"src": "art/h2/ahae2/spin.webp",
+"w": 803,
+"h": 469,
+"ax": 473,
+"ay": 466,
+"orig": "웅크려 두 사슬낫을 몸 둘레로 돌림 — 붉은 원형 궤적 (회전 베기)"
+},
+"dash": {
+"src": "art/h2/ahae2/dash.webp",
+"w": 818,
+"h": 586,
+"ax": 395,
+"ay": 583,
+"orig": "앞으로 몸을 날려 뛰어듦 (한 손 바닥 짚음), 머리 위로 사슬낫 붉은 큰 호"
+},
+"pull": {
+"src": "art/h2/ahae2/pull.webp",
+"w": 663,
+"h": 591,
+"ax": 470,
+"ay": 588,
+"orig": "뒤로 몸을 젖혀 사슬을 끌어당김 — 사슬 끝 두 낫이 앞쪽 (끌어오기)"
+},
+"bind": {
+"src": "art/h2/ahae2/bind.webp",
+"w": 687,
+"h": 679,
+"ax": 340,
+"ay": 676,
+"orig": "뒷모습, 사슬로 나무 기둥 (적 대신) 을 칭칭 감고 당김, 붉은 충격 선 (휘감기)"
+},
+"slam": {
+"src": "art/h2/ahae2/slam.webp",
+"w": 781,
+"h": 653,
+"ax": 376,
+"ay": 650,
+"orig": "내려앉으며 한 무릎 · 발 쾅, 두 사슬낫을 양옆으로 펼침, 바닥 파편"
+},
+"summon": {
+"src": "art/h2/ahae2/summon.webp",
+"w": 628,
+"h": 710,
+"ax": 287,
+"ay": 707,
+"orig": "여러 팔 달린 큰 붉은 원념 무리를 불러냄 — 한 손 뻗음, 다른 손 사슬낫"
+}
+}
+},
+"ahae_wraith": {
+"slug": "ahae_wraith",
+"name": "아해의 원념 (붉은 원념 유령)",
+"rank": "4성",
+"folder": "3기-2/4성 도깨비 아해",
+"role": "소환수 (아해 편)",
+"tall": 1.6,
+"weight": 0,
+"palette": [
+"#d80000",
+"#a80000",
+"#180000",
+"#000000",
+"#f0f0f0"
+],
+"missing": [
+"appear (소환 연출)",
+"dead (흩어짐)",
+"dash (기본아해.png 맨 아랫줄 2번 — 작아서 안 자름)"
+],
+"kit": {
+"basic": "팔 늘여 할퀴기 (attack) — 앞 6m 줄",
+"skills": [
+{
+"name": "움켜쥐기",
+"pose": "attack2",
+"desc": "끌어오기 — 두 팔로 앞 4m 안 적 하나를 붙잡아 1.5초 묶고 원념 쪽으로 2m 끌어옴"
+}
+],
+"passive": "원념: 12초 뒤 사라짐. 물리 피해 50% 덜 받음 (몸이 기운이라), 아해가 쓰러지면 함께 사라짐"
+},
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 2
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 0,
+"stats": {
+"hp": 250,
+"atk": 22,
+"spd": 5.0,
+"weight_kg": 0,
+"tall_m": 1.6
+},
+"desc": "얼굴 없는 붉은 머리에 길게 늘어나는 갈퀴 팔, 아래는 검은 연기 꼬리로 떠다니는 아해의 원념. 주인처럼 담배를 문다.",
+"gen": 3,
+"codex_g": "ahae",
+"batch": "3기-2",
+"portrait": "art/h2/ahae_wraith/portrait.webp",
+"face": "art/h2/ahae_wraith/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ahae_wraith/idle.webp",
+"w": 625,
+"h": 651,
+"ax": 284,
+"ay": 648,
+"orig": "똬리 튼 꼬리로 떠 있음, 한 손 갈퀴 들고 다른 손으로 담배 (얼굴 없는 붉은 머리)"
+},
+"attack": {
+"src": "art/h2/ahae_wraith/attack.webp",
+"w": 1303,
+"h": 589,
+"ax": 325,
+"ay": 586,
+"orig": "몸을 길게 늘여 앞으로 팔을 쭉 뻗어 할큄 (긴 사거리 손)"
+},
+"hurt": {
+"src": "art/h2/ahae_wraith/hurt.webp",
+"w": 752,
+"h": 649,
+"ax": 383,
+"ay": 646,
+"orig": "몸을 말아 웅크리고 두 손으로 머리를 감쌈 (괴로워함 · 맞음)"
+},
+"attack2": {
+"src": "art/h2/ahae_wraith/attack2.webp",
+"w": 1152,
+"h": 662,
+"ax": 418,
+"ay": 659,
+"orig": "두 팔 갈퀴를 앞으로 뻗어 움켜쥐기 (붙잡기)"
+}
+}
+},
 "ancientangel": {
 "slug": "ancientangel",
 "name": "고대천사",
@@ -90,6 +700,141 @@ const H2R = {
 "ax": 458,
 "ay": 604,
 "orig": "다리 넓게 벌리고 오른 날개를 앞으로 쭉 뻗어 날개 끝 갈퀴 손으로 낚아채기"
+}
+}
+},
+"ancientdeer": {
+"slug": "ancientdeer",
+"name": "고대사슴",
+"rank": "5성 이상",
+"folder": "3기-2/고대사슴 5성이상",
+"role": "동료 (5성 이상 = 높은 등급 동료로 봄. 덩치 큰 괴수라 적 · 보스로도 쓸 수 있음 → 둘 다 가능)",
+"tall": 4.0,
+"weight": 3000,
+"palette": [
+"#2a2a2c",
+"#525152",
+"#080a0b",
+"#40d8d0",
+"#a040c0"
+],
+"missing": [
+"walk",
+"run",
+"hurt",
+"down",
+"dead",
+"back",
+"roar (포효)"
+],
+"kit": {
+"basic": "앞발 할퀴기 (attack) — 뒷발로 서서 앞 4.5m 부채꼴 90도, 넘어뜨림",
+"skills": [
+{
+"name": "가시뿔 돌진",
+"pose": "dash",
+"desc": "돌진 — windup 으로 0.6초 준비 뒤 12m 직선 돌진, 부딪힌 적 모두 넘어뜨리고 3m 밀어냄, 벽에 박으면 자기도 1초 멈춤"
+},
+{
+"name": "대지 짓밟기",
+"pose": "slam",
+"desc": "뒷발로 일어서 앞발로 내려찍기 — 반지름 6m 원 피해 + 1초 기절, 그 자리에 가시 뿌리 장판 4초 (밟은 적 이동 -40%)"
+},
+{
+"name": "뿔 방벽",
+"pose": "low",
+"desc": "막기 — 3초 동안 머리를 낮춰 뿔을 앞세움, 정면 150도 피해 60% 감소, 그 사이 다가온 근접 적은 가시 반격 (공격력 50%)"
+}
+],
+"passive": "고대의 가시: 받은 근접 피해 15% 되돌림. 체력 50% 아래면 청록 · 보라 맥이 밝게 빛나며 공격 +20%. 덩치가 커서 배낭 대신 짐 싣기 (bag 칸 큼)"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 1
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 20,
+"stats": {
+"hp": 4000,
+"atk": 90,
+"spd": 6.5,
+"weight_kg": 3000,
+"tall_m": 4.0
+},
+"desc": "돌 비늘 갑각과 나뭇가지처럼 갈라진 검은 가시 뿔 · 등 가시를 가진 고대 사슴 괴수 (5성 이상). 몸에 청록 · 보라 빛 맥이 흐르고, 뒷발로 일어서 거대한 앞발로 내려찍는다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/ancientdeer/portrait.webp",
+"face": "art/h2/ancientdeer/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ancientdeer/idle.webp",
+"w": 594,
+"h": 739,
+"ax": 305,
+"ay": 736,
+"orig": "네 발로 서서 목을 높이 세움, 나뭇가지 같은 검은 가시 뿔 · 등 가시, 청록 · 보라 빛 맥"
+},
+"windup": {
+"src": "art/h2/ancientdeer/windup.webp",
+"w": 661,
+"h": 514,
+"ax": 323,
+"ay": 511,
+"orig": "머리를 낮추고 앞발을 벌려 돌진 준비"
+},
+"dash": {
+"src": "art/h2/ancientdeer/dash.webp",
+"w": 800,
+"h": 574,
+"ax": 673,
+"ay": 571,
+"orig": "앞으로 몸을 날려 도약 돌진 (네 다리 뻗음)"
+},
+"slam": {
+"src": "art/h2/ancientdeer/slam.webp",
+"w": 498,
+"h": 755,
+"ax": 176,
+"ay": 752,
+"orig": "뒷발로 일어서서 거대한 앞발 주먹을 높이 듦 (내려찍기 직전)"
+},
+"low": {
+"src": "art/h2/ancientdeer/low.webp",
+"w": 637,
+"h": 486,
+"ax": 369,
+"ay": 483,
+"orig": "몸을 낮추고 뿔 · 가시를 앞으로 세워 노려봄 (뿔 방벽)"
+},
+"front": {
+"src": "art/h2/ancientdeer/front.webp",
+"w": 578,
+"h": 781,
+"ax": 319,
+"ay": 778,
+"orig": "앞모습으로 목을 세우고 서 있음"
+},
+"attack": {
+"src": "art/h2/ancientdeer/attack.webp",
+"w": 664,
+"h": 688,
+"ax": 335,
+"ay": 685,
+"orig": "뒷발로 서서 앞발을 앞으로 크게 휘둘러 할큄"
+},
+"crouch": {
+"src": "art/h2/ancientdeer/crouch.webp",
+"w": 605,
+"h": 528,
+"ax": 350,
+"ay": 525,
+"orig": "낮게 웅크려 머리를 앞으로 내밀고 다가감 (사냥 자세)"
 }
 }
 },
@@ -445,6 +1190,145 @@ const H2R = {
 }
 }
 },
+"blackrabbit": {
+"slug": "blackrabbit",
+"name": "흑토끼기사",
+"rank": "1기 펫 · NPC (등급 글자 없음 — 파일 이름 '흑토끼', 도감: 펫 · 전설)",
+"folder": "3기-2 (흑토끼.png)",
+"role": "동료 (도감에서 인카운터 유물 펫 '흑토끼기사' — 소환 동료 · 펫. 검은 기사 모습이라 적 정예로도 가능)",
+"tall": 1.75,
+"weight": 85,
+"palette": [
+"#121211",
+"#21201f",
+"#3d3837",
+"#564e4c",
+"#e0203c",
+"#d9d6d4"
+],
+"missing": [
+"hurt",
+"down",
+"dead",
+"dash"
+],
+"kit": {
+"basic": "대검 찌르기 (attack) — 앞 3.5m 줄, 붉은 날로 관통",
+"skills": [
+{
+"name": "내리쪼개기",
+"pose": "windup",
+"desc": "0.5초 대검을 머리 위로 들었다가 앞 4m 줄로 내려침 — 피해 2.5배, 넘어뜨림"
+},
+{
+"name": "토끼 도약",
+"pose": "plunge",
+"desc": "6m 앞으로 뛰어올라 칼끝으로 내리꽂음 — 떨어진 자리 반지름 2m 원 피해 + 0.8초 기절"
+},
+{
+"name": "붉은 검 꽂기",
+"pose": "guard",
+"desc": "대검을 땅에 꽂고 버팀 — 2초 동안 앞 막기 (피해 70% 감소), 끝날 때 반지름 2.5m 원 붉은 충격"
+},
+{
+"name": "도발",
+"pose": "front",
+"desc": "손짓으로 반지름 8m 적을 4초 동안 자기에게 끌어 붙임 (어그로)"
+}
+],
+"passive": "흑토끼의 충성: 주인 (플레이어) 이 맞으면 다음 공격 피해 +25%, 주인 체력 30% 아래면 이동 속도 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 2
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 6,
+"stats": {
+"hp": 1250,
+"atk": 36,
+"spd": 4.8,
+"weight_kg": 85,
+"tall_m": 1.75
+},
+"desc": "검은 토끼 귀 투구 · 찢긴 검은 판금 치마 갑옷 · 긴 흑발의 여기사. 붉게 빛나는 날의 대검을 어깨에 메고 다닌다. 얼굴은 머리칼 그늘에 가려 붉은 눈만 보인다.",
+"gen": 1,
+"codex_g": "blackrabbit",
+"batch": "3기-2",
+"portrait": "art/h2/blackrabbit/portrait.webp",
+"face": "art/h2/blackrabbit/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/blackrabbit/idle.webp",
+"w": 666,
+"h": 698,
+"ax": 229,
+"ay": 695,
+"orig": "붉은 날 대검을 어깨에 메고 서 있음 (칼끝 오른쪽)"
+},
+"walk": {
+"src": "art/h2/blackrabbit/walk.webp",
+"w": 704,
+"h": 614,
+"ax": 475,
+"ay": 611,
+"orig": "대검을 앞으로 비스듬히 늘어뜨리고 오른쪽으로 걸음"
+},
+"windup": {
+"src": "art/h2/blackrabbit/windup.webp",
+"w": 459,
+"h": 768,
+"ax": 262,
+"ay": 765,
+"orig": "다리를 벌리고 대검을 두 손으로 머리 위로 높이 치켜듦"
+},
+"attack": {
+"src": "art/h2/blackrabbit/attack.webp",
+"w": 690,
+"h": 491,
+"ax": 301,
+"ay": 488,
+"orig": "깊게 내딛으며 대검을 오른쪽으로 수평 찌르기 · 베기"
+},
+"front": {
+"src": "art/h2/blackrabbit/front.webp",
+"w": 507,
+"h": 696,
+"ax": 223,
+"ay": 693,
+"orig": "앞모습, 대검을 아래로 늘어뜨리고 왼손을 갈퀴처럼 뻗음 (도발)"
+},
+"plunge": {
+"src": "art/h2/blackrabbit/plunge.webp",
+"w": 357,
+"h": 646,
+"ax": 312,
+"ay": 643,
+"orig": "공중에서 몸을 웅크리고 대검 끝을 아래로 (도약 내리꽂기)"
+},
+"guard": {
+"src": "art/h2/blackrabbit/guard.webp",
+"w": 400,
+"h": 704,
+"ax": 231,
+"ay": 701,
+"orig": "대검을 땅에 꽂고 손잡이에 기대 섬 (반쯤 등을 보임)"
+},
+"back": {
+"src": "art/h2/blackrabbit/back.webp",
+"w": 498,
+"h": 722,
+"ax": 265,
+"ay": 719,
+"orig": "뒷모습, 대검을 어깨에 멤 (칼끝 왼쪽)"
+}
+}
+},
 "blueflame": {
 "slug": "blueflame",
 "name": "푸른불꽃",
@@ -761,6 +1645,192 @@ const H2R = {
 "ax": 440,
 "ay": 595,
 "orig": "투구 가면이 긴 창살 창으로 뻗어나감 + 손 뻗기"
+}
+}
+},
+"collider": {
+"slug": "collider",
+"name": "콜라이더",
+"rank": "5성",
+"folder": "3기-2/5성 서폿 마계 앰버서터 콜라이더 (+ 콜라이더2)",
+"role": "동료 (5성 = 높은 등급 동료, 파일 이름 \"서폿\" → 지원형. 마계 앰버서더 = 마계 쪽 대사라 마족 적과 엮이는 이야기에 씀)",
+"tall": 1.8,
+"weight": 58,
+"palette": [
+"#2e2a3a",
+"#e5e6eb",
+"#4c485b",
+"#1a1820",
+"#f7f3ea"
+],
+"missing": [
+"walk (run 으로 대신)",
+"down",
+"dead",
+"attack2 (꼬리 두 번째 휘두르기)",
+"idle (코트 차림 옆모습 — 코트 차림은 front 뿐)"
+],
+"kit": {
+"basic": "갈퀴 꼬리 채찍 (attack) — 앞 4m 부채꼴 100도, 2타 (두 번째는 검은 파편이 튀어 0.5초 경직)",
+"skills": [
+{
+"name": "차원 문",
+"pose": "cast2",
+"desc": "소환 · 끌어오기 — 앞 4m 에 검은 소용돌이 문을 8초 엶. 반지름 4m 안 적을 1초마다 1.5m 씩 문 쪽으로 끌어오고, 문에 닿은 적 투사체는 사라짐. 다시 쓰면 아군 1명을 문 앞으로 순간이동 (15m 안)"
+},
+{
+"name": "별빛 지목",
+"pose": "shoot",
+"desc": "사격 — 15m 단일 대상에게 가시 덩굴 끝 별 표식, 6초 동안 그 적이 받는 피해 +20% (모든 아군), 처음 맞을 때 덩굴로 0.8초 묶음"
+},
+{
+"name": "마계 장막",
+"pose": "special",
+"desc": "막기 · 장판 — 자기 둘레 반지름 6m 반투명 날개 돔 5초. 안의 아군은 원거리 피해 50% 감소, 돔 경계를 넘어 들어오는 적은 0.5초 경직"
+},
+{
+"name": "유혹의 손짓",
+"pose": "cast",
+"desc": "앞 8m 부채꼴 60도 — 적 1체 2초 매혹 (공격을 멈추고 콜라이더 쪽으로 걸어옴). 마계 적에게는 3초. skill (이마에 손) 은 시전 전 집중 동작"
+}
+],
+"passive": "마계 대사: 마족 적과의 첫 교전 전에 대화 선택지가 생김 (bow). 함께 있는 아군의 마법 피해 +10%, 콜라이더가 쓰러지면 꼬리 그림자가 1번 대신 막아 줌 (체력 1 로 버팀, 전투당 1번)"
+},
+"apt": {
+"melee": 2,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 3
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 8,
+"stats": {
+"hp": 950,
+"atk": 34,
+"spd": 6.2,
+"weight_kg": 58,
+"tall_m": 1.8
+},
+"desc": "검은 실루엣 몸에 흰 무늬, 굽은 두 뿔과 갈고리 꼬리를 가진 5성 마계 앰버서더 (대사). 차원 문 · 별빛 표식 · 날개 장막으로 아군을 돕는 서포터, 정장 때는 찢어진 긴 망토 코트를 걸친다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/collider/portrait.webp",
+"face": "art/h2/collider/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/collider/idle.webp",
+"w": 273,
+"h": 707,
+"ax": 166,
+"ay": 704,
+"orig": "3/4 옆모습으로 반듯이 서 있음 — 맨몸 검은 · 흰 무늬 몸 (보디슈트 같은 피부), 굽은 두 뿔 투구 머리, 끝이 갈고리인 긴 꼬리, 하이힐"
+},
+"cast": {
+"src": "art/h2/collider/cast.webp",
+"w": 428,
+"h": 720,
+"ax": 252,
+"ay": 717,
+"orig": "걸으며 오른손을 앞으로 내밀어 손짓 (유혹 · 손짓하는 시전)"
+},
+"skill": {
+"src": "art/h2/collider/skill.webp",
+"w": 308,
+"h": 704,
+"ax": 184,
+"ay": 701,
+"orig": "손끝을 이마에 대고 집중 (마안 · 정신 집중)"
+},
+"guard": {
+"src": "art/h2/collider/guard.webp",
+"w": 428,
+"h": 728,
+"ax": 235,
+"ay": 725,
+"orig": "팔을 뻗어 손바닥을 앞으로 세움 — 멈춰 / 막기"
+},
+"back": {
+"src": "art/h2/collider/back.webp",
+"w": 406,
+"h": 669,
+"ax": 54,
+"ay": 666,
+"orig": "뒷모습, 오른팔을 옆으로 뻗음 (꼬리 늘어뜨림)"
+},
+"hurt": {
+"src": "art/h2/collider/hurt.webp",
+"w": 295,
+"h": 652,
+"ax": 157,
+"ay": 649,
+"orig": "가슴을 움켜쥐고 몸을 앞으로 접음 (맞음 · 휘청)"
+},
+"run": {
+"src": "art/h2/collider/run.webp",
+"w": 466,
+"h": 676,
+"ax": 301,
+"ay": 673,
+"orig": "두 팔 벌리고 앞으로 달려 나감 (꼬리 뒤로 휨)"
+},
+"crouch": {
+"src": "art/h2/collider/crouch.webp",
+"w": 521,
+"h": 490,
+"ax": 384,
+"ay": 487,
+"orig": "네 발로 낮게 웅크려 덮칠 자세 (손끝 갈퀴 땅 짚음)"
+},
+"front": {
+"src": "art/h2/collider/front.webp",
+"w": 593,
+"h": 701,
+"ax": 293,
+"ay": 698,
+"orig": "긴 찢어진 망토 코트를 입고 앞모습으로 서서 왼손 내밂 (코트 차림 대기)"
+},
+"cast2": {
+"src": "art/h2/collider/cast2.webp",
+"w": 688,
+"h": 705,
+"ax": 382,
+"ay": 702,
+"orig": "뒤돌아 오른손을 뻗어 검은 소용돌이 문 (차원 구멍) 을 엶, 검은 파편"
+},
+"shoot": {
+"src": "art/h2/collider/shoot.webp",
+"w": 586,
+"h": 705,
+"ax": 298,
+"ay": 702,
+"orig": "손가락으로 가리켜 가시 덩굴 끝에 별빛 표식을 날림"
+},
+"special": {
+"src": "art/h2/collider/special.webp",
+"w": 687,
+"h": 661,
+"ax": 284,
+"ay": 658,
+"orig": "손바닥을 들어 반투명 날개 장막 (돔) 을 둘러침, 가시 별 장식"
+},
+"attack": {
+"src": "art/h2/collider/attack.webp",
+"w": 703,
+"h": 619,
+"ax": 353,
+"ay": 616,
+"orig": "몸을 비틀어 런지 — 낫 갈퀴 꼬리를 크게 휘둘러 검은 파편이 튐"
+},
+"bow": {
+"src": "art/h2/collider/bow.webp",
+"w": 538,
+"h": 609,
+"ax": 332,
+"ay": 606,
+"orig": "한 손 가슴, 한 팔 펼치고 허리 숙여 정중한 인사 (대사 인사)"
 }
 }
 },
@@ -2803,6 +3873,150 @@ const H2R = {
 }
 }
 },
+"hiddenkkaebi": {
+"slug": "hiddenkkaebi",
+"name": "히든깨비",
+"rank": "초강적",
+"folder": "3기-2 (초강적 히든깨비.png)",
+"role": "적 (파일 이름 '초강적' — 숨은 (히든) 강적 · 검객 보스급. 동료 그림체 아님)",
+"tall": 2.4,
+"weight": 130,
+"palette": [
+"#080304",
+"#27181b",
+"#4d1b1f",
+"#662e2c",
+"#d8322a",
+"#5a2a5e"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"back"
+],
+"kit": {
+"basic": "대각 베기 (attack) — 앞 4m 부채꼴 120도, 붉은 궤적",
+"skills": [
+{
+"name": "잔영 돌진",
+"pose": "dash",
+"desc": "잔상을 남기며 14m 순간 돌진 — 줄 위 모든 적 베기, 0.5초 뒤 잔상이 한 번 더 벰"
+},
+{
+"name": "혈검 낙하",
+"pose": "slam",
+"desc": "칼을 거꾸로 쥐고 땅에 꽂음 — 반지름 5m 원 붉은 균열 + 바위 파편, 넘어뜨림"
+},
+{
+"name": "혈단검 고리",
+"pose": "skill",
+"desc": "몸 둘레에 붉은 단검 12자루를 띄움 (5초) — 다가오는 적 자동으로 찌르고, 끝날 때 바깥으로 사방 발사 (15m 사격)"
+},
+{
+"name": "공간 찢기",
+"pose": "attack2",
+"desc": "칼을 곧게 찔러 앞 6m 줄에 보랏빛 균열 — 2초 뒤 터지며 피해 + 끌어오기"
+},
+{
+"name": "올려 베기",
+"pose": "attack3",
+"desc": "무릎 꿇었다가 위로 올려 벰 — 앞 3m, 맞은 적 띄움 · 바위 파편"
+}
+],
+"passive": "숨은 도깨비: 전투 밖에서는 보이지 않다가 (히든) 첫 공격이 확정 치명타, 체력 50% 아래에서 붉은 기운이 짙어져 공격 속도 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 4
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 6,
+"stats": {
+"hp": 5200,
+"atk": 78,
+"spd": 4.6,
+"weight_kg": 130,
+"tall_m": 2.4
+},
+"desc": "검붉은 누더기 로브에 붉은 실 · 장신구를 칭칭 감고 붉은 탈 같은 얼굴을 한 키 큰 도깨비 검객. 몸에서 붉은 기운 · 불티가 흐르고, 칼 하나로 잔상 · 균열 · 단검 고리를 부린다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/hiddenkkaebi/portrait.webp",
+"face": "art/h2/hiddenkkaebi/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/hiddenkkaebi/idle.webp",
+"w": 781,
+"h": 731,
+"ax": 368,
+"ay": 728,
+"orig": "칼을 오른쪽 아래로 늘어뜨리고 서 있음, 붉은 불티가 흩날림"
+},
+"front": {
+"src": "art/h2/hiddenkkaebi/front.webp",
+"w": 727,
+"h": 720,
+"ax": 360,
+"ay": 717,
+"orig": "앞모습, 칼을 낮게 들고 발밑에 붉은 기운이 소용돌이"
+},
+"attack": {
+"src": "art/h2/hiddenkkaebi/attack.webp",
+"w": 911,
+"h": 698,
+"ax": 548,
+"ay": 695,
+"orig": "깊게 내딛으며 왼쪽 위에서 오른쪽 아래로 크게 대각 베기, 붉은 궤적"
+},
+"slam": {
+"src": "art/h2/hiddenkkaebi/slam.webp",
+"w": 850,
+"h": 774,
+"ax": 413,
+"ay": 771,
+"orig": "칼을 두 손으로 거꾸로 쥐고 땅에 내리꽂음, 붉은 섬광 · 바위 파편"
+},
+"dash": {
+"src": "art/h2/hiddenkkaebi/dash.webp",
+"w": 911,
+"h": 481,
+"ax": 448,
+"ay": 478,
+"orig": "칼을 오른쪽으로 겨누고 잔상을 남기며 돌진 (보랏빛 잔상 · 흙먼지)"
+},
+"skill": {
+"src": "art/h2/hiddenkkaebi/skill.webp",
+"w": 923,
+"h": 772,
+"ax": 380,
+"ay": 769,
+"orig": "손을 들어 붉은 단검 열두 자루를 몸 둘레에 띄움 (소환 단검 고리)"
+},
+"attack2": {
+"src": "art/h2/hiddenkkaebi/attack2.webp",
+"w": 891,
+"h": 808,
+"ax": 346,
+"ay": 805,
+"orig": "칼을 오른쪽으로 곧게 찌름, 칼끝에 보랏빛 균열 (공간 찢기)"
+},
+"attack3": {
+"src": "art/h2/hiddenkkaebi/attack3.webp",
+"w": 774,
+"h": 803,
+"ax": 380,
+"ay": 800,
+"orig": "한쪽 무릎을 꿇은 채 칼을 오른쪽 위로 올려 벰, 붉은 궤적 · 바위 파편"
+}
+}
+},
 "hirari": {
 "slug": "hirari",
 "name": "히라리",
@@ -3783,6 +4997,146 @@ const H2R = {
 }
 }
 },
+"knightcaptain": {
+"slug": "knightcaptain",
+"name": "기사단장",
+"rank": "미정 (파일 이름에 등급 없음)",
+"folder": "3기-2 / 기사단장.png (도감 1기 묶음 knightcommander 와 같은 인물)",
+"role": "둘 다 (보스 · 동료) — 왕국 기사단장이라 적 쪽이면 기사단을 이끄는 보스, 아군이면 지휘형 동료. 도감에서도 역할 미정",
+"tall": 1.85,
+"weight": 95,
+"palette": [
+"#5e6571",
+"#303139",
+"#b3bac5",
+"#8e95a1",
+"#d6dce3"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"back",
+"옆모습 idle (idle 은 3/4 앞모습)"
+],
+"kit": {
+"basic": "장검 가로베기 (attack) — 앞 3m 부채꼴 140도. guard 자세로 막기 (정면 근접 막기, 막은 직후 low 자세에서 반격 베기 1회)",
+"skills": [
+{
+"name": "일섬 찌르기",
+"pose": "attack2",
+"desc": "한 손으로 쭉 뻗는 찌르기 — 앞 6m 줄 관통, 방어 무시 30%"
+},
+{
+"name": "돌진 베기",
+"pose": "dash",
+"desc": "8m 앞으로 돌진하며 찔러 들어감 — 줄 위 적 넘어뜨림, 마지막 적에게 추가 피해"
+},
+{
+"name": "천근 내려찍기",
+"pose": "windup",
+"desc": "0.8초 장검을 치켜들었다 내려찍음 — 앞 3m 원 (반지름 2.5m) 큰 피해 + 1초 기절, 쓰러진 적에게 확인사살"
+},
+{
+"name": "기사단 호령",
+"pose": "skill",
+"desc": "장검을 하늘로 들어 호령 — 반지름 10m 원 안 아군 공격 +20% · 방어 +15% 8초, 적은 2초 공포"
+}
+],
+"passive": "백랑 털망토: 정면에서 받는 피해 15% 감소, 체력 30% 아래로 떨어지면 공격 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "지휘",
+"bag": 14,
+"stats": {
+"hp": 2600,
+"atk": 75,
+"spd": 4.6,
+"weight_kg": 95,
+"tall_m": 1.85
+},
+"desc": "흰 늑대 털망토와 은빛 판금 갑옷을 두른 왕국 기사단장. 투구 아래로 검은 긴 머리를 늘어뜨리고, 붉은 술이 달린 장검 한 자루로 싸운다.",
+"gen": 1,
+"codex_g": "knightcommander",
+"batch": "3기-2",
+"portrait": "art/h2/knightcaptain/portrait.webp",
+"face": "art/h2/knightcaptain/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/knightcaptain/idle.webp",
+"w": 524,
+"h": 687,
+"ax": 253,
+"ay": 684,
+"orig": "3/4 앞모습으로 똑바로 섬, 붉은 술 달린 장검을 땅에 세워 두 손으로 자루를 쥠, 흰 늑대 털망토 · 흰 천 망토가 발까지 늘어짐"
+},
+"guard": {
+"src": "art/h2/knightcaptain/guard.webp",
+"w": 687,
+"h": 617,
+"ax": 297,
+"ay": 614,
+"orig": "다리를 넓게 벌리고 허리 높이에서 두 손으로 장검을 오른쪽으로 길게 겨눈 겨눔 자세 (막기 자세)"
+},
+"attack": {
+"src": "art/h2/knightcaptain/attack.webp",
+"w": 784,
+"h": 615,
+"ax": 382,
+"ay": 612,
+"orig": "두 손 장검으로 오른쪽 가로베기, 흰 베기 궤적이 몸 앞을 휘감음, 머리칼 · 망토가 뒤로 휘날림 (오른쪽 끝에 섞인 4번째 그림 머리칼 · 망토 지움)"
+},
+"attack2": {
+"src": "art/h2/knightcaptain/attack2.webp",
+"w": 668,
+"h": 547,
+"ax": 333,
+"ay": 544,
+"orig": "오른팔을 쭉 뻗어 한 손 찌르기, 다리 넓게 벌린 깊은 자세, 붉은 술 나부낌 (왼쪽에 섞인 3번째 그림 칼끝 지움)"
+},
+"low": {
+"src": "art/h2/knightcaptain/low.webp",
+"w": 604,
+"h": 522,
+"ax": 255,
+"ay": 519,
+"orig": "한 무릎 굽혀 낮게 웅크리고 장검을 오른쪽 아래로 비스듬히 내린 자세 — 반격 · 발도 준비"
+},
+"windup": {
+"src": "art/h2/knightcaptain/windup.webp",
+"w": 622,
+"h": 792,
+"ax": 260,
+"ay": 789,
+"orig": "두 손으로 장검을 머리 위로 높이 치켜든 내려찍기 직전 자세, 붉은 술이 손잡이에서 늘어짐 (오른쪽에 섞인 3번째 그림 머리칼 지움)"
+},
+"dash": {
+"src": "art/h2/knightcaptain/dash.webp",
+"w": 758,
+"h": 620,
+"ax": 368,
+"ay": 617,
+"orig": "앞으로 크게 내딛으며 한 손으로 장검을 오른쪽 아래로 뻗은 돌진 찌르기, 검은 머리 · 망토가 뒤로 길게 휘날림"
+},
+"skill": {
+"src": "art/h2/knightcaptain/skill.webp",
+"w": 574,
+"h": 797,
+"ax": 226,
+"ay": 794,
+"orig": "왼손 주먹 쥐고 오른팔로 장검을 하늘 높이 치켜든 호령 자세 (기사단 지휘)"
+}
+}
+},
 "langpang": {
 "slug": "langpang",
 "name": "랑팡",
@@ -4337,6 +5691,145 @@ const H2R = {
 }
 }
 },
+"magusgirl": {
+"slug": "magusgirl",
+"name": "마도사녀",
+"rank": "중적",
+"folder": "3기-2 (중적 마도사녀.png)",
+"role": "적 (파일 이름 '중적' — 중간급 적 마법사. 엘리트 · 소보스로 알맞음)",
+"tall": 1.78,
+"weight": 58,
+"palette": [
+"#17191c",
+"#2a272a",
+"#2b4fb0",
+"#e02a2a",
+"#e7e0e2",
+"#5a1a1e"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead",
+"back"
+],
+"kit": {
+"basic": "혈편 사격 (cast) — 앞 14m 부채꼴 20도로 붉은 파편 5발",
+"skills": [
+{
+"name": "푸른 반달 방벽",
+"pose": "guard",
+"desc": "앞에 반달 방벽 3초 — 앞 120도 원거리 공격을 막고 화살 · 총알을 되튕김"
+},
+{
+"name": "혈마법진",
+"pose": "skill",
+"desc": "1초 땅에 마법진을 그림 — 12m 안 지정 자리 반지름 3.5m 원 장판 4초, 초당 피해 + 둔화 30%"
+},
+{
+"name": "지팡이 낙하",
+"pose": "slam",
+"desc": "떠올랐다가 지팡이를 땅에 내리꽂음 — 반지름 4m 원 붉은 폭발, 넘어뜨림"
+},
+{
+"name": "붉은 소용돌이 찌르기",
+"pose": "attack",
+"desc": "도끼날 지팡이를 앞 4m 줄로 내지름, 끝에 소용돌이 — 맞은 적 2m 끌어오기"
+}
+],
+"passive": "마녀의 망토: 체력 50% 아래가 되면 한 번 dash 로 8m 뒤로 미끄러져 빠지고 2초 투명"
+},
+"apt": {
+"melee": 2,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 1
+},
+"tag": "mage",
+"role_job": "사수",
+"bag": 8,
+"stats": {
+"hp": 1500,
+"atk": 34,
+"spd": 4.4,
+"weight_kg": 58,
+"tall_m": 1.78
+},
+"desc": "긴 붉은 머리 · 머리 양옆의 검은 나선 뿔 · 푸른 무늬가 찢긴 검은 로브 · 흰 치마 · 검은 사이하이 부츠. 도끼날 달린 검은 지팡이로 붉은 피의 마법과 푸른 방벽을 쓴다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/magusgirl/portrait.webp",
+"face": "art/h2/magusgirl/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/magusgirl/idle.webp",
+"w": 557,
+"h": 711,
+"ax": 254,
+"ay": 708,
+"orig": "한 손을 머리(뿔)에 얹고 지팡이를 세워 든 채 서 있음 (3/4 앞)"
+},
+"front": {
+"src": "art/h2/magusgirl/front.webp",
+"w": 637,
+"h": 705,
+"ax": 344,
+"ay": 702,
+"orig": "앞모습, 도끼날 지팡이를 아래로 비스듬히 늘어뜨림"
+},
+"cast": {
+"src": "art/h2/magusgirl/cast.webp",
+"w": 711,
+"h": 661,
+"ax": 361,
+"ay": 658,
+"orig": "지팡이를 짚고 오른팔을 뻗어 붉은 파편을 쏨"
+},
+"guard": {
+"src": "art/h2/magusgirl/guard.webp",
+"w": 693,
+"h": 635,
+"ax": 318,
+"ay": 632,
+"orig": "손바닥을 내밀어 푸른 반달 방벽을 세움"
+},
+"skill": {
+"src": "art/h2/magusgirl/skill.webp",
+"w": 685,
+"h": 671,
+"ax": 312,
+"ay": 668,
+"orig": "한쪽 무릎을 꿇고 손가락으로 바닥에 붉은 마법진을 그림"
+},
+"dash": {
+"src": "art/h2/magusgirl/dash.webp",
+"w": 710,
+"h": 573,
+"ax": 263,
+"ay": 570,
+"orig": "로브를 휘날리며 몸을 눕혀 오른쪽으로 미끄러지듯 날아감"
+},
+"slam": {
+"src": "art/h2/magusgirl/slam.webp",
+"w": 512,
+"h": 711,
+"ax": 297,
+"ay": 708,
+"orig": "공중에서 지팡이를 땅에 내리꽂아 붉은 폭발 · 파편"
+},
+"attack": {
+"src": "art/h2/magusgirl/attack.webp",
+"w": 740,
+"h": 624,
+"ax": 331,
+"ay": 621,
+"orig": "다리를 벌리고 지팡이를 오른쪽으로 내지름, 도끼날 끝에 붉은 소용돌이"
+}
+}
+},
 "majin": {
 "slug": "majin",
 "name": "마신족 병사",
@@ -4869,6 +6362,216 @@ const H2R = {
 }
 }
 },
+"mari": {
+"slug": "mari",
+"name": "마리",
+"rank": "1기 NPC (등급 글자 없음 — 파일 이름 '마리1~3', 도감: 마리 · NPC · 부족 전사)",
+"folder": "3기-2 (마리1.png · 마리2.png · 마리3.png)",
+"role": "둘 다 (도감에서는 NPC — 창을 쓰는 부족 전사, 와킨과 사실혼 관계인 파트너. 이번에 전투 동작 24장이 와서 영입 동료로 쓰기 좋고, 부족 쪽 적 우두머리로도 쓸 수 있음)",
+"tall": 1.95,
+"weight": 95,
+"palette": [
+"#1b160f",
+"#363026",
+"#bca061",
+"#e2c45a",
+"#6e6447"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead (쓰러지는 그림 없음 — crouch 로 대신)"
+],
+"kit": {
+"basic": "창 찌르기 (attack) — 앞 3m 줄 찌르기, 2번째 적까지 관통",
+"skills": [
+{
+"name": "창 돌진",
+"pose": "dash",
+"desc": "8m 돌진, 처음 맞은 적을 창에 걸어 2m 밀고 넘어뜨림 (공격력 1.6배). 재사용 9초"
+},
+{
+"name": "투창",
+"pose": "aim",
+"desc": "aim (0.5초 조준) → throw: 22m 사격, 줄 위 적 2명 관통 (공격력 1.8배). 등에 멘 여분 창 (back 그림) 3자루까지 연달아, 다 쓰면 12초 뒤 채움"
+},
+{
+"name": "하늘 내리꽂기",
+"pose": "slam",
+"desc": "jump 로 6m 도약 → slam: 떨어진 자리 반지름 3.5m 원 충격, 넘어뜨림 + 돌 파편 (반지름 5m 안 작은 피해). 재사용 12초"
+},
+{
+"name": "금빛 원 베기",
+"pose": "spin",
+"desc": "창을 한 바퀴 휘둘러 반지름 3m 원 360도 피해 + 1.5m 밀치기. 둘러싸였을 때"
+}
+],
+"passive": "부족 전사의 피: 적을 쓰러뜨릴 때마다 6초 동안 공격력 +10% (3번 겹침), 넘어뜨리기에 30% 덜 밀림"
+},
+"apt": {
+"melee": 4,
+"spear": 5,
+"bow": 2,
+"gun": 0,
+"magic": 0,
+"stealth": 2
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 12,
+"stats": {
+"hp": 1500,
+"atk": 42,
+"spd": 5.2,
+"weight_kg": 95,
+"tall_m": 1.95
+},
+"desc": "금빛 긴 머리 · 금테 두른 검은 가시 갑옷 · 금빛 깃털 망토의 키 큰 부족 여전사. 창 한 자루로 찌르고 던지고 내리꽂는다. 와킨 (철퇴)과 함께 다니는 짝.",
+"gen": 1,
+"codex_g": "mari",
+"batch": "3기-2",
+"portrait": "art/h2/mari/portrait.webp",
+"face": "art/h2/mari/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/mari/idle.webp",
+"w": 417,
+"h": 759,
+"ax": 191,
+"ay": 756,
+"orig": "창을 오른손에 세워 쥐고 똑바로 서서 웃음 (가장 반듯한 선 모습, 반쯤 앞을 봄)"
+},
+"idle2": {
+"src": "art/h2/mari/idle2.webp",
+"w": 489,
+"h": 720,
+"ax": 247,
+"ay": 717,
+"orig": "창을 세워 쥐고 서서 노려봄 (반쯤 앞모습, 발밑 돌 부스러기)"
+},
+"front": {
+"src": "art/h2/mari/front.webp",
+"w": 491,
+"h": 706,
+"ax": 196,
+"ay": 703,
+"orig": "앞모습, 왼손에 창을 세우고 오른손을 내밀며 웃음 (도발)"
+},
+"back": {
+"src": "art/h2/mari/back.webp",
+"w": 426,
+"h": 664,
+"ax": 254,
+"ay": 661,
+"orig": "뒷모습, 등에 창 여러 자루를 묶어 메고 주먹을 쥠, 어깨 너머 오른쪽을 봄"
+},
+"attack": {
+"src": "art/h2/mari/attack.webp",
+"w": 731,
+"h": 547,
+"ax": 82,
+"ay": 544,
+"orig": "크게 내디디며 두 손으로 창을 앞으로 찌름 (발밑 흙먼지)"
+},
+"dash": {
+"src": "art/h2/mari/dash.webp",
+"w": 630,
+"h": 510,
+"ax": 180,
+"ay": 507,
+"orig": "몸을 낮게 던져 창을 앞세우고 돌진 (머리 · 털망토 뒤로 휘날림, 흙먼지)"
+},
+"jump": {
+"src": "art/h2/mari/jump.webp",
+"w": 504,
+"h": 685,
+"ax": 372,
+"ay": 682,
+"orig": "땅에 꽂은 창을 짚고 장대뛰기처럼 몸을 띄움 (창끝 돌 파편)"
+},
+"leap": {
+"src": "art/h2/mari/leap.webp",
+"w": 574,
+"h": 673,
+"ax": 491,
+"ay": 670,
+"orig": "던진 창이 땅에 꽂힌 뒤 한 손을 뻗은 채 공중으로 뛰어오름 (창 궤적 선 · 돌 파편)"
+},
+"slam": {
+"src": "art/h2/mari/slam.webp",
+"w": 465,
+"h": 717,
+"ax": 222,
+"ay": 714,
+"orig": "공중에서 두 손으로 창을 거꾸로 내리꽂아 땅이 터짐 (큰 돌 파편 · 빛 줄기)"
+},
+"spin": {
+"src": "art/h2/mari/spin.webp",
+"w": 773,
+"h": 616,
+"ax": 270,
+"ay": 613,
+"orig": "뒤돌아선 채 창을 크게 휘둘러 둥근 금빛 궤적 (원 베기)"
+},
+"kneel": {
+"src": "art/h2/mari/kneel.webp",
+"w": 717,
+"h": 681,
+"ax": 251,
+"ay": 678,
+"orig": "한 무릎 꿇고 창을 비스듬히 위로 찔러 올림 (대공 찌르기)"
+},
+"guard": {
+"src": "art/h2/mari/guard.webp",
+"w": 694,
+"h": 571,
+"ax": 247,
+"ay": 568,
+"orig": "다리를 넓게 벌리고 창을 낮게 비스듬히 겨눈 수비 자세"
+},
+"windup": {
+"src": "art/h2/mari/windup.webp",
+"w": 577,
+"h": 720,
+"ax": 434,
+"ay": 717,
+"orig": "창을 머리 위로 치켜들어 던지기 직전, 외침 (옆 그림과 붙어 있어 다각형으로 가름)"
+},
+"aim": {
+"src": "art/h2/mari/aim.webp",
+"w": 710,
+"h": 700,
+"ax": 332,
+"ay": 697,
+"orig": "창을 머리 위 뒤로 당기고 왼손으로 과녁을 가리킴 (투창 조준, 옆 그림과 붙어 있어 다각형으로 가름)"
+},
+"throw": {
+"src": "art/h2/mari/throw.webp",
+"w": 839,
+"h": 630,
+"ax": 302,
+"ay": 627,
+"orig": "뒷모습으로 창을 던진 직후 — 창이 앞으로 날아가고 손을 뻗음"
+},
+"bash": {
+"src": "art/h2/mari/bash.webp",
+"w": 521,
+"h": 622,
+"ax": 242,
+"ay": 619,
+"orig": "창을 짧게 쥐고 창 자루 끝으로 앞을 내지름 (자루 치기, 이를 드러냄, attack 창끝과 붙어 있어 다각형으로 가름)"
+},
+"crouch": {
+"src": "art/h2/mari/crouch.webp",
+"w": 570,
+"h": 463,
+"ax": 480,
+"ay": 460,
+"orig": "쭈그려 앉아 창을 땅에 눕혀 쥐고 노려봄 (매복 · 쉬기)"
+}
+}
+},
 "mintbeast": {
 "slug": "mintbeast",
 "name": "민트괴수 (민트 외눈 괴수)",
@@ -4959,6 +6662,418 @@ const H2R = {
 "ax": 319,
 "ay": 674,
 "orig": "낮게 덮치며 머리카락 사이 둥근 이빨 아가리를 벌리고 두 갈퀴손을 뻗음"
+}
+}
+},
+"moro": {
+"slug": "moro",
+"name": "모로",
+"rank": "5성",
+"folder": "3기-2/5성모로",
+"role": "동료 (5성 = 높은 등급 동료. 파일에 역할 글자 없음 — 낫 팔 근접형으로 봄)",
+"tall": 1.75,
+"weight": 60,
+"palette": [
+"#3c3439",
+"#eadfd6",
+"#89858f",
+"#8a5a62",
+"#1e1c1e"
+],
+"missing": [
+"walk",
+"run",
+"fly (날개로 날기)",
+"hurt",
+"down",
+"dead",
+"back"
+],
+"kit": {
+"basic": "낫 팔 휘두르기 (attack) — 앞 3m 부채꼴 160도, 2타",
+"skills": [
+{
+"name": "난도질",
+"pose": "attack2",
+"desc": "앞 4m 부채꼴 90도 5연타 할퀴기 + 출혈 3초 (초당 공격력 20%)"
+},
+{
+"name": "나방 찌르기",
+"pose": "skill",
+"desc": "돌진 · 줄 — 6m 앞으로 긴 낫 팔을 내찌르며 미끄러짐, 줄 위 적 모두 관통 피해"
+},
+{
+"name": "가루 날개",
+"pose": "guard",
+"desc": "막기 — 2초 동안 날개로 몸을 감싸 모든 방향 피해 70% 감소, 끝날 때 반지름 4m 인분 가루 장판 4초 (안의 적 명중 -30%)"
+},
+{
+"name": "급강하",
+"pose": "crouch",
+"desc": "도약 — 8m 앞 지점으로 날아 내려앉음, 반지름 3m 원 피해 + 넘어뜨림. 쓰러진 적에게는 low (쓸어베기) 로 확인사살 (피해 2배)"
+}
+],
+"passive": "밤나방: 어두운 곳 (동굴 · 밤) 에서 이동 +10% · 회피 +10%. 싸우지 않을 때는 idle2 (하품) 로 졸음"
+},
+"apt": {
+"melee": 5,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 3
+},
+"tag": "beast",
+"role_job": "척후",
+"bag": 8,
+"stats": {
+"hp": 1300,
+"atk": 48,
+"spd": 6.5,
+"weight_kg": 60,
+"tall_m": 1.75
+},
+"desc": "더듬이와 흰 털 목도리, 회청 무늬 나방 날개 넷, 톱날 낫 같은 두 팔을 가진 5성 나방 여인. 늘 졸린 얼굴이지만 낫 팔로 휘몰아치듯 베는 근접형.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/moro/portrait.webp",
+"face": "art/h2/moro/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/moro/idle.webp",
+"w": 393,
+"h": 696,
+"ax": 202,
+"ay": 693,
+"orig": "앞모습에 가깝게 서서 낫 팔과 날개를 몸 앞으로 모음 (3/4, 오른쪽)"
+},
+"attack": {
+"src": "art/h2/moro/attack.webp",
+"w": 735,
+"h": 717,
+"ax": 384,
+"ay": 714,
+"orig": "몸을 돌리며 두 낫 팔을 크게 휘둘러 원을 그림 (베기 궤적)"
+},
+"attack2": {
+"src": "art/h2/moro/attack2.webp",
+"w": 544,
+"h": 689,
+"ax": 243,
+"ay": 686,
+"orig": "오른손 손톱을 뻗어 여러 줄 할퀴기 궤적 (연속 할퀴기)"
+},
+"skill": {
+"src": "art/h2/moro/skill.webp",
+"w": 931,
+"h": 663,
+"ax": 470,
+"ay": 660,
+"orig": "다리를 벌리고 긴 낫 팔을 앞으로 곧게 내찔러 뻗음 (찌르기 궤적)"
+},
+"guard": {
+"src": "art/h2/moro/guard.webp",
+"w": 525,
+"h": 655,
+"ax": 263,
+"ay": 652,
+"orig": "날개 네 장과 낫 팔로 몸을 감싸 웅크림 (막기)"
+},
+"low": {
+"src": "art/h2/moro/low.webp",
+"w": 791,
+"h": 649,
+"ax": 532,
+"ay": 646,
+"orig": "낮게 런지하며 낫 팔로 땅을 쓸어 벰 (발밑 궤적)"
+},
+"crouch": {
+"src": "art/h2/moro/crouch.webp",
+"w": 986,
+"h": 515,
+"ax": 472,
+"ay": 512,
+"orig": "날개를 펼친 채 한 손으로 땅을 짚고 웅크려 착지"
+},
+"idle2": {
+"src": "art/h2/moro/idle2.webp",
+"w": 566,
+"h": 681,
+"ax": 346,
+"ay": 678,
+"orig": "낫 팔을 들고 다른 손으로 입을 가리며 하품 (졸린 대기, 방울)"
+}
+}
+},
+"mstar": {
+"slug": "mstar",
+"name": "모닝스타 (\"슈퍼스타\")",
+"rank": "1기 동료 · E (등급 글자 없음 — 파일 이름 '모닝스타1'. LORE 원문 '##E' 칸, 도감: 모닝스타 · 동료)",
+"folder": "3기-2 (모닝스타1.png)",
+"role": "동료 (2D 판: 2층 보스 오르소를 이기면 영입 · 4층 영입 동료, LORE \"옛 1층 동료\". 게임 안 DEFS.morningstar 가 이미 있음 — 이 h2 slug 는 새 3D 전투 그림 묶음)",
+"tall": 1.5,
+"weight": 45,
+"palette": [
+"#110f0d",
+"#4a4240",
+"#f5e3db",
+"#7a2e24",
+"#d9b23c"
+],
+"missing": [
+"walk",
+"hurt",
+"dead (down 으로 대신)",
+"front"
+],
+"kit": {
+"basic": "사슬 철퇴 휘두르기 (attack) — 앞 3.5m 부채꼴 120도, 맞은 자리 반지름 1m 주변 피해 (2D splashR 그대로)",
+"skills": [
+{
+"name": "철퇴 던지기",
+"pose": "attack2",
+"desc": "사슬을 7m 줄로 내던져 처음 맞은 적에게 피해 (공격력 1.5배) + 발 앞 1.5m 로 끌어오기. 재사용 8초"
+},
+{
+"name": "광란의 회전",
+"pose": "spin",
+"desc": "3초 동안 철퇴를 머리 위로 돌려 반지름 3m 원 0.4초마다 피해, 돌면서 걸을 수 있음 (이동 속도 −30%), 원거리 투사체 30% 튕김"
+},
+{
+"name": "별 떨어뜨리기",
+"pose": "windup",
+"desc": "0.6초 치켜든 뒤 앞 4m 지점 반지름 1.8m 원 내려찍기 — 넘어뜨림 + 1초 기절. 재사용 10초"
+}
+],
+"passive": "슈퍼스타의 광기: 잃은 체력 10%마다 공격력 +4%. 전투마다 한 번, 쓰러지면 (down) 2초 뒤 체력 20%로 웃으며 일어남"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 950,
+"atk": 40,
+"spd": 5.0,
+"weight_kg": 45,
+"tall_m": 1.5
+},
+"desc": "검은 트윈테일 · 노란 별 눈 · 송곳니의 작은 광기 소녀. 녹슨 가시 철퇴를 사슬째 휘두르는 근딜, 별명 \"슈퍼스타\".",
+"gen": 1,
+"codex_g": "morningstar",
+"batch": "3기-2",
+"portrait": "art/h2/mstar/portrait.webp",
+"face": "art/h2/mstar/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/mstar/idle.webp",
+"w": 480,
+"h": 696,
+"ax": 185,
+"ay": 693,
+"orig": "철퇴를 땅에 늘어뜨린 채 서서 손톱 세운 손을 들고 송곳니를 드러냄 (광기 어린 대기)"
+},
+"attack": {
+"src": "art/h2/mstar/attack.webp",
+"w": 833,
+"h": 710,
+"ax": 310,
+"ay": 707,
+"orig": "다리를 넓게 벌리고 두 손으로 사슬을 당겨 가시 철퇴를 옆으로 크게 휘두름, 씩 웃음"
+},
+"attack2": {
+"src": "art/h2/mstar/attack2.webp",
+"w": 936,
+"h": 614,
+"ax": 397,
+"ay": 611,
+"orig": "크게 내디디며 사슬을 앞으로 내던져 철퇴를 멀리 뻗음 (철퇴 던지기)"
+},
+"windup": {
+"src": "art/h2/mstar/windup.webp",
+"w": 584,
+"h": 870,
+"ax": 265,
+"ay": 867,
+"orig": "한 팔로 사슬을 높이 들어 철퇴를 머리 위로 치켜듦, 외침 (내려찍기 직전)"
+},
+"spin": {
+"src": "art/h2/mstar/spin.webp",
+"w": 688,
+"h": 822,
+"ax": 280,
+"ay": 819,
+"orig": "두 팔을 머리 위로 들어 사슬 철퇴를 머리 위에서 빙빙 돌림"
+},
+"crouch": {
+"src": "art/h2/mstar/crouch.webp",
+"w": 526,
+"h": 574,
+"ax": 298,
+"ay": 571,
+"orig": "쭈그려 앉아 사슬을 몸에 감고 음흉하게 웃음 (철퇴는 발치에)"
+},
+"down": {
+"src": "art/h2/mstar/down.webp",
+"w": 688,
+"h": 393,
+"ax": 295,
+"ay": 390,
+"orig": "옆으로 쓰러져 엎드린 채 이를 악물고 노려봄 (사슬 늘어짐)"
+},
+"back": {
+"src": "art/h2/mstar/back.webp",
+"w": 559,
+"h": 741,
+"ax": 229,
+"ay": 738,
+"orig": "뒷모습, 어깨 너머로 오른쪽을 보며 철퇴를 아래로 늘어뜨림"
+}
+}
+},
+"mulle": {
+"slug": "mulle",
+"name": "물레",
+"rank": "5성 (업적보상)",
+"folder": "3기-2/5성 업적보상 정령서포터 앰버서더 물레",
+"role": "동료 (5성 업적보상 = 업적을 달성하면 얻는 동료. 정령 서포터 → 지원)",
+"tall": 1.72,
+"weight": 55,
+"palette": [
+"#97baf1",
+"#b02a2a",
+"#d8b04a",
+"#b070c0",
+"#5d5c78"
+],
+"missing": [
+"walk",
+"run",
+"hurt",
+"down",
+"dead",
+"front"
+],
+"kit": {
+"basic": "정령 지시 (attack) — 손가락으로 가리켜 물 정령 탄 1발, 12m 사격 단일, 1초 이동 -20%",
+"skills": [
+{
+"name": "정령의 손길",
+"pose": "cast",
+"desc": "치유 — 10m 안 아군 1명 체력 25% 즉시 회복 + 4초 동안 초당 2% 회복"
+},
+{
+"name": "정령 방벽",
+"pose": "guard",
+"desc": "막기 — 앞 3m 에 너비 4m 물 장막 4초, 원거리 공격을 막고 닿은 근접 적을 2m 밀어냄"
+},
+{
+"name": "정령 강림",
+"pose": "skill",
+"desc": "장판 — 반지름 8m 원 6초, 안의 아군 초당 3% 회복 · 이동 +15%, 적 이동 -30%"
+},
+{
+"name": "땅의 정령 부르기",
+"pose": "kneel",
+"desc": "소환 — 무릎 꿇고 작은 정령 1체를 20초 부름. 정령은 체력이 가장 낮은 아군을 따라다니며 3초마다 회복탄 (5%)"
+}
+],
+"passive": "정령 계약 (업적보상 앰버서더): 파티 전원 최대 체력 +8%, 쓰러진 아군 살리는 시간 50% 단축. 정령 · 요정 쪽 마을에서 bow 로 대화 선택지"
+},
+"apt": {
+"melee": 0,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 1
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 8,
+"stats": {
+"hp": 900,
+"atk": 28,
+"spd": 6.0,
+"weight_kg": 55,
+"tall_m": 1.72
+},
+"desc": "푸른 피부에 붉은 눈, 단발머리에 작은 붉은 관을 쓴 5성 업적보상 동료. 정령을 부리는 앰버서더 (대사) 로, 치유 · 방벽 · 장판으로 파티를 지킨다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/mulle/portrait.webp",
+"face": "art/h2/mulle/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/mulle/idle.webp",
+"w": 164,
+"h": 699,
+"ax": 82,
+"ay": 696,
+"orig": "옆모습으로 반듯이 서서 손을 가슴에 얹음"
+},
+"cast": {
+"src": "art/h2/mulle/cast.webp",
+"w": 374,
+"h": 704,
+"ax": 127,
+"ay": 701,
+"orig": "손바닥을 위로 해 앞으로 내밂 (정령에게 내주는 손짓 · 치유)"
+},
+"guard": {
+"src": "art/h2/mulle/guard.webp",
+"w": 346,
+"h": 710,
+"ax": 85,
+"ay": 707,
+"orig": "팔을 곧게 뻗어 손바닥을 세움 (멈춰 · 막기)"
+},
+"kneel": {
+"src": "art/h2/mulle/kneel.webp",
+"w": 441,
+"h": 509,
+"ax": 166,
+"ay": 506,
+"orig": "한쪽 무릎 꿇고 손을 앞으로 뻗음 (땅의 정령 부르기)"
+},
+"attack": {
+"src": "art/h2/mulle/attack.webp",
+"w": 454,
+"h": 739,
+"ax": 115,
+"ay": 736,
+"orig": "팔을 곧게 뻗어 손가락으로 가리킴 (정령에게 공격 지시)"
+},
+"back": {
+"src": "art/h2/mulle/back.webp",
+"w": 238,
+"h": 734,
+"ax": 113,
+"ay": 731,
+"orig": "뒷모습 (돌아봄)"
+},
+"bow": {
+"src": "art/h2/mulle/bow.webp",
+"w": 222,
+"h": 718,
+"ax": 104,
+"ay": 715,
+"orig": "손을 가슴에 얹고 허리 숙여 인사"
+},
+"skill": {
+"src": "art/h2/mulle/skill.webp",
+"w": 303,
+"h": 744,
+"ax": 81,
+"ay": 741,
+"orig": "두 손을 얼굴 앞으로 들어 올려 정령을 받드는 시전"
 }
 }
 },
@@ -5245,6 +7360,579 @@ const H2R = {
 "ax": 284,
 "ay": 507,
 "orig": "몸을 앞으로 숙이고 점액 팔을 길게 늘여 갈퀴처럼 할큄 (점액 방울 튐)"
+}
+}
+},
+"ratknight": {
+"slug": "ratknight",
+"name": "쥐 기사 (포렌의 쥐 · 이름 없는 방패창병)",
+"rank": "유닛 (이름 없는 쥐 기사, 생환하면 이름 · 3~4번 생환하면 쥐 베테랑)",
+"folder": "3기-2/포렌의 쥐들",
+"role": "동료 (포렌의 쥐 군대 — 포렌이 부름)",
+"tall": 1.2,
+"weight": 45,
+"palette": [
+"#9fd65a",
+"#4b4a3f",
+"#25231f",
+"#6b4a32",
+"#59603f"
+],
+"missing": [
+"walk (dash 로 대신)",
+"hurt",
+"dead (down 으로 대신 — 누운 그림이 쉬는 듯 편안해 보임)",
+"back · front"
+],
+"kit": {
+"basic": "짧은 창 찌르기 (attack) — 앞 2.2m 줄, 방패를 앞에 둔 채 찌름",
+"skills": [
+{
+"name": "창 거리 유지",
+"pose": "stance",
+"desc": "적이 1.6m 안으로 들어오면 0.4초 동안 1m 뒷걸음질하며 창끝을 겨눔 — 2.2m 거리를 지키며 견제 찌르기 (피해 70%), 쿨 4초"
+},
+{
+"name": "방패 막기",
+"pose": "guard",
+"desc": "웅크려 둥근 방패를 앞세움 — 정면 90도 부채꼴에서 오는 근접 · 화살 피해 70% 감소, 최대 2초, 막는 동안 이동 불가, 쿨 6초"
+},
+{
+"name": "돌격",
+"pose": "dash",
+"desc": "창을 앞세우고 6m 직선 돌진 — 처음 닿은 적에게 창 피해 130% + 1m 밀침, 벽에 박으면 멈춤, 쿨 10초"
+}
+],
+"passive": "쥐 떼: 반지름 3m 안 다른 쥐 기사 1마리당 방어 +5% (최대 +15%). 생환 기록 — 전투 끝까지 살아 돌아오면 생환 +1, 첫 생환에 이름 (쥐기사 A, B …), 3~4번 생환하면 ratvet 로 승급"
+},
+"apt": {
+"melee": 2,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 4,
+"stats": {
+"hp": 220,
+"atk": 14,
+"spd": 5.0,
+"weight_kg": 45,
+"tall_m": 1.2
+},
+"desc": "포렌 (쥐들의 대왕, 1인군단)이 부르는 쥐 군대의 이름 없는 방패창병. 녹색 땋은 머리에 쥐 귀 투구, 쥐 꼬리, 낡은 철 갑옷의 작은 소녀 모습. 대부분 전투에서 죽고, 살아 돌아온 쥐만 이름을 얻는다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/ratknight/portrait.webp",
+"face": "art/h2/ratknight/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ratknight/idle.webp",
+"w": 477,
+"h": 708,
+"ax": 278,
+"ay": 705,
+"orig": "오른손에 짧은 창 세워 쥐고 왼팔에 둥근 철 방패, 반듯이 서서 앞을 봄 — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"salute": {
+"src": "art/h2/ratknight/salute.webp",
+"w": 351,
+"h": 720,
+"ax": 236,
+"ay": 717,
+"orig": "오른손을 투구 챙에 붙여 경례, 방패는 등에 멤, 창 없음 — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"command": {
+"src": "art/h2/ratknight/command.webp",
+"w": 485,
+"h": 687,
+"ax": 279,
+"ay": 684,
+"orig": "다리를 벌리고 서서 오른팔을 뒤쪽 (왼쪽)으로 곧게 뻗어 손바닥을 폄 — 길 안내 · 명령 대기 · 열 맞추기 손짓, 방패는 등에 — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"attack": {
+"src": "art/h2/ratknight/attack.webp",
+"w": 609,
+"h": 548,
+"ax": 280,
+"ay": 545,
+"orig": "앞발 내딛고 두 손으로 창을 수평으로 찌름, 왼팔 방패를 앞에 붙임 — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"guard": {
+"src": "art/h2/ratknight/guard.webp",
+"w": 537,
+"h": 573,
+"ax": 299,
+"ay": 570,
+"orig": "낮게 쪼그려 앉아 둥근 방패 뒤로 몸을 숨기고 창은 비스듬히 위로 세움 (방패 막기) — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"stance": {
+"src": "art/h2/ratknight/stance.webp",
+"w": 536,
+"h": 692,
+"ax": 294,
+"ay": 689,
+"orig": "다리 벌려 버티고 방패를 앞세운 채 창을 허리 높이에서 비스듬히 앞으로 겨눔 (거리 유지 · 찌르기 준비) — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"down": {
+"src": "art/h2/ratknight/down.webp",
+"w": 520,
+"h": 428,
+"ax": 368,
+"ay": 425,
+"orig": "옆으로 누워 팔꿈치로 상체를 받치고 창은 앞 바닥에 놓임, 방패는 등 뒤, 꼬리 위로 — 쓰러짐 (쉬는 모습으로도 보임) — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+},
+"dash": {
+"src": "art/h2/ratknight/dash.webp",
+"w": 581,
+"h": 622,
+"ax": 265,
+"ay": 619,
+"orig": "창을 앞으로 수평으로 겨누고 방패 들고 크게 뛰어 달림, 땋은 머리 · 꼬리 뒤로 날림 (돌격) — 4단 크기 비교 시트 (같은 동작을 작게→크게 4번, 성장 단계 비교로도 보임) — 가장 큰 오른쪽 하나만 씀"
+}
+}
+},
+"ratsmall": {
+"slug": "ratsmall",
+"name": "일반 쥐 (포렌의 쥐)",
+"rank": "유닛 (일반쥐)",
+"folder": "3기-2/포렌의 쥐들",
+"role": "동료 (포렌의 쥐 군대 — 포렌이 부름)",
+"tall": 0.25,
+"weight": 0.4,
+"palette": [
+"#0d0d0d",
+"#1e1e1e",
+"#3a3a3a",
+"#7a7a7a",
+"#a8e030"
+],
+"missing": [
+"attack (물기)",
+"run 따로 (idle 을 호다닥 달리기로 같이 씀)",
+"hurt",
+"dead"
+],
+"kit": {
+"basic": "물기 — 앞 0.5m, 작은 피해, 0.3초마다",
+"skills": [
+{
+"name": "호다닥",
+"pose": "idle",
+"desc": "낮게 몸을 깔고 8m 를 빠르게 달려 적 발밑에 붙음 — 붙은 적 이동 속도 −10% (쥐가 여럿이면 겹침, 최대 −30%)"
+},
+{
+"name": "따라 물기",
+"pose": "idle",
+"desc": "쥐 베테랑의 '작은 표식'이 찍힌 적을 따라가 4초 동안 물어뜯음 (초당 작은 피해)"
+}
+],
+"passive": "작은 몸: 원거리 공격에 맞을 확률 −40%, 대신 한두 대면 죽음"
+},
+"apt": {
+"melee": 1,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 4
+},
+"tag": "beast",
+"role_job": "척후",
+"bag": 0,
+"stats": {
+"hp": 12,
+"atk": 3,
+"spd": 7.5,
+"weight_kg": 0.4,
+"tall_m": 0.25
+},
+"desc": "포렌이 부르는 진짜 검은 쥐 한 마리. 초록 눈, 검은 털, 긴 꼬리. 떼로 몰려 발밑을 물고 다님.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/ratsmall/portrait.webp",
+"face": "art/h2/ratsmall/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ratsmall/idle.webp",
+"w": 926,
+"h": 329,
+"ax": 480,
+"ay": 326,
+"orig": "검은 쥐 한 마리 옆모습, 네 발로 낮게 걷는 (호다닥) 기본 자세, 초록 눈 · 긴 꼬리 · 수염"
+}
+}
+},
+"ratvet": {
+"slug": "ratvet",
+"name": "쥐 베테랑 (포렌의 쥐 · 3~4번 생환한 쥐 기사)",
+"rank": "베테랑 (쥐 기사 승급형)",
+"folder": "3기-2/포렌의 쥐들",
+"role": "동료 (포렌의 쥐 군대 — 포렌이 부름, 베테랑은 로비에서 포렌을 졸졸 따라다님)",
+"tall": 1.25,
+"weight": 62,
+"palette": [
+"#8fd04a",
+"#5b6340",
+"#2a2824",
+"#e8a530",
+"#efe3c8",
+"#3f5233"
+],
+"missing": [
+"walk · run",
+"hurt",
+"dead (down 으로 대신)",
+"front · back"
+],
+"kit": {
+"basic": "긴 창 찌르기 (attack) — 앞 3m 줄. 적이 1.2m 안에 붙으면 등의 짧은 검으로 바꿔 찌르기 (sword_attack, 1.6m)",
+"skills": [
+{
+"name": "구르기 방패 박치기 (무겁게)",
+"pose": "bash",
+"desc": "roll_in → roll_flip → bash: 앞으로 4m 굴러 (구르는 0.4초 무적) 큰 방패로 몸통 박치기 — 맞은 적 피해 160% + 2.5m 밀침 + 1초 기절, 무거워서 끝나고 본인도 0.6초 경직 (roll_land), 쿨 9초"
+},
+{
+"name": "뒷구르기",
+"pose": "broll_flip",
+"desc": "broll_fall → broll_flip → broll_land: 뒤로 3m 굴러 빠짐, 0.3초 무적, 착지 뒤 1초 방패 막기 자동 — 위험할 때 (HP 30% 아래) 스스로도 씀, 쿨 7초"
+},
+{
+"name": "작은 방진",
+"pose": "guard2",
+"desc": "무릎 꿇고 창을 세워 방패를 박음 (포렌 방진의 마이너 카피) — 4초 동안 반지름 2.5m 안 쥐 기사 최대 2마리와 받는 피해를 나눠 받음 (셋이 1/3씩), 정면 120도 근접 피해 50% 감소, 쿨 15초"
+},
+{
+"name": "작은 표식",
+"pose": "command",
+"desc": "손을 뻗어 적 1명 지목 (포렌 표식의 마이너 카피, 찍!) — 6초 표식, 근처 일반 쥐 (ratsmall) 2마리가 달려와 따라 묾, 쥐 기사들의 다음 공격 +20%, 쿨 18초"
+}
+],
+"passive": "베테랑의 근성: 첫 치명상 한 번은 HP 1로 버팀 (전투당 1번). 큰 장식 방패 — 정면 원거리 피해 35% 감소. 이름 있는 쥐 — 죽으면 포렌이 그 이름을 부름"
+},
+"apt": {
+"melee": 4,
+"spear": 4,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 8,
+"stats": {
+"hp": 520,
+"atk": 24,
+"spd": 5.2,
+"weight_kg": 62,
+"tall_m": 1.25
+},
+"desc": "전투에서 3~4번 살아 돌아와 쥐 베테랑이 된 포렌의 쥐 기사. 더 큰 장식 방패 · 긴 창 · 등의 짧은 검 · 고급 갑옷 · 투구의 주황 리본, 한쪽 눈을 감은 여유. 구르고 방패로 박는 무거운 싸움, 포렌 기술의 작은 흉내 (방진 · 표식)를 씀.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/ratvet/portrait.webp",
+"face": "art/h2/ratvet/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/ratvet/idle.webp",
+"w": 546,
+"h": 815,
+"ax": 366,
+"ay": 812,
+"orig": "왼손에 긴 창 세워 쥐고 오른쪽에 키만 한 큰 장식 방패 (녹색 바탕 금색 백합 무늬, 금 테 · 리벳), 반듯이 서서 앞을 봄. 투구 옆 주황 리본 · 반짝임, 한쪽 눈 감음, 허리까지 오는 굵은 녹색 땋은 머리, 등에 짧은 검"
+},
+"salute": {
+"src": "art/h2/ratvet/salute.webp",
+"w": 401,
+"h": 755,
+"ax": 251,
+"ay": 752,
+"orig": "오른손을 투구 챙에 대고 경례, 왼손은 옆에 내림, 방패는 등에 멤, 한쪽 눈 감고 고개 듦"
+},
+"command": {
+"src": "art/h2/ratvet/command.webp",
+"w": 527,
+"h": 742,
+"ax": 283,
+"ay": 739,
+"orig": "다리 벌리고 서서 오른팔을 뒤쪽 (왼쪽)으로 곧게 뻗어 손바닥 폄 — 경례 전 대기 · 명령 · 표식 지목 손짓, 방패 등에, 검 자루 보임"
+},
+"ready": {
+"src": "art/h2/ratvet/ready.webp",
+"w": 638,
+"h": 848,
+"ax": 435,
+"ay": 845,
+"orig": "창 세워 들고 큰 방패 옆에 세운 채 서 있음 (idle 과 같은 차림, 다른 각도의 대기)"
+},
+"guard": {
+"src": "art/h2/ratvet/guard.webp",
+"w": 656,
+"h": 813,
+"ax": 389,
+"ay": 810,
+"orig": "무릎 굽혀 낮게 웅크리고 큰 방패를 땅에 박듯 앞세움, 창은 방패 뒤에서 비스듬히 위로 (방패 막기)"
+},
+"attack": {
+"src": "art/h2/ratvet/attack.webp",
+"w": 1073,
+"h": 610,
+"ax": 433,
+"ay": 607,
+"orig": "다리 넓게 벌리고 두 손으로 긴 창을 수평으로 길게 찌름, 방패는 뒤에 (창 찌르기)"
+},
+"attack2": {
+"src": "art/h2/ratvet/attack2.webp",
+"w": 1228,
+"h": 724,
+"ax": 54,
+"ay": 721,
+"orig": "몸을 날려 앞으로 뛰며 창을 수평으로 찌름, 방패를 몸 앞에 붙임 (도약 찌르기 · 돌격 찌르기)"
+},
+"down": {
+"src": "art/h2/ratvet/down.webp",
+"w": 980,
+"h": 482,
+"ax": 771,
+"ay": 479,
+"orig": "방패에 깔려 옆으로 쓰러짐, 창 쥔 채 한쪽 눈 감고 지친 얼굴 (쓰러짐)"
+},
+"guard2": {
+"src": "art/h2/ratvet/guard2.webp",
+"w": 678,
+"h": 854,
+"ax": 459,
+"ay": 851,
+"orig": "한쪽 무릎 꿇고 창을 땅에 세워 쥐고 방패를 옆에 세움 (방진 · 버티기)"
+},
+"block_up": {
+"src": "art/h2/ratvet/block_up.webp",
+"w": 572,
+"h": 820,
+"ax": 243,
+"ay": 817,
+"orig": "두 팔로 큰 방패를 머리 위로 들어 위에서 오는 공격을 막음"
+},
+"crouch": {
+"src": "art/h2/ratvet/crouch.webp",
+"w": 507,
+"h": 544,
+"ax": 277,
+"ay": 541,
+"orig": "방패 뒤에 깊이 웅크려 숨음 (검 · 창 없이)"
+},
+"sword_ready": {
+"src": "art/h2/ratvet/sword_ready.webp",
+"w": 573,
+"h": 612,
+"ax": 315,
+"ay": 609,
+"orig": "방패 세우고 짧은 검을 낮게 뒤로 뺌 (검 자세)"
+},
+"sword_windup": {
+"src": "art/h2/ratvet/sword_windup.webp",
+"w": 433,
+"h": 657,
+"ax": 220,
+"ay": 654,
+"orig": "검을 어깨 위로 들어 올림, 방패 앞세움 (내려베기 준비)"
+},
+"sword_thrust": {
+"src": "art/h2/ratvet/sword_thrust.webp",
+"w": 566,
+"h": 580,
+"ax": 306,
+"ay": 577,
+"orig": "방패 뒤에서 검을 앞으로 내밀어 찌름 (방패 너머 찌르기)"
+},
+"grab": {
+"src": "art/h2/ratvet/grab.webp",
+"w": 537,
+"h": 671,
+"ax": 356,
+"ay": 668,
+"orig": "왼손을 크게 뻗어 움켜쥐려 함, 검은 아래로 (붙잡기)"
+},
+"sword_low": {
+"src": "art/h2/ratvet/sword_low.webp",
+"w": 551,
+"h": 659,
+"ax": 91,
+"ay": 656,
+"orig": "다리 넓게 벌려 낮은 자세, 검 아래로 비스듬히 (낮은 검 자세)"
+},
+"sword_attack": {
+"src": "art/h2/ratvet/sword_attack.webp",
+"w": 757,
+"h": 594,
+"ax": 307,
+"ay": 591,
+"orig": "몸을 앞으로 기울여 검을 길게 찔러 뻗음, 방패는 뒤 (검 찌르기)"
+},
+"sword_cry": {
+"src": "art/h2/ratvet/sword_cry.webp",
+"w": 592,
+"h": 818,
+"ax": 317,
+"ay": 815,
+"orig": "검을 머리 위로 높이 들고 입 벌려 외침, 방패 앞세움 (함성 · 내려베기)"
+},
+"sword_kneel": {
+"src": "art/h2/ratvet/sword_kneel.webp",
+"w": 465,
+"h": 735,
+"ax": 291,
+"ay": 732,
+"orig": "한쪽 무릎 꿇고 방패 숨어 검을 비스듬히 세움 (낮은 반격 자세)"
+},
+"throw": {
+"src": "art/h2/ratvet/throw.webp",
+"w": 717,
+"h": 773,
+"ax": 232,
+"ay": 770,
+"orig": "긴 창을 머리 위로 들어 던지려는 자세, 방패 앞에 세움 (창 던지기)"
+},
+"dive": {
+"src": "art/h2/ratvet/dive.webp",
+"w": 654,
+"h": 643,
+"ax": 418,
+"ay": 640,
+"orig": "앞으로 몸을 날리며 왼팔을 쭉 뻗음, 방패 등 뒤, 꼬리 휨 (앞으로 몸 날리기 · 구르기 시작)"
+},
+"slash": {
+"src": "art/h2/ratvet/slash.webp",
+"w": 552,
+"h": 633,
+"ax": 288,
+"ay": 630,
+"orig": "방패 앞세우고 검을 비스듬히 위로 휘두름, 입 벌림 (검 베기)"
+},
+"cover": {
+"src": "art/h2/ratvet/cover.webp",
+"w": 460,
+"h": 464,
+"ax": 252,
+"ay": 461,
+"orig": "방패를 등에 지고 손 짚고 낮게 엎드림 (방패 덮개 · 구르기 직전)"
+},
+"tumble": {
+"src": "art/h2/ratvet/tumble.webp",
+"w": 497,
+"h": 578,
+"ax": 303,
+"ay": 575,
+"orig": "방패를 등에 진 채 거꾸로 뒤집혀 구름, 다리 하늘로 (구르기)"
+},
+"land": {
+"src": "art/h2/ratvet/land.webp",
+"w": 531,
+"h": 528,
+"ax": 246,
+"ay": 525,
+"orig": "구르고 나서 한 손 짚고 낮게 착지, 방패 등에 (구르기 끝)"
+},
+"sword_raise": {
+"src": "art/h2/ratvet/sword_raise.webp",
+"w": 521,
+"h": 798,
+"ax": 216,
+"ay": 795,
+"orig": "방패 세우고 검을 머리 위로 비스듬히 치켜듦"
+},
+"shield_push": {
+"src": "art/h2/ratvet/shield_push.webp",
+"w": 669,
+"h": 561,
+"ax": 370,
+"ay": 558,
+"orig": "큰 방패를 수평으로 눕혀 낮게 밀어붙이며 검을 앞으로 내지름 (방패 밀치기)"
+},
+"knee": {
+"src": "art/h2/ratvet/knee.webp",
+"w": 452,
+"h": 751,
+"ax": 272,
+"ay": 748,
+"orig": "한쪽 무릎을 높이 들어 차올리듯 서고 검은 아래로 늘어뜨림 (무릎 차기 · 밟기)"
+},
+"sword_back": {
+"src": "art/h2/ratvet/sword_back.webp",
+"w": 542,
+"h": 708,
+"ax": 244,
+"ay": 705,
+"orig": "방패 뒤에서 검을 몸 앞으로 가로 잡음 (검 막기 · 역수 자세)"
+},
+"roll_in": {
+"src": "art/h2/ratvet/roll_in.webp",
+"w": 629,
+"h": 606,
+"ax": 363,
+"ay": 603,
+"orig": "방패를 앞에 세우고 손 짚어 낮게 웅크림 (앞구르기 준비)"
+},
+"bash": {
+"src": "art/h2/ratvet/bash.webp",
+"w": 707,
+"h": 582,
+"ax": 522,
+"ay": 579,
+"orig": "방패를 앞세우고 몸을 수평으로 날려 부딪침 (굴러서 방패로 박치기, 무겁게)"
+},
+"roll_flip": {
+"src": "art/h2/ratvet/roll_flip.webp",
+"w": 722,
+"h": 633,
+"ax": 306,
+"ay": 630,
+"orig": "방패를 몸에 붙인 채 거꾸로 뒤집혀 앞구르기 (머리 아래 · 다리 위)"
+},
+"roll_land": {
+"src": "art/h2/ratvet/roll_land.webp",
+"w": 628,
+"h": 509,
+"ax": 345,
+"ay": 506,
+"orig": "구르기 끝, 방패 앞세우고 한 손 짚고 낮게 착지"
+},
+"helmet": {
+"src": "art/h2/ratvet/helmet.webp",
+"w": 592,
+"h": 756,
+"ax": 358,
+"ay": 753,
+"orig": "구르고 일어나 투구를 한 손으로 바로잡고 서 있음, 방패 옆에 세움 (정비 · 대기)"
+},
+"broll_fall": {
+"src": "art/h2/ratvet/broll_fall.webp",
+"w": 689,
+"h": 507,
+"ax": 294,
+"ay": 504,
+"orig": "방패를 앞에 둔 채 뒤로 주저앉으며 넘어감 (뒷구르기 시작)"
+},
+"broll_flip": {
+"src": "art/h2/ratvet/broll_flip.webp",
+"w": 730,
+"h": 564,
+"ax": 384,
+"ay": 561,
+"orig": "방패를 덮고 거꾸로 뒤집혀 뒷구르기 (다리 위)"
+},
+"broll_land": {
+"src": "art/h2/ratvet/broll_land.webp",
+"w": 623,
+"h": 564,
+"ax": 375,
+"ay": 561,
+"orig": "뒷구르기 끝, 방패 앞세우고 손 짚고 낮게 착지"
 }
 }
 },
@@ -5546,6 +8234,140 @@ const H2R = {
 "ax": 282,
 "ay": 628,
 "orig": "방패 들고 돌진 (창 겨눔, 흙먼지)"
+}
+}
+},
+"rozel": {
+"slug": "rozel",
+"name": "로젤 (붉은 가시 성당의 주인)",
+"rank": "보스 (파일 이름 '보스 로젤')",
+"folder": "3기-2 (보스 로젤.png)",
+"role": "보스 (2D 판 3층 붉은 가시 성당 보스룸의 주인. 영입 동료 아님)",
+"tall": 1.85,
+"weight": 55,
+"palette": [
+"#100706",
+"#1d1715",
+"#d01418",
+"#641617",
+"#e8e2e0"
+],
+"missing": [
+"walk",
+"attack (때리는 그림 없음 — 모두 주문 자세)",
+"hurt",
+"dead (down 으로 대신)",
+"back"
+],
+"kit": {
+"basic": "가시 줄기 (cast) — 9m 앞 한 점에서 가시 한 줄기가 솟음 (사격), 절단 (3초 동안 초당 최대 체력 1%)",
+"skills": [
+{
+"name": "가시 문장",
+"pose": "cast2",
+"desc": "상대 발밑에 반지름 2.5m 붉은 문장 → 1초 뒤 가시가 솟음: 공격력 1.4배 + 0.8초 묶임 + 50% 절단. 체력 절반 아래면 문장 둘. 문장 밖으로 빠지면 피함 (2D 기술 그대로). 재사용 6초"
+},
+{
+"name": "가시 정원",
+"pose": "front",
+"desc": "두 팔을 벌려 자신 둘레 반지름 8m 원 장판 6초 — 안의 적 이동 −35%, 1초마다 피해, 장판 위 로젤은 피해 15% 덜 받음. 재사용 18초"
+},
+{
+"name": "뿌리 부르기",
+"pose": "skill",
+"desc": "땅을 쓰다듬어 붉은 가시 뿌리 촉수 3개 소환 (8초, 각자 6m 안 적을 휘둘러 침 · 0.5초 묶음). 체력 절반 아래면 5개"
+}
+],
+"passive": "붉은 가시 로브: 2m 안에서 때린 근접 공격자에게 받은 피해 20% 되돌림 + 절단. 넘어뜨리기 · 밀치기 무시"
+},
+"apt": {
+"melee": 1,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 1
+},
+"tag": "mage",
+"role_job": "지휘",
+"bag": 6,
+"stats": {
+"hp": 3800,
+"atk": 70,
+"spd": 3.6,
+"weight_kg": 55,
+"tall_m": 1.85
+},
+"desc": "붉은 가시 성당의 주인. 붉은 긴 머리가 얼굴을 가린 검은 수도복 여인으로, 로브 자락에서 핏빛 가시 뿌리가 바닥으로 번진다. 손짓 하나로 발밑에 가시 문장을 펼친다.",
+"gen": 1,
+"codex_g": "agnes",
+"batch": "3기-2",
+"portrait": "art/h2/rozel/portrait.webp",
+"face": "art/h2/rozel/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/rozel/idle.webp",
+"w": 525,
+"h": 700,
+"ax": 241,
+"ay": 697,
+"orig": "옆모습으로 서서 두 손을 내림 — 로브 자락 끝에서 붉은 가시 뿌리가 바닥으로 방사형으로 퍼짐"
+},
+"idle2": {
+"src": "art/h2/rozel/idle2.webp",
+"w": 500,
+"h": 686,
+"ax": 314,
+"ay": 683,
+"orig": "똑바로 서서 한 손을 가슴께에 얹고 고개를 숙임"
+},
+"front": {
+"src": "art/h2/rozel/front.webp",
+"w": 551,
+"h": 702,
+"ax": 259,
+"ay": 699,
+"orig": "앞모습, 두 팔을 양옆으로 벌려 손바닥을 펼침 (큰 주문 · 가시 퍼뜨리기)"
+},
+"cast": {
+"src": "art/h2/rozel/cast.webp",
+"w": 508,
+"h": 703,
+"ax": 216,
+"ay": 700,
+"orig": "한 손을 위로 들어 손가락을 펼침 (주문)"
+},
+"cast2": {
+"src": "art/h2/rozel/cast2.webp",
+"w": 516,
+"h": 684,
+"ax": 276,
+"ay": 681,
+"orig": "몸을 숙이며 한 손을 아래로 뻗어 바닥을 가리킴 (가시 문장 펼치기)"
+},
+"cast3": {
+"src": "art/h2/rozel/cast3.webp",
+"w": 571,
+"h": 674,
+"ax": 268,
+"ay": 671,
+"orig": "고개를 돌리며 한 손바닥을 위로 펴 내밂 (부르기 · 손짓)"
+},
+"skill": {
+"src": "art/h2/rozel/skill.webp",
+"w": 505,
+"h": 692,
+"ax": 186,
+"ay": 689,
+"orig": "허리를 깊이 숙여 한 팔을 높이 치켜들고 다른 손으로 바닥의 가시를 쓰다듬음"
+},
+"down": {
+"src": "art/h2/rozel/down.webp",
+"w": 550,
+"h": 505,
+"ax": 243,
+"ay": 502,
+"orig": "무릎 꿇고 엎드려 한 손으로 가시 바닥을 짚음 (쓰러짐 — 가시 소환 자세로도 씀)"
 }
 }
 },
@@ -5966,6 +8788,275 @@ const H2R = {
 }
 }
 },
+"slra": {
+"slug": "slra",
+"name": "슬라 (산호천사)",
+"rank": "미정",
+"folder": "3기-2/기본슬라천사",
+"role": "동료 (등급 글자 없음. 상냥한 젤리 천사 → 지원 동료, 싸울 때는 slra2 전투 모습으로 변신)",
+"tall": 1.62,
+"weight": 70,
+"palette": [
+"#f6f0ef",
+"#c070d8",
+"#e8d070",
+"#f0f0b0",
+"#d02a3a"
+],
+"missing": [
+"attack (그림 없음 — wave 로 대신)",
+"hurt",
+"down",
+"dead",
+"back"
+],
+"kit": {
+"basic": "산호 방울 던지기 (그림 없음 — wave 로 대신) — 8m 사격, 끈적 젤리 방울로 2초 이동 -20%",
+"skills": [
+{
+"name": "산호 축복",
+"pose": "special",
+"desc": "떠오르며 반지름 7m 원 — 안의 아군 체력 20% 회복 + 4초 받는 피해 10% 감소"
+},
+{
+"name": "젤리 회전",
+"pose": "skill",
+"desc": "빙글 돌아 반지름 3m 원 — 젤리 치마로 적을 3m 밀어내고 2초 이동 -30%"
+},
+{
+"name": "산호 싹",
+"pose": "summon",
+"desc": "소환 — 앞 3m 에 산호 싹 15초, 반지름 4m 안 아군 초당 2% 회복 (싹은 체력 200, 적이 노림)"
+},
+{
+"name": "산호 기사 변신",
+"pose": "bow",
+"desc": "변신 — 치마를 들어 인사하며 slra2 (산호 갑옷 + 장검) 로 25초 바뀜. 변신 동안 지원 기술 대신 근접 검술"
+}
+],
+"passive": "젤리 몸: 받는 근접 피해 15% 흡수, 앉아 쉬면 (sit) 회복 2배"
+},
+"apt": {
+"melee": 1,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 0
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 9,
+"stats": {
+"hp": 800,
+"atk": 22,
+"spd": 5.5,
+"weight_kg": 70,
+"tall_m": 1.62
+},
+"desc": "흰 젤리 드레스에 보라 · 노랑 얼룩과 금빛 방울이 흐르는 산호천사 슬라. 산호 머리장식과 머리 위 고리, 늘 웃는 상냥한 회복 지원 동료이며 싸울 때는 산호 기사 (slra2) 로 변신한다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/slra/portrait.webp",
+"face": "art/h2/slra/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/slra/idle.webp",
+"w": 503,
+"h": 699,
+"ax": 256,
+"ay": 696,
+"orig": "앞모습으로 두 팔을 살짝 벌리고 웃으며 서 있음 — 흰 젤리 드레스 (보라 · 노랑 얼룩, 금빛 방울), 산호 머리장식, 머리 위 고리"
+},
+"bow": {
+"src": "art/h2/slra/bow.webp",
+"w": 469,
+"h": 665,
+"ax": 257,
+"ay": 662,
+"orig": "두 손으로 젤리 치마를 들고 눈웃음 인사"
+},
+"skill": {
+"src": "art/h2/slra/skill.webp",
+"w": 552,
+"h": 707,
+"ax": 325,
+"ay": 704,
+"orig": "빙글 돌아 젤리 치마가 크게 퍼짐 (회전)"
+},
+"wave": {
+"src": "art/h2/slra/wave.webp",
+"w": 413,
+"h": 696,
+"ax": 214,
+"ay": 693,
+"orig": "한 손 가슴, 한 손 흔들며 인사"
+},
+"walk": {
+"src": "art/h2/slra/walk.webp",
+"w": 552,
+"h": 657,
+"ax": 248,
+"ay": 654,
+"orig": "맨발로 사뿐 걸음"
+},
+"special": {
+"src": "art/h2/slra/special.webp",
+"w": 486,
+"h": 622,
+"ax": 240,
+"ay": 619,
+"orig": "두 팔 활짝 벌리고 공중에 떠오름 (축복)"
+},
+"sit": {
+"src": "art/h2/slra/sit.webp",
+"w": 571,
+"h": 560,
+"ax": 296,
+"ay": 557,
+"orig": "젤리 치마 위에 앉아 쉼"
+},
+"summon": {
+"src": "art/h2/slra/summon.webp",
+"w": 507,
+"h": 581,
+"ax": 261,
+"ay": 578,
+"orig": "앉아서 손바닥 위의 작은 산호 싹을 들여다봄 (반짝 표시)"
+}
+}
+},
+"slra2": {
+"slug": "slra2",
+"name": "슬라 (산호천사 · 전투 모습)",
+"rank": "미정",
+"folder": "3기-2/슬라(산호천사)전투",
+"role": "동료 (slra 의 전투 변신 — 같은 인물, 산호 갑옷 + 장검)",
+"tall": 1.62,
+"weight": 64,
+"palette": [
+"#f1e6d9",
+"#d6c4af",
+"#b080c8",
+"#c8a050",
+"#4b3a3e"
+],
+"missing": [
+"down",
+"dead",
+"walk",
+"run",
+"back",
+"attack2 (베기 — 원본의 베기 그림은 빨간 X)"
+],
+"kit": {
+"basic": "장검 찌르기 (attack) — 앞 3.5m 줄, 3타째는 관통",
+"skills": [
+{
+"name": "도약 베기",
+"pose": "jump",
+"desc": "도약 — 7m 앞 지점으로 뛰어올라 내려벰, 반지름 2.5m 원 피해 + 넘어뜨림"
+},
+{
+"name": "산호 자세",
+"pose": "guard",
+"desc": "막기 — 2초 정면 막기, 막는 순간 맞으면 찌르기 반격 (피해 150%)"
+},
+{
+"name": "기합 돌진",
+"pose": "windup",
+"desc": "1.2초 검을 세워 모은 뒤 10m 돌진 찌르기 (attack 으로 이어짐), 줄 위 적 관통"
+},
+{
+"name": "웃음 도발",
+"pose": "taunt",
+"desc": "반지름 8m 원 적을 4초 끌어들임 (어그로), 그 동안 받는 피해 15% 감소"
+}
+],
+"passive": "산호 갑옷: 변신 동안 받는 피해 15% 감소, 25초가 끝나면 slra 로 돌아옴 (돌아올 때 체력 10% 회복)"
+},
+"apt": {
+"melee": 4,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 9,
+"stats": {
+"hp": 1150,
+"atk": 40,
+"spd": 6.0,
+"weight_kg": 64,
+"tall_m": 1.62
+},
+"desc": "슬라가 산호 갑옷 드레스와 긴 금빛 장검으로 변신한 전투 모습. 밝게 웃으며 찌르기 · 도약 베기로 앞에 선다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/slra2/portrait.webp",
+"face": "art/h2/slra2/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/slra2/idle.webp",
+"w": 539,
+"h": 702,
+"ax": 319,
+"ay": 699,
+"orig": "오른손에 긴 금빛 장검을 늘어뜨리고 서 있음 — 흰 산호 갑옷 드레스 (찢어진 천 자락, 보라 얼룩), 산호 머리장식, 고리"
+},
+"windup": {
+"src": "art/h2/slra2/windup.webp",
+"w": 584,
+"h": 709,
+"ax": 418,
+"ay": 706,
+"orig": "한 다리를 들고 장검을 사선으로 높이 세움 (베기 준비 자세)"
+},
+"attack": {
+"src": "art/h2/slra2/attack.webp",
+"w": 675,
+"h": 589,
+"ax": 321,
+"ay": 586,
+"orig": "다리를 벌리고 장검을 앞으로 곧게 내찌름 (칼끝은 원본에서 잘려 있음)"
+},
+"jump": {
+"src": "art/h2/slra2/jump.webp",
+"w": 530,
+"h": 816,
+"ax": 142,
+"ay": 813,
+"orig": "공중으로 뛰어올라 장검을 머리 위로 치켜듦 (도약 베기)"
+},
+"guard": {
+"src": "art/h2/slra2/guard.webp",
+"w": 682,
+"h": 822,
+"ax": 321,
+"ay": 819,
+"orig": "다리를 넓게 벌리고 두 손으로 장검을 세워 막음"
+},
+"hurt": {
+"src": "art/h2/slra2/hurt.webp",
+"w": 595,
+"h": 674,
+"ax": 395,
+"ay": 671,
+"orig": "고개를 숙여 앞머리로 눈을 가리고 비틀거림, 장검 아래로"
+},
+"taunt": {
+"src": "art/h2/slra2/taunt.webp",
+"w": 638,
+"h": 802,
+"ax": 482,
+"ay": 799,
+"orig": "눈 감고 크게 웃으며 손을 내밂, 장검은 아래로 (도발)"
+}
+}
+},
 "sosucha": {
 "slug": "sosucha",
 "name": "소스차",
@@ -6205,6 +9296,144 @@ const H2R = {
 "ax": 214,
 "ay": 642,
 "orig": "웅크려 덮치기: 머리 (황금 포자 껍질) 가 크게 벌어져 검은 아가리, 두 갈퀴 손 뻗음"
+}
+}
+},
+"stagbeast": {
+"slug": "stagbeast",
+"name": "사슴",
+"rank": "초강적",
+"folder": "3기-2 (초강적 사슴.png)",
+"role": "적 (파일 이름 '초강적' — 맨손 격투형 괴수 강적, 보스 바로 아래. 동료 그림체 아님)",
+"tall": 2.8,
+"weight": 320,
+"palette": [
+"#1d1c1f",
+"#3e3f43",
+"#455056",
+"#4fd6e8",
+"#dcd7d1",
+"#3a2a22"
+],
+"missing": [
+"walk",
+"hurt",
+"down",
+"dead"
+],
+"kit": {
+"basic": "뒤돌려 주먹 (attack) — 앞 3m, 2연타",
+"skills": [
+{
+"name": "뿔소 돌진",
+"pose": "dash",
+"desc": "몸을 낮추고 12m 돌진 — 줄 위 적을 갈퀴로 긁고 밀쳐 넘어뜨림, 벽에 박으면 1.5초 기절"
+},
+{
+"name": "대지 짓밟기",
+"pose": "slam",
+"desc": "발을 굴러 반지름 5m 원 충격파 + 바위 파편 3초 장판 (밟으면 피해 · 둔화)"
+},
+{
+"name": "무릎 차올리기",
+"pose": "jump",
+"desc": "4m 뛰어들며 무릎으로 올려 침 — 맞은 적 공중에 띄움 1초 (windup 으로 이어 치기)"
+},
+{
+"name": "숲의 포효",
+"pose": "roar",
+"desc": "반지름 10m 원 포효 — 적 2초 공포, 자신 8초 공격 +30% · 푸른 문양이 밝아짐"
+}
+],
+"passive": "고목의 뿔: 정면에서 받는 근접 피해 20% 감소, 체력 40% 아래에서 공격 속도 +25%"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "beast",
+"role_job": "선봉",
+"bag": 4,
+"stats": {
+"hp": 4200,
+"atk": 70,
+"spd": 5.0,
+"weight_kg": 320,
+"tall_m": 2.8
+},
+"desc": "큰 사슴뿔이 달린 해골 가면 머리, 검은 깃털 갈기, 푸른 빛 문양이 흐르는 검푸른 근육질 몸의 암컷 괴수. 손목 · 정강이에 뼈 가시 팔찌, 맨손 갈퀴와 발굽 같은 발로 싸운다.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/stagbeast/portrait.webp",
+"face": "art/h2/stagbeast/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/stagbeast/idle.webp",
+"w": 501,
+"h": 769,
+"ax": 269,
+"ay": 766,
+"orig": "앞모습으로 다리 벌려 섬, 두 손 갈퀴를 늘어뜨림 (가장 반듯한 선 모습)"
+},
+"windup": {
+"src": "art/h2/stagbeast/windup.webp",
+"w": 663,
+"h": 771,
+"ax": 299,
+"ay": 768,
+"orig": "주먹을 뒤로 크게 당기고 오른쪽으로 체중을 실음 (주먹 준비)"
+},
+"attack": {
+"src": "art/h2/stagbeast/attack.webp",
+"w": 637,
+"h": 779,
+"ax": 396,
+"ay": 776,
+"orig": "등을 보이며 오른쪽으로 팔꿈치 · 주먹을 내지름"
+},
+"jump": {
+"src": "art/h2/stagbeast/jump.webp",
+"w": 491,
+"h": 760,
+"ax": 183,
+"ay": 757,
+"orig": "무릎을 차올리며 뛰어오름, 갈퀴 손을 앞으로 (무릎 차기)"
+},
+"dash": {
+"src": "art/h2/stagbeast/dash.webp",
+"w": 735,
+"h": 755,
+"ax": 594,
+"ay": 752,
+"orig": "몸을 낮추고 두 갈퀴를 벌린 채 오른쪽으로 돌진 (뒤로 흙먼지)"
+},
+"slam": {
+"src": "art/h2/stagbeast/slam.webp",
+"w": 506,
+"h": 750,
+"ax": 293,
+"ay": 747,
+"orig": "발을 굴러 땅을 짓밟음, 바위 파편이 튐"
+},
+"roar": {
+"src": "art/h2/stagbeast/roar.webp",
+"w": 736,
+"h": 670,
+"ax": 370,
+"ay": 667,
+"orig": "앞모습, 두 주먹을 쥐고 가슴을 펴 포효 (힘 모으기)"
+},
+"claw": {
+"src": "art/h2/stagbeast/claw.webp",
+"w": 451,
+"h": 766,
+"ax": 242,
+"ay": 763,
+"orig": "몸을 틀어 등을 보이며 오른쪽으로 갈퀴 손을 치켜듦"
 }
 }
 },
@@ -6690,6 +9919,673 @@ const H2R = {
 }
 }
 },
+"tehera": {
+"slug": "tehera",
+"name": "테헤라",
+"rank": "1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능)",
+"folder": "3기-2 (테헤라1.png · 테헤라2.png · 테헤라3.png)",
+"role": "동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형)",
+"tall": 1.7,
+"weight": 40,
+"palette": [
+"#d8c98a",
+"#e4d8cf",
+"#d58aa8",
+"#c9a64a",
+"#805e51",
+"#f2eef0"
+],
+"missing": [
+"attack (때리는 그림 없음 — cast · reach 로 대신)",
+"dead (hurt · sit 으로 대신)",
+"down"
+],
+"kit": {
+"basic": "빛가루 뿌리기 (cast) — 12m 앞 사격, 맞은 적 1초 둔화 20%",
+"skills": [
+{
+"name": "요정의 축복",
+"pose": "reach",
+"desc": "허리 굽혀 손을 뻗음 — 4m 안 아군 하나 체력 25% 회복 + 4초 동안 받는 피해 15% 감소"
+},
+{
+"name": "날개 방패",
+"pose": "guard",
+"desc": "날개로 몸을 감쌈 — 2초 동안 자신 피해 80% 감소, 끝날 때 반지름 3m 원 빛가루로 적 1초 눈멂"
+},
+{
+"name": "은빛 비행",
+"pose": "dash",
+"desc": "몸을 눕혀 8m 날아 이동 (지나간 줄 위 적 0.8초 둔화), 벽 · 구덩이 넘음"
+},
+{
+"name": "나른한 꿈",
+"pose": "sit",
+"desc": "자리에 앉아 졸음 — 반지름 6m 원 장판 5초, 안의 적 공격 속도 −40%, 아군 초당 체력 1% 회복 (본인은 못 움직임)"
+}
+],
+"passive": "요정 날개: 늘 떠 있어 함정 · 장판을 밟지 않음, 원거리 회피 15%"
+},
+"apt": {
+"melee": 0,
+"spear": 0,
+"bow": 1,
+"gun": 0,
+"magic": 5,
+"stealth": 3
+},
+"tag": "mage",
+"role_job": "지원",
+"bag": 8,
+"stats": {
+"hp": 620,
+"atk": 14,
+"spd": 5.2,
+"weight_kg": 40,
+"tall_m": 1.7
+},
+"desc": "잠자리 같은 투명한 금테 날개 · 긴 금발 · 뾰족 귀 · 분홍 드레스의 요정. 우주 바위 위에 나른하게 앉아 빛가루를 흩날리는, 어느 종족의 왕이었을 법한 존재.",
+"gen": 1,
+"codex_g": "tehera",
+"batch": "3기-2",
+"portrait": "art/h2/tehera/portrait.webp",
+"face": "art/h2/tehera/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/tehera/idle.webp",
+"w": 454,
+"h": 704,
+"ax": 339,
+"ay": 701,
+"orig": "하이힐로 서서 다리를 꼬고 고개를 오른쪽으로, 날개 접음 (가장 반듯한 선 모습)"
+},
+"walk": {
+"src": "art/h2/tehera/walk.webp",
+"w": 543,
+"h": 592,
+"ax": 322,
+"ay": 589,
+"orig": "날개를 펴고 오른쪽으로 성큼 걸음, 손을 앞으로"
+},
+"rise": {
+"src": "art/h2/tehera/rise.webp",
+"w": 517,
+"h": 735,
+"ax": 187,
+"ay": 732,
+"orig": "두 팔을 벌리고 위를 보며 떠오름 (드레스 휘날림)"
+},
+"crouch": {
+"src": "art/h2/tehera/crouch.webp",
+"w": 509,
+"h": 568,
+"ax": 221,
+"ay": 565,
+"orig": "몸을 낮춰 웅크리고 한 손을 땅에 뻗음"
+},
+"walk2": {
+"src": "art/h2/tehera/walk2.webp",
+"w": 506,
+"h": 685,
+"ax": 259,
+"ay": 682,
+"orig": "날개를 세우고 걸음, 한 손을 뒤로"
+},
+"dash": {
+"src": "art/h2/tehera/dash.webp",
+"w": 543,
+"h": 633,
+"ax": 228,
+"ay": 630,
+"orig": "몸을 눕혀 오른쪽으로 날아감, 두 팔을 앞뒤로 뻗음"
+},
+"sit": {
+"src": "art/h2/tehera/sit.webp",
+"w": 664,
+"h": 544,
+"ax": 470,
+"ay": 541,
+"orig": "바닥에 앉아 손에 볼을 괴고 졸린 얼굴 (날개로 몸을 감쌈)"
+},
+"front": {
+"src": "art/h2/tehera/front.webp",
+"w": 415,
+"h": 694,
+"ax": 277,
+"ay": 691,
+"orig": "앞모습, 두 손을 모으고 서 있음"
+},
+"land": {
+"src": "art/h2/tehera/land.webp",
+"w": 622,
+"h": 702,
+"ax": 425,
+"ay": 699,
+"orig": "날개를 크게 펴고 무릎 꿇듯 내려앉아 한 손을 땅에 짚음"
+},
+"float": {
+"src": "art/h2/tehera/float.webp",
+"w": 393,
+"h": 733,
+"ax": 306,
+"ay": 730,
+"orig": "발끝을 세운 채 똑바로 떠 있음, 고개 숙임 (맨발 · 뾰족한 발)"
+},
+"walk3": {
+"src": "art/h2/tehera/walk3.webp",
+"w": 457,
+"h": 722,
+"ax": 348,
+"ay": 719,
+"orig": "치맛자락을 쥐고 사뿐히 걸음"
+},
+"drift": {
+"src": "art/h2/tehera/drift.webp",
+"w": 561,
+"h": 702,
+"ax": 254,
+"ay": 699,
+"orig": "몸을 뒤로 눕힌 채 떠 있음, 팔을 늘어뜨림"
+},
+"cast": {
+"src": "art/h2/tehera/cast.webp",
+"w": 550,
+"h": 701,
+"ax": 175,
+"ay": 698,
+"orig": "앞으로 날아가며 한 손을 아래로 뻗어 빛가루를 뿌림"
+},
+"reach": {
+"src": "art/h2/tehera/reach.webp",
+"w": 454,
+"h": 677,
+"ax": 166,
+"ay": 674,
+"orig": "허리를 굽혀 아래로 손을 뻗음 (치유 · 축복)"
+},
+"guard": {
+"src": "art/h2/tehera/guard.webp",
+"w": 385,
+"h": 670,
+"ax": 189,
+"ay": 667,
+"orig": "날개로 몸을 감싸고 손을 가슴에 얹음 (날개 방패)"
+},
+"sit2": {
+"src": "art/h2/tehera/sit2.webp",
+"w": 687,
+"h": 499,
+"ax": 613,
+"ay": 496,
+"orig": "바닥에 앉아 한 무릎을 세움 (원본 왼쪽 보기 → 뒤집음)"
+},
+"dash2": {
+"src": "art/h2/tehera/dash2.webp",
+"w": 681,
+"h": 541,
+"ax": 50,
+"ay": 538,
+"orig": "몸을 쭉 펴고 오른쪽으로 쏜살같이 날아감"
+},
+"jump": {
+"src": "art/h2/tehera/jump.webp",
+"w": 417,
+"h": 743,
+"ax": 23,
+"ay": 740,
+"orig": "무릎을 들고 위로 솟구침, 고개를 쳐듦"
+},
+"back": {
+"src": "art/h2/tehera/back.webp",
+"w": 494,
+"h": 709,
+"ax": 133,
+"ay": 706,
+"orig": "뒷모습, 어깨 너머로 오른쪽을 봄 (드러난 등 · 날개)"
+},
+"fly": {
+"src": "art/h2/tehera/fly.webp",
+"w": 399,
+"h": 722,
+"ax": 296,
+"ay": 719,
+"orig": "무릎을 굽힌 채 떠서 날갯짓"
+},
+"hurt": {
+"src": "art/h2/tehera/hurt.webp",
+"w": 578,
+"h": 594,
+"ax": 531,
+"ay": 591,
+"orig": "고개를 젖히고 뒤로 넘어가듯 떨어짐 (맞음 · 기절)"
+},
+"low": {
+"src": "art/h2/tehera/low.webp",
+"w": 773,
+"h": 613,
+"ax": 514,
+"ay": 610,
+"orig": "다리를 길게 뻗고 한 손을 땅에 짚어 낮게 내려앉음, 다른 팔은 뒤로"
+},
+"curl": {
+"src": "art/h2/tehera/curl.webp",
+"w": 364,
+"h": 630,
+"ax": 309,
+"ay": 627,
+"orig": "무릎을 끌어안고 날개로 몸을 감싸 공처럼 웅크림"
+},
+"front2": {
+"src": "art/h2/tehera/front2.webp",
+"w": 460,
+"h": 656,
+"ax": 199,
+"ay": 653,
+"orig": "앞모습, 날개를 접고 공중에 서 있음"
+}
+}
+},
+"unitA": {
+"slug": "unitA",
+"name": "기체 A",
+"rank": "미정 (파일 이름에 등급 없음)",
+"folder": "3기-2 / 기체A1.png · 기체A2.png · 기체A4족,기체B쌍검.png (아래 줄)",
+"role": "적 (기계 병기 — 기체 B 와 짝을 이루는 기계 인형. 이름 대신 번호로 불려 적 병기로 봄, 나중에 동료화 여지는 있음)",
+"tall": 2.2,
+"weight": 180,
+"palette": [
+"#2e272b",
+"#cda9c0",
+"#b3477c",
+"#1a1517",
+"#692947"
+],
+"missing": [
+"hurt",
+"dead (down 으로 대신)",
+"옆모습 idle (idle 은 3/4 앞모습)"
+],
+"kit": {
+"basic": "레이저 검 찌르기 (attack · attack2 번갈아) — 앞 4m 줄",
+"skills": [
+{
+"name": "4족 돌격",
+"pose": "walk",
+"desc": "몸을 낮춰 거미처럼 8m 빠르게 기어 돌진 — 줄 위 적을 날 다리로 쳐 넘어뜨림, 끝에 dash 로 뛰어듦"
+},
+{
+"name": "날개 회전 베기",
+"pose": "skill",
+"desc": "날 다리 넷을 사방으로 펼쳐 한 바퀴 — 원 반지름 3.5m 베기 2타 + 출혈 3초"
+},
+{
+"name": "공중제비 꿰뚫기",
+"pose": "flip",
+"desc": "6m 도약 (jump) 후 공중제비로 거꾸로 떨어지며 날 다리로 내리꽂음 — 착지 원 반지름 2m 큰 피해 + 1초 묶기"
+},
+{
+"name": "X 날 내려베기",
+"pose": "windup",
+"desc": "0.6초 날 다리 둘을 머리 위로 교차했다가 내려벰 — 앞 4m 부채꼴 90도, 막기 무시"
+}
+],
+"passive": "4족 기체: 넘어짐 · 밀려남 면역, 날 다리가 정면 근접 피해 20% 막음 (guard 자세 때 40%)"
+},
+"apt": {
+"melee": 5,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 1
+},
+"tag": "soldier",
+"role_job": "선봉",
+"bag": 6,
+"stats": {
+"hp": 2200,
+"atk": 70,
+"spd": 5.5,
+"weight_kg": 180,
+"tall_m": 2.2
+},
+"desc": "분홍 고깔 투구 · 흰 긴 머리 · 연보라 몸의 기계 인형. 허리와 등에서 뻗은 검은 바탕 분홍 무늬 날 다리 넷으로 거미처럼 걷거나 날개처럼 펼쳐 싸우고, 손에는 분홍 레이저 검.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/unitA/portrait.webp",
+"face": "art/h2/unitA/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitA/idle.webp",
+"w": 535,
+"h": 706,
+"ax": 243,
+"ay": 703,
+"orig": "3/4 앞모습으로 섬, 허리 · 등에서 검은 바탕 분홍 무늬 날 다리 넷이 땅을 짚음, 한 손에 분홍 레이저 검을 아래로 비스듬히"
+},
+"attack": {
+"src": "art/h2/unitA/attack.webp",
+"w": 883,
+"h": 555,
+"ax": 508,
+"ay": 552,
+"orig": "오른쪽으로 레이저 검 한 손 찌르기, 다리를 넓게 벌리고 뒤쪽 가시 다리 하나를 왼쪽으로 길게 뻗음"
+},
+"attack2": {
+"src": "art/h2/unitA/attack2.webp",
+"w": 610,
+"h": 666,
+"ax": 173,
+"ay": 663,
+"orig": "날 다리 넷으로 버티고 서서 레이저 검을 오른쪽으로 쭉 뻗은 찌르기"
+},
+"back": {
+"src": "art/h2/unitA/back.webp",
+"w": 531,
+"h": 697,
+"ax": 203,
+"ay": 694,
+"orig": "뒷모습, 흰 긴 머리가 등을 덮음, 날 다리 넷 · 왼손 레이저 검 (오른쪽 아래에 섞인 4번째 그림 레이저 지움)"
+},
+"low": {
+"src": "art/h2/unitA/low.webp",
+"w": 545,
+"h": 557,
+"ax": 229,
+"ay": 554,
+"orig": "날 다리 넷을 펼친 채 무릎 굽혀 웅크리고 레이저 검을 앞 아래로 겨눔 (왼쪽에 섞인 3번째 그림 날 다리 지움)"
+},
+"walk": {
+"src": "art/h2/unitA/walk.webp",
+"w": 650,
+"h": 504,
+"ax": 351,
+"ay": 501,
+"orig": "4족 보행 — 몸을 앞으로 숙이고 분홍 가시 다리 넷으로 거미처럼 땅을 짚음, 손에 레이저 검"
+},
+"kick": {
+"src": "art/h2/unitA/kick.webp",
+"w": 658,
+"h": 630,
+"ax": 303,
+"ay": 627,
+"orig": "뒷모습으로 서서 날 다리 하나를 오른쪽 위로 높이 차올림"
+},
+"kick2": {
+"src": "art/h2/unitA/kick2.webp",
+"w": 677,
+"h": 583,
+"ax": 244,
+"ay": 580,
+"orig": "한 다리로 서서 오른쪽으로 하이킥, 레이저 검은 머리 위로 치켜듦, 분홍 가시 다리들이 땅을 짚음"
+},
+"guard": {
+"src": "art/h2/unitA/guard.webp",
+"w": 720,
+"h": 701,
+"ax": 338,
+"ay": 698,
+"orig": "몸을 뒤로 젖히고 레이저 검을 비스듬히 세워 막는 자세, 가시 다리 넷이 앞뒤로 버팀"
+},
+"dash": {
+"src": "art/h2/unitA/dash.webp",
+"w": 693,
+"h": 635,
+"ax": 373,
+"ay": 632,
+"orig": "무릎을 끌어안듯 몸을 웅크리고 공중으로 뛰어드는 돌진, 가시 다리 · 레이저 검을 사방으로 뻗음"
+},
+"windup": {
+"src": "art/h2/unitA/windup.webp",
+"w": 614,
+"h": 744,
+"ax": 340,
+"ay": 741,
+"orig": "한 무릎 들고 서서 가시 다리 둘을 머리 위로 X 자로 교차해 치켜든 내려베기 직전 자세"
+},
+"jump": {
+"src": "art/h2/unitA/jump.webp",
+"w": 666,
+"h": 639,
+"ax": 383,
+"ay": 636,
+"orig": "공중으로 뛰어오름, 두 팔 벌리고 큰 날 다리 넷을 날개처럼 펼침, 흰 머리 휘날림"
+},
+"fly": {
+"src": "art/h2/unitA/fly.webp",
+"w": 615,
+"h": 634,
+"ax": 266,
+"ay": 631,
+"orig": "공중에 떠 정면을 보며 한 무릎 들고 큰 날 다리 넷을 X 자로 펼침 (호버링)"
+},
+"skill": {
+"src": "art/h2/unitA/skill.webp",
+"w": 667,
+"h": 674,
+"ax": 346,
+"ay": 671,
+"orig": "두 팔을 활짝 벌리고 발끝으로 서서 큰 날 다리 넷을 사방으로 펼친 회전 베기 자세"
+},
+"flip": {
+"src": "art/h2/unitA/flip.webp",
+"w": 619,
+"h": 701,
+"ax": 287,
+"ay": 698,
+"orig": "머리가 아래로 간 공중제비, 흰 머리가 위로 쏟아지고 날 다리가 위아래로 뻗음"
+},
+"down": {
+"src": "art/h2/unitA/down.webp",
+"w": 665,
+"h": 628,
+"ax": 269,
+"ay": 625,
+"orig": "땅에 주저앉아 한 팔로 몸을 받치고 큰 날 다리 넷이 앞으로 겹쳐 쓰러짐"
+}
+}
+},
+"unitB": {
+"slug": "unitB",
+"name": "기체 B",
+"rank": "미정 (파일 이름에 등급 없음)",
+"folder": "3기-2 / 기체A4족,기체B쌍검.png (위 줄) · 기체B날라다니고 공중제비등.png · 기체B전트.png (전투의 오타로 봄)",
+"role": "적 (기계 병기 — 기체 A 와 짝을 이루는 날랜 암살형 기계 인형. 나중에 동료화 여지는 있음)",
+"tall": 1.8,
+"weight": 110,
+"palette": [
+"#dbb6d3",
+"#191315",
+"#32272b",
+"#976787",
+"#65314d"
+],
+"missing": [
+"walk",
+"hurt",
+"dead (down 으로 대신)",
+"옆모습 idle (idle 은 정면)"
+],
+"kit": {
+"basic": "쌍단검 연속 베기 (attack) — 앞 3m 부채꼴 100도 2타, 3타째 하이킥 (kick2) 으로 1m 띄움",
+"skills": [
+{
+"name": "비상 돌입",
+"pose": "fly",
+"desc": "공중으로 떠올라 (jump) 10m 비스듬히 날아들며 줄 위 적을 벰, 착지 (crouch) 때 원 반지름 2m 베기"
+},
+{
+"name": "공중제비 베기",
+"pose": "flip",
+"desc": "제자리 공중제비 — 원 반지름 2.5m 회전 베기 2타, 이 동안 원거리 공격 피함"
+},
+{
+"name": "승천 베기",
+"pose": "skill",
+"desc": "앞 2m 적을 단검으로 올려 베며 함께 솟구침 — 1.2초 띄움, 공중의 적에게 피해 +50% (kick 으로 마무리)"
+},
+{
+"name": "십자 막기",
+"pose": "guard",
+"desc": "1.5초 두 단검을 머리 위 X 로 막음 — 정면 근접 · 위쪽 공격 막고, 막으면 stance 에서 반격 십자베기 (앞 2.5m)"
+}
+],
+"passive": "큰 삿갓: 위에서 떨어지는 투사체 · 낙하 공격 피해 30% 감소, 공중에 있는 동안 회피 +20%"
+},
+"apt": {
+"melee": 5,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 3
+},
+"tag": "brawler",
+"role_job": "척후",
+"bag": 6,
+"stats": {
+"hp": 1600,
+"atk": 80,
+"spd": 7.0,
+"weight_kg": 110,
+"tall_m": 1.8
+},
+"desc": "검은 바탕에 분홍 얼룩 큰 삿갓 · 검은 마스크 · 분홍빛 긴 머리의 기계 인형. 양손 분홍 레이저 단검 두 자루로 날아다니며 공중제비 · 발차기 · 베기를 잇는 날랜 격투형.",
+"gen": 3,
+"batch": "3기-2",
+"portrait": "art/h2/unitB/portrait.webp",
+"face": "art/h2/unitB/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitB/idle.webp",
+"w": 525,
+"h": 702,
+"ax": 290,
+"ay": 699,
+"orig": "정면으로 똑바로 섬, 검은 바탕 분홍 얼룩 큰 삿갓, 양손에 분홍 레이저 단검을 아래로 늘어뜨림, 허리에 검은 · 분홍 장갑 술"
+},
+"attack": {
+"src": "art/h2/unitB/attack.webp",
+"w": 815,
+"h": 676,
+"ax": 460,
+"ay": 673,
+"orig": "다리를 넓게 벌리고 오른쪽으로 레이저 단검 찌르기, 다른 손 단검은 뒤로 낮게"
+},
+"back": {
+"src": "art/h2/unitB/back.webp",
+"w": 623,
+"h": 684,
+"ax": 361,
+"ay": 681,
+"orig": "뒷모습, 분홍빛 긴 머리가 등을 덮음, 양손 단검을 양옆으로 비스듬히"
+},
+"low": {
+"src": "art/h2/unitB/low.webp",
+"w": 623,
+"h": 556,
+"ax": 319,
+"ay": 553,
+"orig": "삿갓을 앞으로 기울이고 무릎을 깊게 굽혀 웅크린 자세, 양손 단검을 좌우로 뻗음"
+},
+"fly": {
+"src": "art/h2/unitB/fly.webp",
+"w": 825,
+"h": 653,
+"ax": 348,
+"ay": 650,
+"orig": "몸을 비스듬히 기울여 날아다님, 머리칼이 뒤로 길게 날림, 단검 둘을 앞 아래 · 뒤 위로 뻗음"
+},
+"jump": {
+"src": "art/h2/unitB/jump.webp",
+"w": 905,
+"h": 666,
+"ax": 417,
+"ay": 663,
+"orig": "한 무릎 들고 공중으로 뛰어들며 양손 단검을 앞뒤로 펼침"
+},
+"kick": {
+"src": "art/h2/unitB/kick.webp",
+"w": 747,
+"h": 744,
+"ax": 299,
+"ay": 741,
+"orig": "한 손으로 삿갓을 잡고 한 다리를 오른쪽 위로 높이 차올림, 다른 손 단검은 아래로"
+},
+"skill": {
+"src": "art/h2/unitB/skill.webp",
+"w": 628,
+"h": 966,
+"ax": 339,
+"ay": 963,
+"orig": "몸을 세로로 곧게 세워 솟아오르며 한 손 단검을 하늘로 치켜듦 — 승천 베기"
+},
+"flip": {
+"src": "art/h2/unitB/flip.webp",
+"w": 790,
+"h": 860,
+"ax": 454,
+"ay": 857,
+"orig": "거꾸로 뒤집힌 공중제비, 한 다리를 위로 뻗고 삿갓이 아래로, 단검 둘을 좌우로"
+},
+"crouch": {
+"src": "art/h2/unitB/crouch.webp",
+"w": 834,
+"h": 584,
+"ax": 564,
+"ay": 581,
+"orig": "한 무릎 꿇고 착지, 양손 단검을 좌우 아래로 뻗음"
+},
+"kick2": {
+"src": "art/h2/unitB/kick2.webp",
+"w": 901,
+"h": 721,
+"ax": 313,
+"ay": 718,
+"orig": "한 다리로 서서 오른쪽으로 하이킥, 양손 단검은 뒤로 낮게 늘어뜨림"
+},
+"down": {
+"src": "art/h2/unitB/down.webp",
+"w": 1054,
+"h": 439,
+"ax": 492,
+"ay": 436,
+"orig": "땅에 옆으로 주저앉아 한 손으로 몸을 받치고 다른 손 단검을 오른쪽으로 겨눔 (쓰러진 자세)"
+},
+"stance": {
+"src": "art/h2/unitB/stance.webp",
+"w": 601,
+"h": 780,
+"ax": 278,
+"ay": 777,
+"orig": "한 무릎을 높이 들고 서서 단검 하나는 세로로 몸 앞에, 다른 하나는 아래 뒤로 — 반격 대기 자세"
+},
+"windup": {
+"src": "art/h2/unitB/windup.webp",
+"w": 862,
+"h": 770,
+"ax": 301,
+"ay": 767,
+"orig": "등을 보이며 다리를 넓게 벌리고 한 손 단검을 머리 위로, 다른 손 단검을 아래로 — 베기 직전"
+},
+"dash": {
+"src": "art/h2/unitB/dash.webp",
+"w": 770,
+"h": 711,
+"ax": 366,
+"ay": 708,
+"orig": "앞으로 크게 내딛는 돌진, 오른손을 앞으로 뻗고 뒤쪽 단검을 끌고 감"
+},
+"guard": {
+"src": "art/h2/unitB/guard.webp",
+"w": 679,
+"h": 733,
+"ax": 416,
+"ay": 730,
+"orig": "한 무릎 꿇고 두 단검을 머리 위로 X 자 교차해 막음"
+}
+}
+},
 "venti": {
 "slug": "venti",
 "name": "중장 벤티",
@@ -6935,6 +10831,145 @@ const H2R = {
 }
 }
 },
+"wangnim": {
+"slug": "wangnim",
+"name": "왕님 (하르겐 · 푸른 왕)",
+"rank": "보스 (파일 이름 '보스 왕님')",
+"folder": "3기-2 (보스 왕님.png)",
+"role": "보스 (2D 판 4층 왕관의 회랑의 보스 하르겐과 같은 인물로 판단 — 왕관 · 푸른 얼굴 · 하늘만 올려다보는 대기 · 푸른 장검이 도감 하르겐 대기 그림과 같음)",
+"tall": 2.2,
+"weight": 110,
+"palette": [
+"#0b0b09",
+"#463a31",
+"#8a6440",
+"#5f7da6",
+"#b08a4a"
+],
+"missing": [
+"hurt",
+"down",
+"dead",
+"back",
+"front"
+],
+"kit": {
+"basic": "장검 찌르기 (attack) — 앞 4.5m 줄",
+"skills": [
+{
+"name": "청검 일섬",
+"pose": "special",
+"desc": "1초 웅크려 칼을 거두며 12m 일직선 예고 → 한 번에 벰 (공격력 2.2배, 막을 수 없음, 맞은 적 0.5초 경직). 체력 절반 아래면 두 번 연달아 (두 번째는 비스듬히). 거두는 동안 크게 휘청이면 끊김 (2D 기술 그대로). 재사용 7초 (절반 아래 4.5초)"
+},
+{
+"name": "왕의 내려찍기",
+"pose": "windup",
+"desc": "0.8초 치켜든 뒤 앞 3m 지점 반지름 2m 원 내려찍기 — 넘어뜨림, 막으면 막은 쪽 1초 경직"
+},
+{
+"name": "망토 쓸어 베기",
+"pose": "low",
+"desc": "몸을 낮춰 앞 5m 부채꼴 150도 다리 베기 — 2초 둔화 40%"
+},
+{
+"name": "올려 베기",
+"pose": "attack2",
+"desc": "앞 3m 비스듬히 올려 베어 맞은 적을 1초 띄움 (공중 확인사살과 이어짐)"
+}
+],
+"passive": "하늘만 보는 왕: 정면에서 오는 원거리 피해 30% 감소. 체력 절반 아래면 이동 속도 +20% · 청검 일섬 재사용 단축"
+},
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "지휘",
+"bag": 6,
+"stats": {
+"hp": 5200,
+"atk": 95,
+"spd": 4.2,
+"weight_kg": 110,
+"tall_m": 2.2
+},
+"desc": "왕관의 회랑의 푸른 왕. 가시 왕관을 쓴 푸른 얼굴의 마른 노왕이 바닥까지 끌리는 갈색 망토를 두르고, 하늘만 올려다보다가 긴 푸른 장검 한 번에 베어 버린다.",
+"gen": 1,
+"codex_g": "hargen",
+"batch": "3기-2",
+"portrait": "art/h2/wangnim/portrait.webp",
+"face": "art/h2/wangnim/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/wangnim/idle.webp",
+"w": 482,
+"h": 699,
+"ax": 240,
+"ay": 696,
+"orig": "하늘을 올려다보며 긴 푸른 장검을 땅에 세워 두 손으로 짚고 섬 (도감 하르겐 대기와 같은 자세)"
+},
+"attack": {
+"src": "art/h2/wangnim/attack.webp",
+"w": 1037,
+"h": 609,
+"ax": 242,
+"ay": 606,
+"orig": "팔을 쭉 뻗어 긴 푸른 장검으로 앞을 찌름 (망토 자락 휘날림)"
+},
+"attack2": {
+"src": "art/h2/wangnim/attack2.webp",
+"w": 592,
+"h": 758,
+"ax": 286,
+"ay": 755,
+"orig": "몸을 뒤로 젖히며 장검을 비스듬히 위로 올려 벰, 다른 손은 갈퀴처럼 펼침"
+},
+"low": {
+"src": "art/h2/wangnim/low.webp",
+"w": 966,
+"h": 377,
+"ax": 327,
+"ay": 374,
+"orig": "몸을 낮게 숙여 망토를 넓게 펼치고 장검을 비스듬히 아래로 끌며 휘두름 (원본에서 칼끝이 옆 그림 망토에 닿아 있어, 칼끝 둘레의 망토 조각은 색으로 걸러 지움)"
+},
+"windup": {
+"src": "art/h2/wangnim/windup.webp",
+"w": 498,
+"h": 718,
+"ax": 234,
+"ay": 715,
+"orig": "한 무릎 꿇고 두 손으로 장검을 머리 위로 높이 치켜듦 (내려찍기 직전). 원본에서 옆 그림 (low) 칼날이 망토 앞을 지나가 그 칼날을 지움 — 망토 아랫단에 가는 빈 틈이 남음"
+},
+"windup2": {
+"src": "art/h2/wangnim/windup2.webp",
+"w": 553,
+"h": 711,
+"ax": 280,
+"ay": 708,
+"orig": "장검을 어깨 너머 뒤로 젖혀 들어 올림 (크게 베기 준비)"
+},
+"walk": {
+"src": "art/h2/wangnim/walk.webp",
+"w": 673,
+"h": 668,
+"ax": 288,
+"ay": 665,
+"orig": "장검을 아래로 늘어뜨려 칼끝을 끌며 성큼 걸음"
+},
+"special": {
+"src": "art/h2/wangnim/special.webp",
+"w": 663,
+"h": 346,
+"ax": 202,
+"ay": 343,
+"orig": "망토를 땅에 펼치고 낮게 웅크려 장검을 수평으로 겨눔 (청검 일섬 자세)"
+}
+}
+},
 "whistle": {
 "slug": "whistle",
 "name": "휘슬",
@@ -7155,6 +11190,318 @@ const H2R = {
 "ax": 432,
 "ay": 616,
 "orig": "몸 낮추고 기계 팔을 길게 뻗어 낫 같은 갈고리 집게를 벌림 (잡기 · 끌어오기)"
+}
+}
+},
+"yellow": {
+"slug": "yellow",
+"name": "옐로",
+"rank": "1기 동료 · ★ (등급 글자 없음 — 파일 이름 '옐로1~3'. 2D 판 '새 영웅: 옐로 (★, 근접 힐러)')",
+"folder": "3기-2 (옐로1.png · 옐로2.png · 옐로3.png)",
+"role": "동료 (2D 판 2층 · 3층 영입 동료, 근접 힐러)",
+"tall": 1.6,
+"weight": 48,
+"palette": [
+"#f7f3ee",
+"#f2c64a",
+"#2f6f8f",
+"#d8262b",
+"#2d2724"
+],
+"missing": [
+"walk",
+"down",
+"dead",
+"back",
+"roller (2D 설정의 롤러스케이트 — 새 그림은 굽 높은 흰 장화)"
+],
+"kit": {
+"basic": "갈퀴 할퀴기 (attack) — 앞 2m 부채꼴 90도 2연타",
+"skills": [
+{
+"name": "덮치기",
+"pose": "jump2",
+"desc": "crouch 0.3초 → 7m 도약 덮치기, 떨어진 자리 반지름 1.5m 피해 + 0.6초 넘어뜨림. 재사용 7초"
+},
+{
+"name": "연속 할퀴기",
+"pose": "attack2",
+"desc": "앞 2.5m 5연타, 마지막 타에 출혈 (3초 초당 공격력 20%)"
+},
+{
+"name": "응급 처치",
+"pose": "heal",
+"desc": "3m 안 아군 하나에게 무릎 꿇고 1초 시전 — 즉시 체력 30% + 4초 동안 초당 2% 회복. 재사용 12초"
+},
+{
+"name": "치고 빠지기",
+"pose": "dash",
+"desc": "6m 대시, 지나가는 줄 위 적을 할큄 (공격력 0.8배), 끝나면 0.5초 회피 상승"
+}
+],
+"passive": "장난꾸러기 간호사: 근접 공격으로 피해를 줄 때마다 4m 안에서 체력이 가장 낮은 아군 회복 (준 피해의 15%) — 2D 근접 힐러 그대로"
+},
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 3
+},
+"tag": "brawler",
+"role_job": "지원",
+"bag": 10,
+"stats": {
+"hp": 880,
+"atk": 30,
+"spd": 6.0,
+"weight_kg": 48,
+"tall_m": 1.6
+},
+"desc": "금발 긴 트윈테일 · 흰 간호모와 찢어진 흰 간호복 · 파란 기계 갈퀴 손의 장난꾸러기 간호사. 짐승처럼 치고 빠지며 할퀴고, 그 손으로 동료를 고친다.",
+"gen": 1,
+"codex_g": "yellow",
+"batch": "3기-2",
+"portrait": "art/h2/yellow/portrait.webp",
+"face": "art/h2/yellow/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/yellow/idle.webp",
+"w": 490,
+"h": 697,
+"ax": 237,
+"ay": 694,
+"orig": "두 팔을 벌리고 파란 기계 갈퀴 손을 펼친 채 서서 웃음 (원본 왼쪽 보기 → 뒤집음)"
+},
+"idle2": {
+"src": "art/h2/yellow/idle2.webp",
+"w": 387,
+"h": 738,
+"ax": 177,
+"ay": 735,
+"orig": "한 손을 얼굴 옆에 들어 갈퀴 손가락을 꼼지락거리며 웃고 섬 (원본 왼쪽 보기 → 뒤집음)"
+},
+"taunt": {
+"src": "art/h2/yellow/taunt.webp",
+"w": 478,
+"h": 735,
+"ax": 276,
+"ay": 732,
+"orig": "고개를 젖혀 크게 웃으며 갈퀴 손을 얼굴 옆에 듦 (도발)"
+},
+"attack": {
+"src": "art/h2/yellow/attack.webp",
+"w": 634,
+"h": 679,
+"ax": 258,
+"ay": 676,
+"orig": "등을 보이며 몸을 틀어 갈퀴 손을 앞으로 길게 내뻗어 할큄 (손톱 궤적)"
+},
+"attack2": {
+"src": "art/h2/yellow/attack2.webp",
+"w": 663,
+"h": 689,
+"ax": 279,
+"ay": 686,
+"orig": "두 갈퀴 손으로 연달아 할큄 (손톱 궤적 선 두 줄)"
+},
+"crouch": {
+"src": "art/h2/yellow/crouch.webp",
+"w": 534,
+"h": 503,
+"ax": 141,
+"ay": 500,
+"orig": "네 발로 낮게 엎드려 갈퀴 손을 땅에 짚음 (짐승처럼 덮칠 준비)"
+},
+"prowl": {
+"src": "art/h2/yellow/prowl.webp",
+"w": 536,
+"h": 647,
+"ax": 203,
+"ay": 644,
+"orig": "낮게 웅크려 한 손을 땅에 짚고 고개를 숙인 채 노려봄 (트윈테일 크게 휘날림)"
+},
+"dash": {
+"src": "art/h2/yellow/dash.webp",
+"w": 590,
+"h": 639,
+"ax": 116,
+"ay": 636,
+"orig": "앞으로 기울여 오른쪽으로 달려 나감, 트윈테일 뒤로 휘날림"
+},
+"jump": {
+"src": "art/h2/yellow/jump.webp",
+"w": 568,
+"h": 652,
+"ax": 82,
+"ay": 649,
+"orig": "무릎을 들고 공중으로 뛰어올라 갈퀴 손을 뻗음 (이를 드러냄)"
+},
+"jump2": {
+"src": "art/h2/yellow/jump2.webp",
+"w": 544,
+"h": 583,
+"ax": 197,
+"ay": 580,
+"orig": "무릎을 모아 웅크린 채 공중에 떠서 갈퀴 손을 앞으로 뻗음 (덮치기)"
+},
+"heal": {
+"src": "art/h2/yellow/heal.webp",
+"w": 529,
+"h": 605,
+"ax": 257,
+"ay": 602,
+"orig": "한 무릎 꿇고 갈퀴 손을 앞으로 내밀어 손끝이 빛남 (치료 — 옐로1.png 같은 자리 그림에는 앞에 회색 환자 실루엣이 있어 그것 없는 옐로2 를 씀)"
+},
+"hurt": {
+"src": "art/h2/yellow/hurt.webp",
+"w": 577,
+"h": 612,
+"ax": 313,
+"ay": 609,
+"orig": "무릎 꿇고 눈을 감은 채 붉게 빛나는 손목을 감싸 쥠 (맞음 · 아픔, 둘레에 흔들림 선 — 자기 치료로도 쓸 수 있음)"
+}
+}
+},
+"yongmyo": {
+"slug": "yongmyo",
+"name": "용묘화",
+"rank": "1기 동료 (등급 글자 없음 — 파일 이름 '용묘화1')",
+"folder": "3기-2 (용묘화1.png)",
+"role": "동료 (1기 동료 — 2D 판에서 성당 · 회랑에서 영입. 적 그림체 아님)",
+"tall": 1.78,
+"weight": 68,
+"palette": [
+"#141213",
+"#302525",
+"#624e48",
+"#fad8bd",
+"#a12a2a",
+"#c9a24a"
+],
+"missing": [
+"walk",
+"dead",
+"front",
+"back",
+"dash (돌진 — 2D 판에 있음)",
+"guard (막기 — 2D 판에 있음)"
+],
+"kit": {
+"basic": "삽 찌르기 (attack) — 앞 2.8m 줄, 삽날로 내지름 · 밀어냄 0.5m",
+"skills": [
+{
+"name": "모아 내려치기",
+"pose": "windup",
+"desc": "0.6초 삽을 치켜들었다가 (windup) 앞 3m 원 (반지름 1.6m) 을 내려찍음 (dig 그림으로 끝) — 피해 2.2배, 1초 기절"
+},
+{
+"name": "파내기",
+"pose": "dig",
+"desc": "삽날을 땅에 꽂아 앞 4m 부채꼴 90도로 흙 · 돌을 퍼 던짐 — 피해 1.2배, 2초 둔화 40%, 작은 함정 · 덫을 없앰"
+},
+{
+"name": "휘둘러 쳐내기",
+"pose": "attack2",
+"desc": "몸을 돌려 삽을 크게 휘두름 — 앞 3.2m 부채꼴 150도, 맞은 적 2m 밀쳐 냄 (둘러싸였을 때)"
+},
+{
+"name": "매복",
+"pose": "crouch",
+"desc": "쪼그려 숨어 3초 동안 눈에 덜 띔 (발각 거리 반) — 다음 공격 피해 1.5배"
+}
+],
+"passive": "묘지기: 적을 쓰러뜨리면 그 자리를 '묻어' 체력 3% 회복, 쓰러진 적에게 주는 피해 +30% (확인사살)"
+},
+"apt": {
+"melee": 5,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 2
+},
+"tag": "brawler",
+"role_job": "선봉",
+"bag": 14,
+"stats": {
+"hp": 1150,
+"atk": 32,
+"spd": 4.6,
+"weight_kg": 68,
+"tall_m": 1.78
+},
+"desc": "龍墓花. 검은 군모 · 선글라스 · 검은 코트 (붉은 끈 바느질 · 금 견장) 의 여장부. 등과 팔에 용 문신, 큰 삽 하나로 싸우고 묻는다.",
+"gen": 1,
+"codex_g": "tomoe",
+"batch": "3기-2",
+"portrait": "art/h2/yongmyo/portrait.webp",
+"face": "art/h2/yongmyo/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/yongmyo/idle.webp",
+"w": 453,
+"h": 696,
+"ax": 236,
+"ay": 693,
+"orig": "삽을 몸 앞에 비스듬히 쥐고 다리 벌려 선 자세 (3/4 앞, 얼굴 오른쪽)"
+},
+"attack": {
+"src": "art/h2/yongmyo/attack.webp",
+"w": 749,
+"h": 662,
+"ax": 350,
+"ay": 659,
+"orig": "두 손으로 삽을 오른쪽으로 길게 내지름 (삽날 찌르기 · 밀어치기), 코트 자락 펄럭"
+},
+"hurt": {
+"src": "art/h2/yongmyo/hurt.webp",
+"w": 400,
+"h": 681,
+"ax": 263,
+"ay": 678,
+"orig": "뒤로 젖혀지며 비틀거림, 삽 끝이 땅에 끌림 (맞고 밀림)"
+},
+"down": {
+"src": "art/h2/yongmyo/down.webp",
+"w": 573,
+"h": 456,
+"ax": 473,
+"ay": 453,
+"orig": "땅에 주저앉아 한 손으로 버팀, 삽은 옆에 눕힘 (쓰러짐)"
+},
+"windup": {
+"src": "art/h2/yongmyo/windup.webp",
+"w": 451,
+"h": 734,
+"ax": 266,
+"ay": 731,
+"orig": "삽을 머리 위 뒤로 크게 치켜듦 (등이 보이는 각도, 모아 내려치기 준비)"
+},
+"dig": {
+"src": "art/h2/yongmyo/dig.webp",
+"w": 669,
+"h": 596,
+"ax": 519,
+"ay": 593,
+"orig": "앞으로 깊게 내딛으며 삽날을 땅에 꽂아 퍼냄 (파내기 · 땅 찍기)"
+},
+"attack2": {
+"src": "art/h2/yongmyo/attack2.webp",
+"w": 690,
+"h": 709,
+"ax": 240,
+"ay": 706,
+"orig": "등을 보이며 삽을 오른쪽으로 크게 휘둘러 내지름 (등의 용 문신 · 견장 보임)"
+},
+"crouch": {
+"src": "art/h2/yongmyo/crouch.webp",
+"w": 582,
+"h": 466,
+"ax": 241,
+"ay": 463,
+"orig": "쪼그려 앉아 무릎 위에 삽을 가로로 걸침 (쉬기 · 매복)"
 }
 }
 },

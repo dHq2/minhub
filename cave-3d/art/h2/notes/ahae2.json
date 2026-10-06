@@ -234,5 +234,6 @@
  "desc": "붉은 원념을 두른 아해의 각성 모습. 두 자루 사슬낫을 멀리 던져 적을 휘감아 끌어오고, 붉은 궤적으로 베어 낸다.",
  "transform_of": "ahae",
  "gen": 3,
- "codex_g": "ahae"
+ "codex_g": "ahae",
+ "batch": "3기-2"
 }
