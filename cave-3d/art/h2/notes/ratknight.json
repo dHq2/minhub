@@ -145,5 +145,10 @@
    "scale": 0.95
   }
  },
- "batch": "3기-2"
+ "batch": "3기-2",
+ "growth": {
+  "stages": 4,
+  "note": "민수 확인: 4단 시트는 성장 단계 — 날이 갈수록 커지고, 오래 살아남으면 베테랑 (ratvet) 이 됨"
+ },
+ "codex_g": "ratKnight"
 }
