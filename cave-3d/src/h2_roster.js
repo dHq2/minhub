@@ -4095,6 +4095,7 @@ const H2R = {
 "atk": 28,
 "spd": 1.3
 },
+"face": "art/h2/levi_beast/face.webp",
 "poses": {
 "idle": {
 "src": "art/h2/levi_beast/idle.webp",

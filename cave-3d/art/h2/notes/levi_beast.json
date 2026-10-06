@@ -66,5 +66,6 @@
  },
  "tag": "beast",
  "role_job": "선봉",
- "bag": 0
+ "bag": 0,
+ "face": "art/h2/levi_beast/face.webp"
 }

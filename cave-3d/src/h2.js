@@ -1,4 +1,4 @@
-/* h2.js v1.5 — (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.6 — (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -115,7 +115,7 @@ function h2Cast(u, s, tgt){
       break; }
     case 'combo': {   // 연계: 여러 기술을 차례로 (sub: [기술, …], gap 초)
       const subs = s.sub || []; let tm = 0;
-      for (const x of subs){ setTimeout(() => { if (u.dead || u.downed) return; u.st = 'idle'; h2Cast(u, { cd: 0, id: s.id + '_' + x.type, n: x.n || s.n, ...x }, tgt && !tgt.dead ? tgt : null); }, tm * 1000); tm += (x.windup ?? 0.4) + (s.gap || 0.35); }
+      for (const x of subs){ setTimeout(() => { if (u.dead || u.downed || u.lying || u.st === 'hurt' || u.grabbed) return; u.st = 'idle'; h2Cast(u, { cd: 0, id: s.id + '_' + x.type, n: x.n || s.n, ...x }, tgt && !tgt.dead ? tgt : null); }, tm * 1000); tm += (x.windup ?? 0.4) + (s.gap || 0.35); }
       u.h2cd[s.id] = s.cd; break; }
     case 'backstep': { const n = norm(u.x - (tgt ? tgt.x : u.x + 1), u.z - (tgt ? tgt.z : u.z)); moveBy(u, n.x * (s.len || 2.4), n.z * (s.len || 2.4)); dust(u.x, u.z, 5); u.st = 'strike'; u.stT = 0.35; break; }
   }
@@ -460,16 +460,16 @@ const H2PAS = {
 };
 
 // v1.5 3기 패시브
-const isPhys = o => o.fam !== 'magic';
-const near = (u, f, r = 10) => G.units.some(o => o !== u && o.side === u.side && !o.dead && o.D.h2 && f(o) && dist(o, u) < r);
+const h2Phys = o => o.fam !== 'magic';
+const h2Near = (u, f, r = 10) => G.units.some(o => o !== u && o.side === u.side && !o.dead && o.D.h2 && f(o) && dist(o, u) < r);
 Object.assign(H2PAS, {
   '사냥꾼의 눈': { out: (u, t) => t && (t.st === 'hurt' || t.lying || (t.sts && t.sts.slow && t.sts.slow.t > 0)) ? 1.2 : 1 },
   '관측 기록': { out: (u, t) => { if (!t) return 1; if (u._obs !== t){ u._obs = t; u._obsN = 0; } u._obsN = Math.min(5, (u._obsN || 0) + 1); return 1 + 0.05 * (u._obsN - 1); } },
   '돌갑주': { in: (u, o) => o.ranged ? 1 : 0.8, kb: 0 },
   '마신족 무리': { out: (u) => 1 + 0.1 * Math.min(3, G.units.filter(o => o !== u && o.D.h2 === 'majin' && o.side === u.side && !o.dead && dist(o, u) < 10).length) },
-  '두꺼운 판금': { in: (u, o) => isPhys(o) ? 0.75 : 1.2, kb: 0.5 },
-  '망령': { in: (u, o) => isPhys(o) ? 0.8 : 1.3 },
-  '원령': { in: (u, o) => isPhys(o) ? 0.6 : 1.5 },
+  '두꺼운 판금': { in: (u, o) => h2Phys(o) ? 0.75 : 1.2, kb: 0.5 },
+  '망령': { in: (u, o) => h2Phys(o) ? 0.8 : 1.3 },
+  '원령': { in: (u, o) => h2Phys(o) ? 0.6 : 1.5 },
   '붉은 갑주': { in: (u, o) => h2Front(u, o.from) ? 0.75 : 1.2 },
   '무쇠 몸통': { in: (u, o) => h2Front(u, o.from) ? 0.7 : 1.3, kb: 0 },
   '초월 신체': { in: (u, o) => !o.ranged && h2Front(u, o.from) ? 0.75 : 1, kb: 0 },
@@ -479,13 +479,35 @@ Object.assign(H2PAS, {
   '빛나는 눈': { out: (u) => u.hp < u.max * 0.5 ? 1.25 : 1 },
   '얼굴 없는 자': { dodge: 0.12 },
   '누더기 그림자': { dodge: 0.12 },
-  '공허의 껍질': { in: (u, o) => isPhys(o) ? 0.8 : 1, tick: (u, dt) => { u.hp = Math.min(u.max, u.hp + u.max * 0.004 * dt); } },
-  '흐르는 몸': { in: (u, o) => o.fam === 'fire' || o.sts === 'burn' ? 1.25 : isPhys(o) ? 0.8 : 1 },
+  '공허의 껍질': { in: (u, o) => h2Phys(o) ? 0.8 : 1, tick: (u, dt) => { u.hp = Math.min(u.max, u.hp + u.max * 0.004 * dt); } },
+  '흐르는 몸': { in: (u, o) => o.fam === 'fire' || o.sts === 'burn' ? 1.25 : h2Phys(o) ? 0.8 : 1 },
   '붉은 암석 몸': { in: (u, o) => o.ranged ? 0.6 : 1.1, kb: 0.2 },
   '돌 거신': { in: (u, o) => o.ranged ? 0.75 : 1, kb: 0 },
-  '암계의 장군': { in: (u) => near(u, o => o.D.h2 === (u.D.h2 === 'haryu' ? 'heugik' : 'haryu')) ? 0.85 : 1 },
+  '암계의 장군': { in: (u) => h2Near(u, o => o.D.h2 === (u.D.h2 === 'haryu' ? 'heugik' : 'haryu')) ? 0.85 : 1 },
   '흑철 갑주': { in: (u, o) => !o.ranged && h2Front(u, o.from) ? 0.75 : 1, out: (u) => 1 + 0.05 * Math.min(5, u._h2fallen || 0) },
   '긴 팔': { out: (u, t) => t && dist(u, t) > 3 ? 1.15 : 1 },
+});
+
+// v1.6 남은 패시브 (자체점검: 글만 있던 것) — 탐험용 (수집가의 자루 · 이계 탐험가 · 타천 날개 · 차원 영웅)은 원정 쪽 효과라 여기선 작게
+const h2Dark = u => typeof lightMul === 'function' && lightMul(u.x, u.z) < 0.6;
+Object.assign(H2PAS, {
+  '깃털 몸': { in: (u, o) => o.ranged ? 1 : 0.75 },
+  '인공 후광': { out: (u) => h2Near(u, () => true, 4) ? 1.1 : 1 },
+  '초인계 마수': { hitSts: 'burn', in: (u, o) => o.sts === 'burn' || o.fam === 'fire' ? 0.5 : 1 },
+  '붕대 갑옷': { in: (u, o) => o.fam === 'fire' ? 1.3 : o.ranged ? 1 : 0.8 },
+  '차원 영웅': { out: (u) => (u._h2sw = ((u._h2sw || 0) + 1) % 3) === 0 ? 1.25 : 1 },   // 곤봉 · 조율봉 · 권총을 바꿔 들어 세 번째마다 강타
+  '악마의 뿔': { out: (u) => h2Dark(u) ? 1.15 : 1 },
+  '깃털귀 천사': { out: (u) => isCrouched(u) ? 1.4 : 1 },
+  '후광': { tick: (u, dt) => { for (const o of G.units) if (o !== u && o.side === u.side && !o.dead && !o.downed && o.hp < o.max && dist(o, u) < 4) o.hp = Math.min(o.max, o.hp + o.max * 0.004 * dt); } },
+  '남색 결의': { in: (u) => h2Near(u, o => !!(o.D.bow), 6) ? 0.85 : 1 },
+  '계약의 그림자': { tick: (u, dt) => { u._h2ct = (u._h2ct || 0) - dt; if (u._h2ct > 0 || u.hp > u.max * 0.4 || u.st !== 'idle') return; const s = (H2K[u.D.h2].sk || []).find(x => x.type === 'summon'); if (!s) return; u._h2ct = 30; h2Cast(u, s, null); popText(u.x, u.y + 2, u.z, '계약의 그림자', 'alert', 1); } },
+  '그림자 몸': { in: (u) => h2Dark(u) ? 0.85 : 1.15, out: (u) => h2Dark(u) ? 1.15 : 1 },
+  '비늘 깃털 갑옷': { in: (u, o) => o.ranged && h2Front(u, o.from) ? 0.7 : h2Front(u, o.from) ? 1 : 1.15 },
+  '악마의 눈': { out: (u) => h2Dark(u) ? 1.1 : 1 },
+  '타천 날개': { dodge: 0.08 },
+  '유령 몸': { in: (u, o) => h2Phys(o) ? 0.7 : 1.2 },
+  '웃는 가면': { out: (u, t) => t && !h2Front(t, u) ? 1.4 : 1 },   // 등 돌린 적에게 배신의 칼
+  '수집가의 자루': {}, '이계 탐험가': {},
 });
 const h2Front = (u, f) => !f || f.x == null ? false : Math.cos(Math.atan2(f.z - u.z, f.x - u.x) - (u.aim ?? 0)) > 0.3;
 const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2K[u.D.h2].pas[0]] : null;
@@ -502,6 +524,7 @@ const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2
       if (T.last && !tgt._h2last && tgt.hp - base * 1.1 <= 0){ tgt._h2last = true; base = Math.max(0, tgt.hp - 1); popText(tgt.x, tgt.y + 2, tgt.z, '버팀!', 'alert', 1); }
     }
     const r = _hurtH2(att, tgt, base, o);
+    if (A && A.hitSts && r > 0 && typeof addStatus === 'function' && !tgt.dead) addStatus(tgt, A.hitSts, { t: 3, dps: att.atk * 0.15, k: 0.3 });
     if (T && T.thorn && att && !o.ranged && att !== tgt && att.D && !att.dead && r > 0 && !o._thorn) _hurtH2(tgt, att, r * T.thorn, { from: tgt, kb: 0, _thorn: true });
     if (tgt.dead || tgt.downed){
       if (A && att.D.h2 === 'tanga') att._h2kill = true;
