@@ -1,0 +1,74 @@
+{
+ "slug": "ratsmall",
+ "name": "일반 쥐 (포렌의 쥐)",
+ "rank": "유닛 (일반쥐)",
+ "folder": "3기-2/포렌의 쥐들",
+ "role": "동료 (포렌의 쥐 군대 — 포렌이 부름)",
+ "tall": 0.25,
+ "weight": 0.4,
+ "length": 0.6,
+ "palette": [
+  "#0d0d0d",
+  "#1e1e1e",
+  "#3a3a3a",
+  "#7a7a7a",
+  "#a8e030"
+ ],
+ "portrait": "art/h2/ratsmall/portrait.webp",
+ "face": "art/h2/ratsmall/face.webp",
+ "portrait_from": "일반쥐 호다닥 기본.png",
+ "missing": [
+  "attack (물기)",
+  "run 따로 (idle 을 호다닥 달리기로 같이 씀)",
+  "hurt",
+  "dead"
+ ],
+ "kit": {
+  "basic": "물기 — 앞 0.5m, 작은 피해, 0.3초마다",
+  "skills": [
+   {
+    "name": "호다닥",
+    "pose": "idle",
+    "desc": "낮게 몸을 깔고 8m 를 빠르게 달려 적 발밑에 붙음 — 붙은 적 이동 속도 −10% (쥐가 여럿이면 겹침, 최대 −30%)"
+   },
+   {
+    "name": "따라 물기",
+    "pose": "idle",
+    "desc": "쥐 베테랑의 '작은 표식'이 찍힌 적을 따라가 4초 동안 물어뜯음 (초당 작은 피해)"
+   }
+  ],
+  "passive": "작은 몸: 원거리 공격에 맞을 확률 −40%, 대신 한두 대면 죽음"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 4
+ },
+ "tag": "beast",
+ "role_job": "척후",
+ "bag": 0,
+ "stats": {
+  "hp": 12,
+  "atk": 3,
+  "spd": 7.5,
+  "weight_kg": 0.4,
+  "tall_m": 0.25
+ },
+ "desc": "포렌이 부르는 진짜 검은 쥐 한 마리. 초록 눈, 검은 털, 긴 꼬리. 떼로 몰려 발밑을 물고 다님.",
+ "gen": 3,
+ "poses": {
+  "idle": {
+   "src": "art/h2/ratsmall/idle.webp",
+   "w": 926,
+   "h": 329,
+   "ax": 480,
+   "ay": 326,
+   "from": "일반쥐 호다닥 기본.png",
+   "orig": "검은 쥐 한 마리 옆모습, 네 발로 낮게 걷는 (호다닥) 기본 자세, 초록 눈 · 긴 꼬리 · 수염",
+   "scale": 0.92
+  }
+ }
+}
