@@ -1,4 +1,4 @@
-/* units.js v0.27 — (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.28 — (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -90,6 +90,9 @@ function updateSprite(u, dt){
   u.flash = Math.max(0, u.flash - dt * 6);
   u.mat.color.setScalar(0.92 + u.flash * 2.6);
   if (u.redTint) u.mat.color.setRGB(1.6, 0.6, 0.6);
+  // v0.28 완전히 죽으면 (쓰러짐 · 기절은 아님) 0.5초에 걸쳐 어둡고 보랏빛으로 가라앉음 — 모든 유닛 공용
+  if (u.dead){ if (u.deadT == null) u.deadT = G.t; const d = Math.min(1, (G.t - u.deadT) / 0.5), c = u.mat.color; c.setRGB(c.r * (1 - d * 0.62), c.g * (1 - d * 0.7), c.b * (1 - d * 0.5)); }
+  else u.deadT = null;
 }
 // 바라보는 각 → 화면의 왼쪽 · 오른쪽
 function faceToward(u, ax, az){
