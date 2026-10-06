@@ -36,6 +36,6 @@ for g, names in heroes.items():
     if not first: continue
     note = first.get('note', '').split(' || 주요 인물 (따로 묶음): ')[0]
     first['note'] = note + ' || 주요 인물 (따로 묶음): ' + ' · '.join(dict.fromkeys(names))
-if 'v1.84:' not in head: head = head.replace('/* catalog.js v1.83 — ', '/* catalog.js v1.84 — v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83: ', 1)
+if 'v1.84:' not in head: head = head.replace('/* catalog.js v1.83 — v1.83:', '/* catalog.js v1.84 — v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83:', 1)
 open(P, 'w', encoding='utf-8').write(head + json.dumps(cat, ensure_ascii=False, indent=0) + ';\n')
 print('옮김', len(moved), '· 팩션', len(heroes))

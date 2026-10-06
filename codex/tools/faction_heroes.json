@@ -1,0 +1,50 @@
+[
+ {
+  "id": "X-maritribe-01",
+  "faction_g": "X-maritribe",
+  "faction_name": "마리의 부족민",
+  "n": 1,
+  "member_name": "톱날 대검을 든 금발 여전사",
+  "person_g": "mari",
+  "person_name": "마리",
+  "person_cid": "C-022",
+  "confidence": "mid",
+  "why": "노란 피부 · 긴 금발 앞머리 · 뾰족 귀 · 이빨 드러낸 웃음 · 검은 갑옷 체형이 마리와 같음. 다만 털 망토와 창이 없고 톱날 대검이라 같은 종족 부족원일 수도 있음 · 팩션 이름이 '마리의 부족민' — 그 부족의 우두머리로 봄 (mid, 아니면 confidence 를 no 로)"
+ },
+ {
+  "id": "X-h3f-blackveil-01",
+  "faction_g": "X-h3f-blackveil",
+  "faction_name": "검은 장막",
+  "n": 1,
+  "member_name": "뿔 마녀",
+  "person_g": "h2_goldmask",
+  "person_name": "노란악마녀 (보스)",
+  "person_cid": "C-231",
+  "confidence": "high",
+  "why": "긴 금발 · 검은 마스크 · 작은 검은 뿔 · 끈 상의 · 찢어진 검은 치마 · 고리 벨트 · 버클 부츠까지 같음"
+ },
+ {
+  "id": "X-h3f-bluemask-05",
+  "faction_g": "X-h3f-bluemask",
+  "faction_name": "푸른 외투단",
+  "n": 5,
+  "member_name": "낫창 지휘관",
+  "person_g": "h2_arkam",
+  "person_name": "아컴 (장군)",
+  "person_cid": "C-227",
+  "confidence": "high",
+  "why": "뾰족 검은 투구 · 가시 어깨갑 · 찢어진 푸른 긴 외투 · 낫날 장창 · 같은 자세"
+ },
+ {
+  "id": "X-h3f-tendon-01",
+  "faction_g": "X-h3f-tendon",
+  "faction_name": "텐던 콰이어 (힘줄 성가대)",
+  "n": 1,
+  "member_name": "가지뿔 후드 사제",
+  "person_g": "cultist",
+  "person_name": "광신도",
+  "person_cid": "C-064",
+  "confidence": "high",
+  "why": "나뭇가지 뿔 · 하늘색 빛나는 십자 · 흰 후드 속 푸른 빛 얼굴 · 마젠타 힘줄 흐르는 검은 로브가 같음"
+ }
+]
