@@ -132,3 +132,31 @@ function h2EnemyThink(u, dt){
 
 /* ---------- 기술표 (인물마다): st = 능력치, sk = 기술, pas = 패시브 [이름, 설명], boss = 보스 ---------- */
 const H2K = {};
+
+/* ---------- 대충 움직이기 (그림이 한 장씩이라 몸을 눌렀다 폈다 · 기울여 살아 있게) ----------
+   · 서 있음: 숨쉬기 (세로 1.5% · 3초)
+   · 걸음: 위아래 출렁 + 앞으로 기울임 (걸음 그림이 없으면)
+   · 예고 (windup): 뒤로 젖히며 움츠림 → 침 (strike): 앞으로 쭉 + 살짝 늘어남
+   · 맞음: 좌우로 떨림 · 기술: 둘레가 빛남 (잔광) · 돌진: 잔상 */
+const _updateSpriteH2 = updateSprite;
+updateSprite = function(u, dt){
+  _updateSpriteH2(u, dt);
+  if (!u.D || !u.D.h2 || u.dead) return;
+  const t = G.t + (u.uid || 0) * 0.37, m = u.mesh, f = -u.face;
+  let sy = 1, sx = 1, rz = 0, dy = 0;
+  if (u.downed || u.lying) return;
+  if (u.st === 'windup'){ const k = Math.min(1, u.poseT / 0.35); sy = 1 - 0.06 * k; sx = 1 + 0.04 * k; rz = -0.1 * k * f; }
+  else if (u.st === 'strike'){ const k = Math.max(0, 1 - u.poseT / 0.25); sy = 1 + 0.05 * k; sx = 1 - 0.03 * k; rz = 0.16 * k * f; }
+  else if (u.st === 'hurt'){ rz = Math.sin(t * 60) * 0.05; }
+  else if (u.moving && !u.S.poses.walk_real){ dy = Math.abs(Math.sin(t * 9)) * 0.06; rz = 0.06 * f + Math.sin(t * 9) * 0.02; }
+  else { sy = 1 + Math.sin(t * 2.1) * 0.015; }
+  m.scale.y *= sy; m.scale.x *= sx; m.position.y *= sy; u.pivot.rotation.z += rz; u.pivot.position.y += dy;
+  // 잔상: 빨리 움직이는 동안
+  const sp = u._lp2 ? Math.hypot(u.x - u._lp2.x, u.z - u._lp2.z) / Math.max(dt, 1e-3) : 0; u._lp2 = { x: u.x, z: u.z };
+  if (sp > 7 && (u._gh = (u._gh || 0) - dt) <= 0){ u._gh = 0.05; h2Ghost(u); }
+};
+function h2Ghost(u){
+  const g = new THREE.Mesh(u.mesh.geometry, new THREE.MeshBasicMaterial({ map: u.mat.map, transparent: true, opacity: 0.45, depthWrite: false, color: u.side === 'enemy' ? 0xff9a9a : 0x9fd0ff }));
+  g.scale.copy(u.mesh.scale); u.mesh.getWorldPosition(g.position); u.mesh.getWorldQuaternion(g.quaternion); G.scene.add(g);
+  const t0 = G.t; const step = () => { const k = (G.t - t0) / 0.3; if (k >= 1 || !G.scene){ G.scene.remove(g); g.material.dispose(); return; } g.material.opacity = 0.45 * (1 - k); requestAnimationFrame(step); }; requestAnimationFrame(step);
+}

@@ -1,0 +1,127 @@
+{
+ "slug": "joshua",
+ "name": "투구게 조슈아",
+ "rank": 4,
+ "folder": "4성 투구게 SF",
+ "role": "동료 (적 · 보스로도 가능)",
+ "tall": 2.3,
+ "weight": 320,
+ "palette": [
+  "#af9454",
+  "#8f7541",
+  "#372b26",
+  "#5a2328",
+  "#27201c"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/joshua/idle.webp",
+   "w": 309,
+   "h": 699,
+   "ax": 173,
+   "ay": 696,
+   "from": "금빛 골렘 기사의 전투 자세.png",
+   "orig": "기본 (두 손 모으고 선 자세 = '투구게 조슈아' 초상과 같은 그림)"
+  },
+  "ready": {
+   "src": "art/h2/joshua/ready.webp",
+   "w": 616,
+   "h": 664,
+   "ax": 272,
+   "ay": 661,
+   "from": "황금 기계 골렘의 두 전투 자세.png",
+   "orig": "왼쪽: 두 주먹 모은 전투 대기"
+  },
+  "attack": {
+   "src": "art/h2/joshua/attack.webp",
+   "w": 792,
+   "h": 632,
+   "ax": 317,
+   "ay": 629,
+   "from": "황금 기계 골렘의 두 전투 자세.png",
+   "orig": "오른쪽: 스트레이트 펀치"
+  },
+  "special": {
+   "src": "art/h2/joshua/special.webp",
+   "w": 646,
+   "h": 524,
+   "ax": 439,
+   "ay": 521,
+   "from": "황금 골렘의 두 가지 공격 포즈.png",
+   "orig": "왼쪽: 지면 강타 (주먹으로 땅을 부숨, 파편)"
+  },
+  "skill": {
+   "src": "art/h2/joshua/skill.webp",
+   "w": 751,
+   "h": 678,
+   "ax": 387,
+   "ay": 675,
+   "from": "황금 골렘의 두 가지 공격 포즈.png",
+   "orig": "오른쪽: 손 뻗으며 등 뒤 케이블 (촉수) 휘몰아침"
+  },
+  "guard": {
+   "src": "art/h2/joshua/guard.webp",
+   "w": 522,
+   "h": 558,
+   "ax": 215,
+   "ay": 555,
+   "from": "황금 골렘의 두 전투 자세.png",
+   "orig": "왼쪽: 팔로 머리 막기"
+  },
+  "down": {
+   "src": "art/h2/joshua/down.webp",
+   "w": 830,
+   "h": 252,
+   "ax": 411,
+   "ay": 249,
+   "from": "황금 골렘의 두 전투 자세.png",
+   "orig": "오른쪽: 엎어져 쓰러짐"
+  }
+ },
+ "portrait": "art/h2/joshua/portrait.webp",
+ "face": "art/h2/joshua/face.webp",
+ "portrait_group": "art/h2/joshua/portrait_group.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead"
+ ],
+ "kit": {
+  "basic": "스트레이트 (attack)",
+  "skills": [
+   {
+    "name": "지면 강타",
+    "pose": "special",
+    "note": "앞쪽 원뿔 범위 기절"
+   },
+   {
+    "name": "케이블 채찍",
+    "pose": "skill",
+    "note": "중거리 끌어당기기 (등 뒤 케이블)"
+   },
+   {
+    "name": "철벽",
+    "pose": "guard",
+    "note": "정면 피해 크게 줄임"
+   }
+  ],
+  "passive": "갑각 장갑: 받는 물리 피해 -20%, 넉백 면역"
+ },
+ "stats": {
+  "hp": 240,
+  "atk": 22,
+  "spd": 0.75
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 14
+}

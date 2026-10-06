@@ -1,0 +1,185 @@
+{
+ "slug": "garam",
+ "name": "가람",
+ "rank": "미정 (폴더 이름에 등급 없음)",
+ "folder": "가람, 히라리",
+ "role": "동료 (적으로도 가능)",
+ "tall": 1.68,
+ "weight": 56,
+ "palette": [
+  "#1a1b22",
+  "#3c3c4b",
+  "#1f9fa6",
+  "#f2d6c8",
+  "#c9ccd6"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/garam/idle.webp",
+   "w": 416,
+   "h": 702,
+   "ax": 166,
+   "ay": 699,
+   "from": "기본아이들.png 왼쪽",
+   "orig": "기본 아이들 (검 내려 든 채 섬)"
+  },
+  "run": {
+   "src": "art/h2/garam/run.webp",
+   "w": 685,
+   "h": 614,
+   "ax": 121,
+   "ay": 611,
+   "from": "뛰기.png 왼쪽",
+   "orig": "뛰기"
+  },
+  "attack": {
+   "src": "art/h2/garam/attack.webp",
+   "w": 810,
+   "h": 548,
+   "ax": 395,
+   "ay": 545,
+   "from": "가면 검객과 별빛 마법사의 공격.png 왼쪽",
+   "orig": "공격 (한손 찌르기)"
+  },
+  "guard": {
+   "src": "art/h2/garam/guard.webp",
+   "w": 650,
+   "h": 717,
+   "ax": 372,
+   "ay": 714,
+   "from": "검사와 별 마법사의 수비 자세.png 왼쪽",
+   "orig": "수비 자세 (두손 검 사선 막기)"
+  },
+  "hurt": {
+   "src": "art/h2/garam/hurt.webp",
+   "w": 733,
+   "h": 641,
+   "ax": 496,
+   "ay": 638,
+   "from": "피격에 흔들리는 검객과 별 마법사.png 왼쪽",
+   "orig": "피격에 흔들림 (충격선 있음)"
+  },
+  "hurt2": {
+   "src": "art/h2/garam/hurt2.webp",
+   "w": 727,
+   "h": 664,
+   "ax": 422,
+   "ay": 661,
+   "from": "검사와 별 마법사의 피격 반응.png 왼쪽",
+   "orig": "피격 반응"
+  },
+  "hurt3": {
+   "src": "art/h2/garam/hurt3.webp",
+   "w": 731,
+   "h": 642,
+   "ax": 492,
+   "ay": 639,
+   "from": "분홍 마법사의 자연스러운 두 팔.png 왼쪽",
+   "orig": "피격 (hurt 와 거의 같음, 충격선 없음)"
+  },
+  "special": {
+   "src": "art/h2/garam/special.webp",
+   "w": 727,
+   "h": 685,
+   "ax": 347,
+   "ay": 682,
+   "from": "검사와 별마법사의 필살기.png 왼쪽",
+   "orig": "필살기 (낮게 올려베기 + 청록 검기)"
+  },
+  "crawl": {
+   "src": "art/h2/garam/crawl.webp",
+   "w": 889,
+   "h": 354,
+   "ax": 541,
+   "ay": 351,
+   "from": "포복, 엎드림, 쉼.png 왼쪽",
+   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)"
+  },
+  "finisher": {
+   "src": "art/h2/garam/finisher.webp",
+   "w": 624,
+   "h": 540,
+   "ax": 358,
+   "ay": 537,
+   "from": "하단, 확살.png 왼쪽",
+   "orig": "확살 (확인사살 — 두손으로 검을 아래로 꽂음; 파일 이름 순서로는 하단일 수도)"
+  },
+  "armor_idle": {
+   "src": "art/h2/garam/armor_idle.webp",
+   "w": 353,
+   "h": 699,
+   "ax": 94,
+   "ay": 696,
+   "from": "검을 든 청록빛 마스크 기사.png",
+   "orig": "판금 갑옷 버전 서 있음 (다른 옷)"
+  },
+  "armor_ready": {
+   "src": "art/h2/garam/armor_ready.webp",
+   "w": 393,
+   "h": 653,
+   "ax": 33,
+   "ay": 650,
+   "from": "청록 머리의 가면 기사.png",
+   "orig": "판금 갑옷 버전 두손 검 겨눔 (다른 옷)"
+  }
+ },
+ "portrait": "art/h2/garam/portrait.webp",
+ "face": "art/h2/garam/face.webp",
+ "missing": [
+  "walk",
+  "down",
+  "dead",
+  "jump",
+  "windup",
+  "attack2",
+  "shoot (해당 없음)"
+ ],
+ "kit": {
+  "basic": "한손 장검 찌르기 — 근접 2.2m (attack)",
+  "skills": [
+   {
+    "name": "청록 검기 올려베기",
+    "pose": "special",
+    "desc": "낮게 파고들어 위로 크게 베며 청록 검기로 앞 4m 부채꼴 피해"
+   },
+   {
+    "name": "확인사살",
+    "pose": "finisher",
+    "desc": "쓰러진 적에게 두손으로 검을 꽂아 큰 피해 (쓰러짐 상태 적 2배)"
+   },
+   {
+    "name": "포복 침투",
+    "pose": "crawl",
+    "desc": "엎드려 기어가며 눈에 덜 띔 (은신 + 이동 느림)"
+   },
+   {
+    "name": "사선 막기",
+    "pose": "guard",
+    "desc": "두손 검으로 앞 공격 막기 (근접 피해 60% 감소, 짧게)"
+   }
+  ],
+  "passive": "그림자 검사: 은신/포복 상태에서 첫 공격 치명 확률 +30%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 1,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 4
+ },
+ "tag": "soldier",
+ "role_job": "척후",
+ "bag": 10,
+ "stats": {
+  "hp": 120,
+  "atk": 16,
+  "spd": 6.2,
+  "weight_kg": 56,
+  "tall_m": 1.68
+ },
+ "variants": [
+  "garam2 (망토 갑옷 버전)",
+  "armor_* (판금 갑옷 버전)"
+ ]
+}

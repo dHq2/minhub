@@ -1,0 +1,160 @@
+{
+ "slug": "sosucha",
+ "name": "소스차",
+ "rank": 4,
+ "folder": "4성 소스차",
+ "role": "동료 (적으로도 가능)",
+ "tall": 1.72,
+ "weight": 55,
+ "palette": [
+  "#160a1a",
+  "#40194a",
+  "#a646b1",
+  "#e576e9",
+  "#380a44"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/sosucha/idle.webp",
+   "w": 139,
+   "h": 702,
+   "ax": 55,
+   "ay": 699,
+   "from": "보랏빛 전사의 두 전투 자세.png",
+   "orig": "왼쪽: 옆으로 선 기본"
+  },
+  "stand": {
+   "src": "art/h2/sosucha/stand.webp",
+   "w": 122,
+   "h": 698,
+   "ax": 59,
+   "ay": 695,
+   "from": "네 번째 패널의 보랏빛 악마 여성.png",
+   "orig": "옆으로 선 자세 (원화와 같은 그림, 왼쪽을 봐서 좌우 반전)"
+  },
+  "attack": {
+   "src": "art/h2/sosucha/attack.webp",
+   "w": 957,
+   "h": 609,
+   "ax": 415,
+   "ay": 606,
+   "from": "보랏빛 전사의 두 전투 자세.png",
+   "orig": "오른쪽: 정권 지르기 (분홍 잔상)"
+  },
+  "attack2": {
+   "src": "art/h2/sosucha/attack2.webp",
+   "w": 581,
+   "h": 694,
+   "ax": 304,
+   "ay": 691,
+   "from": "보라 악마의 두 전투 포즈.png",
+   "orig": "왼쪽: 발 구르기 (지면 분홍 폭발)"
+  },
+  "attack3": {
+   "src": "art/h2/sosucha/attack3.webp",
+   "w": 618,
+   "h": 570,
+   "ax": 140,
+   "ay": 567,
+   "from": "보라 악마의 두 전투 포즈.png",
+   "orig": "오른쪽: 공중 옆차기 (분홍 궤적)"
+  },
+  "skill": {
+   "src": "art/h2/sosucha/skill.webp",
+   "w": 220,
+   "h": 716,
+   "ax": 91,
+   "ay": 713,
+   "from": "마젠타 불꽃 머리의 보랏빛 정령.png",
+   "orig": "손끝에 마젠타 불꽃"
+  },
+  "windup": {
+   "src": "art/h2/sosucha/windup.webp",
+   "w": 738,
+   "h": 580,
+   "ax": 299,
+   "ay": 577,
+   "from": "보랏빛 전사의 두 전투 자세(1).png",
+   "orig": "왼쪽: 빛나는 검을 머리 위로 (내려치기 준비)"
+  },
+  "low": {
+   "src": "art/h2/sosucha/low.webp",
+   "w": 903,
+   "h": 305,
+   "ax": 740,
+   "ay": 302,
+   "from": "보랏빛 전사의 두 전투 자세(1).png",
+   "orig": "오른쪽: 엎드려 검 휘두르기 (하단)"
+  },
+  "windup2": {
+   "src": "art/h2/sosucha/windup2.webp",
+   "w": 579,
+   "h": 580,
+   "ax": 301,
+   "ay": 577,
+   "from": "무기 없는 두 포즈 스프라이트.png",
+   "orig": "왼쪽: 같은 자세 무기 없음 (두 손 모아 머리 위)"
+  },
+  "crawl": {
+   "src": "art/h2/sosucha/crawl.webp",
+   "w": 798,
+   "h": 293,
+   "ax": 391,
+   "ay": 290,
+   "from": "무기 없는 두 포즈 스프라이트.png",
+   "orig": "오른쪽: 엎드려 기기 (무기 없음)"
+  }
+ },
+ "portrait": "art/h2/sosucha/portrait.webp",
+ "face": "art/h2/sosucha/face.webp",
+ "portrait_group": "art/h2/sosucha/portrait_group.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "검 내려친 뒤 (slash 마무리)"
+ ],
+ "kit": {
+  "basic": "정권 (attack)",
+  "skills": [
+   {
+    "name": "공중 옆차기",
+    "pose": "attack3",
+    "note": "짧은 도약 돌진 킥"
+   },
+   {
+    "name": "진각",
+    "pose": "attack2",
+    "note": "발밑 범위 충격"
+   },
+   {
+    "name": "영혼검",
+    "pose": "windup",
+    "note": "빛 검 소환 후 내려치기 (원래 맨손, 검은 마력으로 만듦)"
+   },
+   {
+    "name": "마젠타 불꽃",
+    "pose": "skill",
+    "note": "원거리 불꽃 탄"
+   }
+  ],
+  "passive": "악마의 몸: 맨발 · 맨몸 — 이동 빠르고 회피 +15%, 방어구 못 입음"
+ },
+ "stats": {
+  "hp": 100,
+  "atk": 19,
+  "spd": 1.25
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 3
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 8
+}

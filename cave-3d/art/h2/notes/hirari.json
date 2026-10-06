@@ -1,0 +1,180 @@
+{
+ "slug": "hirari",
+ "name": "히라리",
+ "rank": "미정 (폴더 이름에 등급 없음)",
+ "folder": "가람, 히라리",
+ "role": "동료",
+ "tall": 1.62,
+ "weight": 48,
+ "palette": [
+  "#e89ec9",
+  "#e35fd6",
+  "#d3dfdd",
+  "#65455b",
+  "#f9d4cb"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hirari/idle.webp",
+   "w": 499,
+   "h": 700,
+   "ax": 333,
+   "ay": 697,
+   "from": "기본아이들.png 오른쪽",
+   "orig": "기본 아이들 (별봉 내려 듦)"
+  },
+  "run": {
+   "src": "art/h2/hirari/run.webp",
+   "w": 656,
+   "h": 678,
+   "ax": 595,
+   "ay": 675,
+   "from": "뛰기.png 오른쪽",
+   "orig": "뛰기"
+  },
+  "attack": {
+   "src": "art/h2/hirari/attack.webp",
+   "w": 672,
+   "h": 573,
+   "ax": 336,
+   "ay": 570,
+   "from": "가면 검객과 별빛 마법사의 공격.png 오른쪽",
+   "orig": "별봉 내밀어 별 쏘기"
+  },
+  "guard": {
+   "src": "art/h2/hirari/guard.webp",
+   "w": 685,
+   "h": 677,
+   "ax": 428,
+   "ay": 674,
+   "from": "검사와 별 마법사의 수비 자세.png 오른쪽",
+   "orig": "수비 — 별 마법 방패"
+  },
+  "hurt": {
+   "src": "art/h2/hirari/hurt.webp",
+   "w": 718,
+   "h": 671,
+   "ax": 440,
+   "ay": 668,
+   "from": "피격에 흔들리는 검객과 별 마법사.png 오른쪽",
+   "orig": "피격에 흔들림 (충격선)"
+  },
+  "hurt2": {
+   "src": "art/h2/hirari/hurt2.webp",
+   "w": 717,
+   "h": 700,
+   "ax": 462,
+   "ay": 697,
+   "from": "검사와 별 마법사의 피격 반응.png 오른쪽",
+   "orig": "피격 반응 (가슴에 손)"
+  },
+  "hurt3": {
+   "src": "art/h2/hirari/hurt3.webp",
+   "w": 718,
+   "h": 671,
+   "ax": 441,
+   "ay": 668,
+   "from": "분홍 마법사의 자연스러운 두 팔.png 오른쪽",
+   "orig": "피격 (두 팔 자연스러운 수정판)"
+  },
+  "special": {
+   "src": "art/h2/hirari/special.webp",
+   "w": 686,
+   "h": 706,
+   "ax": 487,
+   "ay": 703,
+   "from": "검사와 별마법사의 필살기.png 오른쪽",
+   "orig": "필살기 — 별봉 치켜들어 별 무리 쏟기"
+  },
+  "crawl": {
+   "src": "art/h2/hirari/crawl.webp",
+   "w": 809,
+   "h": 399,
+   "ax": 412,
+   "ay": 396,
+   "from": "포복, 엎드림, 쉼.png 오른쪽",
+   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)"
+  },
+  "low": {
+   "src": "art/h2/hirari/low.webp",
+   "w": 670,
+   "h": 690,
+   "ax": 383,
+   "ay": 687,
+   "from": "하단, 확살.png 오른쪽",
+   "orig": "하단 — 별봉을 아래로 휘둘러 땅에 별 폭발 (파일 이름 순서로는 확살일 수도)"
+  },
+  "skill": {
+   "src": "art/h2/hirari/skill.webp",
+   "w": 466,
+   "h": 704,
+   "ax": 308,
+   "ay": 701,
+   "from": "분홍 후광의 마법봉 여인.png (= 뾰로롱 특별이미지 투명판)",
+   "orig": "뾰로롱 — 별봉 겨눔 (특별 이미지)"
+  },
+  "talk": {
+   "src": "art/h2/hirari/talk.webp",
+   "w": 378,
+   "h": 700,
+   "ax": 280,
+   "ay": 697,
+   "from": "분홍 후광의 마법사.png (= 특수 아이들. 대사 원화 투명판)",
+   "orig": "특수 아이들 / 대사 (손 흔들기)"
+  }
+ },
+ "portrait": "art/h2/hirari/portrait.webp",
+ "face": "art/h2/hirari/face.webp",
+ "missing": [
+  "walk",
+  "down",
+  "dead",
+  "windup",
+  "cast (skill 로 대신)"
+ ],
+ "kit": {
+  "basic": "별봉 별탄 — 중거리 8m (attack)",
+  "skills": [
+   {
+    "name": "뾰로롱",
+    "pose": "skill",
+    "desc": "별봉으로 가리킨 아군 1명 회복 + 공격력 증가 (지원기)"
+   },
+   {
+    "name": "별빛 방패",
+    "pose": "guard",
+    "desc": "앞에 별 마법진 방패 — 투사체 막음"
+   },
+   {
+    "name": "별똥별 무리",
+    "pose": "special",
+    "desc": "별봉을 치켜들어 앞 반원에 별 다발 낙하"
+   },
+   {
+    "name": "땅별 터뜨리기",
+    "pose": "low",
+    "desc": "발밑 앞 2m 땅에 별 폭발 — 넘어진/낮은 적에게 강함"
+   }
+  ],
+  "passive": "후광: 주변 아군 정신력 회복 +, 성장 게이지가 차면 변신 (hirari2)"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 1,
+  "bow": 1,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 1
+ },
+ "tag": "mage",
+ "role_job": "지원",
+ "bag": 9,
+ "stats": {
+  "hp": 80,
+  "atk": 14,
+  "spd": 5.8,
+  "weight_kg": 48,
+  "tall_m": 1.62
+ },
+ "transform": "hirari2"
+}

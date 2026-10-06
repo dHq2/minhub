@@ -1,0 +1,163 @@
+{
+ "slug": "levi",
+ "name": "레비",
+ "rank": 4,
+ "folder": "4성 악마 소환사 레비",
+ "role": "동료 (적으로도 가능)",
+ "tall": 1.68,
+ "weight": 58,
+ "palette": [
+  "#4b4a40",
+  "#636054",
+  "#5a4630",
+  "#b8ab90",
+  "#201f1b"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/levi/idle.webp",
+   "w": 294,
+   "h": 700,
+   "ax": 185,
+   "ay": 697,
+   "from": "올리브 전투복의 갈색 장발 정찰병.png",
+   "orig": "기본 (레비 기본 — 뒤돌아보며 소총을 아래로 듦)"
+  },
+  "ready": {
+   "src": "art/h2/levi/ready.webp",
+   "w": 347,
+   "h": 701,
+   "ax": 165,
+   "ay": 698,
+   "from": "올리브 라이플 사수의 두 포즈.png",
+   "orig": "왼쪽: 소총 낮춰 든 전투 대기"
+  },
+  "shoot": {
+   "src": "art/h2/levi/shoot.webp",
+   "w": 621,
+   "h": 678,
+   "ax": 245,
+   "ay": 675,
+   "from": "올리브 라이플 사수의 두 포즈.png",
+   "orig": "오른쪽: 견착 사격 (총구 불꽃)"
+  },
+  "attack": {
+   "src": "art/h2/levi/attack.webp",
+   "w": 575,
+   "h": 660,
+   "ax": 337,
+   "ay": 657,
+   "from": "올리브 병사의 소총 공격과 소환.png",
+   "orig": "왼쪽: 소총 공격 (개머리 · 총열 휘두르기)"
+  },
+  "summon": {
+   "src": "art/h2/levi/summon.webp",
+   "w": 459,
+   "h": 698,
+   "ax": 251,
+   "ay": 695,
+   "from": "올리브 병사의 소총 공격과 소환.png",
+   "orig": "오른쪽: 소환 (한 손 뻗음)"
+  },
+  "summon2": {
+   "src": "art/h2/levi/summon2.webp",
+   "w": 481,
+   "h": 693,
+   "ax": 296,
+   "ay": 690,
+   "from": "무릎 강타와 소환 자세의 전투 스프라이트.png",
+   "orig": "오른쪽: 소환 자세 (두 손 뻗음)"
+  },
+  "special": {
+   "src": "art/h2/levi/special.webp",
+   "w": 602,
+   "h": 546,
+   "ax": 421,
+   "ay": 543,
+   "from": "무릎 강타와 소환 자세의 전투 스프라이트.png",
+   "orig": "왼쪽: 무릎 강타 (한 무릎 꿇고 주먹으로 땅을 침, 파편)"
+  },
+  "crouch": {
+   "src": "art/h2/levi/crouch.webp",
+   "w": 473,
+   "h": 533,
+   "ax": 298,
+   "ay": 530,
+   "from": "소총 든 올리브 여전사의 두 자세.png",
+   "orig": "왼쪽: 무릎 쏴 (앉아 겨눔)"
+  },
+  "down": {
+   "src": "art/h2/levi/down.webp",
+   "w": 642,
+   "h": 397,
+   "ax": 597,
+   "ay": 394,
+   "from": "소총 든 올리브 여전사의 두 자세.png",
+   "orig": "오른쪽: 넘어진 채 소총 겨눔"
+  },
+  "command": {
+   "src": "art/h2/levi/command.webp",
+   "w": 466,
+   "h": 701,
+   "ax": 156,
+   "ay": 698,
+   "from": "검은 괴수를 지휘하는 불안한 소환사.png",
+   "orig": "검은 괴수를 지휘 (그림자 용과 함께, 좌우 반전)"
+  }
+ },
+ "portrait": "art/h2/levi/portrait.webp",
+ "face": "art/h2/levi/face.webp",
+ "portrait_group": "art/h2/levi/portrait_group.webp",
+ "summon": "levi_beast",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "reload",
+  "jump"
+ ],
+ "kit": {
+  "basic": "소총 점사 (shoot)",
+  "skills": [
+   {
+    "name": "그림자 용 소환",
+    "pose": "summon",
+    "note": "levi_beast를 불러 돌진시킴 (beast dash)"
+   },
+   {
+    "name": "무릎 강타",
+    "pose": "special",
+    "note": "주변 지면 충격, 근접 적 넉백"
+   },
+   {
+    "name": "무릎 쏴",
+    "pose": "crouch",
+    "note": "멈춰 앉아 정밀 사격, 명중 · 사거리 증가"
+   },
+   {
+    "name": "지휘",
+    "pose": "command",
+    "note": "소환수 강화 · 어그로 끌기 (궁극기)"
+   }
+  ],
+  "passive": "계약의 그림자: 체력이 30% 아래로 떨어지면 소환수가 자동으로 나타나 한 번 막아 줌",
+  "melee": "소총 휘두르기 (attack)"
+ },
+ "stats": {
+  "hp": 110,
+  "atk": 16,
+  "spd": 1.0
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 1,
+  "gun": 4,
+  "magic": 4,
+  "stealth": 2
+ },
+ "tag": "mage",
+ "role_job": "사수",
+ "bag": 12
+}

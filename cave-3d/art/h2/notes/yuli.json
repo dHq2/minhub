@@ -1,0 +1,151 @@
+{
+ "slug": "yuli",
+ "name": "율리",
+ "rank": 4,
+ "folder": "4성 율리",
+ "role": "동료 (적으로도 가능)",
+ "tall": 1.85,
+ "weight": 72,
+ "palette": [
+  "#171816",
+  "#31322b",
+  "#49493d",
+  "#6b6a4a",
+  "#0b0b0b"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/yuli/idle.webp",
+   "w": 283,
+   "h": 701,
+   "ax": 145,
+   "ay": 698,
+   "from": "검은 후드의 고요한 그림자.png",
+   "orig": "기본 (한 손 주머니, 다른 손에 검은 연기)"
+  },
+  "ready": {
+   "src": "art/h2/yuli/ready.webp",
+   "w": 256,
+   "h": 700,
+   "ax": 131,
+   "ay": 697,
+   "from": "검은 후드의 무표정 전사.png",
+   "orig": "단검을 쥔 대기"
+  },
+  "cast": {
+   "src": "art/h2/yuli/cast.webp",
+   "w": 391,
+   "h": 711,
+   "ax": 228,
+   "ay": 708,
+   "from": "검은 후드와 소용돌이 그림자.png",
+   "orig": "손바닥 위 올리브빛 그림자 소용돌이"
+  },
+  "windup": {
+   "src": "art/h2/yuli/windup.webp",
+   "w": 403,
+   "h": 688,
+   "ax": 184,
+   "ay": 685,
+   "from": "올리브 코트 그림자 전사의 두 전투 포즈.png",
+   "orig": "왼쪽: 주먹에 그림자 모으기"
+  },
+  "attack": {
+   "src": "art/h2/yuli/attack.webp",
+   "w": 753,
+   "h": 619,
+   "ax": 305,
+   "ay": 616,
+   "from": "올리브 코트 그림자 전사의 두 전투 포즈.png",
+   "orig": "오른쪽: 팔 뻗어 그림자 발사"
+  },
+  "special": {
+   "src": "art/h2/yuli/special.webp",
+   "w": 667,
+   "h": 425,
+   "ax": 386,
+   "ay": 422,
+   "from": "올리브 후드 중력술사의 전투 자세.png",
+   "orig": "왼쪽: 웅크려 땅에 손 — 그림자 폭발 (지면)"
+  },
+  "skill": {
+   "src": "art/h2/yuli/skill.webp",
+   "w": 718,
+   "h": 583,
+   "ax": 375,
+   "ay": 580,
+   "from": "올리브 후드 중력술사의 전투 자세.png",
+   "orig": "오른쪽: 두 손 사이 중력구 (검은 소용돌이 구)"
+  },
+  "guard": {
+   "src": "art/h2/yuli/guard.webp",
+   "w": 555,
+   "h": 599,
+   "ax": 313,
+   "ay": 596,
+   "from": "후드 캐릭터의 두 가지 전투 포즈.png",
+   "orig": "왼쪽: 두 손으로 그림자 벽 (막기)"
+  },
+  "down": {
+   "src": "art/h2/yuli/down.webp",
+   "w": 770,
+   "h": 243,
+   "ax": 224,
+   "ay": 240,
+   "from": "후드 캐릭터의 두 가지 전투 포즈.png",
+   "orig": "오른쪽: 쓰러짐 (손에 연기 남음)"
+  }
+ },
+ "portrait": "art/h2/yuli/portrait.webp",
+ "face": "art/h2/yuli/face.webp",
+ "portrait_group": "art/h2/yuli/portrait_group.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "knife attack (단검 찌르기)"
+ ],
+ "kit": {
+  "basic": "그림자 탄 (attack)",
+  "skills": [
+   {
+    "name": "중력구",
+    "pose": "skill",
+    "note": "구에 적을 끌어모아 묶음"
+   },
+   {
+    "name": "그림자 분출",
+    "pose": "special",
+    "note": "발밑 범위 폭발 + 둔화"
+   },
+   {
+    "name": "그림자 벽",
+    "pose": "guard",
+    "note": "투사체 막기"
+   },
+   {
+    "name": "그림자 단검",
+    "pose": "ready",
+    "note": "근접 기습 (은신 연계)"
+   }
+  ],
+  "passive": "얼굴 없는 자: 어둠 속에서 적에게 늦게 발견됨 (은신 보너스)"
+ },
+ "stats": {
+  "hp": 95,
+  "atk": 20,
+  "spd": 1.05
+ },
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 4
+ },
+ "tag": "mage",
+ "role_job": "지원",
+ "bag": 10
+}

@@ -1,0 +1,133 @@
+{
+ "slug": "bel",
+ "name": "인공천사 벨",
+ "rank": "1성",
+ "folder": "1성 인공천사 벨",
+ "role": "동료 (적으로도 가능)",
+ "tall": 1.62,
+ "weight": 52,
+ "palette": [
+  "#e9b85a",
+  "#f4f1ee",
+  "#b8323c",
+  "#8fc6d8",
+  "#f6d9c8"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/bel/idle.webp",
+   "w": 454,
+   "h": 703,
+   "ax": 269,
+   "ay": 700,
+   "from": "금발 천사 건슬링어의 두 전투 포즈.png 왼쪽",
+   "orig": "쌍권총 들고 서 있음",
+   "scale": 0.73
+  },
+  "shoot": {
+   "src": "art/h2/bel/shoot.webp",
+   "w": 599,
+   "h": 624,
+   "ax": 318,
+   "ay": 621,
+   "from": "금발 천사 건슬링어의 두 전투 포즈.png 오른쪽",
+   "orig": "두 팔 뻗어 쌍권총 사격 (총구 불꽃)",
+   "scale": 0.73
+  },
+  "crouch": {
+   "src": "art/h2/bel/crouch.webp",
+   "w": 569,
+   "h": 550,
+   "ax": 358,
+   "ay": 547,
+   "from": "수호 천사의 두 전투 자세.png 왼쪽",
+   "orig": "쪼그려 앉아 한 총은 뒤, 한 총은 위로",
+   "scale": 0.73
+  },
+  "down": {
+   "src": "art/h2/bel/down.webp",
+   "w": 639,
+   "h": 429,
+   "ax": 337,
+   "ay": 426,
+   "from": "수호 천사의 두 전투 자세.png 오른쪽",
+   "orig": "바닥에 주저앉아 총 겨눔 (넘어짐)",
+   "scale": 0.73
+  },
+  "low": {
+   "src": "art/h2/bel/low.webp",
+   "w": 564,
+   "h": 538,
+   "ax": 204,
+   "ay": 535,
+   "from": "쌍권총 천사의 지상·공중 액션.png 왼쪽",
+   "orig": "무릎 꿇듯 낮게 앉아 아래로 사격 (탄피 · 불꽃)",
+   "scale": 0.73
+  },
+  "jump": {
+   "src": "art/h2/bel/jump.webp",
+   "w": 623,
+   "h": 610,
+   "ax": 330,
+   "ay": 607,
+   "from": "쌍권총 천사의 지상·공중 액션.png 오른쪽",
+   "orig": "공중에서 쌍권총 사격",
+   "scale": 0.73,
+   "ax_auto": 544
+  }
+ },
+ "portrait": "art/h2/bel/portrait.webp",
+ "face": "art/h2/bel/face.webp",
+ "portrait_from": "황금 후광의 쌍권총 천사 벨.png (검은 바탕 + 빛 번짐, 다른 화풍)",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신 가능)",
+  "reload"
+ ],
+ "kit": {
+  "basic": "쌍권총 연사 (shoot) — 원거리 10m",
+  "skills": [
+   {
+    "name": "천사의 탄막",
+    "pose": "jump",
+    "desc": "뛰어올라 공중에서 앞 부채꼴로 연사, 착지까지 무적 짧게"
+   },
+   {
+    "name": "낮은 사격",
+    "pose": "low",
+    "desc": "몸을 낮춰 다리 · 작은 적 노리기, 이 동안 받는 원거리 피해 감소"
+   },
+   {
+    "name": "엄호 자세",
+    "pose": "crouch",
+    "desc": "앉아서 앞뒤 두 방향 사격 (뒤에서 오는 적 견제)"
+   }
+  ],
+  "passive": "인공 후광: 아군 근처에 있으면 명중 +10%, 쓰러지면 (down) 한 번 버팀"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 1,
+  "gun": 5,
+  "magic": 2,
+  "stealth": 1
+ },
+ "tag": "soldier",
+ "role_job": "사수",
+ "bag": 10,
+ "stats": {
+  "hp": 520,
+  "atk": 34,
+  "spd": 6.5,
+  "weight_kg": 52,
+  "tall_m": 1.62
+ },
+ "same_as_h1": {
+  "h1": "art/h1/angel.webp (소천사녀)",
+  "same": false,
+  "why": "소천사녀는 분홍 단발 · 흰 홀터 드레스 · 금 지팡이 · 끈 샌들. 벨은 금발 곱슬 단발 · 크롭탑과 프릴 치마 · 쌍권총 · 청백 날개. 후광만 같음 → 다른 인물"
+ },
+ "extra_portraits_by_other": "portrait2~4 / face2~4 는 다른 작업자가 _loose 캡처(벨 원화.jpg · 벨.jpg 등)로 만든 것"
+}

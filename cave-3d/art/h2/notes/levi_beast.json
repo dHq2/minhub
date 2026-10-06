@@ -1,0 +1,70 @@
+{
+ "slug": "levi_beast",
+ "name": "레비의 소환수 (숯빛 그림자 용)",
+ "rank": 4,
+ "folder": "4성 악마 소환사 레비",
+ "role": "소환수 (레비 편)",
+ "tall": 2.8,
+ "weight": 900,
+ "palette": [
+  "#332f32",
+  "#242224",
+  "#484346",
+  "#5d5659",
+  "#d02020"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/levi_beast/idle.webp",
+   "w": 962,
+   "h": 698,
+   "ax": 620,
+   "ay": 695,
+   "from": "숯빛 거대 용형 소환수의 대기와 돌진.png",
+   "orig": "왼쪽: 대기"
+  },
+  "dash": {
+   "src": "art/h2/levi_beast/dash.webp",
+   "w": 971,
+   "h": 677,
+   "ax": 845,
+   "ay": 674,
+   "from": "숯빛 거대 용형 소환수의 대기와 돌진.png",
+   "orig": "오른쪽: 돌진 (입 벌리고 앞발 뻗음)"
+  }
+ },
+ "length": 6.5,
+ "missing": [
+  "attack(물기 · 할퀴기)",
+  "hurt",
+  "dead(그림자로 흩어짐)",
+  "appear(소환 연출)"
+ ],
+ "kit": {
+  "basic": "할퀴기",
+  "skills": [
+   {
+    "name": "돌진",
+    "pose": "dash",
+    "note": "직선 관통 돌진"
+   }
+  ],
+  "passive": "그림자 몸: 일정 시간 뒤 사라짐 (지속 소환수)"
+ },
+ "stats": {
+  "hp": 260,
+  "atk": 28,
+  "spd": 1.3
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 1
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 0
+}

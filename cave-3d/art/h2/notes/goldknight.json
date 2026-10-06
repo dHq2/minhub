@@ -1,0 +1,131 @@
+{
+ "slug": "goldknight",
+ "name": "금기사",
+ "rank": "1성",
+ "folder": "1성 금기사",
+ "role": "동료",
+ "tall": 1.78,
+ "weight": 85,
+ "palette": [
+  "#f0c8a0",
+  "#9a9898",
+  "#3a4258",
+  "#1e1e24",
+  "#3b78b0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/goldknight/idle.webp",
+   "w": 448,
+   "h": 702,
+   "ax": 253,
+   "ay": 699,
+   "from": "금발 기사 두 가지 전투 자세.png 왼쪽",
+   "orig": "장검 늘어뜨리고 서 있음",
+   "scale": 0.825
+  },
+  "attack": {
+   "src": "art/h2/goldknight/attack.webp",
+   "w": 841,
+   "h": 685,
+   "ax": 422,
+   "ay": 682,
+   "from": "금발 기사 두 가지 전투 자세.png 오른쪽",
+   "orig": "두 손으로 장검 위로 뻗어 베기 / 찌르기",
+   "scale": 0.825
+  },
+  "guard": {
+   "src": "art/h2/goldknight/guard.webp",
+   "w": 695,
+   "h": 706,
+   "ax": 281,
+   "ay": 703,
+   "from": "금발 여성 기사의 두 전투 자세.png 왼쪽",
+   "orig": "두 손으로 검 비스듬히 세운 겨눔 자세",
+   "scale": 0.825
+  },
+  "down": {
+   "src": "art/h2/goldknight/down.webp",
+   "w": 779,
+   "h": 416,
+   "ax": 391,
+   "ay": 413,
+   "from": "금발 여성 기사의 두 전투 자세.png 오른쪽",
+   "orig": "바닥에 주저앉음 (검 쥔 채)",
+   "scale": 0.825
+  },
+  "windup": {
+   "src": "art/h2/goldknight/windup.webp",
+   "w": 598,
+   "h": 598,
+   "ax": 277,
+   "ay": 595,
+   "from": "두 전투 자세의 금발 기사.png 왼쪽",
+   "orig": "검을 땅에 꽂듯 내리고 몸 숙임 (공격 준비 · 숨 고르기)",
+   "scale": 0.825
+  },
+  "attack2": {
+   "src": "art/h2/goldknight/attack2.webp",
+   "w": 867,
+   "h": 592,
+   "ax": 405,
+   "ay": 589,
+   "from": "두 전투 자세의 금발 기사.png 오른쪽",
+   "orig": "한 손 앞찌르기 (런지)",
+   "scale": 0.825
+  }
+ },
+ "portrait": "art/h2/goldknight/portrait.webp",
+ "face": "art/h2/goldknight/face.webp",
+ "portrait_from": "portrait = _loose/금기사.jpg (휴대폰 캡처, 왼쪽에 가리가 걸침) · face = 금발 기사 두 가지 전투 자세.png 의 서 있는 그림 얼굴",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "block(방패 없음 — guard 로 대신)"
+ ],
+ "kit": {
+  "basic": "장검 베기 (attack) — 근접 2m",
+  "skills": [
+   {
+    "name": "관통 찌르기",
+    "pose": "attack2",
+    "desc": "앞으로 3m 런지, 일직선 관통"
+   },
+   {
+    "name": "검 세우기",
+    "pose": "guard",
+    "desc": "받아넘기기 — 근접 공격 하나를 흘리고 반격"
+   },
+   {
+    "name": "숨 고르기",
+    "pose": "windup",
+    "desc": "1초 멈춰 다음 공격 2배 · 기력 회복"
+   }
+  ],
+  "passive": "기사의 맹세: 아군이 쓰러지면 잠깐 공격력 +25%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 10,
+ "stats": {
+  "hp": 950,
+  "atk": 42,
+  "spd": 5.0,
+  "weight_kg": 85,
+  "tall_m": 1.78
+ },
+ "same_as_h1": {
+  "h1": "art/h1/goldknight.webp (금기사)",
+  "same": true,
+  "why": "허리까지 오는 곧은 금발 · 파란 눈 · 회색 판금 (어깨 · 팔 · 다리) · 검은 몸판에 파란 선 무늬 · 남색 찢긴 망토 치마 · 장검 · 굽 있는 철 부츠 — 같은 디자인"
+ }
+}

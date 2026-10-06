@@ -1,0 +1,121 @@
+{
+ "slug": "garam2",
+ "name": "가람 (망토 갑옷 버전)",
+ "rank": "미정",
+ "folder": "가람, 히라리",
+ "role": "동료 (가람의 다른 옷 / 강화 형태 후보)",
+ "tall": 1.72,
+ "weight": 60,
+ "palette": [
+  "#1b1b22",
+  "#3e3e45",
+  "#3f8a86",
+  "#f2d8cc",
+  "#a9b1b5"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/garam2/idle.webp",
+   "w": 458,
+   "h": 703,
+   "ax": 253,
+   "ay": 700,
+   "from": "가람2 .png 왼쪽",
+   "orig": "서 있음 (장검 아래로)"
+  },
+  "attack": {
+   "src": "art/h2/garam2/attack.webp",
+   "w": 1011,
+   "h": 607,
+   "ax": 383,
+   "ay": 604,
+   "from": "가람2 .png 오른쪽",
+   "orig": "한손 길게 찌르기 (런지)"
+  },
+  "guard": {
+   "src": "art/h2/garam2/guard.webp",
+   "w": 643,
+   "h": 374,
+   "ax": 246,
+   "ay": 371,
+   "from": "가면 여전사의 두 전투 자세.png 왼쪽",
+   "orig": "두손 검 겨눔 (낮은 전투 자세)"
+  },
+  "down": {
+   "src": "art/h2/garam2/down.webp",
+   "w": 654,
+   "h": 152,
+   "ax": 440,
+   "ay": 149,
+   "from": "가면 여전사의 두 전투 자세.png 오른쪽",
+   "orig": "쓰러짐 (검 쥔 채 엎드림)"
+  },
+  "low": {
+   "src": "art/h2/garam2/low.webp",
+   "w": 581,
+   "h": 352,
+   "ax": 306,
+   "ay": 349,
+   "from": "검은 가면 검사의 두 검술 자세.png 왼쪽",
+   "orig": "한 무릎 꿇은 낮은 검 자세 (하단)"
+  },
+  "attack2": {
+   "src": "art/h2/garam2/attack2.webp",
+   "w": 522,
+   "h": 471,
+   "ax": 476,
+   "ay": 468,
+   "from": "검은 가면 검사의 두 검술 자세.png 오른쪽",
+   "orig": "뛰어오르며 베기 (검기 효과)"
+  }
+ },
+ "portrait": "art/h2/garam2/portrait.webp",
+ "face": "art/h2/garam2/face.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "special",
+  "crawl"
+ ],
+ "kit": {
+  "basic": "장검 찌르기 — 근접 2.5m (attack)",
+  "skills": [
+   {
+    "name": "도약 베기",
+    "pose": "attack2",
+    "desc": "뛰어올라 반달 검기로 앞 3m 베기"
+   },
+   {
+    "name": "낮은 자세 베기",
+    "pose": "low",
+    "desc": "무릎 꿇고 다리 베기 (느려짐)"
+   },
+   {
+    "name": "겨눔",
+    "pose": "guard",
+    "desc": "두손 겨눔 — 다음 공격 반격"
+   }
+  ],
+  "passive": "찢긴 망토: 회피 +10%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 1,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 3
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 10,
+ "stats": {
+  "hp": 140,
+  "atk": 18,
+  "spd": 5.8,
+  "weight_kg": 60,
+  "tall_m": 1.72
+ }
+}

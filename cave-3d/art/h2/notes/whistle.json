@@ -1,0 +1,173 @@
+{
+ "slug": "whistle",
+ "name": "휘슬",
+ "rank": "1성",
+ "folder": "1성 휘슬",
+ "role": "동료",
+ "tall": 1.68,
+ "weight": 55,
+ "palette": [
+  "#d8283c",
+  "#1b1617",
+  "#f0c9be",
+  "#a01c30",
+  "#b8b8bc"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/whistle/idle.webp",
+   "w": 345,
+   "h": 700,
+   "ax": 158,
+   "ay": 697,
+   "from": "붉은 검의 전사 포즈 시트.png 왼쪽 위",
+   "orig": "검 늘어뜨리고 서 있음 (비키니 · 붉은 망토 버전)",
+   "scale": 1.0
+  },
+  "guard": {
+   "src": "art/h2/whistle/guard.webp",
+   "w": 587,
+   "h": 628,
+   "ax": 285,
+   "ay": 625,
+   "from": "붉은 검의 전사 포즈 시트.png 오른쪽 위",
+   "orig": "두 손으로 검 비스듬히 겨눔",
+   "scale": 1.0
+  },
+  "attack": {
+   "src": "art/h2/whistle/attack.webp",
+   "w": 724,
+   "h": 599,
+   "ax": 402,
+   "ay": 596,
+   "from": "붉은 검의 전사 포즈 시트.png 왼쪽 아래",
+   "orig": "크게 옆으로 베기 (붉은 검기 궤적 포함) — 원래 왼쪽을 봄",
+   "scale": 1.0,
+   "flip": true
+  },
+  "walk": {
+   "src": "art/h2/whistle/walk.webp",
+   "w": 354,
+   "h": 626,
+   "ax": 189,
+   "ay": 623,
+   "from": "붉은 검의 전사 포즈 시트.png 오른쪽 아래",
+   "orig": "걸음 내딛으며 검 들고 감 (돌아서기)",
+   "scale": 1.0
+  },
+  "attack2": {
+   "src": "art/h2/whistle/attack2.webp",
+   "w": 614,
+   "h": 417,
+   "ax": 361,
+   "ay": 414,
+   "from": "붉은 단발 검객의 수평 검격.png",
+   "orig": "수평 검격 — 한 팔로 검 곧게 뻗기 (크롭탑 · 반바지 버전) — 원래 왼쪽을 봄",
+   "scale": 0.42,
+   "flip": true
+  },
+  "taunt": {
+   "src": "art/h2/whistle/taunt.webp",
+   "w": 350,
+   "h": 711,
+   "ax": 176,
+   "ay": 708,
+   "from": "붉은 단발 검사의 자신만만한 정면 포즈.png",
+   "orig": "검 어깨에 걸치고 허리에 손 (자신만만한 정면)",
+   "scale": 0.483
+  },
+  "idle2": {
+   "src": "art/h2/whistle/idle2.webp",
+   "w": 317,
+   "h": 699,
+   "ax": 155,
+   "ay": 696,
+   "from": "붉은 단발 검사의 전신 프로모션.png",
+   "orig": "서 있음 (바디수트 · 붉은 망토 버전)",
+   "scale": 0.483
+  },
+  "idle3": {
+   "src": "art/h2/whistle/idle3.webp",
+   "w": 370,
+   "h": 704,
+   "ax": 211,
+   "ay": 701,
+   "from": "붉은 머리의 무심한 검사 캐릭터 시트.png 왼쪽",
+   "orig": "서 있음 — 원화 옷 (언더붑 재킷 · 끈 하의 · 사이하이 · 군화)",
+   "scale": 0.507
+  }
+ },
+ "portrait": "art/h2/whistle/portrait.webp",
+ "face": "art/h2/whistle/face.webp",
+ "portrait_from": "붉은 머리의 무심한 검사 캐릭터 시트.png (전신 + 얼굴 확대 칸) · face = 그 얼굴 칸",
+ "missing": [
+  "hurt",
+  "down",
+  "dead",
+  "run",
+  "jump"
+ ],
+ "kit": {
+  "basic": "장검 베기 (attack) — 근접 2m",
+  "skills": [
+   {
+    "name": "붉은 검기",
+    "pose": "attack",
+    "desc": "넓게 베며 붉은 궤적 — 앞 반원 3m"
+   },
+   {
+    "name": "수평 일섬",
+    "pose": "attack2",
+    "desc": "한 팔 찌르기로 4m 뻗음, 빠름"
+   },
+   {
+    "name": "도발",
+    "pose": "taunt",
+    "desc": "검 어깨에 걸치고 주변 적 끌기, 3초 회피 +30%"
+   }
+  ],
+  "passive": "무심: 첫 공격은 항상 치명타 (전투 시작 · 은신 뒤)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 3
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 8,
+ "stats": {
+  "hp": 700,
+  "atk": 45,
+  "spd": 6.5,
+  "weight_kg": 55,
+  "tall_m": 1.68
+ },
+ "dup_files": {
+  "1000017934.jpg": [
+   "1000017934(2).jpg",
+   "1000017934(3).jpg",
+   "1000017934(4).jpg"
+  ],
+  "1000017964.jpg": [
+   "1000017964(1).jpg"
+  ],
+  "1000017911(1).jpg": [
+   "1000017911(2).jpg",
+   "1000017911(3).jpg"
+  ],
+  "1000017868(3).jpg": [
+   "1000017868(4).jpg",
+   "1000017868(5).jpg"
+  ],
+  "붉은 머리의 무심한 검사 캐릭터 시트.png": [
+   "붉은 머리의 무심한 검사 캐릭터 시트 (1).png"
+  ],
+  "image(20261005-234017).png": [
+   "image(20261005-234017-1).png"
+  ]
+ }
+}

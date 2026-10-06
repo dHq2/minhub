@@ -1,0 +1,82 @@
+{
+ "slug": "ohe",
+ "name": "오헤",
+ "rank": "1성",
+ "folder": "(2기멤버 동료,적 모음 바로 아래 낱장) 오헤 (1성악마동료).png",
+ "role": "동료 (1성 악마)",
+ "tall": 1.75,
+ "weight": 55,
+ "palette": [
+  "#141416",
+  "#262425",
+  "#594f54",
+  "#8a84d8",
+  "#79d4ff"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/ohe/idle.webp",
+   "w": 258,
+   "h": 710,
+   "ax": 135,
+   "ay": 707,
+   "from": "오헤 (1성악마동료).png (좌우 뒤집음)",
+   "orig": "서 있음 (정면, 꼬리)"
+  },
+  "sneak": {
+   "src": "art/h2/ohe/sneak.webp",
+   "w": 413,
+   "h": 433,
+   "ax": 184,
+   "ay": 430,
+   "from": "은신.png 위 둘째",
+   "orig": "은신 — 낮게 웅크린 자세 (갈고리 손)"
+  }
+ },
+ "portrait": "art/h2/ohe/portrait.webp",
+ "face": "art/h2/ohe/face.webp",
+ "missing": [
+  "walk",
+  "run",
+  "attack",
+  "skill",
+  "guard",
+  "hurt",
+  "down",
+  "dead"
+ ],
+ "kit": {
+  "basic": "갈고리 손톱 할퀴기 — 근접 1.5m (그림 없음 — sneak 로 대신)",
+  "skills": [
+   {
+    "name": "그림자 숨기",
+    "pose": "sneak",
+    "desc": "웅크려 어둠에 섞임 — 은신"
+   },
+   {
+    "name": "뒤에서 할퀴기",
+    "pose": "sneak",
+    "desc": "은신 중 첫 공격 피해 2배"
+   }
+  ],
+  "passive": "악마의 눈: 어두운 곳에서 시야 +, 빛 마법(히라리 등)에 약함"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 5
+ },
+ "tag": "beast",
+ "role_job": "척후",
+ "bag": 6,
+ "stats": {
+  "hp": 70,
+  "atk": 11,
+  "spd": 6.8,
+  "weight_kg": 55,
+  "tall_m": 1.75
+ }
+}

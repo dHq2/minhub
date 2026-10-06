@@ -1,0 +1,126 @@
+{
+ "slug": "rook",
+ "name": "룩 (창병)",
+ "rank": "1성",
+ "folder": "1성 룩 창병 흑인",
+ "role": "동료 (적 병사로도 가능)",
+ "tall": 1.85,
+ "weight": 120,
+ "palette": [
+  "#3b2a22",
+  "#8a8580",
+  "#242222",
+  "#b9b3ab",
+  "#141413"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/rook/idle.webp",
+   "w": 505,
+   "h": 829,
+   "ax": 254,
+   "ay": 826,
+   "from": "창과 방패 병사의 두 전투 자세.png 왼쪽",
+   "orig": "창 세워 들고 방패 들고 서 있음",
+   "scale": 1.0
+  },
+  "attack": {
+   "src": "art/h2/rook/attack.webp",
+   "w": 1065,
+   "h": 591,
+   "ax": 384,
+   "ay": 588,
+   "from": "창과 방패 병사의 두 전투 자세.png 오른쪽",
+   "orig": "방패 뒤에서 창 찌르기",
+   "scale": 1.0
+  },
+  "guard": {
+   "src": "art/h2/rook/guard.webp",
+   "w": 880,
+   "h": 607,
+   "ax": 354,
+   "ay": 604,
+   "from": "창과 방패 병사의 두 전투 자세(1).png 왼쪽",
+   "orig": "방패 앞세우고 창 겨눈 수비 자세",
+   "scale": 0.93
+  },
+  "down": {
+   "src": "art/h2/rook/down.webp",
+   "w": 974,
+   "h": 543,
+   "ax": 513,
+   "ay": 540,
+   "from": "창과 방패 병사의 두 전투 자세(1).png 오른쪽",
+   "orig": "뒤로 넘어짐 (창 · 방패 쥔 채, 먼지)",
+   "scale": 0.93
+  },
+  "low": {
+   "src": "art/h2/rook/low.webp",
+   "w": 959,
+   "h": 597,
+   "ax": 497,
+   "ay": 594,
+   "from": "창과 방패 병사의 두 전투 자세(2).png 왼쪽",
+   "orig": "창끝으로 땅 찍기 (하단 찌르기, 돌 파편)",
+   "scale": 1.0
+  },
+  "dash": {
+   "src": "art/h2/rook/dash.webp",
+   "w": 965,
+   "h": 631,
+   "ax": 282,
+   "ay": 628,
+   "from": "창과 방패 병사의 두 전투 자세(2).png 오른쪽",
+   "orig": "방패 들고 돌진 (창 겨눔, 흙먼지)",
+   "scale": 1.0
+  }
+ },
+ "portrait": "art/h2/rook/portrait.webp",
+ "face": "art/h2/rook/face.webp",
+ "portrait_from": "_loose/창병.jpg (휴대폰 캡처, 권총악마와 나란히 — 폴더 안에는 초상 없음)",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신)",
+  "throw(창 던지기)"
+ ],
+ "kit": {
+  "basic": "창 찌르기 (attack) — 근접 2.5m",
+  "skills": [
+   {
+    "name": "방패 돌진",
+    "pose": "dash",
+    "desc": "5m 돌진, 부딪힌 적 넘어뜨림"
+   },
+   {
+    "name": "창벽",
+    "pose": "guard",
+    "desc": "앞 120도 화살 · 총알 막기, 다가오는 적에게 찌르기 반격"
+   },
+   {
+    "name": "땅 찌르기",
+    "pose": "low",
+    "desc": "쓰러진 적 · 작은 적에게 하단 공격 (확인사살)"
+   }
+  ],
+  "passive": "대방패: 정면 원거리 피해 40% 감소"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 5,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 12,
+ "stats": {
+  "hp": 1100,
+  "atk": 30,
+  "spd": 4.5,
+  "weight_kg": 120,
+  "tall_m": 1.85
+ }
+}

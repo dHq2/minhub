@@ -1,0 +1,152 @@
+{
+ "slug": "gun",
+ "name": "건",
+ "rank": 4,
+ "folder": "4성 차원영웅 건",
+ "role": "동료 (주인공급)",
+ "tall": 1.78,
+ "weight": 70,
+ "palette": [
+  "#434c5d",
+  "#50607b",
+  "#3f8fd8",
+  "#9ea2a8",
+  "#2b2f37"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/gun/idle.webp",
+   "w": 270,
+   "h": 701,
+   "ax": 163,
+   "ay": 698,
+   "from": "파란 머리 전투원과 금속 곤봉.png",
+   "orig": "기본 (금속 곤봉 = '건 원화'와 같은 그림)"
+  },
+  "rod": {
+   "src": "art/h2/gun/rod.webp",
+   "w": 344,
+   "h": 702,
+   "ax": 196,
+   "ay": 699,
+   "from": "청회색 조율봉 전사.png",
+   "orig": "조율봉 (끝이 갈래진 봉, 파란 구슬) 든 다른 차림 — 긴 코트"
+  },
+  "pistol": {
+   "src": "art/h2/gun/pistol.webp",
+   "w": 243,
+   "h": 698,
+   "ax": 113,
+   "ay": 695,
+   "from": "푸른 회색 머리의 정찰병.png",
+   "orig": "권총 든 다른 차림 (옆모습)"
+  },
+  "ready": {
+   "src": "art/h2/gun/ready.webp",
+   "w": 468,
+   "h": 595,
+   "ax": 210,
+   "ay": 592,
+   "from": "푸른 전사의 양면 브레이커 봉 액션.png",
+   "orig": "왼쪽: 양면 브레이커 봉 낮게 든 대기"
+  },
+  "attack": {
+   "src": "art/h2/gun/attack.webp",
+   "w": 683,
+   "h": 511,
+   "ax": 381,
+   "ay": 508,
+   "from": "푸른 전사의 양면 브레이커 봉 액션.png",
+   "orig": "오른쪽: 두 손 찌르기"
+  },
+  "attack2": {
+   "src": "art/h2/gun/attack2.webp",
+   "w": 617,
+   "h": 592,
+   "ax": 339,
+   "ay": 589,
+   "from": "청발 전사의 두 가지 전투 자세.png",
+   "orig": "오른쪽: 크게 휘두르기 (궤적)"
+  },
+  "special": {
+   "src": "art/h2/gun/special.webp",
+   "w": 529,
+   "h": 486,
+   "ax": 338,
+   "ay": 483,
+   "from": "청발 전사의 두 가지 전투 자세.png",
+   "orig": "왼쪽: 무릎 꿇고 지면 내려찍기 (파편)"
+  },
+  "guard": {
+   "src": "art/h2/gun/guard.webp",
+   "w": 491,
+   "h": 536,
+   "ax": 351,
+   "ay": 533,
+   "from": "푸른 전사의 두 전투 자세.png",
+   "orig": "왼쪽: 봉 가로로 막기"
+  },
+  "down": {
+   "src": "art/h2/gun/down.webp",
+   "w": 659,
+   "h": 228,
+   "ax": 315,
+   "ay": 225,
+   "from": "푸른 전사의 두 전투 자세.png",
+   "orig": "오른쪽: 옆으로 쓰러짐 (봉 쥔 채)"
+  }
+ },
+ "portrait": "art/h2/gun/portrait.webp",
+ "face": "art/h2/gun/face.webp",
+ "portrait_group": "art/h2/gun/portrait_group.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "shoot (권총 사격)",
+  "rod 조율봉 동작"
+ ],
+ "kit": {
+  "basic": "브레이커 찌르기 (attack)",
+  "skills": [
+   {
+    "name": "브레이커 휘두르기",
+    "pose": "attack2",
+    "note": "앞쪽 넓은 부채꼴"
+   },
+   {
+    "name": "지면 분쇄",
+    "pose": "special",
+    "note": "충격파 + 방어 깎기"
+   },
+   {
+    "name": "차원 조율",
+    "pose": "rod",
+    "note": "조율봉으로 아군 버프 · 차원 틈 열기 (무기 전환)"
+   },
+   {
+    "name": "예비 권총",
+    "pose": "pistol",
+    "note": "원거리 견제 (무기 전환)"
+   }
+  ],
+  "passive": "차원 영웅: 무기 세 가지 (곤봉 · 조율봉 · 권총) 를 바꿔 들 수 있음"
+ },
+ "stats": {
+  "hp": 140,
+  "atk": 18,
+  "spd": 1.0
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 3,
+  "bow": 0,
+  "gun": 3,
+  "magic": 2,
+  "stealth": 1
+ },
+ "tag": "knight",
+ "role_job": "지휘",
+ "bag": 14
+}

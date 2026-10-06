@@ -1,0 +1,126 @@
+{
+ "slug": "pearl",
+ "name": "인공타천사 펄",
+ "rank": "1성",
+ "folder": "1성 인공타천사 펄",
+ "role": "둘 다 (캡처에 \"3인방\" — 적 3인조로 먼저 나오고 동료가 될 수 있음)",
+ "tall": 1.58,
+ "weight": 48,
+ "palette": [
+  "#f2d468",
+  "#1a1618",
+  "#f8dfcf",
+  "#d0303c",
+  "#8a8a8a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/pearl/idle.webp",
+   "w": 345,
+   "h": 699,
+   "ax": 100,
+   "ay": 696,
+   "from": "펄기본, 펄 공격.png 왼쪽",
+   "orig": "펄기본 — 날개 접고 서서 웃음",
+   "scale": 0.711
+  },
+  "attack": {
+   "src": "art/h2/pearl/attack.webp",
+   "w": 639,
+   "h": 700,
+   "ax": 433,
+   "ay": 697,
+   "from": "펄기본, 펄 공격.png 오른쪽",
+   "orig": "펄 공격 — 손바닥 뻗어 밀치기 (날개 펼침)",
+   "scale": 0.711
+  },
+  "land": {
+   "src": "art/h2/pearl/land.webp",
+   "w": 505,
+   "h": 705,
+   "ax": 338,
+   "ay": 702,
+   "from": "펄 착지, 꼬깃꼬깃, 철 특수기, 공격.png 왼쪽",
+   "orig": "착지 / 꼬깃꼬깃 — 발 구르며 내려앉기 (땅 깨짐 효과)",
+   "scale": 0.711
+  },
+  "special": {
+   "src": "art/h2/pearl/special.webp",
+   "w": 665,
+   "h": 693,
+   "ax": 360,
+   "ay": 690,
+   "from": "펄 착지, 꼬깃꼬깃, 철 특수기, 공격.png 오른쪽",
+   "orig": "철 특수기 / 공격 — 뒤돌아 손 뻗어 검은 깃털 날리기 (깃털 효과 포함)",
+   "scale": 0.711
+  },
+  "crouch": {
+   "src": "art/h2/pearl/crouch.webp",
+   "w": 340,
+   "h": 428,
+   "ax": 150,
+   "ay": 425,
+   "from": "펄 앉기, 넘어짐.png 왼쪽",
+   "orig": "펄 앉기 — 쪼그려 앉아 자기 몸 감쌈 (겁먹음)",
+   "scale": 0.52
+  },
+  "down": {
+   "src": "art/h2/pearl/down.webp",
+   "w": 579,
+   "h": 257,
+   "ax": 304,
+   "ay": 254,
+   "from": "펄 앉기, 넘어짐.png 오른쪽",
+   "orig": "넘어짐 — 엎어져 아파함",
+   "scale": 0.52
+  }
+ },
+ "portrait": "art/h2/pearl/portrait.webp",
+ "face": "art/h2/pearl/face.webp",
+ "portrait_from": "펄 초상.jpg (휴대폰 캡처 — 시트 미궁미궁 \"3인방 / 인공타천사 '펄'\" 칸의 초상, 칸만 잘라냄)",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "fly(날기)"
+ ],
+ "kit": {
+  "basic": "밀치기 (attack) — 근접 1.5m, 넉백",
+  "skills": [
+   {
+    "name": "철 깃털 (철 특수기)",
+    "pose": "special",
+    "desc": "강철 깃털 부채꼴 발사 — 중거리 8m, 출혈"
+   },
+   {
+    "name": "꼬깃꼬깃 착지",
+    "pose": "land",
+    "desc": "날아올랐다 내려찍기, 주변 2m 충격파"
+   },
+   {
+    "name": "움츠리기",
+    "pose": "crouch",
+    "desc": "날개로 몸 감싸 2초 동안 받는 피해 60% 감소"
+   }
+  ],
+  "passive": "타천 날개: 떨어질 때 피해 없음, 점프 높이 +50%"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 4,
+  "stealth": 2
+ },
+ "tag": "mage",
+ "role_job": "척후",
+ "bag": 7,
+ "stats": {
+  "hp": 480,
+  "atk": 36,
+  "spd": 7.0,
+  "weight_kg": 48,
+  "tall_m": 1.58
+ }
+}

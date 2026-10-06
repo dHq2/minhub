@@ -1,0 +1,131 @@
+{
+ "slug": "gari",
+ "name": "갱스터 가리",
+ "rank": "1성",
+ "folder": "1성 갱스터 가리",
+ "role": "동료 (적 졸개로도 가능)",
+ "tall": 1.95,
+ "weight": 110,
+ "palette": [
+  "#e8c032",
+  "#5e4f6b",
+  "#2a2624",
+  "#d8d2c4",
+  "#6b4a2a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/gari/idle.webp",
+   "w": 421,
+   "h": 700,
+   "ax": 215,
+   "ay": 697,
+   "from": "가리2.png 왼쪽",
+   "orig": "주먹 들고 서 있음 (권투 자세)",
+   "scale": 0.738
+  },
+  "attack": {
+   "src": "art/h2/gari/attack.webp",
+   "w": 590,
+   "h": 670,
+   "ax": 353,
+   "ay": 667,
+   "from": "가리2.png 오른쪽",
+   "orig": "오른 주먹 곧게 뻗기 (스트레이트)",
+   "scale": 0.738
+  },
+  "guard": {
+   "src": "art/h2/gari/guard.webp",
+   "w": 560,
+   "h": 702,
+   "ax": 286,
+   "ay": 699,
+   "from": "가리3.png 왼쪽",
+   "orig": "낮게 버티고 두 주먹 가드",
+   "scale": 0.888
+  },
+  "down": {
+   "src": "art/h2/gari/down.webp",
+   "w": 939,
+   "h": 331,
+   "ax": 580,
+   "ay": 328,
+   "from": "가리3.png 오른쪽",
+   "orig": "옆으로 누워 쓰러짐 (턱 괴고 눈 뜸 — 쉼으로도)",
+   "scale": 0.888
+  },
+  "attack2": {
+   "src": "art/h2/gari/attack2.webp",
+   "w": 593,
+   "h": 567,
+   "ax": 297,
+   "ay": 564,
+   "from": "가리5.png 왼쪽",
+   "orig": "몸 숙여 낮게 어퍼컷 준비 / 바디블로",
+   "scale": 0.738
+  },
+  "attack3": {
+   "src": "art/h2/gari/attack3.webp",
+   "w": 485,
+   "h": 684,
+   "ax": 249,
+   "ay": 681,
+   "from": "가리5.png 오른쪽",
+   "orig": "팔꿈치 치켜올리기 (엘보 · 훅)",
+   "scale": 0.738
+  }
+ },
+ "portrait": "art/h2/gari/portrait.webp",
+ "face": "art/h2/gari/face.webp",
+ "portrait_from": "가리.jpg (휴대폰 캡처, 왼쪽 벨 · 오른쪽 금기사가 걸쳐 보임) · face 는 _loose/갱스터 원화.jpg 시트 칸의 얼굴",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead",
+  "grab(잡기)"
+ ],
+ "kit": {
+  "basic": "원투 (attack) — 근접 1.5m",
+  "skills": [
+   {
+    "name": "바디블로",
+    "pose": "attack2",
+    "desc": "숙여 들어가 배를 침, 상대 경직"
+   },
+   {
+    "name": "엘보 훅",
+    "pose": "attack3",
+    "desc": "짧은 거리 강타, 갑옷 무시 일부"
+   },
+   {
+    "name": "버티기",
+    "pose": "guard",
+    "desc": "가드 동안 앞 근접 피해 50% 감소, 끝나며 반격"
+   }
+  ],
+  "passive": "뒷골목 맷집: 체력 30% 아래에서 공격력 +20%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 900,
+  "atk": 40,
+  "spd": 5.5,
+  "weight_kg": 110,
+  "tall_m": 1.95
+ },
+ "same_as_h1": {
+  "h1": "art/h1/gangster.webp (갱스터)",
+  "same": true,
+  "why": "보라 피부 · 긴 곱슬 금발 · 검은 오버사이즈 재킷과 끈 달린 헐렁한 바지 · 붕대 감은 주먹 · 흰 밑창 운동화 · 목걸이 — 같은 디자인. h1 그림은 가리.jpg 같은 캡처에서 자른 것"
+ }
+}

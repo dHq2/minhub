@@ -1,0 +1,130 @@
+{
+ "slug": "hirari2",
+ "name": "히라리 (변신 · 성장 형태, 히라히라)",
+ "rank": "미정",
+ "folder": "가람, 히라리",
+ "role": "동료 (히라리 변신 후)",
+ "tall": 1.68,
+ "weight": 52,
+ "palette": [
+  "#f4a6c8",
+  "#f9f6f5",
+  "#b7a4b3",
+  "#b8964a",
+  "#2a2626"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hirari2/idle.webp",
+   "w": 475,
+   "h": 780,
+   "ax": 177,
+   "ay": 777,
+   "from": "히라리 변신(성장).png 왼쪽",
+   "orig": "서 있음 (날개고리 지팡이)"
+  },
+  "idle2": {
+   "src": "art/h2/hirari2/idle2.webp",
+   "w": 309,
+   "h": 793,
+   "ax": 134,
+   "ay": 790,
+   "from": "히라리,하리.png 왼쪽 (루즈 파일)",
+   "orig": "서 있음 2 (뒤돌아 웃음)"
+  },
+  "attack": {
+   "src": "art/h2/hirari2/attack.webp",
+   "w": 1065,
+   "h": 713,
+   "ax": 369,
+   "ay": 710,
+   "from": "히라리 변신(성장).png 오른쪽",
+   "orig": "지팡이 크게 휘두르기 (빛 궤적 대부분 지워짐)"
+  },
+  "guard": {
+   "src": "art/h2/hirari2/guard.webp",
+   "w": 895,
+   "h": 705,
+   "ax": 488,
+   "ay": 702,
+   "from": "히라리 변신2.png 왼쪽",
+   "orig": "지팡이 사선으로 막기"
+  },
+  "down": {
+   "src": "art/h2/hirari2/down.webp",
+   "w": 1180,
+   "h": 335,
+   "ax": 847,
+   "ay": 332,
+   "from": "히라리 변신2.png 오른쪽",
+   "orig": "쓰러짐 (엎드려 지팡이 쥠)"
+  },
+  "low": {
+   "src": "art/h2/hirari2/low.webp",
+   "w": 1144,
+   "h": 577,
+   "ax": 569,
+   "ay": 574,
+   "from": "히라리 변신3.png 왼쪽",
+   "orig": "무릎 꿇고 지팡이로 땅 내려치기 (불꽃)"
+  },
+  "special": {
+   "src": "art/h2/hirari2/special.webp",
+   "w": 980,
+   "h": 717,
+   "ax": 599,
+   "ay": 714,
+   "from": "히라리 변신3.png 오른쪽",
+   "orig": "뛰어오르며 손바닥 빛 폭발 (빛 효과 옅게 남음)"
+  }
+ },
+ "portrait": "art/h2/hirari2/portrait.webp",
+ "face": "art/h2/hirari2/face.webp",
+ "missing": [
+  "walk",
+  "run",
+  "hurt",
+  "dead",
+  "skill"
+ ],
+ "kit": {
+  "basic": "날개고리 지팡이 휘두르기 — 근접 2.5m (attack)",
+  "skills": [
+   {
+    "name": "천상 광휘",
+    "pose": "special",
+    "desc": "뛰어올라 손바닥에서 빛 폭발 — 앞 5m 부채꼴"
+   },
+   {
+    "name": "대지 내려치기",
+    "pose": "low",
+    "desc": "지팡이로 땅을 내려쳐 주변 적 넘어뜨림"
+   },
+   {
+    "name": "지팡이 막기",
+    "pose": "guard",
+    "desc": "정면 막기"
+   }
+  ],
+  "passive": "성장한 천사: 변신 동안 받는 피해 20% 감소, 시간이 끝나면 hirari 로 돌아옴"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 0
+ },
+ "tag": "mage",
+ "role_job": "선봉",
+ "bag": 9,
+ "stats": {
+  "hp": 130,
+  "atk": 20,
+  "spd": 6.0,
+  "weight_kg": 52,
+  "tall_m": 1.68
+ },
+ "transform_of": "hirari"
+}
