@@ -1,0 +1,3 @@
+[{"id":"giants","A":["h2_hornbeast"],"B":["h2e_stagbeast"],"cap":30,"tries":3,"th":0.35,"want":"win!=='draw'"},
+ {"id":"support","A":["h2_mulle","h2_collider","h2_slra"],"B":["h2e_stagbeast"],"cap":35,"tries":5,"th":0.35,"want":"win==='A'"},
+ {"id":"goodwill","A":["goodwill"],"B":["h2e_magusgirl"],"cap":35,"tries":4,"th":0.35,"want":"win==='A'"}]

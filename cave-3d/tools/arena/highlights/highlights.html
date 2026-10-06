@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>투기장 명경기 모음</title>
+<!-- highlights.html v1.0 — 굴의 프롤로그 투기장 명경기 8판 (게임 v0.67 훈련장에서 실제로 다시 싸운 장면) -->
+<style>
+:root{--bg:#f6f3ee;--panel:#fff;--ink:#1f1b16;--sub:#6b6258;--line:#e4ddd2;--acc:#b5462b;--win:#2e8b57;--chip:#f1ece4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141210;--panel:#1e1b18;--ink:#efe9e1;--sub:#a59c91;--line:#332e29;--acc:#e2734f;--win:#4cc184;--chip:#28241f}}
+:root[data-theme="dark"]{--bg:#141210;--panel:#1e1b18;--ink:#efe9e1;--sub:#a59c91;--line:#332e29;--acc:#e2734f;--win:#4cc184;--chip:#28241f}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;overflow-x:hidden}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:4px 0 4px}.sub{color:var(--sub);font-size:13.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:16px;margin-top:18px}
+@media (max-width:520px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#000;cursor:zoom-in}
+.cb{padding:12px 14px 14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--acc);border-radius:6px;padding:1px 8px;margin-right:6px}
+.cb h2{font-size:17px;margin:6px 0 4px}
+.res{font-size:13.5px;color:var(--win);font-weight:600}
+.cb p{margin:6px 0 0;font-size:14px}
+.meta{font-size:12px;color:var(--sub);margin-top:6px}
+h3{margin:34px 0 10px;font-size:18px}
+.stills{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:620px){.stills{grid-template-columns:repeat(2,1fr)}}
+.stills img{width:100%;border-radius:10px;display:block;cursor:zoom-in}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13.5px;margin-top:24px}
+.note li{margin:3px 0}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:9;padding:10px}
+#zoom img{max-width:100%;max-height:100%;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sub">굴의 프롤로그 · 투기장 하이라이트 v1.0 · 게임 v0.67 훈련장</div>
+  <h1>투기장 명경기 모음</h1>
+  <div class="sub">훈련장에서 실제로 다시 붙인 판을 찍은 움짤 8개예요. 판은 처음부터 끝까지 진짜로 싸웠고, 움짤은 승부가 갈리는 막판만 담았어요 (약 1.6배속). 그림을 누르면 크게 봐요.</div>
+  <div class="grid" id="g"></div>
+  <h3>명장면 스틸</h3>
+  <div class="stills" id="s"></div>
+  <div class="note"><ul>
+    <li>같은 대진도 판마다 결과가 달라요. 극적인 판이 나올 때까지 여러 번 붙여서 골랐어요 (하극상 대진은 앞서 열 번 중 한 번만 이겼어요).</li>
+    <li>이름표 · 체력 바 · 기술 이름 (빨간 글씨) · 예고 장판 (붉은 / 푸른 바닥) 이 게임 그대로 보여요.</li>
+    <li>쓰러진 몸은 어둡고 보랏빛으로 가라앉아요 (v0.65 죽음 표시).</li>
+  </ul></div>
+</div>
+<div id="zoom"><img alt=""></div>
+<script>
+const M=[
+ {k:'upset',tag:'하극상',t:'히라리 vs 레비의 소환수',r:'히라리 승 (체력 73% 남김) · 21초',p:'투기장 90위가 51위를 잡았어요. 앞서 열 번 붙였을 땐 한 번만 이긴 대진이에요. 히라리가 변신해서 그림자 용을 쓰러뜨려요.'},
+ {k:'awaken',tag:'각성',t:'아해 vs 마리',r:'마리 승 (체력 40% 남김) · 12초',p:'아해가 "…다 데려가." 하며 각성해 사슬낫을 꺼내지만, 마리의 창이 끝내 이겨요.'},
+ {k:'boss',tag:'보스전',t:'하르겐 vs 기사단장',r:'하르겐 승 (체력 82% 남김) · 62초',p:'투기장 1위와 2위의 대결. 기사단장이 돌진과 찌르기로 몰아붙이지만 하르겐이 끝까지 버텨 내요.'},
+ {k:'karius',tag:'기준점',t:'카리우스 vs 하르겐',r:'하르겐 승 (체력 91% 남김) · 23초',p:'불멸의 사나이 카리우스가 4층의 왕에게 도전해요. 이번엔 왕의 검이 더 빨랐어요.'},
+ {k:'giants',tag:'괴수전',t:'거대괴수B vs 사슴',r:'거대괴수B 승 (체력 75% 남김) · 62초',p:'7.5m 거대괴수와 초강적 사슴의 정면 충돌. 화면을 꽉 채우는 몸싸움.'},
+ {k:'support',tag:'팀전',t:'물레 · 콜라이더 · 슬라 vs 사슴',r:'서포터 셋 승 · 60초',p:'5성 서포터 셋이 초강적을 잡아요. 슬라는 산호 기사로 변신해 앞에 서요.'},
+ {k:'goodwill',tag:'낭만',t:'GOOD WILL vs 마도사 맨얼굴',r:'GOOD WILL 승 (체력 90% 남김) · 45초',p:'맨주먹 하나로 마도사를 쓰러뜨려요. 낭만.'},
+ {k:'rats',tag:'포렌의 쥐',t:'쥐 분대 vs 마도사 맨얼굴',r:'40초 동안 승부 안 남',p:'쥐 베테랑 · 쥐 기사 둘 (성장 단계가 제각각) · 일반 쥐 둘이 우르르 달려들어요. 아직 마도사를 넘기엔 작아요.'}];
+document.getElementById('g').innerHTML=M.map(m=>`<div class="card"><img src="${m.k}.webp" alt="${m.t}" loading="lazy"><div class="cb"><span class="tag">${m.tag}</span><h2>${m.t}</h2><div class="res">${m.r}</div><p>${m.p}</p></div></div>`).join('');
+document.getElementById('s').innerHTML=M.map(m=>`<img src="${m.k}_still.jpg" alt="${m.t}" title="${m.t}" loading="lazy">`).join('');
+const z=document.getElementById('zoom');document.addEventListener('click',e=>{if(e.target.tagName==='IMG'&&e.target.closest('.card,.stills')){z.querySelector('img').src=e.target.src;z.style.display='flex'}else if(e.target.closest('#zoom'))z.style.display='none'});
+</script>
+</body>
+</html>

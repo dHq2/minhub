@@ -1,4 +1,6 @@
-# 투기장 (arena) v1.1
+# 투기장 (arena) v1.2
+
+v1.2 (2026-10-06): 명경기 녹화 arena_highlights.js v1.3 — 대진 (highlights/sc*.json) 을 여러 번 붙여 조건에 맞는 판을 고르고, 화면 없이 빨리 돌리다 막판 (한쪽 체력 35% 아래) 부터 0.2초마다 찍음. `node arena_highlights.js sc1.json` → f/<id>/*.jpg, 움짤은 PIL 로 webp. 페이지 틀 highlights/highlights.html.
 
 v1.1 (2026-10-06, 게임 v0.66): 3기-2 26명을 더해 92명 · 8372판 다시 돌림 (오류 0 · 멈춤 0). arena_analyze.py v1.0 (판 결과 → arena.json) 추가 · arena_build.py v1.1 (결과 폴더 인자).
 

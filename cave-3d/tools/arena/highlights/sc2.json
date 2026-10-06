@@ -1,0 +1,2 @@
+[{"id":"upset","A":["h2_hirari"],"B":["h2e_levi_beast"],"cap":40,"tries":12,"th":0.6,"want":"win==='A'"},
+ {"id":"rats","A":["h2_ratvet","h2_ratknight","h2_ratknight","h2_ratsmall","h2_ratsmall"],"B":["h2e_magusgirl"],"cap":40,"tries":5,"from":2,"want":"win==='A'"}]
