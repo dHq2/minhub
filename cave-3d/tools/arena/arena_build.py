@@ -1,10 +1,11 @@
-# build_page.py v1.0 — 투기장 결과 (arena.json + r1~r4.json) → 티어표 페이지 (page/arena.html)
+# build_page.py v1.1 — (v1.1: 결과 폴더를 인자로 · 92명 · 3기-2 표시) v1.0 — 투기장 결과 (arena.json + r1~r4.json) → 티어표 페이지 (page/arena.html)
 import json, base64, os
-H = os.path.dirname(os.path.abspath(__file__))
+import sys
+H0 = os.path.dirname(os.path.abspath(__file__)); H = sys.argv[1] if len(sys.argv) > 1 else H0
 a = json.load(open(f'{H}/arena.json'))
 legs = []
 for i in range(1, 5): legs += json.load(open(f'{H}/r{i}.json'))['res']
-FIX = {'garam2': '가람 (망토 갑옷)', 'hirari2': '히라리 (변신)'}
+FIX = {'garam2': '가람 (망토 갑옷)', 'hirari2': '히라리 (변신)', 'ahae2': '아해 (각성)', 'slra2': '슬라 (전투)'}
 nm = dict(a['names']); nm.update(FIX)
 rows = a['rows']
 for r in rows:
@@ -36,7 +37,7 @@ rk = {r['slug']: r['rank'] for r in rows}
 for r in rows: r['tier'] = tier(r['avg']); r['br'] = bracket(r)
 # 재미 기록
 ko = [l for l in legs if l.get('ko') and l.get('w') in rk]
-fast = sorted(ko, key=lambda l: l['t'])[:5]
+fast = sorted([l for l in ko if 'ratsmall' not in (l['A'], l['B'])], key=lambda l: l['t'])[:5]   # 일반 쥐 (체력 10) 는 빼고
 ups = sorted([l for l in ko if rk[l['w']] - rk[l['B'] if l['w'] == l['A'] else l['A']] >= 30],
              key=lambda l: -(rk[l['w']] - rk[l['B'] if l['w'] == l['A'] else l['A']]))
 upl = []
@@ -69,10 +70,10 @@ faces = base64.b64encode(open('/home/user/minhub/cave-3d/art/h2/atlas/faces.webp
 src = open('/home/user/minhub/cave-3d/src/h2_atlas.js', encoding='utf-8').read()
 A = json.loads(src[src.index('const H2A = ') + 12:].strip().rstrip(';'))
 fi = A['faces']
-keep = ['slug','name','rank','gen','boss','hp','atk','avg','pw','pd','pl','lw','legs','ko','kot','dmg','casts','allyw','enw','best','worst','rankstr','role','sk','pas','phase','tier','br']
+keep = ['slug','name','rank','gen','batch','boss','hp','atk','avg','pw','pd','pl','lw','legs','ko','kot','dmg','casts','allyw','enw','best','worst','rankstr','role','sk','pas','phase','tier','br']
 data = {'rows': [{k: r[k] for k in keep} for r in rows], 'M': M, 'order': order, 'fun': fun, 'fi': fi['i'], 'cols': fi['cols'], 'frows': fi['rows']}
-html = open(f'{H}/tpl.html', encoding='utf-8').read().replace('/*DATA*/', 'const D=' + json.dumps(data, ensure_ascii=False) + ';').replace('FACES_B64', faces)
-open(f'{H}/page/arena.html', 'w', encoding='utf-8').write(html)
+html = open(f'{H0}/tpl.html', encoding='utf-8').read().replace('/*DATA*/', 'const D=' + json.dumps(data, ensure_ascii=False) + ';').replace('FACES_B64', faces)
+open(f'{H0}/page/arena.html', 'w', encoding='utf-8').write(html)
 from collections import Counter
 print(Counter(r['tier'] for r in rows), Counter(r['br'] for r in rows), len(html))
 print(json.dumps(fun, ensure_ascii=False))

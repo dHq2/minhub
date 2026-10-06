@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>굴의 투기장 티어표</title>
-<!-- arena.html v1.0 — 굴의 프롤로그 2기·3기 인물 66명 투기장 (전원 리그 4290판) 결과 · 티어표 · 순위 · 상성표 -->
+<!-- arena.html v1.1 — (v1.1: 3기-2 26명을 더해 92명 · 8372판, 3기-2 탭 · 새 얼굴 표시) v1.0 — 굴의 프롤로그 2기·3기 인물 투기장 결과 · 티어표 · 순위 · 상성표 -->
 <style>
 :root{
   --bg:#f6f3ee;--panel:#ffffff;--ink:#1f1b16;--sub:#6b6258;--line:#e4ddd2;--chip:#f1ece4;
@@ -87,9 +87,9 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 </head>
 <body>
 <div class="wrap">
-  <div class="sub">굴의 프롤로그 · 훈련장 투기장 v1.0 · 2026-10-06 (게임 v0.64)</div>
+  <div class="sub">굴의 프롤로그 · 훈련장 투기장 v1.1 · 2026-10-06 (게임 v0.66 · 3기-2 반영)</div>
   <h1>굴의 투기장 티어표</h1>
-  <div class="sub">2기 · 3기 인물 66명이 모두와 1대1로, 자리를 바꿔 두 번씩 붙은 전원 리그. 게임 속 실제 스킬 · 패시브 · 2페이즈 그대로, AI 끼리 싸움. 재미로 보는 순위.</div>
+  <div class="sub">2기 · 3기 (3기-2 포함) 인물 <span id="nall"></span>명이 모두와 1대1로, 자리를 바꿔 두 번씩 붙은 전원 리그. 게임 속 실제 스킬 · 패시브 · 2페이즈 그대로, AI 끼리 싸움. 재미로 보는 순위.</div>
   <div class="stats" id="stats"></div>
 
   <h2>티어표</h2>
@@ -113,7 +113,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 
   <h2>어떻게 붙였나</h2>
   <div class="note"><ul id="how"></ul></div>
-  <div class="foot">arena.html v1.0 — 처음 판. 시뮬레이터: cave-3d/tools/arena_sim.js v1.0 · 정리: arena_build.py v1.0.</div>
+  <div class="foot">arena.html v1.1 — 3기-2 26명 더함 (★ 표시). v1.0 — 66명 첫 판. 시뮬레이터: cave-3d/tools/arena_sim.js v1.0 · 정리: arena_build.py v1.0.</div>
 </div>
 
 <dialog id="dlg"></dialog>
@@ -130,7 +130,7 @@ function face(slug,s){const i=D.fi[slug];if(i==null)return `<div class="f" style
 const nm=s=>BY[s]?BY[s].name:s;
 const sg=v=>(v>0?'+':'')+v.toFixed(2);
 // 요약
-const F=D.fun;
+const F=D.fun; document.getElementById('nall').textContent=R.length;
 document.getElementById('stats').innerHTML=[
  [R.length,'출전'],[F.side.n.toLocaleString(),'판'],[F.side.ko.toLocaleString(),'KO'],[(F.side.n-F.side.ko).toLocaleString(),'45초 판정'],['45초','판당 시간 제한']
 ].map(([b,s])=>`<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
@@ -139,7 +139,7 @@ const tiers=['S+','S','A','B','C','D','F'];
 document.getElementById('tiers').innerHTML=tiers.map(t=>{
   const m=R.filter(r=>r.tier===t);if(!m.length)return'';
   return `<div class="tier"><div class="tl" style="background:${TC[t]}"><div>${t}<small>${TN[t]}</small></div></div><div class="tc">${
-   m.map(r=>`<div class="ch" data-s="${r.slug}">${face(r.slug,36)}<div><div class="n">${r.rank}. ${esc(r.name)}</div><div class="v">${sg(r.avg)} · ${r.pw}승 ${r.pd}무 ${r.pl}패</div></div></div>`).join('')
+   m.map(r=>`<div class="ch" data-s="${r.slug}">${face(r.slug,36)}<div><div class="n">${r.rank}. ${esc(r.name)}${r.batch?' ★':''}</div><div class="v">${sg(r.avg)} · ${r.pw}승 ${r.pd}무 ${r.pl}패</div></div></div>`).join('')
   }</div></div>`}).join('');
 // 재미 기록
 const li=(s,t)=>`<li><span class="nm" style="display:inline-flex">${face(s,22)} ${esc(nm(s))}</span> ${t}</li>`;
@@ -165,14 +165,14 @@ document.getElementById('awards').innerHTML=[
 ].map(([h,b])=>`<div class="aw"><h3>${h}</h3>${b}</div>`).join('');
 // 순위표
 const COLS=[['rank','#'],['name','이름','l'],['tier','티어'],['avg','점수'],['rec','쌍 전적'],['ko','KO'],['kot','KO 평균초'],['dmg','판당 피해'],['hp','체력'],['atk','공격'],['br','부문','l']];
-const BR=['전체','보스급','강적 · 기타','성급 동료'];let br='전체',sk='rank',sd=1;
-document.getElementById('tabs').innerHTML=BR.map(b=>`<button class="tab${b===br?' on':''}" data-b="${b}">${b} (${b==='전체'?R.length:R.filter(r=>r.br===b).length})</button>`).join('');
+const BR=['전체','3기-2','보스급','강적 · 기타','성급 동료'];let br='전체',sk='rank',sd=1;
+document.getElementById('tabs').innerHTML=BR.map(b=>`<button class="tab${b===br?' on':''}" data-b="${b}">${b} (${b==='전체'?R.length:b==='3기-2'?R.filter(r=>r.batch==='3기-2').length:R.filter(r=>r.br===b).length})</button>`).join('');
 function table(){
-  let m=R.filter(r=>br==='전체'||r.br===br);
+  let m=R.filter(r=>br==='전체'||(br==='3기-2'?r.batch==='3기-2':r.br===br));
   m.sort((a,b)=>{const k=sk==='rec'?'avg':sk;const x=a[k],y=b[k];return (typeof x==='string'?x.localeCompare(y):x-y)*sd});
   const mx=2;
   document.getElementById('tbl').innerHTML=`<thead><tr>${COLS.map(([k,h,c])=>`<th class="${c||''}" data-k="${k}">${h}${sk===k?(sd>0?' ▲':' ▼'):''}</th>`).join('')}${br!=='전체'?'<th>부문 순위</th>':''}</tr></thead><tbody>${
-   m.map((r,i)=>`<tr class="r" data-s="${r.slug}"><td>${r.rank}</td><td class="l"><span class="nm">${face(r.slug,30)}${esc(r.name)}</span></td><td><span class="tg" style="background:${TC[r.tier]}">${r.tier}</span></td><td>${sg(r.avg)}<span class="bar" style="width:${Math.abs(r.avg)/mx*40}px;background:${r.avg>=0?'var(--good)':'var(--bad)'}"></span></td><td>${r.pw}-${r.pd}-${r.pl}</td><td>${r.ko}</td><td>${r.ko?r.kot:'-'}</td><td>${r.dmg}</td><td>${r.hp}</td><td>${r.atk}</td><td class="l">${r.br}</td>${br!=='전체'?`<td>${i+1}</td>`:''}</tr>`).join('')}</tbody>`;
+   m.map((r,i)=>`<tr class="r" data-s="${r.slug}"><td>${r.rank}</td><td class="l"><span class="nm">${face(r.slug,30)}${esc(r.name)}${r.batch?' ★':''}</span></td><td><span class="tg" style="background:${TC[r.tier]}">${r.tier}</span></td><td>${sg(r.avg)}<span class="bar" style="width:${Math.abs(r.avg)/mx*40}px;background:${r.avg>=0?'var(--good)':'var(--bad)'}"></span></td><td>${r.pw}-${r.pd}-${r.pl}</td><td>${r.ko}</td><td>${r.ko?r.kot:'-'}</td><td>${r.dmg}</td><td>${r.hp}</td><td>${r.atk}</td><td class="l">${r.br}</td>${br!=='전체'?`<td>${i+1}</td>`:''}</tr>`).join('')}</tbody>`;
 }
 table();
 document.getElementById('tabs').onclick=e=>{const b=e.target.closest('.tab');if(!b)return;br=b.dataset.b;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t===b));if(sk!=='rank'){}table()};
@@ -220,14 +220,14 @@ document.getElementById('dlg').addEventListener('click',e=>{if(e.target.id==='dl
 // 방법
 document.getElementById('how').innerHTML=[
  '훈련장 (#drill) 에서 그림만 끄고 게임 그대로 돌림. 시간은 판마다 0.05초씩 직접 넘김 (실제 시간과 무관하게 같은 결과).',
- `66명 × 65명 = ${F.side.n.toLocaleString()}판. 한 쌍은 두 번 붙음: A 가 아군 자리 · B 가 적 자리, 그다음 자리를 바꿔서.`,
+ `${R.length}명 × ${R.length - 1}명 = ${F.side.n.toLocaleString()}판. 한 쌍은 두 번 붙음: A 가 아군 자리 · B 가 적 자리, 그다음 자리를 바꿔서.`,
  `자리를 바꾼 까닭: 아군 AI 가 적 AI 보다 확실히 셈 (아군 자리 승 ${F.side.ally.toLocaleString()} vs 적 자리 승 ${F.side.enemy.toLocaleString()}). 두 자리를 다 해야 공평.`,
  '판 점수 (내 쪽에서): KO 승 = 0.5 + 0.5 × 내 남은 피 비율 · KO 패 = 그 반대 (음수) · 45초 판정 = 내 남은 피 비율 − 상대 남은 피 비율.',
  '쌍 점수 = 두 판 점수의 합 (−2 ~ +2). 순위 점수 = 65 쌍 점수의 평균. 쌍 전적 승-무-패는 쌍 점수 +0.05 넘음 / ±0.05 안 / −0.05 밑.',
  '티어 기준: S+ 1.2 이상 · S 1.0 · A 0.5 · B 0 · C −0.6 · D −1.0 · F 그 아래.',
  '플레이어는 멀리 세워 두고 무적. 넘어지면 즉사 안 함 (훈련장 규칙). 소환수 · 2페이즈 · 패시브 모두 켜짐.',
  '보스는 체력 · 공격이 원래 크니 보스급이 위에 몰리는 건 당연. 같은 부문끼리 보려면 전체 순위의 탭을 쓰면 됨.',
- '가람 · 히라리는 3D 판에 두 벌씩 있어 (망토 갑옷) · (변신) 으로 나눠 적음.',
+ '가람 · 히라리 · 아해 · 슬라는 두 모습이 있어 (망토 갑옷) · (변신) · (각성) · (전투) 로 나눠 적음. ★ = 3기-2 로 새로 들어온 인물. 변신 모습 · 소환물 (원념 · 일반 쥐) 도 혼자 출전.',
 ].map(x=>`<li>${x}</li>`).join('');
 </script>
 </body>
