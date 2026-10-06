@@ -1,4 +1,4 @@
-/* units.js v0.25 — (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.26 — (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -43,6 +43,11 @@ function removeUnit(u){ G.scene.remove(u.group); u.bar && u.bar.remove(); u.tag 
 function setPose(u, p){ if (u.pose !== p){ u.pose = p; u.poseT = 0; } }
 function texFor(u, P){
   if (P.canvas){ return P._tex || (P._tex = canvasTex(P.w, P.h, P.canvas)); }
+  if (P.rect){   // v0.60 묶음 그림 (아틀라스) 한 칸: [x, y, w, h, 전체 W, 전체 H] (px, 위에서부터)
+    const key = P.src + '#' + P.rect[0] + ',' + P.rect[1];
+    if (!u.tex[key]){ const [x, y, w, h, W, H] = P.rect, t = loadTex(P.src).clone(); t.repeat.set(w / W, h / H); t.offset.set(x / W, 1 - (y + h) / H); t.needsUpdate = true; u.tex[key] = t; }
+    return u.tex[key];
+  }
   if (!u.tex[P.src]){ const t = loadTex(P.src).clone(); t.needsUpdate = true; u.tex[P.src] = t; }
   return u.tex[P.src];
 }

@@ -9,7 +9,7 @@
 - 41명: 1성 8 · 2성 8 · 3성 6 · 4성 6 · 등급 없음 7 (가람 · 히라리 각 두 모습, 망향 · 마카로프 · 셰도르 · 레비의 소환수 등) · 보스 6
 - 그림: `art/h2/<slug>/` (동작마다 webp, 모두 오른쪽 보기, 발 가운데 기준점). 초상 portrait · 얼굴 face. 원본은 저장소에 안 넣음
 - 노트: `art/h2/notes/<slug>.md` (사람이 읽는 분석) · `<slug>.json` (기계용). 낱장 파일 분석은 `notes/_loose.md`
-- 다시 만들기: 노트 json을 고치고 `python3 tools/h2_roster.py`. 자르기는 `tools/hero2_cut.py` (grid · seg · cut)
+- 다시 만들기: 노트 json을 고치고 `python3 tools/h2_roster.py` → `python3 tools/h2_atlas.py` (인물마다 묶음 그림 · 얼굴 모음). 자르기는 `tools/hero2_cut.py` (grid · seg · cut)
 - 한 인물이 동료로도 적으로도 나옴: DEFS `h2_<slug>` (동료) · `h2e_<slug>` (적)
 
 ## 확인이 필요한 것 (민수)

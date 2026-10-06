@@ -1,4 +1,4 @@
-/* h2.js v1.1 — (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.2 — (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -19,7 +19,9 @@ function h2Build(){
   if (typeof H2R === 'undefined') return;
   for (const [slug, o] of Object.entries(H2R)){
     const P = o.poses || {}; if (!P.idle) { const k = Object.keys(P)[0]; if (!k) continue; P.idle = P[k]; }
-    const pose = p => ({ src: p.src, w: p.w, h: p.h, ax: p.ax ?? Math.round(p.w / 2), ay: p.ay ?? p.h - 3, f: 1 });
+    const AT = typeof H2A !== 'undefined' && H2A[slug];   // 묶음 그림이 있으면 그 칸을 씀 (아티팩트 파일 수 줄이기)
+    const pose = p => { const q = { src: p.src, w: p.w, h: p.h, ax: p.ax ?? Math.round(p.w / 2), ay: p.ay ?? p.h - 3, f: 1 }, n = AT && Object.keys(P).find(k => P[k] === p), r = n && AT.poses[n];
+      if (r){ q.src = AT.src; q.rect = [...r, AT.W, AT.H]; } return q; };
     const poses = {};
     for (const [k, v] of Object.entries(P)) poses[k] = pose(v);
     for (const [eng, from] of Object.entries(H2POSE)) if (!poses[eng]){ const k = from.find(f => P[f]); if (k) poses[eng] = pose(P[k]); }
@@ -263,6 +265,11 @@ h2Build();
 /* ---------- 훈련장 '2기' 탭 (drill.js가 부름) ----------
    인물마다: 얼굴 · 이름 · 등급 · 보직 · 키 · 기술 이름 · 빠진 그림 + 동료로 (2조) / 적으로 / 보스로 부르기 */
 const H2UI = { f: 'all' };
+function h2FaceHtml(o){
+  const F = typeof H2A !== 'undefined' && H2A.faces, i = F && F.i[o.slug];
+  if (i == null) return `<i class="h2f"></i>`;
+  const s = 64 / F.cell; return `<i class="h2f" style="background:url(${F.src}) ${-(i % F.cols) * 64}px ${-Math.floor(i / F.cols) * 64}px / ${F.cols * F.cell * s}px ${F.rows * F.cell * s}px"></i>`;
+}
 const h2Rank = o => { const m = /[1-4]성/.exec(o.rank || ''); return m ? m[0] : H2K[o.slug] && H2K[o.slug].boss ? '보스' : '기타'; };
 function h2Main(o){ const A = o.apt || {}; return A.gun >= 4 ? 'pistol' : A.bow >= 4 ? 'bow' : A.magic >= 4 ? 'wand' : null; }
 function h2Ally(slug, at){
@@ -283,7 +290,7 @@ function h2Panel(){
   const groups = ['all', '1성', '2성', '3성', '4성', '보스', '기타'];
   const L = H2.list.map(s => H2R[s]).filter(o => H2UI.f === 'all' || h2Rank(o) === H2UI.f);
   const card = o => { const K = H2K[o.slug] || {}, sk = (K.sk || []).map(s => s.n).join(' · '), miss = (o.missing || []).map(m => String(m).split(' ')[0]).join(', ');
-    return `<div class="h2c"><img src="${o.face || o.portrait || o.poses.idle.src}" loading="lazy"><div><b>${DEFS['h2_' + o.slug].name}</b> <small>${h2Rank(o)} · ${o.role_job || o.role || ''} · ${o.tall || '?'}m</small>
+    return `<div class="h2c">${h2FaceHtml(o)}<div><b>${DEFS['h2_' + o.slug].name}</b> <small>${h2Rank(o)} · ${o.role_job || o.role || ''} · ${o.tall || '?'}m</small>
       <p>${K.pas ? `<em>${K.pas[0]}</em> ${K.pas[1]}<br>` : ''}기술: ${sk || '—'}<br><small>그림 ${Object.keys(o.poses).join(' · ')}${miss ? ` / 빠짐 ${miss}` : ''}</small></p>
       <span><button data-h2="ally" data-s="${o.slug}">동료로</button><button data-h2="foe" data-s="${o.slug}">적으로</button>${K.boss ? `<button data-h2="boss" data-s="${o.slug}">보스로</button>` : ''}</span></div></div>`; };
   return `<p class="dp-note">2기 멤버 1차 (드라이브 그림 ${H2.list.length}명). 동료는 2조로 들어옴 — 기술은 알아서 씀. 그림이 한 장씩이라 몸을 눌렀다 폈다 하며 움직임 (걷기 · 맞기 그림이 오면 바꿈).</p>
