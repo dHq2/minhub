@@ -1,0 +1,143 @@
+{
+ "slug": "madangsoe",
+ "name": "마당쇠",
+ "rank": "2성",
+ "folder": "2성 돌쇠, 마당쇠",
+ "role": "둘 다 (돌쇠와 짝 — 동료 또는 조직 적)",
+ "tall": 1.92,
+ "weight": 95,
+ "palette": [
+  "#1f1f1f",
+  "#d9a930",
+  "#e8e4dc",
+  "#988d7a",
+  "#101010"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/madangsoe/idle.webp",
+   "w": 310,
+   "h": 702,
+   "ax": 154,
+   "ay": 699,
+   "ax_auto": 169,
+   "from": "황금 늑대 마당쇠의 두 전투 자세.png 왼쪽",
+   "orig": "서 있음 (왼손 주머니, 오른 주먹)"
+  },
+  "attack": {
+   "src": "art/h2/madangsoe/attack.webp",
+   "w": 661,
+   "h": 625,
+   "ax": 330,
+   "ay": 622,
+   "ax_auto": 377,
+   "from": "황금 늑대 마당쇠의 두 전투 자세.png 오른쪽",
+   "orig": "오른 주먹 곧게 뻗기 (바람 선 · 발밑 파편)"
+  },
+  "guard": {
+   "src": "art/h2/madangsoe/guard.webp",
+   "w": 418,
+   "h": 552,
+   "ax": 204,
+   "ay": 549,
+   "ax_auto": 45,
+   "from": "황금 늑대 가면의 두 전투 자세.png 왼쪽",
+   "orig": "두 주먹 얼굴 앞 (권투 막기)"
+  },
+  "down": {
+   "src": "art/h2/madangsoe/down.webp",
+   "w": 742,
+   "h": 220,
+   "ax": 371,
+   "ay": 217,
+   "ax_auto": 468,
+   "from": "황금 늑대 가면의 두 전투 자세.png 오른쪽",
+   "orig": "엎드려 쓰러짐 (머리 오른쪽)"
+  },
+  "special": {
+   "src": "art/h2/madangsoe/special.webp",
+   "w": 652,
+   "h": 531,
+   "ax": 325,
+   "ay": 528,
+   "from": "황금 늑대 가면 전투 스프라이트.png 왼쪽",
+   "orig": "주먹으로 땅 내려치기 (돌 파편 터짐)"
+  },
+  "kick": {
+   "src": "art/h2/madangsoe/kick.webp",
+   "w": 653,
+   "h": 549,
+   "ax": 320,
+   "ay": 546,
+   "from": "황금 늑대 가면 전투 스프라이트.png 오른쪽",
+   "orig": "날아 차기 (공중, 오른발 뻗음)"
+  },
+  "dead": {
+   "src": "art/h2/madangsoe/down.webp",
+   "w": 742,
+   "h": 220,
+   "ax": 371,
+   "ay": 217,
+   "from": "황금 늑대 가면의 두 전투 자세.png 오른쪽",
+   "orig": "죽음 그림 없음 — down 으로 대신",
+   "alias_of": "down"
+  },
+  "jump": {
+   "src": "art/h2/madangsoe/kick.webp",
+   "w": 653,
+   "h": 549,
+   "ax": 320,
+   "ay": 546,
+   "from": "황금 늑대 가면 전투 스프라이트.png 오른쪽",
+   "orig": "점프 그림 없음 — kick 으로 대신",
+   "alias_of": "kick"
+  }
+ },
+ "portrait": "art/h2/madangsoe/portrait.webp",
+ "face": "art/h2/madangsoe/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신)",
+  "windup"
+ ],
+ "kit": {
+  "basic": "곧은 주먹 (attack) — 근접 1.2m, 빠름",
+  "skills": [
+   {
+    "name": "늑대 날아차기",
+    "pose": "kick",
+    "desc": "3m 뛰어 차기, 맞은 적 밀려남"
+   },
+   {
+    "name": "땅 울리기",
+    "pose": "special",
+    "desc": "주먹으로 땅 쳐 주변 2.5m 적 넘어뜨림 (파편)"
+   },
+   {
+    "name": "가드 올리기",
+    "pose": "guard",
+    "desc": "앞 피해 50% 막고 다음 주먹 +30%"
+   }
+  ],
+  "passive": "황금 늑대 가면: 맨손 — 무기 없어도 감 0, 돌쇠와 같이 있으면 hp 회복 +"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 360,
+  "atk": 26,
+  "spd": 6,
+  "weight_kg": 95,
+  "tall_m": 1.92
+ }
+}

@@ -1,0 +1,165 @@
+{
+ "slug": "gandu",
+ "name": "갱스터 간두",
+ "rank": "2성",
+ "folder": "2성 갱스터 간두",
+ "role": "둘 다 (의리파 갱스터 — 동료 또는 적 조직 간부)",
+ "tall": 1.88,
+ "weight": 75,
+ "palette": [
+  "#eed267",
+  "#f2ece0",
+  "#302c24",
+  "#3c3c3c",
+  "#f6e6b4"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/gandu/idle.webp",
+   "w": 354,
+   "h": 702,
+   "ax": 164,
+   "ay": 699,
+   "ax_auto": 204,
+   "from": "스탠딩 간두, 기본 공격.png 왼쪽",
+   "orig": "스탠딩 (권총 얼굴 옆에 세움, 왼손 주머니)"
+  },
+  "attack": {
+   "src": "art/h2/gandu/attack.webp",
+   "w": 720,
+   "h": 554,
+   "ax": 351,
+   "ay": 551,
+   "ax_auto": 372,
+   "from": "스탠딩 간두, 기본 공격.png 오른쪽",
+   "orig": "기본 공격 (권총 쏘기, 총구 불꽃 · 탄피)"
+  },
+  "finisher": {
+   "src": "art/h2/gandu/finisher.webp",
+   "w": 666,
+   "h": 437,
+   "ax": 327,
+   "ay": 434,
+   "ax_auto": 176,
+   "from": "간두 확인사살, 하단공격, 백스텝,특수기.png 왼쪽",
+   "orig": "확인사살 · 하단공격 (무릎 꿇고 아래로 쏘기)"
+  },
+  "backstep": {
+   "src": "art/h2/gandu/backstep.webp",
+   "w": 650,
+   "h": 597,
+   "ax": 325,
+   "ay": 594,
+   "ax_auto": 400,
+   "from": "간두 확인사살, 하단공격, 백스텝,특수기.png 오른쪽",
+   "orig": "백스텝 · 특수기 (뒤로 뛰며 쏘기, 공중)"
+  },
+  "crouch": {
+   "src": "art/h2/gandu/crouch.webp",
+   "w": 656,
+   "h": 540,
+   "ax": 309,
+   "ay": 537,
+   "ax_auto": 121,
+   "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 왼쪽",
+   "orig": "앉아쏴 (한 무릎 세우고 앉아 겨눔 — 숙여피하기 겸용)"
+  },
+  "dead": {
+   "src": "art/h2/gandu/dead.webp",
+   "w": 672,
+   "h": 344,
+   "ax": 336,
+   "ay": 341,
+   "ax_auto": 140,
+   "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 오른쪽",
+   "orig": "간두 죽음 (엎어짐, 권총 쥔 채 — 넘어짐 겸용)"
+  },
+  "low": {
+   "src": "art/h2/gandu/finisher.webp",
+   "w": 666,
+   "h": 437,
+   "ax": 327,
+   "ay": 434,
+   "from": "간두 확인사살, 하단공격, 백스텝,특수기.png 왼쪽",
+   "orig": "하단공격 — 확인사살 그림 겸용",
+   "alias_of": "finisher"
+  },
+  "special": {
+   "src": "art/h2/gandu/backstep.webp",
+   "w": 650,
+   "h": 597,
+   "ax": 325,
+   "ay": 594,
+   "from": "간두 확인사살, 하단공격, 백스텝,특수기.png 오른쪽",
+   "orig": "특수기 — 백스텝 그림 겸용",
+   "alias_of": "backstep"
+  },
+  "shoot": {
+   "src": "art/h2/gandu/crouch.webp",
+   "w": 656,
+   "h": 540,
+   "ax": 309,
+   "ay": 537,
+   "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 왼쪽",
+   "orig": "앉아쏴",
+   "alias_of": "crouch"
+  },
+  "down": {
+   "src": "art/h2/gandu/dead.webp",
+   "w": 672,
+   "h": 344,
+   "ax": 336,
+   "ay": 341,
+   "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 오른쪽",
+   "orig": "넘어짐 — 죽음 그림 겸용",
+   "alias_of": "dead"
+  }
+ },
+ "portrait": "art/h2/gandu/portrait.webp",
+ "face": "art/h2/gandu/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "숙여피하기 따로 (지금은 crouch 겸용)",
+  "down 따로 (지금은 dead 겸용)"
+ ],
+ "kit": {
+  "basic": "권총 쏘기 (attack) — 원거리 12m",
+  "skills": [
+   {
+    "name": "백스텝 사격",
+    "pose": "backstep",
+    "desc": "뒤로 3m 뛰며 2발 — 근접 적에서 거리 벌림"
+   },
+   {
+    "name": "앉아쏴",
+    "pose": "crouch",
+    "desc": "앉아서 명중 +30%, 받는 원거리 피해 -30%"
+   },
+   {
+    "name": "확인사살",
+    "pose": "finisher",
+    "desc": "넘어진 적에게 2배 피해"
+   }
+  ],
+  "passive": "의리파: 근처 아군이 쓰러지면 5초 공격 +30%"
+ },
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 1,
+  "gun": 5,
+  "magic": 0,
+  "stealth": 2
+ },
+ "tag": "soldier",
+ "role_job": "사수",
+ "bag": 12,
+ "stats": {
+  "hp": 280,
+  "atk": 26,
+  "spd": 6,
+  "weight_kg": 75,
+  "tall_m": 1.88
+ }
+}

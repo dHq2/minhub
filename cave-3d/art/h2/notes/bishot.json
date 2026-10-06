@@ -1,0 +1,164 @@
+{
+ "slug": "bishot",
+ "name": "비숏",
+ "rank": "2성",
+ "folder": "2성 비숏",
+ "role": "둘 다 (초인계 마수 — 적 강자 또는 동료)",
+ "tall": 1.75,
+ "weight": 72,
+ "palette": [
+  "#b0262c",
+  "#c9a4d0",
+  "#9a98e0",
+  "#1c1a1a",
+  "#ff8a1e"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/bishot/idle.webp",
+   "w": 590,
+   "h": 702,
+   "ax": 294,
+   "ay": 699,
+   "ax_auto": 276,
+   "from": "비숏_기본,죽음,쉼,넘어짐.png 왼쪽",
+   "orig": "기본 (권투 자세, 왼 주먹 불꽃)"
+  },
+  "dead": {
+   "src": "art/h2/bishot/dead.webp",
+   "w": 840,
+   "h": 336,
+   "ax": 420,
+   "ay": 333,
+   "ax_auto": 114,
+   "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
+   "orig": "죽음 (옆으로 누움, 눈 감음 — 쉼 · 넘어짐 겸용)"
+  },
+  "windup": {
+   "src": "art/h2/bishot/windup.webp",
+   "w": 657,
+   "h": 681,
+   "ax": 328,
+   "ay": 678,
+   "ax_auto": 300,
+   "from": "비숏_공격준비,라이트.png 왼쪽",
+   "orig": "공격준비 (두 주먹 들고 오른 주먹 불꽃)"
+  },
+  "attack": {
+   "src": "art/h2/bishot/attack.webp",
+   "w": 755,
+   "h": 697,
+   "ax": 381,
+   "ay": 694,
+   "ax_auto": 464,
+   "from": "비숏_공격준비,라이트.png 오른쪽",
+   "orig": "라이트 (불꽃 오른 주먹 곧게)"
+  },
+  "finisher": {
+   "src": "art/h2/bishot/finisher.webp",
+   "w": 874,
+   "h": 561,
+   "ax": 439,
+   "ay": 558,
+   "ax_auto": 341,
+   "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 왼쪽",
+   "orig": "확인사살 · 내려찍기 (불꽃 주먹으로 땅 내려치기, 폭발 · 돌)"
+  },
+  "special": {
+   "src": "art/h2/bishot/special.webp",
+   "w": 549,
+   "h": 722,
+   "ax": 176,
+   "ay": 719,
+   "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 오른쪽",
+   "orig": "특수기 · 점핑파이어 (무릎 들고 두 손 불꽃 고리)"
+  },
+  "rest": {
+   "src": "art/h2/bishot/dead.webp",
+   "w": 840,
+   "h": 336,
+   "ax": 420,
+   "ay": 333,
+   "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
+   "orig": "쉼 — 따로 그림 없음, 죽음 그림 겸용",
+   "alias_of": "dead"
+  },
+  "down": {
+   "src": "art/h2/bishot/dead.webp",
+   "w": 840,
+   "h": 336,
+   "ax": 420,
+   "ay": 333,
+   "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
+   "orig": "넘어짐 — 따로 그림 없음, 죽음 그림 겸용",
+   "alias_of": "dead"
+  },
+  "jump": {
+   "src": "art/h2/bishot/special.webp",
+   "w": 549,
+   "h": 722,
+   "ax": 176,
+   "ay": 719,
+   "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 오른쪽",
+   "orig": "점핑파이어 — 특수기 그림 겸용",
+   "alias_of": "special"
+  },
+  "slam": {
+   "src": "art/h2/bishot/finisher.webp",
+   "w": 874,
+   "h": 561,
+   "ax": 439,
+   "ay": 558,
+   "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 왼쪽",
+   "orig": "내려찍기 — 확인사살 그림 겸용",
+   "alias_of": "finisher"
+  }
+ },
+ "portrait": "art/h2/bishot/portrait.webp",
+ "face": "art/h2/bishot/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "rest · down 따로 (지금은 dead 겸용)",
+  "jump 따로 (지금은 special 겸용)"
+ ],
+ "kit": {
+  "basic": "라이트 (windup→attack) — 불꽃 주먹, 근접 1.5m",
+  "skills": [
+   {
+    "name": "점핑파이어",
+    "pose": "special",
+    "desc": "무릎 차올리며 불꽃 고리 — 주변 2m 불 피해 + 화상"
+   },
+   {
+    "name": "내려찍기",
+    "pose": "finisher",
+    "desc": "땅 내려쳐 앞 3m 불기둥 · 돌 파편"
+   },
+   {
+    "name": "확인사살",
+    "pose": "finisher",
+    "desc": "넘어진 적에게 2배 피해"
+   }
+  ],
+  "passive": "초인계 마수: 불 피해 면역, 주먹마다 화상 1스택"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 340,
+  "atk": 28,
+  "spd": 7,
+  "weight_kg": 72,
+  "tall_m": 1.75
+ }
+}

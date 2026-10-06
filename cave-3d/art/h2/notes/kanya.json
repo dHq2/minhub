@@ -1,0 +1,143 @@
+{
+ "slug": "kanya",
+ "name": "여검방기사 칸야",
+ "rank": "2성",
+ "folder": "2성 여검방기사 칸야",
+ "role": "동료",
+ "tall": 1.68,
+ "weight": 70,
+ "palette": [
+  "#333946",
+  "#171b21",
+  "#3a6fd8",
+  "#8a93a8",
+  "#f0d6c8"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/kanya/idle.webp",
+   "w": 485,
+   "h": 700,
+   "ax": 236,
+   "ay": 697,
+   "from": "남색 갑옷 여기사의 두 전투 포즈.png 왼쪽",
+   "orig": "서 있음 (장검 아래로, 방패 앞)"
+  },
+  "attack": {
+   "src": "art/h2/kanya/attack.webp",
+   "w": 874,
+   "h": 584,
+   "ax": 290,
+   "ay": 581,
+   "ax_auto": 346,
+   "from": "남색 갑옷 여기사의 두 전투 포즈.png 오른쪽",
+   "orig": "두 손 장검 찌르기 (방패 앞, 깊은 런지)"
+  },
+  "crouch": {
+   "src": "art/h2/kanya/crouch.webp",
+   "w": 683,
+   "h": 569,
+   "ax": 341,
+   "ay": 566,
+   "ax_auto": 427,
+   "from": "같은 여성 기사의 검과 방패 전투 포즈.png 왼쪽",
+   "orig": "한 무릎 꿇고 방패 세움, 검 앞 아래"
+  },
+  "jump": {
+   "src": "art/h2/kanya/jump.webp",
+   "w": 735,
+   "h": 625,
+   "ax": 330,
+   "ay": 622,
+   "ax_auto": 53,
+   "from": "같은 여성 기사의 검과 방패 전투 포즈.png 오른쪽",
+   "orig": "방패 앞세워 뛰어듦 (검 뒤로) — 공중"
+  },
+  "guard": {
+   "src": "art/h2/kanya/guard.webp",
+   "w": 621,
+   "h": 670,
+   "ax": 255,
+   "ay": 667,
+   "ax_auto": 196,
+   "from": "방패와 검의 두 전투 자세.png 왼쪽",
+   "orig": "방패 방어 + 검 가로로 겨눔"
+  },
+  "down": {
+   "src": "art/h2/kanya/down.webp",
+   "w": 883,
+   "h": 317,
+   "ax": 441,
+   "ay": 314,
+   "ax_auto": 674,
+   "from": "방패와 검의 두 전투 자세.png 오른쪽",
+   "orig": "옆으로 쓰러짐 (머리 오른쪽, 방패 · 검 쥔 채)"
+  },
+  "idle2": {
+   "src": "art/h2/kanya/idle2.webp",
+   "w": 412,
+   "h": 699,
+   "ax": 167,
+   "ay": 696,
+   "ax_auto": 29,
+   "from": "칸야.png",
+   "orig": "원화 서 있음 (검 비스듬히, 배율 따로 0.478)"
+  },
+  "dead": {
+   "src": "art/h2/kanya/down.webp",
+   "w": 883,
+   "h": 317,
+   "ax": 441,
+   "ay": 314,
+   "from": "방패와 검의 두 전투 자세.png 오른쪽",
+   "orig": "죽음 그림 없음 — down 으로 대신",
+   "alias_of": "down"
+  }
+ },
+ "portrait": "art/h2/kanya/portrait.webp",
+ "face": "art/h2/kanya/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신)"
+ ],
+ "kit": {
+  "basic": "장검 찌르기 (attack) — 근접 2m",
+  "skills": [
+   {
+    "name": "방패 돌진",
+    "pose": "jump",
+    "desc": "방패 앞세워 4m 뛰어들어 부딪힌 적 넘어뜨림"
+   },
+   {
+    "name": "검방 자세",
+    "pose": "guard",
+    "desc": "막기 + 막은 직후 찌르기 반격"
+   },
+   {
+    "name": "무릎 방벽",
+    "pose": "crouch",
+    "desc": "웅크려 방패 세움 — 뒤의 아군 화살 · 총알 막아 줌"
+   }
+  ],
+  "passive": "남색 결의: 아군 사수가 뒤에 있으면 방어 +15%"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 2,
+  "bow": 1,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 10,
+ "stats": {
+  "hp": 330,
+  "atk": 22,
+  "spd": 7,
+  "weight_kg": 70,
+  "tall_m": 1.68
+ }
+}

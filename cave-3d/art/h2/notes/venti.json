@@ -1,0 +1,171 @@
+{
+ "slug": "venti",
+ "name": "중장 벤티",
+ "rank": "2성",
+ "folder": "2정 중장 벤티",
+ "role": "동료 (적 병사로도 가능 — 둘 다)",
+ "tall": 1.78,
+ "weight": 95,
+ "palette": [
+  "#987550",
+  "#3d3126",
+  "#bb9a78",
+  "#55483b",
+  "#cfd0d4"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/venti/idle.webp",
+   "w": 392,
+   "h": 699,
+   "ax": 195,
+   "ay": 696,
+   "ax_auto": 208,
+   "from": "우향 청동 병사 두 가지 포즈.png 왼쪽",
+   "orig": "서 있음 (검 아래로, 방패 왼팔)"
+  },
+  "attack": {
+   "src": "art/h2/venti/attack.webp",
+   "w": 687,
+   "h": 647,
+   "ax": 258,
+   "ay": 644,
+   "ax_auto": 326,
+   "from": "우향 청동 병사 두 가지 포즈.png 오른쪽",
+   "orig": "한 손 검 찌르기 (앞으로 뻗음)"
+  },
+  "walk": {
+   "src": "art/h2/venti/walk.webp",
+   "w": 476,
+   "h": 656,
+   "ax": 200,
+   "ay": 653,
+   "ax_auto": 59,
+   "from": "청동 병사의 두 가지 전투 자세.png 왼쪽",
+   "orig": "방패 들고 성큼 나아감 (뒷발 딛고 앞발 듦)"
+  },
+  "bash": {
+   "src": "art/h2/venti/bash.webp",
+   "w": 686,
+   "h": 608,
+   "ax": 294,
+   "ay": 605,
+   "ax_auto": 343,
+   "from": "청동 병사의 두 가지 전투 자세.png 오른쪽",
+   "orig": "방패 앞으로 내밀어 밀치기 (검은 뒤로)"
+  },
+  "windup": {
+   "src": "art/h2/venti/windup.webp",
+   "w": 552,
+   "h": 517,
+   "ax": 278,
+   "ay": 514,
+   "ax_auto": 311,
+   "from": "청동 병사의 두 전투 자세(1).png 왼쪽",
+   "orig": "낮게 웅크려 방패 앞, 검 뒤로 (공격 준비)"
+  },
+  "dead": {
+   "src": "art/h2/venti/dead.webp",
+   "w": 709,
+   "h": 234,
+   "ax": 354,
+   "ay": 231,
+   "ax_auto": 302,
+   "from": "청동 병사의 두 전투 자세(1).png 오른쪽",
+   "orig": "엎어져 쓰러짐 (머리 오른쪽, 검 앞으로)"
+  },
+  "idle2": {
+   "src": "art/h2/venti/idle2.webp",
+   "w": 377,
+   "h": 638,
+   "ax": 190,
+   "ay": 635,
+   "from": "청동 병사의 두 전투 자세.png 왼쪽",
+   "orig": "서 있음 2 (어깨 펴고 검 아래로)"
+  },
+  "attack2": {
+   "src": "art/h2/venti/attack2.webp",
+   "w": 762,
+   "h": 579,
+   "ax": 280,
+   "ay": 576,
+   "from": "청동 병사의 두 전투 자세.png 오른쪽",
+   "orig": "방패 뒤에서 검 높이 찌르기 (깊은 런지)"
+  },
+  "guard": {
+   "src": "art/h2/venti/guard.webp",
+   "w": 598,
+   "h": 598,
+   "ax": 296,
+   "ay": 595,
+   "from": "청동 병사의 방패 방어와 쓰러진 자세.png 왼쪽",
+   "orig": "방패 방어 (낮게 버팀)"
+  },
+  "down": {
+   "src": "art/h2/venti/down.webp",
+   "w": 660,
+   "h": 342,
+   "ax": 330,
+   "ay": 339,
+   "ax_auto": 375,
+   "from": "청동 병사의 방패 방어와 쓰러진 자세.png 오른쪽",
+   "orig": "뒤로 넘어짐 (등 대고 누움, 방패 위)"
+  },
+  "front": {
+   "src": "art/h2/venti/front.webp",
+   "w": 351,
+   "h": 700,
+   "ax": 178,
+   "ay": 697,
+   "ax_auto": 166,
+   "from": "청동 투구를 쓴 미소의 검병.png",
+   "orig": "정면 서 있음 (원화와 같은 그림, 배율 따로 0.469)"
+  }
+ },
+ "portrait": "art/h2/venti/portrait.webp",
+ "face": "art/h2/venti/face.webp",
+ "missing": [
+  "hurt",
+  "run",
+  "skill (특수기 없음 — bash 로 대신)"
+ ],
+ "kit": {
+  "basic": "한 손 검 찌르기 (attack) — 근접 1.8m",
+  "skills": [
+   {
+    "name": "방패 밀치기",
+    "pose": "bash",
+    "desc": "앞 1.5m 적 밀어내고 0.8초 휘청"
+   },
+   {
+    "name": "청동 벽",
+    "pose": "guard",
+    "desc": "앞 120도 피해 70% 막기, 막는 동안 느리게 걷기"
+   },
+   {
+    "name": "낮은 찌르기",
+    "pose": "windup→attack2",
+    "desc": "웅크렸다가 깊게 찔러 2.5m 돌진"
+   }
+  ],
+  "passive": "중장갑: 넘어짐 (down) 저항 +50%, 화살 피해 -20%"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 2,
+  "bow": 1,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 12,
+ "stats": {
+  "hp": 380,
+  "atk": 20,
+  "spd": 5,
+  "weight_kg": 95,
+  "tall_m": 1.78
+ }
+}

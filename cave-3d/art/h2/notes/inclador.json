@@ -1,0 +1,92 @@
+{
+ "slug": "inclador",
+ "name": "갱스터 잉끌레이도르",
+ "rank": "2성",
+ "folder": "2성 갱스터 잉끌레이도르",
+ "role": "둘 다 (갱스터 — 적 조직원 또는 동료)",
+ "tall": 1.8,
+ "weight": 68,
+ "palette": [
+  "#212020",
+  "#d8d4cc",
+  "#d6b25e",
+  "#a0703a",
+  "#5a5a5e"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/inclador/idle.webp",
+   "w": 254,
+   "h": 699,
+   "ax": 126,
+   "ay": 696,
+   "ax_auto": 48,
+   "from": "잉끌레이도르.png",
+   "orig": "서 있음 (오른손 장도리 낮게, 왼손 주머니)"
+  },
+  "windup": {
+   "src": "art/h2/inclador/windup.webp",
+   "w": 403,
+   "h": 691,
+   "ax": 183,
+   "ay": 688,
+   "ax_auto": 30,
+   "from": "흉터 난 금발 청년의 장도리 자세.png",
+   "orig": "두 손 장도리 치켜듦 (휘두르기 직전)"
+  },
+  "attack": {
+   "src": "art/h2/inclador/windup.webp",
+   "w": 403,
+   "h": 691,
+   "ax": 183,
+   "ay": 688,
+   "from": "흉터 난 금발 청년의 장도리 자세.png",
+   "orig": "공격 그림 없음 — windup 을 앞으로 기울여 대신 (임시)",
+   "alias_of": "windup"
+  }
+ },
+ "portrait": "art/h2/inclador/portrait.webp",
+ "face": "art/h2/inclador/face.webp",
+ "missing": [
+  "attack (진짜 휘두르기)",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "guard"
+ ],
+ "kit": {
+  "basic": "장도리 내려치기 (windup→attack) — 근접 1.2m",
+  "skills": [
+   {
+    "name": "못 빼기",
+    "pose": "windup",
+    "desc": "장도리 뒷면으로 방패 · 갑옷 벗기기 (방어 -30% 5초)"
+   },
+   {
+    "name": "미친 웃음",
+    "pose": "idle",
+    "desc": "주변 적 1명 겁먹게 (공격 -20% 4초)"
+   }
+  ],
+  "passive": "흉터: 피가 30% 아래면 공격 속도 +25%"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 0,
+  "bow": 0,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 3
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 9,
+ "stats": {
+  "hp": 260,
+  "atk": 26,
+  "spd": 7,
+  "weight_kg": 68,
+  "tall_m": 1.8
+ }
+}

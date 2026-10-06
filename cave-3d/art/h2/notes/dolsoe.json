@@ -1,0 +1,135 @@
+{
+ "slug": "dolsoe",
+ "name": "돌쇠",
+ "rank": "2성",
+ "folder": "2성 돌쇠, 마당쇠",
+ "role": "둘 다 (마당쇠와 짝 — 동료 또는 조직 적)",
+ "tall": 1.75,
+ "weight": 62,
+ "palette": [
+  "#222121",
+  "#d4d0cc",
+  "#e8e8e8",
+  "#6b6b6b",
+  "#191818"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/dolsoe/idle.webp",
+   "w": 335,
+   "h": 698,
+   "ax": 185,
+   "ay": 695,
+   "ax_auto": 223,
+   "from": "돌쇠의 두 전투 자세.png 왼쪽",
+   "orig": "서 있음 (오른손 쇠지렛대 아래로)"
+  },
+  "attack": {
+   "src": "art/h2/dolsoe/attack.webp",
+   "w": 701,
+   "h": 513,
+   "ax": 350,
+   "ay": 510,
+   "ax_auto": 330,
+   "from": "돌쇠의 두 전투 자세.png 오른쪽",
+   "orig": "쇠지렛대로 땅 내려찍기 (파편 · 그림자 포함)"
+  },
+  "windup": {
+   "src": "art/h2/dolsoe/windup.webp",
+   "w": 488,
+   "h": 597,
+   "ax": 243,
+   "ay": 594,
+   "ax_auto": 295,
+   "from": "돌쇠의 쇠지렛대 전투 포즈.png 왼쪽",
+   "orig": "두 손 쇠지렛대 머리 위로 치켜듦"
+  },
+  "down": {
+   "src": "art/h2/dolsoe/down.webp",
+   "w": 732,
+   "h": 211,
+   "ax": 366,
+   "ay": 208,
+   "ax_auto": 711,
+   "from": "돌쇠의 쇠지렛대 전투 포즈.png 오른쪽",
+   "orig": "엎드려 쓰러짐 (머리 오른쪽, 쇠지렛대 쥔 채)"
+  },
+  "low": {
+   "src": "art/h2/dolsoe/low.webp",
+   "w": 532,
+   "h": 531,
+   "ax": 277,
+   "ay": 528,
+   "ax_auto": 399,
+   "from": "복면 흑발 돌쇠의 전투 스프라이트.png 왼쪽",
+   "orig": "웅크려 쇠지렛대 갈고리로 바닥 긁기 (하단 공격, 파편)"
+  },
+  "attack2": {
+   "src": "art/h2/dolsoe/attack2.webp",
+   "w": 487,
+   "h": 721,
+   "ax": 241,
+   "ay": 718,
+   "ax_auto": 339,
+   "from": "복면 흑발 돌쇠의 전투 스프라이트.png 오른쪽 (원래 왼쪽 봄 → 뒤집음)",
+   "orig": "몸 비틀어 쇠지렛대 뒤로 휘두르기"
+  },
+  "dead": {
+   "src": "art/h2/dolsoe/down.webp",
+   "w": 732,
+   "h": 211,
+   "ax": 366,
+   "ay": 208,
+   "from": "돌쇠의 쇠지렛대 전투 포즈.png 오른쪽",
+   "orig": "죽음 그림 없음 — down 으로 대신",
+   "alias_of": "down"
+  }
+ },
+ "portrait": "art/h2/dolsoe/portrait.webp",
+ "face": "art/h2/dolsoe/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "guard",
+  "dead (down 으로 대신)"
+ ],
+ "kit": {
+  "basic": "쇠지렛대 내려찍기 (windup→attack) — 근접 1.5m",
+  "skills": [
+   {
+    "name": "갈고리 걸기",
+    "pose": "low",
+    "desc": "발목 걸어 끌어당기고 넘어뜨림"
+   },
+   {
+    "name": "비틀어 치기",
+    "pose": "attack2",
+    "desc": "뒤로 크게 휘둘러 옆 2명까지 맞힘"
+   },
+   {
+    "name": "문 따기",
+    "pose": "low",
+    "desc": "(탐험) 잠긴 문 · 상자 열기"
+   }
+  ],
+  "passive": "복면: 은신 중 첫 공격 피해 +40%, 마당쇠와 같이 있으면 속도 +10%"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 0,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 4
+ },
+ "tag": "soldier",
+ "role_job": "척후",
+ "bag": 10,
+ "stats": {
+  "hp": 270,
+  "atk": 24,
+  "spd": 7,
+  "weight_kg": 62,
+  "tall_m": 1.75
+ }
+}

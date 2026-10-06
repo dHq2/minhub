@@ -1,0 +1,162 @@
+{
+ "slug": "tank",
+ "name": "중장 탱크",
+ "rank": "2성",
+ "folder": "2성 중장 탱크(SF)",
+ "role": "동료 (중장 방패 탱커)",
+ "tall": 2.05,
+ "weight": 140,
+ "palette": [
+  "#515050",
+  "#a3a1a2",
+  "#2d2d2d",
+  "#2fd6d0",
+  "#747374"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/tank/idle.webp",
+   "w": 484,
+   "h": 703,
+   "ax": 263,
+   "ay": 700,
+   "from": "회색 갑옷 기사의 대기와 공격 자세.png 왼쪽",
+   "orig": "대기 (철퇴 아래로, 방패 왼팔)"
+  },
+  "attack": {
+   "src": "art/h2/tank/attack.webp",
+   "w": 602,
+   "h": 610,
+   "ax": 251,
+   "ay": 607,
+   "ax_auto": 275,
+   "from": "회색 갑옷 기사의 대기와 공격 자세.png 오른쪽",
+   "orig": "철퇴 아래로 휘둘러 치기"
+  },
+  "idle2": {
+   "src": "art/h2/tank/idle2.webp",
+   "w": 484,
+   "h": 666,
+   "ax": 265,
+   "ay": 663,
+   "from": "회색 뿔 기사 두 전투 포즈.png 왼쪽",
+   "orig": "대기 2"
+  },
+  "attack2": {
+   "src": "art/h2/tank/attack2.webp",
+   "w": 525,
+   "h": 690,
+   "ax": 263,
+   "ay": 687,
+   "ax_auto": 391,
+   "from": "회색 뿔 기사 두 전투 포즈.png 오른쪽 (원래 왼쪽 봄 → 뒤집음)",
+   "orig": "철퇴 머리 위로 치켜들기 (내려찍기)"
+  },
+  "low": {
+   "src": "art/h2/tank/low.webp",
+   "w": 584,
+   "h": 475,
+   "ax": 291,
+   "ay": 472,
+   "ax_auto": 374,
+   "from": "뿔 기사 두 전투 포즈.png 왼쪽",
+   "orig": "몸 숙여 철퇴 낮게 쓸기 (하단 공격)"
+  },
+  "windup": {
+   "src": "art/h2/tank/windup.webp",
+   "w": 654,
+   "h": 442,
+   "ax": 264,
+   "ay": 439,
+   "from": "뿔 기사 두 전투 포즈.png 오른쪽",
+   "orig": "방패 앞, 철퇴 뒤로 크게 젖힘 (공격 준비)"
+  },
+  "guard": {
+   "src": "art/h2/tank/guard.webp",
+   "w": 602,
+   "h": 552,
+   "ax": 291,
+   "ay": 549,
+   "ax_auto": 241,
+   "from": "뿔투구 기사, 수비와 전복 포즈.png 왼쪽",
+   "orig": "수비 (방패 세우고 낮게 버팀)"
+  },
+  "down": {
+   "src": "art/h2/tank/down.webp",
+   "w": 615,
+   "h": 346,
+   "ax": 307,
+   "ay": 343,
+   "ax_auto": 325,
+   "from": "뿔투구 기사, 수비와 전복 포즈.png 오른쪽",
+   "orig": "전복 — 뒤로 넘어져 주저앉음"
+  },
+  "front": {
+   "src": "art/h2/tank/front.webp",
+   "w": 458,
+   "h": 700,
+   "ax": 245,
+   "ay": 697,
+   "ax_auto": 208,
+   "from": "청록 바이저의 쌍뿔 탱크 기사.png",
+   "orig": "정면 서 있음 (원화와 같은 그림, 배율 따로 0.472)"
+  },
+  "dead": {
+   "src": "art/h2/tank/down.webp",
+   "w": 615,
+   "h": 346,
+   "ax": 307,
+   "ay": 343,
+   "from": "뿔투구 기사, 수비와 전복 포즈.png 오른쪽",
+   "orig": "죽음 그림 없음 — down 으로 대신",
+   "alias_of": "down"
+  }
+ },
+ "portrait": "art/h2/tank/portrait.webp",
+ "face": "art/h2/tank/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "dead (down 으로 대신)",
+  "skill (SF 장비 쓰는 동작)"
+ ],
+ "kit": {
+  "basic": "철퇴 치기 (attack) — 근접 1.8m, 느림",
+  "skills": [
+   {
+    "name": "내려찍기",
+    "pose": "windup→attack2",
+    "desc": "치켜든 철퇴로 앞 2m 원형 충격, 넘어뜨림"
+   },
+   {
+    "name": "다리 쓸기",
+    "pose": "low",
+    "desc": "낮게 쓸어 앞 120도 적 넘어뜨림"
+   },
+   {
+    "name": "강철 방벽",
+    "pose": "guard",
+    "desc": "피해 80% 막기, 주변 적 어그로 끌기"
+   }
+  ],
+  "passive": "청록 바이저 (SF): 어둠 · 연기 속에서도 적 보임, 넘어짐 저항 +60%"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 1,
+  "bow": 0,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 14,
+ "stats": {
+  "hp": 520,
+  "atk": 22,
+  "spd": 3,
+  "weight_kg": 140,
+  "tall_m": 2.05
+ }
+}
