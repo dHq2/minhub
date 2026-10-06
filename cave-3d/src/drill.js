@@ -1,4 +1,4 @@
-/* drill.js v1.4 — (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.5 — (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -155,6 +155,15 @@ function drillRangeAct(u, dt){
 { const _solControlD = solControl; solControl = function(u, dt){ if (DRILL.on && DRILL.range && u.sol && u.sol.kit.main && u.kind !== 'player' && !u.downed && !foes().length) return drillRangeAct(u, dt); return _solControlD(u, dt); }; }
 // 훈련장 표적은 연습 공을 쏘지 않음 (제자리로만)
 if (typeof sparThink === 'function'){ const _sparThinkD = sparThink; sparThink = function(u, dt){ if (u.D.drill) return; return _sparThinkD(u, dt); }; }
+// v0.61 훈련장 초기화: 처음 들어왔을 때 그대로 (적 · 부른 2기 · 소환수 · 진지 · 재료 · 맵 · 동료 자리 · 체력). 적성 · 훈련 점수 · 보직은 저장된 대로 남음. 기록은 '기록 지우기'로 따로
+function drillReset(){
+  if (typeof solSaveAll === 'function') solSaveAll();
+  if (typeof FORT !== 'undefined' && FORT.plan) fortPlan(false);
+  G.slow = 1; DRILL.range = false; DRILL.freeze = false; ENG.tok.clear();
+  for (const sq of SQ.list){ sq.tgt = null; sq.at = null; sq.post = null; sq.order = 'follow'; }
+  drillPanel(false); startDrill();
+  caption('훈련장 초기화', '처음 상태로 — 적성 · 훈련 · 보직은 그대로');
+}
 function drillClear(){ for (const e of foes()) removeUnit(e); for (const sq of SQ.list) sq.tgt = null; ENG.tok.clear(); }
 function drillHeal(){ for (const u of G.units) if (u.side === 'ally' && !u.dead){ if (u.downed) revivePut(u); u.hp = u.max; u.lying = false; if (u.sol) u.sol.mp = u.sol.mpMax; } if (G.player) G.player.hp = G.player.max; }
 TICKS.push(dt => {
@@ -198,7 +207,7 @@ function drillPanelRender(){
   let body = '';
   if (DP.tab === 'crew') body = `<p class="dp-note">적성 0~5 (진한 칸 = 타고남, 밝은 칸 = 훈련). 훈련 비용은 성향이 정함 — 군인은 총이 싸고, 마법 계열은 총이 비쌈. 5를 찍은 계열은 고유 기술이 열림 (총 5 헤드샷 · 활 5 꿰뚫기). 적성 0인 무기는 억지로 쥠.</p>` + crew.map(crewRow).join('');
   if (DP.tab === 'sc') body = `<div class="dp-sc">${DRILL_SC.map(s => `<button data-sc="${s.k}"><b>${s.n}</b><small>${s.d}</small></button>`).join('')}</div>
-    <div class="dp-row"><button data-act="range" class="${DRILL.range ? 'on' : ''}">사격 훈련 (동료가 표적을 쏨) ${DRILL.range ? '켜짐' : '꺼짐'}</button><button data-act="clear">적 모두 치우기</button><button data-act="heal">우리 편 회복 · 일으키기</button><button data-act="freeze" class="${DRILL.freeze ? 'on' : ''}">적 멈춤 ${DRILL.freeze ? '켜짐' : '꺼짐'}</button></div>
+    <div class="dp-row"><button data-act="range" class="${DRILL.range ? 'on' : ''}">사격 훈련 (동료가 표적을 쏨) ${DRILL.range ? '켜짐' : '꺼짐'}</button><button data-act="dreset" class="warn">훈련장 초기화 (처음 상태로)</button><button data-act="clear">적 모두 치우기</button><button data-act="heal">우리 편 회복 · 일으키기</button><button data-act="freeze" class="${DRILL.freeze ? 'on' : ''}">적 멈춤 ${DRILL.freeze ? '켜짐' : '꺼짐'}</button></div>
     <div class="dp-row"><button data-act="fplan">진지 계획 (L)</button><button data-act="fmat">재료 더미 받기 (나무 · 돌 · 잔해 +6)</button><button data-act="fclear">진지 · 설계도 모두 치우기</button></div>`;
   if (DP.tab === 'rule'){
     const S = SOLS;
@@ -213,7 +222,7 @@ function drillPanelRender(){
     <tr><th>지은 진지</th><td>${FORT.stat.built} (부서짐 ${FORT.stat.broken})</td><th>엄폐가 막음</th><td>${FORT.stat.blocked}</td><th>머리 · 투구 뚫림</th><td>${FORT.stat.heads}</td></tr>
     <tr><th>대기 사격</th><td>${FORT.stat.ambush}</td><th>모은 재료</th><td>${FORT.stat.harvested}</td><th>자객 잡음</th><td>${PRW.stat.caught}</td></tr>
     <tr><th>자객에게 당함</th><td>${PRW.stat.execs}</td><th>목 따임 · 쓰러짐</th><td>${PRW.stat.slain} · ${PRW.stat.downs}</td><th>치명상</th><td>${PRW.stat.wounds}</td></tr></table>
-    <div class="dp-row"><button data-act="reset">기록 지우기</button><button data-act="exit">훈련장 나가기 (굴로)</button></div>`;
+    <div class="dp-row"><button data-act="dreset" class="warn">훈련장 초기화 (처음 상태로)</button><button data-act="reset">기록 지우기</button><button data-act="exit">훈련장 나가기 (굴로)</button></div>`;
   }
   if (DP.tab === 'h2' && typeof h2Panel === 'function') body = h2Panel();
   if (DP.tab === 'help') body = `<div class="dp-help">
@@ -245,6 +254,7 @@ function drillPanelClick(e){
   if (b.dataset.sc){ const s = DRILL_SC.find(o => o.k === b.dataset.sc); drillPanel(false); s && s.go(); return; }
   const a = b.dataset.act;
   if (a === 'close') return drillPanel(false);
+  if (a === 'dreset') return drillReset();
   if (a === 'range'){ DRILL.range = !DRILL.range; if (DRILL.range){ drillClear(); caption('사격 훈련', '원거리를 든 동료가 사선에서 표적을 쏨 — 기록 탭에서 명중률'); } }
   if (a === 'clear') drillClear(); if (a === 'heal') drillHeal(); if (a === 'freeze') DRILL.freeze = !DRILL.freeze;
   if (a === 'eng'){ ENG.on = !ENG.on; ENG.tok.clear(); } if (a === 'engshow') ENG.show = !ENG.show; if (a === 'slots') ENG.slots = ENG.slots >= 3 ? 1 : ENG.slots + 1;

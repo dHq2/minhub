@@ -1,4 +1,4 @@
-/* prowl.js v1.1 — (v1.1, v0.59: 사각 · 암살 구역 표시는 훈련장에서만 — 원정은 표시 없이) (v1.0, v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
+/* prowl.js v1.2 — (v1.2, v0.61: 숙인 몸 기울기도 보이는 방향 fS를 따름) (v1.1, v0.59: 사각 · 암살 구역 표시는 훈련장에서만 — 원정은 표시 없이) (v1.0, v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
    ■ 자객 (적): 무리와 따로 움직이며 우리 편을 사냥함. 숙여 구부린 걸음으로 경계가 비는 쪽 — 맨 뒤 · 떨어진 놈 · 싸우느라 한눈 판 놈의 등 뒤로 돌아 들어옴
      · 우리 편 누구의 시야 (앞 ±65°, 어두우면 짧음)에도 안 걸리는 자리만 밟음. 다 막혀 있으면 어둠 속에서 기다림
      · 등 뒤에 닿으면: 목 따기 (즉사 — 동료는 전사, 인주는 위독) · 한 번에 쓰러뜨림 · 치명상. 거구 (카리우스 · 판금)는 목이 안 닿음
@@ -224,7 +224,7 @@ TICKS.push(dt => {
 const _updateSpriteP = updateSprite;
 updateSprite = function(u, dt){
   _updateSpriteP(u, dt);
-  if (u.bend){ u.mesh.scale.y *= 0.84; u.mesh.position.y *= 0.84; u.pivot.rotation.z += 0.2 * -u.face; }
+  if (u.bend){ u.mesh.scale.y *= 0.84; u.mesh.position.y *= 0.84; u.pivot.rotation.z += 0.2 * -(u.fS ?? u.face); }
   if (PRW.dark.length && G.mode === 'drill'){ const L = lightMul(u.x, u.z); if (L < 1) u.mat.color.multiplyScalar(Math.max(0.25, (L - 0.3) / 0.7 * 0.75 + 0.25)); }
 };
 

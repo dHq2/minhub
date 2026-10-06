@@ -1,4 +1,4 @@
-/* units.js v0.26 — (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.27 — (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -64,7 +64,12 @@ function updateSprite(u, dt){
     else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }
   const k = u.S.tall * SPRITE_SCALE / u.S.h0 * (P.scale || 1), w = P.w * k, h = P.h * k;
-  const flip = (P.f || 1) === u.face ? 1 : -1;
+  // v0.61 좌우 떨림 막기: 갈 데 없이 제자리에서 방향만 왔다 갔다 하면 그림이 마구 뒤집힘 → 보이는 방향 (fS)은 새 방향이 0.22초 이어져야 바뀜. 인주는 바로
+  if (u.fS == null || u.kind === 'player' || u.dead) { u.fS = u.face; u.fT = 0; }
+  else if (u.face !== u.fS){ u.fT += dt; if (u.fT >= 0.22){ u.fS = u.face; u.fT = 0; } }
+  else u.fT = 0;
+  const F = u.fS;
+  const flip = (P.f || 1) === F ? 1 : -1;
   u.mesh.scale.set(w * flip, h, 1);
   u.mesh.position.set((P.w / 2 - P.ax) * k * flip, (P.ay - P.h / 2) * k, 0);
   // v0.2 털썩 주저앉음: 발을 땅에 둔 채 세로로 눌러 줌
@@ -72,11 +77,11 @@ function updateSprite(u, dt){
   // 쓰러짐: 옆으로 눕힘
   // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
   if (u.tripT && G.t > u.tripT){ u.tripT = 0; if (!u.downed && !u.dead) u.lying = false; }   // 다리후리기 · 슬라이딩으로 넘어진 놈이 일어남
-  const tiltT = (u.downed || u.dead || u.lying) && !P.flat ? Math.PI / 2 * 0.92 * -u.face : 0;   // 누운 그림 (flat: 그라운드 가드 · 웅크림 · 죽음 · 잠)은 이미 누워 있음
+  const tiltT = (u.downed || u.dead || u.lying) && !P.flat ? Math.PI / 2 * 0.92 * -F : 0;   // 누운 그림 (flat: 그라운드 가드 · 웅크림 · 죽음 · 잠)은 이미 누워 있음
   if (u.tiltOverride != null) u.tilt = u.tiltOverride; else u.tilt += (tiltT - u.tilt) * Math.min(1, dt * 10);
   u.lean = (u.lean || 0) + ((u.leanT || 0) - (u.lean || 0)) * Math.min(1, dt * 18);
   if (u.st !== 'windup') u.leanT = (u.leanT || 0) * Math.max(0, 1 - dt * 6);
-  u.pivot.rotation.z = u.tilt + u.lean * -u.face;
+  u.pivot.rotation.z = u.tilt + u.lean * -F;
   u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0) + (u.pose === 'box' ? Math.abs(Math.sin(G.t * 7.5)) * 0.06 : u.pose === 'mtPose' ? Math.abs(Math.sin(G.t * 3.2)) * 0.035 : 0);   // 복싱 스텝: 통통
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
@@ -90,7 +95,8 @@ function updateSprite(u, dt){
 function faceToward(u, ax, az){
   camRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
   const d = ax * camRight.x + az * camRight.z;
-  if (Math.abs(d) > 0.05) u.face = d > 0 ? 1 : -1;
+  // v0.61 거의 위아래 (카메라 쪽 · 먼 쪽)로 움직일 땐 지금 방향 유지 — 반대로 돌려면 0.25 넘게 기울어야 함
+  if (Math.abs(d) > (Math.sign(d) === u.face ? 0.05 : 0.25)) u.face = d > 0 ? 1 : -1;
 }
 function setAim(u, tx, tz){ u.aim = Math.atan2(tz - u.z, tx - u.x); faceToward(u, Math.cos(u.aim), Math.sin(u.aim)); }
 

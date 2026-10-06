@@ -1,4 +1,4 @@
-/* h2.js v1.2 — (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.3 — (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -148,7 +148,7 @@ const _updateSpriteH2 = updateSprite;
 updateSprite = function(u, dt){
   _updateSpriteH2(u, dt);
   if (!u.D || !u.D.h2 || u.dead) return;
-  const t = G.t + (u.uid || 0) * 0.37, m = u.mesh, f = -u.face;
+  const t = G.t + (u.uid || 0) * 0.37, m = u.mesh, f = -(u.fS ?? u.face);
   let sy = 1, sx = 1, rz = 0, dy = 0;
   if (u.downed || u.lying) return;
   if (u.st === 'windup'){ const k = Math.min(1, u.poseT / 0.35); sy = 1 - 0.06 * k; sx = 1 + 0.04 * k; rz = -0.1 * k * f; }
