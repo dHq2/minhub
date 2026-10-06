@@ -1,0 +1,100 @@
+{
+ "slug": "wraitha",
+ "name": "망령A",
+ "rank": "보스",
+ "folder": "망령A",
+ "role": "적 (시트 이름은 '보스 시트'지만 폴더 이름이 '망령A' 라 같은 망령 무리의 하나 — 중간 보스 · 정예 적으로 알맞음)",
+ "tall": 1.9,
+ "weight": 70,
+ "palette": [
+  "#2b283a",
+  "#3b3f8f",
+  "#8a7a9a",
+  "#a08460",
+  "#4a3f3a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/wraitha/idle.webp",
+   "w": 454,
+   "h": 702,
+   "ax": 232,
+   "ay": 699,
+   "from": "보라 안경 망령 보스 시트.png 가운데",
+   "orig": "옆모습 (오른쪽 보기) 구부정하게 서 있음, 기계 갈고리 팔 늘어뜨림",
+   "scale": 1.12
+  },
+  "front": {
+   "src": "art/h2/wraitha/front.webp",
+   "w": 615,
+   "h": 852,
+   "ax": 274,
+   "ay": 849,
+   "from": "보라 안경 망령 보스 시트.png 왼쪽",
+   "orig": "앞모습 (조금 오른쪽) 서 있음, 갈고리 팔 · 넝마 망토",
+   "scale": 1.12
+  },
+  "attack": {
+   "src": "art/h2/wraitha/attack.webp",
+   "w": 982,
+   "h": 619,
+   "ax": 432,
+   "ay": 616,
+   "from": "보라 안경 망령 보스 시트.png 오른쪽",
+   "orig": "몸 낮추고 기계 팔을 길게 뻗어 낫 같은 갈고리 집게를 벌림 (잡기 · 끌어오기)",
+   "scale": 1.12
+  }
+ },
+ "portrait": "art/h2/wraitha/portrait.webp",
+ "face": "art/h2/wraitha/face.webp",
+ "portrait_from": "보라 안경 망령 보스 시트.png 왼쪽 인물 상반신 (00_원본_참고.png 는 133x242 작은 캡처라 쓰지 않음)",
+ "missing": [
+  "back",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "float(떠다니기)"
+ ],
+ "kit": {
+  "basic": "갈고리 베기 (attack) — 앞 3m 부채꼴 60도",
+  "skills": [
+   {
+    "name": "갈고리 낚아채기",
+    "pose": "attack",
+    "desc": "기계 팔이 늘어나 줄 7m 앞으로 뻗음, 맞은 적을 붙잡아 1m 앞으로 끌어오고 1초 묶음"
+   },
+   {
+    "name": "망령 걸음",
+    "pose": "idle",
+    "desc": "몸이 흐려지며 4m 순간 이동 (적 뒤로), 다음 공격 피해 +50%"
+   },
+   {
+    "name": "넝마 장막",
+    "pose": "front",
+    "desc": "망토 자락을 펼쳐 앞 120도 2초 막기, 막는 동안 받은 근접 공격자에게 갈고리 반격"
+   }
+  ],
+  "passive": "망령 — 받는 물리 피해 20% 감소, 빛 · 불 속성 피해는 30% 더 받음"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 4
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 6,
+ "stats": {
+  "hp": 1800,
+  "atk": 42,
+  "spd": 5.5,
+  "weight_kg": 70,
+  "tall_m": 1.9
+ },
+ "desc": "붕대 감은 보라 해골 얼굴에 둥근 고글 안경, 넝마 망토의 망령. 오른팔은 낫 갈고리 기계 팔로, 멀리서 낚아채 끌어온다.",
+ "gen": 3
+}

@@ -1,0 +1,101 @@
+{
+ "slug": "goldmask",
+ "name": "노란악마녀",
+ "rank": "보스",
+ "folder": "노란악마녀",
+ "role": "보스 (시트 파일 이름이 '보스 시트', 가면 · 뿔 · 갈퀴 손의 악마라 적 쪽 우두머리)",
+ "tall": 1.8,
+ "weight": 58,
+ "palette": [
+  "#e8d97a",
+  "#1d1b1a",
+  "#e0cca8",
+  "#f2e86a",
+  "#8a8a8a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/goldmask/idle.webp",
+   "w": 253,
+   "h": 702,
+   "ax": 149,
+   "ay": 699,
+   "from": "금발 가면 악마 보스 시트.png 가운데",
+   "orig": "옆모습 (오른쪽 보기) 서 있음, 갈퀴 손 늘어뜨림",
+   "scale": 0.78
+  },
+  "front": {
+   "src": "art/h2/goldmask/front.webp",
+   "w": 346,
+   "h": 736,
+   "ax": 197,
+   "ay": 733,
+   "from": "금발 가면 악마 보스 시트.png 왼쪽",
+   "orig": "앞모습 (조금 오른쪽) 서 있음, 찢어진 망토 치마 펼쳐짐",
+   "scale": 0.78
+  },
+  "attack": {
+   "src": "art/h2/goldmask/attack.webp",
+   "w": 559,
+   "h": 585,
+   "ax": 358,
+   "ay": 582,
+   "from": "금발 가면 악마 보스 시트.png 오른쪽",
+   "orig": "앞으로 크게 내딛으며 갈퀴 손 뻗기 (할퀴기 · 덮치기)",
+   "scale": 0.78
+  }
+ },
+ "portrait": "art/h2/goldmask/portrait.webp",
+ "face": "art/h2/goldmask/face.webp",
+ "portrait_from": "금발 가면 악마 보스 시트.png 왼쪽 인물 상반신 (00_원본_참고.png 는 144x300 작은 캡처라 쓰지 않음)",
+ "missing": [
+  "back",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "cast(마법)",
+  "jump"
+ ],
+ "kit": {
+  "basic": "갈퀴 손톱 할퀴기 (attack) — 앞 2.5m 부채꼴 90도, 2연타",
+  "skills": [
+   {
+    "name": "악마의 덮치기",
+    "pose": "attack",
+    "desc": "앞으로 7m 돌진하며 두 손 갈퀴로 3연속 할퀴기 (앞 3m 부채꼴), 맞은 적 출혈 4초"
+   },
+   {
+    "name": "그림자 자락",
+    "pose": "front",
+    "desc": "찢어진 치마 자락이 그림자로 퍼져 주위 5m 원 장판 5초: 안의 적 이동 -40%, 매초 작은 피해"
+   },
+   {
+    "name": "사슬 끌어오기",
+    "pose": "idle",
+    "desc": "허리 사슬을 던져 줄 8m, 처음 맞은 적을 앞 1.5m 로 끌어옴 (뒤이어 할퀴기 연계)"
+   }
+  ],
+  "passive": "빛나는 눈 — 체력 50% 아래면 광폭: 이동 +20%, 공격 속도 +15%, 가면 눈빛이 짙어짐"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 3
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 6,
+ "stats": {
+  "hp": 3200,
+  "atk": 60,
+  "spd": 7.0,
+  "weight_kg": 58,
+  "tall_m": 1.8
+ },
+ "desc": "검은 가면에 노란 눈빛, 길게 늘어진 금발과 작은 뿔의 악마녀. 갈퀴 손으로 덮쳐 찢는 날쌘 근접 보스.",
+ "gen": 3
+}

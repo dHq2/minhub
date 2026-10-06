@@ -1,0 +1,75 @@
+{
+ "slug": "cheonmyeong",
+ "name": "천명",
+ "rank": "초강자",
+ "folder": "초강자 천명",
+ "role": "보스 (2기와 같음. 3기 폴더 그림은 2기와 같은 그림이라 판단 근거 그대로)",
+ "tall": 2.4,
+ "weight": 300,
+ "palette": [
+  "#463126",
+  "#7b5b3e",
+  "#ac8357",
+  "#cca26c",
+  "#e2bb84"
+ ],
+ "poses": {},
+ "portrait": "art/h2/cheonmyeong/portrait.webp",
+ "face": "art/h2/cheonmyeong/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "windup"
+ ],
+ "kit": {
+  "basic": "대검 베기 (attack) — 근접 3m (2기와 같음)",
+  "skills": [
+   {
+    "name": "황금 감옥",
+    "pose": "special",
+    "desc": "뻗은 손 끝 6m 지점에 금빛 창살 우리 (원 반경 2m) 를 세움: 안의 적 3초 이동 불가 (공격 · 사격은 가능), 우리 밖에서 들어올 수도 없음. 재사용 14초"
+   },
+   {
+    "name": "공허의 처형",
+    "pose": "attack",
+    "desc": "앞 3m 부채꼴 90도 낮은 처형 베기: 피 30% 아래 적은 확인사살 (3배 피해), 그 외에는 보통 피해. 0.6초 모음"
+   },
+   {
+    "name": "집행 선고",
+    "pose": "idle2",
+    "desc": "8m 안 적 하나에 금빛 표식 10초: 그 적이 받는 천명 피해 +25%, 표식 대상이 죽으면 천명 피 5% 회복"
+   }
+  ],
+  "passive": "집행자의 걸음: 표식 대상 쪽으로 걸을 때 이동 속도 +20%, 밀치기 · 넘어뜨리기에 안 밀림"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 4,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 3600,
+  "atk": 80,
+  "spd": 4,
+  "weight_kg": 300,
+  "tall_m": 2.4
+ },
+ "desc": "황금 붕대 갑옷을 두른 공허의 처형인. 금빛 창살 투구 속은 텅 빈 검은 공허이고, 표식을 찍은 죄인을 끝까지 쫓아 처형검으로 끝낸다.",
+ "gen": 3,
+ "epithet": "황금 공허의 집행자",
+ "rank_g2": "보스",
+ "same_as_g2": {
+  "황금 공허의 집행자.png": "천명1.png (idle)",
+  "천명_ 황금 공허의 처형검.png": "천명2.png (idle2 · attack)",
+  "황금 감옥과 검은 공허의 집행자.png": "천명3.png (special)"
+ },
+ "note": "3기 드라이브 폴더의 그림 3장이 2기 원본과 화소 하나까지 똑같음 (이름만 바뀜). 새로 자른 동작 없음 · idle_b 없음. kit 는 2기 kit 와 겹치지 않는 새 기술만, 기존 동작 그림을 같이 씀."
+}
