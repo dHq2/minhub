@@ -1,4 +1,4 @@
-# h2_poses.py v1.1 — (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
+# h2_poses.py v1.2 — (v1.2: 3기-2 — codex_g 가 있는 1기 인물 (마리 · 모닝스타 · 옐로 …)은 도감의 그 사람 묶음 끝에 붙임 · 변신 / 소환물 묶음 (아해 · 슬라) · 메모에 batch) (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
 #  · 인물마다 새 묶음 (g = h2_<slug>, cid = 새 인물 번호). 같은 인물의 다른 모습은 한 묶음: 가람 + 망토 갑옷 · 히라리 + 변신 · 레비 + 소환수
 #  · F-h2-<slug> 기본 초상화 (img/face, 256 → 160) · P-h2-<slug> 원화 (img/h2, 높이 420) · O-h2-<slug>-<동작> 동작 그림 (img/h2, 높이 300)
 #  · 은신 웅크림 (은신.png) 7장 · 연금술사 (이름 모름, 낱장 연금술.png) · 벨 쌍권총 그림도 같이
@@ -24,7 +24,7 @@ PN = {'idle': '기본', 'idle2': '기본 2', 'idle3': '기본 3', 'walk': '걷�
       'command': '지휘', 'pistol': '권총', 'rod': '조율봉', 'talk': '말하기', 'armor_idle': '갑옷 기본', 'armor_ready': '갑옷 태세', 'fly': '날기', 'slam': '내려찍기'}
 ENG = {'idle': '서 있을 때 · 숨쉬기', 'walk': '걸을 때', 'run': '걸을 때 (뛰기)', 'down': '쓰러졌을 때', 'dead': '죽었을 때', 'hurt': '맞았을 때', 'guard': '막기 자세 · 맞을 때 (맞음 그림 대신)',
        'windup': '공격 예고', 'attack': '기본 공격', 'crouch': '숙이기 (G) · 은신', 'sneak': '숙이기 (G) · 은신'}
-GROUP = {'garam2': 'garam', 'hirari2': 'hirari', 'levi_beast': 'levi'}
+GROUP = {'garam2': 'garam', 'hirari2': 'hirari', 'levi_beast': 'levi', 'ahae2': 'ahae', 'ahae_wraith': 'ahae', 'slra2': 'slra'}
 def role(slug, o):
     r = str(o.get('role') or '') + ' ' + str(o.get('rank') or '')
     if K.get(slug, {}).get('boss') or r.startswith('보스') or '강적' in r or o.get('role', '').startswith('적'): return '적 · 보스'
@@ -54,13 +54,16 @@ def skillsFor(slug, pose):
 order = []
 for slug, o in R.items():
     g = 'h2_' + GROUP.get(slug, slug); base = R[GROUP.get(slug, slug)]
-    if g not in cidOf: cidOf[g] = f'C-{nxt:03d}'; nxt += 1
+    cg = base.get('codex_g'); hit = next((e for e in cat if cg and e.get('g') == cg), None)
+    if hit: g = cg; cidOf[g] = hit.get('cid') or cidOf.get(g)   # 1기 인물: 도감에 있던 묶음으로
+    if g not in cidOf or not cidOf[g]: cidOf[g] = f'C-{nxt:03d}'; nxt += 1
     cid = cidOf[g]; rl = role(GROUP.get(slug, slug), base)
-    rank = str(base.get('rank') or ''); rk = re.match(r'[1-4]성|4|보스|강적|중간급|암계장군|악마대장군|초강자|장군|거대괴수|정예|병사', rank)
+    rank = str(base.get('rank') or ''); rk = re.match(r'[1-5]성|4|보스|강적|중간급|암계장군|악마대장군|초강자|장군|거대괴수|정예|병사', rank)
     sub = f"{clean(base['name'])}{' (' + (rk.group(0) + ('성' if rk.group(0) == '4' else '')) + ')' if rk else ''} · {rl} · 동작 그림"
+    if hit: sub = hit['sub']
     nm = clean(o['name']); pas = K.get(slug, {}).get('pas')
     kit = ' · '.join(x['n'] for x in K.get(slug, {}).get('sk', []))
-    note = f"{'3기' if o.get('gen') == 3 else '2기'} 멤버 1차 (드라이브, 2026-10-06) · {o.get('rank', '')} · {o.get('role', '')} · 보직 {o.get('role_job', '-')} · 키 {o.get('tall', '?')}m · 분석: cave-3d/art/h2/notes/{slug}.md"
+    note = f"{o.get('batch') or ('3기' if o.get('gen') == 3 else '2기') + ' 멤버 1차'} (드라이브, 2026-10-06) · {o.get('rank', '')} · {o.get('role', '')} · 보직 {o.get('role_job', '-')} · 키 {o.get('tall', '?')}m · 분석: cave-3d/art/h2/notes/{slug}.md"
     gsum = f"게임 (훈련장 P → 2기): 기술 {kit or '-'}" + (f" · 패시브 {pas[0]} — {pas[1]}" if pas else '')
     if o.get('face') and slug not in GROUP:
         put(o['face'], os.path.join(FACE, f'h2_{slug}.webp'), sq=160)
@@ -96,8 +99,12 @@ ent('P-h2-alchemist', cat='char', sub=sub, cid=cidOf['h2_alchemist'], g='h2_alch
 rk = lambda e: (0 if e['id'].startswith('F-') else 1 if e['id'].startswith('P-') else 2 if e['id'].endswith('-idle') else 3)
 new.sort(key=lambda e: (e['g'], rk(e)))
 # 인물 칸 끝 (마지막 char 뒤)에 넣음
+ext = [e for e in new if not e['g'].startswith('h2_')]; new = [e for e in new if e['g'].startswith('h2_')]
+for gg in dict.fromkeys(e['g'] for e in ext):
+    idx = [i for i, e in enumerate(cat) if e.get('g') == gg]; add = [e for e in ext if e['g'] == gg]
+    cat[idx[-1] + 1:idx[-1] + 1] = add
 at = max(i for i, e in enumerate(cat) if e['cat'] == 'char') + 1
 cat[at:at] = new
 if 'v1.82:' not in head: head = head.replace('/* catalog.js v1.81 — ', '/* catalog.js v1.82 — v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). ', 1)
 open(P, 'w', encoding='utf-8').write(head + json.dumps(cat, ensure_ascii=False, indent=0) + ';\n')
-print(len(new), 'entries,', len({e['g'] for e in new}), 'people,', len(cat), 'total; cid', min(cidOf.values()), '~', max(cidOf.values()))
+print(len(new), 'entries (+', len(ext), 'in 1기 groups),', len({e['g'] for e in new}), 'people,', len(cat), 'total; cid', min(cidOf.values()), '~', max(cidOf.values()))
