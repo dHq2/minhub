@@ -1,4 +1,4 @@
-/* h2.js v1.3 — (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v1.4 — (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -93,6 +93,30 @@ function h2Cast(u, s, tgt){
     case 'pull': windup(u, 'line', { x: u.x, z: u.z, len: s.len || 6, w: s.w || 0.9, a, windup: W }, t => { hurt(u, t, u.atk * (s.mul || 0.8), { from: u, kb: 0 }); if (!t.D.boss && !t.D.heavy){ const n = norm(u.x - t.x, u.z - t.z), L = Math.max(0, dist(u, t) - 1.2); moveBy(t, n.x * L, n.z * L); t.st = 'hurt'; t.stT = 0.6; popText(t.x, t.y + bodyH(t) + 0.3, t.z, '끌려옴', 'alert', 0.6); } }); break;
     case 'transform': { const to = SPR['h2_' + s.to]; if (!to || u.h2form) break; const S0 = u.S; u.h2form = true; u.S = to; u.atk = Math.round(u.atk * (s.k || 1.5)); ring(u.x, u.z, 0xffd0f0, 2.4, 0.8); spark(u.x, u.y + 1.2, u.z, 0xffe0ff, 24, 5); camShake(0.2, 0.3); setPose(u, 'idle');
       setTimeout(() => { if (u.dead) return; u.S = S0; u.h2form = false; u.atk = Math.round(u.atk / (s.k || 1.5)); spark(u.x, u.y + 1.2, u.z, 0xffe0ff, 12, 3); popText(u.x, u.y + 2, u.z, '변신 풀림', 'miss', 0.8); }, (s.t || 15) * 1000); u.st = 'strike'; u.stT = 0.8; break; }
+    // v1.4 (3기) 새 기술 종류
+    case 'rain': {   // 연속 장판: 표적 둘레에 n개를 차례로 떨어뜨림 (운석 · 창비 · 낙뢰)
+      u.st = 'strike'; u.stT = 0.6; const n = s.cnt || 5, cx = tgt ? tgt.x : u.x, cz = tgt ? tgt.z : u.z;
+      for (let i = 0; i < n; i++) setTimeout(() => { if (u.dead) return; const t2 = i === 0 && tgt && !tgt.dead ? tgt : null, x = t2 ? t2.x : cx + rnd(-1, 1) * (s.spread || 3), z = t2 ? t2.z : cz + rnd(-1, 1) * (s.spread || 3), r = s.r || 1.4;
+        const dd = decal('circle', { x, z, r, dur: s.delay || 0.9, color: s.color || BLUE, hostile: u.side === 'enemy' });
+        dd.onDone = () => { ring(x, z, s.color || 0xffb070, r, 0.35); dust(x, z, 6); for (const t of G.units) if (t.side !== u.side && t.side !== 'neutral' && !t.dead && !t.downed && Math.hypot(t.x - x, t.z - z) < r) hurt(u, t, u.atk * (s.mul || 0.9), { from: { x, z }, kb: 0.8, stun: s.stun, fam: s.fam || 'magic' }); };
+      }, i * (s.gap || 0.22) * 1000);
+      break; }
+    case 'wave': {   // 충격파: 몸에서 둥글게 퍼지는 고리 (가까운 고리부터, 고리 사이에 서면 안 맞음)
+      u.st = 'strike'; u.stT = 0.8; camShake(0.18, 0.3); const n = s.cnt || 3, x = u.x, z = u.z;
+      for (let i = 0; i < n; i++) setTimeout(() => { if (u.dead) return; const R = (s.r || 2) * (i + 1), w = s.w || 1.1; ring(x, z, s.color || 0xffe0a0, R, 0.4);
+        for (const t of G.units) if (t.side !== u.side && t.side !== 'neutral' && !t.dead && !t.downed){ const dd = Math.hypot(t.x - x, t.z - z); if (dd < R && dd > R - w * 1.6) hurt(u, t, u.atk * (s.mul || 1), { from: { x, z }, kb: s.kb || 1.6, stun: s.stun }); } }, W * 1000 + i * (s.gap || 0.3) * 1000);
+      decal('circle', { x, z, r: (s.r || 2) * n, dur: W, color: s.color || BLUE, hostile: u.side === 'enemy' });
+      break; }
+    case 'beam': windup(u, 'line', { x: u.x, z: u.z, len: s.len || 12, w: s.w || 1.4, a, windup: W }, hit(s.mul || 2, { kb: 1.2, ...s })); camShake(0.1, 0.2); break;   // 광선: 길고 굵은 줄, 예고가 김
+    case 'trap': {   // 덫 · 감옥: 표적 발밑에 늦게 닫히는 원 → 걸리면 오래 묶임
+      u.st = 'strike'; u.stT = 0.5; const x = tgt ? tgt.x : u.x, z = tgt ? tgt.z : u.z, r = s.r || 1.5;
+      const dd = decal('circle', { x, z, r, dur: s.delay || 1.0, color: s.color || 0xc070ff, hostile: u.side === 'enemy' });
+      dd.onDone = () => { ring(x, z, s.color || 0xc070ff, r, 0.6); for (const t of G.units) if (t.side !== u.side && t.side !== 'neutral' && !t.dead && !t.downed && Math.hypot(t.x - x, t.z - z) < r){ hurt(u, t, u.atk * (s.mul || 0.6), { from: { x, z }, kb: 0, stun: s.stun || 2.2 }); popText(t.x, t.y + bodyH(t) + 0.3, t.z, s.tag || '갇힘', 'alert', 0.9); } };
+      break; }
+    case 'combo': {   // 연계: 여러 기술을 차례로 (sub: [기술, …], gap 초)
+      const subs = s.sub || []; let tm = 0;
+      for (const x of subs){ setTimeout(() => { if (u.dead || u.downed) return; u.st = 'idle'; h2Cast(u, { cd: 0, id: s.id + '_' + x.type, n: x.n || s.n, ...x }, tgt && !tgt.dead ? tgt : null); }, tm * 1000); tm += (x.windup ?? 0.4) + (s.gap || 0.35); }
+      u.h2cd[s.id] = s.cd; break; }
     case 'backstep': { const n = norm(u.x - (tgt ? tgt.x : u.x + 1), u.z - (tgt ? tgt.z : u.z)); moveBy(u, n.x * (s.len || 2.4), n.z * (s.len || 2.4)); dust(u.x, u.z, 5); u.st = 'strike'; u.stT = 0.35; break; }
   }
   return true;
@@ -103,6 +127,7 @@ function h2Pick(u, tgt){
   const d = dist(u, tgt), cd = u.h2cd || {};
   for (const s of K.sk){
     if ((cd[s.id] || 0) > 0) continue;
+    if (s.ph && !u.h2ph) continue;   // 2페이즈 기술
     if (s.type === 'heal'){ if (G.units.some(o => o.side === u.side && !o.dead && (o.downed && s.revive || o.hp < o.max * 0.55) && dist(o, u) < (s.r || 5))) return s; continue; }
     if (s.type === 'buff' || s.type === 'summon'){ if (d < (s.use || 10)) return s; continue; }
     if (s.type === 'guard'){ if (d < (s.use || 3) && Math.random() < 0.5) return s; continue; }
@@ -112,7 +137,17 @@ function h2Pick(u, tgt){
   }
   return null;
 }
-function h2Tick(u, dt){ if (u.h2cd) for (const k in u.h2cd) u.h2cd[k] -= dt; }
+function h2Tick(u, dt){
+  if (u.h2cd) for (const k in u.h2cd) u.h2cd[k] -= dt;
+  // v1.4 보스 2페이즈: K.phase = { at: 체력 비율, k: 공격 배율, spd: 속도 배율, say, pose (바꿀 서 있는 그림) }
+  const K = H2K[u.D.h2], P = K && K.phase;
+  if (P && !u.h2ph && !u.dead && u.hp < u.max * (P.at || 0.5)){
+    u.h2ph = true; u.atk = Math.round(u.atk * (P.k || 1.3)); u.spd *= P.spd || 1.15; u.h2cd = {};
+    if (P.pose && u.S.poses[P.pose]) u.S = { ...u.S, poses: { ...u.S.poses, idle: u.S.poses[P.pose] } };
+    ring(u.x, u.z, 0xff4060, 3.2, 0.9); camShake(0.35, 0.5); spark(u.x, u.y + 1.5, u.z, 0xff6080, 30, 6);
+    say(u, P.say || '……이제부터다.', 'big', 2); popText(u.x, u.y + bodyH(u) + 0.8, u.z, '2페이즈', 'alert', 1.4);
+  }
+}
 // 적: 기술이 있으면 쓰고, 아니면 보통 적 두뇌 (근접 · 활)
 function h2EnemyThink(u, dt){
   h2Tick(u, dt);
