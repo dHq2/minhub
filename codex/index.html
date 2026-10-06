@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v1.94 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<!-- codex v1.95 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -192,6 +192,16 @@ main{touch-action:pan-x pan-y}
 .view .big.zoomed{display:block}
 .view .big.zoomed img{max-height:none;max-width:none;width:220%}
 .view .hint{font-size:11px;color:var(--dim)}
+/* v1.95 꽉 찬 화면 (스샷용): 그림만 화면 가득, 원본이 있으면 원본 해상도로 다시 그림 */
+.shot{position:fixed;inset:0;z-index:40;background:#000;touch-action:pinch-zoom;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.shot[data-bg="white"]{background:#fff} .shot[data-bg="paper"]{background:var(--bg)}
+.shot[data-bg="check"]{background:repeating-conic-gradient(#cfcfcf 0 25%,#f4f4f4 0 50%) 0 0/24px 24px}
+.shot canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.shotUi{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.55));transition:opacity .35s;font:12px var(--body);color:#eee}
+.shotUi.off{opacity:0;pointer-events:none}
+.shotUi button{font:600 13px var(--body);color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:7px 12px}
+.shotUi span{flex:1;text-align:center;opacity:.8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.view .big img{cursor:zoom-in}
 /* 휴대폰 */
 @media (max-width:640px){
   .search{flex:1 1 100%} .search input{font-size:16px;padding:8px 10px}
@@ -314,6 +324,8 @@ h3.gh.open{margin-top:18px}
   <main id="main"></main>
 </div>
 
+<div class="shot" id="shot" hidden aria-label="꽉 찬 화면 (스샷용)"><canvas id="shotC"></canvas>
+  <div class="shotUi" id="shotUi"><button type="button" id="shotBg">바탕: 검정</button><span id="shotInfo"></span><button type="button" id="shotX">닫기</button></div></div>
 <div class="view" id="view" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="vName">
     <div class="big"><img id="vImg" alt=""></div>
@@ -348,6 +360,7 @@ h3.gh.open{margin-top:18px}
 
 <script src="catalog.js"></script>
 <script src="packs.js"></script>
+<script src="hipacks.js"></script>
 <script>
 'use strict';
 // 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
@@ -591,7 +604,7 @@ const navStack = [];
 function pushNav(kind){ navStack.push({ kind, cat, y: scrollY }); try { history.pushState({ codexNav: navStack.length }, ''); } catch (e) {} updBack(); }
 function updBack(){ const b = $('backBtn'); if (b) b.hidden = !navStack.length; }
 function goBack(){ if (!navStack.length) return; let moved = false; try { if (history.state && history.state.codexNav){ history.back(); moved = true; } } catch (e) {} if (!moved) restoreNav(); }
-function restoreNav(){ const s = navStack.pop(); updBack(); if (!s) return; if (!$('view').hidden){ closeView(true); return; } if (s.cat !== cat){ cat = s.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (e) {} } scrollTo({ top: s.y }); }
+function restoreNav(){ const s = navStack.pop(); updBack(); if (!s) return; if (s.kind === 'shot' && !$('shot').hidden){ closeShot(true); return; } if (!$('view').hidden){ closeView(true); return; } if (s.cat !== cat){ cat = s.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (e) {} } scrollTo({ top: s.y }); }
 addEventListener('popstate', () => { if (skipPop){ skipPop = false; return; } restoreNav(); });
 /* v1.69 자동 스크롤: 브라우저 smooth 대신 직접 굴림 (앱 안에서도 쭉 내려가는 게 보이게). 매 프레임 목표 위치를 다시 재서 그림이 늦게 떠 밀려도 따라감. 손가락이 닿으면 멈춤 */
 let autoScr = 0;
@@ -1057,7 +1070,73 @@ $('backBtn').onclick = goBack;
 $('fab').onclick = () => { pushNav('jump'); const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
 $('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
 document.querySelector('.lede').addEventListener('click', e => e.currentTarget.classList.toggle('open'));
-/* 크게 보기: 좌우로 밀어 넘기기 · 두 번 눌러 확대 */
+/* ---------- v1.95 꽉 찬 화면 (스샷용) ----------
+   크게 보기에서 그림을 한 번 누르면 그림만 화면 가득. 원본이 저장소에 있던 그림 (2기 · 인주 · 카리우스)은 hi/ 묶음의 원본 해상도로,
+   나머지는 도감에 있는 가장 큰 그림으로. 화면 픽셀 (기기 배율까지) 그대로 다시 그려서 흐림을 줄임.
+   1.6초 뒤 아래 줄이 사라져 스샷에 안 찍힘 (누르면 다시 보임) · 좌우로 밀면 이전 · 다음 · 바탕 (검정 · 흰색 · 도감 · 투명 체크) 바꾸기 · 뒤로 / Esc로 닫기 */
+const HIP = typeof HI === 'object' ? HI : {}, hiSheet = {};
+const SHOT = { bg: 'black', img: null, id: null, uiT: 0 };
+try { SHOT.bg = localStorage.getItem('codex-shotbg') || 'black'; } catch (e) {}
+const BGN = { black: '검정', white: '흰색', paper: '도감', check: '투명 체크' };
+function hiImg(src){
+  const h = HIP[src];
+  if (h){
+    const i = h[0]; const sp = hiSheet[i] || (hiSheet[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = HIPACKS[i]; }));
+    return sp.then(im => ({ im, sx: h[1], sy: h[2], w: h[3], h: h[4], hi: true }));
+  }
+  const p = PK[src];
+  if (p) return packImg(p[0]).then(im => ({ im, sx: p[1], sy: p[2], w: p[3], h: p[4] }));
+  return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok({ im, sx: 0, sy: 0, w: im.naturalWidth, h: im.naturalHeight }); im.onerror = no; im.src = src.startsWith('a/') ? src : src; });
+}
+function shotDraw(){
+  const c = $('shotC'), S = SHOT.img; if (!S || $('shot').hidden) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 4), W = Math.round(innerWidth * dpr), H = Math.round(innerHeight * dpr);
+  c.width = W; c.height = H; const g = c.getContext('2d'); g.clearRect(0, 0, W, H);
+  const m = Math.round(Math.min(W, H) * 0.02), k = Math.min((W - m * 2) / S.w, (H - m * 2) / S.h), dw = S.w * k, dh = S.h * k;
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  // 크게 키울 땐 두 배씩 나눠 키움 (한 번에 키우는 것보다 덜 뭉개짐)
+  let src = S.im, sx = S.sx, sy = S.sy, sw = S.w, sh = S.h;
+  if (k > 2.2){
+    let cw = sw, ch = sh, tmp = document.createElement('canvas'); tmp.width = sw; tmp.height = sh; tmp.getContext('2d').drawImage(src, sx, sy, sw, sh, 0, 0, sw, sh);
+    while (cw * 2 < dw){ const t2 = document.createElement('canvas'); t2.width = cw * 2; t2.height = ch * 2; const g2 = t2.getContext('2d'); g2.imageSmoothingEnabled = true; g2.imageSmoothingQuality = 'high'; g2.drawImage(tmp, 0, 0, cw, ch, 0, 0, cw * 2, ch * 2); tmp = t2; cw *= 2; ch *= 2; }
+    src = tmp; sx = 0; sy = 0; sw = cw; sh = ch;
+  }
+  g.drawImage(src, sx, sy, sw, sh, Math.round((W - dw) / 2), Math.round((H - dh) / 2), Math.round(dw), Math.round(dh));
+  const e = BY_ID[SHOT.id]; $('shotInfo').textContent = (e ? nameOf(e) : '') + ' · ' + S.w + '×' + S.h + (S.hi ? ' 원본' : '');
+}
+function shotUi(on = true){ clearTimeout(SHOT.uiT); $('shotUi').classList.toggle('off', !on); if (on) SHOT.uiT = setTimeout(() => $('shotUi').classList.add('off'), 1600); }
+function shotLoad(id){
+  const e = BY_ID[id]; if (!e) return; SHOT.id = id;
+  hiImg(e.src).then(S => { if (SHOT.id !== id) return; SHOT.img = S; shotDraw(); }).catch(() => {});
+}
+function openShot(){
+  if (!viewing) return; const sh = $('shot'); sh.dataset.bg = SHOT.bg; $('shotBg').textContent = '바탕: ' + BGN[SHOT.bg];
+  sh.hidden = false; SHOT.img = null; $('shotC').getContext('2d').clearRect(0, 0, 1e4, 1e4); shotLoad(viewing); shotUi(true); pushNav('shot');
+  try { if (sh.requestFullscreen && !document.fullscreenElement) sh.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}); } catch (e) {}
+}
+function closeShot(fromPop){
+  if ($('shot').hidden) return; $('shot').hidden = true; SHOT.img = null; clearTimeout(SHOT.uiT);
+  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+  if (!fromPop && navStack.length && navStack[navStack.length - 1].kind === 'shot'){ navStack.pop(); updBack(); try { if (history.state && history.state.codexNav) history.back(); } catch (e) {} skipPop = true; }
+}
+function shotStep(d){ step(d); shotLoad(viewing); }
+(() => {
+  const sh = $('shot'); let sx = 0, sy = 0, st = 0, multi = false;
+  sh.addEventListener('touchstart', e => { if (e.touches.length > 1){ multi = true; return; } multi = false; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, { passive:true });
+  sh.addEventListener('touchend', e => {
+    if (!st || multi || e.touches.length) return; const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; st = 0;
+    if (window.visualViewport && visualViewport.scale > 1.05) return;   // 손가락으로 확대한 채면 넘기지 않음
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4){ shotStep(dx < 0 ? 1 : -1); return; }
+    if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.4){ goBack(); return; }   // 아래로 쓸면 닫기
+  }, { passive:true });
+  sh.addEventListener('click', e => { if (e.target.closest('button')) return; shotUi($('shotUi').classList.contains('off')); });
+  $('shotX').onclick = e => { e.stopPropagation(); goBack(); };
+  $('shotBg').onclick = e => { e.stopPropagation(); const ks = Object.keys(BGN); SHOT.bg = ks[(ks.indexOf(SHOT.bg) + 1) % ks.length]; sh.dataset.bg = SHOT.bg; $('shotBg').textContent = '바탕: ' + BGN[SHOT.bg]; try { localStorage.setItem('codex-shotbg', SHOT.bg); } catch (err) {} shotUi(true); };
+  addEventListener('resize', () => { if (!sh.hidden) shotDraw(); });
+  addEventListener('keydown', e => { if (sh.hidden) return; e.stopImmediatePropagation(); if (e.key === 'Escape') goBack(); if (e.key === 'ArrowRight') shotStep(1); if (e.key === 'ArrowLeft') shotStep(-1); }, true);
+  $('vImg').addEventListener('click', openShot);
+})();
+/* 크게 보기: 좌우로 밀어 넘기기 · 그림을 누르면 꽉 찬 화면 (v1.95, 전엔 두 번 눌러 확대) */
 (() => {
   const big = document.querySelector('.view .big'); let sx = 0, sy = 0, st = 0, last = 0;
   big.addEventListener('touchstart', e => { if (e.touches.length !== 1) return; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, { passive:true });
@@ -1065,9 +1144,7 @@ document.querySelector('.lede').addEventListener('click', e => e.currentTarget.c
     if (!st) return; const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, dt = Date.now() - st; st = 0;
     if (big.classList.contains('zoomed')) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8 && Date.now() - last < 320) { big.classList.remove('zoomed'); last = 0; } else if (Math.abs(dx) < 8) last = Date.now(); return; }
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 700){ step(dx < 0 ? 1 : -1); return; }
-    if (Math.abs(dx) < 8 && Math.abs(dy) < 8){ if (Date.now() - last < 320){ big.classList.add('zoomed'); big.scrollLeft = (big.scrollWidth - big.clientWidth) / 2; last = 0; } else last = Date.now(); }
   }, { passive:true });
-  big.addEventListener('dblclick', () => big.classList.toggle('zoomed'));
 })();
 $('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = () => closeView();
 $('view').addEventListener('click', e => { if (e.target === $('view')) closeView(); });
