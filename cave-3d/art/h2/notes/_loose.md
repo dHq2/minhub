@@ -24,7 +24,7 @@ v1
 | 갈리아, 탕아 원화.jpg | 시트 캡처 — 실제로는 탕아 + 딸기: 글 "용사 '탕아'", "딸기/식물계/정령 딜서폿" (갈리아는 안 보임) | tanga · sanddalgi | tanga/portrait · face, sanddalgi/portrait · face |
 | 금기사.jpg | 갤러리 캡처 — 왼쪽 어두운 피부 금발 사내(가리, 잘림) + 오른쪽 금발 판금 여기사 | goldknight (+ gari) | goldknight/portrait2 · face2 |
 | 벨.jpg | 갤러리 캡처 — 벨 전신 + 오른쪽 검은 옷 인물 (잘림, 가리로 보임) | bel | bel/portrait3 · face3 |
-| 휘슬 .jpg | 갤러리 캡처 — 왼쪽 붉은 · 검은 투톤 단발 여전사 (검은 가죽 · 벨트 갑옷, 비키니형 상의, 허벅지 부츠, 장검), 오른쪽 망토 갑옷 가람 | whistle · garam2 | whistle/portrait · face (새 폴더), garam2/portrait · face |
+| 휘슬 .jpg | 갤러리 캡처 — 왼쪽 붉은 · 검은 투톤 단발 여전사 (검은 가죽 · 벨트 갑옷, 비키니형 상의, 허벅지 부츠, 장검), 오른쪽 망토 갑옷 가람 | whistle · garam2 | whistle/portrait2 · face2 (portrait 는 담당 작업자 것), garam2/portrait · face |
 | 창병.jpg | 갤러리 캡처 — 금발 뿔 정장 권총 여자 + 어두운 피부 창 · 큰 방패 병사 | gundevil · rook | gundevil/portrait2 · face2, rook/portrait2 · face2 |
 | 변신 히라히라.jpg | 갤러리 캡처 — 변신 히라리 (흰 예복 · 날개고리 지팡이) + 오른쪽 하리 (잘림) | hirari2 (+ hari) | hirari2/portrait · face |
 
@@ -72,12 +72,11 @@ v1
 | 빨간 딸기 머리 · 청록 드레스 · 지팡이 | sanddalgi | 갈리아, 탕아 원화, 딸기 전신 콘셉트 |
 | 청동 투구 병사 | venti | 벤티, 탱크 원화 |
 | 뿔 투구 · 회색 SF 갑옷 · 파란 눈빛 | tank | 벤티, 탱크 원화 |
-| 붉은 · 검정 투톤 단발 여전사 · 장검 | whistle (새 폴더) | 휘슬 .jpg 왼쪽 |
+| 붉은 · 검정 투톤 단발 여전사 · 장검 | whistle | 휘슬 .jpg 왼쪽 |
 | 흰 머리 숫양 뿔 · 안경 · 연금술 로브 | (새) alchemist | 연금술.png, 원화들 |
 | 레비 · 건 · 풍야 · 소스차 · 투구 다섯 | levi · gun · ? · sosucha · joshua? | 4성 5인 원화 (목록만) |
 
 ## 5. 주의
-- hari 폴더는 내가 처음 만들었음 (portrait · face). 천사 하리 담당자가 같은 이름을 쓰면 겹칠 수 있음 → 합칠 때 확인.
-- whistle 폴더도 이 작업에서 처음 만듦 (portrait · face 만).
+- hari/portrait · face 와 whistle/portrait2 · face2 는 이 작업에서 넣음 (그 폴더의 동작 그림은 다른 작업자 것). 담당자가 portrait 를 따로 만들면 겹치므로 합칠 때 확인 (내 것: hari/portrait 428x900 = 히라리,하리.png 오른쪽, whistle/portrait2 347x900 = 휘슬 .jpg 왼쪽).
 - '갈리아, 탕아 원화.jpg' 는 이름과 달리 탕아 + 딸기 그림.
 - 4성 5인 원화는 다른 작업자도 봄 — 여기서는 아무것도 자르지 않음.
