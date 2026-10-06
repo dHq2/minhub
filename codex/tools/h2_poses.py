@@ -1,4 +1,4 @@
-# h2_poses.py v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
+# h2_poses.py v1.1 — (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
 #  · 인물마다 새 묶음 (g = h2_<slug>, cid = 새 인물 번호). 같은 인물의 다른 모습은 한 묶음: 가람 + 망토 갑옷 · 히라리 + 변신 · 레비 + 소환수
 #  · F-h2-<slug> 기본 초상화 (img/face, 256 → 160) · P-h2-<slug> 원화 (img/h2, 높이 420) · O-h2-<slug>-<동작> 동작 그림 (img/h2, 높이 300)
 #  · 은신 웅크림 (은신.png) 7장 · 연금술사 (이름 모름, 낱장 연금술.png) · 벨 쌍권총 그림도 같이
@@ -56,11 +56,11 @@ for slug, o in R.items():
     g = 'h2_' + GROUP.get(slug, slug); base = R[GROUP.get(slug, slug)]
     if g not in cidOf: cidOf[g] = f'C-{nxt:03d}'; nxt += 1
     cid = cidOf[g]; rl = role(GROUP.get(slug, slug), base)
-    rank = str(base.get('rank') or ''); rk = re.match(r'[1-4]성|4|보스|강적', rank)
+    rank = str(base.get('rank') or ''); rk = re.match(r'[1-4]성|4|보스|강적|중간급|암계장군|악마대장군|초강자|장군|거대괴수|정예|병사', rank)
     sub = f"{clean(base['name'])}{' (' + (rk.group(0) + ('성' if rk.group(0) == '4' else '')) + ')' if rk else ''} · {rl} · 동작 그림"
     nm = clean(o['name']); pas = K.get(slug, {}).get('pas')
     kit = ' · '.join(x['n'] for x in K.get(slug, {}).get('sk', []))
-    note = f"2기 멤버 1차 (드라이브, 2026-10-06) · {o.get('rank', '')} · {o.get('role', '')} · 보직 {o.get('role_job', '-')} · 키 {o.get('tall', '?')}m · 분석: cave-3d/art/h2/notes/{slug}.md"
+    note = f"{'3기' if o.get('gen') == 3 else '2기'} 멤버 1차 (드라이브, 2026-10-06) · {o.get('rank', '')} · {o.get('role', '')} · 보직 {o.get('role_job', '-')} · 키 {o.get('tall', '?')}m · 분석: cave-3d/art/h2/notes/{slug}.md"
     gsum = f"게임 (훈련장 P → 2기): 기술 {kit or '-'}" + (f" · 패시브 {pas[0]} — {pas[1]}" if pas else '')
     if o.get('face') and slug not in GROUP:
         put(o['face'], os.path.join(FACE, f'h2_{slug}.webp'), sq=160)

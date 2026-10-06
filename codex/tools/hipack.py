@@ -1,4 +1,4 @@
-# hipack.py v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
+# hipack.py v1.1 — (v1.1: 3기 추가 스프라이트 h3x · 추가팩션 h3f 원본) v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
 #  도감 그림 (img/*)은 목록용으로 줄여 둔 것. 원본이 저장소에 있는 그림만 원본 해상도로 다시 묶어 hi/hi<N>.webp + hipacks.js
 #   · img/h2/<slug>__<동작> → cave-3d/art/h2/<slug>/<동작>.webp (원화 · 은신 · 쌍권총 · 연금술사는 원래 자리)
 #   · img/face/h2_<slug> → 2기 얼굴 원본 · img/inju/<k> → cave-3d/art/inju/<k> · img/karius/<k> → cave-3d/art/kar/<k> (원화 2는 src/art2)
@@ -22,6 +22,10 @@ def hiOf(src):
         p = R.get(slug, {}).get('poses', {}).get(k); return p and p['src']
     if src.startswith('img/face/h2_'):
         slug = b[3:]; return f'{MISC}/alchemist_face.webp' if slug == 'alchemist' else R.get(slug, {}).get('face')
+    if src.startswith('img/h3x/'):
+        slug, k = b.split('__', 1); return f'art/h3x/{slug}/{k}.webp'
+    if src.startswith(('img/npc/h3f_', 'img/prop/h3f_')):
+        rest = b[4:]; slug, nn = rest.rsplit('_', 1); return f'art/h3f/{slug}/{nn}.webp'
     if src.startswith('img/inju/'): return f'art/inju/{b}.webp'
     if src.startswith('img/karius/'): return 'art/kar/src/art2.webp' if b == 'art2' else f'art/kar/{b}.webp'
     return None
