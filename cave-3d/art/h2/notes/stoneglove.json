@@ -1,0 +1,114 @@
+{
+ "slug": "stoneglove",
+ "name": "돌장갑",
+ "rank": "미정 (폴더 이름에 등급 없음)",
+ "folder": "돌장갑",
+ "role": "동료 (적 격투가로도 가능)",
+ "tall": 1.62,
+ "weight": 95,
+ "palette": [
+  "#ecd8cf",
+  "#e6e0d4",
+  "#272422",
+  "#7e7672",
+  "#8a4fb0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/stoneglove/idle.webp",
+   "w": 432,
+   "h": 695,
+   "ax": 206,
+   "ay": 692,
+   "from": "토끼 귀 전사의 세 포즈(입모양가끔바뀌는 idle).png 왼쪽",
+   "orig": "서 있음 (입 조금 벌림), 돌장갑 낀 두 팔 늘어뜨림",
+   "scale": 0.82
+  },
+  "idle2": {
+   "src": "art/h2/stoneglove/idle2.webp",
+   "w": 428,
+   "h": 692,
+   "ax": 204,
+   "ay": 689,
+   "from": "돌장갑.png",
+   "orig": "서 있음 — idle 과 같은 자세에 입을 크게 벌림 (idle 중 가끔 바꿔 끼우는 입모양 그림)",
+   "scale": 0.82
+  },
+  "guard": {
+   "src": "art/h2/stoneglove/guard.webp",
+   "w": 459,
+   "h": 594,
+   "ax": 242,
+   "ay": 591,
+   "from": "토끼 귀 전사의 세 포즈(입모양가끔바뀌는 idle).png 가운데",
+   "orig": "다리 넓게 벌려 낮추고 두 돌주먹을 앞에 모은 격투 자세",
+   "scale": 0.82
+  },
+  "attack": {
+   "src": "art/h2/stoneglove/attack.webp",
+   "w": 561,
+   "h": 535,
+   "ax": 230,
+   "ay": 532,
+   "from": "토끼 귀 전사의 세 포즈(입모양가끔바뀌는 idle).png 오른쪽",
+   "orig": "뛰어들며 오른 돌주먹 내지르기 (공중, 발이 땅에 안 닿음)",
+   "scale": 0.82,
+   "ax_auto": 86
+  }
+ },
+ "portrait": "art/h2/stoneglove/portrait.webp",
+ "face": "art/h2/stoneglove/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "slam (내려찍기)",
+  "back"
+ ],
+ "kit": {
+  "basic": "돌주먹 연타 (guard 자세에서) — 앞 2m, 3타째 넘어뜨림",
+  "skills": [
+   {
+    "name": "도약 돌주먹",
+    "pose": "attack",
+    "desc": "6m 앞으로 뛰어들며 주먹 — 맞은 적 4m 밀어냄, 착지 반지름 2.5m 원 넘어뜨림"
+   },
+   {
+    "name": "바위 자세",
+    "pose": "guard",
+    "desc": "2초 동안 앞 120도 막기 (피해 70% 감소), 막는 동안 맞으면 반격 주먹"
+   },
+   {
+    "name": "토끼 고함",
+    "pose": "idle2",
+    "desc": "입을 크게 벌려 소리침 — 반지름 6m 원 도발 (적이 3초간 자신을 노림)"
+   }
+  ],
+  "passive": "돌갑주: 팔다리 돌 장갑으로 근접 피해 20% 감소, 넘어지지 않음 (대신 이동 −10%)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 1
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 950,
+  "atk": 38,
+  "spd": 5.0,
+  "weight_kg": 95,
+  "tall_m": 1.62
+ },
+ "desc": "흰 털 망토를 두른 토끼 귀 격투가. 바위로 깎은 큼직한 장갑과 정강이 갑옷으로 때리고 버틴다.",
+ "gen": 3,
+ "ax_note": "attack 은 공중 동작이라 ax 를 몸 (허리) 가운데로 손으로 고침 (자동값은 ax_auto).",
+ "idle_alt": {
+  "idle2": "idle 중 2~4초마다 0.4초쯤 idle2 로 바꿔 끼워 입모양이 바뀌게"
+ }
+}

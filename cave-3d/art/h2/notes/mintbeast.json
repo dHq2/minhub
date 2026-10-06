@@ -1,0 +1,99 @@
+{
+ "slug": "mintbeast",
+ "name": "민트괴수 (민트 외눈 괴수)",
+ "rank": "미정 (폴더에 등급 없음 · 그림 제목은 \"보스\")",
+ "folder": "민트괴수",
+ "role": "보스 (또는 강적 — 그림 제목이 보스 시트)",
+ "tall": 3.1,
+ "weight": 240,
+ "palette": [
+  "#1f2222",
+  "#3b3f3f",
+  "#687069",
+  "#89a094",
+  "#8fdcc0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/mintbeast/idle.webp",
+   "w": 371,
+   "h": 698,
+   "ax": 145,
+   "ay": 695,
+   "from": "민트 외눈 괴수 3종 보스 시트.png 가운데",
+   "orig": "옆모습, 구부정히 숙이고 긴 팔과 갈퀴를 늘어뜨림",
+   "scale": 0.9
+  },
+  "front": {
+   "src": "art/h2/mintbeast/front.webp",
+   "w": 432,
+   "h": 752,
+   "ax": 217,
+   "ay": 749,
+   "from": "민트 외눈 괴수 3종 보스 시트.png 왼쪽",
+   "orig": "앞모습, 민트 머리카락 사이 검은 외눈 (구멍) 이 정면을 봄",
+   "scale": 0.9
+  },
+  "attack": {
+   "src": "art/h2/mintbeast/attack.webp",
+   "w": 682,
+   "h": 677,
+   "ax": 319,
+   "ay": 674,
+   "from": "민트 외눈 괴수 3종 보스 시트.png 오른쪽",
+   "orig": "낮게 덮치며 머리카락 사이 둥근 이빨 아가리를 벌리고 두 갈퀴손을 뻗음",
+   "scale": 0.9
+  }
+ },
+ "portrait": "art/h2/mintbeast/portrait.webp",
+ "face": "art/h2/mintbeast/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "back",
+  "crawl (기어가기)"
+ ],
+ "kit": {
+  "basic": "갈퀴 할퀴기 — 앞 3m 부채꼴 120도",
+  "skills": [
+   {
+    "name": "둥근 아가리",
+    "pose": "attack",
+    "desc": "5m 덮치며 둥근 이빨 입으로 물기 — 큰 피해 + 피해의 30% 회복, 맞은 적 1초 붙잡힘"
+   },
+   {
+    "name": "외눈 응시",
+    "pose": "front",
+    "desc": "검은 눈구멍으로 바라봄 — 앞 12m 줄, 맞은 적 2초 굳음 (돌아서 있으면 안 걸림)"
+   },
+   {
+    "name": "누더기 숨기",
+    "pose": "idle",
+    "desc": "몸을 숙여 4초 은신 이동 (반투명), 은신 뒤 첫 공격 피해 +50%"
+   }
+  ],
+  "passive": "누더기 그림자: 어두운 곳에서 받는 원거리 공격 명중 −30%, 등의 가지 뿔에 원거리 피해 15% 감소"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 4
+ },
+ "tag": "beast",
+ "role_job": "척후",
+ "bag": 6,
+ "stats": {
+  "hp": 2400,
+  "atk": 55,
+  "spd": 5.5,
+  "weight_kg": 240,
+  "tall_m": 3.1
+ },
+ "desc": "민트빛 긴 머리카락이 얼굴을 덮은 외눈 괴물. 비늘 몸에 누더기를 두르고 등에서 사슴뿔 같은 가지가 뻗으며, 머리카락 속 둥근 아가리로 문다.",
+ "gen": 3
+}

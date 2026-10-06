@@ -1,0 +1,100 @@
+{
+ "slug": "majin",
+ "name": "마신족 병사",
+ "rank": "병사 (그림 제목은 \"마신족 보스\")",
+ "folder": "마신족 병사",
+ "role": "적 (마신족 병사 — 무리로 나오는 적. 크게 키우면 소보스로도)",
+ "tall": 2.3,
+ "weight": 170,
+ "palette": [
+  "#aa4e6d",
+  "#7b3d50",
+  "#433436",
+  "#2b2b2b",
+  "#e3d8bf"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/majin/idle.webp",
+   "w": 593,
+   "h": 686,
+   "ax": 280,
+   "ay": 683,
+   "from": "마신족 보스 3면 캐릭터 시트.png 가운데",
+   "orig": "옆모습, 철퇴를 한 손으로 늘어뜨리고 서 있음",
+   "scale": 1.1
+  },
+  "front": {
+   "src": "art/h2/majin/front.webp",
+   "w": 632,
+   "h": 801,
+   "ax": 345,
+   "ay": 798,
+   "from": "마신족 보스 3면 캐릭터 시트.png 왼쪽",
+   "orig": "앞모습 (3/4), 두 손으로 철퇴 자루를 비스듬히 쥠, 날개 펼침",
+   "scale": 1.1
+  },
+  "windup": {
+   "src": "art/h2/majin/windup.webp",
+   "w": 684,
+   "h": 853,
+   "ax": 320,
+   "ay": 850,
+   "from": "마신족 보스 3면 캐릭터 시트.png 오른쪽",
+   "orig": "두 손으로 가시 철퇴를 머리 위로 치켜듦 (내려찍기 직전), 다리 벌려 낮춤",
+   "scale": 1.1
+  }
+ },
+ "portrait": "art/h2/majin/portrait.webp",
+ "face": "art/h2/majin/face.webp",
+ "missing": [
+  "attack (내려친 뒤)",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "fly (날개)",
+  "back"
+ ],
+ "kit": {
+  "basic": "철퇴 치기 (idle 에서 휘두름) — 앞 2.5m 부채꼴 90도",
+  "skills": [
+   {
+    "name": "마신 내려찍기",
+    "pose": "windup",
+    "desc": "1초 치켜든 뒤 앞 3m 내려찍기 — 반지름 2m 원 큰 피해 + 넘어뜨림 (치켜드는 동안 맞으면 끊김)"
+   },
+   {
+    "name": "철퇴 쓸어치기",
+    "pose": "front",
+    "desc": "두 손으로 자루를 잡고 옆으로 쓸기 — 앞 3m 부채꼴 160도, 맞은 적 2m 밀쳐냄"
+   },
+   {
+    "name": "날개 뛰기",
+    "pose": "idle",
+    "desc": "날개를 펴 8m 도약해 적 뒤로 내려앉음 (날기 그림 없음 — idle 로 대신)"
+   }
+  ],
+  "passive": "마신족 무리: 근처 10m 에 다른 마신족이 있으면 공격 +10% (최대 3마리)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "tag": "soldier",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 700,
+  "atk": 40,
+  "spd": 5.0,
+  "weight_kg": 170,
+  "tall_m": 2.3
+ },
+ "desc": "용 머리에 굽은 숫양 뿔, 박쥐 날개와 꼬리를 단 마신족 병사. 해진 자홍색 천을 두르고 가시 철퇴를 든다.",
+ "gen": 3
+}

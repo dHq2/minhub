@@ -1,0 +1,95 @@
+{
+ "slug": "ancientangel",
+ "name": "고대천사",
+ "rank": "보스",
+ "folder": "고대천사B",
+ "role": "보스 (2기와 같음. 폴더 이름 'B' 는 다른 형태가 아니라 두 번째 그림 묶음으로 판단 — 깃털 가면 얼굴 · 분홍 깃털 몸 · 날개 끝 갈퀴 손이 2기 그림과 같음)",
+ "tall": 4.0,
+ "weight": 220,
+ "palette": [
+  "#503a3d",
+  "#77595c",
+  "#977578",
+  "#b08d8e",
+  "#c5a2a3"
+ ],
+ "poses": {
+  "idle_b": {
+   "src": "art/h2/ancientangel/idle_b.webp",
+   "w": 620,
+   "h": 704,
+   "ax": 460,
+   "ay": 701,
+   "ax_auto": 414,
+   "from": "고대 천사의 두 전투 자세.png 왼쪽",
+   "orig": "날개 접어 몸 뒤로 두르고 곧게 섬 (두 손 갈퀴 늘어뜨림)",
+   "scale": 0.885
+  },
+  "attack": {
+   "src": "art/h2/ancientangel/attack.webp",
+   "w": 1045,
+   "h": 607,
+   "ax": 458,
+   "ay": 604,
+   "from": "고대 천사의 두 전투 자세.png 오른쪽",
+   "orig": "다리 넓게 벌리고 오른 날개를 앞으로 쭉 뻗어 날개 끝 갈퀴 손으로 낚아채기",
+   "scale": 0.885
+  }
+ },
+ "portrait": "art/h2/ancientangel/portrait.webp",
+ "face": "art/h2/ancientangel/face.webp",
+ "missing": [
+  "fly",
+  "special",
+  "walk",
+  "hurt",
+  "down",
+  "dead"
+ ],
+ "kit": {
+  "basic": "날개 갈퀴 할퀴기 (attack) — 앞 5m 부채꼴 60도",
+  "skills": [
+   {
+    "name": "날개 감옥",
+    "pose": "idle_b",
+    "desc": "날개를 몸 둘레로 접어 2초 버팀: 정면 · 옆 원거리 피해 70% 감소, 끝날 때 날개를 펼치며 반경 4m 원 밀어내기 (3m) + 깃털 칼날 피해. 원본 파일 '날개 감옥' 에서 이름"
+   },
+   {
+    "name": "천상의 낚아채기",
+    "pose": "attack",
+    "desc": "날개 끝 갈퀴 손을 앞으로 8m 줄로 뻗어 처음 맞은 적 하나를 끌어오기 (발 앞 1.5m 로) + 1초 붙잡기. 재사용 10초"
+   },
+   {
+    "name": "깃털 비",
+    "pose": "idle",
+    "desc": "(2기 기술 그대로) 날개 펼쳐 앞 12m 부채꼴 90도 깃털 칼날 7발"
+   }
+  ],
+  "passive": "고대의 깃털: 날개를 접은 (idle_b) 동안 넘어뜨리기 · 밀치기 무시"
+ },
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 3,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 0
+ },
+ "tag": "mage",
+ "role_job": "지휘",
+ "bag": 8,
+ "stats": {
+  "hp": 4200,
+  "atk": 80,
+  "spd": 5,
+  "weight_kg": 220,
+  "tall_m": 4.0
+ },
+ "desc": "온몸이 연분홍 깃털로 뒤덮인 4m 여성형 고대 천사. 얼굴은 깃털 왕관 속 검은 가면이고, 날개 끝이 거대한 갈퀴 손이다.",
+ "gen": 3,
+ "rank_g2": "보스",
+ "same_as_g2": {
+  "고대천사의 날개 감옥 IDLe.png": "고대천사 보스.png (idle) — 화소까지 똑같음"
+ },
+ "note": "새 그림은 '고대 천사의 두 전투 자세.png' 하나 (1881x836). 변신 · 다른 형태가 아니므로 ancientangel2 를 만들지 않음. 배율 0.885 는 idle_b 키 (날개 끝 포함) 가 2기 idle (h 701) 과 같게 맞춤. 00_원본_참고 에 글자 없음 (이름 · 등급은 폴더 · 파일 이름에서)."
+}

@@ -1,0 +1,104 @@
+{
+ "slug": "hornbeast",
+ "name": "거대괴수B (검은 뿔 괴수)",
+ "rank": "거대괴수 (시트 제목 \"보스\")",
+ "folder": "거대괴수B",
+ "role": "보스 (거대괴수 — 맵 하나를 차지하는 큰 보스)",
+ "tall": 7.5,
+ "weight": 26000,
+ "palette": [
+  "#19191c",
+  "#252428",
+  "#333336",
+  "#444447",
+  "#b8b3a8"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hornbeast/idle.webp",
+   "w": 578,
+   "h": 705,
+   "ax": 284,
+   "ay": 702,
+   "from": "검은 뿔 괴수 3면 보스 시트.png 가운데",
+   "orig": "옆모습, 앞으로 숙여 긴 팔을 땅에 드리우고 서 있음",
+   "scale": 1.05
+  },
+  "front": {
+   "src": "art/h2/hornbeast/front.webp",
+   "w": 545,
+   "h": 840,
+   "ax": 224,
+   "ay": 837,
+   "from": "검은 뿔 괴수 3면 보스 시트.png 왼쪽",
+   "orig": "앞모습 (3/4), 똑바로 서서 고개 숙임",
+   "scale": 1.05
+  },
+  "attack": {
+   "src": "art/h2/hornbeast/attack.webp",
+   "w": 675,
+   "h": 607,
+   "ax": 412,
+   "ay": 604,
+   "from": "검은 뿔 괴수 3면 보스 시트.png 오른쪽",
+   "orig": "낮게 웅크려 입을 쩍 벌리고 앞발 갈퀴를 휘두르기 직전 (포효 · 덮치기)",
+   "scale": 1.05
+  }
+ },
+ "portrait": "art/h2/hornbeast/portrait.webp",
+ "face": "art/h2/hornbeast/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "roar (따로)",
+  "back",
+  "charge (돌진)"
+ ],
+ "kit": {
+  "basic": "갈퀴 휘두르기 (attack) — 앞 7m 부채꼴 120도, 넘어뜨림",
+  "skills": [
+   {
+    "name": "뿔 들이받기",
+    "pose": "idle",
+    "desc": "몸을 숙인 채 앞으로 14m 돌진 — 줄 위 적을 밀쳐 넘어뜨리고 벽에 박으면 2초 기절"
+   },
+   {
+    "name": "아가리 포효",
+    "pose": "attack",
+    "desc": "입을 벌려 울부짖음 — 반지름 15m 원, 2초 공포 (뒤로 도망) + 방어 −20% 6초"
+   },
+   {
+    "name": "대지 내려찍기",
+    "pose": "front",
+    "desc": "일어서서 두 팔로 땅을 침 — 반지름 9m 원 충격파, 가까울수록 큰 피해, 돌 파편이 3초 장판"
+   }
+  ],
+  "passive": "가시 털가죽: 근접 공격한 적에게 받은 피해 15% 되돌림, 원거리 피해 20% 감소"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "beast",
+ "role_job": "선봉",
+ "bag": 6,
+ "stats": {
+  "hp": 8000,
+  "atk": 110,
+  "spd": 4.0,
+  "weight_kg": 26000,
+  "tall_m": 7.5
+ },
+ "desc": "온몸이 검은 깃털 같은 비늘과 가시로 덮인 거대 괴수. 머리에 긴 뿔 네 가닥, 눈 없이 톱니 이빨만 드러낸다.",
+ "gen": 3,
+ "billboard": {
+  "mode": "single",
+  "note": "세운 괴수라 빌보드 한 장. 게임 크기는 키 7.5m 기준 (idle 그림 높이 = 7.5m). 판정은 원기둥 (반지름 2.5m, 높이 6.5m) 으로 따로."
+ }
+}

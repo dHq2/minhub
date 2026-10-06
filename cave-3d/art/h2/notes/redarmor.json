@@ -1,0 +1,99 @@
+{
+ "slug": "redarmor",
+ "name": "붉은갑주 (붉은 갑각 전사)",
+ "rank": "강적",
+ "folder": "강적 붉은갑주",
+ "role": "적 (강적 — 중간 보스급)",
+ "tall": 2.5,
+ "weight": 320,
+ "palette": [
+  "#ba4c65",
+  "#84384d",
+  "#412530",
+  "#e8c2b2",
+  "#c7818a"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/redarmor/idle.webp",
+   "w": 603,
+   "h": 693,
+   "ax": 304,
+   "ay": 690,
+   "from": "붉은 갑각 전사 3면 보스 시트.png 가운데",
+   "orig": "옆 (3/4 오른쪽) 으로 서서 오른팔 갑각 낫을 늘어뜨림",
+   "scale": 1.05
+  },
+  "front": {
+   "src": "art/h2/redarmor/front.webp",
+   "w": 520,
+   "h": 811,
+   "ax": 228,
+   "ay": 808,
+   "from": "붉은 갑각 전사 3면 보스 시트.png 왼쪽",
+   "orig": "앞모습 (3/4), 두 팔 벌리고 똑바로 섬",
+   "scale": 1.05
+  },
+  "attack": {
+   "src": "art/h2/redarmor/attack.webp",
+   "w": 738,
+   "h": 601,
+   "ax": 338,
+   "ay": 598,
+   "from": "붉은 갑각 전사 3면 보스 시트.png 오른쪽",
+   "orig": "다리 넓게 디디고 몸을 틀어 오른팔 낫날을 앞으로 휘두름",
+   "scale": 1.05
+  }
+ },
+ "portrait": "art/h2/redarmor/portrait.webp",
+ "face": "art/h2/redarmor/face.webp",
+ "missing": [
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "attack2 (내려 베기)",
+  "back"
+ ],
+ "kit": {
+  "basic": "갑각 낫 베기 (attack) — 앞 3.5m 부채꼴 150도",
+  "skills": [
+   {
+    "name": "돌진 베기",
+    "pose": "attack",
+    "desc": "6m 앞으로 돌진하며 낫으로 쓸어 벰 — 줄 위 모든 적, 출혈 3초"
+   },
+   {
+    "name": "갑각 굳히기",
+    "pose": "front",
+    "desc": "두 팔 벌려 버팀 3초 — 받는 피해 50% 감소, 그 동안 근접으로 친 적에게 반격 베기"
+   },
+   {
+    "name": "붉은 처형",
+    "pose": "attack",
+    "desc": "쓰러진 적 · 체력 25% 아래 적에게 앞 2m 큰 내려 베기 (확인사살, 피해 2배)"
+   }
+  ],
+  "passive": "붉은 갑주: 정면 피해 25% 감소, 등 · 배 (살구빛 맨살) 는 약점 (+20% 피해)"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "brawler",
+ "role_job": "선봉",
+ "bag": 8,
+ "stats": {
+  "hp": 1600,
+  "atk": 62,
+  "spd": 4.5,
+  "weight_kg": 320,
+  "tall_m": 2.5
+ },
+ "desc": "새우 · 가재 같은 붉은 갑각을 두른 거구 전사. 오른팔이 커다란 초승달 낫날로 되어 있고, 해골 같은 하얀 얼굴에 붉은 뿔 두 개.",
+ "gen": 3
+}
