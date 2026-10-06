@@ -1,0 +1,99 @@
+{
+ "slug": "hammerknight",
+ "name": "해머기사 (이름 미상)",
+ "rank": "미상 (폴더 이름 '해머기사 적' — 등급 글자 없음, 정예 졸개급으로 봄)",
+ "folder": "해머기사 적",
+ "role": "적 (폴더 이름이 '적'. 이름 없는 중장 해머 병사 — 무리 속 정예 · 관문지기. 대화 · 동료 요소 없음)",
+ "tall": 2.25,
+ "weight": 260,
+ "palette": [
+  "#5a5a5c",
+  "#2f2f31",
+  "#4a3b30",
+  "#6b4a33",
+  "#9a9a98"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/hammerknight/idle.webp",
+   "w": 510,
+   "h": 697,
+   "ax": 268,
+   "ay": 694,
+   "from": "검은 면갑 기사 해머 포즈 시트.png 가운데 (뒤집음)",
+   "orig": "옆모습: 대형 돌 해머를 한 손으로 비스듬히 끌듯 들고 섬, 등에 털가죽 짐",
+   "scale": 1.12
+  },
+  "front": {
+   "src": "art/h2/hammerknight/front.webp",
+   "w": 616,
+   "h": 877,
+   "ax": 353,
+   "ay": 874,
+   "from": "검은 면갑 기사 해머 포즈 시트.png 왼쪽 (뒤집음)",
+   "orig": "3/4 앞모습: 해머 머리를 땅에 짚고 섬, 통 투구 (네모 면갑, 눈구멍 검게 뚫림)",
+   "scale": 1.12
+  },
+  "windup": {
+   "src": "art/h2/hammerknight/windup.webp",
+   "w": 757,
+   "h": 892,
+   "ax": 334,
+   "ay": 889,
+   "from": "검은 면갑 기사 해머 포즈 시트.png 오른쪽 (뒤집음)",
+   "orig": "다리 크게 벌리고 두 손으로 해머를 머리 위로 치켜듦 (내려찍기 직전)",
+   "scale": 1.12
+  }
+ },
+ "portrait": "art/h2/hammerknight/portrait.webp",
+ "face": "art/h2/hammerknight/face.webp",
+ "missing": [
+  "attack (내려찍은 순간 — windup 다음 장면)",
+  "back",
+  "walk",
+  "hurt",
+  "down",
+  "dead"
+ ],
+ "kit": {
+  "basic": "해머 휘두르기 (idle → windup 짧게) — 앞 2.5m 부채꼴 90도, 느림 (1.4초), 맞으면 밀려남 2m",
+  "skills": [
+   {
+    "name": "대지 내려찍기",
+    "pose": "windup",
+    "desc": "1초 모은 뒤 앞 3m 원 (지름 3m) 내려찍기: 큰 피해 + 넘어뜨림 1.5초, 바닥에 돌 파편 장판 3초 (밟으면 둔화 30%)"
+   },
+   {
+    "name": "해머 버티기",
+    "pose": "front",
+    "desc": "해머를 땅에 박고 2초 버팀: 받는 피해 50% 감소 + 밀려나지 않음, 끝날 때 주변 2m 원 충격파 (밀쳐냄)"
+   },
+   {
+    "name": "짓밟기 확인사살",
+    "pose": "windup",
+    "desc": "쓰러진 적이 2m 안에 있으면 해머로 내리찍어 큰 피해 (쓰러진 대상 피해 2배)"
+   }
+  ],
+  "passive": "두꺼운 판금: 근접 · 화살 피해 25% 감소, 넘어뜨리기 · 밀치기에 강함 (지속 시간 절반). 대신 이동 느리고 마법 · 불 피해 +20%"
+ },
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 0
+ },
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 14,
+ "stats": {
+  "hp": 1800,
+  "atk": 58,
+  "spd": 3.4,
+  "weight_kg": 260,
+  "tall_m": 2.25
+ },
+ "desc": "네모난 통 투구에 낡은 판금 · 털가죽 짐을 진 거구의 해머 병사. 말없이 거대한 돌망치를 끌고 다니며 앞을 막는다.",
+ "gen": 3
+}

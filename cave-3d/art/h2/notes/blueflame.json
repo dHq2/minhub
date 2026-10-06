@@ -1,0 +1,99 @@
+{
+ "slug": "blueflame",
+ "name": "푸른불꽃",
+ "rank": "미상 (폴더 이름 '푸른불꽃' 에 등급 글자 없음)",
+ "folder": "푸른불꽃",
+ "role": "둘 다 (토끼 가면의 쇠사슬 · 철사 고리 사냥꾼 — 적 강자로 먼저 나오고 영입 가능. 원본 참고 캡처가 만화 장면이라 이야기 인물로 봄)",
+ "tall": 1.95,
+ "weight": 72,
+ "palette": [
+  "#1e1e20",
+  "#3a3a3c",
+  "#b9b9b7",
+  "#e2e2e0",
+  "#3fd9d0"
+ ],
+ "poses": {
+  "idle": {
+   "src": "art/h2/blueflame/idle.webp",
+   "w": 350,
+   "h": 702,
+   "ax": 181,
+   "ay": 699,
+   "from": "회색 토끼 가면 캐릭터 시트.png 가운데",
+   "orig": "옆모습 (오른쪽 봄): 등 굽히고 긴 갈퀴 손 늘어뜨림, 해진 긴 코트",
+   "scale": 0.92
+  },
+  "front": {
+   "src": "art/h2/blueflame/front.webp",
+   "w": 394,
+   "h": 784,
+   "ax": 199,
+   "ay": 781,
+   "from": "회색 토끼 가면 캐릭터 시트.png 왼쪽",
+   "orig": "3/4 앞모습: 한 손 주머니, 회색 토끼 해골 가면 (청록 눈빛, 이빨 마스크), 흰 티 · 검은 바지 · 군화",
+   "scale": 0.92
+  },
+  "attack": {
+   "src": "art/h2/blueflame/attack.webp",
+   "w": 666,
+   "h": 670,
+   "ax": 350,
+   "ay": 667,
+   "from": "회색 토끼 가면 캐릭터 시트.png 오른쪽",
+   "orig": "다리 벌려 한 손을 앞으로 휘둘러 철사 · 채찍 고리를 던짐 (올가미)",
+   "scale": 0.92
+  }
+ },
+ "portrait": "art/h2/blueflame/portrait.webp",
+ "face": "art/h2/blueflame/face.webp",
+ "missing": [
+  "back",
+  "walk",
+  "hurt",
+  "down",
+  "dead",
+  "skill (푸른 불꽃 효과 — 이름의 근원, 그림에는 눈빛만 청록)"
+ ],
+ "kit": {
+  "basic": "갈퀴 손 할퀴기 (idle) — 앞 2m 부채꼴, 빠름 (0.5초)",
+  "skills": [
+   {
+    "name": "철사 올가미",
+    "pose": "attack",
+    "desc": "앞 8m 줄로 고리를 던짐: 처음 맞은 적을 내 앞 1.5m 까지 끌어오기 + 묶기 1초"
+   },
+   {
+    "name": "푸른 불꽃",
+    "pose": "attack",
+    "desc": "고리에 청록 불을 붙여 휘두름: 앞 4m 부채꼴 120도 불 피해 + 화상 4초 (매초 피해)"
+   },
+   {
+    "name": "그림자 걸음",
+    "pose": "idle",
+    "desc": "몸을 숙여 5m 순간 돌진 (적 뒤로 지나감), 다음 할퀴기 피해 2배"
+   }
+  ],
+  "passive": "사냥꾼의 눈: 끌어오거나 묶인 적에게 주는 피해 +20%, 화상 걸린 적의 위치가 벽 너머로 보임"
+ },
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 3
+ },
+ "tag": "brawler",
+ "role_job": "척후",
+ "bag": 8,
+ "stats": {
+  "hp": 900,
+  "atk": 44,
+  "spd": 6.8,
+  "weight_kg": 72,
+  "tall_m": 1.95
+ },
+ "desc": "회색 토끼 해골 가면에 청록 눈빛, 해진 긴 코트를 입은 사냥꾼. 철사 고리로 적을 끌어와 푸른 불꽃으로 태운다.",
+ "gen": 3
+}
