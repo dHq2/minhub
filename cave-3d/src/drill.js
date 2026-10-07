@@ -1,4 +1,4 @@
-/* drill.js v1.7 — (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.8 — (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -305,7 +305,7 @@ if (typeof pauseOpen === 'function'){
      얼굴을 눌러 고른 뒤 바닥을 눌러도 놓임 · 놓인 인물을 끌면 옮김 (선을 넘기면 편이 바뀜) · 우클릭 / 🧹 지우기 = 빼기
    ■ ▶ 시작 → 구경. 한쪽이 모두 쓰러지면 결과 · ⟲ 재시작 (R) = 시작했던 배치로 다시 · 💾 배치 저장 / 📂 불러오기 · 속도 x1 / x2
    ■ 인주는 숨어서 구경 (그림 · 체력 줄 · 조작 없음, 아무도 노리지 않음) */
-const COLO = { on: false, run: false, done: false, cx: 21, cz: 13, a: 13.5, b: 8.6, zoom: 1, tab: 'ally', pick: null, tool: null, drag: null, spd: 1, start: null, log: [] };
+const COLO = { updFold: (() => { try { return !!localStorage.getItem('colo-upd-fold'); } catch (e) { return false; } })(), on: false, run: false, done: false, cx: 21, cz: 13, a: 13.5, b: 8.6, zoom: 1, tab: 'ally', pick: null, tool: null, drag: null, spd: 1, start: null, log: [] };
 const COLO_SAVE = 'colo-save-v1', COLO_LAST = 'colo-last-v1';
 function coloRows(){
   const W = 43, H = 27, g = [];
@@ -359,6 +359,12 @@ function coloRoster(){
     R.push({ id: k, name: D.name, tab: D.boss ? 'boss' : 'foe', ally: null, foe: k }); }
   return COLO.roster = R;
 }
+// v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
+const COLO_UPD = [
+  { v: 'v0.70', n: '키 맞춤 — 인주 · 청광묵과 비슷하게', ids: ['h2:ratknight', 'h2:ratvet', 'h2:poren'] },
+  { v: 'v0.69', n: '동작 검토 — 보는 방향 · 발 위치 · 누운 그림 · 크기', ids: ['cesar', 'foeJelly', 'h2:bishot', 'h2:ancientdeer', 'bk', 'axeKnight', 'cs', 'catw', 'gwangnyang', 'h2:gallia', 'h2:hari', 'h2:mari', 'h2:mstar', 'h2:tanga', 'h2:garam', 'h2:gun', 'h2:ahae', 'h2:tehera', 'h2:unitB', 'jakyak', 'h2:hirari'] },
+];
+const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
 // 얼굴: 드라이브 명단은 얼굴 묶음, 나머지는 서 있는 그림의 윗부분을 잘라 씀
 const coloFaceCache = {};
@@ -382,7 +388,7 @@ function coloUI(){
   if ($('coUI')) return;
   const d = document.createElement('div'); d.id = 'coUI';
   d.innerHTML = `<div id="coPanel"><div class="co-title" id="coTitle">콜로세움 <small>접기</small></div>
-    <div class="co-tabs" id="coTabs"></div><div class="co-tools" id="coList"></div>
+    <div id="coUpd"></div><div class="co-tabs" id="coTabs"></div><div class="co-tools" id="coList"></div>
     <div class="co-sec">도구</div><div class="co-tools co-misc"><button data-tool="erase">🧹 지우기</button><button data-tool="mirror" title="아군 배치를 거울처럼 적군 쪽에 똑같이">⇄ 거울 배치</button></div>
     <div class="co-hint">얼굴을 바닥으로 끌어 배치 · 얼굴을 눌러 고른 뒤 바닥을 눌러도 됨 · 가운데 선 왼쪽 = 아군, 오른쪽 = 적군 · 놓인 인물을 끌어 옮김 (선을 넘기면 편이 바뀜) · 우클릭 = 빼기 · 휠 = 당기고 밀기<br>동료 탭은 아군만, 적 탭은 적군만 (1기 · 2기 · 3기 · 보스는 양쪽 다)</div>
     <div class="co-row"><button id="coRun" class="primary">▶ 전투 시작</button><button id="coClear">🧹 비우기</button><button id="coSave">💾 배치 저장</button></div>
@@ -399,14 +405,22 @@ function coloUI(){
   $('coPanel').addEventListener('click', e => { const t = e.target.closest('[data-tool]'); if (!t) return; e.stopPropagation();
     if (t.dataset.tool === 'mirror') return coloMirror();
     COLO.tool = COLO.tool === 'erase' ? null : 'erase'; COLO.pick = null; coloPanel(); });
-  $('coList').addEventListener('pointerdown', e => { const b = e.target.closest('[data-id]'); if (!b) return; e.preventDefault(); COLO.drag = { from: 'list', id: b.dataset.id, x0: e.clientX, y0: e.clientY, moved: false }; });
+  $('coUpd').addEventListener('click', e => { const t = e.target.closest('[data-upd]'); if (!t) return; e.stopPropagation(); if (t.dataset.upd === 'fold'){ COLO.updFold = !COLO.updFold; try { localStorage.setItem('colo-upd-fold', COLO.updFold ? '1' : ''); } catch (er) {} coloPanel(); } else coloUpdTest(+t.dataset.upd); });
+  for (const el of [$('coList'), $('coUpd')]) el.addEventListener('pointerdown', e => { const b = e.target.closest('[data-id]'); if (!b) return; e.preventDefault(); COLO.drag = { from: 'list', id: b.dataset.id, x0: e.clientX, y0: e.clientY, moved: false }; });
   coloPanel();
 }
 function coloPanel(){
   $('coTabs').innerHTML = COLO_TABS.map(([k, n]) => `<button data-tab="${k}" class="${COLO.tab === k ? 'on' : ''}">${n}</button>`).join('');
-  const L = coloRoster().filter(r => r.tab === COLO.tab);
-  $('coList').innerHTML = L.map(r => `<button data-id="${r.id}" class="${COLO.pick === r.id ? 'on' : ''}" title="${r.name}${r.rank ? ' · ' + r.rank : ''}">${coloFace(r)}<span>${r.name}</span></button>`).join('') || '<small>없음</small>';
+  const L = coloRoster().filter(r => r.tab === COLO.tab), btn = r => { const g = coloUpdOf(r.id);
+    return `<button data-id="${r.id}" class="${COLO.pick === r.id ? 'on' : ''}${g ? ' upd' : ''}" title="${r.name}${r.rank ? ' · ' + r.rank : ''}${g ? ' — 업뎃 ' + g.v + ': ' + g.n : ''}">${coloFace(r)}<span>${r.name}</span>${g ? '<b class="ub">업뎃!</b>' : ''}</button>`; };
+  $('coList').innerHTML = L.map(btn).join('') || '<small>없음</small>';
   coloDrawFaces($('coList'));
+  // 업뎃! 칸: 묶음마다 (새것 먼저, 한 인물은 가장 새 묶음에만)
+  const R = coloRoster(), seen = new Set();
+  const groups = COLO_UPD.map((g, i) => ({ g, i, L: g.ids.filter(id => !seen.has(id) && seen.add(id)).map(id => R.find(r => r.id === id)).filter(Boolean) })).filter(x => x.L.length);
+  $('coUpd').innerHTML = groups.length ? `<div class="co-upd-h" data-upd="fold">⚡ 업뎃! 모션 시험 <small>${COLO.updFold ? '펼치기' : '접기'}</small></div>` + (COLO.updFold ? '' : groups.map(({ g, i, L: GL }) =>
+    `<div class="co-upd-g"><span>${g.v} · ${g.n}</span><button data-upd="${i}" title="이 묶음을 아군 · 적군 양쪽에 놓음 (같은 인물끼리 맞붙음)">시험판</button></div><div class="co-tools co-upd-l">${GL.map(btn).join('')}</div>`).join('')) : '';
+  coloDrawFaces($('coUpd'));
   document.querySelectorAll('#coPanel [data-tool="erase"]').forEach(b => b.classList.toggle('on', COLO.tool === 'erase'));
   coloCount();
 }
@@ -446,6 +460,14 @@ function coloMirror(){
   for (const u of coloUnits().filter(u => u.side === 'enemy')) removeUnit(u);
   let n = 0; for (const u of A){ const r = coloRoster().find(o => o.id === u.colo); if (r && r.foe){ coloPut(u.colo, 2 * COLO.cx - u.home.x, u.home.z, 'enemy'); n++; } }
   coloLog(`⇄ 아군 ${A.length}명을 거울처럼 적군 쪽에 (${n}명 — 동료 탭 인물은 적으로 못 나옴)`, 'sys');
+}
+// 업뎃 시험판: 그 묶음 인물을 왼쪽 (아군) 에 세로로, 같은 인물을 오른쪽 (적군) 에 거울로. 한쪽만 되는 인물은 상대로 검사
+function coloUpdTest(i){
+  const g = COLO_UPD[i]; if (!g) return; coloClear();
+  const L = g.ids.map(id => coloRoster().find(r => r.id === id)).filter(Boolean).slice(0, 8), n = L.length;
+  L.forEach((r, k) => { const z = COLO.cz + (n > 1 ? (k / (n - 1) - 0.5) * Math.min(13, n * 2.2) : 0), xa = COLO.cx - 4.5 - (k % 2) * 1.6, xe = 2 * COLO.cx - xa;
+    coloPut(r.ally ? r.id : 'swordsman', xa, z, 'ally'); coloPut(r.foe ? r.id : 'swordsman', xe, z, 'enemy'); });
+  caption('업뎃 시험판 ' + g.v, g.n + ' — ▶ 시작'); coloLog(`⚡ 업뎃 시험판 ${g.v} (${n}명${g.ids.length > 8 ? ', 앞 8명' : ''}): ${L.map(r => r.name).join(' · ')}`, 'sys');
 }
 function coloSpeed(){ COLO.spd = COLO.spd === 1 ? 2 : COLO.spd === 2 ? 0.5 : 1; G.spd = COLO.spd; const t = COLO.spd === 0.5 ? 'x½' : 'x' + COLO.spd; $('coSpd').textContent = '속도 ' + t; $('cqSpd').textContent = t; }
 // 시작 · 멈춤 · 결과

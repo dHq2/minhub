@@ -429,6 +429,10 @@
   #coLog{pointer-events:auto;position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(320px,36%);max-height:26%;overflow-y:auto;background:rgba(10,8,12,.72);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 9px;font-size:12.5px;line-height:1.5;}
   #coLog .sys{color:#9fd3ff;} #coLog .dead{color:#ff9f8f;} #coLog .heal{color:#8ee08e;}
   .ntag.enemy{color:#ffb8a8;}
+  .co-tools button{position:relative;} .co-tools button.upd{border:2px solid #ffd35a;box-shadow:0 0 7px rgba(255,211,90,.45);} .co-tools button .ub{position:absolute;right:2px;top:1px;font-weight:normal;font-size:9.5px;color:#1a1008;background:#ffd35a;border-radius:3px;padding:0 3px;line-height:13px;}
+  #coUpd{margin:8px 0 2px;} .co-upd-h{color:#ffd35a;font-size:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;} .co-upd-h small{font-size:11px;color:#8a8098;}
+  .co-upd-g{display:flex;justify-content:space-between;align-items:center;gap:6px;margin:6px 0 4px;font-size:11.5px;color:#d8c890;} .co-upd-g button{font-family:inherit;flex:none;font-size:12px;padding:2px 8px;color:#1a1008;background:#ffd35a;border:0;border-radius:4px;cursor:pointer;}
+  .co-upd-l{max-height:30vh;}
   #coGhost{position:fixed;z-index:30;pointer-events:none;transform:translate(-50%,-50%);border-radius:50%;padding:3px;}
   #coGhost .cf{width:46px;height:46px;} #coGhost.a{background:rgba(80,210,110,.7);} #coGhost.e{background:rgba(230,80,60,.7);} #coGhost.x{background:rgba(120,120,120,.5);opacity:.6;}
   @media (max-width:760px){ #coQuick{left:12px;right:12px;} #coQuick button{flex:1;padding:8px 2px;font-size:13px;} #coPanel{top:calc(58px + env(safe-area-inset-top,0px));width:calc(100% - 24px);max-height:48%;} #coPanel.collapsed{display:none;} #coCount{top:auto;bottom:calc(26% + 20px);} #coLog{left:12px;right:12px;width:auto;max-height:18%;} }
