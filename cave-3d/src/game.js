@@ -1,4 +1,4 @@
-/* game.js v0.90 — (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.91 — (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -80,7 +80,7 @@ function init(){
 function startGame(){
   const h = location.hash;
   const ex = /^#exp(\d*)$/.exec(h);
-  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave();
+  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#colo' && typeof startColo === 'function') startColo(); else if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave();
   else if (h === '#new'){ newGame(); }
   else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ const ck = typeof expHasCheckpoint === 'function' && expHasCheckpoint(); if (ck) expResume(ck); else startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기 · v0.88 원정 중이었으면 그 층부터
   else startPrologue();
@@ -374,7 +374,7 @@ function updateSpearMark(){
 }
 
 /* ---------- 한 프레임 ---------- */
-const PLAY_MODES = new Set(['lobby', 'floor', 'prologue', 'cave', 'exp', 'drill']);
+const PLAY_MODES = new Set(['lobby', 'floor', 'prologue', 'cave', 'exp', 'drill', 'colo']);   // v0.91 콜로세움 (drill.js)
 let last = performance.now();
 function loop(now){
   requestAnimationFrame(loop);
@@ -383,7 +383,7 @@ function loop(now){
   if (typeof uiKeys === 'function' && uiKeys()){ if (G.paused){ G.renderer.render(G.scene, camera); pressed.clear(); return; } pressed.clear(); }
   if (G.paused){ G.renderer.render(G.scene, camera); pressed.clear(); return; }
   if (G.hitstop > 0){ G.hitstop -= dt; dt *= 0.06; }
-  dt *= G.slow;
+  dt *= G.slow * (G.spd || 1);   // v0.91 G.spd: 콜로세움 구경 속도
   G.t += dt; G.dt = dt;
   // 입력: 글상자 · 로딩이 떠 있으면 거기로
   if (hit('Tab')) G.inspIdx = (G.inspIdx || 0) + 1;
@@ -403,7 +403,7 @@ function loop(now){
       if (u.dead){ if (u.fading){ u.mat.opacity = Math.max(0, 1 - (G.t - u.fading)); u.mat.transparent = true; u.mat.alphaTest = 0; if (u.shadow) u.shadow.material.opacity = 0.42 * u.mat.opacity; } continue; }
       if (u.lock){ /* 레슬링 중: grapple.js */ }
       else if (u.side === 'enemy' && !G.lock){ if (u.D.think) u.D.think(u, dt); else if (u.D.boss) bossThink(u, dt); else enemyThink(u, dt); }
-      else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.mode === 'drill' || G.lobbyFight) && !G.lock){ if (!(typeof heroCombat === 'function' && heroCombat(u, dt))) (u.D.think || allyThink)(u, dt); }   // v0.33: 활 · 총 든 동료는 쏨
+      else if (u.side === 'ally' && (G.mode === 'floor' || G.mode === 'exp' || G.mode === 'drill' || G.mode === 'colo' || G.lobbyFight) && !G.lock){ if (!(typeof heroCombat === 'function' && heroCombat(u, dt))) (u.D.think || allyThink)(u, dt); }   // v0.33: 활 · 총 든 동료는 쏨
       else if (u.side === 'ally' && G.mode === 'floor' && G.lock && u.kind !== 'player'){ u.moving = false; }
       else if (u.D.spar && !G.lock && typeof sparThink === 'function') sparThink(u, dt);
       else if (u.D.wander && !G.lock && !G.waitInput) u.D.wander(u, dt);   // v0.87 굴 손님 (쥐 기사 순찰)

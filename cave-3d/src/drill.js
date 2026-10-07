@@ -1,4 +1,4 @@
-/* drill.js v1.6 — (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.7 — (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -295,6 +295,292 @@ if (typeof pauseOpen === 'function'){
     const box = document.querySelector('#confirm .cf-box div'); if (!box || box.querySelector('[data-p="drill"]')) return;
     const b = document.createElement('button'); b.dataset.p = 'drill'; b.textContent = G.mode === 'drill' ? '훈련장 나가기' : '훈련장 (새 전투 규칙 실험)';
     b.addEventListener('click', ev => { ev.stopPropagation(); if (G.mode === 'drill') return drillExit(); if (typeof proSave === 'function') proSave(); location.hash = '#drill'; location.reload(); });
+    box.appendChild(b);
+  };
+}
+
+/* ---------- v1.7 (v0.72) 콜로세움 (#colo) — 2D 훈련장을 3D 경기장으로 ----------
+   ■ 둥근 모래 경기장 + 둘레 관중석. 카메라는 낮게, 남쪽 관중석에서 보는 각도로 고정 (돌지 않음 · 휠로 당기고 밀기만)
+   ■ 2D 훈련장처럼: 왼쪽 편성 창의 얼굴을 바닥으로 끌어 놓음. 가운데 선 왼쪽 = 아군, 오른쪽 = 적군
+     얼굴을 눌러 고른 뒤 바닥을 눌러도 놓임 · 놓인 인물을 끌면 옮김 (선을 넘기면 편이 바뀜) · 우클릭 / 🧹 지우기 = 빼기
+   ■ ▶ 시작 → 구경. 한쪽이 모두 쓰러지면 결과 · ⟲ 재시작 (R) = 시작했던 배치로 다시 · 💾 배치 저장 / 📂 불러오기 · 속도 x1 / x2
+   ■ 인주는 숨어서 구경 (그림 · 체력 줄 · 조작 없음, 아무도 노리지 않음) */
+const COLO = { on: false, run: false, done: false, cx: 21, cz: 13, a: 13.5, b: 8.6, zoom: 1, tab: 'ally', pick: null, tool: null, drag: null, spd: 1, start: null, log: [] };
+const COLO_SAVE = 'colo-save-v1', COLO_LAST = 'colo-last-v1';
+function coloRows(){
+  const W = 43, H = 27, g = [];
+  for (let z = 0; z < H; z++){ let r = ''; for (let x = 0; x < W; x++){ const e = ((x - COLO.cx) / COLO.a) ** 2 + ((z - COLO.cz) / COLO.b) ** 2; r += e <= 1 ? '.' : '#'; } g.push(r); }
+  return g;
+}
+// 관중석: 경기장 둘레 계단 (카메라 쪽 남쪽은 비움) + 사람 점들
+function coloStands(){
+  const grp = new THREE.Group(), box = new THREE.BoxGeometry(1, 1, 1), m4 = new THREE.Matrix4(), col = new THREE.Color();
+  const tiers = 6, steps = [];
+  for (let k = 0; k < tiers; k++){
+    const ra = COLO.a + 2.2 + k * 1.15, rb = COLO.b + 2.2 + k * 1.15, n = Math.round(Math.PI * (ra + rb) / 0.95);
+    for (let i = 0; i < n; i++){ const t = i / n * Math.PI * 2, s = Math.sin(t); if (s > 0.3) continue; steps.push({ x: COLO.cx + Math.cos(t) * ra, z: COLO.cz + s * rb, h: 0.7 + k * 0.62, t, k }); }
+  }
+  const st = new THREE.InstancedMesh(box, new THREE.MeshStandardMaterial({ roughness: 0.95 }), steps.length);
+  steps.forEach((p, i) => { m4.makeRotationY(-p.t); m4.scale(new THREE.Vector3(1.25, p.h, 1.2)); m4.setPosition(p.x, p.h / 2 - 0.2, p.z); st.setMatrixAt(i, m4); col.setHex(0x9c8a6c).multiplyScalar(0.72 + (p.k % 2) * 0.1 + Math.random() * 0.08); st.setColorAt(i, col); });
+  st.receiveShadow = true; grp.add(st);
+  const fans = steps.filter(() => Math.random() < 0.62), cols = [0xb84a3a, 0x3a5ab8, 0xd8c060, 0x5a9a4a, 0xe0d8c8, 0x7a4a9a, 0x2a2a2a];
+  const fm = new THREE.InstancedMesh(new THREE.BoxGeometry(0.34, 0.62, 0.3), new THREE.MeshStandardMaterial({ roughness: 1 }), fans.length);
+  fans.forEach((p, i) => { m4.makeRotationY(-p.t); m4.setPosition(p.x + rnd(-0.3, 0.3), p.h - 0.2 + 0.31, p.z + rnd(-0.2, 0.2)); fm.setMatrixAt(i, m4); fm.setColorAt(i, col.setHex(cols[i % cols.length]).multiplyScalar(rnd(0.7, 1))); });
+  grp.add(fm); COLO.fans = { m: fm, list: fans };
+  // 바깥 땅 + 문 두 개 (서쪽 아군 · 동쪽 적군)
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(140, 110), new THREE.MeshStandardMaterial({ color: 0x6a5c44, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.set(COLO.cx, -0.21, COLO.cz); grp.add(ground);
+  for (const [sx, c] of [[-1, 0x3a7a4a], [1, 0x9a3a32]]){
+    const gate = new THREE.Mesh(new THREE.BoxGeometry(0.6, 2.6, 2.6), new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 }));
+    gate.position.set(COLO.cx + sx * (COLO.a + 1.3), 1.1, COLO.cz); grp.add(gate);
+  }
+  // 가운데 선 (배치 중에만): 점선
+  const line = new THREE.Group();
+  for (let z = COLO.cz - COLO.b + 0.6; z < COLO.cz + COLO.b - 0.4; z += 0.9){ const d = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.5), new THREE.MeshBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: 0.7, depthWrite: false })); d.rotation.x = -Math.PI / 2; d.position.set(COLO.cx, 0.03, z); line.add(d); }
+  grp.add(line); COLO.line = line;
+  // 양쪽 바닥 빛깔 (아군 초록 · 적군 빨강, 아주 옅게)
+  for (const [sx, c] of [[-1, 0x4ad070], [1, 0xe04a3a]]){
+    const s = new THREE.Mesh(new THREE.CircleGeometry(1, 48, sx < 0 ? Math.PI / 2 : -Math.PI / 2, Math.PI), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.08, depthWrite: false }));
+    s.rotation.x = -Math.PI / 2; s.scale.set(COLO.a - 0.3, COLO.b - 0.3, 1); s.position.set(COLO.cx, 0.02, COLO.cz); line.add(s);
+  }
+  return grp;
+}
+// 고를 수 있는 인물: 동료 (1기 영웅) · 1기 · 2기 · 3기 (드라이브 명단, 양쪽 다) · 적 (옛 적) · 보스
+const COLO_HERO = ['cheongAlly', 'kariusAlly', 'rebeccaAlly', 'goldknightAlly', 'angelAlly', 'gangsterAlly', 'morningstar', 'norman'];
+function coloRoster(){
+  if (COLO.roster) return COLO.roster;
+  const R = [];
+  for (const k of COLO_HERO) if (DEFS[k]) R.push({ id: k, name: DEFS[k].name, tab: 'ally', ally: k, foe: null });
+  for (const s of H2.list){ const o = H2R[s], K = H2K[s] || {}; if (!DEFS['h2_' + s] || H2NOMIX.has(s)) continue;
+    R.push({ id: 'h2:' + s, slug: s, name: DEFS['h2_' + s].name, tab: K.boss ? 'boss' : o.gen === 3 ? 'g3' : o.gen === 1 ? 'g1' : 'g2', ally: 'h2_' + s, foe: 'h2e_' + s, rank: h2Rank(o) }); }
+  const skip = new Set(['player', 'rebecca', 'dummy', 'encMouth', 'ratV', 'ratKnightV', 'pig', 'cheongNpc', 'cannon', ...COLO_HERO]);   // 소품 · 마을용 · 고정 포대는 뺌
+  for (const k of Object.keys(DEFS)){ const D = DEFS[k];
+    if (skip.has(k) || k.startsWith('h2') || /Ally$/.test(k) || D.dummy || D.drill || D.spar || D.hittable || !SPR[D.spr] || !(D.hp > 0) || D.hp > 50000) continue;
+    R.push({ id: k, name: D.name, tab: D.boss ? 'boss' : 'foe', ally: null, foe: k }); }
+  return COLO.roster = R;
+}
+const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
+// 얼굴: 드라이브 명단은 얼굴 묶음, 나머지는 서 있는 그림의 윗부분을 잘라 씀
+const coloFaceCache = {};
+function coloFace(r){
+  if (r.slug){ const F = typeof H2A !== 'undefined' && H2A.faces, i = F && F.i[r.slug]; if (i != null){ const s = 40 / F.cell; return `<i class="cf" style="background:url(${F.src}) ${-(i % F.cols) * 40}px ${-Math.floor(i / F.cols) * 40}px / ${F.cols * F.cell * s}px ${F.rows * F.cell * s}px"></i>`; } }
+  const k = r.ally || r.foe; if (HERO_FACE[k]) return `<i class="cf" style="background:url(${HERO_FACE[k]}) 50% 12% / cover"></i>`;
+  return `<canvas class="cf" width="40" height="40" data-face="${k}"></canvas>`;
+}
+function coloDrawFaces(root){
+  for (const c of root.querySelectorAll('canvas[data-face]')){
+    const k = c.dataset.face, S = SPR[DEFS[k].spr], P = S && (S.poses.idle || Object.values(S.poses)[0]); if (!P || !P.src) continue;
+    const draw = img => { const g = c.getContext('2d'); let fx = 0, fy = 0, fw = img.naturalWidth, fh = img.naturalHeight;
+      if (P.rect){ [fx, fy, fw, fh] = P.rect; if (P.cols){ fw /= P.cols; fh /= P.rows; } } else if (P.cols){ fw /= P.cols; fh /= P.rows; } else if (P.n){ fw /= P.n; }
+      const sx = fw / (P.w || fw), side = Math.min(fw, fh * 0.5), ax = (P.ax != null ? P.ax * sx : fw / 2);
+      g.clearRect(0, 0, 40, 40); g.drawImage(img, fx + Math.max(0, Math.min(fw - side, ax - side / 2)), fy + fh * 0.04, side, side, 0, 0, 40, 40); };
+    const im = coloFaceCache[P.src] || (coloFaceCache[P.src] = Object.assign(new Image(), { src: P.src }));
+    if (im.complete && im.naturalWidth) draw(im); else im.addEventListener('load', () => draw(im), { once: true });
+  }
+}
+function coloUI(){
+  if ($('coUI')) return;
+  const d = document.createElement('div'); d.id = 'coUI';
+  d.innerHTML = `<div id="coPanel"><div class="co-title" id="coTitle">콜로세움 <small>접기</small></div>
+    <div class="co-tabs" id="coTabs"></div><div class="co-tools" id="coList"></div>
+    <div class="co-sec">도구</div><div class="co-tools co-misc"><button data-tool="erase">🧹 지우기</button><button data-tool="mirror" title="아군 배치를 거울처럼 적군 쪽에 똑같이">⇄ 거울 배치</button></div>
+    <div class="co-hint">얼굴을 바닥으로 끌어 배치 · 얼굴을 눌러 고른 뒤 바닥을 눌러도 됨 · 가운데 선 왼쪽 = 아군, 오른쪽 = 적군 · 놓인 인물을 끌어 옮김 (선을 넘기면 편이 바뀜) · 우클릭 = 빼기 · 휠 = 당기고 밀기<br>동료 탭은 아군만, 적 탭은 적군만 (1기 · 2기 · 3기 · 보스는 양쪽 다)</div>
+    <div class="co-row"><button id="coRun" class="primary">▶ 전투 시작</button><button id="coClear">🧹 비우기</button><button id="coSave">💾 배치 저장</button></div>
+    <div class="co-row"><button id="coLast" class="primary">⟲ 마지막 세팅 재시작 [R]</button></div>
+    <div class="co-row"><button id="coLoad">📂 저장한 배치</button><button id="coSpd">속도 x1</button><button id="coExit">나가기</button></div></div>
+    <div id="coQuick"><button id="cqRun" class="primary">▶ 시작</button><button id="cqClear">비우기</button><button id="cqSave">저장</button><button id="cqLast">재시작</button><button id="cqSpd">x1</button><button id="cqPanel">☰ 편성</button></div>
+    <div id="coCount"></div><div id="coLog"></div>`;
+  document.body.appendChild(d);
+  const on = (id, f) => $(id).addEventListener('click', e => { e.stopPropagation(); f(); });
+  on('coTitle', () => $('coPanel').classList.toggle('collapsed')); on('cqPanel', () => $('coPanel').classList.toggle('collapsed'));
+  on('coRun', coloToggle); on('cqRun', coloToggle); on('coClear', coloClear); on('cqClear', coloClear); on('coSave', coloSave); on('cqSave', coloSave);
+  on('coLast', coloRestart); on('cqLast', coloRestart); on('coLoad', coloLoad); on('coSpd', coloSpeed); on('cqSpd', coloSpeed); on('coExit', coloExit);
+  $('coTabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; e.stopPropagation(); COLO.tab = b.dataset.tab; coloPanel(); });
+  $('coPanel').addEventListener('click', e => { const t = e.target.closest('[data-tool]'); if (!t) return; e.stopPropagation();
+    if (t.dataset.tool === 'mirror') return coloMirror();
+    COLO.tool = COLO.tool === 'erase' ? null : 'erase'; COLO.pick = null; coloPanel(); });
+  $('coList').addEventListener('pointerdown', e => { const b = e.target.closest('[data-id]'); if (!b) return; e.preventDefault(); COLO.drag = { from: 'list', id: b.dataset.id, x0: e.clientX, y0: e.clientY, moved: false }; });
+  coloPanel();
+}
+function coloPanel(){
+  $('coTabs').innerHTML = COLO_TABS.map(([k, n]) => `<button data-tab="${k}" class="${COLO.tab === k ? 'on' : ''}">${n}</button>`).join('');
+  const L = coloRoster().filter(r => r.tab === COLO.tab);
+  $('coList').innerHTML = L.map(r => `<button data-id="${r.id}" class="${COLO.pick === r.id ? 'on' : ''}" title="${r.name}${r.rank ? ' · ' + r.rank : ''}">${coloFace(r)}<span>${r.name}</span></button>`).join('') || '<small>없음</small>';
+  coloDrawFaces($('coList'));
+  document.querySelectorAll('#coPanel [data-tool="erase"]').forEach(b => b.classList.toggle('on', COLO.tool === 'erase'));
+  coloCount();
+}
+function coloCount(){
+  const a = G.units.filter(u => u.colo && u.side === 'ally' && !u.dead && !u.downed).length, e = G.units.filter(u => u.colo && u.side === 'enemy' && !u.dead && !u.downed).length;
+  const el = $('coCount'); if (el) el.innerHTML = `<b class="a">아군 ${a}</b> <i>vs</i> <b class="e">적군 ${e}</b>${COLO.run ? ' · 전투 중' : COLO.done ? '' : ' · 배치 중'}`;
+  for (const id of ['coRun', 'cqRun']){ const b = $(id); if (b) b.textContent = COLO.run ? (id === 'coRun' ? '■ 멈추고 배치로' : '■ 멈춤') : (id === 'coRun' ? '▶ 전투 시작' : '▶ 시작'); }
+}
+function coloLog(t, cls = ''){ const el = $('coLog'); if (!el) return; const p = document.createElement('div'); p.className = cls; p.textContent = t; el.appendChild(p); while (el.children.length > 60) el.firstChild.remove(); el.scrollTop = el.scrollHeight; }
+// 놓기 · 빼기
+function coloSideAt(x){ return x < COLO.cx ? 'ally' : 'enemy'; }
+function coloInside(x, z){ return ((x - COLO.cx) / (COLO.a - 0.7)) ** 2 + ((z - COLO.cz) / (COLO.b - 0.7)) ** 2 <= 1; }
+function coloClamp(x, z){ const dx = x - COLO.cx, dz = z - COLO.cz, e = Math.sqrt((dx / (COLO.a - 0.8)) ** 2 + (dz / (COLO.b - 0.8)) ** 2); return e <= 1 ? { x, z } : { x: COLO.cx + dx / e, z: COLO.cz + dz / e }; }
+function coloPut(id, x, z, side){
+  const r = coloRoster().find(o => o.id === id); if (!r) return null;
+  side = side || coloSideAt(x);
+  const kind = side === 'ally' ? r.ally : r.foe;
+  if (!kind){ popText(x, 1.2, z, side === 'ally' ? '적으로만 나옴' : '동료로만 나옴', 'miss', 1); return null; }
+  ({ x, z } = coloClamp(x, z));
+  const u = spawn(kind, x, z, side); u.colo = id; u.face = side === 'ally' ? 1 : -1; u.aim = side === 'ally' ? 0 : Math.PI; u.home = { x, z };
+  if (kind === 'kariusAlly') Object.assign(u, { kc: null, p2: false, cd: 0.5, swCd: 2.5, grCd: 4, slCd: 2, rsCd: 3 });
+  if (side === 'enemy' && !u.tag){ u.tag = document.createElement('div'); u.tag.className = 'ntag enemy'; u.tag.textContent = u.D.name; UI.layer.appendChild(u.tag); u.alert = true; }   // 구경용: 적도 이름표
+  if (side === 'enemy'){ u.band = 'colo'; if (u.D.boss && !u.D.h2 && typeof bossInit === 'function'){ const g = G.boss; bossInit(u, { x: COLO.cx, z: COLO.cz }); G.boss = g || null; $('bossbar').hidden = true; } }
+  if (side === 'ally' && u.kind.startsWith('h2_') && typeof BAG_CAP !== 'undefined') BAG_CAP[u.kind] = (H2R[r.slug] && H2R[r.slug].bag) || 8;
+  if (COLO.run) coloWake(u); else COLO.dirty = true;
+  dust(x, z, 6); coloCount(); return u;
+}
+function coloDel(u){ if (!u || !u.colo) return; removeUnit(u); COLO.dirty = true; if (G.boss === u) G.boss = null; coloCount(); }
+function coloUnits(){ return G.units.filter(u => u.colo); }
+function coloSnap(){ return coloUnits().filter(u => !u.dead && !(COLO.done && u.downed)).map(u => ({ id: u.colo, x: +u.home.x.toFixed(2), z: +u.home.z.toFixed(2), side: u.side })); }
+function coloSet(list){ for (const u of coloUnits()) removeUnit(u); G.boss = null; for (const s of list || []) coloPut(s.id, s.x, s.z, s.side); coloCount(); }
+function coloClear(){ coloStop(); COLO.done = false; for (const u of coloUnits()) removeUnit(u); G.boss = null; for (const d of [...G.decals]) G.scene.remove(d.g); G.decals = []; for (const p of [...G.projs]) G.scene.remove(p.m); G.projs = []; coloCount(); }
+function coloSave(){ const s = COLO.run || COLO.done ? (COLO.start || coloSnap()) : coloSnap(); try { localStorage.setItem(COLO_SAVE, JSON.stringify(s)); } catch (e) {} coloLog(`💾 배치를 저장했어요 (${s.length}명). 콜로세움에 들어오면 이 배치로 시작하고, 📂로 언제든 불러와요.`, 'sys'); }
+function coloLoad(){ let s = null; try { s = JSON.parse(localStorage.getItem(COLO_SAVE) || 'null'); } catch (e) {} if (!s){ coloLog('저장한 배치가 없어요', 'sys'); return; } coloClear(); coloSet(s); coloLog(`📂 저장한 배치를 불러왔어요 (${s.length}명)`, 'sys'); }
+function coloMirror(){
+  if (COLO.run) return; const A = coloUnits().filter(u => u.side === 'ally');
+  for (const u of coloUnits().filter(u => u.side === 'enemy')) removeUnit(u);
+  let n = 0; for (const u of A){ const r = coloRoster().find(o => o.id === u.colo); if (r && r.foe){ coloPut(u.colo, 2 * COLO.cx - u.home.x, u.home.z, 'enemy'); n++; } }
+  coloLog(`⇄ 아군 ${A.length}명을 거울처럼 적군 쪽에 (${n}명 — 동료 탭 인물은 적으로 못 나옴)`, 'sys');
+}
+function coloSpeed(){ COLO.spd = COLO.spd === 1 ? 2 : COLO.spd === 2 ? 0.5 : 1; G.spd = COLO.spd; const t = COLO.spd === 0.5 ? 'x½' : 'x' + COLO.spd; $('coSpd').textContent = '속도 ' + t; $('cqSpd').textContent = t; }
+// 시작 · 멈춤 · 결과
+function coloWake(u){ if (u.side === 'enemy'){ u.alert = true; u.seen = G.t; } }
+function coloToggle(){ if (COLO.run) return coloStop(true); coloGo(); }
+function coloGo(){
+  const A = coloUnits().filter(u => u.side === 'ally' && !u.dead), E = coloUnits().filter(u => u.side === 'enemy' && !u.dead);
+  if (!A.length || !E.length){ caption('양쪽에 한 명씩은', '왼쪽 (아군) · 오른쪽 (적군)에 인물을 놓아 주세요'); return; }
+  if (COLO.done) coloSet(COLO.dirty || !COLO.start ? coloSnap() : COLO.start);   // 끝난 뒤: 손대지 않았으면 시작했던 배치로, 손댔으면 지금 배치 (쓰러진 인물은 빼고, 나머지는 새로)
+  COLO.start = coloSnap(); try { localStorage.setItem(COLO_LAST, JSON.stringify(COLO.start)); } catch (e) {}
+  COLO.run = true; COLO.done = false; COLO.dirty = false; COLO.t0 = G.t; G.lock = false; COLO.line.visible = false;
+  for (const u of coloUnits()) coloWake(u);
+  const bs = coloUnits().find(u => u.side === 'enemy' && u.D.boss); G.boss = bs || null;
+  caption('시작!', `아군 ${A.length} vs 적군 ${E.length}`); coloLog(`▶ 전투 시작 — 아군 ${A.map(u => u.D.name).join(' · ')} / 적군 ${E.map(u => u.D.name).join(' · ')}`, 'sys');
+  if (typeof SFX !== 'undefined' && SFX.wake){ SFX.wake(); SFX.thump && SFX.thump(70, 0.5, 0.6); }
+  coloCount();
+}
+function coloStop(back){
+  if (!COLO.run && !COLO.done) return;
+  COLO.run = false; G.lock = true; COLO.line.visible = true; $('bossbar').hidden = true;
+  if (back && COLO.start){ coloSet(COLO.start); COLO.done = false; coloLog('■ 멈추고 시작 전 배치로 돌렸어요', 'sys'); }
+  coloCount();
+}
+function coloRestart(){
+  let s = COLO.start; if (!s) try { s = JSON.parse(localStorage.getItem(COLO_LAST) || 'null'); } catch (e) {}
+  if (!s){ coloLog('아직 시작한 전투가 없어요', 'sys'); return; }
+  COLO.run = false; COLO.done = false; G.lock = true; coloClear(); coloSet(s); coloGo();
+}
+function coloEnd(win){
+  COLO.run = false; COLO.done = true; G.lock = true; $('bossbar').hidden = true; COLO.line.visible = true;
+  const sec = Math.round(G.t - COLO.t0), left = coloUnits().filter(u => u.side === (win === 'ally' ? 'ally' : 'enemy') && !u.dead && !u.downed);
+  const big = win === 'ally' ? '아군 승리' : win === 'enemy' ? '적군 승리' : '무승부';
+  caption(big, `${sec}초 · 남은 ${left.map(u => u.D.name).join(' · ') || '없음'} — R 재시작`);
+  coloLog(`🏁 ${big} (${sec}초) — 남은 인물: ${left.map(u => `${u.D.name} ${Math.max(0, Math.round(u.hp))}/${u.max}`).join(', ') || '없음'}`, win === 'ally' ? 'heal' : 'dead');
+  coloCount();
+}
+TICKS.push(dt => {
+  if (!COLO.on) return;
+  const pl = G.player; if (pl){ pl.x = COLO.cx; pl.z = COLO.cz; pl.lift = 1; pl.inv = 1e9; pl.hp = pl.max; pl.downed = false; }
+  if (!COLO.run) return;
+  for (const u of coloUnits()){
+    if (u.side === 'enemy' && !u.dead) coloWake(u);
+    if ((u.dead || u.downed) && !u._coOut){ u._coOut = true; coloLog(`${u.side === 'ally' ? '🟢' : '🔴'} ${u.D.name} 쓰러짐 (${Math.round(G.t - COLO.t0)}초)`, 'dead'); coloCount(); }
+    if (!u.dead && !coloInside(u.x, u.z)){ const c = coloClamp(u.x, u.z); u.x = c.x; u.z = c.z; }
+  }
+  const a = coloUnits().some(u => u.side === 'ally' && !u.dead && !u.downed), e = coloUnits().some(u => u.side === 'enemy' && !u.dead && !u.downed);
+  if (!a || !e) coloEnd(a ? 'ally' : e ? 'enemy' : 'draw');
+});
+// 마우스 · 손가락: 끌어 놓기 · 옮기기 · 빼기
+function coloGround(ev){ const r = G.renderer.domElement.getBoundingClientRect(); return screenToGround(ev.clientX - r.left, ev.clientY - r.top, r.width, r.height, 0); }
+function coloUnitAt(ev){
+  const r = G.renderer.domElement.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top; let best = null, bd = 1e9;
+  for (const u of coloUnits()){ if (u.dead) continue; const f = toScreen(u.x, u.y, u.z, r.width, r.height), h = toScreen(u.x, u.y + bodyH(u), u.z, r.width, r.height);
+    const w = Math.max(18, (f.y - h.y) * 0.32), inX = Math.abs(mx - f.x) < w, inY = my < f.y + 12 && my > h.y - 6; if (!inX || !inY) continue;
+    const d = Math.abs(mx - f.x) + Math.abs(my - (f.y + h.y) / 2) * 0.3; if (d < bd){ bd = d; best = u; } }
+  return best;
+}
+function coloGhost(on, id, ev){
+  let g = $('coGhost'); if (!on){ if (g) g.remove(); return; }
+  if (!g){ g = document.createElement('div'); g.id = 'coGhost'; const r = coloRoster().find(o => o.id === id); g.innerHTML = r ? coloFace(r) : ''; document.body.appendChild(g); coloDrawFaces(g); }
+  g.style.left = ev.clientX + 'px'; g.style.top = ev.clientY + 'px';
+  const p = coloGround(ev); g.className = p && coloInside(p.x, p.z) ? (coloSideAt(p.x) === 'ally' ? 'a' : 'e') : 'x';
+}
+function coloBind(){
+  const cv = G.renderer.domElement;
+  cv.addEventListener('pointerdown', ev => {
+    if (!COLO.on) return; const p = coloGround(ev); if (!p) return;
+    const u = coloUnitAt(ev);
+    if (ev.button === 2){ if (u) coloDel(u); return; }
+    if (COLO.tool === 'erase'){ if (u) coloDel(u); return; }
+    if (u){ COLO.drag = { from: 'unit', u, x0: ev.clientX, y0: ev.clientY, moved: false }; cv.setPointerCapture && cv.setPointerCapture(ev.pointerId); return; }
+    if (COLO.pick && coloInside(p.x, p.z)) coloPut(COLO.pick, p.x, p.z);
+  });
+  addEventListener('pointermove', ev => {
+    const D = COLO.drag; if (!D || !COLO.on) return;
+    if (Math.hypot(ev.clientX - D.x0, ev.clientY - D.y0) > 6) D.moved = true;
+    if (D.from === 'list' && D.moved) coloGhost(true, D.id, ev);
+    if (D.from === 'unit' && D.moved){ const p = coloGround(ev); if (p){ const c = coloClamp(p.x, p.z); D.u.x = c.x; D.u.z = c.z; D.u.home = { x: c.x, z: c.z }; D.u.kx = D.u.kz = 0; if (!COLO.run) COLO.dirty = true; } }
+  });
+  addEventListener('pointerup', ev => {
+    const D = COLO.drag; COLO.drag = null; if (!D || !COLO.on) return; coloGhost(false);
+    if (D.from === 'list'){
+      if (!D.moved){ COLO.pick = COLO.pick === D.id ? null : D.id; COLO.tool = null; coloPanel(); return; }
+      const over = document.elementFromPoint(ev.clientX, ev.clientY); if (over && over !== cv) return;
+      const p = coloGround(ev); if (p && coloInside(p.x, p.z)) coloPut(D.id, p.x, p.z);
+      return;
+    }
+    if (D.from === 'unit' && D.moved){ const u = D.u, side = coloSideAt(u.x);
+      if (side !== u.side){ const id = u.colo, x = u.x, z = u.z; removeUnit(u); if (!coloPut(id, x, z, side)) coloPut(id, x + (side === 'ally' ? 1.2 : -1.2), z, side === 'ally' ? 'enemy' : 'ally'); }
+      coloCount(); }
+  });
+  cv.addEventListener('wheel', ev => { if (!COLO.on) return; ev.preventDefault(); COLO.zoom = clamp(COLO.zoom * (ev.deltaY > 0 ? 1.08 : 0.93), 0.55, 1.35); }, { passive: false });
+  addEventListener('keydown', ev => { if (!COLO.on || ev.repeat) return; if (ev.code === 'KeyR') coloRestart(); if (ev.code === 'Space'){ ev.preventDefault(); coloToggle(); } });
+}
+// 카메라: 남쪽 관중석에서 낮게, 고정 (돌지 않음). 흔들림만 받음
+function coloCam(dt){
+  const z = COLO.zoom, tx = COLO.cx, ty = 6.2 * z + 0.6, tz = COLO.cz + COLO.b + 9.5 * z, k = 1 - Math.pow(1 - 0.1, dt * 60);
+  camera.position.x += (tx - camera.position.x) * k; camera.position.y += (ty - camera.position.y) * k; camera.position.z += (tz - camera.position.z) * k;
+  if (G.t < CAM.shakeUntil){ const a = CAM.shakeAmp; camera.position.x += rnd(-0.5, 0.5) * a; camera.position.y += rnd(-0.5, 0.5) * a * 0.6; }
+  camera.up.set(0, 1, 0); camera.lookAt(COLO.cx, 0.4, COLO.cz + 0.6);
+  CAM.follow.x = COLO.cx; CAM.follow.z = COLO.cz;
+  // 관중: 싸우는 동안 들썩
+  if (COLO.run && COLO.fans && Math.random() < 0.5){ const F = COLO.fans, m4 = new THREE.Matrix4(); for (let n = 0; n < 12; n++){ const i = Math.floor(Math.random() * F.list.length), p = F.list[i]; m4.makeRotationY(-p.t); m4.setPosition(p.x, p.h + 0.11 + (Math.random() < 0.5 ? 0.18 : 0), p.z); F.m.setMatrixAt(i, m4); } F.m.instanceMatrix.needsUpdate = true; }
+}
+{ const _uc = updateCamera; updateCamera = function(dt, t){ if (COLO.on) return coloCam(dt); return _uc(dt, t); }; }
+{ const _pu = playerUpdate; playerUpdate = function(u, dt){ if (COLO.on) return; return _pu(u, dt); }; }
+{ const _lw = layoutWalls; layoutWalls = function(map, yaw){ _lw(map, yaw); if (!COLO.on || !map.wallInfo) return; const m4 = new THREE.Matrix4();   // 경기장 밖 덩어리 벽은 치움 (관중석이 보이게)
+  map.wallInfo.forEach((w, k) => { if (!w.near){ m4.makeScale(0.001, 0.001, 0.001); m4.setPosition(w.x, -5, w.z); map.wallMesh.setMatrixAt(k, m4); } }); map.wallMesh.instanceMatrix.needsUpdate = true; }; }
+function startColo(){
+  clearLevel(); G.mode = 'colo'; COLO.on = true; COLO.run = false; COLO.done = false; G.cmd = 'free';
+  document.body.classList.add('colo');
+  const theme = { bg: 0x9fb4cc, fogNear: 40, fogFar: 120, hemi: 0.7, moon: 0.75, floor: 0xb89c6c, wall: 0x8a7458, pillar: 0x9a8a70 };
+  loadLevel(coloRows(), theme); G.fogK = 2.4;
+  hemi.color.setHex(0xfff4e0); hemi.groundColor.setHex(0x8a7050); moon.color.setHex(0xfff0d0);
+  G.map.wallH = 1.1; layoutWalls(G.map, 0); CAM.lockYaw = true; CAM.yaw = CAM.yawT = 0;
+  G.map.group.add(coloStands());
+  G.player = spawn('player', COLO.cx, COLO.cz, 'neutral'); G.player.group.visible = false; if (G.player.bar){ G.player.bar.remove(); G.player.bar = null; } if (G.player.tag){ G.player.tag.remove(); G.player.tag = null; }
+  G.onKill = () => {}; G.lock = true;
+  camera.position.set(COLO.cx, 7, COLO.cz + COLO.b + 10);
+  coloUI(); if (!COLO.bound){ COLO.bound = true; coloBind(); }
+  let s = null; try { s = JSON.parse(localStorage.getItem(COLO_SAVE) || 'null'); } catch (e) {}
+  if (!s) s = [{ id: 'kariusAlly', x: 15, z: 12, side: 'ally' }, { id: 'rebeccaAlly', x: 16.5, z: 15, side: 'ally' }, { id: 'cheongAlly', x: 14, z: 15.5, side: 'ally' }, { id: 'swordsman', x: 27, z: 12, side: 'enemy' }, { id: 'swordsman', x: 27.5, z: 15, side: 'enemy' }, { id: 'spearman', x: 29, z: 13.5, side: 'enemy' }];
+  coloSet(s);
+  caption('콜로세움', '얼굴을 끌어 놓고 ▶ 시작 — 왼쪽 아군 · 오른쪽 적군');
+  coloLog('콜로세움 — 왼쪽 편성 창에서 얼굴을 바닥으로 끌어 놓으세요. 가운데 선 왼쪽은 아군, 오른쪽은 적군. Space 시작 · 멈춤, R 재시작.', 'sys');
+}
+function coloExit(){ COLO.on = false; location.hash = ''; location.reload(); }
+// 굴의 일시정지 창에 '콜로세움'
+if (typeof pauseOpen === 'function'){
+  const _pauseC = pauseOpen;
+  pauseOpen = function(){
+    _pauseC();
+    const box = document.querySelector('#confirm .cf-box div'); if (!box || box.querySelector('[data-p="colo"]')) return;
+    const b = document.createElement('button'); b.dataset.p = 'colo'; b.textContent = G.mode === 'colo' ? '콜로세움 나가기' : '콜로세움 (배치하고 구경)';
+    b.addEventListener('click', ev => { ev.stopPropagation(); if (G.mode === 'colo') return coloExit(); if (typeof proSave === 'function') proSave(); location.hash = '#colo'; location.reload(); });
     box.appendChild(b);
   };
 }
