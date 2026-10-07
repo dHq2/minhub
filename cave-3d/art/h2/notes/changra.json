@@ -48,7 +48,9 @@
    "ax": 436,
    "ay": 328,
    "from": "오른쪽을 겨누는 거대 전사 스프라이트.png",
-   "orig": "넘어짐 (눈 감음)"
+   "orig": "넘어짐 (눈 감음)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "guardfront": {
    "src": "art/h2/changra/guardfront.webp",
@@ -66,7 +68,9 @@
    "ax": 436,
    "ay": 328,
    "from": "차리막기, 차리 넘어짐.png",
-   "orig": "차리 넘어짐"
+   "orig": "차리 넘어짐",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "attack2": {
    "src": "art/h2/changra/attack2.webp",

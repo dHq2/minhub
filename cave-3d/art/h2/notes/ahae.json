@@ -282,7 +282,9 @@
    "ay": 347,
    "from": "검크람아햐.png 아랫줄 3번",
    "orig": "쓰러짐 — 옆으로 누워 기댐, 차크람 · 검 쥔 채",
-   "scale": 1.35
+   "scale": 1.35,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "down2": {
    "src": "art/h2/ahae/down2.webp",
@@ -292,7 +294,9 @@
    "ay": 334,
    "from": "검크람2.png 아랫줄 3번",
    "orig": "쓰러짐 2 — 누운 채 차크람 쳐들고 검은 바닥에",
-   "scale": 1.43
+   "scale": 1.43,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "down3": {
    "src": "art/h2/ahae/down3.webp",
@@ -302,7 +306,9 @@
    "ay": 390,
    "from": "아해4.png 아랫줄 3번",
    "orig": "쓰러짐 3 — 누운 채 큰 차크람을 치켜듦",
-   "scale": 1.37
+   "scale": 1.37,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "sit": {
    "src": "art/h2/ahae/sit.webp",

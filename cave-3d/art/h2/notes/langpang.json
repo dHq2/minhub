@@ -66,7 +66,9 @@
    "ax": 311,
    "ay": 177,
    "from": "푸른 머리 마법공학자의 두 전투 포즈.png",
-   "orig": "쓰러짐 (눈 감음)"
+   "orig": "쓰러짐 (눈 감음)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/langpang/portrait.webp",

@@ -71,7 +71,9 @@
    "ay": 314,
    "ax_auto": 674,
    "from": "방패와 검의 두 전투 자세.png 오른쪽",
-   "orig": "옆으로 쓰러짐 (머리 오른쪽, 방패 · 검 쥔 채)"
+   "orig": "옆으로 쓰러짐 (머리 오른쪽, 방패 · 검 쥔 채)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "idle2": {
    "src": "art/h2/kanya/idle2.webp",
@@ -91,7 +93,9 @@
    "ay": 314,
    "from": "방패와 검의 두 전투 자세.png 오른쪽",
    "orig": "죽음 그림 없음 — down 으로 대신",
-   "alias_of": "down"
+   "alias_of": "down",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/kanya/portrait.webp",

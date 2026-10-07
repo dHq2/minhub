@@ -52,7 +52,9 @@
    "ay": 328,
    "from": "가리3.png 오른쪽",
    "orig": "옆으로 누워 쓰러짐 (턱 괴고 눈 뜸 — 쉼으로도)",
-   "scale": 0.888
+   "scale": 0.888,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "attack2": {
    "src": "art/h2/gari/attack2.webp",

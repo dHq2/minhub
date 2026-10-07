@@ -485,6 +485,9 @@ H2K.mano.phase = { at: 0.5, k: 1.2, spd: 1.2, say: '…' };
 H2K.hadim.sk.push(sk('crown', '뿔 왕관 수직 강타', 'leap', 'special', 12, 5, { len: 5, r: 2.5, mul: 0.6, mul2: 2.0, trip: true, windup: 1.0, ph: 2, say: '무릎 꿇어라!' }), sk('order', '악마 장군의 호령', 'buff', 'idle', 25, 12, { k: 1.2, t: 10, r: 12 }));
 H2K.hadim.phase = { at: 0.5, k: 1.25, spd: 1.15, say: '크하하하하! 이제야 몸이 풀리는군!' };
 h2Build();
+// v2.0 동작 검토 (v0.69): 2기 · 3기 밖 인물의 발 위치 (ax) · 보는 방향 (f) · 크기 (scale) 보정 — 자동 측정 + 눈 검토로 고름 (발이 칼끝 · 무기 밑에 서 있던 것들)
+const MOTION_FIX = {"axeKnight": {"idle": {"ax": 121}}, "bk": {"idle": {"ax": 68}, "thrust": {"ax": 86}, "attack": {"ax": 123}, "heavy": {"ax": 125}, "kick": {"ax": 81}, "bash": {"ax": 66}}, "catw": {"pounce": {"ax": 166}}, "cs": {"attack": {"ax": 101}, "jump": {"ax": 96}}, "foeJelly": {"idle": {"f": -1}}, "gwangnyang": {"attack": {"ax": 179}}, "jakyak": {"attack": {"scale": 2.0}}, "player": {"kick": {"ax": 417}}};
+for (const [k, L] of Object.entries(MOTION_FIX)) if (SPR[k]) for (const [p, v] of Object.entries(L)) if (SPR[k].poses[p]) Object.assign(SPR[k].poses[p], v);
 
 /* ---------- 훈련장 '2기' 탭 (drill.js가 부름) ----------
    인물마다: 얼굴 · 이름 · 등급 · 보직 · 키 · 기술 이름 · 빠진 그림 + 동료로 (2조) / 적으로 / 보스로 부르기 */

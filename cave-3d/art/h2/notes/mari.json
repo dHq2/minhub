@@ -88,11 +88,12 @@
    "src": "art/h2/mari/leap.webp",
    "w": 574,
    "h": 673,
-   "ax": 491,
+   "ax": 258,
    "ay": 670,
    "from": "마리1.png 위 넷째",
    "orig": "던진 창이 땅에 꽂힌 뒤 한 손을 뻗은 채 공중으로 뛰어오름 (창 궤적 선 · 돌 파편)",
-   "scale": 1.4
+   "scale": 1.4,
+   "review": "v0.69 동작 검토"
   },
   "slam": {
    "src": "art/h2/mari/slam.webp",
@@ -178,11 +179,12 @@
    "src": "art/h2/mari/crouch.webp",
    "w": 570,
    "h": 463,
-   "ax": 480,
+   "ax": 199,
    "ay": 460,
    "from": "마리3.png 아래 넷째",
    "orig": "쭈그려 앉아 창을 땅에 눕혀 쥐고 노려봄 (매복 · 쉬기)",
-   "scale": 1.4
+   "scale": 1.4,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/mari/portrait.webp",

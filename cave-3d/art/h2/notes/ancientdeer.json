@@ -38,11 +38,12 @@
    "src": "art/h2/ancientdeer/dash.webp",
    "w": 800,
    "h": 574,
-   "ax": 673,
+   "ax": 368,
    "ay": 571,
    "from": "고대사슴 5성이상.png 윗줄 3번",
    "orig": "앞으로 몸을 날려 도약 돌진 (네 다리 뻗음)",
-   "scale": 1.6
+   "scale": 1.6,
+   "review": "v0.69 동작 검토"
   },
   "slam": {
    "src": "art/h2/ancientdeer/slam.webp",

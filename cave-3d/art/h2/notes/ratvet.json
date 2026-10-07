@@ -99,7 +99,9 @@
    "ay": 739,
    "from": "베테랑경례대기.png",
    "orig": "다리 벌리고 서서 오른팔을 뒤쪽 (왼쪽)으로 곧게 뻗어 손바닥 폄 — 경례 전 대기 · 명령 · 표식 지목 손짓, 방패 등에, 검 자루 보임",
-   "scale": 0.55
+   "scale": 0.55,
+   "f": -1,
+   "review": "v0.69 동작 검토"
   },
   "ready": {
    "src": "art/h2/ratvet/ready.webp",
@@ -149,7 +151,9 @@
    "ay": 479,
    "from": "file_00000000321c8209992e721113666a92.png (세 동작 시트) 가운데",
    "orig": "방패에 깔려 옆으로 쓰러짐, 창 쥔 채 한쪽 눈 감고 지친 얼굴 (쓰러짐)",
-   "scale": 1.17
+   "scale": 1.17,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "guard2": {
    "src": "art/h2/ratvet/guard2.webp",
@@ -225,11 +229,12 @@
    "src": "art/h2/ratvet/sword_low.webp",
    "w": 551,
    "h": 659,
-   "ax": 91,
+   "ax": 225,
    "ay": 656,
    "from": "file_0000000068188209ab020b424f505d08.png (10칸 검 · 방패 시트) 2행 2",
    "orig": "다리 넓게 벌려 낮은 자세, 검 아래로 비스듬히 (낮은 검 자세)",
-   "scale": 1.73
+   "scale": 1.73,
+   "review": "v0.69 동작 검토"
   },
   "sword_attack": {
    "src": "art/h2/ratvet/sword_attack.webp",
@@ -419,7 +424,9 @@
    "ay": 504,
    "from": "베테랑 앞구르기 뒷구르기 굴러서 방패로 박치기 무겁게.png (8칸) 2행 2",
    "orig": "방패를 앞에 둔 채 뒤로 주저앉으며 넘어감 (뒷구르기 시작)",
-   "scale": 1.73
+   "scale": 1.73,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "broll_flip": {
    "src": "art/h2/ratvet/broll_flip.webp",

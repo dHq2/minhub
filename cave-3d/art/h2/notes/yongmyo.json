@@ -53,7 +53,9 @@
    "ay": 453,
    "from": "용묘화1.png 위 넷째",
    "orig": "땅에 주저앉아 한 손으로 버팀, 삽은 옆에 눕힘 (쓰러짐)",
-   "scale": 1.48
+   "scale": 1.48,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "windup": {
    "src": "art/h2/yongmyo/windup.webp",

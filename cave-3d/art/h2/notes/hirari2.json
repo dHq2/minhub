@@ -30,7 +30,9 @@
    "ax": 134,
    "ay": 790,
    "from": "히라리,하리.png 왼쪽 (루즈 파일)",
-   "orig": "서 있음 2 (뒤돌아 웃음)"
+   "orig": "서 있음 2 (뒤돌아 웃음)",
+   "scale": 1.3,
+   "review": "v0.69 동작 검토"
   },
   "attack": {
    "src": "art/h2/hirari2/attack.webp",
@@ -57,7 +59,9 @@
    "ax": 847,
    "ay": 332,
    "from": "히라리 변신2.png 오른쪽",
-   "orig": "쓰러짐 (엎드려 지팡이 쥠)"
+   "orig": "쓰러짐 (엎드려 지팡이 쥠)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/hirari2/low.webp",

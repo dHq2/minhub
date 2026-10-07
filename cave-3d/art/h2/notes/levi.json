@@ -93,7 +93,9 @@
    "ax": 597,
    "ay": 394,
    "from": "소총 든 올리브 여전사의 두 자세.png",
-   "orig": "오른쪽: 넘어진 채 소총 겨눔"
+   "orig": "오른쪽: 넘어진 채 소총 겨눔",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "command": {
    "src": "art/h2/levi/command.webp",

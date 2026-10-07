@@ -78,11 +78,12 @@
    "src": "art/h2/unitB/kick.webp",
    "w": 747,
    "h": 744,
-   "ax": 299,
+   "ax": 552,
    "ay": 741,
    "from": "기체B날라다니고 공중제비등.png 위 오른쪽",
    "orig": "한 손으로 삿갓을 잡고 한 다리를 오른쪽 위로 높이 차올림, 다른 손 단검은 아래로",
-   "scale": 1.55
+   "scale": 1.55,
+   "review": "v0.69 동작 검토"
   },
   "skill": {
    "src": "art/h2/unitB/skill.webp",
@@ -132,7 +133,9 @@
    "ay": 436,
    "from": "기체B전트.png 위 가운데",
    "orig": "땅에 옆으로 주저앉아 한 손으로 몸을 받치고 다른 손 단검을 오른쪽으로 겨눔 (쓰러진 자세)",
-   "scale": 1.55
+   "scale": 1.55,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "stance": {
    "src": "art/h2/unitB/stance.webp",

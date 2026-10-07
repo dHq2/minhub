@@ -39,7 +39,9 @@
    "ax": 246,
    "ay": 371,
    "from": "가면 여전사의 두 전투 자세.png 왼쪽",
-   "orig": "두손 검 겨눔 (낮은 전투 자세)"
+   "orig": "두손 검 겨눔 (낮은 전투 자세)",
+   "scale": 1.92,
+   "review": "v0.69 동작 검토"
   },
   "down": {
    "src": "art/h2/garam2/down.webp",
@@ -48,7 +50,9 @@
    "ax": 440,
    "ay": 149,
    "from": "가면 여전사의 두 전투 자세.png 오른쪽",
-   "orig": "쓰러짐 (검 쥔 채 엎드림)"
+   "orig": "쓰러짐 (검 쥔 채 엎드림)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/garam2/low.webp",

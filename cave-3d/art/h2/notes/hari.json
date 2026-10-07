@@ -36,10 +36,11 @@
    "src": "art/h2/hari/attack2.webp",
    "w": 846,
    "h": 608,
-   "ax": 565,
+   "ax": 295,
    "ay": 605,
    "from": "두 전투 자세의 핑크 깃털 마법사.png",
-   "orig": "내려찍기 폭발"
+   "orig": "내려찍기 폭발",
+   "review": "v0.69 동작 검토"
   },
   "skill": {
    "src": "art/h2/hari/skill.webp",
@@ -66,7 +67,9 @@
    "ax": 386,
    "ay": 237,
    "from": "분홍 깃털귀 마법사 두 전투 포즈.png",
-   "orig": "쓰러짐 (눈 감음)"
+   "orig": "쓰러짐 (눈 감음)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "stand": {
    "src": "art/h2/hari/stand.webp",

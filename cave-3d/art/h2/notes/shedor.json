@@ -70,7 +70,9 @@
    "ay": 208,
    "from": "붉은 머리 가면 전사의 두 전투 자세.png 오른쪽",
    "orig": "쓰러져 죽음 (머리 오른쪽)",
-   "ax_auto": 595
+   "ax_auto": 595,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/shedor/portrait.webp",

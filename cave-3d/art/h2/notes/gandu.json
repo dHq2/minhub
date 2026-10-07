@@ -72,7 +72,9 @@
    "ay": 341,
    "ax_auto": 140,
    "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 오른쪽",
-   "orig": "간두 죽음 (엎어짐, 권총 쥔 채 — 넘어짐 겸용)"
+   "orig": "간두 죽음 (엎어짐, 권총 쥔 채 — 넘어짐 겸용)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/gandu/finisher.webp",
@@ -112,7 +114,9 @@
    "ay": 341,
    "from": "간두 앉아쏴, 숙여피하기, 간두 죽음, 넘어짐.png 오른쪽",
    "orig": "넘어짐 — 죽음 그림 겸용",
-   "alias_of": "dead"
+   "alias_of": "dead",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/gandu/portrait.webp",

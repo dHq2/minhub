@@ -63,7 +63,9 @@
    "ay": 752,
    "from": "초강적 사슴.png 아래 첫째",
    "orig": "몸을 낮추고 두 갈퀴를 벌린 채 오른쪽으로 돌진 (뒤로 흙먼지)",
-   "scale": 1.57
+   "scale": 1.57,
+   "f": -1,
+   "review": "v0.69 동작 검토"
   },
   "slam": {
    "src": "art/h2/stagbeast/slam.webp",

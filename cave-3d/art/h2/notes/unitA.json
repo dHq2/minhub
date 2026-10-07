@@ -172,7 +172,9 @@
    "ay": 625,
    "from": "기체A1.png 아래 오른쪽 칸 (뒤집음)",
    "orig": "땅에 주저앉아 한 팔로 몸을 받치고 큰 날 다리 넷이 앞으로 겹쳐 쓰러짐",
-   "scale": 1.34
+   "scale": 1.34,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/unitA/portrait.webp",

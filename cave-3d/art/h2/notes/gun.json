@@ -81,10 +81,11 @@
    "src": "art/h2/gun/guard.webp",
    "w": 491,
    "h": 536,
-   "ax": 351,
+   "ax": 245,
    "ay": 533,
    "from": "푸른 전사의 두 전투 자세.png",
-   "orig": "왼쪽: 봉 가로로 막기"
+   "orig": "왼쪽: 봉 가로로 막기",
+   "review": "v0.69 동작 검토"
   },
   "down": {
    "src": "art/h2/gun/down.webp",
@@ -93,7 +94,9 @@
    "ax": 315,
    "ay": 225,
    "from": "푸른 전사의 두 전투 자세.png",
-   "orig": "오른쪽: 옆으로 쓰러짐 (봉 쥔 채)"
+   "orig": "오른쪽: 옆으로 쓰러짐 (봉 쥔 채)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/gun/portrait.webp",

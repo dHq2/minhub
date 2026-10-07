@@ -27,10 +27,11 @@
    "src": "art/h2/garam/run.webp",
    "w": 685,
    "h": 614,
-   "ax": 121,
+   "ax": 274,
    "ay": 611,
    "from": "뛰기.png 왼쪽",
-   "orig": "뛰기"
+   "orig": "뛰기",
+   "review": "v0.69 동작 검토"
   },
   "attack": {
    "src": "art/h2/garam/attack.webp",
@@ -76,7 +77,9 @@
    "ax": 541,
    "ay": 351,
    "from": "포복, 엎드림, 쉼.png 왼쪽",
-   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)"
+   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "finisher": {
    "src": "art/h2/garam/finisher.webp",
@@ -100,10 +103,11 @@
    "src": "art/h2/garam/armor_ready.webp",
    "w": 393,
    "h": 653,
-   "ax": 33,
+   "ax": 121,
    "ay": 650,
    "from": "청록 머리의 가면 기사.png",
-   "orig": "판금 갑옷 버전 두손 검 겨눔 (다른 옷)"
+   "orig": "판금 갑옷 버전 두손 검 겨눔 (다른 옷)",
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/garam/portrait.webp",

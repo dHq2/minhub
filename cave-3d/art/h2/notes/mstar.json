@@ -18,11 +18,12 @@
    "src": "art/h2/mstar/idle.webp",
    "w": 480,
    "h": 696,
-   "ax": 185,
+   "ax": 287,
    "ay": 693,
    "from": "모닝스타1.png 위 둘째",
    "orig": "철퇴를 땅에 늘어뜨린 채 서서 손톱 세운 손을 들고 송곳니를 드러냄 (광기 어린 대기)",
-   "scale": 1.65
+   "scale": 1.65,
+   "review": "v0.69 동작 검토"
   },
   "attack": {
    "src": "art/h2/mstar/attack.webp",
@@ -82,7 +83,9 @@
    "ay": 390,
    "from": "모닝스타1.png 위 넷째",
    "orig": "옆으로 쓰러져 엎드린 채 이를 악물고 노려봄 (사슬 늘어짐)",
-   "scale": 1.65
+   "scale": 1.65,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "back": {
    "src": "art/h2/mstar/back.webp",

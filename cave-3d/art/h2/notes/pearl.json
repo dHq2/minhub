@@ -72,7 +72,9 @@
    "ay": 254,
    "from": "펄 앉기, 넘어짐.png 오른쪽",
    "orig": "넘어짐 — 엎어져 아파함",
-   "scale": 0.52
+   "scale": 0.52,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/pearl/portrait.webp",

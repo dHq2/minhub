@@ -92,7 +92,9 @@
    "ay": 502,
    "from": "보스 로젤.png 아래 둘째",
    "orig": "무릎 꿇고 엎드려 한 손으로 가시 바닥을 짚음 (쓰러짐 — 가시 소환 자세로도 씀)",
-   "scale": 1.45
+   "scale": 1.45,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/rozel/portrait.webp",

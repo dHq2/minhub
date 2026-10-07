@@ -1,10 +1,12 @@
-# poren_art.py v1.1 — 2D 판 '야광 포렌' 움직임 13종 (codex/img/foren/*_v2.webp, 동작마다 10~14장) → 3D 판 묶음 그림
+# poren_art.py v1.2 — 2D 판 '야광 포렌' 움직임 13종 (codex/img/foren/*_v2.webp, 동작마다 10~14장) → 3D 판 묶음 그림
 #  · 동작마다 모든 장의 겹친 상자로 자르고 같은 배율 (서 있는 키 380px) 로 줄임 → 그 동작의 칸들을 격자로 한 덩어리
 #  · 덩어리들을 큰 묶음 그림 (art/poren/poren<N>.webp, 4096 폭) 에 차곡차곡 → src/poren_sheets.js (동작 → rect · 칸 수 · 격자 · 발 위치)
 #  · 얼굴: foren_idle_color.webp 머리 → art/poren/face.webp (128)
 #  게시 파일 수 한도 (511) 때문에 묶음은 2장 이하로
+#  v1.2: 발 위치를 몸 무게중심 x · 넓은 줄 맨 아래로 (동작 검토: 칼끝 밑에 서던 문제)
 #  v1.1: 4장 → 2장. 배율을 300px 부터 줄여 가며 2장 안에 들 때까지 다시 쌓음
 import os, json, math
+import numpy as np
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); SRC = os.path.join(os.path.dirname(ROOT), 'codex', 'img', 'foren')
 OUT = os.path.join(ROOT, 'art', 'poren'); os.makedirs(OUT, exist_ok=True)
@@ -24,11 +26,10 @@ def build(K):
             b = f.getchannel('A').point(lambda v: 255 if v > 24 else 0).getbbox()
             if b: bb = b if bb is None else (min(bb[0], b[0]), min(bb[1], b[1]), max(bb[2], b[2]), max(bb[3], b[3]))
         fw, fh = math.ceil((bb[2] - bb[0]) * K), math.ceil((bb[3] - bb[1]) * K)
-        # 발 위치: 첫 장의 몸 (불투명) 아래 끝 · 그 줄 가운데
-        f0 = frames[0].crop(bb).resize((fw, fh), Image.LANCZOS); a = f0.getchannel('A'); ay = fh - 3
-        for y in range(fh - 1, 0, -1):
-            row = [x for x in range(fw) if a.getpixel((x, y)) > 200]
-            if len(row) > 6: ay = y; ax = (row[0] + row[-1]) // 2; break
+        # 발 위치 (v1.2): x = 첫 장 불투명 몸 전체의 x 중앙값 (칼끝 · 베기 궤적에 끌려가지 않게), y = 폭이 넓은 (가장 넓은 줄의 15% 넘는) 줄 중 맨 아래 (꽂은 칼끝은 건너뜀)
+        f0 = frames[0].crop(bb).resize((fw, fh), Image.LANCZOS); A = np.array(f0.getchannel('A')) > 120
+        ys, xs = np.nonzero(A); ax = int(np.median(xs)) if len(xs) else fw // 2
+        rw = A.sum(1); wide = np.nonzero(rw > rw.max() * 0.15)[0]; ay = int(wide.max()) if len(wide) else fh - 3
         cols = max(1, min(n, SHEET_W // fw)); rows = math.ceil(n / cols)
         blk = Image.new('RGBA', (cols * fw, rows * fh), (0, 0, 0, 0))
         for i, f in enumerate(frames): blk.paste(f.crop(bb).resize((fw, fh), Image.LANCZOS), ((i % cols) * fw, (i // cols) * fh))

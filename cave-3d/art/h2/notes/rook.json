@@ -52,7 +52,9 @@
    "ay": 540,
    "from": "창과 방패 병사의 두 전투 자세(1).png 오른쪽",
    "orig": "뒤로 넘어짐 (창 · 방패 쥔 채, 먼지)",
-   "scale": 0.93
+   "scale": 0.93,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/rook/low.webp",

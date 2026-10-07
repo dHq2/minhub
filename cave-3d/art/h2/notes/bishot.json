@@ -32,7 +32,9 @@
    "ay": 333,
    "ax_auto": 114,
    "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
-   "orig": "죽음 (옆으로 누움, 눈 감음 — 쉼 · 넘어짐 겸용)"
+   "orig": "죽음 (옆으로 누움, 눈 감음 — 쉼 · 넘어짐 겸용)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "windup": {
    "src": "art/h2/bishot/windup.webp",
@@ -62,7 +64,9 @@
    "ay": 558,
    "ax_auto": 341,
    "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 왼쪽",
-   "orig": "확인사살 · 내려찍기 (불꽃 주먹으로 땅 내려치기, 폭발 · 돌)"
+   "orig": "확인사살 · 내려찍기 (불꽃 주먹으로 땅 내려치기, 폭발 · 돌)",
+   "f": -1,
+   "review": "v0.69 동작 검토"
   },
   "special": {
    "src": "art/h2/bishot/special.webp",
@@ -81,7 +85,9 @@
    "ay": 333,
    "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
    "orig": "쉼 — 따로 그림 없음, 죽음 그림 겸용",
-   "alias_of": "dead"
+   "alias_of": "dead",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "down": {
    "src": "art/h2/bishot/dead.webp",
@@ -91,7 +97,9 @@
    "ay": 333,
    "from": "비숏_기본,죽음,쉼,넘어짐.png 오른쪽",
    "orig": "넘어짐 — 따로 그림 없음, 죽음 그림 겸용",
-   "alias_of": "dead"
+   "alias_of": "dead",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "jump": {
    "src": "art/h2/bishot/special.webp",
@@ -111,7 +119,9 @@
    "ay": 558,
    "from": "비숏_점핑파이어,확인사살,내려찍기,특수기.png 왼쪽",
    "orig": "내려찍기 — 확인사살 그림 겸용",
-   "alias_of": "finisher"
+   "alias_of": "finisher",
+   "f": -1,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/bishot/portrait.webp",

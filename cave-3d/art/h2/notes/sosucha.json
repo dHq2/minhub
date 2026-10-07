@@ -84,7 +84,9 @@
    "ax": 740,
    "ay": 302,
    "from": "보랏빛 전사의 두 전투 자세(1).png",
-   "orig": "오른쪽: 엎드려 검 휘두르기 (하단)"
+   "orig": "오른쪽: 엎드려 검 휘두르기 (하단)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "windup2": {
    "src": "art/h2/sosucha/windup2.webp",
@@ -102,7 +104,9 @@
    "ax": 391,
    "ay": 290,
    "from": "무기 없는 두 포즈 스프라이트.png",
-   "orig": "오른쪽: 엎드려 기기 (무기 없음)"
+   "orig": "오른쪽: 엎드려 기기 (무기 없음)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/sosucha/portrait.webp",

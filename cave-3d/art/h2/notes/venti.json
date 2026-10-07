@@ -72,7 +72,9 @@
    "ay": 231,
    "ax_auto": 302,
    "from": "청동 병사의 두 전투 자세(1).png 오른쪽",
-   "orig": "엎어져 쓰러짐 (머리 오른쪽, 검 앞으로)"
+   "orig": "엎어져 쓰러짐 (머리 오른쪽, 검 앞으로)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "idle2": {
    "src": "art/h2/venti/idle2.webp",
@@ -109,7 +111,9 @@
    "ay": 339,
    "ax_auto": 375,
    "from": "청동 병사의 방패 방어와 쓰러진 자세.png 오른쪽",
-   "orig": "뒤로 넘어짐 (등 대고 누움, 방패 위)"
+   "orig": "뒤로 넘어짐 (등 대고 누움, 방패 위)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "front": {
    "src": "art/h2/venti/front.webp",

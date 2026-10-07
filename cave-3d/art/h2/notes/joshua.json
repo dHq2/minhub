@@ -75,7 +75,9 @@
    "ax": 411,
    "ay": 249,
    "from": "황금 골렘의 두 전투 자세.png",
-   "orig": "오른쪽: 엎어져 쓰러짐"
+   "orig": "오른쪽: 엎어져 쓰러짐",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/joshua/portrait.webp",

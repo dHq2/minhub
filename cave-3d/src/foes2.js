@@ -1,4 +1,4 @@
-/* foes2.js v1.2 — (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.3 — (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
    1 무덤 어귀 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
    6 안개 늪: 검냥이 · 강적 보르마 · 7 도깨비 시장: 보광 · 광냥 · 강적 청승 · 작약 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
@@ -26,7 +26,7 @@ Object.assign(SPR, {
   bogwang: foeSheet('bogwang', 1.7, 1), gwangnyang: foeSheet('gwangnyang', 1.8, 1), cs: foeSheet('cs', 2.0, 1), jakyak: foeSheet('jakyak', 1.9, -1),
   bk: foeSheet('bk', 1.85, 1, { alias: { windup: 'idle' } }), bkShield: foeSheet('bkShield', 1.8, -1), bkSpear: foeSheet('bkSpear', 1.85, 1), axeKnight: foeSheet('axeKnight', 2.3, -1),
   eyemon: foeSheet('eyemon', 2.0, 1), bluefat: foeSheet('bluefat', 2.3, 1), janggun: foeSheet('janggun', 2.8, -1),
-  cesar: foeSheet('cesar', 2.1, 1), general: foeSheet('general', 2.4, 1),
+  cesar: foeSheet('cesar', 2.1, -1), general: foeSheet('general', 2.4, 1),
 });
 const M = (range, arc, windup, cd, mul = 1, kb = 0.8) => ({ range, arc, windup, cd, mul, kb });
 Object.assign(DEFS, {

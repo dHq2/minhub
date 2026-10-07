@@ -93,7 +93,9 @@
    "ax": 224,
    "ay": 240,
    "from": "후드 캐릭터의 두 가지 전투 포즈.png",
-   "orig": "오른쪽: 쓰러짐 (손에 연기 남음)"
+   "orig": "오른쪽: 쓰러짐 (손에 연기 남음)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/yuli/portrait.webp",

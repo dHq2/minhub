@@ -76,7 +76,9 @@
    "ax": 412,
    "ay": 396,
    "from": "포복, 엎드림, 쉼.png 오른쪽",
-   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)"
+   "orig": "포복 / 엎드림 / 쉼 (먼지 효과)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/hirari/low.webp",

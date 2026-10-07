@@ -169,11 +169,12 @@
    "src": "art/h2/tehera/sit2.webp",
    "w": 687,
    "h": 499,
-   "ax": 613,
+   "ax": 274,
    "ay": 496,
    "from": "테헤라1.png 아래 넷째",
    "orig": "바닥에 앉아 한 무릎을 세움 (원본 왼쪽 보기 → 뒤집음)",
-   "scale": 1.41
+   "scale": 1.41,
+   "review": "v0.69 동작 검토"
   },
   "dash2": {
    "src": "art/h2/tehera/dash2.webp",

@@ -36,10 +36,11 @@
    "src": "art/h2/tanga/attack.webp",
    "w": 611,
    "h": 574,
-   "ax": 381,
+   "ax": 201,
    "ay": 571,
    "from": "거대 검사의 지상·공중 참격.png",
-   "orig": "지상 참격"
+   "orig": "지상 참격",
+   "review": "v0.69 동작 검토"
   },
   "jump": {
    "src": "art/h2/tanga/jump.webp",
@@ -75,7 +76,9 @@
    "ax": 285,
    "ay": 346,
    "from": "대검 전사의 수비와 쓰러짐.png",
-   "orig": "쓰러짐"
+   "orig": "쓰러짐",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "windup": {
    "src": "art/h2/tanga/windup.webp",

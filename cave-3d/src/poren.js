@@ -1,4 +1,4 @@
-/* poren.js v1.0 — 포렌 (쥐들의 대왕 · 1인군단) (v1.0, v0.68: 2D 판 '야광 포렌' 을 3D 로. 그림 13동작 (tools/poren_art.py → art/poren 묶음 2장) · 쥐 군단 · 기억하는 쥐)
+/* poren.js v1.1 — (v1.1, v0.69 동작 검토: 발 위치를 몸 무게중심으로 다시 잼 · 쓰러지면 대검 꽂고 무릎 꿇음) v1.0 — 포렌 (쥐들의 대왕 · 1인군단) (v1.0, v0.68: 2D 판 '야광 포렌' 을 3D 로. 그림 13동작 (tools/poren_art.py → art/poren 묶음 2장) · 쥐 군단 · 기억하는 쥐)
    140cm 에메랄드 갑주 · 대검 탱커. 혼자서 군단 — 쥐들이 끝없이 몰려와 싸움. 세자르와 같은 급 (인간의 정점들)
    2기 목록에 붙음: DEFS.h2_poren (동료) · DEFS.h2e_poren (적 · 보스로도). 훈련장 '2기' 탭 · 투기장에서 그대로 씀
    기술 (위에 있을수록 먼저):
@@ -19,7 +19,7 @@ const PQ = (k, o = {}) => ({ ...POREN_SHEETS[k], f: 1, fps: 14, ...o });
 const PO = { tall: 1.35, cap: 12, rec: 'poren_rats' };
 SPR.h2_poren = { h0: POREN_SHEETS.idle.h, tall: PO.tall, poses: {
   idle: PQ('idle', { fps: 8, pingpong: true }), walk: PQ('idle', { fps: 16, pingpong: true }), hurt: PQ('block', { count: 3, fps: 12, once: true }), block: PQ('block', { fps: 12, once: true }),
-  down: PQ('ground', { from: 12, count: 1 }), dead: PQ('ground', { from: 12, count: 1 }),
+  down: PQ('ground', { from: 12, count: 1, flat: true }), dead: PQ('ground', { from: 12, count: 1, flat: true }),   // v1.1 쓰러져도 대검을 꽂고 무릎 꿇은 채 (눕히지 않음)
   slashA: PQ('slash_diag', { count: 5, fps: 14, once: true }), slashB: PQ('slash_diag', { from: 5, count: 6, fps: 20, once: true }), attack: PQ('slash_diag', { from: 5, count: 6, fps: 20, once: true }),
   bigA: PQ('bigslash', { count: 5, fps: 10, once: true }), bigB: PQ('bigslash', { from: 5, count: 6, fps: 18, once: true }),
   thrA: PQ('dash_thrust', { count: 5, fps: 12, once: true }), thrB: PQ('dash_thrust', { from: 5, count: 7, fps: 20, once: true }),

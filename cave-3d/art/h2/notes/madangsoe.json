@@ -52,7 +52,9 @@
    "ay": 217,
    "ax_auto": 468,
    "from": "황금 늑대 가면의 두 전투 자세.png 오른쪽",
-   "orig": "엎드려 쓰러짐 (머리 오른쪽)"
+   "orig": "엎드려 쓰러짐 (머리 오른쪽)",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "special": {
    "src": "art/h2/madangsoe/special.webp",
@@ -80,7 +82,9 @@
    "ay": 217,
    "from": "황금 늑대 가면의 두 전투 자세.png 오른쪽",
    "orig": "죽음 그림 없음 — down 으로 대신",
-   "alias_of": "down"
+   "alias_of": "down",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "jump": {
    "src": "art/h2/madangsoe/kick.webp",

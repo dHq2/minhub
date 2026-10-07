@@ -89,7 +89,9 @@
    "ay": 343,
    "ax_auto": 325,
    "from": "뿔투구 기사, 수비와 전복 포즈.png 오른쪽",
-   "orig": "전복 — 뒤로 넘어져 주저앉음"
+   "orig": "전복 — 뒤로 넘어져 주저앉음",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "front": {
    "src": "art/h2/tank/front.webp",
@@ -109,7 +111,9 @@
    "ay": 343,
    "from": "뿔투구 기사, 수비와 전복 포즈.png 오른쪽",
    "orig": "죽음 그림 없음 — down 으로 대신",
-   "alias_of": "down"
+   "alias_of": "down",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/tank/portrait.webp",

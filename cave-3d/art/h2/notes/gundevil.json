@@ -73,7 +73,9 @@
    "ay": 312,
    "from": "쌍권총을 든 뿔난 여성 전투 포즈 2종.png 오른쪽",
    "orig": "옆으로 누워 사격 (넘어짐 · 엎드려쏴로도)",
-   "scale": 0.77
+   "scale": 0.77,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/gundevil/portrait.webp",

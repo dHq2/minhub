@@ -70,7 +70,9 @@
    "ay": 286,
    "from": "뿔 달린 뼈 전사의 두 전투 자세.png 오른쪽",
    "orig": "뒤로 쓰러짐 (철퇴 쥔 채)",
-   "ax_auto": 682
+   "ax_auto": 682,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/makarov/portrait.webp",

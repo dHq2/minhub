@@ -49,7 +49,9 @@
    "ay": 274,
    "from": "두 포즈 게임 스프라이트 여백 보정.png 오른쪽",
    "orig": "엎드려 쓰러짐 (머리 오른쪽)",
-   "ax_auto": 343
+   "ax_auto": 343,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   }
  },
  "portrait": "art/h2/manghyang/portrait.webp",

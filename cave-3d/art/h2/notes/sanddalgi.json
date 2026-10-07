@@ -48,7 +48,9 @@
    "ax": 342,
    "ay": 380,
    "from": "딸기머리 수호자의 두 포즈.png",
-   "orig": "옆으로 누움"
+   "orig": "옆으로 누움",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "attack": {
    "src": "art/h2/sanddalgi/attack.webp",

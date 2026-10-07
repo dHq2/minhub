@@ -108,11 +108,12 @@
    "src": "art/h2/ahae2/slash.webp",
    "w": 562,
    "h": 557,
-   "ax": 198,
+   "ax": 291,
    "ay": 554,
    "from": "아해 각성모드.png 아랫줄 1번",
    "orig": "낮게 웅크려 사슬낫으로 둥글게 베기, 붉은 베기 궤적",
-   "scale": 1.47
+   "scale": 1.47,
+   "review": "v0.69 동작 검토"
   },
   "spin": {
    "src": "art/h2/ahae2/spin.webp",

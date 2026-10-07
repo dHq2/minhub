@@ -52,7 +52,9 @@
    "ay": 426,
    "from": "수호 천사의 두 전투 자세.png 오른쪽",
    "orig": "바닥에 주저앉아 총 겨눔 (넘어짐)",
-   "scale": 0.73
+   "scale": 0.73,
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "low": {
    "src": "art/h2/bel/low.webp",

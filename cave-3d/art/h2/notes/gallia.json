@@ -48,7 +48,9 @@
    "ax": 335,
    "ay": 380,
    "from": "보라 갑옷 대검 전사의 두 포즈.png",
-   "orig": "팔꿈치 괴고 누움"
+   "orig": "팔꿈치 괴고 누움",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "attack2": {
    "src": "art/h2/gallia/attack2.webp",
@@ -66,16 +68,19 @@
    "ax": 461,
    "ay": 330,
    "from": "보라색 기사, 두 가지 전투 자세.png",
-   "orig": "엎드려 쓰러짐"
+   "orig": "엎드려 쓰러짐",
+   "flat": true,
+   "review": "v0.69 동작 검토"
   },
   "attack3": {
    "src": "art/h2/gallia/attack3.webp",
    "w": 908,
    "h": 524,
-   "ax": 577,
+   "ax": 245,
    "ay": 521,
    "from": "보랏빛 갑옷 전사의 대검 이중 액션.png",
-   "orig": "내려찍기 (지면 파쇄)"
+   "orig": "내려찍기 (지면 파쇄)",
+   "review": "v0.69 동작 검토"
   },
   "jump": {
    "src": "art/h2/gallia/jump.webp",
