@@ -1,4 +1,4 @@
-/* game.js v0.89 — (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.90 — (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -312,7 +312,7 @@ function medicHud(){
   return `<div class="sk ${off ? 'off' : ready >= 1 ? 'ready' : ''}"><span class="cd" style="--p:${(off ? 0 : ready) * 360}deg"><i>✚</i></span><span>노먼 · 구급상자</span><span class="pips">${pips}</span><small>${n.downed ? '쓰러짐' : left ? (ready >= 1 ? '준비' : Math.ceil(n.healCd) + '초') : '없음'}</small></div>`;
 }
 function updateHud(){
-  const party = G.units.filter(u => u.side === 'ally');
+  const party = G.units.filter(u => u.side === 'ally' && !u.king);   // v0.68 포렌의 쥐는 동료 줄에 안 넣음
   if (typeof caveBar === 'function') caveBar();
   if (G.mode === 'cave' && PRO.bar && !PRO.caveIntro) $('party').innerHTML = ''; else
   if (G.mode === 'exp' && typeof uiHeroPanel === 'function'){ const hh = uiHeroPanel(); if ($('party').dataset.h !== hh){ $('party').dataset.h = hh; $('party').innerHTML = hh; } } else

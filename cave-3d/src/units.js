@@ -1,4 +1,4 @@
-/* units.js v0.28 — (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.29 — (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -60,7 +60,8 @@ function updateSprite(u, dt){
     const cnt = P.count || P.n, from = P.from || 0;
     let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(fi % (2 * cnt - 2) - (cnt - 1)) : fi % cnt;   // pingpong: 끝에서 거꾸로
     u.fi = fi;
-    if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
+    if (P.rect && P.cols){ const [x, y, w, h, W, H] = P.rect, fw = w / P.cols, fh = h / P.rows, c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(fw / W, fh / H); t.offset.set((x + c * fw) / W, 1 - (y + (r + 1) * fh) / H); }   // v0.29 묶음 그림 칸 안의 격자
+    else if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
     else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }
   const k = u.S.tall * SPRITE_SCALE / u.S.h0 * (P.scale || 1), w = P.w * k, h = P.h * k;
