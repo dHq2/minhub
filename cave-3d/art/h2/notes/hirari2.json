@@ -31,8 +31,8 @@
    "ay": 790,
    "from": "히라리,하리.png 왼쪽 (루즈 파일)",
    "orig": "서 있음 2 (뒤돌아 웃음)",
-   "scale": 1.3,
-   "review": "v0.69 동작 검토"
+   "review": "v0.69 동작 검토",
+   "gscale": 1.3
   },
   "attack": {
    "src": "art/h2/hirari2/attack.webp",
