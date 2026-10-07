@@ -1,4 +1,6 @@
-# 투기장 (arena) v1.2
+# 투기장 (arena) v1.3
+
+v1.3 (2026-10-07): 투기장 페이지 하나에 탭으로 모음 (티어표 · 순위 / 명경기). 새 기록은 새 페이지를 만들지 않고 같은 페이지에 탭을 더함. 명경기 움짤은 게시할 때 hl/<id>.webp · hl/<id>_still.jpg 로 붙임 (arena_tpl.html 의 HL 목록).
 
 v1.2 (2026-10-06): 명경기 녹화 arena_highlights.js v1.3 — 대진 (highlights/sc*.json) 을 여러 번 붙여 조건에 맞는 판을 고르고, 화면 없이 빨리 돌리다 막판 (한쪽 체력 35% 아래) 부터 0.2초마다 찍음. `node arena_highlights.js sc1.json` → f/<id>/*.jpg, 움짤은 PIL 로 webp. 페이지 틀 highlights/highlights.html.
 
