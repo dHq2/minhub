@@ -1,4 +1,4 @@
-# h2_roster.py v1.2 — (v1.2: codex_g (도감에 이미 있는 1기 인물 묶음) · batch (3기-2 등 들어온 묶음) 도 넘김) (v1.1: gen (기수) · <slug>_g3.json 처럼 같은 slug 의 덧붙임 노트는 동작만 합침) v1.0 — 2기 멤버 노트 (art/h2/notes/*.json) → src/h2_roster.js (게임이 읽는 목록)
+# h2_roster.py v1.3 — (v1.3: 동작 검토 값 f (그림이 보는 방향, -1 = 왼쪽) · flat (이미 누운 그림) · scale (크기 맞춤) 도 넘김) (v1.2: codex_g (도감에 이미 있는 1기 인물 묶음) · batch (3기-2 등 들어온 묶음) 도 넘김) (v1.1: gen (기수) · <slug>_g3.json 처럼 같은 slug 의 덧붙임 노트는 동작만 합침) v1.0 — 2기 멤버 노트 (art/h2/notes/*.json) → src/h2_roster.js (게임이 읽는 목록)
 #  · 노트마다 그림 (동작) · 키 · 무게 · 적성 · 성향 · 보직 · 배낭 · 기술 제안을 한데 모음
 #  · 그림 파일이 실제로 있는 것만 넣음 (없는 건 빠진 동작으로)
 #  · 같은 인물을 두 작업자가 다른 slug로 쓴 경우는 ALIAS로 합침
@@ -20,7 +20,7 @@ def main():
             for k, v in (o.get('poses') or {}).items():
                 if not isinstance(v, dict) or not v.get('src'): continue
                 if not os.path.exists(os.path.join(ROOT, v['src'])): print('  missing file', slug, k, v['src']); continue
-                poses[k] = {kk: v[kk] for kk in ('src', 'w', 'h', 'ax', 'ay', 'orig') if kk in v}
+                poses[k] = {kk: v[kk] for kk in ('src', 'w', 'h', 'ax', 'ay', 'orig', 'f', 'flat', 'scale') if kk in v}
             if not poses: print('no poses', slug)
             keep = {k: o.get(k) for k in ('name', 'rank', 'folder', 'role', 'tall', 'weight', 'palette', 'missing', 'kit', 'apt', 'tag', 'role_job', 'bag', 'stats', 'hp', 'atk', 'spd', 'desc', 'gen', 'codex_g', 'batch') if o.get(k) is not None}
             for k in ('portrait', 'face'):

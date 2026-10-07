@@ -1,4 +1,4 @@
-/* units.js v0.29 — (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.30 — (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -54,6 +54,7 @@ function texFor(u, P){
 const camRight = new THREE.Vector3();
 function updateSprite(u, dt){
   u.poseT += dt;
+  if (u.downed || u.dead){ if (!u._dp){ u._dp = true; const Q = u.S.poses, k = u.dead && Q.dead && Q.dead.flat ? 'dead' : Q.down && Q.down.flat ? 'down' : null; if (k) setPose(u, k); } } else u._dp = false;   // v0.30 누운 그림
   const P = u.S.poses[u.pose] || u.S.poses.idle, t = texFor(u, P);
   if (u.mat.map !== t){ u.mat.map = t; u.mat.needsUpdate = true; }
   if (P.n){

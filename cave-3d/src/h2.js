@@ -1,4 +1,4 @@
-/* h2.js v1.9 — (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v2.0 — (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -20,7 +20,7 @@ function h2Build(){
   for (const [slug, o] of Object.entries(H2R)){
     const P = o.poses || {}; if (!P.idle) { const k = Object.keys(P)[0]; if (!k) continue; P.idle = P[k]; }
     const AT = typeof H2A !== 'undefined' && H2A[slug];   // 묶음 그림이 있으면 그 칸을 씀 (아티팩트 파일 수 줄이기)
-    const pose = p => { const q = { src: p.src, w: p.w, h: p.h, ax: p.ax ?? Math.round(p.w / 2), ay: p.ay ?? p.h - 3, f: 1 }, n = AT && Object.keys(P).find(k => P[k] === p), r = n && AT.poses[n];
+    const pose = p => { const q = { src: p.src, w: p.w, h: p.h, ax: p.ax ?? Math.round(p.w / 2), ay: p.ay ?? p.h - 3, f: p.f || 1, ...(p.flat ? { flat: true } : {}), ...(p.scale ? { scale: p.scale } : {}) }, n = AT && Object.keys(P).find(k => P[k] === p), r = n && AT.poses[n];
       if (r){ q.src = AT.src; q.rect = [...r, AT.W, AT.H]; } return q; };
     const poses = {};
     for (const [k, v] of Object.entries(P)) poses[k] = pose(v);
