@@ -1,0 +1,1154 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>굴의 도감</title>
+<!-- codex v2.01 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 배치: 위에 고정된 장부 띠 (분류 · 체크 수 · 백업), 아래로 분류별 진열장. 그림 칸마다 번호표 (스샷으로 집어 말할 수 있게) */
+:root{
+  --bg:#141116; --panel:#1d1920; --well:#25202a; --line:#3a3240; --fg:#ece4d6; --dim:#a39a8c;
+  --accent:#d9a94e; --check:#e8564a; --in:#3fbf6a; --out:#d8443a; --relic:#2f7f78; --relic-edge:#6fe0d0; --boss:#7a1f22; --boss-edge:#ff8a70;
+  --display:"Nanum Myeongjo","Batang",serif; --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
+  --accent:#9a6a12; --check:#c2352a; --in:#2e9a52; --out:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; } }
+:root[data-theme="light"]{
+  --bg:#f3efe8; --panel:#fbf8f3; --well:#e8e2d8; --line:#d3c9b9; --fg:#231d24; --dim:#6c6255;
+  --accent:#9a6a12; --check:#c2352a; --in:#2e9a52; --out:#c2352a; --relic:#2f7f78; --relic-edge:#2f9c90; --boss:#7a1f22; --boss-edge:#c0453a; color-scheme:light; }
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:20px 80px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px}
+h1{font:800 34px/1.1 var(--display);margin:0;letter-spacing:1px;text-wrap:balance}
+.lede{color:var(--dim);margin:0;max-width:62ch;font-size:14px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 auto;min-width:0}
+.tab{font:500 13px var(--body);color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+.tab b{font:500 11px var(--mono);color:var(--dim);margin-left:4px}
+.tab[aria-pressed="true"]{color:var(--fg);border-color:var(--accent);background:var(--panel)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{font:500 13px var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 11px;cursor:pointer}
+.btn:hover,.tab:hover{border-color:var(--accent)}
+.btn:focus-visible,.tab:focus-visible,.tile:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.warn{color:var(--check)}
+.count{font:500 13px var(--mono);color:var(--check);padding-inline:4px;font-variant-numeric:tabular-nums}
+.only{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim);cursor:pointer}
+.status{font-size:12px;color:var(--dim);width:100%}
+.status.err{color:var(--check)}
+section.cat{margin-top:34px}
+section.cat > h2{font:700 22px/1.2 var(--display);margin:0 0 4px;display:flex;align-items:baseline;gap:10px}
+section.cat > h2 small{font:500 12px var(--mono);color:var(--dim)}
+.cat-note{color:var(--dim);font-size:13px;margin:0 0 12px;max-width:70ch}
+h3{font:600 13px var(--body);color:var(--dim);letter-spacing:.06em;margin:20px 0 8px;display:flex;gap:8px;align-items:center}
+h3 .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.grid{--z:var(--zoom,1);display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(118px*var(--z)),1fr));gap:calc(10px*min(var(--z),1))}
+.grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,calc(250px*var(--z))),1fr))}
+.grid.cards{grid-template-columns:repeat(auto-fill,minmax(calc(140px*var(--z)),1fr))}
+.tile{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:5px;cursor:pointer;min-width:0}
+.tile .pic{aspect-ratio:1/1;max-width:100%;border-radius:4px;background:var(--well);display:grid;place-items:center;overflow:hidden}
+.grid.wide .pic{aspect-ratio:16/10}
+.grid.cards .pic{aspect-ratio:3/4}
+.grid.anim .pic{aspect-ratio:468/328}
+.grid.anim img{object-fit:contain}
+.grid.tall{grid-template-columns:repeat(auto-fill,minmax(calc(150px*var(--z)),1fr))} .grid.tall .pic{aspect-ratio:3/4}
+.tile img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.grid.wide img,.grid.cards img{width:100%;height:100%;object-fit:cover}
+.tile.relic .pic{background:radial-gradient(circle at 50% 45%,var(--relic) 0%,#123a3a 75%);box-shadow:inset 0 0 0 1px var(--relic-edge)}
+.tile.boss .pic{background:radial-gradient(circle at 50% 45%,var(--boss) 0%,#2a0a0c 78%);box-shadow:inset 0 0 0 1px var(--boss-edge)}
+.tile.gold .pic{background:radial-gradient(circle at 50% 42%,#d4a93a 0%,#6b4a08 80%);box-shadow:inset 0 0 0 1px #f2dc96}
+.meta{display:flex;align-items:baseline;gap:6px;min-width:0}
+.id{font:500 11px var(--mono);color:var(--accent);flex:none}
+.nm{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.memo-dot{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v1.81 확정한 설정 · 효과: 본문색으로 또렷하게. 출처 메모는 그대로 흐린색 */
+.spec-dot{font-size:11.5px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.view .side p.spec{color:var(--fg);font-size:15px;line-height:1.55;font-weight:500;border-left:3px solid var(--accent);padding-left:9px;white-space:pre-wrap}
+/* v1.83 인물 공통 설정: 그 인물의 모든 그림이 같이 보는 칸 */
+.cspec{color:var(--fg);font-size:13.5px;line-height:1.6;white-space:pre-wrap;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:9px 11px;margin:0 0 10px;scroll-margin-top:var(--barH,120px)}
+.cspec em{color:var(--dim);font-style:normal;font-size:12.5px}
+.pbtn .pen{position:absolute;right:2px;top:2px;font:600 10px var(--body);color:var(--bg);background:var(--accent);border-radius:999px;padding:0 4px;line-height:14px}
+#vCSpec{min-height:130px}
+/* v1.84 인물 섹션 나누기 */
+.prow{border:1px dashed transparent;border-radius:8px;padding:5px 6px;margin:-1px}
+html.csort .prow{border-color:var(--line)}
+html.csort .prow.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+html.csort .pbtn{cursor:grab;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+html.csort .pbtn:active{cursor:grabbing}
+html.csort .pbtn img,html.csort .pbtn .pp{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+.pbtn.insb .pp{box-shadow:-4px 0 0 var(--accent)}
+.pbtn.insa .pp{box-shadow:4px 0 0 var(--accent)}
+/* v1.86 파워밸런스 격자: 세로 등급 · 가로 구분 */
+.board{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:0 0 10px}
+.bgrid{display:grid;grid-template-columns:calc(58px*var(--zoom,1)) repeat(4,minmax(calc(150px*var(--zoom,1)),1fr));min-width:min(100%,660px)}
+.bh{position:sticky;top:0;z-index:3;background:var(--well);border-bottom:1px solid var(--line);padding:7px 8px;font:600 12.5px var(--body);color:var(--fg);display:flex;align-items:baseline;gap:6px}
+.bh i{font:500 10.5px var(--mono);color:var(--dim);font-style:normal}
+.bt{position:sticky;left:0;z-index:2;background:var(--well);border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px 6px;font:600 11.5px var(--body);color:var(--fg);line-height:1.3}
+.bt small{display:block;font:500 10px var(--mono);color:var(--dim)}
+.bh:first-child{position:sticky;left:0;z-index:4}
+.cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:calc(54px*var(--zoom,1))}
+.cell.over{background:color-mix(in srgb,var(--accent) 16%,transparent);box-shadow:inset 0 0 0 2px var(--accent)}
+.cell.no{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--well) 6px 12px);color:var(--dim);font:500 11px var(--mono);align-items:center;justify-content:center}
+.cell .pbtn,.tray .pbtn{width:calc(46px*var(--zoom,1));flex:none}
+.cell .pbtn .pn,.tray .pbtn .pn{font-size:calc(9px*var(--zoom,1));line-height:1.15}
+.cell .pbtn .pp,.tray .pbtn .pp{border-radius:6px}
+/* 아직 안 나눈 인물은 격자 밖, 전체 폭 더미로 (한 줄에 많이 들어가게) */
+.tray{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:7px;margin:0 0 10px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start}
+.tray.over{box-shadow:inset 0 0 0 2px var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.trayh{display:flex;align-items:baseline;gap:8px;margin:0 0 5px;font:600 12.5px var(--body);color:var(--fg)}
+.trayh i{font:500 11px var(--mono);color:var(--dim);font-style:normal}
+.tb{position:absolute;left:2px;bottom:16px;z-index:1;font:700 9.5px var(--mono);color:var(--bg);background:var(--accent);border-radius:3px;padding:0 3px;line-height:13px}
+.tb.en{background:var(--out);color:#fff}
+.bsum{font:500 12px var(--mono);color:var(--dim);padding:6px 2px}
+.pbtn.lifted{opacity:.3}
+.ghost{position:fixed;z-index:40;pointer-events:none;width:76px;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.ghost img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;border:2px solid var(--accent);display:block}
+.prow > b .cnt{font:500 10.5px var(--mono);color:var(--dim);margin-left:6px}
+.sheet .btn{flex:0 0 auto}
+.box{position:absolute;top:10px;left:10px;width:24px;height:24px;border-radius:5px;border:2px solid var(--dim);background:var(--bg);display:grid;place-items:center;font:700 15px var(--body);color:transparent;cursor:pointer}
+.tile.on{border-color:var(--check);box-shadow:0 0 0 1px var(--check)}
+.st{position:absolute;top:12px;right:12px;width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
+.st.out{background:var(--out)} .st.in{background:var(--in)}
+.cdot{position:absolute;left:3px;top:3px;z-index:2;width:13px;height:13px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 0 1px rgba(0,0,0,.35)} .cdot.in{background:#3bd16f} .cdot.out{background:#e0433a}
+.cell .cdot,.tray .cdot{width:9px;height:9px;border-width:1.5px;left:2px;top:2px} .cspec .cdot{position:static;display:inline-block;vertical-align:-2px;margin-right:7px;width:14px;height:14px}
+.trash{position:absolute;top:8px;right:38px;width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--dim);display:grid;place-items:center;cursor:pointer;padding:0;opacity:.55}
+.trash svg{width:16px;height:16px}
+.tile:hover .trash,.trash:focus-visible{opacity:1;border-color:var(--line);background:var(--bg)}
+.trash.del{opacity:1;color:#fff;background:var(--check);border-color:var(--check)}
+.tile.on .box{background:var(--check);border-color:var(--check);color:#fff}
+.tile.on .id{color:var(--check)}
+.fold{position:absolute;left:10px;bottom:34px;font:600 12px var(--body);color:#fff;background:var(--accent);border:0;border-radius:999px;padding:4px 10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.fold.on{background:var(--fg);color:var(--bg)}
+.tile.folder .pic{box-shadow:4px 4px 0 -1px var(--panel),4px 4px 0 0 var(--line),8px 8px 0 -1px var(--panel),8px 8px 0 0 var(--line)}
+.tile.kid{border-style:dashed;border-color:var(--accent)}
+.tile.kid.keep{border-style:solid}
+.pnav{display:flex;flex-direction:column;gap:10px;margin:6px 0 18px;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.prow > b{display:block;font:600 12px var(--body);color:var(--dim);margin-bottom:6px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(62px*var(--zoom,1)),1fr));gap:6px}
+.pbtn{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;padding:2px;cursor:pointer;color:var(--fg);min-width:0}
+.pbtn .pp{position:relative;width:100%;aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:var(--well);border:1px solid var(--line);display:grid;place-items:center}
+/* v1.88 꼬리표: 영입 가능 = 대각선 금띠 (동료와 NPC 사이 중립지대) · 무리 = 초록 테두리 (한 그림에 여러 명, 무리 전체의 등급) */
+.pbtn.rec .pp::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,transparent 0 60%,var(--accent) 60% 84%,transparent 84%)}
+.pbtn.grp .pp{border-color:var(--in);box-shadow:inset 0 0 0 2px var(--in)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font:500 11.5px var(--body);color:var(--dim);margin:0 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend .sw2{width:15px;height:15px;border-radius:4px;border:1px solid var(--line);background:var(--well);position:relative;display:inline-block}
+.legend .sw2.rec::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 0 55%,var(--accent) 55% 85%,transparent 85%)}
+.legend .sw2.grp{border-color:var(--in);box-shadow:inset 0 0 0 2px var(--in)}
+.pbtn img{width:100%;height:100%;object-fit:cover;display:block}
+.pbtn:hover .pp,.pbtn:focus-visible .pp{border-color:var(--accent)}
+.pn{font-size:10.5px;line-height:1.2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cat-char h3,.pnav{scroll-margin-top:var(--barH,120px)}
+.toNav{margin-left:auto;font:500 11px var(--body);color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:2px 8px;cursor:pointer}
+h3.hit,.pnav.hit{animation:hit 1.2s}
+@keyframes hit{0%{background:color-mix(in srgb,var(--accent) 35%,transparent)}100%{background:transparent}}
+.renamed{display:inline-block;font:600 10.5px var(--body);color:#fff;background:#b06a12;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* v1.73 유물 착용 분류 */
+.wear{display:inline-block;font:600 10.5px var(--body);border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wear.y{color:#06211f;background:var(--relic-edge)}
+.wear.n{color:#fff;background:var(--out)}
+.wear.u{color:var(--dim);background:transparent;border:1px dashed var(--line)}
+.wear.q{color:var(--bg);background:var(--accent)}
+.cons{display:inline-block;font:600 10.5px var(--body);color:#fff;background:#6f4fa0;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn.on{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+.btn[disabled]{opacity:.4;cursor:default}
+html.sorting .tile{cursor:copy}
+html.sorting .tile:active{transform:scale(.96)}
+html.sorting .tile .box,html.sorting .tile .st,html.sorting .tile .trash{pointer-events:none;opacity:.35}
+.sortbar{border-color:var(--accent)}
+.wearRow .btn{flex:1}
+.wearRow .btn.on{color:var(--bg)}
+.namein{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 8px;font:15px var(--body)}
+.namein:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.search{display:flex;align-items:center;gap:6px;flex:1 1 220px;min-width:0}
+.search input{flex:1;min-width:0;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font:14px var(--body)}
+.search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#qn{font:500 12px var(--mono);color:var(--accent);white-space:nowrap}
+.empty{color:var(--dim);font-size:14px;padding:20px 0}
+/* 크게 보기 */
+.view{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;padding:16px}
+.view .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-width:min(920px,100%);max-height:100%;overflow:auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;padding:16px}
+.view .big{background:var(--well);border-radius:6px;display:grid;place-items:center;min-height:260px}
+.view .big img{max-height:70vh;object-fit:contain}
+.view .side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.chk2{display:flex;flex-direction:column;gap:10px}
+.view .side .id{font-size:14px}
+.view .side h4{font:700 22px/1.25 var(--display);margin:0}
+.view .side p{margin:0;color:var(--dim);font-size:13.5px}
+textarea{width:100%;min-height:110px;resize:vertical;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:14px/1.5 var(--body)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.sheet{position:fixed;inset:auto 0 0 0;z-index:25;background:var(--panel);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.sheet p{margin:0;flex:1 1 260px}
+pre.copy{white-space:pre-wrap;font:12px/1.5 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;max-height:200px;overflow:auto;width:100%;margin:0}
+/* 크기 조절 */
+.zoom{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.zoom button{font:600 15px var(--body);color:var(--fg);background:var(--panel);border:0;width:34px;height:32px;cursor:pointer}
+.zoom span{font:500 11px var(--mono);color:var(--dim);min-width:38px;text-align:center}
+.toolsBtn{display:none}
+main{touch-action:pan-x pan-y}
+.tiny .trash,.tiny .nm,.tiny .memo-dot{display:none!important} .tiny .box{width:20px;height:20px;top:5px;left:5px;border-width:1.5px} .tiny .st{width:14px;height:14px;top:6px;right:6px} .tiny .tile{padding:3px}
+.view .big{position:relative;overflow:auto;touch-action:pan-x pan-y}
+.view .big.zoomed{display:block}
+.view .big.zoomed img{max-height:none;max-width:none;width:220%}
+.view .hint{font-size:11px;color:var(--dim)}
+/* v1.95 꽉 찬 화면 (스샷용): 그림만 화면 가득, 원본이 있으면 원본 해상도로 다시 그림 */
+.shot{position:fixed;inset:0;z-index:40;background:#000;touch-action:pinch-zoom;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.shot[data-bg="white"]{background:#fff} .shot[data-bg="paper"]{background:var(--bg)}
+.shot[data-bg="check"]{background:repeating-conic-gradient(#cfcfcf 0 25%,#f4f4f4 0 50%) 0 0/24px 24px}
+.shot canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.shotUi{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.55));transition:opacity .35s;font:12px var(--body);color:#eee}
+.shotUi.off{opacity:0;pointer-events:none}
+.shotUi button{font:600 13px var(--body);color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:7px 12px}
+.shotUi span{flex:1;text-align:center;opacity:.8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.view .big img{cursor:zoom-in}
+/* 휴대폰 */
+@media (max-width:640px){
+  .search{flex:1 1 100%} .search input{font-size:16px;padding:8px 10px}
+  .wrap{padding-block:12px 90px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(calc(100px*var(--z)),1fr))}
+  .grid.wide{grid-template-columns:repeat(auto-fill,minmax(min(100%,calc(165px*var(--z))),1fr))}
+  .grid.cards,.grid.tall{grid-template-columns:repeat(auto-fill,minmax(calc(110px*var(--z)),1fr))}
+  .status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  h1{font-size:24px}
+  .lede{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .lede.open{display:block}
+  .bar{padding:8px 16px;gap:6px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;flex:1 1 100%;scroll-snap-type:x proximity;margin-inline:-16px;padding-inline:16px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;padding:7px 12px;scroll-snap-align:start}
+  .toolsBtn{display:inline-block}
+  .tools{width:100%;gap:6px}
+  .tools .more{display:none;width:100%;flex-wrap:wrap;gap:6px}
+  .bar.open .tools .more{display:flex}
+  .status{font-size:11px}
+  section.cat{margin-top:22px}
+  section.cat > h2{font-size:19px}
+  .cat-note{font-size:12px}
+  h3{margin:14px 0 6px}
+  .tile{padding:4px;gap:3px}
+  .nm{font-size:11.5px}
+  .box{top:7px;left:7px;width:26px;height:26px}
+  .st{top:9px;right:9px;width:20px;height:20px}
+  .trash{top:6px;right:34px;width:28px;height:28px;opacity:.85;background:color-mix(in srgb,var(--bg) 70%,transparent)}
+  /* 크게 보기: 전체 화면, 아래 버튼 고정, 좌우로 밀어 넘김 */
+  .view{padding:0;place-items:stretch}
+  .view .card{grid-template-columns:1fr;grid-template-rows:auto 1fr;border-radius:0;border:0;max-height:100%;height:100%;padding:0;gap:0;overflow:hidden}
+  .view .big{min-height:0;height:52vh;border-radius:0}
+  .view .big img{max-height:52vh;max-width:100%}
+  .view .side{overflow:auto;padding:12px 16px calc(120px + env(safe-area-inset-bottom,0px));gap:8px}
+  .view .side h4{font-size:19px}
+  .view .side .acts{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;z-index:2}
+  .view .side .acts .btn{padding:10px 6px;font-size:14px}
+  .view .side .acts #vDel{grid-column:1 / -1}
+  textarea{min-height:80px;font-size:16px}
+}
+/* v1.68 초상화 두 번 누르기: 한 번 누르면 테두리 · 이름 강조, 한 번 더 누르면 이동 */
+.pbtn.armed .pp{border:2px solid var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.pbtn.armed .pn{color:var(--accent);font-weight:700}
+.pbtn{position:relative}
+.pbtn.armed::after{content:'한 번 더';position:absolute;left:50%;top:4px;transform:translateX(-50%);white-space:nowrap;font:600 10px var(--body);color:var(--bg);background:var(--accent);border-radius:999px;padding:1px 6px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+/* v1.66 뒤로 버튼 */
+.tab.back{color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:600;flex:none}
+@media (max-width:640px){ .tab.back{padding:7px 12px} .bar:has(#backBtn:not([hidden])) .tabs{flex:1 1 0;margin-left:0;padding-left:0} }
+/* v1.63 목차 · 묶음 접기 */
+.gbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px}
+.gbar .btn{padding:4px 10px;font-size:12px}
+.gcount{font:500 12px var(--mono);color:var(--dim)}
+.toc{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;scroll-margin-top:var(--barH,120px)}
+.tocrow{display:grid;grid-template-columns:minmax(90px,150px) 1fr;gap:4px 10px;align-items:start}
+.tocrow > b{font:600 12.5px var(--body);color:var(--fg);padding-top:3px}
+.tocrow > b i,.tchip i{font:500 10.5px var(--mono);color:var(--dim);font-style:normal;margin-left:5px}
+.tocrow > span{display:flex;flex-wrap:wrap;gap:5px}
+.tchip{font:500 12px var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+.tchip:hover,.tchip:focus-visible{border-color:var(--accent)}
+.tchip.on{border-color:var(--accent);color:var(--accent)}
+h3.gh{margin:6px 0;scroll-margin-top:var(--barH,120px)}
+h3.gh.open{margin-top:18px}
+.gt{display:flex;gap:8px;align-items:center;font:600 13px var(--body);color:var(--dim);letter-spacing:.06em;background:transparent;border:0;padding:4px 2px;cursor:pointer;text-align:left}
+.gt:hover,.gh.open .gt{color:var(--fg)}
+.car{width:12px;color:var(--accent)}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;font:600 13px var(--body);color:var(--bg);background:var(--accent);border:0;border-radius:999px;padding:9px 14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+@media (max-width:640px){
+  .tocrow{grid-template-columns:1fr} .fab{bottom:calc(18px + env(safe-area-inset-bottom,0px));padding:11px 16px;font-size:14px}
+  /* v1.64 손가락 크기: 접기 제목 · 목차 칩 · 버튼을 넉넉하게 */
+  .gt{min-height:44px;flex:1;font-size:14px;letter-spacing:.02em} h3.gh{margin:2px 0;border-bottom:1px solid var(--line)} h3.gh.open{margin-top:12px}
+  .toNav{padding:6px 10px;font-size:12px}
+  .tchip{padding:7px 12px;font-size:13.5px} .tocrow > span{gap:7px}
+  .gbar .btn{padding:8px 12px;font-size:13px}
+  /* 고정 띠를 얇게: 상태 글은 오류일 때만, 내려가는 동안엔 도구 줄을 숨김 */
+  .status:not(.err){display:none}
+  .bar.mini .tools{display:none}
+  .bar{transition:padding .15s}
+  /* 그림 칸: 쓰레기통은 크게 보기 안에서만 (등장 동그라미 옆이라 잘못 눌림). 삭제 표시된 것은 작은 표만 */
+  .tile .trash{display:none} .tile .trash.del{display:grid;pointer-events:none;width:22px;height:22px;top:auto;bottom:34px;right:8px}
+  .pbtn .pp{border-radius:10px}
+  /* 크게 보기: 그림 조금 줄이고 체크 · 등장을 큰 버튼처럼, 이름은 입력칸 하나만 */
+  .view .big{height:44vh} .view .big img{max-height:44vh}
+  .view .side h4{display:none}
+  .view .side label.only{min-height:46px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:15px;color:var(--fg);gap:10px}
+  .view .side label.only input{width:22px;height:22px;accent-color:var(--accent)}
+  .view .side label.only:has(input:checked){border-color:var(--accent)}
+  .view .side .chk2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+}
+@media (prefers-reduced-motion:no-preference){ .tile{transition:border-color .15s,box-shadow .15s} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>굴의 도감</h1>
+    <p class="lede">굴의 프롤로그에 들어갈, 지금까지 받은 그림 전부. 그림을 누르면 크게 보고 메모를 남길 수 있고, 왼쪽 위 네모로 체크합니다. 오른쪽 위 동그라미는 등장 표시예요 (초록 = 등장 확정, 빨강 = 미등장, 누르면 바뀜). 맨 위 초상화 모음의 왼쪽 위 동그라미는 인물 전체의 등장이에요 (그 인물 그림 중 하나라도 등장이면 초록, 누르면 인물째로 바뀜 — 아래 인물 칸 · 등장 거르기와 같이 움직임). 체크 · 등장 표시 · 메모는 누르거나 쓰는 즉시 자동 저장되고 Claude가 바로 읽을 수 있어요.</p>
+  </header>
+
+  <div class="bar" id="bar">
+    <button class="tab back" id="backBtn" type="button" hidden aria-label="뒤로">← 뒤로</button><div class="tabs" id="tabs" role="toolbar" aria-label="분류"></div>
+    <div class="search"><input id="q" type="search" placeholder="찾기: 번호 (h076) · 이름 · 메모 · 묶음" autocomplete="off" aria-label="찾기"><span id="qn"></span></div>
+    <div class="tools">
+      <span class="zoom" aria-label="그림 크기"><button type="button" id="zOut" aria-label="작게">−</button><span id="zVal">100%</span><button type="button" id="zIn" aria-label="크게">+</button></span>
+      <span class="count" id="count">체크 0</span>
+      <button class="btn toolsBtn" id="toolsBtn" type="button" aria-expanded="false">도구 ▾</button>
+      <span class="more">
+      <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
+      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option><option value="wy">○ 착용 가능만 (유물)</option><option value="wn">✕ 착용 불가만 (유물)</option><option value="wq">? 등장 미정만 (유물)</option><option value="cons">◆ 소모품만</option><option value="spec">설정 적은 것만</option><option value="nospec">설정 아직 안 적은 것만</option></select>
+      <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
+      <button class="btn" id="saveBtn" type="button">백업 저장</button>
+      <button class="btn" id="loadBtn" type="button">백업 불러오기</button>
+      <input type="file" id="loadFile" accept="application/json,.json" hidden>
+      <button class="btn" type="button" data-undo disabled>되돌리기</button>
+      <button class="btn warn" id="clearBtn" type="button">체크 모두 해제</button>
+      </span>
+    </div>
+    <div class="status" id="status">저장소에 연결하는 중…</div>
+  </div>
+
+  <main id="main"></main>
+</div>
+
+<div class="shot" id="shot" hidden aria-label="꽉 찬 화면 (스샷용)"><canvas id="shotC"></canvas>
+  <div class="shotUi" id="shotUi"><button type="button" id="shotBg">바탕: 검정</button><span id="shotInfo"></span><button type="button" id="shotX">닫기</button></div></div>
+<div class="view" id="view" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="vName">
+    <div class="big"><img id="vImg" alt=""></div>
+    <div class="side">
+      <span class="id" id="vId"></span>
+      <h4 id="vName"></h4>
+      <label for="vNameIn" class="memo-dot">이름 (고치면 바로 저장 · 원래 이름과 다르면 '이름 바뀜' 표시)</label>
+      <input id="vNameIn" class="namein" type="text" autocomplete="off">
+      <span class="renamed" id="vOrig" hidden></span>
+      <p id="vSub"></p>
+      <p class="spec" id="vSpec" hidden></p>
+      <p id="vNote"></p>
+      <div class="chk2"><label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
+      <label class="only" for="vSt"><input type="checkbox" id="vSt"> 등장 확정</label>
+      <label class="only" for="vCons"><input type="checkbox" id="vCons"> ◆ 소모품</label>
+      <label class="only" for="vRec" id="vRecL" hidden><input type="checkbox" id="vRec"> 영입 가능</label>
+      <label class="only" for="vGrp" id="vGrpL" hidden><input type="checkbox" id="vGrp"> 무리 · 여럿</label></div>
+      <div class="row wearRow" id="vWear" hidden><button class="btn" type="button" data-vw="o">○ 착용 가능</button><button class="btn" type="button" data-vw="x">✕ 착용 불가</button><button class="btn" type="button" data-vw="">? 등장 미정</button></div>
+      <label for="vCSpec" class="memo-dot" id="vCSpecLab" hidden>인물 공통 설정 — 설정 · 스토리 · 스탯 (이 인물의 모든 그림이 같이 봅니다)</label>
+      <textarea id="vCSpec" hidden placeholder="예: 고대천사 렉사. 현존하는 3체 중 1명, 왜 나타나는지 모름.&#10;HP 300 / 공격 40 / 방어 25&#10;1장 끝에 처음 등장"></textarea>
+      <label for="vMemo" class="memo-dot">메모 (이 그림 한 장에 대해: 지우기 · 이름 · 다듬기 …)</label>
+      <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
+      <div class="row acts"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vClose" type="button">닫기</button><button class="btn" id="vNext" type="button">다음 →</button>
+      <button class="btn warn" id="vDel" type="button">삭제 표시 (체크 + 메모)</button></div>
+      <span class="hint">메모 · 이름에서 엔터 = 저장하고 다음 그림 (줄바꿈은 Shift + 엔터) · 그림을 좌우로 밀면 넘어가요 · 두 번 누르면 확대</span>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden></div>
+<button class="fab" id="fab" type="button" hidden aria-label="이 분류의 목차로">↑ 목차</button>
+
+<script src="catalog.js"></script>
+<script src="packs.js"></script>
+<script src="hipacks.js"></script>
+<script>
+'use strict';
+// 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
+const CATS = [
+  { key:'relic', no:'1', name:'유물', note:'묶음은 착용 가능 · 등장 미정 · 착용 불가 셋뿐입니다 (시트별 묶음은 없앴고, 원래 출처는 찾기로 나옵니다). 분류 모드를 켜고 칸을 누를 때마다 착용 가능 → 착용 불가 → 등장 미정 순으로 돌며, 그동안은 칸이 자리를 안 옮깁니다. 모드를 끄면 세 통으로 갈립니다. 소모품 (한 번 쓰면 없어지는 것)은 크게 보기에서 따로 켜는 표라, 착용 가능이든 불가든 같이 달 수 있습니다. 금빛 바탕 = 보스 · 특별 유물 (칼의 현자 세트 · 페흐토의 망토 · 도끼기사의 도끼).' },
+  { key:'equip', no:'2', name:'장비', note:'게임에서 끼우는 칸대로 나눴습니다 — 무기 (종류별: 검 · 대검 · 단검 · 도끼 · 망치 · 창 · 지팡이 · 활 · 석궁 · 권총 · 산탄총 · 레버액션 · 돌격소총) · 보조 (방패) · 방어구 (머리 · 몸 · 다리) · 장신구. 칸과 종류는 게임 데이터 (cave-3d)와 같고, 크게 보기에 게임 속 칸 · 등급 · 수치가 나옵니다. 원래 받은 묶음 (시트 이름)은 크게 보기 · 찾기에 남아 있어요. 핏빛 바탕 = 보스 등급 장비 (세자르 · 적뢰 · 발용 · 레지나).' },
+  { key:'scene', no:'4', name:'컷씬 · 인카운터 · 배경', note:'쓰는 곳대로: 컷씬 (로딩 · 장면 전환) · 인카운터 (그림 · 카드 · 조우 장면 카드 160장) · 배경 (장소) · 빈 맵 틀 28장. 인카운터를 맵으로 만드는 계획은 cave-3d/ENCOUNTER_MAPS.md.' },
+  { key:'card', no:'6', name:'스킬 · 이야기 그림', note:'스킬 아이콘은 하는 일대로: 무기 공격 · 맨손 · 레슬링 · 방어 · 회피 · 회복 · 지원 · 마법 · 이능 · 탐색 · 도구 · 기묘한 술수. 흑백 이야기 그림 120장은 그림 내용대로 이름을 붙였습니다 (글상자 · 로딩 · 회상에 씀).' },
+  { key:'char', no:'8', name:'인물', note:'꼬리표 두 개가 있습니다 — 대각선 금띠는 영입 가능 (동료가 될 수 있는 NPC, 동료와 NPC 사이 중립지대), 초록 테두리는 무리 · 여럿 (한 그림에 여러 명이라 그 무리 · 팩션 전체의 등급). 얼굴을 톡 누르거나 크게 보기에서 답니다. 파워밸런스 격자를 켜면 위에 아직 안 나눈 인물 더미가, 아래에 세로 등급 × 가로 구분(펫 · 동료 · NPC · 적) 표가 열립니다. 더미에서 칸으로 끌어다 놓으면 구분과 등급이 한 번에 정해지고, 다시 더미로 끌면 되돌아갑니다 (폰에서는 꾹 눌러 집고, 톡 누르면 고르는 창). 등급은 하나의 눈금입니다 — 1 잡몹 · 2 중몹 · 3 강적 · 4 중간보스 · 5 보스 · 6 최강 · 7 초월이고, 펫 · 동료는 같은 눈금을 ★1~★7로 읽습니다. 인물마다 공통 설정 칸이 있습니다 — 그림을 열면 맨 위에 인물 공통 설정이 뜨고, 거기 적은 설정 · 스토리 · 스탯은 그 인물의 모든 그림이 같이 봅니다 (묶음 제목 밑에도 표시). 모든 인물을 한곳에. 맨 위 초상화 버튼 (동료 · NPC · 적 · 역할 미정 · 미등장 NPC)을 누르면 그 인물 묶음으로 내려감. 묶음마다 초상화가 맨 앞, 그 뒤로 새 그림 · 2D판 그림. 묶음 제목의 ↑ 초상화로 다시 위로. 묶음 이름 끝은 게임에서 쓰는 방식 — 동작 그림 / 원화 + 연출 (기본 이미지만 있어서 움직임은 연출로) / 2D 몸 · 로직 그대로 (카리우스). 초상화를 따로 받지 않은 인물은 스탠딩에서 정사각형으로 자른 그림이 기본 초상화. 팩션 NPC · 적 무리는 드라이브 일반NPC 시트를 한 명씩 잘라 팩션마다 묶음.' },
+  { key:'prop', no:'11', name:'가구 · 소품', note:'놓는 곳대로 나눴습니다 — 굴 가구 (침대 · 의자 · 탁자 · 수납 · 방 꾸밈 · 생활 소품 · 오딜의 방) · 던전 (빛 · 불 · 상자 · 통 · 보급 · 무덤 · 시체 · 방어물 · 야영 · 제단 · 성물 · 우물) · 상점 · 작업대 · 도시 · 현대 · 기계 · 건축물 · 지형 · 인카운터 오브제 · 팩션 지형. 초록 동그라미 = 지금 원정 던전에 놓이는 것. 색 변형은 대표 그림 밑에 접혀 있어요.' },
+  { key:'item', no:'12', name:'일반 에셋', note:'쓰는 일대로: 회복 (물약 · 붕대) · 음식 · 탄약 · 빛 · 열쇠 · 책 · 지도 · 쓰는 물건 (던짐 · 부적 · 신호) · 도구 · 재료 · 돈 · 지니는 물건 · 장비 아이콘 · 상자 · 통 · 표지판 · 잡동사니 · 현대 물건 · 생물 (가축 · 야생 · 바다 · 하늘 · 몬스터 · 신화 · 기묘한 소형). 거의 같은 그림 (횃불 · 통 · 동물 다른 자세)은 대표 밑에 변형으로 접었어요.' },
+];
+const BY_ID = Object.fromEntries(CATALOG.map(e => [e.id, e]));
+/* v1.83 인물 공통 설정: cid 한 줄에 적어 두고 그 인물의 그림 전부가 같이 읽음 */
+const CIDS = new Set(CATALOG.filter(e => e.cid).map(e => e.cid));
+const cspecOf = e => (e && e.cid && marks[e.cid] && marks[e.cid].cspec) || '';
+const $ = id => document.getElementById(id);
+let marks = {};             // id → { checked, memo, at }
+let cat = 'all', onlyChecked = false, store = null, viewing = null, synced = false, showSt = 'all';
+
+/* ---------- 저장: db (Claude가 읽음) · 안 되면 이 브라우저에만 ---------- */
+const LS = 'codex-marks-v1';
+function lsRead(){ try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
+function lsWrite(){ try { localStorage.setItem(LS, JSON.stringify(marks)); } catch (e) {} }
+function status(msg, err){ const s = $('status'); s.textContent = msg; s.classList.toggle('err', !!err); }
+async function connect(){
+  marks = lsRead(); render();
+  let db = null;
+  try { db = window.claude && claude.use ? await claude.use('db') : null; } catch (e) { db = null; }
+  if (!db){ status('이 화면에서는 공유 저장소를 쓸 수 없어 이 브라우저에만 저장됩니다. 백업 저장으로 파일을 남겨 두세요.'); return; }
+  store = db.collection('marks');
+  let first = true;
+  store.onSnapshot(snap => {
+    const next = {};
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name || v.slot || v.cons || v.cspec || v.role || typeof v.ord === 'number' || typeof v.tier === 'number' || v.recruit || v.group)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, inAt: v.inAt || '', at: v.at || '' }; });
+    // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
+    if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if ((BY_ID[id] || CIDS.has(id)) && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
+    // 아직 저장소에 올라가는 중인 내 수정은 저장소 내용으로 덮지 않음 (예전엔 여기서 방금 고친 게 날아갈 수 있었음)
+    for (const [id, v] of Object.entries(pending)){ if (v) next[id] = v; else delete next[id]; }
+    marks = next; lsWrite(); if (sorting) repaintWears(); else keepPlace(render); if (viewing) fillView();
+    // 예전에 메모만 하고 체크 안 한 것을 체크해 주는 건 열 때 한 번만. (매번 하면 '체크 모두 해제'를 해도 메모 있는 칸이 곧바로 다시 켜짐)
+    if (first){ first = false; flushAll();
+      for (const [id, v] of Object.entries(marks)) if (v.memo && !v.checked) put(id, { checked: true }, true);
+    }
+    status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
+  }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
+}
+const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, inAt: v.inAt || '', at: v.at || new Date().toISOString() });
+const empty = v => !v.checked && !v.memo && !v.status && !v.name && !v.slot && !v.cons && !v.cspec && !v.role && typeof v.ord !== 'number' && typeof v.tier !== 'number' && !v.recruit && !v.group;
+// 이름 바꾸기: 바꾼 이름은 marks에 (원래 이름은 catalog 그대로). 바뀐 칸은 '이름 바뀜' 표시 → Claude가 나중에 catalog에 적용
+const nameOf = e => (marks[e.id] && marks[e.id].name) || e.name;
+const renamed = e => !!(marks[e.id] && marks[e.id].name && marks[e.id].name !== e.name);
+async function put(id, patch, quiet){
+  const cur = marks[id] || { checked:false, memo:'', status:'' };
+  const now = new Date().toISOString();
+  if (patch.status === 'in' && cur.status !== 'in') patch = { ...patch, inAt: now };   // 등장 확정을 누른 때 → 다음 판에 이 순서로 분류 맨 위
+  if (patch.status === 'out') patch = { ...patch, inAt: '' };
+  if (patch.memo && patch.memo !== (cur.memo || '') && patch.checked === undefined) patch = { ...patch, checked: true };   // 메모를 쓰면 자동으로 체크
+  const v = { ...cur, ...patch, at: now };
+  if (empty(v)) delete marks[id]; else marks[id] = v;
+  if (viewing === id && $('vCheck')) $('vCheck').checked = !!v.checked;
+  lsWrite(); if (!quiet) render();
+  pending[id] = empty(v) ? null : v; lsPending();
+  if (!store){ status('이 브라우저에 자동 저장됨 ' + new Date().toLocaleTimeString()); return; }
+  send(id);
+}
+/* 저장 대기열: 고친 것은 저장소에 올라갈 때까지 pending에 (이 브라우저에도 기록). 한 칸씩 차례로 올리고, 실패하면 2 · 4 · 8 … 초 뒤 다시 */
+const LSP = LS + '-pending';
+let pending = (() => { try { return JSON.parse(localStorage.getItem(LSP) || '{}'); } catch (e) { return {}; } })();
+const sending = {};
+function lsPending(){ try { localStorage.setItem(LSP, JSON.stringify(pending)); } catch (e) {} }
+function saveState(){ const n = Object.keys(pending).length; if (n) status('저장 중… (' + n + ')'); else status('자동 저장됨 ' + new Date().toLocaleTimeString()); }
+async function send(id, tries){
+  if (!store || !(id in pending)) return;
+  if (sending[id]){ sending[id].again = true; return; }
+  const v = pending[id]; sending[id] = { again:false };
+  saveState();
+  let ok = true;
+  try { if (v) await store.doc(id).set(docOf(v)); else await store.doc(id).delete(); }
+  catch (e){ ok = false; status('저장소에 못 올림: ' + (e && e.message || e) + '. 이 브라우저에는 남아 있고, 곧 다시 올려요.', true); }
+  const again = sending[id].again; delete sending[id];
+  if (ok && pending[id] === v){ delete pending[id]; lsPending(); }
+  if (again || (ok && id in pending)) return send(id, 0);
+  if (!ok){ const n = (tries || 0) + 1; setTimeout(() => send(id, n), Math.min(30000, 2000 * 2 ** (n - 1))); return; }
+  saveState();
+}
+function flushAll(){ for (const id of Object.keys(pending)) send(id, 0); }
+// 등장 표시: 초록 = 등장 확정, 빨강 = 미등장. 바꾸지 않았으면 지금 게임에 들어가 있는지 (catalog의 on)로
+const stOf = e => (marks[e.id] && marks[e.id].status) || (e.on ? 'in' : 'out');
+// v1.93 인물 등장 (초상화 모음 동그라미): 인물에 직접 정한 것 (marks[cid].status)이 먼저, 없으면 그 인물 그림 중 하나라도 등장이면 등장. 그릴 때마다 새로 셈
+let CST = null;
+const charSt = cid => { if (!cid) return 'out'; if (!CST){ CST = {}; for (const e of CATALOG) if (e.cat === 'char' && e.cid && stOf(e) === 'in') CST[e.cid] = 'in'; } const m = marks[cid]; return (m && m.status) || CST[cid] || 'out'; };
+const cdotHtml = cid => cid ? `<span class="cdot ${charSt(cid)}" data-cst="${esc(cid)}" role="button" title="${charSt(cid) === 'in' ? '등장 (누르면 미등장)' : '미등장 (누르면 등장)'}" aria-label="${charSt(cid) === 'in' ? '등장' : '미등장'}"></span>` : '';
+/* v1.73 착용 분류: marks.slot — '' 아직 안 봄 · 'x' 착용 불가 · 그 밖 ('o', 나중엔 '목' · '손가락' 같은 부위)은 전부 착용 가능 */
+const WEAR_Y = '착용 가능', WEAR_N = '착용 불가', WEAR_Q = '등장 미정';
+let sorting = false;
+/* v1.77 되돌리기: 바꾸기 직전 상태를 통째로 쌓아 둠 (체크 · 메모 · 이름 · 등장 · 착용 전부). 이 브라우저에 저장돼서 새로고침해도 남음 */
+const UKEY = 'codex-undo';
+const undoStack = (() => { try { return JSON.parse(localStorage.getItem(UKEY) || '[]'); } catch (e) { return []; } })();
+const slotOf = e => (marks[e.id] && marks[e.id].slot) || '';
+const wearCls = e => slotOf(e) === 'x' ? 'n' : wearable(e) ? 'y' : 'q';
+const wearTxt = e => slotOf(e) === 'x' ? '✕ 착용 불가' : wearable(e) ? '○ 착용 가능' : '? 등장 미정';
+const slotVal = e => slotOf(e) === 'x' ? 'x' : wearable(e) ? 'o' : '';   // 고르지 않은 것은 전부 등장 미정
+const consOf = e => !!(marks[e.id] && marks[e.id].cons);   // 소모품 (한 번 쓰면 없어지는 것) — 착용 분류와 겹치지 않는 따로 표
+const wearable = e => { const s = slotOf(e); return !!s && s !== 'x' && s !== 'u'; };   // 'u' = 등장 미정 (넣을지 아직 안 정함) · '' = 아직 안 본 것
+// v1.74 유물은 묶음이 둘뿐. 착용 가능이 아닌 것은 (아직 안 본 것 포함) 전부 착용 불가 쪽에 모임
+let frozen = null;
+const bucketOf = e => wearable(e) ? WEAR_Y : slotOf(e) === 'x' ? WEAR_N : WEAR_Q;
+// 분류 모드일 때는 찍어도 자리를 옮기지 않음 (연속으로 찍는 동안 칸이 도망가면 못 씀). 모드를 켠 순간의 자리를 얼려 둠
+const dsub = e => e.cat !== 'relic' ? e.sub : ((sorting && frozen && frozen[e.id] && frozen[e.id].b) || bucketOf(e));
+
+/* ---------- 묶음 그림: 게시 파일 수 한도 (511) 때문에 작은 그림은 pack/*.webp에서 잘라 씀 (packs.js, tools/pack.py) ---------- */
+const PK = typeof PACKED === 'object' ? PACKED : {};
+const sheetP = {}, cutP = {};
+let seen = null;
+function packImg(i){ return sheetP[i] || (sheetP[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = PACKS[i]; })); }
+function picUrl(src){
+  const p = PK[src]; if (!p) return Promise.resolve(src);
+  return cutP[src] || (cutP[src] = packImg(p[0]).then(im => {
+    const c = document.createElement('canvas'); c.width = p[3]; c.height = p[4];
+    c.getContext('2d').drawImage(im, p[1], p[2], p[3], p[4], 0, 0, p[3], p[4]);
+    return c.toDataURL('image/webp', 0.92);
+  }).catch(() => src));
+}
+function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.dataset.k === src) img.src = u; }); }
+
+/* ---------- 그리기 ---------- */
+/* 표정 묶음: parent가 있는 그림 (표정)은 대표 초상화 밑에 접어 둠. 대표 칸의 '표정 n'을 누르면 바로 뒤에 펴짐 */
+const KIDS = {}; for (const e of CATALOG) if (e.parent) (KIDS[e.parent] = KIDS[e.parent] || []).push(e.id);
+let opened = {}; try { opened = JSON.parse(localStorage.getItem('codex-open') || '{}'); } catch (e) {}
+/* v1.63 묶음 접기: 처음엔 모두 접힘 (목차처럼 한눈에). 묶음 제목 · 목차 · 초상화 버튼을 누르면 펴짐. 찾기 · 거르기 중엔 모두 펴서 보여 줌 */
+let gOpen = {}; try { gOpen = JSON.parse(localStorage.getItem('codex-gopen') || '{}'); } catch (e) {}
+const gKey = (ck, s) => ck + '|' + s;
+const filtering = () => !!(q || onlyChecked || showSt !== 'all');
+const isOpenG = k => filtering() || !!gOpen[k];
+function setOpenG(k, v){ if (v) gOpen[k] = 1; else delete gOpen[k]; try { localStorage.setItem('codex-gopen', JSON.stringify(gOpen)); } catch (e) {} }
+// 목차 묶음: 알려진 앞머리 (무기 · 의상 · 조우 장면 …)끼리 모음. 나머지는 분류마다 '기본' 줄로
+const KNOWN = ['무기','보조','방어구','장신구','보스 장비','장비','컷씬','인카운터','배경','빈 맵 틀','스킬','이야기 그림 (흑백)','굴 가구','던전','지형','인카운터 오브제','팩션 지형','생물',WEAR_Y,WEAR_N,WEAR_Q];
+const BASE = { relic:'유물', equip:'장비', scene:'장면', card:'그림', prop:'그 밖의 소품', item:'물건' };
+const clusterOf = (s, ck) => { const p = s.includes(' · ') ? s.split(' · ')[0] : s; return KNOWN.includes(p) ? p : (BASE[ck] || '기본'); };
+function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID[e.parent] || !visible(BY_ID[e.parent])); }
+/* 찾기: 번호는 하이픈 · 대소문자 무시 (h076 = H-076). 찾는 동안은 모든 분류에서 */
+let q = '';
+const norm = t => String(t || '').toLowerCase().replace(/[-\s]/g, '');
+function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(m.name).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.pk).includes(n) || norm(e.was).includes(n) || norm(e.game).includes(n) || norm(e.note).includes(n) || norm(e.spec).includes(n) || norm(cspecOf(e)).includes(n); }
+function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); default: return stOf(e) === showSt; } }
+function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && stPass(e); }
+function tile(e){
+  const m = marks[e.id], on = m && m.checked;
+  const memo = m && m.memo ? `<span class="memo-dot">✎ ${esc(m.memo)}</span>` : '';
+  const wch = e.cat !== 'relic' ? '' : `<span class="wear ${wearCls(e)}">${wearTxt(e)}</span>`;
+  const cch = consOf(e) ? '<span class="cons">◆ 소모품</span>' : '';
+  const sch = e.spec ? `<span class="spec-dot" title="${esc(e.spec)}">${esc(e.spec)}</span>` : '';
+  return `<div class="tile ${e.rank} ${e.cat === 'relic' ? (slotOf(e) === 'x' ? 'wn' : wearable(e) ? 'wy' : '') : ''} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${e.parent && keepKid(e) ? 'keep' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
+    <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
+    <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
+    <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
+    <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
+    ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">${BY_ID[KIDS[e.id][0]].name.includes('색 변형') ? '색' : /변형|자세/.test(BY_ID[KIDS[e.id][0]].name) ? '변형' : '표정'} ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
+    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${sch}${memo}${wch}${cch}</div>`;
+}
+/* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
+const isFace = e => e.id.startsWith('F-') || e.id.endsWith('-face');
+function roleOf(sub){ if (sub.includes('미등장 NPC')) return '미등장'; for (const r of ['동료', 'NPC', '적 · 보스', '역할 미정', '팩션 NPC', '적 무리']) if (sub.includes(' · ' + r + ' · ')) return r; return '역할 미정'; }
+/* v1.84 인물 섹션: 끌어 옮기면 marks[cid].role 에 저장되고, 안 옮긴 인물은 묶음 이름에서 읽은 값 그대로 */
+/* v1.86 축 셋: 구분(한 명당 하나) · 등급(얼마나 센가, 하나의 눈금) · 꼬리표(나중에).
+   동료 ★1~★5 와 적 잡몹~보스가 같은 1~5 눈금을 쓰고, 6 최강은 적 전용. */
+const ROLES = ['펫', '동료', 'NPC', '적', '미분류'];
+const GCOLS = ['펫', '동료', 'NPC', '적'];                          // 격자에 세우는 열 (미분류는 격자 밖 더미)
+const TIERS = [7, 6, 5, 4, 3, 2, 1, 0];
+const TNAME = { 7: '초월', 6: '최강', 5: '보스', 4: '중간보스', 3: '강적', 2: '중몹', 1: '잡몹', 0: '등급 없음' };
+const ALLY = r => r === '펫' || r === '동료';                       // 동료 쪽은 ★ 로 읽음
+const tLabel = (t, r) => t === 0 ? '―' : ALLY(r) ? '★' + t : TNAME[t];
+const ROLE_MAP = { '동료': '동료', 'NPC': 'NPC', '팩션 NPC': 'NPC', '적 · 보스': '적', '적 무리': '적', '미등장': '미분류', '역할 미정': '미분류' };
+const blocked = () => false;
+let charSort = false;
+const roleOfChar = (sub, f) => (f && f.cid && marks[f.cid] && marks[f.cid].role) || ROLE_MAP[roleOf(sub)] || '미분류';
+const tierOf = cid => { const m = marks[cid]; return (m && typeof m.tier === 'number') ? m.tier : 0; };
+const recOf = cid => !!(marks[cid] && marks[cid].recruit);     // 영입 가능 (동료가 될 수 있는 NPC)
+const grpOf = cid => !!(marks[cid] && marks[cid].group);       // 한 그림에 여러 명 — 무리 · 팩션 전체의 등급
+const BASE_ORD = {}; { let i = 0; for (const e of CATALOG) if (e.cid && !(e.cid in BASE_ORD)) BASE_ORD[e.cid] = (++i) * 1000; }
+const ordOf = cid => { const m = marks[cid]; return (m && typeof m.ord === 'number') ? m.ord : (BASE_ORD[cid] || 0); };
+const LANES = {};   // 자리 이름 → 그 안의 cid 순서 (끌어 놓을 자리를 셈할 때 씀)
+function charList(subs){
+  const out = [];
+  subs.forEach((s, i) => {
+    const ms = CATALOG.filter(e => e.cat === 'char' && e.sub === s); if (!ms.length) return;
+    const f = ms.find(isFace) || ms[0];
+    out.push({ i, s, f, cid: f.cid || '', nm: s.split(' · ')[0], role: roleOfChar(s, f) });
+  });
+  return out;
+}
+function faceBtn(x, withTier){
+  const pen = cspecOf(x.f) ? '<span class="pen" aria-label="설정 적힘">✎</span>' : '';
+  const t = tierOf(x.cid);
+  const tb = withTier && t ? `<span class="tb ${ALLY(x.role) ? '' : 'en'}">${esc(tLabel(t, x.role))}</span>` : '';
+  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}">${pen}${tb}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
+}
+/* 평소: 구분별 한 줄씩 (누르면 그 인물 묶음으로 내려감) */
+function peopleNav(subs){
+  const by = {};
+  for (const x of charList(subs)) if (showSt !== 'in' && showSt !== 'out' || charSt(x.cid) === showSt) (by[x.role] = by[x.role] || []).push(x);   // v1.93 등장 거르기와 같이
+  for (const k of Object.keys(LANES)) delete LANES[k];
+  const rows = Object.entries(by).sort((a, b) => ROLES.indexOf(a[0]) - ROLES.indexOf(b[0]));
+  return `<nav class="pnav" id="pnav" aria-label="인물 초상화">${rows.map(([r, list]) => {
+    list.sort((a, b) => (tierOf(b.cid) - tierOf(a.cid)) || (ordOf(a.cid) - ordOf(b.cid)));
+    LANES[r] = list.map(x => x.cid);
+    return `<div class="prow" data-role="${esc(r)}"><b>${esc(r)}<span class="cnt">${list.length}</span></b><div class="pgrid">${list.map(x => faceBtn(x, true)).join('')}</div></div>`;
+  }).join('')}</nav>`;
+}
+/* 섹션 나누기: 세로 등급 × 가로 구분 격자. 칸에 떨구면 구분과 등급이 한 번에 정해짐 */
+function powerGrid(subs){
+  const all = charList(subs), cells = {}, colN = {};
+  for (const x of all){
+    const r = x.role, t = r === '미분류' ? 0 : tierOf(x.cid);
+    const k = r + '|' + t;
+    (cells[k] = cells[k] || []).push(x);
+    colN[r] = (colN[r] || 0) + 1;
+  }
+  for (const k of Object.keys(LANES)) delete LANES[k];
+  const un = (cells['미분류|0'] || []).sort((a, b) => ordOf(a.cid) - ordOf(b.cid));
+  LANES['미분류|0'] = un.map(x => x.cid);
+  let h = `<div class="bh"></div>` + GCOLS.map(r => `<div class="bh">${esc(r)}<i>${colN[r] || 0}</i></div>`).join('');
+  for (const t of TIERS){
+    h += `<div class="bt">${t || '―'}<small>${t ? esc(TNAME[t]) : '등급 없음'}</small></div>`;
+    for (const r of GCOLS){
+      const k = r + '|' + t, list = (cells[k] || []).sort((a, b) => ordOf(a.cid) - ordOf(b.cid));
+      LANES[k] = list.map(x => x.cid);
+      h += `<div class="cell" data-role="${esc(r)}" data-tier="${t}">${list.map(x => faceBtn(x, false)).join('')}</div>`;
+    }
+  }
+  const done = all.filter(x => x.role !== '미분류' && tierOf(x.cid) > 0).length;
+  return `<div class="trayh">아직 안 나눈 인물<i>${un.length}명</i><i>· 여기서 아래 칸으로 끌어다 놓으세요 (되돌릴 땐 다시 여기로)</i></div>`
+    + `<div class="tray" data-role="미분류" data-tier="0">${un.map(x => faceBtn(x, false)).join('') || '<span class="empty" style="padding:4px">다 나눴어요</span>'}</div>`
+    + `<div class="legend"><span><i class="sw2 rec"></i>영입 가능 — 동료가 될 수 있는 NPC</span><span><i class="sw2 grp"></i>무리 · 여럿 — 한 그림에 여러 명, 무리 전체의 등급</span><span>얼굴을 톡 누르면 꼬리표를 달 수 있어요</span></div>`
+    + `<div class="board"><div class="bgrid">${h}</div></div>`
+    + `<p class="bsum">인물 ${all.length}명 · 등급까지 매김 ${done} · 아직 ${un.length} · 얼굴이 작으면 위쪽 + − 로 키우세요</p>`;
+}
+/* v1.66 뒤로 가기: 분류 바꾸기 · 목차 · 초상화 이동 · 그림 열기마다 발자국. 휴대폰 뒤로 가기 · 도감 안 '← 뒤로' 버튼이 한 단계씩 되돌림 */
+const navStack = [];
+function pushNav(kind){ navStack.push({ kind, cat, y: scrollY }); try { history.pushState({ codexNav: navStack.length }, ''); } catch (e) {} updBack(); }
+function updBack(){ const b = $('backBtn'); if (b) b.hidden = !navStack.length; }
+function goBack(){ if (!navStack.length) return; let moved = false; try { if (history.state && history.state.codexNav){ history.back(); moved = true; } } catch (e) {} if (!moved) restoreNav(); }
+function restoreNav(){ const s = navStack.pop(); updBack(); if (!s) return; if (s.kind === 'shot' && !$('shot').hidden){ closeShot(true); return; } if (!$('view').hidden){ closeView(true); return; } if (s.cat !== cat){ cat = s.cat; render(); try { localStorage.setItem('codex-tab', cat); } catch (e) {} } scrollTo({ top: s.y }); }
+addEventListener('popstate', () => { if (skipPop){ skipPop = false; return; } restoreNav(); });
+/* v1.69 자동 스크롤: 브라우저 smooth 대신 직접 굴림 (앱 안에서도 쭉 내려가는 게 보이게). 매 프레임 목표 위치를 다시 재서 그림이 늦게 떠 밀려도 따라감. 손가락이 닿으면 멈춤 */
+let autoScr = 0;
+function stopAuto(){ if (autoScr){ cancelAnimationFrame(autoScr); autoScr = 0; } }
+['touchstart','wheel','keydown'].forEach(t => addEventListener(t, stopAuto, { passive:true }));
+function glideTo(el, done){
+  stopAuto();
+  const goal = () => Math.max(0, Math.min(el.getBoundingClientRect().top + scrollY - ($('bar').offsetHeight + 8), document.documentElement.scrollHeight - innerHeight));
+  const y0 = scrollY, dist = Math.abs(goal() - y0), dur = Math.min(1100, 380 + dist * 0.12), t0 = performance.now();
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const step = now => { const t = Math.min(1, (now - t0) / dur); scrollTo(0, y0 + (goal() - y0) * ease(t)); if (t < 1) autoScr = requestAnimationFrame(step); else { done && done(); done = null; settle(now); } };
+  // 도착 뒤 1.5초 동안 위쪽 그림이 늦게 떠서 밀리면 다시 맞춤
+  const settle = s0 => { const g = goal(); if (Math.abs(g - scrollY) > 2) scrollTo(0, g); autoScr = performance.now() - s0 < 1500 ? requestAnimationFrame(() => settle(s0)) : 0; };
+  autoScr = requestAnimationFrame(step);
+}
+function jumpTo(id){ const el = $(id); if (!el) return; el.classList.remove('hit'); glideTo(el, () => { void el.offsetWidth; el.classList.add('hit'); }); }
+/* 묶음 안 순서: (인물은 초상화 먼저) → 등장 확정 (판을 낼 때 누른 순서로 매긴 pin) → 나머지 원래 순서.
+   표정 · 색 변형 (parent 있음)은 대표 바로 뒤, 펴 놓았을 때만. 크게 보기의 이전 · 다음도 이 순서 (FLAT) */
+let FLAT = [];
+// 체크 · 등장 확정한 변형은 접혀 있어도 라인업에 남김 (실선)
+const keepKid = k => !!(marks[k.id] && (marks[k.id].checked || marks[k.id].status === 'in'));
+function arrange(list, ck){
+  const inL = new Set(list);
+  const tops = list.filter(e => !e.parent || !inL.has(BY_ID[e.parent]));
+  const key = e => [ck === 'char' && isFace(e) ? 0 : 1, e.pin ? 0 : 1, e.pin || 0, CATALOG.indexOf(e)];
+  tops.sort((a, b) => { const x = key(a), y = key(b); for (let i = 0; i < 4; i++) if (x[i] !== y[i]) return x[i] - y[i]; return 0; });
+  const out = [];
+  for (const e of tops){ out.push(e); if (KIDS[e.id]) out.push(...KIDS[e.id].map(id => BY_ID[id]).filter(k => inL.has(k) && (opened[e.id] || keepKid(k)))); }
+  return out;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c])); }
+function render(){
+  CST = null;
+  const checked = CATALOG.filter(e => marks[e.id] && marks[e.id].checked).length;
+  $('count').textContent = `체크 ${checked}`;
+  $('tabs').innerHTML = [{ key:'all', no:'', name:'전체' }, ...CATS].map(c => {
+    const n = c.key === 'all' ? CATALOG.length : CATALOG.filter(e => e.cat === c.key).length;
+    return `<button class="tab" type="button" data-cat="${c.key}" aria-pressed="${cat === c.key}">${c.no ? c.no + '. ' : ''}${c.name}<b>${n}</b></button>`;
+  }).join('');
+  let html = ''; FLAT = [];
+  for (const c of CATS){
+    if (!q && cat !== 'all' && cat !== c.key) continue;
+    if (q && !CATALOG.some(e => e.cat === c.key && visible(e))) continue;
+    const items = CATALOG.filter(e => e.cat === c.key && visible(e));
+    const subs0 = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
+    const subs = c.key === 'relic' ? [WEAR_Y, WEAR_Q, WEAR_N] : subs0;
+    const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
+    html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
+    if (c.key === 'char' && !q){
+      const nr = [...CIDS].filter(cid => marks[cid] && (marks[cid].role || typeof marks[cid].tier === 'number')).length;
+      html += `<div class="gbar sortbar"><button class="btn ${charSort ? 'on' : ''}" type="button" data-csort>${charSort ? '격자 닫기' : '파워밸런스 격자 (구분 × 등급)'}</button><button class="btn" type="button" data-undo disabled>되돌리기</button><button class="btn" type="button" data-sortname>이름순 정렬</button><span class="gcount">인물 ${subs0.length}명 · 손댄 인물 ${nr}</span></div>`;
+      html += charSort ? powerGrid(subs0) : peopleNav(subs0);
+    }
+    if (c.key === 'relic'){
+      html += `<div class="gbar sortbar"><button class="btn ${sorting ? 'on' : ''}" type="button" data-sort>${sorting ? '분류 모드 끄기' : '분류 모드 (눌러서 가능 → 불가 → 등장 미정)'}</button><button class="btn" type="button" data-undo ${undoStack.length ? '' : 'disabled'}>되돌리기 ${undoStack.length || ''}</button><span class="gcount" id="wcount">${wCountTxt()}</span></div>`;
+    }
+    const shown = subs.filter(s => items.some(e => dsub(e) === s));
+    if (shown.length > 1 && c.key !== 'relic'){
+      const nOpen = shown.filter(s => isOpenG(gKey(c.key, s))).length;
+      html += `<div class="gbar"><button class="btn" type="button" data-all="${c.key}" data-v="1">모두 펴기</button><button class="btn" type="button" data-all="${c.key}" data-v="0">모두 접기</button><span class="gcount">묶음 ${shown.length} · 펴짐 ${filtering() ? '전부 (찾기 · 거르기 중)' : nOpen}</span></div>`;
+      if (c.key !== 'char'){
+        const cl = {}; for (const s of shown) (cl[clusterOf(s, c.key)] = cl[clusterOf(s, c.key)] || []).push(s);
+        html += `<nav class="toc" id="toc-${c.key}" aria-label="${esc(c.name)} 목차">${Object.entries(cl).map(([k, ss]) => `<div class="tocrow"><b>${esc(k)}<i>${ss.reduce((a, s) => a + items.filter(e => e.sub === s).length, 0)}</i></b><span>${ss.map(s => { const r = s.startsWith(k + ' · ') ? s.slice(k.length + 3) : s; const n = items.filter(e => e.sub === s).length; return `<button type="button" class="tchip ${isOpenG(gKey(c.key, s)) ? 'on' : ''}" data-goto="${esc(gKey(c.key, s))}">${esc(r)} <i>${n}</i></button>`; }).join('')}</span></div>`).join('')}</nav>`;
+      }
+    }
+    let any = false;
+    for (const s of subs){
+      const list0 = items.filter(e => dsub(e) === s); if (!list0.length) continue; any = true;
+      const k = gKey(c.key, s), op = isOpenG(k) || shown.length === 1 || c.key === 'relic';
+      const list = op ? arrange(list0, c.key) : list0; if (op) FLAT.push(...list);
+      const sw = list[0].rank === 'relic' ? 'var(--relic)' : list[0].rank === 'boss' ? 'var(--boss)' : list[0].rank === 'gold' ? '#d4a93a' : 'var(--line)';
+      const g = s === '인카운터 카드' || s === '인카운터 · 카드' ? 'grid cards' : s.startsWith('초상화') ? 'grid' : cls;
+      const gi = c.key === 'char' && subs0.includes(s) ? `who-${subs0.indexOf(s)}` : 'g-' + c.key + '-' + subs.indexOf(s);
+      const bulk = c.key === 'relic' ? `<button class="toNav" type="button" data-bulk="" data-bs="${esc(s)}">전부 아직으로</button>` : '';
+      const back = c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : (c.key !== 'relic' && shown.length > 1) ? `<button class="toNav" type="button" data-totoc="toc-${c.key}" aria-label="목차로">↑ 목차</button>` : '';
+      const cs = c.key === 'char' && list[0].cid ? `<div class="cspec" id="cs-${list[0].cid}">${cdotHtml(list[0].cid)}${cspecOf(list[0]) ? esc(cspecOf(list[0])) : '<em>인물 설정 없음 — 그림을 열어 인물 공통 설정에 적으면 여기에 떠요</em>'}</div>` : '';
+      html += `<h3 id="${gi}" class="gh ${op ? 'open' : ''}" data-g="${esc(k)}"><button class="gt" type="button" data-tog="${esc(k)}" aria-expanded="${op}"><span class="car">${op ? '▾' : '▸'}</span><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</button>${bulk}${back}</h3>${op ? cs + `<div class="${g}">${list.map(tile).join('')}</div>` : ''}`;
+    }
+    if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
+    html += `</section>`;
+  }
+  $('main').innerHTML = html;
+  if (seen) seen.disconnect();
+  seen = 'IntersectionObserver' in window ? new IntersectionObserver(es => { for (const x of es) if (x.isIntersecting){ seen.unobserve(x.target); setPic(x.target, x.target.dataset.pk); } }, { rootMargin:'600px' }) : null;
+  document.documentElement.style.setProperty('--barH', ($('bar').offsetHeight + 8) + 'px');
+  for (const im of $('main').querySelectorAll('img[data-pk]')) seen ? seen.observe(im) : setPic(im, im.dataset.pk);
+  updUndo();
+}
+
+/* ---------- 크게 보기 ---------- */
+function order(){ return FLAT; }
+const coarse = matchMedia('(pointer:coarse)').matches;
+function openView(id){ const was = !$('view').hidden; viewing = id; $('view').hidden = false; fillView(); if (!coarse) $('vMemo').focus({ preventScroll:true }); if (!was) pushNav('view'); }
+function fillView(){
+  const bg = document.querySelector('.view .big'); if (bg) bg.classList.remove('zoomed');
+  const e = BY_ID[viewing]; if (!e) return; const m = marks[e.id] || {};
+  setPic($('vImg'), e.src); $('vImg').alt = e.name; $('vId').textContent = e.id; $('vName').textContent = nameOf(e);
+  if (document.activeElement !== $('vNameIn')) $('vNameIn').value = nameOf(e);
+  $('vOrig').hidden = !renamed(e); $('vOrig').textContent = '이름 바뀜 · 원래 이름: ' + e.name;
+  $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub + (e.pk && e.pk !== e.sub ? '  (받은 묶음: ' + e.pk + ')' : '') + (e.was ? '  · 예전 이름: ' + e.was : ''); $('vNote').textContent = (e.game ? e.game + (e.note ? ' — ' : '') : '') + (e.note || '');
+  $('vSpec').textContent = e.spec || ''; $('vSpec').hidden = !e.spec;
+  const hasC = e.cat === 'char' && !!e.cid;
+  $('vCSpecLab').hidden = !hasC; $('vCSpec').hidden = !hasC;
+  $('vRecL').hidden = !hasC; $('vGrpL').hidden = !hasC;
+  if (hasC){ $('vRec').checked = recOf(e.cid); $('vGrp').checked = grpOf(e.cid); }
+  if (hasC && document.activeElement !== $('vCSpec')) $('vCSpec').value = cspecOf(e);
+  $('vCheck').checked = !!m.checked; $('vSt').checked = stOf(e) === 'in'; $('vCons').checked = !!m.cons;
+  $('vWear').hidden = e.cat !== 'relic';
+  for (const b of $('vWear').querySelectorAll('[data-vw]')) b.classList.toggle('on', b.dataset.vw === slotVal(e));
+  $('vDel').textContent = isDel(e.id) ? '삭제 표시 풀기' : '삭제 표시 (체크 + 메모)';
+  if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
+}
+function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; $('vNameIn').value = nameOf(n); fillView(); if (enterNext) $(enterNext).focus({ preventScroll:true }); } }
+function saveName(){ if (!viewing) return; const e = BY_ID[viewing], v = $('vNameIn').value.trim(), want = v && v !== e.name ? v : ''; if (want !== ((marks[viewing] || {}).name || '')) put(viewing, { name: want }); }
+function saveMemo(){ if (!viewing) return; saveName(); saveCSpec(); const v = $('vMemo').value.trim(), cur = (marks[viewing] || {}).memo || ''; if (v !== cur) put(viewing, { memo: v }); }
+function saveCSpec(quiet){ const e = BY_ID[viewing]; if (!e || !e.cid) return; const v = $('vCSpec').value.trim(); if (v !== cspecOf(e)) put(e.cid, { cspec: v }, quiet); }
+function keepPlace(fn){   // 다시 그려도 보던 자리 그대로 (화면 가운데 그림을 기준으로)
+  const mid = document.elementFromPoint(innerWidth / 2, innerHeight / 2), t = mid && mid.closest('.tile, h3');
+  const key = t && (t.dataset.id ? '.tile[data-id="' + t.dataset.id + '"]' : t.id ? '#' + CSS.escape(t.id) : null), y = t && t.getBoundingClientRect().top;
+  fn(); const n = key && document.querySelector(key); if (n) scrollBy(0, n.getBoundingClientRect().top - y);
+}
+function closeView(fromPop){ if ($('view').hidden) return; saveMemo(); $('view').hidden = true; const was = viewing; viewing = null; if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); keepPlace(render); const tl = document.querySelector('.tile[data-id="' + was + '"]'); if (tl){ const r = tl.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) tl.scrollIntoView({ block:'center' }); } if (!fromPop && navStack.length && navStack[navStack.length - 1].kind === 'view'){ navStack.pop(); updBack(); try { if (history.state && history.state.codexNav) history.back(); } catch (e) {} skipPop = true; } }
+let skipPop = false;
+
+/* ---------- 목록 복사 · 백업 ---------- */
+function listText(){
+  const rows = CATALOG.filter(e => e.spec || (marks[e.id] && (marks[e.id].checked || marks[e.id].memo || marks[e.id].slot || marks[e.id].cons || renamed(e))));
+  if (!rows.length) return '체크하거나 메모한 그림이 없어요.';
+  return rows.map(e => `${marks[e.id].checked ? '[v]' : '[ ]'} ${stOf(e) === 'in' ? '●등장' : '○미등장'}${e.cat === 'relic' ? (slotOf(e) === 'x' ? ' ✕착용불가' : wearable(e) ? ' ○착용가능' : slotOf(e) === 'u' ? ' ?등장미정' : '') : ''}${consOf(e) ? ' ◆소모품' : ''}${e.spec ? '  [' + e.spec + ']' : ''} ${e.id}  ${e.name}${renamed(e) ? '  → 이름: ' + marks[e.id].name : ''}${marks[e.id].memo ? '  — ' + marks[e.id].memo : ''}`).join('\n');
+}
+function sheet(html){ const s = $('sheet'); s.innerHTML = html; s.hidden = false; }
+function closeSheet(){ $('sheet').hidden = true; }
+async function copyList(){
+  const t = listText();
+  try { await navigator.clipboard.writeText(t); status('체크 목록을 복사했어요'); }
+  catch (e){ sheet(`<p>복사가 막혀 있어요. 아래 글을 직접 선택해 복사하세요.</p><button class="btn" type="button" data-close>닫기</button><pre class="copy" id="copyText"></pre>`); $('copyText').textContent = t; const r = document.createRange(); r.selectNodeContents($('copyText')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+}
+async function saveBackup(){
+  const data = JSON.stringify({ kind:'codex-marks', version:1, savedAt:new Date().toISOString(), marks }, null, 1);
+  let dl = null; try { dl = window.claude && claude.use ? await claude.use('downloads') : null; } catch (e) {}
+  const name = 'codex-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  if (dl){ try { await dl.save({ filename:name, data }); status('백업 파일을 저장했어요: ' + name); return; } catch (e){ if (e && e.code === 'declined'){ status('백업 저장을 취소했어요'); return; } } }
+  sheet(`<p>파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 ${name} 로 저장하면 그게 백업이에요.</p><button class="btn" type="button" data-close>닫기</button><pre class="copy" id="copyText"></pre>`); $('copyText').textContent = data;
+}
+function loadBackup(file){
+  const r = new FileReader();
+  r.onload = async () => {
+    let j; try { j = JSON.parse(r.result); } catch (e){ status('백업 파일을 읽지 못했어요. 이 도감에서 저장한 .json 파일인지 확인해 주세요.', true); return; }
+    const m = j && j.marks; if (!m || typeof m !== 'object'){ status('백업 파일에 체크 정보가 없어요.', true); return; }
+    const ids = Object.keys(m).filter(id => BY_ID[id] || CIDS.has(id));
+    for (const id of ids) await put(id, { checked: !!m[id].checked, memo: m[id].memo || '', status: m[id].status || '', name: m[id].name || '', slot: m[id].slot || '', cons: !!m[id].cons, cspec: m[id].cspec || '', role: m[id].role || '', ord: typeof m[id].ord === 'number' ? m[id].ord : null, tier: typeof m[id].tier === 'number' ? m[id].tier : null, recruit: !!m[id].recruit, group: !!m[id].group }, true); render();
+    status(`백업에서 ${ids.length}개를 되살렸어요`);
+  };
+  r.readAsText(file);
+}
+// v1.77 묻지 않고 바로 해제. 되돌리기 한 번이면 그대로 되살아남
+function askClear(){
+  const ids = Object.keys(marks).filter(id => marks[id].checked);
+  if (!ids.length){ status('해제할 체크가 없어요'); return; }
+  pushUndo(ids.map(id => ({ id, prev: snapOf(id) })));
+  for (const id of ids) put(id, { checked: false }, true);
+  render(); status(`체크 ${ids.length}개를 해제했어요 · 되돌리기로 되살릴 수 있어요`);
+}
+
+/* ---------- 쓰레기통: 한 번에 체크 + 메모에 '삭제'. 다시 누르면 풀림 (원래 메모는 남김) ---------- */
+const DEL = '삭제';
+function isDel(id){ const m = marks[id]; return !!(m && m.checked && (m.memo || '').startsWith(DEL)); }
+function toggleDel(id){
+  const memo = ((marks[id] || {}).memo || '').trim();
+  if (isDel(id)){ const rest = memo.slice(DEL.length).replace(/^\s*·\s*/, '').trim(); put(id, { checked:false, memo:rest }); if (viewing === id) $('vMemo').value = rest; }
+  else { const m = memo.startsWith(DEL) ? memo : memo ? DEL + ' · ' + memo : DEL; put(id, { checked:true, memo:m }); if (viewing === id) $('vMemo').value = m; }
+  if (viewing === id) fillView();
+}
+
+/* ---------- v1.73 유물 착용 분류 ---------- */
+function setSorting(v){ sorting = v; frozen = null; if (v){ frozen = {}; for (const e of CATALOG) if (e.cat === 'relic') frozen[e.id] = { b: bucketOf(e) }; } document.documentElement.classList.toggle('sorting', v); render(); }
+const snapOf = id => { const m = marks[id]; return m ? { checked: !!m.checked, memo: m.memo || '', status: m.status || '', name: m.name || '', slot: m.slot || '', cons: !!m.cons, cspec: m.cspec || '', role: m.role || '', ord: typeof m.ord === 'number' ? m.ord : null, tier: typeof m.tier === 'number' ? m.tier : null, recruit: !!m.recruit, group: !!m.group } : null; };
+function lsUndo(){ try { localStorage.setItem(UKEY, JSON.stringify(undoStack)); } catch (e) {} }
+function pushUndo(list){ if (!list.length) return; undoStack.push(list); while (undoStack.length > 40) undoStack.shift(); lsUndo(); updUndo(); }
+function updUndo(){
+  const n = undoStack.length, txt = '되돌리기' + (n ? ' ' + n : '');
+  for (const b of document.querySelectorAll('[data-undo]')){ b.disabled = !n; b.textContent = txt; }
+}
+const NEXT_SLOT = { '': 'o', o: 'x', x: '', u: 'o' };   // 한 번 누를 때마다 착용 가능 → 착용 불가 → 등장 미정 → 다시 착용 가능
+function cycleWear(id){
+  const cur = (marks[id] || {}).slot || '';
+  pushUndo([{ id, prev: snapOf(id) }]);
+  put(id, { slot: cur in NEXT_SLOT ? NEXT_SLOT[cur] : 'o' }, true);   // 빈 값('등장 미정')도 제대로 넘어가게 (|| 를 쓰면 미정으로 못 감)
+  paintWear(id); updWCount();
+}
+function bulkWear(sub, val){
+  const list = CATALOG.filter(e => e.cat === 'relic' && dsub(e) === sub && ((marks[e.id] || {}).slot || '') !== val);
+  if (!list.length){ status('바뀔 게 없어요'); return; }
+  pushUndo(list.map(e => ({ id: e.id, prev: snapOf(e.id) })));
+  for (const e of list) put(e.id, { slot: val }, true);
+  render(); status(`${sub} · ${list.length}개를 ${val === 'x' ? '착용 불가' : val === 'u' ? '등장 미정' : val ? '착용 가능' : '아직 안 본 것'}으로 바꿨어요`);
+}
+function undoWear(){
+  const list = undoStack.pop(); lsUndo(); updUndo(); if (!list) return;
+  for (const u of list){ const v = u.prev || {}; put(u.id, { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group }, true); }
+  render(); status(`${list.length}개를 되돌렸어요`);
+}
+// 분류 모드에서는 다시 그리지 않고 그 칸만 고쳐 칠함 (연속으로 찍어도 목록이 안 흔들리고 그림도 안 깜빡임)
+function paintTile(t, e){
+  t.classList.toggle('wn', slotOf(e) === 'x'); t.classList.toggle('wy', wearable(e));
+  let c = t.querySelector('.cons');
+  if (!consOf(e)){ if (c) c.remove(); }
+  else if (!c){ c = document.createElement('span'); c.className = 'cons'; c.textContent = '◆ 소모품'; t.appendChild(c); }
+  let w = t.querySelector('.wear');
+  if (!w){ w = document.createElement('span'); t.appendChild(w); }
+  const cls = 'wear ' + wearCls(e), txt = wearTxt(e);
+  if (w.className !== cls) w.className = cls;
+  if (w.textContent !== txt) w.textContent = txt;
+}
+function paintWear(id){ const e = BY_ID[id]; if (!e) return; for (const t of document.querySelectorAll('.tile[data-id="' + id + '"]')) paintTile(t, e); }
+// 저장소에서 소식이 왔을 때 (다른 기기에서 찍은 것 포함) 유물 칸만 훑어 고침
+function repaintWears(){
+  for (const t of $('main').querySelectorAll('.tile[data-id]')){ const e = BY_ID[t.dataset.id]; if (e && e.cat === 'relic') paintTile(t, e); }
+  updWCount();
+}
+function wCountTxt(){
+  const rs = CATALOG.filter(e => e.cat === 'relic');
+  const ny = rs.filter(wearable).length, nx = rs.filter(e => slotOf(e) === 'x').length, nc = rs.filter(consOf).length;
+  return `착용 가능 ${ny} · 착용 불가 ${nx} · 등장 미정 ${rs.length - ny - nx}${nc ? ' · 소모품 ' + nc : ''}`;
+}
+function updWCount(){
+  const el = $('wcount'); if (!el) return;
+  el.textContent = wCountTxt(); updUndo();
+}
+
+/* ---------- v1.85 인물 섹션 나누기 · 순서 정렬 ----------
+   끌기: 마우스는 집어서 바로, 손가락은 0.2초 꾹 눌러서 (그래야 스크롤이랑 안 싸움).
+   그림은 브라우저 기본 '이미지 끌기'가 먼저 가로채므로 dragstart 를 막고 img 에 pointer-events 를 뺌. */
+function setCharSort(v){ charSort = v; document.documentElement.classList.toggle('csort', v); render(); }
+function placeAt(cid, role, tier, idx, nm){
+  if (!cid) return;
+  const cur = marks[cid] || {};
+  if (role == null) role = cur.role || '미분류';
+  if (tier == null) tier = tierOf(cid);
+  if (blocked(role, tier)) tier = 5;                       // 아군은 최강 칸에 못 들어감
+  const key = role + '|' + tier, lane = (LANES[key] || []).filter(x => x !== cid);
+  if (idx == null || idx < 0 || idx > lane.length) idx = lane.length;
+  const prev = lane[idx - 1], next = lane[idx];
+  const ord = prev !== undefined && next !== undefined ? (ordOf(prev) + ordOf(next)) / 2
+            : next !== undefined ? ordOf(next) - 1000
+            : prev !== undefined ? ordOf(prev) + 1000 : 1000;
+  if ((cur.role || '') === role && tierOf(cid) === tier && ordOf(cid) === ord) return;
+  pushUndo([{ id: cid, prev: snapOf(cid) }]);
+  put(cid, { role, tier, ord });
+  status(`${nm || cid} → ${role} · ${tLabel(tier, role)}`);
+}
+function pickRole(cid, nm){
+  const cur = marks[cid] || {}, r0 = cur.role || '미분류', t0 = tierOf(cid);
+  sheet(`<p style="flex:1 1 100%;margin:0 0 2px">${esc(nm)} — 구분</p>`
+    + ROLES.map(r => `<button class="btn ${r === r0 ? 'on' : ''}" type="button" data-role="${esc(r)}">${esc(r)}</button>`).join('')
+    + `<p style="flex:1 1 100%;margin:6px 0 2px">등급</p>`
+    + TIERS.filter(t => !blocked(r0, t)).map(t => `<button class="btn ${t === t0 ? 'on' : ''}" type="button" data-tier="${t}">${t || '―'} ${esc(tLabel(t, r0))}</button>`).join('')
+    + `<p style="flex:1 1 100%;margin:6px 0 2px">꼬리표</p>`
+    + `<button class="btn ${recOf(cid) ? 'on' : ''}" type="button" data-flag="recruit">영입 가능 (금띠)</button>`
+    + `<button class="btn ${grpOf(cid) ? 'on' : ''}" type="button" data-flag="group">무리 · 여럿 (초록 테두리)</button>`
+    + `<button class="btn" type="button" data-move="first">↑ 맨 앞으로</button><button class="btn" type="button" data-move="last">↓ 맨 뒤로</button><button class="btn" type="button" data-close>닫기</button>`);
+  $('sheet').dataset.cid = cid; $('sheet').dataset.nm = nm;
+}
+function roleNow(cid){ return (marks[cid] || {}).role || '미분류'; }
+function sortByName(){
+  const list = [];
+  for (const [r, l] of Object.entries(LANES)) l.forEach(cid => list.push({ r, cid }));
+  const nameOfCid = {};
+  for (const e of CATALOG) if (e.cid && !(e.cid in nameOfCid)) nameOfCid[e.cid] = e.sub.split(' · ')[0];
+  const undo = [], per = {};
+  for (const { r, cid } of list) (per[r] = per[r] || []).push(cid);
+  for (const r of Object.keys(per)){
+    per[r].sort((a, b) => nameOfCid[a].localeCompare(nameOfCid[b], 'ko'));
+    per[r].forEach((cid, i) => {
+      const want = (i + 1) * 1000;
+      if (ordOf(cid) !== want){ undo.push({ id: cid, prev: snapOf(cid) }); put(cid, { ord: want }, true); }
+    });
+  }
+  pushUndo(undo); render();
+  status(undo.length ? `이름순으로 ${undo.length}명 정렬했어요` : '이미 이름순이에요');
+}
+(() => {
+  let st = null, drag = null, ghost = null, holdT = 0, lastRow = null, edgeT = 0, dropIdx = -1;
+  const clear = () => {
+    clearTimeout(holdT); if (edgeT) cancelAnimationFrame(edgeT); edgeT = 0;
+    if (ghost){ ghost.remove(); ghost = null; }
+    if (drag) drag.classList.remove('lifted');
+    document.querySelectorAll('.prow.over,.cell.over,.tray.over').forEach(r => r.classList.remove('over'));
+    document.querySelectorAll('.pbtn.insb,.pbtn.insa').forEach(x => x.classList.remove('insb', 'insa'));
+    st = null; drag = null; lastRow = null; dropIdx = -1;
+  };
+  function lift(b, x, y){
+    drag = b; b.classList.add('lifted');
+    ghost = document.createElement('div'); ghost.className = 'ghost';
+    const im = b.querySelector('img');
+    ghost.innerHTML = `<img src="${(im && im.getAttribute('src')) || ''}" alt="">`;
+    document.body.appendChild(ghost); move(x, y);
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch (e) {}
+  }
+  const move = (x, y) => { if (ghost){ ghost.style.left = x + 'px'; ghost.style.top = y + 'px'; } };
+  function over(x, y){
+    const el = document.elementFromPoint(x, y), row = el && el.closest('.cell:not(.no), .tray, .prow');
+    if (row !== lastRow){ if (lastRow) lastRow.classList.remove('over'); if (row) row.classList.add('over'); lastRow = row; }
+    document.querySelectorAll('.pbtn.insb,.pbtn.insa').forEach(q => q.classList.remove('insb', 'insa'));
+    dropIdx = -1;
+    if (row){
+      const bs = [...row.querySelectorAll('.pbtn')].filter(q => q !== drag);
+      let idx = bs.length, mark = null, after = false;
+      for (let i = 0; i < bs.length; i++){
+        const r = bs[i].getBoundingClientRect();
+        if (y < r.bottom && x < r.left + r.width / 2){ idx = i; mark = bs[i]; break; }
+        if (y < r.bottom){ idx = i + 1; mark = bs[i]; after = true; }
+      }
+      dropIdx = idx;
+      if (mark) mark.classList.add(after ? 'insa' : 'insb');
+    }
+    const m = 90, sp = y < m ? -14 : y > innerHeight - m ? 14 : 0;
+    if (sp && !edgeT){ const step = () => { scrollBy(0, sp); edgeT = requestAnimationFrame(step); }; edgeT = requestAnimationFrame(step); }
+    else if (!sp && edgeT){ cancelAnimationFrame(edgeT); edgeT = 0; }
+  }
+  addEventListener('dragstart', e => { if (charSort && e.target.closest && e.target.closest('.pnav')) e.preventDefault(); });
+  addEventListener('pointerdown', e => {
+    if (!charSort) return;
+    const b = e.target.closest('.pbtn'); if (!b || e.target.closest('[data-cst]')) return;
+    const touch = e.pointerType !== 'mouse';
+    st = { b, x: e.clientX, y: e.clientY, touch };
+    if (!touch) e.preventDefault();                                  // 마우스: 글자 선택 · 기본 끌기 막기
+    else holdT = setTimeout(() => { if (st && !drag) lift(st.b, st.x, st.y); }, 220);
+  });
+  addEventListener('pointermove', e => {
+    if (!st) return;
+    if (!drag){
+      if (Math.hypot(e.clientX - st.x, e.clientY - st.y) < 7) return;
+      if (st.touch){ clear(); return; }                              // 손가락이 바로 움직이면 스크롤
+      lift(st.b, e.clientX, e.clientY);                              // 마우스는 움직이는 순간 집힘
+    }
+    move(e.clientX, e.clientY); over(e.clientX, e.clientY);
+  }, { passive: true });
+  addEventListener('touchmove', e => { if (drag) e.preventDefault(); }, { passive: false });
+  addEventListener('pointerup', e => {
+    if (!st) return;
+    const b = st.b, dragged = !!drag, row = lastRow, idx = dropIdx;
+    if (dragged && row && row.dataset.role) placeAt(b.dataset.cid, row.dataset.role, row.dataset.tier !== undefined ? +row.dataset.tier : null, idx, b.dataset.nm);
+    else if (!dragged && Math.hypot(e.clientX - st.x, e.clientY - st.y) < 12) pickRole(b.dataset.cid, b.dataset.nm);
+    clear();
+  });
+  addEventListener('pointercancel', clear);
+  addEventListener('blur', clear);
+})();
+
+/* ---------- 이벤트 ---------- */
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (!b) return; if (b.dataset.cat !== cat) pushNav('tab'); cat = b.dataset.cat; scrollTo({ top: 0 }); render(); try { localStorage.setItem('codex-tab', cat); } catch (er) {} });
+$('main').addEventListener('click', e => {
+  const cd = e.target.closest('[data-cst]'); if (cd){ e.stopPropagation(); e.preventDefault(); const id = cd.dataset.cst, y0 = scrollY; put(id, { status: charSt(id) === 'in' ? 'out' : 'in' }, true); render(); scrollTo(0, y0); return; }   // v1.93 인물 등장 동그라미
+  const so2 = e.target.closest('[data-csort]'); if (so2){ e.stopPropagation(); setCharSort(!charSort); return; }
+  if (e.target.closest('[data-sortname]')){ e.stopPropagation(); sortByName(); return; }
+  if (charSort && e.target.closest('.pbtn')){ e.stopPropagation(); return; }
+  const jb = e.target.closest('[data-jump]'); if (jb){ e.stopPropagation();
+    // v1.68 휴대폰: 초상화는 두 번 눌러야 이동 (한 번 = 고름 · 이름 크게). 스크롤하다 잘못 눌려 튀는 것 막기
+    if (coarse && jb.classList.contains('pbtn') && !(jb.classList.contains('armed') && Date.now() - (jb._armT || 0) < 1500)){
+      document.querySelectorAll('.pbtn.armed').forEach(x => x.classList.remove('armed')); jb.classList.add('armed'); jb._armT = Date.now(); return;
+    }
+    jb.classList.remove('armed'); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
+  if (e.target.closest('[data-tonav]')){ e.stopPropagation(); pushNav('jump'); jumpTo('pnav'); return; }
+  const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); pushNav('jump'); jumpTo(tt.dataset.totoc); return; }
+  const tg = e.target.closest('[data-tog]'); if (tg){ e.stopPropagation(); const k = tg.dataset.tog; if (filtering()) return; setOpenG(k, !gOpen[k]); const h = tg.closest('h3'), id = h && h.id, y = h ? h.getBoundingClientRect().top : 0; render(); const n = id && $(id); if (n) scrollBy(0, n.getBoundingClientRect().top - y); return; }
+  const go = e.target.closest('[data-goto]'); if (go){ e.stopPropagation(); pushNav('jump'); const k = go.dataset.goto; setOpenG(k, true); render(); const h = [...document.querySelectorAll('h3[data-g]')].find(x => x.dataset.g === k); if (h) jumpTo(h.id); return; }
+  const al = e.target.closest('[data-all]'); if (al){ e.stopPropagation(); const ck = al.dataset.all, v = al.dataset.v === '1'; const ss = new Set(CATALOG.filter(x => x.cat === ck).map(x => x.sub)); if (ck === 'relic'){ ss.add(WEAR_Y); ss.add(WEAR_N); } for (const s of ss) setOpenG(gKey(ck, s), v); render(); return; }
+  const fo = e.target.closest('[data-fold]'); if (fo){ e.stopPropagation(); const id = fo.dataset.fold; opened[id] = !opened[id]; try { localStorage.setItem('codex-open', JSON.stringify(opened)); } catch (er) {} render(); return; }
+  const so = e.target.closest('[data-sort]'); if (so){ e.stopPropagation(); setSorting(!sorting); return; }
+  const un = e.target.closest('[data-undo]'); if (un){ e.stopPropagation(); undoWear(); return; }
+  const bk = e.target.closest('[data-bulk]'); if (bk){ e.stopPropagation(); bulkWear(bk.dataset.bs, bk.dataset.bulk); return; }
+  if (sorting){ const tw = e.target.closest('.tile'); if (tw && BY_ID[tw.dataset.id] && BY_ID[tw.dataset.id].cat === 'relic'){ e.stopPropagation(); cycleWear(tw.dataset.id); return; } }
+  const d = e.target.closest('[data-del]'); if (d){ e.stopPropagation(); toggleDel(d.dataset.del); return; }
+  const st = e.target.closest('[data-st]'); if (st){ e.stopPropagation(); const it = BY_ID[st.dataset.st]; put(it.id, { status: stOf(it) === 'in' ? 'out' : 'in' }); return; }
+  const c = e.target.closest('[data-check]'); if (c){ e.stopPropagation(); const id = c.dataset.check; put(id, { checked: !(marks[id] && marks[id].checked) }); return; }
+  const t = e.target.closest('.tile'); if (t) openView(t.dataset.id);
+});
+$('main').addEventListener('keydown', e => { const t = e.target.closest('.tile'); if (!t) return; if (e.key === 'Enter'){ openView(t.dataset.id); } if (e.key === ' '){ e.preventDefault(); put(t.dataset.id, { checked: !(marks[t.dataset.id] && marks[t.dataset.id].checked) }); } });
+let qT = 0;
+$('q').addEventListener('input', () => { clearTimeout(qT); qT = setTimeout(() => { q = $('q').value.trim(); render(); const n = q ? CATALOG.filter(visible).length : 0; $('qn').textContent = q ? `${n}개` : ''; if (q) scrollTo({ top: $('main').offsetTop - $('bar').offsetHeight - 8 }); }, 150); });
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229){ e.preventDefault(); const f = CATALOG.find(visible); if (f) openView(f.id); } if (e.key === 'Escape'){ $('q').value = ''; q = ''; $('qn').textContent = ''; render(); } });
+$('onlyChecked').addEventListener('change', e => { onlyChecked = e.target.checked; render(); });
+$('copyBtn').onclick = copyList; $('saveBtn').onclick = saveBackup; $('clearBtn').onclick = askClear;
+document.querySelector('.tools').addEventListener('click', e => { if (e.target.closest('[data-undo]')) undoWear(); });
+$('loadBtn').onclick = () => $('loadFile').click();
+$('loadFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadBackup(f); e.target.value = ''; });
+$('sheet').addEventListener('click', e => {
+  const cid = $('sheet').dataset.cid, nm = $('sheet').dataset.nm;
+  const rb = e.target.closest('[data-role]');
+  if (rb){ placeAt(cid, rb.dataset.role, null, null, nm); closeSheet(); return; }
+  const tb = e.target.closest('[data-tier]');
+  if (tb){ placeAt(cid, null, +tb.dataset.tier, null, nm); closeSheet(); return; }
+  const fl = e.target.closest('[data-flag]');
+  if (fl){ const k = fl.dataset.flag; pushUndo([{ id: cid, prev: snapOf(cid) }]); put(cid, { [k]: !(marks[cid] || {})[k] }); pickRole(cid, nm); return; }
+  const mv = e.target.closest('[data-move]');
+  if (mv){ const r = roleNow(cid), k = r + '|' + tierOf(cid); placeAt(cid, r, null, mv.dataset.move === 'first' ? 0 : (LANES[k] || []).length, nm); closeSheet(); return; }
+  if (e.target.closest('[data-close]')) closeSheet();
+});
+$('vDel').addEventListener('click', () => { saveMemo(); toggleDel(viewing); });
+$('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.checked }));
+$('vSt').addEventListener('change', e => put(viewing, { status: e.target.checked ? 'in' : 'out' }));
+$('vCons').addEventListener('change', e => { if (!viewing) return; pushUndo([{ id: viewing, prev: snapOf(viewing) }]); put(viewing, { cons: e.target.checked }); });
+for (const [id, k] of [['vRec', 'recruit'], ['vGrp', 'group']]) $(id).addEventListener('change', e => {
+  const x = BY_ID[viewing]; if (!x || !x.cid) return;
+  pushUndo([{ id: x.cid, prev: snapOf(x.cid) }]); put(x.cid, { [k]: e.target.checked });
+});
+$('vWear').addEventListener('click', e => { const b = e.target.closest('[data-vw]'); if (!b || !viewing) return; pushUndo([{ id: viewing, prev: (marks[viewing] || {}).slot || '' }]); put(viewing, { slot: b.dataset.vw }); fillView(); });
+$('vMemo').addEventListener('blur', saveMemo);
+$('vCSpec').addEventListener('blur', () => saveCSpec());
+let cspecT = null; $('vCSpec').addEventListener('input', () => { clearTimeout(cspecT); cspecT = setTimeout(() => saveCSpec(true), 600); });
+let memoT = null;
+// 엔터 = 저장하고 다음 (Shift + 엔터는 줄바꿈). 한글 조합 중 엔터는 무시
+let enterNext = null;
+for (const id of ['vMemo', 'vNameIn']) $(id).addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229) return;
+  e.preventDefault(); enterNext = id; step(1); enterNext = null;
+});
+$('vNameIn').addEventListener('change', saveName);
+let nameT = null; $('vNameIn').addEventListener('input', () => { clearTimeout(nameT); nameT = setTimeout(saveName, 600); });   // 이름도 쓰는 도중 자동 저장
+$('vMemo').addEventListener('input', () => { clearTimeout(memoT); memoT = setTimeout(() => { if (!viewing) return; const v = $('vMemo').value.trim(); if (v !== ((marks[viewing] || {}).memo || '')) put(viewing, { memo: v }, true); }, 500); });   // 쓰는 도중에도 0.5초마다 자동 저장
+addEventListener('pagehide', () => { saveMemo(); flushAll(); }); document.addEventListener('visibilitychange', () => { if (document.hidden){ saveMemo(); flushAll(); } });
+addEventListener('online', flushAll);
+addEventListener('beforeunload', e => { if (Object.keys(pending).length){ flushAll(); e.preventDefault(); e.returnValue = ''; } });
+$('stFilter').addEventListener('change', e => { showSt = e.target.value; render(); });
+/* ---------- 크기 조절: + − 버튼 · 두 손가락 오므리기/벌리기 · 기억 ---------- */
+let zoom = 1;
+try { const z = parseFloat(localStorage.getItem('codex-zoom')); if (z) zoom = z; } catch (e) {}
+function setZoom(z, save){
+  zoom = Math.min(2.6, Math.max(0.55, Math.round(z * 100) / 100));
+  document.documentElement.style.setProperty('--zoom', zoom);
+  $('zVal').textContent = Math.round(zoom * 100) + '%';
+  document.documentElement.classList.toggle('tiny', zoom < 0.75);
+  if (save !== false) try { localStorage.setItem('codex-zoom', zoom); } catch (e) {}
+}
+setZoom(zoom, false);
+$('zIn').onclick = () => setZoom(zoom * 1.2);
+$('zOut').onclick = () => setZoom(zoom / 1.2);
+(() => {
+  let d0 = 0, z0 = 1, raf = 0, nz = 1, anchor = null;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  $('main').addEventListener('touchstart', e => {
+    if (e.touches.length !== 2) return;
+    d0 = dist(e.touches); z0 = zoom;
+    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    const el = document.elementFromPoint(innerWidth / 2, my); anchor = el && el.closest('.tile');
+  }, { passive:true });
+  $('main').addEventListener('touchmove', e => {
+    if (e.touches.length !== 2 || !d0) return;
+    e.preventDefault(); nz = z0 * dist(e.touches) / d0;
+    if (!raf) raf = requestAnimationFrame(() => { raf = 0; const y = anchor && anchor.getBoundingClientRect().top; setZoom(nz, false); if (anchor) scrollBy(0, anchor.getBoundingClientRect().top - y); });
+  }, { passive:false });
+  $('main').addEventListener('touchend', e => { if (d0 && e.touches.length < 2){ d0 = 0; setZoom(zoom); } }, { passive:true });
+  // 컴퓨터: Ctrl + 휠
+  $('main').addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08)); }, { passive:false });
+})();
+/* 떠 있는 버튼: 지금 보는 분류의 목차 (인물은 초상화 버튼)로 */
+function curSection(){ const top = $('bar').offsetHeight + 12; let cur = null; for (const sct of document.querySelectorAll('section.cat')) if (sct.getBoundingClientRect().top <= top) cur = sct; return cur; }
+const narrow = matchMedia('(max-width:640px)'); let lastY = scrollY;
+let fabT = 0; addEventListener('scroll', () => { if (fabT) return; fabT = requestAnimationFrame(() => { fabT = 0; $('fab').hidden = scrollY < 900;
+  if (autoScr){ lastY = scrollY; } else if (narrow.matches && !$('bar').classList.contains('open')){ const dy = scrollY - lastY; if (Math.abs(dy) > 6){ $('bar').classList.toggle('mini', dy > 0 && scrollY > 200); lastY = scrollY; } } else $('bar').classList.remove('mini'); }); }, { passive:true });
+$('backBtn').onclick = goBack;
+$('fab').onclick = () => { pushNav('jump'); const sct = curSection() || document.querySelector('section.cat'); if (!sct) return; const t = sct.querySelector('.pnav,.toc,.gbar') || sct; t.id ? jumpTo(t.id) : t.scrollIntoView({ block:'start' }); if (!t.id) scrollBy(0, -($('bar').offsetHeight + 8)); };
+$('toolsBtn').onclick = () => { const o = $('bar').classList.toggle('open'); $('toolsBtn').setAttribute('aria-expanded', o); $('toolsBtn').textContent = o ? '도구 ▴' : '도구 ▾'; };
+document.querySelector('.lede').addEventListener('click', e => e.currentTarget.classList.toggle('open'));
+/* ---------- v1.95 꽉 찬 화면 (스샷용) ----------
+   크게 보기에서 그림을 한 번 누르면 그림만 화면 가득. 원본이 저장소에 있던 그림 (2기 · 인주 · 카리우스)은 hi/ 묶음의 원본 해상도로,
+   나머지는 도감에 있는 가장 큰 그림으로. 화면 픽셀 (기기 배율까지) 그대로 다시 그려서 흐림을 줄임.
+   1.6초 뒤 아래 줄이 사라져 스샷에 안 찍힘 (누르면 다시 보임) · 좌우로 밀면 이전 · 다음 · 바탕 (검정 · 흰색 · 도감 · 투명 체크) 바꾸기 · 뒤로 / Esc로 닫기 */
+const HIP = typeof HI === 'object' ? HI : {}, hiSheet = {};
+const SHOT = { bg: 'black', img: null, id: null, uiT: 0 };
+try { SHOT.bg = localStorage.getItem('codex-shotbg') || 'black'; } catch (e) {}
+const BGN = { black: '검정', white: '흰색', paper: '도감', check: '투명 체크' };
+function hiImg(src){
+  const h = HIP[src];
+  if (h){
+    const i = h[0]; const sp = hiSheet[i] || (hiSheet[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = HIPACKS[i]; }));
+    return sp.then(im => ({ im, sx: h[1], sy: h[2], w: h[3], h: h[4], hi: true }));
+  }
+  const p = PK[src];
+  if (p) return packImg(p[0]).then(im => ({ im, sx: p[1], sy: p[2], w: p[3], h: p[4] }));
+  return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok({ im, sx: 0, sy: 0, w: im.naturalWidth, h: im.naturalHeight }); im.onerror = no; im.src = src.startsWith('a/') ? src : src; });
+}
+function shotDraw(){
+  const c = $('shotC'), S = SHOT.img; if (!S || $('shot').hidden) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 4), W = Math.round(innerWidth * dpr), H = Math.round(innerHeight * dpr);
+  c.width = W; c.height = H; const g = c.getContext('2d'); g.clearRect(0, 0, W, H);
+  const m = Math.round(Math.min(W, H) * 0.02), k = Math.min((W - m * 2) / S.w, (H - m * 2) / S.h), dw = S.w * k, dh = S.h * k;
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+  // 크게 키울 땐 두 배씩 나눠 키움 (한 번에 키우는 것보다 덜 뭉개짐)
+  let src = S.im, sx = S.sx, sy = S.sy, sw = S.w, sh = S.h;
+  if (k > 2.2){
+    let cw = sw, ch = sh, tmp = document.createElement('canvas'); tmp.width = sw; tmp.height = sh; tmp.getContext('2d').drawImage(src, sx, sy, sw, sh, 0, 0, sw, sh);
+    while (cw * 2 < dw){ const t2 = document.createElement('canvas'); t2.width = cw * 2; t2.height = ch * 2; const g2 = t2.getContext('2d'); g2.imageSmoothingEnabled = true; g2.imageSmoothingQuality = 'high'; g2.drawImage(tmp, 0, 0, cw, ch, 0, 0, cw * 2, ch * 2); tmp = t2; cw *= 2; ch *= 2; }
+    src = tmp; sx = 0; sy = 0; sw = cw; sh = ch;
+  }
+  g.drawImage(src, sx, sy, sw, sh, Math.round((W - dw) / 2), Math.round((H - dh) / 2), Math.round(dw), Math.round(dh));
+  const e = BY_ID[SHOT.id]; $('shotInfo').textContent = (e ? nameOf(e) : '') + ' · ' + S.w + '×' + S.h + (S.hi ? ' 원본' : '');
+}
+function shotUi(on = true){ clearTimeout(SHOT.uiT); $('shotUi').classList.toggle('off', !on); if (on) SHOT.uiT = setTimeout(() => $('shotUi').classList.add('off'), 1600); }
+function shotLoad(id){
+  const e = BY_ID[id]; if (!e) return; SHOT.id = id;
+  hiImg(e.src).then(S => { if (SHOT.id !== id) return; SHOT.img = S; shotDraw(); }).catch(() => {});
+}
+function openShot(){
+  if (!viewing) return; const sh = $('shot'); sh.dataset.bg = SHOT.bg; $('shotBg').textContent = '바탕: ' + BGN[SHOT.bg];
+  sh.hidden = false; SHOT.img = null; $('shotC').getContext('2d').clearRect(0, 0, 1e4, 1e4); shotLoad(viewing); shotUi(true); pushNav('shot');
+  try { if (sh.requestFullscreen && !document.fullscreenElement) sh.requestFullscreen({ navigationUI: 'hide' }).catch(() => {}); } catch (e) {}
+}
+function closeShot(fromPop){
+  if ($('shot').hidden) return; $('shot').hidden = true; SHOT.img = null; clearTimeout(SHOT.uiT);
+  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+  if (!fromPop && navStack.length && navStack[navStack.length - 1].kind === 'shot'){ navStack.pop(); updBack(); try { if (history.state && history.state.codexNav) history.back(); } catch (e) {} skipPop = true; }
+}
+function shotStep(d){ step(d); shotLoad(viewing); }
+(() => {
+  const sh = $('shot'); let sx = 0, sy = 0, st = 0, multi = false;
+  sh.addEventListener('touchstart', e => { if (e.touches.length > 1){ multi = true; return; } multi = false; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, { passive:true });
+  sh.addEventListener('touchend', e => {
+    if (!st || multi || e.touches.length) return; const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; st = 0;
+    if (window.visualViewport && visualViewport.scale > 1.05) return;   // 손가락으로 확대한 채면 넘기지 않음
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4){ shotStep(dx < 0 ? 1 : -1); return; }
+    if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.4){ goBack(); return; }   // 아래로 쓸면 닫기
+  }, { passive:true });
+  sh.addEventListener('click', e => { if (e.target.closest('button')) return; shotUi($('shotUi').classList.contains('off')); });
+  $('shotX').onclick = e => { e.stopPropagation(); goBack(); };
+  $('shotBg').onclick = e => { e.stopPropagation(); const ks = Object.keys(BGN); SHOT.bg = ks[(ks.indexOf(SHOT.bg) + 1) % ks.length]; sh.dataset.bg = SHOT.bg; $('shotBg').textContent = '바탕: ' + BGN[SHOT.bg]; try { localStorage.setItem('codex-shotbg', SHOT.bg); } catch (err) {} shotUi(true); };
+  addEventListener('resize', () => { if (!sh.hidden) shotDraw(); });
+  addEventListener('keydown', e => { if (sh.hidden) return; e.stopImmediatePropagation(); if (e.key === 'Escape') goBack(); if (e.key === 'ArrowRight') shotStep(1); if (e.key === 'ArrowLeft') shotStep(-1); }, true);
+  $('vImg').addEventListener('click', openShot);
+})();
+/* 크게 보기: 좌우로 밀어 넘기기 · 그림을 누르면 꽉 찬 화면 (v1.95, 전엔 두 번 눌러 확대) */
+(() => {
+  const big = document.querySelector('.view .big'); let sx = 0, sy = 0, st = 0, last = 0;
+  big.addEventListener('touchstart', e => { if (e.touches.length !== 1) return; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, { passive:true });
+  big.addEventListener('touchend', e => {
+    if (!st) return; const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy, dt = Date.now() - st; st = 0;
+    if (big.classList.contains('zoomed')) { if (Math.abs(dx) < 8 && Math.abs(dy) < 8 && Date.now() - last < 320) { big.classList.remove('zoomed'); last = 0; } else if (Math.abs(dx) < 8) last = Date.now(); return; }
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 700){ step(dx < 0 ? 1 : -1); return; }
+  }, { passive:true });
+})();
+$('vPrev').onclick = () => step(-1); $('vNext').onclick = () => step(1); $('vClose').onclick = () => closeView();
+$('view').addEventListener('click', e => { if (e.target === $('view')) closeView(); });
+addEventListener('keydown', e => { if ($('view').hidden) return; if (e.key === 'Escape') closeView(); if (document.activeElement === $('vMemo')) return; if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+try { const t = localStorage.getItem('codex-tab'); if (t && (t === 'all' || CATS.some(c => c.key === t))) cat = t; } catch (e) {}
+render(); connect();
+</script>
