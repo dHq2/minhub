@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v2.01 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<!-- codex v2.02 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.02: 인물 작업 — 초상화 줄 = 아래 인물 묶음 (같은 순서 · 같은 이름 · 같은 상태). 인물 이름 바꾸기 · 대표 초상화 고르기 · 인물째 삭제 표시 · 🗑 삭제 표시만 거르기. 쓰레기통은 Claude 가 다음 턴에 지움 (tools/trash_apply.py). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -292,6 +292,19 @@ h3.gh.open{margin-top:18px}
   .view .side .chk2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 }
 @media (prefers-reduced-motion:no-preference){ .tile{transition:border-color .15s,box-shadow .15s} }
+.pbtn .pdl{position:absolute;left:2px;bottom:16px;z-index:2;font:600 10px var(--body);color:#fff;background:var(--check);border-radius:999px;padding:0 4px;line-height:14px}
+.pbtn .pdl.n{background:#8a5a2a}
+.pbtn.gone .pp{opacity:.35;outline:2px dashed var(--check);outline-offset:-2px}
+.pbtn.gone .pn{text-decoration:line-through;opacity:.6}
+.gh .pnm{font-size:1.05em;margin-right:6px}
+.gh .was{opacity:.7;margin-right:6px}
+.gh .chip{display:inline-block;font:600 11px var(--body);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-right:6px;vertical-align:1px}
+.gh .pact{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap;margin-left:6px}
+.gh .pact .cdot{position:static;display:inline-block}
+.gh .toNav.on{background:var(--check);color:#fff;border-color:var(--check)}
+.gh.gone .gt{opacity:.5;text-decoration:line-through}
+.tile.pgone{opacity:.45}
+#vFace.on{background:var(--accent);color:var(--bg)}
 </style>
 
 <div class="wrap">
@@ -309,7 +322,7 @@ h3.gh.open{margin-top:18px}
       <button class="btn toolsBtn" id="toolsBtn" type="button" aria-expanded="false">도구 ▾</button>
       <span class="more">
       <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
-      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option><option value="wy">○ 착용 가능만 (유물)</option><option value="wn">✕ 착용 불가만 (유물)</option><option value="wq">? 등장 미정만 (유물)</option><option value="cons">◆ 소모품만</option><option value="spec">설정 적은 것만</option><option value="nospec">설정 아직 안 적은 것만</option></select>
+      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option><option value="wy">○ 착용 가능만 (유물)</option><option value="wn">✕ 착용 불가만 (유물)</option><option value="wq">? 등장 미정만 (유물)</option><option value="cons">◆ 소모품만</option><option value="spec">설정 적은 것만</option><option value="nospec">설정 아직 안 적은 것만</option><option value="del">🗑 삭제 표시만 (다음에 Claude가 지움)</option></select>
       <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
       <button class="btn" id="saveBtn" type="button">백업 저장</button>
       <button class="btn" id="loadBtn" type="button">백업 불러오기</button>
@@ -349,7 +362,7 @@ h3.gh.open{margin-top:18px}
       <label for="vMemo" class="memo-dot">메모 (이 그림 한 장에 대해: 지우기 · 이름 · 다듬기 …)</label>
       <textarea id="vMemo" placeholder="예: 배경 지우고 유물로. 이름은 ‘녹슨 종’"></textarea>
       <div class="row acts"><button class="btn" id="vPrev" type="button">← 이전</button><button class="btn" id="vClose" type="button">닫기</button><button class="btn" id="vNext" type="button">다음 →</button>
-      <button class="btn warn" id="vDel" type="button">삭제 표시 (체크 + 메모)</button></div>
+      <button class="btn warn" id="vDel" type="button">삭제 표시 (체크 + 메모)</button><button class="btn" id="vFace" type="button" hidden>이 그림을 초상화로</button></div>
       <span class="hint">메모 · 이름에서 엔터 = 저장하고 다음 그림 (줄바꿈은 Shift + 엔터) · 그림을 좌우로 밀면 넘어가요 · 두 번 누르면 확대</span>
     </div>
   </div>
@@ -395,7 +408,7 @@ async function connect(){
   let first = true;
   store.onSnapshot(snap => {
     const next = {};
-    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name || v.slot || v.cons || v.cspec || v.role || typeof v.ord === 'number' || typeof v.tier === 'number' || v.recruit || v.group)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, inAt: v.inAt || '', at: v.at || '' }; });
+    snap.docs.forEach(d => { const v = d.data(); if (v && (v.checked || v.memo || v.status || v.name || v.slot || v.cons || v.cspec || v.role || typeof v.ord === 'number' || typeof v.tier === 'number' || v.recruit || v.group || v.face)) next[d.id] = { checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, face: v.face || '', inAt: v.inAt || '', at: v.at || '' }; });
     // 처음 한 번: 이 브라우저에만 있고 저장소에 못 올라간 것 (끊겼을 때 등)을 올려 보냄 → 날아가지 않게
     if (!synced){ synced = true; for (const [id, v] of Object.entries(marks)) if ((BY_ID[id] || CIDS.has(id)) && (!next[id] || (v.at || '') > (next[id].at || ''))){ next[id] = v; store.doc(id).set(docOf(v)).catch(() => {}); } }
     // 아직 저장소에 올라가는 중인 내 수정은 저장소 내용으로 덮지 않음 (예전엔 여기서 방금 고친 게 날아갈 수 있었음)
@@ -408,8 +421,8 @@ async function connect(){
     status('자동 저장됨 ' + new Date().toLocaleTimeString() + ' · 체크 · 등장 표시 · 메모는 누르는 즉시 저장되고 Claude가 바로 읽을 수 있어요');
   }, e => status('저장소 오류: ' + (e && e.message || e) + '. 이 브라우저에는 계속 저장됩니다.', true));
 }
-const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, inAt: v.inAt || '', at: v.at || new Date().toISOString() });
-const empty = v => !v.checked && !v.memo && !v.status && !v.name && !v.slot && !v.cons && !v.cspec && !v.role && typeof v.ord !== 'number' && typeof v.tier !== 'number' && !v.recruit && !v.group;
+const docOf = v => ({ checked: !!v.checked, memo: v.memo || '', status: v.status || '', name: v.name || '', slot: v.slot || '', cons: !!v.cons, cspec: v.cspec || '', role: v.role || '', ord: typeof v.ord === 'number' ? v.ord : null, tier: typeof v.tier === 'number' ? v.tier : null, recruit: !!v.recruit, group: !!v.group, face: v.face || '', inAt: v.inAt || '', at: v.at || new Date().toISOString() });
+const empty = v => !v.checked && !v.memo && !v.status && !v.name && !v.slot && !v.cons && !v.cspec && !v.role && typeof v.ord !== 'number' && typeof v.tier !== 'number' && !v.recruit && !v.group && !v.face;
 // 이름 바꾸기: 바꾼 이름은 marks에 (원래 이름은 catalog 그대로). 바뀐 칸은 '이름 바뀜' 표시 → Claude가 나중에 catalog에 적용
 const nameOf = e => (marks[e.id] && marks[e.id].name) || e.name;
 const renamed = e => !!(marks[e.id] && marks[e.id].name && marks[e.id].name !== e.name);
@@ -506,7 +519,7 @@ function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID
 let q = '';
 const norm = t => String(t || '').toLowerCase().replace(/[-\s]/g, '');
 function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(m.name).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.pk).includes(n) || norm(e.was).includes(n) || norm(e.game).includes(n) || norm(e.note).includes(n) || norm(e.spec).includes(n) || norm(cspecOf(e)).includes(n); }
-function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); default: return stOf(e) === showSt; } }
+function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); case 'del': return isDel(e.id) || (!!e.cid && e.cat === 'char' && isDel(e.cid)); default: return stOf(e) === showSt; } }
 function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && stPass(e); }
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
@@ -514,7 +527,7 @@ function tile(e){
   const wch = e.cat !== 'relic' ? '' : `<span class="wear ${wearCls(e)}">${wearTxt(e)}</span>`;
   const cch = consOf(e) ? '<span class="cons">◆ 소모품</span>' : '';
   const sch = e.spec ? `<span class="spec-dot" title="${esc(e.spec)}">${esc(e.spec)}</span>` : '';
-  return `<div class="tile ${e.rank} ${e.cat === 'relic' ? (slotOf(e) === 'x' ? 'wn' : wearable(e) ? 'wy' : '') : ''} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${e.parent && keepKid(e) ? 'keep' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
+  return `<div class="tile ${e.cid && e.cat === 'char' && isDel(e.cid) ? 'pgone' : ''} ${e.rank} ${e.cat === 'relic' ? (slotOf(e) === 'x' ? 'wn' : wearable(e) ? 'wy' : '') : ''} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${e.parent && keepKid(e) ? 'keep' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
     <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
@@ -544,20 +557,39 @@ const grpOf = cid => !!(marks[cid] && marks[cid].group);       // 한 그림에 
 const BASE_ORD = {}; { let i = 0; for (const e of CATALOG) if (e.cid && !(e.cid in BASE_ORD)) BASE_ORD[e.cid] = (++i) * 1000; }
 const ordOf = cid => { const m = marks[cid]; return (m && typeof m.ord === 'number') ? m.ord : (BASE_ORD[cid] || 0); };
 const LANES = {};   // 자리 이름 → 그 안의 cid 순서 (끌어 놓을 자리를 셈할 때 씀)
+/* v2.02 인물 한 명 = 초상화 줄 한 칸 = 아래 묶음 하나. 이름 · 대표 초상화 · 삭제는 인물 문서 (marks[cid]) 에 — 초상화 줄과 묶음 머리가 같은 값을 봄 */
+const pName = (cid, s) => (cid && marks[cid] && marks[cid].name) || s.split(' · ')[0];
+function faceOfList(ms, cid){   // 고른 대표 초상화 → 삭제 표시 안 된 초상화 → 삭제 표시 안 된 아무 그림 → 첫 그림
+  const pick = cid && marks[cid] && marks[cid].face, f0 = pick && ms.find(e => e.id === pick);
+  return f0 || ms.find(e => isFace(e) && !isDel(e.id)) || ms.find(e => !isDel(e.id)) || ms[0];
+}
+const SUB_MS = {}; for (const e of CATALOG) if (e.cat === 'char') (SUB_MS[e.sub] = SUB_MS[e.sub] || []).push(e);
 function charList(subs){
   const out = [];
   subs.forEach((s, i) => {
-    const ms = CATALOG.filter(e => e.cat === 'char' && e.sub === s); if (!ms.length) return;
-    const f = ms.find(isFace) || ms[0];
-    out.push({ i, s, f, cid: f.cid || '', nm: s.split(' · ')[0], role: roleOfChar(s, f) });
+    const ms = SUB_MS[s] || []; if (!ms.length) return;
+    const cid = (ms.find(e => e.cid) || {}).cid || '', f = faceOfList(ms, cid);
+    out.push({ i, s, f, cid, nm: pName(cid, s), role: roleOfChar(s, f), del: isDel(cid), ndel: ms.filter(e => isDel(e.id)).length, n: ms.length });
   });
   return out;
+}
+/* 아래 인물 묶음도 초상화 줄과 같은 순서 (구분 → 등급 높은 것 → 끌어 놓은 순서) */
+function charOrder(subs){
+  const L = charList(subs);
+  L.sort((a, b) => (ROLES.indexOf(a.role) - ROLES.indexOf(b.role)) || (tierOf(b.cid) - tierOf(a.cid)) || (ordOf(a.cid) - ordOf(b.cid)));
+  return L.map(x => x.s);
 }
 function faceBtn(x, withTier){
   const pen = cspecOf(x.f) ? '<span class="pen" aria-label="설정 적힘">✎</span>' : '';
   const t = tierOf(x.cid);
   const tb = withTier && t ? `<span class="tb ${ALLY(x.role) ? '' : 'en'}">${esc(tLabel(t, x.role))}</span>` : '';
-  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}">${pen}${tb}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
+  const dl = x.del ? '<span class="pdl" aria-label="인물 삭제 표시">🗑</span>' : x.ndel ? `<span class="pdl n" aria-label="삭제 표시 그림 ${x.ndel}">🗑${x.ndel}</span>` : '';
+  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''} ${x.del ? 'gone' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.nm)} — ${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}${x.del ? ' · 인물 삭제 표시' : ''}">${pen}${tb}${dl}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
+}
+function personTitle(cid, s, n){
+  const parts = s.split(' · '), r = roleOfChar(s, { cid }), t = tierOf(cid), nm = pName(cid, s);
+  const kind = parts.slice(-1)[0], dn = SUB_MS[s] ? SUB_MS[s].filter(e => isDel(e.id)).length : 0;
+  return `<b class="pnm">${esc(nm)}</b>${nm !== parts[0] ? `<small class="was">원래 ${esc(parts[0])}</small>` : ''}<span class="chip">${esc(r)}${t ? ' · ' + esc(tLabel(t, r)) : ''}</span><small>${esc(kind)} · ${n}${dn ? ` · 🗑${dn}` : ''}${isDel(cid) ? ' · 인물 삭제 표시' : ''}</small>`;
 }
 /* 평소: 구분별 한 줄씩 (누르면 그 인물 묶음으로 내려감) */
 function peopleNav(subs){
@@ -650,7 +682,7 @@ function render(){
     if (q && !CATALOG.some(e => e.cat === c.key && visible(e))) continue;
     const items = CATALOG.filter(e => e.cat === c.key && visible(e));
     const subs0 = [...new Set(CATALOG.filter(e => e.cat === c.key).map(e => e.sub))];
-    const subs = c.key === 'relic' ? [WEAR_Y, WEAR_Q, WEAR_N] : subs0;
+    const subs = c.key === 'relic' ? [WEAR_Y, WEAR_Q, WEAR_N] : c.key === 'char' ? charOrder(subs0) : subs0;
     const cls = c.key === 'anim' ? 'grid wide anim' : c.key === 'char' ? 'grid tall' : c.key === 'scene' || c.key === 'bg' ? 'grid wide' : 'grid';
     html += `<section class="cat" id="cat-${c.key}"><h2>${c.no}. ${c.name} <small>${CATALOG.filter(e => e.cat === c.key).length}</small></h2><p class="cat-note">${c.note}</p>`;
     if (c.key === 'char' && !q){
@@ -681,7 +713,10 @@ function render(){
       const bulk = c.key === 'relic' ? `<button class="toNav" type="button" data-bulk="" data-bs="${esc(s)}">전부 아직으로</button>` : '';
       const back = c.key === 'char' ? '<button class="toNav" type="button" data-tonav aria-label="초상화 버튼으로">↑ 초상화</button>' : (c.key !== 'relic' && shown.length > 1) ? `<button class="toNav" type="button" data-totoc="toc-${c.key}" aria-label="목차로">↑ 목차</button>` : '';
       const cs = c.key === 'char' && list[0].cid ? `<div class="cspec" id="cs-${list[0].cid}">${cdotHtml(list[0].cid)}${cspecOf(list[0]) ? esc(cspecOf(list[0])) : '<em>인물 설정 없음 — 그림을 열어 인물 공통 설정에 적으면 여기에 떠요</em>'}</div>` : '';
-      html += `<h3 id="${gi}" class="gh ${op ? 'open' : ''}" data-g="${esc(k)}"><button class="gt" type="button" data-tog="${esc(k)}" aria-expanded="${op}"><span class="car">${op ? '▾' : '▸'}</span><span class="sw" style="background:${sw}"></span>${esc(s)} · ${list.length}</button>${bulk}${back}</h3>${op ? cs + `<div class="${g}">${list.map(tile).join('')}</div>` : ''}`;
+      const pc = c.key === 'char' ? (list0.find(e => e.cid) || {}).cid || '' : '';
+      const title = pc ? personTitle(pc, s, list0.length) : `${esc(s)} · ${list.length}`;
+      const pact = pc ? `<span class="pact">${cdotHtml(pc)}<button class="toNav" type="button" data-prole="${esc(pc)}" data-nm="${esc(pName(pc, s))}">구분 · 등급</button><button class="toNav" type="button" data-pname="${esc(pc)}" data-s="${esc(s)}">이름</button><button class="toNav ${isDel(pc) ? 'on' : ''}" type="button" data-pdel="${esc(pc)}">${isDel(pc) ? '인물 삭제 풀기' : '인물 삭제'}</button></span>` : '';
+      html += `<h3 id="${gi}" class="gh ${op ? 'open' : ''} ${pc && isDel(pc) ? 'gone' : ''}" data-g="${esc(k)}"><button class="gt" type="button" data-tog="${esc(k)}" aria-expanded="${op}"><span class="car">${op ? '▾' : '▸'}</span><span class="sw" style="background:${sw}"></span>${title}</button>${pact}${bulk}${back}</h3>${op ? cs + `<div class="${g}">${list.map(tile).join('')}</div>` : ''}`;
     }
     if (!any) html += `<p class="empty">${onlyChecked ? '이 분류에 체크한 그림이 없어요.' : '그림이 없어요.'}</p>`;
     html += `</section>`;
@@ -715,6 +750,7 @@ function fillView(){
   $('vWear').hidden = e.cat !== 'relic';
   for (const b of $('vWear').querySelectorAll('[data-vw]')) b.classList.toggle('on', b.dataset.vw === slotVal(e));
   $('vDel').textContent = isDel(e.id) ? '삭제 표시 풀기' : '삭제 표시 (체크 + 메모)';
+  $('vFace').hidden = !hasC; if (hasC){ const on = (marks[e.cid] || {}).face === e.id; $('vFace').textContent = on ? '★ 이 인물의 초상화 (누르면 풀기)' : '이 그림을 초상화로'; $('vFace').classList.toggle('on', on); }
   if (document.activeElement !== $('vMemo')) $('vMemo').value = m.memo || '';
 }
 function step(d){ saveMemo(); const o = order(), i = o.findIndex(e => e.id === viewing); const n = o[(i + d + o.length) % o.length]; if (n){ viewing = n.id; $('vMemo').value = (marks[n.id] || {}).memo || ''; $('vNameIn').value = nameOf(n); fillView(); if (enterNext) $(enterNext).focus({ preventScroll:true }); } }
@@ -781,7 +817,7 @@ function toggleDel(id){
 
 /* ---------- v1.73 유물 착용 분류 ---------- */
 function setSorting(v){ sorting = v; frozen = null; if (v){ frozen = {}; for (const e of CATALOG) if (e.cat === 'relic') frozen[e.id] = { b: bucketOf(e) }; } document.documentElement.classList.toggle('sorting', v); render(); }
-const snapOf = id => { const m = marks[id]; return m ? { checked: !!m.checked, memo: m.memo || '', status: m.status || '', name: m.name || '', slot: m.slot || '', cons: !!m.cons, cspec: m.cspec || '', role: m.role || '', ord: typeof m.ord === 'number' ? m.ord : null, tier: typeof m.tier === 'number' ? m.tier : null, recruit: !!m.recruit, group: !!m.group } : null; };
+const snapOf = id => { const m = marks[id]; return m ? { checked: !!m.checked, memo: m.memo || '', status: m.status || '', name: m.name || '', slot: m.slot || '', cons: !!m.cons, cspec: m.cspec || '', role: m.role || '', ord: typeof m.ord === 'number' ? m.ord : null, tier: typeof m.tier === 'number' ? m.tier : null, recruit: !!m.recruit, group: !!m.group, face: m.face || '' } : null; };
 function lsUndo(){ try { localStorage.setItem(UKEY, JSON.stringify(undoStack)); } catch (e) {} }
 function pushUndo(list){ if (!list.length) return; undoStack.push(list); while (undoStack.length > 40) undoStack.shift(); lsUndo(); updUndo(); }
 function updUndo(){
@@ -865,6 +901,7 @@ function pickRole(cid, nm){
     + `<p style="flex:1 1 100%;margin:6px 0 2px">꼬리표</p>`
     + `<button class="btn ${recOf(cid) ? 'on' : ''}" type="button" data-flag="recruit">영입 가능 (금띠)</button>`
     + `<button class="btn ${grpOf(cid) ? 'on' : ''}" type="button" data-flag="group">무리 · 여럿 (초록 테두리)</button>`
+    + `<p style="flex:1 1 100%;margin:6px 0 2px">인물</p><button class="btn" type="button" data-pa="name">이름 바꾸기</button><button class="btn ${isDel(cid) ? 'on' : ''}" type="button" data-pa="del">${isDel(cid) ? '인물 삭제 풀기' : '🗑 인물 삭제 (그림 전부)'}</button><button class="btn" type="button" data-pa="go">이 인물 묶음 열기</button>`
     + `<button class="btn" type="button" data-move="first">↑ 맨 앞으로</button><button class="btn" type="button" data-move="last">↓ 맨 뒤로</button><button class="btn" type="button" data-close>닫기</button>`);
   $('sheet').dataset.cid = cid; $('sheet').dataset.nm = nm;
 }
@@ -969,6 +1006,9 @@ $('main').addEventListener('click', e => {
     }
     jb.classList.remove('armed'); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
   if (e.target.closest('[data-tonav]')){ e.stopPropagation(); pushNav('jump'); jumpTo('pnav'); return; }
+  const pr = e.target.closest('[data-prole]'); if (pr){ e.stopPropagation(); pickRole(pr.dataset.prole, pr.dataset.nm); return; }
+  const pn = e.target.closest('[data-pname]'); if (pn){ e.stopPropagation(); renamePerson(pn.dataset.pname, pn.dataset.s); return; }
+  const pd = e.target.closest('[data-pdel]'); if (pd){ e.stopPropagation(); const y0 = scrollY; pushUndo([{ id: pd.dataset.pdel, prev: snapOf(pd.dataset.pdel) }]); toggleDel(pd.dataset.pdel); render(); scrollTo(0, y0); return; }
   const tt = e.target.closest('[data-totoc]'); if (tt){ e.stopPropagation(); pushNav('jump'); jumpTo(tt.dataset.totoc); return; }
   const tg = e.target.closest('[data-tog]'); if (tg){ e.stopPropagation(); const k = tg.dataset.tog; if (filtering()) return; setOpenG(k, !gOpen[k]); const h = tg.closest('h3'), id = h && h.id, y = h ? h.getBoundingClientRect().top : 0; render(); const n = id && $(id); if (n) scrollBy(0, n.getBoundingClientRect().top - y); return; }
   const go = e.target.closest('[data-goto]'); if (go){ e.stopPropagation(); pushNav('jump'); const k = go.dataset.goto; setOpenG(k, true); render(); const h = [...document.querySelectorAll('h3[data-g]')].find(x => x.dataset.g === k); if (h) jumpTo(h.id); return; }
@@ -1002,9 +1042,22 @@ $('sheet').addEventListener('click', e => {
   if (fl){ const k = fl.dataset.flag; pushUndo([{ id: cid, prev: snapOf(cid) }]); put(cid, { [k]: !(marks[cid] || {})[k] }); pickRole(cid, nm); return; }
   const mv = e.target.closest('[data-move]');
   if (mv){ const r = roleNow(cid), k = r + '|' + tierOf(cid); placeAt(cid, r, null, mv.dataset.move === 'first' ? 0 : (LANES[k] || []).length, nm); closeSheet(); return; }
+  const pa = e.target.closest('[data-pa]');
+  if (pa){ const k = pa.dataset.pa, s = (CATALOG.find(x => x.cid === cid) || {}).sub || '';
+    if (k === 'name'){ closeSheet(); renamePerson(cid, s); return; }
+    if (k === 'del'){ pushUndo([{ id: cid, prev: snapOf(cid) }]); toggleDel(cid); render(); pickRole(cid, nm); return; }
+    if (k === 'go'){ closeSheet(); const subs0 = [...new Set(CATALOG.filter(x => x.cat === 'char').map(x => x.sub))], gi = 'who-' + subs0.indexOf(s), key = gKey('char', s); setOpenG(key, true); render(); pushNav('jump'); jumpTo(gi); return; }
+  }
   if (e.target.closest('[data-close]')) closeSheet();
 });
+function renamePerson(cid, s){
+  const cur = pName(cid, s), orig = s.split(' · ')[0], v = prompt('인물 이름 (비우면 원래 이름 ' + orig + ')', cur);
+  if (v === null) return; const want = v.trim() && v.trim() !== orig ? v.trim() : '';
+  pushUndo([{ id: cid, prev: snapOf(cid) }]); const y0 = scrollY; put(cid, { name: want }); render(); scrollTo(0, y0);
+  status(want ? `이름: ${orig} → ${want}` : `이름을 원래대로 (${orig})`);
+}
 $('vDel').addEventListener('click', () => { saveMemo(); toggleDel(viewing); });
+$('vFace').addEventListener('click', () => { const x = BY_ID[viewing]; if (!x || !x.cid) return; pushUndo([{ id: x.cid, prev: snapOf(x.cid) }]); const on = (marks[x.cid] || {}).face === x.id; put(x.cid, { face: on ? '' : x.id }); fillView(); status(on ? '초상화를 기본으로 되돌렸어요' : '이 그림이 인물 초상화가 됐어요 — 위 초상화 줄도 같이 바뀜'); });
 $('vCheck').addEventListener('change', e => put(viewing, { checked: e.target.checked }));
 $('vSt').addEventListener('change', e => put(viewing, { status: e.target.checked ? 'in' : 'out' }));
 $('vCons').addEventListener('change', e => { if (!viewing) return; pushUndo([{ id: viewing, prev: snapOf(viewing) }]); put(viewing, { cons: e.target.checked }); });
