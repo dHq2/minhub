@@ -38,7 +38,7 @@ const KSK = {   // 기술 그림 · 이름 (상태 창 · 기술 알림)
 const HERO_SK = { karius: ['body', 'grit', 'pierce', 'stomp', 'kick', 'heretic'] };
 function heroSkillsHtml(h){
   const L = HERO_SK[h.id]; if (!L) return '';
-  return `<div class="rw-sk"><div class="rw-sub">고유 특성 · 기술</div>${L.map(k => { const s = KSK[k]; return `<div class="rw-ski">${s.icon ? `<img src="${s.icon}" alt="">` : '<i></i>'}<div><b>${s.n}</b><small>${s.d}</small></div></div>`; }).join('')}</div>`;
+  return `<div class="rw-sk"><div class="rw-sub">고유 특성 · 기술</div>${L.map(k => { const s = KSK[k]; return `<div class="rw-ski">${s.icon ? `<img src="${artSrc(s.icon)}" alt="">` : '<i></i>'}<div><b>${s.n}</b><small>${s.d}</small></div></div>`; }).join('')}</div>`;
 }
 const KCD = ['cd', 'swCd', 'grCd', 'slCd', 'rsCd', 'stCd', 'dkCd', 'gtCd', 'hkCd'];
 const isLying = e => !!(e && !e.dead && (e.lying || (e.tripT && e.tripT > G.t)));
@@ -46,12 +46,12 @@ const isLying = e => !!(e && !e.dead && (e.lying || (e.tripT && e.tripT > G.t)))
 /* ---------- 기술 알림 · 컷씬 ---------- */
 function skillCall(u, sk, name){
   let box = document.getElementById('skcall'); if (!box){ box = document.createElement('div'); box.id = 'skcall'; document.body.appendChild(box); }
-  const el = document.createElement('div'); el.className = 'skc'; el.innerHTML = `${sk.icon ? `<img src="${sk.icon}" alt="">` : ''}<b>${name || sk.n}</b><small>${u.D.name}</small>`;
+  const el = document.createElement('div'); el.className = 'skc'; el.innerHTML = `${sk.icon ? `<img src="${artSrc(sk.icon)}" alt="">` : ''}<b>${name || sk.n}</b><small>${u.D.name}</small>`;
   box.appendChild(el); setTimeout(() => el.classList.add('out'), 1300); setTimeout(() => el.remove(), 1800);
 }
 function cutIn(src, big, small){
   let el = document.getElementById('cutin'); if (!el){ el = document.createElement('div'); el.id = 'cutin'; document.body.appendChild(el); }
-  el.innerHTML = `<img src="${src}" alt=""><div><b>${big}</b><span>${small || ''}</span></div>`; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  el.innerHTML = `<img src="${artSrc(src)}" alt=""><div><b>${big}</b><span>${small || ''}</span></div>`; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
 }
 
 /* ---------- 두뇌 ---------- */

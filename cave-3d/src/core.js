@@ -1,7 +1,7 @@
 /* 굴의 프롤로그 3D 시제품 · core.js v0.1
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.73';
+const VERSION = 'v0.74';
 const TICKS = [];   // v0.55 한 프레임마다 부르는 것들 (engage · sol · squad · drill이 넣음): f(dt)
 // v0.49 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작 (민수: 진행 중 저장은 되게, 단 업데이트되면 초기화)
 let SAVE_RESET = null;
@@ -83,10 +83,36 @@ const texCache = {};
 const texLoader = new THREE.TextureLoader();
 function loadTex(src){
   if (texCache[src]) return texCache[src];
-  const t = texLoader.load(src);
+  let t;
+  if (propAt(src)){ t = new THREE.Texture(); const fill = () => { const c = propCanvas(src); if (!c) return false; t.image = c; t.needsUpdate = true; return true; }; if (!fill()) propWait.push(fill); }
+  else t = texLoader.load(src);
   t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
   return (texCache[src] = t);
 }
+/* v0.74 소품 묶음 그림 (src/prop_atlas.js · tools/prop_atlas.py): 낱장 171장 → 3장. 게시 칸 아끼기
+   원래 경로 그대로 부르면 됨 — 그림판은 loadTex, 화면 그림 (<img> · CSS)은 artSrc 가 묶음에서 잘라 줌 */
+const propSheets = [], propCut = {}, propURL = {}, propWait = [];
+function propAt(src){ return typeof PROP_ART !== 'undefined' && PROP_ART.at[src]; }
+function propCanvas(src){
+  if (propCut[src]) return propCut[src];
+  const a = propAt(src), im = a && propSheets[a[0]];
+  if (!im || !im.naturalWidth) return null;
+  const c = document.createElement('canvas'); c.width = a[3]; c.height = a[4];
+  c.getContext('2d').drawImage(im, a[1], a[2], a[3], a[4], 0, 0, a[3], a[4]);
+  return (propCut[src] = c);
+}
+function artSrc(src){
+  if (!propAt(src)) return src;
+  if (propURL[src]) return propURL[src];
+  const c = propCanvas(src); return c ? (propURL[src] = c.toDataURL()) : src;
+}
+function propLoad(){   // 묶음 그림 불러오기 (preload 가 기다림). crossOrigin 은 three.js TextureLoader 와 같게 — 잘라 쓰는 canvas 가 막히지 않음
+  if (typeof PROP_ART === 'undefined') return Promise.resolve();
+  return Promise.all(PROP_ART.sheets.map((s, i) => new Promise(res => { const im = new Image(); im.crossOrigin = 'anonymous'; propSheets[i] = im; im.onload = () => (im.decode ? im.decode() : Promise.resolve()).catch(() => {}).then(res); im.onerror = () => res(); im.src = s; })))
+    .then(() => { for (const f of propWait.splice(0)) if (!f()) propWait.push(f); });
+}
+// 빠뜨린 <img> 가 있어도 낱장이 없으면 (게시본) 묶음에서 잘라 다시 넣음
+addEventListener('error', e => { const el = e.target; if (!el || el.tagName !== 'IMG') return; const s = el.getAttribute('src'); if (s && propAt(s)){ const u = artSrc(s); if (u !== s) el.src = u; } }, true);
 function canvasTex(w, h, draw){
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);

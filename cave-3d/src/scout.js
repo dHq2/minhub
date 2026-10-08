@@ -36,7 +36,7 @@ function scRow(u, o = {}){
   const D = u.D, hp = o.hp ?? u.hp, max = o.max ?? u.max, atk = o.atk ?? u.atk ?? D.atk, f = scFace(u);
   const p2 = u.p2 ? ' <em class="sc-tag">불경자</em>' : '', ls = u.ls ? ' <em class="sc-tag">근성</em>' : '', dn = u.downed ? ' <em class="sc-tag bad">쓰러짐</em>' : '';
   const tr = scTraits(o.D || D), sk = o.hero && typeof heroSkillsHtml === 'function' ? heroSkillsHtml({ id: o.hero }) : '';
-  return `<div class="sc-u">${f ? `<img src="${f}" alt="">` : '<i></i>'}<div class="sc-b">
+  return `<div class="sc-u">${f ? `<img src="${artSrc(f)}" alt="">` : '<i></i>'}<div class="sc-b">
     <b>${o.name || D.name}${p2}${ls}${dn}</b>
     <div class="sc-hp"><span style="width:${Math.max(0, Math.min(100, hp / max * 100))}%"></span><small>${Math.max(0, Math.round(hp))} / ${max}</small></div>
     <div class="sc-st">공격 <b>${Math.round(atk)}</b> · 속도 <b>${(o.spd ?? u.spd ?? D.spd ?? 0).toFixed ? (o.spd ?? u.spd ?? D.spd ?? 0).toFixed(1) : '-'}</b> · 무게 <b>${D.weight || 60}kg</b>${o.extra ? ' · ' + o.extra : ''}</div>

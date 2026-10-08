@@ -193,7 +193,7 @@ function crewRow(u){
   const curW = isP ? ((hero('inju').eq.weapon || {}).id || '') : S.kit.main || '';
   const pOpts = INJU_W.some(([v]) => v === curW) || !curW ? INJU_W : [[curW, `지금 무기 (${(ITEMS[curW] || {}).n || curW})`], ...INJU_W];
   const wsel = isP ? sel('pw', pOpts, curW) : sel('main', [['', '없음 (근접만)'], ...Object.entries(RW).map(([k, R]) => [k, `${R.n} (${FAM[R.fam]})`])], curW);
-  return `<div class="dp-u"><div class="dp-id"><img src="${face}" alt=""><div><b>${u.D.name}</b><small>${TAGS[S.tag].n} · 훈련 점수 <em>${S.pts}</em></small><small class="pas">${S.pas[0]} — ${S.pas[1]}</small></div></div>
+  return `<div class="dp-u"><div class="dp-id"><img src="${artSrc(face)}" alt=""><div><b>${u.D.name}</b><small>${TAGS[S.tag].n} · 훈련 점수 <em>${S.pts}</em></small><small class="pas">${S.pas[0]} — ${S.pas[1]}</small></div></div>
     <div class="dp-set"><label>보직 ${sel('role', Object.entries(ROLES), S.role)}</label><label>조 ${isP ? '<b>1조 조장</b>' : sel('sq', [[1, '1조'], [2, '2조'], [0, '단독']], S.sq)}</label>
       <label>무기 ${wsel}</label>${isP ? '' : `<label>사격 ${sel('fire', [['free', '아끼지 않음'], ['save', '아낌 (쏠 만한 놈만)']], S.fire || 'free')}</label>`}${isP ? '' : `<label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="shield" ${S.kit.shield ? 'checked' : ''}> 방패</label><label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="watch" ${S.watch ? 'checked' : ''}> 경계 (뒤를 봄)</label>`}</div>
     <div class="dp-apt">${FAMS.map(f => `<div><span>${FAM[f]}</span>${aptBar(u, f)}<b>${aptOf(u, f)}</b><button data-u="${u.uid}" data-tr="${f}" data-d="-1">−</button><button data-u="${u.uid}" data-tr="${f}" data-d="1" title="비용 ${aptOf(u, f) < 5 ? trainCost(u, f) : '-'}">+${aptOf(u, f) < 5 ? `<small>${trainCost(u, f)}</small>` : ''}</button></div>`).join('')}</div>
@@ -370,7 +370,7 @@ const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3
 const coloFaceCache = {};
 function coloFace(r){
   if (r.slug){ const F = typeof H2A !== 'undefined' && H2A.faces, i = F && F.i[r.slug]; if (i != null){ const s = 40 / F.cell; return `<i class="cf" style="background:url(${F.src}) ${-(i % F.cols) * 40}px ${-Math.floor(i / F.cols) * 40}px / ${F.cols * F.cell * s}px ${F.rows * F.cell * s}px"></i>`; } }
-  const k = r.ally || r.foe; if (HERO_FACE[k]) return `<i class="cf" style="background:url(${HERO_FACE[k]}) 50% 12% / cover"></i>`;
+  const k = r.ally || r.foe; if (HERO_FACE[k]) return `<i class="cf" style="background:url(${artSrc(HERO_FACE[k])}) 50% 12% / cover"></i>`;
   return `<canvas class="cf" width="40" height="40" data-face="${k}"></canvas>`;
 }
 function coloDrawFaces(root){
@@ -380,7 +380,7 @@ function coloDrawFaces(root){
       if (P.rect){ [fx, fy, fw, fh] = P.rect; if (P.cols){ fw /= P.cols; fh /= P.rows; } } else if (P.cols){ fw /= P.cols; fh /= P.rows; } else if (P.n){ fw /= P.n; }
       const sx = fw / (P.w || fw), side = Math.min(fw, fh * 0.5), ax = (P.ax != null ? P.ax * sx : fw / 2);
       g.clearRect(0, 0, 40, 40); g.drawImage(img, fx + Math.max(0, Math.min(fw - side, ax - side / 2)), fy + fh * 0.04, side, side, 0, 0, 40, 40); };
-    const im = coloFaceCache[P.src] || (coloFaceCache[P.src] = Object.assign(new Image(), { src: P.src }));
+    const im = coloFaceCache[P.src] || (coloFaceCache[P.src] = Object.assign(new Image(), { src: artSrc(P.src) }));
     if (im.complete && im.naturalWidth) draw(im); else im.addEventListener('load', () => draw(im), { once: true });
   }
 }

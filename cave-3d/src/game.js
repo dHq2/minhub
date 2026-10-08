@@ -1,4 +1,4 @@
-/* game.js v0.91 — (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.92 — (v0.92, v0.74: 소품 묶음 그림 — preload 가 propLoad 를 기다림) (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -91,9 +91,9 @@ function resize(){
   G.renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); G.renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 function preload(){
-  const srcs = new Set(); for (const S of Object.values(SPR)) for (const P of Object.values(S.poses)) if (P.src) srcs.add(P.src);
+  const srcs = new Set(); for (const S of Object.values(SPR)) for (const P of Object.values(S.poses)) if (P.src && !propAt(P.src)) srcs.add(P.src);   // 소품 묶음에 든 건 propLoad 가 맡음
   if (typeof ITEM_ART !== 'undefined') for (const s of ITEM_ART.held.sheets) srcs.add(s);
-  return Promise.all([...srcs].map(src => new Promise(res => { const t = texLoader.load(src, () => res(), undefined, () => res()); t.encoding = THREE.sRGBEncoding; texCache[src] = t; })));
+  return Promise.all([propLoad(), ...[...srcs].map(src => new Promise(res => { const t = texLoader.load(src, () => res(), undefined, () => res()); t.encoding = THREE.sRGBEncoding; texCache[src] = t; }))]);
 }
 
 /* ---------- 판 정리 · 불러오기 ---------- */
@@ -252,7 +252,7 @@ function textbox(who, lines, o = {}){
       if (G.t - shownAt < hold && i >= 0) return;
       i++; if (i >= lines.length){ box.hidden = true; box.classList.remove('hasface'); box.classList.remove('vn'); G.waitInput = null; clearTimeout(timer); res(); return; }
       box.classList.toggle('hasface', !!o.face); box.classList.toggle('vn', !!o.face && !!o.vn);
-      box.innerHTML = `${o.face ? `<img class="face" src="${o.face}" alt="">` : ''}${who ? `<b>${who}${o.tags ? ' ' + o.tags : ''}</b>` : ''}<p>${lines[i]}</p><span class="more"${hold > 0.6 ? ' hidden' : ''}>${i < lines.length - 1 ? '▼' : '■'}</span>`;
+      box.innerHTML = `${o.face ? `<img class="face" src="${artSrc(o.face)}" alt="">` : ''}${who ? `<b>${who}${o.tags ? ' ' + o.tags : ''}</b>` : ''}<p>${lines[i]}</p><span class="more"${hold > 0.6 ? ' hidden' : ''}>${i < lines.length - 1 ? '▼' : '■'}</span>`;
       box.querySelector('p').classList.add('in'); shownAt = G.t;
       if (hold > 0.6){ clearTimeout(timer); timer = setTimeout(() => { const m = box.querySelector('.more'); if (m) m.hidden = false; }, hold * 1000 / Math.max(0.2, G.slow)); }
     };
@@ -262,7 +262,7 @@ function textbox(who, lines, o = {}){
 // 로딩: 한 줄씩 떠오름. 다 뜨고 0.8초 뒤에야 "계속"이 나타나고, 그때 눌러야 넘어감. 그 전에 누르면 남은 줄만 다 보여줌
 function loadScreen(img, lines){
   return new Promise(res => {
-    const el = $('load'); el.hidden = false; el.style.backgroundImage = `linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.8)), url(${img})`;
+    const el = $('load'); el.hidden = false; el.style.backgroundImage = `linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.8)), url(${artSrc(img)})`;
     const box = el.querySelector('.lines'); box.innerHTML = ''; const go = el.querySelector('.go'); go.hidden = true;
     const t0 = performance.now(); let ready = false;
     lines.forEach((t, i) => { const d = document.createElement('p'); d.textContent = t; d.style.animationDelay = (0.4 + i * 1.3) + 's'; box.appendChild(d); });

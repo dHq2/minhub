@@ -564,7 +564,7 @@ function listRow(icon, name, tagText, tagCls, note = '', cls = ''){
   row.innerHTML = `<span class="ic">${icon}</span><span class="nm">${name}</span><span class="tag ${tagCls}">${tagText}</span><span class="nt">${note}</span>`;
   const rows = $p('fallres').querySelector('.rows'); rows.appendChild(row); rows.scrollTop = rows.scrollHeight; SFX.clink(0.18);   // 넘치면 새 줄이 보이게
 }
-function fallSlot(i, d){ const [tn, tc] = d.wood ? ['땔감', 'twood'] : DROP_TYPE[d.type]; listRow(`<img src="${PA + d.k}.webp" alt="">`, d.name, tn, tc, d.toilet ? '변소 자리에 설치' : d.type === 'live' ? '우리로' : d.wood ? `모닥불로 (장작 ${d.wood})` : d.type === 'junk' ? '구덩이로' : d.type === 'food' ? `식량 ${d.food}` : '창고로'); }
+function fallSlot(i, d){ const [tn, tc] = d.wood ? ['땔감', 'twood'] : DROP_TYPE[d.type]; listRow(`<img src="${artSrc(PA + d.k + '.webp')}" alt="">`, d.name, tn, tc, d.toilet ? '변소 자리에 설치' : d.type === 'live' ? '우리로' : d.wood ? `모닥불로 (장작 ${d.wood})` : d.type === 'junk' ? '구덩이로' : d.type === 'food' ? `식량 ${d.food}` : '창고로'); }
 // 받침 있으면 을, 없으면 를
 const eul = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c < 11172 && c % 28 ? '을' : '를'); };
 function landDrop(d, b, t, i){
@@ -1465,7 +1465,7 @@ function stopPlayer(h, sp, dt){
 const BAR_WHO = [['inju', '인주', 'assets/inju_face.png'], ['ch', '청광묵', PA + 'goblin_face.webp'], ['ka', '카리우스', PA + 'karius_face.webp'], ['reb', '레베카', PA + 'rebecca_face.webp']];
 function caveBarInit(){
   const el = $p('cavebar');
-  el.innerHTML = '<div class="talk"><em></em><span></span></div><div class="people">' + BAR_WHO.map(([k, n, src]) => `<div class="who" data-k="${k}"><img src="${src}" alt=""><div class="nm">${n}<small></small></div><div class="g hp"><b></b><i></i></div><div class="meal"></div></div>`).join('') + '</div><div class="st"></div>';
+  el.innerHTML = '<div class="talk"><em></em><span></span></div><div class="people">' + BAR_WHO.map(([k, n, src]) => `<div class="who" data-k="${k}"><img src="${artSrc(src)}" alt=""><div class="nm">${n}<small></small></div><div class="g hp"><b></b><i></i></div><div class="meal"></div></div>`).join('') + '</div><div class="st"></div>';
   PRO.bar = { el, talk: el.querySelector('.talk'), rows: Object.fromEntries(BAR_WHO.map(([k]) => { const r = el.querySelector(`[data-k="${k}"]`); return [k, { st: r.querySelector('small'), hp: r.querySelector('.hp b'), hpn: r.querySelector('.hp i'), meal: r.querySelector('.meal'), r }]; })), st: el.querySelector('.st'), talkT: 0, last: '', lastP: {} };
 }
 function barTalk(name, text, life){
@@ -1692,7 +1692,7 @@ function renderStore(){
   const box = $p('storeMenu').querySelector('.sm-body'), groups = new Map();
   PRO.store.forEach((d, i) => { const key = d.name; if (!groups.has(key)) groups.set(key, { d, idx: [], n: 0, food: 0 }); const g = groups.get(key); g.idx.push(i); g.n++; g.food += d.raw ? 0 : d.food || 0; });
   const fed = PRO.meal.inju.fed, E = PRO.equip;
-  const eqRow = (slot, t) => E[slot] ? `<div class="sm-eq"><span>${t}</span><img src="${PA + E[slot].k}.webp" alt=""><b>${E[slot].name}</b><small>${EQUIP[E[slot].k].note}</small><button data-a="unequip" data-s="${slot}">벗기</button></div>` : `<div class="sm-eq off"><span>${t}</span><b>없음</b></div>`;
+  const eqRow = (slot, t) => E[slot] ? `<div class="sm-eq"><span>${t}</span><img src="${artSrc(PA + E[slot].k + '.webp')}" alt=""><b>${E[slot].name}</b><small>${EQUIP[E[slot].k].note}</small><button data-a="unequip" data-s="${slot}">벗기</button></div>` : `<div class="sm-eq off"><span>${t}</span><b>없음</b></div>`;
   const hj = typeof hero === 'function' ? hero('inju') : null, wq = hj && hj.eq.weapon ? itemDef(hj.eq.weapon).n : '맨손';
   let h = `<div class="sm-equip"><div class="sm-eq"><span>장비</span><b>${wq}</b><small>I 키 — 가방 · 장비 창</small></div></div>`;
   if (!groups.size) h += '<div class="sm-empty">창고가 비어 있다.</div>';
@@ -1703,7 +1703,7 @@ function renderStore(){
     else if (HEAL[d.k]){ note = `체력 +${HEAL[d.k] * 100}%`; btn = [['inju', '인주'], ['ch', '청광묵'], ['ka', '카리우스']].concat(PRO.rebOut ? [['reb', '레베카']] : []).map(([k, n]) => `<button data-a="heal" data-w="${k}" data-i="${g.idx[0]}">${n}</button>`).join(''); }
     else if (EQUIP[d.k]){ note = EQUIP[d.k].note; btn = `<button data-a="equip" data-i="${g.idx[0]}">장착</button>`; }
     else if (d.type === 'furn' || d.k === 'd_H-402'){ note = FURN_NOTE[d.k] || '굴 꾸미기'; btn = `<button data-a="take" data-i="${g.idx[0]}">꺼내 놓기</button>`; }
-    h += `<div class="sm-row"><img src="${PA + d.k}.webp" alt=""><b>${name}${g.n > 1 ? ` ×${g.n}` : ''}</b><span class="tag ${tc}">${tn}</span><small>${note}</small><span class="sm-btns">${btn}</span></div>`;
+    h += `<div class="sm-row"><img src="${artSrc(PA + d.k + '.webp')}" alt=""><b>${name}${g.n > 1 ? ` ×${g.n}` : ''}</b><span class="tag ${tc}">${tn}</span><small>${note}</small><span class="sm-btns">${btn}</span></div>`;
   }
   box.innerHTML = h;
   $p('storeMenu').querySelector('.sm-head small').innerHTML = `인주 ${Math.round(G.player.hp)}/${G.player.max} · 청광묵 ${Math.round(PRO.hpf.ch * 100)}% · 카리우스 ${Math.round(PRO.hpf.ka * 100)}%${PRO.rebOut ? ` · 레베카 ${Math.round(PRO.hpf.reb * 100)}%` : ''} <button data-a="close" class="sm-close">닫기 ✕</button>`;
