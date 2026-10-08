@@ -131,7 +131,7 @@ const DRILL_SC = [
   { k: 'fast', n: '날랜 놈들', d: '검냥이 · 광냥. 조준을 보면 옆으로 피함 — 우리 편이 붙어 묶으면 못 피함 (묶고 쏘기)', go: () => drillSpawn(['catw', 'catw', 'gwangnyang', 'bogwang'], { title: '날랜 놈들', sub: '묶어 두고 쏴라' }) },
   { k: 'shield', n: '방패 벽', d: '검방패병 셋이 앞, 궁수 둘이 뒤. 정면 사격은 방패가 막음 — 옆으로 돌기 (척후 · 돌아 들어가)', go: () => { drillSpawn(['shieldman', 'shieldman', 'bkShield'], { title: '방패 벽', sub: '옆으로 돌아라' }); const c = drillAhead(15); drillSpawn(['archer', 'archer'], { at: c, title: '방패 벽', sub: '뒤에 궁수' }); } },
   { k: 'caster', n: '주술사', d: '멀리서 1.8초 동안 큰 원을 준비함. 원거리로 맞히면 끊김 — 사수의 일', go: () => drillSpawn(['drillCaster', 'drillCaster', 'swordsman', 'swordsman'], { dist: 13, title: '주술사', sub: '예고를 끊어라 (총 · 활 · 마법)' }) },
-  { k: 'armor', n: '갑옷 기사', d: '흑기사 셋. 칼 · 활은 갑옷에 튕기고, 총 (특히 소총)이 잘 뚫음', go: () => drillSpawn(['bk', 'bk', 'bkSpear'], { title: '갑옷 기사', sub: '소총이 잘 뚫는다' }) },
+  { k: 'armor', n: '갑옷 기사', d: '고딕 기사 둘 · 흑기사창병 하나. 칼 · 활은 갑옷에 튕기고, 총 (특히 소총)이 잘 뚫음', go: () => drillSpawn(['bk', 'bk', 'bkSpear'], { title: '갑옷 기사', sub: '소총이 잘 뚫는다' }) },
   { k: 'monster', n: '괴물', d: '푸른 뚱보 · 슬라임녀 · 눈깔괴물. 총이 거의 안 먹힘 — 마법 · 칼이 약점', go: () => drillSpawn(['bluefat', 'slimeGirl', 'eyemon'], { title: '괴물', sub: '총은 안 먹힌다 — 마법 · 칼' }) },
   { k: 'titan', n: '전략병기', d: '장군님 (5m). 정면 대결 금지 — 묶고 · 넘어뜨리고 · 벽에 박고 · 등 뒤로', go: () => drillSpawn(['janggun'], { at: { x: 65, z: 9 }, title: '전략병기', sub: '우리에서 나온다 — 묶고 돌아라' }) },
   { k: 'alley', n: '골목 매복', d: '골목 곳곳에 잠든 적 다섯. 총소리에 깨어남 — 활 · 칼로 조용히', go: () => { const P2 = [[58, 30], [66, 34], [60, 42], [70, 38], [73, 28]]; P2.forEach(([x, z], i) => drillSpawn([['swordsman', 'spearman', 'catw', 'swordsman', 'archer'][i]], { at: { x, z }, alert: false, title: '골목 매복', sub: '조용히 — 총은 깨운다' })); } },
