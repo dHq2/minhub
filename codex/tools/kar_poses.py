@@ -1,4 +1,4 @@
-# kar_poses.py v1.1 — (v1.1: 카리우스 옛 항목 (초상화 · 원화 · 도형)도 같은 묶음으로 — 초상화 모음에 카리우스가 둘 뜨던 것)
+# kar_poses.py v1.2 — (v1.2: 사망 그림 dead — 드라이브 카리우스 폴더 '카리우스 사망', 가짜 체크무늬 바탕을 걷어냄 (2026-10-08)) (v1.1: 카리우스 옛 항목 (초상화 · 원화 · 도형)도 같은 묶음으로 — 초상화 모음에 카리우스가 둘 뜨던 것)
 # v1.0 — 3D판 카리우스 새 그림 (cave-3d/art/kar, 민수 드라이브 '카리우스' 폴더)을 도감 카리우스 칸에 넣음
 #  · 동작 그림: art/kar/<키>.webp → codex/img/karius/<키>.webp (높이 300) · 항목 id O-kar-<키>, sub '카리우스 · 동료 · 동작 그림'
 #  · 스킬 그림 (액자): 개조된 신체 · 근성 · 잡아뚫기 · 불경자 → img/karius/icon_*.webp · 항목 SK-kar-<키> (cat card, sub '스킬 · 카리우스 고유')
@@ -20,6 +20,7 @@ POSES = [
     ('raise', '손 들어올리기', '노인의 팔이 부풂 (철퇴 예고 · 굴 파기)'), ('mace', '철퇴', '내려찍기 · 굴 파기'),
     ('footUp', '발 들기', '짓밟기 · 딥킥 예고'), ('kick', '뻥 (딥킥)', '딥킥 — 멀리 걷어참, 벽이면 짓뭉개짐'),
     ('tackle', '돌진 몸박', '불경자 돌진 예고'), ('rush', '돌진 몸박 2 (좌우 반전)', '불경자 돌진 — 밀려 날아간 놈은 벽에 짓뭉개짐'),
+    ('dead', '사망', '아직 게임에 안 씀 (쓰러질 때 후보) — 광대 · 노인 · 소녀 · 검은 머리 · 떨어진 안경'),
 ]
 ICONS = [('body', '개조된 신체', '고유 특성 — 모든 피해 60% 감소 · 상태 이상 절반'), ('grit', '근성', '체력 45% 아래 포효 — 6초 받는 피해 절반 · 회복 · 도발 (30초)'),
          ('pierce', '잡아뚫기', '광대의 팔로 붙잡아 끌어와 레프트로 꿰뚫음 (11초)'), ('heretic', '불경자', '체력 15% 아래 — 공격력 1.6배 · 철퇴 · 돌진 몸박')]
@@ -46,6 +47,7 @@ ent('P-karius-art2', cat='char', sub=SUB, cid='C-003', g='karius', name='카리�
 ent('P-karius-cut', cat='char', sub=SUB, cid='C-003', g='karius', name='불경자 카리우스 · 컷씬', src='img/karius/cut_heretic.webp', note='드라이브 · 불경자 카리우스 컷씬&잘라서스킬이미지.PNG', game='게임: 불경자로 바뀔 때 화면을 가로지르는 컷씬 띠')
 for k, name, use in POSES:
     ent('O-kar-' + k, cat='char', sub=SUB, cid='C-003', g='karius', name=f'카리우스 · {name}', src=f'img/karius/{k}.webp', note='3D판 동작 그림 (드라이브 카리우스 폴더 → cave-3d/tools/kar_art.py)', game=f'게임: {use}')
+    if k == 'dead': new[-1].update(on=False, note='드라이브 1기/카리우스 · 카리우스 사망 (2026-10-08, 가짜 체크무늬 바탕을 걷어냄) → cave-3d/art/kar/dead.webp')
 for k, name, d in ICONS:
     ent('SK-kar-' + k, cat='card', sub='스킬 · 카리우스 고유', name=name, src=f'img/karius/icon_{k}.webp', note='드라이브 카리우스 폴더 스킬 그림 (액자 안쪽을 자름)', game='게임: ' + d + ' · 상태 창 (C) · 기술 알림')
 at = max(i for i, e in enumerate(cat) if e.get('g') == 'karius') + 1

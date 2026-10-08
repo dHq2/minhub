@@ -1,4 +1,26 @@
 {
- "ids": {},
+ "ids": {
+  "O-karius-shape": {
+   "name": "카리우스 · 도형 그림",
+   "sub": "카리우스 · 동료 · 동작 그림",
+   "src": "img/old2d/shape_karius.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-ratKnight-face": {
+   "name": "쥐 기사 · 얼굴",
+   "sub": "쥐 기사 · 적 · 보스 · 원화 + 연출",
+   "src": "img/old2d/ratKnight_face.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-ratKnight-idle": {
+   "name": "쥐 기사 · 대기",
+   "sub": "쥐 기사 · 적 · 보스 · 원화 + 연출",
+   "src": "img/old2d/ratKnight_idle.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  }
+ },
  "cids": {}
 }
