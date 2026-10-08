@@ -20,7 +20,78 @@
    "src": "img/old2d/ratKnight_idle.webp",
    "memo": "삭제",
    "at": "2026-10-08"
+  },
+  "O-h2-tehera-idle": {
+   "name": "테헤라 · 기본",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__idle.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-walk2": {
+   "name": "테헤라 · 걷기 2",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__walk2.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "P-h2-tehera": {
+   "name": "테헤라 · 원화",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__portrait.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-front": {
+   "name": "테헤라 · 정면",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__front.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-walk": {
+   "name": "테헤라 · 걷기",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__walk.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-rise": {
+   "name": "테헤라 · 떠오르기",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__rise.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-crouch": {
+   "name": "테헤라 · 웅크림",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__crouch.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "O-h2-tehera-dash": {
+   "name": "테헤라 · 돌진",
+   "sub": "테헤라 · 동료 · 동작 그림",
+   "src": "img/h2/tehera__dash.webp",
+   "memo": "삭제",
+   "at": "2026-10-08"
   }
  },
- "cids": {}
+ "cids": {
+  "C-173": {
+   "name": "물레, 콜라이더",
+   "sub": "물레, 콜라이더 · 미등장 NPC (일반) · 원화 + 연출",
+   "n": 1,
+   "memo": "삭제",
+   "at": "2026-10-08"
+  },
+  "C-060": {
+   "name": "쥐 (작은",
+   "sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
+   "n": 4,
+   "memo": "삭제",
+   "at": "2026-10-08"
+  }
+ }
 }

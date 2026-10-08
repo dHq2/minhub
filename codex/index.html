@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v2.07 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.07: 인물 묶음의 공통 설정 칸을 그 자리에서 바로 적음 — 메모처럼 적는 동안 0.6초마다 저장소에 저장 (Claude · 다른 화면이 바로 봄), 다른 사람 수정이 와도 적던 글 · 커서 그대로. v2.06: 인물 묶음 머리 · 구분 · 등급 창에 ⬇ 다운로드 — 그 인물 그림 전부를 가장 고퀄 (원본 해상도 우선) PNG 로 한 zip 에 (info.txt 에 이름 · 구분 · 설정 · 그림 목록). v2.05: 파워밸런스 격자에서도 얼굴 밑 이름을 누르면 바로 고침 (얼굴을 누르면 전처럼 구분 · 등급 창, 끌면 옮기기). v2.04: 초상화 줄의 이름을 누르면 그 자리에서 고침 → 묶음 머리 · 그 인물 그림 이름 앞머리까지 같이 바뀜. v2.03: 인물 설정 · 이름 칸에서 ← → 를 누르면 다른 그림으로 넘어가던 것 고침 (글 쓰는 칸에서는 글자 사이만 움직임). v2.02: 인물 작업 — 초상화 줄 = 아래 인물 묶음 (같은 순서 · 같은 이름 · 같은 상태). 인물 이름 바꾸기 · 대표 초상화 고르기 · 인물째 삭제 표시 · 🗑 삭제 표시만 거르기. 쓰레기통은 Claude 가 다음 턴에 지움 (tools/trash_apply.py). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<!-- codex v2.08 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.08: 인물 묶음 머리의 이름을 누르면 그 자리에서 바로 고침 (이름 단추도 같은 칸). 초상화 줄 · 격자 · 묶음 머리 어디서 고쳐도 같은 본명 (marks[C-…].name). v2.07: 인물 묶음의 공통 설정 칸을 그 자리에서 바로 적음 — 메모처럼 적는 동안 0.6초마다 저장소에 저장 (Claude · 다른 화면이 바로 봄), 다른 사람 수정이 와도 적던 글 · 커서 그대로. v2.06: 인물 묶음 머리 · 구분 · 등급 창에 ⬇ 다운로드 — 그 인물 그림 전부를 가장 고퀄 (원본 해상도 우선) PNG 로 한 zip 에 (info.txt 에 이름 · 구분 · 설정 · 그림 목록). v2.05: 파워밸런스 격자에서도 얼굴 밑 이름을 누르면 바로 고침 (얼굴을 누르면 전처럼 구분 · 등급 창, 끌면 옮기기). v2.04: 초상화 줄의 이름을 누르면 그 자리에서 고침 → 묶음 머리 · 그 인물 그림 이름 앞머리까지 같이 바뀜. v2.03: 인물 설정 · 이름 칸에서 ← → 를 누르면 다른 그림으로 넘어가던 것 고침 (글 쓰는 칸에서는 글자 사이만 움직임). v2.02: 인물 작업 — 초상화 줄 = 아래 인물 묶음 (같은 순서 · 같은 이름 · 같은 상태). 인물 이름 바꾸기 · 대표 초상화 고르기 · 인물째 삭제 표시 · 🗑 삭제 표시만 거르기. 쓰레기통은 Claude 가 다음 턴에 지움 (tools/trash_apply.py). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -304,6 +304,7 @@ h3.gh.open{margin-top:18px}
 .pbtn.gone .pp{opacity:.35;outline:2px dashed var(--check);outline-offset:-2px}
 .pbtn.gone .pn{text-decoration:line-through;opacity:.6}
 .gh .pnm{font-size:1.05em;margin-right:6px}
+.gh .pnm[data-pnm]{cursor:text;border-bottom:1px dashed transparent} .gh .pnm[data-pnm]:hover{border-bottom-color:var(--accent)}   /* v2.08 눌러서 이름 바로 고치기 */
 .gh .was{opacity:.7;margin-right:6px}
 .gh .chip{display:inline-block;font:600 11px var(--body);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-right:6px;vertical-align:1px}
 .gh .pact{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap;margin-left:6px}
@@ -601,7 +602,7 @@ function faceBtn(x, withTier){
 function personTitle(cid, s, n){
   const parts = s.split(' · '), r = roleOfChar(s, { cid }), t = tierOf(cid), nm = pName(cid, s);
   const kind = parts.slice(-1)[0], dn = SUB_MS[s] ? SUB_MS[s].filter(e => isDel(e.id)).length : 0;
-  return `<b class="pnm">${esc(nm)}</b>${nm !== parts[0] ? `<small class="was">원래 ${esc(parts[0])}</small>` : ''}<span class="chip">${esc(r)}${t ? ' · ' + esc(tLabel(t, r)) : ''}</span><small>${esc(kind)} · ${n}${dn ? ` · 🗑${dn}` : ''}${isDel(cid) ? ' · 인물 삭제 표시' : ''}</small>`;
+  return `<b class="pnm" data-pnm="${esc(cid)}" title="눌러서 이름 바로 고치기 (Enter 저장 · Esc 취소 · 비우면 원래 이름)">${esc(nm)}</b>${nm !== parts[0] ? `<small class="was">원래 ${esc(parts[0])}</small>` : ''}<span class="chip">${esc(r)}${t ? ' · ' + esc(tLabel(t, r)) : ''}</span><small>${esc(kind)} · ${n}${dn ? ` · 🗑${dn}` : ''}${isDel(cid) ? ' · 인물 삭제 표시' : ''}</small>`;
 }
 /* 평소: 구분별 한 줄씩 (누르면 그 인물 묶음으로 내려감) */
 function peopleNav(subs){
@@ -1058,6 +1059,7 @@ $('main').addEventListener('keydown', e => { const t = e.target; if (!t.matches 
 $('main').addEventListener('mousedown', e => { const c = e.target.closest('.cspec'); if (c && !e.target.closest('textarea, [data-cst]')){ e.preventDefault(); c.querySelector('textarea').focus(); } });   // 칸 빈 곳을 눌러도 적기 시작
 $('main').addEventListener('click', e => {
   const cd = e.target.closest('[data-cst]'); if (cd){ e.stopPropagation(); e.preventDefault(); const id = cd.dataset.cst, y0 = scrollY; put(id, { status: charSt(id) === 'in' ? 'out' : 'in' }, true); render(); scrollTo(0, y0); return; }   // v1.93 인물 등장 동그라미
+  const pm = e.target.closest('[data-pnm]'); if (pm){ e.stopPropagation(); e.preventDefault(); editNameAt(pm.dataset.pnm, pm); return; }   // v2.08 묶음 머리 이름 바로 고치기 (접히지 않게 먼저)
   const so2 = e.target.closest('[data-csort]'); if (so2){ e.stopPropagation(); setCharSort(!charSort); return; }
   if (e.target.closest('[data-sortname]')){ e.stopPropagation(); sortByName(); return; }
   const pg = charSort && e.target.closest('.pbtn .pn'); if (pg){ e.stopPropagation(); e.preventDefault(); editPersonName(pg.closest('.pbtn')); return; }   // v2.05 격자에서도 이름 바로 고치기
@@ -1071,7 +1073,7 @@ $('main').addEventListener('click', e => {
     jb.classList.remove('armed'); pushNav('jump'); const h = $(jb.dataset.jump); if (h && h.dataset.g && !isOpenG(h.dataset.g)){ setOpenG(h.dataset.g, true); render(); } jumpTo(jb.dataset.jump); return; }
   if (e.target.closest('[data-tonav]')){ e.stopPropagation(); pushNav('jump'); jumpTo('pnav'); return; }
   const pr = e.target.closest('[data-prole]'); if (pr){ e.stopPropagation(); pickRole(pr.dataset.prole, pr.dataset.nm); return; }
-  const pn = e.target.closest('[data-pname]'); if (pn){ e.stopPropagation(); renamePerson(pn.dataset.pname, pn.dataset.s); return; }
+  const pn = e.target.closest('[data-pname]'); if (pn){ e.stopPropagation(); const el = pn.closest('h3') && pn.closest('h3').querySelector('[data-pnm]'); if (el) editNameAt(pn.dataset.pname, el); else renamePerson(pn.dataset.pname, pn.dataset.s); return; }
   const pe = !charSort && e.target.closest('.pbtn .pn'); if (pe){ e.stopPropagation(); e.preventDefault(); editPersonName(pe.closest('.pbtn')); return; }
   const pz = e.target.closest('[data-pzip]'); if (pz){ e.stopPropagation(); zipPerson(pz.dataset.pzip); return; }
   const pd = e.target.closest('[data-pdel]'); if (pd){ e.stopPropagation(); const y0 = scrollY; pushUndo([{ id: pd.dataset.pdel, prev: snapOf(pd.dataset.pdel) }]); toggleDel(pd.dataset.pdel); render(); scrollTo(0, y0); return; }
@@ -1118,9 +1120,10 @@ $('sheet').addEventListener('click', e => {
   if (e.target.closest('[data-close]')) closeSheet();
 });
 /* v2.04 초상화 줄에서 이름을 누르면 그 자리에서 바로 고침 (엔터 · 밖을 누르면 저장, Esc 취소). 비우면 원래 이름 */
-function editPersonName(b){
-  const cid = b && b.dataset.cid; if (!cid) return;
-  const s = (CATALOG.find(x => x.cid === cid) || {}).sub || '', orig = s.split(' · ')[0], pn = b.querySelector('.pn'), r = pn.getBoundingClientRect();
+function editPersonName(b){ const cid = b && b.dataset.cid; if (cid) editNameAt(cid, b.querySelector('.pn')); }
+// v2.08 묶음 머리 이름 · 이름 단추에서도 같은 칸 (본명 = marks[cid].name)
+function editNameAt(cid, pn){
+  const s = (CATALOG.find(x => x.cid === cid) || {}).sub || '', orig = s.split(' · ')[0], r = pn.getBoundingClientRect();
   const old = document.getElementById('pnEdit'); if (old) old.remove();
   const inp = document.createElement('input'); inp.id = 'pnEdit'; inp.type = 'text'; inp.value = pName(cid, s); inp.placeholder = orig; inp.autocomplete = 'off';
   const w = Math.max(120, r.width + 40);

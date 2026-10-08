@@ -32466,96 +32466,6 @@ const CATALOG = [
 "game": "게임 (훈련장 P → 2기): 기술 요정의 축복 · 날개 방패 · 은빛 비행 · 나른한 꿈 · 패시브 요정 날개 — 회피 +10%"
 },
 {
-"id": "P-h2-tehera",
-"rank": "",
-"on": false,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 원화",
-"src": "img/h2/tehera__portrait.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md"
-},
-{
-"id": "O-h2-tehera-idle",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 기본",
-"src": "img/h2/tehera__idle.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 서 있을 때 · 숨쉬기"
-},
-{
-"id": "O-h2-tehera-walk",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 걷기",
-"src": "img/h2/tehera__walk.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 걸을 때"
-},
-{
-"id": "O-h2-tehera-rise",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 떠오르기",
-"src": "img/h2/tehera__rise.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 아직 안 씀 (예비 동작)"
-},
-{
-"id": "O-h2-tehera-crouch",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 웅크림",
-"src": "img/h2/tehera__crouch.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 숙이기 (G) · 은신"
-},
-{
-"id": "O-h2-tehera-walk2",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 걷기 2",
-"src": "img/h2/tehera__walk2.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 아직 안 씀 (예비 동작)"
-},
-{
-"id": "O-h2-tehera-dash",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 돌진",
-"src": "img/h2/tehera__dash.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 기술 은빛 비행"
-},
-{
 "id": "O-h2-tehera-sit",
 "rank": "",
 "on": true,
@@ -32567,19 +32477,6 @@ const CATALOG = [
 "src": "img/h2/tehera__sit.webp",
 "note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
 "game": "게임: 기술 나른한 꿈"
-},
-{
-"id": "O-h2-tehera-front",
-"rank": "",
-"on": true,
-"cat": "char",
-"sub": "테헤라 · 동료 · 동작 그림",
-"cid": "C-016",
-"g": "tehera",
-"name": "테헤라 · 정면",
-"src": "img/h2/tehera__front.webp",
-"note": "3기-2 (드라이브, 2026-10-06) · 1기 동료 (등급 글자 없음 — 파일 이름 '테헤라1~3', 도감: 우주의 테헤라 · 동료 영입 가능) · 동료 (도감 인카운터 '우주의 테헤라 (동료 영입 가능)' — 영입형 요정. 싸우는 그림이 없어 지원형) · 보직 지원 · 키 1.7m · 분석: cave-3d/art/h2/notes/tehera.md",
-"game": "게임: 아직 안 씀 (예비 동작)"
 },
 {
 "id": "O-h2-tehera-land",
@@ -35651,54 +35548,6 @@ const CATALOG = [
 "src": "img/h2/ratvet__broll_land.webp",
 "note": "3기-2 (드라이브, 2026-10-06) · 베테랑 (쥐 기사 승급형) · 동료 (포렌의 쥐 군대 — 포렌이 부름, 베테랑은 로비에서 포렌을 졸졸 따라다님) · 보직 선봉 · 키 1.25m · 분석: cave-3d/art/h2/notes/ratvet.md",
 "game": "게임: 아직 안 씀 (예비 동작)"
-},
-{
-"id": "F-auto-rats",
-"cat": "char",
-"sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
-"cid": "C-060",
-"name": "쥐 (작은 · 보통 · 큰) 기본 초상화",
-"src": "img/face/auto_rats.webp",
-"note": "초상화가 없어서 스프라이트에서 정사각형으로 자름 (자동)",
-"rank": "",
-"on": false,
-"g": "rats"
-},
-{
-"id": "O-ratS-shape",
-"cat": "char",
-"sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
-"cid": "C-060",
-"name": "작은 쥐 · 도형 그림",
-"src": "img/old2d/shape_ratS.webp",
-"note": "충성 · 포렌이 부른 작은 쥐",
-"rank": "",
-"on": false,
-"g": "rats"
-},
-{
-"id": "O-ratM-shape",
-"cat": "char",
-"sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
-"cid": "C-060",
-"name": "쥐 · 도형 그림",
-"src": "img/old2d/shape_ratM.webp",
-"note": "충성 · 포렌이 부른 쥐",
-"rank": "",
-"on": false,
-"g": "rats"
-},
-{
-"id": "O-ratL-shape",
-"cat": "char",
-"sub": "쥐 (작은 · 보통 · 큰) · 적 · 보스 · 원화 + 연출",
-"cid": "C-060",
-"name": "큰 쥐 · 도형 그림",
-"src": "img/old2d/shape_ratL.webp",
-"note": "충성 · 사람만 한 쥐",
-"rank": "",
-"on": false,
-"g": "rats"
 },
 {
 "id": "F-slime",
@@ -44458,18 +44307,6 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "N-022"
-},
-{
-"id": "N-023",
-"cat": "char",
-"sub": "물레, 콜라이더 · 미등장 NPC (일반) · 원화 + 연출",
-"cid": "C-173",
-"name": "물레, 콜라이더",
-"src": "img/npc/N-023.webp",
-"note": "할 일: 인카운터 그림으로 옮기기 · 드라이브 NPC 폴더 · 물레, 콜라이더.png · 한 장에 둘 이상. 사진 같은 그림이라 배경을 못 지움, 그대로 둠 · 물레 (파랑) · 콜라이더 (검정 · 회색)로 따로 분리해 둠 (N-023a · N-023b)",
-"rank": "",
-"on": false,
-"g": "N-023"
 },
 {
 "id": "F-N-023a",
