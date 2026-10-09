@@ -1,4 +1,5 @@
-/* motion.js v1.2 — (v1.2, v0.78: 앉은 그림이 여러 장인 동료 (테헤라 — 바위에 앉아 쉼) 는 둘레에 적 없이 8초 가만히 있으면 앉음 · 따라가기 중 think 의 기본 자세 (서 있음 · 걷기) 가 이 파일이 고른 자세 (달리기 · 뒷걸음 · 쉼) 를 매 장 덮어 첫 장에 멈추던 것 고침) (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
+/* motion.js v1.3 — (v1.3, v0.80 동작 점검 (녹화 32판 · 넘김판으로 직접 봄): ① 모든 인물 (영웅 · 적 · 2 · 3기) 걷기 · 달리기 그림이 따로 있으면 움직일 때 그 그림 — 전엔 서 있는 그림으로 미끄러짐 ② 출발 · 멈춤 · 달리기 · 뒷모습에 여유 (0.08 ~ 0.2초) — 걷기 ↔ 서 있음이 한두 장씩 깜빡이던 것 ③ 상대를 보며 물러서면 걷기 장을 거꾸로 (뒷걸음) ④ 맞으면 움찔 — 맞음 그림이 있으면 잠깐 그 그림 (2가지면 번갈아), 없으면 몸을 뒤로 젖힘 ⑤ 걷기 그림인데 0.3초 넘게 제자리면 서 있음 (싸움이 끝나면 제자리 걷기하던 것) ⑥ 걷기 그림 없는 영웅 · 적도 걸을 때 출렁 ⑦ 장판을 피할 때 적을 본 채 깡충 물러섬 ⑧ 싸움 없이 오래 서 있으면 가끔 다른 대기 그림 (idle2 · 담배 · 도발 …) ⑨ 예고 · 공격 그림이 없는 영웅 · 적도 움츠렸다 쭉 뻗음 (2 · 3기와 같게) ⑩ 넘어지거나 휘청이면 하던 기술 그림 대신 누운 · 맞음 그림 ⑪ 공격 그림이 여럿이면 (공격B · 공격2 · 공격3) 기본 공격 때 번갈아)
+   v1.2 — (v1.2, v0.78: 앉은 그림이 여러 장인 동료 (테헤라 — 바위에 앉아 쉼) 는 둘레에 적 없이 8초 가만히 있으면 앉음 · 따라가기 중 think 의 기본 자세 (서 있음 · 걷기) 가 이 파일이 고른 자세 (달리기 · 뒷걸음 · 쉼) 를 매 장 덮어 첫 장에 멈추던 것 고침) (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
    v1.0 — 1차 업뎃 (2026-10-09): 잡몹 10명 동작 그림 (드라이브 '10.08 1차업뎃 / 1차적 10인')
    검사 · 검방패병 · 붉은 망토 궁수 · 창병 · 광신도 · 꼬마악마 · 흑기사 방패병 · 흑기사 창병 · 광냥 · 푸른 뚱보
    ■ 그림: src/mob10_sheets.js (M10, tools/mob10_art.py 가 만듦) → SPR[키] 를 통째로 바꿈 (키 · 크기 (tall) 는 그대로)
@@ -55,13 +56,21 @@ function movMap(u, p){
     if ((u.stT || 0) >= 0.6 && Q.stun) return 'stun';
     u._hk = !u._hk; return u._hk && Q.hurt2 ? 'hurt2' : 'hurt';
   }
-  if (p === 'attack' && Q.attackB){ if (M10_ATK.has(u.pose) && u.poseT < 0.25) return u.pose; u._ak = (u._ak || 0) + 1; return u._ak % 2 ? 'attack' : 'attackB'; }
+  if (p === 'attack') return atkAlt(u);   // v1.3 공격 그림이 여럿이면 번갈아 (attackB · attack2 · attack3)
   return p;
+}
+// v1.3 기본 공격 그림 돌려 쓰기: 공격 · 공격B · 공격2 · 공격3 중 따로 있는 것 (같은 순간 여러 번 불려도 0.25초는 그대로)
+const ATK_ALT = ['attack', 'attackB', 'attack2', 'attack3'];
+function atkAlt(u){
+  const Q = u.S.poses, L = ATK_ALT.filter((k, i) => Q[k] && (i === 0 || !sameImg(Q[k], Q.attack)));
+  if (L.length < 2) return 'attack';
+  if (L.includes(u.pose) && u.poseT < 0.25) return u.pose;
+  u._ak = (u._ak || 0) + 1; return L[u._ak % L.length];
 }
 const _setPoseM10 = setPose;
 setPose = function(u, p){
-  if (u && u.S && !u.lock && u.st === 'idle' && u._mw && u.pose === u._mw && (p === 'idle' || (p === 'walk' && (u.S.m10 || u.S.mov)))) return;   // v1.2 이 파일이 고른 자세를 기본 자세가 덮지 않게 (같은 장에 다시 고름)
-  return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p) : p);
+  if (u && u.S && !u.lock && u.st === 'idle' && u._mw && u.pose === u._mw && (p === 'idle' || p === 'walk' || p === 'run')) return;   // v1.2 이 파일이 고른 자세를 기본 자세 (생각이 매 장 부르는 서 있음 · 걷기 · 달리기) 가 덮지 않게 (같은 장에 다시 고름)
+  return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p === 'attack' && u.D && u.D.h2 ? atkAlt(u) : p) : p);
 };
 
 /* ---------- 고유 기술: 특수 준비 → 특수 공격 ---------- */
@@ -84,6 +93,12 @@ hurt = function(att, tgt, base, o = {}){
   }
   const r = _hurtM10(att, tgt, base, o);
   if (blk && r > 0 && !tgt.dead && tgt.st === 'idle') tgt._guardT = G.t + 0.45;
+  // v1.3 움찔: 서 있거나 걷다 맞으면 (치는 중 · 휘청 중은 아님) 몸을 뒤로 젖히고, 맞음 그림이 있으면 잠깐 그 그림
+  if (r > 0 && tgt && !tgt.dead && !tgt.downed && !tgt.lying && !tgt.lock && tgt.kind !== 'player' && !tgt.D.boss && !o.dot && tgt.st === 'idle' && !(tgt._guardT > G.t)){
+    tgt._flS = G.t;
+    const Q = tgt.S.poses;
+    if (Q.hurt && !sameImg(Q.hurt, Q.idle) && !Q.hurt.flat && (!tgt._mvOn || (o.kb || 0) >= 1.2 || o.crit)) tgt._flT = G.t + (o.crit || r >= 30 ? 0.34 : 0.24);
+  }
   return r;
 };
 /* ---------- 죽음: 누운 그림 둘 중 하나 ---------- */
@@ -105,6 +120,7 @@ function m10Want(u, dt){
     return M10_HURT.has(u.pose) ? null : m10Map(u, 'hurt');
   }
   u._wasLying = false; u._wake = false;
+  if (st === 'idle' && G.t < (u._flT || 0)) return M10_HURT.has(u.pose) ? null : flinchPose(u);   // v1.3 움찔
   if (st === 'leap' || u.airborne || (u.jy || 0) > 0.25) return Q.jump ? 'jump' : 'run';
   if (st === 'guardStance') return 'guard';
   if (st === 'charge') return 'run';
@@ -115,9 +131,10 @@ function m10Want(u, dt){
   if (u.camp && !u.alert) return u.camp.pose;
   if (u.posture === 'crouch' && u.side === 'enemy' && !u.moving || u.lurk && !u.alert) return 'crouch';
   if (G.t < (u._guardT || 0)) return 'guard';
-  if (u.moving && (u._msp || 0) > 0.25){
-    const fast = (u.alert || u.side === 'ally') && u._msp > u.spd * 0.85;
-    u._rate = Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));   // 빠르기에 맞춰 재생 속도
+  if (u._dodgeT > G.t) return u.alert || u.side === 'ally' ? 'ready' : 'idle';   // v1.3 깡충 물러섬
+  if (u._mvOn){
+    const bp = backpedal(u), fast = runOn(u, dt, !bp && (u.alert || u.side === 'ally'));
+    u._rate = (bp ? -1 : 1) * Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));   // 빠르기에 맞춰 재생 속도 · 뒷걸음은 거꾸로
     return fast && Q.run ? 'run' : 'walk';
   }
   if (u.side === 'enemy') return u.alert ? 'ready' : 'idle';
@@ -125,63 +142,169 @@ function m10Want(u, dt){
   return u._rdy ? 'ready' : 'idle';
 }
 // 2 · 3기: 이 파일이 다루는 자세일 때만 (사격 · 막기 · 기술 그림은 건드리지 않음)
-const MOV_OWN = new Set(['idle', 'ready', 'walk', 'walkB', 'run', 'hurt', 'hurt2', 'stun', 'kneel', 'down', 'sit']);
-const _camF = new THREE.Vector3();
+const KEEP_LY = new Set(['curl', 'groundGuard', 'clinch', 'sleep']);   // v1.3 넘어짐 · 휘청 중에도 그대로 두는 그림 (레슬링 · 웅크림 · 잠)
+const MOV_OWN = new Set(['idle', 'ready', 'walk', 'walkB', 'run', 'hurt', 'hurt2', 'stun', 'kneel', 'down', 'sit', 'idle2', 'idle3', 'smoke', 'taunt', 'stance', 'talk', 'salute']);
+const _camF = new THREE.Vector3(), _camR = new THREE.Vector3();
+// v1.3 같은 그림인지 (2 · 3기는 없는 동작을 서 있는 그림으로 채워 둠)
+const sameImg = (a, b) => a === b || !!(a && b && a.src === b.src && String(a.rect) === String(b.rect) && (a.n || 0) === (b.n || 0) && (a.from || 0) === (b.from || 0));
+const ownImg = (Q, k) => Q[k] && !sameImg(Q[k], Q.idle);
+// v1.3 움직임 판정 — 출발은 0.08초, 멈춤은 0.16초 이어져야 바뀜 (걷기 ↔ 서 있음 한두 장 깜빡임 막기)
+function mvOn(u, dt){
+  const on = !!u._mvOn, want = !!u.moving && (u._msp || 0) > (on ? 0.18 : 0.45);
+  if (want === on) u._mvT = 0;
+  else if ((u._mvT = (u._mvT || 0) + dt) >= (want ? 0.08 : 0.16)){ u._mvOn = want; u._mvT = 0; }
+  return !!u._mvOn;
+}
+// 달리기: 제 속도의 88% 넘으면 · 70% 아래로 떨어지면 (0.15초 이어져야)
+function runOn(u, dt, can){
+  const on = !!u._runOn, want = !!can && (u._msp || 0) > u.spd * (on ? 0.7 : 0.88);
+  if (want === on) u._rnT = 0;
+  else if ((u._rnT = (u._rnT || 0) + dt) >= 0.15){ u._runOn = want; u._rnT = 0; }
+  return !!u._runOn;
+}
+// 뒷모습 걷기 (카메라에서 멀어짐): 들어갈 땐 0.45 · 나올 땐 0.2 (0.2초 이어져야)
+function backOn(u, dt){
+  let want = false;
+  if (u._mv){ camera.getWorldDirection(_camF); const l = Math.hypot(_camF.x, _camF.z) || 1; want = (u._mv.x * _camF.x + u._mv.z * _camF.z) / l > (u._bkOn ? 0.2 : 0.45); }
+  if (want === !!u._bkOn) u._bkT = 0;
+  else if ((u._bkT = (u._bkT || 0) + dt) >= 0.2){ u._bkOn = want; u._bkT = 0; }
+  return !!u._bkOn;
+}
+// 뒷걸음: 화면에서 보는 쪽과 반대로 움직임 (상대를 보며 물러섬) → 걷기 장을 거꾸로
+function backpedal(u){
+  if (!u._mv) return false;
+  _camR.set(1, 0, 0).applyQuaternion(camera.quaternion);
+  const sx = u._mv.x * _camR.x + u._mv.z * _camR.z;
+  return u._bp = Math.abs(sx) > 0.35 && Math.sign(sx) !== (u.fS ?? u.face);
+}
+// 싸움 중인지 (적은 들킴 · 동료는 9칸 안에 적)
+function warOf(u, dt){
+  if (u.side === 'enemy') return !!u.alert;
+  if ((u._rdT = (u._rdT || 0) - dt) <= 0){ u._rdT = 0.5; u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9); }
+  return !!u._rdy;
+}
+// v1.3 싸움 없이 오래 서 있으면 가끔 다른 대기 그림 (6 ~ 12초마다, 1.6 ~ 2.8초 · 여러 장이면 두 번 돎)
+const FIDGET = ['idle2', 'idle3', 'smoke', 'taunt', 'talk', 'stance', 'salute'];
+function fidget(u){
+  const Q = u.S.poses;
+  if (u._fid){ if (G.t < u._fid.until && Q[u._fid.p]) return u._fid.p; u._fid = null; u._fidAt = G.t + rnd(6, 12); return 'idle'; }
+  if (u._fidAt == null) u._fidAt = G.t + rnd(3, 9);
+  if (G.t < u._fidAt) return null;
+  const L = FIDGET.filter(k => ownImg(Q, k));
+  if (!L.length){ u._fidAt = G.t + 60; return null; }
+  const k = L[Math.floor(Math.random() * L.length)], P = Q[k], len = P.n ? (P.count || P.n) / (P.fps || 8) * (P.once ? 1 : 2) : rnd(1.6, 2.8);
+  u._fid = { p: k, until: G.t + Math.max(1.2, len) }; return k;
+}
+// 움찔 그림: 맞음 2가지면 번갈아
+const flinchPose = u => (u._hk = !u._hk) && ownImg(u.S.poses, 'hurt2') ? 'hurt2' : 'hurt';
 function movWant(u, dt){
   const Q = u.S.poses, st = u.st;
   u._rate = 1;
-  if (u.lying && Q.down && Q.down.flat){ u._wasLying = true; return MOV_OWN.has(u.pose) || M10_HURT.has(u.pose) ? 'down' : null; }
+  if (u.lying && Q.down && Q.down.flat){ u._wasLying = true; return KEEP_LY.has(u.pose) || u.pose === 'down' ? null : 'down'; }   // v1.3 치던 그림 그대로 눕지 않게
   if (st === 'hurt' || st === 'stun' || st === 'held'){
-    if (!MOV_OWN.has(u.pose)) return null;
+    if (st === 'held' ? !MOV_OWN.has(u.pose) : KEEP_LY.has(u.pose)) return null;   // v1.3 맞아 끊기면 하던 기술 그림 대신 맞음 (잡기가 정한 그림은 그대로)
     if (u._wasLying && Q.kneel) return 'kneel';
     if (st === 'stun' && Q.stun) return 'stun';
     return M10_HURT.has(u.pose) ? null : movMap(u, 'hurt');
   }
   u._wasLying = false;
-  if (st !== 'idle' || !MOV_OWN.has(u.pose)){ u._stillT = 0; return null; }
-  if (u.moving && (u._msp || 0) > 0.25){
-    u._stillT = 0;
-    const fast = (u.alert || u.side === 'ally') && u._msp > u.spd * 0.85;
-    u._rate = Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));
-    if (Q.walkB && u._mv){ camera.getWorldDirection(_camF); const l = Math.hypot(_camF.x, _camF.z) || 1; if ((u._mv.x * _camF.x + u._mv.z * _camF.z) / l > 0.45) return 'walkB'; }   // 카메라에서 멀어짐 = 뒷모습
+  if (st !== 'idle' || !MOV_OWN.has(u.pose)){ u._stillT = 0; u._fid = null; return null; }
+  if (G.t < (u._flT || 0)) return M10_HURT.has(u.pose) ? null : flinchPose(u);   // v1.3 움찔
+  const war = warOf(u, dt);
+  if (u._dodgeT > G.t) return war && Q.ready ? 'ready' : 'idle';   // v1.3 깡충 물러섬 (적을 본 채)
+  if (u._mvOn){
+    u._stillT = 0; u._fid = null;
+    const bp = backpedal(u), fast = runOn(u, dt, !bp && (u.alert || u.side === 'ally'));
+    u._rate = (bp ? -1 : 1) * Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));
+    if (Q.walkB && !bp && backOn(u, dt)) return 'walkB';   // 카메라에서 멀어짐 = 뒷모습
     return fast && Q.run ? 'run' : 'walk';
   }
-  const war = u.side === 'enemy' ? u.alert : ((u._rdT = (u._rdT || 0) - dt) <= 0 ? (u._rdT = 0.5, u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9)) : u._rdy);
-  if (war) u._stillT = 0;
-  else if (u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 오래 가만히 → 앉아 쉼
-  return war && Q.ready ? 'ready' : 'idle';
+  if (war){ u._stillT = 0; u._fid = null; return Q.ready ? 'ready' : 'idle'; }
+  if (u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 오래 가만히 → 앉아 쉼
+  return fidget(u) || 'idle';
 }
-// v1.2 움직임 그림은 없고 앉은 그림만 여러 장인 동료 (테헤라): 오래 가만히 → 앉음, 움직이거나 적이 오면 일어남
-function sitWant(u, dt){
-  if (u.st !== 'idle' || u.moving){ u._stillT = 0; return u.moving && u.st === 'idle' && u.pose === 'sit' ? (u.S.poses.walk ? 'walk' : 'idle') : null; }   // 앉은 채 미끄러지지 않게
-  if ((u._rdT = (u._rdT || 0) - dt) <= 0){ u._rdT = 0.5; u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9); }
-  if (u._rdy){ u._stillT = 0; return u.pose === 'sit' ? 'idle' : null; }
-  u._stillT = (u._stillT || 0) + dt;
-  return u._stillT > 8 ? 'sit' : null;
+// v1.3 그 밖 인물 (영웅 · 적 · 새 동작 프레임 없는 2 · 3기): 걷기 · 달리기 그림이 따로 있으면 움직일 때 그 그림 · 싸움 중엔 공격 대기 그림 (있으면) · 앉은 그림이 여러 장인 동료 (테헤라) 는 오래 가만히 있으면 앉음
+const LOCO_OWN = new Set(['idle', 'ready', 'walk', 'run', 'hurt', 'hurt2', 'stun', 'down', 'sit', 'idle2', 'idle3', 'smoke', 'taunt', 'stance', 'talk', 'salute']);
+const locoOK = u => (u.side === 'ally' || u.side === 'enemy') && u.kind !== 'player' && !(u.D.boss && !u.D.h2) && !u.D.dummy && !(typeof kariusThink === 'function' && u.D.think === kariusThink);
+function locoWant(u, dt){
+  const Q = u.S.poses;
+  u._rate = 1;
+  // 넘어짐 · 휘청: 하던 기술 그림 대신 누운 그림 (없으면 맞음 그림을 눕힘) · 맞음
+  if (u.lying && (u.tripT || u.st === 'hurt')){ u._stillT = 0; if (KEEP_LY.has(u.pose)) return null;   // 쉬려고 누운 것 (레베카 굴) 은 그대로
+    const p = Q.down && Q.down.flat ? 'down' : Q.hurt ? 'hurt' : 'idle'; return u.pose === p ? null : p; }
+  if (u.st === 'hurt' || u.st === 'stun'){ u._stillT = 0; return KEEP_LY.has(u.pose) || M10_HURT.has(u.pose) ? null : u.st === 'stun' && Q.stun ? 'stun' : Q.hurt ? 'hurt' : 'idle'; }
+  if (u.st !== 'idle' || !LOCO_OWN.has(u.pose)){ u._stillT = 0; u._fid = null; return null; }
+  if (G.t < (u._flT || 0) && Q.hurt) return u.pose === 'hurt' || u.pose === 'hurt2' ? null : flinchPose(u);   // 움찔
+  const war = warOf(u, dt), rdy = war && ownImg(Q, 'ready') ? 'ready' : 'idle';
+  if (u._dodgeT > G.t) return rdy;
+  if (u._mvOn){
+    u._stillT = 0; u._fid = null;
+    const bp = backpedal(u), fast = runOn(u, dt, !bp && (u.alert || u.side === 'ally'));
+    u._rate = (bp ? -1 : 1) * Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));
+    if (fast && ownImg(Q, 'run')) return 'run';
+    if (ownImg(Q, 'walk')) return 'walk';
+    return rdy;   // 걷기 그림이 없으면 서 있는 그림 + 출렁임 (h2.js · 아래 그리기)
+  }
+  if (war){ u._stillT = 0; u._fid = null; return rdy; }
+  if (u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 테헤라: 바위에 앉아 쉼
+  return fidget(u) || 'idle';
 }
 TICKS.push(dt => {
   for (const u of G.units){
     if (!u.S || u.dead || u.downed || u.lock){ if (u) u._mw = null; continue; }
-    const sitOnly = !(u.S.m10 || u.S.mov) && u.side === 'ally' && u.S.poses.sit && u.S.poses.sit.n > 1;
-    if (!(u.S.m10 || u.S.mov) && !sitOnly){ u._mw = null; continue; }
-    if (sitOnly){ const p = sitWant(u, dt); u._mw = p; if (p) _setPoseM10(u, p); continue; }
     const dx = u._mp ? u.x - u._mp.x : 0, dz = u._mp ? u.z - u._mp.z : 0, sp = Math.hypot(dx, dz) / Math.max(dt, 1e-3); u._mp = { x: u.x, z: u.z };
     if (sp > 0.2) u._mv = { x: dx / (sp * Math.max(dt, 1e-3)), z: dz / (sp * Math.max(dt, 1e-3)) };   // 움직이는 쪽 (단위)
     u._msp = (u._msp || 0) + (Math.min(sp, 12) - (u._msp || 0)) * Math.min(1, dt * 10);
-    const p = u.S.m10 ? m10Want(u, dt) : movWant(u, dt);
+    mvOn(u, dt);
+    const k = u.S.m10 ? 1 : u.S.mov ? 2 : locoOK(u) ? 3 : 0;
+    if (!k){ u._mw = null; continue; }
+    const p = k === 1 ? m10Want(u, dt) : k === 2 ? movWant(u, dt) : locoWant(u, dt);
     u._mw = p && u.S.poses[p] ? p : null;
     if (u._mw) _setPoseM10(u, p);
-    if ((u.pose === 'walk' || u.pose === 'walkB' || u.pose === 'run') && u.poseT > 0.05) u.poseT = Math.max(0, u.poseT + dt * (u._rate - 1));
+    if (u.pose === 'walk' || u.pose === 'walkB' || u.pose === 'run') u.poseT += dt * ((u._rate ?? 1) - 1);   // 빠르기에 맞춰 · 뒷걸음은 거꾸로 (units.js 가 음수 장도 돌림)
   }
 });
 /* ---------- 숨쉬기 (서 있는 그림이 한 장이라 아주 살짝) ---------- */
 const M10_BREATH = new Set(['idle', 'ready', 'guard', 'crouch', 'rest', 'rest2', 'rest3']);
+const LOCO_P = new Set(['walk', 'walkB', 'run']);
 const _updateSpriteM10 = updateSprite;
 updateSprite = function(u, dt){
   _updateSpriteM10(u, dt);
-  if (!u.S || !u.S.m10 || u.dead || u.downed || u.lying || !M10_BREATH.has(u.pose)) return;
-  const sy = 1 + Math.sin((G.t + (u.uid || 0) * 0.37) * 2.2) * 0.012;
-  u.mesh.scale.y *= sy; u.mesh.position.y *= sy;
+  if (!u.S || u.dead) return;
+  // v1.3 걷기 그림인데 0.3초 넘게 제자리 (싸움이 끝나 생각이 멈춤 · 막힘) → 서 있음
+  if (u.kind !== 'player' && !u.lock && LOCO_P.has(u.pose)){
+    const q = u._sq || (u._sq = { x: u.x, z: u.z, t: 0 });
+    if (Math.hypot(u.x - q.x, u.z - q.z) > 0.08){ q.x = u.x; q.z = u.z; q.t = 0; }
+    else if ((q.t += dt) > 0.3){ q.t = 0; u.moving = false; u._mvOn = false; _setPoseM10(u, u.S.poses.ready && (u.alert || u._rdy) ? 'ready' : 'idle'); }
+  }
+  if (u.downed || u.lying) return;
+  const f = -(u.fS ?? u.face), H = Math.min(1.6, u.S.tall);
+  // 숨쉬기 (잡몹 10명: 서 있는 그림이 한 장이라 아주 살짝)
+  if (u.S.m10 && M10_BREATH.has(u.pose)){ const sy = 1 + Math.sin((G.t + (u.uid || 0) * 0.37) * 2.2) * 0.012; u.mesh.scale.y *= sy; u.mesh.position.y *= sy; }
+  // v1.3 걷기 그림이 없는 (또는 한 장인) 영웅 · 적: 걸을 때 출렁 + 앞으로 기울임 (2 · 3기는 h2.js 가 함)
+  else if (!u.D.h2 && !u.S.m10 && u.kind !== 'player' && u.st === 'idle' && u._mvOn && (u.lift || 0) < 0.05 && !((u.jy || 0) > 0.05) && !(u._dodgeT > G.t) && (u.pose === 'idle' || u.pose === 'ready' || (LOCO_P.has(u.pose) && !(u.S.poses[u.pose] || {}).n))){
+    const t = (G.t + (u.uid || 0) * 0.31) * (u._runOn ? 11 : 8.5);
+    u.pivot.position.y += Math.abs(Math.sin(t)) * 0.05 * H; u.pivot.rotation.z += (u._bp ? -0.035 : 0.05) * f + Math.sin(t) * 0.02;
+  }
+  // v1.3 예고 · 침 · 휘청 그림이 없는 영웅 · 적 (서 있는 그림으로 칠 때): 예고 = 움츠리며 뒤로 젖힘 → 침 = 앞으로 쭉 · 휘청 = 떨림 (2 · 3기는 h2.js 가 함)
+  if (u.st !== u._pst){ u._pst = u.st; u._stAt = G.t; }
+  if (!u.D.h2 && !u.S.m10 && u.kind !== 'player' && (u.pose === 'idle' || u.pose === 'ready')){
+    const e = G.t - (u._stAt ?? G.t), A = !!u.S.poses.attack;
+    let sy = 1, sx = 1, rz = 0;
+    if (u.st === 'windup'){ const k = Math.min(1, e / 0.3); sy = 1 - 0.07 * k; sx = 1 + 0.045 * k; rz = (A ? -0.1 : -0.03) * k * f; }   // 공격 그림도 없으면 기울임은 windup() 의 lean 이 더함
+    else if (u.st === 'strike'){ const k = Math.max(0, 1 - e / 0.25); sy = 1 + 0.06 * k; sx = 1 - 0.035 * k; rz = (A ? 0.16 : 0.06) * k * f; }
+    else if (u.st === 'hurt' && !u.S.poses.hurt) rz = Math.sin(G.t * 60) * 0.05;
+    if (sy !== 1){ u.mesh.scale.y *= sy; u.mesh.position.y *= sy; u.mesh.scale.x *= sx; u.mesh.position.x *= sx; }
+    u.pivot.rotation.z += rz;
+  }
+  // v1.3 깡충 물러섬 (장판 피하기 · 뒤로 빠지기): 적을 본 채 작게 뛰며 뒤로 젖힘
+  if (u._dodgeT > G.t - 0.05 && u._dodgeS != null){
+    const k = G.t - u._dodgeS;
+    u.pivot.position.y += Math.abs(Math.sin(k * Math.PI / 0.3)) * 0.13 * H; u.pivot.rotation.z += -0.09 * f;
+  }
+  // v1.3 움찔: 뒤로 젖혔다 돌아옴 (0.2초)
+  const fk = u._flS != null ? 1 - (G.t - u._flS) / 0.2 : 0;
+  if (fk > 0 && fk <= 1){ u.pivot.rotation.z += -0.11 * f * fk; u.mesh.scale.x *= 1 + 0.04 * fk; u.mesh.position.x *= 1 + 0.04 * fk; u.mesh.scale.y *= 1 - 0.04 * fk; u.mesh.position.y *= 1 - 0.04 * fk; }
 };
 
 /* ---------- 원정: 모닥불 곁에서 쉬는 무리 ---------- */

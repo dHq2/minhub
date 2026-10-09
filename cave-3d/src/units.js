@@ -1,4 +1,4 @@
-/* units.js v0.30 — (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.31 — (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -40,7 +40,19 @@ function spawn(kind, x, z, side){
   return u;
 }
 function removeUnit(u){ G.scene.remove(u.group); u.bar && u.bar.remove(); u.tag && u.tag.remove(); G.units = G.units.filter(o => o !== u); }
-function setPose(u, p){ if (u.pose !== p){ u.pose = p; u.poseT = 0; } }
+const REST_POSE = new Set(['idle', 'ready']);
+const NOW_POSE = new Set(['hurt', 'hurt2', 'stun', 'down', 'dead', 'dead2', 'kneel', 'walk', 'walkB', 'run', 'guard', 'block', 'shoot']);   // 늦추지 않고 바로 보이는 그림 (맞음 · 넘어짐 · 걷기 · 막기 · 총 쏨). 공격 그림은 예고로도 쓰여서 0.1초 늦어도 됨
+// v0.31 보이는 자세: ① 동작에서 서 있음으로 돌아오면 0.1초는 앞 동작을 이어 그림 ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작이 오면 0.1초까지는 서 있음 (한두 장만 번쩍이지 않게)
+function dispPose(u){
+  const D = u._disp || (u._disp = { p: u.pose, at: G.t }), H = u._hold, live = !u.dead && !u.downed;
+  let p = u.pose, pT = u.poseT;
+  if (live && H && REST_POSE.has(u.pose) && G.t - H.at < 0.1 && u.S.poses[H.p]){ p = H.p; pT = H.t + (G.t - H.at); }
+  else if (live && u.kind !== 'player' && !REST_POSE.has(p) && !NOW_POSE.has(p) && REST_POSE.has(D.p) && G.t - D.at < 0.1 && u.S.poses[D.p]){ p = D.p; pT = G.t - D.at; }   // 인주는 바로 (조작 반응)
+  if (p !== D.p){ D.p = p; D.at = G.t; }
+  u.dpose = p;
+  return [p, pT];
+}
+function setPose(u, p){ if (u.pose !== p){ u._hold = REST_POSE.has(p) && u.pose && !REST_POSE.has(u.pose) && u.poseT >= 0.12 && typeof G !== 'undefined' ? { p: u.pose, t: u.poseT, at: G.t } : null; u.pose = p; u.poseT = 0; } }   // v0.31 _hold: 서 있음으로 돌아온 순간의 앞 그림 (0.1초 동안 이어 그림)
 function texFor(u, P){
   if (P.canvas){ return P._tex || (P._tex = canvasTex(P.w, P.h, P.canvas)); }
   if (P.rect){   // v0.60 묶음 그림 (아틀라스) 한 칸: [x, y, w, h, 전체 W, 전체 H] (px, 위에서부터)
@@ -54,12 +66,14 @@ function texFor(u, P){
 const camRight = new THREE.Vector3();
 function updateSprite(u, dt){
   u.poseT += dt;
-  if (u.downed || u.dead){ if (!u._dp){ u._dp = true; const Q = u.S.poses, k = u.dead && Q.dead && Q.dead.flat ? 'dead' : Q.down && Q.down.flat ? 'down' : null; if (k) setPose(u, k); } } else u._dp = false;   // v0.30 누운 그림
-  const P = u.S.poses[u.pose] || u.S.poses.idle, t = texFor(u, P);
+  if (u.downed || u.dead){ if (!u._dp){ u._dp = true; const Q = u.S.poses, k = u.dead && Q.dead && Q.dead.flat ? 'dead' : Q.down && Q.down.flat ? 'down' : Q.hurt ? 'hurt' : 'idle'; setPose(u, k); } } else u._dp = false;   // v0.30 누운 그림 · v0.31 없으면 맞음 그림 (공격 · 걷기 그림을 그대로 눕히지 않게)
+  const [dp, pT] = dispPose(u);   // v0.31 보이는 자세 (서 있음 깜빡임 막기)
+  const P = u.S.poses[dp] || u.S.poses.idle, t = texFor(u, P);
   if (u.mat.map !== t){ u.mat.map = t; u.mat.needsUpdate = true; }
   if (P.n){
-    const cnt = P.count || P.n, from = P.from || 0;
-    let fi = Math.floor(u.poseT * P.fps); fi = P.once ? Math.min(cnt - 1, fi) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(fi % (2 * cnt - 2) - (cnt - 1)) : fi % cnt;   // pingpong: 끝에서 거꾸로
+    const cnt = P.count || P.n, from = P.from || 0, md = (a, b) => ((a % b) + b) % b;   // v0.31 뒷걸음 (장이 거꾸로) 도 되게
+    let fi = Math.floor(pT * P.fps); fi = P.once ? Math.max(0, Math.min(cnt - 1, fi)) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(md(fi, 2 * cnt - 2) - (cnt - 1)) : md(fi, cnt);   // pingpong: 끝에서 거꾸로
+    if ((u.dead || u.downed) && !P.flat) fi = 0;   // v0.31 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤
     u.fi = fi;
     if (P.rect && P.cols){ const [x, y, w, h, W, H] = P.rect, fw = w / P.cols, fh = h / P.rows, c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(fw / W, fh / H); t.offset.set((x + c * fw) / W, 1 - (y + (r + 1) * fh) / H); }   // v0.29 묶음 그림 칸 안의 격자
     else if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음

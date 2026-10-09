@@ -1,4 +1,4 @@
-/* foes2.js v1.3 — (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.4 — (v1.4, v0.80: 콜로세움 · 훈련장 (원정 밖) 에서 세자르 '일어나라' · 대장군 '증원!' 이 오류로 멈추던 것 — 층 정보가 없으면 1층 세기) (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
    1 무덤 어귀 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
    6 안개 늪: 검냥이 · 강적 보르마 · 7 도깨비 시장: 보광 · 광냥 · 강적 청승 · 작약 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
@@ -153,7 +153,7 @@ function cesarThink(u, dt){
   if (tgt && u.st === 'idle' && !G.lock){
     const d = dist(u, tgt);
     if (!B.raised && u.hp < u.max * 0.5){ B.raised = true; setPose(u, 'raise'); u.st = 'strike'; u.stT = 1.2; sigSay(u, '일어나라');
-      for (let i = 0; i < 3; i++){ const a = rnd(0, 6.28), x = u.x + Math.cos(a) * 2.5, z = u.z + Math.sin(a) * 2.5; if (!solidAt(G.map, x, z)){ const e = spawnFoe('swordsman', x, z, EXP.F, 'boss'); e.alert = true; dust(x, z, 10); } }
+      for (let i = 0; i < 3; i++){ const a = rnd(0, 6.28), x = u.x + Math.cos(a) * 2.5, z = u.z + Math.sin(a) * 2.5; if (!solidAt(G.map, x, z)){ const e = spawnFoe('swordsman', x, z, EXP ? EXP.F : 1, 'boss'); e.alert = true; e.seen = G.t; dust(x, z, 10); } }
       return; }
     if (B.cd.sky <= 0 && d < 9){   // 하늘 가르기: 긴 줄 · 큰 피해
       B.cd.sky = 9; setAim(u, tgt.x, tgt.z); sigSay(u, '하늘 가르기'); setPose(u, 'special');
@@ -185,7 +185,7 @@ function generalThink(u, dt){
       for (const e of foes()) if (!e.cryT){ e.cryT = true; e.atk = Math.round(e.atk * 1.2); setTimeout(() => { e.cryT = false; e.atk = Math.round(e.atk / 1.2); }, 8000); }
       for (const a of allies()) if (dist(a, u) < 9 && typeof addStatus === 'function'){ addStatus(a, 'fear', { t: 1.2 }); if (a.hero) a.hero.san = Math.max(0, (a.hero.san ?? 50) - 6); }
       return; }
-    if (B.cd.call <= 0){ B.cd.call = 22; sigSay(u, '증원!'); for (let i = 0; i < 3; i++){ const a = rnd(0, 6.28), x = u.x + Math.cos(a) * 3, z = u.z + Math.sin(a) * 3; if (!solidAt(G.map, x, z)){ const e = spawnFoe(R2(['bk', 'bkSpear', 'swordsman']), x, z, EXP.F, 'boss'); e.alert = true; } } u.st = 'strike'; u.stT = 0.8; return; }
+    if (B.cd.call <= 0){ B.cd.call = 22; sigSay(u, '증원!'); for (let i = 0; i < 3; i++){ const a = rnd(0, 6.28), x = u.x + Math.cos(a) * 3, z = u.z + Math.sin(a) * 3; if (!solidAt(G.map, x, z)){ const e = spawnFoe(R2(['bk', 'bkSpear', 'swordsman']), x, z, EXP ? EXP.F : 1, 'boss'); e.alert = true; e.seen = G.t; } } u.st = 'strike'; u.stT = 0.8; return; }
     if (B.cd.charge <= 0 && d > 3 && d < 9){ B.cd.charge = 7; return sigDash(u, tgt) ? undefined : enemyThink(u, dt); }
     if (B.cd.sweep <= 0 && d < 2.8){ B.cd.sweep = 5; return sigSweep(u, tgt) ? undefined : enemyThink(u, dt); }
   }

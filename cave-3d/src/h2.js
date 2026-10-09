@@ -1,4 +1,4 @@
-/* h2.js v2.5 — (v2.5, v0.79: 고대사슴 산호 도감 설정 크기 — 몸길이 5m · 등 높이 3m (노트 tall 5.3) · 몸 반경 1.1 → 1.45. 잉끌레이도르 = 잭 (도감 본명, names.js) · 돌장갑 NPC) (v2.4, v0.78: 기술 끝 그림 pose2 를 장판 기술 (베기 · 찌르기 · 찍기 · 마무리 …) 에도 — 칠 때 그 그림. 용묘화: 모아 내려치기 charge → smash · 파내기 · 파묻기 dig → dig2 (도감 움짤)) (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v2.6 — (v2.6, v0.80 동작 점검: 막기 기술 (성벽 방패 · 바위 갑피 …) 을 막기 그림 없는 인물이 쓰면 공격 그림으로 3 ~ 5초 굳어 있던 것 · 쏘기 · 연사 기술이 예고 중에 기절 · 넘어짐으로 끊겨도 그대로 쏘던 것 (휘청이 풀렸음) · 넘어뜨리기 (trip) 맞은 놈이 누운 채 걷고 치던 것 → 일어날 때까지 (1.2초) 휘청 · 기술을 걷다가 쓰면 걷기 · 달리기 그림 그대로 쏘거나 서 있던 것 → 예고 그림 (없으면 공격 대기 · 서 있음) · 뒤로 빠지기 (backstep) 는 깡충 · 걸을 때 출렁임은 움직임 판정 (motion.js) 을 따라 깜빡이지 않게 · 뒷걸음은 뒤로 기울임) (v2.5, v0.79: 고대사슴 산호 도감 설정 크기 — 몸길이 5m · 등 높이 3m (노트 tall 5.3) · 몸 반경 1.1 → 1.45. 잉끌레이도르 = 잭 (도감 본명, names.js) · 돌장갑 NPC) (v2.4, v0.78: 기술 끝 그림 pose2 를 장판 기술 (베기 · 찌르기 · 찍기 · 마무리 …) 에도 — 칠 때 그 그림. 용묘화: 모아 내려치기 charge → smash · 파내기 · 파묻기 dig → dig2 (도감 움짤)) (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -42,7 +42,7 @@ function h2Build(){
 // 기술 하나 쓰기 (동료 · 적 같음). 성공하면 true
 function h2Cast(u, s, tgt){
   const d = tgt ? dist(u, tgt) : 0, a = tgt ? Math.atan2(tgt.z - u.z, tgt.x - u.x) : u.aim, P = p => u.S.poses[p] ? p : u.S.poses.attack ? 'attack' : 'idle';
-  const hit = (mul, o = {}) => t => { hurt(u, t, u.atk * mul, { from: u, kb: o.kb ?? 0.8, stun: o.stun, crit: o.crit, ranged: o.ranged }); if (o.sts && typeof addStatus === 'function') addStatus(t, o.sts, { t: o.stsT || 3, dps: o.dps || u.atk * 0.2, k: o.stsK || 0.4 }); if (o.trip && !t.D.heavy && !t.D.boss){ t.lying = true; t.tripT = G.t + 1.2; } };
+  const hit = (mul, o = {}) => t => { hurt(u, t, u.atk * mul, { from: u, kb: o.kb ?? 0.8, stun: o.stun, crit: o.crit, ranged: o.ranged }); if (o.sts && typeof addStatus === 'function') addStatus(t, o.sts, { t: o.stsT || 3, dps: o.dps || u.atk * 0.2, k: o.stsK || 0.4 }); if (o.trip && !t.D.heavy && !t.D.boss && !t.dead && !t.downed){ interrupt(t); t.lying = true; t.tripT = G.t + 1.2; if (t.st !== 'hurt' || (t.stT || 0) < 1.2){ t.st = 'hurt'; t.stT = 1.2; } setPose(t, 'hurt'); } };   // v2.6 넘어진 놈은 일어날 때까지 못 움직임 (전엔 누운 채 걷고 쳤음)
   if (tgt) setAim(u, tgt.x, tgt.z);
   u.h2cd = u.h2cd || {}; u.h2cd[s.id] = s.cd;
   if (s.say) say(u, s.say, 'big', 1.2); else popText(u.x, u.y + bodyH(u) + 0.5, u.z, s.n, 'alert', 0.8);
@@ -61,7 +61,7 @@ function h2Cast(u, s, tgt){
       const n = s.cnt || 1, gap = s.type === 'volley' ? (s.gap || 0.12) : 0;
       u.st = 'windup';
       setTimeout(() => {
-        if (u.dead || u.downed) return; u.st = 'strike'; u.stT = 0.3 + n * gap; setPose(u, P(s.pose2 || 'attack'));
+        if (u.dead || u.downed || u.st !== 'windup') return; u.st = 'strike'; u.stT = 0.3 + n * gap; setPose(u, P(s.pose2 || 'attack'));   // v2.6 기절 · 넘어짐으로 끊겼으면 쏘지 않음 (전엔 휘청하다가도 쏘고 휘청이 풀렸음)
         for (let i = 0; i < n; i++) setTimeout(() => {
           if (u.dead) return; const sp = (s.spread || 0.06) * (n > 1 && !gap ? (i - (n - 1) / 2) : (Math.random() - 0.5) * 2), aa = (tgt && !tgt.dead ? Math.atan2(tgt.z - u.z, tgt.x - u.x) : a) + sp, y0 = u.y + bodyH(u) * 0.6;
           shoot({ x: u.x + Math.cos(aa) * 0.5, y: y0, z: u.z + Math.sin(aa) * 0.5, a: aa, speed: s.speed || 26, range: s.range || 10, side: u.side, len: s.len || 0.4, thick: s.thick || 0.05, color: s.color || 0xffe08a, glow: s.glow, dy: tgt ? aimDy(u.x, y0, u.z, tgt, s.speed || 26) : 0, hitsAir: true, pierce: s.pierce,
@@ -81,7 +81,7 @@ function h2Cast(u, s, tgt){
     case 'buff': { u.st = 'strike'; u.stT = 0.6; ring(u.x, u.z, 0xffd35a, s.r || 6, 0.6);
       for (const o of G.units) if (o.side === u.side && !o.dead && dist(o, u) < (s.r || 6)){ const k = s.k || 1.25; o.atk = Math.round(o.atk * k); popText(o.x, o.y + bodyH(o) + 0.4, o.z, s.n, 'heal', 0.8); setTimeout(() => { o.atk = Math.round(o.atk / k); }, (s.t || 8) * 1000); }
       break; }
-    case 'guard': { u.st = 'strike'; u.stT = s.t || 2.5; u.guardStance = true; setPose(u, P('block'));
+    case 'guard': { u.st = 'strike'; u.stT = s.t || 2.5; u.guardStance = true; setPose(u, u.S.poses.block ? 'block' : u.S.poses[s.pose] ? s.pose : 'idle');   // v2.6 막기 그림이 없으면 기술 그림 (없으면 서 있음) — 전엔 공격 그림으로 3 ~ 5초 굳어 있었음
       if (s.taunt) for (const e of G.units) if (e.side !== u.side && !e.dead && dist(e, u) < (s.r || 5)){ e.focusOn = u; }
       setTimeout(() => { u.guardStance = false; }, (s.t || 2.5) * 1000); break; }
     case 'summon': { u.st = 'strike'; u.stT = 0.8; setPose(u, P(s.pose || 'summon'));
@@ -119,8 +119,9 @@ function h2Cast(u, s, tgt){
       const subs = s.sub || []; let tm = 0;
       for (const x of subs){ setTimeout(() => { if (u.dead || u.downed || u.lying || u.st === 'hurt' || u.grabbed) return; u.st = 'idle'; h2Cast(u, { cd: 0, id: s.id + '_' + x.type, n: x.n || s.n, ...x }, tgt && !tgt.dead ? tgt : null); }, tm * 1000); tm += (x.windup ?? 0.4) + (s.gap || 0.35); }
       u.h2cd[s.id] = s.cd; break; }
-    case 'backstep': { const n = norm(u.x - (tgt ? tgt.x : u.x + 1), u.z - (tgt ? tgt.z : u.z)); moveBy(u, n.x * (s.len || 2.4), n.z * (s.len || 2.4)); dust(u.x, u.z, 5); u.st = 'strike'; u.stT = 0.35; break; }
+    case 'backstep': { const n = norm(u.x - (tgt ? tgt.x : u.x + 1), u.z - (tgt ? tgt.z : u.z)); moveBy(u, n.x * (s.len || 2.4), n.z * (s.len || 2.4)); dust(u.x, u.z, 5); u.st = 'strike'; u.stT = 0.35; u._dodgeS = G.t; u._dodgeT = G.t + 0.3; break; }   // v2.6 깡충 (motion.js)
   }
+  if (u.st !== 'idle' && (u.pose === 'walk' || u.pose === 'walkB' || u.pose === 'run')) setPose(u, u.S.poses.windup ? 'windup' : u.S.poses.ready ? 'ready' : 'idle');   // v2.6 걷다가 쓴 기술: 걷기 그림 그대로 쏘지 않게
   u.pose2Next = null;
   return true;
 }
@@ -166,7 +167,7 @@ function h2EnemyThink(u, dt){
   heroCombat = function(u, dt){
     if (u.D && u.D.h2){
       h2Tick(u, dt);
-      if (u.st === 'idle' && !u.lock && !G.lock && !u.downed){
+      if (u.st === 'idle' && !u.lock && !G.lock && !u.downed && !u.escape){   // v2.6 피하려는 참엔 기술을 걸지 않음 (걸자마자 끊겨 그림이 깜빡이던 것)
         const t = nearest(u, foes().filter(e => e.alert && !e.dead && !e.D.dummy), 14), s = t && h2Pick(u, t);
         if (s && Math.random() < dt * 3){ h2Cast(u, s, t); return true; }
       }
@@ -192,7 +193,7 @@ updateSprite = function(u, dt){
   if (u.st === 'windup'){ const k = Math.min(1, u.poseT / 0.35); sy = 1 - 0.06 * k; sx = 1 + 0.04 * k; rz = -0.1 * k * f; }
   else if (u.st === 'strike'){ const k = Math.max(0, 1 - u.poseT / 0.25); sy = 1 + 0.05 * k; sx = 1 - 0.03 * k; rz = 0.16 * k * f; }
   else if (u.st === 'hurt'){ rz = Math.sin(t * 60) * 0.05; }
-  else if (u.moving && !u.S.poses.walk_real && !u.S.mov){ dy = Math.abs(Math.sin(t * 9)) * 0.06; rz = 0.06 * f + Math.sin(t * 9) * 0.02; }   // v2.3 진짜 걷기 그림이면 출렁임 없음
+  else if ((u._mvOn ?? u.moving) && !u.S.poses.walk_real && !u.S.mov && !(u._dodgeT > G.t) && !(u.lift > 0.05)){ const w = t * (u._runOn ? 11 : 9); dy = Math.abs(Math.sin(w)) * 0.06; rz = (u._bp ? -0.035 : 0.06) * f + Math.sin(w) * 0.02; }   // v2.3 진짜 걷기 그림이면 출렁임 없음 · v2.6 움직임 판정 (motion.js) 을 따름 · 뒷걸음은 뒤로
   else { sy = 1 + Math.sin(t * 2.1) * 0.015; }
   m.scale.y *= sy; m.scale.x *= sx; m.position.y *= sy; u.pivot.rotation.z += rz; u.pivot.position.y += dy;
   // 잔상: 빨리 움직이는 동안

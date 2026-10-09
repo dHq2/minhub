@@ -1,4 +1,4 @@
-/* ai.js v0.32 — (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.33 — (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -19,9 +19,12 @@ const bodyH = u => u.S.tall * SPRITE_SCALE * (u.posture === 'crouch' ? 0.6 : 1);
 function aimDy(x, y0, z, t, speed){ const d = Math.hypot(t.x - x, t.z - z), time = Math.max(0.05, d / speed); return ((t.y + (t.lift || 0) + (t.jy || 0) + bodyH(t) * 0.5) - y0) / time; }
 
 // 한 번 휘두르기 · 찌르기 · 내려찍기: 예고 장판이 다 차는 순간 그 안의 상대가 맞음 (뛰어올라 있으면 바닥 공격은 피함)
+const WIND_FROM = new Set(['idle', 'ready', 'walk', 'walkB', 'run']);
+// v0.33 예고를 시작할 때 서 있음 · 걷기 그림이면 예고 그림으로 (없으면 공격 대기 · 서 있음)
+function windPose(u){ if (u.kind !== 'player' && WIND_FROM.has(u.pose)){ const Q = u.S.poses; setPose(u, Q.windup ? 'windup' : Q.ready ? 'ready' : 'idle'); } }
 function windup(u, shape, o, onHit, color = RED){
   const p2 = u.pose2Next; u.pose2Next = null;   // v0.32 기술 끝 그림 (h2Cast 가 부르기 바로 전에 정함)
-  u.st = 'windup';
+  u.st = 'windup'; windPose(u);
   if (!u.S.poses.windup && !u.S.poses.attack) u.leanT = -0.16;
   u.decal = decal(shape, { ...o, color, hostile: u.side === 'enemy', dur: o.windup, onDone: d => {
     u.decal = null;
@@ -106,7 +109,7 @@ function enemyThink(u, dt){
     const seeIt = sees(u, tgt);
     if (u.post && !u.routed){ if (dist(u, u.post) > 0.6) navTo(u, u.post.x, u.post.z, u.spd, dt, 0.3); }
     else if (d > B.range || !seeIt) navTo(u, tgt.x, tgt.z, u.spd, dt, 2);
-    else if (d < 4.5 && u.y < 0.3) steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd * 0.8, dt);
+    else if (d < 4.5 && u.y < 0.3){ steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd * 0.8, dt); setAim(u, tgt.x, tgt.z); }   // v0.33 물러서며 상대를 봄
     if (u.cd <= 0 && d <= B.range && seeIt){
       setAim(u, tgt.x, tgt.z); u.cd = B.cd; setPose(u, 'aim');
       const len = Math.min(B.range + 1, d + 2.5);
@@ -137,7 +140,7 @@ function enemyThink(u, dt){
     if (u.sideT > 0){ u.sideT -= dt; steerTo(u, u.x + Math.cos(u.sideA), u.z + Math.sin(u.sideA), u.spd * 1.3, dt); setAim(u, tgt.x, tgt.z); return; }
     if (d > 2.2 || !sees(u, tgt)) navTo(u, tgt.x, tgt.z, u.spd, dt, 1.8);
     else if (u.cd <= 0){
-      setAim(u, tgt.x, tgt.z); u.cd = S.cd; setPose(u, 'idle');
+      setAim(u, tgt.x, tgt.z); u.cd = S.cd; setPose(u, u.S.poses.windup ? 'windup' : 'idle');
       const cx = u.x + Math.cos(ang) * 1.1, cz = u.z + Math.sin(ang) * 1.1;
       windup(u, 'circle', { x: cx, z: cz, r: S.r, windup: S.windup }, t => hurt(u, t, u.atk * S.mul, { kb: S.kb, from: { x: cx, z: cz }, stun: S.stun }), RED);
       const dd = u.decal; dd.onDone = ((orig) => (x) => { orig(x); camShake(0.35, 0.25); ring(cx, cz, 0xffb070, S.r * 1.2, 0.45); dust(cx, cz, 14); })(dd.onDone);
@@ -166,8 +169,14 @@ function allyThink(u, dt){
   if (u.st !== 'windup'){
     u.dodgeCheck = (u.dodgeCheck || 0) - dt;
     if (u.dodgeCheck <= 0){ u.dodgeCheck = 0.1; u.escape = escapeSpot(u); if (u.escape && !u.saidDodge){ u.saidDodge = true; setTimeout(() => u.saidDodge = false, 3000); } }
-    if (u.escape){
-      if (Math.hypot(u.escape.x - u.x, u.escape.z - u.z) > 0.25){ steerTo(u, u.escape.x, u.escape.z, u.spd * 2.1, dt); u.st = 'idle'; return; }
+    if (u.escape && !(u.st === 'strike' && u.poseT < 0.15)){   // v0.33 친 그림은 0.15초는 보여 주고 피함
+      if (Math.hypot(u.escape.x - u.x, u.escape.z - u.z) > 0.25){
+        const f0 = u.face; steerTo(u, u.escape.x, u.escape.z, u.spd * 2.1, dt);
+        if (u.st !== 'idle'){ u.st = 'idle'; setPose(u, 'idle'); }   // v0.33 치고 나서 피할 때 공격 그림 그대로 미끄러지던 것
+        if (!(u._dodgeT > G.t) && !(u._runAway > G.t)) u._dodgeS = G.t;
+        if (G.t - u._dodgeS < 0.45){ u.face = f0; u._dodgeT = G.t + 0.2; } else u._runAway = G.t + 0.2;   // 적을 본 채 뛰어 물러섬 (motion.js 가 서 있는 그림 + 깡충) · 0.45초 넘게 피해야 하면 돌아서 뜀
+        return;
+      }
       u.escape = null;
     }
   }
@@ -219,7 +228,7 @@ function allyThink(u, dt){
   } else if (u.D.ranged){
     const R = u.D.ranged, see = sees(u, tgt);
     if (d > R.range || !see) navTo(u, tgt.x, tgt.z, u.spd, dt, 3);
-    else if (d < 3.5) steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd, dt);
+    else if (d < 3.5){ steerTo(u, u.x - (tgt.x - u.x), u.z - (tgt.z - u.z), u.spd, dt); setAim(u, tgt.x, tgt.z); }   // v0.33 물러서며 상대를 봄
     // 점사 (2D판 그대로): 기본 2발, 10%는 손가락이 늦게 떨어져 6발 "드르르륵!" (0.09초 간격)
     if (u.burst){ tickBurst(u, dt); return; }
     if (u.cd <= 0 && d <= R.range && see){

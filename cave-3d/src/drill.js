@@ -1,4 +1,4 @@
-/* drill.js v1.12 — (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.13 — (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -361,9 +361,9 @@ function coloRoster(){
 }
 // v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
 const COLO_UPD = [
+  { v: 'v0.80', n: '동작 점검 — 걷기 · 달리기 그림으로 걸음 (서 있는 그림으로 미끄러지던 것) · 출발 · 멈춤 깜빡임 없앰 · 맞으면 움찔 · 장판 피할 때 깡충 · 걷다 칠 때 예고 그림 · 넘어지면 누운 그림 · 싸움 끝나면 제자리 걷기 하던 것', ids: ['h2:tank', 'h2:moro', 'h2:collider', 'h2:hirari', 'h2:unitA', 'swordsman', 'bkSpear', 'rebeccaAlly'] },
   { v: 'v0.79', n: '도감 설정 반영 — 고대사슴 산호 크기 (몸길이 5m · 등 높이 3m → 뿔 끝까지 5.3m) · 카리우스 불경자 스킬 그림 (얼굴 전체가 보이게)', ids: ['h2:ancientdeer', 'kariusAlly'] },
   { v: 'v0.78', n: '프레임은 있는데 멈춰 있던 인물 — 용묘화 (대기 · 공격 2가지 · 모아 내려치기 · 파내기) · 테헤라 (날며 대기 · 바위에 앉아 쉬기)', ids: ['h2:yongmyo', 'h2:tehera'] },
-  { v: 'v0.77', n: '1차 업뎃 2 · 3기 28명 새 동작 — 걷기 · 뒤로 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림 · 옐로 새 디자인', ids: ['h2:yellow', 'h2:bel', 'h2:gandu', 'h2:yongmyo', 'h2:moro', 'h2:goldknight', 'h2:gari', 'h2:gundevil', 'h2:ohe', 'h2:rook', 'h2:mstar', 'h2:knightcaptain', 'h2:blackrabbit', 'h2:tank', 'h2:venti', 'h2:ratvet', 'h2:ratknight', 'h2:mari', 'h2:dolsoe', 'h2:rozel', 'h2:kanya', 'h2:wangnim', 'h2:madangsoe', 'h2:inclador', 'h2:bishot', 'h2:tehera', 'h2:ratsmall', 'h2:poren'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
@@ -451,9 +451,10 @@ function coloPut(id, x, z, side){
 }
 function coloDel(u){ if (!u || !u.colo) return; removeUnit(u); COLO.dirty = true; if (G.boss === u) G.boss = null; coloCount(); }
 function coloUnits(){ return G.units.filter(u => u.colo); }
+function coloExtra(){ return G.units.filter(u => !u.colo && u !== G.player && (u.side === 'ally' || u.side === 'enemy')); }   // v1.13 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원)
 function coloSnap(){ return coloUnits().filter(u => !u.dead && !(COLO.done && u.downed)).map(u => ({ id: u.colo, x: +u.home.x.toFixed(2), z: +u.home.z.toFixed(2), side: u.side })); }
-function coloSet(list){ for (const u of coloUnits()) removeUnit(u); G.boss = null; for (const s of list || []) coloPut(s.id, s.x, s.z, s.side); coloCount(); }
-function coloClear(){ coloStop(); COLO.done = false; for (const u of coloUnits()) removeUnit(u); G.boss = null; for (const d of [...G.decals]) G.scene.remove(d.g); G.decals = []; for (const p of [...G.projs]) G.scene.remove(p.m); G.projs = []; coloCount(); }
+function coloSet(list){ for (const u of [...coloUnits(), ...coloExtra()]) removeUnit(u); G.boss = null; for (const s of list || []) coloPut(s.id, s.x, s.z, s.side); coloCount(); }
+function coloClear(){ coloStop(); COLO.done = false; for (const u of [...coloUnits(), ...coloExtra()]) removeUnit(u); G.boss = null; for (const d of [...G.decals]) G.scene.remove(d.g); G.decals = []; for (const p of [...G.projs]) G.scene.remove(p.m); G.projs = []; coloCount(); }
 function coloSave(){ const s = COLO.run || COLO.done ? (COLO.start || coloSnap()) : coloSnap(); try { localStorage.setItem(COLO_SAVE, JSON.stringify(s)); } catch (e) {} coloLog(`💾 배치를 저장했어요 (${s.length}명). 콜로세움에 들어오면 이 배치로 시작하고, 📂로 언제든 불러와요.`, 'sys'); }
 function coloLoad(){ let s = null; try { s = JSON.parse(localStorage.getItem(COLO_SAVE) || 'null'); } catch (e) {} if (!s){ coloLog('저장한 배치가 없어요', 'sys'); return; } coloClear(); coloSet(s); coloLog(`📂 저장한 배치를 불러왔어요 (${s.length}명)`, 'sys'); }
 function coloMirror(){
@@ -499,6 +500,7 @@ function coloRestart(){
 }
 function coloEnd(win){
   COLO.run = false; COLO.done = true; G.lock = true; $('bossbar').hidden = true; COLO.line.visible = true;
+  setTimeout(() => { if (!COLO.done) return; for (const u of [...coloUnits(), ...coloExtra()]) if (!u.dead && !u.downed && !u.lock){ interrupt(u); u.st = 'idle'; u.stT = 0; u.moving = false; u.guardStance = false; u.lift = 0; setPose(u, 'idle'); } }, 500);   // v1.13 끝난 뒤 휘두르던 그림 그대로 굳지 않게 (0.5초 뒤 서 있음)
   const sec = Math.round(G.t - COLO.t0), left = coloUnits().filter(u => u.side === (win === 'ally' ? 'ally' : 'enemy') && !u.dead && !u.downed);
   const big = win === 'ally' ? '아군 승리' : win === 'enemy' ? '적군 승리' : '무승부';
   caption(big, `${sec}초 · 남은 ${left.map(u => u.D.name).join(' · ') || '없음'} — R 재시작`);
@@ -514,6 +516,7 @@ TICKS.push(dt => {
     if ((u.dead || u.downed) && !u._coOut){ u._coOut = true; coloLog(`${u.side === 'ally' ? '🟢' : '🔴'} ${u.D.name} 쓰러짐 (${Math.round(G.t - COLO.t0)}초)`, 'dead'); coloCount(); }
     if (!u.dead && !coloInside(u.x, u.z)){ const c = coloClamp(u.x, u.z); u.x = c.x; u.z = c.z; }
   }
+  for (const u of coloExtra()) if (!u.dead && !coloInside(u.x, u.z)){ const c = coloClamp(u.x, u.z); u.x = c.x; u.z = c.z; }   // v1.13 불려 나온 인물도 경기장 안에
   const a = coloUnits().some(u => u.side === 'ally' && !u.dead && !u.downed), e = coloUnits().some(u => u.side === 'enemy' && !u.dead && !u.downed);
   if (!a || !e) coloEnd(a ? 'ally' : e ? 'enemy' : 'draw');
 });
