@@ -4,7 +4,7 @@
  "rank": "5성 이상",
  "folder": "3기-2/고대사슴 5성이상",
  "role": "동료 (5성 이상 = 높은 등급 동료로 봄. 덩치 큰 괴수라 적 · 보스로도 쓸 수 있음 → 둘 다 가능)",
- "tall": 4.0,
+ "tall": 5.3,
  "weight": 3000,
  "palette": [
   "#2a2a2c",
@@ -99,7 +99,7 @@
  "portrait": "art/h2/ancientdeer/portrait.webp",
  "face": "art/h2/ancientdeer/face.webp",
  "portrait_from": "고대사슴 5성이상.png 윗줄 1번 · face 같은 그림 머리",
- "length": 4.5,
+ "length": 5.0,
  "missing": [
   "walk",
   "run",
@@ -152,5 +152,6 @@
  "gen": 3,
  "batch": "3기-2",
  "codex_g": "coraldeer",
- "alias": "고대사슴 산호 (도감 · 드라이브 NPC 고대사슴 산호.png)"
+ "alias": "고대사슴 산호 (도감 · 드라이브 NPC 고대사슴 산호.png)",
+ "size_note": "도감 설정 (2026-10-09): 몸길이 5m · 높이 3m (등). 그림 비율로 맞추면 고개 든 대기 그림의 뿔 끝까지 5.3m (전엔 4.0m)"
 }

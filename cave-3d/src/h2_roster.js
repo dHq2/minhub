@@ -712,7 +712,7 @@ const H2R = {
 "rank": "5성 이상",
 "folder": "3기-2/고대사슴 5성이상",
 "role": "동료 (5성 이상 = 높은 등급 동료로 봄. 덩치 큰 괴수라 적 · 보스로도 쓸 수 있음 → 둘 다 가능)",
-"tall": 4.0,
+"tall": 5.3,
 "weight": 3000,
 "palette": [
 "#2a2a2c",
@@ -4566,6 +4566,7 @@ const H2R = {
 "weight_kg": 68,
 "tall_m": 1.8
 },
+"codex_g": "h3x_jangdori",
 "portrait": "art/h2/inclador/portrait.webp",
 "face": "art/h2/inclador/face.webp",
 "poses": {
@@ -9500,7 +9501,7 @@ const H2R = {
 "name": "돌장갑",
 "rank": "미정 (폴더 이름에 등급 없음)",
 "folder": "돌장갑",
-"role": "동료 (적 격투가로도 가능)",
+"role": "NPC (떠돌이 격투가 — 동료 아님, 적으로도 나옴 · 도감 설정 2026-10-09)",
 "tall": 1.62,
 "weight": 95,
 "palette": [
