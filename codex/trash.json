@@ -118,6 +118,300 @@
    "src": "img/h2/garam2__guard.webp",
    "memo": "삭제",
    "at": "2026-10-09"
+  },
+  "X-fairy-02": {
+   "name": "소매를 펼친 흰 머리 요정",
+   "sub": "요정 · 팩션 NPC · 원화",
+   "src": "img/npc/X-fairy-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-abyssshadow-09": {
+   "name": "돌 상자를 든 짐꾼 그림자",
+   "sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
+   "src": "img/npc/X-abyssshadow-09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-03": {
+   "name": "상자에 앉아 저울을 든 할머니",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-03.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-05": {
+   "name": "밧줄로 쇠추를 든 여인",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-05.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-07": {
+   "name": "단검을 들고 발차기하는 여인",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-magentaroot-06": {
+   "name": "올가미 덫꾼",
+   "sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_magentaroot_06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-flame-08": {
+   "name": "냄비를 잔뜩 짊어진 뚱뚱한 상인",
+   "sub": "화염 · 용암 · 팩션 NPC · 원화",
+   "src": "img/npc/X-flame-08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-tendon-09": {
+   "name": "대롱총 수녀",
+   "sub": "텐던 콰이어 (힘줄 성가대) · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_tendon_09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-wraith-07": {
+   "name": "드릴 여전사",
+   "sub": "망령군 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_wraith_07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-flame-07": {
+   "name": "통을 든 긴 머리 여인",
+   "sub": "화염 · 용암 · 팩션 NPC · 원화",
+   "src": "img/npc/X-flame-07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-blackhorn-05": {
+   "name": "도롱뇽 열쇠지기",
+   "sub": "검은 뿔 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_blackhorn_05.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-mechman-09": {
+   "name": "상자 위에 주저앉은 기계인",
+   "sub": "기계인간 · 팩션 NPC · 원화",
+   "src": "img/npc/X-mechman-09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-flame-02": {
+   "name": "녹슨 둥근 방패를 든 냄비 머리 전사",
+   "sub": "화염 · 용암 · 팩션 NPC · 원화",
+   "src": "img/npc/X-flame-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-02": {
+   "name": "쇳덩이를 든 대머리 장정",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-04": {
+   "name": "구멍 뚫린 쇠기둥을 멘 사내",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-04.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-blackveil-04": {
+   "name": "영양 머리 짐꾼",
+   "sub": "검은 장막 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_blackveil_04.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-tendon-06": {
+   "name": "낫지팡이 수녀",
+   "sub": "텐던 콰이어 (힘줄 성가대) · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_tendon_06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-wraith-08": {
+   "name": "고리 사슬꾼",
+   "sub": "망령군 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_wraith_08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-blackveil-07": {
+   "name": "나방 탄약수",
+   "sub": "검은 장막 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_blackveil_07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-10": {
+   "name": "돌멩이를 던지는 가방 멘 아이",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-10.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-ironremnant-09": {
+   "name": "주전자를 든 외투 차림 기사",
+   "sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
+   "src": "img/npc/X-ironremnant-09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-wraith-02": {
+   "name": "방패 단검 여전사",
+   "sub": "망령군 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_wraith_02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-magentaroot-02": {
+   "name": "탑방패 도끼병",
+   "sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_magentaroot_02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-magentaroot-08": {
+   "name": "집게 간호수녀",
+   "sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_magentaroot_08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-wraith-04": {
+   "name": "도끼창 여장교",
+   "sub": "망령군 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_wraith_04.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-blackhorn-03": {
+   "name": "가위 재단사",
+   "sub": "검은 뿔 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_blackhorn_03.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-magentaroot-07": {
+   "name": "통 짊은 거구",
+   "sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_magentaroot_07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-devil-10": {
+   "name": "실타래를 든 굽은 뿔 노인",
+   "sub": "악마 · 팩션 NPC · 원화",
+   "src": "img/npc/X-devil-10.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-09": {
+   "name": "쇠 상자를 안은 뚱뚱한 여인",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-commoner1-01": {
+   "name": "돌 바퀴를 세우는 망치 든 여인",
+   "sub": "일반인 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-commoner1-01.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-mechman-05": {
+   "name": "구슬 지팡이를 짚은 망토 기계인",
+   "sub": "기계인간 · 팩션 NPC · 원화",
+   "src": "img/npc/X-mechman-05.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-demonkin1-02": {
+   "name": "챙 모자를 쓴 뼈 발톱 여인",
+   "sub": "마족 1 · 팩션 NPC · 원화",
+   "src": "img/npc/X-demonkin1-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-bluemask-08": {
+   "name": "서기관",
+   "sub": "푸른 외투단 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_bluemask_08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-devil-09": {
+   "name": "닻을 멘 뚱뚱한 뿔 여인",
+   "sub": "악마 · 팩션 NPC · 원화",
+   "src": "img/npc/X-devil-09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-blackhorn-02": {
+   "name": "렌치검 소녀",
+   "sub": "검은 뿔 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_blackhorn_02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-h3f-wraith-09": {
+   "name": "가방 든 여사감",
+   "sub": "망령군 · 팩션 NPC · 원화",
+   "src": "img/npc/h3f_wraith_09.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-flame-06": {
+   "name": "종을 매단 통통한 꼬마",
+   "sub": "화염 · 용암 · 팩션 NPC · 원화",
+   "src": "img/npc/X-flame-06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-mechman-06": {
+   "name": "둥근 통을 등에 멘 기계 짐꾼",
+   "sub": "기계인간 · 팩션 NPC · 원화",
+   "src": "img/npc/X-mechman-06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-abyssshadow-08": {
+   "name": "큰 칼을 든 단발 여인",
+   "sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
+   "src": "img/npc/X-abyssshadow-08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-ironremnant-10": {
+   "name": "두루마리를 안은 꼬마 기사",
+   "sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
+   "src": "img/npc/X-ironremnant-10.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-ironremnant-07": {
+   "name": "투구를 옆에 낀 머리 없는 대장장이 갑옷",
+   "sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
+   "src": "img/npc/X-ironremnant-07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-ironremnant-08": {
+   "name": "가방을 멘 붉은 두건 기사",
+   "sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
+   "src": "img/npc/X-ironremnant-08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
   }
  },
  "cids": {
@@ -134,6 +428,41 @@
    "n": 4,
    "memo": "삭제",
    "at": "2026-10-08"
+  },
+  "C-111": {
+   "name": "붉은 점토 부족 생존자",
+   "sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
+   "n": 10,
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "C-112": {
+   "name": "검은 재 마법 생존자",
+   "sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
+   "n": 10,
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "C-114": {
+   "name": "야수 생존자",
+   "sub": "야수 생존자 · 팩션 NPC · 원화",
+   "n": 10,
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "C-117": {
+   "name": "돌피부 인간",
+   "sub": "돌피부 인간 · 팩션 NPC · 원화",
+   "n": 10,
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "C-178": {
+   "name": "복서",
+   "sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
+   "n": 2,
+   "memo": "삭제",
+   "at": "2026-10-09"
   }
  }
 }

@@ -1,4 +1,4 @@
-/* catalog.js v1.89 — v1.89: 잡몹 10명 동작 그림 (드라이브 '1차적 10인', tools/m10_poses.py). v1.88: 카리우스 · 사망 그림 (tools/kar_poses.py v1.2) · 쓰레기통 3 (카리우스 도형 · 쥐 기사 얼굴 · 대기). v1.87: v1.87: 민수 확인 — 왕님 = 하르겐 · 발용 본명 테이론 (tools/renames.py) · 마도사녀 = 마도사 (맨얼굴) · 쥐 베테랑은 쥐 기사 묶음 · 3기-2 인물을 도감에 이미 있던 묶음 9곳 (모로 · 쥐 기사 · 히든깨비 · 물레 · 콜라이더 · 기체 A/B · 천사슬 = 슬라 · 고대사슴 산호 = 고대사슴) 에 이어 붙임. v1.86: 3기-2 — 포렌의 쥐 (쥐 기사 · 쥐 베테랑 · 일반 쥐) · 5성 서포터 (콜라이더 · 물레 · 모로 · 고대사슴) · 슬라 · 기체 A/B · 마도사녀 · 사슴 · 히든깨비 새 묶음, 1기 인물 새 시트 (마리 · 모닝스타 · 옐로 · 용묘화 · 테헤라 · 흑토끼기사 · 로젤 · 왕님 · 기사단장 · 아해) 는 그 사람 묶음 끝에 (tools/h2_poses.py v1.2). v1.85: 마리의 부족민 #1 은 마리와 다른 사람 → 팩션으로 되돌림, 나머지 셋 민수 확인. v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83: 3기 1차 — 3기 인물 (tools/h2_poses.py v1.1) · 추가팩션 인물 7묶음 · 전장 설비 7묶음 · 추가 스프라이트 (tools/h3_extra.py). v1.82: v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). v1.81: 카리우스 옛 항목도 한 묶음 (초상화 모음에 둘 뜨던 것), 도감 인주 의자에 앉기. v1.80: 카리우스 새 그림 21자세 · 스킬 그림 4 · 컷씬 · 원화 2 (tools/kar_poses.py), 레베카 동작은 3D 동료로 씀. v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
+/* catalog.js v1.90 — v1.90: 쓰레기통 84장 (인물 5 — 붉은 점토 부족 생존자 · 검은 재 마법 생존자 · 야수 생존자 · 돌피부 인간 · 복서, 낱장 42). v1.89: 잡몹 10명 동작 그림 (드라이브 '1차적 10인', tools/m10_poses.py). v1.88: 카리우스 · 사망 그림 (tools/kar_poses.py v1.2) · 쓰레기통 3 (카리우스 도형 · 쥐 기사 얼굴 · 대기). v1.87: v1.87: 민수 확인 — 왕님 = 하르겐 · 발용 본명 테이론 (tools/renames.py) · 마도사녀 = 마도사 (맨얼굴) · 쥐 베테랑은 쥐 기사 묶음 · 3기-2 인물을 도감에 이미 있던 묶음 9곳 (모로 · 쥐 기사 · 히든깨비 · 물레 · 콜라이더 · 기체 A/B · 천사슬 = 슬라 · 고대사슴 산호 = 고대사슴) 에 이어 붙임. v1.86: 3기-2 — 포렌의 쥐 (쥐 기사 · 쥐 베테랑 · 일반 쥐) · 5성 서포터 (콜라이더 · 물레 · 모로 · 고대사슴) · 슬라 · 기체 A/B · 마도사녀 · 사슴 · 히든깨비 새 묶음, 1기 인물 새 시트 (마리 · 모닝스타 · 옐로 · 용묘화 · 테헤라 · 흑토끼기사 · 로젤 · 왕님 · 기사단장 · 아해) 는 그 사람 묶음 끝에 (tools/h2_poses.py v1.2). v1.85: 마리의 부족민 #1 은 마리와 다른 사람 → 팩션으로 되돌림, 나머지 셋 민수 확인. v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83: 3기 1차 — 3기 인물 (tools/h2_poses.py v1.1) · 추가팩션 인물 7묶음 · 전장 설비 7묶음 · 추가 스프라이트 (tools/h3_extra.py). v1.82: v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). v1.81: 카리우스 옛 항목도 한 묶음 (초상화 모음에 둘 뜨던 것), 도감 인주 의자에 앉기. v1.80: 카리우스 새 그림 21자세 · 스킬 그림 4 · 컷씬 · 원화 2 (tools/kar_poses.py), 레베카 동작은 3D 동료로 씀. v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
 const CATALOG = [
 {
 "id": "R-A",
@@ -43196,246 +43196,6 @@ const CATALOG = [
 "g": "X-redtribe"
 },
 {
-"id": "X-redclay-01",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "창과 나무 방패를 든 앉은 여인",
-"src": "img/npc/X-redclay-01.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-02",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "도끼를 든 건장한 사내",
-"src": "img/npc/X-redclay-02.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-03",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "갈래 지팡이를 짚은 백발 노인",
-"src": "img/npc/X-redclay-03.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-04",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "새총을 당기는 소녀",
-"src": "img/npc/X-redclay-04.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-05",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "무릎 꿇고 활을 쏘는 사내",
-"src": "img/npc/X-redclay-05.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-06",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "쌍 손도끼를 든 땋은 머리 여전사",
-"src": "img/npc/X-redclay-06.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-07",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "망치 묶음을 든 대장장이",
-"src": "img/npc/X-redclay-07.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-08",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "광주리를 든 할머니",
-"src": "img/npc/X-redclay-08.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #7 (2026-10-04)",
-"rank": "",
-"on": true,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-09",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "마체테를 든 날랜 청년",
-"src": "img/npc/X-redclay-09.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-redclay-10",
-"cat": "char",
-"sub": "붉은 점토 부족 생존자 · 팩션 NPC · 원화",
-"cid": "C-111",
-"name": "돗자리 두루마리를 든 꼬마",
-"src": "img/npc/X-redclay-10.webp",
-"note": "드라이브 일반NPC · 붉은 점토 부족 생존자 10인-4.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-redclay"
-},
-{
-"id": "X-blackash-01",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "큰 방패를 쥐고 웅크린 전사",
-"src": "img/npc/X-blackash-01.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-02",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "지팡이를 짚은 흰머리 노인",
-"src": "img/npc/X-blackash-02.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-03",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "둥근 방패와 곤봉을 든 청년",
-"src": "img/npc/X-blackash-03.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-04",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "책을 읽으며 앉은 노인",
-"src": "img/npc/X-blackash-04.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-05",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "그릇과 바늘을 든 앞치마 여인",
-"src": "img/npc/X-blackash-05.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-06",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "맷돌을 어깨에 멘 일꾼",
-"src": "img/npc/X-blackash-06.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-07",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "흰 천을 늘어뜨린 여인",
-"src": "img/npc/X-blackash-07.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #6 (2026-10-04)",
-"rank": "",
-"on": true,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-08",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "쌍갈고리를 든 붉은 목도리 사내",
-"src": "img/npc/X-blackash-08.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-09",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "나무 상자를 든 흰 두건 여인",
-"src": "img/npc/X-blackash-09.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-blackash"
-},
-{
-"id": "X-blackash-10",
-"cat": "char",
-"sub": "검은 재 마법 생존자 · 팩션 NPC · 원화",
-"cid": "C-112",
-"name": "작은 짐승을 안은 아이",
-"src": "img/npc/X-blackash-10.webp",
-"note": "드라이브 일반NPC · 검은 재의 마법 생존자 10인-3.png #9 (2026-10-04)",
-"rank": "",
-"on": true,
-"g": "X-blackash"
-},
-{
 "id": "X-abyssshadow-01",
 "cat": "char",
 "sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
@@ -43520,30 +43280,6 @@ const CATALOG = [
 "g": "X-abyssshadow"
 },
 {
-"id": "X-abyssshadow-08",
-"cat": "char",
-"sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
-"cid": "C-113",
-"name": "큰 칼을 든 단발 여인",
-"src": "img/npc/X-abyssshadow-08.webp",
-"note": "드라이브 일반NPC · 심연의 그림자 생존자 10인-5.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-abyssshadow"
-},
-{
-"id": "X-abyssshadow-09",
-"cat": "char",
-"sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
-"cid": "C-113",
-"name": "돌 상자를 든 짐꾼 그림자",
-"src": "img/npc/X-abyssshadow-09.webp",
-"note": "드라이브 일반NPC · 심연의 그림자 생존자 10인-5.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-abyssshadow"
-},
-{
 "id": "X-abyssshadow-10",
 "cat": "char",
 "sub": "심연의 그림자 생존자 · 팩션 NPC · 원화",
@@ -43554,126 +43290,6 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "X-abyssshadow"
-},
-{
-"id": "X-beastsurv-01",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "엄니 달린 얼룩 곰 짐승",
-"src": "img/npc/X-beastsurv-01.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-02",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "몽둥이를 든 꽁지머리 여전사",
-"src": "img/npc/X-beastsurv-02.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-03",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "항아리를 안은 수염 노인",
-"src": "img/npc/X-beastsurv-03.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #2 (2026-10-04)",
-"rank": "",
-"on": true,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-04",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "가방을 멘 네 발 늑대",
-"src": "img/npc/X-beastsurv-04.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-05",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "통나무를 든 멧돼지 거한",
-"src": "img/npc/X-beastsurv-05.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-06",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "창을 든 등짐 늑대 사냥꾼",
-"src": "img/npc/X-beastsurv-06.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-07",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "도끼와 나무 방패를 든 여전사",
-"src": "img/npc/X-beastsurv-07.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-08",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "약상자를 여는 흰 털 짐승",
-"src": "img/npc/X-beastsurv-08.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-09",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "큰 짐을 지고 지팡이를 짚은 짐꾼",
-"src": "img/npc/X-beastsurv-09.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
-},
-{
-"id": "X-beastsurv-10",
-"cat": "char",
-"sub": "야수 생존자 · 팩션 NPC · 원화",
-"cid": "C-114",
-"name": "깡통 곁에 앉은 고슴도치 꼬마",
-"src": "img/npc/X-beastsurv-10.webp",
-"note": "드라이브 일반NPC · 야수 생존자 10종 스프라이트 시트-2.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-beastsurv"
 },
 {
 "id": "X-beastknight-01",
@@ -43916,126 +43532,6 @@ const CATALOG = [
 "g": "X-beastmajin"
 },
 {
-"id": "X-stoneskin-01",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "돌판 검을 든 장발 여인",
-"src": "img/npc/X-stoneskin-01.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-02",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "큰 상자와 칼을 쥔 웅크린 사내",
-"src": "img/npc/X-stoneskin-02.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-03",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "접이식 자를 펼친 외투 사내",
-"src": "img/npc/X-stoneskin-03.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-04",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "작은 상자를 안은 소녀",
-"src": "img/npc/X-stoneskin-04.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-05",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "장대 가위를 든 무사",
-"src": "img/npc/X-stoneskin-05.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-06",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "돌 손 집게를 든 웅크린 거구",
-"src": "img/npc/X-stoneskin-06.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-07",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "실을 감으며 앉은 할머니",
-"src": "img/npc/X-stoneskin-07.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-08",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "자를 든 긴 치마 여인",
-"src": "img/npc/X-stoneskin-08.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-09",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "철망 상자를 끌어안은 사내",
-"src": "img/npc/X-stoneskin-09.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
-"id": "X-stoneskin-10",
-"cat": "char",
-"sub": "돌피부 인간 · 팩션 NPC · 원화",
-"cid": "C-117",
-"name": "토끼 인형을 안은 꼬마",
-"src": "img/npc/X-stoneskin-10.webp",
-"note": "드라이브 일반NPC · 돌피부인간들.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-stoneskin"
-},
-{
 "id": "X-ironremnant-01",
 "cat": "char",
 "sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
@@ -44103,54 +43599,6 @@ const CATALOG = [
 "name": "도끼창을 든 기사",
 "src": "img/npc/X-ironremnant-06.webp",
 "note": "드라이브 일반NPC · 철의 잔재, 빈 갑옷 기사들-1.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-ironremnant"
-},
-{
-"id": "X-ironremnant-07",
-"cat": "char",
-"sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
-"cid": "C-118",
-"name": "투구를 옆에 낀 머리 없는 대장장이 갑옷",
-"src": "img/npc/X-ironremnant-07.webp",
-"note": "드라이브 일반NPC · 철의 잔재, 빈 갑옷 기사들-1.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-ironremnant"
-},
-{
-"id": "X-ironremnant-08",
-"cat": "char",
-"sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
-"cid": "C-118",
-"name": "가방을 멘 붉은 두건 기사",
-"src": "img/npc/X-ironremnant-08.webp",
-"note": "드라이브 일반NPC · 철의 잔재, 빈 갑옷 기사들-1.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-ironremnant"
-},
-{
-"id": "X-ironremnant-09",
-"cat": "char",
-"sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
-"cid": "C-118",
-"name": "주전자를 든 외투 차림 기사",
-"src": "img/npc/X-ironremnant-09.webp",
-"note": "드라이브 일반NPC · 철의 잔재, 빈 갑옷 기사들-1.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-ironremnant"
-},
-{
-"id": "X-ironremnant-10",
-"cat": "char",
-"sub": "철의 잔재 · 빈 갑옷 기사 · 팩션 NPC · 원화",
-"cid": "C-118",
-"name": "두루마리를 안은 꼬마 기사",
-"src": "img/npc/X-ironremnant-10.webp",
-"note": "드라이브 일반NPC · 철의 잔재, 빈 갑옷 기사들-1.png #9 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-ironremnant"
@@ -44396,66 +43844,6 @@ const CATALOG = [
 "g": "X-wanderer"
 },
 {
-"id": "X-commoner1-01",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "돌 바퀴를 세우는 망치 든 여인",
-"src": "img/npc/X-commoner1-01.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-02",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "쇳덩이를 든 대머리 장정",
-"src": "img/npc/X-commoner1-02.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-03",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "상자에 앉아 저울을 든 할머니",
-"src": "img/npc/X-commoner1-03.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-04",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "구멍 뚫린 쇠기둥을 멘 사내",
-"src": "img/npc/X-commoner1-04.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-05",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "밧줄로 쇠추를 든 여인",
-"src": "img/npc/X-commoner1-05.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
 "id": "X-commoner1-06",
 "cat": "char",
 "sub": "일반인 1 · 팩션 NPC · 원화",
@@ -44468,18 +43856,6 @@ const CATALOG = [
 "g": "X-commoner1"
 },
 {
-"id": "X-commoner1-07",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "단검을 들고 발차기하는 여인",
-"src": "img/npc/X-commoner1-07.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
 "id": "X-commoner1-08",
 "cat": "char",
 "sub": "일반인 1 · 팩션 NPC · 원화",
@@ -44487,30 +43863,6 @@ const CATALOG = [
 "name": "추를 늘어뜨린 지팡이 노인",
 "src": "img/npc/X-commoner1-08.webp",
 "note": "드라이브 일반NPC · 일반인 구역.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-09",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "쇠 상자를 안은 뚱뚱한 여인",
-"src": "img/npc/X-commoner1-09.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-commoner1"
-},
-{
-"id": "X-commoner1-10",
-"cat": "char",
-"sub": "일반인 1 · 팩션 NPC · 원화",
-"cid": "C-121",
-"name": "돌멩이를 던지는 가방 멘 아이",
-"src": "img/npc/X-commoner1-10.webp",
-"note": "드라이브 일반NPC · 일반인 구역.png #9 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-commoner1"
@@ -44708,30 +44060,6 @@ const CATALOG = [
 "g": "X-mechman"
 },
 {
-"id": "X-mechman-05",
-"cat": "char",
-"sub": "기계인간 · 팩션 NPC · 원화",
-"cid": "C-123",
-"name": "구슬 지팡이를 짚은 망토 기계인",
-"src": "img/npc/X-mechman-05.webp",
-"note": "드라이브 일반NPC · 기계인간.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-mechman"
-},
-{
-"id": "X-mechman-06",
-"cat": "char",
-"sub": "기계인간 · 팩션 NPC · 원화",
-"cid": "C-123",
-"name": "둥근 통을 등에 멘 기계 짐꾼",
-"src": "img/npc/X-mechman-06.webp",
-"note": "드라이브 일반NPC · 기계인간.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-mechman"
-},
-{
 "id": "X-mechman-07",
 "cat": "char",
 "sub": "기계인간 · 팩션 NPC · 원화",
@@ -44751,18 +44079,6 @@ const CATALOG = [
 "name": "칼날 팔을 펼친 꼬리 기계인",
 "src": "img/npc/X-mechman-08.webp",
 "note": "드라이브 일반NPC · 기계인간.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-mechman"
-},
-{
-"id": "X-mechman-09",
-"cat": "char",
-"sub": "기계인간 · 팩션 NPC · 원화",
-"cid": "C-123",
-"name": "상자 위에 주저앉은 기계인",
-"src": "img/npc/X-mechman-09.webp",
-"note": "드라이브 일반NPC · 기계인간.png #8 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-mechman"
@@ -45003,18 +44319,6 @@ const CATALOG = [
 "name": "가슴에 빛 고리를 단 단발 요정",
 "src": "img/npc/X-fairy-01.webp",
 "note": "드라이브 일반NPC · 요정들.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-fairy"
-},
-{
-"id": "X-fairy-02",
-"cat": "char",
-"sub": "요정 · 팩션 NPC · 원화",
-"cid": "C-126",
-"name": "소매를 펼친 흰 머리 요정",
-"src": "img/npc/X-fairy-02.webp",
-"note": "드라이브 일반NPC · 요정들.png #1 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-fairy"
@@ -45332,30 +44636,6 @@ const CATALOG = [
 "g": "X-devil"
 },
 {
-"id": "X-devil-09",
-"cat": "char",
-"sub": "악마 · 팩션 NPC · 원화",
-"cid": "C-128",
-"name": "닻을 멘 뚱뚱한 뿔 여인",
-"src": "img/npc/X-devil-09.webp",
-"note": "드라이브 일반NPC · 악마쪽.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-devil"
-},
-{
-"id": "X-devil-10",
-"cat": "char",
-"sub": "악마 · 팩션 NPC · 원화",
-"cid": "C-128",
-"name": "실타래를 든 굽은 뿔 노인",
-"src": "img/npc/X-devil-10.webp",
-"note": "드라이브 일반NPC · 악마쪽.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-devil"
-},
-{
 "id": "X-demonkin1-01",
 "cat": "char",
 "sub": "마족 1 · 팩션 NPC · 원화",
@@ -45363,18 +44643,6 @@ const CATALOG = [
 "name": "뼈 갑옷을 두른 해골 얼굴 거수",
 "src": "img/npc/X-demonkin1-01.webp",
 "note": "드라이브 일반NPC · 마족.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-demonkin1"
-},
-{
-"id": "X-demonkin1-02",
-"cat": "char",
-"sub": "마족 1 · 팩션 NPC · 원화",
-"cid": "C-129",
-"name": "챙 모자를 쓴 뼈 발톱 여인",
-"src": "img/npc/X-demonkin1-02.webp",
-"note": "드라이브 일반NPC · 마족.png #1 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-demonkin1"
@@ -45596,18 +44864,6 @@ const CATALOG = [
 "g": "X-flame"
 },
 {
-"id": "X-flame-02",
-"cat": "char",
-"sub": "화염 · 용암 · 팩션 NPC · 원화",
-"cid": "C-131",
-"name": "녹슨 둥근 방패를 든 냄비 머리 전사",
-"src": "img/npc/X-flame-02.webp",
-"note": "드라이브 일반NPC · 화염or용암쪽.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-flame"
-},
-{
 "id": "X-flame-03",
 "cat": "char",
 "sub": "화염 · 용암 · 팩션 NPC · 원화",
@@ -45639,42 +44895,6 @@ const CATALOG = [
 "name": "등불 지팡이를 든 누더기 사제",
 "src": "img/npc/X-flame-05.webp",
 "note": "드라이브 일반NPC · 화염or용암쪽.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-flame"
-},
-{
-"id": "X-flame-06",
-"cat": "char",
-"sub": "화염 · 용암 · 팩션 NPC · 원화",
-"cid": "C-131",
-"name": "종을 매단 통통한 꼬마",
-"src": "img/npc/X-flame-06.webp",
-"note": "드라이브 일반NPC · 화염or용암쪽.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-flame"
-},
-{
-"id": "X-flame-07",
-"cat": "char",
-"sub": "화염 · 용암 · 팩션 NPC · 원화",
-"cid": "C-131",
-"name": "통을 든 긴 머리 여인",
-"src": "img/npc/X-flame-07.webp",
-"note": "드라이브 일반NPC · 화염or용암쪽.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-flame"
-},
-{
-"id": "X-flame-08",
-"cat": "char",
-"sub": "화염 · 용암 · 팩션 NPC · 원화",
-"cid": "C-131",
-"name": "냄비를 잔뜩 짊어진 뚱뚱한 상인",
-"src": "img/npc/X-flame-08.webp",
-"note": "드라이브 일반NPC · 화염or용암쪽.png #7 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-flame"
@@ -48691,30 +47911,6 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "N-027"
-},
-{
-"id": "F-N-034",
-"cat": "char",
-"sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
-"cid": "C-178",
-"name": "복서 기본 초상화",
-"src": "img/face/N-034_portrait.webp",
-"note": "스탠딩에서 정사각형으로 자름",
-"rank": "",
-"on": false,
-"g": "N-034"
-},
-{
-"id": "N-034",
-"cat": "char",
-"sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
-"cid": "C-178",
-"name": "복서",
-"src": "img/npc/N-034.webp",
-"note": "드라이브 NPC 폴더 · 복서.png",
-"rank": "",
-"on": false,
-"g": "N-034"
 },
 {
 "id": "F-N-042",
@@ -55451,30 +54647,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-blackhorn-02",
-"rank": "",
-"cat": "char",
-"sub": "검은 뿔 · 팩션 NPC · 원화",
-"cid": "C-252",
-"g": "X-h3f-blackhorn",
-"name": "렌치검 소녀",
-"src": "img/npc/h3f_blackhorn_02.webp",
-"note": "3기 추가팩션 · 검은 뿔의 열 가지 실루엣.png #02 (2026-10-06). 금발 단발 앞치마 소녀, 거대한 바이스 렌치 검. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-blackhorn-03",
-"rank": "",
-"cat": "char",
-"sub": "검은 뿔 · 팩션 NPC · 원화",
-"cid": "C-252",
-"g": "X-h3f-blackhorn",
-"name": "가위 재단사",
-"src": "img/npc/h3f_blackhorn_03.webp",
-"note": "3기 추가팩션 · 검은 뿔의 열 가지 실루엣.png #03 (2026-10-06). 긴 금발 여인, 큰 가위와 자. · 역할 병사",
-"on": false
-},
-{
 "id": "X-h3f-blackhorn-04",
 "rank": "",
 "cat": "char",
@@ -55484,18 +54656,6 @@ const CATALOG = [
 "name": "석궁 사슴말",
 "src": "img/npc/h3f_blackhorn_04.webp",
 "note": "3기 추가팩션 · 검은 뿔의 열 가지 실루엣.png #04 (2026-10-06). 등에 석궁 · 두루마리를 실은 긴 다리 짐승. · 역할 괴수",
-"on": false
-},
-{
-"id": "X-h3f-blackhorn-05",
-"rank": "",
-"cat": "char",
-"sub": "검은 뿔 · 팩션 NPC · 원화",
-"cid": "C-252",
-"g": "X-h3f-blackhorn",
-"name": "도롱뇽 열쇠지기",
-"src": "img/npc/h3f_blackhorn_05.webp",
-"note": "3기 추가팩션 · 검은 뿔의 열 가지 실루엣.png #05 (2026-10-06). 점박이 도롱뇽 수인, 바퀴 머리 지팡이. · 역할 마법사",
 "on": false
 },
 {
@@ -55583,18 +54743,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-blackveil-04",
-"rank": "",
-"cat": "char",
-"sub": "검은 장막 · 팩션 NPC · 원화",
-"cid": "C-253",
-"g": "X-h3f-blackveil",
-"name": "영양 머리 짐꾼",
-"src": "img/npc/h3f_blackveil_04.webp",
-"note": "3기 추가팩션 · 검은 장막의 열 전사 도감.png #04 (2026-10-06). 긴 뿔 영양 수인, 탄 주머니와 집게 장대. · 역할 병사",
-"on": false
-},
-{
 "id": "X-h3f-blackveil-05",
 "rank": "",
 "cat": "char",
@@ -55616,18 +54764,6 @@ const CATALOG = [
 "name": "방독면 화염병",
 "src": "img/npc/h3f_blackveil_06.webp",
 "note": "3기 추가팩션 · 검은 장막의 열 전사 도감.png #06 (2026-10-06). 대머리 방독면 사내, 탱크와 관총. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-blackveil-07",
-"rank": "",
-"cat": "char",
-"sub": "검은 장막 · 팩션 NPC · 원화",
-"cid": "C-253",
-"g": "X-h3f-blackveil",
-"name": "나방 탄약수",
-"src": "img/npc/h3f_blackveil_07.webp",
-"note": "3기 추가팩션 · 검은 장막의 열 전사 도감.png #07 (2026-10-06). 털 목도리의 네 팔 나방 수인, 탄약 상자를 나른다. · 역할 지원",
 "on": false
 },
 {
@@ -55739,18 +54875,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-bluemask-08",
-"rank": "",
-"cat": "char",
-"sub": "푸른 외투단 · 팩션 NPC · 원화",
-"cid": "C-254",
-"g": "X-h3f-bluemask",
-"name": "서기관",
-"src": "img/npc/h3f_bluemask_08.webp",
-"note": "3기 추가팩션 · 푸른 외투와 검은 가면의 열 인물.png #08 (2026-10-06). 장부를 끼고 서류 가방을 든 모자 쓴 여 서기. · 역할 지원",
-"on": false
-},
-{
 "id": "X-h3f-bluemask-09",
 "rank": "",
 "cat": "char",
@@ -55787,18 +54911,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-magentaroot-02",
-"rank": "",
-"cat": "char",
-"sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
-"cid": "C-255",
-"g": "X-h3f-magentaroot",
-"name": "탑방패 도끼병",
-"src": "img/npc/h3f_magentaroot_02.webp",
-"note": "3기 추가팩션 · 마젠타 뿌리 군단의 10인 전투 도감-4.png #02 (2026-10-06). 비대한 몸, 손도끼와 판자 탑방패. · 역할 병사",
-"on": false
-},
-{
 "id": "X-h3f-magentaroot-03",
 "rank": "",
 "cat": "char",
@@ -55832,42 +54944,6 @@ const CATALOG = [
 "name": "드릴팔 거구",
 "src": "img/npc/h3f_magentaroot_05.webp",
 "note": "3기 추가팩션 · 마젠타 뿌리 군단의 10인 전투 도감-4.png #05 (2026-10-06). 붕대 감은 굵은 팔, 드릴 창을 쥔 짐 진 거구. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-magentaroot-06",
-"rank": "",
-"cat": "char",
-"sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
-"cid": "C-255",
-"g": "X-h3f-magentaroot",
-"name": "올가미 덫꾼",
-"src": "img/npc/h3f_magentaroot_06.webp",
-"note": "3기 추가팩션 · 마젠타 뿌리 군단의 10인 전투 도감-4.png #06 (2026-10-06). 장대 끝 올가미와 곰덫을 든 여인. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-magentaroot-07",
-"rank": "",
-"cat": "char",
-"sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
-"cid": "C-255",
-"g": "X-h3f-magentaroot",
-"name": "통 짊은 거구",
-"src": "img/npc/h3f_magentaroot_07.webp",
-"note": "3기 추가팩션 · 마젠타 뿌리 군단의 10인 전투 도감-4.png #07 (2026-10-06). 양옆에 통 묶음을 매단 비대한 운반병. · 역할 지원",
-"on": false
-},
-{
-"id": "X-h3f-magentaroot-08",
-"rank": "",
-"cat": "char",
-"sub": "마젠타 뿌리 군단 · 팩션 NPC · 원화",
-"cid": "C-255",
-"g": "X-h3f-magentaroot",
-"name": "집게 간호수녀",
-"src": "img/npc/h3f_magentaroot_08.webp",
-"note": "3기 추가팩션 · 마젠타 뿌리 군단의 10인 전투 도감-4.png #08 (2026-10-06). 흰 앞치마, 긴 집게와 약 가방. · 역할 지원",
 "on": false
 },
 {
@@ -56063,18 +55139,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-tendon-06",
-"rank": "",
-"cat": "char",
-"sub": "텐던 콰이어 (힘줄 성가대) · 팩션 NPC · 원화",
-"cid": "C-257",
-"g": "X-h3f-tendon",
-"name": "낫지팡이 수녀",
-"src": "img/npc/h3f_tendon_06.webp",
-"note": "3기 추가팩션 · 텐던 콰이어의 열 이형 전사.png #06 (2026-10-06). 흰 머리 묶은 수녀, 붉은 액이 든 대롱 달린 낫 지팡이를 든다. · 역할 병사",
-"on": false
-},
-{
 "id": "X-h3f-tendon-07",
 "rank": "",
 "cat": "char",
@@ -56096,18 +55160,6 @@ const CATALOG = [
 "name": "쌍낫 힘줄 전사",
 "src": "img/npc/h3f_tendon_08.webp",
 "note": "3기 추가팩션 · 텐던 콰이어의 열 이형 전사.png #08 (2026-10-06). 자홍 힘줄이 뒤엉킨 굵은 팔, 두 손에 갈고리 낫. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-tendon-09",
-"rank": "",
-"cat": "char",
-"sub": "텐던 콰이어 (힘줄 성가대) · 팩션 NPC · 원화",
-"cid": "C-257",
-"g": "X-h3f-tendon",
-"name": "대롱총 수녀",
-"src": "img/npc/h3f_tendon_09.webp",
-"note": "3기 추가팩션 · 텐던 콰이어의 열 이형 전사.png #09 (2026-10-06). 흰 단발 수녀, 자홍 액을 쏘는 대롱총과 감긴 호스. · 역할 궁수",
 "on": false
 },
 {
@@ -56135,18 +55187,6 @@ const CATALOG = [
 "on": false
 },
 {
-"id": "X-h3f-wraith-02",
-"rank": "",
-"cat": "char",
-"sub": "망령군 · 팩션 NPC · 원화",
-"cid": "C-258",
-"g": "X-h3f-wraith",
-"name": "방패 단검 여전사",
-"src": "img/npc/h3f_wraith_02.webp",
-"note": "3기 추가팩션 · 망령군.png #02 (2026-10-06). 비늘 치마의 땅딸막한 여전사, 철판 방패와 단검. · 역할 병사",
-"on": false
-},
-{
 "id": "X-h3f-wraith-03",
 "rank": "",
 "cat": "char",
@@ -56156,18 +55196,6 @@ const CATALOG = [
 "name": "개틀링 거한",
 "src": "img/npc/h3f_wraith_03.webp",
 "note": "3기 추가팩션 · 망령군.png #03 (2026-10-06). 꿰맨 근육 거인, 회전 포신 기관포를 안는다. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-wraith-04",
-"rank": "",
-"cat": "char",
-"sub": "망령군 · 팩션 NPC · 원화",
-"cid": "C-258",
-"g": "X-h3f-wraith",
-"name": "도끼창 여장교",
-"src": "img/npc/h3f_wraith_04.webp",
-"note": "3기 추가팩션 · 망령군.png #04 (2026-10-06). 흰 머리 올린 장신 여인, 도끼창을 짚는다. · 역할 지휘관",
 "on": false
 },
 {
@@ -56192,42 +55220,6 @@ const CATALOG = [
 "name": "꼽추 저격수",
 "src": "img/npc/h3f_wraith_06.webp",
 "note": "3기 추가팩션 · 망령군.png #06 (2026-10-06). 흰 머리 노인, 망원 장총을 든 구부정한 사수. · 역할 궁수",
-"on": false
-},
-{
-"id": "X-h3f-wraith-07",
-"rank": "",
-"cat": "char",
-"sub": "망령군 · 팩션 NPC · 원화",
-"cid": "C-258",
-"g": "X-h3f-wraith",
-"name": "드릴 여전사",
-"src": "img/npc/h3f_wraith_07.webp",
-"note": "3기 추가팩션 · 망령군.png #07 (2026-10-06). 굵은 팔뚝 여전사, 키만 한 드릴 철퇴. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-wraith-08",
-"rank": "",
-"cat": "char",
-"sub": "망령군 · 팩션 NPC · 원화",
-"cid": "C-258",
-"g": "X-h3f-wraith",
-"name": "고리 사슬꾼",
-"src": "img/npc/h3f_wraith_08.webp",
-"note": "3기 추가팩션 · 망령군.png #08 (2026-10-06). 큰 쇠고리와 사슬 갈고리를 어깨에 건 사내. · 역할 병사",
-"on": false
-},
-{
-"id": "X-h3f-wraith-09",
-"rank": "",
-"cat": "char",
-"sub": "망령군 · 팩션 NPC · 원화",
-"cid": "C-258",
-"g": "X-h3f-wraith",
-"name": "가방 든 여사감",
-"src": "img/npc/h3f_wraith_09.webp",
-"note": "3기 추가팩션 · 망령군.png #09 (2026-10-06). 흰 단발, 긴 장교 코트, 철 가방을 든 여사감. · 역할 지휘관",
 "on": false
 },
 {
