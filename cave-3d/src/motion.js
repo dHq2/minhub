@@ -1,4 +1,4 @@
-/* motion.js v1.1 — (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
+/* motion.js v1.2 — (v1.2, v0.78: 앉은 그림이 여러 장인 동료 (테헤라 — 바위에 앉아 쉼) 는 둘레에 적 없이 8초 가만히 있으면 앉음 · 따라가기 중 think 의 기본 자세 (서 있음 · 걷기) 가 이 파일이 고른 자세 (달리기 · 뒷걸음 · 쉼) 를 매 장 덮어 첫 장에 멈추던 것 고침) (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
    v1.0 — 1차 업뎃 (2026-10-09): 잡몹 10명 동작 그림 (드라이브 '10.08 1차업뎃 / 1차적 10인')
    검사 · 검방패병 · 붉은 망토 궁수 · 창병 · 광신도 · 꼬마악마 · 흑기사 방패병 · 흑기사 창병 · 광냥 · 푸른 뚱보
    ■ 그림: src/mob10_sheets.js (M10, tools/mob10_art.py 가 만듦) → SPR[키] 를 통째로 바꿈 (키 · 크기 (tall) 는 그대로)
@@ -59,7 +59,10 @@ function movMap(u, p){
   return p;
 }
 const _setPoseM10 = setPose;
-setPose = function(u, p){ return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p) : p); };
+setPose = function(u, p){
+  if (u && u.S && !u.lock && u.st === 'idle' && u._mw && u.pose === u._mw && (p === 'idle' || (p === 'walk' && (u.S.m10 || u.S.mov)))) return;   // v1.2 이 파일이 고른 자세를 기본 자세가 덮지 않게 (같은 장에 다시 고름)
+  return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p) : p);
+};
 
 /* ---------- 고유 기술: 특수 준비 → 특수 공격 ---------- */
 for (const k of Object.keys(typeof M10 !== 'undefined' ? M10 : {})){
@@ -122,7 +125,7 @@ function m10Want(u, dt){
   return u._rdy ? 'ready' : 'idle';
 }
 // 2 · 3기: 이 파일이 다루는 자세일 때만 (사격 · 막기 · 기술 그림은 건드리지 않음)
-const MOV_OWN = new Set(['idle', 'ready', 'walk', 'walkB', 'run', 'hurt', 'hurt2', 'stun', 'kneel', 'down']);
+const MOV_OWN = new Set(['idle', 'ready', 'walk', 'walkB', 'run', 'hurt', 'hurt2', 'stun', 'kneel', 'down', 'sit']);
 const _camF = new THREE.Vector3();
 function movWant(u, dt){
   const Q = u.S.poses, st = u.st;
@@ -135,24 +138,39 @@ function movWant(u, dt){
     return M10_HURT.has(u.pose) ? null : movMap(u, 'hurt');
   }
   u._wasLying = false;
-  if (st !== 'idle' || !MOV_OWN.has(u.pose)) return null;
+  if (st !== 'idle' || !MOV_OWN.has(u.pose)){ u._stillT = 0; return null; }
   if (u.moving && (u._msp || 0) > 0.25){
+    u._stillT = 0;
     const fast = (u.alert || u.side === 'ally') && u._msp > u.spd * 0.85;
     u._rate = Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));
     if (Q.walkB && u._mv){ camera.getWorldDirection(_camF); const l = Math.hypot(_camF.x, _camF.z) || 1; if ((u._mv.x * _camF.x + u._mv.z * _camF.z) / l > 0.45) return 'walkB'; }   // 카메라에서 멀어짐 = 뒷모습
     return fast && Q.run ? 'run' : 'walk';
   }
   const war = u.side === 'enemy' ? u.alert : ((u._rdT = (u._rdT || 0) - dt) <= 0 ? (u._rdT = 0.5, u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9)) : u._rdy);
+  if (war) u._stillT = 0;
+  else if (u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 오래 가만히 → 앉아 쉼
   return war && Q.ready ? 'ready' : 'idle';
+}
+// v1.2 움직임 그림은 없고 앉은 그림만 여러 장인 동료 (테헤라): 오래 가만히 → 앉음, 움직이거나 적이 오면 일어남
+function sitWant(u, dt){
+  if (u.st !== 'idle' || u.moving){ u._stillT = 0; return u.moving && u.st === 'idle' && u.pose === 'sit' ? (u.S.poses.walk ? 'walk' : 'idle') : null; }   // 앉은 채 미끄러지지 않게
+  if ((u._rdT = (u._rdT || 0) - dt) <= 0){ u._rdT = 0.5; u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9); }
+  if (u._rdy){ u._stillT = 0; return u.pose === 'sit' ? 'idle' : null; }
+  u._stillT = (u._stillT || 0) + dt;
+  return u._stillT > 8 ? 'sit' : null;
 }
 TICKS.push(dt => {
   for (const u of G.units){
-    if (!u.S || !(u.S.m10 || u.S.mov) || u.dead || u.downed || u.lock) continue;
+    if (!u.S || u.dead || u.downed || u.lock){ if (u) u._mw = null; continue; }
+    const sitOnly = !(u.S.m10 || u.S.mov) && u.side === 'ally' && u.S.poses.sit && u.S.poses.sit.n > 1;
+    if (!(u.S.m10 || u.S.mov) && !sitOnly){ u._mw = null; continue; }
+    if (sitOnly){ const p = sitWant(u, dt); u._mw = p; if (p) _setPoseM10(u, p); continue; }
     const dx = u._mp ? u.x - u._mp.x : 0, dz = u._mp ? u.z - u._mp.z : 0, sp = Math.hypot(dx, dz) / Math.max(dt, 1e-3); u._mp = { x: u.x, z: u.z };
     if (sp > 0.2) u._mv = { x: dx / (sp * Math.max(dt, 1e-3)), z: dz / (sp * Math.max(dt, 1e-3)) };   // 움직이는 쪽 (단위)
     u._msp = (u._msp || 0) + (Math.min(sp, 12) - (u._msp || 0)) * Math.min(1, dt * 10);
     const p = u.S.m10 ? m10Want(u, dt) : movWant(u, dt);
-    if (p && u.S.poses[p]) _setPoseM10(u, p);
+    u._mw = p && u.S.poses[p] ? p : null;
+    if (u._mw) _setPoseM10(u, p);
     if ((u.pose === 'walk' || u.pose === 'walkB' || u.pose === 'run') && u.poseT > 0.05) u.poseT = Math.max(0, u.poseT + dt * (u._rate - 1));
   }
 });

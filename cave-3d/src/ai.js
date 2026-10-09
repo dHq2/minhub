@@ -1,4 +1,4 @@
-/* ai.js v0.31 — (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.32 — (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -20,6 +20,7 @@ function aimDy(x, y0, z, t, speed){ const d = Math.hypot(t.x - x, t.z - z), time
 
 // 한 번 휘두르기 · 찌르기 · 내려찍기: 예고 장판이 다 차는 순간 그 안의 상대가 맞음 (뛰어올라 있으면 바닥 공격은 피함)
 function windup(u, shape, o, onHit, color = RED){
+  const p2 = u.pose2Next; u.pose2Next = null;   // v0.32 기술 끝 그림 (h2Cast 가 부르기 바로 전에 정함)
   u.st = 'windup';
   if (!u.S.poses.windup && !u.S.poses.attack) u.leanT = -0.16;
   u.decal = decal(shape, { ...o, color, hostile: u.side === 'enemy', dur: o.windup, onDone: d => {
@@ -32,7 +33,7 @@ function windup(u, shape, o, onHit, color = RED){
       u.leanT = 0.2; moveBy(u, Math.cos(d.a ?? u.aim) * 0.35, Math.sin(d.a ?? u.aim) * 0.35);
       if (shape === 'sector') for (let k = -2; k <= 2; k++){ const a = (d.a ?? u.aim) + k * (o.arc || 1) / 5; spark(u.x + Math.cos(a) * (o.r || 1.2) * 0.8, u.y + 0.8, u.z + Math.sin(a) * (o.r || 1.2) * 0.8, color === BLUE ? 0x9fd0ff : 0xffb0a0, 2, 1.5, 0.16, 0.2); }
     }
-    u.st = 'strike'; u.stT = 0.3; setPose(u, u.S.poses.attack ? 'attack' : 'idle');
+    u.st = 'strike'; u.stT = 0.3; setPose(u, p2 && u.S.poses[p2] ? p2 : u.S.poses.attack ? 'attack' : 'idle');
     o.after && o.after(d, targets);
   } });
 }

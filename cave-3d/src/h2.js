@@ -1,4 +1,4 @@
-/* h2.js v2.3 — (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v2.4 — (v2.4, v0.78: 기술 끝 그림 pose2 를 장판 기술 (베기 · 찌르기 · 찍기 · 마무리 …) 에도 — 칠 때 그 그림. 용묘화: 모아 내려치기 charge → smash · 파내기 · 파묻기 dig → dig2 (도감 움짤)) (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -48,6 +48,7 @@ function h2Cast(u, s, tgt){
   if (s.say) say(u, s.say, 'big', 1.2); else popText(u.x, u.y + bodyH(u) + 0.5, u.z, s.n, 'alert', 0.8);
   setPose(u, P(s.pose || 'windup'));
   const W = s.windup ?? 0.5;
+  u.pose2Next = s.type !== 'volley' && s.type !== 'shot' && s.pose2 || null;   // v2.4 칠 때 그림 (windup() 이 한 번 읽음)
   switch (s.type){
     case 'slash': windup(u, 'sector', { x: u.x, z: u.z, r: s.r || 2.2, a, arc: s.arc || 2.0, windup: W }, hit(s.mul || 1.4, s)); break;
     case 'thrust': windup(u, 'line', { x: u.x, z: u.z, len: s.len || 3.5, w: s.w || 0.9, a, windup: W }, hit(s.mul || 1.5, s)); break;
@@ -120,6 +121,7 @@ function h2Cast(u, s, tgt){
       u.h2cd[s.id] = s.cd; break; }
     case 'backstep': { const n = norm(u.x - (tgt ? tgt.x : u.x + 1), u.z - (tgt ? tgt.z : u.z)); moveBy(u, n.x * (s.len || 2.4), n.z * (s.len || 2.4)); dust(u.x, u.z, 5); u.st = 'strike'; u.stT = 0.35; break; }
   }
+  u.pose2Next = null;
   return true;
 }
 // 쓸 만한 기술 고르기
@@ -428,8 +430,8 @@ Object.assign(H2K, {
     sk: [sk('pounce', '덮치기', 'leap', 'jump2', 7, 7, { len: 7, r: 1.5, mul: 0.5, mul2: 1.3, trip: true, windup: 0.3 }), sk('rake', '연속 할퀴기', 'slash', 'attack2', 6, 2.5, { r: 2.5, arc: 1.6, mul: 1.4, sts: 'bleed' }),
       sk('aid', '응급 처치', 'heal', 'heal', 12, 4, { r: 4, amt: 0.3, revive: true }), sk('dart', '치고 빠지기', 'dash', 'dash', 6, 6, { len: 6, mul: 0.8, windup: 0.15 })] },
   yongmyo: { st: { hp: 190, atk: 20, spd: 3.5, melee: ML(2.8, 1.0, 0.3, 0.9, 0.9, 0.8) }, pas: ['묘지기', '쓰러진 적에게 +30% · 쓰러뜨리면 체력 3% 회복'],
-    sk: [sk('smash', '모아 내려치기', 'slam', 'windup', 8, 3, { r: 1.6, atTarget: true, mul: 2.2, stun: 1, windup: 0.6 }), sk('dig', '파내기', 'slash', 'dig', 8, 4, { r: 4, arc: 1.6, mul: 1.2, sts: 'slow' }),
-      sk('sweep', '휘둘러 쳐내기', 'slash', 'attack2', 7, 3, { r: 3.2, arc: 2.6, mul: 1.1, kb: 2 }), sk('bury', '파묻기', 'finisher', 'dig', 6, 2, { mul: 2.6 })] },
+    sk: [sk('smash', '모아 내려치기', 'slam', 'charge', 8, 3, { r: 1.6, atTarget: true, mul: 2.2, stun: 1, windup: 0.6, pose2: 'smash' }), sk('dig', '파내기', 'slash', 'dig', 8, 4, { r: 4, arc: 1.6, mul: 1.2, sts: 'slow', pose2: 'dig2' }),
+      sk('sweep', '휘둘러 쳐내기', 'slash', 'attack2', 7, 3, { r: 3.2, arc: 2.6, mul: 1.1, kb: 2 }), sk('bury', '파묻기', 'finisher', 'dig', 6, 2, { mul: 2.6, pose2: 'dig2' })] },
   tehera: { st: { hp: 125, atk: 11, spd: 3.6, melee: ML(1.2, 0.6), bow: { range: 12, windup: 0.35, cd: 0.9, speed: 18 } }, pas: ['요정 날개', '회피 +10%'],
     sk: [sk('bless', '요정의 축복', 'heal', 'reach', 9, 5, { r: 5, amt: 0.25 }), sk('wings', '날개 방패', 'guard', 'guard', 10, 2, { t: 2 }),
       sk('flight', '은빛 비행', 'dash', 'dash', 7, 8, { len: 8, mul: 0.4, sts: 'slow', windup: 0.15 }), sk('dream', '나른한 꿈', 'zone', 'sit', 14, 8, { r: 4, delay: 1.2, mul: 0.4, sts: 'slow', stun: 0.8, color: 0xffd0e8 })] },

@@ -1,4 +1,4 @@
-# h2_moves.py v1.0 — 1차 업뎃 (2026-10-09): 2 · 3기 인물 새 동작 프레임 → 인물마다 동작 묶음 그림 art/h2/mov/<slug>.webp + src/h2_mov.js (H2MOV)
+# h2_moves.py v1.1 — (v1.1: 도감 움짤 (codex/img) 을 동작으로 — 프레임이 있는데 게임에서 멈춰 있던 인물: 용묘화 (대기 · 공격 2 · 모아 내려치기 · 파내기) · 테헤라 (날며 대기 · 앉아 쉬기). 움짤은 그린 자리 그대로 (발을 한 장 기준으로 고정) · 작으면 키우지 않고 scale 로) v1.0 — 1차 업뎃 (2026-10-09): 2 · 3기 인물 새 동작 프레임 → 인물마다 동작 묶음 그림 art/h2/mov/<slug>.webp + src/h2_mov.js (H2MOV)
 #  · 원본: 드라이브 '10.08 1차업뎃' 시트를 자른 칸 (python3 -I tools/up1_cut.py <시트 폴더> <자른 칸 폴더> tools/up1_cut_spec.json → <시트 이름>/r<줄>c<칸>.png) · 흑토끼 움짤 프레임 폴더 (움짤 webp 를 장마다 png 로 푼 것)
 #  · 칸 → 동작: 아래 SHEETS. 같은 동작 이름 칸이 여럿이면 순서대로 한 줄 띠 (발 맞춤 · 같은 크기 칸) → 게임이 칸 격자로 재생
 #     '동작#k' 는 띠 안의 자리 (다른 시트 칸을 사이에 끼울 때) · '인물:동작' 은 여러 인물 시트 (기절 모음)
@@ -11,10 +11,10 @@
 # 실행: python3 tools/h2_moves.py <자른 칸 폴더> <원본 시트 폴더> <움짤 프레임 폴더>   → 그다음 python3 tools/h2_atlas.py (얼굴 모음) · 도감 h2_poses.py
 import os, sys, json
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageSequence
 from scipy import ndimage
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
-OUT = os.path.join(ROOT, 'art', 'h2', 'mov'); NOTES = os.path.join(ROOT, 'art', 'h2', 'notes')
+OUT = os.path.join(ROOT, 'art', 'h2', 'mov'); NOTES = os.path.join(ROOT, 'art', 'h2', 'notes'); CODEX = os.path.join(os.path.dirname(ROOT), 'codex', 'img')
 TARGET = 420; PAD = 6; MAXW = 2048; MAXH = 2048
 # 기준 칸 비율 (서 있는 대기 키 = 1)
 RATIO = {'idle': 1.0, 'ready': 0.95, 'walk': 0.98, 'walkB': 0.98, 'run': 0.9, 'hurt': 0.92, 'hurt2': 0.9, 'stun': 0.88, 'guard': 0.94, 'taunt': 0.98, 'shoot': 0.95}
@@ -101,6 +101,21 @@ SHEETS = [
 ]
 # 흑토끼 고화질 대기 움짤 (24장 → 8장)
 ANIMS = [('코퀄 흑토끼 idle', 'blackrabbit', 'idle', 3, 1.0)]   # (폴더, 인물, 동작, 몇 장마다, 첫 장 키 비율) — 24장 중 8장
+# v1.1 도감 움짤 → 동작: (codex/img 아래 파일, 인물, 동작, 쓸 장 번호, (키 기준 장, 그 장 키 ÷ 서 있는 키), 발 기준 장, 재생, 띄움 (서 있는 키 비율))
+#  · 장마다 발을 다시 맞추지 않음 (움짤 속 움직임 그대로) — 발 기준 장의 발 (가로 가운데 · 바닥) 이 인물 자리
+#  · 용묘화 움짤은 대기만 크게 그려짐 (서 있는 키 339px), 공격 넷은 275px — 장마다 그 움짤의 첫 장 (서 있음) 으로 키를 맞춤
+#  · 쓰는 곳: attack · attackB = 기본 공격 번갈아, charge → smash = 모아 내려치기 (기술 pose · pose2), dig → dig2 = 파내기 · 파묻기, sit = 나른한 꿈 · 오래 가만히 있으면 앉아 쉼 (motion.js)
+CANIMS = [
+    ('tomoe/tomoe_idle.webp', 'yongmyo', 'idle', list(range(16)), (0, 1.0), 0, dict(fps=8), 0),
+    ('tomoe/tomoe_basic_attack.webp', 'yongmyo', 'attack', [2, 3, 4, 5, 6], (0, 1.0), 6, dict(fps=14, once=1), 0),
+    ('tomoe/tomoe_dash_smash.webp', 'yongmyo', 'attackB', [6, 7, 8, 9, 10, 11, 12], (0, 1.0), 9, dict(fps=16, once=1), 0),
+    ('tomoe/tomoe_charge_smash.webp', 'yongmyo', 'charge', [3, 4, 5, 6, 7, 8, 9], (0, 1.0), 3, dict(fps=12, once=1), 0),
+    ('tomoe/tomoe_charge_smash.webp', 'yongmyo', 'smash', [10, 11, 12, 13, 14, 15, 16, 17], (0, 1.0), 11, dict(fps=24, once=1), 0),
+    ('tomoe/tomoe_dig.webp', 'yongmyo', 'dig', [5, 6, 7, 8], (0, 1.0), 5, dict(fps=8, once=1), 0),
+    ('tomoe/tomoe_dig.webp', 'yongmyo', 'dig2', [9, 10, 11, 12, 13, 14, 15, 16], (0, 1.0), 10, dict(fps=22, once=1), 0),
+    ('char/tehera_fly_idle.webp', 'tehera', 'idle', list(range(0, 30, 2)), (0, 1.04), 0, dict(fps=4.5), 0.08),
+    ('char/tehera_sit_idle.webp', 'tehera', 'sit', list(range(0, 28, 2)), (0, 0.95), 0, dict(fps=4), 0),
+]
 REPLACE = {'yellow'}   # 노트의 옛 동작을 게임에서 뺌
 ALIAS = {'yellow': {'dash': 'run', 'prowl': 'crouch', 'hurt2': 'stun'}}   # 기술 · 엔진이 부르는 옛 이름 → 새 동작
 
@@ -121,14 +136,20 @@ def foot(im):
     a = np.asarray(im)[..., 3] > 60; h = a.shape[0]; band = a[int(h * 0.92):]
     cols = np.where(band.any(0))[0]
     return int((cols.min() + cols.max()) / 2) if len(cols) else im.width // 2
-def strip(frames):
-    """같은 크기 칸에 발 (아래 가운데) 을 맞춰 줄 세움. 띠가 묶음 가로를 넘으면 여러 줄 격자로 접음"""
-    fx = [foot(f) for f in frames]; ax = max(fx); cw = max(ax - x + f.width for f, x in zip(frames, fx)) + 2 * PAD; ch = max(f.height for f in frames) + 2 * PAD
+def foot_at(im):
+    """판 위 발 자리 (x, y) — 그림 테두리 안에서 찾은 발을 판 좌표로"""
+    x0, y0, x1, y1 = alpha_bbox(im, 60); return x0 + foot(im.crop((x0, y0, x1, y1))), y1
+def strip(frames, fix=None):
+    """같은 크기 칸에 발 (아래 가운데) 을 맞춰 줄 세움. 띠가 묶음 가로를 넘으면 여러 줄 격자로 접음
+       fix = (발 x, 발 y — 그림 위에서부터, 띄움 px): 움짤처럼 같은 판에 그려진 장들은 발을 다시 맞추지 않고 이 자리를 발로 (v1.1)"""
+    fx = [fix[0]] * len(frames) if fix else [foot(f) for f in frames]; ax = max(fx); cw = max(ax - x + f.width for f, x in zip(frames, fx)) + 2 * PAD; ch = max(f.height for f in frames) + 2 * PAD
     ax += PAD; n = len(frames); cols = max(1, min(n, int(MAXW * 0.98 // cw))); rows = -(-n // cols)
     S = Image.new('RGBA', (cw * cols, ch * rows), (0, 0, 0, 0))
     for i, (f, x) in enumerate(zip(frames, fx)):
         r, c = divmod(i, cols); S.paste(f, (c * cw + ax - x, r * ch + ch - PAD - f.height), f)
-    return S, cw, ch, ax, ch - PAD - 1, cols, rows
+    ay = ch - PAD - 1
+    if fix: hmax = max(f.height for f in frames); ay = ch - PAD - hmax + fix[1] + fix[2]
+    return S, cw, ch, ax, ay, cols, rows
 def shelf(items, W):
     x = y = rowh = 0; pos = {}
     for k, w, h in items:
@@ -147,6 +168,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     frames = {}   # slug → pose → [(idx, image)]
     fig = {}
+    FIX, MUL, PLY = {}, {}, {}   # v1.1 움짤: (인물, 동작) → 고정 발 · 게임 크기 곱 · 재생
+    SRC = {}   # v1.1 (인물, 동작) → 원본 (시트 칸 · 움짤) — tools/h2_mov_sources.json (도감 h2_poses.py 가 읽음)
     def put(slug, pose, idx, im):
         frames.setdefault(slug, {}).setdefault(pose, []).append((idx, im))
     for stem, slug0, cells, opt in SHEETS:
@@ -187,7 +210,7 @@ def main():
                 im2 = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
                 n_ = order.get(base, 0); order[base] = n_ + 1
                 idx = int(k) if k else 1000 + len(frames.get(sl, {}).get(base, [])) + n_
-                put(sl, base, idx, im2)
+                put(sl, base, idx, im2); SRC.setdefault((sl, base), []).append(f'{stem} {c}')
             print(f'{stem[:28]:28} {sl:13} 배율 {s:.3f} (기준 {len(est)}칸) → {", ".join(sorted({p.split("#")[0] for _, p, _ in L}))}')
     for folder, sl, pose, step, r in ANIMS:
         d = os.path.join(ANIM, folder); fs = sorted(f for f in os.listdir(d) if f.endswith('.png'))[::step]
@@ -201,14 +224,31 @@ def main():
         if sl not in fig: fig[sl] = idle_fig(sl)
         F = fig[sl][0]; D = min(1.0, TARGET / F); x0, y0, x1, y1 = alpha_bbox(raw[0], 60); s = F * D * r / (y1 - y0)
         for i, im in enumerate(raw): put(sl, pose, i, im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS))
+        SRC.setdefault((sl, pose), []).append(f'움짤 {folder} ({len(raw)}장)')
         print(f'움짤 {folder} → {sl} {pose} {len(raw)}장 배율 {s:.3f}')
+    for rel, sl, pose, idx, (ri, r), ai, play, lift in CANIMS:
+        fr = [x.convert('RGBA') for x in ImageSequence.Iterator(Image.open(os.path.join(CODEX, rel)))]
+        for im in fr:
+            a = np.asarray(im).copy(); a[a[..., 3] < 60] = 0; im.paste(Image.fromarray(a))
+        sel = [fr[i] for i in idx]; bb = None
+        for im in sel:
+            b = alpha_bbox(im, 60); bb = b if bb is None else (min(bb[0], b[0]), min(bb[1], b[1]), max(bb[2], b[2]), max(bb[3], b[3]))
+        if sl not in fig: fig[sl] = idle_fig(sl)
+        F = fig[sl][0]; D = min(1.0, TARGET / F); x0, y0, x1, y1 = alpha_bbox(fr[ri], 60)
+        s = F * D * r / (y1 - y0); k = min(1.0, s)   # 크면 줄이고, 작으면 그대로 두고 게임 크기 (scale) 로 키움
+        fx, fy = foot_at(fr[ai]); std = F * D * k / s   # 서 있는 키 (묶음 px)
+        for i, im in enumerate(sel):
+            c = im.crop(bb); put(sl, pose, i, c.resize((max(1, round(c.width * k)), max(1, round(c.height * k))), Image.LANCZOS))
+        FIX[(sl, pose)] = (round((fx - bb[0]) * k), round((fy - bb[1]) * k) - 1, round(lift * std)); MUL[(sl, pose)] = s / k; PLY[(sl, pose)] = play
+        SRC.setdefault((sl, pose), []).append(f'codex:img/{rel} {idx[0]}-{idx[-1]}')
+        print(f'도감 움짤 {rel} → {sl} {pose} {len(sel)}장 배율 {s:.3f} ({"그대로 · 게임에서 키움" if s > 1 else "줄임"})')
     MOV = {}
     for sl, P in frames.items():
         F, g0, _ = fig[sl]; D = min(1.0, TARGET / F)
         strips = {}
         for pose, L in P.items():
             L.sort(key=lambda t: t[0]); fr = [im for _, im in L]
-            strips[pose] = (*strip(fr), len(fr))
+            strips[pose] = (*strip(fr, FIX.get((sl, pose))), len(fr))
         # 묶음: 거의 정사각 한 장에 들면 한 장, 넘치면 가로 2048 로 여러 장 (줄이지 않음 — 화질 그대로)
         items = sorted(((n, v[0].width, v[0].height) for n, v in strips.items()), key=lambda t: -t[2])
         W = min(MAXW, max(int((sum(w * h for _, w, h in items) * 1.15) ** 0.5), max(w for _, w, _ in items)))
@@ -228,9 +268,9 @@ def main():
             for n, w, h in mine:
                 S, cw, ch, ax, ay, cols, rows, cnt = strips[n]
                 x, y, _ = pos[n]; sheet.paste(S, (x, y))
-                q = {'rect': [x, y, w, h, PW, PH], 'w': cw, 'h': ch, 'ax': ax, 'ay': ay, 'scale': round(g0 / D, 4)}
+                q = {'rect': [x, y, w, h, PW, PH], 'w': cw, 'h': ch, 'ax': ax, 'ay': ay, 'scale': round(g0 / D * MUL.get((sl, n), 1.0), 4)}
                 if pg: q['src'] = f'art/h2/mov/{name}.webp'
-                if cnt > 1: q.update({'n': cnt, 'cols': cols, 'rows': rows, **PLAY.get(n, ONCE)})
+                if cnt > 1: q.update({'n': cnt, 'cols': cols, 'rows': rows, **(PLY.get((sl, n)) or PLAY.get(n, ONCE))})
                 elif n in PLAY and 'flat' in PLAY[n]: q['flat'] = 1
                 Q[n] = q
             sheet.save(os.path.join(OUT, name + '.webp'), 'WEBP', quality=86, method=4); files.append((name, PW, PH))
@@ -243,6 +283,8 @@ def main():
           '   h2.js h2Build 가 노트 동작 위에 덮어씀 (replace = 노트 동작은 버림). poren.js 도 */\n'
           "'use strict';\nconst H2MOV = " + json.dumps(MOV, ensure_ascii=False, separators=(',', ':')) + ';\n')
     open(os.path.join(ROOT, 'src', 'h2_mov.js'), 'w', encoding='utf-8').write(js)
+    srcs = {sl: {p: SRC.get((sl, p), []) for p in MOV[sl]['poses']} for sl in MOV}
+    json.dump({'v': '1.1', 'src': srcs, 'alias': ALIAS}, open(os.path.join(HERE, 'h2_mov_sources.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     # 옐로 새 원화 → 초상화 · 얼굴 (옛 것은 _v1 로)
     Y = os.path.join(ROOT, 'art', 'h2', 'yellow')
     for f in ('portrait', 'face'):
