@@ -1,4 +1,4 @@
-# h2_poses.py v1.3 — (v1.3: 민수 확인 — 마도사녀 = 마도사 · 쥐 베테랑은 쥐 기사 묶음 · 도감에 이미 있던 묶음 9곳에 이어 붙임) v1.2 — (v1.2: 3기-2 — codex_g 가 있는 1기 인물 (마리 · 모닝스타 · 옐로 …)은 도감의 그 사람 묶음 끝에 붙임 · 변신 / 소환물 묶음 (아해 · 슬라) · 메모에 batch) (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
+# h2_poses.py v1.4 — (v1.4: 원래 칸을 쓰레기통에 다 넣은 묶음 (쥐 기사) 도 묶음 · 인물 번호를 지킴 · 1차 업뎃 새 동작 프레임 (cave-3d/src/h2_mov.js) — 동작마다 한 장 (프레임을 줄지어, 칸 높이 220) O-h2m-<slug>-<동작> · img/h2m. 도감 움짤에서 온 동작 (용묘화 · 테헤라) 은 그 움짤 칸에 '게임:' 줄만. 옐로 옛 동작은 '(옛 디자인)' 표시) (v1.3: 민수 확인 — 마도사녀 = 마도사 · 쥐 베테랑은 쥐 기사 묶음 · 도감에 이미 있던 묶음 9곳에 이어 붙임) v1.2 — (v1.2: 3기-2 — codex_g 가 있는 1기 인물 (마리 · 모닝스타 · 옐로 …)은 도감의 그 사람 묶음 끝에 붙임 · 변신 / 소환물 묶음 (아해 · 슬라) · 메모에 batch) (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
 #  · 인물마다 새 묶음 (g = h2_<slug>, cid = 새 인물 번호). 같은 인물의 다른 모습은 한 묶음: 가람 + 망토 갑옷 · 히라리 + 변신 · 레비 + 소환수
 #  · F-h2-<slug> 기본 초상화 (img/face, 256 → 160) · P-h2-<slug> 원화 (img/h2, 높이 420) · O-h2-<slug>-<동작> 동작 그림 (img/h2, 높이 300)
 #  · 은신 웅크림 (은신.png) 7장 · 연금술사 (이름 모름, 낱장 연금술.png) · 벨 쌍권총 그림도 같이
@@ -38,8 +38,8 @@ def put(src, dst, h=300, sq=0):
     im.save(dst, 'WEBP', quality=86, method=4)
 P = os.path.join(ROOT, 'catalog.js'); s = open(P, encoding='utf-8').read(); key = 'const CATALOG = '
 head = s[:s.index(key) + len(key)]; cat = json.loads(s[len(head):].strip().rstrip(';'))
-mine = lambda e: e['id'].startswith(('O-h2-', 'F-h2-', 'P-h2-'))
-old = {e['id']: e for e in cat if mine(e)}; cat = [e for e in cat if not mine(e)]
+mine = lambda e: e['id'].startswith(('O-h2-', 'F-h2-', 'P-h2-', 'O-h2m-'))
+cat0 = list(cat); old = {e['id']: e for e in cat if mine(e)}; cat = [e for e in cat if not mine(e)]
 used = {int(e['cid'][2:]) for e in cat if e.get('cid', '').startswith('C-')}
 cidOf = {}
 for e in old.values():
@@ -52,16 +52,20 @@ def ent(id_, **kw):
 def skillsFor(slug, pose):
     return [x['n'] for x in K.get(slug, {}).get('sk', []) if pose in (x.get('pose'), x.get('pose2'))]
 order = []
+# v1.4 1차 업뎃 새 동작 (cave-3d/src/h2_mov.js · tools/h2_mov_sources.json)
+ms = open(os.path.join(C3, 'src', 'h2_mov.js'), encoding='utf-8').read(); MOV = json.loads(ms[ms.index('{'):ms.rindex('}') + 1])
+MSRC = json.load(open(os.path.join(C3, 'tools', 'h2_mov_sources.json'), encoding='utf-8'))
+WHO = {}   # slug → (묶음 g, cid, sub, 이름)
 for slug, o in R.items():
     g = 'h2_' + GROUP.get(slug, slug); base = R[GROUP.get(slug, slug)]
-    cg = base.get('codex_g'); hit = next((e for e in cat if cg and e.get('g') == cg), None)
+    cg = base.get('codex_g'); hit = next((e for e in cat if cg and e.get('g') == cg), None) or next((e for e in old.values() if cg and e.get('g') == cg), None)   # v1.4 원래 칸을 다 지워도 (쓰레기통) 그 묶음 · 번호 그대로
     if hit: g = cg; cidOf[g] = hit.get('cid') or cidOf.get(g)   # 1기 인물: 도감에 있던 묶음으로
     if g not in cidOf or not cidOf[g]: cidOf[g] = f'C-{nxt:03d}'; nxt += 1
     cid = cidOf[g]; rl = role(GROUP.get(slug, slug), base)
     rank = str(base.get('rank') or ''); rk = re.match(r'[1-5]성|4|보스|강적|중간급|암계장군|악마대장군|초강자|장군|거대괴수|정예|병사', rank)
     sub = f"{clean(base['name'])}{' (' + (rk.group(0) + ('성' if rk.group(0) == '4' else '')) + ')' if rk else ''} · {rl} · 동작 그림"
     if hit: sub = hit['sub']
-    nm = clean(o['name']); pas = K.get(slug, {}).get('pas')
+    nm = clean(o['name']); pas = K.get(slug, {}).get('pas'); WHO[slug] = (g, cid, sub, nm)
     kit = ' · '.join(x['n'] for x in K.get(slug, {}).get('sk', []))
     note = f"{o.get('batch') or ('3기' if o.get('gen') == 3 else '2기') + ' 멤버 1차'} (드라이브, 2026-10-06) · {o.get('rank', '')} · {o.get('role', '')} · 보직 {o.get('role_job', '-')} · 키 {o.get('tall', '?')}m · 분석: cave-3d/art/h2/notes/{slug}.md"
     gsum = f"게임 (훈련장 P → 2기): 기술 {kit or '-'}" + (f" · 패시브 {pas[0]} — {pas[1]}" if pas else '')
@@ -75,7 +79,9 @@ for slug, o in R.items():
         put(p['src'], os.path.join(OUT, f'{slug}__{k}.webp'))
         use = skillsFor(slug, k); eng = ENG.get(k)
         game = '게임: ' + ' · '.join(([eng] if eng else []) + ([f'기술 {", ".join(use)}'] if use else [])) if (eng or use) else '게임: 아직 안 씀 (예비 동작)'
-        ent(f'O-h2-{slug}-{k}', cat='char', sub=sub, cid=cid, g=g, name=f'{nm} · {PN.get(k, k)}', src=f'img/h2/{slug}__{k}.webp', note=note, game=game)
+        old_d = slug in MOV and MOV[slug].get('replace')   # v1.4 리뉴얼로 옛 그림을 안 쓰는 인물 (옐로)
+        if old_d: game = '게임: 안 씀 — 1차 업뎃 (v0.77) 리뉴얼 새 그림으로 바뀜'
+        ent(f'O-h2-{slug}-{k}', cat='char', sub=sub, cid=cid, g=g, name=f'{nm} · {PN.get(k, k)}' + (' (옛 디자인)' if old_d else ''), src=f'img/h2/{slug}__{k}.webp', note=note, game=game)
     order.append(g)
 # 은신 웅크림 (은신.png) · 벨 쌍권총 · 하리 원화 전신 · 연금술사
 MISC = os.path.join('art', 'h2', '_misc')
@@ -95,14 +101,54 @@ an = '낱장 연금술.png · 원화들.png (2026-10-06). 이름 · 등급 · �
 ent('F-h2-alchemist', cat='char', sub=sub, cid=cidOf['h2_alchemist'], g='h2_alchemist', name='연금술사 기본 초상화', src='img/face/h2_alchemist.webp', note=an, on=False)
 ent('O-h2-alchemist-idle', cat='char', sub=sub, cid=cidOf['h2_alchemist'], g='h2_alchemist', name='연금술사 · 기본', src='img/h2/alchemist__idle.webp', note=an, on=False)
 ent('P-h2-alchemist', cat='char', sub=sub, cid=cidOf['h2_alchemist'], g='h2_alchemist', name='연금술사 · 원화', src='img/h2/alchemist__portrait.webp', note=an, on=False)
-# 묶음 안 순서: 초상화 → 원화 → 기본 → 나머지 동작
-rk = lambda e: (0 if e['id'].startswith('F-') else 1 if e['id'].startswith('P-') else 2 if e['id'].endswith('-idle') else 3)
+# v1.4 1차 업뎃 새 동작: 동작마다 한 장 (묶음 그림의 그 칸 — 프레임 줄 · 격자 그대로, 칸 높이 220 까지 줄임)
+PN2 = {'walkB': '뒤로 걷기', 'stun': '기절', 'kneel': '무릎 꿇고 일어남', 'plunge': '내리꽂기', 'heal': '치유', 'jump2': '뛰어오름', 'attackB': '공격 (번갈아)', 'charge': '모으기',
+       'smash': '내려치기', 'dig': '파내기 (들어가기)', 'dig2': '파내기 (퍼올리기)', 'sit': '앉아 쉬기', 'hurt2': '맞음 2'}
+ENG2 = {'idle': '서 있을 때', 'ready': '싸움 태세 (적이 가까울 때)', 'walk': '걸을 때', 'walkB': '카메라에서 멀어지며 걸을 때 (뒷모습)', 'run': '뛸 때', 'hurt': '맞았을 때 (두 가지 번갈아)',
+        'hurt2': '맞았을 때 (두 가지 번갈아)', 'stun': '오래 휘청일 때 (기절)', 'kneel': '넘어졌다 일어날 때', 'down': '넘어졌을 때 · 죽었을 때', 'dead': '죽었을 때', 'guard': '막기',
+        'crouch': '숙이기 · 은신', 'attack': '기본 공격', 'attackB': '기본 공격 (번갈아)', 'windup': '공격 예고', 'sit': '둘레에 적 없이 8초 가만히 있을 때'}
+H2M = os.path.join(ROOT, 'img', 'h2m'); os.makedirs(H2M, exist_ok=True)
+WHO['poren'] = ('poren', 'C-006', next((e['sub'] for e in cat if e.get('cid') == 'C-006'), '포렌 · 동료 · 동작 그림'), '포렌')
+sheets = {}
+for slug, M in MOV.items():
+    if slug not in WHO: continue
+    g, cid, sub, nm = WHO[slug]; seen = {}
+    for k, q in M['poses'].items():
+        key = (q.get('src') or M['src'], tuple(q['rect']))
+        if key in seen: continue   # 다른 이름으로 같은 칸 (옐로 dash = run …)
+        seen[key] = k
+        use = skillsFor(slug, k); eng = ENG2.get(k); n = q.get('n', 1)
+        game = '게임: ' + ' · '.join(([eng] if eng else []) + ([f'기술 {", ".join(use)}'] if use else [])) if (eng or use) else '게임: 아직 안 씀 (예비 동작)'
+        game += f" ({n}장{' · 초당 ' + str(q['fps']) + '장' if q.get('fps') else ''}{' · 한 번' if q.get('once') else ''})" if n > 1 else ''
+        srcs = MSRC['src'].get(slug, {}).get(k, [])
+        if srcs and all(x.startswith('codex:') for x in srcs):   # 도감 움짤에서 온 동작 → 그 움짤 칸에 '게임:' 줄
+            for x in srcs:
+                path, rng = x[6:].rsplit(' ', 1); hit = next((e for e in cat if e.get('src') == path), None)
+                if hit:
+                    lines = [l for l in (hit.get('game') or '').split(' / ') if l and not l.startswith(f'게임 ({nm} {k}')]
+                    hit['game'] = ' / '.join(lines + [f"게임 ({nm} {k}, {rng.replace('-', '~')}번 장): " + game[4:]])
+            continue
+        sp = q.get('src') or M['src']
+        if sp not in sheets: sheets[sp] = Image.open(os.path.join(C3, sp)).convert('RGBA')
+        x, y, w, h, W, H = q['rect']; im = sheets[sp].crop((x, y, x + w, y + h)); kk = min(1.0, 220 / q['h'])
+        if kk < 1: im = im.resize((max(1, round(w * kk)), max(1, round(h * kk))), Image.LANCZOS)
+        im.save(os.path.join(H2M, f'{slug}__{k}.webp'), 'WEBP', quality=80, method=4)
+        note = "1차 업뎃 (드라이브 '10.08 1차업뎃', 2026-10-09) · 원본 " + ' · '.join(dict.fromkeys(x.rsplit(' ', 1)[0] for x in srcs)) + ' · 게임 묶음 cave-3d/art/h2/mov (tools/h2_moves.py)'
+        ent(f'O-h2m-{slug}-{k}', cat='char', sub=sub, cid=cid, g=g, name=f"{nm} · {PN2.get(k, PN.get(k, k))}{f' ({n}장)' if n > 1 else ''} · 1차 업뎃", src=f'img/h2m/{slug}__{k}.webp', note=note, game=game)
+# 묶음 안 순서: 초상화 → 원화 → 기본 → 나머지 동작 → 1차 업뎃 새 동작
+rk = lambda e: (0 if e['id'].startswith('F-') else 1 if e['id'].startswith('P-') else 4 if e['id'].startswith('O-h2m-') else 2 if e['id'].endswith('-idle') else 3)
 new.sort(key=lambda e: (e['g'], rk(e)))
 # 인물 칸 끝 (마지막 char 뒤)에 넣음
 ext = [e for e in new if not e['g'].startswith('h2_')]; new = [e for e in new if e['g'].startswith('h2_')]
 for gg in dict.fromkeys(e['g'] for e in ext):
     idx = [i for i, e in enumerate(cat) if e.get('g') == gg]; add = [e for e in ext if e['g'] == gg]
-    cat[idx[-1] + 1:idx[-1] + 1] = add
+    if idx: at_i = idx[-1] + 1
+    else:   # v1.4 묶음에 이 도구 칸만 있던 경우: 예전 자리에
+        j = next((k for k, e in enumerate(cat0) if e.get('g') == gg), None)
+        prev = next((e for e in reversed(cat0[:j]) if not mine(e)), None) if j is not None else None   # 예전에 바로 앞에 있던 (이 도구 것이 아닌) 칸의 묶음 끝 뒤
+        ii = [i for i, e in enumerate(cat) if (e.get('g') == prev.get('g') if prev.get('g') else e['id'] == prev['id'])] if prev else []
+        at_i = ii[-1] + 1 if ii else max(i for i, e in enumerate(cat) if e['cat'] == 'char') + 1
+    cat[at_i:at_i] = add
 at = max(i for i, e in enumerate(cat) if e['cat'] == 'char') + 1
 cat[at:at] = new
 if 'v1.82:' not in head: head = head.replace('/* catalog.js v1.81 — ', '/* catalog.js v1.82 — v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). ', 1)
