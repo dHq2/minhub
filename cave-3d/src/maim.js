@@ -1,4 +1,4 @@
-/* maim.js v1.0 — (v0.48) 하 · 중 · 상단 공격 · 부위 치명상 · 반시체 · 수술과 후유증 · 적의 확인사살 · 레슬링 테이크다운
+/* maim.js v1.1 — (v1.1, v0.82: 테이크다운이 실제로 뛰어듦 — 전엔 한 프레임에 2칸 가까이 옮김) (v1.0, v0.48) 하 · 중 · 상단 공격 · 부위 치명상 · 반시체 · 수술과 후유증 · 적의 확인사살 · 레슬링 테이크다운
    공격 높이 (적의 근접 · 찌르기는 휘두를 때마다 하나를 고름. 예고 장판 색 + 머리 위 표시로 미리 보임):
    · ▲ 상단 (주황): G 숙이면 머리 위로 빗나감 (빈틈 → 어퍼컷). 막기 됨
    · ■ 중단 (빨강): F 막기 · 튕겨내기. 숙여도 맞음
@@ -237,7 +237,12 @@ function takedown(u){
   p = Math.max(0.12, Math.min(0.92, p)); const pct = Math.round(p * 100);
   // 뛰어듦
   const n = norm(t.x - u.x, t.z - u.z), go = Math.max(0, dist(u, t) - u.r - t.r - 0.05);
-  if (typeof ghost === 'function') ghost(u); moveBy(u, n.x * go, n.z * go); setAim(u, t.x, t.z); dust(u.x, u.z, 8); SFX.whoosh && SFX.whoosh();
+  SFX.whoosh && SFX.whoosh(); dust(u.x, u.z, 4);
+  if (go > 0.15 && typeof rushStart === 'function') rushStart(u, Math.atan2(n.z, n.x), go, { sp: 22, done: () => !t.dead && !u.dead && tdLand(u, t, p, pct, back) });   // v1.1 (v0.82) 실제로 뛰어듦 (전엔 한 프레임에 옮김)
+  else tdLand(u, t, p, pct, back);
+}
+function tdLand(u, t, p, pct, back){
+  setAim(u, t.x, t.z); dust(u.x, u.z, 8);
   if (Math.random() < p){
     const L = grab(u, t); if (!L) return;
     L.phase = 'ground'; L.t = 0; t.lying = true; hurt(u, t, u.atk * 0.4, { from: u, grapple: true, noCam: true });

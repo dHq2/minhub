@@ -1,9 +1,9 @@
-/* foes2.js v1.4 — (v1.4, v0.80: 콜로세움 · 훈련장 (원정 밖) 에서 세자르 '일어나라' · 대장군 '증원!' 이 오류로 멈추던 것 — 층 정보가 없으면 1층 세기) (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.5 — (v1.5, v0.82: 검냥이 = 광냥 (민수 도감 메모로 합침) — 광냥은 중간보스급 4성 · 유일개체라 잡몹 셋에서 6 · 7층 강적 하나로 (한 원정에 한 번) · 기술은 덮치기 (검냥이) + 할퀴어 쓸기 · 옛 키 catw 는 광냥으로 · 보광 = 4성 마딜러 (마력탄을 쏘는 7층 강적) · 보르마 = 4성 원딜러 악마 (전엔 근접이 먼저라 활을 못 씀) · 6층 잡몹은 슬라임 · 요정 · 궁수, 7층은 꼬마악마 · 광신도 · 궁수) (v1.4, v0.80: 콜로세움 · 훈련장 (원정 밖) 에서 세자르 '일어나라' · 대장군 '증원!' 이 오류로 멈추던 것 — 층 정보가 없으면 1층 세기) (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
    1 무덤 어귀 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
-   6 안개 늪: 검냥이 · 강적 보르마 · 7 도깨비 시장: 보광 · 광냥 · 강적 청승 · 작약 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
+   6 안개 늪: 슬라임 · 요정 · 궁수 · 강적 보르마 · 벤킨 · 광냥 · 7 도깨비 시장: 꼬마악마 · 광신도 · 궁수 · 강적 청승 · 작약 · 광냥 · 보광 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
    9 눈알의 굴: 눈깔괴물 · 푸른 뚱보 · 강적 장군님 · 10 대장군의 전장: 흑기사 군단 · 보스 대장군 (군단과 함께, 쓰러뜨리면 원정 끝 — 지름길)
-   고유 기술 (붉은 예고 장판, 읽으면 피함): 덮치기 (검냥이) · 뛰어 내려찍기 (청승) · 북소리 (보광: 주변 적 강해짐) · 마력 폭발 (보르마) · 응시 (눈깔괴물: 정신도) · 짓누르기 (푸른 뚱보)
+   고유 기술 (붉은 예고 장판, 읽으면 피함): 덮치기 · 할퀴어 쓸기 (광냥) · 뛰어 내려찍기 (청승) · 북소리 (보광: 주변 적 강해짐) · 마력 폭발 (보르마) · 응시 (눈깔괴물: 정신도) · 짓누르기 (푸른 뚱보)
    세자르: 하늘 가르기 (긴 줄) · 마구 베기 (세 번) · 뒤로 빠져 찌르기 · 손을 들어 해골 검사를 부름 (체력 절반 아래)
    대장군: 함성 (모든 적 강해짐 · 아군 공포) · 돌격 (긴 줄) · 휩쓸기 · 증원 (흑기사) */
 'use strict';
@@ -32,10 +32,9 @@ const M = (range, arc, windup, cd, mul = 1, kb = 0.8) => ({ range, arc, windup, 
 Object.assign(DEFS, {
   ratKnight:  { spr: 'ratKnight', name: '쥐 기사', hp: 80, atk: 11, spd: 3.3, r: 0.32, weight: 50, line: { len: 2.5, w: 0.5, windup: 0.5, cd: 1.5, mul: 1, kb: 0.7 } },
   slimeGirl:  { spr: 'slimeGirl', name: '슬라임녀', hp: 360, atk: 20, spd: 1.8, r: 0.5, weight: 200, melee: M(1.9, 2.6, 0.7, 1.8, 1.1, 1.2) },
-  catw:       { spr: 'catw', name: '검냥이', hp: 150, atk: 17, spd: 4.0, r: 0.36, weight: 70, melee: M(1.6, 1.8, 0.32, 1.0, 0.9, 0.5) },
-  borama:     { spr: 'borama', name: '보르마', hp: 540, atk: 26, spd: 2.6, r: 0.42, weight: 90, bow: { range: 8, windup: 0.6, cd: 1.6, speed: 14 }, melee: M(1.7, 2.0, 0.5, 1.6, 1.1, 1.2) },
-  bogwang:    { spr: 'bogwang', name: '보광', hp: 130, atk: 15, spd: 3.4, r: 0.32, weight: 55, melee: M(1.5, 1.8, 0.4, 1.2, 1, 0.6) },
-  gwangnyang: { spr: 'gwangnyang', name: '광냥', hp: 160, atk: 18, spd: 3.8, r: 0.36, weight: 75, melee: M(1.7, 2.0, 0.38, 1.2, 1, 0.7) },
+  borama:     { spr: 'borama', name: '보르마', hp: 540, atk: 26, spd: 2.6, r: 0.42, weight: 90, leap: 3.2, bow: { range: 8, windup: 0.6, cd: 1.5, speed: 16, magic: true, color: 0xc080ff, glow: 0x9040ff } },   // v1.5 4성 원딜러 악마 (도감 메모) — 전엔 근접이 먼저라 활 (마력탄) 을 못 썼음
+  bogwang:    { spr: 'bogwang', name: '보광', hp: 430, atk: 24, spd: 3.2, r: 0.34, weight: 60, leap: 3.0, bow: { range: 7.5, windup: 0.55, cd: 1.4, speed: 15, magic: true, color: 0xffc070, glow: 0xff8a30 } },   // v1.5 4성 마딜러 (도감 메모) — 전엔 근접 잡몹 (130 · 15)
+  gwangnyang: { spr: 'gwangnyang', name: '광냥', hp: 500, atk: 25, spd: 4.2, r: 0.38, weight: 85, melee: M(1.8, 2.0, 0.36, 1.2, 1.1, 0.9) },   // v1.5 중간보스급 · 4성 · 유일개체 (도감 메모) — 전엔 잡몹 (160 · 18)
   cs:         { spr: 'cs', name: '청승', hp: 640, atk: 30, spd: 2.8, r: 0.45, weight: 160, armor: 0.75, melee: M(2.2, 2.2, 0.6, 1.8, 1.2, 1.6) },
   jakyak:     { spr: 'jakyak', name: '작약', hp: 560, atk: 28, spd: 3.1, r: 0.4, weight: 120, melee: M(2.0, 2.4, 0.55, 1.6, 1.15, 1.4), grab: { reach: 1.7, cd: 8, wind: 0.55 } },
   bk:         { spr: 'bk', name: '흑기사', hp: 200, atk: 20, spd: 2.9, r: 0.38, weight: 120, armor: 0.8, melee: M(1.9, 1.9, 0.5, 1.5, 1, 0.8) },
@@ -48,8 +47,11 @@ Object.assign(DEFS, {
   cesar:      { spr: 'cesar', name: '세자르', hp: 1100, atk: 28, spd: 3.0, r: 0.45, weight: 400, boss: true, armor: 0.8, melee: M(2.1, 2.2, 0.5, 1.4, 1.1, 1.2), think: cesarThink },
   general:    { spr: 'general', name: '대장군', hp: 1400, atk: 30, spd: 2.6, r: 0.5, weight: 800, boss: true, armor: 0.7, line: { len: 3.4, w: 0.8, windup: 0.6, cd: 1.6, mul: 1.15, kb: 1.6 }, think: generalThink },
 });
-Object.assign(FOE_XP, { ratKnight: 9, slimeGirl: 90, catw: 22, borama: 120, bogwang: 20, gwangnyang: 24, cs: 140, jakyak: 130, bk: 30, bkShield: 32, bkSpear: 30, axeKnight: 170, eyemon: 26, bluefat: 60, janggun: 220, cesar: 400, general: 800 });
-Object.assign(FOE_DEF, { ratKnight: 2, slimeGirl: 6, catw: 4, borama: 8, bogwang: 3, gwangnyang: 5, cs: 16, jakyak: 12, bk: 12, bkShield: 16, bkSpear: 10, axeKnight: 18, eyemon: 4, bluefat: 10, janggun: 20, cesar: 20, general: 22 });
+// v1.5 검냥이 = 광냥 (민수 메모로 합침): 옛 키 'catw' 는 광냥 그대로 (저장 · 옛 훈련장 명단이 불러도 광냥)
+DEFS.catw = { ...DEFS.gwangnyang };
+Object.assign(FOE_XP, { ratKnight: 9, slimeGirl: 90, borama: 120, bogwang: 115, gwangnyang: 120, cs: 140, jakyak: 130, bk: 30, bkShield: 32, bkSpear: 30, axeKnight: 170, eyemon: 26, bluefat: 60, janggun: 220, cesar: 400, general: 800 });
+Object.assign(FOE_DEF, { ratKnight: 2, slimeGirl: 6, borama: 8, bogwang: 7, gwangnyang: 8, cs: 16, jakyak: 12, bk: 12, bkShield: 16, bkSpear: 10, axeKnight: 18, eyemon: 4, bluefat: 10, janggun: 20, cesar: 20, general: 22 });
+FOE_XP.catw = FOE_XP.gwangnyang; FOE_DEF.catw = FOE_DEF.gwangnyang;
 // 층 구성 고쳐 씀
 (() => {
   const set = (F, o) => Object.assign(FLOOR_DEF[F], o);
@@ -57,17 +59,18 @@ Object.assign(FOE_DEF, { ratKnight: 2, slimeGirl: 6, catw: 4, borama: 8, bogwang
   set(2, { foes: { archer: 3, shieldman: 3, spearman: 2, foeDevil: 1 } });
   set(3, { elite: ['slimeGirl', 'dandalo', 'brute'] });
   set(5, { boss: 'cesar' });
-  set(6, { foes: { catw: 3, foeSlime: 2, foeFairy: 2, archer: 1 }, elite: ['borama', 'benkin'] });
-  set(7, { foes: { bogwang: 3, gwangnyang: 3, foeDevil: 2, archer: 1 }, elite: ['cs', 'jakyak'] });
+  set(6, { foes: { foeSlime: 3, foeFairy: 3, archer: 2 }, elite: ['borama', 'benkin', 'gwangnyang'] });   // v1.5 광냥 (= 검냥이) 은 잡몹에서 강적으로 — 한 원정에 한 번 (expedition.js UNIQ_FOE)
+  set(7, { foes: { foeDevil: 4, foeCultist: 3, archer: 2 }, elite: ['cs', 'jakyak', 'gwangnyang', 'bogwang'] });   // v1.5 보광도 4성 마딜러라 강적으로
   set(8, { foes: { bk: 3, bkShield: 3, bkSpear: 3, archer: 2 }, elite: ['axeKnight', 'dandalo'] });
   set(9, { foes: { eyemon: 3, bluefat: 2, foeCultist: 2, foeDevil: 1 }, elite: ['janggun', 'benkin'] });
   set(10, { foes: { bk: 3, bkShield: 2, bkSpear: 2, swordsman: 2, archer: 2 }, elite: ['axeKnight', 'cs'], boss: 'general' });
 })();
 Object.assign(SIG, {
-  catw: { cd: 5, fn: sigDash }, bk: { cd: 6, fn: sigDash }, bkShield: { cd: 5, fn: sigBash }, gwangnyang: { cd: 6, fn: sigSweep },
+  bk: { cd: 6, fn: sigDash }, bkShield: { cd: 5, fn: sigBash }, gwangnyang: { cd: 4.5, fn: (u, t) => sigDash(u, t, '덮치기', { sp: 16, arc: 0.7 }) || sigSweep(u, t, '할퀴어 쓸기') },   // v1.5 광냥: 검냥이의 덮치기 + 광냥의 쓸기
   cs: { cd: 6, fn: sigLeap }, jakyak: { cd: 6, fn: sigSweep }, bogwang: { cd: 9, fn: sigDrum }, borama: { cd: 7, fn: sigNova },
   eyemon: { cd: 8, fn: sigStare }, slimeGirl: { cd: 7, fn: sigAcid }, ratKnight: { cd: 7, fn: sigDash },
 });
+SIG.catw = SIG.gwangnyang;
 // 뛰어 내려찍기: 표적 자리에 원 → 0.8초 뒤 날아와 내려찍음
 function sigLeap(u, tgt){
   const d = dist(u, tgt); if (d < 2.5 || d > 8) return false;

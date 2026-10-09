@@ -1,4 +1,4 @@
-/* prowl.js v1.2 — (v1.2, v0.61: 숙인 몸 기울기도 보이는 방향 fS를 따름) (v1.1, v0.59: 사각 · 암살 구역 표시는 훈련장에서만 — 원정은 표시 없이) (v1.0, v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
+/* prowl.js v1.3 — (v1.3, v0.82: 검냥이 = 광냥 (하나뿐인 강적) — 후방 기습 자객은 광냥 · 꼬마악마, 어두운 골목 자객은 광냥) (v1.2, v0.61: 숙인 몸 기울기도 보이는 방향 fS를 따름) (v1.1, v0.59: 사각 · 암살 구역 표시는 훈련장에서만 — 원정은 표시 없이) (v1.0, v0.58) 자객 · 경계 · 어둠 · 후방 기습 (훈련장 규칙. "어딜 놀아")
    ■ 자객 (적): 무리와 따로 움직이며 우리 편을 사냥함. 숙여 구부린 걸음으로 경계가 비는 쪽 — 맨 뒤 · 떨어진 놈 · 싸우느라 한눈 판 놈의 등 뒤로 돌아 들어옴
      · 우리 편 누구의 시야 (앞 ±65°, 어두우면 짧음)에도 안 걸리는 자리만 밟음. 다 막혀 있으면 어둠 속에서 기다림
      · 등 뒤에 닿으면: 목 따기 (즉사 — 동료는 전사, 인주는 위독) · 한 번에 쓰러뜨림 · 치명상. 거구 (카리우스 · 판금)는 목이 안 닿음
@@ -255,12 +255,12 @@ DRILL_SC.splice(DRILL_SC.length - 1, 0,
     for (const u of G.units) if (u.side === 'ally' && u !== pl && !u.dead){ u.x = 39 + rnd(-3, 3); u.z = 34 + rnd(0, 2); }
     lineOf('barricade', 21, 35, 43, [39], 'enemy');
     for (const [k, x] of [['swordsman', 36], ['swordsman', 42], ['spearman', 38], ['archer', 40]]){ drillSpawn([k], { at: { x, z: 20 }, alert: false, title: '후방 기습', sub: '앞에 숨은 무리 — 그리고 뒤' }); const e = foes()[foes().length - 1]; e.lurk = true; e.band = 'front'; }
-    prowlSpawn('catw', { x: 30, z: 45 }, { stl: 4 }); prowlSpawn('gwangnyang', { x: 49, z: 45 }, { stl: 4 });
+    prowlSpawn('foeDevil', { x: 30, z: 45 }, { stl: 4 }); prowlSpawn('gwangnyang', { x: 49, z: 45 }, { stl: 4 });   // v0.82 검냥이 = 광냥 (하나뿐) → 자객 하나는 꼬마악마
   } },
   { k: 'dark', n: '어두운 골목', d: '골목은 어두움 (서로 잘 안 보임). 복도 끝마다 보초가 지키고, 어둠 속엔 자객 하나. 숙여서 · 벽 곁으로', go: () => {
     drillClear(); drillHeal();
     for (const [x, z, a] of [[70, 32, -Math.PI / 2], [63, 34, -Math.PI / 2], [57, 39, -Math.PI / 2], [71, 43, Math.PI]]){ drillSpawn([z === 43 ? 'archer' : 'spearman'], { at: { x, z }, alert: false, title: '어두운 골목', sub: '보초 · 그리고 어둠 속의 자객' }); const e = foes()[foes().length - 1]; e.lookT = 1e9; e.aim = e.aim0 = a; }
-    prowlSpawn('catw', { x: 59, z: 43 }, { stl: 5 });
+    prowlSpawn('gwangnyang', { x: 59, z: 43 }, { stl: 5 });
     const pl = G.player; pl.x = 67; pl.z = 22;
     for (const u of G.units) if (u.side === 'ally' && u !== pl){ u.x = 67 + rnd(-2, 2); u.z = 20 + rnd(0, 1); }
   } });

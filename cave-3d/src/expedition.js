@@ -1,4 +1,4 @@
-/* expedition.js v1.15 — 원정 (한 번의 런). v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.16 — 원정 (한 번의 런). v1.16 (v0.82): 유일개체 (광냥 — 도감 메모) 는 한 원정에 한 번만 강적으로. v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -187,7 +187,7 @@ function fillRoom(r, gen){
     if (R() < 0.35){ const t = takeTile(tiles, R); if (t) corpseProp(t.x, t.z, R); }
   } else if (r.type === 'elite'){
     const t = takeTile(tiles, R) || { x: Math.round(r.cx), z: Math.round(r.cz) };
-    const ep = r.top || { x: r.cx, z: r.cz }, e = spawnFoe(R.pick(D.elite), ep.x, ep.z, F, band, true);   // 단상이 있으면 그 위에
+    const ep = r.top || { x: r.cx, z: r.cz }, e = spawnFoe(uniqPick(R, D.elite), ep.x, ep.z, F, band, true);   // 단상이 있으면 그 위에
     spawnGroup(r, gen, tiles, 1 + Math.floor(R() * 2), band);
     lights(2); deco(2); r.reward = true;
   } else if (r.type === 'treasure'){
@@ -211,6 +211,13 @@ function fillRoom(r, gen){
     spawnGroup(r, gen, tiles, 2, band); lights(2); deco(2);
   } else if (r.type === 'enc' && typeof encFill === 'function'){ encFill(r, gen, tiles, edges, band, lights, deco); lights(1); }   // v1.12 인카운터 방 (encounters.js)
   else if (typeof sitFill === 'function') sitFill(r, gen, tiles, edges, band, lights, deco);
+}
+// v1.16 (v0.82) 유일개체 (도감 메모 — 세상에 하나뿐): 한 원정에 한 번만 강적으로 나옴 (광냥)
+const UNIQ_FOE = new Set(['gwangnyang']);
+function uniqPick(R, L){
+  const seen = EXP ? (EXP.uniq || (EXP.uniq = [])) : [], ok = L.filter(k => !UNIQ_FOE.has(k) || !seen.includes(k)), k = R.pick(ok.length ? ok : L);
+  if (UNIQ_FOE.has(k)) seen.push(k);
+  return k;
 }
 function spawnFoe(kind, x, z, F, band, elite){
   const e = spawn(kind, x, z, 'enemy');

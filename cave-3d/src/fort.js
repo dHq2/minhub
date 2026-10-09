@@ -1,4 +1,4 @@
-/* fort.js v1.1 — (v1.1, v0.59: 진지 계획 (L)은 훈련장에서만 · 엄폐 규칙은 1층에도) (v1.0, v0.57) 진지 · 엄폐 · 계획 (훈련장 규칙. "계획이 거의 절반인 게임")
+/* fort.js v1.2 — (v1.2, v0.82: 2파의 날랜 놈 검냥이 → 궁수 (검냥이 = 광냥, 강적으로 합침)) (v1.1, v0.59: 진지 계획 (L)은 훈련장에서만 · 엄폐 규칙은 1층에도) (v1.0, v0.57) 진지 · 엄폐 · 계획 (훈련장 규칙. "계획이 거의 절반인 게임")
    ■ 재료: 둘레의 나무 · 바위 · 잔해 (부서진 수레)에서 모음 — 동료가 알아서 캐 오고, 인주는 곁에서 E
    ■ 계획 (L): 시간이 0.25배로 느려짐 (멈추진 않음 — 빨리 생각해야 함). 땅을 찍어 설계도를 놓음 (누른 채 끌면 줄줄이)
      · 나무 바리케이드 (나무 2) · 잔해 더미 (잔해 2): 낮은 엄폐. 걸어서는 못 넘음 (점프로 넘음) · 시야는 안 막음
@@ -464,7 +464,7 @@ DRILL_SC.splice(DRILL_SC.length - 1, 0,
     const pl = G.player; pl.x = 39; pl.z = 36;
     FORT.wave = { t: 45, gap: 30, i: 0, list: [
       () => fortWaveSpawn(['swordsman', 'swordsman', 'spearman', 'archer', 'archer'], { x: 39, z: 10 }, '1파', '검사 · 창병 · 궁수'),
-      () => fortWaveSpawn(['swordsman', 'shieldman', 'spearman', 'catw', 'archer', 'drillCaster'], { x: 33, z: 11 }, '2파', '방패 · 날랜 놈 · 주술사'),
+      () => fortWaveSpawn(['swordsman', 'shieldman', 'spearman', 'archer', 'archer', 'drillCaster'], { x: 33, z: 11 }, '2파', '방패 · 날랜 놈 · 주술사'),
       () => fortWaveSpawn(['bk', 'bkSpear', 'swordsman', 'swordsman', 'archer', 'archer', 'gwangnyang'], { x: 45, z: 11 }, '3파', '갑옷 기사 · 궁수 둘'),
     ] };
     caption('진지전', '45초 — L로 계획 (느려짐)'); fortPlan(true);

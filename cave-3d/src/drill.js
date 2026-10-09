@@ -1,4 +1,4 @@
-/* drill.js v1.14 — (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.15 — (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -128,7 +128,7 @@ function drillSpawn(list, o = {}){
 }
 const DRILL_SC = [
   { k: 'mob', n: '근접 무리', d: '검사 셋 · 창병 둘. 교전 자리: 둘만 앞에서 치고 나머지는 돌며 등 뒤를 노림', go: () => drillSpawn(['swordsman', 'swordsman', 'swordsman', 'spearman', 'spearman'], { title: '근접 무리', sub: '등을 지켜라 (등맞대기 · 삼각)' }) },
-  { k: 'fast', n: '날랜 놈들', d: '검냥이 · 광냥. 조준을 보면 옆으로 피함 — 우리 편이 붙어 묶으면 못 피함 (묶고 쏘기)', go: () => drillSpawn(['catw', 'catw', 'gwangnyang', 'bogwang'], { title: '날랜 놈들', sub: '묶어 두고 쏴라' }) },
+  { k: 'fast', n: '날랜 놈들', d: '광냥 · 보광 (강적) · 궁수 둘. 조준을 보면 옆으로 피함 — 우리 편이 붙어 묶으면 못 피함 (묶고 쏘기)', go: () => drillSpawn(['gwangnyang', 'bogwang', 'archer', 'archer'], { title: '날랜 놈들', sub: '묶어 두고 쏴라' }) },
   { k: 'shield', n: '방패 벽', d: '검방패병 셋이 앞, 궁수 둘이 뒤. 정면 사격은 방패가 막음 — 옆으로 돌기 (척후 · 돌아 들어가)', go: () => { drillSpawn(['shieldman', 'shieldman', 'bkShield'], { title: '방패 벽', sub: '옆으로 돌아라' }); const c = drillAhead(15); drillSpawn(['archer', 'archer'], { at: c, title: '방패 벽', sub: '뒤에 궁수' }); } },
   { k: 'caster', n: '주술사', d: '멀리서 1.8초 동안 큰 원을 준비함. 원거리로 맞히면 끊김 — 사수의 일', go: () => drillSpawn(['drillCaster', 'drillCaster', 'swordsman', 'swordsman'], { dist: 13, title: '주술사', sub: '예고를 끊어라 (총 · 활 · 마법)' }) },
   { k: 'armor', n: '갑옷 기사', d: '고딕 기사 둘 · 흑기사창병 하나. 칼 · 활은 갑옷에 튕기고, 총 (특히 소총)이 잘 뚫음', go: () => drillSpawn(['bk', 'bk', 'bkSpear'], { title: '갑옷 기사', sub: '소총이 잘 뚫는다' }) },
@@ -136,9 +136,9 @@ const DRILL_SC = [
   { k: 'titan', n: '전략병기', d: '장군님 (5m). 정면 대결 금지 — 묶고 · 넘어뜨리고 · 벽에 박고 · 등 뒤로', go: () => drillSpawn(['janggun'], { at: { x: 65, z: 9 }, title: '전략병기', sub: '우리에서 나온다 — 묶고 돌아라' }) },
   { k: 'alley', n: '골목 매복', d: '골목 곳곳에 잠든 적 다섯. 총소리에 깨어남 — 활 · 칼로 조용히', go: () => { const P2 = [[58, 30], [66, 34], [60, 42], [70, 38], [73, 28]]; P2.forEach(([x, z], i) => drillSpawn([['swordsman', 'spearman', 'catw', 'swordsman', 'archer'][i]], { at: { x, z }, alert: false, title: '골목 매복', sub: '조용히 — 총은 깨운다' })); } },
   { k: 'sneak', n: '은신 · 암살', d: '들키지 않은 적 여섯이 들판에 흩어져 두리번거림. 숙이고 (G) 등 뒤로 가서 공격 = 암살 (은신 적성). 조 지시 \'은밀히\'로 동료도 암살', go: () => {
-      const c = drillAhead(13); [[0, 0, 0], [3.5, -1.5, 2.6], [-3.5, -1, 0.6], [1, -5, 1.6], [-4, -5.5, 3.6], [5, -5, 4.4]].forEach(([dx, dz, a], i) => { const k = ['swordsman', 'spearman', 'swordsman', 'archer', 'shieldman', 'catw'][i]; drillSpawn([k], { at: { x: c.x + dx, z: c.z + dz }, alert: false, title: '은신 · 암살', sub: 'G 숙이기 · 등 뒤에서 공격 · O → 은밀히' }); const e = foes()[foes().length - 1]; e.aim = e.aim0 = a; });
+      const c = drillAhead(13); [[0, 0, 0], [3.5, -1.5, 2.6], [-3.5, -1, 0.6], [1, -5, 1.6], [-4, -5.5, 3.6], [5, -5, 4.4]].forEach(([dx, dz, a], i) => { const k = ['swordsman', 'spearman', 'swordsman', 'archer', 'shieldman', 'foeDevil'][i]; drillSpawn([k], { at: { x: c.x + dx, z: c.z + dz }, alert: false, title: '은신 · 암살', sub: 'G 숙이기 · 등 뒤에서 공격 · O → 은밀히' }); const e = foes()[foes().length - 1]; e.aim = e.aim0 = a; });
     } },
-  { k: 'big', n: '대규모', d: '섞어서 열둘. 조를 나눠 지휘', go: () => { drillSpawn(['swordsman', 'swordsman', 'spearman', 'shieldman', 'catw', 'bk'], { title: '대규모', sub: '1조 · 2조로 나눠라' }); drillSpawn(['archer', 'archer', 'drillCaster', 'swordsman', 'spearman', 'gwangnyang'], { at: drillAhead(17), title: '대규모', sub: '뒤에 궁수 · 주술사' }); } },
+  { k: 'big', n: '대규모', d: '섞어서 열둘. 조를 나눠 지휘', go: () => { drillSpawn(['swordsman', 'swordsman', 'spearman', 'shieldman', 'foeDevil', 'bk'], { title: '대규모', sub: '1조 · 2조로 나눠라' }); drillSpawn(['archer', 'archer', 'drillCaster', 'swordsman', 'spearman', 'gwangnyang'], { at: drillAhead(17), title: '대규모', sub: '뒤에 궁수 · 주술사' }); } },
 ];
 // 사격 훈련: 원거리를 든 동료가 사선에 서서 표적을 번갈아 쏨 (적성 · 무기별 명중률 비교 — 기록 탭)
 function drillRangeAct(u, dt){
@@ -353,7 +353,7 @@ function coloRoster(){
   for (const k of COLO_HERO) if (DEFS[k]) R.push({ id: k, name: DEFS[k].name, tab: 'ally', ally: k, foe: null });
   for (const s of H2.list){ const o = H2R[s], K = H2K[s] || {}; if (!DEFS['h2_' + s] || H2NOMIX.has(s)) continue;
     R.push({ id: 'h2:' + s, slug: s, name: DEFS['h2_' + s].name, tab: K.boss ? 'boss' : o.gen === 3 ? 'g3' : o.gen === 1 ? 'g1' : 'g2', ally: 'h2_' + s, foe: 'h2e_' + s, rank: h2Rank(o) }); }
-  const skip = new Set(['player', 'rebecca', 'dummy', 'encMouth', 'ratV', 'ratKnightV', 'pig', 'cheongNpc', 'cannon', ...COLO_HERO]);   // 소품 · 마을용 · 고정 포대는 뺌
+  const skip = new Set(['player', 'rebecca', 'dummy', 'encMouth', 'ratV', 'ratKnightV', 'pig', 'cheongNpc', 'cannon', 'catw', ...COLO_HERO]);   // 소품 · 마을용 · 고정 포대는 뺌 · v1.15 검냥이 (catw) 는 광냥과 같은 인물
   for (const k of Object.keys(DEFS)){ const D = DEFS[k];
     if (skip.has(k) || k.startsWith('h2') || /Ally$/.test(k) || D.dummy || D.drill || D.spar || D.hittable || !SPR[D.spr] || !(D.hp > 0) || D.hp > 50000) continue;
     R.push({ id: k, name: D.name, tab: D.boss ? 'boss' : 'foe', ally: null, foe: k }); }
@@ -361,9 +361,9 @@ function coloRoster(){
 }
 // v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
 const COLO_UPD = [
+  { v: 'v0.82', n: '돌진 · 도약 · 뒤로 뛰기 · 끌어오기가 실제로 달려감 (전엔 한 프레임에 순간이동 — 세자르급 보스만 그대로) · 광냥 = 검냥이 (대기는 검냥이 움직이는 대기 20 · 12장, 덮치기 · 할퀴어 쓸기, 4성 강적) · 보광 · 보르마 마력탄 (4성 강적)', ids: ['gwangnyang', 'h2:gallia', 'h2:tanga', 'h2:mari', 'h2:moro', 'h2:grinvan', 'h2:stagbeast', 'h2:kanya', 'h2:hiddenkkaebi', 'bk', 'bogwang', 'borama'] },
   { v: 'v0.81', n: '모닝스타 (슈퍼스타) 대기를 원래 그림 (2D 판 대기 8장 움직임) 으로 — 새 걷기 · 맞음 · 기술 그림과 같은 키 · 발 자리', ids: ['h2:mstar', 'morningstar'] },
   { v: 'v0.80', n: '동작 점검 — 걷기 · 달리기 그림으로 걸음 (서 있는 그림으로 미끄러지던 것) · 출발 · 멈춤 깜빡임 없앰 · 맞으면 움찔 · 장판 피할 때 깡충 · 걷다 칠 때 예고 그림 · 넘어지면 누운 그림 · 싸움 끝나면 제자리 걷기 하던 것', ids: ['h2:tank', 'h2:moro', 'h2:collider', 'h2:hirari', 'h2:unitA', 'swordsman', 'bkSpear', 'rebeccaAlly'] },
-  { v: 'v0.79', n: '도감 설정 반영 — 고대사슴 산호 크기 (몸길이 5m · 등 높이 3m → 뿔 끝까지 5.3m) · 카리우스 불경자 스킬 그림 (얼굴 전체가 보이게)', ids: ['h2:ancientdeer', 'kariusAlly'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
@@ -500,7 +500,7 @@ function coloRestart(){
 }
 function coloEnd(win){
   COLO.run = false; COLO.done = true; G.lock = true; $('bossbar').hidden = true; COLO.line.visible = true;
-  setTimeout(() => { if (!COLO.done) return; for (const u of [...coloUnits(), ...coloExtra()]) if (!u.dead && !u.downed && !u.lock){ interrupt(u); u.st = 'idle'; u.stT = 0; u.moving = false; u.guardStance = false; u.lift = 0; setPose(u, 'idle'); } }, 500);   // v1.13 끝난 뒤 휘두르던 그림 그대로 굳지 않게 (0.5초 뒤 서 있음)
+  setTimeout(() => { if (!COLO.done) return; for (const u of [...coloUnits(), ...coloExtra()]) if (!u.dead && !u.downed && !u.lock){ interrupt(u); u.st = 'idle'; u.stT = 0; u.moving = false; u.guardStance = false; u.lift = 0; u._rush = null; setPose(u, 'idle'); } }, 500);   // v1.13 끝난 뒤 휘두르던 그림 그대로 굳지 않게 (0.5초 뒤 서 있음)
   const sec = Math.round(G.t - COLO.t0), left = coloUnits().filter(u => u.side === (win === 'ally' ? 'ally' : 'enemy') && !u.dead && !u.downed);
   const big = win === 'ally' ? '아군 승리' : win === 'enemy' ? '적군 승리' : '무승부';
   caption(big, `${sec}초 · 남은 ${left.map(u => u.D.name).join(' · ') || '없음'} — R 재시작`);
