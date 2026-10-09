@@ -1,4 +1,5 @@
-/* motion.js v1.0 — 1차 업뎃 (2026-10-09): 잡몹 10명 동작 그림 (드라이브 '10.08 1차업뎃 / 1차적 10인')
+/* motion.js v1.1 — (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
+   v1.0 — 1차 업뎃 (2026-10-09): 잡몹 10명 동작 그림 (드라이브 '10.08 1차업뎃 / 1차적 10인')
    검사 · 검방패병 · 붉은 망토 궁수 · 창병 · 광신도 · 꼬마악마 · 흑기사 방패병 · 흑기사 창병 · 광냥 · 푸른 뚱보
    ■ 그림: src/mob10_sheets.js (M10, tools/mob10_art.py 가 만듦) → SPR[키] 를 통째로 바꿈 (키 · 크기 (tall) 는 그대로)
    ■ 자세 고르기 (TICK — 생각 → TICKS → 그리기 순서라, 생각이 정한 자세 위에 덮어씀)
@@ -8,6 +9,8 @@
      · 맞음 2가지 번갈아 · 오래 휘청 (0.6초 넘게) = 기절 그림 · 넘어짐 = 누운 그림 → 웅크렸다 일어남
      · 막는 놈 (검방패병 · 흑기사 방패병) 이 앞에서 막으면 잠깐 방어 그림 · 방어 자세 (뚱보) = 방어 · 들이받기 = 달리기
      · 궁수 뒤로 도약 · 뛰어오름 = 점프 그림 · 숙임 (매복 · 엄폐) = 웅크림 · 죽음 = 누운 그림 2가지 중 하나
+   ■ 2 · 3기 (S.mov): 자세가 이 파일이 다루는 것 (서 있음 · 걷기 · 맞음 …) 일 때만 바꿈 — 사격 · 막기 · 기술 그림은 그 코드가 정한 그대로
+     · 앞뒤 걷기 그림 (walkB) 이 있으면 카메라에서 멀어질 때 뒷모습 걷기 · 공격 그림이 둘이면 (attackB) 번갈아
    ■ 원정 싸움 방 열에 다섯 (계단 방 넷 · 보물 방 셋): 무리 가운데 모닥불 → 둘레에 앉아 쉼 (쉬기 그림 3가지). 쉬는 동안은 가까이 (3칸) 와야 알아챔. 깨면 웅크렸다 일어남 */
 'use strict';
 const M10_SIGLESS = new Set(['foeDevil', 'bkSpear', 'bluefat']);   // 고유 기술이 없는 놈: 가끔 특수 공격 그림으로 침
@@ -44,8 +47,19 @@ function m10Map(u, p){
   if (p === 'jump') return Q.jump ? 'jump' : 'run';
   return p;
 }
+// 2 · 3기 (S.mov): 맞음 → 오래 휘청이면 기절 · 맞음 2가지 번갈아, 기본 공격 그림이 둘이면 번갈아
+function movMap(u, p){
+  const Q = u.S.poses;
+  if (p === 'hurt'){
+    if (M10_HURT.has(u.pose) && u.poseT < 0.15) return u.pose;
+    if ((u.stT || 0) >= 0.6 && Q.stun) return 'stun';
+    u._hk = !u._hk; return u._hk && Q.hurt2 ? 'hurt2' : 'hurt';
+  }
+  if (p === 'attack' && Q.attackB){ if (M10_ATK.has(u.pose) && u.poseT < 0.25) return u.pose; u._ak = (u._ak || 0) + 1; return u._ak % 2 ? 'attack' : 'attackB'; }
+  return p;
+}
 const _setPoseM10 = setPose;
-setPose = function(u, p){ return _setPoseM10(u, u && u.S && u.S.m10 ? m10Map(u, p) : p); };
+setPose = function(u, p){ return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p) : p); };
 
 /* ---------- 고유 기술: 특수 준비 → 특수 공격 ---------- */
 for (const k of Object.keys(typeof M10 !== 'undefined' ? M10 : {})){
@@ -107,14 +121,39 @@ function m10Want(u, dt){
   if ((u._rdT = (u._rdT || 0) - dt) <= 0){ u._rdT = 0.5; u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9); }
   return u._rdy ? 'ready' : 'idle';
 }
+// 2 · 3기: 이 파일이 다루는 자세일 때만 (사격 · 막기 · 기술 그림은 건드리지 않음)
+const MOV_OWN = new Set(['idle', 'ready', 'walk', 'walkB', 'run', 'hurt', 'hurt2', 'stun', 'kneel', 'down']);
+const _camF = new THREE.Vector3();
+function movWant(u, dt){
+  const Q = u.S.poses, st = u.st;
+  u._rate = 1;
+  if (u.lying && Q.down && Q.down.flat){ u._wasLying = true; return MOV_OWN.has(u.pose) || M10_HURT.has(u.pose) ? 'down' : null; }
+  if (st === 'hurt' || st === 'stun' || st === 'held'){
+    if (!MOV_OWN.has(u.pose)) return null;
+    if (u._wasLying && Q.kneel) return 'kneel';
+    if (st === 'stun' && Q.stun) return 'stun';
+    return M10_HURT.has(u.pose) ? null : movMap(u, 'hurt');
+  }
+  u._wasLying = false;
+  if (st !== 'idle' || !MOV_OWN.has(u.pose)) return null;
+  if (u.moving && (u._msp || 0) > 0.25){
+    const fast = (u.alert || u.side === 'ally') && u._msp > u.spd * 0.85;
+    u._rate = Math.max(0.6, Math.min(1.3, u._msp / Math.max(0.5, u.spd)));
+    if (Q.walkB && u._mv){ camera.getWorldDirection(_camF); const l = Math.hypot(_camF.x, _camF.z) || 1; if ((u._mv.x * _camF.x + u._mv.z * _camF.z) / l > 0.45) return 'walkB'; }   // 카메라에서 멀어짐 = 뒷모습
+    return fast && Q.run ? 'run' : 'walk';
+  }
+  const war = u.side === 'enemy' ? u.alert : ((u._rdT = (u._rdT || 0) - dt) <= 0 ? (u._rdT = 0.5, u._rdy = G.units.some(e => e.side === 'enemy' && !e.dead && !e.downed && dist(e, u) < 9)) : u._rdy);
+  return war && Q.ready ? 'ready' : 'idle';
+}
 TICKS.push(dt => {
   for (const u of G.units){
-    if (!u.S || !u.S.m10 || u.dead || u.downed || u.lock) continue;
-    const sp = u._mp ? Math.hypot(u.x - u._mp.x, u.z - u._mp.z) / Math.max(dt, 1e-3) : 0; u._mp = { x: u.x, z: u.z };
+    if (!u.S || !(u.S.m10 || u.S.mov) || u.dead || u.downed || u.lock) continue;
+    const dx = u._mp ? u.x - u._mp.x : 0, dz = u._mp ? u.z - u._mp.z : 0, sp = Math.hypot(dx, dz) / Math.max(dt, 1e-3); u._mp = { x: u.x, z: u.z };
+    if (sp > 0.2) u._mv = { x: dx / (sp * Math.max(dt, 1e-3)), z: dz / (sp * Math.max(dt, 1e-3)) };   // 움직이는 쪽 (단위)
     u._msp = (u._msp || 0) + (Math.min(sp, 12) - (u._msp || 0)) * Math.min(1, dt * 10);
-    const p = m10Want(u, dt);
+    const p = u.S.m10 ? m10Want(u, dt) : movWant(u, dt);
     if (p && u.S.poses[p]) _setPoseM10(u, p);
-    if ((u.pose === 'walk' || u.pose === 'run') && u.poseT > 0.05) u.poseT = Math.max(0, u.poseT + dt * (u._rate - 1));
+    if ((u.pose === 'walk' || u.pose === 'walkB' || u.pose === 'run') && u.poseT > 0.05) u.poseT = Math.max(0, u.poseT + dt * (u._rate - 1));
   }
 });
 /* ---------- 숨쉬기 (서 있는 그림이 한 장이라 아주 살짝) ---------- */

@@ -1,4 +1,4 @@
-/* h2.js v2.2 — (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v2.3 — (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -22,10 +22,11 @@ function h2Build(){
     const AT = typeof H2A !== 'undefined' && H2A[slug];   // 묶음 그림이 있으면 그 칸을 씀 (아티팩트 파일 수 줄이기)
     const pose = p => { const q = { src: p.src, w: p.w, h: p.h, ax: p.ax ?? Math.round(p.w / 2), ay: p.ay ?? p.h - 3, f: p.f || 1, ...(p.flat ? { flat: true } : {}), ...(p.gscale ? { scale: p.gscale } : {}) }, n = AT && Object.keys(P).find(k => P[k] === p), r = n && AT.poses[n];
       if (r){ q.src = AT.src; q.rect = [...r, AT.W, AT.H]; } return q; };
-    const poses = {};
-    for (const [k, v] of Object.entries(P)) poses[k] = pose(v);
-    for (const [eng, from] of Object.entries(H2POSE)) if (!poses[eng]){ const k = from.find(f => P[f]); if (k) poses[eng] = pose(P[k]); }
-    SPR['h2_' + slug] = { h0: P.idle.h, tall: tallOf(o), poses };
+    const poses = {}, MV = typeof H2MOV !== 'undefined' && H2MOV[slug];   // v2.3 1차 업뎃 새 동작 (h2_mov.js)
+    if (!(MV && MV.replace)) for (const [k, v] of Object.entries(P)) poses[k] = pose(v);
+    if (MV){ for (const [k, p] of Object.entries(MV.poses)) poses[k] = { src: p.src || MV.src, f: 1, ...p }; if (MV.poses.down && !MV.poses.dead) poses.dead = poses.down; }   // 죽음도 새 누운 그림
+    for (const [eng, from] of Object.entries(H2POSE)) if (!poses[eng]){ const k = from.find(f => poses[f]); if (k) poses[eng] = poses[k]; }
+    SPR['h2_' + slug] = { h0: P.idle.h, tall: tallOf(o), poses, ...(MV && MV.poses.walk && MV.poses.walk.n > 1 ? { mov: true } : {}) };   // mov: 진짜 걷기 그림 (motion.js 가 걷기 · 달리기 · 맞음을 고름)
     const K = H2K[slug] || {}, st = K.st || {}, w = o.weight || st.weight || 70, big = tallOf(o) > 2.4;
     const base = { spr: 'h2_' + slug, name: (o.name || slug).replace(/\s*\(.*\)\s*$/, ''), hp: st.hp || 120, atk: st.atk || 14, spd: st.spd || 3.0, r: st.r || (big ? 0.6 : 0.34), weight: w,
       melee: st.melee || { range: 1.6, arc: 1.6, windup: 0.4, cd: 1.2, mul: 1, kb: 0.6 }, h2: slug, heavy: w >= 200 || big };
@@ -189,7 +190,7 @@ updateSprite = function(u, dt){
   if (u.st === 'windup'){ const k = Math.min(1, u.poseT / 0.35); sy = 1 - 0.06 * k; sx = 1 + 0.04 * k; rz = -0.1 * k * f; }
   else if (u.st === 'strike'){ const k = Math.max(0, 1 - u.poseT / 0.25); sy = 1 + 0.05 * k; sx = 1 - 0.03 * k; rz = 0.16 * k * f; }
   else if (u.st === 'hurt'){ rz = Math.sin(t * 60) * 0.05; }
-  else if (u.moving && !u.S.poses.walk_real){ dy = Math.abs(Math.sin(t * 9)) * 0.06; rz = 0.06 * f + Math.sin(t * 9) * 0.02; }
+  else if (u.moving && !u.S.poses.walk_real && !u.S.mov){ dy = Math.abs(Math.sin(t * 9)) * 0.06; rz = 0.06 * f + Math.sin(t * 9) * 0.02; }   // v2.3 진짜 걷기 그림이면 출렁임 없음
   else { sy = 1 + Math.sin(t * 2.1) * 0.015; }
   m.scale.y *= sy; m.scale.x *= sx; m.position.y *= sy; u.pivot.rotation.z += rz; u.pivot.position.y += dy;
   // 잔상: 빨리 움직이는 동안

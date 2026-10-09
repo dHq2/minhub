@@ -1,4 +1,4 @@
-/* poren.js v1.2 — (v1.2: 키 1.35 → 1.52 — 머리가 인주보다 살짝 낮게 (그림 키에 대검이 들어 있음)) (v1.1, v0.69 동작 검토: 발 위치를 몸 무게중심으로 다시 잼 · 쓰러지면 대검 꽂고 무릎 꿇음) v1.0 — 포렌 (쥐들의 대왕 · 1인군단) (v1.0, v0.68: 2D 판 '야광 포렌' 을 3D 로. 그림 13동작 (tools/poren_art.py → art/poren 묶음 2장) · 쥐 군단 · 기억하는 쥐)
+/* poren.js v1.3 — (v1.3, v0.77: 1차 업뎃 새 동작 — 걷기 4 · 달리기 4 · 맞음 · 기절 · 쓰러짐 · 순직 (H2MOV.poren, tools/h2_moves.py)) (v1.2: 키 1.35 → 1.52 — 머리가 인주보다 살짝 낮게 (그림 키에 대검이 들어 있음)) (v1.1, v0.69 동작 검토: 발 위치를 몸 무게중심으로 다시 잼 · 쓰러지면 대검 꽂고 무릎 꿇음) v1.0 — 포렌 (쥐들의 대왕 · 1인군단) (v1.0, v0.68: 2D 판 '야광 포렌' 을 3D 로. 그림 13동작 (tools/poren_art.py → art/poren 묶음 2장) · 쥐 군단 · 기억하는 쥐)
    140cm 에메랄드 갑주 · 대검 탱커. 혼자서 군단 — 쥐들이 끝없이 몰려와 싸움. 세자르와 같은 급 (인간의 정점들)
    2기 목록에 붙음: DEFS.h2_poren (동료) · DEFS.h2e_poren (적 · 보스로도). 훈련장 '2기' 탭 · 투기장에서 그대로 씀
    기술 (위에 있을수록 먼저):
@@ -25,6 +25,7 @@ SPR.h2_poren = { h0: POREN_SHEETS.idle.h, tall: PO.tall, poses: {
   thrA: PQ('dash_thrust', { count: 5, fps: 12, once: true }), thrB: PQ('dash_thrust', { from: 5, count: 7, fps: 20, once: true }),
   surf: PQ('dash_spin', { fps: 18, once: true }), slam: PQ('slam', { fps: 18, once: true }), ground: PQ('ground', { fps: 9, once: true }), spin: PQ('spin_slash', { fps: 16, once: true }),
   burst: PQ('burst', { fps: 14, once: true }), command: PQ('command', { fps: 12, once: true }), command2: PQ('command2', { fps: 12, once: true }), order: PQ('order', { fps: 14, once: true }) } };
+if (typeof H2MOV !== 'undefined' && H2MOV.poren){ const MV = H2MOV.poren; for (const [k, p] of Object.entries(MV.poses)) SPR.h2_poren.poses[k] = { src: p.src || MV.src, f: 1, ...p }; SPR.h2_poren.mov = true; }   // v1.3 새 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 순직
 {
   const base = { spr: 'h2_poren', name: '포렌', hp: 1000, atk: 22, spd: 3.0, r: 0.36, weight: 140, dr: 0.1, h2: 'poren', melee: { range: 1.9, arc: 1.8, windup: 0.35, cd: 1.1, mul: 1, kb: 0.8 }, think: porenThink };
   DEFS.h2_poren = { ...base }; DEFS.h2e_poren = { ...base, boss: true };

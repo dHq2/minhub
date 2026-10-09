@@ -1,4 +1,4 @@
-/* drill.js v1.9 — (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.10 — (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -361,9 +361,9 @@ function coloRoster(){
 }
 // v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
 const COLO_UPD = [
+  { v: 'v0.77', n: '1차 업뎃 2 · 3기 28명 새 동작 — 걷기 · 뒤로 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림 · 옐로 새 디자인', ids: ['h2:yellow', 'h2:bel', 'h2:gandu', 'h2:yongmyo', 'h2:moro', 'h2:goldknight', 'h2:gari', 'h2:gundevil', 'h2:ohe', 'h2:rook', 'h2:mstar', 'h2:knightcaptain', 'h2:blackrabbit', 'h2:tank', 'h2:venti', 'h2:ratvet', 'h2:ratknight', 'h2:mari', 'h2:dolsoe', 'h2:rozel', 'h2:kanya', 'h2:wangnim', 'h2:madangsoe', 'h2:inclador', 'h2:bishot', 'h2:tehera', 'h2:ratsmall', 'h2:poren'] },
   { v: 'v0.76', n: '1차 업뎃 잡몹 10명 새 그림 — 걷기 · 달리기 · 공격 2가지 · 고유 기술 · 맞음 · 기절 · 막기 · 쓰러짐 · 쉼', ids: ['swordsman', 'shieldman', 'archer', 'spearman', 'foeCultist', 'foeDevil', 'bkShield', 'bkSpear', 'gwangnyang', 'bluefat'] },
   { v: 'v0.70', n: '키 맞춤 — 인주 · 청광묵과 비슷하게', ids: ['h2:ratknight', 'h2:ratvet', 'h2:poren'] },
-  { v: 'v0.69', n: '동작 검토 — 보는 방향 · 발 위치 · 누운 그림 · 크기', ids: ['cesar', 'foeJelly', 'h2:bishot', 'h2:ancientdeer', 'bk', 'axeKnight', 'cs', 'catw', 'gwangnyang', 'h2:gallia', 'h2:hari', 'h2:mari', 'h2:mstar', 'h2:tanga', 'h2:garam', 'h2:gun', 'h2:ahae', 'h2:tehera', 'h2:unitB', 'jakyak', 'h2:hirari'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
