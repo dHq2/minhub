@@ -76,6 +76,48 @@
    "src": "img/h2/tehera__dash.webp",
    "memo": "삭제",
    "at": "2026-10-08"
+  },
+  "O-h2-garam2-down": {
+   "name": "가람 · 쓰러짐",
+   "sub": "가람 · 동료 · 동작 그림",
+   "src": "img/h2/garam2__down.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "O-h2-garam2-low": {
+   "name": "가람 · 낮은 자세",
+   "sub": "가람 · 동료 · 동작 그림",
+   "src": "img/h2/garam2__low.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "O-h2-garam2-attack2": {
+   "name": "가람 · 공격 2",
+   "sub": "가람 · 동료 · 동작 그림",
+   "src": "img/h2/garam2__attack2.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "O-h2-garam2-attack": {
+   "name": "가람 · 공격",
+   "sub": "가람 · 동료 · 동작 그림",
+   "src": "img/h2/garam2__attack.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "O-h3x-angelsoldier-s08": {
+   "name": "천사 병사 10인 · 갈색 피부 · 분홍 곱슬, 양손 낫칼 (쌍검)",
+   "sub": "천사 병사 10인 · 역할 미정 · 동작 그림",
+   "src": "img/h3x/angelsoldier__s08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "O-h2-garam2-guard": {
+   "name": "가람 · 막기",
+   "sub": "가람 · 동료 · 동작 그림",
+   "src": "img/h2/garam2__guard.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
   }
  },
  "cids": {
