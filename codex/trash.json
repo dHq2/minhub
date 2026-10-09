@@ -426,6 +426,125 @@
    "src": "img/h3x/angelsoldier__s02.webp",
    "memo": "삭제 — 하리와 중복 (이름 칸에 적은 대로: 하리임. 중복이니까 삭제.)",
    "at": "2026-10-09"
+  },
+  "X-straggler-06": {
+   "name": "거대한 가위를 든 누더기 노파",
+   "sub": "낙오 방랑자 · 팩션 NPC · 원화",
+   "src": "img/npc/X-straggler-06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-10": {
+   "name": "몸통이 이어진 두 머리 여우",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-10.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-06": {
+   "name": "누더기를 걸친 철퇴 꼬리 쥐",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-02": {
+   "name": "구멍 뚫린 분홍 통 두 발 짐승",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-03": {
+   "name": "가죽 앞발을 단 줄무늬 하이에나",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-03.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-04": {
+   "name": "흰 부리 머리의 붉은 셔츠 거인",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-04.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-07": {
+   "name": "붉은 날개를 단 나방 인간",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-07.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-alienodd-11": {
+   "name": "붉은 상자 머리를 쓴 멜빵 거한",
+   "sub": "이질적인 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-alienodd-11.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-11": {
+   "name": "목이 긴 부리 새",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-11.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-02": {
+   "name": "상자 머리를 쓴 학",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-02.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-straggler-08": {
+   "name": "단검을 든 긴 머리 여인",
+   "sub": "낙오 방랑자 · 팩션 NPC · 원화",
+   "src": "img/npc/X-straggler-08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-08": {
+   "name": "붉은 버섯 팔의 근육질 사내",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-08.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-10": {
+   "name": "나방 날개 소매의 주황 외투 인간",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-10.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-06": {
+   "name": "고리 모양 머리의 연보라 인간",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-06.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-crossroad-01": {
+   "name": "아코디언 주둥이 털북숭이 짐승",
+   "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
+   "src": "img/npc/X-crossroad-01.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-12": {
+   "name": "보라 날개를 단 두 몸 붙은 흰 생물",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-12.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "X-oddcreature-01": {
+   "name": "초록 꽃잎 머리의 정장 인간",
+   "sub": "기묘한 적 생물 · 적 무리 · 원화",
+   "src": "img/npc/X-oddcreature-01.webp",
+   "memo": "삭제",
+   "at": "2026-10-09"
   }
  },
  "cids": {
@@ -475,6 +594,13 @@
    "name": "복서",
    "sub": "복서 · 미등장 NPC (일반) · 원화 + 연출",
    "n": 2,
+   "memo": "삭제",
+   "at": "2026-10-09"
+  },
+  "C-135": {
+   "name": "기묘한 휴머노이드 적",
+   "sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
+   "n": 12,
    "memo": "삭제",
    "at": "2026-10-09"
   }

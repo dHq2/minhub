@@ -1,4 +1,4 @@
-/* catalog.js v1.92 — v1.92: 도감 설정 · 메모 반영 (2026-10-09) — 갱스터 잉끌레이도르 → 잭 (장도리) 묶음으로 합침 · 쥐 베테랑을 쥐 기사에서 떼어 새 인물 C-274 · 돌장갑 NPC · 대검 든 산호 여인 → 러슬 (전투 모습) · 천사 병사 중복 2장 (히라리 · 하리) 쓰레기통 · tools/memo_fix.py: 초상화 5 다시 (레오나스 · 친칠라 · 페흐토 · 소녀와 죄수 · 고대사슴 산호) · 산호 사슴 배경 지운 스프라이트 · 불경자 스킬 그림 · 두 명 그림 2장 → 4명 (요리사 C-275 · 테레비신도 C-276). v1.91: 1차 업뎃 2 · 3기 28명 새 동작 154칸 (O-h2m-<인물>-<동작>, 동작마다 프레임 한 줄 · tools/h2_poses.py v1.4) · 옐로 옛 동작은 '(옛 디자인)' · 용묘화 · 테헤라 움짤에 게임 쓰임 (v0.78). v1.90: 쓰레기통 84장 (인물 5 — 붉은 점토 부족 생존자 · 검은 재 마법 생존자 · 야수 생존자 · 돌피부 인간 · 복서, 낱장 42). v1.89: 잡몹 10명 동작 그림 (드라이브 '1차적 10인', tools/m10_poses.py). v1.88: 카리우스 · 사망 그림 (tools/kar_poses.py v1.2) · 쓰레기통 3 (카리우스 도형 · 쥐 기사 얼굴 · 대기). v1.87: v1.87: 민수 확인 — 왕님 = 하르겐 · 발용 본명 테이론 (tools/renames.py) · 마도사녀 = 마도사 (맨얼굴) · 쥐 베테랑은 쥐 기사 묶음 · 3기-2 인물을 도감에 이미 있던 묶음 9곳 (모로 · 쥐 기사 · 히든깨비 · 물레 · 콜라이더 · 기체 A/B · 천사슬 = 슬라 · 고대사슴 산호 = 고대사슴) 에 이어 붙임. v1.86: 3기-2 — 포렌의 쥐 (쥐 기사 · 쥐 베테랑 · 일반 쥐) · 5성 서포터 (콜라이더 · 물레 · 모로 · 고대사슴) · 슬라 · 기체 A/B · 마도사녀 · 사슴 · 히든깨비 새 묶음, 1기 인물 새 시트 (마리 · 모닝스타 · 옐로 · 용묘화 · 테헤라 · 흑토끼기사 · 로젤 · 왕님 · 기사단장 · 아해) 는 그 사람 묶음 끝에 (tools/h2_poses.py v1.2). v1.85: 마리의 부족민 #1 은 마리와 다른 사람 → 팩션으로 되돌림, 나머지 셋 민수 확인. v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83: 3기 1차 — 3기 인물 (tools/h2_poses.py v1.1) · 추가팩션 인물 7묶음 · 전장 설비 7묶음 · 추가 스프라이트 (tools/h3_extra.py). v1.82: v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). v1.81: 카리우스 옛 항목도 한 묶음 (초상화 모음에 둘 뜨던 것), 도감 인주 의자에 앉기. v1.80: 카리우스 새 그림 21자세 · 스킬 그림 4 · 컷씬 · 원화 2 (tools/kar_poses.py), 레베카 동작은 3D 동료로 씀. v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
+/* catalog.js v1.93 — v1.93: 검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) — 검냥이 그림 6장을 광냥 (C-092) 묶음으로 · 이름 '광냥 (검냥이) · …' · 게임 쓰임 칸 (광냥 대기 = 검냥이 대기 그림) (tools/renames.py v1.2). v1.92: 도감 설정 · 메모 반영 (2026-10-09) — 갱스터 잉끌레이도르 → 잭 (장도리) 묶음으로 합침 · 쥐 베테랑을 쥐 기사에서 떼어 새 인물 C-274 · 돌장갑 NPC · 대검 든 산호 여인 → 러슬 (전투 모습) · 천사 병사 중복 2장 (히라리 · 하리) 쓰레기통 · tools/memo_fix.py: 초상화 5 다시 (레오나스 · 친칠라 · 페흐토 · 소녀와 죄수 · 고대사슴 산호) · 산호 사슴 배경 지운 스프라이트 · 불경자 스킬 그림 · 두 명 그림 2장 → 4명 (요리사 C-275 · 테레비신도 C-276). v1.91: 1차 업뎃 2 · 3기 28명 새 동작 154칸 (O-h2m-<인물>-<동작>, 동작마다 프레임 한 줄 · tools/h2_poses.py v1.4) · 옐로 옛 동작은 '(옛 디자인)' · 용묘화 · 테헤라 움짤에 게임 쓰임 (v0.78). v1.90: 쓰레기통 84장 (인물 5 — 붉은 점토 부족 생존자 · 검은 재 마법 생존자 · 야수 생존자 · 돌피부 인간 · 복서, 낱장 42). v1.89: 잡몹 10명 동작 그림 (드라이브 '1차적 10인', tools/m10_poses.py). v1.88: 카리우스 · 사망 그림 (tools/kar_poses.py v1.2) · 쓰레기통 3 (카리우스 도형 · 쥐 기사 얼굴 · 대기). v1.87: v1.87: 민수 확인 — 왕님 = 하르겐 · 발용 본명 테이론 (tools/renames.py) · 마도사녀 = 마도사 (맨얼굴) · 쥐 베테랑은 쥐 기사 묶음 · 3기-2 인물을 도감에 이미 있던 묶음 9곳 (모로 · 쥐 기사 · 히든깨비 · 물레 · 콜라이더 · 기체 A/B · 천사슬 = 슬라 · 고대사슴 산호 = 고대사슴) 에 이어 붙임. v1.86: 3기-2 — 포렌의 쥐 (쥐 기사 · 쥐 베테랑 · 일반 쥐) · 5성 서포터 (콜라이더 · 물레 · 모로 · 고대사슴) · 슬라 · 기체 A/B · 마도사녀 · 사슴 · 히든깨비 새 묶음, 1기 인물 새 시트 (마리 · 모닝스타 · 옐로 · 용묘화 · 테헤라 · 흑토끼기사 · 로젤 · 왕님 · 기사단장 · 아해) 는 그 사람 묶음 끝에 (tools/h2_poses.py v1.2). v1.85: 마리의 부족민 #1 은 마리와 다른 사람 → 팩션으로 되돌림, 나머지 셋 민수 확인. v1.84: 팩션 시트 속 주요 인물을 그 인물 묶음으로 (tools/faction_heroes.py). v1.83: 3기 1차 — 3기 인물 (tools/h2_poses.py v1.1) · 추가팩션 인물 7묶음 · 전장 설비 7묶음 · 추가 스프라이트 (tools/h3_extra.py). v1.82: v1.82: 2기 멤버 41명 (38인물 + 연금술사) 초상화 · 원화 · 동작 그림 (tools/h2_poses.py). v1.81: 카리우스 옛 항목도 한 묶음 (초상화 모음에 둘 뜨던 것), 도감 인주 의자에 앉기. v1.80: 카리우스 새 그림 21자세 · 스킬 그림 4 · 컷씬 · 원화 2 (tools/kar_poses.py), 레베카 동작은 3D 동료로 씀. v1.79: 인주 동작 45장 (던진 뒤 더함). v1.78: 인주 동작 44장 (어퍼컷 · 드롭킥 1 · 2 · 3 · 붕권 더함). v1.77: 3D판 인주 동작 그림 39장 (O-inju-*, tools/inju_poses.py). 도감 항목. id는 바뀌지 않음. on = 지금 3D에 들어가 있음. spec = 확정한 설정 · 효과 (본문색), note = 출처 · 할 일 (흐린색). cid = 인물 번호. v1.76: 쓰임새로 다시 나눔 (sub = 쓰임새, pk = 원래 받은 묶음, game = 게임 속 칸 · 등급, was = 고치기 전 이름) — tools/reclass.py */
 const CATALOG = [
 {
 "id": "R-A",
@@ -41275,7 +41275,7 @@ const CATALOG = [
 "note": "1차 업뎃 (드라이브 '10.08 1차업뎃 / 1차적 10인', 2026-10-08) · 시트 '기본'",
 "rank": "",
 "on": true,
-"game": "게임: 서 있을 때"
+"game": "게임: 아직 안 씀 (대기는 검냥이 그림 20장)"
 },
 {
 "id": "O-m10-gwangnyang-walk1",
@@ -41392,7 +41392,7 @@ const CATALOG = [
 "note": "1차 업뎃 (드라이브 '10.08 1차업뎃 / 1차적 10인', 2026-10-08) · 시트 '공격대기'",
 "rank": "",
 "on": true,
-"game": "게임: 싸움 중 서 있을 때"
+"game": "게임: 아직 안 씀 (싸움 중 대기는 검냥이 그림 12장)"
 },
 {
 "id": "O-m10-gwangnyang-windup",
@@ -42338,74 +42338,76 @@ const CATALOG = [
 {
 "id": "F-auto-catwarrior",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 기본 초상화",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) 기본 초상화",
 "src": "img/face/auto_catwarrior.webp",
-"note": "대기 첫 장에서 정사각형으로 자름",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · 대기 첫 장에서 정사각형으로 자름",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang"
 },
 {
 "id": "P-catwarrior-idle",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 · 대기 (12장, v1.1)",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) · 대기 (12장, v1.1)",
 "src": "img/char/catwarrior_idle.webp",
-"note": "cat_idle 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · cat_idle 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang",
+"game": "게임: 싸움 중 서 있을 때 (광냥 대기 12장)"
 },
 {
 "id": "P-catwarrior-calm_idle",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 · 차분한 대기 (20장)",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) · 차분한 대기 (20장)",
 "src": "img/char/catwarrior_calm_idle.webp",
-"note": "cat_calm_idle 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · cat_calm_idle 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang",
+"game": "게임: 서 있을 때 (광냥 대기 20장)"
 },
 {
 "id": "P-catwarrior-scratch",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 · 할퀴기 (8장)",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) · 할퀴기 (8장)",
 "src": "img/char/catwarrior_scratch.webp",
-"note": "cat_scratch 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · cat_scratch 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang"
 },
 {
 "id": "P-catwarrior-triple_scratch",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 · 세 번 할퀴기 (14장)",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) · 세 번 할퀴기 (14장)",
 "src": "img/char/catwarrior_triple_scratch.webp",
-"note": "cat_triple_scratch 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · cat_triple_scratch 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang"
 },
 {
 "id": "P-catwarrior-pounce",
 "cat": "char",
-"sub": "검냥이 · 역할 미정 · 동작 그림",
-"cid": "C-102",
-"name": "검냥이 · 덮쳐 찢기 (13장)",
+"sub": "광냥 · 역할 미정 · 원화 + 연출",
+"cid": "C-092",
+"name": "광냥 (검냥이) · 덮쳐 찢기 (13장)",
 "src": "img/char/catwarrior_pounce.webp",
-"note": "cat_pounce 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
+"note": "검냥이 = 광냥 (민수 메모로 합침, 2026-10-09) · cat_pounce 스프라이트 (드라이브 2026-10-03) · 드라이브 검냥이 폴더 (예전 이름 고양이 전사녀)",
 "rank": "",
 "on": false,
-"g": "catwarrior"
+"g": "kwangnyang"
 },
 {
 "id": "F-auto-eopong",
@@ -43996,18 +43998,6 @@ const CATALOG = [
 "g": "X-straggler"
 },
 {
-"id": "X-straggler-06",
-"cat": "char",
-"sub": "낙오 방랑자 · 팩션 NPC · 원화",
-"cid": "C-119",
-"name": "거대한 가위를 든 누더기 노파",
-"src": "img/npc/X-straggler-06.webp",
-"note": "드라이브 일반NPC · 낙오방랑1.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-straggler"
-},
-{
 "id": "X-straggler-07",
 "cat": "char",
 "sub": "낙오 방랑자 · 팩션 NPC · 원화",
@@ -44015,18 +44005,6 @@ const CATALOG = [
 "name": "궤짝 둘을 등에 진 근육 짐꾼",
 "src": "img/npc/X-straggler-07.webp",
 "note": "드라이브 일반NPC · 낙오방랑1.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-straggler"
-},
-{
-"id": "X-straggler-08",
-"cat": "char",
-"sub": "낙오 방랑자 · 팩션 NPC · 원화",
-"cid": "C-119",
-"name": "단검을 든 긴 머리 여인",
-"src": "img/npc/X-straggler-08.webp",
-"note": "드라이브 일반NPC · 낙오방랑1.png #7 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-straggler"
@@ -45376,42 +45354,6 @@ const CATALOG = [
 "g": "X-alien"
 },
 {
-"id": "X-crossroad-01",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "아코디언 주둥이 털북숭이 짐승",
-"src": "img/npc/X-crossroad-01.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
-"id": "X-crossroad-02",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "상자 머리를 쓴 학",
-"src": "img/npc/X-crossroad-02.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
-"id": "X-crossroad-03",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "가죽 앞발을 단 줄무늬 하이에나",
-"src": "img/npc/X-crossroad-03.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
 "id": "X-crossroad-04",
 "cat": "char",
 "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
@@ -45436,30 +45378,6 @@ const CATALOG = [
 "g": "X-crossroad"
 },
 {
-"id": "X-crossroad-06",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "누더기를 걸친 철퇴 꼬리 쥐",
-"src": "img/npc/X-crossroad-06.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
-"id": "X-crossroad-07",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "붉은 날개를 단 나방 인간",
-"src": "img/npc/X-crossroad-07.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
 "id": "X-crossroad-08",
 "cat": "char",
 "sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
@@ -45479,30 +45397,6 @@ const CATALOG = [
 "name": "붉은 밧줄 팔을 단 가면 고릴라",
 "src": "img/npc/X-crossroad-09.webp",
 "note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
-"id": "X-crossroad-10",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "몸통이 이어진 두 머리 여우",
-"src": "img/npc/X-crossroad-10.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-crossroad"
-},
-{
-"id": "X-crossroad-11",
-"cat": "char",
-"sub": "이세계 교차로의 기묘한 적 · 적 무리 · 원화",
-"cid": "C-133",
-"name": "목이 긴 부리 새",
-"src": "img/npc/X-crossroad-11.webp",
-"note": "드라이브 일반NPC · 이세계 교차로의 기묘한 적들.png #10 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-crossroad"
@@ -45638,162 +45532,6 @@ const CATALOG = [
 "rank": "",
 "on": false,
 "g": "X-alienodd"
-},
-{
-"id": "X-alienodd-11",
-"cat": "char",
-"sub": "이질적인 기묘한 적 · 적 무리 · 원화",
-"cid": "C-134",
-"name": "붉은 상자 머리를 쓴 멜빵 거한",
-"src": "img/npc/X-alienodd-11.webp",
-"note": "드라이브 일반NPC · 이질적인 12종 기묘한 적 스프라이트.png #10 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-alienodd"
-},
-{
-"id": "X-oddhuman-01",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "얼굴 구멍 난 두건 쓴 긴 팔 인간",
-"src": "img/npc/X-oddhuman-01.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-02",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "돌 주먹을 단 붉은 피부 여인",
-"src": "img/npc/X-oddhuman-02.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-03",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "흰 외투를 걸친 푸른 피부 사내",
-"src": "img/npc/X-oddhuman-03.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-04",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "나무 지팡이를 짚은 누더기 노인",
-"src": "img/npc/X-oddhuman-04.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #3 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-05",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "흰 두건을 쓴 붉은 피부 여인",
-"src": "img/npc/X-oddhuman-05.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #4 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-06",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "부리 가면을 쓴 검은 거구",
-"src": "img/npc/X-oddhuman-06.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-07",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "붕대 팔을 한 얼굴 없는 흰 인간",
-"src": "img/npc/X-oddhuman-07.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-08",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "앞치마를 두른 가면 사내",
-"src": "img/npc/X-oddhuman-08.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #7 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-09",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "보라 손을 가진 붉은 재킷 여인",
-"src": "img/npc/X-oddhuman-09.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #8 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-10",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "한쪽 팔이 거대한 검은 그림자 인간",
-"src": "img/npc/X-oddhuman-10.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-11",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "돌덩이 팔을 가진 가면 거인",
-"src": "img/npc/X-oddhuman-11.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #10 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
-},
-{
-"id": "X-oddhuman-12",
-"cat": "char",
-"sub": "기묘한 휴머노이드 적 · 적 무리 · 원화",
-"cid": "C-135",
-"name": "다리가 나무뿌리인 푸른 재킷 사내",
-"src": "img/npc/X-oddhuman-12.webp",
-"note": "드라이브 일반NPC · 기묘한 12종 휴머노이드 적 스프라이트 시트-4.png #11 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddhuman"
 },
 {
 "id": "X-oddgame-01",
@@ -45940,30 +45678,6 @@ const CATALOG = [
 "g": "X-oddgame"
 },
 {
-"id": "X-oddcreature-01",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "초록 꽃잎 머리의 정장 인간",
-"src": "img/npc/X-oddcreature-01.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #0 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
-"id": "X-oddcreature-02",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "구멍 뚫린 분홍 통 두 발 짐승",
-"src": "img/npc/X-oddcreature-02.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #1 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
 "id": "X-oddcreature-03",
 "cat": "char",
 "sub": "기묘한 적 생물 · 적 무리 · 원화",
@@ -45971,18 +45685,6 @@ const CATALOG = [
 "name": "흰 가시가 박힌 푸른 물 인간",
 "src": "img/npc/X-oddcreature-03.webp",
 "note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #2 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
-"id": "X-oddcreature-04",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "흰 부리 머리의 붉은 셔츠 거인",
-"src": "img/npc/X-oddcreature-04.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #3 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-oddcreature"
@@ -46000,18 +45702,6 @@ const CATALOG = [
 "g": "X-oddcreature"
 },
 {
-"id": "X-oddcreature-06",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "고리 모양 머리의 연보라 인간",
-"src": "img/npc/X-oddcreature-06.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #5 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
 "id": "X-oddcreature-07",
 "cat": "char",
 "sub": "기묘한 적 생물 · 적 무리 · 원화",
@@ -46019,18 +45709,6 @@ const CATALOG = [
 "name": "회색 판 속에 숨은 두 발 생물",
 "src": "img/npc/X-oddcreature-07.webp",
 "note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #6 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
-"id": "X-oddcreature-08",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "붉은 버섯 팔의 근육질 사내",
-"src": "img/npc/X-oddcreature-08.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #7 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-oddcreature"
@@ -46048,18 +45726,6 @@ const CATALOG = [
 "g": "X-oddcreature"
 },
 {
-"id": "X-oddcreature-10",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "나방 날개 소매의 주황 외투 인간",
-"src": "img/npc/X-oddcreature-10.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #9 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
 "id": "X-oddcreature-11",
 "cat": "char",
 "sub": "기묘한 적 생물 · 적 무리 · 원화",
@@ -46067,18 +45733,6 @@ const CATALOG = [
 "name": "흰 등뼈를 두른 검은 네발 짐승",
 "src": "img/npc/X-oddcreature-11.webp",
 "note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #10 (2026-10-04)",
-"rank": "",
-"on": false,
-"g": "X-oddcreature"
-},
-{
-"id": "X-oddcreature-12",
-"cat": "char",
-"sub": "기묘한 적 생물 · 적 무리 · 원화",
-"cid": "C-137",
-"name": "보라 날개를 단 두 몸 붙은 흰 생물",
-"src": "img/npc/X-oddcreature-12.webp",
-"note": "드라이브 일반NPC · 기묘한 적 생물 12종 스프라이트 시트-5.png #11 (2026-10-04)",
 "rank": "",
 "on": false,
 "g": "X-oddcreature"
