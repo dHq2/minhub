@@ -1,4 +1,4 @@
-# h2_poses.py v1.4 — (v1.4: 원래 칸을 쓰레기통에 다 넣은 묶음 (쥐 기사) 도 묶음 · 인물 번호를 지킴 · 1차 업뎃 새 동작 프레임 (cave-3d/src/h2_mov.js) — 동작마다 한 장 (프레임을 줄지어, 칸 높이 220) O-h2m-<slug>-<동작> · img/h2m. 도감 움짤에서 온 동작 (용묘화 · 테헤라) 은 그 움짤 칸에 '게임:' 줄만. 옐로 옛 동작은 '(옛 디자인)' 표시) (v1.3: 민수 확인 — 마도사녀 = 마도사 · 쥐 베테랑은 쥐 기사 묶음 · 도감에 이미 있던 묶음 9곳에 이어 붙임) v1.2 — (v1.2: 3기-2 — codex_g 가 있는 1기 인물 (마리 · 모닝스타 · 옐로 …)은 도감의 그 사람 묶음 끝에 붙임 · 변신 / 소환물 묶음 (아해 · 슬라) · 메모에 batch) (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
+# h2_poses.py v1.5 — (v1.5: 쥐 베테랑을 쥐 기사 묶음에서 떼어 제 인물 번호로 · 잉끌레이도르는 노트의 codex_g 로 잭 (장도리 h3x 묶음) 에 붙음 — 둘 다 민수 도감 설정 2026-10-09) (v1.4: 원래 칸을 쓰레기통에 다 넣은 묶음 (쥐 기사) 도 묶음 · 인물 번호를 지킴 · 1차 업뎃 새 동작 프레임 (cave-3d/src/h2_mov.js) — 동작마다 한 장 (프레임을 줄지어, 칸 높이 220) O-h2m-<slug>-<동작> · img/h2m. 도감 움짤에서 온 동작 (용묘화 · 테헤라) 은 그 움짤 칸에 '게임:' 줄만. 옐로 옛 동작은 '(옛 디자인)' 표시) (v1.3: 민수 확인 — 마도사녀 = 마도사 · 쥐 베테랑은 쥐 기사 묶음 · 도감에 이미 있던 묶음 9곳에 이어 붙임) v1.2 — (v1.2: 3기-2 — codex_g 가 있는 1기 인물 (마리 · 모닝스타 · 옐로 …)은 도감의 그 사람 묶음 끝에 붙임 · 변신 / 소환물 묶음 (아해 · 슬라) · 메모에 batch) (v1.1: 3기 — 등급 이름 늘림 (강적 · 중간급 · 장군 · 거대괴수 …) · 메모에 기수) v1.0 — 2기 멤버 (드라이브 '2기멤버 동료,적 모음', cave-3d v0.60)를 도감 인물 칸에 넣음
 #  · 인물마다 새 묶음 (g = h2_<slug>, cid = 새 인물 번호). 같은 인물의 다른 모습은 한 묶음: 가람 + 망토 갑옷 · 히라리 + 변신 · 레비 + 소환수
 #  · F-h2-<slug> 기본 초상화 (img/face, 256 → 160) · P-h2-<slug> 원화 (img/h2, 높이 420) · O-h2-<slug>-<동작> 동작 그림 (img/h2, 높이 300)
 #  · 은신 웅크림 (은신.png) 7장 · 연금술사 (이름 모름, 낱장 연금술.png) · 벨 쌍권총 그림도 같이
@@ -24,7 +24,7 @@ PN = {'idle': '기본', 'idle2': '기본 2', 'idle3': '기본 3', 'walk': '걷�
       'command': '지휘', 'pistol': '권총', 'rod': '조율봉', 'talk': '말하기', 'armor_idle': '갑옷 기본', 'armor_ready': '갑옷 태세', 'fly': '날기', 'slam': '내려찍기', 'aim': '조준', 'attack4': '공격 4', 'attack_b': '공격 (뒤)', 'back': '뒷모습', 'bind': '휘감아 묶기', 'block_up': '방패 들어 막기', 'bow': '인사', 'broll_fall': '뒷구르기 1', 'broll_flip': '뒷구르기 2', 'broll_land': '뒷구르기 3', 'cast2': '시전 2', 'cast3': '시전 3', 'claw': '할퀴기', 'cover': '방패 덮기', 'curl': '웅크려 말기', 'dash2': '돌진 2', 'dig': '파내기', 'dive': '뛰어들기', 'down2': '쓰러짐 2', 'down3': '쓰러짐 3', 'drift': '떠다니기', 'flip': '공중제비', 'float': '떠 있기', 'front2': '정면 2', 'grab': '붙잡기', 'guard2': '방진', 'heal': '치료', 'helmet': '투구 고쳐 쓰기', 'idle_b': '기본 (뒤)', 'jump2': '도약 2', 'kick2': '발차기 2', 'knee': '무릎', 'kneel': '무릎 꿇기', 'leap': '뛰어오르기', 'low2': '낮은 자세 2', 'plunge': '내리꽂기', 'prowl': '살금살금', 'pull': '끌어오기', 'reach': '손 뻗기', 'ready2': '태세 2', 'ready3': '태세 3', 'rise': '떠오르기', 'roar': '포효', 'roll_flip': '구르기 2', 'roll_in': '구르기 1', 'roll_land': '구르기 3', 'salute': '경례', 'shield_push': '방패 밀기', 'sit': '앉기', 'sit2': '앉기 2', 'slash': '베기', 'smoke': '담배', 'spin': '회전', 'stance': '겨눔', 'summon3': '소환 3', 'swing': '휘두르기', 'sword_attack': '검 베기', 'sword_back': '검 뒤로', 'sword_cry': '검 들고 외침', 'sword_kneel': '검 짚고 무릎', 'sword_low': '검 낮게', 'sword_raise': '검 들기', 'sword_ready': '검 태세', 'sword_thrust': '검 찌르기', 'sword_windup': '검 예고', 'throw': '던지기', 'throw2': '던지기 2', 'tumble': '구르기', 'walk2': '걷기 2', 'walk3': '걷기 3', 'walk_b': '걷기 (뒤)', 'wave': '손 흔들기'}
 ENG = {'idle': '서 있을 때 · 숨쉬기', 'walk': '걸을 때', 'run': '걸을 때 (뛰기)', 'down': '쓰러졌을 때', 'dead': '죽었을 때', 'hurt': '맞았을 때', 'guard': '막기 자세 · 맞을 때 (맞음 그림 대신)',
        'windup': '공격 예고', 'attack': '기본 공격', 'crouch': '숙이기 (G) · 은신', 'sneak': '숙이기 (G) · 은신'}
-GROUP = {'garam2': 'garam', 'hirari2': 'hirari', 'levi_beast': 'levi', 'ahae2': 'ahae', 'ahae_wraith': 'ahae', 'slra2': 'slra', 'ratvet': 'ratknight', 'magusgirl': 'madosa'}
+GROUP = {'garam2': 'garam', 'hirari2': 'hirari', 'levi_beast': 'levi', 'ahae2': 'ahae', 'ahae_wraith': 'ahae', 'slra2': 'slra', 'magusgirl': 'madosa'}   # v1.5 쥐 베테랑은 쥐 기사와 따로 (민수 도감 설정: 베테랑 4성 · 쥐 기사 1성)
 def role(slug, o):
     r = str(o.get('role') or '') + ' ' + str(o.get('rank') or '')
     if K.get(slug, {}).get('boss') or r.startswith('보스') or '강적' in r or o.get('role', '').startswith('적'): return '적 · 보스'
@@ -86,9 +86,9 @@ for slug, o in R.items():
 # 은신 웅크림 (은신.png) · 벨 쌍권총 · 하리 원화 전신 · 연금술사
 MISC = os.path.join('art', 'h2', '_misc')
 for slug in ('goldknight', 'gundevil', 'hari', 'inclador', 'kanya', 'rook'):
-    g = 'h2_' + slug; nm = clean(R[slug]['name']); sub = next(e['sub'] for e in new if e['g'] == g)
+    g, cid_s, sub, nm = WHO[slug]   # v1.5 다른 묶음에 붙은 인물도 (잉끌레이도르 → 잭 묶음)
     put(os.path.join(MISC, f'stealth_{slug}.webp'), os.path.join(OUT, f'{slug}__stealth.webp'))
-    ent(f'O-h2-{slug}-stealth', cat='char', sub=sub, cid=cidOf[g], g=g, name=f'{nm} · 은신 웅크림', src=f'img/h2/{slug}__stealth.webp', note='낱장 은신.png (시트의 \'은신\' 칸) — 은신 되는 인물 목록으로 보임. 배율 임시', game='게임: 아직 안 씀 (숙이기 그림 후보)', on=False)
+    ent(f'O-h2-{slug}-stealth', cat='char', sub=sub, cid=cid_s, g=g, name=f'{nm} · 은신 웅크림', src=f'img/h2/{slug}__stealth.webp', note='낱장 은신.png (시트의 \'은신\' 칸) — 은신 되는 인물 목록으로 보임. 배율 임시', game='게임: 아직 안 씀 (숙이기 그림 후보)', on=False)
 sub = next(e['sub'] for e in new if e['g'] == 'h2_bel')
 put(os.path.join(MISC, 'bel_dualshoot.webp'), os.path.join(OUT, 'bel__dualshoot.webp'))
 ent('O-h2-bel-dualshoot', cat='char', sub=sub, cid=cidOf['h2_bel'], g='h2_bel', name='인공천사 벨 · 쌍권총 (전신 원화)', src='img/h2/bel__dualshoot.webp', note='낱장 1000017866.png (검은 바탕)', game='게임: 아직 안 씀 (연사 그림 후보)', on=False)
