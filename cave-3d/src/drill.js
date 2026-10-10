@@ -1,4 +1,4 @@
-/* drill.js v1.16 — (v1.16, v0.83: 콜로세움 기수 탭을 명단에서 만듦 — 노트에 gen: 4 가 오면 '4기' 탭이 저절로 (전엔 1 · 3 이 아니면 다 2기로 감) · 도감 본명: 장군님 호레이쇼 · 반미 (보르마) 를 설명 글에도) (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.17 — (v1.17, v0.85: '업뎃!' 칸에 4기 묶음 (인물 22 · 적 · 1기 영웅 9 · 잡몹 9 — 가장 오래된 v0.80 묶음은 뺌) · 시험판은 8명씩, 누를 때마다 다음 8명 (전엔 앞 8명만)) (v1.16, v0.83: 콜로세움 기수 탭을 명단에서 만듦 — 노트에 gen: 4 가 오면 '4기' 탭이 저절로 (전엔 1 · 3 이 아니면 다 2기로 감) · 도감 본명: 장군님 호레이쇼 · 반미 (보르마) 를 설명 글에도) (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -361,9 +361,9 @@ function coloRoster(){
 }
 // v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
 const COLO_UPD = [
+  { v: 'v0.85', n: '4기 (드라이브 1010 4기 업뎃) — 새 인물 16 (유니 · 콘 · 리완 · 세르파 · 슈 · 글리치 챔피언 · 기병기사 …) · 각펄 보스 (한 방은 2성 그대로 — «이게 2성이구나!») · 세르파 수정 거품게 (자원 유닛 → 흡수해 유닛 뽑기) · 펄 · 망향 · 마도사 · 사슴 · 잭 새 동작 · 적 · 1기 영웅 새 동작 9명 (청광묵 팜 버스트 · GOOD WILL 마운트 파운딩 · 곤봉 거한 · 장군님 내려찍기 · 무릎 · 방어 · 딴짓 · 쉬기) · 4기 잡몹 9인 (동방 5 · 서방 4 — 총 · 산탄 · 저격, 7 · 8층)', ids: ['h2:yuni', 'h2:kon', 'h2:riwan', 'h2:serpa', 'h2:shu', 'h2:glitch', 'h2:nurse', 'h2:darkrider', 'h2:sawknight', 'h2:purpledemon', 'h2:pinkdemon', 'h2:regina', 'h2:pehto', 'h2:teiron', 'h2:chinchilla', 'h2:traka', 'h2:pearlgak', 'h2:pearl', 'h2:manghyang', 'h2:magusgirl', 'h2:stagbeast', 'h2:inclador', 'cheongAlly', 'goodwill', 'brute', 'janggun', 'cs', 'jakyak', 'eyemon', 'benkin', 'bk', 'ssangbu', 'bangdokki', 'eastRifle', 'eastSniper', 'maskBlade', 'huntKnife', 'camilla', 'mokja', 'seondoja'] },
   { v: 'v0.82', n: '돌진 · 도약 · 뒤로 뛰기 · 끌어오기가 실제로 달려감 (전엔 한 프레임에 순간이동 — 세자르급 보스만 그대로) · 광냥 = 검냥이 (대기는 검냥이 움직이는 대기 20 · 12장, 덮치기 · 할퀴어 쓸기, 4성 강적) · 보광 · 반미 마력탄 (4성 강적)', ids: ['gwangnyang', 'h2:gallia', 'h2:tanga', 'h2:mari', 'h2:moro', 'h2:grinvan', 'h2:stagbeast', 'h2:kanya', 'h2:hiddenkkaebi', 'bk', 'bogwang', 'borama'] },
   { v: 'v0.81', n: '모닝스타 (슈퍼스타) 대기를 원래 그림 (2D 판 대기 8장 움직임) 으로 — 새 걷기 · 맞음 · 기술 그림과 같은 키 · 발 자리', ids: ['h2:mstar', 'morningstar'] },
-  { v: 'v0.80', n: '동작 점검 — 걷기 · 달리기 그림으로 걸음 (서 있는 그림으로 미끄러지던 것) · 출발 · 멈춤 깜빡임 없앰 · 맞으면 움찔 · 장판 피할 때 깡충 · 걷다 칠 때 예고 그림 · 넘어지면 누운 그림 · 싸움 끝나면 제자리 걷기 하던 것', ids: ['h2:tank', 'h2:moro', 'h2:collider', 'h2:hirari', 'h2:unitA', 'swordsman', 'bkSpear', 'rebeccaAlly'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 // v1.16 기수 탭은 명단에서 만듦 — 4기 · 5기 노트 (gen: 4 …) 가 들어오면 탭이 저절로 생김
@@ -421,7 +421,7 @@ function coloPanel(){
   const R = coloRoster(), seen = new Set();
   const groups = COLO_UPD.map((g, i) => ({ g, i, L: g.ids.filter(id => !seen.has(id) && seen.add(id)).map(id => R.find(r => r.id === id)).filter(Boolean) })).filter(x => x.L.length);
   $('coUpd').innerHTML = groups.length ? `<div class="co-upd-h" data-upd="fold">⚡ 업뎃! 모션 시험 <small>${COLO.updFold ? '펼치기' : '접기'}</small></div>` + (COLO.updFold ? '' : groups.map(({ g, i, L: GL }) =>
-    `<div class="co-upd-g"><span>${g.v} · ${g.n}</span><button data-upd="${i}" title="이 묶음을 아군 · 적군 양쪽에 놓음 (같은 인물끼리 맞붙음)">시험판</button></div><div class="co-tools co-upd-l">${GL.map(btn).join('')}</div>`).join('')) : '';
+    `<div class="co-upd-g"><span>${g.v} · ${g.n}</span><button data-upd="${i}" title="이 묶음을 아군 · 적군 양쪽에 놓음 (같은 인물끼리 맞붙음)${g.ids.length > 8 ? ' · 8명씩 — 누를 때마다 다음 8명' : ''}">시험판${g.ids.length > 8 ? ' ' + (Math.floor((COLO.updPg && COLO.updPg[i] || 0) / 8) + 1) + '/' + Math.ceil(g.ids.length / 8) : ''}</button></div><div class="co-tools co-upd-l">${GL.map(btn).join('')}</div>`).join('')) : '';
   coloDrawFaces($('coUpd'));
   document.querySelectorAll('#coPanel [data-tool="erase"]').forEach(b => b.classList.toggle('on', COLO.tool === 'erase'));
   coloCount();
@@ -467,10 +467,11 @@ function coloMirror(){
 // 업뎃 시험판: 그 묶음 인물을 왼쪽 (아군) 에 세로로, 같은 인물을 오른쪽 (적군) 에 거울로. 한쪽만 되는 인물은 상대로 검사
 function coloUpdTest(i){
   const g = COLO_UPD[i]; if (!g) return; coloClear();
-  const L = g.ids.map(id => coloRoster().find(r => r.id === id)).filter(Boolean).slice(0, 8), n = L.length;
+  const A = g.ids.map(id => coloRoster().find(r => r.id === id)).filter(Boolean), pg = COLO.updPg || (COLO.updPg = {}), o = (pg[i] || 0) < A.length ? pg[i] || 0 : 0;   // v1.17 8명씩 — 누를 때마다 다음 8명
+  const L = A.slice(o, o + 8), n = L.length; pg[i] = o + 8 < A.length ? o + 8 : 0;
   L.forEach((r, k) => { const z = COLO.cz + (n > 1 ? (k / (n - 1) - 0.5) * Math.min(13, n * 2.2) : 0), xa = COLO.cx - 4.5 - (k % 2) * 1.6, xe = 2 * COLO.cx - xa;
     coloPut(r.ally ? r.id : 'cheongAlly', xa, z, 'ally'); coloPut(r.foe ? r.id : 'swordsman', xe, z, 'enemy'); });   // 적으로만 나오는 인물의 상대는 청광묵 (검사는 동료로 못 나옴)
-  caption('업뎃 시험판 ' + g.v, g.n + ' — ▶ 시작'); coloLog(`⚡ 업뎃 시험판 ${g.v} (${n}명${g.ids.length > 8 ? ', 앞 8명' : ''}): ${L.map(r => r.name).join(' · ')}`, 'sys');
+  caption('업뎃 시험판 ' + g.v, g.n + ' — ▶ 시작'); coloLog(`⚡ 업뎃 시험판 ${g.v} (${A.length > 8 ? `${o + 1} ~ ${o + n}번째 / ${A.length}명 — 다시 누르면 다음 8명` : n + '명'}): ${L.map(r => r.name).join(' · ')}`, 'sys'); coloPanel();
 }
 function coloSpeed(){ COLO.spd = COLO.spd === 1 ? 2 : COLO.spd === 2 ? 0.5 : 1; G.spd = COLO.spd; const t = COLO.spd === 0.5 ? 'x½' : 'x' + COLO.spd; $('coSpd').textContent = '속도 ' + t; $('cqSpd').textContent = t; }
 // 시작 · 멈춤 · 결과

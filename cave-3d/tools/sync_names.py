@@ -1,4 +1,4 @@
-# sync_names.py v1.0 — 도감 본명 → 게임 이름 (2026-10-08)
+# sync_names.py v1.1 — 도감 본명 → 게임 이름 (2026-10-08) (v1.1, 2026-10-10: 4기 잡몹 9인 (mob9.js) → 도감 C-285~C-293 · 소환물 (H2R summon — 세르파의 거품게 · 시종 …) 과 각펄 · 마계장군 A 는 제 이름 그대로)
 #  본명 = 도감에서 고친 이름 (marks[C-…].name) > 도감 목록 이름 (catalog sub 첫 칸). 괄호 ( … ) 는 꼬리표라 뗌 (3성 · 보스 · 펫 …)
 #  어느 게임 인물이 어느 도감 인물인지: 2 · 3기 = 도감 그림 번호 'X-h2-<slug>' · 적 그림 = tools/foe_art.py 의 원본 · 2D 옛 적 = 'O-<키>-' · 나머지는 아래 MAP
 #  출력: src/names.js — const BONMYEONG = { 게임 키: 본명 } + 불러올 때 DEFS · H2R · HERO_DEF 이름을 바꿔 씀
@@ -9,8 +9,10 @@ MAP = {   # 그림 번호로 못 잇는 게임 인물 → 도감 인물 번호
     'player': 'C-001', 'cheong': 'C-004', 'cheongAlly': 'C-004', 'cheongNpc': 'C-004', 'karius': 'C-003', 'kariusAlly': 'C-003',
     'rebeccaAlly': 'C-002', 'goodwill': 'C-010', 'foeDevil': 'C-068', 'foeFairy': 'C-069', 'foeCultist': 'C-064', 'foeJelly': 'C-065',
     'ratKnight': 'C-059', 'ratKnightV': 'C-059', 'ratV': 'C-270', 'goldknightAlly': 'C-198', 'snail': 'C-037',
+    'ssangbu': 'C-285', 'bangdokki': 'C-286', 'eastRifle': 'C-287', 'eastSniper': 'C-288', 'maskBlade': 'C-289',   # v1.1 4기 잡몹 (동방 5)
+    'huntKnife': 'C-290', 'camilla': 'C-291', 'mokja': 'C-292', 'seondoja': 'C-293',   # 서방 4
 }
-KEEP = {'h2:ratvet', 'h2:ahae_wraith', 'h2:levi_beast'}   # 게임만의 변형 · 소환수 이름은 그대로 (쥐 베테랑 = 쥐 기사가 자란 것)
+KEEP = {'h2:ratvet', 'h2:ahae_wraith', 'h2:levi_beast', 'h2:pearlgak', 'h2:sawknight'}   # 게임만의 변형 · 소환수 이름은 그대로 (쥐 베테랑 = 쥐 기사가 자란 것 · 각펄 = 펄의 보스판 · 마계장군 A 는 도감 '마족 2' 묶음의 한 명)
 base = lambda n: re.sub(r'\s*\([^)]*\)', '', n).strip()
 
 def main():
@@ -34,6 +36,8 @@ def main():
     r = open(os.path.join(ROOT, 'src', 'h2_roster.js'), encoding='utf-8').read(); H2R = json.loads(r[r.index('{'):r.rindex('}') + 1])
     for slug in H2R:
         if 'h2:' + slug in KEEP or slug not in h2c: continue
+        sm = H2R[slug].get('summon')   # v1.1 소환물 (summon: 주인 — 세르파의 거품게 · 시종 …) 이 주인 묶음 (같은 도감 인물) 에 들어 있으면 주인 이름이 되므로 뺌. 아해 · 레비의 summon 은 제 소환수 이름
+        if isinstance(sm, str) and sm != slug and h2c.get(sm) == h2c[slug]: continue
         out['h2:' + slug] = name(h2c[slug])
     fa = open(os.path.join(HERE, 'foe_art.py'), encoding='utf-8').read()
     for k, pose, p in re.findall(r"\('(\w+)', '(\w+)', '([^'@][^']*)'\)", fa):
@@ -43,7 +47,7 @@ def main():
         if len(cs) == 1 and k not in out: out[k] = name(next(iter(cs)))
     for k, c in MAP.items():
         if c in sub: out[k] = name(c)
-    js = ('/* names.js v1.0 — tools/sync_names.py 가 만듦 (손으로 고치지 말 것). 도감 본명 → 게임 이름\n'
+    js = ('/* names.js v1.1 — tools/sync_names.py 가 만듦 (손으로 고치지 말 것). 도감 본명 → 게임 이름 (v1.1: 4기 인물 · 잡몹 9인 · 기병기사)\n'
           '   본명 = 도감에서 고친 이름 > 도감 목록 이름, 괄호 꼬리표는 뗌. 2 · 3기 명단 (H2R)은 이름 뒤 설명 괄호를 그대로 둠 */\n'
           "'use strict';\n"
           'const BONMYEONG = ' + json.dumps(dict(sorted(out.items())), ensure_ascii=False, separators=(',', ':')) + ';\n'
