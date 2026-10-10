@@ -1,4 +1,4 @@
-/* situations.js v1.1 — 상황 방 (v1.1, v0.58: 구출작전 삭제 — 살아남기도 벅찬 곳에 포로를 잡아 둘 리 없음. 동료 · 노예는 민수가 따로 정함) (v1.0, v0.31)
+/* situations.js v1.2 — 상황 방 (v1.2, v0.86: 매복이 무서워짐 (민수: 평범하게 살아버려서 식었음) — 동료마다 한 명 더 (2 ~ 4) · 떨어지자마자 침 · 첫 8초는 공격 +30% · 교전 자리 순서 무시 · 원정대는 흩어지며 0.6초 휘청) (v1.1, v0.58: 구출작전 삭제 — 살아남기도 벅찬 곳에 포로를 잡아 둘 리 없음. 동료 · 노예는 민수가 따로 정함) (v1.0, v0.31)
    · 진지전 (fort): 낮은 바위 벽 한 줄 + 두 칸 문. 앞에 검방패병 (방패벽), 뒤에 궁수. 맨 뒤 검은 깃발 — 뽑으면 사기 붕괴 (공격 · 속도 ↓, 몇은 달아남)
    · 포격전 (artillery): 방 끝의 대포 + 포수. 원정대 머리 위로 붉은 원 셋 (1.6초 뒤 떨어짐, 적도 맞음). 포수를 다 잡으면 느려지고, 대포를 부수면 끝
    · 각개전투 (ambush): 방에 들어서면 어둠 속에서 원정대 하나하나 곁에 적이 떨어짐. 모두 흩어져 제 몫을 싸움
@@ -60,7 +60,7 @@ function sitFill(r, gen, tiles, edges, band, lights, deco){
     r.reward = true; return;
   }
   if (r.type === 'ambush'){
-    r.ambush = { done: false, n: Math.min(3, 1 + Math.floor(F / 3)) };
+    r.ambush = { done: false, n: Math.min(4, 2 + Math.floor(F / 3)) };   // v1.2 한 명 더
     deco(3 + Math.floor(R() * 2));   // 어둡고 조용한 방 (빛 없음)
     if (R() < 0.5){ const t = takeTile(tiles, R); if (t) corpseProp(t.x, t.z, R); }
     return;
@@ -128,7 +128,7 @@ async function ambushSpring(r){
   caption('매복!', '흩어졌다 — 각자 살아남아라');
   dark(0.85, 0.15); SFX.thump(70, 0.7, 0.4); camShake(0.3, 0.4);
   // 원정대를 흩음
-  for (const a of allies()){ const ang = rnd(0, 6.28); a.kx += Math.cos(ang) * 7; a.kz += Math.sin(ang) * 7; if (a.hero) a.hero.san = Math.max(0, (a.hero.san ?? 50) - 5); }
+  for (const a of allies()){ const ang = rnd(0, 6.28); a.kx += Math.cos(ang) * 7; a.kz += Math.sin(ang) * 7; if (a.hero) a.hero.san = Math.max(0, (a.hero.san ?? 50) - 5); if (!a.D.heavy){ interrupt(a); a.st = 'hurt'; a.stT = 0.6; setPose(a, 'hurt'); } }   // v1.2 흩어지며 휘청
   await wait(0.35); dark(0, 0.5);
   G.cmd = 'free';
   for (const a of allies()){
@@ -136,6 +136,7 @@ async function ambushSpring(r){
       let x = a.x, z = a.z;
       for (let k = 0; k < 12; k++){ const ang = rnd(0, 6.28), L = rnd(1.8, 3); x = a.x + Math.cos(ang) * L; z = a.z + Math.sin(ang) * L; if (!solidAt(G.map, x, z)) break; x = a.x; z = a.z; }
       const e = spawnFoe(gen.R.wpick(D.foes), x, z, F, band); e.alert = true; e.seen = G.t; e.focusOn = a;
+      e.ambushT = G.t + 8; e.cd = 0; const a0 = e.atk; e.atk = Math.round(a0 * 1.3); setTimeout(() => { if (!e.dead) e.atk = a0; }, 8000);   // v1.2 기습: 바로 침 · 8초 공격 +30% · 교전 자리 순서 무시
       smoke(x, z, 3, 0.7, 0.8); dust(x, z, 6);
     }
   }

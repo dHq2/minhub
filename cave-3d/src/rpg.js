@@ -1,4 +1,4 @@
-/* rpg.js v1.22 — RPG 핵심. v1.22 (v0.58): 동료 배낭 — 저마다 따로, 크기 다름 (BAG_CAP), 인주 가방이 차면 곁의 동료 배낭으로 · 적성 저장 (RPG.sol). v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
+/* rpg.js v1.23 — RPG 핵심. v1.23 (v0.86): 인주가 막지 않고 맞으면 더 아픔 (보통 ×1.2 · 어려움 ×1.35) · 인주 회피 25% 까지 · 치명 더하기 o.critAdd (앉아쏴 · 집중 사격). 레벨업에 체력이 안 참 — 전엔 25% 회복 + 층 시작 때 저장한 체력 비율로 되돌아가 사실상 크게 회복됐음 (민수: 레벨업 · 회복이 너무 편함). v1.22 (v0.58): 동료 배낭 — 저마다 따로, 크기 다름 (BAG_CAP), 인주 가방이 차면 곁의 동료 배낭으로 · 적성 저장 (RPG.sol). v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
    영웅 기록 (레벨 · 경험 · 속성 다섯 · 장비 여섯 칸 · 체력 · 정신도) · 아이템 (등급 · 품질 · 덧붙은 효과) · 공용 가방 · 굴 보관함
    파생 수치 (스탯이 실제로 먹힘) · 피해 공식 (방어 · 회피 · 치명 · 흡혈 · 가시 · 상태 이상) · 경험 · 레벨업 · 저장 (localStorage)
    ITEMS (data_items.js)를 씀. 피해는 units.js의 hurt를 한 겹 감쌈 */
@@ -148,7 +148,7 @@ function derive(h){
   S.def = Math.round(G2.def * (1 + n('defP') / 100));
   S.crit = Math.min(0.75, 0.05 + A.per * 0.004 + n('crit') / 100);
   S.critMul = 2 + n('critDmg') / 100;
-  S.eva = Math.min(0.5, A.dex * 0.003 + n('eva') / 100);
+  S.eva = Math.min(h.id === 'inju' ? 0.25 : 0.5, A.dex * 0.003 + n('eva') / 100);   // v1.23 인주 회피는 25% 까지 (안 죽던 것)
   S.vision = (4 + A.per * 0.12) * (1 + n('vision') / 100);
   S.maxSan = Math.round(50 + A.wil * 3 + n('sanity'));
   S.spd = S.spd0 * (1 + A.dex * 0.003 + n('spd') / 100);
@@ -187,7 +187,7 @@ function gainXp(n, why){
     while (h.xp >= xpNeed(h.lv)){
       h.xp -= xpNeed(h.lv); h.lv++; h.pts += 3;
       const u = G.units.find(o => o.hero === h);
-      if (u){ applyHero(u, h); u.hp = Math.min(u.max, u.hp + Math.round(u.max * 0.25)); popText(u.x, u.y + bodyH(u) + 0.8, u.z, `레벨 ${h.lv}!`, 'crit', 1.6); ring(u.x, u.z, 0xffd35a, 2.2, 0.7); spark(u.x, u.y + 1, u.z, 0xffe9a0, 18, 4); SFX.tone && SFX.tone(660, 0.2); }
+      if (u){ if (typeof syncHeroHp === 'function') syncHeroHp(u); applyHero(u, h); popText(u.x, u.y + bodyH(u) + 0.8, u.z, `레벨 ${h.lv}!`, 'crit', 1.6); ring(u.x, u.z, 0xffd35a, 2.2, 0.7); spark(u.x, u.y + 1, u.z, 0xffe9a0, 18, 4); SFX.tone && SFX.tone(660, 0.2); }
       if (k === 'inju' && typeof uiToast === 'function') uiToast(`<b style="color:#ffd35a">레벨 ${h.lv}</b> — 속성 점수 3 (I 키)`, 'lv');
       if (k !== 'inju' && h.pts >= 3) autoSpend(h);
     }
@@ -300,13 +300,15 @@ hurt = function(att, tgt, base, o = {}){
   // 회피
   if (tgt.eva && !o.unblockable && !o.dot && Math.random() < tgt.eva){ popText(tgt.x, tgt.y + 1.7 + (tgt.lift || 0), tgt.z, '회피', 'miss'); return 0; }
   // 치명
-  if (att && att.critP && !o.crit && !o.dot && !o.noCrit){ const rc = o.ranged && A && A.rangedCrit ? A.rangedCrit / 100 : 0; if (Math.random() < att.critP + rc) o.crit = true; }
+  if (att && att.critP && !o.crit && !o.dot && !o.noCrit){ const rc = o.ranged && A && A.rangedCrit ? A.rangedCrit / 100 : 0; if (Math.random() < att.critP + rc + (o.critAdd || 0)) o.crit = true; }   // v0.86 critAdd: 앉아쏴 · 집중 사격 (weapons.js)
   if (o.crit && att && att.critMul && !o.critMul) o.critMul = att.critMul;
   // 표식 · 출혈 추가 피해 · 등 뒤 (단검 · 그림자 건틀릿)
   if (tgt.sts && tgt.sts.mark && tgt.sts.mark.t > 0) base *= 1 + tgt.sts.mark.k;
   if (A && A.bleedBonus && tgt.sts && tgt.sts.bleed && tgt.sts.bleed.t > 0) base *= 1 + A.bleedBonus / 100;
   if (A && A.holyP && tgt.D.holy) base *= 1 + A.holyP / 100;
   if (o.backMul && att){ const toA = Math.atan2(att.z - tgt.z, att.x - tgt.x); if (Math.abs(angDiff(toA, tgt.aim)) > 1.9) base *= o.backMul; }
+  // v1.23 (v0.86) 인주가 막지 않고 맞으면 더 아픔 (민수: 방어도 안 하는데 안 죽음) — 원정에서 쉬움 ×1 · 보통 ×1.2 · 어려움 ×1.35
+  if (tgt === G.player && !tgt.guard && !o.dot && att && att.side === 'enemy' && G.mode === 'exp') base *= ({ easy: 1, normal: 1.2, hard: 1.35 })[RPG.meta.diff || 'normal'] || 1.2;
   // 방어
   const def = (tgt.def || 0) * (1 - Math.min(0.9, ((A && A.armorPierce) || 0) / 100 + (o.pierceDef || 0)));
   if (def > 0 && !o.dot) base *= 1 - def / (def + 40);

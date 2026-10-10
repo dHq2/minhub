@@ -1,4 +1,4 @@
-/* karius.js v1.2 — (v1.2, v0.54: 광대의 팔 잡아뚫기는 공중에 뜬 적도 붙잡아 끌어내림 (3.4칸, 보스도 — 끌어내려 잠깐 휘청). 어퍼 둘째 · 훅 셋째 · 노인의 팔 · 꿰뚫기는 공중도 침) (v1.1, v0.53: 불경자 · 근성을 2D판 원본대로 — 불경자 체력 15%: 공격력 ×2.5 (기술 포함) · 받는 피해 67% 더 감소 · 이동 ×1.4 · 공격 간격 ×0.8 · 철퇴 100 · 돌진 88. 근성 = 마지막 항전: 체력 0 → 3초 무적 발버둥 → 안광 → 7초 쓰러지지 않음 (공격속도 ×1.5 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐. 3D판에서 따로 만든 '체력 45% 포효 근성'은 뺌)
+/* karius.js v1.3 — (v1.3, v0.86: 근성이 안 켜져 안 죽던 것 — 체력이 1.6 처럼 소수로 남으면 근성이 안 켜지고 '1은 남김' 때문에 피해가 계속 0이 됐음 (이제 2 아래로 떨어지는 순간 근성) · 돌격 합류: 전선이 멀면 성큼성큼 가속해 달려들고 (2 → 7칸/초) 부딪히면 멈추며 밀침 — 탱커라 먼저 붙음 (민수)) (v1.2, v0.54: 광대의 팔 잡아뚫기는 공중에 뜬 적도 붙잡아 끌어내림 (3.4칸, 보스도 — 끌어내려 잠깐 휘청). 어퍼 둘째 · 훅 셋째 · 노인의 팔 · 꿰뚫기는 공중도 침) (v1.1, v0.53: 불경자 · 근성을 2D판 원본대로 — 불경자 체력 15%: 공격력 ×2.5 (기술 포함) · 받는 피해 67% 더 감소 · 이동 ×1.4 · 공격 간격 ×0.8 · 철퇴 100 · 돌진 88. 근성 = 마지막 항전: 체력 0 → 3초 무적 발버둥 → 안광 → 7초 쓰러지지 않음 (공격속도 ×1.5 · 모든 공격 치명 · 슈퍼아머) → 실이 끊긴 듯 쓰러짐. 3D판에서 따로 만든 '체력 45% 포효 근성'은 뺌)
    v1.0 — Sir. 카리우스 (v0.47: prologue.js에서 옮김 + 드라이브 새 그림 · 발 기술 · 짓뭉개짐 · 근성 · 개조된 신체)
    그림: art/kar (tools/kar_art.py가 드라이브 '카리우스' 폴더 그림을 정리). 3m 융합 거구 — 카이로스 경 (안경 대머리) · 광대 · 노인 · 슬픈 여자
    체력 500 · 개조된 신체 (모든 피해 60% 감소 + 상태 이상 절반) · 느림 · 무거움 (무게 300)
@@ -40,7 +40,7 @@ function heroSkillsHtml(h){
   const L = HERO_SK[h.id]; if (!L) return '';
   return `<div class="rw-sk"><div class="rw-sub">고유 특성 · 기술</div>${L.map(k => { const s = KSK[k]; return `<div class="rw-ski">${s.icon ? `<img src="${artSrc(s.icon)}" alt="">` : '<i></i>'}<div><b>${s.n}</b><small>${s.d}</small></div></div>`; }).join('')}</div>`;
 }
-const KCD = ['cd', 'swCd', 'grCd', 'slCd', 'rsCd', 'stCd', 'dkCd', 'gtCd', 'hkCd'];
+const KCD = ['cd', 'swCd', 'grCd', 'slCd', 'rsCd', 'stCd', 'dkCd', 'gtCd', 'hkCd', 'chCd'];
 const isLying = e => !!(e && !e.dead && (e.lying || (e.tripT && e.tripT > G.t)));
 
 /* ---------- 기술 알림 · 컷씬 ---------- */
@@ -80,6 +80,7 @@ function kariusThink(u, dt){
   }
   const d = dist(u, tg), a = Math.atan2(tg.z - u.z, tg.x - u.x);
   setAim(u, tg.x, tg.z);
+  if (kChargeIn(u, tg)) return;   // v1.3 돌격 합류
   const front = o => { const dd = Math.hypot(o.x - u.x, o.z - u.z); return dd < 2.7 && Math.abs(angDiff(Math.atan2(o.z - u.z, o.x - u.x), a)) < 1.2; };
   // 딥킥: 벽을 등진 놈은 바로, 아니면 가끔
   if (u.dkCd <= 0 && d <= 2.0 && !tg.D.boss && (wallBehind(tg, a, 3.5) || Math.random() < 0.35)){
@@ -96,6 +97,14 @@ function kariusThink(u, dt){
   setPose(u, u.p2 ? 'heretic' : 'idle');
   if (u.cd <= 0){ u.cd = u.p2 ? 1.4 * 0.8 : 1.4; u.kc = { type: 'punch', t: 0, a, n: 0, dec: decal('sector', { x: u.x, z: u.z, r: 1.9, a, arc: 1.5, dur: 0.45, color: BLUE }) }; setPose(u, 'prep'); }
 }
+// v1.3 돌격 합류: 싸움이 붙었는데 전선이 멀면 (4.5칸 넘게) 성큼성큼 달려듦 — 6초마다. 부대 규칙 (squad.js) 에서도 이걸 먼저 봄
+function kChargeIn(u, tg){
+  if (u.p2 || u.ls || (u.chCd || 0) > 0 || !tg || tg.dead) return false;
+  if (typeof injOf === 'function' && (injOf(u) || {}).noCharge) return false;   // 다리가 떨어져 나갔으면 돌격 없음 (maim.js INJ)
+  const d = dist(u, tg); if (d <= 4.5 || d >= 18) return false;
+  u.chCd = 6; u.kc = { type: 'charge', t: 0, tg, v: u.spd }; say(u, '…!', 'soft', 0.6); return true;
+}
+DEFS.kariusAlly.chargeIn = kChargeIn;
 function kStomp(u, e){
   u.stCd = isLying(e) ? 4 : 8; setAim(u, e.x, e.z);
   const px = e.x, pz = e.z;
@@ -161,6 +170,16 @@ function kariusSkill(u, K, m, dt){
     if (!K.hit && K.t >= 0.7){ K.hit = true; camShake(0.55, 0.3); G.hitstop = Math.max(G.hitstop, 0.12); hitIn(e => Math.hypot(e.x - K.px, e.z - K.pz) < 1.3 + e.r, 40, { kb: 0.8, stun: 0.6 }); dust(K.px, K.pz, 16); popText(K.px, 1.4, K.pz, '쾅!', 'big', 0.6); SFX.boom(0.9); }
     if (K.t >= 1.15) done(); return;
   }
+  if (K.type === 'charge'){   // v1.3 성큼성큼 돌격: 점점 빨라짐 (2 → 7칸/초) · 적에 부딪히면 멈추며 밀침 · 붙거나 3초면 끝
+    const t = K.tg; if (!t || t.dead || t.downed) return done();
+    K.v = Math.min(7, K.v + 7 * dt); const a = Math.atan2(t.z - u.z, t.x - u.x); u.aim = a; faceToward(u, Math.cos(a), Math.sin(a));
+    navTo(u, t.x, t.z, K.v, dt, 1.1); setPose(u, u.S.poses.rush && K.v > 4 ? 'rush' : 'walk'); u.leanT = 0.3;
+    K.st = (K.st || 0) - dt; if (K.st <= 0){ K.st = Math.max(0.16, 0.5 - K.v * 0.05); dust(u.x, u.z, 3); camShake(0.05 + K.v * 0.012, 0.08); }
+    const bump = foes().find(e => !e.dead && !e.downed && !e.airborne && Math.hypot(e.x - u.x, e.z - u.z) < u.r + e.r + 0.25);
+    if (bump){ hurt(u, bump, (10 + K.v * 3) * m, { from: u, noCam: true, kb: 1 }); if (!bump.dead) shove(u, bump, 1.2 + K.v * 0.4, a, { crush: 20 * m }); popText(bump.x, bump.y + bodyH(bump), bump.z, '쿵!', 'big', 0.6); camShake(0.18, 0.15); return done(); }
+    if (dist(u, t) < 1.7 || K.t > 3) return done();
+    return;
+  }
   if (K.type === 'rush'){    // 몸을 낮췄다가 일직선으로 밀고 나가 몸박 → 맞은 놈은 밀려 날아감 (벽이면 짓뭉개짐)
     if (K.t < 0.5) return;
     setPose(u, 'rush');
@@ -223,8 +242,10 @@ hurt = function(att, tgt, base, o = {}){
   if (kar && tgt.p2 && !o.pierce) base *= 1 - KH.def;   // 불경자: 방어력 +50 (받는 피해 67% 더 감소)
   if (att && att.ls && att.ls.ph === 'last' && att.D === DEFS.kariusAlly) o = { ...o, crit: true };   // 근성: 모든 공격 치명타
   if (tgt && tgt.D.resist && o.stun) o = { ...o, stun: o.stun * (1 - tgt.D.resist) };   // 개조된 신체: 경직 절반
+  const f0 = kar ? tgt.flash : 0; if (kar) tgt.flash = 0;
   const dmg = _hurtK(att, tgt, base, o);
-  if (kar && !tgt.ls && !tgt.lsEnd && dmg > 0 && tgt.hp <= 1) kLastStandStart(tgt);
+  const landed = kar && tgt.flash === 1; if (kar && !landed) tgt.flash = f0;   // 회피 · 반격이 아니라 실제로 맞음
+  if (kar && !tgt.ls && !tgt.lsEnd && landed && tgt.hp < 2) kLastStandStart(tgt);   // v1.3 체력 1.x 에서 멈춰 안 죽던 것 (1 남김 → 피해 0 → 근성 안 켜짐)
   const s = o.from || att;
   if (dmg > 0 && o.kb >= 1 && !o.crush && s && s.D && tgt && !tgt.dead && !tgt.D.heavy && !tgt.D.boss && shoveW(s) >= shoveW(tgt) * 0.8){
     const a = Math.atan2(tgt.z - s.z, tgt.x - s.x);

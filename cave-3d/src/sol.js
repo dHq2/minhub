@@ -1,4 +1,4 @@
-/* sol.js v1.2 — (v1.2, v0.58: 저장 — 적성 · 보직 · 소지품을 남겨 키움, 레벨마다 훈련 점수 +1 · 소지품 칸 = 동료 배낭 크기) (v1.1, v0.56: 은신 적성 · 돌팔매 (무한) · 사격 규율 아낌/아끼지 않음) (v1.0, v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
+/* sol.js v1.3 — (v1.3, v0.86: 방패의 정면 사격 막기 (×0.15) 는 던진 창 · 도끼엔 안 씀 — 던진 무기는 weapons.js 가 막힘 · 튕김 · 부숨 · 박힘을 정함) (v1.2, v0.58: 저장 — 적성 · 보직 · 소지품을 남겨 키움, 레벨마다 훈련 점수 +1 · 소지품 칸 = 동료 배낭 크기) (v1.1, v0.56: 은신 적성 · 돌팔매 (무한) · 사격 규율 아낌/아끼지 않음) (v1.0, v0.55, 탄약 · 소지품 칸 포함) 적성 · 장비 칸 · 무기 바꿔 들기 · 총 / 활 / 마법 규칙 · 보직
    "누구나 보직을 받을 수 있다. 효율은 적성이 정한다"
    · 적성 0~5 (계열 다섯: 근접 · 창과 투척 · 활 · 총 · 마법). 0이면 억지로 쥠 — 조준이 떨리고 (명중 25%) 탄이 걸리기도 함. 5면 고유 기술
    · 성향 (훈련받은 군인 · 마법 계열 · 야수 · 기사 · 싸움꾼)이 훈련 비용을 정함: 잘 맞는 계열은 싸게, 안 맞는 계열은 비싸게
@@ -215,7 +215,7 @@ hurt = function(att, tgt, base, o = {}){
   }
   // 방패: 정면 사격을 거의 다 막음
   const shieldy = tgt.D.block || (tgt.sol && tgt.sol.kit.shield && tgt.sol.mode === 'melee');
-  if (o.ranged && shieldy && att){ const s = o.from || att, front = Math.abs(angDiff(Math.atan2(s.z - tgt.z, s.x - tgt.x), tgt.aim ?? 0)) < 1.1; if (front){ base *= 0.15; spark(tgt.x, tgt.y + 1.1, tgt.z, 0xd8e8ff, 8, 4); if ((tgt.blkSaid || 0) < G.t){ tgt.blkSaid = G.t + 1; popText(tgt.x, tgt.y + bodyH(tgt) + 0.4, tgt.z, '방패에 막힘', 'miss', 0.7); } SOLS.blocked++; } }
+  if (o.ranged && shieldy && att && !o.thrown){ const s = o.from || att, front = Math.abs(angDiff(Math.atan2(s.z - tgt.z, s.x - tgt.x), tgt.aim ?? 0)) < 1.1; if (front){ base *= 0.15; spark(tgt.x, tgt.y + 1.1, tgt.z, 0xd8e8ff, 8, 4); if ((tgt.blkSaid || 0) < G.t){ tgt.blkSaid = G.t + 1; popText(tgt.x, tgt.y + bodyH(tgt) + 0.4, tgt.z, '방패에 막힘', 'miss', 0.7); } SOLS.blocked++; } }
   // 금기사 철벽: 방패를 든 채 정면이면 70% 감소
   if (tgt.kind === 'goldknightAlly' && tgt.sol && tgt.sol.kit.shield && !o.pierce){ const s = o.from || att; if (s && Math.abs(angDiff(Math.atan2(s.z - tgt.z, s.x - tgt.x), tgt.aim ?? 0)) < 1.2){ base *= 0.3; spark(tgt.x + Math.cos(tgt.aim) * 0.4, tgt.y + 1, tgt.z + Math.sin(tgt.aim) * 0.4, 0xffe8a0, 6, 3); } }
   const wasWind = tgt.st === 'windup' && tgt.side === 'enemy';

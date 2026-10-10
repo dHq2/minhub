@@ -1,4 +1,4 @@
-/* squad.js v1.1 — (v1.1, v0.56: 지시 '은밀히' — stealth.js) (v1.0, v0.55) 조 · 진형 · 지휘 · 기절과 일으키기 · 상태 연계 · 슬라이딩 / 드롭킥 카운터
+/* squad.js v1.2 — (v1.2, v0.86: 반시체는 동료도 · 인주도 못 일으킴 · 출혈 초읽기도 안 띄움 (그 원정에선 못 일어남, 업고 돌아가야 함) · 멀면 고유 돌격 (D.chargeIn — 카리우스)) (v1.1, v0.56: 지시 '은밀히' — stealth.js) (v1.0, v0.55) 조 · 진형 · 지휘 · 기절과 일으키기 · 상태 연계 · 슬라이딩 / 드롭킥 카운터
    ■ 조: 1조 (조장 = 인주) · 2조 (조장 = 보직이 '지휘'인 동료, 없으면 첫 조원) · 단독 (혼자 움직이는 전략병기)
    ■ 진형 (조장 기준 자리): 삼각 · 가로 · 종대 · 등맞대기 (서로 등을 막아 사각을 없앰) · 흩어짐 · 포위 (묶은 적 둘레)
    ■ 지휘 (O · 손가락 화면은 위 줄 깃발): 창이 열린 동안 시간이 느려짐 (0.2배). 조마다
@@ -113,6 +113,7 @@ function solControl(u, dt){
     if (!behind && !solidAt(G.map, bx, bz) && dist(u, tgt) < 9){ u.moving = false; navTo(u, bx, bz, u.spd * 1.25, dt, 0.3); walkPose(u); if (dist(u, tgt) > 2.4 || !behind) return true; }
   }
   if (S.mode === 'ranged' && S.kit.main) return solRanged(u, dt, tgt);
+  if (u.D.chargeIn && u.D.chargeIn(u, tgt)) return true;   // v1.2 돌격 합류 (카리우스 — 고유 기술로 넘김)
   if (dist(u, tgt) > 1.9){ u.moving = false; navTo(u, tgt.x, tgt.z, u.spd * 1.15, dt, 1.4); walkPose(u); return true; }
   return false;   // 붙었음: 고유 근접 AI
 }
@@ -127,7 +128,7 @@ const _reviveCheckSq = reviveCheck;
 reviveCheck = function(dt){
   if (!SQ.on) return _reviveCheckSq(dt);
   for (const u of G.units) if (u.side === 'ally' && u.downed && !u.dead){
-    if (u.D.undying) continue;   // 레베카: 스스로 재생
+    if (u.D.undying || u.halfDead) continue;   // 레베카: 스스로 재생 · v1.2 반시체는 초읽기 없음
     u.bleedT = (u.bleedT ?? REV.bleed) - dt;
     u.bleedSay = (u.bleedSay ?? 0) - dt;
     if (u.bleedSay <= 0 && u.bleedT > 0){ u.bleedSay = 5; popText(u.x, u.y + 1.3, u.z, `기절 — 출혈 ${Math.ceil(u.bleedT)}초`, 'hurt', 1.2); }
@@ -135,6 +136,7 @@ reviveCheck = function(dt){
   }
 };
 function revivePut(u, by){
+  if (u.halfDead && G.mode === 'exp') return;   // v1.2 반시체는 그 원정에선 못 일어남 (일으키던 중에 반시체가 돼도)
   u.downed = false; u.critical = false; u.bleedT = null; u.lying = false; u.st = 'idle'; u.hp = Math.max(1, Math.round(u.max * 0.3)); setPose(u, 'idle');
   popText(u.x, u.y + 1.8, u.z, by ? `${by.D.name}이(가) 일으킴` : '일어남', 'heal', 1.3); ring(u.x, u.z, 0x7dffa0, 1.3, 0.45); SOLS.revives++;
 }
@@ -152,7 +154,7 @@ function reviveDuty(u, dt){
   }
   const busyNear = foes().some(e => e.alert && dist(e, u) < 2.5);
   if (busyNear && S.role !== 'support') return false;
-  const cand = G.units.filter(o => o.side === 'ally' && o.downed && !o.dead && o !== u && !o.D.undying && !G.units.some(w => w.sol && w.sol.rev && w.sol.rev.who === o));
+  const cand = G.units.filter(o => o.side === 'ally' && o.downed && !o.dead && !o.halfDead && o !== u && !o.D.undying && !G.units.some(w => w.sol && w.sol.rev && w.sol.rev.who === o));
   const t = nearest(u, cand, S.role === 'support' ? 30 : 10); if (!t) return false;
   S.rev = { who: t, t: 0 }; return true;
 }
@@ -161,11 +163,11 @@ const MEREV = { u: null, t: 0 };
 TICKS.push(dt => {
   if (!SQ.on) return;
   const pl = G.player; if (!pl) return;
-  for (const u of G.units) if (u.side === 'ally' && u.downed && !u.dead && !u.revInsp && u !== pl && !u.D.undying){
+  for (const u of G.units) if (u.side === 'ally' && u.downed && !u.dead && !u.halfDead && !u.revInsp && u !== pl && !u.D.undying){
     u.revInsp = { unit: u, r: 1.6, keep: true, get used(){ return !u.downed || u.dead; }, set used(v){}, label: `${u.D.name}을(를) 일으킨다`, fn: () => { MEREV.u = u; MEREV.t = 0; MEREV.x = pl.x; MEREV.z = pl.z; popText(pl.x, pl.y + 2.2, pl.z, '일으키는 중…', 'heal', 1); } };
     G.inspect.push(u.revInsp);
   }
-  for (const u of G.units) if (u.revInsp && !u.downed){ const i = G.inspect.indexOf(u.revInsp); if (i >= 0) G.inspect.splice(i, 1); u.revInsp = null; }
+  for (const u of G.units) if (u.revInsp && (!u.downed || u.halfDead)){ const i = G.inspect.indexOf(u.revInsp); if (i >= 0) G.inspect.splice(i, 1); u.revInsp = null; }
   if (MEREV.u){
     const t = MEREV.u;
     if (!t.downed || pl.downed || pl.st === 'hurt' || Math.hypot(pl.x - MEREV.x, pl.z - MEREV.z) > 0.6 || dist(pl, t) > 2){ if (t.downed) popText(pl.x, pl.y + 2.2, pl.z, '끊김', 'miss', 0.7); MEREV.u = null; }

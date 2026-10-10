@@ -1,7 +1,7 @@
-/* 굴의 프롤로그 3D 시제품 · core.js v0.1
+/* 굴의 프롤로그 3D 시제품 · core.js v0.2 (v0.2, v0.86: 휠 클릭 (mouse.mid) — 누르는 동안 방어)
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.85';
+const VERSION = 'v0.86';
 const TICKS = [];   // v0.55 한 프레임마다 부르는 것들 (engage · sol · squad · drill이 넣음): f(dt)
 // v0.49 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작 (민수: 진행 중 저장은 되게, 단 업데이트되면 초기화)
 let SAVE_RESET = null;
@@ -26,7 +26,7 @@ const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
 /* ---------- 입력 ---------- */
 const keys = new Set(), pressed = new Set();
-const mouse = { x: 0, y: 0, left: false, right: false, moved: -99, wx: 0, wz: 0, over: null, inside: false };
+const mouse = { x: 0, y: 0, left: false, right: false, mid: false, moved: -99, wx: 0, wz: 0, over: null, inside: false };
 addEventListener('keydown', e => {
   if (['Space', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
   if (!keys.has(e.code)) pressed.add(e.code);
@@ -48,8 +48,8 @@ const down = code => keys.has(code);
 function bindMouse(el){
   el.addEventListener('mousemove', e => { const r = el.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.moved = G.t; mouse.inside = true; });
   el.addEventListener('mouseleave', () => { mouse.inside = false; });
-  el.addEventListener('mousedown', e => { if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } });
-  addEventListener('mouseup', e => { if (e.button === 0) mouse.left = false; if (e.button === 2) mouse.right = false; });
+  el.addEventListener('mousedown', e => { if (e.button === 0){ mouse.left = true; pressed.add('Mouse0'); } if (e.button === 2){ mouse.right = true; pressed.add('Mouse2'); } if (e.button === 1){ mouse.mid = true; e.preventDefault(); } });   // v0.2 (v0.86) 휠 클릭 = 방어 (누르는 동안)
+  addEventListener('mouseup', e => { if (e.button === 0) mouse.left = false; if (e.button === 2) mouse.right = false; if (e.button === 1) mouse.mid = false; });
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
 

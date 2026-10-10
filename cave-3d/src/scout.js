@@ -1,4 +1,4 @@
-/* scout.js v1.0 — (v0.53) 동료 · 상대 보기
+/* scout.js v1.1 — (v1.1, v0.86: 죽은 동료는 굴 동료 칸에서 뺌) (v1.0, v0.53) 동료 · 상대 보기
    · U (손가락 화면: 위 줄 👥) = '동료 · 상대' 창: 굴 · 원정 어디서나. 멈춘 채로 봄
      동료: 얼굴 · 체력 · 공격 · 받는 피해 감소 · 속도 · 무게 · 오늘 끼니 · 고유 기술 (카리우스 · 레베카)
      상대: 지금 이 판의 적 (보스 포함) — 체력 · 공격 · 무게 · 속도 · 공격 방식 · 특징 (대리석 피부 · 갑옷 · 방패 · 무거움)
@@ -52,7 +52,7 @@ function scMates(){
     const C = PRO.cave, meal = k => PRO.meal[k] ? (PRO.meal[k].fed ? '오늘 먹음' : '배고픔') : '';
     const L = [[C.ch, 'cheongAlly', 'ch', null], [C.ka, 'kariusAlly', 'ka', 'karius'], [C.reb, 'rebeccaAlly', 'reb', 'rebecca']];
     for (const [u, dk, k, hero] of L){
-      if (!u) continue; const D = DEFS[dk]; if (!D) continue;
+      if (!u || u.gone) continue; const D = DEFS[dk]; if (!D) continue;   // v0.86 죽은 동료는 뺌
       const fight = u.side === 'ally';
       out.push(scRow(fight ? u : { ...u, D, p2: false, ls: null, downed: false }, { D, hero, name: D.name, hp: fight ? u.hp : D.hp * (PRO.hpf[k] ?? 1), max: D.hp, atk: fight ? u.atk : D.atk, spd: D.spd, extra: meal(k) }));
     }

@@ -1,4 +1,4 @@
-/* expedition.js v1.16 — 원정 (한 번의 런). v1.16 (v0.82): 유일개체 (광냥 — 도감 메모) 는 한 원정에 한 번만 강적으로. v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.17 — 원정 (한 번의 런). v1.17 (v0.86): 반시체 동료는 다음 층에 업혀 감 (싸우지 않음) · 단달로도 유일개체 · 쓰러뜨린 유일개체 · 보스는 다시 안 나옴 (RPG.meta.slain) · 장비가 덜 쏟아짐 (민수: 너무 많아 보지도 못함) — 상자 2~3 → 1~2개 · 잡몹 장비 6% → 2% · 강적은 절반만 장비 (나머지는 소모품). v1.16 (v0.82): 유일개체 (광냥 — 도감 메모) 는 한 원정에 한 번만 강적으로. v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -134,9 +134,11 @@ async function expLoadFloor(F, how){
   EXP.seaView = false; if (typeof mapFxBuild === 'function') mapFxBuild(gen);   // v1.12 가시 · 물 · 진흙
   EXP.reveal = false; EXP.radar = !!EXP.tehera; EXP.encs = []; EXP.lit = true; EXP.meet = null; G.locks = [];
   // 원정대
+  const carried = [];
   const s = gen.start, px = Math.round(s.cx), pz = Math.round(s.cz) + 1;
   for (const [i, k] of RPG.party.entries()){
     const h = hero(k); if (h.st !== 'ok') continue;
+    if (h.halfDead && k !== 'inju'){ carried.push(h.name); continue; }   // v1.17 반시체 동료는 업혀 감 (싸우지 않음 · 굴로 돌아가면 수술)
     const u = spawn(HERO_DEF[k].unit, px + (i === 0 ? 0 : i % 2 ? -1.1 : 1.1), pz + (i === 0 ? 0 : 0.7), 'ally');
     applyHero(u, h); if (k === 'inju') G.player = u;
     if (EXP.hungry){ u.max = Math.round(u.max * 0.85); u.hp = Math.min(u.hp, u.max); }
@@ -149,7 +151,7 @@ async function expLoadFloor(F, how){
   G.onKill = expOnKill;
   G.cmd = 'free';
   camSnapTo(px, pz); CAM.yaw = CAM.yawT;
-  caption(`${F}층 · ${D.name}`, D.sub + (EXP.seaView ? ' · 멀리 바다가 보이는 절벽 길' : ''));
+  caption(`${F}층 · ${D.name}`, D.sub + (EXP.seaView ? ' · 멀리 바다가 보이는 절벽 길' : '') + (carried.length ? ` · 반시체 ${carried.join(' · ')} — 업혀 감` : ''));
   if (F >= 5 && typeof heroCount === 'function') for (const k of RPG.party) heroCount(hero(k), 'deep');
   if (how === 'start' && !RPG.meta.expHelp){ RPG.meta.expHelp = 1; setTimeout(() => guide('어둡다. <em>횃불</em>이 다 타기 전에 · <em>계단</em>은 가장 먼 방 · <em>귀환 줄</em>로 굴로 · <em>I</em> 가방 · <em>M</em> 지도', 9), 1500); }
   uiExpHud(true);
@@ -213,12 +215,17 @@ function fillRoom(r, gen){
   else if (typeof sitFill === 'function') sitFill(r, gen, tiles, edges, band, lights, deco);
 }
 // v1.16 (v0.82) 유일개체 (도감 메모 — 세상에 하나뿐): 한 원정에 한 번만 강적으로 나옴 (광냥)
-const UNIQ_FOE = new Set(['gwangnyang']);
+// v1.17 (v0.86) 단달로도 유일개체 (민수: 양산형이 아님 · 매우 강자) · 쓰러뜨린 유일개체 · 보스는 다시 안 나옴 (RPG.meta.slain — 보스를 파밍하듯 잡지 않게)
+const UNIQ_FOE = new Set(['gwangnyang', 'dandalo']);
+const slainOf = () => (RPG.meta.slain || (RPG.meta.slain = []));
 function uniqPick(R, L){
-  const seen = EXP ? (EXP.uniq || (EXP.uniq = [])) : [], ok = L.filter(k => !UNIQ_FOE.has(k) || !seen.includes(k)), k = R.pick(ok.length ? ok : L);
+  const seen = EXP ? (EXP.uniq || (EXP.uniq = [])) : [], ok = L.filter(k => !UNIQ_FOE.has(k) || (!seen.includes(k) && !slainOf().includes(k)));
+  const k = ok.length ? R.pick(ok) : 'brute';   // 남은 강적이 유일개체뿐이고 다 나왔거나 죽었으면 곤봉 거한
   if (UNIQ_FOE.has(k)) seen.push(k);
   return k;
 }
+// 유일개체 · 보스를 쓰러뜨리면 기록 (다시 안 나옴)
+function markSlain(u){ if (!u || !(UNIQ_FOE.has(u.kind) || (u.D && u.D.boss && !u.D.h2))) return; const S = slainOf(); if (!S.includes(u.kind)) S.push(u.kind); }
 function spawnFoe(kind, x, z, F, band, elite){
   const e = spawn(kind, x, z, 'enemy');
   const hm = 1 + 0.15 * (F - 1), am = 1 + 0.12 * (F - 1);
@@ -289,7 +296,7 @@ async function openChest(ch){
   ch.opened = true;
   ch.b.m.material.color.setScalar(0.55);
   spark(ch.x, 0.7, ch.z, 0xffe9a0, 14, 3); dust(ch.x, ch.z, 6); SFX.burst({ type: 'bandpass', f: 600, f2: 1600, q: 2, gain: 0.25, dec: 0.25 });
-  const n = 2 + Math.floor(Math.random() * 2) + (ch.plus ? 1 : 0);
+  const n = 1 + Math.floor(Math.random() * 2) + (ch.plus ? 1 : 0);   // v1.17 2~3 → 1~2
   for (let i = 0; i < n; i++) setTimeout(() => dropLootAt(ch.x, ch.z, rollItem(ch.F, { bonus: ch.bonus, plus: i === 0 ? ch.plus : 0 })), i * 130);
   if (Math.random() < 0.7) setTimeout(() => dropLootAt(ch.x, ch.z, { gold: Math.round((6 + Math.random() * 10) * ch.F) }), n * 130);
 }
@@ -345,13 +352,13 @@ function placeLostBag(gen){
 /* ---------- 쓰러뜨림 ---------- */
 function expOnKill(u, by){
   if (u.side !== 'enemy') return;
-  EXP.kills++;
+  EXP.kills++; markSlain(u);
   gainXp(u.xp || 8, 'kill');
   if (typeof bloodBurst === 'function'){ bloodBurst(u.x, u.z, bodyH(u)); bloodPool(u.x, u.z, 0.4 + bodyH(u) * 0.3, 2.2); }
   const F = EXP.F;
   if (Math.random() < 0.7) dropLootAt(u.x, u.z, { gold: Math.round((2 + Math.random() * 4) * (1 + F * 0.6) * (u.elite ? 3 : 1)) });
-  if (Math.random() < (u.elite ? 1 : 0.2)) dropLootAt(u.x, u.z, rollItem(F, { type: u.elite ? 'gear' : 'cons', bonus: u.elite ? 0.25 : 0, plus: u.elite ? 1 : 0 }));
-  if (!u.elite && Math.random() < 0.06) dropLootAt(u.x, u.z, rollItem(F, { type: 'gear' }));
+  if (Math.random() < (u.elite ? 1 : 0.2)){ const gear = u.elite && Math.random() < 0.5; dropLootAt(u.x, u.z, rollItem(F, { type: gear ? 'gear' : 'cons', bonus: u.elite ? 0.25 : 0, plus: gear ? 1 : 0 })); }   // v1.17 강적은 절반만 장비
+  if (!u.elite && Math.random() < 0.02) dropLootAt(u.x, u.z, rollItem(F, { type: 'gear' }));   // v1.17 6% → 2%
   if (u.kind === 'archer' && Math.random() < 0.5) for (let i = 0; i < 2 + Math.floor(Math.random() * 3); i++) groundArrow(u.x + rnd(-0.8, 0.8), u.z + rnd(-0.8, 0.8), rnd(0, 6.28), false, true);
   // 강적 방을 비우면 보상 상자
   const room = DUN.rooms && DUN.rooms.find(r => 'r' + r.id === u.band);

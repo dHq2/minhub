@@ -1,4 +1,4 @@
-/* prologue.js v0.116 — (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.117 — (v0.117, v0.86: 죽은 동료 (청광묵 · 카리우스) 는 굴에 없음 — 그 자리에 무덤 (maim.js caveGraves) · 말풍선 · 끼니 · 굴 싸움 · 아래 칸에서도 빠짐 (u.gone)) (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -32,6 +32,7 @@ function guide(html, sec = 4){ const el = $p('guide'); clearTimeout(guideTimer);
 function mid(text){ const el = $p('mid'); el.textContent = text; el.classList.toggle('on', !!text); }
 // 말풍선: 인물 (또는 {x, y, z}) 머리 위. cls: big (외침, 떨림) · soft (혼잣말) · zzz (떠오름)
 function say(who, text, cls = '', life = 1.6){
+  if (who && who.gone) return;   // v0.117 죽은 동료는 말하지 않음
   const el = document.createElement('div'); el.className = 'bubble ' + cls; el.textContent = text; UI.layer.appendChild(el);
   PRO.bubbles.push({ el, who, t0: G.t, life, rise: cls === 'zzz' });
   if (PRO.cave && (who === PRO.cave.ch || who === PRO.cave.ka) && text.replace(/[.…!?\s]/g, '').length >= 3) barTalk(who === PRO.cave.ch ? '청광묵' : '카리우스', text, life + 1.5);
@@ -421,6 +422,7 @@ async function startCave(cine = false){
     await textbox('청광묵', ['대장! 아직 먹으면 안된다! 알! 낳아야한다!'], { face: FACE.cheong, tags: CHEONG_TAGS() }); camFocusOff(); } });
   if (!PRO.rebOut) G.inspect.push({ x: B.x, z: B.z, r: 1.6, mark: '레베카', far: 5, get used(){ return PRO.rebOut; }, set used(v){}, get label(){ return `벽을 파서 레베카를 꺼낸다 (${PRO.rebDig}/3${apTag()})`; }, fn: digRebecca });
   if (PRO.rebOut) spawnRebecca(B.x + 1, B.z);
+  if (typeof caveGraves === 'function') caveGraves(ch, ka, Cc, K);   // v0.117 죽은 동료 자리에 무덤
   G.inspect.push({ unit: snails[0], r: 1.6, talk: true, label: '인광달팽이를 본다', fn: async () => { await textbox('', ['인광달팽이. 껍데기에서 청록빛이 은은하게 번진다.', '…알을 낳을 때까지는 먹으면 안 된다고 한다.']); } });
   // 석문: 높이 5m쯤 되는 엄청 단단한 문. 지금은 막혀 있음
   // 굴 끝 벽 (z = 1)의 앞면 (z = 1.5)에 납작하게 붙임: 카메라를 따라 돌지 않고 벽 앞에 딱 (굴 폭 3칸 = 문 폭, 높이 약 4.6)
@@ -1047,9 +1049,9 @@ DEFS.cheongAlly.think = cheongBurstThink;
 function startLobbyFight(){
   G.lobbyFight = true; G.cmd = 'free';
   for (const e of foes()){ e.alert = true; e.seen = G.t; e.home = { x: LOBBY_C.x, z: LOBBY_C.z }; }
-  const ch = PRO.cave.ch; ch.side = 'ally'; ch.D = DEFS.cheongAlly; ch.max = DEFS.cheongAlly.hp; ch.hp = Math.max(1, Math.round(ch.max * PRO.hpf.ch)); ch.atk = DEFS.cheongAlly.atk; ch.spd = DEFS.cheongAlly.spd; ch.job = null; ch.rescue = null; ch.lift = 0;
+  const ch = PRO.cave.ch; if (!ch.gone){ ch.side = 'ally'; ch.D = DEFS.cheongAlly; ch.max = DEFS.cheongAlly.hp; ch.hp = Math.max(1, Math.round(ch.max * PRO.hpf.ch)); ch.atk = DEFS.cheongAlly.atk; ch.spd = DEFS.cheongAlly.spd; ch.job = null; ch.rescue = null; ch.lift = 0; }
   say(ch, '!', 'alert', 1.1); say(PRO.cave.ka, '!', 'alert', 1.1); setTimeout(() => G.lobbyFight && say(ch, '대장! 적이다! 청광묵도 싸운다!', 'soft', 2), 1100);   // 리스트 뒤에 가렸던 ! 를 한 번 더
-  const ka = PRO.cave.ka; Object.assign(ka, { side: 'ally', D: DEFS.kariusAlly, hp: Math.max(1, Math.round(DEFS.kariusAlly.hp * PRO.hpf.ka)), max: DEFS.kariusAlly.hp, atk: DEFS.kariusAlly.atk, spd: DEFS.kariusAlly.spd, job: null, kc: null, p2: false, cd: 0.5, swCd: 2.5, grCd: 4, slCd: 2, rsCd: 3 }); setPose(ka, 'idle');
+  const ka = PRO.cave.ka; if (!ka.gone) Object.assign(ka, { side: 'ally', D: DEFS.kariusAlly, hp: Math.max(1, Math.round(DEFS.kariusAlly.hp * PRO.hpf.ka)), max: DEFS.kariusAlly.hp, atk: DEFS.kariusAlly.atk, spd: DEFS.kariusAlly.spd, job: null, kc: null, p2: false, cd: 0.5, swCd: 2.5, grCd: 4, slCd: 2, rsCd: 3 }); setPose(ka, 'idle');
   setTimeout(() => G.lobbyFight && say(ka, '.....', 'soft', 1.4), 1500);
   guide('적이다! <em>좌클릭</em> 찌르기 · <em>우클릭</em> 투창 · <em>Q</em> 구르기 · <em>F</em> 방어', 5);
   G.onKill = (u) => { if (u.side === 'enemy' && G.mode === 'cave' && u.R) dropLoot(u);
@@ -1061,9 +1063,9 @@ function startLobbyFight(){
 }
 function endLobbyFight(win){
   G.lobbyFight = false;
-  for (const h of [PRO.cave.ch, PRO.cave.ka]){ h.ready = 0; h.restT = rnd(1, 5); PRO.hpf[h === PRO.cave.ch ? 'ch' : 'ka'] = h.downed ? 0.05 : Math.max(0.05, h.hp / h.max); }
-  const ch = PRO.cave.ch; ch.side = 'neutral'; ch.D = DEFS.cheongNpc; ch.downed = false; ch.st = 'idle'; ch.tilt = 0;
-  const ka = PRO.cave.ka; if (ka.kc && ka.kc.dec) cancelDecal(ka.kc.dec); Object.assign(ka, { side: 'neutral', D: DEFS.karius, hp: DEFS.karius.hp, max: DEFS.karius.hp, downed: false, st: 'idle', tilt: 0, kc: null, p2: false }); setPose(ka, 'idle');
+  for (const h of [PRO.cave.ch, PRO.cave.ka]){ if (h.gone) continue; h.ready = 0; h.restT = rnd(1, 5); PRO.hpf[h === PRO.cave.ch ? 'ch' : 'ka'] = h.downed ? 0.05 : Math.max(0.05, h.hp / h.max); }
+  const ch = PRO.cave.ch; if (!ch.gone){ ch.side = 'neutral'; ch.D = DEFS.cheongNpc; ch.downed = false; ch.st = 'idle'; ch.tilt = 0; }
+  const ka = PRO.cave.ka; if (ka.kc && ka.kc.dec) cancelDecal(ka.kc.dec); if (!ka.gone) Object.assign(ka, { side: 'neutral', D: DEFS.karius, hp: DEFS.karius.hp, max: DEFS.karius.hp, downed: false, st: 'idle', tilt: 0, kc: null, p2: false }); setPose(ka, 'idle');
   if (win){ say(ch, '대장! 다 잡았다!', 'soft', 2.2); caption('정리', '사체는 쓰레기 구덩이로'); }
 }
 // 로비에서 인주가 쓰러지면: 암전 → 적은 사라지고, 반쯤 회복
@@ -1217,7 +1219,7 @@ function tickPigs(dt){
       continue;
     }
     // 뽈뽈 도망: 인주 · 청광묵이 가까이 오면
-    const threat = [G.player, Cv.ch].find(o => o && Math.hypot(o.x - u.x, o.z - u.z) < 2.6);
+    const threat = [G.player, Cv.ch].find(o => o && !o.gone && Math.hypot(o.x - u.x, o.z - u.z) < 2.6);
     if (threat){
       const n = norm(u.x - threat.x, u.z - threat.z), sp = 2.4 * dt;
       if (!moveBy(u, n.x * sp, n.z * sp)){ const side = (u.uid % 2 ? 1 : -1); moveBy(u, -n.z * sp * side, n.x * sp * side); }
@@ -1409,7 +1411,7 @@ function tickBody(dt){
   // 청광묵: 펄쩍 (놀람) · 눈물
   const ch = Cv.ch;
   if (ch.hop > 0){ ch.hop -= dt; ch.lift = Math.max(0, Math.sin((1 - ch.hop / 0.5) * Math.PI)) * 0.7; }
-  if (ch.sadT > 45 && Math.random() < dt * 8) dot(ch.x + rnd(-0.18, 0.18), ch.y + bodyH(ch) * 0.62, ch.z + 0.05, 0x7fc8ff, 0.05, 0.5);
+  if (!ch.gone && ch.sadT > 45 && Math.random() < dt * 8) dot(ch.x + rnd(-0.18, 0.18), ch.y + bodyH(ch) * 0.62, ch.z + 0.05, 0x7fc8ff, 0.05, 0.5);
 }
 // 우리 (12, 10)에서: 들고 있는 식량을 먹이로 · 창고 식량으로 먹이 · 배고프면 버섯을 따 먹기
 function penFeedLabel(){
@@ -1536,7 +1538,7 @@ function caveBar(){
   const Cv = PRO.cave, pl = G.player;
   const hp = { inju: [pl.hp, pl.max], ch: G.lobbyFight ? [Cv.ch.hp, Cv.ch.max] : [PRO.hpf.ch * DEFS.cheongAlly.hp, DEFS.cheongAlly.hp], ka: G.lobbyFight ? [Cv.ka.hp, Cv.ka.max] : [PRO.hpf.ka * DEFS.kariusAlly.hp, DEFS.kariusAlly.hp], reb: [(PRO.hpf.reb || 1) * 100, 100] };
   for (const [k] of BAR_WHO){
-    const R = B.rows[k]; R.r.hidden = k === 'reb' && !PRO.rebOut; if (R.r.hidden) continue;
+    const R = B.rows[k]; R.r.hidden = (k === 'reb' && !PRO.rebOut) || !!(Cv[k] && Cv[k].gone); if (R.r.hidden) continue;   // v0.117 죽은 동료 칸은 숨김
     const [h, m] = hp[k], M = PRO.meal[k];
     R.hp.style.width = Math.max(0, h / m * 100) + '%'; R.hpn.textContent = `${Math.max(0, Math.round(h))}/${m}`;
     const sad = k === 'ch' && Cv.ch.sadT > 0, down = (k === 'ch' && Cv.ch.downed) || (k === 'ka' && Cv.ka.downed) || (k === 'inju' && pl.downed);
@@ -1886,8 +1888,8 @@ function nightRaid(){
 
 
 /* ---------- v0.21 동료 목록 · 끼니 대상 (레베카가 나오면 넷) ---------- */
-const mates = () => PRO.cave ? [PRO.cave.ch, PRO.cave.ka, PRO.cave.reb].filter(Boolean) : [];
-const mealKeys = () => PRO.rebOut ? ['inju', 'ch', 'ka', 'reb'] : ['inju', 'ch', 'ka'];
+const mates = () => PRO.cave ? [PRO.cave.ch, PRO.cave.ka, PRO.cave.reb].filter(u => u && !u.gone) : [];   // v0.117 죽은 동료는 뺌
+const mealKeys = () => (PRO.rebOut ? ['inju', 'ch', 'ka', 'reb'] : ['inju', 'ch', 'ka']).filter(k => !(PRO.cave && PRO.cave[k] && PRO.cave[k].gone));
 HSAY.reb = { work: ['…음냐, 정리할게.', '…하암.'], hungry: ['…배고파.'], ate: ['…맛있다. 졸려.'], starve: ['…배고파…', '…(꼬르륵)'], forage: ['…버섯 하나만.'], off: ['…하암.', '…졸려.', '(꾸벅)'], potty: ['…잠깐.'], done: ['…'] };
 // 잘 때: 낙하가 끝났고, 행동을 다 썼거나 오늘 할 일을 다 했으면 → 잠자리에 ▼ + 청광묵이 알려 줌
 function readyToSleep(){

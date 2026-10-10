@@ -1,4 +1,4 @@
-/* weapons.js v1.08 — 인주의 무기 (v1.08: 투창 · 돌 · 수류탄을 놓는 순간은 던진 뒤 그림 (전엔 돌을 쥔 채였음). v1.07: 숙여 피한 뒤 맨손 J = 어퍼컷 반격. v1.06: 마력 폭발은 손 드는 자세. v1.05: 맨손 4연타 — 잽 · 주먹 · 앞차기 · 회전 하이킥, 칸마다 예고 자세 (wpose). v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
+/* weapons.js v1.10 — 인주의 무기 (v1.10, v0.86: 조준 사격 — 걸으면서도 모임 (절반 빠르기, 전엔 움직이면 풀림) · '조준!' 문턱 0.72 → 0.65 · 앉아쏴 (숙이고 쏨: 덜 흔들림 · 빨리 모임 · 문턱 0.55 · 치명 +12%) · 집중 사격 치명 +8% · 팔이 망가지면 투창 · 활 못 함 · 손 떨림 · 눈은 탄이 퍼짐) (v1.09, v0.86: 던진 창 · 도끼가 막히거나 · 튕겨나거나 · 박힘 (민수) — 앞에서 막는 놈 (방패 · 막기 · 방어 자세 · 갑옷) 에게: 창은 막힘 50% · 튕김 22% · 뚫고 박힘 28%, 도끼는 막기를 부숨 55% (방패도 부서짐 · 휘청) · 막힘 30% · 튕김 15%. 안 막으면 창은 박힘 (치명 30% · 부위 치명상 35%) · 도끼는 찍고 떨어지거나 박힘. 산 적에 박힌 무기는 그 적이 죽거나 8초 뒤 떨어짐 (gore.js) · 헤드샷이면 머리에 박힌 채 쓰러짐 · 화살 · 총알도 헤드샷 (gore.js 가 씀: arrow · bullet · ang)) (v1.08: 투창 · 돌 · 수류탄을 놓는 순간은 던진 뒤 그림 (전엔 돌을 쥔 채였음). v1.07: 숙여 피한 뒤 맨손 J = 어퍼컷 반격. v1.06: 마력 폭발은 손 드는 자세. v1.05: 맨손 4연타 — 잽 · 주먹 · 앞차기 · 회전 하이킥, 칸마다 예고 자세 (wpose). v1.04: 맨손 3연타 (잽 · 주먹 · 발차기), 맨손 예고는 복싱 자세, 투창을 끝까지 당기면 강한 투창 자세. v1.03: 맨손 공격은 주먹 내지르기 그림. v1.02: 권총 · 소총 사격 자세 그림, 레슬링 자세에선 무기를 숨김. v1.01: 돌 · 수류탄은 던지기 자세 그림)
    · 손에 보이는 무기: 도감 그림 (art/atlas/held*.webp)을 손 자리에 붙임. 평소엔 등에 메고, 공격할 때 손에 들고 실제로 휘두름 (궤적이 남음)
    · 무기 14종마다 기본 공격 (좌클릭 · J)과 무기 스킬 (우클릭 · K)이 다름. 변형 (레이피어 · 일본도 · 낫 · 도끼창 · 채찍 · 대포 · 광선총 …)은 수치와 작은 효과
    · 화살: 맞으면 몸에 박힌 채 보임 → 죽으면 둘레에 떨어짐 (일부 부러짐). 갑옷 · 방패 · 막기에 맞으면 튕겨 나가 바닥에. 빗나가면 바닥 · 벽에 꽂힘. 위를 지나가면 주움
@@ -373,7 +373,7 @@ function finishReload(u){
 // 총알 · 볼트 한 번 (산탄은 여러 알)
 function fireGun(u, w, tgt, o){
   const mz = muzzleWorld(u), y0 = Math.max(u.y + 0.7, Math.min(u.y + 1.5, mz.y));
-  const nP = w.pellets || 1, sp = o.spread ?? (w.spread || 0) * (w.auto ? 1 + 3 * (P.heat || 0) : 1) * (P.focus ? 0.3 : 1);
+  const nP = w.pellets || 1, sp = o.spread ?? (w.spread || 0) * (w.auto ? 1 + 3 * (P.heat || 0) : 1) * (P.focus ? 0.3 : 1) * (u.kneelShot ? 0.45 : 1) * ((typeof injOf === 'function' && injOf(u) || {}).shake || 1);   // v1.10 앉아쏴: 덜 흔들림 · 손 떨림 · 눈: 더 흔들림
   const mul = (w.shotMul || 1) * (o.mul || 1) * (P.focus ? 1.15 : 1);
   const am = ammoKind(w);
   setPose(u, shootPose()); P.shootT = G.t + 0.45; P.flashAt = G.t; P.recoil = Math.min(1.4, (P.recoil || 0) + (w.kind === 'shotgun' ? 1 : w.kind === 'lever' ? 0.8 : 0.45));
@@ -388,7 +388,7 @@ function fireGun(u, w, tgt, o){
         let m2 = mul;
         if (w.kind === 'shotgun'){ const d = Math.hypot(p.x - mz.x, p.z - mz.z); m2 *= d < 3 ? 1 : Math.max(0.45, 1 - (d - 3) / 8); }
         if (w.pierce){ p.pc = (p.pc || 0) + 1; if (p.pc >= (w.pierce || 1) + 1) p.pierce = false; }
-        hurt(u, t, u.atk * m2, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, ranged: true, hitsAir: true, kb: w.kb || (bolt ? 0.8 : 0.25), pierceDef: w.pierceDef || 0, crit: o.crit || undefined });
+        hurt(u, t, u.atk * m2, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, ranged: true, hitsAir: true, kb: w.kb || (bolt ? 0.8 : 0.25), pierceDef: w.pierceDef || 0, crit: o.crit || undefined, critAdd: (u.kneelShot ? 0.12 : 0) + (P.focus ? 0.08 : 0), arrow: bolt, bullet: !bolt, ang: p.a });   // v1.10 앉아쏴 · 집중 사격: 치명 ↑
         if (w.slow) addStatus(t, 'slow', { k: 0.5, t: 2 });
         if (w.boom) boom(u, p.x, p.z, w.boom, u.atk * mul * 0.6);
         if (bolt) stickArrow(t, p);
@@ -452,7 +452,7 @@ function fireArrow(u, w, tgt, k, perfect, opt = {}){
     onHit: (p, t) => {
       const toS = Math.atan2(u.z - t.z, u.x - t.x), front = Math.abs(angDiff(toS, t.aim)) < 1.25;
       const armored = (t.D.block || t.D.armor || t.guardStance || t.guard) && front && !perfect && !opt.pierce;
-      hurt(u, t, u.atk * mul, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, ranged: true, hitsAir: true, kb: 0.35 * k, crit: perfect || undefined, critMul: perfect ? 2.6 : undefined, pierce: !!opt.pierce });
+      hurt(u, t, u.atk * mul, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, ranged: true, hitsAir: true, kb: 0.35 * k, crit: perfect || undefined, critMul: perfect ? 2.6 : undefined, pierce: !!opt.pierce, arrow: !stone, ang: p.a });
       if (stone) return;
       if (armored && Math.random() < 0.7){   // 튕김: 바닥으로
         spark(p.x, p.y, p.z, 0xe0e0e0, 6, 4); SFX.burst({ type: 'highpass', f: 3000, gain: 0.14, dec: 0.05 });
@@ -504,9 +504,10 @@ function startSkill(u, mv){
   if (P.skCd > 0 && w.skillCd){ popText(u.x, u.y + 2.3, u.z, `${w.skillName} ${Math.ceil(P.skCd)}초`, 'miss', 0.6); return true; }
   switch (w.skill){
     case 'throw':
+      if (typeof injOf === 'function' && injOf(u) && injOf(u).noThrow){ injSay(u, 'noThrow'); return true; }   // v1.10 팔: 던질 수 없음 (maim.js INJ)
       if (!P.spear){ popText(u.x, u.y + 2, u.z, `${w.d ? w.d.n : '무기'}이 없음 — 주워야 함`, 'miss', 0.9); return true; }
       P.aiming = true; P.aimMode = 'throw'; P.charge = 0; return true;
-    case 'draw': P.aiming = true; P.aimMode = 'draw'; P.charge = 0; return true;
+    case 'draw': if (typeof injOf === 'function' && injOf(u) && injOf(u).noDraw){ injSay(u, 'noDraw'); return true; } P.aiming = true; P.aimMode = 'draw'; P.charge = 0; return true;
     case 'aimShot': if (!w.it.mag && !startReload(u)){ noAmmo(u, ammoKind(w)); return true; } P.aiming = true; P.aimMode = 'aimShot'; P.charge = 0; return true;
     case 'focus': P.aiming = true; P.aimMode = 'focus'; P.charge = 0; P.focus = true; return true;
     case 'nova': P.aiming = true; P.aimMode = 'nova'; P.charge = 0; return true;
@@ -581,9 +582,10 @@ function aimHold(u, dt, mv, holding){
   const full = P.charge >= THROW.full;
   if (mode === 'throw'){ aimPath(u); setPose(u, P.charge >= THROW.full * 0.55 && u.S.poses.throwHard ? 'throwHard' : 'aim'); }   // 끝까지 당기면 강한 투창 자세
   else { pickAim(u, null, 16); setPose(u, mode === 'nova' && u.S.poses.raise ? 'raise' : 'shoot'); }
-  const slow = mode === 'aimShot' ? 0.1 : 0.45;
+  const slow = (mode === 'aimShot' ? 0.38 : 0.45) * (u.kneelShot ? 0.5 : 1);
   if (mv) moveBy(u, mv.x * u.spd * slow * dt, mv.z * u.spd * slow * dt);
-  if (mode === 'aimShot' && mv) P.charge = Math.max(0, P.charge - dt * 2.5);   // 움직이면 조준이 풀림
+  if (mode === 'aimShot' && mv) P.charge = Math.max(0, P.charge - dt * 0.5);   // v1.10 걸으면서도 조준 (모이는 빠르기만 절반 — 전엔 움직이면 풀림)
+  if (u.kneelShot && mode !== 'throw') P.charge = Math.min(THROW.full, P.charge + dt * 0.35);   // v1.10 앉아쏴: 빨리 모임
   if (!holding || (full && mode === 'throw')){
     const k = P.charge / THROW.full, perfect = !full && P.charge >= THROW.full - THROW.perfect;
     P.aiming = false;
@@ -597,7 +599,7 @@ function aimHold(u, dt, mv, holding){
       P.atkCd = 0.4;
     }
     else if (mode === 'aimShot'){
-      if (w.it.mag > 0){ w.it.mag--; const ok = k >= 0.72; fireGun(u, w, pickAim(u, null, 20), { crit: ok, mul: ok ? 1.6 : 1, spread: 0 }); if (ok) popText(u.x, u.y + 2.2, u.z, '조준!', 'crit', 0.8); }
+      if (w.it.mag > 0){ w.it.mag--; const ok = k >= (u.kneelShot ? 0.55 : 0.65); fireGun(u, w, pickAim(u, null, 20), { crit: ok, mul: ok ? 1.6 : 1.15, spread: 0 }); if (ok) popText(u.x, u.y + 2.2, u.z, u.kneelShot ? '앉아쏴 — 조준!' : '조준!', 'crit', 0.8); }   // v1.10 조준이 덜 모여도 '조준!' (0.72 → 0.65, 앉아쏴 0.55)
       P.atkCd = 0.5;
     }
     else if (mode === 'nova'){
@@ -628,8 +630,21 @@ function throwWeapon(u, k, perfect){
   const p = shoot({ x: u.x, y: Aa.y0, z: u.z, a, speed: Aa.vh, vy: Aa.vy, g: ARC.g, hitR: 0.3, range: THROW.range * 2, side: 'ally', len: 0.1, thick: 0.01, color: 0xc8b8a0,
     glow: perfect ? 0x5ab4ff : null, pierce: perfect, hitsAir: true, trail: perfect ? 0x5ab4ff : null,
     onHit: (pp, t) => {
-      hurt(u, t, dmg, { hitsAir: true, ranged: true, from: { x: pp.x - Math.cos(pp.a), z: pp.z - Math.sin(pp.a) }, crit: perfect || undefined, critMul: 2.5, pierce: perfect, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0 });
-      if (w.kind === 'axe') addStatus(t, 'bleed', { dps: Math.max(4, u.atk * 0.3), t: 4 });
+      // v1.09 막힘 · 튕김 · 막기 부숨 · 박힘
+      const front = Math.abs(angDiff(Math.atan2(u.z - t.z, u.x - t.x), t.aim ?? 0)) < 1.25, axe = w.kind === 'axe';
+      const guarded = front && !perfect && t.side === 'enemy' && !!(t.guard || t.guardStance || (t.D.block && !t.shieldBroken) || t.D.armor);
+      let out = 'stick', mul = 1; const r0 = Math.random();
+      if (guarded) out = axe ? (r0 < 0.55 ? 'break' : r0 < 0.85 ? 'block' : 'deflect') : (r0 < 0.5 ? 'block' : r0 < 0.72 ? 'deflect' : 'stick');
+      else if (axe && r0 < 0.5) out = 'hit';
+      const at = (txt, cls) => popText(t.x, t.y + bodyH(t) + 0.5, t.z, txt, cls, 0.9);
+      if (out === 'deflect'){ at('튕겨냄', 'miss'); spark(pp.x, pp.y, pp.z, 0xe8e8e8, 12, 5); SFX.clink && SFX.clink(0.5); pp.deflect = true; return; }
+      if (out === 'block'){ mul = 0.25; at('막힘', 'miss'); spark(pp.x, pp.y, pp.z, 0xd8d8d8, 10, 4); SFX.clink && SFX.clink(0.4); }
+      if (out === 'break'){ mul = 0.7; at('막기를 부쉈다!', 'crit'); interrupt(t); t.guard = false; t.guardStance = false; if (t.D.block){ t.shieldBroken = true; t.D = { ...t.D, block: 0 }; } if (!t.D.heavy && !t.D.boss){ t.st = 'hurt'; t.stT = 0.9; setPose(t, 'hurt'); } camShake(0.2, 0.15); }
+      const crit = perfect || (out === 'stick' && !axe && Math.random() < 0.3) || undefined;
+      hurt(u, t, dmg * mul, { hitsAir: true, ranged: true, from: { x: pp.x - Math.cos(pp.a), z: pp.z - Math.sin(pp.a) }, crit, critMul: 2.5, pierce: perfect || guarded, noCam: perfect, kb: 1.2 * k, stun: perfect ? 0.6 : 0, thrown: w.kind, ang: pp.a });   // 막는 놈에게: 결과 (막힘 ×0.25 · 부숨 ×0.7 · 뚫고 박힘) 가 이미 정했으니 방패 · 갑옷을 또 셈하지 않음
+      if (t.dead && t.goreMeshes && t.twitch) pp.headIn = t;   // 헤드샷: 머리에 박힌 채 쓰러짐 (gore.js)
+      else if (out === 'stick' && !t.dead){ pp.stuckIn = t; if (!axe && t.side === 'enemy' && typeof enemyMaim === 'function' && Math.random() < 0.35) enemyMaim(t, 'mid'); }   // 창: 박히며 치명상
+      if (axe && out !== 'block') addStatus(t, 'bleed', { dps: Math.max(4, u.atk * 0.3), t: 4 });
       if (fx.throwBoom) boom(u, t.x, t.z, 2.6, dmg * 0.7);
       if (G.cmd === 'focus') G.focusTarget = t;
     },
@@ -637,6 +652,11 @@ function throwWeapon(u, k, perfect){
       if (CAM.track === pp) CAM.trackUntil = G.t + 0.25;
       if (fx.throwBoom && !t) boom(u, x, z, 2.6, dmg * 0.7);
       if (fx.boomerang){ setTimeout(() => { P.spear = true; popText(u.x, u.y + 2, u.z, '돌아옴', 'heal', 0.7); }, 450); return; }
+      if (typeof GORE !== 'undefined'){   // v1.09 박힘: 머리 (헤드샷) · 산 몸 — 떨어진 뒤에 주움
+        if (pp.headIn){ const L = pp.headIn.goreMeshes || [], gm = L[L.length - 1]; GORE.stuck = { t: pp.headIn, m: gm && gm.m, a: pp.a, until: G.t + 4.5, corpse: true }; return; }
+        if (pp.stuckIn && !pp.stuckIn.dead){ goreStickWeapon(pp.stuckIn, w.kind, pp.a); return; }
+      }
+      if (pp.deflect && t){ const b = pp.a + Math.PI + rnd(-0.8, 0.8), L = rnd(1.4, 2.6); dropWeapon(t.x + Math.cos(b) * L, t.z + Math.sin(b) * L, b); return; }   // 튕겨 나감
       dropWeapon(t ? t.x + rnd(-0.6, 0.6) : x - Math.cos(pp.a) * (wall ? 0.4 : 0), t ? t.z + rnd(0.3, 0.9) : z - Math.sin(pp.a) * (wall ? 0.4 : 0), pp.a);
     } });
   // 날아가는 그림: 무기 그림 그대로 (도끼는 빙글빙글)

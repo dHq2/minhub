@@ -1,4 +1,4 @@
-/* engage.js v1.0 — (v0.55) 교전 자리 규칙 (공격 자리)
+/* engage.js v1.1 — (v1.1, v0.86: 매복한 적은 처음 8초 동안 자리 순서 없이 한꺼번에 덤빔 (e.ambushT)) (v1.0, v0.55) 교전 자리 규칙 (공격 자리)
    격투와 조직전이 함께 살게 하는 뼈대. 한 사람을 앞에서 동시에 칠 수 있는 적은 둘 (ENG.slots)
    · 자리를 얻은 적만 예고 장판을 깔고 공격함. 자리가 없으면 둘레 (2.6~3칸)를 돌며 기다림 — 기다리는 놈은 슬금슬금 등 뒤로 돎
    · 자리는 한 번에 2.4초까지. 다 쓰면 내놓고 1초 동안 다시 못 잡음 → 기다리던 놈과 번갈아 들어옴 (일대일 기술 교환이 끊기지 않음)
@@ -8,7 +8,7 @@
 'use strict';
 const ENG = { on: false,   // 훈련장이 켬 (확정되면 모든 판)
    slots: 2, ring: 2.8, slice: 2.4, rest: 1.0, show: false, tok: new Map(), stat: { waits: 0, flanks: 0 } };
-const engUses = e => !e.D.boss && !e.D.dummy && !e.D.bow && !!(e.D.melee || e.D.line || e.D.slam) && e.side === 'enemy';
+const engUses = e => !e.D.boss && !e.D.dummy && !e.D.bow && !!(e.D.melee || e.D.line || e.D.slam) && e.side === 'enemy' && !(e.ambushT > G.t);   // v0.86 매복 첫 8초는 자리 순서 없이 한꺼번에
 function engSlotsOf(t){ return ENG.slots + (t.lying || t.downed || t.lock ? 1 : 0) + (t.engPull || 0); }
 function engList(t){ let m = ENG.tok.get(t.uid); if (!m){ m = new Map(); ENG.tok.set(t.uid, m); } return m; }
 function engHolds(e, t){ const m = ENG.tok.get(t.uid); return !!(m && m.has(e.uid)); }

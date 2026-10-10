@@ -1,4 +1,4 @@
-/* camera.js v0.10 — (v0.10, v0.59: greyside — 1층 대지를 옆에서 멀찍이, 하늘 · 언덕이 보이게) (v0.9: 층마다 카메라 모드 — iso (기본) · side (낮게 옆에서, 횡스크롤처럼) · top (높이서 내려다봄) · drift (천천히 돎). camMode(). side · top은 Z · C로 못 돌림)
+/* camera.js v0.11 — (v0.11, v0.86: 옆 카메라 (side) 에서 인주와 카메라 사이 벽을 깎아 보이게 (world.js sideCut, 0.25초마다 인주가 0.5칸 넘게 움직였으면) — 9층 가림) (v0.10, v0.59: greyside — 1층 대지를 옆에서 멀찍이, 하늘 · 언덕이 보이게) (v0.9: 층마다 카메라 모드 — iso (기본) · side (낮게 옆에서, 횡스크롤처럼) · top (높이서 내려다봄) · drift (천천히 돎). camMode(). side · top은 Z · C로 못 돌림)
    v0.8 — 참고 코드 (logic-prototype v9.3) 구조 그대로: 맵은 고정, 움직이는 건 카메라뿐.
    우선순위: 횡스크롤 전환 > 크리티컬 스냅 > 락온 · 넓게 보여주기 (부드럽게 밀고 들어감) > 평소 (느슨한 추적 + 줌 펄스 + 잔진동)
    v0.3: 카메라가 돎 (yaw, Z · C로 90°씩, 가려진 것을 볼 땐 스스로 돎) · 완벽 투창은 창을 따라감
@@ -174,3 +174,12 @@ function screenToGround(sx, sy, W, H, y = 0){
   _plane.constant = -y;
   return _ray.ray.intersectPlane(_plane, _hit) ? { x: _hit.x, z: _hit.z } : null;
 }
+
+// v0.11 옆 카메라: 인주와 카메라 사이 벽은 낮게 (가리지 않게) — 인주가 움직이면 0.25초마다 다시 깎음
+TICKS.push(dt => {
+  const m = G.map, pl = G.player; if (!m || !m.wallInfo || !pl) return;
+  if (CAM.mode !== 'side'){ if (m.sideCut){ m.sideCut = null; layoutWalls(m, CAM.yawT || 0); } return; }
+  CAM.scT = (CAM.scT || 0) - dt; if (CAM.scT > 0) return; CAM.scT = 0.25;
+  const S = m.sideCut; if (S && Math.hypot(S.x - pl.x, S.z - pl.z) < 0.5) return;
+  m.sideCut = { x: pl.x, z: pl.z }; layoutWalls(m, CAM.yawT || 0);
+});

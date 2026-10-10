@@ -1,4 +1,4 @@
-/* greyland.js v1.0 — (v0.59) 1층 고정: 회색 대지 → 무덤 → 알현실 → 세자르 (2D판 1층을 그대로 옮김 · FLOORS.md §2)
+/* greyland.js v1.1 — (v1.1, v0.86: 훈련장 규칙 (조 · 교전 자리 · 은신 · 엄폐 · 동료가 일으킴 · 조준 태클) 을 모든 층에 — 전엔 1층만이라 2층부터 '적용 안 된 게 많음' · 쓰러뜨린 세자르는 다시 안 나옴 (빈 관) · 두 번째부터 세자르는 관에서 일어나지 않고 왕좌 방에서 말없이 바라보며 기다림 (다가가거나 치면 싸움) · 무덤 들어가기 전 모닥불 · 방패벽 무리는 우리를 보기 전엔 모닥불에 앉아 쉬다가 알아채면 방패벽을 세움 · 검사 · 창병 무리는 대지를 순찰) v1.0 — (v0.59) 1층 고정: 회색 대지 → 무덤 → 알현실 → 세자르 (2D판 1층을 그대로 옮김 · FLOORS.md §2)
    ■ 들어갈 때 달 그림 한 장: "달에는 길이 없었다. 지도만 있었다."
    ■ 회색 대지 (x 1~74): 길고 넓은 가로 들판. 어두운 회색 하늘 · 먼 언덕 두 겹 · 가끔 내리는 재. 바위는 엄폐
      · 무리 둘 (두리번거리는 검사 · 창병 / 방패벽 + 바위 뒤 붉은 망토 궁수), 강적은 곤봉 거한 하나
@@ -114,11 +114,22 @@ function greyPost(gen){
   for (let i = 0; i < 2500; i++){ const v = Math.random() < 0.5 ? 40 : 120; x2.fillStyle = `rgba(${v},${v},${v},0.25)`; x2.fillRect(Math.random() * 512, Math.random() * 512, 1.5, 1.5); }
   const gt = new THREE.CanvasTexture(c); gt.wrapS = gt.wrapT = THREE.RepeatWrapping; gt.repeat.set(76 / 9, (GREY.H + 34) / 9);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(76, GREY.H + 34), new THREE.MeshStandardMaterial({ map: gt, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.position.set(37, 0.006, (GREY.H - 34) / 2 - 0.5);   // 언덕 밑까지 이어진 땅 ground.receiveShadow = true; G.scene.add(ground); G.props.push(ground);
-  // 무리 1: 두리번거리는 검사 · 창병
+  // 무리 1: 대지를 순찰하는 검사 · 창병 (v1.1 — 들키기 전엔 길을 따라 걷다 서서 두리번)
   const g1 = [['swordsman', 23, 13], ['swordsman', 25, 16], ['spearman', 26, 13]].map(([k, x, z]) => spawnFoe(k, x, z, F, 'g1'));
-  // 무리 2: 방패벽 + 바위 줄 뒤 궁수 (엄폐)
-  for (const [k, x, z] of [['shieldman', 40.6, 13], ['shieldman', 40.6, 16]]){ const e = spawnFoe(k, x, z, F, 'g2'); e.post = { x, z }; e.aim = e.aim0 = Math.PI; }
-  for (const [x, z] of [[43.1, 11.5], [43.1, 17.5]]){ const e = spawnFoe('archer', x, z, F, 'g2'); e.post = { x, z }; e._fortPost = true; e.aim = e.aim0 = Math.PI; }
+  const route = [{ x: 25, z: 14.5 }, { x: 34, z: 10 }, { x: 37, z: 19 }, { x: 30, z: 22 }];
+  g1.forEach((e, i) => { e.patrol = { pts: route, i: 0, off: { x: [0, -1.1, 0.9][i], z: [0, 1.0, 1.1][i] }, wait: rnd(1, 3) }; });
+  // 무리 2: 방패병 · 궁수 — 우리를 보기 전엔 모닥불에 앉아 쉼, 알아채면 방패벽 (바위 줄 앞) · 궁수는 바위 뒤 (v1.1)
+  const cf = { x: 45, z: 14 }, mf = makeFire(G.map, cf.x, cf.z); mf.light.visible = false; G.map.fires.push(mf); G.map.solid[cf.z * G.map.w + cf.x] = 1; addSource(cf.x, cf.z, 4.5, 0xffa050, 0.9, 1);
+  const seats = [[-1.5, -0.6, 'rest'], [-1.4, 0.8, 'rest2'], [0.4, -1.5, 'rest3'], [0.5, 1.5, 'rest']];
+  [['shieldman', 40.6, 13], ['shieldman', 40.6, 16], ['archer', 43.1, 11.5], ['archer', 43.1, 17.5]].forEach(([k, x, z], i) => {
+    const [dx, dz, pose] = seats[i], px = cf.x + dx, pz = cf.z + dz, e = spawnFoe(k, px, pz, F, 'g2');
+    e.post = { x, z }; e.aim0 = Math.PI; if (k === 'archer') e._fortPost = true;
+    e.home = { x: px, z: pz }; e.aim = Math.atan2(cf.z - pz, cf.x - px); faceToward(e, cf.x - px, cf.z - pz); e.camp = { x: cf.x, z: cf.z, pose };
+  });
+  // 무덤 들어가기 전 모닥불 (v1.1 — 쉬어 갈 곳)
+  { const x = 72, z = 15, f = makeFire(G.map, x, z); G.map.fires.push(f); G.map.solid[z * G.map.w + x] = 1; addSource(x, z, 5, 0xffa050, 1.1, 1);
+    G.inspect.push({ x, z, r: 1.8, mark: '모닥불', far: 9, label: '모닥불 곁에서 쉰다 (체력 35% · 정신도 +30)', once: true, fn: () => campRest(x, z) });
+    DUN.marks.push({ x, z, icon: '♨', col: '#ffa050' }); }
   // 강적: 곤봉 거한 하나
   const br = spawnFoe('brute', 60, 15, F, 'elite', true); br.aim = br.aim0 = Math.PI;
   // 뒤를 밟는 자객
@@ -137,10 +148,20 @@ function greyPost(gen){
   throne.position.set(120.5, 0, 14.5); G.scene.add(throne); G.props.push(throne);
   // 관 → 세자르 (bossTick이 깨움)
   const cx = 108, cz = 14.5;
-  EXP.boss = { kind: 'cesar', alive: true, woke: false, x: cx, z: cz, grey: true };
-  EXP.boss.coffin = dbill(DA + 'H-198.webp', cx, cz, 1.3, { fit: 1.6, tint: 0.9 });
   addSource(cx, cz, 4.5, 0xbfd8ff, 0.7, 1.6);
-  G.inspect.push({ x: cx, z: cz, r: 1.8, mark: '관', far: 12, label: '녹슬지 않은 왕관을 쓴 관', once: true, fn: () => bossWake() });
+  if ((RPG.meta.slain || []).includes('cesar')){   // v1.1 쓰러뜨린 세자르는 다시 안 나옴 (보스는 파밍하지 않음)
+    EXP.boss = null; dbill(DA + 'H-198.webp', cx, cz, 1.3, { fit: 1.6, tint: 0.55 });
+    G.inspect.push({ x: cx, z: cz, r: 1.8, mark: '빈 관', far: 12, label: '빈 관 — 왕은 이제 없다', once: true, fn: () => popText(G.player.x, G.player.y + 2.2, G.player.z, '…조용하다', 'whisper', 1.4) });
+  } else if (RPG.meta.cesarMet){   // v1.1 두 번째부터: 관은 비었고 세자르는 왕좌 방에서 말없이 이쪽을 보며 기다림
+    EXP.boss = { kind: 'cesar', alive: true, woke: true, x: cx, z: cz, grey: true };
+    EXP.boss.coffin = dbill(DA + 'H-198.webp', cx, cz, 1.3, { fit: 1.6, tint: 0.6 });
+    const u = spawnFoe('cesar', cx + 5, cz, F, 'boss'); u.czWait = true; u.alert = false; u.aim = u.aim0 = Math.PI; u.face = -1; EXP.boss.u = u;
+    if (u.tag){ u.tag.remove(); u.tag = null; }
+  } else {
+    EXP.boss = { kind: 'cesar', alive: true, woke: false, x: cx, z: cz, grey: true };
+    EXP.boss.coffin = dbill(DA + 'H-198.webp', cx, cz, 1.3, { fit: 1.6, tint: 0.9 });
+    G.inspect.push({ x: cx, z: cz, r: 1.8, mark: '관', far: 12, label: '녹슬지 않은 왕관을 쓴 관', once: true, fn: () => bossWake() });
+  }
   const st = G.inspect.find(o => o.mark === '계단');
   if (st){ const fn = st.fn, lb = st.label; st.fn = () => EXP.boss && EXP.boss.alive ? popText(G.player.x, G.player.y + 2.2, G.player.z, '세자르를 쓰러뜨려야 내려간다', 'miss', 1.2) : fn(); Object.defineProperty(st, 'label', { get: () => EXP.boss && EXP.boss.alive ? '계단 — 봉인됨 (세자르)' : lb }); }
   DUN.marks.push({ x: cx, z: cz, icon: '♛', col: '#ff6a6a', known: true });
@@ -163,6 +184,7 @@ expLoadFloor = async function(F, how){
   GREY.ash = null; GREY.snow = false; GREY.snowFx = null; GREY.sky = [];
   const r = await _expLoadFloorG(F, how);
   if (F === 1 && GREY.on && EXP && EXP.gen && EXP.gen.D.grey) greyPost(EXP.gen);
+  else if (typeof SQ !== 'undefined' && EXP && G.mode === 'exp') greyRules(true);   // v1.1 훈련장 규칙은 모든 층에 (1층은 greyPost 가 켬)
   return r;
 };
 if (typeof expToCave === 'function'){ const _e2c = expToCave; expToCave = function(...a){ if (typeof SQ !== 'undefined') greyRules(false); return _e2c.apply(this, a); }; }
@@ -202,8 +224,19 @@ function czAuthorityTick(u, dt){
   if (Z.shaken > 0){ Z.shaken -= dt; if (Z.shaken <= 0){ GREY.snow = true; caption('권위', '권위가 다시 홀을 채운다 — 눈이 내린다'); } }
   else if (GREY.snow && u.st === 'hurt' && (u.stT || 0) >= 0.4 && (Z.cool = (Z.cool || 0) - dt) <= 0){ Z.shaken = 6; Z.cool = 4; GREY.snow = false; caption('권위가 흔들린다', '6초 동안 눈이 멎고 더 아프게 맞는다'); }
 }
+// v1.1 기다리는 세자르: 가장 가까운 동료를 말없이 바라봄. 왕좌 방에 들어와 7.5칸 안으로 오거나 맞으면 싸움 (보스 줄은 그때)
+function czWaitTick(u){
+  const t = nearest(u, czFoes3(u), 40);
+  if (t){ u.aim = Math.atan2(t.z - u.z, t.x - u.x); faceToward(u, t.x - u.x, t.z - u.z); }
+  if ((t && t.x > 97 && dist(u, t) < 7.5) || u.hp < u.max){
+    u.czWait = false; u.alert = true; u.seen = G.t; G.boss = u; $('bossbar').hidden = false; $('bossname').textContent = '세자르 — 관 속의 늙은 왕'; $('bossphase').textContent = '';
+    return false;
+  }
+  u.alert = false; u.moving = false; czPose(u, 'idle'); return true;
+}
 function cz3Think(u, dt){
   if (u.lock || G.lock) return;
+  if (u.czWait && czWaitTick(u)) return;   // v1.1 두 번째부터: 왕좌 방에서 말없이 기다림
   const Z = u.cz || (u.cz = { phaseT: CZ3.probe[0], fury: false, orbit: Math.random() < 0.5 ? 1 : -1, act: null, auth: 0.6, shaken: 0, cd: { ult: 10, wave: 5, spin: 1, shoulder: 3, thrust: 4, back: 0, flank: 3, rush: 5, upcut: 8, punish: 0 } });
   for (const k in Z.cd) Z.cd[k] -= dt;
   czAuthorityTick(u, dt);

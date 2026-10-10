@@ -1,4 +1,4 @@
-/* units.js v0.34 — (v0.34, v0.84: 2 · 3기 인물 묶음이 큰 판 (4104px 안) 으로 합쳐짐 (h2_atlas.py v1.1) — 판이 아직 안 왔을 땐 판 전체를 GPU 에 올리던 예전 길 대신 빈 그림을 잠깐 보이고 다음 장면에 다시) (v0.33, v0.83: 그림판 아끼기 — 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 씀 · 묶음 칸 (P.rect) 은 그 칸만 잘라 올림 (전엔 유닛 · 자세마다 묶음 전체를 GPU 에 다시 올려 2 · 3기 8명 싸움에 274MB) · 여러 장 자세만 유닛마다 따로 · 유닛을 치우면 (removeUnit) 그 유닛만 쓰던 그림판 · 재질 · 판을 GPU 에서 내림 — 전엔 콜로세움을 여러 판 돌리면 계속 쌓임) (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.35 — (v0.35, v0.86: 항공뷰 (top) 에선 그림을 카메라 쪽으로 세우고 벽 위에 그림 · 앉아쏴는 쏘는 그림을 낮춰 보임 · 방어 자세는 보스의 공격을 다 못 막음 (90% → 60% 감소) — 레베카에게 세자르 마구 베기가 0 · 1 · 3 으로 들어가던 것) (v0.34, v0.84: 2 · 3기 인물 묶음이 큰 판 (4104px 안) 으로 합쳐짐 (h2_atlas.py v1.1) — 판이 아직 안 왔을 땐 판 전체를 GPU 에 올리던 예전 길 대신 빈 그림을 잠깐 보이고 다음 장면에 다시) (v0.33, v0.83: 그림판 아끼기 — 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 씀 · 묶음 칸 (P.rect) 은 그 칸만 잘라 올림 (전엔 유닛 · 자세마다 묶음 전체를 GPU 에 다시 올려 2 · 3기 8명 싸움에 274MB) · 여러 장 자세만 유닛마다 따로 · 유닛을 치우면 (removeUnit) 그 유닛만 쓰던 그림판 · 재질 · 판을 GPU 에서 내림 — 전엔 콜로세움을 여러 판 돌리면 계속 쌓임) (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -115,6 +115,7 @@ function updateSprite(u, dt){
   u.mesh.position.set((P.w / 2 - P.ax) * k * flip, (P.ay - P.h / 2) * k, 0);
   // v0.2 털썩 주저앉음: 발을 땅에 둔 채 세로로 눌러 줌
   if (u.sit){ u.mesh.scale.y *= 0.68; u.mesh.position.y *= 0.68; }
+  else if (u.kneelShot){ u.mesh.scale.y *= 0.8; u.mesh.position.y *= 0.8; }   // v0.86 앉아쏴: 쏘는 자세를 낮춰 (앉아쏴 그림이 생기면 바꿈)
   // 쓰러짐: 옆으로 눕힘
   // 쓰러짐 · 누움 (u.lying: 연출로 눕힘). u.tiltOverride가 있으면 연출이 직접 기울기를 정함 (천천히 무너짐)
   if (u.tripT && G.t > u.tripT){ u.tripT = 0; if (!u.downed && !u.dead) u.lying = false; }   // 다리후리기 · 슬라이딩으로 넘어진 놈이 일어남
@@ -127,6 +128,9 @@ function updateSprite(u, dt){
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
   u.pivot.rotation.y = Math.atan2(camera.position.x - u.x, camera.position.z - u.z);
+  // v0.86 항공뷰 (top): 그림을 카메라 쪽으로 세워 눕힘 · 벽 위에 그림 (민수: 림월드처럼 조금 겹쳐도 인물이 보여야) — 전엔 위에서 보면 그림이 얇은 선이 됨
+  const top = CAM.mode === 'top';
+  if (top || u._top){ u._top = top; u.pivot.rotation.order = 'YXZ'; u.pivot.rotation.x = top ? -Math.atan2(camera.position.y - u.y, Math.hypot(camera.position.x - u.x, camera.position.z - u.z)) * 0.85 : 0; if (u.mat.depthTest === top){ u.mat.depthTest = !top; u.mesh.renderOrder = top ? 30 : 0; } }
   u.shadow.material.opacity = 0.42 * Math.max(0.2, 1 - u.lift / 3);
   u.flash = Math.max(0, u.flash - dt * 6);
   u.mat.color.setScalar(0.92 + u.flash * 2.6);
@@ -407,7 +411,7 @@ function hurt(att, tgt, base, o = {}){
     if (!strong && Math.random() < 0.59){ dmg *= 0.3; tag = '대리석 '; spark(tgt.x, tgt.y + 1.6 + (tgt.lift || 0), tgt.z, 0xd8d0c0, 8, 4); }
   }
   if (back){ dmg *= 1.25; tag = '사각! '; }
-  if (tgt.guardStance && !back && !o.pierce){ dmg *= 0.1; tag = '방어 자세 '; spark(tgt.x, tgt.y + 1.5, tgt.z, 0xd8d8d8, 8, 4); }
+  if (tgt.guardStance && !back && !o.pierce){ dmg *= att && att.D && att.D.boss ? 0.4 : 0.1; tag = '방어 자세 '; spark(tgt.x, tgt.y + 1.5, tgt.z, 0xd8d8d8, 8, 4); }
   else if (tgt.D.block && !back && !o.pierce){ dmg *= tgt.D.block; tag = '막음 '; spark(tgt.x, tgt.y + 1, tgt.z, 0xd8d8d8, 10, 5); }
   else if (tgt.D.armor && !back && !o.crit && !o.pierce){ dmg *= tgt.D.armor; tag = '갑옷 '; spark(tgt.x, tgt.y + 1.4, tgt.z, 0xb0b0b0, 6, 3); }
   if (att && att.y > tgt.y + 0.3) dmg *= 1.15;

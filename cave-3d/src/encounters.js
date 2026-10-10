@@ -1,4 +1,4 @@
-/* encounters.js v1.2 — (v1.2, v0.85: 4기 각펄 — 2 ~ 5층에 검은 날개의 펄 (2성) 이 홀로 기다림. «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!») (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
+/* encounters.js v1.3 — (v1.3, v0.86: 테헤라는 드물게 (5 ~ 8층, 무게 3 → 1) · 손을 내민 횟수가 인연 (RPG.meta.teheraBond) 으로 남고 만날 때마다 말이 달라짐 — 인연이 쌓이면 동료가 되는 건 민수와 정할 것 (PLAYTEST_2026-10-10.md)) (v1.2, v0.85: 4기 각펄 — 2 ~ 5층에 검은 날개의 펄 (2성) 이 홀로 기다림. «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!») (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
    · 죽은 영웅 · 액자 (뇌를 훔치면 노인들이 덤빔) · 지껄임 (입: 동료 비밀을 떠듦, 때려서 닫음) · 기나긴 해변 (말대가리) · 눈알방 (밟으면 터지고 다시 자람, 정신도)
    · 우주의 테헤라 (따라옴: 이번 원정 시야 +1.5 · 적이 지도에) · 게 요리사 (상점) · 담배 피는 노인 (보물 방 · 정신도) · 거대한 무희 (정신도 회복 · 느려짐)
    · 돼지들의 신 (고깃덩이 선물: 먹으면 회복 + 정신도 · 혼란) · 푸른 구멍의 도끼기사 (강적, 도끼 유물) · 끝없는 줄 (줄 선 존재들 · 움직이는 바닥)
@@ -7,7 +7,7 @@
 const EA = 'art/enc/';
 const ENC = {
   deadHero:  { F: [1, 4], w: 3 }, brainFrame: { F: [3, 7], w: 2 }, chatter: { F: [4, 9], w: 2 }, beach: { F: [2, 6], w: 2 }, eyeRoom: { F: [4, 9], w: 2 },
-  tehera:    { F: [5, 7], w: 3 }, crabChef: { F: [2, 8], w: 3 }, smoker: { F: [5, 8], w: 3 }, dancers: { F: [6, 8], w: 2 }, pigGod: { F: [6, 8], w: 2 },
+  tehera:    { F: [5, 8], w: 1 }, crabChef: { F: [2, 8], w: 3 }, smoker: { F: [5, 8], w: 3 }, dancers: { F: [6, 8], w: 2 }, pigGod: { F: [6, 8], w: 2 },
   axeHole:   { F: [8, 10], w: 3 }, conveyor: { F: [9, 10], w: 3 },
   pearl:     { F: [2, 5], w: 3 },
 };
@@ -75,8 +75,10 @@ const ENC_FILL = {
     const b = dbill(EA + 'tehera_sit.webp', p.x, p.z, 1.3, { fit: 1.4, glow: 1, y: 0.55 }); addSource(p.x, p.z, 5, 0xc8e8ff, 0.8, 2);
     r.encData = { p, b };
     G.inspect.push({ x: p.x, z: p.z, r: 1.9, mark: '테헤라', far: 9, once: true, label: '테헤라에게 손을 내민다', fn: async () => {
-      await vnTalk('테헤라', ['…', '(빛가루가 손등에 내려앉는다)', '재미있는 냄새가 나는 아이들이네. 조금만 따라가 볼까.']);
-      b.g.visible = false; EXP.tehera = true; EXP.radar = true; caption('테헤라가 따라온다', '이번 원정: 시야 +1.5 · 적이 지도에 보임');
+      const n = RPG.meta.teheraBond = (RPG.meta.teheraBond || 0) + 1;   // v1.3 인연 (민수: 7성 서포터 — 인연이 이어져야 얻음, 한 판에 한 번 보기도 힘듦)
+      const T = [['…', '(빛가루가 손등에 내려앉는다)', '재미있는 냄새가 나는 아이들이네. 조금만 따라가 볼까.'], ['…또 너희구나.', '(빛가루가 어깨에 내려앉는다)', '냄새가 조금 진해졌어. 이번에도 조금만.'], ['(테헤라가 먼저 손을 내민다)', '세 번째야. 이런 건 잘 안 일어나는데.'], ['(테헤라가 기다리고 있었다는 듯 일어선다)', '…이번엔 끝까지 가 볼까.']][Math.min(3, n - 1)];
+      await vnTalk('테헤라', T);
+      b.g.visible = false; EXP.tehera = true; EXP.radar = true; caption(`테헤라가 따라온다 · 인연 ${n}`, '이번 원정: 시야 +1.5 · 적이 지도에 보임'); typeof saveRpg === 'function' && saveRpg();
     } });
   },
   crabChef(r){

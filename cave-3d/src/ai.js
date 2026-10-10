@@ -1,4 +1,4 @@
-/* ai.js v0.35 — (v0.35, v0.85: 총 쏘는 적 (D.bow.bullet — 4기 잡몹 소총 · 저격 · 산탄 · 권총): 작고 빠른 총알 · 총구 불꽃 · 총소리 · 산탄은 부채꼴로 여러 알 (pellets · spread) · 한 방 배율 (mul) · 내려찍기 (곤봉 거한 · 장군님) — 새 동작 그림이 있으면 번갈아 크게 들어 (windup2) 땅을 찍는 그림 (slam)) (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.36 — (v0.36, v0.86: 싸움 뒤 '일어남' 에서 반시체 (그 원정에선 못 일어남) 는 뺌 — 전엔 매 프레임 일으키고 maim.js 가 다시 눕혀 '일어남' 이 끝없이 뜨고 인주가 반시체면 원정이 멈췄음 (9층)) (v0.35, v0.85: 총 쏘는 적 (D.bow.bullet — 4기 잡몹 소총 · 저격 · 산탄 · 권총): 작고 빠른 총알 · 총구 불꽃 · 총소리 · 산탄은 부채꼴로 여러 알 (pellets · spread) · 한 방 배율 (mul) · 내려찍기 (곤봉 거한 · 장군님) — 새 동작 그림이 있으면 번갈아 크게 들어 (windup2) 땅을 찍는 그림 (slam)) (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -261,5 +261,5 @@ function fireBullet(u, tgt){
 function reviveCheck(dt){
   const busy = foes().some(e => e.alert);
   G.calmT = busy ? 0 : (G.calmT || 0) + dt;
-  if (G.calmT > 4) for (const u of G.units) if (u.side === 'ally' && u.downed){ u.downed = false; u.hp = Math.round(u.max * 0.3); u.st = 'idle'; popText(u.x, u.y + 1.6, u.z, '일어남', 'heal'); }
+  if (G.calmT > 4) for (const u of G.units) if (u.side === 'ally' && u.downed && !u.halfDead && !u.dead){ u.downed = false; u.hp = Math.round(u.max * 0.3); u.st = 'idle'; popText(u.x, u.y + 1.6, u.z, '일어남', 'heal'); }
 }

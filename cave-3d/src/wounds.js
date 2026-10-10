@@ -1,7 +1,7 @@
-/* wounds.js v1.1 — 치명상 · 상태 이상 정리 (v0.33) (v1.1: 영웅 칸 칩에 영구 · 빈사 · 반시체 · 반병신 — 부위 치명상은 maim.js)
+/* wounds.js v1.3 — 치명상 · 상태 이상 정리 (v0.33) (v1.3, v0.86: 치명상이 더 아픔 — 다리 이동 -30% (점프 · 슬라이딩 못 함) · 심장 최대 체력 -25% · 뇌 정신도 -25 · 반병신 칩에 '원정 못 감') (v1.2, v0.86: 밤에 굴에서 쉬면 정신도가 돌아옴 — 최대의 40% (원정 간 날은 20%). 전엔 안 돌아와서 한 번 0이면 다음 원정 시작부터 '절망' (영웅 칸에 절망 9999)) (v1.1: 영웅 칸 칩에 영구 · 빈사 · 반시체 · 반병신 — 부위 치명상은 maim.js)
    치명상 (영웅에게 남는 상처, 굴에 돌아와도 안 나음):
    · 생기는 때: 쓰러질 때 25% · 한 방에 최대 체력 35% 넘게 맞을 때 7%
-   · 다리: 이동 -15% (6일) · 심장: 최대 체력 -15%, 생길 때 크게 피 흘림 (8일) · 뇌: 정신도 -20, 가끔 혼란 · 헛소리 (10일) · 목: 생길 때 크게 피 흘림 (5일)
+   · 다리: 이동 -30% · 점프 · 슬라이딩 못 함 (7일) · 심장: 최대 체력 -25%, 생길 때 크게 피 흘림 (9일) · 뇌: 정신도 -25, 가끔 혼란 · 헛소리 (10일) · 목: 생길 때 크게 피 흘림 (5일)
      목 치명상은 쓰러진 채로 받으면 3%로 목이 떨어짐 (동료는 영영 잃음, 인주는 겨우 숨이 붙음)
    · 낫는 법: 원정을 안 간 날 밤마다 하루씩 줆. 은실 바늘 (꿰매기)은 심장 · 목을 3일 줄임. 붕대 · 초록 물약은 상처의 피만 멈춤
    상태 이상 (원정 중, 영웅 칸에 칩):
@@ -11,9 +11,9 @@
 'use strict';
 Object.assign(STS_N, { fear: ['공포', '#b48cff'], despair: ['절망', '#6a4a8a'], confuse: ['혼란', '#ff9ad8'], vuln: ['취약', '#ff7a4a'], helpless: ['무력', '#c8c8c8'] });
 const WOUND = {
-  leg:   { n: '다리 치명상', days: 6, note: '이동 -15%' },
-  heart: { n: '심장 치명상', days: 8, note: '최대 체력 -15%' },
-  brain: { n: '뇌 치명상', days: 10, note: '정신도 -20 · 가끔 혼란' },
+  leg:   { n: '다리 치명상', days: 7, note: '이동 -30% · 점프 · 슬라이딩 못 함 · 달리기 느림' },
+  heart: { n: '심장 치명상', days: 9, note: '최대 체력 -25%' },
+  brain: { n: '뇌 치명상', days: 10, note: '정신도 -25 · 가끔 혼란' },
   neck:  { n: '목 치명상', days: 5, note: '피를 많이 흘림' },
 };
 const WOUND_W = [['leg', 40], ['heart', 22], ['brain', 16], ['neck', 22]];
@@ -48,9 +48,9 @@ const _deriveW = derive;
 derive = function(h){
   const S = _deriveW(h);
   for (const w of h.wounds || []){
-    if (w.k === 'leg'){ S.spd *= 0.85; S.spd0 *= 0.85; }
-    if (w.k === 'heart') S.maxHp = Math.round(S.maxHp * 0.85);
-    if (w.k === 'brain') S.maxSan = Math.max(10, S.maxSan - 20);
+    if (w.k === 'leg'){ S.spd *= 0.7; S.spd0 *= 0.7; }   // v1.3 (v0.86) 더 세게 (민수) — 못 하는 동작은 maim.js INJ
+    if (w.k === 'heart') S.maxHp = Math.round(S.maxHp * 0.75);
+    if (w.k === 'brain') S.maxSan = Math.max(10, S.maxSan - 25);
   }
   return S;
 };
@@ -106,6 +106,10 @@ function woundTick(dt){
 // 낫기: 원정을 안 간 날 밤마다 하루씩
 function woundNight(){
   const news = [];
+  for (const h of Object.values(RPG.heroes)){   // v1.2 정신도 회복
+    if (!h || h.st === 'dead' || h.san == null) continue;
+    const S = derive(h); h.san = Math.min(S.maxSan, h.san + S.maxSan * (h.tripDay === PRO.day ? 0.2 : 0.4));
+  }
   for (const h of Object.values(RPG.heroes)){
     if (!h.wounds || !h.wounds.length || h.st === 'dead') continue;
     if (h.tripDay === PRO.day) continue;   // 오늘 원정을 갔으면 안 나음
@@ -129,5 +133,5 @@ useItem = function(it, u = G.player){
   if (u && fx.cure && u.sts && u.sts.confuse) u.sts.confuse.t = 0;
   return r;
 };
-const woundChips = h => (h.st === 'moribund' ? `<em class="wd" title="수술 뒤 회복 중 — 원정 못 감">빈사 ${h.moribund || 1}일</em>` : '') + (h.halfDead ? '<em class="wd" title="데리고 돌아가면 수술">반시체</em>' : '') + (typeof crippled === 'function' && crippled(h) ? '<em class="wd" title="영구 손상 · 골절이 겹침">반병신</em>' : '')
+const woundChips = h => (h.st === 'moribund' ? `<em class="wd" title="수술 뒤 회복 중 — 원정 못 감">빈사 ${h.moribund || 1}일</em>` : '') + (h.halfDead ? '<em class="wd" title="데리고 돌아가면 수술">반시체</em>' : '') + (typeof crippled === 'function' && crippled(h) ? '<em class="wd" title="영구 손상 · 골절이 겹침 — 원정 못 감 (인주 빼고)">반병신</em>' : '')
   + (h.wounds || []).map(w => `<em class="wd" title="${WOUND[w.k].note}">${WOUND[w.k].n.replace(' 치명상', '')} ${WOUND[w.k].perm ? '영구' : w.d + '일'}</em>`).join('');   // v1.1: 영구 · 빈사 · 반시체 · 반병신 (maim.js)

@@ -1,4 +1,4 @@
-/* heroes.js v1.1 — 새 영웅 · 강적 (2D판 원화 · 기술을 3D로)
+/* heroes.js v1.2 — 새 영웅 · 강적 (2D판 원화 · 기술을 3D로)    v1.2 (v0.86): 단달로는 유일개체 · 매우 강자 (민수) — 체력 560 → 1150 · 공격 30 → 38 · 방어 14 → 22 · 한 원정에 한 번 · 쓰러뜨리면 다시 안 나옴 (expedition.js UNIQ_FOE · RPG.meta.slain)
    v1.1 (v0.85, 4기): GOOD WILL 마운트 파운딩 — 넘어진 적에 올라타 주먹 넷 (마지막은 번개). 그림은 드라이브 '굿윌 파운딩' 시트 (상대 인형은 지움, foe4.js)
    · GOOD WILL (영웅, 2층 만남에서 영입): 밝은 무술가 · 푸른 번개. 거리를 두고 번개로 괴롭히다 사각으로 순간이동해 파고듦
      손바닥 (붙잡아 클린치) · 무릎 (빈틈이면 머리 무릎 = 확정 치명) · 내리꽂기 (날아올라 둘레 번개) · 손가락 튕기기 (번개 1 · 3) · 올려차기
@@ -24,7 +24,7 @@ HERO_DEF.goodwill = { name: 'GOOD WILL', unit: 'goodwill', face: 'assets/goodwil
 SPR.dandalo = { h0: 440, tall: 2.0, poses: {
   idle: { src: GWA + 'dandalo_idle.png', w: 424, h: 440, ax: 178, ay: 440, f: 1 }, windup: { src: GWA + 'dandalo_prep.png', w: 357, h: 441, ax: 176, ay: 441, f: 1 },
   attack: { src: GWA + 'dandalo_strike.png', w: 446, h: 391, ax: 165, ay: 391, f: 1 }, slam: { src: GWA + 'dandalo_slam.png', w: 439, h: 424, ax: 165, ay: 424, f: 1 } } };
-DEFS.dandalo = { spr: 'dandalo', name: '단달로', hp: 560, atk: 30, spd: 2.3, r: 0.55, weight: 420, armor: 0.6,
+DEFS.dandalo = { spr: 'dandalo', name: '단달로', hp: 1150, atk: 38, spd: 2.5, r: 0.55, weight: 420, armor: 0.6,
   melee: { range: 2.3, arc: 2.1, windup: 0.75, cd: 2.0, mul: 1.15, kb: 1.6 }, grab: { reach: 1.9, cd: 6.5, wind: 0.6 } };
 SPR.benkin = { h0: 460, tall: 1.95, poses: {
   idle: { src: GWA + 'benkin_idle.png', w: 275, h: 460, ax: 145, ay: 460, f: 1 }, attack: { src: GWA + 'benkin_attack.png', w: 304, h: 460, ax: 90, ay: 460, f: 1 },
@@ -32,7 +32,7 @@ SPR.benkin = { h0: 460, tall: 1.95, poses: {
 DEFS.benkin = { spr: 'benkin', name: '벤킨', hp: 420, atk: 24, spd: 3.0, r: 0.4, weight: 130, block: 0.35,
   melee: { range: 2.1, arc: 2.7, windup: 0.5, cd: 1.6, mul: 1, kb: 0.9 }, chain: { len: 5, cd: 6 } };
 DEFS.brute.grab = { reach: 1.8, cd: 7.5, wind: 0.65 };
-Object.assign(FOE_XP, { dandalo: 110, benkin: 80 }); Object.assign(FOE_DEF, { dandalo: 14, benkin: 6 });
+Object.assign(FOE_XP, { dandalo: 260, benkin: 80 }); Object.assign(FOE_DEF, { dandalo: 22, benkin: 6 });
 
 /* ---------- 번개 (그림) ---------- */
 function bolt(x, z, big){
