@@ -106,7 +106,7 @@ def main():
     os.makedirs(OUT, exist_ok=True); os.makedirs(PV, exist_ok=True)
     jsp = os.path.join(ROOT, 'src', 'foe4.js'); M = {}
     if only and os.path.exists(jsp):
-        s = open(jsp, encoding='utf-8').read(); M = json.loads(s[s.index('{'):s.index('};') + 1])
+        s = open(jsp, encoding='utf-8').read(); i = s.index('const FOE4 = ') + len('const FOE4 = '); M = json.loads(s[i:s.index('};', i) + 1])
     for key in FOES:
         if only and key not in only: continue
         C = prep(key, C4, D4); old = old_idle(key)

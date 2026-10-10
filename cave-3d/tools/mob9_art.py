@@ -1,7 +1,8 @@
-# mob9_art.py v1.0 (2026-10-10) — 4기 잡몹 9인 (동방 5 · 서방 4) 동작 → art/mob9/<키>.webp + src/mob9_sheets.js (M10 꼴 — motion.js 의 잡몹 자세 고르기 · 모닥불 쉼을 그대로 씀)
+# mob9_art.py v1.1 (2026-10-10) — v1.1: 서방 둘 이름을 기획 캡처대로 (선도사녀 → 선도자 · 선도사남 → 목자, 키 seondoja · mokja) · 카밀라 · 헌팅나이프는 칭호를 앞에
+# v1.0 — 4기 잡몹 9인 (동방 5 · 서방 4) 동작 → art/mob9/<키>.webp + src/mob9_sheets.js (M10 꼴 — motion.js 의 잡몹 자세 고르기 · 모닥불 쉼을 그대로 씀)
 #  · 원본: 드라이브 '1010 4기 업뎃/4기몹' 3×3 시트 23장 (장마다 한 동작 · 아홉 명이 같은 자리) → tools/g4_cut.py 로 자른 칸 (<c4>/4기몹/<시트>/r?c?.png)
 #  · 자리 (동방 라인업 1차 · 서방 넷 원화로 확인): r0c0 쌍부 · r0c1 방도끼 · r0c2 동방소총수 · r1c0 동방저격수 · r1c1 풀페이스가면 검사
-#                                              r1c2 심계소령 헌팅나이프 · r2c0 라스트솔져 카밀라 · r2c1 선도사남 · r2c2 선도사녀
+#                                              r1c2 심계 소령 헌팅나이프 · r2c0 이계 라스트 솔져 카밀라 · r2c1 목자 (남) · r2c2 선도자 (여) — 기획 캡처 이름 (파일 이름은 선도사남 · 선도사녀)
 #  · 크기: 시트마다 그린 배율이 인물마다 달라 (같은 인물도 ±30%) — 몸통 키 (가는 총 · 창은 뺀 테두리, g4_lib.body_box) 를 시트 자세 비율 R 로 서 있는 키에 맞춤
 #    누운 시트 (죽음) 는 몸 길이 (가로) 로. 인물마다 눈으로 본 손보정 SK[키][시트] (머리 크기 대조)
 #  · 대기 키 = TARGET px (게임 h0). 띠가 2048 을 넘으면 줄여 그리고 scale 로 되돌림
@@ -14,7 +15,7 @@ from g4_lib import alpha_bbox, body_box, resize, strip, pack, preview
 OUT = os.path.join(ROOT, 'art', 'mob9'); TARGET = 340
 CHARS = [   # 키 · 자리 · 이름 (드라이브 파일 이름 그대로 — 도감에서 고치면 그 이름이 우선)
   ('ssangbu', 'r0c0', '쌍부'), ('bangdokki', 'r0c1', '방도끼'), ('eastRifle', 'r0c2', '동방소총수'), ('eastSniper', 'r1c0', '동방저격수'), ('maskBlade', 'r1c1', '풀페이스가면 검사'),
-  ('huntKnife', 'r1c2', '심계소령 헌팅나이프'), ('camilla', 'r2c0', '라스트솔져 카밀라'), ('seondoM', 'r2c1', '선도사남'), ('seondoF', 'r2c2', '선도사녀')]
+  ('huntKnife', 'r1c2', '심계 소령 헌팅나이프'), ('camilla', 'r2c0', '라스트 솔져 카밀라'), ('mokja', 'r2c1', '목자'), ('seondoja', 'r2c2', '선도자')]
 # 시트: 별칭 → (폴더, 자세 키 비율 R (서 있는 몸통 키 대비), 잴 것 'h' 키 · 'w' 길이)
 SHEETS = {
   'idle': ('한복과 군인 9인의 3×3 스프라이트 시트', 1.0, 'h'), 'walkA': ('스테이지 4 아홉 캐릭터 3x3 워크 스프라이트', 0.98, 'h'), 'walkB': ('9인 워크 프레임 2 캐릭터 시트', 0.99, 'h'),
@@ -35,7 +36,7 @@ POSES = {
 SK = {   # 손보정: SK[키][시트] = 배율 곱 (미리보기 9명 × 23장을 한 줄씩 놓고 머리 크기 대조 — 도끼를 머리 위로 든 장은 몸통 키가 커 보여 작게 그려지던 것)
   'ssangbu': {'strike': 1.15, 'special': 1.12, 'windup': 1.05}, 'bangdokki': {'strike': 1.15, 'special': 1.12},
   'maskBlade': {'stride': 0.92, 'windup': 1.06}, 'camilla': {'spwind': 0.9, 'special': 0.9, 'runA': 0.95, 'runB': 0.95},
-  'seondoM': {'runA': 0.92}, 'seondoF': {'runB': 0.9}}
+  'mokja': {'runA': 0.92}, 'seondoja': {'runB': 0.9}}
 
 def cell(C4, al, c):
     p = os.path.join(C4, '4기몹', SHEETS[al][0], c + '.png')
@@ -72,7 +73,7 @@ def main():
     os.makedirs(OUT, exist_ok=True); os.makedirs(PV, exist_ok=True)
     jsp = os.path.join(ROOT, 'src', 'mob9_sheets.js'); M = {}
     if only and os.path.exists(jsp):
-        s = open(jsp, encoding='utf-8').read(); M = json.loads(s[s.index('{'):s.index('};') + 1])
+        s = open(jsp, encoding='utf-8').read(); i = s.index('const MOB9_SHEETS = ') + len('const MOB9_SHEETS = '); M = json.loads(s[i:s.index('};', i) + 1])   # 머리 글에도 { } 가 있어 자리로 찾음
     for key, c, name in CHARS:
         if only and key not in only: continue
         strips, rows, sc = build(key, c, C4)
