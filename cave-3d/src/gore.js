@@ -1,11 +1,11 @@
-/* gore.js v1.1 — (v1.1: 누운 그림 (flat) 으로 바뀐 시체는 박힌 것을 몸 가운데에 — 전엔 머리 자리를 어림해 몸 밖으로 나갔음) (v1.0, v0.86) 즉사 연출 · 박힘 (민수: 헤드샷 · 목 절단은 진짜 즉사 — 머리에 화살 · 창이 박히고 파르르 떨며 쓰러짐)
+/* gore.js v1.2 — (v1.2, v0.87: 박힌 창 · 도끼는 다가가면 바로 뽑아 쥠 (민수) — 산 적이든 시체든. 전엔 적이 죽거나 8초 · 시체는 4.5초 뒤 땅에 떨어져야 주웠음) (v1.1: 누운 그림 (flat) 으로 바뀐 시체는 박힌 것을 몸 가운데에 — 전엔 머리 자리를 어림해 몸 밖으로 나갔음) (v1.0, v0.86) 즉사 연출 · 박힘 (민수: 헤드샷 · 목 절단은 진짜 즉사 — 머리에 화살 · 창이 박히고 파르르 떨며 쓰러짐)
    ■ 헤드샷: 아군이 던지거나 쏜 것 (투창 · 도끼 · 화살 · 총알) 이 머리에 들어감
      · 완벽 투창 · 완벽 화살 · 조준 사격 ('조준!') 은 40%, 그 밖은 6% (집중 사격 + 10% · 앉아쏴 + 8%)
      · 날아가는 것만 (화살 · 볼트 · 총알 · 던진 무기 · 동료의 총 · 활 · 투창 (펄)) — 폭발 · 광선 · 마력탄 · 검기는 아님
      · 보스 · 거구 (D.heavy) 는 즉사 대신 피해 ×1.6. 그 밖은 즉사 — 큰 숫자 (500 넘게) · '헤드샷' · 머리에 박힘 (화살 · 창 · 도끼) · 파르르 떨다 멎음
    ■ 목 절단: 아군 근접이 상단 (▲) 으로 들어가면 2.5% (미리 정해진 치명이면 10%, 도끼 · 대검 · 낫은 두 배) — '목이 떨어졌다' 즉사 (보스 · 거구 빼고).
      동료의 목 절단은 wounds.js beheaded (레베카는 빼고) — 쓰러질 때 똑같이 파르르
-   ■ 던진 창 · 도끼가 산 적에 박히면: 그 적이 죽거나 8초가 지나면 떨어져 주울 수 있음 (weapons.js throwWeapon 의 결과 'stick')
+   ■ 던진 창 · 도끼가 산 적에 박히면: 다가가면 바로 뽑아 쥠 (v1.2). 안 뽑으면 그 적이 죽거나 8초 지나 땅에 떨어짐 (weapons.js throwWeapon 의 결과 'stick')
    ■ 시체는 조금 더 오래 남음 (6초) — 박힌 것이 보이게 */
 'use strict';
 const GORE = { stuck: null, head: { pre: 0.4, base: 0.06, focus: 0.1, kneel: 0.08 }, neck: { base: 0.025, pre: 0.1, heavy: 2 } };
@@ -85,13 +85,27 @@ updateSprite = function(u, dt){
 // 시체: 박힌 게 보이게 조금 더 남음
 const _fadeOutGore = fadeOut;
 fadeOut = function(u){ if (u && u.goreHold && G.t < u.goreHold) return setTimeout(() => fadeOut(u), (u.goreHold - G.t) * 1000); return _fadeOutGore(u); };
-// 산 적에 박힌 던진 무기: 그 적이 죽거나 8초 지나면 떨어짐 (그때부터 주울 수 있음)
+// 산 적에 박힌 던진 무기: 다가가면 바로 뽑음 (goreGrab) · 아니면 그 적이 죽거나 8초 지나면 떨어짐
 function goreStickWeapon(t, kind, a, sec){
   const m = goreStick(t, kind, a, false); GORE.stuck = { t, m, a, until: G.t + (sec || 8) };
   if (!t.dead) popText(t.x, t.y + bodyH(t) + 0.4, t.z, kind === 'axe' ? '도끼가 박혔다' : '창이 박혔다', 'big', 0.9);
 }
+const eulOf = s => { const c = s.charCodeAt(s.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 ? '을' : '를'; };
+// v1.2 박힌 것에 다가가면 바로 뽑아 쥠 (산 적 · 시체 모두)
+function goreGrab(pl){
+  const S = GORE.stuck; if (!S || !pl || pl.downed || pl.dead || pl.lock) return false;
+  const t = S.t; if (!t || !G.units.includes(t)) return false;
+  if (Math.hypot(t.x - pl.x, t.z - pl.z) > (pl.r || 0.32) + (t.r || 0.4) + 0.6) return false;
+  GORE.stuck = null;
+  if (S.m && S.m.parent) S.m.parent.remove(S.m);
+  if (t.goreMeshes) t.goreMeshes = t.goreMeshes.filter(o => o.m !== S.m);
+  P.spear = true; const n = W.def.d ? W.def.d.n : '창';
+  popText(pl.x, pl.y + 2, pl.z, `${n}${eulOf(n)} 뽑았다`, 'heal', 0.8); SFX.burst && SFX.burst({ type: 'bandpass', f: 900, f2: 300, q: 2, gain: 0.25, dec: 0.12 });
+  return true;
+}
 TICKS.push(() => {
   const S = GORE.stuck; if (!S) return;
+  if (typeof P !== 'undefined' && !P.spear && goreGrab(G.player)) return;
   const t = S.t, gone = !t || !G.units.includes(t);
   if (!gone && !t.dead && G.t < S.until) return;
   if (gone && G.mode !== 'exp' && G.mode !== 'drill' && G.mode !== 'colo' && G.mode !== 'cave') { GORE.stuck = null; return; }

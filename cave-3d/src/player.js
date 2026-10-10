@@ -1,4 +1,4 @@
-/* player.js v0.88 — (v0.88: 몸이 망가지면 못 하는 동작 (maim.js INJ — 점프 · 달리기 · 구르기 · 슬라이딩 · 태클 · 잡기 · 막기, 키를 누르면 머리 위에 이유) · 쉬운 키 (민수) — 달리면서 Q = 슬라이딩 (Shift+G 도 그대로) · F 를 톡 치면 방어를 올린 채 둠 (다시 F · 공격 · 구르기 · 스킬 · 점프면 내림, 누르고 있기도 그대로) · 휠 클릭 누르고 있기 = 방어. 앉아쏴: 총 · 활 · 마법을 든 채 G 로 숙이고 쏘거나 조준 — 낮은 몸 · 덜 흔들림 · 치명 · 헤드샷 ↑) (v0.87: 드롭킥이 날아감 (적뢰 날아차기처럼 예고선 → 4.4칸 직선 비행), 발끝에 걸리면 빠아악! (확정 치명 · 크게 날림), 몸통 쪽은 보통. 던진 뒤 그림) (v0.86: 드롭킥 세 프레임 (뛰어오름 → 중간 → 마지막) · 치명이면 화면 · 기기 진동, 숙여 피한 뒤 J는 어퍼컷 (숙인 채라도), 격투 기술이 대련 더미에도) (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
+/* player.js v0.89 — (v0.89: 창 줍기를 어떤 동작 중이든 (전엔 막기 · 숙이기 · 공격 · 조준 중엔 지나가도 안 주워짐) · 몸에 박힌 창은 다가가면 바로 뽑음 (gore.js)) (v0.88: 몸이 망가지면 못 하는 동작 (maim.js INJ — 점프 · 달리기 · 구르기 · 슬라이딩 · 태클 · 잡기 · 막기, 키를 누르면 머리 위에 이유) · 쉬운 키 (민수) — 달리면서 Q = 슬라이딩 (Shift+G 도 그대로) · F 를 톡 치면 방어를 올린 채 둠 (다시 F · 공격 · 구르기 · 스킬 · 점프면 내림, 누르고 있기도 그대로) · 휠 클릭 누르고 있기 = 방어. 앉아쏴: 총 · 활 · 마법을 든 채 G 로 숙이고 쏘거나 조준 — 낮은 몸 · 덜 흔들림 · 치명 · 헤드샷 ↑) (v0.87: 드롭킥이 날아감 (적뢰 날아차기처럼 예고선 → 4.4칸 직선 비행), 발끝에 걸리면 빠아악! (확정 치명 · 크게 날림), 몸통 쪽은 보통. 던진 뒤 그림) (v0.86: 드롭킥 세 프레임 (뛰어오름 → 중간 → 마지막) · 치명이면 화면 · 기기 진동, 숙여 피한 뒤 J는 어퍼컷 (숙인 채라도), 격투 기술이 대련 더미에도) (v0.85: 굴 (로비)에서도 숙이기 · 슬라이딩 · 태클 · 잡기 · 다리후리기 (짐을 들었으면 G는 내려놓기). 뛰어오름 · 플라잉 니킥 · 드롭킥 (달리며 점프 중 J → 착지하며 뒹굶) · 발목 부수기 (넘어진 놈에게 J) · 구르기 뒤 프레임 · 짐 들기 · 손 들기) (v0.84: 무에타이 — 맨손 막기는 무릎 들고 머리 감쌈, 서 있을 땐 무에타이 자세, 점프 중 J는 날아 무릎) (v0.83: 구르기 · 점프 · 복싱 스텝 · 앉아 쉬기 그림, 다리후리기 (G+공격) · 슬라이딩 (달리며 G)) (v0.82: 쓰러지면 웅크림 자세 · poseHold (잠 · 죽음 연출 자세)) (v0.81: 레슬링 — 잡혀 있으면 grapple.js가 맡음 · V 잡기) 인주 직접 조작 (v0.8: 공격 · 스킬은 weapons.js가 무기마다 맡음. 여기는 이동 · 구르기 · 점프 · 방어)
    WASD 이동 (카메라 기준) · Shift 달리기 · Space 점프 (바닥 공격을 넘음 · 바위를 넘음 · 높은 곳에 오름)
    좌클릭/J 찌르기 (3연격, 3타째는 강공) · Q 구르기 (무적 0.3초) · F 누르고 있기 = 방어 (앞에서 오는 것 70% 줄임, 맞기 직전 0.2초 안에 올리면 튕겨냄)
    우클릭/K 누르고 있기 → 놓으면 투창. 적 위에서 누르면 그 적을 정조준 (핀포인트), 아니면 마우스 쪽 · 마우스를 안 쓰면 앞의 가까운 적
@@ -136,6 +136,11 @@ function playerUpdate(u, dt){
   updateJump(u, dt);
   if (u.poseHold && u.S.poses[u.poseHold]){ u.guard = false; setPose(u, u.poseHold); return; }   // 연출이 정한 자세 (잠 · 죽음)
   if (u.downed){ u.guard = false; u.posture = 'stand'; if (TKS && TKS.st) tkEnd(u, true); if (u.S.poses.curl || u.S.poses.groundGuard) setPose(u, u.S.poses.curl ? 'curl' : 'groundGuard'); return; }   // 쓰러짐: 웅크려 머리를 감쌈
+  // 창 줍기 — v0.89 어떤 동작 중이든 (막기 · 숙이기 · 공격 · 조준 중엔 안 주워지던 것). 몸에 박힌 건 다가가면 바로 뽑음 (gore.js goreGrab)
+  if (!P.spear && P.spearObj && Math.hypot(P.spearObj.x - u.x, P.spearObj.z - u.z) < 0.9){
+    const n = W.def.d ? W.def.d.n : '창', c = n.charCodeAt(n.length - 1) - 0xac00;
+    G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, `${n}${c >= 0 && c <= 11171 && c % 28 ? '을' : '를'} 주움`, 'heal', 0.7);
+  }
   const tkBlock = !!(inj && inj.noTackle && !(typeof TKS !== 'undefined' && TKS.st)); if (tkBlock && !G.lock && hit('KeyT')) injSay(u, 'noTackle');   // v0.88 갈비뼈 · 팔 · 다리 절단: 태클 못 함
   if (fightMode() && typeof tackleInput === 'function' && !u.lock && u.st !== 'hurt' && !tkBlock && tackleInput(u, dt)) return;   // v0.33 바디 태클 (T)
   if (u.lock){ u.guard = false; return; }   // 잡거나 잡힘: grapple.js
@@ -213,10 +218,6 @@ function playerUpdate(u, dt){
     if (!shooting){ u.aim = Math.atan2(mv.z, mv.x); faceToward(u, mv.x, mv.z); }
     setPose(u, shooting ? shootPose() : u.jy ? airPose(u) : G.t < (u.raiseT || 0) ? 'raise' : carrying(u) ? 'carry' : run ? 'run' : boxing(u) ? 'box' : 'walk');
   } else setPose(u, G.t < (P.shootT || 0) ? shootPose() : u.jy ? airPose(u) : G.t < (u.raiseT || 0) ? 'raise' : carrying(u) ? 'carry' : boxing(u) ? (u.S.poses.mtPose ? 'mtPose' : 'box') : G.mode !== 'exp' && u.stillT > 6 && u.S.poses.sit ? 'sit' : 'idle');
-  // 창 줍기
-  if (!P.spear && P.spearObj && Math.hypot(P.spearObj.x - u.x, P.spearObj.z - u.z) < 0.9){
-    G.scene.remove(P.spearObj.m); P.spearObj = null; P.spear = true; popText(u.x, u.y + 2, u.z, `${W.def.d ? W.def.d.n : '창'}을 주움`, 'heal', 0.7);
-  }
 }
 // 투창 궤적: 보정 없음. 마우스가 가리키는 곳 그대로
 //  - 바닥을 가리키면 그 자리 (2 ~ 13칸)에 꽂히는, 빠르고 거의 곧은 포물선 (살짝 떨어짐)
