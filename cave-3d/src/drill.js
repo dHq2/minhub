@@ -1,4 +1,4 @@
-/* drill.js v1.15 — (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.16 — (v1.16, v0.83: 콜로세움 기수 탭을 명단에서 만듦 — 노트에 gen: 4 가 오면 '4기' 탭이 저절로 (전엔 1 · 3 이 아니면 다 2기로 감)) (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -345,14 +345,14 @@ function coloStands(){
   }
   return grp;
 }
-// 고를 수 있는 인물: 동료 (1기 영웅) · 1기 · 2기 · 3기 (드라이브 명단, 양쪽 다) · 적 (옛 적) · 보스
+// 고를 수 있는 인물: 동료 (1기 영웅) · 1기 · 2기 · 3기 · 4기 … (드라이브 명단, 양쪽 다 — 기수는 노트의 gen, 없으면 2기) · 적 (옛 적) · 보스
 const COLO_HERO = ['cheongAlly', 'kariusAlly', 'rebeccaAlly', 'goldknightAlly', 'angelAlly', 'gangsterAlly', 'morningstar', 'norman'];
 function coloRoster(){
   if (COLO.roster) return COLO.roster;
   const R = [];
   for (const k of COLO_HERO) if (DEFS[k]) R.push({ id: k, name: DEFS[k].name, tab: 'ally', ally: k, foe: null });
   for (const s of H2.list){ const o = H2R[s], K = H2K[s] || {}; if (!DEFS['h2_' + s] || H2NOMIX.has(s)) continue;
-    R.push({ id: 'h2:' + s, slug: s, name: DEFS['h2_' + s].name, tab: K.boss ? 'boss' : o.gen === 3 ? 'g3' : o.gen === 1 ? 'g1' : 'g2', ally: 'h2_' + s, foe: 'h2e_' + s, rank: h2Rank(o) }); }
+    R.push({ id: 'h2:' + s, slug: s, name: DEFS['h2_' + s].name, tab: K.boss ? 'boss' : 'g' + (o.gen || 2), ally: 'h2_' + s, foe: 'h2e_' + s, rank: h2Rank(o) }); }
   const skip = new Set(['player', 'rebecca', 'dummy', 'encMouth', 'ratV', 'ratKnightV', 'pig', 'cheongNpc', 'cannon', 'catw', ...COLO_HERO]);   // 소품 · 마을용 · 고정 포대는 뺌 · v1.15 검냥이 (catw) 는 광냥과 같은 인물
   for (const k of Object.keys(DEFS)){ const D = DEFS[k];
     if (skip.has(k) || k.startsWith('h2') || /Ally$/.test(k) || D.dummy || D.drill || D.spar || D.hittable || !SPR[D.spr] || !(D.hp > 0) || D.hp > 50000) continue;
@@ -366,7 +366,8 @@ const COLO_UPD = [
   { v: 'v0.80', n: '동작 점검 — 걷기 · 달리기 그림으로 걸음 (서 있는 그림으로 미끄러지던 것) · 출발 · 멈춤 깜빡임 없앰 · 맞으면 움찔 · 장판 피할 때 깡충 · 걷다 칠 때 예고 그림 · 넘어지면 누운 그림 · 싸움 끝나면 제자리 걷기 하던 것', ids: ['h2:tank', 'h2:moro', 'h2:collider', 'h2:hirari', 'h2:unitA', 'swordsman', 'bkSpear', 'rebeccaAlly'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
-const COLO_TABS = [['ally', '동료'], ['g1', '1기'], ['g2', '2기'], ['g3', '3기'], ['foe', '적'], ['boss', '보스']];
+// v1.16 기수 탭은 명단에서 만듦 — 4기 · 5기 노트 (gen: 4 …) 가 들어오면 탭이 저절로 생김
+const coloTabs = () => { const gs = [...new Set(coloRoster().map(r => r.tab).filter(t => /^g\d+$/.test(t)))].sort((a, b) => a.slice(1) - b.slice(1)); return [['ally', '동료'], ...gs.map(g => [g, g.slice(1) + '기']), ['foe', '적'], ['boss', '보스']]; };
 // 얼굴: 드라이브 명단은 얼굴 묶음, 나머지는 서 있는 그림의 윗부분을 잘라 씀
 const coloFaceCache = {};
 function coloFace(r){
@@ -391,7 +392,7 @@ function coloUI(){
   d.innerHTML = `<div id="coPanel"><div class="co-title" id="coTitle">콜로세움 <small>접기</small></div>
     <div id="coUpd"></div><div class="co-tabs" id="coTabs"></div><div class="co-tools" id="coList"></div>
     <div class="co-sec">도구</div><div class="co-tools co-misc"><button data-tool="erase">🧹 지우기</button><button data-tool="mirror" title="아군 배치를 거울처럼 적군 쪽에 똑같이">⇄ 거울 배치</button></div>
-    <div class="co-hint">얼굴을 바닥으로 끌어 배치 · 얼굴을 눌러 고른 뒤 바닥을 눌러도 됨 · 가운데 선 왼쪽 = 아군, 오른쪽 = 적군 · 놓인 인물을 끌어 옮김 (선을 넘기면 편이 바뀜) · 우클릭 = 빼기 · 휠 = 당기고 밀기<br>동료 탭은 아군만, 적 탭은 적군만 (1기 · 2기 · 3기 · 보스는 양쪽 다)</div>
+    <div class="co-hint">얼굴을 바닥으로 끌어 배치 · 얼굴을 눌러 고른 뒤 바닥을 눌러도 됨 · 가운데 선 왼쪽 = 아군, 오른쪽 = 적군 · 놓인 인물을 끌어 옮김 (선을 넘기면 편이 바뀜) · 우클릭 = 빼기 · 휠 = 당기고 밀기<br>동료 탭은 아군만, 적 탭은 적군만 (기수 탭 · 보스는 양쪽 다)</div>
     <div class="co-row"><button id="coRun" class="primary">▶ 전투 시작</button><button id="coClear">🧹 비우기</button><button id="coSave">💾 배치 저장</button></div>
     <div class="co-row"><button id="coLast" class="primary">⟲ 마지막 세팅 재시작 [R]</button></div>
     <div class="co-row"><button id="coLoad">📂 저장한 배치</button><button id="coSpd">속도 x1</button><button id="coExit">나가기</button></div></div>
@@ -411,7 +412,7 @@ function coloUI(){
   coloPanel();
 }
 function coloPanel(){
-  $('coTabs').innerHTML = COLO_TABS.map(([k, n]) => `<button data-tab="${k}" class="${COLO.tab === k ? 'on' : ''}">${n}</button>`).join('');
+  $('coTabs').innerHTML = coloTabs().map(([k, n]) => `<button data-tab="${k}" class="${COLO.tab === k ? 'on' : ''}">${n}</button>`).join('');
   const L = coloRoster().filter(r => r.tab === COLO.tab), btn = r => { const g = coloUpdOf(r.id);
     return `<button data-id="${r.id}" class="${COLO.pick === r.id ? 'on' : ''}${g ? ' upd' : ''}" title="${r.name}${r.rank ? ' · ' + r.rank : ''}${g ? ' — 업뎃 ' + g.v + ': ' + g.n : ''}">${coloFace(r)}<span>${r.name}</span>${g ? '<b class="ub">업뎃!</b>' : ''}</button>`; };
   $('coList').innerHTML = L.map(btn).join('') || '<small>없음</small>';

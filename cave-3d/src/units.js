@@ -1,4 +1,4 @@
-/* units.js v0.32 — (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.33 — (v0.33, v0.83: 그림판 아끼기 — 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 씀 · 묶음 칸 (P.rect) 은 그 칸만 잘라 올림 (전엔 유닛 · 자세마다 묶음 전체를 GPU 에 다시 올려 2 · 3기 8명 싸움에 274MB) · 여러 장 자세만 유닛마다 따로 · 유닛을 치우면 (removeUnit) 그 유닛만 쓰던 그림판 · 재질 · 판을 GPU 에서 내림 — 전엔 콜로세움을 여러 판 돌리면 계속 쌓임) (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -39,7 +39,9 @@ function spawn(kind, x, z, side){
   G.units.push(u);
   return u;
 }
-function removeUnit(u){ G.scene.remove(u.group); u.bar && u.bar.remove(); u.tag && u.tag.remove(); G.units = G.units.filter(o => o !== u); }
+function removeUnit(u){ G.scene.remove(u.group); u.bar && u.bar.remove(); u.tag && u.tag.remove(); G.units = G.units.filter(o => o !== u);
+  for (const t of Object.values(u.tex || {})) if (t._own) t.dispose();   // v0.33 이 유닛만 쓰던 그림판 (여러 장 자세) 은 GPU 에서 내림 — 같이 쓰는 그림판은 그대로
+  u.mat && u.mat.dispose(); u.mesh && u.mesh.geometry.dispose(); }
 const REST_POSE = new Set(['idle', 'ready']);
 const NOW_POSE = new Set(['hurt', 'hurt2', 'stun', 'down', 'dead', 'dead2', 'kneel', 'walk', 'walkB', 'run', 'guard', 'block', 'shoot']);   // 늦추지 않고 바로 보이는 그림 (맞음 · 넘어짐 · 걷기 · 막기 · 총 쏨). 공격 그림은 예고로도 쓰여서 0.1초 늦어도 됨
 // v0.31 보이는 자세: ① 동작에서 서 있음으로 돌아오면 0.1초는 앞 동작을 이어 그림 ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작이 오면 0.1초까지는 서 있음 (한두 장만 번쩍이지 않게)
@@ -53,15 +55,36 @@ function dispPose(u){
   return [p, pT];
 }
 function setPose(u, p){ if (u.pose !== p){ u._hold = REST_POSE.has(p) && u.pose && !REST_POSE.has(u.pose) && u.poseT >= 0.12 && typeof G !== 'undefined' ? { p: u.pose, t: u.poseT, at: G.t } : null; u.pose = p; u.poseT = 0; } }   // v0.31 _hold: 서 있음으로 돌아온 순간의 앞 그림 (0.1초 동안 이어 그림)
+/* v0.33 (v0.83) 그림판 아끼기: r128 three.js 는 Texture 하나마다 GPU 에 따로 올림. 전엔 유닛마다 · 자세마다 clone 해서
+   묶음 칸 (P.rect) 이면 묶음 그림 전체가 매번 올라감 (2 · 3기 8명 12초 싸움에 274MB). 이제 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 쓰고,
+   묶음 칸은 그 칸만 잘라 (canvas) 올림. 여러 장 움직이는 자세 (P.n) 만 장 번호마다 UV 를 바꾸니 유닛마다 따로 (잘라 둔 칸을 clone) */
+const RECT_TEX = {};
+function rectTex(P){
+  const [x, y, w, h] = P.rect, key = P.src + '#' + x + ',' + y + ',' + w + ',' + h;
+  if (RECT_TEX[key]) return RECT_TEX[key];
+  const im = loadTex(P.src).image;
+  if (!im || im.complete === false || !(im.naturalWidth || im.width)) return null;   // 묶음이 아직 안 왔으면 예전 방식 (묶음 전체 + UV)
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(im, x, y, w, h, 0, 0, w, h);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; t._cut = 1;
+  return (RECT_TEX[key] = t);
+}
 function texFor(u, P){
   if (P.canvas){ return P._tex || (P._tex = canvasTex(P.w, P.h, P.canvas)); }
+  const multi = !!P.n;
   if (P.rect){   // v0.60 묶음 그림 (아틀라스) 한 칸: [x, y, w, h, 전체 W, 전체 H] (px, 위에서부터)
-    const key = P.src + '#' + P.rect[0] + ',' + P.rect[1];
-    if (!u.tex[key]){ const [x, y, w, h, W, H] = P.rect, t = loadTex(P.src).clone(); t.repeat.set(w / W, h / H); t.offset.set(x / W, 1 - (y + h) / H); t.needsUpdate = true; u.tex[key] = t; }
+    const key = P.src + '#' + P.rect[0] + ',' + P.rect[1] + (multi ? '|m' : '');
+    if (!u.tex[key]){
+      const ct = rectTex(P);
+      if (ct && !multi) u.tex[key] = ct;
+      else if (ct){ const t = ct.clone(); t._cut = 1; t._own = 1; t.needsUpdate = true; u.tex[key] = t; }
+      else { const [x, y, w, h, W, H] = P.rect, t = loadTex(P.src).clone(); t.repeat.set(w / W, h / H); t.offset.set(x / W, 1 - (y + h) / H); t._own = 1; t.needsUpdate = true; u.tex[key] = t; }
+    }
     return u.tex[key];
   }
-  if (!u.tex[P.src]){ const t = loadTex(P.src).clone(); t.needsUpdate = true; u.tex[P.src] = t; }
-  return u.tex[P.src];
+  const key = multi ? P.src + '|m' : P.src;
+  if (!u.tex[key]){ if (multi){ const t = loadTex(P.src).clone(); t._own = 1; t.needsUpdate = true; u.tex[key] = t; } else u.tex[key] = loadTex(P.src); }
+  return u.tex[key];
 }
 const camRight = new THREE.Vector3();
 function updateSprite(u, dt){
@@ -75,7 +98,7 @@ function updateSprite(u, dt){
     let fi = Math.floor(pT * P.fps); fi = P.once ? Math.max(0, Math.min(cnt - 1, fi)) : P.pingpong && cnt > 1 ? cnt - 1 - Math.abs(md(fi, 2 * cnt - 2) - (cnt - 1)) : md(fi, cnt);   // pingpong: 끝에서 거꾸로
     if ((u.dead || u.downed) && !P.flat) fi = 0;   // v0.31 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤
     u.fi = fi;
-    if (P.rect && P.cols){ const [x, y, w, h, W, H] = P.rect, fw = w / P.cols, fh = h / P.rows, c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(fw / W, fh / H); t.offset.set((x + c * fw) / W, 1 - (y + (r + 1) * fh) / H); }   // v0.29 묶음 그림 칸 안의 격자
+    if (P.rect && P.cols && !t._cut){ const [x, y, w, h, W, H] = P.rect, fw = w / P.cols, fh = h / P.rows, c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(fw / W, fh / H); t.offset.set((x + c * fw) / W, 1 - (y + (r + 1) * fh) / H); }   // v0.29 묶음 그림 칸 안의 격자 (v0.33: 잘라 둔 칸 (_cut) 은 한 장짜리 묶음처럼 아래 식)
     else if (P.cols){ const c = (from + fi) % P.cols, r = Math.floor((from + fi) / P.cols); t.repeat.set(1 / P.cols, 1 / P.rows); t.offset.set(c / P.cols, 1 - (r + 1) / P.rows); }   // 여러 줄 묶음
     else { t.repeat.set(1 / P.n, 1); t.offset.set((from + fi) / P.n, 0); }
   }
