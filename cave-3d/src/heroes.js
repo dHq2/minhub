@@ -1,4 +1,5 @@
-/* heroes.js v1.0 — 새 영웅 · 강적 (2D판 원화 · 기술을 3D로)
+/* heroes.js v1.1 — 새 영웅 · 강적 (2D판 원화 · 기술을 3D로)
+   v1.1 (v0.85, 4기): GOOD WILL 마운트 파운딩 — 넘어진 적에 올라타 주먹 넷 (마지막은 번개). 그림은 드라이브 '굿윌 파운딩' 시트 (상대 인형은 지움, foe4.js)
    · GOOD WILL (영웅, 2층 만남에서 영입): 밝은 무술가 · 푸른 번개. 거리를 두고 번개로 괴롭히다 사각으로 순간이동해 파고듦
      손바닥 (붙잡아 클린치) · 무릎 (빈틈이면 머리 무릎 = 확정 치명) · 내리꽂기 (날아올라 둘레 번개) · 손가락 튕기기 (번개 1 · 3) · 올려차기
    · 단달로 (강적, 3 · 4층): "경전" 큰 도끼 가면의 사내. 휘두르기 · 내려찍기 · 붙잡아 메치기
@@ -44,7 +45,7 @@ function bolt(x, z, big){
 function blinkTo(u, x, z){ if (solidAt(G.map, x, z)) return false; ghost(u); u.x = x; u.z = z; spark(x, 1, z, 0x9fe0ff, 6, 3); return true; }
 
 /* ---------- GOOD WILL 두뇌 ---------- */
-const GWS = { palm: { cd: 7, reach: 3.4 }, knee: { cd: 3.2, reach: 4.2, mul: 1.5, head: 2.6 }, slam: { cd: 8, reach: 5.5, r: 2.4, mul: 1.5 }, snap1: { cd: 5, reach: 7, min: 2, mul: 1.1 }, snap3: { cd: 6, reach: 7, min: 2, mul: 0.7 }, rise: { cd: 4.5, reach: 1.7, mul: 1.4 } };
+const GWS = { pound: { cd: 7, reach: 3.6, mul: 0.5 }, palm: { cd: 7, reach: 3.4 }, knee: { cd: 3.2, reach: 4.2, mul: 1.5, head: 2.6 }, slam: { cd: 8, reach: 5.5, r: 2.4, mul: 1.5 }, snap1: { cd: 5, reach: 7, min: 2, mul: 1.1 }, snap3: { cd: 6, reach: 7, min: 2, mul: 0.7 }, rise: { cd: 4.5, reach: 1.7, mul: 1.4 } };
 function gwThink(u, dt){
   if (u.side === 'enemy') return enemyThink(u, dt);
   if (u.downed) return;
@@ -57,13 +58,14 @@ function gwThink(u, dt){
   if (!tgt || G.cmd === 'follow' && !pl.downed && !u.guest) return allyThink(u, dt);
   const d = dist(u, tgt); setAim(u, tgt.x, tgt.z);
   // 기술 고르기
-  const can = k => g.cd[k] <= 0 && d <= GWS[k].reach && d >= (GWS[k].min || 0) && sees(u, tgt);
+  const can = k => (g.cd[k] ?? 0) <= 0 && d <= GWS[k].reach && d >= (GWS[k].min || 0) && sees(u, tgt);
   const opts = [];
   if (can('knee')) opts.push('knee', ...(tgt.st === 'windup' || tgt.st === 'hurt' || tgt.lock ? ['knee', 'knee', 'knee'] : []));
   if (can('palm') && canGrab(u, tgt)) opts.push('palm');
   if (can('slam')) opts.push('slam', ...(foes().filter(e => dist(e, tgt) < GWS.slam.r).length >= 2 ? ['slam'] : []));
   if (can('snap1')) opts.push('snap1'); if (can('snap3')) opts.push('snap3');
   if (can('rise')) opts.push('rise');
+  if (can('pound') && tgt.lying && !tgt.D.boss && !tgt.D.heavy && SPR.goodwill.poses.pound) opts.push('pound', 'pound', 'pound');   // v1.1 넘어진 적 = 올라타 파운딩
   if (opts.length && Math.random() < dt * 4){
     const type = opts[Math.floor(Math.random() * opts.length)];
     g.act = { type, t: 0, tgt, sx: u.x, sz: u.z, mx: tgt.x, mz: tgt.z, done: 0 };
@@ -112,6 +114,18 @@ function gwAct(u, g, dt){
     const hits = A.type === 'snap1' ? [6] : [6, 10, 14];
     while (A.done < hits.length && A.t >= gwHitT(A.type, hits[A.done])){ A.done++; if (o.dead) continue; const big = A.type === 'snap1'; bolt(o.x, o.z, big); hurt(u, o, u.atk * GWS[A.type].mul, { from: u, ranged: true, hitsAir: true, stun: big ? 0.35 : 0.15 }); if (big) addStatus(o, 'shock', { t: 0.6 }); }
     if (A.t >= gwLen(A.type)) end(); return;
+  }
+  if (A.type === 'pound'){   // v1.1 마운트 파운딩: 넘어진 적에 올라타 주먹 넷 (마지막은 번개) — 맞는 동안은 못 일어남, 먼저 일어나면 그만
+    if (!A.go){ A.go = true; setAim(u, o.x, o.z); blinkTo(u, o.x - Math.cos(u.aim) * 0.35, o.z - Math.sin(u.aim) * 0.35); }
+    if (!o.dead && o.lying){ o.st = 'hurt'; o.stT = Math.max(o.stT || 0, 0.45); }
+    const hits = [0.3, 0.62, 0.94, 1.3];
+    while (A.done < hits.length && A.t >= hits[A.done]){
+      A.done++; if (o.dead) continue; const last = A.done === hits.length;
+      hurt(u, o, u.atk * GWS.pound.mul * (last ? 1.8 : 1), { from: u, grapple: true, stun: 0.3 }); dust(o.x, o.z, 4); camShake(last ? 0.18 : 0.08, 0.12); G.hitstop = Math.max(G.hitstop, last ? 0.08 : 0.04);
+      popText(o.x, o.y + 0.7, o.z, last ? '콰직!' : '퍽!', last ? 'crit' : 'hurt', 0.6);
+      if (last){ bolt(o.x, o.z, false); addStatus(o, 'shock', { t: 0.5 }); }
+    }
+    if (A.t >= 1.6 || o.dead || !o.lying) end(); return;
   }
   if (A.type === 'rise'){
     if (!A.done && A.t >= gwHitT('rise', 10)){ A.done = 1; if (dist(u, o) < GWS.rise.reach + 0.5){ hurt(u, o, u.atk * GWS.rise.mul, { from: u, kb: 1.2 }); if (!o.D.heavy && Math.random() < 0.35){ o.st = 'hurt'; o.stT = 1; o.lying = true; setTimeout(() => o.lying = false, 900); popText(o.x, o.y + 1, o.z, '넘어짐', 'big', 0.7); } } }

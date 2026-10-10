@@ -1,4 +1,4 @@
-/* prologue.js v0.115 — (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.116 — (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -789,7 +789,7 @@ function helperTick(h, dt){
   if (G.lobbyFight){ if (!isCh){ h.lift = 0; } return; }   // 싸우는 중엔 정리 안 함 (같이 싸움)
   if (h.ready){ h.ready -= dt; if (h.ready <= 0) h.ready = 0; else return; }   // 전투 준비 (! 뜬 뒤 잠깐)
   if (isCh && h.stopPl) return stopPlayer(h, sp, dt);   // 인주가 달팽이를 때림 → 말리러
-  if (isCh && h.sadT > 0){ h.sadT -= dt; if (h.sadT > 45){ h.sit = true; h.lift = 0; return; } h.sit = false; }   // 달팽이가 죽음: 주저앉아 움
+  if (isCh && h.sadT > 0){ h.sadT -= dt; if (h.sadT > 45){ h.lift = 0; if (h.S.poses.hug){ h.sit = false; if (h.pose !== 'hug') setPose(h, 'hug'); } else h.sit = true; return; } h.sit = false; }   // 달팽이가 죽음: 주저앉아 움 (v0.116 무릎 감싸 안은 그림)
   if (isCh && snailRescue(h, sp, dt)) return;   // 달팽이 탈출이 먼저
   if (isCh && pigRescue(h, sp, dt)) return;      // 그다음 돼지
   let moving = false;
@@ -825,7 +825,7 @@ function helperTick(h, dt){
     else {
       const ok = h.eat === 'pen' ? pickPenFood() : takeMeal();
       if (ok){ M.fed = true; h.seekT = 0; say(h, h.eat === 'pen' ? (isCh ? '…달팽이 미안하다…' : '…') : pick(L.ate), 'soft', 1.8); popText(h.x, h.y + 2, h.z, h.eat === 'pen' ? '버섯 냠 (달팽이 먹이 -1)' : '냠 (끼니)', 'heal', 1.3); SFX.burst({ type: 'bandpass', f: 500, q: 3, gain: 0.2, dec: 0.3 }); }
-      h.eat = false; h.restT = rnd(2, 5);
+      h.eat = false; h.restT = rnd(2, 5); h._eatT = G.t + 2.6;   // v0.116 냠냠 그림 (청광묵)
     }
     return hMove(h, moving);
   }
@@ -862,8 +862,21 @@ function helperTick(h, dt){
   hMove(h, moving);
 }
 function hMove(h, moving){
-  h.lift = h === PRO.cave.ch && moving ? Math.abs(Math.sin(G.t * 16)) * 0.09 : 0;   // 발발 (청광묵)
+  const ch = h === PRO.cave.ch, W = ch && h.S.poses.walk;
+  h.lift = ch && moving && !W ? Math.abs(Math.sin(G.t * 16)) * 0.09 : 0;   // 발발 (청광묵 — 걷기 그림이 없을 때만)
   if (h === PRO.cave.ka){ if (moving) setPose(h, 'walk'); else if (h.pose === 'walk') setPose(h, 'idle'); }
+  if (W) chDay(h, moving);
+}
+// v0.116 (v0.85 4기) 굴의 청광묵: 걸을 땐 걷기 · 들고 서 있으면 이고 있음 · 끼니 뒤 냠냠 · 5초 넘게 가만히 있으면 일상 그림 하나 (움직일 때까지, 12 ~ 20초마다 바꿈)
+const CH_DAY = ['idle2', 'snack', 'bandage', 'stool', 'sit2', 'sleep', 'sit', 'carry'];
+function chDay(h, moving){
+  const Q = h.S.poses, set = p => { if (Q[p] && h.pose !== p) setPose(h, p); };
+  if (moving){ h._dayP = null; h._stillAt = null; return set('walk'); }
+  if (h._eatT > G.t) return set('eat');
+  if (h.job && h.job.it) return set('carry');
+  if (h._stillAt == null) h._stillAt = G.t;
+  if (G.t - h._stillAt > 5 && (!h._dayP || G.t > h._dayUntil)){ const L = CH_DAY.filter(k => Q[k] && k !== h._dayP && k !== 'carry'); h._dayP = L[Math.floor(Math.random() * L.length)]; h._dayUntil = G.t + rnd(12, 20); }
+  set(h._dayP && G.t - h._stillAt > 5 ? h._dayP : 'idle');
 }
 // 적이 하나라도 떨어지면: 동료 머리에 ! → 하던 것 내려놓고 적 쪽을 보며 전투 준비
 function battleReady(e){
@@ -872,7 +885,7 @@ function battleReady(e){
     if (h.job){ const J = h.job; if (J.it){ const it = J.it; it.carrier = null; it.claimed = null; it.x = h.x; it.z = h.z; it.b.g.position.set(h.x, heightAt(G.map, h.x, h.z), h.z); it.insp.x = h.x; it.insp.z = h.z; } else if (J.target) J.target.claimed = null; h.job = null; }
     if (h.potty){ h.potty = null; h.group.visible = true; }
     h.wander = null; h.pigJob && h.pigJob.u && (h.pigJob.u.carrier = null); h.pigJob = null; h.ready = 99; h.lift = 0;
-    h.face = Math.sign(e.x - h.x) || 1; if (h === PRO.cave.ka) setPose(h, 'idle');
+    h.face = Math.sign(e.x - h.x) || 1; if (h === PRO.cave.ka) setPose(h, 'idle'); if (h === PRO.cave.ch){ h._dayP = null; h._stillAt = null; setPose(h, 'idle'); }   // v0.116 쉬던 청광묵도 일어남
     say(h, '!', 'alert', 1.6);
   }
   SFX.clink(0.5);
@@ -990,6 +1003,47 @@ const foeSpr = (file, w, h, tall) => ({ h0: h, tall, poses: { idle: { src: PA + 
 Object.assign(SPR, { foeJelly: foeSpr('foe_jelly', 370, 311, 0.7), foeDevil: foeSpr('foe_devil', 157, 384, 1.0), foeFairy: foeSpr('foe_fairy', 167, 384, 0.95), foeSlime: foeSpr('foe_slime', 304, 328, 1.05), foeCultist: foeSpr('foe_cultist', 294, 384, 1.35) });
 const FOE_FILE = { foeJelly: 'foe_jelly', foeDevil: 'foe_devil', foeFairy: 'foe_fairy', foeSlime: 'foe_slime', foeCultist: 'foe_cultist' };
 DEFS.cheongAlly = { spr: 'cheong', name: '청광묵', hp: 140, atk: 12, spd: 3.3, r: 0.34, weight: 60, melee: { range: 1.5, arc: 1.8, windup: 0.35, cd: 1.0, mul: 1, kb: 0.6 } };
+/* ---------- v0.116 (v0.85, 4기) 청광묵 팜 버스트 (민수 시트: «강한 폭발과 반동, 강한 넉백과 화염데미지, 치명상시 머리 터지며 즉사») ----------
+   붙은 적에게 손바닥을 내밂 (준비 그림 · 작은 붉은 장판 0.5초) → 펑: 강한 넉백 + 화상, 청광묵도 반동으로 뒤로 밀림. 9초마다
+   치명상 (18% · 휘청 · 넘어짐 · 치려던 적은 45%) 이면 보스가 아닌 상대는 머리가 터지며 즉사 (인주는 큰 피해만) */
+const BURST = { cd: 9, reach: 1.9, r: 1.25, wind: 0.5, mul: 2.4, kb: 3.0, crit: 0.18, open: 0.45 };
+const burstFoes = u => G.units.filter(e => e.side !== u.side && e.side !== 'neutral' && !e.dead && !e.downed && !e.D.dummy && (e.side !== 'enemy' || e.alert));
+function cheongBurstThink(u, dt){
+  const base = u.side === 'enemy' ? enemyThink : allyThink, Q = u.S.poses;
+  if (u.downed || u.dead || u.kind === 'player') return base(u, dt);
+  u._bcd = (u._bcd ?? rnd(2, 4)) - dt;
+  if (u._bcd <= 0 && u.st === 'idle' && !u.lock && Q.burst && Q.burstReady){
+    const t = nearest(u, burstFoes(u).filter(e => dist(e, u) <= BURST.reach + (e.r || 0.3) && sees(u, e)), BURST.reach + 1);
+    if (t){ u._bcd = BURST.cd; burstGo(u, t); return; }
+  }
+  return base(u, dt);
+}
+function burstGo(u, t){
+  setAim(u, t.x, t.z); u.moving = false;
+  const a = Math.atan2(t.z - u.z, t.x - u.x), cx = u.x + Math.cos(a) * 1.1, cz = u.z + Math.sin(a) * 1.1;
+  setPose(u, 'burstReady'); u.pose2Next = 'burst'; say(u, '팜 버스트!', 'alert', 0.9);
+  spark(u.x + Math.cos(a) * 0.6, u.y + 1, u.z + Math.sin(a) * 0.6, 0xffa040, 10, 1.5);
+  windup(u, 'circle', { x: cx, z: cz, r: BURST.r, windup: BURST.wind, after: () => burstBoom(u, cx, cz, a) }, o => burstHit(u, o), 0xff7a30);
+}
+function burstBoom(u, cx, cz, a){
+  ring(cx, cz, 0xff8a30, BURST.r * 1.6, 0.45); spark(cx, u.y + 1, cz, 0xffc060, 26, 6); spark(cx, u.y + 1, cz, 0xff5020, 14, 4); smoke(cx, cz, 8, 1.2, 1.0, 0x50443c, 1.4); dust(cx, cz, 10);
+  camShake(0.3, 0.25); G.hitstop = Math.max(G.hitstop || 0, 0.07);
+  moveBy(u, -Math.cos(a) * 0.8, -Math.sin(a) * 0.8); u.stT = 0.45;   // 반동: 청광묵도 뒤로 밀림 (터지는 그림 두 장을 보여 줌)
+}
+function burstHit(u, o){
+  const open = o.st === 'hurt' || o.st === 'stun' || o.lying || o.st === 'windup', crit = Math.random() < (open ? BURST.open : BURST.crit);
+  if (crit && !o.D.boss && o.kind !== 'player') return headBurst(u, o);
+  hurt(u, o, u.atk * BURST.mul * (crit ? 1.6 : 1), { from: u, kb: BURST.kb, crit: crit || undefined, fam: 'fire' });
+  if (!o.dead) addStatus(o, 'burn', { t: 4, dps: u.atk * 0.35, k: 0.4 });
+}
+function headBurst(u, o){   // 치명상: 머리가 터지며 즉사
+  const h = bodyH(o);
+  popText(o.x, o.y + h + 0.3, o.z, '머리가 터졌다!', 'crit', 1.4);
+  spark(o.x, o.y + h * 0.9, o.z, 0xb01818, 30, 5, 0.22, 0.6); spark(o.x, o.y + h * 0.9, o.z, 0xff9040, 12, 4);
+  bloodBurst(o.x, o.z, h); camShake(0.45, 0.3); G.hitstop = Math.max(G.hitstop || 0, 0.12);
+  kill(o, u);
+}
+DEFS.cheongAlly.think = cheongBurstThink;
 function startLobbyFight(){
   G.lobbyFight = true; G.cmd = 'free';
   for (const e of foes()){ e.alert = true; e.seen = G.t; e.home = { x: LOBBY_C.x, z: LOBBY_C.z }; }

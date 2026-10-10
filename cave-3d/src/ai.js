@@ -1,4 +1,4 @@
-/* ai.js v0.34 — (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.35 — (v0.35, v0.85: 내려찍기 (곤봉 거한 · 장군님) — 새 동작 그림이 있으면 번갈아 크게 들어 (windup2) 땅을 찍는 그림 (slam)) (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -140,7 +140,8 @@ function enemyThink(u, dt){
     if (u.sideT > 0){ u.sideT -= dt; steerTo(u, u.x + Math.cos(u.sideA), u.z + Math.sin(u.sideA), u.spd * 1.3, dt); setAim(u, tgt.x, tgt.z); return; }
     if (d > 2.2 || !sees(u, tgt)) navTo(u, tgt.x, tgt.z, u.spd, dt, 1.8);
     else if (u.cd <= 0){
-      setAim(u, tgt.x, tgt.z); u.cd = S.cd; setPose(u, u.S.poses.windup ? 'windup' : 'idle');
+      const big = !!(u.S.foe4 && u.S.poses.slam && u.S.poses.windup2) && (u._slk = !u._slk);   // v0.35 새 동작 (foe4): 번갈아 크게 들어 땅을 찍는 그림
+      setAim(u, tgt.x, tgt.z); u.cd = S.cd; setPose(u, big ? 'windup2' : u.S.poses.windup ? 'windup' : 'idle'); if (big) u.pose2Next = 'slam';
       const cx = u.x + Math.cos(ang) * 1.1, cz = u.z + Math.sin(ang) * 1.1;
       windup(u, 'circle', { x: cx, z: cz, r: S.r, windup: S.windup }, t => hurt(u, t, u.atk * S.mul, { kb: S.kb, from: { x: cx, z: cz }, stun: S.stun }), RED);
       const dd = u.decal; dd.onDone = ((orig) => (x) => { orig(x); camShake(0.35, 0.25); ring(cx, cz, 0xffb070, S.r * 1.2, 0.45); dust(cx, cz, 14); })(dd.onDone);

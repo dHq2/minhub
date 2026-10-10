@@ -1,4 +1,4 @@
-/* motion.js v1.4 — (v1.4, v0.82: 광냥 = 검냥이 (민수 메모로 합침) — 광냥 대기는 검냥이의 움직이는 대기 그림 (평소 차분한 대기 20장 · 싸움 중 대기 12장) · 여러 장 움직이는 대기는 숨쉬기 흔들림을 안 더함) (v1.3, v0.80 동작 점검 (녹화 32판 · 넘김판으로 직접 봄): ① 모든 인물 (영웅 · 적 · 2 · 3기) 걷기 · 달리기 그림이 따로 있으면 움직일 때 그 그림 — 전엔 서 있는 그림으로 미끄러짐 ② 출발 · 멈춤 · 달리기 · 뒷모습에 여유 (0.08 ~ 0.2초) — 걷기 ↔ 서 있음이 한두 장씩 깜빡이던 것 ③ 상대를 보며 물러서면 걷기 장을 거꾸로 (뒷걸음) ④ 맞으면 움찔 — 맞음 그림이 있으면 잠깐 그 그림 (2가지면 번갈아), 없으면 몸을 뒤로 젖힘 ⑤ 걷기 그림인데 0.3초 넘게 제자리면 서 있음 (싸움이 끝나면 제자리 걷기하던 것) ⑥ 걷기 그림 없는 영웅 · 적도 걸을 때 출렁 ⑦ 장판을 피할 때 적을 본 채 깡충 물러섬 ⑧ 싸움 없이 오래 서 있으면 가끔 다른 대기 그림 (idle2 · 담배 · 도발 …) ⑨ 예고 · 공격 그림이 없는 영웅 · 적도 움츠렸다 쭉 뻗음 (2 · 3기와 같게) ⑩ 넘어지거나 휘청이면 하던 기술 그림 대신 누운 · 맞음 그림 ⑪ 공격 그림이 여럿이면 (공격B · 공격2 · 공격3) 기본 공격 때 번갈아)
+/* motion.js v1.5 — (v1.5, v0.85: 4기 적 · 1기 영웅 새 동작 (foe4.js, S.foe4 — 청승 · 작약 · 장군님 · 눈깔괴물 · 벤킨 · 곤봉 거한 · GOOD WILL · 청광묵 · 비나): 넘어졌다 일어나면 무릎 · 막으면 방어 그림 · 방어 자세 (거한) = 방어 · 들이받기 = 달리기 · 도약 = 점프 · 기본 공격 그림 번갈아 (attackB · attack2 · attack3) · 인물마다 딴짓 (S.fidget) · 오래 가만히 있으면 앉거나 쉼 (S.rest — 동료 10초 · 안 들킨 적 12초, 깨면 잠깐 무릎)) (v1.4, v0.82: 광냥 = 검냥이 (민수 메모로 합침) — 광냥 대기는 검냥이의 움직이는 대기 그림 (평소 차분한 대기 20장 · 싸움 중 대기 12장) · 여러 장 움직이는 대기는 숨쉬기 흔들림을 안 더함) (v1.3, v0.80 동작 점검 (녹화 32판 · 넘김판으로 직접 봄): ① 모든 인물 (영웅 · 적 · 2 · 3기) 걷기 · 달리기 그림이 따로 있으면 움직일 때 그 그림 — 전엔 서 있는 그림으로 미끄러짐 ② 출발 · 멈춤 · 달리기 · 뒷모습에 여유 (0.08 ~ 0.2초) — 걷기 ↔ 서 있음이 한두 장씩 깜빡이던 것 ③ 상대를 보며 물러서면 걷기 장을 거꾸로 (뒷걸음) ④ 맞으면 움찔 — 맞음 그림이 있으면 잠깐 그 그림 (2가지면 번갈아), 없으면 몸을 뒤로 젖힘 ⑤ 걷기 그림인데 0.3초 넘게 제자리면 서 있음 (싸움이 끝나면 제자리 걷기하던 것) ⑥ 걷기 그림 없는 영웅 · 적도 걸을 때 출렁 ⑦ 장판을 피할 때 적을 본 채 깡충 물러섬 ⑧ 싸움 없이 오래 서 있으면 가끔 다른 대기 그림 (idle2 · 담배 · 도발 …) ⑨ 예고 · 공격 그림이 없는 영웅 · 적도 움츠렸다 쭉 뻗음 (2 · 3기와 같게) ⑩ 넘어지거나 휘청이면 하던 기술 그림 대신 누운 · 맞음 그림 ⑪ 공격 그림이 여럿이면 (공격B · 공격2 · 공격3) 기본 공격 때 번갈아)
    v1.2 — (v1.2, v0.78: 앉은 그림이 여러 장인 동료 (테헤라 — 바위에 앉아 쉼) 는 둘레에 적 없이 8초 가만히 있으면 앉음 · 따라가기 중 think 의 기본 자세 (서 있음 · 걷기) 가 이 파일이 고른 자세 (달리기 · 뒷걸음 · 쉼) 를 매 장 덮어 첫 장에 멈추던 것 고침) (v1.1, v0.77: 2 · 3기 새 동작 프레임 (h2_mov.js) 이 있는 인물 (S.mov) 도 — 서 있음 · 걷기 · 달리기 · 앞뒤 걷기 · 맞음 · 기절 · 넘어짐만 고름, 기술 그림은 h2.js 그대로)
    v1.0 — 1차 업뎃 (2026-10-09): 잡몹 10명 동작 그림 (드라이브 '10.08 1차업뎃 / 1차적 10인')
    검사 · 검방패병 · 붉은 망토 궁수 · 창병 · 광신도 · 꼬마악마 · 흑기사 방패병 · 흑기사 창병 · 광냥 · 푸른 뚱보
@@ -78,7 +78,7 @@ function atkAlt(u){
 const _setPoseM10 = setPose;
 setPose = function(u, p){
   if (u && u.S && !u.lock && u.st === 'idle' && u._mw && u.pose === u._mw && (p === 'idle' || p === 'walk' || p === 'run')) return;   // v1.2 이 파일이 고른 자세를 기본 자세 (생각이 매 장 부르는 서 있음 · 걷기 · 달리기) 가 덮지 않게 (같은 장에 다시 고름)
-  return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p === 'attack' && u.D && u.D.h2 ? atkAlt(u) : p) : p);
+  return _setPoseM10(u, u && u.S ? (u.S.m10 ? m10Map(u, p) : u.S.mov ? movMap(u, p) : p === 'attack' && u.D && (u.D.h2 || u.S.foe4) ? atkAlt(u) : p) : p);   // v1.5 새 동작 인물 (foe4) 도 공격 그림 번갈아
 };
 
 /* ---------- 고유 기술: 특수 준비 → 특수 공격 ---------- */
@@ -96,7 +96,7 @@ for (const k of Object.keys(typeof M10 !== 'undefined' ? M10 : {})){
 const _hurtM10 = hurt;
 hurt = function(att, tgt, base, o = {}){
   let blk = false;
-  if (tgt && tgt.S && tgt.S.m10 && tgt.D.block && !o.pierce && !tgt.dead && !tgt.downed){
+  if (tgt && tgt.S && (tgt.S.m10 || tgt.S.foe4 && tgt.S.poses.guard) && tgt.D.block && !o.pierce && !tgt.dead && !tgt.downed){   // v1.5 벤킨 (막기) 도
     const s = o.from || att; if (s) blk = Math.abs(angDiff(Math.atan2(s.z - tgt.z, s.x - tgt.x), tgt.aim)) <= 1.9;
   }
   const r = _hurtM10(att, tgt, base, o);
@@ -198,7 +198,7 @@ function fidget(u){
   if (u._fid){ if (G.t < u._fid.until && Q[u._fid.p]) return u._fid.p; u._fid = null; u._fidAt = G.t + rnd(6, 12); return 'idle'; }
   if (u._fidAt == null) u._fidAt = G.t + rnd(3, 9);
   if (G.t < u._fidAt) return null;
-  const L = FIDGET.filter(k => ownImg(Q, k));
+  const L = [...new Set([...FIDGET, ...(u.S.fidget || [])])].filter(k => ownImg(Q, k));   // v1.5 인물마다 딴짓 (S.fidget — 청광묵 냠냠 · 붕대 감기 …)
   if (!L.length){ u._fidAt = G.t + 60; return null; }
   const k = L[Math.floor(Math.random() * L.length)], P = Q[k], len = P.n ? (P.count || P.n) / (P.fps || 8) * (P.once ? 1 : 2) : rnd(1.6, 2.8);
   u._fid = { p: k, until: G.t + Math.max(1.2, len) }; return k;
@@ -234,16 +234,33 @@ function movWant(u, dt){
 // v1.3 그 밖 인물 (영웅 · 적 · 새 동작 프레임 없는 2 · 3기): 걷기 · 달리기 그림이 따로 있으면 움직일 때 그 그림 · 싸움 중엔 공격 대기 그림 (있으면) · 앉은 그림이 여러 장인 동료 (테헤라) 는 오래 가만히 있으면 앉음
 const LOCO_OWN = new Set(['idle', 'ready', 'walk', 'run', 'hurt', 'hurt2', 'stun', 'down', 'sit', 'idle2', 'idle3', 'smoke', 'taunt', 'stance', 'talk', 'salute']);
 const locoOK = u => (u.side === 'ally' || u.side === 'enemy') && u.kind !== 'player' && !(u.D.boss && !u.D.h2) && !u.D.dummy && !(typeof kariusThink === 'function' && u.D.think === kariusThink);
+// v1.5 새 동작 인물 (foe4) 이 이 파일에서 고른 자세 (무릎 · 방어 · 점프 · 쉼 · 딴짓) 도 '이 파일 것' 으로 봄 (다음 장에 서 있음 · 걷기로 돌아오게)
+const f4Own = u => u.S.foe4 && (u.pose === 'kneel' || u.pose === 'guard' || u.pose === 'jump' || (u.S.rest || []).includes(u.pose) || (u.S.fidget || []).includes(u.pose));
 function locoWant(u, dt){
-  const Q = u.S.poses;
+  const Q = u.S.poses, F4 = !!u.S.foe4;
   u._rate = 1;
   // 넘어짐 · 휘청: 하던 기술 그림 대신 누운 그림 (없으면 맞음 그림을 눕힘) · 맞음
-  if (u.lying && (u.tripT || u.st === 'hurt')){ u._stillT = 0; if (KEEP_LY.has(u.pose)) return null;   // 쉬려고 누운 것 (레베카 굴) 은 그대로
+  if (u.lying && (u.tripT || u.st === 'hurt')){ u._stillT = 0; u._restP = null; if (KEEP_LY.has(u.pose)) return null;   // 쉬려고 누운 것 (레베카 굴) 은 그대로
+    if (F4 && Q.down && Q.down.flat) u._wasLying = true;
     const p = Q.down && Q.down.flat ? 'down' : Q.hurt ? 'hurt' : 'idle'; return u.pose === p ? null : p; }
-  if (u.st === 'hurt' || u.st === 'stun'){ u._stillT = 0; return KEEP_LY.has(u.pose) || M10_HURT.has(u.pose) ? null : u.st === 'stun' && Q.stun ? 'stun' : Q.hurt ? 'hurt' : 'idle'; }
-  if (u.st !== 'idle' || !LOCO_OWN.has(u.pose)){ u._stillT = 0; u._fid = null; return null; }
+  if (u.st === 'hurt' || u.st === 'stun'){ u._stillT = 0; u._restP = null;
+    if (F4 && u._wasLying && ownImg(Q, 'kneel')) return u.pose === 'kneel' ? null : 'kneel';   // v1.5 넘어졌다 일어나는 중 = 무릎
+    return KEEP_LY.has(u.pose) || M10_HURT.has(u.pose) ? null : u.st === 'stun' && Q.stun ? 'stun' : Q.hurt ? 'hurt' : 'idle'; }
+  if (F4){
+    u._wasLying = false;
+    const st = u.st, want = st === 'guardStance' ? 'guard' : st === 'charge' ? 'run' : st === 'leap' ? 'jump' : null;   // v1.5 거한 방어 자세 · 들이받기 · 궁수식 도약
+    if (want && ownImg(Q, want)){ u._restP = null; return u.pose === want ? null : want; }
+  }
+  if (u.st !== 'idle' || !(LOCO_OWN.has(u.pose) || F4 && f4Own(u))){ u._stillT = 0; u._fid = null; u._restP = null; return null; }
+  if (F4 && G.t < (u._guardT || 0) && ownImg(Q, 'guard')) return 'guard';   // v1.5 앞에서 막음 (벤킨)
   if (G.t < (u._flT || 0) && Q.hurt) return u.pose === 'hurt' || u.pose === 'hurt2' ? null : flinchPose(u);   // 움찔
   const war = warOf(u, dt), rdy = war && ownImg(Q, 'ready') ? 'ready' : 'idle';
+  if (F4 && u.S.rest){   // v1.5 오래 가만히 (동료 10초 · 안 들킨 적 12초) → S.rest 중 하나로 앉거나 쉼 (움직이거나 싸움이 붙을 때까지). 깨면 잠깐 무릎
+    if (war || u._mvOn || u._dodgeT > G.t){ if (u._restP){ u._restP = null; u._stillT = 0; if (ownImg(Q, 'kneel')) u._wakeT = G.t + 0.35; } }
+    else if (u._restP && ownImg(Q, u._restP)) return u._restP;
+    else if ((u._stillT = (u._stillT || 0) + dt) > (u.side === 'ally' ? 10 : 12)){ const L = u.S.rest.filter(k => ownImg(Q, k)); u._stillT = 0; if (L.length){ u._fid = null; return u._restP = L[Math.floor(Math.random() * L.length)]; } }
+  }
+  if (F4 && G.t < (u._wakeT || 0)) return 'kneel';
   if (u._dodgeT > G.t) return rdy;
   if (u._mvOn){
     u._stillT = 0; u._fid = null;
@@ -254,7 +271,7 @@ function locoWant(u, dt){
     return rdy;   // 걷기 그림이 없으면 서 있는 그림 + 출렁임 (h2.js · 아래 그리기)
   }
   if (war){ u._stillT = 0; u._fid = null; return rdy; }
-  if (u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 테헤라: 바위에 앉아 쉼
+  if (!(F4 && u.S.rest) && u.side === 'ally' && Q.sit && Q.sit.n > 1 && (u._stillT = (u._stillT || 0) + dt) > 8) return 'sit';   // v1.2 테헤라: 바위에 앉아 쉼
   return fidget(u) || 'idle';
 }
 TICKS.push(dt => {
