@@ -1,0 +1,36 @@
+{
+ "slug": "nurse",
+ "name": "간호사",
+ "rank": "1성",
+ "role": "동료",
+ "tall": 1.55,
+ "weight": 44,
+ "tag": "human",
+ "role_job": "치유",
+ "bag": 3,
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 0,
+  "gun": 2,
+  "magic": 1,
+  "stealth": 2
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "인간계의 낙오자 — 오래전 전쟁터에서 죽어서 온 젊은 간호사. 치료 · 버프 특화, 전투는 거의 못함",
+ "face": "art/h2/nurse/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/nurse/idle.webp",
+   "w": 193,
+   "h": 527,
+   "ax": 86,
+   "ay": 524,
+   "orig": "4기 대기 칸 B r1c0"
+  }
+ },
+ "codex_g": "nurse",
+ "codex_face": 0
+}

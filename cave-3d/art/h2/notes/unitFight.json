@@ -1,0 +1,35 @@
+{
+ "slug": "unitFight",
+ "name": "일반 전투 유닛",
+ "rank": "소환",
+ "role": "소환물",
+ "tall": 1.1,
+ "weight": 120,
+ "tag": "construct",
+ "role_job": "돌격",
+ "bag": 0,
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "세르파 소환 · 광석 짐승 (근접)",
+ "summon": "serpa",
+ "face": "art/h2/unitFight/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/unitFight/idle.webp",
+   "w": 539,
+   "h": 290,
+   "ax": 245,
+   "ay": 287,
+   "orig": "원화 일반전투유닛.png"
+  }
+ }
+}

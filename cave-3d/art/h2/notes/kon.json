@@ -1,0 +1,34 @@
+{
+ "slug": "kon",
+ "name": "도살자 콘",
+ "rank": "2성",
+ "role": "적 (포획 · 영입 가능)",
+ "tall": 1.74,
+ "weight": 62,
+ "tag": "human",
+ "role_job": "돌격",
+ "bag": 3,
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 0,
+  "stealth": 4
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "뼈 문신 · 붉은 누더기 털망토의 단검 도살자 (2성). 적으로 만나 포획 · 영입할 수 있음. 쓰러진 적을 끝장냄",
+ "face": "art/h2/kon/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/kon/idle.webp",
+   "w": 314,
+   "h": 576,
+   "ax": 110,
+   "ay": 573,
+   "orig": "4기 대기 칸 D r0c0"
+  }
+ }
+}

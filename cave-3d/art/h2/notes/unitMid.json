@@ -1,0 +1,35 @@
+{
+ "slug": "unitMid",
+ "name": "고급 마도 유닛",
+ "rank": "소환",
+ "role": "소환물",
+ "tall": 1.9,
+ "weight": 90,
+ "tag": "construct",
+ "role_job": "마법",
+ "bag": 0,
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "세르파 소환 · 마도공학 유닛 (중거리)",
+ "summon": "serpa",
+ "face": "art/h2/unitMid/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/unitMid/idle.webp",
+   "w": 400,
+   "h": 507,
+   "ax": 234,
+   "ay": 504,
+   "orig": "원화 고급 마도유닛 중거리.png"
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "slug": "shu",
+ "name": "슈",
+ "rank": "3성",
+ "role": "동료",
+ "tall": 1.66,
+ "weight": 50,
+ "tag": "spirit",
+ "role_job": "치유",
+ "bag": 3,
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 4,
+  "stealth": 2
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "3성 힐러. 정령계 인간 — 대기를 마시며 삶. 눈을 가린 메이드 치유사, 빈손으로 지킴",
+ "face": "art/h2/shu/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/shu/idle.webp",
+   "w": 280,
+   "h": 501,
+   "ax": 141,
+   "ay": 498,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ }
+}

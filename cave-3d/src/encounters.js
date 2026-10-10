@@ -1,4 +1,4 @@
-/* encounters.js v1.1 — (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
+/* encounters.js v1.2 — (v1.2, v0.85: 4기 각펄 — 2 ~ 5층에 검은 날개의 펄 (2성) 이 홀로 기다림. «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!») (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
    · 죽은 영웅 · 액자 (뇌를 훔치면 노인들이 덤빔) · 지껄임 (입: 동료 비밀을 떠듦, 때려서 닫음) · 기나긴 해변 (말대가리) · 눈알방 (밟으면 터지고 다시 자람, 정신도)
    · 우주의 테헤라 (따라옴: 이번 원정 시야 +1.5 · 적이 지도에) · 게 요리사 (상점) · 담배 피는 노인 (보물 방 · 정신도) · 거대한 무희 (정신도 회복 · 느려짐)
    · 돼지들의 신 (고깃덩이 선물: 먹으면 회복 + 정신도 · 혼란) · 푸른 구멍의 도끼기사 (강적, 도끼 유물) · 끝없는 줄 (줄 선 존재들 · 움직이는 바닥)
@@ -9,6 +9,7 @@ const ENC = {
   deadHero:  { F: [1, 4], w: 3 }, brainFrame: { F: [3, 7], w: 2 }, chatter: { F: [4, 9], w: 2 }, beach: { F: [2, 6], w: 2 }, eyeRoom: { F: [4, 9], w: 2 },
   tehera:    { F: [5, 7], w: 3 }, crabChef: { F: [2, 8], w: 3 }, smoker: { F: [5, 8], w: 3 }, dancers: { F: [6, 8], w: 2 }, pigGod: { F: [6, 8], w: 2 },
   axeHole:   { F: [8, 10], w: 3 }, conveyor: { F: [9, 10], w: 3 },
+  pearl:     { F: [2, 5], w: 3 },
 };
 const encSpot = (r, dx = 0, dz = 0) => ({ x: Math.round(r.cx) + dx, z: Math.round(r.cz) + dz });
 const encSay = (x, z, h, text, life = 2.6) => typeof say === 'function' && say({ x, y: heightAt(G.map, x, z) + h, z }, text, '', life);
@@ -37,6 +38,7 @@ const ENC_TEXT = {
   dancers: '거대한 무희들이 무아지경으로 춤을 춥니다. 향은 독할 정도로 농염합니다.',
   pigGod: '돼지들의 신입니다. 생각보다 다정합니다. 냄새는 나지만요. …왜 자꾸 고깃덩이 돼지들을 "싸는" 겁니까?',
   axeHole: '반짝이는 알갱이 사이, 푸른 구멍 앞을 그가 지키고 있었습니다.',
+  pearl: '검은 날개의 소녀가 창끝으로 바닥을 긁으며 기다립니다. 이름표에는 숫자가 하나 — 2성. …이게, 2성입니다.',
   conveyor: '당신은 긴 줄에 서 있습니다. 끝은 보이지 않습니다. 앞뒤로 처음 보는 존재들이 미동도 없이 서 있습니다. 그들은 살아 있을까요?',
 };
 const ENC_FILL = {
@@ -112,6 +114,13 @@ const ENC_FILL = {
     for (let n = 0; n < 40; n++){ const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color: 0xd8e8ff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); s.scale.setScalar(0.12); s.position.set(r.x + Math.random() * r.w, Math.random() * 0.5, r.z + Math.random() * r.h); G.scene.add(s); G.props.push(s); }
     const e = spawnFoe('axeKnight', p.x, p.z + 1.4, gen.F, band, true); e.relicDrop = 'R-S083'; r.encData = { hole, bar, e };
   },
+  pearl(r, gen, tiles, band){   // v1.2 각펄 (h2.js pearlgak): 2성 하나가 홀로 — 한 방 세기는 2성 그대로, 기술을 끝까지 다 씀
+    if (!DEFS.h2e_pearlgak){ spawnGroup(r, gen, tiles, 2, band); return; }
+    const p = encSpot(r, 0, 0), e = spawnFoe('h2e_pearlgak', p.x, p.z, gen.F, band, false);
+    if (!e.tag){ e.tag = document.createElement('div'); e.tag.className = 'ntag enemy elite'; e.tag.textContent = '2성 · 인공타천사 펄'; UI.layer.appendChild(e.tag); e.tagEl = true; }
+    addSource(p.x, p.z, 4, 0x9090b0, 0.7, 1.3);
+    r.encData = { e };
+  },
   conveyor(r){
     const along = r.w >= r.h, row = along ? Math.round(r.cz) : Math.round(r.cx);
     const belt = new THREE.Mesh(new THREE.PlaneGeometry(along ? r.w : 1.6, along ? 1.6 : r.h), new THREE.MeshStandardMaterial({ color: 0x2a2a30, emissive: 0x0c0c10, roughness: 0.6 }));
@@ -169,6 +178,10 @@ function encTick(dt){
     if (E.key === 'pigGod' && here && d.p){ d.t -= dt; if (d.t <= 0){ d.t = 9; encSay(d.p.x, d.p.z, 2.8, R2(['꿀꿀, 선물이야', '먹어 봐, 먹어 봐', '또 낳았어!'])); dropLootAt(d.p.x, d.p.z + 1, 'I-043', { spread: 1.2 }); } }
     if (E.key === 'axeHole' && d.hole){ d.hole.material.opacity = 0.7 + Math.sin(G.t * 2) * 0.15; d.hole.lookAt(camera.position.x, 1.3, camera.position.z); d.bar.quaternion.copy(d.hole.quaternion);
       if (d.e && d.e.dead && !d.done){ d.done = true; dropLootAt(d.e.x, d.e.z, 'R-S083'); caption('도끼기사가 쓰러졌다', '푸른 구멍 앞에 도끼가 남았다'); } }
+    if (E.key === 'pearl' && d.e){
+      if (here && !d.met){ d.met = true; d.e.alert = true; d.e.seen = G.t; caption('인공타천사 펄 · 2성', '…이게, 2성이다.'); }
+      if (d.e.dead && !d.done){ d.done = true; caption('펄이 쓰러졌다', '2성 하나가 이만큼이었다'); dropLootAt(d.e.x, d.e.z, { gold: 80 * EXP.F }); }
+    }
     if (E.key === 'conveyor' && here){ const onBelt = Math.abs((d.along ? pl.z : pl.x) - d.row) < 0.8; if (onBelt && !(pl.jy > 0.2)) moveBy(pl, d.along ? 0.9 * dt : 0, d.along ? 0 : 0.9 * dt); }
   }
   if (EXP.tehera){

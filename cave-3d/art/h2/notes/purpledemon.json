@@ -1,0 +1,34 @@
+{
+ "slug": "purpledemon",
+ "name": "보라 날개 악마",
+ "rank": "3성",
+ "role": "적",
+ "tall": 1.85,
+ "weight": 60,
+ "tag": "demon",
+ "role_job": "돌격",
+ "bag": 3,
+ "apt": {
+  "melee": 4,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 3
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "박쥐 날개 · 흰 무늬 보라 악마. 날개로 덮치고 발톱으로 할큄",
+ "face": "art/h2/purpledemon/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/purpledemon/idle.webp",
+   "w": 289,
+   "h": 497,
+   "ax": 153,
+   "ay": 494,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ }
+}

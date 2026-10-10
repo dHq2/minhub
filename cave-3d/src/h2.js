@@ -1,4 +1,4 @@
-/* h2.js v2.9 — (v2.9, v0.83: 4기 준비 — 노트에 gen: 4 (5 …) 가 오면 훈련 창 2기 탭 거르개에 '4기' 가 저절로 생기고 인물 줄에 '4기 · 등급') (v2.8, v0.82: 2 · 3기 돌진 · 도약 · 뒤로 뛰기 · 끌어오기가 실제로 달려감 (units.js rushStart) — 전엔 예고가 끝나는 순간 한 프레임에 5 ~ 10칸 옮겨져 순간이동처럼 보였음. 돌진은 지나가며 맞히고, 도약은 포물선을 그리며 내려앉는 자리에서 맞힘. 보스 (세자르급) 만 순간 이동 + 잔상 · 연계 기술은 달리는 시간만큼 다음 기술을 늦춤) (v2.7, v0.81: 모닝스타 (슈퍼스타) 대기를 원래 2D 그림 (8장 움직임) 으로 — 민수. 새 그림들과 같은 키 · 발 자리) (v2.6, v0.80 동작 점검: 막기 기술 (성벽 방패 · 바위 갑피 …) 을 막기 그림 없는 인물이 쓰면 공격 그림으로 3 ~ 5초 굳어 있던 것 · 쏘기 · 연사 기술이 예고 중에 기절 · 넘어짐으로 끊겨도 그대로 쏘던 것 (휘청이 풀렸음) · 넘어뜨리기 (trip) 맞은 놈이 누운 채 걷고 치던 것 → 일어날 때까지 (1.2초) 휘청 · 기술을 걷다가 쓰면 걷기 · 달리기 그림 그대로 쏘거나 서 있던 것 → 예고 그림 (없으면 공격 대기 · 서 있음) · 뒤로 빠지기 (backstep) 는 깡충 · 걸을 때 출렁임은 움직임 판정 (motion.js) 을 따라 깜빡이지 않게 · 뒷걸음은 뒤로 기울임) (v2.5, v0.79: 고대사슴 산호 도감 설정 크기 — 몸길이 5m · 등 높이 3m (노트 tall 5.3) · 몸 반경 1.1 → 1.45. 잉끌레이도르 = 잭 (도감 본명, names.js) · 돌장갑 NPC) (v2.4, v0.78: 기술 끝 그림 pose2 를 장판 기술 (베기 · 찌르기 · 찍기 · 마무리 …) 에도 — 칠 때 그 그림. 용묘화: 모아 내려치기 charge → smash · 파내기 · 파묻기 dig → dig2 (도감 움짤)) (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
+/* h2.js v3.0 — (v3.0, v0.85: 4기 (드라이브 '1010 4기 업뎃') — 새 인물 16 (유니 · 콘 · 리완 · 세르파 · 슈 · 간호사 · 친칠라 · 트라카 · 글리치 챔피언 · 기병기사 · 마계장군 A · 보라 날개 악마 · 분홍 마족 · 페흐토 · 레지나 · 테이론) · 각펄 (보스 — «이게 2성이구나») · 세르파 소환물 11 (수정 거품게 = 자원 유닛 → 흡수해 유닛을 뽑는 세르파 로직) · 펄 2성 (도감) · 망향 · 마도사녀 · 사슴 · 잭 새 동작 · 기술. 그림은 H2MOV4 (h2_mov4.js)) (v2.9, v0.83: 4기 준비 — 노트에 gen: 4 (5 …) 가 오면 훈련 창 2기 탭 거르개에 '4기' 가 저절로 생기고 인물 줄에 '4기 · 등급') (v2.8, v0.82: 2 · 3기 돌진 · 도약 · 뒤로 뛰기 · 끌어오기가 실제로 달려감 (units.js rushStart) — 전엔 예고가 끝나는 순간 한 프레임에 5 ~ 10칸 옮겨져 순간이동처럼 보였음. 돌진은 지나가며 맞히고, 도약은 포물선을 그리며 내려앉는 자리에서 맞힘. 보스 (세자르급) 만 순간 이동 + 잔상 · 연계 기술은 달리는 시간만큼 다음 기술을 늦춤) (v2.7, v0.81: 모닝스타 (슈퍼스타) 대기를 원래 2D 그림 (8장 움직임) 으로 — 민수. 새 그림들과 같은 키 · 발 자리) (v2.6, v0.80 동작 점검: 막기 기술 (성벽 방패 · 바위 갑피 …) 을 막기 그림 없는 인물이 쓰면 공격 그림으로 3 ~ 5초 굳어 있던 것 · 쏘기 · 연사 기술이 예고 중에 기절 · 넘어짐으로 끊겨도 그대로 쏘던 것 (휘청이 풀렸음) · 넘어뜨리기 (trip) 맞은 놈이 누운 채 걷고 치던 것 → 일어날 때까지 (1.2초) 휘청 · 기술을 걷다가 쓰면 걷기 · 달리기 그림 그대로 쏘거나 서 있던 것 → 예고 그림 (없으면 공격 대기 · 서 있음) · 뒤로 빠지기 (backstep) 는 깡충 · 걸을 때 출렁임은 움직임 판정 (motion.js) 을 따라 깜빡이지 않게 · 뒷걸음은 뒤로 기울임) (v2.5, v0.79: 고대사슴 산호 도감 설정 크기 — 몸길이 5m · 등 높이 3m (노트 tall 5.3) · 몸 반경 1.1 → 1.45. 잉끌레이도르 = 잭 (도감 본명, names.js) · 돌장갑 NPC) (v2.4, v0.78: 기술 끝 그림 pose2 를 장판 기술 (베기 · 찌르기 · 찍기 · 마무리 …) 에도 — 칠 때 그 그림. 용묘화: 모아 내려치기 charge → smash · 파내기 · 파묻기 dig → dig2 (도감 움짤)) (v2.3, v0.77: 1차 업뎃 새 동작 프레임 H2MOV (src/h2_mov.js, tools/h2_moves.py) — 걷기 · 달리기 · 맞음 · 기절 · 쓰러짐 · 기술 그림을 노트 동작 위에 덮어씀. 옐로는 새 디자인만 (replace). 걷기 그림이 진짜면 출렁임을 끔) (v2.2: 기사단장은 4성 — 체력 1900 → 340 · 공격 30 → 22 · 보스 · 2페이즈 뺌) (v2.1: 노트의 크기 맞춤은 gscale (scale 은 자를 때 배율이라 쓰면 안 됨 — v2.0 에서 쥐 베테랑 등이 작아지던 것 고침) · 다 큰 쥐 기사 · 쥐 베테랑 키를 인주 · 청광묵과 비슷하거나 살짝 작게) (v2.0: 동작 검토 — 노트의 f (보는 방향) · flat (누운 그림) · scale (크기 맞춤) 을 씀) (v1.9: 쥐 기사 단계를 미리 정할 수 있음 H2.ratLv (포렌의 기억하는 쥐) · 포렌 (poren.js) 이 2기 목록에 붙음) (v1.8: 쥐 기사 성장 단계 1~4 (크기 · 체력 · 공격) · 하르겐 · 마도사 (맨얼굴) 이름) (v1.7: 3기-2 26명 기술표 (포렌의 쥐 · 아해 · 5성 서포터 · 1기 인물 새 시트 · 로젤 · 왕님 · 기사단장) · 패시브 25종 · 거르개 3기-2 / 1기 / 5성 · 포렌의 쥐 분대 단추) (v1.6: 자체점검 — 글만 있던 패시브 19개에 효과 · 주먹 화상 hitSts · 연계 도중 맞거나 넘어지면 끊김 (전엔 경직을 풀어 버림)) (v1.5: 3기 1차 25명 기술표 · 2기 7명 덧붙임 · 패시브 13종 · 소환 kind/hpk) (v1.4: 3기 — 기술 종류 rain 연속 장판 · wave 충격파 · beam 광선 · trap 덫 · combo 연계, 보스 2페이즈 phase · 2페이즈 기술 ph) (v1.3, v0.61: 움직임 기울기도 보이는 방향 fS를 따름) (v1.2: 묶음 그림 H2A (h2_atlas.js)가 있으면 그 칸을 씀 · 얼굴 모음) (v1.1: 기술 이름을 덮던 발수 n → cnt · 이름 괄호 정리 · 등급 묶음 · 패시브 효과 21종 H2PAS) (v1.0, v0.60) 2기 멤버: 드라이브 '2기멤버 동료,적 모음' 1차 반영
    ■ 그림 · 키 · 적성 · 배낭은 h2_roster.js (tools/h2_roster.py가 art/h2/notes/*.json에서 만듦)
    ■ 기술은 아래 H2K (인물마다 손으로 정함 — 그림 (동작)과 짝지음)
    ■ 한 인물이 동료로도 적으로도 나올 수 있음: DEFS['h2_' + slug] (동료) · DEFS['h2e_' + slug] (적)
@@ -93,6 +93,7 @@ function h2Cast(u, s, tgt){
       if (s.hpk) m.max = m.hp = Math.round(m.D.hp * s.hpk); else if (u.side === 'enemy' && typeof spawnFoe === 'function' && EXP){ m.max = m.hp = Math.round(m.D.hp * 0.8); }
       smoke(m.x, m.z, 6, 1, 1); dust(m.x, m.z, 10); if (s.t) setTimeout(() => { if (!m.dead){ smoke(m.x, m.z, 4, 0.8, 0.8); removeUnit(m); } }, s.t * 1000);
       break; }
+    case 'serpa': { u.st = 'strike'; u.stT = 0.9; setTimeout(() => { if (!u.dead && !u.downed && !serpaCall(u, tgt && !tgt.dead ? tgt : null)) u.h2cd[s.id] = 1; }, W * 1000); break; }   // v3.0 세르파: 곁의 거품게를 흡수해 유닛을 부름
     case 'finisher': windup(u, 'sector', { x: u.x, z: u.z, r: s.r || 1.6, a, arc: 1.2, windup: W }, t => hurt(u, t, u.atk * ((t.lying || t.downed || t.st === 'hurt') ? (s.mul || 3) : 1), { from: u, crit: !!(t.lying || t.st === 'hurt'), kb: 0.3 })); break;
     case 'pull': windup(u, 'line', { x: u.x, z: u.z, len: s.len || 6, w: s.w || 0.9, a, windup: W }, t => { hurt(u, t, u.atk * (s.mul || 0.8), { from: u, kb: 0 }); if (!t.D.boss && !t.D.heavy && !t.dead && !t.downed){ const n = norm(u.x - t.x, u.z - t.z), L = Math.max(0, dist(u, t) - 1.2); interrupt(t); t.st = 'hurt'; t.stT = Math.max(0.6, L / 16 + 0.3); setPose(t, 'hurt'); if (L > 0.05) rushStart(t, Math.atan2(n.z, n.x), L, { sp: 16, face: false, self: false }); popText(t.x, t.y + bodyH(t) + 0.3, t.z, '끌려옴', 'alert', 0.6); } }); break;   // v2.8 끌려옴도 실제로 끌려감
     case 'transform': { const to = SPR['h2_' + s.to]; if (!to || u.h2form) break; const S0 = u.S; u.h2form = true; u.S = to; u.atk = Math.round(u.atk * (s.k || 1.5)); ring(u.x, u.z, 0xffd0f0, 2.4, 0.8); spark(u.x, u.y + 1.2, u.z, 0xffe0ff, 24, 5); camShake(0.2, 0.3); setPose(u, 'idle');
@@ -136,6 +137,7 @@ function h2Pick(u, tgt){
     if ((cd[s.id] || 0) > 0) continue;
     if (s.ph && !u.h2ph) continue;   // 2페이즈 기술
     if (s.type === 'heal'){ if (G.units.some(o => o.side === u.side && !o.dead && (o.downed && s.revive || o.hp < o.max * 0.55) && dist(o, u) < (s.r || 5))) return s; continue; }
+    if (s.type === 'serpa'){ if (serpaChoice(u)) return s; continue; }   // v3.0 거품게가 모였고 부를 자리가 있을 때만
     if (s.type === 'buff' || s.type === 'summon'){ if (d < (s.use || 10)) return s; continue; }
     if (s.type === 'guard'){ if (d < (s.use || 3) && Math.random() < 0.5) return s; continue; }
     if (s.type === 'finisher'){ if (d < 2 && (tgt.lying || tgt.downed || tgt.st === 'hurt')) return s; continue; }
@@ -490,6 +492,113 @@ H2K.mano.sk.push(sk('hook', '공허 갈고리', 'dash', 'special', 9, 8, { len: 
 H2K.mano.phase = { at: 0.5, k: 1.2, spd: 1.2, say: '…' };
 H2K.hadim.sk.push(sk('crown', '뿔 왕관 수직 강타', 'leap', 'special', 12, 5, { len: 5, r: 2.5, mul: 0.6, mul2: 2.0, trip: true, windup: 1.0, ph: 2, say: '무릎 꿇어라!' }), sk('order', '악마 장군의 호령', 'buff', 'idle', 25, 12, { k: 1.2, t: 10, r: 12 }));
 H2K.hadim.phase = { at: 0.5, k: 1.25, spd: 1.15, say: '크하하하하! 이제야 몸이 풀리는군!' };
+// ───────── v3.0 (v0.85) 4기 (드라이브 '1010 4기 업뎃') 기술표 ─────────
+//  · 그림: H2MOV4 (src/h2_mov4.js · tools/g4_moves.py). 움짤 기술 (펄 · 각펄 · 잭) 은 예고 그림 = 칠 때 그림 (pose2) 으로 한 번에 돌림
+//  · 등급은 도감 (marks 등급) 을 따름 — 펄 2성 · 잭 2성 · 기병기사 4성 · 친칠라 4성 · 레지나 · 페흐토 5성 · 테이론 7성 · 챔피언 2성급 (드라이브 폴더 이름)
+//  · 세르파 (3성 몬스터퀸): 수정 거품게 (자원 유닛) 가 저절로 생기고 불어남 → 모아서 (흡수) 유닛을 뽑음 — 아래 SERPA
+//  · 각펄 (보스 인카운터): «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!» — 한 방 세기는 2성 그대로, 기술을 끝까지 다 씀
+Object.assign(H2K, {
+  // ── 4기 동료 · NPC ──
+  yuni: { st: { hp: 175, atk: 18, spd: 3.8, melee: ML(1.5, 1.0, 0.25, 0.85, 1.6) }, pas: ['오니의 손톱', '할퀸 적은 피를 흘림'],
+    sk: [sk('pounce', '덮치기', 'dash', 'dash', 7, 5, { len: 5, mul: 1.3, trip: true, windup: 0.35 }), sk('claw', '보석 손톱', 'slash', 'windup', 5, 1.9, { r: 1.9, arc: 1.8, mul: 1.5, pose2: 'attack2' }),
+      sk('charm', '유혹', 'trap', 'charm', 14, 7, { r: 1.8, delay: 0.9, mul: 0.2, stun: 1.6, tag: '홀림', color: 0xff70c0, say: '이리 와~' }), sk('taunt', '혀 내밀기', 'guard', 'taunt', 12, 4, { t: 1.5, taunt: true })] },
+  kon: { st: { hp: 165, atk: 19, spd: 3.9, melee: ML(1.3, 1.0, 0.22, 0.75, 1.4) }, pas: ['도살자', '쓰러지거나 휘청이는 적에게 피해 +35%'],
+    sk: [sk('butcher', '끝장내기', 'finisher', 'special', 5, 2, { mul: 3.2, pose2: 'special' }),
+      sk('combo', '단검 연격', 'combo', 'combo', 7, 2, { sub: [{ type: 'slash', pose: 'combo', pose2: 'combo', r: 1.7, arc: 1.6, mul: 0.8, windup: 0.2 }, { type: 'slash', pose: 'combo2', pose2: 'combo2', r: 1.8, arc: 1.8, mul: 1.0, sts: 'bleed', windup: 0.2 }] }),
+      sk('dash', '파고들기', 'dash', 'dash', 7, 5, { len: 5, mul: 1.2, sts: 'bleed', windup: 0.3 }), sk('low', '발목 긋기', 'slash', 'low', 6, 1.8, { r: 1.8, arc: 1.6, mul: 0.9, trip: true })] },
+  riwan: { st: { hp: 380, atk: 19, spd: 2.8, melee: ML(1.7, 1.1, 0.4, 1.2, 1.4, 1.2), armor: 0.7, weight: 95, r: 0.4 }, pas: ['수정 방패', '정면 피해 -30% · 잘 밀리지 않음'],
+    sk: [sk('wall', '수정 성벽', 'guard', 'guard', 9, 4, { t: 3.5, taunt: true, r: 7 }), sk('bash', '방패 밀치기', 'slam', 'shoulder', 6, 1.7, { r: 1.6, mul: 0.7, kb: 3, stun: 0.8 }),
+      sk('smash', '철퇴 내려찍기', 'slam', 'windup', 8, 2.4, { r: 2.0, atTarget: true, mul: 1.7, trip: true, windup: 0.6, pose2: 'slam' }), sk('kneel', '무릎 방벽', 'guard', 'guard2', 14, 8, { t: 3, use: 8 }),
+      sk('kick', '방패 걷어차기', 'slash', 'kick', 7, 1.6, { r: 1.6, arc: 1.4, mul: 0.8, kb: 2.4 })] },
+  serpa: { st: { hp: 165, atk: 13, spd: 3.2, melee: ML(1.3, 0.7), bow: { range: 9, windup: 0.4, cd: 1.3, speed: 22 } }, pas: ['정령왕 코어', '수정 거품게가 저절로 생기고 불어남 — 모아서 (흡수) 유닛을 뽑음'],
+    sk: [sk('call', '광석 소환', 'serpa', 'summon', 3, 16, { windup: 0.6 }), sk('order', '진군 명령', 'buff', 'command', 18, 12, { k: 1.25, t: 8, r: 12, say: '가.' }),
+      sk('shard', '수정 파편', 'shot', 'cast', 4, 9, { cnt: 3, spread: 0.14, mul: 0.6, color: 0x9fe8ff, fam: 'magic', pose2: 'skill' }), sk('push', '밀어내기', 'wave', 'push', 9, 2.4, { cnt: 1, r: 2.4, mul: 0.5, kb: 2.6 }),
+      sk('ward', '수정 방벽', 'guard', 'guard', 12, 2.5, { t: 2 })] },
+  shu: { st: { hp: 145, atk: 13, spd: 3.4, melee: ML(1.3, 0.8) }, pas: ['대기를 마시는 몸', '곁 (5m) 아군 체력이 조금씩 차오름'],
+    sk: [sk('breath', '정령의 숨', 'heal', 'heal', 7, 7, { r: 7, amt: 0.22 }), sk('revive', '되살리는 바람', 'heal', 'reach', 30, 7, { r: 6, amt: 0.1, revive: true, say: '…일어나요.' }),
+      sk('push', '바람 밀어내기', 'wave', 'wave', 9, 2.5, { cnt: 2, r: 1.8, mul: 0.4, kb: 2.6 }), sk('ward', '빈손 방어', 'guard', 'guard', 10, 2.2, { t: 2 })] },
+  nurse: { st: { hp: 100, atk: 8, spd: 3.4, melee: ML(1.2, 0.6) }, pas: ['종군 간호', '곁 (4m) 아군 체력이 조금씩 차오름 · 싸움은 거의 못 함'],
+    sk: [sk('aid', '응급 처치', 'heal', 'heal', 7, 5, { r: 5, amt: 0.25, revive: true }), sk('shot', '각성 주사', 'buff', 'attack', 16, 6, { k: 1.25, t: 6, r: 5, say: '조금 따끔해요.' }), sk('cover', '웅크리기', 'guard', 'guard', 10, 2, { t: 2 })] },
+  chinchilla: { st: { hp: 165, atk: 20, spd: 3.6, melee: ML(1.3, 0.6), bow: { range: 15, windup: 0.35, cd: 0.8, speed: 38 } }, pas: ['심해의 눈', '어두운 곳에서 피해 +15%'],
+    sk: [sk('multi', '세 갈래 화살', 'shot', 'aim', 6, 13, { cnt: 3, spread: 0.15, mul: 0.9, pose2: 'multishot', speed: 40, color: 0xe8e0c0 }), sk('kneel', '무릎 쏴', 'volley', 'kneelshot', 8, 15, { cnt: 3, gap: 0.3, mul: 1.2, pose2: 'kneelshot', speed: 46, spread: 0.02 }),
+      sk('sky', '하늘 화살', 'rain', 'skyshot', 11, 13, { cnt: 5, r: 1.3, spread: 2.5, mul: 0.9, delay: 0.9, color: 0x80d0ff, fam: 'bow' }), sk('hop', '뒤로 뛰기', 'backstep', 'leap', 5, 1.4, { len: 3 })] },
+  traka: { st: { hp: 95, atk: 12, spd: 3.8, melee: ML(1.2, 0.7), bow: { range: 11, windup: 0.35, cd: 0.8, speed: 32 } }, pas: ['작은 불씨', '맞힌 적에게 약한 불 (화상)'],
+    sk: [sk('fire', '불화살', 'shot', 'draw', 6, 11, { cnt: 1, mul: 1.3, color: 0xff8040, glow: 0xffb070, pose2: 'shoot' }), sk('prone', '엎드려 쏘기', 'volley', 'prone', 9, 12, { cnt: 3, gap: 0.25, mul: 0.8, pose2: 'prone' }),
+      sk('kick', '걷어차기', 'slam', 'kick', 7, 1.4, { r: 1.3, mul: 0.6, kb: 2.2 })] },
+  // ── 4기 적 · 강적 ──
+  glitch: { st: { hp: 240, atk: 20, spd: 3.9, melee: ML(1.9, 1.1, 0.25, 0.75, 1.6, 1.0), weight: 120, r: 0.42 }, pas: ['글리치', '맞는 순간 화면이 깨지듯 비켜남 (18%) — 2성급이지만 기술만으로 30층 최강'],
+    sk: [sk('thrust', '일섬 찌르기', 'thrust', 'thrust', 4, 3.4, { len: 3.6, mul: 1.6, windup: 0.3 }), sk('lunge', '파고드는 찌르기', 'dash', 'lunge', 6, 5, { len: 5, mul: 1.3, windup: 0.25 }),
+      sk('combo', '검투사 연격', 'combo', 'slash', 7, 2.4, { sub: [{ type: 'slash', pose: 'slash', pose2: 'slash', r: 2.2, arc: 1.8, mul: 0.9, windup: 0.2 }, { type: 'slash', pose: 'attack2', pose2: 'attack2', r: 2.2, arc: 1.8, mul: 1.0, windup: 0.2 }, { type: 'thrust', pose: 'thrust', pose2: 'thrust', len: 3, mul: 1.2, windup: 0.2 }] }),
+      sk('bash', '방패 치기', 'slam', 'bash', 6, 1.6, { r: 1.5, mul: 0.6, kb: 2.5, stun: 1 }), sk('leap', '도약 내려베기', 'leap', 'leap', 9, 6, { len: 6, r: 2, mul: 0.5, mul2: 1.5 }), sk('parry', '받아넘기기', 'guard', 'guard', 7, 2, { t: 1.2 })] },
+  darkrider: { st: { hp: 560, atk: 25, spd: 4.4, melee: ML(2.6, 1.1, 0.35, 1.0, 1.6, 1.4), r: 0.8, weight: 650 }, pas: ['유령 군마', '밀리지도 넘어지지도 않음'],
+    sk: [sk('charge', '유령 돌격', 'dash', 'run', 8, 11, { len: 11, w: 1.8, mul: 1.5, kb: 3, trip: true, windup: 0.5 }), sk('rear', '앞발 들기', 'slam', 'rear', 9, 2.6, { r: 2.6, mul: 1.4, trip: true, windup: 0.6 }),
+      sk('thrust', '기창 찌르기', 'thrust', 'thrust', 6, 4.5, { len: 4.6, mul: 1.6 }), sk('swing', '말 위 휘두르기', 'slash', 'swing', 6, 3, { r: 3.2, arc: 2.4, mul: 1.2 })] },
+  sawknight: { st: { hp: 620, atk: 26, spd: 3.0, melee: ML(2.4, 1.2, 0.45, 1.2, 1.8, 1.4), armor: 0.8, r: 0.5, weight: 140 }, pas: ['톱날 대검', '베인 적은 피를 흘림'],
+    sk: [sk('slam', '톱날 내려찍기', 'slam', 'lift', 8, 2.6, { r: 2.2, atTarget: true, mul: 1.8, trip: true, windup: 0.7, pose2: 'slam' }), sk('lunge', '찌르며 돌진', 'dash', 'lunge', 8, 6, { len: 6, mul: 1.4, windup: 0.45 }),
+      sk('jump', '도약 베기', 'leap', 'leap', 10, 6, { len: 6, r: 2.2, mul: 0.6, mul2: 1.6, pose2: 'jumpslash' }), sk('sweep', '쓸어 베기', 'slash', 'low', 7, 3, { r: 3, arc: 2.6, mul: 1.1 })] },
+  purpledemon: { st: { hp: 440, atk: 23, spd: 4.0, melee: ML(1.6, 1.0, 0.25, 0.8, 1.6) }, pas: ['박쥐 날개', '12% 로 비켜남'],
+    sk: [sk('swoop', '날개 덮치기', 'leap', 'leap', 8, 7, { len: 7, r: 2, mul: 0.5, mul2: 1.4 }), sk('claw', '발톱 할퀴기', 'slash', 'attack2', 5, 1.9, { r: 1.9, arc: 1.6, mul: 1.4, sts: 'bleed' }),
+      sk('spin', '회전 차기', 'slash', 'kick2', 7, 2.1, { r: 2.1, arc: 6.3, mul: 1.0, kb: 2 }), sk('curse', '저주 구체', 'shot', 'cast', 6, 10, { cnt: 3, spread: 0.15, mul: 0.7, color: 0xb060ff, fam: 'magic' })] },
+  pinkdemon: { st: { hp: 400, atk: 22, spd: 3.3, melee: ML(1.4, 0.8), bow: { range: 12, windup: 0.4, cd: 1.0, speed: 22 } }, pas: ['가시 바퀴 후광', '마법 피해 -25%'],
+    sk: [sk('orb', '마력 구슬', 'shot', 'cast', 4, 11, { cnt: 1, mul: 1.5, color: 0xff60c0, glow: 0xff9ad8, fam: 'magic', speed: 18, len: 0.6, thick: 0.18 }),
+      sk('vortex', '분홍 소용돌이', 'zone', 'summon', 9, 10, { r: 3, delay: 1.0, mul: 1.4, color: 0xff60c0 }), sk('push', '밀쳐내기', 'wave', 'attack', 8, 2.5, { cnt: 1, r: 2.5, mul: 0.6, kb: 2.6 }),
+      sk('barrage', '구슬 연사', 'volley', 'attack2', 9, 11, { cnt: 5, gap: 0.12, mul: 0.5, color: 0xff60c0, fam: 'magic', pose2: 'attack2' })] },
+  pehto: { st: { hp: 330, atk: 28, spd: 3.6, melee: ML(2.4, 1.1, 0.3, 0.9, 1.8, 1.0), armor: 0.85, r: 0.45, weight: 85 }, pas: ['대귀족의 피', '쓰러질 때 한 번 1로 버팀 · 반 아래서 피해 +20%'],
+    sk: [sk('lunge', '마검 찌르기', 'dash', 'lunge', 6, 6, { len: 6, mul: 1.6, windup: 0.35 }), sk('sweep', '마검 쓸기', 'slash', 'sweep', 7, 3.2, { r: 3.2, arc: 2.6, mul: 1.3 }),
+      sk('upper', '올려 베기', 'slash', 'upper', 6, 2.6, { r: 2.6, arc: 1.4, mul: 1.4, stun: 1 }), sk('leap', '도약 강타', 'leap', 'jump', 9, 6, { len: 6, r: 2.4, mul: 0.6, mul2: 1.7, pose2: 'leap' }),
+      sk('slam', '마검 내려찍기', 'slam', 'lift', 9, 2.4, { r: 2.2, atTarget: true, mul: 1.8, trip: true, windup: 0.6, pose2: 'slam' }), sk('guard', '검 막기', 'guard', 'guard', 9, 2, { t: 1.5 })] },
+  // ── 4기 보스 ──
+  regina: { boss: true, st: { hp: 2600, atk: 34, spd: 3.6, melee: ML(2.4, 1.1, 0.3, 0.9, 1.6, 1.0), r: 0.42, weight: 70 }, pas: ['권태로운 검', '반 아래로 떨어지면 깨어나 피해 +25%'],
+    phase: { at: 0.5, k: 1.25, spd: 1.15, say: '…조금은, 재밌어졌네.' },
+    sk: [sk('thrust', '붉은 찌르기', 'thrust', 'windup', 5, 5, { len: 5, mul: 1.7, pose2: 'thrust' }), sk('whirl', '회전 베기', 'slash', 'whirl', 7, 3, { r: 3, arc: 6.3, mul: 1.3 }),
+      sk('upper', '올려 베기', 'slash', 'upper', 6, 2.6, { r: 2.6, arc: 1.4, mul: 1.4, stun: 1 }), sk('flash', '붉은 일섬', 'beam', 'special', 9, 10, { len: 10, w: 1.2, mul: 2.0, windup: 0.8, color: 0xff3040 }),
+      sk('guard', '검 세우기', 'guard', 'guard', 9, 2, { t: 1.4 }),
+      sk('end', '권태의 끝', 'combo', 'thrust2', 13, 5, { ph: 2, sub: [{ type: 'thrust', pose: 'thrust2', pose2: 'thrust2', len: 5, mul: 1.4, windup: 0.3 }, { type: 'slash', pose: 'whirl', pose2: 'whirl', r: 3, arc: 6.3, mul: 1.2, windup: 0.3 }, { type: 'beam', pose: 'special', pose2: 'special', len: 10, w: 1.2, mul: 1.8, windup: 0.6, color: 0xff3040 }] })] },
+  teiron: { boss: true, st: { hp: 5200, atk: 46, spd: 3.2, melee: ML(3.4, 1.2, 0.35, 1.0, 1.4, 1.2), armor: 0.8, r: 0.55, weight: 110 }, pas: ['초승달 왕', '정면 피해 -25% · 넘어지지 않음'],
+    phase: { at: 0.5, k: 1.3, spd: 1.15, say: '(하얀 공간이 별빛 우주로 물든다)', pose: 'idle2' },
+    sk: [sk('javelin', '극강 투창', 'shot', 'spear', 9, 18, { cnt: 1, mul: 3.0, speed: 42, range: 22, len: 2.2, thick: 0.12, color: 0xc080ff, glow: 0xe0b0ff, pierce: true, windup: 0.9, kb: 2.4, pose2: 'spear' }),
+      sk('sweep', '초승달 쓸기', 'slash', 'sweep', 7, 4, { r: 4, arc: 3.0, mul: 1.4 }), sk('thrust', '창 찌르기', 'thrust', 'thrust', 5, 5, { len: 5, mul: 1.6 }),
+      sk('laser', '대검 레이저', 'beam', 'gs_swing', 11, 16, { len: 16, w: 2, mul: 2.2, windup: 1.2, color: 0xa060ff }), sk('slam', '대검 내려찍기', 'slam', 'gs_raise', 10, 3, { r: 3, atTarget: true, mul: 2.0, trip: true, windup: 0.9, pose2: 'gs_slam' }),
+      sk('cut', '공간 절단', 'beam', 'gs_thrust', 14, 14, { len: 14, w: 1.4, mul: 2.6, windup: 1.1, color: 0x8040ff, ph: 2 }), sk('stars', '별 무리', 'rain', 'gs_raise', 16, 12, { cnt: 8, r: 1.6, spread: 5, mul: 1.2, delay: 1.0, ph: 2, color: 0x9060ff, say: '…쏟아져라.' }),
+      sk('guard', '대검 막기', 'guard', 'gs_guard', 10, 3, { t: 2 })] },
+  pearlgak: { boss: true, st: { hp: 1300, atk: 22, spd: 4.0, melee: ML(2.2, 1.1, 0.22, 0.75, 1.4, 1.2), r: 0.36, weight: 48 }, pas: ['이게 2성', '한 방 세기는 2성 그대로 — 기술을 끝까지 다 씀 · 쓰러질 때 한 번 버팀'],
+    phase: { at: 0.5, k: 1.15, spd: 1.15, say: '(검은 날개가 찢어지듯 펼쳐진다)' },
+    sk: [sk('stab', '찍고 빼기', 'thrust', 'attack', 3, 2.6, { len: 2.6, mul: 1.3, windup: 0.25, pose2: 'attack' }),
+      sk('throw', '정면 투창', 'shot', 'throw', 6, 14, { cnt: 1, mul: 2.2, speed: 42, len: 1.6, thick: 0.07, color: 0x1a1a20, windup: 0.55, pose2: 'throw', kb: 1.6, pierce: true }),
+      sk('step', '스텝 찌르기', 'dash', 'stepthrust', 6, 5, { len: 4.5, mul: 1.4, windup: 0.25 }),
+      sk('triple', '3연속 베기', 'combo', 'triple', 9, 3, { sub: [{ type: 'slash', pose: 'triple', pose2: 'triple', r: 2.6, arc: 2.4, mul: 0.8, windup: 0.2 }, { type: 'slash', pose: 'triple', pose2: 'triple', r: 2.6, arc: 2.4, mul: 0.8, windup: 0.15 }, { type: 'slash', pose: 'triple', pose2: 'triple', r: 2.8, arc: 3.0, mul: 1.1, windup: 0.15 }] }),
+      sk('pillar', '솟는 거대 창', 'trap', 'pillar', 10, 10, { r: 1.8, delay: 1.1, mul: 1.6, stun: 1.2, tag: '꿰뚫림', color: 0x30303a }),
+      sk('sky', '공중 투창 (창비)', 'rain', 'skythrow', 11, 13, { cnt: 6, r: 1.4, spread: 3.5, mul: 1.0, delay: 0.9, color: 0x30303a }),
+      sk('wide', '반경 10m 횡베기', 'slash', 'wide', 13, 5, { r: 6, arc: 6.3, mul: 1.2, windup: 0.9, pose2: 'wide' }),
+      sk('exec', '정면 처형', 'dash', 'execute', 10, 9, { len: 9, w: 1.2, mul: 1.8, trip: true, windup: 0.3 }),
+      sk('cannon', '창 대포', 'beam', 'cannon', 12, 12, { len: 12, w: 1.2, mul: 2.2, windup: 0.9, color: 0x40404a, pose2: 'cannon' }),
+      sk('fly', '날아 투창', 'leap', 'flythrow', 12, 9, { len: 9, r: 2.2, mul: 0.6, mul2: 1.6, ph: 2 }),
+      sk('big', '초대형 치명타', 'zone', 'bigthrow', 18, 14, { r: 3.6, delay: 1.6, mul: 2.6, color: 0x202028, ph: 2 }),
+      sk('plunge', '처형 내리꽂기', 'leap', 'plunge', 14, 7, { len: 7, r: 2.4, mul: 0.6, mul2: 2.0, ph: 2 })] },
+  // ── 세르파 소환물 (세르파가 거품게를 흡수해 부름 — 그림은 서 있는 원화 한 장) ──
+  crab: { st: { hp: 30, atk: 1, spd: 2.8, r: 0.32, weight: 12 }, pas: ['거품 몸', '싸우지 않음 — 세르파 곁을 맴돌다 흡수됨'] },
+  maidA: { st: { hp: 95, atk: 11, spd: 3.5, melee: ML(1.3, 0.9) }, pas: ['시종', '세르파가 부름 (거품게 2)'] },
+  maidB: { st: { hp: 100, atk: 10, spd: 3.3, melee: ML(1.3, 0.8), bow: { range: 8, windup: 0.4, cd: 1.4, speed: 16 } }, pas: ['광석 알 시종', '광석 알을 던짐 (거품게 2)'] },
+  unitFight: { st: { hp: 130, atk: 15, spd: 4.2, melee: ML(1.5, 1.1, 0.25, 0.8, 1.4), r: 0.45, weight: 120 }, pas: ['광석 짐승', '세르파가 부름 (거품게 3)'], sk: [sk('bite', '광석 돌진', 'dash', 'idle', 7, 5, { len: 5, mul: 1.2, trip: true })] },
+  unitTank: { st: { hp: 300, atk: 10, spd: 2.6, melee: ML(1.6, 0.9, 0.45, 1.3, 1.4, 1.4), armor: 0.65, r: 0.55, weight: 300 }, pas: ['광석 껍질', '정면 피해 -30% (거품게 4)'], sk: [sk('wall', '몸으로 막기', 'guard', 'idle', 9, 4, { t: 3, taunt: true, r: 6 })] },
+  pin: { st: { hp: 105, atk: 16, spd: 3.2, melee: ML(1.2, 0.6), bow: { range: 15, windup: 0.45, cd: 1.0, speed: 40 } }, pas: ['긴 총', '세르파 소환 · 사수 (거품게 4)'], sk: [sk('snipe', '긴 총 저격', 'shot', 'idle', 7, 15, { cnt: 1, mul: 1.8, speed: 48, range: 16 })] },
+  tulin: { st: { hp: 115, atk: 9, spd: 3.3, melee: ML(1.2, 0.6) }, pas: ['광석 치유사', '세르파 소환 · 서포터 (거품게 4)'], sk: [sk('mend', '광석 치유', 'heal', 'idle', 8, 6, { r: 6, amt: 0.2 })] },
+  gula: { st: { hp: 180, atk: 18, spd: 3.6, melee: ML(1.8, 1.1, 0.3, 0.9, 1.6) }, pas: ['마도공학 기사', '세르파 소환 · 검사 (거품게 5)'], sk: [sk('cut', '마도 검격', 'slash', 'idle', 6, 2.4, { r: 2.4, arc: 2.0, mul: 1.5 })] },
+  mong: { st: { hp: 320, atk: 12, spd: 2.6, melee: ML(1.6, 0.9, 0.45, 1.3, 1.2, 1.4), armor: 0.6, r: 0.5, weight: 140 }, pas: ['수정 대방패', '정면 피해 -35% (거품게 5)'], sk: [sk('wall', '수정 대방패', 'guard', 'idle', 9, 4, { t: 3.5, taunt: true, r: 7 })] },
+  unitMid: { st: { hp: 140, atk: 17, spd: 3.0, melee: ML(1.3, 0.7), bow: { range: 10, windup: 0.4, cd: 1.0, speed: 22 } }, pas: ['마도 유닛', '세르파 소환 · 중거리 (거품게 6)'], sk: [sk('burst', '마도 폭발', 'zone', 'idle', 8, 9, { r: 2.4, delay: 1.0, mul: 1.4, color: 0x80e0ff })] },
+  unitFar: { st: { hp: 120, atk: 19, spd: 3.0, melee: ML(1.2, 0.6), bow: { range: 16, windup: 0.45, cd: 1.1, speed: 30 } }, pas: ['마도공학 유닛', '세르파 소환 · 원거리 (거품게 7)'], sk: [sk('beam', '마도 광선', 'beam', 'idle', 10, 14, { len: 14, w: 1.0, mul: 1.8, windup: 0.9, color: 0x60d0ff })] },
+});
+// 있던 인물 — 4기 새 그림 · 기술
+H2K.pearl.st = { hp: 165, atk: 18, spd: 3.8, melee: ML(2.0, 1.0, 0.25, 0.85, 1.4, 1.2) };   // 도감 등급 2 (2성)
+H2K.pearl.sk = [sk('throw', '정면 투창', 'shot', 'throw', 7, 12, { cnt: 1, mul: 1.8, speed: 38, len: 1.4, thick: 0.06, color: 0x2a2a30, windup: 0.5, pose2: 'throw', kb: 1.2 }),
+  sk('spin', '원형 베기', 'slash', 'spin', 8, 3, { r: 3, arc: 6.3, mul: 1.2, windup: 0.4, pose2: 'spin' }), sk('exec', '정면 처형', 'dash', 'execute', 10, 7, { len: 7, w: 1.1, mul: 1.8, windup: 0.3 }),
+  sk('kick', '돌려차기', 'slash', 'kick', 6, 1.9, { r: 1.9, arc: 2.0, mul: 1.0, kb: 2.4, windup: 0.35, pose2: 'kick' }), ...H2K.pearl.sk];
+H2K.manghyang.sk.push(sk('kick', '뿔 걷어차기', 'slash', 'kick', 6, 1.9, { r: 1.9, arc: 1.6, mul: 1.2, kb: 2.2 }), sk('claw', '할퀴어 올리기', 'slash', 'claw', 6, 1.9, { r: 1.9, arc: 1.6, mul: 1.3, sts: 'bleed' }));
+H2K.magusgirl.sk.push(sk('hop', '지팡이 도약', 'leap', 'jump', 10, 6, { len: 6, r: 2.2, mul: 0.6, mul2: 1.4 }));
+H2K.stagbeast.sk.push(sk('grab', '붙잡아 끌기', 'pull', 'grab', 9, 4, { len: 4, mul: 1.0 }), sk('pound', '내리치기', 'slam', 'pound', 8, 2.4, { r: 2.2, atTarget: true, mul: 1.7, trip: true, windup: 0.6 }), sk('kick', '앞차기', 'slash', 'kick', 6, 2.4, { r: 2.4, arc: 1.4, mul: 1.3, kb: 2.6 }));
+H2K.inclador.sk = [sk('upper', '장도리 어퍼', 'slash', 'upper', 6, 1.9, { r: 1.9, arc: 1.4, mul: 1.5, stun: 1, windup: 0.29, pose2: 'upper' }), sk('liver', '리버샷', 'thrust', 'liver', 7, 1.9, { len: 1.9, mul: 1.6, stun: 0.8, windup: 0.29, pose2: 'liver' }),
+  sk('noir', '느와르 어퍼', 'slash', 'noir', 12, 1.9, { r: 1.9, arc: 1.4, mul: 2.2, crit: true, windup: 0.29, pose2: 'noir' }), sk('head', '정수리 내려찍기', 'slam', 'headsmash', 9, 1.9, { r: 1.6, atTarget: true, mul: 1.9, trip: true, windup: 0.3, pose2: 'headsmash' }),
+  sk('exec', '필살 치명타 내려찍기', 'finisher', 'execute', 8, 2, { mul: 3.5, windup: 0.15, pose2: 'execute' }), ...H2K.inclador.sk];
 h2Build();
 // v2.1 민수: 다 큰 쥐 기사 · 베테랑 · 포렌은 인주 · 청광묵 크기 (비슷하거나 살짝 작게). 그림 키에 머리 위 창끝이 들어 있어 숫자가 큼 — 머리 높이로 맞춤 (쥐 기사 1~4단계는 이 키의 0.7 ~ 1)
 if (SPR.h2_ratknight) SPR.h2_ratknight.tall = 1.2;
@@ -694,3 +803,84 @@ const h2P = u => u && u.D && u.D.h2 && H2K[u.D.h2] && H2K[u.D.h2].pas ? H2PAS[H2
   };
 }
 TICKS.push(dt => { for (const u of G.units) if (u.D.h2 && !u.dead && !u.downed){ const P = h2P(u); if (P && P.tick) P.tick(u, dt); } });
+// v3.0 4기 패시브
+Object.assign(H2PAS, {
+  '오니의 손톱': { hitSts: 'bleed' },
+  '도살자': { out: (u, t) => t && (t.lying || t.downed || t.st === 'hurt') ? 1.35 : 1 },
+  '수정 방패': { in: (u, o) => h2Front(u, o.from) ? 0.7 : 1, kb: 0.4 },
+  '대기를 마시는 몸': { tick: (u, dt) => { for (const o of G.units) if (o.side === u.side && !o.dead && !o.downed && o.hp < o.max && dist(o, u) < 5) o.hp = Math.min(o.max, o.hp + o.max * 0.006 * dt); } },
+  '종군 간호': { tick: (u, dt) => { for (const o of G.units) if (o.side === u.side && !o.dead && !o.downed && o.hp < o.max && dist(o, u) < 4) o.hp = Math.min(o.max, o.hp + o.max * 0.005 * dt); } },
+  '심해의 눈': { out: (u) => h2Dark(u) ? 1.15 : 1 },
+  '작은 불씨': { hitSts: 'burn' },
+  '글리치': { dodge: 0.18 },
+  '유령 군마': { kb: 0 },
+  '톱날 대검': { hitSts: 'bleed' },
+  '박쥐 날개': { dodge: 0.12 },
+  '가시 바퀴 후광': { in: (u, o) => o.fam === 'magic' ? 0.75 : 1 },
+  '대귀족의 피': { last: 1, out: (u) => u.hp < u.max * 0.5 ? 1.2 : 1 },
+  '권태로운 검': { out: (u) => u.hp < u.max * 0.5 ? 1.25 : 1 },
+  '초승달 왕': { in: (u, o) => h2Front(u, o.from) ? 0.75 : 1, kb: 0 },
+  '이게 2성': { last: 1 },
+  '광석 껍질': { in: (u, o) => h2Front(u, o.from) ? 0.7 : 1, kb: 0.4 },
+  '수정 대방패': { in: (u, o) => h2Front(u, o.from) ? 0.65 : 1, kb: 0.3 },
+  '정령왕 코어': { tick: (u, dt) => serpaTick(u, dt) },
+});
+
+/* ---------- v3.0 (v0.85) 세르파 로직 — 수정 거품게 = 자원 유닛 (민수: «그걸 모으거나 해서 유닛을 뽑는 게 세르파 로직») ----------
+   · 싸움이 붙으면 세르파 곁에 거품게가 바로 둘 생기고, 그 뒤로 저절로 생김 (패시브 '정령왕 코어'). 거품게가 많을수록 더 빨리 불어남 (증식) — 최대 SERPA.cap
+   · 거품게는 싸우지 않고 세르파 곁을 맴돎 (crabThink). 적이 잡아 죽이면 그만큼 자원이 줄어듦 (지켜야 함)
+   · 기술 '광석 소환' (type 'serpa'): 곁의 거품게를 값만큼 흡수해 유닛 하나를 부름 — 시종 2 · 전투 유닛 3 · 탱킹 유닛 · 핀 · 튤린 4 · 굴라 · 몽 5 · 고급 마도 6 · 7
+     고르기: 앞에 막아 줄 게 없는데 적이 붙으면 탱커 (몽 · 탱킹 유닛), 다친 아군이 있으면 튤린, 아니면 살 수 있는 가장 센 것. 이미 부른 게 있으면 5마리까지 모았다가 부름
+   · 한 번에 부린 유닛은 SERPA.maxCall 까지, 부른 유닛은 SERPA.life 초 뒤 광석으로 흩어짐. 세르파가 쓰러지면 거품게도 흩어짐 */
+const SERPA = { cap: 8, base: 3.0, grow: 0.3, start: 2, maxCall: 3, life: 60,
+  menu: [{ what: 'unitFar', cost: 7 }, { what: 'unitMid', cost: 6 }, { what: 'mong', cost: 5, role: 'tank' }, { what: 'gula', cost: 5 }, { what: 'tulin', cost: 4, role: 'heal' }, { what: 'pin', cost: 4 },
+    { what: 'unitTank', cost: 4, role: 'tank' }, { what: 'unitFight', cost: 3 }, { what: 'maidB', cost: 2 }, { what: 'maidA', cost: 2 }] };
+const serpaKind = (u, w) => (u.side === 'enemy' ? 'h2e_' : 'h2_') + w;
+function serpaCrabs(u){ return (u.crabs = (u.crabs || []).filter(c => !c.dead && G.units.includes(c))); }
+function serpaCalls(u){ return (u.minions = (u.minions || []).filter(m => !m.dead && G.units.includes(m))); }
+function serpaFoes(u, r = 22){ return G.units.filter(e => e.side !== u.side && e.side !== 'neutral' && !e.dead && !e.downed && (e.side !== 'enemy' || e.alert) && !e.D.dummy && !e.D.h2res && dist(e, u) < r); }   // 적은 경계한 것만 (동료 쪽은 경계 표시가 없음)
+function serpaChoice(u){
+  const n = serpaCrabs(u).length, calls = serpaCalls(u); if (calls.length >= SERPA.maxCall || n < 2) return null;
+  const has = w => calls.some(m => m.D.h2 === w), team = G.units.filter(o => o.side === u.side && !o.dead && o.D && !o.D.h2res);
+  const needTank = !calls.some(m => m.D.h2 === 'mong' || m.D.h2 === 'unitTank') && serpaFoes(u, 7).length > 0;
+  const needHeal = !has('tulin') && team.some(o => o.hp < o.max * 0.5);
+  if (calls.length && n < 5 && !needTank && !needHeal) return null;   // 이미 부린 게 있으면 조금 모았다가 센 것으로
+  const ok = SERPA.menu.filter(m => m.cost <= n && DEFS[serpaKind(u, m.what)]); if (!ok.length) return null;
+  return (needTank && ok.find(m => m.role === 'tank')) || (needHeal && ok.find(m => m.role === 'heal')) || ok[0];
+}
+function serpaCall(u, tgt){
+  const c = serpaChoice(u); if (!c) return false;
+  const L = serpaCrabs(u).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, c.cost); let x = 0, z = 0;
+  for (const k of L){ x += k.x; z += k.z; spark(k.x, k.y + 0.4, k.z, 0x9fe8ff, 6, 2); removeUnit(k); }
+  u.crabs = serpaCrabs(u); x /= L.length; z /= L.length;
+  if (tgt && !tgt.dead){ const a = Math.atan2(tgt.z - u.z, tgt.x - u.x); x = (x + u.x + Math.cos(a) * 1.6) / 2; z = (z + u.z + Math.sin(a) * 1.6) / 2; }   // 흡수한 자리와 세르파 앞 사이에서 솟음
+  const m = spawn(serpaKind(u, c.what), x, z, u.side); m.summoner = u; m.alert = true; m.seen = G.t; serpaCalls(u).push(m);
+  ring(x, z, 0x9fe8ff, 1.8, 0.7); spark(x, 1, z, 0xc8f4ff, 22, 4); dust(x, z, 10); camShake(0.08, 0.15);
+  popText(m.x, m.y + bodyH(m) + 0.4, m.z, `${m.D.name} (거품게 ${c.cost})`, 'heal', 1.2);
+  setTimeout(() => { if (!m.dead && G.units.includes(m)){ spark(m.x, m.y + 0.8, m.z, 0x9fe8ff, 10, 3); smoke(m.x, m.z, 4, 0.8, 0.8); removeUnit(m); } }, SERPA.life * 1000);
+  return true;
+}
+function serpaTick(u, dt){
+  if (u.downed || !serpaFoes(u).length){ u._crabOn = false; return; }   // 싸움이 붙었을 때만 생김
+  const L = serpaCrabs(u); if (L.length >= SERPA.cap) return;
+  if (!u._crabOn){ u._crabOn = true; if (L.length < SERPA.start){ u._crabT = 0; u._crabBurst = SERPA.start - L.length; } }   // 싸움이 붙자마자 둘
+  u._crabT = (u._crabT ?? 1.2) - dt * (1 + SERPA.grow * L.length);   // 많을수록 빨리 불어남 (증식)
+  if (u._crabT > 0) return; u._crabT = (u._crabBurst = Math.max(0, (u._crabBurst || 0) - 1)) > 0 ? 0.25 : SERPA.base;
+  const kind = serpaKind(u, 'crab'); if (!DEFS[kind]) return;
+  const src = L.length && Math.random() < 0.6 ? L[Math.floor(Math.random() * L.length)] : u, a = Math.random() * Math.PI * 2;   // 대개 있던 거품게 곁에서 갈라져 나옴
+  const c = spawn(kind, src.x + Math.cos(a) * 0.9, src.z + Math.sin(a) * 0.9, u.side); c.crabOf = u; c.summoner = u; c.alert = true; c.seen = G.t; L.push(c); u.crabs = L;
+  if (c.tag){ c.tag.remove(); c.tag = null; }   // 이름표는 빼고 체력 줄만 (여럿이 겹쳐 어지러움)
+  spark(c.x, c.y + 0.3, c.z, 0xc8f4ff, 5, 1.5);
+}
+// 거품게: 싸우지 않고 세르파 곁을 맴돎. 세르파가 쓰러지면 흩어짐
+function crabThink(u, dt){
+  const s = u.crabOf;
+  if (!s || s.dead || !G.units.includes(s) || (s.downed && (u._lostT = (u._lostT || 0) + dt) > 2)){ if (!u.dead && G.units.includes(u)){ spark(u.x, u.y + 0.3, u.z, 0x9fe8ff, 6, 2); removeUnit(u); } return; }
+  if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0){ u.st = 'idle'; setPose(u, 'idle'); } return; }
+  u._ang = (u._ang ?? Math.random() * Math.PI * 2) + dt * 0.45;
+  const R = 1.5 + ((u.uid || 0) % 3) * 0.55, tx = s.x + Math.cos(u._ang) * R, tz = s.z + Math.sin(u._ang) * R;
+  u.moving = false; if (Math.hypot(tx - u.x, tz - u.z) > 0.3) steerTo(u, tx, tz, u.spd * (dist(u, s) > 4 ? 1.6 : 0.7), dt);
+}
+if (DEFS.h2_crab){ DEFS.h2_crab.think = DEFS.h2e_crab.think = crabThink; DEFS.h2_crab.h2res = DEFS.h2e_crab.h2res = true; }
+if (typeof FOE_XP !== 'undefined'){ FOE_XP.h2e_crab = 2; for (const w of ['maidA', 'maidB', 'unitFight', 'unitTank', 'pin', 'tulin', 'gula', 'mong', 'unitMid', 'unitFar']) FOE_XP['h2e_' + w] = 10; }
+for (const s of H2.list) if (H2R[s] && H2R[s].summon) H2NOMIX.add(s);   // 소환물 (세르파 것) 은 혼전 · 콜로세움 명단에 따로 안 나옴

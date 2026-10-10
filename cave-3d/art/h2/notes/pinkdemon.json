@@ -1,0 +1,34 @@
+{
+ "slug": "pinkdemon",
+ "name": "분홍 마족",
+ "rank": "3성",
+ "role": "적",
+ "tall": 1.8,
+ "weight": 55,
+ "tag": "demon",
+ "role_job": "마법",
+ "bag": 3,
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 5,
+  "stealth": 2
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "가시 바퀴 후광 · 꼬리 · 분홍 소용돌이 무늬의 마족. 손의 마력 구슬로 쏘고 밀침",
+ "face": "art/h2/pinkdemon/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/pinkdemon/idle.webp",
+   "w": 303,
+   "h": 405,
+   "ax": 155,
+   "ay": 402,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ }
+}

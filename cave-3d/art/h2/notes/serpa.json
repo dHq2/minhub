@@ -1,0 +1,34 @@
+{
+ "slug": "serpa",
+ "name": "세르파",
+ "rank": "3성",
+ "role": "동료",
+ "tall": 1.62,
+ "weight": 48,
+ "tag": "construct",
+ "role_job": "소환",
+ "bag": 3,
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 4,
+  "stealth": 1
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "3성 몬스터퀸. 마도공학 광물계 정령왕 코어. 광석생물 · 시종을 불러 물량으로 싸움",
+ "face": "art/h2/serpa/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/serpa/idle.webp",
+   "w": 223,
+   "h": 487,
+   "ax": 94,
+   "ay": 484,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ }
+}

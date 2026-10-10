@@ -1,0 +1,34 @@
+{
+ "slug": "riwan",
+ "name": "리완",
+ "rank": "4성",
+ "role": "동료",
+ "tall": 1.76,
+ "weight": 95,
+ "tag": "knight",
+ "role_job": "방패",
+ "bag": 4,
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "4성 탱커. 철퇴와 큰 수정 방패의 기사. 앞을 막고 버팀",
+ "face": "art/h2/riwan/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/riwan/idle.webp",
+   "w": 228,
+   "h": 381,
+   "ax": 121,
+   "ay": 378,
+   "orig": "4기 대기 칸 A r1c2"
+  }
+ }
+}

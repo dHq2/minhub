@@ -1,0 +1,36 @@
+{
+ "slug": "teiron",
+ "name": "테이론",
+ "rank": "7성",
+ "role": "보스",
+ "tall": 2.3,
+ "weight": 110,
+ "tag": "demon",
+ "role_job": "선봉",
+ "bag": 6,
+ "apt": {
+  "melee": 5,
+  "spear": 5,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "작은 우주차원을 호령하던 초승달 왕 (7성). 20층 이후의 강보스 — 하얀 공간이 우주로 침식됨. 대검 레이저 · 극강 투창 · 공간 절단",
+ "face": "art/h2/teiron/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/teiron/idle.webp",
+   "w": 351,
+   "h": 500,
+   "ax": 175,
+   "ay": 497,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ },
+ "codex_g": "balyong",
+ "codex_face": 0
+}

@@ -1,0 +1,38 @@
+{
+ "slug": "pearlgak",
+ "name": "각펄",
+ "rank": "2성",
+ "role": "보스",
+ "tall": 1.58,
+ "weight": 48,
+ "tag": "angel",
+ "role_job": "선봉",
+ "bag": 3,
+ "apt": {
+  "melee": 5,
+  "spear": 5,
+  "bow": 0,
+  "gun": 0,
+  "magic": 3,
+  "stealth": 1
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "보스 인카운터로 나온 펄 (각펄, 2성). «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!» 를 보여 주는 판 — 능력치는 2성 그대로, 기술을 끝까지 다 씀. 호러에 가까운 연출. 정면투창 · 공중투창 (창비 · 거대 창) · 처형 · 연속 찌르기 · 넓은 횡베기 · 땅에서 솟는 거대 창",
+ "face": "art/h2/pearl/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/pearl/idle.webp",
+   "w": 345,
+   "h": 699,
+   "ax": 100,
+   "ay": 696,
+   "from": "펄기본, 펄 공격.png 왼쪽",
+   "orig": "펄기본 — 날개 접고 서서 웃음",
+   "scale": 0.711
+  }
+ },
+ "codex_g": "h2_pearl",
+ "codex_face": 0
+}

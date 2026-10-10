@@ -1,0 +1,34 @@
+{
+ "slug": "glitch",
+ "name": "글리치 챔피언",
+ "rank": "2성",
+ "role": "적",
+ "tall": 1.95,
+ "weight": 120,
+ "tag": "knight",
+ "role_job": "선봉",
+ "bag": 4,
+ "apt": {
+  "melee": 5,
+  "spear": 2,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "30층 스타디움의 챔피언 — 2성급이지만 오로지 기술만으로 승부하는 30층의 최강자. 황금 갑옷 검투사, 갑옷 위로 화면이 깨지듯 빛이 튐 (글리치)",
+ "face": "art/h2/glitch/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/glitch/idle.webp",
+   "w": 201,
+   "h": 368,
+   "ax": 101,
+   "ay": 365,
+   "orig": "4기 대기 칸 C r0c0"
+  }
+ }
+}

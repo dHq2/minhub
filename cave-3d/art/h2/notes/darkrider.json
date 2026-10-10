@@ -1,0 +1,36 @@
+{
+ "slug": "darkrider",
+ "name": "기병기사",
+ "rank": "4성",
+ "role": "적",
+ "tall": 2.7,
+ "weight": 650,
+ "tag": "knight",
+ "role_job": "돌격",
+ "bag": 4,
+ "apt": {
+  "melee": 4,
+  "spear": 3,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "유령 군마를 탄 암흑 기사 (드라이브 파일 이름은 3성 정도 · 도감 등급 4). 길게 돌진하며 베고 짓밟음",
+ "face": "art/h2/darkrider/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/darkrider/idle.webp",
+   "w": 312,
+   "h": 317,
+   "ax": 180,
+   "ay": 314,
+   "orig": "4기 대기 칸 B r1c2"
+  }
+ },
+ "codex_g": "darkrider",
+ "codex_face": 0
+}

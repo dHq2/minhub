@@ -1,0 +1,36 @@
+{
+ "slug": "regina",
+ "name": "레지나",
+ "rank": "5성",
+ "role": "보스",
+ "tall": 1.9,
+ "weight": 70,
+ "tag": "beastkin",
+ "role_job": "선봉",
+ "bag": 4,
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 1
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "9층의 보스. 알현실에 유폐되어 권태로운 수인 검사 (5성). 에너지계 검술 — 붉게 빛나는 장검",
+ "face": "art/h2/regina/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/regina/idle.webp",
+   "w": 426,
+   "h": 502,
+   "ax": 241,
+   "ay": 499,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ },
+ "codex_g": "regina",
+ "codex_face": 0
+}

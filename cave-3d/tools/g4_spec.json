@@ -1,0 +1,1866 @@
+{
+ "v": "1.0",
+ "owners": {
+  "yuni": {
+   "name": "오니 유니",
+   "cid": null,
+   "game": "h2",
+   "note": "2성 · NPC로 먼저 등장 (기본 · 유혹) · 보석 뿔 유카타 오니"
+  },
+  "kon": {
+   "name": "도살자 콘",
+   "cid": null,
+   "game": "h2",
+   "note": "뼈 문신 · 붉은 누더기 털망토 · 단검 (2성 정도)"
+  },
+  "riwan": {
+   "name": "리완",
+   "cid": null,
+   "game": "h2",
+   "note": "4성 탱커 · 수정 방패 기사 (철퇴 + 큰 수정 방패)"
+  },
+  "serpa": {
+   "name": "세르파",
+   "cid": null,
+   "game": "h2",
+   "note": "3성 몬스터퀸 · 마도공학 광물계 · 광석생물 생성 · 물량전 특화 (구 · 신성 세르파)"
+  },
+  "gula": {
+   "name": "굴라",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 검사"
+  },
+  "tulin": {
+   "name": "튤린",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 서포터"
+  },
+  "pin": {
+   "name": "핀",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 사수"
+  },
+  "mong": {
+   "name": "몽",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 방패"
+  },
+  "maidA": {
+   "name": "일반 시종 A",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 시종"
+  },
+  "maidB": {
+   "name": "일반 시종 B",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 시종"
+  },
+  "unitFight": {
+   "name": "일반 전투 유닛",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 광석 짐승 (근접)"
+  },
+  "unitTank": {
+   "name": "일반 탱킹 유닛",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 광석 짐승 (몸빵)"
+  },
+  "unitMid": {
+   "name": "고급 마도 유닛 (중거리)",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 마도공학 유닛"
+  },
+  "unitFar": {
+   "name": "고급 마도공학 유닛 (원거리)",
+   "cid": null,
+   "game": "sum",
+   "note": "세르파 소환 · 작은 슬라임을 모으고 불려 유닛을 부름"
+  },
+  "shu": {
+   "name": "슈",
+   "cid": null,
+   "game": "h2",
+   "note": "3성 힐러 · 정령계 인간 · 대기를 마시며 삶 · 눈가린 메이드 치유사"
+  },
+  "glitch": {
+   "name": "글리치 챔피언",
+   "cid": null,
+   "game": "h2",
+   "note": "30층 경기장 챔피언 (중요) · 황금 갑옷 글리치 검투사"
+  },
+  "trans": {
+   "name": "초월자들",
+   "cid": null,
+   "game": "npc",
+   "note": "6~7성 초월자 · 중립지대 · 개인 (발렌타인 · 부정 · 고뇌 · 의도 · 방역) · 본넥스 · 훼 롄 · 소요 · 금해 · 베리욘"
+  },
+  "stadium": {
+   "name": "경기장 사람들",
+   "cid": null,
+   "game": "npc",
+   "note": "30층 경기장: 중계자 MC 더 플링 · DJ 춘향 · 거인 관중 (A1 · A2 · B · 대머리) · 아틀라스 7성"
+  },
+  "east": {
+   "name": "동방 5인 · 서방 4인",
+   "cid": null,
+   "game": "m9",
+   "note": "4기 잡몹 9인 (스테이지 4~20 시트): 쌍부 · 방도끼 · 동방소총수 · 동방저격수 · 가면 검사 · 헌팅나이프 · 카밀라 · 목자 · 선도자"
+  },
+  "twinpistol": {
+   "name": "쌍피스톨 기사",
+   "cid": null,
+   "game": "npc",
+   "note": "붉은 수정 갑옷 · 쌍권총"
+  },
+  "orientpistol": {
+   "name": "오리엔탈 피스톨",
+   "cid": null,
+   "game": "npc",
+   "note": "검은 사제복 · 투구 · 권총"
+  },
+  "purpledemon": {
+   "name": "보라 날개 악마",
+   "cid": null,
+   "game": "h2",
+   "note": "박쥐 날개 · 흰 무늬 보라 악마 (10 · 8 동작 시트)"
+  },
+  "pinkdemon": {
+   "name": "분홍 마족",
+   "cid": null,
+   "game": "h2",
+   "note": "가시 바퀴 후광 · 꼬리 · 분홍 소용돌이 무늬"
+  },
+  "halo": {
+   "name": "후광 가면 괴물",
+   "cid": null,
+   "game": "npc",
+   "note": "가면과 후광의 고딕 괴물 (원화 · 참고 사진)"
+  },
+  "plan4": {
+   "name": "4기 기획 메모",
+   "cid": null,
+   "game": "ref",
+   "note": "기획 표 캡처 (역할 · 이름 메모)"
+  },
+  "icons4": {
+   "name": "전략 · 전술 아이콘",
+   "cid": null,
+   "game": "icon",
+   "note": "전술 기동 · 전술 전략 · 신호와 지휘 · 전장 자원관리 — 20종씩 4판"
+  },
+  "noblelady": {
+   "name": "귀족부인",
+   "cid": null,
+   "game": "npc",
+   "note": "보스급 · 가시 왕관 · 손으로 얼굴을 가린 귀부인 (원화 한 장 — 동작 그림이 오면 게임에)"
+  },
+  "pearl": {
+   "name": "인공타천사 펄",
+   "cid": "C-215",
+   "game": "h2",
+   "note": "각펄 · 신펄 움짤, 검은 천사 표정"
+  },
+  "manghyang": {
+   "name": "이계악마 망향",
+   "cid": "C-212",
+   "game": "h2",
+   "note": ""
+  },
+  "magusgirl": {
+   "name": "마도사 맨얼굴 (마도사녀)",
+   "cid": "C-240",
+   "game": "h2",
+   "note": ""
+  },
+  "inclador": {
+   "name": "장 끌레도르 (갱스터 잉끌레이도르)",
+   "cid": "C-262",
+   "game": "h2",
+   "note": "장도리 움짤 · 느와르 걷기"
+  },
+  "stagbeast": {
+   "name": "사슴 해골 영웅",
+   "cid": "C-273",
+   "game": "h2",
+   "note": ""
+  },
+  "cs": {
+   "name": "청승",
+   "cid": "C-088",
+   "game": "foe",
+   "note": ""
+  },
+  "jakyak": {
+   "name": "작약",
+   "cid": "C-089",
+   "game": "foe",
+   "note": ""
+  },
+  "janggun": {
+   "name": "장군님 호레이쇼",
+   "cid": "C-158",
+   "game": "foe",
+   "note": "대장군 호레이쇼 (4성 정도)"
+  },
+  "eyemon": {
+   "name": "눈깔괴물",
+   "cid": "C-080",
+   "game": "foe",
+   "note": ""
+  },
+  "benkin": {
+   "name": "벤킨",
+   "cid": "C-057",
+   "game": "foe1",
+   "note": ""
+  },
+  "brute": {
+   "name": "곤봉 거한",
+   "cid": "C-055",
+   "game": "foe1",
+   "note": "거대 곤봉 괴물 · 돌갑옷 거인 · 회색 거인"
+  },
+  "goodwill": {
+   "name": "GOOD WILL",
+   "cid": "C-010",
+   "game": "hero1",
+   "note": ""
+  },
+  "goblin": {
+   "name": "청광묵",
+   "cid": "C-004",
+   "game": "pro",
+   "note": "팜 버스트 (강한 폭발과 반동 · 넉백 · 화염 · 치명상이면 머리가 터지며 즉사)"
+  },
+  "regina": {
+   "name": "레지나",
+   "cid": "C-085",
+   "game": "h2",
+   "note": "보스"
+  },
+  "pehto": {
+   "name": "페흐토",
+   "cid": "C-108",
+   "game": "h2",
+   "note": "뿔 달린 기사 보스"
+  },
+  "teiron": {
+   "name": "테이론",
+   "cid": "C-086",
+   "game": "h2",
+   "note": "초승달 왕 · 대검"
+  },
+  "chinchilla": {
+   "name": "친칠라",
+   "cid": "C-106",
+   "game": "h2",
+   "note": "곰 후드 궁수 (사과 그림은 빼고 씀)"
+  },
+  "traka": {
+   "name": "트라카",
+   "cid": "C-107",
+   "game": "h2",
+   "note": "고블린 궁수"
+  },
+  "nurse": {
+   "name": "간호사",
+   "cid": "C-018",
+   "game": "h2",
+   "note": "1성 영웅"
+  },
+  "gothic": {
+   "name": "고딕 기사 (흑기사 비나)",
+   "cid": "C-019",
+   "game": "h2",
+   "note": "3성 영웅"
+  },
+  "darkrider": {
+   "name": "승마 기사 (기병기사)",
+   "cid": "C-072",
+   "game": "h2",
+   "note": "3성 정도 · 유령 군마"
+  },
+  "sawknight": {
+   "name": "톱날 대검을 든 망토 기사 (마계장군 A)",
+   "cid": "C-187",
+   "game": "h2",
+   "note": "마계장군 A"
+  }
+ },
+ "files": {
+  "4기/A1 리듬2.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "거인 A1 리듬 2"
+  },
+  "4기/A2 리듬2(골반).webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "거인 A2 리듬 2 (골반)"
+  },
+  "4기/MC 더 플링, DJ 춘향.png": {
+   "owner": "stadium",
+   "kind": "art",
+   "note": "중계자 MC 더 플링 · DJ 춘향"
+  },
+  "4기/image(20261007-230709)(1).png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "장 끌레도르 서 있는 그림"
+  },
+  "4기/image(20261010-023224).png": {
+   "owner": "eyemon",
+   "kind": "art",
+   "note": "눈깔괴물 원화 (긴 몸)"
+  },
+  "4기/image(20261010-040808).png": {
+   "owner": "glitch",
+   "kind": "ref",
+   "note": "챔피언 (중요) 기획 캡처"
+  },
+  "4기/image(20261010-040831).png": {
+   "owner": "stadium",
+   "kind": "ref",
+   "note": "중계자 MC 더 플링 · DJ 춘향 (기획 캡처)"
+  },
+  "4기/image(20261010-040904).png": {
+   "owner": "stadium",
+   "kind": "ref",
+   "note": "거인 관중 · 아틀라스 (중요)"
+  },
+  "4기/image(20261010-040958).png": {
+   "owner": "halo",
+   "kind": "ref",
+   "note": "후광 가면 괴물 참고 (사진 · 그림)"
+  },
+  "4기/image(20261010-041243).png": {
+   "owner": "plan4",
+   "kind": "ref",
+   "note": "세르파 · 슈 · 벤티 기획 메모"
+  },
+  "4기/image(20261010-041331).png": {
+   "owner": "east",
+   "kind": "ref",
+   "note": "서방 4인: 라스트 솔져 카밀라 · 심계 소령 헌팅나이프 · 선도자 (여) · 목자 (남)"
+  },
+  "4기/image(20261010-041454).png": {
+   "owner": "trans",
+   "kind": "ref",
+   "note": "중립지대 · 개인: 발렌타인 · 부정 · 고뇌 · 의도 (선에 가까움) · 방역"
+  },
+  "4기/image(20261010-041720).png": {
+   "owner": "trans",
+   "kind": "ref",
+   "note": "초월자 분위기 판 (훼 롄 · 소요 · 금해 · 베리욘 …)"
+  },
+  "4기/image(20261010-042003).png": {
+   "owner": "glitch",
+   "kind": "ref",
+   "note": "챔피언 기획 캡처"
+  },
+  "4기/image(20261010-042016).png": {
+   "owner": "stadium",
+   "kind": "ref",
+   "note": "중계자 · DJ (기획 캡처)"
+  },
+  "4기/image(20261010-042035).png": {
+   "owner": "stadium",
+   "kind": "ref",
+   "note": "거인 관중 (기획 캡처)"
+  },
+  "4기/image(20261010-042250).png": {
+   "owner": "trans",
+   "kind": "ref",
+   "note": "발렌타인 · 부정 · 고뇌 · 의도 (기획 캡처)"
+  },
+  "4기/image(20261010-042332).png": {
+   "owner": "trans",
+   "kind": "ref",
+   "note": "초월자 분위기 판 (다른 캡처)"
+  },
+  "4기/가면과 후광의 고딕 괴물들.png": {
+   "owner": "halo",
+   "kind": "art",
+   "note": "가면과 후광의 고딕 괴물"
+  },
+  "4기/간호사1.png": {
+   "owner": "nurse",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기/간호사특수2.png": {
+   "owner": "nurse",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기/거인A.png": {
+   "owner": "stadium",
+   "kind": "art",
+   "note": "거인 A (세 모습)"
+  },
+  "4기/거인A1 단독리듬.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "거인 A1 단독 리듬"
+  },
+  "4기/거인A2 단독리듬.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "거인 A2 단독 리듬"
+  },
+  "4기/거인B단독리듭.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "거인 B 단독 리듬"
+  },
+  "4기/거인들 원화.png": {
+   "owner": "stadium",
+   "kind": "ref",
+   "note": "거인 관중 분위기 판"
+  },
+  "4기/검은 얼굴의 금발 망치꾼.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "얼굴 가린 금발 망치꾼 (걷기)"
+  },
+  "4기/검은 정장의 클로해머 일격(1).png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "클로해머 일격"
+  },
+  "4기/구, 신성 세르파.png": {
+   "owner": "serpa",
+   "kind": "art",
+   "note": "구 · 신성 세르파"
+  },
+  "4기/굿윌 파운딩 마운트 파운딩의 상대캐릭터는 삭제해서 쓸거임.png": {
+   "owner": "goodwill",
+   "kind": "sheet",
+   "note": "마운트 파운딩 (상대 인물은 지우고 씀)"
+  },
+  "4기/굿윌1.png": {
+   "owner": "goodwill",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기/금해, 베리욘.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "여행자 금해 · 몽상가 베리욘"
+  },
+  "4기/기병기사(3성정도).png": {
+   "owner": "darkrider",
+   "kind": "art",
+   "note": "기병기사 (3성 정도)"
+  },
+  "4기/네 전사의 전신 콘셉트 시트.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "서방 4인 전신 (헌팅나이프 · 카밀라 · 목자 · 선도자)"
+  },
+  "4기/노아르 해머맨의 느린 걸음.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "느와르 해머맨 느린 걸음"
+  },
+  "4기/느와르 금발 남자의 해머 워킹.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "느와르 해머 워킹"
+  },
+  "4기/대머리거인 단독리듬.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "대머리 거인 단독 리듬"
+  },
+  "4기/도살자 원화.png": {
+   "owner": "kon",
+   "kind": "art",
+   "note": "도살자 원화"
+  },
+  "4기/동방원화.png": {
+   "owner": "east",
+   "kind": "ref",
+   "note": "동방 원화 분위기 판"
+  },
+  "4기/리완 원화.png": {
+   "owner": "riwan",
+   "kind": "art",
+   "note": "리완 원화"
+  },
+  "4기/마계장군A.png": {
+   "owner": "sawknight",
+   "kind": "art",
+   "note": "마계장군 A"
+  },
+  "4기/서방 4인방 원화.png": {
+   "owner": "east",
+   "kind": "ref",
+   "note": "서방 4인방 원화 (기획 캡처)"
+  },
+  "4기/세 신성한 거인의 전신 콘셉트.png": {
+   "owner": "stadium",
+   "kind": "art",
+   "note": "거인 관중 셋 (정장 · A1 · B)"
+  },
+  "4기/세르파 원화.png": {
+   "owner": "serpa",
+   "kind": "art",
+   "note": "세르파 원화"
+  },
+  "4기/슈 스탠딩2.png": {
+   "owner": "shu",
+   "kind": "art",
+   "note": "슈 스탠딩 2"
+  },
+  "4기/신호와 지휘 중심의 전략 아이콘-2.png": {
+   "owner": "icons4",
+   "kind": "icon",
+   "note": "신호와 지휘 20종"
+  },
+  "4기/쌍피스톨기사.png": {
+   "owner": "twinpistol",
+   "kind": "art",
+   "note": ""
+  },
+  "4기/아틀라스 7성 단동 리듬.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "아틀라스 (7성) 단독 리듬"
+  },
+  "4기/오리엔탈 피스톨.png": {
+   "owner": "orientpistol",
+   "kind": "art",
+   "note": ""
+  },
+  "4기/원화2.png": {
+   "owner": "plan4",
+   "kind": "ref",
+   "note": "세르파 · 슈 기획 메모 (다른 캡처)"
+  },
+  "4기/전술 기동 아이콘 20종-1.png": {
+   "owner": "icons4",
+   "kind": "icon",
+   "note": "전술 기동 20종"
+  },
+  "4기/전술 전략 아이콘 20종.png": {
+   "owner": "icons4",
+   "kind": "icon",
+   "note": "전술 전략 20종"
+  },
+  "4기/전장 자원관리 전략 아이콘 20종-3.png": {
+   "owner": "icons4",
+   "kind": "icon",
+   "note": "전장 자원관리 20종"
+  },
+  "4기/초월자 여행자 금해, 몽상가 베리욘.png": {
+   "owner": "trans",
+   "kind": "ref",
+   "note": "초월자 여행자 금해 · 몽상가 베리욘 (기획 캡처)"
+  },
+  "4기/펄 - 위로 후려치기.png": {
+   "owner": "pearl",
+   "kind": "art",
+   "note": "위로 후려치기"
+  },
+  "4기/펄-돌진준비.png": {
+   "owner": "pearl",
+   "kind": "art",
+   "note": "돌진 준비"
+  },
+  "4기/황금 갑옷의 글리치 검투사.png": {
+   "owner": "glitch",
+   "kind": "art",
+   "note": "황금 갑옷의 글리치 검투사"
+  },
+  "4기/흑기사 비나 특수5.png": {
+   "owner": "gothic",
+   "kind": "sheet",
+   "note": "흑기사 비나 특수 5"
+  },
+  "4기 누락 부인, 보라거인, 리완 추가/mace_shield_girl_v1.png": {
+   "owner": "riwan",
+   "kind": "art",
+   "note": "리완 기본 (철퇴 · 수정 방패) — 처음 7.4MB 라 못 받았던 「리완 기본」"
+  },
+  "4기 누락 부인, 보라거인, 리완 추가/thorn_mask_queen_v1.png": {
+   "owner": "noblelady",
+   "kind": "art",
+   "note": "귀족부인 (보스급) — 처음 6.8MB 라 못 받았던 「귀족부인 [보스급]」"
+  },
+  "4기 누락 부인, 보라거인, 리완 추가/리듬보라거임.webp": {
+   "owner": "stadium",
+   "kind": "anim",
+   "note": "보라 거인 리듬"
+  },
+  "4기몹/3x3 무기 든 전신 캐릭터 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/9인 워크 프레임 2 캐릭터 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/image(20261010-044325).png": {
+   "owner": "east",
+   "kind": "ref",
+   "note": "방도끼 분위기 그림"
+  },
+  "4기몹/동방 라인업 1차.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "동방 라인업 1차 (5인)"
+  },
+  "4기몹/동방소총수A.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "동방 소총수 A"
+  },
+  "4기몹/동방저격수A.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "동방 저격수 A"
+  },
+  "4기몹/방도끼 원화.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "방도끼 원화"
+  },
+  "4기몹/스테이지 10_ 9인 공격 후속 포즈.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 11, 아홉 전사의 준비 자세.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 12_ 한복·군복 아홉 인물의 3×3 액션 스프라이트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 13_ 아홉 캐릭터의 피격 반동.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 15_ 낮은 엄폐의 아홉 전사.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 17_ 아홉 영웅의 편안한 휴식.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 18_ 아홉 캐릭터의 휘청거림.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 19_ 아홉 수호자의 방어진.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 20_ 아홉 캐릭터 점프 스프라이트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 4 아홉 캐릭터 3x3 워크 스프라이트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 5_ 한복·군복 3×3 워킹 스프라이트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 6_ 9인 우향 질주.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 7 아홉 인물의 공중 질주.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 8 9인 공격 준비 스프라이트 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/스테이지 9_ 아홉 전사의 강력한 일격.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/심계소령 헌팅나이프,라스트솔져 카밀라,선도사남,선도사녀.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "심계소령 헌팅나이프 · 라스트솔져 카밀라 · 선도사 남 · 선도사 녀"
+  },
+  "4기몹/쌍부 원화.png": {
+   "owner": "east",
+   "kind": "ref",
+   "note": "쌍부 분위기 그림"
+  },
+  "4기몹/쌍부.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "쌍부"
+  },
+  "4기몹/아홉 영웅의 숨 고르기.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/여백 있는 3×3 전투 스프라이트 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/완성된 아홉 전사의 3×3 스프라이트 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/중앙에 누운 백발 가면 검객.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/풀페이스가면 검사.png": {
+   "owner": "east",
+   "kind": "art",
+   "note": "풀페이스 가면 검사"
+  },
+  "4기몹/한복과 군복 캐릭터 9인 스프라이트 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "4기몹/한복과 군인 9인의 3×3 스프라이트 시트.png": {
+   "owner": "east",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/image(20261010-040649).png": {
+   "owner": "kon",
+   "kind": "art",
+   "note": "도살자 콘 원화 (얼굴)"
+  },
+  "도살자콘/공중에서 반대 보폭을 취한 해골 전사.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/도살자 콘 원화 기본.png": {
+   "owner": "kon",
+   "kind": "art",
+   "note": "도살자 콘 원화 기본"
+  },
+  "도살자콘/붉은 눈 해골 전사 스프라이트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/붉은 눈의 해골 전사 스프라이트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/뼈 문신 단검 여성의 다섯 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/뼈 문신 전사의 다섯 전투 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/뼈 문신 전사의 다섯 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/뼈문신 전사의 10가지 전투 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/원본 얼굴과 화장으로 수정한 캐릭터 시트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 도살자의 10가지 전투 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 여성의 다섯 포즈.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 전사의 5연속 전투 스프라이트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 전사의 5포즈 스프라이트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 전사의 다섯 특수 자세.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 문신 전사의 단검 자세 4종.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "도살자콘/해골 전사의 걷기 포즈 시트.png": {
+   "owner": "kon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/등을 보인 기사 8종 스프라이트 시트.png": {
+   "owner": "pehto",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/레지나 8프레임 검술 스프라이트.png": {
+   "owner": "regina",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/레지나의 10종 특수 검격.png": {
+   "owner": "regina",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/붉은 검의 여성 보스 8프레임 스프라이트.png": {
+   "owner": "regina",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/뿔 달린 기사 보스 8종 모션 시트.png": {
+   "owner": "pehto",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/뿔 달린 기사 보스 8프레임 스프라이트 시트.png": {
+   "owner": "pehto",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/뿔 달린 기사 보스의 8가지 강공격.png": {
+   "owner": "pehto",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/초승달 왕의 8가지 전투 자세.png": {
+   "owner": "teiron",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/타이론 후방 3_4 보행 스프라이트 시트.png": {
+   "owner": "teiron",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/타이론의 9컷 전투 스프라이트.png": {
+   "owner": "teiron",
+   "kind": "sheet",
+   "note": ""
+  },
+  "레지나페흐토테이론/테이론 대검스킬 5종.png": {
+   "owner": "teiron",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/수정 방패 기사 10종 포즈 시트.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/수정 방패 기사 10포즈 스프라이트 시트.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/수정 방패 기사, 다섯 가지 포즈.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/수정 방패 기사, 다섯 포즈.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/수정 방패 기사의 여섯 가지 전투 동작.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "리완/흰 캔버스의 10인 전신 스프라이트 배열.png": {
+   "owner": "riwan",
+   "kind": "sheet",
+   "note": ""
+  },
+  "마도사녀추가/붉은 머리 뿔마녀 9종 액션 스프라이트.png": {
+   "owner": "magusgirl",
+   "kind": "sheet",
+   "note": ""
+  },
+  "마도사녀추가/뿔 달린 마법사 10프레임 포즈 시트.png": {
+   "owner": "magusgirl",
+   "kind": "sheet",
+   "note": ""
+  },
+  "마도사녀추가/뿔 달린 마법사 전투 스프라이트 10종.png": {
+   "owner": "magusgirl",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/다섯 포즈 완성형 캐릭터 시트.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/망향 악마 전사의 10포즈 스프라이트 (1).png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/망향 악마 전사의 10포즈 스프라이트(1).png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/망향 악마 전투 포즈 스프라이트 시트-2.png": {
+   "owner": "manghyang",
+   "kind": "dup",
+   "note": ""
+  },
+  "망향추가/망향 악마 전투 포즈 스프라이트 시트.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/분홍 머리 뿔 여전사 10포즈 스프라이트 시트.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/분홍 장발 뿔 전사 5포즈 스프라이트.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/핑크 악마 맹향의 다섯 가지 일상 포즈.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "망향추가/핑크 악마의 다섯 가지 일상 소동 사과는 제거해서 사용.png": {
+   "owner": "manghyang",
+   "kind": "sheet",
+   "note": ""
+  },
+  "벤킨추가/두건벤킨1.png": {
+   "owner": "benkin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "벤킨추가/두건벤킨2.png": {
+   "owner": "benkin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "벤킨추가/벤킨1.png": {
+   "owner": "benkin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "벤킨추가/벤킨2.png": {
+   "owner": "benkin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "벤킨추가/입만 드러난 열 개의 벤킨 후드 전사.png": {
+   "owner": "benkin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/Gemini_Generated_Image_d79whmd79whmd79w.png": {
+   "owner": "serpa",
+   "kind": "ref",
+   "note": "세르파 코어 (가슴 보석) 확대"
+  },
+  "세르파/image(20261010-101213).png": {
+   "owner": "serpa",
+   "kind": "art",
+   "note": "세르파 · 정령왕 코어 설정"
+  },
+  "세르파/고급 마도공학 유닛. 결국 작은 슬라임들을 얼마나 모으고 증식시키냐로 유닛 소환 가능, 원거리.png": {
+   "owner": "unitFar",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/고급 마도유닛 중거리.png": {
+   "owner": "unitMid",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/굴라 - 검사, 튤린 - 서폿.png": {
+   "owner": "gula",
+   "kind": "art",
+   "note": "굴라 (검사) · 튤린 (서폿)"
+  },
+  "세르파/반대 보폭의 게임 캐릭터 걷기 포즈.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/방패명 - 몽.png": {
+   "owner": "mong",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/세르파 - 뛰기+기술.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/세르파 기본.png": {
+   "owner": "serpa",
+   "kind": "art",
+   "note": "세르파 기본"
+  },
+  "세르파/세르파 안드로이드 5포즈 시트.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/세르파 안드로이드 전투 포즈 시트.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/세르파 안드로이드의 5가지 전투 자세.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/세르파 지원 안드로이드 4포즈 시트.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/세르파 지원 안드로이드 포즈 시트.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/수정 왕관의 지원 안드로이드 스프라이트.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/오른쪽을 바라보는 5포즈 진주빛 안드로이드.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/오른쪽을 응시하는 다섯 포즈 안드로이드.png": {
+   "owner": "serpa",
+   "kind": "sheet",
+   "note": ""
+  },
+  "세르파/일반 시종A.png": {
+   "owner": "maidA",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/일반시종 B.png": {
+   "owner": "maidB",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/일반전투유닛.png": {
+   "owner": "unitFight",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/일반탱킹유닛.png": {
+   "owner": "unitTank",
+   "kind": "art",
+   "note": ""
+  },
+  "세르파/핀 - 세르파소환 사수.png": {
+   "owner": "pin",
+   "kind": "art",
+   "note": ""
+  },
+  "슈/image(20261010-104733).png": {
+   "owner": "shu",
+   "kind": "art",
+   "note": "슈 원화 (기획 캡처)"
+  },
+  "슈/게임 캐릭터 반대 걸음 포즈.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/눈가리개 치유사 슈의 특별 포즈 5종.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/눈가리개 치유사의 5가지 전투 포즈.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/눈가리개를 한 우아한 메이드 여성.png": {
+   "owner": "shu",
+   "kind": "art",
+   "note": "눈가리개 메이드"
+  },
+  "슈/눈가린 치유사 슈 5포즈 스프라이트.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/눈가린 치유사의 공중 역보폭.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/맹목의 치유사 5포즈 스프라이트 시트.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/빈손으로 지키는 치유사.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/치유사 슈의 다섯 포즈 시트.png": {
+   "owner": "shu",
+   "kind": "sheet",
+   "note": ""
+  },
+  "슈/흰 망토를 두른 눈가린 치료사.png": {
+   "owner": "shu",
+   "kind": "art",
+   "note": "흰 망토 치료사"
+  },
+  "유니/10종 캐릭터 워크·런 사이클 시트.png": {
+   "owner": "yuni",
+   "kind": "sheet",
+   "note": ""
+  },
+  "유니/NPC로 등장, 기본.png": {
+   "owner": "yuni",
+   "kind": "art",
+   "note": "NPC로 등장 · 기본"
+  },
+  "유니/NPC로 등장, 유혹.png": {
+   "owner": "yuni",
+   "kind": "art",
+   "note": "NPC로 등장 · 유혹"
+  },
+  "유니/보석 뿔의 유카타 오니.png": {
+   "owner": "yuni",
+   "kind": "art",
+   "note": "보석 뿔 유카타 오니"
+  },
+  "유니/보석 오니 전투 포즈 스프라이트 시트.png": {
+   "owner": "yuni",
+   "kind": "sheet",
+   "note": ""
+  },
+  "유니/보석 오니의 10포즈 액션 스프라이트.png": {
+   "owner": "yuni",
+   "kind": "sheet",
+   "note": ""
+  },
+  "유니/보석 오니의 다섯 가지 전신 포즈.png": {
+   "owner": "yuni",
+   "kind": "sheet",
+   "note": ""
+  },
+  "유니/보석 오니의 다섯 가지 포즈.png": {
+   "owner": "yuni",
+   "kind": "sheet",
+   "note": ""
+  },
+  "유니/오니 유니 기본 원화.png": {
+   "owner": "yuni",
+   "kind": "art",
+   "note": "오니 유니 기본 원화"
+  },
+  "유니/오니 유니 원화.png": {
+   "owner": "yuni",
+   "kind": "art",
+   "note": "오니 유니 원화 (얼굴)"
+  },
+  "작약추가/도끼 든 오니의 전투 포즈 스프라이트.png": {
+   "owner": "jakyak",
+   "kind": "sheet",
+   "note": ""
+  },
+  "작약추가/도끼를 든 오니 전사 스프라이트 시트.png": {
+   "owner": "jakyak",
+   "kind": "sheet",
+   "note": ""
+  },
+  "작약추가/붉은 오니 여전사의 10종 액션 스프라이트.png": {
+   "owner": "jakyak",
+   "kind": "sheet",
+   "note": ""
+  },
+  "작약추가/붉은 오니 전사의 다섯 포즈.png": {
+   "owner": "jakyak",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/image(20261010-030916).png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/검은 정장의 클로해머 일격 (1).png": {
+   "owner": "inclador",
+   "kind": "dup",
+   "note": ""
+  },
+  "장끌레도르추가/검은 정장의 클로해머 일격.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "클로해머 일격"
+  },
+  "장끌레도르추가/금발 남성의 두 가지 해머 공격.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/금발 남자의 더블 해머 스매시.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/금발 해머맨의 느와르 워킹 프레임.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "느와르 워킹"
+  },
+  "장끌레도르추가/네 방향 단일 클로 해머 스프라이트.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/느릿한 금발 망치꾼의 행진.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "느릿한 행진"
+  },
+  "장끌레도르추가/느와르 금발 남자의 해머 보행.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "해머 보행"
+  },
+  "장끌레도르추가/느와르 망치꾼의 느린 역방향 보행.png": {
+   "owner": "inclador",
+   "kind": "art",
+   "note": "느린 역방향 보행"
+  },
+  "장끌레도르추가/느와르 장도리 어퍼.webp": {
+   "owner": "inclador",
+   "kind": "anim",
+   "note": ""
+  },
+  "장끌레도르추가/상승과 하강의 해머 강타.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/장 끌레도르 느와르 걷기.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "장끌레도르추가/장도리 리버샷.webp": {
+   "owner": "inclador",
+   "kind": "anim",
+   "note": ""
+  },
+  "장끌레도르추가/장도리 스킬 - 내려찍기.webp": {
+   "owner": "inclador",
+   "kind": "anim",
+   "note": ""
+  },
+  "장끌레도르추가/장도리 스킬 - 어퍼.webp": {
+   "owner": "inclador",
+   "kind": "anim",
+   "note": ""
+  },
+  "장끌레도르추가/필살 치명타 내려찍기 장도리.webp": {
+   "owner": "inclador",
+   "kind": "anim",
+   "note": ""
+  },
+  "장끌레도르추가/회전 망치 워킹 스프라이트 시트.png": {
+   "owner": "inclador",
+   "kind": "sheet",
+   "note": ""
+  },
+  "챔피언/5×2 배열의 10인 전신 스프라이트.png": {
+   "owner": "glitch",
+   "kind": "sheet",
+   "note": ""
+  },
+  "챔피언/글리치 챔피언 원화.png": {
+   "owner": "glitch",
+   "kind": "art",
+   "note": "글리치 챔피언 원화"
+  },
+  "챔피언/금빛 기사 다섯 가지 전투 자세.png": {
+   "owner": "glitch",
+   "kind": "sheet",
+   "note": ""
+  },
+  "챔피언/금빛 전사의 10포즈 전투 스프라이트.png": {
+   "owner": "glitch",
+   "kind": "sheet",
+   "note": ""
+  },
+  "챔피언/황금 갑옷 전사의 10가지 전투 포즈.png": {
+   "owner": "glitch",
+   "kind": "sheet",
+   "note": ""
+  },
+  "챔피언/황금 갑옷 전사의 다섯 전투 자세.png": {
+   "owner": "glitch",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청광묵추가/청광묵 팜 버스트 발동(강한 폭발과 반동, 강한 넉백과 화염데미지, 치명상시 머리 터지며 즉사).png": {
+   "owner": "goblin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청광묵추가/청광묵 팜 버스트준비.png": {
+   "owner": "goblin",
+   "kind": "art",
+   "note": "팜 버스트 준비"
+  },
+  "청광묵추가/청광묵1.png": {
+   "owner": "goblin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청광묵추가/청광묵의 다섯 가지 엉뚱한 일상.png": {
+   "owner": "goblin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청광묵추가/청광묵의 다섯 가지 일상 포즈.png": {
+   "owner": "goblin",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청승추가/점프 스프라이트의 복원된 거대 대검.png": {
+   "owner": "cs",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청승추가/청승 블루 오니의 액션 스프라이트 시트.png": {
+   "owner": "cs",
+   "kind": "sheet",
+   "note": ""
+  },
+  "청승추가/청승의 10종 전투 스프라이트 시트.png": {
+   "owner": "cs",
+   "kind": "sheet",
+   "note": ""
+  },
+  "초월자/6성 해방자 본넥스, 훼 롄, 소요 스탠딩2.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "6성 해방자 본넥스 · 훼 롄 · 소요"
+  },
+  "초월자/7성 선 초월자 [의도].png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "7성 선 초월자 의도"
+  },
+  "초월자/7성 중립 초월자 [고뇌].png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "7성 중립 초월자 고뇌"
+  },
+  "초월자/7성 중립 초월자 [발렌타인].png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "7성 중립 초월자 발렌타인"
+  },
+  "초월자/부정, 이야기.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "부정 · 이야기"
+  },
+  "초월자/부정의 신과 거대한 의식검.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "부정의 신과 의식검"
+  },
+  "초월자/소요 원화.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "소요 원화"
+  },
+  "초월자/스탠딩 소요.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "소요 스탠딩"
+  },
+  "초월자/신성 소요2.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "신성 소요 2"
+  },
+  "초월자/초월자 NPC, 선성향 [의도].png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "초월자 NPC · 선 성향 의도"
+  },
+  "초월자/초월자 중립 [부정].png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "초월자 중립 부정"
+  },
+  "초월자/초월자 훼 롄.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "초월자 훼 롄"
+  },
+  "초월자/훼 롄 원화.png": {
+   "owner": "trans",
+   "kind": "art",
+   "note": "훼 롄 원화"
+  },
+  "추가스프라이트/거대 곤봉 괴물 10종 스프라이트.png": {
+   "owner": "brute",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/거대한 대검의 악령 기사 스프라이트.png": {
+   "owner": "sawknight",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/눈 괴물 10종 포즈 스프라이트 시트.png": {
+   "owner": "eyemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/대장군 호레이쇼 3.png": {
+   "owner": "janggun",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/대장군 호레이쇼(4성정도).png": {
+   "owner": "janggun",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/대장군호레이쇼2.png": {
+   "owner": "janggun",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/돌갑옷 거인의 다섯 가지 곤봉 공격.png": {
+   "owner": "brute",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/보라색 악마 10종 액션 스프라이트 시트.png": {
+   "owner": "purpledemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/보라색 악마의 8가지 전투 포즈.png": {
+   "owner": "purpledemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/분홍 마족 10포즈 스프라이트 시트.png": {
+   "owner": "pinkdemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/분홍 악마의 10포즈 스프라이트 시트.png": {
+   "owner": "pinkdemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/사슴 해골 영웅 10종 동작 스프라이트.png": {
+   "owner": "stagbeast",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/사슴 해골 영웅 10종 스프라이트.png": {
+   "owner": "stagbeast",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/사슴 해골 영웅의 전투 스프라이트.png": {
+   "owner": "stagbeast",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/사슴 해골 전사의 레슬링 포즈 8종.png": {
+   "owner": "stagbeast",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/암흑 기사와 청록 갑마의 10가지 동작.png": {
+   "owner": "darkrider",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/열 가지 전투 포즈 시트.png": {
+   "owner": "pinkdemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/열 가지 포즈의 악마 기사 스프라이트.png": {
+   "owner": "sawknight",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/유령 군마 기사 10포즈 스프라이트 시트.png": {
+   "owner": "darkrider",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/창백한 눈 괴물 10종 스프라이트 시트.png": {
+   "owner": "eyemon",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/트라카 9프레임 동작 스프라이트 시트.png": {
+   "owner": "traka",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/트라카의 여덟 가지 활 공격.png": {
+   "owner": "traka",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/해골 기사 대검 공격 스프라이트 시트.png": {
+   "owner": "sawknight",
+   "kind": "sheet",
+   "note": ""
+  },
+  "추가스프라이트/회색 거인의 클럽 전투 스프라이트.png": {
+   "owner": "brute",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/곰 후드 청록 궁수 5포즈 시트.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/곰 후드 청색 궁수의 다섯 포즈 (1).png": {
+   "owner": "chinchilla",
+   "kind": "dup",
+   "note": ""
+  },
+  "친칠라추가/곰 후드 청색 궁수의 다섯 포즈.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/아이보리 활을 든 다섯 친칠라.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/치치닐라 궁수의 다섯 가지 일상 자세, 사과는 삭제.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/친칠라 궁수 10종 동작 스프라이트 시트 사과같은 특정 스프라이트는 모두 제거해서 사용(다른데서도 쓰게.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/친칠라의 다섯 가지 일상 포즈.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "친칠라추가/푸른 궁수의 여덟 가지 스킬 포즈.png": {
+   "owner": "chinchilla",
+   "kind": "sheet",
+   "note": ""
+  },
+  "펄추가/blackangel_angry_v1.1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/blackangel_happy_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/blackangel_stun_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/pearl_cannon_gak_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/pearl_cannon_sin_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/pearl_polekick_sin_v1.5.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/pearl_stepthrust_gak_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/pearl_stepthrust_sin_v1.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각벌 3번 연속 베기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 곤중투창2 초대형치명타.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 공중투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 날아투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 반경 10m원형베기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 정면처형.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 정면투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄 찍고빼기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/각펄스킬.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/검은 날개와 자신만만한 미소-2.png": {
+   "owner": "pearl",
+   "kind": "art",
+   "note": "검은 날개 · 자신만만한 미소"
+  },
+  "펄추가/공중에서 대각선 아래 작살(몸으로 투창).webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/극강 찌르기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/날펄대기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/대각처형.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/대각투창 - 돌려차기.webp": {
+   "owner": "pearl",
+   "kind": "dup",
+   "note": ""
+  },
+  "펄추가/더블어퍼.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/도약후돌려차기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/돌려차고 내려가기.webp": {
+   "owner": "pearl",
+   "kind": "dup",
+   "note": ""
+  },
+  "펄추가/바로 돌려차기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/서서대기펄.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/신펄 공중투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/신펄 날아투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/신펄 반경 3m원형베기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/신펄 정면투창.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/신펄스킬.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/장난스러운 미소의 창 든 날개 전사-1.png": {
+   "owner": "pearl",
+   "kind": "art",
+   "note": "창 든 날개 전사 · 장난스러운 미소"
+  },
+  "펄추가/정면처형.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/진주의 날개 상승 창격.png": {
+   "owner": "pearl",
+   "kind": "art",
+   "note": "날개 상승 창격"
+  },
+  "펄추가/찍고빼기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/찍기펄.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/창던지고 돌려차기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/창돌리는펄.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/처형 펄.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/펄 사선베기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/펄 어퍼.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  },
+  "펄추가/포물선 투창 - 돌려차기.webp": {
+   "owner": "pearl",
+   "kind": "dup",
+   "note": ""
+  },
+  "펄추가/한바퀴 돌아 찍기.webp": {
+   "owner": "pearl",
+   "kind": "anim",
+   "note": ""
+  }
+ }
+}

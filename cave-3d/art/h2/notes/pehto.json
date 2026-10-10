@@ -1,0 +1,36 @@
+{
+ "slug": "pehto",
+ "name": "페흐토",
+ "rank": "5성",
+ "role": "적",
+ "tall": 2.0,
+ "weight": 85,
+ "tag": "demon",
+ "role_job": "선봉",
+ "bag": 4,
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 1
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "떠돌이 마족 (5성 · 대귀족급). 4층 이후 · 인카운터에 나옴. 인연이 이어지면 영입, 원하면 싸움",
+ "face": "art/h2/pehto/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/pehto/idle.webp",
+   "w": 298,
+   "h": 489,
+   "ax": 170,
+   "ay": 486,
+   "orig": "4기 대기 칸 B r0c0"
+  }
+ },
+ "codex_g": "pehto",
+ "codex_face": 0
+}

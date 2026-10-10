@@ -1,0 +1,36 @@
+{
+ "slug": "sawknight",
+ "name": "마계장군 A",
+ "rank": "3성",
+ "role": "적",
+ "tall": 2.05,
+ "weight": 140,
+ "tag": "demon",
+ "role_job": "선봉",
+ "bag": 4,
+ "apt": {
+  "melee": 5,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "마계의 장군직 (3성 정도). 톱날 대검을 든 망토 기사",
+ "face": "art/h2/sawknight/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/sawknight/idle.webp",
+   "w": 357,
+   "h": 332,
+   "ax": 181,
+   "ay": 329,
+   "orig": "4기 대기 칸 B r1c2"
+  }
+ },
+ "codex_g": "X-demonkin2",
+ "codex_face": 0
+}

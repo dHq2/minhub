@@ -1,0 +1,36 @@
+{
+ "slug": "traka",
+ "name": "트라카",
+ "rank": "1성",
+ "role": "동료",
+ "tall": 1.35,
+ "weight": 40,
+ "tag": "goblin",
+ "role_job": "사수",
+ "bag": 2,
+ "apt": {
+  "melee": 2,
+  "spear": 0,
+  "bow": 4,
+  "gun": 0,
+  "magic": 1,
+  "stealth": 3
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "고블린 궁수 (1성). 청광묵과 동향이지만 모르는 사이, 발화 능력은 더 약함. 주워 주면 좋아함",
+ "face": "art/h2/traka/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/traka/idle.webp",
+   "w": 266,
+   "h": 390,
+   "ax": 150,
+   "ay": 387,
+   "orig": "4기 대기 칸 A r0c0"
+  }
+ },
+ "codex_g": "traka",
+ "codex_face": 0
+}

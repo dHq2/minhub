@@ -1,0 +1,34 @@
+{
+ "slug": "yuni",
+ "name": "오니 유니",
+ "rank": "2성",
+ "role": "NPC·적 (포획 가능)",
+ "tall": 1.72,
+ "weight": 58,
+ "tag": "demon",
+ "role_job": "돌격",
+ "bag": 3,
+ "apt": {
+  "melee": 4,
+  "spear": 1,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 3
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "보석 뿔을 단 유카타 차림 오니 (2성). NPC 로 먼저 만나고, 적으로 붙으면 포획할 수 있음 (드라이브 폴더 \"유니(2성 NPC&포획가능 적 오니\"). 손톱으로 할퀴고 덮침",
+ "face": "art/h2/yuni/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/yuni/idle.webp",
+   "w": 207,
+   "h": 643,
+   "ax": 109,
+   "ay": 640,
+   "orig": "4기 대기 칸 D r0c4"
+  }
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "slug": "maidA",
+ "name": "일반 시종 A",
+ "rank": "소환",
+ "role": "소환물",
+ "tall": 1.7,
+ "weight": 55,
+ "tag": "construct",
+ "role_job": "선봉",
+ "bag": 0,
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "세르파 소환 · 시종",
+ "summon": "serpa",
+ "face": "art/h2/maidA/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/maidA/idle.webp",
+   "w": 223,
+   "h": 603,
+   "ax": 103,
+   "ay": 600,
+   "orig": "원화 일반 시종A.png"
+  }
+ }
+}

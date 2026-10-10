@@ -1,0 +1,35 @@
+{
+ "slug": "unitFar",
+ "name": "고급 마도공학 유닛",
+ "rank": "소환",
+ "role": "소환물",
+ "tall": 1.8,
+ "weight": 70,
+ "tag": "construct",
+ "role_job": "사수",
+ "bag": 0,
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "세르파 소환 · 원거리 (작은 슬라임을 모으고 불려 유닛을 부름)",
+ "summon": "serpa",
+ "face": "art/h2/unitFar/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/unitFar/idle.webp",
+   "w": 354,
+   "h": 527,
+   "ax": 215,
+   "ay": 524,
+   "orig": "원화 고급 마도공학 유닛. 결국 작은 슬라임들을 얼마나 모으고 증식시키냐로 유닛 소환 가능, 원거리.png"
+  }
+ }
+}

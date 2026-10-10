@@ -1,0 +1,35 @@
+{
+ "slug": "tulin",
+ "name": "튤린",
+ "rank": "소환",
+ "role": "소환물",
+ "tall": 1.65,
+ "weight": 55,
+ "tag": "construct",
+ "role_job": "치유",
+ "bag": 0,
+ "apt": {
+  "melee": 3,
+  "spear": 0,
+  "bow": 0,
+  "gun": 0,
+  "magic": 2,
+  "stealth": 0
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "세르파 소환 · 서포터",
+ "summon": "serpa",
+ "face": "art/h2/tulin/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/tulin/idle.webp",
+   "w": 244,
+   "h": 603,
+   "ax": 108,
+   "ay": 600,
+   "orig": "원화 굴라 - 검사, 튤린 - 서폿.png"
+  }
+ }
+}

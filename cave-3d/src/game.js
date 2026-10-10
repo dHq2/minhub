@@ -312,7 +312,7 @@ function medicHud(){
   return `<div class="sk ${off ? 'off' : ready >= 1 ? 'ready' : ''}"><span class="cd" style="--p:${(off ? 0 : ready) * 360}deg"><i>✚</i></span><span>노먼 · 구급상자</span><span class="pips">${pips}</span><small>${n.downed ? '쓰러짐' : left ? (ready >= 1 ? '준비' : Math.ceil(n.healCd) + '초') : '없음'}</small></div>`;
 }
 function updateHud(){
-  const party = G.units.filter(u => u.side === 'ally' && !u.king);   // v0.68 포렌의 쥐는 동료 줄에 안 넣음
+  const party = G.units.filter(u => u.side === 'ally' && !u.king && !(u.D && u.D.h2res));   // v0.68 포렌의 쥐는 동료 줄에 안 넣음 · v0.85 세르파의 수정 거품게 (자원 유닛) 도
   if (typeof caveBar === 'function') caveBar();
   if (G.mode === 'cave' && PRO.bar && !PRO.caveIntro) $('party').innerHTML = ''; else
   if (G.mode === 'exp' && typeof uiHeroPanel === 'function'){ const hh = uiHeroPanel(); if ($('party').dataset.h !== hh){ $('party').dataset.h = hh; $('party').innerHTML = hh; } } else

@@ -71,6 +71,7 @@ const H2R = {
 "gen": 3,
 "codex_g": "ahae",
 "batch": "3기-2",
+"summon": "ahae_wraith",
 "portrait": "art/h2/ahae/portrait.webp",
 "face": "art/h2/ahae/face.webp",
 "poses": {
@@ -1660,6 +1661,42 @@ const H2R = {
 }
 }
 },
+"chinchilla": {
+"slug": "chinchilla",
+"name": "친칠라",
+"rank": "4성",
+"role": "동료",
+"tall": 1.6,
+"weight": 50,
+"apt": {
+"melee": 1,
+"spear": 0,
+"bow": 5,
+"gun": 1,
+"magic": 0,
+"stealth": 3
+},
+"tag": "beastkin",
+"role_job": "사수",
+"bag": 3,
+"desc": "심해 종족의 궁수 (4성). 홀로 떨어져 주운 장비로 사냥하며 잘 적응함 — 이곳도 하나의 심해라고 여김",
+"gen": 4,
+"codex_g": "chinchilla",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/chinchilla/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/chinchilla/idle.webp",
+"w": 353,
+"h": 621,
+"ax": 199,
+"ay": 618,
+"orig": "4기 대기 칸 D r0c2"
+}
+}
+},
 "collider": {
 "slug": "collider",
 "name": "콜라이더",
@@ -1938,6 +1975,79 @@ const H2R = {
 "ax": 369,
 "ay": 530,
 "orig": "몸 낮추고 방패 뒤에서 창을 오른쪽 아래로 찌름"
+}
+}
+},
+"crab": {
+"slug": "crab",
+"name": "수정 거품게",
+"rank": "소환",
+"role": "소환물",
+"tall": 0.55,
+"weight": 12,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "자원",
+"bag": 0,
+"desc": "세르파의 자원 유닛 — 저절로 생기고 불어나며 (증식), 세르파가 모아서 유닛을 뽑음 (세르파 로직의 핵심). 싸움은 못 함",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"res": 1,
+"wide": 1,
+"face": "art/h2/crab/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/crab/idle.webp",
+"w": 586,
+"h": 603,
+"ax": 330,
+"ay": 600,
+"orig": "원화 crystal_bubble_crab_v1.png"
+}
+}
+},
+"darkrider": {
+"slug": "darkrider",
+"name": "기병기사",
+"rank": "4성",
+"role": "적",
+"tall": 2.7,
+"weight": 650,
+"apt": {
+"melee": 4,
+"spear": 3,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "돌격",
+"bag": 4,
+"desc": "유령 군마를 탄 암흑 기사 (드라이브 파일 이름은 3성 정도 · 도감 등급 4). 길게 돌진하며 베고 짓밟음",
+"gen": 4,
+"codex_g": "darkrider",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/darkrider/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/darkrider/idle.webp",
+"w": 312,
+"h": 317,
+"ax": 180,
+"ay": 314,
+"orig": "4기 대기 칸 B r1c2"
 }
 }
 },
@@ -2832,6 +2942,40 @@ const H2R = {
 }
 }
 },
+"glitch": {
+"slug": "glitch",
+"name": "글리치 챔피언",
+"rank": "2성",
+"role": "적",
+"tall": 1.95,
+"weight": 120,
+"apt": {
+"melee": 5,
+"spear": 2,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "선봉",
+"bag": 4,
+"desc": "30층 스타디움의 챔피언 — 2성급이지만 오로지 기술만으로 승부하는 30층의 최강자. 황금 갑옷 검투사, 갑옷 위로 화면이 깨지듯 빛이 튐 (글리치)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/glitch/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/glitch/idle.webp",
+"w": 201,
+"h": 368,
+"ax": 101,
+"ay": 365,
+"orig": "4기 대기 칸 C r0c0"
+}
+}
+},
 "goldknight": {
 "slug": "goldknight",
 "name": "금기사",
@@ -3131,6 +3275,41 @@ const H2R = {
 "ax": 529,
 "ay": 623,
 "orig": "방패 앞세워 오른쪽으로 돌진, 몽둥이 든 팔은 뒤로 젖힘 (휘두르기 직전)"
+}
+}
+},
+"gula": {
+"slug": "gula",
+"name": "굴라",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.75,
+"weight": 70,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "선봉",
+"bag": 0,
+"desc": "세르파 소환 · 검사 (마도공학 기사)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/gula/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/gula/idle.webp",
+"w": 477,
+"h": 603,
+"ax": 223,
+"ay": 600,
+"orig": "원화 굴라 - 검사, 튤린 - 서폿.png"
 }
 }
 },
@@ -5172,6 +5351,40 @@ const H2R = {
 }
 }
 },
+"kon": {
+"slug": "kon",
+"name": "도살자 콘",
+"rank": "2성",
+"role": "적 (포획 · 영입 가능)",
+"tall": 1.74,
+"weight": 62,
+"apt": {
+"melee": 4,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 0,
+"stealth": 4
+},
+"tag": "human",
+"role_job": "돌격",
+"bag": 3,
+"desc": "뼈 문신 · 붉은 누더기 털망토의 단검 도살자 (2성). 적으로 만나 포획 · 영입할 수 있음. 쓰러진 적을 끝장냄",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/kon/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/kon/idle.webp",
+"w": 314,
+"h": 576,
+"ax": 110,
+"ay": 573,
+"orig": "4기 대기 칸 D r0c0"
+}
+}
+},
 "langpang": {
 "slug": "langpang",
 "name": "랑팡",
@@ -5352,6 +5565,7 @@ const H2R = {
 "atk": 16,
 "spd": 1.0
 },
+"summon": "levi_beast",
 "portrait": "art/h2/levi/portrait.webp",
 "face": "art/h2/levi/face.webp",
 "poses": {
@@ -5866,6 +6080,76 @@ const H2R = {
 "ax": 331,
 "ay": 621,
 "orig": "다리를 벌리고 지팡이를 오른쪽으로 내지름, 도끼날 끝에 붉은 소용돌이"
+}
+}
+},
+"maidA": {
+"slug": "maidA",
+"name": "일반 시종 A",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.7,
+"weight": 55,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "선봉",
+"bag": 0,
+"desc": "세르파 소환 · 시종",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/maidA/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/maidA/idle.webp",
+"w": 223,
+"h": 603,
+"ax": 103,
+"ay": 600,
+"orig": "원화 일반 시종A.png"
+}
+}
+},
+"maidB": {
+"slug": "maidB",
+"name": "일반 시종 B",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.7,
+"weight": 60,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "선봉",
+"bag": 0,
+"desc": "세르파 소환 · 시종 (광석 알 든 앞치마)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/maidB/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/maidB/idle.webp",
+"w": 282,
+"h": 603,
+"ax": 155,
+"ay": 600,
+"orig": "원화 일반시종 B.png"
 }
 }
 },
@@ -6706,6 +6990,41 @@ const H2R = {
 }
 }
 },
+"mong": {
+"slug": "mong",
+"name": "몽",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.9,
+"weight": 140,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "방패",
+"bag": 0,
+"desc": "세르파 소환 · 방패 (큰 수정 방패)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/mong/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/mong/idle.webp",
+"w": 395,
+"h": 603,
+"ax": 192,
+"ay": 600,
+"orig": "원화 방패명 - 몽.png"
+}
+}
+},
 "moro": {
 "slug": "moro",
 "name": "모로",
@@ -7121,6 +7440,42 @@ const H2R = {
 }
 }
 },
+"nurse": {
+"slug": "nurse",
+"name": "간호사",
+"rank": "1성",
+"role": "동료",
+"tall": 1.55,
+"weight": 44,
+"apt": {
+"melee": 1,
+"spear": 0,
+"bow": 0,
+"gun": 2,
+"magic": 1,
+"stealth": 2
+},
+"tag": "human",
+"role_job": "치유",
+"bag": 3,
+"desc": "인간계의 낙오자 — 오래전 전쟁터에서 죽어서 온 젊은 간호사. 치료 · 버프 특화, 전투는 거의 못함",
+"gen": 4,
+"codex_g": "nurse",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/nurse/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/nurse/idle.webp",
+"w": 193,
+"h": 527,
+"ax": 86,
+"ay": 524,
+"orig": "4기 대기 칸 B r1c0"
+}
+}
+},
 "ohe": {
 "slug": "ohe",
 "name": "오헤",
@@ -7204,7 +7559,7 @@ const H2R = {
 "pearl": {
 "slug": "pearl",
 "name": "인공타천사 펄",
-"rank": "1성",
+"rank": "2성",
 "folder": "1성 인공타천사 펄",
 "role": "둘 다 (캡처에 \"3인방\" — 적 3인조로 먼저 나오고 동료가 될 수 있음)",
 "tall": 1.58,
@@ -7312,6 +7667,181 @@ const H2R = {
 "ay": 254,
 "orig": "넘어짐 — 엎어져 아파함",
 "flat": true
+}
+}
+},
+"pearlgak": {
+"slug": "pearlgak",
+"name": "각펄",
+"rank": "2성",
+"role": "보스",
+"tall": 1.58,
+"weight": 48,
+"apt": {
+"melee": 5,
+"spear": 5,
+"bow": 0,
+"gun": 0,
+"magic": 3,
+"stealth": 1
+},
+"tag": "angel",
+"role_job": "선봉",
+"bag": 3,
+"desc": "보스 인카운터로 나온 펄 (각펄, 2성). «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!» 를 보여 주는 판 — 능력치는 2성 그대로, 기술을 끝까지 다 씀. 호러에 가까운 연출. 정면투창 · 공중투창 (창비 · 거대 창) · 처형 · 연속 찌르기 · 넓은 횡베기 · 땅에서 솟는 거대 창",
+"gen": 4,
+"codex_g": "h2_pearl",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/pearl/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/pearl/idle.webp",
+"w": 345,
+"h": 699,
+"ax": 100,
+"ay": 696,
+"orig": "펄기본 — 날개 접고 서서 웃음"
+}
+}
+},
+"pehto": {
+"slug": "pehto",
+"name": "페흐토",
+"rank": "5성",
+"role": "적",
+"tall": 2.0,
+"weight": 85,
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 1
+},
+"tag": "demon",
+"role_job": "선봉",
+"bag": 4,
+"desc": "떠돌이 마족 (5성 · 대귀족급). 4층 이후 · 인카운터에 나옴. 인연이 이어지면 영입, 원하면 싸움",
+"gen": 4,
+"codex_g": "pehto",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/pehto/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/pehto/idle.webp",
+"w": 298,
+"h": 489,
+"ax": 170,
+"ay": 486,
+"orig": "4기 대기 칸 B r0c0"
+}
+}
+},
+"pin": {
+"slug": "pin",
+"name": "핀",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.7,
+"weight": 55,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "사수",
+"bag": 0,
+"desc": "세르파 소환 · 사수 (긴 총)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/pin/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/pin/idle.webp",
+"w": 323,
+"h": 603,
+"ax": 143,
+"ay": 600,
+"orig": "원화 핀 - 세르파소환 사수.png"
+}
+}
+},
+"pinkdemon": {
+"slug": "pinkdemon",
+"name": "분홍 마족",
+"rank": "3성",
+"role": "적",
+"tall": 1.8,
+"weight": 55,
+"apt": {
+"melee": 2,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 5,
+"stealth": 2
+},
+"tag": "demon",
+"role_job": "마법",
+"bag": 3,
+"desc": "가시 바퀴 후광 · 꼬리 · 분홍 소용돌이 무늬의 마족. 손의 마력 구슬로 쏘고 밀침",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/pinkdemon/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/pinkdemon/idle.webp",
+"w": 303,
+"h": 405,
+"ax": 155,
+"ay": 402,
+"orig": "4기 대기 칸 A r0c0"
+}
+}
+},
+"purpledemon": {
+"slug": "purpledemon",
+"name": "보라 날개 악마",
+"rank": "3성",
+"role": "적",
+"tall": 1.85,
+"weight": 60,
+"apt": {
+"melee": 4,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 3
+},
+"tag": "demon",
+"role_job": "돌격",
+"bag": 3,
+"desc": "박쥐 날개 · 흰 무늬 보라 악마. 날개로 덮치고 발톱으로 할큄",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/purpledemon/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/purpledemon/idle.webp",
+"w": 289,
+"h": 497,
+"ax": 153,
+"ay": 494,
+"orig": "4기 대기 칸 A r0c0"
 }
 }
 },
@@ -8175,6 +8705,76 @@ const H2R = {
 }
 }
 },
+"regina": {
+"slug": "regina",
+"name": "레지나",
+"rank": "5성",
+"role": "보스",
+"tall": 1.9,
+"weight": 70,
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 1
+},
+"tag": "beastkin",
+"role_job": "선봉",
+"bag": 4,
+"desc": "9층의 보스. 알현실에 유폐되어 권태로운 수인 검사 (5성). 에너지계 검술 — 붉게 빛나는 장검",
+"gen": 4,
+"codex_g": "regina",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/regina/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/regina/idle.webp",
+"w": 426,
+"h": 502,
+"ax": 241,
+"ay": 499,
+"orig": "4기 대기 칸 A r0c0"
+}
+}
+},
+"riwan": {
+"slug": "riwan",
+"name": "리완",
+"rank": "4성",
+"role": "동료",
+"tall": 1.76,
+"weight": 95,
+"apt": {
+"melee": 4,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "knight",
+"role_job": "방패",
+"bag": 4,
+"desc": "4성 탱커. 철퇴와 큰 수정 방패의 기사. 앞을 막고 버팀",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/riwan/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/riwan/idle.webp",
+"w": 228,
+"h": 381,
+"ax": 121,
+"ay": 378,
+"orig": "4기 대기 칸 A r1c2"
+}
+}
+},
 "rook": {
 "slug": "rook",
 "name": "룩 (창병)",
@@ -8636,6 +9236,42 @@ const H2R = {
 }
 }
 },
+"sawknight": {
+"slug": "sawknight",
+"name": "마계장군 A",
+"rank": "3성",
+"role": "적",
+"tall": 2.05,
+"weight": 140,
+"apt": {
+"melee": 5,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 1,
+"stealth": 0
+},
+"tag": "demon",
+"role_job": "선봉",
+"bag": 4,
+"desc": "마계의 장군직 (3성 정도). 톱날 대검을 든 망토 기사",
+"gen": 4,
+"codex_g": "X-demonkin2",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/sawknight/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/sawknight/idle.webp",
+"w": 357,
+"h": 332,
+"ax": 181,
+"ay": 329,
+"orig": "4기 대기 칸 B r1c2"
+}
+}
+},
 "scythebeast": {
 "slug": "scythebeast",
 "name": "보라빛 대낫 괴수 (이름 미상)",
@@ -8727,6 +9363,40 @@ const H2R = {
 "ax": 350,
 "ay": 622,
 "orig": "몸을 낮추고 낫 팔을 앞으로 크게 휘두름"
+}
+}
+},
+"serpa": {
+"slug": "serpa",
+"name": "세르파",
+"rank": "3성",
+"role": "동료",
+"tall": 1.62,
+"weight": 48,
+"apt": {
+"melee": 2,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 1
+},
+"tag": "construct",
+"role_job": "소환",
+"bag": 3,
+"desc": "3성 몬스터퀸. 마도공학 광물계 정령왕 코어. 광석생물 · 시종을 불러 물량으로 싸움",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/serpa/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/serpa/idle.webp",
+"w": 223,
+"h": 487,
+"ax": 94,
+"ay": 484,
+"orig": "4기 대기 칸 A r0c0"
 }
 }
 },
@@ -8840,6 +9510,40 @@ const H2R = {
 "ay": 208,
 "orig": "쓰러져 죽음 (머리 오른쪽)",
 "flat": true
+}
+}
+},
+"shu": {
+"slug": "shu",
+"name": "슈",
+"rank": "3성",
+"role": "동료",
+"tall": 1.66,
+"weight": 50,
+"apt": {
+"melee": 2,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 4,
+"stealth": 2
+},
+"tag": "spirit",
+"role_job": "치유",
+"bag": 3,
+"desc": "3성 힐러. 정령계 인간 — 대기를 마시며 삶. 눈을 가린 메이드 치유사, 빈손으로 지킴",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/shu/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/shu/idle.webp",
+"w": 280,
+"h": 501,
+"ax": 141,
+"ay": 498,
+"orig": "4기 대기 칸 A r0c0"
 }
 }
 },
@@ -10247,6 +10951,113 @@ const H2R = {
 }
 }
 },
+"teiron": {
+"slug": "teiron",
+"name": "테이론",
+"rank": "7성",
+"role": "보스",
+"tall": 2.3,
+"weight": 110,
+"apt": {
+"melee": 5,
+"spear": 5,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "demon",
+"role_job": "선봉",
+"bag": 6,
+"desc": "작은 우주차원을 호령하던 초승달 왕 (7성). 20층 이후의 강보스 — 하얀 공간이 우주로 침식됨. 대검 레이저 · 극강 투창 · 공간 절단",
+"gen": 4,
+"codex_g": "balyong",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/teiron/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/teiron/idle.webp",
+"w": 351,
+"h": 500,
+"ax": 175,
+"ay": 497,
+"orig": "4기 대기 칸 A r0c0"
+}
+}
+},
+"traka": {
+"slug": "traka",
+"name": "트라카",
+"rank": "1성",
+"role": "동료",
+"tall": 1.35,
+"weight": 40,
+"apt": {
+"melee": 2,
+"spear": 0,
+"bow": 4,
+"gun": 0,
+"magic": 1,
+"stealth": 3
+},
+"tag": "goblin",
+"role_job": "사수",
+"bag": 2,
+"desc": "고블린 궁수 (1성). 청광묵과 동향이지만 모르는 사이, 발화 능력은 더 약함. 주워 주면 좋아함",
+"gen": 4,
+"codex_g": "traka",
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"codex_face": 0,
+"face": "art/h2/traka/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/traka/idle.webp",
+"w": 266,
+"h": 390,
+"ax": 150,
+"ay": 387,
+"orig": "4기 대기 칸 A r0c0"
+}
+}
+},
+"tulin": {
+"slug": "tulin",
+"name": "튤린",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.65,
+"weight": 55,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "치유",
+"bag": 0,
+"desc": "세르파 소환 · 서포터",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/tulin/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/tulin/idle.webp",
+"w": 244,
+"h": 603,
+"ax": 108,
+"ay": 600,
+"orig": "원화 굴라 - 검사, 튤린 - 서폿.png"
+}
+}
+},
 "unitA": {
 "slug": "unitA",
 "name": "기체 A",
@@ -10649,6 +11460,146 @@ const H2R = {
 "ax": 416,
 "ay": 730,
 "orig": "한 무릎 꿇고 두 단검을 머리 위로 X 자 교차해 막음"
+}
+}
+},
+"unitFar": {
+"slug": "unitFar",
+"name": "고급 마도공학 유닛",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.8,
+"weight": 70,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "사수",
+"bag": 0,
+"desc": "세르파 소환 · 원거리 (작은 슬라임을 모으고 불려 유닛을 부름)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/unitFar/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitFar/idle.webp",
+"w": 354,
+"h": 527,
+"ax": 215,
+"ay": 524,
+"orig": "원화 고급 마도공학 유닛. 결국 작은 슬라임들을 얼마나 모으고 증식시키냐로 유닛 소환 가능, 원거리.png"
+}
+}
+},
+"unitFight": {
+"slug": "unitFight",
+"name": "일반 전투 유닛",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.1,
+"weight": 120,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "돌격",
+"bag": 0,
+"desc": "세르파 소환 · 광석 짐승 (근접)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/unitFight/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitFight/idle.webp",
+"w": 539,
+"h": 290,
+"ax": 245,
+"ay": 287,
+"orig": "원화 일반전투유닛.png"
+}
+}
+},
+"unitMid": {
+"slug": "unitMid",
+"name": "고급 마도 유닛",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.9,
+"weight": 90,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "마법",
+"bag": 0,
+"desc": "세르파 소환 · 마도공학 유닛 (중거리)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/unitMid/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitMid/idle.webp",
+"w": 400,
+"h": 507,
+"ax": 234,
+"ay": 504,
+"orig": "원화 고급 마도유닛 중거리.png"
+}
+}
+},
+"unitTank": {
+"slug": "unitTank",
+"name": "일반 탱킹 유닛",
+"rank": "소환",
+"role": "소환물",
+"tall": 1.4,
+"weight": 300,
+"apt": {
+"melee": 3,
+"spear": 0,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 0
+},
+"tag": "construct",
+"role_job": "방패",
+"bag": 0,
+"desc": "세르파 소환 · 광석 짐승 (몸빵)",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"summon": "serpa",
+"face": "art/h2/unitTank/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/unitTank/idle.webp",
+"w": 591,
+"h": 357,
+"ax": 284,
+"ay": 354,
+"orig": "원화 일반탱킹유닛.png"
 }
 }
 },
@@ -11713,6 +12664,40 @@ const H2R = {
 "ay": 240,
 "orig": "오른쪽: 쓰러짐 (손에 연기 남음)",
 "flat": true
+}
+}
+},
+"yuni": {
+"slug": "yuni",
+"name": "오니 유니",
+"rank": "2성",
+"role": "NPC·적 (포획 가능)",
+"tall": 1.72,
+"weight": 58,
+"apt": {
+"melee": 4,
+"spear": 1,
+"bow": 0,
+"gun": 0,
+"magic": 2,
+"stealth": 3
+},
+"tag": "demon",
+"role_job": "돌격",
+"bag": 3,
+"desc": "보석 뿔을 단 유카타 차림 오니 (2성). NPC 로 먼저 만나고, 적으로 붙으면 포획할 수 있음 (드라이브 폴더 \"유니(2성 NPC&포획가능 적 오니\"). 손톱으로 할퀴고 덮침",
+"gen": 4,
+"batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+"date": "2026-10-10",
+"face": "art/h2/yuni/face.webp",
+"poses": {
+"idle": {
+"src": "art/h2/yuni/idle.webp",
+"w": 207,
+"h": 643,
+"ax": 109,
+"ay": 640,
+"orig": "4기 대기 칸 D r0c4"
 }
 }
 }

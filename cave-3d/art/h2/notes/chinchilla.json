@@ -1,0 +1,36 @@
+{
+ "slug": "chinchilla",
+ "name": "친칠라",
+ "rank": "4성",
+ "role": "동료",
+ "tall": 1.6,
+ "weight": 50,
+ "tag": "beastkin",
+ "role_job": "사수",
+ "bag": 3,
+ "apt": {
+  "melee": 1,
+  "spear": 0,
+  "bow": 5,
+  "gun": 1,
+  "magic": 0,
+  "stealth": 3
+ },
+ "gen": 4,
+ "date": "2026-10-10",
+ "batch": "4기 1차 (드라이브 '1010 4기 업뎃')",
+ "desc": "심해 종족의 궁수 (4성). 홀로 떨어져 주운 장비로 사냥하며 잘 적응함 — 이곳도 하나의 심해라고 여김",
+ "face": "art/h2/chinchilla/face.webp",
+ "poses": {
+  "idle": {
+   "src": "art/h2/chinchilla/idle.webp",
+   "w": 353,
+   "h": 621,
+   "ax": 199,
+   "ay": 618,
+   "orig": "4기 대기 칸 D r0c2"
+  }
+ },
+ "codex_g": "chinchilla",
+ "codex_face": 0
+}
