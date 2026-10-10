@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>굴의 도감</title>
-<!-- codex v2.08 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.08: 인물 묶음 머리의 이름을 누르면 그 자리에서 바로 고침 (이름 단추도 같은 칸). 초상화 줄 · 격자 · 묶음 머리 어디서 고쳐도 같은 본명 (marks[C-…].name). v2.07: 인물 묶음의 공통 설정 칸을 그 자리에서 바로 적음 — 메모처럼 적는 동안 0.6초마다 저장소에 저장 (Claude · 다른 화면이 바로 봄), 다른 사람 수정이 와도 적던 글 · 커서 그대로. v2.06: 인물 묶음 머리 · 구분 · 등급 창에 ⬇ 다운로드 — 그 인물 그림 전부를 가장 고퀄 (원본 해상도 우선) PNG 로 한 zip 에 (info.txt 에 이름 · 구분 · 설정 · 그림 목록). v2.05: 파워밸런스 격자에서도 얼굴 밑 이름을 누르면 바로 고침 (얼굴을 누르면 전처럼 구분 · 등급 창, 끌면 옮기기). v2.04: 초상화 줄의 이름을 누르면 그 자리에서 고침 → 묶음 머리 · 그 인물 그림 이름 앞머리까지 같이 바뀜. v2.03: 인물 설정 · 이름 칸에서 ← → 를 누르면 다른 그림으로 넘어가던 것 고침 (글 쓰는 칸에서는 글자 사이만 움직임). v2.02: 인물 작업 — 초상화 줄 = 아래 인물 묶음 (같은 순서 · 같은 이름 · 같은 상태). 인물 이름 바꾸기 · 대표 초상화 고르기 · 인물째 삭제 표시 · 🗑 삭제 표시만 거르기. 쓰레기통은 Claude 가 다음 턴에 지움 (tools/trash_apply.py). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
+<!-- codex v2.10 — 굴의 프롤로그 그림 도감 (체크 · 메모 · 백업). v2.10: '⚑ 정리 후보' — 세계관 · 그림체가 굴과 동떨어진 그림 146장에 꼬리표 (이유는 그림 위에 마우스 · 크게 보기), 거르기에 '⚑ 정리 후보만'. 지우지 않음, 지울지는 🗑 삭제 표시로 (cands.json · tools/cands.py). v2.09: 무거운 그림 (움짤 102 · 꽉 찬 화면 원본 hi 26) 을 도감 자산 보관함 (1GiB) 으로 — 한 판 256MiB 에서 빠져 4기 자리가 생김 · 움짤은 눌렀던 원본 화질로, hi 는 품질 90 으로 되돌림 (blobs.js · tools/blobs.py). v2.08: 인물 묶음 머리의 이름을 누르면 그 자리에서 바로 고침 (이름 단추도 같은 칸). 초상화 줄 · 격자 · 묶음 머리 어디서 고쳐도 같은 본명 (marks[C-…].name). v2.07: 인물 묶음의 공통 설정 칸을 그 자리에서 바로 적음 — 메모처럼 적는 동안 0.6초마다 저장소에 저장 (Claude · 다른 화면이 바로 봄), 다른 사람 수정이 와도 적던 글 · 커서 그대로. v2.06: 인물 묶음 머리 · 구분 · 등급 창에 ⬇ 다운로드 — 그 인물 그림 전부를 가장 고퀄 (원본 해상도 우선) PNG 로 한 zip 에 (info.txt 에 이름 · 구분 · 설정 · 그림 목록). v2.05: 파워밸런스 격자에서도 얼굴 밑 이름을 누르면 바로 고침 (얼굴을 누르면 전처럼 구분 · 등급 창, 끌면 옮기기). v2.04: 초상화 줄의 이름을 누르면 그 자리에서 고침 → 묶음 머리 · 그 인물 그림 이름 앞머리까지 같이 바뀜. v2.03: 인물 설정 · 이름 칸에서 ← → 를 누르면 다른 그림으로 넘어가던 것 고침 (글 쓰는 칸에서는 글자 사이만 움직임). v2.02: 인물 작업 — 초상화 줄 = 아래 인물 묶음 (같은 순서 · 같은 이름 · 같은 상태). 인물 이름 바꾸기 · 대표 초상화 고르기 · 인물째 삭제 표시 · 🗑 삭제 표시만 거르기. 쓰레기통은 Claude 가 다음 턴에 지움 (tools/trash_apply.py). v2.01: 하르겐 · 테이론 이름 · 마도사 맨얼굴 · 이미 있던 묶음 9곳에 이어 붙임 (catalog v1.87). v2.00: 3기-2 (catalog v1.86 — 포렌의 쥐 · 5성 서포터 · 1기 인물 새 시트 26명). v1.99: 마리의 부족민 #1 팩션으로 되돌림 (catalog v1.85). v1.98: 팩션 시트 속 주요 인물 4명을 그 인물 묶음으로 (catalog v1.84). v1.97: 가람 · 히라리 피격 그림 바꿈. v1.96: 3기 1차 — 인물 25 · 추가팩션 · 전장 설비 · 추가 스프라이트 (catalog v1.83). v1.95: 크게 보기에서 그림을 누르면 꽉 찬 화면 (스샷용, 원본 해상도 hi/ 묶음 · 바탕 바꾸기 · 밀어 넘기기). v1.94: 2기 멤버 41명 인물 칸 (39묶음, catalog v1.82). v1.93: 초상화 모음에 인물 등장 동그라미 (초록 = 등장 · 빨강 = 미등장, 누르면 바뀜) — 아래 인물 칸 · 등장 거르기와 같이 움직임 · 카리우스 새 그림 (catalog v1.80). v1.92: 인주 동작 45장 (던진 뒤 더함, catalog v1.79). v1.91: 인주 동작 44장 (어퍼컷 · 드롭킥 세 프레임 · 붕권 더함, catalog v1.78). v1.90: 인물 · 인주 칸에 3D판 동작 그림 39장 (catalog v1.77). v1.89: 쓰임새로 다시 나눔 · 번호뿐인 이름 297개 고침 · 같은 그림은 변형으로 접음 · 게임 속 칸 · 등급 표시 (catalog v1.76). v1.88: 영입 가능(대각선 금띠) · 무리(초록 테두리) 꼬리표 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -158,6 +158,9 @@ h3.hit,.pnav.hit{animation:hit 1.2s}
 .wear.u{color:var(--dim);background:transparent;border:1px dashed var(--line)}
 .wear.q{color:var(--bg);background:var(--accent)}
 .cons{display:inline-block;font:600 10.5px var(--body);color:#fff;background:#6f4fa0;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand{display:inline-block;font:600 10.5px var(--body);color:#3a2a00;background:#e2b13c;border-radius:4px;padding:1px 6px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand.c2{background:transparent;color:var(--dim);border:1px dashed #c9a23f}
+.view .side p.candl{color:var(--fg);font-size:13px;line-height:1.5;border-left:3px solid #e2b13c;padding-left:9px}
 .btn.on{color:var(--bg);background:var(--accent);border-color:var(--accent)}
 .btn[disabled]{opacity:.4;cursor:default}
 html.sorting .tile{cursor:copy}
@@ -333,7 +336,7 @@ html.csort .pbtn .pn{cursor:text} .pbtn .pn:hover{text-decoration:underline dott
       <button class="btn toolsBtn" id="toolsBtn" type="button" aria-expanded="false">도구 ▾</button>
       <span class="more">
       <label class="only" for="onlyChecked"><input type="checkbox" id="onlyChecked"> 체크한 것만</label>
-      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option><option value="wy">○ 착용 가능만 (유물)</option><option value="wn">✕ 착용 불가만 (유물)</option><option value="wq">? 등장 미정만 (유물)</option><option value="cons">◆ 소모품만</option><option value="spec">설정 적은 것만</option><option value="nospec">설정 아직 안 적은 것만</option><option value="del">🗑 삭제 표시만 (다음에 Claude가 지움)</option></select>
+      <select class="btn" id="stFilter" aria-label="등장 표시로 거르기"><option value="all">등장 · 전체</option><option value="in">● 등장 확정만</option><option value="out">○ 미등장만</option><option value="ren">이름 바뀐 것만</option><option value="wy">○ 착용 가능만 (유물)</option><option value="wn">✕ 착용 불가만 (유물)</option><option value="wq">? 등장 미정만 (유물)</option><option value="cons">◆ 소모품만</option><option value="spec">설정 적은 것만</option><option value="nospec">설정 아직 안 적은 것만</option><option value="cand">⚑ 정리 후보만 (세계관 · 그림체가 다른 것)</option><option value="del">🗑 삭제 표시만 (다음에 Claude가 지움)</option></select>
       <button class="btn" id="copyBtn" type="button">체크 목록 복사</button>
       <button class="btn" id="saveBtn" type="button">백업 저장</button>
       <button class="btn" id="loadBtn" type="button">백업 불러오기</button>
@@ -362,6 +365,7 @@ html.csort .pbtn .pn{cursor:text} .pbtn .pn:hover{text-decoration:underline dott
       <p id="vSub"></p>
       <p class="spec" id="vSpec" hidden></p>
       <p id="vNote"></p>
+      <p class="candl" id="vCand" hidden></p>
       <div class="chk2"><label class="only" for="vCheck"><input type="checkbox" id="vCheck"> 체크</label>
       <label class="only" for="vSt"><input type="checkbox" id="vSt"> 등장 확정</label>
       <label class="only" for="vCons"><input type="checkbox" id="vCons"> ◆ 소모품</label>
@@ -385,6 +389,8 @@ html.csort .pbtn .pn{cursor:text} .pbtn .pn:hover{text-decoration:underline dott
 <script src="catalog.js"></script>
 <script src="packs.js"></script>
 <script src="hipacks.js"></script>
+<script src="blobs.js"></script>
+<script src="cands.js"></script>
 <script>
 'use strict';
 // 분류 (도감 번호 = 사용자가 정한 순서). 3 재료는 따로 분류가 아니어서 뺌 (받은 그림 모음을 부르던 이름)
@@ -500,16 +506,22 @@ const dsub = e => e.cat !== 'relic' ? e.sub : ((sorting && frozen && frozen[e.id
 
 /* ---------- 묶음 그림: 게시 파일 수 한도 (511) 때문에 작은 그림은 pack/*.webp에서 잘라 씀 (packs.js, tools/pack.py) ---------- */
 const PK = typeof PACKED === 'object' ? PACKED : {};
+/* v2.09 자산 보관함 (blobs.js, tools/blobs.py): 무거운 그림 (움짤 · hi 원본) 은 한 판 대신 보관함 — 그 경로면 '/_blob/' + id 로 읽음 */
+const BL = typeof BLOBS === 'object' ? BLOBS : {};
+/* v2.10 정리 후보 (cands.js): 그림 번호 → [단계, 제목, 이유]. 없으면 빈 것 */
+const CD = typeof CANDS === 'object' && CANDS.ids ? CANDS : { g: [], ids: {} };
+const candOf = e => e && e.id in CD.ids ? CD.g[CD.ids[e.id]] : null;
+const U = p => BL[p] ? '/_blob/' + BL[p] : p;
 const sheetP = {}, cutP = {};
 let seen = null;
-function packImg(i){ return sheetP[i] || (sheetP[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = PACKS[i]; })); }
+function packImg(i){ return sheetP[i] || (sheetP[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = U(PACKS[i]); })); }
 function picUrl(src){
-  const p = PK[src]; if (!p) return Promise.resolve(src);
+  const p = PK[src]; if (!p) return Promise.resolve(U(src));
   return cutP[src] || (cutP[src] = packImg(p[0]).then(im => {
     const c = document.createElement('canvas'); c.width = p[3]; c.height = p[4];
     c.getContext('2d').drawImage(im, p[1], p[2], p[3], p[4], 0, 0, p[3], p[4]);
     return c.toDataURL('image/webp', 0.92);
-  }).catch(() => src));
+  }).catch(() => U(src)));
 }
 function setPic(img, src){ img.dataset.k = src; picUrl(src).then(u => { if (img.dataset.k === src) img.src = u; }); }
 
@@ -532,7 +544,7 @@ function shown(e){ return visible(e) && (!e.parent || opened[e.parent] || !BY_ID
 let q = '';
 const norm = t => String(t || '').toLowerCase().replace(/[-\s]/g, '');
 function hitQ(e){ if (!q) return true; const n = norm(q), m = marks[e.id] || {}; return norm(e.id).includes(n) || norm(e.name).includes(n) || norm(nameOf(e)).includes(n) || norm(m.memo).includes(n) || norm(e.sub).includes(n) || norm(e.pk).includes(n) || norm(e.was).includes(n) || norm(e.game).includes(n) || norm(e.note).includes(n) || norm(e.spec).includes(n) || norm(cspecOf(e)).includes(n); }
-function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); case 'del': return isDel(e.id) || (!!e.cid && e.cat === 'char' && isDel(e.cid)); default: return stOf(e) === showSt; } }
+function stPass(e){ switch (showSt){ case 'all': return true; case 'ren': return renamed(e); case 'wy': return wearable(e); case 'wn': return slotOf(e) === 'x'; case 'wq': return e.cat === 'relic' && !wearable(e) && slotOf(e) !== 'x'; case 'cons': return consOf(e); case 'spec': return !!e.spec || !!cspecOf(e); case 'nospec': return !e.spec && !cspecOf(e); case 'cand': return !!candOf(e); case 'del': return isDel(e.id) || (!!e.cid && e.cat === 'char' && isDel(e.cid)); default: return stOf(e) === showSt; } }
 function visible(e){ return hitQ(e) && (q || cat === 'all' || e.cat === cat) && (!onlyChecked || (marks[e.id] && marks[e.id].checked)) && stPass(e); }
 function tile(e){
   const m = marks[e.id], on = m && m.checked;
@@ -540,13 +552,14 @@ function tile(e){
   const wch = e.cat !== 'relic' ? '' : `<span class="wear ${wearCls(e)}">${wearTxt(e)}</span>`;
   const cch = consOf(e) ? '<span class="cons">◆ 소모품</span>' : '';
   const sch = e.spec ? `<span class="spec-dot" title="${esc(e.spec)}">${esc(e.spec)}</span>` : '';
+  const cd = candOf(e), cdh = cd ? `<span class="cand c${cd[0]}" title="${esc(cd[1] + ' — ' + cd[2])}">⚑ 정리 후보${cd[0] > 1 ? ' (약)' : ''}</span>` : '';
   return `<div class="tile ${e.cid && e.cat === 'char' && isDel(e.cid) ? 'pgone' : ''} ${e.rank} ${e.cat === 'relic' ? (slotOf(e) === 'x' ? 'wn' : wearable(e) ? 'wy' : '') : ''} ${on ? 'on' : ''} ${e.parent ? 'kid' : ''} ${e.parent && keepKid(e) ? 'keep' : ''} ${KIDS[e.id] ? 'folder' : ''}" data-id="${e.id}" tabindex="0" role="button" aria-label="${esc(e.id + ' ' + e.name)} 크게 보기">
     <span class="box" data-check="${e.id}" role="checkbox" aria-checked="${on ? 'true' : 'false'}" aria-label="${esc(e.id)} 체크">✓</span>
     <button class="trash ${isDel(e.id) ? 'del' : ''}" type="button" data-del="${e.id}" title="${isDel(e.id) ? '삭제 표시 풀기 (체크 해제 · 메모의 삭제 지움)' : '삭제 표시 (체크 + 메모에 삭제)'}" aria-label="${esc(e.id)} 삭제 표시" aria-pressed="${isDel(e.id)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg></button>
     <span class="st ${stOf(e)}" data-st="${e.id}" role="button" title="${stOf(e) === 'in' ? '등장 확정 (누르면 미등장)' : '미등장 (누르면 등장 확정)'}" aria-label="${esc(e.id)} ${stOf(e) === 'in' ? '등장 확정' : '미등장'}"></span>
-    <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${e.src}"`} alt="${esc(e.name)}"></div>
+    <div class="pic"><img ${PK[e.src] ? `data-pk="${esc(e.src)}"` : `loading="lazy" src="${U(e.src)}"`} alt="${esc(e.name)}"></div>
     ${KIDS[e.id] ? `<button class="fold ${opened[e.id] ? 'on' : ''}" type="button" data-fold="${e.id}" aria-expanded="${!!opened[e.id]}">${BY_ID[KIDS[e.id][0]].name.includes('색 변형') ? '색' : /변형|자세/.test(BY_ID[KIDS[e.id][0]].name) ? '변형' : '표정'} ${KIDS[e.id].length} ${opened[e.id] ? '▴' : '▾'}</button>` : ''}
-    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${sch}${memo}${wch}${cch}</div>`;
+    <div class="meta"><span class="id">${e.id}</span><span class="nm">${esc(nameOf(e))}</span></div>${renamed(e) ? `<span class="renamed" title="원래 이름: ${esc(e.name)}">이름 바뀜 · 원래 ${esc(e.name)}</span>` : ''}${sch}${memo}${wch}${cch}${cdh}</div>`;
 }
 /* 인물 위의 초상화 버튼: 누르면 그 인물 묶음 (초상화 + 스프라이트)으로 내려감. 버튼일 뿐, 초상화 칸은 묶음 안에 있음 */
 const isFace = e => e.id.startsWith('F-') || e.id.endsWith('-face');
@@ -597,7 +610,7 @@ function faceBtn(x, withTier){
   const t = tierOf(x.cid);
   const tb = withTier && t ? `<span class="tb ${ALLY(x.role) ? '' : 'en'}">${esc(tLabel(t, x.role))}</span>` : '';
   const dl = x.del ? '<span class="pdl" aria-label="인물 삭제 표시">🗑</span>' : x.ndel ? `<span class="pdl n" aria-label="삭제 표시 그림 ${x.ndel}">🗑${x.ndel}</span>` : '';
-  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''} ${x.del ? 'gone' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.nm)} — ${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}${x.del ? ' · 인물 삭제 표시' : ''}">${pen}${tb}${dl}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${x.f.src}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
+  return `<button class="pbtn ${recOf(x.cid) ? 'rec' : ''} ${grpOf(x.cid) ? 'grp' : ''} ${x.del ? 'gone' : ''}" type="button" data-jump="who-${x.i}" data-cid="${esc(x.cid)}" data-nm="${esc(x.nm)}" title="${esc(x.nm)} — ${esc(x.s)}${recOf(x.cid) ? ' · 영입 가능' : ''}${grpOf(x.cid) ? ' · 무리' : ''}${x.del ? ' · 인물 삭제 표시' : ''}">${pen}${tb}${dl}<span class="pp">${cdotHtml(x.cid)}<img ${PK[x.f.src] ? `data-pk="${esc(x.f.src)}"` : `loading="lazy" src="${U(x.f.src)}"`} alt="" draggable="false"></span><span class="pn">${esc(x.nm)}</span></button>`;
 }
 function personTitle(cid, s, n){
   const parts = s.split(' · '), r = roleOfChar(s, { cid }), t = tierOf(cid), nm = pName(cid, s);
@@ -757,6 +770,7 @@ function fillView(){
   $('vOrig').hidden = !renamed(e); $('vOrig').textContent = '이름 바뀜 · 원래 이름: ' + e.name;
   $('vSub').textContent = (CATS.find(c => c.key === e.cat) || {}).name + ' · ' + e.sub + (e.pk && e.pk !== e.sub ? '  (받은 묶음: ' + e.pk + ')' : '') + (e.was ? '  · 예전 이름: ' + e.was : ''); $('vNote').textContent = (e.game ? e.game + (e.note ? ' — ' : '') : '') + (e.note || '');
   $('vSpec').textContent = e.spec || ''; $('vSpec').hidden = !e.spec;
+  const cd = candOf(e); $('vCand').hidden = !cd; $('vCand').textContent = cd ? `⚑ 정리 후보${cd[0] > 1 ? ' (약)' : ''} · ${cd[1]} — ${cd[2]}. 지울지는 민수가 정함 (🗑 삭제 표시)` : '';
   const hasC = e.cat === 'char' && !!e.cid;
   $('vCSpecLab').hidden = !hasC; $('vCSpec').hidden = !hasC;
   $('vRecL').hidden = !hasC; $('vGrpL').hidden = !hasC;
@@ -1222,12 +1236,12 @@ const BGN = { black: '검정', white: '흰색', paper: '도감', check: '투명 
 function hiImg(src){
   const h = HIP[src];
   if (h){
-    const i = h[0]; const sp = hiSheet[i] || (hiSheet[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = HIPACKS[i]; }));
+    const i = h[0]; const sp = hiSheet[i] || (hiSheet[i] = new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = U(HIPACKS[i]); }));
     return sp.then(im => ({ im, sx: h[1], sy: h[2], w: h[3], h: h[4], hi: true }));
   }
   const p = PK[src];
   if (p) return packImg(p[0]).then(im => ({ im, sx: p[1], sy: p[2], w: p[3], h: p[4] }));
-  return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok({ im, sx: 0, sy: 0, w: im.naturalWidth, h: im.naturalHeight }); im.onerror = no; im.src = src.startsWith('a/') ? src : src; });
+  return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok({ im, sx: 0, sy: 0, w: im.naturalWidth, h: im.naturalHeight }); im.onerror = no; im.src = U(src); });
 }
 function shotDraw(){
   const c = $('shotC'), S = SHOT.img; if (!S || $('shot').hidden) return;
