@@ -1,4 +1,4 @@
-# hipack.py v1.3 — (v1.3, 2026-10-10: 품질 74 → 90 되돌림 — hi 묶음은 이제 도감 자산 보관함 (1GiB) 에 올라가 한 판 256MiB 에 안 셈, tools/blobs.py) (v1.2: 품질 90 → 74 — 도감 한 판 256MiB 한도 안으로) (v1.1: 3기 추가 스프라이트 h3x · 추가팩션 h3f 원본) v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
+# hipack.py v1.4 — (v1.4, 2026-10-10: 4기 원화 · 기획 (img/g4/<주인>_<번호>) 의 원본은 도감 안 src4/<주인>/<번호>.webp (tools/g4_extra.py, 긴 변 1800 · 품질 90)) (v1.3, 2026-10-10: 품질 74 → 90 되돌림 — hi 묶음은 이제 도감 자산 보관함 (1GiB) 에 올라가 한 판 256MiB 에 안 셈, tools/blobs.py) (v1.2: 품질 90 → 74 — 도감 한 판 256MiB 한도 안으로) (v1.1: 3기 추가 스프라이트 h3x · 추가팩션 h3f 원본) v1.0 — 꽉 찬 화면 (스샷) 보기용 고화질 묶음
 #  도감 그림 (img/*)은 목록용으로 줄여 둔 것. 원본이 저장소에 있는 그림만 원본 해상도로 다시 묶어 hi/hi<N>.webp + hipacks.js
 #   · img/h2/<slug>__<동작> → cave-3d/art/h2/<slug>/<동작>.webp (원화 · 은신 · 쌍권총 · 연금술사는 원래 자리)
 #   · img/face/h2_<slug> → 2기 얼굴 원본 · img/inju/<k> → cave-3d/art/inju/<k> · img/karius/<k> → cave-3d/art/kar/<k> (원화 2는 src/art2)
@@ -26,14 +26,17 @@ def hiOf(src):
         slug, k = b.split('__', 1); return f'art/h3x/{slug}/{k}.webp'
     if src.startswith(('img/npc/h3f_', 'img/prop/h3f_')):
         rest = b[4:]; slug, nn = rest.rsplit('_', 1); return f'art/h3f/{slug}/{nn}.webp'
+    if src.startswith('img/g4/'):   # v1.4 4기 원화 · 기획: 도감 안 원본 (codex: = 도감 폴더 기준)
+        o, nn = b.rsplit('_', 1); return f'codex:src4/{o}/{nn}.webp'
     if src.startswith('img/inju/'): return f'art/inju/{b}.webp'
     if src.startswith('img/karius/'): return 'art/kar/src/art2.webp' if b == 'art2' else f'art/kar/{b}.webp'
     return None
 items = []
 for e in cat:
     src = e['src']; h = hiOf(src)
-    if not h or not os.path.exists(f'{C3}/{h}') or not os.path.exists(f'{ROOT}/{src}'): continue
-    im = Image.open(f'{C3}/{h}').convert('RGBA'); cur = max(Image.open(f'{ROOT}/{src}').size)
+    hp = h and (f'{ROOT}/{h[6:]}' if h.startswith('codex:') else f'{C3}/{h}')
+    if not h or not os.path.exists(hp) or not os.path.exists(f'{ROOT}/{src}'): continue
+    im = Image.open(hp).convert('RGBA'); cur = max(Image.open(f'{ROOT}/{src}').size)
     if max(im.size) < cur * 1.25: continue
     k = min(1, 1800 / max(im.size))
     if k < 1: im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)

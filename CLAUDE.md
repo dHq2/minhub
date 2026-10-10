@@ -1,5 +1,6 @@
-# minhub 작업 규칙 v1.7
+# minhub 작업 규칙 v1.8
 
+v1.8 (2026-10-10): 도감 파이프라인에 g4_extra (4기 칸 · src4 원본) 추가.
 v1.7 (2026-10-10): 도감 정리 후보 (codex/cands.json · tools/cands.py) — 지우지 않고 꼬리표만. 파이프라인 trash_apply 뒤에 cands.
 v1.6 (2026-10-10): 도감 무거운 그림 (움짤 · hi 원본) 은 자산 보관함 (blobs.js · tools/blobs.py) — 화질은 낮추지 않음 (민수: 퀄리티 유지). 쓰레기통 뒤엔 pack.py 만. 저장소 기록이 1000건 넘으면 나눠 읽기.
 v1.5 (2026-10-09): 도감 파이프라인에 m10_poses (잡몹 10명 동작) 추가 · 한 판 256MiB 한도면 shrink_anim.py.
@@ -24,7 +25,7 @@ v1.0 (2026-10-07): 도감 관리 규칙 (민수 지시).
 - 인물 본명 = 도감에서 고친 이름 (marks[C-…].name). 초상화 줄 · 격자 · 묶음 머리 · 이름 단추 어디서 고쳐도 같은 칸. 파일명 · 그림 번호 · catalog 이름 · 게임 내부 이름보다 최우선 — 인물을 부르거나 문서 · 게임에 이름을 쓸 땐 이 이름을 먼저 읽음 (비어 있을 때만 catalog 이름). 게임 이름은 `python3 cave-3d/tools/sync_names.py <내려받은 marks 폴더>` → src/names.js 로 맞춤 (이름이 바뀌었으면 게임 게시 때 같이)
 - 인물 이름 바꾸기 (marks[C-…].name) · 대표 초상화 (marks[C-…].face) · 구분 · 등급은 도감 화면이 바로 씀. 게임 쪽 반영이 필요하면 그때 읽어서 씀
 - 백업: codex/backup/2026-10-07/ (catalog · packs · hipacks · index · 저장소 marks 646건). 지운 것은 trash.json 기록 + git 에서 되살릴 수 있음
-- 파이프라인 순서: h2_poses → h3_extra → faction_heroes → m10_poses (인자 없이) → renames → trash_apply (인자 없이) → cands → pack · hipack — 다른 도구가 되살려도 쓰레기통이 다시 지움
+- 파이프라인 순서: h2_poses → h3_extra → faction_heroes → m10_poses (인자 없이) → g4_extra (인자 없이 — codex/src4 에서 다시) → renames → trash_apply (인자 없이) → cands → pack · hipack — 다른 도구가 되살려도 쓰레기통이 다시 지움
 - 정리 후보: codex/cands.json (세계관 · 그림체가 굴과 동떨어진 그림, 이유 · 단계) → `python3 codex/tools/cands.py` → cands.js. 도감에 꼬리표 · 거르기만, 지우는 건 민수의 🗑 삭제 표시로만
 - 게시: 한 번에 64MB · 255개, 한 판 256MiB · 511개 까지. 바뀐 파일만 files 로 보냄 (나머지는 그대로 남음). 목록은 `python3 codex/tools/publish_files.py`
 - 무거운 그림은 자산 보관함 (도감 아티팩트 assets, 1GiB · 5000개 — 한 판에 안 셈): 묶이지 않은 움짤 (img/** 여러 장 webp) + 꽉 찬 화면 원본 hi/*.webp. 지도 codex/blobs.json → blobs.js (화면은 '/_blob/' + id 로 읽음)

@@ -1,4 +1,5 @@
-# memo_fix.py v1.0 — 민수가 도감에 적어 둔 그림 할 일 처리 (2026-10-09)
+# memo_fix.py v1.1 — 민수가 도감에 적어 둔 그림 할 일 처리 (2026-10-09)
+#  v1.1 (2026-10-10): 다시 돌리면 나눈 칸 (N-026a · b · N-027a · b) 이 사라지던 것 고침 · 친칠라 (좀더 얼굴 확대) · 페흐토 (배경 제거, 투구쪽만 확대) 메모를 다시 받아 더 좁게 자름 — 얼굴 · 투구가 칸을 꽉 채움, 키운 만큼 살짝 선명하게
 #  · 초상화 다시 자르기: 레오나스 (가면 말고 수염 난 얼굴) · 친칠라 (얼굴 더 크게) · 페흐토 (배경 없는 기본 그림에서 투구만)
 #    · 소녀와 죄수 (거인 말고 소녀 얼굴) · 고대사슴 산호 (뿔 있는 머리)
 #  · 고대사슴 산호 NPC 그림: 보라 바탕을 지운 스프라이트 N-coral-deer-cut 를 따로 둠 (원본은 그대로)
@@ -18,13 +19,16 @@ DAY = '2026-10-09'
 
 def square(src, box, dst, size=256, mode=None):
     im = Image.open(src).convert('RGBA').crop(box).resize((size, size), Image.LANCZOS)
+    if size / (box[2] - box[0]) > 1.6:   # v1.1 많이 키운 칸은 살짝 선명하게 (투명도는 그대로)
+        from PIL import ImageFilter
+        a = im.getchannel('A'); im = im.convert('RGB').filter(ImageFilter.UnsharpMask(radius=1.4, percent=55, threshold=2)).convert('RGBA'); im.putalpha(a)
     if mode == 'RGB': bg = Image.new('RGBA', im.size, (0, 0, 0, 255)); bg.alpha_composite(im); im = bg.convert('RGB')
     im.save(dst, 'WEBP', quality=88, method=4)
 
 # 1) 초상화 · 스킬 그림 (원본 → 정사각형)
 square(R('img/char/leonas_art.webp'), (220, 135, 390, 305), R('img/face/leonas_portrait.webp'))          # 웃는 얼굴 + 분홍 수염
-square(R('img/char/chinchilla_art.webp'), (236, 70, 396, 230), R('img/face/auto_chinchilla.webp'))       # 곰 가죽 아래 얼굴
-square(R('img/char/pehto_base.webp'), (205, 15, 415, 225), R('img/face/auto_pehto.webp'))                # 배경 없는 기본 그림의 뿔 투구
+square(R('img/char/chinchilla_art.webp'), (213, 112, 333, 232), R('img/face/auto_chinchilla.webp'))      # v1.1 얼굴만 (눈 · 코 · 입이 칸을 채움, 곰 가죽은 위 가장자리만)
+square(R('img/char/pehto_base.webp'), (282, 42, 408, 168), R('img/face/auto_pehto.webp'))                 # v1.1 배경 없는 기본 그림에서 투구만 (뿔 · 어깨는 가장자리 밖)
 square(R('img/char/girlprisoner_art.webp'), (280, 315, 440, 475), R('img/face/girlprisoner_portrait.webp'))   # 땋은 머리 소녀 얼굴
 for dst, mode in ((os.path.join(C3, 'art', 'kar', 'icon_heretic.webp'), None), (R('img/karius/icon_heretic.webp'), 'RGB')):
     square(os.path.join(C3, 'art', 'kar', 'cut_heretic.webp'), (160, 20, 600, 460), dst, mode=mode)       # 얼굴 전체
@@ -82,8 +86,8 @@ by = {e['id']: e for e in cat}
 def note(i, t):
     if i in by: by[i]['note'] = t
 note('F-leonas', f'{DAY} 다시 자름: 가면 말고 웃는 얼굴 + 분홍 수염으로 줌인 (민수 메모) · 스탠딩에서 정사각형')
-note('F-auto-chinchilla', f'{DAY} 다시 자름: 얼굴을 더 크게 (민수 메모) · 기본 원화에서 정사각형')
-note('F-auto-pehto', f'{DAY} 다시 자름: 배경 없는 기본 그림 (페흐토기본.png) 에서 투구만 크게 (민수 메모)')
+note('F-auto-chinchilla', '2026-10-10 한 번 더 자름: 얼굴만 꽉 차게 (민수 메모 \'좀더 얼굴 확대된 초상화로\') · 기본 원화에서 정사각형 (2026-10-09 첫 자름은 곰 가죽까지)')
+note('F-auto-pehto', '2026-10-10 한 번 더 자름: 배경 없는 기본 그림 (페흐토기본.png) 에서 투구만 꽉 차게 · 바탕 투명 (민수 메모 \'배경 제거, 투구쪽만 확대\')')
 note('F-girlprisoner', f'{DAY} 다시 자름: 거인 말고 땋은 머리 소녀 얼굴로 (민수 메모)')
 note('F-auto-coraldeer', f'{DAY} 다시 자름: 뿔 있는 머리 부분 (민수 메모) · 배경 지운 스프라이트 N-coral-deer-cut 에서')
 note('N-coral-deer', '드라이브 NPC 폴더 · 고대사슴 산호.png (원본 그대로). 배경 지운 스프라이트는 바로 다음 칸')
@@ -104,7 +108,7 @@ for e in cat:
             out.append({'id': f'{nid}{suf}', 'cat': 'char', 'sub': sub, 'cid': cid, 'name': nm, 'src': f'img/npc/{nid}{suf}.webp',
                         'note': f'{DAY} 한 장에 같이 있던 그림 (드라이브 NPC 폴더 · {row[5]}) 에서 나눔 (민수 메모 \'분리해서 별개 스프라이트로\')', 'rank': '', 'on': False, 'g': g})
         continue
-    if e['id'].startswith(('F-N-026', 'N-026', 'F-N-027', 'N-027')) and e['id'][-1] in 'ab': continue   # 다시 돌릴 때 위에서 새로 넣음
+    if e['id'].startswith(('F-N-026', 'N-026', 'F-N-027', 'N-027')) and e['id'][-1] in 'ab' and any(x['id'] in ('N-026', 'N-027') for x in cat): continue   # 다시 돌릴 때 위에서 새로 넣음 (v1.1: 나눈 원래 칸이 이미 없으면 나눈 칸을 그대로 둠 — 전엔 지워졌음)
     out.append(e)
     if e['id'] == 'N-coral-deer': out.append(new_deer)
 cat = out
