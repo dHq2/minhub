@@ -1,4 +1,4 @@
-/* ai.js v0.35 — (v0.35, v0.85: 내려찍기 (곤봉 거한 · 장군님) — 새 동작 그림이 있으면 번갈아 크게 들어 (windup2) 땅을 찍는 그림 (slam)) (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
+/* ai.js v0.35 — (v0.35, v0.85: 총 쏘는 적 (D.bow.bullet — 4기 잡몹 소총 · 저격 · 산탄 · 권총): 작고 빠른 총알 · 총구 불꽃 · 총소리 · 산탄은 부채꼴로 여러 알 (pellets · spread) · 한 방 배율 (mul) · 내려찍기 (곤봉 거한 · 장군님) — 새 동작 그림이 있으면 번갈아 크게 들어 (windup2) 땅을 찍는 그림 (slam)) (v0.34, v0.82: 활 · 마력탄 쏘는 적 — 쏠 때 공격 그림 · 마력탄 (D.bow.magic: 굵고 빛나는 구슬 · 마법 피해) — 보광 · 보르마) (v0.33, v0.80 동작 점검: 걷다가 · 서서 바로 칠 때 예고 그림 (없으면 공격 대기 · 서 있음) — 걷는 다리로 휘두르던 것 · 곤봉 거한 · 도끼기사 · 장군님 내려찍기도 예고 그림 · 동료가 장판을 피할 때 공격 그림 그대로 미끄러지던 것 고침 (적을 본 채 물러섬) · 활 · 총은 물러설 때도 상대를 봄) (v0.32, v0.78: 기술이 '끝 그림' (pose2) 을 정해 두면 칠 때 그 그림 — u.pose2Next 를 부를 때 한 번 읽고 지움) (v0.31: 진지전 자리 지키기 · 정해 둔 상대 focusOn) 적: 맵에 서 있다가 들키면 덤빔 (벽 너머는 모름, 돌아서 쫓아옴, 멀어지면 제자리로). 동료: 지시를 따르고, 예고 장판은 피함 */
 'use strict';
 const MEDIC = { kits: 5, cd: 5, heal: 0.4 };
 const allies = () => G.units.filter(u => u.side === 'ally' && !u.dead && !u.downed);
@@ -117,9 +117,11 @@ function enemyThink(u, dt){
       u.decal.onDone = (dd) => {   // 레이저처럼: 장판이 다 차면 매우 빠른 화살 (그 사이 옆으로 비키면 빗나감)
         u.decal = null; if (u.dead) return;
         u.st = 'strike'; u.stT = 0.25; if (!u.S.m10 && u.S.poses.attack) setPose(u, 'attack');   // v0.34 쏠 때 공격 그림 (잡몹 10명은 motion.js 가 고름)
-        const y0 = u.y + 1.3;
-        shoot({ x: u.x, y: y0, z: u.z, a: dd.a, speed: B.speed, range: B.range + 2, side: u.side, len: B.magic ? 0.4 : 0.8, thick: B.magic ? 0.09 : 0, tip: !B.magic, color: B.color || 0xd8c8a8, glow: B.glow, dy: aimDy(u.x, y0, u.z, tgt, B.speed), hitsAir: true,   // v0.34 마력탄 (B.magic): 굵고 빛나는 구슬
-          onHit: (p, t) => { const head = !B.magic && t.kind === 'player' && Math.random() < 0.2; hurt(u, t, u.atk, { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, crit: head, critMul: 1.8, ranged: true, fam: B.magic ? 'magic' : undefined }); if (head) popText(t.x, t.y + 2.2, t.z, '헤드샷', 'crit'); } });
+        const y0 = u.y + 1.3, bul = !!B.bullet, n = B.pellets || 1;
+        if (bul){ spark(u.x + Math.cos(dd.a) * 0.7, y0, u.z + Math.sin(dd.a) * 0.7, 0xffd27a, 8, 3, 0.14, 0.18); smoke(u.x + Math.cos(dd.a) * 0.6, u.z + Math.sin(dd.a) * 0.6, 2, 0.5, 0.4); SFX.burst({ type: 'highpass', f: 1300, gain: 0.2, dec: 0.08 }); }   // v0.35 총구 불꽃 · 총소리
+        for (let i = 0; i < n; i++){ const a = dd.a + (n > 1 ? (i / (n - 1) - 0.5) * (B.spread || 0.3) : 0);   // 산탄: 부채꼴로 여러 알
+        shoot({ x: u.x, y: y0, z: u.z, a, speed: B.speed, range: B.range + 2, side: u.side, len: B.magic ? 0.4 : bul ? 0.3 : 0.8, thick: B.magic ? 0.09 : bul ? 0.03 : 0, tip: !B.magic && !bul, color: B.color || (bul ? 0xffe2a0 : 0xd8c8a8), glow: B.glow || (bul ? 0xffb050 : undefined), dy: aimDy(u.x, y0, u.z, tgt, B.speed), hitsAir: true,   // v0.34 마력탄 (B.magic): 굵고 빛나는 구슬
+          onHit: (p, t) => { const head = !B.magic && t.kind === 'player' && Math.random() < (B.mul > 1.4 ? 0.35 : 0.2); hurt(u, t, u.atk * (B.mul || 1), { from: { x: p.x - Math.cos(p.a), z: p.z - Math.sin(p.a) }, crit: head, critMul: 1.8, ranged: true, fam: B.magic ? 'magic' : undefined, kb: B.kb }); if (head) popText(t.x, t.y + 2.2, t.z, '헤드샷', 'crit'); } }); }
       };
     }
   } else if (D.slam){
