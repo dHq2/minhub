@@ -1,4 +1,5 @@
-# renames.py v1.2 — 민수가 확정한 이름 · 묶음을 도감에 적용 (파이프라인 끝쪽: h2_poses → h3_extra → faction_heroes → m10_poses → renames → trash_apply → pack · hipack)
+# renames.py v1.3 — 민수가 확정한 이름 · 묶음을 도감에 적용 (파이프라인 끝쪽: h2_poses → h3_extra → faction_heroes → m10_poses → g4_extra → renames → trash_apply → cands → pack · hipack)
+#  · v1.3 (2026-10-10) 승마 기사 → 기병기사 — 민수의 4기 드라이브 이름 ('4기/기병기사(3성정도).png'). '승마 기사' 는 Claude 가 그림만 보고 붙였던 임시 이름 (2026-10-03)
 #  · 발용 → 테이론 (본명, 2026-10-06) · 왕님 → 하르겐 (2026-10-06)
 #  · v1.1 (2026-10-09) 묶음 옮기기 MOVE: 그림 하나를 다른 인물로 (그 인물의 묶음 이름 · 번호 · g 를 따라감)
 #    대검을 든 단발 산호 여인 (X-coralangel-03) → 러슬 (천사슬, C-104) — 민수 메모 '얘는 슬라천 쪽 전투 스프라이트'
@@ -9,7 +10,7 @@ import os, json, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 P = os.path.join(ROOT, 'catalog.js'); s = open(P, encoding='utf-8').read(); key = 'const CATALOG = '
 head = s[:s.index(key) + len(key)]; cat = json.loads(s[len(head):].strip().rstrip(';'))
-REN = [('발용 (= 테이론)', '테이론'), ('발용의 ', '테이론의 '), ('발용', '테이론'), ('왕님 · ', '하르겐 · ')]
+REN = [('발용 (= 테이론)', '테이론'), ('발용의 ', '테이론의 '), ('발용', '테이론'), ('왕님 · ', '하르겐 · '), ('승마 기사', '기병기사')]
 n = 0
 for e in cat:
     for k in ('name', 'sub'):
@@ -30,5 +31,6 @@ for e in cat:
             e.update({'cid': cid, 'sub': to['sub'], 'g': to.get('g', e.get('g'))}); e['note'] = why + ' · ' + re.sub(r'^할 일: [^·]*· ', '', e.get('note') or ''); mv += 1
     if e['id'] in CAT and e.get('name', '').startswith('검냥이'): e['name'] = '광냥 (검냥이)' + e['name'][3:]
     if e['id'] in GAME: e['game'] = GAME[e['id']]
+if 'v1.95:' not in head: head = head.replace('/* catalog.js v1.94 — ', '/* catalog.js v1.95 — v1.95: 승마 기사 → 기병기사 (민수의 4기 드라이브 이름, tools/renames.py v1.3). ', 1)   # v1.3
 open(P, 'w', encoding='utf-8').write(head + json.dumps(cat, ensure_ascii=False, indent=0) + ';\n')
 print('바꾼 칸', n, '· 옮긴 그림', mv)
