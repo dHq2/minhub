@@ -1,4 +1,4 @@
-/* foes2.js v1.5 — (v1.5, v0.82: 검냥이 = 광냥 (민수 도감 메모로 합침) — 광냥은 중간보스급 4성 · 유일개체라 잡몹 셋에서 6 · 7층 강적 하나로 (한 원정에 한 번) · 기술은 덮치기 (검냥이) + 할퀴어 쓸기 · 옛 키 catw 는 광냥으로 · 보광 = 4성 마딜러 (마력탄을 쏘는 7층 강적) · 보르마 = 4성 원딜러 악마 (전엔 근접이 먼저라 활을 못 씀) · 6층 잡몹은 슬라임 · 요정 · 궁수, 7층은 꼬마악마 · 광신도 · 궁수) (v1.4, v0.80: 콜로세움 · 훈련장 (원정 밖) 에서 세자르 '일어나라' · 대장군 '증원!' 이 오류로 멈추던 것 — 층 정보가 없으면 1층 세기) (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
+/* foes2.js v1.6 — (v1.6, v0.83: 10층 대장군 첫 대사 · 자막 · 보스 줄 · 쓰러뜨린 안내의 이름을 본명 (도감에서 고친 이름, names.js) 으로 — 지금은 '푸른망토대장군') (v1.5, v0.82: 검냥이 = 광냥 (민수 도감 메모로 합침) — 광냥은 중간보스급 4성 · 유일개체라 잡몹 셋에서 6 · 7층 강적 하나로 (한 원정에 한 번) · 기술은 덮치기 (검냥이) + 할퀴어 쓸기 · 옛 키 catw 는 광냥으로 · 보광 = 4성 마딜러 (마력탄을 쏘는 7층 강적) · 보르마 = 4성 원딜러 악마 (전엔 근접이 먼저라 활을 못 씀) · 6층 잡몹은 슬라임 · 요정 · 궁수, 7층은 꼬마악마 · 광신도 · 궁수) (v1.4, v0.80: 콜로세움 · 훈련장 (원정 밖) 에서 세자르 '일어나라' · 대장군 '증원!' 이 오류로 멈추던 것 — 층 정보가 없으면 1층 세기) (v1.3, v0.69 동작 검토: 세자르 그림은 모두 왼쪽을 봄 → f -1 (전엔 뒤로 베고 찔렀음)) (v1.2: 쥐 기사를 1 · 2층 적에서 뺌 — 포렌의 소환수로만) (v1.1: 보스가 깨어날 때 넓게 비추고 초상화 대사)  층마다 고유한 적 · 강적 · 보스 (그림: 도감 → tools/foe_art.py → art/foe · foe_sheets.js)
    층 구성 (dungeon.js FLOOR_DEF를 여기서 고쳐 씀)
    1 무덤 어귀 · 3 젖은 묘지: 강적 슬라임녀 · 5 세자르의 알현실: 보스 세자르 (계단 방의 관에서 일어남, 쓰러뜨려야 내려감)
    6 안개 늪: 슬라임 · 요정 · 궁수 · 강적 보르마 · 벤킨 · 광냥 · 7 도깨비 시장: 꼬마악마 · 광신도 · 궁수 · 강적 청승 · 작약 · 광냥 · 보광 · 8 쇠의 진지: 흑기사 · 흑기사 방패병 · 창병 · 강적 도끼기사
@@ -133,7 +133,7 @@ function bossTick(dt){
     for (let i = 0; i < 3; i++) setTimeout(() => dropLootAt(B.u.x, B.u.z, rollItem(EXP.F, { type: i ? 'gear' : 'relic', bonus: 0.5, plus: 2 })), 300 + i * 250);
     dropLootAt(B.u.x, B.u.z, { gold: 150 * EXP.F });
     RPG.meta.shortcut = Math.max(RPG.meta.shortcut || 1, EXP.F + 1); saveRpg && saveRpg();
-    if (B.kind === 'general') setTimeout(() => guide('<em>대장군</em>을 쓰러뜨렸다. 이 아래는 아직 아무도 모른다 — <em>귀환 줄</em>로 돌아가자', 9), 1500);
+    if (B.kind === 'general') setTimeout(() => guide('<em>' + (DEFS.general ? DEFS.general.name : '대장군') + '</em>을 쓰러뜨렸다. 이 아래는 아직 아무도 모른다 — <em>귀환 줄</em>로 돌아가자', 9), 1500);
   }
 }
 async function bossWake(){
@@ -142,9 +142,9 @@ async function bossWake(){
   if (B.coffin){ B.coffin.g.visible = false; dust(B.x, B.z, 20); camShake(0.4, 0.5); }
   const u = spawnFoe(kind, B.x, B.z + (kind === 'cesar' ? 0.4 : 0), EXP.F, 'boss'); B.u = u; u.alert = true; u.elite = false;
   if (u.tag){ u.tag.remove(); u.tag = null; }
-  G.boss = u; $('bossbar').hidden = false; $('bossname').textContent = kind === 'cesar' ? '세자르 — 관 속의 늙은 왕' : '대장군 — 열 번째 층의 주인'; $('bossphase').textContent = '';
+  G.boss = u; $('bossbar').hidden = false; $('bossname').textContent = kind === 'cesar' ? '세자르 — 관 속의 늙은 왕' : u.D.name + ' — 열 번째 층의 주인'; $('bossphase').textContent = '';
   if (kind === 'cesar'){ setPose(u, 'raise'); u.st = 'strike'; u.stT = 3; G.lock = true; camWide(u.x, u.z, 4.5, 6, 4); await vnTalk('세자르', ['…누가 내 잠을 깨우나.', '왕관은 녹슬지 않았다. 나도 그렇다.', '무릎을 꿇어라. 아니면 — 베인다.']); G.lock = false; u.st = 'idle'; caption('세자르', '녹슬지 않는 왕관 · 관 속의 늙은 왕'); }
-  else { G.lock = true; camWide(u.x, u.z, 6, 9, 3.5); await textbox('대장군', ['여기까지 내려온 자는 오랜만이군.', '군단이여 — 깃발 아래로.'], { face: 'art/foe/general_idle.webp', vn: true }); G.lock = false; caption('대장군', '열 번째 층의 주인 · 군단'); for (const e of foes()) e.alert = true; }
+  else { G.lock = true; camWide(u.x, u.z, 6, 9, 3.5); await textbox(u.D.name, ['여기까지 내려온 자는 오랜만이군.', '군단이여 — 깃발 아래로.'], { face: 'art/foe/general_idle.webp', vn: true }); G.lock = false; caption(u.D.name, '열 번째 층의 주인 · 군단'); for (const e of foes()) e.alert = true; }
   SFX.roar && SFX.roar(0.5);
 }
 // 세자르: 평소 칼질 (enemyThink) 위에 큰 기술 넷
