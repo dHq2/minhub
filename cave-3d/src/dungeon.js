@@ -1,4 +1,4 @@
-/* dungeon.js v1.3 — 원정 층 만들기 (v1.3, v0.58: 구출작전 방 삭제) (v1.2: 층 배치 — linear (방이 한 줄로, 횡스크롤 카메라) · ascent (남→북으로 오르막, 마지막 방이 높은 단 위 = 세자르) · cam (층 카메라 모드 · drift)) (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
+/* dungeon.js v1.4 — (v1.4, v0.89: 갈림길이 방 구성을 바꿈 (EXP.route) · 인카운터 방은 문을 달아도 길이 안 끊기는 방을 먼저 고르고 입구 칸을 적어 둠 (r.ents, rogue.js 가 문을 닮)) 원정 층 만들기 (v1.3, v0.58: 구출작전 방 삭제) (v1.2: 층 배치 — linear (방이 한 줄로, 횡스크롤 카메라) · ascent (남→북으로 오르막, 마지막 방이 높은 단 위 = 세자르) · cam (층 카메라 모드 · drift)) (v1.1: 방 모양 (둥근 · 십자) · 넓은 복도 · 방 구조물 (기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루) · 층 기믹 표시 (가시 · 물 · 진흙) — mapfx.js)
    · 절차 생성: 방 7 ~ 11개 (겹치지 않게) + 2칸 복도 (가장 짧게 잇고 + 고리 몇 개) → 글자 지도 → buildWorld (굴 · 1층과 같은 판)
    · 방 종류: 시작 (귀환 줄) · 계단 (가장 먼 방) · 싸움 · 강적 · 보물 · 쉼터 (모닥불) · 무덤 (1층) · 제단 (4층)
    · 층 테마 10: 땅 · 벽 · 빛 색 · 적 · 소품 (도감 소품 75종, art/dun)
@@ -110,18 +110,32 @@ function genDungeon(F, seed){
   start.type = 'start'; stairs.type = 'stairs';
   const rest = rooms.filter(r => r.type === 'fight' && r !== start && r !== stairs);
   const take = (type, n, pref) => { for (let k = 0; k < n && rest.length; k++){ const pool = pref ? rest.filter(pref) : rest; const r = (pool.length ? pool : rest)[Math.floor(R() * (pool.length ? pool : rest).length)]; r.type = type; rest.splice(rest.indexOf(r), 1); } };
-  take('elite', 1, r => dist.get(r.id) >= 2);
-  take('treasure', R() < 0.5 ? 2 : 1, r => r.links.length === 1);   // 막다른 방이 보물방
-  if (rooms.length >= 7) take('rest', 1, r => dist.get(r.id) >= 2);
+  // v1.4 갈림길 (rogue.js): 고른 길이 이 층의 방 구성을 바꿈 — 보물 · 사냥 · 문 · 조용한 길 · 상인 · 붉은 일식
+  const RT = typeof EXP !== 'undefined' && EXP && EXP.route && EXP.route.F === F ? EXP.route.k : null;
+  take('elite', 1 + (RT === 'treasure' || RT === 'hunt' ? 1 : 0), r => dist.get(r.id) >= 2);
+  // v1.1 인카운터 방 (encounters.js): 층마다 한두 개. v1.4 문을 달아도 길이 끊기지 않는 방을 먼저 고름 (encSafe — 문 · 그림 카드는 rogue.js)
+  const cells = (r, ring) => { const L = []; for (let j = r.z - (ring ? 1 : 0); j < r.z + r.h + (ring ? 1 : 0); j++) for (let i = r.x - (ring ? 1 : 0); i < r.x + r.w + (ring ? 1 : 0); i++) L.push([i, j]); return L; };
+  const entrances = r => cells(r, true).filter(([i, j]) => (i < r.x || i >= r.x + r.w || j < r.z || j >= r.z + r.h) && g[j] && g[j][i] && g[j][i] !== '#'
+    && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => { const x = i + a, z = j + b; return x >= r.x && x < r.x + r.w && z >= r.z && z < r.z + r.h && g[z][x] !== '#'; }));
+  const encSafe = r => {
+    const ent = entrances(r); if (!ent.length || ent.length > 9) return false;
+    const block = new Set(cells(r, false).concat(ent).map(([i, j]) => j * W + i)), sx = Math.round(start.cx), sz = Math.round(start.cz);
+    if (block.has(sz * W + sx)) return false;
+    const seen = new Uint8Array(W * H), q = [sz * W + sx]; seen[q[0]] = 1;
+    while (q.length){ const k = q.pop(), i = k % W, j = (k - i) / W; for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]){ const x = i + a, z = j + b, n = z * W + x; if (x < 0 || z < 0 || x >= W || z >= H || seen[n] || block.has(n) || g[z][x] === '#') continue; seen[n] = 1; q.push(n); } }
+    return rooms.every(o => o === r || seen[Math.round(o.cz) * W + Math.round(o.cx)]);
+  };
+  take('enc', (R() < 0.35 ? 2 : 1) + (RT === 'doors' ? 2 : 0), r => dist.get(r.id) >= 1 && r.w >= 6 && r.h >= 6 && encSafe(r));
+  for (const r of rooms) if (r.type === 'enc'){ r.encSafe = encSafe(r); r.ents = r.encSafe ? entrances(r) : []; }
+  take('treasure', (R() < 0.5 ? 2 : 1) + (RT === 'treasure' ? 1 : 0), r => r.links.length === 1);   // 막다른 방이 보물방
+  if (rooms.length >= 7 || RT === 'quiet') take('rest', 1 + (RT === 'quiet' ? 1 : 0), r => dist.get(r.id) >= 2);
   if (D.graves) take('graves', 1);
   if (D.altar) take('altar', 1);
-  // v1.1 인카운터 방 (encounters.js): 층마다 한두 개
-  take('enc', R() < 0.35 ? 2 : 1, r => dist.get(r.id) >= 1 && r.w >= 7 && r.h >= 6);
   // v0.31 상황 방: 만남 · 진지전 · 포격전 · 각개전투 (매복)
   if (F >= 2 && (F === 2 || R() < 0.35)) take('meet', 1, r => dist.get(r.id) >= 1);
   if (F >= 2) take('fort', 1, r => r.w >= 8 && r.h >= 7);
   if (F >= 3 && R() < 0.75) take('artillery', 1, r => r.w >= 8);
-  if (F >= 2 && R() < 0.6) take('ambush', 1);
+  if (F >= 2 && R() < 0.6 && RT !== 'quiet') take('ambush', 1);
   // v1.1 구조물 (길 · 문 앞은 비워 둠): 진지 목책 · 기둥 회랑 · 단상 · 반쪽 높은 층 · 무너진 벽 · 망루 · 바위
   // 지켜야 할 길: 방 밖의 복도 + 방 가장자리 두 칸 안의 복도 (문 앞). 방 한가운데를 지나는 길은 돌아가도 됨 (단상은 경사로 오르내림)
   const inner = (i, j) => rooms.some(r => i >= r.x + 2 && i <= r.x + r.w - 3 && j >= r.z + 2 && j <= r.z + r.h - 3);

@@ -1,4 +1,4 @@
-/* prologue.js v0.117 — (v0.117, v0.86: 죽은 동료 (청광묵 · 카리우스) 는 굴에 없음 — 그 자리에 무덤 (maim.js caveGraves) · 말풍선 · 끼니 · 굴 싸움 · 아래 칸에서도 빠짐 (u.gone)) (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.119 — (v0.119, v0.89: 정사는 레베카의 이야기 (민수) — 시작은 인주가 굴에 떨어짐 → 성해포를 두른 채 깨어남 · 석문은 열려 있음 (적뢰전은 나중에 넣음) → 벽에서 '저기요!'. 청광묵 · 카리우스는 다른 세계선 동료 — 처음엔 굴에 없음 (canon.js). 옛 청광묵 맞짱 프롤로그는 startPitFight 로 남겨 둠 (지금은 안 씀)) (v0.118, v0.89: 카리우스가 말을 함 (민수 설정 — 현학적 · 무감정 · '~하는 건가?' '...그렇다면야.') — 말 걸기는 굴 상황마다 고름 (kaTalkLines) · 깨어나는 장면 · 일할 때 말풍선 · 석문 팔 때 · 굴 싸움. 땅 파는 '캉' 소리는 그대로) (v0.117, v0.86: 죽은 동료 (청광묵 · 카리우스) 는 굴에 없음 — 그 자리에 무덤 (maim.js caveGraves) · 말풍선 · 끼니 · 굴 싸움 · 아래 칸에서도 빠짐 (u.gone)) (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -192,8 +192,13 @@ function spawnGob(x, z){
   return g;
 }
 
-/* ---------- 프롤로그 시작: 낙하 ---------- */
+/* ---------- v0.119 프롤로그 시작: 굴에 낙하 (레베카의 이야기 · canon.js) ---------- */
 async function startPrologue(){
+  if (typeof canonStart === 'function') canonStart();
+  return startCave(true);
+}
+/* ---------- 옛 프롤로그 (다른 세계선 — 청광묵과 맞짱). 지금은 안 씀 ---------- */
+async function startPitFight(){
   clearLevel(); G.mode = 'prologue'; PRO.cursed = false; PRO.tries = 0; PRO.necklace = false;
   buildArena(); const C = PRO.c;
   G.lock = true; letterbox(true); dark(1, 0);
@@ -381,7 +386,7 @@ function makeMotes(w, h){
   PRO.motes = { pts, seed, pos, geo };
 }
 async function startCave(cine = false){
-  clearLevel(); G.mode = 'cave'; PRO.cursed = true;
+  clearLevel(); G.mode = 'cave';   // v0.119 청광묵 눈 흉터 (PRO.cursed) 는 옛 세계선 — 굴에서 켜지 않음
   const sp = loadLevel(lobbyRows(), { bg: 0x110c1c, fogNear: 12, fogFar: 28, hemi: 0.45, moon: 0.12, floor: 0x3b3448, wall: 0x261f33,
     lights: [{ x: 13.2, z: 10.5, c: 0x5fffd8, i: 1.5, d: 6.5 }, { x: 8.5, z: 3, c: 0xffb070, i: 1.3, d: 6 }, { x: 3.6, z: 10, c: 0xc8a0ff, i: 0.9, d: 5 }, { x: 9, z: 10, c: 0x9f8cff, i: 0.7, d: 10 }] });
   hemi.color.setHex(0xb8a0ff); hemi.groundColor.setHex(0x1a1030);
@@ -417,12 +422,16 @@ async function startCave(cine = false){
   makeMotes(G.map.w, G.map.h);
   // 말 걸기
   const talk = (u, who, lines, o) => G.inspect.push({ unit: u, r: 1.7, talk: true, label: `${who}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, ...lens(3.0, 4.4), 0.05); await textbox(who, lines, o); camFocusOff(); } });
-  talk(ka, '카리우스', ['...캉. 캉.'], { face: FACE.karius });
-  G.inspect.push({ unit: ch, r: 1.7, talk: true, label: '청광묵에게 말을 건다', fn: async () => { ch.face = Math.sign(G.player.x - ch.x) || ch.face; camFocus(ch.x, ch.z, 99, ...lens(3.0, 4.4), 0.05);
-    await textbox('청광묵', ['대장! 아직 먹으면 안된다! 알! 낳아야한다!'], { face: FACE.cheong, tags: CHEONG_TAGS() }); camFocusOff(); } });
+  PRO.cave.talk = {   // v0.119 다른 세계선 동료가 굴에 들어오면 (canon.js wlBack) 다시 붙임
+    ka: { unit: ka, r: 1.7, talk: true, label: '카리우스에게 말을 건다', fn: async () => { ka.face = Math.sign(G.player.x - ka.x) || ka.face; camFocus(ka.x, ka.z, 99, ...lens(3.0, 4.4), 0.05);
+      await textbox('카리우스', kaTalkLines(), { face: FACE.karius }); camFocusOff(); } },
+    ch: { unit: ch, r: 1.7, talk: true, label: '청광묵에게 말을 건다', fn: async () => { ch.face = Math.sign(G.player.x - ch.x) || ch.face; camFocus(ch.x, ch.z, 99, ...lens(3.0, 4.4), 0.05);
+      await textbox('청광묵', ['대장! 아직 먹으면 안된다! 알! 낳아야한다!'], { face: FACE.cheong, tags: CHEONG_TAGS() }); camFocusOff(); } } };
+  G.inspect.push(PRO.cave.talk.ka, PRO.cave.talk.ch);
   if (!PRO.rebOut) G.inspect.push({ x: B.x, z: B.z, r: 1.6, mark: '레베카', far: 5, get used(){ return PRO.rebOut; }, set used(v){}, get label(){ return `벽을 파서 레베카를 꺼낸다 (${PRO.rebDig}/3${apTag()})`; }, fn: digRebecca });
   if (PRO.rebOut) spawnRebecca(B.x + 1, B.z);
   if (typeof caveGraves === 'function') caveGraves(ch, ka, Cc, K);   // v0.117 죽은 동료 자리에 무덤
+  if (typeof wlCave === 'function') wlCave(ch, ka);   // v0.119 아직 만나지 않은 다른 세계선 동료는 굴에 없음
   G.inspect.push({ unit: snails[0], r: 1.6, talk: true, label: '인광달팽이를 본다', fn: async () => { await textbox('', ['인광달팽이. 껍데기에서 청록빛이 은은하게 번진다.', '…알을 낳을 때까지는 먹으면 안 된다고 한다.']); } });
   // 석문: 높이 5m쯤 되는 엄청 단단한 문. 지금은 막혀 있음
   // 굴 끝 벽 (z = 1)의 앞면 (z = 1.5)에 납작하게 붙임: 카메라를 따라 돌지 않고 벽 앞에 딱 (굴 폭 3칸 = 문 폭, 높이 약 4.6)
@@ -432,18 +441,8 @@ async function startCave(cine = false){
   buildStorage(); buildFire(); caveBarInit(); restorePlaced();
   G.inspect.push({ x: 12, z: 10, r: 1.3, mark: '우리', far: 0.1, keep: true, get label(){ return penLabel(); }, fn: penAction });
   if (!cine){ camSnapTo(G.camAnchor.x, G.camAnchor.z); caption('굴', '떨어진 자들이 사는 곳'); return; }
-  // 화면이 점점 밝아지며 굴. 카리우스 → 청광묵 → 움직이기 가능
-  pl.lying = true; G.lock = true; letterbox(true); dark(1, 0); PRO.caveIntro = true;
-  camSnapTo(K.x, K.z + 2.5); camWide(K.x + 0.6, K.z + 1.2, ...lens(5.5, 6.5), 99);
-  await wait(0.3); dark(0, 3.4); await wait(3.6);
-  await textbox('카리우스', ['.....'], { face: FACE.karius, hold: 1.2 });
-  await textbox('', ['(굴을 파는 중이다)']);
-  camWide(Cc.x, Cc.z, ...lens(4.6, 6), 99); await wait(1.8);
-  await textbox('', ['(청광묵의 왼눈에 흉터가 남아 있다)']);
-  await textbox('청광묵', ['대장! 일어났나!'], { face: FACE.cheong, tags: CHEONG_TAGS() });
-  pl.lying = false; CAM.wide = null; letterbox(false); G.lock = false; PRO.caveIntro = false;
-  caption('굴', '떨어진 자들이 사는 곳');
-  guide('<em>WASD</em> 움직이기 · <em>E</em> 말 걸기', 5);
+  // v0.119 첫 장면: 굴에 떨어짐 → 깨어남 → 벽에서 '저기요!' (canon.js)
+  return canonIntro(pl, B);
 }
 
 /* ---------- 매 프레임 (글상자가 떠 있어도 돎) ---------- */
@@ -476,14 +475,14 @@ function proTick(dt){
   const Cv = PRO.cave;
   if (G.mode === 'cave' && Cv){
     // 카리우스: 캉. 캉. (굴을 팜)
-    const atDig = !hBusy(Cv.ka) && !G.lobbyFight && Math.hypot(Cv.ka.x - Cv.K.x, Cv.ka.z - Cv.K.z) < 0.5;
+    const atDig = !Cv.ka.gone && !hBusy(Cv.ka) && !G.lobbyFight && Math.hypot(Cv.ka.x - Cv.K.x, Cv.ka.z - Cv.K.z) < 0.5;
     if (atDig && Cv.ka.pose !== 'dig'){ setPose(Cv.ka, 'dig'); Cv.digT = 0.85; } if (!atDig && Cv.ka.pose === 'dig') setPose(Cv.ka, 'idle');
     Cv.digT -= dt; if (Cv.digT <= 0 && atDig){ Cv.digT = 8 / 7; const k = Cv.ka; SFX.clink(0.35); spark(k.x + 0.4, 1.3, k.z - 0.6, 0xffe0b0, 6, 2.5, 0.12, 0.25); say(k, '캉', 'soft', 0.7); }
     // 청광묵: 달팽이를 보며 가끔 "아우.... 귀여워!"
     Cv.cuteT -= dt; if (Cv.cuteT <= 0 && Cv.ch.sadT > 0){ Cv.cuteT = rnd(3, 5); say(Cv.ch, Cv.ch.sadT > 45 ? '😭' : '😢', 'emo', 2.4); }
     else if (Cv.cuteT <= 0 && !hBusy(Cv.ch)){ Cv.cuteT = rnd(6, 9); const s = Cv.snails[0]; if (s) Cv.ch.face = Math.sign(s.x - Cv.ch.x) || 1; say(Cv.ch, '아우.... 귀여워!', 'soft', 2.4); }
     // 레베카 (벽 속): 흙을 긁는 소리 · 가끔 꺼내 달라고 조름 (v0.114 설정대로 — 자는 게 아님)
-    Cv.zzzT -= dt; if (!PRO.rebOut && Cv.zzzT <= 0){ Cv.zzzT = rnd(7, 12); say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, ['(사각… 사각…)', '…저기요, 혹시 꺼내 주실 수 있나요?', '(흙을 긁는 소리)', '…헤헤. 오늘도 하늘 냄새가 나요.'][Math.floor(Math.random() * 4)], 'zzz', 2.4); }
+    Cv.zzzT -= dt; if (!PRO.rebOut && Cv.zzzT <= 0){ Cv.zzzT = rnd(7, 12); say({ x: Cv.B.x - 0.3, y: 0.75, z: Cv.B.z }, REB_WALL[Math.floor(Math.random() * REB_WALL.length)], 'zzz', 2.4); }
     // 달팽이: 집 근처를 아주 천천히 기어다님
     if (!G.waitInput) tickSnails(dt);
     if (PRO.carry && !G.lock && !G.waitInput && hit('KeyG')) dropHere();
@@ -756,11 +755,12 @@ async function endDay(){
   for (const it of PRO.loose) if (it.d.type !== 'junk') it.age++;
   mid(`${PRO.day}일째`); await wait(1.6); mid('');
   dark(0, 1.6); await wait(1.2); G.player.lying = false; G.player.poseHold = null;
-  if (rotNow){ say(Cv.ch, '대장! 냄새난다! 쓰레기 썩는다!', 'soft', 2.6); }
-  dayNews.forEach((t, i) => setTimeout(() => say(Cv.ch, t, 'soft', 2.6), 2800 + i * 2600));
+  const news = t => { if (!Cv.ch.gone) return say(Cv.ch, t, 'soft', 2.6); const p = G.player; if (p) say({ x: p.x, y: p.y + 0.4, z: p.z }, t.replace(/^대장[!…\s]*/, ''), 'zzz', 2.6); };   // v0.119 청광묵이 굴에 없으면 혼잣말처럼
+  if (rotNow) news('대장! 냄새난다! 쓰레기 썩는다!');
+  dayNews.forEach((t, i) => setTimeout(() => news(t), 2800 + i * 2600));
   letterbox(false); G.lock = false;
   if (PRO.day >= 3 && Math.random() < 0.25) setTimeout(nightRaid, 1800);
-  setTimeout(() => G.mode === 'cave' && guide(`아침 — <em>밥</em> · <em>불</em>은 언제든 · 행동 <em>${AP_MAX}</em>번: <em>달팽이 먹이</em> · <em>묻기</em> · <em>석문 파기</em> · <em>레베카</em>`, 7), 2600);
+  setTimeout(() => G.mode === 'cave' && guide(`아침 — <em>밥</em> · <em>불</em>은 언제든 · 행동 <em>${AP_MAX}</em>번: <em>달팽이 먹이</em> · <em>묻기</em> · <em>${PRO.dig < 100 ? '석문 파기' : '원정 (석문)'}</em>${PRO.rebOut ? '' : ' · <em>레베카</em>'}`, 7), 2600);
   caption(`${PRO.day}일째 · ${WEATHER[PRO.weather].icon} ${WEATHER[PRO.weather].name}`, rotNow ? '어디선가 썩는 냄새가 난다' : WEATHER[PRO.weather].note);
   if (PRO.weather === 'rain' && PRO.tentGoneNow) setTimeout(() => say(Cv.ch, '대장! 변소 천막 날아갔다!', 'soft', 2.4), 1800);
 }
@@ -778,11 +778,26 @@ function tickStorage(dt){
   for (const t of rotten){ if (Math.random() < dt * (2 + (t.rot || t.age || 1) * 2)){ const x = (t.b ? t.b.g.position.x : t.x) + rnd(-0.4, 0.4), z = (t.b ? t.b.g.position.z : t.z) + rnd(-0.4, 0.4); dot(x, rnd(0.3, 0.9), z, 0x2a3a1a, 0.07, 0.6); } }
   if (rotten.length){ Cv.smellT = (Cv.smellT || 4) - dt; if (Cv.smellT <= 0){ Cv.smellT = rnd(7, 11); const t = rotten[0]; say({ x: t.b ? t.b.g.position.x : t.x, y: 1.0, z: t.b ? t.b.g.position.z : t.z }, '(썩는 냄새)', 'zzz', 2); } }
 }
+// 카리우스 말 (v0.89, 민수 설정: 조용히 명상하다가 '~하는 건가?' '...그렇다면야.' '....~다.' 하고 지식을 늘어놓는 현학자. 거의 무감정 — 감성은 배워서 익힌 것)
+function kaTalkLines(){
+  const C = PRO.cave || {}, pick = a => a[Math.floor(Math.random() * a.length)], L = [];
+  if (PRO.rebOut && C.reb && !C.reb.gone) L.push(['저 여자의 재생은 열량을 쓴다. ....질이 나쁜 종류의 불사군.', '내가 본 불사는 더 진짜였다. 개념적으로 죽지 못하는 것, 무엇으로도 오염되지 않는 것.', '....그래도 2년을 버텼다. 그건 흥미롭다.']);
+  if (!PRO.rebOut) L.push(['벽에서 목소리가 났었다. ....들은 건가?', '꺼낼지 말지는 대장이 정할 일이다. 다만 백지장도 맞들면 낫다.']);
+  if (C.ch && !C.ch.gone) L.push(['저 녀석은 너를 대장이라 부른다. 종족의 습성이다.', '....나쁘지 않은 습성이다.']);
+  L.push(['바닥을 조금만 파도 뼈가 나온다.', '....이곳에 먼저 떨어진 자가 많았다는 뜻이다.']);
+  L.push(['할 일이 없어서 파는 건가, 라고 묻는 건가?', '....그렇다. 그리고 공간도 넓어진다.']);
+  L.push(['이곳엔 낮과 밤이 없다. 자고 일어나면 아침이다.', '....합리적인 정의다.']);
+  L.push(['비도 눈도 위에서 버려지는 것이다.', '지금까지는 운 좋게 진짜 물이었다. ....앞으로도 그러길.']);
+  L.push(['.....', '....명상 중이었다. 용건이 있는 건가?']);
+  return pick(L);
+}
 // 동료 정리 (v0.17): 인주가 뭘 하든 낙하 뒤엔 기본으로 정리함. 단 약간 랜덤 — 그냥 가만히 있기도, 바로 정리하기도, 정리하다 딴 데로 새기도
 // 동료도 화장실에 감 (가끔. 변소 구덩이면 큰 똥 · 파리가 늘어남)
 const hBusy = h => !!(h.job || h.potty || h.wander || h.pigJob || h.rescue || h.ready || h.eat || h.stopPl || h.sadT > 45);
 const HSAY = { ch: { work: ['정리한다!', '청광묵 돕는다!', '영차!'], hungry: ['배고프다! 밥!', '청광묵 아침 먹는다!'], ate: ['맛있다!', '배부르다! 대장!'], starve: ['먹을 거… 먹을 거…', '대장… 먹을 거 없다…', '꼬르륵…'], forage: ['…버섯… 조금만…', '배고프다… 달팽이 거 조금만…'], off: ['어? 저거 뭐냐', '달팽이 보고 온다!', '킁킁…', '배고프다…'], potty: ['청광묵 똥 싸러 간다!', '급하다!'], done: ['시원하다!', '대장! 개운하다!'] },
-               ka: { work: ['.....', '…'], hungry: ['.....'], ate: ['…'], starve: ['…(꼬르륵)'], forage: ['.....'], off: ['.....', '캉.'], potty: ['.....'], done: ['…'] } };
+               ka: { work: ['....정리는 엔트로피를 잠시 미루는 일이다.', '이건 여기에 두는 건가? ....그렇다면야.', '.....'], hungry: ['....위가 비었다는 신호다.', '먹을 때가 된 건가.'], ate: ['....충분하다.', '열량은 확보됐다.'],
+                    starve: ['....굶주림은 판단을 흐린다. 경험적으로.', '…(꼬르륵) ....방금 그건 못 들은 걸로.'], forage: ['....버섯이 먹을 수 있는 종인지는 반반이다.'], off: ['.....', '저 벽의 결은 흥미롭다.', '....명상 중이다.'],
+                    potty: ['....생리 현상이다. 설명이 더 필요한 건가?'], done: ['....끝났다.', '그렇다면야.'] } };
 function helperTick(h, dt){
   if (!h) return;
   h.home = h.home || { x: h.x, z: h.z };
@@ -1052,7 +1067,7 @@ function startLobbyFight(){
   const ch = PRO.cave.ch; if (!ch.gone){ ch.side = 'ally'; ch.D = DEFS.cheongAlly; ch.max = DEFS.cheongAlly.hp; ch.hp = Math.max(1, Math.round(ch.max * PRO.hpf.ch)); ch.atk = DEFS.cheongAlly.atk; ch.spd = DEFS.cheongAlly.spd; ch.job = null; ch.rescue = null; ch.lift = 0; }
   say(ch, '!', 'alert', 1.1); say(PRO.cave.ka, '!', 'alert', 1.1); setTimeout(() => G.lobbyFight && say(ch, '대장! 적이다! 청광묵도 싸운다!', 'soft', 2), 1100);   // 리스트 뒤에 가렸던 ! 를 한 번 더
   const ka = PRO.cave.ka; if (!ka.gone) Object.assign(ka, { side: 'ally', D: DEFS.kariusAlly, hp: Math.max(1, Math.round(DEFS.kariusAlly.hp * PRO.hpf.ka)), max: DEFS.kariusAlly.hp, atk: DEFS.kariusAlly.atk, spd: DEFS.kariusAlly.spd, job: null, kc: null, p2: false, cd: 0.5, swCd: 2.5, grCd: 4, slCd: 2, rsCd: 3 }); setPose(ka, 'idle');
-  setTimeout(() => G.lobbyFight && say(ka, '.....', 'soft', 1.4), 1500);
+  setTimeout(() => G.lobbyFight && say(ka, '....침입자인가. 그렇다면야.', 'soft', 1.6), 1500);
   guide('적이다! <em>좌클릭</em> 찌르기 · <em>우클릭</em> 투창 · <em>Q</em> 구르기 · <em>F</em> 방어', 5);
   G.onKill = (u) => { if (u.side === 'enemy' && G.mode === 'cave' && u.R) dropLoot(u);
     if (u.side === 'enemy' && G.mode === 'cave' && !u.D.boss){
@@ -1442,15 +1457,16 @@ function dayBody(){
   PRO.sleepHint = false;
   if (PRO.nightCold && !hasPlaced('d_H-402')) news.push('대장… 밤에 추웠다… 담요 있으면 좋겠다…');
   // 석문: 카리우스가 밤새 팜 (먹었으면 4, 굶었으면 1)
-  if (PRO.dig < 100){ PRO.dig = Math.min(100, PRO.dig + (PRO.meal.ka.hd ? 1 : 4)); if (PRO.dig >= 100) setTimeout(doorDone, 4000); }
-  else if (PRO.jrDone && typeof RPG !== 'undefined'){   // v0.32 채굴: 석문을 연 뒤엔 카리우스가 밤마다 벽을 팜 (먹었을 때만). 금화 · 가끔 쓸 것 (보관함) · 굴 넓히기 진척
+  const kaIn = !PRO.cave.ka.gone;   // v0.119 카리우스가 굴에 있을 때만 밤에 팜
+  if (PRO.dig < 100 && kaIn){ PRO.dig = Math.min(100, PRO.dig + (PRO.meal.ka.hd ? 1 : 4)); if (PRO.dig >= 100) setTimeout(doorDone, 4000); }
+  else if (PRO.jrDone && kaIn && typeof RPG !== 'undefined'){   // v0.32 채굴: 석문을 연 뒤엔 카리우스가 밤마다 벽을 팜 (먹었을 때만). 금화 · 가끔 쓸 것 (보관함) · 굴 넓히기 진척
     if (!PRO.meal.ka.hd){ const g = 4 + Math.floor(Math.random() * 9); RPG.gold += g; PRO.mine = (PRO.mine || 0) + 5;
       let got = ''; if (Math.random() < 0.3 && typeof rollItem === 'function'){ const id = rollItem(Math.max(1, RPG.depth || 1), { type: 'cons' }), it = makeItem(id); if (it){ RPG.stash.push(it); got = ` · ${itemDef(it).n}`; } }
       news.push(`카리우스가 밤새 팠다… 금화 ${g}${got} (넓히기 ${Math.min(100, PRO.mine)}%)`); if (typeof saveRpg === 'function') saveRpg(); }
     else news.push('카리우스는 굶어서 파지 않았다…');
   }
   PRO.ap = AP_MAX;
-  if (PRO.meal.ch.hd) news.push(`대장… 어제 못 먹었다… (${PRO.meal.ch.hd}일째)`);
+  if (PRO.meal.ch.hd && !PRO.cave.ch.gone) news.push(`대장… 어제 못 먹었다… (${PRO.meal.ch.hd}일째)`);
   // 달팽이: 밤에 우리 먹이를 먹음
   const need = snailNeed();
   if (need){
@@ -1475,7 +1491,7 @@ hurt = function(att, tgt, base, o){
 function snailHit(att, s, died){
   const ch = PRO.cave.ch;
   if (s.st2 === 'carried' && s.carrier && s.carrier.rescue){ s.carrier.rescue = null; }
-  if (att === G.player && !G.lobbyFight && !died && !(ch.sadT > 45)){
+  if (att === G.player && !G.lobbyFight && !died && !ch.gone && !(ch.sadT > 45)){
     if (ch.job){ if (ch.job.it){ const it = ch.job.it; it.carrier = null; it.claimed = null; it.x = ch.x; it.z = ch.z; it.b.g.position.set(ch.x, heightAt(G.map, ch.x, ch.z), ch.z); it.insp.x = ch.x; it.insp.z = ch.z; } else if (ch.job.target) ch.job.target.claimed = null; ch.job = null; }
     if (ch.potty){ ch.potty = null; ch.group.visible = true; }
     ch.wander = null; ch.eat = false;
@@ -1494,7 +1510,7 @@ function snailDie(s){
   const d = { ...RAW_SNAIL, name: s.baby ? '죽은 새끼 달팽이' : RAW_SNAIL.name, h: bodyH(s) }, x = s.x, z = s.z;
   bloodBurst(x, z, 0.3, 0x2fbfa0); bloodPool(x, z, 0.28, 1.2, 0x1f7f6a);   // 달팽이 체액 (청록)
   setTimeout(() => { if (G.mode !== 'cave') return; const b = bill(PA + d.k + '.webp', x, z, d.h, { tint: 0.5 }); b.m.rotation.z = Math.PI * 0.94; addLoose(d, b, x, z); }, 900);
-  ch.stopPl = null; ch.sadT = 75; ch.hop = 0; ch.job = null;
+  ch.stopPl = null; if (!ch.gone) ch.sadT = 75; ch.hop = 0; ch.job = null;
   say(ch, '아…', 'soft', 1.2);
   setTimeout(() => PRO.cave && say(ch, '달팽이…!! 으아아아앙!!', 'big', 2.6), 1300);
   setTimeout(() => PRO.cave && say(ch, '😭', 'emo', 2.6), 4200); PRO.cave.cuteT = 7;
@@ -1683,7 +1699,7 @@ async function doorAction(){
   for (let k = 0; k < 4; k++){ pl.leanT = 0.3; SFX.clink(0.45); spark(9 + rnd(-0.6, 0.6), 0.6, 2.4, 0xffe0b0, 6, 2.5); dust(9 + rnd(-0.8, 0.8), 2.5, 6); camShake(0.06, 0.1); await wait(0.42); }
   PRO.dig = Math.min(100, PRO.dig + gain); buildRubble();
   popText(9, 2.2, 2.6, `석문 ${Math.floor(PRO.dig)}% (+${gain})`, 'heal', 1.4); G.lock = false;
-  if (PRO.dig >= 100) doorDone(); else if (Math.random() < 0.4) say(PRO.cave.ka, '…캉.', 'soft', 1);
+  if (PRO.dig >= 100) doorDone(); else if (Math.random() < 0.4) say(PRO.cave.ka, Math.random() < 0.5 ? '....캉.' : ['....석문은 단단하다. 그렇다면야, 더 파면 된다.', '이 돌은 이 세계의 것이 아니다. ....결이 다르다.', `....${PRO.dig}퍼센트쯤이다.`][Math.floor(Math.random() * 3)], 'soft', 1.6);
 }
 function doorDone(){
   if (G.mode !== 'cave' || !PRO.cave) return;
@@ -1755,14 +1771,14 @@ function renderStore(){
   for (const [name, g] of groups){
     const d = g.d, [tn, tc] = d.wood ? ['땔감', 'twood'] : DROP_TYPE[d.type] || ['', ''];
     let btn = '', note = '';
-    if (d.type === 'food' && !d.raw){ note = `끼니 ${g.food}`; btn = (fed ? '<button disabled>오늘 먹음</button>' : `<button data-a="eat" data-i="${g.idx[0]}">먹기</button>`) + TAME.filter(([k]) => PRO.meal[k] && (k !== 'reb' || PRO.rebOut)).map(([k, n]) => PRO.meal[k].fed ? `<button disabled>${n} 먹음</button>` : `<button data-a="feed" data-w="${k}" data-i="${g.idx[0]}">${n}에게 주기</button>`).join(''); }
-    else if (HEAL[d.k]){ note = `체력 +${HEAL[d.k] * 100}%`; btn = [['inju', '인주'], ['ch', '청광묵'], ['ka', '카리우스']].concat(PRO.rebOut ? [['reb', '레베카']] : []).map(([k, n]) => `<button data-a="heal" data-w="${k}" data-i="${g.idx[0]}">${n}</button>`).join(''); }
+    if (d.type === 'food' && !d.raw){ note = `끼니 ${g.food}`; btn = (fed ? '<button disabled>오늘 먹음</button>' : `<button data-a="eat" data-i="${g.idx[0]}">먹기</button>`) + TAME.filter(([k]) => PRO.meal[k] && (k !== 'reb' || PRO.rebOut) && !(PRO.cave[k] && PRO.cave[k].gone)).map(([k, n]) => PRO.meal[k].fed ? `<button disabled>${n} 먹음</button>` : `<button data-a="feed" data-w="${k}" data-i="${g.idx[0]}">${n}에게 주기</button>`).join(''); }
+    else if (HEAL[d.k]){ note = `체력 +${HEAL[d.k] * 100}%`; btn = [['inju', '인주'], ['ch', '청광묵'], ['ka', '카리우스']].concat(PRO.rebOut ? [['reb', '레베카']] : []).filter(([k]) => !(PRO.cave[k] && PRO.cave[k].gone)).map(([k, n]) => `<button data-a="heal" data-w="${k}" data-i="${g.idx[0]}">${n}</button>`).join(''); }
     else if (EQUIP[d.k]){ note = EQUIP[d.k].note; btn = `<button data-a="equip" data-i="${g.idx[0]}">장착</button>`; }
     else if (d.type === 'furn' || d.k === 'd_H-402'){ note = FURN_NOTE[d.k] || '굴 꾸미기'; btn = `<button data-a="take" data-i="${g.idx[0]}">꺼내 놓기</button>`; }
     h += `<div class="sm-row"><img src="${artSrc(PA + d.k + '.webp')}" alt=""><b>${name}${g.n > 1 ? ` ×${g.n}` : ''}</b><span class="tag ${tc}">${tn}</span><small>${note}</small><span class="sm-btns">${btn}</span></div>`;
   }
   box.innerHTML = h;
-  $p('storeMenu').querySelector('.sm-head small').innerHTML = `인주 ${Math.round(G.player.hp)}/${G.player.max} · 청광묵 ${Math.round(PRO.hpf.ch * 100)}% · 카리우스 ${Math.round(PRO.hpf.ka * 100)}%${PRO.rebOut ? ` · 레베카 ${Math.round(PRO.hpf.reb * 100)}%` : ''} <button data-a="close" class="sm-close">닫기 ✕</button>`;
+  $p('storeMenu').querySelector('.sm-head small').innerHTML = `인주 ${Math.round(G.player.hp)}/${G.player.max}${PRO.cave.ch.gone ? '' : ` · 청광묵 ${Math.round(PRO.hpf.ch * 100)}%`}${PRO.cave.ka.gone ? '' : ` · 카리우스 ${Math.round(PRO.hpf.ka * 100)}%`}${PRO.rebOut ? ` · 레베카 ${Math.round(PRO.hpf.reb * 100)}%` : ''} <button data-a="close" class="sm-close">닫기 ✕</button>`;
 }
 function storeTake(i){ const d = PRO.store.splice(i, 1)[0]; for (const b of PRO.storeBills) G.scene.remove(b.g); PRO.storeBills = []; PRO.store.forEach((x, k) => pileAdd(x, k)); return d; }
 $p('storeMenu').addEventListener('click', e => {
@@ -1908,14 +1924,16 @@ function tickHungry(dt){
   }
 }
 
+// v0.119 벽 속 레베카 (민수 설정: 아무렇지 않은 척 쓸모를 은근히 내세우며 빼 달라고 함 — 체력 좋고 강함 · 블랙코미디 '...어머, ~네요')
+const REB_WALL = ['(사각… 사각…)', '…저기요. 아직 거기 계세요?', '저, 체력 좋아요. 그리고 강해요. 꽤 많이요.', '…어머, 오늘도 목 운동만 하네요.', '(흙을 긁는 소리)', '무거운 것도 잘 들어요. …꺼내 주시면요.', '…괜찮아요. 저는 정말 괜찮아요.'];
 /* ---------- v0.21 레베카 꺼내기: 벽에 박힌 머리 → 벽을 세 번 파면 (하루 행동 1씩) 쑥 빠져나옴. 그 뒤로 굴에 같이 삶 (v0.114: 꺼낸 날은 누워 쉼 · 다음 날부터 따라다님 · 원정 동료 — rebecca.js) ---------- */
 async function digRebecca(){
   if (PRO.rebOut || !spendAp()) return;
   const B = PRO.cave.B, pl = G.player; G.lock = true;
   for (let k = 0; k < 4; k++){ pl.leanT = 0.3; SFX.clink(0.4); spark(B.x + 0.3, 0.6, B.z, 0xffe0b0, 6, 2.5); dust(B.x + 0.4, B.z, 6); await wait(0.4); }
   PRO.rebDig++; popText(B.x + 0.5, 1.4, B.z, `레베카 ${PRO.rebDig}/3`, 'heal', 1.2); G.lock = false;
-  if (PRO.rebDig === 1) say({ x: B.x, y: 0.8, z: B.z }, '…앗! 사람이다…!', 'zzz', 2);
-  if (PRO.rebDig === 2) say({ x: B.x, y: 0.8, z: B.z }, '조금만 더요…! 흙이 무너지고 있어요!', 'zzz', 2);
+  if (PRO.rebDig === 1) say({ x: B.x, y: 0.8, z: B.z }, '…어머, 파 주시는 거예요? 천천히 하셔도 돼요. 2년도 기다렸는걸요.', 'zzz', 3);
+  if (PRO.rebDig === 2) say({ x: B.x, y: 0.8, z: B.z }, '조금만 더요…! …아, 아래쪽은 안 보시는 게 좋겠네요. 2년 치라서요.', 'zzz', 3);
   if (PRO.rebDig >= 3) rebeccaOut();
 }
 async function rebeccaOut(){

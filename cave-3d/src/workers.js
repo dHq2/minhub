@@ -1,4 +1,4 @@
-/* workers.js v1.2 — (v1.2, v0.58: 구출작전 삭제로 일꾼이 들어오는 길 없음 · 코드는 남겨 둠) (v1.1, v0.55: 일꾼 일에 '화살 깎기' — 밤마다 조잡한 화살 10, 땔감 6을 씀. 총알 · 산탄은 설비 · 재료가 없어 굴에서 못 만듦 (상점 · 원정에서만)) (v1.0, v0.49) 굴 일꾼
+/* workers.js v1.3 — (v1.3, v0.89: 먹는 입은 굴에 있는 사람만 · 청광묵이 없으면 도축 · 요리 맡기기도 없음) (v1.2, v0.58: 구출작전 삭제로 일꾼이 들어오는 길 없음 · 코드는 남겨 둠) (v1.1, v0.55: 일꾼 일에 '화살 깎기' — 밤마다 조잡한 화살 10, 땔감 6을 씀. 총알 · 산탄은 설비 · 재료가 없어 굴에서 못 만듦 (상점 · 원정에서만)) (v1.0, v0.49) 굴 일꾼
    청광묵 · 도축과 요리 (알아서): 창고 끼니가 사람 수 × 2보다 적고 우리에 돼지가 있으면 하루 한 번
      우리로 가서 한 마리를 잡고 ("…미안하다 돼지.") → 모닥불로 (꺼져 있으면 손바닥 발화로 붙임 — 설정: 발화 E) → 굽고 → 창고에 구운 고기 넷 (끼니 8)
      우리 앞에서 E로 켜고 끔 (처음엔 켜짐)
@@ -83,10 +83,10 @@ if (typeof startCave === 'function'){
 }
 
 /* ---------- 청광묵: 도축 · 요리 (알아서) ---------- */
-function mouths(){ return 3 + (PRO.rebOut ? 1 : 0) + (RPG.meta.staff || []).length; }
+function mouths(){ return 1 + (typeof mates === 'function' ? mates().length : 3) + (RPG.meta.staff || []).length; }
 function cookInsp(){
   if (!PRO.pen) return;
-  G.inspect.push({ x: PRO.pen.x0 - 1.1, z: PRO.pen.z1 + 0.6, r: 1.1, far: 3, mark: '도축', keep: true, get label(){ return `청광묵에게 도축 · 요리 맡기기: ${PRO.autoCook === false ? '꺼짐 → 켜기' : '켜짐 → 끄기'}`; },
+  G.inspect.push({ x: PRO.pen.x0 - 1.1, z: PRO.pen.z1 + 0.6, r: 1.1, far: 3, mark: '도축', keep: true, get used(){ return !(PRO.cave && PRO.cave.ch && !PRO.cave.ch.gone); }, set used(v){}, get label(){ return `청광묵에게 도축 · 요리 맡기기: ${PRO.autoCook === false ? '꺼짐 → 켜기' : '켜짐 → 끄기'}`; },
     fn: () => { PRO.autoCook = PRO.autoCook === false; popText(G.player.x, G.player.y + 2.2, G.player.z, PRO.autoCook === false ? '도축 · 요리 맡기기 끔' : '청광묵이 알아서 도축 · 요리', 'heal', 1.4); } });
 }
 function cookWanted(){

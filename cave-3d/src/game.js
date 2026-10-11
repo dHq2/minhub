@@ -1,62 +1,7 @@
-/* game.js v0.93 — (v0.93, v0.86: 인주가 쓰러져 있으면 Tab 으로 보는 동료를 바꿈 (레베카 ↔ 카리우스 …) — 전엔 첫 동료만 봄) (v0.92, v0.74: 소품 묶음 그림 — preload 가 propLoad 를 기다림) (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.94 — (v0.94, v0.89: 옛 굴 (#lobby) · 옛 1층 (#floor) · 옛 적뢰 장면을 뺌 (민수: 쓸모없는 건 쳐냄). 모닝스타 · 노먼은 콜로세움 · 훈련장에 그대로) (v0.93, v0.86: 인주가 쓰러져 있으면 Tab 으로 보는 동료를 바꿈 (레베카 ↔ 카리우스 …) — 전엔 첫 동료만 봄) (v0.92, v0.74: 소품 묶음 그림 — preload 가 propLoad 를 기다림) (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
-const LOBBY = [
-  '################',
-  '#######GG#######',
-  '##............##',
-  '#..............#',
-  '#...D..........#',
-  '#..........M...#',
-  '#.....f........#',
-  '#....R.....N...#',
-  '#..............#',
-  '#.....P........#',
-  '################'];
-const FLOOR1 = [
-  '##############################',
-  '#............................#',
-  '#............................#',
-  '#.....o..............o.......#',
-  '#............................#',
-  '#.............J..............#',
-  '#............................#',
-  '#.....o..............o.......#',
-  '#............................#',
-  '#............................#',
-  '#############....#############',
-  '#############..m.#############',
-  '#############....#############',
-  '#^^^^^A^...............^A^^^^#',
-  '#^^^^^^^...............^^^^^^#',
-  '#^^^^^^/...............//^^^^#',
-  '#.......r.......b......r.....#',
-  '#............................#',
-  '#.....r..............r.......#',
-  '#............................#',
-  '#############....#############',
-  '######......#....#############',
-  '######.fx.........############',
-  '######......#....#############',
-  '#############....#############',
-  '#............................#',
-  '#...o....o....o....o....^^^^.#',
-  '#.................p.....^A^^.#',
-  '#...o....o.d..o....o....//^^.#',
-  '#............................#',
-  '#...o....o....o....o.........#',
-  '#############....#############',
-  '#############....#############',
-  '#...........s....s...........#',
-  '#.......r..........r.........#',
-  '#............................#',
-  '#............................#',
-  '#....r.................r.....#',
-  '#............................#',
-  '#.............P..............#',
-  '##############################'];
-const ENEMY_OF = { s: 'swordsman', p: 'spearman', d: 'shieldman', b: 'brute', A: 'archer' };
 
 let hemi, moon;
 const $ = id => document.getElementById(id);
@@ -80,7 +25,7 @@ function init(){
 function startGame(){
   const h = location.hash;
   const ex = /^#exp(\d*)$/.exec(h);
-  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#colo' && typeof startColo === 'function') startColo(); else if (h === '#lobby') startLobby(); else if (h === '#floor') startFloor1(); else if (h === '#cave') startCave();
+  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#colo' && typeof startColo === 'function') startColo(); else if (h === '#cave') startCave();
   else if (h === '#new'){ newGame(); }
   else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ const ck = typeof expHasCheckpoint === 'function' && expHasCheckpoint(); if (ck) expResume(ck); else startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기 · v0.88 원정 중이었으면 그 층부터
   else startPrologue();
@@ -120,127 +65,6 @@ function loadLevel(rows, theme){
   const sp = c => G.map.spawns.filter(s => s.c === c);
   return sp;
 }
-function spawnParty(x, z){
-  G.kits = MEDIC.kits;   // 노먼 구급상자: 판 (층)마다 다시 채움
-  G.player = spawn('player', x, z, 'ally');
-  spawn('morningstar', x - 1, z - 0.6, 'ally');
-  spawn('norman', x + 1, z - 0.6, 'ally');
-}
-
-/* ---------- 굴 (로비) ---------- */
-function startLobby(){
-  clearLevel(); G.mode = 'lobby';
-  const sp = loadLevel(LOBBY, { bg: 0x0d0a0c, fogNear: 14, fogFar: 30, hemi: 0.35, moon: 0.15, floor: 0x3e3530, wall: 0x2c2420 });
-  const p = sp('P')[0]; G.player = spawn('player', p.x, p.z, 'ally');
-  const R = sp('R')[0], M = sp('M')[0], N = sp('N')[0], D = sp('D')[0];
-  const reb = spawn('rebecca', R.x, R.z, 'neutral'); reb.face = 1;
-  const ms = spawn('morningstar', M.x, M.z, 'neutral'), nm = spawn('norman', N.x, N.z, 'neutral'); nm.face = -1;
-  spawn('dummy', D.x, D.z, 'neutral');
-  talkable(reb, ['(검을 무릎에 올려두고 불을 쬐고 있다)', '인주 님. 오늘도 내려가실 거죠?', '…조심하세요. 1층에서 말 없는 붉은 날개를 봤다는 사람이 있어요.']);
-  talkable(ms, ['슈퍼스타 대기 중.', '무대는 아래에 있지? 데려가.']);
-  talkable(nm, ['…붕대는 충분하다.', '…다치면 불러라.']);
-  const gx = G.map.gate ? G.map.gate.x : 7.5, gz = 1.9;
-  G.inspect.push({ x: gx, z: gz, r: 1.6, label: '석문을 연다 — 아래로', fn: descend });
-  camSnapTo(p.x, p.z + 3); camWide(7.5, 5, 11, 9, 1.4);
-  caption('굴', '떨어진 자들이 모여 사는 곳');
-  if (!G.seenHelp){ $('help').hidden = false; G.seenHelp = true; }
-}
-function talkable(u, lines){ G.inspect.push({ unit: u, r: 1.6, talk: true, label: `${u.D.name}에게 말을 건다`, fn: async () => { u.face = Math.sign(G.player.x - u.x) || u.face; camFocus(u.x, u.z, 99, 3.2, 4.6, 0.05); await textbox(u.D.name, lines); camFocusOff(); } }); }
-async function descend(){
-  G.lock = true;
-  camFocus(G.player.x, 2, 1.2, 3.5, 4.5, 0.04); await wait(1.0);
-  await loadScreen('assets/load_moon.jpg', ['석문이 열렸습니다.', '계단은 생각보다 길었습니다. 셀 수 없을 만큼.', '발소리가 돌아오지 않습니다. 아래로, 아래로.']);
-  startFloor1();
-}
-
-/* ---------- 1층 ---------- */
-function startFloor1(){
-  clearLevel(); G.mode = 'floor';
-  const sp = loadLevel(FLOOR1, { bg: 0x08090d, fogNear: 16, fogFar: 34, hemi: 0.32, moon: 0.36, floor: 0x3a3842, wall: 0x24222c, pillar: 0x4a4656,
-    lights: [{ x: 9, z: 4, c: 0xff3a30, i: 1.6, d: 12 }, { x: 20, z: 6, c: 0xff3a30, i: 1.6, d: 12 }, { x: 15, z: 16, c: 0x7f9fff, i: 1.1, d: 14 },
-             { x: 12, z: 28, c: 0x9fb4ff, i: 1.0, d: 14 }, { x: 15, z: 36, c: 0x9fb4ff, i: 0.9, d: 14 }] });
-  const p = sp('P')[0]; spawnParty(p.x, p.z);
-  for (const [c, kind] of Object.entries(ENEMY_OF)) for (const s of sp(c)){
-    const e = spawn(kind, s.x, s.z, 'enemy');
-    e.band = s.z < 11 ? 'arena' : s.z < 20 ? 'C' : s.z < 31 ? 'B' : 'A';
-    e.face = 1; e.aim = Math.PI / 2;   // 내려오는 쪽 (카메라 쪽)을 봄
-  }
-  const J = sp('J')[0]; G.arena = { x: J.x, z: J.z };
-  const x = sp('x')[0], m = sp('m')[0], fire = G.map.fires[0];
-  G.inspect.push({ x: x.x, z: x.z, r: 1.3, label: '시체를 살핀다', fn: async () => { camFocus(x.x, x.z, 99, 2.4, 3.2, 0.05); await textbox('', ['모닥불 곁에 앉은 채로 굳은 시체.', '…그는 찾지 못한 듯하다.']); camFocusOff(); } });
-  G.inspect.push({ x: m.x, z: m.z, r: 1.2, label: '바닥의 글씨를 읽는다', fn: async () => { camFocus(m.x, m.z, 99, 2.2, 2.6, 0.05); await textbox('', ['바닥에 손톱으로 긁어 쓴 글씨.', '"겁쟁이!"', '누가, 누구에게 쓴 걸까요.']); camFocusOff(); } });
-  // 모닥불 곁방: 들어가면 카메라가 동쪽 (입구 쪽)으로 돌아 안을 보여줌, 나오면 원래대로
-  G.map.zones = [{ x0: 5.6, x1: 11.7, z0: 20.6, z1: 23.4, yaw: Math.PI / 2, cut: true }];
-  G.inspect.push({ x: fire.x, z: fire.z, r: 1.6, once: true, label: '모닥불 곁에서 쉰다', mark: '모닥불 (쉬기)', far: 40, fn: rest });
-  G.onKill = (u) => { if (u === G.boss) bossDown(u); };
-  // 넓게 먼저: 저 멀리 붉은 빛 (우물) → 천천히 인주에게
-  G.lock = true; letterbox(true);
-  camSnapTo(14.5, 22); camWide(14.5, 18, 30, 18, 99);
-  caption('1층', '무덤 가는 길');
-  (async () => {
-    await wait(1.6); camWide(14.5, 5, 12, 12, 99); await wait(2.4, true);
-    CAM.wide = null; letterbox(false); G.lock = false;
-  })();
-}
-async function rest(){
-  G.lock = true; letterbox(true);
-  const f = G.map.fires[0]; camFocus(f.x, f.z, 99, 2.1, 3.6, 0.03);
-  await wait(2.2);
-  await textbox('', ['불이 탁탁 튑니다.', '잠시 쉽니다. 모두 체력을 40% 되찾습니다.']);
-  for (const u of G.units) if (u.side === 'ally'){ if (u.downed){ u.downed = false; u.hp = 0; } u.hp = Math.min(u.max, u.hp + Math.round(u.max * 0.4)); popText(u.x, u.y + 1.8, u.z, '+', 'heal'); }
-  camFocusOff(); letterbox(false); G.lock = false;
-}
-
-/* ---------- 적뢰: 비 · 천둥 · 붉은 빛이 떨어짐 · 정적 · 예고 없는 날아차기 ---------- */
-async function bossIntro(){
-  G.flags.boss = true; G.lock = true; letterbox(true);
-  // 들어온 길을 붉은 번개 벽이 막음
-  for (let x = 13; x <= 16; x++){ G.map.solid[10 * G.map.w + x] = 1; }
-  const wall = new THREE.Mesh(new THREE.PlaneGeometry(4, 0.7), new THREE.MeshBasicMaterial({ map: sparkTex, color: 0xff2a2a, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }));
-  wall.position.set(14.5, 0.35, 10.45); G.map.group.add(wall); G.flags.barrier = wall;
-  const C = G.arena;
-  // 모두 우물 안으로 (막는 줄 위에 서 있지 않게)
-  G.units.filter(u => u.side === 'ally').forEach((u, i) => { u.x = 14.5 + (i - 1) * 1.1; u.z = 8.6 + (i ? 0.3 : 0); u.kx = u.kz = 0; });
-  camWide(C.x, C.z + 2, 9, 10, 99);
-  G.rain.on = true;
-  await wait(0.5); flashScreen('#ffffff', 0.5); camShake(0.15, 0.3); SFX.thunder();
-  await wait(0.9); flashScreen('#ffe8e8', 0.6); camShake(0.2, 0.3); SFX.thunder();
-  await wait(0.7);
-  // 붉은 빛 하나가 떨어짐
-  const streak = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, color: 0xff3020, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-  streak.scale.set(1.2, 6, 1); streak.position.set(C.x, 24, C.z); G.scene.add(streak);
-  const t0 = G.t; await waitUntil(() => { const k = Math.min(1, (G.t - t0) / 0.4); streak.position.y = 24 - 21 * k; return k >= 1; });
-  G.scene.remove(streak);
-  flashScreen('#ffffff', 0.9); camShake(0.6, 0.5); ring(C.x, C.z, 0xff5040, 5, 0.6); dust(C.x, C.z, 24); spark(C.x, 1, C.z, 0xff8060, 30, 9); smoke(C.x, C.z, 16, 1.6, 2.2); SFX.boom(1.6);
-  const boss = spawn('jeokroe', C.x, C.z, 'enemy'); G.boss = boss; boss.alert = true; boss.band = 'boss'; setAim(boss, G.player.x, G.player.z);
-  // 정적: 빗방울이 멈춘 듯
-  G.rain.freeze = 1.3; camFocus(boss.x, boss.z, 99, 3.4, 6.5, 0.07);
-  await wait(1.3);
-  // 정적이 끝나면 바로 전투. 첫 패턴은 무조건 날아차기 (예고 장판 있음)
-  camFocusOff(); CAM.wide = null;
-  bossInit(boss, C);
-  boss.B.act = { type: 'kick', t: 0, tgt: G.player, phase: 0 };
-  $('bossbar').hidden = false; $('bossname').textContent = '적뢰 — 붉은 날개의 천사';
-  letterbox(false); G.lock = false;
-}
-async function bossDown(u){
-  G.slow = 0.25; camSide(G.player, u, 2.4, 1.9);
-  setPose(u, 'hurt'); u.lift = 0; u.airborne = false;
-  await wait(0.6);
-  G.slow = 1; G.lock = true; letterbox(true);
-  for (const e of G.units) if (e.side === 'enemy') e.alert = false;
-  await wait(1.6);
-  await textbox('', ['적뢰가 무너집니다.', '대리석이 빗속에서 식어 갑니다.', '— 1층 시제품은 여기까지입니다. 굴로 돌아갑니다.']);
-  startCave();
-}
-async function defeat(){
-  if (G.flags.defeat) return; G.flags.defeat = true;
-  G.slow = 0.3; G.lock = true; letterbox(true);
-  await wait(0.8); G.slow = 1;
-  await textbox('', ['…', '눈을 뜨니 굴입니다.', '누군가 당신들을 끌고 올라왔습니다.']);
-  startCave();
-}
-
 /* ---------- 글상자 · 로딩 · 자막 · 화면 효과 ---------- */
 // 글상자: 한 줄씩. 줄마다 최소 0.5초는 머묾 (눌러도 넘어가지 않음), 그 뒤 E · Space · 클릭으로 다음
 // v0.7 o: face (초상화 그림) · tags (특성 태그 HTML) · hold (줄마다 머무는 최소 초, 프롤로그 연출은 3초). 머무는 동안엔 ▼가 안 보임
@@ -416,14 +240,6 @@ function loop(now){
     if (!G.lock && typeof orbTick === 'function') orbTick(dt);   // v0.84 대련 더미의 연습 공
     if (!G.lock && typeof shoveTick === 'function') shoveTick(dt);   // v0.87 밀려 날아감 · 짓뭉개짐 (karius.js)
     if (!G.lock) for (const f of TICKS) f(dt);   // v0.89 교전 자리 · 적성 · 조 · 훈련장
-    if (G.mode === 'floor'){
-      reviveCheck(dt);
-      // 인주가 쓰러져도 싸움은 계속 (동료가 싸움). 모두 쓰러져야 끝
-      if (pl.downed && !G.flags.plDown){ G.flags.plDown = true; caption('인주 쓰러짐', '동료가 버티는 동안 싸움이 끝나면 일어남'); }
-      if (!pl.downed) G.flags.plDown = false;
-      if (G.units.filter(u => u.side === 'ally').every(u => u.downed || u.dead)) defeat();
-      if (!G.flags.boss && pl.z < 10.6) bossIntro();
-    }
     if (G.mode === 'prologue' && pl && pl.downed) proEaten();   // 프롤로그: 쓰러지면 먹힘
   }
   for (const u of G.units) updateSprite(u, dt);

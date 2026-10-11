@@ -1,4 +1,4 @@
-/* encounters.js v1.4 — (v1.4, v0.88: 펄 인카운터에서 '이게 2성' 문구 · 이름표 별 뺌 (민수 — 설명용 말이었지 펄의 대사가 아님, 별은 세계 안에서 안 보임)) (v1.3, v0.86: 테헤라는 드물게 (5 ~ 8층, 무게 3 → 1) · 손을 내민 횟수가 인연 (RPG.meta.teheraBond) 으로 남고 만날 때마다 말이 달라짐 — 인연이 쌓이면 동료가 되는 건 민수와 정할 것 (PLAYTEST_2026-10-10.md)) (v1.2, v0.85: 4기 각펄 — 2 ~ 5층에 검은 날개의 펄 (2성) 이 홀로 기다림. «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!») (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
+/* encounters.js v1.5 — (v1.5, v0.89: 방에 들어가면 그림 카드 + 선택지 (rogue.js rgEnter) · 상인의 길이면 게 요리사를 꼭 만남) (v1.4, v0.88: 펄 인카운터에서 '이게 2성' 문구 · 이름표 별 뺌 (민수 — 설명용 말이었지 펄의 대사가 아님, 별은 세계 안에서 안 보임)) (v1.3, v0.86: 테헤라는 드물게 (5 ~ 8층, 무게 3 → 1) · 손을 내민 횟수가 인연 (RPG.meta.teheraBond) 으로 남고 만날 때마다 말이 달라짐 — 인연이 쌓이면 동료가 되는 건 민수와 정할 것 (PLAYTEST_2026-10-10.md)) (v1.2, v0.85: 4기 각펄 — 2 ~ 5층에 검은 날개의 펄 (2성) 이 홀로 기다림. «펄이 이렇게나 강해?» 가 아니라 «이게 2성이구나!») (v1.1: 테헤라 · 게 요리사 초상화 대화)  인카운터 방 (ENCOUNTER_MAPS.md). 층마다 한두 개, 원정 한 번에 같은 것은 한 번만
    · 죽은 영웅 · 액자 (뇌를 훔치면 노인들이 덤빔) · 지껄임 (입: 동료 비밀을 떠듦, 때려서 닫음) · 기나긴 해변 (말대가리) · 눈알방 (밟으면 터지고 다시 자람, 정신도)
    · 우주의 테헤라 (따라옴: 이번 원정 시야 +1.5 · 적이 지도에) · 게 요리사 (상점) · 담배 피는 노인 (보물 방 · 정신도) · 거대한 무희 (정신도 회복 · 느려짐)
    · 돼지들의 신 (고깃덩이 선물: 먹으면 회복 + 정신도 · 혼란) · 푸른 구멍의 도끼기사 (강적, 도끼 유물) · 끝없는 줄 (줄 선 존재들 · 움직이는 바닥)
@@ -20,6 +20,7 @@ function encFill(r, gen, tiles, edges, band, lights, deco){
   if (!pool.length){ spawnGroup(r, gen, tiles, 2, band); return; }
   const tot = pool.reduce((s, [, e]) => s + e.w, 0); let q = R() * tot, key = pool[0][0];
   for (const [k, e] of pool){ q -= e.w; if (q <= 0){ key = k; break; } }
+  if (EXP.route && EXP.route.F === F && EXP.route.k === 'merchant' && !EXP.encSeen.has('crabChef')) key = 'crabChef';   // v1.5 상인의 길 (rogue.js 갈림길)
   EXP.encSeen.add(key); r.enc = key;
   ENC_FILL[key](r, gen, tiles, band, lights, deco);
   DUN.marks.push({ x: r.cx, z: r.cz, icon: '?', col: '#c8a0ff' });
@@ -161,7 +162,7 @@ function encTick(dt){
   const pl = G.player; if (!pl) return;
   for (const E of EXP.encs){
     const r = E.r, d = r.encData || {}, here = inRoom(r, pl);
-    if (here && !E.entered){ E.entered = true; guide(ENC_TEXT[E.key], 8); }
+    if (here && !E.entered){ E.entered = true; if (typeof rgEnter === 'function') rgEnter(E); else guide(ENC_TEXT[E.key], 8); }   // v1.5 그림 카드 (rogue.js)
     if (E.key === 'brainFrame' && here && d.men && d.men[0].b.g.visible){ d.t -= dt; if (d.t <= 0){ d.t = 2.4; const m = d.men[d.i % d.men.length]; encSay(m.x, m.z, 2.0, d.lines[d.i % d.lines.length]); d.i++; } }
     if (E.key === 'chatter' && d.u && d.u.dead && !d.done){ d.done = true; caption('입이 닫혔다', '조용해졌다'); dropLootAt(d.u.x, d.u.z, { gold: 60 * EXP.F }); }
     if (E.key === 'beach' && d.sea){ d.sea.opacity = 0.6 + Math.sin(G.t * 1.2) * 0.12; }

@@ -1,4 +1,4 @@
-/* drill.js v1.19 — (v1.19, v0.88: 업뎃! 칸 v0.85 글에서 '이게 2성' 뺌) (v1.18, v0.86: '업뎃!' 칸에 v0.86 묶음 (펄 · 각펄 · 카리우스 · 4기 잡몹 9인 — 가장 오래된 v0.81 묶음은 뺌)) (v1.17, v0.85: '업뎃!' 칸에 4기 묶음 (인물 22 · 적 · 1기 영웅 9 · 잡몹 9 — 가장 오래된 v0.80 묶음은 뺌) · 시험판은 8명씩, 누를 때마다 다음 8명 (전엔 앞 8명만)) (v1.16, v0.83: 콜로세움 기수 탭을 명단에서 만듦 — 노트에 gen: 4 가 오면 '4기' 탭이 저절로 (전엔 1 · 3 이 아니면 다 2기로 감) · 도감 본명: 장군님 호레이쇼 · 반미 (보르마) 를 설명 글에도) (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
+/* drill.js v1.20 — (v1.20, v0.89: 콜로세움 업뎃! 칸에 금기사 · 갱스터 묶음 · 임시 1성 금기사 · 갱스터 그림을 개선판 (2기 금기사 · 갱스터 가리) 그림으로 — 임시 그림 지움, 콜로세움엔 2기 명단 쪽만 (민수: 개선판 있으면 버림). 소천사녀는 개선판이 없어 그대로) (v1.19, v0.88: 업뎃! 칸 v0.85 글에서 '이게 2성' 뺌) (v1.18, v0.86: '업뎃!' 칸에 v0.86 묶음 (펄 · 각펄 · 카리우스 · 4기 잡몹 9인 — 가장 오래된 v0.81 묶음은 뺌)) (v1.17, v0.85: '업뎃!' 칸에 4기 묶음 (인물 22 · 적 · 1기 영웅 9 · 잡몹 9 — 가장 오래된 v0.80 묶음은 뺌) · 시험판은 8명씩, 누를 때마다 다음 8명 (전엔 앞 8명만)) (v1.16, v0.83: 콜로세움 기수 탭을 명단에서 만듦 — 노트에 gen: 4 가 오면 '4기' 탭이 저절로 (전엔 1 · 3 이 아니면 다 2기로 감) · 도감 본명: 장군님 호레이쇼 · 반미 (보르마) 를 설명 글에도) (v1.15, v0.82: '업뎃!' 칸에 돌진 · 광냥 · 보광 · 보르마 묶음 (가장 오래된 v0.79 묶음은 뺌) · 콜로세움 명단에서 검냥이 (catw) 를 뺌 (광냥과 같은 인물) · 훈련 '날랜 놈들' · '대규모' 등에서 검냥이 → 궁수 · 꼬마악마) (v1.14, v0.81: '업뎃!' 칸에 모닝스타 대기 (원래 그림) 묶음 — 가장 오래된 v0.78 묶음은 뺌) (v1.13, v0.80: 싸움이 끝나면 0.5초 뒤 남은 인물이 서 있음으로 (휘두르던 그림 그대로 굳던 것) · '업뎃!' 칸에 동작 점검 묶음 (걷기 · 달리기 그림 · 움찔 · 깡충 · 예고 그림 · 넘어짐) — 가장 오래된 v0.77 묶음은 뺌 · 싸움 중 불려 나온 인물 (소환수 · 세자르의 검사 · 대장군 증원) 도 비우기 · 다시 배치 때 지우고 경기장 안에 가둠) (v1.12, v0.79: '업뎃!' 칸에 고대사슴 산호 (도감 설정 크기) · 카리우스 (불경자 스킬 그림) — 가장 오래된 v0.76 묶음은 뺌) (v1.11, v0.78: '업뎃!' 칸에 용묘화 · 테헤라 (도감 움짤로 움직임) — 가장 오래된 v0.70 묶음은 뺌) (v1.10, v0.77: '업뎃!' 칸에 1차 업뎃 2 · 3기 28명 묶음 — 가장 오래된 v0.69 묶음은 뺌) (v1.9, v0.76: '업뎃!' 칸에 1차 업뎃 잡몹 10명 묶음 · 시험판에서 적으로만 나오는 인물의 상대가 안 서던 것 고침 — 검사 대신 청광묵) (v1.8, v0.73: 콜로세움 '업뎃!' 칸 — 모션 고친 인물을 맨 위에 노란 테두리로 · 묶음 시험판) (v1.7, v0.72: 콜로세움 #colo — 2D 훈련장처럼 끌어 놓고 구경, 맨 아래) (v1.6: 2기 · 3기 보스는 적뢰 보스 초기화 (bossInit) 안 함 — 몸 크기가 0.8로 덮이던 것) (v1.5, v0.61: 훈련장 초기화 drillReset — 시나리오 · 규칙 탭 버튼) (v1.4, v0.60: 2기 탭 — h2.js) (v1.3, v0.58: 경계 (뒤를 봄) 체크 · 자객 기록 · 사각 · 자객 보이기 버튼 · 적성 저장) (v1.2, v0.57: 진지 버튼 · 진지 기록 · 도움말) (v1.1, v0.56: 사격 규율 고르기 · 치명 규칙 켜고 끄기 · 은신 시나리오 · 은신 통계) (v1.0, v0.55) 훈련장: 지금까지 이야기한 것을 한 곳에서 다 해 보는 넓은 들판 (주소 #drill · 굴의 일시정지 창 '훈련장')
    ■ 맵 (밝은 낮, 78 × 48칸)
      · 서쪽 사격장: 사선 (낮은 바위) 뒤에서 5 · 10 · 16칸 표적 — 보통 · 방패 · 갑옷 · 괴물 허수아비 (적성 · 약점 · 방패 시험)
      · 가운데 교전장: 넓은 빈 들 — 무리 · 진형 · 교전 자리 연습. 북쪽 망루 (높은 단 · 경사로)
@@ -12,17 +12,15 @@
      규칙 · 기록 — 교전 자리 규칙 켜고 끄기 (비교) · 자리 표시 · 사격 · 끊기 · 회피 · 연계 · 일으키기 수, 동료마다 명중률
    ■ 이 판에서만 켜지는 새 규칙: engage.js · sol.js · squad.js · tackle2.js (확정되면 모든 판으로) */
 'use strict';
-// ---------- 새 1성 영웅 셋 (서 있는 그림 하나 — 걸을 땐 흔들고, 칠 땐 기울임) ----------
+// ---------- 1성 영웅 (소천사녀 — 서 있는 그림 하나: 걸을 땐 흔들고, 칠 땐 기울임). 금기사 · 갱스터 가리는 2기 그림을 씀 (v1.20) ----------
 const h1p = (k, w) => ({ src: 'art/h1/' + k + '.webp', w, h: 700, ax: Math.round(w / 2), ay: 697, f: 1 });
 Object.assign(SPR, {
   angel:      { h0: 700, tall: 1.3, poses: { idle: h1p('angel', 350), walk: h1p('angel', 350) } },
-  goldknight: { h0: 700, tall: 1.45, poses: { idle: h1p('goldknight', 309), walk: h1p('goldknight', 309) } },
-  gangster:   { h0: 700, tall: 1.5, poses: { idle: h1p('gangster', 322), walk: h1p('gangster', 322) } },
 });
 Object.assign(DEFS, {
   angelAlly:      { spr: 'angel', name: '소천사녀', hp: 95, atk: 10, spd: 3.2, r: 0.32, weight: 50, melee: { range: 1.5, arc: 1.6, windup: 0.42, cd: 1.4, mul: 0.8, kb: 0.6 } },
-  goldknightAlly: { spr: 'goldknight', name: '금기사', hp: 170, atk: 16, spd: 2.8, r: 0.36, weight: 95, melee: { range: 1.85, arc: 2.0, windup: 0.45, cd: 1.3, mul: 1.1, kb: 0.8 } },
-  gangsterAlly:   { spr: 'gangster', name: '갱스터', hp: 140, atk: 15, spd: 3.4, r: 0.36, weight: 85, melee: { range: 1.35, arc: 1.4, windup: 0.26, cd: 0.8, mul: 0.8, kb: 0.5 } },
+  goldknightAlly: { spr: 'h2_goldknight', name: '금기사', hp: 170, atk: 16, spd: 2.8, r: 0.36, weight: 95, melee: { range: 1.85, arc: 2.0, windup: 0.45, cd: 1.3, mul: 1.1, kb: 0.8 } },
+  gangsterAlly:   { spr: 'h2_gari', name: '갱스터 가리', hp: 140, atk: 15, spd: 3.4, r: 0.36, weight: 85, melee: { range: 1.35, arc: 1.4, windup: 0.26, cd: 0.8, mul: 0.8, kb: 0.5 } },
   // 훈련용 허수아비 (맞으면 숫자만, 제자리로 돌아옴) · 결이 다름
   drillDummy:   { spr: 'dummy', name: '허수아비', hp: 99999, atk: 0, spd: 0, r: 0.35, weight: 60, dummy: true, spar: true, drill: true },
   drillShield:  { spr: 'dummy', name: '방패 허수아비', hp: 99999, atk: 0, spd: 0, r: 0.35, weight: 60, dummy: true, spar: true, drill: true, block: 0.35 },
@@ -32,7 +30,11 @@ Object.assign(DEFS, {
   drillCaster:  { spr: 'eyemon', name: '주술사', hp: 170, atk: 26, spd: 1.9, r: 0.36, weight: 80, think: casterThink },
 });
 Object.assign(TRAIT, { drillArmor: 'armored', drillMonster: 'monster' });
-const HERO_FACE = { player: 'assets/inju_face.png', cheongAlly: 'art/pro/goblin_face.webp', kariusAlly: 'art/pro/karius_face.webp', rebeccaAlly: 'art/pro/rebecca_face.webp', angelAlly: 'art/h1/angel.webp', goldknightAlly: 'art/h1/goldknight.webp', gangsterAlly: 'art/h1/gangster.webp' };
+const HERO_FACE = { player: 'assets/inju_face.png', cheongAlly: 'art/pro/goblin_face.webp', kariusAlly: 'art/pro/karius_face.webp', rebeccaAlly: 'art/pro/rebecca_face.webp', angelAlly: 'art/h1/angel.webp' };
+// v1.20 금기사 · 갱스터 가리는 2기 얼굴 묶음 그림 (H2A.faces) 에서 잘라 씀
+const HERO_H2 = { goldknightAlly: 'goldknight', gangsterAlly: 'gari' };
+function h2FaceIcon(slug, px){ const F = typeof H2A !== 'undefined' && H2A.faces, i = F && F.i[slug]; if (i == null) return ''; const s = px / F.cell;
+  return `<i class="cf" style="display:inline-block;width:${px}px;height:${px}px;border-radius:6px;background:url(${F.src}) ${-(i % F.cols) * px}px ${-Math.floor(i / F.cols) * px}px / ${F.cols * F.cell * s}px ${F.rows * F.cell * s}px"></i>`; }
 function casterThink(u, dt){
   u.cd -= dt;
   if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0){ u.st = 'idle'; setPose(u, 'idle'); } return; }
@@ -193,7 +195,7 @@ function crewRow(u){
   const curW = isP ? ((hero('inju').eq.weapon || {}).id || '') : S.kit.main || '';
   const pOpts = INJU_W.some(([v]) => v === curW) || !curW ? INJU_W : [[curW, `지금 무기 (${(ITEMS[curW] || {}).n || curW})`], ...INJU_W];
   const wsel = isP ? sel('pw', pOpts, curW) : sel('main', [['', '없음 (근접만)'], ...Object.entries(RW).map(([k, R]) => [k, `${R.n} (${FAM[R.fam]})`])], curW);
-  return `<div class="dp-u"><div class="dp-id"><img src="${artSrc(face)}" alt=""><div><b>${u.D.name}</b><small>${TAGS[S.tag].n} · 훈련 점수 <em>${S.pts}</em></small><small class="pas">${S.pas[0]} — ${S.pas[1]}</small></div></div>
+  return `<div class="dp-u"><div class="dp-id">${HERO_H2[u.kind] ? h2FaceIcon(HERO_H2[u.kind], 44) : `<img src="${artSrc(face)}" alt="">`}<div><b>${u.D.name}</b><small>${TAGS[S.tag].n} · 훈련 점수 <em>${S.pts}</em></small><small class="pas">${S.pas[0]} — ${S.pas[1]}</small></div></div>
     <div class="dp-set"><label>보직 ${sel('role', Object.entries(ROLES), S.role)}</label><label>조 ${isP ? '<b>1조 조장</b>' : sel('sq', [[1, '1조'], [2, '2조'], [0, '단독']], S.sq)}</label>
       <label>무기 ${wsel}</label>${isP ? '' : `<label>사격 ${sel('fire', [['free', '아끼지 않음'], ['save', '아낌 (쏠 만한 놈만)']], S.fire || 'free')}</label>`}${isP ? '' : `<label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="shield" ${S.kit.shield ? 'checked' : ''}> 방패</label><label class="ck"><input type="checkbox" data-u="${u.uid}" data-k="watch" ${S.watch ? 'checked' : ''}> 경계 (뒤를 봄)</label>`}</div>
     <div class="dp-apt">${FAMS.map(f => `<div><span>${FAM[f]}</span>${aptBar(u, f)}<b>${aptOf(u, f)}</b><button data-u="${u.uid}" data-tr="${f}" data-d="-1">−</button><button data-u="${u.uid}" data-tr="${f}" data-d="1" title="비용 ${aptOf(u, f) < 5 ? trainCost(u, f) : '-'}">+${aptOf(u, f) < 5 ? `<small>${trainCost(u, f)}</small>` : ''}</button></div>`).join('')}</div>
@@ -346,7 +348,7 @@ function coloStands(){
   return grp;
 }
 // 고를 수 있는 인물: 동료 (1기 영웅) · 1기 · 2기 · 3기 · 4기 … (드라이브 명단, 양쪽 다 — 기수는 노트의 gen, 없으면 2기) · 적 (옛 적) · 보스
-const COLO_HERO = ['cheongAlly', 'kariusAlly', 'rebeccaAlly', 'goldknightAlly', 'angelAlly', 'gangsterAlly', 'morningstar', 'norman'];
+const COLO_HERO = ['cheongAlly', 'kariusAlly', 'rebeccaAlly', 'angelAlly', 'morningstar', 'norman'];   // v1.20: 금기사 · 갱스터 가리는 2기 명단 (개선판) 으로만
 function coloRoster(){
   if (COLO.roster) return COLO.roster;
   const R = [];
@@ -361,9 +363,9 @@ function coloRoster(){
 }
 // v1.8 '업뎃!' 칸: 모션 · 크기 · 그림을 고친 인물 (모션 시험용). 새로 고치면 맨 앞에 묶음을 더하고, 3묶음이 넘으면 오래된 것을 뺌
 const COLO_UPD = [
+  { v: 'v0.89', n: '임시 1성 영웅 정리 — 금기사 · 갱스터 가리가 임시 그림 대신 2기 그림 (개선판) 으로 싸움', ids: ['goldknightAlly', 'gangsterAlly'] },
   { v: 'v0.86', n: '플레이 피드백 (9층까지) — 펄 · 각펄 = 도약하며 뛰어다니는 투창 극딜러 (공격 27 / 30 · 도약 찍기 3 ~ 8칸 · 4초마다 정면 투창 ×3.2) · 카리우스 돌격 합류 (멀면 성큼성큼 가속, 부딪히면 멈추며 밀침) · 4기 잡몹 9인 키 ×0.86 (동방 전사들이 너무 큼) · 헤드샷 · 목 절단 즉사 (파르르 떨며 쓰러짐)', ids: ['h2:pearl', 'h2:pearlgak', 'kariusAlly', 'ssangbu', 'bangdokki', 'eastRifle', 'eastSniper', 'maskBlade', 'huntKnife', 'camilla', 'mokja', 'seondoja'] },
   { v: 'v0.85', n: '4기 (드라이브 1010 4기 업뎃) — 새 인물 16 (유니 · 콘 · 리완 · 세르파 · 슈 · 글리치 챔피언 · 기병기사 …) · 각펄 보스 · 세르파 수정 거품게 (자원 유닛 → 흡수해 유닛 뽑기) · 펄 · 망향 · 마도사 · 사슴 · 잭 새 동작 · 적 · 1기 영웅 새 동작 9명 (청광묵 팜 버스트 · GOOD WILL 마운트 파운딩 · 곤봉 거한 · 장군님 내려찍기 · 무릎 · 방어 · 딴짓 · 쉬기) · 4기 잡몹 9인 (동방 5 · 서방 4 — 총 · 산탄 · 저격, 7 · 8층)', ids: ['h2:yuni', 'h2:kon', 'h2:riwan', 'h2:serpa', 'h2:shu', 'h2:glitch', 'h2:nurse', 'h2:darkrider', 'h2:sawknight', 'h2:purpledemon', 'h2:pinkdemon', 'h2:regina', 'h2:pehto', 'h2:teiron', 'h2:chinchilla', 'h2:traka', 'h2:pearlgak', 'h2:pearl', 'h2:manghyang', 'h2:magusgirl', 'h2:stagbeast', 'h2:inclador', 'cheongAlly', 'goodwill', 'brute', 'janggun', 'cs', 'jakyak', 'eyemon', 'benkin', 'bk', 'ssangbu', 'bangdokki', 'eastRifle', 'eastSniper', 'maskBlade', 'huntKnife', 'camilla', 'mokja', 'seondoja'] },
-  { v: 'v0.82', n: '돌진 · 도약 · 뒤로 뛰기 · 끌어오기가 실제로 달려감 (전엔 한 프레임에 순간이동 — 세자르급 보스만 그대로) · 광냥 = 검냥이 (대기는 검냥이 움직이는 대기 20 · 12장, 덮치기 · 할퀴어 쓸기, 4성 강적) · 보광 · 반미 마력탄 (4성 강적)', ids: ['gwangnyang', 'h2:gallia', 'h2:tanga', 'h2:mari', 'h2:moro', 'h2:grinvan', 'h2:stagbeast', 'h2:kanya', 'h2:hiddenkkaebi', 'bk', 'bogwang', 'borama'] },
 ];
 const coloUpdOf = id => COLO_UPD.find(g => g.ids.includes(id));
 // v1.16 기수 탭은 명단에서 만듦 — 4기 · 5기 노트 (gen: 4 …) 가 들어오면 탭이 저절로 생김
