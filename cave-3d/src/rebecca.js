@@ -1,4 +1,4 @@
-/* rebecca.js v1.5 — (v1.5, v0.90: 불사 다시 — 싸우는 중엔 재생 없음 (바닥 체력에서 버티던 것) → 쓰러지면 곤죽 · 피 웅덩이 · 붉은 재생 원이 차오르고 4초 (곤죽 7초) 뒤 벌떡 · 숨 돌리면 빠르게 재생) (v1.4, v0.89: 꺼낸 뒤 한마디는 굴에 있는 동료만 — 청광묵 · 카리우스는 다른 세계선 동료라 없을 수 있음 (canon.js)) (v1.3, v0.86: 훨씬 질기고 빨리 일어남 (민수) — 체력 100 → 130 · 싸우는 중 초당 6% 재생 · 쓰러져도 3.5초 · 짓뭉개지거나 확인사살 · 머리가 깨져도 7초 (굶으면 1.5배) · 방패 막기는 보스의 공격엔 60%만 줄임) (v1.2, v0.54: 재생이 강함 — 싸우는 중 초당 2.5% 회복 · 쓰러져도 8초 (짓뭉개지면 25초) · 방패로 앞에서 오는 공격을 잘 막고 (55%) 예고 장판은 옆으로 피함. 굴: 따라다니기 ↔ 여기저기 돌아다니며 일 (정리 · 불 피우기 · 죽은 달팽이로 달팽이구이)) (v1.1, v0.53: 굴에 적이 들어오면 레베카도 같이 싸움 · 끝나면 다시 굴 주민) (v1.0, v0.47: 꺼낸 뒤 굴에서 움직이고 따라다님 · 원정 동료)
+/* rebecca.js v1.6 — (v1.6, v0.91: 민수 — 싸우는 중에도 재생 (초당 6%) · 재생의 한계 (체력 25% 아래: 재생 ×0.35 · 방패 못 듦) 를 넘으면 죽음 → 전투 이탈 6초 (짓뭉개짐 10초 · 굶으면 ×1.5) 뒤 되살아남. 시간은 REB_DEATH) (v1.5, v0.90: 불사 다시 — 싸우는 중엔 재생 없음 (바닥 체력에서 버티던 것) → 쓰러지면 곤죽 · 피 웅덩이 · 붉은 재생 원이 차오르고 4초 (곤죽 7초) 뒤 벌떡 · 숨 돌리면 빠르게 재생) (v1.4, v0.89: 꺼낸 뒤 한마디는 굴에 있는 동료만 — 청광묵 · 카리우스는 다른 세계선 동료라 없을 수 있음 (canon.js)) (v1.3, v0.86: 훨씬 질기고 빨리 일어남 (민수) — 체력 100 → 130 · 싸우는 중 초당 6% 재생 · 쓰러져도 3.5초 · 짓뭉개지거나 확인사살 · 머리가 깨져도 7초 (굶으면 1.5배) · 방패 막기는 보스의 공격엔 60%만 줄임) (v1.2, v0.54: 재생이 강함 — 싸우는 중 초당 2.5% 회복 · 쓰러져도 8초 (짓뭉개지면 25초) · 방패로 앞에서 오는 공격을 잘 막고 (55%) 예고 장판은 옆으로 피함. 굴: 따라다니기 ↔ 여기저기 돌아다니며 일 (정리 · 불 피우기 · 죽은 달팽이로 달팽이구이)) (v1.1, v0.53: 굴에 적이 들어오면 레베카도 같이 싸움 · 끝나면 다시 굴 주민) (v1.0, v0.47: 꺼낸 뒤 굴에서 움직이고 따라다님 · 원정 동료)
    설정 (민수): 루비색 장발 · 늘 조용한 눈웃음 · 158cm · 27세 · 낡은 판금 갑옷 · 장검. 순수한 절대선. 침착 · 백절불굴 · 희망을 잃지 않는 소녀 기사 (전투력은 평범, 심장 100)
      매사 긍정 · 존댓말. 던전 괴수와 함께 무너져 흙 속에 2년 — 불사가 한계까지 부서지고 다시 붙기를 반복. 꺼내지면 하늘을 보며 대자로 누워 소리 없이 운다 → 하루 쉬면 다 재생
    · 꺼낸 날: 누워서 쉼 (말을 걸면 짧게). 다음 날부터 일어나 굴을 돌아다님 — 끼니 · 화장실은 다른 동료처럼, 한가하면 인주 뒤를 따라다님
@@ -12,10 +12,10 @@ Object.assign(SPR.rebecca.poses.run, { once: false, fps: 12 }); SPR.rebecca.pose
 DEFS.rebecca.spd = 2.8;   // 굴: 이제 걸어 다님 (전엔 0이라 꺼내도 제자리)
 DEFS.rebeccaAlly = { spr: 'rebecca', name: '레베카', hp: 130, atk: 17, spd: 3.3, r: 0.32, weight: 80, think: rebThink, undying: true };
 HERO_DEF.rebecca = { name: '레베카', unit: 'rebeccaAlly', face: 'art/pro/rebecca_face.webp', attr: { str: 5, dex: 6, vit: 4, wil: 9, per: 5 },
-  note: '늘 조용한 눈웃음 · 존댓말. 선봉. 불사 — 곤죽이 되어도 4초 · 짓뭉개져도 7초면 일어남 (치명상이 남지 않음). 굶으면 약해짐', innate: '낡은 장검', wts: ['sword', 'greatsword', 'spear', 'shield'],
+  note: '늘 조용한 눈웃음 · 존댓말. 선봉. 불사 — 싸우는 중에도 재생 · 한계를 넘으면 죽었다가 6초 (짓뭉개지면 10초) 뒤 되살아남 (치명상이 남지 않음). 굶으면 약해짐', innate: '낡은 장검', wts: ['sword', 'greatsword', 'spear', 'shield'],
   line: ['제가 앞에 설게요.', '괜찮아요, 금방 나아요.', '꼭 다 같이 나가요.'] };
 Object.assign(KSK, {
-  rUndying: { icon: 'art/pro/rebecca_face.webp', n: '불사 (재생)', d: '고유 특성 — 쓰러지면 곤죽이 됐다가 4초면 다 붙어 일어남 · 숨을 돌리면 (3초) 빠르게 재생 (짓뭉개지거나 머리가 깨져도 7초). 치명상이 남지 않음. 굶으면 재생이 느리고 약해짐' },
+  rUndying: { icon: 'art/pro/rebecca_face.webp', n: '불사 (재생)', d: '고유 특성 — 싸우는 중에도 초당 6% 재생 · 체력 25% 아래는 재생의 한계 (재생이 못 따라가고 방패를 못 듦) · 죽으면 6초 (짓뭉개짐 10초) 동안 빠졌다가 되살아남 (짓뭉개지거나 머리가 깨져도 7초). 치명상이 남지 않음. 굶으면 재생이 느리고 약해짐' },
   rCharge: { icon: '', n: '방패 돌진', d: '3~6칸 떨어진 적에게 일직선으로 — 밀침 · 경직 (7초)' },
   rSpin: { icon: '', n: '회전베기', d: '둘 이상 붙으면 둘레 1.9칸 (6초)' },
   rThrust: { icon: '', n: '찌르기', d: '2.8칸 줄 · 방어 무시 (4초)' },
@@ -24,6 +24,7 @@ Object.assign(KSK, {
 HERO_SK.rebecca = ['rUndying', 'rCharge', 'rSpin', 'rThrust', 'rBlock'];
 const REB = { swing: { r: 1.6, arc: 1.6, wind: 0.32, cd: 0.95 }, thrust: { len: 2.8, w: 0.6, wind: 0.42, cd: 4 }, spin: { r: 1.9, wind: 0.45, cd: 6 }, bash: { cd: 5 }, charge: { len: 4.6, cd: 7 }, block: { cd: 1.0 } };
 const rebThin = () => !!(PRO.meal && PRO.meal.reb && !PRO.meal.reb.fed);
+const REB_DEATH = { down: 6, crushed: 10, thinMul: 1.5, limit: 0.25 };   // v1.6 전투 이탈 시간 (죽음 → 되살아남): 보통 6초 · 짓뭉개지거나 머리가 깨지면 10초 · 굶으면 ×1.5 · 재생의 한계 = 체력 25%
 const REB_SAY = { down: ['…조금만, 기다려 주세요.', '…아파요. 그래도 괜찮아요.'], up: ['다녀왔어요.', '…괜찮아요. 다시 갈게요.'], fight: ['제가 앞에 설게요!', '물러서지 않아요.', '…이쪽이에요!'] };
 const pickR = a => a[Math.floor(Math.random() * a.length)];
 
@@ -32,21 +33,25 @@ function rebThink(u, dt){
   const R = u.reb || (u.reb = { cd: { swing: 0, thrust: 1, spin: 2, bash: 1, charge: 2, block: 0, dodge: 0 }, act: null, n: 0 });
   if (u.downed){   // 불사: 재생
     // v1.5 곤죽 → 재생 (민수: 곤죽이 되어도 다시 일어나는 모습): 쓰러지면 피 웅덩이 · 붉은 재생 원이 차오름 · 살이 붙는 소리 → 붉은 김을 뿜으며 벌떡
-    if (!R.upAt){ const k = rebThin() ? 1.5 : 1, T = (u.crushed ? 7 : 4) * k; R.upAt = G.t + T; R.tick = 0.6; R.downs = (R.downs || 0) + 1; say(u, pickR(REB_SAY.down), 'soft', 2);
+    if (!R.upAt){ const k = rebThin() ? REB_DEATH.thinMul : 1, T = (u.crushed ? REB_DEATH.crushed : REB_DEATH.down) * k; R.upAt = G.t + T; R.tick = 0.6; R.downs = (R.downs || 0) + 1; say(u, pickR(REB_SAY.down), 'soft', 2);
       if (typeof bloodBurst === 'function') bloodBurst(u.x, u.z, 0.8); if (typeof bloodPool === 'function') bloodPool(u.x, u.z, 0.5, 1.4);
-      if (R.gauge) cancelDecal(R.gauge); R.gauge = decal('circle', { x: u.x, z: u.z, r: 1.0, dur: T, color: 0xff4a5a, follow: u }); popText(u.x, u.y + 1.6, u.z, u.crushed ? '곤죽' : '쓰러짐', 'hurt big', 1.2); }
+      if (R.gauge) cancelDecal(R.gauge); R.gauge = decal('circle', { x: u.x, z: u.z, r: 1.0, dur: T, color: 0xff4a5a, follow: u }); popText(u.x, u.y + 1.6, u.z, `${u.crushed ? '곤죽' : '죽음'} — 전투 이탈 ${Math.round(T)}초`, 'hurt big', 1.6); }
     if (u.crushed && R.gauge && R.gauge.dur < R.upAt - G.t + R.gauge.t){ cancelDecal(R.gauge); R.gauge = decal('circle', { x: u.x, z: u.z, r: 1.0, dur: R.upAt - G.t, color: 0xff4a5a, follow: u }); }   // 확인사살로 늦어지면 원을 다시
     R.tick -= dt; if (R.tick <= 0){ R.tick = 1.1; spark(u.x, u.y + 0.3, u.z, 0xff5a5a, 6, 1.6, 0.4, 0.3); popText(u.x + rnd(-0.3, 0.3), u.y + 0.9, u.z, pickR(['(우드득)', '(살이 붙는다)', '(뼈가 맞춰진다)', '(꿈틀)']), 'whisper', 0.9); }
     if (G.t >= R.upAt){ R.upAt = 0; if (R.gauge){ cancelDecal(R.gauge); R.gauge = null; }
       u.crushed = false; u.downed = false; u.lying = false; u.st = 'idle'; u.hp = Math.round(u.max * (rebThin() ? 0.6 : 1)); u.inv = Math.max(u.inv || 0, 1.0);
-      popText(u.x, u.y + 2, u.z, '재생!', 'heal big', 1.4); ring(u.x, u.z, 0xff6a6a, 2.2, 0.55); spark(u.x, u.y + 1, u.z, 0xff8080, 26, 5, 0.6, 0.5); camShake(0.12, 0.25); SFX.boom && SFX.boom(0.4);
+      popText(u.x, u.y + 2, u.z, '되살아남', 'heal big', 1.4); ring(u.x, u.z, 0xff6a6a, 2.2, 0.55); spark(u.x, u.y + 1, u.z, 0xff8080, 26, 5, 0.6, 0.5); camShake(0.12, 0.25); SFX.boom && SFX.boom(0.4);
       say(u, pickR(REB_SAY.up), 'soft', 1.8); }
     return;
   }
   for (const k in R.cd) R.cd[k] -= dt;
   if (u.inv > 0) u.inv = Math.max(0, u.inv - dt);
-  R.calm = foes().some(e => e.alert && !e.dead && dist(e, u) < 9) ? 0 : (R.calm || 0) + dt;   // v1.5 싸우는 중엔 재생하지 않음 (전엔 초당 6% — 바닥 체력에서 질질 버팀). 숨을 돌리면 (3초) 빠르게
-  if (u.hp < u.max && R.calm > 3) u.hp = Math.min(u.max, u.hp + u.max * (rebThin() ? 0.03 : 0.08) * dt);
+  // v1.6 재생 (민수: 싸우는 중에도 재생 · 재생의 한계를 넘으면 죽고 다시 살아남 — 중요한 건 전투 이탈 시간)
+  //   싸우는 중 초당 6% (굶으면 2.5%) · 숨 돌리면 (3초) 8%. 체력 25% 아래 = 재생의 한계: 재생이 못 따라가고 (×0.35) 방패를 들 힘도 없음 → 바닥에서 버티지 않고 죽음
+  R.calm = foes().some(e => e.alert && !e.dead && dist(e, u) < 9) ? 0 : (R.calm || 0) + dt;
+  const lim = u.hp < u.max * REB_DEATH.limit;
+  if (lim && !R.limSaid){ R.limSaid = true; popText(u.x, u.y + bodyH(u) + 0.5, u.z, '재생이 못 따라간다', 'hurt', 1.2); } else if (!lim && u.hp > u.max * 0.5) R.limSaid = false;
+  if (u.hp < u.max) u.hp = Math.min(u.max, u.hp + u.max * (R.calm > 3 ? (rebThin() ? 0.03 : 0.08) : (rebThin() ? 0.025 : 0.06) * (lim ? 0.35 : 1)) * dt);
   if (u.st === 'hurt'){ u.stT -= dt; if (u.stT <= 0) u.st = 'idle'; R.act = null; u.guardStance = false; return; }
   if (R.act) return rebAct(u, R, dt);
   const pl = G.player, list = foes().filter(e => e.alert && !e.dead && (!pl || dist(e, pl) < 16));
@@ -94,7 +99,7 @@ function rebAct(u, R, dt){
 // 불사: 치명상이 남지 않음 · 짓뭉개져 쓰러지면 재생이 오래 걸림
 if (typeof addWound === 'function'){ const _addWoundR = addWound; addWound = function(u, k, why){ if (u && u.D && u.D.undying){ popText(u.x, u.y + bodyH(u) + 0.6, u.z, '…재생', 'heal', 1); return; } return _addWoundR(u, k, why); }; }
 { const _hurtR = hurt; hurt = function(att, tgt, base, o = {}){
-  if (tgt && tgt.D === DEFS.rebeccaAlly && !tgt.downed && !tgt.guardStance && !o.unblockable && !o.pierce && !o.dot && Math.random() < 0.55){   // v1.2 방패: 앞에서 오면 잘 막음
+  if (tgt && tgt.D === DEFS.rebeccaAlly && !tgt.downed && !tgt.guardStance && !o.unblockable && !o.pierce && !o.dot && tgt.hp >= tgt.max * REB_DEATH.limit && Math.random() < 0.55){   // v1.2 방패: 앞에서 오면 잘 막음 · v1.6 재생의 한계 (25% 아래) 면 못 듦
     const s = o.from || att; if (s && Math.abs(angDiff(Math.atan2(s.z - tgt.z, s.x - tgt.x), tgt.aim)) < 1.3){ base *= att && att.D && att.D.boss ? 0.4 : 0.15; o = { ...o, stun: 0, kb: (o.kb || 0) * 0.4 }; setPose(tgt, 'block'); spark(tgt.x + Math.cos(tgt.aim) * 0.4, tgt.y + 1, tgt.z + Math.sin(tgt.aim) * 0.4, 0xd8e8ff, 10, 4); SFX.clink && SFX.clink(0.4); }
   }
   const r = _hurtR(att, tgt, base, o); if (tgt && tgt.D && tgt.D.undying && tgt.downed && o.crush) tgt.crushed = true; return r; }; }
