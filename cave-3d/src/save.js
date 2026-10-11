@@ -1,4 +1,4 @@
-/* save.js v1.3 — (v1.3, v0.89: 방마다 저장 — 싸움이 있던 방을 비우고 조용해지면 그 자리에서 저장. 다시 열면 같은 층을 같은 시드로 만들고, 깬 방의 적 · 열린 상자 · 바닥 물건 · 본 지도 · 들어간 인카운터를 되돌린 뒤 저장한 자리부터) (v1.2: 적뢰 오는 날 · 쥐 기사 순찰 날도 저장) (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
+/* save.js v1.4 — (v1.4, v0.90: 방 저장의 인카운터는 고른 것만 끝난 걸로) (v1.3, v0.89: 방마다 저장 — 싸움이 있던 방을 비우고 조용해지면 그 자리에서 저장. 다시 열면 같은 층을 같은 시드로 만들고, 깬 방의 적 · 열린 상자 · 바닥 물건 · 본 지도 · 들어간 인카운터를 되돌린 뒤 저장한 자리부터) (v1.2: 적뢰 오는 날 · 쥐 기사 순찰 날도 저장) (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
    · 새 아침 (잠에서 깸) · 원정에서 돌아옴 · 적뢰를 쓰러뜨림 · 굴에서 1분마다 저장
    · 주소에 아무것도 없이 열면: 저장이 있으면 굴에서 이어함 (프롤로그 건너뜀). I 창의 "처음부터"로 지움 */
 'use strict';
@@ -76,7 +76,7 @@ function roomCheckpoint(){
   EXP.room = { F: EXP.F, x: +pl.x.toFixed(2), z: +pl.z.toFixed(2),
     items: DUN.items.map(o => o.gold ? { x: +o.x.toFixed(2), z: +o.z.toFixed(2), gold: o.gold } : { x: +o.x.toFixed(2), z: +o.z.toFixed(2), it: plainOf(o.it) }),
     chests: RSAVE.chests.filter(c => c.opened).map(c => [c.x, c.z]), seen: seenPack(DUN.seen),
-    encIn: (EXP.encs || []).filter(E => E.entered).map(E => E.r.id) };
+    encIn: (EXP.encs || []).filter(E => E.done).map(E => E.r.id) };   // v1.4 고른 것만 (살펴보기 전이면 이어할 때 다시 살펴볼 수 있게)
   expCheckpoint();
   popText(pl.x, pl.y + 2.4, pl.z, '저장됨', 'heal', 0.9);
 }

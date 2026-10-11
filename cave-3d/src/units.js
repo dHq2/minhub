@@ -1,4 +1,4 @@
-/* units.js v0.35 — (v0.35, v0.86: 항공뷰 (top) 에선 그림을 카메라 쪽으로 세우고 벽 위에 그림 · 앉아쏴는 쏘는 그림을 낮춰 보임 · 방어 자세는 보스의 공격을 다 못 막음 (90% → 60% 감소) — 레베카에게 세자르 마구 베기가 0 · 1 · 3 으로 들어가던 것) (v0.34, v0.84: 2 · 3기 인물 묶음이 큰 판 (4104px 안) 으로 합쳐짐 (h2_atlas.py v1.1) — 판이 아직 안 왔을 땐 판 전체를 GPU 에 올리던 예전 길 대신 빈 그림을 잠깐 보이고 다음 장면에 다시) (v0.33, v0.83: 그림판 아끼기 — 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 씀 · 묶음 칸 (P.rect) 은 그 칸만 잘라 올림 (전엔 유닛 · 자세마다 묶음 전체를 GPU 에 다시 올려 2 · 3기 8명 싸움에 274MB) · 여러 장 자세만 유닛마다 따로 · 유닛을 치우면 (removeUnit) 그 유닛만 쓰던 그림판 · 재질 · 판을 GPU 에서 내림 — 전엔 콜로세움을 여러 판 돌리면 계속 쌓임) (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
+/* units.js v0.36 — (v0.36, v0.90: 항공뷰에선 그림이 카메라 자리를 따라 돌지 않고 모두 화면과 나란히 (민수)) (v0.35, v0.86: 항공뷰 (top) 에선 그림을 카메라 쪽으로 세우고 벽 위에 그림 · 앉아쏴는 쏘는 그림을 낮춰 보임 · 방어 자세는 보스의 공격을 다 못 막음 (90% → 60% 감소) — 레베카에게 세자르 마구 베기가 0 · 1 · 3 으로 들어가던 것) (v0.34, v0.84: 2 · 3기 인물 묶음이 큰 판 (4104px 안) 으로 합쳐짐 (h2_atlas.py v1.1) — 판이 아직 안 왔을 땐 판 전체를 GPU 에 올리던 예전 길 대신 빈 그림을 잠깐 보이고 다음 장면에 다시) (v0.33, v0.83: 그림판 아끼기 — 한 장짜리 자세는 모든 유닛이 그림판 하나를 같이 씀 · 묶음 칸 (P.rect) 은 그 칸만 잘라 올림 (전엔 유닛 · 자세마다 묶음 전체를 GPU 에 다시 올려 2 · 3기 8명 싸움에 274MB) · 여러 장 자세만 유닛마다 따로 · 유닛을 치우면 (removeUnit) 그 유닛만 쓰던 그림판 · 재질 · 판을 GPU 에서 내림 — 전엔 콜로세움을 여러 판 돌리면 계속 쌓임) (v0.32, v0.82: 돌진 · 도약 · 뒤로 뛰기 · 끌려감 · 뛰어듦이 실제로 달려감 (rushStart · rushTick, 한 프레임 순간이동 대신 초당 11 ~ 22칸으로 이동 · 지나가며 맞힘 · 도약은 포물선) — 세자르급 보스만 순간 이동 + 잔상) (v0.31, v0.80: 누운 그림이 없는 인물이 쓰러지면 맞음 그림 (없으면 서 있음) 을 눕힘 — 전엔 치거나 걷던 그림 그대로 눕힘 · 동작 사이 '서 있음' 한두 장 깜빡임 막기 (dispPose) — ① 다른 그림 (공격 · 기술 · 걷기 …) 에서 서 있음 (idle · ready) 으로 돌아온 지 0.1초 안에 다음 동작이 오면 서 있음을 그리지 않고 앞 그림을 이어 그림 (앞 그림이 0.12초도 안 됐으면 늘리지 않음) ② 서 있음이 보이기 시작한 지 0.1초가 안 됐는데 다음 동작 (맞음 · 넘어짐 · 걷기 · 막기는 빼고) 이 오면 0.1초까지는 서 있음 (인주는 바로) · 장 번호가 거꾸로 (뒷걸음) 가도 됨 · 눕힌 그림 (누운 그림이 없을 때) 은 첫 장에 멈춤) (v0.30, v0.69: 쓰러지거나 죽으면 그 인물의 누운 그림 (down · dead, flat) 이 있으면 그걸로 — 없을 때만 세운 그림을 눕힘) (v0.29, v0.68: 묶음 그림 한 칸 (P.rect) 안에서도 여러 장 움직임 — 칸 안을 격자로 나눠 재생 · 포렌) (v0.28, v0.65: 완전히 죽은 유닛은 어둡고 보랏빛으로 가라앉음 · 공용) (v0.27, v0.61: 좌우 떨림 막기 — 보이는 방향은 0.22초 이어져야 바뀜 · 위아래 이동은 방향 유지) (v0.26, v0.60: 묶음 그림 한 칸 P.rect) (v0.25: 물 · 진흙에서 느려짐) (v0.24: 대련 더미 (D.spar)는 밀리고 밀쳐짐) (v0.23: 무에타이 자세는 천천히 흔들림) (v0.22: 넘어뜨린 놈은 tripT까지 누움 · 복싱 스텝은 통통 뜀) (v0.21: 이미 누운 그림 (flat)은 눕히지 않음) 인물 (세워 놓은 그림) · 체력 줄 · 글씨 · 예고 장판 · 투사체 · 불꽃 · 피해 규칙 */
 'use strict';
 const UI = { layer: null, W: 1, H: 1 };
 const DEFS = {
@@ -127,10 +127,12 @@ function updateSprite(u, dt){
   u.pivot.position.y = u.lift + (u.jy || 0) + (u.tilt ? -0.05 : 0) + (u.pose === 'box' ? Math.abs(Math.sin(G.t * 7.5)) * 0.06 : u.pose === 'mtPose' ? Math.abs(Math.sin(G.t * 3.2)) * 0.035 : 0);   // 복싱 스텝: 통통
   // 그림은 카메라를 봄 (세로축만 돎)
   u.group.position.set(u.x, u.y, u.z);
-  u.pivot.rotation.y = Math.atan2(camera.position.x - u.x, camera.position.z - u.z);
   // v0.86 항공뷰 (top): 그림을 카메라 쪽으로 세워 눕힘 · 벽 위에 그림 (민수: 림월드처럼 조금 겹쳐도 인물이 보여야) — 전엔 위에서 보면 그림이 얇은 선이 됨
+  // v0.36 (v0.90) 항공뷰에선 그림이 저마다 카메라 자리를 따라 돌지 않음 (민수) — 모두 화면과 나란히 같은 각으로 섬 (가장자리 인물이 비틀려 보이던 것)
   const top = CAM.mode === 'top';
-  if (top || u._top){ u._top = top; u.pivot.rotation.order = 'YXZ'; u.pivot.rotation.x = top ? -Math.atan2(camera.position.y - u.y, Math.hypot(camera.position.x - u.x, camera.position.z - u.z)) * 0.85 : 0; if (u.mat.depthTest === top){ u.mat.depthTest = !top; u.mesh.renderOrder = top ? 30 : 0; } }
+  if (top){ camera.getWorldDirection(camFwd); u.pivot.rotation.y = Math.atan2(-camFwd.x, -camFwd.z); }
+  else u.pivot.rotation.y = Math.atan2(camera.position.x - u.x, camera.position.z - u.z);
+  if (top || u._top){ u._top = top; u.pivot.rotation.order = 'YXZ'; u.pivot.rotation.x = top ? -Math.atan2(-camFwd.y, Math.hypot(camFwd.x, camFwd.z)) * 0.85 : 0; if (u.mat.depthTest === top){ u.mat.depthTest = !top; u.mesh.renderOrder = top ? 30 : 0; } }
   u.shadow.material.opacity = 0.42 * Math.max(0.2, 1 - u.lift / 3);
   u.flash = Math.max(0, u.flash - dt * 6);
   u.mat.color.setScalar(0.92 + u.flash * 2.6);
@@ -140,6 +142,7 @@ function updateSprite(u, dt){
   else u.deadT = null;
 }
 // 바라보는 각 → 화면의 왼쪽 · 오른쪽
+const camFwd = new THREE.Vector3();   // v0.36 항공뷰: 카메라가 보는 방향 (그림을 모두 같은 각으로)
 function faceToward(u, ax, az){
   camRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
   const d = ax * camRight.x + az * camRight.z;

@@ -1,4 +1,4 @@
-/* rogue.js v1.0 — (v0.89) 원정의 로그라이크 결 (민수 · ROGUELIKE_PLAN.md v1.1)
+/* rogue.js v1.1 — (v1.1, v0.90: 인카운터 구조 — 문은 E 한 번에 바로 열림 (기척은 이름표) · 들어서도 카드가 저절로 뜨지 않고 방 안의 그것을 살펴보면 카드 (검은 날개 · 푸른 구멍만 바로)) (v1.0, v0.89) 원정의 로그라이크 결 (민수 · ROGUELIKE_PLAN.md v1.1)
    ■ 그림 카드 창: 그림 · 이름 · 글 · 선택지 (숫자 키 1 ~ 4 또는 누르기). 열려 있는 동안 게임은 멈춤
    ■ 인카운터 문: 인카운터 방은 문으로 닫혀 있음 (문을 달아도 길이 안 끊기는 방만 — dungeon.js r.ents)
      · 문 앞에서 E → 소리 · 빛 · 냄새 카드 → 연다 / 그냥 둔다 (안 열고 지나가도 됨)
@@ -218,12 +218,24 @@ function rgRetreat(E){
   const pl = G.player; for (const u of allies()) if (u === pl || inRoom(E.r, u)){ const a = Math.random() * 6.28, k = u === pl ? 0 : 0.9; u.x = p.x + Math.cos(a) * k; u.z = p.z + Math.sin(a) * k; }
   camSnapTo(p.x, p.z);
 }
-async function rgEnter(E){
+// v1.1 (v0.90) 들어서면 카드가 저절로 뜨지 않음 (민수: 인카운터 구조) — 방 안의 그것 (샘 · 상자 · 사람 …) 에 다가가 E 로 살펴보면 카드 · 선택지.
+//   다가오는 위협 (검은 날개 · 푸른 구멍) 만 들어서자마자 카드 (물러날 수 있게)
+const RG_AUTO = new Set(['pearl', 'axeHole']);
+async function rgCardOf(E){
   if (E.done) return; E.done = true;
   if (E.key === 'pearl' && E.r.encData) E.r.encData.met = true;   // 카드에서 고를 때까지 깨우지 않음
-  const H = RG_ENC[E.key]; if (!H){ guide(ENC_TEXT[E.key], 8); return; }
+  const H = RG_ENC[E.key];
   const C = H.choices(E, E.r), i = await rgCard({ img: H.img, kicker: `${EXP.F}층 · 문 너머`, title: rgTitle(E.key), text: ENC_TEXT[E.key], choices: C });
   const c = C[i]; if (c && c.fn) c.fn();
+}
+async function rgEnter(E){
+  if (E.done || E.waiting) return;
+  const H = RG_ENC[E.key]; if (!H){ E.done = true; guide(ENC_TEXT[E.key], 8); return; }
+  if (RG_AUTO.has(E.key)) return rgCardOf(E);
+  E.waiting = true;
+  const d = E.r.encData || {}, p = d.p || (d.u ? { x: d.u.x, z: d.u.z } : { x: E.r.cx, z: E.r.cz });
+  G.inspect.push({ x: p.x, z: p.z, r: 2.0, mark: rgTitle(E.key), far: 14, encE: E, get used(){ return E.done; }, set used(v){}, label: `${rgTitle(E.key)} — 살펴본다`, fn: () => rgCardOf(E) });
+  guide(`<em>${rgTitle(E.key)}</em> — ${H.hint || ''} 다가가 <em>E</em>`, 5);
 }
 const RG_TITLE = { deadHero: '얼어붙은 영웅', brainFrame: '액자 속 뇌', chatter: '지껄이는 입', beach: '해변의 남자', eyeRoom: '눈의 방', tehera: '빛가루', crabChef: '게 요리사', smoker: '담배 피는 노인',
   dancers: '무희들', pigGod: '돼지들의 신', axeHole: '푸른 구멍', pearl: '검은 날개', conveyor: '끝없는 줄', spring: '샘', mimic: '덩그러니 놓인 상자', mirror: '깨진 거울', traveler: '나그네', fallen: '쓰러진 낙하자', bag: '버려진 배낭' };
@@ -248,7 +260,7 @@ function rgDoors(r, key){
     G.scene.add(grp); G.props.push(grp);
     const src = addSource(cx, cz, 2.6, col, 0.6, 1.5);
     D.parts.push({ g0, grp, src, seam });
-    G.inspect.push({ x: cx, z: cz, r: 1.7, mark: '문', far: 9, get used(){ return D.open; }, set used(v){}, get label(){ return `문 — ${H.hint || '무언가 있다'}`; }, fn: () => rgDoorCard(D) });
+    G.inspect.push({ x: cx, z: cz, r: 1.7, mark: '문', far: 9, get used(){ return D.open; }, set used(v){}, get label(){ return `문을 연다 — ${H.hint || '무언가 있다'}`; }, fn: () => rgOpenDoor(D) });   // v1.1 카드 없이 바로 엶 (기척은 이름표로)
   }
   (RG.doors = RG.doors || []).push(D); G.map.nav = {};
   if ((EXP.doorsOpen || []).includes(r.id)) rgOpenDoor(D, true);

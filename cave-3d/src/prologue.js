@@ -1,4 +1,4 @@
-/* prologue.js v0.119 — (v0.119, v0.89: 정사는 레베카의 이야기 (민수) — 시작은 인주가 굴에 떨어짐 → 성해포를 두른 채 깨어남 · 석문은 열려 있음 (적뢰전은 나중에 넣음) → 벽에서 '저기요!'. 청광묵 · 카리우스는 다른 세계선 동료 — 처음엔 굴에 없음 (canon.js). 옛 청광묵 맞짱 프롤로그는 startPitFight 로 남겨 둠 (지금은 안 씀)) (v0.118, v0.89: 카리우스가 말을 함 (민수 설정 — 현학적 · 무감정 · '~하는 건가?' '...그렇다면야.') — 말 걸기는 굴 상황마다 고름 (kaTalkLines) · 깨어나는 장면 · 일할 때 말풍선 · 석문 팔 때 · 굴 싸움. 땅 파는 '캉' 소리는 그대로) (v0.117, v0.86: 죽은 동료 (청광묵 · 카리우스) 는 굴에 없음 — 그 자리에 무덤 (maim.js caveGraves) · 말풍선 · 끼니 · 굴 싸움 · 아래 칸에서도 빠짐 (u.gone)) (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
+/* prologue.js v0.120 — (v0.120, v0.90: 굶어도 자면 조금은 나음 (−15% 깎이던 것 → +10%) · 밤사이 바닥의 낙하물 정리 (식량 · 보급은 창고, 잡동사니는 구덩이 · 땔감)) (v0.119, v0.89: 정사는 레베카의 이야기 (민수) — 시작은 인주가 굴에 떨어짐 → 성해포를 두른 채 깨어남 · 석문은 열려 있음 (적뢰전은 나중에 넣음) → 벽에서 '저기요!'. 청광묵 · 카리우스는 다른 세계선 동료 — 처음엔 굴에 없음 (canon.js). 옛 청광묵 맞짱 프롤로그는 startPitFight 로 남겨 둠 (지금은 안 씀)) (v0.118, v0.89: 카리우스가 말을 함 (민수 설정 — 현학적 · 무감정 · '~하는 건가?' '...그렇다면야.') — 말 걸기는 굴 상황마다 고름 (kaTalkLines) · 깨어나는 장면 · 일할 때 말풍선 · 석문 팔 때 · 굴 싸움. 땅 파는 '캉' 소리는 그대로) (v0.117, v0.86: 죽은 동료 (청광묵 · 카리우스) 는 굴에 없음 — 그 자리에 무덤 (maim.js caveGraves) · 말풍선 · 끼니 · 굴 싸움 · 아래 칸에서도 빠짐 (u.gone)) (v0.116, v0.85 4기: 청광묵 팜 버스트 (붙은 적에 손바닥 → 폭발 · 반동 · 넉백 · 화상, 치명상이면 머리가 터지며 즉사 — 보스 · 인주 빼고) · 굴의 청광묵이 새 그림을 씀 (걷기 · 이고 나르기 · 냠냠 · 슬프면 무릎 감싸 안기 · 오래 가만히 있으면 간식 · 붕대 · 의자 · 낮잠 …)) (v0.115, v0.54: 적뢰는 석문을 다 판 다음 날의 낙하로 내려옴 (그날 낙하 대신) · 싸우는 중엔 낙하 시계가 멈춤 · 한 번 진 뒤엔 석문에서 다시 부름) (v0.114: 카리우스 그림 · 전투를 karius.js로 옮김 · 벽 속 레베카 대사를 설정대로) (v0.113: 토끼마차 손님 · v0.112: 굴에 대련 더미) (v0.111: 밤에 잠든 자세 · 로비 패배는 뻗은 자세) 프롤로그 (PROLOGUE.md v1.1 대본)
    낙하 (돼지 · 시체 · 갑옷과 함께) → 어둠 속 청광묵 (줌인 · 초상화 · 말풍선 "크아아!!") → 맞짱 (튜토리얼)
    → 이기면 컷신 (슬로모션 완벽 투척 · 끄아아 · 3초 무너짐 · 주저앉음 · 기어감 · 암전 · 캉캉) → 몽환적인 굴
    전투 규칙은 1층과 같음 (예고 장판 · 투창 · 구르기 · 방어). 맵 (둥근 구덩이) · 카메라 연출만 따로
@@ -748,7 +748,10 @@ async function endDay(){
   G.player.lying = true; G.player.poseHold = 'sleep'; dark(1, 1.4); await wait(1.6);   // 잠든 인주
   PRO.day++; PRO.didBury = false; Cv.dropped = false; Cv.dropT = 30;
   PRO.nightCold = PRO.weather === 'snow' || PRO.storm === 'blizzard'; endStorm(); PRO.weather = rollWeather(); applyWeather(true);
+  const tidy = (PRO.loose || []).filter(it => !it.done && !it.carrier && (it.d.type === 'food' || it.d.type === 'supply' || it.d.type === 'junk') && !it.d.raw);   // v0.120 밤사이 바닥 정리 (혼자 시작하니 나를 사람이 없음 — 잡일 줄임)
+  for (const it of tidy){ if (it.d.type === 'junk' && !it.d.wood) putTrash(it); else if (it.d.wood){ dropCarried(it); PRO.wood = Math.min(WOOD_MAX, PRO.wood + it.d.wood); } else putStore(it); }
   const dayNews = dayLivestock().concat(dayBody()); ageStains();
+  if (tidy.length) dayNews.unshift(`밤사이 바닥의 것들을 정리했다 (${tidy.length}개)`);
   let rotNow = 0;
   for (const t of PRO.trash){ t.rot++; rotTint(t); rotNow++; }
   for (const it of PRO.loose) if (it.d.type === 'junk'){ it.age++; it.b.m.material.color.setRGB(0.62, 0.78, 0.45); rotNow++; }
@@ -1450,7 +1453,7 @@ function dayBody(){
     const M = PRO.meal[k];
     const sl = 0.35 + (hasPlaced('d_H-120', BED, 2.6) ? 0.2 : 0) - (PRO.nightCold && !hasPlaced('d_H-402') ? 0.25 : 0);   // 침대 곁 +20% · 담요 없이 눈 오는 밤 -25%
     if (M.fed){ M.hd = 0; if (k === 'inju') pl.hp = Math.min(pl.max, pl.hp + pl.max * sl); else PRO.hpf[k] = Math.min(1, PRO.hpf[k] + sl); }
-    else { M.hd++; if (k === 'inju') pl.hp = Math.max(1, pl.hp - pl.max * 0.15); else PRO.hpf[k] = Math.max(0.05, PRO.hpf[k] - 0.15); }
+    else { M.hd++; const hs = Math.max(0.08, sl - 0.25); if (k === 'inju') pl.hp = Math.min(pl.max, pl.hp + pl.max * hs); else PRO.hpf[k] = Math.min(1, PRO.hpf[k] + hs); }   // v0.120 굶어도 자면 조금은 낫음 (전엔 −15% — 인주 · 레베카가 0~5 체력에서 맴돌던 것). 굶주림은 원정 최대 체력 −15% · 레베카 재생 느림으로
     M.fed = false;
   }
   for (const h of mates()){ h.mealT = rnd(2, 8); h.seekT = 0; }

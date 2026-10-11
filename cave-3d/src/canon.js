@@ -1,4 +1,4 @@
-/* canon.js v1.0 — (v0.89) 정사는 레베카의 이야기 (민수, 2026-10-11 · CORE_LORE.md v1.20)
+/* canon.js v1.1 — (v1.1, v0.90: 창고에 첫 끼니 넷) (v1.0, v0.89) 정사는 레베카의 이야기 (민수, 2026-10-11 · CORE_LORE.md v1.20)
    ■ 시작: 인주가 굴에 떨어짐 → (적뢰전 — 나중에 넣음) → 성해포를 두른 채 깨어남 · 석문은 이미 열려 있음 → 벽에서 "저기요!" (레베카)
      · 굴은 인주 혼자 + 벽 속 레베카. 레베카는 확정 등장 · 세 번 파면 꺼냄 (안 꺼내도 됨) → 다음 날부터 원정 동료
    ■ 청광묵 · 카리우스는 다른 세계선의 동료 (그런 세계선이 있을 뿐, 정사 아님): 처음엔 굴에 없음
@@ -15,6 +15,7 @@ const wlLeft = () => WL.ids.filter(id => !(RPG.meta.wl && RPG.meta.wl[id]));
 function canonStart(){
   PRO.jrDone = true; PRO.dig = 100; PRO.cursed = false;   // 적뢰전은 나중에 — 석문은 열려 있음
   RPG.meta.wl = RPG.meta.wl || {};
+  if (!PRO.store.length) for (const k of ['d_I-043', 'd_I-050', 'd_I-053']){ const d = DROP_TABLE.find(o => o.k === k); if (d) PRO.store.push({ ...d }); }   // v1.1 창고에 첫 끼니 넷 (고기 · 빵 · 사과) — 혼자 시작이라 첫날부터 굶지 않게
   const h = hero('inju');
   if (!h.eq.body || h.eq.body.id !== 'B-3'){ const it = makeItem('B-3', { q: 1, aff: [] }); if (it) h.eq.body = it; }
   RPG.meta.r6 = RPG.meta.r6 || []; if (!RPG.meta.r6.includes('B-3')) RPG.meta.r6.push('B-3');   // 6등급은 한 번만 — 원정에서 또 나오지 않게

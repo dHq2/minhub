@@ -1,4 +1,4 @@
-/* wounds.js v1.3 — 치명상 · 상태 이상 정리 (v0.33) (v1.3, v0.86: 치명상이 더 아픔 — 다리 이동 -30% (점프 · 슬라이딩 못 함) · 심장 최대 체력 -25% · 뇌 정신도 -25 · 반병신 칩에 '원정 못 감') (v1.2, v0.86: 밤에 굴에서 쉬면 정신도가 돌아옴 — 최대의 40% (원정 간 날은 20%). 전엔 안 돌아와서 한 번 0이면 다음 원정 시작부터 '절망' (영웅 칸에 절망 9999)) (v1.1: 영웅 칸 칩에 영구 · 빈사 · 반시체 · 반병신 — 부위 치명상은 maim.js)
+/* wounds.js v1.4 — 치명상 · 상태 이상 정리 (v0.33) (v1.4, v0.90: 쓰러질 때 치명상 25% → 15%, 1층 5% · 원정 간 날도 하루, 쉰 날은 이틀씩 나음) (v1.3, v0.86: 치명상이 더 아픔 — 다리 이동 -30% (점프 · 슬라이딩 못 함) · 심장 최대 체력 -25% · 뇌 정신도 -25 · 반병신 칩에 '원정 못 감') (v1.2, v0.86: 밤에 굴에서 쉬면 정신도가 돌아옴 — 최대의 40% (원정 간 날은 20%). 전엔 안 돌아와서 한 번 0이면 다음 원정 시작부터 '절망' (영웅 칸에 절망 9999)) (v1.1: 영웅 칸 칩에 영구 · 빈사 · 반시체 · 반병신 — 부위 치명상은 maim.js)
    치명상 (영웅에게 남는 상처, 굴에 돌아와도 안 나음):
    · 생기는 때: 쓰러질 때 25% · 한 방에 최대 체력 35% 넘게 맞을 때 7%
    · 다리: 이동 -30% · 점프 · 슬라이딩 못 함 (7일) · 심장: 최대 체력 -25%, 생길 때 크게 피 흘림 (9일) · 뇌: 정신도 -25, 가끔 혼란 · 헛소리 (10일) · 목: 생길 때 크게 피 흘림 (5일)
@@ -59,7 +59,7 @@ const _killW = kill;
 kill = function(u, by){
   const was = u.downed;
   const r = _killW(u, by);
-  if (G.mode === 'exp' && u.side === 'ally' && u.hero && u.downed && !was && Math.random() < 0.25) addWound(u, rollWoundKind(), 'down');
+  if (G.mode === 'exp' && u.side === 'ally' && u.hero && u.downed && !was && Math.random() < (EXP && EXP.F <= 1 ? 0.05 : 0.15)) addWound(u, rollWoundKind(), 'down');   // v0.90 25% → 15% (1층 5%)
   return r;
 };
 const _hurtW = hurt;
@@ -112,8 +112,8 @@ function woundNight(){
   }
   for (const h of Object.values(RPG.heroes)){
     if (!h.wounds || !h.wounds.length || h.st === 'dead') continue;
-    if (h.tripDay === PRO.day) continue;   // 오늘 원정을 갔으면 안 나음
-    for (const w of h.wounds) w.d--;
+    const k = h.tripDay === PRO.day ? 1 : 2;   // v1.4 원정을 간 날도 하루 · 쉰 날은 이틀 (전엔 쉰 날만 하루 — 혼자 시작이라 뇌 치명상 하나로 열흘을 못 감)
+    for (const w of h.wounds) w.d -= k;
     const healed = h.wounds.filter(w => w.d <= 0); h.wounds = h.wounds.filter(w => w.d > 0);
     for (const w of healed) news.push(`${h.name} — ${WOUND[w.k].n}이 나았다`);
   }
