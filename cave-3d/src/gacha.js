@@ -1,4 +1,4 @@
-/* gacha.js v1.0 — (v0.90) 낙하 기원 = 동료 뽑기 (민수: 동료가챠도 있음 좋겠는데)
+/* gacha.js v1.1 — (v1.1, v0.92: 카드에 뽑힌 인물 얼굴이 제대로 (얼굴 묶음을 기다림) · 한 명이면 체력 · 공격 · 패시브 · 기술을 보임) (v1.0) (v0.90) 낙하 기원 = 동료 뽑기 (민수: 동료가챠도 있음 좋겠는데)
    ■ 굴 천장 구멍의 푸른 빛 아래에서 금화를 빛 속에 던지고 빈다 → 누군가 떨어진다 → 굴 식구 (원정 준비 창에서 데려감)
    ■ 한 번 60 금화 · 다섯 번 280 금화. 처음 한 번은 금화 없이
    ■ 별 (세계 안에선 안 보임 — 게임의 편의, CORE_LORE): ★1 40% · ★2 33% · ★3 18% · ★4 7% · ★5 2%. 열 번째마다 ★3 이상 확정 (모자라면 쌓임)
@@ -23,6 +23,10 @@ function gachaRoll(){
   return cand[Math.floor(Math.random() * cand.length)];
 }
 const gachaName = o => o.wl ? HERO_DEF[o.wl].name : capName(o.s);
+// v1.1 뽑힌 인물 한 줄: 체력 · 공격 · 패시브 · 기술 (카드가 이름만 있고 비어 보였음)
+const gachaInfo = o => { if (o.wl) return HERO_DEF[o.wl].note || ''; const K = (typeof H2K !== 'undefined' && H2K[o.s]) || {}, st = K.st || {}; return [st.hp ? `체력 ${st.hp} · 공격 ${st.atk}` : '', K.pas ? `${K.pas[0]} — ${K.pas[1]}` : '', (K.sk || []).length ? '기술: ' + K.sk.map(k => k.n).join(' · ') : ''].filter(Boolean).join('\n'); };
+// v1.1 얼굴 묶음 그림을 다 읽은 뒤 카드를 띄움 (전엔 첫 기원 때 묶음이 아직이라 기도하는 기본 그림이 떴음)
+const gachaFaceWait = o => new Promise(res => { if (!o.s || CAP.faces[o.s]) return res(); capFace(o.s); let n = 0; const iv = setInterval(() => { if (CAP.faces[o.s] || ++n > 40){ clearInterval(iv); res(); } }, 50); });
 const gachaFace = o => o.wl ? HERO_DEF[o.wl].face : (capFace(o.s), CAP.faces[o.s] || CA + 'U-007.webp');
 // 들이기: 떨어져 내려와 굴 식구가 됨
 function gachaJoin(o, i){
@@ -44,9 +48,9 @@ async function gachaPull(n){
     // 연출: 빛기둥이 밝아지고 · 우르르 → 카드
     const C = GACHA.spot; SFX.roar && SFX.roar(0.4); camShake(0.2, 1.0); flashScreen('#d8e4ff', 0.35);
     GACHA.glow = 1;
-    await wait(0.9);
+    await Promise.all([wait(0.9), ...got.map(gachaFaceWait)]);
     const best = got.reduce((a, b) => (b.star > a.star ? b : a));
-    const text = got.map(o => `${STAR(o.star)}  ${gachaName(o)}`).join('\n');
+    const text = got.length === 1 ? `${STAR(best.star)}\n${gachaInfo(best)}` : got.map(o => `${STAR(o.star)}  ${gachaName(o)}`).join('\n');
     await rgCard({ img: gachaFace(best), kicker: `낙하 기원 · ${free ? '첫 기원' : '금화 ' + cost}`, title: got.length === 1 ? gachaName(best) : `${got.length}명이 떨어진다`, text,
       choices: [{ t: '굴에 들인다', sub: '굴 식구가 된다 — 원정 준비 창에서 데려갈 수 있다' }] });
     got.forEach((o, i) => gachaJoin(o, i));

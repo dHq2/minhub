@@ -1,4 +1,4 @@
-/* expedition.js v1.19 — (v1.19, v0.90: 재생 중인 레베카가 있으면 전멸이 아님) (v1.18, v0.89: 6등급 유물이 7층부터 아주 드물게 (같은 것은 한 번만)) 원정 (한 번의 런). v1.17 (v0.86): 반시체 동료는 다음 층에 업혀 감 (싸우지 않음) · 단달로도 유일개체 · 쓰러뜨린 유일개체 · 보스는 다시 안 나옴 (RPG.meta.slain) · 장비가 덜 쏟아짐 (민수: 너무 많아 보지도 못함) — 상자 2~3 → 1~2개 · 잡몹 장비 6% → 2% · 강적은 절반만 장비 (나머지는 소모품). v1.16 (v0.82): 유일개체 (광냥 — 도감 메모) 는 한 원정에 한 번만 강적으로. v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
+/* expedition.js v1.20 — (v1.20, v0.92: 결과에 동료 id · 레베카 죽음 기록 (EXP.reb) 을 넘김) (v1.19, v0.90: 재생 중인 레베카가 있으면 전멸이 아님) (v1.18, v0.89: 6등급 유물이 7층부터 아주 드물게 (같은 것은 한 번만)) 원정 (한 번의 런). v1.17 (v0.86): 반시체 동료는 다음 층에 업혀 감 (싸우지 않음) · 단달로도 유일개체 · 쓰러뜨린 유일개체 · 보스는 다시 안 나옴 (RPG.meta.slain) · 장비가 덜 쏟아짐 (민수: 너무 많아 보지도 못함) — 상자 2~3 → 1~2개 · 잡몹 장비 6% → 2% · 강적은 절반만 장비 (나머지는 소모품). v1.16 (v0.82): 유일개체 (광냥 — 도감 메모) 는 한 원정에 한 번만 강적으로. v1.15 (v0.58): 동료 배낭에도 주워 담음 · 전멸하면 동료 배낭도 바닥에 · 돌아오면 동료 배낭의 식량 · 땔감도 굴로. v1.14: 돌아오면 레베카 체력도 굴로 · 바다가 보이는 층은 자막에 적음. v1.13: 층 카메라 모드 (D.cam · drift) · 난이도 (RPG.meta.diff). v1.12: 땅 기믹 (mapfx.js) · 망루 위 궁수 · 단상 위 강적 · 보물. v1.11: 전멸하면 인주가 뻗은 자세. v1.1: 상황 방 (situations.js) · 포로 · 손님은 전멸 판정에서 뺌
    준비 (동료 · 식량 · 횃불) → 층마다 절차 생성 맵 → 적 무리 · 강적 · 상자 · 모닥불 · 무덤 · 제단 → 계단으로 아래로 / 귀환 줄로 굴로
    · 횃불: 하나에 4분. 다 타면 시야 2칸 + 정신도가 빨리 줆
    · 정신도: 어둠 속에서 천천히 줆. 낮으면 환청 · 화면 가장자리가 어두워짐, 0이면 공포 (몸이 굳음)
@@ -454,7 +454,7 @@ async function expWipe(){
   expToCave(sum);
 }
 function expSummary(kind){
-  const party = RPG.party.map(k => { const h = hero(k); return { name: h.name, lv: h.lv, hp: h.hp, hpMax: h.hpMax, san: Math.round(h.san ?? 0) }; });
+  const party = RPG.party.map(k => { const h = hero(k); return { id: k, name: h.name, lv: h.lv, hp: h.hp, hpMax: h.hpMax, san: Math.round(h.san ?? 0) }; });
   const toCave = { food: 0, wood: 0, snail: 0, items: [] };
   if (kind === 'return'){
     for (const [B, it] of [RPG.bag, ...RPG.party.filter(k => k !== 'inju' && RPG.heroes[k]).map(k => bagOf(RPG.heroes[k]))].flatMap(B => B.slice().map(it => [B, it]))){
@@ -464,7 +464,7 @@ function expSummary(kind){
       else if (fx.snail){ toCave.snail += fx.snail * it.n; removeItem(it); }
     }
   }
-  return { kind, F: EXP.F, deepest: EXP.deepest, kills: EXP.kills, gold: RPG.gold - EXP.gold0, got: EXP.got.slice(), party, toCave, lost: kind === 'wipe' ? (RPG.lost ? RPG.lost.items.length : 0) : 0 };
+  return { kind, F: EXP.F, deepest: EXP.deepest, kills: EXP.kills, gold: RPG.gold - EXP.gold0, got: EXP.got.slice(), party, toCave, reb: EXP.reb || null, lost: kind === 'wipe' ? (RPG.lost ? RPG.lost.items.length : 0) : 0 };
 }
 function expToCave(sum){
   // 굴 창고로: 식량 · 땔감 · 달팽이 먹이

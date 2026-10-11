@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.20 — (v1.20, v0.89: 청광묵 · 카리우스는 굴에 들어온 뒤에만 (다른 세계선 동료 · canon.js) — 원정 준비 · I 창 · 못 가는 동료 칸은 '못 감') (v1.19, v0.89: 원정 준비 창에 굴 식구 (포획 · 동행 · 낙하로 온 2 · 3 · 4기 인물)) RPG 화면 (v1.18, v0.86: 반병신 동료는 원정 준비에서 못 고름 (heroCanGo) · 스킬 줄 슬라이딩 칸 ⇧G → ⇧Q (달리며 Q)) (v1.17, v0.86: 끝이 없는 상태 (절망 등, 900초 넘게) 는 남은 시간을 안 적음 — '절망 9999' 로 보이던 것) (v1.16, v0.58: 고른 영웅의 배낭을 보여 줌 · 동료끼리 넘겨주기 · 가방 칸 수는 원정대 모두 · 포로 칸 삭제) (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.21 — (v1.21, v0.92: 동료 칸 — 죽은 레베카는 '되살아남까지 N초' · 원정 중엔 body.exphud (안내 글을 위로 — 왼쪽 아래 동료 칸과 겹쳤음) · 원정 결과 — 동료마다 상처 · 반시체 · 후유증 표 · 레베카 죽음 수와 전투 이탈 시간 · '가져온 것' → '주운 것 (쓴 것도 포함)') (v1.20, v0.89: 청광묵 · 카리우스는 굴에 들어온 뒤에만 (다른 세계선 동료 · canon.js) — 원정 준비 · I 창 · 못 가는 동료 칸은 '못 감') (v1.19, v0.89: 원정 준비 창에 굴 식구 (포획 · 동행 · 낙하로 온 2 · 3 · 4기 인물)) RPG 화면 (v1.18, v0.86: 반병신 동료는 원정 준비에서 못 고름 (heroCanGo) · 스킬 줄 슬라이딩 칸 ⇧G → ⇧Q (달리며 Q)) (v1.17, v0.86: 끝이 없는 상태 (절망 등, 900초 넘게) 는 남은 시간을 안 적음 — '절망 9999' 로 보이던 것) (v1.16, v0.58: 고른 영웅의 배낭을 보여 줌 · 동료끼리 넘겨주기 · 가방 칸 수는 원정대 모두 · 포로 칸 삭제) (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -206,8 +206,9 @@ function uiResult(sum){
     el.innerHTML = `<div class="rs-box ${wipe ? 'wipe' : ''}"><b>${wipe ? '전멸' : '생환'}</b><small>${wipe ? '어둠이 모두를 삼켰다. …누군가 끌고 올라왔다.' : '살아서 돌아왔다.'}</small>
       <div class="rs-row"><span>가장 깊은 곳</span><b>${sum.deepest}층</b></div><div class="rs-row"><span>쓰러뜨린 적</span><b>${sum.kills}</b></div><div class="rs-row"><span>금화</span><b>${sum.gold >= 0 ? '+' : ''}${sum.gold}</b></div>
       ${wipe ? `<div class="rs-row bad"><span>잃은 가방</span><b>${sum.lost}개 — ${sum.F}층 바닥에 (3일 안에 가면 되찾음)</b></div>` : `<div class="rs-row"><span>굴 창고로</span><b>식량 ${tc.food} · 땔감 ${tc.wood} · 달팽이 먹이 ${tc.snail}</b></div>`}
-      <div class="rs-sub">가져온 것</div><div class="rs-got">${gotHtml}</div>
-      <div class="rs-sub">원정대</div><div class="rs-party">${sum.party.map(p => `<div><b>${p.name}</b> Lv ${p.lv} · 체력 ${Math.round(p.hp || 0)}/${p.hpMax || '?'} · 정신도 ${p.san}</div>`).join('')}</div>
+      ${sum.reb && sum.reb.n ? `<div class="rs-row"><span>레베카</span><b>${sum.reb.n}번 죽었다 되살아남 · 전투 이탈 ${Math.round(sum.reb.t)}초</b></div>` : ''}
+      <div class="rs-sub">주운 것 <small>(쓴 것도 포함)</small></div><div class="rs-got">${gotHtml}</div>
+      <div class="rs-sub">원정대</div><div class="rs-party">${sum.party.map(p => { const h = p.id && RPG.heroes[p.id], ch = h && typeof woundChips === 'function' ? woundChips(h) : ''; return `<div><b>${p.name}</b> Lv ${p.lv} · 체력 ${Math.round(p.hp || 0)}/${p.hpMax || '?'} · 정신도 ${p.san}${ch ? `<span class="hc-st">${ch}</span>` : ''}</div>`; }).join('')}</div>
       <button>굴로 (E)</button></div>`;
     el.hidden = false;
     UIR.result = () => { el.hidden = true; UIR.result = null; res(); };
@@ -218,7 +219,7 @@ function uiResult(sum){
 /* ---------- 원정 HUD · 지도 · 어둠 ---------- */
 function uiExpHud(force){
   const el = $r('expHud'), on = !!EXP && G.mode === 'exp';
-  el.hidden = !on; $r('mmwrap').hidden = !on; if (!on){ $r('vig').style.opacity = 0; $r('bigwrap').hidden = true; return; }
+  el.hidden = !on; $r('mmwrap').hidden = !on; document.body.classList.toggle('exphud', on); if (!on){ $r('vig').style.opacity = 0; $r('bigwrap').hidden = true; return; }
   const h = hero('inju'), S = G.player && G.player.rpg, sMax = S ? S.maxSan : 65, san = Math.round(h.san ?? sMax);
   const tk = EXP.torchT / EXP_TORCH, mm = Math.floor(EXP.torchT / 60), ss = Math.floor(EXP.torchT % 60);
   const html = `<div class="eh-f"><b>${EXP.F}층</b> ${EXP.gen.D.name}</div>
@@ -234,7 +235,7 @@ function uiHeroPanel(){
   const units = G.units.filter(u => u.side === 'ally' && !u.dead && u.hero);
   return '<div class="hp-wrap">' + units.map(u => {
     const h = u.hero, S = u.rpg || derive(h), san = Math.round(h.san ?? S.maxSan), sk = san / S.maxSan, hk = u.hp / u.max;
-    const L = u.lock, st = u.downed ? [u.halfDead ? '반시체' : '쓰러짐', 'down'] : L && L.d === u ? ['잡힘!', 'held'] : L && L.a === u ? [L.phase === 'ground' ? '그라운드' : '클린치', 'grab'] : u.guest ? ['손님', 'guest'] : null;
+    const L = u.lock, st = u.downed ? [u.halfDead ? '반시체' : u.D.undying && u.reb && u.reb.upAt ? `되살아남까지 ${Math.max(1, Math.ceil(u.reb.upAt - G.t))}초` : '쓰러짐', 'down'] : L && L.d === u ? ['잡힘!', 'held'] : L && L.a === u ? [L.phase === 'ground' ? '그라운드' : '클린치', 'grab'] : u.guest ? ['손님', 'guest'] : null;
     const chips = (typeof woundChips === 'function' ? woundChips(h) : '') + Object.entries(u.sts || {}).filter(([k, v]) => v && v.t > 0 && STS_N[k]).map(([k, v]) => `<em style="--c:${STS_N[k][1]}">${STS_N[k][0]}${v.t < 900 ? ' ' + Math.ceil(v.t) : ''}</em>`).join('');
     const gw = u.gw ? '<div class="hc-sk">' + GW_SK.map(([k, n]) => `<em class="${u.gw.cd[k] <= 0 ? 'on' : ''}">${n}</em>`).join('') + '</div>' : '';
     const sh = u.shieldMax ? `<u style="width:${Math.min(100, (u.shield || 0) / u.max * 100)}%"></u>` : '';

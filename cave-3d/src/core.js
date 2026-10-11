@@ -1,7 +1,7 @@
-/* 굴의 프롤로그 3D 시제품 · core.js v0.2 (v0.2, v0.86: 휠 클릭 (mouse.mid) — 누르는 동안 방어)
+/* 굴의 프롤로그 3D 시제품 · core.js v0.3 (v0.3, v0.92: artSrc — 따로 읽는 작은 그림을 한 번 읽어 data URL 로 (원정 화면에서 인주 초상화가 깜빡이며 안 보이던 것)) (v0.2, v0.86: 휠 클릭 (mouse.mid) — 누르는 동안 방어)
    공용: 상태 · 입력 · 수학 · 그림(스프라이트 정의) · 텍스처 */
 'use strict';
-const VERSION = 'v0.91';
+const VERSION = 'v0.92';
 const TICKS = [];   // v0.55 한 프레임마다 부르는 것들 (engage · sol · squad · drill이 넣음): f(dt)
 // v0.49 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작 (민수: 진행 중 저장은 되게, 단 업데이트되면 초기화)
 let SAVE_RESET = null;
@@ -101,8 +101,14 @@ function propCanvas(src){
   c.getContext('2d').drawImage(im, a[1], a[2], a[3], a[4], 0, 0, a[3], a[4]);
   return (propCut[src] = c);
 }
+const artPre = {};   // v0.3 따로 읽는 작은 그림 (인주 · GOOD WILL 얼굴 등) → 한 번 읽어 data URL
 function artSrc(src){
-  if (!propAt(src)) return src;
+  if (!propAt(src)){   // v0.3 원정 화면 동료 칸은 체력이 바뀔 때마다 다시 그려져서, 따로 읽는 그림은 다 읽기 전에 새 칸이 생겨 자주 안 보였음 (인주 초상화가 비어 보임)
+    if (!src || src.startsWith('data:')) return src;
+    const c = artPre[src]; if (typeof c === 'string') return c;
+    if (!c){ const im = new Image(); artPre[src] = im; im.onload = () => { try { if (im.naturalWidth * im.naturalHeight > 512 * 512) return; const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; cv.getContext('2d').drawImage(im, 0, 0); artPre[src] = cv.toDataURL(); } catch (e) {} }; im.src = src; }
+    return src;
+  }
   if (propURL[src]) return propURL[src];
   const c = propCanvas(src); return c ? (propURL[src] = c.toDataURL()) : src;
 }

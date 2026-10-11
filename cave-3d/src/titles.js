@@ -1,4 +1,4 @@
-/* titles.js v1.1 — 패시브 · 칭호 (v0.33) (v1.1, v0.58: '구원자' 칭호 삭제 — 구출작전이 없어짐)
+/* titles.js v1.2 — (v1.2, v0.92: 불굴 판정을 실제 '죽을 피해' 로 · 소수 체력에서 끝없이 버티던 버그 (레베카 · 인주)) 패시브 · 칭호 (v0.33) (v1.1, v0.58: '구원자' 칭호 삭제 — 구출작전이 없어짐)
    · 패시브: 영웅마다 타고난 것 (설정형 = 이야기, 전투형 = 수치). 늘 켜져 있음
    · 칭호: 원정에서 한 일로 얻음 (끝내기 · 메치기 · 벽꽝 · 깃발 · 강적 · 치명상 · 쓰러짐 · 깊이). 얻은 칭호는 모두 수치가 붙음
    · I 창 → 상태 탭 아래에 보임. 얻으면 알림 */
@@ -56,10 +56,10 @@ gearFx = function(h){
 const _hurtT = hurt;
 hurt = function(att, tgt, base, o = {}){
   if (att && att.hero && att.hero.id === 'cheong' && G.player && dist(att, G.player) < 5) base *= 1.12;   // 충직
-  // 불굴: 층마다 한 번, 죽을 피해를 1로 버팀
-  if (tgt && tgt.fx && tgt.fx.unbent && EXP && !tgt.unbentUsed && tgt.hp - base * 1.2 <= 0 && tgt.hp > 1){
-    o = { ...o, keep1: true }; const d = _hurtT(att, tgt, base, o);
-    if (tgt.hp <= 1.01){ tgt.unbentUsed = true; popText(tgt.x, tgt.y + bodyH(tgt) + 0.8, tgt.z, '불굴!', 'crit', 1.6); tgt.critNext = true; }
+  // 불굴: 층마다 한 번, 죽을 피해를 1로 버팀 — v1.2 어림 (기본 피해 ×1.2) 대신 실제로 죽을 피해였는지 (kept1) 로 판정. 전엔 체력이 소수 (레베카 재생 · 물약) 면 피해 0 → '사용' 이 안 켜져 1~2 체력에서 끝없이 버팀
+  if (tgt && tgt.fx && tgt.fx.unbent && EXP && !tgt.unbentUsed && !tgt.downed && tgt.hp > 1){
+    tgt.kept1 = false; const d = _hurtT(att, tgt, base, { ...o, keep1: true });
+    if (tgt.kept1){ tgt.kept1 = false; tgt.unbentUsed = true; popText(tgt.x, tgt.y + bodyH(tgt) + 0.8, tgt.z, '불굴!', 'crit', 1.6); tgt.critNext = true; }
     return d;
   }
   if (att && att.critNext && !o.dot){ att.critNext = false; o = { ...o, crit: true }; }
