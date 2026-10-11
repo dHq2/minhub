@@ -1,4 +1,4 @@
-/* ui_rpg.js v1.21 — (v1.21, v0.92: 동료 칸 — 죽은 레베카는 '되살아남까지 N초' · 원정 중엔 body.exphud (안내 글을 위로 — 왼쪽 아래 동료 칸과 겹쳤음) · 원정 결과 — 동료마다 상처 · 반시체 · 후유증 표 · 레베카 죽음 수와 전투 이탈 시간 · '가져온 것' → '주운 것 (쓴 것도 포함)') (v1.20, v0.89: 청광묵 · 카리우스는 굴에 들어온 뒤에만 (다른 세계선 동료 · canon.js) — 원정 준비 · I 창 · 못 가는 동료 칸은 '못 감') (v1.19, v0.89: 원정 준비 창에 굴 식구 (포획 · 동행 · 낙하로 온 2 · 3 · 4기 인물)) RPG 화면 (v1.18, v0.86: 반병신 동료는 원정 준비에서 못 고름 (heroCanGo) · 스킬 줄 슬라이딩 칸 ⇧G → ⇧Q (달리며 Q)) (v1.17, v0.86: 끝이 없는 상태 (절망 등, 900초 넘게) 는 남은 시간을 안 적음 — '절망 9999' 로 보이던 것) (v1.16, v0.58: 고른 영웅의 배낭을 보여 줌 · 동료끼리 넘겨주기 · 가방 칸 수는 원정대 모두 · 포로 칸 삭제) (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
+/* ui_rpg.js v1.22 — (v1.22, v0.93: 원정 준비 창 — 죽은 동료는 빼고 · 아래에 잃은 동료 (mortal.js)) (v1.21, v0.92: 동료 칸 — 죽은 레베카는 '되살아남까지 N초' · 원정 중엔 body.exphud (안내 글을 위로 — 왼쪽 아래 동료 칸과 겹쳤음) · 원정 결과 — 동료마다 상처 · 반시체 · 후유증 표 · 레베카 죽음 수와 전투 이탈 시간 · '가져온 것' → '주운 것 (쓴 것도 포함)') (v1.20, v0.89: 청광묵 · 카리우스는 굴에 들어온 뒤에만 (다른 세계선 동료 · canon.js) — 원정 준비 · I 창 · 못 가는 동료 칸은 '못 감') (v1.19, v0.89: 원정 준비 창에 굴 식구 (포획 · 동행 · 낙하로 온 2 · 3 · 4기 인물)) RPG 화면 (v1.18, v0.86: 반병신 동료는 원정 준비에서 못 고름 (heroCanGo) · 스킬 줄 슬라이딩 칸 ⇧G → ⇧Q (달리며 Q)) (v1.17, v0.86: 끝이 없는 상태 (절망 등, 900초 넘게) 는 남은 시간을 안 적음 — '절망 9999' 로 보이던 것) (v1.16, v0.58: 고른 영웅의 배낭을 보여 줌 · 동료끼리 넘겨주기 · 가방 칸 수는 원정대 모두 · 포로 칸 삭제) (v1.15: 영웅 칸에 반시체 · 원정 준비에 레베카 · 동료 체력 칸 표 · 상태 탭에 고유 특성 · 기술 그림) (v1.14: Esc 일시정지 · 원정 준비 창에 난이도. v1.13: 원정 준비 창에서 출발 층 (지름길). v1.12: 소모품을 쓰면 손을 듦. v1.11: 스킬 줄에 슬라이딩. v1.1: 원정 중 왼쪽 아래 영웅 칸 · 준비 창에 GOOD WILL)
    · I: 가방 · 장비 창 (왼쪽 원정대 · 가운데 인물과 장비 여섯 칸 · 오른쪽 가방 · 굴에선 보관함) + 상태 탭 (속성 점수 나누기 · 파생 수치 · 무기 기술)
    · 아래: 스킬 줄 (기본 · 무기 스킬 · 구르기 · 막기 · 탄약 · 소모품 칸 4 ~ 7)
    · 원정: 왼쪽 위 층 · 횃불 · 금화 · 정신도, 오른쪽 위 작은 지도 (M = 크게), 가장자리 어둠
@@ -264,7 +264,7 @@ function uiVignette(a, sk){
 const HPF_KEY = { cheong: 'ch', karius: 'ka', rebecca: 'reb' };   // 굴의 동료 체력 비율 칸
 const PREP = { pick: { cheong: true, karius: true, goodwill: true, rebecca: true }, torches: 2, startF: 1 };
 const heroCanGo = k => { const h = hero(k); return h.st === 'ok' && !(k !== 'inju' && typeof crippled === 'function' && crippled(h)) && !(typeof rotBlock === 'function' && rotBlock(k)); };   // v1.19 카리우스 점검일 (rotation.js)   // v1.18 반병신 동료는 원정 못 감 (민수: 신체 이상 패널티는 더 심해야)
-const prepMates = () => ['cheong', 'karius'].filter(k => typeof wlHere !== 'function' || wlHere(k)).concat(RPG.meta.gw ? ['goodwill'] : []).concat(PRO.rebOut && !(typeof rebResting === 'function' && rebResting()) ? ['rebecca'] : []).concat(typeof capCrew === 'function' ? capCrew() : []);   // v1.19 굴 식구 (capture.js)   // v1.15 레베카 (꺼낸 다음 날부터)
+const prepMates = () => ['cheong', 'karius'].filter(k => typeof wlHere !== 'function' || wlHere(k)).concat(RPG.meta.gw ? ['goodwill'] : []).concat(PRO.rebOut && !(typeof rebResting === 'function' && rebResting()) ? ['rebecca'] : []).concat(typeof capCrew === 'function' ? capCrew() : []).filter(k => !(RPG.heroes[k] && RPG.heroes[k].st === 'dead'));   // v1.22 죽은 동료는 빼고 (mortal.js)   // v1.19 굴 식구 (capture.js)   // v1.15 레베카 (꺼낸 다음 날부터)
 function expPrepOpen(){
   G.paused = true; const el = $r('prep');
   const foodHave = PRO.store.reduce((a, d) => a + (d.raw ? 0 : d.food || 0), 0);
@@ -281,6 +281,7 @@ function expPrepOpen(){
       ${(RPG.meta.shortcut || 1) > 1 ? `<div class="pp-row"><span>출발</span><b>${[1].concat((RPG.meta.shortcut || 1) >= 6 ? [6] : []).concat((RPG.meta.shortcut || 1) >= 11 ? [10] : []).map(f => `<button data-f="${f}" style="${PREP.startF === f ? 'outline:2px solid #ffd35a' : ''}">${f}층</button>`).join(' ')}</b><em>지름길: 쓰러뜨린 보스 아래층부터</em></div>` : ''}
       <div class="pp-row"><span>난이도</span><b>${['easy', 'normal', 'hard'].map(k => `<button data-d="${k}" style="${(RPG.meta.diff || 'normal') === k ? 'outline:2px solid #ffd35a' : ''}">${{ easy: '쉬움', normal: '보통', hard: '어려움' }[k]}</button>`).join(' ')}</b><em>적 체력 · 공격 (쉬움 75% · 70%, 어려움 125% · 120%)</em></div>
       <div class="pp-row"><span>가방 (모두)</span><b>${partyBagTxt()}</b><em>탄약: 화살 ${RPG.ammo.arrow} · 총알 ${RPG.ammo.bullet} · 산탄 ${RPG.ammo.shell} · I로 장비를 고르고 오기</em></div>
+      ${typeof mortFallenHtml === 'function' ? mortFallenHtml() : ''}
       <div class="pp-btns"><button data-a="go">떠난다</button><button data-a="eq">장비 (I)</button><button data-a="no">아직</button></div></div>`;
   };
   render(); el.hidden = false;

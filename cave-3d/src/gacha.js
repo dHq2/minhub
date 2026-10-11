@@ -1,11 +1,14 @@
-/* gacha.js v1.1 — (v1.1, v0.92: 카드에 뽑힌 인물 얼굴이 제대로 (얼굴 묶음을 기다림) · 한 명이면 체력 · 공격 · 패시브 · 기술을 보임) (v1.0) (v0.90) 낙하 기원 = 동료 뽑기 (민수: 동료가챠도 있음 좋겠는데)
+/* gacha.js v1.2 — (v1.2, v0.93: 영입의 희소성 (민수: 인원 제한 대신 영입의 희소성 · 사망률) — 빛이 다시 차오르기까지 사흘 · 빌 때마다 값이 오름 (60 → 100 → 140 …) · 다섯 번 빌기는 없앰. 봇 14일에 21 ~ 28번 빌어 22 ~ 32명이 됐었음) (v1.1, v0.92: 카드에 뽑힌 인물 얼굴이 제대로 (얼굴 묶음을 기다림) · 한 명이면 체력 · 공격 · 패시브 · 기술을 보임) (v1.0) (v0.90) 낙하 기원 = 동료 뽑기 (민수: 동료가챠도 있음 좋겠는데)
    ■ 굴 천장 구멍의 푸른 빛 아래에서 금화를 빛 속에 던지고 빈다 → 누군가 떨어진다 → 굴 식구 (원정 준비 창에서 데려감)
-   ■ 한 번 60 금화 · 다섯 번 280 금화. 처음 한 번은 금화 없이
+   ■ 처음 한 번은 금화 없이. 그 뒤엔 60 금화부터 빌 때마다 +40. 빈 뒤 빛이 다시 차오르기까지 사흘 (GACHA.wait)
    ■ 별 (세계 안에선 안 보임 — 게임의 편의, CORE_LORE): ★1 40% · ★2 33% · ★3 18% · ★4 7% · ★5 2%. 열 번째마다 ★3 이상 확정 (모자라면 쌓임)
    ■ 후보: 굴 식구가 아닌 2 · 3 · 4기 인물 (포획 후보와 같음) + 아직 만나지 않은 다른 세계선 동료 (청광묵 ★2 · 카리우스 ★5) */
 'use strict';
-const GACHA = { cost: 60, cost5: 280, rate: [[1, 40], [2, 33], [3, 18], [4, 7], [5, 2]], spot: null, busy: false };
+const GACHA = { base: 60, step: 40, wait: 3, get cost(){ return this.base + this.step * (RPG.meta.gPaid || 0); }, rate: [[1, 40], [2, 33], [3, 18], [4, 7], [5, 2]], spot: null, busy: false };
 const STAR = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+// v1.2 빛이 차오름: 마지막으로 빈 날부터 사흘. 남은 날 (0 이면 빌 수 있음)
+const gachaLeft = () => RPG.meta.gDay == null ? 0 : Math.max(0, GACHA.wait - (PRO.day - RPG.meta.gDay));
+const gachaReady = () => gachaLeft() <= 0;
 function gachaPool(){
   const crew = new Set(RPG.meta.crew || []);
   const L = capPool().filter(s => !crew.has(s)).map(s => ({ s, star: capStar(s) }));
@@ -40,11 +43,14 @@ function gachaJoin(o, i){
 async function gachaPull(n){
   if (GACHA.busy) return; GACHA.busy = true;
   try {
-    const free = !RPG.meta.gFree, cost = free ? 0 : n === 5 ? GACHA.cost5 : GACHA.cost;
-    if (RPG.gold < cost){ caption('금화가 모자라다', `기원 ${n === 5 ? '다섯 번' : '한 번'}에 금화 ${cost} (가진 금화 ${RPG.gold})`); return; }
-    RPG.gold -= cost; if (free) RPG.meta.gFree = 1;
+    n = 1;
+    const free = !RPG.meta.gFree, cost = free ? 0 : GACHA.cost;
+    if (!free && !gachaReady()){ caption('빛이 아직 약하다', `다시 차오르기까지 ${gachaLeft()}일`); return; }
+    if (RPG.gold < cost){ caption('금화가 모자라다', `기원 한 번에 금화 ${cost} (가진 금화 ${RPG.gold})`); return; }
+    RPG.gold -= cost; if (free) RPG.meta.gFree = 1; else RPG.meta.gPaid = (RPG.meta.gPaid || 0) + 1;
+    RPG.meta.gDay = PRO.day;
     const got = []; for (let i = 0; i < n; i++){ const o = gachaRoll(); if (o){ got.push(o); if (o.s) (RPG.meta.crew = RPG.meta.crew || []).includes(o.s) || RPG.meta.crew.push(o.s); if (o.wl) (RPG.meta.wl = RPG.meta.wl || {})[o.wl] = PRO.day; } }   // 같은 이를 두 번 뽑지 않게 바로 표시
-    if (!got.length){ caption('…아무도 오지 않았다', '빛 아래가 고요하다'); RPG.gold += cost; return; }
+    if (!got.length){ caption('…아무도 오지 않았다', '빛 아래가 고요하다'); RPG.gold += cost; if (!free) RPG.meta.gPaid--; RPG.meta.gDay = null; return; }
     // 연출: 빛기둥이 밝아지고 · 우르르 → 카드
     const C = GACHA.spot; SFX.roar && SFX.roar(0.4); camShake(0.2, 1.0); flashScreen('#d8e4ff', 0.35);
     GACHA.glow = 1;
@@ -59,12 +65,11 @@ async function gachaPull(n){
   } finally { GACHA.busy = false; }
 }
 async function gachaOpen(){
-  const free = !RPG.meta.gFree, pity = 10 - (RPG.meta.gPity || 0);
-  const i = await rgCard({ img: CA + 'U-007.webp', kicker: `낙하 기원 · 가진 금화 ${RPG.gold}`, title: '빛 아래에서 빈다',
-    text: `천장 구멍에서 내려오는 푸른 빛 속으로 금화를 던진다.\n…누군가 떨어진다. 위에서, 혹은 어딘가에서.\n★3 이상까지 ${pity}번`,
-    choices: [{ t: free ? '빈다 (첫 기원 · 금화 없이)' : `한 번 빈다 (금화 ${GACHA.cost})`, sub: '한 명', dis: !free && RPG.gold < GACHA.cost },
-      { t: `다섯 번 빈다 (금화 ${GACHA.cost5})`, sub: '다섯 명 · 한 번에', dis: RPG.gold < GACHA.cost5 }, { t: '그만둔다' }] });
-  if (i === 0) return gachaPull(1); if (i === 1) return gachaPull(5);
+  const free = !RPG.meta.gFree, pity = 10 - (RPG.meta.gPity || 0), left = free ? 0 : gachaLeft();
+  const i = await rgCard({ img: CA + 'U-007.webp', kicker: `낙하 기원 · 가진 금화 ${RPG.gold}`, title: left ? '빛이 아직 약하다' : '빛 아래에서 빈다',
+    text: left ? `천장 구멍의 빛이 가늘다. 다시 차오르기까지 ${left}일.\n떨어지는 이는 드물다. 데려온 이를 잃지 말 것.` : `천장 구멍에서 내려오는 푸른 빛 속으로 금화를 던진다.\n…누군가 떨어진다. 위에서, 혹은 어딘가에서.\n빌고 나면 빛이 다시 차오르기까지 ${GACHA.wait}일 · ★3 이상까지 ${pity}번`,
+    choices: [{ t: free ? '빈다 (첫 기원 · 금화 없이)' : `빈다 (금화 ${GACHA.cost})`, sub: left ? `${left}일 뒤` : '한 명', dis: !!left || (!free && RPG.gold < GACHA.cost) }, { t: '그만둔다' }] });
+  if (i === 0) return gachaPull(1);
 }
 // 굴: 빛 아래 자리 (빈 칸) + 은은한 빛기둥 + 살펴보기
 { const _scG = startCave; startCave = async function(){
@@ -74,9 +79,9 @@ async function gachaOpen(){
       if (p){ GACHA.spot = p; const y = heightAt(G.map, p.x, p.z);
         const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.9, 9, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xbfd8ff, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }));
         beam.position.set(p.x, y + 4.5, p.z); G.scene.add(beam); G.props.push(beam); GACHA.beam = beam;
-        G.inspect.push({ x: p.x, z: p.z, r: 1.3, mark: '기원', far: 6, keep: true, get label(){ return `빛 아래에서 빈다 — 동료 기원 (${!RPG.meta.gFree ? '첫 기원 무료' : '금화 ' + GACHA.cost}, 가진 금화 ${RPG.gold})`; }, fn: gachaOpen });
+        G.inspect.push({ x: p.x, z: p.z, r: 1.3, mark: '기원', far: 6, keep: true, get label(){ return !RPG.meta.gFree ? '빛 아래에서 빈다 — 동료 기원 (첫 기원 무료)' : gachaReady() ? `빛 아래에서 빈다 — 동료 기원 (금화 ${GACHA.cost}, 가진 금화 ${RPG.gold})` : `빛이 아직 약하다 — ${gachaLeft()}일 뒤`; }, fn: gachaOpen });
       }
     } catch (e) {}
     return r;
   }; }
-TICKS.push(dt => { if (!GACHA.beam || G.mode !== 'cave') return; GACHA.glow = Math.max(0, (GACHA.glow || 0) - dt * 0.25); GACHA.beam.material.opacity = 0.1 + GACHA.glow * 0.3 + Math.sin(G.t * 2) * 0.015; });
+TICKS.push(dt => { if (!GACHA.beam || G.mode !== 'cave') return; GACHA.glow = Math.max(0, (GACHA.glow || 0) - dt * 0.25); GACHA.beam.material.opacity = (RPG.meta.gFree && !gachaReady() ? 0.035 : 0.1) + GACHA.glow * 0.3 + Math.sin(G.t * 2) * 0.015; });   // v1.2 빛이 차오르는 중엔 가늘게
