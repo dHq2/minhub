@@ -1,6 +1,6 @@
 # 굴의 프롤로그 3D (시제품)
 
-현재 버전: v0.87
+현재 버전: v0.88
 
 2D판 (`../cave-game`, v14.11)에서 나온 피드백의 뿌리 세 개를 풀려고 새로 짓는 3D판. 지금은 1층 하나만.
 
@@ -176,6 +176,7 @@
 
 ## 변경 기록
 
+- v0.88 (2026-10-11) 펄의 '이게 2성' 문구를 모두 뺌 (민수 — 설명용 말이었지 펄의 대사가 아님 · 별은 세계 안에서 안 보임): 인카운터 글 · 이름표 · 등장 / 쓰러짐 자막 · 각펄 패시브 이름 ('끝까지') · 명단 설명 (art/h2/notes → tools/h2_roster.py) · 업뎃! 칸 글 — encounters.js v1.4 · h2.js v3.4 · drill.js v1.19 · tools/g4_moves_cfg.py v1.2. CORE_LORE.md v1.8 에 '짜투리 설정' 칸
 - v0.87 (2026-10-10) 박힌 창 · 도끼는 다가가면 바로 뽑아 쥠 (산 적 · 시체 모두 — 전엔 적이 죽거나 8초 · 시체는 4.5초 뒤 떨어져야 주웠음) · 땅의 창은 막기 · 숙이기 · 공격 · 조준 중에도 지나가면 주움 (민수) — gore.js v1.2 · player.js v0.89 · core.js (VERSION). PLAYTEST_2026-10-10.md v1.1
 - v0.86 (2026-10-10) 플레이 피드백 (9층까지) 검토 — 자세한 건 PLAYTEST_2026-10-10.md v1.0. ai.js v0.36 · h2.js v3.3 · squad.js v1.2 · maim.js v1.3 · expedition.js v1.17 · foes2.js v1.7 · greyland.js v1.1 · stealth.js v1.3 · units.js v0.35 · rebecca.js v1.3 · karius.js v1.3 · wounds.js v1.3 · ui_rpg.js v1.18 · rpg.js v1.23 · mob9.js v1.2 · heroes.js v1.2 · world.js v0.6 · camera.js v0.11 · game.js v0.93 · situations.js v1.2 · engage.js v1.1 · prologue.js v0.117 · scout.js v1.1 · weapons.js v1.10 · player.js v0.88 · core.js v0.2 · qol.js v1.6 · touch.js v1.7 · tackle.js v1.13 · sol.js v1.3 · encounters.js v1.3 · drill.js v1.18 · 새 src/patrol.js v1.1 · gore.js v1.1 · retreat.js v1.0
   - 9층 무한 '일어남' (진행 불가): 반시체를 싸움 뒤에 일으키려다 다시 눕히기를 반복 → 반시체는 안 일으킴. 인주가 반시체면 동료가 들쳐업고 굴로 (싸움 중에도 — 세자르 앞 · 마지막 동료 · 크게 다친 동료면 바로, 들쳐업기 1.2초 · 3초 버티면 빠져나감). 업을 동료가 없으면 전멸
