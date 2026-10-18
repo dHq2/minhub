@@ -1,5 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>[hidden]{display:none!important}body{margin:0}</style></head><body><title>굴의 전투판</title>
-<!-- 굴의 전투판 v7.27.0 (2026-10-18) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v7.28.0 (2026-10-18) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v7.28.0: 연출 — 카메라가 싸움을 담고 큰 사건에 잠깐 다가감 (도약 강타 · 세자르의 큰 기술 · 세자르 기상 · 보스가 쓰러짐). 손으로 확대 · 축소하면 4초 쉼.
+         보스 치명타: 빛살 · '치명타!' · 멈칫 · 보스에게 맞으면 붉은 테두리. 보스가 쓰러지면 느린 순간. 거구가 내려찍으면 화면이 살짝 흔들림 (도약 강타는 먼지 고리 · 휴대폰 진동).
+         켜고 끄기: 🎥 연출 · 📳 흔들림 · 휴대폰 진동.
      v7.27.0: 레지나 (9층의 보스) 인카운터 — 인카운터 목록에서만 해 볼 수 있음. 푸른 화로가 늘어선 복도를 지나 알현실로 (도감 그림 · 벽 · 기둥 · 화로 · 옥좌는 못 지나감).
          권태로운 레지나와 이야기 · 싸움 · 그냥 지나감 · 세 번째 만남부터 영입. 새 대화 그림 (레지나 · 레베카 · 모닝스타 · 친칠라 · 리완 · 세르파 · 페흐토 · 포렌).
          5S 세자르의 알현실을 도감 그림으로 — 벽 · 옥좌 · 서 있는 기둥은 막힘, 쓰러진 기둥 · 돌무더기는 잔해 (못 지나가는 낮은 엄폐). 관은 빈 옥좌 앞.
@@ -987,7 +990,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v7.27.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v7.28.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1349,7 +1352,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v7.27.0 · 레지나 · 세자르 알현실</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v7.28.0 · 연출</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1394,6 +1397,8 @@ i.dur.z::after{background:var(--foe)}
           <label class="ck" for="cmpShow" title="아군 카드를 둘씩 간단히 — 명령 단추가 위로 올라와요"><input id="cmpShow" type="checkbox"> ▤ 카드 간단히</label>
           <button class="btn sm keybtn" id="keyBtn" type="button" title="단축키 보기 (?)">⌨ 단축키</button>
           <label class="ck" for="detailAll" title="끄면 고른 아군 · 커서를 올린 인물만 시선 · 공격 범위를 그려요"><input id="detailAll" type="checkbox"> 자세히 보기</label>
+          <label class="ck" for="fxCam" title="카메라 연출 — 따라갈 때 가까운 싸움 쪽으로 살짝 · 큰 사건 (도약 강타 · 보스의 큰 기술 · 보스가 쓰러짐) 에 잠깐 다가감 · 보스 치명타의 멈칫 · 느린 순간"><input id="fxCam" type="checkbox"> 🎥 연출</label>
+          <label class="ck" for="fxShake" title="화면 흔들림 — 거구가 내려찍을 때 · 도약 강타 착지 · 보스 치명타 (가볍게)"><input id="fxShake" type="checkbox"> 📳 흔들림</label>
           <span class="seg"><button type="button" id="zOut" aria-label="작게">−</button><button type="button" id="zIn" aria-label="크게">+</button></span>
         </div>
         <div class="turninfo" id="turnInfo"></div>
@@ -1526,7 +1531,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v7.27.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v7.28.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
 </div>
 <div class="dock" id="dock" aria-label="조작판"><div class="drow dchips" id="dChips"></div><div class="drow acts" id="dActs"></div><div class="drow play" id="dPlay"></div></div>
@@ -10167,6 +10172,11 @@ let lastTI = '';   // v5.7.2 turnInfo 캐시
 let mode = 'edit', paused = false, speed = 0.25, world = null, preview = null, MAP = null, mapCv = null;
 let tool = 'select', sideNow = 1, brush = null, selId = null, roleF = '전체', q = '';
 const cam = { x: 0, y: 0, z: 1.25, follow: true };
+/* v7.28.0 연출 상태: 카메라 감독 (CD — 다가감 · 확대 배율) · 화면 흔들림 (SHK) · 멈칫 · 느린 순간 (FXT) · 그림 효과 (FXV — 화면 시간 ms) */
+const FXR = { bias: 0.36, biasR: 10, edge: 0.32, quietMs: 4000, gap: 2200, critGap: 0.35, txtGap: 0.5, giantGap: 0.4 };   // bias = 가까운 적 쪽으로 당기는 몫 · biasR 칸 안의 적만 · edge = 화면 반의 몫까지만
+const CD = { shot: null, pend: null, zk: 1, zSet: null, base: null, quietUntil: 0, lastShot: -1e9 }, SHK = { a: 0, t0: 0, dur: 0 }, FXT = { until: 0, k: 1 }, FXV = [], FXL = { crit: -9, txt: -9, giant: -9 };
+const FX_RM = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();   // 움직임 줄이기를 켠 기기는 흔들림이 처음부터 꺼짐
+const fxOn = k => { const v = (S.fx || {})[k]; return v == null ? !(k === 'shake' && FX_RM) : !!v; };
 const TS = 28;   // 확대 1 일 때 한 칸 = 28px
 const atlas = new Image(); let atlasOK = false; atlas.onload = () => { atlasOK = true; }; atlas.src = 'faces.webp';
 
@@ -10322,7 +10332,7 @@ function draw(){
   const { dpr, w, h } = fit(), ts = TS * cam.z;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.fillStyle = '#07060a'; ctx.fillRect(0, 0, w, h);
-  const ox = w / 2 - cam.x * ts, oy = h / 2 - cam.y * ts;
+  const SK = fxShakeOff(), ox = w / 2 - cam.x * ts + SK.x, oy = h / 2 - cam.y * ts + SK.y;   /* v7.28.0 화면 흔들림 */
   // 맵 (보이는 부분만)
   const x0 = Math.max(0, Math.floor(cam.x - w / 2 / ts) - 1), y0 = Math.max(0, Math.floor(cam.y - h / 2 / ts) - 1), x1 = Math.min(S.W, Math.ceil(cam.x + w / 2 / ts) + 1), y1 = Math.min(S.H, Math.ceil(cam.y + h / 2 / ts) + 1);
   ctx.imageSmoothingEnabled = true;
@@ -10830,6 +10840,7 @@ function draw(){
     ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
     for (let y = 0; y < S.H; y++) ctx.fillText(String(S.H - y), ox - 5, oy + (y + .5) * ts);
   }
+  if (FXV.length) drawFxv(ox, oy, ts, w, h);   /* v7.28.0 치명타 빛살 · 글 · 먼지 고리 · 테두리 · 번쩍임 */
   if (boxSel){ const x = Math.min(boxSel.x0, boxSel.x1), y = Math.min(boxSel.y0, boxSel.y1), bw = Math.abs(boxSel.x1 - boxSel.x0), bh = Math.abs(boxSel.y1 - boxSel.y0);
     ctx.fillStyle = 'rgba(217,169,78,.12)'; ctx.fillRect(x, y, bw, bh); ctx.strokeStyle = 'rgba(217,169,78,.9)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]); ctx.strokeRect(x, y, bw, bh); ctx.setLineDash([]); }
   drawMini(Wd);
@@ -11207,7 +11218,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v7.27.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v7.28.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => padW(f2(e.t) + '초', 8);
@@ -12730,7 +12741,7 @@ function frame(ts){
   requestAnimationFrame(frame);
   const dt = Math.min(0.1, (ts - lastTs) / 1000 || 0); lastTs = ts;
   if (mode === 'run' && world && !paused){   // v5.7.2 멈춤 (Space)
-    let budget = dt * speed * (slowNow() ? FOCUS_SLOW : 1);   // v5.9.0 모바일: 꾹 누름 · 기술이 켜진 동안 진짜 슬로우
+    let budget = dt * speed * (slowNow() ? FOCUS_SLOW : 1) * fxTimeK();   // v5.9.0 모바일: 꾹 누름 · 기술이 켜진 동안 진짜 슬로우   /* v7.28.0 멈칫 · 느린 순간 */
     while (budget > 1e-9 && !world.over && world.t < world.turnEnd - 1e-6){ const s = Math.min(STEP, budget, world.turnEnd - world.t); stepWorld(world, s); budget -= s; }
     renderNarr();
     if (world.over || world.t >= world.turnEnd - 1e-6){
@@ -12743,9 +12754,11 @@ function frame(ts){
   }
   const Wd = W_();
   if (Wd && mode !== 'edit') czCutTick(Wd);   /* v7.23.2 세자르 컷인 · 권위 알림 */
+  if (Wd && mode !== 'edit') fxTick(Wd);   /* v7.28.0 연출 (로그 사건) */
   if (Wd && mode !== 'edit' && Wd.camp){ encTick(Wd); khTick(Wd); czEvTick(Wd); odTick(Wd); rgTick(Wd); }   /* v7.26.0 오딜의 방 · v7.27.0 레지나 */   // v7.22 장면 인물   // v7.22.3 각혈
+  if (Wd && mode !== 'edit') camZoomTick(dt);   /* v7.28.0 다가감 (확대 배율) */
   if (MOB && Wd && mode !== 'edit') mobFollow(Wd, dt);   // v5.8 모바일: 가까이 볼 때 아군 (고른 아군) 을 따라감
-  if (Wd && cam.follow && mode !== 'edit' && !small() && !MOB){ const h = Wd.units.find(u => u.torch && u.alive && u.side === 0) || Wd.units.find(u => u.side === 0 && u.alive); if (h){ const k = 1 - Math.pow(0.002, dt); cam.x += (h.x - cam.x) * k; cam.y += (h.y - cam.y) * k; } }
+  if (Wd && cam.follow && mode !== 'edit' && !small() && !MOB){ const h = Wd.units.find(u => u.torch && u.alive && u.side === 0) || Wd.units.find(u => u.side === 0 && u.alive); if (h){ const a = fxOn('cam') ? camAim(Wd, h.x, h.y) : h, k = 1 - Math.pow(CD.shot && fxOn('cam') ? 0.0006 : 0.002, dt); cam.x += (a.x - cam.x) * k; cam.y += (a.y - cam.y) * k; } }   /* v7.28.0 싸움 쪽으로 살짝 · 큰 사건에 다가감 */
   draw();
   if (ringFor != null) positionRing();   // v5.8.2 기술 고리가 인물을 따라감
   hudT -= dt; if (hudT <= 0){ hudT = mode === 'run' ? 0.1 : 0.4; hud(); if (mode === 'run') renderLog(); }
@@ -13263,7 +13276,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push('굴의 전투판 v7.27.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push('굴의 전투판 v7.28.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   M.forEach((m, i) => {
     o.push(`════════ ${i + 1}. ${m.name || m.s + 'S'} · ${m.kind || ''}${m.enc ? ' — ' + m.enc : ''}${m.btl ? ' — ' + m.btl.comp + ' · ' + m.btl.sit : ''}${m.npc ? ' (' + m.npc + ')' : ''} — ${m.back ? '다시 들어섬' : '처음'}${m.from ? (m.from === 'up' ? ' · 위에서 내려옴' : ' · 아래에서 올라옴') : ''}${m.live ? ' · 지금 이 맵' : ''} ════════`);
@@ -13291,7 +13304,7 @@ async function campLogAll(){
   for (const x of L){ let log = null, tx = null; try { log = x.z ? JSON.parse(await gunB64(x.z)) : JSON.parse(x.j || '[]'); } catch (e) {} try { tx = x.zt ? JSON.parse(await gunB64(x.zt)) : x.jt ? JSON.parse(x.jt) : null; } catch (e) {}
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
-  return { game: '굴의 전투판', ver: '7.27.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '7.28.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -13804,10 +13817,11 @@ $('assist').addEventListener('click', e => { const b = e.target.closest('[data-a
 renderAssist();
 // v7.10.5 PC 조작 편의
 const cmpOn = () => S.pcCmp != null ? !!S.pcCmp : true, detOn = () => S.pcDet != null ? !!S.pcDet : window.innerWidth >= 1500;
-function applyPc(){ document.body.classList.toggle('nodet', !detOn()); $('detShow').checked = detOn(); $('cmpShow').checked = cmpOn(); $('party').classList.toggle('cmp', cmpOn()); }
+function applyPc(){ document.body.classList.toggle('nodet', !detOn()); $('detShow').checked = detOn(); $('cmpShow').checked = cmpOn(); $('party').classList.toggle('cmp', cmpOn()); $('fxCam').checked = fxOn('cam'); $('fxShake').checked = fxOn('shake'); }   /* v7.28.0 연출 */
 applyPc(); window.addEventListener('resize', () => { if (S.pcDet == null) applyPc(); });
 $('detShow').addEventListener('change', () => { S.pcDet = $('detShow').checked; save(); applyPc(); });
 $('cmpShow').addEventListener('change', () => { S.pcCmp = $('cmpShow').checked; save(); applyPc(); });
+$('fxCam').addEventListener('change', () => setFx('cam', $('fxCam').checked)); $('fxShake').addEventListener('change', () => setFx('shake', $('fxShake').checked));   /* v7.28.0 */
 $('legBtn').addEventListener('click', () => { S.pcLeg = !S.pcLeg; save(); hud(); });
 $('turnInfo').addEventListener('click', e => { if (e.target.closest('button, a')) return; $('turnInfo').classList.toggle('fold'); S.pcFold = !$('turnInfo').classList.contains('fold'); });
 const KB_GROUPS = [['고르기', [['1 ~ 9', '아군 고르기 (고른 뒤엔 1 ~ 5 = 기술 칸)'], ['Shift + 클릭', '더하기'], ['Ctrl + A', '모두 고르기'], ['끌기', '네모로 여럿'], ['판 빈 곳 클릭', '고르기 풀기']]],
@@ -13824,7 +13838,7 @@ $('speedSeg').addEventListener('click', e => { const b = e.target.closest('[data
 $('turnLen').addEventListener('change', e => { rules.turn = +e.target.value; S.rules = rules; save(); if (world) world.rules.turn = rules.turn; renderRules(); hud(); toast(`한 턴 = ${rules.turn}초 (다음 턴부터)`); });
 $('followBtn').addEventListener('click', () => { cam.follow = true; });
 $('zIn').addEventListener('click', () => zoom(1.2)); $('zOut').addEventListener('click', () => zoom(1 / 1.2));
-function zoom(k){ cam.z = Math.min(4, Math.max(0.45, cam.z * k)); }
+function zoom(k){ camUser(); cam.z = Math.min(4, Math.max(0.45, cam.z * k)); }
 const small = () => S.W <= 16 && S.H <= 16;
 function fitBoard(){ if (MOB){ mobFit(); return; } const w = cv.clientWidth || 600, h = cv.clientHeight || 400; cam.z = Math.min(w / ((S.W + 0.9) * TS), h / ((S.H + 1.7) * TS)); const ts = TS * cam.z, free = w - S.W * ts, shift = free > 160 ? Math.max(0, Math.min(free - 16, 356) - free / 2) : 0; cam.x = S.W / 2 - 0.2 - shift / ts; cam.y = S.H / 2 - 0.35; cam.follow = false; }   // 위에 상태 글 자리, 아래 · 왼쪽에 칸 이름 자리
 
@@ -13851,13 +13865,108 @@ function mobFit(){
   if (zoomAll || mode === 'edit' || !small()){ cam.z = small() ? fitAll : Math.max(cam.z, 1); if (small()){ cam.x = S.W / 2 - 0.2; cam.y = S.H / 2 - 0.35; } cam.follow = !small() && mode !== 'edit'; return; }
   cam.z = Math.min(52, h / (S.H + 1.7)) / TS; cam.y = S.H / 2 - 0.35; cam.follow = true;
 }
+/* ---------- v7.28.0 연출: 카메라 감독 · 화면 흔들림 · 멈칫 · 느린 순간 · 보스 치명타 · 먼지 고리 · 휴대폰 진동 ----------
+   로그 사건만 읽어 그림 (엔진 · 판정 · 시험의 stepWorld 는 그대로). 손으로 판을 끌면 따라감이 꺼지고 (예전과 같음), 확대 · 축소 · 집기를 하면 4초 동안 다가가지 않음 */
+function setFx(k, v){ S.fx = { ...(S.fx || {}), [k]: !!v }; save(); if (k === 'cam' && !v) camUser(true); if (k === 'shake' && !v) SHK.a = 0; if ($('fxCam')){ $('fxCam').checked = fxOn('cam'); $('fxShake').checked = fxOn('shake'); } }
+const fxBoss = u => !!u && (u.traits || []).includes('보스');
+const fxGiant = u => !!u && (!!u.giant || (u.traits || []).includes('거구') || ['대형', '초대형'].includes(u.sizeCls) || (+u.h || 0) >= 3);
+const fxTimeK = () => performance.now() < FXT.until ? FXT.k : 1;
+function fxStop(ms, k){ if (!fxOn('cam')) return; const now = performance.now(); if (now + ms > FXT.until){ FXT.until = now + ms; FXT.k = k; } }   // 멈칫 (히트스톱) · 느린 순간
+function fxBuzz(p){ if (!MOB || !fxOn('buzz')) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+function fxShake(a, ms, x, y){
+  if (!fxOn('shake')) return; const now = performance.now();
+  if (x != null){ const ts = TS * cam.z, far = Math.hypot(x - cam.x, y - cam.y) > Math.max(cv.clientWidth, cv.clientHeight) / ts * 0.6; if (far) a *= 0.4; }   // 화면 밖 멀리서 난 일은 약하게
+  const left = SHK.dur ? SHK.a * Math.max(0, 1 - (now - SHK.t0) / SHK.dur) : 0; if (a >= left){ SHK.a = a; SHK.t0 = now; SHK.dur = ms; }
+}
+function fxShakeOff(){
+  if (!SHK.a) return { x: 0, y: 0 }; const now = performance.now(), r = 1 - (now - SHK.t0) / SHK.dur; if (r <= 0){ SHK.a = 0; return { x: 0, y: 0 }; }
+  const m = SHK.a * r * r; return { x: m * (Math.sin(now * 0.091) * 0.6 + Math.sin(now * 0.173 + 1.3) * 0.4), y: m * (Math.cos(now * 0.083 + 0.7) * 0.6 + Math.sin(now * 0.151 + 2.1) * 0.4) };
+}
+// 다가감: { x, y } 또는 { unit } 쪽으로 · z = 확대 배율 · dur ms · pri (높을수록 앞섬). 따라감이 켜져 있고 · 대화 · 로딩 중이 아니고 · 화면 가까이에서 난 일만
+function camShot(Wd, o){
+  if (!fxOn('cam') || !cam.follow || small()) return; const now = performance.now(); if (now < CD.quietUntil) return;
+  if (TK || LD){ if ((o.pri || 1) >= 3) CD.pend = { o, at: now }; return; }   // 대화 · 로딩 중에 난 큰 사건은 닫힌 뒤에
+  const cur = CD.shot && now < CD.shot.end ? CD.shot : null; if (cur && (o.pri || 1) < (cur.pri || 1)) return; if (!cur && now - CD.lastShot < FXR.gap && (o.pri || 1) < 3) return;
+  const p = o.unit != null ? Wd.units[o.unit] : o; if (!p) return; const ts = TS * cam.z; if (Math.hypot(p.x - cam.x, p.y - cam.y) > Math.max(cv.clientWidth, cv.clientHeight) / ts * 0.75) return;
+  CD.shot = { ...o, t0: now, end: now + (o.dur || 1200) }; CD.lastShot = now;
+}
+function shotEnv(sh){ const now = performance.now(), u = (now - sh.t0) / Math.max(1, sh.end - sh.t0); if (u <= 0 || u >= 1) return 0; const e = Math.min(1, u / 0.18, (1 - u) / 0.3); return e * e * (3 - 2 * e); }
+function camAim(Wd, bx, by){
+  const ts = TS * cam.z, hw = cv.clientWidth / 2 / ts, hh = cv.clientHeight / 2 / ts, see = $('seeAll').checked; let x = bx, y = by;
+  const F = Wd.units.filter(u => u.alive && u.side === 1 && (u.seenBy || see) && Math.hypot(u.x - bx, u.y - by) <= FXR.biasR).sort((a, b) => Math.hypot(a.x - bx, a.y - by) - Math.hypot(b.x - bx, b.y - by)).slice(0, 5);
+  if (F.length){ const cx = F.reduce((q, u) => q + u.x, 0) / F.length, cy = F.reduce((q, u) => q + u.y, 0) / F.length; x += Math.max(-hw * FXR.edge, Math.min(hw * FXR.edge, (cx - bx) * FXR.bias)); y += Math.max(-hh * FXR.edge, Math.min(hh * FXR.edge, (cy - by) * FXR.bias)); }   // 가까운 싸움 쪽으로 살짝
+  const sh = CD.shot; if (sh){ const p = sh.unit != null ? Wd.units[sh.unit] : sh; if (p){ const e = shotEnv(sh) * 0.85; x += (p.x - x) * e; y += (p.y - y) * e; } }   // 큰 사건 쪽으로
+  return { x, y };
+}
+// 확대 배율: 남 (확대 단추 · 맞춤 · 집기) 이 cam.z 를 바꾸면 그 값을 새 바탕으로 · 다가감이 끝나면 바탕으로 돌아옴
+function camZoomTick(dt){
+  if (CD.zSet == null || Math.abs(cam.z - CD.zSet) > 1e-9){ CD.base = cam.z; CD.zk = 1; }
+  const now = performance.now(); if (CD.shot && now >= CD.shot.end) CD.shot = null;
+  if (CD.pend && !TK && !LD){ const P = CD.pend; CD.pend = null; if (now - P.at < 30000 && W_()) camShot(W_(), P.o); }
+  const zt = fxOn('cam') && cam.follow && CD.shot && !(MOB && zoomAll) ? 1 + ((CD.shot.z || 1) - 1) * shotEnv(CD.shot) : 1;
+  CD.zk += (zt - CD.zk) * Math.min(1, dt * 7); if (zt === 1 && Math.abs(CD.zk - 1) < 1e-3) CD.zk = 1;
+  cam.z = CD.base * CD.zk; CD.zSet = cam.z;
+}
+function camUser(off){ if (CD.zk !== 1 && CD.zSet != null && Math.abs(cam.z - CD.zSet) < 1e-9) cam.z = CD.base; CD.zk = 1; CD.zSet = null; CD.shot = null; CD.pend = null; if (!off) CD.quietUntil = performance.now() + FXR.quietMs; }
+// 로그 사건 → 연출 (새 사건만 · 판을 처음 볼 때는 지난 것을 건너뜀)
+function fxTick(Wd){
+  const L = Wd.log; if (Wd._fxI == null || Wd._fxI > L.length) Wd._fxI = L.length; const i0 = Wd._fxI; if (i0 >= L.length) return; Wd._fxI = L.length;
+  const see = $('seeAll').checked, U = i => i != null ? Wd.units[i] : null, vis = u => !!u && (u.side === 0 || !!u.seenBy || see), now = performance.now();
+  for (let i = i0; i < L.length; i++){ const e = L[i], a = U(e.a), b = U(e.b);
+    if (e.k === 'quake'){ if (a && (e.vis || vis(a))) camShot(Wd, { x: (a.x + e.x) / 2, y: (a.y + e.y) / 2, z: 1.12, dur: 1500, pri: 2 }); }   // 도약 강타: 뛰어오름 → 떨어질 자리까지 담음
+    else if (e.k === 'quakeHit'){ if (!a) continue; const big = fxGiant(a) || fxBoss(a); fxShake((big ? 7 : 5) + (e.n >= 2 ? 1 : 0), 450, e.x, e.y); FXV.push({ k: 'ring', x: e.x, y: e.y, r: ((((Wd.rules.spec || {}).quake) || {}).r) || 2.4, t0: now, dur: 650 }); camShot(Wd, { x: e.x, y: e.y, z: 1.06, dur: 380, pri: 3 }); fxBuzz(40); }   // 착지: 흔들림 · 먼지 고리 · 진동
+    else if (e.k === 'slam'){ if (!a || !(e.vis || vis(a))) continue; const big = fxGiant(a) || fxBoss(a); if (e.n || big){ fxShake(big ? 4.5 : 2.5, 300, a.x, a.y); FXV.push({ k: 'ring', x: a.x, y: a.y, r: 1.3, t0: now, dur: 450 }); if (big) fxBuzz(25); } }   // 공중제비 내려찍기
+    else if (e.k === 'stomp'){ if (a && e.vis && fxGiant(a)) fxShake(3, 260, a.x, a.y); }   // 거구의 짓밟기
+    else if (e.k === 'palm'){ if (b && e.vis && !e.block) fxShake(2, 200, b.x, b.y); }   // 팜 버스트
+    else if (e.k === 'czStart'){ if (a && vis(a) && ['upcut', 'ult', 'auth'].includes(e.s)) camShot(Wd, { unit: a.i, z: 1.14, dur: 1300, pri: 2 }); }   // 세자르의 큰 기술: 손을 드는 순간
+    else if (e.k === 'czUpcut'){ if (a) fxShake(4, 320, a.x, a.y); }   // 하늘 가르기
+    else if (e.k === 'czUlt'){ if (a) fxShake(5, 380, a.x, a.y); }   // 마구 베기 끝
+    else if (e.k === 'czRise'){ if (a){ camShot(Wd, { unit: a.i, z: 1.18, dur: 2200, pri: 3 }); fxShake(3, 400, a.x, a.y); } }   // 관에서 일어남
+    else if (e.k === 'hit'){ if (!a || !b || !(e.dmg > 0) || a.side === b.side || !(vis(a) || vis(b))) continue;
+      const bA = fxBoss(a), bB = fxBoss(b);
+      if (e.crit && (bA || bB)) fxCrit(Wd, a, b, bA, '치명타!');
+      else if (bA && !e.block && e.dmg >= 0.22 * (b.max || 100)) FXV.push({ k: 'burst', x: b.x, y: b.y, r: b.r, t0: now, dur: 300, col: '255,120,80', big: false });   // 보스의 큰 일격 (치명이 아니어도)
+      if (fxGiant(a) && !e.far && !e.jav && !e.kn && Wd.t - FXL.giant > FXR.giantGap){ FXL.giant = Wd.t; fxShake(e.block ? 1.8 : 2.6, 220, b.x, b.y); } }   // 거구가 내려치면 살짝
+    else if (e.k === 'bossFatal'){ if (a && b && (vis(a) || vis(b))) fxCrit(Wd, a, b, false, '치명상!'); }
+    else if (e.k === 'die'){ if (b && fxBoss(b) && (vis(b) || vis(a))){ fxStop(650, 0.3); camShot(Wd, { x: b.x, y: b.y, z: 1.22, dur: 1800, pri: 4 }); fxShake(5, 500, b.x, b.y); FXV.push({ k: 'flash', t0: now, dur: 520, col: '255,250,235', a: 0.32 }); fxBuzz([40, 30, 70]); } }   // 보스가 쓰러짐: 느린 순간 · 다가감 · 흰 번쩍임
+  }
+}
+function fxCrit(Wd, a, b, bA, txt){
+  const now = performance.now(), big = Wd.t - FXL.crit >= FXR.critGap;
+  FXV.push({ k: 'burst', x: b.x, y: b.y, r: b.r, t0: now, dur: big ? 380 : 260, col: bA ? '255,96,64' : '255,214,110', big });
+  if (!big) return; FXL.crit = Wd.t;
+  if (Wd.t - FXL.txt >= FXR.txtGap){ FXL.txt = Wd.t; FXV.push({ k: 'txt', x: b.x, y: b.y - b.r - 0.25, t0: now, dur: 900, s: txt, col: bA ? '#ff6a48' : '#ffd34d' }); }
+  fxStop(bA ? 90 : 60, 0.08); fxShake(bA ? 4 : 2.5, 260, b.x, b.y);
+  if (bA && b.side === 0){ FXV.push({ k: 'vig', t0: now, dur: 420, col: '200,30,20', a: 0.32 }); fxBuzz(30); }   // 보스가 우리를: 붉은 테두리
+}
+function drawFxv(ox, oy, ts, w, h){
+  const now = performance.now(); let j = 0;
+  for (const f of FXV){ const age = now - f.t0; if (age < f.dur) FXV[j++] = f; } FXV.length = j;
+  ctx.save();
+  for (const f of FXV){ const k = Math.max(0, (now - f.t0) / f.dur), ek = 1 - Math.pow(1 - k, 3);
+    if (f.k === 'burst'){ const px = ox + f.x * ts, py = oy + f.y * ts, r0 = ((f.r || 0.4) + 0.1) * ts, r1 = r0 + ts * (0.45 + 0.9 * ek) * (f.big ? 1.3 : 0.85);   // 빛살 · 고리 · 흰 심
+      if (k < 0.35){ ctx.fillStyle = `rgba(255,255,245,${(0.55 * (1 - k / 0.35)).toFixed(3)})`; ctx.beginPath(); ctx.arc(px, py, r0 * 1.05, 0, 6.283); ctx.fill(); }
+      ctx.strokeStyle = `rgba(${f.col},${(1 - k).toFixed(3)})`; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1.5, ts * 0.07) * (1 - k * 0.6);
+      for (let n = 0; n < 12; n++){ const an = n * Math.PI / 6 + (f.t0 % 7) * 0.2, q = n % 2 ? 0.7 : 1; ctx.beginPath(); ctx.moveTo(px + Math.cos(an) * r0, py + Math.sin(an) * r0); ctx.lineTo(px + Math.cos(an) * (r0 + (r1 - r0) * q), py + Math.sin(an) * (r0 + (r1 - r0) * q)); ctx.stroke(); }
+      ctx.strokeStyle = `rgba(${f.col},${(0.7 * (1 - k)).toFixed(3)})`; ctx.lineWidth = Math.max(1, ts * 0.04); ctx.beginPath(); ctx.arc(px, py, r0 + (r1 - r0) * ek, 0, 6.283); ctx.stroke(); }
+    else if (f.k === 'txt'){ const pop = k < 0.13 ? 0.6 + k / 0.13 * 0.75 : Math.max(1, 1.35 - (k - 0.13) * 1.6), al = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4, px = ox + f.x * ts, py = oy + (f.y - 0.5 * ek) * ts, fs = Math.round(Math.max(17, ts * 0.52) * pop);   // '치명타!' — 튀어나왔다 가라앉으며 떠오름
+      ctx.globalAlpha = Math.max(0, al); ctx.font = `900 ${fs}px IBM Plex Sans KR, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(20,6,4,.9)'; ctx.lineWidth = Math.max(3, fs * 0.2); ctx.strokeText(f.s, px, py); ctx.fillStyle = f.col; ctx.fillText(f.s, px, py); ctx.globalAlpha = 1; }
+    else if (f.k === 'ring'){ const px = ox + f.x * ts, py = oy + f.y * ts, R = f.r * ts * (0.25 + 0.75 * ek);   // 먼지 고리 · 튀는 돌
+      ctx.fillStyle = `rgba(150,130,100,${(0.18 * (1 - k)).toFixed(3)})`; ctx.beginPath(); ctx.arc(px, py, R, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = `rgba(210,190,150,${(0.85 * (1 - k)).toFixed(3)})`; ctx.lineWidth = ts * 0.16 * (1 - k) + 1; ctx.beginPath(); ctx.arc(px, py, R, 0, 6.283); ctx.stroke();
+      ctx.fillStyle = `rgba(120,104,84,${(1 - k).toFixed(3)})`; for (let n = 0; n < 10; n++){ const an = n * 0.628 + (f.t0 % 5), d = R * (0.6 + (n % 3) * 0.25); ctx.beginPath(); ctx.arc(px + Math.cos(an) * d, py + Math.sin(an) * d - ts * 0.3 * Math.sin(Math.PI * k), Math.max(1.5, ts * 0.05), 0, 6.283); ctx.fill(); } }
+    else if (f.k === 'vig'){ const al = f.a * Math.pow(1 - k, 1.5), g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75); g.addColorStop(0, `rgba(${f.col},0)`); g.addColorStop(1, `rgba(${f.col},${al.toFixed(3)})`); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); }   // 붉은 테두리
+    else if (f.k === 'flash'){ ctx.fillStyle = `rgba(${f.col},${(f.a * (1 - k) * (1 - k)).toFixed(3)})`; ctx.fillRect(0, 0, w, h); } }   // 흰 번쩍임
+  ctx.restore();
+}
 // 가까이 볼 때: 고른 아군 (없으면 살아 있는 아군) 의 가운데를 부드럽게 따라감 · 맵 밖은 덜 보이게
 function mobFollow(Wd, dt){
   if (!cam.follow || pd || pinch) return;
   const L = selUnits(Wd), G = L.length ? L : Wd.units.filter(u => u.side === 0 && u.alive); if (!G.length) return;
-  const tx = G.reduce((a, u) => a + u.x, 0) / G.length, ty = G.reduce((a, u) => a + u.y, 0) / G.length, ts = TS * cam.z, hw = cv.clientWidth / 2 / ts, hh = cv.clientHeight / 2 / ts;
+  let tx = G.reduce((a, u) => a + u.x, 0) / G.length, ty = G.reduce((a, u) => a + u.y, 0) / G.length; const ts = TS * cam.z, hw = cv.clientWidth / 2 / ts, hh = cv.clientHeight / 2 / ts;
+  if (fxOn('cam') && !zoomAll){ const a = camAim(Wd, tx, ty); tx = a.x; ty = a.y; }   /* v7.28.0 싸움 쪽으로 살짝 · 큰 사건에 다가감 */
   const cx = S.W + 0.4 > hw * 2 ? Math.min(S.W - hw + 0.3, Math.max(hw - 0.5, tx)) : S.W / 2 - 0.2, cy = S.H + 1.2 > hh * 2 ? Math.min(S.H - hh + 0.6, Math.max(hh - 0.8, ty)) : S.H / 2 - 0.35;
-  const k = 1 - Math.pow(0.004, dt); cam.x += (cx - cam.x) * k; cam.y += (cy - cam.y) * k;
+  const k = 1 - Math.pow(CD.shot && fxOn('cam') ? 0.0008 : 0.004, dt); cam.x += (cx - cam.x) * k; cam.y += (cy - cam.y) * k;
 }
 // 탭: 아군 = 고르기 · 적 = 공격 (빠르게 두 번 = 급함) · 바닥 = 이동 (두 번 = 서두름) · 물건 = 줍기. 고르는 중 (돌진 · 투창 · 약 · 공격 이동) 이면 그 대상
 function unitNear(Wd, x, y){ const ts = TS * cam.z; let best = null, bd = 1e9; for (const u of Wd.units){ if (!u.alive) continue; if (u.side === 1 && !u.seenBy && !$('seeAll').checked) continue; const q = u.side === 0 && u.posUnk && u.posK && !$('seeAll').checked && mode !== 'edit' ? u.posK : u, d = Math.hypot(q.x - x, q.y - y); if (d < Math.max(u.r + 0.3, 26 / ts) && d < bd){ bd = d; best = u; } } return best; }   // v7.4 위치 모르는 아군은 마지막 자리
@@ -14052,7 +14161,7 @@ function toggleMenu(on){ $('dMenu').hidden = !on; if (on) renderMenu(); dockHtml
 function renderMenu(){
   const t = rules.turn;
   const stA = S.mode === 'story';   // v7.24.5 모드 · 스토리엔 모두 보기 · 층 없음
-  $('dMenu').innerHTML = `<p class="lab">모드</p><div class="mrow"><button class="db ${stA ? 'on' : ''}" data-dm="mode" data-v="story">📖<small>스토리</small></button><button class="db ${stA ? '' : 'on'}" data-dm="mode" data-v="train">🛠<small>훈련장</small></button></div><p class="lab">보기</p><div class="mrow">${stA ? '' : `<button class="db ${$('seeAll').checked ? 'on' : ''}" data-dm="see">👁<small>모두 보기</small></button>`}<button class="db ${$('netShow').checked ? 'on' : ''}" data-dm="net">📡<small>지휘망</small></button><button class="db ${$('detailAll').checked ? 'on' : ''}" data-dm="det">🔎<small>자세히 보기</small></button><button class="db ${document.body.classList.contains('leg') ? 'on' : ''}" data-dm="leg">🗺<small>범례</small></button></div>
+  $('dMenu').innerHTML = `<p class="lab">모드</p><div class="mrow"><button class="db ${stA ? 'on' : ''}" data-dm="mode" data-v="story">📖<small>스토리</small></button><button class="db ${stA ? '' : 'on'}" data-dm="mode" data-v="train">🛠<small>훈련장</small></button></div><p class="lab">보기</p><div class="mrow">${stA ? '' : `<button class="db ${$('seeAll').checked ? 'on' : ''}" data-dm="see">👁<small>모두 보기</small></button>`}<button class="db ${$('netShow').checked ? 'on' : ''}" data-dm="net">📡<small>지휘망</small></button><button class="db ${$('detailAll').checked ? 'on' : ''}" data-dm="det">🔎<small>자세히 보기</small></button><button class="db ${document.body.classList.contains('leg') ? 'on' : ''}" data-dm="leg">🗺<small>범례</small></button></div><p class="lab">연출</p><div class="mrow"><button class="db ${fxOn('cam') ? 'on' : ''}" data-dm="fxcam">🎥<small>카메라 연출</small></button><button class="db ${fxOn('shake') ? 'on' : ''}" data-dm="fxshake">📳<small>화면 흔들림</small></button><button class="db ${fxOn('buzz') ? 'on' : ''}" data-dm="fxbuzz">📴<small>휴대폰 진동</small></button></div>
     <p class="lab">한 턴 길이 (⏭ 한 턴 · 재생도 턴마다 이어짐)</p><div class="mrow">${[0.5, 1, 1.5, 2].map(v => `<button class="db ${t === v ? 'on' : ''}" data-dm="turn" data-v="${v}">${v}초</button>`).join('')}</div>
     ${stA ? '' : `<p class="lab">층 (기초 배치 — 지금 판을 접고 그 배치로)</p><div class="mrow">${floorList().map(f => `<button class="db" data-dm="floor" data-v="${esc(f.name)}">▦<small>${esc(f.name)}</small></button>`).join('')}</div>`}
     <p class="lab">그 밖</p><div class="mrow"><button class="db" data-dm="fs">⛶<small>${document.fullscreenElement ? '전체 화면 끄기' : '전체 화면'}</small></button><button class="db" data-dm="reset">⟲<small>${stA ? '맵 처음부터' : '배치로'}</small></button><button class="db" data-dm="panel">☷<small>${stA ? '이야기' : '기록 · 수치'}</small></button></div>`;
@@ -14101,6 +14210,7 @@ dockTap($('dMenu'), b => {
   else if (k === 'see'){ $('seeAll').checked = !$('seeAll').checked; $('seeAll').dispatchEvent(new Event('change')); }
   else if (k === 'det'){ $('detailAll').checked = !$('detailAll').checked; $('detailAll').dispatchEvent(new Event('change')); }
   else if (k === 'leg') document.body.classList.toggle('leg');
+  else if (k === 'fxcam') setFx('cam', !fxOn('cam')); else if (k === 'fxshake'){ setFx('shake', !fxOn('shake')); if (fxOn('shake')) fxShake(4, 300); } else if (k === 'fxbuzz'){ setFx('buzz', !fxOn('buzz')); if (fxOn('buzz')) fxBuzz(35); }   /* v7.28.0 연출 */
   else if (k === 'turn'){ const sl = $('turnLen'); sl.value = b.dataset.v; sl.dispatchEvent(new Event('change')); }
   else if (k === 'fs'){ $('fsBtn').click(); }
   else if (k === 'reset'){ toggleMenu(false); resetToEdit(); return; }
@@ -14229,7 +14339,7 @@ cv.addEventListener('pointerdown', e => {
   const w = toWorld(e.clientX, e.clientY);
   if (e.pointerType === 'touch'){
     touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (touches.size >= 2){ clearTimeout(lpT); pd = null; const [a, b] = [...touches.values()], mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2; pinch = { d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: cam.z, w0: toWorld(mx, my) }; cam.follow = false; return; }
+    if (touches.size >= 2){ clearTimeout(lpT); pd = null; const [a, b] = [...touches.values()], mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2; camUser(); pinch = { d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: cam.z, w0: toWorld(mx, my) }; cam.follow = false; return; }
   }
   pd = { x: e.clientX, y: e.clientY, cx: cam.x, cy: cam.y, moved: false, unit: null, box: mode !== 'edit' && ((e.button === 0 && e.pointerType !== 'touch') || (boxArm && e.button === 0)), boxA: boxArm && mode !== 'edit', shift: e.shiftKey, right: e.button === 2, touch: e.pointerType === 'touch' };
   if (pd.touch && focus && focus.phase === 'open'){ closeFan(); pd.ignore = true; return; }   // v5.9.0 부채 바깥 탭 = 닫기 (명령 없음)
@@ -14256,7 +14366,7 @@ cv.addEventListener('pointermove', e => {
   pd.moved = true;
   if (pd.unit){ const w = toWorld(e.clientX, e.clientY), pu = preview.units.find(u => u.pid === pd.unit); if (pu){ pu.x = w.x; pu.y = w.y; } selId = pd.unit; return; }
   if (pd.box){ const r = cv.getBoundingClientRect(); boxSel = { x0: pd.x - r.left, y0: pd.y - r.top, x1: e.clientX - r.left, y1: e.clientY - r.top }; return; }
-  const ts = TS * cam.z; cam.x = pd.cx - (e.clientX - pd.x) / ts; cam.y = pd.cy - (e.clientY - pd.y) / ts; cam.follow = false;
+  if (CD.zk !== 1 || CD.shot) camUser(); const ts = TS * cam.z; cam.x = pd.cx - (e.clientX - pd.x) / ts; cam.y = pd.cy - (e.clientY - pd.y) / ts; cam.follow = false;
 });
 cv.addEventListener('pointerup', e => {
   touches.delete(e.pointerId); clearTimeout(lpT);
@@ -14878,7 +14988,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v7.27.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v7.28.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
