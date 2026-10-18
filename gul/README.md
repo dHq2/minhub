@@ -1,8 +1,9 @@
-# 굴의 전투판 — 소스 보관 v1
+# 굴의 전투판 — 소스 보관 v1.1
 
+- v1.1 (2026-10-18): 게임 v7.26.2 (이동 · 합류 · 샷건 · 문 · 인카운터 바로 해 보기). gulsync.sh 로 맞춤.
 - v1 (2026-10-18): 처음 올림. 게임 v7.26.0 (오딜의 방) 기준.
 
-공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (판 146 = v7.26.0)
+공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (판 147 = v7.26.2)
 
 ## 무엇이 어디에
 - rt3_head.js · rt3_mid.js · rt3_tail.js — 전투 엔진 (세 조각을 이어 rt3.js 로 씀)

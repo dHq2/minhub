@@ -779,7 +779,7 @@ function walkClear(m, x0, y0, x1, y1, r){ const dx = x1 - x0, dy = y1 - y0, l = 
 function setGoal(W, u, x, y){
   if (u.goal && Math.hypot(u.goal.x - x, u.goal.y - y) < 0.6 && u.path && W.t - u.pathT < 0.8) return;
   u.goal = { x, y }; u.pathT = W.t;
-  u.path = walkClear(W.map, u.x, u.y, x, y, u.r * 0.92) ? [{ x, y }] : findPath(W.map, u.x, u.y, x, y) || null;   // v7.21 무더기는 돌아감
+  u.path = walkClear(W.map, u.x, u.y, x, y, u.r * 1.12) ? [{ x, y }] : findPath(W.map, u.x, u.y, x, y) || null;   // v7.21 무더기는 돌아감
   if (u.path && u.path.length) u.path[u.path.length - 1] = { x, y };
 }
 function stop(u){ u.goal = null; u.path = null; u.quadOn = false; }
@@ -814,7 +814,7 @@ function follow(W, u, dt, slow){
     tryMove(W, u, u.x + (w.x - u.x) / d * s, u.y + (w.y - u.y) / d * s);
     rem -= s; if (s >= d - 1e-6) u.path.shift(); else break;
   }
-  if (u.goal && u.path && u.path.length > 1 && W.t - (u.skipT || 0) > 0.3){ u.skipT = W.t; if (walkClear(W.map, u.x, u.y, u.goal.x, u.goal.y, u.r * 0.92)) u.path = [u.goal]; }
+  if (u.goal && u.path && u.path.length > 1 && W.t - (u.skipT || 0) > 0.3){ u.skipT = W.t; if (walkClear(W.map, u.x, u.y, u.goal.x, u.goal.y, u.r * 1.12)) u.path = [u.goal]; }
 }
 function goTo(W, u, x, y, dt){ setGoal(W, u, x, y); follow(W, u, dt); }
 // v7.1 움직이는 동안 몸 (방어) 을 둘 위협: 나를 치려는 · 돌진해 오는 · 겨누는 상대가 먼저, 그다음 가장 가까운 아는 근접 상대 (손 + near 칸 안). 서두르기 · 질주 · 돌진 · 기어다님은 없음 (돌아서 뜀)
@@ -847,6 +847,9 @@ function tryMove(W, u, nx, ny){
   }
   u.moved += Math.hypot(u.x - ox, u.y - oy);
 }
+// v7.26.1 좁은 곳: 지금 칸이나 다음 길목 칸이 양옆 (또는 위아래) 이 벽 — 한 칸 문 · 통로
+const tightCell = (m, cx, cy) => (rock(m, cx - 0.5, cy + 0.5) && rock(m, cx + 1.5, cy + 0.5)) || (rock(m, cx + 0.5, cy - 0.5) && rock(m, cx + 0.5, cy + 1.5));
+const tightAt = (W, u) => tightCell(W.map, Math.floor(u.x), Math.floor(u.y)) || (!!u.path && !!u.path[0] && tightCell(W.map, Math.floor(u.path[0].x), Math.floor(u.path[0].y)));
 function separate(W){
   const A = W.units.filter(u => u.alive);
   for (let a = 0; a < A.length; a++) for (let b = a + 1; b < A.length; b++){
@@ -854,9 +857,11 @@ function separate(W){
     if (d >= need) continue;
     if ((P.act && P.act.air) || (Q.act && Q.act.air)) continue;   /* v7.24 높이 뛴 몸 (도약 강타) 은 겹쳐도 밀지 않음 — 내려앉는 자리의 몸이 미리 비켜 나지 않게 */
     if (P.lie || Q.lie) lieTrample(W, P, Q);   // v7.11 모르고 밟음
-    const push = (need - d) / 2, ux = dx / d, uy = dy / d;
+    const soft = P.side === Q.side && !P.act && !Q.act && P.path && P.path.length && Q.path && Q.path.length && (tightAt(W, P) || tightAt(W, Q)) ? (W.rules.sepSoft != null ? W.rules.sepSoft : 0.35) : 1;   /* v7.26.1 좁은 문 · 통로 앞에서 둘 다 길을 가는 같은 편은 덜 밂 — 비켜 지나감 (넓은 곳은 그대로) */
+    const push = (need - d) / 2 * soft, ux = dx / d, uy = dy / d;
     // 공격 준비 · 회복 중인 쪽은 버팀 (밀리지 않음)
-    const pw = P.act ? 0 : Q.act ? 2 : 1, qw = Q.act ? 0 : P.act ? 2 : 1;
+    let pw = P.act ? 0 : Q.act ? 2 : 1, qw = Q.act ? 0 : P.act ? 2 : 1;
+    if (soft < 1){ if (P.i < Q.i){ pw = 0.25; qw = 1.75; } else { pw = 1.75; qw = 0.25; } }   /* v7.26.1 둘이 문 앞에 나란히 서서 서로 막지 않게 — 먼저 온 (번호가 앞선) 쪽이 지나갈 차례 */
     // 밀려난 거리는 '한 턴 이동' 에 세지 않음
     const pm = P.moved, qm = Q.moved;
     if (pw) tryMove(W, P, P.x - ux * push * pw, P.y - uy * push * pw);
@@ -2136,9 +2141,20 @@ function alertNear(W, e, target){
 const inReach = (u, t) => gap(u, t) <= u.rng + 0.02;
 
 /* ---------- 생각 (0.2초마다): 누구를 노릴지 ---------- */
+// v7.26.1 적이 없는 판 (끝난 맵): 둘레 near 칸에 동료가 없이 idle 초 → 대장 (없으면 가장 가까운 동료) 곁으로 걸어감 (도착하면 그 자리 · 제자리 명령은 그대로)
+function isoRejoin(W, u){
+  const J = W.rules.rejoin || {}, k = isFar(u) ? (J.ranged || 1.5) : 1, mates = W.units.filter(a => a.alive && a !== u && a.side === 0 && !a.down && !a.crawl);
+  if (!mates.length){ u.aloneT = 0; return; }
+  const nb = mates.reduce((b, a) => dist(a, u) < dist(b, u) ? a : b); if (dist(nb, u) <= (J.near || 6) * k){ u.aloneT = 0; return; }
+  u.aloneT = (u.aloneT || 0) + 0.2; if (u.aloneT < (J.idle || 4)) return;
+  const hero = W.units.find(h => h.hero && h.alive && h.side === 0), anc = hero && hero !== u ? hero : nb, an = Math.atan2(u.y - anc.y, u.x - anc.x);
+  let x = Math.max(0.6, Math.min(W.map.W - 0.6, anc.x + Math.cos(an) * 1.5)), y = Math.max(0.6, Math.min(W.map.H - 0.6, anc.y + Math.sin(an) * 1.5)); if (boxRock(W, x, y, u.r)){ const q = freeSpot(W, x, y, u.r); if (q){ x = q.x; y = q.y; } else { x = anc.x; y = anc.y; } }
+  u.order = { k: 'move', x, y, rejoin: true }; u.ordLive = u.order; u.stay = null; u.aloneT = 0;
+  L(W, { k: 'rejoin', a: u.i, d: +dist(nb, u).toFixed(1), why: '혼자 남음', vis: true }); u.lastDec = { t: W.t, s: `둘레 ${((J.near || 6) * k).toFixed(0)}칸에 동료가 없음 — ${anc.name} 곁으로` };
+}
 function think(W, u){
   const R = W.rules, foes = W.units.filter(f => f.alive && f.side !== u.side);
-  if (!foes.length){ stop(u); return; }
+  if (!foes.length){ stop(u); if (u.side === 0 && !u.order && !u.hero && !u.down && !u.crawl) isoRejoin(W, u); return; }   /* v7.26.1 적이 없어도 혼자 남으면 합류 */
   smellTick(W, u);
   // 본 것 기억: 앞 · 옆으로 본 상대는 senseT 동안 자리를 앎 (등 뒤로 돌아가도 한동안은 경계)
   for (const f of W.units) if (f.alive && f.side !== u.side && canSee(W, u, f) && (u.heads > 1 || sideV(W, u, f) !== 'back')) u.sense[f.i] = { x: f.x, y: f.y, t: W.t, exact: true, sight: true };
@@ -2186,8 +2202,8 @@ function think(W, u){
     const J = R.rejoin || {}, k = isFar(u) ? (J.ranged || 2) : 1, mates = W.units.filter(a => a.alive && a !== u && a.side === 0 && !a.down && !a.crawl);
     if (mates.length){ const nearest = Math.min(...mates.map(a => dist(a, u))), dH = hero && !u.hero ? dist(hero, u) : nearest;
       const noise = (W.eng && W.eng.open) || (W.noises || []).some(n => W.t - n.t0 < 6 && Math.hypot(n.x - u.x, n.y - u.y) < 22);
-      const far = nearest > (J.near || 8) * k || dH > (J.hero || 14) * k; u.farT = far ? (u.farT || 0) + 0.2 : 0;
-      if ((far && noise && u.farT >= (J.t || 1.2)) || u.farT >= (J.idle || 6) * k){ L(W, { k: 'rejoin', a: u.i, d: +Math.min(nearest, dH).toFixed(1), why: noise ? '교전 소리' : '대열이 멀어짐', vis: true }); u.lastDec = { t: W.t, s: `동료와 ${Math.min(nearest, dH).toFixed(0)}칸 떨어짐${noise ? ' · 교전 소리' : ''} — 지키던 자리를 풀고 합류` }; u.stay = null; u.farT = 0; u.state = hero ? 'follow' : 'explore'; setMood(W, u, '합류'); } } }
+      const alone = nearest > (J.near || 6) * k, far = alone || dH > (J.hero || 14) * k; u.farT = far ? (u.farT || 0) + 0.2 : 0; u.aloneT = alone ? (u.aloneT || 0) + 0.2 : 0;   /* v7.26.1 둘레에 아무도 없음 = 고립 */
+      if ((far && noise && u.farT >= (J.t || 1.2)) || u.aloneT >= (J.idle || 4)){ L(W, { k: 'rejoin', a: u.i, d: +Math.min(nearest, dH).toFixed(1), why: noise ? '교전 소리' : '대열이 멀어짐', vis: true }); u.lastDec = { t: W.t, s: `동료와 ${Math.min(nearest, dH).toFixed(0)}칸 떨어짐${noise ? ' · 교전 소리' : ''} — 지키던 자리를 풀고 합류` }; u.stay = null; u.farT = 0; u.aloneT = 0; u.state = hero ? 'follow' : 'explore'; setMood(W, u, '합류'); } } }
   const lead = leadOf(W, u) || hero, anchor = u.stay || (lead && !u.hero ? lead : u); let lim = u.stay ? R.stayLeash || 4 : R.leash;
   const rm = roeOf(W, u);
   if (rm === 'smart' && W.eng && W.eng.out) lim = Math.min(lim, (R.roe || {}).outLim || 4.5);   // v7.9 열세로 싸움이 열렸으면 제 자리 둘레에서만 막음 (쫓아 나가지 않음)
@@ -3721,6 +3737,10 @@ function exitStep(W, u, o, dt){
 function leaveMap(W, u, dir){
   u.gone = dir; u.alive = false; u.order = null; u.ordPend = null; u.act = null; u.path = null; u.vx = 0; u.vy = 0; u.posUnk = false; u.leftT = W.t;
   L(W, { k: 'leave', a: u.i, dir, vis: true }); W.lightT = 0;
+  if (W.camp && u.hero && u.side === 0 && ((W.rules.camp || {}).follow !== false)){   /* v7.26.1 대장이 넘어가면 남은 동료도 같은 길로 (제자리 명령 · 쓰러진 이는 그대로) */
+    const F = W.units.filter(a => a.alive && a.side === 0 && !a.down && !(a.order && (a.order.k === 'hold' || a.order.k === 'exit')));
+    for (const a of F){ a.order = { k: 'exit', dir, x: a.x, follow: true }; a.ordLive = a.order; a.ordPend = null; a.stay = null; }
+    if (F.length) L(W, { k: 'followOut', a: u.i, dir, n: F.map(a => a.i), vis: true }); }
 }
 /* ---------- v7.20 소지품 (가방) · 내구도 — 적 · 아군 같은 규칙 ---------- */
 // 물건: { k: 'weapon' · 'shield' · 'armor' · 'helm' · 'ammo', name (무기표 이름 · 갑옷은 보이는 이름), label (보이는 이름), dur (0 ~ 100), own (원래 주인), ammo · mag (총 · 활), mat · tier · size (갑옷), at · n (탄) }
@@ -3809,12 +3829,16 @@ function resolveAlt(W, u){
   L(W, { k: 'altSwap', a: u.i, w: nx.name, from: cur.name, n: u.ammo, why: A.why, vis: u.side === 0 || !!u.seenBy });
 }
 // 자동: 근접 상대가 altIn 칸 안 (나를 노리거나 코앞) 이면 가까운 총 (샷건) 으로 · altOut 칸 안에 아무도 없이 altCalm 초면 (또는 탄이 떨어지면) 원래 총으로
-function altAuto(W, u){
-  if (!u.alt || u.act || u.weaponGone || u.down || u.crawl || u.kb || u.lie || (u.order && u.order.k !== 'attack')) return false;
+// v7.26.1 지근거리: 보이는 적 (근접 · 사수 모두) 이 altIn 칸 안 · 나를 노리거나 덮쳐 오면 altWatch 칸 안 → 바로 바꿔 듦. 겨누는 중 · 재장전 중 (busy) 에도 끊고 바꿈
+function altAuto(W, u, busy){
+  if (!u.alt || u.weaponGone || u.down || u.crawl || u.kb || u.lie || (u.order && (u.order.k === 'alt' || u.order.k === 'swap'))) return false;
+  if (u.act && !(busy && (u.act.k === 'reload' || (u.act.k === 'atk' && u.act.phase === 'wind' && isFar(u))))) return false;
   const I = INV(W), nearW = n => !!((W.rules.weapons || {})[n] || {}).near, holdNear = nearW(u.weapon), altNear = nearW(u.alt.name);
-  const seen = W.units.filter(f => f.alive && !f.down && f.side !== u.side && !isFar(f) && canSee(W, u, f));
-  if (!holdNear && altNear && (u.alt.ammo == null || u.alt.ammo > 0)){ const f = seen.find(f => gap(u, f) < (I.altIn || 2.2) && (f.target === u || (f.act && f.act.b === u.i) || gap(u, f) < 1.2)); if (f) return startAlt(W, u, f.name + '이(가) 붙음'); }
-  if (holdNear && !altNear){ if (u.ammo === 0) return startAlt(W, u, '산탄이 떨어짐'); const any = seen.some(f => gap(u, f) < (I.altOut || 3.6));
+  const seen = W.units.filter(f => f.alive && !f.down && f.side !== u.side && canSee(W, u, f));
+  if (!holdNear && altNear && (u.alt.ammo == null || u.alt.ammo > 0)){ const f = seen.filter(f => gap(u, f) < (I.altIn || 2.6) || (gap(u, f) < (I.altWatch || 3.4) && (f.target === u || (f.act && f.act.b === u.i)))).sort((a, b) => gap(u, a) - gap(u, b))[0];
+    if (f){ if (u.act){ u.act = null; u.burst = null; } return startAlt(W, u, f.name + (gap(u, f) < 1.2 ? '이(가) 붙음' : '이(가) 다가옴')); } }
+  if (busy || u.act) return false;
+  if (holdNear && !altNear){ if (u.ammo === 0) return startAlt(W, u, '산탄이 떨어짐'); const any = seen.some(f => gap(u, f) < (I.altOut || 4.2));
     if (any) u.altFarT = null; else { if (u.altFarT == null) u.altFarT = W.t; if (W.t - u.altFarT >= (I.altCalm || 1.5)) return startAlt(W, u, '근접이 멀어짐'); } }
   return false;
 }
@@ -4888,7 +4912,7 @@ function cmdTick(W){
   for (const u of W.units){ if (u.side !== 0) continue; const P = u.ordPend; if (!P || W.t < P.at) continue; u.ordPend = null; if (!u.alive) continue;
     if (P.ok){ u.order = P.o; u.ordLive = P.o; u.missT = null; preempt(W, u); if (!P.o) lieFree(W, u); if (P.o && P.o.k === 'attack' && P.o.b != null) W.cmdFocus0 = { b: P.o.b, t: W.t };
       L(W, { k: 'cmdRecv', a: u.i, c: P.c, dep: P.o && P.o.dep != null ? 1 : null, via: P.via, m: P.m != null ? P.m : null, m2: P.m2 != null ? P.m2 : null, sec: +(W.t - P.t0).toFixed(1), p: +P.p.toFixed(2), o: orderTxt(P.o, u), vis: true }); if (W.fxOn) W.fx.push({ k: 'ack', a: u.i, o: P.o, t0: W.t }); }
-    else { u.missT = W.t; u.missO = P.o; L(W, { k: 'cmdMiss', side: 0, a: u.i, c: P.c, via: P.via, why: P.why, p: +P.p.toFixed(2), o: orderTxt(P.o, u), vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.35, s: P.via === 'none' ? '명령이 안 닿음' : '못 들음', c: 'm', t0: W.t }); }
+    else { u.missT = W.t; u.missO = P.o; if (W.t - (u.missLogT == null ? -9 : u.missLogT) > 3){ u.missLogT = W.t; L(W, { k: 'cmdMiss', side: 0, a: u.i, c: P.c, via: P.via, why: P.why, p: +P.p.toFixed(2), o: orderTxt(P.o, u), vis: true }); }   /* v7.26.1 같은 줄이 쌓이지 않게 */ if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.35, s: P.via === 'none' ? '명령이 안 닿음' : '못 들음', c: 'm', t0: W.t }); }
   }
 }
 /* ---------- v7.5 정찰 ----------
@@ -6311,6 +6335,10 @@ function doOrder(W, u, dt){
   if (o.k === 'move'){
     // 도착 → 자동 (그 자리를 지키며 스스로 판단)
     if (Math.hypot(u.x - o.x, u.y - o.y) < 0.12){ L(W, { k: 'arrive', a: u.i }); u.order = null; u.stay = { x: o.x, y: o.y }; stop(u); return; }
+    { const d0 = Math.hypot(u.x - o.x, u.y - o.y), pc = o.pc || (o.pc = { t: W.t, d: d0 });   /* v7.26.1 막힘: 끝자리가 차 있으면 가까이서 멈춘 채 도착 · 멀리서 막히면 길을 다시 */
+      if (pc.d - d0 > 0.08){ pc.t = W.t; pc.d = d0; }
+      else if (d0 < 1.2 && W.t - pc.t > 0.8){ L(W, { k: 'arrive', a: u.i, near: +d0.toFixed(2) }); u.order = null; u.stay = { x: u.x, y: u.y }; stop(u); return; }
+      else if (W.t - pc.t > 1.5){ pc.t = W.t; pc.d = d0; u.goal = null; u.path = null; L(W, { k: 'repath', a: u.i, d: +d0.toFixed(1) }); } }
     setMood(W, u, '이동');
     setGoal(W, u, o.x, o.y); follow(W, u, dt);
     if (!u.path){ L(W, { k: 'stuck', a: u.i }); u.order = null; u.stay = { x: u.x, y: u.y }; }
@@ -6463,6 +6491,7 @@ function act(W, u, dt){
     const pr = perilOn(W, u), v = W.units[u.act.b], H = W.rules.heal || {};
     if (pr && v && (v === u || !(v.down || v.hp / v.max < (H.rescue != null ? H.rescue : 0.12)))){   /* v7.17 자기 치료 중에도 치명적 일격이 오면 끊고 비킴 */ L(W, { k: 'healAbort', a: u.i, b: v.i, by: pr.e.i, eta: +pr.eta.toFixed(2), vis: true }); u.act = null; u.healDeferT = W.t; } }
   if (u.act && u.act.k === 'atk' && !u.act.mode && (u.act.phase === 'rec' || u.act.phase === 'wind') && stepOK(W, u, isFar(u)) && tryDodge(W, u, true)) return;   /* v7.17 치는 중 · 거두는 중에도 스텝 — 상대 일격이 먼저 떨어지면 내 공격을 버리고 비켜섬 (공격 · 막기 · 회피의 심리전) */
+  if (u.act && u.alt && altAuto(W, u, true)) return;   /* v7.26.1 겨누는 · 재장전 중에도 코앞이면 샷건으로 */
   if (u.act){ if (u.act.k === 'skill' && u.act.phase === 'tend'){ tendStep(W, u); if (!u.act) return; }   // v7.3 돌봄
     if (u.burst) tickBurst(W, u); if (u.act && u.act.k === 'atk' && u.strafe && W.t < u.strafe.until && isFar(u)) strafeStep(W, u, dt); if (u.act && W.t >= u.act.end) resolveAct(W, u); return; }   // v7.0 이동 사격: 당기는 · 거두는 동안 옆으로   // 준비 · 회복 중엔 못 움직임 (점사는 회복 중에 이어 쏨)
   if (altAuto(W, u)) return;   // v7.25.1 두 번째 총
