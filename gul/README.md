@@ -1,9 +1,10 @@
-# 굴의 전투판 — 소스 보관 v1.1
+# 굴의 전투판 — 소스 보관 v1.2
 
+- v1.2 (2026-10-18): 게임 v7.27.0 (레지나 인카운터 · 세자르 알현실 도감 그림 · 새 대화 그림). 그림 손질 도구는 patches/tools.
 - v1.1 (2026-10-18): 게임 v7.26.2 (이동 · 합류 · 샷건 · 문 · 인카운터 바로 해 보기). gulsync.sh 로 맞춤.
 - v1 (2026-10-18): 처음 올림. 게임 v7.26.0 (오딜의 방) 기준.
 
-공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (판 147 = v7.26.2)
+공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (v7.27.0)
 
 ## 무엇이 어디에
 - rt3_head.js · rt3_mid.js · rt3_tail.js — 전투 엔진 (세 조각을 이어 rt3.js 로 씀)
@@ -15,6 +16,7 @@
 - build/wrapped.html — 바로 열어 볼 수 있는 완성본 (그림은 build/art 를 옆에 두고)
 - ui*.js · eng*.js 그 밖의 .js — 시험. `bash runui.sh` (UI 묶음) · `bash allreg.sh` (전체 회귀)
 - patches/ — 판마다 바꾼 기록 (patchNNNN.py = 엔진 · pageNNNN.py = 화면). 안의 경로는 만들 때의 작업 폴더라, 다시 쓰려면 맨 위 D 를 이 폴더로 바꿈
+- patches/tools/ — 도감 그림 손질 (czmask · czgrid · czcells · czclean: 체크무늬 걷기 · 칸 맞추기 · 막힌 칸 지도)
 - docs/ — 설계 · 상태 문서 (design_*.md · 캐릭터 설정 프롬프트 · 오딜의 방 원문)
 
 ## 빌드 · 시험에 필요한 것

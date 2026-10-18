@@ -1891,7 +1891,7 @@ function stepShots(W, dt){
         else if (!s.gun && W.fxOn) W.fx.push({ k: 'stuck', b: hit.i, ang: Math.atan2(s.dy, s.dx), blk: !!(o2 && o2.block), t0: W.t, dur: 1.4 });   // v7.2 화살이 몸 · 방패에 꽂힘
         break;
       }
-      if (s.cov && Math.hypot(nx - s.x0, ny - s.y0) >= s.cov.d){ s.done = true; s.x = s.x0 + s.dx * s.cov.d; s.y = s.y0 + s.dy * s.cov.d; if (!s.supp){ u.miss++; L(W, { k: 'miss', a: s.a, b: s.meant, why: s.cov.pile ? (s.cov.pile === 2 ? '굳은 시체에 막힘 (엄폐)' : '갑옷 무더기에 막힘 (엄폐)') : '언덕 마루에 막힘', fired: true, p: s.p, cover: true }); } break; }   // v7.18
+      if (s.cov && Math.hypot(nx - s.x0, ny - s.y0) >= s.cov.d){ s.done = true; s.x = s.x0 + s.dx * s.cov.d; s.y = s.y0 + s.dy * s.cov.d; if (!s.supp){ u.miss++; L(W, { k: 'miss', a: s.a, b: s.meant, why: s.cov.pile ? (s.cov.pile === 2 ? '굳은 시체에 막힘 (엄폐)' : s.cov.pile === 3 ? '관에 막힘 (엄폐)' : s.cov.pile === 4 ? '쓰러진 기둥에 막힘 (엄폐)' : '갑옷 무더기에 막힘 (엄폐)') : '언덕 마루에 막힘', fired: true, p: s.p, cover: true }); } break; }   // v7.18
       if (solid(W.map, nx, ny)){ s.done = true; if (!s.supp){ u.miss++; L(W, { k: 'miss', a: s.a, b: s.meant, why: '빗나가 바위에 맞음', fired: true, p: s.p }); } if (s.jav) dropSpear(W, s, s.x - s.dx * 0.4, s.y - s.dy * 0.4, 'bounce'); break; }
       s.x = nx; s.y = ny; s.left -= st;
       if (s.left <= 1e-6 && s.supp){ s.done = true; break; }   // v7.7 견제 탄은 자리 너머에서 끝

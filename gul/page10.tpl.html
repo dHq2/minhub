@@ -1,5 +1,8 @@
 <title>굴의 전투판</title>
-<!-- 굴의 전투판 v7.26.2 (2026-10-18) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v7.27.0 (2026-10-18) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v7.27.0: 레지나 (9층의 보스) 인카운터 — 인카운터 목록에서만 해 볼 수 있음. 푸른 화로가 늘어선 복도를 지나 알현실로 (도감 그림 · 벽 · 기둥 · 화로 · 옥좌는 못 지나감).
+         권태로운 레지나와 이야기 · 싸움 · 그냥 지나감 · 세 번째 만남부터 영입. 새 대화 그림 (레지나 · 레베카 · 모닝스타 · 친칠라 · 리완 · 세르파 · 페흐토 · 포렌).
+         5S 세자르의 알현실을 도감 그림으로 — 벽 · 옥좌 · 서 있는 기둥은 막힘, 쓰러진 기둥 · 돌무더기는 잔해 (못 지나가는 낮은 엄폐). 관은 빈 옥좌 앞.
      v7.26.2: 인카운터 목록 ▶ — 지금 배치된 아군 그대로 로딩 뒤 그 만남으로 바로 (확인 · 뽑기 없음 · 진행 중인 프롤로그는 그대로 남음).
      v7.26.1: ↑ · ↓ 맵 단추는 모두에게 · 대장이 넘어가면 남은 동료도 따라감 (제자리 명령은 그대로) · 고립 (6칸 안에 동료 없이 4초) 이면 스스로 합류 ·
          간두는 코앞 (2.6칸 · 나를 노리면 3.4칸) 이면 겨누던 중에도 샷건으로 · 지금 든 총이 탄 칸에 보임 · 갑옷 아이콘이 작은 판에서도 보임 · 좁은 문에서 덜 낌.
@@ -984,7 +987,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v7.26.2";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v7.27.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1346,7 +1349,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v7.26.2 · 인카운터 바로 해 보기</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v7.27.0 · 레지나 · 세자르 알현실</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1523,7 +1526,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v7.26.2 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v7.27.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
 </div>
 <div class="dock" id="dock" aria-label="조작판"><div class="drow dchips" id="dChips"></div><div class="drow acts" id="dActs"></div><div class="drow play" id="dPlay"></div></div>
@@ -2148,7 +2151,7 @@ if (!S.v4){
 if (!S.draft) S.draft = { ...newDraft(), done: true, picks: S.units.filter(u => u.side === 0 && !u.hero && u.ref).map(u => u.ref).slice(0, 2) };   // 예전 배치는 그대로 두고 뽑기만 새로   // v2 수치표 (cd) → v3 (준비 · 회복 · 턴)
 // v7.2 수치표 이전: 저장된 수치표는 v5.2 뒤에 생긴 세부 칸을 못 받고, 옛 기본값 (활 탄속 32 · 총 85 …) 에 머물러 v7.0 의 탄속이 실제 판에 안 닿았음.
 // ① 기본값에 있는데 저장된 수치표에 없는 칸은 채움 (지난 이전 때 이미 있던 칸을 손으로 지운 건 그대로 둠) ② 옛 기본값 그대로인 칸만 지금 기본값으로 (손으로 바꾼 값은 둠)
-const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '7.26.1', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
+const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '7.27.0', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
 function rulePaths(d, p, out){ for (const k in d){ const v = d[k], pp = p + '/' + k; out.push(pp); if (v && typeof v === 'object' && !Array.isArray(v)) rulePaths(v, pp, out); } return out; }
 function fixRules(R, known){
   let n = 0; const ks = known ? new Set(known) : null;
@@ -2181,7 +2184,8 @@ function rebuildMap(){
   const g = mapCv.getContext('2d'), R = mulberry32(S.seed ^ 77);
   for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++){
     if (S.room){ roomCell(g, x, y, P, R); continue; }   /* v7.26.0 오딜의 방: 마루 · 벽지 */
-    if (S.hall){ hallCell(g, x, y, P, R); continue; }   // v7.25.0 알현실: 흰 대리석
+    if (S.regina){ g.fillStyle = rgOpen(x, y) ? '#1b2c62' : '#04050c'; g.fillRect(x * P, y * P, P, P); continue; }   /* v7.27.0 바탕 — 그림은 draw 에서 (원본 해상도) */
+    if (S.hall){ hallCell(g, x, y, P); continue; }   /* v7.27.0 알현실: 바탕만 — 그림은 draw 에서 (원본 해상도) */
     if (MAP.indoor){ ruinCell(g, x, y, P, R); continue; }   // v7.23 유적: 돌바닥 · 모래 · 돌벽
     const r = MAP.t[y * S.W + x] === 1 ? 1 : 0;   // v7.18 더미 칸은 바닥 위에 따로 그림
     if (!r && isGrid(S.type)){
@@ -2202,42 +2206,11 @@ function rebuildMap(){
     }
   }
   drawTerrain(g, P);   // v7.18
-  if (S.hall) hallDeco(g, P);   // v7.25.0
   if (S.room) roomDeco(g, P);   /* v7.26.0 융단 · 문틀 */
 }
 // v7.23 유적 칸: 바닥 = 돌판 (안) · 하얀 모래 (sandY 아래) / 벽 = 돌벽 (줄눈 · 앞면 밝게)
-// v7.25.0 알현실 칸: 바닥 = 흰 대리석 (결 · 줄눈) · 원 밖 = 어두운 돌. 기둥 · 금빛 원 · 융단 · 관은 hallDeco
-function hallCell(g, x, y, P, R){
-  const X = x * P, Y = y * P, d = Math.hypot(x + 0.5 - HALL.cx, y + 0.5 - HALL.cy);
-  if (MAP.t[y * S.W + x] === 1 && d > HALL.r - 0.6){ g.fillStyle = '#17141b'; g.fillRect(X, Y, P, P); g.fillStyle = 'rgba(255,240,210,.035)'; for (let k = 0; k < 3; k++) g.fillRect(X + R() * P, Y + R() * P, 3, 2); return; }
-  g.fillStyle = ['#e4ddce', '#ddd5c3', '#e8e2d4', '#d9d0be', '#e1d9c8'][(x * 37 + y * 17) % 5]; g.fillRect(X, Y, P, P);
-  g.strokeStyle = 'rgba(120,100,70,.26)'; g.lineWidth = 1; g.strokeRect(X + 0.5, Y + 0.5, P - 1, P - 1);
-  if (R() < 0.55){ g.strokeStyle = `rgba(140,128,110,${(0.1 + R() * 0.14).toFixed(3)})`; g.lineWidth = 0.8 + R(); g.beginPath(); g.moveTo(X + R() * P, Y); g.bezierCurveTo(X + R() * P, Y + P * 0.35, X + R() * P, Y + P * 0.65, X + R() * P, Y + P); g.stroke(); }   // 대리석 결
-}
-function hallDeco(g, P){
-  const cx = HALL.cx * P, cy = HALL.cy * P; g.save();
-  g.save(); g.beginPath(); g.rect(0, 0, S.W * P, S.H * P); g.rect(12 * P, (S.H - 5) * P, 4 * P, 5 * P); g.clip('evenodd');   // 둥근 벽: 칸 모서리를 덮어 매끈한 원 (아래 입구는 열어 둠)
-  g.fillStyle = '#17141b'; g.beginPath(); g.rect(0, 0, S.W * P, S.H * P); g.arc(cx, cy, (HALL.r - 0.2) * P, 0, 6.283, true); g.fill('evenodd'); g.restore();
-  g.strokeStyle = '#8a6a2c'; g.lineWidth = 5; g.beginPath(); g.arc(cx, cy, (HALL.r - 0.2) * P, 0, 6.283); g.stroke();
-  g.fillStyle = 'rgba(70,50,20,.22)'; g.beginPath(); g.arc(cx, cy, (HALL.r - 0.1) * P, 0, 6.283); g.arc(cx, cy, (HALL.r - 0.9) * P, 0, 6.283, true); g.fill();   // 벽 밑 그늘
-  g.strokeStyle = 'rgba(190,150,60,.8)'; g.lineWidth = 3; for (const r of [3.2, 6.2, HALL.r - 0.45]){ g.beginPath(); g.arc(cx, cy, r * P, 0, 6.283); g.stroke(); }   // 금빛 원
-  g.strokeStyle = 'rgba(190,150,60,.45)'; g.lineWidth = 1.5; for (const r of [3.45, 5.95]){ g.beginPath(); g.arc(cx, cy, r * P, 0, 6.283); g.stroke(); }
-  for (let k = 0; k < 16; k++){ const a = k * Math.PI / 8; g.beginPath(); g.moveTo(cx + Math.cos(a) * 3.45 * P, cy + Math.sin(a) * 3.45 * P); g.lineTo(cx + Math.cos(a) * 5.95 * P, cy + Math.sin(a) * 5.95 * P); g.stroke(); }   // 바퀴살
-  const x0 = (HALL.king.x - 1.15) * P, x1 = (HALL.king.x + 1.15) * P, y0 = (HALL.king.y + 1.15) * P, y1 = S.H * P, xm = (x0 + x1) / 2;   // 붉은 융단: 아래 입구 → 관
-  g.fillStyle = '#6d1522'; g.fillRect(x0, y0, x1 - x0, y1 - y0); g.fillStyle = 'rgba(0,0,0,.16)'; for (let y = y0; y < y1; y += P * 0.5) g.fillRect(x0, y, x1 - x0, 1);
-  g.strokeStyle = '#c9a24a'; g.lineWidth = 3; g.beginPath(); g.moveTo(x0 + 4, y0); g.lineTo(x0 + 4, y1); g.moveTo(x1 - 4, y0); g.lineTo(x1 - 4, y1); g.stroke();
-  g.fillStyle = 'rgba(214,176,90,.6)'; for (let y = y0 + P * 0.6; y < y1; y += P * 1.2){ g.beginPath(); g.moveTo(xm, y - 6); g.lineTo(xm + 6, y); g.lineTo(xm, y + 6); g.lineTo(xm - 6, y); g.closePath(); g.fill(); }
-  for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++){ if (MAP.t[y * S.W + x] !== 1 || Math.hypot(x + 0.5 - HALL.cx, y + 0.5 - HALL.cy) > HALL.r - 0.6) continue;   // 대리석 기둥
-    const px = (x + 0.5) * P, py = (y + 0.5) * P, r = P * 0.64; g.fillStyle = 'rgba(60,44,24,.3)'; g.beginPath(); g.ellipse(px - 7, py + 9, r * 1.05, r * 0.9, 0, 0, 6.283); g.fill();
-    const gr = g.createRadialGradient(px + r * 0.3, py - r * 0.4, r * 0.1, px, py, r); gr.addColorStop(0, '#fffbf2'); gr.addColorStop(0.6, '#e8dfcf'); gr.addColorStop(1, '#a99d87'); g.fillStyle = gr; g.beginPath(); g.arc(px, py, r, 0, 6.283); g.fill();
-    g.strokeStyle = '#c9a24a'; g.lineWidth = 2.5; g.beginPath(); g.arc(px, py, r - 1.5, 0, 6.283); g.stroke(); g.strokeStyle = 'rgba(150,130,100,.45)'; g.lineWidth = 1; for (let k = 0; k < 8; k++){ const a = k * Math.PI / 4; g.beginPath(); g.moveTo(px + Math.cos(a) * r * 0.35, py + Math.sin(a) * r * 0.35); g.lineTo(px + Math.cos(a) * r * 0.88, py + Math.sin(a) * r * 0.88); g.stroke(); } }
-  if ((S.piles || []).length){ const qx = HALL.coffin[0][0] * P, qy = HALL.coffin[0][1] * P, w = P * 2, h = P, L = qx + 3, Rr = qx + w - 3, T = qy + 4, B = qy + h - 4, mid = (T + B) / 2;   // 관
-    g.fillStyle = 'rgba(40,28,14,.35)'; g.beginPath(); g.ellipse(qx + w / 2 - 6, qy + h / 2 + 8, w * 0.55, h * 0.5, 0, 0, 6.283); g.fill();
-    const path = (i) => { g.beginPath(); g.moveTo(L + i, mid); g.lineTo(L + w * 0.2 + i * 0.4, T + i); g.lineTo(Rr - i, T + h * 0.1 + i); g.lineTo(Rr - i, B - h * 0.1 - i); g.lineTo(L + w * 0.2 + i * 0.4, B - i); g.closePath(); };
-    const wg = g.createLinearGradient(0, T, 0, B); wg.addColorStop(0, '#6a4428'); wg.addColorStop(0.5, '#3e2614'); wg.addColorStop(1, '#2a180c'); g.fillStyle = wg; path(0); g.fill(); g.strokeStyle = '#d4ad55'; g.lineWidth = 2.5; path(0); g.stroke();
-    g.strokeStyle = 'rgba(212,173,85,.6)'; g.lineWidth = 1.2; path(5); g.stroke(); }
-  g.restore();
-}
+// v7.27.0 알현실 칸: 바탕만 (홀 밖 · 벽 = 어둠 · 바닥 = 어두운 돌빛). 도감 그림 · 관은 drawCzRoom (매 장면)
+function hallCell(g, x, y, P){ const c = (CZ_MAP[y] || '')[x] || 'x'; g.fillStyle = c === 'x' ? '#07060a' : c === '#' ? '#121016' : '#2b2622'; g.fillRect(x * P, y * P, P, P); }
 function ruinCell(g, x, y, P, R){
   const X = x * P, Y = y * P;
   if (MAP.t[y * S.W + x] !== 1){
@@ -2264,7 +2237,7 @@ function drawTerrain(g, P){
       if (Math.abs(sh) > 0.02){ g.fillStyle = sh > 0 ? `rgba(255,238,205,${Math.min(0.42, sh * 0.45).toFixed(3)})` : `rgba(0,0,0,${Math.min(0.5, -sh * 0.5).toFixed(3)})`; g.fillRect(x * Q, y * Q, Q, Q); }
       const l0 = lv(wx, wy); if (l0 > 0 && (lv(wx + 1 / N, wy) !== l0 || lv(wx, wy + 1 / N) !== l0)){ g.fillStyle = 'rgba(40,26,10,.42)'; g.fillRect(x * Q, y * Q, Q, Q); } }
     g.font = 'bold 11px sans-serif'; g.textAlign = 'center'; for (const k of m.hills){ const hh = gH(m, k.x, k.y); if (hh < 0.6 || k.x < 0 || k.y < 0 || k.x >= S.W || k.y >= S.H) continue; const t = '▲' + hh.toFixed(1) + 'M'; g.fillStyle = 'rgba(0,0,0,.55)'; g.fillText(t, k.x * P + 1, k.y * P + 5); g.fillStyle = 'rgba(255,232,190,.85)'; g.fillText(t, k.x * P, k.y * P + 4); } }
-  if (m.piles && !S.hall && !S.room) for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++){   /* v7.25.0 알현실의 관은 hallDeco */ const k = pileAt(m, x + 0.5, y + 0.5); if (!k) continue;
+  if (m.piles && !S.hall && !S.room && !S.regina) for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++){   /* v7.27.0 알현실의 관 · 잔해는 그림 (drawCzRoom) */ const k = pileAt(m, x + 0.5, y + 0.5); if (!k) continue;
     const R = mulberry32(x * 131 + y * 977 + 5), cx = x * P + P / 2, cy = y * P + P / 2;
     g.fillStyle = 'rgba(0,0,0,.38)'; g.beginPath(); g.ellipse(cx + 3, cy + 4, P * 0.5, P * 0.36, 0, 0, 6.283); g.fill();
     if (k === 3){ const lf = pileAt(m, x - 0.5, y + 0.5) === 3, rt = pileAt(m, x + 1.5, y + 0.5) === 3, x0 = x * P + (lf ? 0 : 3), x1 = x * P + P - (rt ? 0 : 3);   /* v7.23.1 관 */
@@ -2361,6 +2334,8 @@ function draw(){
   const x0 = Math.max(0, Math.floor(cam.x - w / 2 / ts) - 1), y0 = Math.max(0, Math.floor(cam.y - h / 2 / ts) - 1), x1 = Math.min(S.W, Math.ceil(cam.x + w / 2 / ts) + 1), y1 = Math.min(S.H, Math.ceil(cam.y + h / 2 / ts) + 1);
   ctx.imageSmoothingEnabled = true;
   if (x1 > x0 && y1 > y0) ctx.drawImage(mapCv, x0 * 32, y0 * 32, (x1 - x0) * 32, (y1 - y0) * 32, ox + x0 * ts, oy + y0 * ts, (x1 - x0) * ts, (y1 - y0) * ts);
+  if (S.regina && Wd.camp) drawRegina(Wd, ox, oy, ts);   /* v7.27.0 복도 · 알현실 그림 · 옥좌의 레지나 */
+  if (S.hall && Wd.camp) drawCzRoom(Wd, ox, oy, ts);   /* v7.27.0 세자르의 알현실 그림 · 옥좌 앞의 관 */
   // v7.19.2 뿌리 벽: 칸마다 엉킨 뿌리 (단단함 막대)
   if (mode !== 'edit') for (const r of Wd.roots || []){ for (const [cx, cy] of r.cells){ const x = ox + cx * ts, y = oy + cy * ts, R0 = mulberry32(cx * 31 + cy * 17 + r.id);
       ctx.fillStyle = '#3b2a1c'; ctx.fillRect(x + ts * 0.06, y + ts * 0.06, ts * 0.88, ts * 0.88); ctx.lineCap = 'round';
@@ -2373,11 +2348,11 @@ function draw(){
     ctx.fillStyle = 'rgba(185,224,160,.8)'; ctx.font = `600 ${Math.max(10, Math.round(ts * 0.4))}px sans-serif`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText('↑ ' + nx, ox + ts * 0.3, oy + band * ts * 0.5); if (pv) ctx.fillText('↓ ' + pv, ox + ts * 0.3, oy + (Wd.map.H - band * 0.5) * ts); ctx.restore(); }
   if (S.camp && S.camp.s === 5 && Wd.camp) drawHall(Wd, ox, oy, ts);
   if (S.room && Wd.camp) drawRoomProps(Wd, ox, oy, ts);   /* v7.26.0 가구 · 시신 */   // v7.23.1 관 속의 왕관 · 계단
-  for (const u of Wd.units) if (!u.alive && !u.gone && !(u.side === 0 && u.posUnk && mode !== 'edit' && !$('seeAll').checked) && (u.side === 0 || (litAt(Wd, u.x, u.y) && !(Wd.map.indoor && !S.hall && !S.room && Wd.visNow && !Wd.visNow[(u.y | 0) * S.W + (u.x | 0)])) || $('seeAll').checked)) drawCorpse(Wd, u, ox, oy, ts);   // v7.5 소식 없는 동료의 시신은 찾기 전엔 안 보임
+  for (const u of Wd.units) if (!u.alive && !u.gone && !(u.side === 0 && u.posUnk && mode !== 'edit' && !$('seeAll').checked) && (u.side === 0 || (litAt(Wd, u.x, u.y) && !(Wd.map.indoor && !S.hall && !S.room && !S.regina && Wd.visNow && !Wd.visNow[(u.y | 0) * S.W + (u.x | 0)])) || $('seeAll').checked)) drawCorpse(Wd, u, ox, oy, ts);   // v7.5 소식 없는 동료의 시신은 찾기 전엔 안 보임
   // 어둠: 칸마다 밝기 (빛 · 가 본 곳) → 부드럽게 늘림
   const see = $('seeAll').checked, ed = mode === 'edit', hid0 = u => !ed && u.side === 0 && !!u.posUnk && !!u.posK && !see;   // v7.4 지휘관이 모르는 아군
   if (!lightImg || lightCv.width !== S.W || lightCv.height !== S.H){ lightCv.width = S.W; lightCv.height = S.H; lightImg = lctx.createImageData(S.W, S.H); }
-  const D = lightImg.data, vNow = Wd.map && Wd.map.indoor && !S.hall && !S.room && !ed && !see && Wd.visNow && Wd.visNow.length === S.W * S.H ? Wd.visNow : null;   // v7.23 실내: 지금 안 보이는 칸은 기억한 모습만
+  const D = lightImg.data, vNow = Wd.map && Wd.map.indoor && !S.hall && !S.room && !S.regina && !ed && !see && Wd.visNow && Wd.visNow.length === S.W * S.H ? Wd.visNow : null;   // v7.23 실내: 지금 안 보이는 칸은 기억한 모습만
   for (let i = 0; i < S.W * S.H; i++){
     let b = vNow && !vNow[i] ? 0 : Wd.light[i]; const e = Wd.explored[i];
     b = Math.max(b, e === 2 ? 0.2 : e === 1 ? 0.12 : 0);
@@ -3239,7 +3214,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v7.26.2 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v7.27.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => padW(f2(e.t) + '초', 8);
@@ -3382,6 +3357,9 @@ function logLines(Wd, from){
       case 'encWar': out.push(`${T(e)}☠ 토끼마차를 건드림 — 확정 패배`); break;
       case 'encFollow': out.push(`${T(e)}👣 ${ga(e.name)} 뒤따라 옴`); break;
       case 'odAct': out.push(`${T(e)}🫖 ${e.s}`); break;   /* v7.26.0 오딜의 방 */
+      case 'rgMeet': out.push(`${T(e)}👑 레지나와의 만남 ${e.n}번째${e.n >= 3 ? ' — 영입할 수 있음' : ''}`); break;   /* v7.27.0 */
+      case 'rgPass': out.push(`${T(e)}👑 레지나가 길을 내줌 — 옥좌 뒤 길 (↑)`); break;
+      case 'rgDead': out.push(`${T(e)}👑 레지나 쓰러짐 — 다음부터 빈 옥좌 · 옥좌 뒤 길 (↑)`); break;
       case 'odMeet': out.push(`${T(e)}🫖 오딜과의 만남 ${e.n}번째${e.n === 3 ? ' — 장미장식을 줄 때' : ''}`); break;
       case 'odTea': out.push(`${T(e)}🍵 오딜의 차를 받음 — ${(e.who || []).join(' · ') || '다친 이 없음'}`); break;
       case 'odRest': out.push(`${T(e)}🛋 조용히 쉼 — ${(e.who || []).join(' · ') || '다친 이 없음'}`); break;
@@ -3853,7 +3831,9 @@ function narrOf(Wd, e){
     case 'odRest': return { c: 'good', s: '낡은 의자에서 잠시 숨을 고른다.' };
     case 'odBless': return { c: 'good', s: '오딜이 장미장식을 건넨다 — <축복:오딜>.' };
     case 'odDead': return { c: 'bad', s: '가면을 쓴 여자가 소파 곁에 쓰러진다. 찻잔이 바닥을 구른다.' };
-    case 'odMeet': case 'odTake': return null;
+    case 'odMeet': case 'odTake': case 'rgMeet': return null;
+    case 'rgPass': return { c: 'dim', s: '레지나가 다시 턱을 괸다. 옥좌 뒤로 길이 열려 있다.' };   /* v7.27.0 */
+    case 'rgDead': return { c: 'good', s: '레지나가 무릎을 꿇고 쓰러진다. 푸른 불꽃이 잠시 흔들린다.' };
     case 'campIn': return { c: 'dim', s: `1F · ${e.name} — ${e.kind}.` };
     case 'encSeen': return { c: 'dim', s: NPC[e.npc].seen };   // v7.22 인카운터
     case 'encWake': return { c: 'dim', s: `${ga(NPC[e.npc].who)} 화들짝 놀라 뒤로 뛰어 물러난다.` };
@@ -4770,7 +4750,7 @@ function frame(ts){
   }
   const Wd = W_();
   if (Wd && mode !== 'edit') czCutTick(Wd);   /* v7.23.2 세자르 컷인 · 권위 알림 */
-  if (Wd && mode !== 'edit' && Wd.camp){ encTick(Wd); khTick(Wd); czEvTick(Wd); odTick(Wd); }   /* v7.26.0 오딜의 방 */   // v7.22 장면 인물   // v7.22.3 각혈
+  if (Wd && mode !== 'edit' && Wd.camp){ encTick(Wd); khTick(Wd); czEvTick(Wd); odTick(Wd); rgTick(Wd); }   /* v7.26.0 오딜의 방 · v7.27.0 레지나 */   // v7.22 장면 인물   // v7.22.3 각혈
   if (MOB && Wd && mode !== 'edit') mobFollow(Wd, dt);   // v5.8 모바일: 가까이 볼 때 아군 (고른 아군) 을 따라감
   if (Wd && cam.follow && mode !== 'edit' && !small() && !MOB){ const h = Wd.units.find(u => u.torch && u.alive && u.side === 0) || Wd.units.find(u => u.side === 0 && u.alive); if (h){ const k = 1 - Math.pow(0.002, dt); cam.x += (h.x - cam.x) * k; cam.y += (h.y - cam.y) * k; } }
   draw();
@@ -4960,14 +4940,45 @@ const CAMP_S = [null,
   { name: '2S', kind: '공통 전투', note: '언덕과 무더기 — 무엇과 어떻게 마주칠지는 들어서야 앎', btl: true },
   { name: '3S', kind: '랜덤 인카운터', note: '어떤 만남인지는 들어서야 앎' },
   { name: '4S', kind: '알현실 입구', note: '하얀 사막의 끝 — 입구를 지키는 곤봉적 · 안은 방마다 숨은 적 (실내전)', ruin: true },   // v7.23 유적 (ruinLayout)
-  { name: '5S', kind: '알현실', note: '세자르의 알현실 — 천장이 보이지 않는 원형 홀 · 가운데에 관 하나', hall: true }];   // v7.23.1
-// v7.23.1 5S 알현실: 28 × 28 원형 홀 (밝음 · 기둥 여덟 · 아래 입구) · 가운데 관 (2칸 · 더미 3) — 관 속의 왕 (세자르) · 쓰러지면 관 자리에 계단
-const HALL = { W: 28, H: 28, cx: 14, cy: 13.5, r: 12.6, pr: 8, coffin: [[13, 11], [14, 11]], king: { x: 14, y: 11.5 }, stairs: { x: 14, y: 11.5, r: 0.9 }, amb: 1, near: 2.6, far: 6, wait: 25, rise: 10, hint: 6 };   /* v7.25.0 아주 밝음 · 관을 조사하면 10초 뒤 */
+  { name: '5S', kind: '알현실', note: '세자르의 알현실 — 무너진 원형 홀 · 빈 옥좌 앞에 관 하나', hall: true }];   // v7.23.1
+// v7.23.1 5S 알현실 → v7.27.0 도감 그림 (bg_cesar_boss · 2066 × 2048 · 74px = 한 칸 · 왼쪽 13px 여백): 28 × 28 무너진 원형 홀 (밝음 · 아래 입구 · 위 = 높은 문틈과 벽) ·
+//   빈 옥좌 앞에 관 (2칸 · 더미 3) — 관 속의 왕 (세자르) · 쓰러지면 관 자리에 계단
+const HALL = { W: 28, H: 28, coffin: [[13, 12], [14, 12]], king: { x: 14, y: 12.5 }, stairs: { x: 14, y: 12.5, r: 0.9 }, amb: 1, near: 2.6, far: 6, wait: 25, rise: 10, hint: 6, img: { src: 'art/cesar/boss.webp', x: -13 / 74, y: 0, s: 1 / 74 } };   /* v7.25.0 아주 밝음 · 관을 조사하면 10초 뒤 */
+// 칸: x = 홀 밖 · # = 벽 · 옥좌 · 서 있는 부러진 기둥 (높음 — 시야 · 탄을 막음) · r = 잔해 (쓰러진 기둥 · 돌무더기 — 못 지나감 · 너머로 보이는 낮은 엄폐) · . = 바닥
+const CZ_MAP = [
+  "xxxxxxxxxxxx#xx#xxxxxxxxxxxx",
+  "xxxxxxxxxx########xxxxxxxxxx",
+  "xxxxxxxx############xxxxxxxx",
+  "xxxxx#################xxxxxx",
+  "xxxx####################xxxx",
+  "xxx#######################xx",
+  "xx#########......#########xx",
+  "xx#########..##..#########xx",
+  "xx#######....##.......####xx",
+  "xx##........######.....r##xx",
+  "xx#rrr....rr######.....rr#xx",
+  "xx#rrr.....rr...r#......r#xx",
+  "x##.......................#x",
+  "x#r.......................#x",
+  "x#.......................##x",
+  "xx.......................#xx",
+  "xxr.......................xx",
+  "xxrr......................xx",
+  "xxrr......................xx",
+  "xxxr.....................xxx",
+  "xxxxrr..................xxxx",
+  "xxxx.rr.................xxxx",
+  "xxxxx..................xxxxx",
+  "xxxxxx................xxxxxx",
+  "xxxxxxxx............xxxxxxxx",
+  "xxxxxxxxxx........xxxxxxxxxx",
+  "xxxxxxxxxxxx....xxxxxxxxxxxx",
+  "xxxxxxxxxxxx....xxxxxxxxxxxx"];
+const czRubble = () => { const o = []; CZ_MAP.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'r') o.push(x + ',' + y + ',4'); })); return o; };
 function hallLayout(){
-  const { W, H, cx, cy, r } = HALL, flips = new Set();
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){ const door = y >= H - 5 && x >= 12 && x <= 15; if (Math.hypot(x + 0.5 - cx, y + 0.5 - cy) > r && !door) flips.add(x + ',' + y); }
-  for (let k = 0; k < 8; k++){ const a = k * Math.PI / 4 + Math.PI / 8; flips.add(Math.floor(cx + Math.cos(a) * HALL.pr) + ',' + Math.floor(cy + Math.sin(a) * HALL.pr)); }   // 기둥 여덟
-  return { W, H, flips: [...flips], piles: HALL.coffin.map(([x, y]) => x + ',' + y + ',3') };
+  const { W, H } = HALL, flips = [];
+  CZ_MAP.forEach((r, y) => [...r].forEach((c, x) => { if (c === 'x' || c === '#') flips.push(x + ',' + y); }));
+  return { W, H, flips, piles: HALL.coffin.map(([x, y]) => x + ',' + y + ',3'), rubble: czRubble() };
 }
 const czNearCoffin = Wd => Wd.units.some(u => u.alive && u.side === 0 && Math.hypot(u.x - HALL.king.x, u.y - HALL.king.y) <= HALL.near);
 function czEvTick(Wd){
@@ -5009,7 +5020,7 @@ function czRise(Wd, E){
 }
 function czFall(Wd, E){
   E.st = 'stairs'; Wd.holdClear = false; S.holdClear = false; Wd.stairs = { ...HALL.stairs };
-  for (const [x, y] of HALL.coffin){ Wd.map.t[y * Wd.map.W + x] = 0; if (Wd.map.pk) Wd.map.pk[y * Wd.map.W + x] = 0; } S.piles = []; S.camp.stages[5].piles = []; rebuildMap();
+  for (const [x, y] of HALL.coffin){ Wd.map.t[y * Wd.map.W + x] = 0; if (Wd.map.pk) Wd.map.pk[y * Wd.map.W + x] = 0; } S.piles = czRubble(); S.camp.stages[5].piles = S.piles.slice(); rebuildMap();
   checkEnd(Wd); logEv(Wd, { k: 'czFall' }); save(); campBarRender(true);
   talkLines([{ narr: Wd.snow ? '왕이 무너지자 눈이 멎습니다.' : '왕이 무너졌습니다.' }, { narr: '빈 관 바닥이 비스듬히 꺼져 있습니다.' }, { narr: '아래로 이어지는 계단.' }, { narr: '관이 다음 층의 입구였습니다.' }]);
 }
@@ -5074,21 +5085,36 @@ function drawSnow(Wd){
   for (let k = 0; k < 70; k++){ const sx = (k * 97.3 + Math.sin(t * 0.7 + k) * 18 + t * 9 * (1 + k % 3)) % w, sy = (k * 53.1 + t * (28 + (k % 5) * 9)) % h, r = 1 + (k % 3) * 0.6; ctx.beginPath(); ctx.arc(sx, sy, r, 0, 6.283); ctx.fill(); }
   ctx.restore();
 }
-// v7.25.0 알현실의 빛: 높은 창에서 비스듬히 쏟아지는 빛줄기 (천천히 일렁임) · 관을 곧게 비추는 빛 · 빛 속을 떠도는 먼지. 권위의 눈이 내리면 차가운 빛
+// v7.25.0 알현실의 빛 → v7.27.0 그림에 빛줄기가 그려져 있어 그 위에 일렁임만: 위 문틈에서 내려오는 두 빛줄기 (옅게) · 관을 비추는 빛 · 떠도는 먼지. 권위의 눈이 내리면 홀이 푸르게
+function czClip(ox, oy, ts){ ctx.beginPath(); CZ_MAP.forEach((r, y) => { let x0 = -1; for (let x = 0; x <= r.length; x++){ const o = x < r.length && r[x] !== 'x'; if (o && x0 < 0) x0 = x; if (!o && x0 >= 0){ ctx.rect(ox + x0 * ts, oy + y * ts, (x - x0) * ts, ts); x0 = -1; } } }); ctx.clip(); }
 function drawHallLight(Wd, ox, oy, ts){
-  const t = performance.now() / 1000, col = Wd && Wd.snow ? '215,232,255' : '255,236,196', cx = ox + HALL.cx * ts, cy = oy + HALL.cy * ts, R = HALL.r * ts, kx = ox + HALL.king.x * ts, ky = oy + HALL.king.y * ts;
-  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.283); ctx.clip(); ctx.fillStyle = 'rgba(46,30,14,.24)'; ctx.fillRect(cx - R, cy - R, R * 2, R * 2); ctx.globalCompositeOperation = 'lighter';   // 그늘을 깔고 빛을 더함 (빛줄기가 보이게)
-  const ang = 1.2, dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx, Lh = R * 2.8;
-  for (let k = 0; k < 7; k++){ const off = (k - 3) * R * 0.34 + Math.sin(t * 0.13 + k * 2.1) * ts * 0.35, w = ts * (1.1 + (k % 3) * 0.55), a = 0.15 + 0.06 * Math.sin(t * 0.6 + k * 1.7);
-    const sx = cx + nx * off - dx * Lh / 2, sy = cy + ny * off - dy * Lh / 2, gr = ctx.createLinearGradient(sx - nx * w, sy - ny * w, sx + nx * w, sy + ny * w);
-    gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(0.5, `rgba(${col},${a.toFixed(3)})`); gr.addColorStop(1, `rgba(${col},0)`); ctx.fillStyle = gr;
-    ctx.beginPath(); ctx.moveTo(sx + nx * w, sy + ny * w); ctx.lineTo(sx + nx * w + dx * Lh, sy + ny * w + dy * Lh); ctx.lineTo(sx - nx * w + dx * Lh, sy - ny * w + dy * Lh); ctx.lineTo(sx - nx * w, sy - ny * w); ctx.closePath(); ctx.fill(); }
-  { const g0 = ctx.createRadialGradient(kx, ky, 0, kx, ky, ts * 4.6); g0.addColorStop(0, `rgba(${col},${(0.3 + 0.05 * Math.sin(t * 0.9)).toFixed(3)})`); g0.addColorStop(1, `rgba(${col},0)`); ctx.fillStyle = g0; ctx.beginPath(); ctx.arc(kx, ky, ts * 4.6, 0, 6.283); ctx.fill();   // 관을 비추는 빛
-    const g1 = ctx.createLinearGradient(kx - ts * 1.4, 0, kx + ts * 1.4, 0); g1.addColorStop(0, `rgba(${col},0)`); g1.addColorStop(0.5, `rgba(${col},0.16)`); g1.addColorStop(1, `rgba(${col},0)`); ctx.fillStyle = g1; ctx.fillRect(kx - ts * 1.4, cy - R, ts * 2.8, ky - (cy - R)); }
-  ctx.fillStyle = `rgba(${col},1)`;
-  for (let k = 0; k < 90; k++){ const sp = 0.6 + (k % 5) * 0.25, x = cx - R + (((k * 97.31 + t * 9 * sp) % (2 * R)) + 2 * R) % (2 * R), y = cy - R + (((k * 61.7 + t * 14 * sp) % (2 * R)) + 2 * R) % (2 * R), al = 0.18 + 0.32 * (0.5 + 0.5 * Math.sin(t * 1.4 + k * 1.3));
+  const t = performance.now() / 1000, snow = Wd && Wd.snow, col = snow ? '215,232,255' : '255,236,196', kx = ox + HALL.king.x * ts, ky = oy + HALL.king.y * ts;
+  ctx.save(); czClip(ox, oy, ts);
+  if (snow){ ctx.fillStyle = 'rgba(110,150,225,.16)'; ctx.fillRect(ox, oy, HALL.W * ts, HALL.H * ts); }
+  ctx.globalCompositeOperation = 'lighter';
+  for (const [ax, b0, b1, ye, ph] of [[13.3, 8, 11, 23, 0], [14.95, 17.3, 20, 22, 2.2]]){ const a = 0.04 + 0.03 * Math.sin(t * 0.5 + ph), y0 = oy + 0.6 * ts, y1 = oy + ye * ts;   // 그림의 두 빛줄기
+    const gr = ctx.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, `rgba(${col},${(a * 1.6).toFixed(3)})`); gr.addColorStop(1, `rgba(${col},0)`); ctx.fillStyle = gr;
+    ctx.beginPath(); ctx.moveTo(ox + (ax - 0.35) * ts, y0); ctx.lineTo(ox + (ax + 0.35) * ts, y0); ctx.lineTo(ox + b1 * ts, y1); ctx.lineTo(ox + b0 * ts, y1); ctx.closePath(); ctx.fill(); }
+  { const g0 = ctx.createRadialGradient(kx, ky, 0, kx, ky, ts * 3.2); g0.addColorStop(0, `rgba(${col},${(0.16 + 0.04 * Math.sin(t * 0.9)).toFixed(3)})`); g0.addColorStop(1, `rgba(${col},0)`); ctx.fillStyle = g0; ctx.beginPath(); ctx.arc(kx, ky, ts * 3.2, 0, 6.283); ctx.fill(); }   // 관을 비추는 빛
+  ctx.fillStyle = `rgba(${col},1)`; const X0 = ox + ts, Y0 = oy + ts, w = 26 * ts, h = 26 * ts;
+  for (let k = 0; k < 90; k++){ const sp = 0.6 + (k % 5) * 0.25, x = X0 + (((k * 97.31 + t * 9 * sp) % w) + w) % w, y = Y0 + (((k * 61.7 + t * 14 * sp) % h) + h) % h, al = 0.16 + 0.3 * (0.5 + 0.5 * Math.sin(t * 1.4 + k * 1.3));
     ctx.globalAlpha = al; ctx.beginPath(); ctx.arc(x, y, 0.7 + (k % 3) * 0.55, 0, 6.283); ctx.fill(); }   // 떠도는 먼지
   ctx.restore();
+}
+// v7.27.0 세자르의 알현실 그림 (처음 그릴 때 불러옴) · 그림이 28칸에 조금 모자란 아래 입구는 마지막 줄을 늘려 이음 · 옥좌 앞의 관
+let CZIMG = null; const czImg = () => CZIMG || (CZIMG = Object.assign(new Image(), { src: HALL.img.src }));
+function drawCzRoom(Wd, ox, oy, ts){
+  const a = czImg(), I = HALL.img;
+  if (a.complete && a.naturalWidth){ const w = a.naturalWidth * I.s * ts, h = a.naturalHeight * I.s * ts, x = ox + I.x * ts, y = oy + I.y * ts; ctx.drawImage(a, x, y, w, h);
+    if (h < HALL.H * ts) ctx.drawImage(a, 0, a.naturalHeight - 6, a.naturalWidth, 6, x, y + h - 1, w, HALL.H * ts - h + 1); }
+  if ((S.piles || []).some(k => String(k).endsWith(',3'))) czCoffin(ox, oy, ts);
+}
+function czCoffin(ox, oy, ts){
+  const g = ctx, P = ts, qx = ox + HALL.coffin[0][0] * P, qy = oy + HALL.coffin[0][1] * P, w = P * 2, h = P, L = qx + P * 0.1, Rr = qx + w - P * 0.1, T = qy + P * 0.13, B = qy + h - P * 0.13, mid = (T + B) / 2;
+  g.save(); g.fillStyle = 'rgba(30,20,10,.45)'; g.beginPath(); g.ellipse(qx + w / 2 - P * 0.18, qy + h / 2 + P * 0.25, w * 0.55, h * 0.5, 0, 0, 6.283); g.fill();
+  const path = i => { g.beginPath(); g.moveTo(L + i, mid); g.lineTo(L + w * 0.2 + i * 0.4, T + i); g.lineTo(Rr - i, T + h * 0.1 + i); g.lineTo(Rr - i, B - h * 0.1 - i); g.lineTo(L + w * 0.2 + i * 0.4, B - i); g.closePath(); };
+  const wg = g.createLinearGradient(0, T, 0, B); wg.addColorStop(0, '#6a4428'); wg.addColorStop(0.5, '#3e2614'); wg.addColorStop(1, '#2a180c'); g.fillStyle = wg; path(0); g.fill(); g.strokeStyle = '#d4ad55'; g.lineWidth = Math.max(1.5, P * 0.08); path(0); g.stroke();
+  g.strokeStyle = 'rgba(212,173,85,.6)'; g.lineWidth = Math.max(1, P * 0.04); path(P * 0.16); g.stroke(); g.restore();
 }
 // 관 속의 왕관 (반짝임) · 계단
 function drawHall(Wd, ox, oy, ts){
@@ -5244,7 +5270,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push('굴의 전투판 v7.26.2 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push('굴의 전투판 v7.27.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   M.forEach((m, i) => {
     o.push(`════════ ${i + 1}. ${m.name || m.s + 'S'} · ${m.kind || ''}${m.enc ? ' — ' + m.enc : ''}${m.btl ? ' — ' + m.btl.comp + ' · ' + m.btl.sit : ''}${m.npc ? ' (' + m.npc + ')' : ''} — ${m.back ? '다시 들어섬' : '처음'}${m.from ? (m.from === 'up' ? ' · 위에서 내려옴' : ' · 아래에서 올라옴') : ''}${m.live ? ' · 지금 이 맵' : ''} ════════`);
@@ -5272,7 +5298,7 @@ async function campLogAll(){
   for (const x of L){ let log = null, tx = null; try { log = x.z ? JSON.parse(await gunB64(x.z)) : JSON.parse(x.j || '[]'); } catch (e) {} try { tx = x.zt ? JSON.parse(await gunB64(x.zt)) : x.jt ? JSON.parse(x.jt) : null; } catch (e) {}
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
-  return { game: '굴의 전투판', ver: '7.26.2', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '7.27.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -5299,7 +5325,7 @@ const ENC3 = [
   { k: 'fight', name: '공통 전투', w: 3, fight: 'btl' },   /* v7.25.3 싸움은 공통 전투 하나 (무리 · 상황은 들어설 때) */
   { k: 'f0', name: '똥개 무리', w: 0, fight: 0, comp: 'c2', old: true }, { k: 'f1', name: '똥개와 기사', w: 0, fight: 1, comp: 'c3', old: true }, { k: 'f2', name: '기사들', w: 0, fight: 2, comp: 'c4', old: true },   /* 예전 저장 · 시험용 (뽑히지 않음) */
   { k: 'chin', name: '잠든 사냥꾼', w: 1.2, npc: 'chin' }, { k: 'tang', name: '불가에 앉은 이', w: 1.2, npc: 'tang' },
-  { k: 'shop', name: '토끼마차', w: 1, npc: 'aiten', more: ['cheong'] }, { k: 'hora', name: '대장군의 무대', w: 0.6, npc: 'hora' }, { k: 'lost', name: '당신들을 따라온 누군가', w: 1.5, npc: 'lost' }, { k: 'odile', name: '오딜의 방', w: 1, npc: 'odile' }];   /* v7.26.0 */   // v7.22.4 버린 이가 있을 때만   // v7.22.2 중간보스 (확률적으로)   // v7.22.1 상인 (more = 곁의 인물)
+  { k: 'shop', name: '토끼마차', w: 1, npc: 'aiten', more: ['cheong'] }, { k: 'hora', name: '대장군의 무대', w: 0.6, npc: 'hora' }, { k: 'lost', name: '당신들을 따라온 누군가', w: 1.5, npc: 'lost' }, { k: 'odile', name: '오딜의 방', w: 1, npc: 'odile' }, { k: 'regina', name: '레지나의 알현실', w: 0, npc: 'regina', test: true }];   /* v7.27.0 레지나: 아직 랜덤에 없음 (목록에서만) */   /* v7.26.0 */   // v7.22.4 버린 이가 있을 때만   // v7.22.2 중간보스 (확률적으로)   // v7.22.1 상인 (more = 곁의 인물)
 // 장면 인물: 싸움 셈 밖 (아무도 노리지 않고 노려지지도 않음) — 말 걸기 · 공격 (그 자리에서 적) · 영입 (동료). map = 그 맵 (물 · 횃불 · 더미)
 const NPC = {
   chin: { key: '친칠라', ref: 'C-106', who: '활을 든 인물', x: 16.5, y: 5.2, rock: true, sleep: true, img: 'C-106_talk06',
@@ -5315,6 +5341,9 @@ const NPC = {
   hora: { key: '호레이쇼', ref: 'C-158', who: '앉아 있는 거대한 기사', x: 13, y: 6, img: 'C-158_art', st0: 'sit', boss: true, big: 1.9, node: () => 'war',   /* v7.22.2 중간보스 */
     map: { W: 26, H: 16, amb: 0.55, water: [], torches: [], piles: ['8,5,1', '9,5,1', '17,5,1', '18,6,1', '7,9,2', '19,10,2'] }, seen: '무대 같은 빛 한가운데, 거대한 기사가 조용히 앉아 있다.' },
   lost: { key: '', ref: '', who: '어둠 속의 누군가', x: 16, y: 7, img: null, st0: 'sit', lostNpc: true, map: { water: [], torches: [], piles: ['13,6,2', '19,8,2', '15,10,1'] }, seen: '어둠 속에서 누군가 비틀거리며 다가온다.' } };   /* v7.22.4 버린 아군 (얼굴 · 이름은 그 사람) */
+NPC.regina = { key: '레지나', ref: 'C-085', who: '옥좌의 검은 기사', x: 12, y: 2.6, img: 'regina_t1', st0: 'throne', fromRef: true, throne: true, talkR: 6.5, node: E => rgNode(E),   /* v7.27.0 레지나 (9층의 보스) */
+  mod: { traits: ['베테랑'], foeTraits: ['보스'], wName: '레지나의 검', gear: { 몸: { name: '레지나의 흑갑', mat: '판금', tier: 3 } } },
+  foeLine: '그녀가 옥좌에서 천천히 일어난다. 붉은 검이 빛을 머금는다.', map: { W: 24, H: 40, amb: 0.85, regina: true, water: [], torches: [], piles: [] }, seen: null };
 NPC.odile = { key: '오딜', ref: 'C-027', who: '가면을 쓴 여자', x: 8, y: 3.35, img: 'odile_t1', st0: 'od', fromRef: true, talkR: 13, node: E => odNode(E), foeLine: '그녀는 찻잔을 내려놓는다. 아무 말도 하지 않는다.',   /* v7.26.0 오딜의 방 */
   map: { W: 16, H: 12, amb: 0.5, room: true, water: [], torches: [], piles: [] }, seen: null };
 // 대화: 줄 = { t (말) | narr (나레이션), img } · { ask: [[단추, 다음]] } (다음 = 마디 · '' 닫기 · '!join' '!foe' '!decline') · { go: '!…' }
@@ -5338,10 +5367,11 @@ const TALK = {
     t2: [{ t: '꺼져', img: 'C-036_art' }, { ask: [['그만둔다', ''], ['공격한다', '!war']] }],
     t3: [{ narr: '그는 대꾸하지 않는다. 담배 연기만 길게 내뿜는다.', img: 'C-036_art' }, { ask: [['그만둔다', ''], ['공격한다', '!war']] }] },
   hora: { war: [{ narr: '거대한 기사가 천천히 일어선다. 갑옷이 삐걱이는 소리가 무대를 채운다.', img: 'C-158_art' }, { box: '대장군이 전쟁을 시작합니다' }, { go: '!foe2' }] } };   /* v7.22.2 */
+TALK.regina = { cur: [], more: [] };   /* v7.27.0 마디는 그때그때 (rgNode) */
 TALK.odile = { cur: [], more: [], q3a: [{ t: '그래. 다들 그렇게 말하더라.', img: 'odile_t5' }, { go: '!ogift' }], q3b: [{ t: '솔직하네. 그게 나아.', img: 'odile_t5' }, { go: '!ogift' }] };   /* v7.26.0 (cur · more 는 그때그때) */
 // v7.22.1 토끼마차를 건드림: 확정 패배 이벤트 (6성 창병 청갑 · 4성 서폿 아이텐 — 전투는 나중에 제대로)
 const TALK_WAR = [{ narr: '청갑이 담배를 비벼 끄고 천천히 창을 든다.', img: 'C-036_art', npc: 'cheong' }, { t: '고객님, 이러시면 곤란해요.', img: 'C-033_art', npc: 'aiten' }, { box: '...눈 깜짝할 사이였다.' }, { go: '!lose' }];
-const ENC_LIVE = ['sleep', 'awake', 'sit', 'greeted', 'declined', 'shop', 'smoke', 'rise', 'od'];   /* v7.26.0 od = 오딜 (방) */
+const ENC_LIVE = ['sleep', 'awake', 'sit', 'greeted', 'declined', 'shop', 'smoke', 'rise', 'od', 'throne', 'rpass'];   /* v7.27.0 throne · rpass = 레지나 (옥좌) */   /* v7.26.0 od = 오딜 (방) */
 function encPick(C, party){
   const have = new Set([...party.map(p => p.name), ...(C.fallen || []), ...(C.lost || [])]), L = ENC3.filter(e => e.w > 0 && (e.npc === 'lost' ? (C.lostP || []).length > 0 : !e.npc || !have.has(NPC[e.npc].key)));
   let r = Math.random() * L.reduce((a, e) => a + e.w, 0); for (const e of L){ r -= e.w; if (r <= 0) return e; } return L[0];
@@ -5392,7 +5422,8 @@ function encTalk(E){
   talkOpen(E.npc, N.node ? N.node(E) : E.st === 'declined' ? 'declined' : E.st === 'sit' ? (E.st = 'greeted', 'greet') : 'start', E);
 }
 function encClick(w){ const E = encAll().find(q => encLive(q) && (q.seen || $('seeAll').checked) && Math.hypot(w.x - q.x, w.y - q.y) <= 0.8); if (!E) return false; encTalk(E); return true; }
-function encMake(E, side){ const N = NPC[E.npc], p = E.p ? { ...clone(E.p), id: uid(), side, x: E.x, y: E.y } : N.fromRef ? { ...unitFromRef(N.ref, side, {}), id: uid(), x: E.x, y: E.y } : { ...fromDesign(designByKey(N.key), side), x: E.x, y: E.y };   /* v7.26.0 fromRef = 도감 그대로 (오딜) */ if (E.p) lostBack(E.p.name); lockIdentity(p); S.units.push(p); return addUnit(world, p); }
+function encMake(E, side){ const N = NPC[E.npc], p = E.p ? { ...clone(E.p), id: uid(), side, x: E.x, y: E.y } : N.fromRef ? { ...unitFromRef(N.ref, side, {}), id: uid(), x: E.x, y: E.y } : { ...fromDesign(designByKey(N.key), side), x: E.x, y: E.y };
+  if (N.mod && !E.p){ const Md = clone(N.mod); p.traits = [...new Set([...(p.traits || []), ...(Md.traits || []), ...(side === 1 ? Md.foeTraits || [] : [])])]; delete Md.traits; delete Md.foeTraits; Object.assign(p, Md); }   /* v7.27.0 인물 덧붙임 (레지나: 베테랑 · 적이면 보스 · 검 이름 · 흑갑) */   /* v7.26.0 fromRef = 도감 그대로 (오딜) */ if (E.p) lostBack(E.p.name); lockIdentity(p); S.units.push(p); return addUnit(world, p); }
 function lostBack(name){ const C = S.camp; if (!C) return; C.lostP = (C.lostP || []).filter(q => q.name !== name); C.lost = (C.lost || []).filter(n => n !== name); }   // v7.22.4 버린 이가 돌아옴
 function encJoin(E){ E = E || encCur(); if (!E) return; const u = encMake(E, 0); E.st = 'joined'; logEv(world, { k: 'encJoin', npc: E.npc, a: u.i, name: u.name }); save(); hud(); campBarRender(true); toast(`${ga(u.name)} 동료가 됐어요 — 함께 넘어가요`); }
 function encFoe(E){ E = E || encCur(); if (!E) return; const u = encMake(E, 1), Wd = world; E.st = 'foe';
@@ -5409,7 +5440,9 @@ const talkImgOk = new Set(), talkImgBad = new Set();
 // v7.25.4 대화 그림 등록표 — 도감 번호 → 대화용 그림 (배경 투명 · art/이름.webp). 줄에 img 가 있으면 그 그림 · 없으면 첫 그림 · 그것도 없으면 얼굴 (도감 얼굴)
 //   투명 그림을 새로 받으면 여기 한 줄만 고치면 됨 (인주 C-001 은 아직 없음 → 얼굴)
 const TALK_ART = { 'C-106': ['C-106_talk06', 'C-106_talk01', 'C-106_talk02', 'C-106_talk03', 'C-106_talk04', 'C-106_talk05', 'C-106_talk07', 'C-106_talk08', 'C-106_talk09', 'C-106_talk10'],
-  'C-221': ['C-221_art'], 'C-033': ['C-033_art'], 'C-036': ['C-036_art'], 'C-158': ['C-158_art'], 'C-027': ['odile_t1', 'odile_t2', 'odile_t3', 'odile_t4', 'odile_t5'], 'C-005': ['mstar_t1', 'mstar_t2', 'mstar_t3'], 'C-002': ['C-002_art'] };
+  'C-221': ['C-221_art'], 'C-033': ['C-033_art'], 'C-036': ['C-036_art'], 'C-158': ['C-158_art'], 'C-027': ['odile_t1', 'odile_t2', 'odile_t3', 'odile_t4', 'odile_t5'], 'C-005': ['mstar_t1', 'mstar_t2', 'mstar_t3', 'mstar_t4', 'mstar_t5', 'mstar_t6', 'mstar_t7', 'mstar_t8'], 'C-002': ['C-002_art', 'rebecca_t2', 'rebecca_t3', 'rebecca_t4'],
+  'C-085': ['regina_t1', 'regina_t2', 'regina_t3', 'regina_t4', 'regina_t5'],   /* v7.27.0 레지나 */
+  'C-282': ['riwan_t1', 'riwan_t2', 'riwan_t3', 'riwan_t4', 'riwan_t5', 'riwan_t6', 'riwan_t7', 'riwan_t8'], 'C-277': ['serpa_t1', 'serpa_t2', 'serpa_t3', 'serpa_t4', 'serpa_t5'], 'C-108': ['pehto_t1'], 'C-006': ['poren_t1', 'poren_t2', 'poren_t3', 'poren_t4', 'poren_t5'] };   /* v7.27.0 리완 · 세르파 · 페흐토 · 포렌 — 나오게 되면 바로 씀 */
 const talkArt = (ref, img) => img || ((TALK_ART[ref] || [])[0]) || null;
 function tkSlot(side, ref, img){
   const el = $(side === 'L' ? 'tkL' : 'tkPic'), im = $(side === 'L' ? 'tkImgL' : 'tkImg');
@@ -5439,9 +5472,9 @@ function talkShow(){
   if (L.cg){ Lr = Li = Rr = Ri = null; sp = ''; }   /* v7.26.0 가운데 장면 그림 — 양쪽 인물 비움 */
   tkSlot('L', Lr, Li); tkSlot('R', Rr, Ri); $('tkL').classList.toggle('on', sp === 'L'); $('tkPic').classList.toggle('on', sp === 'R'); $('talk').classList.toggle('tk-sp-r', sp === 'R');
   $('talk').classList.toggle('tk-narr', !!L.narr); $('talk').classList.toggle('tk-boxed', !!L.box); $('tkName').textContent = L.narr || L.box ? '' : ally ? (L.name || ally.name) : N ? (known ? N.key : N.who) || (E && E.name) || '' : '';   // v7.22.1 box = 사각형 나레이션
-  if (L.bg) TK.bg = L.bg; else if (!TK.bg && TK.npc === 'odile') TK.bg = 'bg_room'; const T0 = $('talk'); T0.classList.toggle('tk-bgi', !!TK.bg || !!L.cg);   /* v7.26.0 장면 그림 (TK.bg = 뒤 배경 · L.cg = 그 줄에만 가운데 큰 그림 — 양쪽 인물은 비움) */
+  if (L.bg) TK.bg = L.bg; else if (!TK.bg && TK.npc === 'odile') TK.bg = 'bg_room'; else if (!TK.bg && TK.npc === 'regina') TK.bg = 'rg_bg'; const T0 = $('talk'); T0.classList.toggle('tk-bgi', !!TK.bg || !!L.cg);   /* v7.26.0 장면 그림 (TK.bg = 뒤 배경 · L.cg = 그 줄에만 가운데 큰 그림 — 양쪽 인물은 비움) */
   T0.style.backgroundImage = L.cg ? `linear-gradient(to top,rgba(6,5,8,.97) 0%,rgba(6,5,8,.9) 24%,rgba(6,5,8,0) 40%),url(art/room/${L.cg}.webp),linear-gradient(rgba(6,5,8,.8),rgba(6,5,8,.8))${TK.bg ? `,url(art/room/${TK.bg}.webp)` : ''}` : TK.bg ? `linear-gradient(to top,rgba(6,5,8,.95) 0%,rgba(6,5,8,.66) 42%,rgba(6,5,8,.5) 100%),url(art/room/${TK.bg}.webp)` : '';
-  T0.style.backgroundSize = L.cg ? 'auto,auto 64%,auto,cover' : ''; T0.style.backgroundPosition = L.cg ? '0 0,center 6%,0 0,center 30%' : ''; T0.style.backgroundRepeat = L.cg ? 'no-repeat' : '';
+  T0.style.backgroundSize = L.cg ? (L.cgw ? 'auto,min(96%,1500px) auto,auto,cover' : 'auto,auto 64%,auto,cover') : ''; T0.style.backgroundPosition = L.cg ? (L.cgw ? '0 0,center 14%,0 0,center 30%' : '0 0,center 6%,0 0,center 30%') : '';   /* v7.27.0 cgw = 가로로 긴 장면 그림 */ T0.style.backgroundRepeat = L.cg ? 'no-repeat' : '';
   $('tkCh').innerHTML = ''; $('tkNx').hidden = true;
   const full = L.t || L.narr || L.box || '', el = $('tkText'); clearInterval(TK.timer); jrTalk({ who: L.narr ? '나레이션' : L.box ? '알림' : $('tkName').textContent || (E && E.name) || '', s: full });   /* v7.25.3 여정 기록 */ TK.full = full; TK.n = 0; el.textContent = '';
   TK.timer = setInterval(() => { TK.n += 2; el.textContent = full.slice(0, TK.n); if (TK.n >= full.length) talkDone(); }, 32);
@@ -5451,10 +5484,14 @@ function talkAdv(){ if (!TK) return; if (TK.timer){ talkDone(); return; } const 
 function talkPick(nx){ if (!TK) return; if (!nx){ talkClose(); return; } if (nx[0] === '!'){ talkDo(nx); return; } talkOpen(TK.npc, nx, TK.E); }
 function talkDo(a){
   const N = TK && TK.npc ? NPC[TK.npc] : null, E = (TK && TK.E) || encCur();
-  if (a === '!join'){ talkClose(); encJoin(E); return; }
+  if (a === '!join'){ talkClose(); encJoin(E); if (E && E.npc === 'regina'){ rgS().joined = true; world.stairs = { ...RG.door }; save(); campBarRender(true); } return; }
+  if (a === '!rask'){ TK.lines = [rgAsk(E)]; TK.i = 0; talkShow(); return; } if (a === '!rpass2'){ talkClose(); rgPass(E); return; }   /* v7.27.0 레지나 */
+  if (a === '!rfoe'){ TK.lines = [{ t: '좋아. 오랜만에 몸이 좀 풀리겠네.', img: 'regina_t5' }, { narr: '(그녀가 옥좌에서 천천히 일어난다. 붉은 검이 빛을 머금는다.)', img: 'regina_t5' }, { go: '!foe2' }]; TK.i = 0; talkShow(); return; }
+  if (a === '!rpass'){ TK.lines = [{ t: '가 봐. 문은 안 잠갔어.', img: 'regina_t3' }, { narr: '(그녀가 다시 턱을 괸다.)', img: 'regina_t1' }, { go: '!rpass2' }]; TK.i = 0; talkShow(); return; }
+  if (a === '!rjoin'){ TK.lines = [{ t: '...여기 앉아 있는 것도 질렸어.', img: 'regina_t2' }, { t: '좋아, 따라가 줄게. 대신 지루하게 하지 마.', img: 'regina_t4' }, { go: '!join' }]; TK.i = 0; talkShow(); return; }
   if (a === '!decline'){ if (E){ E.st = 'declined'; logEv(world, { k: 'encDecline', npc: E.npc }); save(); } talkClose(); campBarRender(true); return; }
   if (a === '!foe'){ TK.lines = [{ narr: N ? N.foeLine : '싸움이 시작된다.', img: N ? N.img : null }, { go: '!foe2' }]; TK.i = 0; talkShow(); return; }
-  if (a === '!foe2'){ talkClose(); if (E && E.npc === 'odile'){ E.x = OD.stand.x; E.y = OD.stand.y; } encFoe(E); return; }   /* v7.26.0 오딜은 소파에서 일어남 */
+  if (a === '!foe2'){ talkClose(); if (E && E.npc === 'odile'){ E.x = OD.stand.x; E.y = OD.stand.y; } if (E && E.npc === 'regina'){ E.x = RG.stand.x; E.y = RG.stand.y; } encFoe(E); return; }   /* v7.26.0 오딜은 소파에서 일어남 */
   if (a === '!otea'){ odTea(E); return; } if (a === '!orest'){ talkClose(); odRest(); return; } if (a === '!oleave'){ talkClose(); odLeave(); return; }   /* v7.26.0 오딜의 방 */
   if (a === '!oask'){ TK.lines = [odTalkAsk(E)]; TK.i = 0; talkShow(); return; } if (a === '!obless'){ talkClose(); odBless(); return; }
   if (a === '!ogift'){ TK.lines = [{ narr: '(그녀가 머리에서 장미 장식을 하나 떼어 내민다.)', img: 'odile_t4' }, { t: '가져가. 별건 아니야.', img: 'odile_t1' }, { box: '<축복:오딜> — 오딜의 장미장식' }, { go: '!obless' }]; TK.i = 0; talkShow(); return; }
@@ -5470,6 +5507,7 @@ function drawNpc(Wd, E, ox, oy, ts, see){
   const N = NPC[E.npc], now = performance.now(); let x = E.x, y = E.y, lift = 0;
   if (E.hop && now - E.hop.t0 < 380){ const k = (now - E.hop.t0) / 380, q = 1 - (1 - k) * (1 - k); x = E.hop.fx + (E.x - E.hop.fx) * q; y = E.hop.fy + (E.y - E.hop.fy) * q; lift = Math.sin(k * Math.PI) * 0.6; }
   if (!(see || E.seen || litAt(Wd, x, y))) return;
+  if (N.throne && (E.st === 'throne' || E.st === 'rpass')) return;   /* v7.27.0 옥좌에 앉아 있으면 그림 (drawRegina) */
   const px = ox + x * ts, py = oy + (y - lift) * ts, r = 0.36 * ts * (N.big || 1) * (E.st === 'rise' ? 1 + Math.min(1, (now - (E.riseT || now)) / 1200) * 0.15 : 1), fi = faceOf(E.ref || N.ref);
   if (N.cart) drawCart(ox + N.cart.x * ts, oy + N.cart.y * ts, ts);   // v7.22.1 토끼마차
   if (N.rock){ const rx = ox + N.x * ts, ry = oy + (N.y + 0.25) * ts; ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.beginPath(); ctx.ellipse(rx + 3, ry + 4, ts * 0.55, ts * 0.32, 0, 0, 6.283); ctx.fill(); ctx.fillStyle = '#4a4650'; ctx.beginPath(); ctx.ellipse(rx, ry, ts * 0.52, ts * 0.3, 0, 0, 6.283); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.beginPath(); ctx.ellipse(rx - ts * 0.12, ry - ts * 0.08, ts * 0.22, ts * 0.1, -0.3, 0, 6.283); ctx.fill(); }
@@ -5595,26 +5633,31 @@ function campBuild(s, from, party){
   const RL = def.ruin ? (st.ruin || (st.ruin = ruinLayout(st.seed))) : null;   // v7.23 4S 유적
   const HL = def.hall ? hallLayout() : null; if (HL && !st.cz) st.cz = { st: 'coffin', t0: null, near: false }; if (HL && st.cz.st === 'fight'){ st.cz.fs0 = st.cz.fs || 0; st.cz.tR = 0; }   /* v7.23.3 다시 들어오면 이어서 셈 */   // v7.23.1 5S 알현실 (관 속의 왕)
   Object.assign(S, { type: 'grid', W: (NP && NP.map.W) || 32, H: (NP && NP.map.H) || 20, amb: (NP && NP.map.amb) || 0, mapC: false, randStart: !st.seen, seed: st.seed, flips: [], torches: NP ? clone(NP.map.torches) : [], terr: NP ? '' : '1F', tseed: st.tseed, piles: st.piles || (NP ? NP.map.piles.slice() : []), hills: st.hills || [], pileOff: [], water: NP ? clone(NP.map.water) : [] });   // v7.22 장면 인물 맵 (물 · 불빛 · 더미)
-  if (RL) Object.assign(S, { W: RL.W, H: RL.H, amb: 0, randStart: false, flips: RL.flips.slice(), torches: clone(RL.torches), terr: '', piles: st.piles || RL.piles.slice(), hills: [], indoor: true, zones: clone(RL.zones), sandY: RL.sandY }); else if (HL) Object.assign(S, { W: HL.W, H: HL.H, amb: HALL.amb, randStart: false, flips: HL.flips.slice(), torches: [], terr: '', piles: st.cz.st === 'stairs' ? [] : HL.piles.slice(), hills: [], indoor: true, zones: [], sandY: null, holdClear: st.cz.st !== 'stairs' }); else Object.assign(S, { indoor: false, zones: [], sandY: null });
+  if (RL) Object.assign(S, { W: RL.W, H: RL.H, amb: 0, randStart: false, flips: RL.flips.slice(), torches: clone(RL.torches), terr: '', piles: st.piles || RL.piles.slice(), hills: [], indoor: true, zones: clone(RL.zones), sandY: RL.sandY }); else if (HL) Object.assign(S, { W: HL.W, H: HL.H, amb: HALL.amb, randStart: false, flips: HL.flips.slice(), torches: [], terr: '', piles: (st.cz.st === 'stairs' ? [] : HL.piles.slice()).concat(HL.rubble), hills: [], indoor: true, zones: [], sandY: null, holdClear: st.cz.st !== 'stairs' }); else Object.assign(S, { indoor: false, zones: [], sandY: null });
   S.hall = !!HL; if (HL && st.cz.st === 'open'){ delete st.cz.tOpen; delete st.cz.hint; }   /* v7.25.0 알현실 그림 · 다시 들어오면 10초를 다시 셈 */
-  S.room = !!(NP && NP.map.room); if (S.room) Object.assign(S, { flips: odFlips(), piles: odPiles(), torches: [], hills: [], indoor: true, zones: [], sandY: null });   /* v7.26.0 오딜의 방 (벽 · 가구 칸) */
+  S.room = !!(NP && NP.map.room); if (S.room) Object.assign(S, { flips: odFlips(), piles: odPiles(), torches: [], hills: [], indoor: true, zones: [], sandY: null });
+  S.regina = !!(NP && NP.map.regina); if (S.regina) Object.assign(S, { flips: rgFlips(), piles: [], torches: [], hills: [], indoor: true, zones: [], sandY: null });   /* v7.27.0 레지나: 복도 → 알현실 (그림의 벽 · 기둥 · 화로 · 옥좌는 막힘) */
+  if (S.regina && st.enc) st.enc.seen = true;   // 들어설 때 장면은 rgEnter 가   /* v7.26.0 오딜의 방 (벽 · 가구 칸) */
   if (S.room && st.enc && !st.enc.entered) st.enc.seen = true;   // 들어설 때 나레이션은 odEnter 가
   if (!HL) S.holdClear = false;   /* v7.23 실내 (벽이 시야를 자름) · 구역 빛 */
   const foes = st.seen ? (st.foes || []).map(f => { const o = { ...clone(f), id: uid() }; delete o.warden; return o; }) : RL ? RL.foes.map(f => ({ ...foeOf(f.k), id: uid(), x: f.x, y: f.y, ...(f.warden ? { warden: clone(f.warden) } : {}) })) : HL ? [] : (bt ? btlComp(bt).foes : []).flatMap(([k, n]) => Array.from({ length: n }, () => ({ ...foeOf(k), id: uid() })));
   S.startK = bt && !st.seen ? bt.s : null;   /* v7.25.3 적의 시작 (엔진 startScenario · patrolStart) */
   S.units = [...party, ...foes]; rebuildMap();
   const m = buildMap(S), up = from === 'up';
+  if (S.regina && up) campPlace(m, party, 3.4, 6, 9, 15); else   /* v7.27.0 위에서 돌아오면 옥좌 앞 */
+  if (HL && !up) campPlace(m, party, S.H - 4, S.H - 0.5, 8, 20); else   /* v7.27.0 알현실은 아래 입구가 좁음 — 아래 네 줄 (세자르가 일어나는 자리에서 10칸쯤) */
   campPlace(m, party, up ? 0.5 : S.H - 3, up ? 3 : S.H - 0.5, RL && up ? 12 : Math.max(1, S.W / 2 - 6), RL && up ? 18 : Math.min(S.W - 1, S.W / 2 + 6));   // v7.22.2 맵 크기에 맞춤   // v7.23 유적 위쪽은 복도로
   if (!st.seen && !RL) campPlace(m, foes, 2, S.H - 8, 2, S.W - 2);
   if (def.torches) S.torches = autoTorches(buildMap(S), S.seed, def.torches);
   st.piles = S.piles; st.hills = S.hills;
   selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors();
-  if ((HL || S.room) && world && world.explored) world.explored.fill(2);   /* v7.26.0 방도 한눈에 */   /* v7.25.0 밝은 홀 — 한눈에 다 보임 */
+  if ((HL || S.room || S.regina) && world && world.explored) world.explored.fill(2);
+  if (S.regina && st.enc && ['rpass', 'rdead', 'joined'].includes(st.enc.st)) world.stairs = { ...RG.door };   /* v7.27.0 옥좌 뒤 길 */   /* v7.26.0 방도 한눈에 */   /* v7.25.0 밝은 홀 — 한눈에 다 보임 */
   if (HL && st.cz.st === 'stairs') world.stairs = { ...HALL.stairs };   // v7.23.1 계단은 그대로
   logEv(world, { k: 'campIn', s, name: def.name, kind: def.kind + (E3 ? ' — ' + E3.name : ''), bt: bt ? btlTxt(bt) : null, from, back: !!st.seen });   /* v7.25.3 무리 · 상황은 로그에만 */
   jrIn(C, s, from, st, E3, bt);   /* v7.25.3 여정 기록 */
   if (S.room && st.enc) ldAfter(() => odEnter(st.enc), 420);   /* v7.26.0 오딜의 방에 들어섬 */
-  const RN = HL && !st.seen ? [{ narr: '천장이 보이지 않을 만큼 높습니다. 가운데에 관 하나.' }] : RL && !st.seen ? [{ narr: '하얀 사막이 끝나는 곳. 무너진 담 너머로 유적의 입구가 보인다.' }, { narr: '입구 안쪽은 미약한 빛뿐이다. 무언가 숨을 죽이고 있다.' }] : [];   // v7.23 유적에 들어섬 (따라온 이의 나레이션 뒤에 이어서)
+  const RN = HL && !st.seen ? [{ narr: '천장이 보이지 않을 만큼 높습니다. 거미줄 앉은 옥좌 앞에, 관 하나.' }] : RL && !st.seen ? [{ narr: '하얀 사막이 끝나는 곳. 무너진 담 너머로 유적의 입구가 보인다.' }, { narr: '입구 안쪽은 미약한 빛뿐이다. 무언가 숨을 죽이고 있다.' }] : [];   // v7.23 유적에 들어섬 (따라온 이의 나레이션 뒤에 이어서)
   if (C.follow){ const f = C.follow; delete C.follow; logEv(world, { k: 'encFollow', name: f.name, tx: f.t }); ldAfter(() => talkLines([{ narr: f.t, img: f.img }, ...RN])); } else if (RN.length) ldAfter(() => talkLines(RN));   /* v7.25.3 로딩이 걷힌 뒤 */   // v7.22 그냥 지나친 만남 인물이 따라옴
   { const tt = !st.seen ? `1F · ${def.name} ${def.kind}${E3 ? ' — ' + E3.name : ''} · ${def.note}` : `1F · ${def.name} 로 돌아옴 — 남긴 적 ${foes.length}`; ldAfter(() => toast(tt), 0); }
   campBarRender(true);
@@ -5669,7 +5712,7 @@ function prologRec(C, al){
 function campQuit(q){
   const TT = S.camp && S.camp.test;   /* v7.26.2 인카운터 시험 (지난 여정 기록은 건드리지 않음) */
   if (S.camp && !TT && S.camp.jr && (S.camp.jr.visits || []).length){ const C = S.camp; S.jrLast = { jr: clone(C.jr), camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log, t0: C.t0, t1: C.t1 || Date.now() } }; }   /* v7.25.3 지난 여정 — 로그와 함께 새 프롤로그까지 남김 */
-  const B = S.campBak; delete S.camp; delete S.campBak; if (B) Object.assign(S, clone(B)); S.water = (B && B.water) || []; S.amb = (B && B.amb) || 0; S.indoor = false; S.hall = false; S.startK = null; S.room = false; S.zones = []; S.sandY = null; S.holdClear = false;   // v7.22 얕은 물은 캠페인 맵에만   // v7.23 실내 · 구역 빛도
+  const B = S.campBak; delete S.camp; delete S.campBak; if (B) Object.assign(S, clone(B)); S.water = (B && B.water) || []; S.amb = (B && B.amb) || 0; S.indoor = false; S.hall = false; S.startK = null; S.room = false; S.regina = false; S.zones = []; S.sandY = null; S.holdClear = false;   // v7.22 얕은 물은 캠페인 맵에만   // v7.23 실내 · 구역 빛도
   resetToEdit(); selId = null; rebuildMap(); setMapUI(); changed(); renderFloors(); campBarRender(true); showTab(S.mode === 'story' ? 'story' : 'place'); sHomeRender();   // v7.24.5 스토리면 첫 화면으로
   if (TT){ if (S.mode !== 'train') setMode('train'); if (TT.keep && !S.story) S.story = TT.keep; save(); if (q !== true) toast('🧪 시험을 마치고 훈련장 배치로 돌아왔어요' + (TT.keep ? ' (프롤로그는 그대로)' : '')); return; }
   if (q !== true) toast(S.mode === 'story' ? '프롤로그를 접었어요 — 다시 시작할 수 있어요' : '캠페인을 끝내고 원래 배치로 돌아왔어요');
@@ -5682,6 +5725,7 @@ function campBarRender(force){
   const def = CAMP_S[C.s] || {}, W = world && world.camp ? world : null, gone = W ? W.units.filter(u => u.side === 0 && u.gone && u.gone !== 'left').length : 0, left = W ? W.units.filter(u => u.side === 0 && u.alive).length : 0, nx = CAMP_S[C.s + 1], pv = CAMP_S[C.s - 1];
   let h = `<b>1F · ${def.name}</b><span class="ck">${esc(def.kind)}${C.s === 3 ? ' — ' + esc(enc3Of(C).name) : ''}${W && W.cleared ? ' · 🏳 끝난 맵' : ''}${gone ? ` · 넘어간 이 ${gone}` : ''}</span><span class="cb">${encNear() ? '<button class="btn sm go" type="button" data-ctalk="1" title="가까이 있는 만남 인물에게 말을 검">💬 말 걸기</button>' : ''}${W && !W.over ? `<button class="btn sm" type="button" data-cexit="up" title="고른 아군 (없으면 모두) 이 맵 위쪽 끝으로 가서 넘어감">↑ ${nx ? nx.name + '로' : '계단으로'}</button>${pv ? `<button class="btn sm" type="button" data-cexit="down" title="고른 아군 (없으면 모두) 이 맵 아래쪽 끝으로">↓ ${pv.name}로</button>` : ''}${gone && left ? `<button class="btn sm warn" type="button" data-cabandon="1" title="남은 아군은 이후 나오지 않음">아군을 버린다 (${left})</button>` : ''}${W.cleared ? '<button class="btn sm" type="button" data-cloot="1">전리품</button>' : ''}` : ''}${dlNs ? '<button class="btn sm" type="button" data-clog="1" title="지금까지의 여정 (이 맵까지) 을 파일 하나로">여정 기록</button>' : '<button class="btn sm" type="button" data-clog="cp" title="지금까지의 여정 (이 맵까지) 을 복사">여정 복사</button>'}<button class="btn sm" type="button" data-cquit="1">그만두기</button></span>`;
   if (C.s === 3 && W && S.room){ const E = encCur(), O = odS(); if (E && E.npc === 'odile' && !O.dead && E.st === 'od'){ const left = 2 - (E.teaTaken || []).filter(Boolean).length; h = h.replace('<span class="cb">', `<span class="cb">${left > 0 ? `<button class="btn sm" type="button" data-otea="1" title="오딜의 차 — 무료 두 잔 (이번 방문)">🍵 차 ${left}</button>` : ''}${!E.rested ? '<button class="btn sm" type="button" data-orest="1" title="대화 없이 잠시 쉬어 감 (체력 조금)">🛋 쉬기</button>' : ''}`); } }   /* v7.26.0 */
+  if (C.s === 3 && W && S.regina && !W.stairs) h = h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, '');   /* v7.27.0 레지나: 옥좌 뒤 길이 열려야 위로 */
   if (C.s === 5 && W){ const E = ((C.stages || {})[5] || {}).cz; if (!W.stairs) h = h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, ''); if (E && E.st === 'coffin' && czNearCoffin(W)) h = h.replace('<span class="cb">', '<span class="cb"><button class="btn sm go" type="button" data-ccoffin="1" title="관 뚜껑을 밀어 엶">⚰ 관을 연다</button>'); }   // v7.23.1
   if (h !== campBarH || el.hidden){ campBarH = h; el.innerHTML = h; el.hidden = false; }
   campNarrTop();
@@ -6258,7 +6302,7 @@ function hoverTip(e){
 // v7.18 지형 상태: 언덕 위 (높이) · 웅크림 · 엄폐 곁 (둘레 칸의 더미)
 function terrFx(Wd, u){ if (!terrOn(Wd)) return []; const out = [], h = gH(Wd.map, u.x, u.y); if (h >= 0.3) out.push(`언덕 위 ${h.toFixed(1)}M`);
   if (crouching(Wd, u)) out.push(`웅크림 (키 ×${(Wd.rules.terrain || {}).crouch || 0.55} — 더미 뒤면 가려짐)`);
-  let pk = 0; for (let dy = -1; dy <= 1 && !pk; dy++) for (let dx = -1; dx <= 1 && !pk; dx++) pk = pileAt(Wd.map, u.x + dx, u.y + dy); if (pk) out.push(pk === 2 ? '엄폐 곁 (굳은 시체 0.6M)' : '엄폐 곁 (갑옷 무더기 1.1M)');
+  let pk = 0; for (let dy = -1; dy <= 1 && !pk; dy++) for (let dx = -1; dx <= 1 && !pk; dx++) pk = pileAt(Wd.map, u.x + dx, u.y + dy); if (pk) out.push(pk === 2 ? '엄폐 곁 (굳은 시체 0.6M)' : pk === 3 ? '엄폐 곁 (관 0.9M)' : pk === 4 ? '엄폐 곁 (쓰러진 기둥 1.0M)' : '엄폐 곁 (갑옷 무더기 1.1M)');
   return out; }
 // v7.20 판 위 소지품 한 줄: 든 것의 내구도 + 가방 (아군은 '들기' — 명령이라 닿아야 함)
 function invLine(Wd, u){
@@ -6841,7 +6885,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v7.26.2 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v7.27.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
@@ -6970,6 +7014,7 @@ function traitPeople(){ const m = new Map(); for (const u of S.units) if (!m.has
 function gradeOfP(p, k){ if (k === '야시') return p.nv ? (p.nvG || 'B') : ''; if (k === '후각') return smellGrade(p); const t = (p.traits || []).find(x => { const m = GRADE_RE.exec(x); return m && m[1] === k; }); return t ? t.slice(-1) : ''; }
 // v7.25.3 인카운터 목록 — 1F 프롤로그의 모든 만남: 갈래 · 나오는 곳 · 확률 · 등장 · 맵 · 대화 마디 · 결말 · 바로 해 보기 (스토리에서 새 프롤로그로)
 const ENC_DOC = {
+  regina: { end: '싸움 (이기면 옥좌 뒤 길) · 지나감 · 영입 (세 번째 만남부터)' },   /* v7.27.0 */
   fight: { what: '떠도는 망자의 무리. 들어설 때 무리 하나 · 상황 하나를 뽑음 (2S 는 바로 앞 싸움과 다른 무리). 다시 들어오면 남긴 적이 그 자리에', how: ['적을 모두 쓰러뜨리면 끝난 맵 (전리품 창)', '위쪽 끝으로 나가면 다음 맵 · 아래쪽 끝은 앞 맵', '1S · 2S 에 처음 들어설 때 각혈 (7%, 캠페인에 한 번)'], end: '모두 쓰러뜨림 · 넘어감 · 전멸' },
   chin: { what: '물가 바위 위에서 졸고 있는 사냥꾼 (활)', how: ['처음 보이면 나레이션', '3칸 안에 다가가면 깜짝 놀라 물러남 (도약)', '말 걸기 → 계속 말을 건다 → 어디로 가냐 → 위쪽 길을 가리킴 → 동행 제안 → 동료', '그만두면 거절 (다시 말 걸면 눈길도 주지 않음)', '말 걸지 않고 위로 넘어가면 따라와 동료가 됨', '공격하면 그 자리에서 적'], end: '동료 · 거절 · 따라옴 · 싸움' },
   tang: { what: '어둠 한가운데 작은 불빛 — 장비 무더기와 시체 곁에 앉은 사내 (대검)', how: ['불빛 4칸 안이면 먼저 인사', '말 걸기 → 같이 가자 → 동료 / 두고 간다 → 거절', '그냥 지나쳐 위로 넘어가면 따라옴', '공격하면 대검을 쥐고 일어섬'], end: '동료 · 거절 · 따라옴 · 싸움' },
@@ -6989,7 +7034,7 @@ function renderEncTab(){
   const el = $('pane-enc'); if (!el) return;
   const B = (k, t) => `<span class="eb b-${k}">${t}</span>`, tryB = (k, lb) => `<button class="btn sm" type="button" data-etry="${k}">${lb || '▶ 해 보기'}</button>`;
   const rows = [['공통 전투', B('com', '공통'), '1S · 2S (늘) · 3S (뽑히면)', `1S · 2S 100% · 3S ${encShare('fight')}`, ENC_DOC.fight.end, 'fight'],
-    ...ENC3.filter(e => e.npc).map(e => [e.name, B('rnd', '랜덤'), '3S', encShare(e.k), ENC_DOC[e.k] ? ENC_DOC[e.k].end : '', e.k]),
+    ...ENC3.filter(e => e.npc).map(e => e.w > 0 ? [e.name, B('rnd', '랜덤'), '3S', encShare(e.k), ENC_DOC[e.k] ? ENC_DOC[e.k].end : '', e.k] : [e.name, B('plan', '시험용'), '3S 자리 (목록에서만)', '아직 랜덤에 없음 — ▶ 로만', ENC_DOC[e.k] ? ENC_DOC[e.k].end : '', e.k]),
     ['알현실 입구', B('fix', '고정'), '4S', '늘', '실내전 — 쓰러뜨리거나 지나감', '4'], ['알현실 — 관 속의 왕', B('fix', '고정'), '5S', '늘', '세자르가 쓰러지면 계단 → 프롤로그 끝', '5'],
     ['피할 수 없는 죽음 (각혈)', B('ev', '사건'), '1S · 2S', `${Math.round(KH_P * 100)}% (캠페인에 한 번)`, '쓰러뜨림 · 살아서 빠져나옴', 'kh'], ['따라온 이', B('ev', '사건'), '3S 다음 맵', '3S 만남 인물을 말 걸지 않고 지나치면', '따라와 동료가 됨', ''],
     ['토끼마차를 건드림', B('ev', '사건'), '3S (토끼마차)', '공격을 고르면', '확정 패배 (전멸)', '']];
@@ -7000,13 +7045,13 @@ function renderEncTab(){
     <p class="sublab">무리 (적 구성)</p><div class="tw"><table class="tbl encT"><thead><tr><th class="l">무리</th><th class="l">구성</th><th class="l">몫</th><th class="l">설명</th></tr></thead><tbody>${BTL_COMP.map(c => `<tr><td class="l">${esc(c.name)}</td><td class="l">${encFoes(c.foes)}</td><td class="l">${(c.w / cTot * 100).toFixed(0)}%</td><td class="l">${esc(c.note)}</td></tr>`).join('')}</tbody></table></div>
     <p class="sublab">상황 (적의 시작)</p><div class="tw"><table class="tbl encT"><thead><tr><th class="l">상황</th><th class="l">몫</th><th class="l">적의 시작</th><th class="l">들어설 때 나레이션</th></tr></thead><tbody>${BTL_SIT.map(x => `<tr><td class="l">${esc(x.name)}</td><td class="l">${(x.w / sTot * 100).toFixed(0)}%</td><td class="l">${esc(x.note)}</td><td class="l">${esc(x.narr)}</td></tr>`).join('')}</tbody></table></div>
     <div class="row"><select id="encBtC" aria-label="무리"><option value="">무리 — 무작위</option>${BTL_COMP.map(c => `<option value="${c.k}">${esc(c.name)}</option>`).join('')}</select><select id="encBtS" aria-label="상황"><option value="">상황 — 무작위</option>${BTL_SIT.map(x => `<option value="${x.k}">${esc(x.name)}</option>`).join('')}</select>${tryB('fight', '▶ 1S 에서 해 보기')}</div></div>`;
-  for (const e of ENC3.filter(q => q.npc)){ if (e.k === 'odile'){ h += odDocBox(B, tryB); continue; }   /* v7.26.0 */ const N = NPC[e.npc], Dc = ENC_DOC[e.k] || {}, ppl = [N, ...(e.more || []).map(k => NPC[k])].filter(Boolean);
+  for (const e of ENC3.filter(q => q.npc)){ if (e.k === 'odile'){ h += odDocBox(B, tryB); continue; } if (e.k === 'regina'){ h += rgDocBox(B, tryB); continue; }   /* v7.26.0 */ const N = NPC[e.npc], Dc = ENC_DOC[e.k] || {}, ppl = [N, ...(e.more || []).map(k => NPC[k])].filter(Boolean);
     h += `<div class="box"><p class="lab">${esc(e.name)} ${B('rnd', '3S 랜덤')}</p><table class="tbl encT"><tbody>${encTr('무엇', esc(Dc.what || ''))}${encTr('뽑힐 몫', esc(encShare(e.k)) + (e.npc !== 'lost' ? ' · 그 인물이 일행 · 쓰러짐 · 버림에 있으면 빠짐' : ''))}
       ${encTr('등장', ppl.map(n => n.lostNpc ? encFace(null, '버린 동료', '그 사람') : encFace(n.ref, n.key, n.who + (n.boss ? ' · 보스' : ''))).join(''))}${N.map ? encTr('맵', esc(encMap(N.map))) : ''}${N.seen ? encTr('처음 보일 때', esc(N.seen)) : ''}
       ${encTr('흐름', '<ul>' + (Dc.how || []).map(x => `<li>${esc(x)}</li>`).join('') + '</ul>')}${ppl.some(n => TALK[Object.keys(NPC).find(k => NPC[k] === n)]) ? encTr('대화 마디', ppl.map(n => encTalkDoc(Object.keys(NPC).find(k => NPC[k] === n))).join('')) : ''}
       ${e.k === 'shop' ? encTr('물건', SHOP.map(x => `${esc(x.name)} (${x.cost} · ${x.stock}개)`).join(' · ')) : ''}${N.pass ? encTr('지나치면', esc(N.pass)) : ''}${encTr('결말', esc(Dc.end || ''))}</tbody></table><div class="row">${tryB(e.k, '▶ 3S 에서 해 보기')}</div></div>`; }
   h += `<div class="box"><p class="lab">알현실 입구 ${B('fix', '4S 고정')}</p><table class="tbl encT"><tbody>${encTr('무엇', '하얀 사막의 끝 — 무너진 담 너머 유적. 입구를 지키는 곤봉적 (햇살 안) · 안은 방마다 숨은 적 (실내전 · 벽이 시야를 자름)')}${encTr('맵', `${RUIN.W} × ${RUIN.H} 유적 · 햇살 ${RUIN.sun} · 안쪽 빛 ${RUIN.dim}`)}${encTr('적', encFoes([['곤봉적', 1]]) + encFoes(Object.entries(RUIN.foes.reduce((a, k) => (a[k] = (a[k] || 0) + 1, a), {}))))}${encTr('흐름', '<ul><li>방마다 문 옆 모퉁이를 지키는 적 — 들어서면 덮침</li><li>위쪽 끝 = 5S 알현실</li></ul>')}</tbody></table><div class="row">${tryB('4', '▶ 4S 에서 해 보기')}</div></div>`;
-  h += `<div class="box"><p class="lab">알현실 — 관 속의 왕 ${B('fix', '5S 고정')}</p><table class="tbl encT"><tbody>${encTr('무엇', '천장이 보이지 않는 원형 홀 — 빛이 쏟아져 내리는 장엄한 곳 · 가운데에 관 하나')}${encTr('맵', `${HALL.W} × ${HALL.H} 원형 홀 · 빛 ${HALL.amb} (한눈에 다 보임) · 기둥 여덟`)}${encTr('등장', encFoes([['세자르', 1]]))}
+  h += `<div class="box"><p class="lab">알현실 — 관 속의 왕 ${B('fix', '5S 고정')}</p><table class="tbl encT"><tbody>${encTr('무엇', '무너진 원형 알현실 — 높은 문틈으로 빛이 쏟아져 내림 · 거미줄 앉은 빈 옥좌 앞에 관 하나 (도감 그림 bg_cesar_boss)')}${encTr('맵', `${HALL.W} × ${HALL.H} 원형 홀 · 빛 ${HALL.amb} (한눈에 다 보임) · 벽 · 옥좌 · 서 있는 부러진 기둥은 막힘 (시야도) · 쓰러진 기둥 · 돌무더기 ${czRubble().length}칸은 잔해 (못 지나감 · 1.0M 낮은 엄폐 — 너머로 보이고 쏠 수 있음)`)}${encTr('등장', encFoes([['세자르', 1]]))}
     ${encTr('흐름', `<ul><li>관에 ${HALL.near}칸 안 → ⚰ 관을 연다</li><li>관을 조사하고 ${HALL.rise}초 뒤 (${HALL.hint}초에 긁는 소리) — 세자르가 일어남</li><li>가까이 갔다가 ${HALL.far}칸 밖으로 벗어나도 · ${HALL.wait}초 넘게 머뭇거려도 일어남</li><li>쓰러지면 관 자리에 계단 → 프롤로그 끝</li></ul>`)}</tbody></table><div class="row">${tryB('5', '▶ 5S 에서 해 보기')}</div></div>`;
   h += `<div class="box"><p class="lab">사건 ${B('ev', '사건')}</p><table class="tbl encT"><tbody>${encTr('피할 수 없는 죽음', `${encFoes([['각혈', 1]])} 1S · 2S 에 처음 들어설 때 ${Math.round(KH_P * 100)}% (캠페인에 한 번) — 6 ~ 14초 뒤 일행에게서 먼 쪽 끝에서 나타나 가장 가까운 이를 쫓음 (처음 노린 이의 자리는 앎) · ${tryB('kh', '▶ 1S 에서 해 보기')}`)}
     ${encTr('따라온 이', '3S 의 잠든 사냥꾼 · 불가에 앉은 이를 말 걸지 않고 (또는 인사만) 지나쳐 위로 넘어가면 다음 맵에서 따라와 동료가 됨')}${encTr('토끼마차를 건드림', esc(TALK_WAR.filter(x => x.t || x.narr || x.box).map(x => x.t ? `"${x.t}"` : x.narr || x.box).join(' · ')) + ' → 확정 패배')}</tbody></table></div>`;
@@ -7197,6 +7242,63 @@ function odDocBox(B, tryB){
     ${encTr('인연 (판마다 한 번)', '<ul><li>1 — 큰 관심 없음 · 차와 쉼을 허락</li><li>2 — 알아보고 지난 일을 기억함 (이름이 보임)</li><li>3 — 개인적인 질문 → 장미장식 &lt;축복:오딜&gt; (공격 × 1.1 · 회피 +10%)</li><li>4~ — 익숙함 (찻잔을 하나 더 꺼냄)</li><li>죽으면 — 다음 방문부터 소파 위의 시신 · 대화 · 차 없음 · 저주 없음</li></ul>')}
     ${encTr('지금', esc(st))}${encTr('결말', esc(ENC_DOC.odile.end))}</tbody></table><div class="row">${tryB('odile', '▶ 3S 에서 해 보기')}</div></div>`;
 }
+/* ---------- v7.27.0 레지나 — 9층의 보스 (C-085 · 수인 · 에너지 검술 · 5성쯤). 지금은 인카운터 목록에서만 (3S 랜덤 몫 0) ----------
+   맵 24 × 40: 위 = 알현실 (24 × 16 · 도감 bg_regina_boss) · 아래 = 복도 (16 × 24 · bg_regina_hall1 · x 4 부터 · 걷는 길 7 ~ 16). 그림의 벽 · 기둥 · 화로 · 옥좌는 막힌 칸
+   흐름: 복도를 지나 알현실 (y < 16) 에 들어서면 장면 그림 + 첫마디 — 이야기를 나눈다 · 칼을 맞대 본다 (싸움) · 지나간다 (옥좌 뒤 길) · 세 번째 만남부터 같이 가자 (영입)
+   인연: 판마다 한 번 셈 (S.rgBond) · 죽으면 다음부터 빈 옥좌 */
+const RG = { W: 24, H: 40, hallH: 16, cx: 4, stand: { x: 12, y: 3.8 }, door: { x: 12, y: 2.3, r: 0.9 }, thr: { x: 12, y: 3.55, w: 2.9 } };
+function rgOpen(x, y){ return (y >= 2 && y <= 13 && x >= 2 && x <= 21) || (y >= 14 && y <= 15 && x >= 10 && x <= 13) || (y >= 16 && y < 40 && x >= 7 && x <= 16); }   // 함수 선언 (불러온 판을 처음 그릴 때도 쓰임)
+const rgFlips = () => { const f = []; for (let y = 0; y < RG.H; y++) for (let x = 0; x < RG.W; x++) if (!rgOpen(x, y)) f.push(x + ',' + y); return f; };
+const RGIMG = {}; const rgImg = n => RGIMG[n] || (RGIMG[n] = Object.assign(new Image(), { src: `art/regina/${n}.webp` }));
+const rgS = () => S.rgBond || (S.rgBond = { met: 0, dead: false, joined: false, lastRun: null });
+function drawRegina(Wd, ox, oy, ts){
+  const a = rgImg('boss'), b = rgImg('hall');
+  if (b.complete && b.naturalWidth) ctx.drawImage(b, ox + RG.cx * ts, oy + RG.hallH * ts, 16 * ts, 24 * ts);
+  if (a.complete && a.naturalWidth) ctx.drawImage(a, ox, oy, 24 * ts, 16 * ts);
+  const E = encCur(); if (!E || E.npc !== 'regina' || !(E.st === 'throne' || E.st === 'rpass')) return;
+  const t = rgImg('throne'); if (!(t.complete && t.naturalWidth)) return; const w = RG.thr.w * ts, h = w * t.naturalHeight / t.naturalWidth, px = ox + RG.thr.x * ts, py = oy + RG.thr.y * ts;
+  ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(px, py - ts * 0.1, w * 0.46, ts * 0.32, 0, 0, 6.283); ctx.fill(); ctx.drawImage(t, px - w / 2, py - h, w, h); ctx.restore();
+  const near = encDist(Wd, E) <= (NPC.regina.talkR || 6), nm = (near ? '💬 ' : '') + (E.known ? '레지나' : NPC.regina.who);
+  ctx.font = `700 ${Math.max(10, Math.round(ts * 0.36))}px IBM Plex Sans KR, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const tw = ctx.measureText(nm).width + 12, ly = py + ts * 0.42;
+  ctx.fillStyle = 'rgba(10,10,24,.82)'; ctx.fillRect(px - tw / 2, ly - ts * 0.24, tw, ts * 0.48); ctx.fillStyle = '#e8d8ff'; ctx.fillText(nm, px, ly);
+}
+function rgEnter(E){
+  const Wd = world, C = S.camp, O = rgS(); if (!E || !Wd || !C) return;
+  E.entered = true; E.seen = true;
+  if (!O.dead && O.lastRun !== C.t0){ O.lastRun = C.t0; O.met = (O.met || 0) + 1; logEv(Wd, { k: 'rgMeet', n: O.met }); }
+  if (O.met >= 2) E.known = true;
+  if (O.dead){ E.st = 'rdead'; Wd.stairs = { ...RG.door }; save(); campBarRender(true); talkLines([{ narr: '복도 끝, 푸른 불꽃이 늘어선 알현실이 열린다.' }, { narr: '옥좌는 비어 있다. 붉은 검도, 검은 기사도 없다.' }, { narr: '불꽃만 여전히 조용히 타오른다. 옥좌 뒤로 길이 나 있다.' }], 'regina', E); return; }
+  save(); campBarRender(true); talkLines(rgEnterLines(E), 'regina', E);
+}
+function rgEnterLines(E){
+  const m = rgS().met;
+  const head = m <= 1 ? [{ narr: '복도 끝, 푸른 불꽃이 늘어선 알현실이 열린다.', cg: 'rg_cut', cgw: true }, { narr: '옥좌에 검은 기사가 턱을 괴고 앉아 있다. 붉은 검이 발치에 꽂혀 있다.', cg: 'rg_cut', cgw: true }, { t: '...또 누가 왔네.', img: 'regina_t1' }, { narr: '(그녀는 일어나지 않는다. 권태로운 눈이 당신들을 훑는다.)', img: 'regina_t3' }]
+    : m === 2 ? [{ narr: '다시 그 알현실. 푸른 불꽃은 그대로다.', cg: 'rg_cut', cgw: true }, { t: '또 너야? ...뭐, 반갑네. 여긴 아무도 안 오거든.', img: 'regina_t2' }]
+    : [{ narr: '익숙한 알현실.', cg: 'rg_cut', cgw: true }, { t: '왔어? 이번엔 뭘 할 건데.', img: 'regina_t4' }];
+  rgNode(E); return [...head, rgAsk(E)];
+}
+const rgAsk = E => ({ ask: [['이야기를 나눈다', 'more'], ['칼을 맞대 본다', '!rfoe'], ['지나간다', '!rpass'], ...(rgS().met >= 3 && !rgS().dead ? [['같이 가자', '!rjoin']] : [])] });
+const RG_MORE = [['여기서 뭘 하냐고? ...앉아 있지. 오래.', 'regina_t1'], ['이 층의 주인이라는 건 그런 거야. 누가 올 때까지 기다리는 것.', 'regina_t3'], ['심심하면 칼이라도 맞대 볼래? 아니면 그냥 지나가. 어느 쪽이든 상관없어.', 'regina_t5'], ['떨어진 거야, 나도. 위에서. ...이제는 별로 궁금하지도 않아.', 'regina_t2'], [null, 'regina_t4', '(그녀가 하품을 참는다.)']];
+function rgNode(E){
+  const M = RG_MORE[Math.floor(Math.random() * RG_MORE.length)];
+  TALK.regina.more = [M[0] ? { t: M[0], img: M[1] } : { narr: M[2], img: M[1] }, { go: '!rask' }];
+  TALK.regina.cur = [{ t: rgS().met >= 3 ? '할 말 있으면 해.' : '용건은?', img: 'regina_t3' }, rgAsk(E)];
+  return 'cur';
+}
+function rgPass(E){ const Wd = world; if (!E || !Wd) return; E.st = 'rpass'; Wd.stairs = { ...RG.door }; logEv(Wd, { k: 'rgPass' }); save(); campBarRender(true); toast('옥좌 뒤 길이 열렸어요 — ↑ 로 지나가요'); }
+function rgTick(Wd){
+  if (!S.regina || !Wd.camp || Wd.over || mode === 'edit') return; const E = encCur(); if (!E || E.npc !== 'regina') return; const O = rgS();
+  if (E.st === 'foe'){ const u = Wd.units.find(x => x.ref === 'C-085' && x.side === 1); if (u && !u.alive && !O.dead){ O.dead = true; E.st = 'rdead'; Wd.stairs = { ...RG.door }; logEv(Wd, { k: 'rgDead' }); save(); campBarRender(true); toast('레지나가 쓰러졌다 — 옥좌 뒤 길이 열렸어요 · 다음부터 빈 옥좌'); } return; }
+  if (!E.entered && !TK && !LD && Wd.units.some(u => u.side === 0 && u.alive && u.y < RG.hallH - 0.3)) rgEnter(E);
+}
+function rgDocBox(B, tryB){
+  const O = rgS(), st = O.dead ? '쓰러짐 (다음부터 빈 옥좌)' : `${O.met || 0}번 만남${O.joined ? ' · 영입한 적 있음' : ''}`;
+  return `<div class="box"><p class="lab">레지나의 알현실 ${B('plan', '시험용')}</p><table class="tbl encT"><tbody>${encTr('무엇', '9층의 보스 레지나 (수인 · 에너지 검술 · 5성쯤). 유폐에 가깝게 떨어져 권태로움 — 말 걸면 평범하게 받아 줌 · 싸워도 지나가도 상관없음 · 만남이 이어지면 영입')}${encTr('나오는 곳', '아직 랜덤 인카운터에 없음 — 이 목록의 ▶ 로만')}
+    ${encTr('맵', '24 × 40 · 빛 0.85 · 아래 복도 (16 × 24 · 푸른 화로 · 기둥) → 위 알현실 (24 × 16 · 옥좌 · 화로 · 대리석 기둥) — 도감 그림 그대로 · 벽 · 기둥 · 화로 · 옥좌는 못 지나감')}${encTr('등장', encFace('C-085', '레지나', 'C-085 · 5성 · 적이면 [보스] · 레지나의 검 · 흑갑'))}
+    ${encTr('흐름', '<ul><li>복도를 지나 알현실에 들어서면 장면 그림 — "...또 누가 왔네."</li><li>이야기를 나눈다 · 칼을 맞대 본다 (싸움) · 지나간다 (옥좌 뒤 길 ↑) · 세 번째 만남부터 같이 가자 (영입)</li><li>이기거나 지나가거나 영입하면 옥좌 뒤 길이 열림 — 그 전엔 ↑ 단추가 없음</li></ul>')}
+    ${encTr('인연 (판마다 한 번)', '<ul><li>1 — 권태로운 첫 만남</li><li>2 — 알아봄 (이름이 보임)</li><li>3~ — 같이 가자 (영입)</li><li>죽으면 — 다음부터 빈 옥좌</li></ul>')}
+    ${encTr('대화 그림', '레지나 5 (regina_t1 ~ t5) · 장면 그림 (regina_cutscene) · 옥좌 (regina_throne)')}${encTr('지금', esc(st))}${encTr('결말', esc(ENC_DOC.regina.end))}</tbody></table><div class="row">${tryB('regina', '▶ 해 보기')}</div></div>`;
+}
 function renderTraitsTab(){
   if (!$('traitAuditBox')) return;
   const P = traitPeople(), who = L => L.length ? L.map(x => `<span class="${x.on ? '' : 'lb'}">${esc(x.p.name)}</span>`).join(' · ') : '<span class="lb">―</span>';
@@ -7225,9 +7327,9 @@ document.addEventListener('fullscreenchange', () => { $('fsBtn').textContent = d
 
 /* v7.24.5 스토리 · 훈련장 — 모드마다 판이 따로. 스토리 = 1F 프롤로그 (캠페인) 만 · 훈련장 = 배치 · 층 · 수치 · 자동 돌리기.
    진행 중인 프롤로그는 훈련장에 가 있는 동안 S.story 에 맡겨 둠 (그 맵의 판 + 캠페인) · 훈련장 판은 프롤로그 동안 S.campBak 에 (예전과 같음) */
-const BOARD_K = ['type', 'W', 'H', 'mapC', 'randStart', 'startK', 'room', 'seed', 'flips', 'units', 'torches', 'terr', 'tseed', 'piles', 'hills', 'pileOff', 'openers', 'water', 'amb', 'indoor', 'hall', 'zones', 'sandY', 'holdClear'];   /* v7.25.3 startK */
+const BOARD_K = ['type', 'W', 'H', 'mapC', 'randStart', 'startK', 'room', 'regina', 'seed', 'flips', 'units', 'torches', 'terr', 'tseed', 'piles', 'hills', 'pileOff', 'openers', 'water', 'amb', 'indoor', 'hall', 'zones', 'sandY', 'holdClear'];   /* v7.25.3 startK */
 const boardOf = () => { const o = {}; for (const k of BOARD_K) if (S[k] !== undefined) o[k] = clone(S[k]); return o; };
-const boardSet = B => Object.assign(S, { startK: null, room: false, water: [], amb: 0, indoor: false, hall: false, zones: [], sandY: null, holdClear: false, piles: [], hills: [], pileOff: [], openers: [] }, clone(B || {}));
+const boardSet = B => Object.assign(S, { startK: null, room: false, regina: false, water: [], amb: 0, indoor: false, hall: false, zones: [], sandY: null, holdClear: false, piles: [], hills: [], pileOff: [], openers: [] }, clone(B || {}));
 const MODE_NM = { story: '스토리', train: '훈련장' };
 function storyStash(){ if (!S.camp) return; if (S.camp.test){ const T = S.camp.test, B = S.campBak; delete S.camp; delete S.campBak; if (B) boardSet(B); if (T.keep) S.story = T.keep; return; }   /* v7.26.2 인카운터 시험은 접음 */
   S.story = { camp: S.camp, board: boardOf() }; const B = S.campBak; delete S.camp; delete S.campBak; if (B) boardSet(B); }

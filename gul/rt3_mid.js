@@ -50,7 +50,7 @@ function buildMap(setup){
 // v7.18 지형: 더미 칸 = 2 (못 지나감 · 낮은 엄폐 — 시야 · 탄은 높이로 봄). rock = 못 지나감 (바위 · 벽 · 더미), solid = 시야 · 탄을 막는 바위 · 벽만
 const rock = (m, x, y) => x < 0 || y < 0 || x >= m.W || y >= m.H || m.t[(y | 0) * m.W + (x | 0)] !== 0;
 const solid = (m, x, y) => x < 0 || y < 0 || x >= m.W || y >= m.H || m.t[(y | 0) * m.W + (x | 0)] === 1 || m.t[(y | 0) * m.W + (x | 0)] === 3;   // v7.19.2 뿌리 벽 (3) 도 시야 · 탄을 막음
-const PILE_NM = { 1: '갑옷', 2: '시체', 3: '관' };   /* v7.23.1 관 (5S 알현실) */
+const PILE_NM = { 1: '갑옷', 2: '시체', 3: '관', 4: '잔해' };   /* v7.23.1 관 (5S 알현실) · v7.27.0 잔해 (쓰러진 기둥 · 돌무더기) */
 const pileAt = (m, x, y) => !m.pk || x < 0 || y < 0 || x >= m.W || y >= m.H ? 0 : m.t[(y | 0) * m.W + (x | 0)] === 2 ? m.pk[(y | 0) * m.W + (x | 0)] || 1 : 0;
 // 땅 높이 (M): 언덕 = 가우스 봉우리의 합 (부드러움 · 칸과 상관없음)
 const gH = (m, x, y) => { const H = m.hills; if (!H) return 0; let h = 0; for (const k of H){ const dx = x - k.x, dy = y - k.y, q = (dx * dx + dy * dy) / (k.r * k.r); if (q < 9) h += k.h * Math.exp(-q); } return h; };
