@@ -1,0 +1,35 @@
+// v7.21 UI 시험 — ui721.js v1.3 (v1.3: 정산 창이 뜨면 '다음 맵으로' 를 누름 (v7.21.2) · v1.2: 뽑기 창이 뜨면 모두 뒤집고 1S 로 (v7.21.1) · v1.1: 위로 넘어가기는 10초마다 남은 이에게 다시 명령 (지휘 전달이 빗나갈 수 있음 — 사람처럼) · 1F 캠페인: 시작 · 파티 (확정 셋 + 랜덤 둘) · 끝난 맵 · 전리품 단추 · 위로 넘어감 → 2S · 체력 이어받음 · 아군을 버린다 · 아래로 돌아오면 남긴 적 그대로 · 5S 를 넘으면 끝 화면 · 그만두기 → 원래 배치 · 모바일 띠)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const url='file://'+process.cwd()+'/build/wrapped.html';
+ const fresh = async ctxOpt => { const p=await (await b.newContext(ctxOpt)).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000); return {p,errs}; };
+ const stepUntil = (cond, n) => `for(let i=0;i<${n}&&!(${cond});i++){ stepWorld(world,1/30); if(world.over){ mode='plan'; onOver(); { const nb=document.getElementById('campNext'); if(nb) nb.click(); } break; } }`;
+ { const {p,errs}=await fresh({viewport:{width:1280,height:860}});
+   const r1 = await p.evaluate(()=>{ const n0=S.units.length; showTab('place'); renderFloors(); document.getElementById('campBtn').click(); { const g=document.getElementById('gacha'); if(g&&!g.hidden){ document.getElementById('gAll').click(); document.getElementById('gGo').click(); } } const bar=document.getElementById('campBar');
+     return { n0, s: S.camp&&S.camp.s, camp: !!(world&&world.camp), party: S.units.filter(u=>u.side===0).map(u=>u.name), foes: S.units.filter(u=>u.side===1).length, bar: bar.hidden?'':bar.innerText.replace(/\s+/g,' '), bak: !!S.campBak }; });
+   console.log('    시작', JSON.stringify(r1)); ok(r1.s===1&&r1.camp&&r1.party.length===6&&['인주','카리우스','레베카','청광묵'].every(k=>r1.party.includes(k))&&r1.foes===5&&/1F · 1S/.test(r1.bar)&&r1.bak,'캠페인 시작: 1S · 파티 여섯 (확정 셋 + 랜덤 둘) · 적 다섯 · 띠');
+   const r2 = await p.evaluate(`(()=>{ const c=document.getElementById('contBtn'); if(c) c.click(); paused=true; for(const e of world.units) if(e.side===1){ e.hp=0; e.alive=false; dropOnDeath(world,e); } ${stepUntil('world.cleared',10)} hud(); const bar=document.getElementById('campBar').innerText;
+     const inj=world.units.find(u=>u.name==='인주'); inj.hp=40; return { cleared: world.cleared, over: world.over, bar: bar.replace(/\\s+/g,' '), loot: !!document.querySelector('#campBar [data-cloot]') }; })()`);
+   console.log('    끝난 맵', JSON.stringify(r2)); ok(r2.cleared&&!r2.over&&/끝난 맵/.test(r2.bar)&&r2.loot,'적을 다 쓰러뜨려도 판은 이어짐 · 끝난 맵 · 전리품 단추');
+   const r3 = await p.evaluate(`(()=>{ document.querySelector('#campBar [data-cloot]').click(); const lb=!!document.querySelector('#banner #lootBox'); document.getElementById('lootClose').click();
+     for(let k=0;k<6&&S.camp.s===1;k++){ const bt=document.querySelector('#campBar [data-cexit="up"]'); if(bt) bt.click(); ${stepUntil('S.camp.s===2',300)} } const inj=S.units.find(u=>u.name==='인주');
+     return { lb, s: S.camp.s, camp: world.camp, t: world.t, party: S.units.filter(u=>u.side===0).length, foes: S.units.filter(u=>u.side===1).length, hp: world.units.find(u=>u.name==='인주').hp, ys: world.units.filter(u=>u.side===0).map(u=>+u.y.toFixed(1)), line: logLines(world).filter(s=>/2S/.test(s)).slice(0,1) }; })()`);
+   console.log('    2S', JSON.stringify(r3)); ok(r3.lb,'끝난 맵 전리품 창'); ok(r3.s===2&&r3.camp&&r3.party===6&&r3.foes===6&&r3.hp===40&&r3.ys.every(y=>y>15),'모두 위로 넘어감 → 2S (아래에서 들어섬 · 인주 피 40 그대로)');
+   const r4 = await p.evaluate(`(()=>{ const c=document.getElementById('contBtn'); if(c) c.click(); paused=true; const A=world.units.filter(u=>u.side===0); for(const u of A.slice(0,4)) leaveMap(world,u,'up'); hud(); const ab=document.querySelector('#campBar [data-cabandon]'); if(!ab) return { ab:false };
+     ab.click(); { const nb=document.getElementById('campNext'); if(nb) nb.click(); } return { ab:true, s: S.camp.s, lost: S.camp.lost.length, party: S.units.filter(u=>u.side===0).length }; })()`);
+   console.log('    버리기', JSON.stringify(r4)); ok(r4.ab&&r4.s===3&&r4.lost===2&&r4.party===4,'넷이 넘어가고 둘을 버림 → 3S · 파티 넷');
+   const r5 = await p.evaluate(`(()=>{ const c=document.getElementById('contBtn'); if(c) c.click(); paused=true; for(const u of world.units.filter(u=>u.side===0)) leaveMap(world,u,'down'); checkEnd(world); if(world.over){ mode='plan'; onOver(); { const nb=document.getElementById('campNext'); if(nb) nb.click(); } }
+     return { s: S.camp.s, foes: S.units.filter(u=>u.side===1).length, ys: world.units.filter(u=>u.side===0).map(u=>+u.y.toFixed(1)), back: logLines(world).some(s=>/다시 돌아옴/.test(s)) }; })()`);
+   console.log('    아래로', JSON.stringify(r5)); ok(r5.s===2&&r5.foes===6&&r5.back&&r5.ys.every(y=>y<4),'아래로 → 2S 로 돌아옴 (남긴 적 여섯 · 위에서 들어섬)');
+   const r6 = await p.evaluate(`(()=>{ S.camp.s=5; for(const u of world.units.filter(u=>u.side===0)) leaveMap(world,u,'up'); checkEnd(world); if(world.over){ mode='plan'; onOver(); { const nb=document.getElementById('campNext'); if(nb) nb.click(); } } const bn=document.getElementById('banner');
+     return { end: S.camp.end, txt: bn.hidden?'':bn.innerText.replace(/\\s+/g,' ').slice(0,120), bar: document.getElementById('campBar').hidden }; })()`);
+   console.log('    끝', JSON.stringify(r6)); ok(r6.end==='clear'&&/무덤이 열리고 계단/.test(r6.txt)&&r6.bar,'5S 를 넘으면 끝 화면 (무덤 · 계단)');
+   const r7 = await p.evaluate(()=>{ document.getElementById('campDone').click(); return { camp: !!S.camp, bak: !!S.campBak, mode, n: S.units.length, names: S.units.filter(u=>u.side===0).map(u=>u.name).join(',') }; });
+   console.log('    그만두기', JSON.stringify(r7)); ok(!r7.camp&&!r7.bak&&r7.mode==='edit'&&r7.n===r1.n0,'캠페인 끝내기 → 원래 배치 그대로');
+   ok(errs.length===0,'오류 없음 (데스크톱) '+JSON.stringify(errs)); }
+ { const {p,errs}=await fresh({viewport:{width:412,height:915}, deviceScaleFactor:2.625, isMobile:true, hasTouch:true});
+   const m = await p.evaluate(()=>{ showTab('place'); renderFloors(); document.getElementById('campBtn').click(); { const g=document.getElementById('gacha'); if(g&&!g.hidden){ document.getElementById('gAll').click(); document.getElementById('gGo').click(); } } hud(); const bar=document.getElementById('campBar'), q=bar.getBoundingClientRect(), bs=[...bar.querySelectorAll('button')];
+     return { vis: !bar.hidden&&q.width>0, l: Math.round(q.left), r: Math.round(q.right), iw: innerWidth, over: bs.filter(x=>{ const r=x.getBoundingClientRect(); return r.right>innerWidth+1||r.left<-1; }).length, small: bs.filter(x=>x.getBoundingClientRect().height<30).length, n: bs.length }; });
+   console.log('    모바일 띠', JSON.stringify(m)); ok(m.vis&&m.l>=0&&m.r<=m.iw&&m.over===0&&m.small===0,'모바일: 캠페인 띠가 화면 안 · 손가락 크기');
+   ok(errs.length===0,'오류 없음 (모바일) '+JSON.stringify(errs)); }
+ console.log(fails?`${fails} FAIL`:'ALL UI721 OK'); await b.close(); })();

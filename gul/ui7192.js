@@ -1,0 +1,38 @@
+// v7.19.2 UI 시험 — ui7192.js v1.1 (v1.1: 무기 잡기는 근접 (모닝스타) 이 · 뿌리 벽 이름표는 뿌리 벽 동작에서 · 딸기: 칸 6 역장 (바로) · 칸 7 뿌리 벽 (자리 찍기) · 동작 이름표 · 역장 고리 · 뿌리 벽 그림 · 열매 맺기 · 먹기 · 무기 잡기 로그 · 상세 · 모바일 조작판 · 부채 · 옛 저장)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const url='file://'+process.cwd()+'/build/wrapped.html';
+ const setup = async p => { await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
+   await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1||u.hero); const h=S.units.find(u=>u.hero); for (const [k,dx] of [['딸기',0.9],['모닝스타',-0.9]]){ const u=fromDesign(designByKey(k),0); u.x=h.x+dx; u.y=h.y; S.units.push(u); } rebuildMap(); changed(); start(); }); await p.waitForTimeout(300); };
+ const until = (cond, n) => `for(let i=0;i<${n}&&!(${cond});i++) stepWorld(world,1/30);`;
+ { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); await setup(p);
+   await p.evaluate(()=>{ const c=document.getElementById('contBtn'); if(c) c.click(); paused=true; for(const e of world.units) if(e.side===1){ e.x=Math.min(world.map.W-2,e.x+6); } });
+   const sk = await p.evaluate(()=>{ const t=world.units.find(u=>u.name==='딸기'); sel=new Set([t.i]); hud(); return [...document.querySelectorAll('#skbar .sk:not(.off)')].map(b=>[b.dataset.sk,b.querySelector('.nm').innerText,!!b.querySelector('.ic .tico')]); });
+   console.log('    딸기 기술 막대', JSON.stringify(sk)); ok(sk.some(x=>x[0]==='6'&&x[1]==='역장'&&x[2])&&sk.some(x=>x[0]==='7'&&x[1]==='뿌리 벽'&&x[2]),'칸 6 역장 · 칸 7 뿌리 벽 (아이콘)');
+   const wd = await p.evaluate(`(()=>{ const t=world.units.find(u=>u.name==='딸기'); sel=new Set([t.i]); hud(); useSlot(6); const o0=t.order||(t.ordPend&&t.ordPend.o); let lab='';
+     for(let i=0;i<150&&!(world.wards&&world.wards.length);i++){ stepWorld(world,1/30); if(t.act&&t.act.k==='spec'&&!lab) lab=actLabel(world,t,liveAct(world,t))+' | '+dockState(world,t); }
+     hud(); return { o: o0&&o0.k+':'+o0.s, lab, w: (world.wards||[]).map(w=>[w.by===t.i,w.left,+(w.until-world.t).toFixed(1)]), log: logLines(world).filter(s=>/역장/.test(s)).slice(0,2) }; })()`);
+   console.log('    역장', JSON.stringify(wd)); ok(wd.o==='spec:ward'&&/역장/.test(wd.lab)&&wd.w.length===1&&wd.w[0][0]&&wd.w[0][1]===3&&wd.log.length>=1,'칸 6 → 바로 역장 (이름표 · 고리 · 로그)');
+   const rt = await p.evaluate(`(()=>{ const t=world.units.find(u=>u.name==='딸기'); sel=new Set([t.i]); hud(); useSlot(7); const arm=!!(armed&&armed.k==='spec'&&armed.s==='root'); const tx=t.x+3, ty=t.y; armedTap({x:tx,y:ty}); const o0=t.order||(t.ordPend&&t.ordPend.o); let lab='';
+     for(let i=0;i<240&&!(world.roots&&world.roots.length);i++){ stepWorld(world,1/30); if(t.act&&t.act.k==='spec'&&t.act.s==='root'&&!lab) lab=actLabel(world,t,liveAct(world,t)); }
+     const R=(world.roots||[])[0]; hud(); return { arm, o: o0&&o0.k+':'+o0.s, lab, n: R?R.cells.length:0, solid: R?R.cells.every(c=>world.map.t[c[1]*world.map.W+c[0]]===3):false, d: R?+Math.hypot(R.cells[0][0]+0.5-t.x,R.cells[0][1]+0.5-t.y).toFixed(1):0, log: logLines(world).filter(s=>/뿌리 벽/.test(s)).slice(0,2) }; })()`);
+   console.log('    뿌리 벽', JSON.stringify(rt)); ok(rt.arm&&rt.o==='spec:root'&&/뿌리 벽/.test(rt.lab)&&rt.n>=1&&rt.solid&&rt.log.length>=1,'칸 7 → 자리 찍기 → 뿌리 벽 (못 지나가는 칸 · 로그)');
+   const br = await p.evaluate(`(()=>{ const t=world.units.find(u=>u.name==='딸기'), m=world.units.find(u=>u.name==='모닝스타'); t.berryT=world.t; ${until("world.items.some(it=>it.k==='berry')",30)}
+     const it=world.items.find(x=>x.k==='berry'); if(!it) return { spawn:false }; m.hp=m.max-20; m.x=it.x; m.y=it.y; m.order={k:'hold'}; ${until("!world.items.some(x=>x===it)",30)}
+     return { spawn:true, eaten: !world.items.includes(it), heal: it.heal, log: logLines(world).filter(s=>/열매/.test(s)).slice(0,3) }; })()`);
+   console.log('    열매', JSON.stringify(br)); ok(br.spawn&&br.eaten&&br.heal>=5&&br.heal<=10&&br.log.some(s=>/맺힘/.test(s))&&br.log.some(s=>/먹음/.test(s)),'열매가 맺히고 다친 동료가 밟으면 먹음 (5 ~ 10)');
+   const gb = await p.evaluate(()=>{ const m=world.units.find(u=>u.name==='모닝스타'), e=world.units.find(u=>u.side===1&&u.alive); const w0=e.weaponNow, p0=world.rules.grab.p, c0=world.rules.grab.cap; e.weaponNow='창'; e.weapon='창'; e.x=m.x+1; e.y=m.y; world.rules.grab.p=1; world.rules.grab.cap=1; m.grabT=-99; const r=grabTry(world,m,e,'block'); world.rules.grab.p=p0; world.rules.grab.cap=c0; return { r, gone: !!e.weaponGone, log: logLines(world).filter(s=>/자루를 잡아/.test(s)).slice(0,1) }; });
+   console.log('    무기 잡기', JSON.stringify(gb)); ok(gb.r&&gb.gone&&gb.log.length===1,'무기 잡기 로그');
+   await p.evaluate(()=>{ paused=false; }); await p.waitForTimeout(900); await p.evaluate(()=>{ paused=true; });
+   const dt = await p.evaluate(()=>{ const g=world.units.find(u=>u.name==='딸기'); const d=document.createElement('div'); d.innerHTML=unitDetailHtml(world,g); const s=d.innerText; return { w: s.match(/\[역장\][^\n]*/)?.[0]||'', r: s.match(/\[뿌리 벽\][^\n]*/)?.[0]||'', b: /열매 맺기/.test(s) }; });
+   console.log('    상세', JSON.stringify(dt)); ok(dt.w&&dt.r&&dt.b,'상세에 역장 · 뿌리 벽 · 열매 맺기');
+   ok(errs.length===0,'오류 없음 (데스크톱 · 그림) '+JSON.stringify(errs)); }
+ { const ctx=await b.newContext({viewport:{width:412,height:915}, deviceScaleFactor:2.625, isMobile:true, hasTouch:true}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); await setup(p);
+   const d = await p.evaluate(()=>{ paused=true; const m=world.units.find(u=>u.name==='딸기'); sel=new Set([m.i]); hud(); const bs=[...document.querySelectorAll('#dActs [data-dk^="sk"]')]; const off=bs.filter(b=>{ const q=b.getBoundingClientRect(); return q.right>innerWidth+1||q.left<-1; }).length; return { keys: bs.map(b=>b.dataset.dk+':'+b.innerText.replace(/\s+/g,' ').trim()), off, fan: fanItems(world,[m.i],null).map(x=>x.k) }; });
+   console.log('    모바일 조작판', JSON.stringify(d)); ok(d.keys.some(x=>/sk6:.*역장/.test(x))&&d.keys.some(x=>/sk7:.*뿌리 벽/.test(x))&&d.off===0,'모바일 기술 단추 6 · 7 (화면 안)'); ok(d.fan.includes('spec1')&&d.fan.includes('spec2'),'꾹 누름 부채에도');
+   ok(errs.length===0,'오류 없음 (모바일) '+JSON.stringify(errs)); }
+ { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+   await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
+   await p.evaluate(()=>{ const u=fromDesign(designByKey('딸기'),0); u.active=[]; u.traits=u.traits.filter(t=>t!=='열매 맺기'); u.x=5.5; u.y=15.5; S.units.push(u); delete S.v7192k; save(); }); await p.reload(); await p.waitForTimeout(2400);
+   const mg = await p.evaluate(()=>{ const u=S.units.find(x=>x.ref==='C-218'); return u?[u.active,u.traits.includes('열매 맺기')]:null; }); ok(mg&&JSON.stringify(mg[0])==='["역장","뿌리 벽"]'&&mg[1],'옛 저장의 딸기에 역장 · 뿌리 벽 · 열매 맺기 '+JSON.stringify(mg)); ok(errs.length===0,'오류 없음 (옛 저장)'); }
+ console.log(fails?`${fails} FAIL`:'ALL UI7192 OK'); await b.close(); })();
