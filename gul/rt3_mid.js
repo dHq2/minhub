@@ -150,6 +150,7 @@ const litAt = (W, x, y) => W.light[(y | 0) * W.map.W + (x | 0)] > LIT;
 const glowAt = (W, x, y) => W.light[(y | 0) * W.map.W + (x | 0)] > DIM;   // v7.7 빛 또는 어스름 (실루엣이라도 보임)
 function canSee(W, u, t){
   const d = Math.hypot(u.x - t.x, u.y - t.y);
+  if (u.radar && t.rpT && t.side !== u.side && t.rpT[u.side] > W.t && d <= ((W.rules.radar || {}).r || 14)) return true;   /* v8.4.0 [레이더] */
   if (d > W.rules.sight + (W.map.hills ? (TER(W).sightHi != null ? TER(W).sightHi : 0.6) * Math.abs(gH(W.map, u.x, u.y) - gH(W.map, t.x, t.y)) : 0)) return false;   // v7.18 높이차만큼 멀리 보고 · 멀리서 보임
   if (u.smell && d <= u.smell) return true;   // 높은후각: 빛 · 바위와 상관없이 냄새로 앎
   if (t.lie && !t.lieSw && !W.lieOff && t.side !== u.side && lieHid(W, u, t, d)) return false;   // v7.11 엎드린 몸: 아직 모르는 눈에는 가까이서만 (후각은 위에서 먼저 맡음 · 몸이 닿아도 모름 — 밟을 수 있음)

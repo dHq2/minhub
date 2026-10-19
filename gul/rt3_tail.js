@@ -152,7 +152,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       eyes: (tr.includes('머리 넷') ? 4 : 1) * 2, eyeLost: 0, blind: false, sightMul: 1, aimMaim: 1, arms: { L: null, R: null }, noArms: false, bleed: null, bled: 0,   // v5.5 부위 (눈 · 팔) · 출혈
       heads: tr.includes('머리 넷') ? 4 : 1, cry: p.cry || '', mute: p.mute != null ? !!p.mute : p.side === 1,   // v5.3 [머리 넷] · 외침 (말 없는 쪽은 이모지 — 적 기본)
       // v5.2 무게 · 몸 방패 · 거구의 공격 · 방패 밀치기 · 피하기 · 넘어짐 · 기어다님 · 밀려남 · 조 · 휘두르기 명령
-      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg, noChg0: !!p.noChg, heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
+      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'),   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg, noChg0: !!p.noChg, heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
       canGuard: sh || !!wp.guard || (p.traits || []).includes('반사신경') || parryArcW(rules, p.weapon) > 0, parry: !sh && !wp.guard && parryArcW(rules, p.weapon) > 0, regen: tr.includes('재생') ? ((rules.regen || {}).hp != null ? rules.regen.hp : 0.04) : +p.regenK || 0, guardMode: 'auto', raised: false, raiseAt: 1e9, reflex: (p.traits || []).includes('반사신경'), post: 100, role: roleOf(p, rules),   // v5.7 막기는 선택
       // v5.0 방어 재능 (역할): 방패 · 대검을 든 쪽만 — 막는 폭 ×(0.6 + 0.4g), 막을 때 받는 피해 1 − (1 − blockMul)·g, 자세 깎임 ×(2 − g). [반사신경] 은 몸에 밴 것이라 최소 0.9
       gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0) : 1, vet,
@@ -1103,6 +1103,7 @@ function tire(W, u, k, mul){ const F = FATR(W); if (!F || AI6.includes('fat') ||
   u.fat = Math.min(100, (u.fat || 0) + (F[k] || 0) * (u.vet ? F.vet : 1) * (mul || 1)); fatState(W, u); }
 const fatMul = (W, u, k) => { const fz = k === 'wind' && W.t < (u.frostT || -9) ? ((W.rules.frost || {}).wind || 1.6) : 1, F = FATR(W); if (!F || AI6.includes('fat')) return fz; return fz * u.exhausted ? (F.ex[k] != null ? F.ex[k] : 1) : u.tired ? (F.ti[k] != null ? F.ti[k] : 1) : 1; };
 function startAct(W, u, t, why){
+  if (u.tremor && W.t >= (u.tremCd || -9)){ const B = W.rules.brand || {}; u.tremCd = W.t + (B.tremGap || 1.5); if (W.rand() < (B.tremor != null ? B.tremor : 0.15)){ L(W, { k: 'tremor', a: u.i, vis: u.side === 0 || !!u.seenBy }); stun(W, u, B.tremStun || 0.55, null); return; } }   /* v8.3.0 [낙인:적뢰] 수전증 */
   const heal = u.cls === '치유' && t.side === u.side;
   if (!heal && isFar(u) && t.side !== u.side && running(W, u)) return;   /* v7.17 질주 중엔 누구도 쏘지 않음 */
   if (u.lie && (heal || t.side === u.side || !gunOf(W, u)) && lieGate(W, u, heal ? '돌보려 일어남' : isFar(u) ? '쏘려 일어남 (엎드려서는 총만)' : '치려 일어남')) return;   // v7.11
@@ -6888,7 +6889,7 @@ function checkEnd(W){
   if (W.camp){   // v7.21 캠페인 판: 적을 다 쓰러뜨려도 끝나지 않음 ('끝난 맵' — 정리하고 원할 때 이동) · 아군이 모두 나가거나 쓰러지면 끝 · 시간 제한 없음
     const a = W.units.some(u => u.alive && u.side === 0), b = W.units.some(u => u.alive && u.side === 1);
     if (!b && !W.cleared && !W.holdClear){ W.cleared = true; L(W, { k: 'cleared', vis: true }); }   /* v7.23.1 holdClear: 아직 끝나지 않은 맵 (관 속의 왕) */
-    if (!a){ W.over = true; W.result = W.units.some(u => u.side === 0 && u.gone && u.gone !== 'left') ? 'exit' : 'lose'; }
+    if (!a){ W.over = true; W.result = W.units.some(u => u.side === 0 && u.gone && u.gone !== 'left' && u.gone !== 'merge') ? 'exit' : 'lose'; }
     return W.over; }
   // v5.5.1 쓰러진 [불사] 는 셈에서 빠짐 (일어날 때까지) — 아군이 다 쓰러지면 진짜 죽음
   const up = u => u.alive;
@@ -6940,6 +6941,9 @@ function stepWorld(W, dt){
   // v5.5.1 [불사]: 쓰러진 채로도 재생 → 피가 move 에 이르면 일어남. 아군이 하나도 없으면 진짜 죽음
   stepFlora(W, dt);   // v7.19.2 역장 · 뿌리 벽 · 열매
   for (const u of W.units) if (u.alive && u.skill && u.skill.regen > 0 && u.skill.left < u.skill.pool) u.skill.left = Math.min(u.skill.pool, u.skill.left + u.skill.regen * dt);   // v7.19 저절로 차는 약 (옐로의 양동이)
+  if (W.t >= (W.rpNext || 0)){ const RD = W.rules.radar || {}; W.rpNext = W.t + (RD.gap || 3);   /* v8.4.0 [레이더] 맥박 */
+    for (const u of W.units) if (u.alive && u.radar && !u.gone){ u.rpLast = W.t; for (const e of W.units) if (e.alive && !e.gone && e.side !== u.side && Math.hypot(e.x - u.x, e.y - u.y) <= (RD.r || 14)) (e.rpT || (e.rpT = [0, 0]))[u.side] = W.t + (RD.dur || 1.2); } }
+  for (const u of W.units) if (u.alive && u.regenHp > 0 && u.hp < u.max) u.hp = Math.min(u.max, u.hp + u.regenHp * dt);   /* v8.3.0 성해포 (재생D — 초당 일정량, 몸 전체 재생은 아님) */
   for (const u of W.units){ if (!u.undying && !(u.regen > 0)) continue; const rg = u.max * (u.regen > 0 ? u.regen : (W.rules.undying || {}).regen || 0) * dt;   // v5.7.1 [재생]
     if (u.down){
       if (!W.units.some(o => o.alive && o !== u && o.side === u.side)){ u.down = false; u.hp = 0; u.deadT = W.t; L(W, { k: 'die', a: u.i, b: u.i, ff: false, last: true, alone: true }); continue; }

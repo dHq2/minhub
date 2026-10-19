@@ -1,4 +1,4 @@
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.8 (v1.8: 그만두기 · 떠나보냄은 판 위의 확인 창 (askYes) — 아티팩트 화면은 브라우저 확인 창을 막아 눌러도 아무 일이 없었음 · v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.10 (v1.10: 소환 (세르파의 슬라임) 은 끝난 판의 동료 셈에서 빠짐 · 적 설계로 합류하는 동료는 allyOv (세르파 체력 90) · v1.9: 대화 동작 R8X 는 여정 밖 (프롤로그 — 적뢰 · 오딜) 에서도 · v1.8: 그만두기 · 떠나보냄은 판 위의 확인 창 (askYes) — 아티팩트 화면은 브라우저 확인 창을 막아 눌러도 아무 일이 없었음 · v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -237,7 +237,7 @@ function r8Over(){
   if (W.duel){ duel8Over(W, W.duel.res || ((W.units[W.duel.foe] || {}).alive ? 'lose' : 'win')); return; }   // v8.2 결승
   const party = [], dirs = {}, rows = stageStats(W); try { campLogSave(W, 1); } catch (e) {}
   const node = r8Node(R.at) || { t: 'fight' };
-  for (const u of W.units){ if (u.side !== 0) continue; const p = S.units.find(x => x.id === u.pid); if (!p) continue;
+  for (const u of W.units){ if (u.side !== 0 || u.summon) continue; const p = S.units.find(x => x.id === u.pid); if (!p) continue;
     if (u.gone === 'up' || u.gone === 'down'){ dirs[u.gone] = (dirs[u.gone] || 0) + 1; settleWorld({ units: [{ ...u, alive: true }], items: W.items }); p.hpNow = Math.round(u.hp); if (u.skill) p.skLeft = u.skill.left; else delete p.skLeft; party.push(p); }
     else if (u.gone === 'left'){ C.lost.push(p.name); } else { C.fallen.push(p.name); R.dead.push(p.name); } }
   // 판 밖에서 만난 동료 (만남 칸 영입 · 레지나 …) 도 party 에 — encJoin 은 S.units 에 넣음
@@ -277,7 +277,7 @@ function r8Recruit(ref, txt, then, force){
   const R = R8S(); if (!R) { then && then(); return; }
   if (R.party.length >= R8.cap && !force){ talkLines([{ narr: txt || '' }, { box: `동료가 가득 차서 (${R8.cap}) 함께 갈 수 없었다.` }, { go: '!r8:then' }]); R8T = then; return; }
   let p; const d = DESIGN_DEFAULTS.find(x => x.ref === ref && x.side === 0), fd = Object.values(FOE8).find(x => x.ref === ref);   // 도감 명단에 없으면 (세르파) 적 설계를 아군으로
-  p = d ? fromDesign(d, 0) : RBY[ref] ? unitFromRef(ref, 0, {}) : fd ? fromDesign({ ...clone(fd), side: 0, traits: (fd.traits || []).filter(t => t !== '보스') }, 0) : null;
+  p = d ? fromDesign(d, 0) : RBY[ref] ? unitFromRef(ref, 0, {}) : fd ? fromDesign({ ...clone(fd), side: 0, traits: (fd.traits || []).filter(t => t !== '보스'), ...(fd.allyOv ? { ov: { ...(fd.ov || {}), ...fd.allyOv } } : {}) }, 0) : null;
   if (!p){ then && then(); return; } p = { ...p, id: uid(), side: 0 }; R.party.push(p); save();
   talkLines([{ narr: txt || `${p.name} — 동료가 되었다.` }, { box: `${p.name} 합류` }, { go: '!r8:then' }]); R8T = then;
 }
@@ -375,9 +375,9 @@ function r8TextEvent(n, k){
   r8Hide(); talkLines(EV[k] || EV.curse);
 }
 function r8Act(a){
+  if (typeof R8X === 'object' && R8X[a]){ R8X[a](); return; }   // v8.2 결승 · v8.3 적뢰 (여정 밖에서도)
   const R = R8S(); if (!R) return; const hero = R.party.find(p => p.hero) || R.party[0];
   const done = () => r8NodeDone(), say = (L, then) => { R8T = then || done; talkLines([...L, { go: '!r8:then' }]); };
-  if (typeof R8X === 'object' && R8X[a]){ R8X[a](); return; }   // v8.2 결승
   if (a === 'then'){ const f = R8T; R8T = null; if (f) f(); else r8MapShow(); return; }
   if (a === 'done'){ done(); return; }
   if (a === 'floor2'){ r8FloorEnter(2); return; }
