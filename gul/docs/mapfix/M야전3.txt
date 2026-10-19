@@ -1,0 +1,4 @@
+0-33,0-22=.
+id=field3
+name=야전 3 (시가)
+tag=war

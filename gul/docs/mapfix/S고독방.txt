@@ -1,0 +1,4 @@
+0-27,0-27=.
+id=lonely
+name=고독방
+tag=stage

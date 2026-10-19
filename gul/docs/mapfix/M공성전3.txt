@@ -1,0 +1,62 @@
+#! siege battlefield: muddy field of craters and barricades between ruined walls, bridge in at the bottom, gate gap at the top v1
+0-22,0-33=.
+#! top walls, house, camp
+0-9,0-1=#
+8-9,0-3=#
+11-22,0-2=#
+13-16,3=#
+0-5,2-7=#
+6-7,2-4=#
+6-7,5-6=r
+18-20,3-4=#
+15-18,4-5=r
+21-22,3-7=#
+19-20,6=r
+#! right towers and ruined arch
+18-20,7-11=#
+21-22,8-33=#
+20,11-14=#
+#! diagonal ruined wall mid right
+14-16,12-13=#
+17-19,13-15=#
+20,15-17=#
+15,14=r
+12-14,14-15=r
+19-20,16-18=r
+#! left edge, walls, tower
+0,8-33=#
+0-1,10-15=#
+1-5,14-16=#
+2-4,11-13=r
+1-4,19-26=#
+0-7,27-33=#
+5-9,25-31=#
+#! bottom right wall, moat, ruins
+12,29-33=#
+13,27-33=#
+14-20,26-33=#
+19-20,21-25=#
+18,23-24=r
+16-18,25=r
+#! field obstacles
+9-10,6-7=r
+7-9,8-9=r
+13-15,7-8=r
+8-11,9-11=#
+4-7,10-11=r
+6-9,14-15=r
+7-8,17-19=r
+4-5,18-19=r
+5-6,21-22=r
+3-4,22-23=r
+16-18,20-22=r
+19-20,19-20=r
+7-9,24=r
+#! bridge
+10-11,26-33=.
+id=siege3
+name=공성전 3
+tag=war
+in=9-12,29-33
+out=10,0
+amb=0.6

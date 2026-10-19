@@ -1,0 +1,4 @@
+0-33,0-22=.
+id=med2
+name=중세 골목 물레방아
+tag=medieval

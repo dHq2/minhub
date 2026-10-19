@@ -1,0 +1,4 @@
+0-22,0-33=.
+id=cave3
+name=동굴 3
+tag=cave

@@ -1,0 +1,4 @@
+0-33,0-22=.
+id=spirit3
+name=정령계 구슬 제단
+tag=spirit

@@ -1,0 +1,4 @@
+0-27,0-27=.
+id=chicken
+name=치킨룸
+tag=stage
