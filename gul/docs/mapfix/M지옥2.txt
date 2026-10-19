@@ -1,0 +1,50 @@
+#! hell bone field: red flesh-earth plain ringed by porous bone walls and tubes, dark trails from top left and right edge v1
+0-33,0-22=.
+#! top left bones and tube
+0-8,0-4=#
+0-3,5-6=#
+#! top middle bone wall and spire cluster
+12-19,0-3=#
+14-19,4=#
+11-12,5-6=#
+#! top right tube and roots
+20-33,0-2=#
+23-33,3-4=#
+26-33,5=#
+29-33,6-8=#
+20-21,7-8=r
+#! middle right bone wall
+23-24,7=#
+22-26,8-11=#
+27-30,8-9=#
+31-33,9=#
+#! right lower wall
+29-33,12-14=#
+31-33,15-22=#
+#! bottom right wall and spires
+20-30,19-22=#
+20-24,18=#
+25,17-18=#
+29,17-18=#
+21-24,15=#
+23-24,14=#
+26-28,15-17=#
+28,18=#
+#! left middle bone chain and nests
+7-9,8-9=#
+7-10,10-12=#
+11-13,10-12=r
+7-9,13-14=#
+#! left wall
+0-2,7-22=#
+3,10-17=#
+#! bottom left wall and spires
+0-7,18-22=#
+6,17=#
+8-14,19-22=#
+id=hell3
+name=지옥 뼈 구멍
+tag=hell
+in=9-11,0-2
+out=33,10
+amb=0.55

@@ -1,0 +1,24 @@
+#! flooded shrine marsh at night: shallow water field with three sunken torii gates, black void sky at the top v1
+0-33,0-22=.
+0-33,0-3=#
+#! torii pillars
+5-6,4-9=#
+9-10,4-8=#
+18,4-5=#
+20,4-5=#
+28,8-10=#
+30,8-10=#
+#! reed and grass clumps
+19-20,11-12=r
+25-28,14-16=r
+10-12,17-18=r
+0-1,14-15=r
+31-32,9-10=r
+12-13,8=r
+14,17=r
+id=yokai3
+name=물에 잠긴 도리이
+tag=yokai
+in=0-1,16-21
+out=33,13
+amb=0.45

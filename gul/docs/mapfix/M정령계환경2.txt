@@ -1,0 +1,42 @@
+#! spirit realm flower hills: dirt trails around a central rock mound between cliffs, waterfalls and a spirit pavilion pool v1
+0-33,0-22=#
+#! top left plateau
+4-10,1=.
+3-12,2=.
+3-14,3=.
+4-16,4=.
+5-15,5=.
+13-15,6=.
+#! upper trail over the mound
+17-22,3-4=.
+22-25,5=.
+#! left trail down beside the mound
+14-15,7-9=.
+12-16,10=.
+14-24,11=.
+17-24,12=.
+#! right trail and lantern band
+24-27,6-10=.
+26-31,7-9=.
+28-30,6=.
+25,10=.
+#! lower right plateau
+23-28,11=.
+22-30,12=.
+22-31,13-15=.
+22-30,16=.
+23-30,17=.
+24-25,17=r
+29-31,18=.
+30-32,19=.
+31-33,20=.
+#! lower left trail and stairs to the water
+11-14,12-13=.
+11-13,14=.
+12-13,15-17=.
+id=spirit5
+name=정령계 꽃 언덕
+tag=spirit
+in=3-6,2-5
+out=32,20
+amb=0.7

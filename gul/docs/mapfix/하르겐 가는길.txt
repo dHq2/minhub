@@ -1,0 +1,55 @@
+#! road to Hargen: lamp-lit cobbled road from the left over a stone bridge across a stream to the city gate on the right, dirt side trails v1
+0-47,0-15=#
+#! main cobbled road
+0-2,5-7=.
+3-9,5-8=.
+10-14,6-9=.
+15-25,6-8=.
+14-20,9=.
+16-20,10=.
+18-20,11=.
+13,6=#
+15-16,9=r
+#! low wall with barrels down the slope
+15,10-11=#
+16-17,11-12=#
+18-19,12-13=#
+20,13=#
+#! top left dirt trail
+8-10,0=.
+9-11,1=.
+10-12,2=.
+11-13,3=.
+12-14,4=.
+13-15,5=.
+#! bottom dirt trail
+5-13,10=.
+12-14,11=.
+13-16,12=.
+14-18,13=.
+16-22,14=.
+19-29,15=.
+#! bridge and road to the gate
+26-31,6-8=.
+32-36,6-9=.
+31-32,9=#
+37-43,5-10=.
+42-43,9-10=#
+44-46,6-9=.
+#! top right dirt trail
+30-32,0=.
+31-33,1=.
+32-34,2=.
+33-35,3=.
+34-36,4=.
+35-37,5=.
+#! bottom right dirt trail under the city wall
+36-40,10-11=.
+38-41,12-13=.
+40-47,14-15=.
+id=hargen0a
+name=하르겐 가는 길
+tag=stage
+in=0-2,5-7
+out=46,8
+amb=0.6

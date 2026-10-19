@@ -1,0 +1,47 @@
+#! cathedral square at dusk: cobbled road from the town gate curves down and up to the cathedral plaza with compass rose v1
+0-33,0-22=#
+#! town road from the gate arch
+6,5=.
+5-17,6=.
+10-11,6=r
+5-18,7=.
+5-13,8=.
+6-14,9-10=.
+8-15,11-12=.
+6-7,10-12=r
+10-19,13=.
+11-19,14=.
+12-19,15=.
+15-19,16=.
+16-19,17=.
+17-32,18=.
+16-33,19-20=.
+22-23,21-22=.
+#! walled garden
+14-18,8-11=r
+#! cathedral plaza, front platform and steps
+19-32,7-15=.
+18-19,6=.
+24-28,6=.
+21-32,4-5=.
+26,3=.
+24,4=r
+28,4=r
+21-22,8-10=#
+31,8-10=#
+23,8-9=r
+30,8-9=r
+23,11-13=r
+30,11-13=r
+20-21,12-14=#
+22-24,14-17=#
+29-31,14-17=#
+25-28,16-17=.
+32,11-14=.
+32-33,15-17=#
+id=temple4
+name=성전 — 대성당 앞
+tag=temple
+in=5-8,6-8
+out=26,4
+amb=0.6

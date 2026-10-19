@@ -1,0 +1,18 @@
+#! Dandalo manor, Rosina's room: dark panelled bedroom with gothic bed, nightstand, writing desk at the window, wardrobe, rug; doorway at the bottom v1
+0-22,0-33=#
+2-20,12-21=.
+3-20,22=.
+4-19,23=.
+8-14,24=.
+9-13,25-30=.
+#! furniture
+2-6,12-20=#
+7-8,12=r
+11-13,12=r
+18-20,12-16=#
+id=dandal4
+name=단달로 저택 휴게실 · 로지나 방
+tag=stage
+in=9-13,27-30
+out=15,12
+amb=0.55

@@ -1,0 +1,133 @@
+# mapjobs.tsv v1.0 — 칸 지도를 만들 그림 맵 (제목 · id · 이름 · 지대 tag · nx (빈칸 = 그림 가로/45) · 메모)
+M 어두운 숲 3	forest3	어두운 숲 3	forest		세로 밤숲 길
+M어두운 숲 2	forest2	어두운 숲 2	forest		
+M어두운 숲1	forest1	어두운 숲 1	forest		바위 계단
+M숲B1	forestb1	해골 늪	forest		초록 늪 · 해골 나무
+M숲C1	forestc1	뼈 숲 갈림길	forest		
+M숲C2	forestc2	해골 뿌리 고리길	forest		
+M숲C3	forestc3	뼈 등줄기 공터	forest		보스 공터
+M가는길	road1	붉은 단풍 오솔길	forest		
+M과거의 칼데라, 활률적으로 등장하며, 히든보스 등장	calderap	과거의 칼데라	caldera	40	히든보스가 나오는 넓은 구멍 · 크게
+M칼데라 (크게 확대해서 매우 큰 맵으로 만들거임, 탈출구는 침대이고, 강적들이 많이 출몰함	caldera	칼데라	caldera	56	아주 큰 맵 · out = 침대 위치
+M눈알	eye0	눈알의 방 (마름모)	eye		
+M눈알2	eye2	눈알의 복도	eye		ㄱ자 통로
+M데이터3	data3	데이터 3	data		
+M마젠타도시3	magenta3	마젠타 횡단보도	neon		
+M마젠타도시4	magenta4	마젠타 세로 거리	neon		
+마젠타 네온 누아르 골목	magenta5	네온 누아르 골목	neon		
+마젠타 네온 뒷골목 사거리	magenta6	네온 뒷골목 사거리	neon		
+마젠타 네온의 느와르 사이버시티	magenta7	느와르 사이버시티	neon		차량
+마젠타 사이버골목의 희미한 네온	magenta8	희미한 네온 골목	neon		
+M옥상빌딩2	roof2	빌딩 옥상 2	cyber		fall=1 (떨어지는 옥상)
+M옥상빌딩3	roof3	빌딩 옥상 3	cyber		fall=1
+M중화사이버 4	cyber4	중화사이버 눈길	cyber		
+M중화사이버2	cyber2	중화사이버 굽은 길	cyber		
+M중화사이버3	cyber3	중화사이버 계단	cyber		
+M 마리부족 중앙	mari0	마리부족 중앙 광장	mari		
+M마리부족 1	mari1	마리부족 황금 흙길	mari		
+M마리부족 2	mari2	마리부족 등불 도시	mari		
+M마리부족 골목1	marial1	마리부족 골목 1	mari		
+M마리부족 골목2	marial2	마리부족 골목 2	mari		
+M마리부족 골목3	marial3	마리부족 골목 3	mari		
+M0층 공략후	zero2	0층 — 공략 후	rain		적뢰를 이긴 뒤 (zero 와 같은 틀)
+M고딕폐허2	gothic2	고딕 폐허 2	gothic		
+고딕 폐허와 거대한 석상의 전장	gothic3	거대 석상의 전장	gothic		
+M공성전2	siege2	공성전 2	war		
+M공성전3	siege3	공성전 3	war		
+M기계천사계2	machina2	기계천사계 광장	machina		
+M기계천사계3	machina3	기계천사계 광장 2	machina		
+M네오마계2	neodemon2	네오마계 2	neo		
+M네오마계3	neodemon3	네오마계 3	neo		
+M네오마계4	neodemon4	네오마계 4	neo		
+M네오마계거리	neodemon5	네오마계 거리	neo		넓은 띠 — 왼쪽에서 오른쪽
+M네오마계광장	neodemon6	네오마계 광장	neo		보스 광장
+M네오정령거리3	neospirit2	네오 정령 거리 3	neo		
+M네오정령계거리	neospirit3	네오 정령계 거리	neo		넓은 띠
+M네오정령계거리2	neospirit4	네오 정령계 거리 2	neo		
+M네오정령계도시	neospirit5	네오 정령계 도시	neo		
+M동방 폐허1	east1	동방 폐허 1	yokai		
+M동방폐허2	east2	동방 폐허 2	yokai		
+M동방폐허3	east3	동방 폐허 3	yokai		
+M몽환동굴2	dream2	몽환동굴 2	dream		
+M몽환동굴3	dream3	몽환동굴 3	dream		가운데 깊은 못
+M불경1	impious1	불경 — 뼈 석상 들판	impious		
+M불경C1	impious2	불경 — 무너진 원형 성벽	impious		
+M불경C2	impious3	불경 — 벽 조각 섬	impious		검은 물
+M불경C3	impious4	불경 — 석상 아래 갈림길	impious		
+황혼의 붉은 사암 성당 폐허-4	impious5	붉은 사암 성당 폐허	impious		협곡 다리
+M성전2	temple2	성전 — 참호 들판	temple		
+M성전3	temple3	성전 — 원형 광장	temple		
+M성전4	temple4	성전 — 대성당 앞	temple		
+M성전5	temple5	성전 — 무너진 성채	temple		
+M심계(마계)2	abyss2	심계 (마계) 2	abyss		
+M심계(마계3)	abyss3	심계 (마계) 3	abyss		
+S마계1	abyss4	마계 돌다리	abyss		
+S마계2	abyss5	마계 보라 문 앞	abyss		
+M심계(지옥계)1	hellx1	심계 (지옥계) 용암 절벽	hell		
+M심계(지옥계)3	hellx3	심계 (지옥계) 붉은 장막	hell		
+M지옥2	hell3	지옥 뼈 구멍	hell		
+M지옥3	hell4	지옥 뼈 울타리	hell		보스 판
+M심해1	deep1	심해	deep		
+M심해신성계	deep2	심해 신성계	deep		
+검은 물의 팔각 사원 폐허-3	deep3	검은 물의 팔각 사원	deep		
+M야전2	field2	야전 2	war		
+M야전3	field3	야전 3 (시가)	war		
+M요괴맵(일본)2	yokai2	요괴 마을 마당	yokai		
+M요괴맵(일본)3	yokai3	물에 잠긴 도리이	yokai		
+M요괴맵(일본)4	yokai4	거목 아래 신사	yokai		
+M이계1	other1	이계 1	other		
+M이계2	other2	이계 2 (바위 다리)	other		
+M이계3	other3	이계 3	other		
+M정령계B2	spirit2	정령계 네잎 고리	spirit		
+M정령계B3	spirit3	정령계 구슬 제단	spirit		
+M정령계환경	spirit4	정령계 꽃 정원	spirit		
+M정령계환경2	spirit5	정령계 꽃 언덕	spirit		
+M정령도시1	spiritc1	정령 도시 1	spirit		
+M정령도시2	spiritc2	정령 도시 2	spirit		
+M정령도시3	spiritc3	정령 도시 3	spirit		
+정령의 숲, 뿌리다리와 숨은 길	spirit6	정령의 숲 (숨은 길)	spirit		
+M중세골목1	med1	중세 골목 우물 마당	medieval		
+M중세골목2	med2	중세 골목 물레방아	medieval		
+M중세폐허1	medr1	중세 폐허 1	medieval		
+M중세폐허2	medr2	중세 폐허 2	medieval		
+M중세폐허3	medr3	중세 폐허 3	medieval		
+M지하미궁 중앙	maze0	지하미궁 중앙	maze		보스 방
+M지하미궁1	maze1	지하미궁 1	maze		
+M지하미궁2	maze2	지하미궁 2	maze		
+M차원계2	dim2	차원계 원형 단	dim		
+M차원계3	dim3	차원계 돌방	dim		
+M하르겐1	hargen1	하르겐의 회랑	stage		
+하르겐 가는길	hargen0a	하르겐 가는 길	stage		긴 가로 띠
+하르겐가는길2	hargen0b	하르겐 앞마당	stage		긴 가로 띠
+M하수구3	sewer3	하수구 벙커 2	sewer		
+M호수유적 - 잡몹없이 보스등장 	lakeruin	호수 유적	stage		보스만
+S동굴1	cave1	동굴 1	cave		
+S동굴2	cave2	동굴 2	cave		
+S동굴3	cave3	동굴 3	cave		
+S석회동굴2	lime2	석회동굴 못	cave		
+S석회동굴3	lime3	석회동굴 갈래	cave		
+S수정동굴3	crystal3	수정동굴 3	crystal		
+S갈대밭, 요괴NPC, 낮은확률로 모란등장 	reeds	갈대밭	stage		
+S유적A	ruina	흰 원형 신전	stage		
+S의료텐트-파비	tent	야전병원 천막	stage		방 (침대 · 난로 = 막힘)
+S이스터에그-신성오딜방	odileh	신성 오딜의 방	stage		방
+S지껄이는 입 타일 늘여서 좀 걷게 하기, 배경은 그냥 우주 쓰기	mouth	지껄이는 입	stage	72	타일 늘여 좀 걷게 — 가로로 긴 사막 · 끝에 입
+고대 마야 유적의 디스코 복싱장 (1)	stadium2	마야 디스코 복싱장	stadium		30층 링 후보
+진료소 안	clinic	진료소	stage		방
+S 장작방, 말없이 장작에 뭘 넣는 수녀와 악마	firewood	장작방	stage		방
+S 지식의 나선 마지막 구간(DVD룸~ 마지막 길)	spiral3	지식의 나선 — 마지막 구간	stage		세로 긴 길
+S 호수, 친칠라 등장	lake	잠든 사냥꾼의 호수	stage		
+SM행성 공용	planet	행성	stage		달 표면 — 거의 모두 바닥
+S고대폐허,펄맵으로도씀	ancient	고대 폐허	stage		세로 기둥 복도
+S고독방	lonely	고독방	stage		흑백 체크 · 의자 하나
+S단달로 저택 복도	dandal2	단달로 저택 복도	stage		
+S단달로 저택 휴게실,로지나방	dandal4	단달로 저택 휴게실 · 로지나 방	stage		
+S단달로저택 메인 룸	dandal3	단달로 저택 메인 룸	stage		
+S단달로처택 입구	dandal1	단달로 저택 입구	stage		
+S붉은 소녀 스테이지	redgirl	붉은 소녀의 길	stage		
+S지식의 나선 맨 아래	spiral4	지식의 나선 — 맨 아래 DVD 방	stage		
+S지식의나선 하층+사무실	spiral2	지식의 나선 — 하층 · 사무실	stage		
+S치킨룸 (2)	chicken	치킨룸	stage		
+S해변	beach	해변	stage		
+지식의 나선 아래로 향하는길	spiral1	지식의 나선 — 아래로 향하는 길	stage		
+CR 챔피언 로드 관중 통로	champ	챔피언 로드 관중 통로	champ		세로 · 가운데 길만 바닥 · 양쪽 관중 막힘 · in 아래 · out 위
