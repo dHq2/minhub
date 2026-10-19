@@ -1,4 +1,4 @@
-// v7.26.1 UI 시험 — ui7261.js v1.1 (v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
+// v7.26.1 UI 시험 — ui7261.js v1.2 (v1.2: 훈련장으로 바꾼 뒤 잠깐 기다림 · 적이 없으면 창병 하나 · v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
 //   명령이 안 닿음 로그는 3초에 한 번 / 간두: 겨누는 중에도 코앞 (2.6칸) 이면 샷건 · 멀어지면 권총 · 탄 칸에 총 이름 · '🔁 샷건으로' 띠 / 갑옷 아이콘이 작은 판에서도 / 좁은 문: 4S 유적 다섯 판 모두 도착)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -40,8 +40,8 @@ const { chromium } = require('playwright');
  console.log('    고립', JSON.stringify(g4), JSON.stringify(g4a), JSON.stringify(g4b), JSON.stringify(g4c)); ok(g4a.stay&&!g4b.stay&&g4b.rj.includes(g4.a)&&!g4b.rj.includes(g4.c)&&g4b.holdK==='hold'&&g4c.d<4,'끝난 맵 고립: 3초엔 그대로 · 4초 넘으면 '+g4.a+'이(가) 스스로 대장 곁으로 ('+g4c.d+'칸) · 제자리 '+g4.c+'는 그대로');
 
  // 5) 간두: 겨누는 중에도 코앞이면 샷건 · 멀어지면 권총 · 탄 칸 · 띠 (훈련장)
- await p.evaluate(()=>{ setMode('train'); if (S.camp) campQuit(); });
- await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1).slice(0,1); const g=fromDesign(designByKey('간두'),0); g.x=10.5; g.y=10.5; S.units.push(g); rebuildMap(); changed(); start(); });
+ await p.evaluate(()=>{ setMode('train'); if (S.camp) campQuit(); }); await p.waitForTimeout(200);
+ await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1).slice(0,1); if (!S.units.length){ const f=fromDesign(designByKey('창병'),1); f.x=20.5; f.y=10.5; S.units.push(f); } const g=fromDesign(designByKey('간두'),0); g.x=10.5; g.y=10.5; S.units.push(g); rebuildMap(); changed(); start(); });
  const s5 = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); e.seenBy=true; e.x=g.x+6; e.y=g.y; g.face=0; e.face=Math.PI; computeLight(W);
    mode='run'; paused=false; startAct(W,g,e,'시험'); const a0=g.act&&g.act.k; e.x=g.x+g.r+e.r+2.0; let sw=null, lab=null; for (let k=0;k<30;k++){ stepWorld(W,1/30); if (g.act&&g.act.k==='altSwap'&&!sw){ sw=k; draw(); } if (g.weapon==='샷건') break; } paused=true; mode='plan';
    return { a0, sw, w: g.weapon, alt: g.alt&&g.alt.name, log: W.log.filter(l=>l.k==='altSwap').map(l=>l.why) }; });

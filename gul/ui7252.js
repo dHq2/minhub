@@ -1,4 +1,4 @@
-// v7.25.2 UI 시험 — ui7252.js v1.1 (v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
+// v7.25.2 UI 시험 — ui7252.js v1.2 (v1.2: v8.5.0 전리품 창 다시에 맞춤 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
 //   동료 얼굴을 누르면 그 가방으로 · 장비 탭에서 끼우기 → 다음 맵 판에 그 무기 · 맵 중간 전리품 창도 카드 · 화면 안 (PC · 휴대폰))
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -13,10 +13,10 @@ const { chromium } = require('playwright');
    console.log('    '+vw.nm+' 정산',JSON.stringify(r)); ok(r.vis&&r.tabs.length===3&&/정산/.test(r.tabs[0])&&/전리품/.test(r.tabs[1])&&/장비/.test(r.tabs[2])&&r.cards===6,vw.nm+': 맵을 넘어가면 정산 화면 — 탭 셋 · 동료 카드 여섯');
    ok(r.chips>=1,vw.nm+': ✦ 성장이 칩으로 크게 ('+r.chips+')');
    if (vw.mob) await p.screenshot({path:'_s7252_sum_mo.png'}); else await p.screenshot({path:'_s7252_sum.png'});
-   const l = await p.evaluate(()=>{ document.querySelector('[data-crt="loot"]').click(); const L=lootOf(world), cards=document.querySelectorAll('#crBody .lcard').length;
+   const l = await p.evaluate(()=>{ document.querySelector('[data-crt="loot"]').click(); const L=lootOf(world), cards=document.querySelectorAll('#crBody .l8r').length+L.filter(x=>x.taken).length;
      const w=L.filter(x=>x.k==='weapon').length, sh=L.filter(x=>x.k==='shield').length, ar=L.filter(x=>x.k==='armor'||x.k==='helm');
-     const i=L.findIndex(x=>x.k==='weapon'&&x.name==='장검'), rb=crCtx.party.find(x=>x.name==='레베카'), bag0=(rb.bag||[]).length; const btn=document.querySelector(`[data-lgive="${i}"][data-lp="${rb.id}"]`); if (btn) btn.click();
-     return { cards, w, sh, ar: ar.map(x=>x.k+':'+x.dur+(x.worn?':worn':'')), i, got: (rb.bag||[]).length-bag0, taken: L[i]&&L[i].taken, em: document.querySelectorAll('#crBody .lcard em').length }; });
+     const i=L.findIndex(x=>x.k==='weapon'&&x.name==='장검'), rb=crCtx.party.find(x=>x.name==='레베카'), bag0=(rb.bag||[]).length; lootTo=rb.id; crRender(); const btn=document.querySelector(`#crBody .l8go[data-lgive="${i}"][data-lp="${rb.id}"]`); if (btn) btn.click();
+     return { cards, w, sh, ar: ar.map(x=>x.k+':'+x.dur+(x.worn?':worn':'')), i, got: (rb.bag||[]).length-bag0, taken: L[i]&&L[i].taken, em: document.querySelectorAll('#crBody .l8took').length }; });
    console.log('    '+vw.nm+' 전리품',JSON.stringify(l));
    ok(l.cards>=7&&l.w>=5&&l.sh>=2,vw.nm+': 전리품 — 무구는 모두 (무기 '+l.w+' · 방패 '+l.sh+')');
    ok(l.ar.every(x=>/worn/.test(x)&&+x.split(':')[1]<=60),vw.nm+': 방어구는 드물고 나와도 망가짐 ('+l.ar.length+')');
@@ -27,7 +27,7 @@ const { chromium } = require('playwright');
      return { n: document.querySelectorAll('#crBody .ceq').length, bi, dis, wName: rb.wName, inBag: (rb.bag||[]).filter(x=>x.k==='weapon').map(x=>x.label||x.name), add: !!document.querySelector('#crBody [data-iadd]') }; });
    console.log('    '+vw.nm+' 장비',JSON.stringify(e)); ok(e.n===6&&!e.dis&&/검방패기사의 장검/.test(e.wName||'')&&!e.add,vw.nm+': 장비 · 가방 탭 — 끼우기 (레베카가 검방패기사의 장검을 듦 · 원래 장검은 가방으로) · 만들기 없음');
    if (vw.mob) await p.screenshot({path:'_s7252_eq_mo.png'}); else await p.screenshot({path:'_s7252_eq.png'});
-   const n = await p.evaluate(()=>{ const lay=[...document.querySelectorAll('#banner .lp,#banner .ivc,#banner .btn')].filter(x=>{ const q=x.getBoundingClientRect(); return q.width&&(q.right>innerWidth+1||q.left<-1); }).length;
+   const n = await p.evaluate(()=>{ const lay=[...document.querySelectorAll('#banner .l8p,#banner .l8go,#banner .ivc,#banner .btn')].filter(x=>{ const q=x.getBoundingClientRect(); return q.width&&(q.right>innerWidth+1||q.left<-1); }).length;
      document.getElementById('campNext').click(); const u=world.units.find(x=>x.name==='레베카'); return { lay, s:S.camp.s, wName:u&&u.wName, sw:document.documentElement.scrollWidth, iw:innerWidth }; });
    console.log('    '+vw.nm+' 다음 맵',JSON.stringify(n)); ok(n.lay===0&&n.sw<=n.iw+1,vw.nm+': 정산 화면이 화면 안'); ok(n.s===2&&/검방패기사의 장검/.test(n.wName||''),vw.nm+': 2S 판의 레베카가 끼운 장검을 듦');
    ok(!errs.length,vw.nm+' 오류 없음 '+errs.slice(0,2).join(' | ')); }

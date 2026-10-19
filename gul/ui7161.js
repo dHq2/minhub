@@ -1,9 +1,9 @@
-// v7.16.1 UI 시험 — ui7161.js v1.2 (v1.2: 싸움이 늦게 열리는 판 (무작위 시작) 이면 8초까지 더 돌려 봄 · v1.1: 예시 판은 1.6초에 적이 쫓아와 싸움이 열림 — 교전 금지를 0초에 걸어 둠 · 포복 명령 전달 · 가는 중인 지시를 셈 (두 번 누르면 일어나) · 알림 · 교전 금지 자동 해제 로그 · 서술 · 아군 카드 · 모바일)
+// v7.16.1 UI 시험 — ui7161.js v1.3 (v1.3: 시작 자리 무작위 (v8.4.1) 는 끔 — '멀리 있으면' 거리 시험이라 · v1.2: 싸움이 늦게 열리는 판 (무작위 시작) 이면 8초까지 더 돌려 봄 · v1.1: 예시 판은 1.6초에 적이 쫓아와 싸움이 열림 — 교전 금지를 0초에 걸어 둠 · 포복 명령 전달 · 가는 중인 지시를 셈 (두 번 누르면 일어나) · 알림 · 교전 금지 자동 해제 로그 · 서술 · 아군 카드 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
  for (const mob of [false,true]){
-  const p=await (await b.newContext(mob?{viewport:{width:412,height:883},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}:{viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); const tag=mob?'모바일 ':'PC ';
+  const cx=await b.newContext(mob?{viewport:{width:412,height:883},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}:{viewport:{width:1280,height:860}}); await cx.addInitScript('window.__noJit=true'); const p=await cx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); const tag=mob?'모바일 ':'PC ';
   await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
   const r = await p.evaluate(()=>{ start(); const W=world, h=W.units.find(u=>u.hero), far=W.units.filter(u=>u.side===0&&!u.hero&&!u.modBody).sort((a,b)=>Math.hypot(b.x-h.x,b.y-h.y)-Math.hypot(a.x-h.x,a.y-h.y))[0];
     for (const u of W.units) if (u.side===0) u.roe='hold'; for (let k=0;k<60;k++) stepWorld(W,1/30);   /* 0초가 지나 전달이 걸리게 · 교전 금지는 0초에 */
