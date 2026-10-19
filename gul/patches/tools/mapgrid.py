@@ -1,4 +1,4 @@
-# mapgrid.py v1.2 (v1.2: 고침.txt 의 'seed=x,y;x,y' (+ 'dc=0.9' · 'de=1.6') — 찍은 바닥 칸들의 색 · 결을 기준으로 비슷한 칸만 바닥으로 어림해 이어 붙임 (동굴 · 들판처럼 구불구불한 맵) · v1.1: v1.1: 겹쳐 보기를 반투명 층으로 · 문턱 1.5 이상이면 어림 없이 모두 바닥 (손으로 짚을 때) · 칸 번호 모두) — 그림 맵 (위에서 본 전장) → 칸 지도 어림 + 겹쳐 보기
+# mapgrid.py v1.4 (v1.4: ring= · fall= 줄도 건너뜀 · v1.3: 고침.txt 의 in= · out= · amb= · name= · tag= · id= · nx= 줄은 건너뜀 (maps8.py 가 읽음) · v1.2: v1.2: 고침.txt 의 'seed=x,y;x,y' (+ 'dc=0.9' · 'de=1.6') — 찍은 바닥 칸들의 색 · 결을 기준으로 비슷한 칸만 바닥으로 어림해 이어 붙임 (동굴 · 들판처럼 구불구불한 맵) · v1.1: v1.1: 겹쳐 보기를 반투명 층으로 · 문턱 1.5 이상이면 어림 없이 모두 바닥 (손으로 짚을 때) · 칸 번호 모두) — 그림 맵 (위에서 본 전장) → 칸 지도 어림 + 겹쳐 보기
 #   칸마다 결 (가장자리 세기) · 바닥 색과의 거리를 재서 바닥 / 막힘을 어림하고, 가운데에서 이어진 바닥만 남김.
 #   작은 막힘 덩어리 (≤ small 칸) 는 낮은 엄폐 r, 나머지는 # (높음).
 #   쓰기: python3 -I mapgrid.py 그림.png 칸수(가로) 결과.json 겹침.jpg [문턱 0.0~1.0 기본 0.5] [고침.txt]
@@ -79,7 +79,7 @@ for y in range(NY):
 if fix:
     for ln in open(fix, encoding='utf-8'):
         ln = ln.split('#!')[0].strip()
-        if not ln or '=' not in ln or ln[:5] in ('seed=',) or ln[:3] in ('dc=', 'de='): continue
+        if not ln or '=' not in ln or ln.split('=')[0].strip() in ('seed', 'dc', 'de', 'in', 'out', 'amb', 'name', 'tag', 'id', 'nx', 'ring', 'fall'): continue
         a, v = ln.split('='); xs, ys = a.split(',')
         def rg(s):
             s = s.strip(); return range(int(s.split('-')[0]), int(s.split('-')[1]) + 1) if '-' in s else range(int(s), int(s) + 1)

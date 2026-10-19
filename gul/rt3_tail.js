@@ -3737,6 +3737,8 @@ function grabTry(W, t, a, how){
 /* ---------- v7.21 캠페인: 맵 끝으로 나감 — 위 · 아래 끝 띠 (camp.band 칸) 에 닿으면 맵에서 빠짐 (다른 맵으로 · 적은 쫓아오지 않음) ---------- */
 function exitStep(W, u, o, dt){
   const m = W.map, H = m.H, band = (W.rules.camp || {}).band || 0.9, dn = o.dir === 'down', row = dn ? H - 1 : 0;
+  if (dn && W.entry){ const E0 = W.entry; if (Math.hypot(E0.x - u.x, E0.y - u.y) <= (E0.r || 1.2)){ leaveMap(W, u, 'down'); return; } setMood(W, u, '물러남'); goTo(W, u, E0.x, E0.y, dt); return; }   /* v8.0.0 여정: 들어온 자리로 물러남 */
+  if (!dn && W.stairs && W.exitLock && !W.cleared){ const S0 = W.stairs; setMood(W, u, '출구 — 적이 남아 있음'); if (Math.hypot(S0.x - u.x, S0.y - u.y) > 1.6) goTo(W, u, S0.x, S0.y, dt); else { u.vx = 0; u.vy = 0; } return; }   /* v8.0.0 여정: 맵을 끝내야 열림 */
   if (!dn && W.stairs){ const S0 = W.stairs; if (Math.hypot(S0.x - u.x, S0.y - u.y) <= (S0.r || 0.9)){ leaveMap(W, u, 'up'); return; } setMood(W, u, '계단으로'); goTo(W, u, S0.x, S0.y, dt); return; }   /* v7.23.1 무덤의 계단 */
   if (dn ? u.y + u.r >= H - band : u.y - u.r <= band){ leaveMap(W, u, dn ? 'down' : 'up'); return; }
   if (o.tx == null){ const x0 = Math.floor(o.x != null ? o.x : u.x); let bx = null;   // 끝 줄의 가장 가까운 빈 칸
