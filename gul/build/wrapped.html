@@ -1,5 +1,7 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>[hidden]{display:none!important}body{margin:0}</style></head><body><title>굴의 전투판</title>
-<!-- 굴의 전투판 v8.0.0 (2026-10-19) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v8.1.0 (2026-10-19) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v8.1.0: 챔피언 로드 — 20층에서 MC 더 플링이 나온 뒤 21 ~ 29층: 관중 열기 (0 ~ 100) 가 싸움에 끼어듦 — 응원 (공격 +12%) · 야유 (빠르기 −10%) · 축복 (가장 다친 이 회복) · 증오 (빈 병).
+         열기는 처치 + · 동료가 쓰러짐 − · 이김 + · 물러남 −. 상금은 열기만큼 (× 0.75 ~ 1.25). 싸움마다 MC 실황 · 깜짝 규칙 (암전 · 상금 두 배 · 관중 열광 · 90초 승부).
      v8.0.0: 30층 여정 — 프롤로그 (1F) 를 마치면 ▼ 2층으로. 층마다 갈림길 지도 (싸움 · 정예 · 만남 · 쉼터 · 상인 · 보물 · 보스 · 고정) 를 골라 내려감.
          싸움 칸은 드라이브 5기의 그림 맵 (하수구 · 동굴 · 네온 · 요괴 · 지옥 · 마계 · 정령 · 기계천사 · 성전 · 옥상 · 공성 · 야전 · 차원 · 데이터 …) 위에서 — 들어온 자리 · 출구 계단 · 낮은 엄폐.
          층에 들어설 때 뽑기 세 장 (동료 · 유물) · 유물 18 · 여신의 눈물 ①②③ · 보스 (세르파 · 레지나 · 하딤/사슴 · 테이론 · 삼신) · 10층 · 20층 정산 (나감 / 계속) · 20층부터 MC 더 플링 · 결말 다섯.
@@ -996,7 +998,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v8.0.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v8.1.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1358,7 +1360,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.0.0 · 30층 여정</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.1.0 · 챔피언 로드</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1537,7 +1539,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v8.0.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v8.1.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
 </div>
 <div class="dock" id="dock" aria-label="조작판"><div class="drow dchips" id="dChips"></div><div class="drow acts" id="dActs"></div><div class="drow play" id="dPlay"></div></div>
@@ -11261,7 +11263,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v8.0.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v8.1.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => padW(f2(e.t) + '초', 8);
@@ -11416,6 +11418,7 @@ function logLines(Wd, from){
       case 'odTake': out.push(`${T(e)}🍵 오딜의 차 한 잔 → ${e.to} 가방 (다음 맵부터)`); break;
       case 'odBless': out.push(`${T(e)}🌹 <축복:오딜> — 장미장식 · 인주 (공격 × 1.1 · 회피 +10%)`); break;
       case 'odDead': out.push(`${T(e)}✝ 오딜이 죽음 — 다음 방문부터 소파 위의 시신 · 인연 멈춤`); break;
+      case 'r8': out.push(`${T(e)}${e.s}`); break;   /* v8.1.0 */
       case 'campIn': out.push(`${T(e)}🗺 ${e.r8 ? '' : '1F · '}${e.name} ${e.kind}${e.bt ? ' — ' + e.bt + ' (우리는 모름)' : ''}${e.back ? ' — 다시 돌아옴' : ''} (${e.from === 'up' ? '위' : '아래'}에서 들어섬)`); break;
       case 'altSwap': out.push(`${T(e)}🔁 ${n(e.a)} ${e.from} → ${e.w} 바꿔 듦${e.n != null ? ' (탄 ' + e.n + ')' : ''}${e.why ? ' — ' + e.why : ''}`); break;   // v7.25.1
       case 'bagSwap': out.push(`${T(e)}🎒 ${n(e.a)} 가방에서 ${e.w}${e.sh ? ' + ' + e.sh : ''} 꺼내 듦${e.from ? ' (' + e.from + ' 은 가방에)' : ''}${e.why ? ' — ' + e.why : ''}`); break;   // v7.20 소지품
@@ -11884,6 +11887,7 @@ function narrOf(Wd, e){
     case 'odMeet': case 'odTake': case 'rgMeet': return null;
     case 'rgPass': return { c: 'dim', s: '레지나가 다시 턱을 괸다. 옥좌 뒤로 길이 열려 있다.' };   /* v7.27.0 */
     case 'rgDead': return { c: 'good', s: '레지나가 무릎을 꿇고 쓰러진다. 푸른 불꽃이 잠시 흔들린다.' };
+    case 'r8': return { c: e.c || 'dim', s: e.s };   /* v8.1.0 여정 · 관중 · MC */
     case 'campIn': return { c: 'dim', s: `${e.r8 ? '' : '1F · '}${e.name} — ${e.kind}.` };
     case 'encSeen': return { c: 'dim', s: NPC[e.npc].seen };   // v7.22 인카운터
     case 'encWake': return { c: 'dim', s: `${ga(NPC[e.npc].who)} 화들짝 놀라 뒤로 뛰어 물러난다.` };
@@ -13327,7 +13331,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push('굴의 전투판 v8.0.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push('굴의 전투판 v8.1.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   M.forEach((m, i) => {
     o.push(`════════ ${i + 1}. ${m.name || m.s + 'S'} · ${m.kind || ''}${m.enc ? ' — ' + m.enc : ''}${m.btl ? ' — ' + m.btl.comp + ' · ' + m.btl.sit : ''}${m.npc ? ' (' + m.npc + ')' : ''} — ${m.back ? '다시 들어섬' : '처음'}${m.from ? (m.from === 'up' ? ' · 위에서 내려옴' : ' · 아래에서 올라옴') : ''}${m.live ? ' · 지금 이 맵' : ''} ════════`);
@@ -13355,7 +13359,7 @@ async function campLogAll(){
   for (const x of L){ let log = null, tx = null; try { log = x.z ? JSON.parse(await gunB64(x.z)) : JSON.parse(x.j || '[]'); } catch (e) {} try { tx = x.zt ? JSON.parse(await gunB64(x.zt)) : x.jt ? JSON.parse(x.jt) : null; } catch (e) {}
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
-  return { game: '굴의 전투판', ver: '8.0.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '8.1.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -15044,7 +15048,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v8.0.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v8.1.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
@@ -15738,7 +15742,7 @@ const RELIC8 = {
   dice: { name: '왐의 주사위', ic: '🎲', d: '상인 값이 20% 쌈' } };
 const RELIC8_POOL = ['odtear', 'scale', 'nurse', 'violin', 'candle', 'gamyu', 'duck', 'rokto', 'tea', 'branch', 'coin', 'boots', 'crown', 'dice'];
 
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.5 (v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.6 (v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -15815,6 +15819,7 @@ function r8Css(){ if ($('r8css')) return; const st = document.createElement('sty
 .r8pan{max-width:560px;margin:10px auto;background:#17141f;border:1px solid #2e283c;border-radius:12px;padding:12px}.r8pan h3{margin:0 0 6px}
 .r8pan .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.r8card{display:inline-flex;flex-direction:column;align-items:center;gap:4px;width:150px;padding:10px;border-radius:12px;background:#221d2e;border:1px solid #3b3350;text-align:center;font-size:12px;vertical-align:top;margin:4px}
 .r8card b{font-size:14px}.r8card .ic{font-size:30px}.r8card.back{background:#2a2140;cursor:pointer;min-height:150px;justify-content:center;font-size:40px}
+.r8mc{margin:2px 0 4px;color:#ffb3d9;font-size:13px}
 .r8crowd{display:inline-block;width:120px;height:8px;background:#2a2238;border-radius:4px;overflow:hidden;vertical-align:middle}.r8crowd b{display:block;height:100%;background:linear-gradient(90deg,#7a5cff,#ff5ca8)}
 `; document.head.appendChild(st); }
 let r8Sel = null;
@@ -15828,8 +15833,9 @@ function r8MapShow(){
   const nodes = rows.flat().map(n => { const p = pos(n), N = NODE8[n.t] || {}, big = ['boss', 'fixed', 'final', 'stairs'].includes(n.t);
     const lb = n.t === 'elite' ? (ELITE8[n.e] || {}).name || '정예' : n.t === 'boss' ? r8BossName(n.b) : n.t === 'fixed' ? r8FixedName(n.k) : N.nm;
     return `<button type="button" class="r8n${big ? ' big' : ''}${R.done.includes(n.id) ? ' done' : ''}${av.includes(n.id) ? ' av' : ''}${R.at === n.id ? ' at' : ''}${r8Sel === n.id ? ' sel' : ''}" data-r8n="${n.id}" style="left:${p.x}%;top:${p.y}%">${N.ic || '?'}<small>${esc(lb)}</small></button>`; }).join('');
+  const mcl = typeof r8McLine === 'function' ? r8McLine() : '';   // v8.1
   const crowd = R.f >= 20 ? `<span>관중 열기 <span class="r8crowd"><b style="width:${Math.round(R.crowd)}%"></b></span></span>` : '';
-  el.innerHTML = `<h2>${R.f}층 · ${esc(F.name || '')}</h2><div class="r8sub">${F.final ? '결승 — 링 위에서 1대1' : F.boss ? '보스가 기다리는 층' : '갈림길 — 빛나는 칸을 골라 나아가세요'}</div>
+  el.innerHTML = `<h2>${R.f}층 · ${esc(F.name || '')}</h2>${mcl ? `<div class="r8mc">🎤 MC 더 플링: "${esc(mcl)}"</div>` : ''}<div class="r8sub">${F.final ? '결승 — 링 위에서 1대1' : F.boss ? '보스가 기다리는 층' : '갈림길 — 빛나는 칸을 골라 나아가세요'}</div>
     <div class="r8top"><span>👛 <b>${R.gold}</b></span><span>💧 여신의 눈물 <b>${R.tears}</b></span><span>동료 <b>${R.party.length}</b>/${R8.cap}</span>${crowd}<span style="color:#8a8070">${r8Elapsed()}</span></div>
     <div class="r8rel">${R.relics.length ? R.relics.map(k => `<span title="${esc((RELIC8[k] || {}).d || '')}">${(RELIC8[k] || {}).ic || '?'} ${esc((RELIC8[k] || {}).name || k)}</span>`).join('') : '<span style="opacity:.6">유물 없음</span>'}</div>
     <div class="r8map" style="--h:${H}px"><svg viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${nodes}</div>
@@ -15892,6 +15898,7 @@ function r8Battle(n, waveK){
   if (M){ for (let y = 0; y < M.NY; y++) for (let x = 0; x < M.NX; x++){ const c = M.rows[y][x]; if (c === '#') flips.push(x + ',' + y); else if (c === 'r') piles.push(`${x},${y},4`); } }
   Object.assign(S, { type: 'grid', W: M ? M.NX : 32, H: M ? M.NY : 20, amb: M ? M.amb : 0.15, mapC: false, randStart: true, seed: st.seed, flips, torches: [], terr: M ? '' : '1F', tseed: st.tseed, piles, hills: [], pileOff: [], indoor: !!M, zones: [], sandY: null, water: [], startK: n.t === 'fight' ? r8Pick(['roam', 'front', 'pincer', 'ambush', 'column']) : 'front' });
   S.art8 = id || null; S.hall = false; S.room = false; S.regina = false; S.holdClear = false;
+  const rule = typeof r8CrowdRule === 'function' ? r8CrowdRule(n) : null;   // v8.1 깜짝 규칙 (암전은 판을 만들기 전에)
   const pre = r8Pre(party);
   S.units = [...party, ...foes]; rebuildMap();
   const m = buildMap(S), inn = M && M.in ? M.in : [Math.floor(S.W / 2) - 5, S.H - 3, Math.floor(S.W / 2) + 5, S.H - 1];
@@ -15899,11 +15906,12 @@ function r8Battle(n, waveK){
   r8PlaceFar(m, foes, inn);
   selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors(); pre();
   r8Post(world);
-  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0 }; world.exitLock = true; if (M && M.fall) world.fall8 = true; }
+  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0, rule }; world.exitLock = true; if (M && M.fall) world.fall8 = true; }
   logEv(world, { k: 'campIn', s: 1, name: `${R.f}층 ${(NODE8[n.t] || {}).nm}`, kind: n.t === 'elite' ? (ELITE8[n.e] || {}).name : n.t === 'boss' ? r8BossName(n.b) : (F8[R.f] || {}).name, bt: null, from: 'down', back: false, r8: true });
   jrIn(C, 1, 'down', st, null, null);
   const B = n.t === 'boss' ? (n.b === 'neo' ? BOSS8[R.neo] : BOSS8[n.b]) : null;
   const intro = n.t === 'boss' ? r8BossIntro(n.b, waveK) : n.t === 'elite' ? [{ narr: `${(ELITE8[n.e] || {}).name} — 길을 막고 선다.` }] : [{ narr: r8Pick(F8[R.f].narr || ['어둠 속에서 무언가 움직인다.']) }];
+  if (typeof crowdOn === 'function' && crowdOn()) intro.unshift(...r8CrowdIntro(n, rule || 'none'));   // v8.1 MC 더 플링
   r8LoadFx(n, () => { if (intro && intro.length) talkLines(intro); });
   campBarRender(true);
 }
@@ -15945,8 +15953,9 @@ function r8Post(W){
 // 판마다 (draw 쪽에서 부름): 촛대 · 옥상 낙사
 function r8Tick(W){
   if (!W || !W.r8) return; const R = R8S(); if (!R) return;
-  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8candle', a: u.i, left: c.left }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
-  if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8fall', a: u.i }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
+  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
+  if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8', s: `${u.name} — 옥상 끝에서 밀려 떨어졌다!`, c: 'bad', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
+  if (typeof r8CrowdTick === 'function') r8CrowdTick(W);   // v8.1 관중
 }
 function r8LoadFx(n, then){
   const R = R8S(), F = F8[R.f] || {}, el = $('ldFx'); if (!el || navigator.webdriver){ setTimeout(then, 30); return; }
@@ -15976,13 +15985,13 @@ function r8Over(){
   R.party = party; C.log.push({ s: 1, f: R.f, t: +W.t.toFixed(1), res: W.result, kills: (W.kills || [0])[0], party: party.map(p => p.name) });
   if (W.result === 'lose' || !party.length){ r8End('wipe'); return; }
   const up = (dirs.up || 0) >= (dirs.down || 0);
-  if (!up && !W.cleared){ R.at = r8PrevAt(); save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
+  if (!up && !W.cleared){ if (typeof r8CrowdOver === 'function') r8CrowdOver(W, node, false, true); R.at = r8PrevAt(); save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
   for (const r of rows){ const p = party.find(x => x.id === r.pid); r.grow = p ? growFor(p, r) : []; }
   try { jrGrow(rows); } catch (e) {}
   if (r8Has('violin')) for (const p of party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow || 0) + Math.round(mx * 0.1)); }
   // 보상
-  const G = R8.gold[node.t === 'elite' ? 'elite' : node.t === 'boss' ? 'boss' : 'fight'] || R8.gold.fight, gold = Math.round(r8Rnd(G[0], G[1]) * (r8Has('coin') ? 1.5 : 1)); R.gold += gold;
-  const rew = [`👛 ${gold}`]; let relic = null;
+  const G = R8.gold[node.t === 'elite' ? 'elite' : node.t === 'boss' ? 'boss' : 'fight'] || R8.gold.fight, cm = typeof r8CrowdOver === 'function' ? r8CrowdOver(W, node, true, false) : { mul: 1, add: 0, txt: [] }, gold = Math.round(r8Rnd(G[0], G[1]) * (r8Has('coin') ? 1.5 : 1) * cm.mul) + cm.add; R.gold += gold;   // v8.1 관중 · 규칙
+  const rew = [`👛 ${gold}`, ...cm.txt]; let relic = null;
   if (node.t === 'elite' || (node.t === 'fight' && Math.random() < 0.18)) relic = r8GiveRelic();
   if (relic) rew.push(`${RELIC8[relic].ic} ${RELIC8[relic].name}`);
   const B = node.t === 'boss' ? (node.b === 'neo' ? BOSS8[R.neo] : BOSS8[node.b]) : null;
@@ -16162,7 +16171,7 @@ function r8Settle(){
 }
 // ===== MC 더 플링 (20층) =====
 function r8McIntro(then){
-  const R = R8S(); R.crowd = 60; save(); R8T = then;
+  const R = R8S(); R.crowd = 60; R.flags.mc = 1; save(); R8T = then;
   talkLines([{ narr: '사방에서 조명이 켜진다. 굴의 천장 너머에서 함성이 쏟아진다.' }, { t: '자아아아—! 300년! 300년 만입니다, 여러분!!', name: 'MC 더 플링' }, { t: '아래를 보세요, 저 작은 불빛! 오늘부터 이 굴은…', name: 'MC 더 플링' }, { t: '챔피언 로드입니다!!!', name: 'MC 더 플링' }, { narr: '관중의 함성이 굴을 흔든다. 콜라이더와 물레가 멀리서 고개를 끄덕인다.' }, { t: '20층까지 돌파한 세력은 300년 만에 처음입니다. 우리는 당신을 돕고 싶습니다.', name: '콜라이더' }, { box: '챔피언 로드 — 이제부터 관중이 지켜봐요 (응원 · 야유 · 축복 · 증오)' }, { go: '!r8:then' }]);
 }
 // ===== 결승 (v8.2 에서 링 위 1대1) =====
@@ -16191,6 +16200,78 @@ function r8PartyPanel(){
 function r8Boot(){ if (!run8On()) return; const R = R8S(); if (world && world.camp && !world.over && (S.art8 || S.camp.s === 3)){ world.r8 = world.r8 || { node: R.at }; return; } r8MapShow(); }
 R8READY = true;
 setTimeout(r8Boot, 900);
+
+/* ---------- v8.1.0 챔피언 로드 — run8_c.js v1.0 (20층에서 MC 더 플링이 나온 뒤 ~ 29층: 관중 열기 · 응원 · 야유 · 축복 · 증오 · MC 실황 · 깜짝 규칙) ----------
+   관중은 도전자 (우리) 를 본다. 열기 (0 ~ 100) 가 높으면 응원 · 축복, 낮으면 야유 · 증오가 쏟아진다.
+   열기는 싸움으로 움직인다: 적을 쓰러뜨림 + · 동료가 쓰러짐 − · 이기면 + (정예 · 보스는 더) · 물러나면 크게 −.
+   깜짝 규칙은 판 전체 (양쪽 같게) — 암전 · 상금 두 배 · 관중 열광 · 90초 승부. */
+const CR8 = { gap: [11, 17], cheer: 1.12, cheerT: 8, boo: 0.9, booT: 6, bless: 0.15, hate: 0.04, kill: 3, down: -3, win: 5, winBig: 10, retreat: -12, clockT: 90 };
+const crowdOn = () => { const R = R8S(); return !!R && R.on && R.f >= 21 && R.f < 30 && !!(R.flags || {}).mc; };
+const MC8 = {
+  start: ['자, 다음 무대! 도전자 입장합니다!', '여러분, 저 횃불 보이시죠? 아직 안 꺼졌습니다!', '오늘의 상대는… 굴의 토박이들! 텃세가 장난 아니에요!', '카메라 붙었습니다! 숨소리까지 들려요!'],
+  kill: ['한 놈 넘어갑니다!', '깔끔해요, 깔끔해!', '이게 바로 챔피언 로드죠!', '관중석이 들썩입니다!'],
+  down: ['아아— 쓰러졌습니다!', '이건 아프겠는데요…', '도전자 쪽에 구멍이 났어요!'],
+  cheer: ['함성이 쏟아집니다!', '이름을 연호하는 관중들!', '박수 소리에 바닥이 울려요!'],
+  boo: ['야유! 야유가 터집니다!', '관중들이 등을 돌려요…', '"지루하다!" 소리가 여기까지 들립니다!'],
+  bless: ['누군가 꽃다발을 던졌습니다 — 축복이에요!', '관중석에서 약병이 굴러 옵니다!'],
+  hate: ['빈 병이 날아옵니다! 관중이 화났어요!', '누가 돌을 던졌어요! 이건 반칙 아닌가요?'],
+  win: ['승리! 승리입니다!', '도전자, 또 한 층을 뚫습니다!', '이 맛에 중계하죠!'],
+  retreat: ['물러납니다… 관중들 실망이 커요.', '어어, 등을 보이네요?'],
+  map: { hi: ['오늘 시청률 최고입니다! 다음 무대 기대하세요!', '관중들이 도전자의 이름을 외우기 시작했어요!'], mid: ['아직 판단하기 이릅니다, 여러분!', '다음 층, 어디로 갈까요? 저도 궁금합니다!'], lo: ['이대로면 시즌 최단 탈락입니다…', '관중들이 채널을 돌리고 있어요!'] } };
+const CRULE8 = { none: null, dark: { name: '암전 경기', mc: '조명 끕니다! 횃불 하나에 모든 걸 거세요!', d: '판이 아주 어두워짐 (양쪽 모두)' }, gold: { name: '상금 두 배', mc: '이번 판은 상금 두 배! 스폰서님 감사합니다!', d: '이기면 동전 × 2' }, frenzy: { name: '관중 열광', mc: '관중석 문을 다 열었습니다! 오늘은 아무도 못 말려요!', d: '응원 · 야유가 두 배로 자주' }, clock: { name: '90초 승부', mc: '90초! 90초 안에 끝내면 보너스!', d: '90초 안에 끝내면 열기 +12 · 동전 +30 (넘기면 열기 −10)' } };
+const crPick = L => L[Math.floor(Math.random() * L.length)];
+function crHeat(d){ const R = R8S(); if (!R) return; R.crowd = Math.max(0, Math.min(100, (R.crowd == null ? 50 : R.crowd) + d)); }
+function crSay(W, s, c){ logEv(W, { k: 'r8', s: '🎤 ' + s, c: c || 'dim', vis: true }); }
+// 판을 만들기 전: 깜짝 규칙 (여정의 싸움 · 정예 칸만)
+function r8CrowdRule(n){
+  if (!crowdOn() || !['fight', 'elite'].includes(n.t)) return null;
+  const k = Math.random() < 0.4 ? 'none' : crPick(['dark', 'gold', 'frenzy', 'clock']);
+  if (k === 'dark') S.amb = Math.min(S.amb, 0.12);
+  return k;
+}
+// 들어설 때 MC 한마디 (대화 맨 앞)
+function r8CrowdIntro(n, rule){
+  const R = R8S(), r = CRULE8[rule], L = [{ t: crPick(MC8.start), name: 'MC 더 플링' }];
+  if (r) L.push({ t: r.mc, name: 'MC 더 플링' }, { box: `깜짝 규칙 — ${r.name}: ${r.d}` });
+  L.push({ narr: R.crowd >= 70 ? '관중석이 들끓는다. 이름을 부르는 소리가 들린다.' : R.crowd < 35 ? '관중석에서 야유가 먼저 쏟아진다.' : '수만 개의 눈이 우리를 내려다본다.' });
+  return L;
+}
+// 판마다 (r8Tick 에서): 쓰러짐 셈 · 관중의 응원 · 야유 · 축복 · 증오
+function r8CrowdTick(W){
+  if (!crowdOn() || !W || !W.r8 || W.over) return; const R = R8S();
+  const C = W.r8c || (W.r8c = { next: W.t + 6, a: W.units.filter(u => u.side === 0 && u.alive).length, f: W.units.filter(u => u.side === 1 && u.alive).length, fx: [] });
+  const a = W.units.filter(u => u.side === 0 && u.alive).length, f = W.units.filter(u => u.side === 1 && u.alive).length;
+  if (f < C.f){ crHeat(CR8.kill * (C.f - f)); if (Math.random() < 0.45) crSay(W, crPick(MC8.kill), 'good'); }
+  if (a < C.a){ crHeat(CR8.down * (C.a - a)); crSay(W, crPick(MC8.down), 'bad'); }
+  C.a = a; C.f = f;
+  for (const e of C.fx.splice(0)){ if (W.t < e.t1){ C.fx.push(e); continue; } const u = W.units[e.i]; if (u){ if (e.k === 'atk') u.atk = Math.round(u.atk / CR8.cheer); if (e.k === 'spd') u.spd /= CR8.boo; } }
+  if (W.t < C.next || W.cleared) return;
+  const g = CR8.gap[0] + Math.random() * (CR8.gap[1] - CR8.gap[0]); C.next = W.t + ((W.r8.rule === 'frenzy') ? g / 2 : g);
+  const al = W.units.filter(u => u.side === 0 && u.alive && !u.gone); if (!al.length) return;
+  const h = R.crowd, r = Math.random();
+  const k = h >= 70 ? (r < 0.6 ? 'cheer' : r < 0.85 ? 'bless' : null) : h >= 40 ? (r < 0.5 ? 'cheer' : r < 0.7 ? 'boo' : null) : (r < 0.4 ? 'boo' : r < 0.75 ? 'hate' : null);
+  if (!k) return;
+  const u = k === 'bless' ? al.slice().sort((p, q) => p.hp / p.max - q.hp / q.max)[0] : crPick(al), fx = (s, c) => { if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.4, s, c, t0: W.t }); };
+  if (k === 'cheer'){ u.atk = Math.round(u.atk * CR8.cheer); C.fx.push({ i: u.i, k: 'atk', t1: W.t + CR8.cheerT }); crSay(W, `${crPick(MC8.cheer)} — ${u.name} 공격 +12% (${CR8.cheerT}초)`, 'good'); fx('📣 응원', 'h'); crHeat(1); }
+  if (k === 'boo'){ u.spd *= CR8.boo; C.fx.push({ i: u.i, k: 'spd', t1: W.t + CR8.booT }); crSay(W, `${crPick(MC8.boo)} — ${u.name} 움찔 (빠르기 −10%, ${CR8.booT}초)`, 'bad'); fx('👎 야유', 'd'); }
+  if (k === 'bless'){ const amt = Math.max(1, Math.round(u.max * CR8.bless)); u.hp = Math.min(u.max, u.hp + amt); crSay(W, `${crPick(MC8.bless)} — ${u.name} +${amt}`, 'good'); fx('💐 축복 +' + amt, 'h'); }
+  if (k === 'hate'){ const amt = Math.max(1, Math.round(u.max * CR8.hate)); u.hp = Math.max(1, u.hp - amt); crSay(W, `${crPick(MC8.hate)} — ${u.name} −${amt}`, 'bad'); fx('🍾 증오 −' + amt, 'd'); }
+  (R.crowdLog = R.crowdLog || []).push({ f: R.f, k, who: u.name, t: +W.t.toFixed(1) }); if (R.crowdLog.length > 60) R.crowdLog.shift();
+}
+// 판이 끝날 때 (r8Over): 열기 · 상금 배율 · 규칙 보너스
+function r8CrowdOver(W, node, win, retreat){
+  const out = { mul: 1, add: 0, txt: [] }; if (!crowdOn() || !W || !W.r8) return out; const R = R8S(), rule = W.r8.rule;
+  if (retreat){ crHeat(CR8.retreat); out.txt.push('👎 관중 실망 (열기 ' + CR8.retreat + ')'); return out; }
+  if (!win) return out;
+  crHeat(node.t === 'elite' || node.t === 'boss' ? CR8.winBig : CR8.win);
+  if (rule === 'gold'){ out.mul *= 2; out.txt.push('💰 상금 두 배'); }
+  if (rule === 'clock'){ if (W.t <= CR8.clockT){ crHeat(12); out.add += 30; out.txt.push('⏱ 90초 안에 — 보너스 +30'); } else { crHeat(-10); out.txt.push('⏱ 90초를 넘김 (열기 −10)'); } }
+  out.mul *= Math.max(0.75, Math.min(1.25, 1 + (R.crowd - 50) / 200));
+  out.txt.push(`🔥 관중 열기 ${Math.round(R.crowd)}`);
+  return out;
+}
+// 지도에서: MC 한마디
+function r8McLine(){ const R = R8S(); if (!crowdOn()) return ''; const L = R.crowd >= 70 ? MC8.map.hi : R.crowd < 35 ? MC8.map.lo : MC8.map.mid; return L[(R.f + R.done.length) % L.length]; }
 
 setMob(); if (MOB) requestAnimationFrame(() => { layoutMob(); mobFit(); });   // v5.8 모바일
 requestAnimationFrame(frame);

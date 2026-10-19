@@ -1,4 +1,4 @@
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.5 (v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.6 (v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -75,6 +75,7 @@ function r8Css(){ if ($('r8css')) return; const st = document.createElement('sty
 .r8pan{max-width:560px;margin:10px auto;background:#17141f;border:1px solid #2e283c;border-radius:12px;padding:12px}.r8pan h3{margin:0 0 6px}
 .r8pan .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.r8card{display:inline-flex;flex-direction:column;align-items:center;gap:4px;width:150px;padding:10px;border-radius:12px;background:#221d2e;border:1px solid #3b3350;text-align:center;font-size:12px;vertical-align:top;margin:4px}
 .r8card b{font-size:14px}.r8card .ic{font-size:30px}.r8card.back{background:#2a2140;cursor:pointer;min-height:150px;justify-content:center;font-size:40px}
+.r8mc{margin:2px 0 4px;color:#ffb3d9;font-size:13px}
 .r8crowd{display:inline-block;width:120px;height:8px;background:#2a2238;border-radius:4px;overflow:hidden;vertical-align:middle}.r8crowd b{display:block;height:100%;background:linear-gradient(90deg,#7a5cff,#ff5ca8)}
 `; document.head.appendChild(st); }
 let r8Sel = null;
@@ -88,8 +89,9 @@ function r8MapShow(){
   const nodes = rows.flat().map(n => { const p = pos(n), N = NODE8[n.t] || {}, big = ['boss', 'fixed', 'final', 'stairs'].includes(n.t);
     const lb = n.t === 'elite' ? (ELITE8[n.e] || {}).name || '정예' : n.t === 'boss' ? r8BossName(n.b) : n.t === 'fixed' ? r8FixedName(n.k) : N.nm;
     return `<button type="button" class="r8n${big ? ' big' : ''}${R.done.includes(n.id) ? ' done' : ''}${av.includes(n.id) ? ' av' : ''}${R.at === n.id ? ' at' : ''}${r8Sel === n.id ? ' sel' : ''}" data-r8n="${n.id}" style="left:${p.x}%;top:${p.y}%">${N.ic || '?'}<small>${esc(lb)}</small></button>`; }).join('');
+  const mcl = typeof r8McLine === 'function' ? r8McLine() : '';   // v8.1
   const crowd = R.f >= 20 ? `<span>관중 열기 <span class="r8crowd"><b style="width:${Math.round(R.crowd)}%"></b></span></span>` : '';
-  el.innerHTML = `<h2>${R.f}층 · ${esc(F.name || '')}</h2><div class="r8sub">${F.final ? '결승 — 링 위에서 1대1' : F.boss ? '보스가 기다리는 층' : '갈림길 — 빛나는 칸을 골라 나아가세요'}</div>
+  el.innerHTML = `<h2>${R.f}층 · ${esc(F.name || '')}</h2>${mcl ? `<div class="r8mc">🎤 MC 더 플링: "${esc(mcl)}"</div>` : ''}<div class="r8sub">${F.final ? '결승 — 링 위에서 1대1' : F.boss ? '보스가 기다리는 층' : '갈림길 — 빛나는 칸을 골라 나아가세요'}</div>
     <div class="r8top"><span>👛 <b>${R.gold}</b></span><span>💧 여신의 눈물 <b>${R.tears}</b></span><span>동료 <b>${R.party.length}</b>/${R8.cap}</span>${crowd}<span style="color:#8a8070">${r8Elapsed()}</span></div>
     <div class="r8rel">${R.relics.length ? R.relics.map(k => `<span title="${esc((RELIC8[k] || {}).d || '')}">${(RELIC8[k] || {}).ic || '?'} ${esc((RELIC8[k] || {}).name || k)}</span>`).join('') : '<span style="opacity:.6">유물 없음</span>'}</div>
     <div class="r8map" style="--h:${H}px"><svg viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${nodes}</div>
@@ -152,6 +154,7 @@ function r8Battle(n, waveK){
   if (M){ for (let y = 0; y < M.NY; y++) for (let x = 0; x < M.NX; x++){ const c = M.rows[y][x]; if (c === '#') flips.push(x + ',' + y); else if (c === 'r') piles.push(`${x},${y},4`); } }
   Object.assign(S, { type: 'grid', W: M ? M.NX : 32, H: M ? M.NY : 20, amb: M ? M.amb : 0.15, mapC: false, randStart: true, seed: st.seed, flips, torches: [], terr: M ? '' : '1F', tseed: st.tseed, piles, hills: [], pileOff: [], indoor: !!M, zones: [], sandY: null, water: [], startK: n.t === 'fight' ? r8Pick(['roam', 'front', 'pincer', 'ambush', 'column']) : 'front' });
   S.art8 = id || null; S.hall = false; S.room = false; S.regina = false; S.holdClear = false;
+  const rule = typeof r8CrowdRule === 'function' ? r8CrowdRule(n) : null;   // v8.1 깜짝 규칙 (암전은 판을 만들기 전에)
   const pre = r8Pre(party);
   S.units = [...party, ...foes]; rebuildMap();
   const m = buildMap(S), inn = M && M.in ? M.in : [Math.floor(S.W / 2) - 5, S.H - 3, Math.floor(S.W / 2) + 5, S.H - 1];
@@ -159,11 +162,12 @@ function r8Battle(n, waveK){
   r8PlaceFar(m, foes, inn);
   selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors(); pre();
   r8Post(world);
-  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0 }; world.exitLock = true; if (M && M.fall) world.fall8 = true; }
+  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0, rule }; world.exitLock = true; if (M && M.fall) world.fall8 = true; }
   logEv(world, { k: 'campIn', s: 1, name: `${R.f}층 ${(NODE8[n.t] || {}).nm}`, kind: n.t === 'elite' ? (ELITE8[n.e] || {}).name : n.t === 'boss' ? r8BossName(n.b) : (F8[R.f] || {}).name, bt: null, from: 'down', back: false, r8: true });
   jrIn(C, 1, 'down', st, null, null);
   const B = n.t === 'boss' ? (n.b === 'neo' ? BOSS8[R.neo] : BOSS8[n.b]) : null;
   const intro = n.t === 'boss' ? r8BossIntro(n.b, waveK) : n.t === 'elite' ? [{ narr: `${(ELITE8[n.e] || {}).name} — 길을 막고 선다.` }] : [{ narr: r8Pick(F8[R.f].narr || ['어둠 속에서 무언가 움직인다.']) }];
+  if (typeof crowdOn === 'function' && crowdOn()) intro.unshift(...r8CrowdIntro(n, rule || 'none'));   // v8.1 MC 더 플링
   r8LoadFx(n, () => { if (intro && intro.length) talkLines(intro); });
   campBarRender(true);
 }
@@ -205,8 +209,9 @@ function r8Post(W){
 // 판마다 (draw 쪽에서 부름): 촛대 · 옥상 낙사
 function r8Tick(W){
   if (!W || !W.r8) return; const R = R8S(); if (!R) return;
-  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8candle', a: u.i, left: c.left }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
-  if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8fall', a: u.i }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
+  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
+  if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8', s: `${u.name} — 옥상 끝에서 밀려 떨어졌다!`, c: 'bad', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
+  if (typeof r8CrowdTick === 'function') r8CrowdTick(W);   // v8.1 관중
 }
 function r8LoadFx(n, then){
   const R = R8S(), F = F8[R.f] || {}, el = $('ldFx'); if (!el || navigator.webdriver){ setTimeout(then, 30); return; }
@@ -236,13 +241,13 @@ function r8Over(){
   R.party = party; C.log.push({ s: 1, f: R.f, t: +W.t.toFixed(1), res: W.result, kills: (W.kills || [0])[0], party: party.map(p => p.name) });
   if (W.result === 'lose' || !party.length){ r8End('wipe'); return; }
   const up = (dirs.up || 0) >= (dirs.down || 0);
-  if (!up && !W.cleared){ R.at = r8PrevAt(); save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
+  if (!up && !W.cleared){ if (typeof r8CrowdOver === 'function') r8CrowdOver(W, node, false, true); R.at = r8PrevAt(); save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
   for (const r of rows){ const p = party.find(x => x.id === r.pid); r.grow = p ? growFor(p, r) : []; }
   try { jrGrow(rows); } catch (e) {}
   if (r8Has('violin')) for (const p of party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow || 0) + Math.round(mx * 0.1)); }
   // 보상
-  const G = R8.gold[node.t === 'elite' ? 'elite' : node.t === 'boss' ? 'boss' : 'fight'] || R8.gold.fight, gold = Math.round(r8Rnd(G[0], G[1]) * (r8Has('coin') ? 1.5 : 1)); R.gold += gold;
-  const rew = [`👛 ${gold}`]; let relic = null;
+  const G = R8.gold[node.t === 'elite' ? 'elite' : node.t === 'boss' ? 'boss' : 'fight'] || R8.gold.fight, cm = typeof r8CrowdOver === 'function' ? r8CrowdOver(W, node, true, false) : { mul: 1, add: 0, txt: [] }, gold = Math.round(r8Rnd(G[0], G[1]) * (r8Has('coin') ? 1.5 : 1) * cm.mul) + cm.add; R.gold += gold;   // v8.1 관중 · 규칙
+  const rew = [`👛 ${gold}`, ...cm.txt]; let relic = null;
   if (node.t === 'elite' || (node.t === 'fight' && Math.random() < 0.18)) relic = r8GiveRelic();
   if (relic) rew.push(`${RELIC8[relic].ic} ${RELIC8[relic].name}`);
   const B = node.t === 'boss' ? (node.b === 'neo' ? BOSS8[R.neo] : BOSS8[node.b]) : null;
@@ -422,7 +427,7 @@ function r8Settle(){
 }
 // ===== MC 더 플링 (20층) =====
 function r8McIntro(then){
-  const R = R8S(); R.crowd = 60; save(); R8T = then;
+  const R = R8S(); R.crowd = 60; R.flags.mc = 1; save(); R8T = then;
   talkLines([{ narr: '사방에서 조명이 켜진다. 굴의 천장 너머에서 함성이 쏟아진다.' }, { t: '자아아아—! 300년! 300년 만입니다, 여러분!!', name: 'MC 더 플링' }, { t: '아래를 보세요, 저 작은 불빛! 오늘부터 이 굴은…', name: 'MC 더 플링' }, { t: '챔피언 로드입니다!!!', name: 'MC 더 플링' }, { narr: '관중의 함성이 굴을 흔든다. 콜라이더와 물레가 멀리서 고개를 끄덕인다.' }, { t: '20층까지 돌파한 세력은 300년 만에 처음입니다. 우리는 당신을 돕고 싶습니다.', name: '콜라이더' }, { box: '챔피언 로드 — 이제부터 관중이 지켜봐요 (응원 · 야유 · 축복 · 증오)' }, { go: '!r8:then' }]);
 }
 // ===== 결승 (v8.2 에서 링 위 1대1) =====
