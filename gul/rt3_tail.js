@@ -152,7 +152,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       eyes: (tr.includes('머리 넷') ? 4 : 1) * 2, eyeLost: 0, blind: false, sightMul: 1, aimMaim: 1, arms: { L: null, R: null }, noArms: false, bleed: null, bled: 0,   // v5.5 부위 (눈 · 팔) · 출혈
       heads: tr.includes('머리 넷') ? 4 : 1, cry: p.cry || '', mute: p.mute != null ? !!p.mute : p.side === 1,   // v5.3 [머리 넷] · 외침 (말 없는 쪽은 이모지 — 적 기본)
       // v5.2 무게 · 몸 방패 · 거구의 공격 · 방패 밀치기 · 피하기 · 넘어짐 · 기어다님 · 밀려남 · 조 · 휘두르기 명령
-      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'),   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg, noChg0: !!p.noChg, heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
+      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'), marble: tr.includes('대리석 피부'),   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg, noChg0: !!p.noChg, heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
       canGuard: sh || !!wp.guard || (p.traits || []).includes('반사신경') || parryArcW(rules, p.weapon) > 0, parry: !sh && !wp.guard && parryArcW(rules, p.weapon) > 0, regen: tr.includes('재생') ? ((rules.regen || {}).hp != null ? rules.regen.hp : 0.04) : +p.regenK || 0, guardMode: 'auto', raised: false, raiseAt: 1e9, reflex: (p.traits || []).includes('반사신경'), post: 100, role: roleOf(p, rules),   // v5.7 막기는 선택
       // v5.0 방어 재능 (역할): 방패 · 대검을 든 쪽만 — 막는 폭 ×(0.6 + 0.4g), 막을 때 받는 피해 1 − (1 − blockMul)·g, 자세 깎임 ×(2 − g). [반사신경] 은 몸에 밴 것이라 최소 0.9
       gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0) : 1, vet,
@@ -1103,6 +1103,7 @@ function tire(W, u, k, mul){ const F = FATR(W); if (!F || AI6.includes('fat') ||
   u.fat = Math.min(100, (u.fat || 0) + (F[k] || 0) * (u.vet ? F.vet : 1) * (mul || 1)); fatState(W, u); }
 const fatMul = (W, u, k) => { const fz = k === 'wind' && W.t < (u.frostT || -9) ? ((W.rules.frost || {}).wind || 1.6) : 1, F = FATR(W); if (!F || AI6.includes('fat')) return fz; return fz * u.exhausted ? (F.ex[k] != null ? F.ex[k] : 1) : u.tired ? (F.ti[k] != null ? F.ti[k] : 1) : 1; };
 function startAct(W, u, t, why){
+  if (u.jrB) return;   /* v8.6.0 대본으로 싸우는 몸 (적뢰): 대리석 주먹은 대본이 침 */
   if (u.tremor && W.t >= (u.tremCd || -9)){ const B = W.rules.brand || {}; u.tremCd = W.t + (B.tremGap || 1.5); if (W.rand() < (B.tremor != null ? B.tremor : 0.15)){ L(W, { k: 'tremor', a: u.i, vis: u.side === 0 || !!u.seenBy }); stun(W, u, B.tremStun || 0.55, null); return; } }   /* v8.3.0 [낙인:적뢰] 수전증 */
   const heal = u.cls === '치유' && t.side === u.side;
   if (!heal && isFar(u) && t.side !== u.side && running(W, u)) return;   /* v7.17 질주 중엔 누구도 쏘지 않음 */
@@ -2061,7 +2062,7 @@ function strike(W, u, t, meant, p, far, extra){
   { const V = R.vital || {}, through = !AM0.it || pen, rangedV = (o.far || J) && through, meleeV = !o.far && !J && crit && wk !== '맨손';
     const heart = part === '몸통' && (rangedV || meleeV) && W.rand() < (V.heartP != null ? V.heartP : 0.25);
     const vp = part === '머리' && (rangedV || meleeV) ? '머리' : heart ? '심장' : null;
-    if (vp && !(extra && extra.noWound) && !o.deflect){
+    if (vp && !(extra && extra.noWound) && !o.deflect && !t.marble){   /* v8.6.0 [대리석 피부]: 급소가 없음 */
       o.vital = vp; const boss = (t.traits || []).includes('보스'), vMax = boss ? Math.min(t.max, V.boss != null ? V.boss : 400) : t.max;   // v7.22.2 [보스]
       if (vp === '머리' && (t.heads || 1) > 1){   // 머리 넷: 그 머리를 잃음
         o.headLost = true; dmg = Math.max(dmg, Math.round(vMax * (V.headLoss != null ? V.headLoss : 0.2)));
@@ -2118,6 +2119,7 @@ function strike(W, u, t, meant, p, far, extra){
   return o;
 }
 function applyDmg(W, u, t, dmg, o){
+  if (t.marble || t.jrFly || t.jrInv){ dmg = marbleHit(W, u, t, dmg, o); if (!(dmg > 0)) return; }   /* v8.6.0 [대리석 피부] · 하늘 · 떠오름 */
   const real = Math.min(dmg, t.hp), dark = t.side === 0 && !canSee(W, t, u);
   if (o && o.ff && u !== t && u.side === t.side){ u.burst = null; u.ffHitT = W.t; u.lastDec = { t: W.t, s: `${t.name}을(를) 맞힘 — 점사를 접고 사선을 다시 봄` }; }   // v7.9.3 아군을 맞히면 남은 발을 접음
   t.hp -= real; t.hitT = W.t; t.hitFar = !!(o && o.far); t.hitSide = u.side; u.dealt += real; t.taken += real;   // v7.11 hitFar   // v7.16.1 hitSide
@@ -2141,6 +2143,24 @@ function applyDmg(W, u, t, dmg, o){
     if (W.spareBy === t.i){ W.spareBy = null; if (W.spare > 0){ W.spareAt = { x: +t.x.toFixed(2), y: +t.y.toFixed(2), by: t.i }; L(W, { k: 'spareDrop', a: t.i, n: W.spare, x: W.spareAt.x, y: W.spareAt.y }); } }   // v7.8.5 여분 꾸러미도 몸 곁에
     if (W.fxOn) W.fx.push({ k: 'die', x: t.x, y: t.y, t0: W.t, side: t.side });
   }
+}
+// v8.6.0 [대리석 피부] · 하늘에 뜬 몸: 0 이면 닿지 않음 (흘림 · 받아 냄은 로그 'marble'). 감전 · 잔류 · 출혈 · 화상 같은 몸 안의 피해와 스스로의 기술 (jrOwn) 은 그대로
+function marbleHit(W, u, t, dmg, o){
+  if (!t.alive || !u || u === t || (o && (o.ff || o.dot || o.jrOwn)) || /출혈|화상|감전|잔류/.test((o && o.tag) || '')) return dmg;
+  const vis = t.side === 0 || u.side === 0 || !!t.seenBy;
+  if (t.jrInv && W.t < t.jrInv){ if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.8, s: '닿지 않음', c: 'b', t0: W.t }); return 0; }
+  if (t.jrFly && !(o && (o.far || o.jav))){ if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.8, s: '하늘 — 닿지 않음', c: 'b', t0: W.t }); return 0; }
+  if (!t.marble) return dmg;
+  const R = W.rules.marble || {}, strong = !!(o && (o.crit || o.hcrit || o.pen || o.strong || o.jav || /돌진|돌격|투창|찍기|내려찍|버팀 \(큰 피해\)/.test(o.tag || ''))) || dmg >= (R.strong || 30);
+  if (strong && !t.jrBusy && !t.jrFly && W.t >= (t.mStepT || -9) && !t.down && !t.kb && W.t >= (t.stunT || -9)){
+    const a0 = Math.atan2(t.y - u.y, t.x - u.x), L0 = R.step || 2.2;
+    for (const da of W.rand() < 0.5 ? [1.4, -1.4, 0.9, -0.9] : [-1.4, 1.4, -0.9, 0.9]) for (const k of [1, 0.7]){ const x = t.x + Math.cos(a0 + da) * L0 * k, y = t.y + Math.sin(a0 + da) * L0 * k;
+      if (x < 1 || y < 1 || x > W.map.W - 1 || y > W.map.H - 1 || boxRock(W, x, y, t.r * 0.9) || W.units.some(q => q.alive && q !== t && Math.hypot(q.x - x, q.y - y) < q.r + t.r * 0.8)) continue;
+      t.mStepT = W.t + (R.stepCd || 4); t.x = x; t.y = y; stop(t);
+      L(W, { k: 'marble', a: u.i, b: t.i, how: 'step', dmg: Math.round(dmg), vis }); if (W.fx && W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.8, s: '스텝', c: 'b', t0: W.t });
+      return 0; } }
+  if (!strong && W.rand() < (R.p != null ? R.p : 0.59)){ const d2 = Math.max(1, Math.round(dmg * (R.mul != null ? R.mul : 0.3))); L(W, { k: 'marble', a: u.i, b: t.i, how: 'block', dmg: Math.round(dmg), got: d2, vis }); o.tag = o.tag || '대리석 피부'; return d2; }
+  return dmg;
 }
 function alertNear(W, e, target){
   for (const o of W.units) if (o.alive && o.side === e.side && o !== e && o.state !== 'hunt' && dist(o, e) <= W.rules.alert){
@@ -2972,7 +2992,8 @@ function interrupt(W, u, why){
 }
 // 넘어뜨림: sec 초 ([개조된 신체] 는 움찔 배율만큼 짧게). 준비 · 점사 끊김, 못 막음 · 못 움직임
 function knockDown(W, u, sec, by, why){
-  if (!u.alive || u.crawl || W.t < (u.saT || -9)) return;   /* v7.23.2 슈퍼아머 */
+  if (!u.alive || u.crawl || W.t < (u.saT || -9)) return;
+  if (u.marble){ if (typeof ccShrug === 'function') ccShrug(W, u, by, 'prone'); return; }   /* v8.6.0 [대리석 피부]: 몇 톤 — 넘어지지 않음 */   /* v7.23.2 슈퍼아머 */
   if (u.ccRes && W.rand() < u.ccRes){ ccShrug(W, u, by, 'prone'); return; }   /* v7.29.0 버팀 (세자르 — 잘 넘어지지 않음) */
   const s = sec * (mbOn(W, u) ? mbF(W, u, 'pin') : 1) * (u.vet ? VETR(W).pin : 1);   // v6.1 베테랑: 넘어져도 빨리 일어남
   if (W.t + s <= u.proneT) return;
@@ -7079,7 +7100,7 @@ function injRecalc(W, t){
 }
 // 맞은 뒤 부상 판정 (strike · 짓뭉갬 · 짓밟기 끝에서)
 function woundRoll(W, a, t, o, dmg, part, crit, pen, mix0){
-  const R = WR(W); if (!R || AI6.includes('wound') || !part || o.block || o.ff && o.tag === '부딪힘') return;
+  const R = WR(W); if (!R || t.marble || AI6.includes('wound') || !part || o.block || o.ff && o.tag === '부딪힘') return;
   const whole = wholeBody(t), mix = o.deflect ? [0, 0, 1] : mix0 || woundMix(W, a, t, o), pass = woundPass(W, t, part, pen), raw = dmg / Math.max(0.15, o.deflect ? 1 : o.armPure != null ? o.armPure : o.armMul || 1) / Math.max(0.5, ((W.rules.parts || {})[part] || {}).mul || 1) / Math.max(1, t.max);   // 힘 = 갑옷 · 부위 배율을 걷어낸 피해 (머리 ×2 는 자리의 몫이라 힘이 아님)
   const sc = raw * mix[0] * pass[0], sp = raw * mix[1] * pass[1], sb = raw * mix[2] * pass[2], res = maimRes(W, t), zone = woundZone(W, t, part, o.dir), Z = { zone, mode: o.mode || null };
   const rnd = p => W.rand() < p, alive = t.alive;
