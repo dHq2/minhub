@@ -1,4 +1,4 @@
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.6 (v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.7 (v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -209,6 +209,7 @@ function r8Post(W){
 // 판마다 (draw 쪽에서 부름): 촛대 · 옥상 낙사
 function r8Tick(W){
   if (!W || !W.r8) return; const R = R8S(); if (!R) return;
+  if (W.duel){ if (typeof duel8Tick === 'function') duel8Tick(W); return; }   // v8.2 결승 (촛대 · 관중 없음)
   const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
   if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8', s: `${u.name} — 옥상 끝에서 밀려 떨어졌다!`, c: 'bad', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
   if (typeof r8CrowdTick === 'function') r8CrowdTick(W);   // v8.1 관중
@@ -227,11 +228,13 @@ const ART8IMG = {};
 function drawArt8(Wd, ox, oy, ts){
   const M = MAPS8[S.art8]; if (!M) return; const a = ART8IMG[S.art8] || (ART8IMG[S.art8] = Object.assign(new Image(), { src: M.src }));
   if (a.complete && a.naturalWidth){ const k = ts / M.cs; ctx.drawImage(a, ox, oy, M.pw * k, M.ph * k); }
+  if (Wd.duel && typeof duel8Draw === 'function') duel8Draw(Wd, ox, oy, ts);   // v8.2 거인 · 조명
   const st = Wd.stairs; if (st && Wd.cleared){ const x = ox + st.x * ts, y = oy + st.y * ts, t = performance.now() / 600; ctx.save(); ctx.strokeStyle = `rgba(240,200,110,${0.55 + 0.35 * Math.sin(t)})`; ctx.lineWidth = Math.max(2, ts * 0.08); ctx.beginPath(); ctx.arc(x, y, ts * 0.75, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(240,200,110,.9)'; ctx.font = `bold ${Math.max(11, ts * 0.38)}px sans-serif`; ctx.textAlign = 'center'; ctx.fillText('▼ 출구', x, y - ts * 0.95); ctx.restore(); }
 }
 // ===== 판을 나감 (캠페인 campOver 대신) =====
 function r8Over(){
   const W = world, C = S.camp, R = R8S(); if (!W || !C || !R) return;
+  if (W.duel){ duel8Over(W, W.duel.res || ((W.units[W.duel.foe] || {}).alive ? 'lose' : 'win')); return; }   // v8.2 결승
   const party = [], dirs = {}, rows = stageStats(W); try { campLogSave(W, 1); } catch (e) {}
   const node = r8Node(R.at) || { t: 'fight' };
   for (const u of W.units){ if (u.side !== 0) continue; const p = S.units.find(x => x.id === u.pid); if (!p) continue;
@@ -374,6 +377,7 @@ function r8TextEvent(n, k){
 function r8Act(a){
   const R = R8S(); if (!R) return; const hero = R.party.find(p => p.hero) || R.party[0];
   const done = () => r8NodeDone(), say = (L, then) => { R8T = then || done; talkLines([...L, { go: '!r8:then' }]); };
+  if (typeof R8X === 'object' && R8X[a]){ R8X[a](); return; }   // v8.2 결승
   if (a === 'then'){ const f = R8T; R8T = null; if (f) f(); else r8MapShow(); return; }
   if (a === 'done'){ done(); return; }
   if (a === 'floor2'){ r8FloorEnter(2); return; }

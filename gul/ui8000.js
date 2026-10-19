@@ -1,4 +1,4 @@
-// v8.0.0 UI 시험 — ui8000.js v1.0 (30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
+// v8.0.0 UI 시험 — ui8000.js v1.1 (v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -90,7 +90,7 @@ const { chromium } = require('playwright');
  const re = await p.evaluate(()=>({ on: run8On(), f: R8S()&&R8S().f, map: !!document.getElementById('run8')&&!document.getElementById('run8').hidden }));
  ok(re.on&&re.f===21&&re.map,'새로 고침 — 여정이 그대로 · 지도');
  // 11. 모든 그림 맵에서 판이 섬
- const all = await p.evaluate(()=>{ const R=R8S(), bad=[]; const F=F8[R.f], m0=F.maps; const ids=Object.keys(MAPS8).filter(k=>k!=='stadium');
+ const all = await p.evaluate(()=>{ const R=R8S(), bad=[]; const F=F8[R.f], m0=F.maps; const ids=Object.keys(MAPS8).filter(k=>k!=='stadium'&&k!=='ring');
    for (const id of ids){ F.maps=[id]; const n={ id:'m_'+id, r:1, i:0, t:'fight', x:.5, next:[] }; R.fm.rows[1].push(n); R.at=n.id; try { r8Battle(n); } catch (e) { bad.push(id+':'+e.message); continue; } const W=world, M=MAPS8[id];
      if (S.art8!==id) bad.push(id+':art'); if (!W.units.every(u=>M.rows[Math.floor(u.y)]&&M.rows[Math.floor(u.y)][Math.floor(u.x)]!=='#')) bad.push(id+':wall'); if (W.units.filter(u=>u.side===1).length<2) bad.push(id+':foes');
      if (Math.abs(W.stairs.x-0.5-M.out[0])>0.01) bad.push(id+':out');

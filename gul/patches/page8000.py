@@ -1,4 +1,4 @@
-# v8.0.0 페이지 — page8000.py v1.2 (v1.2: 여정 판에 들어섬 로그 · 서술에서 '1F ·' 뺌 · v1.1: 그림 맵 그림 · 촛대 · 낙사는 여정이 켜졌을 때만 · v1.0: 30층 여정: run8_a.js · run8_b.js 를 붙이고 (MAPS8 = d5/maps8.json) · 그림 맵 바탕 · 판 끝 · 대화 '!r8:' · 캠페인 띠 · 로딩 · 버전)
+# v8.0.0 페이지 — page8000.py v1.4 (v1.4: 띠의 맵 종류 자리에 층 이름 · v1.3: 결승 링에선 나가기 · 물러나기 단추 없음 · v1.2: 여정 판에 들어섬 로그 · 서술에서 '1F ·' 뺌 · v1.1: 그림 맵 그림 · 촛대 · 낙사는 여정이 켜졌을 때만 · v1.0: 30층 여정: run8_a.js · run8_b.js 를 붙이고 (MAPS8 = d5/maps8.json) · 그림 맵 바탕 · 판 끝 · 대화 '!r8:' · 캠페인 띠 · 로딩 · 버전)
 import json
 D = '/tmp/claude-0/-home-user-minhub/d21f98b4-0f7f-5135-a5ee-7d38f9fd42cc/scratchpad/'
 F = D + 'page10.tpl.html'
@@ -48,7 +48,7 @@ rep("|| '' : '';   // v7.22.1 box", "|| '' : L.name || '';   // v7.22.1 box")
 # ---------- 캠페인 띠 · 로딩 ----------
 rep("  if (h !== campBarH || el.hidden){ campBarH = h;",
     "  if (run8On() && W){ const R = R8S(), nd = r8Node(R.at) || {}; h = h.replace(/^<b>1F · [^<]*<\\/b>/, `<b>${R.f}층 · ${esc((NODE8[nd.t] || {}).nm || '')}</b>`);   /* v8.0.0 30층 여정 */\n"
-    "    if (S.art8){ h = W.cleared ? h.replace(/(<button[^>]*data-cexit=\"up\"[^>]*>)[^<]*/, '$1▼ 출구로') : h.replace(/<button[^>]*data-cexit=\"up\"[^>]*>[^<]*<\\/button>/, ''); if (!W.over && !/data-cexit=\"down\"/.test(h)) h = h.replace('<span class=\"cb\">', '<span class=\"cb\"><button class=\"btn sm\" type=\"button\" data-cexit=\"down\" title=\"들어온 자리로 물러남 (그 칸은 다시 고를 수 있어요)\">↩ 물러나기</button>'); } }\n"
+    "    h = h.replace(/<span class=\"ck\">[^<]*/, `<span class=\"ck\">${esc((F8[R.f] || {}).name || '')}${W.cleared ? ' · 🏳 끝난 맵' : ''}`);\n    if (W.duel) h = h.replace(/<button[^>]*data-cexit=\"[a-z]*\"[^>]*>[^<]*<\\/button>/g, '');\n    else if (S.art8){ h = W.cleared ? h.replace(/(<button[^>]*data-cexit=\"up\"[^>]*>)[^<]*/, '$1▼ 출구로') : h.replace(/<button[^>]*data-cexit=\"up\"[^>]*>[^<]*<\\/button>/, ''); if (!W.over && !/data-cexit=\"down\"/.test(h)) h = h.replace('<span class=\"cb\">', '<span class=\"cb\"><button class=\"btn sm\" type=\"button\" data-cexit=\"down\" title=\"들어온 자리로 물러남 (그 칸은 다시 고를 수 있어요)\">↩ 물러나기</button>'); } }\n"
     "  if (h !== campBarH || el.hidden){ campBarH = h;")
 rep('<div class="lf">1F · 프롤로그</div>', '<div class="lf">${run8On() ? R8S().f + \'층 · 만남\' : \'1F · 프롤로그\'}</div>')
 

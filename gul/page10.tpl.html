@@ -1,5 +1,8 @@
 <title>굴의 전투판</title>
-<!-- 굴의 전투판 v8.1.0 (2026-10-19) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v8.2.0 (2026-10-19) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v8.2.0: 30층 결승 — 마야 피라미드 꼭대기의 링 (스타디움 그림을 확대) · 양쪽에서 춤추는 거인 · 디스코 조명 · DJ 춘향의 드롭 · MC 더 플링 중계.
+         동료 한 명을 골라 글리치 챔피언 (그 사람을 그대로 비춤) 과 단 한 번 1대1. 특수능력 (특성 · 기술 · 치료 · 유물 · 눈물 · 돌격) 은 양쪽 모두 봉인 — 직접 조작만:
+         PC WASD · 방향키 이동 / J 공격 / K 막기 / Space 회피 대시 · 휴대폰 왼쪽 막대 + 공격 · 막기 · 회피 단추. 이기면 진엔딩, 지면 "다음 시즌, 또 만나요!".
      v8.1.0: 챔피언 로드 — 20층에서 MC 더 플링이 나온 뒤 21 ~ 29층: 관중 열기 (0 ~ 100) 가 싸움에 끼어듦 — 응원 (공격 +12%) · 야유 (빠르기 −10%) · 축복 (가장 다친 이 회복) · 증오 (빈 병).
          열기는 처치 + · 동료가 쓰러짐 − · 이김 + · 물러남 −. 상금은 열기만큼 (× 0.75 ~ 1.25). 싸움마다 MC 실황 · 깜짝 규칙 (암전 · 상금 두 배 · 관중 열광 · 90초 승부).
      v8.0.0: 30층 여정 — 프롤로그 (1F) 를 마치면 ▼ 2층으로. 층마다 갈림길 지도 (싸움 · 정예 · 만남 · 쉼터 · 상인 · 보물 · 보스 · 고정) 를 골라 내려감.
@@ -998,7 +1001,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v8.1.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v8.2.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1360,7 +1363,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.1.0 · 챔피언 로드</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.2.0 · 30층 결승</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1539,7 +1542,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v8.1.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v8.2.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
 </div>
 <div class="dock" id="dock" aria-label="조작판"><div class="drow dchips" id="dChips"></div><div class="drow acts" id="dActs"></div><div class="drow play" id="dPlay"></div></div>
@@ -3236,7 +3239,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v8.1.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v8.2.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => padW(f2(e.t) + '초', 8);
@@ -5304,7 +5307,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push('굴의 전투판 v8.1.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push('굴의 전투판 v8.2.0 — 1F 프롤로그 여정 기록', `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   M.forEach((m, i) => {
     o.push(`════════ ${i + 1}. ${m.name || m.s + 'S'} · ${m.kind || ''}${m.enc ? ' — ' + m.enc : ''}${m.btl ? ' — ' + m.btl.comp + ' · ' + m.btl.sit : ''}${m.npc ? ' (' + m.npc + ')' : ''} — ${m.back ? '다시 들어섬' : '처음'}${m.from ? (m.from === 'up' ? ' · 위에서 내려옴' : ' · 아래에서 올라옴') : ''}${m.live ? ' · 지금 이 맵' : ''} ════════`);
@@ -5332,7 +5335,7 @@ async function campLogAll(){
   for (const x of L){ let log = null, tx = null; try { log = x.z ? JSON.parse(await gunB64(x.z)) : JSON.parse(x.j || '[]'); } catch (e) {} try { tx = x.zt ? JSON.parse(await gunB64(x.zt)) : x.jt ? JSON.parse(x.jt) : null; } catch (e) {}
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
-  return { game: '굴의 전투판', ver: '8.1.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '8.2.0', kind: '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -5764,7 +5767,9 @@ function campBarRender(force){
   if (C.s === 3 && W && S.regina && !W.stairs) h = h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, '');   /* v7.27.0 레지나: 옥좌 뒤 길이 열려야 위로 */
   if (C.s === 5 && W){ const E = ((C.stages || {})[5] || {}).cz; if (!W.stairs) h = h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, ''); if (E && E.st === 'coffin' && czNearCoffin(W)) h = h.replace('<span class="cb">', '<span class="cb"><button class="btn sm go" type="button" data-ccoffin="1" title="관 뚜껑을 밀어 엶">⚰ 관을 연다</button>'); }   // v7.23.1
   if (run8On() && W){ const R = R8S(), nd = r8Node(R.at) || {}; h = h.replace(/^<b>1F · [^<]*<\/b>/, `<b>${R.f}층 · ${esc((NODE8[nd.t] || {}).nm || '')}</b>`);   /* v8.0.0 30층 여정 */
-    if (S.art8){ h = W.cleared ? h.replace(/(<button[^>]*data-cexit="up"[^>]*>)[^<]*/, '$1▼ 출구로') : h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, ''); if (!W.over && !/data-cexit="down"/.test(h)) h = h.replace('<span class="cb">', '<span class="cb"><button class="btn sm" type="button" data-cexit="down" title="들어온 자리로 물러남 (그 칸은 다시 고를 수 있어요)">↩ 물러나기</button>'); } }
+    h = h.replace(/<span class="ck">[^<]*/, `<span class="ck">${esc((F8[R.f] || {}).name || '')}${W.cleared ? ' · 🏳 끝난 맵' : ''}`);
+    if (W.duel) h = h.replace(/<button[^>]*data-cexit="[a-z]*"[^>]*>[^<]*<\/button>/g, '');
+    else if (S.art8){ h = W.cleared ? h.replace(/(<button[^>]*data-cexit="up"[^>]*>)[^<]*/, '$1▼ 출구로') : h.replace(/<button[^>]*data-cexit="up"[^>]*>[^<]*<\/button>/, ''); if (!W.over && !/data-cexit="down"/.test(h)) h = h.replace('<span class="cb">', '<span class="cb"><button class="btn sm" type="button" data-cexit="down" title="들어온 자리로 물러남 (그 칸은 다시 고를 수 있어요)">↩ 물러나기</button>'); } }
   if (h !== campBarH || el.hidden){ campBarH = h; el.innerHTML = h; el.hidden = false; }
   campNarrTop();
 }
@@ -7021,7 +7026,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v8.1.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v8.2.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
@@ -7715,7 +7720,7 @@ const RELIC8 = {
   dice: { name: '왐의 주사위', ic: '🎲', d: '상인 값이 20% 쌈' } };
 const RELIC8_POOL = ['odtear', 'scale', 'nurse', 'violin', 'candle', 'gamyu', 'duck', 'rokto', 'tea', 'branch', 'coin', 'boots', 'crown', 'dice'];
 
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.6 (v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.7 (v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -7926,6 +7931,7 @@ function r8Post(W){
 // 판마다 (draw 쪽에서 부름): 촛대 · 옥상 낙사
 function r8Tick(W){
   if (!W || !W.r8) return; const R = R8S(); if (!R) return;
+  if (W.duel){ if (typeof duel8Tick === 'function') duel8Tick(W); return; }   // v8.2 결승 (촛대 · 관중 없음)
   const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
   if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8', s: `${u.name} — 옥상 끝에서 밀려 떨어졌다!`, c: 'bad', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
   if (typeof r8CrowdTick === 'function') r8CrowdTick(W);   // v8.1 관중
@@ -7944,11 +7950,13 @@ const ART8IMG = {};
 function drawArt8(Wd, ox, oy, ts){
   const M = MAPS8[S.art8]; if (!M) return; const a = ART8IMG[S.art8] || (ART8IMG[S.art8] = Object.assign(new Image(), { src: M.src }));
   if (a.complete && a.naturalWidth){ const k = ts / M.cs; ctx.drawImage(a, ox, oy, M.pw * k, M.ph * k); }
+  if (Wd.duel && typeof duel8Draw === 'function') duel8Draw(Wd, ox, oy, ts);   // v8.2 거인 · 조명
   const st = Wd.stairs; if (st && Wd.cleared){ const x = ox + st.x * ts, y = oy + st.y * ts, t = performance.now() / 600; ctx.save(); ctx.strokeStyle = `rgba(240,200,110,${0.55 + 0.35 * Math.sin(t)})`; ctx.lineWidth = Math.max(2, ts * 0.08); ctx.beginPath(); ctx.arc(x, y, ts * 0.75, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(240,200,110,.9)'; ctx.font = `bold ${Math.max(11, ts * 0.38)}px sans-serif`; ctx.textAlign = 'center'; ctx.fillText('▼ 출구', x, y - ts * 0.95); ctx.restore(); }
 }
 // ===== 판을 나감 (캠페인 campOver 대신) =====
 function r8Over(){
   const W = world, C = S.camp, R = R8S(); if (!W || !C || !R) return;
+  if (W.duel){ duel8Over(W, W.duel.res || ((W.units[W.duel.foe] || {}).alive ? 'lose' : 'win')); return; }   // v8.2 결승
   const party = [], dirs = {}, rows = stageStats(W); try { campLogSave(W, 1); } catch (e) {}
   const node = r8Node(R.at) || { t: 'fight' };
   for (const u of W.units){ if (u.side !== 0) continue; const p = S.units.find(x => x.id === u.pid); if (!p) continue;
@@ -8091,6 +8099,7 @@ function r8TextEvent(n, k){
 function r8Act(a){
   const R = R8S(); if (!R) return; const hero = R.party.find(p => p.hero) || R.party[0];
   const done = () => r8NodeDone(), say = (L, then) => { R8T = then || done; talkLines([...L, { go: '!r8:then' }]); };
+  if (typeof R8X === 'object' && R8X[a]){ R8X[a](); return; }   // v8.2 결승
   if (a === 'then'){ const f = R8T; R8T = null; if (f) f(); else r8MapShow(); return; }
   if (a === 'done'){ done(); return; }
   if (a === 'floor2'){ r8FloorEnter(2); return; }
@@ -8245,6 +8254,183 @@ function r8CrowdOver(W, node, win, retreat){
 }
 // 지도에서: MC 한마디
 function r8McLine(){ const R = R8S(); if (!crowdOn()) return ''; const L = R.crowd >= 70 ? MC8.map.hi : R.crowd < 35 ? MC8.map.lo : MC8.map.mid; return L[(R.f + R.done.length) % L.length]; }
+
+/* ---------- v8.2.0 30층 결승 — run8_d.js v1.3 (v1.3: 막대 · 체력 띠 바탕 진하게 · 이름 한 줄 · 휴대폰 — 결승 동안 아래 조작판 숨김 · 링 전체가 보이게 · 체력 띠는 막대 위 · v1.2: 150초 판정 (남은 체력 비율 · 같으면 챔피언 방어) · 시계 · v1.1: 결승은 체력 × 3 (양쪽 같게 — 몇 초 만에 끝나지 않게) · v1.0: 마야 피라미드 꼭대기의 링 · 춤추는 거인 · DJ 춘향 · MC 더 플링 · 글리치 챔피언과 단 한 번의 1대1 — 직접 조작) ----------
+   규칙 (양쪽 같게): 특수능력 모두 뺌 — 특성 · 고유 기술 · 치료 · 유물 · 여신의 눈물 · 돌격 없음. 무기 · 방패 · 몸 (체력 · 힘 · 빠르기) 만.
+   글리치 챔피언 = 링에 오른 이를 그대로 비추는 300년 전의 도전자 (같은 몸 · 같은 무기). 이기는 길은 조작뿐.
+   조작: PC — WASD · 방향키 이동 / J 공격 / K 막기 (켜고 끔) / Space 회피 (대시) · 판을 눌러도 됨 (적 = 공격 · 바닥 = 이동)
+         휴대폰 — 왼쪽 막대 이동 · 오른쪽 단추 (공격 · 막기 · 회피). 회피 (대시) 는 둘 다 같은 거리 · 같은 대기. */
+const DU8 = { tLimit: 150, hpK: 3, dash: 1.7, dashT: 0.18, dashCd: 1.3, aiDashP: 0.45, aiPunishP: 0.3, dropGap: [14, 20] };
+MAPS8.ring = { name: '스타디움 링', tag: 'stadium', src: 'art/maps/ring.webp', pw: 1068, ph: 798, NX: 16, NY: 12, cs: 66.75, rows: Array.from({ length: 12 }, (_, y) => Array.from({ length: 16 }, (_, x) => x >= 2 && x <= 13 && y >= 3 && y <= 9 ? '.' : '#').join('')), in: [2, 5, 4, 7], out: null, amb: 1 };
+const DIN8 = { x: 0, y: 0, keys: {}, atk: false, guard: false, dash: false, jx: 0, jy: 0 };
+const d8On = () => !!(world && world.duel && !world.over);
+// ===== 들어서기: 연출 → 고르기 =====
+function duel8Start(n){
+  const R = R8S(); r8Hide(); R.at = n.id; save();
+  talkLines([
+    { narr: '피라미드 꼭대기. 디스코볼이 돈다.', cg: 'r8_stadium', cgw: false },
+    { narr: '양쪽 관중석 너머로 거인들이 몸을 흔든다. 한 걸음마다 피라미드가 울린다 — 쿵, 쿵, 쿵.', cg: 'r8_stadium' },
+    { t: '레이디스 앤 젠틀맨!! 300년을 기다린 결승입니다!!!', name: 'MC 더 플링' },
+    { t: '비트 올려 줄게. 떨어지지 마.', name: 'DJ 춘향' },
+    { narr: '링 위에 누군가 서 있다. 얼굴이 자꾸 깨진다 — 노이즈, 노이즈, 그리고 낯익은 윤곽.' },
+    { t: '도전자 확인. 챔피언 동기화 시작.', name: '관리자', img: 'run8/admin' },
+    { t: '규칙은 하나! 특수능력은 전부 봉인! 몸 하나, 무기 하나, 그리고 — 손가락!', name: 'MC 더 플링' },
+    { box: '결승 — 동료 한 명을 골라 링에 올립니다. 글리치 챔피언은 그 사람을 그대로 비춥니다 (같은 몸 · 같은 무기). 특성 · 기술 · 유물은 모두 꺼짐. 단 한 번.' },
+    { go: '!r8:duelPick' }]);
+}
+function duel8Pick(){
+  const R = R8S(), L = R.party.filter(p => !R.dead.includes(p.name));
+  const st = p => { try { const s = statsOf(duel8Strip(p), rules); return `체력 ${Math.round(s.hp)} · 공격 ${Math.round(s.atk)} · ${p.weapon || '맨손'}`; } catch (e) { return p.weapon || ''; } };
+  const el = r8Panel(`<h2>🏟 링에 오를 한 명</h2><div class="r8sub">특수능력은 모두 봉인 — 몸과 무기, 그리고 조작만.</div><div class="r8pan">${L.map((p, i) => `<button class="btn" type="button" data-d8p="${i}" style="display:flex;gap:8px;align-items:center;width:100%;margin:4px 0;text-align:left"><i style="${r8Face(p.ref, 40)};border-radius:8px"></i><span><b>${esc(p.name)}</b><br><small>${esc(st(p))}</small></span></button>`).join('')}</div>
+    <div class="r8pan"><b>조작</b><br><small>150초가 지나면 판정 (남은 체력 비율). ${MOB ? '왼쪽 막대 = 이동 · 공격 = 다가가 침 · 막기 = 켜고 끔 · 회피 = 짧은 대시 (1.3초 대기)' : 'WASD · 방향키 = 이동 · J = 공격 · K = 막기 (켜고 끔) · Space = 회피 대시 (1.3초 대기) · 판을 눌러도 됨 (적 = 공격 · 바닥 = 이동)'}</small></div>`);
+  el.querySelectorAll('[data-d8p]').forEach(b => b.onclick = () => duel8Begin(L[+b.dataset.d8p]));
+}
+// 특수능력 봉인 (양쪽 같게)
+function duel8Strip(p){
+  const q = clone(p); q.traits = []; q.active = []; q.skill = null; q.spec = null; q.modBody = false; q.regenK = 0; q.hero = false; q.noChg = true; q.chgBias = 0; q.ccRes = 0; q.brain = null; q.poise = null; q.dcounter = null;
+  delete q.skLeft; delete q.hpNow; delete q.alt; delete q.shells; delete q.leapN; return q;
+}
+// ===== 링 =====
+function duel8Begin(p){
+  const C = S.camp, R = R8S(); r8Hide();
+  const me = { ...duel8Strip(p), id: uid(), side: 0, x: 3.5, y: 6.5 }, foe = { ...duel8Strip(p), id: uid(), side: 1, name: '글리치 챔피언', key: '글리치 챔피언', x: 12.5, y: 6.5, nv: true, nvG: 'A', glitch: true };
+  const M = MAPS8.ring, flips = []; for (let y = 0; y < M.NY; y++) for (let x = 0; x < M.NX; x++) if (M.rows[y][x] === '#') flips.push(x + ',' + y);
+  C.s = 1; C.stages = { 1: { seed: 1 + Math.floor(Math.random() * 999999), tseed: 1 + Math.floor(Math.random() * 999999), r8: true } };
+  const d0 = { noPause: S.noPause };
+  Object.assign(S, { type: 'grid', W: M.NX, H: M.NY, amb: 1, mapC: false, randStart: false, seed: C.stages[1].seed, flips, torches: [], terr: '', tseed: C.stages[1].tseed, piles: [], hills: [], pileOff: [], indoor: true, zones: [], sandY: null, water: [], startK: null, noPause: true });
+  S.art8 = 'ring'; S.hall = false; S.room = false; S.regina = false; S.holdClear = false;
+  S.units = [me, foe]; selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors();
+  const W = world; if (!W) return;
+  W.explored && W.explored.fill(2); W.exitLock = true;
+  for (const u of W.units){ u.max = Math.round(u.max * DU8.hpK); u.hp = u.max; }   // 결승 라운드 — 양쪽 같게
+  W.r8 = { node: R.at, t: 'final' };
+  W.duel = { me: W.units.findIndex(u => u.side === 0), foe: W.units.findIndex(u => u.side === 1), cd: {}, dash: [], acts: new WeakSet(), pacts: new WeakSet(), lastT: 0, drop: 6, hp: {}, ref: p.ref, name: p.name, d0, said: {} };
+  for (const k of Object.keys(DIN8.keys)) DIN8.keys[k] = false; DIN8.jx = DIN8.jy = 0;
+  logEv(W, { k: 'r8', s: `🏟 결승 — ${p.name} 대 글리치 챔피언. 특수능력 봉인.`, c: 'dim', vis: true });
+  duel8Ui(true); campBarRender(true);
+  if (W.fxOn) W.fx.push({ k: 'num', x: 8, y: 5, s: 'FIGHT!', c: 'h', t0: W.t });
+  paused = false; cont = true; if (mode === 'plan') nextTurn();
+}
+// ===== 판마다 (r8Tick 에서) =====
+function duel8Tick(W){
+  const d = W.duel; if (!d || W.over) return;
+  const me = W.units[d.me], foe = W.units[d.foe], dt = Math.max(0, Math.min(0.1, W.t - d.lastT)); d.lastT = W.t;
+  // 끝
+  if (!foe.alive || !me.alive){ d.res = !foe.alive && me.alive ? 'win' : 'lose'; W.over = true; W.result = d.res === 'win' ? 'win' : 'lose'; return; }
+  if (W.t >= DU8.tLimit){ d.res = me.hp / me.max > foe.hp / foe.max ? 'win' : 'lose'; d.judge = true; logEv(W, { k: 'r8', s: `🎤 판정!! ${d.res === 'win' ? d.name : '글리치 챔피언'}의 손이 올라갑니다!`, c: d.res === 'win' ? 'good' : 'bad', vis: true }); W.over = true; W.result = d.res; return; }   // 판정 (권투처럼)
+  // 대시 진행
+  for (const s of d.dash.splice(0)){ const u = W.units[s.i]; if (!u || !u.alive) continue; const st = Math.min(dt, s.left), v = DU8.dash / DU8.dashT, nx = u.x + s.dx * v * st, ny = u.y + s.dy * v * st;
+    if (!rock(W.map, nx, ny) && !solid(W.map, nx, ny) && Math.hypot(nx - W.units[s.o].x, ny - W.units[s.o].y) > u.r + W.units[s.o].r * 0.9){ u.x = nx; u.y = ny; } s.left -= st; if (s.left > 1e-6) d.dash.push(s); else stop(u); }
+  // 유저 조작
+  if (!TK && !paused){ const v = duel8Vec();
+    if (DIN8.dash){ DIN8.dash = false; duel8Dash(W, me, v || duel8Away(me, foe)); }
+    if (DIN8.atk){ DIN8.atk = false; me.order = { k: 'attack', b: foe.i }; preempt(W, me); d.mv = false; d.atkOn = true; }
+    if (DIN8.guard){ DIN8.guard = false; me.guardMode = me.guardMode === 'hold' ? 'auto' : 'hold'; logEv(W, { k: 'guardMode', a: me.i, m: me.guardMode, why: '결승 조작', vis: true }); }
+    if (v){ const tx = Math.max(2.4, Math.min(13.6, me.x + v.x * 1.2)), ty = Math.max(3.4, Math.min(9.6, me.y + v.y * 1.2)); me.order = { k: 'move', x: tx, y: ty }; if (!d.mv) preempt(W, me); d.mv = true; d.atkOn = false; }
+    else if (d.mv){ d.mv = false; me.order = { k: 'hold' }; preempt(W, me); }
+    else if (!me.order && !d.atkOn) me.order = { k: 'hold' }; }
+  // 글리치 챔피언: 같은 대시 — 일격 준비를 보면 피하고, 빈틈이면 파고듦 (한 동작에 한 번 굴림)
+  const a = me.act;
+  if (a && a.b === foe.i && !d.acts.has(a)){
+    if (a.phase === 'wind' && gap(me, foe) < 1.8){ d.acts.add(a); if (Math.random() < DU8.aiDashP) duel8Dash(W, foe, duel8Away(foe, me, true)); }
+  }
+  if (a && a.phase && a.phase !== 'wind' && a.b === foe.i && !d.pacts.has(a)){ d.pacts.add(a); const g = Math.hypot(me.x - foe.x, me.y - foe.y); if (g > 1.6 && g < 3.6 && Math.random() < DU8.aiPunishP){ duel8Dash(W, foe, { x: (me.x - foe.x) / g, y: (me.y - foe.y) / g }); foe.order = { k: 'attack', b: me.i }; } }
+  // DJ 춘향 · MC
+  if (W.t >= d.drop){ d.drop = W.t + DU8.dropGap[0] + Math.random() * (DU8.dropGap[1] - DU8.dropGap[0]); logEv(W, { k: 'r8', s: '🎧 DJ 춘향: "' + crPick(['드롭!', '베이스 올려!', '쿵 — 쿵 — 쿵!', '거인들, 박자 맞춰!']) + '"', c: 'dim', vis: true }); d.flash = performance.now(); }
+  for (const [u, nm] of [[me, d.name], [foe, '글리치 챔피언']]){ const r = u.hp / u.max; for (const th of [0.5, 0.25]) if (r < th && !d.said[u.i + '_' + th]){ d.said[u.i + '_' + th] = 1; logEv(W, { k: 'r8', s: '🎤 ' + (th === 0.5 ? `${nm}, 절반이 날아갔습니다!` : `${nm}, 벼랑 끝입니다!!`), c: u.side ? 'good' : 'bad', vis: true }); } }
+  duel8Hud(W);
+}
+function duel8Vec(){ const K = DIN8.keys; let x = (K.d || K.arrowright ? 1 : 0) - (K.a || K.arrowleft ? 1 : 0) + DIN8.jx, y = (K.s || K.arrowdown ? 1 : 0) - (K.w || K.arrowup ? 1 : 0) + DIN8.jy; const l = Math.hypot(x, y); return l > 0.25 ? { x: x / l, y: y / l } : null; }
+function duel8Away(u, o, side){ const dx = u.x - o.x, dy = u.y - o.y, l = Math.hypot(dx, dy) || 1; let x = dx / l, y = dy / l; if (side){ const s = Math.random() < 0.5 ? 1 : -1; x = x * 0.5 - y * s * 0.87; y = y * 0.5 + (dx / l) * s * 0.87; } return { x, y }; }
+function duel8Dash(W, u, v){
+  const d = W.duel; if (!d || !v || W.t < (d.cd[u.i] || 0) || u.down || u.kb) return false;
+  d.cd[u.i] = W.t + DU8.dashCd; if (u.act && u.act.phase === 'wind') u.act = null;
+  d.dash.push({ i: u.i, o: u.side ? d.me : d.foe, dx: v.x, dy: v.y, left: DU8.dashT });
+  logEv(W, { k: 'r8', s: `💨 ${u.side ? '글리치 챔피언' : d.name} — 회피 대시`, c: 'dim', vis: false });
+  if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.5, s: '💨', c: 'm', t0: W.t });
+  return true;
+}
+// ===== 그림: 춤추는 거인 · 조명 · 드롭 섬광 (drawArt8 에서) =====
+function duel8Draw(Wd, ox, oy, ts){
+  const t = performance.now() / 1000, beat = Math.abs(Math.sin(t * Math.PI * 2 * 0.95)), d = Wd.duel;
+  ctx.save();
+  for (const [gx, sgn] of [[0.9, 1], [15.1, -1]]){ const sway = Math.sin(t * 2.2 + (sgn > 0 ? 0 : 1.6)) * 0.35, x = ox + (gx + sway) * ts, y = oy + 6.2 * ts - beat * ts * 0.25, H = ts * 7.2;
+    ctx.fillStyle = 'rgba(16,6,26,.62)'; ctx.beginPath(); ctx.ellipse(x, y, ts * 1.1, H * 0.42, sway * 0.2, 0, 6.283); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + sway * ts * 0.4, y - H * 0.52, ts * 0.62, 0, 6.283); ctx.fill();
+    ctx.strokeStyle = 'rgba(16,6,26,.62)'; ctx.lineCap = 'round'; ctx.lineWidth = ts * 0.42; ctx.beginPath(); ctx.moveTo(x - ts * 0.8, y - H * 0.25); ctx.lineTo(x - ts * 1.6, y - H * (0.45 + 0.25 * Math.sin(t * 4.4))); ctx.moveTo(x + ts * 0.8, y - H * 0.25); ctx.lineTo(x + ts * 1.6, y - H * (0.45 + 0.25 * Math.cos(t * 4.4))); ctx.stroke();
+    ctx.fillStyle = `rgba(255,${120 + Math.round(beat * 80)},220,${(0.35 + beat * 0.4).toFixed(2)})`; ctx.beginPath(); ctx.arc(x + sway * ts * 0.4 - ts * 0.2, y - H * 0.55, ts * 0.09, 0, 6.283); ctx.arc(x + sway * ts * 0.4 + ts * 0.2, y - H * 0.55, ts * 0.09, 0, 6.283); ctx.fill(); }
+  ctx.globalCompositeOperation = 'lighter';
+  for (let k = 0; k < 3; k++){ const a = Math.PI / 2 + Math.sin(t * 0.8 + k * 2.1) * 0.7, x0 = ox + 8 * ts, y0 = oy - ts; const g = ctx.createLinearGradient(x0, y0, x0 + Math.cos(a) * ts * 12, y0 + Math.sin(a) * ts * 12); g.addColorStop(0, 'rgba(255,90,200,.22)'); g.addColorStop(1, 'rgba(255,90,200,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + Math.cos(a - 0.08) * ts * 12, y0 + Math.sin(a - 0.08) * ts * 12); ctx.lineTo(x0 + Math.cos(a + 0.08) * ts * 12, y0 + Math.sin(a + 0.08) * ts * 12); ctx.closePath(); ctx.fill(); }
+  if (d && d.flash && performance.now() - d.flash < 450){ ctx.fillStyle = `rgba(255,120,220,${(0.28 * (1 - (performance.now() - d.flash) / 450)).toFixed(3)})`; ctx.fillRect(ox, oy, 16 * ts, 12 * ts); }
+  ctx.globalCompositeOperation = 'source-over';
+  if (d){ const f = Wd.units[d.foe]; if (f && f.alive && Math.random() < 0.35){ ctx.fillStyle = `rgba(${Math.random() < 0.5 ? '0,255,240' : '255,40,160'},.5)`; ctx.fillRect(ox + (f.x - 0.5 + (Math.random() - 0.5) * 0.3) * ts, oy + (f.y - 0.6 + Math.random() * 0.9) * ts, ts * (0.4 + Math.random() * 0.6), ts * 0.06 + 1); } }   // 글리치 줄
+  ctx.restore();
+}
+// ===== 조작 화면 (체력 막대 · 휴대폰 막대 · 단추) =====
+function duel8Ui(on){
+  let el = $('duel8ui'); document.body.classList.toggle('d8', !!on); if (MOB){ zoomAll = !!on; try { mobFit(); } catch (e) {} } if (!on){ if (el) el.remove(); return; }
+  if (!$('d8css')){ const st = document.createElement('style'); st.id = 'd8css'; st.textContent = `
+#duel8ui{position:fixed;inset:0;pointer-events:none;z-index:40;font-family:inherit}
+body.d8 #dock{display:none!important}
+body.mob #duel8ui .d8hud{top:auto;bottom:168px}
+#duel8ui .d8hud{position:absolute;left:50%;top:8px;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:rgba(10,6,16,.92);border:1px solid #4a2a50;border-radius:12px;padding:6px 10px;color:#f3e9ff;font-size:12px;max-width:calc(100vw - 24px);white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#duel8ui .d8hud span:first-child,#duel8ui .d8hud span:last-child{max-width:22vw;overflow:hidden;text-overflow:ellipsis}
+#duel8ui .d8hb{width:min(30vw,190px);height:9px;background:#3a1a28;border-radius:5px;overflow:hidden}#duel8ui .d8hb b{display:block;height:100%;background:#7fdc7a;transition:width .15s}#duel8ui .d8f b{background:#ff5ca8}
+#duel8ui .d8tip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(10,6,16,.6);color:#cdbfdc;font-size:11.5px;padding:4px 10px;border-radius:8px;white-space:nowrap}
+#duel8ui .d8joy{position:absolute;left:18px;bottom:22px;width:128px;height:128px;border-radius:50%;background:rgba(20,10,30,.72);border:2px solid rgba(255,160,220,.45);pointer-events:auto;touch-action:none;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#duel8ui .d8joy i{position:absolute;left:44px;top:44px;width:40px;height:40px;border-radius:50%;background:rgba(255,160,220,.55)}
+#duel8ui .d8btns{position:absolute;right:14px;bottom:22px;display:grid;grid-template-columns:repeat(2,72px);gap:10px;pointer-events:auto}
+#duel8ui .d8btns button{height:64px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(40,16,48,.75);color:#fff;font-size:13px;font-weight:700;touch-action:none}
+#duel8ui .d8btns button.on{background:rgba(110,60,150,.9)}#duel8ui .d8btns button[data-d8="atk"]{grid-column:span 2;border-radius:32px;background:rgba(160,30,90,.85)}`; document.head.appendChild(st); }
+  if (!el){ el = document.createElement('div'); el.id = 'duel8ui'; document.body.appendChild(el); }
+  el.innerHTML = `<div class="d8hud"><span id="d8n0"></span><span class="d8hb"><b id="d8h0" style="width:100%"></b></span><b id="d8t">VS</b><span class="d8hb d8f"><b id="d8h1" style="width:100%"></b></span><span>글리치 챔피언</span></div>`
+    + (MOB ? `<div class="d8joy" id="d8joy"><i id="d8knob"></i></div><div class="d8btns"><button type="button" data-d8="guard">막기</button><button type="button" data-d8="dash">회피</button><button type="button" data-d8="atk">공격</button></div>` : `<div class="d8tip">WASD · 방향키 이동 · J 공격 · K 막기 · Space 회피 대시</div>`);
+  if (MOB){ const J = $('d8joy'), kn = $('d8knob'); let id = null;
+    const mv = e => { const r = J.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; let x = (e.clientX - cx) / (r.width / 2), y = (e.clientY - cy) / (r.height / 2); const l = Math.hypot(x, y); if (l > 1){ x /= l; y /= l; } DIN8.jx = x; DIN8.jy = y; kn.style.transform = `translate(${x * 40}px,${y * 40}px)`; };
+    J.addEventListener('pointerdown', e => { id = e.pointerId; J.setPointerCapture(id); mv(e); e.preventDefault(); });
+    J.addEventListener('pointermove', e => { if (e.pointerId === id) mv(e); });
+    const up = e => { if (e.pointerId !== id) return; id = null; DIN8.jx = DIN8.jy = 0; kn.style.transform = ''; }; J.addEventListener('pointerup', up); J.addEventListener('pointercancel', up);
+    el.querySelectorAll('[data-d8]').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); DIN8[b.dataset.d8] = true; })); }
+}
+function duel8Hud(W){
+  const d = W.duel, me = W.units[d.me], foe = W.units[d.foe], n0 = $('d8n0'); if (!n0) return;
+  n0.textContent = d.name; $('d8h0').style.width = Math.max(0, me.hp / me.max * 100).toFixed(1) + '%'; $('d8h1').style.width = Math.max(0, foe.hp / foe.max * 100).toFixed(1) + '%';
+  const tt = $('d8t'); if (tt) tt.textContent = Math.max(0, Math.ceil(DU8.tLimit - W.t)) + '';
+  const gb = document.querySelector('#duel8ui [data-d8="guard"]'); if (gb) gb.classList.toggle('on', me.guardMode === 'hold');
+}
+window.addEventListener('keydown', e => {
+  if (!d8On() || TK || (e.target && e.target.closest && e.target.closest('input, textarea, select'))) return; const k = e.key.toLowerCase();
+  if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)){ DIN8.keys[k] = true; e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (k === 'j'){ DIN8.atk = true; e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (k === 'k'){ if (!e.repeat) DIN8.guard = true; e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (k === ' '){ if (!e.repeat) DIN8.dash = true; e.preventDefault(); e.stopImmediatePropagation(); return; }
+}, true);
+window.addEventListener('keyup', e => { const k = (e.key || '').toLowerCase(); if (k in DIN8.keys || ['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) DIN8.keys[k] = false; }, true);
+// ===== 끝 =====
+function duel8Over(W, res){
+  const R = R8S(), d = W.duel; if (!d || d.done) return; d.done = true; duel8Ui(false);
+  S.noPause = d.d0.noPause; cont = false; paused = false;
+  (R.log = R.log || []).push({ f: 30, k: 'final', res, t: Date.now(), who: d.name, secs: +W.t.toFixed(1) });
+  save();
+  const L = res === 'win' ? [
+    { t: d.judge ? '판정!!! 심판 전원 일치 — 새 챔피언!!!' : '끝났습니다!!! 끝났어요!!! 새 챔피언!!!', name: 'MC 더 플링' },
+    { narr: '글리치 챔피언이 무릎을 꿇는다. 노이즈가 걷히고, 얼굴이 처음으로 또렷해진다 — 앳된 얼굴. 손에 꺼진 횃불 하나.' },
+    { t: '…300년. 드디어, 누가 내 불을 받아 주는구나.', name: '글리치 챔피언' },
+    { narr: '그의 횃불 속에 남아 있던 불씨가 인주의 횃불로 옮겨 붙는다. 불씨 둘이 겹친다.' },
+    { t: '…기록 오류. 기록 오류. 무대를 — 닫습니다.', name: '관리자', img: 'run8/admin' },
+    { t: '이건 내가 틀어 본 것 중에 제일 좋은 엔딩이야.', name: 'DJ 춘향' },
+    { narr: '굴의 바닥이 열린다. 저 아래, 아주 먼 곳에서 — 무언가 뛰기 시작한다. 쿵. 쿵.' },
+    { go: '!r8:duelEnd' }] : [
+    { t: d.judge ? '판정— 챔피언 방어 성공! 300년 하고도 하루!' : '아아— 챔피언 방어 성공! 300년 하고도 하루!', name: 'MC 더 플링' },
+    { narr: '화면이 찢어진다. 노이즈 속에서 글리치 챔피언의 얼굴이 — 잠깐, ' + d.name + '의 얼굴로 굳는다.' },
+    { t: '새 챔피언 데이터 저장. 다음 시즌을 준비합니다.', name: '관리자', img: 'run8/admin' },
+    { t: '다음 시즌, 또 만나요!', name: 'MC 더 플링' },
+    { go: '!r8:duelEnd' }];
+  d.endKind = res === 'win' ? 'true' : 'lose30'; R.flags.final = d.endKind; save();
+  talkLines(L);
+}
+const R8X = { duelPick: () => duel8Pick(), duelEnd: () => { const R = R8S(); r8End((R.flags || {}).final || 'lose30'); } };
 
 setMob(); if (MOB) requestAnimationFrame(() => { layoutMob(); mobFit(); });   // v5.8 모바일
 requestAnimationFrame(frame);
