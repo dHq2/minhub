@@ -1,4 +1,4 @@
-// v7.27.0 UI 시험 — ui7270c.js v1.1 (v1.1: 수치표 이전은 예전 저장처럼 — 알던 칸 목록에도 잔해가 없음 · v1.0: 세자르의 알현실 (5S) 도감 그림: 맵 28 × 28 · 벽 · 옥좌 · 서 있는 기둥 = 바위 (시야도 막음) · 쓰러진 기둥 · 돌무더기 = 잔해 (더미 4 — 못 지나감 · 너머로 보임 · 1.0M) /
+// v7.27.0 UI 시험 — ui7270c.js v1.2 (v1.2: 이전 판 번호는 지금 판의 RULES_MIG (v7.29.0 에서 올라감) · v1.1: 수치표 이전은 예전 저장처럼 — 알던 칸 목록에도 잔해가 없음 · v1.0: 세자르의 알현실 (5S) 도감 그림: 맵 28 × 28 · 벽 · 옥좌 · 서 있는 기둥 = 바위 (시야도 막음) · 쓰러진 기둥 · 돌무더기 = 잔해 (더미 4 — 못 지나감 · 너머로 보임 · 1.0M) /
 //   관은 옥좌 앞 (13 ~ 14, 12) · 들어서면 아래쪽 바닥에 섬 · 옥좌 뒤까지 걸어서 감 · 걷는 동안 막힌 칸에 들어가지 않음 / 관을 열고 → 세자르가 일어남 → 15초 싸움에 막힌 칸에 들어가지 않음 → 쓰러지면 계단 · 잔해는 남음 /
 //   그림이 열림 · 그리기 오류 없음 · 엄폐 곁 글 · 수치표 이전 (잔해 높이) · 인카운터 탭 글 · PC · 휴대폰)
 const { chromium } = require('playwright');
@@ -59,7 +59,7 @@ const { chromium } = require('playwright');
    const t = await p.evaluate(()=>{ setMode('train'); document.querySelector('.tab[data-tab="enc"]').click(); const tx=document.getElementById('pane-enc').innerText; return { what: /거미줄 앉은 빈 옥좌 앞에 관 하나/.test(tx), map: /잔해/.test(tx)&&/서 있는 부러진 기둥은 막힘/.test(tx) }; });
    ok(t.what&&t.map,'인카운터 탭: 알현실 글 (빈 옥좌 앞의 관 · 잔해)');
    await p.evaluate(()=>{ const s=JSON.parse(localStorage.getItem(LS)); delete s.rules.terrain.pileH['잔해']; s.rulesKeys=(s.rulesKeys||[]).filter(k=>!/잔해/.test(k)); s.rulesMig='7.26.1'; localStorage.setItem(LS, JSON.stringify(s)); }); await p.reload(); await p.waitForTimeout(1800);
-   const r = await p.evaluate(()=>({ h: S.rules.terrain.pileH['잔해'], mig: S.rulesMig }));
-   ok(r.h===1&&r.mig==='7.27.0','수치표 이전 7.27.0 — 예전 저장에 잔해 높이 칸을 채움 '+JSON.stringify(r));
+   const r = await p.evaluate(()=>({ h: S.rules.terrain.pileH['잔해'], mig: S.rulesMig, cur: RULES_MIG }));
+   ok(r.h===1&&r.mig===r.cur,'수치표 이전 (지금 판 '+r.cur+') — 예전 저장에 잔해 높이 칸을 채움 '+JSON.stringify(r));
    ok(errs.length===0,'오류 없음 (탭 · 이전) '+JSON.stringify(errs.slice(0,3))); await ctx.close(); }
  console.log(fails?`${fails} FAIL`:'ALL UI7270C OK'); await b.close(); })();
