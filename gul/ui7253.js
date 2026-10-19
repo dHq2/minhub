@@ -1,11 +1,11 @@
-// v7.25.3 UI 시험 — ui7253.js v1.4 (v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: 3S 에 오딜의 방 (몫 1) → 공통 전투 37.5% · 예정 줄 없앰 / v1.2: 파일 버전은 7.25.x 모양만 · v1.1: 여정은 맵 다섯 이상 · 휴대폰 넓이는 innerWidth 가 그대로인지로 · 공통 전투: 무리 · 상황을 뽑음 (2S 는 앞과 다른 무리) · 상황마다 적의 시작 (매복 = 숨음) · 3S 의 싸움도 공통 전투 /
+// v7.25.3 UI 시험 — ui7253.js v1.5 (v1.5: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: 3S 에 오딜의 방 (몫 1) → 공통 전투 37.5% · 예정 줄 없앰 / v1.2: 파일 버전은 7.25.x 모양만 · v1.1: 여정은 맵 다섯 이상 · 휴대폰 넓이는 innerWidth 가 그대로인지로 · 공통 전투: 무리 · 상황을 뽑음 (2S 는 앞과 다른 무리) · 상황마다 적의 시작 (매복 = 숨음) · 3S 의 싸움도 공통 전투 /
 //   맵을 넘어갈 때 나레이션 · 로딩 (누르면 · Space 로 건너뜀 · 대화는 걷힌 뒤) · 4S 모래 · 5S 빛 / 여정 기록: 1S ~ 끝까지 파일 하나 (요약 · 글 · 맵마다 원본 · 대화 · 전리품 ·
 //   성장) · 저장이 막혀도 메모리 사본 · 지금 맵도 · 끝낸 뒤에도 남음 (이야기 탭) · 새 프롤로그 때 지움 / 인카운터 목록 탭 (훈련장) · 해 보기 · 휴대폰 넓이)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
  const MOCK = `window.__saved=[]; window.claude={ use: async n => n==='downloads' ? Object.freeze({ save: async r => { const t = typeof r.data==='string' ? r.data : await r.data.text(); window.__saved.push({ filename:r.filename, text:t }); return { status:'saved' }; } }) : null };`;
- const fresh = async (vw, mock) => { const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); if (mock) await ctx.addInitScript(MOCK); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+ const fresh = async (vw, mock) => { const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); if (mock) await ctx.addInitScript(MOCK); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900); return { p, errs, ctx }; };
  const TALKEND = "while (TK){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[L.ask.length>1?1:0][1]); continue; } talkAdv(); }";
  // 1) 공통 전투

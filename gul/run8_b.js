@@ -1,4 +1,4 @@
-/* ---------- v8.0.0 30층 여정 — run8_b.js v1.7 (v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
+/* ---------- v8.0.0 30층 여정 — run8_b.js v1.8 (v1.8: 그만두기 · 떠나보냄은 판 위의 확인 창 (askYes) — 아티팩트 화면은 브라우저 확인 창을 막아 눌러도 아무 일이 없었음 · v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
 function run8On(){ return R8READY && !!(S.camp && S.camp.run && S.camp.run.on); }
 function R8S(){ return (S.camp && S.camp.run) || null; }
@@ -114,7 +114,7 @@ document.addEventListener('click', e => {
   if (k === 'enter' && r8Sel){ r8Enter(r8Node(r8Sel)); return; }
   if (k === 'party'){ r8PartyPanel(); return; }
   if (k === 'log'){ try { campLogDownload(); } catch (x) { toast('기록을 받을 수 없어요'); } return; }
-  if (k === 'quit'){ if (confirm('여정을 그만둘까요? (이 진행은 사라져요)')){ r8Hide(); campQuit(); } return; }
+  if (k === 'quit'){ askYes('여정을 그만둘까요? (이 진행은 사라져요)', '그만둔다').then(y => { if (y){ r8Hide(); campQuit(); } }); return; }
 });
 function r8Hide(){ const el = $('run8'); if (el) el.hidden = true; }
 
@@ -453,7 +453,7 @@ function r8End(kind){
 function r8PartyPanel(){
   const R = R8S();
   const el = r8Panel(`<h2>동료</h2><div class="r8sub">최대 ${R8.cap}명. 떠나보낸 동료는 돌아오지 않아요.</div><div class="r8pan">${R.party.map((p, i) => { const mx = r8MaxHp(p), hp = p.hpNow != null ? p.hpNow : mx; return `<div class="r8p" style="margin:4px 0"><i style="${r8Face(p.ref, 40)}"></i><div style="flex:1"><b>${esc(p.name)}</b> ${TIER_STAR(p.tier)} <small>${hp}/${mx}${(p.grown || []).length ? ' · ✦ ' + esc(p.grown.slice(-3).join(' · ')) : ''}${(p.curses || []).length ? ' · ☠ ' + esc(p.curses.join(' · ')) : ''}</small></div>${p.hero ? '' : `<button class="btn sm warn" type="button" data-r8kick="${i}">떠나보냄</button>`}</div>`; }).join('')}<div class="row"><button class="btn go" type="button" id="r8pX">지도로</button></div></div>`);
-  el.querySelectorAll('[data-r8kick]').forEach(b => b.onclick = () => { const p = R.party[+b.dataset.r8kick]; if (!confirm(`${p.name} 을(를) 떠나보낼까요?`)) return; R.party.splice(+b.dataset.r8kick, 1); S.camp.lost.push(p.name); save(); r8PartyPanel(); });
+  el.querySelectorAll('[data-r8kick]').forEach(b => b.onclick = () => { const p = R.party[+b.dataset.r8kick]; askYes(`${p.name} 을(를) 떠나보낼까요?`, '떠나보낸다').then(y => { if (!y) return; R.party.splice(+b.dataset.r8kick, 1); S.camp.lost.push(p.name); save(); r8PartyPanel(); }); });
   $('r8pX').onclick = () => r8MapShow();
 }
 // ===== 처음 켤 때 · 다시 열 때 =====

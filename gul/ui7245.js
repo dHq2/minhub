@@ -1,10 +1,10 @@
-// v7.24.5 UI 시험 — ui7245.js v1.1 (v1.1: 첫 화면에서 ▶ 전투 시작 = 프롤로그 시작 · 오른쪽 안내 글 · 스토리 · 훈련장: 처음 고르기 · 머리글 단추 · 탭과 단추가 모드마다 · 스토리 첫 화면 · 프롤로그 시작 · 싸우다 훈련장으로 (맡겨 둠) · 돌아오면 그 맵 · 기록 · 다시 열어도 모드 그대로 · 모바일 조작판 · 더 보기)
+// v7.24.5 UI 시험 — ui7245.js v1.2 (v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 첫 화면에서 ▶ 전투 시작 = 프롤로그 시작 · 오른쪽 안내 글 · 스토리 · 훈련장: 처음 고르기 · 머리글 단추 · 탭과 단추가 모드마다 · 스토리 첫 화면 · 프롤로그 시작 · 싸우다 훈련장으로 (맡겨 둠) · 돌아오면 그 맵 · 기록 · 다시 열어도 모드 그대로 · 모바일 조작판 · 더 보기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
  const vis = (p, sel) => p.evaluate(s=>{ const e=document.querySelector(s); return !!(e && e.offsetParent!==null && getComputedStyle(e).display!=='none'); }, sel);
  for (const vw of [{width:1280,height:860,nm:'pc'},{width:412,height:880,nm:'mo',mob:true}]){
- const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+ const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
  console.log('  ['+vw.nm+']');
  // 1) 자동 시험은 훈련장으로 열림 (고르기 창 없음)

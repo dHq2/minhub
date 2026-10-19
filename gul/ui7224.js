@@ -1,8 +1,8 @@
-// v7.22.4 UI 시험 — ui7224.js v1.0 (당신들을 따라온 누군가: 1S 에서 아군을 버림 → 기억 (체력 그대로) · 버린 이가 있을 때만 3S 만남에 나옴 · 다가가면 나레이션 → 다시 합류 (그때 체력) · 그냥 넘어가도 따라옴 · 버린 이 목록에서 빠짐)
+// v7.22.4 UI 시험 — ui7224.js v1.1 (v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 당신들을 따라온 누군가: 1S 에서 아군을 버림 → 기억 (체력 그대로) · 버린 이가 있을 때만 3S 만남에 나옴 · 다가가면 나레이션 → 다시 합류 (그때 체력) · 그냥 넘어가도 따라옴 · 버린 이 목록에서 빠짐)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
- const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+ const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
  const START = `(()=>{ showTab('place'); renderFloors(); if (S.camp) campQuit(); document.getElementById('campBtn').click(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); return true; })()`;
  // 1S 에서 하나를 버림 (나머지는 위로)

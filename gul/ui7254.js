@@ -1,4 +1,4 @@
-// v7.25.4 UI 시험 — ui7254.js v1.1 (v1.1: 그림은 열리는지만 (file:// 은 캔버스로 픽셀을 못 읽음 — 투명은 talkcut.py 에서 봄) · 대화 화면: 양 끝 큰 그림 — 왼쪽 = 우리 (인주 · 얼굴로 대신) · 오른쪽 = 말하는 NPC / 말하는 쪽만 밝게 · 이름표는 말하는 쪽 ·
+// v7.25.4 UI 시험 — ui7254.js v1.2 (v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 그림은 열리는지만 (file:// 은 캔버스로 픽셀을 못 읽음 — 투명은 talkcut.py 에서 봄) · 대화 화면: 양 끝 큰 그림 — 왼쪽 = 우리 (인주 · 얼굴로 대신) · 오른쪽 = 말하는 NPC / 말하는 쪽만 밝게 · 이름표는 말하는 쪽 ·
 //   아군이 NPC 와 말하면 왼쪽에 아군 (대화 끝까지) · NPC 없이 아군이 말하면 오른쪽 / 나레이션 · 사각형 나레이션 / 새 그림 (오딜 · 모닝스타 · 레베카 · 탕아) 이 실제로 열림 · 배경 투명 /
 //   가로 띠는 화면 아래 끝까지 · ▼ SPACE (휴대폰 ▼ 탭) · 휴대폰 넓이)
 const { chromium } = require('playwright');
@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
      nx: document.getElementById('tkNx').textContent, iw: innerWidth, ih: innerHeight, sw: document.documentElement.scrollWidth }; })()`;
  const DONE = "(()=>{ if (TK && TK.timer) talkDone(); })()";
  for (const vw of [{width:1280,height:860,nm:'PC'},{width:412,height:880,nm:'휴대폰',mob:true}]){
-   const p=await (await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+   const p=await (await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
    await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp, party=S.units.filter(u=>u.side===0&&u.name!=='친칠라'); C.stages[3]={ seed: 11, tseed: 7, e3: 'chin' }; C.s=3; campBuild(3,'down',party); while (TK){ if (TK.timer) talkDone(); talkAdv(); }
      const E=encCur(); const h=world.units.find(u=>u.hero); h.x=E.x; h.y=E.y+2.6; computeLight(world); encTick(world); });

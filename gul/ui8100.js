@@ -1,10 +1,10 @@
-// v8.1.0 UI 시험 — ui8100.js v1.1 (v1.1: 들어설 때 대화는 로딩 뒤에 열림 — 기다렸다 셈 · v1.0: 챔피언 로드: 20층 MC 뒤에만 켜짐 · 들어설 때 MC 한마디 · 깜짝 규칙 (암전 · 상금 두 배 · 90초) · 관중 (응원 · 야유 · 축복 · 증오 · 되돌림) · 처치 · 쓰러짐 열기 · 이김 · 물러남 · 지도 MC 한마디 · 서술 · 로그 · 휴대폰)
+// v8.1.0 UI 시험 — ui8100.js v1.2 (v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 들어설 때 대화는 로딩 뒤에 열림 — 기다렸다 셈 · v1.0: 챔피언 로드: 20층 MC 뒤에만 켜짐 · 들어설 때 MC 한마디 · 깜짝 규칙 (암전 · 상금 두 배 · 90초) · 관중 (응원 · 야유 · 축복 · 증오 · 되돌림) · 처치 · 쓰러짐 열기 · 이김 · 물러남 · 지도 MC 한마디 · 서술 · 로그 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
  const TALKEND = "window.__nm=[]; while (TK){ if (TK.timer) talkDone(); __nm.push(document.getElementById('tkName').textContent+'|'+document.getElementById('tkText').textContent); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[0][1]); continue; } talkAdv(); }";
  for (const vw of [{width:1280,height:860,nm:'pc'},{width:412,height:880,nm:'mo',mob:true}]){
- const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+ const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
  console.log('== '+vw.nm);
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); while (TK){ if (TK.timer) talkDone(); talkAdv(); } });

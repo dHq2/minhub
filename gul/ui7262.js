@@ -1,8 +1,8 @@
-// v7.26.2 UI 시험 — ui7262.js v1.0 (인카운터 목록 ▶: 확인 창 없이 · 지금 배치된 아군 그대로 (뽑기 없음) · 로딩 뒤 그 만남 / 그만두면 훈련장 배치 그대로 · 맡긴 스토리 프롤로그도 그대로 / 공통 전투 무리 · 상황 고르기)
+// v7.26.2 UI 시험 — ui7262.js v1.1 (v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 인카운터 목록 ▶: 확인 창 없이 · 지금 배치된 아군 그대로 (뽑기 없음) · 로딩 뒤 그 만남 / 그만두면 훈련장 배치 그대로 · 맡긴 스토리 프롤로그도 그대로 / 공통 전투 무리 · 상황 고르기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
- const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); const dlg=[]; p.on('dialog',d=>{ dlg.push(d.message().slice(0,40)); d.accept(); });
+ const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); const dlg=[]; p.on('dialog',d=>{ dlg.push(d.message().slice(0,40)); d.accept(); }); await p.addInitScript('window.__askAuto=true');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
  // 진행 중인 스토리 프롤로그 하나 (맡겨질 것)
  const st0 = await p.evaluate(()=>{ setMode('story'); campStart({ direct: true }); const C=S.camp; C.s=2; const t0=C.t0; setMode('train'); return { t0, story: !!S.story, mode: S.mode }; });

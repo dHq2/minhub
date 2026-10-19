@@ -1,4 +1,4 @@
-// v7.21.4 UI 시험 — ui7213.js v1.4 (v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: v7.25.3 여정 기록 — 파일 이름 gul_1F_journey_ · 끝내도 지난 여정은 남고 새 프롤로그 때 지움 · v1.2: v1.2: 받은 파일의 판 번호는 형식만 봄 · v1.1: 로그 받기는 downloads 기능 (가짜 claude.use 로 시험) · 거절 처리 · 기능이 없으면 받기 단추 숨김 + 띠는 '로그 복사' / v1.0: 맵을 넘어가면 gzip 로그가 쌓임 · 풀면 그 맵 로그 그대로 · 그만두기 · 새 캠페인 때 지움)
+// v7.21.4 UI 시험 — ui7213.js v1.5 (v1.5: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: v7.25.3 여정 기록 — 파일 이름 gul_1F_journey_ · 끝내도 지난 여정은 남고 새 프롤로그 때 지움 · v1.2: v1.2: 받은 파일의 판 번호는 형식만 봄 · v1.1: 로그 받기는 downloads 기능 (가짜 claude.use 로 시험) · 거절 처리 · 기능이 없으면 받기 단추 숨김 + 띠는 '로그 복사' / v1.0: 맵을 넘어가면 gzip 로그가 쌓임 · 풀면 그 맵 로그 그대로 · 그만두기 · 새 캠페인 때 지움)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
  const MOCK = mode => `window.__dlMode=${JSON.stringify(mode)}; window.__saved=[]; window.claude={ use: async n => n==='downloads' ? Object.freeze({ save: async r => { if (window.__dlMode==='declined') throw { code:'declined', message:'no' }; const t = typeof r.data==='string' ? r.data : await r.data.text(); window.__saved.push({ filename:r.filename, text:t }); return { status:'saved' }; } }) : null };`;
  const NX="{ const nb=document.getElementById('campNext'); if(nb) nb.click(); }";
  async function run(nm, mock){
-  const ctx=await b.newContext({viewport:{width:1280,height:860}}); if (mock) await ctx.addInitScript(MOCK(mock)); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+  const ctx=await b.newContext({viewport:{width:1280,height:860}}); if (mock) await ctx.addInitScript(MOCK(mock)); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
   await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
   const r1 = await p.evaluate(`(async()=>{ showTab('place'); renderFloors(); document.getElementById('campBtn').click(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); await dlReady;
     const bar = document.getElementById('campBar'), clog = bar.querySelector('[data-clog]'); const barLog = clog ? { v: clog.dataset.clog, t: clog.textContent } : null;

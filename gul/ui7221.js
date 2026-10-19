@@ -1,4 +1,4 @@
-// v7.22.1 UI 시험 — ui7221.js v1.0 (토끼마차: 아이텐 · 청갑 둘 · 처음 보임 나레이션 둘 · 청갑 뭘 봐 → 꺼져 → 무시 · 쓸 만한 물건 없음 · 거래 (건네기 → 가치 · 사기 → 가방 · 많이 이용해 주세요) · 넘어가면 산 것 · 판 것 반영 · 회복약 마시기 · 공격 → 사각형 나레이션 → 확정 패배 · 모바일)
+// v7.22.1 UI 시험 — ui7221.js v1.1 (v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 토끼마차: 아이텐 · 청갑 둘 · 처음 보임 나레이션 둘 · 청갑 뭘 봐 → 꺼져 → 무시 · 쓸 만한 물건 없음 · 거래 (건네기 → 가치 · 사기 → 가방 · 많이 이용해 주세요) · 넘어가면 산 것 · 판 것 반영 · 회복약 마시기 · 공격 → 사각형 나레이션 → 확정 패배 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
  const NEAR = (k,d) => `(()=>{ const E=encAll().find(q=>q.npc==='${k}'), al=world.units.filter(u=>u.alive&&u.side===0); const h=al.find(u=>u.hero)||al[0]; h.x=E.x; h.y=E.y+${d}; for (const u of al) if (u!==h){ u.x=E.x+((u.i%5)-2)*0.9; u.y=Math.min(world.map.H-1.5,E.y+${d}+1.2+Math.floor(u.i/5)); } computeLight(world); encTick(world); return { talk: !!TK, txt: TK ? TK.full : '' }; })()`;
  const TALKTO = k => `(()=>{ encTalk(encAll().find(q=>q.npc==='${k}')); if (TK && TK.timer) talkDone(); return { txt: TK && TK.full, name: document.getElementById('tkName').textContent }; })()`;
  for (const [nm,vp] of [['데스크톱',{viewport:{width:1280,height:860}}],['모바일',{viewport:{width:412,height:915},deviceScaleFactor:2.625,isMobile:true,hasTouch:true}]]){
-  const ctx=await b.newContext(vp); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+  const ctx=await b.newContext(vp); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
   await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
   await p.evaluate(GO3('shop'));
   const m = await p.evaluate(()=>({ n: encAll().length, sts: encAll().map(E=>E.npc+':'+E.st), torches: world.torches.length, foes: world.units.filter(u=>u.side===1).length, bar: document.getElementById('campBar').innerText }));

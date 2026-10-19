@@ -1,4 +1,4 @@
-// v7.25.0 UI 시험 — ui7250.js v1.2 (v1.2: 겨눔 시험은 쟝의 머리 찍기 (간두는 v7.25.1부터 기술 대신 두 번째 총) · v1.1: PC 는 오른쪽 클릭 = 이동 · 왼쪽 클릭 = 고르기 풀기 (겨눔도 풀림) · 알현실: 아주 밝음 · 한눈에 다 보임 · 그림 오류 없음 / 관을 조사하면 10초 뒤 세자르 (9초엔 아직) / 영거리 사격 겨눔 중 바닥을 누르면 겨눔을 풀고 이동 (PC · 휴대폰) /
+// v7.25.0 UI 시험 — ui7250.js v1.3 (v1.3: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.2: 겨눔 시험은 쟝의 머리 찍기 (간두는 v7.25.1부터 기술 대신 두 번째 총) · v1.1: PC 는 오른쪽 클릭 = 이동 · 왼쪽 클릭 = 고르기 풀기 (겨눔도 풀림) · 알현실: 아주 밝음 · 한눈에 다 보임 · 그림 오류 없음 / 관을 조사하면 10초 뒤 세자르 (9초엔 아직) / 영거리 사격 겨눔 중 바닥을 누르면 겨눔을 풀고 이동 (PC · 휴대폰) /
 //   성장: 괴력 대신 근력 · 예전에 싸워서 얻은 괴력은 근력으로 옮김 (원래 괴력은 그대로) / 로그 글)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
  const fresh = async p => { await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900); };
  const camp5 = p => p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp, party=S.units.filter(u=>u.side===0); C.s=5; campBuild(5,'down',party); });
  const talkEnd = p => p.evaluate(()=>{ for (let k=0;k<30&&TK;k++){ if (TK.timer) talkDone(); talkAdv(); } });
- { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await fresh(p);
+ { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true'); await fresh(p);
    await camp5(p); await p.waitForTimeout(700); await talkEnd(p);
    const h = await p.evaluate(()=>{ let err=null; try { draw(); } catch(e){ err=e.message; } return { hall:S.hall, amb:world.amb, exp:[...world.explored].every(v=>v===2), err, light:Math.min(...world.light) }; });
    console.log('    홀',JSON.stringify(h)); ok(h.hall&&h.amb===1&&h.exp&&!h.err&&h.light>=0.99,'알현실: 아주 밝음 (빛 1) · 한눈에 다 보임 · 빛줄기 그리기 오류 없음');

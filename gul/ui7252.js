@@ -1,10 +1,10 @@
-// v7.25.2 UI 시험 — ui7252.js v1.0 (정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
+// v7.25.2 UI 시험 — ui7252.js v1.1 (v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
 //   동료 얼굴을 누르면 그 가방으로 · 장비 탭에서 끼우기 → 다음 맵 판에 그 무기 · 맵 중간 전리품 창도 카드 · 화면 안 (PC · 휴대폰))
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
  for (const vw of [{width:1280,height:860,nm:'PC'},{width:412,height:880,nm:'휴대폰',mob:true}]){
-   const p=await (await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+   const p=await (await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
    await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); }); await p.waitForTimeout(500);
    const r = await p.evaluate(()=>{ const W=world, al=W.units.filter(u=>u.side===0), k=al[0]; for (const f of W.units.filter(u=>u.side===1)) applyDmg(W,k,f,99999,{}); const rb=W.units.find(u=>u.name==='레베카'); rb.shots=30; rb.miss=2;
