@@ -1,4 +1,4 @@
-/* ===== run8_h.js v1.4 (v1.4: 도감 적 설계에 도감 정체성 특성을 이어받음 (검사 · 검방패병 · 붉은 망토 궁수 · 곤봉 거한 = [망자]) · v1.3: 21 ~ 29층 MS 하나는 챔피언 로드 관중 통로 (민수가 준 그림) · v1.2: 소품을 여럿 놓을 때 앞서 놓은 칸을 빼고 길이 끊기는지 잼 (둘째부터 모두 거절되던 것) · v1.1: 구획 이름에 씨앗 (같은 칸 이름이 다른 층 · 여정과 겹치지 않게) · 엄폐 소품 3 ~ 6) · v1.0 — v8.7.0 여정 구조 v2 (민수 명세 spec_870 A 절)
+/* ===== run8_h.js v1.6 (v1.6: 맵 장치 — 구획 안에 돌벽 토막 (타일 벽 · 이어짐 검사) · 진지의 큰 설비 표시 (포대 자리) · 두 맵을 잘라 이은 싸움판 (MS 싸움 15% · 다른 그림 둘 · 뚫은 통로) · 판 그림 위에 v8.7.1.1 장치를 그림 · v1.5: 히든 층 (r8Hidden — run8_i) · 층 정의의 rows (줄마다 갈래) · 히든 보스는 BOSS8 의 맵 · 빈 회랑 (적 없음) · 판을 만든 뒤 r8HookI · v1.4: 도감 적 설계에 도감 정체성 특성을 이어받음 (검사 · 검방패병 · 붉은 망토 궁수 · 곤봉 거한 = [망자]) · v1.3: 21 ~ 29층 MS 하나는 챔피언 로드 관중 통로 (민수가 준 그림) · v1.2: 소품을 여럿 놓을 때 앞서 놓은 칸을 빼고 길이 끊기는지 잼 (둘째부터 모두 거절되던 것) · v1.1: 구획 이름에 씨앗 (같은 칸 이름이 다른 층 · 여정과 겹치지 않게) · 엄폐 소품 3 ~ 6) · v1.0 — v8.7.0 여정 구조 v2 (민수 명세 spec_870 A 절)
    · 층 = 주제 (지대). 무작위 층은 깊이에 맞는 지대를 뽑고, 고정층 (3 · 5 · 10 · 15 · 20 · 25 · 30) 은 화면에 "고정층" 으로 밝힘
    · 층의 흐름: MS - MS - S - MS - S - (MS / S / S 갈림길) - S - 층 보스.  MS = 그 층 맵을 잘라 만든 싸움판 · S = 인카운터 · 쉼터 · 상인 · 보물 · 정예
    · MS 는 맵 전체가 아니라 확대한 맵에서 구획을 잘라 씀 (이어진 바닥만 · 못 가는 곳은 막음) + 소품으로 엄폐 · 진지 (도감 소품 · 3기 전장 설비)
@@ -227,6 +227,8 @@ function r8PickTheme(f){
 }
 // 층 정의를 F8[f] 에 (다른 코드가 F8 을 읽음: 이름 · 무리 · 나레이션 · 정산)
 function r8FloorDef(f){
+  const HD = typeof r8Hidden === 'function' ? r8Hidden(f) : null;
+  if (HD){ const tk = HD.band.replace(/^t_/, ''), T = THEME8[tk] || {}; const D = { ...HD, maps: [], theme: tk, fixed8: false, settle: false, final: false, strong: true, narr: HD.narr || T.narr || [] }; const last = HD.rows[HD.rows.length - 1].find(x => x.t === 'boss'); if (last) D.boss = last.b; F8[f] = D; return D; }
   const X = FIX8[f]; let T = null, tk = null;
   if (X && X.theme){ tk = X.theme; (R8S().themes = R8S().themes || {})[f] = tk; } else if (!X) tk = r8PickTheme(f);
   if (tk) T = THEME8[tk];
@@ -245,14 +247,15 @@ function r8Gen(f){
   const mk = (r, i, n, t) => { const o = { id: `n${r}_${i}`, r, i, x: (i + 0.5) / n, next: [], seed: 1 + Math.floor(rnd() * 1e9) };
     if (t === 'ms'){ o.t = 'fight'; o.ms = msKind(); } else if (t === 's'){ o.t = sPick(); o.s = true; if (o.t === 'elite') o.e = r8Pick(((THEME8[D.theme] || {}).el || ['hall'])); } else Object.assign(o, t); return o; };
   let plan;
-  if (D.seq) plan = [D.seq.map(x => ({ ...x }))];
+  if (D.rows) plan = D.rows.map(row => row.map(x => ({ ...x })));   // 히든 층
+  else if (D.seq) plan = [D.seq.map(x => ({ ...x }))];
   else { const top = D.top ? { ...D.top } : { t: 'elite', e: r8Pick((THEME8[D.theme] || {}).el || ['hall']), top: true };
     plan = [['ms'], ['ms'], ['s'], ['ms'], ['s'], ['ms', 's', 's'], ['s'], [top]]; }
   const rows = plan.map((row, r) => row.map((t, i) => mk(r, i, row.length, t)));
   for (const row of rows) for (const nd of row) if (nd.t === 'elite' && !ELITE8[nd.e]) nd.e = 'hall';
-  if (f >= 21 && f < 30 && !D.seq && r8MapOk('champ')){ const L = rows.flat().filter(nd => nd.ms === 'fight'); if (L.length){ const nd = r8Pick(L); nd.src8 = 'champ'; nd.champ = true; } }   // 챔피언 로드: 관중 통로에서 한 판
-  const last = rows[rows.length - 1][0]; if (last.t === 'boss'){ last.id = 'boss'; } else if (last.t === 'final') last.id = 'final'; else if (last.t === 'fixed') last.id = 'fixed';
-  if (!D.seq && last.t !== 'boss' && last.t !== 'fixed') last.stair = true;   // 층 보스를 이기면 아래로
+  if (f >= 21 && f < 30 && !D.seq && !D.rows && r8MapOk('champ')){ const L = rows.flat().filter(nd => nd.ms === 'fight'); if (L.length){ const nd = r8Pick(L); nd.src8 = 'champ'; nd.champ = true; } }   // 챔피언 로드: 관중 통로에서 한 판
+  const last = rows[rows.length - 1][0]; if (last.t === 'boss'){ last.id = 'boss'; }   /* 히든 층: 마지막 줄 = 보스 / 계단 */ else if (last.t === 'final') last.id = 'final'; else if (last.t === 'fixed') last.id = 'fixed';
+  if (!D.seq && !D.rows && last.t !== 'boss' && last.t !== 'fixed') last.stair = true;   // 층 보스를 이기면 아래로
   for (let r = 0; r < rows.length - 1; r++) for (const a of rows[r]) a.next = rows[r + 1].map(b => b.id);
   return { rows, v: 2 };
 }
@@ -350,35 +353,56 @@ function r8Sec(srcId, seed, opt){
   const RS = PROPSET8[T.rock || 'rubble'] || PROPSET8.rubble;
   const nCover = o.kind === 'boss' ? 1 + Math.floor(rnd() * 2) : 3 + Math.floor(rnd() * 4);
   for (let i = 0; i < nCover; i++) place(RS[Math.floor(rnd() * RS.length)], null, 50);
+  // 돌벽 토막 (타일 벽): 싸움 · 진지 · 지나가기 — 길을 끊지 않을 때만
+  if (o.kind === 'fight' || o.kind === 'fort' || o.kind === 'pass'){ const nW = 1 + Math.floor(rnd() * 3); for (let i = 0; i < nW; i++){ const len = 3 + Math.floor(rnd() * 4), hor = rnd() < 0.5; place(['wall', hor ? len : 1, hor ? 1 : len, '#'], null, 40); } }
   if ((o.kind === 'fort' || o.kind === 'open') && T.fort){
     const F = PROPSET8['f_' + T.fort]; const enemy = (x, y) => dist[y * w + x] > far * 0.55;
     const nB = o.kind === 'open' ? 8 : 3 + Math.floor(rnd() * 3), nL = o.kind === 'open' ? 5 : 1 + Math.floor(rnd() * 2);
     for (let i = 0; i < nB; i++) place(F[0][Math.floor(rnd() * F[0].length)], enemy, 40);
-    for (let i = 0; i < nL; i++) place(F[1][Math.floor(rnd() * F[1].length)], (x, y) => dist[y * w + x] > far * 0.7, 40); }
+    for (let i = 0; i < nL; i++) if (place(F[1][Math.floor(rnd() * F[1].length)], (x, y) => dist[y * w + x] > far * 0.7, 40)) props[props.length - 1].big = 1; }   // 큰 설비 = 포대 자리 (v8.7.1.1)
   if (/^caldera/.test(srcId)) props.push({ id: 'H-120', x: out[0] - 1, y: out[1] - 1, w: 2, h: 2, decor: true });   // 칼데라: 나가는 곳은 침대 (그림엔 없어 도감 소품을 놓음)
   const pxPerCell = M.cs / z;
   return { name: M.name, tag: M.tag, src: M.src, pw: M.pw, ph: M.ph, cs: pxPerCell, NX: w, NY: h, rows: S2(), in: inn, out, amb: M.amb, fall: M.fall, sx: win.x0, sy: win.y0, props, base: srcId, sec: true };
 }
+// 두 맵을 잘라 이은 싸움판: 왼쪽 구획 A · 오른쪽 구획 B · 사이 두 칸 벽을 뚫어 통로 (두 줄)
+function r8Stitch(a, b, seed, o){
+  const A = r8Sec(a, seed, { ...o, kind: 'fight' }), B = r8Sec(b, seed + 77, { ...o, kind: 'fight' }); if (!A || !B) return A;
+  const gap = 2, W = A.NX + gap + B.NX, H = Math.max(A.NY, B.NY), fill = n => '#'.repeat(n);
+  const g = Array.from({ length: H }, (_, y) => [...((A.rows[y] || fill(A.NX)) + fill(gap) + (B.rows[y] || fill(B.NX)))]);
+  let best = null;
+  for (let y = 1; y < H - 2; y++){ const ax = (A.rows[y] || '').lastIndexOf('.'), bx = (B.rows[y] || '').indexOf('.'); if (ax < 0 || bx < 0) continue; const c = (A.NX - 1 - ax) + bx; if (!best || c < best.c) best = { y, ax, bx, c }; }
+  if (!best) return A;
+  const off = A.NX + gap, props = [...A.props, ...B.props.map(p => ({ ...p, x: p.x + off }))], pc = new Set(); for (const p of props) for (let yy = p.y; yy < p.y + p.h; yy++) for (let xx = p.x; xx < p.x + p.w; xx++) pc.add(xx + ',' + yy);
+  const cut = [], span = y => { const L = []; for (let x = best.ax; x <= off + best.bx; x++) L.push(x); return L; };
+  for (const y of [best.y, best.y + 1]){ const L = span(y); if (y !== best.y && L.some(x => pc.has(x + ',' + y))) continue; for (const x of L) if (g[y][x] !== '.' && !pc.has(x + ',' + y)){ g[y][x] = '.'; cut.push([x, y]); } }
+  return { name: A.name + ' → ' + B.name, tag: A.tag, src: A.src, pw: A.pw, ph: A.ph, cs: A.cs, NX: W, NY: H, rows: g.map(r => r.join('')), in: A.in, out: [B.out[0] + off, B.out[1]], amb: Math.min(A.amb, B.amb), fall: A.fall || B.fall, sx: A.sx, sy: A.sy, props, cut, base: a, base2: b, sec: true,
+    parts: [{ src: A.src, sx: A.sx, sy: A.sy, cs: A.cs, pw: A.pw, ph: A.ph, ox: 0, w: A.NX, h: A.NY }, { src: B.src, sx: B.sx, sy: B.sy, cs: B.cs, pw: B.pw, ph: B.ph, ox: off, w: B.NX, h: B.NY }] };
+}
 // 구획을 MAPS8 에 올림 (판을 다시 열 때도 같은 씨앗으로 다시 만듦)
 function r8SecReg(key, srcId, seed, opt){
   if (MAPS8[key] && MAPS8[key].sec) return key;
-  const M = r8Sec(srcId, seed, opt); if (!M) return null; MAPS8[key] = M; return key;
+  const M = opt && opt.src2 ? r8Stitch(srcId, opt.src2, seed, opt) : r8Sec(srcId, seed, opt); if (!M) return null; MAPS8[key] = M; return key;
 }
 // 노드의 판 맵
 function r8MapFor(n){
   const R = R8S(), F = F8[R.f] || {};
   if (n.t === 'boss' && n.b === 'neo'){ const k = R.neo || (R.neo = Math.random() < 0.5 ? 'neodemon' : 'neospirit'); return BOSS8[k].map; }
-  if (F.fixed8 && F.seq && F.maps && F.maps.length) return F.maps.find(r8MapOk) || null;   // S 하나짜리 고정층 (테이론 · 삼신 · 결승)
+  if (F.fixed8 && F.seq && F.maps && F.maps.length) return F.maps.find(r8MapOk) || null;
+  if (n.t === 'boss' && F.hidden8 && BOSS8[n.b] && r8MapOk(BOSS8[n.b].map)) return BOSS8[n.b].map;   // 히든 보스 (하르겐 · 데두라) 는 맵 통째로   // S 하나짜리 고정층 (테이론 · 삼신 · 결승)
   const L = (F.maps || []).filter(r8MapOk); if (!L.length && !n.src8) return null;
   n.src8 = n.src8 && r8MapOk(n.src8) ? n.src8 : r8Pick(L.length > 1 ? L.filter(k => k !== R.lastSrc8) : L); R.lastSrc8 = n.src8;
   const kind = n.champ ? 'boss' : n.t === 'boss' ? 'boss' : n.ms || (n.t === 'elite' && ELITE8[n.e] && ELITE8[n.e].open ? 'open' : n.t === 'elite' ? 'fort' : 'fight');
-  const key = `~${R.f}_${n.id}_${n.seed || 7}`; S.art8sec = { key, src: n.src8, seed: n.seed || 7, kind, theme: F.theme };
-  return r8SecReg(key, n.src8, n.seed || 7, { kind, theme: F.theme });
+  // 두 맵 잇기: 보통 MS 싸움의 15% (그 지대에 맵이 둘 넘을 때 · 관중 통로 · 히든 빼고)
+  if (n.stitch === undefined) n.stitch = kind === 'fight' && n.t === 'fight' && !n.champ && !n.empty && L.length >= 2 && ((n.seed || 7) % 100) < 15 ? L.filter(k => k !== n.src8)[(n.seed || 7) % (L.length - 1)] || null : null;
+  const src2 = n.stitch && r8MapOk(n.stitch) ? n.stitch : null;
+  const key = `~${R.f}_${n.id}_${n.seed || 7}`; S.art8sec = { key, src: n.src8, src2, seed: n.seed || 7, kind, theme: F.theme };
+  return r8SecReg(key, n.src8, n.seed || 7, { kind, theme: F.theme, src2 });
 }
-function r8SecRestore(){ const A = S.art8sec; if (A && S.art8 === A.key && !MAPS8[A.key]) r8SecReg(A.key, A.src, A.seed, { kind: A.kind, theme: A.theme }); }
+function r8SecRestore(){ const A = S.art8sec; if (A && S.art8 === A.key && !MAPS8[A.key]) r8SecReg(A.key, A.src, A.seed, { kind: A.kind, theme: A.theme, src2: A.src2 || null }); }
 // 적 묶음 — 지대 무리 · 지나가기는 적음 · 칼데라는 강적
 function r8Foes(n){
   const R = R8S(), f = R.f, F = F8[f] || {};
+  if (n.empty) return [];   // 빈 회랑 (히든 층)
   if (n.t === 'elite') return (ELITE8[n.e] || ELITE8.hall).foes.flatMap(([k, c]) => Array.from({ length: c }, () => k));
   if (n.t === 'boss'){ let B = BOSS8[n.b]; if (n.b === 'neo') B = BOSS8[R.neo || 'neodemon']; if (B.waves) return B.waves[0].slice(0, 1).flatMap(([k, c]) => Array.from({ length: c }, () => k)); return (B.foes || []).flatMap(([k, c]) => Array.from({ length: c }, () => k)); }
   const P = BAND8[F.band] || BAND8.sewer, nP = R.party.length;
@@ -393,21 +417,30 @@ function r8BattleHook(n, M){
   const open = n.ms === 'pass' || n.ms === 'open' || (n.t === 'elite' && ELITE8[n.e] && ELITE8[n.e].open);
   if (open){ W.exitLock = false; W.r8.pass = true; logEv(W, { k: 'r8', s: n.ms === 'pass' ? '🚪 출구가 열려 있다 — 싸우지 않고 빠져나가도 된다' : '🛏 칼데라 — 침대 (출구) 까지 가면 빠져나간다', c: 'dim', vis: true }); }
   if (n.ms === 'pass') for (const u of W.units) if (u.side === 1 && u.alive){ u.alert = 0; }
+  if (typeof r8HookI === 'function') r8HookI(n, W);   // v8.7.1 손님 · 맵 위 NPC · 항복
 }
 // 그림 맵 · 구획 · 소품
 const PROPIMG8 = {};
 function drawArt8(Wd, ox, oy, ts){
   r8SecRestore();
   const M = MAPS8[S.art8]; if (!M) return; const a = ART8IMG[M.src] || (ART8IMG[M.src] = Object.assign(new Image(), { src: M.src }));
-  if (a.complete && a.naturalWidth){ const k = ts / M.cs;
+  if (M.parts){ for (const P of M.parts){ const im = ART8IMG[P.src] || (ART8IMG[P.src] = Object.assign(new Image(), { src: P.src })); if (!im.complete || !im.naturalWidth) continue; const k = ts / P.cs;
+      ctx.save(); ctx.beginPath(); ctx.rect(ox + P.ox * ts, oy, P.w * ts, P.h * ts); ctx.clip(); ctx.drawImage(im, ox + (P.ox - P.sx) * ts, oy - P.sy * ts, P.pw * k, P.ph * k); ctx.restore(); }
+    ctx.save(); for (const [x, y] of M.cut || []){ ctx.fillStyle = '#2a2420'; ctx.fillRect(ox + x * ts, oy + y * ts, ts + 0.5, ts + 0.5); ctx.strokeStyle = 'rgba(120,96,70,.45)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(ox + x * ts, oy + (y + 0.5) * ts); ctx.lineTo(ox + (x + 1) * ts, oy + (y + 0.5) * ts); ctx.stroke(); } ctx.restore(); }
+  else if (a.complete && a.naturalWidth){ const k = ts / M.cs;
     if (M.sec){ ctx.save(); ctx.beginPath(); ctx.rect(ox, oy, M.NX * ts, M.NY * ts); ctx.clip(); ctx.drawImage(a, ox - M.sx * ts, oy - M.sy * ts, M.pw * k, M.ph * k); ctx.restore(); }
     else ctx.drawImage(a, ox, oy, M.pw * k, M.ph * k); }
-  for (const p of M.props || []){ if (!p.id) continue; const im = PROPIMG8[p.id] || (PROPIMG8[p.id] = Object.assign(new Image(), { src: `art/prop/${p.id}.webp` }));
+  for (const p of M.props || []){ if (p.id !== 'wall') continue; const x = ox + p.x * ts, y = oy + p.y * ts, wd = p.w * ts, ht = p.h * ts;   // 돌벽 토막
+    ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(x + ts * 0.12, y + ts * 0.18, wd, ht); ctx.fillStyle = '#4a443d'; ctx.fillRect(x, y, wd, ht); ctx.fillStyle = '#5f584f'; ctx.fillRect(x, y, wd, ts * 0.22);
+    ctx.strokeStyle = 'rgba(20,16,12,.7)'; ctx.lineWidth = 1; for (let yy = 0; yy < p.h; yy++) for (let xx = 0; xx < p.w; xx++){ const bx = x + xx * ts, by = y + yy * ts; ctx.strokeRect(bx + 0.5, by + 0.5, ts - 1, ts - 1); ctx.beginPath(); ctx.moveTo(bx + ts * ((xx + yy) % 2 ? 0.5 : 0.3), by + ts * 0.5); ctx.lineTo(bx + ts * ((xx + yy) % 2 ? 0.5 : 0.3), by + ts); ctx.moveTo(bx, by + ts * 0.5); ctx.lineTo(bx + ts, by + ts * 0.5); ctx.stroke(); }
+    ctx.restore(); }
+  for (const p of M.props || []){ if (!p.id || p.id === 'wall') continue; const im = PROPIMG8[p.id] || (PROPIMG8[p.id] = Object.assign(new Image(), { src: `art/prop/${p.id}.webp` }));
     if (!im.complete || !im.naturalWidth) continue; const wpx = p.w * ts * 1.25, hpx = wpx * im.naturalHeight / im.naturalWidth;
     const cx = ox + (p.x + p.w / 2) * ts, by = oy + (p.y + p.h) * ts + ts * 0.1;
     ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(cx, by - ts * 0.15, wpx * 0.42, ts * 0.22, 0, 0, 6.283); ctx.fill(); ctx.restore();
     ctx.drawImage(im, cx - wpx / 2, by - hpx, wpx, hpx); }
   if (Wd.duel && typeof duel8Draw === 'function') duel8Draw(Wd, ox, oy, ts);   // v8.2 거인 · 조명
+  if (typeof r8DrawI === 'function') r8DrawI(Wd, ox, oy, ts);   // v8.7.1.1 봉인 문양
   const st = Wd.stairs; if (st && (Wd.cleared || !Wd.exitLock)){ const x = ox + st.x * ts, y = oy + st.y * ts, t = performance.now() / 600; ctx.save(); ctx.strokeStyle = `rgba(240,200,110,${0.55 + 0.35 * Math.sin(t)})`; ctx.lineWidth = Math.max(2, ts * 0.08); ctx.beginPath(); ctx.arc(x, y, ts * 0.75, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(240,200,110,.9)'; ctx.font = `bold ${Math.max(11, ts * 0.38)}px sans-serif`; ctx.textAlign = 'center'; ctx.fillText(F8[(R8S() || {}).f] && F8[R8S().f].theme === 'caldera' ? '🛏 침대 (출구)' : '▼ 출구', x, y - ts * 0.95); ctx.restore(); }
 }
 

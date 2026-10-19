@@ -1,4 +1,4 @@
-// v8.7.0 UI 시험 — ui8700.js v1.2 (v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
+// v8.7.0 UI 시험 — ui8700.js v1.4 (v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -9,6 +9,7 @@ const { chromium } = require('playwright');
  // 1. 프롤로그 끝 → 2층
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); });
  await p.evaluate(TALKEND); await wait(p,250); await p.evaluate(()=>{ document.getElementById('r8dAll').click(); document.getElementById('r8dGo').click(); });
+ await p.evaluate(()=>{ const R=R8S(); R.flags=R.flags||{}; R.flags.hargenSeen=1; R.flags.calderapSeen=1; const h=(R.hid||{})[R.f]; R.hid={}; if (h&&h!=='none'){ F8[R.f]=null; R.fm=r8Gen(R.f); r8MapShow(); } });   // 히든 층 끔 (무작위)
  const f2 = await p.evaluate(()=>{ const R=R8S(), F=F8[2], rows=R.fm.rows; return { theme: F.theme, name: F.name, fixed: F.fixed8, plan: rows.map(r=>r.map(n=>n.ms?'ms:'+n.ms:n.s?'s:'+n.t:n.t).join('/')), v: R.fm.v, sub: document.querySelector('#run8 .r8sub').textContent }; });
  console.log('    2층', JSON.stringify(f2));
  ok(f2.v===2&&f2.plan.length===8&&f2.plan[0].startsWith('ms')&&f2.plan[1].startsWith('ms')&&f2.plan[2].startsWith('s:')&&f2.plan[5].split('/').length===3&&f2.plan[7]==='elite','층 흐름 MS-MS-S-MS-S-(갈림 셋)-S-층 보스');
@@ -60,7 +61,7 @@ const { chromium } = require('playwright');
  await p.evaluate(TALKEND); await p.evaluate(()=>{ const b=[...document.querySelectorAll('#banner button')].find(x=>/지도로/.test(x.textContent)); if (b) b.click(); }); await wait(p,200);
  ok(win.includes('n0_0'),'MS 를 이기면 칸 끝 ('+win.join(',')+')');
  // 5. 지나가기: 출구가 열려 있음 → 안 싸우고 빠져나가면 동전 적음 · 다음 칸
- const ps = await p.evaluate(()=>{ const R=R8S(); world=null; const n=R.fm.rows[1][0]; n.ms='pass'; R.at='n0_0'; r8Enter(n); const W=world, lock=W.exitLock, pass=W.r8.pass; const bar=document.getElementById('campBar').innerHTML; const g0=R.gold;
+ const ps = await p.evaluate(()=>{ const R=R8S(); world=null; const n=R.fm.rows[1][0]; n.ms='pass'; n.seed=n.seed-(n.seed%100)+60; n.stitch=null; R.at='n0_0'; r8Enter(n); const W=world, lock=W.exitLock, pass=W.r8.pass; const bar=document.getElementById('campBar').innerHTML; const g0=R.gold;
    for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); W.over=true; W.result='exit'; mode='plan'; onOver(); return { lock, pass, exitBtn: /▼ 출구로/.test(bar), gold: R.gold-g0, done: R.done.includes(n.id) }; });
  await p.evaluate(TALKEND); console.log('    지나가기', JSON.stringify(ps));
  ok(!ps.lock&&ps.pass&&ps.exitBtn&&ps.done&&ps.gold>0&&ps.gold<=Math.ceil(22*0.4*1.5)+1,'지나가기 — 출구가 처음부터 열림 · 싸우지 않고 빠져나감 (동전 '+ps.gold+' · 40%)');

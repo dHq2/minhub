@@ -1,10 +1,16 @@
-/* ===== run8_i.js v1.0 — v8.7.1 인카운터 · 맵 위 NPC (민수 명세 spec_870 B 절 · A4 · A7 · A12 · A15 ~ A17 · A19)
+/* ===== run8_i.js v1.6 — v8.7.1 · v8.7.1.1 인카운터 · 맵 위 NPC (민수 명세 spec_870 B 절 · A4 · A7 · A12 · A15 ~ A17 · A19)
    · 맵 위 상시 NPC: MS 싸움판 구석에 — 야전병원 천막 (간호사장 · 파비 · 1성 간호사) · 로지나 · 대장장이 · 배신자 셰도르 · 노라 · 왐 · 마리와 와킨 · 아이텐 · 아해 (요괴 마을)
      싸움에 끼지 않고 · 일부는 싸움이 끝날 때까지 숨음 (천막 · 노라) · 일부는 다음 싸움을 도움 (로지나 — 위험하면 튐 · 셰도르)
    · 항복: 아해 (마지막 하나 · 빈사) · 페흐토 (빈사) — 죽이면 끝 · 살리면 영입 이벤트
    · S 칸 인카운터: 도감 조우 장면 카드 212장 (기본 카드 · 조우 장면 · 인카운터 그림 + 글) · 이름 있는 만남 19 (장작방 · 고독방 · 붉은 소녀 · 치킨룸 · 해변 · 행성 · 지껄이는 입 · 신성 오딜의 방 · 갈대밭 · 유적의 페흐토 · 호수 유적 · 해양 유적 가뮤 · 지식의 나선 · 단달로 저택 · 인공천사 벨 · 러버덕 · 광대 마카로니 · 노란악마 · 테헤라 · 아템)
    · 히든 층: 하르겐의 성당 (16 ~ 28층) · 과거의 칼데라 (2 ~ 9층 · 히든보스 데두라)
-   · 대화 그림 (배경 딴 투명 그림) 등록: 벨 18 · 딸기 6 · 옐로 5 · 로지나 3 · 아해 · 간호사장 · 파비 */
+   · 대화 그림 (배경 딴 투명 그림) 등록: 벨 18 · 딸기 6 · 옐로 5 · 로지나 3 · 아해 · 간호사장 · 파비
+   v1.6: 도감 카드 212장은 묶음 그림 3장 (art/card/atlasN — 파일 수 한도) · 대화 줄의 card: id 를 가운데 큰 그림으로 (묶음에서 그 칸만)
+   v1.5: 좁은 지나가기 맵에도 봉인 문양 셋 (사이 7 → 5 → 3칸)
+   v1.4: v8.7.1.1 맵 장치 — 봉인된 출구 (지나가기의 35%: 빛나는 문양 셋을 밟아야 열림 · 적은 자고 있음 · 다 쓰러뜨려도 열림) · 진지 설비 (진지 MS 의 큰 설비 자리에 팩션 보급 포대 — 움직이지 않는 적 · 같은 사격 규칙 · 부술 수 있음)
+   v1.3: 비전투 맵 (남은 적 없음) 에선 대장이 나가면 모두 함께 나간 것으로 침 (기다리지 않음 · 명세 A9)
+   v1.2: 자기 검토 — 페흐토가 가끔 싸움을 도움 (4층 뒤 · 손님) · 페흐토를 죽이면 투구 · 망토 갑주 (고급) 를 반드시 떨어뜨림 · 노라를 쓰러뜨리면 상품 모두 (탄 · 귀한 총 · 약 · 동전) · 죽은 단독 개체 (마리 · 아해 · 셰도르 …) 는 맵 위에 다시 안 나옴
+   v1.1: 판 안 대화 (r8InMap) — 영입은 판에 바로 (r8PutIn) · 끝나면 지도로 가지 않음 · 히든 층은 줄 (rows) 로 — 마지막 줄은 보스 / 돌아 나가는 계단 · 이름 있는 만남은 여정에 한 번 · 판을 만든 뒤 r8HookI (손님 · 맵 위 NPC · 항복) */
 
 // ---------- 대화 그림 ----------
 Object.assign(TALK_ART, {
@@ -44,7 +50,7 @@ Object.assign(ELITE8, {
   x_nora: { name: '노라', foes: [['노라', 1]] } });
 Object.assign(BOSS8, {
   hargen: { name: '하르겐', foes: [['하르겐', 1]], map: 'hargen1', tear: 0 },
-  dedura: { name: '과거의 칼데라 — 고대 몬스터 데두라', foes: [['고대 몬스터 데두라', 1], ['괴수 A', 2]], map: 'calderap', open: true } });
+  dedura: { name: '과거의 칼데라 — 고대 몬스터 데두라', foes: [['고대 몬스터 데두라', 1], ['괴수 A', 2]], map: 'calderap' } });
 
 // ---------- 히든 층 ----------
 function r8Hidden(f){
@@ -57,21 +63,31 @@ function r8Hidden(f){
 }
 function r8HiddenDef(k){
   if (k === 'hargen') return { name: '✦ 하르겐의 성당 (히든)', band: 't_gothic', maps: [], narr: ['길이 갑자기 성당 쪽으로 꺾인다. 아무도 이 길을 말해 주지 않았다.', '긴 회랑 끝에 — 누군가 등을 돌리고 서 있다.'], hidden8: true,
-    seq: [{ t: 'fight', ms: 'pass', src8: 'hargen0a', empty: true }, { t: 'fight', ms: 'pass', src8: 'hargen0b', empty: true }, { t: 'boss', b: 'hargen' }] };
-  if (k === 'calderap') return { name: '✦ 과거의 칼데라 (히든)', band: 't_caldera', maps: [], narr: ['칼데라 — 그러나 지금이 아닌 언젠가의.', '구멍 위로 무언가 둥둥 떠 있다. 가까이 갈수록 속이 뒤집힌다.'], hidden8: true, seq: [{ t: 'boss', b: 'dedura' }] };
+    rows: [[{ t: 'fight', ms: 'pass', src8: 'hargen0a', empty: true }], [{ t: 'fight', ms: 'pass', src8: 'hargen0b', empty: true }], [{ t: 'boss', b: 'hargen' }, { t: 'stairs' }]] };
+  if (k === 'calderap') return { name: '✦ 과거의 칼데라 (히든)', band: 't_caldera', maps: [], narr: ['칼데라 — 그러나 지금이 아닌 언젠가의.', '구멍 위로 무언가 둥둥 떠 있다. 가까이 갈수록 속이 뒤집힌다.'], hidden8: true, rows: [[{ t: 'fight', ms: 'open', src8: 'calderap' }], [{ t: 'boss', b: 'dedura' }, { t: 'stairs' }]] };
   return null;
 }
 
 // ---------- 손님 · 항복 (판마다) ----------
-function r8GuestSpawn(W){
+function r8GuestSpawn(W, n){
   const R = R8S(); if (!W || !R) return; R.flags = R.flags || {}; const hero = W.units.find(u => u.side === 0 && u.hero) || W.units.find(u => u.side === 0); if (!hero) return;
   const spawn = (key, tag) => { const d = foe8(key, R.f); const p = { ...fromDesign({ ...clone(d), side: 0, traits: (d.traits || []).filter(t => t !== '보스') }, 0), id: uid(), summon: true, r8guest: tag, x: hero.x + 0.6, y: hero.y + 0.4 }; lockIdentity(p); S.units.push(p); const u = addUnit(W, p); u.summon = true; u.r8guest = tag; logEv(W, { k: 'r8', s: `🤝 ${p.name} — 이번 싸움을 함께한다`, c: 'good', vis: true }); return u; };
   if (R.flags.rosinaHelp > 0){ R.flags.rosinaHelp--; spawn('로지나 (손님)', 'rosina'); }
   if (R.flags.shedorHelp > 0){ R.flags.shedorHelp--; spawn('배신자 셰도르', 'shedor'); }
+  // 페흐토 — 4층 뒤 떠돌이 · 가끔 보통 싸움에 끼어듦 (죽였거나 · 동료거나 · 죽었으면 안 나옴)
+  if (n && n.t === 'fight' && !n.champ && R.f >= 4 && !R.flags.pehtoDead && !R.party.some(p => p.name === '페흐토') && !R.dead.includes('페흐토') && Math.random() < 0.04){ spawn('페흐토', 'pehto'); logEv(W, { k: 'r8', s: '청염이 번진다 — 떠돌이 기사 페흐토가 이쪽 편에 선다. "이번만이다."', c: 'good', vis: true }); }
 }
+// 노라를 쓰러뜨림 (퇴로가 막혀 도망치지 못함) — 상품 모두 · 다시 안 나옴
+function r8NoraLoot(rew){ const R = R8S(); R.gold += 120; for (const p of R.party) if (p.ammo) p.ammoLeft = p.ammo; const L = R.party.filter(p => /총|활|저격|소총|권총/.test(p.weapon || '')); for (const p of L){ p.ov = p.ov || {}; p.ov.atk = Math.round((p.ov.atk != null ? +p.ov.atk : statsOf({ ...p, ov: {} }, rules).atk) * 1.15); }
+  for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, Math.round((p.hpNow != null ? p.hpNow : mx) + mx * 0.4)); }
+  rew.push('노라의 짐 — 👛 120 · 탄 가득 · 귀한 총 (사수 ' + L.length + '명 공격 +15%) · 약 (모두 40% 회복)'); }
 FOE8['로지나 (손님)'] = { key: '로지나 (손님)', name: '로지나', side: 1, ref: 'C-028', tier: 3, cls: '기동', role: '공격수', weapon: '단검', height: 1.75, weight: 60, nv: true, nvG: 'A', ov: { hp: 260, atk: 40 }, traits: ['회피A', '속력A', '야시'], active: ['도약'], tactic: '단달로의 시녀 — 위험하면 튐', note: '단달로의 부하이자 파트너 · 마족' };
 function r8GuestTick(W){
   for (const u of W.units){
+    if (u.anchor8 && u.alive){ u.x = u.anchor8.x; u.y = u.anchor8.y; u.vx = 0; u.vy = 0; if (u.kb) u.kb = null; }   // 진지 설비는 박혀 있음 (밀려도 제자리)
+    if (u.side === 1 && u.name === '페흐토' && !u.alive && u.gone !== 'surr' && !u.r8drop){ u.r8drop = 1; R8S().flags.pehtoDead = 1;   // 죽이면 투구 · 망토 갑주 (고급) — 검은 쓰러질 때 떨어짐
+      try { dropItem(W, u, 'helm', '페흐토의 투구', { mat: '판금', tier: 3, dur: 100, label: '페흐토의 투구 (고급)' }, 'pehto'); dropItem(W, u, 'armor', '페흐토의 망토 갑주', { mat: '사슬', tier: 3, dur: 100, label: '페흐토의 망토 갑주 (고급)' }, 'pehto'); } catch (e) {}
+      logEv(W, { k: 'r8', s: '페흐토가 쓰러졌다. 청염이 꺼진 투구와 망토가 바닥에 남는다.', c: 'dim', vis: true }); }
     if (u.r8guest === 'rosina' && u.alive && !u.gone && u.hp / u.max < 0.35){ try { leaveMap(W, u, 'down'); } catch (e) { u.alive = false; u.gone = 'left'; } logEv(W, { k: 'r8', s: '로지나 — "위험하면 튄다고 했지?" (도망쳤다)', c: 'dim', vis: true }); }
     if (u.r8surr && u.alive && !u.gone && u.hp / u.max < 0.22){ const left = W.units.filter(o => o.side === 1 && o.alive && o !== u).length; if (u.r8surr.last && left) continue;
       u.alive = false; u.gone = 'surr'; u.order = null; u.act = null; W.r8.surr = { ref: u.ref, key: u.r8surr.key, name: u.name }; logEv(W, { k: 'r8', s: `🏳 ${u.name} — 무기를 내려놓는다. 항복.`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '항복', c: 'h', t0: W.t }); try { checkEnd(W); } catch (e) {} } }
@@ -108,7 +124,7 @@ r8T('ahae', [{ t: '사람이네? 오랜만이다. 술 있냐?', name: '아해', 
 // MS 판을 만든 뒤: 구석에 NPC 하나 (보스 · 정예 · 칼데라 · 지나가기 빼고 28%)
 function r8NpcPlace(n, W){
   const R = R8S(), F = F8[R.f] || {}, C = S.camp; if (!W || !C || n.t !== 'fight' || n.ms === 'open' || n.champ || n.empty) return;
-  if (n.npc8 === undefined){ n.npc8 = null; if (Math.random() < 0.28){ const have = new Set(R.party.map(p => p.name)); const L = Object.entries(MNPC8).filter(([k, M]) => R.f >= M.d[0] && R.f <= M.d[1] && (!M.themes || M.themes.includes(F.theme)) && !(R.npcGone || []).includes(k) && !(k === 'ahae' && have.has('아해')) && !(k === 'marie' && have.has('마리')) && !(k === 'nora' && R.flags.noraDead)).map(([k, M]) => [k, M.w]); if (L.length) n.npc8 = r8WPick(L); } save(); }
+  if (n.npc8 === undefined){ n.npc8 = null; if (Math.random() < 0.28){ const have = new Set([...R.party.map(p => p.name), ...R.dead]);   /* 죽은 단독 개체는 다시 안 나옴 */ const L = Object.entries(MNPC8).filter(([k, M]) => R.f >= M.d[0] && R.f <= M.d[1] && (!M.themes || M.themes.includes(F.theme)) && !(R.npcGone || []).includes(k) && !(k === 'ahae' && have.has('아해')) && !(k === 'marie' && have.has('마리')) && !(k === 'nora' && R.flags.noraDead)).map(([k, M]) => [k, M.w]); if (L.length) n.npc8 = r8WPick(L); } save(); }
   const k = n.npc8; if (!k) return; const M = MNPC8[k], m = W.map;
   // 들어선 곳에서 25 ~ 50% 거리 · 둘레가 빈 바닥
   const inn = (MAPS8[S.art8] || {}).in || [0, 0, 1, 1], cx = (inn[0] + inn[2]) / 2, cy = (inn[1] + inn[3]) / 2, cand = [];
@@ -118,13 +134,29 @@ function r8NpcPlace(n, W){
   (C.stages[1] = C.stages[1] || {}).enc = E; if (M.prop){ const MM = MAPS8[S.art8]; if (MM){ MM.props = (MM.props || []).filter(p => !p.npc8); MM.props.push({ id: M.prop, x: c.x - 0.5, y: c.y - 1.6, w: 2, h: 1, decor: true, npc8: true }); } }
   if (k === 'ahae' && Math.random() < 0.5){ C.stages[1].enc = null; const d = foe8('아해', R.f); const p = { ...fromDesign(clone(d), 1), id: uid(), x: c.x + 0.5, y: c.y + 0.5 }; lockIdentity(p); S.units.push(p); const u = addUnit(W, p); u.r8surr = { key: '아해', last: true }; logEv(W, { k: 'r8', s: '도깨비 아해가 적 쪽에 섞여 있다 — 마지막에 혼자 남아 빈사면 항복할지도.', c: 'dim', vis: true }); }
 }
+function r8FollowTick(W){   // 명세 A9: 비전투 맵 — 대장이 방 · 길로 들어서면 모두 들어선 것으로 침
+  if (W.over || W.r8fol) return; const h = W.units.find(u => u.side === 0 && u.hero); if (!h || (h.gone !== 'up' && h.gone !== 'down')) return;
+  if (W.units.some(u => u.side === 1 && u.alive)) return; W.r8fol = 1;
+  const L = W.units.filter(u => u.side === 0 && u.alive && !u.down && !u.r8guest); for (const u of L) leaveMap(W, u, h.gone);
+  if (L.length) logEv(W, { k: 'r8', s: '남은 이들도 함께 넘어간다.', c: 'dim', vis: true }); try { checkEnd(W); } catch (e) {}
+}
 function r8NpcTick(W){
+  r8FollowTick(W); r8SealTick(W);
   const C = S.camp, E = C && C.stages && C.stages[1] && C.stages[1].enc; if (!E || !E.r8) return;
   if (E.st === 'hidden' && W.cleared){ E.st = 'sit'; logEv(W, { k: 'r8', s: `${MNPC8[E.r8].who} — 숨어 있다가 나온다`, c: 'dim', vis: true }); campBarRender(true); }
 }
 
 // ---------- 도감 조우 장면 카드 (S 칸) ----------
 const CARD8 = /*CARDS8*/[];
+const CARDATLAS8 = /*CARDATLAS8*/{};   // id → [묶음, x, y, w, h, 묶음 너비, 묶음 높이]
+// 대화 줄 { card: id } → 가운데 큰 그림 (talkShow 가 줄마다 부름 · 없는 줄이면 숨김)
+function r8CardShow(L){
+  const T0 = $('talk'); if (!T0) return; let el = $('tkCard8'); const a = L && L.card && CARDATLAS8[L.card];
+  if (!a){ if (el) el.hidden = true; return; }
+  if (!el){ el = document.createElement('div'); el.id = 'tkCard8'; el.style.cssText = 'position:absolute;left:50%;top:5%;transform:translateX(-50%);background-repeat:no-repeat;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.6);pointer-events:none;z-index:0'; T0.insertBefore(el, T0.firstChild); }
+  const H = Math.max(120, Math.min(T0.clientHeight * 0.6, (T0.clientWidth * 0.9) * a[4] / a[3])), k = H / a[4];
+  el.style.height = H + 'px'; el.style.width = (a[3] * k) + 'px'; el.style.backgroundImage = `url(art/card/atlas${a[0]}.webp)`; el.style.backgroundSize = `${a[5] * k}px ${a[6] * k}px`; el.style.backgroundPosition = `${-a[1] * k}px ${-a[2] * k}px`; el.hidden = false;
+}
 // 카드 이름으로 갈래를 어림: 쉼 · 거래 · 보물 · 습격 · 망자 · 신성 · 문 · 기묘
 function r8CardKind(c){
   const s = c.name + ' ' + (c.txt || '');
@@ -151,7 +183,7 @@ function r8Card(n){
   let c = n.card8 && CARD8.find(x => x.id === n.card8);
   if (!c){ const L = CARD8.filter(x => !R.cardSeen.includes(x.id)); c = r8Pick(L.length ? L : CARD8); n.card8 = c.id; R.cardSeen.push(c.id); save(); }
   const k = r8CardKind(c), T = CARD_TXT8[k]; R.cardNow = { id: c.id, k, name: c.name };
-  r8Hide(); talkLines([{ narr: c.name + (c.txt ? ' — ' + c.txt : ''), cg: '../card/' + c.id }, { narr: T[0], cg: '../card/' + c.id }, { ask: T[1].map(([a, b]) => [a, '!r8:' + b]) }]);
+  r8Hide(); talkLines([{ narr: c.name + (c.txt ? ' — ' + c.txt : ''), card: c.id }, { narr: T[0], card: c.id }, { ask: T[1].map(([a, b]) => [a, '!r8:' + b]) }]);
 }
 
 // ---------- 이름 있는 만남 (S 칸 · x:) ----------
@@ -160,7 +192,7 @@ const XENC8 = [   // [키, 무게, 층 범위]
   ['reeds', 0.8, 6, 14], ['pehtoR', 0.45, 4, 28], ['lakeruin', 0.35, 5, 20], ['gamyu', 0.3, 12, 26], ['spiral', 0.55, 4, 28], ['dandal', 0.35, 6, 22], ['bell', 0.7, 2, 20], ['duck', 0.4, 8, 26], ['macaroni', 0.35, 10, 28], ['yellowd', 0.45, 11, 19], ['tehera2', 0.2, 12, 29], ['aitem', 0.4, 6, 26]];
 const cg8 = k => ({ cg: 's_' + k, cgw: true });
 function r8XEvent(n, k){
-  const R = R8S(); R.flags = R.flags || {}; r8Hide(); const go = a => '!r8:x_' + a;
+  const R = R8S(); R.flags = R.flags || {}; r8Hide(); const go = a => '!r8:x_' + a; if (!(R.npcDone = R.npcDone || []).includes('x:' + k)) R.npcDone.push('x:' + k); save();
   const EV = {
     firewood: [{ narr: '벽난로가 있는 방. 수녀와 악마가 나란히 앉아, 말없이 장작에 무언가를 넣고 있다.', ...cg8('firewood') }, { narr: '불 속에서 — 종이 같은 것이 타며 누군가의 웃음소리가 난다.', ...cg8('firewood') }, { ask: [['불가에 앉는다', go('fireSit')], ['무엇을 넣는지 들여다본다', go('fireLook')], ['조용히 나간다', '!r8:done']] }],
     lonely: [{ narr: '흑백의 체크 바닥. 의자 하나. 아무도 없다.', ...cg8('lonely') }, { narr: '의자가 — 누군가를 기다리는 것 같다.', ...cg8('lonely') }, { ask: [['누군가 앉는다', go('lonelySit')], ['아무도 앉지 않는다', '!r8:done']] }],
@@ -181,7 +213,7 @@ function r8XEvent(n, k){
     macaroni: [{ narr: '천막도 없는 서커스. 뿔 달린 광대가 칼을 저글링한다.', img: IMG8.macaroni }, { t: '관객이다! 관객이 왔어! 자, 한 판 — 맞히면 상품, 틀리면… 웃어 줘.', name: '광대 마카로니', img: IMG8.macaroni }, { ask: [['내기를 한다 (동전 30)', go('macBet')], ['광대를 친다 (보스)', go('macFight')], ['박수만 치고 간다', '!r8:done']] }],
     yellowd: [{ narr: '보라색 문 앞의 넓은 터. 바닥이 노랗게 그을렸다 — 노란악마들의 영역.', ...cg8('abyss5') }, { narr: '노란 뿔의 악마들이 일제히 고개를 든다. 사냥감을 본 눈이다.' }, { ask: [['싸운다 (정예)', go('yellowFight')], ['도망친다 (한 명 다칠 수도)', go('yellowRun')]] }],
     tehera2: [{ narr: '우주 한가운데 바위 다리. 잠자리 같은 날개의 여인이 다리 끝에 앉아 있다.', cg: 'bg_tehera', cgw: true }, { t: '…같이 가자고?', name: '테헤라' }, { ask: [['같이 가자', '!r8:tehera1'], ['지나간다', '!r8:done']] }],
-    aitem: [{ narr: '금빛 아치가 끝없이 이어진 회랑.', cg: 'bg_aitem', cgw: true }, { narr: '거대한 몸, 목에 빛나는 보석을 단 누군가가 수수께끼를 낸다 — 아템.', cg: '../card/ENC-riddle' }, { t: '아침엔 넷, 낮엔 둘, 밤엔 셋. 그런데 굴에선 몇이지?', name: '아템' }, { ask: [['"하나"', go('riddleA')], ['"없어"', go('riddleB')], ['"세는 사람 마음"', go('riddleC')]] }] };
+    aitem: [{ narr: '금빛 아치가 끝없이 이어진 회랑.', cg: 'bg_aitem', cgw: true }, { narr: '거대한 몸, 목에 빛나는 보석을 단 누군가가 수수께끼를 낸다 — 아템.', card: 'ENC-riddle' }, { t: '아침엔 넷, 낮엔 둘, 밤엔 셋. 그런데 굴에선 몇이지?', name: '아템' }, { ask: [['"하나"', go('riddleA')], ['"없어"', go('riddleB')], ['"세는 사람 마음"', go('riddleC')]] }] };
   talkLines(EV[k] || EV.firewood);
 }
 // 만남 목록에 넣기: x: 와 카드 c:
@@ -189,13 +221,60 @@ ENC8.push(...XENC8.map(([k, w, a, b]) => ['x:' + k, w, a, b]), ['c:card', 7, 2, 
 for (const e of ENC8) if (e[0] === 't:pehto' || e[0] === 't:tehera') e[1] = 0;   // 유적의 페흐토 · 테헤라 맵으로 옮김
 
 // ---------- 행동 ----------
+// 판 안 (MS 싸움판 · 맵 위 NPC 와 대화 중) 인지 — 그러면 대화가 끝나도 지도로 가지 않음 · 영입은 판에 바로
+function r8InMap(){ return !!(world && world.r8 && !world.over && S.camp && S.camp.s === 1); }
+function r8PutIn(p){ lockIdentity(p); const hero = world.units.find(u => u.side === 0 && u.alive && u.hero) || world.units.find(u => u.side === 0 && u.alive); p.x = (hero ? hero.x : 2) + 0.5; p.y = (hero ? hero.y : 2) + 0.5; S.units.push(p); const u = addUnit(world, p); logEv(world, { k: 'r8', s: `🤝 ${p.name} — 일행에 합류`, c: 'good', vis: true }); return u; }
+// ---------- v8.7.1.1 봉인된 출구 (A4 퍼즐) ----------
+function r8Seals(W){
+  const m = W.map, al = W.units.filter(u => u.side === 0 && u.alive); if (!al.length) return; const h = al.find(u => u.hero) || al[0];
+  const d = new Int32Array(m.W * m.H).fill(-1), q = [[Math.floor(h.x), Math.floor(h.y)]]; d[q[0][1] * m.W + q[0][0]] = 0;
+  for (let i = 0; i < q.length; i++){ const [x, y] = q[i]; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]){ const a = x + dx, b = y + dy; if (a < 1 || b < 1 || a >= m.W - 1 || b >= m.H - 1 || d[b * m.W + a] >= 0 || m.t[b * m.W + a] !== 0) continue; d[b * m.W + a] = d[y * m.W + x] + 1; q.push([a, b]); } }
+  const far = Math.max(...d); const L = q.filter(([x, y]) => d[y * m.W + x] > far * 0.25); const S0 = [];
+  for (let k = 0; k < 600 && S0.length < 3; k++){ const c = L[Math.floor(Math.random() * L.length)]; if (!c) break; const gap = k < 200 ? 7 : k < 400 ? 5 : 3; if (S0.some(o => Math.hypot(o.x - c[0], o.y - c[1]) < gap)) continue;   /* 좁은 맵은 문양 사이를 좁힘 */ if (W.stairs && Math.hypot(W.stairs.x - c[0], W.stairs.y - c[1]) < 4) continue; S0.push({ x: c[0] + 0.5, y: c[1] + 0.5, on: false }); }
+  if (S0.length < 3) return; W.r8.seals = S0; W.exitLock = true;
+  logEv(W, { k: 'r8', s: '🔮 출구가 봉인되어 있다 — 바닥의 빛나는 문양 셋을 밟으면 열린다 (적은 아직 자고 있다)', c: 'dim', vis: true });
+}
+function r8SealTick(W){
+  const L = W.r8 && W.r8.seals; if (!L || W.r8.sealOpen) return; if (W.cleared){ W.r8.sealOpen = 1; return; }
+  for (const s of L){ if (s.on) continue; const near = W.units.some(u => u.side === 0 && u.alive && Math.hypot(u.x - s.x, u.y - s.y) <= 0.8); if (!near){ s.since = null; continue; } if (s.since == null) s.since = W.t; if (W.t - s.since >= 0.8){ s.on = true; logEv(W, { k: 'r8', s: `문양 하나가 켜졌다 (${L.filter(o => o.on).length}/${L.length})`, c: 'good', vis: true }); } }
+  if (L.every(o => o.on)){ W.r8.sealOpen = 1; W.exitLock = false; logEv(W, { k: 'r8', s: '🔓 봉인이 풀렸다 — 출구가 열렸다', c: 'good', vis: true }); try { campBarRender(true); } catch (e) {} }
+}
+function r8DrawI(Wd, ox, oy, ts){
+  const L = Wd.r8 && Wd.r8.seals; if (!L) return; const t = performance.now() / 500;
+  for (const s of L){ const x = ox + s.x * ts, y = oy + s.y * ts, r = ts * 0.55; ctx.save(); ctx.lineWidth = Math.max(1.5, ts * 0.07);
+    ctx.strokeStyle = s.on ? 'rgba(250,210,120,.95)' : `rgba(170,130,255,${0.45 + 0.3 * Math.sin(t + s.x)})`; ctx.fillStyle = s.on ? 'rgba(250,210,120,.25)' : 'rgba(150,110,255,.12)';
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill(); ctx.stroke(); ctx.beginPath(); for (let i = 0; i < 6; i++){ const a = i * 1.047 + (s.on ? 0 : t * 0.3); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * r * 0.8, y + Math.sin(a) * r * 0.8); } ctx.stroke(); ctx.restore(); }
+}
+// ---------- v8.7.1.1 진지 설비 (A7): 팩션마다 보급한 포대 — 움직이지 않는 적 (같은 사격 규칙 · 부술 수 있음) ----------
+const TURRET8 = { iron: ['철벽 포대', '소총', '판금'], urban: ['기관포 진지', '소총', '판금'], mech: ['기계 포탑', '소총', '판금'], arc: ['아크 방어탑', '마법', null], odd: ['기묘한 방어 장치', '마법', null], grim: ['생체 포탑', '총', '가죽'], camp: ['쇠뇌 노포', '활', null] };
+function r8Turrets(W){
+  const R = R8S(), F = F8[R.f] || {}, T = THEME8[F.theme] || {}, D = TURRET8[T.fort]; const M = MAPS8[S.art8]; if (!D || !M) return 0;
+  const m = W.map, inn = M.in || [0, 0, 1, 1], cx = (inn[0] + inn[2]) / 2, cy = (inn[1] + inn[3]) / 2; let n = 0;
+  const dIn = q => Math.hypot(q.x + q.w / 2 - cx, q.y + q.h / 2 - cy); let P = (M.props || []).filter(q => q.big).slice(0, 2);
+  if (!P.length) P = (M.props || []).filter(q => q.id && q.id !== 'wall' && !q.decor && !q.npc8).sort((a, b) => dIn(b) - dIn(a)).slice(0, 1);   // 큰 설비를 못 놓은 좁은 진지: 가장 먼 바리케이드 뒤
+  if (!P.length && M.out) P = [{ x: M.out[0] - 1, y: M.out[1] - 1, w: 2, h: 2 }];   // 소품이 하나도 없는 진지: 출구를 지키는 설비
+  for (const p of P){
+    let best = null; for (let y = p.y - 1; y <= p.y + p.h; y++) for (let x = p.x - 1; x <= p.x + p.w; x++){ if (x < 1 || y < 1 || x >= m.W - 1 || y >= m.H - 1 || m.t[y * m.W + x] !== 0) continue; if (W.units.some(u => u.alive && Math.hypot(u.x - x - 0.5, u.y - y - 0.5) < 0.9)) continue; const dd = Math.hypot(x - cx, y - cy); if (!best || dd > best.d) best = { x, y, d: dd }; }
+    if (!best) continue;
+    const d = { key: D[0], name: D[0], side: 1, tier: 3, cls: '원거리', role: '사수', weapon: D[1], ammo: 999, height: 1.5, weight: 900, sizeCls: '대형', nv: true, nvG: 'A', ov: { hp: 240 + R.f * 10, atk: 24 + R.f, spd: 0.01 }, traits: ['갑피'], tactic: '진지 설비 — 움직이지 않음', note: `${T.name || ''} 팩션이 보급한 설비`, turret8: true, ...(D[2] ? { gear: { 몸: { name: D[0] + ' 장갑', mat: D[2], tier: 3 } } } : {}) };
+    const u0 = { ...fromDesign(d, 1), id: uid(), x: best.x + 0.5, y: best.y + 0.5 }; try { lockIdentity(u0); } catch (e) {} S.units.push(u0); const u = addUnit(W, u0); u.turret8 = true; u.mass = Math.max(u.mass || 0, 2000); u.anchor8 = { x: u.x, y: u.y }; n++; }
+  if (n) logEv(W, { k: 'r8', s: `⚙ 적 진지에 설비 ${n} — ${D[0]} (움직이지 않음 · 부술 수 있음)`, c: 'dim', vis: true });
+  return n;
+}
+// 판을 만든 뒤 (r8BattleHook 끝에서): 손님 · 맵 위 NPC · 항복할 수 있는 적 · 빈 회랑
+function r8HookI(n, W){
+  if (!W || !W.r8) return; r8GuestSpawn(W, n); r8NpcPlace(n, W);
+  if (n.surr) for (const u of W.units) if (u.side === 1 && u.name === n.surr){ u.r8surr = { key: n.surr }; }
+  if (n.empty){ W.exitLock = false; W.r8.pass = true; logEv(W, { k: 'r8', s: '…아무도 없다. 발소리만 울린다.', c: 'dim', vis: true }); }
+  if (n.ms === 'pass' && !n.empty && !n.champ && ((n.seed || 7) % 100) < 35) r8Seals(W);   // v8.7.1.1 봉인된 출구
+  if (n.ms === 'fort' && n.t === 'fight') r8Turrets(W);   // v8.7.1.1 진지 설비
+}
 function r8JoinNow(key, txt, then){   // 판 안이면 판에 바로 (여정 동료로 셈) · 판 밖이면 r8Recruit
   const R = R8S(), d = FOE8[key] ? foe8(key, Math.max(2, R.f - 4)) : null;
   if (!d){ then && then(); return; }
   if (R.party.length >= R8.cap){ talkLines([{ narr: txt || '' }, { box: `동료가 가득 차서 (${R8.cap}) 함께 갈 수 없었다.` }, { go: '!r8:then' }]); R8T = then; return; }
   const p = { ...fromDesign({ ...clone(d), side: 0, traits: (d.traits || []).filter(t => t !== '보스') }, 0), id: uid(), side: 0 }; lockIdentity(p);
-  if (world && world.r8 && !world.over){ const hero = world.units.find(u => u.side === 0 && u.hero) || world.units.find(u => u.side === 0); p.x = (hero ? hero.x : 2) + 0.5; p.y = (hero ? hero.y : 2) + 0.5; S.units.push(p); addUnit(world, p); }
-  else R.party.push(p);
+  if (r8InMap()) r8PutIn(p); else R.party.push(p);
   save(); talkLines([{ narr: txt || `${p.name} — 동료가 되었다.` }, { box: `${p.name} 합류` }, { go: '!r8:then' }]); R8T = then;
 }
 const r8HealAll = k => { const R = R8S(); for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, Math.round((p.hpNow != null ? p.hpNow : mx) + mx * k)); } if (world && world.r8) for (const u of world.units) if (u.side === 0 && u.alive) u.hp = Math.min(u.max, u.hp + u.max * k); };
@@ -217,7 +296,7 @@ Object.assign(X8, {
     r8Say(L, () => campBarRender(true)); },
   mnTentNurse(){ const R = R8S(); if (R.party.some(p => p.ref === 'C-018') || R.flags.nurseHired){ r8Say([{ t: '그 애는 이미 당신들이랑 갔잖아요.', name: '간호사장', img: IMG8.lumi }], () => campBarRender(true)); return; } R.flags.nurseHired = 1;
     const d = DESIGN_DEFAULTS.find(x => x.ref === 'C-018' && x.side === 0); if (!d){ r8Say([{ narr: '간호사는 지금 바쁘다.' }], () => campBarRender(true)); return; }
-    const p = { ...fromDesign(d, 0), id: uid(), side: 0 }; lockIdentity(p); if (world && world.r8){ const h = world.units.find(u => u.side === 0 && u.alive); p.x = (h ? h.x : 2) + 0.5; p.y = (h ? h.y : 2) + 0.5; S.units.push(p); addUnit(world, p); } else R.party.push(p);
+    const p = { ...fromDesign(d, 0), id: uid(), side: 0 }; lockIdentity(p); if (r8InMap()) r8PutIn(p); else R.party.push(p);
     r8Say([{ t: '데려가요. 대신 다치게 하면 가만 안 둬요.', name: '간호사장', img: IMG8.lumi }, { box: `${p.name} 합류` }], () => campBarRender(true)); },
   mnRosinaHelp(){ const R = R8S(); R.flags.rosinaHelp = 2; r8Say([{ t: '약속~ 위험하면 튈 거야.', name: '로지나', img: IMG8.rosina2 }, { box: '로지나 — 다음 두 싸움을 함께함 (체력이 35% 아래면 도망)' }], () => campBarRender(true)); },
   mnRosinaHouse(){ const R = R8S(); R.flags.dandal = 1; r8Say([{ t: '주인님 댁? 좋아, 다음에 길이 나면 데려가 줄게.', name: '로지나', img: IMG8.rosina3 }, { box: '다음 S 칸 하나가 단달로의 저택이 됨' }], () => campBarRender(true)); },
@@ -228,7 +307,7 @@ Object.assign(X8, {
   mnNoraDrug(){ const R = R8S(); if (R.gold < 30) return r8Say([{ t: '빈손이네.', name: '노라', img: IMG8.nora }], () => campBarRender(true)); R.gold -= 30; r8HealAll(0.4); const L = [{ box: '모두 40% 회복' }]; if (Math.random() < 0.25){ const p = r8Who(); r8Curse(p, '약 기운', 5); L.push({ narr: `${p.name} 의 손이 떨린다.` }, { box: `${p.name} — 최대 체력 −5 (약 기운)` }); } r8Say(L, () => campBarRender(true)); },
   mnNoraFight(){ const R = R8S(), E = S.camp.stages[1] && S.camp.stages[1].enc; if (Math.random() < 0.03){ R.flags.noraDead = 1; if (E) E.st = 'joined'; r8Say([{ narr: '퇴로가 모두 막혀 있었다. 노라가 처음으로 웃지 않는다.' }, { box: '노라 — 도망치지 못함 (싸움)' }], () => { const n = r8Node(R.at); world = null; r8XFight('x_nora', n && n.src8, { noraLoot: true }); }); return; }
     if (E){ E.st = 'joined'; E.x = -9; } r8Say([{ narr: '손을 뻗는 순간 — 노라는 그림자 속으로 뿅 사라졌다. 다음에 태연하게 나타날 것이다.' }], () => campBarRender(true)); },
-  mnAiten(){ const n = r8Node(R8S().at) || { id: 'x' }; r8ShopPanel(n); },
+  mnAiten(){ const C = S.camp, E = C && C.stages && C.stages[1] && C.stages[1].enc; if (E) E.stock = E.stock || null; const n = E || { id: 'x' }; paused = true; r8ShopPanel(n); },
   // 항복
   surrJoin(){ const R = R8S(), S8 = R.flags.surr; R.flags.surr = null; if (S8 && S8.key) { const cont = R8T; r8JoinNow(S8.key, S8.key === '아해' ? '아해가 담배를 비벼 끈다. "심심하던 참이다."' : '"…좋다. 이 검, 당분간 너희에게 빌려주지."', cont); return; } const f = R8T; R8T = null; f && f(); },
   surrLet(){ const R = R8S(); R.flags.surr = null; const f = R8T; R8T = null; talkLines([{ narr: '그는 아무 말 없이 어둠 속으로 사라졌다.' }, { go: '!r8:then' }]); R8T = f; },
