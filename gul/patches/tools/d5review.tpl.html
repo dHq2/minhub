@@ -1,0 +1,164 @@
+<title>굴의 전투판 그림 검토표</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 지도방 작업대: 위에 요약 · 확인받을 것 · 층별 배치, 아래에 묶음별 그림 카드. 상태 띠로 걸러 봄. d5review.tpl.html %VER% */
+:root {
+  --bg: #eef0f2; --panel: #f9fafb; --ink: #1d232b; --mute: #5d6773; --line: #d4d9df;
+  --torch: #a85a14; --torch-soft: #f4e3cf;
+  --in: #2f7a4a; --in-bg: #dcefe2; --part: #9a6a07; --part-bg: #f6ebcc; --no: #7a4652; --no-bg: #f0dfe3; --miss: #b02a2a; --miss-bg: #f6d7d7;
+  --f-disp: "Gowun Batang", "Nanum Myeongjo", serif; --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151a20; --panel: #1d242c; --ink: #e5e9ee; --mute: #9aa5b1; --line: #313b46; --torch: #e8a25a; --torch-soft: #3a2b1b;
+  --in: #7fd09b; --in-bg: #1f3a29; --part: #e9c46a; --part-bg: #3a3119; --no: #e3a3b1; --no-bg: #3a2329; --miss: #ff8f8f; --miss-bg: #462020; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151a20; --panel: #1d242c; --ink: #e5e9ee; --mute: #9aa5b1; --line: #313b46; --torch: #e8a25a; --torch-soft: #3a2b1b;
+  --in: #7fd09b; --in-bg: #1f3a29; --part: #e9c46a; --part-bg: #3a3119; --no: #e3a3b1; --no-bg: #3a2329; --miss: #ff8f8f; --miss-bg: #462020; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--f-body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px }
+header { display: grid; gap: 10px }
+.ver { font: 500 12px/1 var(--f-mono); color: var(--torch); letter-spacing: .06em }
+h1 { font: 700 clamp(26px, 4vw, 36px)/1.2 var(--f-disp); margin: 0; text-wrap: balance }
+.lead { margin: 0; color: var(--mute); max-width: 68ch }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px }
+.filters button { font: 500 14px/1 var(--f-body); border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 9px 14px; border-radius: 999px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center }
+.filters button b { font: 500 13px/1 var(--f-mono); font-variant-numeric: tabular-nums }
+.filters button[aria-pressed="true"] { border-color: var(--torch); background: var(--torch-soft) }
+.filters button:focus-visible, nav a:focus-visible { outline: 2px solid var(--torch); outline-offset: 2px }
+.dot { width: 9px; height: 9px; border-radius: 50% }
+.dot.in { background: var(--in) } .dot.part { background: var(--part) } .dot.no { background: var(--no) } .dot.miss { background: var(--miss) }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; min-width: 0 }
+.box h2 { font: 700 20px/1.3 var(--f-disp); margin: 0 }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px }
+ol.q { margin: 0; padding-left: 1.3em; display: grid; gap: 6px }
+.tbl { overflow-x: auto }
+table { border-collapse: collapse; width: 100%; font-size: 14px }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top }
+th { font-weight: 600; color: var(--mute); font-size: 12px; letter-spacing: .04em }
+td.fl { font: 500 13px var(--f-mono); white-space: nowrap; color: var(--torch) }
+nav { display: flex; flex-wrap: wrap; gap: 6px 16px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding-block: 10px; z-index: 5; border-bottom: 1px solid var(--line) }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg) }
+nav a { color: var(--ink); text-decoration: none; font-size: 14px }
+nav a b { font: 500 12px var(--f-mono); color: var(--mute) }
+section { display: grid; gap: 14px; scroll-margin-top: 60px }
+section h2 { font: 700 22px/1.3 var(--f-disp); margin: 0 }
+.ct { font: 500 13px var(--f-mono); color: var(--mute) }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 268px), 1fr)); gap: 14px }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; min-width: 0 }
+.card.wide { grid-column: 1 / -1 }
+.ph { aspect-ratio: 4 / 3; background: var(--bg); display: grid; place-items: center; max-width: 100% }
+.ph img { max-height: 100%; max-width: 100%; object-fit: contain }
+.nopic { color: var(--mute); font-size: 13px }
+.strip { display: flex; gap: 6px; overflow-x: auto; padding: 8px; background: var(--bg) }
+.strip img { height: 150px; width: auto; flex: none; border-radius: 4px }
+.bd { padding: 12px 14px 14px; display: grid; gap: 6px; align-content: start; min-width: 0 }
+.hd { display: flex; justify-content: space-between; align-items: center; gap: 8px }
+.no { font: 500 13px var(--f-mono); color: var(--torch) }
+.pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px }
+.pill.in { color: var(--in); background: var(--in-bg) } .pill.part { color: var(--part); background: var(--part-bg) } .pill.no { color: var(--no); background: var(--no-bg) } .pill.miss { color: var(--miss); background: var(--miss-bg) }
+.card h3 { font: 600 14px/1.4 var(--f-body); margin: 0; overflow-wrap: anywhere; color: var(--mute) }
+.what { margin: 0; font-size: 14px }
+.memo { margin: 0; font-size: 13px; color: var(--torch); background: var(--torch-soft); padding: 6px 8px; border-radius: 6px }
+dl { margin: 2px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 13px }
+dt { color: var(--mute); white-space: nowrap } dd { margin: 0; overflow-wrap: anywhere }
+.card[hidden] { display: none !important }
+@media (prefers-reduced-motion: no-preference) { .filters button { transition: background .15s, border-color .15s } }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="ver">굴의 전투판 · 드라이브 5기 그림 검토 %VER% · 2026-10-19</span>
+  <h1>그림 249장, 하나씩 본 결과</h1>
+  <p class="lead">그림마다 무엇인지, 파일 이름에 적힌 메모, 지금 판에 들어갔는지, 어디에 넣으면 좋을지를 적었습니다. 판에 들어갔는지는 이름으로 짐작하지 않고, 그림을 판에 실린 그림 129장과 픽셀로 맞대어 확인했습니다.</p>
+  <div class="filters" role="group" aria-label="판에 들어간 정도로 걸러 보기">
+    <button type="button" id="f-all" data-f="all" aria-pressed="true">전체 <b>249</b></button>
+    <button type="button" id="f-in" data-f="in" aria-pressed="false"><span class="dot in"></span>들어감 <b>%N_in%</b></button>
+    <button type="button" id="f-part" data-f="part" aria-pressed="false"><span class="dot part"></span>글만 있음 <b>%N_part%</b></button>
+    <button type="button" id="f-no" data-f="no" aria-pressed="false"><span class="dot no"></span>없음 <b>%N_no%</b></button>
+    <button type="button" id="f-miss" data-f="miss" aria-pressed="false"><span class="dot miss"></span>못 받음 <b>%N_miss%</b></button>
+  </div>
+  <p class="lead">글만 있음: 사건 · 인물 · 유물은 판에 있는데 이 그림이 붙지 않은 것 (예: 유물 18개는 이모지 아이콘, 노라 상인 · 야전병원 · 로지나 · 아해는 글만).</p>
+</header>
+
+<div class="two">
+  <div class="box">
+    <h2>넣기 전에 정해 주실 것</h2>
+    <ol class="q">
+      <li>벨 (천사 · 금발 · 양손 권총, 표정 18장) 은 판에 없는 인물입니다. 동료인지, NPC 인지, 어느 층에서 만나는지 알려 주세요.</li>
+      <li>새 묶음 여섯 (마리부족 6 · 불경 4 · 숲 4+3 · 심해 / 해양 유적 · 지하미궁 3 · 하르겐 3) 은 지금 30층 표에 자리가 없습니다. 새 층대로 끼울지, 곁가지 길 (히든 · 인카운터) 로 둘지 골라 주세요.</li>
+      <li>1층 리디자인 맵은 중세 골목 · 중세 폐허 (M78–M82) 를 1순위, 어두운 숲 (F12 · F24 · F25) 을 2순위로 제안합니다.</li>
+      <li>칼데라 둘 (F33 크게 늘인 맵 · 나가는 곳은 침대, F13 과거의 칼데라 · 히든보스) 은 몇 층 무렵에 나오면 될까요?</li>
+      <li>이름 맞추기: 판의 유물은 가뮤의 대검인데 그림 이름은 가무, 유물 그림 메모는 로켈의 갑옷인데 판의 초월자는 모켈입니다. 어느 쪽이 맞나요?</li>
+      <li>노먼 전직 (닥터 · 선봉장) 은 전직 기능이 아직 없습니다. 기능부터 만들지, 그림만 대화에 먼저 쓸지 정해 주세요.</li>
+      <li>치킨룸의 치킨 초상 (O53, 120×126) 은 드라이브에서 받아지지 않았습니다. 같은 그림을 한 번 더 올려 주시면 붙이겠습니다.</li>
+    </ol>
+  </div>
+  <div class="box">
+    <h2>층별로 더 넣을 맵</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>층</th><th>지금</th><th>더 넣을 그림</th></tr></thead>
+      <tbody>
+        <tr><td class="fl">1F</td><td>그림 맵 없음</td><td>리디자인 (위 3번)</td></tr>
+        <tr><td class="fl">2F</td><td>하수구 1 · 2</td><td>M96</td></tr>
+        <tr><td class="fl">3–4F</td><td>석회 · 몽환 1</td><td>T02–T04 · T08 · T09 · M36 · M37 · S04 호수 (친칠라)</td></tr>
+        <tr><td class="fl">5F</td><td>수정 1 · 2</td><td>T12</td></tr>
+        <tr><td class="fl">6–7F</td><td>마젠타 1 · 2</td><td>F22 · F23 · F36 · F38–F40 · M33 컷씬 · F06 / O29 젤리 엘리트</td></tr>
+        <tr><td class="fl">8–9F</td><td>요괴 1 · 도깨비</td><td>M64–M66 · M25–M27 · T01 갈대밭 (모란)</td></tr>
+        <tr><td class="fl">10F</td><td>레지나 (옛 그림)</td><td>F01 알현실 · F02 복도로 바꿈</td></tr>
+        <tr><td class="fl">11–12F</td><td>지옥 1 · 지옥계 2</td><td>M55 · M57 · M84 · M85</td></tr>
+        <tr><td class="fl">13–14F</td><td>마계 1 · 고딕 1</td><td>M53 · M54 · M06 · O09 · T05 · T06</td></tr>
+        <tr><td class="fl">15F</td><td>네오 마계 1 · 정령 광장</td><td>M14–M21 · M23</td></tr>
+        <tr><td class="fl">16F</td><td>정령계 B1</td><td>M71–M77 · O44</td></tr>
+        <tr><td class="fl">17F</td><td>기계천사 1</td><td>M11 · M12</td></tr>
+        <tr><td class="fl">18F</td><td>성전 1 · 성당 1</td><td>M44–M47</td></tr>
+        <tr><td class="fl">19F</td><td>로젤 바닥</td><td>F03 뒷배경 · F04 로딩 · O20 저주 무늬</td></tr>
+        <tr><td class="fl">20F</td><td>테이론 바닥</td><td>F07 연출 · F34 배경 · M92 첫 만남</td></tr>
+        <tr><td class="fl">21–22F</td><td>옥상 1 · 중화사이버 1</td><td>F27 · F28 · F29 · F31 · F32 · O26 전투단</td></tr>
+        <tr><td class="fl">23–24F</td><td>공성 1 · 야전 1</td><td>M08 · M09 · M61 · M62</td></tr>
+        <tr><td class="fl">25F</td><td>피바다 · 삼신 컷씬</td><td>O49–O51 초월자 대화</td></tr>
+        <tr><td class="fl">26F</td><td>차원 1 · 눈알 1</td><td>M90 · M91 · F14 · F16 · M67–M69 이계</td></tr>
+        <tr><td class="fl">27–29F</td><td>데이터 1 · 2</td><td>F19</td></tr>
+        <tr><td class="fl">30F</td><td>스타디움</td><td>O07 링 후보</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="box">
+  <h2>인카운터 · 대화 · 유물로 붙일 것</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>무엇</th><th>그림</th><th>메모 · 할 일</th></tr></thead>
+    <tbody>
+      <tr><td>지식의 나선 (연속)</td><td>O46 · S20 · S15 · S03 · S14 · S19 · O47</td><td>로딩 → 아래로 향하는 길 → 하층 + 사무실 → 마지막 구간 → 맨 아래 DVD 방 주인</td></tr>
+      <tr><td>단달로 저택 (연속)</td><td>S11 · S08 · S10 · S09</td><td>입구 → 복도 → 메인 룸 → 휴게실 · 로지나 방 (로지나 사건과 이음)</td></tr>
+      <tr><td>야전병원</td><td>T14 · O48 · O33 · O05</td><td>지금 글만 있는 사건에 방 · 파비 · 간호사장 루미 그림</td></tr>
+      <tr><td>신성 오딜 방</td><td>T15 · O30 · O31</td><td>메모대로 이스터에그 방</td></tr>
+      <tr><td>지껄이는 입 · 행성</td><td>T16 · S05 · S18</td><td>메모대로 타일을 늘여 좀 걷게 · 배경은 우주</td></tr>
+      <tr><td>호수유적 · 해양 유적</td><td>M97 · M58 · M59 · M34 · S17 · O25 · O57</td><td>메모대로 잡몹 없이 보스 등장 · 가무는 하체가 거대한 수룡</td></tr>
+      <tr><td>방 하나짜리</td><td>S02 장작방 · S07 고독방 · S12 붉은 소녀 · S16 치킨룸 · T13 유적A · S06 고대폐허 (펄)</td><td>장작방은 메모대로 수녀와 악마가 말없이 장작에 뭘 넣음 · 고대폐허는 펄 맵</td></tr>
+      <tr><td>대화 표정</td><td>딸기 6 · 옐로 5 · 로지나 3 · 노라 · 아해 · 사르딜 락 2 · 마카로니 · 러버덕 · 노먼 전직 2 · 벨 18</td><td>배경을 따서 대화 그림 등록표 (TALK_ART) 에</td></tr>
+      <tr><td>유물 아이콘</td><td>O01 · O19 · O41</td><td>유물 14개 그림을 잘라 이모지 대신 (간호사장 모자는 간호사 전용 · 오딜의 눈물은 신성일 때만)</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<nav aria-label="묶음">%NAV%</nav>
+%SECTIONS%
+</div>
+
+<script>
+(function () {
+  const bs = document.querySelectorAll('.filters button'), cs = document.querySelectorAll('.card');
+  function set(f) {
+    bs.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
+    cs.forEach(c => { c.hidden = f !== 'all' && c.dataset.st !== f; });
+    try { localStorage.setItem('d5f', f); } catch (e) {}
+  }
+  bs.forEach(b => b.addEventListener('click', () => set(b.dataset.f)));
+  let f0 = 'all'; try { f0 = localStorage.getItem('d5f') || 'all'; } catch (e) {}
+  set(f0);
+})();
+</script>
