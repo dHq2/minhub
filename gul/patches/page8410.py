@@ -1,4 +1,4 @@
-# v8.4.1 페이지 — page8410.py v1.0 (조작 다듬기: page8400.py 를 먼저 돌린 뒤 — 겹친 자리 첫 클릭은 인물만 (아군 고르기 · 적 공격), 같은 인물을 다시 누르면 고르는 창 · 우회 미리보기는 곡선 · 전투를 시작하면 우리 편 자리가 살짝 무작위 (1칸 안 · 바닥 · 겹치지 않게 — 그 흩어짐은 옮길 수 없음) · 판 번호 8.4.1)
+# v8.4.1 페이지 — page8410.py v1.1 (v1.1: 시작 자리 무작위는 반올림한 자리로 검사 (14.996 → 15.00 이 벽 칸에 놓이던 것) · 몸 둘레도 벽에 닿지 않게 · v1.0: 조작 다듬기: page8400.py 를 먼저 돌린 뒤 — 겹친 자리 첫 클릭은 인물만 (아군 고르기 · 적 공격), 같은 인물을 다시 누르면 고르는 창 · 우회 미리보기는 곡선 · 전투를 시작하면 우리 편 자리가 살짝 무작위 (1칸 안 · 바닥 · 겹치지 않게 — 그 흩어짐은 옮길 수 없음) · 판 번호 8.4.1)
 import subprocess
 D = '/tmp/claude-0/-home-user-minhub/d21f98b4-0f7f-5135-a5ee-7d38f9fd42cc/scratchpad/'
 F = D + 'page10.tpl.html'
@@ -41,12 +41,15 @@ rep("  world = createWorld(S, rules, (Math.random() * 2 ** 32) >>> 0); if (S.cam
 rep("function start(){", """const START_JIT = 1.0;   // v8.4.1 전투를 시작하면 우리 편 자리가 이 칸 안에서 살짝 무작위 (바닥 · 겹치지 않게 · 갈 수 있는 곳) — 뭉쳐 있지만 변수. 옮길 수 없음
 function startJit(W){
   if (!W || W.duel || window.__noJit) return; const m = W.map, free = (x, y) => { const cx = Math.floor(x), cy = Math.floor(y); return cx >= 0 && cy >= 0 && cx < m.W && cy < m.H && m.t[cy * m.W + cx] === 0; };
+  const IN = typeof run8On === 'function' && run8On() && S.art8 && typeof MAPS8 !== 'undefined' && MAPS8[S.art8] ? MAPS8[S.art8].in : null;   // 여정: 들어선 곳 안에서만
   for (const u of W.units){ if (u.side !== 0 || !u.alive || u.gone) continue;
-    for (let k = 0; k < 10; k++){ const a = Math.random() * 6.283, r = START_JIT * Math.sqrt(Math.random()), x = u.x + Math.cos(a) * r, y = u.y + Math.sin(a) * r;
-      if (!free(x, y) || rock(W.map, x, y) || W.units.some(o => o !== u && o.alive && !o.gone && Math.hypot(o.x - x, o.y - y) < o.r + u.r + 0.05)) continue;
-      u.x = u.px = +x.toFixed(2); u.y = u.py = +y.toFixed(2); break; } }
+    for (let k = 0; k < 10; k++){ const a = Math.random() * 6.283, r = START_JIT * Math.sqrt(Math.random()), x = +(u.x + Math.cos(a) * r).toFixed(2), y = +(u.y + Math.sin(a) * r).toFixed(2);   // 반올림한 뒤에 검사 (칸 경계를 넘지 않게)
+      if (IN && !(x >= IN[0] && x <= IN[2] + 1 && y >= IN[1] && y <= IN[3] + 1)) continue;
+      if (!free(x, y) || rock(W.map, x, y) || boxRock(W, x, y, u.r * 0.9) || W.units.some(o => o !== u && o.alive && !o.gone && Math.hypot(o.x - x, o.y - y) < o.r + u.r + 0.05)) continue;
+      u.x = u.px = x; u.y = u.py = y; break; } }
   if (W.fxOn) W.fx = [];
 }
 function start(){""")
+rep("으로 크게 돌아감 (${coord(v.x, v.y)} 거쳐)", "으로 부드럽게 돌아감 (${coord(v.x, v.y)} 거쳐 · 곡선)")
 open(F, 'w', encoding='utf-8').write(s)
 print('page8410 OK')

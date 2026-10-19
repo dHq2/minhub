@@ -1,8 +1,8 @@
-// v7.24.3 UI 시험 — ui7243.js v1.0 (PC 전열: 사수 하나만 골라도 오른쪽 명령 칸 · 아래 기술 막대에 '전열' · 누르면 근접은 나란히 · 사수 · 치유는 전열 지원 (따라다님 · 점선 · 명령 이름) · 전열 후퇴 (K) 단추 · 휴대폰 조작판에도)
+// v7.24.3 UI 시험 — ui7243.js v1.1 (v1.1: 시작 자리 무작위 (v8.4.1) 는 끔 — 붙여 둔 자리에서 전열 UI 를 봄 · v1.0: PC 전열: 사수 하나만 골라도 오른쪽 명령 칸 · 아래 기술 막대에 '전열' · 누르면 근접은 나란히 · 사수 · 치유는 전열 지원 (따라다님 · 점선 · 명령 이름) · 전열 후퇴 (K) 단추 · 휴대폰 조작판에도)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
- const setup = async p => { await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
+ const setup = async p => { await p.addInitScript('window.__noJit=true'); await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
    await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1||u.hero); const h=S.units.find(u=>u.hero); for (const [k,dx,dy] of [['레베카',1,0],['카리우스',2,0],['노먼',0,1.5],['가윤',1,1.5]]){ const u=fromDesign(designByKey(k),0); u.x=h.x+dx; u.y=h.y+dy; S.units.push(u); } rebuildMap(); changed(); start(); paused=true; }); };
  { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); await setup(p);
    const a = await p.evaluate(()=>{ const n=world.units.find(u=>u.name==='노먼'); sel=new Set([n.i]); hud(); renderSkillBar(world); return { ord: !!document.querySelector('#orders [data-ord="line"]'), sk: !!document.querySelector('#skbar [data-cmd="line"]'), sb: (document.querySelector('#skbar [data-cmd="line"] .sb')||{}).textContent }; });

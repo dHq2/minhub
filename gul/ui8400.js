@@ -1,4 +1,4 @@
-// v8.4.0 UI 시험 — ui8400.js v1.1 (v1.1: 흩어짐 시험은 세르파가 멀쩡하고 적이 보이는 자리에서 · v1.0: 세르파 슬라임 조직: 동료 세르파 (체력 90) 가 슬라임을 뽑음 · 상한 · 넷 → 합침 (상황에 맞는 것 · 레이더) · 합치는 중 셋 아래로 줄면 흩어짐 · 레이더 (벽 너머 앎) · 수정 우박 · 세르파가 쓰러지면 작은 슬라임만 녹음 · 동료가 모두 쓰러지면 아군 소환도 녹음 → 전멸 (넘어감 아님) · 보스 세르파 (적 쪽 같은 규칙 · 맵이 끝나지 않음) · 다음 판에 소환이 남지 않음 · 정산 셈 · 휴대폰 칩)
+// v8.4.0 UI 시험 — ui8400.js v1.3 (v1.3: 우박 시험은 세르파가 보이는 빈 바닥에 적을 세움 · v1.2: 다친 동료 시험도 적이 없으면 새로 세움 · v1.1: 흩어짐 시험은 세르파가 멀쩡하고 적이 보이는 자리에서 · v1.0: 세르파 슬라임 조직: 동료 세르파 (체력 90) 가 슬라임을 뽑음 · 상한 · 넷 → 합침 (상황에 맞는 것 · 레이더) · 합치는 중 셋 아래로 줄면 흩어짐 · 레이더 (벽 너머 앎) · 수정 우박 · 세르파가 쓰러지면 작은 슬라임만 녹음 · 동료가 모두 쓰러지면 아군 소환도 녹음 → 전멸 (넘어감 아님) · 보스 세르파 (적 쪽 같은 규칙 · 맵이 끝나지 않음) · 다음 판에 소환이 남지 않음 · 정산 셈 · 휴대폰 칩)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -24,7 +24,7 @@ const { chromium } = require('playwright');
    const mg=W.sp8.o[s.i].mg && { ...W.sp8.o[s.i].mg }; __run(W,1.6); const up=W.units.find(u=>u.summon==='up'&&u.alive); const sl1=W.units.filter(u=>u.summon==='slime'&&u.alive).length, melted=W.units.filter(u=>u.gone==='merge').length;
    return { mg: mg&&mg.kind, n: mg&&mg.ids.length, up: up&&up.name, radar: up&&up.radar, sl0, sl1, melted, side: up&&up.side, tr: up&&up.traits.includes('레이더') }; });
  console.log('    합침', JSON.stringify(m)); ok(m.n===4,'싸움 중에 넷을 모아 엉김'); ok(m.up==='몽'&&m.side===0,'적이 가까우면 몽 (탱커) — 우리 편 ('+m.up+')'); ok(m.radar&&m.tr,'합친 것은 [레이더]'); ok(m.melted>=4&&m.sl1<=m.sl0-3,'엉긴 넷은 녹아 하나가 됨 (작은 슬라임 '+m.sl0+' → '+m.sl1+')');
- const h = await p.evaluate(()=>{ const W=world, s=W.units.find(u=>u.name==='세르파'&&u.side===0), o=W.sp8.o[s.i]; const ally=W.units.find(u=>u.side===0&&!u.summon&&u.alive&&u!==s); ally.hp=ally.max*0.3; const e=W.units.find(u=>u.side===1&&u.alive); e.x=s.x+5; e.y=s.y;
+ const h = await p.evaluate(()=>{ const W=world, s=W.units.find(u=>u.name==='세르파'&&u.side===0), o=W.sp8.o[s.i]; const ally=W.units.find(u=>u.side===0&&!u.summon&&u.alive&&u!==s); ally.hp=ally.max*0.3; const e=W.units.find(u=>u.side===1&&u.alive)||__put(W,'하수구 망자',1,s.x+5,s.y); e.hp=e.max; e.stunT=W.t+60; e.x=s.x+5; e.y=s.y;
    while (W.units.filter(u=>u.summon==='slime'&&u.alive).length<4) { o.next=W.t; sp8Tick(W); stepWorld(W,0.05); } o.mgT=W.t; o.hailT=W.t+99; sp8Tick(W); const k=o.mg&&o.mg.kind; __run(W,1.6); const ups=W.units.filter(u=>u.summon==='up'&&u.alive).map(u=>u.name);
    ally.hp=ally.max*0.3; while (W.units.filter(u=>u.summon==='slime'&&u.alive).length<4) { o.next=W.t; sp8Tick(W); stepWorld(W,0.05); } o.mgT=W.t; sp8Tick(W); const k3=o.mg&&o.mg.kind; if (o.mg) __run(W,1.6);
    return { k, ups, k3, n: W.units.filter(u=>u.summon==='up'&&u.alive).length }; });
@@ -42,7 +42,7 @@ const { chromium } = require('playwright');
  console.log('    레이더', JSON.stringify(r)); ok(r.radar&&r.rp&&r.seen,'레이더 맥박 → 9 ~ 12칸 밖 적도 앎 (벽 · 어둠과 상관없이)');
  // 5. 수정 우박
  const hl = await p.evaluate(()=>{ const W=world, s=W.units.find(u=>u.name==='세르파'&&u.side===0), o=W.sp8.o[s.i]; for (const u of W.units) if (u.side===1&&u.alive){ u.alive=false; u.hp=0; }
-   const e1=__put(W,'하수구 망자',1,s.x+3,s.y), e2=__put(W,'하수구 망자',1,s.x+3.4,s.y+0.4); [e1,e2].forEach(e=>{ e.stunT=W.t+60; }); const hp1=e1.hp, hp2=e2.hp; o.hailT=W.t; o.mgT=W.t+99; sp8Tick(W); const n=W.sp8.hail.length; const hx=W.sp8.hail[0]; e1.x=hx.x; e1.y=hx.y; e2.x=hx.x+0.6; e2.y=hx.y; W.t=hx.t+0.01; sp8Tick(W);
+   s.stunT=0; s.proneT=0; s.hp=s.max; const m=W.map; let c=null; for (let y=1;y<m.H-1&&!c;y++) for (let x=1;x<m.W-2;x++){ const d=Math.hypot(x+0.5-s.x,y+0.5-s.y); if (m.t[y*m.W+x]===0&&m.t[y*m.W+x+1]===0&&d>2.5&&d<4&&losClear(m,s.x,s.y,x+0.5,y+0.5)){ c={x:x+0.5,y:y+0.5}; break; } } const e1=__put(W,'하수구 망자',1,c.x,c.y), e2=__put(W,'하수구 망자',1,c.x+0.6,c.y); e1.seenBy=e2.seenBy=true; [e1,e2].forEach(e=>{ e.stunT=W.t+60; }); const hp1=e1.hp, hp2=e2.hp; o.hailT=W.t; o.mgT=W.t+99; sp8Tick(W); const n=W.sp8.hail.length; const hx=W.sp8.hail[0]; e1.x=hx.x; e1.y=hx.y; e2.x=hx.x+0.6; e2.y=hx.y; W.t=hx.t+0.01; sp8Tick(W);
    return { n, d1: Math.round(hp1-e1.hp), d2: Math.round(hp2-e2.hp), left: W.sp8.hail.length, log: W.log.some(l=>l.k==='r8'&&/우박/.test(l.s)) }; });
  console.log('    우박', JSON.stringify(hl)); ok(hl.n===1&&hl.log,'보이는 적 무리에 수정 우박 예고'); ok(hl.d1>0&&hl.d2>0&&hl.left===0,'예고 원 안의 적 둘 모두 맞음 ('+hl.d1+' · '+hl.d2+')');
  // 6. 세르파가 쓰러지면 작은 슬라임만 녹음

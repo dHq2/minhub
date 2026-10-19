@@ -1,5 +1,6 @@
-# 굴의 전투판 — 소스 보관 v2.0
+# 굴의 전투판 — 소스 보관 v2.1
 
+- v2.1 (2026-10-19): 게임 v8.4.1 (조작 다듬기 — 겹친 자리 첫 클릭 · 우회 곡선 · 시작 자리 무작위). patches/patch8410.py · page8410.py · 시험 ui8410 (ui7151 v1.1 · ui7243 v1.1 · ui7261 v1.1 · ui8400 v1.3 고침). 설계 docs/design_800_v1.6.md.
 - v2.0 (2026-10-19): 게임 v8.4.0 (세르파 슬라임 조직 — 뽑기 · 합치기 · 레이더 · 수정 우박). 엔진 patches/patch8400.py · 화면 patches/page8400.py · 모듈 run8_f.js · 시험 ui8400 · 판 재기 sim8400. 설계 docs/design_800_v1.5.md.
 - v1.9 (2026-10-19): 게임 v8.3.0 (히든보스 적뢰 — 1F 1S 굴 밖으로 · 폭우 · 낙하 · 날라차기 · 번개창 · 천벌 · [낙인:적뢰] · 성해포). 엔진 patches/patch8300.py · 화면 patches/page8300.py · 모듈 run8_e.js · 시험 ui8300 · 판 재기 sim8300. 설계 docs/design_800_v1.4.md.
 - v1.8 (2026-10-19): 게임 v8.2.1 (그만두기 · 확인 창 고침 — 아티팩트 화면은 브라우저 confirm · prompt 를 막음 → 판 위의 창). patches/page8210.py · 시험 ui8210.
@@ -12,7 +13,7 @@
 - v1.1 (2026-10-18): 게임 v7.26.2 (이동 · 합류 · 샷건 · 문 · 인카운터 바로 해 보기). gulsync.sh 로 맞춤.
 - v1 (2026-10-18): 처음 올림. 게임 v7.26.0 (오딜의 방) 기준.
 
-공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (판 156 = v8.4.0)
+공개 판: https://claude.ai/artifact/Bb3MmvnUEH7EeisHZ87U1j (판 157 = v8.4.1)
 
 ## 무엇이 어디에
 - rt3_head.js · rt3_mid.js · rt3_tail.js — 전투 엔진 (세 조각을 이어 rt3.js 로 씀)

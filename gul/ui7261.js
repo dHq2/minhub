@@ -1,9 +1,9 @@
-// v7.26.1 UI 시험 — ui7261.js v1.0 (↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
+// v7.26.1 UI 시험 — ui7261.js v1.1 (v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
 //   명령이 안 닿음 로그는 3초에 한 번 / 간두: 겨누는 중에도 코앞 (2.6칸) 이면 샷건 · 멀어지면 권총 · 탄 칸에 총 이름 · '🔁 샷건으로' 띠 / 갑옷 아이콘이 작은 판에서도 / 좁은 문: 4S 유적 다섯 판 모두 도착)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
- const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
+ const ctx0=await b.newContext({viewport:{width:1280,height:860}}); await ctx0.addInitScript('window.__askAuto=true'); const p=await ctx0.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept());
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
  const STEP = n => `(()=>{ mode='run'; paused=false; for (let k=0;k<${n};k++) stepWorld(world,1/30); paused=true; mode='plan'; return world.t; })()`;
  const CAMP1 = `(()=>{ setMode('story'); if (S.camp) campQuit(); campStart({ direct: true }); const C=S.camp, party=S.units.filter(u=>u.side===0); C.stages[1]={ seed: 5, tseed: 5 }; C.s=1; campBuild(1,'down',party); while (TK){ if (TK.timer) talkDone(); talkAdv(); }

@@ -2251,14 +2251,24 @@ function think(W, u){
 // v7.12 우회 (Shift + 이동 · 공격): 경유점까지 먼저 (가는 길엔 싸우지 않음) — 닿거나 · 노린 적이 2.5칸 안이거나 · 길이 없거나 · 25초가 지나면 본래 명령대로
 function viaStep(W, u, o, dt){
   const t = ['attack', 'palm', 'charge'].includes(o.k) && o.b != null ? W.units[o.b] : null, d = Math.hypot(u.x - o.via.x, u.y - o.via.y), nearT = o.k === 'charge' ? 1.6 : 2.5;   // v7.15 팜 버스트 · 돌진도 우회 (돌진은 돌진 거리 안쪽까지만 붙어도 돌아감)
-  if (o.via.t0 == null) o.via.t0 = W.t;
-  const done = d < 0.7 ? '닿음' : t && (!t.alive || gap(u, t) < nearT) ? '노린 적이 가까움' : W.t - o.via.t0 > 25 ? '너무 오래 걸림' : null;
+  if (o.via.t0 == null){ o.via.t0 = W.t; o.via.pts = viaCurve(W, u, o, t); o.via.k = 0; }   /* v8.4.1 포물선 위의 점들 */
+  const P = o.via.pts && o.via.pts.length ? o.via.pts : [o.via]; while (o.via.k < P.length - 1 && Math.hypot(u.x - P[o.via.k].x, u.y - P[o.via.k].y) < 1.0) o.via.k++;
+  const q = P[Math.min(o.via.k || 0, P.length - 1)], dq = Math.hypot(u.x - q.x, u.y - q.y), last = (o.via.k || 0) >= P.length - 1;
+  const done = last && dq < 0.7 ? '닿음' : t && (!t.alive || gap(u, t) < nearT) ? '노린 적이 가까움' : W.t - o.via.t0 > 25 ? '너무 오래 걸림' : null;
   if (done){ o.viaOK = true; L(W, { k: 'viaDone', a: u.i, why: done, vis: u.side === 0 || !!u.seenBy }); return false; }
-  setMood(W, u, '우회'); setGoal(W, u, o.via.x, o.via.y); follow(W, u, dt);
+  setMood(W, u, '우회'); setGoal(W, u, q.x, q.y); follow(W, u, dt);
   if (!u.path){ o.viaOK = true; L(W, { k: 'viaDone', a: u.i, why: '길이 없음', vis: u.side === 0 || !!u.seenBy }); return false; }
   return true;
 }
 // v7.12 우회 경유점: (tx, ty) 까지 곧장 가는 길에서 옆으로 크게 — 아는 적이 적은 쪽 (아군은 본 · 보고받은 자리만) · 적에게서 먼 곳 · 갈 수 있는 곳. side +1 = 가는 쪽의 오른쪽
+// v8.4.1 우회 곡선: 출발점 P0 · 경유점 V · 목적지 P2 — V 를 지나는 2차 베지어 (조절점 C = 2V − (P0 + P2) / 2) 위의 점 (바위 · 벽 칸은 건너뜀). 마지막 점을 밟으면 본래 명령대로 목적지로
+function viaCurve(W, u, o, t){
+  const V = o.via, P2 = t ? { x: t.x, y: t.y } : o.x != null ? { x: o.x, y: o.y } : null; if (!P2) return [V];
+  const cx = 2 * V.x - (u.x + P2.x) / 2, cy = 2 * V.y - (u.y + P2.y) / 2, S = (W.rules.detour || {}).curve || [0.2, 0.35, 0.5, 0.65, 0.8], out = [];
+  for (const s of S){ const a = (1 - s) * (1 - s), b = 2 * (1 - s) * s, c = s * s, x = a * u.x + b * cx + c * P2.x, y = a * u.y + b * cy + c * P2.y;
+    if (s === 0.5){ out.push({ x: V.x, y: V.y }); continue; } if (x < 1 || y < 1 || x > W.map.W - 1 || y > W.map.H - 1 || boxRock(W, x, y, 0.4)) continue; out.push({ x: +x.toFixed(2), y: +y.toFixed(2) }); }
+  return out.length ? out : [V];
+}
 function detourVia(W, L, tx, ty){
   const DT = W.rules.detour || {}, S = L[0].side, cx = L.reduce((a, u) => a + u.x, 0) / L.length, cy = L.reduce((a, u) => a + u.y, 0) / L.length, dx = tx - cx, dy = ty - cy, Ld = Math.hypot(dx, dy);
   if (Ld < (DT.min || 3)) return null;
@@ -2268,8 +2278,8 @@ function detourVia(W, L, tx, ty){
   const tR = thr(1), tL = thr(-1), sides = tR <= tL ? [1, -1] : [-1, 1];
   for (const sg of sides){
     let best = null, bs = -1e9;
-    for (const k of [0.5, 0.35, 0.65]) for (const m of [1, 1.4, 0.7, 1.8]){
-      const Dd = Math.min(DT.max || 8, Math.max(DT.min || 3, Ld * (DT.k || 0.45))) * m, x = cx + dx * k + nx * sg * Dd, y = cy + dy * k + ny * sg * Dd;
+    for (const k of [0.5, 0.4, 0.6]) for (const m of [1, 1.2, 0.8, 0.6]){
+      const Dd = Math.min(DT.max || 6, Math.min(DT.max || 6, Math.max(DT.min || 2.5, Ld * (DT.k || 0.35))) * m),   /* v8.4.1 옆으로 최대 6칸 */ x = cx + dx * k + nx * sg * Dd, y = cy + dy * k + ny * sg * Dd;
       if (x < 1 || y < 1 || x > W.map.W - 1 || y > W.map.H - 1 || boxRock(W, x, y, 0.45)) continue;
       if (!findPath(W.map, cx, cy, x, y) || !findPath(W.map, x, y, tx, ty)) continue;
       const near = F.length ? Math.min(...F.map(p => Math.hypot(p.x - x, p.y - y))) : 99, sc = Math.min(near, (DT.near || 3) * 2) - Math.abs(m - 1) * 0.8 - Math.abs(k - 0.5) * 2;
