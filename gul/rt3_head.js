@@ -272,7 +272,7 @@ const DEFAULT_RULES = {
   leap: { chain: 0.3, chainCd: 1.6, dist: 1.7, time: 0.3, cd: 1.1, near: 2.2, flank: { cd: 3, chk: 0.4, ang: [1.9, 2.6] }, shotAt: 0.5, shotAim: 0.6, shotMin: 0.55 },   // v7.14 활은 도약 중에도 쏨 (뛴 shotAt 쯤 · 조준 × shotAim)   // v7.12 flank = 측후방 도약: 나를 앞으로 보고 선 근접 상대의 옆 (ang[0] rad) · 뒤 (ang[1]) 로 뛰어 들어감 (cd 초마다 · chk 초마다 살핌)
     // [도약]: 앞 · 뒤 · 옆 어디로든 dist 칸을 time 초에 뜀 (cd 초마다) — 사수는 근접 상대가 near 칸 안으로 오면 뒤로 (v6.7.4 방향 자유)
   // v5.5.3 stun = 막지 않은 상대가 휘청이는 초 (× 무게 비 0.6 ~ 1.5) · maxOrd = 명령 돌진이 곧장 뛰는 거리 (칸) · shieldKb · shieldStun = 방패 돌진의 밀침 · 휘청 ×
-  charge: { stun: 1.0, maxOrd: 8, shieldKb: 1.3, shieldStun: 1.25, wind: 0.2, min: 1.5, max: 5, spd: 2.6, sp0: 1.2, full: 3, shove: 1.0, dmg: 0.6, post: 60, push: 1.2, pin: 1.2, cd: 4, turn: 0.6, commit: 1.2, e: 0.3, kb: 0.3, downV: 4, brace: 0.6, trained: 1.6, worth: 1.8, common: true },   // v5.8.5 준비 0.2초 · 대기 4초 · 도움닫기: 달리기 시작은 ×sp0, 달린 거리가 full 칸이면 전력질주 ×spd (짧으면 덜 셈) · v5.8.6 shove 칸도 못 달리고 부딪히면 밀치기 수준 (휘청 없음), 휘청은 달린 거리만큼
+  charge: { stun: 1.0, maxOrd: 8, shieldKb: 1.3, shieldStun: 1.25, wind: 0.2, min: 1.5, max: 5, spd: 2.6, sp0: 1.2, full: 3, shove: 1.0, dmg: 0.6, post: 60, push: 1.2, pin: 1.2, cd: 4, turn: 1.0, commit: 0.8, e: 0.3, kb: 0.3, downV: 4, brace: 0.6, trained: 1.6, worth: 1.8, common: true },   // v5.8.5 준비 0.2초 · 대기 4초 · 도움닫기: 달리기 시작은 ×sp0, 달린 거리가 full 칸이면 전력질주 ×spd (짧으면 덜 셈) · v5.8.6 shove 칸도 못 달리고 부딪히면 밀치기 수준 (휘청 없음), 휘청은 달린 거리만큼
   chargeSet: { counter: 0.8, spear: 1.6, spearPost: 0.6, parryPost: 1.2, stun: 1.0, bounce: 0.4, after: 0.5, afterShield: 0.3, ai: 3 },   // v5.8.7 돌격 받기 (태세): 막는 자세로 마주 보고 기다리던 쪽이 버티면 받아치기 × (창은 꿰뚫기 × 달려온 속력) · 자세 깎임 × (창 · 무구) · 돌격한 쪽 휘청 (초) · 튕겨 나옴 (칸) · 들이받은 뒤 빈틈 (초, 방패) · AI 가 버틸 상대를 피하는 정도
   // v5.3 돌격 · 돌진: spd = 전력질주 속력 ×, 부딪히면 운동량 충돌 — e = 튕김 (0 붙어 감 ~ 1 완전 탄성), 부딪힌 뒤 속력 × kb 초 만큼 날아감, downV 넘으면 넘어짐.
   // brace = 뒤 · 옆 동료 무게가 받쳐 주는 몫, trained = 이쪽을 막고 선 전선 (훈련된 방진) 버팀 ×, worth = 돌격할 만한 기준 (− 대담함 × 0.8), common = 보병 · 탱커 공통 기술
@@ -419,7 +419,7 @@ const DEFAULT_RULES = {
   reachB: { k: 0.25, lo: -0.1, hi: 0.25 },   /* v7.17 몸 리치: 든 근접 무기 사거리 + k × (키 − 1.7) (lo ~ hi) */
   cc: { shove: 0.6, fxGap: 0.6 },   /* v7.29.0 버팀 (ccRes): 넘어짐 · 휘청을 그 확률로 버팀 · 밀려나는 거리 × (1 − ccRes × shove) */
   cz: { bulletEv: 0.7, evCd: 0.35, probe: [4.5, 7], fury: 4.5, punish: 2.2, punR: 6, keep: 3.5, orbit: 0.25, walk: 0.6, jog: 1.4, furyWalk: 1.0, run: 3, close: 1.2, back: 1.8, backT: 0.34, backRest: 0.16, backCd: 6, flankCd: 5, rushCd: 5, combo: 0.35, comboGap: 0.12, hitStun: 0.45, frostT: 4, spinP: 0.8, rspin: [3, 4.5],
-    spin: { r: 2.6, wind: 0.35, rec: 0.5, mul: 2.0, kb: 1.6, stun: 0.5, frost: 2, cd: 8, brk: 3 }, shoulder: { v: 10, max: 0.45, reach: 0.6, rng: 3.3, mul: 0.6, kb: 1.2, stun: 0.7, rec: 0.6, cd: 5 },
+    spin: { r: 2.4, wind: 0.22, rec: 0.3, mul: 0.6, kb: 0.5, stun: 0.15, frost: 0.6, cd: 2.2, brk: 1.5 }, shoulder: { v: 10, max: 0.45, reach: 0.6, rng: 3.3, mul: 0.6, kb: 1.2, stun: 0.7, rec: 0.6, cd: 5 },
     upcut: { cd: 20, d0: 2.1, d1: 10, charge: 1.0, len: 16, w: 0.8, mul: 2.2, stun: 1.0, down: 1.6, hobble: 10, galeAt: 1.1, gale: 1.5, galeV: 2.2, galeArc: 0.35, galeAdd: 4 },
     thrust: { cd: 6, d0: 1.8, d1: 6.3, charge: 0.6, dash: 5, w: 0.8, mul: 1.2, crit: 0.5, lift: 500, toss: 2.4, tossMul: 0.8, tossStun: 0.8, stun: 1.2, rec: 1.1 },
     wave: { cd: 9, brk: 4, d0: 3.1, d1: 7, charge: 0.8, r: 7.3, half: 1.3, mul: 1.8, frost: 4, rec: 0.7 },

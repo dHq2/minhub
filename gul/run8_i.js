@@ -1,4 +1,4 @@
-/* ===== run8_i.js v1.6 — v8.7.1 · v8.7.1.1 인카운터 · 맵 위 NPC (민수 명세 spec_870 B 절 · A4 · A7 · A12 · A15 ~ A17 · A19)
+/* ===== run8_i.js v1.7 (v1.7: 손님 · 판 안 영입은 주인공 곁의 빈 바닥에 (벽 · 맵 밖에 나타나던 것) ) — v8.7.1 · v8.7.1.1 인카운터 · 맵 위 NPC (민수 명세 spec_870 B 절 · A4 · A7 · A12 · A15 ~ A17 · A19)
    · 맵 위 상시 NPC: MS 싸움판 구석에 — 야전병원 천막 (간호사장 · 파비 · 1성 간호사) · 로지나 · 대장장이 · 배신자 셰도르 · 노라 · 왐 · 마리와 와킨 · 아이텐 · 아해 (요괴 마을)
      싸움에 끼지 않고 · 일부는 싸움이 끝날 때까지 숨음 (천막 · 노라) · 일부는 다음 싸움을 도움 (로지나 — 위험하면 튐 · 셰도르)
    · 항복: 아해 (마지막 하나 · 빈사) · 페흐토 (빈사) — 죽이면 끝 · 살리면 영입 이벤트
@@ -71,7 +71,7 @@ function r8HiddenDef(k){
 // ---------- 손님 · 항복 (판마다) ----------
 function r8GuestSpawn(W, n){
   const R = R8S(); if (!W || !R) return; R.flags = R.flags || {}; const hero = W.units.find(u => u.side === 0 && u.hero) || W.units.find(u => u.side === 0); if (!hero) return;
-  const spawn = (key, tag) => { const d = foe8(key, R.f); const p = { ...fromDesign({ ...clone(d), side: 0, traits: (d.traits || []).filter(t => t !== '보스') }, 0), id: uid(), summon: true, r8guest: tag, x: hero.x + 0.6, y: hero.y + 0.4 }; lockIdentity(p); S.units.push(p); const u = addUnit(W, p); u.summon = true; u.r8guest = tag; logEv(W, { k: 'r8', s: `🤝 ${p.name} — 이번 싸움을 함께한다`, c: 'good', vis: true }); return u; };
+  const spawn = (key, tag) => { const d = foe8(key, R.f), q = r8Spot(W, hero, 0.45); const p = { ...fromDesign({ ...clone(d), side: 0, traits: (d.traits || []).filter(t => t !== '보스') }, 0), id: uid(), summon: true, r8guest: tag, x: q.x, y: q.y }; lockIdentity(p); S.units.push(p); const u = addUnit(W, p); u.summon = true; u.r8guest = tag; logEv(W, { k: 'r8', s: `🤝 ${p.name} — 이번 싸움을 함께한다`, c: 'good', vis: true }); return u; };
   if (R.flags.rosinaHelp > 0){ R.flags.rosinaHelp--; spawn('로지나 (손님)', 'rosina'); }
   if (R.flags.shedorHelp > 0){ R.flags.shedorHelp--; spawn('배신자 셰도르', 'shedor'); }
   // 페흐토 — 4층 뒤 떠돌이 · 가끔 보통 싸움에 끼어듦 (죽였거나 · 동료거나 · 죽었으면 안 나옴)
@@ -223,7 +223,11 @@ for (const e of ENC8) if (e[0] === 't:pehto' || e[0] === 't:tehera') e[1] = 0;  
 // ---------- 행동 ----------
 // 판 안 (MS 싸움판 · 맵 위 NPC 와 대화 중) 인지 — 그러면 대화가 끝나도 지도로 가지 않음 · 영입은 판에 바로
 function r8InMap(){ return !!(world && world.r8 && !world.over && S.camp && S.camp.s === 1); }
-function r8PutIn(p){ lockIdentity(p); const hero = world.units.find(u => u.side === 0 && u.alive && u.hero) || world.units.find(u => u.side === 0 && u.alive); p.x = (hero ? hero.x : 2) + 0.5; p.y = (hero ? hero.y : 2) + 0.5; S.units.push(p); const u = addUnit(world, p); logEv(world, { k: 'r8', s: `🤝 ${p.name} — 일행에 합류`, c: 'good', vis: true }); return u; }
+// v1.7 주인공 곁의 빈 바닥 (바위 · 벽 · 맵 밖 · 다른 몸과 겹침을 피함) — 한 바퀴씩 넓혀 찾고, 없으면 주인공 자리
+function r8Spot(W, h, r){ if (!h) return { x: 2, y: 2 }; for (let d = 0.9; d <= 4.5; d += 0.45) for (let k = 0; k < 12; k++){ const a = k * Math.PI / 6 + d, x = h.x + Math.cos(a) * d, y = h.y + Math.sin(a) * d;
+    if (x < 0.6 || y < 0.6 || x > W.map.W - 0.6 || y > W.map.H - 0.6 || boxRock(W, x, y, r)) continue; if (W.units.some(o => o.alive && !o.gone && Math.hypot(o.x - x, o.y - y) < (o.r || 0.4) + r)) continue; return { x, y }; }
+  return { x: h.x, y: h.y }; }
+function r8PutIn(p){ lockIdentity(p); const hero = world.units.find(u => u.side === 0 && u.alive && u.hero) || world.units.find(u => u.side === 0 && u.alive); const q = r8Spot(world, hero, 0.45); p.x = q.x; p.y = q.y; S.units.push(p); const u = addUnit(world, p); logEv(world, { k: 'r8', s: `🤝 ${p.name} — 일행에 합류`, c: 'good', vis: true }); return u; }
 // ---------- v8.7.1.1 봉인된 출구 (A4 퍼즐) ----------
 function r8Seals(W){
   const m = W.map, al = W.units.filter(u => u.side === 0 && u.alive); if (!al.length) return; const h = al.find(u => u.hero) || al[0];

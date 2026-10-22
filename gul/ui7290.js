@@ -1,4 +1,4 @@
-// v7.29.0 UI 시험 — ui7290.js v1.2 (v1.2: 비껴 선 동료는 공이 휘는 반대쪽 · 상세 칸은 교전한 세자르로 · v1.1: 적 자리 = 철퇴가 닿는 거리 (간격 2.0) · v1.0: 철퇴 오사 (던질 때 · 거둘 때 · 비껴 선 동료는 안 맞음) · 길에 동료가 있으면 기다림 (명령이면 던짐) · 거두는 공이 적을 침 · 넘어뜨림 / 돌격 성향 (탕아 · 모닝스타 · 돌격 안 함 단추 · 다음 판) / 세자르 버팀 · 원형 베기 → 돌진 원형 베기 / 왕관 [★권위E] · 로그 · 상세 칸 · PC · 휴대폰)
+// v7.29.0 UI 시험 — ui7290.js v1.3 (v1.3: v8.7.2 모닝스타는 이제 타고나길 돌격 안 함 — 성향 · 단추 시험은 그 성향을 끈 채로 · v1.2: 비껴 선 동료는 공이 휘는 반대쪽 · 상세 칸은 교전한 세자르로 · v1.1: 적 자리 = 철퇴가 닿는 거리 (간격 2.0) · v1.0: 철퇴 오사 (던질 때 · 거둘 때 · 비껴 선 동료는 안 맞음) · 길에 동료가 있으면 기다림 (명령이면 던짐) · 거두는 공이 적을 침 · 넘어뜨림 / 돌격 성향 (탕아 · 모닝스타 · 돌격 안 함 단추 · 다음 판) / 세자르 버팀 · 원형 베기 → 돌진 원형 베기 / 왕관 [★권위E] · 로그 · 상세 칸 · PC · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -27,11 +27,11 @@ const { chromium } = require('playwright');
  ok(f.wait&&f.ordThrow,'공 길에 동료 — 스스로는 기다림 · 명령이면 던짐'); ok(f.txt,'로그 글 (오사 — 던질 때 · 거둘 때)'); ok(f.ff===0.55,'수치표 flail.ff 0.55');
  // 2. 돌격 성향 · 돌격 안 함
  const c = await p.evaluate(()=>{ const W=world, m=W.units.find(u=>u.name==='모닝스타'), t=W.units.find(u=>u.name==='탕아'), e=W.units.find(u=>u.side===1&&u.alive&&!u.cz);
-   m.x=10; m.y=10; e.x=13.5; e.y=10; e.seenBy=true; t.x=10; t.y=12; const v=chargeValue(W,m,e), C=W.rules.charge, w0=C.worth; C.worth=v+m.bold*0.8-((planOf(W,0)||{}).chg||0)-0.5;
+   m.noChg=m.noChg0=false; m.chgBias=2; m.x=10; m.y=10; e.x=13.5; e.y=10; e.seenBy=true; t.x=10; t.y=12; const v=chargeValue(W,m,e), C=W.rules.charge, w0=C.worth; C.worth=v+m.bold*0.8-((planOf(W,0)||{}).chg||0)-0.5;
    const okB=chargeOk(W,m,e), b0=m.chgBias; m.chgBias=0; const ok0=chargeOk(W,m,e); m.chgBias=b0; C.worth=w0;
    const tc=tryCharge(W,t,e,false); return { mb: m.chgBias, tn: t.noChg, okB, ok0, tc, flip: (t.spec||[]).some(x=>x.k==='flip') }; });
  console.log('    돌격 성향', JSON.stringify(c)); ok(c.mb===2&&!c.okB&&c.ok0,'모닝스타 돌격 성향 +2 — 같은 값에서 돌격 안 함 (성향 0 이면 함)'); ok(c.tn&&c.tc===false&&c.flip,'탕아 — 스스로 돌격 안 함 · 공중제비 있음');
- const t2 = await p.evaluate(async ()=>{ const W=world, m=W.units.find(u=>u.name==='모닝스타'); sel=new Set([m.i]); hud(); await new Promise(r=>setTimeout(r,60));
+ const t2 = await p.evaluate(async ()=>{ const W=world, m=W.units.find(u=>u.name==='모닝스타'); m.noChg=m.noChg0=false; sel=new Set([m.i]); hud(); await new Promise(r=>setTimeout(r,60));
    let pcBtn=null; if (!MOB){ const bt=document.querySelector('#orders [data-ord="nochg"]'); pcBtn=!!bt; if (bt) bt.click(); } else ordKey('nochg');
    await new Promise(r=>setTimeout(r,60)); const on=m.noChg, e=W.units.find(u=>u.side===1&&u.alive&&!u.cz); m.x=10; m.y=10; e.x=13.5; e.y=10; const tc=tryCharge(W,m,e,true);
    const drawer=typeof drawerActs==='function'?null:null; const lg=logLines(W).join('\n');

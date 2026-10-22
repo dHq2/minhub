@@ -1,4 +1,4 @@
-// v7.24.5 UI 시험 — ui7245.js v1.2 (v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 첫 화면에서 ▶ 전투 시작 = 프롤로그 시작 · 오른쪽 안내 글 · 스토리 · 훈련장: 처음 고르기 · 머리글 단추 · 탭과 단추가 모드마다 · 스토리 첫 화면 · 프롤로그 시작 · 싸우다 훈련장으로 (맡겨 둠) · 돌아오면 그 맵 · 기록 · 다시 열어도 모드 그대로 · 모바일 조작판 · 더 보기)
+// v7.24.5 UI 시험 — ui7245.js v1.3 (v1.3: v8.7.2 처음 동료 일곱 (뽑기 셋) · v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 첫 화면에서 ▶ 전투 시작 = 프롤로그 시작 · 오른쪽 안내 글 · 스토리 · 훈련장: 처음 고르기 · 머리글 단추 · 탭과 단추가 모드마다 · 스토리 첫 화면 · 프롤로그 시작 · 싸우다 훈련장으로 (맡겨 둠) · 돌아오면 그 맵 · 기록 · 다시 열어도 모드 그대로 · 모바일 조작판 · 더 보기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -32,7 +32,7 @@ const { chromium } = require('playwright');
  ok(!(await p.evaluate(()=>document.getElementById('gacha').hidden))&&(await p.evaluate(()=>document.getElementById('sHome').hidden)),'시작 → 뽑기 연출 (첫 화면은 숨음)');
  await p.evaluate(()=>{ document.getElementById('gAll').click(); document.getElementById('gGo').click(); }); await p.waitForTimeout(500);
  const d1 = await p.evaluate(()=>({ s:S.camp&&S.camp.s, w:!!world, bar:!document.getElementById('campBar').hidden, W:S.W, H:S.H, party:S.units.filter(u=>u.side===0).length }));
- console.log('     ',JSON.stringify(d1)); ok(d1.s===1&&d1.w&&d1.bar&&d1.party===6,'1S — 인주 · 확정 셋 · 뽑기 둘');
+ console.log('     ',JSON.stringify(d1)); ok(d1.s===1&&d1.w&&d1.bar&&d1.party===7,'1S — 인주 · 확정 셋 · 뽑기 둘');
  // 5) 싸우다 훈련장으로: 프롤로그는 맡겨 둠 · 훈련장 판이 돌아옴
  await p.evaluate(()=>{ mode='run'; paused=false; for (let i=0;i<40;i++) stepWorld(world,1/30); });
  await p.evaluate(()=>setMode('train')); await p.waitForTimeout(300);
@@ -46,7 +46,7 @@ const { chromium } = require('playwright');
  await p.evaluate(()=>setMode('story')); await p.waitForTimeout(300);
  const f1 = await p.evaluate(()=>({ s:S.camp&&S.camp.s, story:!!S.story, W:S.W, H:S.H, party:S.units.filter(u=>u.side===0).length, home:!document.getElementById('sHome').hidden, go:!!document.querySelector('#pane-story [data-sh="go"]'), bak:!!S.campBak }));
  console.log('     ',JSON.stringify(f1));
- ok(f1.s===1&&!f1.story&&f1.W===d1.W&&f1.H===d1.H&&f1.party===6&&!f1.home&&f1.go&&f1.bak,'스토리로 돌아옴 — 1S 그 맵 · 동료 그대로 · 이야기 탭에 ▶ 이 맵 시작');
+ ok(f1.s===1&&!f1.story&&f1.W===d1.W&&f1.H===d1.H&&f1.party===7&&!f1.home&&f1.go&&f1.bak,'스토리로 돌아옴 — 1S 그 맵 · 동료 그대로 · 이야기 탭에 ▶ 이 맵 시작');
  await p.evaluate(()=>document.querySelector('#pane-story [data-sh="go"]').click()); await p.waitForTimeout(300);
  ok(await p.evaluate(()=>!!(world&&world.camp)),'▶ 이 맵 시작 → 캠페인 판');
  if (vw.mob){ await p.evaluate(()=>toggleMenu(true)); await p.waitForTimeout(150);

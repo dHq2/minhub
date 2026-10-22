@@ -1,4 +1,4 @@
-// v7.25.0 UI 시험 — ui7250.js v1.3 (v1.3: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.2: 겨눔 시험은 쟝의 머리 찍기 (간두는 v7.25.1부터 기술 대신 두 번째 총) · v1.1: PC 는 오른쪽 클릭 = 이동 · 왼쪽 클릭 = 고르기 풀기 (겨눔도 풀림) · 알현실: 아주 밝음 · 한눈에 다 보임 · 그림 오류 없음 / 관을 조사하면 10초 뒤 세자르 (9초엔 아직) / 영거리 사격 겨눔 중 바닥을 누르면 겨눔을 풀고 이동 (PC · 휴대폰) /
+// v7.25.0 UI 시험 — ui7250.js v1.4 (v1.4: v8.7.2 없던 근력은 생기지 않음 (공격 +2) · v1.3: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.2: 겨눔 시험은 쟝의 머리 찍기 (간두는 v7.25.1부터 기술 대신 두 번째 총) · v1.1: PC 는 오른쪽 클릭 = 이동 · 왼쪽 클릭 = 고르기 풀기 (겨눔도 풀림) · 알현실: 아주 밝음 · 한눈에 다 보임 · 그림 오류 없음 / 관을 조사하면 10초 뒤 세자르 (9초엔 아직) / 영거리 사격 겨눔 중 바닥을 누르면 겨눔을 풀고 이동 (PC · 휴대폰) /
 //   성장: 괴력 대신 근력 · 예전에 싸워서 얻은 괴력은 근력으로 옮김 (원래 괴력은 그대로) / 로그 글)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -30,7 +30,7 @@ const { chromium } = require('playwright');
  // 성장 · 옮김 · 로그
  { const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); await fresh(p);
    const g = await p.evaluate(()=>{ const q={ ...fromDesign(designByKey('레베카'),0) }; q.traits=(q.traits||[]).filter(t=>!/^(근력|괴력)/.test(t)); const out=growFor(q,{ hits:0, dodges:0, moved:0, meleeDealt:900, taken:0 }); return { out, tr:q.traits.filter(t=>/^(근력|괴력)/.test(t)) }; });
-   console.log('    성장',JSON.stringify(g)); ok(g.out.some(x=>/^근력/.test(x))&&g.tr.includes('근력C')&&!g.tr.some(t=>/^괴력/.test(t)),'근접으로 많이 싸우면 근력이 자람 (괴력은 자라지 않음)');
+   console.log('    성장',JSON.stringify(g)); ok(g.out.some(x=>/^공격 \+2/.test(x))&&!g.tr.some(t=>/^(근력|괴력)/.test(t)),'근접으로 많이 싸우면 공격이 오름 — 없던 근력 · 괴력은 생기지 않음 (v8.7.2)');
    const m = await p.evaluate(()=>{ const a={ ...fromDesign(designByKey('레베카'),0), traits:['불사','괴력C'], grown:['괴력 없음 → C'] }, j={ ...fromDesign(designByKey('쟝'),0) }; j.grown=['괴력 없음 → C']; const j0=j.traits.slice(); const ra=fix7250(a), rj=fix7250(j); return { ra, at:a.traits, ag:a.grown, rj, jt:j.traits, j0 }; });
    console.log('    옮김',JSON.stringify(m)); ok(m.ra&&m.at.includes('근력C')&&!m.at.includes('괴력C')&&/^근력/.test(m.ag[0])&&!m.rj&&JSON.stringify(m.jt)===JSON.stringify(m.j0),'예전에 싸워서 얻은 괴력 → 근력 (쟝처럼 원래 괴력은 그대로)');
    const t = await p.evaluate(()=>traitDesc('괴력C')); ok(/아무나 얻지 못함/.test(t),'괴력 설명: 아무나 얻지 못함 · 싸워서 자라지 않음');
