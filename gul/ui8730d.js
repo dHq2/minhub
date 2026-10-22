@@ -1,4 +1,4 @@
-// v8.7.3 바로잡기 4d UI 시험 — ui8730d.js v1.4 (v1.4: 적 진형 기록 — 지휘관이 쓰러져 '지휘를 잃음' 으로 제각기 (free) 가 된 줄만 이름 없음이 맞음 · v1.3: 늦게 띄우는 나레이션 · 알림 (ldAfter) 은 맵이 바뀌면 버림 · v1.2: 막 닫힌 대화 (0.45초) 막이는 누르는 곳 (판 클릭 · 💬 단추) 에 — encTalk 자체는 열려 있을 때만 막음 (시험 · 이야기 흐름이 바로 여는 것은 됨) · v1.1: 전투 일지는 끝난 판에서만 (over) · 진형 기록은 지휘관 · 방패가 있는 적으로 실제로 남김 · v1.0: 적 진형 글은 그때의 지휘관 · 상처 묶음 · 전리품 수 한 번 · 이야기 되풀이 줄임 · 치료 도구 글 · 자기 치료는 '동료의 상처' 에서 뺌 · 끝난 맵의 적 판단 · 소음 · 전열 기록 없음 · 마법은 떨어뜨리지 않음 · 심장 급소 → 심장 글 · 대화 겹침 · 노라 · 세르파 글)
+// v8.7.3 바로잡기 4d UI 시험 — ui8730d.js v1.5 (v1.5: v8.7.4 5층 소개는 붉은암석 · 세르파는 만남 · v1.4: 적 진형 기록 — 지휘관이 쓰러져 '지휘를 잃음' 으로 제각기 (free) 가 된 줄만 이름 없음이 맞음 · v1.3: 늦게 띄우는 나레이션 · 알림 (ldAfter) 은 맵이 바뀌면 버림 · v1.2: 막 닫힌 대화 (0.45초) 막이는 누르는 곳 (판 클릭 · 💬 단추) 에 — encTalk 자체는 열려 있을 때만 막음 (시험 · 이야기 흐름이 바로 여는 것은 됨) · v1.1: 전투 일지는 끝난 판에서만 (over) · 진형 기록은 지휘관 · 방패가 있는 적으로 실제로 남김 · v1.0: 적 진형 글은 그때의 지휘관 · 상처 묶음 · 전리품 수 한 번 · 이야기 되풀이 줄임 · 치료 도구 글 · 자기 치료는 '동료의 상처' 에서 뺌 · 끝난 맵의 적 판단 · 소음 · 전열 기록 없음 · 마법은 떨어뜨리지 않음 · 심장 급소 → 심장 글 · 대화 겹침 · 노라 · 세르파 글)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -63,10 +63,10 @@ const { chromium } = require('playwright');
  ok(r8.open&&r8.click&&r8.btn&&r8.close,'만남 대화: 열려 있으면 다시 열지 않음 · 막 닫힌 (0.45초) 누름은 판 클릭 · 💬 단추에서 막음');
 
  // 9. 노라 · 세르파 글
- const r9 = await p.evaluate(()=>({ nora: MNPC8.nora.seen, serpa: (r8BossIntro('serpa', 0) || []).map(l => l.narr || l.t).join(' / ') }));
+ const r9 = await p.evaluate(()=>({ nora: MNPC8.nora.seen, boss5: (r8BossIntro('redrock', 0) || []).map(l => l.narr || l.t || l.box).join(' / '), serpa: MNPC8.serpa.seen }));   // v8.7.4 5층은 붉은암석 · 세르파는 만남
  console.log('    글', JSON.stringify(r9));
  ok(!/\(싸움 동안/.test(r9.nora)&&/아무도 보지 못했다/.test(r9.nora),'노라: 메모 같은 괄호 글 대신 이야기 글');
- ok(/모이고 엉기면/.test(r9.serpa),'세르파 소개: 조직은 싸우면서 자람 ("모이고 엉기면 …")');
+ ok(/붉은암석/.test(r9.boss5)&&/방어모드/.test(r9.boss5)&&/슬라임의 왕/.test(r9.serpa),'5층 소개는 붉은암석 (방어모드 · 붙잡힘 안내) · 세르파는 수정동굴 만남 (슬라임의 왕)');
 
  // 10. 늦게 띄우는 것 (맵에 들어선 나레이션 · 알림) 은 건 때의 맵이 그대로일 때만
  const r10 = await p.evaluate(async ()=>{ __mk([['카리우스',0,5,10],['검기사',1,20,10]]); const out = []; ldAfter(() => out.push('같은 맵'), 0); await new Promise(r => setTimeout(r, 80)); ldAfter(() => out.push('앞 맵'), 0); __mk([['카리우스',0,5,10],['검기사',1,20,10]]); await new Promise(r => setTimeout(r, 80)); return out; });

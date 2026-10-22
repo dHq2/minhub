@@ -1,4 +1,4 @@
-// v7.19.2 시험 — eng7192.js v1.1 (v1.1: 무기 잡기는 철퇴 든 적 (창은 먼저 던짐) · 뿌리 피해는 로그로 · 딸기 역장 · 뿌리 벽 · 열매 맺기 · 공통 무기 잡기)
+// v7.19.2 시험 — eng7192.js v1.2 (v1.2: 열매 맺기 — 맺는 9초 동안 둘 다 제자리 (주인공 둘러보기로 걷다 인주가 먼저 주워 먹던 것 · 시험만 고침) · v1.1: 무기 잡기는 철퇴 든 적 (창은 먼저 던짐) · 뿌리 피해는 로그로 · 딸기 역장 · 뿌리 벽 · 열매 맺기 · 공통 무기 잡기)
 const {E,R,U,DES,INJ,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb) cb(); } };
@@ -19,7 +19,7 @@ console.log('B. 뿌리 벽');
   k.order=null; k.x=r.cells[0][0]+1.6; k.y=r.cells[0][1]+0.5; run(W,30); console.log(`    뜯김 로그 ${W.log.filter(x=>x.k==='rootChew').length} · 부서짐 ${W.log.some(x=>x.k==='rootBreak')} · 남은 뿌리 ${(W.roots||[]).length}`); ok(W.log.some(x=>x.k==='rootBreak')||W.log.some(x=>x.k==='rootChew'),'붙은 적이 뜯어냄'); }
 
 console.log('C. 열매 맺기');
-{ const W=WT([mk(BER,0,6,8,{hero:true}),mk({...INJ,ov:{hp:200}},0,9,8),FAR()],1,'hold'); const b=W.units[0], h=W.units[1]; h.hp=100; run(W,9); const be=(W.items||[]).filter(i=>i.k==='berry');
+{ const W=WT([mk(BER,0,6,8,{hero:true}),mk({...INJ,ov:{hp:200}},0,9,8),FAR()],1,'hold'); const b=W.units[0], h=W.units[1]; h.hp=100; b.order={k:'hold'}; h.order={k:'hold'}; run(W,9); const be=(W.items||[]).filter(i=>i.k==='berry');
   console.log(`    9초: 열매 ${be.length}개 ${be.map(i=>i.x+','+i.y+' +'+i.heal).join(' ')}`); ok(be.length===1,'8초에 하나 맺힘');
   if(be[0]){ h.order={k:'move',x:be[0].x,y:be[0].y}; run(W,4); const l=W.log.find(x=>x.k==='berry'); console.log(`    먹음 ${l?l.amt:0} · 인주 ${Math.round(h.hp)}`); ok(l&&l.amt>=5&&l.amt<=10&&!(W.items||[]).some(i=>i.k==='berry'&&i.id===be[0].id),'지나가며 먹음 (5 ~ 10)'); } }
 

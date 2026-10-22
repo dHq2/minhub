@@ -1,4 +1,4 @@
-// v8.7.0 UI 시험 — ui8700.js v1.6 (v1.6: 지대 10초 싸움 — 10초 전에 끝난 판은 결과 (전멸 lose · 승리 win) 가 있으면 됨 (드물게 2층 동료가 총잡이 지대에서 10초 안에 쓰러짐 — 옛 빌드도 150판에 1번 · 고장 아님) · v1.5: v8.7.3 보통 싸움판은 출구가 처음부터 열림 (정예 · 보스만 잠김) · 출구는 찾아야 앎 (🔎 출구 찾기) · v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
+// v8.7.0 UI 시험 — ui8700.js v1.7 (v1.7: v8.7.4 5층 고정 보스는 붉은암석 · v1.6: 지대 10초 싸움 — 10초 전에 끝난 판은 결과 (전멸 lose · 승리 win) 가 있으면 됨 (드물게 2층 동료가 총잡이 지대에서 10초 안에 쓰러짐 — 옛 빌드도 150판에 1번 · 고장 아님) · v1.5: v8.7.3 보통 싸움판은 출구가 처음부터 열림 (정예 · 보스만 잠김) · 출구는 찾아야 앎 (🔎 출구 찾기) · v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -18,7 +18,7 @@ const { chromium } = require('playwright');
  // 2. 고정층 · 층마다 지대 (3 ~ 29)
  const fl = await p.evaluate(()=>{ const R=R8S(), out={}; for (let f=3; f<=30; f++){ R.f=f; const g=r8Gen(f); const F=F8[f]; out[f]={ th: F.theme, fx: F.fixed8, n: g.rows.length, top: g.rows[g.rows.length-1][0].t, b: F.boss||F.fixed||'' }; } R.f=2; R.fm=r8Gen(2); return out; });
  console.log('    층', JSON.stringify(fl));
- ok(fl[3].fx&&fl[3].top==='fixed'&&fl[5].fx&&fl[5].b==='serpa'&&fl[10].fx&&fl[10].n===1&&fl[15].b==='neo'&&fl[20].n===1&&fl[25].n===1&&fl[30].top==='final','고정층 3 · 5 · 10 · 15 · 20 · 25 · 30');
+ ok(fl[3].fx&&fl[3].top==='fixed'&&fl[5].fx&&fl[5].b==='redrock'&&fl[10].fx&&fl[10].n===1&&fl[15].b==='neo'&&fl[20].n===1&&fl[25].n===1&&fl[30].top==='final','고정층 3 · 5 · 10 · 15 · 20 · 25 · 30');
  const rnd=[4,6,7,8,9,11,12,13,14,16,17,18,19,21,22,23,24,26,27,28,29];
  ok(rnd.every(f=>!fl[f].fx&&fl[f].th&&fl[f].n===8&&fl[f].top==='elite'),'무작위 층 21 — 모두 지대 · 8줄 · 층 보스');
  ok(rnd.every(f=>fl[f].th!==fl[f-1].th),'바로 위층과 같은 지대가 이어지지 않음');

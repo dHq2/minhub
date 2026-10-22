@@ -1,4 +1,4 @@
-// v8.0.0 UI 시험 — ui8000.js v1.4 (v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
+// v8.0.0 UI 시험 — ui8000.js v1.5 (v1.5: v8.7.4 5층 보스는 붉은암석 · 세르파는 만남 영입 동료 · v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -64,16 +64,16 @@ const { chromium } = require('playwright');
  ok(npc.s===3&&npc.w&&!npc.art&&npc.bar,'인카운터 칸 — 1F 의 만남 맵 (아이텐) · 띠 N층 · 만남');
  const npc2 = await p.evaluate(()=>{ const W=world, R=R8S(); for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); W.over=true; W.result='exit'; mode='plan'; onOver(); const bs=[...document.querySelectorAll('#banner button')].find(x=>/지도로/.test(x.textContent)); if (bs) bs.click(); return { map: !document.getElementById('run8').hidden, done: R.done.includes('xnpc'), on: run8On() }; });
  ok(npc2.map&&npc2.done&&npc2.on,'만남 맵을 나가면 지도로 · 칸 끝');
- // 6. 보스 (5층 세르파) → 영입 → 6층
+ // 6. 보스 (5층 붉은암석 — v8.7.4) → 6층 · 세르파는 보스가 아님 (수정동굴의 만남 칸에서 영입)
  const bs = await p.evaluate(()=>{ const R=R8S(); R.party=R.party.slice(0,7); r8FloorEnter(5); return R.f; }); await wait(p,200);
  await p.evaluate(()=>{ const D=document.getElementById('r8dAll'); if (D){ D.click(); document.getElementById('r8dGo').click(); } });
  const bs2 = await p.evaluate(()=>{ const R=R8S(), top=R.fm.rows[R.fm.rows.length-1][0]; R.at=R.fm.rows[R.fm.rows.length-2][0].id; R.done.push(R.at); r8Enter(top); const W=world; return { t: top.t, b: top.b, art: S.art8, base: MAPS8[S.art8].base, foes: W.units.filter(u=>u.side===1).length, names: [...new Set(W.units.filter(u=>u.side===1).map(u=>u.name.replace(/\s*\d+$/,'')))].join(',') }; });
  await wait(p,100); await p.evaluate(TALKEND);
- console.log('    보스', JSON.stringify(bs2)); ok(bs2.t==='boss'&&bs2.b==='serpa'&&/crystal/.test(bs2.base)&&bs2.foes>=3,'5층 보스 칸 — 수정동굴 · 세르파의 젤리들');
+ console.log('    보스', JSON.stringify(bs2)); ok(bs2.t==='boss'&&bs2.b==='redrock'&&/crystal/.test(bs2.base)&&bs2.foes>=1&&/붉은암석/.test(bs2.names),'5층 보스 칸 — 수정동굴 · 붉은암석');
  const bs3 = await p.evaluate((TE)=>{ const W=world, R=R8S(); for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } W.cleared=true; for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); W.over=true; W.result='exit'; mode='plan'; onOver(); const bs=[...document.querySelectorAll('#banner button')].find(x=>/지도로/.test(x.textContent)); if (bs) bs.click(); const serpa=R.party.some(p=>p.ref==='C-277'); eval(TE); return { serpa, f: R.f, cards: document.querySelectorAll('#run8 [data-r8d]').length }; }, TALKEND);
  await wait(p,200);
  const bs4 = await p.evaluate(()=>({ f: R8S().f, cards: document.querySelectorAll('#run8 [data-r8d]').length }));
- ok(bs3.serpa&&bs4.f===6,'세르파를 쓰러뜨리면 동료가 됨 → 6층 ('+JSON.stringify(bs4)+')');
+ ok(!bs3.serpa&&bs4.f===6,'붉은암석을 쓰러뜨리면 6층 (세르파는 보스판에서 오지 않음) ('+JSON.stringify(bs4)+')');
  // 7. 고정 (3층 여신의 호수)
  const fx = await p.evaluate((TE)=>{ const R=R8S(), t0=R.tears; const n={ id:'fixed', t:'fixed', k:'goddess', r:5, i:0, x:.5, next:[] }; R.fm.rows.push([n]); R.at=n.id; r8Fixed(n); const bg=document.getElementById('talk').style.backgroundImage; eval(TE); return { tear: R.tears-t0, bg: /r8_goddess/.test(bg) }; }, TALKEND);
  ok(fx.tear===1&&fx.bg,'여신의 호수 — 장면 그림 · 여신의 눈물 ①');

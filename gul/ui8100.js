@@ -1,4 +1,4 @@
-// v8.1.0 UI 시험 — ui8100.js v1.2 (v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 들어설 때 대화는 로딩 뒤에 열림 — 기다렸다 셈 · v1.0: 챔피언 로드: 20층 MC 뒤에만 켜짐 · 들어설 때 MC 한마디 · 깜짝 규칙 (암전 · 상금 두 배 · 90초) · 관중 (응원 · 야유 · 축복 · 증오 · 되돌림) · 처치 · 쓰러짐 열기 · 이김 · 물러남 · 지도 MC 한마디 · 서술 · 로그 · 휴대폰)
+// v8.1.0 UI 시험 — ui8100.js v1.3 (v1.3: 암전이 30판 안에 안 뽑히면 더 뽑아 효과를 봄 (드물게 떨어지던 것) · v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 들어설 때 대화는 로딩 뒤에 열림 — 기다렸다 셈 · v1.0: 챔피언 로드: 20층 MC 뒤에만 켜짐 · 들어설 때 MC 한마디 · 깜짝 규칙 (암전 · 상금 두 배 · 90초) · 관중 (응원 · 야유 · 축복 · 증오 · 되돌림) · 처치 · 쓰러짐 열기 · 이김 · 물러남 · 지도 MC 한마디 · 서술 · 로그 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -17,6 +17,7 @@ const { chromium } = require('playwright');
  const mc1 = await p.evaluate((TE)=>{ eval(TE); return __nm.filter(x=>/^MC 더 플링/.test(x)).length; }, TALKEND);
  const on = await p.evaluate((TE)=>{ const R=R8S(); R.f=21; R.flags.mc=1; R.crowd=60; const out={ rules:{} };
    for (let k=0;k<30;k++){ const n={ id:'c'+k, r:1, i:0, t:'fight', x:.5, next:[] }; R.fm.rows[1].push(n); R.at=n.id; r8Battle(n); eval(TE); out.rules[world.r8.rule]=(out.rules[world.r8.rule]||0)+1; if (k===0){ out.mc=__nm.filter(x=>/^MC 더 플링/.test(x)).length; out.on=crowdOn(); } if (world.r8.rule==='dark') out.darkAmb=S.amb; }
+   for (let k=30;k<150&&out.darkAmb==null;k++){ const n={ id:'c'+k, r:1, i:0, t:'fight', x:.5, next:[] }; R.fm.rows[1].push(n); R.at=n.id; r8Battle(n); eval(TE); if (world.r8.rule==='dark') out.darkAmb=S.amb; }   // v1.3 암전이 안 뽑혔으면 더 뽑아 효과를 봄
    return out; }, TALKEND);
  console.log('    규칙', JSON.stringify(on)); ok(on.on&&mc1>=1,'21층 — 들어설 때 MC 더 플링 (이름 띠)'); ok(Object.keys(on.rules).length>=4&&on.rules.none>0,'깜짝 규칙이 여러 가지로 나옴 (없음 포함)'); ok(on.darkAmb!=null&&on.darkAmb<=0.12,'암전 경기 — 판이 어두워짐 (밝기 '+on.darkAmb+')');
  // 3. 관중: 응원 · 축복 (열기 높음) · 야유 · 증오 (열기 낮음) · 되돌림

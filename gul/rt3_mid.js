@@ -176,20 +176,23 @@ function canSee(W, u, t){
 
 /* ---------- 길찾기: 8방향 BFS (모서리 넘어가기 없음), 가는 길에 직선이 트이면 질러감 ---------- */
 const DIR8 = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-function findPath(m, sx, sy, gx, gy, maxN){
+function findPath(m, sx, sy, gx, gy, maxN, cr){
   const W = m.W, s = (sy | 0) * W + (sx | 0); let g = (gy | 0) * W + (gx | 0);
+  const big = cr > 0.55, no = big ? (x, y) => x < 0 || y < 0 || x >= m.W || y >= m.H || !bigOk(m, x + 0.5, y + 0.5, cr) : (x, y) => rock(m, x, y);   /* v8.7.4 큰 몸: 몸이 들어가는 칸만 */
   if (rock(m, gx, gy)) return null;
   if (s === g) return [];
-  const prev = new Int32Array(m.W * m.H).fill(-1); prev[s] = s; const q = [s];
+  const prev = new Int32Array(m.W * m.H).fill(-1); prev[s] = s; const q = [s]; let best = s, bd = Math.hypot((s % W) + 0.5 - gx, ((s / W) | 0) + 0.5 - gy);
+  const back = c => { const path = []; while (c !== s){ path.push({ x: c % W + 0.5, y: ((c / W) | 0) + 0.5 }); c = prev[c]; } return path.reverse(); };
   for (let h = 0; h < q.length && h < (maxN || 4000); h++){
     const p = q[h], x = p % W, y = (p / W) | 0;
     for (const [dx, dy] of DIR8){
-      const nx = x + dx, ny = y + dy; if (rock(m, nx, ny)) continue;
-      if (dx && dy && (rock(m, x + dx, y) || rock(m, x, y + dy))) continue;
+      const nx = x + dx, ny = y + dy; if (no(nx, ny)) continue;
+      if (dx && dy && (no(x + dx, y) || no(x, y + dy))) continue;
       const np = ny * W + nx; if (prev[np] >= 0) continue; prev[np] = p; q.push(np);
-      if (np === g){ const path = []; let c = g; while (c !== s){ path.push({ x: c % W + 0.5, y: ((c / W) | 0) + 0.5 }); c = prev[c]; } return path.reverse(); }
+      if (np === g) return back(g);
+      if (big){ const d = Math.hypot(nx + 0.5 - gx, ny + 0.5 - gy); if (d < bd){ bd = d; best = np; } }
     }
   }
-  return null;
+  return big && best !== s ? back(best) : null;   // 큰 몸: 목표 칸에 몸이 안 들어가면 가장 가까이 닿는 칸까지
 }
 

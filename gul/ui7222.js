@@ -1,4 +1,4 @@
-// v7.22.2 UI 시험 — ui7222.js v1.1 (v1.1: 회전 투척은 다른 아군을 멀리 두고 · 예고가 끊기면 다시 · 체력 2400 · 대장군 호레이쇼: 작은 밝은 맵 · 앉아 있음 · 다가가면 일어남 → 사각형 창 "대장군이 전쟁을 시작합니다" → 적 호레이쇼 (5M · 도끼 · 기술 둘) · 도약 강타 그림자 · 회전 도끼 · 쓰러뜨리면 도끼 · 갑옷 · 투구 · 모바일)
+// v7.22.2 UI 시험 — ui7222.js v1.2 (v1.2: 도약 강타 — 그림자를 보고 모두 피한 판도 내려앉음으로 셈 (드물게 떨어지던 것) · v1.1: 회전 투척은 다른 아군을 멀리 두고 · 예고가 끊기면 다시 · 체력 2400 · 대장군 호레이쇼: 작은 밝은 맵 · 앉아 있음 · 다가가면 일어남 → 사각형 창 "대장군이 전쟁을 시작합니다" → 적 호레이쇼 (5M · 도끼 · 기술 둘) · 도약 강타 그림자 · 회전 도끼 · 쓰러뜨리면 도끼 · 갑옷 · 투구 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -22,7 +22,7 @@ const { chromium } = require('playwright');
   const q = await p.evaluate(()=>{ const u=world.units.find(x=>x.name==='호레이쇼'), al=world.units.filter(x=>x.alive&&x.side===0), v=al.find(x=>!x.hero&&x.name!=='카리우스'); v.x=u.x; v.y=u.y+6; const n0=al.length;
     const okq=startQuake(world,u,v.x,v.y,'시험'); const flown=u.act&&u.act.quake; mode='run'; for (let i=0;i<10;i++) stepWorld(world,1/30); draw(); const flee=world.log.some(l=>l.k==='quakeFlee'); for (let i=0;i<40;i++) stepWorld(world,1/30); mode='plan';
     return { okq, flown, flee, hit: world.log.some(l=>l.k==='quakeHit'), crushed: world.log.filter(l=>l.k==='die'&&l.how==='crush').length, at: [+u.x.toFixed(1), +u.y.toFixed(1)] }; });
-  console.log('    '+nm+' 도약 강타', JSON.stringify(q)); ok(q.okq&&q.flown&&q.hit,nm+': 도약 강타 — 날아가 내려앉으며 충격');
+  console.log('    '+nm+' 도약 강타', JSON.stringify(q)); ok(q.okq&&q.flown&&(q.hit||q.flee),nm+': 도약 강타 — 날아가 내려앉으며 충격 ('+(q.hit?'맞힘':'그림자를 보고 다 피함')+')');   // v1.2 피함은 그림자 피하기가 일한 것 (충격 판정은 eng8740 9 에서 꼭 맞히게 확인)
   ok(q.flee||q.crushed>=0,nm+': 그림자를 본 쪽은 피하려 함 ('+(q.flee?'피함':'못 피함')+')');
   // 회전 투척: 도끼가 날아가 떨어짐 → 맨손 → 주우러 도약
   const sp = await p.evaluate(()=>{ const u=world.units.find(x=>x.name==='호레이쇼'); if (!u.alive) return { dead: true }; u.act=null; const al=world.units.filter(x=>x.alive&&x.side===0), t=al[0]; for (const o of al) if (o!==t){ o.x=1+o.i*0.8; o.y=1; } t.x=Math.min(world.map.W-2,u.x+5); t.y=u.y; mode='run'; for (let k=0;k<4 && !world.items.some(it=>it.how==='spin');k++){ if (!u.weaponGone && !(u.act&&u.act.s==='spin')){ u.act=null; u.spec.find(x=>x.k==='spin').cdT=-9; startSpec(world,u,t,'spin','시험'); } for (let i=0;i<60 && !world.items.some(it=>it.how==='spin');i++) stepWorld(world,1/30); } mode='plan';   /* 예고가 끊기면 다시 */

@@ -1,4 +1,4 @@
-// v7.23.1 시험 — eng7231.js v1.2 (v1.2: 동상이 풀렸는지는 방패 자세 (걸음 ×0.75) 를 빼고 잼 — 투창 예고를 보고 방패를 들면 0.75 로 읽히던 것 · v1.1: 원형 베기는 버티는 몸 (인주 체력 500 · 카리우스) · 리듬은 오래 버티는 레베카 · 자세 기준 0.6 · 세자르 1 — 2D 판 두뇌 이식: 깨어남 · 리듬 (탐색 ↔ 딜타임) · 탐색 중 간격 · 원형 베기 (둘레 모두 · 동상 · 밀림) · 끊김 · 어깨 박치기 · 뒷걸음 점프 · 빈틈 찌르기 → 확정 3연격 · 회피 반격 (확정 치명) · 동상 (걸음 ×0.55) · 자세 (덜 밀림) · 노인의 검 냉기 · 무덤의 계단 · 일행과 한 판)
+// v7.23.1 시험 — eng7231.js v1.3 (v1.3: 원형 베기 대기 · 끊긴 뒤 대기는 수치표대로 (v8.7.2 빠르고 약한 견제기 — 2.2초 · 1.5초) · 끊김 시험은 [버팀] 을 빼고 (휘청이 85% 버텨져 끊기지 않던 것) · v1.2: 동상이 풀렸는지는 방패 자세 (걸음 ×0.75) 를 빼고 잼 — 투창 예고를 보고 방패를 들면 0.75 로 읽히던 것 · v1.1: 원형 베기는 버티는 몸 (인주 체력 500 · 카리우스) · 리듬은 오래 버티는 레베카 · 자세 기준 0.6 · 세자르 1 — 2D 판 두뇌 이식: 깨어남 · 리듬 (탐색 ↔ 딜타임) · 탐색 중 간격 · 원형 베기 (둘레 모두 · 동상 · 밀림) · 끊김 · 어깨 박치기 · 뒷걸음 점프 · 빈틈 찌르기 → 확정 3연격 · 회피 반격 (확정 치명) · 동상 (걸음 ×0.55) · 자세 (덜 밀림) · 노인의 검 냉기 · 무덤의 계단 · 일행과 한 판)
 const {E,R,DES,INJ,NOR,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -16,10 +16,10 @@ const lit=W=>{ W.amb=1; E.computeLight(W); };
 // 3) 원형 베기: 둘레 모두 · 동상 · 밀림
 { const W=W_([mk(INJ,0,6,8,{hero:true,ov:{hp:500}}),mk(KAR,0,8.6,9.6)],[mk(CZ,1,7.6,8)],1,'hold'); lit(W); const [a,b,k]=W.units; k.cz.on=true; k.cz.phaseT=99; const x0=[a.x,b.x];
   E.czStart(W,k,'spin',a); run(W,1.2); const L=W.log.find(l=>l.k==='czSpin'); console.log('      ',JSON.stringify(L), 'frost', [a,b].map(u=>(u.frostT||0).toFixed(1)));
-  ok(L&&L.n===2,'원형 베기 — 둘레 둘 모두'); ok([a,b].some(u=>u.taken>0)&&[a,b].some(u=>(u.frostT||-9)>W.t-1.5),'맞으면 동상'); ok(k.cz.spin>6,'대기 8초'); }
+  ok(L&&L.n===2,'원형 베기 — 둘레 둘 모두'); ok([a,b].some(u=>u.taken>0)&&[a,b].some(u=>(u.frostT||-9)>W.t-1.5),'맞으면 동상'); { const S=W.rules.cz.spin||{}; ok(k.cz.spin>(S.cd||8)-1.2,'대기 '+(S.cd||8)+'초 (v8.7.2 빠르고 약한 견제기 — 남은 '+k.cz.spin.toFixed(2)+')'); } }
 // 4) 끊김: 모으는 동안 휘청이면
 { const W=W_([mk(INJ,0,6,8,{hero:true})],[mk(CZ,1,7.4,8)],1,'hold'); lit(W); const [a,k]=W.units; k.cz.on=true; k.cz.phaseT=99;
-  E.czStart(W,k,'spin',a); E.stepWorld(W,1/30); E.stun(W,k,0.5,a.i); run(W,0.3); ok(W.log.some(l=>l.k==='czBreak')&&!W.log.some(l=>l.k==='czSpin')&&k.cz.spin>2.5,'모으는 동안 휘청 → 끊김 (대기 3초)'); }
+  k.ccRes=0; E.czStart(W,k,'spin',a); E.stepWorld(W,1/30); E.stun(W,k,0.5,a.i); run(W,0.3); const S=W.rules.cz.spin||{}; ok(W.log.some(l=>l.k==='czBreak')&&!W.log.some(l=>l.k==='czSpin')&&k.cz.spin>(S.brk||3)-0.5,'모으는 동안 휘청 → 끊김 (대기 '+(S.brk||3)+'초 · 버팀은 빼고 잼)'); }
 // 5) 어깨 박치기
 { const W=W_([mk(INJ,0,5,8,{hero:true})],[mk(CZ,1,7.6,8)],1,'hold'); lit(W); const [a,k]=W.units; k.cz.on=true; k.cz.phaseT=99; const ax=a.x;
   E.czStart(W,k,'shoulder',a); run(W,1.2); const L=W.log.find(l=>l.k==='czShoulder'); console.log('      ',JSON.stringify(L), '밀림', (ax-a.x).toFixed(2));

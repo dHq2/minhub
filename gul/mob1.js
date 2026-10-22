@@ -1,4 +1,4 @@
-// v5.8 모바일 검증 (갤럭시 노트 20: 412×915 · DPR 2.625 · 터치)
+// v5.8 모바일 검증 (갤럭시 노트 20: 412×915 · DPR 2.625 · 터치) — mob1.js v1.1 (v1.1: 바닥 탭은 빈 자리 (곁에 아무도 없고 벽 아님) 를 골라서 — 시작 배치가 살짝 무작위라 정한 자리에 동료가 서 있으면 '겹친 곳 첫 탭은 고르기만' 으로 이동 명령이 안 나던 것 · 시험만 고침)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
   const ctx = await b.newContext({viewport:{width:412,height:915}, deviceScaleFactor:2.625, isMobile:true, hasTouch:true, userAgent:'Mozilla/5.0 (Linux; Android 13; SM-N981N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36'});
@@ -17,7 +17,8 @@ const { chromium } = require('playwright');
   let R = await p.evaluate(()=>{ const u=world.units.find(u=>u.name==='레베카'); return {x:u.x,y:u.y}; }); let pr = await scr(R.x,R.y); await tap(pr.x, pr.y);
   console.log('tap rebecca → sel', JSON.stringify((await info()).sel));
   // 바닥을 탭 → 이동
-  pr = await scr(R.x+1.2, R.y-1.5); await tap(pr.x, pr.y);
+  const G0 = await p.evaluate(([x0,y0])=>{ for (const [dx,dy] of [[1.2,-1.5],[1.5,-1.2],[-1.2,-1.5],[1.5,1.2],[-1.5,1.2],[2,-2],[-2,-2],[2,2],[-2,2],[0,-2.2],[2.2,0],[-2.2,0],[0,2.2]]){ const x=x0+dx, y=y0+dy; if (rock(world.map,x,y)) continue; if (world.units.some(u=>u.alive&&Math.hypot(u.x-x,u.y-y)<1.2)) continue; return {x,y}; } return {x:x0+1.2,y:y0-1.5}; }, [R.x,R.y]);
+  pr = await scr(G0.x, G0.y); await tap(pr.x, pr.y);
   console.log('tap ground → order', await p.evaluate(()=>JSON.stringify(world.units.find(u=>u.name==='레베카').order)));
   await tap(pr.x, pr.y);
   console.log('double tap → hurry', await p.evaluate(()=>JSON.stringify(world.units.find(u=>u.name==='레베카').order)));

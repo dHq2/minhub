@@ -1,4 +1,4 @@
-// v7.23.2 시험 — eng7232.js v1.6 (v1.6: '끝나면 다시 움직임' 은 하늘 가르기가 끝났는가 — v8.7.3 세자르 버팀 (×6) 이 돌격 셈에 들어가 인주가 돌진하지 않으니 판이 달라져 세자르가 새 걸음을 밟는 중일 수 있음 · v1.5: 마구 베기는 '마구 베기' 표시의 타격만 셈 (끝난 뒤 보통 공격 한 번이 더 들어오면 '모두 치명' 이 깨지던 것) · v1.4: 권위 시험의 카리우스는 오래 버팀 · v1.3: 줄 중간 // 주석 고침 · v1.2: 관통 찌르기 시험은 자리만 고정 · v1.1: 시험 대상을 묶어 둠 · 여덟 판 · 세자르 2 — 필살 · 권위: 하늘 가르기 (직선 위 모두 · 못 막음 · 쓰러짐 · 이동 제약 · 모으는 동안 슈퍼아머 · 폭풍) · 이동 제약 (걸음 × 0.4 · 스텝 못 함) · 관통 찌르기 (가벼운 맨 앞은 내던짐 · 무거우면 관통) · 냉기 참격 (부채꼴 · 동상 · 끊김) · 마구 베기 (최전방 · 확정 치명 12번 · 끊김) · 권위 (눈 · 신성 봉인 · 끊김 · 흔들림) · 한 판)
+// v7.23.2 시험 — eng7232.js v1.7 (v1.7: 관통 찌르기 내던짐 시험은 치명 없이 — 50% 치명이면 머리 급소 (v8.7.2) 로 맨 앞이 쓰러져 내던질 몸이 없던 것 · v1.6: '끝나면 다시 움직임' 은 하늘 가르기가 끝났는가 — v8.7.3 세자르 버팀 (×6) 이 돌격 셈에 들어가 인주가 돌진하지 않으니 판이 달라져 세자르가 새 걸음을 밟는 중일 수 있음 · v1.5: 마구 베기는 '마구 베기' 표시의 타격만 셈 (끝난 뒤 보통 공격 한 번이 더 들어오면 '모두 치명' 이 깨지던 것) · v1.4: 권위 시험의 카리우스는 오래 버팀 · v1.3: 줄 중간 // 주석 고침 · v1.2: 관통 찌르기 시험은 자리만 고정 · v1.1: 시험 대상을 묶어 둠 · 여덟 판 · 세자르 2 — 필살 · 권위: 하늘 가르기 (직선 위 모두 · 못 막음 · 쓰러짐 · 이동 제약 · 모으는 동안 슈퍼아머 · 폭풍) · 이동 제약 (걸음 × 0.4 · 스텝 못 함) · 관통 찌르기 (가벼운 맨 앞은 내던짐 · 무거우면 관통) · 냉기 참격 (부채꼴 · 동상 · 끊김) · 마구 베기 (최전방 · 확정 치명 12번 · 끊김) · 권위 (눈 · 신성 봉인 · 끊김 · 흔들림) · 한 판)
 const {E,R,DES,INJ,NOR,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -17,7 +17,7 @@ const prep=k=>{ k.cz.on=true; k.cz.phaseT=99; k.cz.fury=true; for(const s of ['s
   ok(W.log.some(l=>l.k==='czGale')&&a.x-ax>0.5,'갈라진 자리의 폭풍 — 가벼운 몸은 밀려남 ('+(a.x-ax).toFixed(1)+'M)');
   const s0=E.spdNow0(W,r), s1=(r.hobbleT=W.t+5, E.spdNow0(W,r)); ok(Math.abs(s1/s0-0.4)<0.01,'이동 제약 — 걸음 × 0.4'); ok(!(k.act&&k.act.s==='upcut'),'끝나면 다시 움직임 (하늘 가르기가 끝남'+(k.act?' — 지금 '+(k.act.s||k.act.k):'')+')'); }
 // 2) 관통 찌르기: 가벼운 맨 앞은 꿰어 내던짐
-{ const W=W_([mk(GOB,0,8,8,{ov:{hp:600}}),mk(REB,0,9.6,8,{ov:{hp:600}})],[mk(CZ,1,5,8)],1,'hold'); lit(W); const [g,r,k]=W.units; prep(k); const kx=k.x;
+{ const W=W_([mk(GOB,0,8,8,{ov:{hp:600}}),mk(REB,0,9.6,8,{ov:{hp:600}})],[mk(CZ,1,5,8)],1,'hold'); lit(W); const [g,r,k]=W.units; prep(k); const kx=k.x; W.rules.cz.thrust.crit=1e-9;   /* (0 은 수치표 기본값 0.5 로 읽힘) 치명 (50%) 이면 머리 급소로 맨 앞이 쓰러져 내던질 몸이 없음 — 내던짐만 봄 */
   E.czStart(W,k,'thrust',g,{ang:0}); run(W,0.9,()=>{ if(!k.act||!k.act.hit){ g.x=8; g.y=8; r.x=9.6; r.y=8; } });   /* 모으는 동안 자리 고정 (묶어 두면 휘청 → 심장 관통으로 쓰러짐) */ const L=W.log.find(l=>l.k==='czThrust'), T=W.log.find(l=>l.k==='czToss'); console.log('      ',JSON.stringify(L),JSON.stringify(T),'세자르',(k.x-kx).toFixed(2));
   ok(L&&L.n===2&&g.taken>0&&r.taken>0,'관통 찌르기 — 줄 위 둘'); ok(T&&T.b===g.i,'가벼운 맨 앞 (청광묵) — 꿰어 내던짐'); ok(k.x-kx>1,'세자르가 앞으로 튀어나감'); }
 { const W=W_([mk(KAR,0,8.2,8)],[mk(CZ,1,5,8)],1,'hold'); lit(W); const [c,k]=W.units; prep(k);
