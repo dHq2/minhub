@@ -1,4 +1,4 @@
-// v7.12 시험 — lie712.js v1 (빨리 일어남 · 카리우스 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 돌격 · 우회)
+// v7.12 시험 — lie712.js v1.1 (v1.1: v8.7.3 '자동' 은 기준 (지휘관) 을 따라가니 B 의 노먼은 제자리 명령으로 고립을 지킴 · D 의 곤봉적은 목소리로 지휘 (말 못 하는 몸짓 · 어둠은 59% — 난수 차례에 따라 놓침) · v1: 빨리 일어남 · 카리우스 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 돌격 · 우회)
 const {E,R,DES,NOR,INJ,KAR,REB,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dark=W=>{ for(const u of W.units){u.torch=false;u.torchOff=false;} W.torches=[]; E.computeLight(W); };
@@ -14,7 +14,7 @@ console.log('A. 일어남 · 카리우스');
 
 console.log('B. 스스로 엎드림 (고립 · 어디선가 사격 집중)');
 { const W=W_([mk(NOR,0,4,8),mk(INJ,0,4,14)],[mk(DES['궁수'],1,24,3)],1,'smart'); dark(W); const n=W.units[0], a=W.units[2];
-  const s={a:a.i,side:1}; E.stepWorld(W,1/30); W.units[0].fireP=[];
+  const s={a:a.i,side:1}; E.stepWorld(W,1/30); W.units[0].fireP=[]; n.order={k:'hold'};
   const fake=()=>{ n.fireP=n.fireP||[]; n.fireP.push({t:W.t,seen:false}); };
   fake(); run(W,0.5); fake(); run(W,0.5); const l=W.log.find(x=>x.k==='lieDown'&&x.a===n.i);
   console.log('    ', l?'엎드림 — '+l.why:'안 엎드림'); ok(!!l&&/고립/.test(l.why),'혼자 · 두 발 → 스스로 엎드림'); ok(n.lieAuto!=null,'lieAuto 표시');
@@ -36,7 +36,7 @@ console.log('C. 곡사 면 제압 (방패 무시)');
   console.log(`    쏜 ${fired}발 · 레베카 맞음 ${hits} · 방패에 막힘 ${blk}`); ok(fired>20,'활은 곡사로 면 제압'); ok(hits>0&&blk===0,'든 방패가 머리 위를 못 막음'); }
 
 console.log('D. 숨은 사수의 안 자리 → 적 지휘관이 곡사 면 제압');
-{ const W=W_([mk(NOR,0,4,8),mk(INJ,0,3,14)],[mk(DES['궁수'],1,9,8),mk(DES['곤봉적'],1,13,8)],1,'smart'); dark(W); const n=W.units[0], a=W.units[2], c=W.units[3];
+{ const W=W_([mk(NOR,0,4,8),mk(INJ,0,3,14)],[mk(DES['궁수'],1,9,8),mk(DES['곤봉적'],1,13,8)],1,'smart'); dark(W); const n=W.units[0], a=W.units[2], c=W.units[3]; c.mute=false;
   E.stepWorld(W,1/30); n.lie=true; n.lieSw=null; n.lieSeen={}; n.lastFireT=W.t; a.sense[n.i]={x:n.x,y:n.y,t:W.t,exact:true}; a.face=Math.PI; a.act=null; a.supp=null; a.suppPend=null; a.suppCd=0; W.inc=[];
   const see=E.canSee(W,a,n), hs=E.suppHid(W); E.suppAI(W);
   console.log(`    궁수가 봄 ${see} · 안 자리 ${hs?hs.x.toFixed(1)+','+hs.y.toFixed(1):'없음'} · 명령 ${a.suppPend?JSON.stringify({x:+a.suppPend.x.toFixed(1),y:+a.suppPend.y.toFixed(1),hid:a.suppPend.hid}):'없음 (지휘가 닿지 않았을 수 있음)'}`);

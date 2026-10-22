@@ -150,6 +150,7 @@ const litAt = (W, x, y) => W.light[(y | 0) * W.map.W + (x | 0)] > LIT;
 const glowAt = (W, x, y) => W.light[(y | 0) * W.map.W + (x | 0)] > DIM;   // v7.7 빛 또는 어스름 (실루엣이라도 보임)
 function canSee(W, u, t){
   const d = Math.hypot(u.x - t.x, u.y - t.y);
+  if (W.camp && W.t < (W.rules.see0 != null ? W.rules.see0 : 0.3) && !W.duel && t.side !== u.side && d > (u.r || 0) + (t.r || 0) + 0.35) return false;   /* v8.7.3 여정 맵에 들어선 첫 0.3초는 발견 없음 (양쪽 같음) — 몸이 닿은 것만 (훈련장은 그대로) */
   if (u.radar && t.rpT && t.side !== u.side && t.rpT[u.side] > W.t && d <= ((W.rules.radar || {}).r || 14)) return true;   /* v8.4.0 [레이더] */
   if (d > W.rules.sight + (W.map.hills ? (TER(W).sightHi != null ? TER(W).sightHi : 0.6) * Math.abs(gH(W.map, u.x, u.y) - gH(W.map, t.x, t.y)) : 0)) return false;   // v7.18 높이차만큼 멀리 보고 · 멀리서 보임
   if (u.smell && d <= u.smell) return true;   // 높은후각: 빛 · 바위와 상관없이 냄새로 앎

@@ -1,4 +1,4 @@
-// v7.23.1 시험 — eng7231.js v1.1 (v1.1: 원형 베기는 버티는 몸 (인주 체력 500 · 카리우스) · 리듬은 오래 버티는 레베카 · 자세 기준 0.6 · 세자르 1 — 2D 판 두뇌 이식: 깨어남 · 리듬 (탐색 ↔ 딜타임) · 탐색 중 간격 · 원형 베기 (둘레 모두 · 동상 · 밀림) · 끊김 · 어깨 박치기 · 뒷걸음 점프 · 빈틈 찌르기 → 확정 3연격 · 회피 반격 (확정 치명) · 동상 (걸음 ×0.55) · 자세 (덜 밀림) · 노인의 검 냉기 · 무덤의 계단 · 일행과 한 판)
+// v7.23.1 시험 — eng7231.js v1.2 (v1.2: 동상이 풀렸는지는 방패 자세 (걸음 ×0.75) 를 빼고 잼 — 투창 예고를 보고 방패를 들면 0.75 로 읽히던 것 · v1.1: 원형 베기는 버티는 몸 (인주 체력 500 · 카리우스) · 리듬은 오래 버티는 레베카 · 자세 기준 0.6 · 세자르 1 — 2D 판 두뇌 이식: 깨어남 · 리듬 (탐색 ↔ 딜타임) · 탐색 중 간격 · 원형 베기 (둘레 모두 · 동상 · 밀림) · 끊김 · 어깨 박치기 · 뒷걸음 점프 · 빈틈 찌르기 → 확정 3연격 · 회피 반격 (확정 치명) · 동상 (걸음 ×0.55) · 자세 (덜 밀림) · 노인의 검 냉기 · 무덤의 계단 · 일행과 한 판)
 const {E,R,DES,INJ,NOR,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -38,7 +38,7 @@ const lit=W=>{ W.amb=1; E.computeLight(W); };
   ok(L&&r.taken>0,'회피 반격 — 피한 뒤 곧바로 되벰'); }
 // 9) 동상: 걸음 × 0.55
 { const W=W_([mk(REB,0,7,8)],[mk(DES['창병'],1,15,8)],1,'hold'); const r=W.units[0], s0=E.spdNow0(W,r); E.frostOn(W,r,4,1); const s1=E.spdNow0(W,r);
-  ok(Math.abs(s1/s0-0.55)<0.01,'동상 — 걸음 × 0.55 ('+(s1/s0).toFixed(2)+')'); run(W,4.2); ok(Math.abs(E.spdNow0(W,r)/s0-1)<0.01,'4초 뒤 풀림'); }
+  ok(Math.abs(s1/s0-0.55)<0.01,'동상 — 걸음 × 0.55 ('+(s1/s0).toFixed(2)+')'); run(W,4.2); r.raised=false; r.pinT=-9; ok(Math.abs(E.spdNow0(W,r)/s0-1)<0.01,'4초 뒤 풀림'); }
 // 10) 자세: 가벼운 몸이지만 덜 밀림
 { const W=W_([mk(KAR,0,6,8)],[mk(CZ,1,8,8),{...mk(CZ,1,8,11),poise:1}],1,'hold'); const [c,k1,k2]=W.units; const l1=E.kbLen(W,c,k1,1), l2=E.kbLen(W,c,k2,1);
   console.log('      밀림', l1.toFixed(2), '자세 없으면', l2.toFixed(2)); ok(l1<l2*0.6,'자세 × 6 — 카리우스에게도 덜 밀림'); }

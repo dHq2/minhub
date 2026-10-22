@@ -1,4 +1,4 @@
-// v7.29.0 UI 시험 — ui7290.js v1.3 (v1.3: v8.7.2 모닝스타는 이제 타고나길 돌격 안 함 — 성향 · 단추 시험은 그 성향을 끈 채로 · v1.2: 비껴 선 동료는 공이 휘는 반대쪽 · 상세 칸은 교전한 세자르로 · v1.1: 적 자리 = 철퇴가 닿는 거리 (간격 2.0) · v1.0: 철퇴 오사 (던질 때 · 거둘 때 · 비껴 선 동료는 안 맞음) · 길에 동료가 있으면 기다림 (명령이면 던짐) · 거두는 공이 적을 침 · 넘어뜨림 / 돌격 성향 (탕아 · 모닝스타 · 돌격 안 함 단추 · 다음 판) / 세자르 버팀 · 원형 베기 → 돌진 원형 베기 / 왕관 [★권위E] · 로그 · 상세 칸 · PC · 휴대폰)
+// v7.29.0 UI 시험 — ui7290.js v1.4 (v1.4: v8.7.3 철퇴도 사격과 같게 — 연타 (바로) 명령만 오사를 감수, 그냥 공격 명령은 길이 트일 때까지 기다림 · v1.3: v8.7.2 모닝스타는 이제 타고나길 돌격 안 함 — 성향 · 단추 시험은 그 성향을 끈 채로 · v1.2: 비껴 선 동료는 공이 휘는 반대쪽 · 상세 칸은 교전한 세자르로 · v1.1: 적 자리 = 철퇴가 닿는 거리 (간격 2.0) · v1.0: 철퇴 오사 (던질 때 · 거둘 때 · 비껴 선 동료는 안 맞음) · 길에 동료가 있으면 기다림 (명령이면 던짐) · 거두는 공이 적을 침 · 넘어뜨림 / 돌격 성향 (탕아 · 모닝스타 · 돌격 안 함 단추 · 다음 판) / 세자르 버팀 · 원형 베기 → 돌진 원형 베기 / 왕관 [★권위E] · 로그 · 상세 칸 · PC · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -18,13 +18,13 @@ const { chromium } = require('playwright');
    // 거둘 때 동료 (깊이 겹침)
    put(); e.x=16; a.x=12.2; a.y=10.02; W.rand=()=>0.5; k0=W.log.length; W.flails=[{ by:m.i, side:0, b:e.i, x:13.6, y:10, vx:-12, vy:0, L:3.2, br:0.2, ph:'back', hit:null, ev:[], bk:[], t0:W.t }]; run(120); const L4=W.log.slice(k0), ffBack=L4.some(l=>l.k==='flailFF'&&l.b===a.i&&l.back);
    // 길에 동료 → 기다림 · 명령이면 던짐
-   put(); a.x=11.6; a.y=10.04; m.order=null; startAct(W,m,e,'시험'); const wait=!m.act&&/철퇴 길/.test(m.mood||''); m.act=null; m.order={ k:'attack', b:e.i }; startAct(W,m,e,'명령'); const ordThrow=!!(m.act&&m.act.fl); m.act=null; m.order=null;
+   put(); a.x=11.6; a.y=10.04; m.order=null; startAct(W,m,e,'시험'); const wait=!m.act&&/철퇴 길/.test(m.mood||''); m.act=null; m.order={ k:'attack', b:e.i }; startAct(W,m,e,'명령'); const ordWait=!m.act; m.act=null; m.order={ k:'attack', b:e.i, now:true }; startAct(W,m,e,'명령'); const ordThrow=!!(m.act&&m.act.fl); m.act=null; m.order=null;
    const txt=logLines(W).join('\n'); W.rand=r0; evadeP=ev0; put();
-   return { ffOut, aHit, eHit1, ffSide, eHit2, back: back?back.dmg:null, down, ffBack, wait, ordThrow, txt: /오사 — 모닝스타의 철퇴가/.test(txt)&&/오사 — 모닝스타의 돌아오는 철퇴가/.test(txt), ff: W.rules.weapons['모닝스타'].flail.ff };
+   return { ffOut, aHit, eHit1, ffSide, eHit2, back: back?back.dmg:null, down, ffBack, wait, ordWait, ordThrow, txt: /오사 — 모닝스타의 철퇴가/.test(txt)&&/오사 — 모닝스타의 돌아오는 철퇴가/.test(txt), ff: W.rules.weapons['모닝스타'].flail.ff };
  });
  console.log('    철퇴 ('+vw.nm+')', JSON.stringify(f));
  ok(f.ffOut&&f.aHit&&!f.eHit1,'던진 공이 깊이 겹친 동료를 맞힘 (오사 · 그 뒤 적은 안 맞음)'); ok(!f.ffSide&&f.eHit2,'비껴 선 동료는 지나침 — 적이 맞음'); ok(f.back>0&&f.down,'거두는 공이 길의 적을 침 ('+f.back+') · 넘어뜨림'); ok(f.ffBack,'거두는 공도 깊이 겹친 동료를 맞힘');
- ok(f.wait&&f.ordThrow,'공 길에 동료 — 스스로는 기다림 · 명령이면 던짐'); ok(f.txt,'로그 글 (오사 — 던질 때 · 거둘 때)'); ok(f.ff===0.55,'수치표 flail.ff 0.55');
+ ok(f.wait&&f.ordWait&&f.ordThrow,'공 길에 동료 — 스스로 · 그냥 공격 명령은 기다림 · 연타 (바로) 명령이면 던짐'); ok(f.txt,'로그 글 (오사 — 던질 때 · 거둘 때)'); ok(f.ff===0.55,'수치표 flail.ff 0.55');
  // 2. 돌격 성향 · 돌격 안 함
  const c = await p.evaluate(()=>{ const W=world, m=W.units.find(u=>u.name==='모닝스타'), t=W.units.find(u=>u.name==='탕아'), e=W.units.find(u=>u.side===1&&u.alive&&!u.cz);
    m.noChg=m.noChg0=false; m.chgBias=2; m.x=10; m.y=10; e.x=13.5; e.y=10; e.seenBy=true; t.x=10; t.y=12; const v=chargeValue(W,m,e), C=W.rules.charge, w0=C.worth; C.worth=v+m.bold*0.8-((planOf(W,0)||{}).chg||0)-0.5;

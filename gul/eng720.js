@@ -1,4 +1,4 @@
-// v7.20 시험 — eng720.js v1.1 (v1.1: 탄 시험은 1발 · 가까이 · 갑옷 시험은 장검으로 · 루팅 이름은 '검기사의 ' 로 · 가방 탄 · 탄이 떨어지면 가방 무기 · 방패 · 무기 부러짐 → 가방 무기 · 방패 부서짐 · 갑옷 닳음 · 망가짐 · 루팅 이름 · 카리우스 제한 · 두 손 무기 · 남의 무기 · 큰 갑옷 무게 · 꺼내 듦 명령 · 들던 무기는 가방으로)
+// v7.20 시험 — eng720.js v1.2 (v1.2: B 의 창병은 멀리 (투창 한 방 — 심장 급소 — 에 노먼이 쓰러져 꺼내 들기를 못 보던 것 · 난수 차례) · v1.1: 탄 시험은 1발 · 가까이 · 갑옷 시험은 장검으로 · 루팅 이름은 '검기사의 ' 로 · 가방 탄 · 탄이 떨어지면 가방 무기 · 방패 · 무기 부러짐 → 가방 무기 · 방패 부서짐 · 갑옷 닳음 · 망가짐 · 루팅 이름 · 카리우스 제한 · 두 손 무기 · 남의 무기 · 큰 갑옷 무게 · 꺼내 듦 명령 · 들던 무기는 가방으로)
 const {E,DES,NOR,INJ,KAR,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -12,7 +12,7 @@ console.log('A. 가방 탄: 든 무기의 탄이 다 떨어지면 같은 종류 
   ok(!!l&&l.n>0&&n.ammo>0&&n.weaponNow!=='맨손','탄을 꺼내 다시 쏨'); }
 
 console.log('B. 탄이 없고 가방 탄도 없으면 가방의 근접 무기 · 방패를 꺼내 듦');
-{ const W=W_([mk({...NOR,ammo:0,bag:[{k:'weapon',name:'검',label:'노먼의 검'},{k:'shield',name:'방패',label:'노먼의 방패'}]},0,4,8),mk(INJ,0,1,1,{hero:true})],[mk(DES['창병'],1,12,8)],1,'free'); lit(W); const n=W.units[0];
+{ const W=W_([mk({...NOR,ammo:0,bag:[{k:'weapon',name:'검',label:'노먼의 검'},{k:'shield',name:'방패',label:'노먼의 방패'}]},0,4,8),mk(INJ,0,1,1,{hero:true})],[mk(DES['창병'],1,28,14)],1,'free'); lit(W); const n=W.units[0];
   run(W,4,()=>W.log.some(l=>l.k==='bagSwap'&&l.a===n.i)); const l=W.log.find(x=>x.k==='bagSwap'&&x.a===n.i);
   console.log('    ', JSON.stringify(l), '든 것', n.weapon, n.wName, '방패', n.shield, '가방', JSON.stringify(n.bag.map(x=>x.label||x.name)));
   ok(!!l&&n.weapon==='검'&&n.wName==='노먼의 검'&&n.shield&&!E.unarmed?.(n)&&n.rng<1,'검 + 방패를 꺼내 듦'); ok(n.bag.some(x=>x.name==='소총'),'빈 소총은 가방으로');

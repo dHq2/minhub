@@ -1,4 +1,4 @@
-// v7.22.0 UI 시험 — ui722.js v1.1 (v1.1: 모바일 대화 창이 화면 아래 · 넓게 · 인사 다음 줄 한 칸씩 · 인카운터: 3S 뽑기 (파티 인물 빠짐) · 친칠라 (호수 · 졸음 · 처음 보임 나레이션 · 깜짝 도약 · 말 걸기 셋 → 영입 · 공격 → 적 · 쓰러뜨리면 하얀 나무 · 친칠라의 후드 · 그냥 넘어가면 따라옴) · 탕아 (불빛 · 인사 · 두고 감 / 같이 감) · 대화 창 그림 · 판 누름 · 모바일)
+// v7.22.0 UI 시험 — ui722.js v1.3 (v1.3: 판에서 눌러 말 걸기 (encClick) 도 앞 나레이션을 닫고 0.5초 뒤 · v1.2: 💬 말 걸기는 앞 나레이션을 닫고 0.5초 뒤에 누름 — v8.7.3 막 닫은 누름 (0.45초) 은 대화를 다시 열지 않음 (사람 손의 같은 터치) · v1.1: 모바일 대화 창이 화면 아래 · 넓게 · 인사 다음 줄 한 칸씩 · 인카운터: 3S 뽑기 (파티 인물 빠짐) · 친칠라 (호수 · 졸음 · 처음 보임 나레이션 · 깜짝 도약 · 말 걸기 셋 → 영입 · 공격 → 적 · 쓰러뜨리면 하얀 나무 · 친칠라의 후드 · 그냥 넘어가면 따라옴) · 탕아 (불빛 · 인사 · 두고 감 / 같이 감) · 대화 창 그림 · 판 누름 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -23,7 +23,7 @@ const { chromium } = require('playwright');
  const s2b = await p.evaluate(()=>{ const E=encCur(), h=world.units.find(u=>u.hero); return { d: +Math.hypot(h.x-E.x,h.y-E.y).toFixed(2), x: E.x, y: E.y }; });
  console.log('    깜짝', JSON.stringify(s2), JSON.stringify(s2b)); ok(s2.st==='awake'&&/깜짝/.test(s2.bub||'')&&s2b.d>3.5,'3칸 안으로 오면 "...(깜짝)" 뒤로 도약 (지금 '+s2b.d+'칸)');
  const bar = await p.evaluate(()=>{ encTick(world); campBarRender(true); return !!document.querySelector('[data-ctalk]'); }); ok(bar,'가까이 있으면 캠페인 띠에 💬 말 걸기');
- await p.evaluate(()=>document.querySelector('[data-ctalk]').click());
+ await p.waitForTimeout(500); await p.evaluate(()=>document.querySelector('[data-ctalk]').click());   // 사람처럼 — 막 닫은 누름 (0.45초) 은 다시 열지 않음
  const t1 = await p.evaluate(ADV); console.log('    말 1', JSON.stringify(t1)); ok(t1&&t1.length===3&&t1.includes('공격한다'),'말 걸기 1: 노려보기만 · 계속 / 그만 / 공격');
  const img = await p.evaluate(async()=>{ await new Promise(r=>setTimeout(r,500)); const im=document.getElementById('tkImg'); return { src: im.getAttribute('src'), w: im.naturalWidth, face: document.getElementById('tkPic').classList.contains('tk-face') }; });
  console.log('    그림', JSON.stringify(img)); ok(/art\/C-106_talk03\.webp/.test(img.src||'')&&img.w>0&&!img.face,'대화 창에 친칠라 대화 표정 (talk03) 그림');
@@ -65,7 +65,7 @@ const { chromium } = require('playwright');
 
  // 5) 탕아 같이 감 + 판 누름으로 말 걸기
  await p.evaluate(GO3('tang')); await p.evaluate(NEAR(3)); await p.evaluate(ADV); await p.evaluate(()=>encTick(world)); await p.evaluate(ADV);
- const ck = await p.evaluate(()=>{ const E=encCur(); return encClick({ x: E.x + 0.2, y: E.y }); }); await p.evaluate(ADV); await p.evaluate(PICK('같이 가자')); await p.evaluate(ADV);
+ await p.waitForTimeout(500); const ck = await p.evaluate(()=>{ const E=encCur(); return encClick({ x: E.x + 0.2, y: E.y }); }); await p.evaluate(ADV); await p.evaluate(PICK('같이 가자')); await p.evaluate(ADV);
  const j5 = await p.evaluate(()=>{ const u=world.units.find(x=>x.name==='탕아'); return { side: u&&u.side, st: encCur().st }; });
  ok(ck&&j5.side===0&&j5.st==='joined','판에서 누르면 말 걸기 · 같이 가자 → 탕아가 동료');
 

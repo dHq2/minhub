@@ -1,4 +1,4 @@
-// v8.0.0 UI 시험 — ui8000.js v1.3 (v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
+// v8.0.0 UI 시험 — ui8000.js v1.4 (v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -36,9 +36,9 @@ const { chromium } = require('playwright');
  const rt = await p.evaluate(()=>{ const W=world, u=W.units.find(x=>x.side===0&&x.alive); const o={ k:'exit', dir:'down', x:u.x }; u.order=o; exitStep(W,u,o,1/60); const mood=u.mood; const far=!u.gone; u.x=W.entry.x+0.3; u.y=W.entry.y; exitStep(W,u,o,1/60); return { mood, far, gone: u.gone }; });
  ok(rt.gone==='down','↩ 물러나기 — 들어온 자리로 가서 나감 ('+JSON.stringify(rt)+')');
  // 이기고 출구로
- const win = await p.evaluate(()=>{ const W=world; for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } W.cleared=true; campBarRender(true); const bar=document.getElementById('campBar').innerHTML; const g0=R8S().gold;
-   for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); checkEnd(W); W.over=true; W.result=W.result||'exit'; mode='plan'; onOver(); return { exit: /▼ 출구로/.test(bar), bn: !document.getElementById('banner').hidden, txt: document.getElementById('banner').textContent, g0 }; });
- ok(win.exit,'끝난 판 — ▼ 출구로 단추');
+ const win = await p.evaluate(()=>{ const W=world; for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } W.cleared=true; campBarRender(true); const hid=!!(W.exitHide&&!W.exitSeen), bar0=document.getElementById('campBar').innerHTML; W.exitSeen=true; campBarRender(true); const bar=document.getElementById('campBar').innerHTML; const g0=R8S().gold;
+   for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); checkEnd(W); W.over=true; W.result=W.result||'exit'; mode='plan'; onOver(); return { find: !hid || /출구 찾기/.test(bar0), exit: /▼ 출구로/.test(bar), bn: !document.getElementById('banner').hidden, txt: document.getElementById('banner').textContent, g0 }; });
+ ok(win.find&&win.exit,'끝난 판 — 출구를 못 찾았으면 🔎 출구 찾기 · 찾으면 ▼ 출구로 단추');
  ok(win.bn&&/^2층 정산/.test(win.txt)&&/지도로/.test(win.txt)&&/얻은 것/.test(win.txt),'정산 화면 (N층 정산) · 얻은 것 · 지도로');
  const back = await p.evaluate(()=>{ const bs=[...document.querySelectorAll('#banner button')].find(x=>/지도로/.test(x.textContent)); if (bs) bs.click(); const R=R8S(); return { map: !document.getElementById('run8').hidden, done: R.done.length, gold: R.gold, party: R.party.length, av: r8Avail().length }; });
  ok(back.map&&back.done===1&&back.gold>win.g0&&back.av>=1,'지도로 돌아옴 — 칸 끝 · 동전 늚 ('+JSON.stringify(back)+')');

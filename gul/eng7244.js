@@ -1,4 +1,4 @@
-// v7.24.4 시험 — eng7244.js v1.0 (모닝스타 철퇴: 관성 던지기 (속도가 변함 · 사슬 끝에서 되튕김 · 맞고 튕김 · 끌려 돌아옴) / 철퇴 후리기 (정한 거리 · 한 바퀴 · 지나는 순서대로 · 중형은 크게 밀리고 대형은 덜 · 동료도 · 막기 성공이면 튕기고 멈춤 · 스스로 쓸 때 거리))
+// v7.24.4 시험 — eng7244.js v1.1 (v1.1: v8.7.3 철퇴 후리기 준비 중엔 원 안의 동료가 비켜섬 — 옛 판정 (동료도 맞음) 은 동료에게 제자리 명령 · 비켜섬은 따로 · v1.0: 모닝스타 철퇴: 관성 던지기 (속도가 변함 · 사슬 끝에서 되튕김 · 맞고 튕김 · 끌려 돌아옴) / 철퇴 후리기 (정한 거리 · 한 바퀴 · 지나는 순서대로 · 중형은 크게 밀리고 대형은 덜 · 동료도 · 막기 성공이면 튕기고 멈춤 · 스스로 쓸 때 거리))
 const {E,R,DES,INJ,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -15,8 +15,12 @@ const pin=(u,x,y)=>{ u.x=x; u.y=y; u.vx=0; u.vy=0; u.goal=null; u.path=[]; };
 { const W=W_([mk(MS,0,8,8)],[mk(KN(),1,10.3,8)],1,'hold'); lit(W); const [m,k]=W.units; k.stunT=1e9; E.throwFlail(W,m,k); const F=W.flails[0]; let vx0=null;
   for (let i=0;i<12;i++){ E.stepWorld(W,1/30); pin(m,8,8); pin(k,10.3,8); if (F.hit!=null&&vx0==null) vx0=F.vx; }
   console.log('      맞은 뒤 vx',vx0&&vx0.toFixed(2)); ok(F.hit===k.i&&vx0<0.5,'몸에 맞고 튕겨 나옴'); }
+// 3b) v8.7.3 제자리 명령이 없는 동료는 원 밖으로 비켜섬 ('!')
+{ const W=W_([mk(MS,0,10,8),mk({...REB,name:'동료',ov:{hp:9000}},0,10,6.6)],[mk(KN(),1,11.9,8),mk(KN(),1,16.5,8)],1,'hold'); lit(W); const [m,r,k1]=W.units; k1.stunT=1e9; m.face=0; E.startSpec(W,m,null,'sweep','시험'); m.act.R=2.1;
+  run(W,1.8); const warn=W.log.some(l=>l.k==='sweepWarn'&&l.a===r.i), hitR=W.log.some(l=>l.k==='hit'&&l.a===m.i&&l.b===r.i); console.log('      비켜섬',warn,'동료 맞음',hitR,'거리',Math.hypot(r.x-m.x,r.y-m.y).toFixed(2));
+  ok(warn&&!hitR,'제자리 명령이 없는 동료는 철퇴 원 밖으로 비켜섬 (안 맞음)'); }
 // 3) 철퇴 후리기: 정한 거리 · 한 바퀴 · 중형은 크게 · 대형은 덜 · 동료도
-{ const W=W_([mk(MS,0,10,8),mk({...REB,name:'동료',ov:{hp:9000}},0,10,6.3)],[mk(KN(),1,11.9,8),mk({...KAR,side:1,name:'적 카리우스',ov:{hp:9000}},1,10,10.2),mk(KN(),1,14.5,8)],1,'hold'); lit(W); const [m,r,k1,kr,kfar]=W.units; for (const e of [k1,kr,kfar]){ e.stunT=1e9; e.guardMode='off'; e.raised=false; }
+{ const W=W_([mk(MS,0,10,8),mk({...REB,name:'동료',ov:{hp:9000}},0,10,6.3)],[mk(KN(),1,11.9,8),mk({...KAR,side:1,name:'적 카리우스',ov:{hp:9000}},1,10,10.2),mk(KN(),1,14.5,8)],1,'hold'); lit(W); const [m,r,k1,kr,kfar]=W.units; r.order={k:'hold'}; for (const e of [k1,kr,kfar]){ e.stunT=1e9; e.guardMode='off'; e.raised=false; }
   m.face=0; const p0={k1:[k1.x,k1.y],kr:[kr.x,kr.y],r:[r.x,r.y]}; E.startSpec(W,m,null,'sweep','시험'); m.act.R=2.1; const seq=[];
   run(W,1.8,()=>{ for (const l of W.log.filter(l=>l.k==='hit'&&l.a===m.i&&l.tag==='철퇴 후리기')) if (!seq.includes(l.b)) seq.push(l.b); });
   const S=W.log.find(l=>l.k==='flailSpin'), SW=W.log.find(l=>l.k==='flailSweep'); const mv=u=>Math.hypot(u.x-p0[u===k1?'k1':u===kr?'kr':'r'][0],u.y-p0[u===k1?'k1':u===kr?'kr':'r'][1]);

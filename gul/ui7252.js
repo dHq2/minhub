@@ -1,4 +1,4 @@
-// v7.25.2 UI 시험 — ui7252.js v1.3 (v1.3: v8.7.2 처음 동료 일곱 (뽑기 셋) · v1.2: v8.5.0 전리품 창 다시에 맞춤 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
+// v7.25.2 UI 시험 — ui7252.js v1.4 (v1.4: v8.7.3 남은 전리품이 있으면 정산 창은 전리품 탭부터 — 카드 · 성장 칩은 정산 탭을 눌러 봄 · 전리품 탭이 먼저 열림도 확인 · v1.3: v8.7.2 처음 동료 일곱 (뽑기 셋) · v1.2: v8.5.0 전리품 창 다시에 맞춤 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
 //   동료 얼굴을 누르면 그 가방으로 · 장비 탭에서 끼우기 → 다음 맵 판에 그 무기 · 맵 중간 전리품 창도 카드 · 화면 안 (PC · 휴대폰))
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -8,10 +8,10 @@ const { chromium } = require('playwright');
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
    await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); }); await p.waitForTimeout(500);
    const r = await p.evaluate(()=>{ const W=world, al=W.units.filter(u=>u.side===0), k=al[0]; for (const f of W.units.filter(u=>u.side===1)) applyDmg(W,k,f,99999,{}); const rb=W.units.find(u=>u.name==='레베카'); rb.shots=30; rb.miss=2;
-     for (const u of al) leaveMap(W,u,'up'); checkEnd(W); mode='plan'; onOver(); const bn=document.getElementById('banner');
-     return { vis:!bn.hidden, tabs:[...bn.querySelectorAll('[data-crt]')].map(b=>b.textContent), chips:bn.querySelectorAll('.gchip').length, cards:bn.querySelectorAll('.cgrid .cc').length }; });
+     for (const u of al) leaveMap(W,u,'up'); checkEnd(W); mode='plan'; onOver(); const bn=document.getElementById('banner'); const first=(bn.querySelector('[data-crt].on')||{}).dataset; const sb=bn.querySelector('[data-crt="sum"]'); if (sb) sb.click();
+     return { vis:!bn.hidden, first: first && first.crt, tabs:[...bn.querySelectorAll('[data-crt]')].map(b=>b.textContent), chips:bn.querySelectorAll('.gchip').length, cards:bn.querySelectorAll('.cgrid .cc').length }; });
    console.log('    '+vw.nm+' 정산',JSON.stringify(r)); ok(r.vis&&r.tabs.length===3&&/정산/.test(r.tabs[0])&&/전리품/.test(r.tabs[1])&&/장비/.test(r.tabs[2])&&r.cards===7,vw.nm+': 맵을 넘어가면 정산 화면 — 탭 셋 · 동료 카드 여섯');
-   ok(r.chips>=1,vw.nm+': ✦ 성장이 칩으로 크게 ('+r.chips+')');
+   ok(r.chips>=1,vw.nm+': ✦ 성장이 칩으로 크게 ('+r.chips+')'); ok(r.first==='loot',vw.nm+': 남은 전리품이 있으면 전리품 탭부터 ('+r.first+')');
    if (vw.mob) await p.screenshot({path:'_s7252_sum_mo.png'}); else await p.screenshot({path:'_s7252_sum.png'});
    const l = await p.evaluate(()=>{ document.querySelector('[data-crt="loot"]').click(); const L=lootOf(world), cards=document.querySelectorAll('#crBody .l8r').length+L.filter(x=>x.taken).length;
      const w=L.filter(x=>x.k==='weapon').length, sh=L.filter(x=>x.k==='shield').length, ar=L.filter(x=>x.k==='armor'||x.k==='helm');

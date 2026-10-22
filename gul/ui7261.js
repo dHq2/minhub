@@ -1,4 +1,4 @@
-// v7.26.1 UI 시험 — ui7261.js v1.2 (v1.2: 훈련장으로 바꾼 뒤 잠깐 기다림 · 적이 없으면 창병 하나 · v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
+// v7.26.1 UI 시험 — ui7261.js v1.4 (v1.4: 바꿔 들기 시험의 창병은 체력을 넉넉히 (권총이 1초 안에 쓰러뜨린 드문 판 — 바꿔 들 까닭이 사라지고 다음 줄이 멈추던 것) · 적이 없으면 멈추지 않고 실패로 적음 · v1.3: v8.7.3 바꿔 들기는 보이는 근접이 2.6칸 안에 1초 머물 때 (1.2칸 안이면 곧바로) · 되돌림 시험은 간두 제자리 (어둠 속 탐색으로 적에게 다가가 흔들리던 것) · v1.2: 훈련장으로 바꾼 뒤 잠깐 기다림 · 적이 없으면 창병 하나 · v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
 //   명령이 안 닿음 로그는 3초에 한 번 / 간두: 겨누는 중에도 코앞 (2.6칸) 이면 샷건 · 멀어지면 권총 · 탄 칸에 총 이름 · '🔁 샷건으로' 띠 / 갑옷 아이콘이 작은 판에서도 / 좁은 문: 4S 유적 다섯 판 모두 도착)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -42,14 +42,16 @@ const { chromium } = require('playwright');
  // 5) 간두: 겨누는 중에도 코앞이면 샷건 · 멀어지면 권총 · 탄 칸 · 띠 (훈련장)
  await p.evaluate(()=>{ setMode('train'); if (S.camp) campQuit(); }); await p.waitForTimeout(200);
  await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1).slice(0,1); if (!S.units.length){ const f=fromDesign(designByKey('창병'),1); f.x=20.5; f.y=10.5; S.units.push(f); } const g=fromDesign(designByKey('간두'),0); g.x=10.5; g.y=10.5; S.units.push(g); rebuildMap(); changed(); start(); });
- const s5 = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); e.seenBy=true; e.x=g.x+6; e.y=g.y; g.face=0; e.face=Math.PI; computeLight(W);
-   mode='run'; paused=false; startAct(W,g,e,'시험'); const a0=g.act&&g.act.k; e.x=g.x+g.r+e.r+2.0; let sw=null, lab=null; for (let k=0;k<30;k++){ stepWorld(W,1/30); if (g.act&&g.act.k==='altSwap'&&!sw){ sw=k; draw(); } if (g.weapon==='샷건') break; } paused=true; mode='plan';
+ const s5 = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); e.max=e.hp=Math.max(e.hp,5000); e.seenBy=true; e.x=g.x+6; e.y=g.y; g.face=0; e.face=Math.PI; computeLight(W);
+   mode='run'; paused=false; startAct(W,g,e,'시험'); const a0=g.act&&g.act.k; e.x=g.x+g.r+e.r+2.0; let sw=null, lab=null; for (let k=0;k<60;k++){ stepWorld(W,1/30); if (g.act&&g.act.k==='altSwap'&&!sw){ sw=k; draw(); } if (g.weapon==='샷건') break; } paused=true; mode='plan';
    return { a0, sw, w: g.weapon, alt: g.alt&&g.alt.name, log: W.log.filter(l=>l.k==='altSwap').map(l=>l.why) }; });
- console.log('    간두', JSON.stringify(s5)); ok(s5.a0==='atk'&&s5.sw!=null&&s5.sw<=3&&s5.w==='샷건'&&s5.alt==='권총','간두: 권총으로 겨누던 중 적이 2칸 안 → 곧바로 샷건 ('+(s5.sw)+' 틱 · '+s5.log.join('')+')');
- const s5b = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); e.x=g.x+9; e.order={k:'hold'}; mode='run'; paused=false; for (let k=0;k<30*3;k++){ stepWorld(W,1/30); if (g.weapon==='권총') break; } paused=true; mode='plan'; return { w: g.weapon }; });
+ console.log('    간두', JSON.stringify(s5)); ok(s5.a0==='atk'&&s5.sw!=null&&s5.sw>=24&&s5.sw<=40&&s5.w==='샷건'&&s5.alt==='권총','간두: 권총으로 겨누던 중 적이 2칸 안에 1초 머물면 샷건 ('+(s5.sw)+' 틱 · '+s5.log.join('')+')');
+ const s5b = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); if (!e) return { w: null }; e.x=g.x+9; e.order={k:'hold'}; g.order={k:'hold'}; g.ordLive=g.order; mode='run'; paused=false; for (let k=0;k<30*3;k++){ stepWorld(W,1/30); if (g.weapon==='권총') break; } paused=true; mode='plan'; g.order=null; g.ordLive=null; return { w: g.weapon }; });
  ok(s5b.w==='권총','적이 멀어지면 (4.2칸 밖 1.5초) 다시 권총');
  const lab = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'); const txt=[]; const ft=ctx.fillText.bind(ctx); ctx.fillText=(s,...a)=>{ txt.push(String(s)); return ft(s,...a); }; draw(); g.act={ k:'altSwap', phase:'wind', t0:W.t, end:W.t+0.35 }; draw(); g.act=null; ctx.fillText=ft; return txt.filter(s=>/권총|샷건/.test(s)); });
  console.log('    글', JSON.stringify(lab)); ok(lab.some(s=>/^권총 \d/.test(s))&&lab.some(s=>/🔁 샷건으로/.test(s)),'탄 칸에 든 총 이름 (권총 n·n) · 바꿔 드는 동안 "🔁 샷건으로"');
+ const s5c = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='간두'), e=W.units.find(u=>u.side===1&&u.alive); g.act=null; g.altNearT=null; e.x=g.x+g.r+e.r+0.9; e.y=g.y; computeLight(W); mode='run'; paused=false; let sw=null; for (let k=0;k<30;k++){ stepWorld(W,1/30); if (g.act&&g.act.k==='altSwap'&&sw==null) sw=k; if (g.weapon==='샷건') break; } paused=true; mode='plan'; return { sw, w: g.weapon }; });
+ ok(s5c.sw!=null&&s5c.sw<=3,'코앞 (1칸 안) 이면 머물지 않고 곧바로 샷건 ('+s5c.sw+' 틱)');
 
  // 6) 갑옷 아이콘: 작은 판에서도
  const ar = await p.evaluate(()=>{ const e0=S.units.find(u=>u.side===1); S.units=S.units.filter(u=>u.side===0||u===e0); const k=fromDesign(designByKey('레베카'),0); k.x=8.5; k.y=8.5; S.units.push(k); rebuildMap(); changed(); start(); let n=0; const f0=window.iconArmor; window.iconArmor=(...a)=>{ n++; return f0(...a); }; const z0=cam.z; cam.z=Math.min(cam.z, 20/TS); draw(); const ts=TS*cam.z; window.iconArmor=f0; cam.z=z0; return { n, ts: +ts.toFixed(1) }; });

@@ -1,4 +1,4 @@
-// v8.7.0 UI 시험 — ui8700.js v1.4 (v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
+// v8.7.0 UI 시험 — ui8700.js v1.6 (v1.6: 지대 10초 싸움 — 10초 전에 끝난 판은 결과 (전멸 lose · 승리 win) 가 있으면 됨 (드물게 2층 동료가 총잡이 지대에서 10초 안에 쓰러짐 — 옛 빌드도 150판에 1번 · 고장 아님) · v1.5: v8.7.3 보통 싸움판은 출구가 처음부터 열림 (정예 · 보스만 잠김) · 출구는 찾아야 앎 (🔎 출구 찾기) · v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -47,9 +47,9 @@ const { chromium } = require('playwright');
  ok(pimg.okN===pimg.n,'소품 그림 '+pimg.okN+'/'+pimg.n+' 불러옴 '+pimg.badL.join(' '));
  // 4. 첫 MS 칸 — 구획 싸움판
  const bt = await p.evaluate(()=>{ const R=R8S(); const n=R.fm.rows[0][0]; n.ms='fort'; r8Enter(n); const W=world, M=MAPS8[S.art8], al=W.units.filter(u=>u.side===0), fo=W.units.filter(u=>u.side===1);
-   const onFloor=W.units.every(u=>M.rows[Math.floor(u.y)][Math.floor(u.x)]==='.'); return { art: S.art8, sec: !!M.sec, base: M.base, NX: M.NX, NY: M.NY, W: S.W, H: S.H, al: al.length, fo: fo.length, onFloor, props: M.props.length, lock: W.exitLock, st: !!W.stairs }; });
+   const onFloor=W.units.every(u=>M.rows[Math.floor(u.y)][Math.floor(u.x)]==='.'); return { art: S.art8, sec: !!M.sec, base: M.base, NX: M.NX, NY: M.NY, W: S.W, H: S.H, al: al.length, fo: fo.length, onFloor, props: M.props.length, lock: W.exitLock, nt: n.t, st: !!W.stairs }; });
  console.log('    MS', JSON.stringify(bt));
- ok(bt.sec&&bt.art.startsWith('~')&&bt.W===bt.NX&&bt.H===bt.NY&&bt.fo>=3&&bt.onFloor&&bt.lock,'MS 칸 = 확대한 맵의 구획 ('+bt.base+' '+bt.NX+'×'+bt.NY+') · 모두 바닥 위 · 출구 잠김');
+ ok(bt.sec&&bt.art.startsWith('~')&&bt.W===bt.NX&&bt.H===bt.NY&&bt.fo>=3&&bt.onFloor&&bt.lock===(bt.nt==='elite'||bt.nt==='boss'),'MS 칸 = 확대한 맵의 구획 ('+bt.base+' '+bt.NX+'×'+bt.NY+') · 모두 바닥 위 · 출구는 정예 · 보스만 잠김 ('+bt.nt+' → '+(bt.lock?'잠김':'열림')+')');
  await p.evaluate(TALKEND); await wait(p,700);
  await p.evaluate(()=>{ const W=world, al=W.units.filter(u=>u.side===0); const a=al[0]; selId=a.i; const M=MAPS8[S.art8]; camX=null; }); await wait(p,300);
  await p.screenshot({ path: 'shots/v870_ms.png' });
@@ -62,7 +62,7 @@ const { chromium } = require('playwright');
  ok(win.includes('n0_0'),'MS 를 이기면 칸 끝 ('+win.join(',')+')');
  // 5. 지나가기: 출구가 열려 있음 → 안 싸우고 빠져나가면 동전 적음 · 다음 칸
  const ps = await p.evaluate(()=>{ const R=R8S(); world=null; const n=R.fm.rows[1][0]; n.ms='pass'; n.seed=n.seed-(n.seed%100)+60; n.stitch=null; R.at='n0_0'; r8Enter(n); const W=world, lock=W.exitLock, pass=W.r8.pass; const bar=document.getElementById('campBar').innerHTML; const g0=R.gold;
-   for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); W.over=true; W.result='exit'; mode='plan'; onOver(); return { lock, pass, exitBtn: /▼ 출구로/.test(bar), gold: R.gold-g0, done: R.done.includes(n.id) }; });
+   for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); W.over=true; W.result='exit'; mode='plan'; onOver(); return { lock, pass, exitBtn: /▼ 출구로|🔎 출구 찾기/.test(bar), gold: R.gold-g0, done: R.done.includes(n.id) }; });
  await p.evaluate(TALKEND); console.log('    지나가기', JSON.stringify(ps));
  ok(!ps.lock&&ps.pass&&ps.exitBtn&&ps.done&&ps.gold>0&&ps.gold<=Math.ceil(22*0.4*1.5)+1,'지나가기 — 출구가 처음부터 열림 · 싸우지 않고 빠져나감 (동전 '+ps.gold+' · 40%)');
  // 6. 층 보스 (정예) 이기면 아래층
@@ -90,9 +90,9 @@ const { chromium } = require('playwright');
    for (const [e,E] of Object.entries(ELITE8)) for (const [k] of E.foes) if (k!=='@saved'&&!FOE8[k]) miss.push('정예 '+e+':'+k);
    return { n: Object.keys(FOE8).length, bad, miss }; });
  ok(fx.n>=150&&!fx.bad.length&&!fx.miss.length,'적 설계 '+fx.n+' — 모두 몸이 됨 · 지대 무리 · 정예가 모두 있는 설계 '+JSON.stringify(fx.bad.concat(fx.miss).slice(0,8)));
- const tf = await p.evaluate(()=>{ const R=R8S(), out={}; for (const tk of Object.keys(THEME8)){ world=null; R.themes[R.f=7]=tk; F8[7]=null; R.fm=r8Gen(7); const n=R.fm.rows[0][0]; R.at=null; R.done=[]; r8Enter(n); const W=world; if (!W){ out[tk]='판 없음'; continue; } for (let i=0;i<200&&!W.over;i++) stepWorld(W,0.05); const fo=W.units.filter(u=>u.side===1); out[tk]=fo.length+'/'+fo.filter(u=>!u.alive).length+' t'+W.t.toFixed(0)+' '+(MAPS8[S.art8]||{}).base; } return out; });
+ const tf = await p.evaluate(()=>{ const R=R8S(), out={}; for (const tk of Object.keys(THEME8)){ world=null; R.themes[R.f=7]=tk; F8[7]=null; R.fm=r8Gen(7); const n=R.fm.rows[0][0]; R.at=null; R.done=[]; r8Enter(n); const W=world; if (!W){ out[tk]='판 없음'; continue; } for (let i=0;i<200&&!W.over;i++) stepWorld(W,0.05); const fo=W.units.filter(u=>u.side===1); out[tk]=fo.length+'/'+fo.filter(u=>!u.alive).length+' t'+W.t.toFixed(0)+(W.over&&W.t<9.95?' '+W.result:'')+' '+(MAPS8[S.art8]||{}).base; } return out; });
  console.log('    지대', JSON.stringify(tf));
- ok(Object.values(tf).every(v=>/^\d+\/\d+ t1[0-9]/.test(v)),'지대 25 — 첫 MS 를 10초씩 돌림 (적/쓰러짐 · 맵)');
+ ok(Object.values(tf).every(v=>/^\d+\/\d+ (t1[0-9]|t\d (lose|win) )/.test(v)),'지대 25 — 첫 MS 를 10초씩 돌림 (적/쓰러짐 · 맵 · 10초 전에 끝나면 그 결과)');
  ok(!errs.length,'페이지 오류 없음 '+errs.slice(0,3).join(' | '));
  console.log(fails?'FAIL '+fails:'ALL OK'); await b.close(); process.exit(fails?1:0);
 })();
