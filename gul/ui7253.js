@@ -1,4 +1,4 @@
-// v7.25.3 UI 시험 — ui7253.js v1.6 (v1.6: 새 프롤로그는 확인 창이 닫힌 뒤 (잠깐 기다림) 뽑기를 누름 · 전리품은 새 창 (v8.5.0 — 받는 사람을 고르고 → 단추) · v1.5: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: 3S 에 오딜의 방 (몫 1) → 공통 전투 37.5% · 예정 줄 없앰 / v1.2: 파일 버전은 7.25.x 모양만 · v1.1: 여정은 맵 다섯 이상 · 휴대폰 넓이는 innerWidth 가 그대로인지로 · 공통 전투: 무리 · 상황을 뽑음 (2S 는 앞과 다른 무리) · 상황마다 적의 시작 (매복 = 숨음) · 3S 의 싸움도 공통 전투 /
+// v7.25.3 UI 시험 — ui7253.js v1.7 (v1.7: v8.7.6 전리품 단추는 번호가 아니라 출처 열쇠 (lk — 목록을 다시 세도 어긋나지 않게) · v1.6: 새 프롤로그는 확인 창이 닫힌 뒤 (잠깐 기다림) 뽑기를 누름 · 전리품은 새 창 (v8.5.0 — 받는 사람을 고르고 → 단추) · v1.5: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.4: 파일 버전은 x.y.z 모양 (8.0.0 부터) · v1.3: 3S 에 오딜의 방 (몫 1) → 공통 전투 37.5% · 예정 줄 없앰 / v1.2: 파일 버전은 7.25.x 모양만 · v1.1: 여정은 맵 다섯 이상 · 휴대폰 넓이는 innerWidth 가 그대로인지로 · 공통 전투: 무리 · 상황을 뽑음 (2S 는 앞과 다른 무리) · 상황마다 적의 시작 (매복 = 숨음) · 3S 의 싸움도 공통 전투 /
 //   맵을 넘어갈 때 나레이션 · 로딩 (누르면 · Space 로 건너뜀 · 대화는 걷힌 뒤) · 4S 모래 · 5S 빛 / 여정 기록: 1S ~ 끝까지 파일 하나 (요약 · 글 · 맵마다 원본 · 대화 · 전리품 ·
 //   성장) · 저장이 막혀도 메모리 사본 · 지금 맵도 · 끝낸 뒤에도 남음 (이야기 탭) · 새 프롤로그 때 지움 / 인카운터 목록 탭 (훈련장) · 해 보기 · 휴대폰 넓이)
 const { chromium } = require('playwright');
@@ -53,7 +53,7 @@ const { chromium } = require('playwright');
      const W=world, k=W.units.find(u=>u.hero); for (const f of W.units.filter(u=>u.side===1)) applyDmg(W,k,f,99999,{}); const rb=W.units.find(u=>u.name==='레베카'); rb.shots=30; rb.miss=2;
      for (let i=0;i<30;i++) stepWorld(W,1/30); const live = await campLogAll();
      for (const u of W.units.filter(u=>u.side===0)) leaveMap(W,u,'up'); checkEnd(W); mode='plan'; onOver();
-     document.querySelector('[data-crt="loot"]').click(); const L=lootOf(W), i=L.findIndex(x=>x.k==='weapon'), pr=crCtx.party.find(x=>x.name==='레베카'); lootTo=pr.id; crRender(); document.querySelector(`#crBody .l8go[data-lgive="${i}"][data-lp="${pr.id}"]`).click(); document.getElementById('campNext').click();
+     document.querySelector('[data-crt="loot"]').click(); const L=lootOf(W), i=L.findIndex(x=>x.k==='weapon'), pr=crCtx.party.find(x=>x.name==='레베카'); lootTo=pr.id; crRender(); document.querySelector(`#crBody .l8go[data-lgive="${L[i].lk!=null?L[i].lk:i}"][data-lp="${pr.id}"]`).click(); document.getElementById('campNext').click();
      return { live: live.stages.map(x=>({ s:x.s, live:!!x.live, ev: (x.log||[]).length })), liveTxt: live.text.some(l=>/지금 이 맵/.test(l)) }; });
    console.log('    지금 맵', JSON.stringify(j1)); ok(j1.live.length===1&&j1.live[0].live&&j1.live[0].ev>0&&j1.liveTxt,'아직 넘어가지 않은 지금 맵도 여정 기록에');
    // 3S: 잠든 사냥꾼과 대화 (고른 것까지)

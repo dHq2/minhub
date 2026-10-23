@@ -1,4 +1,4 @@
-// v7.26.1 UI 시험 — ui7261.js v1.5 (v1.5: v8.7.5 고립 합류는 본대 곁 — 대형이 켜지면 움직임의 기준은 본대 기준 (주 방어대장) 이고 2편대 기준은 본대 곁에 따로 섬: 본대 기준에게서 6.5칸 · 가장 가까운 동료 3칸 안 (주인공에게서 4칸은 대형 전 규칙) · v1.4: 바꿔 들기 시험의 창병은 체력을 넉넉히 (권총이 1초 안에 쓰러뜨린 드문 판 — 바꿔 들 까닭이 사라지고 다음 줄이 멈추던 것) · 적이 없으면 멈추지 않고 실패로 적음 · v1.3: v8.7.3 바꿔 들기는 보이는 근접이 2.6칸 안에 1초 머물 때 (1.2칸 안이면 곧바로) · 되돌림 시험은 간두 제자리 (어둠 속 탐색으로 적에게 다가가 흔들리던 것) · v1.2: 훈련장으로 바꾼 뒤 잠깐 기다림 · 적이 없으면 창병 하나 · v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
+// v7.26.1 UI 시험 — ui7261.js v1.6 (v1.6: v8.7.6 끝난 맵에서 처음 나가려 하면 남은 전리품을 한 번 보여 줌 (J11) — ▶ 이대로 나가기 를 누름 · v1.5: v8.7.5 고립 합류는 본대 곁 — 대형이 켜지면 움직임의 기준은 본대 기준 (주 방어대장) 이고 2편대 기준은 본대 곁에 따로 섬: 본대 기준에게서 6.5칸 · 가장 가까운 동료 3칸 안 (주인공에게서 4칸은 대형 전 규칙) · v1.4: 바꿔 들기 시험의 창병은 체력을 넉넉히 (권총이 1초 안에 쓰러뜨린 드문 판 — 바꿔 들 까닭이 사라지고 다음 줄이 멈추던 것) · 적이 없으면 멈추지 않고 실패로 적음 · v1.3: v8.7.3 바꿔 들기는 보이는 근접이 2.6칸 안에 1초 머물 때 (1.2칸 안이면 곧바로) · 되돌림 시험은 간두 제자리 (어둠 속 탐색으로 적에게 다가가 흔들리던 것) · v1.2: 훈련장으로 바꾼 뒤 잠깐 기다림 · 적이 없으면 창병 하나 · v1.1: 확인 창은 판 위의 창 (v8.2.1) — __askAuto 로 예 · v1.0: ↑ 맵 단추 = 모두 (대장만 골라도) · 대장이 넘어가면 남은 동료가 따라감 · 제자리 (정지) 는 남음 / 고립 합류: 6칸 안에 동료 없이 4초 → 자리를 풀고 합류 · 제자리는 그대로 /
 //   명령이 안 닿음 로그는 3초에 한 번 / 간두: 겨누는 중에도 코앞 (2.6칸) 이면 샷건 · 멀어지면 권총 · 탄 칸에 총 이름 · '🔁 샷건으로' 띠 / 갑옷 아이콘이 작은 판에서도 / 좁은 문: 4S 유적 다섯 판 모두 도착)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -11,8 +11,8 @@ const { chromium } = require('playwright');
 
  // 1) ↑ 단추는 모두 (대장만 골라도)
  const n1 = await p.evaluate(CAMP1);
- const e1 = await p.evaluate(()=>{ const h=world.units.find(u=>u.hero); sel=new Set([h.i]); const bt=document.querySelector('#campBar [data-cexit="up"]'); if (!bt) return { nobtn:true }; bt.click(); const al=world.units.filter(u=>u.side===0&&u.alive);
-   return { n: al.length, exit: al.filter(u=>u.order&&u.order.k==='exit').length, pend: al.filter(u=>u.ordPend).length }; });
+ const e1 = await p.evaluate(()=>{ const h=world.units.find(u=>u.hero); sel=new Set([h.i]); const bt=document.querySelector('#campBar [data-cexit="up"]'); if (!bt) return { nobtn:true }; bt.click(); const lg=document.getElementById('lootGo'), shown=!!lg&&!document.getElementById('banner').hidden; if (lg) lg.click(); const al=world.units.filter(u=>u.side===0&&u.alive);
+   return { shown, n: al.length, exit: al.filter(u=>u.order&&u.order.k==='exit').length, pend: al.filter(u=>u.ordPend).length }; });
  console.log('    ↑ 단추', JSON.stringify(e1)); ok(!e1.nobtn&&e1.n>=5&&e1.exit===e1.n&&e1.pend===0,'끝난 맵: ↑ 4S 단추를 누르면 고른 이와 상관없이 모두 위로 (말이 바로 닿음)');
 
  // 2) 대장이 넘어가면 따라감 · 제자리는 남음

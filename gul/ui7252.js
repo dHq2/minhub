@@ -1,4 +1,4 @@
-// v7.25.2 UI 시험 — ui7252.js v1.4 (v1.4: v8.7.3 남은 전리품이 있으면 정산 창은 전리품 탭부터 — 카드 · 성장 칩은 정산 탭을 눌러 봄 · 전리품 탭이 먼저 열림도 확인 · v1.3: v8.7.2 처음 동료 일곱 (뽑기 셋) · v1.2: v8.5.0 전리품 창 다시에 맞춤 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
+// v7.25.2 UI 시험 — ui7252.js v1.5 (v1.5: v8.7.6 전리품 단추는 번호가 아니라 출처 열쇠 (lk — 목록을 다시 세도 어긋나지 않게) · v1.4: v8.7.3 남은 전리품이 있으면 정산 창은 전리품 탭부터 — 카드 · 성장 칩은 정산 탭을 눌러 봄 · 전리품 탭이 먼저 열림도 확인 · v1.3: v8.7.2 처음 동료 일곱 (뽑기 셋) · v1.2: v8.5.0 전리품 창 다시에 맞춤 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 정산 화면: 탭 셋 (정산 · 전리품 · 장비 · 가방) · ✦ 성장 칩 · 전리품 = 무구 모두 (무기 · 방패) · 방어구는 드물고 망가짐 ·
 //   동료 얼굴을 누르면 그 가방으로 · 장비 탭에서 끼우기 → 다음 맵 판에 그 무기 · 맵 중간 전리품 창도 카드 · 화면 안 (PC · 휴대폰))
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
    if (vw.mob) await p.screenshot({path:'_s7252_sum_mo.png'}); else await p.screenshot({path:'_s7252_sum.png'});
    const l = await p.evaluate(()=>{ document.querySelector('[data-crt="loot"]').click(); const L=lootOf(world), cards=document.querySelectorAll('#crBody .l8r').length+L.filter(x=>x.taken).length;
      const w=L.filter(x=>x.k==='weapon').length, sh=L.filter(x=>x.k==='shield').length, ar=L.filter(x=>x.k==='armor'||x.k==='helm');
-     const i=L.findIndex(x=>x.k==='weapon'&&x.name==='장검'), rb=crCtx.party.find(x=>x.name==='레베카'), bag0=(rb.bag||[]).length; lootTo=rb.id; crRender(); const btn=document.querySelector(`#crBody .l8go[data-lgive="${i}"][data-lp="${rb.id}"]`); if (btn) btn.click();
+     const i=L.findIndex(x=>x.k==='weapon'&&x.name==='장검'), rb=crCtx.party.find(x=>x.name==='레베카'), bag0=(rb.bag||[]).length; lootTo=rb.id; crRender(); const btn=document.querySelector(`#crBody .l8go[data-lgive="${L[i].lk!=null?L[i].lk:i}"][data-lp="${rb.id}"]`); if (btn) btn.click();
      return { cards, w, sh, ar: ar.map(x=>x.k+':'+x.dur+(x.worn?':worn':'')), i, got: (rb.bag||[]).length-bag0, taken: L[i]&&L[i].taken, em: document.querySelectorAll('#crBody .l8took').length }; });
    console.log('    '+vw.nm+' 전리품',JSON.stringify(l));
    ok(l.cards>=7&&l.w>=5&&l.sh>=2,vw.nm+': 전리품 — 무구는 모두 (무기 '+l.w+' · 방패 '+l.sh+')');

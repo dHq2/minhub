@@ -1,4 +1,4 @@
-// v8.7.5 대형 UI 시험 — ui8750.js v1.3 (v1.3: 휴대폰 대형 띠는 판 위에 두지 않음 — 세로는 머리줄 칩 (판 밖) · 누르면 판 왼쪽 위에 펼침 · ▴ 접기 · 가로는 판 왼쪽 위 한 줄 칩 · 펼친 띠의 판 위 인물 꾹 누르기를 가리지 않음 · '모이는 중' · v1.2: 시작할 때 기본은 놓인 자리 그대로 · 휴대폰 띠는 판 아래쪽 · v1.1: 시작할 때 모임 칸은 시험 스위치 __noJit 를 끄고 봄 · v1.0: 버전 · 수치표 · 대형 띠 · 기준 · 명령은 기준에게 · 모여 · 깃발 · 모양 단추 · 켜고 끔 · 상세정보 칸 · 기록 · 서술 · 그림 · 단축키 · 편성 창 (편대 나누기 · 기준 · 모양 · 맞바꾸기 · 자유 끌기 · 되돌리기 · 시작할 때 · 싸울 때 · 교전 규칙) · 시작 모임 · 모닝스타 좁은 골목 그림 · 휴대폰)
+// v8.7.5 대형 UI 시험 — ui8750.js v1.4 (v1.4: 버전은 8.7.5 이상 (8.7.6 부터 이 시험도 계속 돎) · v1.3: 휴대폰 대형 띠는 판 위에 두지 않음 — 세로는 머리줄 칩 (판 밖) · 누르면 판 왼쪽 위에 펼침 · ▴ 접기 · 가로는 판 왼쪽 위 한 줄 칩 · 펼친 띠의 판 위 인물 꾹 누르기를 가리지 않음 · '모이는 중' · v1.2: 시작할 때 기본은 놓인 자리 그대로 · 휴대폰 띠는 판 아래쪽 · v1.1: 시작할 때 모임 칸은 시험 스위치 __noJit 를 끄고 봄 · v1.0: 버전 · 수치표 · 대형 띠 · 기준 · 명령은 기준에게 · 모여 · 깃발 · 모양 단추 · 켜고 끔 · 상세정보 칸 · 기록 · 서술 · 그림 · 단축키 · 편성 창 (편대 나누기 · 기준 · 모양 · 맞바꾸기 · 자유 끌기 · 되돌리기 · 시작할 때 · 싸울 때 · 교전 규칙) · 시작 모임 · 모닝스타 좁은 골목 그림 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
    window.__run = (W, sec) => { const n = Math.round(sec / 0.05); for (let i=0;i<n && !W.over;i++) stepWorld(W, 0.05); }; });
  // 1) 버전 · 수치표
  const d = await p.evaluate(()=>({ ver: document.querySelector('span.ver').textContent, mig: RULES_MIG, r: [!!rules.form8, !!rules.fbuf, !!rules.combo], kb: KB_GROUPS.flat(2).join(' '), st0: form8Cfg().start }));
- ok(/v8\.7\.5/.test(d.ver)&&d.mig==='8.7.5','버전 8.7.5 · 수치표 이전 8.7.5'); ok(d.r.every(Boolean),'수치표에 form8 · fbuf · combo'); ok(d.st0==='loose','시작할 때 기본 = 놓인 자리 그대로 (손으로 놓은 자리를 옮기지 않음)'); ok(/모여/.test(d.kb)&&/편성 창/.test(d.kb),'단축키 표에 W · D');
+ ok(/v8\.7\.([5-9]|\d\d)/.test(d.ver)&&/^8\.7\.([5-9]|\d\d)$/.test(d.mig),'버전 8.7.5 이상 · 수치표 이전 8.7.5 이상 ('+d.mig+')'); ok(d.r.every(Boolean),'수치표에 form8 · fbuf · combo'); ok(d.st0==='loose','시작할 때 기본 = 놓인 자리 그대로 (손으로 놓은 자리를 옮기지 않음)'); ok(/모여/.test(d.kb)&&/편성 창/.test(d.kb),'단축키 표에 W · D');
  // 2) 판: 대형 · 기준 · 띠 · 명령은 기준에게 · 그림
  const r1 = await p.evaluate(()=>{ const W=__mkF([['인주',0,10,10],['레베카',0,11,10],['청광묵',0,10,11],['노먼',0,11,11],['검기사',1,40,10]], false, true); const out={ e: [] };
    const F = W.form && W.form.A; out.has = !!F; out.lead = F && W.units[F.lead].name; out.shape = F && F.shape;

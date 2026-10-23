@@ -1,4 +1,4 @@
-// v7.20.1 UI 시험 — ui7201.js v1.2 (v1.2: v8.5.0 전리품 창 다시에 맞춤 — 줄 .l8r · 받는 사람 lootTo · 챙긴 것 .l8took · v1.1: v7.25.2 전리품 카드 — 고르기 칸 대신 동료 얼굴 단추 · 전리품 창: 목록 · 누구 가방에 → 명단 가방 · 화살은 단궁 쓰는 트라카 가방에 저절로 · 이번 판 장비 반영 (내구도 · 탄) · 같은 배치로 다시 하면 가방째 · 모바일 넓이)
+// v7.20.1 UI 시험 — ui7201.js v1.3 (v1.3: v8.7.6 전리품 단추는 번호가 아니라 출처 열쇠 (lk — 목록을 다시 세도 어긋나지 않게) · v1.2: v8.5.0 전리품 창 다시에 맞춤 — 줄 .l8r · 받는 사람 lootTo · 챙긴 것 .l8took · v1.1: v7.25.2 전리품 카드 — 고르기 칸 대신 동료 얼굴 단추 · 전리품 창: 목록 · 누구 가방에 → 명단 가방 · 화살은 단궁 쓰는 트라카 가방에 저절로 · 이번 판 장비 반영 (내구도 · 탄) · 같은 배치로 다시 하면 가방째 · 모바일 넓이)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
    const r1 = await p.evaluate(()=>{ const box=document.getElementById('lootBox'); if(!box) return { box:false }; const rows=[...box.querySelectorAll('.l8r')].map(x=>x.innerText.replace(/\s+/g,' ').trim()).concat([...box.querySelectorAll('.l8took')].map(x=>x.innerText.replace(/\s+/g,' ').trim())); const t=S.units.find(u=>u.name==='트라카');
      return { box:true, n: rows.length, rows: rows.slice(0,6), auto: rows.filter(x=>/저절로/.test(x)), tbag: (t.bag||[]).map(x=>x.k+':'+(x.at||x.name)+':'+(x.n||'')) }; });
    console.log('    전리품', JSON.stringify(r1)); ok(r1.box&&r1.n>=3,'결과 창에 전리품 목록'); ok(r1.auto.length>=1&&r1.tbag.some(x=>/^ammo:화살:13/.test(x)),'화살 13 은 트라카 가방에 저절로');
-   const r2 = await p.evaluate(()=>{ const n=S.units.find(u=>u.name==='노먼'); const L=lootOf(world), i=L.findIndex(it=>!it.taken&&(it.k==='armor'||it.k==='helm'||it.k==='weapon')), it=L[i]; lootTo=n.id; renderLoot(); const bt=document.querySelector(`#lootBox .l8go[data-lgive="${i}"][data-lp="${n.id}"]`); if (bt) bt.click();
+   const r2 = await p.evaluate(()=>{ const n=S.units.find(u=>u.name==='노먼'); const L=lootOf(world), i=L.findIndex(it=>!it.taken&&(it.k==='armor'||it.k==='helm'||it.k==='weapon')), it=L[i]; lootTo=n.id; renderLoot(); const bt=document.querySelector(`#lootBox .l8go[data-lgive="${it.lk!=null?it.lk:i}"][data-lp="${n.id}"]`); if (bt) bt.click();
      return { lab: itName(it), taken: it.taken, nbag: (n.bag||[]).map(x=>x.label||x.name), row: ((document.querySelector('#lootBox .l8took')||{}).textContent||'').includes(itName(it)) }; });
    console.log('    가져가기', JSON.stringify(r2)); ok(r2.taken==='노먼'&&r2.nbag.includes(r2.lab)&&r2.row,'고른 전리품 → 노먼 가방 (명단)');
    const r3 = await p.evaluate(()=>{ document.getElementById('settleBtn').click(); const n=S.units.find(u=>u.name==='노먼'); return { wDur: n.wDur, ammo: n.ammo, btn: document.getElementById('settleBtn').disabled }; });

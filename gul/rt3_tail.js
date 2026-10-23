@@ -32,6 +32,7 @@ function gearOf(p, rules){
     const tg = gpT[1] ? { SS: 6, S: 5, A: 4, B: 3, C: 2, D: 1 }[gpT[1]] : rules.galpi || 3;
     if (A['판금'] && (!out['몸'] || out['몸'].tier < tg)) out['몸'] = { name: '갑피', mat: '판금', tier: tg, innate: true, ...(out['몸'] ? { under: out['몸'] } : {}) };
     if (A['투구'] && (!out['머리'] || out['머리'].tier < tg)) out['머리'] = { name: '갑피', mat: '투구', tier: tg, innate: true, ...(out['머리'] ? { under: out['머리'] } : {}) };   /* v7.23.3 덮인 장비는 under 로 남음 (쓰러지면 전리품) */
+    for (const [sl, mt] of [['몸', '판금'], ['머리', '투구']]) if (A[mt] && out[sl] && !out[sl].innate) out[sl].over = { name: '갑피', mat: mt, tier: tg, innate: true };   /* v8.7.6 갑피보다 단단한 장비는 갑피 위에 — 벗거나 망가지면 갑피로 */
   }
   return out;
 }
@@ -68,12 +69,10 @@ function armorMul(rules, t, part, wk){
   return { m: Math.max(0.15, Math.min(1, 1 - (1 - M.vs[wk]) * it.tier / 3 * f)), it };
 }
 // 입기 · 벗기 (싸우는 중에도): 같은 칸은 바뀜 (예: 노먼의 방탄복 2성 → 갑주 5성 = 무게가 늘고 더 막음). item = null 이면 벗음
-function equip(W, u, slot, item){
-  u.gear = u.gear || {};
+function equip(W, u, slot, item){   /* v8.7.6 걸음은 gearSet 처럼 바뀐 무게만큼 (예전엔 없는 spd0 을 써서 NaN) */
   const A = W.rules.armor || {};
   if (item && slot === '몸' && u.eqRule && u.eqRule.body === false) return;   // v7.20 카리우스: 몸 갑옷 못 입음
-  if (item && A[item.mat]) u.gear[slot] = { name: item.name || item.mat, mat: item.mat, tier: Math.max(1, Math.min(5, Math.round(+item.tier || 1))), dur: item.dur != null ? +item.dur : 100, size: item.size || null, own: item.own || null }; else delete u.gear[slot];
-  u.spd = +(u.spd0 * (1 - gearW(u.gear, W.rules, { size: sizeOf(u), ref: ownKey(u) }))).toFixed(2);
+  gearSet(W, u, slot, item && A[item.mat] ? { name: item.name || item.mat, mat: item.mat, tier: Math.max(1, Math.min(5, Math.round(+item.tier || 1))), dur: item.dur != null ? +item.dur : 100, size: item.size || null, own: item.own || null } : null);
   if (W.log) L(W, { k: 'equip', a: u.i, slot, name: u.gear[slot] ? u.gear[slot].name : null, tier: u.gear[slot] ? u.gear[slot].tier : null });
 }
 function statsOf(p, rules){
@@ -1528,6 +1527,7 @@ function resolveAct(W, u){
     u.fg = u.face = Math.atan2(ty - u.y, tx - u.x); return;
   }
   if (u.act.k === 'bagSwap'){ resolveSwap(W, u); return; }   // v7.20
+  if (u.act.k === 'invAct'){ resolveInv(W, u); return; }   /* v8.7.6 */
   if (u.act.k === 'altSwap'){ resolveAlt(W, u); return; }   // v7.25.1
   if (u.act.k === 'drink'){ resolveDrink(W, u); return; }   // v7.22.1
   if (u.act.k === 'bagAmmo'){ resolveBagAmmo(W, u); return; }
@@ -3104,6 +3104,7 @@ function interrupt(W, u, why){
   if (a && a.k === 'h2' && a.phase === 'wind') L(W, { k: 'h2Break', a: u.i, s: a.s, n: a.n, why, vis: u.side === 0 || !!u.seenBy });   /* v8.7.4 휘청 · 넘어짐으로 끊긴 예고 */
   if (a && a.k === 'skill' && a.phase === 'tend'){ tendEnd(W, u, a, why); u.act = null; u.burst = null; return; }   // v7.3 맞으면 돌봄이 끊김
   if (a && a.k === 'spec' && a.s === 'tear' && a.phase === 'run'){ const v = W.units[a.held]; if (v) v.heldBy = null; L(W, { k: 'tearLet', a: u.i, b: a.held, why, vis: true }); }   /* v8.7.4 잡아찢기가 끊김 */
+  if (a && a.k === 'invAct' && a.phase === 'wind') L(W, { k: 'invBreak', a: u.i, op: a.op, slot: a.slot || null, w: a.it ? a.it.label || a.it.name : null, why, vis: u.side === 0 || !!u.seenBy });   /* v8.7.6 입던 · 건네던 것이 끊김 */
   if (a && (a.phase === 'wind' || a.phase === 'run') && a.k !== 'reload'){
     if (a.b != null && (a.k === 'atk' || a.k === 'throw' || a.k === 'bash' || a.k === 'skill' || a.k === 'heal' || a.k === 'palm' || a.k === 'assn')) L(W, { k: 'miss', a: u.i, b: a.b, why });
     u.act = null;
@@ -3954,10 +3955,11 @@ const lootName = (u, k, name) => { const nm = String(u.name || '').replace(/\s*\
 const heldItem = u => ({ k: 'weapon', name: u.weapon, label: u.wName || '', dur: u.wDur != null ? u.wDur : 100, own: u.wOwn || ownKey(u), ...(u.ammo != null ? { ammo: u.ammo, mag: u.mag } : {}) });
 const bagCapOf = (W, u) => u.bagCap || (INV(W).cap || {})[sizeOf(u)] || 8;
 const ammoTOf = (W, name) => { const wp = (W.rules.weapons || {})[name] || {}; return wp.kind === '활' ? '화살' : wp.kind === '총포류' ? ((INV(W).special || ['저격총', '샷건']).includes(name) ? '특수' : '일반') : null; };
-const bagWpnN = u => (u.bag || []).filter(x => x.k === 'weapon').length + (u.weapon && !ITEM_NATURAL.includes(u.weapon) && !u.weaponGone ? 1 : 0);
+const wTwo = (W, name) => (((W && W.rules.weapons) || {})[name] || {}).two ? 2 : 1;   /* v8.7.6 J10 두 손 무기 (대검 · 대장군의 도끼) 는 무기 칸 둘 */
+const bagWpnN = (u, W) => (u.bag || []).filter(x => x.k === 'weapon').reduce((s, x) => s + wTwo(W, x.name), 0) + (u.weapon && !ITEM_NATURAL.includes(u.weapon) && !u.weaponGone ? wTwo(W, u.weapon) : 0);
 // 가방에 넣기 (자리가 없거나 · 무기 칸 한도 (카리우스 4) 를 넘으면 발밑에)
 function stowOrDrop(W, u, it){
-  const full = !u.bag || u.bag.length >= bagCapOf(W, u) || (it.k === 'weapon' && u.eqRule && u.eqRule.wmax && bagWpnN(u) >= u.eqRule.wmax);
+  const full = !u.bag || u.bag.length >= bagCapOf(W, u) || (it.k === 'weapon' && u.eqRule && u.eqRule.wmax && bagWpnN(u, W) + wTwo(W, it.name) > u.eqRule.wmax);
   if (full){ dropItem(W, u, it.k, it.name, it, 'swap'); return false; }
   u.bag.push({ ...it, uid: (W.bagN = (W.bagN || 10000) + 1) }); L(W, { k: 'stow', a: u.i, w: it.label || it.name, vis: u.side === 0 || !!u.seenBy }); return true;
 }
@@ -4056,6 +4058,67 @@ function invOrder(W, u, o){
   if (u.act && u.act.phase === 'wind' && u.act.k !== 'charge') u.act = null;
   if (!u.act) startSwap(W, u, it, '명령');
 }
+/* ---------- v8.7.6 싸우는 중 장비 (D2 · I24) — 가방의 갑옷 · 투구 입기 · 벗기 (방패도) · 건네기 · 내려놓기 ----------
+   명령 { k: 'inv', op: 'wear' | 'off' | 'give' | 'drop', uid (가방 물건), slot ('몸' · '머리' · 'shield'), to (받을 동료) } — 지휘망으로 감 (늦게 · 못 들음).
+   입고 벗는 동안 (투구 gearT.helm · 갑옷 gearT.armor · 방패 swapSh 초) 은 아무것도 못 하고, 휘청이면 끊김 (아무것도 바뀌지 않음). 건네기는 giveR 칸 안으로 다가가 giveT 초.
+   싸우는 중에 땅에 내려놓는 건 무기 · 방패만 (D1 — 갑옷 · 투구는 가방에 둠). 무기 칸은 두 손 무기가 둘 (J10). */
+const pOfU = u => ({ name: u.name, eq: u.eqRule || null, headSize: u.headSize || null, sizeCls: sizeOf(u), traits: u.traits || [], weapon: u.weaponGone ? '맨손' : u.weapon, shield: !!(u.shield && !u.armShield) });
+const gSlotOf = it => it && it.k === 'armor' ? '몸' : it && it.k === 'helm' ? '머리' : null;
+const bagRoomU = (W, u, it) => { if ((u.bag || []).length >= bagCapOf(W, u)) return '가방이 가득 (' + (u.bag || []).length + '/' + bagCapOf(W, u) + ')'; if (it && it.k === 'weapon' && u.eqRule && u.eqRule.wmax && bagWpnN(u, W) + wTwo(W, it.name) > u.eqRule.wmax) return '무기 칸이 참 (' + bagWpnN(u, W) + '/' + u.eqRule.wmax + ' — 두 손 무기는 둘)'; return ''; };
+function wearWhyU(W, u, it){
+  const sl = gSlotOf(it); if (!sl) return '입을 것이 아님';
+  const g0 = (u.gear || {})[sl]; if (g0 && g0.innate && (+it.tier || 1) <= g0.tier) return '갑피 (' + g0.tier + '성) 가 더 단단함 — 입어도 소용없음';
+  return wearWhy(W.rules, pOfU(u), it);
+}
+// 갑옷 · 투구를 바꿔 낌: 무게만큼 걸음을 다시 셈 (다른 배율 — 붉은암석 2페이즈 등 — 은 그대로)
+function gearSet(W, u, slot, g){
+  const bs = { size: sizeOf(u), ref: ownKey(u) }, w0 = gearW(u.gear, W.rules, bs); u.gear = u.gear || {};
+  if (g) u.gear[slot] = g; else delete u.gear[slot];
+  const w1 = gearW(u.gear, W.rules, bs); u.spd = +(u.spd * Math.max(0.05, 1 - w1) / Math.max(0.05, 1 - w0)).toFixed(3);
+}
+const gearItem = (g, sl, W) => ({ k: sl === '몸' ? 'armor' : 'helm', name: g.name, label: g.label || g.name, mat: g.mat, tier: g.tier, dur: g.dur != null ? +g.dur : 100, size: g.size || null, own: g.own || null, uid: (W.bagN = (W.bagN || 10000) + 1) });
+function invOp(W, u, o, dt){
+  const I = INV(W), T = I.gearT || {}, it = o.uid != null ? (u.bag || []).find(x => x.uid === o.uid) : null, nm = x => x.label || x.name || '';
+  const miss = why => { u.order = null; L(W, { k: 'miss', a: u.i, why, inv: o.op, vis: u.side === 0 || !!u.seenBy }); };
+  const free = () => { if (u.act && u.act.phase === 'wind' && u.act.k !== 'charge') u.act = null; return !u.act; };
+  if (o.op === 'give'){ const r = W.units[o.to];
+    if (!it) return miss('가방에 없음'); if (!r || !r.alive || r.gone || r.side !== u.side || r === u) return miss('건넬 동료가 없음');
+    const why = bagRoomU(W, r, it); if (why) return miss(r.name + ': ' + why);
+    if (gap(u, r) > (I.giveR || 1.2)){ setMood(W, u, r.name + '에게 건네러', r.i); setGoal(W, u, r.x, r.y); follow(W, u, dt); return; }
+    u.order = null; if (!free()) return miss('하던 동작이 있음');
+    u.act = { k: 'invAct', op: 'give', phase: 'wind', t0: W.t, end: W.t + (I.giveT || 0.6), it, b: r.i }; stop(u); u.fg = Math.atan2(r.y - u.y, r.x - u.x); setMood(W, u, nm(it) + ' 건넴', r.i); return; }
+  u.order = null; if (!free()) return miss('하던 동작이 있음');
+  if (o.op === 'wear'){ if (!it) return miss('가방에 없음'); const why = wearWhyU(W, u, it); if (why) return miss(nm(it) + ' — ' + why); const sl = gSlotOf(it);
+    u.act = { k: 'invAct', op: 'wear', phase: 'wind', t0: W.t, end: W.t + (sl === '머리' ? T.helm || 1.5 : T.armor || 4), it, slot: sl }; stop(u); setMood(W, u, nm(it) + ' 입는 중'); return; }
+  if (o.op === 'off'){ const sl = o.slot;
+    if (sl === 'shield'){ if (!u.shield || u.armShield) return miss(u.armShield ? '팔 방패는 몸' : '벗을 방패가 없음'); }
+    else { const g = (u.gear || {})[sl]; if (!g || g.innate) return miss(g && g.innate ? '갑피는 몸 — 벗을 수 없음' : '입은 것이 없음'); }
+    if ((u.bag || []).length >= bagCapOf(W, u)) return miss('가방이 가득 — 벗어 둘 자리가 없음');
+    u.act = { k: 'invAct', op: 'off', phase: 'wind', t0: W.t, end: W.t + (sl === 'shield' ? I.swapSh || 0.5 : sl === '머리' ? T.helm || 1.5 : T.armor || 4), slot: sl }; stop(u); setMood(W, u, (sl === 'shield' ? '방패' : sl === '머리' ? '투구' : '갑옷') + ' 벗는 중'); return; }
+  if (o.op === 'drop'){ if (!it) return miss('가방에 없음'); if (it.k !== 'weapon' && it.k !== 'shield') return miss('싸우는 중엔 무기 · 방패만 내려놓음 (나머지는 가방에)');
+    u.act = { k: 'invAct', op: 'drop', phase: 'wind', t0: W.t, end: W.t + (I.dropT || 0.3), it }; stop(u); setMood(W, u, nm(it) + ' 내려놓음'); return; }
+  miss('알 수 없는 장비 명령');
+}
+function resolveInv(W, u){
+  const A = u.act, it = A.it, vis = u.side === 0 || !!u.seenBy; u.act = null; if (!u.alive || !u.bag) return;
+  if (A.op === 'give'){ const r = W.units[A.b]; if (!r || !r.alive || r.gone || !u.bag.includes(it) || gap(u, r) > (INV(W).giveR || 1.2) + 0.8) return;
+    const why = bagRoomU(W, r, it); if (why){ L(W, { k: 'miss', a: u.i, why: r.name + ': ' + why, inv: 'give', vis }); return; }
+    u.bag.splice(u.bag.indexOf(it), 1); (r.bag = r.bag || []).push({ ...it, uid: (W.bagN = (W.bagN || 10000) + 1) }); L(W, { k: 'give', a: u.i, b: r.i, w: it.label || it.name || '', item: it.k, vis }); return; }
+  if (A.op === 'drop'){ if (!u.bag.includes(it)) return; u.bag.splice(u.bag.indexOf(it), 1); const { uid, ...o } = it; dropItem(W, u, it.k, it.name, o, 'put'); return; }
+  if (A.op === 'wear'){ if (!u.bag.includes(it)) return; const why = wearWhyU(W, u, it); if (why){ L(W, { k: 'miss', a: u.i, why: (it.label || it.name) + ' — ' + why, inv: 'wear', vis }); return; }
+    const sl = A.slot, cur = (u.gear || {})[sl]; u.bag.splice(u.bag.indexOf(it), 1);
+    if (cur && !cur.innate) u.bag.push(gearItem(cur, sl, W));
+    let inn = cur && cur.innate ? cur : cur && cur.over ? cur.over : null, und = null; if (inn && inn.under && u.bag.length < bagCapOf(W, u)){ und = inn.under; u.bag.push(gearItem(und, sl, W)); inn = { ...inn }; delete inn.under; }   // 갑피 아래 덮여 있던 장비는 가방으로 (한 칸엔 하나 — 정산에서 사라지지 않게)
+    gearSet(W, u, sl, { name: it.label || it.name || it.mat, mat: it.mat, tier: Math.max(1, Math.min(5, Math.round(+it.tier || 1))), dur: it.dur != null ? +it.dur : 100, size: it.size || null, own: it.own || null, ...(inn ? { over: inn } : {}) });   // 갑피 위에 입으면 벗을 때 갑피로 돌아감
+    L(W, { k: 'gearOn', a: u.i, slot: sl, w: it.label || it.name, tier: u.gear[sl].tier, from: cur && !cur.innate ? cur.name : und ? und.name : null, spd: u.spd, vis }); return; }
+  if (A.op === 'off'){ const sl = A.slot; if ((u.bag || []).length >= bagCapOf(W, u)) return;
+    if (sl === 'shield'){ if (!u.shield || u.armShield) return; const wp = (W.rules.weapons || {})[u.weapon] || {};
+      u.bag.push({ k: 'shield', name: '방패', label: u.sName || '', dur: u.sDur != null ? +u.sDur : 100, own: u.sOwn || ownKey(u), uid: (W.bagN = (W.bagN || 10000) + 1) });
+      const nm0 = u.sName || '방패'; u.shield = false; u.sOff = true; u.canBash = false; u.raised = false; if (u.canCharge && u.chargeName === '방패 돌진') u.chargeName = '돌진';
+      u.parry = !u.weaponGone && !wp.guard && parryArcW(W.rules, u.weapon) > 0; u.canGuard = (!u.weaponGone && !!wp.guard) || !!u.reflex || u.parry; evoRole(W, u);
+      L(W, { k: 'gearOff', a: u.i, slot: 'shield', w: nm0, vis }); return; }
+    const g = (u.gear || {})[sl]; if (!g || g.innate) return; u.bag.push(gearItem(g, sl, W)); gearSet(W, u, sl, g.over || null); L(W, { k: 'gearOff', a: u.i, slot: sl, w: g.name, spd: u.spd, vis }); }
+}
 // 근접 무기가 닳음 · 막힐 때 아주 낮은 확률로 부러짐 (낡을수록 · 둔기 · 센 기술에 더)
 function wearW(W, u, amt, brk, why){
   const w = u.weaponNow || u.weapon, wp = (W.rules.weapons || {})[u.weapon] || {};
@@ -4090,27 +4153,35 @@ function wearHit(W, u, t, o, it, dmg, armMul){
   const D = W.rules.dur || {}; if (!D.clash) return;
   if (!o.far && !o.jav) wearW(W, u, D.hit || 0.25, null);
   if (it && !it.innate && armMul < 1 && it.dur != null && it.dur > 0){ const ab = Math.min(40, dmg / Math.max(0.15, armMul) - dmg); it.dur = Math.max(0, +(it.dur - ab * (D.armor || 0.1)).toFixed(2));
-    if (it.dur <= 0) L(W, { k: 'aBreak', a: t.i, name: it.name, slot: it.mat === '투구' ? '머리' : '몸', vis: t.side === 0 || !!t.seenBy }); }
+    if (it.dur <= 0){ const sl = GEAR_SLOTS.find(k => t.gear && t.gear[k] === it) || (it.mat === '투구' ? '머리' : '몸'); L(W, { k: 'aBreak', a: t.i, name: it.name, slot: sl, ...(it.over ? { bare: true } : {}), vis: t.side === 0 || !!t.seenBy }); if (it.over && t.gear && t.gear[sl] === it) gearSet(W, t, sl, it.over); } }   /* v8.7.6 갑피 위의 장비가 망가지면 갑피가 드러남 */
 }
 // v7.20.1 전리품 (판이 끝나면): 땅의 무기 · 방패 (아군 제 것은 저절로 돌아오니 빼고 · 던진 창 빼고) + 쓰러진 적의 갑옷 · 투구 (망가진 것 빼고 · 그 몸의 체급) + 무기에 남은 화살 · 탄 (따로 묶음)
-function lootOf(W){
-  if (W.loot) return W.loot;
-  const out = [], mine = new Set(W.units.filter(u => u.side === 0).map(ownKey));
+function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처음 한 번만 — 주운 것이 남아 보이던 것) · 출처 열쇠 lk 로 챙긴 표시 · 남은 탄을 이어 받음 · 갑옷 굴림은 한 번 */
+  const dead = W.units.filter(u => !u.alive && !u.gone && !u.summon), sig = (W.items || []).filter(it => it.k === 'weapon' || it.k === 'shield').map(it => it.id).join(',') + '|' + dead.map(u => u.i).join(',');
+  if (W.loot && W.lootSig === sig) return W.loot;
+  const prev = new Map((W.loot || []).map(x => [x.lk, x])), roll = W.lootRoll || (W.lootRoll = {});
+  const out = [], mine = new Set(W.units.filter(u => u.side === 0 && (u.alive || u.gone)).map(ownKey));   // 살아 있거나 맵을 나간 동료의 제 것은 그 동료에게 (정산에서 돌아감) — 쓰러진 동료의 것은 전리품
+  const put = (lk, o) => { const p = prev.get(lk); out.push({ ...o, lk, ...(p && p.taken ? { taken: p.taken } : {}), ...(p && p.auto ? { auto: p.auto } : {}), ...(p && p.n0 != null ? { n0: p.n0 } : {}), ...(p && o.k === 'ammo' && p.n != null ? { n: p.n } : {}) }); };   // 챙긴 표시 · 나눠 담고 남은 탄은 이어 받음
   for (const it of W.items || []){ if (it.k !== 'weapon' && it.k !== 'shield') continue; if (it.own && mine.has(it.own)) continue;
-    const at = it.k === 'weapon' ? ammoTOf(W, it.name) : null;
-    if (at && it.ammo > 0) out.push({ k: 'ammo', at, n: it.ammo, label: (it.label || it.name) + '에 남은 ' + (at === '화살' ? '화살' : at + ' 탄') });
-    out.push({ k: it.k, name: it.name, label: it.label || '', dur: it.dur != null ? +it.dur : 100, own: it.own || null, ...(at ? { ammo: 0 } : {}) }); }
+    const at = it.k === 'weapon' ? ammoTOf(W, it.name) : null, dw = W.units.find(u => !u.alive && !u.gone && u.side === 0 && ownKey(u) === it.own);
+    if (at && it.ammo > 0) put('ga' + it.id, { k: 'ammo', at, n: it.ammo, label: (it.label || it.name) + '에 남은 ' + (at === '화살' ? '화살' : at + ' 탄') });
+    put('g' + it.id, { k: it.k, name: it.name, label: it.label || '', dur: it.dur != null ? +it.dur : 100, own: it.own || null, ground: it.id, ...(dw ? { fall: dw.name } : {}), ...(at ? { ammo: 0 } : {}) }); }
   const LR = W.rules.loot || {}, wr = LR.worn || [15, 60];
-  for (const u of W.units){ if (u.side === 0 || u.alive) continue; const nm = String(u.name || '').replace(/\s*\d+$/, ''), sz = sizeOf(u);
-    for (const x of u.bag || []) if (x.k === 'weapon' || x.k === 'shield'){ const { uid, ...o } = x; out.push({ ...o, label: o.label || (x.k === 'weapon' ? nm + '의 ' + o.name : nm + '의 방패'), dur: o.dur != null ? +o.dur : 100, own: o.own || ownKey(u) }); }   /* v7.25.2 무구는 모두: 가방의 무기 · 방패 */
-    if (u.alt && u.alt.name){ const at = ammoTOf(W, u.alt.name); if (at && u.alt.ammo > 0) out.push({ k: 'ammo', at, n: u.alt.ammo, label: nm + '의 ' + u.alt.name + '에 남은 ' + at + ' 탄' }); out.push({ k: 'weapon', name: u.alt.name, label: nm + '의 ' + u.alt.name, dur: 100, own: ownKey(u), ...(at ? { ammo: 0 } : {}) }); }   /* 두 번째 총 */
-    for (const sl of GEAR_SLOTS){ const g0 = (u.gear || {})[sl], g = g0 && g0.innate ? g0.under : g0; if (!g || g.innate || (g.dur != null && g.dur <= 0)) continue;   /* v7.23.3 갑피 아래의 장비도 */
-      const uq = / ?의 /.test(g.name || '') || (u.traits || []).includes('보스');   /* v7.25.2 이름 붙은 고유 장비 · [보스] 의 것은 늘 · 멀쩡히 */
-      if (!uq && W.rand() >= (sl === '몸' ? (LR.armorP != null ? LR.armorP : 0.25) : (LR.helmP != null ? LR.helmP : 0.3))) continue;   /* v7.25.2 방어구는 낮은 확률 (망가지고 벗기기 힘듦) */
-      const d0 = g.dur != null ? +g.dur : 100, dw = uq ? d0 : Math.min(d0, Math.round(wr[0] + W.rand() * (wr[1] - wr[0])));
-      out.push({ k: sl === '몸' ? 'armor' : 'helm', name: g.name, label: / ?의 /.test(g.name || '') ? g.name : nm + '의 ' + (sl === '몸' ? '갑옷' : g.mat === '두건' ? '두건' : '투구'), mat: g.mat, tier: g.tier, dur: dw, ...(uq ? {} : { worn: true }), size: sz, own: ownKey(u) }); } }
-  return (W.loot = out);
+  for (const u of dead){ const ally = u.side === 0, nm = String(u.name || '').replace(/\s*\d+$/, ''), sz = sizeOf(u), fall = ally ? { fall: nm } : {};   // 쓰러진 동료의 것: 가방 · 두 번째 총 · 갑옷 · 투구 모두 (굴림 없이 · 낡은 그대로)
+    for (const x of u.bag || []){ const { uid, ...o } = x; if (x.k === 'weapon' || x.k === 'shield') put('b' + u.i + ':' + uid, { ...o, label: o.label || (x.k === 'weapon' ? nm + '의 ' + o.name : nm + '의 방패'), dur: o.dur != null ? +o.dur : 100, own: o.own || ownKey(u), ...fall });   /* v7.25.2 무구는 모두: 가방의 무기 · 방패 */
+      else if (ally && x.k !== 'ammo') put('b' + u.i + ':' + uid, { ...o, ...fall });
+      else if (ally && x.k === 'ammo' && x.n > 0) put('b' + u.i + ':' + uid, { k: 'ammo', at: x.at, n: x.n, label: nm + '의 가방에 남은 ' + (x.at === '화살' ? '화살' : x.at + ' 탄'), ...fall }); }
+    if (u.alt && u.alt.name){ const at = ammoTOf(W, u.alt.name); if (at && u.alt.ammo > 0) put('aa' + u.i, { k: 'ammo', at, n: u.alt.ammo, label: nm + '의 ' + u.alt.name + '에 남은 ' + at + ' 탄' }); put('alt' + u.i, { k: 'weapon', name: u.alt.name, label: nm + '의 ' + u.alt.name, dur: 100, own: ownKey(u), ...fall, ...(at ? { ammo: 0 } : {}) }); }   /* 두 번째 총 */
+    for (const sl of GEAR_SLOTS){ const g0 = (u.gear || {})[sl], g = g0 && g0.innate ? g0.under : g0 && g0.over ? g0 : g0; if (!g || g.innate || (g.dur != null && g.dur <= 0)) continue;   /* v7.23.3 갑피 아래의 장비도 */
+      const uq = ally || / ?의 /.test(g.name || '') || (u.traits || []).includes('보스'), rk = 'a' + u.i + sl;   /* v7.25.2 이름 붙은 고유 장비 · [보스] 의 것 · v8.7.6 쓰러진 동료의 것은 늘 */
+      if (roll[rk] == null) roll[rk] = W.rand();
+      if (!uq && roll[rk] >= (sl === '몸' ? (LR.armorP != null ? LR.armorP : 0.25) : (LR.helmP != null ? LR.helmP : 0.3))) continue;   /* v7.25.2 방어구는 낮은 확률 (망가지고 벗기기 힘듦) — 굴림은 한 번 */
+      const d0 = g.dur != null ? +g.dur : 100, dw = uq ? d0 : Math.min(d0, Math.round(wr[0] + roll[rk] * 1000 % 1 * (wr[1] - wr[0])));
+      put(rk, { k: sl === '몸' ? 'armor' : 'helm', name: g.name, label: / ?의 /.test(g.name || '') ? g.name : nm + '의 ' + (sl === '몸' ? '갑옷' : g.mat === '두건' ? '두건' : '투구'), mat: g.mat, tier: g.tier, dur: dw, ...(uq ? {} : { worn: true }), size: g.size || sz, own: g.own || ownKey(u), ...fall }); } }
+  { const have = new Set(out.map(o => o.lk)); for (const [lk, x] of prev) if (x.taken && !have.has(lk)) out.push(x); }   // 맵 위에서 챙겨 땅에서 사라진 것도 '챙긴 것' 으로 남김 (여정 기록 · 챙긴 줄)
+  W.lootSig = sig; return (W.loot = out);
 }
+
 /* ---------- v7.19.1 고유 기술: 공중제비 (탕아) · 머리 찍기 (쟝) · 영거리 사격 (간두) · 철퇴 후리기 · 휘둘러 치기 (모닝스타) — 적 · 아군 같은 규칙 ---------- */
 const SPEC_NM = k => (Object.entries(SPEC_K).find(e => e[1] === k) || [k])[0];   /* v8.7.3 기술 이름 (명령 글) */
 const SPEC_K = { '혈영보': 'blink', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder' };   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
@@ -6971,6 +7042,7 @@ function doOrder(W, u, dt){
   const o = u.order, foes = W.units.filter(f => f.alive && f.side !== u.side);
   if (o.k === 'frally'){ u.order = null; u.fdet = false; u.stay = null; setMood(W, u, '대형으로'); L(W, { k: 'frallyOk', a: u.i, vis: true }); return; }   /* v8.7.5 모여 */
   if (o.k === 'swap'){ invOrder(W, u, o); return; }
+  if (o.k === 'inv'){ invOp(W, u, o, dt); return; }   /* v8.7.6 싸우는 중 장비 (입기 · 벗기 · 건네기 · 내려놓기) */
   if (o.k === 'alt'){ u.order = null; if (u.act && u.act.phase === 'wind' && u.act.k !== 'charge') u.act = null; if (!u.act && !startAlt(W, u, '명령')) L(W, { k: 'miss', a: u.i, why: '바꿔 들 총이 없음', vis: u.side === 0 }); return; }   /* v7.25.1 */
   if (o.k === 'exit'){ exitStep(W, u, o, dt); return; }   // v7.21 맵 끝으로   // v7.20 가방의 무기 · 방패를 꺼내 듦
   if (o.via && !o.viaOK && ['move', 'amove', 'attack', 'palm', 'charge'].includes(o.k) && viaStep(W, u, o, dt)) return;   // v7.12 우회 경유점   // v7.15 팜 버스트 · 돌진도
@@ -8071,7 +8143,7 @@ function opTick(W, coord){
 }
 // 한 턴: 정해진 시간만큼 모두 함께 진행. 턴 시작 (명령 기록) · 끝 (이동 거리 · 상태표) 을 남김
 const STEP = 1 / 30;
-const orderTxt = (o, u) => o && o.k === 'frally' ? ['frally'] : o && o.k === 'alt' ? ['alt'] : o && o.k === 'exit' ? ['exit', o.dir, o.hurry ? 1 : 0] : o && o.k === 'specCancel' ? ['specCancel', o.s || null] : o && o.k === 'spec' ? ['spec', o.s, o.b != null ? o.b : null, o.x != null ? +o.x.toFixed(2) : null, o.y != null ? +o.y.toFixed(2) : null, o.R != null ? +(+o.R).toFixed(2) : null] : o && o.k === 'swap' ? ['swap', o.uid] : o && o.k === 'flank' ? ['flank', o.b] : o && o.k === 'sac' ? ['sac'] : o && o.k === 'torchGet' ? ['torchGet'] : o && o.k === 'flare' ? ['flare', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'supp' ? ['supp', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'watch' ? ['watch', +o.f.toFixed(2)] : o && o.k === 'assn' ? ['assn', o.b] : o && o.k === 'scout' ? ['scout', +o.x.toFixed(2), +o.y.toFixed(2), o.pol || 'look'] : o && o.k === 'lret' ? ['lret', o.id] : o && o.k === 'leap' ? (o.b != null ? ['leap', o.b] : o.x != null ? ['leapPt', +o.x.toFixed(2), +o.y.toFixed(2)] : ['leap0']) : o && o.k === 'palm' ? ['palm', o.b] : o && o.k === 'line' && o.join ? ['lineJoin'] : o && o.k === 'amove' ? ['amove', +o.x.toFixed(2), +o.y.toFixed(2), o.hurry ? 1 : 0] : o && o.k === 'line' ? ['line', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'charge' ? (o.b == null ? ['chargePt', +o.x.toFixed(2), +o.y.toFixed(2)] : ['charge', o.b]) : o && o.k === 'throw' ? ['throw', o.b] : o && o.k === 'pick' && o.id != null ? ['pickItem', o.id] : o && o.k === 'pick' && o.spear ? ['pickSpear'] : !o ? (u && u.stay ? ['auto', +u.stay.x.toFixed(2), +u.stay.y.toFixed(2)] : ['auto']) : o.k === 'move' ? ['move', +o.x.toFixed(2), +o.y.toFixed(2)] : o.k === 'attack' ? ['attack', o.b] : o.k === 'skill' ? ['skill', o.b] : o.k === 'pick' ? ['pick', +o.x.toFixed(2), +o.y.toFixed(2)] : ['hold'];
+const orderTxt = (o, u) => o && o.k === 'frally' ? ['frally'] : o && o.k === 'alt' ? ['alt'] : o && o.k === 'exit' ? ['exit', o.dir, o.hurry ? 1 : 0] : o && o.k === 'specCancel' ? ['specCancel', o.s || null] : o && o.k === 'spec' ? ['spec', o.s, o.b != null ? o.b : null, o.x != null ? +o.x.toFixed(2) : null, o.y != null ? +o.y.toFixed(2) : null, o.R != null ? +(+o.R).toFixed(2) : null] : o && o.k === 'swap' ? ['swap', o.uid] : o && o.k === 'inv' ? ['inv', o.op, o.uid != null ? o.uid : null, o.slot || null, o.to != null ? o.to : null] : o && o.k === 'flank' ? ['flank', o.b] : o && o.k === 'sac' ? ['sac'] : o && o.k === 'torchGet' ? ['torchGet'] : o && o.k === 'flare' ? ['flare', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'supp' ? ['supp', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'watch' ? ['watch', +o.f.toFixed(2)] : o && o.k === 'assn' ? ['assn', o.b] : o && o.k === 'scout' ? ['scout', +o.x.toFixed(2), +o.y.toFixed(2), o.pol || 'look'] : o && o.k === 'lret' ? ['lret', o.id] : o && o.k === 'leap' ? (o.b != null ? ['leap', o.b] : o.x != null ? ['leapPt', +o.x.toFixed(2), +o.y.toFixed(2)] : ['leap0']) : o && o.k === 'palm' ? ['palm', o.b] : o && o.k === 'line' && o.join ? ['lineJoin'] : o && o.k === 'amove' ? ['amove', +o.x.toFixed(2), +o.y.toFixed(2), o.hurry ? 1 : 0] : o && o.k === 'line' ? ['line', +o.x.toFixed(2), +o.y.toFixed(2)] : o && o.k === 'charge' ? (o.b == null ? ['chargePt', +o.x.toFixed(2), +o.y.toFixed(2)] : ['charge', o.b]) : o && o.k === 'throw' ? ['throw', o.b] : o && o.k === 'pick' && o.id != null ? ['pickItem', o.id] : o && o.k === 'pick' && o.spear ? ['pickSpear'] : !o ? (u && u.stay ? ['auto', +u.stay.x.toFixed(2), +u.stay.y.toFixed(2)] : ['auto']) : o.k === 'move' ? ['move', +o.x.toFixed(2), +o.y.toFixed(2)] : o.k === 'attack' ? ['attack', o.b] : o.k === 'skill' ? ['skill', o.b] : o.k === 'pick' ? ['pick', +o.x.toFixed(2), +o.y.toFixed(2)] : ['hold'];
 function beginTurn(W){
   W.turn++; W.turnFrom = W.t; W.turnEnd = W.t + W.rules.turn;
   for (const u of W.units) u.moved = 0;
@@ -8098,4 +8170,4 @@ function runAuto(setup, rules, seed){
   return W;
 }
 
-if (typeof module !== 'undefined') module.exports = { startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
+if (typeof module !== 'undefined') module.exports = { startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
