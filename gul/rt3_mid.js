@@ -124,7 +124,7 @@ function losClear(m, x0, y0, x1, y1){
 }
 function lightSources(W){
   const L = [];
-  for (const h of W.units) if (h.torch && h.alive && !h.torchOff) L.push({ x: h.x, y: h.y, r: W.rules.heroLight, f: 0 });   // 횃불을 든 이 (처음엔 주인공)   // v7.5 끈 횃불은 안 비춤
+  for (const h of W.units) if (h.torch && h.alive && !h.torchOff) L.push({ x: h.x, y: h.y, r: W.rules.heroLight * (W.torchK && h.side === 0 ? W.torchK : 1), f: 0 });   /* v8.7.7 여신의 눈물 — 횃불이 더 밝음 (torchK) */   // 횃불을 든 이 (처음엔 주인공)   // v7.5 끈 횃불은 안 비춤
   W.torches.forEach((t, i) => { if (!t.off) L.push({ x: t.x, y: t.y, r: t.r || W.rules.torchLight, f: i + 1 }); });   // v7.8 모닥불 · 장작은 제 반경
   return L;
 }
@@ -159,7 +159,7 @@ function canSee(W, u, t){
   if (u.blind) return false;   // v5.5 실명: 몸에 닿는 것만 앎
   if (u.blindL && d > 1 && u.face != null){ const ra = Math.atan2(t.y - u.y, t.x - u.x) - u.face, s = Math.atan2(Math.sin(ra), Math.cos(ra)); if (s < -0.35 && s > -2.6) return false; }   // v6.7 [실명:좌안] 왼쪽 옆 (20° ~ 150°) 은 1칸 밖이 안 보임 (사각)
   if (u.sightMul != null && u.sightMul < 1 && d > W.rules.sight * u.sightMul) return false;   // v5.5 눈을 잃음: 보는 거리 ×
-  const sk0 = t.side !== u.side ? stealthK(W, t) : 1, sk = sk0 < 1 && lookOn(W, u) && sideOf(W, u, t) === 'back' ? sk0 * ((W.rules.watch || {}).glance || 0.6) : sk0; if (sk < 1 && d > W.rules.sight * sk) return false;   // v7.5 은신: 들킬 거리 ×   // v7.7 잠깐 돌아본 눈은 덜 멀리 (glance)
+  const sk0 = t.side !== u.side ? Math.min(1, stealthK(W, t) * (u.spotK || 1)) : 1, sk = sk0 < 1 && lookOn(W, u) && sideOf(W, u, t) === 'back' ? sk0 * ((W.rules.watch || {}).glance || 0.6) : sk0; if (sk < 1 && d > W.rules.sight * sk) return false;   // v7.5 은신: 들킬 거리 ×   // v7.7 잠깐 돌아본 눈은 덜 멀리 (glance)
   if (sk < 1 && (W.rules.stealth || {}).back && u.face != null && !(u.heads > 1) && sideV(W, u, t) === 'back') return false;   // v7.7 돌아보는 중이면 그쪽   // v7.6 숨은 몸은 등 뒤에서는 안 보임 (후각은 위에서 먼저 맡음)
   if (!litAt(W, t.x, t.y) && glowAt(W, t.x, t.y) && glareAt(W, u) && d > W.rules.sight * sk * (W.rules.glare.dim || 0.8)) return false;
   if (!glowAt(W, t.x, t.y)){ if (!u.nv) return false; const sp = sk >= 1 && t.stealthG && t.side !== u.side ? stealthP(W, t) : 1, sq = sk * sp; /* v7.14 숨지 않아도 은신 등급만큼 어둠 속에선 덜 멀리 보임 */ if (sp < 1 && d > W.rules.sight * sp) return false; if (glareAt(W, u) && d > glareReach(W, u) * sq) return false; if (u.nvG === 'B' && d > (W.rules.nvB || 5) * sq) return false; if (u.nvG === 'C' && d > (W.rules.nvC || 3.75) * sq) return false; if (u.nvG === 'D' && d > (W.rules.nvD || 2.5) * sq) return false; }   // 야시 B 는 어둠 속에선 nvB 칸까지   // v7.8 화광 실명: 밝은 빛 속에 선 눈은 빛 · 어스름 밖 어둠을 glareReach 까지만   // 야시 B 는 어둠 속에선 nvB 칸까지   // v7.8 화광 실명: 밝은 빛 속에 선 눈은 빛 · 어스름 밖 어둠을 glareReach 까지만

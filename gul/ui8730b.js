@@ -1,4 +1,4 @@
-// v8.7.3 바로잡기 4 UI 시험 — ui8730b.js v1.4 (v1.4: 2층 뽑기 창은 뜰 때까지 기다림 (나란히 돌려 느릴 때) · v1.3: v8.7.4 5층 보스 붉은암석 · 세르파는 만남의 그림으로 · v1.2: 맵 시작 채움은 여정 맵만 — 훈련장은 정한 탄 그대로 (2/60) · 여정 맵 (createWorld … { camp: true }) 은 가방 화살로 가득 · 다음 맵도 여정 맵으로 · v1.1: 유물 시험은 30층 판 (S.camp.run.relics) 으로 — const r8Has 는 바꿔 끼울 수 없음 · 화살통 크기는 설계 (가방 150) · 정산이 크기를 따로 적음 · 옛 저장 되살림 · 간두가 샷건을 든 채 끝나도 권총 · 원거리 무기는 무기 표로 (단궁 · 하얀 나무 · 샷건) · v1.0: 희귀도 별 (도감) · 30층 여정 기록 (층 · 지대 · 칸 · 유물 · 칸 기록 · 머리글) · 유물 둘 (간호사장 모자 한 번 · 록토 로브 은신 E) · 30층 무리에 1층 설계 없음 · 보스 대사 그림 · 화살통 채우기 (시작 · 20%) · 맨손 글 · 쏜 것 이름 · 회피기동 글 · 받침 · 띄어쓰기 · 적이 없는 맵의 명령 · 전리품 (쓸 사람 · 주인 · 탭) · 목이 꿰뚫림)
+// v8.7.3 바로잡기 4 UI 시험 — ui8730b.js v1.5 (v1.5: v8.7.7 간호사장의 모자는 간호사 전용 (지닌 이) · 약 +3 — 가윤으로 봄 · v1.4: 2층 뽑기 창은 뜰 때까지 기다림 (나란히 돌려 느릴 때) · v1.3: v8.7.4 5층 보스 붉은암석 · 세르파는 만남의 그림으로 · v1.2: 맵 시작 채움은 여정 맵만 — 훈련장은 정한 탄 그대로 (2/60) · 여정 맵 (createWorld … { camp: true }) 은 가방 화살로 가득 · 다음 맵도 여정 맵으로 · v1.1: 유물 시험은 30층 판 (S.camp.run.relics) 으로 — const r8Has 는 바꿔 끼울 수 없음 · 화살통 크기는 설계 (가방 150) · 정산이 크기를 따로 적음 · 옛 저장 되살림 · 간두가 샷건을 든 채 끝나도 권총 · 원거리 무기는 무기 표로 (단궁 · 하얀 나무 · 샷건) · v1.0: 희귀도 별 (도감) · 30층 여정 기록 (층 · 지대 · 칸 · 유물 · 칸 기록 · 머리글) · 유물 둘 (간호사장 모자 한 번 · 록토 로브 은신 E) · 30층 무리에 1층 설계 없음 · 보스 대사 그림 · 화살통 채우기 (시작 · 20%) · 맨손 글 · 쏜 것 이름 · 회피기동 글 · 받침 · 띄어쓰기 · 적이 없는 맵의 명령 · 전리품 (쓸 사람 · 주인 · 탭) · 목이 꿰뚫림)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -17,11 +17,11 @@ const { chromium } = require('playwright');
  ok(r1.card,'뽑기 카드에 희귀도 별 (★★★★ 친칠라)');
 
  // 2. 유물: 간호사장의 모자 (+2 는 한 번) · 록토의 로브 (은신 E → D)
- const r2 = await p.evaluate(()=>{ const n = fromDesign(designByKey('노먼'), 0), k = fromDesign(designByKey('카리우스'), 0); n.skLeft = 1; const C0 = S.camp; S.camp = { run: { relics: ['nurse', 'rokto'] } };
+ const r2 = await p.evaluate(()=>{ const n = fromDesign(designByKey('가윤'), 0), k = fromDesign(designByKey('카리우스'), 0); n.skLeft = 1; const C0 = S.camp; S.camp = { run: { relics: ['nurse', 'rokto'], party: [n, k], dead: [] } };
    const L = []; for (let m = 0; m < 3; m++){ const undo = r8Pre([n, k]); L.push([n.skLeft, n.skill.pool, (k.traits || []).filter(t => /^은신/.test(t)).join('')]); undo(); }
    S.camp = C0; return { L, after: (k.traits || []).filter(t => /^은신/.test(t)).join('') }; });
  console.log('    유물', JSON.stringify(r2));
- ok(r2.L[0][0]===3&&r2.L[1][0]===3&&r2.L[2][0]===3,'간호사장의 모자: 남은 약 +2 는 한 번만 (1 → 3 · 3 · 3, 쌓이지 않음)');
+ ok(r2.L[0][0]===4&&r2.L[1][0]===4&&r2.L[2][0]===4,'간호사장의 모자 (간호사 가윤이 지님): 남은 약 +3 은 한 번만 (1 → 4 · 4 · 4, 쌓이지 않음)');
  ok(r2.L.every(x=>x[2]==='은신D')&&r2.after==='은신E','록토의 로브: 은신 E → D 한 단계 (둘이 되지 않음) · 판 뒤엔 E 로');
 
  // 3. 30층 무리에 1층 설계 없음 · 동굴 괴수 이름

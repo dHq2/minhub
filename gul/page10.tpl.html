@@ -1,5 +1,11 @@
 <title>굴의 전투판</title>
-<!-- 굴의 전투판 v8.7.6 (2026-10-23) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v8.7.7 (2026-10-23) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v8.7.7: 유물 34 — 새 유물 16 (랑팡의 나침반 · 탄탄만의 숫돌 · 노라의 탄띠 · 아이텐의 토끼발 · 셰도르의 단검집 · 호레이쇼의 군기 · 페흐토의 청염 조각 · 세르파의 젤리 · 인공천사 벨의 깃털 ·
+         마리의 약초 주머니 · 로지나의 리본 · 테헤라의 모래시계 · 각혈의 핏방울 · 망각의 데이터 조각 · 붉은암석의 핵 · 도굴꾼의 열쇠) · 지닌 이 (끼운 인물만 — 왐의 머리촛대 · 간호사장의 모자 (간호사 전용) ·
+         가뮤의 대검 (중대형 이상) · 로켈의 갑옷 · 모란의 가면 · 비늘조각 · 오딜의 눈물 · 청염 조각 — 지도의 유물 칸을 눌러 고름) · 뽑기 풀 24 (가뮤의 대검 · 비늘조각 · 모자 · 바이올린 · 오딜의 눈물은 얻는 길만).
+         효과가 걸리지 않던 것 고침 ([가호:오딜] · 로켈의 갑옷 · 왕관 조각 · 눈물의 횃불 · 비늘조각) · 촛대로 일어나면 중상이 나음 · 삼신의 심판은 판마다 그 신의 유물 (눈물은 마지막 판에만) · 3층을 자주 오가면 비늘조각.
+         노먼 전직 (야전병원 간호사장에게 의료 기술을 배운 뒤 — 동료 정리 ⭐): 닥터 노먼 (의학 A · 응급처치 강화) · 선봉장 노먼 (대방패 + 소총 — 쏘는 동안에도 방패를 듦 · 방호 160).
+         간호사장 이야기는 천막마다 한 번 · 의학 등급이 실제로 오름 · 가윤도 간호사로 셈. 이름 · 등급: 로켈 (삼신 · 갑옷) · 탕아 3성 · 인공천사 벨 · 가뮤
      v8.7.6: 인벤토리 v2 — 상세 칸에 '🎒 장비 · 가방' 탭 (I): 무기 · 방패 · 몸 · 머리 칸과 가방 칸 (빈 칸도) · 고르면 설명과 지금 것과 비교 ▲▼ · 싸우는 중에도 들기 · 입기 (투구 1.5초 · 갑옷 4초 — 그동안 못 싸우고 휘청이면 끊김) ·
          벗기 · 마시기 · 곁의 동료에게 건네기 · 무기 · 방패 내려놓기 · 두 번 누르면 바로 (명령은 지휘망으로) · 가까운 땅의 무구 줍기. 판 위 이름표: 떨어진 무구 · 던진 창 위에 이름 — 누르면 누가 주울지 · 장면 인물 이름표를 누르면 말 걸기.
          전리품: 받는 이의 지금 장비와 비교 · 끼우기 · 맵 위에선 판의 몸에 바로 · 쓰러진 동료의 것도 · 진짜 시체만 · 줍거나 쓰러지면 다시 셈 · 끝난 맵에서 나가려 하면 남은 전리품을 한 번 보여 줌.
@@ -1106,7 +1112,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v8.7.6";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v8.7.7";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1483,7 +1489,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.7.6 인벤토리 v2 (장비 탭 · 이름표 · 전리품 비교) / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.7.6 · 인벤토리 v2 (장비 탭 · 이름표 · 전리품 비교)</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.7.7 유물 34 · 노먼 전직 / v8.7.6 인벤토리 v2 (장비 탭 · 이름표 · 전리품 비교) / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.7.7 · 유물 34 · 노먼 전직</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1663,7 +1669,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v8.7.6 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v8.7.7 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
   <div class="fmwin" id="fmWin" hidden role="dialog" aria-label="편성 창"><div class="fmc" id="fmC"></div></div>
 </div>
@@ -1913,7 +1919,7 @@ const DESIGN_DEFAULTS = [
   { key: '청광묵', side: 0, ref: 'C-004', name: '청광묵', tier: 2, sq: 'B', cls: '기동', role: '미드필더', weapon: '흑요석 단검', sm: 0.96, height: 1.3, weight: 38, nv: true, nvG: 'B', ov: { hp: 100, atk: 27 }, traits: ['회피A', '급소A', '발화E', '실명:좌안', '후각B', '은신B'], active: ['도약', '팜 버스트'], race: '고블린', tactic: '기동 · 흑요석 단검 · 팜 버스트', note: '일족이 몰살된 뒤 굴에서 혼자 한 달을 살아남은 고블린 전사 (130cm · 가벼움 · 옷만). 흑요석 단검 (짧고 빠른 근접 날붙이 — 기본 공격 · 던질 수도 있음 — 던지면 맨손, 맨손이면 손바닥이 닿아 화상). 회피 · 약점 찌르기 · 도약으로 요리조리 튀어다니고, 붙으면 팜 버스트로 터뜨림. 왼눈을 잃음 (왼쪽 사각)' },   // v6.7 설계 칸만 (판에는 놓지 않음)
   { key: '친칠라', side: 0, ref: 'C-106', name: '친칠라', tier: 2, sq: 'B', cls: '원거리', role: '사수', weapon: '하얀 나무', ammo: 30, gear: { 머리: { name: '친칠라의 후드', mat: '두건', tier: 1 } }, sm: 1.34, height: 1.65, nv: true, nvG: 'S', ov: { hp: 100, atk: 25 }, traits: ['사격A', '은신S', '가호:바다', '축복:바다'], active: ['도약'], race: '정령 (물) · 심해 종족', tactic: '사냥꾼 · 장궁 (하얀 나무) · 도약 사격', note: '심해에서 혼자 떨어진 사냥꾼 (주운 장비 · 후드). 조용히 떠다니다 먹이를 덮치는 심해 생물이라 숨는 솜씨가 뛰어남 (은신 S) · 야시 S (빛에도 눈부시지 않음). 고유 무기 하얀 나무 (장궁): 사거리 10칸 — 관통력은 활과 같지만 화살이 궁수의 활보다 느리고 근력 · 사격 솜씨 (A 대 S) 가 한 단계 아래라, 역전의 명사수인 궁수와 1대1 로 맞쏘면 살짝 밀림 (거리 · 어둠 · 은신으로 싸움). 도약하며 쏨 · 엎드려서는 못 쏨' },   // v7.14 2편대 (노먼)
   // v7.19 2단계 인물 (design_1F N · 도감 설정) — 공통 기술 · 등급 특성 위주
-  { key: '탕아', side: 0, ref: 'C-221', name: '탕아', tier: 2, cls: '근접', role: '공격수', weapon: '대검', sm: 1.38, height: 1.82, weight: 82, bold: 0.6, noChg: true, nv: true, nvG: 'B', ov: { hp: 150, atk: 34 }, traits: ['베테랑', '영웅', '지휘B', '사격B', '회피B', '은신C'], gear: { 몸: { name: '용사의 갑옷', mat: '판금', tier: 2 } }, active: ['공중제비'], race: '인간 (용사)', origin: '판타지계 — 전투 중 죽어서 떨어짐', tactic: '용사 · 대검 (두 손) · 공중제비 (돌격 대신)', note: '무감정하지만 정의로운 장군 출신 용사. 대검을 두 손으로 써 방패는 못 듦 (대검으로 막음). 스스로 돌격하지 않고 공중제비로 파고듦 (돌진 명령은 따름). 회피가 좋은 근접 전투원 · 사격 재능도 있음 (권총 · 샷건은 한 손이라 명중이 떨어짐). 투구 없는 갑옷' },
+  { key: '탕아', side: 0, ref: 'C-221', name: '탕아', tier: 3, cls: '근접', role: '공격수', weapon: '대검', sm: 1.38, height: 1.82, weight: 82, bold: 0.6, noChg: true, nv: true, nvG: 'B', ov: { hp: 150, atk: 34 }, traits: ['베테랑', '영웅', '지휘B', '사격B', '회피B', '은신C'], gear: { 몸: { name: '용사의 갑옷', mat: '판금', tier: 2 } }, active: ['공중제비'], race: '인간 (용사)', origin: '판타지계 — 전투 중 죽어서 떨어짐', tactic: '용사 · 대검 (두 손) · 공중제비 (돌격 대신)', note: '무감정하지만 정의로운 장군 출신 용사. 대검을 두 손으로 써 방패는 못 듦 (대검으로 막음). 스스로 돌격하지 않고 공중제비로 파고듦 (돌진 명령은 따름). 회피가 좋은 근접 전투원 · 사격 재능도 있음 (권총 · 샷건은 한 손이라 명중이 떨어짐). 투구 없는 갑옷' },
   { key: '딸기', side: 0, ref: 'C-218', name: '딸기', tier: 2, cls: '치유', role: '지원', weapon: '대지 마법', sm: 0.97, height: 1.7, weight: 58, bold: 0.3, nv: true, nvG: 'B', ov: { hp: 120, atk: 22 }, regenK: 0.012, traits: ['은신C', '열매 맺기'], active: ['역장', '뿌리 벽'], skill: { name: '딸기 정령술', kit: true, inf: true, pool: 99, pct: 0.12, min: 8, cap: 20, hot: 3, hotN: 6, hotGap: 0.5, cd: 2.4, wind: 0.45, rec: 0.3, rng: 3.5, auto: 0.55 }, race: '정령 (딸기 계열 대정령)', origin: '정령계', tactic: '서포터 · 마력 치유 (끝없음) · 대지 마법', note: '딸기 계열 정령 중 강한 축 — 본질은 만능 서포터. 마력으로 끝없이 치유 (3.5칸 밖에서도 · 처음 조금 + 이어서 돌봄). 대지 마법 (바위 · 흙덩이 — 갑옷 판정 · 약한 넉백). 레베카보다 약한 재생 (불사 아님)' },
   { key: '옐로', side: 0, ref: 'C-008', name: '옐로', tier: 2, cls: '기동', role: '미드필더', weapon: '맨손', height: 1.55, weight: 52, nv: true, nvG: 'B', ov: { hp: 110, atk: 26 }, traits: ['의학B', '은신B', '사족보행', '속력A', '근력B', '괴력B', '제약:총포류', '제약:활'], unique: ['저주:맥아'], active: ['도약'], leapN: 2, skill: { name: '양동이 약', pool: 500, per: 120, wind: 0.5, rec: 0.4, rng: 0.8, regen: 4 }, tactic: '기동 · 2연속 도약 · 양동이 약', note: '침식 중인 소녀. 손발이 날붙이 (짐승의 이빨처럼) · 네 발로 달리면 가장 빠름 · 도약 2연속. 의학 B (전문 지식은 있으나 의사는 아님) — 양동이 약은 몸에서 계속 다시 참 (초당 4)' },
   { key: '트라카', side: 0, ref: 'C-107', name: '트라카', tier: 2, cls: '원거리', role: '사수', weapon: '단궁', ammo: 60, sm: 1.38, height: 1.25, weight: 34, nv: true, nvG: 'B', ov: { hp: 80, atk: 13, wind: 0.2, rec: 0.22 }, traits: ['사격B', '회피A', '은신B'], active: ['도약'], race: '고블린', origin: '청광묵과 같은 세계 (서로 모름) — 청광묵보다 먼저 다른 곳에서 떨어짐', tactic: '고블린 궁수 · 단궁 속사 · 도약', note: '단궁으로 짧게 (4칸) 빠르게 두세 발씩. 작고 잘 피함. 사격 B — 도약하며 쏘지 못하고, 움직이며 쏘면 덜 맞음' },
@@ -2262,6 +2268,10 @@ if (!S.v661a){ for (const u of S.units) fixArcher661(u); try { const mine = myDe
   try { const F = myFloors(); let fc = false; for (const f of F) if (f.snap && f.snap.units) for (const u of f.snap.units) if (fixArcher661(u)) fc = true; if (fc) saveMyFloors(F); } catch (e) {} S.v661a = true; }
 if (!S.v620k){ for (const u of S.units) fixKit62(u); try { const mine = myDesigns(); let dc = false; for (const d of mine) if (fixKit62(d)) dc = true; if (dc) saveMyDesigns(mine); } catch (e) {}
   try { const F = myFloors(); let fc = false; for (const f of F) if (f.snap && f.snap.units) for (const u of f.snap.units) if (fixKit62(u)) fc = true; if (fc) saveMyFloors(F); } catch (e) {} S.v620k = true; }
+if (!S.v877t){ const fx = u => { if (u && u.ref === 'C-221' && +u.tier === 2){ u.tier = 3; return true; } return false; };   /* v8.7.7 탕아 3성 — 저장된 판 · 내 설계 · 내 층 · 여정 동료도 한 번 */
+  for (const u of S.units || []) fx(u); try { const mine = myDesigns(); let dc = false; for (const d of mine) if (fx(d)) dc = true; if (dc) saveMyDesigns(mine); } catch (e) {}
+  try { const Fl = myFloors(); let fc = false; for (const f of Fl) if (f.snap && f.snap.units) for (const u of f.snap.units) if (fx(u)) fc = true; if (fc) saveMyFloors(Fl); } catch (e) {}
+  try { const C = S.camp; if (C){ for (const p of (C.run && C.run.party) || []) fx(p); for (const p of C.lostP || []) fx(p); } } catch (e) {} S.v877t = true; }
 if (!S.v610){ let n = 0; for (const u of S.units) if (fixVet6(u)) n++;
   try { const mine = myDesigns(); let dc = false; for (const d of mine) if (fixVet6(d)) dc = true; if (dc) saveMyDesigns(mine); } catch (e) {}
   try { const F = myFloors(); let fc = false; for (const f of F) if (f.snap && f.snap.units) for (const u of f.snap.units) if (fixVet6(u)) fc = true; if (fc) saveMyFloors(F); } catch (e) {}
@@ -2329,7 +2339,7 @@ if (!S.v4){
 if (!S.draft) S.draft = { ...newDraft(), done: true, picks: S.units.filter(u => u.side === 0 && !u.hero && u.ref).map(u => u.ref).slice(0, 2) };   // 예전 배치는 그대로 두고 뽑기만 새로   // v2 수치표 (cd) → v3 (준비 · 회복 · 턴)
 // v7.2 수치표 이전: 저장된 수치표는 v5.2 뒤에 생긴 세부 칸을 못 받고, 옛 기본값 (활 탄속 32 · 총 85 …) 에 머물러 v7.0 의 탄속이 실제 판에 안 닿았음.
 // ① 기본값에 있는데 저장된 수치표에 없는 칸은 채움 (지난 이전 때 이미 있던 칸을 손으로 지운 건 그대로 둠) ② 옛 기본값 그대로인 칸만 지금 기본값으로 (손으로 바꾼 값은 둠)
-const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '8.7.6', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
+const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '8.7.7', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
 function rulePaths(d, p, out){ for (const k in d){ const v = d[k], pp = p + '/' + k; out.push(pp); if (v && typeof v === 'object' && !Array.isArray(v)) rulePaths(v, pp, out); } return out; }
 function fixRules(R, known){
   let n = 0; const ks = known ? new Set(known) : null;
@@ -3481,7 +3491,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v8.7.6 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v8.7.7 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => { const s = padW(f2(e.t) + '초', 8); return / $/.test(s) ? s : s + ' '; };   /* v8.7.3 100초가 넘어도 띄어 씀 */
@@ -6226,7 +6236,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push(`굴의 전투판 v8.7.6 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push(`굴의 전투판 v8.7.7 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   let prevRel = [];   /* v8.7.3 30층: 그 사이 얻은 유물 */
   M.forEach((m, i) => {
@@ -6258,7 +6268,7 @@ async function campLogAll(){
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
   if (J) for (const pv of (J.visits || []).filter(q => q.panel)){ const k = M.findIndex(m => m.n != null && m.n > pv.n); M.splice(k < 0 ? M.length : k, 0, { ...pv }); }   /* v8.7.3 30층 칸 (상인 · 쉼터 · 만남 글) */
-  return { game: '굴의 전투판', ver: '8.7.6', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '8.7.7', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log, run: C.run ? { f: C.run.f, end: C.run.end || null, relics: (C.run.relics || []).slice(), gold: C.run.gold } : null }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -7448,6 +7458,7 @@ function unitDetailHtml(Wd, u){
     ${!ed && u.alive && Wd.t < (u.hobbleT || -9) ? `<span class="tr" style="color:#cfe6ff"><span class="lb">이동 제약</span> ⛓ 걸음 ×0.4 · 못 뜀 · 스텝 · 도약 못 함 · ${f2(u.hobbleT - Wd.t)}초</span>` : ''}
     ${!ed && u.alive && Wd.t < (u.frostT || -9) ? `<span class="tr" style="color:#9fd0ff"><span class="lb">동상</span> ❄ 걸음 ×0.55 · 준비 느림 · ${f2(u.frostT - Wd.t)}초</span>` : ''}
     ${!ed && u.alive && u.burn && Wd.t < u.burn.until ? `<span class="tr" style="color:#ff9a86"><span class="lb">화상</span> 🔥 초당 ${u.burn.dps.toFixed(1)} · ${f2(u.burn.until - Wd.t)}초 남음 (${esc(Wd.units[u.burn.by] ? Wd.units[u.burn.by].name : '')})</span>` : ''}
+    ${r8DetLine(Wd, u)}
     <span class="tr"><span class="lb">몸</span> 키 ${u.h}m · 무게 ${u.mass}kg${u.massEst ? ' (어림 — 키 · 무게를 정하면 정확해짐)' : ''} · 돌아서기 ×${turnMul(Wd, u).toFixed(2)}${u.heads > 1 ? ' · 머리 ' + u.heads + ' (사방을 봄 — 등 뒤도 알아챔)' : ''}${u.bodyShield ? ' · 몸이 방패 (중전차 — 막는 게 아니라 동료를 가리고 지킴)' : ''}${u.h >= 2.2 ? ' (큰 몸 — 1M 넘게 작은 쪽은 이 너머를 못 봄)' : ''} · ${u.human ? '일반 인간계 사람 — 총에 그대로 다침' : '굴의 몸 — 총 피해 ×' + Wd.rules.gunTough}${u.modBody ? ' · 개조된 신체 (받는 피해 ×' + (Wd.rules.modBody || {}).dmg + ')' : ''}${u.undying ? ' · 불사' : ''}</span>
     ${u.ammo != null && known ? `<span class="tr"><span class="lb">탄약</span> ${u.magMax ? `탄창 ${u.mag}/${u.magMax} · 남은 탄 ${u.ammo}/${u.ammoMax} · 재장전 ${(Wd.rules.weapons[u.weapon] || {}).reload || 2}초${(Wd.rules.weapons[u.weapon] || {}).burst ? ' · 점사 ' + Wd.rules.weapons[u.weapon].burst + '발 (가끔 ' + Wd.rules.weapons[u.weapon].burstMax + '발)' : ''}` : `${u.ammo}/${u.ammoMax}`}${u.loud ? ' · 쏘면 총성 (그 자리에 !)' : ' · 소리 없음'}</span>` : ''}
     ${!ed && u.lie && u.alive && !u.side ? (() => { const LR = Wd.rules.lie || {}, gun = gunOf(Wd, u), bl = u.lieFeelT != null && Wd.t - u.lieFeelT < 6; return `<span class="tr" style="color:#86efac"><span class="lb">포복</span> ${u.lieSw ? (u.lieSw.to ? '엎드리는 중 ' : '일어나는 중 ') + f2(Math.max(0, u.lieSw.at - Wd.t)) + '초 (아무것도 못 함)' : '엎드림'} — 기는 속력 ×${LR.spd} · ${LR.near}칸 밖에서 맞을 확률 ×${LR.hitFar} (곡사 · 투창 ×${LR.hitArc}) · 노린 게 아닌 탄은 거의 위로 넘어감 (${Math.round((LR.over != null ? LR.over : 0.08) * 100)}%) · ${gun ? '엎드려 쏨 — 남은 빗나감 −' + Math.round((LR.aim || 0) * 100) + '%' : isFar(u) ? '활은 일어나야 쏨' : '치려면 일어남'} (${u.cls === '기동' ? LR.upFast : LR.up}초) · 근접에 약함 · 모르는 적에겐 빛 ×${LR.lit} · 어스름 ×${LR.dim} · 어둠 ×${LR.dark} 거리 안만 보임${bl ? ' · 👁 들킨 듯' : ''}</span>`; })() : ''}
@@ -8000,7 +8011,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v8.7.6 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v8.7.7 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
@@ -8602,17 +8613,17 @@ const ELITE8 = {
   machinaB: { name: '기체 B 편대', foes: [['기체 B', 3], ['블루블랙 전투단', 2]] },
   giant: { name: '15M 거인병사', foes: [['15M 거인병사', 1], ['갈퀴창 병사', 3]] },
   mask: { name: '가면', foes: [['가면', 1], ['하류', 2]] },
-  forget: { name: '망각', foes: [['망각', 1], ['@saved', 2]] },
+  forget: { name: '망각', foes: [['망각', 1], ['@saved', 2]], relic: 'shard' },   /* v8.7.7 망각의 데이터 조각 */
   hall: { name: '황량', foes: [['황량', 1]] }, lady: { name: '귀족부인', foes: [['귀족부인', 1], ['도깨비 졸개', 2]] } };
 const BOSS8 = {
-  redrock: { name: '붉은암석', foes: [['붉은암석', 1]] },   /* v8.7.4 5층 층 보스 (3D 명단: 동굴 관문 보스로 알맞음 · 3D 처럼 혼자) */
-  serpa: { name: '붉은암석', foes: [['붉은암석', 1]] },   /* v8.7.4 세르파는 보스가 아님 — 옛 저장의 5층 보스 칸 (b: 'serpa') 은 붉은암석 */
+  redrock: { name: '붉은암석', foes: [['붉은암석', 1]], relic: 'core' },   /* v8.7.7 붉은암석의 핵 */   /* v8.7.4 5층 층 보스 (3D 명단: 동굴 관문 보스로 알맞음 · 3D 처럼 혼자) */
+  serpa: { name: '붉은암석', foes: [['붉은암석', 1]], relic: 'core' },   /* v8.7.4 세르파는 보스가 아님 — 옛 저장의 5층 보스 칸 (b: 'serpa') 은 붉은암석 */
   regina: { npc: 'regina' },
   neo: { pick: ['neodemon', 'neospirit'] },
   neodemon: { name: '네오마계의 대악마 하딤', foes: [['대악마 하딤', 1], ['하류', 2], ['흑익', 2]], reward: 'C-175', map: 'neodemon1' },
   neospirit: { name: '네오 정령계의 사슴', foes: [['사슴', 1], ['포자', 2], ['천사 경비병', 2]], reward: 'C-174', map: 'neospirit1' },
   theron: { name: '테이론', foes: [['테이론', 1]], tear: 2 },
-  gods: { name: '삼신의 심판', waves: [['천사 경비병', 3, '라비스'], ['마신족 병사', 3, '모켈'], ['사이버 암살자', 3, '모란']], tear: 3 } };
+  gods: { name: '삼신의 심판', waves: [['천사 경비병', 3, '라비스'], ['마신족 병사', 3, '로켈'], ['사이버 암살자', 3, '모란']], tear: 3 } };
 // 적 설계 (여정 전용 — 도감 그림 ref · 이 판의 수치). 층이 깊을수록 R8.scale 만큼 세짐
 const FOE8 = {};
 [
@@ -8675,27 +8686,74 @@ const foe8 = (k, f) => {   // f = 층 (세짐)
   const n = Math.max(0, (f || 2) - 2); d.ov = { ...(d.ov || {}) }; if (d.ov.hp) d.ov.hp = Math.round(d.ov.hp * (1 + R8.scale.hp * n)); if (d.ov.atk) d.ov.atk = Math.round(d.ov.atk * (1 + R8.scale.atk * n));
   return { ...fromDesign(d, 1), id: uid() };
 };
-// 유물 — 효과는 싸움을 만들 때 (r8Pre: 설계에 얹었다가 판을 만든 뒤 걷음 · r8Post: 판의 몸에) 또는 정해진 때
+// 유물 — 효과는 싸움을 만들 때 (r8Pre: 설계에 얹었다가 판을 만든 뒤 걷음 · r8Post: 판의 몸에) 또는 정해진 때 · v8.7.7 34종 · hold = 지닌 이 (끼운 인물만 — 유물 칸에서 고름)
 const RELIC8 = {
-  tear: { name: '여신의 눈물', ic: '💧', d: '횃불이 더 밝음 · 아군 최대 체력 +6% (모을수록)', st: true },
-  odtear: { name: '오딜의 눈물', ic: '🌹', d: '인주에게 [가호:오딜] — 받는 피해 −10%' },
-  scale: { name: '사르딜락의 비늘조각', ic: '🐉', d: '인주 최대 체력 +20% · 불 · 냉기에 강함' },
-  nurse: { name: '간호사장의 모자', ic: '⛑', d: '치유하는 동료의 약이 두 번 더' },
-  violin: { name: '루미의 바이올린', ic: '🎻', d: '싸움이 끝날 때마다 모두 최대 체력의 10% 회복' },
-  candle: { name: '왐의 머리촛대', ic: '🕯', d: '지닌 이 (가장 앞의 동료) 가 쓰러지면 체력 10% 로 일어남 — 다섯 번' },
-  gamyu: { name: '가뮤의 대검', ic: '🗡', d: '가장 큰 동료 (중대형 이상) 의 공격 +30%' },
+  tear: { name: '여신의 눈물', ic: '💧', d: '횃불이 더 밝음 (+10% · 모을수록) · 아군 최대 체력 +6% (모을수록)', st: true, how: '여신의 호수 · 테이론 · 삼신의 심판' },
+  odtear: { name: '오딜의 눈물', ic: '🌹', hold: true, d: '과거의 오딜이 남긴 선물 — 지닌 이에게 [가호:오딜] (받는 피해 −10%)', how: '신성 오딜의 차 (신성을 지닌 동료가 있을 때)' },
+  scale: { name: '사르딜 락의 비늘조각', ic: '🐉', hold: true, d: '지닌 이 최대 체력 +20% · 화상 · 동상을 반으로', how: '3층 (여신의 호수) 을 자주 오가면 · 호수 유적의 사르딜 락' },
+  nurse: { name: '간호사장의 모자', ic: '⛑', hold: true, d: '간호사 전용 — 지닌 간호사의 약 +3 · 치유량 +30%', how: '야전병원 간호사장과 인연 3 (간호사가 동료일 때)' },
+  violin: { name: '루미의 바이올린', ic: '🎻', d: '싸움이 끝날 때마다 모두 최대 체력의 10% 회복', how: '야전병원 간호사장과 인연 5 (최대)' },
+  candle: { name: '왐의 머리촛대', ic: '🕯', hold: true, d: '지닌 이가 쓰러지면 체력 10% 로 일어남 · 중상도 나음 — 다섯 번' },
+  gamyu: { name: '가뮤의 대검', ic: '🗡', hold: true, d: '중대형 · 대형 · 초대형만 — 지닌 이의 공격 +30%', how: '거대 해양괴수 가뮤를 이기면' },
   duck: { name: '러버덕의 리볼버', ic: '🦆', d: '사수들의 공격 +20%' },
-  rabis: { name: '라비스의 투구', ic: '🪶', d: '아군 모두 최대 체력 +10% (삼신 — 질서)' },
-  moran: { name: '모란의 가면', ic: '🎭', d: '인주의 회피 +15% (삼신 — 칼끝)' },
-  mokel: { name: '모켈의 갑옷', ic: '🛡', d: '인주가 받는 피해 −15% (삼신 — 거래)' },
+  rabis: { name: '라비스의 투구', ic: '🪶', d: '아군 모두 최대 체력 +10% (삼신 — 질서)', how: '삼신의 심판 — 라비스의 판을 넘기면' },
+  moran: { name: '모란의 가면', ic: '🎭', hold: true, d: '지닌 이의 회피 +15% (삼신 — 칼끝)', how: '갈대숲의 모란 · 삼신의 심판 — 모란의 판' },
+  mokel: { name: '로켈의 갑옷', ic: '🛡', hold: true, d: '지닌 이가 받는 피해 −15% (삼신 — 거래)', how: '삼신의 심판 — 로켈의 판을 넘기면' },
   rokto: { name: '록토의 로브', ic: '💀', d: '아군 모두 은신이 한 단계 좋아짐 (괴이)' },
   tea: { name: '오딜의 차', ic: '🍵', d: '층에 들어설 때 모두 최대 체력의 20% 회복' },
   branch: { name: '친칠라의 하얀 가지', ic: '🌿', d: '활을 쏘는 동료의 공격 +25%' },
   coin: { name: '굴 동전 주머니', ic: '👛', d: '싸움에서 얻는 동전 +50%' },
   boots: { name: '망자의 장화', ic: '🥾', d: '아군 모두 조금 빠름 (+6%)' },
-  crown: { name: '부서진 왕관 조각', ic: '👑', d: '치명타를 맞을 때 한 번 버팀 (싸움마다 한 명)' },
-  dice: { name: '왐의 주사위', ic: '🎲', d: '상인 값이 20% 쌈' } };
-const RELIC8_POOL = ['odtear', 'scale', 'nurse', 'violin', 'candle', 'gamyu', 'duck', 'rokto', 'tea', 'branch', 'coin', 'boots', 'crown', 'dice'];
+  crown: { name: '부서진 왕관 조각', ic: '👑', d: '싸움마다 한 번 — 치명타를 맞아도 체력 1 로 버팀 (처음 맞는 동료)' },
+  dice: { name: '왐의 주사위', ic: '🎲', d: '상인 값이 20% 쌈' },
+  compass: { name: '랑팡의 나침반', ic: '🧭', d: '싸움판의 출구를 처음부터 앎 (찾지 않아도 됨)' },
+  whet: { name: '탄탄만의 숫돌', ic: '⚒', d: '무기 · 방패 · 갑옷이 40% 덜 닳음' },
+  belt: { name: '노라의 탄띠', ic: '🎗', d: '층에 들어설 때 사수의 화살 · 탄이 가득 참' },
+  rabbit: { name: '아이텐의 토끼발', ic: '🐇', d: '아군 모두 회피 +8%' },
+  sheath: { name: '셰도르의 단검집', ic: '🔪', d: '단검을 든 동료의 공격 +25%' },
+  banner: { name: '호레이쇼의 군기', ic: '🚩', d: '명령이 닿을 확률 +15% (외침 · 손짓 · 전달이 닿는 곳에서)' },
+  flame: { name: '페흐토의 청염 조각', ic: '🔥', hold: true, d: '지닌 이의 근접 공격에 청염 — 맞은 상대에게 불이 붙음', how: '페흐토를 이기면' },
+  jelly: { name: '세르파의 젤리', ic: '🟢', d: '싸움이 끝날 때 가장 다친 동료가 최대 체력의 25% 회복' },
+  feather: { name: '인공천사 벨의 깃털', ic: '🪽', d: '싸움마다 한 번 — 체력이 30% 아래로 떨어진 첫 동료를 감쌈 (체력 +20% · 피가 멎음)' },
+  herbs: { name: '마리의 약초 주머니', ic: '🍃', d: '치유하는 동료의 치유량 +25%' },
+  ribbon: { name: '로지나의 리본', ic: '🎀', d: '뛸 때 (서두름) 걸음 +15%' },
+  glass: { name: '테헤라의 모래시계', ic: '⏳', d: '한 번 — 모두 쓰러지면 그 싸움 앞으로 되돌아감 (모래시계는 깨짐)' },
+  drop: { name: '각혈의 핏방울', ic: '🩸', d: '피 흘리는 상대에게 주는 피해 +15%' },
+  shard: { name: '망각의 데이터 조각', ic: '💾', d: '숨은 상대가 더 멀리서 보임 (은신 × 1.3)' },
+  core: { name: '붉은암석의 핵', ic: '🌋', d: '아군 모두 넘어짐 · 밀려남 버팀 +20%' },
+  key: { name: '도굴꾼의 열쇠', ic: '🗝', d: '보물 상자의 미믹을 알아봄 (미믹 없음) · 상자에서 동전 +30' } };
+// 뽑기 · 상인 · 보물 · 만남이 주는 풀 (24) — 오딜의 눈물 · 비늘조각 · 간호사장의 모자 · 루미의 바이올린 · 가뮤의 대검 · 삼신의 셋 · 청염 조각 · 여신의 눈물은 얻는 길만 (J9)
+const RELIC8_POOL = ['candle', 'duck', 'rokto', 'tea', 'branch', 'coin', 'boots', 'crown', 'dice', 'compass', 'whet', 'belt', 'rabbit', 'sheath', 'banner', 'jelly', 'feather', 'herbs', 'ribbon', 'glass', 'drop', 'shard', 'core', 'key'];
+// v8.7.7 지닌 이 (끼운 인물만): 유물 칸에서 고름 — 고르지 않았거나 · 떠났거나 · 조건이 안 맞으면 기본 (간호사 · 가장 큰 몸 · 주인공)
+const isNurse8 = p => !!p && (p.ref === 'C-018' || /간호사/.test(p.name || ''));   /* 가윤 = 1성 간호사 (C-018) */
+const REL_BIG = ['중대형', '대형', '초대형'];
+const sizeP8 = p => { try { return sizeP(p); } catch (e) { return p.sizeCls || '중형'; } };
+const REL_OK = { nurse: p => isNurse8(p), gamyu: p => REL_BIG.includes(sizeP8(p)) }, REL_WHY = { nurse: '간호사만', gamyu: '중대형 · 대형 · 초대형만' };
+const r8HoldOK = (k, p) => !REL_OK[k] || REL_OK[k](p);
+function r8Holder(k){
+  const R = R8S(); if (!R || !(R.relics || []).includes(k) || !(RELIC8[k] || {}).hold) return null;
+  const live = (R.party || []).filter(p => !(R.dead || []).includes(p.name)), id = (R.relHold || {})[k];
+  let p = id != null ? live.find(x => String(x.id) === String(id)) : null; if (p && !r8HoldOK(k, p)) p = null;
+  if (!p){ const L = live.filter(x => r8HoldOK(k, x)); p = k === 'gamyu' ? L.sort((a, b) => (SIZE_RANK[sizeP8(b)] || 0) - (SIZE_RANK[sizeP8(a)] || 0) || (+b.weight || 0) - (+a.weight || 0))[0] : (L.find(x => x.hero) || L[0]); }
+  return p || null;
+}
+const r8HeldIc = p => { const R = R8S(); if (!R || !p) return ''; const L = (R.relics || []).filter(k => (RELIC8[k] || {}).hold && (r8Holder(k) || {}).id === p.id); return L.length ? ' <span class="r8held" title="' + esc(L.map(k => RELIC8[k].name).join(' · ')) + '">' + L.map(k => RELIC8[k].ic).join('') + '</span>' : ''; };
+// 유물을 얻음 (한 곳으로): 이미 있으면 false · 촛대는 불꽃 다섯
+function r8AddRelic(k){ const R = R8S(); if (!R || !RELIC8[k] || R.relics.includes(k)) return false; R.relics.push(k); if (k === 'candle') R.flags.candle = 5; return true; }
+// 지닐 사람 고르기
+function r8HoldPanel(k){
+  const R = R8S(), D = RELIC8[k]; if (!R || !D || !D.hold) return; const cur = r8Holder(k), live = R.party.filter(p => !R.dead.includes(p.name));
+  const el = r8Panel(`<h2>${D.ic} ${esc(D.name)} — 지닐 사람</h2><div class="r8sub">${esc(D.d)}${REL_WHY[k] ? ' · ' + esc(REL_WHY[k]) : ''}${k === 'candle' ? ` · 남은 불꽃 ${R.flags.candle != null ? R.flags.candle : 5}` : ''}</div><div class="r8pan">${live.map(p => { const ok = r8HoldOK(k, p), on = cur && cur.id === p.id; return `<button class="btn r8hp${on ? ' go' : ''}" type="button" ${ok ? `data-r8hp="${esc(String(p.id))}"` : 'disabled'}><i style="${r8Face(p.ref, 34)};border-radius:8px"></i><span><b>${esc(jobNm8(p))}</b> <small>${on ? '지니고 있음' : ok ? '' : esc(REL_WHY[k] || '')}</small></span></button>`; }).join('') || '<p>지닐 동료가 없어요.</p>'}<div class="row"><button class="btn" type="button" id="r8hX">지도로</button></div></div>`);
+  el.querySelectorAll('[data-r8hp]').forEach(b => b.onclick = () => { R.relHold = R.relHold || {}; R.relHold[k] = b.dataset.r8hp; save(); toast(`${D.name} — ${jobNm8(R.party.find(p => String(p.id) === b.dataset.r8hp) || {})}`); r8MapShow(); });
+  $('r8hX').onclick = () => r8MapShow();
+}
+// 상세 칸 (싸움 중): 지닌 유물 · 전직
+function r8DetLine(Wd, u){
+  if (!Wd || !Wd.r8 || u.side !== 0 || !run8On()) return ''; const R = R8S(), p = S.units.find(x => x.id === u.pid) || {}, L = [];
+  for (const k of R.relics || []) if ((RELIC8[k] || {}).hold && (r8Holder(k) || {}).id === p.id) L.push(RELIC8[k].ic + ' ' + RELIC8[k].name + (k === 'candle' && Wd.r8candle && Wd.r8candle.i === u.i ? ' (불꽃 ' + Wd.r8candle.left + ')' : ''));
+  const j = jobOf8(p);
+  return (j ? `<span class="tr"><span class="lb">전직</span> ⭐ ${esc(j.name)} — ${esc(j.d)}</span>` : '') + (L.length ? `<span class="tr"><span class="lb">유물</span> ${esc(L.join(' · '))}</span>` : '');
+}
 
 /* ---------- v8.0.0 30층 여정 — run8_b.js v1.10 (v1.10: 소환 (세르파의 슬라임) 은 끝난 판의 동료 셈에서 빠짐 · 적 설계로 합류하는 동료는 allyOv (세르파 체력 90) · v1.9: 대화 동작 R8X 는 여정 밖 (프롤로그 — 적뢰 · 오딜) 에서도 · v1.8: 그만두기 · 떠나보냄은 판 위의 확인 창 (askYes) — 아티팩트 화면은 브라우저 확인 창을 막아 눌러도 아무 일이 없었음 · v1.7: 결승 고리 (run8_d — 대화 동작 R8X · 판마다 duel8Tick · 링 그림 duel8Draw · 끝 duel8Over) · v1.6: 챔피언 로드 고리 (run8_c — 깜짝 규칙 · MC 한마디 · 관중 · 상금 배율) · 촛대 · 낙사 로그는 'r8' 글로 · v1.5: 얼굴 칸 크기 · 지도 줄은 늘어나지 않게 · 로그의 '1F ·' 뺌 · v1.4: 무리 수 동료 × (0.6 + 층 × 0.01) · 적의 시작 상황을 켬 (싸움 = 떠돎 · 정면 · 협공 · 매복 · 행군 / 정예 · 보스 = 정면) · 출구는 맵을 끝내야 열림 · v1.3: 정산 제목은 N층 · 들어서는 곳에 바로 둠 (맵 끝 칸도 · 모자라면 가까운 바닥부터) · 도감 명단에 없는 동료 (세르파) 는 적 설계로 · v1.2: 페이지가 처음 뜰 때 먼저 불려도 괜찮게 (R8READY) · 보스가 주는 동료는 자리 수를 넘어도 합류 · v1.1: 라비스 대사 그림 · v1.0: 여정 상태 · 층 지도 · 칸 · 싸움 판 · 끝난 판 · 뽑기 · 쉼터 · 상인 · 보물 · 만남 · 정산 · 결말) ---------- */
 var R8READY = false;   // 모듈을 다 읽은 뒤에만 켜짐 (처음 뜰 때 campBarRender · draw 가 먼저 불려도 괜찮게)
@@ -8722,10 +8780,11 @@ function r8FloorEnter(f){
   const R = R8S(); if (!R) return; R.f = f; R.at = null; R.done = []; R.fm = r8Gen(f); R.floorT = Date.now();
   const F = F8[f] || {}; R.log.push({ f, t: Date.now(), k: 'floor', name: F.name });
   for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, Math.round((p.hpNow != null ? p.hpNow : mx) + mx * (R8.floorHeal + (r8Has('tea') ? 0.2 : 0)))); }
+  if (r8Has('belt')) for (const p of R.party) if (p.ammo != null && p.ammo !== ''){ fix873(p); if (p.ammoMax != null) p.ammo = Math.max(+p.ammo || 0, +p.ammoMax); }   /* v8.7.7 노라의 탄띠 */
   save(); world = null; mode = 'plan';
   r8FloorCard(f, () => r8DrawShow(f));
 }
-const r8MaxHp = p => { try { return Math.round(statsOf(p, rules).hp * (1 + 0.06 * ((R8S() || {}).tears || 0)) * (r8Has('rabis') ? 1.1 : 1)); } catch (e) { return 100; } };
+const r8MaxHp = p => { try { return Math.round(statsOf(p, rules).hp * (1 + 0.06 * ((R8S() || {}).tears || 0)) * (r8Has('rabis') ? 1.1 : 1) * (r8Has('scale') && (r8Holder('scale') || {}).id === p.id ? 1.2 : 1)); } catch (e) { return 100; } };   /* v8.7.7 비늘조각 (지닌 이) 도 */
 // 층 카드 (나레이션)
 function r8FloorCard(f, then){
   const F = F8[f] || {}, el = $('ldFx'); if (!el){ then(); return; }
@@ -8760,6 +8819,9 @@ function r8Css(){ if ($('r8css')) return; const st = document.createElement('sty
 .r8 h2{margin:2px 0 2px;font-size:20px;letter-spacing:.5px}.r8 .r8sub{color:#a99f8f;font-size:13px;margin-bottom:8px}
 .r8 .r8top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:6px;font-size:13px}.r8 .r8top b{color:#f0d690}
 .r8 .r8rel{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}.r8 .r8rel span{background:#241f33;border:1px solid #3b3350;border-radius:8px;padding:2px 7px;font-size:12px}
+.r8rel button.r8hold{background:#2a2438;border:1px solid #7a6431;border-radius:8px;padding:2px 8px;font:inherit;font-size:12px;color:inherit;cursor:pointer;min-height:32px}.r8rel button.r8hold small{opacity:.85;color:#f0d690}
+body.mob .r8rel button.r8hold{min-height:36px}.r8held{font-size:12px;letter-spacing:1px}
+.r8 .btn.r8hp{display:flex;align-items:center;gap:8px;margin:4px 0;width:100%;text-align:left;min-height:44px}.r8 .r8jimg{display:block;width:100%;height:170px;background:center/contain no-repeat;margin-bottom:4px}
 .r8 .r8map{position:relative;margin:6px auto 10px;max-width:560px;height:var(--h,420px)}
 .r8 .r8map svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .r8 .r8n{position:absolute;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;border:2px solid #4a4160;background:#1b1726;color:#ddd;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
@@ -8780,6 +8842,9 @@ function r8Css(){ if ($('r8css')) return; const st = document.createElement('sty
 let r8Sel = null;
 function r8MapShow(){
   const R = R8S(); if (!R || !R.on) return; r8Css();
+  if (R.f === 3 && (R.flags.f3n || 0) >= 6 && !R.relics.includes('scale') && !R.flags.sardilGift && !(world && !world.over)){   /* v8.7.7 3층 (여신의 호수) 을 자주 오가면 — 사르딜 락의 비늘조각 */
+    R.flags.sardilGift = 1; r8AddRelic('scale'); save(); r8Hide(); R8T = () => r8MapShow();
+    talkLines([{ narr: '호수 가장자리를 몇 번이나 오갔을까. 물 밑에서 푸른 빛이 줄곧 따라오고 있었다.', img: IMG8.sardil2 }, { t: '…시끄럽게도 오가는군, 작은 것들. 이거나 가지고 조용히 지나가라.', name: '사르딜 락', img: IMG8.sardil }, { narr: '물 위로 손바닥만 한 푸른 비늘 한 조각이 떠오른다.' }, { box: '🐉 사르딜 락의 비늘조각 — 지닌 이 최대 체력 +20% · 화상 · 동상을 반으로 (유물 칸에서 지닐 사람을 고름)' }, { go: '!r8:then' }]); return; }
   let el = $('run8'); if (!el){ el = document.createElement('div'); el.id = 'run8'; el.className = 'r8'; document.body.appendChild(el); }
   el.hidden = false; el.classList.remove('hide');
   const F = F8[R.f] || {}, rows = R.fm.rows, av = r8Avail(), H = 90 + rows.length * 86;
@@ -8792,10 +8857,10 @@ function r8MapShow(){
   const crowd = R.f >= 20 ? `<span>관중 열기 <span class="r8crowd"><b style="width:${Math.round(R.crowd)}%"></b></span></span>` : '';
   el.innerHTML = `<h2>${R.f}층 · ${esc(F.name || '')}</h2>${mcl ? `<div class="r8mc">🎤 MC 더 플링: "${esc(mcl)}"</div>` : ''}<div class="r8sub">${F.final ? '결승 — 링 위에서 1대1' : (F.fixed8 ? '✧ 고정층 · ' : `무작위 지대 · `) + (F.boss ? '보스가 기다리는 층' : 'MS · S 를 지나 층 보스까지 — 한 번은 갈림길')}</div>
     <div class="r8top"><span>👛 <b>${R.gold}</b></span><span>💧 여신의 눈물 <b>${R.tears}</b></span><span>동료 <b>${R.party.length}</b>/${R8.cap}</span>${crowd}<span style="color:#8a8070">${r8Elapsed()}</span></div>
-    <div class="r8rel">${R.relics.length ? R.relics.map(k => `<span title="${esc((RELIC8[k] || {}).d || '')}">${(RELIC8[k] || {}).ic || '?'} ${esc((RELIC8[k] || {}).name || k)}</span>`).join('') : '<span style="opacity:.6">유물 없음</span>'}</div>
+    <div class="r8rel">${R.relics.length ? R.relics.map(k => { const D = RELIC8[k] || {}, h = D.hold ? r8Holder(k) : null; return D.hold ? `<button type="button" class="r8hold" data-r8hold="${k}" title="${esc(D.d || '')} — 눌러서 지닐 사람을 고름">${D.ic || '?'} ${esc(D.name || k)}${k === 'candle' ? ` (불꽃 ${R.flags.candle != null ? R.flags.candle : 5})` : ''} <small>· ${h ? esc(jobNm8(h)) : '지닐 사람 없음'}</small></button>` : `<span title="${esc(D.d || '')}">${D.ic || '?'} ${esc(D.name || k)}</span>`; }).join('') : '<span style="opacity:.6">유물 없음</span>'}</div>
     <div class="r8map" style="--h:${H}px"><svg viewBox="0 0 100 100" preserveAspectRatio="none">${lines}</svg>${nodes}</div>
     <div class="r8desc" id="r8desc">${r8Sel ? esc(r8NodeDesc(r8Node(r8Sel))) : '빛나는 칸을 누르면 무엇이 있는지 보여요.'}</div>
-    <div class="r8party">${R.party.map(p => { const mx = r8MaxHp(p), hp = p.hpNow != null ? p.hpNow : mx; return `<div class="r8p"><i style="${r8Face(p.ref, 34)}"></i><div><b>${esc(p.name)}</b>${p.hero ? ' 🔥' : ''}<div class="hb"><b style="width:${Math.max(0, Math.min(100, Math.round(hp / mx * 100)))}%"></b></div><small>${hp}/${mx}</small></div></div>`; }).join('')}</div>
+    <div class="r8party">${R.party.map(p => { const mx = r8MaxHp(p), hp = p.hpNow != null ? p.hpNow : mx; return `<div class="r8p"><i style="${r8Face(p.ref, 34)}"></i><div><b>${esc(jobNm8(p))}</b>${p.hero ? ' 🔥' : ''}${r8HeldIc(p)}<div class="hb"><b style="width:${Math.max(0, Math.min(100, Math.round(hp / mx * 100)))}%"></b></div><small>${hp}/${mx}</small></div></div>`; }).join('')}</div>
     <div class="r8go">${r8Sel && av.includes(r8Sel) ? `<button class="btn go" type="button" data-r8="enter">${(NODE8[r8Node(r8Sel).t] || {}).ic} 들어가기</button>` : ''}<button class="btn" type="button" data-r8="party">동료 정리</button><button class="btn" type="button" data-r8="log">여정 기록</button><button class="btn" type="button" data-r8="quit">그만두기</button></div>`;
 }
 function r8Elapsed(){ const R = R8S(); if (!R) return ''; const m = Math.round((Date.now() - R.t0) / 60000); return m >= 60 ? `${Math.floor(m / 60)}시간 ${m % 60}분` : `${m}분`; }
@@ -8809,6 +8874,7 @@ function r8NodeDesc(n){
 document.addEventListener('click', e => {
   const el = e.target.closest('#run8'); if (!el) return;
   const nb = e.target.closest('[data-r8n]'); if (nb){ const id = nb.dataset.r8n; if (r8Avail().includes(id)){ if (r8Sel === id){ r8Enter(r8Node(id)); return; } r8Sel = id; } else { r8Sel = id; } r8MapShow(); return; }
+  const hb = e.target.closest('[data-r8hold]'); if (hb){ r8HoldPanel(hb.dataset.r8hold); return; }   /* v8.7.7 지닐 사람 */
   const b = e.target.closest('[data-r8]'); if (!b) return; const k = b.dataset.r8;
   if (k === 'enter' && r8Sel){ r8Enter(r8Node(r8Sel)); return; }
   if (k === 'party'){ r8PartyPanel(); return; }
@@ -8819,7 +8885,7 @@ function r8Hide(){ const el = $('run8'); if (el) el.hidden = true; }
 
 // ===== 칸에 들어감 =====
 function r8Enter(n){
-  const R = R8S(); if (!R || !n) return; r8Sel = null; R.at = n.id; save();
+  const R = R8S(); if (!R || !n) return; r8Sel = null; R.at = n.id; if (R.f === 3) R.flags.f3n = (R.flags.f3n || 0) + 1; save();   /* v8.7.7 3층을 오간 수 (비늘조각) */
   if (n.t === 'stairs'){ R.done.push(n.id); r8Next(); return; }
   if (['rest', 'shop', 'chest', 'enc', 'fixed', 'final'].includes(n.t)) try { jrPanel(n); } catch (e) {}   /* v8.7.3 여정 기록에 칸 (대화 고름 · 유물) */
   if (n.t === 'rest'){ r8RestPanel(n); return; }
@@ -8855,14 +8921,15 @@ function r8Battle(n, waveK){
   Object.assign(S, { type: 'grid', W: M ? M.NX : 32, H: M ? M.NY : 20, amb: M ? M.amb : 0.15, mapC: false, randStart: true, seed: st.seed, flips, torches: [], terr: M ? '' : '1F', tseed: st.tseed, piles, hills: [], pileOff: [], indoor: !!M, zones: [], sandY: null, water: [], startK: n.t === 'fight' ? r8Pick(['roam', 'front', 'pincer', 'ambush', 'column']) : 'front' });
   S.art8 = id || null; S.hall = false; S.room = false; S.regina = false; S.holdClear = false;
   const rule = typeof r8CrowdRule === 'function' ? r8CrowdRule(n) : null;   // v8.1 깜짝 규칙 (암전은 판을 만들기 전에)
+  if (r8Has('glass') && (!waveK || !R.glassSnap)) R.glassSnap = clone(R.party); else if (!r8Has('glass')) delete R.glassSnap;   /* v8.7.7 테헤라의 모래시계 — 싸움 앞의 동료들 */
   const pre = r8Pre(party);
   S.units = [...party, ...foes]; rebuildMap();
   const m = buildMap(S), inn = M && M.in ? M.in : [Math.floor(S.W / 2) - 5, S.H - 3, Math.floor(S.W / 2) + 5, S.H - 1];
   r8PlaceIn(m, party, inn);
   r8PlaceFar(m, foes, inn);
-  selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors(); pre();
+  selId = null; rebuildMap(); setMapUI(); save(); start(); renderFloors(); pre(); save();   /* v8.7.7 설계에 얹었던 유물 몫 (가호 · 은신 · 약) 을 걷은 뒤 다시 저장 — 싸우다 새로 고침해도 남지 않게 */
   r8Post(world);
-  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0, rule }; world.exitLock = n.t === 'elite' || n.t === 'boss'; world.exitHide = true;   /* v8.7.3 보통 맵은 처음부터 열림 (싸울지 지나갈지 고름) · 정예 · 보스 · 봉인만 잠금 · 출구는 누가 봐야 앎 */ if (M && M.fall) world.fall8 = true; if (typeof r8BattleHook === 'function') r8BattleHook(n, M); }
+  if (world){ world.explored && world.explored.fill(2); const o = M && M.out ? M.out : [Math.floor(S.W / 2), 0]; world.stairs = { x: o[0] + 0.5, y: o[1] + 0.5, r: 0.9 }; world.entry = { x: (inn[0] + inn[2]) / 2 + 0.5, y: (inn[1] + inn[3]) / 2 + 0.5, r: 1.6 }; world.r8 = { node: n.id, t: n.t, wave: waveK || 0, rule }; world.exitLock = n.t === 'elite' || n.t === 'boss'; world.exitHide = !r8Has('compass'); if (r8Has('compass')) world.exitSeen = true;   /* v8.7.7 랑팡의 나침반 — 출구를 처음부터 앎 */   /* v8.7.3 보통 맵은 처음부터 열림 (싸울지 지나갈지 고름) · 정예 · 보스 · 봉인만 잠금 · 출구는 누가 봐야 앎 */ if (M && M.fall) world.fall8 = true; if (typeof r8BattleHook === 'function') r8BattleHook(n, M); }
   logEv(world, { k: 'campIn', s: 1, name: `${R.f}층 ${(NODE8[n.t] || {}).nm}`, kind: n.t === 'elite' ? (ELITE8[n.e] || {}).name : n.t === 'boss' ? r8BossName(n.b) : (F8[R.f] || {}).name, bt: null, from: 'down', back: false, r8: true });
   jrIn(C, 1, 'down', st, null, null);
   const B = n.t === 'boss' ? (n.b === 'neo' ? BOSS8[R.neo] : BOSS8[n.b]) : null;
@@ -8895,33 +8962,51 @@ function r8PlaceFar(m, foes, inn){
   cells.sort((a, b) => b.d - a.d); const far = cells.slice(0, Math.max(foes.length * 4, Math.floor(cells.length * 0.4))), used = new Set();
   for (const u of foes){ for (let k = 0; k < 60; k++){ const c = r8Pick(far); const key = c.x + ',' + c.y; if (used.has(key)) continue; used.add(key); u.x = c.x + 0.5; u.y = c.y + 0.5; break; } }
 }
-// 유물 효과 (판을 만들기 전 설계 · 만든 뒤 몸)
+// 유물 효과 (판을 만들기 전 설계 · 만든 뒤 몸) — v8.7.7 지닌 이 (끼운 인물만)
 function r8Pre(party){
   const undo = []; const add = (p, t) => { if (!(p.traits || []).includes(t)){ p.traits = [...(p.traits || []), t]; undo.push(() => { p.traits = (p.traits || []).filter(x => x !== t); }); } };
-  const hero = party.find(p => p.hero) || party[0];
-  if (hero && r8Has('odtear')) add(hero, '축복:오딜');
+  const hp = k => { const h = r8Holder(k); return h ? party.find(p => p.id === h.id) || null : null; };
+  { const p = hp('odtear'); if (p) add(p, '가호:오딜'); }   /* v8.7.7 [가호:오딜] — 받는 피해 × 0.9 (엔진) · 예전 '축복:오딜' 은 아무 효과도 없었음 */
   if (r8Has('rokto')) for (const p of party){ const cur = (p.traits || []).find(t => /^은신[SABCDE]$/.test(t)); const up = { E: 'D', D: 'C', C: 'B', B: 'A', A: 'S', S: 'S' }[cur ? cur.slice(-1) : 'D'] || 'C'; if (cur){ p.traits = p.traits.filter(t => t !== cur); undo.push(() => { p.traits = [...p.traits.filter(t => t !== '은신' + up), cur]; }); } add(p, '은신' + up); }
-  if (r8Has('nurse')) for (const p of party) if (p.skill && p.skill.pool){ const s0 = p.skill.pool; p.skill.pool += 2; if (!p.nurse2){ p.nurse2 = true; if (p.skLeft != null) p.skLeft += 2; } undo.push(() => { p.skill.pool = s0; }); }   /* v8.7.3 남은 약 +2 는 한 번만 (맵마다 쌓이던 것) */
+  { const p = hp('nurse'); if (p && p.skill && p.skill.pool){ const s0 = p.skill.pool; p.skill.pool += 3; if (!p.nurse3){ p.nurse3 = true; if (p.skLeft != null) p.skLeft += 3; } undo.push(() => { p.skill.pool = s0; }); } }   /* v8.7.7 간호사 전용 · 약 +3 (남은 약 +3 은 처음 한 번만) */
   for (const p of party) if (p.skill && p.skill.pool && p.skLeft != null && p.skLeft > p.skill.pool) p.skLeft = p.skill.pool;   /* v8.7.3 쌓였던 약은 최대까지 */
   return () => undo.forEach(f => f());
 }
+const r8HealK = (u, k) => { const s = u.skill; if (!s) return; for (const f of ['per', 'pct', 'min', 'cap', 'hot']) if (s[f] != null && isFinite(s[f]) && s[f] > 0) s[f] = +(s[f] * k).toFixed(3); };   /* v8.7.7 치유량 × */
 function r8Post(W){
   if (!W) return; const R = R8S(), al = W.units.filter(u => u.side === 0), hero = al.find(u => u.hero) || al[0];
   const mul = (u, k) => { const r = u.hp / u.max; u.max = Math.round(u.max * k); u.hp = Math.max(1, Math.round(u.max * r)); };
+  const hu = k => { const p = r8Holder(k); return p ? al.find(u => u.pid === p.id) || null : null; };   /* v8.7.7 지닌 이의 몸 */
   const tk = 1 + 0.06 * R.tears; for (const u of al){ if (tk > 1) mul(u, tk); if (r8Has('rabis')) mul(u, 1.1); if (r8Has('boots')) u.spd *= 1.06; }
-  if (hero && r8Has('scale')) mul(hero, 1.2);
-  if (hero && r8Has('moran')) hero.ev = (hero.ev || 1) * 1.15;
-  if (r8Has('gamyu')){ const big = al.filter(u => ['중대형', '대형', '초대형'].includes(sizeOf(u))).sort((a, b) => b.mass - a.mass)[0]; if (big){ big.atk = Math.round(big.atk * 1.3); big.r8gamyu = true; } }
-  for (const u of al){ if (r8Has('duck') && isFar(u)) u.atk = Math.round(u.atk * 1.2); if (r8Has('branch') && /활/.test(u.weaponNow || u.weapon || '')) u.atk = Math.round(u.atk * 1.25); }
-  W.r8dmg = { hero: hero ? hero.i : null, odile: r8Has('odtear') ? 0.9 : 1, mokel: r8Has('mokel') ? 0.85 : 1 };
-  if (r8Has('candle')){ const c = R.flags.candle == null ? (R.flags.candle = 5) : R.flags.candle; if (c > 0 && hero) W.r8candle = { i: hero.i, left: c }; }
-  if (r8Has('crown')) W.r8crown = 1;
+  if (R.tears > 0) W.torchK = 1 + 0.1 * R.tears;   // 여신의 눈물 — 횃불이 더 밝음
+  { const u = hu('scale'); if (u){ mul(u, 1.2); u.fireRes = 0.5; u.frostRes = 0.5; } }
+  { const u = hu('moran'); if (u) u.ev = (u.ev || 1) * 1.15; }
+  { const u = hu('gamyu'); if (u && REL_BIG.includes(sizeOf(u))){ u.atk = Math.round(u.atk * 1.3); u.r8gamyu = true; } }
+  { const u = hu('mokel'); if (u) u.dmgK = (u.dmgK || 1) * 0.85; }
+  { const u = hu('flame'); if (u) u.wFire = 2; }
+  { const u = hu('nurse'); if (u) r8HealK(u, 1.3); }
+  for (const u of al){ const w = u.weaponNow || u.weapon || '';
+    if (r8Has('duck') && isFar(u)) u.atk = Math.round(u.atk * 1.2);
+    if (r8Has('branch') && /활/.test(w)) u.atk = Math.round(u.atk * 1.25);
+    if (r8Has('sheath') && /단검/.test(w)) u.atk = Math.round(u.atk * 1.25);
+    if (r8Has('rabbit')) u.ev = (u.ev || 1) * 1.08;
+    if (r8Has('whet')) u.durK = 0.6;
+    if (r8Has('ribbon')) u.runK = 1.15;
+    if (r8Has('drop')) u.bleedK = 1.15;
+    if (r8Has('shard')) u.spotK = 1.3;
+    if (r8Has('core')) u.poise = (u.poise || 1) * 1.2;
+    if (r8Has('herbs')) r8HealK(u, 1.25); }
+  if (r8Has('banner')) W.cmdBonus = { 0: 0.15 };
+  if (r8Has('candle')){ const c = R.flags.candle == null ? (R.flags.candle = 5) : R.flags.candle, u = hu('candle'); if (c > 0 && u) W.r8candle = { i: u.i, left: c }; }
+  if (r8Has('crown')) W.crown = { 0: 1 };
+  if (r8Has('feather')) W.r8feather = 1;
 }
-// 판마다 (draw 쪽에서 부름): 촛대 · 옥상 낙사
+// 판마다 (draw 쪽에서 부름): 촛대 · 깃털 · 옥상 낙사
 function r8Tick(W){
   if (!W || !W.r8) return; const R = R8S(); if (!R) return;
   if (W.duel){ if (typeof duel8Tick === 'function') duel8Tick(W); return; }   // v8.2 결승 (촛대 · 관중 없음)
-  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
+  const c = W.r8candle; if (c && c.left > 0){ const u = W.units[c.i]; if (u && !u.alive && !u.gone && !u.down){ try { rise(W, u, 0.1, true); } catch (e) {} c.left--; R.flags.candle = c.left; logEv(W, { k: 'r8', s: `🕯 촛대의 불꽃 — ${u.name} 이(가) 다시 일어난다 · 중상이 나음 (남은 불꽃 ${c.left})`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🕯 다시 일어남', c: 'h', t0: W.t }); } }
+  if (W.r8feather > 0){ const u = W.units.find(x => x.side === 0 && x.alive && !x.summon && !x.gone && x.hp > 0 && x.hp < x.max * 0.3); if (u){ W.r8feather--; u.hp = Math.min(u.max, u.hp + u.max * 0.2); u.bleed = null; u.ibleed = null; logEv(W, { k: 'r8', s: `🪽 깃털이 ${u.name} 을(를) 감싼다 — 체력 +20% · 피가 멎음`, c: 'good', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '🪽 감쌈', c: 'h', t0: W.t }); } }
   if (W.fall8) for (const u of W.units){ if (!u.alive || u.r8fell) continue; const cx = Math.floor(u.x), cy = Math.floor(u.y); if (u.kb && rock(W.map, u.x + (u.kb.dx || 0) * 0.6, u.y + (u.kb.dy || 0) * 0.6) && !solid(W.map, u.x, u.y) && W.map.t[cy * W.map.W + cx] === 0 && u.kb.left > 0.3){ u.r8fell = true; u.alive = false; u.hp = 0; u.down = false; u.kb = null; logEv(W, { k: 'r8', s: `${u.name} — 옥상 끝에서 밀려 떨어졌다!`, c: 'bad', vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '추락!', c: 'd', t0: W.t }); } }
   if (typeof r8CrowdTick === 'function') r8CrowdTick(W);   // v8.1 관중
   if (typeof r8GuestTick === 'function'){ r8GuestTick(W); r8NpcTick(W); }   // v8.7.1 손님 · 항복 · 숨은 NPC
@@ -8949,6 +9034,9 @@ function r8Over(){
   if (W.duel){ duel8Over(W, W.duel.res || ((W.units[W.duel.foe] || {}).alive ? 'lose' : 'win')); return; }   // v8.2 결승
   const party = [], dirs = {}, rows = stageStats(W); try { campLogSave(W, 1); } catch (e) {}
   const node = r8Node(R.at) || { t: 'fight' };
+  if ((W.result === 'lose' || !W.units.some(u => u.side === 0 && !u.summon && (u.gone === 'up' || u.gone === 'down'))) && r8Has('glass') && R.glassSnap){   /* v8.7.7 테헤라의 모래시계 — 모두 쓰러지면 그 싸움 앞으로 (한 번 · 깨짐) */
+    R.party = R.glassSnap; delete R.glassSnap; R.relics = R.relics.filter(k => k !== 'glass'); { const nid = R.at; R.done = R.done.filter(x => x !== nid); } R.at = r8PrevAt(); R.log.push({ f: R.f, k: 'glass', t: Date.now() }); save(); world = null;
+    R8T = () => r8MapShow(); talkLines([{ narr: '모래시계가 손 안에서 깨진다. 흩어진 모래가 거꾸로 흐른다 —' }, { narr: '눈을 뜨니, 싸움이 시작되기 전이다. 아무도 쓰러지지 않았다.' }, { box: '⏳ 테헤라의 모래시계 — 그 싸움 앞으로 되돌아감 (모래시계는 깨짐)' }, { go: '!r8:then' }]); return; }
   for (const u of W.units){ if (u.side !== 0 || u.summon) continue; const p = S.units.find(x => x.id === u.pid); if (!p) continue;
     if (u.gone === 'up' || u.gone === 'down'){ dirs[u.gone] = (dirs[u.gone] || 0) + 1; settleWorld({ units: [{ ...u, alive: true }], items: W.items }); p.hpNow = Math.round(u.hp); if (u.skill) p.skLeft = u.skill.left; else delete p.skLeft; party.push(p); }
     else if (u.gone === 'left'){ C.lost.push(p.name); } else { C.fallen.push(p.name); R.dead.push(p.name); } }
@@ -8956,10 +9044,11 @@ function r8Over(){
   R.party = party; C.log.push({ s: 1, f: R.f, t: +W.t.toFixed(1), res: W.result, kills: (W.kills || [0])[0], party: party.map(p => p.name) });
   if (W.result === 'lose' || !party.length){ r8End('wipe'); return; }
   const up = (dirs.up || 0) >= (dirs.down || 0);
-  if (!up && !W.cleared){ if (typeof r8CrowdOver === 'function') r8CrowdOver(W, node, false, true); R.at = r8PrevAt(); save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
+  if (!up && !W.cleared){ if (typeof r8CrowdOver === 'function') r8CrowdOver(W, node, false, true); R.at = r8PrevAt(); if (R.f === 3) R.flags.f3n = (R.flags.f3n || 0) + 1; save(); toast('물러났어요 — 그 칸은 다시 고를 수 있어요'); world = null; r8MapShow(); return; }   // 물러남: 칸은 그대로
   for (const r of rows){ const p = party.find(x => x.id === r.pid); r.grow = p ? growFor(p, r) : []; }
   try { jrGrow(rows); } catch (e) {}
   if (r8Has('violin')) for (const p of party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow || 0) + Math.round(mx * 0.1)); }
+  if (r8Has('jelly') && party.length){ const p = party.slice().sort((a, b) => (a.hpNow != null ? a.hpNow : r8MaxHp(a)) / r8MaxHp(a) - (b.hpNow != null ? b.hpNow : r8MaxHp(b)) / r8MaxHp(b))[0], mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow != null ? p.hpNow : mx) + Math.round(mx * 0.25)); }   /* v8.7.7 세르파의 젤리 */
   // 보상
   const G = R8.gold[node.t === 'elite' ? 'elite' : node.t === 'boss' ? 'boss' : 'fight'] || R8.gold.fight, cm = typeof r8CrowdOver === 'function' ? r8CrowdOver(W, node, true, false) : { mul: 1, add: 0, txt: [] }, gold = Math.round(r8Rnd(G[0], G[1]) * (r8Has('coin') ? 1.5 : 1) * cm.mul * ((W.r8 || {}).pass && !W.cleared ? 0.4 : 1)) + cm.add; R.gold += gold;   // v8.1 관중 · 규칙
   const rew = [`👛 ${gold}`, ...cm.txt]; let relic = null;
@@ -8967,7 +9056,10 @@ function r8Over(){
   if (node.noraLoot && W.cleared && typeof r8NoraLoot === 'function') r8NoraLoot(rew);   /* v8.7.1 노라의 짐 */
   if (relic) rew.push(`${RELIC8[relic].ic} ${RELIC8[relic].name}`);
   const B = node.t === 'boss' ? (node.b === 'neo' ? BOSS8[R.neo] : BOSS8[node.b]) : null;
-  if (B && B.tear){ R.tears++; if (!R.relics.includes('tear')) R.relics.push('tear'); rew.push(`💧 여신의 눈물 ${B.tear === 2 ? '②' : '③'}`); }
+  const gw = node.t === 'boss' && node.b === 'gods' ? ((W.r8 || {}).wave || 0) : -1;   /* v8.7.7 삼신의 심판: 판마다 그 신의 유물 · 눈물은 마지막 판에만 (예전엔 판마다 하나 — 셋) */
+  if (gw >= 0 && W.cleared){ const gk = ['rabis', 'mokel', 'moran'][gw]; if (gk && r8AddRelic(gk)) rew.push(`${RELIC8[gk].ic} ${RELIC8[gk].name}`); }
+  if (B && B.relic && W.cleared && r8AddRelic(B.relic)) rew.push(`${RELIC8[B.relic].ic} ${RELIC8[B.relic].name}`);   /* v8.7.7 보스 유물 (붉은암석의 핵) */
+  if (B && B.tear && !(gw >= 0 && gw < 2)){ R.tears++; if (!R.relics.includes('tear')) R.relics.push('tear'); rew.push(`💧 여신의 눈물 ${B.tear === 2 ? '②' : '③'}`); }
   R.done.push(node.id); R.log.push({ f: R.f, k: node.t, res: 'win', t: Date.now(), gold, relic, kills: (W.kills || [0])[0] });
   save();
   const after = () => {
@@ -8998,7 +9090,8 @@ function r8Recruit(ref, txt, then, force){
 }
 let R8T = null;
 function r8GiveRelic(force){
-  const R = R8S(); const L = RELIC8_POOL.filter(k => !R.relics.includes(k)); if (!L.length) return null; const k = force || r8Pick(L); R.relics.push(k); if (k === 'candle') R.flags.candle = 5; return k;
+  const R = R8S(); if (force) return r8AddRelic(force) ? force : null;   /* v8.7.7 예전엔 풀이 비면 정예 유물 (가뮤의 대검) 도 못 받았음 */
+  const L = RELIC8_POOL.filter(k => !R.relics.includes(k)); if (!L.length) return null; const k = r8Pick(L); r8AddRelic(k); return k;
 }
 // ===== 뽑기 (층에 들어설 때 세 번) =====
 function r8DrawShow(f){
@@ -9016,7 +9109,7 @@ function r8DrawShow(f){
 }
 function r8DrawTake(cards){
   const R = R8S(); const got = [];
-  for (const c of cards){ if (c.k === 'relic'){ if (!R.relics.includes(c.id)){ R.relics.push(c.id); if (c.id === 'candle') R.flags.candle = 5; got.push(RELIC8[c.id].name); } }
+  for (const c of cards){ if (c.k === 'relic'){ if (r8AddRelic(c.id)) got.push(RELIC8[c.id].name); }
     else if (c.k === 'gold'){ R.gold += c.n; got.push('동전 ' + c.n); }
     else if (c.k === 'ally'){ if (R.party.length >= R8.cap){ R.gold += 25; got.push(`${c.name} (자리가 없어 동전 25 로)`); continue; } const d = designByKey(c.key); if (d){ R.party.push({ ...fromDesign(d, 0), id: uid() }); got.push(c.name + ' 합류'); } } }
   delete R.drawCards; R.drawOpen = []; save(); toast(got.join(' · ')); r8MapShow();
@@ -9036,7 +9129,7 @@ function r8ShopPanel(n){
   const nm = it => it.k === 'relic' ? `${RELIC8[it.id].ic} ${RELIC8[it.id].name}` : it.k === 'heal' ? '⛑ 치료 (모두 30%)' : it.k === 'potion' ? '🧪 회복약 (인주 가방)' : '🏹 화살 · 탄 한 묶음';
   const el = r8Panel(`<h2>🛒 상인</h2><div class="r8sub">노라가 그림자 속에서 손을 흔든다. "구경은 공짜야~"</div><div class="r8pan"><div>👛 <b>${R.gold}</b></div><div class="row">${n.stock.map((it, i) => it.sold ? `<button class="btn" type="button" disabled>${esc(nm(it))} — 팔림</button>` : `<button class="btn" type="button" data-r8buy="${i}" title="${esc(it.k === 'relic' ? RELIC8[it.id].d : '')}">${esc(nm(it))} — ${Math.round(it.cost * off)}</button>`).join('')}</div><div class="row"><button class="btn go" type="button" id="r8shopX">떠난다</button></div></div>`);
   el.querySelectorAll('[data-r8buy]').forEach(b => b.onclick = () => { const it = n.stock[+b.dataset.r8buy], c = Math.round(it.cost * off); if (R.gold < c){ toast('동전이 모자라요'); return; } R.gold -= c;
-    if (it.k === 'relic'){ R.relics.push(it.id); if (it.id === 'candle') R.flags.candle = 5; it.sold = true; }
+    if (it.k === 'relic'){ r8AddRelic(it.id); it.sold = true; }
     else if (it.k === 'heal'){ for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow != null ? p.hpNow : mx) + Math.round(mx * 0.3)); } if (typeof r8InMap === 'function' && r8InMap()) for (const u of world.units) if (u.side === 0 && u.alive) u.hp = Math.min(u.max, u.hp + u.max * 0.3); }
     else { const h = R.party.find(p => p.hero) || R.party[0]; if (h){ h.bag = h.bag || []; h.bag.push(it.k === 'potion' ? { k: 'potion', name: '회복약' } : { k: 'ammo', name: '화살', n: 20 }); } }
     save(); r8ShopPanel(n); });
@@ -9044,9 +9137,9 @@ function r8ShopPanel(n){
 }
 function r8ChestPanel(n){
   const R = R8S();
-  if (Math.random() < 0.2 && !n.mimic){ n.mimic = true; n.t = 'fight'; save(); talkLines([{ narr: '상자가 입을 벌렸다 — 미믹이다!' }, { go: '!r8:battle' }]); return; }
-  const k = r8GiveRelic(); save();
-  r8Panel(`<h2>💎 보물</h2><div class="r8pan" style="text-align:center">${k ? `<div class="r8card"><span class="ic">${RELIC8[k].ic}</span><b>${esc(RELIC8[k].name)}</b><small>${esc(RELIC8[k].d)}</small></div>` : '<p>비어 있다. 누군가 먼저 다녀갔다.</p>'}<div class="row" style="justify-content:center"><button class="btn go" type="button" id="r8chX">챙긴다</button></div></div>`);
+  if (Math.random() < 0.2 && !n.mimic && !r8Has('key')){ n.mimic = true; n.t = 'fight'; save(); talkLines([{ narr: '상자가 입을 벌렸다 — 미믹이다!' }, { go: '!r8:battle' }]); return; }   /* v8.7.7 도굴꾼의 열쇠 — 미믹을 알아봄 */
+  const k = r8GiveRelic(), kg = r8Has('key') && !n.keyG ? 30 : 0; if (kg){ n.keyG = 1; R.gold += kg; } save();
+  r8Panel(`<h2>💎 보물</h2><div class="r8pan" style="text-align:center">${k ? `<div class="r8card"><span class="ic">${RELIC8[k].ic}</span><b>${esc(RELIC8[k].name)}</b><small>${esc(RELIC8[k].d)}</small></div>` : '<p>비어 있다. 누군가 먼저 다녀갔다.</p>'}${kg ? `<p>🗝 열쇠로 연 바닥 칸 — 👛 ${kg}</p>` : ''}<div class="row" style="justify-content:center"><button class="btn go" type="button" id="r8chX">챙긴다</button></div></div>`);
   $('r8chX').onclick = () => r8NodeDone();
 }
 // ===== 만남 =====
@@ -9104,7 +9197,9 @@ function r8Act(a){
   if (a === 'battle'){ const n = r8Node(R.at); r8Hide(); r8Battle(n); return; }
   if (a === 'curseRead'){ const p = r8Pick(R.party); if (Math.random() < 0.55){ const out = growFor(p, { hits: 99, dodges: 0, moved: 0, meleeDealt: 0, taken: 0 }); say([{ narr: `${p.name} 이(가) 무언가를 깨달았다.` }, { box: out.length ? out.join(' · ') : '깨달음 — 지휘가 조금 늘었다' }]); } else { p.ov = p.ov || {}; p.ov.hp = Math.max(40, (p.ov.hp != null ? +p.ov.hp : statsOf({ ...p, ov: {} }, rules).hp) - 10); p.curses = [...(p.curses || []), '지식의 저주']; say([{ narr: `글씨가 ${p.name} 의 눈으로 기어 들어간다.` }, { box: `${p.name} — 최대 체력 −10 (저주)` }]); } save(); return; }
   if (a === 'wamPlay'){ if (!R.relics.filter(k => k !== 'tear').length){ say([{ t: '걸 게 없잖아. 다음에 와.', name: '왐' }]); return; } if (Math.random() < 0.5){ const k = r8GiveRelic(); say([{ narr: '카드가 뒤집힌다 — 이겼다!' }, { box: k ? `${RELIC8[k].ic} ${RELIC8[k].name}` : '동전 40' }]); if (!k) R.gold += 40; } else { const L = R.relics.filter(k => k !== 'tear'), k = r8Pick(L); R.relics = R.relics.filter(x => x !== k); say([{ narr: '카드가 뒤집힌다 — 졌다.' }, { box: `${RELIC8[k].ic} ${reul(RELIC8[k].name)} 잃었다` }]); } save(); return; }
-  if (a === 'nurseHeal'){ for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow != null ? p.hpNow : mx) + Math.round(mx * 0.6)); if (p.skill && p.skill.pool){ p.skLeft = p.skill.pool; } } const nu = R.party.find(p => /간호사|가윤|노먼/.test(p.name)); if (nu && !R.flags.nurseUp){ R.flags.nurseUp = 1; if (nu.skill) nu.skill.pool = (nu.skill.pool || 0) + 2; } say([{ narr: '간호사장이 바이올린을 켠다. 잠깐 굴을 잊는다.' }, { box: '모두 회복' + (nu ? ` · ${nu.name} 의 약 +2` : '') }]); save(); return; }
+  if (a === 'nurseHeal'){ for (const p of R.party){ const mx = r8MaxHp(p); p.hpNow = Math.min(mx, (p.hpNow != null ? p.hpNow : mx) + Math.round(mx * 0.6)); if (p.skill && p.skill.pool) delete p.skLeft; }   /* v8.7.7 약은 가득 (지닌 유물의 몫까지 — 싸울 때 셈) */
+    R.flags.lumi = (R.flags.lumi || 0) + 1; const was = !!R.flags.normanMed, up = R.flags.lumi >= 2 ? r8MedUp(R.party.filter(p => isNurse8(p) || p.ref === 'C-007')) : [];   /* v8.7.7 천막과 같은 인연 · 같은 의료 기술 (예전엔 노먼 · 간호사 하나만 한 번 약 +2) */
+    say([{ narr: '간호사장이 바이올린을 켠다. 잠깐 굴을 잊는다.' }, { box: '모두 회복 · 약 가득' + (up.length ? ' · 의료 기술 등급 업 — ' + up.join(' · ') : '') }, ...(!was && R.flags.normanMed ? [{ box: '⭐ 노먼 — 전직할 수 있음 (동료 정리 → ⭐ 전직)' }] : [])]); save(); return; }
   if (a === 'rosina'){ R.flags.rosina = 1; say([{ t: '약속~ 위험하면 튈 거야.', name: '로지나' }]); save(); return; }
   if (a === 'lang'){ r8Recruit('C-207', '랑팡이 지도를 접는다. "좋아요, 같이 가요. 여신을 찾으면 반은 내 거예요."', done); return; }
   if (a === 'marie'){ r8Recruit('C-022', '마리가 웃는다.', () => r8Recruit('C-023', '와킨이 짐을 짊어진다.', done)); return; }
@@ -9139,7 +9234,7 @@ function r8BossIntro(b, wave){
   if (b === 'redrock' || b === 'serpa') return [{ narr: '무너진 수정 기둥 사이에 붉은 바위가 웅크리고 있다. 다가가자 — 바위가 일어선다.' }, { narr: '붉은암석. 마족의 바위 거인 — 매우매우 단단하다.' }, { box: '붉은암석 — 방어모드 (피해 1) 일 땐 치지 말고 기다릴 것 · 붙잡히면 동료가 쳐서 끊어 줄 것 · 날아오는 바위 · 내려앉을 그림자를 보면 비킬 것' }];   /* v8.7.4 */
   if (b === 'neo'){ const k = R.neo; return k === 'neospirit' ? [{ narr: '빛나는 정령의 광장. 거대한 사슴이 앞발로 땅을 긁는다.' }, { box: '네오 정령계의 문 — 이기면 물레가 함께한다' }] : [{ narr: '네온 마계의 광장. 대악마 하딤이 도끼를 어깨에 걸친다.' }, { t: '오랜만에 위로 올라온 먹잇감이군.', name: '하딤', who: 'C-201' }, { box: '네오마계의 문 — 이기면 콜라이더가 함께한다' }]; }
   if (b === 'theron') return [{ narr: '하얀 공간. 아무 소리도 없다.' }, { narr: '테이론이 검을 뽑는 순간 — 하얀 공간이 우주로 무너진다. 별이 비처럼 쏟아진다.' }, { box: '테이론 — 말없이 싸움이 시작된다' }];
-  if (b === 'gods'){ const W8 = BOSS8.gods.waves[wave || 0]; return wave ? [{ narr: `${W8[2]} 이(가) 손가락을 든다. 다음 심판.` }] : [{ narr: '붉은 바다 위의 무대. 세 개의 옥좌에 세 초월자가 앉아 있다.', cg: 'r8_gods' }, { narr: '흰 깃털의 라비스. 긴 흑발의 모란. 뿔 달린 모켈. 그리고 그들 위에 떠 있는 해골 — 록토.', cg: 'r8_gods' }, { t: '불씨를 든 아이가 왔구나.', name: '라비스', img: 'run8/rabis' }, { box: '삼신의 심판 — 세 판을 연달아 (라비스 · 모켈 · 모란이 고른 적)' }]; }
+  if (b === 'gods'){ const W8 = BOSS8.gods.waves[wave || 0]; return wave ? [{ narr: `${W8[2]} 이(가) 손가락을 든다. 다음 심판.` }] : [{ narr: '붉은 바다 위의 무대. 세 개의 옥좌에 세 초월자가 앉아 있다.', cg: 'r8_gods' }, { narr: '흰 깃털의 라비스. 긴 흑발의 모란. 뿔 달린 로켈. 그리고 그들 위에 떠 있는 해골 — 록토.', cg: 'r8_gods' }, { t: '불씨를 든 아이가 왔구나.', name: '라비스', img: 'run8/rabis' }, { box: '삼신의 심판 — 세 판을 연달아 (라비스 · 로켈 · 모란이 고른 적)' }]; }
   return [{ narr: '보스가 기다리고 있다.' }];
 }
 // ===== 정산 (10 · 20층) =====
@@ -9173,10 +9268,30 @@ function r8End(kind){
   $('r8finLog').onclick = () => { try { campLogDownload(); } catch (e) {} };
 }
 // ===== 동료 정리 =====
+// v8.7.7 전직 (H) — 지금은 노먼만 (다른 동료는 JOB8 에 더하면 됨 · 도감: "닥터" 노먼 · "선봉" 노먼). 조건: 야전병원 간호사장에게서 의료 기술을 배운 뒤 (R.flags.normanMed)
+const JOB8 = { 'C-007': { needTxt: '야전병원 간호사장에게서 의료 기술을 배운 뒤 (천막의 간호사장 이야기 · 인연 2부터)', need: R => !!(R.flags || {}).normanMed, jobs: {
+  doc: { name: '닥터 노먼', img: 'talk/norman_doc', d: '의무 — 의학 A (이미 A 이상이면 그대로) · 응급처치 강화: 약 +3 · 처음 30% (15 ~ 60) · 돌봄 6 × 5 · 대기 1.6초 · 소총은 그대로', line: '총은 그대로 들게. 대신 — 이제 아무도 내 앞에서 죽게 두지 않아.',
+    apply: p => { const cur = (p.traits || []).find(t => /^의학[SABCDE]$/.test(t)), g = cur ? cur.slice(-1) : 'E'; if (!['S', 'A'].includes(g)) p.traits = [...(p.traits || []).filter(t => t !== cur), '의학A'];
+      const k = p.skill || {}; p.skill = { ...k, name: k.name || '응급처치', kit: true, pool: (+k.pool || 7) + 3, pct: Math.max(+k.pct || 0.2, 0.3), min: Math.max(+k.min || 10, 15), cap: Math.max(+k.cap || 30, 60), hot: Math.max(+k.hot || 4, 6), hotN: Math.max(+k.hotN || 5, 5), hotGap: +k.hotGap || 0.4, cd: Math.min(+k.cd || 2.2, 1.6), auto: Math.max(+k.auto || 0.5, 0.5) };
+      if (p.skLeft != null) p.skLeft = +p.skLeft + 3; p.tactic = '닥터 — 응급처치 (의무) · 소총'; } },
+  van: { name: '선봉장 노먼', img: 'talk/norman_van', d: '선봉 — 대방패 + 소총: 쏘는 동안에도 방패를 듦 (방호 160 — 화살 · 총알을 막음) · 전열에 섬 · 방패만큼 걸음이 느림', line: '앞은 내가 선다. 다들 — 내 방패 뒤로.',
+    apply: p => { p.shield = true; p.sName = '대방패'; p.sDur = 100; delete p.sOwn; p.traits = [...new Set([...(p.traits || []), '대방패'])]; p.role = '전선'; p.tactic = '선봉장 — 대방패 뒤에서 소총'; } } } } };
+const jobOf8 = p => p && p.job && JOB8[p.ref] ? JOB8[p.ref].jobs[p.job] || null : null;
+const jobNm8 = p => { const j = jobOf8(p); return j ? j.name : (p && p.name) || ''; };
+const jobCan8 = p => !!(p && JOB8[p.ref] && !p.job && JOB8[p.ref].need(R8S() || {}));
+function r8JobPanel(i){
+  const R = R8S(), p = R && R.party[i], J = p && JOB8[p.ref]; if (!J || p.job) return;
+  const el = r8Panel(`<h2>⭐ 전직 — ${esc(p.name)}</h2><div class="r8sub">${esc(J.needTxt)} · 한 번 고르면 되돌릴 수 없어요.</div><div class="r8pan" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">${Object.entries(J.jobs).map(([k, j]) => `<div class="r8card" style="width:230px;min-height:auto"><span class="r8jimg" style="background-image:url(art/${j.img}.webp)"></span><b>${esc(j.name)}</b><small>${esc(j.d)}</small><button class="btn go" type="button" data-r8job="${k}" style="margin-top:6px;min-height:40px">이 길로</button></div>`).join('')}<div class="row" style="width:100%;justify-content:center"><button class="btn" type="button" id="r8jX">나중에</button></div></div>`);
+  el.querySelectorAll('[data-r8job]').forEach(b => b.onclick = () => { const k = b.dataset.r8job, j = J.jobs[k]; askYes(`${p.name} — ${j.name} (으)로 전직할까요? (되돌릴 수 없음)`, '전직한다').then(y => { if (!y) return;
+    j.apply(p); p.job = k; (R.log = R.log || []).push({ f: R.f, k: 'job', who: p.name, job: j.name, t: Date.now() }); save(); r8Hide(); R8T = () => r8PartyPanel();
+    talkLines([{ t: j.line, name: j.name, img: j.img }, { box: `⭐ ${j.name} — ${j.d}` }, { go: '!r8:then' }]); }); });
+  $('r8jX').onclick = () => r8PartyPanel();
+}
 function r8PartyPanel(){
   const R = R8S();
-  const el = r8Panel(`<h2>동료</h2><div class="r8sub">최대 ${R8.cap}명. 떠나보낸 동료는 돌아오지 않아요.</div><div class="r8pan">${R.party.map((p, i) => { const mx = r8MaxHp(p), hp = p.hpNow != null ? p.hpNow : mx; return `<div class="r8p" style="margin:4px 0"><i style="${r8Face(p.ref, 40)}"></i><div style="flex:1"><b>${esc(p.name)}</b> ${RAR_STAR(p)} <small>${hp}/${mx}${(p.grown || []).length ? ' · ✦ ' + esc(p.grown.slice(-3).join(' · ')) : ''}${(p.curses || []).length ? ' · ☠ ' + esc(p.curses.join(' · ')) : ''}</small></div>${p.hero ? '' : `<button class="btn sm warn" type="button" data-r8kick="${i}">떠나보냄</button>`}</div>`; }).join('')}<div class="row"><button class="btn go" type="button" id="r8pX">지도로</button></div></div>`);
+  const el = r8Panel(`<h2>동료</h2><div class="r8sub">최대 ${R8.cap}명. 떠나보낸 동료는 돌아오지 않아요.</div><div class="r8pan">${R.party.map((p, i) => { const mx = r8MaxHp(p), hp = p.hpNow != null ? p.hpNow : mx; return `<div class="r8p" style="margin:4px 0"><i style="${r8Face(p.ref, 40)}"></i><div style="flex:1"><b>${esc(jobNm8(p))}</b> ${RAR_STAR(p)}${r8HeldIc(p)} <small>${hp}/${mx}${JOB8[p.ref] && !p.job && !jobCan8(p) ? ' · ⭐ 전직 — ' + esc(JOB8[p.ref].needTxt) : ''}${(p.grown || []).length ? ' · ✦ ' + esc(p.grown.slice(-3).join(' · ')) : ''}${(p.curses || []).length ? ' · ☠ ' + esc(p.curses.join(' · ')) : ''}</small></div>${jobCan8(p) ? `<button class="btn sm go" type="button" data-r8job0="${i}">⭐ 전직</button>` : ''}${p.hero ? '' : `<button class="btn sm warn" type="button" data-r8kick="${i}">떠나보냄</button>`}</div>`; }).join('')}<div class="row"><button class="btn go" type="button" id="r8pX">지도로</button></div></div>`);
   el.querySelectorAll('[data-r8kick]').forEach(b => b.onclick = () => { const p = R.party[+b.dataset.r8kick]; askYes(`${reul(p.name)} 떠나보낼까요?`, '떠나보낸다').then(y => { if (!y) return; R.party.splice(+b.dataset.r8kick, 1); S.camp.lost.push(p.name); save(); r8PartyPanel(); }); });
+  el.querySelectorAll('[data-r8job0]').forEach(b => b.onclick = () => r8JobPanel(+b.dataset.r8job0));   /* v8.7.7 전직 */
   $('r8pX').onclick = () => r8MapShow();
 }
 // ===== 처음 켤 때 · 다시 열 때 =====
@@ -10512,7 +10627,7 @@ Object.assign(ELITE8, {
   x_dandal: { name: '단달로', foes: [['단달로', 1], ['검은 뿔 귀족', 2], ['검은 장막 술사', 1]] },
   x_macaroni: { name: '광대 마카로니', foes: [['광대 마카로니', 1], ['꼬마악마', 3]] },
   x_yellow: { name: '노란악마의 영역', foes: [['노란악마녀', 1], ['노란악마', 5]] },
-  x_pehto: { name: '페흐토', foes: [['페흐토', 1]] },
+  x_pehto: { name: '페흐토', foes: [['페흐토', 1]], relic: 'flame' },   /* v8.7.7 페흐토의 청염 조각 */
   x_mimic: { name: '미믹', foes: [['이질적인 기묘한 적', 2], ['기묘한 적 생물', 3]] },
   x_beast: { name: '짐승의 습격', foes: [['똥개', 4], ['굴 개', 2]] },
   x_ghost: { name: '유령들', foes: [['귀신 유령', 4]] },
@@ -10759,15 +10874,26 @@ function r8XFight(key, src8, extra){ const R = R8S(), n = r8Node(R.at); if (!n) 
 const X8 = {};
 const r8Say = (L, then) => { R8T = then || (() => r8NodeDone()); talkLines([...L, { go: '!r8:then' }]); };
 const r8Who = () => { const R = R8S(); return r8Pick(R.party.filter(p => !p.hero).concat(R.party)); };
+// v8.7.7 간호사장에게서 의료 기술을 배움 — 의학 한 등급 (S 까지) · 약 +2 · 치유량 ↑ · 노먼은 전직 조건 / 천막의 치료 · 바이올린 · 이야기는 천막마다 한 번
+const MED_UP8 = { E: 'D', D: 'C', C: 'B', B: 'A', A: 'S' };
+function r8MedUp(L){
+  const R = R8S(), out = [];
+  for (const p of L){ if (p.ref === 'C-007') R.flags.normanMed = 1; const cur = (p.traits || []).find(t => /^의학[SABCDE]$/.test(t)), g = cur ? cur.slice(-1) : null, nx = g ? MED_UP8[g] : 'D'; if (!nx) continue;
+    p.traits = [...(p.traits || []).filter(t => t !== cur), '의학' + nx];
+    if (p.skill && +p.skill.pool > 0){ p.skill.pool = +p.skill.pool + 2; p.skill.pct = Math.min(0.4, (+p.skill.pct || 0.12) + 0.03); }
+    p.medUp = (p.medUp || 0) + 1; out.push(`${p.name} 의학 ${g || '없음'} → ${nx}`); }
+  return out;
+}
+const r8TentUsed = k => { const C = S.camp, E = C && C.stages && C.stages[1] && C.stages[1].enc; if (!E || E.r8 !== 'tent') return false; E.used = E.used || []; if (E.used.includes(k)) return true; E.used.push(k); return false; };
 Object.assign(X8, {
   // 맵 위 NPC
-  mnTentHeal(){ r8HealAll(0.5); const R = R8S(); R.flags.lumiV = (R.flags.lumiV || 0) + 1; r8Say([{ narr: '파비가 말없이 상처를 꿰맨다. 간호사장이 순서를 부른다.' }, { box: '모두 50% 회복' }], () => { campBarRender(true); }); },
-  mnTentRest(){ r8HealAll(0.2); const R = R8S(); R.flags.lumi = (R.flags.lumi || 0) + 1; const L = [{ narr: '간호사장이 바이올린을 꺼낸다. 잠깐 — 굴을 잊는다.', img: IMG8.lumi }, { box: `모두 20% 회복 · 간호사장과의 인연 ${R.flags.lumi}` }];
-    if (R.flags.lumi >= 5 && !R.relics.includes('violin')){ R.relics.push('violin'); L.push({ t: '…가져가요. 내가 없을 때도 들을 수 있게.', name: '간호사장', img: IMG8.lumi }, { box: '🎻 루미의 바이올린 (최대 인연) — 싸움이 끝날 때마다 모두 10% 회복' }); }
+  mnTentHeal(){ if (r8TentUsed('heal')) return r8Say([{ t: '방금 꿰맸잖아요. 다음 천막에서 봐요.', name: '간호사장', img: IMG8.lumi }], () => campBarRender(true)); r8HealAll(0.5); const R = R8S(); R.flags.lumiV = (R.flags.lumiV || 0) + 1; r8Say([{ narr: '파비가 말없이 상처를 꿰맨다. 간호사장이 순서를 부른다.' }, { box: '모두 50% 회복' }], () => { campBarRender(true); }); },
+  mnTentRest(){ if (r8TentUsed('rest')) return r8Say([{ t: '바이올린은 한 번이면 충분해요. 또 와요.', name: '간호사장', img: IMG8.lumi }], () => campBarRender(true)); r8HealAll(0.2); const R = R8S(); R.flags.lumi = (R.flags.lumi || 0) + 1; const L = [{ narr: '간호사장이 바이올린을 꺼낸다. 잠깐 — 굴을 잊는다.', img: IMG8.lumi }, { box: `모두 20% 회복 · 간호사장과의 인연 ${R.flags.lumi}` }];
+    if (R.flags.lumi >= 5 && r8AddRelic('violin')){ L.push({ t: '…가져가요. 내가 없을 때도 들을 수 있게.', name: '간호사장', img: IMG8.lumi }, { box: '🎻 루미의 바이올린 (최대 인연) — 싸움이 끝날 때마다 모두 10% 회복' }); }
     r8Say(L, () => campBarRender(true)); },
-  mnTentTalk(){ const R = R8S(); R.flags.lumi = (R.flags.lumi || 0) + 1; const L = [{ t: R.flags.lumi < 3 ? '이름? 비밀이에요. 간호사장이라고 부르면 돼요.' : '…루미. 아무한테도 말하지 마요.', name: '간호사장', img: IMG8.lumi }];
-    const nu = R.party.filter(p => /간호사|노먼/.test(p.name)); if (R.flags.lumi >= 2 && nu.length){ for (const p of nu){ if (p.skill){ p.skill.pool = (p.skill.pool || 0) + 2; p.skill.pct = Math.min(0.4, (p.skill.pct || 0.12) + 0.03); } p.medUp = (p.medUp || 0) + 1; if (/노먼/.test(p.name)) R.flags.normanMed = 1; } L.push({ narr: `간호사장이 ${nu.map(p => p.name).join(' · ')} 에게 손놀림을 가르친다.` }, { box: '의료 기술 등급 업 (약 +2 · 치유량 ↑)' + (R.flags.normanMed ? ' · 노먼 — 전직 조건을 채움' : '') }); }
-    if (R.flags.lumi >= 3 && R.party.some(p => /간호사/.test(p.name)) && !R.relics.includes('nurse')){ R.relics.push('nurse'); L.push({ box: '⛑ 간호사장의 모자 — 간호사에게 (치유하는 동료의 약이 두 번 더)' }); }
+  mnTentTalk(){ const R = R8S(); if (r8TentUsed('talk')) return r8Say([{ t: '오늘 이야기는 여기까지. 다친 사람이 기다려요.', name: '간호사장', img: IMG8.lumi }], () => campBarRender(true)); R.flags.lumi = (R.flags.lumi || 0) + 1; const L = [{ t: R.flags.lumi < 3 ? '이름? 비밀이에요. 간호사장이라고 부르면 돼요.' : '…루미. 아무한테도 말하지 마요.', name: '간호사장', img: IMG8.lumi }];
+    const nu = R.party.filter(p => isNurse8(p) || p.ref === 'C-007'); if (R.flags.lumi >= 2 && nu.length){ const was = !!R.flags.normanMed, up = r8MedUp(nu); if (up.length) L.push({ narr: `간호사장이 ${nu.map(p => p.name).join(' · ')} 에게 손놀림을 가르친다.` }, { box: '의료 기술 등급 업 — ' + up.join(' · ') + ' (약 +2 · 치유량 ↑)' }); if (!was && R.flags.normanMed) L.push({ box: '⭐ 노먼 — 전직할 수 있음 (동료 정리 → ⭐ 전직: 닥터 노먼 · 선봉장 노먼)' }); }
+    if (R.flags.lumi >= 3 && R.party.some(isNurse8) && r8AddRelic('nurse')) L.push({ box: '⛑ 간호사장의 모자 — 간호사 전용 (지닌 간호사의 약 +3 · 치유량 +30%)' });
     r8Say(L, () => campBarRender(true)); },
   mnTentNurse(){ const R = R8S(); if (R.party.some(p => p.ref === 'C-018') || R.flags.nurseHired){ r8Say([{ t: '그 애는 이미 당신들이랑 갔잖아요.', name: '간호사장', img: IMG8.lumi }], () => campBarRender(true)); return; } R.flags.nurseHired = 1;
     const d = DESIGN_DEFAULTS.find(x => x.ref === 'C-018' && x.side === 0); if (!d){ r8Say([{ narr: '간호사는 지금 바쁘다.' }], () => campBarRender(true)); return; }
@@ -10790,7 +10916,7 @@ Object.assign(X8, {
   cRest(){ r8HealAll(0.25); r8Say([{ box: '모두 25% 회복' }]); },
   cBuy(){ const R = R8S(); if (R.gold < 45) return r8Say([{ narr: '동전이 모자라다.' }]); R.gold -= 45; const k = r8GiveRelic(); r8Say([{ box: k ? `${RELIC8[k].ic} ${RELIC8[k].name}` : '아무것도 남지 않았다 (동전은 돌려받음)' }]); if (!k) R.gold += 45; },
   cBuyHeal(){ const R = R8S(); if (R.gold < 20) return r8Say([{ narr: '동전이 모자라다.' }]); R.gold -= 20; r8HealAll(0.15); r8Say([{ box: '모두 15% 회복' }]); },
-  cOpen(){ const R = R8S(); if (Math.random() < 0.2){ r8Say([{ narr: '상자에 이빨이 있었다!' }], () => r8XFight('x_mimic')); return; } if (Math.random() < 0.5){ const k = r8GiveRelic(); r8Say([{ box: k ? `${RELIC8[k].ic} ${RELIC8[k].name}` : '동전 40' }]); if (!k) R.gold += 40; } else { const g = r8Rnd(25, 60); R.gold += g; r8Say([{ box: `👛 ${g}` }]); } },
+  cOpen(){ const R = R8S(); if (Math.random() < 0.2 && !r8Has('key')){ r8Say([{ narr: '상자에 이빨이 있었다!' }], () => r8XFight('x_mimic')); return; } if (Math.random() < 0.5){ const k = r8GiveRelic(); r8Say([{ box: k ? `${RELIC8[k].ic} ${RELIC8[k].name}` : '동전 40' }]); if (!k) R.gold += 40; } else { const g = r8Rnd(25, 60); R.gold += g; r8Say([{ box: `👛 ${g}` }]); } },
   cFight(){ r8XFight(Math.random() < 0.5 ? 'x_beast' : 'x_ghost'); },
   cSneak(){ if (Math.random() < 0.55) r8Say([{ narr: '숨을 죽이고 — 지나갔다.' }]); else r8Say([{ narr: '들켰다!' }], () => r8XFight('x_beast')); },
   cLoot(){ const R = R8S(), g = r8Rnd(20, 50); R.gold += g; const L = [{ box: `👛 ${g}` }]; if (Math.random() < 0.3){ const p = r8Who(); r8Curse(p, '망자의 원한', 6); L.push({ narr: `차가운 손이 ${p.name} 의 어깨를 잡는다.` }, { box: `${p.name} — 최대 체력 −6 (저주)` }); } r8Say(L); },
@@ -10814,13 +10940,13 @@ Object.assign(X8, {
     const p = r8Who(); if (Math.random() < 0.5){ const out = growFor(p, { hits: 99, dodges: 99, moved: 99, meleeDealt: 99, taken: 99 }).slice(0, 1); L.push({ box: `${p.name} — 불편한 진실을 견딤: ${out[0] || '깨달음'}` }); } else { r8Curse(p, '지껄임', 5); L.push({ box: `${p.name} — 최대 체력 −5 (귀에서 떠나지 않는 목소리)` }); }
     r8Say(L); },
   x_holyTea(){ r8HealAll(1); const R = R8S(), holy = R.party.some(p => (p.traits || []).some(t => /^신성/.test(t))); const L = [{ narr: '차는 따뜻했다. 시간이 잠깐 멈춘다.', img: IMG8.holy2 }, { box: '모두 회복' }];
-    if (holy && !R.relics.includes('odtear')){ R.relics.push('odtear'); L.push({ t: '신성을 지닌 아이가 있네. …이걸 주지. 미래의 내가 화내겠지만.', name: '신성 오딜', img: IMG8.holy2 }, { box: '🌹 오딜의 눈물 (신성일 때만 얻음) — 인주에게 [가호:오딜]' }); } r8Say(L); },
+    if (holy && !R.relics.includes('odtear')){ r8AddRelic('odtear'); L.push({ t: '신성을 지닌 아이가 있네. …이걸 주지. 미래의 내가 화내겠지만.', name: '신성 오딜', img: IMG8.holy2 }, { box: '🌹 오딜의 눈물 (신성일 때만 얻음) — 지닌 이에게 [가호:오딜] (받는 피해 −10%)' }); } r8Say(L); },
   x_holyBrand(){ const R = R8S(); let n0 = 0; for (const p of R.party){ const c = (p.traits || []).filter(t => /^낙인:/.test(t)).length; if (c){ p.traits = p.traits.filter(t => !/^낙인:/.test(t)); n0 += c; } } r8Say([{ narr: n0 ? '여인이 손끝으로 낙인을 쓸어 낸다. 하얀 재가 된다.' : '…지울 낙인이 없는데?', img: IMG8.holy1 }, ...(n0 ? [{ box: `낙인 ${n0}개가 지워짐` }] : [])]); },
   x_reedShop(){ const R = R8S(); if (R.gold < 30) return r8Say([{ narr: '요괴 장사꾼이 고개를 젓는다.' }]); R.gold -= 30; r8HealAll(0.1); const L = [{ box: '모두 10% 회복' }]; if (Math.random() < 0.35){ const k = r8GiveRelic(); if (k) L.push({ box: `좌판 구석의 물건 — ${RELIC8[k].ic} ${RELIC8[k].name}` }); } r8Say(L); },
-  x_reedDeep(){ const R = R8S(); if (Math.random() < 0.06 && !R.flags.moranMet){ R.flags.moranMet = 1; const L = [{ narr: '갈대 사이에 붉은 꽃이 핀다. 흰 털, 여우 가면 — 초월자 모란이다.', img: IMG8.moran }, { t: '칼끝 같은 아이들이네. 가져가렴.', name: '모란', img: IMG8.moran }]; if (!R.relics.includes('moran')){ R.relics.push('moran'); L.push({ box: '🎭 모란의 가면 — 인주의 회피 +15%' }); } r8Say(L); return; } if (Math.random() < 0.5) r8Say([{ narr: '갈대가 길을 가린다. 한참을 헤맨 끝에 — 원래 자리.' }]); else r8Say([{ narr: '갈대 속에서 무언가 튀어나온다!' }], () => r8XFight('x_beast')); },
+  x_reedDeep(){ const R = R8S(); if (Math.random() < 0.06 && !R.flags.moranMet){ R.flags.moranMet = 1; const L = [{ narr: '갈대 사이에 붉은 꽃이 핀다. 흰 털, 여우 가면 — 초월자 모란이다.', img: IMG8.moran }, { t: '칼끝 같은 아이들이네. 가져가렴.', name: '모란', img: IMG8.moran }]; if (r8AddRelic('moran')) L.push({ box: '🎭 모란의 가면 — 지닌 이의 회피 +15%' }); r8Say(L); return; } if (Math.random() < 0.5) r8Say([{ narr: '갈대가 길을 가린다. 한참을 헤맨 끝에 — 원래 자리.' }]); else r8Say([{ narr: '갈대 속에서 무언가 튀어나온다!' }], () => r8XFight('x_beast')); },
   x_pehtoFight(){ r8XFight('x_pehto', 'ruina', { surr: '페흐토' }); },
   x_sardilFight(){ r8XFight('x_sardil', 'lakeruin'); },
-  x_sardilTalk(){ const R = R8S(); if (R.tears >= 1 && !R.relics.includes('scale')){ R.relics.push('scale'); r8Say([{ t: '여신의 눈물 냄새가 나는군. …위층의 그 호수를 지킨 자들인가.', name: '사르딜 락', img: IMG8.sardil }, { narr: '용이 비늘 한 조각을 떨어뜨린다.' }, { box: '🐉 사르딜락의 비늘조각 — 인주 최대 체력 +20% · 불 · 냉기에 강함' }]); } else r8Say([{ t: '…볼일 없으면 가라.', name: '사르딜 락', img: IMG8.sardil }]); },
+  x_sardilTalk(){ const R = R8S(); if (R.tears >= 1 && !R.relics.includes('scale')){ r8AddRelic('scale'); r8Say([{ t: '여신의 눈물 냄새가 나는군. …위층의 그 호수를 지킨 자들인가.', name: '사르딜 락', img: IMG8.sardil }, { narr: '용이 비늘 한 조각을 떨어뜨린다.' }, { box: '🐉 사르딜 락의 비늘조각 — 지닌 이 최대 체력 +20% · 화상 · 동상을 반으로' }]); } else r8Say([{ t: '…볼일 없으면 가라.', name: '사르딜 락', img: IMG8.sardil }]); },
   x_gamyuFight(){ r8XFight('x_gamyu', 'deep2'); },
   x_dvdWar(){ const p = r8Who(), out = growFor(p, { hits: 99, dodges: 99, moved: 99, meleeDealt: 99, taken: 99 }).slice(0, 2); r8Say([{ narr: `화면 속 전쟁. ${p.name} 이(가) 숨도 쉬지 않고 본다.` }, { box: out.length ? `${p.name} ${out.join(' · ')}` : '깨달음' }]); },
   x_dvdDiary(){ const R = R8S(); for (const p of R.party) r8MaxUp(p, 4); r8Say([{ narr: '누군가의 일기. 굴에 떨어진 첫날부터 — 마지막 날까지.' }, { box: '모두 최대 체력 +4' }]); },
