@@ -1,4 +1,4 @@
-// v8.7.8 UI 시험 (2) — ui8780b.js v1.0 (v1.0: 포렌 — 설계 · 도감 정체성 · 글 · 아이콘 판 64칸 · 판의 쥐 (S.units 와 순서가 맞음) · 쥐는 고르기 · 명단 · 모두 고르기에서 빠짐 · 쥐를 탭 (고른 이 없음 → 알림 / 있음 → 그 자리로) ·
+// v8.7.8 UI 시험 (2) — ui8780b.js v1.1 (v1.1: 아이콘 판은 인물이 늘면 아래로 자람 — 8 줄 이상 · 384 × (줄 × 48) 이면 됨 (어퐁 · 카리우스에서 8 × 10 이 됨) · v1.0: 포렌 — 설계 · 도감 정체성 · 글 · 아이콘 판 64칸 · 판의 쥐 (S.units 와 순서가 맞음) · 쥐는 고르기 · 명단 · 모두 고르기에서 빠짐 · 쥐를 탭 (고른 이 없음 → 알림 / 있음 → 그 자리로) ·
 //   기술 칸 1 쥐 표식 (적을 탭) · 2 쥐 방진 (바로) · 기록 · 서술 (쥐 떼의 자잘한 일은 조용히) · 그림 (표식 고리 · 망토 · 방진 · 쥐 방패 · 포박 · 기사 이름) · 상세 줄 · 동작 이름 · 처음으로 · 불러오기 · 기억하는 기사 (다음 판) · 적 포렌 · 자동 한 판)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -20,7 +20,7 @@ const { chromium } = require('playwright');
  ok(v0.d&&v0.d.ref==='C-006'&&v0.d.w==='포렌의 대검'&&v0.d.sh===false&&v0.d.u==='쥐들의 왕'&&v0.d.a===SK.join(',')&&v0.d.hp===532&&v0.d.atk===46&&v0.d.tr&&v0.d.g==='포렌의 중갑'&&v0.d.h===1.4,'포렌 설계: 포렌의 대검 · 투구 없는 중갑 · 140cm · ◆쥐들의 왕 · 기술 다섯 · 체력 532 · 공격 46 · [지휘S] [군주] [높은후각] [반사신경]');
  ok(v0.prof.u==='쥐들의 왕'&&v0.prof.a===SK.join(',')&&v0.prof.w==='포렌의 대검'&&v0.prof.tr&&v0.id.u==='쥐들의 왕'&&v0.id.a===SK.join(',')&&v0.id.tr,'도감 프로필 · 정체성 (C-006) 이 설계와 같음');
  ok(!v0.noAct.length&&!v0.noIco.length&&v0.tgt&&v0.uq.who==='C-006'&&v0.uq.lore>=2&&v0.uq.eff>=6&&v0.gunju,'기술 글 (구르기까지) · 그림 칸 · 대상 고르기 글 · ◆쥐들의 왕 글 · [군주] 글에 포렌');
- ok(v0.rows===8&&v0.ico==='46,47,48,49'&&v0.img==='384x384'&&v0.ic==='🐀🗡🦵👊','아이콘 판 8 × 8 (새 그림 46 ~ 49 · '+v0.img+') · 기술 칸 그림 (쥐 표식 · 쥐 방진 · 니킥 · 내려찍기)');
+ ok(v0.rows>=8&&v0.ico==='46,47,48,49'&&v0.img==='384x'+v0.rows*48&&v0.ic==='🐀🗡🦵👊','아이콘 판 8 × '+v0.rows+' (새 그림 46 ~ 49 · '+v0.img+') · 기술 칸 그림 (쥐 표식 · 쥐 방진 · 니킥 · 내려찍기)');
  ok(v0.rar===0.3&&v0.camp,'뽑기 희귀도 5성 0.3 · 1층 · 여정 뽑기 풀에 포렌');
  await p.evaluate(TALKEND);
  await p.evaluate(()=>{ window.__mk = (list) => { setMode('train'); resetToEdit(); S.units = list.map(([k,s,x,y])=>({ ...fromDesign(designByKey(k),s), x, y, id: uid() })); start(); paused = true; const W=world; list.forEach(([k,s,x,y],i)=>{ W.units[i].x=x; W.units[i].y=y; W.units[i].order=null; W.units[i].stay=null; }); return W; };
