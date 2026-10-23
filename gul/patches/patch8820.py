@@ -1,4 +1,4 @@
-# v8.8.2 엔진 — patch8820.py v1.0 (v1.0: 옐로 업데이트 — 민수 "옐로는 특수잡기 … 연속 도약 … 돌진 … 양동이 뿌리기 … 기존 시스템에서 가능하면 응용")
+# v8.8.2 엔진 — patch8820.py v1.1 (v1.1: 스스로 쓰기 차례 — 양동이 뿌리기 (조건이 맞을 때만) 가 연속 도약 · 달라붙기보다 먼저 · v1.0: 옐로 업데이트 — 민수 "옐로는 특수잡기 … 연속 도약 … 돌진 … 양동이 뿌리기 … 기존 시스템에서 가능하면 응용")
 #   응용한 것: 잡아찢기 (tear — 붙잡기 · 맞으면 놓침) → 달라붙기 난도질 (yclaw) / 핏빛 장판 (pool) → 양동이 뿌리기 (ybucket · 저주:맥아 장판)
 #   돌진 (charge · 도움닫기 · fling) → 옐로의 돌진 (사족보행 · 느리게 출발해 끝에서 폭발 · 5칸 넘게 달리면 확정 밀침) / 도약 (leapN 2) → 연속 도약 (스스로 자주 뜀)
 #   날붙이 손 (bladeHands) → 절삭력 (sharp: 갑옷이 막는 몫을 줄임) · 단단한 손 (hardHands: 맨팔로 막아도 안 잘림)
@@ -167,12 +167,12 @@ rep("  if (u.act && u.act.k === 'gwHop'){ gwHopStep(W, u); return; }", "  if (u.
 # ---------- 스스로 쓰기 ----------
 rep("  if (apAuto(W, u, t)) return true;   /* v8.7.8 어퐁: 초돌진 · 앞차기 */",
     r'''  if (apAuto(W, u, t)) return true;   /* v8.7.8 어퐁: 초돌진 · 앞차기 */
-  if (u.leapN >= 2 && yHop(W, u, t, gap(u, t))) return true;   /* v8.8.2 옐로: 연속 도약으로 뛰어듦 */
-  if (specReady(W, u, 'yclaw') && gap(u, t) <= (SPY(W, 'yclaw').rng || 1.3) && !t.down && !t.heldBy && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형'] && !(t.act && t.act.k === 'leap') && W.units.filter(e => e.alive && e.side !== u.side && gap(u, e) <= 1.2).length < 3 && W.rand() < 0.35) return startSpec(W, u, t, 'yclaw', '달라붙어 마구 할큄');   /* v8.8.2 */
   if (specReady(W, u, 'ybucket')){ const B = SPY(W, 'ybucket'), gg = gap(u, t);   /* v8.8.2 양동이 뿌리기: 무리 · 먼 사수 · 큰 몸에게 — 동료가 위급하면 약은 치료에 */
     if (gg >= 1.6 && gg <= B.rng && u.skill.left >= (B.min || 60) + 60 && !(t.maltT != null && W.t < t.maltT) && !W.units.some(a => a.alive && a.side === u.side && a !== u && a.hp / a.max < 0.4)){
       const grp = W.units.filter(e => e.alive && e.side !== u.side && dist(e, t) <= (B.r || 1.6) + 0.6).length;
-      if (grp >= 2 || isFar(t) || (t.mass || 60) >= 120){ startSpec(W, u, t, 'ybucket', '양동이를 뿌림'); u.act.px = t.x + (t.vx || 0) * 0.4; u.act.py = t.y + (t.vy || 0) * 0.4; return true; } } }''')
+      if (grp >= 2 || isFar(t) || (t.mass || 60) >= 120){ startSpec(W, u, t, 'ybucket', '양동이를 뿌림'); u.act.px = t.x + (t.vx || 0) * 0.4; u.act.py = t.y + (t.vy || 0) * 0.4; return true; } } }
+  if (u.leapN >= 2 && yHop(W, u, t, gap(u, t))) return true;   /* v8.8.2 옐로: 연속 도약으로 뛰어듦 */
+  if (specReady(W, u, 'yclaw') && gap(u, t) <= (SPY(W, 'yclaw').rng || 1.3) && !t.down && !t.heldBy && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형'] && !(t.act && t.act.k === 'leap') && W.units.filter(e => e.alive && e.side !== u.side && gap(u, e) <= 1.2).length < 3 && W.rand() < 0.35) return startSpec(W, u, t, 'yclaw', '달라붙어 마구 할큄');   /* v8.8.2 */''')
 
 for k in P: open(D + 'rt3_%s.js' % k, 'w', encoding='utf-8').write(P[k])
 print('patch8820 OK')

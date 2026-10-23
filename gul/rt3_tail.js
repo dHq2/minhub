@@ -4248,7 +4248,7 @@ function wpnSpec(W, u){ const wp = (W.rules.weapons || {})[u.weapon] || {}; if (
 // v7.22.3 핏빛 장판: tick 초마다 안에 선 모두 (깐 이는 빼고 · 동료도) 화상 · 느려짐 — 장판을 본 쪽은 밖으로 피함
 function stepPools(W, dt){
   const S = SPR(W, 'pool');
-  for (const P of W.pools){ if (W.t >= P.until) continue; if (P.kind === 'malt'){ stepMalt(W, P); continue; } const by = W.units[P.by];   /* v8.8.2 저주:맥아 장판 */
+  for (const P of W.pools){ if (W.t >= P.until) continue; if (P.kind === 'malt'){ stepMalt(W, P, dt); continue; } const by = W.units[P.by];   /* v8.8.2 저주:맥아 장판 */
     for (const e of W.units){ if (!e.alive || e.i === P.by || e.fairyW) continue; const d = Math.hypot(e.x - P.x, e.y - P.y); if (d > P.r + e.r * 0.5) continue;
       e.poolSlowT = W.t + 0.3;
       if (!e.flee && !e.down && !e.kb && (litAt(W, P.x, P.y) || d < 1.5) && !(e.act && e.act.phase !== 'wind')){ const a = d > 0.05 ? Math.atan2(e.y - P.y, e.x - P.x) : W.rand() * 6.283, D = P.r + e.r + 0.4;
@@ -4377,7 +4377,7 @@ function stepSpins(W, dt){
   W.spins = W.spins.filter(S => !S.done);
 }
 /* ---------- v8.8.2 옐로: 달라붙기 난도질 · 양동이 뿌리기 (저주:맥아 장판) · 연속 도약 · 돌진 (키하핫) ---------- */
-const YD = { yclaw: { rng: 1.3, wind: 0.3, rec: 0.5, hold: 2, cd: 14, tick: 0.2, mul: 0.26, fin: 2.5, brk: 0.2 }, ybucket: { rng: 4, r: 1.6, wind: 0.5, rec: 0.4, cd: 10, tick: 0.5, cost: 120, min: 60, tMin: 3, tMax: 10, slow: 0.55, melt: 0.3, dot: 2.5, linger: 1.5 } };
+const YD = { yclaw: { rng: 1.3, wind: 0.3, rec: 0.5, hold: 2, cd: 14, tick: 0.2, mul: 0.26, fin: 2.5, brk: 0.2 }, ybucket: { rng: 4, r: 1.6, wind: 0.5, rec: 0.4, cd: 10, tick: 0.5, cost: 120, min: 60, tMin: 3, tMax: 10, slow: 0.55, melt: 0.3, dps: 5, linger: 2, stage: 2.5 } };
 const SPY = (W, k) => ({ ...YD[k], ...SPR(W, k) });
 // 달라붙기 난도질: 붙잡기 (잡아찢기와 같은 틀 — 맞으면 놓침) 동안 tick 초마다 날붙이로 마구 할큄 (막을 수 없음)
 function clawStep(W, u, dt){
@@ -4397,16 +4397,29 @@ function clawDone(W, u, A){
   if (t.alive && t.side !== u.side){ const d = dist(u, t) || 1; fling(W, u, t, 1.2, (t.x - u.x) / d, (t.y - u.y) / d, { how: '옐로가 박차고 떨어짐' }); }
   L(W, { k: 'clawEnd', a: u.i, b: t.i, n: A.hits || 0, vis: u.side === 0 || t.side === 0 || !!u.seenBy || !!t.seenBy });
 }
-// 저주:맥아 장판 (양동이 뿌리기): 안의 상대에게 <저주:맥아> — 걸음 느려짐 · 받는 피해 + · 살이 녹음 (tick 초마다). 동료는 상관없음
-function stepMalt(W, P){
-  const Sy = SPY(W, 'ybucket'), by = W.units[P.by];
-  for (const e of W.units){ if (!e.alive || e.side === P.side || e.fairyW) continue;
-    if (Math.hypot(e.x - P.x, e.y - P.y) > P.r + e.r * 0.5) continue;
-    if (!(e.maltT != null && W.t < e.maltT)){ L(W, { k: 'maltOn', a: P.by, b: e.i, vis: e.side === 0 || P.side === 0 || !!e.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y - 0.3, s: '저주:맥아', c: 'g', t0: W.t }); }
-    e.maltT = W.t + (Sy.linger || 1.5); }
-  if (W.t >= P.tickT){ P.tickT = W.t + (Sy.tick || 0.5);
-    for (const e of W.units){ if (!e.alive || e.side === P.side || e.fairyW || Math.hypot(e.x - P.x, e.y - P.y) > P.r + e.r * 0.5) continue;
-      hurtRaw(W, by || { i: P.by, side: P.side }, e, Sy.dot || 2.5, { tag: '맥아가 살을 녹임' }); } }
+// 저주:맥아 장판 (양동이 뿌리기): 안에 선 모두 (아군도 · 뿌린 옐로만 빼고) 에게 <저주:맥아> — 걸음 느려짐 · 받는 피해 + · 살이 녹음 (초당 dps — 화상과 같은 틀의 상태 u.malt · 장판을 나간 뒤 linger 초 더) · 부상이 한 단계씩 쌓임 (woundAdd)
+const MALT_W = [['맥아에 살이 무름', ['받는 피해 +30%', '걸음 ×0.55']], ['살갗이 녹아내림', ['살이 녹는 중']], ['살이 문드러짐', ['살이 녹는 중']], ['뼈가 드러남', ['살이 녹는 중']]];
+function maltWound(W, P, e, st){ const w = MALT_W[Math.min(st, 3)], by = W.units[P.by] || null; woundAdd(W, by, e, 'malt', w[0], w[1], { fx: st ? '맥아 부식' : null }); }
+function stepMalt(W, P, dt){
+  const Sy = SPY(W, 'ybucket');
+  for (const e of W.units){ if (!e.alive || e.i === P.by || e.fairyW) continue;
+    const d = Math.hypot(e.x - P.x, e.y - P.y); if (d > P.r + e.r * 0.5) continue;
+    const was = e.malt && W.t < e.malt.until;
+    e.malt = { dps: Sy.dps || 5, until: W.t + (Sy.linger || 2), by: P.by }; e.maltT = e.malt.until;
+    if (!was){ e.maltExp = 0; e.maltStage = 0; L(W, { k: 'maltOn', a: P.by, b: e.i, ff: e.side === P.side, vis: e.side === 0 || P.side === 0 || !!e.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y - 0.3, s: '저주:맥아', c: 'g', t0: W.t }); maltWound(W, P, e, 0); }
+    else { e.maltExp = (e.maltExp || 0) + dt; const st = Math.min(3, Math.floor(e.maltExp / (Sy.stage || 2.5))); if (st > (e.maltStage || 0)){ e.maltStage = st; maltWound(W, P, e, st); } }
+    if (!e.flee && !e.down && !e.kb && !(e.side === 0 && e.order) && !(e.act && e.act.phase !== 'wind')){ const a = d > 0.05 ? Math.atan2(e.y - P.y, e.x - P.x) : W.rand() * 6.283, Dd = P.r + e.r + 0.4;   /* 장판을 본 쪽은 밖으로 피함 (핏빛 장판과 같음 — 명령 받은 아군은 그대로) */
+      e.flee = { x: Math.max(0.6, Math.min(W.map.W - 0.6, P.x + Math.cos(a) * Dd)), y: Math.max(0.6, Math.min(W.map.H - 0.6, P.y + Math.sin(a) * Dd)), until: W.t + 1.2 }; }
+  }
+}
+// 맥아 상태: 매 순간 초당 피해 (화상처럼 갑옷과 상관없이 살이 녹음) · 숫자가 떠오름 · 죽으면 '맥아 부식'
+function stepMaltDot(W, u, dt){
+  const m = u.malt; if (!m) return;
+  if (W.t >= m.until){ u.malt = null; u.maltT = null; u.maltAcc = 0; L(W, { k: 'maltStop', a: u.i, vis: u.side === 0 || !!u.seenBy }); return; }
+  const d = m.dps * dt * (mbOn(W, u) ? mbF(W, u, 'dmg') : 1); u.maltDmg = (u.maltDmg || 0) + d; u.maltAcc = (u.maltAcc || 0) + d;
+  if (u.hp - d < 0.5){ const by = W.units[m.by] || u; u.malt = null; u.maltT = null; applyDmg(W, by, u, Math.max(1, Math.ceil(u.hp)), { ff: by !== u && by.side === u.side, far: false, part: null, tag: '맥아 부식' }); return; }
+  u.hp -= d;
+  if (u.maltAcc >= 2){ if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.1, s: '-' + Math.round(u.maltAcc), c: 'g', t0: W.t }); u.maltAcc = 0; }
 }
 // 옐로의 돌진 맞음: 5칸 넘게 달렸으면 몸집만큼 확정 밀침 (중형 이하 kb0 · 중대형 kb2 · 대형 kb3 · 그 위 조금) + 키하핫!! — held (상대가 태세로 받았을 때) 는 그래도 밀림 (넘어지진 않음)
 const rushLate = (W, e, u) => e.rush && e.act && e.act.k === 'charge' && gap(e, u) > (((W.rules.claw || {}).rush || {}).react || 2);   /* v8.8.2 옐로의 돌진은 react 칸 안에서야 알아챔 */
@@ -4798,12 +4811,12 @@ function gwBrain(W, u, dt){
 function specAuto(W, u, t, see){
   if ((!u.spec || !u.spec.length) && !u.pk || !t || !t.alive || !see || u.act) return false;   /* v8.7.9 동료 펄은 기술 칸이 없어도 (기술표) */
   if (apAuto(W, u, t)) return true;   /* v8.7.8 어퐁: 초돌진 · 앞차기 */
-  if (u.leapN >= 2 && yHop(W, u, t, gap(u, t))) return true;   /* v8.8.2 옐로: 연속 도약으로 뛰어듦 */
-  if (specReady(W, u, 'yclaw') && gap(u, t) <= (SPY(W, 'yclaw').rng || 1.3) && !t.down && !t.heldBy && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형'] && !(t.act && t.act.k === 'leap') && W.units.filter(e => e.alive && e.side !== u.side && gap(u, e) <= 1.2).length < 3 && W.rand() < 0.35) return startSpec(W, u, t, 'yclaw', '달라붙어 마구 할큄');   /* v8.8.2 */
   if (specReady(W, u, 'ybucket')){ const B = SPY(W, 'ybucket'), gg = gap(u, t);   /* v8.8.2 양동이 뿌리기: 무리 · 먼 사수 · 큰 몸에게 — 동료가 위급하면 약은 치료에 */
-    if (gg >= 1.6 && gg <= B.rng && u.skill.left >= (B.min || 60) + 60 && !(t.maltT != null && W.t < t.maltT) && !W.units.some(a => a.alive && a.side === u.side && a !== u && a.hp / a.max < 0.4)){
+    if (gg >= 1.6 && gg <= B.rng && u.skill.left >= (B.min || 60) + 60 && !(t.maltT != null && W.t < t.maltT) && !W.units.some(a => a.alive && a.side === u.side && a !== u && a.hp / a.max < 0.4) && !W.units.some(a => a.alive && a.side === u.side && a !== u && Math.hypot(a.x - t.x, a.y - t.y) <= (B.r || 1.6) + a.r + 0.7)){   /* v8.8.3 동료도 맞으니 곁에 동료가 없는 자리에만 */
       const grp = W.units.filter(e => e.alive && e.side !== u.side && dist(e, t) <= (B.r || 1.6) + 0.6).length;
       if (grp >= 2 || isFar(t) || (t.mass || 60) >= 120){ startSpec(W, u, t, 'ybucket', '양동이를 뿌림'); u.act.px = t.x + (t.vx || 0) * 0.4; u.act.py = t.y + (t.vy || 0) * 0.4; return true; } } }
+  if (u.leapN >= 2 && yHop(W, u, t, gap(u, t))) return true;   /* v8.8.2 옐로: 연속 도약으로 뛰어듦 */
+  if (specReady(W, u, 'yclaw') && gap(u, t) <= (SPY(W, 'yclaw').rng || 1.3) && !t.down && !t.heldBy && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형'] && !(t.act && t.act.k === 'leap') && W.units.filter(e => e.alive && e.side !== u.side && gap(u, e) <= 1.2).length < 3 && W.rand() < 0.35) return startSpec(W, u, t, 'yclaw', '달라붙어 마구 할큄');   /* v8.8.2 */
   if (u.karKit && karAuto(W, u, t)) return true;   /* v8.7.8 카리우스 (3D kariusThink 의 차례) */
   if (u.pk && !u.h2 && pearlAuto(W, u, t)) return true;   /* v8.7.9 동료 펄 (평소) */
   if (specReady(W, u, 'pthrow') && pthrowAuto(W, u, t)) return true;   /* v8.7.9 펄의 창 — 정면 투창 (열화) */
@@ -8167,7 +8180,7 @@ function rise(W, t, pct, cure){
   if (t.heretic) karHeretic(W, t, false);   /* v8.7.8 일어나면 공격 · 걸음 배수가 처음으로 — 불경자도 풂 (다시 15% 아래면 다시) */   /* v8.7.7 cure: 중상 (부상 · 쇼크 · 출혈 · 내출혈 · 화상 · 기절) 도 나음 — 잃은 눈 · 팔은 그대로 */
   t.alive = true; t.down = false; t.riseT = null; t.hp = Math.max(1, pct != null ? Math.max(t.hp, Math.round(t.max * pct)) : t.hp);   // v5.5.1 재생해 찬 그 적은 피로 (구급상자는 pct 까지)
   t.wounds = []; t.atkMul = 1; t.spdMul = 1; t.proneT = -9; t.kb = null; t.crawl = false; t.legLoss = null; t.act = null; t.pinT = -9; t.post = Math.max(t.post, 40); t.brokenT = -9; t.state = 'idle'; t.target = null;
-  if (cure){ t.inj = []; t.shock = 0; t.ibleed = null; t.bleed = null; t.burn = null; t.koT = null; t.deathKind = null; t.headAt = null; try { injRecalc(W, t); } catch (e) {} }
+  if (cure){ t.inj = []; t.shock = 0; t.ibleed = null; t.bleed = null; t.burn = null; t.malt = null; t.maltT = null; t.koT = null; t.deathKind = null; t.headAt = null; try { injRecalc(W, t); } catch (e) {} }
   L(W, { k: 'rise', a: t.i, hp: Math.round(t.hp), ...(cure ? { cure: true } : {}), vis: t.side === 0 || !!t.seenBy });
   if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '일어남', c: 'h', t0: W.t });
 }
@@ -8224,6 +8237,7 @@ function stepWorld(W, dt){
   lineOpportunity(W);   // v5.7 교전 구속
   for (const u of W.units) if (u.alive && u.bleed) stepBleed(W, u, dt);   // v5.5 출혈
   for (const u of W.units) if (u.alive && u.burn) stepBurn(W, u, dt);   // v6.7 화상
+  for (const u of W.units) if (u.alive && u.malt) stepMaltDot(W, u, dt);   /* v8.8.3 맥아 (저주) */
   supWorld(W, dt);   /* v8.7.8 물레 · 콜라이더 · 테헤라: 장판 · 문 · 방벽 · 장막 · 축복 · 계약 */
   karWorld(W);   /* v8.7.8 근성 중에 싸움이 끝나면 쓰러져 살아남음 */
   porenTick(W, dt);   /* v8.7.8 포렌: 충성 · 쥐 망토 · 표식 · 방벽 · 포박 · 기억하는 쥐 */
