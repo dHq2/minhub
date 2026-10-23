@@ -1,4 +1,4 @@
-// v8.3.0 UI 시험 — ui8300.js v1.3 (v1.3: 붉은 번개창 시험은 성해포를 낀 이가 보는 빈 바닥에 적을 세움 (오른쪽 4칸이 바위일 수 있음) · v1.2: 적뢰 v2.0 — 원작 패턴 (대리석 피부 · 주먹 · 천벌 · 번개비 · 날아차기 · 즉사 · 정면 / 바닥 창 · 2페이즈 하늘 · 붉은 창 · 내려꽂힘 · 폭우) · v1.1: 날라차기 시험은 맵 가운데 빈 곳에서 · v1.0: 히든보스 적뢰: 1S "↓ 굴 밖으로" (2S · 여정에선 없음) → 대화 → 30초 → 폭우 → 붉은 원 → 낙하 (즉사 · 둘레) → 날라차기 · 붉은 번개창 · 천벌 · 2페이즈 · 낙인 (수전증 · 신성 면함) · 이김 → 성해포 (재생 · 신성E · 낙인 있는 이는 번개창) · 오딜 낙인 지우기 · 기록 · 휴대폰)
+// v8.3.0 UI 시험 — ui8300.js v1.4 (v1.4: 감전은 한 틀 (u.zap — v8.7.8 굿윌의 푸른 번개와 같은 틀) · v1.3: 붉은 번개창 시험은 성해포를 낀 이가 보는 빈 바닥에 적을 세움 (오른쪽 4칸이 바위일 수 있음) · v1.2: 적뢰 v2.0 — 원작 패턴 (대리석 피부 · 주먹 · 천벌 · 번개비 · 날아차기 · 즉사 · 정면 / 바닥 창 · 2페이즈 하늘 · 붉은 창 · 내려꽂힘 · 폭우) · v1.1: 날라차기 시험은 맵 가운데 빈 곳에서 · v1.0: 히든보스 적뢰: 1S "↓ 굴 밖으로" (2S · 여정에선 없음) → 대화 → 30초 → 폭우 → 붉은 원 → 낙하 (즉사 · 둘레) → 날라차기 · 붉은 번개창 · 천벌 · 2페이즈 · 낙인 (수전증 · 신성 면함) · 이김 → 성해포 (재생 · 신성E · 낙인 있는 이는 번개창) · 오딜 낙인 지우기 · 기록 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -26,7 +26,7 @@ const { chromium } = require('playwright');
    const run=(s)=>{ for (let i=0;i<Math.round(s/0.05);i++){ W.t+=0.05; jrTickAll(W); } };
    let cx=Math.floor(W.map.W/2)+0.5, cy=Math.floor(W.map.H/2)+0.5; const clear=(x,y)=>{ for (let dx=-6;dx<=6;dx+=1) if (rock(W.map,x+dx,y)||rock(W.map,x+dx,y-1)||rock(W.map,x+dx,y+1)) return false; return true; };
    for (let k=0;k<200&&!clear(cx,cy);k++){ cx=7.5+Math.floor(Math.random()*(W.map.W-15)); cy=2.5+Math.floor(Math.random()*(W.map.H-5)); } out.open=clear(cx,cy);
-   const reset=()=>{ b.x=cx; b.y=cy; b.jrC=null; b.jrFly=false; b.jrInv=0; b.stunT=-9; b.saT=-9; b.kb=null; b.down=false; Object.assign(J,{ puT:1e9, kickT:1e9, stormT:1e9, thT:1e9, lsT:1e9, jpT:1e9, bkT:1e9, tg:null }); for (const o of al){ o.x=1.5; o.y=1.5; o.order=null; o.jrWF=null; o.jrSh=null; o.stunT=-9; o.kb=null; o.down=false; o.proneT=-9; } W.jrStorm=[]; W.jrq=[]; };
+   const reset=()=>{ b.x=cx; b.y=cy; b.jrC=null; b.jrFly=false; b.jrInv=0; b.stunT=-9; b.saT=-9; b.kb=null; b.down=false; Object.assign(J,{ puT:1e9, kickT:1e9, stormT:1e9, thT:1e9, lsT:1e9, jpT:1e9, bkT:1e9, tg:null }); for (const o of al){ o.x=1.5; o.y=1.5; o.order=null; o.jrWF=null; o.zap=null; o.stunT=-9; o.kb=null; o.down=false; o.proneT=-9; } W.jrStorm=[]; W.jrq=[]; };
    const plain=al.filter(u=>!u.modBody&&!u.undying), T=plain[0]||al[0], T2=plain[1]||al.find(u=>u!==T);
    const put=(u,dx,dy)=>{ u.x=cx+dx; u.y=cy+dy; u.alive=true; u.hp=u.max; u.down=false; };
    // 대리석 피부: 강공 → 스텝 · 약한 것 → 59% 받아 냄 · 넘어지지 않음
@@ -34,7 +34,7 @@ const { chromium } = require('playwright');
    // 대리석 주먹: 2.8칸 안 → 0.22초 파고들어 30 · 땅울림
    reset(); put(T,2.4,0); put(T2,2.9,0.6); Math.random=()=>0.99; J.puT=W.t; let h1=T.hp, h2=T2.hp; jrTickAll(W); out.punch=b.jrC&&b.jrC.k==='punch'; run(0.35); out.punchHit=T.hp<h1; out.quake=T2.hp<h2; out.lunge=b.x>cx+0.3;
    // 천벌: 2초 겨눔 → 직격 90 · 감전 (적뢰) · 방사 20
-   reset(); put(T,3,0); put(T2,4,0); h1=T.hp; h2=T2.hp; jrStart(W,J,b,{ ...jrThPick(W,b), tg:T.i, x:T.x, y:T.y }); run(2.1); out.thDirect=h1-T.hp; out.thShock=T.jrSh&&T.jrSh.kind; out.thArea=h2-T2.hp;
+   reset(); put(T,3,0); put(T2,4,0); h1=T.hp; h2=T2.hp; jrStart(W,J,b,{ ...jrThPick(W,b), tg:T.i, x:T.x, y:T.y }); run(2.1); out.thDirect=h1-T.hp; out.thShock=T.zap&&T.zap.kind; out.thArea=h2-T2.hp;
    // 번개비: 0.8초 시전 → 3번 · 2~4개
    reset(); put(T,3,0); jrStart(W,J,b,{ k:'storm', pin:true }); run(0.9); out.storm=(W.jrStorm||[]).length; run(4); out.bolts=W.log.filter(l=>l.k==='hit'&&/번개비/.test(l.tag||'')).length+'/'+W.jrHits.filter(h=>h.cross).length;
    // 날아차기: 웅크림 → 날아감 → 확정 치명 120 (갑옷) · 벽까지 날아감
@@ -68,7 +68,7 @@ const { chromium } = require('playwright');
    run(1.6); out.p2=J.p2; out.rain=W.rain; out.fly=b.jrFly; out.melee=marbleHit(W,T,b,50,{})===0; out.far=marbleHit(W,T,b,20,{ far:true })>0;
    J.spT=W.t; J.thT=1e9; J.dT=1e9; jrTickAll(W); out.spears=(W.jrq||[]).filter(e=>e.k==='circ').length;
    run(2); J.dT=W.t; J.spT=1e9; jrTickAll(W); out.desc=b.jrC&&b.jrC.k==='desc'; run(1.2); out.landed=!b.jrFly; run(5.3); out.up=b.jrFly&&!b.jrC;
-   b.jrC=null; const far=al.find(u=>!u.modBody&&!u.undying)||al[0]; far.alive=true; far.down=false; far.x=Math.max(1.5,Math.min(W.map.W-1.5,b.x+7)); far.y=b.y; far.hp=far.max; far.jrSh=null; const h=far.hp; const R0=Math.random; Math.random=()=>0.99; jrThunder(W,b,{ x:b.x+0.2, y:b.y, tg:-1 }); Math.random=R0; out.rainAll=h-far.hp;
+   b.jrC=null; const far=al.find(u=>!u.modBody&&!u.undying)||al[0]; far.alive=true; far.down=false; far.x=Math.max(1.5,Math.min(W.map.W-1.5,b.x+7)); far.y=b.y; far.hp=far.max; far.zap=null; const h=far.hp; const R0=Math.random; Math.random=()=>0.99; jrThunder(W,b,{ x:b.x+0.2, y:b.y, tg:-1 }); Math.random=R0; out.rainAll=h-far.hp;
    return out; });
  console.log('    2페이즈', JSON.stringify(p2));
  ok(p2.asc&&p2.inv,'55% — 떠오름 (그동안 무엇도 닿지 않음)');
