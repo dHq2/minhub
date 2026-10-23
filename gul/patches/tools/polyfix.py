@@ -1,4 +1,4 @@
-# polyfix.py v1.1 (v1.1: cells 손 고침) · v1.0 — 그림 맵 칸 지도를 다각형으로 그림: d5/poly/<제목>.json (그림 픽셀 좌표) → d5/fix/<제목>.txt (maps8.py 가 읽는 고침 글) · d5/raw/<제목>.png (원본에서 crop 하면 잘라 둠)
+# polyfix.py v1.2 (v1.2: 칸 번호를 그림 안으로 · v1.1: cells 손 고침) · v1.0 — 그림 맵 칸 지도를 다각형으로 그림: d5/poly/<제목>.json (그림 픽셀 좌표) → d5/fix/<제목>.txt (maps8.py 가 읽는 고침 글) · d5/raw/<제목>.png (원본에서 crop 하면 잘라 둠)
 #   spec: { id, name, tag, nx, amb, z, src (원본 그림 제목), crop [x0,y0,x1,y1] (선택), floor [[(x,y)..]..], block [..] (# 높은 막힘), cover [..] (r 낮은 엄폐), in [x0,y0,x1,y1] (픽셀 상자), out [x,y] (픽셀) }
 #   칸 판정: 바닥 = floor 다각형에 칸의 절반 이상 · block = 칸의 0.3 이상 · cover = 바닥 칸 중 0.3 이상
 #   쓰기: python3 -I tools/polyfix.py <제목> [<제목> ...]  (그 뒤 tools/mapchk.py "<제목>" 로 확인)
@@ -31,7 +31,7 @@ for t in sys.argv[1:]:
     for ch, L2 in (S.get('cells') or {}).items():   # 손으로 칸 고침: {'.': [[x,y]..]} (자른 그림이면 자른 쪽 칸 번호)
         for x, y in L2:
             if 0 <= x < NX and 0 <= y < NY: g[y][x] = ch
-    cell = lambda px, py: (int((px - cx0) // cs), int((py - cy0) // cs))
+    cell = lambda px, py: (min(NX - 1, max(0, int((px - cx0) // cs))), min(NY - 1, max(0, int((py - cy0) // cs))))   # v1.2 가장자리 밖은 안으로
     L = [f'#! {S["name"]} — polyfix v1.0 (다각형으로 그린 칸 지도)', f'0-{NX - 1},0-{NY - 1}=#']
     for y in range(NY):
         x = 0
