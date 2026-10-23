@@ -149,14 +149,14 @@ function unitInit(W, p, i){ const rules = W.rules;
       mag: wp.mag && am0 != null ? Math.min(wp.mag, am0) : null, magMax: wp.mag && am0 != null ? wp.mag : null, burst: null,
       gear: gearOf(p, rules), bag: (p.bag || []).filter(it => it && it.k).map((it, k) => ({ ...it, uid: i * 100 + k + 1 })), bag0: JSON.stringify(p.bag || []), bagCap: bagCapP(rules, p), eqRule: eqRuleP(rules, p), headSize: p.headSize || (eqRuleP(rules, p) || {}).head || null, wDur: p.wDur != null ? +p.wDur : 100, sDur: p.sDur != null ? +p.sDur : 100, wName: p.wName || '', sName: p.sName || '', wOwn: p.wOwn || null, sOwn: p.sOwn || null, wForeign: !!p.wOwn && p.wOwn !== (p.ref || ('#' + String(p.name || '').replace(/\s*\d+$/, ''))), undying: tr.includes('불사'), undead: tr.includes('망자'), down: false, riseT: null, human: tr.includes('일반인'), giant: tr.includes('거구'), h: hh, modBody: !!p.modBody || tr.includes('개조된 신체'),   // 키 (m) · [개조된 신체] (v5.2: ◆고유특성이면 p.modBody)
       canCharge: tr.includes('돌진') || acts.includes('돌진') || acts.includes('돌격') || commonCharge, chargeName: p.shield ? '방패 돌진' : '돌진', chargeCd: -9,   // v5.4.3 보병 · 탱커 공통 기술 이름 = 돌진
-      canLeap: tr.includes('도약') || acts.includes('도약'), leapCd: -9, active: acts,   // v5.2 액티브 스킬 (p.active)
+      canLeap: tr.includes('도약') || acts.includes('도약') || acts.includes('연속 도약'), leapCd: -9, active: acts,   // v5.2 액티브 스킬 (p.active)
       ev: gradeMul(rules, tr, '회피'), vit: vitOf(rules, tr), fire: fireOf(rules, tr), palm: acts.includes('팜 버스트'), palmCd: -9, spec: acts.filter(a => SPEC_K[a]).map(a => ({ k: SPEC_K[a], name: a, cdT: -9, n: SPEC_K[a] === 'head' ? 1 : null })), shells: acts.includes('영거리 사격') ? (p.shells != null ? +p.shells : 100) : null, alt: p.alt && p.alt.name ? { name: p.alt.name, ammo: p.alt.ammo != null ? +p.alt.ammo : null, mag: p.alt.mag != null ? +p.alt.mag : null } : null, csense: tr.includes('전투센스'), race: p.race || null, berry: tr.includes('열매 맺기'), berryT: tr.includes('열매 맺기') ? (rules.berry || {}).first || 8 : null, evadeCd: -9, evN: 0, manN: 0, blindL: tr.includes('실명:좌안'), burn: null, recoil: null,   // v6.7 [회피X] · [급소X] · [발화X] · [팜 버스트] · [실명:좌안] · 화상 · 반동   // v5.2 액티브 스킬 (p.active)
       cmd: cmdOf0(p, rules), rank: p.rank != null ? p.rank : RANK_REF[p.ref] || '', sqLead: null,   // v5.4 [지휘X] 점수
       longReach: !far && s.rng > 1,   // v5.4 장창
       eyes: (tr.includes('머리 넷') ? 4 : 1) * 2, eyeLost: 0, blind: false, sightMul: 1, aimMaim: 1, arms: { L: null, R: null }, noArms: false, bleed: null, bled: 0,   // v5.5 부위 (눈 · 팔) · 출혈
       heads: tr.includes('머리 넷') ? 4 : 1, cry: p.cry || '', mute: p.mute != null ? !!p.mute : p.side === 1,   // v5.3 [머리 넷] · 외침 (말 없는 쪽은 이모지 — 적 기본)
       // v5.2 무게 · 몸 방패 · 거구의 공격 · 방패 밀치기 · 피하기 · 넘어짐 · 기어다님 · 밀려남 · 조 · 휘두르기 명령
-      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'), marble: tr.includes('대리석 피부'), noOrg: tr.includes('무장기'),   /* v8.7.3 */   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg || p.cls === '치유', noChg0: !!p.noChg || p.cls === '치유',   /* v8.7.2 치유는 타고나길 돌격 안 함 */ heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
+      mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || (acts.includes('연속 도약') ? 2 : 1), rush: tr.includes('사족보행') && acts.includes('돌진'), sharp: p.bladeHands ? ((rules.claw || {}).sharp != null ? rules.claw.sharp : 0.35) : 0, hardHands: !!p.bladeHands,   /* v8.8.2 옐로 */ tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'), marble: tr.includes('대리석 피부'), noOrg: tr.includes('무장기'),   /* v8.7.3 */   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg || p.cls === '치유', noChg0: !!p.noChg || p.cls === '치유',   /* v8.7.2 치유는 타고나길 돌격 안 함 */ heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
       canGuard: sh || !!wp.guard || (p.traits || []).includes('반사신경') || parryArcW(rules, p.weapon) > 0, parry: !sh && !wp.guard && parryArcW(rules, p.weapon) > 0, regen: tr.includes('재생') ? ((rules.regen || {}).hp != null ? rules.regen.hp : 0.04) : +p.regenK || 0, guardMode: 'auto', raised: false, raiseAt: 1e9, reflex: (p.traits || []).includes('반사신경'), post: 100, role: roleOf(p, rules),   // v5.7 막기는 선택
       // v5.0 방어 재능 (역할): 방패 · 대검을 든 쪽만 — 막는 폭 ×(0.6 + 0.4g), 막을 때 받는 피해 1 − (1 − blockMul)·g, 자세 깎임 ×(2 − g). [반사신경] 은 몸에 밴 것이라 최소 0.9
       gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1, vet,   /* v8.8.0 [방어X] */
@@ -796,7 +796,7 @@ function assnAI(W, u, dt){
 // 지금 낼 수 있는 속력: 다리 상처 · 맞고 움찔 (pinTime 동안 ×0.4)
 const spdNow0 = (W, u) => (u.winded && W.rules.stamina && W.rules.stamina.jog ? Math.min(1, W.rules.stamina.jog / Math.max(0.1, u.spd * u.spdMul * (u.injSpd || 1))) : 1) * u.spd * u.spdMul * (u.injSpd || 1) * (!u.winded && !u.noRun && !(W.t < (u.hobbleT || -9)) && !(u.exhausted && !AI6.includes('fat')) && ((u.order && u.order.hurry && (u.order.k === 'move' || u.order.k === 'amove' || u.order.k === 'attack' || u.order.k === 'exit')) || (u.mv && u.mv.run && W.t < u.mv.until) || (u.flee && W.t < u.flee.until) || (u.fRun != null && W.t < u.fRun) || (u.side === 1 && !u.order && u.ug && !u.raised && !u.act && W.t - (u.ugT == null ? -9 : u.ugT) < 0.5)) ? (W.rules.run || 1.3) * (u.runK || 1) : 1) * (u.raised && u.shield && !(u.act && u.act.k === 'charge') ? ((W.rules.guard || {}).walk || 0.75) : 1) * (W.t < u.pinT ? 0.4 : 1) * (u.quadOn ? W.rules.quadMul || 1.4 : 1) * (u.crawl ? (W.rules.crawl != null ? W.rules.crawl : 0.2) : 1) * (u.stealth && !(u.order && u.order.hurry) && !(u.sc && u.sc.ph === 'flee') && !(u.torch && !u.torchOff) && (u.stealthE || 0) >= (STL(W).min || 0) ? (STL(W).spd || 0.6) : 1) * (W.t < (u.frostT || -9) ? ((W.rules.frost || {}).spd || 0.55) : 1) * (u.czSpd || 1) * (u.stalkK || 1) * (W.t < (u.hobbleT || -9) ? (W.rules.hobble || 0.4) : 1);   // v5.2 기어다님   /* v7.23.1 동상 · 세자르 걸음 */   // v7.5 은신 걸음   // v7.8.4 횃불을 켰거나 · 숨을 수 없는 몸이면 숨어 걷지 않음 (느리기만 한 헛짓)
 const wetAt = (m, x, y) => !!m.water && m.water.some(w => ((x - w.x) / w.rx) ** 2 + ((y - w.y) / w.ry) ** 2 <= 1);   // v7.22 얕은 물 속인가
-const spdNow = (W, u) => spdNow0(W, u) * (u.stoneT != null && W.t < u.stoneT ? (SPR(W, 'stone').slow || 0.4) : 1) * (u.lie && !u.lieSw ? (W.rules.lie || {}).spd || 0.25 : 1) * (W.t < (u.lungeT == null ? -9 : u.lungeT) ? u.lungeK || 1 : 1) * (W.map.water && !u.fairyW && wetAt(W.map, u.x, u.y) ? ((u.traits || []).includes('가호:바다') ? (TER(W).waterSea || 1.15) : (TER(W).water != null ? TER(W).water : 0.7)) : 1) * (W.t < (u.poolSlowT == null ? -9 : u.poolSlowT) ? (SPR(W, 'pool').slow || 0.7) : 1) * (u.fpK && W.t < (u.fpKT || -9) ? u.fpK : 1) * (u.fb && u.fb.sh === '방진' ? FBR(W).slow || 0.9 : 1) * (u.sqzSlow && W.t < u.sqzSlow ? 0.6 : 1) * (W.sup8 ? supSpd(W, u) : 1);   /* v8.7.5 편대장은 가장 느린 편대원에 맞춤 · 사방 경계는 느림 · 좁은 길에서 몸을 붙여 지나감 */   // v7.22 얕은 물 (v7.22.2 [가호:바다] 는 빨라짐)   // v7.22.3 핏빛 장판   // v7.17 기습 가속 · 팜 버스트 돌입   // v7.11 엎드려 김 (포복)
+const spdNow = (W, u) => spdNow0(W, u) * (u.maltT != null && W.t < u.maltT ? SPY(W, 'ybucket').slow || 0.55 : 1) * (u.stoneT != null && W.t < u.stoneT ? (SPR(W, 'stone').slow || 0.4) : 1) * (u.lie && !u.lieSw ? (W.rules.lie || {}).spd || 0.25 : 1) * (W.t < (u.lungeT == null ? -9 : u.lungeT) ? u.lungeK || 1 : 1) * (W.map.water && !u.fairyW && wetAt(W.map, u.x, u.y) ? ((u.traits || []).includes('가호:바다') ? (TER(W).waterSea || 1.15) : (TER(W).water != null ? TER(W).water : 0.7)) : 1) * (W.t < (u.poolSlowT == null ? -9 : u.poolSlowT) ? (SPR(W, 'pool').slow || 0.7) : 1) * (u.fpK && W.t < (u.fpKT || -9) ? u.fpK : 1) * (u.fb && u.fb.sh === '방진' ? FBR(W).slow || 0.9 : 1) * (u.sqzSlow && W.t < u.sqzSlow ? 0.6 : 1) * (W.sup8 ? supSpd(W, u) : 1);   /* v8.7.5 편대장은 가장 느린 편대원에 맞춤 · 사방 경계는 느림 · 좁은 길에서 몸을 붙여 지나감 */   // v7.22 얕은 물 (v7.22.2 [가호:바다] 는 빨라짐)   // v7.22.3 핏빛 장판   // v7.17 기습 가속 · 팜 버스트 돌입   // v7.11 엎드려 김 (포복)
 // 몸 너비까지 지나갈 수 있는 직선인가 (가운데 + 양옆 두 줄)
 function fatClear(m, x0, y0, x1, y1, r){
   const dx = x1 - x0, dy = y1 - y0, l = Math.hypot(dx, dy) || 1, ox = -dy / l * r, oy = dx / l * r;
@@ -982,7 +982,7 @@ function updateGuard(W, u){
   if (shieldAct) want = true;
   else if (!a && !hurry && u.alive && !u.crawl && !u.kb && W.t >= u.proneT && W.t >= (u.stunT || -9)){
     if (u.guardMode === 'hold' || (lretOn(W, u) && u.guardMode !== 'off')) want = true;   // v7.2 전열 후퇴: 방패 · 무구를 든 채 물러섬
-    const ce = u.guardMode !== 'off' && !isFar(u) ? W.units.find(e => e.alive && e.side !== u.side && e.act && (e.act.k === 'charge' || (e.act.k === 'leap' && e.act.flip && e.act.slam)) && e.act.b === u.i && aware(W, u, e)) : null;   /* v8.7.3 공중제비 내려찍기도 태세로 받음 */
+    const ce = u.guardMode !== 'off' && !isFar(u) ? W.units.find(e => e.alive && e.side !== u.side && e.act && (e.act.k === 'charge' || (e.act.k === 'leap' && e.act.flip && e.act.slam)) && e.act.b === u.i && aware(W, u, e) && !rushLate(W, e, u)) : null;   /* v8.7.3 공중제비 내려찍기도 태세로 받음 */
     if (ce){ want = true; u.fg = Math.atan2(ce.y - u.y, ce.x - u.x); setMood(W, u, '태세', ce.i); }   // v5.8.7 돌격 받을 태세   // v7.0 고침: if 짝이 어긋나 근접병의 자동 막기 (가까운 적 · 겨눈 위험) 가 건너뛰어지던 것
     else if (u.guardMode !== 'off' && (u.shield || u.armShield) && !AI6.includes('sadv') && shooterOn(W, u)){ const g = shooterOn(W, u); want = true; if (!u.path || !u.path.length) u.fg = Math.atan2(g.y - u.y, g.x - u.x); if (u.side === 1 || !u.order) setMood(W, u, '방패 전진', g.i); }   // v7.0 방패 전진
     else if (u.guardMode !== 'off'){ const bare = bareGuard(W, u), dg = dangerOf(W, u);   // v5.7 맨몸이면 자동은 무기를 막지 않음 (맨손 · 주먹만)
@@ -1160,7 +1160,7 @@ function startAct(W, u, t, why){
   const pw = u.parryWait, pe = pw && W.units[pw.b];
   if (!heal && pw && W.t < pw.t && pe && pe.alive && pe.act && pe.act.k === 'atk' && pe.act.b === u.i && pe.act.t0 === pw.t0){ setMood(W, u, '받아 낼 준비', pe.i); return; }   // v5.8.7 무구로 받아 내려고 기다리는 중
   // v5.8.7 나를 노린 돌격이 오는 중이면 (손이 비었고 막을 수 있으면) 치러 들지 않고 태세 — 받아 내야 받아침이 됨
-  if (!heal && t.side !== u.side && t.act && (t.act.k === 'charge' || (t.act.k === 'leap' && t.act.flip && t.act.slam)) && t.act.b === u.i && u.canGuard && !isFar(u) && u.guardMode !== 'off' && aware(W, u, t)){   /* v8.7.3 공중제비 내려찍기도 */ stop(u); u.fg = Math.atan2(t.y - u.y, t.x - u.x); setMood(W, u, '태세', t.i); return; }
+  if (!heal && t.side !== u.side && t.act && (t.act.k === 'charge' || (t.act.k === 'leap' && t.act.flip && t.act.slam)) && t.act.b === u.i && u.canGuard && !isFar(u) && u.guardMode !== 'off' && aware(W, u, t) && !rushLate(W, t, u)){   /* v8.7.3 공중제비 내려찍기도 */ stop(u); u.fg = Math.atan2(t.y - u.y, t.x - u.x); setMood(W, u, '태세', t.i); return; }
   // v5.7 막기 유지 중엔 치지 않음 (방패 밀치기만 — 손 닿으면)
   if (!heal && u.guardMode === 'hold' && u.canGuard && !isFar(u) && t.side !== u.side){ if (u.canBash && W.t >= u.bashCd && W.t >= u.brokenT && gap(u, t) <= u.rng + 0.3){ startBash(W, u, t, '막기 유지'); return; } if (!openingOf(W, u, t) || (t.act && t.act.b === u.i && t.act.phase === 'wind' && !isFar(t) && !u.shield)){ setMood(W, u, '막기 유지', t.i); return; } }   // v5.7.1 막기 유지는 틈이 보일 때만 침 · 무구로 막는 쪽은 상대가 휘두르는 중이면 먼저 받아 내고 (회복 틈에) 되받아침
   // v7.9.3 어떤 길로 왔든 (접근 · 도약 · 밀어붙임) 경량이 막고 선 방패 정면을 스스로 치지 않음 — 틈 (상대의 동작 · 옆 · 뒤 · 자세 무너짐) 을 기다림. 명령 · 궁지는 예외
@@ -1356,7 +1356,7 @@ function leapShot(W, u, A){
 }
 // 돌진: 곧은 길로 속력 ×spd. 처음 닿는 상대를 들이받음 (막아도 자세가 크게 깎임) — 밀치고 움찔 · 준비 끊음. 바위 · 끝이면 멈춤
 function tryCharge(W, u, t, forced, noStance){
-  const C = W.rules.charge || {}, g = gap(u, t);
+  const C = chgC(W, u), g = gap(u, t);
   if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */
   if (u.noChg && !(forced && u.noChg0 && u.noChg === u.noChg0 && !u.noChgUser)) return false;   /* v8.7.2 타고난 성향은 지휘관의 돌격 명령은 따름 */   // v7.29.0 돌격 안 함 (성향 · 유저 설정) — 유저의 돌진 명령 (startCharge) 은 따로라 언제나 됨
   // v5.4 지휘가 있는 편 (탱커도 있음) 은 지휘가 '들어가!' (대치 → 교전) 를 내리기 전엔 함부로 돌격하지 않음. 명령 (플레이어) 은 예외
@@ -1373,6 +1373,7 @@ function tryCharge(W, u, t, forced, noStance){
 // 싸우는 전선에 옆 · 뒤에서, 또는 치고 있는 놈에게 들어가는 돌격은 그래서 대개 통함
 const isSpear = u => !isFar(u) && u.spearHeld !== false && /창$/.test(u.weaponNow || u.weapon || '');
 function setFor(W, t, u){
+  if (u.rush && u.act && u.act.k === 'charge' && (u.act.run || 0) >= (((W.rules.claw || {}).rush || {}).long || 5) - 0.05 && W.rand() >= (((W.rules.claw || {}).rush || {}).setP != null ? W.rules.claw.rush.setP : 0.3)) return false;   /* v8.8.2 태세를 키기도 전에 달려드는 돌진 */
   if (!guardOn(W, t) || isFar(t) || t.act || t.kb) return false;
   if (angDiff(t.face, Math.atan2(u.y - t.y, u.x - t.x)) * 180 / Math.PI > guardArc(W, t) + (shieldWall(W, t) ? ((W.rules.guard || {}).wall != null ? W.rules.guard.wall : 25) : 0)) return false;
   if (!aware(W, t, u)) return false;
@@ -1435,12 +1436,13 @@ function joinStep(W, u, dt){
   const e = lineFoes(W, u).sort((a, b) => dist(u, a) - dist(u, b))[0]; stop(u); if (e) u.fg = Math.atan2(e.y - u.y, e.x - u.x); setMood(W, u, '전열 (혼자)');
 }
 // v5.8.5 도움닫기: 달린 거리만큼 빨라짐 — 처음 ×sp0 → full 칸을 달리면 전력질주 ×spd. 부딪히는 힘 (속력) 도 그만큼이라 짧은 돌격은 덜 셈
-const chargeSp = (C, v0, run) => { const top = C.spd || 2.2, s0 = C.sp0 != null ? C.sp0 : top; return v0 * (s0 + (top - s0) * Math.min(1, run / Math.max(0.1, C.full || 3))); };
+const chargeSp = (C, v0, run) => { const top = C.spd || 2.2, s0 = C.sp0 != null ? C.sp0 : top; return v0 * (s0 + (top - s0) * Math.pow(Math.min(1, run / Math.max(0.1, C.full || 3)), C.pow || 1)); };   /* v8.8.2 pow: 옐로는 끝에서 폭발 */
+const chgC = (W, u) => u.rush ? { ...(W.rules.charge || {}), ...((W.rules.claw || {}).rush || {}) } : (W.rules.charge || {});   /* v8.8.2 사족보행 돌진 */
 function chargeTime(C, v0, s){ let t = 0, run = 0; const ds = 0.05; while (run < s){ t += ds / Math.max(0.1, chargeSp(C, v0, run)); run += ds; } return t; }
 // v5.4 돌격 예고: wind 초 동안 자세를 낮추고 노려봄 (예고선) → 달림. v5.5.3 t = 노리는 상대 (없으면 바닥 자리 pt 로 곧장)
 function startCharge(W, u, t, pt){
   if (u.lie) return false;   // v7.11 엎드린 채 스스로 돌진하지 않음 (명령이면 먼저 일어남)
-  const C = W.rules.charge || {}, tx = t ? t.x : pt.x, ty = t ? t.y : pt.y;
+  const C = chgC(W, u), tx = t ? t.x : pt.x, ty = t ? t.y : pt.y;
   u.act = { k: 'charge', phase: 'wind', b: t ? t.i : null, px: pt ? pt.x : null, py: pt ? pt.y : null, t0: W.t, end: W.t + (C.wind != null ? C.wind : 0.35) };
   u.chargeCd = W.t + (C.cd || 8); stop(u); u.burst = null; tire(W, u, 'charge'); u.fg = Math.atan2(ty - u.y, tx - u.x); u.face = u.fg;   // v6.6 지침   // v7.0 고침: 주석에 삼켜져 있던 '돌진 준비 때 상대 쪽으로 돎'
   const cry = chargeCry(W, u);
@@ -1466,7 +1468,7 @@ function stun(W, u, sec, by){
   return sec;
 }
 function stepCharge(W, u, dt){
-  const A = u.act, C = W.rules.charge || {}, x0 = u.x, y0 = u.y;
+  const A = u.act, C = chgC(W, u), x0 = u.x, y0 = u.y;
   // v5.2 달리며 조금씩 방향을 틂 (초당 turn rad 까지) — 비켜서는 상대를 따라감
   const tg0 = A.b != null ? W.units[A.b] : null, aim0 = tg0 && tg0.alive ? (AI6.includes('clead') || Math.hypot(tg0.vx || 0, tg0.vy || 0) < 0.8 ? tg0 : (k => ({ x: tg0.x + (tg0.vx || 0) * k, y: tg0.y + (tg0.vy || 0) * k, r: tg0.r }))(Math.min(0.8, dist(u, tg0) / Math.max(1, A.sp || 1)))) : A.px != null ? { x: A.px, y: A.py } : null;   // v5.5.3 정한 자리로도 · v6.5 달아나는 상대는 닿을 때의 자리로 (0.8초 앞까지)
   if (A.v0 != null) A.sp = chargeSp(C, A.v0, A.run || 0);   // v5.8.5 도움닫기
@@ -1503,10 +1505,10 @@ function stepCharge(W, u, dt){
     let setBroke = false;
     if (!hc && setFor(W, hit, u)){ let cost = setCost(W, u, hit, k, br.mass / (br.trained ? C.trained || 1.6 : 1));   // 훈련 버팀 배율은 태세에 이미 들어 있음
       if (hit.post <= cost && hit.post > cost / ((hit.might || 1) * 1.05) && hit.side !== u.side && mightReady(W, hit)) cost /= mightUse(W, hit, 'brace', u);   /* v7.24.2 괴력: 무너지려던 태세를 버팀 */
-      if (hit.post > cost){ hit.post -= cost; hit.blockT = W.t; hit.blocked++; setHold(W, u, hit, k, vr); return; }
+      if (hit.post > cost){ hit.post -= cost; hit.blockT = W.t; hit.blocked++; if (u.rush) rushPush(W, u, hit, A, nx, ny, true); setHold(W, u, hit, k, vr); return; }   /* v8.8.2 태세로 받아도 밀림 */
       hit.post = 0; hit.brokenT = W.t + W.rules.breakTime; setBroke = true; }
     const blocked = !setBroke && inGuard(W, hit, u, true), sh = !!u.shield, shK = sh ? (C.shieldKb || 1.3) : 1;   // v5.5.3 방패 돌진: 더 세게 밀침 · 둔기 (방패로 받아침)
-    strike(W, u, hit, hit, 1, false, { mul: (C.dmg || 0.6) * k, wk: sh ? '둔기' : heavyKind(W, u), tag: u.chargeName });
+    strike(W, u, hit, hit, 1, false, { mul: (C.dmg || 0.6) * k * (u.rush && (A.run || 0) >= (C.long || 5) - 0.05 ? C.longMul || 1.4 : 1), wk: sh ? '둔기' : u.sharp ? '날붙이' : heavyKind(W, u), tag: u.chargeName });   /* v8.8.2 */
     if (hc && hit.alive && u.alive) strike(W, hit, u, u, 1, false, { mul: (C.dmg || 0.6) * k, wk: heavyKind(W, hit), tag: hit.chargeName });   // 마주 돌격: 둘 다 침
     if (blocked && hit.alive){ hit.post -= (C.post || 60) * k * shK; if (hit.post <= 0){ hit.post = 0; hit.brokenT = W.t + W.rules.breakTime; } }
     if (hit.alive){ hit.pinT = W.t + (C.pin || 1.2) * (pushOnly ? 0.4 : 1) * (mbOn(W, hit) ? mbF(W, hit, 'pin') : 1) * (hit.vet ? VETR(W).pin : 1); interrupt(W, hit, pushOnly ? '밀려 준비가 끊김' : '들이받혀 준비가 끊김'); }
@@ -1517,15 +1519,15 @@ function stepCharge(W, u, dt){
     { const SR = W.rules.chargeSet || {}; u.offBal = W.t + (sh ? (SR.afterShield != null ? SR.afterShield : 0.3) : (SR.after != null ? SR.after : 0.5)); }   // v5.8.7 들이받은 뒤 빈틈: 잠깐 막지 못함 (방패는 덜)
     if (hc && hit.alive) hit.act = { k: 'atk', phase: 'rec', b: u.i, t0: W.t, end: W.t + 0.5, t1: W.t };
     const KB = C.kb != null ? C.kb : 0.3, dv = C.downV != null ? C.downV : 4;
-    if (hit.alive && vB2 > 0.2) fling(W, u, hit, vB2 * KB * shK, nx, ny, { how: hc ? 'clash' : 'charge', v: vB2, brace: br.ids || [], ...(mtB ? { mt: true } : {}) });   /* v8.7.3 받쳐 준 몸은 받아 줌 */
-    if (u.alive && vA2 < -0.2) fling(W, hit, u, -vA2 * KB * (sh ? 0.6 : 1), -nx, -ny, { how: 'recoil', v: -vA2 * (sh ? 0.6 : 1) });   // 방패가 받아 덜 튕김
+    if (hit.alive && u.rush && !hc && rushPush(W, u, hit, A, nx, ny, false)){ /* v8.8.2 5칸 넘게 달린 옐로의 돌진 — 확정 밀침 */ } else if (hit.alive && vB2 > 0.2) fling(W, u, hit, vB2 * KB * shK, nx, ny, { how: hc ? 'clash' : 'charge', v: vB2, brace: br.ids || [], ...(mtB ? { mt: true } : {}) });   /* v8.7.3 받쳐 준 몸은 받아 줌 */
+    if (u.alive && vA2 < -0.2 && !u.rush) fling(W, hit, u, -vA2 * KB * (sh ? 0.6 : 1), -nx, -ny, { how: 'recoil', v: -vA2 * (sh ? 0.6 : 1) });   // 방패가 받아 덜 튕김
     return;
   }
   if (stuck || W.t >= A.end) u.act = null;
 }
 function resolveAct(W, u){
   if (u.act.k === 'charge' && u.act.phase === 'wind'){   // v5.4 예고 끝 → 그때 상대 (v5.5.3 또는 정한 자리) 쪽으로 달림
-    const C = W.rules.charge || {}, t = u.act.b != null ? W.units[u.act.b] : null, pt = u.act.px != null ? { x: u.act.px, y: u.act.py } : null;
+    const C = chgC(W, u), t = u.act.b != null ? W.units[u.act.b] : null, pt = u.act.px != null ? { x: u.act.px, y: u.act.py } : null;
     if (!pt && (!t || !t.alive)){ u.act = null; return; }
     const tx = t && t.alive ? t.x : pt.x, ty = t && t.alive ? t.y : pt.y, d = Math.hypot(tx - u.x, ty - u.y) || 1, v0 = spdNow(W, u), sp = chargeSp(C, v0, 0);   // v5.8.5 도움닫기 (달릴수록 빨라짐)
     u.act = { k: 'charge', phase: 'run', b: t ? t.i : null, px: pt ? pt.x : null, py: pt ? pt.y : null, t0: W.t, end: W.t + chargeTime(C, v0, d + (t ? 0.6 : 0.15)), dx: (tx - u.x) / d, dy: (ty - u.y) / d, sp, v0, run: 0, ...(u.act.sup ? { sup: true, lim: d + 1.5 } : {}) };
@@ -2101,8 +2103,8 @@ function strike(W, u, t, meant, p, far, extra){
     const G = R.guard || {}, wk0 = J ? '날붙이' : (u.bladeHands && !o.far) ? '날붙이' : (((R.weapons || {})[u.weaponNow || u.weapon] || {}).kind || '맨손');
     if (bareGuard(W, t) && ['날붙이', '둔기', '짐승'].includes(wk0) && (!o.far || J) && W.rand() < (G.bare != null ? G.bare : 0.3)){
       o.block = false; o.bareArm = true; o.part = '팔'; o.wk = wk0; o.tag = '맨팔로 받아 냄';
-      applyDmg(W, u, t, Math.max(1, Math.round(base * (G.bareDmg != null ? G.bareDmg : 0.6))), o);
-      if (t.alive && !wholeBody(t) && W.rand() < (G.bareMaim != null ? G.bareMaim : 0.5) * maimRes(W, t)) maimArm(W, t, u.i, J ? '찌름' : wk0 === '짐승' ? '날붙이' : wk0);
+      applyDmg(W, u, t, Math.max(1, Math.round(base * (G.bareDmg != null ? G.bareDmg : 0.6) * (t.hardHands ? 0.4 : 1))), o);   /* v8.8.2 단단한 손 */
+      if (t.alive && !wholeBody(t) && !t.hardHands && W.rand() < (G.bareMaim != null ? G.bareMaim : 0.5) * maimRes(W, t)) maimArm(W, t, u.i, J ? '찌름' : wk0 === '짐승' ? '날붙이' : wk0);
       return o;
     }
     applyDmg(W, u, t, Math.max(1, Math.round(base * (1 - (1 - (pr ? (PR.mul != null ? PR.mul : 0.5) : R.blockMul)) * (t.gTal != null ? t.gTal : 1)))), o);
@@ -2127,7 +2129,7 @@ function strike(W, u, t, meant, p, far, extra){
   // v5.2 관통: 화살 · 투창 · 총알은 확률 (pen + 근력 · 총은 근력 없음) 로 갑옷을 꿰뚫음 → 갑옷이 막는 몫 × (1 − penK). 총은 늘 뚫지만 반쯤, 화살 · 투창은 뚫으면 거의 다
   const PNR = R.pen && (isF || J) && pw && !AI6.includes('pen') ? penRes(W, u, t, part, dir, J, pw, crit, arcX, extra) : null;   // v7.0 관통 판정
   const pen = PNR ? PNR.pen : !!pw && pw.pen != null && W.rand() < (pw.pen + (pw.kind === '총포류' ? 0 : (pw.penStr != null ? pw.penStr : 0.5) * Math.max(0, (u.strMul || 1) - 1))) * (arcX ? (J && J.arc && J.arc.pen != null ? J.arc.pen : AR.pen != null ? AR.pen : 0.6) : 1);   // v5.8.4 곡사는 힘이 빠져 덜 꿰뚫음
-  const AM0 = armorMul(R, t, part, wk), AM = PNR ? { m: PNR.m, it: AM0.it } : pen && AM0.it ? { m: 1 - (1 - AM0.m) * (1 - (pw.penK != null ? pw.penK : 0.8)), it: AM0.it } : AM0, gapHit = crit && (u.vit || 0) > 0 && !!AM.it, armMul = extra && extra.noArmor ? 1 : (gapHit && !PNR ? 1 - (1 - AM.m) * 0.5 : AM.m) * (wk === '총포류' && !t.human ? (R.gunTough != null ? R.gunTough : 1) : 1);   /* v8.7.8 갑옷 무시 (굿윌 니킥 헤드샷) */   // v6.7 [급소X] 의 치명은 갑옷 틈으로 (막는 몫 절반)   // 굴의 몸은 총에 단단함
+  const AM0 = armorMul(R, t, part, wk), AM = PNR ? { m: PNR.m, it: AM0.it } : pen && AM0.it ? { m: 1 - (1 - AM0.m) * (1 - (pw.penK != null ? pw.penK : 0.8)), it: AM0.it } : AM0, gapHit = crit && (u.vit || 0) > 0 && !!AM.it, armMul = extra && extra.noArmor ? 1 : shp(u, o, (gapHit && !PNR ? 1 - (1 - AM.m) * 0.5 : AM.m)) * (wk === '총포류' && !t.human ? (R.gunTough != null ? R.gunTough : 1) : 1);   /* v8.7.8 갑옷 무시 (굿윌 니킥 헤드샷) */   // v6.7 [급소X] 의 치명은 갑옷 틈으로 (막는 몫 절반)   // 굴의 몸은 총에 단단함
   // v5.2 암살은 뒤 · 측면 배율과 겹치지 않음 (둘 중 큰 쪽)
   let dmg = Math.max(1, Math.round(base * (amb ? Math.max(R.ambushMul || 1, flank) : flank) * (P[part] ? P[part].mul : 1) * (crit ? (J ? J.critMul : CR.mul || 1.5) : 1) * (pr ? rv(W, 'proneHit', 1.5) : 1) * armMul * (mbOn(W, t) ? mbF(W, t, 'dmg') : 1) * (t.scaleMail ? (dir === 'front' ? (o.far || J ? 0.7 : 1) : 1.15) : 1)));   // [개조된 신체]   /* v8.7.4 [비늘 깃털 갑옷] */
   o.part = part; o.ambush = amb; o.jav = !!J; o.crit = crit; if (t.scaleMail) o.scale = dir === 'front' ? (o.far || J ? 0.7 : 1) : 1.15; o.armor = AM.m < 1 && AM.it && !(extra && extra.noArmor) ? AM.it.name : null; o.armMul = +armMul.toFixed(2); o.armPure = AM.m; o.wk = wk; o.tag = (extra && extra.tag) || null; o.hcrit = crit && !J; o.pen = pen && !!AM0.it; o.gapHit = gapHit; if (PNR && AM0.it){ o.P = Math.round(PNR.P); o.A = Math.round(PNR.A); if (!PNR.pen){ o.deflect = PNR.how; o.tag = o.tag || (PNR.how === '튕김' ? '갑옷에 튕김' : '갑옷에 박힘') + ' (관통 ' + o.P + ' < 방호 ' + o.A + ')'; } else if (PNR.how) o.gapHow = PNR.how; }   // v6.9 armPure = 갑옷만의 몫 (총에 단단한 굴의 몸은 부상에도 그대로)
@@ -2204,9 +2206,10 @@ function applyDmg(W, u, t, dmg, o){
     if (t.dmgK > 0 && t.dmgK !== 1) dmg *= t.dmgK;
     if (t.wrapT != null && W.t < t.wrapT) dmg *= ((W.rules.pearl || {}).wrap || {}).k || 0.4;   /* v8.7.9 움츠리기 (펄 — 날개로 몸을 감쌈) */
     if (u.bleedK > 0 && (t.bleed || t.ibleed)) dmg *= u.bleedK;
+    if (t.maltT != null && W.t < t.maltT) dmg *= 1 + (SPY(W, 'ybucket').melt || 0);   /* v8.8.2 <저주:맥아> 살이 무름 */
     const cw = W.crown ? W.crown[t.side] || 0 : 0; if (cw > 0 && t.alive && !t.summon && dmg >= t.hp && t.hp > 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ W.crown[t.side] = cw - 1; dmg = t.hp - 1; t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '왕관 조각이 버팀' }; L(W, { k: 'crownSave', a: u.i, b: t.i, vis: t.side === 0 || !!t.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.3, s: '👑 버팀!', c: 'h', t0: W.t }); }
   }
-  { const G = t.act; if (G && G.k === 'spec' && G.s === 'tear' && G.phase === 'run' && u.side !== t.side){ G.dmg = (G.dmg || 0) + Math.min(dmg, t.hp); if (G.dmg >= t.max * (SPR(W, 'tear').brk || 0.06)) tearLet(W, t, '맞아서 놓침', u.i); } }   /* v8.7.4 잡아찢기는 끊을 수 있음 */   /* v8.6.0 [대리석 피부] · 하늘 · 떠오름 */
+  { const G = t.act; if (G && G.k === 'spec' && (G.s === 'tear' || G.s === 'yclaw') && G.phase === 'run' && u.side !== t.side){ G.dmg = (G.dmg || 0) + Math.min(dmg, t.hp); if (G.dmg >= t.max * (SPY(W, G.s === 'tear' ? 'tear' : 'yclaw').brk || 0.06)) tearLet(W, t, '맞아서 놓침', u.i); } }   /* v8.7.4 잡아찢기는 끊을 수 있음 */   /* v8.6.0 [대리석 피부] · 하늘 · 떠오름 */
   if (t.grit && !t.lsEnd && t.alive){ dmg = karGritHit(W, u, t, dmg, o); if (!(dmg > 0)) return; }   /* v8.7.8 근성 */
   if (t.colKit && !t.tailUsed && t.alive && u !== t && dmg >= t.hp && t.hp >= 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ t.tailUsed = true; dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '꼬리 그림자가 대신 막음' }; L(W, { k: 'colTail', a: u.i, b: t.i, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '꼬리 그림자 — 버팀!', c: 'b', t0: W.t }); if (!(dmg > 0)) return; }   /* v8.7.8 ◆마계 대사: 숨이 끊길 일격을 꼬리 그림자가 한 번 (체력 1 — 3D last) */
   if (t.gakKit && !t.gak && !t.gakUsed && t.alive && u !== t && dmg >= t.hp && t.hp >= 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ t.gakUsed = true; dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '쓰러지지 않음 (각펄)' }; pearlGak(W, t, true); if (!(dmg > 0)) return; }   /* v8.7.9 동료 펄: 숨이 끊길 일격 → 각펄 */
@@ -3125,7 +3128,7 @@ function interrupt(W, u, why){
   const a = u.act;
   if (a && a.k === 'h2' && a.phase === 'wind') L(W, { k: 'h2Break', a: u.i, s: a.s, n: a.n, why, vis: u.side === 0 || !!u.seenBy });   /* v8.7.4 휘청 · 넘어짐으로 끊긴 예고 */
   if (a && a.k === 'skill' && a.phase === 'tend'){ tendEnd(W, u, a, why); u.act = null; u.burst = null; return; }   // v7.3 맞으면 돌봄이 끊김
-  if (a && a.k === 'spec' && a.s === 'tear' && a.phase === 'run'){ const v = W.units[a.held]; if (v) v.heldBy = null; L(W, { k: 'tearLet', a: u.i, b: a.held, why, vis: true }); }   /* v8.7.4 잡아찢기가 끊김 */
+  if (a && a.k === 'spec' && (a.s === 'tear' || a.s === 'yclaw') && a.phase === 'run'){ const v = W.units[a.held]; if (v) v.heldBy = null; L(W, { k: 'tearLet', a: u.i, b: a.held, why, vis: true }); }   /* v8.7.4 잡아찢기가 끊김 */
   if (a && a.k === 'invAct' && a.phase === 'wind') L(W, { k: 'invBreak', a: u.i, op: a.op, slot: a.slot || null, w: a.it ? a.it.label || a.it.name : null, why, vis: u.side === 0 || !!u.seenBy });   /* v8.7.6 입던 · 건네던 것이 끊김 */
   if (a && (a.phase === 'wind' || a.phase === 'run') && a.k !== 'reload'){
     if (a.b != null && (a.k === 'atk' || a.k === 'throw' || a.k === 'bash' || a.k === 'skill' || a.k === 'heal' || a.k === 'palm' || a.k === 'assn')) L(W, { k: 'miss', a: u.i, b: a.b, why });
@@ -3644,6 +3647,7 @@ function swingPlan(W, u, t){
   if (M.length) D -= 1.5 * (1.2 - u.bold) + (u.side === 1 ? 2.5 : 0);   // v6.0 숙련된 용병은 제 편을 휩쓸 휘두르기를 더 꺼림
   return W.rand() < 1 / (1 + Math.exp(-D / 1.2)) ? 'sweep' : 'smash';
 }
+const shp = (u, o, m) => u.sharp > 0 && !o.far ? 1 - (1 - m) * (1 - u.sharp) : m;   /* v8.8.2 절삭력 (옐로의 손) */
 const heavyKind = (W, u) => { const k = ((W.rules.weapons || {})[u.weaponNow || u.weapon] || {}).kind; return !k || k === '맨손' ? '둔기' : k; };
 const HEAVY_TXT = { sweep: '넓게 휘두르기', smash: '찍기', stomp: '짓밟기' };
 // 확인사살 이름: 무기를 든 거구 (곤봉 …) 는 내려찍기, 맨몸 (카리우스) 은 짓밟기
@@ -4210,10 +4214,10 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
 /* ---------- v7.19.1 고유 기술: 공중제비 (탕아) · 머리 찍기 (쟝) · 영거리 사격 (간두) · 철퇴 후리기 · 휘둘러 치기 (모닝스타) — 적 · 아군 같은 규칙 ---------- */
 const SPEC_NM = k => (Object.entries(SPEC_K).find(e => e[1] === k) || [k])[0];   /* v8.7.3 기술 이름 (명령 글) */
 const PK_SPEC = { psky: 'psky', pball: 'pball', pwide: 'pwide', pfeath: 'feather', pland: 'land', pkick: 'kick' };   /* v8.7.9 동료 펄 기술 칸 → 기술표 (pk) */
-const SPEC_K = { '신나는 공중 투창': 'psky', '신나는 포탄': 'pball', '신나는 횡베기': 'pwide', '철 깃털': 'pfeath', '꼬깃꼬깃 착지': 'pland', '돌려차기': 'pkick', '움츠리기': 'pwrap', '혈영보': 'blink', '정령 강림': 'mdesc', '정령 방벽': 'mwall', '땅의 정령': 'mspirit', '물 정령 탄': 'mvolley', '차원 문': 'cgate', '별빛 지목': 'cstar', '마계 장막': 'cveil', '유혹의 손짓': 'clure', '광역 손짓': 'tsweep', '은빛 비행': 'tflight', '날개 방패': 'twing', '나른한 꿈': 'tdream', '초돌진': 'asup', '앞차기': 'akick', '잡아뚫기': 'kgrab', '노인의 팔': 'ksw', '라이트 훅': 'khook', '짓밟기': 'kstomp', '노인의 팔 철퇴': 'kslam', '돌진 몸박': 'krush', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
+const SPEC_K = { '달라붙기 난도질': 'yclaw', '양동이 뿌리기': 'ybucket', '신나는 공중 투창': 'psky', '신나는 포탄': 'pball', '신나는 횡베기': 'pwide', '철 깃털': 'pfeath', '꼬깃꼬깃 착지': 'pland', '돌려차기': 'pkick', '움츠리기': 'pwrap', '혈영보': 'blink', '정령 강림': 'mdesc', '정령 방벽': 'mwall', '땅의 정령': 'mspirit', '물 정령 탄': 'mvolley', '차원 문': 'cgate', '별빛 지목': 'cstar', '마계 장막': 'cveil', '유혹의 손짓': 'clure', '광역 손짓': 'tsweep', '은빛 비행': 'tflight', '날개 방패': 'twing', '나른한 꿈': 'tdream', '초돌진': 'asup', '앞차기': 'akick', '잡아뚫기': 'kgrab', '노인의 팔': 'ksw', '라이트 훅': 'khook', '짓밟기': 'kstomp', '노인의 팔 철퇴': 'kslam', '돌진 몸박': 'krush', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
 const SPR = (W, k) => ((W.rules.spec || {})[k]) || {};
 const specOf = (u, k) => (u.spec || []).find(x => x.k === k);
-function specReady(W, u, k){ const x = specOf(u, k); if (!x || !u.alive || u.down || u.noArms || u.crawl || u.lie || u.kb || W.t < x.cdT || W.t < u.brokenT || W.t < (u.proneT || -9)) return false; if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */ if (x.n != null && x.n <= 0) return false; if (GW_K.includes(k) && !gwOn(u)) return false; if ((k === 'kslam' || k === 'krush') && !u.heretic) return false;   /* v8.7.8 불경자의 기술 */   /* v8.7.8 굿윌의 기술은 맨손일 때만 */ if ((k === 'sweep' || k === 'hurl' || k === 'spin') && u.weaponGone) return false; if ((k === 'sweep' || k === 'hurl') && flailOut(W, u)) return false;   /* v7.25.0 공을 거둬야 */ if (k === 'root' && (W.roots || []).filter(r => r.by === u.i).length >= (SPR(W, 'root').max || 2)) return false; return k !== 'pb' || u.shells > 0; }   // v7.19.2 철퇴를 뺏기면 못 씀 · 뿌리 벽은 둘까지
+function specReady(W, u, k){ const x = specOf(u, k); if (!x || !u.alive || u.down || u.noArms || u.crawl || u.lie || u.kb || W.t < x.cdT || W.t < u.brokenT || W.t < (u.proneT || -9)) return false; if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */ if (x.n != null && x.n <= 0) return false; if (k === 'ybucket' && !(u.skill && u.skill.left >= (SPY(W, 'ybucket').min || 60))) return false;   /* v8.8.2 양동이에 약이 남아야 */ if (GW_K.includes(k) && !gwOn(u)) return false; if ((k === 'kslam' || k === 'krush') && !u.heretic) return false;   /* v8.7.8 불경자의 기술 */   /* v8.7.8 굿윌의 기술은 맨손일 때만 */ if ((k === 'sweep' || k === 'hurl' || k === 'spin') && u.weaponGone) return false; if ((k === 'sweep' || k === 'hurl') && flailOut(W, u)) return false;   /* v7.25.0 공을 거둬야 */ if (k === 'root' && (W.roots || []).filter(r => r.by === u.i).length >= (SPR(W, 'root').max || 2)) return false; return k !== 'pb' || u.shells > 0; }   // v7.19.2 철퇴를 뺏기면 못 씀 · 뿌리 벽은 둘까지
 // 공중제비: back = 뒤 (또는 찍은 자리) 로 빠짐 · 아니면 그 상대에게 뛰어올라 몸 바로 앞에 내려찍음 (내려앉을 때 slamHit)
 function startFlip(W, u, t, back, px, py){
   const F = SPR(W, 'flip'), x = specOf(u, 'flip'); let tx, ty;
@@ -4244,7 +4248,7 @@ function wpnSpec(W, u){ const wp = (W.rules.weapons || {})[u.weapon] || {}; if (
 // v7.22.3 핏빛 장판: tick 초마다 안에 선 모두 (깐 이는 빼고 · 동료도) 화상 · 느려짐 — 장판을 본 쪽은 밖으로 피함
 function stepPools(W, dt){
   const S = SPR(W, 'pool');
-  for (const P of W.pools){ if (W.t >= P.until) continue; const by = W.units[P.by];
+  for (const P of W.pools){ if (W.t >= P.until) continue; if (P.kind === 'malt'){ stepMalt(W, P); continue; } const by = W.units[P.by];   /* v8.8.2 저주:맥아 장판 */
     for (const e of W.units){ if (!e.alive || e.i === P.by || e.fairyW) continue; const d = Math.hypot(e.x - P.x, e.y - P.y); if (d > P.r + e.r * 0.5) continue;
       e.poolSlowT = W.t + 0.3;
       if (!e.flee && !e.down && !e.kb && (litAt(W, P.x, P.y) || d < 1.5) && !(e.act && e.act.phase !== 'wind')){ const a = d > 0.05 ? Math.atan2(e.y - P.y, e.x - P.x) : W.rand() * 6.283, D = P.r + e.r + 0.4;
@@ -4372,6 +4376,59 @@ function stepSpins(W, dt){
       W.items.push(it); L(W, { k: 'spinDrop', a: S.by, n: S.hit.length, name: it.name, label: it.label, x: it.x, y: it.y, vis: true }); } }
   W.spins = W.spins.filter(S => !S.done);
 }
+/* ---------- v8.8.2 옐로: 달라붙기 난도질 · 양동이 뿌리기 (저주:맥아 장판) · 연속 도약 · 돌진 (키하핫) ---------- */
+const YD = { yclaw: { rng: 1.3, wind: 0.3, rec: 0.5, hold: 2, cd: 14, tick: 0.2, mul: 0.26, fin: 2.5, brk: 0.2 }, ybucket: { rng: 4, r: 1.6, wind: 0.5, rec: 0.4, cd: 10, tick: 0.5, cost: 120, min: 60, tMin: 3, tMax: 10, slow: 0.55, melt: 0.3, dot: 2.5, linger: 1.5 } };
+const SPY = (W, k) => ({ ...YD[k], ...SPR(W, k) });
+// 달라붙기 난도질: 붙잡기 (잡아찢기와 같은 틀 — 맞으면 놓침) 동안 tick 초마다 날붙이로 마구 할큄 (막을 수 없음)
+function clawStep(W, u, dt){
+  const A = u.act, S = SPY(W, 'yclaw'), t = W.units[A.held];
+  if (!t || !t.alive){ if (t) t.heldBy = null; u.act = { k: 'spec', s: 'yclaw', b: A.b, phase: 'rec', t0: W.t, end: W.t + (S.rec || 0.5) }; return; }
+  let n = 0;
+  while (W.t >= A.tick && n < 3){ A.tick += S.tick || 0.2; n++;
+    if (t.side === u.side) continue;
+    strike(W, u, t, t, 1, false, { mul: (S.mul || 0.26) * (0.85 + 0.3 * W.rand()), tag: '달라붙어 할큄', wk: '날붙이', grab: true }); A.hits = (A.hits || 0) + 1;
+    if (W.fxOn) W.fx.push({ k: 'claw', x: t.x, y: t.y, ang: W.rand() * 6.283, t0: W.t });
+    if (!t.alive) break; }
+}
+function clawDone(W, u, A){
+  const S = SPY(W, 'yclaw'), t = W.units[A.held]; u.act = { k: 'spec', s: 'yclaw', b: A.b, phase: 'rec', t0: W.t, end: W.t + (S.rec || 0.5) }; u.atkT = W.t;
+  if (!t) return; t.heldBy = null; if (!t.alive) return;
+  strike(W, u, t, t, 1, false, { mul: (S.mul || 0.26) * (S.fin || 2.5), tag: '달라붙어 할큄 — 마무리', wk: '날붙이', grab: true });
+  if (t.alive && t.side !== u.side){ const d = dist(u, t) || 1; fling(W, u, t, 1.2, (t.x - u.x) / d, (t.y - u.y) / d, { how: '옐로가 박차고 떨어짐' }); }
+  L(W, { k: 'clawEnd', a: u.i, b: t.i, n: A.hits || 0, vis: u.side === 0 || t.side === 0 || !!u.seenBy || !!t.seenBy });
+}
+// 저주:맥아 장판 (양동이 뿌리기): 안의 상대에게 <저주:맥아> — 걸음 느려짐 · 받는 피해 + · 살이 녹음 (tick 초마다). 동료는 상관없음
+function stepMalt(W, P){
+  const Sy = SPY(W, 'ybucket'), by = W.units[P.by];
+  for (const e of W.units){ if (!e.alive || e.side === P.side || e.fairyW) continue;
+    if (Math.hypot(e.x - P.x, e.y - P.y) > P.r + e.r * 0.5) continue;
+    if (!(e.maltT != null && W.t < e.maltT)){ L(W, { k: 'maltOn', a: P.by, b: e.i, vis: e.side === 0 || P.side === 0 || !!e.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y - 0.3, s: '저주:맥아', c: 'g', t0: W.t }); }
+    e.maltT = W.t + (Sy.linger || 1.5); }
+  if (W.t >= P.tickT){ P.tickT = W.t + (Sy.tick || 0.5);
+    for (const e of W.units){ if (!e.alive || e.side === P.side || e.fairyW || Math.hypot(e.x - P.x, e.y - P.y) > P.r + e.r * 0.5) continue;
+      hurtRaw(W, by || { i: P.by, side: P.side }, e, Sy.dot || 2.5, { tag: '맥아가 살을 녹임' }); } }
+}
+// 옐로의 돌진 맞음: 5칸 넘게 달렸으면 몸집만큼 확정 밀침 (중형 이하 kb0 · 중대형 kb2 · 대형 kb3 · 그 위 조금) + 키하핫!! — held (상대가 태세로 받았을 때) 는 그래도 밀림 (넘어지진 않음)
+const rushLate = (W, e, u) => e.rush && e.act && e.act.k === 'charge' && gap(e, u) > (((W.rules.claw || {}).rush || {}).react || 2);   /* v8.8.2 옐로의 돌진은 react 칸 안에서야 알아챔 */
+function rushPush(W, u, hit, A, nx, ny, held){
+  const C = chgC(W, u), run = A.run || 0, long = run >= (C.long || 5) - 0.05, rk = SIZE_RANK[sizeOf(hit)] != null ? SIZE_RANK[sizeOf(hit)] : 1;
+  let len = long ? (rk <= 1 ? C.kb0 || 3.6 : rk === 2 ? C.kb2 || 3.2 : rk === 3 ? C.kb3 || 1 : 0.4) : 0;
+  if (held) len = long ? Math.max(1.2, len * (C.setK || 0.5)) : (run >= 2 ? C.setShort || 0.7 : 0);
+  if (!(len > 0) || !hit.alive) return false;
+  if (long){ L(W, { k: 'rushHit', a: u.i, b: hit.i, run: +run.toFixed(1), len: +len.toFixed(1), held: !!held, vis: u.side === 0 || hit.side === 0 || !!u.seenBy || !!hit.seenBy }); if (W.fxOn) W.fx.push({ k: 'say', a: u.i, s: '키하핫!!', t0: W.t }); }
+  fling(W, u, hit, len, nx, ny, { how: 'rush', v: 9, fix: true, ...(held ? { down: false } : {}) });
+  return true;
+}
+// 연속 도약을 스스로 자주: 붙지 못한 상대에게 뛰어듦 (한 번 뛰면 이어서 또) — 멀리서 돌진이 준비돼 있으면 돌진 먼저
+function yHop(W, u, t, g){
+  if (!(u.leapN >= 2) || !u.canLeap || isFar(u) || u.crawl || u.lie || u.kb || u.act || W.t < u.leapCd || W.t < (u.hobbleT || -9) || W.t < (u.yhopChk || -9)) return false;
+  u.yhopChk = W.t + 0.15;
+  const LP = W.rules.leap || {}, D = LP.dist || 1.7, mid = u.leapQ != null && u.leapQ > 0 && u.leapQ < u.leapN;
+  if (g <= u.rng + 0.25 || g > D * 2 + 1.2) return false;
+  if (!mid && g > 3.4 && u.canCharge && W.t >= u.chargeCd) return false;
+  if (u.line || cmdHold(W, u)) return false;
+  const p = leapIn(u, t); return leapTo(W, u, p.x, p.y, 'fwd', t, '연속 도약 — 뛰어들어 붙음');
+}
 function startSpec(W, u, t, k, why){
   const S = SPR(W, k), x = specOf(u, k), wind = (S.wind || 0.5) * fatMul(W, u, 'wind');
   u.act = { k: 'spec', s: k, b: t ? t.i : null, phase: 'wind', t0: W.t, end: W.t + wind, why: why || x.name, ...(k === 'sweep' || k === 'hurl' ? { a0: (u.face || 0) + Math.PI } : {}), ...(KAR_TG.includes(k) ? karAim(W, u, t, k) : {}) };   /* v8.7.8 카리우스 · 앞차기: 겨눈 방향 · 자리는 처음에 정함 (보고 피할 수 있음) */ x.cdT = W.t + (S.cd || 5); stop(u); u.waitT = 0;   /* v7.24.4 머리 위로 돌리기 시작 각 */
@@ -4386,16 +4443,28 @@ function resolveSpec(W, u){
   if (GW_K.includes(k)){ gwResolve(W, u, A, S, t); return; }   /* v8.7.8 굿윌 */
   if (KAR_K.includes(k)){ karResolve(W, u, A, S, t); return; }   /* v8.7.8 카리우스 */
   if (SUP_K.includes(k)){ supResolve(W, u, A, S, t); return; }   /* v8.7.8 물레 · 콜라이더 · 테헤라 */
-  if (k === 'tear' && A.phase === 'run'){ tearDone(W, u, A); return; }   /* v8.7.4 잡아찢기 — 끝까지 쥠 */
+  if ((k === 'tear' || k === 'yclaw') && A.phase === 'run'){ if (k === 'tear') tearDone(W, u, A); else clawDone(W, u, A); return; }   /* v8.7.4 잡아찢기 — 끝까지 쥠 */
   if (A.phase !== 'wind'){ u.act = null; return; }
   A.phase = 'rec'; A.end = W.t + (S.rec || 0.5); A.t1 = W.t; u.atkT = W.t;
-  if (k === 'tear'){   // v8.7.4 잡아찢기 (J22): 손 닿는 상대를 붙잡음 (몸을 비틀어 피할 수 있음) — 초대형은 못 쥠 · 공중은 못 쥠
+  if (k === 'tear' || k === 'yclaw'){   // v8.7.4 잡아찢기 (J22) · v8.8.2 달라붙기 난도질 (같은 틀): 손 닿는 상대를 붙잡음 (몸을 비틀어 피할 수 있음) — 초대형은 못 쥠 · 공중은 못 쥠
     if (!t || !t.alive || t.down){ L(W, { k: 'miss', a: u.i, b: A.b, why: '대상이 이미 쓰러짐', spec: k }); return; }
     if (gap(u, t) > (S.rng || 0.6) + 0.3){ L(W, { k: 'miss', a: u.i, b: t.i, why: '손이 닿지 않음 (' + gap(u, t).toFixed(1) + '칸)', spec: k }); return; }
     if ((SIZE_RANK[sizeOf(t)] || 0) >= SIZE_RANK['초대형'] || (t.act && t.act.k === 'leap')){ L(W, { k: 'miss', a: u.i, b: t.i, why: (t.act && t.act.k === 'leap') ? '공중 — 쥐지 못함' : '너무 커서 쥐지 못함', spec: k }); return; }
     if (t.side !== u.side && evadeMelee(W, t, u)) return;
-    A.phase = 'run'; A.end = W.t + (S.hold || 2.2); A.held = t.i; A.dmg = 0; t.heldBy = u.i; interrupt(W, t, '붙잡혀 준비가 끊김'); stop(t); t.burst = null; flailDrop(W, t, '붙잡힘');
-    L(W, { k: 'tearGrab', a: u.i, b: t.i, sec: S.hold || 2.2, vis: u.side === 0 || t.side === 0 || !!u.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '붙잡힘!', c: 'd', t0: W.t }); return;
+    A.phase = 'run'; A.end = W.t + (S.hold || 2.2); A.held = t.i; A.dmg = 0; A.tick = W.t + (S.tick || 0.2); t.heldBy = u.i; interrupt(W, t, '붙잡혀 준비가 끊김'); stop(t); t.burst = null; flailDrop(W, t, '붙잡힘');
+    L(W, { k: 'tearGrab', s: k, a: u.i, b: t.i, sec: S.hold || 2.2, vis: u.side === 0 || t.side === 0 || !!u.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '붙잡힘!', c: 'd', t0: W.t }); return;
+  }
+  if (k === 'ybucket'){   // v8.8.2 양동이 뿌리기: 닿는 곳에 장판 — 지속은 양동이에 남은 약에 따라
+    const Sy = SPY(W, 'ybucket'); let px = A.px != null ? A.px : t ? t.x : u.x + Math.cos(u.face || 0) * 2, py = A.py != null ? A.py : t ? t.y : u.y + Math.sin(u.face || 0) * 2;
+    const d0 = Math.hypot(px - u.x, py - u.y) || 1, rg = Sy.rng + 0.3; if (d0 > rg){ px = u.x + (px - u.x) / d0 * rg; py = u.y + (py - u.y) / d0 * rg; }
+    const left0 = u.skill ? u.skill.left : 0;
+    if (!u.skill || left0 < (Sy.min || 60)){ L(W, { k: 'specFail', a: u.i, s: 'ybucket', why: '양동이에 약이 모자람', vis: true }); return; }
+    const cost = Math.min(left0, Sy.cost || 120), dur = (Sy.tMin || 3) + ((Sy.tMax || 10) - (Sy.tMin || 3)) * Math.min(1, left0 / Math.max(1, u.skill.pool || 500));
+    u.skill.left = left0 - cost;
+    (W.pools || (W.pools = [])).push({ kind: 'malt', by: u.i, side: u.side, x: px, y: py, r: Sy.r || 1.6, until: W.t + dur, tickT: W.t, t0: W.t });
+    L(W, { k: 'bucket', a: u.i, b: t ? t.i : null, x: +px.toFixed(2), y: +py.toFixed(2), r: Sy.r || 1.6, sec: +dur.toFixed(1), cost, left: Math.round(u.skill.left), vis: true });
+    if (W.fxOn) W.fx.push({ k: 'pour', a: u.i, x: px, y: py, r: Sy.r || 1.6, t0: W.t });
+    return;
   }
   if (k === 'akick'){   // v8.7.8 앞차기 (어퐁 — 그림 '높이 앞차기'): 붙은 적을 차 밀어냄 · 휘청 (막으면 자세가 깎이고 덜 밀림)
     if (!t || !t.alive){ L(W, { k: 'miss', a: u.i, b: A.b, why: '대상이 이미 쓰러짐', spec: k }); return; }
@@ -4729,6 +4798,12 @@ function gwBrain(W, u, dt){
 function specAuto(W, u, t, see){
   if ((!u.spec || !u.spec.length) && !u.pk || !t || !t.alive || !see || u.act) return false;   /* v8.7.9 동료 펄은 기술 칸이 없어도 (기술표) */
   if (apAuto(W, u, t)) return true;   /* v8.7.8 어퐁: 초돌진 · 앞차기 */
+  if (u.leapN >= 2 && yHop(W, u, t, gap(u, t))) return true;   /* v8.8.2 옐로: 연속 도약으로 뛰어듦 */
+  if (specReady(W, u, 'yclaw') && gap(u, t) <= (SPY(W, 'yclaw').rng || 1.3) && !t.down && !t.heldBy && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형'] && !(t.act && t.act.k === 'leap') && W.units.filter(e => e.alive && e.side !== u.side && gap(u, e) <= 1.2).length < 3 && W.rand() < 0.35) return startSpec(W, u, t, 'yclaw', '달라붙어 마구 할큄');   /* v8.8.2 */
+  if (specReady(W, u, 'ybucket')){ const B = SPY(W, 'ybucket'), gg = gap(u, t);   /* v8.8.2 양동이 뿌리기: 무리 · 먼 사수 · 큰 몸에게 — 동료가 위급하면 약은 치료에 */
+    if (gg >= 1.6 && gg <= B.rng && u.skill.left >= (B.min || 60) + 60 && !(t.maltT != null && W.t < t.maltT) && !W.units.some(a => a.alive && a.side === u.side && a !== u && a.hp / a.max < 0.4)){
+      const grp = W.units.filter(e => e.alive && e.side !== u.side && dist(e, t) <= (B.r || 1.6) + 0.6).length;
+      if (grp >= 2 || isFar(t) || (t.mass || 60) >= 120){ startSpec(W, u, t, 'ybucket', '양동이를 뿌림'); u.act.px = t.x + (t.vx || 0) * 0.4; u.act.py = t.y + (t.vy || 0) * 0.4; return true; } } }
   if (u.karKit && karAuto(W, u, t)) return true;   /* v8.7.8 카리우스 (3D kariusThink 의 차례) */
   if (u.pk && !u.h2 && pearlAuto(W, u, t)) return true;   /* v8.7.9 동료 펄 (평소) */
   if (specReady(W, u, 'pthrow') && pthrowAuto(W, u, t)) return true;   /* v8.7.9 펄의 창 — 정면 투창 (열화) */
@@ -5054,7 +5129,7 @@ function tearDone(W, u, A){
   L(W, { k: 'tear', a: u.i, b: t.i, res, size: sizeOf(t), vis: u.side === 0 || t.side === 0 || !!u.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: res === 'kill' ? '찢김!' : res === 'tear' ? '찢겨 나감!' : res === 'break' ? '부러짐!' : '짓눌림!', c: 'd', t0: W.t });
 }
 // 잡아찢기를 놓침 (맞은 피해 · 끊김) — 붙잡힌 몸은 그 자리에 풀려남
-function tearLet(W, u, why, by){ const A = u.act; if (!A || A.k !== 'spec' || A.s !== 'tear' || A.phase !== 'run') return; const v = W.units[A.held]; if (v) v.heldBy = null; u.act = { k: 'spec', s: 'tear', b: A.b, phase: 'rec', t0: W.t, end: W.t + 0.4 }; L(W, { k: 'tearLet', a: u.i, b: A.held, by: by != null ? by : null, why, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '놓침!', c: 'g', t0: W.t }); }
+function tearLet(W, u, why, by){ const A = u.act; if (!A || A.k !== 'spec' || (A.s !== 'tear' && A.s !== 'yclaw') || A.phase !== 'run') return; const v = W.units[A.held]; if (v) v.heldBy = null; u.act = { k: 'spec', s: A.s, b: A.b, phase: 'rec', t0: W.t, end: W.t + 0.4 }; L(W, { k: 'tearLet', a: u.i, b: A.held, by: by != null ? by : null, why, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y, s: '놓침!', c: 'g', t0: W.t }); }
 function startPalm(W, u, t, why){
   if (u.lie) return false;   // v7.11 엎드린 채 팜 버스트를 쓰지 않음 (명령이면 먼저 일어남)
   const P = PALM(W), wind = P.wind * fatMul(W, u, 'wind');
@@ -7531,6 +7606,11 @@ function doOrder(W, u, dt){
     if (o.s === 'sweep' && flailOf(W, u) && tightAt(W, u)){ u.order = null; setMood(W, u, '좁은 골목 — 철퇴를 돌릴 수 없음'); L(W, { k: 'alleyNo', a: u.i, s: 'sweep', vis: u.side === 0 || !!u.seenBy }); return; }   /* v8.7.5 A6 */
     if (o.s === 'pfort'){ const x = specOf(u, 'pfort'); if (x && W.t < x.cdT){ setMood(W, u, '쥐 방진 대기 (' + (x.cdT - W.t).toFixed(1) + '초)'); stop(u); return; } if (!prFort(W, u, '명령')) L(W, { k: 'specFail', a: u.i, s: 'pfort', why: '곁에 쥐가 둘은 있어야', vis: true }); u.order = null; return; }   /* v8.7.8 쥐 방진 (제자리) */
     if (o.s === 'sweep' || o.s === 'ward'){ if (specReady(W, u, o.s)){ startSpec(W, u, null, o.s, '명령'); if (o.R) u.act.R = o.R; u.order = null; }   /* v7.24.4 정한 거리 */ else setMood(W, u, sp.name + ' 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : flailOut(W, u) ? ' (철퇴를 거두는 중)' : '')); return; }   // v7.19.2 역장도 바로   /* v8.7.3 대기 초 */
+    if (o.s === 'ybucket' && o.x != null){ const B = SPY(W, 'ybucket'), d = Math.hypot(o.x - u.x, o.y - u.y);   /* v8.8.2 */
+      if (!(u.skill && u.skill.left >= (B.min || 60))){ L(W, { k: 'specFail', a: u.i, s: 'ybucket', why: '양동이에 약이 모자람', vis: true }); u.order = null; return; }
+      if (specReady(W, u, 'ybucket') && d <= B.rng + 0.3){ startSpec(W, u, null, 'ybucket', '명령'); u.act.px = o.x; u.act.py = o.y; u.order = null; return; }
+      if (d <= B.rng + 0.3){ setMood(W, u, '양동이 뿌리기 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : '')); stop(u); return; }
+      setMood(W, u, '양동이 뿌릴 자리로'); goTo(W, u, o.x, o.y, dt); return; }
     if (o.s === 'root'){ const px = o.x != null ? o.x : t && t.alive ? t.x : null, py = o.y != null ? o.y : t && t.alive ? t.y : null; if (px == null){ u.order = null; return; }   // v7.19.2 뿌리 벽: 찍은 자리 (적이면 그 앞)
       const d = Math.hypot(px - u.x, py - u.y), R2 = SPR(W, 'root').rng || 5;
       if (specReady(W, u, 'root') && d <= R2){ startSpec(W, u, null, 'root', '명령'); const k2 = o.b != null && d > 1.5 ? (d - 1.2) / d : 1; u.act.px = u.x + (px - u.x) * k2; u.act.py = u.y + (py - u.y) * k2; u.order = null; return; }
@@ -7681,13 +7761,14 @@ function act(W, u, dt){
   if (u.gakKit && u.alive) pearlTick(W, u);   /* v8.7.9 동료 펄: 빈사에 각펄 · 돌아옴 */
   if (u.h2) h2Tick(W, u);   /* v8.7.4 2페이즈 */
   if (u.stoneT != null && W.t >= u.stoneT){ u.stoneT = null; L(W, { k: 'stoneOff', a: u.i, vis: u.side === 0 || !!u.seenBy }); }   /* v8.7.4 방어모드 풀림 */
-  if (u.heldBy != null){ const g = W.units[u.heldBy], A = g && g.act; if (g && g.alive && A && A.k === 'spec' && A.s === 'tear' && A.phase === 'run' && A.held === u.i){ const a = g.face || 0, D = g.r + u.r + 0.02; u.x = g.x + Math.cos(a) * D; u.y = g.y + Math.sin(a) * D; stop(u); u.act = null; u.burst = null; u.vx = u.vy = 0; return; } if (g && g.alive && A && A.k === 'spec' && A.s === 'kgrab' && A.held === u.i && karHeld(W, g, u, dt)) return; u.heldBy = null; }   /* v8.7.4 잡아찢기에 붙잡힘 · v8.7.8 광대의 팔에 끌려옴 */
+  if (u.heldBy != null){ const g = W.units[u.heldBy], A = g && g.act; if (g && g.alive && A && A.k === 'spec' && (A.s === 'tear' || A.s === 'yclaw') && A.phase === 'run' && A.held === u.i){ const a = g.face || 0, D = g.r + u.r + 0.02; u.x = g.x + Math.cos(a) * D; u.y = g.y + Math.sin(a) * D; stop(u); u.act = null; u.burst = null; u.vx = u.vy = 0; return; } if (g && g.alive && A && A.k === 'spec' && A.s === 'kgrab' && A.held === u.i && karHeld(W, g, u, dt)) return; u.heldBy = null; }   /* v8.7.4 잡아찢기에 붙잡힘 · v8.7.8 광대의 팔에 끌려옴 */
   if (u.cz){ czTick(W, u, dt); if (czReact(W, u)) return; if (u.act && u.act.k === 'cz' && czRun(W, u, dt)) return; }   /* v7.23.1 세자르 */   /* v7.24 비켜 섬 */
   if (u.dcPend && W.t >= u.dcPend.at) dcFire(W, u);   /* v7.23.1 회피 반격 */
   if (u.order && u.order.k === 'specCancel'){ const A0 = u.act; if (A0 && A0.k === 'spec' && A0.phase === 'wind' && (!u.order.s || A0.s === u.order.s)){ u.act = null; const x0 = specOf(u, A0.s); if (x0) x0.cdT = Math.min(x0.cdT, W.t + 1); L(W, { k: 'specCancel', a: u.i, s: A0.s, vis: true }); setMood(W, u, (x0 ? x0.name : '기술') + ' 그만둠'); } u.order = null; }   /* v8.7.3 준비 중에 그만둠 */
   if (u.act && u.act.k === 'spec' && u.act.s === 'sweep' && u.act.phase === 'wind') sweepWarn(W, u, u.act);   /* v8.7.3 원 안의 동료가 비켜섬 */
   if (u.kb || W.t < u.proneT || W.t < (u.stunT || -9)) return; if ((u.supKit || u.charm) && supAct(W, u, dt)) return;   /* v8.7.8 매혹 · 앉아 졸음 · 날개 방패 · 땅의 정령 · 서포터 기술 (스스로) */   // v5.2 날아가는 중 · 넘어짐 · v5.5.3 휘청: 아무것도 못 함 (기어다니는 쪽은 움직임)
   if (u.act && u.act.k === 'spec' && u.act.s === 'sweep' && u.act.phase === 'swing'){ stepSweep(W, u, dt); return; }   /* v7.24.4 철퇴 후리기 한 바퀴 */
+  if (u.act && u.act.k === 'spec' && u.act.s === 'yclaw' && u.act.phase === 'run') clawStep(W, u, dt);   /* v8.8.2 달라붙어 할큄 */
   if (u.act && u.act.k === 'gwHop'){ gwHopStep(W, u); return; }   /* v8.7.8 굿윌 순간이동 도약 */
   if (u.act && u.act.k === 'karRoar'){ stop(u); if (W.t >= u.act.end) u.act = null; return; }   /* v8.7.8 불경자 — 울부짖음 */
   if (u.act && u.act.k === 'gakOn'){ stop(u); if (W.t >= u.act.end) u.act = null; return; }   /* v8.7.9 각펄 — 눈빛이 바뀜 (잠깐) */
