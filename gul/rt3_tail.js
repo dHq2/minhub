@@ -5376,6 +5376,7 @@ const FBR = W => W.rules.fbuf || {};
 function fbTick(W){
   const S = FBR(W), need = FRM(W).need || 0.7, put = (u, sh, row, back, tip) => { if (u && u.alive && !u.down && !u.gone) u.fb = { sh, nm: FBUF[sh], row, back: !!back, tip: !!tip }; };
   for (const u of W.units) u.fb = null;
+  if (!(S.on > 0)) return;   /* v8.8.1 진형 버프 폐기 (민수) — 수치표 fbuf.on 을 1 로 하면 다시 켜짐 */
   for (const sq in W.form || {}){ const F = W.form[sq]; if (!F || !F.act || !FBUF[F.shape]) continue;
     const on = F.integ >= need;
     if (on) for (const i in F.slots){ const u = W.units[i], s = F.slots[i]; if (!u || u.fdet) continue; if (u.i === F.lead || u.fEng || (u.fD != null && u.fD <= (S.slot || 1.3))){ const L0 = u.i === F.lead, lf = (F.ldk || 'front') === 'front'; put(u, F.shape, L0 ? (lf ? 'front' : 'rear') : s.f >= -0.3 ? 'front' : 'rear', L0 ? F.ldk === 'back' : s.k === 'back', L0 && lf); } }   /* v1.5 기준의 줄은 제 자리대로 */
