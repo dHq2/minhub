@@ -1,10 +1,11 @@
+// (v8.9.0: 맵 이름을 [구역 종류 번호] 로 정리 — 이름 확인을 새 이름으로)
 // v8.8.8 지상 맵 5장 UI 시험 — ui8880.js v1.0 (등록 · 칸 지도 · 칸 크기 · 아무것도 없이 열림 · 그림 오류 없음 · 스크린샷)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
  const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
- const IDS=['gboss1','gevent1','gstair1','gstair2','gfight1'], NM=['지상보스룸1','지상이벤트룸1','지상계단1','지상계단2','지상전투룸1'];
+ const IDS=['gboss1','gevent1','gstair1','gstair2','gfight1'], NM=['지상 보스룸1 · 원형','지상 이벤트룸1','지상 계단1','지상 계단2','지상 전투룸1'];
  const m = await p.evaluate((IDS)=>IDS.map(k=>{ const M=MAPS8[k]; if(!M) return null; let inF=0; for(let y=M.in[1];y<=M.in[3];y++) for(let x=M.in[0];x<=M.in[2];x++) if(M.rows[y][x]==='.') inF++; return { k, name:M.name, nx:M.NX, ny:M.NY, cs:Math.round(M.cs), z:M.z, fl:M.rows.join('').split('.').length-1, inF, outF:M.rows[M.out[1]][M.out[0]]==='.', amb:M.amb, ok:M.rows.length===M.NY&&M.rows.every(r=>r.length===M.NX) }; }), IDS);
  console.log('    ', JSON.stringify(m).slice(0,600));
  ok(m.every(v=>v&&v.ok&&v.z===1&&v.inF>=7&&v.outF&&v.cs===85),'5장: 칸 지도 · 들어서는 곳 7칸 이상 · 나가는 칸 바닥 · 칸 85px · 확대 없음');
