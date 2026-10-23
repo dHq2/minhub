@@ -1,4 +1,4 @@
-// v5.9.0 모바일 (노트 20): 꾹 = 슬로우 + 기술 부채 · 끌어 고름 · 아래 = 취소 · 켜진 기술 = 대상 탭 · 탭은 이동 · 공격만
+// v5.9.0 모바일 (노트 20): 꾹 = 슬로우 + 기술 부채 · 끌어 고름 · 아래 = 취소 · 켜진 기술 = 대상 탭 · 탭은 이동 · 공격만 — mob7.js v1.1 (v1.1: 재생 뒤 동료들이 대형 자리로 걸음을 멈출 때까지 기다린 뒤 꾹 — v8.7.5 부터 싸움이 시작되면 대형으로 모여서, 그 사이 인주 자리를 꾹 누르면 지나가던 노먼이 눌리던 것)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
   const ctx = await b.newContext({viewport:{width:412,height:915}, deviceScaleFactor:2.625, isMobile:true, hasTouch:true});
@@ -11,6 +11,7 @@ const { chromium } = require('playwright');
   const tapSel = async (sel) => { const r = await p.evaluate(s=>{ const e=document.querySelector(s); if(!e) return null; const q=e.getBoundingClientRect(); return {x:q.left+q.width/2,y:q.top+q.height/2}; }, sel); if(!r){ console.log('  !! no', sel); return; } await p.touchscreen.tap(r.x, r.y); await p.waitForTimeout(150); };
   const st = () => p.evaluate(()=>({ focus: focus ? { phase: focus.phase, hi: focus.hi, cancel: focus.cancel, items: focus.items.map(i=>i.k).join(',') } : null, chargePick, throwPick, skillPick, armed: armed && armed.k, slow: slowNow(), sel: [...sel].map(i=>world.units[i].name).join(','), t: +world.t.toFixed(2) }));
   await tapSel('#dPlay [data-dk="start"]'); await p.waitForTimeout(300); await tapSel('#dPlay [data-dk="play"]'); await p.waitForTimeout(500);
+  await p.waitForFunction(()=>{ const L=world.units.filter(u=>u.side===0&&u.alive); const st=L.every(u=>Math.hypot(u.vx||0,u.vy||0)<0.05); window.__still=(st?(window.__still||0)+1:0); return window.__still>=8; }, null, { timeout: 8000, polling: 50 }).catch(()=>{});   // v1.1 대형으로 모이는 걸음이 멈출 때까지
   // 1) 인주를 꾹 → 부채
   let q = await scr(...Object.values(await posOf('인주')));
   const t0 = await p.evaluate(()=>world.t); await T('touchStart', q.x, q.y); await p.waitForTimeout(600);

@@ -1,4 +1,4 @@
-// v8.7.3 바로잡기 2 UI 시험 — ui8730.js v1.4 (v1.4: v8.7.4 세르파는 보스도 적도 아님 — 도감 체력 90 동료 · v1.3: 샷건은 밝은 판에서 네 발 (한 발의 겨눔이 빗나가면 알 대부분이 비킴) · 창 되찾기 시험의 탕아는 쓰러지지 않게 · 벽 짓눌림은 날아가 부딪힌 뒤 봄 · 예고 회피 · 추적은 밝은 판에서 · 손이 안 닿음만 셈 · 근접 첫 1초 명중 · 끝난 맵 편대장 고립 · 배 안 출혈 판에 적 하나 · v1.2: 3부 — [무장기] (급소 · 출혈 · 실명 없음) · 벽 짓눌림은 밀린 힘만큼 · 회전 도끼 관통 · 예고 회피 '!' · 근접 마지막 추적 · 샷건 산탄 부채꼴 · 창을 던진 적의 무장 회복 · 성한 몸의 배 안 출혈 · 세르파 체력 · v1.1: 2부 — 다시 쥔 근접 무기 (사수 아님) · 공중제비 태세 막힘 · 철퇴 던지는 순간 사선 · 도약 사격 사선 · 트라카 곡사 주기 · 후리기 경고 · 그만둠 · 공중제비 바닥 (동료 곁) · v1.0: 1부 — 주인공 없는 편의 기준 (지휘관) · 끝난 맵의 옛 지킴 자리 · 명령 줄 (늦게 온 옛 명령 · 같은 명령 · 바로 걸린 명령 · 무기 바꾸기 뒤 공격) · 지휘관이 먼저 나감 (끊김 없이 이어받음 · 전열 · 적 표적) · 30층 보통 맵 출구 열림 · 출구 발견 · 찾으러 · 대장은 마지막 · 출구 두 번 = 서둘러 · 시작 행동은 같은 맵에서만 · 고유 기술 명령 글 · 막힌 공중제비 알림)
+// v8.7.3 바로잡기 2 UI 시험 — ui8730.js v1.6 (v1.6: 근접 마지막 추적 칸은 상대 (검기사) 의 백스텝 · 피하기를 끄고 봄 — 따라가 치는 것만 보는 칸인데 상대가 백스텝으로 피한 판 (v8.7.4 빌드도 80판에 18판) 이 섞여 닿음 5/8 이 가끔 떨어지던 것 · 끄면 80판 모두 닿음 → 이제 8판에 7판 넘게 · 손이 안 닿아 헛침 0 · 따라붙어 다시 내지른 일격까지 · v1.5: v8.7.5 대형 — 지킴 자리를 가진 편대원은 떼어 맡긴 이 (fdet) 로 · v1.4: v8.7.4 세르파는 보스도 적도 아님 — 도감 체력 90 동료 · v1.3: 샷건은 밝은 판에서 네 발 (한 발의 겨눔이 빗나가면 알 대부분이 비킴) · 창 되찾기 시험의 탕아는 쓰러지지 않게 · 벽 짓눌림은 날아가 부딪힌 뒤 봄 · 예고 회피 · 추적은 밝은 판에서 · 손이 안 닿음만 셈 · 근접 첫 1초 명중 · 끝난 맵 편대장 고립 · 배 안 출혈 판에 적 하나 · v1.2: 3부 — [무장기] (급소 · 출혈 · 실명 없음) · 벽 짓눌림은 밀린 힘만큼 · 회전 도끼 관통 · 예고 회피 '!' · 근접 마지막 추적 · 샷건 산탄 부채꼴 · 창을 던진 적의 무장 회복 · 성한 몸의 배 안 출혈 · 세르파 체력 · v1.1: 2부 — 다시 쥔 근접 무기 (사수 아님) · 공중제비 태세 막힘 · 철퇴 던지는 순간 사선 · 도약 사격 사선 · 트라카 곡사 주기 · 후리기 경고 · 그만둠 · 공중제비 바닥 (동료 곁) · v1.0: 1부 — 주인공 없는 편의 기준 (지휘관) · 끝난 맵의 옛 지킴 자리 · 명령 줄 (늦게 온 옛 명령 · 같은 명령 · 바로 걸린 명령 · 무기 바꾸기 뒤 공격) · 지휘관이 먼저 나감 (끊김 없이 이어받음 · 전열 · 적 표적) · 30층 보통 맵 출구 열림 · 출구 발견 · 찾으러 · 대장은 마지막 · 출구 두 번 = 서둘러 · 시작 행동은 같은 맵에서만 · 고유 기술 명령 글 · 막힌 공중제비 알림)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -27,7 +27,7 @@ const { chromium } = require('playwright');
  ok(a2.cleared&&a2.old&&!a2.tStay&&a2.dT<3.5,'끝난 맵: 싸울 때 잡은 자리는 풀고 기준 곁으로 ('+a2.dT+'칸)');
  ok(a2.gStay&&a2.dG<0.8,'끝난 뒤에 보낸 자리는 그대로 지킴 (동료 곁 · 혼자 멀리 떨어지면 4초 뒤 합류는 그대로)');
  // 3. 싸움이 붙은 지킴이는 그 자리를 새 자리로 (옛 자리로 물러나 동료를 두고 가지 않음)
- const a3 = await p.evaluate(()=>{ const W=__mk([['카리우스',0,8,10],['탕아',0,14,10],['검기사',1,16,10]]); const t=W.units[1]; t.stay={x:8,y:14}; t.cmd=0; W.units[0].cmd=2; W.ancT=null; t.x=14; t.y=10; W.units[2].x=15.2; W.units[2].y=10; __run(W, 0.6); return { stay: t.stay && [+t.stay.x.toFixed(1), +t.stay.y.toFixed(1)], st: t.state }; });
+ const a3 = await p.evaluate(()=>{ const W=__mk([['카리우스',0,8,10],['탕아',0,14,10],['검기사',1,16,10]]); const t=W.units[1]; t.stay={x:8,y:14}; t.fdet=true; t.cmd=0; W.units[0].cmd=2; W.ancT=null; t.x=14; t.y=10; W.units[2].x=15.2; W.units[2].y=10; __run(W, 0.6); return { stay: t.stay && [+t.stay.x.toFixed(1), +t.stay.y.toFixed(1)], st: t.state }; });
  ok(a3.stay&&Math.hypot(a3.stay[0]-14,a3.stay[1]-10)<2,'싸움이 붙으면 지킴 자리를 그곳으로 ('+JSON.stringify(a3.stay)+')');
  // 4. 명령 줄
  const q = await p.evaluate(()=>{ const W=__mk([['간두',0,8,10],['카리우스',0,6,10],['검기사',1,28,3]]); const g=W.units[0]; const out={};
@@ -148,10 +148,11 @@ const { chromium } = require('playwright');
  ok(tg.dodge>=2&&tg.dodge+tg.late===tg.n,'도끼 던지기 예고를 본 탕아가 "!" 하고 비킴 ('+tg.dodge+'/'+tg.n+' · 늦음 '+tg.late+')');
  ok(tg.jd>=2,'투창 조준을 본 모닝스타도 비킴 ('+tg.jd+'/12)');
  // 20. 근접 마지막 추적: 준비 중 상대가 0.4칸 밀려나도 따라가 침 (손이 안 닿음 없음)
- const tr = await p.evaluate(()=>{ let hit=0, miss=0; for (let k=0;k<8;k++){ const W=__lit(__mk([['탕아',0,8,10],['검기사',1,9.2,10]])); const u=W.units[0], e=W.units[1]; e.order={k:'hold'}; e.canGuard=false; e.ev=0.0001; u.order=null; startAct(W, u, e, '시험'); const A=u.act; if (!A) continue; e.x += 0.45; for (let i=0;i<30 && u.act===A;i++) stepWorld(W,0.02);
-     if (W.log.some(l=>l.k==='hit'&&l.a===0&&l.b===1)) hit++; if (W.log.some(l=>l.k==='miss'&&l.a===0&&/안 닿음|닿지/.test(l.why||''))) miss++; } return { hit, miss }; });
+ const tr = await p.evaluate(()=>{ let hit=0, miss=0, dodge=0; for (let k=0;k<8;k++){ const W=__lit(__mk([['탕아',0,8,10],['검기사',1,9.2,10]])); const u=W.units[0], e=W.units[1]; e.order={k:'hold'}; e.canGuard=false; e.ev=0.0001; e.stepCd=1e9; e.dodgeCd=1e9; u.order=null; startAct(W, u, e, '시험'); const A=u.act; if (!A) continue; e.x += 0.45; for (let i=0;i<30 && u.act===A;i++) stepWorld(W,0.02);
+     const got = () => W.log.some(l=>l.k==='hit'&&l.a===0&&l.b===1), dg = () => W.log.some(l=>(l.k==='dodge'&&(l.a===1||l.b===1))||(l.k==='miss'&&l.a===0&&/백스텝|피함|비킴|흘림/.test(l.why||''))); for (let i=0;i<40 && !got() && !dg();i++) stepWorld(W,0.02);   /* v1.6 따라붙어 한 번 더 내지른 일격까지 · 상대가 백스텝으로 피한 판은 따로 셈 */
+     if (got()) hit++; else if (dg()) dodge++; if (W.log.some(l=>l.k==='miss'&&l.a===0&&/안 닿음|닿지/.test(l.why||''))) miss++; } return { hit, miss, dodge }; });
  console.log('    추적', JSON.stringify(tr));
- ok(tr.miss===0&&tr.hit>=5,'준비 중 0.45칸 밀려난 상대를 따라가 침 (닿음 '+tr.hit+'/8 · 헛침 '+tr.miss+')');
+ ok(tr.miss===0&&tr.hit>=7,'준비 중 0.45칸 밀려난 상대를 따라가 침 (닿음 '+tr.hit+'/8 · 상대 백스텝 끔 · 피함 '+tr.dodge+' · 손이 안 닿아 헛침 '+tr.miss+')');
  // 21. 샷건 산탄: 가까우면 한 몸에 여러 알 · 나란한 둘도 함께
  const sg = await p.evaluate(()=>{ let best=0, tot=0, pel=0, w=null, who=new Set(); for (let k=0;k<4;k++){ const W=__lit(__mk([['간두',0,6,10],['검기사',1,7.2,10],['검기사',1,8.4,10.55],['검기사',1,8.4,9.45]])); const g=W.units[0]; if (!g.alt) return { none: true }; setWeapon(W, g, g.alt.name); g.ammo=4; g.mag=4; w=g.weapon; const e=W.units[1]; const n0=W.shots.length; launch(W, g, e, 1, 1); pel = W.shots.length - n0; for (let i=0;i<20;i++) stepShots(W, 0.02);
    const hits = W.log.filter(l=>l.k==='hit'&&l.a===0); best=Math.max(best, hits.length); tot+=hits.length; hits.forEach(l=>who.add(l.b)); } return { w, pel, hits: best, tot, who: [...who] }; });

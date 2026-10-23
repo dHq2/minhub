@@ -1,4 +1,4 @@
-// v7.20 UI 시험 — ui720.js v1.2 (v1.2: 모바일은 배치 탭을 열고 봄 · v1.1: 넣기 선택은 다시 그린 뒤 새로 찾음 · 배치 소지품: 넣기 · 끼우기 · 벗기 · 넘겨주기 · 버리기 · 못 끼우는 까닭 (카리우스 갑옷 · 활 · 대검 + 방패) · 판 위: 탄이 떨어지면 가방 무기 · 상세 '들기' 명령 · 로그 · 옛 저장 검기사 투구 · 모바일 넓이)
+// v7.20 UI 시험 — ui720.js v1.3 (v1.3: 꺼내 듦 칸의 적은 멀리 + 움직이지 않게 (멀리 옮긴 적의 투창에 노먼이 쓰러지면 꺼내 듦을 못 보던 것 — 옛 빌드에서도 12판에 1 · 2판) · v1.2: 모바일은 배치 탭을 열고 봄 · v1.1: 넣기 선택은 다시 그린 뒤 새로 찾음 · 배치 소지품: 넣기 · 끼우기 · 벗기 · 넘겨주기 · 버리기 · 못 끼우는 까닭 (카리우스 갑옷 · 활 · 대검 + 방패) · 판 위: 탄이 떨어지면 가방 무기 · 상세 '들기' 명령 · 로그 · 옛 저장 검기사 투구 · 모바일 넓이)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -29,7 +29,7 @@ const { chromium } = require('playwright');
    ok(r4.ok1&&r4.dropped,'넘겨주기 (레베카 가방으로) · 버리기');
    // 판 위: 노먼은 탄 0 + 가방에 검 · 방패 → 꺼내 듦 / 레베카는 가방의 검 '들기'
    const r5 = await p.evaluate(`(()=>{ const n=${pick('노먼')}; n.weapon='소총'; n.ammo=0; n.shield=false; n.bag=[{k:'weapon',name:'검',label:'노먼의 검',dur:100},{k:'shield',name:'방패',label:'',dur:100}]; changed(); start(); const c=document.getElementById('contBtn'); if(c) c.click(); paused=true;
-     for(const e of world.units) if(e.side===1){ e.x=Math.min(world.map.W-2,e.x+8); }
+     for(const e of world.units) if(e.side===1){ e.x=Math.min(world.map.W-2,e.x+8); e.stunT=1e9; }
      const u=world.units.find(x=>x.name==='노먼'); for(let i=0;i<120&&!world.log.some(l=>l.k==='bagSwap'&&l.a===u.i);i++) stepWorld(world,1/30);
      return { w: u.weapon, sh: u.shield, line: logLines(world).filter(s=>/가방에서/.test(s)).slice(0,2) }; })()`);
    console.log('    탄이 떨어진 노먼', JSON.stringify(r5)); ok(r5.w==='검'&&r5.sh&&r5.line.length>=1,'탄이 없으면 가방의 검 + 방패를 꺼내 듦 (로그)');

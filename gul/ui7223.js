@@ -1,4 +1,4 @@
-// v7.22.3 UI 시험 — ui7223.js v1.1 (v1.1: v8.7.4 각혈은 제3세력 (2편 · 보라) — 알림 둘째 상자 · 망자와 서로 싸움 · 각혈이 살아 있으면 맵 정리 안 됨 · v1.0: 히든보스 각혈: 1S 에 들어설 때 정해짐 · 시간이 되면 먼 쪽 끝에 나타남 → 사각형 창 "피할 수 없는 죽음이 찾아왔습니다." · 6성 · 기술 넷 · [보스] · 캠페인에 한 번 · 장판 · 검기 그림 · 로그 · 모바일)
+// v7.22.3 UI 시험 — ui7223.js v1.2 (v1.2: 그림 · 로그 칸에서 기술을 억지로 쓰게 하기 전에 각혈의 휘청 · 넘어짐 · 날아감을 풂 — 앞선 4초 싸움에서 검방패기사에게 밀쳐져 휘청이던 순간이면 (규칙대로) 기술이 나가지 않아 열에 한 번쯤 떨어지던 것 (v8.7.4 빌드도 40번에 4번) · v1.1: v8.7.4 각혈은 제3세력 (2편 · 보라) — 알림 둘째 상자 · 망자와 서로 싸움 · 각혈이 살아 있으면 맵 정리 안 됨 · v1.0: 히든보스 각혈: 1S 에 들어설 때 정해짐 · 시간이 되면 먼 쪽 끝에 나타남 → 사각형 창 "피할 수 없는 죽음이 찾아왔습니다." · 6성 · 기술 넷 · [보스] · 캠페인에 한 번 · 장판 · 검기 그림 · 로그 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -22,7 +22,7 @@ const { chromium } = require('playwright');
   // 그림 · 로그: 장판 · 검기 · 혈영보 · 혈염
   const r3 = await p.evaluate(()=>{ const k=world.units.find(u=>u.name==='각혈'), a=world.units.find(u=>u.side===0&&u.alive); world.pools=[{by:k.i,side:1,x:a.x,y:a.y,r:2,until:world.t+5,tickT:world.t,t0:world.t}];
     (world.spins=world.spins||[]).push({ wave:true, by:k.i, side:1, x:k.x, y:k.y+1, dx:0, dy:1, v:16, left:8, w:0.45, mul:1.6, kb:0, pierce:2, burn:1, hit:[], t0:world.t });
-    $('seeAll').checked=true; draw(); for (const kk of ['blink','pyre']){ const x=k.spec.find(s=>s.k===kk); x.cdT=-9; k.act={ k:'spec', s:kk, b:a.i, phase:'wind', t0:world.t, end:world.t }; stepWorld(world,1/30); } for (let i=0;i<20;i++) stepWorld(world,1/30); draw(); renderLog(true); renderNarr();
+    $('seeAll').checked=true; draw(); for (const kk of ['blink','pyre']){ const x=k.spec.find(s=>s.k===kk); x.cdT=-9; k.kb=null; k.proneT=-9; k.stunT=-9; k.act={ k:'spec', s:kk, b:a.i, phase:'wind', t0:world.t, end:world.t }; stepWorld(world,1/30); } for (let i=0;i<20;i++) stepWorld(world,1/30); draw(); renderLog(true); renderNarr();
     const lg=(document.getElementById('log')||document.body).innerText; return { kinds: ['khCome','blink','pyre','waveEnd'].filter(kk=>world.log.some(l=>l.k===kk)), logTxt: /혈영보/.test(lg)||/혈염/.test(lg) }; });
   console.log('    '+nm+' 그림 · 로그', JSON.stringify(r3)); ok(r3.kinds.length===4,nm+': 장판 · 검기 그림 · 혈영보 · 혈염 · 로그');
   // 캠페인에 한 번

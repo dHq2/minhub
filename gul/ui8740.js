@@ -1,4 +1,4 @@
-// v8.7.4 전투 바로잡기 UI 시험 — ui8740.js v1.2 (v1.2: 세르파 동료 슬라임 조직 (C9) · 역할 진화 · 자리 옮김 기록 · v1.1: 돌진 길 비킴 기록 · 서술 (아군 · 적 궁수) · v1.0: 버전 · 갑피 등급 (특성 검사 · 특성 탭 등급표 · 설계 칸) · 5층 층 보스 붉은암석 (보스 소개 · 옛 저장 serpa) · 망각은 데이터층 정예 · 세르파는 동료 (뽑기 · 만남) · 붉은암석 기술 설명 · 그림 (방어모드 테두리 · 붙잡힌 손 · 바위던지기 예고 줄 · 날아가는 바위 · 망각 예고 · 잡아찢김 시신) 이 오류 없이 · 기록 · 서술 · 동작 이름 · 지휘 기록의 붙잡힘)
+// v8.7.4 전투 바로잡기 UI 시험 — ui8740.js v1.3 (v1.3: 버전은 8.7.4 이상 (8.7.5 대형) · v1.2: 세르파 동료 슬라임 조직 (C9) · 역할 진화 · 자리 옮김 기록 · v1.1: 돌진 길 비킴 기록 · 서술 (아군 · 적 궁수) · v1.0: 버전 · 갑피 등급 (특성 검사 · 특성 탭 등급표 · 설계 칸) · 5층 층 보스 붉은암석 (보스 소개 · 옛 저장 serpa) · 망각은 데이터층 정예 · 세르파는 동료 (뽑기 · 만남) · 붉은암석 기술 설명 · 그림 (방어모드 테두리 · 붙잡힌 손 · 바위던지기 예고 줄 · 날아가는 바위 · 망각 예고 · 잡아찢김 시신) 이 오류 없이 · 기록 · 서술 · 동작 이름 · 지휘 기록의 붙잡힘)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -12,7 +12,7 @@ const { chromium } = require('playwright');
    boss: [BOSS8.redrock && BOSS8.redrock.foes, BOSS8.serpa && BOSS8.serpa.foes], fix5: FIX8[5].top, f5: F8[5] && F8[5].boss, forget: ELITE8.forget.foes, intro: r8BossIntro('redrock').length, introOld: r8BossIntro('serpa').length,
    act: ['잡아찢기','딥 킥','방어모드','바위던지기'].map(k=>!!ACTIVE[k]), aud: traitAudit([FOE8['붉은암석'], FOE8['세르파'], FOE8['망각'], FOE8['굴란'], FOE8['몽']].map(x=>({ ...x, name: x.key }))).filter(x=>x.lv!=='ok').map(x=>x.msg), dk: [DK_TXT.tear, !!DIE_N.tear] }));
  console.log('    ', JSON.stringify(d).slice(0, 900));
- ok(/v8\.7\.4/.test(d.ver||'')&&d.mig==='8.7.4','버전 8.7.4 · 수치표 이전 8.7.4');
+ ok(/v8\.7\.([4-9]|\d\d)/.test(d.ver||'')&&/^8\.7\.([4-9]|\d\d)$/.test(d.mig),'버전 8.7.4 이상 · 수치표 이전 8.7.4 이상 ('+d.mig+')');
  ok(JSON.stringify(d.tk)===JSON.stringify([true,true,true,true,true,false,false,true]),'갑피 등급 특성 검사 (SS · S · A · C · D 알고 · 속력SS · 갑피E 모름)');
  ok(JSON.stringify(d.gt)==='[6,5,2,3]','갑피 등급 → 판금 · 투구 (SS 6 · S 5 · C 2 · 등급 없음 3)');
  ok(d.rr.quakeKill==='중대형'&&d.rr.traits.includes('갑피SS')&&d.rr.active.length===5,'붉은암석: 갑피SS · 점프 찍기 중대형 · 기술 다섯 (J22)');

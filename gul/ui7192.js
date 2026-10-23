@@ -1,4 +1,4 @@
-// v7.19.2 UI 시험 — ui7192.js v1.1 (v1.1: 무기 잡기는 근접 (모닝스타) 이 · 뿌리 벽 이름표는 뿌리 벽 동작에서 · 딸기: 칸 6 역장 (바로) · 칸 7 뿌리 벽 (자리 찍기) · 동작 이름표 · 역장 고리 · 뿌리 벽 그림 · 열매 맺기 · 먹기 · 무기 잡기 로그 · 상세 · 모바일 조작판 · 부채 · 옛 저장)
+// v7.19.2 UI 시험 — ui7192.js v1.2 (v1.2: 뿌리 벽 자리는 딸기 둘레의 빈 바닥 (오른쪽 3칸이 벽 · 바위 · 맵 끝이면 다른 쪽) — 무작위 훈련장 맵에서 드물게 막힌 자리를 찍어 뿌리 벽이 서지 않던 것 · v1.1: 무기 잡기는 근접 (모닝스타) 이 · 뿌리 벽 이름표는 뿌리 벽 동작에서 · 딸기: 칸 6 역장 (바로) · 칸 7 뿌리 벽 (자리 찍기) · 동작 이름표 · 역장 고리 · 뿌리 벽 그림 · 열매 맺기 · 먹기 · 무기 잡기 로그 · 상세 · 모바일 조작판 · 부채 · 옛 저장)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
      for(let i=0;i<150&&!(world.wards&&world.wards.length);i++){ stepWorld(world,1/30); if(t.act&&t.act.k==='spec'&&!lab) lab=actLabel(world,t,liveAct(world,t))+' | '+dockState(world,t); }
      hud(); return { o: o0&&o0.k+':'+o0.s, lab, w: (world.wards||[]).map(w=>[w.by===t.i,w.left,+(w.until-world.t).toFixed(1)]), log: logLines(world).filter(s=>/역장/.test(s)).slice(0,2) }; })()`);
    console.log('    역장', JSON.stringify(wd)); ok(wd.o==='spec:ward'&&/역장/.test(wd.lab)&&wd.w.length===1&&wd.w[0][0]&&wd.w[0][1]===3&&wd.log.length>=1,'칸 6 → 바로 역장 (이름표 · 고리 · 로그)');
-   const rt = await p.evaluate(`(()=>{ const t=world.units.find(u=>u.name==='딸기'); sel=new Set([t.i]); hud(); useSlot(7); const arm=!!(armed&&armed.k==='spec'&&armed.s==='root'); const tx=t.x+3, ty=t.y; armedTap({x:tx,y:ty}); const o0=t.order||(t.ordPend&&t.ordPend.o); let lab='';
+   const rt = await p.evaluate(`(()=>{ const t=world.units.find(u=>u.name==='딸기'); sel=new Set([t.i]); hud(); useSlot(7); const arm=!!(armed&&armed.k==='spec'&&armed.s==='root'); let tx=t.x+3, ty=t.y; for (const [dx,dy] of [[3,0],[-3,0],[0,3],[0,-3],[2.5,2.5],[-2.5,2.5],[2.5,-2.5],[-2.5,-2.5]]){ const x=t.x+dx, y=t.y+dy; if (x>1.5&&y>1.5&&x<world.map.W-1.5&&y<world.map.H-1.5&&!rock(world.map,x,y)&&!boxRock(world,x,y,0.45)&&!world.units.some(o=>o.alive&&Math.hypot(o.x-x,o.y-y)<1)){ tx=x; ty=y; break; } } armedTap({x:tx,y:ty}); const o0=t.order||(t.ordPend&&t.ordPend.o); let lab='';
      for(let i=0;i<240&&!(world.roots&&world.roots.length);i++){ stepWorld(world,1/30); if(t.act&&t.act.k==='spec'&&t.act.s==='root'&&!lab) lab=actLabel(world,t,liveAct(world,t)); }
      const R=(world.roots||[])[0]; hud(); return { arm, o: o0&&o0.k+':'+o0.s, lab, n: R?R.cells.length:0, solid: R?R.cells.every(c=>world.map.t[c[1]*world.map.W+c[0]]===3):false, d: R?+Math.hypot(R.cells[0][0]+0.5-t.x,R.cells[0][1]+0.5-t.y).toFixed(1):0, log: logLines(world).filter(s=>/뿌리 벽/.test(s)).slice(0,2) }; })()`);
    console.log('    뿌리 벽', JSON.stringify(rt)); ok(rt.arm&&rt.o==='spec:root'&&/뿌리 벽/.test(rt.lab)&&rt.n>=1&&rt.solid&&rt.log.length>=1,'칸 7 → 자리 찍기 → 뿌리 벽 (못 지나가는 칸 · 로그)');

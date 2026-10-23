@@ -1,4 +1,4 @@
-// v7.24.1 UI 시험 — ui7241.js v1.3 (v1.3: 던지기 장면은 세 번까지 다시 (적이 움직여 휘청이면 취소되는 것은 규칙) · v1.2: 이전 표시는 지금 판의 RULES_MIG · v1.1: 이전 시험은 옛 저장처럼 철퇴 칸을 모르는 상태로 · 모닝스타 철퇴: 판에서 던짐 (줄 + 공 그리기 · 머리 위로 돌림 · 매달림 — 오류 없음) · 사거리 2.3 · 설명 · 수치표 이전 (옛 기본값 1.3 · 도약 강타 2.2 · 세자르 걸음 0.45 → 새 값 · 손으로 바꾼 값은 둠) · 휴대폰 그림)
+// v7.24.1 UI 시험 — ui7241.js v1.4 (v1.4: 수치표 이전 칸 — 옛 저장을 써 넣은 뒤 다시 불러오기 전까지 판이 저장하지 않게 (넷을 나란히 돌려 느릴 때 밀린 저장이 써 넣은 옛 값을 덮어 손으로 바꾼 0.95 가 1 로 보이던 것) · v1.3: 던지기 장면은 세 번까지 다시 (적이 움직여 휘청이면 취소되는 것은 규칙) · v1.2: 이전 표시는 지금 판의 RULES_MIG · v1.1: 이전 시험은 옛 저장처럼 철퇴 칸을 모르는 상태로 · 모닝스타 철퇴: 판에서 던짐 (줄 + 공 그리기 · 머리 위로 돌림 · 매달림 — 오류 없음) · 사거리 2.3 · 설명 · 수치표 이전 (옛 기본값 1.3 · 도약 강타 2.2 · 세자르 걸음 0.45 → 새 값 · 손으로 바꾼 값은 둠) · 휴대폰 그림)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -20,7 +20,7 @@ const { chromium } = require('playwright');
  // 수치표 이전: 저장된 옛 기본값 → 새 값 (손으로 바꾼 값은 그대로)
  { const ctx=await b.newContext(); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
-   await p.evaluate(()=>{ save(); const o=JSON.parse(localStorage.getItem('gul-battle-v3')); o.rulesMig='7.21.0'; o.rulesKeys=(o.rulesKeys||[]).filter(k=>!/flail/.test(k)); o.rules.weapons['모닝스타'].rng=1.3; delete o.rules.weapons['모닝스타'].flail; o.rules.spec.quake.mul=2.2; o.rules.spec.quake.kb=1.6; o.rules.spec.quake.down=1.4; o.rules.cz.walk=0.45; o.rules.cz.furyWalk=0.95; localStorage.setItem('gul-battle-v3', JSON.stringify(o)); });
+   await p.evaluate(()=>{ save(); const o=JSON.parse(localStorage.getItem('gul-battle-v3')); o.rulesMig='7.21.0'; o.rulesKeys=(o.rulesKeys||[]).filter(k=>!/flail/.test(k)); o.rules.weapons['모닝스타'].rng=1.3; delete o.rules.weapons['모닝스타'].flail; o.rules.spec.quake.mul=2.2; o.rules.spec.quake.kb=1.6; o.rules.spec.quake.down=1.4; o.rules.cz.walk=0.45; o.rules.cz.furyWalk=0.95; localStorage.setItem('gul-battle-v3', JSON.stringify(o)); window.save = () => {}; });
    await p.reload(); await p.waitForTimeout(900);
    const m = await p.evaluate(()=>({ rng: rules.weapons['모닝스타'].rng, fl: !!rules.weapons['모닝스타'].flail, qm: rules.spec.quake.mul, qk: rules.spec.quake.kb, qd: rules.spec.quake.down, w: rules.cz.walk, fw: rules.cz.furyWalk, mig: S.rulesMig, cur: RULES_MIG }));
    console.log('    이전', JSON.stringify(m)); ok(m.rng===2.3&&m.fl&&m.qm===0.3&&m.qk===0.7&&m.qd===undefined&&m.w===0.6&&m.mig===m.cur,'옛 기본값 그대로인 칸은 새 값으로 (사거리 · 도약 강타 · 세자르 걸음) · 철퇴 칸 채움 · 없앤 칸 지움');

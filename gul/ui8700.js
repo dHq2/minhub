@@ -1,4 +1,4 @@
-// v8.7.0 UI 시험 — ui8700.js v1.7 (v1.7: v8.7.4 5층 고정 보스는 붉은암석 · v1.6: 지대 10초 싸움 — 10초 전에 끝난 판은 결과 (전멸 lose · 승리 win) 가 있으면 됨 (드물게 2층 동료가 총잡이 지대에서 10초 안에 쓰러짐 — 옛 빌드도 150판에 1번 · 고장 아님) · v1.5: v8.7.3 보통 싸움판은 출구가 처음부터 열림 (정예 · 보스만 잠김) · 출구는 찾아야 앎 (🔎 출구 찾기) · v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
+// v8.7.0 UI 시험 — ui8700.js v1.8 (v1.8: 2층 뽑기 창은 정한 시간 (0.25초) 대신 뜰 때까지 기다림 — 여럿을 나란히 돌려 느릴 때 창이 늦게 떠 null 이던 것 · v1.7: v8.7.4 5층 고정 보스는 붉은암석 · v1.6: 지대 10초 싸움 — 10초 전에 끝난 판은 결과 (전멸 lose · 승리 win) 가 있으면 됨 (드물게 2층 동료가 총잡이 지대에서 10초 안에 쓰러짐 — 옛 빌드도 150판에 1번 · 고장 아님) · v1.5: v8.7.3 보통 싸움판은 출구가 처음부터 열림 (정예 · 보스만 잠김) · 출구는 찾아야 앎 (🔎 출구 찾기) · v1.4: 지나가기 시험은 봉인 없는 씨앗 (봉인은 ui8711) · v1.3: 히든 층 (v8.7.1 · 무작위) 은 이 시험에서 끔 · v1.2: 30층 링 (stadium) 은 구획으로 안 씀 — 구획 시험에서 뺌 · v1.1: 챔피언 로드 관중 통로 · v1.0: 여정 구조 v2: 층 흐름 · 고정층 · 지대 · 맵 166장 모두로 구획 (모든 갈래) · 지나가기 · 칼데라 · 층 보스 → 아래층 · 도감 적 설계 100 · 지대마다 짧은 싸움 · 화면 찍기)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
  await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1000);
  // 1. 프롤로그 끝 → 2층
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); });
- await p.evaluate(TALKEND); await wait(p,250); await p.evaluate(()=>{ document.getElementById('r8dAll').click(); document.getElementById('r8dGo').click(); });
+ await p.evaluate(TALKEND); await wait(p,250); await p.waitForSelector('#r8dAll', { state: 'attached', timeout: 15000 }); await p.evaluate(()=>{ document.getElementById('r8dAll').click(); document.getElementById('r8dGo').click(); });
  await p.evaluate(()=>{ const R=R8S(); R.flags=R.flags||{}; R.flags.hargenSeen=1; R.flags.calderapSeen=1; const h=(R.hid||{})[R.f]; R.hid={}; if (h&&h!=='none'){ F8[R.f]=null; R.fm=r8Gen(R.f); r8MapShow(); } });   // 히든 층 끔 (무작위)
  const f2 = await p.evaluate(()=>{ const R=R8S(), F=F8[2], rows=R.fm.rows; return { theme: F.theme, name: F.name, fixed: F.fixed8, plan: rows.map(r=>r.map(n=>n.ms?'ms:'+n.ms:n.s?'s:'+n.t:n.t).join('/')), v: R.fm.v, sub: document.querySelector('#run8 .r8sub').textContent }; });
  console.log('    2층', JSON.stringify(f2));
