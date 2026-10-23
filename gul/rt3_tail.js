@@ -2057,17 +2057,20 @@ function underGun(W, u){
 }
 const weaveAng = (W, u) => { const V = W.rules.weave; return V.amp * Math.sin(W.t * V.f1 + u.i * 1.9) + V.amp2 * Math.sin(W.t * V.f2 + u.i * 0.7); };
 // v7.0 관통 판정 (원거리 · 던진 무기): 관통력 P vs 맞은 곳의 방호력 A. 못 뚫으면 튕김 (총알) · 박힘 (화살 · 창) — 충격만, 뚫으면 남은 힘 비율만큼
-function penPower(W, u, J, pw, extra, arcX){ const PN = W.rules.pen; let P = J ? (J.P || 90) * Math.max(1, u.strMul || 1) : (pw.P != null ? pw.P : 80);
+function pbMul(W, u, t, J, pw, arcX){   /* v8.8.6 영거리 사격: 몸 사이 틈이 좁을수록 관통력 ↑ (총 · 활만 · 곡사 제외) */
+  if (J || arcX || !t || !pw || (pw.kind !== '총포류' && pw.kind !== '활')) return 1; const B = (W.rules.pen.pb || {})[pw.kind], Q = pw.pb || B; if (!Q || !Q.r) return 1;
+  const g = Math.max(0, Math.hypot(t.x - u.x, t.y - u.y) - (u.r || 0) - (t.r || 0)); return 1 + Q.k * Math.max(0, 1 - g / Q.r); }
+function penPower(W, u, J, pw, extra, arcX, t){ const PN = W.rules.pen; let P = J ? (J.P || 90) * Math.max(1, u.strMul || 1) : (pw.P != null ? pw.P : 80);
   if (!J && pw.kind === '활'){ const B = PN.bow || {}; P *= (u.marks || 0) >= 0.69 ? B.S || 1 : (u.marks || 0) >= 0.54 ? B.A || 1 : 1; }
-  return P * (extra && extra.pm ? extra.pm : 1) * (arcX ? PN.arc || 0.8 : 1) * (1 - (PN.rnd || 0) + 2 * (PN.rnd || 0) * W.rand()); }
+  return P * (extra && extra.pm ? extra.pm : 1) * (arcX ? PN.arc || 0.8 : 1) * pbMul(W, u, t, J, pw, arcX) * (1 - (PN.rnd || 0) + 2 * (PN.rnd || 0) * W.rand()); }
 function armorA(W, t, it, gun){ const PN = W.rules.pen, a = (PN.arm || {})[it.mat]; return (a ? a[gun ? 0 : 1] : 50) * ((PN.tier || [])[Math.max(0, Math.min(2, (it.tier || 1) - 1))] || 1); }
 function penRes(W, u, t, part, dir, J, pw, crit, arcX, extra){
-  const PN = W.rules.pen, it = t.gear && t.gear[part === '머리' ? '머리' : '몸'], gun = !J && pw.kind === '총포류', P = penPower(W, u, J, pw, extra, arcX);
+  const PN = W.rules.pen, it = t.gear && t.gear[part === '머리' ? '머리' : '몸'], gun = !J && pw.kind === '총포류', P = penPower(W, u, J, pw, extra, arcX, t), pbm = pbMul(W, u, t, J, pw, arcX);
   if (!it || (pw.kind === '마법' && !pw.phys)) return { pen: true, m: 1, P, A: 0 };   // v7.19 바위 · 흙 마법 (phys) 은 갑옷 판정
   let A = armorA(W, t, it, gun) * (arcX ? PN.top || 0.85 : dir === 'side' ? PN.side || 0.7 : dir === 'back' ? PN.back || 0.6 : 1), how = '';
   if (part === '머리' && W.rand() > (PN.helm != null ? PN.helm : 0.7)){ A *= PN.gap || 0.3; how = '얼굴 · 투구 틈'; }
   else if (crit && (u.vit || 0) > 0){ A *= PN.gap || 0.3; how = '갑옷 틈'; } else if (crit){ A *= PN.crit || 0.6; how = '급소'; }
-  if (P > A) return { pen: true, m: Math.max(0.45, Math.min(1, 0.45 + (P - A) / P)), P, A, how };
+  if (P > A) return { pen: true, m: Math.max(0.45, Math.min(1, 0.45 + (P - A) / P)), P, A, how, pb: pbm > 1.05 && P / pbm <= A ? +pbm.toFixed(2) : 0 };   /* v8.8.6 pb = 영거리가 아니면 못 뚫었을 것을 뚫음 */
   return { pen: false, m: PN.blunt || 0.12, P, A, how: gun ? '튕김' : '박힘' };
 }
 function strike(W, u, t, meant, p, far, extra){
@@ -2094,7 +2097,7 @@ function strike(W, u, t, meant, p, far, extra){
       if (u.alive && !u.kb){ shove(W, t, u, (M.counter || 0.5) * (t.strMul || 1), u.x - t.x, u.y - t.y, { tag: '괴력으로 튕겨냄' }); stun(W, u, M.cStun || 0.3, t.i); } }
     if (t.post <= 0){ t.post = 0; t.brokenT = W.t + R.breakTime; o.broke = true; }
     if (R.pen && (o.far || J) && (t.shield || t.armShield) && !pr && pw && !AI6.includes('pen')){   // v7.0 방패도 관통 판정: 못 뚫으면 피해 없음 (자세만 깎임), 뚫으면 힘이 줄어 몸으로
-      const PN = R.pen, P = penPower(W, u, J, pw, extra, arcX), A = (t.armShield && !t.shield ? PN.armShield : t.pavise ? PN.pavise || 160 : t.buckler ? PN.buckler || 80 : PN.shield) * (arcX ? 0.9 : 1), gunS = !J && pw.kind === '총포류';
+      const PN = R.pen, P = penPower(W, u, J, pw, extra, arcX, t), A = (t.armShield && !t.shield ? PN.armShield : t.pavise ? PN.pavise || 160 : t.buckler ? PN.buckler || 80 : PN.shield) * (arcX ? 0.9 : 1), gunS = !J && pw.kind === '총포류';
       o.P = Math.round(P); o.A = Math.round(A);
       if (P <= A){ o.block = true; o.deflect = gunS ? '튕김' : '박힘'; o.tag = (o.gn === '팔' ? '팔 갑피에 ' : '방패에 ') + o.deflect + ' (관통 ' + o.P + ' < 방호 ' + o.A + ')'; applyDmg(W, u, t, 0, o); return o; }
       const d2 = Math.max(1, Math.round(base * Math.max(0.3, Math.min(1, (P - A) / P + 0.3)) * (PN.thru || 0.55)));
@@ -2135,7 +2138,7 @@ function strike(W, u, t, meant, p, far, extra){
   const AM0 = armorMul(R, t, part, wk), AM = PNR ? { m: PNR.m, it: AM0.it } : pen && AM0.it ? { m: 1 - (1 - AM0.m) * (1 - (pw.penK != null ? pw.penK : 0.8)), it: AM0.it } : AM0, gapHit = crit && (u.vit || 0) > 0 && !!AM.it, armMul = extra && extra.noArmor ? 1 : shp(u, o, (gapHit && !PNR ? 1 - (1 - AM.m) * 0.5 : AM.m)) * (wk === '총포류' && !t.human ? (R.gunTough != null ? R.gunTough : 1) : 1);   /* v8.7.8 갑옷 무시 (굿윌 니킥 헤드샷) */   // v6.7 [급소X] 의 치명은 갑옷 틈으로 (막는 몫 절반)   // 굴의 몸은 총에 단단함
   // v5.2 암살은 뒤 · 측면 배율과 겹치지 않음 (둘 중 큰 쪽)
   let dmg = Math.max(1, Math.round(base * (amb ? Math.max(R.ambushMul || 1, flank) : flank) * (P[part] ? P[part].mul : 1) * (crit ? (J ? J.critMul : CR.mul || 1.5) : 1) * (pr ? rv(W, 'proneHit', 1.5) : 1) * armMul * (mbOn(W, t) ? mbF(W, t, 'dmg') : 1) * (t.scaleMail ? (dir === 'front' ? (o.far || J ? 0.7 : 1) : 1.15) : 1)));   // [개조된 신체]   /* v8.7.4 [비늘 깃털 갑옷] */
-  o.part = part; o.ambush = amb; o.jav = !!J; o.crit = crit; if (t.scaleMail) o.scale = dir === 'front' ? (o.far || J ? 0.7 : 1) : 1.15; o.armor = AM.m < 1 && AM.it && !(extra && extra.noArmor) ? AM.it.name : null; o.armMul = +armMul.toFixed(2); o.armPure = AM.m; o.wk = wk; o.tag = (extra && extra.tag) || null; o.hcrit = crit && !J; o.pen = pen && !!AM0.it; o.gapHit = gapHit; if (PNR && AM0.it){ o.P = Math.round(PNR.P); o.A = Math.round(PNR.A); if (!PNR.pen){ o.deflect = PNR.how; o.tag = o.tag || (PNR.how === '튕김' ? '갑옷에 튕김' : '갑옷에 박힘') + ' (관통 ' + o.P + ' < 방호 ' + o.A + ')'; } else if (PNR.how) o.gapHow = PNR.how; }   // v6.9 armPure = 갑옷만의 몫 (총에 단단한 굴의 몸은 부상에도 그대로)
+  o.part = part; o.ambush = amb; o.jav = !!J; o.crit = crit; if (t.scaleMail) o.scale = dir === 'front' ? (o.far || J ? 0.7 : 1) : 1.15; o.armor = AM.m < 1 && AM.it && !(extra && extra.noArmor) ? AM.it.name : null; o.armMul = +armMul.toFixed(2); o.armPure = AM.m; o.wk = wk; o.tag = (extra && extra.tag) || null; o.hcrit = crit && !J; o.pen = pen && !!AM0.it; o.gapHit = gapHit; if (PNR && AM0.it){ o.P = Math.round(PNR.P); o.A = Math.round(PNR.A); if (!PNR.pen){ o.deflect = PNR.how; o.tag = o.tag || (PNR.how === '튕김' ? '갑옷에 튕김' : '갑옷에 박힘') + ' (관통 ' + o.P + ' < 방호 ' + o.A + ')'; } else if (PNR.how) o.gapHow = PNR.how; if (PNR.pb){ o.pb = PNR.pb; o.tag = o.tag || '영거리 사격 — 갑옷을 뚫음 (관통 ' + o.P + ' > 방호 ' + o.A + ')'; } }   // v6.9 armPure = 갑옷만의 몫 (총에 단단한 굴의 몸은 부상에도 그대로)
   // v5.2 투구째 꿰뚫음: 근력이 아주 센 쪽 (괴력 배율 pierce.str 이상) 의 화살 · 투창이 머리 (투구) 를 뚫으면 pierce.kill 확률로 즉사 — 곡괭이로 찍듯
   const PC = R.pierce || {};
   if (pen && part === '머리' && pw.kind !== '총포류' && !(t.traits || []).includes('보스') && !t.noOrg && (u.strMul || 1) >= (PC.str || 1.3) && W.rand() < (PC.kill != null ? PC.kill : 0.5)){ dmg = Math.max(dmg, Math.ceil(t.hp)); o.tag = '투구째 꿰뚫림 — 즉사'; }
