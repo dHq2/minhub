@@ -37,7 +37,7 @@ const { chromium } = require('playwright');
      if (inF<7) bad.push(id+' '+kind+' in '+inF);
      if (at(M.out[0],M.out[1])!=='.'||d[M.out[1]*W+M.out[0]]<0) bad.push(id+' '+kind+' out');
      if (reach<fl) bad.push(id+' '+kind+' 끊긴 바닥 '+(fl-reach));
-     if (fl<80 && !/^(ruin2|gboss|gevent|gstair|gfight)/.test(id)) bad.push(id+' '+kind+' 바닥 '+fl);
+     if (fl<80 && !/^(ruin2|gboss|gevent|gstair|gfight|fmap)/.test(id)) bad.push(id+' '+kind+' 바닥 '+fl);
      st.props+=M.props.length; if (kind==='fort') st.fort+=M.props.length; st.sizes.push(W*H); }
    st.sizes.sort((a,b)=>a-b); return { bad: bad.slice(0,30), nb: bad.length, n: st.n, base: base.length, props: st.props, fort: st.fort, min: st.sizes[0], med: st.sizes[st.sizes.length>>1], max: st.sizes[st.sizes.length-1] }; });
  console.log('    구획', JSON.stringify(sec));

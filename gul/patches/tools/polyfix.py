@@ -1,4 +1,4 @@
-# polyfix.py v1.2 (v1.2: 칸 번호를 그림 안으로 · v1.1: cells 손 고침) · v1.0 — 그림 맵 칸 지도를 다각형으로 그림: d5/poly/<제목>.json (그림 픽셀 좌표) → d5/fix/<제목>.txt (maps8.py 가 읽는 고침 글) · d5/raw/<제목>.png (원본에서 crop 하면 잘라 둠)
+# polyfix.py v1.3 (v1.3: fall 낙사 맵 · v1.2: 칸 번호를 그림 안으로 · v1.1: cells 손 고침) · v1.0 — 그림 맵 칸 지도를 다각형으로 그림: d5/poly/<제목>.json (그림 픽셀 좌표) → d5/fix/<제목>.txt (maps8.py 가 읽는 고침 글) · d5/raw/<제목>.png (원본에서 crop 하면 잘라 둠)
 #   spec: { id, name, tag, nx, amb, z, src (원본 그림 제목), crop [x0,y0,x1,y1] (선택), floor [[(x,y)..]..], block [..] (# 높은 막힘), cover [..] (r 낮은 엄폐), in [x0,y0,x1,y1] (픽셀 상자), out [x,y] (픽셀) }
 #   칸 판정: 바닥 = floor 다각형에 칸의 절반 이상 · block = 칸의 0.3 이상 · cover = 바닥 칸 중 0.3 이상
 #   쓰기: python3 -I tools/polyfix.py <제목> [<제목> ...]  (그 뒤 tools/mapchk.py "<제목>" 로 확인)
@@ -42,6 +42,6 @@ for t in sys.argv[1:]:
             while x1 + 1 < NX and g[y][x1 + 1] == c: x1 += 1
             L.append(f'{x}-{x1},{y}={c}'); x = x1 + 1
     ix0, iy0 = cell(S['in'][0], S['in'][1]); ix1, iy1 = cell(S['in'][2], S['in'][3]); ox, oy = cell(*S['out'])
-    L += [f'id={S["id"]}', f'name={S["name"]}', f'tag={S.get("tag", "ruin")}', f'in={ix0}-{ix1},{iy0}-{iy1}', f'out={ox},{oy}', f'amb={S["amb"]}', f'nx={NX}']
+    L += [f'id={S["id"]}', f'name={S["name"]}', f'tag={S.get("tag", "ruin")}', f'in={ix0}-{ix1},{iy0}-{iy1}', f'out={ox},{oy}', f'amb={S["amb"]}', f'nx={NX}'] + (['fall=1'] if S.get('fall') else [])
     open(D + 'd5/fix/' + t + '.txt', 'w', encoding='utf-8').write('\n'.join(L) + '\n')
     print(t, f'{NX}x{NY} cs={cs:.1f} 바닥', sum(r.count('.') for r in g), 'r', sum(r.count('r') for r in g))
