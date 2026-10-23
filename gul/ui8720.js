@@ -1,4 +1,4 @@
-// v8.7.2 바로잡기 UI 시험 — ui8720.js v1.1 (v1.1: 혼자 남은 이의 0초 명령 · 가까운 적 시험은 돌격 값어치를 열어 둠 · 리치 · 성향 시험 전에 여정을 끝냄 (바위 맵 위에서 돌격을 시험하던 것) · 성향 · 가까운 적 · 돌진 표적 시험은 시작 뒤 자리를 다시 놓음 (적이 시작 때 다른 자리로 놓임) · 눈앞 적을 치우면 돌격하는지도 · v1.0: 처음 동료 7 · 지휘관 없는 판의 지휘 재능 · 각혈 재시작 · 훈련장 2층 · 리치 (카리우스 + 둔기) · 가윤 · 모닝스타 돌격 안 함 · 돌진 표적 바꾸기 · 출구 명령 글 · 회피 로그 · 상호작용 단추 · 근력 성장 · 세자르 원형 베기 수치 · 각혈 확률)
+// v8.7.2 바로잡기 UI 시험 — ui8720.js v1.2 (v1.2: 지휘 재능 발견 시험은 도감 정체성이 지휘인 동료 (포렌 [지휘S] — 뽑기로 올 수 있음) 도 뺌 — 그 동료가 있으면 이미 지휘관 · v1.1: 혼자 남은 이의 0초 명령 · 가까운 적 시험은 돌격 값어치를 열어 둠 · 리치 · 성향 시험 전에 여정을 끝냄 (바위 맵 위에서 돌격을 시험하던 것) · 성향 · 가까운 적 · 돌진 표적 시험은 시작 뒤 자리를 다시 놓음 (적이 시작 때 다른 자리로 놓임) · 눈앞 적을 치우면 돌격하는지도 · v1.0: 처음 동료 7 · 지휘관 없는 판의 지휘 재능 · 각혈 재시작 · 훈련장 2층 · 리치 (카리우스 + 둔기) · 가윤 · 모닝스타 돌격 안 함 · 돌진 표적 바꾸기 · 출구 명령 글 · 회피 로그 · 상호작용 단추 · 근력 성장 · 세자르 원형 베기 수치 · 각혈 확률)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
  const kp = await p.evaluate(()=>{ let n=0,a=0; for (let i=0;i<4000;i++){ const w = Math.random() < KH_P ? (Math.random()<0.5?1:2) : 0; if (w) n++; if (w===1) a++; } return { r: n/4000, a: a/Math.max(1,n) }; });
  ok(kp.r>0.05&&kp.r<0.11,'각혈이 오는 캠페인 '+(kp.r*100).toFixed(1)+'% (매우 낮음 · 못 볼 수도)');
  // 3. 지휘관 없는 판: 인주를 빼고 1S 다시 — 누군가 [지휘C] 를 발견 · 명령이 닿음
- const cm = await p.evaluate(()=>{ resetToEdit(); S.units = S.units.filter(u=>!(u.side===0&&u.hero)); for (const u of S.units) if (u.side===0) u.traits=(u.traits||[]).filter(t=>!/^지휘/.test(t)); start(); const W=world;
+ const cm = await p.evaluate(()=>{ resetToEdit(); S.units = S.units.filter(u=>!(u.side===0&&(u.hero||((identityOf(u.ref)||{}).traits||[]).some(t=>/^지휘/.test(t))))); for (const u of S.units) if (u.side===0) u.traits=(u.traits||[]).filter(t=>!/^지휘/.test(t)); start(); const W=world;
    const c = W.units.filter(u=>u.side===0&&u.cmd>0); const who = S.units.filter(u=>u.side===0&&(u.traits||[]).includes('지휘C')).map(u=>u.name);
    const others = W.units.filter(u=>u.side===0&&u.alive&&!(u.cmd>0)); const L = others.length ? cmdLink(W, cmdBoss(W, 0), others[0]) : null; const log = (W.log||[]).some(l=>l.k==='r8'&&/지휘의 재능/.test(l.s||''));
    return { c: c.length, who, p: L ? +(L.p||0).toFixed(2) : null, why: L && L.why, log }; });

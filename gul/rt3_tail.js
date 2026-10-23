@@ -179,7 +179,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       dealt: 0, taken: 0, takenDark: 0, unseenHitT: -9, kills: 0, healed: 0, miss: 0, shots: 0, blocked: 0, ff: 0, hitT: -9, atkT: -9, face: p.side ? Math.PI / 2 : -Math.PI / 2, fg: p.side ? Math.PI / 2 : -Math.PI / 2, seenBy: false, engaged: false, slot: 0, wander: 0, moved: 0 });
   if (p.warden){ const P = p.warden, U = W.units[i]; U.warden = { on: true, room: P.room != null ? String(P.room) : null, door: P.door && isFinite(+P.door.x) ? { x: +P.door.x, y: +P.door.y } : null, corner: P.corner && isFinite(+P.corner.x) ? { x: +P.corner.x, y: +P.corner.y } : null, seen: null, seeT: null, cT: null }; if (U.warden.door) U.face = U.fg = Math.atan2(U.warden.door.y - U.y, U.warden.door.x - U.x); }   /* v7.23 방 지킴이 */
   { const U = W.units[i], w0 = (rules.weapons || {})[p.weapon]; U.reachX = far ? Math.max(0, Math.min(0.5, ((rules.reachB || {}).k || 0.25) * (hh - 1.7))) : Math.max(0, +(U.rng0 - (w0 && !isRangedW(w0) ? w0.rng : 0.3)).toFixed(3)); }   /* v8.7.2 몸 리치 (맨손 리치 − 맨손 기본) */
-  { const U = W.units[i]; U.poise = +p.poise > 0 ? +p.poise : 1; U.dmgK = (p.traits || []).includes('가호:오딜') ? 0.9 : 1; U.pavise = (p.traits || []).includes('대방패');   /* v8.7.7 [가호:오딜] 받는 피해 × 0.9 · [대방패] 방패를 든 채 쏨 */ U.dcounter = Math.max(0, Math.min(1, +p.dcounter || 0)); U.gwKit = (p.unique || []).includes('푸른 번개'); if (U.gwKit){ U.flanker = true; U.gw = null; const C0 = (rules.gw || {}).cd0 || {}; for (const x of U.spec || []) if (C0[x.k] != null) x.cdT = (W.t || 0) + C0[x.k]; }   /* v8.7.8 굿윌 — 사각 (등 뒤 근접은 막지 못함) · 싸움을 시작할 때 기술마다 대기 (2D) */ U.frostP = +p.frostP || 0; U.severP = +p.severP || 0; U.brain = p.brain || null; if (p.brain === 'cesar') U.cz = { on: false, fury: false, phaseT: null, orbit: W.rand() < 0.5 ? 1 : -1, spin: 1, shoulder: 3, back: 0, flank: 3, rush: 5, punish: 0, combo: null, jog: 0, upcut: 8, thrust: 4, wave: 5, ult: 10, auth: (p.unique || []).includes('권위') ? 0.6 : null, shaken: 0, cool: 0, stepT: 0, rstep: 0, nStep: 0, wasAtk: false, afterAtk: -9 }; }   /* v7.24 스텝 */   /* v7.23.1 자세 · 회피 반격 · 세자르 */
+  { const U = W.units[i]; U.poise = +p.poise > 0 ? +p.poise : 1; U.dmgK = (p.traits || []).includes('가호:오딜') ? 0.9 : 1; U.pavise = (p.traits || []).includes('대방패');   /* v8.7.7 [가호:오딜] 받는 피해 × 0.9 · [대방패] 방패를 든 채 쏨 */ U.dcounter = Math.max(0, Math.min(1, +p.dcounter || 0)); U.gwKit = (p.unique || []).includes('푸른 번개'); U.porenKit = (p.unique || []).includes('쥐들의 왕'); if (U.porenKit){ const PR = rules.poren || {}; U.taunt = PR.taunt || 3; U.cleave = PR.cleave || 0.6; U.ratMem = U.side === 0 ? (Array.isArray(p.ratMem) ? p.ratMem : (p.ratMem = [])) : null; } if (p.ratOf != null){ U.ratOf = p.ratOf; U.summon = p.summon || 'rat'; U.ratKind = p.ratKind || null; } if (p.javSide) U.javSide = p.javSide; if (+p.javK > 0) U.javK = +p.javK;   /* v8.7.8 포렌 (◆쥐들의 왕) · 쥐 · 투창 뒤 드는 검 · 투창 솜씨 */ if (U.gwKit){ U.flanker = true; U.gw = null; const C0 = (rules.gw || {}).cd0 || {}; for (const x of U.spec || []) if (C0[x.k] != null) x.cdT = (W.t || 0) + C0[x.k]; }   /* v8.7.8 굿윌 — 사각 (등 뒤 근접은 막지 못함) · 싸움을 시작할 때 기술마다 대기 (2D) */ U.frostP = +p.frostP || 0; U.severP = +p.severP || 0; U.brain = p.brain || null; if (p.brain === 'cesar') U.cz = { on: false, fury: false, phaseT: null, orbit: W.rand() < 0.5 ? 1 : -1, spin: 1, shoulder: 3, back: 0, flank: 3, rush: 5, punish: 0, combo: null, jog: 0, upcut: 8, thrust: 4, wave: 5, ult: 10, auth: (p.unique || []).includes('권위') ? 0.6 : null, shaken: 0, cool: 0, stepT: 0, rstep: 0, nStep: 0, wasAtk: false, afterAtk: -9 }; }   /* v7.24 스텝 */   /* v7.23.1 자세 · 회피 반격 · 세자르 */
   { const U = W.units[i], K = p.h2 && H2K[p.h2]; U.scaleMail = (p.traits || []).includes('비늘 깃털 갑옷'); if (p.quakeKill && SIZE_RANK[p.quakeKill] != null) U.quakeKill = p.quakeKill;   /* v8.7.4 점프 찍기 체급 (붉은암석 중대형) */   /* v8.7.4 3D 보스 기술표 · 비늘 깃털 갑옷 */
     if (K){ U.h2 = { k: p.h2, cd: {}, mlT: -9, ph: false, close: false }; U.rng = Math.max(U.rng, +(K.ml.range - U.r - 0.12).toFixed(2)); U.longReach = true; }   // 닿는 거리 (남이 보는 손 길이) = 몸 가운데부터 range
     if (U.r > 0.55 && boxRock(W, U.x, U.y, U.r * 0.9)){ const q = bigSpot(W, U.x, U.y, U.r); if (q){ U.x = q.x; U.y = q.y; U.home = { x: q.x, y: q.y }; } } }   /* v8.7.4 큰 몸은 몸이 들어가는 자리에서 */
@@ -1552,7 +1552,7 @@ function resolveAct(W, u){
     const far = isFar(u);
     let why = '';
     if (!t.alive) why = '대상이 이미 쓰러짐';
-    else if (gap(u, t) > (!far && flailOf(W, u) ? (flailOf(W, u).sw || 1.3) : u.rng) + (far ? 0.5 : R.reach)) why = far ? '사거리 밖으로 벗어남' : W.t - t.dodgedT < 0.5 ? '몸을 빼 피함' : manDodge(W, t) ? (manNote(W, t, u), `직접 움직여 피함 (노린 회피 · ${gap(u, t).toFixed(1)}칸)`) : `손이 안 닿음 (${gap(u, t).toFixed(1)}칸 떨어짐)`;   // v6.7.1
+    else if (gap(u, t) > (!far && flailOf(W, u) ? (flailOf(W, u).sw || 1.3) : u.rng) + (far ? 0.5 : R.reach) && !(!far && A.k === 'atk' && ratWallReach(W, u, t))) why = far ? '사거리 밖으로 벗어남' : W.t - t.dodgedT < 0.5 ? '몸을 빼 피함' : manDodge(W, t) ? (manNote(W, t, u), `직접 움직여 피함 (노린 회피 · ${gap(u, t).toFixed(1)}칸)`) : `손이 안 닿음 (${gap(u, t).toFixed(1)}칸 떨어짐)`;   // v6.7.1
     else if (far && !losClear(W.map, u.x, u.y, t.x, t.y)) why = '바위에 가림';
     else if (A.k === 'atk' && !canSee(W, u, t)) why = '보이지 않음';
     else if (A.k === 'atk' && !far && angDiff(u.face, Math.atan2(t.y - u.y, t.x - u.x)) > rv(W, 'faceArc', 70) * Math.PI / 180) why = '몸을 돌리지 못함';
@@ -1582,7 +1582,7 @@ function resolveAct(W, u){
       const blind0 = blindTo(W, u, t), dp = blind0 ? Math.max(R.darkAim != null ? R.darkAim : 0.25, gap(u, t) < 0.45 ? 0.6 : 0) : !litAt(W, t.x, t.y) && R.darkHit ? (R.darkHit.melee || 0.96) : 1;   // v7.9.3 몸이 닿는 거리면 어둠에서도 어느 정도 맞춤 · v7.5 어둠 속은 보여도 살짝 헛침 · v8.7.3 식 가운데 주석이 뒤를 잘라 (첫 1초 명중 = 시각) 바로잡음
       u.revealT = W.t;   // v7.5 치면 드러남
       if (dp < 1 && W.rand() >= dp){ u.miss++; L(W, { k: 'miss', a: u.i, b: t.i, why: `어둠 속에서 헛침 (명중률 ${Math.round(dp * 100)}%)`, dark: true, nv: !!u.nv, torch: !!u.torch && !u.torchOff, lit: !!litAt(W, t.x, t.y), d: +gap(u, t).toFixed(2) }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '빗나감', c: 'm', t0: W.t }); }
-      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const so = strike(W, u, t, t, dp); if (u.cz) czHit(W, u, t, so); } }   // v6.7 회피 (몸을 비틀어 흘림)
+      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const wr = ratWallHit(W, u, t), so = strike(W, u, wr || t, t, dp); if (u.cz) czHit(W, u, t, so); if (u.cleave) prnCleave(W, u, wr || t); }   /* v8.7.8 방벽 쥐가 대신 맞음 · 대검 베기 */ }   // v6.7 회피 (몸을 비틀어 흘림)
     }
     A.phase = 'rec'; A.end = W.t + u.rec * (far ? (A.sm === 'rapid' ? ((R.sshot || {}).rapid || {}).rec || 0.7 : 1) : wpnSpd(W, u)) + (A.whiff ? (R.step || {}).recAdd || 0.3 : 0); A.t1 = W.t;   // v7.17 헛치면 더 늦게 거둠   // v6.7 단검은 빨리 거둠   // v7.0 속사는 빨리 다음 화살
     if (u.burst) A.end = Math.max(A.end, u.burst.next + (u.burst.left - 1) * u.burst.gap + 0.05);   // 점사가 끝날 때까지
@@ -1692,7 +1692,7 @@ const JVu = (W, u) => isKnife(W, u) ? KNIFE(W) : JV(W);
 const wpnSpd = (W, u) => (((W.rules.weapons || {})[u.weaponNow || u.weapon] || {}).spdW || 1) * (u.wForeign ? ((W.rules.inv || {}).foreign || {}).wind || 1.06 : 1);   // v7.20 남의 무기는 살짝 더딤   // v6.7 단검은 빠름 (근접 준비 · 회복 ×)
 function aimJ(W, u, t){
   const J = JVu(W, u), f = Math.min(1, Math.max(0, gap(u, t)) / J.rng);
-  let p = J.aimNear + (J.aimFar - J.aimNear) * f;
+  let p = (J.aimNear + (J.aimFar - J.aimNear) * f) * (u.javK || 1);   /* v8.7.8 투창 솜씨 (쥐 베테랑 — 투창 좋음) */
   if (Math.hypot(t.vx, t.vy) > 0.6) p *= 0.85;
   if (blindTo(W, u, t)) p *= W.rules.darkAimFar != null ? W.rules.darkAimFar : 0.1;
   if (t.lie && !t.lieSw && W.rules.lie && dist(u, t) > (W.rules.lie.near || 1.8)) p *= W.rules.lie.hitArc || 0.85;   // v7.11 엎드린 몸 (던진 것은 떨어지며 맞음)
@@ -1722,7 +1722,7 @@ function resolveThrow(W, u){
   else if (way.arc){
     const p = Math.max(0.02, aimJ(W, u, t) * (J.arc.aim != null ? J.arc.aim : 0.75));
     launchJavArc(W, u, t, p);
-    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; u.rng = (W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = '맨손';
+    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; javAfter(W, u);
     L(W, { k: 'throw', a: u.i, b: t.i, p: +p.toFixed(2), arc: true, over: way.blk.i, kn: isKnife(W, u), vis: u.side === 0 || !!u.seenBy });
   }
   else {
@@ -1730,7 +1730,7 @@ function resolveThrow(W, u){
     const off = W.rand() < p ? (W.rand() * 2 - 1) * t.r * 0.5 : (W.rand() < 0.5 ? -1 : 1) * (t.r + 0.12 + W.rand() * 0.5);
     const ang = base + Math.atan2(off, d), dx = Math.cos(ang), dy = Math.sin(ang);
     W.shots.push({ id: ++W.shotN, a: u.i, meant: t.i, x: u.x + dx * (u.r + 0.02), y: u.y + dy * (u.r + 0.02), x0: u.x, y0: u.y, dx, dy, sp: J.vel, left: J.rng + u.r + 1.5, p: +p.toFixed(2), t0: W.t, side: u.side, jav: true, kn: isKnife(W, u), wpn: u.weapon });
-    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; u.rng = (W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = '맨손';
+    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; javAfter(W, u);
     L(W, { k: 'throw', a: u.i, b: t.i, p: +p.toFixed(2), kn: isKnife(W, u), vis: u.side === 0 || !!u.seenBy });
   }
   A.phase = 'rec'; A.end = W.t + u.rec; A.t1 = W.t;
@@ -1739,7 +1739,7 @@ function resolveThrow(W, u){
 // 땅에 떨어진 것 W.items: { id, k: 'spear' (던진 창 — 주인이 다시 주움) | 'weapon' | 'shield', name, x, y, owner (원래 주인), t, ammo?, mag? }
 // 떨어지는 때: 쓰러짐 (들고 있던 무기 · 방패) · 방패 팔을 잃음 (방패) · 두 팔을 잃음 (무기 · 방패) · 활 팔을 잃음 (활) · 다른 무기를 집어 듦 (들던 무기를 발밑에)
 const ITEM_NATURAL = ['맨손', '이빨·발톱', '발'];
-const unarmed = u => !u.weapon || ITEM_NATURAL.includes(u.weapon) || u.weaponNow === '맨손' || u.weaponNow === '발' || (u.jav && !u.spearHeld);
+const unarmed = u => !u.weapon || ITEM_NATURAL.includes(u.weapon) || u.weaponNow === '맨손' || u.weaponNow === '발' || (u.jav && !u.spearHeld && !(u.javSide && u.weaponNow === u.javSide));   /* v8.7.8 투창 뒤 검 */
 function dropItem(W, u, k, name, extra, how){
   const sd = k === 'shield' ? -1 : k === 'weapon' ? 1 : 0, fa = (u.face || 0) + Math.PI / 2;   // v5.10.0 방패는 왼쪽 · 무기는 오른쪽으로 0.35칸 — 한 자리에 겹쳐 떨어지지 않게
   const p = freeSpot(W, u.x + Math.cos(fa) * 0.35 * sd + (W.rand() - 0.5) * 0.3, u.y + Math.sin(fa) * 0.35 * sd + (W.rand() - 0.5) * 0.3, 0.15) || { x: u.x, y: u.y };
@@ -1758,6 +1758,7 @@ function dropShield(W, u, how){ if (u.armShield){ if (how === 'arm' || how === '
   if (u.shield){ dropItem(W, u, 'shield', '방패', { dur: u.sDur, label: u.sName || '', own: u.sOwn || ownKey(u) }, how); u.shield = false; if (u.alive) evoRole(W, u); } }   /* v8.7.4 I25 */
 // 쓰러짐: 들고 있던 무기 · 방패를 떨어뜨림. 던져 둔 창은 이제 누구나 주울 수 있음
 function dropOnDeath(W, t){
+  if (t.ratOf != null){ W.items = W.items.filter(it => !(it.k === 'spear' && it.owner === t.i)); t.weaponGone = true; t.shield = false; return; }   /* v8.7.8 포렌의 쥐 */
   for (const it of W.items) if (it.k === 'spear' && it.owner === t.i) it.k = 'weapon';
   dropHeld(W, t, 'death'); dropShield(W, t, 'death');
 }
@@ -2129,7 +2130,7 @@ function strike(W, u, t, meant, p, far, extra){
   { const V = R.vital || {}, through = !AM0.it || pen, rangedV = (o.far || J) && through, meleeV = !o.far && !J && crit && wk !== '맨손';
     const heart = part === '몸통' && (rangedV || meleeV) && W.rand() < (V.heartP != null ? V.heartP : 0.25);
     const vp = part === '머리' && (rangedV || meleeV) ? '머리' : heart ? '심장' : null;
-    if (vp && !(extra && extra.noWound) && !o.deflect && !t.marble && !t.noOrg){   /* v8.6.0 [대리석 피부]: 급소가 없음 */   /* v8.7.3 [무장기] */
+    if (vp && !(extra && extra.noWound) && !o.deflect && !t.marble && !t.noOrg && !(t.act && t.act.k === 'roll')){   /* v8.7.8 구르는 동안 급소 보호 */   /* v8.6.0 [대리석 피부]: 급소가 없음 */   /* v8.7.3 [무장기] */
       o.vital = vp; const boss = (t.traits || []).includes('보스'), vMax = boss ? Math.min(t.max, V.boss != null ? V.boss : 400) : t.max;   // v7.22.2 [보스]
       if (vp === '머리' && (t.heads || 1) > 1){   // 머리 넷: 그 머리를 잃음
         o.headLost = true; dmg = Math.max(dmg, Math.round(vMax * (V.headLoss != null ? V.headLoss : 0.2)));
@@ -2190,6 +2191,7 @@ function applyDmg(W, u, t, dmg, o){
   if (t.marble || t.jrFly || t.jrInv){ dmg = marbleHit(W, u, t, dmg, o); if (!(dmg > 0)) return; }
   if (t.stoneT != null && W.t < t.stoneT && dmg > 1){ dmg = 1; o = { ...(o || {}), stone: true, tag: '방어모드 — 피해 1' }; }   /* v8.7.4 방어모드 (붉은암석): 무엇이든 피해 1 */
   if (u && u !== t && u.side !== t.side && dmg > 0 && !(o && o.ff)){   /* v8.7.7 받는 피해 × (가호 · 유물) · 피 흘리는 상대에게 × · 왕관 조각 (편마다 n 번 — 치명타를 체력 1 로 버팀 · 출혈 · 화상으로 숨이 다할 땐 안 버팀) */
+    if (t.porenKit || (t.rs && t.rs.k === 'shieldWall') || (t.act && t.act.k === 'roll')){ dmg = porenTake(W, u, t, dmg, o); if (!(dmg > 0)) return; }   /* v8.7.8 포렌 · 쥐 방패 · 구르기 */
     if (t.dmgK > 0 && t.dmgK !== 1) dmg *= t.dmgK;
     if (u.bleedK > 0 && (t.bleed || t.ibleed)) dmg *= u.bleedK;
     const cw = W.crown ? W.crown[t.side] || 0 : 0; if (cw > 0 && t.alive && !t.summon && dmg >= t.hp && t.hp > 1 && !/출혈|화상/.test((o && o.tag) || '')){ W.crown[t.side] = cw - 1; dmg = t.hp - 1; t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '왕관 조각이 버팀' }; L(W, { k: 'crownSave', a: u.i, b: t.i, vis: t.side === 0 || !!t.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.3, s: '👑 버팀!', c: 'h', t0: W.t }); }
@@ -2289,7 +2291,7 @@ function think(W, u){
       let pick = seen.reduce((a, b) => score(b) > score(a) ? b : a, seen[0]);
       if (cur && pick !== cur && !(score(pick) > score(cur) * 1.3 + 5)) pick = cur;
       if (cur && pick !== cur && was){ L(W, { k: 'retarget', a: u.i, from: cur.i, b: pick.i, vis: !!u.seenBy }); u.waitT = 0; }
-      u.state = 'hunt'; u.target = pick; u.last = { x: pick.x, y: pick.y }; u.searchT = 6;
+      pick = tauntOf(W, u, pick, seen); u.state = 'hunt'; u.target = pick; u.last = { x: pick.x, y: pick.y }; u.searchT = 6;   /* v8.7.8 도발 */
       seen[0] = pick;
       if (!was){ const dark = !litAt(W, seen[0].x, seen[0].y), sm = !!u.smell && dist(u, seen[0]) <= u.smell && (dark || !u.nv);
         if (W.stance && !W.stance[u.side]) W.sqT = 0;   // v5.4 처음 발견 → 곧바로 대치 판단
@@ -2336,7 +2338,7 @@ function think(W, u){
       if (u.target && u.target.alive && seen.includes(u.target) && sc(pick) < sc(u.target) + 1) pick = u.target;
     }
     if (u.altLock && W.t < u.altLock.until && u.target && u.target.alive && u.target.i === u.altLock.b && seen.includes(u.target)) pick = u.target;   /* v8.7.3 막힌 표적에서 옮겨 온 표적은 잠시 그대로 */
-    if (u.target !== pick) u.waitT = 0; u.state = 'fight'; u.target = pick; return;
+    pick = tauntOf(W, u, pick, seen); if (u.target !== pick) u.waitT = 0; u.state = 'fight'; u.target = pick; return;   /* v8.7.8 도발 */
   }
   // 비명으로 정확히 안 자리 (2.5초 안, 8칸 안) → 몰려감
   const sx = foes.map(f => [f, u.sense[f.i]]).filter(([f, s]) => s && s.exact && W.t - s.t < 2.5 && dist(u, f) <= 8 && W.t >= (u.chaseNo || 0) && !(rm !== 'free' && roeBlock(W, u, f))).sort((a, b) => dist(u, a[0]) - dist(u, b[0]))[0];
@@ -4168,7 +4170,7 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
   const prev = new Map((W.loot || []).map(x => [x.lk, x])), roll = W.lootRoll || (W.lootRoll = {});
   const out = [], mine = new Set(W.units.filter(u => u.side === 0 && (u.alive || u.gone)).map(ownKey));   // 살아 있거나 맵을 나간 동료의 제 것은 그 동료에게 (정산에서 돌아감) — 쓰러진 동료의 것은 전리품
   const put = (lk, o) => { const p = prev.get(lk); out.push({ ...o, lk, ...(p && p.taken ? { taken: p.taken } : {}), ...(p && p.auto ? { auto: p.auto } : {}), ...(p && p.n0 != null ? { n0: p.n0 } : {}), ...(p && o.k === 'ammo' && p.n != null ? { n: p.n } : {}) }); };   // 챙긴 표시 · 나눠 담고 남은 탄은 이어 받음
-  for (const it of W.items || []){ if (it.k !== 'weapon' && it.k !== 'shield') continue; if (it.own && mine.has(it.own)) continue;
+  for (const it of W.items || []){ if (it.k !== 'weapon' && it.k !== 'shield') continue; if (it.own && mine.has(it.own)) continue; if (W.units[it.owner] && W.units[it.owner].ratOf != null) continue;   /* v8.7.8 쥐의 무구는 전리품이 아님 */
     const at = it.k === 'weapon' ? ammoTOf(W, it.name) : null, dw = W.units.find(u => !u.alive && !u.gone && u.side === 0 && ownKey(u) === it.own);
     if (at && it.ammo > 0) put('ga' + it.id, { k: 'ammo', at, n: it.ammo, label: (it.label || it.name) + '에 남은 ' + (at === '화살' ? '화살' : at + ' 탄') });
     put('g' + it.id, { k: it.k, name: it.name, label: it.label || '', dur: it.dur != null ? +it.dur : 100, own: it.own || null, ground: it.id, ...(dw ? { fall: dw.name } : {}), ...(at ? { ammo: 0 } : {}) }); }
@@ -4190,7 +4192,7 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
 
 /* ---------- v7.19.1 고유 기술: 공중제비 (탕아) · 머리 찍기 (쟝) · 영거리 사격 (간두) · 철퇴 후리기 · 휘둘러 치기 (모닝스타) — 적 · 아군 같은 규칙 ---------- */
 const SPEC_NM = k => (Object.entries(SPEC_K).find(e => e[1] === k) || [k])[0];   /* v8.7.3 기술 이름 (명령 글) */
-const SPEC_K = { '혈영보': 'blink', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
+const SPEC_K = { '혈영보': 'blink', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
 const SPR = (W, k) => ((W.rules.spec || {})[k]) || {};
 const specOf = (u, k) => (u.spec || []).find(x => x.k === k);
 function specReady(W, u, k){ const x = specOf(u, k); if (!x || !u.alive || u.down || u.noArms || u.crawl || u.lie || u.kb || W.t < x.cdT || W.t < u.brokenT || W.t < (u.proneT || -9)) return false; if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */ if (x.n != null && x.n <= 0) return false; if (GW_K.includes(k) && !gwOn(u)) return false;   /* v8.7.8 굿윌의 기술은 맨손일 때만 */ if ((k === 'sweep' || k === 'hurl' || k === 'spin') && u.weaponGone) return false; if ((k === 'sweep' || k === 'hurl') && flailOut(W, u)) return false;   /* v7.25.0 공을 거둬야 */ if (k === 'root' && (W.roots || []).filter(r => r.by === u.i).length >= (SPR(W, 'root').max || 2)) return false; return k !== 'pb' || u.shells > 0; }   // v7.19.2 철퇴를 뺏기면 못 씀 · 뿌리 벽은 둘까지
@@ -7321,6 +7323,7 @@ function doOrder(W, u, dt){
     const sp = specOf(u, o.s), t = o.b != null ? W.units[o.b] : null;
     if (!sp){ u.order = null; return; }
     if (o.s === 'sweep' && flailOf(W, u) && tightAt(W, u)){ u.order = null; setMood(W, u, '좁은 골목 — 철퇴를 돌릴 수 없음'); L(W, { k: 'alleyNo', a: u.i, s: 'sweep', vis: u.side === 0 || !!u.seenBy }); return; }   /* v8.7.5 A6 */
+    if (o.s === 'pfort'){ const x = specOf(u, 'pfort'); if (x && W.t < x.cdT){ setMood(W, u, '쥐 방진 대기 (' + (x.cdT - W.t).toFixed(1) + '초)'); stop(u); return; } if (!prFort(W, u, '명령')) L(W, { k: 'specFail', a: u.i, s: 'pfort', why: '곁에 쥐가 둘은 있어야', vis: true }); u.order = null; return; }   /* v8.7.8 쥐 방진 (제자리) */
     if (o.s === 'sweep' || o.s === 'ward'){ if (specReady(W, u, o.s)){ startSpec(W, u, null, o.s, '명령'); if (o.R) u.act.R = o.R; u.order = null; }   /* v7.24.4 정한 거리 */ else setMood(W, u, sp.name + ' 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : flailOut(W, u) ? ' (철퇴를 거두는 중)' : '')); return; }   // v7.19.2 역장도 바로   /* v8.7.3 대기 초 */
     if (o.s === 'root'){ const px = o.x != null ? o.x : t && t.alive ? t.x : null, py = o.y != null ? o.y : t && t.alive ? t.y : null; if (px == null){ u.order = null; return; }   // v7.19.2 뿌리 벽: 찍은 자리 (적이면 그 앞)
       const d = Math.hypot(px - u.x, py - u.y), R2 = SPR(W, 'root').rng || 5;
@@ -7331,7 +7334,7 @@ function doOrder(W, u, dt){
     const see = canSee(W, u, t); if (!see && !(u.side === 0 ? t.seenBy : false)){ L(W, { k: 'lost', a: u.i, b: t.i }); u.order = null; return; }
     if (o.s === 'head'){ if (specReady(W, u, 'head')){ u.headMark = { b: t.i, until: W.t + (SPR(W, 'head').win || 4) + 3 }; L(W, { k: 'specArm', a: u.i, b: t.i, s: 'head', vis: true }); } u.order = { k: 'attack', b: t.i }; return; }
     const S = SPR(W, o.s), reach = o.s === 'flip' ? S.d || 3.2 : o.s === 'pb' ? S.rng || 2.4 : S.rng || 3.6;
-    if (specReady(W, u, o.s) && gap(u, t) <= reach && (o.s === 'flip' ? startFlip(W, u, t, false) : GW_K.includes(o.s) ? gwStart(W, u, t, o.s, '명령') : startSpec(W, u, t, o.s, '명령'))){ u.order = null; return; }   /* v8.7.8 굿윌 기술은 굿윌 방식으로 (내려찍기 = 뛰어오름 · 손바닥 = 표식 · 니킥 = 반동) */
+    if (specReady(W, u, o.s) && gap(u, t) <= reach && (o.s === 'flip' ? startFlip(W, u, t, false) : GW_K.includes(o.s) ? gwStart(W, u, t, o.s, '명령') : o.s === 'pmark' ? prnMark(W, u, t, '명령') : startSpec(W, u, t, o.s, '명령'))){ u.order = null; return; }   /* v8.7.8 굿윌 기술은 굿윌 방식으로 (내려찍기 = 뛰어오름 · 손바닥 = 표식 · 니킥 = 반동) */
     if (!specReady(W, u, o.s) && gap(u, t) <= u.rng + 0.3){ setMood(W, u, sp.name + ' 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : ''), t.i); fight(W, u, t, dt, see, true); return; }
     setMood(W, u, sp.name + '하러', t.i); goTo(W, u, t.x, t.y, dt); u.fg = Math.atan2(t.y - u.y, t.x - u.x); return;
   }
@@ -7464,6 +7467,8 @@ function act(W, u, dt){
   if (u.kb || W.t < u.proneT || W.t < (u.stunT || -9)) return;   // v5.2 날아가는 중 · 넘어짐 · v5.5.3 휘청: 아무것도 못 함 (기어다니는 쪽은 움직임)
   if (u.act && u.act.k === 'spec' && u.act.s === 'sweep' && u.act.phase === 'swing'){ stepSweep(W, u, dt); return; }   /* v7.24.4 철퇴 후리기 한 바퀴 */
   if (u.act && u.act.k === 'gwHop'){ gwHopStep(W, u); return; }   /* v8.7.8 굿윌 순간이동 도약 */
+  if (u.act && u.act.k === 'pr'){ prStep(W, u, dt); return; }   /* v8.7.8 포렌: 쥐 방진 · 쥐 사다리 · 쥐 방패 지휘 */
+  if (u.act && u.act.k === 'roll'){ rollStep(W, u, dt); return; }   /* v8.7.8 쥐 베테랑 구르기 */
   if (u.act && (u.act.k === 'leap' || u.act.k === 'dodge')){ stepLeap(W, u, dt); return; }
   if (u.act && u.act.k === 'charge' && u.act.phase === 'run'){ stepCharge(W, u, dt); return; }
   if (u.act && u.act.k === 'atk' && u.act.phase === 'wind' && !isFar(u)){ const tt = W.units[u.act.b]; if (tt && tt.alive){ u.fg = Math.atan2(tt.y - u.y, tt.x - u.x);
@@ -7724,6 +7729,8 @@ function act2(W, u, dt){
   if (u.cz && !u.order && czBrain(W, u, dt)) return;   /* v7.23.1 세자르 */
   if (u.h2 && !u.order && h2Brain(W, u, dt)) return;   /* v8.7.4 3D 보스 기술표 */
   if (u.gwKit && !u.order && gwBrain(W, u, dt)) return;   /* v8.7.8 굿윌 (2D goodwillBrain) */
+  if (u.ratOf != null && ratBrain(W, u, dt)) return;   /* v8.7.8 포렌의 쥐 (포렌의 기술로만 · 명령은 받지 않음) */
+  if (u.porenKit && !u.order && porenBrain(W, u, dt)) return;   /* v8.7.8 포렌 (2D porenUpdate) */
   if (u.skill && !(u.side === 0 && u.order && u.order.k === 'skill') && emergency(W, u, dt)) return;   // v5.5.1 약 명령이 위급 자동 판단보다 먼저
   // 싸움이 없고 탄창이 반 넘게 비었으면 미리 재장전 (8칸 안에 아는 상대가 없을 때)
   if (u.magMax && !u.order && u.mag < u.magMax * 0.5 && u.ammo > u.mag && !W.units.some(f => f.alive && f.side !== u.side && dist(f, u) < 8 && (u.side === 0 ? f.seenBy : canSee(W, u, f)))){ startReload(W, u); return; }
@@ -7909,6 +7916,7 @@ function stepWorld(W, dt){
   lineOpportunity(W);   // v5.7 교전 구속
   for (const u of W.units) if (u.alive && u.bleed) stepBleed(W, u, dt);   // v5.5 출혈
   for (const u of W.units) if (u.alive && u.burn) stepBurn(W, u, dt);   // v6.7 화상
+  porenTick(W, dt);   /* v8.7.8 포렌: 충성 · 쥐 망토 · 표식 · 방벽 · 포박 · 기억하는 쥐 */
   zapTick(W);   /* v8.7.8 감전 (푸른 번개 · 적뢰 · 잔류) */
   for (const u of W.units) if (u.alive && (u.ibleed || u.inj || u.bled || u.koT)) stepInj(W, u, dt);   // v6.9 내출혈 · 쇼크 · 의식
   for (const u of W.units) if (u.alive && u.recoil && !u.kb) stepRecoil(W, u, dt);   // v6.7 팜 버스트 반동
@@ -8348,4 +8356,394 @@ function runAuto(setup, rules, seed){
   return W;
 }
 
-if (typeof module !== 'undefined') module.exports = { zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
+
+/* ---------- v8.7.8 포렌 (명세 C5 — 2D 미궁 프롤로그 porenUpdate · 쥐 군단 그대로 · 쥐 기사는 3D) ----------
+   충성: 게이지가 차면 쥐가 포렌 뒤쪽에서 달려옴 (다음 쥐는 미리 정해짐 — 작은 쥐 58% 0.8초 · 쥐 27% 3초 · 큰 쥐 13% 8초 · 쥐 기사 2% 8초 ·
+   쥐가 넷보다 적으면 2.5배 빨리 · 싸움이 없으면 넷까지만 천천히 · 최대 24). 쥐는 포렌의 기술로만 움직임 (다른 이의 명령은 받지 않음).
+   따르는 쥐 70% (포렌 곁 · 포렌이 노린 적) · 떠돌이 30% (둘레를 싸돌아다니며 마주친 적). 적 포렌도 같은 규칙 */
+const PRN = W => W.rules.poren || {};
+const PRN_BUSY = ['wall', 'fort', 'ladder', 'bind', 'bindRun', 'shieldWall'];
+const prnRats = (W, u) => W.units.filter(r => r.alive && !r.gone && r.ratOf === u.i);
+const ratBusy = r => !!(r.rs && PRN_BUSY.includes(r.rs.k));
+function ratFree(r){ r.rs = { k: 'idle' }; }
+const prnFoes = (W, u) => W.units.filter(e => e.alive && !e.gone && e.side !== u.side);
+const prnVis = (W, u, t) => u.side === 0 || !!u.seenBy || !!(t && t.seenBy);
+function prnLetter(M){ const AB = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; for (let i = 0; ; i++){ const n = i < 26 ? AB[i] : AB[i % 26] + Math.floor(i / 26); if (!M.some(r => r.n === n)) return n; } }
+function prnRoll(W){ let r = W.rand(); for (const [k, p] of PRN(W).roll || []){ if ((r -= p) <= 0) return k; } return 'ratS'; }
+const prnFill = (W, k) => ((PRN(W).roll || []).find(x => x[0] === k) || [k, 0, 1])[2];
+// 쥐가 생기는 자리: 멀면 포렌 뒤쪽 3.5 ~ 5칸 (적 반대편 — 그 자리부터 달려옴) · 가까우면 곁 (방진 · 포박 · 사다리)
+function prnSpot(W, u, near){
+  const m = W.map, F = prnFoes(W, u).sort((a, b) => dist(u, a) - dist(u, b))[0], a0 = F ? Math.atan2(u.y - F.y, u.x - F.x) : W.rand() * 6.283;
+  for (let k = 0; k < 12; k++){
+    const a = a0 + (W.rand() - 0.5) * (near ? 3.4 : 1.8), r = near ? 0.8 + W.rand() * 0.8 : 3.5 + W.rand() * 1.5, x = u.x + Math.cos(a) * r, y = u.y + Math.sin(a) * r;
+    if (x < 0.7 || y < 0.7 || x > m.W - 0.7 || y > m.H - 0.7 || boxRock(W, x, y, 0.25)) continue;
+    if (!near && !losClear(m, u.x, u.y, x, y)) continue;
+    if (W.units.some(o => o.alive && !o.gone && Math.hypot(o.x - x, o.y - y) < 0.4)) continue;
+    return { x, y };
+  }
+  return { x: u.x + (W.rand() - 0.5) * 0.6, y: u.y + (W.rand() - 0.5) * 0.6 };
+}
+// 쥐 부르기 — 쥐 기사는 기억하는 쥐부터 (동료 포렌: 이름 · 단계 · 세 번 살아 돌아오면 쥐 베테랑)
+function prnRat(W, u, kind, o){
+  const P = PRN(W), O = o || {};
+  if (prnRats(W, u).length >= (P.cap || 24) + (O.extra || 0)) return null;
+  let rec = null, k = kind;
+  if (k === 'ratKnight' && u.ratMem){ rec = u.ratMem.find(x => !W.units.some(m => m.alive && !m.gone && m.ratRec === x)); if (!rec){ rec = { n: prnLetter(u.ratMem), lv: 1, ret: 0, vet: false }; u.ratMem.push(rec); } if (rec.vet) k = 'ratVet'; }
+  const Dz = (P.rats || {})[k]; if (!Dz) return null;
+  const q = O.at || prnSpot(W, u, !!O.near), lv = rec && !rec.vet ? rec.lv || 1 : 1;
+  W.ratSeq = (W.ratSeq || 0) + 1;
+  const p = { id: 'rat-' + u.i + '-' + W.ratSeq, name: rec ? Dz.name + ' ' + rec.n : Dz.name, ref: Dz.ref, tier: 1, cls: Dz.cls || '기동', role: '공격수', side: u.side, weapon: Dz.weapon || '이빨·발톱', javSide: Dz.javSide || null, poise: Dz.poise || undefined, javK: Dz.javK || undefined, shield: !!Dz.shield,
+    height: Dz.height, weight: Dz.weight, rMul: Dz.rMul, noChg: !Dz.charge, nv: true, nvG: 'B', ov: { hp: Math.round(Dz.hp * (1 + (lv - 1) * 0.15)), atk: Math.round(Dz.atk * (1 + (lv - 1) * 0.1)), spd: Dz.spd },
+    traits: (Dz.traits || []).slice(), active: (Dz.active || []).slice(), gear: Dz.gear ? JSON.parse(JSON.stringify(Dz.gear)) : {}, x: q.x, y: q.y, summon: 'rat', ratOf: u.i, ratKind: k };
+  const r = (typeof engineSpawn === 'function' ? engineSpawn : addUnit)(W, p); if (!r) return null;
+  r.summon = 'rat'; r.ratOf = u.i; r.ratKind = k; r.ratRec = rec; r.ratLv = lv; r.ratWild = !rec && k !== 'ratKnight' && W.rand() < (P.wildP != null ? P.wildP : 0.3); r.rs = { k: 'idle' }; r.state = u.side ? 'hunt' : 'fight';
+  if (rec || k === 'ratL' || k === 'ratKnight') L(W, { k: 'ratCome', a: u.i, b: r.i, kind: k, n: rec ? rec.n : null, lv, ret: rec ? rec.ret || 0 : 0, vet: !!(rec && rec.vet), vis: prnVis(W, u) });
+  return r;
+}
+// 싸우는 중 (아는 적이 14칸 안)
+const prnFight = (W, u) => W.units.some(e => e.alive && !e.gone && e.side !== u.side && dist(u, e) < 14 && (e.target === u || (u.side === 0 ? !!e.seenBy || canSee(W, u, e) : u.target === e || canSee(W, u, e))));
+function prnInit(W, u){
+  const P = PRN(W), n = P.init != null ? P.init : 4, kn = (u.ratMem && u.ratMem.length) || W.rand() < (P.initKnight != null ? P.initKnight : 0.5);   // 3D: 처음엔 곁에 넷 (반은 쥐 기사부터)
+  for (let i = 0; i < n; i++) prnRat(W, u, i === 0 && kn ? 'ratKnight' : 'ratS', { near: true });
+}
+// 쥐 표식 '물어라!': 그 적에게 5초 표식 · 어디선가 쥐 셋이 더 달려옴 · 모든 쥐가 우르르 몰려들어 둘러싸고 물어뜯음 (새로 온 쥐도 합류)
+function prnMark(W, u, t, why){
+  const M = PRN(W).mark || {}, x = specOf(u, 'pmark'); if (!x || W.t < x.cdT || !t || !t.alive || t.side === u.side) return false;
+  const rats = prnRats(W, u).filter(r => !ratBusy(r)); if (!rats.length) return false;
+  x.cdT = W.t + (M.cd || 12); u.ratMark = { b: t.i, until: W.t + (M.dur || 5) };
+  for (let i = 0; i < (M.extra || 3); i++){ const r = prnRat(W, u, i === 0 && W.rand() < (M.knightP || 0.3) ? 'ratKnight' : prnRoll(W), { extra: M.extra || 3 }); if (r) rats.push(r); }
+  rats.forEach((r, i) => { r.rs = { k: 'assault', b: t.i, until: u.ratMark.until, a: i / rats.length * 6.283 }; });
+  L(W, { k: 'prMark', a: u.i, b: t.i, n: rats.length, why: why || '', vis: prnVis(W, u, t) });
+  if (W.fxOn) W.fx.push({ k: 'ratmark', b: t.i, t0: W.t, until: u.ratMark.until });
+  return true;
+}
+const markOn = (W, u) => !!(u && u.ratMark && W.t < u.ratMark.until && W.units[u.ratMark.b] && W.units[u.ratMark.b].alive);
+// 방벽: 동료에게 강공 (보스 · 공격 30 넘음) 이 오면 가까운 쥐 2 ~ 4마리가 그 앞에 3초 줄을 섬 — 사이에 선 쥐가 근접 일격을 대신 맞음
+const prnStrong = (W, e) => (e.traits || []).includes('보스') || !!e.jrB || (e.atk || 0) >= ((PRN(W).wall || {}).minAtk || 30);
+function prnWall(W, u, g, e){
+  const P = PRN(W).wall || {}; if (W.t < (u.prn.wallCd || -9)) return false;
+  const need = (e.traits || []).includes('보스') ? 4 : (e.atk || 0) >= (P.bigAtk || 50) ? 3 : 2;
+  const M = prnRats(W, u).filter(r => !ratBusy(r)).sort((a, b) => dist(a, g) - dist(b, g)).slice(0, need); if (!M.length) return false;
+  u.prn.wallCd = W.t + (P.cd || 6);
+  M.forEach((r, i) => { r.rs = { k: 'wall', g: g.i, a: e.i, idx: i, n: M.length, until: W.t + (P.dur || 3) }; });
+  L(W, { k: 'ratWall', a: u.i, b: g.i, c: e.i, n: M.length, vis: prnVis(W, u, e) });
+  return true;
+}
+const ratWallReach = (W, u, t) => W.units.some(r => r.alive && !r.gone && r.rs && r.rs.k === 'wall' && r.rs.g === t.i && r.rs.a === u.i && gap(u, r) <= u.rng + (W.rules.reach || 0.3));
+function ratWallHit(W, u, t){
+  if (!t || t.ratOf != null) return null;
+  const k = gap(u, t);
+  for (const r of W.units) if (r.alive && !r.gone && r.rs && r.rs.k === 'wall' && r.rs.g === t.i && r.rs.a === u.i && dist(u, r) < dist(u, t) && gap(u, r) <= Math.max(k, u.rng) + 0.35) return r;
+  return null;
+}
+// 쥐 방진: 체력 40% 아래 · 강공이 날아옴 → 대검을 꽂고 2.5초 버팀 (움직이지 않음 · 휘청 · 밀림 없음) · 둘레 쥐 (최대 8) 가 받는 피해 70% 를 똑같이 나눠 받음
+//   끝에 대검을 뽑으며 두 바퀴 — 공격 + 쥐들이 대신 맞은 피해 60% + 버틴 무게 (포렌 × 4 + 둘레 쥐) × 0.164 · 치명 25%. 곁에 적이 없으면 방진 쥐 셋을 타고 가장 위험한 적 (8칸) 에게 날아가 거기서
+function prFort(W, u, why){
+  const F = PRN(W).fort || {}, x = specOf(u, 'pfort');
+  if (!x || W.t < x.cdT || !u.alive || u.down || (u.act && u.act.k === 'pr')) return false;
+  const rats = prnRats(W, u).filter(r => !(r.rs && (r.rs.k === 'bind' || r.rs.k === 'bindRun'))).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, F.maxRats || 8);
+  if (rats.length < (F.minRats || 2)) return false;
+  x.cdT = W.t + (F.cd || 14); if (u.act) interrupt(W, u, '쥐 방진');
+  u.act = { k: 'pr', s: 'fort', phase: 'fort', t0: W.t, end: W.t + (F.dur || 2.5), rats: rats.map(r => r.i), absorbed: 0, dead: 0, why: why || '' };
+  u.saT = Math.max(u.saT || -9, u.act.end + 0.05); stop(u);
+  rats.forEach((r, i) => { r.rs = { k: 'fort', a: i / rats.length * 6.283, until: u.act.end + 0.5 }; });
+  L(W, { k: 'prFort', a: u.i, n: rats.length, why: why || '', vis: prnVis(W, u) });
+  if (W.fxOn) W.fx.push({ k: 'prRing', a: u.i, x: u.x, y: u.y, r: 1.6, t0: W.t, c: 'g' });
+  return true;
+}
+function prSpin(W, u, cn){
+  const F = PRN(W).fort || {}, hits = prnFoes(W, u).filter(e => dist(e, u) < (F.spinR || 1.8) + e.r);
+  for (const e of hits){ strike(W, u, e, e, 1, false, { mul: cn.mul, crit: cn.crit || undefined, tag: '쥐 방진 — 대검 회전' }); if (e.alive) shove(W, u, e, 0.8, e.x - u.x, e.y - u.y, { tag: '대검 회전에 밀려남' }); }
+  L(W, { k: 'prSpin', a: u.i, n: hits.length, abs: cn.absorbed, w: cn.w, dead: cn.dead, crit: !!cn.crit, mul: +cn.mul.toFixed(2), vis: prnVis(W, u) });
+  if (W.fxOn) W.fx.push({ k: 'prRing', a: u.i, x: u.x, y: u.y, r: F.spinR || 1.8, t0: W.t, c: hits.length ? 'g' : 'm', spin: true });
+}
+// 쥐 사다리: 2.5 ~ 8칸 떨어진 적에게 — 쥐 셋이 발밑에 모이고 (0.4초) 그 위에 올라타 파도처럼 미끄러져 들어가 (7칸/초) 내려찍음 (1.3칸 · 공격 × 1.5 · 휘청 0.5)
+function prLadder(W, u, t, cn, rats){
+  const Ld = PRN(W).ladder || {}, x = specOf(u, 'pladder');
+  if (!cn){ if (!x || W.t < x.cdT) return false; x.cdT = W.t + (Ld.cd || 7); }
+  const d = Math.hypot(t.x - u.x, t.y - u.y) || 1;
+  u.act = { k: 'pr', s: 'ladder', phase: 'gather', t0: W.t, b: t.i, rats: rats.map(r => r.i), dx: (t.x - u.x) / d, dy: (t.y - u.y) / d, cn: cn || null, hit: false };
+  u.saT = Math.max(u.saT || -9, W.t + 2.6); stop(u);
+  rats.forEach(r => { r.rs = { k: 'ladder', until: W.t + 3 }; });
+  L(W, { k: 'prLadder', a: u.i, b: t.i, counter: !!cn, vis: prnVis(W, u, t) });
+  return true;
+}
+function prLadderEnd(W, u){ const A = u.act; if (A && A.rats) for (const i of A.rats){ const r = W.units[i]; if (r && r.rs && r.rs.k === 'ladder') ratFree(r); } u.act = null; u.saT = Math.min(u.saT || -9, W.t); }
+// 쥐 방패: 동료가 위험 (체력 45% 아래 · 3칸 안에 적) 하거나 포렌이 위험 (50% · 2칸) 하면 — 포렌이 뒤로 뛰어 빠져 6초 지휘 (큰 휘청이면 끊김) ·
+//   쥐 (최대 12) 가 적과 지킬 이 사이에 한 줄 (일곱부터 두 줄) 로 서서 온몸으로 막음 — 치지 않고 막기도 아님 · 맞은 충격은 곁의 구성원이 똑같이 나눠 받음
+function prShield(W, u){
+  const S = PRN(W).shield || {}, x = specOf(u, 'pshield');
+  if (!x || W.t < x.cdT || (u.act && u.act.k === 'pr')) return false;
+  const rats = prnRats(W, u).filter(r => !ratBusy(r) || (r.rs && r.rs.k === 'wall')); if (!rats.length) return false;
+  const near = (o, r) => W.units.some(e => e.alive && !e.gone && e.side !== o.side && dist(e, o) < r);
+  let pr = W.units.filter(o => o.alive && !o.gone && o.side === u.side && !o.summon && o !== u && o.hp < o.max * (S.allyHp || 0.45) && near(o, S.allyR || 3)).sort((a, b) => a.hp / a.max - b.hp / b.max)[0];
+  if (!pr && u.hp < u.max * (S.selfHp || 0.5) && near(u, S.selfR || 2)) pr = u;
+  if (!pr) return false;
+  x.cdT = W.t + (S.cd || 16);
+  const foe = prnFoes(W, u).sort((a, b) => dist(a, u) - dist(b, u))[0];
+  let ax = foe ? u.x - foe.x : -Math.cos(u.face || 0), ay = foe ? u.y - foe.y : -Math.sin(u.face || 0); const al = Math.hypot(ax, ay) || 1; ax /= al; ay /= al;
+  let tx = u.x + ax * (S.jump || 2.2), ty = u.y + ay * (S.jump || 2.2); if (boxRock(W, tx, ty, u.r) || tx < 0.7 || ty < 0.7 || tx > W.map.W - 0.7 || ty > W.map.H - 0.7){ tx = u.x; ty = u.y; }
+  const use = rats.sort((a, b) => dist(a, pr) - dist(b, pr)).slice(0, S.maxRats || 12);
+  if (u.act) interrupt(W, u, '쥐 방패');
+  u.act = { k: 'pr', s: 'cmd', phase: 'jump', t0: W.t, sx: u.x, sy: u.y, tx, ty, pr: pr.i, rats: use.map(r => r.i), ex: foe ? foe.x : u.x + Math.cos(u.face || 0), ey: foe ? foe.y : u.y + Math.sin(u.face || 0) };
+  stop(u);
+  if (pr !== u && !(pr.side === 0 && pr.order)){ const fx = pr.x + (pr.x - u.act.ex) / (Math.hypot(pr.x - u.act.ex, pr.y - u.act.ey) || 1) * 1.6, fy = pr.y + (pr.y - u.act.ey) / (Math.hypot(pr.x - u.act.ex, pr.y - u.act.ey) || 1) * 1.6; if (!boxRock(W, fx, fy, pr.r)) pr.flee = { x: fx, y: fy, until: W.t + 1.1, why: '물러나! (쥐 방패)' }; }
+  use.forEach(r => { r.rs = { k: 'shieldWall', until: W.t + (S.dur || 6) + 1.5 }; });
+  prSlots(W, u, u.act);
+  L(W, { k: 'prShield', a: u.i, b: pr.i, n: use.length, vis: prnVis(W, u) });
+  return true;
+}
+function prSlots(W, u, A){
+  const S = PRN(W).shield || {}, P0 = W.units[A.pr] && W.units[A.pr].alive ? W.units[A.pr] : u;
+  const F = prnFoes(W, u).filter(e => Math.hypot(e.x - P0.x, e.y - P0.y) < 6); if (F.length){ A.ex = F.reduce((s, e) => s + e.x, 0) / F.length; A.ey = F.reduce((s, e) => s + e.y, 0) / F.length; }
+  const dE = Math.hypot(A.ex - P0.x, A.ey - P0.y) || 1, nx = (A.ex - P0.x) / dE, ny = (A.ey - P0.y) / dE, px = -ny, py = nx, lead = Math.min(S.ahead || 1.1, Math.max(0.55, dE * 0.55));
+  const rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive && r.rs && r.rs.k === 'shieldWall'), k = rats.length, rows = k > 6 ? 2 : 1, per = Math.ceil(k / rows) || 1, gp = S.gap || 0.55;
+  rats.forEach((r, i) => { const row = Math.floor(i / per), col = i % per, cnt = Math.min(per, k - row * per), off = (col - (cnt - 1) / 2) * gp, ah = lead + P0.r + (rows === 2 ? (row ? 0 : 0.5) : 0);
+    r.rs.slot = { x: Math.max(0.6, Math.min(W.map.W - 0.6, P0.x + nx * ah + px * off)), y: Math.max(0.6, Math.min(W.map.H - 0.6, P0.y + ny * ah + py * off)) }; r.rs.face = Math.atan2(ny, nx); });
+}
+function prCmdEnd(W, u, why){
+  const A = u.act; if (!A || A.s !== 'cmd') return;
+  for (const i of A.rats){ const r = W.units[i]; if (r && r.rs && r.rs.k === 'shieldWall') ratFree(r); }
+  u.act = null; L(W, { k: 'prShieldEnd', a: u.i, why: why || '', vis: prnVis(W, u) });
+}
+// 쥐 포박: 4.5칸 안 가장 위험한 (공격이 가장 센) 적에게 쥐 다섯이 달려들어 매달림 — 매달린 쥐 하나마다 게이지 +22 (최대 100) · 게이지가 남은 동안 움직이지도 치지도 못함
+//   대상은 버둥거려 깎음 (무거울수록 빨리 · 보스는 2.5배) · 최대 3초 (3D)
+function prBind(W, u, t){
+  const B = PRN(W).bind || {}, x = specOf(u, 'pbind'); if (!x || W.t < x.cdT || !t || !t.alive || t.bind) return false;
+  const rats = prnRats(W, u).filter(r => !(r.rs && ['fort', 'bind', 'bindRun', 'ladder', 'shieldWall'].includes(r.rs.k)));
+  if (rats.length < (B.min || 3)) return false;
+  x.cdT = W.t + (B.cd || 12); t.bind = { by: u.i, rats: [], gauge: 0, t0: W.t };
+  rats.sort((a, b) => dist(a, t) - dist(b, t)).slice(0, B.rats || 5).forEach(r => { r.rs = { k: 'bindRun', b: t.i, until: W.t + 2.5 }; });
+  L(W, { k: 'prBind', a: u.i, b: t.i, vis: prnVis(W, u, t) });
+  return true;
+}
+function bindAttach(W, r, t){
+  const B = PRN(W).bind || {}; r.rs = { k: 'bind', b: t.i, until: W.t + (B.dur || 3) + 0.5 }; t.bind.rats.push(r.i); t.bind.gauge = Math.min(B.max || 100, t.bind.gauge + (B.per || 22));
+  if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.3, s: '찍!', c: 'g', t0: W.t });
+}
+function bindTick(W, dt){
+  const B = PRN(W).bind || {};
+  for (const t of W.units){ const bd = t.bind; if (!bd) continue;
+    bd.rats = bd.rats.filter(i => W.units[i] && W.units[i].alive && W.units[i].rs && W.units[i].rs.k === 'bind' && W.units[i].rs.b === t.i);
+    const el = W.t - bd.t0, boss = (t.traits || []).includes('보스') || !!t.jrB || !!t.h2;
+    if (bd.rats.length) bd.gauge -= (B.drain || 22) * (1 + (t.mass || 70) / 200) * (boss ? B.boss || 2.5 : 1) * dt;
+    if (bd.gauge > 0 && t.alive){ t.bound = true; t.stunT = Math.max(t.stunT || -9, W.t + 0.15); if (t.act && (t.act.phase === 'wind' || t.act.phase === 'run') && t.act.k !== 'reload') t.act = null; stop(t); }
+    else t.bound = false;
+    if (!t.alive || el > (B.dur || 3) || (el > 1.2 && bd.gauge <= 0) || (el > 2.5 && !bd.rats.length)){
+      for (const i of bd.rats){ const r = W.units[i]; if (r && r.alive){ ratFree(r); shove(W, t, r, 0.8, r.x - t.x, r.y - t.y, { tag: '뿌리침' }); } }
+      if (t.alive && bd.rats.length) L(W, { k: 'prUnbind', a: t.i, n: bd.rats.length, el: +el.toFixed(1), vis: t.side === 0 || !!t.seenBy });
+      t.bind = null; t.bound = false; } }
+}
+// 받는 피해 (porenTake): 쥐 망토 · 방진 (쥐들이 70% 를 나눠 받음) · 쥐 방패 (구성원이 충격을 나눠 받음)
+function porenTake(W, a, t, dmg, o){
+  if (o && (o.share || o.dot)) return dmg;
+  const P = PRN(W);
+  if (t.act && t.act.k === 'roll') dmg *= (P.vetRoll || {}).def || 0.6;   // 구르는 동안 (방어 보정)
+  if (t.porenKit){
+    const C = P.cloak || {}, n = t.cloakN || 0; if (n > 0) dmg *= 1 - Math.min(C.max || 0.16, (C.per || 0.035) * n);
+    const A = t.act; if (A && A.k === 'pr' && A.s === 'fort' && dmg > 0){ const F = P.fort || {}, near = A.rats.map(i => W.units[i]).filter(r => r && r.alive && dist(r, t) < (F.near || 1.6));
+      if (near.length){ const share = dmg * (F.share || 0.7), each = Math.max(1, Math.round(share / near.length)); for (const r of near){ applyDmg(W, a, r, each, { tag: '쥐 방진 — 포렌 대신 맞음', share: true }); if (!r.alive) A.dead++; } A.absorbed += share; dmg -= share;
+        if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.5, s: '나눠 받음 ' + Math.round(share) + ' ÷ ' + near.length, c: 'g', t0: W.t }); } }
+  } else if (t.rs && t.rs.k === 'shieldWall'){
+    const S = P.shield || {}, mem = W.units.filter(r => r !== t && r.alive && !r.gone && r.ratOf === t.ratOf && r.rs && r.rs.k === 'shieldWall' && dist(r, t) < (S.shareR || 2.5));
+    if (mem.length){ const part = Math.max(1, Math.round(dmg / (mem.length + 1))); for (const r of mem) applyDmg(W, a, r, part, { tag: '쥐 방패 — 충격을 나눠 받음', share: true }); dmg = part; }
+  }
+  return dmg;
+}
+// 도발 (쥐들의 대왕): 3칸 안의 적은 포렌을 먼저 노림 — 보스는 따르지 않음
+function tauntOf(W, u, pick, seen){
+  if (!pick || u.ratOf != null || u.jrB || (u.traits || []).includes('보스')) return pick;
+  let best = null, bd = 1e9; for (const f of seen || []){ if (!f.taunt || !f.alive || f.gone) continue; const d = gap(u, f); if (d <= f.taunt && d < bd){ bd = d; best = f; } }
+  return best || pick;
+}
+// 대검 베기: 앞의 다른 적 하나까지 60% 피해로 베어 넘김
+function prnCleave(W, u, t){
+  const o = W.units.filter(e => e !== t && e.alive && !e.gone && e.side !== u.side && gap(u, e) <= u.rng + 0.3 && angDiff(Math.atan2(e.y - u.y, e.x - u.x), u.face || 0) < 1.3).sort((a, b) => dist(u, a) - dist(u, b))[0];
+  if (o) strike(W, u, o, o, 1, false, { mul: u.cleave, tag: '대검 베기 — 베어 넘김' });
+}
+// 포렌 두뇌 (2D porenUpdate 의 순서 그대로): 쥐 방패 → 위기면 쥐 방진 → 쥐 포박 → 쥐 사다리 (그 밖엔 보통 근접 — 대검으로 막으며 벰)
+function porenBrain(W, u, dt){
+  if (!u.prn || u.act || u.kb || W.t < (u.stunT || -9) || prone(W, u)) return false;
+  const P = PRN(W);
+  if (prShield(W, u)) return true;
+  if (u.hp < u.max * ((P.fort || {}).lowHp || 0.4) && prFort(W, u, '위기')) return true;
+  if (specReady(W, u, 'pbind')){ const B = P.bind || {}, F = prnFoes(W, u).filter(e => !e.bind && dist(u, e) <= (B.range || 4.5) && canSee(W, u, e));
+    if (F.length && prBind(W, u, F.reduce((a, b) => (b.atk || 0) > (a.atk || 0) ? b : a))) return true; }
+  const t = u.target, Ld = P.ladder || {};
+  if (t && t.alive && !t.gone && t.side !== u.side && specReady(W, u, 'pladder')){ const d = dist(u, t);
+    if (d >= (Ld.min || 2.5) && d <= (Ld.max || 8) && canSee(W, u, t)){ const rats = prnRats(W, u).filter(r => !(r.rs && ['fort', 'bind', 'bindRun', 'ladder', 'shieldWall'].includes(r.rs.k))).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, Ld.rats || 3);
+      if (rats.length >= (Ld.rats || 3) && prLadder(W, u, t, null, rats)) return true; } }
+  return false;
+}
+// 동작 (u.act.k === 'pr')
+function prStep(W, u, dt){
+  const A = u.act, P = PRN(W);
+  if (A.s === 'fort'){ stop(u);
+    if (W.t < A.end) return;
+    const F = P.fort || {}, rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive), fw = (u.mass || 140) * 4 + rats.filter(r => dist(r, u) < (F.near || 1.6)).reduce((s, r) => s + (r.mass || 10), 0);
+    const cn = { mul: (u.atk + A.absorbed * (F.counter || 0.6) + fw * (F.weightK || 0.164)) / Math.max(1, u.atk), crit: W.rand() < (F.crit || 0.25), absorbed: Math.round(A.absorbed), w: Math.round(fw), dead: A.dead };
+    for (const r of rats) if (r.rs && r.rs.k === 'fort') ratFree(r);
+    u.act = null; u.saT = Math.min(u.saT || -9, W.t);
+    if (!prnFoes(W, u).some(e => dist(e, u) < (F.spinR || 1.8) + e.r)){ const Ld = P.ladder || {}, far = prnFoes(W, u).filter(e => dist(e, u) <= (Ld.max || 8) && canSee(W, u, e)).sort((a, b) => (b.atk || 0) - (a.atk || 0))[0];
+      if (far && rats.length >= (Ld.rats || 3)){ prLadder(W, u, far, cn, rats.sort((a, b) => dist(a, u) - dist(b, u)).slice(0, Ld.rats || 3)); return; } }
+    prSpin(W, u, cn); return;
+  }
+  if (A.s === 'ladder'){
+    const t = W.units[A.b], rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive), Ld = P.ladder || {};
+    if (!t || !t.alive || t.gone){ prLadderEnd(W, u); return; }
+    if (A.phase === 'gather'){ stop(u); const k = Math.min(1, dt * 10); rats.forEach((r, i) => { r.x += (u.x - (i - 1) * 0.35 * A.dx - r.x) * k; r.y += (u.y - (i - 1) * 0.35 * A.dy - r.y) * k; }); if (W.t - A.t0 >= 0.4){ A.phase = 'ride'; A.t1 = W.t; } return; }
+    if (A.phase === 'ride'){ const d = Math.hypot(t.x - u.x, t.y - u.y) || 1, nx = (t.x - u.x) / d, ny = (t.y - u.y) / d, st = Math.min(d, (Ld.speed || 7) * dt), px = u.x + nx * st, py = u.y + ny * st, blk = boxRock(W, px, py, u.r * 0.8);
+      if (!blk){ u.x = px; u.y = py; } u.fg = u.face = Math.atan2(ny, nx); stop(u);
+      rats.forEach((r, i) => { r.x = u.x - nx * (i - 1) * 0.35; r.y = u.y - ny * (i - 1) * 0.35; });
+      if (blk || d < 1.2 + t.r || W.t - A.t1 > 1.6){ A.phase = 'slam'; A.t2 = W.t; } return; }
+    if (A.phase === 'slam'){ stop(u);
+      if (!A.hit && W.t - A.t2 >= 0.15){ A.hit = true;
+        if (A.cn) prSpin(W, u, A.cn);
+        else { const hits = prnFoes(W, u).filter(e => Math.hypot(e.x - t.x, e.y - t.y) < (Ld.r || 1.3) + e.r);
+          for (const e of hits){ strike(W, u, e, e, 1, false, { mul: Ld.mul || 1.5, tag: '쥐 사다리 — 내려찍기' }); if (e.alive){ if ((e.mass || 70) < (u.mass || 140) * 3) stun(W, e, Ld.stun || 0.5, u.i); shove(W, u, e, 0.6, e.x - u.x, e.y - u.y, { tag: '내려찍기에 밀려남' }); } }
+          L(W, { k: 'prSlam', a: u.i, b: t.i, n: hits.length, vis: prnVis(W, u, t) }); if (W.fxOn) W.fx.push({ k: 'quake', x: t.x, y: t.y, r: Ld.r || 1.3, t0: W.t }); } }
+      if (W.t - A.t2 >= 0.4) prLadderEnd(W, u); return; }
+    return;
+  }
+  if (A.s === 'cmd'){ const S = P.shield || {};
+    if (A.phase === 'jump'){ const k = Math.min(1, (W.t - A.t0) / 0.4), e = 1 - (1 - k) * (1 - k); u.x = A.sx + (A.tx - A.sx) * e; u.y = A.sy + (A.ty - A.sy) * e; stop(u); if (k >= 1){ A.phase = 'hold'; A.t1 = W.t; } return; }
+    stop(u); prSlots(W, u, A); u.fg = Math.atan2(A.ey - u.y, A.ex - u.x);
+    if (W.t - A.t1 >= (S.dur || 6) || !A.rats.some(i => W.units[i] && W.units[i].alive && W.units[i].rs && W.units[i].rs.k === 'shieldWall')) prCmdEnd(W, u, W.t - A.t1 >= (S.dur || 6) ? '' : '쥐가 모두 쓰러짐');
+    return;
+  }
+  u.act = null;
+}
+// 쥐 두뇌 (양쪽 같음) — 포렌의 기술로만 움직임 · 명령은 받지 않음
+function ratBrain(W, r, dt){
+  if (r.order) r.order = null;
+  const S = r.rs || (r.rs = { k: 'idle' }), K = W.units[r.ratOf], king = K && K.alive && !K.gone ? K : null, tgt = i => { const t = W.units[i]; return t && t.alive && !t.gone ? t : null; };
+  const lead = king || (r.ratKind === 'ratVet' ? null : vetOf(W, r));   // 지휘의 열화 카피: 포렌이 쓰러지면 쥐 베테랑을 따름
+  if (r.leaveT != null){ stop(r); if (king) faceTo(r, king); setMood(W, r, '경례'); return true; }   // 싸움 끝 — 경례하고 사라짐 (도감)
+  if (S.k !== 'idle' && S.until != null && W.t >= S.until) ratFree(r);
+  const s = r.rs;
+  if (r.ratKind === 'ratVet' && (s.k === 'idle' || s.k === 'assault') && vetRoll(W, r, s.k === 'assault' ? tgt(s.b) : r.target && r.target.alive && !r.target.gone && r.target.side !== r.side ? r.target : null)) return true;   // 구르기
+  if (s.k === 'fort'){ if (!king){ ratFree(r); } else { const a = s.a + W.t * 1.6; setMood(W, r, '쥐 방진 — 대검 둘레'); goTo(W, r, king.x + Math.cos(a) * 1.25, king.y + Math.sin(a) * 1.25, dt); return true; } }
+  if (s.k === 'ladder'){ stop(r); setMood(W, r, '쥐 사다리 — 포렌을 태움'); return true; }
+  if (s.k === 'bindRun'){ const t = tgt(s.b); if (!t || !t.bind){ ratFree(r); } else { if (dist(r, t) < t.r + r.r + 0.35) bindAttach(W, r, t); else { setMood(W, r, '묶으러', t.i); goTo(W, r, t.x, t.y, dt); } return true; } }
+  if (s.k === 'bind'){ const t = tgt(s.b); if (!t || !t.bind){ ratFree(r); } else { const B = t.bind, j = B.rats.indexOf(r.i), a = j / Math.max(1, B.rats.length) * 6.283 + (W.t - B.t0) * 2; r.x = t.x + Math.cos(a) * (t.r + r.r * 0.5); r.y = t.y + Math.sin(a) * (t.r + r.r * 0.5); stop(r); setMood(W, r, '매달림', t.i); return true; } }
+  if (s.k === 'shieldWall'){ if (!s.slot){ ratFree(r); } else { if (Math.hypot(s.slot.x - r.x, s.slot.y - r.y) > 0.15){ setMood(W, r, '쥐 방패 — 자리로'); goTo(W, r, s.slot.x, s.slot.y, dt); } else { stop(r); r.fg = s.face; setMood(W, r, '쥐 방패 — 온몸으로 막음'); } return true; } }
+  if (s.k === 'wall'){ const g = tgt(s.g), e = tgt(s.a); if (!g || !e){ ratFree(r); } else { const d = dist(g, e) || 1, nx = (e.x - g.x) / d, ny = (e.y - g.y) / d, ah = Math.min(d * 0.6, g.r + r.r + 0.25), off = (s.idx - (s.n - 1) / 2) * 0.5;
+      const x = g.x + nx * ah - ny * off, y = g.y + ny * ah + nx * off; if (Math.hypot(x - r.x, y - r.y) > 0.12){ setMood(W, r, '방벽 — ' + g.name + ' 앞으로', e.i); goTo(W, r, x, y, dt); } else { stop(r); r.fg = Math.atan2(ny, nx); setMood(W, r, '방벽', e.i); } return true; } }
+  if (s.k === 'assault'){ const t = tgt(s.b); if (!t || !(lead ? markOn(W, lead) : W.t < (s.until || 0))){ ratFree(r); } else { r.target = t; r.state = r.side ? 'hunt' : 'fight'; fight(W, r, t, dt, true, true); return true; } }
+  // 쉬는 쥐: 표식이 남아 있으면 합류
+  if (lead && markOn(W, lead)){ const t = W.units[lead.ratMark.b]; r.rs = { k: 'assault', b: t.i, until: lead.ratMark.until, a: W.rand() * 6.283 }; r.target = t; fight(W, r, t, dt, true, true); return true; }
+  const knight = r.ratKind === 'ratKnight' || r.ratKind === 'ratVet';
+  if (!s.tgT || W.t >= s.tgT){ s.tgT = W.t + 0.3 + W.rand() * 0.2; let t = null;
+    const anc = !r.ratWild && lead ? lead : r, lim = r.ratWild || !lead ? 16 : 7;
+    if (!r.ratWild && lead && lead.target && lead.target.alive && !lead.target.gone && lead.target.side !== r.side && dist(lead, lead.target) <= 7) t = lead.target;
+    else t = prnFoes(W, r).filter(e => dist(anc, e) <= lim && (dist(r, e) < 2.5 || canSee(W, r, e) || (r.side === 0 ? !!e.seenBy : false))).sort((a, b) => dist(r, a) - dist(r, b))[0] || null;
+    s.tg = t ? t.i : null; }
+  const t = s.tg != null ? tgt(s.tg) : null;
+  if (t){ if (knight) return false;   // 쥐 기사 · 베테랑: 창 거리 · 방패 · 돌격은 보통 근접 그대로
+    if (!r.flee && W.rand() < dt * 0.05){ const d = dist(r, t) || 1, fx = r.x + (r.x - t.x) / d * 2.5, fy = r.y + (r.y - t.y) / d * 2.5; if (!boxRock(W, fx, fy, r.r)) r.flee = { x: fx, y: fy, until: W.t + 0.7, why: '쌩 — 도망쳤다 돌아옴' }; }   // 갑자기 뒤로 쌩
+    r.target = t; r.state = r.side ? 'hunt' : 'fight'; fight(W, r, t, dt, true, true); return true; }
+  if (!r.ratWild && lead){ if (dist(r, lead) > 2.2){ const a = (r.i * 2.399) % 6.283; setMood(W, r, lead === king ? '포렌을 따름' : '베테랑을 따름'); goTo(W, r, lead.x + Math.cos(a) * 1.4, lead.y + Math.sin(a) * 1.4, dt); } else { stop(r); setMood(W, r, lead === king ? '포렌 곁' : '베테랑 곁'); } return true; }
+  if (!s.wp || W.t >= (s.wpT || 0) || Math.hypot(s.wp.x - r.x, s.wp.y - r.y) < 0.5){ const c = lead || r; s.wpT = W.t + 3 + W.rand() * 3; s.wp = null;
+    for (let k = 0; k < 8; k++){ const a = W.rand() * 6.283, d = 1.5 + W.rand() * 4.5, x = c.x + Math.cos(a) * d, y = c.y + Math.sin(a) * d; if (x > 0.7 && y > 0.7 && x < W.map.W - 0.7 && y < W.map.H - 0.7 && !boxRock(W, x, y, r.r)){ s.wp = { x, y }; break; } } }
+  if (s.wp){ setMood(W, r, '어슬렁'); goTo(W, r, s.wp.x, s.wp.y, dt); } else stop(r);
+  return true;
+}
+// 포렌마다 (매 순간): 충성 · 쥐 망토 · 쥐 표식 · 방벽 · 강공에 방진 · 지휘가 끊김 · 기억하는 쥐
+function porenTick(W, dt){
+  let any = false;
+  for (const u of W.units){ if (!u.porenKit) continue; any = true; prnMemTick(W, u); if (u.gone){ ratsOut(W, u.side, r => r.ratOf === u.i, u.i, '포렌을 따라 나감'); continue; } if (!u.alive) continue; prnUnitTick(W, u, dt); }   // 포렌이 맵을 나가면 쥐도 함께
+  if (any) for (const v of W.units){ if (v.ratOf == null || !v.alive || v.gone) continue;
+    if (v.leaveT != null && W.t >= v.leaveT){ v.alive = false; v.gone = 'left'; stop(v); continue; }   // 경례 뒤 사라짐
+    if (v.ratKind === 'ratVet'){ const K = W.units[v.ratOf]; if (!(K && K.alive && !K.gone)) vetCmd(W, v); } }
+  if (any) for (const t of W.units) if (t.bind){ bindTick(W, dt); break; }
+  if (any) for (const s of [0, 1, 2]){ if (!W.units.some(r => r.alive && !r.gone && r.side === s && r.ratOf != null)) continue;   // 편에 쥐만 남으면 흩어짐
+    if (!W.units.some(o => o.alive && !o.gone && o.side === s && !o.summon)) ratsOut(W, s, () => true, null, '편에 쥐만 남아 흩어짐'); }
+}
+// 쥐가 한꺼번에 사라짐 (한 줄로 적음)
+function ratsOut(W, side, f, by, why){
+  const R = W.units.filter(r => r.alive && !r.gone && r.side === side && r.ratOf != null && f(r)); if (!R.length) return;
+  for (const r of R){ r.alive = false; r.gone = 'left'; r.act = null; stop(r); }
+  L(W, { k: 'ratScatter', a: by != null ? by : R[0].i, n: R.length, why: why || '', vis: side === 0 || R.some(r => !!r.seenBy) });
+}
+function prnUnitTick(W, u, dt){
+  const P = PRN(W); if (!u.prn){ u.prn = { loyal: null, wallCd: -9, settled: false, calmT: null }; prnInit(W, u); }
+  const Q = u.prn, rats = prnRats(W, u), on = prnFight(W, u), cap = on ? (P.cap || 24) : Math.min(P.cap || 24, P.idleCap || 4);
+  if (!Q.loyal){ const k = prnRoll(W); Q.loyal = { t: 0, next: k, dur: prnFill(W, k) }; }
+  Q.full = rats.length >= cap;
+  if (!Q.full){ Q.loyal.t += dt * (on ? (rats.length < (P.few || 4) ? P.fewK || 2.5 : 1) : P.idleK || 0.25);
+    if (Q.loyal.t >= Q.loyal.dur){ prnRat(W, u, Q.loyal.next); const k = prnRoll(W); Q.loyal = { t: 0, next: k, dur: prnFill(W, k) }; } }
+  { const C = P.cloak || {}; u.cloakN = Math.min(Math.round((C.max || 0.16) / (C.per || 0.035)), rats.filter(r => dist(r, u) < (C.r || 1.6)).length); }
+  if (u.act && u.act.k === 'atk' && u.act.phase === 'wind'){ const t = W.units[u.act.b]; if (t && t.alive && t.side !== u.side && specReady(W, u, 'pmark')) prnMark(W, u, t, '쳐들어가며'); }
+  for (const e of W.units){ const A = e.act; if (!e.alive || e.gone || e.side === u.side || !A || A.phase !== 'wind' || A.b == null) continue;
+    if (!(A.k === 'charge' || A.k === 'bash' || A.k === 'h2' || A.k === 'spec' || (A.k === 'atk' && !isFar(e)))) continue;
+    const g = W.units[A.b]; if (!g || !g.alive || g.side !== u.side || g.ratOf != null || !prnStrong(W, e)) continue;
+    if (g === u){ if (!(u.act && u.act.k === 'pr')) prFort(W, u, '강공'); }   // 포렌 본인: 대검을 꽂고 쥐 방진
+    else prnWall(W, u, g, e); }
+  if (u.act && u.act.k === 'pr' && u.act.s === 'cmd' && (u.stunT || -9) - W.t >= ((P.shield || {}).bigStun || 0.5)) prCmdEnd(W, u, '지휘 끊김!');
+  if (!Q.settled && !prnFoes(W, u).length) prnSettle(W, u);
+  else if (Q.settled && prnFoes(W, u).length) Q.settled = false;   // 새 적이 생김 (여정 맵 · 만남) — 다음 싸움 끝에 다시   // 싸움 끝 (적이 모두 쓰러짐) — 판이 끝나기 전 그 순간에
+}
+// 투창 뒤: 검 (javSide) 이 있으면 그것으로 근접 · 없으면 맨손 — 쥐 베테랑 (도감: 투창 후 검으로 근접전)
+function javAfter(W, u){ const sw = u.javSide && (W.rules.weapons || {})[u.javSide]; u.rng = (sw || W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = sw ? u.javSide : '맨손'; }
+// 지휘의 열화 카피 (쥐 베테랑): 포렌이 쓰러지면 쥐들이 베테랑을 따르고, 베테랑이 치려는 적에게 표식 (덤 쥐 없이 3초 · 대기 18초)
+const vetOf = (W, r) => W.units.find(v => v !== r && v.alive && !v.gone && v.ratOf === r.ratOf && v.ratKind === 'ratVet' && v.leaveT == null) || null;
+function vetCmd(W, v){
+  const C = PRN(W).vetCmd || {}, A = v.act; if (W.t < (v.vcmdCd || -9) || !A || A.k !== 'atk' || A.phase !== 'wind') return;
+  const t = W.units[A.b]; if (!t || !t.alive || t.side === v.side) return;
+  const rats = W.units.filter(r => r !== v && r.alive && !r.gone && r.ratOf === v.ratOf && r.leaveT == null && !ratBusy(r)); if (!rats.length) return;
+  v.vcmdCd = W.t + (C.cd || 18); v.ratMark = { b: t.i, until: W.t + (C.dur || 3) };
+  rats.forEach((r, i) => { r.rs = { k: 'assault', b: t.i, until: v.ratMark.until, a: i / rats.length * 6.283 }; });
+  L(W, { k: 'ratVetCmd', a: v.i, b: t.i, n: rats.length, vis: v.side === 0 || !!v.seenBy || !!t.seenBy });
+  if (W.fxOn) W.fx.push({ k: 'ratmark', b: t.i, t0: W.t, until: v.ratMark.until });
+}
+// 구르기 (쥐 베테랑 — 민수 메모: 앞뒤 · 방어 보정 · 급소 보호 · 중대형까지 넘어뜨림 / 도감: 진형을 붕괴시키는 구르기)
+//   뒤: 나를 노린 근접 일격이 손 안에서 준비 중이면 60% 로 뒤로 굴러 빠짐 · 앞: 1.6 ~ 4.2칸의 적에게 굴러 들어가 닿는 몸을 넘어뜨림 (대형 · 초대형은 밀기만)
+const ROLL_BIG = ['대형', '초대형'];
+function vetRoll(W, r, t){
+  const V = PRN(W).vetRoll || {}; if (W.t < (r.rollCd || -9) || r.act || r.bound || prone(W, r) || W.t < (r.stunT || -9) || r.kb) return false;
+  const e = W.units.find(f => f.alive && !f.gone && f.side !== r.side && f.act && f.act.phase === 'wind' && f.act.b === r.i && f.act !== r.rollSeen && !isFar(f) && (f.act.k === 'atk' || f.act.k === 'bash' || f.act.k === 'spec' || f.act.k === 'h2') && gap(f, r) < (f.rng || 0.5) + (W.rules.reach || 0.3) + 0.5 && f.act.end - W.t > 0.1);
+  if (e){ r.rollSeen = e.act;
+    if (W.rand() < (V.backP != null ? V.backP : 0.6)){ const a0 = Math.atan2(r.y - e.y, r.x - e.x), d = V.bDist || 2.2;
+      for (const da of [0, 0.6, -0.6, 1.1, -1.1]){ const x = r.x + Math.cos(a0 + da) * d, y = r.y + Math.sin(a0 + da) * d;
+        if (x < 0.7 || y < 0.7 || x > W.map.W - 0.7 || y > W.map.H - 0.7 || boxRock(W, x, y, r.r) || !fatClear(W.map, r.x, r.y, x, y, r.r * 0.7)) continue;
+        rollStart(W, r, 'back', x, y, e); return true; } } }
+  if (!t || !t.alive || t.gone || t.side === r.side || ROLL_BIG.includes(sizeOf(t))) return false;
+  const d = dist(r, t); if (d < (V.fMin || 1.6) || d > (V.fMax || 4.2) || !canSee(W, r, t) || !fatClear(W.map, r.x, r.y, t.x, t.y, r.r * 0.7)) return false;
+  const k = Math.min(V.fDist || 3.2, d + 0.2) / d; rollStart(W, r, 'fwd', r.x + (t.x - r.x) * k, r.y + (t.y - r.y) * k, t); return true;
+}
+function rollStart(W, r, dir, tx, ty, t){
+  const V = PRN(W).vetRoll || {}, dur = dir === 'fwd' ? V.fDur || 0.42 : V.bDur || 0.34;
+  stop(r); r.act = { k: 'roll', dir, phase: 'run', t0: W.t, end: W.t + dur, sx: r.x, sy: r.y, tx, ty, b: t ? t.i : null, hit: [] };
+  r.rollCd = W.t + (V.cd || 6); r.fg = r.face = Math.atan2(ty - r.y, tx - r.x) + (dir === 'back' ? Math.PI : 0);
+  L(W, { k: 'ratRoll', a: r.i, b: t ? t.i : null, dir, vis: r.side === 0 || !!r.seenBy || !!(t && t.seenBy) });
+  if (W.fxOn) W.fx.push({ k: 'num', x: r.x, y: r.y - 0.3, s: dir === 'fwd' ? '앞구르기!' : '뒷구르기!', c: 'g', t0: W.t });
+}
+function rollStep(W, r, dt){
+  const A = r.act, k = Math.min(1, (W.t - A.t0) / Math.max(0.05, A.end - A.t0)), e = 1 - (1 - k) * (1 - k), nx = A.sx + (A.tx - A.sx) * e, ny = A.sy + (A.ty - A.sy) * e;
+  stop(r); let blk = false;
+  if (!boxRock(W, nx, ny, r.r * 0.8)){ r.x = nx; r.y = ny; } else blk = true;
+  if (A.dir === 'fwd') for (const o of W.units){ if (!o.alive || o.gone || o.side === r.side || A.hit.includes(o.i)) continue; if (Math.hypot(o.x - r.x, o.y - r.y) < o.r + r.r + ((PRN(W).vetRoll || {}).w || 0.35)){ A.hit.push(o.i); rollBump(W, r, o); } }
+  if (k >= 1 || blk){ r.act = null; if (A.dir === 'fwd' && A.hit.length) L(W, { k: 'ratRollHit', a: r.i, n: A.hit.length, vis: r.side === 0 || !!r.seenBy }); }
+}
+function rollBump(W, r, o){
+  const V = PRN(W).vetRoll || {}, big = ROLL_BIG.includes(sizeOf(o));
+  strike(W, r, o, o, 1, false, { mul: V.mul || 0.5, wk: '둔기', noWound: true, tag: '구르기 — 들이받음' });
+  if (!o.alive) return;
+  if (!big) knockDown(W, o, V.kd || 1.1, r.i, '쥐 베테랑의 구르기에 발이 걸림');
+  shove(W, r, o, big ? 0.3 : V.shove || 0.9, o.x - r.x, o.y - r.y, { tag: '구르기에 밀려남' });
+}
+// 기억에서 빠짐: 쓰러진 쥐 기사 (포렌이 쓰러져 있어도 셈)
+function prnMemTick(W, u){
+  if (u.ratMem) for (const r of W.units) if (r.ratOf === u.i && r.ratRec && !r.alive && !r.gone && !r.recGone){ r.recGone = true; const j = u.ratMem.indexOf(r.ratRec); if (j >= 0) u.ratMem.splice(j, 1); L(W, { k: 'ratLost', a: r.i, n: r.ratRec.n, vis: true }); }
+}
+// 싸움 끝: 살아남은 쥐 기사 — 돌아온 횟수 +1 · 단계 +1 (최대 4) · 세 번 돌아오면 쥐 베테랑 · 경례하고 사라짐 (도감 — 적 포렌의 기사도)
+function prnSettle(W, u){
+  u.prn.settled = true;
+  const ns = [], lv = PRN(W).leave != null ? PRN(W).leave : 1.5;
+  for (const r of prnRats(W, u)){ if (r.ratKind !== 'ratKnight' && r.ratKind !== 'ratVet') continue; r.leaveT = W.t + lv; stop(r); r.act = null;
+    if (r.ratRec && u.ratMem){ const x = r.ratRec; x.ret = (x.ret || 0) + 1; x.lv = Math.min(4, (x.lv || 1) + 1); if (x.ret >= 3 && !x.vet){ x.vet = true; L(W, { k: 'ratVet', a: r.i, n: x.n, vis: true }); } ns.push(x.n + (x.vet ? '★' : '')); }
+    else ns.push(r.name); }
+  if (ns.length) L(W, { k: 'ratSalute', a: u.i, ns: ns.join(', '), vis: u.side === 0 || !!u.seenBy });
+}
+
+if (typeof module !== 'undefined') module.exports = { think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */

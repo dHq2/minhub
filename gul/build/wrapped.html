@@ -4,6 +4,11 @@
          2.6초마다 등 뒤로 파고들어 한두 대 치고 빠짐 · 사각 (등 뒤에서 친 근접은 막지 못함) · 손바닥 (표식 0.45초 — 벗어나면 빗나가고 빈틈) · 니킥 (빈틈이면 헤드샷 60% — 확정 치명 ·
          갑옷 · 막기 무시 · 넘어뜨림) · 딱 · 딱딱딱 (원거리 천둥 — 피하거나 방패로 막을 수 있음 · 갑옷 무시) · 내려찍기 (떠 있는 동안 무적 · 둘레 2.5칸) · 올려차기 · 싸움을 시작할 때 기술마다 대기 (2D).
          감전 한 틀 (푸른 번개 · 적뢰 · 잔류 — 1초마다 피해 × 중첩 · 최대 5). 뽑기 희귀도: 도감 별이 높을수록 드묾.
+         포렌 (명세 C5 — 2D 쥐 군단 · 3D 기억하는 쥐 기사 · 뽑기에서만 · 5성 · [지휘S] [군주] ◆쥐들의 왕 + [높은후각] [반사신경]): 충성 (게이지가 차면 쥐가 뒤쪽에서 달려옴 — 작은 쥐 · 쥐 · 큰 쥐 · 쥐 기사 ·
+         최대 24) · 쥐 표식 (물어라! — 모든 쥐가 몰려듦) · 방벽 (동료에게 강공이 오면 쥐가 대신 맞음) · 쥐 망토 (곁의 쥐마다 받는 피해 −3.5%) · 쥐 방진 (대검을 꽂고 버팀 — 쥐가 70% 를 나눠 받음 ·
+         끝에 회전 반격) · 쥐 방패 (위험한 동료 앞을 쥐가 온몸으로) · 쥐 사다리 · 쥐 포박 · 도발 · 대검 베기. 쥐는 포렌의 기술로만 움직임 (명령 · 고르기에서 빠짐 — 쥐를 탭하면 그 자리 바닥으로).
+         쥐 기사 (3D): 이름 A, B … · 살아 돌아오면 단계 +1 (최대 4) · 세 번 돌아오면 쥐 베테랑 (체력 300 · 대방패 · 구르기 — 진형을 무너뜨림 · 투창 뒤 검 · 포렌이 쓰러지면 쥐들을 이끎) ·
+         싸움이 끝나면 경례하고 사라짐 · 쓰러지면 잊힘. 쥐의 무구는 전리품이 되지 않음. 아이콘 판 64칸.
      v8.7.7: 유물 34 — 새 유물 16 (랑팡의 나침반 · 탄탄만의 숫돌 · 노라의 탄띠 · 아이텐의 토끼발 · 셰도르의 단검집 · 호레이쇼의 군기 · 페흐토의 청염 조각 · 세르파의 젤리 · 인공천사 벨의 깃털 ·
          마리의 약초 주머니 · 로지나의 리본 · 테헤라의 모래시계 · 각혈의 핏방울 · 망각의 데이터 조각 · 붉은암석의 핵 · 도굴꾼의 열쇠) · 지닌 이 (끼운 인물만 — 왐의 머리촛대 · 간호사장의 모자 (간호사 전용) ·
          가뮤의 대검 (중대형 이상) · 로켈의 갑옷 · 모란의 가면 · 비늘조각 · 오딜의 눈물 · 청염 조각 — 지도의 유물 칸을 눌러 고름) · 뽑기 풀 24 (가뮤의 대검 · 비늘조각 · 모자 · 바이올린 · 오딜의 눈물은 얻는 길만).
@@ -1081,7 +1086,7 @@ button.pm{font:inherit;text-align:left;cursor:pointer}
 .ab i{display:block;height:100%} .ab i.w{background:#e8a33c} .ab i.r{background:var(--dim)}
 .pm .at{font:500 11px var(--body);color:var(--fg);max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pm .at.warn{color:var(--foe)}
-.tico{--s:1.3em;--gc:#6b5f4f;display:inline-block;width:var(--s);height:var(--s);vertical-align:-.32em;margin-right:4px;border-radius:4px;flex:none;background:#14120f url(icons.webp) no-repeat;background-size:calc(var(--s) * 8) calc(var(--s) * 6);background-position:calc(var(--s) * var(--ix) * -1) calc(var(--s) * var(--iy) * -1);box-shadow:0 0 0 1.5px var(--gc)}   /* v7.17.1 특성 · 기술 아이콘 */
+.tico{--s:1.3em;--gc:#6b5f4f;display:inline-block;width:var(--s);height:var(--s);vertical-align:-.32em;margin-right:4px;border-radius:4px;flex:none;background:#14120f url(icons.webp) no-repeat;background-size:calc(var(--s) * 8) calc(var(--s) * 8);background-position:calc(var(--s) * var(--ix) * -1) calc(var(--s) * var(--iy) * -1);box-shadow:0 0 0 1.5px var(--gc)}   /* v7.17.1 특성 · 기술 아이콘 */
 .ic .tico{--s:1.2em;margin:0;vertical-align:middle} .tis{display:inline-flex;gap:3px;margin-left:5px;vertical-align:middle} .tis .tico{--s:15px;margin:0;box-shadow:0 0 0 1px var(--gc)} body.mob .tis{display:none}
 .fc.palmOn{box-shadow:0 0 0 2px #ff5a4a,inset 0 0 0 40px rgba(220,30,30,.34)!important}   /* v7.17 팜 버스트 중 */
 .pm.foe .fc{box-shadow:0 0 0 2px var(--foe);width:28px;height:28px}
@@ -1493,7 +1498,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.7.8 굿윌 · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.7.8 · 굿윌 · 감전 한 틀</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v8.7.8 굿윌 · 포렌 (쥐 군단) · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v8.7.8 · 굿윌 · 포렌 · 감전 한 틀</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1625,7 +1630,7 @@ i.dur.z::after{background:var(--foe)}
             <button class="btn warn" id="noTorchBtn" type="button">벽 횃불 모두 빼기</button>
             <button class="btn warn" id="noRockBtn" type="button">놓은 바위 모두 빼기</button>
           </div>
-          <p class="note">사선 예제 = 포렌 g3 (대검, 반사신경 · 후각 A) · 옐로 h3 · 인주 h2 (창) 와 저격총수 h9 · 검사 d8 · 똥개 k8 · l7. 격자는 바위 없는 판이에요. 아군은 아래 가운데, 적은 무리째 위쪽 줄에 놓입니다. 동굴은 같은 씨앗이면 같은 동굴이 나오고, 적은 무리째로 멀리 흩어져요. 바위 도구로 어느 맵이든 칸을 바위로 바꾸거나 되돌릴 수 있어요.</p>
+          <p class="note">사선 예제 = 포렌 g3 (포렌의 대검 · 쥐 군단 · 반사신경 · 후각 A) · 옐로 h3 · 인주 h2 (창) 와 저격총수 h9 · 검사 d8 · 똥개 k8 · l7. 격자는 바위 없는 판이에요. 아군은 아래 가운데, 적은 무리째 위쪽 줄에 놓입니다. 동굴은 같은 씨앗이면 같은 동굴이 나오고, 적은 무리째로 멀리 흩어져요. 바위 도구로 어느 맵이든 칸을 바위로 바꾸거나 되돌릴 수 있어요.</p>
         </div>
       </div>
 
@@ -1977,7 +1982,7 @@ const DEFAULT_RULES = {
   skillReach: 3,      // 다른 명령을 받고 있어도 위급한 동료가 이 거리 (칸) 안이면 달려가 씀 (자동이면 leash 거리까지)
   // 무기: 사거리 (칸, 몸 가장자리끼리) = 공격 범위. 교전은 이 안에서만. 무기가 없으면 직업표의 사거리
   // ammo = 탄약 (없으면 무한), loud = 총성 (소리 난 자리가 알려짐), guard = 방어 자세로 막을 수 있는 무기, aim = 사거리 끝 명중률 (없으면 aimFar), vel = 탄속 (칸/초)
-  weapons: { '맨손':{rng:0.3, kind:'맨손'}, '이빨·발톱':{rng:0.3, kind:'짐승'}, '단검':{rng:0.3, kind:'날붙이', spdW:0.7, thr:true}, '흑요석 단검':{rng:0.3, kind:'날붙이', spdW:0.65, thr:true}, '검':{rng:0.45, kind:'날붙이'}, '둔기':{rng:0.45, kind:'둔기'}, '장검':{rng:0.6, kind:'날붙이'}, '노인의 검':{rng:0.75, kind:'날붙이', frost:0.08}, '대검':{rng:0.7, guard:true, two:true, kind:'날붙이'}, '대장군의 도끼':{rng:1.0, guard:true, two:true, kind:'날붙이'}, '각혈의 장검':{rng:0.65, kind:'날붙이', fire:2, spec:'wave', specName:'피의 검기 (열화)'}, '창':{rng:1.5, kind:'날붙이'},
+  weapons: { '맨손':{rng:0.3, kind:'맨손'}, '이빨·발톱':{rng:0.3, kind:'짐승'}, '단검':{rng:0.3, kind:'날붙이', spdW:0.7, thr:true}, '흑요석 단검':{rng:0.3, kind:'날붙이', spdW:0.65, thr:true}, '검':{rng:0.45, kind:'날붙이'}, '둔기':{rng:0.45, kind:'둔기'}, '장검':{rng:0.6, kind:'날붙이'}, '노인의 검':{rng:0.75, kind:'날붙이', frost:0.08}, '대검':{rng:0.7, guard:true, two:true, kind:'날붙이'}, '포렌의 대검':{rng:0.75, guard:true, two:true, kind:'날붙이'}, '대장군의 도끼':{rng:1.0, guard:true, two:true, kind:'날붙이'}, '각혈의 장검':{rng:0.65, kind:'날붙이', fire:2, spec:'wave', specName:'피의 검기 (열화)'}, '창':{rng:1.5, kind:'날붙이'},
              '샷건':{rng:2.5, cone:{n:5, ang:0.32, mul:0.32}, ammo:4, loud:true, aim:0.6, vel:220, P:45, draw:0.05, kind:'총포류', pen:1, penK:0.3, jit:0.1, near:{r:1.8, mul:2.2, kb:1.0}}, '마법':{rng:4, aim:0.6, vel:12, P:999, kind:'마법'}, '총':{rng:6, ammo:8, loud:true, vel:280, P:75, kind:'총포류', pen:1, penK:0.5, jit:0.06}, '활':{rng:6, ammo:30, aim:0.5, vel:240, P:70, draw:0.15, kind:'활', pen:0.65, penK:0.85, jit:0.35}, '하얀 나무':{rng:10, ammo:30, aim:0.5, vel:200, P:70, draw:0.15, kind:'활', pen:0.65, penK:0.85, jit:0.35}, '궁수의 활':{rng:12, ammo:40, aim:0.5, vel:240, P:70, draw:0.15, kind:'활', pen:0.65, penK:0.85, jit:0.35, req:'중대형'}, '레베카의 검':{rng:0.52, kind:'날붙이'}, '나달의 낡은 장검':{rng:0.62, kind:'날붙이'}, '장도리':{rng:0.36, kind:'둔기', spdW:0.85}, '모닝스타':{rng:2.3, kind:'둔기', spdW:1.15, kb:0.45, flail:{sw:1.3, close:0.9, mid:1.6, swingP:0.25, v:14, back:11, ball:0.2, rec:0.15, drag:1.2, pull:70, damp:3, e:0.35, minV:3, trec:0.3, reel:30, ff:0.55, backMul:0.6, backDown:0.35, backV:4}}, '대지 마법':{rng:6, aim:0.55, vel:20, P:60, draw:0.1, kind:'마법', phys:true, pen:0.6, penK:0.6, jit:0.2, kb:0.25}, '단궁':{rng:4, ammo:40, aim:0.5, vel:200, P:55, draw:0.08, kind:'활', pen:0.5, penK:0.75, jit:0.3, burst:2, burstMax:3, burstP:0.25, burstGap:0.2, burstMul:0.85}, '권총':{rng:5.5, ammo:100, mag:12, reload:1.6, burst:2, burstMax:3, burstP:0.2, burstGap:0.12, burstMul:0.75, loud:true, aim:0.55, vel:260, P:60, draw:0.05, kind:'총포류', pen:1, penK:0.45, jit:0.08}, '저격총':{rng:7, ammo:5, loud:true, aim:0.8, vel:400, P:130, draw:0.15, kind:'총포류', pen:1, penK:0.6, jit:0.05}, '어부의 창':{rng:1.5, kind:'날붙이'},
              '소총':{rng:7, ammo:120, mag:30, reload:2.5, burst:2, burstMax:6, burstP:0.1, burstGap:0.09, burstMul:0.65, loud:true, aim:0.55, vel:320, P:85, kind:'총포류', pen:1, penK:0.5, jit:0.06} },
   // v5.2 관통 (원거리 · 투창): pen = 갑옷을 꿰뚫을 확률 (+ 근력: (괴력 배율 − 1) × penStr, 총은 근력 없음), penK = 꿰뚫으면 갑옷이 막는 몫에서 덜어 내는 비율, jit = 피해 흔들림 (±)
@@ -2116,10 +2121,29 @@ const DEFAULT_RULES = {
   frost: { spd: 0.55, wind: 1.6 },
   hobble: 0.4,   /* v7.23.2 이동 제약: 걸음 × (못 뜀 · 스텝 · 도약 못 함) */   /* v7.23.1 동상: 걸음 × · 준비 시간 × */
   dcounter: { delay: 0.12, reach: 0.8 },
+  poren: {   /* v8.7.8 포렌 — 2D 쥐 군단 그대로 (쥐 기사의 이름 · 단계 · 베테랑은 3D) */
+    cap: 24, few: 4, fewK: 2.5, idleK: 0.25, idleCap: 4, wildP: 0.3, init: 4, initKnight: 0.5,
+    roll: [['ratS', 0.58, 0.8], ['ratM', 0.27, 3], ['ratL', 0.13, 8], ['ratKnight', 0.02, 8]],   // [쥐, 확률, 게이지 초] — 다음 쥐는 미리 정해짐
+    rats: {
+      ratS: { name: '작은 쥐', ref: 'C-270', cls: '기동', hp: 18, atk: 5, spd: 3.8, height: 0.3, weight: 3, rMul: 0.5, traits: ['회피A', '후각B'] },
+      ratM: { name: '쥐', ref: 'C-270', cls: '기동', hp: 48, atk: 11, spd: 3.2, height: 0.45, weight: 12, rMul: 0.7, traits: ['회피B', '후각B'] },
+      ratL: { name: '큰 쥐', ref: 'C-270', cls: '근접', hp: 240, atk: 23, spd: 2.6, height: 1.0, weight: 70, rMul: 1.15, traits: ['후각B'] },
+      ratKnight: { name: '쥐 기사', ref: 'C-059', cls: '근접', weapon: '창', shield: true, charge: true, hp: 108, atk: 21, spd: 3.0, height: 0.9, weight: 40, traits: ['회피C'], active: ['돌진'], gear: { 몸: { name: '판금 흉갑', mat: '판금', tier: 1 } } },
+      ratVet: { name: '쥐 베테랑', ref: 'C-274', cls: '근접', weapon: '창', javSide: '검', shield: true, charge: true, hp: 300, atk: 26, spd: 2.7, height: 1.0, weight: 62, traits: ['베테랑', '공통스킬:투창', '대방패', '회피C'], active: ['돌진', '구르기'], poise: 1.4, javK: 1.25, gear: { 몸: { name: '판금 흉갑', mat: '판금', tier: 2 } } } },
+    vetRoll: { cd: 6, fMin: 1.6, fMax: 4.6, fDist: 3.6, fDur: 0.55, bDist: 2.4, bDur: 0.38, backP: 0.6, def: 0.6, w: 0.35, mul: 0.5, kd: 1.4, shove: 1.0 },   // 구르기 (민수 메모: 앞뒤 · 방어 보정 · 급소 보호 · 중대형까지 넘어뜨림)
+    vetCmd: { cd: 18, dur: 3 }, leave: 1.5,   // 지휘의 열화 카피 (포렌이 쓰러지면 베테랑의 표식 — 덤 쥐 없이 3초) · 경례 뒤 사라지기까지
+    mark: { cd: 12, dur: 5, extra: 3, knightP: 0.3 },   // 쥐 표식 '물어라!' — 3D: 덤으로 오는 첫 쥐는 30% 쥐 기사
+    wall: { cd: 6, dur: 3, minAtk: 30, bigAtk: 50 },   // 방벽: 동료에게 강공 (보스 · 공격 30 넘음) 이 오면 2 ~ 4마리가 앞을 막음
+    cloak: { r: 1.6, per: 0.035, max: 0.16 },   // 쥐 망토: 곁의 쥐 하나마다 받는 피해 -3.5% (최대 -16% — 2D 방어 +2 · +10 을 방어 22 위에서 옮김)
+    fort: { cd: 14, dur: 2.5, share: 0.7, near: 1.6, lowHp: 0.4, maxRats: 8, minRats: 2, counter: 0.6, weightK: 0.164, crit: 0.25, spinR: 1.8 },
+    shield: { cd: 16, dur: 6, jump: 2.2, maxRats: 12, gap: 0.55, bigStun: 0.5, ahead: 1.1, allyHp: 0.45, allyR: 3, selfHp: 0.5, selfR: 2, shareR: 2.5 },
+    ladder: { cd: 7, min: 2.5, max: 8, speed: 7, rats: 3, mul: 1.5, r: 1.3, stun: 0.5 },
+    bind: { cd: 12, range: 4.5, rats: 5, min: 3, per: 22, max: 100, drain: 22, dur: 3, boss: 2.5 },   // 3D: 최대 3초 (2D 4.5초에서 줄임)
+    taunt: 3, cleave: 0.6 },
   gw: { lo: 3, hi: 5, dive: 2.6, evade: 0.55, circle: 1.7, hop: 2.8, hopT: 0.16, skillP: 3, diveD: 5.5, cd0: { gpalm: 2, knee: 1.2, snap: 3, snap3: 2, gslam: 5, rise: 1 } },   /* v8.7.8 굿윌 (2D GW.kite): cd0 = 싸움 시작 때 기술 대기 (2D g.cd 처음 값) · 평소 3 ~ 5칸 · 2.6초마다 등 뒤로 파고듦 · 치려 하면 0.55초마다 쓩 · 1.7초마다 사각으로 옮겨 다님 · 한 번 도약 2.8칸 (0.16초 — 그 사이 피함) · 기술은 초당 skillP 확률로 고름 */
   zap: { blue: [6, 4, '감전: 푸른 번개'], red: [10, 5, '감전: 적뢰'], res: [5, 5, '잔류'], redHalf: [7, 5, '감전: 적뢰 (약)'], resHalf: [4, 5, '잔류 (약)'], max: 5 },   /* v8.7.8 감전 한 틀 (2D SHOCKS): [초당 피해 · 초 · 이름] · 겹치면 중첩 (max 까지 · 피해 × 중첩) · 센 쪽이 약한 쪽을 덮음 */   /* v7.23.1 회피 반격: 피한 뒤 delay 초 · 사거리 + reach 안이면 확정 치명 */
   warden: { near: 3.5, mate: 7, corner: 8, see: 0.6 },   /* v7.23 방 지킴이: near = 이만큼 안 (벽 너머는 아님) 이면 터짐 · mate = 방이 없을 때 곁의 동료 · corner = 모퉁이에서 기다리는 최대 초 · see = 우리를 본 지 이만큼 뒤 모퉁이로 */
-  spec: { gpalm: { rng: 4.5, min: 0.8, wind: 0.45, slip: 0.9, mul: 2.6, miss: 0.9, kb: 1.2, rec: 0.35, cd: 7 }, knee: { rng: 6, min: 1.3, wind: 0.35, mul: 3, head: 1.67, headP: 0.6, stun: 1, down: 2.2, downW: 600, rec: 0.3, cd: 6 }, snap: { rng: 7, min: 2.2, wind: 0.3, mul: 2.4, stun: 0.5, rec: 0.25, cd: 6 }, snap3: { rng: 7, min: 1.8, wind: 0.25, mul: 0.75, stun: 0.25, n: 3, gap: 0.22, rec: 0.25, cd: 4 }, gslam: { rng: 5, min: 0, wind: 0.2, time: 0.55, r: 2.5, mul: 1.6, stun: 1.4, rec: 0.35, cd: 7 }, rise: { rng: 1.5, min: 0, wind: 0.25, mul: 1.5, downP: 0.35, down: 0.9, downW: 600, rec: 0.3, cd: 4.5 },   /* v8.7.8 굿윌 (2D GW 표 그대로 — 거리는 몸 가운데끼리) */
+  spec: { pmark: { cd: 12, rng: 9 }, pfort: { cd: 14 }, pshield: { cd: 16 }, pladder: { cd: 7, rng: 8 }, pbind: { cd: 12, rng: 4.5 }, gpalm: { rng: 4.5, min: 0.8, wind: 0.45, slip: 0.9, mul: 2.6, miss: 0.9, kb: 1.2, rec: 0.35, cd: 7 }, knee: { rng: 6, min: 1.3, wind: 0.35, mul: 3, head: 1.67, headP: 0.6, stun: 1, down: 2.2, downW: 600, rec: 0.3, cd: 6 }, snap: { rng: 7, min: 2.2, wind: 0.3, mul: 2.4, stun: 0.5, rec: 0.25, cd: 6 }, snap3: { rng: 7, min: 1.8, wind: 0.25, mul: 0.75, stun: 0.25, n: 3, gap: 0.22, rec: 0.25, cd: 4 }, gslam: { rng: 5, min: 0, wind: 0.2, time: 0.55, r: 2.5, mul: 1.6, stun: 1.4, rec: 0.35, cd: 7 }, rise: { rng: 1.5, min: 0, wind: 0.25, mul: 1.5, downP: 0.35, down: 0.9, downW: 600, rec: 0.3, cd: 4.5 },   /* v8.7.8 굿윌 (2D GW 표 그대로 — 거리는 몸 가운데끼리) */
     blink: { d: 9, min: 2.5, wind: 0.35, rec: 0.25, cd: 5, behind: 0.4 }, pyre: { r: 3, wind: 0.9, rec: 0.5, cd: 9, mul: 1.3, stacks: 2 }, pool: { rng: 7, r: 2, t: 6, wind: 0.6, rec: 0.4, cd: 12, tick: 0.5, stacks: 1, slow: 0.7 }, wave: { rng: 8, v: 16, w: 0.45, pierce: 2, wind: 0.45, rec: 0.35, cd: 4, mul: 1.6, stacks: 1, weak: 0.6 },   /* v7.22.3 혈영보 (d 칸 안 상대의 등 뒤로) · 혈염 (둘레 r 칸 · 화상 stacks) · 핏빛 장판 (rng 칸 안에 r 칸 · t 초 · tick 초마다 화상 · 걸음 × slow) · 피의 검기 (rng 칸 · 초당 v · pierce 명까지 · 무기가 준 열화판은 × weak) */
     quake: { d: 9, min: 3, time: 1.1, cd: 6, r: 2.4, under: 1, kill: '중형', mul: 0.3, kb: 0.7, crush: 0.5, react: 0.3, flee: 0.85 },   /* v7.24 도약 강타: 공중은 피해 없음 · 그림과 crush (절반) 넘게 겹치면 찌부러짐 · 나머지는 약한 피해 (mul) · 약한 밀림 (kb) · 넘어짐 없음 */ tear: { rng: 0.6, wind: 0.6, rec: 0.6, hold: 2.2, cd: 12, brk: 0.06, mul: 0.6, kill: '중형' }, kick: { wind: 0.35, rec: 0.45, cd: 7, mul: 0.9, kb: 2.2 }, stone: { wind: 0.25, t: 5, cd: 14, slow: 0.4, near: 4, p: 0.06 }, boulder: { rng: 10, min: 3, wind: 0.8, rec: 0.6, cd: 10, v: 14, w: 0.6, mul: 1.3, kb: 1.6 },   /* v8.7.4 붉은암석 (민수 메모 J22): 잡아찢기 (손 닿는 상대를 hold 초 붙잡음 — 휘청 · 넘어짐 · 날아감 · 붙잡은 동안 받은 피해가 최대 체력 × brk 넘으면 놓침 → 끝까지 쥐면 kill 체급까지 찢김 · 더 크면 팔다리 하나) · 딥 킥 (차 날림 — 날아간 몸이 볼링 핀) · 방어모드 (t 초 받는 피해 1 · 걸음 × slow · 치지 않음 — near 칸 안에 상대가 있을 때 p 확률 (3D 바위 갑피 5초 · 14초)) · 바위던지기 (대포 — 곧게 날아가 처음 닿는 몸) */ spin: { rng: 9, v: 13, w: 0.55, wind: 0.75, rec: 0.5, cd: 11, mul: 1.8, kb: 0.6 },   /* v7.22.2 도약 강타 (d 칸까지 · time 초 날아감 · 내려앉은 r 칸 충격 · 몸 반지름 × under (+ 깔리는 몸 절반) 안에 깔린 kill 체급 이하는 즉사 · 그림자를 본 쪽은 react 쯤 flee 초 동안 피함) · 회전 투척 (rng 칸 · 초당 v 칸 · 폭 w) */
     radar: { gap: 3, dur: 1.2, r: 14 },
@@ -2538,7 +2562,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       dealt: 0, taken: 0, takenDark: 0, unseenHitT: -9, kills: 0, healed: 0, miss: 0, shots: 0, blocked: 0, ff: 0, hitT: -9, atkT: -9, face: p.side ? Math.PI / 2 : -Math.PI / 2, fg: p.side ? Math.PI / 2 : -Math.PI / 2, seenBy: false, engaged: false, slot: 0, wander: 0, moved: 0 });
   if (p.warden){ const P = p.warden, U = W.units[i]; U.warden = { on: true, room: P.room != null ? String(P.room) : null, door: P.door && isFinite(+P.door.x) ? { x: +P.door.x, y: +P.door.y } : null, corner: P.corner && isFinite(+P.corner.x) ? { x: +P.corner.x, y: +P.corner.y } : null, seen: null, seeT: null, cT: null }; if (U.warden.door) U.face = U.fg = Math.atan2(U.warden.door.y - U.y, U.warden.door.x - U.x); }   /* v7.23 방 지킴이 */
   { const U = W.units[i], w0 = (rules.weapons || {})[p.weapon]; U.reachX = far ? Math.max(0, Math.min(0.5, ((rules.reachB || {}).k || 0.25) * (hh - 1.7))) : Math.max(0, +(U.rng0 - (w0 && !isRangedW(w0) ? w0.rng : 0.3)).toFixed(3)); }   /* v8.7.2 몸 리치 (맨손 리치 − 맨손 기본) */
-  { const U = W.units[i]; U.poise = +p.poise > 0 ? +p.poise : 1; U.dmgK = (p.traits || []).includes('가호:오딜') ? 0.9 : 1; U.pavise = (p.traits || []).includes('대방패');   /* v8.7.7 [가호:오딜] 받는 피해 × 0.9 · [대방패] 방패를 든 채 쏨 */ U.dcounter = Math.max(0, Math.min(1, +p.dcounter || 0)); U.gwKit = (p.unique || []).includes('푸른 번개'); if (U.gwKit){ U.flanker = true; U.gw = null; const C0 = (rules.gw || {}).cd0 || {}; for (const x of U.spec || []) if (C0[x.k] != null) x.cdT = (W.t || 0) + C0[x.k]; }   /* v8.7.8 굿윌 — 사각 (등 뒤 근접은 막지 못함) · 싸움을 시작할 때 기술마다 대기 (2D) */ U.frostP = +p.frostP || 0; U.severP = +p.severP || 0; U.brain = p.brain || null; if (p.brain === 'cesar') U.cz = { on: false, fury: false, phaseT: null, orbit: W.rand() < 0.5 ? 1 : -1, spin: 1, shoulder: 3, back: 0, flank: 3, rush: 5, punish: 0, combo: null, jog: 0, upcut: 8, thrust: 4, wave: 5, ult: 10, auth: (p.unique || []).includes('권위') ? 0.6 : null, shaken: 0, cool: 0, stepT: 0, rstep: 0, nStep: 0, wasAtk: false, afterAtk: -9 }; }   /* v7.24 스텝 */   /* v7.23.1 자세 · 회피 반격 · 세자르 */
+  { const U = W.units[i]; U.poise = +p.poise > 0 ? +p.poise : 1; U.dmgK = (p.traits || []).includes('가호:오딜') ? 0.9 : 1; U.pavise = (p.traits || []).includes('대방패');   /* v8.7.7 [가호:오딜] 받는 피해 × 0.9 · [대방패] 방패를 든 채 쏨 */ U.dcounter = Math.max(0, Math.min(1, +p.dcounter || 0)); U.gwKit = (p.unique || []).includes('푸른 번개'); U.porenKit = (p.unique || []).includes('쥐들의 왕'); if (U.porenKit){ const PR = rules.poren || {}; U.taunt = PR.taunt || 3; U.cleave = PR.cleave || 0.6; U.ratMem = U.side === 0 ? (Array.isArray(p.ratMem) ? p.ratMem : (p.ratMem = [])) : null; } if (p.ratOf != null){ U.ratOf = p.ratOf; U.summon = p.summon || 'rat'; U.ratKind = p.ratKind || null; } if (p.javSide) U.javSide = p.javSide; if (+p.javK > 0) U.javK = +p.javK;   /* v8.7.8 포렌 (◆쥐들의 왕) · 쥐 · 투창 뒤 드는 검 · 투창 솜씨 */ if (U.gwKit){ U.flanker = true; U.gw = null; const C0 = (rules.gw || {}).cd0 || {}; for (const x of U.spec || []) if (C0[x.k] != null) x.cdT = (W.t || 0) + C0[x.k]; }   /* v8.7.8 굿윌 — 사각 (등 뒤 근접은 막지 못함) · 싸움을 시작할 때 기술마다 대기 (2D) */ U.frostP = +p.frostP || 0; U.severP = +p.severP || 0; U.brain = p.brain || null; if (p.brain === 'cesar') U.cz = { on: false, fury: false, phaseT: null, orbit: W.rand() < 0.5 ? 1 : -1, spin: 1, shoulder: 3, back: 0, flank: 3, rush: 5, punish: 0, combo: null, jog: 0, upcut: 8, thrust: 4, wave: 5, ult: 10, auth: (p.unique || []).includes('권위') ? 0.6 : null, shaken: 0, cool: 0, stepT: 0, rstep: 0, nStep: 0, wasAtk: false, afterAtk: -9 }; }   /* v7.24 스텝 */   /* v7.23.1 자세 · 회피 반격 · 세자르 */
   { const U = W.units[i], K = p.h2 && H2K[p.h2]; U.scaleMail = (p.traits || []).includes('비늘 깃털 갑옷'); if (p.quakeKill && SIZE_RANK[p.quakeKill] != null) U.quakeKill = p.quakeKill;   /* v8.7.4 점프 찍기 체급 (붉은암석 중대형) */   /* v8.7.4 3D 보스 기술표 · 비늘 깃털 갑옷 */
     if (K){ U.h2 = { k: p.h2, cd: {}, mlT: -9, ph: false, close: false }; U.rng = Math.max(U.rng, +(K.ml.range - U.r - 0.12).toFixed(2)); U.longReach = true; }   // 닿는 거리 (남이 보는 손 길이) = 몸 가운데부터 range
     if (U.r > 0.55 && boxRock(W, U.x, U.y, U.r * 0.9)){ const q = bigSpot(W, U.x, U.y, U.r); if (q){ U.x = q.x; U.y = q.y; U.home = { x: q.x, y: q.y }; } } }   /* v8.7.4 큰 몸은 몸이 들어가는 자리에서 */
@@ -3911,7 +3935,7 @@ function resolveAct(W, u){
     const far = isFar(u);
     let why = '';
     if (!t.alive) why = '대상이 이미 쓰러짐';
-    else if (gap(u, t) > (!far && flailOf(W, u) ? (flailOf(W, u).sw || 1.3) : u.rng) + (far ? 0.5 : R.reach)) why = far ? '사거리 밖으로 벗어남' : W.t - t.dodgedT < 0.5 ? '몸을 빼 피함' : manDodge(W, t) ? (manNote(W, t, u), `직접 움직여 피함 (노린 회피 · ${gap(u, t).toFixed(1)}칸)`) : `손이 안 닿음 (${gap(u, t).toFixed(1)}칸 떨어짐)`;   // v6.7.1
+    else if (gap(u, t) > (!far && flailOf(W, u) ? (flailOf(W, u).sw || 1.3) : u.rng) + (far ? 0.5 : R.reach) && !(!far && A.k === 'atk' && ratWallReach(W, u, t))) why = far ? '사거리 밖으로 벗어남' : W.t - t.dodgedT < 0.5 ? '몸을 빼 피함' : manDodge(W, t) ? (manNote(W, t, u), `직접 움직여 피함 (노린 회피 · ${gap(u, t).toFixed(1)}칸)`) : `손이 안 닿음 (${gap(u, t).toFixed(1)}칸 떨어짐)`;   // v6.7.1
     else if (far && !losClear(W.map, u.x, u.y, t.x, t.y)) why = '바위에 가림';
     else if (A.k === 'atk' && !canSee(W, u, t)) why = '보이지 않음';
     else if (A.k === 'atk' && !far && angDiff(u.face, Math.atan2(t.y - u.y, t.x - u.x)) > rv(W, 'faceArc', 70) * Math.PI / 180) why = '몸을 돌리지 못함';
@@ -3941,7 +3965,7 @@ function resolveAct(W, u){
       const blind0 = blindTo(W, u, t), dp = blind0 ? Math.max(R.darkAim != null ? R.darkAim : 0.25, gap(u, t) < 0.45 ? 0.6 : 0) : !litAt(W, t.x, t.y) && R.darkHit ? (R.darkHit.melee || 0.96) : 1;   // v7.9.3 몸이 닿는 거리면 어둠에서도 어느 정도 맞춤 · v7.5 어둠 속은 보여도 살짝 헛침 · v8.7.3 식 가운데 주석이 뒤를 잘라 (첫 1초 명중 = 시각) 바로잡음
       u.revealT = W.t;   // v7.5 치면 드러남
       if (dp < 1 && W.rand() >= dp){ u.miss++; L(W, { k: 'miss', a: u.i, b: t.i, why: `어둠 속에서 헛침 (명중률 ${Math.round(dp * 100)}%)`, dark: true, nv: !!u.nv, torch: !!u.torch && !u.torchOff, lit: !!litAt(W, t.x, t.y), d: +gap(u, t).toFixed(2) }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '빗나감', c: 'm', t0: W.t }); }
-      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const so = strike(W, u, t, t, dp); if (u.cz) czHit(W, u, t, so); } }   // v6.7 회피 (몸을 비틀어 흘림)
+      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const wr = ratWallHit(W, u, t), so = strike(W, u, wr || t, t, dp); if (u.cz) czHit(W, u, t, so); if (u.cleave) prnCleave(W, u, wr || t); }   /* v8.7.8 방벽 쥐가 대신 맞음 · 대검 베기 */ }   // v6.7 회피 (몸을 비틀어 흘림)
     }
     A.phase = 'rec'; A.end = W.t + u.rec * (far ? (A.sm === 'rapid' ? ((R.sshot || {}).rapid || {}).rec || 0.7 : 1) : wpnSpd(W, u)) + (A.whiff ? (R.step || {}).recAdd || 0.3 : 0); A.t1 = W.t;   // v7.17 헛치면 더 늦게 거둠   // v6.7 단검은 빨리 거둠   // v7.0 속사는 빨리 다음 화살
     if (u.burst) A.end = Math.max(A.end, u.burst.next + (u.burst.left - 1) * u.burst.gap + 0.05);   // 점사가 끝날 때까지
@@ -4051,7 +4075,7 @@ const JVu = (W, u) => isKnife(W, u) ? KNIFE(W) : JV(W);
 const wpnSpd = (W, u) => (((W.rules.weapons || {})[u.weaponNow || u.weapon] || {}).spdW || 1) * (u.wForeign ? ((W.rules.inv || {}).foreign || {}).wind || 1.06 : 1);   // v7.20 남의 무기는 살짝 더딤   // v6.7 단검은 빠름 (근접 준비 · 회복 ×)
 function aimJ(W, u, t){
   const J = JVu(W, u), f = Math.min(1, Math.max(0, gap(u, t)) / J.rng);
-  let p = J.aimNear + (J.aimFar - J.aimNear) * f;
+  let p = (J.aimNear + (J.aimFar - J.aimNear) * f) * (u.javK || 1);   /* v8.7.8 투창 솜씨 (쥐 베테랑 — 투창 좋음) */
   if (Math.hypot(t.vx, t.vy) > 0.6) p *= 0.85;
   if (blindTo(W, u, t)) p *= W.rules.darkAimFar != null ? W.rules.darkAimFar : 0.1;
   if (t.lie && !t.lieSw && W.rules.lie && dist(u, t) > (W.rules.lie.near || 1.8)) p *= W.rules.lie.hitArc || 0.85;   // v7.11 엎드린 몸 (던진 것은 떨어지며 맞음)
@@ -4081,7 +4105,7 @@ function resolveThrow(W, u){
   else if (way.arc){
     const p = Math.max(0.02, aimJ(W, u, t) * (J.arc.aim != null ? J.arc.aim : 0.75));
     launchJavArc(W, u, t, p);
-    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; u.rng = (W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = '맨손';
+    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; javAfter(W, u);
     L(W, { k: 'throw', a: u.i, b: t.i, p: +p.toFixed(2), arc: true, over: way.blk.i, kn: isKnife(W, u), vis: u.side === 0 || !!u.seenBy });
   }
   else {
@@ -4089,7 +4113,7 @@ function resolveThrow(W, u){
     const off = W.rand() < p ? (W.rand() * 2 - 1) * t.r * 0.5 : (W.rand() < 0.5 ? -1 : 1) * (t.r + 0.12 + W.rand() * 0.5);
     const ang = base + Math.atan2(off, d), dx = Math.cos(ang), dy = Math.sin(ang);
     W.shots.push({ id: ++W.shotN, a: u.i, meant: t.i, x: u.x + dx * (u.r + 0.02), y: u.y + dy * (u.r + 0.02), x0: u.x, y0: u.y, dx, dy, sp: J.vel, left: J.rng + u.r + 1.5, p: +p.toFixed(2), t0: W.t, side: u.side, jav: true, kn: isKnife(W, u), wpn: u.weapon });
-    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; u.rng = (W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = '맨손';
+    u.shots++; u.spearHeld = false; u.rngSpear = u.rng; javAfter(W, u);
     L(W, { k: 'throw', a: u.i, b: t.i, p: +p.toFixed(2), kn: isKnife(W, u), vis: u.side === 0 || !!u.seenBy });
   }
   A.phase = 'rec'; A.end = W.t + u.rec; A.t1 = W.t;
@@ -4098,7 +4122,7 @@ function resolveThrow(W, u){
 // 땅에 떨어진 것 W.items: { id, k: 'spear' (던진 창 — 주인이 다시 주움) | 'weapon' | 'shield', name, x, y, owner (원래 주인), t, ammo?, mag? }
 // 떨어지는 때: 쓰러짐 (들고 있던 무기 · 방패) · 방패 팔을 잃음 (방패) · 두 팔을 잃음 (무기 · 방패) · 활 팔을 잃음 (활) · 다른 무기를 집어 듦 (들던 무기를 발밑에)
 const ITEM_NATURAL = ['맨손', '이빨·발톱', '발'];
-const unarmed = u => !u.weapon || ITEM_NATURAL.includes(u.weapon) || u.weaponNow === '맨손' || u.weaponNow === '발' || (u.jav && !u.spearHeld);
+const unarmed = u => !u.weapon || ITEM_NATURAL.includes(u.weapon) || u.weaponNow === '맨손' || u.weaponNow === '발' || (u.jav && !u.spearHeld && !(u.javSide && u.weaponNow === u.javSide));   /* v8.7.8 투창 뒤 검 */
 function dropItem(W, u, k, name, extra, how){
   const sd = k === 'shield' ? -1 : k === 'weapon' ? 1 : 0, fa = (u.face || 0) + Math.PI / 2;   // v5.10.0 방패는 왼쪽 · 무기는 오른쪽으로 0.35칸 — 한 자리에 겹쳐 떨어지지 않게
   const p = freeSpot(W, u.x + Math.cos(fa) * 0.35 * sd + (W.rand() - 0.5) * 0.3, u.y + Math.sin(fa) * 0.35 * sd + (W.rand() - 0.5) * 0.3, 0.15) || { x: u.x, y: u.y };
@@ -4117,6 +4141,7 @@ function dropShield(W, u, how){ if (u.armShield){ if (how === 'arm' || how === '
   if (u.shield){ dropItem(W, u, 'shield', '방패', { dur: u.sDur, label: u.sName || '', own: u.sOwn || ownKey(u) }, how); u.shield = false; if (u.alive) evoRole(W, u); } }   /* v8.7.4 I25 */
 // 쓰러짐: 들고 있던 무기 · 방패를 떨어뜨림. 던져 둔 창은 이제 누구나 주울 수 있음
 function dropOnDeath(W, t){
+  if (t.ratOf != null){ W.items = W.items.filter(it => !(it.k === 'spear' && it.owner === t.i)); t.weaponGone = true; t.shield = false; return; }   /* v8.7.8 포렌의 쥐 */
   for (const it of W.items) if (it.k === 'spear' && it.owner === t.i) it.k = 'weapon';
   dropHeld(W, t, 'death'); dropShield(W, t, 'death');
 }
@@ -4488,7 +4513,7 @@ function strike(W, u, t, meant, p, far, extra){
   { const V = R.vital || {}, through = !AM0.it || pen, rangedV = (o.far || J) && through, meleeV = !o.far && !J && crit && wk !== '맨손';
     const heart = part === '몸통' && (rangedV || meleeV) && W.rand() < (V.heartP != null ? V.heartP : 0.25);
     const vp = part === '머리' && (rangedV || meleeV) ? '머리' : heart ? '심장' : null;
-    if (vp && !(extra && extra.noWound) && !o.deflect && !t.marble && !t.noOrg){   /* v8.6.0 [대리석 피부]: 급소가 없음 */   /* v8.7.3 [무장기] */
+    if (vp && !(extra && extra.noWound) && !o.deflect && !t.marble && !t.noOrg && !(t.act && t.act.k === 'roll')){   /* v8.7.8 구르는 동안 급소 보호 */   /* v8.6.0 [대리석 피부]: 급소가 없음 */   /* v8.7.3 [무장기] */
       o.vital = vp; const boss = (t.traits || []).includes('보스'), vMax = boss ? Math.min(t.max, V.boss != null ? V.boss : 400) : t.max;   // v7.22.2 [보스]
       if (vp === '머리' && (t.heads || 1) > 1){   // 머리 넷: 그 머리를 잃음
         o.headLost = true; dmg = Math.max(dmg, Math.round(vMax * (V.headLoss != null ? V.headLoss : 0.2)));
@@ -4549,6 +4574,7 @@ function applyDmg(W, u, t, dmg, o){
   if (t.marble || t.jrFly || t.jrInv){ dmg = marbleHit(W, u, t, dmg, o); if (!(dmg > 0)) return; }
   if (t.stoneT != null && W.t < t.stoneT && dmg > 1){ dmg = 1; o = { ...(o || {}), stone: true, tag: '방어모드 — 피해 1' }; }   /* v8.7.4 방어모드 (붉은암석): 무엇이든 피해 1 */
   if (u && u !== t && u.side !== t.side && dmg > 0 && !(o && o.ff)){   /* v8.7.7 받는 피해 × (가호 · 유물) · 피 흘리는 상대에게 × · 왕관 조각 (편마다 n 번 — 치명타를 체력 1 로 버팀 · 출혈 · 화상으로 숨이 다할 땐 안 버팀) */
+    if (t.porenKit || (t.rs && t.rs.k === 'shieldWall') || (t.act && t.act.k === 'roll')){ dmg = porenTake(W, u, t, dmg, o); if (!(dmg > 0)) return; }   /* v8.7.8 포렌 · 쥐 방패 · 구르기 */
     if (t.dmgK > 0 && t.dmgK !== 1) dmg *= t.dmgK;
     if (u.bleedK > 0 && (t.bleed || t.ibleed)) dmg *= u.bleedK;
     const cw = W.crown ? W.crown[t.side] || 0 : 0; if (cw > 0 && t.alive && !t.summon && dmg >= t.hp && t.hp > 1 && !/출혈|화상/.test((o && o.tag) || '')){ W.crown[t.side] = cw - 1; dmg = t.hp - 1; t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '왕관 조각이 버팀' }; L(W, { k: 'crownSave', a: u.i, b: t.i, vis: t.side === 0 || !!t.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.3, s: '👑 버팀!', c: 'h', t0: W.t }); }
@@ -4648,7 +4674,7 @@ function think(W, u){
       let pick = seen.reduce((a, b) => score(b) > score(a) ? b : a, seen[0]);
       if (cur && pick !== cur && !(score(pick) > score(cur) * 1.3 + 5)) pick = cur;
       if (cur && pick !== cur && was){ L(W, { k: 'retarget', a: u.i, from: cur.i, b: pick.i, vis: !!u.seenBy }); u.waitT = 0; }
-      u.state = 'hunt'; u.target = pick; u.last = { x: pick.x, y: pick.y }; u.searchT = 6;
+      pick = tauntOf(W, u, pick, seen); u.state = 'hunt'; u.target = pick; u.last = { x: pick.x, y: pick.y }; u.searchT = 6;   /* v8.7.8 도발 */
       seen[0] = pick;
       if (!was){ const dark = !litAt(W, seen[0].x, seen[0].y), sm = !!u.smell && dist(u, seen[0]) <= u.smell && (dark || !u.nv);
         if (W.stance && !W.stance[u.side]) W.sqT = 0;   // v5.4 처음 발견 → 곧바로 대치 판단
@@ -4695,7 +4721,7 @@ function think(W, u){
       if (u.target && u.target.alive && seen.includes(u.target) && sc(pick) < sc(u.target) + 1) pick = u.target;
     }
     if (u.altLock && W.t < u.altLock.until && u.target && u.target.alive && u.target.i === u.altLock.b && seen.includes(u.target)) pick = u.target;   /* v8.7.3 막힌 표적에서 옮겨 온 표적은 잠시 그대로 */
-    if (u.target !== pick) u.waitT = 0; u.state = 'fight'; u.target = pick; return;
+    pick = tauntOf(W, u, pick, seen); if (u.target !== pick) u.waitT = 0; u.state = 'fight'; u.target = pick; return;   /* v8.7.8 도발 */
   }
   // 비명으로 정확히 안 자리 (2.5초 안, 8칸 안) → 몰려감
   const sx = foes.map(f => [f, u.sense[f.i]]).filter(([f, s]) => s && s.exact && W.t - s.t < 2.5 && dist(u, f) <= 8 && W.t >= (u.chaseNo || 0) && !(rm !== 'free' && roeBlock(W, u, f))).sort((a, b) => dist(u, a[0]) - dist(u, b[0]))[0];
@@ -6527,7 +6553,7 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
   const prev = new Map((W.loot || []).map(x => [x.lk, x])), roll = W.lootRoll || (W.lootRoll = {});
   const out = [], mine = new Set(W.units.filter(u => u.side === 0 && (u.alive || u.gone)).map(ownKey));   // 살아 있거나 맵을 나간 동료의 제 것은 그 동료에게 (정산에서 돌아감) — 쓰러진 동료의 것은 전리품
   const put = (lk, o) => { const p = prev.get(lk); out.push({ ...o, lk, ...(p && p.taken ? { taken: p.taken } : {}), ...(p && p.auto ? { auto: p.auto } : {}), ...(p && p.n0 != null ? { n0: p.n0 } : {}), ...(p && o.k === 'ammo' && p.n != null ? { n: p.n } : {}) }); };   // 챙긴 표시 · 나눠 담고 남은 탄은 이어 받음
-  for (const it of W.items || []){ if (it.k !== 'weapon' && it.k !== 'shield') continue; if (it.own && mine.has(it.own)) continue;
+  for (const it of W.items || []){ if (it.k !== 'weapon' && it.k !== 'shield') continue; if (it.own && mine.has(it.own)) continue; if (W.units[it.owner] && W.units[it.owner].ratOf != null) continue;   /* v8.7.8 쥐의 무구는 전리품이 아님 */
     const at = it.k === 'weapon' ? ammoTOf(W, it.name) : null, dw = W.units.find(u => !u.alive && !u.gone && u.side === 0 && ownKey(u) === it.own);
     if (at && it.ammo > 0) put('ga' + it.id, { k: 'ammo', at, n: it.ammo, label: (it.label || it.name) + '에 남은 ' + (at === '화살' ? '화살' : at + ' 탄') });
     put('g' + it.id, { k: it.k, name: it.name, label: it.label || '', dur: it.dur != null ? +it.dur : 100, own: it.own || null, ground: it.id, ...(dw ? { fall: dw.name } : {}), ...(at ? { ammo: 0 } : {}) }); }
@@ -6549,7 +6575,7 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
 
 /* ---------- v7.19.1 고유 기술: 공중제비 (탕아) · 머리 찍기 (쟝) · 영거리 사격 (간두) · 철퇴 후리기 · 휘둘러 치기 (모닝스타) — 적 · 아군 같은 규칙 ---------- */
 const SPEC_NM = k => (Object.entries(SPEC_K).find(e => e[1] === k) || [k])[0];   /* v8.7.3 기술 이름 (명령 글) */
-const SPEC_K = { '혈영보': 'blink', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
+const SPEC_K = { '혈영보': 'blink', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
 const SPR = (W, k) => ((W.rules.spec || {})[k]) || {};
 const specOf = (u, k) => (u.spec || []).find(x => x.k === k);
 function specReady(W, u, k){ const x = specOf(u, k); if (!x || !u.alive || u.down || u.noArms || u.crawl || u.lie || u.kb || W.t < x.cdT || W.t < u.brokenT || W.t < (u.proneT || -9)) return false; if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */ if (x.n != null && x.n <= 0) return false; if (GW_K.includes(k) && !gwOn(u)) return false;   /* v8.7.8 굿윌의 기술은 맨손일 때만 */ if ((k === 'sweep' || k === 'hurl' || k === 'spin') && u.weaponGone) return false; if ((k === 'sweep' || k === 'hurl') && flailOut(W, u)) return false;   /* v7.25.0 공을 거둬야 */ if (k === 'root' && (W.roots || []).filter(r => r.by === u.i).length >= (SPR(W, 'root').max || 2)) return false; return k !== 'pb' || u.shells > 0; }   // v7.19.2 철퇴를 뺏기면 못 씀 · 뿌리 벽은 둘까지
@@ -9680,6 +9706,7 @@ function doOrder(W, u, dt){
     const sp = specOf(u, o.s), t = o.b != null ? W.units[o.b] : null;
     if (!sp){ u.order = null; return; }
     if (o.s === 'sweep' && flailOf(W, u) && tightAt(W, u)){ u.order = null; setMood(W, u, '좁은 골목 — 철퇴를 돌릴 수 없음'); L(W, { k: 'alleyNo', a: u.i, s: 'sweep', vis: u.side === 0 || !!u.seenBy }); return; }   /* v8.7.5 A6 */
+    if (o.s === 'pfort'){ const x = specOf(u, 'pfort'); if (x && W.t < x.cdT){ setMood(W, u, '쥐 방진 대기 (' + (x.cdT - W.t).toFixed(1) + '초)'); stop(u); return; } if (!prFort(W, u, '명령')) L(W, { k: 'specFail', a: u.i, s: 'pfort', why: '곁에 쥐가 둘은 있어야', vis: true }); u.order = null; return; }   /* v8.7.8 쥐 방진 (제자리) */
     if (o.s === 'sweep' || o.s === 'ward'){ if (specReady(W, u, o.s)){ startSpec(W, u, null, o.s, '명령'); if (o.R) u.act.R = o.R; u.order = null; }   /* v7.24.4 정한 거리 */ else setMood(W, u, sp.name + ' 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : flailOut(W, u) ? ' (철퇴를 거두는 중)' : '')); return; }   // v7.19.2 역장도 바로   /* v8.7.3 대기 초 */
     if (o.s === 'root'){ const px = o.x != null ? o.x : t && t.alive ? t.x : null, py = o.y != null ? o.y : t && t.alive ? t.y : null; if (px == null){ u.order = null; return; }   // v7.19.2 뿌리 벽: 찍은 자리 (적이면 그 앞)
       const d = Math.hypot(px - u.x, py - u.y), R2 = SPR(W, 'root').rng || 5;
@@ -9690,7 +9717,7 @@ function doOrder(W, u, dt){
     const see = canSee(W, u, t); if (!see && !(u.side === 0 ? t.seenBy : false)){ L(W, { k: 'lost', a: u.i, b: t.i }); u.order = null; return; }
     if (o.s === 'head'){ if (specReady(W, u, 'head')){ u.headMark = { b: t.i, until: W.t + (SPR(W, 'head').win || 4) + 3 }; L(W, { k: 'specArm', a: u.i, b: t.i, s: 'head', vis: true }); } u.order = { k: 'attack', b: t.i }; return; }
     const S = SPR(W, o.s), reach = o.s === 'flip' ? S.d || 3.2 : o.s === 'pb' ? S.rng || 2.4 : S.rng || 3.6;
-    if (specReady(W, u, o.s) && gap(u, t) <= reach && (o.s === 'flip' ? startFlip(W, u, t, false) : GW_K.includes(o.s) ? gwStart(W, u, t, o.s, '명령') : startSpec(W, u, t, o.s, '명령'))){ u.order = null; return; }   /* v8.7.8 굿윌 기술은 굿윌 방식으로 (내려찍기 = 뛰어오름 · 손바닥 = 표식 · 니킥 = 반동) */
+    if (specReady(W, u, o.s) && gap(u, t) <= reach && (o.s === 'flip' ? startFlip(W, u, t, false) : GW_K.includes(o.s) ? gwStart(W, u, t, o.s, '명령') : o.s === 'pmark' ? prnMark(W, u, t, '명령') : startSpec(W, u, t, o.s, '명령'))){ u.order = null; return; }   /* v8.7.8 굿윌 기술은 굿윌 방식으로 (내려찍기 = 뛰어오름 · 손바닥 = 표식 · 니킥 = 반동) */
     if (!specReady(W, u, o.s) && gap(u, t) <= u.rng + 0.3){ setMood(W, u, sp.name + ' 대기' + (sp.cdT > W.t ? ' (' + (sp.cdT - W.t).toFixed(1) + '초)' : ''), t.i); fight(W, u, t, dt, see, true); return; }
     setMood(W, u, sp.name + '하러', t.i); goTo(W, u, t.x, t.y, dt); u.fg = Math.atan2(t.y - u.y, t.x - u.x); return;
   }
@@ -9823,6 +9850,8 @@ function act(W, u, dt){
   if (u.kb || W.t < u.proneT || W.t < (u.stunT || -9)) return;   // v5.2 날아가는 중 · 넘어짐 · v5.5.3 휘청: 아무것도 못 함 (기어다니는 쪽은 움직임)
   if (u.act && u.act.k === 'spec' && u.act.s === 'sweep' && u.act.phase === 'swing'){ stepSweep(W, u, dt); return; }   /* v7.24.4 철퇴 후리기 한 바퀴 */
   if (u.act && u.act.k === 'gwHop'){ gwHopStep(W, u); return; }   /* v8.7.8 굿윌 순간이동 도약 */
+  if (u.act && u.act.k === 'pr'){ prStep(W, u, dt); return; }   /* v8.7.8 포렌: 쥐 방진 · 쥐 사다리 · 쥐 방패 지휘 */
+  if (u.act && u.act.k === 'roll'){ rollStep(W, u, dt); return; }   /* v8.7.8 쥐 베테랑 구르기 */
   if (u.act && (u.act.k === 'leap' || u.act.k === 'dodge')){ stepLeap(W, u, dt); return; }
   if (u.act && u.act.k === 'charge' && u.act.phase === 'run'){ stepCharge(W, u, dt); return; }
   if (u.act && u.act.k === 'atk' && u.act.phase === 'wind' && !isFar(u)){ const tt = W.units[u.act.b]; if (tt && tt.alive){ u.fg = Math.atan2(tt.y - u.y, tt.x - u.x);
@@ -10083,6 +10112,8 @@ function act2(W, u, dt){
   if (u.cz && !u.order && czBrain(W, u, dt)) return;   /* v7.23.1 세자르 */
   if (u.h2 && !u.order && h2Brain(W, u, dt)) return;   /* v8.7.4 3D 보스 기술표 */
   if (u.gwKit && !u.order && gwBrain(W, u, dt)) return;   /* v8.7.8 굿윌 (2D goodwillBrain) */
+  if (u.ratOf != null && ratBrain(W, u, dt)) return;   /* v8.7.8 포렌의 쥐 (포렌의 기술로만 · 명령은 받지 않음) */
+  if (u.porenKit && !u.order && porenBrain(W, u, dt)) return;   /* v8.7.8 포렌 (2D porenUpdate) */
   if (u.skill && !(u.side === 0 && u.order && u.order.k === 'skill') && emergency(W, u, dt)) return;   // v5.5.1 약 명령이 위급 자동 판단보다 먼저
   // 싸움이 없고 탄창이 반 넘게 비었으면 미리 재장전 (8칸 안에 아는 상대가 없을 때)
   if (u.magMax && !u.order && u.mag < u.magMax * 0.5 && u.ammo > u.mag && !W.units.some(f => f.alive && f.side !== u.side && dist(f, u) < 8 && (u.side === 0 ? f.seenBy : canSee(W, u, f)))){ startReload(W, u); return; }
@@ -10268,6 +10299,7 @@ function stepWorld(W, dt){
   lineOpportunity(W);   // v5.7 교전 구속
   for (const u of W.units) if (u.alive && u.bleed) stepBleed(W, u, dt);   // v5.5 출혈
   for (const u of W.units) if (u.alive && u.burn) stepBurn(W, u, dt);   // v6.7 화상
+  porenTick(W, dt);   /* v8.7.8 포렌: 충성 · 쥐 망토 · 표식 · 방벽 · 포박 · 기억하는 쥐 */
   zapTick(W);   /* v8.7.8 감전 (푸른 번개 · 적뢰 · 잔류) */
   for (const u of W.units) if (u.alive && (u.ibleed || u.inj || u.bled || u.koT)) stepInj(W, u, dt);   // v6.9 내출혈 · 쇼크 · 의식
   for (const u of W.units) if (u.alive && u.recoil && !u.kb) stepRecoil(W, u, dt);   // v6.7 팜 버스트 반동
@@ -10708,6 +10740,396 @@ function runAuto(setup, rules, seed){
 }
 
 
+/* ---------- v8.7.8 포렌 (명세 C5 — 2D 미궁 프롤로그 porenUpdate · 쥐 군단 그대로 · 쥐 기사는 3D) ----------
+   충성: 게이지가 차면 쥐가 포렌 뒤쪽에서 달려옴 (다음 쥐는 미리 정해짐 — 작은 쥐 58% 0.8초 · 쥐 27% 3초 · 큰 쥐 13% 8초 · 쥐 기사 2% 8초 ·
+   쥐가 넷보다 적으면 2.5배 빨리 · 싸움이 없으면 넷까지만 천천히 · 최대 24). 쥐는 포렌의 기술로만 움직임 (다른 이의 명령은 받지 않음).
+   따르는 쥐 70% (포렌 곁 · 포렌이 노린 적) · 떠돌이 30% (둘레를 싸돌아다니며 마주친 적). 적 포렌도 같은 규칙 */
+const PRN = W => W.rules.poren || {};
+const PRN_BUSY = ['wall', 'fort', 'ladder', 'bind', 'bindRun', 'shieldWall'];
+const prnRats = (W, u) => W.units.filter(r => r.alive && !r.gone && r.ratOf === u.i);
+const ratBusy = r => !!(r.rs && PRN_BUSY.includes(r.rs.k));
+function ratFree(r){ r.rs = { k: 'idle' }; }
+const prnFoes = (W, u) => W.units.filter(e => e.alive && !e.gone && e.side !== u.side);
+const prnVis = (W, u, t) => u.side === 0 || !!u.seenBy || !!(t && t.seenBy);
+function prnLetter(M){ const AB = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; for (let i = 0; ; i++){ const n = i < 26 ? AB[i] : AB[i % 26] + Math.floor(i / 26); if (!M.some(r => r.n === n)) return n; } }
+function prnRoll(W){ let r = W.rand(); for (const [k, p] of PRN(W).roll || []){ if ((r -= p) <= 0) return k; } return 'ratS'; }
+const prnFill = (W, k) => ((PRN(W).roll || []).find(x => x[0] === k) || [k, 0, 1])[2];
+// 쥐가 생기는 자리: 멀면 포렌 뒤쪽 3.5 ~ 5칸 (적 반대편 — 그 자리부터 달려옴) · 가까우면 곁 (방진 · 포박 · 사다리)
+function prnSpot(W, u, near){
+  const m = W.map, F = prnFoes(W, u).sort((a, b) => dist(u, a) - dist(u, b))[0], a0 = F ? Math.atan2(u.y - F.y, u.x - F.x) : W.rand() * 6.283;
+  for (let k = 0; k < 12; k++){
+    const a = a0 + (W.rand() - 0.5) * (near ? 3.4 : 1.8), r = near ? 0.8 + W.rand() * 0.8 : 3.5 + W.rand() * 1.5, x = u.x + Math.cos(a) * r, y = u.y + Math.sin(a) * r;
+    if (x < 0.7 || y < 0.7 || x > m.W - 0.7 || y > m.H - 0.7 || boxRock(W, x, y, 0.25)) continue;
+    if (!near && !losClear(m, u.x, u.y, x, y)) continue;
+    if (W.units.some(o => o.alive && !o.gone && Math.hypot(o.x - x, o.y - y) < 0.4)) continue;
+    return { x, y };
+  }
+  return { x: u.x + (W.rand() - 0.5) * 0.6, y: u.y + (W.rand() - 0.5) * 0.6 };
+}
+// 쥐 부르기 — 쥐 기사는 기억하는 쥐부터 (동료 포렌: 이름 · 단계 · 세 번 살아 돌아오면 쥐 베테랑)
+function prnRat(W, u, kind, o){
+  const P = PRN(W), O = o || {};
+  if (prnRats(W, u).length >= (P.cap || 24) + (O.extra || 0)) return null;
+  let rec = null, k = kind;
+  if (k === 'ratKnight' && u.ratMem){ rec = u.ratMem.find(x => !W.units.some(m => m.alive && !m.gone && m.ratRec === x)); if (!rec){ rec = { n: prnLetter(u.ratMem), lv: 1, ret: 0, vet: false }; u.ratMem.push(rec); } if (rec.vet) k = 'ratVet'; }
+  const Dz = (P.rats || {})[k]; if (!Dz) return null;
+  const q = O.at || prnSpot(W, u, !!O.near), lv = rec && !rec.vet ? rec.lv || 1 : 1;
+  W.ratSeq = (W.ratSeq || 0) + 1;
+  const p = { id: 'rat-' + u.i + '-' + W.ratSeq, name: rec ? Dz.name + ' ' + rec.n : Dz.name, ref: Dz.ref, tier: 1, cls: Dz.cls || '기동', role: '공격수', side: u.side, weapon: Dz.weapon || '이빨·발톱', javSide: Dz.javSide || null, poise: Dz.poise || undefined, javK: Dz.javK || undefined, shield: !!Dz.shield,
+    height: Dz.height, weight: Dz.weight, rMul: Dz.rMul, noChg: !Dz.charge, nv: true, nvG: 'B', ov: { hp: Math.round(Dz.hp * (1 + (lv - 1) * 0.15)), atk: Math.round(Dz.atk * (1 + (lv - 1) * 0.1)), spd: Dz.spd },
+    traits: (Dz.traits || []).slice(), active: (Dz.active || []).slice(), gear: Dz.gear ? JSON.parse(JSON.stringify(Dz.gear)) : {}, x: q.x, y: q.y, summon: 'rat', ratOf: u.i, ratKind: k };
+  const r = (typeof engineSpawn === 'function' ? engineSpawn : addUnit)(W, p); if (!r) return null;
+  r.summon = 'rat'; r.ratOf = u.i; r.ratKind = k; r.ratRec = rec; r.ratLv = lv; r.ratWild = !rec && k !== 'ratKnight' && W.rand() < (P.wildP != null ? P.wildP : 0.3); r.rs = { k: 'idle' }; r.state = u.side ? 'hunt' : 'fight';
+  if (rec || k === 'ratL' || k === 'ratKnight') L(W, { k: 'ratCome', a: u.i, b: r.i, kind: k, n: rec ? rec.n : null, lv, ret: rec ? rec.ret || 0 : 0, vet: !!(rec && rec.vet), vis: prnVis(W, u) });
+  return r;
+}
+// 싸우는 중 (아는 적이 14칸 안)
+const prnFight = (W, u) => W.units.some(e => e.alive && !e.gone && e.side !== u.side && dist(u, e) < 14 && (e.target === u || (u.side === 0 ? !!e.seenBy || canSee(W, u, e) : u.target === e || canSee(W, u, e))));
+function prnInit(W, u){
+  const P = PRN(W), n = P.init != null ? P.init : 4, kn = (u.ratMem && u.ratMem.length) || W.rand() < (P.initKnight != null ? P.initKnight : 0.5);   // 3D: 처음엔 곁에 넷 (반은 쥐 기사부터)
+  for (let i = 0; i < n; i++) prnRat(W, u, i === 0 && kn ? 'ratKnight' : 'ratS', { near: true });
+}
+// 쥐 표식 '물어라!': 그 적에게 5초 표식 · 어디선가 쥐 셋이 더 달려옴 · 모든 쥐가 우르르 몰려들어 둘러싸고 물어뜯음 (새로 온 쥐도 합류)
+function prnMark(W, u, t, why){
+  const M = PRN(W).mark || {}, x = specOf(u, 'pmark'); if (!x || W.t < x.cdT || !t || !t.alive || t.side === u.side) return false;
+  const rats = prnRats(W, u).filter(r => !ratBusy(r)); if (!rats.length) return false;
+  x.cdT = W.t + (M.cd || 12); u.ratMark = { b: t.i, until: W.t + (M.dur || 5) };
+  for (let i = 0; i < (M.extra || 3); i++){ const r = prnRat(W, u, i === 0 && W.rand() < (M.knightP || 0.3) ? 'ratKnight' : prnRoll(W), { extra: M.extra || 3 }); if (r) rats.push(r); }
+  rats.forEach((r, i) => { r.rs = { k: 'assault', b: t.i, until: u.ratMark.until, a: i / rats.length * 6.283 }; });
+  L(W, { k: 'prMark', a: u.i, b: t.i, n: rats.length, why: why || '', vis: prnVis(W, u, t) });
+  if (W.fxOn) W.fx.push({ k: 'ratmark', b: t.i, t0: W.t, until: u.ratMark.until });
+  return true;
+}
+const markOn = (W, u) => !!(u && u.ratMark && W.t < u.ratMark.until && W.units[u.ratMark.b] && W.units[u.ratMark.b].alive);
+// 방벽: 동료에게 강공 (보스 · 공격 30 넘음) 이 오면 가까운 쥐 2 ~ 4마리가 그 앞에 3초 줄을 섬 — 사이에 선 쥐가 근접 일격을 대신 맞음
+const prnStrong = (W, e) => (e.traits || []).includes('보스') || !!e.jrB || (e.atk || 0) >= ((PRN(W).wall || {}).minAtk || 30);
+function prnWall(W, u, g, e){
+  const P = PRN(W).wall || {}; if (W.t < (u.prn.wallCd || -9)) return false;
+  const need = (e.traits || []).includes('보스') ? 4 : (e.atk || 0) >= (P.bigAtk || 50) ? 3 : 2;
+  const M = prnRats(W, u).filter(r => !ratBusy(r)).sort((a, b) => dist(a, g) - dist(b, g)).slice(0, need); if (!M.length) return false;
+  u.prn.wallCd = W.t + (P.cd || 6);
+  M.forEach((r, i) => { r.rs = { k: 'wall', g: g.i, a: e.i, idx: i, n: M.length, until: W.t + (P.dur || 3) }; });
+  L(W, { k: 'ratWall', a: u.i, b: g.i, c: e.i, n: M.length, vis: prnVis(W, u, e) });
+  return true;
+}
+const ratWallReach = (W, u, t) => W.units.some(r => r.alive && !r.gone && r.rs && r.rs.k === 'wall' && r.rs.g === t.i && r.rs.a === u.i && gap(u, r) <= u.rng + (W.rules.reach || 0.3));
+function ratWallHit(W, u, t){
+  if (!t || t.ratOf != null) return null;
+  const k = gap(u, t);
+  for (const r of W.units) if (r.alive && !r.gone && r.rs && r.rs.k === 'wall' && r.rs.g === t.i && r.rs.a === u.i && dist(u, r) < dist(u, t) && gap(u, r) <= Math.max(k, u.rng) + 0.35) return r;
+  return null;
+}
+// 쥐 방진: 체력 40% 아래 · 강공이 날아옴 → 대검을 꽂고 2.5초 버팀 (움직이지 않음 · 휘청 · 밀림 없음) · 둘레 쥐 (최대 8) 가 받는 피해 70% 를 똑같이 나눠 받음
+//   끝에 대검을 뽑으며 두 바퀴 — 공격 + 쥐들이 대신 맞은 피해 60% + 버틴 무게 (포렌 × 4 + 둘레 쥐) × 0.164 · 치명 25%. 곁에 적이 없으면 방진 쥐 셋을 타고 가장 위험한 적 (8칸) 에게 날아가 거기서
+function prFort(W, u, why){
+  const F = PRN(W).fort || {}, x = specOf(u, 'pfort');
+  if (!x || W.t < x.cdT || !u.alive || u.down || (u.act && u.act.k === 'pr')) return false;
+  const rats = prnRats(W, u).filter(r => !(r.rs && (r.rs.k === 'bind' || r.rs.k === 'bindRun'))).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, F.maxRats || 8);
+  if (rats.length < (F.minRats || 2)) return false;
+  x.cdT = W.t + (F.cd || 14); if (u.act) interrupt(W, u, '쥐 방진');
+  u.act = { k: 'pr', s: 'fort', phase: 'fort', t0: W.t, end: W.t + (F.dur || 2.5), rats: rats.map(r => r.i), absorbed: 0, dead: 0, why: why || '' };
+  u.saT = Math.max(u.saT || -9, u.act.end + 0.05); stop(u);
+  rats.forEach((r, i) => { r.rs = { k: 'fort', a: i / rats.length * 6.283, until: u.act.end + 0.5 }; });
+  L(W, { k: 'prFort', a: u.i, n: rats.length, why: why || '', vis: prnVis(W, u) });
+  if (W.fxOn) W.fx.push({ k: 'prRing', a: u.i, x: u.x, y: u.y, r: 1.6, t0: W.t, c: 'g' });
+  return true;
+}
+function prSpin(W, u, cn){
+  const F = PRN(W).fort || {}, hits = prnFoes(W, u).filter(e => dist(e, u) < (F.spinR || 1.8) + e.r);
+  for (const e of hits){ strike(W, u, e, e, 1, false, { mul: cn.mul, crit: cn.crit || undefined, tag: '쥐 방진 — 대검 회전' }); if (e.alive) shove(W, u, e, 0.8, e.x - u.x, e.y - u.y, { tag: '대검 회전에 밀려남' }); }
+  L(W, { k: 'prSpin', a: u.i, n: hits.length, abs: cn.absorbed, w: cn.w, dead: cn.dead, crit: !!cn.crit, mul: +cn.mul.toFixed(2), vis: prnVis(W, u) });
+  if (W.fxOn) W.fx.push({ k: 'prRing', a: u.i, x: u.x, y: u.y, r: F.spinR || 1.8, t0: W.t, c: hits.length ? 'g' : 'm', spin: true });
+}
+// 쥐 사다리: 2.5 ~ 8칸 떨어진 적에게 — 쥐 셋이 발밑에 모이고 (0.4초) 그 위에 올라타 파도처럼 미끄러져 들어가 (7칸/초) 내려찍음 (1.3칸 · 공격 × 1.5 · 휘청 0.5)
+function prLadder(W, u, t, cn, rats){
+  const Ld = PRN(W).ladder || {}, x = specOf(u, 'pladder');
+  if (!cn){ if (!x || W.t < x.cdT) return false; x.cdT = W.t + (Ld.cd || 7); }
+  const d = Math.hypot(t.x - u.x, t.y - u.y) || 1;
+  u.act = { k: 'pr', s: 'ladder', phase: 'gather', t0: W.t, b: t.i, rats: rats.map(r => r.i), dx: (t.x - u.x) / d, dy: (t.y - u.y) / d, cn: cn || null, hit: false };
+  u.saT = Math.max(u.saT || -9, W.t + 2.6); stop(u);
+  rats.forEach(r => { r.rs = { k: 'ladder', until: W.t + 3 }; });
+  L(W, { k: 'prLadder', a: u.i, b: t.i, counter: !!cn, vis: prnVis(W, u, t) });
+  return true;
+}
+function prLadderEnd(W, u){ const A = u.act; if (A && A.rats) for (const i of A.rats){ const r = W.units[i]; if (r && r.rs && r.rs.k === 'ladder') ratFree(r); } u.act = null; u.saT = Math.min(u.saT || -9, W.t); }
+// 쥐 방패: 동료가 위험 (체력 45% 아래 · 3칸 안에 적) 하거나 포렌이 위험 (50% · 2칸) 하면 — 포렌이 뒤로 뛰어 빠져 6초 지휘 (큰 휘청이면 끊김) ·
+//   쥐 (최대 12) 가 적과 지킬 이 사이에 한 줄 (일곱부터 두 줄) 로 서서 온몸으로 막음 — 치지 않고 막기도 아님 · 맞은 충격은 곁의 구성원이 똑같이 나눠 받음
+function prShield(W, u){
+  const S = PRN(W).shield || {}, x = specOf(u, 'pshield');
+  if (!x || W.t < x.cdT || (u.act && u.act.k === 'pr')) return false;
+  const rats = prnRats(W, u).filter(r => !ratBusy(r) || (r.rs && r.rs.k === 'wall')); if (!rats.length) return false;
+  const near = (o, r) => W.units.some(e => e.alive && !e.gone && e.side !== o.side && dist(e, o) < r);
+  let pr = W.units.filter(o => o.alive && !o.gone && o.side === u.side && !o.summon && o !== u && o.hp < o.max * (S.allyHp || 0.45) && near(o, S.allyR || 3)).sort((a, b) => a.hp / a.max - b.hp / b.max)[0];
+  if (!pr && u.hp < u.max * (S.selfHp || 0.5) && near(u, S.selfR || 2)) pr = u;
+  if (!pr) return false;
+  x.cdT = W.t + (S.cd || 16);
+  const foe = prnFoes(W, u).sort((a, b) => dist(a, u) - dist(b, u))[0];
+  let ax = foe ? u.x - foe.x : -Math.cos(u.face || 0), ay = foe ? u.y - foe.y : -Math.sin(u.face || 0); const al = Math.hypot(ax, ay) || 1; ax /= al; ay /= al;
+  let tx = u.x + ax * (S.jump || 2.2), ty = u.y + ay * (S.jump || 2.2); if (boxRock(W, tx, ty, u.r) || tx < 0.7 || ty < 0.7 || tx > W.map.W - 0.7 || ty > W.map.H - 0.7){ tx = u.x; ty = u.y; }
+  const use = rats.sort((a, b) => dist(a, pr) - dist(b, pr)).slice(0, S.maxRats || 12);
+  if (u.act) interrupt(W, u, '쥐 방패');
+  u.act = { k: 'pr', s: 'cmd', phase: 'jump', t0: W.t, sx: u.x, sy: u.y, tx, ty, pr: pr.i, rats: use.map(r => r.i), ex: foe ? foe.x : u.x + Math.cos(u.face || 0), ey: foe ? foe.y : u.y + Math.sin(u.face || 0) };
+  stop(u);
+  if (pr !== u && !(pr.side === 0 && pr.order)){ const fx = pr.x + (pr.x - u.act.ex) / (Math.hypot(pr.x - u.act.ex, pr.y - u.act.ey) || 1) * 1.6, fy = pr.y + (pr.y - u.act.ey) / (Math.hypot(pr.x - u.act.ex, pr.y - u.act.ey) || 1) * 1.6; if (!boxRock(W, fx, fy, pr.r)) pr.flee = { x: fx, y: fy, until: W.t + 1.1, why: '물러나! (쥐 방패)' }; }
+  use.forEach(r => { r.rs = { k: 'shieldWall', until: W.t + (S.dur || 6) + 1.5 }; });
+  prSlots(W, u, u.act);
+  L(W, { k: 'prShield', a: u.i, b: pr.i, n: use.length, vis: prnVis(W, u) });
+  return true;
+}
+function prSlots(W, u, A){
+  const S = PRN(W).shield || {}, P0 = W.units[A.pr] && W.units[A.pr].alive ? W.units[A.pr] : u;
+  const F = prnFoes(W, u).filter(e => Math.hypot(e.x - P0.x, e.y - P0.y) < 6); if (F.length){ A.ex = F.reduce((s, e) => s + e.x, 0) / F.length; A.ey = F.reduce((s, e) => s + e.y, 0) / F.length; }
+  const dE = Math.hypot(A.ex - P0.x, A.ey - P0.y) || 1, nx = (A.ex - P0.x) / dE, ny = (A.ey - P0.y) / dE, px = -ny, py = nx, lead = Math.min(S.ahead || 1.1, Math.max(0.55, dE * 0.55));
+  const rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive && r.rs && r.rs.k === 'shieldWall'), k = rats.length, rows = k > 6 ? 2 : 1, per = Math.ceil(k / rows) || 1, gp = S.gap || 0.55;
+  rats.forEach((r, i) => { const row = Math.floor(i / per), col = i % per, cnt = Math.min(per, k - row * per), off = (col - (cnt - 1) / 2) * gp, ah = lead + P0.r + (rows === 2 ? (row ? 0 : 0.5) : 0);
+    r.rs.slot = { x: Math.max(0.6, Math.min(W.map.W - 0.6, P0.x + nx * ah + px * off)), y: Math.max(0.6, Math.min(W.map.H - 0.6, P0.y + ny * ah + py * off)) }; r.rs.face = Math.atan2(ny, nx); });
+}
+function prCmdEnd(W, u, why){
+  const A = u.act; if (!A || A.s !== 'cmd') return;
+  for (const i of A.rats){ const r = W.units[i]; if (r && r.rs && r.rs.k === 'shieldWall') ratFree(r); }
+  u.act = null; L(W, { k: 'prShieldEnd', a: u.i, why: why || '', vis: prnVis(W, u) });
+}
+// 쥐 포박: 4.5칸 안 가장 위험한 (공격이 가장 센) 적에게 쥐 다섯이 달려들어 매달림 — 매달린 쥐 하나마다 게이지 +22 (최대 100) · 게이지가 남은 동안 움직이지도 치지도 못함
+//   대상은 버둥거려 깎음 (무거울수록 빨리 · 보스는 2.5배) · 최대 3초 (3D)
+function prBind(W, u, t){
+  const B = PRN(W).bind || {}, x = specOf(u, 'pbind'); if (!x || W.t < x.cdT || !t || !t.alive || t.bind) return false;
+  const rats = prnRats(W, u).filter(r => !(r.rs && ['fort', 'bind', 'bindRun', 'ladder', 'shieldWall'].includes(r.rs.k)));
+  if (rats.length < (B.min || 3)) return false;
+  x.cdT = W.t + (B.cd || 12); t.bind = { by: u.i, rats: [], gauge: 0, t0: W.t };
+  rats.sort((a, b) => dist(a, t) - dist(b, t)).slice(0, B.rats || 5).forEach(r => { r.rs = { k: 'bindRun', b: t.i, until: W.t + 2.5 }; });
+  L(W, { k: 'prBind', a: u.i, b: t.i, vis: prnVis(W, u, t) });
+  return true;
+}
+function bindAttach(W, r, t){
+  const B = PRN(W).bind || {}; r.rs = { k: 'bind', b: t.i, until: W.t + (B.dur || 3) + 0.5 }; t.bind.rats.push(r.i); t.bind.gauge = Math.min(B.max || 100, t.bind.gauge + (B.per || 22));
+  if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.3, s: '찍!', c: 'g', t0: W.t });
+}
+function bindTick(W, dt){
+  const B = PRN(W).bind || {};
+  for (const t of W.units){ const bd = t.bind; if (!bd) continue;
+    bd.rats = bd.rats.filter(i => W.units[i] && W.units[i].alive && W.units[i].rs && W.units[i].rs.k === 'bind' && W.units[i].rs.b === t.i);
+    const el = W.t - bd.t0, boss = (t.traits || []).includes('보스') || !!t.jrB || !!t.h2;
+    if (bd.rats.length) bd.gauge -= (B.drain || 22) * (1 + (t.mass || 70) / 200) * (boss ? B.boss || 2.5 : 1) * dt;
+    if (bd.gauge > 0 && t.alive){ t.bound = true; t.stunT = Math.max(t.stunT || -9, W.t + 0.15); if (t.act && (t.act.phase === 'wind' || t.act.phase === 'run') && t.act.k !== 'reload') t.act = null; stop(t); }
+    else t.bound = false;
+    if (!t.alive || el > (B.dur || 3) || (el > 1.2 && bd.gauge <= 0) || (el > 2.5 && !bd.rats.length)){
+      for (const i of bd.rats){ const r = W.units[i]; if (r && r.alive){ ratFree(r); shove(W, t, r, 0.8, r.x - t.x, r.y - t.y, { tag: '뿌리침' }); } }
+      if (t.alive && bd.rats.length) L(W, { k: 'prUnbind', a: t.i, n: bd.rats.length, el: +el.toFixed(1), vis: t.side === 0 || !!t.seenBy });
+      t.bind = null; t.bound = false; } }
+}
+// 받는 피해 (porenTake): 쥐 망토 · 방진 (쥐들이 70% 를 나눠 받음) · 쥐 방패 (구성원이 충격을 나눠 받음)
+function porenTake(W, a, t, dmg, o){
+  if (o && (o.share || o.dot)) return dmg;
+  const P = PRN(W);
+  if (t.act && t.act.k === 'roll') dmg *= (P.vetRoll || {}).def || 0.6;   // 구르는 동안 (방어 보정)
+  if (t.porenKit){
+    const C = P.cloak || {}, n = t.cloakN || 0; if (n > 0) dmg *= 1 - Math.min(C.max || 0.16, (C.per || 0.035) * n);
+    const A = t.act; if (A && A.k === 'pr' && A.s === 'fort' && dmg > 0){ const F = P.fort || {}, near = A.rats.map(i => W.units[i]).filter(r => r && r.alive && dist(r, t) < (F.near || 1.6));
+      if (near.length){ const share = dmg * (F.share || 0.7), each = Math.max(1, Math.round(share / near.length)); for (const r of near){ applyDmg(W, a, r, each, { tag: '쥐 방진 — 포렌 대신 맞음', share: true }); if (!r.alive) A.dead++; } A.absorbed += share; dmg -= share;
+        if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.5, s: '나눠 받음 ' + Math.round(share) + ' ÷ ' + near.length, c: 'g', t0: W.t }); } }
+  } else if (t.rs && t.rs.k === 'shieldWall'){
+    const S = P.shield || {}, mem = W.units.filter(r => r !== t && r.alive && !r.gone && r.ratOf === t.ratOf && r.rs && r.rs.k === 'shieldWall' && dist(r, t) < (S.shareR || 2.5));
+    if (mem.length){ const part = Math.max(1, Math.round(dmg / (mem.length + 1))); for (const r of mem) applyDmg(W, a, r, part, { tag: '쥐 방패 — 충격을 나눠 받음', share: true }); dmg = part; }
+  }
+  return dmg;
+}
+// 도발 (쥐들의 대왕): 3칸 안의 적은 포렌을 먼저 노림 — 보스는 따르지 않음
+function tauntOf(W, u, pick, seen){
+  if (!pick || u.ratOf != null || u.jrB || (u.traits || []).includes('보스')) return pick;
+  let best = null, bd = 1e9; for (const f of seen || []){ if (!f.taunt || !f.alive || f.gone) continue; const d = gap(u, f); if (d <= f.taunt && d < bd){ bd = d; best = f; } }
+  return best || pick;
+}
+// 대검 베기: 앞의 다른 적 하나까지 60% 피해로 베어 넘김
+function prnCleave(W, u, t){
+  const o = W.units.filter(e => e !== t && e.alive && !e.gone && e.side !== u.side && gap(u, e) <= u.rng + 0.3 && angDiff(Math.atan2(e.y - u.y, e.x - u.x), u.face || 0) < 1.3).sort((a, b) => dist(u, a) - dist(u, b))[0];
+  if (o) strike(W, u, o, o, 1, false, { mul: u.cleave, tag: '대검 베기 — 베어 넘김' });
+}
+// 포렌 두뇌 (2D porenUpdate 의 순서 그대로): 쥐 방패 → 위기면 쥐 방진 → 쥐 포박 → 쥐 사다리 (그 밖엔 보통 근접 — 대검으로 막으며 벰)
+function porenBrain(W, u, dt){
+  if (!u.prn || u.act || u.kb || W.t < (u.stunT || -9) || prone(W, u)) return false;
+  const P = PRN(W);
+  if (prShield(W, u)) return true;
+  if (u.hp < u.max * ((P.fort || {}).lowHp || 0.4) && prFort(W, u, '위기')) return true;
+  if (specReady(W, u, 'pbind')){ const B = P.bind || {}, F = prnFoes(W, u).filter(e => !e.bind && dist(u, e) <= (B.range || 4.5) && canSee(W, u, e));
+    if (F.length && prBind(W, u, F.reduce((a, b) => (b.atk || 0) > (a.atk || 0) ? b : a))) return true; }
+  const t = u.target, Ld = P.ladder || {};
+  if (t && t.alive && !t.gone && t.side !== u.side && specReady(W, u, 'pladder')){ const d = dist(u, t);
+    if (d >= (Ld.min || 2.5) && d <= (Ld.max || 8) && canSee(W, u, t)){ const rats = prnRats(W, u).filter(r => !(r.rs && ['fort', 'bind', 'bindRun', 'ladder', 'shieldWall'].includes(r.rs.k))).sort((a, b) => dist(a, u) - dist(b, u)).slice(0, Ld.rats || 3);
+      if (rats.length >= (Ld.rats || 3) && prLadder(W, u, t, null, rats)) return true; } }
+  return false;
+}
+// 동작 (u.act.k === 'pr')
+function prStep(W, u, dt){
+  const A = u.act, P = PRN(W);
+  if (A.s === 'fort'){ stop(u);
+    if (W.t < A.end) return;
+    const F = P.fort || {}, rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive), fw = (u.mass || 140) * 4 + rats.filter(r => dist(r, u) < (F.near || 1.6)).reduce((s, r) => s + (r.mass || 10), 0);
+    const cn = { mul: (u.atk + A.absorbed * (F.counter || 0.6) + fw * (F.weightK || 0.164)) / Math.max(1, u.atk), crit: W.rand() < (F.crit || 0.25), absorbed: Math.round(A.absorbed), w: Math.round(fw), dead: A.dead };
+    for (const r of rats) if (r.rs && r.rs.k === 'fort') ratFree(r);
+    u.act = null; u.saT = Math.min(u.saT || -9, W.t);
+    if (!prnFoes(W, u).some(e => dist(e, u) < (F.spinR || 1.8) + e.r)){ const Ld = P.ladder || {}, far = prnFoes(W, u).filter(e => dist(e, u) <= (Ld.max || 8) && canSee(W, u, e)).sort((a, b) => (b.atk || 0) - (a.atk || 0))[0];
+      if (far && rats.length >= (Ld.rats || 3)){ prLadder(W, u, far, cn, rats.sort((a, b) => dist(a, u) - dist(b, u)).slice(0, Ld.rats || 3)); return; } }
+    prSpin(W, u, cn); return;
+  }
+  if (A.s === 'ladder'){
+    const t = W.units[A.b], rats = A.rats.map(i => W.units[i]).filter(r => r && r.alive), Ld = P.ladder || {};
+    if (!t || !t.alive || t.gone){ prLadderEnd(W, u); return; }
+    if (A.phase === 'gather'){ stop(u); const k = Math.min(1, dt * 10); rats.forEach((r, i) => { r.x += (u.x - (i - 1) * 0.35 * A.dx - r.x) * k; r.y += (u.y - (i - 1) * 0.35 * A.dy - r.y) * k; }); if (W.t - A.t0 >= 0.4){ A.phase = 'ride'; A.t1 = W.t; } return; }
+    if (A.phase === 'ride'){ const d = Math.hypot(t.x - u.x, t.y - u.y) || 1, nx = (t.x - u.x) / d, ny = (t.y - u.y) / d, st = Math.min(d, (Ld.speed || 7) * dt), px = u.x + nx * st, py = u.y + ny * st, blk = boxRock(W, px, py, u.r * 0.8);
+      if (!blk){ u.x = px; u.y = py; } u.fg = u.face = Math.atan2(ny, nx); stop(u);
+      rats.forEach((r, i) => { r.x = u.x - nx * (i - 1) * 0.35; r.y = u.y - ny * (i - 1) * 0.35; });
+      if (blk || d < 1.2 + t.r || W.t - A.t1 > 1.6){ A.phase = 'slam'; A.t2 = W.t; } return; }
+    if (A.phase === 'slam'){ stop(u);
+      if (!A.hit && W.t - A.t2 >= 0.15){ A.hit = true;
+        if (A.cn) prSpin(W, u, A.cn);
+        else { const hits = prnFoes(W, u).filter(e => Math.hypot(e.x - t.x, e.y - t.y) < (Ld.r || 1.3) + e.r);
+          for (const e of hits){ strike(W, u, e, e, 1, false, { mul: Ld.mul || 1.5, tag: '쥐 사다리 — 내려찍기' }); if (e.alive){ if ((e.mass || 70) < (u.mass || 140) * 3) stun(W, e, Ld.stun || 0.5, u.i); shove(W, u, e, 0.6, e.x - u.x, e.y - u.y, { tag: '내려찍기에 밀려남' }); } }
+          L(W, { k: 'prSlam', a: u.i, b: t.i, n: hits.length, vis: prnVis(W, u, t) }); if (W.fxOn) W.fx.push({ k: 'quake', x: t.x, y: t.y, r: Ld.r || 1.3, t0: W.t }); } }
+      if (W.t - A.t2 >= 0.4) prLadderEnd(W, u); return; }
+    return;
+  }
+  if (A.s === 'cmd'){ const S = P.shield || {};
+    if (A.phase === 'jump'){ const k = Math.min(1, (W.t - A.t0) / 0.4), e = 1 - (1 - k) * (1 - k); u.x = A.sx + (A.tx - A.sx) * e; u.y = A.sy + (A.ty - A.sy) * e; stop(u); if (k >= 1){ A.phase = 'hold'; A.t1 = W.t; } return; }
+    stop(u); prSlots(W, u, A); u.fg = Math.atan2(A.ey - u.y, A.ex - u.x);
+    if (W.t - A.t1 >= (S.dur || 6) || !A.rats.some(i => W.units[i] && W.units[i].alive && W.units[i].rs && W.units[i].rs.k === 'shieldWall')) prCmdEnd(W, u, W.t - A.t1 >= (S.dur || 6) ? '' : '쥐가 모두 쓰러짐');
+    return;
+  }
+  u.act = null;
+}
+// 쥐 두뇌 (양쪽 같음) — 포렌의 기술로만 움직임 · 명령은 받지 않음
+function ratBrain(W, r, dt){
+  if (r.order) r.order = null;
+  const S = r.rs || (r.rs = { k: 'idle' }), K = W.units[r.ratOf], king = K && K.alive && !K.gone ? K : null, tgt = i => { const t = W.units[i]; return t && t.alive && !t.gone ? t : null; };
+  const lead = king || (r.ratKind === 'ratVet' ? null : vetOf(W, r));   // 지휘의 열화 카피: 포렌이 쓰러지면 쥐 베테랑을 따름
+  if (r.leaveT != null){ stop(r); if (king) faceTo(r, king); setMood(W, r, '경례'); return true; }   // 싸움 끝 — 경례하고 사라짐 (도감)
+  if (S.k !== 'idle' && S.until != null && W.t >= S.until) ratFree(r);
+  const s = r.rs;
+  if (r.ratKind === 'ratVet' && (s.k === 'idle' || s.k === 'assault') && vetRoll(W, r, s.k === 'assault' ? tgt(s.b) : r.target && r.target.alive && !r.target.gone && r.target.side !== r.side ? r.target : null)) return true;   // 구르기
+  if (s.k === 'fort'){ if (!king){ ratFree(r); } else { const a = s.a + W.t * 1.6; setMood(W, r, '쥐 방진 — 대검 둘레'); goTo(W, r, king.x + Math.cos(a) * 1.25, king.y + Math.sin(a) * 1.25, dt); return true; } }
+  if (s.k === 'ladder'){ stop(r); setMood(W, r, '쥐 사다리 — 포렌을 태움'); return true; }
+  if (s.k === 'bindRun'){ const t = tgt(s.b); if (!t || !t.bind){ ratFree(r); } else { if (dist(r, t) < t.r + r.r + 0.35) bindAttach(W, r, t); else { setMood(W, r, '묶으러', t.i); goTo(W, r, t.x, t.y, dt); } return true; } }
+  if (s.k === 'bind'){ const t = tgt(s.b); if (!t || !t.bind){ ratFree(r); } else { const B = t.bind, j = B.rats.indexOf(r.i), a = j / Math.max(1, B.rats.length) * 6.283 + (W.t - B.t0) * 2; r.x = t.x + Math.cos(a) * (t.r + r.r * 0.5); r.y = t.y + Math.sin(a) * (t.r + r.r * 0.5); stop(r); setMood(W, r, '매달림', t.i); return true; } }
+  if (s.k === 'shieldWall'){ if (!s.slot){ ratFree(r); } else { if (Math.hypot(s.slot.x - r.x, s.slot.y - r.y) > 0.15){ setMood(W, r, '쥐 방패 — 자리로'); goTo(W, r, s.slot.x, s.slot.y, dt); } else { stop(r); r.fg = s.face; setMood(W, r, '쥐 방패 — 온몸으로 막음'); } return true; } }
+  if (s.k === 'wall'){ const g = tgt(s.g), e = tgt(s.a); if (!g || !e){ ratFree(r); } else { const d = dist(g, e) || 1, nx = (e.x - g.x) / d, ny = (e.y - g.y) / d, ah = Math.min(d * 0.6, g.r + r.r + 0.25), off = (s.idx - (s.n - 1) / 2) * 0.5;
+      const x = g.x + nx * ah - ny * off, y = g.y + ny * ah + nx * off; if (Math.hypot(x - r.x, y - r.y) > 0.12){ setMood(W, r, '방벽 — ' + g.name + ' 앞으로', e.i); goTo(W, r, x, y, dt); } else { stop(r); r.fg = Math.atan2(ny, nx); setMood(W, r, '방벽', e.i); } return true; } }
+  if (s.k === 'assault'){ const t = tgt(s.b); if (!t || !(lead ? markOn(W, lead) : W.t < (s.until || 0))){ ratFree(r); } else { r.target = t; r.state = r.side ? 'hunt' : 'fight'; fight(W, r, t, dt, true, true); return true; } }
+  // 쉬는 쥐: 표식이 남아 있으면 합류
+  if (lead && markOn(W, lead)){ const t = W.units[lead.ratMark.b]; r.rs = { k: 'assault', b: t.i, until: lead.ratMark.until, a: W.rand() * 6.283 }; r.target = t; fight(W, r, t, dt, true, true); return true; }
+  const knight = r.ratKind === 'ratKnight' || r.ratKind === 'ratVet';
+  if (!s.tgT || W.t >= s.tgT){ s.tgT = W.t + 0.3 + W.rand() * 0.2; let t = null;
+    const anc = !r.ratWild && lead ? lead : r, lim = r.ratWild || !lead ? 16 : 7;
+    if (!r.ratWild && lead && lead.target && lead.target.alive && !lead.target.gone && lead.target.side !== r.side && dist(lead, lead.target) <= 7) t = lead.target;
+    else t = prnFoes(W, r).filter(e => dist(anc, e) <= lim && (dist(r, e) < 2.5 || canSee(W, r, e) || (r.side === 0 ? !!e.seenBy : false))).sort((a, b) => dist(r, a) - dist(r, b))[0] || null;
+    s.tg = t ? t.i : null; }
+  const t = s.tg != null ? tgt(s.tg) : null;
+  if (t){ if (knight) return false;   // 쥐 기사 · 베테랑: 창 거리 · 방패 · 돌격은 보통 근접 그대로
+    if (!r.flee && W.rand() < dt * 0.05){ const d = dist(r, t) || 1, fx = r.x + (r.x - t.x) / d * 2.5, fy = r.y + (r.y - t.y) / d * 2.5; if (!boxRock(W, fx, fy, r.r)) r.flee = { x: fx, y: fy, until: W.t + 0.7, why: '쌩 — 도망쳤다 돌아옴' }; }   // 갑자기 뒤로 쌩
+    r.target = t; r.state = r.side ? 'hunt' : 'fight'; fight(W, r, t, dt, true, true); return true; }
+  if (!r.ratWild && lead){ if (dist(r, lead) > 2.2){ const a = (r.i * 2.399) % 6.283; setMood(W, r, lead === king ? '포렌을 따름' : '베테랑을 따름'); goTo(W, r, lead.x + Math.cos(a) * 1.4, lead.y + Math.sin(a) * 1.4, dt); } else { stop(r); setMood(W, r, lead === king ? '포렌 곁' : '베테랑 곁'); } return true; }
+  if (!s.wp || W.t >= (s.wpT || 0) || Math.hypot(s.wp.x - r.x, s.wp.y - r.y) < 0.5){ const c = lead || r; s.wpT = W.t + 3 + W.rand() * 3; s.wp = null;
+    for (let k = 0; k < 8; k++){ const a = W.rand() * 6.283, d = 1.5 + W.rand() * 4.5, x = c.x + Math.cos(a) * d, y = c.y + Math.sin(a) * d; if (x > 0.7 && y > 0.7 && x < W.map.W - 0.7 && y < W.map.H - 0.7 && !boxRock(W, x, y, r.r)){ s.wp = { x, y }; break; } } }
+  if (s.wp){ setMood(W, r, '어슬렁'); goTo(W, r, s.wp.x, s.wp.y, dt); } else stop(r);
+  return true;
+}
+// 포렌마다 (매 순간): 충성 · 쥐 망토 · 쥐 표식 · 방벽 · 강공에 방진 · 지휘가 끊김 · 기억하는 쥐
+function porenTick(W, dt){
+  let any = false;
+  for (const u of W.units){ if (!u.porenKit) continue; any = true; prnMemTick(W, u); if (u.gone){ ratsOut(W, u.side, r => r.ratOf === u.i, u.i, '포렌을 따라 나감'); continue; } if (!u.alive) continue; prnUnitTick(W, u, dt); }   // 포렌이 맵을 나가면 쥐도 함께
+  if (any) for (const v of W.units){ if (v.ratOf == null || !v.alive || v.gone) continue;
+    if (v.leaveT != null && W.t >= v.leaveT){ v.alive = false; v.gone = 'left'; stop(v); continue; }   // 경례 뒤 사라짐
+    if (v.ratKind === 'ratVet'){ const K = W.units[v.ratOf]; if (!(K && K.alive && !K.gone)) vetCmd(W, v); } }
+  if (any) for (const t of W.units) if (t.bind){ bindTick(W, dt); break; }
+  if (any) for (const s of [0, 1, 2]){ if (!W.units.some(r => r.alive && !r.gone && r.side === s && r.ratOf != null)) continue;   // 편에 쥐만 남으면 흩어짐
+    if (!W.units.some(o => o.alive && !o.gone && o.side === s && !o.summon)) ratsOut(W, s, () => true, null, '편에 쥐만 남아 흩어짐'); }
+}
+// 쥐가 한꺼번에 사라짐 (한 줄로 적음)
+function ratsOut(W, side, f, by, why){
+  const R = W.units.filter(r => r.alive && !r.gone && r.side === side && r.ratOf != null && f(r)); if (!R.length) return;
+  for (const r of R){ r.alive = false; r.gone = 'left'; r.act = null; stop(r); }
+  L(W, { k: 'ratScatter', a: by != null ? by : R[0].i, n: R.length, why: why || '', vis: side === 0 || R.some(r => !!r.seenBy) });
+}
+function prnUnitTick(W, u, dt){
+  const P = PRN(W); if (!u.prn){ u.prn = { loyal: null, wallCd: -9, settled: false, calmT: null }; prnInit(W, u); }
+  const Q = u.prn, rats = prnRats(W, u), on = prnFight(W, u), cap = on ? (P.cap || 24) : Math.min(P.cap || 24, P.idleCap || 4);
+  if (!Q.loyal){ const k = prnRoll(W); Q.loyal = { t: 0, next: k, dur: prnFill(W, k) }; }
+  Q.full = rats.length >= cap;
+  if (!Q.full){ Q.loyal.t += dt * (on ? (rats.length < (P.few || 4) ? P.fewK || 2.5 : 1) : P.idleK || 0.25);
+    if (Q.loyal.t >= Q.loyal.dur){ prnRat(W, u, Q.loyal.next); const k = prnRoll(W); Q.loyal = { t: 0, next: k, dur: prnFill(W, k) }; } }
+  { const C = P.cloak || {}; u.cloakN = Math.min(Math.round((C.max || 0.16) / (C.per || 0.035)), rats.filter(r => dist(r, u) < (C.r || 1.6)).length); }
+  if (u.act && u.act.k === 'atk' && u.act.phase === 'wind'){ const t = W.units[u.act.b]; if (t && t.alive && t.side !== u.side && specReady(W, u, 'pmark')) prnMark(W, u, t, '쳐들어가며'); }
+  for (const e of W.units){ const A = e.act; if (!e.alive || e.gone || e.side === u.side || !A || A.phase !== 'wind' || A.b == null) continue;
+    if (!(A.k === 'charge' || A.k === 'bash' || A.k === 'h2' || A.k === 'spec' || (A.k === 'atk' && !isFar(e)))) continue;
+    const g = W.units[A.b]; if (!g || !g.alive || g.side !== u.side || g.ratOf != null || !prnStrong(W, e)) continue;
+    if (g === u){ if (!(u.act && u.act.k === 'pr')) prFort(W, u, '강공'); }   // 포렌 본인: 대검을 꽂고 쥐 방진
+    else prnWall(W, u, g, e); }
+  if (u.act && u.act.k === 'pr' && u.act.s === 'cmd' && (u.stunT || -9) - W.t >= ((P.shield || {}).bigStun || 0.5)) prCmdEnd(W, u, '지휘 끊김!');
+  if (!Q.settled && !prnFoes(W, u).length) prnSettle(W, u);
+  else if (Q.settled && prnFoes(W, u).length) Q.settled = false;   // 새 적이 생김 (여정 맵 · 만남) — 다음 싸움 끝에 다시   // 싸움 끝 (적이 모두 쓰러짐) — 판이 끝나기 전 그 순간에
+}
+// 투창 뒤: 검 (javSide) 이 있으면 그것으로 근접 · 없으면 맨손 — 쥐 베테랑 (도감: 투창 후 검으로 근접전)
+function javAfter(W, u){ const sw = u.javSide && (W.rules.weapons || {})[u.javSide]; u.rng = (sw || W.rules.weapons['맨손'] || { rng: 0.3 }).rng + (u.reachX || 0); u.weaponNow = sw ? u.javSide : '맨손'; }
+// 지휘의 열화 카피 (쥐 베테랑): 포렌이 쓰러지면 쥐들이 베테랑을 따르고, 베테랑이 치려는 적에게 표식 (덤 쥐 없이 3초 · 대기 18초)
+const vetOf = (W, r) => W.units.find(v => v !== r && v.alive && !v.gone && v.ratOf === r.ratOf && v.ratKind === 'ratVet' && v.leaveT == null) || null;
+function vetCmd(W, v){
+  const C = PRN(W).vetCmd || {}, A = v.act; if (W.t < (v.vcmdCd || -9) || !A || A.k !== 'atk' || A.phase !== 'wind') return;
+  const t = W.units[A.b]; if (!t || !t.alive || t.side === v.side) return;
+  const rats = W.units.filter(r => r !== v && r.alive && !r.gone && r.ratOf === v.ratOf && r.leaveT == null && !ratBusy(r)); if (!rats.length) return;
+  v.vcmdCd = W.t + (C.cd || 18); v.ratMark = { b: t.i, until: W.t + (C.dur || 3) };
+  rats.forEach((r, i) => { r.rs = { k: 'assault', b: t.i, until: v.ratMark.until, a: i / rats.length * 6.283 }; });
+  L(W, { k: 'ratVetCmd', a: v.i, b: t.i, n: rats.length, vis: v.side === 0 || !!v.seenBy || !!t.seenBy });
+  if (W.fxOn) W.fx.push({ k: 'ratmark', b: t.i, t0: W.t, until: v.ratMark.until });
+}
+// 구르기 (쥐 베테랑 — 민수 메모: 앞뒤 · 방어 보정 · 급소 보호 · 중대형까지 넘어뜨림 / 도감: 진형을 붕괴시키는 구르기)
+//   뒤: 나를 노린 근접 일격이 손 안에서 준비 중이면 60% 로 뒤로 굴러 빠짐 · 앞: 1.6 ~ 4.2칸의 적에게 굴러 들어가 닿는 몸을 넘어뜨림 (대형 · 초대형은 밀기만)
+const ROLL_BIG = ['대형', '초대형'];
+function vetRoll(W, r, t){
+  const V = PRN(W).vetRoll || {}; if (W.t < (r.rollCd || -9) || r.act || r.bound || prone(W, r) || W.t < (r.stunT || -9) || r.kb) return false;
+  const e = W.units.find(f => f.alive && !f.gone && f.side !== r.side && f.act && f.act.phase === 'wind' && f.act.b === r.i && f.act !== r.rollSeen && !isFar(f) && (f.act.k === 'atk' || f.act.k === 'bash' || f.act.k === 'spec' || f.act.k === 'h2') && gap(f, r) < (f.rng || 0.5) + (W.rules.reach || 0.3) + 0.5 && f.act.end - W.t > 0.1);
+  if (e){ r.rollSeen = e.act;
+    if (W.rand() < (V.backP != null ? V.backP : 0.6)){ const a0 = Math.atan2(r.y - e.y, r.x - e.x), d = V.bDist || 2.2;
+      for (const da of [0, 0.6, -0.6, 1.1, -1.1]){ const x = r.x + Math.cos(a0 + da) * d, y = r.y + Math.sin(a0 + da) * d;
+        if (x < 0.7 || y < 0.7 || x > W.map.W - 0.7 || y > W.map.H - 0.7 || boxRock(W, x, y, r.r) || !fatClear(W.map, r.x, r.y, x, y, r.r * 0.7)) continue;
+        rollStart(W, r, 'back', x, y, e); return true; } } }
+  if (!t || !t.alive || t.gone || t.side === r.side || ROLL_BIG.includes(sizeOf(t))) return false;
+  const d = dist(r, t); if (d < (V.fMin || 1.6) || d > (V.fMax || 4.2) || !canSee(W, r, t) || !fatClear(W.map, r.x, r.y, t.x, t.y, r.r * 0.7)) return false;
+  const k = Math.min(V.fDist || 3.2, d + 0.2) / d; rollStart(W, r, 'fwd', r.x + (t.x - r.x) * k, r.y + (t.y - r.y) * k, t); return true;
+}
+function rollStart(W, r, dir, tx, ty, t){
+  const V = PRN(W).vetRoll || {}, dur = dir === 'fwd' ? V.fDur || 0.42 : V.bDur || 0.34;
+  stop(r); r.act = { k: 'roll', dir, phase: 'run', t0: W.t, end: W.t + dur, sx: r.x, sy: r.y, tx, ty, b: t ? t.i : null, hit: [] };
+  r.rollCd = W.t + (V.cd || 6); r.fg = r.face = Math.atan2(ty - r.y, tx - r.x) + (dir === 'back' ? Math.PI : 0);
+  L(W, { k: 'ratRoll', a: r.i, b: t ? t.i : null, dir, vis: r.side === 0 || !!r.seenBy || !!(t && t.seenBy) });
+  if (W.fxOn) W.fx.push({ k: 'num', x: r.x, y: r.y - 0.3, s: dir === 'fwd' ? '앞구르기!' : '뒷구르기!', c: 'g', t0: W.t });
+}
+function rollStep(W, r, dt){
+  const A = r.act, k = Math.min(1, (W.t - A.t0) / Math.max(0.05, A.end - A.t0)), e = 1 - (1 - k) * (1 - k), nx = A.sx + (A.tx - A.sx) * e, ny = A.sy + (A.ty - A.sy) * e;
+  stop(r); let blk = false;
+  if (!boxRock(W, nx, ny, r.r * 0.8)){ r.x = nx; r.y = ny; } else blk = true;
+  if (A.dir === 'fwd') for (const o of W.units){ if (!o.alive || o.gone || o.side === r.side || A.hit.includes(o.i)) continue; if (Math.hypot(o.x - r.x, o.y - r.y) < o.r + r.r + ((PRN(W).vetRoll || {}).w || 0.35)){ A.hit.push(o.i); rollBump(W, r, o); } }
+  if (k >= 1 || blk){ r.act = null; if (A.dir === 'fwd' && A.hit.length) L(W, { k: 'ratRollHit', a: r.i, n: A.hit.length, vis: r.side === 0 || !!r.seenBy }); }
+}
+function rollBump(W, r, o){
+  const V = PRN(W).vetRoll || {}, big = ROLL_BIG.includes(sizeOf(o));
+  strike(W, r, o, o, 1, false, { mul: V.mul || 0.5, wk: '둔기', noWound: true, tag: '구르기 — 들이받음' });
+  if (!o.alive) return;
+  if (!big) knockDown(W, o, V.kd || 1.1, r.i, '쥐 베테랑의 구르기에 발이 걸림');
+  shove(W, r, o, big ? 0.3 : V.shove || 0.9, o.x - r.x, o.y - r.y, { tag: '구르기에 밀려남' });
+}
+// 기억에서 빠짐: 쓰러진 쥐 기사 (포렌이 쓰러져 있어도 셈)
+function prnMemTick(W, u){
+  if (u.ratMem) for (const r of W.units) if (r.ratOf === u.i && r.ratRec && !r.alive && !r.gone && !r.recGone){ r.recGone = true; const j = u.ratMem.indexOf(r.ratRec); if (j >= 0) u.ratMem.splice(j, 1); L(W, { k: 'ratLost', a: r.i, n: r.ratRec.n, vis: true }); }
+}
+// 싸움 끝: 살아남은 쥐 기사 — 돌아온 횟수 +1 · 단계 +1 (최대 4) · 세 번 돌아오면 쥐 베테랑 · 경례하고 사라짐 (도감 — 적 포렌의 기사도)
+function prnSettle(W, u){
+  u.prn.settled = true;
+  const ns = [], lv = PRN(W).leave != null ? PRN(W).leave : 1.5;
+  for (const r of prnRats(W, u)){ if (r.ratKind !== 'ratKnight' && r.ratKind !== 'ratVet') continue; r.leaveT = W.t + lv; stop(r); r.act = null;
+    if (r.ratRec && u.ratMem){ const x = r.ratRec; x.ret = (x.ret || 0) + 1; x.lv = Math.min(4, (x.lv || 1) + 1); if (x.ret >= 3 && !x.vet){ x.vet = true; L(W, { k: 'ratVet', a: r.i, n: x.n, vis: true }); } ns.push(x.n + (x.vet ? '★' : '')); }
+    else ns.push(r.name); }
+  if (ns.length) L(W, { k: 'ratSalute', a: u.i, ns: ns.join(', '), vis: u.side === 0 || !!u.seenBy });
+}
+
+
 // 도감 인물: [인물 번호, 이름, 구분, 등급, 직업, 영입 가능, 무리, 설정 앞부분, 얼굴 번호, 속력 배율, 방패, 무기]
 const ROSTER = [["C-003","카리우스","동료",5,"근접",0,0,"-Sir.카리우스/3M거구(카이로스경본체180cm平凡앙상)骨題腕,人腕세개,各異크기形五脚/美面안경대머리主격카이로스/或世界神투옥學者罪不敬,融合怪반말冷靜無關心生存默協孤掌難鳴 異世罪人들의罰기괴쇠사슬가죽合 괴력A:신성세계出+融合太身 🔆개조된 신체:상태이상저항强(火凍雷毒등좀더버팀생존력) 꿰멘神→魅了魂保存→4죄수(同世出면식無)互존…",0,0.91,1,"검"],["C-006","포렌","동료",5,"지휘",0,0,"굴에 적응할수밖에 없었던 낙오자중 한명. 결국 대성했다. 그녀 자신이 돌연변이에 가까워 아직 좋은 수컷은 찾지 못했음. 포렌의 카리스마에 쥐계열 종족이 저절로 이끌려 형성된것에 가깝고, 쥐 계열 종족의 절대적인 지지와 충성을 받는 중. 포렌의 영향을 받아, 인간형 쥐들도 가끔 태어나는 중. 굴의 환경은 기형적이다. 5…",1,1.03,0,"검"],["C-010","GOOD WILL","동료",5,"근접",0,0,"굿 윌. 마법계+SF계열 출신이다. 그의 세계에서 가장 강한 이들 중 한명이었다. 적뢰급은 아니지만 매우강한 전격을 가지고 있다. 초속 니킥이 특징. 굴에서 어찌저찌 살아가고, 무뚝뚝해 보이지만 가장 지구기준에서 선성향을 가진 인물중 한명이다. 누가 오더라도 비빌수 있다고 보면 된다. 6성이든, 7성이든, 유효타와 비…",2,1.1,0,"맨손"],["C-014","모로","동료",5,"근접",0,0,"떠돌이 곤충계 여인. 그렇게 안보이지만 매우 강한편. 굴에서 포식자에 위치함. 초월정도는 아님 [갑피]",3,0.81,0,"이빨·발톱"],["C-101","고대사슴 산호","동료",5,"근접",0,0,"굴 어딘가의 태생이다. 신수취급받는 돌연변이 개체이다. 크기는 몸길기 5M, 높이 3M이다. 아군중 가장 거구중 하나이다. 괴력과 돌진, 탱커라고 보긴 애매하나 대충 던져놓으면 그게 탱킹이다. 전차에 가깝다.",4,0.8,1,"검"],["C-174","물레","동료",5,"치유",0,0,"정령계 앰버서더 물레. 20층 이후 찾아오는 세력의 대사이자 5성 서포터, 마찬가지로 종족적인 이유로 플레이어와 우호관계를 쌓으려는 세력. 참고로 물레라는 이름은, 그저 플레이어의 뇌가 번역한 결과이다. <천벌:바벨> 이전의 지역이다 굴은 따라서 언어의 본질적인 의사소통이 가능함. 말하자면 참이슬 소주의 성분표나 이름…",5,0.93,0,"마법"],["C-175","콜라이더","동료",5,"근접",0,0,"마계 대사 대귀족 콜라이더. 마계라고 하지만 정령이나 차원계 쪽에 가까운 인물이다. 20층 이후 시점에 물레와 함께 굴을 방문하는 대사다. \"20층까지 돌파한 세력은 300년만에 처음입니다. 우리는 당신을 돕고 싶습니다.\" 결국 탈출을 원하는 종족이 있고, 유지하려는 종족이 있음 이미적응한 이들. 1층을 돌파하는것조차…",6,1.04,0,"검"],["C-009","용묘화","동료",4,"원거리",0,0,"인간계열 출신. 어떤 조직의 보스였고, 매장되었으나 눈떠보니 굴이었음. 강인한 여성. 안대를 착용중. 반대쪽 눈은 플레이어에겐 안보임.(스프라이트상으로) [괴력A] 괴력≠근력 근력은 신체적인 특성, 괴력은 이질적인 특성 진형붕괴, 사격 잘함, 특수기술로는 상대의 투척물을 거대한 바위까지 역으로 튕겨내는것. 홈런치듯. …",7,0.79,0,"총"],["C-019","비나(흑기사)","동료",4,"근접",0,0,"적군으로 만날수 있는 여러명의 검사들중 한명. 총은 잘 못다룸, 인연에 따라 어떤 떠돌이 기사를 영입 가능하다. 이름은 비나",8,1.05,0,"검"],["C-103","어퐁","동료",4,"지휘",0,0,"판타지쪽 출신, 하이테크다 생각보다. 그녀 자신은 그쪽 세계에서 대장군에 가까웠다. 매우 강한 근력, 2.4M의 거구, 전투의 달인이며, 사실 특기는 총포류다. 진형붕괴와 돌격의 스페셜리스트이다. 탱킹은 취향이 아니나 잘함. 4성으로 수정. 고유특성은 딱히 없다. 약자를 무시하는건 아니지만, 강자를 인정",9,0.79,1,"검"],["C-106","친칠라","동료",4,"원거리",0,0,"심해계열 종족이고, 그녀 혼자 떨어짐. 모든게 주운 장비. 그녀 종족의 하이테크 기술들은 해져 없어진지 오래임. 꽤 장수하는 종족. 활에 천부적인 재능이 있었고, 현재는 사냥꾼이며 별 생각 없이 잘 적응한케이스. 이곳도 하나의 심해라고 생각하는 듯 하다. [종족:심해](수중 호흡/수중전 제한X/익사불가/바다,비,물관련…",10,1.08,0,"활"],["C-191","창라 (3성)","동료",4,"근접",0,0,"출신은 마계, 장군급의 전사, 목적이 있어서 홀로 활동중인 상태, 혹은 질렸을지도 모든것에. 굴에는 온갖것들이 떨어짐. 모든 무기류를 잘 다룸",11,1.03,0,"검"],["C-199","풍야","동료",4,"근접",0,0,"SF쪽 영웅계 출신. [영웅] 초인계 능력 다수 가지고있음, 실제나이는 50세정도",12,0.96,0,"검"],["C-205","투구게 조슈아 (4성)","동료",4,"근접",0,0,"SF+신화계 출신, 평범한 인간종, 육탄전도 가능하나 기본적으로 테크파워, 312세",13,1.06,0,"검"],["C-208","레비 (4성)","동료",4,"근접",0,0,"인간계+판타지계 출신, 실제 전투력은 노먼과 비슷하나 굴에서 살아남으며 어떤 마수와 인연을 맺게되고, 본인도 베테랑이 됨. 34세",14,0.96,0,"검"],["C-220","소스차 (4성)","동료",4,"근접",0,0,"소스차: 현재 모션이 너무 짜치기 때문에 보류, 생각하던 컨셉이 아님. 보라 에너지 다루는 계열, 마계출신, 120세정도",15,1.03,0,"검"],["C-225","건","동료",4,"근접",0,0,"4성의 기준 5인방중 하나. 4성이란 무엇인가? 20층 기준에서도 통할만한 확신을 가진이들 or, 솔로로 어느정도의 돌파성을 입증했을때. 어느정도의 생환을 달성했던 이들. 굴 기준에서도 강자들 건, 풍야, 소스차, 조슈아, 레비가 4성의 기준, 마법+어반판타지계 출신 76세",16,1.0,0,"검"],["C-194","갈리아 (3성)","동료",3,"지휘",0,0,"대장군 갈리아: 3성의 기중 3인방중 한명(탕아, 갈리아, 딸기) 장군계열, 마법재능 있음",17,1.06,0,"검"],["C-218","산딸기 (3성)","동료",3,"치유",0,0,"3성 서폿. 딸기계열 정령중 강한축에 속하나 본질은 만능 서폿.",18,0.97,0,"마법"],["C-221","탕아 (3성)","동료",3,"원거리",0,0,"\"용사\" 탕아. 균형잡힌 딜러 탕아. 존경받는 영웅이었으나 전투중 사망하고 굴에 떨어짐. 본인도 자신이 죽었다는 사실을 알고있다. 하지만 굴에서 죽어서 떨어진놈들은 의외로 흔함. 가설만 늘어날 뿐이지. 공중제비 돌고 매우 원거리에서 순식간에 접근해 떨어지는게 특기. 사격도 재능있음, 굴 기준 상위권 강자중 하나. [용…",19,1.07,0,"총"],["C-222","중장 탱크 (2성)","동료",3,"원거리",0,0,"SF계열 전사. 역장 전개 가능, 사격 재능 많음. 전술안 상당함.",20,0.86,0,"총"],["C-223","중장 벤티 (2성)","동료",3,"근접",0,0,"판타지계 출신, 기술적으로 뛰어난 양반이자 1인분은 무조건 하는 탱커",21,0.92,1,"검"],["C-001","인주","동료",2,"원거리",0,0,"본인도 몰랐던 격투와 사격의 재능 하지만 일반인이다.",22,0.96,0,"총"],["C-002","레베카","동료",2,"근접",0,0,"-레베카/루비색장발평온笑,158cm,27세,舊판금甲장검/純절대선,침착百折不屈不失希望소녀기사평범전투력🫀100 매사긍정존댓말,신개념없는세계出이성적(불사는흔한축복)신참나머지셋戰경험모름 던전괴수殺(불사用1주戰)괴수崩同落→흙시체파묻혀2년벽까지긁음→不死限界崩鑿반복目下꽉낌부패同時재생劇야윔,사실매우아프고외롭고힘들어,희망품은죄평범소녀…",23,0.91,1,"장검"],["C-005","모닝스타","동료",2,"근접",0,0,"\"슈퍼스타\" 모닝스타, 젊은 여성, 판타지계 출신 [괴력A] 철퇴 머리위로 빙빙 돌리다가 대가리 후리기, 반경 3M 원형으로 쓸어버리기, 뒤쪽으로 돌리다가 원거리의 적을 강하게 넉백하기, 당겨오면서 2차적으로 피해와 넘어짐 주기, 돌리다가 발목 후리기등, 무게에 의한 붕괴에 특화됨. 평소엔 신나게 걸어다님.",24,0.82,0,"둔기"],["C-007","노먼","동료",2,"원거리",0,0,"초능력이 가득한 세계의 일반인 군인. 후에 \"닥터\" 노먼, \"선봉대\" 노먼으로 전직 가능을 염두해두고 있음.수많은 전쟁에 참전한 베테랑 정규군 소속이었음. 총기류의 스페셜리스트",25,0.96,0,"총"],["C-008","옐로","동료",2,"근접",0,0,"리뉴얼 중임, 양동이에 자기 세계의 약을 만들어서 가지고 다님. 선 선향의 인물.",26,1.03,0,"검"],["C-190","비숍","동료",2,"원거리",0,0,"2성으로 수정, 초인계요괴, 화염, 용종에 가까운 종특을 지닌다. 브레스가 강함",27,1.02,0,"마법"],["C-209","마당쇠 (2성)","동료",2,"원거리",0,0,"사격에 특화되어있다. 돌쇠와 같은 세계출신, 요괴 출신. 사격재능, 격투재능 상위, 그래플링 잘함",28,0.96,0,"총"],["C-215","인공타천사 펄","동료",2,"원거리",0,0,"인카운터로도 등장하는데, 아군으로 얻으면 세상 귀엽고 평범한 창병이지만, 보스 인카운터로 등장시 초고난도. 절대로 실력을 숨기는게 아니라, 성급은 거의 아무 의미 없고, 단순 희귀하냐 아니냐일 뿐임. 존재적으로, 태생적으로, 능력적으로. 보기 힘든게 고성임. 펄은 강하다기보단.. 호러에가까움. 현재 스프라이트 준비중,…",29,0.87,0,"총"],["C-226","연금술사 (이름 모름)","동료",2,"근접",0,0,"등장 보류.",30,0.98,0,"검"],["C-259","천사 병사 10인","동료",2,"근접",0,0,"천계+사이버, 마법처럼 보이는 기술력이 많은 종족. NPC 인카운터 지역으로 등장. 싸울일은 많이 없음. 알아서 잘 살고있는 종족.",31,0.94,0,"검"],["C-260","흑영웅","동료",2,"근접",0,0,"초인계의 다크히어로, 초능력 좀 가지고 있음, 기본 베이스는 타격, 냉병기 재능 약함",32,1.03,0,"맨손"],["C-261","자홍","동료",2,"근접",0,0,"인간계 출신, 검술 재능 상당한 베테랑 군인 출신. 호위무사이자 탈주자였음. 절단력이 강함",33,1.0,0,"검"],["C-262","잭","동료",2,"기동",0,0,"회사원인데 적응한 계열. 본인도 몰랐던 격투의 재능, 사격은 잘 못함. 미친놈처럼 달려들다보니 어느새 살아남았다. 필살기는 대가리 찍어버리기, 급소공격. 의외성 1티어. 잘피하고, 잘때림. 이런 인간들이 나중에 세자르가 되는것임. 치명타률과 회피률이 예상외로 매우높은 이레귤러. 끌레도르라고 소개하지만, 본명은 잭이다.…",34,1.09,0,"맨손"],["C-004","청광묵","동료",1,"기동",0,0,"-청광묵/귀엽葛주황단발,130cm幼女고블린의외예쁘장꼬질/흑요석단검짐승생존전사(非도적) 일족몰살동굴로불들고사냥꾼피해逃발헛디뎌落落後孤立1달짐승生存,유저落먹으려맞짱→左眼실명敗유저를대장으로伏/强伏습성공동체고등교육수료오히려레베카가초급교육만 벽서주운掌만한怪蝸3마리이끼屍食번식애완동물귀여워애낌·식량食때마다슬퍼 웃긴말투:\"대장..아직…",35,1.07,0,"단검"],["C-018","간호사 (1성 영웅)","동료",1,"치유",0,0,"인간계의 낙오자. 죽어서 온 인물. 젊은 나이, 오래전 전쟁터에서 죽은 인물. 버프, 치료 특화, 전투는 거의 못함. 그나마 권총정도 들려주는게 나을지도.. 처참한 명중률이겠지만. 그래도 후방에선 가장 많이 치료해주는 인물이 될 것임",36,1.07,0,"마법"],["C-107","트라카","동료",1,"원거리",0,0,"고블린 궁수 트라카. 청광묵과는 모르는 사이이나 동향 출신, 발화능력은 청광묵보다도 약하다. 청광묵보다 먼저, 다른곳에서 떨어졌음. 유저가 주워주면 좋아하며 전력이 되어줄지도.",37,1.1,0,"활"],["C-186","팔짱 낀 분홍 머리 악마 여인","동료",1,"근접",1,0,"같은 종족에서 포획 및 영입이 가능한 1성 동료",38,0.94,0,"검"],["C-189","인공천사 벨 (1성)","동료",1,"근접",0,0,"벨의 세계에선 천사종이 신에 의한 피조물, [신성B] 를 지니고 있다. 펄과는 아는사이는 아니고, 동향도 아님. 지능이 그렇게 높지는 않다.",39,1.04,0,"검"],["C-193","돌쇠 (2성)","동료",1,"근접",0,0,"마당쇠와 같은 조직의 소속이었다. 요괴계, 신체능력이 좋은편.",40,1.06,0,"검"],["C-195","갱스터 간두 (2성)","동료",1,"원거리",0,0,"인간계와 비슷한 어느곳의 낙오자. 흑인 항쟁의 끝에서 어딘가의 하수구로 도망쳐 당도했다. 특수기술은 샷건 영거리 사격. 확살률이 높다. 사격의스페셜리스트 격투는 잘 못함",41,1.06,0,"샷건"],["C-196","폰","동료",1,"근접",0,0,"판타지계의 기사 출신, 비숍과 동향사람이며, 같은 소속이었음",42,0.96,0,"검"],["C-197","가리","동료",1,"기동",0,0,"타격을 잘한다. 회피성능이 뛰어남. 절단보단 타격계 무구를 잘씀.",43,1.18,0,"맨손"],["C-198","나달","동료",1,"근접",0,0,"금기사 나달. 판타지계의 전사.",44,1.07,0,"검"],["C-200","호즈","동료",1,"근접",0,0,"냉병기 재능 없는 인물, 초능력 일부 사용 가능, 계약자는 현실에 살아있는데, 계약자의 배신으로 나락에 떨어진게 굴. 본인이 생각보다 약하단걸 여기와서 알았다.",45,0.93,0,"검"],["C-202","하리","동료",1,"근접",0,0,"작은 천계 출신 인물. 메이지.",46,0.94,0,"검"],["C-203","히라리","동료",1,"치유",0,0,"평소에는 서폿+힐, 버프도 잘걸고, 힐도 잘한다. 인연도가 어느정도 높아지면, 4성 매지션으로 합류 가능. 천체마술에 재능이 있다.",47,1.02,0,"마법"],["C-206","여검방기사 칸야 (2성)","동료",1,"근접",0,0,"평범한 탱커, 사이버 판타지계 출신",48,0.84,1,"검"],["C-214","오헤 (1성)","동료",1,"근접",0,0,"마계출신 전사. 특별한 능력은 없으나 신체능력이 뛰어남. 근접 타격 잡기계",49,0.96,0,"맨손"],["C-216","룩 (1성)","동료",1,"원거리",0,0,"꽤 성능좋은 1성 창병이자 방패병. 진형을 유지하기 좋으며 전선의 부품으로 기능한다. 사격에도 재능있음. SF+초인계 출신 참고로 다들 기술이 딸려서 총 특기술이 없는게 아니라, 굴의 한정된 자원, 한정된 인력과 지식으로 어쩔수없이 냉병기를 쓰는 경우가 많아지는것임.",50,1.07,1,"총"],["C-224","휘슬 (1성)","동료",1,"근접",0,0,"등장보류. 등장한다면 1성.",51,1.03,0,"검"],["C-016","테헤라","펫",7,"치유",0,0,"인카운터로 등장, 출신 외계, 생물학적으로는 곤충계열? 서포터, 1기",52,0.98,0,"마법"],["C-040","흑토끼기사 (펫)","펫",5,"근접",0,0,"곧 원화 , 움짤 스프라이트 대량 준비 예정, 적으로도 많이 등장하나 인카운터로 한마리 얻을 수 있음. 5성 펫인건 희귀도 때문. 강하긴 하지만 초월적이진 않는다. 주인을 맹목적으로 사랑하계 설계됨",53,0.97,0,"검"],["C-274","쥐 베테랑","펫",4,"근접",0,0,"",54,1.2,0,"검"],["C-039","꼬마마녀요정 (펫)","펫",3,"근접",0,0,"별로인듯. 삭제...대기 일단.",55,1.05,0,"검"],["C-059","쥐 기사","펫",1,"원거리",0,0,"베테랑쥐와 일반쥐들은 분리, 전투시 쥐기사들은 유닛으로 취급되며, 소환된 순서로 짬이 차고 저장되고, 다음에도 식별할수 있는 유닛으로 점점 성장하며 등장. 기본적으로 방진을 우선하며, 기회나 공격턴일땐 , 돌격함. 포렌과 함께 1기, 어릴때 초상화도 따로 준비해놔야할듯. 총 4단계가 존재하며, 전투가 끝나면 경례하고 …",56,1.16,0,"총"],["C-270","일반 쥐","펫",1,"근접",0,0,"커여운 기본 쥐. 쥐, 중쥐, 대쥐는 하나로 통합. 쥐는 작고, 쉽게 죽음.",57,1.15,0,"이빨·발톱"],["C-024","퀸 아리안","NPC",7,"근접",0,0,"떠돌이 보스, 별 관심 없어하고, 건들지 않으면 그냥 평범한 아주머니 느낌",58,1.04,0,"검"],["C-086","테이론","NPC",7,"원거리",0,0,"작은 우주차원을 호령하던 군주. 20층 이후에 등장하는 강보스 맵은 그저 하얀공간. 그리고 전투시작시 우주가 침식하며, 별들이 내리고, 하늘은 아름답게 빛나게 됨. 대화는 없음. 대검레이저, 극강 투창, 공간절단, 다양한 무구를 활용, 마법은 의외로 안씀.",59,1.0,0,"총"],["C-020","왐","NPC",6,"근접",0,0,"굴의 오래된 도깨비 개체중 하나. 고대종에 가깝다. 전성기엔 한 층의 지배자이기도 했었고, 그 층이 무너지며 그냥 떠돌아다님",60,0.93,0,"검"],["C-026","칼 (현자)","NPC",6,"근접",0,0,"오-닐의 파트너.그들의 맵은 어두운 공간이며, 그들은 무언가를 찾아다니며 다양한 사람들을 돕거나 축복해준다. 그들에게 이것은 하나의 여행인 듯 하다.",61,0.95,0,"검"],["C-031","말대가리","NPC",6,"근접",0,0,"횡스크롤로 넓은 맵, 좋은 날, 선배드에서 음료를 홀짝거림. 초월자중 한명이나 전투계열의 초월자는 아님. 그의 선배드에 말을 걸어봐도 그는 그냥 음료만 홀짝거림. 무관심한 태도. 지나가자. 해변의 쏴아아 소리, 모래사장, 그리고 아름다운 하늘. 어쩌면 그가 원하는 모든것이 다 있을수도.",62,1.03,0,"검"],["C-041","죽은 영웅","NPC",6,"근접",0,0,"인카운터 - 그가 혼자 있는 층이 있음. 한참을 어두운 공간을 걸어가면 그의 시체가 조용히 얼어있음. 실제 그의 강함은 6성정도이지만, 어째선지 그는 나가지 않았음. 그냥 지나가자. 그가 바라보는 끝에는 출구가 있음.",63,0.97,0,"검"],["C-051","가면 (특별한 적)","NPC",6,"근접",0,0,"환각 or 저주로 등장하는 보스. 만남이 계속될수록 위험해지는 계열",64,1.02,0,"검"],["C-034","흑룡 (상인, 아이텐의 조수)","NPC",5,"근접",0,0,"코스튬, 게임과 관련없는 아이템을 파는 소녀 아이텐에게 청갑과 아이텐의 이벤트로 청갑기사단 관련 유물을 받으면, 랜덤하게 소환할수 있다. 아이텐에게 주워졌고, 청갑에게 수련받은 용종소녀, 그녀는 현재 시련중이며, 토끼마차의 2호점을 운영중, 강함은 5성정도이다(종특) 예전에는 미치광이처럼 날뛰던 때도 있었다. 청갑에게…",65,0.95,0,"검"],["C-036","청갑 (아이텐의 호위)","NPC",5,"근접",0,0,"아이텐과 함께등장. 담배를 나눠주면 좋아한다. 얼굴가죽이 실제로는 없다. 마차 뒤에서 담배만뻑뻑 펴댐. 실제로는 5성수준의 강함, 청갑기사단의 유일한 생존자이다.",66,1.01,0,"검"],["C-085","레지나","NPC",5,"근접",1,0,"9층의 보스 레지나. 맵은 알현실 하나. 그녀또한 유폐에 가깝게 떨어져서 상당히 권태로운 상태. 말걸면 평범하게 받아줌. 원한다면 전투, 아니라면 지나가도 상관없음. 만남이 계속되면 영입 가능. 강함은 5성정도, 순수 무력, 에너지계얼 검술, 종족은 수인",67,0.98,0,"검"],["C-096","가이우스 (등장보류)","NPC",5,"근접",0,0,"등장보류",68,0.96,0,"검"],["C-108","페흐토","NPC",5,"근접",1,0,"떠돌이 페흐토. 마족이며, 인카운터나 4층 이후 랜덤하게 출현. 인연이 계속되면 동료로 영입 가능하며, 원한다면 전투가 가능하다. 대귀족과 비슷한 위치이며, 5성정도.",69,1.0,0,"검"],["C-022","마리","NPC",4,"원거리",1,0,"마리 본인은 4성정도의 강함을 지녔다. 마리의 부족에서는 평범한전사층이다. 그녀의 부족들은 잘 적응한 축에 속하며, 굴에서도 꽤 알려진 종족이다. 요괴계, 강한 딜러, 에너지포 발사 가능, 인연이 계속되면 영입할수 있다",70,1.05,0,"마법"],["C-023","와킨","NPC",4,"근접",1,0,"마리의 파트너, 사실혼 관계이다. 서로의 짝. 탱커로 활용 가능하다. 4성. 인연을 이어가면 영입할수 있다.",71,0.84,1,"검"],["C-025","푸른망토대장군(등장보류)","NPC",4,"지휘",0,0,"",72,1.07,0,"검"],["C-098","소녀와 죄수","NPC",4,"근접",0,0,"초상화를 이게 아니라 소녀얼굴로, 저주에 잡힌 소녀, 중간보스정도로 등장",73,0.99,0,"검"],["C-099","레오나스(등장보류)","NPC",4,"근접",0,0,"",74,1.0,0,"검"],["C-104","러슬","NPC",4,"치유",1,0,"슬라임천사 발음을 럿쓸에 가깝다. 실제로는 심해계 종족이다. 머리위 고리로 보이는건 그냥 기관이다. 심해의 축복을 지녔으며, 고대종에 속함. NPC로 등장할때는 사제 버프 서폿, 적대세력이나 특정 인카운터로 합류할때는 기사로 합류하고, 강한 근딜성능을 지님. 단단한 육체와 능력. 기본적으로 굴은 초능력은 널렸고, 신체…",75,1.02,0,"마법"],["C-171","두건","NPC",4,"근접",0,0,"랜덤하게 탐사중 만날 수 있다. 강함은 4성정도.",76,0.96,0,"검"],["C-238","자루","NPC",4,"근접",0,0,"다양한 유물을 수집중인 정려계의 초월자이다. 이계출신. 구매할수도, 판매할수도 있고, 얻을수도 있다. 떠돌아다님",77,1.05,0,"검"],["C-021","노랑고양","NPC",3,"근접",0,0,"정령+요괴, 주기적으로 만나는 어떤 NPC로 활용예정.",78,0.95,0,"검"],["C-028","로지나","NPC",3,"근접",0,0,"단달로의 부하이자 파트너, 시녀. 유저를 흥미로워하며, 그렇게 적대적이지 않으나, 단달로를 적대할경우 적대한다. 3성정도의 강함. 마족",79,1.08,0,"검"],["C-033","아이텐 (상인)","NPC",3,"근접",0,0,"재화로 다양한 아이템을 구매 가능하다. 판매도 가능하다. 정직하게 사주는게 신실이다. [축복:달], 달의 무녀였다. 다양한 차원을 여행중이며, 관리자중 한명과는 실제로 인연이 있다. 호텔의 북극곰.",80,0.98,0,"검"],["C-035","유리스 (상인)","NPC",3,"근접",0,0,"인게임에 떠돌아다니는 장비상이다. 각종 희귀한 장비와 아이템을 판매한다. 코트를 열면 많이 있다. 강함은 3성정도",81,1.03,0,"검"],["C-082","아해","NPC",3,"근접",1,0,"떠돌이 도깨비, 3성정도로 강하다. 담배를 좋아한다. 다양한 무기를 사용한다. 도깨비계중에서도 특이개체. 400세정도. 포획이 가능한 적(유일개체)",82,1.04,0,"검"],["C-094","기사단장","NPC",3,"근접",1,0,"떠돌이 NPC로 등장하며, 인연에 따라 영입이 가능하다. 해당 층에서 원하면 같이 싸워준다. 목적은 모른다. 3성정도",83,1.0,0,"검"],["C-095","간호사장","NPC",3,"치유",0,0,"인카운터, 간호사가 있을경우 스킬을 업그레이드 해주고, 체력회복 시켜줌",84,1.06,0,"마법"],["C-109","마리의 부족민","NPC",3,"근접",0,0,"마리와 동향 사람들. 떨어진지는 꽤 오래된 부족이지. 적대하는 사람들도 있고,그들을 죽인다고 부족 전체가 적대하진 않는다. 기본적으로 층들은 거의 다 분리되어있고, 너무 넓으며, 너무 특수해, 다들 자기 사느라 바쁘다. 적응한 종족들은 매우 드물며, 다 능력이 되니까 살아있는것이다.",85,0.98,0,"검"],["C-113","심연의 그림자 생존자","NPC",3,"근접",0,0,"굴에 정착한 종족, 적대or약탈 가능",86,1.02,0,"검"],["C-116","짐승 마인","NPC",3,"근접",0,0,"정령을 숭배하는 계열의 종족, 인간계열이나 판타지쪽이다. 각종 저주와 특수효과로 싸운다. 이중 사슴전사한명이 매우 강한데, 따로 분리되었다. 그쪽은 신수에 가깝다.",87,1.23,0,"이빨·발톱"],["C-118","철의 잔재","NPC",3,"근접",0,0,"다같이 떠러진 낙오자 기사들. NPC들로 활용한다, 별로 적대적이진 않다.",88,1.05,0,"검"],["C-123","기계인간","NPC",3,"근접",0,0,"적대 세력, SF계열의 낙오자들.",89,1.02,0,"검"],["C-125","산호천사","NPC",3,"근접",0,0,"별로 적대하진 않으나, 적대하게되면 매우 강한 부족, 심해계열",90,0.94,0,"검"],["C-129","마족 1","NPC",3,"근접",0,0,"떠돌이 마족들. 무리지어 다니기도 한다.",91,1.06,0,"검"],["C-130","마족 2","NPC",3,"근접",0,0,"떠도는 이들이 많으며, 강하다. 개개인이 모두.",92,1.02,0,"검"],["C-207","랑팡 (3성)","NPC",3,"근접",1,0,"랜덤 인카운터로 등장하며, 영입 가능하다. 탐험가며, 여신의 시체를 찾고있는 멤버들중 한명이다.",93,1.03,0,"검"],["C-248","돌장갑","NPC",3,"근접",0,0,"동료아니고 NPC. 적대로도 등장가능. 그냥 떠돌아다니는 인물중 한명",94,0.97,0,"검"],["C-250","비키","NPC",3,"근접",0,0,"차원을 연구하는 외계종. 3성정도의 강함, 인카운터로 출현한다.",95,1.01,0,"검"],["C-030","방랑 서랍 (적 또는 NPC)","NPC",2,"근접",0,0,"떠돌아다니며 모은 아이템이 서랍에 들어있다. 뺏으면 슬퍼하나 저항하진 않는다.",96,0.95,0,"검"],["C-038","돼지들의 신 겔록","NPC",2,"근접",0,0,"전투력은 2성정도,마족계, 실제로 신이다. 돼지를 싸서 준다. 먹어도 안전하다. 자비로운 신성. 인연이 계속되면 [축복:겔록]도 받을수 있다. [신성A]",97,1.07,0,"검"],["C-105","천천","NPC",2,"원거리",1,0,"SF계열의 인간족. 저격수이며, 2성정도로 강하다. 적으로도 등장하며, 포획이 가능한 적(유일개체)",98,0.99,0,"저격총"],["C-110","붉은 부족","NPC",2,"근접",0,0,"어딘가에 적응한 부족. 잘 사는 중이다",99,1.0,0,"검"],["C-115","수인족 기사","NPC",2,"근접",0,0,"수인계 팩션, 퍼리 아니다. 우리게임에 퍼리는 없다.",100,1.02,0,"검"],["C-124","기계천사","NPC",2,"근접",0,0,"기계천사계열, 적대하면 모두 적대하게된다.",101,0.97,0,"검"],["C-132","외계","NPC",2,"근접",0,0,"외계 종족, 평화롭게 살아간다.",102,1.04,0,"검"],["C-139","개","NPC",2,"근접",0,0,"",103,1.02,0,"이빨·발톱"],["C-168","대장간","NPC",2,"근접",0,0,"랜덤한 층에 가끔 등장한다.",104,1.02,0,"검"],["C-170","동네야전의사아저씨","NPC",2,"치유",0,0,"랜덤한 층에서 떠돌아 다닌다. 이유는 모르겠지만 치료를 바라면 말없이 도와준다.",105,1.05,0,"마법"],["C-027","오딜","NPC",1,"근접",0,0,"구시대의 초월자중 한명. [축복:오딜] 을 부여해준다. 유저를 흥미로워한다.",106,0.98,0,"검"],["C-029","우산 소녀","NPC",1,"근접",0,0,"인카운터로 등장. 전용 맵과 층이 있다.",107,1.08,0,"검"],["C-032","게 요리사 (상인)","NPC",1,"근접",0,0,"랜덤 인카운터로 등장. 맛있는 요리를 해준다. 젠틀한 남자. 맛있다고 해주면 더 좋아한다. 나중에 계속 만나면 식량도 꽤 나눠주는 좋은 이웃",108,0.97,0,"검"],["C-037","인광달팽이 (가축)","NPC",1,"근접",0,0,"개빡친 인광달팽이들은 주변을 부수고, 아군을 공격한다. 잘 길들이고 키우면 2성정도의 전투용 가축이 된다",109,1.01,0,"검"],["C-042","노예노예 등장보류","NPC",1,"근접",0,0,"",110,0.96,0,"검"],["C-093","봉인된 그녀","NPC",1,"근접",0,0,"",111,1.08,0,"검"],["C-120","떠돌이","NPC",1,"근접",0,0,"적대세력, 어디든 출몰 가능하다",112,1.02,0,"검"],["C-121","일반인 1","NPC",1,"근접",0,0,"NPC로 활용",113,0.92,0,"검"],["C-122","일반인 2","NPC",1,"근접",0,0,"NPC로 활용, 이계, 판타지종족",114,1.03,0,"검"],["C-126","요정","NPC",1,"근접",0,0,"정령계, 떠돌아 다니는 개체가 많다. 여러곳에서 볼 수 있다.",115,0.99,0,"검"],["C-127","요정악마","NPC",1,"근접",0,0,"정령계. 적대도 가능하다. 영입이나 포획은 불가능,환경적으로 생존이 안된다.",116,1.02,0,"검"],["C-128","악마","NPC",1,"근접",0,0,"도깨비외계계열 종족. 잘 살아가는 중이다.",117,0.93,0,"검"],["C-131","화염","NPC",1,"근접",0,0,"몸이 녹는 종족. 평화롭게 살아가는 종족이다. 인외,",118,1.06,0,"검"],["C-140","개2","NPC",1,"근접",0,0,"",119,1.0,0,"이빨·발톱"],["C-142","경찰","NPC",1,"근접",0,0,"",120,1.05,0,"검"],["C-145","노숙악마","NPC",1,"근접",0,0,"랜덤한 인카운터로 등장. 진상짓을 한다. 무시하는게 좋다",121,0.98,0,"검"],["C-153","석상1","NPC",1,"근접",0,0,"",122,0.94,0,"검"],["C-163","탐사중","NPC",1,"근접",0,0,"",123,0.95,0,"검"],["C-165","가지마소녀","NPC",1,"근접",0,0,"인카운터로 등장. 어딘가를 가지 말라고 막고 있다.",124,1.07,0,"검"],["C-166","거지","NPC",1,"근접",0,0,"",125,0.99,0,"검"],["C-169","동네 마법사","NPC",1,"근접",0,0,"도서관에서 등장한다.",126,0.95,0,"검"],["C-172","무서운아재","NPC",1,"근접",0,0,"인카운터로 등장, 축복을 내려주거나, 장비를 수선해줌",127,1.04,0,"검"],["C-176","배달부","NPC",1,"근접",0,0,"",128,1.03,0,"검"],["C-177","벌키우는남자","NPC",1,"근접",0,0,"",129,0.96,0,"검"],["C-179","요리라임","NPC",1,"근접",0,0,"",130,1.0,0,"검"],["C-181","정령연","NPC",1,"근접",0,0,"",131,0.98,0,"검"],["C-182","휠체어할배","NPC",1,"근접",0,0,"",132,1.06,0,"검"],["C-228","푸른불꽃","NPC",1,"근접",0,0,"",133,0.94,0,"검"],["C-276","테레비신도","NPC",0,"근접",0,0,"npc",134,1.03,0,"검"],["C-044","적뢰","적",7,"근접",0,0,"7성의 기준. 7성중엔 평균, 혹은 약한 축에 속할것이지만, 굴 전체로 보았을때는 5성 5명급이라고 생각한다. 신이 아닌, 신의 피조물이다. 최후의 천벌을 맞은 영웅은 영구적으로 [낙인:적뢰]를 얻게 된다.",135,1.05,0,"검"],["C-046","헤마","적",7,"근접",0,0,"한 세계를 멸망시킨 대죄수, 헤마, 멸망한 하얀 도시에 등을 돌리고 서있으며, 플레이어가 한참을 걸어가서 조우시 천천히 일어선다. 앵글이 돌아가며, 발 밑으로 저주가 시작되며, 맵은 어둠과 붉음이 내린다. [저주:헤마] 처치한 영웅은 영구적인 낙인을 얻게된다 [낙인:심장]",136,1.07,0,"검"],["C-047","하르겐","적",7,"근접",0,0,"인카운터로 등장한다. 별 반응 없거나, 천천히 걸어오며 전투가 시작된다.",137,0.93,0,"검"],["C-073","고대 몬스터 햘 (개미여왕)","적",7,"근접",0,0,"예고없이, 어느곳에든 출현 가능한 랜덤맵을 가진다. 맵은 광대하며, 햘은 세계관 최상위의 고대종 몬스터이다. 포획된 동료는 다시 구출할수 없으며, 아주 낮은활률로 햘은 생존시켜 포획이 가능하다. 이경우, 주기적으로 욕구를 풀어주지 않으면 날뛴다. 햘은 말을 하지 못하며, 짐승에 가깝다. 햘에게 침식당하면 개미가 되며 …",138,1.24,0,"검"],["C-078","고대 몬스터 데두라","적",7,"근접",0,0,"고대종 몬스터이다. 광역저주를 뿌리며, 매우매우 강하다. 그냥 둥둥 떠다니며, 범위내의 적들은 내장이 녹고 눈과 코, 귀와 항문등에서 출혈이 발생하며 죽어가기 시작한다. 포션빨며 싸우지 않으면 1분이면 어떤 적이라도 사망이다.죽여도 계속 나오는 악몽. 처치시 [저주:데두라] 를 영구적으로 얻는다",139,0.99,0,"이빨·발톱"],["C-081","고대 악마 고류 (전투 없음)","적",7,"근접",0,0,"마계에서 배경으로 등장한다. 플레이어가 특정 기믹을 통해 계속 고류쪽으로 가면 전투할수 있으나 의미 없다. 만약 처치한다면, 최고등급의 유물을 얻으나 사실상 불가능하게 설계한다. 15000살의 마계출신, 고대종악마이다.",140,1.0,0,"검"],["C-100","렉사","적",7,"근접",0,0,"현존하는 3체의 고대천사중 1체이다. 아무곳에나 랜덤으로 등장하며(낙하포함) 아주 낮은확률로등장, 광역저주를 날리며, 유물을 남긴다.",141,0.99,0,"검"],["C-045","세자르","적",6,"지휘",0,0,"보스란 무엇인가의 기준. 존경받는 왕이었으며, 칼을 대충 슥 하면 절단되버리는 대형참사가 발생한다. 감정도 예측도 불가능하며, 숨막히는 압박만이계속될 뿐이다. 고유특성 [권위]는 신성을 크게 제약한다. 한낱 신성이 세자르보다 위대하진 않기 때문에. 그의 검은 그냥 화려한 검일 뿐이며, 그의 마력도 그렇게 강하지 않다.…",142,0.99,0,"검"],["C-097","각혈","적",6,"근접",0,0,"도깨비계에서 낮은확률로 출현. 갑옷과 검을 루팅 가능하나, 도망치는게 좋을걸? 일부 종족이 사신이라 부르는자이다.",143,0.81,0,"둔기"],["C-211","망각 (보스)","적",6,"근접",0,0,"광석계의 마인. 미치광이에 가깝다. 6성정도의 강함이다.",144,0.96,0,"검"],["C-058","단달로","적",5,"근접",0,0,"어느 마계의 대귀족. 인카운터로 등장. 현명하며, 굳이 적대하지 않는다. 그러나 특정 조건에선 보스로 등장한다.",145,0.93,0,"검"],["C-066","거대 괴수","적",5,"근접",0,0,"10M정도의 괴수(높이는 5M) 마계 출신이다",146,0.84,0,"이빨·발톱"],["C-151","봉인된 시체","적",5,"근접",0,0,"인카운터로 등장. 굳이 봉인을 풀경우 광범위 저주가 시작되며, 승리시 축복과 저주를 동시에 4개 받는다",147,0.93,0,"검"],["C-185","부케","적",5,"근접",1,0,"해당 부족에서 이레귤러. 낮은 확률로,전리품으로 포획이 가능한 5성 딜탱이다.",148,0.96,0,"검"],["C-067","고대천사 (적)","적",4,"근접",0,0,"",149,1.04,0,"검"],["C-072","승마 기사","적",4,"근접",0,0,"",150,0.99,0,"검"],["C-074","흑우 (거대 괴수)","적",4,"근접",0,0,"",151,0.91,0,"이빨·발톱"],["C-079","푸른 뚱보","적",4,"근접",0,0,"",152,0.95,0,"검"],["C-080","눈깔괴물","적",4,"근접",0,0,"",153,1.05,0,"검"],["C-083","도끼기사","적",4,"근접",0,0,"",154,1.03,0,"검"],["C-090","보광","적",4,"원거리",0,0,"4성 마딜러, 포획 가능",155,1.07,0,"마법"],["C-091","반미","적",4,"원거리",0,0,"4성 원딜러 악마, 포획가능",156,1.07,0,"총"],["C-092","광냥","적",4,"근접",0,0,"중간보스급 개체, 4성으로 포획 가능 (유일개체)",157,0.97,0,"검"],["C-141","검방흑기사","적",4,"근접",0,0,"",158,0.98,0,"검"],["C-155","스팅요","적",4,"근접",0,0,"매우 강한 괴수",159,0.86,0,"이빨·발톱"],["C-158","장군님 호레이쇼","적",4,"근접",0,0,"",160,0.92,0,"검"],["C-161","지키는자","적",4,"근접",0,0,"",161,0.98,0,"검"],["C-164","흑기사창병","적",4,"근접",0,0,"",162,1.04,0,"창"],["C-050","손가락 구멍","적",3,"근접",0,0,"",163,0.95,0,"검"],["C-055","곤봉 거한","적",3,"근접",0,0,"",164,0.99,0,"둔기"],["C-056","붉은 망토 궁수","적",3,"원거리",0,0,"",165,1.02,0,"활"],["C-057","벤킨","적",3,"근접",0,0,"",166,1.02,0,"검"],["C-070","괴수 A","적",3,"근접",0,0,"매우 강한 탱딜형 괴물",167,0.89,0,"이빨·발톱"],["C-077","게 몬스터 (큼)","적",3,"근접",0,0,"매우 강한 탱커형 괴물",168,0.89,1,"이빨·발톱"],["C-088","청승 (도깨비 자매)","적",3,"치유",1,0,"청승 & 작약은 포획가능한 떠돌이 자매이다. 강한은 3성정도. 인연 계속으로 영입도 가능, 둘이 같이 있을때 강한 버프를 받고, 협동기는 매우 강함",169,0.94,0,"마법"],["C-089","작약 (도깨비 자매)","적",3,"근접",1,0,"",170,1.02,0,"검"],["C-143","곤충괴","적",3,"근접",0,0,"",171,1.01,0,"이빨·발톱"],["C-146","니드런","적",3,"근접",1,0,"적 & 동료 영입 가능한 3성급, 포획가능",172,1.07,0,"검"],["C-147","들쥐","적",3,"근접",0,0,"",173,1.07,0,"이빨·발톱"],["C-187","톱날 대검을 든 망토 기사","적",3,"지휘",0,0,"마계의 장군직. 3성정도",174,1.02,0,"대검"],["C-052","검사","적",2,"근접",0,0,"",175,0.93,0,"검"],["C-053","창병","적",2,"근접",0,0,"",176,0.93,0,"창"],["C-054","검방패병","적",2,"근접",0,0,"",177,1.07,1,"검"],["C-064","광신도","적",2,"근접",0,0,"",178,1.07,0,"검"],["C-075","귀신 유령 A","적",2,"근접",0,0,"",179,0.93,0,"검"],["C-119","낙오 방랑자","적",2,"근접",0,0,"",180,0.99,0,"검"],["C-149","방패곤봉","적",2,"근접",0,0,"",181,0.99,1,"둔기"],["C-150","방패대검","적",2,"근접",0,0,"",182,0.93,1,"대검"],["C-154","성방패","적",2,"근접",0,0,"",183,1.06,1,"검"],["C-212","이계악마 망향","적",2,"근접",0,0,"포획가능 유일개체 마족, 3성",184,0.96,0,"검"],["C-063","슬라임녀","적",1,"근접",0,0,"",185,0.99,0,"검"],["C-065","젤리 괴물 (녹색)","적",1,"근접",0,0,"",186,0.93,0,"검"],["C-068","꼬마악마","적",1,"근접",0,0,"",187,1.02,0,"검"],["C-069","꼬마요정","적",1,"근접",0,0,"",188,1.05,0,"검"],["C-071","마족녀","적",1,"근접",0,0,"",189,0.99,0,"검"],["C-076","똥개","적",1,"근접",0,0,"",190,1.01,0,"이빨·발톱"],["C-084","막아서는 자","적",1,"근접",0,0,"",191,0.98,0,"검"],["C-133","이세계 교차로의 기묘한 적","적",1,"근접",0,0,"이세계 동물들",192,1.01,0,"검"],["C-134","이질적인 기묘한 적","적",1,"근접",0,0,"",193,0.99,0,"검"],["C-136","기묘한 게임 적","적",1,"근접",0,0,"신수종들",194,0.94,0,"검"],["C-137","기묘한 적 생물","적",1,"근접",0,0,"",195,0.98,0,"검"],["C-138","기묘한 희귀 몬스터","적",1,"근접",0,0,"신수 10종, 강함",196,0.92,0,"이빨·발톱"],["C-144","군마","적",1,"근접",0,0,"",197,1.01,0,"이빨·발톱"],["C-148","멧돼지방패병","적",1,"근접",0,0,"",198,0.99,1,"검"],["C-152","샷건","적",1,"원거리",0,0,"",199,0.98,0,"샷건"],["C-156","일반개비적","적",1,"근접",0,0,"",200,1.04,0,"검"],["C-157","일반적괴물","적",1,"근접",0,0,"",201,1.02,0,"검"],["C-159","저격총수","적",1,"원거리",0,0,"",202,1.07,0,"저격총"],["C-160","적기사","적",1,"근접",0,0,"",203,1.07,0,"검"],["C-162","창병2","적",1,"근접",0,0,"",204,1.03,0,"창"],["C-167","관남기본","적",1,"근접",0,0,"",205,0.97,0,"검"],["C-180","일반개비","적",1,"근접",0,0,"",206,0.98,0,"검"],["C-188","고대천사 (보스)","미분류",6,"근접",0,0,"",207,1.07,0,"검"],["C-273","사슴","미분류",5,"근접",0,0,"",208,1.08,0,"검"],["C-227","아컴 (장군)","미분류",4,"근접",0,0,"",209,0.94,0,"검"],["C-236","홍두깨 (강적)","미분류",4,"근접",0,0,"",210,1.04,0,"검"],["C-237","거대괴수B (거대괴수)","미분류",4,"근접",0,0,"",211,0.91,0,"이빨·발톱"],["C-244","붉은갑주 (강적)","미분류",4,"근접",0,0,"",212,1.06,0,"검"],["C-245","붉은암석 (강적)","미분류",4,"근접",0,0,"",213,0.95,0,"검"],["C-249","테드 (강적)","미분류",4,"근접",0,0,"",214,0.93,0,"검"],["C-183","기체 A","미분류",3,"근접",0,0,"기체 A는 칼날같은 두꺼운 다리가 4개정도 있고, 그걸로 매우 강한 절삭력을 내는 적임",215,0.89,0,"검"],["C-184","기체 B","미분류",3,"근접",0,0,"인간계 출신, 평범한 남성이다.",216,0.8,0,"검"],["C-192","천명 (보스)","미분류",3,"근접",0,0,"",217,0.98,0,"검"],["C-201","대악마 하딤 (보스)","미분류",3,"근접",0,0,"",218,0.93,0,"검"],["C-210","대전사 마카로프 (강적)","미분류",3,"근접",0,0,"",219,1.02,0,"검"],["C-213","마노 (보스)","미분류",3,"근접",0,0,"",220,0.98,0,"검"],["C-217","아량 (보스)","미분류",3,"근접",0,0,"",221,1.05,0,"검"],["C-219","배신자 셰도르","미분류",3,"근접",0,0,"",222,0.96,0,"검"],["C-229","15M 거인병사","미분류",3,"근접",0,0,"",223,0.89,0,"검"],["C-234","하류 (암계장군)","미분류",3,"근접",0,0,"",224,1.0,0,"검"],["C-235","흑익 (암계장군)","미분류",3,"근접",0,0,"",225,0.95,0,"검"],["C-239","카키 (중간급)","미분류",3,"근접",0,0,"",226,1.0,0,"검"],["C-241","마신족 병사 (병사)","미분류",3,"근접",0,0,"",227,1.07,0,"검"],["C-243","레임 (중간급)","미분류",3,"근접",0,0,"",228,1.02,0,"검"],["C-246","보라빛 대낫 괴수 (강적)","미분류",3,"근접",0,0,"",229,0.87,0,"이빨·발톱"],["C-230","귀신녀 (보스)","미분류",2,"근접",0,0,"",230,1.05,0,"검"],["C-231","노란악마녀 (보스)","미분류",2,"근접",0,0,"",231,0.94,0,"검"],["C-232","선봉장 (강적)","미분류",2,"근접",0,0,"",232,0.94,0,"검"],["C-247","포자","미분류",2,"근접",0,0,"",233,1.0,0,"검"],["C-043","일반인 실루엣","미분류",0,"근접",0,0,"",234,1.01,0,"검"],["C-233","해머기사","미분류",0,"근접",0,0,"",235,1.06,0,"둔기"],["C-240","마도사","미분류",0,"근접",0,0,"",236,1.01,0,"검"],["C-242","민트괴수","미분류",0,"근접",0,0,"",237,0.78,0,"이빨·발톱"],["C-251","망령A (보스)","미분류",0,"근접",0,0,"",238,1.06,0,"검"],["C-252","검은 뿔","미분류",0,"근접",0,0,"귀족적인 중세+마계 종족.",239,0.98,0,"검"],["C-253","검은 장막","미분류",0,"근접",0,0,"위 귀족 중세마계 종족과 동일한 종족.",240,0.98,0,"검"],["C-254","푸른 외투단","미분류",0,"근접",0,0,"기계+사이버+외계 종족.",241,1.03,0,"검"],["C-255","마젠타 뿌리 군단","미분류",0,"근접",0,0,"광신도종족. 실제로는 정령계열이다. 어쩌다보니 살고있는거지. 사이비같은 느낌이 아니고, 그냥 자기들만의 종교가있고,신실한편인것이다.",242,1.0,0,"검"],["C-256","창백한 천공군","미분류",0,"근접",0,0,"",243,0.95,0,"검"],["C-257","텐던 콰이어 (힘줄 성가대)","미분류",0,"근접",0,0,"광신도 종족의 강적들",244,0.96,0,"검"],["C-258","망령군","미분류",0,"근접",0,0,"창랑의 종족. 망령계. 쇠퇴한지 오래이다.",245,1.06,0,"검"],["C-275","요리사","미분류",0,"근접",0,0,"",246,1.01,0,"검"]];
 const FACE = {"S": 80, "COLS": 16};
@@ -10722,7 +11144,7 @@ const uid = () => Math.random().toString(36).slice(2, 9);
 const faceOf = ref => ref && RBY[ref] ? RBY[ref][8] : -1;
 const ROWS = Math.ceil(ROSTER.length / FACE.COLS);
 // v7.17.1 특성 · 기술 아이콘 (굴의 도감 아이콘 · icons.webp 한 장 — icons7171.py 가 만듦) · 등급은 테두리 색
-const ICO = {"cols": 8, "rows": 6, "map": {"돌격": 0, "돌진": 1, "방패 돌진": 2, "도약": 3, "투창": 4, "팜 버스트": 5, "응급처치": 6, "약": 7, "막기": 8, "은신": 9, "야시": 10, "후각": 11, "사격": 12, "회피": 13, "급소": 14, "괴력": 15, "지휘": 16, "의학": 17, "속력": 18, "발화": 19, "재생": 20, "불사": 21, "베테랑": 22, "영웅": 23, "갑피": 24, "거구": 25, "방패": 8, "방어 자세": 26, "무구로 막기": 27, "팔 방패": 2, "반사신경": 28, "실명": 29, "망자": 30, "개조된 신체": 31, "머리 넷": 32, "스텝": 33, "기습": 34, "공중제비": 35, "머리 찍기": 36, "영거리 사격": 37, "철퇴 후리기": 38, "휘둘러 치기": 39, "역장": 40, "뿌리 벽": 41, "열매 맺기": 42, "근력": 43, "손바닥": 5, "니킥": 34, "내려찍기": 35, "올려차기": 39, "딱": 44, "딱딱딱": 45, "푸른 번개": 44}}, ICO_GC = { SS: '#fff1b8', S: '#f2dc96', A: '#ff8a70', B: '#6fe0d0', C: '#9b7fd0', D: '#3fbf6a', E: '#a39a8c' };
+const ICO = {"cols": 8, "rows": 8, "map": {"돌격": 0, "돌진": 1, "방패 돌진": 2, "도약": 3, "투창": 4, "팜 버스트": 5, "응급처치": 6, "약": 7, "막기": 8, "은신": 9, "야시": 10, "후각": 11, "사격": 12, "회피": 13, "급소": 14, "괴력": 15, "지휘": 16, "의학": 17, "속력": 18, "발화": 19, "재생": 20, "불사": 21, "베테랑": 22, "영웅": 23, "갑피": 24, "거구": 25, "방패": 8, "방어 자세": 26, "무구로 막기": 27, "팔 방패": 2, "반사신경": 28, "실명": 29, "망자": 30, "개조된 신체": 31, "머리 넷": 32, "스텝": 33, "기습": 34, "공중제비": 35, "머리 찍기": 36, "영거리 사격": 37, "철퇴 후리기": 38, "휘둘러 치기": 39, "역장": 40, "뿌리 벽": 41, "열매 맺기": 42, "근력": 43, "쥐들의 왕": 46, "쥐 표식": 47, "쥐 포박": 48, "구르기": 49, "쥐 방진": 26, "쥐 방패": 8, "쥐 사다리": 3, "군주": 16, "손바닥": 5, "니킥": 34, "내려찍기": 35, "올려차기": 39, "딱": 44, "딱딱딱": 45, "푸른 번개": 44}}, ICO_GC = { SS: '#fff1b8', S: '#f2dc96', A: '#ff8a70', B: '#6fe0d0', C: '#9b7fd0', D: '#3fbf6a', E: '#a39a8c' };
 const icoImg = new Image(); let icoOK = false; icoImg.onload = () => { icoOK = true; try { hud(); } catch (e) {} }; icoImg.src = 'icons.webp';
 function icoKey(t){ const m = GRADE_RE.exec(t); if (m) return [m[1], m[2]]; if (t === '높은후각') return ['후각', '']; if (/^실명/.test(t)) return ['실명', '']; if (/^공통스킬:/.test(t)) return [t.slice(5), '']; return ICO.map[t] != null ? [t, ''] : null; }
 function ico(lab, g, tip){ const i = ICO.map[lab]; if (i == null || !icoOK) return ''; return `<span class="tico" style="--ix:${i % ICO.cols};--iy:${(i / ICO.cols) | 0}${g && ICO_GC[g] ? ';--gc:' + ICO_GC[g] : ''}"${tip ? ` title="${esc(tip)}"` : ''}></span>`; }
@@ -10767,7 +11189,7 @@ const EXAMPLE_GROUPS = [['C-076', 'C-076'], ['C-159'], ['C-052']];   // 똥개 �
 // 특성 목록: 이름 → 설명 (엔진 효과는 rt 엔진이 이름으로 읽음). 여러 인물이 같은 특성을 씀
 const TRAITS = {
   '레이더': '적 위치 탐색 — 3초마다 둘레 14칸의 적을 1.2초 동안 앎 (어둠 · 벽 · 은신과 상관없이). 세르파의 합친 슬라임 넷 (굴란 · 몽 · 핀 · 튤린)',
-  '군주': '무리의 왕 — 세르파: 작은 슬라임을 계속 뽑아 곁에 두고, 넷을 모아 굴란 · 몽 · 핀 · 튤린으로 합침 · 수정 우박',
+  '군주': '무리의 왕 — 세르파: 작은 슬라임을 계속 뽑아 곁에 두고, 넷을 모아 굴란 · 몽 · 핀 · 튤린으로 합침 · 수정 우박 / 포렌: 쥐 군단 (◆쥐들의 왕 — 충성 · 쥐 기술 다섯 · 기억하는 쥐 기사)',   /* v8.7.8 */
   '대리석 피부': '대리석의 몸 (적뢰 · 굴 3D 그대로): 강공이 아니면 59% 로 받아 냄 (피해 × 0.3) · 강공 (치명 · 관통 · 돌진 · 투창 · 60 넘는 한 방) 이 오면 4초마다 옆으로 2.2칸 스텝해 흘림 — 큰 한 방은 쿨이 돌 때를 노릴 것 · 상대가 노인의 왕관 [★권위E] 을 썼으면 받아 내는 몫 · 스텝 간격이 15% 약해짐 · 권위 (신성 봉인) 중엔 꺼짐',   /* v8.6.0 · v8.7.4 */
   '생존자': '끝까지 살아남은 이 (카밀라 · 청광묵) — 설정 표시 · 싸움 효과는 아직 없음',   /* v8.5.1 */
   '보스': '대장 · 보스 — 급소 일격 · 출혈 · 내출혈은 최대 체력 대신 400 으로 셈 (머리 · 심장을 꿰뚫어도 몇 번은 버팀) · 급소 즉사 · 투구째 즉사 없음',   // v7.22.2
@@ -10806,6 +11228,12 @@ const EXTRA_TRAITS = Object.keys(TRAITS).filter(k => k !== '야시' && k !== '�
 let ccNarT = -99; const W0ccNar = e => { if (e.t - ccNarT < 8) return false; ccNarT = e.t; return true; };   // v7.29.0 세자르 버팀 서술 (8초에 한 번)
 const CZ_NM = { spin: '원형 베기', shoulder: '어깨 박치기', backs: '뒷걸음 점프', rush: '돌진', flank: '우회', upcut: '하늘 가르기', thrust: '관통 찌르기', wave: '냉기 참격', ult: '마구 베기', auth: '권위' };   // v7.23.1 세자르의 동작 이름
 const ACTIVE = {
+  '쥐 표식': '포렌 (2D) — 포렌이 치려는 적에게 쥐 표식 ("물어라!"): 어디선가 쥐 셋이 더 튀어나오고 (첫째는 30% 로 쥐 기사) 5초 동안 모든 쥐가 우르르 몰려들어 둘러싸고 물어뜯음 (새로 온 쥐도 합류). 쥐가 하나는 있어야 · 대기 12초. 명령: 기술 칸 1 → 적을 탭 (9칸)',
+  '쥐 방진': '포렌 — 체력 40% 아래 · 강공 (보스 · 공격 30 넘음) 이 날아오면 대검을 땅에 꽂고 2.5초 버팀 (움직이지 않음 · 휘청 · 밀림 없음). 곁의 쥐 (최대 8) 가 둘레에 붙어 받는 피해 70% 를 똑같이 나눠 받음. 끝에 대검을 뽑으며 두 바퀴 — 공격 + 쥐가 대신 맞은 피해 60% + 버틴 무게 (포렌 × 4 + 둘레 쥐) × 0.164 · 치명 25%. 곁에 적이 없으면 방진 쥐 셋을 타고 가장 위험한 적 (8칸) 에게 날아가 거기서 휘두름. 곁에 쥐가 둘은 있어야 · 대기 14초. 명령: 기술 칸 2 (바로 — 제자리)',
+  '쥐 방패': '포렌 — 동료가 위험하면 (체력 45% 아래 · 3칸 안에 적) 또는 포렌이 위험하면 (50% · 2칸): 포렌이 뒤로 뛰어 빠져 6초 지휘 (0.5초 넘는 큰 휘청이면 끊김) · 쥐 (최대 12) 가 적과 지킬 이 사이에 한 줄 (일곱부터 두 줄) 로 서서 온몸으로 막음 — 치지 않고 막기도 아님 · 맞은 충격은 곁의 구성원이 똑같이 나눠 받음. 대기 16초 (스스로)',
+  '쥐 사다리': '포렌 — 2.5 ~ 8칸 떨어진 적에게: 쥐 셋이 발밑에 모이고 (0.4초) 포렌이 그 위에 올라타 파도처럼 미끄러져 들어가 (7칸/초) 내려찍음 (1.3칸 · 공격 × 1.5 · 휘청 0.5초 — 아주 무거운 상대는 버팀). 대기 7초 (스스로)',
+  '쥐 포박': '포렌 — 4.5칸 안에서 가장 위험한 (공격이 가장 센) 적에게 쥐 다섯이 달려들어 주렁주렁 매달림: 매달린 쥐 하나마다 포박 게이지 +22 (최대 100) · 게이지가 남은 동안 움직이지도 치지도 못함. 대상은 버둥거려 깎음 (무거울수록 빨리 · 보스는 2.5배) · 최대 3초 (3D). 쥐 셋 이상 · 대기 12초 (스스로)',
+  '구르기': '쥐 베테랑 (명세 C5 · 도감: 진형을 붕괴시키는 구르기) — 앞구르기: 1.6 ~ 4.6칸의 적에게 3.6칸을 넓게 굴러 들어가 닿는 몸을 모두 넘어뜨림 (중대형까지 1.4초 · 대형 · 초대형은 밀기만 · 공격 × 0.5 들이받음). 뒷구르기: 나를 노린 근접 일격이 준비 중이면 60% 로 2.4칸 뒤로 빠짐. 구르는 동안 받는 피해 × 0.6 · 급소 보호. 대기 6초',
   '니킥': '굿윌 (2D 그대로) — 6칸 안의 상대에게: 뒤로 살짝 물러났다가 반동으로 박차고 보이지 않는 속도로 상대의 옆 · 뒤 (사각) 에 꽂힘 (공격 × 3 · 1초 경직). 빈틈 (공격 준비 중 · 휘청 · 넘어짐) 을 노리면 헤드샷 60% (아니면 25%) — 확정 치명 · 갑옷 · 막기 무시 (공격 × 1.67 · 머리) · 무게 600 아래는 2.2초 넘어짐. 대기 6초. 명령: 기술 칸 1 → 적을 탭',
   '내려찍기': '굿윌 — 거의 유일한 광역기: 5칸 안의 상대에게 뛰어올라 (0.55초 — 떠 있는 동안 무적 · 슈퍼아머 · 돌격도 밑으로 지나감) 내리꽂음 → 둘레 2.5칸의 적 모두 (공격 × 1.6 · 감전 · 1.4초 경직 — 막으면 경직 없음 · 몸을 비틀어 피할 수 있음). 대기 7초. 명령: 기술 칸 2 → 적을 탭',
   '손바닥': '굿윌 (잡기) — 4.5칸 안의 상대 발밑에 푸른 표식 → 0.45초 뒤 순간이동하듯 붙어 손바닥을 대고 터트림 (공격 × 2.6 · 회피 · 막기 무시 · 감전 · 튕겨 냄). 표식이 뜬 사이 0.9칸 넘게 벗어나면 허공을 치고 굿윌이 0.9초 빈틈. 대기 7초',
@@ -10843,6 +11271,16 @@ const ACTIVE = {
 // 인물별 기본 (민수가 정한 것). 같은 특성 · 전술을 다른 적에게도 붙일 수 있음
 // ◆고유특성: 하나뿐인 특성. 설정 글 (lore) · 효과 · 파생특성 · 제약 · 판정 (flags) 을 함께 가짐. who = 그 특성을 가진 단 한 사람
 const UNIQUE = {
+  '쥐들의 왕': { who: 'C-006',   // v8.7.8 포렌 (도감 ★쥐들의 왕 · 2D 쥐 군단 · 3D 기억하는 쥐 기사)
+    lore: ['굴에 적응할 수밖에 없었던 낙오자 중 한 명. 결국 대성했다. 포렌의 카리스마에 쥐 계열 종족이 저절로 이끌려 형성된 세력에 가깝고, 쥐 계열 종족의 절대적인 지지와 충성을 받는다.', '수인종 · 짐승을 포함한 쥐 계열은 모두 충성 — 포렌의 모든 쥐 관련 파생 스킬이 여기서 나온다.', '포렌의 쥐들은 하나의 별개 팩션으로, 굴 안에서 암암리에 국가처럼 세력을 이룬다. 5성의 기준 — 그녀 자체가 쥐의 신이라 불릴 정도.'],
+    effects: ['충성: 게이지가 차면 쥐가 포렌 뒤쪽에서 달려옴 (다음 쥐는 미리 정해짐 — 작은 쥐 58% 0.8초 · 쥐 27% 3초 · 큰 쥐 13% 8초 · 쥐 기사 2% 8초) · 쥐가 넷보다 적으면 2.5배 빨리 · 싸움이 없으면 넷까지만 천천히 · 최대 24 · 싸움을 시작하면 곁에 넷 (3D — 반은 쥐 기사부터)',
+      '쥐는 포렌의 기술로만 움직임 (다른 이의 명령 · 고르기는 받지 않음): 따르는 쥐 70% (포렌 곁 · 포렌이 노린 적) · 떠돌이 30% (둘레를 싸돌아다니며 마주친 적) · 갑자기 뒤로 쌩 도망갔다 돌아옴',
+      '방벽: 동료에게 강공 (보스 · 공격 30 넘음) 이 오면 가까운 쥐 2 ~ 4마리가 그 앞에 3초 줄을 섬 — 사이에 선 쥐가 근접 일격을 대신 맞음 (대기 6초)',
+      '쥐 망토: 곁 1.6칸의 쥐 하나마다 받는 피해 −3.5% (최대 −16%)',
+      '쥐들의 대왕 (2D): 도발 — 3칸 안의 적은 포렌을 먼저 노림 (보스 빼고) · 대검 베기 — 앞의 다른 적 하나까지 60%',
+      '기억하는 쥐 기사 (3D): 이름 A, B … · 살아 돌아올 때마다 단계 +1 (최대 4 · 체력 +15% · 공격 +10% 씩) · 세 번 돌아오면 쥐 베테랑 (4성 · 체력 300 · 대방패 · 방어 자세 좋음 · 구르기 · 투창 좋음 — 던진 뒤엔 검 · 포렌이 쓰러지면 쥐들을 이끎) · 싸움이 끝나면 경례하고 사라짐 · 쓰러지면 잊힘',
+      '포렌이 맵을 나가면 쥐도 함께 · 편에 쥐만 남으면 흩어짐 · 쥐의 무구는 쓰러져도 전리품이 되지 않음'],
+    derived: [], limits: [], flags: {} },
   '푸른 번개': { who: 'C-010',   // v8.7.8 굿윌 (명세 C5 — 2D 미궁 프롤로그 그대로)
     lore: ['굿 윌. 마법계 + SF계열 출신 — 그의 세계에서 가장 강한 이들 중 한 명이었다. 적뢰급은 아니지만 매우 강한 전격을 지녔다.', '초속 니킥이 특징. 굴에서 어찌저찌 살아가고, 무뚝뚝해 보이지만 지구 기준으로 가장 선한 성향을 지닌 인물 중 하나.', '누가 오더라도 비빌 수 있다 — 6성이든 7성이든, 유효타와 비빌 기회는 있다.'],
     effects: ['맨손일 때만 (가장 셈) — 무기를 들면 기술 · 순간이동이 꺼지고 보통 근접처럼 싸움 · 스스로 무기를 줍지 않음',
@@ -10937,7 +11375,7 @@ const PROFILE = {
   'C-002': { traits: ['불사', '재생', '베테랑', '영웅'], shield: true, role: '공격수', weapon: '레베카의 검', height: 1.6, allyNv: 'A', gear: { 몸: { name: '낡은 판금 갑옷', mat: '판금', tier: 3 }, 머리: { name: '기사 투구', mat: '투구', tier: 3 } }, tactic: '선봉 · 불사', note: '훈련받은 기사 · 굴 생활이 김. 장검과 방패를 든 보병 (v5.8.4). 쓰러져도 일어남 — 쓰러진 채 맞으면 (확인사살) 늦게 일어남' },
   'C-004': { cls: '기동', race: '고블린', allyNv: 'B' },   // v6.7 청광묵 (나머지는 설계 칸에서)
   'C-106': { cls: '원거리', race: '정령 (물) · 심해 종족', allyNv: 'S' },   // v7.14 친칠라 (나머지는 설계 칸에서)
-  'C-006': { role: '전선', traits: ['높은후각', '반사신경'], tactic: '브리핑 · 일점 방어', note: '냄새로 맡은 적의 대략적인 방향 · 거리를 2초마다 동료에게 알림. 반사신경으로 바라보는 좁은 방향을 믿을 만하게 막음 (대검이면 넓어짐)' },
+  'C-006': { cls: '지휘', role: '전선', weapon: '포렌의 대검', shield: false, sm: 0.78, height: 1.4, weight: 140, unique: ['쥐들의 왕'], active: ['쥐 표식', '쥐 방진', '쥐 방패', '쥐 사다리', '쥐 포박'], traits: ['지휘S', '군주', '높은후각', '반사신경'], ov: { hp: 532, atk: 46 }, noChg: true, allyNv: 'B', gear: { 몸: { name: '포렌의 중갑', mat: '판금', tier: 3 } }, tactic: '쥐 군단 · 일점 방어 · 브리핑', note: '쥐 군단 (◆쥐들의 왕): 게이지가 차면 쥐가 뒤쪽에서 달려옴 (최대 24) · 쥐는 포렌의 기술로만 움직임. 기술 칸 1 = 쥐 표식 (적을 탭) · 2 = 쥐 방진 (바로) — 쥐 방패 · 사다리 · 포박은 스스로. 냄새로 맡은 적의 대략적인 방향 · 거리를 2초마다 동료에게 알림 · 반사신경으로 바라보는 좁은 방향을 믿을 만하게 막음 (대검이면 넓어짐)' },   // v8.7.8 포렌 (도감 [지휘S] [군주] ◆쥐들의 왕 · 예전 [높은후각] [반사신경] 그대로)
 };
 function applyProfile(u, keepNv){ const pf = PROFILE[u.ref]; if (!pf) return u; if (pf.nv !== undefined && u.side === 1 && !keepNv){ u.nv = pf.nv; u.nvG = pf.nvG || (pf.nv ? 'B' : ''); } if (pf.traits) u.traits = [...new Set([...(u.traits || []), ...pf.traits])]; if (pf.tac) u.tac = pf.tac; if (pf.role && !u.role) u.role = pf.role; if (pf.cls) u.cls = pf.cls; if (pf.am) u.am = pf.am; if (pf.noRanged) u.noRanged = true; if (pf.unique){ u.unique = pf.unique.slice(); applyUnique(u); } if (pf.race) u.race = pf.race; if (pf.origin) u.origin = pf.origin; if (pf.skill && !u.skill) u.skill = clone(pf.skill);
   if (pf.shield === false) u.shield = false; else if (pf.shield === true) u.shield = true; if (pf.weapon) u.weapon = pf.weapon; if (pf.weight) u.weight = pf.weight; if (pf.height) u.height = pf.height; if (pf.sm) u.sm = pf.sm; if (pf.active) u.active = pf.active.slice(); if (pf.cry) u.cry = pf.cry;
@@ -10972,6 +11410,7 @@ const DESIGN_DEFAULTS = [
   { key: '간두', side: 0, ref: 'C-195', name: '간두', tier: 2, cls: '기동', role: '사수', weapon: '권총', ammo: 100, alt: { name: '샷건', ammo: 100 }, sm: 0.95, height: 1.9, weight: 85, sizeCls: '중형', nv: true, nvG: 'B', ov: { hp: 110, atk: 26 }, traits: ['사격A', '회피B', '은신C', '반사신경', '전투센스'], race: '인간', origin: '인간계와 비슷한 어느 곳 — 항쟁 끝에 하수구로 도망쳐 당도', tactic: '기동 사수 — 권총 연사 · 붙으면 샷건으로 바꿔 듦 (특수탄)', note: '갱스터. 반사신경 · 전투 센스 · 기동이 뛰어난 기동 사수 — 엎드리기보다 움직이며 쏨. 권총을 빠르게 연사 (12발 탄창 · 일반탄 100). 두 번째 총 샷건 (특수탄 100) 을 늘 지니고 바꿔 듦 — 코앞에서 크게 맞히고 날려 보냄' },   /* v7.25.1 */
   { key: '모닝스타', side: 0, ref: 'C-005', name: '모닝스타', tier: 2, cls: '근접', role: '공격수', weapon: '모닝스타', sm: 1.12, height: 1.72, weight: 62, bold: 0.65, noChg: true, nv: true, nvG: 'C', ov: { hp: 140, atk: 30 }, traits: ['근력A', '괴력A', '회피C', '은신D'], gear: { 몸: { name: '경갑', mat: '경갑', tier: 1 } }, active: ['철퇴 후리기', '휘둘러 치기'], race: '인간 (초인계)', origin: '판타지계', tactic: '슈퍼스타 · 철퇴를 던졌다 당겨 옴 (2.3M) · 넉백', note: '"슈퍼스타". 철퇴를 휙 던졌다 당겨 옴 — 최대 2.3M · 날아가는 공이 처음 닿는 몸을 맞힘 (피할 수 있음 · 방패 정면은 막힘 · 투사체라 깊이 겹친 동료도 맞음 — 던질 때도 거둘 때도) · 거두는 공도 길의 적을 침 (가끔 넘어뜨림) · 공이 돌아와야 다음. 동료가 공 길에 서 있으면 기다림 (명령이면 감수). 붙으면 가끔 휘두름 · 맞으면 밀림 (괴력). 중거리를 지키는 인원 — 돌격은 드물게. 투구 없는 경갑' },
   { key: '굿윌', side: 0, ref: 'C-010', name: '굿윌', tier: 2, cls: '기동', role: '공격수', weapon: '맨손', shield: false, sm: 1.1, height: 1.85, weight: 70, nv: true, nvG: 'A', noChg: true, dcounter: 0.45, ov: { hp: 360, atk: 46 }, traits: ['속력A', '회피A', '급소B', '반사신경', '전투센스'], unique: ['푸른 번개'], active: ['니킥', '내려찍기', '손바닥', '딱', '딱딱딱', '올려차기'], tactic: '스프린터 · 사각 · 치고 빠지기', note: '맨손일 때 가장 셈 (무기를 들면 보통 근접). 3 ~ 5칸에서 번개로 괴롭히며 상대의 옆 · 뒤로 팟팟 순간이동 · 치려 하면 이미 뒤로 쓩 · 2.6초마다 등 뒤로 파고들어 한두 대 치고 빠짐. 기술 칸 1 = 니킥 · 2 = 내려찍기 (나머지는 스스로)' },   /* v8.7.8 굿윌 (명세 C5 · 2D 그대로 — 체력 300 → 360 · 공격 28 → 46 (모닝스타를 옮길 때와 같은 비)) */
+  { key: '포렌', side: 0, ref: 'C-006', name: '포렌', tier: 2, cls: '지휘', role: '전선', weapon: '포렌의 대검', shield: false, sm: 0.78, height: 1.4, weight: 140, nv: true, nvG: 'B', noChg: true, ov: { hp: 532, atk: 46 }, traits: ['지휘S', '군주', '높은후각', '반사신경'], gear: { 몸: { name: '포렌의 중갑', mat: '판금', tier: 3 } }, unique: ['쥐들의 왕'], active: ['쥐 표식', '쥐 방진', '쥐 방패', '쥐 사다리', '쥐 포박'], tactic: '쥐 군단 · 일점 방어 · 브리핑', note: '쥐 군단 (◆쥐들의 왕): 게이지가 차면 쥐가 뒤쪽에서 달려옴 (최대 24) · 쥐는 포렌의 기술로만 움직임. 기술 칸 1 = 쥐 표식 (적을 탭) · 2 = 쥐 방진 (바로) — 쥐 방패 · 사다리 · 포박은 스스로. 냄새로 맡은 적의 대략적인 방향 · 거리를 2초마다 동료에게 알림 · 반사신경으로 바라보는 좁은 방향을 믿을 만하게 막음 (대검이면 넓어짐)' },   /* v8.7.8 포렌 (명세 C5 · 2D 그대로 — 체력 380 → 532 (탱커 × 1.4) · 공격 28 → 46 (굿윌 · 모닝스타를 옮길 때와 같은 비) · 투구 없는 중장 · 포렌의 대검 (위키 민수 메모)) */
   { key: '검방패기사', side: 1, ref: 'C-054', name: '검방패기사', tier: 2, height: 2.1, weapon: '장검', nv: true, nvG: 'A', ov: { hp: 200, atk: 28 }, traits: ['베테랑', '망자', '은신A'], gear: { 몸: { name: '판금 갑옷', mat: '판금', tier: 3 }, 머리: { name: '쇠 기사 투구', mat: '투구', tier: 2 } }, tactic: '방패벽 (경전차) · 방패 밀치기', note: '무리 앞에 방패를 세우고 버티다가 분명히 유리하면 밀고 나옴. 벽 쪽 · 동료를 노리는 상대는 방패로 밀쳐 냄' },
   { key: '창병', side: 1, ref: 'C-053', name: '창병', tier: 2, height: 2.0, nv: true, nvG: 'A', ov: { hp: 150, atk: 34 }, traits: ['공통스킬:투창', '베테랑', '망자', '은신A'], gear: { 몸: { name: '판금 갑옷', mat: '판금', tier: 2 }, 머리: { name: '쇠 투구', mat: '투구', tier: 2 } }, tactic: '투창', note: '방패 뒤에서 기다리다 확실할 때 창을 던짐' },
   { key: '궁수', side: 1, ref: 'C-056', name: '궁수', tier: 2, sm: 1.55, role: '사수', weapon: '궁수의 활', ammo: 40, height: 2.0, nv: true, nvG: 'S', ov: { hp: 150, atk: 30 }, traits: ['베테랑', '사격S', '망자', '은신S'], active: ['도약'], gear: { 몸: { name: '사슬 갑옷', mat: '사슬', tier: 2 }, 머리: { name: '쇠 투구', mat: '투구', tier: 2 } }, tactic: '기동 사수 · 도약', note: '뒤로 뛰며 단숨에 거리를 벌리는 재빠른 궁수 (활로 드래곤을 잡던 이들). 궁수의 활 — 12칸 · 중대형 이상 근력이라야 당김. 화살 넉넉히 (40). 쏘는 상대 · 사수부터' },
@@ -11023,22 +11462,22 @@ function exampleDraft(){
   placeAll(S, true, true);
   return S;
 }
-// 사선 예제 (민수 화면): 포렌 g3 (대검) · 옐로 h3 · 인주 h2 (창) ↔ 저격총수 h9 · 검사 d8 · 똥개 k8 · l7
+// 사선 예제 (민수 화면): 포렌 g3 (포렌의 대검 · 쥐 군단) · 옐로 h3 · 인주 h2 (창) ↔ 저격총수 h9 · 검사 d8 · 똥개 k8 · l7
 const at = (S, c) => ({ x: 'abcdefghijklmnopqrstuvwxyz'.indexOf(c[0]) + 0.5, y: S.H - (+c.slice(1)) + 0.5 });
 const atL = (S, c) => ({ x: 'abcdefghijklmnopqrstuvwxyz'.indexOf(c[0]) + 9.5, y: S.H - (+c.slice(1)) - 5 + 0.5 });   // v6.2 옛 14×10 좌표를 32×20 개활지 가운데로
 function exampleLine(){
   const S = { v: 3, v4: true, v41: true, v42: true, v43: true, v44: true, v46: true, v47: true, type: 'grid', W: 32, H: 20, mapC: false, randStart: true, seed: 1618, flips: [], units: [], torches: [], rules: clone(DEFAULT_RULES), hist: [], draft: { cands: ['C-006', 'C-008'], picks: ['C-006', 'C-008'], done: true } };
   const put = (ref, side, c, ex) => S.units.push({ ...unitFromRef(ref, side, ex), ...atL(S, c) });
-  put('C-001', 0, 'h2', { hero: true, weapon: '창' }); put('C-006', 0, 'g3', { nv: false, weapon: '대검' }); put('C-008', 0, 'h3', { nv: false });
+  put('C-001', 0, 'h2', { hero: true, weapon: '창' }); put('C-006', 0, 'g3', { nv: false, weapon: '포렌의 대검' }); put('C-008', 0, 'h3', { nv: false });
   put('C-159', 1, 'h9'); put('C-052', 1, 'd8'); put('C-076', 1, 'k8'); put('C-076', 1, 'l7');
   S.torches = autoTorches(buildMap(S), S.seed, Math.round(S.W * S.H / 420));
   return S;
 }
-// 방패 대치 예제: 검방패병 h8 · 창병 g9 · i9 (투창) · 저격총수 h10 · 똥개 l8 ↔ 포렌 g3 (대검) · 옐로 i3 · 인주 h2 (총)
+// 방패 대치 예제: 검방패병 h8 · 창병 g9 · i9 (투창) · 저격총수 h10 · 똥개 l8 ↔ 포렌 g3 (포렌의 대검 · 쥐 군단) · 옐로 i3 · 인주 h2 (총)
 function exampleShield(){
   const S = exampleLine(); S.units = [];
   const put = (ref, side, c, ex) => S.units.push({ ...unitFromRef(ref, side, ex), ...atL(S, c) });
-  put('C-001', 0, 'h2', { hero: true }); put('C-006', 0, 'g3', { nv: false, weapon: '대검' }); put('C-008', 0, 'i3', { nv: false });
+  put('C-001', 0, 'h2', { hero: true }); put('C-006', 0, 'g3', { nv: false, weapon: '포렌의 대검' }); put('C-008', 0, 'i3', { nv: false });
   put('C-054', 1, 'h8'); put('C-053', 1, 'g9'); put('C-053', 1, 'i9'); put('C-159', 1, 'h10'); put('C-076', 1, 'l8');
   return S;
 }
@@ -11112,7 +11551,9 @@ function load(){
   return null;
 }
 function save(){ try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} }
-let S = load() || example();
+// v8.7.8 엔진이 판 도중에 부르는 소환 (포렌의 쥐): 이 화면의 판이면 S.units 에도 넣어 순서를 맞춤 (판의 유닛 i = S.units[i]) · 다른 판 (자동 한 판 · 미리보기) 은 판에만
+function engineSpawn(W, p){ if (W === world){ p.id = p.id || uid(); S.units.push(p); } return addUnit(W, p); }
+let S = load() || example(); if (Array.isArray(S.units)) S.units = S.units.filter(p => !p.summon);   /* v8.7.8 싸우다 저장된 소환은 불러오지 않음 */
 if (!S.rules.turn || !S.rules.classes['근접'].wind) S.rules = clone(DEFAULT_RULES);
 for (const k in DEFAULT_RULES) if (S.rules[k] === undefined) S.rules[k] = clone(DEFAULT_RULES[k]);   // 새 규칙 (방향 · 방패) 채움
 const CLASS_WEAPON = { '근접': '검', '기동': '단검', '원거리': '총', '치유': '마법', '지휘': '검' };
@@ -11157,7 +11598,7 @@ if (!S.v54){ const addT = (u, t) => { if (!(u.traits || []).some(x => /^지휘[S
 // v5.8.1 정체성 특성: 그 인물의 정체 — 어디서 놓든 (도감 · 설계 · 옛 저장 · 동료 뽑기) 늘 붙어 있고 뺄 수 없음
 // 정체성: 그 인물이 그 인물인 까닭 (특성 · ◆고유 · 액티브 · 기술). 장비 · 체력 · 등급 · 무기처럼 바꿀 수 있는 것은 넣지 않음
 function identityOf(ref){ return ({ 'C-001': { traits: ['일반인'] }, 'C-002': { traits: ['불사', '재생', '베테랑'] }, 'C-003': { unique: ['개조된 신체'], active: ['돌진'] },
-  'C-006': { traits: ['높은후각', '반사신경'] }, 'C-007': { skill: true, traits: ['베테랑'] }, 'C-008': { unique: ['저주:맥아'], skill: true }, 'C-004': { traits: ['발화E', '실명:좌안', '후각B'], active: ['팜 버스트'] }, 'C-106': { traits: ['가호:바다', '축복:바다'] },
+  'C-006': { traits: ['지휘S', '군주', '높은후각', '반사신경'], unique: ['쥐들의 왕'], active: ['쥐 표식', '쥐 방진', '쥐 방패', '쥐 사다리', '쥐 포박'] }, 'C-007': { skill: true, traits: ['베테랑'] }, 'C-008': { unique: ['저주:맥아'], skill: true }, 'C-004': { traits: ['발화E', '실명:좌안', '후각B'], active: ['팜 버스트'] }, 'C-106': { traits: ['가호:바다', '축복:바다'] },
   'C-221': { traits: ['영웅'], active: ['공중제비'] }, 'C-010': { unique: ['푸른 번개'], active: ['니킥', '내려찍기', '손바닥', '딱', '딱딱딱', '올려차기'] }, 'C-218': { skill: true, traits: ['열매 맺기'], active: ['역장', '뿌리 벽'] }, 'C-018': { skill: true, traits: ['일반인'] }, 'C-262': { traits: ['일반인'], active: ['머리 찍기'] }, 'C-195': {}, 'C-005': { active: ['철퇴 후리기', '휘둘러 치기'] },   /* v7.19 */
   'C-052': { traits: ['망자'] }, 'C-053': { traits: ['망자'] }, 'C-054': { traits: ['망자'] }, 'C-055': { traits: ['망자'] }, 'C-056': { traits: ['망자'] } })[ref] || null; }   // v7.8.1 죽은 시대의 기사조 = [망자]   // 함수라 어디서든 (저장을 읽기 전에도) 부를 수 있음
 function idTraits(ref){ const I = identityOf(ref); return I ? [...(I.traits || []), ...(I.unique || []).flatMap(n => UNIQUE[n] ? [...UNIQUE[n].derived, ...UNIQUE[n].limits] : [])] : []; }
@@ -11913,10 +12354,11 @@ function draw(){
     if (!ed && u.act){ const a = u.act, span = a.phase === 'wind' || a.phase === 'run' ? a.end - a.t0 : a.end - a.t1, p = span > 0 ? Math.min(1, 1 - (a.end - now) / span) : 1;
       ctx.lineWidth = 3; ctx.strokeStyle = a.phase === 'wind' ? '#ffb347' : 'rgba(200,190,180,.6)';
       ctx.beginPath(); ctx.arc(px, py, r + 4, -Math.PI / 2, -Math.PI / 2 + 6.283 * Math.max(0, p)); ctx.stroke(); }
-    if (!ed && u.side === 0) badge(px - r - 3, py - r * 0.15, allyNo(Wd, u), 1);
+    if (!ed && u.side === 0 && u.ratOf == null) badge(px - r - 3, py - r * 0.15, allyNo(Wd, u), 1);
+    else if (!ed && u.ratRec && (u.side === 0 || see || u.seenBy)) badge(px - r - 3, py - r * 0.15, u.ratRec.n + (u.ratRec.vet ? '★' : ''), 1);   /* v8.7.8 기억하는 쥐 기사의 이름 */
     if (!ed && sel.has(u.i) && u.side === 0){ ctx.strokeStyle = '#d9a94e'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.arc(px, py, r + 11, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); }
     if (u.torch) drawFlame(px + r * 0.95, py + r * 0.35, r * 0.55, false);
-    if (u.nv && (ed || u.side === 0)){ ctx.fillStyle = '#c9a8ff'; ctx.beginPath(); ctx.arc(px - r * 0.85, py + r * 0.6, Math.max(2.5, r * 0.18), 0, 6.283); ctx.fill(); }
+    if (u.nv && (ed || u.side === 0) && u.ratOf == null){ ctx.fillStyle = '#c9a8ff'; ctx.beginPath(); ctx.arc(px - r * 0.85, py + r * 0.6, Math.max(2.5, r * 0.18), 0, 6.283); ctx.fill(); }
     if (ed && u.pid === selId){ ctx.strokeStyle = '#d9a94e'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.arc(px, py, r + 7, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); }
     if (ts >= 30){
       ctx.font = `500 ${ts >= 60 ? 12 : 10}px IBM Plex Sans KR, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -11960,6 +12402,14 @@ function draw(){
     ctx.globalAlpha = vis ? 1 : 0.42; shieldMark(ox + u.x * ts, oy + u.y * ts, u.r * ts, u.face || 0, !ed && guardOn(Wd, u), !ed && Wd.t < u.brokenT, SIDEC[u.side]); ctx.globalAlpha = 1; }
   // v8.7.8 감전 ⚡ (한 틀 — 푸른 번개 · 적뢰 · 잔류): 모든 판에서 · 보이는 몸만 · 몸 위에
   if (!ed) for (const u of Wd.units){ if (!u.alive || !u.zap || hid0(u) || !(u.side === 0 || see || u.seenBy)) continue; ctx.fillStyle = u.zap.kind === 'blue' ? '#7fd4ff' : /red/.test(u.zap.kind) ? '#ff4a4a' : '#ffb45a'; ctx.font = `${Math.max(9, ts * 0.28)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(`⚡${u.zap.st > 1 ? '×' + u.zap.st : ''}`, ox + (u.x + u.r) * ts, oy + (u.y - u.r) * ts); }
+  // v8.7.8 포렌 · 쥐: 표식 고리 · 쥐 망토 · 방진 둘레 · 쥐 방패 · 방벽 · 포박 게이지 (보이는 몸만)
+  if (!ed) for (const u of Wd.units){ if (!u.alive || hid0(u) || !(u.side === 0 || see || u.seenBy)) continue; const px = ox + u.x * ts, py = oy + u.y * ts, r = u.r * ts;
+    if (u.ratMark && Wd.t < u.ratMark.until){ const t = Wd.units[u.ratMark.b]; if (t && t.alive && (t.side === 0 || see || t.seenBy)){ const tx = ox + t.x * ts, ty = oy + t.y * ts, q = (Wd.t * 2.5) % 1; ctx.save(); ctx.strokeStyle = u.side ? 'rgba(255,110,80,.9)' : 'rgba(120,240,160,.9)'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.arc(tx, ty, t.r * ts + 5 + q * 5, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); ctx.font = `${Math.max(10, ts * 0.32)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('🐀', tx + t.r * ts + 8, ty - t.r * ts - 2); ctx.restore(); } }
+    if (u.porenKit && u.cloakN > 0){ ctx.save(); ctx.strokeStyle = `rgba(90,230,140,${(0.2 + 0.1 * u.cloakN).toFixed(2)})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, r + 5, 0, 6.283); ctx.stroke(); ctx.fillStyle = 'rgba(160,255,190,.9)'; for (let k = 0; k < u.cloakN; k++){ const a = Wd.t * 1.5 + k * 6.283 / u.cloakN; ctx.beginPath(); ctx.arc(px + Math.cos(a) * (r + 5), py + Math.sin(a) * (r + 5), 2.4, 0, 6.283); ctx.fill(); } ctx.restore(); }
+    if (u.act && u.act.k === 'pr' && u.act.s === 'fort'){ const F = (Wd.rules.poren || {}).fort || {}; ctx.save(); ctx.strokeStyle = 'rgba(120,240,160,.75)'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(px, py, (F.near || 1.6) * ts, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); ctx.font = `${Math.max(11, ts * 0.36)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🗡', px, py - r - 8); ctx.restore(); }
+    if (u.rs && (u.rs.k === 'shieldWall' || u.rs.k === 'wall') && u.leaveT == null){ ctx.save(); ctx.globalAlpha = u.rs.k === 'shieldWall' ? 0.95 : 0.75; ctx.font = `${Math.max(8, ts * 0.24)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText('🛡', px, py - r - 2); ctx.restore(); }
+    if (u.bound && u.bind){ const w = Math.max(18, r * 2 + 8), g = Math.max(0, Math.min(1, u.bind.gauge / 100)); ctx.save(); ctx.fillStyle = 'rgba(10,10,10,.75)'; ctx.fillRect(px - w / 2, py - r - 12, w, 5); ctx.fillStyle = '#7fe0a0'; ctx.fillRect(px - w / 2, py - r - 12, w * g, 5); ctx.font = `${Math.max(9, ts * 0.28)}px sans-serif`; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText('🪢', px - w / 2 - 2, py - r - 10); ctx.restore(); }
+    if (u.leaveT != null){ ctx.save(); ctx.font = `${Math.max(9, ts * 0.26)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = '#ffd27a'; ctx.fillText('경례', px, py - r - 3); ctx.restore(); } }
   // 총성 '!': 쏜 자리에 noiseTime 동안 남음 (쏜 쪽이 옮겨 가도 그 자리에). 소리라 어둠 속이어도 보임
   // 브리핑 (포렌의 냄새): 보이지 않는 적의 대략적인 방향 · 거리 띠 (보라 부채꼴). 다음 브리핑까지 남음
   if (!ed && Wd.brief && now - Wd.brief.t < Wd.rules.briefT + 1){
@@ -12080,6 +12530,10 @@ function draw(){
       const L0 = f.big ? 0.9 : 0.45, q = age / L0, p = { x: ox + f.x * ts, y: oy + f.y * ts }, H = ts * (f.big ? 3.2 : 2.2), sg = ((f.x * 7.3 + f.y * 3.1) % 1 + 1) % 1; ctx.save(); ctx.globalAlpha = Math.max(0, 1 - q);
       ctx.strokeStyle = '#e8faff'; ctx.shadowColor = '#7fd4ff'; ctx.shadowBlur = f.big ? 14 : 8; ctx.lineWidth = f.big ? 3.5 : 2; ctx.beginPath(); ctx.moveTo(p.x + ts * 0.3 * (sg - 0.5), p.y - H);
       for (let i = 1; i <= 5; i++){ const k = i / 5, w = (i % 2 ? 1 : -1) * ts * (f.big ? 0.32 : 0.22) * (1 - k * 0.6); ctx.lineTo(p.x + w, p.y - H * (1 - k)); } ctx.stroke(); ctx.restore();
+    } else if (f.k === 'prRing' && age < 0.6){   // v8.7.8 포렌 쥐 방진 · 대검 회전 (보이는 포렌만)
+      const a = Wd.units[f.a]; if (!a || a.side === 0 || $('seeAll').checked || a.seenBy){ const q = age / 0.6, p = { x: ox + f.x * ts, y: oy + f.y * ts }; ctx.strokeStyle = `rgba(${f.c === 'm' ? '200,200,200' : '120,240,160'},${(0.85 * (1 - q)).toFixed(2)})`; ctx.lineWidth = f.spin ? 4 : 2.5; ctx.beginPath(); if (f.spin) ctx.arc(p.x, p.y, (f.r || 1.8) * ts, q * 12.6, q * 12.6 + 4.4); else ctx.arc(p.x, p.y, (f.r || 1.6) * ts * (0.4 + 0.6 * q), 0, 6.283); ctx.stroke(); }
+    } else if (f.k === 'ratmark' && age < 0.6){   // v8.7.8 쥐 표식을 새길 때 번쩍
+      const t = Wd.units[f.b]; if (t && (t.side === 0 || $('seeAll').checked || t.seenBy)){ const q = age / 0.6; ctx.strokeStyle = `rgba(255,140,100,${(0.9 * (1 - q)).toFixed(2)})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(ox + t.x * ts, oy + t.y * ts, t.r * ts + 4 + q * 18, 0, 6.283); ctx.stroke(); }
     } else if (f.k === 'quake' && age < 0.5){   // v8.7.8 내려찍기 — 둘레 고리
       const q = age / 0.5, p = { x: ox + f.x * ts, y: oy + f.y * ts }; ctx.strokeStyle = `rgba(127,212,255,${(0.8 * (1 - q)).toFixed(2)})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y, (f.r || 2.5) * ts * (0.3 + 0.7 * q), 0, 6.283); ctx.stroke();
     } else if (f.k === 'num' && age < 0.9){
@@ -12466,6 +12920,9 @@ function actLabel(Wd, u, a){
   if (a.k === 'leap' && a.quake) return '도약 강타 — 날아가는 중';   // v7.22.2
   if (a.k === 'leap') return { fwd: '앞으로 도약', side: '옆으로 도약', pt: '도약' }[a.dir] || '뒤로 도약';   // v6.7.4
   if (a.k === 'dodge') return '몸을 빼 피함';
+  if (a.k === 'gwHop') return '⚡ 순간이동';   /* v8.7.8 굿윌 */
+  if (a.k === 'pr') return a.s === 'fort' ? `🗡 쥐 방진 — 대검을 꽂고 버팀 (${f2(a.left)}초)` : a.s === 'ladder' ? '🌊 쥐 사다리 — 쥐를 타고 미끄러져 들어감' : '🛡 쥐 방패 — 뒤에서 지휘';   /* v8.7.8 포렌 */
+  if (a.k === 'roll') return a.dir === 'back' ? '뒷구르기' : '앞구르기 — 굴러 들어감';   /* v8.7.8 쥐 베테랑 */
   if (a.k === 'supp') return a.ph === 'wind' ? '견제사격 — 당김' : '견제사격 뒤';   // v7.7
   if (a.k === 'flare') return a.ph === 'wind' ? '던지려 함' : '던짐';   // v7.8
   if (a.k === 'assn') return a.ph === 'wind' ? `암살 → ${b ? b.name : ''} (${f2(a.left)}초)` : '암살 뒤';   // v7.6
@@ -12673,6 +13130,24 @@ function logLines(Wd, from){
       case 'gwZap': out.push(`${T(e)}⚡ ${n(e.a)} ${e.big ? '딱' : '딱 (약)'} → ${n(e.b)}`); break;
       case 'gslam': out.push(`${T(e)}👊 ${n(e.a)} 뛰어오름 — 내려찍기${e.b != null ? ' → ' + n(e.b) : ''} (떠 있는 동안 무적)`); break;
       case 'gslamHit': out.push(`${T(e)}👊⚡ 내려찍기 — 둘레 ${e.r}칸 ${e.n}명 감전 · 경직`); break;
+      case 'ratCome': out.push(`${T(e)}🐀 ${n(e.a)}의 충성 — ${e.n ? (e.vet ? '쥐 베테랑 ' + e.n + ' (기억함 ★)' : '쥐 기사 ' + e.n + ' (' + e.lv + '단계 · 돌아온 ' + e.ret + '번)') : ({ ratS: '작은 쥐', ratM: '쥐', ratL: '큰 쥐', ratKnight: '쥐 기사', ratVet: '쥐 베테랑' })[e.kind] || '쥐'} 달려옴`); break;   // v8.7.8 포렌
+      case 'prMark': out.push(`${T(e)}🐀 ${n(e.a)}: "물어라!" — ${n(e.b)}에게 쥐 표식 (쥐 ${e.n}마리 몰려듦${e.why ? ' · ' + e.why : ''})`); break;
+      case 'ratWall': out.push(`${T(e)}🐀 방벽 — 쥐 ${e.n}마리가 ${n(e.b)} 앞에 줄을 섬 (${n(e.c)}의 강공)`); break;
+      case 'prFort': out.push(`${T(e)}🗡 ${n(e.a)} 쥐 방진 — 대검을 꽂고 버팀 (쥐 ${e.n}마리가 나눠 받음${e.why ? ' · ' + e.why : ''})`); break;
+      case 'prSpin': out.push(`${T(e)}🗡 ${n(e.a)} 대검 회전 — ${e.n}명 (×${e.mul} · 대신 맞은 ${e.abs} · 버틴 무게 ${e.w}${e.crit ? ' · 치명' : ''}${e.dead ? ' · 쓰러진 쥐 ' + e.dead : ''})`); break;
+      case 'prLadder': out.push(`${T(e)}🌊 ${n(e.a)} 쥐 사다리 → ${n(e.b)}${e.counter ? ' (방진의 반격 — 쥐를 타고 날아감)' : ''}`); break;
+      case 'prSlam': out.push(`${T(e)}🌊 ${n(e.a)} 내려찍음 — ${e.n}명`); break;
+      case 'prShield': out.push(`${T(e)}🛡 ${n(e.a)} 쥐 방패 — 쥐 ${e.n}마리가 ${e.a === e.b ? '포렌' : n(e.b)} 앞을 막음 (포렌은 뒤에서 지휘)`); break;
+      case 'prShieldEnd': out.push(`${T(e)}🛡 ${n(e.a)} 쥐 방패 끝${e.why ? ' — ' + e.why : ''}`); break;
+      case 'prBind': out.push(`${T(e)}🪢 ${n(e.a)} 쥐 포박 → ${n(e.b)}`); break;
+      case 'prUnbind': out.push(`${T(e)}🪢 ${n(e.a)} 뿌리침 — 쥐 ${e.n}마리 (${e.el}초 묶임)`); break;
+      case 'ratLost': out.push(`${T(e)}🐀 ${n(e.a)} 쓰러짐 — 기억에서 빠짐`); break;
+      case 'ratVet': out.push(`${T(e)}★ 쥐 기사 ${e.n} — 세 번 살아 돌아옴 · 쥐 베테랑이 됨`); break;
+      case 'ratSalute': out.push(`${T(e)}🐀 싸움 끝 — 쥐 기사 경례 (${e.ns}) · 곧 사라짐`); break;
+      case 'ratScatter': out.push(`${T(e)}🐀 쥐 ${e.n || 1}마리 ${e.why || '흩어짐'}`); break;
+      case 'ratRoll': out.push(`${T(e)}🌀 ${n(e.a)} ${e.dir === 'back' ? '뒷구르기' : '앞구르기'}${e.b != null ? ' — ' + n(e.b) : ''}`); break;
+      case 'ratRollHit': out.push(`${T(e)}🌀 ${n(e.a)} 구르기 — ${e.n}명 들이받음`); break;
+      case 'ratVetCmd': out.push(`${T(e)}🐀 ${n(e.a)}: 포렌 대신 표식 → ${n(e.b)} (쥐 ${e.n}마리)`); break;
       case 'zap': out.push(`${T(e)}⚡ ${n(e.b)} 감전 (${({ blue: '푸른 번개', red: '적뢰', res: '잔류', redHalf: '적뢰 (약)', resHalf: '잔류 (약)' })[e.kind] || e.kind}) ×${e.st} — 1초마다 ${e.dps} · ${e.n}초`); break;   // v8.7.8 감전 한 틀
       case 'czShaken': out.push(`${T(e)}👑 ${n(e.a)} 휘청 — 권위가 흔들림 (6초)`); break;
       case 'czAuthBack': out.push(`${T(e)}❄ 권위가 다시 홀을 채움 — 눈`); break;
@@ -13062,8 +13537,23 @@ function narrQuiet(Wd, e){ const win = NQ_W[e.k]; if (!win || e.t == null) retur
 const healTool = u => { const K = u && u.skill; if (!K) return ''; if (!K.kit && /양동이/.test(K.name || '')) return '양동이'; if (!K.name || /응급처치|지혈|구급/.test(K.name)) return '구급상자'; return K.name; };
 const healRun = (u, b) => { const t = healTool(u); return t === '양동이' || t === '구급상자' ? `${reul(t)} 들고 ${b}에게 달려간다!` : `${b}에게 달려간다${t ? ' — ' + t : ''}!`; };
 const healPour = (u, who) => { const t = healTool(u); return t === '양동이' ? `쓰러져 가는 ${who}에게 양동이를 기울인다!` : t === '구급상자' ? `쓰러져 가는 ${who}에게 구급상자를 연다!` : `쓰러져 가는 ${who}에게 ${reul(t || '약')} 쓴다!`; };
+const RAT_TOAST = '🐀 포렌의 쥐는 포렌의 기술로만 움직여요 (고를 수 없음 — 아군을 고른 채 쥐를 탭하면 그 자리로 이동)';   /* v8.7.8 */
+const RAT_KN = { ratS: '작은 쥐', ratM: '쥐', ratL: '큰 쥐', ratKnight: '쥐 기사', ratVet: '쥐 베테랑' }, RAT_RS = { idle: '쉼 · 따름', assault: '표식의 적을 물어뜯음', wall: '방벽 — 동료 앞', fort: '쥐 방진 — 대검 둘레', ladder: '쥐 사다리', bind: '매달림 (포박)', bindRun: '포박하러', shieldWall: '쥐 방패 — 온몸으로 막음' };
+// 상세 '쥐 군단' 줄: 포렌 (쥐 수 · 망토 · 다음 쥐 게이지 · 기억하는 기사) · 쥐 (갈래 · 단계 · 지금 하는 일)
+function ratRow(Wd, u){
+  if (u.porenKit){ const R = Wd.units.filter(r => r.alive && !r.gone && r.ratOf === u.i), P = Wd.rules.poren || {}, C = P.cloak || {}, Q = u.prn;
+    return `쥐 ${R.length}마리 (최대 ${P.cap || 24}${Q && Q.full ? ' · 가득' : ''})${u.cloakN ? ' · 쥐 망토 −' + Math.round(Math.min(C.max || 0.16, (C.per || 0.035) * u.cloakN) * 100) + '%' : ''}${Q && Q.loyal ? ' · 다음: ' + (RAT_KN[Q.loyal.next] || '쥐') + ' ' + f2(Q.loyal.t) + '/' + f2(Q.loyal.dur) + '초' : ''}${u.ratMem && u.ratMem.length ? ' · 기억하는 기사 ' + u.ratMem.map(x => x.n + (x.vet ? '★' : ' ' + x.lv + '단계')).join(', ') : ''}`; }
+  const K = Wd.units[u.ratOf], x = u.ratRec;
+  return `${RAT_KN[u.ratKind] || '쥐'} — ${K ? K.name : '포렌'}의 쥐 (포렌의 기술로만 움직임)${x ? ' · ' + (x.vet ? '베테랑' : x.lv + '단계') + ' · 돌아온 ' + (x.ret || 0) + '번' : ''}${u.ratWild ? ' · 떠돌이' : ''} · 지금: ${u.leaveT != null ? '경례' : RAT_RS[(u.rs || {}).k] || '쉼'}`;
+}
+// 명단 · 적 목록의 포렌 옆: 쥐 수 · 쥐 망토 (적이면 보이는 쥐만)
+function ratBadge(Wd, u, foe){ if (!u.porenKit || mode === 'edit' || !u.alive) return ''; const see = $('seeAll').checked, C = (Wd.rules.poren || {}).cloak || {}, n = Wd.units.filter(r => r.alive && !r.gone && r.ratOf === u.i && (!foe || see || r.seenBy)).length;
+  return n || u.cloakN ? ` <i class="stb" title="포렌의 쥐 (보이는) · 곁의 쥐 ${u.cloakN || 0} — 쥐 망토">🐀${n}${u.cloakN ? ' · −' + Math.round(Math.min(C.max || 0.16, (C.per || 0.035) * u.cloakN) * 100) + '%' : ''}</i>` : ''; }
+const RAT_PLAIN = ['ratS', 'ratM', 'ratL'];   /* v8.7.8 이름 없는 쥐 */
+const ratPlain = (Wd, i) => { const u = i != null ? Wd.units[i] : null; return !!(u && u.ratOf != null && RAT_PLAIN.includes(u.ratKind)); };
 function narrOf(Wd, e){
   if (narrQuiet(Wd, e)) return null;
+  if (!/^(rat|pr)/.test(e.k) && (ratPlain(Wd, e.b) || (ratPlain(Wd, e.a) && !(e.k === 'die' && e.b != null && !ratPlain(Wd, e.b))))) return null;   /* v8.7.8 쥐 떼의 자잘한 일 */
   const n = i => Wd.units[i].name, U = i => Wd.units[i];
   switch (e.k){
     case 'turn': return e.n > 1 ? { c: 'tn', s: `${e.n}턴` } : null;
@@ -13204,7 +13694,7 @@ function narrOf(Wd, e){
     case 'exitFound': return { c: 'good', s: e.a != null ? `${ga(n(e.a))} 출구를 찾았다!${e.lock ? ' — 하지만 닫혀 있다.' : ''}` : `출구가 보인다!${e.lock ? ' — 하지만 닫혀 있다.' : ''}` };   /* v8.7.3 */
     case 'exitSearch': return { c: 'dim', s: `${ga(n(e.a))} 출구를 찾아 안 가 본 쪽으로 앞장선다.` };
     case 'exitWait': return { c: 'dim', s: `${ga(n(e.a))} 출구 앞에서 뒤따라오는 동료들을 기다린다.` };
-    case 'specFail': return { c: 'bad', s: `${ga(n(e.a))} 뛰려다 멈춘다 — 내려앉을 자리가 막혔다.` };
+    case 'specFail': return e.s === 'pfort' ? { c: 'dim', s: `${ga(n(e.a))} 대검을 꽂으려다 멈춘다 — 곁에 쥐가 모자라다.` } : e.s === 'flip' || !e.s ? { c: 'bad', s: `${ga(n(e.a))} 뛰려다 멈춘다 — 내려앉을 자리가 막혔다.` } : { c: 'dim', s: `${ga(n(e.a))} ${reul(SPEC_NM(e.s))} 못 한다 — ${e.why || '막혔다'}.` };   /* v8.7.8 기술마다 */
     case 'chaseEnd': return { c: 'dim', s: `${ga(n(e.a))} 놓친 ${reul(n(e.b))} 더는 쫓지 않는다.` };
     case 'rejoin': return { c: 'dim', s: `${ga(n(e.a))} 혼자 서 있던 자리를 떠나 동료들 쪽으로 간다.` };
     case 'rally': return { c: 'warn', s: `${ga(n(e.a))} 외친다 — 모여! ${coord(e.x, e.y)} 쪽으로.${(e.miss || []).length ? ' ' + e.miss.map(n).join(' · ') + '에게는 닿지 않았다.' : ''}` };   // v7.9.4
@@ -13260,6 +13750,16 @@ function narrOf(Wd, e){
     case 'gwKnee': if (!e.head || !(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `🦵 ${n(e.a)}의 니킥이 ${n(e.b)}의 머리에 꽂힌다 — 빠아악!!` };   // v8.7.8 굿윌
     case 'gwPalm': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `✋ ${n(e.a)}의 손바닥 — ${reul(n(e.b))} 붙잡아 터트린다. 파직!` };
     case 'gwMiss': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'good' : 'dim', s: `${n(e.a)}의 손바닥이 허공을 친다 — 빈틈!` };
+    case 'prMark': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${n(e.a)}: "물어라!" — 쥐들이 우르르 ${n(e.b)}에게 몰려든다!` };   // v8.7.8 포렌
+    case 'prFort': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 대검을 땅에 꽂는다 — 쥐 ${e.n}마리가 둘레에 붙어 함께 버틴다.` };
+    case 'prSpin': if (!(e.vis || U(e.a).side === 0) || !e.n) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 대검을 뽑으며 두 바퀴 — 쥐들이 버틴 무게까지 실려 ${e.n}명을 휩쓴다!${e.crit ? ' (치명)' : ''}` };
+    case 'prShield': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 뒤로 뛰어 빠진다 — 쥐 ${e.n}마리가 ${e.a === e.b ? '포렌' : n(e.b)} 앞에 줄지어 온몸으로 막는다.` };
+    case 'prBind': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `쥐 다섯이 ${n(e.b)}에게 달려들어 주렁주렁 매달린다 — 꼼짝 못 한다!` };
+    case 'ratVet': return { c: 'good', s: `★ 쥐 기사 ${e.n} — 세 번째로 살아 돌아왔다. 이제 쥐 베테랑이다.` };
+    case 'ratSalute': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'dim' : 'good', s: `🐀 싸움이 끝났다 — 쥐 기사들이 ${n(e.a)}에게 경례하고 사라진다. (${e.ns})` };
+    case 'ratLost': return U(e.a).side === 0 ? { c: 'bad', s: `${ga(n(e.a))} 쓰러졌다 — 포렌은 이 기사를 기억하지만, 다시 오지는 않는다.` } : null;
+    case 'ratVetCmd': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 창끝으로 ${reul(n(e.b))} 가리킨다 — 쥐들이 베테랑을 따라 몰려든다!` };
+    case 'ratRoll': if (e.dir !== 'fwd' || !(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 몸을 말아 굴러 들어간다 — 진형이 무너진다!` };
     case 'gslamHit': if (!e.n) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `👊⚡ ${ga(n(e.a))} 내리꽂는다 — 둘레 ${e.n}명에게 푸른 번개!` };
     case 'czShaken': return { c: 'good', s: '👑 세자르가 휘청인다 — 6초 동안 눈이 멎고 신성이 돌아온다!' };
     case 'czAuthBack': return { c: 'bad', s: '❄ 권위가 다시 홀을 채운다. 눈이 내린다.' };
@@ -13586,8 +14086,8 @@ const SLOTS = [
 // v7.19.1 특수 칸: 그 인물의 첫째 · 둘째 고유 기술
 const specAt = (u, k) => (u.spec || [])[k === 'spec2' ? 1 : 0];
 let sweepAim = null;   /* v7.24.4 */
-const SPEC_IC = { flip: '🤸', head: '🔨', pb: '💥', sweep: '🌀', hurl: '☄', ward: '🛡', root: '🌱' };
-const SPEC_TGT = { knee: '🦵 니킥: 적을 탭 (6칸 — 사각에 꽂힘 · 빈틈이면 헤드샷)', gslam: '👊 내려찍기: 적을 탭 (5칸 — 뛰어올라 둘레 2.5칸 · 떠 있는 동안 무적)', gpalm: '✋ 손바닥: 적을 탭 (4.5칸 — 표식에서 벗어나면 빗나감)', snap: '⚡ 딱: 보이는 적을 탭 (7칸)', snap3: '⚡ 딱딱딱: 보이는 적을 탭 (7칸)', rise: '🦶 올려차기: 붙은 적을 탭', sweep: '🌀 철퇴 후리기: 휘두를 거리를 탭 (1.2 ~ 2.6M — 그 거리로 한 바퀴 · 동료도 맞음) · 단추를 한 번 더 = 바로', flip: '🤸 공중제비: 적을 탭 (뛰어올라 내려찍음) · 바닥을 탭 (그쪽으로 빠짐)', head: '🔨 머리 찍기: 노릴 적을 탭 (판에 한 번 — 머리 확정 치명)', pb: '💥 영거리 사격: 샷건을 쏠 적을 탭 (2.4칸 · 특수탄)', hurl: '☄ 휘둘러 치기: 후려칠 적을 탭 (3.6칸까지)', root: '🌱 뿌리 벽: 세울 곳 (바닥 · 5칸 안) 을 탭 · 적을 탭하면 그 앞에' };
+const SPEC_IC = { flip: '🤸', head: '🔨', pb: '💥', sweep: '🌀', hurl: '☄', ward: '🛡', root: '🌱', knee: '🦵', gslam: '👊', gpalm: '✋', snap: '⚡', snap3: '⚡', rise: '🦶', pmark: '🐀', pfort: '🗡', pshield: '🛡', pladder: '🌊', pbind: '🪢' };   /* v8.7.8 굿윌 · 포렌 (전엔 ★) */
+const SPEC_TGT = { pmark: '🐀 쥐 표식: 적을 탭 (9칸 — 모든 쥐가 몰려듦)', knee: '🦵 니킥: 적을 탭 (6칸 — 사각에 꽂힘 · 빈틈이면 헤드샷)', gslam: '👊 내려찍기: 적을 탭 (5칸 — 뛰어올라 둘레 2.5칸 · 떠 있는 동안 무적)', gpalm: '✋ 손바닥: 적을 탭 (4.5칸 — 표식에서 벗어나면 빗나감)', snap: '⚡ 딱: 보이는 적을 탭 (7칸)', snap3: '⚡ 딱딱딱: 보이는 적을 탭 (7칸)', rise: '🦶 올려차기: 붙은 적을 탭', sweep: '🌀 철퇴 후리기: 휘두를 거리를 탭 (1.2 ~ 2.6M — 그 거리로 한 바퀴 · 동료도 맞음) · 단추를 한 번 더 = 바로', flip: '🤸 공중제비: 적을 탭 (뛰어올라 내려찍음) · 바닥을 탭 (그쪽으로 빠짐)', head: '🔨 머리 찍기: 노릴 적을 탭 (판에 한 번 — 머리 확정 치명)', pb: '💥 영거리 사격: 샷건을 쏠 적을 탭 (2.4칸 · 특수탄)', hurl: '☄ 휘둘러 치기: 후려칠 적을 탭 (3.6칸까지)', root: '🌱 뿌리 벽: 세울 곳 (바닥 · 5칸 안) 을 탭 · 적을 탭하면 그 앞에' };
 const specCd = (Wd, C, k) => Math.max(0, ...C.map(u => { const x = specAt(u, k); return x ? x.cdT - Wd.t : 0; }));
 function slotLabel(Wd, L, n){
   const S2 = SLOTS[n - 1], C = L.filter(S2.has); if (!C.length) return null;
@@ -13659,7 +14159,7 @@ function useSlot(n){
     if (sp.n === 0){ toast(`${sp.name} — 이 판에서 이미 썼어요`); return; }
     { const W0 = D.filter(u => u.act && u.act.k === 'spec' && u.act.s === sp.k && u.act.phase === 'wind'); if (W0.length){ W0.forEach(u => { u.order = { k: 'specCancel', s: sp.k }; }); armed = null; noteOrders(W0, 'user', sp.name + ' 그만둠'); toast(`✋ ${W0.map(u => u.name).join(' · ')}: ${sp.name} 그만둠 (준비 중에 멈춤)`); hud(); return; } }   /* v8.7.3 준비 중에 한 번 더 = 그만둠 */
     if (sp.k === 'sweep' && armed && armed.k === 'spec' && armed.s === 'sweep'){ D.forEach(u => { u.order = { k: 'spec', s: 'sweep' }; }); armed = null; noteOrders(D); toast(`${D.map(u => u.name).join(' · ')}: 철퇴 후리기 — 바로 (${(rules.spec.sweep || {}).r || 1.9}M · 동료도 맞을 수 있어요)`); hud(); return; }   /* v7.24.4 한 번 더 = 바로 */
-    if (sp.k === 'ward'){ D.forEach(u => { u.order = { k: 'spec', s: sp.k }; }); noteOrders(D); toast(`${D.map(u => u.name).join(' · ')}: ${sp.k === 'ward' ? '역장 — 둘레 1.6칸의 상대 탄 세 발을 막음 (6초)' : '철퇴 후리기 — 둘레를 한 바퀴 (동료도 맞을 수 있어요)'}`); hud(); return; }
+    if (sp.k === 'ward' || sp.k === 'pfort'){ D.forEach(u => { u.order = { k: 'spec', s: sp.k }; }); noteOrders(D); toast(`${D.map(u => u.name).join(' · ')}: ${sp.k === 'ward' ? '역장 — 둘레 1.6칸의 상대 탄 세 발을 막음 (6초)' : sp.k === 'pfort' ? '쥐 방진 — 대검을 꽂고 2.5초 버팀 · 둘레 쥐가 70% 를 나눠 받음 (곁에 쥐 둘 이상)' : '철퇴 후리기 — 둘레를 한 바퀴 (동료도 맞을 수 있어요)'}`); hud(); return; }   /* v8.7.8 쥐 방진 (제자리 — 바로) */
     armed = armed && armed.k === 'spec' && armed.slot === S2.k ? null : { k: 'spec', slot: S2.k, s: sp.k, cas: D.map(u => u.i) }; chargePick = throwPick = skillPick = palmPick = leapPick = null;
     if (armed) toast(armedTxt() + (specCd(world, D, S2.k) > 0 ? ` — ${f2(specCd(world, D, S2.k))}초 뒤에 씀 (다가가며 기다림)` : '')); hud(); return; }
   ordKey('skill');
@@ -13931,9 +14431,9 @@ function giveSkill(t){
   const cdw = Math.max(0, ...C.map(u => u.skill.kit ? u.skill.cdT - world.t : 0));
   noteOrders(C); skillPick = null; toast(cdw > 0 ? `${t.name}에게 약 — 구급상자는 ${f2(cdw)}초 뒤라 곁으로 가서 기다려요` : `${t.name}에게 약을 쓰라고 했어요 (하던 준비는 멈춤)`); hud(); return true;
 }
-const selUnits = Wd => Wd ? [...sel].map(i => Wd.units[i]).filter(u => u && u.alive && u.side === 0) : [];
-const allyNo = (Wd, u) => Wd.units.filter(a => a.side === 0).indexOf(u) + 1;   // 숫자키 · 판 위 번호
-function pickAlly(i, add){ if (add){ if (sel.has(i)) sel.delete(i); else sel.add(i); } else sel = new Set([i]); }
+const selUnits = Wd => Wd ? [...sel].map(i => Wd.units[i]).filter(u => u && u.alive && u.side === 0 && u.ratOf == null) : [];   /* v8.7.8 쥐는 빠짐 */
+const allyNo = (Wd, u) => Wd.units.filter(a => a.side === 0 && a.ratOf == null).indexOf(u) + 1;   /* v8.7.8 쥐는 번호 없음 */   // 숫자키 · 판 위 번호
+function pickAlly(i, add){ { const U0 = world && world.units[i]; if (U0 && U0.ratOf != null){ toast(RAT_TOAST); return; } }   /* v8.7.8 */ if (add){ if (sel.has(i)) sel.delete(i); else sel.add(i); } else sel = new Set([i]); }
 function bar(Wd, u){
   const a = u.act; if (!a) return '<div class="ab"></div>';
   const span = a.phase === 'wind' ? a.end - a.t0 : a.end - a.t1, done = span > 0 ? 1 - Math.max(0, a.end - Wd.t) / span : 1;
@@ -13949,18 +14449,18 @@ function hud(){
   { const f = $('sqBoxF'); if (f) f.hidden = !(mode === 'plan' && world && world.t < 1e-6); }   // v7.15 편대 상자는 싸움 전 (0초) 에만
   const Wd = W_(); renderSkillBar(Wd); renderFormBar(Wd); renderDetail(); renderDock(Wd); if (ringFor != null) renderRing(); if (!Wd) return;   // v5.5.4 기술 막대 · v5.6 상세정보 칸 · v5.8 모바일 조작판
   const ed = mode === 'edit', see = $('seeAll').checked;
-  $('party').innerHTML = Wd.units.filter(u => u.side === 0).map(u => {
+  $('party').innerHTML = Wd.units.filter(u => u.side === 0 && u.ratOf == null).map(u => {   /* v8.7.8 쥐는 포렌 줄에 🐀 수로 */
     const H = hidA(Wd, u), dark = !ed && !H && Wd.t - u.unseenHitT < 1.2;   // v7.8.4
     const what = H ? `소식 없음 ${Math.round(Wd.t - u.posK.t)}초 — 무슨 일인지 모름 (마지막으로 안 자리 ${coord(u.posK.x, u.posK.y)})` : u.down ? `쓰러짐 — [불사] 피 ${Math.round(u.hp)}/${Math.round(u.max * undMove(Wd))} 차면 일어남${Wd.t - (u.pinnedT == null ? -9 : u.pinnedT) < 2.5 ? ' (눌림)' : ' (' + f2(undEta(Wd, u)) + '초)'}` : !u.alive ? '쓰러짐' : ed ? `${u.tier}등급 ${u.cls} · ${u.role || ''} · 속력 ${u.spd}${u.shield ? ' · 방패' : u.canGuard ? ' · 방어 자세' : ''}${u.hero ? ' · 주인공' : ''} · 대담함 ${u.bold}` : u.act ? actLabel(Wd, u, liveAct(Wd, u)) : moodLabel(Wd, u) || (u.path && u.path.length ? '이동 중' : stateLabel(u) || '서 있음');
     return `<button type="button" class="pm ${u.alive || H ? '' : 'dead'} ${!ed && sel.has(u.i) ? 'sel' : ''}" data-ally="${u.i}"><span class="fc ${palmOn(Wd, u) ? 'palmOn' : ''}" style="${faceCss(faceOf(u.ref), 34)}"></span><span class="pmb">
-      <span class="nm"><b class="no">${allyNo(Wd, u)}</b> ${esc(u.name)}<span class="tis">${traitStrip(u)}</span>${u.torch || (mode === 'edit' && u.hero) ? ' 🔥' : ''}${mode !== 'edit' && Wd.spareBy === u.i && Wd.spare > 0 && !hidA(Wd, u) ? ' 🎒' + Wd.spare : ''}${(() => { const si = stlInfo(Wd, u); return si ? `<i class="stb ${si.k}" title="${esc(si.why)}">${si.k === 'blown' ? '👁 ' + esc(si.why) : '🥷' + (si.k === 'off' ? ' ' + esc(si.why) : '')}</i>` : ''; })()}${mode !== 'edit' && u.lie && u.alive && !hidA(Wd, u) ? ` <i class="stb lie">🦎 ${u.lieSw ? (u.lieSw.to ? '엎드리는 중' : '일어나는 중') : u.lieFeelT != null && Wd.t - u.lieFeelT < 4 ? '엎드림 · 들킨 듯' : '엎드림'}</i>` : ''} <i>${H ? coord(u.posK.x, u.posK.y) + '?' : coord(u.x, u.y)}</i></span>
+      <span class="nm"><b class="no">${allyNo(Wd, u)}</b> ${esc(u.name)}${ratBadge(Wd, u)}<span class="tis">${traitStrip(u)}</span>${u.torch || (mode === 'edit' && u.hero) ? ' 🔥' : ''}${mode !== 'edit' && Wd.spareBy === u.i && Wd.spare > 0 && !hidA(Wd, u) ? ' 🎒' + Wd.spare : ''}${(() => { const si = stlInfo(Wd, u); return si ? `<i class="stb ${si.k}" title="${esc(si.why)}">${si.k === 'blown' ? '👁 ' + esc(si.why) : '🥷' + (si.k === 'off' ? ' ' + esc(si.why) : '')}</i>` : ''; })()}${mode !== 'edit' && u.lie && u.alive && !hidA(Wd, u) ? ` <i class="stb lie">🦎 ${u.lieSw ? (u.lieSw.to ? '엎드리는 중' : '일어나는 중') : u.lieFeelT != null && Wd.t - u.lieFeelT < 4 ? '엎드림 · 들킨 듯' : '엎드림'}</i>` : ''} <i>${H ? coord(u.posK.x, u.posK.y) + '?' : coord(u.x, u.y)}</i></span>
       <span class="hb"><i style="width:${Math.max(0, hpK(Wd, u) / u.max * 100)}%"></i></span>
       <span class="st">${Math.ceil(hpK(Wd, u))}/${u.max}${H ? ' (마지막으로 안 것)' : ''}${gearTxt(Wd, u)}${ed ? '' : ' · 명령 ' + orderLabel(Wd, ordOf(u))}${!ed && u.swing ? `<span class="lk c" title="휘두르기 명령 중">🔨 ${u.swing === '찍기' ? '찍기' : '넓게'}</span>` : ''}${linkBadge(Wd, u)}${!ed && u.alive && (u.order || u.stay) ? ` <span class="xo" data-cancel="${u.i}" title="명령 취소 (X)">✕</span>` : ''}</span>
       ${ed || H ? '' : bar(Wd, u)}<span class="at ${dark ? 'warn' : ''}">${H ? esc(what) + '</span></span></button>' : ''}${dark ? '어둠 속에서 맞는 중 · ' : ''}${!ed && u.alive && u.crawl ? '기어다님 (다리 ' + esc(u.legLoss || '') + ') · ' : !ed && u.alive && Wd.t < u.proneT ? '넘어짐 · ' : ''}${!ed && u.down && Wd.t - (u.pinnedT == null ? -9 : u.pinnedT) < 2.5 ? '눌림 (확인사살 중) · ' : ''}${!ed && u.alive && u.blind ? '실명 · ' : ''}${!ed && u.alive && u.bleed ? '피를 흘림 · ' : ''}${esc(what)}</span></span></button>`;
   }).join('');
-  const foes = Wd.units.filter(u => u.side !== 0), vis = foes.filter(u => u.alive && (ed || see || u.seenBy)), hid = foes.filter(u => u.alive && !(ed || see || u.seenBy)).length;
+  const foes = Wd.units.filter(u => u.side !== 0 && u.ratOf == null), vis = foes.filter(u => u.alive && (ed || see || u.seenBy)), hid = foes.filter(u => u.alive && !(ed || see || u.seenBy)).length;   /* v8.7.8 적 포렌의 쥐는 포렌 줄에 */
   $('foes').innerHTML = vis.map(u => `<div class="pm foe ${!ed && !u.seenBy ? 'ghost' : ''}" data-foe="${u.i}"><span class="fc" style="${faceCss(faceOf(u.ref), 28)}"></span><span class="pmb">
-      <span class="nm">${!ed && !see && u.sil ? '실루엣 (누구인지 모름)' : esc(u.name)} <i>${coord(u.x, u.y)}${!ed && !u.seenBy ? ' · 안 보임' : ''}</i></span>
+      <span class="nm">${!ed && !see && u.sil ? '실루엣 (누구인지 모름)' : esc(u.name)}${!ed && !(!see && u.sil) ? ratBadge(Wd, u, true) : ''} <i>${coord(u.x, u.y)}${!ed && !u.seenBy ? ' · 안 보임' : ''}</i></span>
       ${!ed && (u.engaged || see) && !(u.sil && !see) ? `<span class="hb"><i style="width:${Math.max(0, u.hp / u.max * 100)}%"></i></span><span class="st">${Math.ceil(u.hp)}/${u.max}${gearTxt(Wd, u)}${u.engaged ? '' : ' (모두 보기)'}</span>` : `<span class="st">체력 ? · ${ed ? '배치 중' : '아직 교전 전'}</span>`}
       ${ed ? '' : bar(Wd, u)}<span class="at">${ed ? `${u.tier}등급 ${u.cls} · ${u.role || ''} · 속력 ${u.spd}${u.nv ? ' · 야시' : ''}${u.shield ? ' · 방패' : u.canGuard ? ' · 방어 자세' : ''} · 대담함 ${u.bold}` : u.act ? esc(actLabel(Wd, u, liveAct(Wd, u))) : esc(moodLabel(Wd, u) || stateLabel(u))}</span></span></div>`).join('')
     + (hid ? `<div class="pm foe dim"><span class="pmb"><span class="nm">어둠 속 적 ${hid}</span><span class="at">빛 밖이라 안 보여요</span></span></div>` : '')
@@ -14026,7 +14526,7 @@ $('orders').addEventListener('click', e => {
   const sl = e.target.closest('[data-slot]'); if (sl && world && !world.over){ useSlot(+sl.dataset.slot); return; }   // v5.4.3 기술 칸
   const b = e.target.closest('[data-ord]'); if (!b || !world) return;
   const k = b.dataset.ord;
-  if (k === 'all'){ sel = new Set(world.units.filter(u => u.side === 0 && u.alive).map(u => u.i)); hud(); return; }
+  if (k === 'all'){ sel = new Set(world.units.filter(u => u.side === 0 && u.alive && u.ratOf == null).map(u => u.i)); hud(); return; }
   if (k === 'none'){ sel = new Set(); hud(); return; }
   if (world.over) return;
   if (k === 'torchT'){ toggleTorch(); return; }   // v7.5
@@ -14523,7 +15023,7 @@ function lblClick(cx, cy){
 // 땅의 물건 상세: 누가 주울지 (아군마다 · 지휘망으로)
 function itemPickRow(Wd, it){
   if (!Wd || Wd.over || mode === 'edit' || !(it.k === 'weapon' || it.k === 'shield' || it.k === 'spear')) return '';
-  const C = Wd.units.filter(u => u.side === 0 && u.alive && !u.gone && canTake(Wd, u, it.k === 'spear' ? { ...it, k: 'weapon' } : it)).sort((a, b) => Math.hypot(a.x - it.x, a.y - it.y) - Math.hypot(b.x - it.x, b.y - it.y)).slice(0, 6);
+  const C = Wd.units.filter(u => u.side === 0 && u.alive && !u.gone && u.ratOf == null && canTake(Wd, u, it.k === 'spear' ? { ...it, k: 'weapon' } : it)).sort((a, b) => Math.hypot(a.x - it.x, a.y - it.y) - Math.hypot(b.x - it.x, b.y - it.y)).slice(0, 6);
   if (!C.length) return '<span class="tr lb">지금 집어 들 수 있는 아군이 없음 (팔 · 두 손 무기 · 이미 방패)</span>';
   return `<div class="ipk">${C.map(u => `<button type="button" class="btn" data-ipick="${it.id}" data-u="${u.i}">✋ ${esc(u.name)} <small>${Math.hypot(u.x - it.x, u.y - it.y).toFixed(1)}칸</small></button>`).join('')}</div>`;
 }
@@ -14792,7 +15292,7 @@ function togglePlay(){
 const opKey = () => [S.type, S.W, S.H, S.seed, S.tseed || 0, S.art8 || '', S.camp ? S.camp.s : ''].join('|');   /* v8.7.3 시작 행동 (0초 명령) 은 같은 맵 (다시 하기 · 훈련장) 에서만 — 다음 맵에 옛 좌표 명령이 걸리던 것 */
 function saveOpeners(Wd){
   const pidOf = i => (Wd.units[i] || {}).pid; S.openersK = opKey();
-  S.openers = Wd.units.filter(u => u.side === 0 && u.pid != null).map(u => {
+  S.openers = Wd.units.filter(u => u.side === 0 && u.pid != null && !u.summon).map(u => {
     const o = u.order ? { ...u.order } : null; if (o && o.b != null){ o.bp = pidOf(o.b); delete o.b; } if (o) delete o.n;
     return { pid: u.pid, o, gm: u.guardMode && u.guardMode !== 'auto' ? u.guardMode : null, sw: u.swing || null, st: u.stealth ? 1 : null, tf: u.torch && u.torchOff ? 1 : null, ro: u.roe && u.roe !== 'smart' ? u.roe : null, hp: u.healPol && u.healPol !== 'dying' ? u.healPol : null, nc: u.noChg !== u.noChg0 ? (u.noChg ? 1 : 0) : null };   /* v7.29.0 돌격 안 함 (타고난 성향과 다를 때만) */   // v7.9 은신 · 횃불 꺼 둠 · 교전 규칙 · 치료 방침도
   }).filter(x => x.o || x.gm || x.sw || x.st || x.tf || x.ro || x.hp || x.nc != null);
@@ -14818,6 +15318,7 @@ function applyOpeners(Wd){
   return n;
 }
 function resetToEdit(){
+  S.units = S.units.filter(p => !p.summon);   /* v8.7.8 지난 판의 소환 (쥐 · 슬라임) 은 배치에 남지 않음 */
   closeRing(); mode = 'edit'; world = null; cont = false; paused = false; if (MOB) requestAnimationFrame(() => { layoutMob(); mobFit(); }); $('banner').hidden = true; lockUI(campLock());   /* v8.7.3 여정은 배치 칸도 잠금 */
   rebuildPreview(); hud();
 }
@@ -15624,7 +16125,7 @@ $('banner').addEventListener('click', e => { if (!SH) return; const b = e.target
 // 토끼마차를 건드린 대가: 확정 패배
 function encWar(){
   const C = S.camp, Wd = world; if (!C || !Wd) return; logEv(Wd, { k: 'encWar' });
-  for (const u of Wd.units) if (u.side === 0 && u.alive){ u.alive = false; u.hp = 0; u.act = null; const p = S.units.find(q => q.id === u.pid); if (p) C.fallen.push(p.name); }
+  for (const u of Wd.units) if (u.side === 0 && u.alive){ u.alive = false; u.hp = 0; u.act = null; const p = S.units.find(q => q.id === u.pid); if (p && !u.summon) C.fallen.push(p.name); }   /* v8.7.8 소환은 쓰러진 이로 적지 않음 */
   Wd.over = true; Wd.result = 'lose'; mode = 'plan'; cont = false; paused = false; C.why = '토끼마차를 건드렸다'; campLogSave(Wd, C.s); C.log.push({ s: C.s, t: +Wd.t.toFixed(1), res: 'war', kills: 0, party: [] }); campEnd('wipe'); hud();
 }
 // v8.7.3 우리 편은 띠 안에서 대장 둘레로 모여 (packPlace)
@@ -15805,14 +16306,14 @@ $('campBar').addEventListener('click', e => {
     const look = dir === 'up' && world.exitHide && !world.exitSeen && world.stairs;
     for (const u of L) u.order = { k: 'exit', dir, x: u.x, ...(hur ? { hurry: true } : {}) }; noteOrders(L, 'user', (hur ? '서둘러 ' : '') + (look ? '출구 찾기' : '모두 ' + (dir === 'up' ? '위' : '아래') + ' 맵으로'), !!world.cleared);
     toast(hur ? '모두 출구로 — 서둘러! (방패를 내리고 뜀)' : look ? '🔎 출구를 아직 못 찾았어요 — 대장을 따라 안 가 본 곳을 뒤져요 (찾으면 곧장 · 한 번 더 누르면 서둘러)' : `모두 ${dir === 'up' ? '위' : '아래'} 맵으로 (한 번 더 누르면 서둘러)`); hud(); return; }
-  if (b.dataset.cabandon){ const L = world.units.filter(u => u.side === 0 && u.alive); if (!L.length) return; askYes(`${reul(L.map(u => u.name).join(' · '))} 두고 갈까요? (이후 나오지 않음)`, '두고 간다').then(y => { if (!y || !world) return;   /* v8.2.1 */
+  if (b.dataset.cabandon){ const L = world.units.filter(u => u.side === 0 && u.alive), Ln = L.filter(u => !u.summon); if (!Ln.length) return; askYes(`${reul(Ln.map(u => u.name).join(' · '))} 두고 갈까요? (이후 나오지 않음)`, '두고 간다').then(y => { if (!y || !world) return;   /* v8.2.1 */
     for (const u of L){ u.gone = 'left'; u.alive = false; u.order = null; } checkEnd(world); if (world.over){ mode = 'plan'; cont = false; paused = false; onOver(); } hud(); }); return; }
   if (b.dataset.cloot){ world.lootSeen = true; lootBanner(world, false); return; }   /* v8.7.6 */
 });
 function onOver(){
   if (world && world.camp && S.camp){ campOver(); return; }   // v7.21 캠페인: 맵을 넘어감 · 전멸
   const r = world.result, b = $('banner');
-  const alive = world.units.filter(u => u.side === 0 && u.alive).length;
+  const alive = world.units.filter(u => u.side === 0 && u.alive && !u.summon).length;
   if (r === 'win') lootAuto(world);   // v7.20.1 화살 · 탄은 쓰는 동료 가방에 저절로
   b.className = 'banner ' + (r === 'win' ? 'win' : 'lose');
   b.innerHTML = `<b>${r === 'win' ? '적을 모두 쓰러뜨림' : r === 'lose' ? '전멸' : '시간 끝'}</b><span>${world.turn}턴 · ${f2(world.t)}초 · 살아남은 아군 ${alive} · 처치 ${world.kills[0]}</span>${world.units.some(u => u.side === 0 && pickedOf(u)) ? `<span>✋ 주운 장비 (${world.units.filter(u => u.side === 0 && pickedOf(u)).map(u => u.name + ' ' + pickedOf(u).items.join(' + ')).join(' · ')}) — 다음 판에도 쓰려면 '이번 판 장비 반영'</span>` : ''}${r === 'win' ? `<div class="loot" id="lootBox">${(lootPL = null, lootCards(world, lootParty()))}</div>` : ''}<div class="row"><button class="btn go" type="button" id="againBtn">같은 배치로 다시</button><button class="btn" type="button" id="toEditBtn">배치로</button><button class="btn" type="button" id="settleBtn" title="살아남은 아군의 닳은 내구도 · 남은 탄 · 바꿔 든 무기 · 가방 · 부서진 장비를 명단에 그대로">이번 판 장비 반영</button></div>`;
@@ -16038,7 +16539,7 @@ function drawFxv(ox, oy, ts, w, h){
 // 가까이 볼 때: 고른 아군 (없으면 살아 있는 아군) 의 가운데를 부드럽게 따라감 · 맵 밖은 덜 보이게
 function mobFollow(Wd, dt){
   if (!cam.follow || pd || pinch) return;
-  const L = selUnits(Wd), G = L.length ? L : Wd.units.filter(u => u.side === 0 && u.alive); if (!G.length) return;
+  const L = selUnits(Wd), G = L.length ? L : Wd.units.filter(u => u.side === 0 && u.alive && !u.summon); if (!G.length) return;   /* v8.7.8 쥐 떼를 따라가지 않음 */
   let tx = G.reduce((a, u) => a + u.x, 0) / G.length, ty = G.reduce((a, u) => a + u.y, 0) / G.length; const ts = TS * cam.z, hw = cv.clientWidth / 2 / ts, hh = cv.clientHeight / 2 / ts;
   if (fxOn('cam') && !zoomAll){ const a = camAim(Wd, tx, ty); tx = a.x; ty = a.y; }   /* v7.28.0 싸움 쪽으로 살짝 · 큰 사건에 다가감 */
   const cx = S.W + 0.4 > hw * 2 ? Math.min(S.W - hw + 0.3, Math.max(hw - 0.5, tx)) : S.W / 2 - 0.2, cy = S.H + 1.2 > hh * 2 ? Math.min(S.H - hh + 0.6, Math.max(hh - 0.8, ty)) : S.H / 2 - 0.35;
@@ -16055,7 +16556,8 @@ function touchTap(w){ detItem = null;   /* v8.7.6 */
   if (armedNow() && armedTap(w) !== 'pass') return;   // v5.9.0 기술이 켜져 있으면 그 기술의 대상만 · v7.25.0 엉뚱한 곳이면 풀고 아래로
   const u = unitNear(world, w.x, w.y);
   // v5.9.0 탭은 이동 · 공격만: 아군 = 고르기 · 적 = 공격 · 바닥 = 이동 (물건 위여도). v5.9.1 빠르게 두 번 = 서둘러 이동 · 빠르게 공격 (사수는 바로 쏨)
-  if (u && u.side === 0){ if (sel.size === 1 && sel.has(u.i)){ clearSel(); return; } pickAlly(u.i, false); hud(); return; }   // v5.9.5 고른 아군을 다시 탭 = 풀기
+  if (u && u.side === 0 && u.ratOf != null && !selUnits(world).length){ toast(RAT_TOAST); return; }   /* v8.7.8 쥐는 고를 수 없음 — 고른 이가 있으면 그 자리 바닥으로 */
+  if (u && u.side === 0 && u.ratOf == null){ if (sel.size === 1 && sel.has(u.i)){ clearSel(); return; } pickAlly(u.i, false); hud(); return; }   // v5.9.5 고른 아군을 다시 탭 = 풀기
   const L = selUnits(world);
   if (amovePick){ amovePick = false; if (!L.length){ toast('먼저 명령할 아군을 고르세요'); hud(); return; } groupMove(L, w.x, w.y, 'amove', false, detourArm); hud(); return; }
   if (!L.length){ toast('아군을 먼저 고르세요 — 판의 아군이나 아래 칩을 탭'); return; }
@@ -16269,7 +16771,7 @@ dockTap($('dock'), b => {
   if (k === 'follow'){ cam.follow = !cam.follow; CD.panOff = false; if (cam.follow && !zoomAll) mobFit(); hud(); return; }
   if (k === 'info'){ openDet(!detOpen); return; }
   if (k === 'menu'){ toggleMenu(!menuOpen()); return; }
-  if (k === 'all'){ if (!world) return; const A = world.units.filter(u => u.side === 0 && u.alive); sel = A.every(u => sel.has(u.i)) ? new Set() : new Set(A.map(u => u.i)); hud(); return; }
+  if (k === 'all'){ if (!world) return; const A = world.units.filter(u => u.side === 0 && u.alive && u.ratOf == null); sel = A.every(u => sel.has(u.i)) ? new Set() : new Set(A.map(u => u.i)); hud(); return; }
   if (k === 'pickx'){ boxArm = false; skillPick = null; throwPick = null; chargePick = null; palmPick = null; leapPick = null; amovePick = false; armed = null; toast('고르기를 취소했어요'); hud(); return; }
   if (/^sk\d$/.test(k)){ closeRing(); useSlot(+k.slice(2)); hud(); return; }
   if (k === 'torchT'){ toggleTorch(); return; }   // v7.5
@@ -16322,7 +16824,7 @@ const dockState = (Wd, u) => u.gone ? (u.gone === 'left' ? '버림' : u.gone ===
 function renderDock(Wd){
   if (!MOB) return;
   const ed = mode === 'edit', over = !!(Wd && Wd.over), L = Wd && !ed ? selUnits(Wd) : [];
-  const allies = Wd && !(S.mode === 'story' && !S.camp) ? Wd.units.filter(u => u.side === 0 && !(u.summon && (u.gone || u.summon === 'slime'))) : [];   /* v8.4.0 작은 슬라임은 칩 없음 */   // v7.24.5 스토리 첫 화면엔 칩 없음
+  const allies = Wd && !(S.mode === 'story' && !S.camp) ? Wd.units.filter(u => u.side === 0 && u.ratOf == null && !(u.summon && (u.gone || u.summon === 'slime'))) : [];   /* v8.7.8 쥐는 칩 없음 */   /* v8.4.0 작은 슬라임은 칩 없음 */   // v7.24.5 스토리 첫 화면엔 칩 없음
   const chips = allies.map(u => `<button type="button" class="dchip ${!ed && sel.has(u.i) ? 'on' : ''} ${u.alive || hidA(Wd, u) ? '' : 'dead'} ${hidA(Wd, u) ? 'unk' : ''}" data-dc="${u.i}"><span class="cnm">${esc(u.name)}</span><span class="fc ${palmOn(Wd, u) ? 'palmOn' : ''}" style="${faceCss(faceOf(u.ref), 30)}"></span><b class="cno">${allyNo(Wd, u)}</b>${ed ? '' : stlChip(Wd, u)}${ed ? '' : lieChip(Wd, u)}${ed ? '' : roeChip(Wd, u)}<span class="dn"><i class="hb"><i style="width:${Math.max(0, hpK(Wd, u) / u.max * 100).toFixed(0)}%"></i></i><small>${ed ? '' : linkBadge(Wd, u)}${esc(ed ? (u.role || u.cls || '') : hidA(Wd, u) ? '' : dockState(Wd, u))}</small></span></button>`).join('')
     + (!ed && Wd ? `<button type="button" class="db" data-dk="all"><span class="ic">👥</span><small>${allies.filter(u => u.alive).every(u => sel.has(u.i)) && L.length ? '풀기' : '모두'}</small></button>` : '');
   let acts;
@@ -16408,8 +16910,8 @@ window.addEventListener('keydown', e => {
   if (mode !== 'edit' && world && !world.over && !e.ctrlKey && !e.metaKey){ const m = { m: 'alt', h: 'hold', g: 'auto', q: 'skill', e: 'pick', r: 'throw', f: 'active', v: 'swing', a: 'amove', b: 'guard', l: 'line', k: 'lret', y: 'scout', n: 'flank', u: 'assn', j: 'supp', p: 'area', o: 'watch', i: 'flare', z: 'stealth', c: 'lie', x: 'cancel', backspace: 'cancel', delete: 'cancel' }[k]; if (m){ e.preventDefault(); ordKey(m); } }
   if (mode === 'edit' && (k === 'delete' || k === 'backspace') && selId){ e.preventDefault(); const p = S.units.find(x => x.id === selId); S.units = S.units.filter(x => x.id !== selId); selId = null; changed(); if (p) toast(`${p.name} 뺌`); }
   if (/^[1-7]$/.test(e.code ? e.code.replace('Digit', '') : k) && mode !== 'edit' && world && !world.over && sel.size && !e.shiftKey){ e.preventDefault(); useSlot(+(e.code ? e.code.replace('Digit', '') : k)); return; }   // v5.4.3 기술 칸
-  if (/^[1-9]$/.test(e.code ? e.code.replace('Digit', '') : k) && mode !== 'edit' && world){ const al = world.units.filter(u => u.side === 0); const u = al[+(e.code ? e.code.replace('Digit', '') : k) - 1]; if (u && u.alive){ pickAlly(u.i, e.shiftKey); hud(); } }
-  if (k === 'a' && (e.ctrlKey || e.metaKey) && mode !== 'edit' && world){ e.preventDefault(); sel = new Set(world.units.filter(u => u.side === 0 && u.alive).map(u => u.i)); hud(); }
+  if (/^[1-9]$/.test(e.code ? e.code.replace('Digit', '') : k) && mode !== 'edit' && world){ const al = world.units.filter(u => u.side === 0 && u.ratOf == null); const u = al[+(e.code ? e.code.replace('Digit', '') : k) - 1]; if (u && u.alive){ pickAlly(u.i, e.shiftKey); hud(); } }
+  if (k === 'a' && (e.ctrlKey || e.metaKey) && mode !== 'edit' && world){ e.preventDefault(); sel = new Set(world.units.filter(u => u.side === 0 && u.alive && u.ratOf == null).map(u => u.i)); hud(); }
   if (k === 'escape' && mode !== 'edit'){ if (askOv){ askOverlapDone('x'); return; } /* v7.15.1 */ if (pstOpen){ $('ask').hidden = true; pstOpen = false; hud(); return; } if (askSt){ askScoutDone('x'); return; } if (boxArm){ boxArm = false; hud(); return; } if (armed){ armed = null; hud(); return; } if (amovePick){ amovePick = false; hud(); return; } if (chargePick){ chargePick = null; hud(); return; } if (throwPick){ throwPick = null; hud(); return; } if (skillPick){ skillPick = null; hud(); return; } if (palmPick){ palmPick = null; hud(); return; } if (leapPick){ leapPick = null; hud(); return; } sel = new Set(); hud(); }
 });
 
@@ -16465,7 +16967,7 @@ cv.addEventListener('pointerup', e => {
   if (d.box && d.moved && boxSel && world){
     // 네모 안의 아군 고르기 (Shift 면 더하기)
     const a = toWorld(Math.min(d.x, e.clientX), Math.min(d.y, e.clientY)), b = toWorld(Math.max(d.x, e.clientX), Math.max(d.y, e.clientY));
-    const inBox = world.units.filter(u => u.alive && u.side === 0 && u.x >= a.x - u.r && u.x <= b.x + u.r && u.y >= a.y - u.r && u.y <= b.y + u.r).map(u => u.i);
+    const inBox = world.units.filter(u => u.alive && u.side === 0 && u.ratOf == null && u.x >= a.x - u.r && u.x <= b.x + u.r && u.y >= a.y - u.r && u.y <= b.y + u.r).map(u => u.i);
     if (d.shift) inBox.forEach(i => sel.add(i)); else sel = new Set(inBox);
     boxSel = null; if (d.boxA) boxArm = false; hud(); if (inBox.length) toast(`아군 ${sel.size}명 고름${d.boxA ? ' — 이제 명령을 고르세요 (모두에게 동시에)' : ''}`); else if (d.boxA) toast('네모 안에 아군이 없어요'); return;
   }
@@ -16553,6 +17055,7 @@ function unitDetailHtml(Wd, u){
     ${!ed && known && u.assnE != null ? `<span class="tr"><span class="lb">암살</span> 암살 솜씨 ${Math.round(u.assnE * 100)}%${u.assnE >= 0.7 ? ' — 믿을 만함' : u.assnE >= 0.4 ? ' — 그럭저럭' : u.assnE >= 0.15 ? ' — 서툶' : ' — 맡기기 어려움'} · 숨은 채 등 뒤 · 아무도 못 볼 때 (× (1 − 상대의 경계))${u.assnN ? ' · 이 판에서 ' + u.assnN + '번' : ''}</span>` : ''}
     ${!ed && u.side === 0 && u.alive && !hidA(Wd, u) && (u.hm || u.offFrom != null || u.rally) ? `<span class="tr"><span class="lb">상황</span> ${[u.hm ? (u.hm.k === 'anvil' ? '⚓ 모루 — ' + esc(reul(Wd.units[u.hm.b].name)) + ' 붙듦' : '🔨 망치 — ' + esc(Wd.units[u.hm.b].name) + '의 옆 · 뒤로') : '', u.offFrom != null && Wd.t - u.offFrom >= 6 ? '📵 연락 두절 ' + Math.round(Wd.t - u.offFrom) + '초 — 마지막 임무로 판단' : '', u.rally && Wd.t < u.rally.until ? '🚩 집결지 ' + coord(u.rally.x, u.rally.y) + '로 (' + esc(Wd.units[u.rally.by] ? Wd.units[u.rally.by].name : '') + '의 부름)' : ''].filter(Boolean).join(' · ')}</span>` : ''}
     ${!ed && u.alive && (u.side === 0 || see) && u.lastDec && Wd.t - u.lastDec.t < 20 ? `<span class="tr" style="color:#d8c8ff"><span class="lb">최근 판단</span> ${esc(u.lastDec.s)} · ${Math.round(Wd.t - u.lastDec.t)}초 전</span>` : ''}
+    ${!ed && known && u.alive && (u.porenKit || u.ratOf != null) ? `<span class="tr"><span class="lb">쥐 군단</span> ${esc(ratRow(Wd, u))}</span>` : ''}
     ${!ed && u.side === 0 && u.alive && !hidA(Wd, u) && u.mission ? `<span class="tr"><span class="lb">임무</span> ${esc(orderLabel(Wd, orderTxt(u.mission.o, u)))} · 받은 지 ${Math.round(Wd.t - u.mission.t)}초${u.order ? '' : ' (끝났거나 끊김 — 스스로 판단 중)'}${u.missT != null && !u.ordPend ? ' · ✗ 새 명령을 못 들음' : ''}</span>` : ''}
     ${!ed && u.side === 0 && u.alive && !hidA(Wd, u) && (u.rank === '부대장' || u.sqLead != null) ? `<span class="tr"><span class="lb">직책</span> ${u.rank === '부대장' ? '🎖 공식 부대장 — 편대 ' + Wd.units.filter(m => m.alive && m.sqLead === u.i).length + '명' + (u.sqFocus && Wd.t - u.sqFocus.t < 6 && Wd.units[u.sqFocus.b] ? ' · 표적 ' + esc(Wd.units[u.sqFocus.b].name) : '') : '🎖 ' + esc((Wd.units[u.sqLead] || {}).name || '?') + ' 편대' + (u.sqAuto ? ' (스스로 들어감)' : '')}</span>` : ''}
     ${!ed && u.side === 0 && u.alive && !hidA(Wd, u) ? (() => { const lit = u.torch && !u.torchOff, S3 = Wd.rules; return `<span class="tr"><span class="lb">시야</span> ${[lit ? '🔥 횃불 켬 — 빛 ' + S3.heroLight + '칸 안은 보임 (멀리서도 보임)' : u.torch ? '🌑 횃불 꺼짐 — 빛이 없어 어둠 속' : '횃불 없음', u.nv ? '야시 ' + (u.nvG || 'B') + ' — 어둠 속 ' + (u.nvG === 'A' || u.nvG === 'S' ? S3.sight : u.nvG === 'D' ? S3.nvD : u.nvG === 'C' ? S3.nvC : S3.nvB) + '칸' : '야시 없음 — 빛 밖은 거의 안 보임 (몸에 닿는 것만)', u.smellG ? '후각 ' + u.smellG + ' — ' + (u.smellFar || S3.smellFar) + '칸' : ''].filter(Boolean).join(' · ')}${u.stealth && lit ? ' · ⚠ 횃불을 든 채라 은신이 소용없음' : ''}</span>`; })() : ''}
@@ -16633,7 +17136,8 @@ function playClick(w, add, u0){ detItem = null;   /* v8.7.6 판을 누르면 고
   if (u && u.side !== 0 && chargePick){ giveCharge(u, add || detourArm); return; }
   if (u && !throwPick && !palmPick && !chargePick && !skillPick){ const dC = it => Math.hypot(it.x - w.x, it.y - w.y), its = (world.items || []).filter(it => u.side === 0 ? dC(it) < 0.45 || Math.hypot(it.x - u.x, it.y - u.y) < u.r + 0.15 : dC(it) < 0.25 && dC(it) < Math.hypot(u.x - w.x, u.y - w.y));   // v7.15.1 겹친 물건 → 고르는 창
     if (its.length && ovSecond(u)){ askOverlap(u, its.sort((a, b) => Math.hypot(a.x - w.x, a.y - w.y) - Math.hypot(b.x - w.x, b.y - w.y)).slice(0, 4), add); return; } }
-  if (u && u.side === 0){ pickAlly(u.i, add); hud(); return; }
+  if (u && u.side === 0 && u.ratOf != null && !selUnits(world).length){ toast(RAT_TOAST); return; }   /* v8.7.8 */
+  if (u && u.side === 0 && u.ratOf == null){ pickAlly(u.i, add); hud(); return; }
   if (throwPick){ throwPick = null; toast('투창을 취소했어요'); hud(); return; }
   if (palmPick){ palmPick = null; toast('팜 버스트를 취소했어요'); hud(); return; }
   if (skillPick){ skillPick = null; toast('약 쓰기를 취소했어요'); hud(); return; }
@@ -17010,7 +17514,7 @@ $('lineExBtn').addEventListener('click', () => {
   const L = exampleLine();
   Object.assign(S, { type: L.type, W: L.W, H: L.H, mapC: L.type === 'gridC', randStart: L.randStart !== false, seed: L.seed, flips: [], units: L.units, torches: L.torches, draft: L.draft });
   selId = null; renderDraft(); rebuildMap(); setMapUI(); changed(); centerStart(); hud();
-  toast('사선 예제: 포렌 g3 (대검) · 옐로 h3 · 인주 h2 (창) ↔ 저격총수 h9 · 검사 d8 · 똥개 k8 · l7');
+  toast('사선 예제: 포렌 g3 (포렌의 대검 · 쥐 군단) · 옐로 h3 · 인주 h2 (창) ↔ 저격총수 h9 · 검사 d8 · 똥개 k8 · l7');
 });
 $('autoTorchBtn').addEventListener('click', () => { S.torches = autoTorches(MAP, (Math.random() * 1e6) | 0, Math.round(S.W * S.H / 420)); changed(); });
 $('noTorchBtn').addEventListener('click', () => { S.torches = []; changed(); toast('벽 횃불을 모두 뺐어요 · 주인공 횃불만 남아요'); });
@@ -18408,8 +18912,8 @@ function r8CrowdIntro(n, rule){
 // 판마다 (r8Tick 에서): 쓰러짐 셈 · 관중의 응원 · 야유 · 축복 · 증오
 function r8CrowdTick(W){
   if (!crowdOn() || !W || !W.r8 || W.over) return; const R = R8S();
-  const C = W.r8c || (W.r8c = { next: W.t + 6, a: W.units.filter(u => u.side === 0 && u.alive).length, f: W.units.filter(u => u.side !== 0 && u.alive).length, fx: [] });
-  const a = W.units.filter(u => u.side === 0 && u.alive).length, f = W.units.filter(u => u.side !== 0 && u.alive).length;
+  const C = W.r8c || (W.r8c = { next: W.t + 6, a: W.units.filter(u => u.side === 0 && u.alive && !u.summon).length, f: W.units.filter(u => u.side !== 0 && u.alive).length, fx: [] });
+  const a = W.units.filter(u => u.side === 0 && u.alive && !u.summon).length, f = W.units.filter(u => u.side !== 0 && u.alive && !u.summon).length;   /* v8.7.8 소환 (쥐 · 슬라임) 은 관중 셈에서 빠짐 */
   if (f < C.f){ crHeat(CR8.kill * (C.f - f)); if (Math.random() < 0.45) crSay(W, crPick(MC8.kill), 'good'); }
   if (a < C.a){ crHeat(CR8.down * (C.a - a)); crSay(W, crPick(MC8.down), 'bad'); }
   C.a = a; C.f = f;
