@@ -1,4 +1,4 @@
-// v7.14 UI 시험 — ui714.js v1.2 (v1.2: 훈련장 탭 여섯 (v7.25.3 인카운터) · v1.1: 모바일 탭 폭은 보이는 탭만 — 훈련장에선 이야기 탭이 숨음 (v7.24.5) · 친칠라 기본 배치 · 옛 저장 이전 · 특성 탭 · 매 판 특성 검사 · 은신 등급 고르기 · 모바일 폭)
+// v7.14 UI 시험 — ui714.js v1.3 (v1.3: 종족 · 가호 표는 앞 6000자를 봄 — v8.7.8 서포터 셋 · 적의 종족 (마족 · 정령 · 요정) 이 늘어 앞 300자 밖으로 밀리던 것 · v1.2: 훈련장 탭 여섯 (v7.25.3 인카운터) · v1.1: 모바일 탭 폭은 보이는 탭만 — 훈련장에선 이야기 탭이 숨음 (v7.24.5) · 친칠라 기본 배치 · 옛 저장 이전 · 특성 탭 · 매 판 특성 검사 · 은신 등급 고르기 · 모바일 폭)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -19,7 +19,7 @@ const { chromium } = require('playwright');
  console.log('    이전', JSON.stringify(mg)); ok(mg.c && mg.d <= 2.3,'옛 판에 친칠라를 노먼 곁에 놓음'); ok(/노먼:은신A/.test(mg.g)&&/궁수:은신S/.test(mg.g),'옛 판에 은신 등급을 붙임');
  // 특성 탭
  await p.click('.tab[data-tab="traits"]'); await p.waitForTimeout(300);
- const tb = await p.evaluate(()=>({ vis: !document.getElementById('pane-traits').hidden, aud: document.getElementById('traitAuditBox').innerText.replace(/\s+/g,' '), gr: document.querySelectorAll('#traitGradeTbl tr').length, row: [...document.querySelectorAll('#traitGradeTbl tr')].find(r=>r.cells[0]&&r.cells[0].innerText==='은신')?.innerText.replace(/\s+/g,' '), tr: document.querySelectorAll('#traitTbl tr').length, race: document.getElementById('traitRaceTbl').innerText.replace(/\s+/g,' ').slice(0,300), note: document.getElementById('traitGradeNote').textContent }));
+ const tb = await p.evaluate(()=>({ vis: !document.getElementById('pane-traits').hidden, aud: document.getElementById('traitAuditBox').innerText.replace(/\s+/g,' '), gr: document.querySelectorAll('#traitGradeTbl tr').length, row: [...document.querySelectorAll('#traitGradeTbl tr')].find(r=>r.cells[0]&&r.cells[0].innerText==='은신')?.innerText.replace(/\s+/g,' '), tr: document.querySelectorAll('#traitTbl tr').length, race: document.getElementById('traitRaceTbl').innerText.replace(/\s+/g,' ').slice(0,6000), note: document.getElementById('traitGradeNote').textContent }));
  console.log('    탭', JSON.stringify(tb)); ok(tb.vis && /지금 판 — 이상 없음/.test(tb.aud) && tb.gr>=10 && tb.tr>10,'특성 탭: 검사 · 등급 · 보통 특성'); ok(/친칠라/.test(tb.row||'')&&/카리우스/.test(tb.row||''),'은신 줄에 등급별 인물'); ok(/가호:바다/.test(tb.race)&&/친칠라/.test(tb.race),'종족 · 가호 줄');
  await p.screenshot({path:'ui714_tab.png', fullPage:false});
  // 은신 등급 고르기 (E ~ S)

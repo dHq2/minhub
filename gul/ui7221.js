@@ -1,4 +1,4 @@
-// v7.22.1 UI 시험 — ui7221.js v1.2 (v1.2: 공격 시험은 맵을 연 뒤 늦은 나레이션 (0.35초 뒤) 이 다 뜰 때까지 0.8초 기다려 넘김 — 부하가 크면 대화 고름 사이에 끼어 대화 줄이 밀리던 것 · 시험만 고침 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 토끼마차: 아이텐 · 청갑 둘 · 처음 보임 나레이션 둘 · 청갑 뭘 봐 → 꺼져 → 무시 · 쓸 만한 물건 없음 · 거래 (건네기 → 가치 · 사기 → 가방 · 많이 이용해 주세요) · 넘어가면 산 것 · 판 것 반영 · 회복약 마시기 · 공격 → 사각형 나레이션 → 확정 패배 · 모바일)
+// v7.22.1 UI 시험 — ui7221.js v1.3 (v1.3: 회복약 시험은 마신 몫만 잼 — 곁의 마력 치유 동료 (딸기) 가 v8.7.8 부터 알아서 치유해 함께 오르던 것 · 시험만 고침 · v1.2: 공격 시험은 맵을 연 뒤 늦은 나레이션 (0.35초 뒤) 이 다 뜰 때까지 0.8초 기다려 넘김 — 부하가 크면 대화 고름 사이에 끼어 대화 줄이 밀리던 것 · 시험만 고침 · v1.1: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · 토끼마차: 아이텐 · 청갑 둘 · 처음 보임 나레이션 둘 · 청갑 뭘 봐 → 꺼져 → 무시 · 쓸 만한 물건 없음 · 거래 (건네기 → 가치 · 사기 → 가방 · 많이 이용해 주세요) · 넘어가면 산 것 · 판 것 반영 · 회복약 마시기 · 공격 → 사각형 나레이션 → 확정 패배 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -37,7 +37,7 @@ const { chromium } = require('playwright');
     const q=S.units.find(x=>x.name===gn), hero=S.units.find(x=>x.hero); return { s: S.camp.s, sold: (q.bag||[]).filter(x=>x.k!=='ammo').map(x=>x.name), hero: (hero.bag||[]).map(x=>x.k+':'+(x.name||x.at)), world: (world.units.find(u=>u.hero).bag||[]).map(x=>x.k) }; }, g);
   console.log('    '+nm+' 넘어감', JSON.stringify(x1)); ok(x1.s===4&&x1.sold.length===0&&x1.hero.includes('potion:회복약')&&x1.world.includes('potion'),nm+': 넘어가면 건넨 물건은 사라지고 산 회복약 · 화살은 다음 맵 가방에');
   // 회복약 마시기 (명령 → 1초 → 회복 · 가방에서 빠짐)
-  const dk = await p.evaluate(()=>{ const u=world.units.find(x=>x.hero), it=u.bag.find(x=>x.k==='potion'); u.hp=20; const h0=u.hp; u.order={k:'swap',uid:it.uid}; mode='run'; for(let i=0;i<60;i++) stepWorld(world,1/30); mode='plan'; return { h0, h1: Math.round(u.hp), max: u.max, left: u.bag.filter(x=>x.k==='potion').length, log: world.log.some(l=>l.k==='drink') }; });
+  const dk = await p.evaluate(()=>{ const u=world.units.find(x=>x.hero), it=u.bag.find(x=>x.k==='potion'); for (const v of world.units) if (v.skill && v !== u) v.healPol='order'; u.hp=20;   /* 마신 몫만 재려고 — 치유하는 동료는 '명령만' (v8.7.8 마력 치유의 기본이 '알아서') */ const h0=u.hp; u.order={k:'swap',uid:it.uid}; mode='run'; for(let i=0;i<60;i++) stepWorld(world,1/30); mode='plan'; return { h0, h1: Math.round(u.hp), max: u.max, left: u.bag.filter(x=>x.k==='potion').length, log: world.log.some(l=>l.k==='drink') }; });
   console.log('    '+nm+' 마심', JSON.stringify(dk)); ok(dk.h1-dk.h0===Math.round(Math.max(20,Math.min(80,dk.max*0.3)))&&dk.left===0&&dk.log,nm+': 회복약을 마시면 최대 체력의 30% (20 ~ 80) 회복 · 가방에서 빠짐');
   // 공격 → 확정 패배
   await p.evaluate(GO3('shop')); await p.waitForTimeout(800); await p.evaluate(ADV); await p.evaluate(NEAR('aiten',2.5)); await p.evaluate(ADV); await p.evaluate(()=>encTick(world)); await p.evaluate(ADV);
