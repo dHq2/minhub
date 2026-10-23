@@ -1,3 +1,4 @@
+// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.7.1 UI 시험 — ui8710.js v1.7 (v1.7: 맵 위 NPC 칸에선 인사 (v8.7.8 — 일행에 콜라이더 · 물레가 뽑히면 고르기 창) 를 건너뜀 — 고르기 창에서 시험 고리가 멈추던 것 · v1.6: v8.7.6 D1 — 페흐토의 투구 · 망토 갑주는 땅이 아니라 전리품으로 · v1.5: v8.7.4 맵 위 NPC 에 세르파 (수정동굴) — 10 · v1.4: 카드 그림은 묶음 (atlas) · v1.3: 히든 층은 히든 시험에서만 (나머지는 끔) · v1.2: 자기 검토 — 페흐토 손님 · 고급 드랍 · 노라의 짐 · 죽은 단독 개체 · 비전투 회랑 따라 나감 · v1.1: 영입 시험 전에 자리를 비움 (뽑기로 8명이면 가득 참) · v1.0: 맵 위 NPC 9 (판 안 대화 · 숨었다 나옴 · 판에 바로 영입 · 지도로 안 감) · 손님 로지나 (튐) · 셰도르 · 항복 (페흐토 · 아해) · 도감 카드 212 · 이름 있는 만남 20 (그림 · 행동 · 싸움) · 히든 층 2 · 단달로 약속 · 정예 전용 유물)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -5,7 +6,7 @@ const { chromium } = require('playwright');
  const TALKEND = "while (TK){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[L.ask.length>1?1:0][1]); continue; } talkAdv(); }";
  const wait = (p, ms) => p.waitForTimeout(ms);
  const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
- await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1000);
+ await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1000); await p.evaluate(()=>{ delete FIX8[2]; });   /* v8.8.7 옛 2층 (무작위 지대) 흐름으로 시험 */
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); });
  await p.evaluate(TALKEND); await wait(p,250); await p.evaluate(()=>{ document.getElementById('r8dAll').click(); document.getElementById('r8dGo').click(); });
  await p.evaluate(()=>{ const R=R8S(); R.flags=R.flags||{}; R.flags.hargenSeen=1; R.flags.calderapSeen=1; const h=(R.hid||{})[R.f]; R.hid={}; if (h&&h!=='none'){ F8[R.f]=null; R.fm=r8Gen(R.f); r8MapShow(); } });   // 히든 층 끔 (무작위)

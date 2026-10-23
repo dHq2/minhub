@@ -1,3 +1,4 @@
+// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.8.0 UI 시험 — ui8800.js v1.0 (v1.0: 위층으로 — 층 지도 ▲ · ▼ (층마다 남긴 상태 · 처음 들어설 때만 회복 · 카드 · 뽑기 · 다시 온 층의 안 간 칸 · 3층 오감 셈 ·
 //   가 본 아래층은 떠난 자리 · 다시 불러와도 층 정의 그대로) · 싸움판 안 ▲ 올라가는 계단 (단추 · 그림 · 명령 글 · 나가면 앞 칸 · 여정 기록) ·
 //   한 일대로 성장 (방어 · 의학 · 은신 · 지휘 · 많이 한 일부터 · 상한 A · 수련은 보인 하나만) · [방어X] 글 · 아이콘 · 정산 글 · 닿은 명령 (진짜 명령 길))
@@ -7,7 +8,7 @@ const { chromium } = require('playwright');
  const TALKEND = "{ let g=0; while (TK && g++<200){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[0][1]); continue; } talkAdv(); } }";
  const wait = (p, ms) => p.waitForTimeout(ms);
  const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
- await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1200);
+ await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1200); await p.evaluate(()=>{ delete FIX8[2]; });   /* v8.8.7 옛 2층 (무작위 지대) 흐름으로 시험 */
 
  // 0) [방어X] · 성장 갈래 (설계에 바로)
  const g0 = await p.evaluate(()=>{ const d=traitDesc('방어A');

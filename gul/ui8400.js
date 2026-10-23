@@ -1,3 +1,4 @@
+// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.4.0 UI 시험 — ui8400.js v1.4 (v1.4: 다친 동료 · 흩어짐 시험도 세르파가 보는 빈 바닥에 적을 세움 (슬라임을 다 뽑은 뒤 합치기 바로 앞에 다시 세움) (v8.7.3 끝난 맵에서 동료가 기준을 따라 움직여 자리가 달라짐 — 오른쪽 몇 칸이 바위일 수 있음) · v1.3: 우박 시험은 세르파가 보이는 빈 바닥에 적을 세움 · v1.2: 다친 동료 시험도 적이 없으면 새로 세움 · v1.1: 흩어짐 시험은 세르파가 멀쩡하고 적이 보이는 자리에서 · v1.0: 세르파 슬라임 조직: 동료 세르파 (체력 90) 가 슬라임을 뽑음 · 상한 · 넷 → 합침 (상황에 맞는 것 · 레이더) · 합치는 중 셋 아래로 줄면 흩어짐 · 레이더 (벽 너머 앎) · 수정 우박 · 세르파가 쓰러지면 작은 슬라임만 녹음 · 동료가 모두 쓰러지면 아군 소환도 녹음 → 전멸 (넘어감 아님) · 보스 세르파 (적 쪽 같은 규칙 · 맵이 끝나지 않음) · 다음 판에 소환이 남지 않음 · 정산 셈 · 휴대폰 칩)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -10,7 +11,7 @@ const { chromium } = require('playwright');
   window.__run = (W, sec) => { const t1 = W.t + sec; while (W.t < t1 && !W.over){ stepWorld(W, 0.05); sp8Tick(W); } };`;
  for (const vw of [{width:1280,height:860,nm:'pc'},{width:412,height:880,nm:'mo',mob:true}]){
  const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); await ctx.addInitScript('window.__askAuto=true'); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.dismiss());
- await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
+ await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000); await p.evaluate(()=>{ delete FIX8[2]; });   /* v8.8.7 옛 2층 (무작위 지대) 흐름으로 시험 */
  console.log('== '+vw.nm); await p.evaluate(LIB);
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); }); await p.waitForTimeout(300);
  await p.evaluate((TE)=>{ eval(TE); if (typeof ldEnd==='function') ldEnd(true); }, TALKEND);

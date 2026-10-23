@@ -1,3 +1,4 @@
+// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.7.9 UI 시험 — ui8790.js v1.2 (v1.2: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기) · 기술 칸 1 신나는 공중 투창 · 2 신나는 포탄 · 기술 칸 그림 · 겨눌 곳 글 · v1.1: 전멸 확인은 한 번 버티는 몸 (근성 · 동료 펄의 각펄) 까지 거듭 쳐서 · 기술 칸 시험은 시작 뒤 자리를 다시 놓음 (훈련장 시작 배치가 자리를 옮김) · v1.0: 펄 · 각펄 (명세 E) — 설계 · 도감 프로필 · 정체성 · 글 · 아이콘 판 8 × 12 · 뽑기에 없음 · 대화 그림 ·
 //   고대 폐허의 만남: 우왓 깜짝이얏! · 지나감 · 귀엽게 → 죄 하나씩 → 각펄 (음영 줄) → 머뭇거림 → 10 … 0 초읽기 → 천천히 걸어옴 → 싸움 (물러날 길 없음 · 출구 닫힘 · 만남의 각펄) ·
 //   이기면 무릎 → 데려간다 (설계 그대로의 펄) · 숨을 끊는다 (펄의 창 → 가방) · 지면 무조건 전멸 (모래시계도 듣지 않음 · 펄의 글) · 초읽기 중 떠난다 ·
@@ -8,7 +9,7 @@ const { chromium } = require('playwright');
  const TALKEND = "{ let g=0; while (TK && g++<200){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[L.ask.length>1?1:0][1]); continue; } talkAdv(); } }";
  const wait = (p, ms) => p.waitForTimeout(ms);
  const ctx=await b.newContext({viewport:{width:1280,height:860}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
- await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1200);
+ await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1200); await p.evaluate(()=>{ delete FIX8[2]; });   /* v8.8.7 옛 2층 (무작위 지대) 흐름으로 시험 */
  const PE_ACT=['신나는 공중 투창','신나는 포탄','철 깃털','꼬깃꼬깃 착지','신나는 횡베기','돌려차기','움츠리기'], GK_ACT=['찍고 빼기','정면 투창','도약 찍기','스텝 찌르기','3연속 베기','솟는 거대 창','공중 투창 (창비)','반경 10m 횡베기','정면 처형','창 대포','날아 투창','초대형 치명타','처형 내리꽂기'];
  // 0) 설계 · 프로필 · 정체성 · 글 · 아이콘 · 대화 그림
  const v0 = await p.evaluate(({PE_ACT,GK_ACT})=>{ const same=(a,b)=>(a||[]).join(',')===b.join(','), d=designByKey('펄'), P=PROFILE['C-215']||{}, I=identityOf('C-215')||{}, g=unitFromRef('C-215',0,{}), G=FOE8['각펄']||{}, gu=foe8('각펄',6);

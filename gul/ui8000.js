@@ -1,3 +1,4 @@
+// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.0.0 UI 시험 — ui8000.js v1.8 (v1.8: 들어온 자리 단추는 ▲ 올라가는 계단 (v8.8.0 — 예전 ↩ 물러나기) · v1.7: 히든 층 (과거의 칼데라 6%) 끔 — 나오면 층 줄이 2 · 다른 지대 맵이라 시험이 어긋남 · 맵 그림은 불러올 때까지 기다림 (최대 6초) · 들어서는 곳의 바닥이 동료 수보다 적으면 곁 칸 (3칸) 까지 들어선 것으로 봄 (예전 sewer2 처럼 가끔 어긋나던 것) · v1.6: 세르파는 보스판에서 오지 않음 — 보스판 앞뒤를 비교 (앞선 수정동굴 맵에서 만남으로 이미 동료가 된 판이 있음) · v1.5: v8.7.4 5층 보스는 붉은암석 · 세르파는 만남 영입 동료 · v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -7,7 +8,7 @@ const { chromium } = require('playwright');
  const wait = (p, ms) => p.waitForTimeout(ms);
  for (const vw of [{width:1280,height:860,nm:'pc'},{width:412,height:880,nm:'mo',mob:true}]){
  const ctx=await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true');
- await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1000);
+ await p.goto(url); await wait(p,400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await wait(p,1000); await p.evaluate(()=>{ delete FIX8[2]; });   /* v8.8.7 옛 2층 (무작위 지대) 흐름으로 시험 */
  console.log('== '+vw.nm);
  // 1. 프롤로그 끝 → 2층
  const a = await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); return { btn: !!document.getElementById('campRun8'), n: party.length }; });
