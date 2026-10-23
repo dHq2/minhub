@@ -1,4 +1,4 @@
-// v8.8.2 엔진 시험 — eng8820.js v1.0 (옐로: 연속 도약 · 돌진 (사족보행 · 5칸 넘게 달리면 확정 밀침) · 달라붙기 난도질 · 양동이 뿌리기 (저주:맥아 장판) · 날붙이 손 절삭력 · 단단한 손)
+// v8.8.2 엔진 시험 — eng8820.js v1.0 (옐로: 연속 도약 (v8.8.4 스택제로 시험 바뀜) · 돌진 (사족보행 · 5칸 넘게 달리면 확정 밀침) · 달라붙기 난도질 · 양동이 뿌리기 (저주:맥아 장판) · 날붙이 손 절삭력 · 단단한 손)
 const {E,R,U,DES,GOB,INJ,NOR,KAR,REB,KIT,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec)=>{ const end=W.t+sec; while(W.t<end&&!W.over) E.stepWorld(W,1/30); };
@@ -33,7 +33,7 @@ console.log('D. 태세로 받아도 밀림 (넘어지진 않음)');
   console.log('    검방패기사 (태세로 받음)',res.length,'판 · 밀침',res.map(q=>q.len).join(' ')); ok(res.length>=2&&res.every(q=>q.len>=1.2),'방패로 받아도 1칸 넘게 밀림'); }
 console.log('E. 달라붙기 난도질');
 { const W=WD2([FOE({x:11.2,y:10})]); const f=W.units[1], y=W.units[0]; f.order={k:'hold'}; y.order={k:'spec',s:'yclaw',b:1}; const h0=f.hp; run(W,0.6); const held=f.heldBy===0; run(W,2.2); const hits=W.log.filter(l=>l.k==='hit'&&l.a===0&&/할큄/.test(l.tag||'')).length;
-  console.log('    붙잡음',held,'· 할큄',hits,'번 · 피해',Math.round(h0-f.hp)); ok(held,'붙잡힘 (heldBy)'); ok(hits>=7,'여러 번 마구 할큄'); ok(W.log.some(l=>l.k==='clawEnd'),'마무리'); ok(f.heldBy==null,'끝나면 풀려남'); }
+  console.log('    붙잡음',held,'· 할큄',hits,'번 · 피해',Math.round(h0-f.hp)); ok(held,'붙잡힘 (heldBy)'); ok(hits>=3&&hits<=5,'여러 번 할큄 (3 ~ 5타: '+hits+')'); ok(W.log.some(l=>l.k==='clawEnd'),'마무리'); ok(f.heldBy==null,'끝나면 풀려남'); }
 console.log('F. 양동이 뿌리기');
 { const W=WD2([FOE({x:13,y:10})]); const f=W.units[1], y=W.units[0]; y.order={k:'spec',s:'ybucket',b:1}; const l0=y.skill.left; run(W,1.2); const P=(W.pools||[]).find(p=>p.kind==='malt');
   ok(!!P,'맥아 장판 생김'); if(P){ console.log('    장판 반지름',P.r,'지속',(P.until-P.t0).toFixed(1),'초 · 약',Math.round(l0),'→',Math.round(y.skill.left)); ok(y.skill.left<l0,'양동이 약을 씀'); ok(f.maltT!=null&&f.maltT>W.t,'<저주:맥아> 걸림'); }
@@ -43,5 +43,5 @@ console.log('F. 양동이 뿌리기');
 { const W=WD2([FOE({x:13,y:10})]); const f=W.units[1], y=W.units[0]; y.order={k:'spec',s:'ybucket',b:1}; run(W,1.5); const sp0=E.spdNow?E.spdNow(W,f):null; ok(f.maltT>W.t,'장판 안 상대 느려짐 표지 (maltT)');
   const W2=WD2([FOE({x:30,y:10})]); W2.pools=[{kind:'malt',by:0,side:0,x:10,y:10,r:2,until:99,tickT:0,t0:0}]; const a1=W2.units[0]; run(W2,0.5); ok(a1.maltT==null||a1.maltT<=W2.t,'동료(옐로)는 상관없음'); }
 console.log('G. 연속 도약: 붙지 못한 상대에게 스스로 두 번 뜀');
-{ const W=WD2([FOE({x:13.2,y:10})]); const y=W.units[0]; y.target=W.units[1]; y.state='hunt'; run(W,1.5); const lp=W.log.filter(l=>l.k==='leap'&&l.a===0&&l.dir==='fwd'); console.log('    앞으로 도약',lp.length,'번'); ok(lp.length>=2,'연속 도약 (2번 이어서)'); }
+{ const W=WD2([FOE({x:13.2,y:10})]); const y=W.units[0]; y.target=W.units[1]; y.state='hunt'; run(W,1.5); const lp=W.log.filter(l=>l.k==='leap'&&l.a===0&&l.dir==='fwd'); console.log('    앞으로 도약',lp.length,'번'); const tot=lp.reduce((s,l)=>s+l.len,0); ok(lp.length>=1&&tot>=2.0,'연속 도약 (스택으로 멀리 뛰어듦 '+tot.toFixed(1)+'칸)'); }
 console.log(fails?'FAIL '+fails:'ALL OK'); process.exit(fails?1:0);

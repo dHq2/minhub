@@ -21,12 +21,12 @@ const vge=(s,m)=>{ const a=String(s||'').match(/(\d+)\.(\d+)\.(\d+)/), b=m.split
    __run(W, 0.6); try { draw(); } catch (e) { out.e.push('draw2 '+e.message); } out.pool = (W.pools||[]).filter(q => q.kind === 'malt').length; out.malt = W.units.filter(u => u.side === 1 && u.maltT > W.t).length; out.left = Math.round(y.skill.left);
    window.__shot1 = true; return out; });
  console.log('    ', JSON.stringify(r).slice(0, 500));
- ok(r.spec==='달라붙기 난도질,양동이 뿌리기','기술 칸 2개: '+r.spec); ok(r.canCharge&&r.rush&&r.leapN===2,'돌진 · 연속 도약'); ok(r.leapLabel==='연속 도약','도약 칸 이름 = 연속 도약 ('+r.leapLabel+')'); ok(r.s6==='달라붙기 난도질'&&r.s7==='양동이 뿌리기'&&r.ic6==='🐾'&&r.ic7==='🪣','특수 칸 이름 · 아이콘');
+ ok(r.spec==='달라붙기 난도질,양동이 뿌리기','기술 칸 2개: '+r.spec); ok(r.canCharge&&r.rush&&r.leapN===2,'돌진 · 연속 도약'); ok(/^연속 도약/.test(r.leapLabel),'도약 칸 이름 = 연속 도약 ('+r.leapLabel+')'); ok(r.s6==='달라붙기 난도질'&&r.s7==='양동이 뿌리기'&&r.ic6==='🐾'&&r.ic7==='🪣','특수 칸 이름 · 아이콘');
  ok(r.pourFx,'양동이 쏟기 그림 (fx pour)'); ok(r.pool===1,'맥아 장판 한 장'); ok(r.malt>=1,'<저주:맥아> 걸린 적 '+r.malt); ok(r.left<500,'양동이 약이 줄어듦 ('+r.left+')'); ok(!r.e.length,'그림 오류 없음 '+JSON.stringify(r.e));
  await p.screenshot({ path: 'ui8820_bucket.png', clip: { x: 0, y: 60, width: 1000, height: 700 } }).catch(()=>{});
  // 3) 달라붙기 난도질 · 돌진
  const c = await p.evaluate(()=>{ const out={ e: [] }; const W=__mkF([['옐로',0,10,10],['검기사',1,11.2,10]]); const y=W.units[0], f=W.units[1]; f.order={k:'hold'}; f.canCharge=false; f.canLeap=false; y.order={k:'spec',s:'yclaw',b:1}; paused=false;
-   __run(W,0.7); try { draw(); } catch (e) { out.e.push('draw3 '+e.message); } out.held = f.heldBy === 0; out.clawFx = (W.fx||[]).filter(q=>q.k==='claw').length;
+   out.clawFx = 0; for (let i=0;i<18;i++){ stepWorld(W,0.05); out.clawFx += (W.fx||[]).filter(q=>q.k==='claw'&&q.t0>=W.t-0.06).length; } try { draw(); } catch (e) { out.e.push('draw3 '+e.message); } out.held = f.heldBy === 0;
    __run(W,2.3); out.hits = W.log.filter(l=>l.k==='hit'&&l.a===0&&/할큄/.test(l.tag||'')).length; out.end = W.log.some(l=>l.k==='clawEnd');
    const lines = logLines(W, 0).join('\n'); out.logGrab = /달라붙기 난도질/.test(lines); out.logEnd = /난도질 끝/.test(lines);
    try { const nn = W.log.filter(l => ['tearGrab','clawEnd'].includes(l.k)).map(l => narrOf(W, l)); out.narr = nn.map(q => q && q.s).filter(Boolean).length; } catch (e) { out.e.push('narr '+e.message); }
@@ -35,6 +35,6 @@ const vge=(s,m)=>{ const a=String(s||'').match(/(\d+)\.(\d+)\.(\d+)/), b=m.split
    out.rush = W2.log.filter(l=>l.k==='rushHit').length; const l2 = logLines(W2, 0).join('\n'); out.logRush = /키하핫/.test(l2); const rl = W2.log.find(l=>l.k==='rushHit'); try { out.narrRush = rl ? narrOf(W2, rl).s : null; } catch (e) { out.e.push('narr2 '+e.message); } out.say = (W2.fx||[]).some(q=>q.k==='say'&&q.s==='키하핫!!');
    return out; });
  console.log('    ', JSON.stringify(c).slice(0, 600));
- ok(c.held,'붙잡힘'); ok(c.clawFx>=1,'할큄 자국 그림 (fx claw)'); ok(c.hits>=7,'여러 번 할큄 '+c.hits); ok(c.end,'마무리'); ok(c.logGrab&&c.logEnd,'기록 글'); ok(c.narr>=1,'서술 글'); ok(c.rush===1||c.rush===0,'돌진 시도 ('+c.rush+')'); ok(!c.e.length,'그림 · 서술 오류 없음 '+JSON.stringify(c.e));
+ ok(c.held,'붙잡힘'); ok(c.clawFx>=1,'할큄 자국 그림 (fx claw)'); ok(c.hits>=3&&c.hits<=5,'3 ~ 5타 할큄 '+c.hits); ok(c.end,'마무리'); ok(c.logGrab&&c.logEnd,'기록 글'); ok(c.narr>=1,'서술 글'); ok(c.rush===1||c.rush===0,'돌진 시도 ('+c.rush+')'); ok(!c.e.length,'그림 · 서술 오류 없음 '+JSON.stringify(c.e));
  ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,3)));
  console.log(fails ? 'FAILS ' + fails : 'ALL UI8820 OK'); await b.close(); process.exit(fails ? 1 : 0); })();

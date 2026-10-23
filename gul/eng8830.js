@@ -13,7 +13,7 @@ console.log('A. 아군 · 적군 모두 맞고 옐로는 안 맞음');
   ok(al.malt||al.maltDmg>0,'아군도 맥아에 걸림'); ok(f.maltDmg>0,'적도 걸림'); ok(!y.malt&&!(y.maltDmg>0),'뿌린 옐로는 안 걸림'); ok(al.maltDmg>3&&f.maltDmg>3,'초당 피해가 들어감 (아군 '+al.maltDmg.toFixed(1)+' · 적 '+f.maltDmg.toFixed(1)+')');
   ok(nums>=2,'떠오르는 숫자 (-N) '+nums+'번'); ok(W.log.some(l=>l.k==='maltOn'&&l.ff===true),'아군이 걸리면 기록에 같은 편 장판 표시 (ff)'); }
 console.log('B. 초당 피해 = 5 (갑옷과 상관없음) · 부상이 쌓임');
-{ const W=WD([mk(YEL,0,10,10),FOE(13.3,10.1,{gear:{몸:{name:'판금',mat:'판금',tier:3}}})]); const y=W.units[0], f=W.units[1]; y.order={k:'spec',s:'ybucket',b:1}; run(W,0.9); const t0=W.t, h0=f.hp, m0=f.maltDmg||0; run(W,2);
+{ const W=WD([mk(YEL,0,10,10),ALLY(13.3,10.1,{gear:{몸:{name:'판금',mat:'판금',tier:3}}}),FOE(45,10)]); const y=W.units[0], f=W.units[1]; f.order={k:'hold'}; y.spdMul=0; y.canCharge=false; y.canLeap=false; y.order={k:'spec',s:'ybucket',x:13.3,y:10.1}; run(W,0.9); const t0=W.t, h0=f.hp, m0=f.maltDmg||0; run(W,2);
   const rate=((m0?f.maltDmg-m0:f.maltDmg))/(W.t-t0); console.log('    맥아 피해 초당',rate.toFixed(1),' hp 변화',(h0-f.hp).toFixed(1)); ok(rate>=4&&rate<=6,'초당 5 안팎'); ok((h0-f.hp)>=8,'판금을 입어도 살이 녹음 (hp 줄어듦)');
   run(W,5); const ws=(f.inj||[]).filter(w=>w.k==='malt').length; console.log('    부상',ws,'개:',(f.wounds||[]).join(' / ')); ok(ws>=3,'머문 만큼 부상이 쌓임 ('+ws+'단계)'); ok(W.log.filter(l=>l.k==='wound'&&l.w==='malt').length===ws,'부상 기록 (로그)'); }
 console.log('C. 나간 뒤 잠깐 더 · 그 뒤 멈춤 · 죽으면 맥아 부식');

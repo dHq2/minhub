@@ -1270,7 +1270,9 @@ function holdFire(W, u, t, jav){
 }
 /* ---------- v5.1 [도약] · [돌진] ---------- */
 // v7.19 2연속 도약 (leapN 2 — 옐로): 남은 횟수가 있으면 chain 초 뒤 또 뜀, 다 쓰면 대기 × chainCd
-function leapCdNext(W, u, R){ const n = u.leapN || 1; if (n <= 1) return R.cd || 1.1; u.leapQ = (u.leapQ == null ? n : u.leapQ) - 1; if (u.leapQ > 0) return R.chain || 0.3; u.leapQ = n; return (R.cd || 1.1) * (R.chainCd || 1.6); }
+// v8.8.4 도약 스택 (leapN 2 — 옐로 [연속 도약]): 스택이 쿨 (stackCd) 마다 하나씩 차오름 · 짧게 뛰면 스택 하나 (dist 칸) · 멀리 뛰면 둘 다 (dist × 2 칸) — 스택이 남아 있으면 chain 초 뒤 다시 뛸 수 있고, 다 쓰면 다음 스택이 찰 때까지
+function leapCdNext(W, u, R){ const n = u.leapN || 1; if (n <= 1) return R.cd || 1.1; const need = u.leapNeed || 1; u.leapNeed = 0; const cur = u.stk == null ? n : u.stk; u.stk = Math.max(0, cur - need); if (u.stkT == null || cur >= n) u.stkT = W.t + (R.stackCd || 2.2); return u.stk > 0 ? (R.chain || 0.3) : Math.max(0.05, u.stkT - W.t); }
+function stepLeapStk(W, u){ const n = u.leapN || 1; if (n <= 1) return; if (u.stk == null){ u.stk = n; return; } if (u.stk >= n){ u.stkT = null; return; } if (u.stkT != null && W.t >= u.stkT){ u.stk++; u.stkT = u.stk < n ? u.stkT + ((W.rules.leap || {}).stackCd || 2.2) : null; if (u.leapCd > W.t) u.leapCd = Math.min(u.leapCd, W.t); } }
 // 도약: 뒤로 dist 칸을 time 초에 (상대를 본 채). 바위에 막히면 거기까지
 function startLeap(W, u, t){
   if (u.lie) return false;   // v7.11 엎드린 채 스스로 뛰지 않음 (명령이면 먼저 일어남)
@@ -1287,9 +1289,10 @@ function leapTo(W, u, x, y, dir, t, why){
   if (u.lie || W.t < (u.hobbleT || -9)) return false;   /* v7.23.2 이동 제약: 도약 못 함 */   // v7.11 엎드린 채 스스로 뛰지 않음 (명령이면 먼저 일어남)
   const R = W.rules.leap || {}, D = R.dist || 1.7, dx = x - u.x, dy = y - u.y, l = Math.hypot(dx, dy);
   if (l < 0.2 || u.crawl || u.kb) return false;
-  const k = Math.min(1, D / l); let tx = u.x + dx * k, ty = u.y + dy * k;
+  const stk = u.leapN >= 2 ? Math.max(1, u.stk == null ? u.leapN : u.stk) : 1, k = Math.min(1, D * stk / l); let tx = u.x + dx * k, ty = u.y + dy * k;   /* v8.8.4 스택 만큼 멀리 */
   for (let s = 0; s < 6 && (boxRock(W, tx, ty, u.r * 0.9) || !fatClear(W.map, u.x, u.y, tx, ty, u.r * 0.8)); s++){ tx = u.x + (tx - u.x) * 0.75; ty = u.y + (ty - u.y) * 0.75; }
   const len = Math.hypot(tx - u.x, ty - u.y); if (boxRock(W, tx, ty, u.r * 0.9) || len < 0.3) return false;
+  u.leapNeed = u.leapN >= 2 ? Math.min(stk, Math.max(1, Math.ceil(len / D - 0.02))) : 1;   /* v8.8.4 가까우면 스택 하나 · 멀리 찍으면 둘 다 */
   u.act = { k: 'leap', phase: 'run', t0: W.t, end: W.t + (R.time || 0.3) * Math.max(0.5, len / D), fx: u.x, fy: u.y, tx, ty, b: t ? t.i : null, dir };
   u.leapCd = W.t + leapCdNext(W, u, R) * (cbHas(u, 'gob') ? (W.rules.combo || {}).leap || 0.85 : 1); stop(u); u.fg = t && dir !== 'fwd' ? Math.atan2(t.y - u.y, t.x - u.x) : Math.atan2(ty - u.y, tx - u.x);
   L(W, { k: 'leap', a: u.i, b: t ? t.i : null, dir, why: why || '', x: +tx.toFixed(2), y: +ty.toFixed(2), len: +len.toFixed(2), vis: u.side === 0 || !!u.seenBy });
@@ -4377,25 +4380,30 @@ function stepSpins(W, dt){
   W.spins = W.spins.filter(S => !S.done);
 }
 /* ---------- v8.8.2 옐로: 달라붙기 난도질 · 양동이 뿌리기 (저주:맥아 장판) · 연속 도약 · 돌진 (키하핫) ---------- */
-const YD = { yclaw: { rng: 1.3, wind: 0.3, rec: 0.5, hold: 2, cd: 14, tick: 0.2, mul: 0.26, fin: 2.5, brk: 0.2 }, ybucket: { rng: 4, r: 1.6, wind: 0.5, rec: 0.4, cd: 10, tick: 0.5, cost: 120, min: 60, tMin: 3, tMax: 10, slow: 0.55, melt: 0.3, dps: 5, linger: 2, stage: 2.5 } };
+const YD = { yclaw: { rng: 1.3, wind: 0.3, rec: 0.5, cd: 14, tick: 0.4, nMin: 3, nMax: 5, mul: 0.7, fin: 1.6, brk: 0.2, rBase: 0.5 }, ybucket: { rng: 4, r: 1.6, wind: 0.5, rec: 0.4, cd: 10, tick: 0.5, cost: 120, min: 60, tMin: 3, tMax: 10, slow: 0.55, melt: 0.3, dps: 5, linger: 2, stage: 2.5 } };
 const SPY = (W, k) => ({ ...YD[k], ...SPR(W, k) });
-// 달라붙기 난도질: 붙잡기 (잡아찢기와 같은 틀 — 맞으면 놓침) 동안 tick 초마다 날붙이로 마구 할큄 (막을 수 없음)
+// 달라붙기 난도질: 붙잡기 (잡아찢기와 같은 틀 — 맞으면 놓침) 동안 tick 초마다 날붙이로 할큄 (막을 수 없음) — 3 ~ 5타. 상대는 저항 게이지 (A.res 0 → 1) 를 채우며 버티고, 가득 차면 풀려남 (마지막 타)
+function clawInit(W, u, A, t, S){
+  const f = Math.max(0.6, Math.min(1.8, Math.sqrt((t.mass || 70) / Math.max(20, u.mass || 52)))) * (t.might || 1) * (t.strMul || 1), r = (S.rBase || 0.5) * f, tk = S.tick || 0.4;
+  A.n = Math.max(S.nMin || 3, Math.min(S.nMax || 5, Math.round(1 / Math.max(0.1, r) / tk))); A.t0r = W.t; A.hn = 0; A.res = 0; A.rate = +r.toFixed(2); A.end = W.t + A.n * tk + 0.12;
+}
 function clawStep(W, u, dt){
-  const A = u.act, S = SPY(W, 'yclaw'), t = W.units[A.held];
+  const A = u.act, S = SPY(W, 'yclaw'), t = W.units[A.held], tk = S.tick || 0.4;
   if (!t || !t.alive){ if (t) t.heldBy = null; u.act = { k: 'spec', s: 'yclaw', b: A.b, phase: 'rec', t0: W.t, end: W.t + (S.rec || 0.5) }; return; }
+  A.res = Math.min(1, (W.t - A.t0r) / Math.max(0.1, A.n * tk));
   let n = 0;
-  while (W.t >= A.tick && n < 3){ A.tick += S.tick || 0.2; n++;
+  while (A.hn < A.n && W.t >= A.tick && n < 3){ A.tick += tk; A.hn++; n++;
     if (t.side === u.side) continue;
-    strike(W, u, t, t, 1, false, { mul: (S.mul || 0.26) * (0.85 + 0.3 * W.rand()), tag: '달라붙어 할큄', wk: '날붙이', grab: true }); A.hits = (A.hits || 0) + 1;
-    if (W.fxOn) W.fx.push({ k: 'claw', x: t.x, y: t.y, ang: W.rand() * 6.283, t0: W.t });
+    const last = A.hn === A.n;
+    strike(W, u, t, t, 1, false, { mul: (S.mul || 0.7) * (0.9 + 0.2 * W.rand()) * (last ? S.fin || 1.6 : 1), tag: last ? '달라붙어 할큄 — 마지막 일격' : '달라붙어 할큄', wk: '날붙이', grab: true });
+    if (W.fxOn) W.fx.push({ k: 'claw', x: t.x, y: t.y, ang: W.rand() * 6.283, t0: W.t, big: last });
     if (!t.alive) break; }
 }
 function clawDone(W, u, A){
   const S = SPY(W, 'yclaw'), t = W.units[A.held]; u.act = { k: 'spec', s: 'yclaw', b: A.b, phase: 'rec', t0: W.t, end: W.t + (S.rec || 0.5) }; u.atkT = W.t;
   if (!t) return; t.heldBy = null; if (!t.alive) return;
-  strike(W, u, t, t, 1, false, { mul: (S.mul || 0.26) * (S.fin || 2.5), tag: '달라붙어 할큄 — 마무리', wk: '날붙이', grab: true });
-  if (t.alive && t.side !== u.side){ const d = dist(u, t) || 1; fling(W, u, t, 1.2, (t.x - u.x) / d, (t.y - u.y) / d, { how: '옐로가 박차고 떨어짐' }); }
-  L(W, { k: 'clawEnd', a: u.i, b: t.i, n: A.hits || 0, vis: u.side === 0 || t.side === 0 || !!u.seenBy || !!t.seenBy });
+  if (t.side !== u.side){ const d = dist(u, t) || 1; fling(W, u, t, 1.2, (t.x - u.x) / d, (t.y - u.y) / d, { how: '옐로가 박차고 떨어짐' }); }
+  L(W, { k: 'clawEnd', a: u.i, b: t.i, n: A.hn || 0, vis: u.side === 0 || t.side === 0 || !!u.seenBy || !!t.seenBy });
 }
 // 저주:맥아 장판 (양동이 뿌리기): 안에 선 모두 (아군도 · 뿌린 옐로만 빼고) 에게 <저주:맥아> — 걸음 느려짐 · 받는 피해 + · 살이 녹음 (초당 dps — 화상과 같은 틀의 상태 u.malt · 장판을 나간 뒤 linger 초 더) · 부상이 한 단계씩 쌓임 (woundAdd)
 const MALT_W = [['맥아에 살이 무름', ['받는 피해 +30%', '걸음 ×0.55']], ['살갗이 녹아내림', ['살이 녹는 중']], ['살이 문드러짐', ['살이 녹는 중']], ['뼈가 드러남', ['살이 녹는 중']]];
@@ -4436,9 +4444,9 @@ function rushPush(W, u, hit, A, nx, ny, held){
 function yHop(W, u, t, g){
   if (!(u.leapN >= 2) || !u.canLeap || isFar(u) || u.crawl || u.lie || u.kb || u.act || W.t < u.leapCd || W.t < (u.hobbleT || -9) || W.t < (u.yhopChk || -9)) return false;
   u.yhopChk = W.t + 0.15;
-  const LP = W.rules.leap || {}, D = LP.dist || 1.7, mid = u.leapQ != null && u.leapQ > 0 && u.leapQ < u.leapN;
-  if (g <= u.rng + 0.25 || g > D * 2 + 1.2) return false;
-  if (!mid && g > 3.4 && u.canCharge && W.t >= u.chargeCd) return false;
+  const LP = W.rules.leap || {}, D = LP.dist || 1.7, stk = u.stk == null ? u.leapN : u.stk;   /* v8.8.4 스택 */
+  if (stk < 1 || g <= u.rng + 0.25 || g > D * stk + 1.2) return false;
+  if (g > 3.4 && u.canCharge && W.t >= u.chargeCd) return false;
   if (u.line || cmdHold(W, u)) return false;
   const p = leapIn(u, t); return leapTo(W, u, p.x, p.y, 'fwd', t, '연속 도약 — 뛰어들어 붙음');
 }
@@ -4464,8 +4472,8 @@ function resolveSpec(W, u){
     if (gap(u, t) > (S.rng || 0.6) + 0.3){ L(W, { k: 'miss', a: u.i, b: t.i, why: '손이 닿지 않음 (' + gap(u, t).toFixed(1) + '칸)', spec: k }); return; }
     if ((SIZE_RANK[sizeOf(t)] || 0) >= SIZE_RANK['초대형'] || (t.act && t.act.k === 'leap')){ L(W, { k: 'miss', a: u.i, b: t.i, why: (t.act && t.act.k === 'leap') ? '공중 — 쥐지 못함' : '너무 커서 쥐지 못함', spec: k }); return; }
     if (t.side !== u.side && evadeMelee(W, t, u)) return;
-    A.phase = 'run'; A.end = W.t + (S.hold || 2.2); A.held = t.i; A.dmg = 0; A.tick = W.t + (S.tick || 0.2); t.heldBy = u.i; interrupt(W, t, '붙잡혀 준비가 끊김'); stop(t); t.burst = null; flailDrop(W, t, '붙잡힘');
-    L(W, { k: 'tearGrab', s: k, a: u.i, b: t.i, sec: S.hold || 2.2, vis: u.side === 0 || t.side === 0 || !!u.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '붙잡힘!', c: 'd', t0: W.t }); return;
+    A.phase = 'run'; A.end = W.t + (S.hold || 2.2); A.held = t.i; A.dmg = 0; A.tick = W.t + (S.tick || 0.4); if (k === 'yclaw') clawInit(W, u, A, t, S); t.heldBy = u.i; interrupt(W, t, '붙잡혀 준비가 끊김'); stop(t); t.burst = null; flailDrop(W, t, '붙잡힘');
+    L(W, { k: 'tearGrab', s: k, a: u.i, b: t.i, sec: k === 'yclaw' ? +(A.end - W.t).toFixed(1) : S.hold || 2.2, n: A.n || null, vis: u.side === 0 || t.side === 0 || !!u.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '붙잡힘!', c: 'd', t0: W.t }); return;
   }
   if (k === 'ybucket'){   // v8.8.2 양동이 뿌리기: 닿는 곳에 장판 — 지속은 양동이에 남은 약에 따라
     const Sy = SPY(W, 'ybucket'); let px = A.px != null ? A.px : t ? t.x : u.x + Math.cos(u.face || 0) * 2, py = A.py != null ? A.py : t ? t.y : u.y + Math.sin(u.face || 0) * 2;
@@ -8248,6 +8256,7 @@ function stepWorld(W, dt){
   // [불사]: 쓰러진 쪽은 때가 되면 일어나고, 살아 있으면 조금씩 재생
   // v5.5.1 [불사]: 쓰러진 채로도 재생 → 피가 move 에 이르면 일어남. 아군이 하나도 없으면 진짜 죽음
   stepFlora(W, dt);   // v7.19.2 역장 · 뿌리 벽 · 열매
+  for (const u of W.units) if (u.alive && u.leapN >= 2) stepLeapStk(W, u);   /* v8.8.4 도약 스택 충전 */
   for (const u of W.units) if (u.alive && u.skill && u.skill.regen > 0 && u.skill.left < u.skill.pool) u.skill.left = Math.min(u.skill.pool, u.skill.left + u.skill.regen * dt);   // v7.19 저절로 차는 약 (옐로의 양동이)
   if (W.t >= (W.rpNext || 0)){ const RD = W.rules.radar || {}; W.rpNext = W.t + (RD.gap || 3);   /* v8.4.0 [레이더] 맥박 */
     for (const u of W.units) if (u.alive && u.radar && !u.gone){ u.rpLast = W.t; for (const e of W.units) if (e.alive && !e.gone && e.side !== u.side && Math.hypot(e.x - u.x, e.y - u.y) <= (RD.r || 14)) (e.rpT || (e.rpT = [0, 0]))[u.side] = W.t + (RD.dur || 1.2); } }
