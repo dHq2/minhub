@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
    const p=await (await b.newContext({viewport:{width:vw.width,height:vw.height},...(vw.mob?{isMobile:true,hasTouch:true,deviceScaleFactor:2}:{})})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
    await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
    const d = await p.evaluate(()=>{ const x=designByKey('간두'); return { cls:x.cls, tr:x.traits, act:x.active||[], alt:x.alt }; });
-   if (!vw.mob){ console.log('    설계',JSON.stringify(d)); ok(d.cls==='기동'&&d.tr.includes('반사신경')&&d.tr.includes('전투센스')&&!d.act.includes('영거리 사격')&&d.alt&&d.alt.name==='샷건'&&d.alt.ammo===100,'간두 설계: 기동 · [반사신경] · [전투센스] · 기술 없이 두 번째 총 샷건 (특수탄 100)'); }
+   if (!vw.mob){ console.log('    설계',JSON.stringify(d)); ok(d.cls==='기동'&&d.tr.includes('반사신경')&&d.tr.includes('전투센스')&&!d.act.includes('영거리 사격')&&d.alt&&d.alt.name==='샷건'&&d.alt.ammo===50,'간두 설계: 기동 · [반사신경] · [전투센스] · 기술 없이 두 번째 총 샷건 (특수탄 50)'); }
    await p.evaluate(()=>{ S.units=S.units.filter(u=>u.side===1||u.hero); const g=fromDesign(designByKey('간두'),0); g.x=10.5; g.y=15.5; S.units.push(g); S.draft.done=true; rebuildMap(); changed(); start(); paused=true; });
    const r = await p.evaluate(mob=>{ const g=world.units.find(u=>u.name==='간두'); sel=new Set([g.i]); hud();
      const btn = mob ? document.querySelector('#dActs [data-dk="alt"]') : document.querySelector('#skbar [data-cmd="alt"]'); const t0 = btn ? btn.textContent : '';

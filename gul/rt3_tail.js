@@ -1595,7 +1595,7 @@ function resolveAct(W, u){
       if (dp < 1 && W.rand() >= dp){ u.miss++; L(W, { k: 'miss', a: u.i, b: t.i, why: `어둠 속에서 헛침 (명중률 ${Math.round(dp * 100)}%)`, dark: true, nv: !!u.nv, torch: !!u.torch && !u.torchOff, lit: !!litAt(W, t.x, t.y), d: +gap(u, t).toFixed(2) }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '빗나감', c: 'm', t0: W.t }); }
       else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const wr = ratWallHit(W, u, t), so = strike(W, u, wr || t, t, dp); if (u.cz) czHit(W, u, t, so); if (u.cleave) prnCleave(W, u, wr || t); }   /* v8.7.8 방벽 쥐가 대신 맞음 · 대검 베기 */ }   // v6.7 회피 (몸을 비틀어 흘림)
     }
-    A.phase = 'rec'; A.end = W.t + u.rec * supAtkK(W, u) * (far ? (A.sm === 'rapid' ? ((R.sshot || {}).rapid || {}).rec || 0.7 : 1) : wpnSpd(W, u)) + (A.whiff ? (R.step || {}).recAdd || 0.3 : 0); A.t1 = W.t;   // v7.17 헛치면 더 늦게 거둠   // v6.7 단검은 빨리 거둠   // v7.0 속사는 빨리 다음 화살
+    A.phase = 'rec'; A.end = W.t + u.rec * supAtkK(W, u) * (far ? (A.sm === 'rapid' ? ((R.sshot || {}).rapid || {}).rec || 0.7 : 1) * ((((R.weapons || {})[u.weapon]) || {}).recK || 1) : wpnSpd(W, u)) + (A.whiff ? (R.step || {}).recAdd || 0.3 : 0); A.t1 = W.t;   // v7.17 헛치면 더 늦게 거둠   // v6.7 단검은 빨리 거둠   // v7.0 속사는 빨리 다음 화살
     if (u.burst) A.end = Math.max(A.end, u.burst.next + (u.burst.left - 1) * u.burst.gap + 0.05);   // 점사가 끝날 때까지
     return;
   }
@@ -1788,7 +1788,7 @@ function canTake(W, u, it){
 // v7.1 조준 시간 (들고 쏘기까지) = 사격 등급 (S · A 는 들자마자 쏨 · 베테랑 ×vet) + 무기의 draw (활은 시위) × 익숙함 (제 무기 ×1 · 솜씨는 있으나 다른 종류 × skill · 낯선 무기 × wind). 쏜 뒤 회복 (연사 간격) 은 그대로
 const famMul = (W, u) => { const A = W.rules.alien || {}; return u.alien ? A.wind || 1.4 : u.fam2 ? A.skill || 1.15 : 1; };
 function aimT(W, u){ const G = W.rules.aimG; if (!G) return u.wind; const m = u.mk0 || 0, g = m >= 0.69 ? G.S : m >= 0.54 ? G.A : m >= 0.39 ? G.B : m >= 0.24 ? G.C : G.none, wp = (W.rules.weapons || {})[u.weapon] || {};
-  return (g * (u.vet ? G.vet || 1 : 1) + (wp.draw || 0)) * famMul(W, u); }
+  return (g * (u.vet ? G.vet || 1 : 1) * (wp.aimK != null ? wp.aimK : 1) + (wp.draw || 0)) * famMul(W, u); }   /* v8.8.5 샷건은 조준이 거의 필요 없음 (aimK) */
 const wpnProf = (W, u, wp) => { const k0 = (((W.rules.weapons || {})[(u.kit0 && u.kit0.weapon) || ''] || {}).kind); return k0 === wp.kind || (u.mk0 || 0) > 0; };
 // 무기를 바꿔 듦: 사거리 · 장창 · 투창 · 탄약 · 방어 자세 (대검) 를 그 무기에 맞춤
 function setWeapon(W, u, name, it){
