@@ -1,6 +1,7 @@
-// v8.7.6 인벤토리 v2 UI 시험 — ui8760.js v1.3 (v1.3: 버전은 8.7.6 이상 (8.7.7 부터 이 시험도 계속 돎) · v1.2: 나가기 전 전리품 창이 뜬 채 출구 단추를 한 번 더 누르면 창을 닫고 서둘러 나감 · 끼우기 단추 손가락 크기 · v1.1: 상세 칸을 누르고 있는 동안은 다시 그리지 않음 · 고정한 물건은 아군을 새로 고르면 풀림 · v1.0: 버전 · 상세 칸 정보 / 장비 · 가방 탭 (칸 넷 · 가방 칸 · 빈 칸 · 설명 · 지금 것과 비교 · 입기 · 두 번 누르면 바로 · 벗기 · 건네기 · 마시기 · 내려놓기 · 곁의 땅 줍기 · 방패 벗기 · I 키 · 적은 보기만) · 카리우스 무기 칸 (J10) · 판 위 이름표 (무구 — 누르면 누가 주울지 · 인물이 서 있으면 인물 먼저 · 안개 속은 없음) ·
+// v8.7.6 인벤토리 v2 UI 시험 — ui8760.js v1.4 (v1.4: 버전 견줌을 숫자로 (8.8.0 · 그 뒤도 '이상') · v1.3: 버전은 8.7.6 이상 (8.7.7 부터 이 시험도 계속 돎) · v1.2: 나가기 전 전리품 창이 뜬 채 출구 단추를 한 번 더 누르면 창을 닫고 서둘러 나감 · 끼우기 단추 손가락 크기 · v1.1: 상세 칸을 누르고 있는 동안은 다시 그리지 않음 · 고정한 물건은 아군을 새로 고르면 풀림 · v1.0: 버전 · 상세 칸 정보 / 장비 · 가방 탭 (칸 넷 · 가방 칸 · 빈 칸 · 설명 · 지금 것과 비교 · 입기 · 두 번 누르면 바로 · 벗기 · 건네기 · 마시기 · 내려놓기 · 곁의 땅 줍기 · 방패 벗기 · I 키 · 적은 보기만) · 카리우스 무기 칸 (J10) · 판 위 이름표 (무구 — 누르면 누가 주울지 · 인물이 서 있으면 인물 먼저 · 안개 속은 없음) ·
 //   여정 맵: 장면 인물 이름표 누르면 말 걸기 · 전리품 비교 · 끼우기 · 맵 위에선 판의 몸에 바로 (땅의 것은 사라짐) · 나가기 전 전리품 (J11) · 정산에 갑옷 · 방패 · 페흐토 (D1) · 기록 · 휴대폰)
 const { chromium } = require('playwright');
+const vge=(s,m)=>{ const a=String(s||'').match(/(\d+)\.(\d+)\.(\d+)/), b=m.split('.').map(Number); if(!a) return false; for(let i=0;i<3;i++){ const x=+a[i+1]; if(x!==b[i]) return x>b[i]; } return true; };   /* 버전 x.y.z 이상 (숫자로 견줌) */
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const dir = process.argv[2]||'build', url='file://'+process.cwd()+'/'+dir+'/wrapped.html';
  const TALKEND = "while (TK){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[L.ask.length>1?1:0][1]); continue; } talkAdv(); }";
@@ -13,7 +14,7 @@ const { chromium } = require('playwright');
    window.__ord = u => u.order || (u.ordPend && u.ordPend.o) || null; });
  // 1) 버전 · 수치표 · 단축키
  const d = await p.evaluate(()=>({ ver: document.querySelector('span.ver').textContent, mig: RULES_MIG, gt: rules.inv && rules.inv.gearT, give: rules.inv && rules.inv.giveR, kb: KB_GROUPS.flat(2).join(' ') }));
- ok(/v8\.7\.([6-9]|\d\d)/.test(d.ver)&&/^8\.7\.([6-9]|\d\d)$/.test(d.mig),'버전 8.7.6 이상 · 수치표 이전 8.7.6 이상 ('+d.mig+')');
+ ok(vge(d.ver,'8.7.6')&&vge(d.mig,'8.7.6'),'버전 8.7.6 이상 · 수치표 이전 8.7.6 이상 ('+d.mig+')');
  ok(d.gt&&d.gt.armor===4&&d.gt.helm===1.5&&d.give>0,'수치표 inv: 갑옷 4초 · 투구 1.5초 · 건네기 거리');
  ok(/장비 · 가방 탭/.test(d.kb),'단축키 표에 I (장비 · 가방 탭)');
  // 2) 상세 칸 탭 · 장비 탭 모양

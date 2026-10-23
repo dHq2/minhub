@@ -1,6 +1,7 @@
-// v8.7.7 UI 시험 — ui8770.js v1.4 (v1.4: 버전은 8.7.7 이상 (다음 판에서도 이 시험이 계속 돎) · v1.3: 모래시계 + 삼신 — 첫째 판을 이긴 뒤 둘째 판에서 쓰러짐 · 모래시계 — 삼신 심판 둘째 판에서 되돌아가도 그 칸을 다시 고를 수 있음 · 새로 고침해도 설계에 얹은 유물 몫이 남지 않음 · v1.2: 촛대를 볼 땐 깃털을 잠시 끔 (깃털이 일어난 동료를 먼저 감쌈 — 그것도 맞음) · 만남 야전 천막은 지금 등급의 다음 등급 · v1.1: 노먼을 동료에 더함 (1F 뽑기에 따라 없을 수 있음) · 촛대는 지닌 이 (앞에서 레베카로 바꿈) 를 쓰러뜨림 · 깃털은 다른 동료 · 3층 시험 앞의 대화를 닫음 · v1.0: 유물 34 · 뽑기 풀 · 지닌 이 (유물 칸 · 고르기 · 조건) · 판의 몸에 걸리는 효과 · 촛대 (중상) · 깃털 · 모래시계 · 삼신 (판마다 · 눈물 한 번) · 보스 유물 · 열쇠 ·
+// v8.7.7 UI 시험 — ui8770.js v1.5 (v1.5: 버전 견줌을 숫자로 (8.8.0 · 그 뒤도 '이상') · v1.4: 버전은 8.7.7 이상 (다음 판에서도 이 시험이 계속 돎) · v1.3: 모래시계 + 삼신 — 첫째 판을 이긴 뒤 둘째 판에서 쓰러짐 · 모래시계 — 삼신 심판 둘째 판에서 되돌아가도 그 칸을 다시 고를 수 있음 · 새로 고침해도 설계에 얹은 유물 몫이 남지 않음 · v1.2: 촛대를 볼 땐 깃털을 잠시 끔 (깃털이 일어난 동료를 먼저 감쌈 — 그것도 맞음) · 만남 야전 천막은 지금 등급의 다음 등급 · v1.1: 노먼을 동료에 더함 (1F 뽑기에 따라 없을 수 있음) · 촛대는 지닌 이 (앞에서 레베카로 바꿈) 를 쓰러뜨림 · 깃털은 다른 동료 · 3층 시험 앞의 대화를 닫음 · v1.0: 유물 34 · 뽑기 풀 · 지닌 이 (유물 칸 · 고르기 · 조건) · 판의 몸에 걸리는 효과 · 촛대 (중상) · 깃털 · 모래시계 · 삼신 (판마다 · 눈물 한 번) · 보스 유물 · 열쇠 ·
 //   힘으로 주는 유물 · 3층 비늘조각 · 야전병원 (천막마다 한 번 · 의학 등급 · 가윤) · 노먼 전직 (닥터 · 선봉장) · 탕아 3성 옮김 · 로켈 · 휴대폰 손가락 크기)
 const { chromium } = require('playwright');
+const vge=(s,m)=>{ const a=String(s||'').match(/(\d+)\.(\d+)\.(\d+)/), b=m.split('.').map(Number); if(!a) return false; for(let i=0;i<3;i++){ const x=+a[i+1]; if(x!==b[i]) return x>b[i]; } return true; };   /* 버전 x.y.z 이상 (숫자로 견줌) */
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const dir = process.argv[2]||'build', url='file://'+process.cwd()+'/'+dir+'/wrapped.html';
  const TALKEND = "{ let g=0; while (TK && g++<200){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[L.ask.length>1?1:0][1]); continue; } talkAdv(); } }";
@@ -12,7 +13,7 @@ const { chromium } = require('playwright');
    out: ['gamyu','scale','nurse','violin','odtear','tear','rabis','moran','mokel','flame'].filter(k=>RELIC8_POOL.includes(k)), icU: new Set(ic).size, full: K.every(k=>RELIC8[k].name&&RELIC8[k].ic&&RELIC8[k].d), hold: K.filter(k=>RELIC8[k].hold).sort().join(','), rokel: RELIC8.mokel.name, scaleN: RELIC8.scale.name,
    must: ['여신의 눈물','러버덕의 리볼버','오딜의 눈물','사르딜 락의 비늘조각','간호사장의 모자','루미의 바이올린','왐의 머리촛대','가뮤의 대검','로켈의 갑옷'].filter(nm=>!K.some(k=>RELIC8[k].name===nm)) }; });
  console.log('    ', JSON.stringify(v0));
- ok(/v8\.7\.([7-9]|\d\d)/.test(v0.ver)&&/^8\.7\.([7-9]|\d\d)$/.test(v0.mig)&&v0.pav===160,'버전 8.7.7 이상 · 수치표 이전 8.7.7 이상 ('+v0.mig+') · 대방패 방호 160');
+ ok(vge(v0.ver,'8.7.7')&&vge(v0.mig,'8.7.7')&&v0.pav===160,'버전 8.7.7 이상 · 수치표 이전 8.7.7 이상 ('+v0.mig+') · 대방패 방호 160');
  ok(v0.n===34&&v0.full&&v0.icU===34,'유물 34 (이름 · 그림 · 설명 · 그림은 서로 다름)');
  ok(!v0.must.length,'꼭 있어야 할 것 아홉 모두 (여신의 눈물 · 러버덕 · 오딜의 눈물 · 비늘조각 · 모자 · 바이올린 · 촛대 · 가뮤의 대검 · 로켈의 갑옷)');
  ok(v0.pool===24&&v0.poolOk&&v0.dupPool&&!v0.out.length,'뽑기 풀 24 — 가뮤의 대검 · 비늘조각 · 모자 · 바이올린 · 오딜의 눈물 · 삼신 · 청염 · 눈물은 빠짐 (J9)');

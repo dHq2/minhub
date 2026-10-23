@@ -1,4 +1,4 @@
-// v8.0.0 UI 시험 — ui8000.js v1.7 (v1.7: 히든 층 (과거의 칼데라 6%) 끔 — 나오면 층 줄이 2 · 다른 지대 맵이라 시험이 어긋남 · 맵 그림은 불러올 때까지 기다림 (최대 6초) · 들어서는 곳의 바닥이 동료 수보다 적으면 곁 칸 (3칸) 까지 들어선 것으로 봄 (예전 sewer2 처럼 가끔 어긋나던 것) · v1.6: 세르파는 보스판에서 오지 않음 — 보스판 앞뒤를 비교 (앞선 수정동굴 맵에서 만남으로 이미 동료가 된 판이 있음) · v1.5: v8.7.4 5층 보스는 붉은암석 · 세르파는 만남 영입 동료 · v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
+// v8.0.0 UI 시험 — ui8000.js v1.8 (v1.8: 들어온 자리 단추는 ▲ 올라가는 계단 (v8.8.0 — 예전 ↩ 물러나기) · v1.7: 히든 층 (과거의 칼데라 6%) 끔 — 나오면 층 줄이 2 · 다른 지대 맵이라 시험이 어긋남 · 맵 그림은 불러올 때까지 기다림 (최대 6초) · 들어서는 곳의 바닥이 동료 수보다 적으면 곁 칸 (3칸) 까지 들어선 것으로 봄 (예전 sewer2 처럼 가끔 어긋나던 것) · v1.6: 세르파는 보스판에서 오지 않음 — 보스판 앞뒤를 비교 (앞선 수정동굴 맵에서 만남으로 이미 동료가 된 판이 있음) · v1.5: v8.7.4 5층 보스는 붉은암석 · 세르파는 만남 영입 동료 · v1.4: v8.7.3 출구는 누가 보기 전엔 모름 — 끝난 판 단추는 🔎 출구 찾기 → 찾으면 ▼ 출구로 · v1.3: v8.7.0 여정 구조 v2 — 층 흐름 8줄 (첫 줄 MS 하나 · 맨 위 층 보스) · 싸움판은 맵을 잘라 만든 구획 (S.art8 = '~…' · base 가 그 지대의 맵) · 모든 맵 돌리기도 구획으로 · v1.2: v1.2: 판 위의 확인 창 — 자동 시험은 __askAuto 로 바로 '예' · v1.1: 결승 전용 링 맵은 모든 맵 돌리기에서 뺌 · v1.0: 30층 여정: 프롤로그 끝 → ▼ 2층으로 · 층 카드 · 뽑기 · 갈림길 지도 · 싸움 칸 (그림 맵 · 들어온 자리 · 출구 · 물러남) · 보상 · 쉼터 · 상인 · 보물 · 글 만남 · 인카운터 칸 · 보스 (세르파 영입) · 고정 (여신) · 정산 10 · 20 (MC) · 결말 · 다시 열기 · 모든 그림 맵 · 휴대폰)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -26,18 +26,18 @@ const { chromium } = require('playwright');
  const bt = await p.evaluate(()=>{ const W=world, M=MAPS8[S.art8], al=W.units.filter(u=>u.side===0), fo=W.units.filter(u=>u.side===1);
    let nIn=0; for (let y=M.in[1];y<=M.in[3];y++) for (let x=M.in[0];x<=M.in[2];x++) if (M.rows[y]&&M.rows[y][x]&&M.rows[y][x]!=='#') nIn++; const mg=nIn<al.length?3:1;   /* 들어서는 곳이 동료 수보다 좁으면 (바닥 8 ~ 9칸인 맵이 스물 남짓) 곁 칸에 이어 섬 */
    const inIn=al.every(u=>u.x>=M.in[0]-mg+1&&u.x<=M.in[2]+mg&&u.y>=M.in[1]-mg+1&&u.y<=M.in[3]+mg), onFloor=W.units.every(u=>M.rows[Math.floor(u.y)][Math.floor(u.x)]!=='#');
-   const bar=document.getElementById('campBar').innerHTML; return { lock: W.exitLock, art: S.art8, base: M.base, inTheme: THEME8[F8[2].theme].maps.includes(M.base), W: S.W, H: S.H, nx: M.NX, al: al.length, fo: fo.length, inIn, onFloor, st: W.stairs, en: W.entry, r8: W.r8, bar: /2층 · 싸움/.test(bar), up: /data-cexit="up"/.test(bar), down: /물러나기/.test(bar) }; });
+   const bar=document.getElementById('campBar').innerHTML; return { lock: W.exitLock, art: S.art8, base: M.base, inTheme: THEME8[F8[2].theme].maps.includes(M.base), W: S.W, H: S.H, nx: M.NX, al: al.length, fo: fo.length, inIn, onFloor, st: W.stairs, en: W.entry, r8: W.r8, bar: /2층 · 싸움/.test(bar), up: /data-cexit="up"/.test(bar), down: /data-cexit="down"[^>]*>▲ 올라가는 계단/.test(bar) }; });
  console.log('    싸움', JSON.stringify(bt));
  ok(bt.base&&bt.inTheme&&bt.art.startsWith('~')&&bt.W===bt.nx&&bt.fo>=3,'2층 싸움 = 그 층 지대 맵 ('+bt.base+') 의 구획 · 적 '+bt.fo);
  ok(bt.inIn&&bt.onFloor,'아군은 들어선 곳 안 · 모두 막힌 칸 밖');
  ok(bt.st&&bt.en&&bt.r8&&bt.r8.t==='fight','출구 계단 · 들어온 자리 · 여정 표시');
- ok(bt.bar&&(bt.lock?!bt.up:bt.up)&&bt.down,'캠페인 띠: 2층 · 싸움 · 끝나기 전엔 출구 단추 없음 (지나가기 · 칼데라는 처음부터 있음) · ↩ 물러나기');
+ ok(bt.bar&&(bt.lock?!bt.up:bt.up)&&bt.down,'캠페인 띠: 2층 · 싸움 · 끝나기 전엔 출구 단추 없음 (지나가기 · 칼데라는 처음부터 있음) · ▲ 올라가는 계단');
  await p.evaluate(TALKEND); await wait(p,200);
  await p.waitForFunction(()=>{ const a=ART8IMG[MAPS8[S.art8].src]; return a&&a.naturalWidth>0; },null,{timeout:6000}).catch(()=>{});   // 큰 맵 그림은 불러오는 데 시간이 걸림
  const img = await p.evaluate(()=>{ const a=ART8IMG[MAPS8[S.art8].src]; return a&&a.naturalWidth; }); ok(img>500,'그림 맵 그림을 불러옴 ('+img+'px)');
  // 물러남: 들어온 자리로 가서 나감
  const rt = await p.evaluate(()=>{ const W=world, u=W.units.find(x=>x.side===0&&x.alive); const o={ k:'exit', dir:'down', x:u.x }; u.order=o; exitStep(W,u,o,1/60); const mood=u.mood; const far=!u.gone; u.x=W.entry.x+0.3; u.y=W.entry.y; exitStep(W,u,o,1/60); return { mood, far, gone: u.gone }; });
- ok(rt.gone==='down','↩ 물러나기 — 들어온 자리로 가서 나감 ('+JSON.stringify(rt)+')');
+ ok(rt.gone==='down','▲ 올라가는 계단 — 들어온 자리로 가서 나감 ('+JSON.stringify(rt)+')');
  // 이기고 출구로
  const win = await p.evaluate(()=>{ const W=world; for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } W.cleared=true; campBarRender(true); const hid=!!(W.exitHide&&!W.exitSeen), bar0=document.getElementById('campBar').innerHTML; W.exitSeen=true; campBarRender(true); const bar=document.getElementById('campBar').innerHTML; const g0=R8S().gold;
    for (const u of W.units) if (u.side===0&&u.alive) leaveMap(W,u,'up'); checkEnd(W); W.over=true; W.result=W.result||'exit'; mode='plan'; onOver(); return { find: !hid || /출구 찾기/.test(bar0), exit: /▼ 출구로/.test(bar), bn: !document.getElementById('banner').hidden, txt: document.getElementById('banner').textContent, g0 }; });

@@ -6,6 +6,7 @@ function marksOf(rules, traits){ for (const t of traits || []) if (/^사격[SABC
 // v6.7 [급소X]: 치명 (약점) 확률 + (없으면 0) · [발화X]: 화상 등급 배율 (없으면 0)
 function vitOf(rules, traits){ for (const t of traits || []) if (/^급소[SABC]$/.test(t)){ const g = rules.grades && rules.grades['급소']; return (g && g[t.slice(-1)]) || { S: 0.25, A: 0.18, B: 0.12, C: 0.06 }[t.slice(-1)]; } return 0; }
 function fireOf(rules, traits){ for (const t of traits || []) if (/^발화[SABCDE]$/.test(t)){ const g = (rules.burn || {}).g || {}; return g[t.slice(-1)] || 1; } return 0; }
+const gdFloor = (rules, p) => (p.traits || []).some(t => /^방어[SABC]$/.test(t)) ? gradeMul(rules, p.traits, '방어') : 0;   /* v8.8.0 [방어X] 막는 재능의 바닥 (없으면 0) */
 function gradeMul(rules, traits, key){ for (const t of traits || []) if (t.length === key.length + 1 && t.startsWith(key)){ const g = rules.grades && rules.grades[key]; return (g && g[t.slice(-1)]) || 1; } return 1; }
 // v5.0 역할 (포지션): 따로 정하지 않으면 장비 · 직업으로 — 방패 = 전선, 포위 사냥 · 기동 = 미드필더, 원거리 무기 = 사수, 치유 · 지휘 = 지원, 근접 = 공격수
 const ROLE_NAMES = ['전선', '미드필더', '공격수', '사수', '지원'];
@@ -158,8 +159,8 @@ function unitInit(W, p, i){ const rules = W.rules;
       mass: massOf(p, rules, hh, gearOf(p, rules), s.hp), sizeCls: p.sizeCls || null, leapN: +p.leapN || 1, tremor: (p.curses || []).includes('낙인:적뢰') && p.trinket !== '성해포', regenHp: p.trinket === '성해포' ? 1.5 : (+p.regenHp || 0), radar: tr.includes('레이더'), marble: tr.includes('대리석 피부'), noOrg: tr.includes('무장기'),   /* v8.7.3 */   /* v8.3.0 낙인 · 성해포 */ ccRes: Math.max(0, Math.min(0.95, +p.ccRes || 0)), chgBias: +p.chgBias || 0, noChg: !!p.noChg || p.cls === '치유', noChg0: !!p.noChg || p.cls === '치유',   /* v8.7.2 치유는 타고나길 돌격 안 함 */ heroic: tr.includes('영웅'), massEst: !(p.weight > 0) && !(p.height > 0) && !tr.includes('거구'), bodyShield: tr.includes('거구'), canSweep: tr.includes('거구'), canBash: sh, bashCd: -9, dodgeCd: -9, dodgedT: -9, proneT: -9, stunT: -9, crawl: false, legLoss: null, kb: null, sq: null, swing: null,
       canGuard: sh || !!wp.guard || (p.traits || []).includes('반사신경') || parryArcW(rules, p.weapon) > 0, parry: !sh && !wp.guard && parryArcW(rules, p.weapon) > 0, regen: tr.includes('재생') ? ((rules.regen || {}).hp != null ? rules.regen.hp : 0.04) : +p.regenK || 0, guardMode: 'auto', raised: false, raiseAt: 1e9, reflex: (p.traits || []).includes('반사신경'), post: 100, role: roleOf(p, rules),   // v5.7 막기는 선택
       // v5.0 방어 재능 (역할): 방패 · 대검을 든 쪽만 — 막는 폭 ×(0.6 + 0.4g), 막을 때 받는 피해 1 − (1 − blockMul)·g, 자세 깎임 ×(2 − g). [반사신경] 은 몸에 밴 것이라 최소 0.9
-      gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0) : 1, vet,
-      gArc: Math.round(Math.max(sh ? rules.frontArc : 0, wp.guard ? rules.guardArcW || 40 : 0, (p.traits || []).includes('반사신경') ? (wp.guard || sh ? rules.guardArcRW || 55 : rules.guardArcR || 20) : 0) * ((sh || wp.guard) ? 0.6 + 0.4 * Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0) : 1)),
+      gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1, vet,   /* v8.8.0 [방어X] */
+      gArc: Math.round(Math.max(sh ? rules.frontArc : 0, wp.guard ? rules.guardArcW || 40 : 0, (p.traits || []).includes('반사신경') ? (wp.guard || sh ? rules.guardArcRW || 55 : rules.guardArcR || 20) : 0) * ((sh || wp.guard) ? 0.6 + 0.4 * Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1)),   /* v8.8.0 [방어X] 막는 폭도 */
       gCost: Math.min((p.traits || []).includes('반사신경') ? rules.reflexCost || 0.6 : 1, vet ? vT.post : 1), brokenT: -9, blockT: -9, bold: boldOf(p), wounds: [], atkMul: 1, spdMul: 1, pinT: -9,
       mood: '', moodB: null, moodT: 0, moodLogT: -9, waitT: 0, vx: 0, vy: 0, heard: null, spot: null,
       // v4.1: 감각 (sense[적 번호] = 대략 / 정확한 자리 · 때) · 전술 (pack = 포위 사냥, stalk = 어둠 속 우회)
@@ -874,7 +875,7 @@ function tryMove(W, u, nx, ny){
     const tx = ox + Math.sign(cx - ox) * Math.min(s, Math.abs(cx - ox)), ty = oy + Math.sign(cy - oy) * Math.min(s, Math.abs(cy - oy));
     if (ok(tx, ty)){ u.x = tx; u.y = ty; }
   }
-  u.moved += Math.hypot(u.x - ox, u.y - oy);
+  { const dm = Math.hypot(u.x - ox, u.y - oy); u.moved += dm; if (u.stealth && (u.stealthE || 0) >= (STL(W).min || 0)) u.sneakMv = (u.sneakMv || 0) + dm; }   /* v8.8.0 숨은 채 걸은 거리 (들키면 은신이 풀림 · 숨을 수 없는 몸은 셈하지 않음 — 은신 성장) */
 }
 // v7.26.1 좁은 곳: 지금 칸이나 다음 길목 칸이 양옆 (또는 위아래) 이 벽 — 한 칸 문 · 통로
 const tightCell = (m, cx, cy) => (rock(m, cx - 0.5, cy + 0.5) && rock(m, cx + 1.5, cy + 0.5)) || (rock(m, cx + 0.5, cy - 0.5) && rock(m, cx + 0.5, cy + 1.5));
@@ -6070,6 +6071,7 @@ function cmdTick(W){
     u.ordPend = Q.length ? Q.reduce((a, b) => b.t0 >= a.t0 ? b : a) : null; if (!Q.length) u.ordQ = null;
     if (!P) continue;
     if (P.ok){ u.ordT0 = P.t0; u.order = P.o; u.ordLive = P.o; u.missT = null; preempt(W, u); if (!P.o) lieFree(W, u); if (P.o && P.o.k === 'attack' && P.o.b != null) W.cmdFocus0 = { b: P.o.b, t: W.t };
+      for (const ci of new Set([P.c, P.m, P.m2].filter(x => x != null && x !== u.i))){ const cu = W.units[ci]; if (cu && cu.side === 0) cu.cmdOk = (cu.cmdOk || 0) + 1; }   /* v8.8.0 내가 내리거나 전한 명령이 닿음 (지휘 성장) */
       L(W, { k: 'cmdRecv', a: u.i, c: P.c, dep: P.o && P.o.dep != null ? 1 : null, via: P.via, m: P.m != null ? P.m : null, m2: P.m2 != null ? P.m2 : null, sec: +(W.t - P.t0).toFixed(1), p: +P.p.toFixed(2), o: orderTxt(P.o, u), vis: true }); if (W.fxOn) W.fx.push({ k: 'ack', a: u.i, o: P.o, t0: W.t }); }
     else { u.missT = W.t; u.missO = P.o; if (W.t - (u.missLogT == null ? -9 : u.missLogT) > 3){ u.missLogT = W.t; L(W, { k: 'cmdMiss', side: 0, a: u.i, c: P.c, via: P.via, why: P.why, p: +P.p.toFixed(2), o: orderTxt(P.o, u), vis: true }); }   /* v7.26.1 같은 줄이 쌓이지 않게 */ if (W.fxOn) W.fx.push({ k: 'num', x: u.x, y: u.y - 0.35, s: P.via === 'none' ? '명령이 안 닿음' : '못 들음', c: 'm', t0: W.t }); }
   }
