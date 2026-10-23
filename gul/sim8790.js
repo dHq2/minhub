@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
  for (let i=0;i<N;i++){
   const r = await p.evaluate(([FL,PN,party0])=>{ const R=R8S(); R.f=FL; r8FloorDef(FL); const keep=R.party.slice(); if (PN>0) R.party=keep.filter(q=>party0.slice(0,PN).includes(q.name)); if (window.__EXCL) R.party=R.party.filter(q=>!window.__EXCL.includes(q.name)); for (const q of R.party) q.hpNow=null; R.relics=[];
     const n = { id:'x'+Math.random(), r:1, i:0, t:'x', x:.5, next:[] }; R.fm.rows[1].push(n); R.at=n.id; world=null;
-    r8XFight('x_pearl','ancient',{ pearl8:true }); while (TK){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[0][1]); continue; } talkAdv(); }
+    r8XFight('x_pearl','pearl1',{ pearl8:true }); while (TK){ if (TK.timer) talkDone(); const L=TK.lines[TK.i]; if (L&&L.ask){ talkPick(L.ask[0][1]); continue; } talkAdv(); }
     const W=world; if (!W) return { err: 'no world' }; paused=true; const al0=W.units.filter(u=>u.side===0&&!u.summon).length, M=W.units.find(u=>u.side===1&&u.h2);
     let last={x:M.x,y:M.y,t:0}, maxStill=0, still=0, gakT=null;
     while (!W.over && W.t<300 && !W.cleared){ stepWorld(W,0.05); if (W.r8 && run8On()) r8Tick(W); jrTickAll(W); sp8Tick(W);

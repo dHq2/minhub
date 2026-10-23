@@ -1,3 +1,4 @@
+// (v8.9.2: 각펄 싸움 맵이 고대 폐허 → 각펄 전용맵 pearl1 · ui8790 v1.3)
 // (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.7.9 UI 시험 — ui8790.js v1.2 (v1.2: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기) · 기술 칸 1 신나는 공중 투창 · 2 신나는 포탄 · 기술 칸 그림 · 겨눌 곳 글 · v1.1: 전멸 확인은 한 번 버티는 몸 (근성 · 동료 펄의 각펄) 까지 거듭 쳐서 · 기술 칸 시험은 시작 뒤 자리를 다시 놓음 (훈련장 시작 배치가 자리를 옮김) · v1.0: 펄 · 각펄 (명세 E) — 설계 · 도감 프로필 · 정체성 · 글 · 아이콘 판 8 × 12 · 뽑기에 없음 · 대화 그림 ·
 //   고대 폐허의 만남: 우왓 깜짝이얏! · 지나감 · 귀엽게 → 죄 하나씩 → 각펄 (음영 줄) → 머뭇거림 → 10 … 0 초읽기 → 천천히 걸어옴 → 싸움 (물러날 길 없음 · 출구 닫힘 · 만남의 각펄) ·
@@ -68,7 +69,7 @@ const { chromium } = require('playwright');
    const a=W.units.find(u=>u.side===0&&u.alive); a.order={k:'exit',dir:'down'}; for (let i=0;i<30;i++) stepWorld(W,1/30);
    return { w: !!W, pearl: W&&W.r8&&W.r8.pearl, nr: W&&W.noRetreat, lock: W&&W.exitLock, g: !!g, spare: g&&g.spare8, sense: g&&Object.keys(g.sense||{}).length, state: g&&g.state, h2: g&&g.h2&&g.h2.k, art: S.art8, src: (S.art8sec||{}).src, intro, down: /data-cexit="down"/.test(bar), gone: a.gone||'', mood: a.mood||'', node: R8S().at===__n2 }; }, TALKEND);
  console.log('    싸움', JSON.stringify(f2));
- ok(f2.w&&f2.pearl&&f2.g&&f2.spare&&f2.h2==='pearlgak'&&f2.src==='ancient'&&f2.state==='hunt'&&f2.sense>=3,'싸움 — 고대 폐허 맵 · 만남의 각펄 (쓰러지되 숨) · 처음부터 우리를 앎 (천천히 걸어옴)');
+ ok(f2.w&&f2.pearl&&f2.g&&f2.spare&&f2.h2==='pearlgak'&&f2.src==='pearl1'&&f2.state==='hunt'&&f2.sense>=3,'싸움 — 각펄 전용맵 (무너진 다리 · pearl1) · 만남의 각펄 (쓰러지되 숨) · 처음부터 우리를 앎 (천천히 걸어옴)');
  ok(f2.nr&&f2.lock&&!f2.down&&!f2.gone&&/지면 무조건 전멸/.test(f2.intro),'물러날 길 없음 — 물러나기 단추 없음 · 들어온 자리로 가는 명령도 듣지 않음 · 소개 "'+f2.intro.slice(0,40)+'…"');
  // 4) 그림 · 기록 · 서술 (각펄 싸움 판에서)
  const d1 = await p.evaluate(()=>{ const W=world, g=W.units.find(u=>u.name==='각펄'), a=W.units.find(u=>u.side===0&&u.alive); W.amb=1; computeLight(W); g.seenBy=1; cam.x=g.x; cam.y=g.y; cam.z=1; cam.follow=false;
