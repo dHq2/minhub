@@ -1,4 +1,4 @@
-// v9.1.0 엔진 시험 — eng9010.js v1.0 (전우조 · 대장-부하: 관계 API · 대장의 말은 바로 · 저절로 드는 편대는 없음 · 멀리 간 전우 곁으로 · 위급한 전우 구원 · 측면 협공 · 대장이 싸우는 적을 함께 봄)
+// v9.1.0 엔진 시험 — eng9010.js v1.1 (v1.1: v9.6.4 — 멀리 간 전우 곁 판정을 x 비교에서 거리로 · 전우조 · 대장-부하: 관계 API · 대장의 말은 바로 · 저절로 드는 편대는 없음 · 멀리 간 전우 곁으로 · 위급한 전우 구원 · 측면 협공 · 대장이 싸우는 적을 함께 봄)
 const {E,R,U,DES,GOB,INJ,NOR,REB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,fn)=>{ const n=Math.round(sec*30); for(let i=0;i<n&&!W.over;i++){ E.stepWorld(W,1/30); if(fn&&fn(W)) break; } };
@@ -30,7 +30,7 @@ console.log('C. 대장의 말은 바로 닿고 · 저절로 드는 편대는 없
 console.log('D. 명령으로 멀리 간 전우 곁으로 (붙어 다님)');
 { const trial=(mate)=>{ const W=mkW([mk(INJ,0,4,8,{hero:true}),mk(REB,0,6,8,mate?{cg:'m'}:{}),mk(GOB,0,6,10,mate?{cg:'m'}:{})],[mk(DES['창병'],1,29,2,{spdMul:0,hold:true})]); const [h,r,g]=W.units; E.stepWorld(W,1/30); g.order={k:'move',x:24,y:12}; r.state='follow'; let d0=null; run(W,12,()=>{ if(W.t>3.5&&d0==null) d0=Math.hypot(r.x-g.x,r.y-g.y); }); return { d: Math.hypot(r.x-g.x,r.y-g.y), rx: r.x, hx: h.x }; };
   const a=trial(true), b=trial(false); console.log('    전우: 간 전우와 '+a.d.toFixed(1)+'칸 · 레베카 x '+a.rx.toFixed(1)+' / 아닌 경우 '+b.d.toFixed(1)+'칸 · x '+b.rx.toFixed(1));
-  ok(a.rx>b.rx+3,'전우는 간 전우 쪽으로 따라감 (x '+a.rx.toFixed(1)+' > '+b.rx.toFixed(1)+')'); }
+  ok(a.d<=3.3&&a.d<b.d-1,'전우는 간 전우 곁 3칸 안 ('+a.d.toFixed(1)+'칸 · 전우가 아니면 '+b.d.toFixed(1)+'칸)'); }   /* v1.1 x 비교 → 거리 (v9.6.4 짝 붙어 다니기 — 전우가 아닌 쪽도 인주를 따라 오른쪽으로 감) */
 
 console.log('E. 위급한 전우 구원 (돌격 금지여도 구하러는 돌진)');
 { const W=mkW([mk(INJ,0,4,8,{hero:true}),mk(REB,0,14,8,{cg:'m'}),mk(GOB,0,12,8,{cg:'m',hp0:1})],[mk(SP,1,13,10,{spdMul:1}),mk(SP,1,24,8,{spdMul:0})]); const [h,r,g,f1,f2]=W.units;
