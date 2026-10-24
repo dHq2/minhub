@@ -1,4 +1,4 @@
-# mkgallery.py v1.1 (v1.1: 이름 정리 · ❓ 랜덤 인카운터 · 순서 옮기기 · 중간보스 · 메모 · 방 회랑 분리 폐기 · 민수가 짠 2층 순서) · v1.0 — 2층 맵 모음 (한눈에 보기 · 순서 짜 보기) 페이지 만들기: d5/maps8.json + d5/raw + d5/grid/*_ov.jpg → floor2_maps_v1.1.html
+# mkgallery.py v1.2 (v1.2: 지금 2층 = 열한 칸 (❓ 셋 포함 · v8.9.4) · v1.1: 이름 정리 · ❓ 랜덤 인카운터 · 순서 옮기기 · 중간보스 · 메모 · 방 회랑 분리 폐기 · 민수가 짠 2층 순서) · v1.0 — 2층 맵 모음 (한눈에 보기 · 순서 짜 보기) 페이지 만들기: d5/maps8.json + d5/raw + d5/grid/*_ov.jpg → floor2_maps_v1.1.html
 import json, base64, io
 from PIL import Image
 D = '/tmp/claude-0/-home-user-minhub/d21f98b4-0f7f-5135-a5ee-7d38f9fd42cc/scratchpad/'
@@ -13,7 +13,7 @@ ROLE = {'ruin2a': '입구', 'ruin2b': '계단', 'ruin2c': '이벤트룸', 'gfigh
 ALIAS = {'ruin2a': '무너진 유적 (입구)', 'ruin2b': '무너진 유적 (계단)', 'ruin2c': '무너진 유적 (회랑과 방)', 'fmap2': '전투맵2', 'fmap3': '전투맵3', 'gboss1': '지상보스룸1', 'gevent1': '지상이벤트룸1', 'gfight1': '지상전투룸1', 'gstair1': '지상계단1', 'gstair2': '지상계단2'}
 MID = ['gfight1', 'gevent1']
 MEMO = {'gboss1': '클리어하면 한가운데에서 빛이 나며 다음 층으로 이동할 수 있음 (기믹 메모 · 아직 안 만듦 · 나가는 칸은 한가운데로 잡아 둠)', 'ruin2c': '방과 회랑을 나누지 않고 한 장으로 씀', 'fmap2': '가장자리 밖으로 밀리면 떨어져 사망 (적 · 아군 같음) · 버티기 기믹은 나중', 'gevent1': '중간보스가 나올 수 있음 (메모)', 'gfight1': '중간보스가 나올 수 있음 (메모)'}
-LIVE = ['ruin2a', 'ruin2b', 'gfight1', 'fmap2', 'gstair1', 'gstair2', 'fmap3', 'gboss1']
+LIVE = ['ruin2a', 'ruin2b', '?', 'gfight1', 'fmap2', '?', 'gstair1', 'gstair2', 'fmap3', '?', 'gboss1']
 def b64(img, fmt, w, q):
     img = img.convert('RGB'); h = round(img.size[1] * w / img.size[0]); img = img.resize((w, h), Image.LANCZOS); b = io.BytesIO(); img.save(b, fmt, quality=q); return base64.b64encode(b.getvalue()).decode(), (w, h)
 def card(k):
@@ -89,7 +89,7 @@ dt{{color:var(--dim)}}dd{{margin:0;font-variant-numeric:tabular-nums;text-align:
 </div>
 <script>
 (function(){{
- var LIVE=['ruin2a','ruin2b','gfight1','fmap2','gstair1','gstair2','fmap3','gboss1'], seq=[], seqEl=document.getElementById('seq'), msg=document.getElementById('msg');
+ var LIVE=['ruin2a','ruin2b','?','gfight1','fmap2','?','gstair1','gstair2','fmap3','?','gboss1'], seq=[], seqEl=document.getElementById('seq'), msg=document.getElementById('msg');
  var names={{'?':'❓ 랜덤 인카운터'}}; document.querySelectorAll('.card').forEach(function(c){{names[c.dataset.id]=c.dataset.name;}});
  function say(t){{msg.textContent=t; setTimeout(function(){{if(msg.textContent===t)msg.textContent='';}},2600);}}
  function render(){{
@@ -113,7 +113,7 @@ dt{{color:var(--dim)}}dd{{margin:0;font-variant-numeric:tabular-nums;text-align:
  }});
  document.getElementById('q').onclick=function(){{seq.push('?');render();}};
  document.getElementById('clear').onclick=function(){{seq=[];render();}};
- document.getElementById('live').onclick=function(){{seq=LIVE.slice();render();say('지금 2층: 여덟 칸 (민수가 짠 순서)');}};
+ document.getElementById('live').onclick=function(){{seq=LIVE.slice();render();say('지금 2층: 열한 칸 (❓ 셋 · 민수가 짠 순서)');}};
  document.getElementById('copy').onclick=function(){{
   if(!seq.length){{say('담은 칸이 없습니다');return;}}
   var t=text();
@@ -123,5 +123,5 @@ dt{{color:var(--dim)}}dd{{margin:0;font-variant-numeric:tabular-nums;text-align:
  seq=LIVE.slice(); render();
 }})();
 </script>'''
-open(D + 'floor2_maps_v1.1.html', 'w', encoding='utf-8').write(html)
+open(D + 'floor2_maps_v1.2.html', 'w', encoding='utf-8').write(html)
 print('ok', len(html) // 1024, 'KB')
