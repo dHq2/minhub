@@ -1,4 +1,4 @@
-// v7.15 UI 시험 — ui715.js v1.1 (v1.1: 가는 중인 명령은 ordPend 에서 봄 · 편대 상자 · 0초에 편대 바꾸기 · 지시 점 · 팜 우회 · 돌진 화살표 · 도착해서 쓸 것 · 모바일)
+// v7.15 UI 시험 — ui715.js v1.2 (v1.2: v9.1.0 — 편대 상자 → 관계 상자 (대장 · 전우 고르기 · 부대장 ★) · v1.1: 가는 중인 명령은 ordPend 에서 봄 · 편대 상자 · 0초에 편대 바꾸기 · 지시 점 · 팜 우회 · 돌진 화살표 · 도착해서 쓸 것 · 모바일)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -7,17 +7,17 @@ const { chromium } = require('playwright');
  // 배치 탭 편대 상자
  await p.evaluate(()=>showTab('place')); await p.waitForTimeout(200);
  const rows = await p.evaluate(()=>[...document.querySelectorAll('#sqBoxP .sqrow')].map(r=>r.innerText.replace(/\s+/g,' '))); console.log('    편대 상자', JSON.stringify(rows));
- ok(rows.length===6 && rows.some(r=>/노먼.*★ 편대장/.test(r)),'배치 탭 편대 상자 (아군 여섯 · 노먼 ★)');
- const ki = await p.evaluate(()=>S.units.findIndex(u=>u.name==='친칠라')); await p.click(`#sqBoxP [data-sqk="${ki}"][data-sqv="A"]`); await p.waitForTimeout(150);
- const c1 = await p.evaluate(()=>S.units.find(u=>u.name==='친칠라').sq); await p.click(`#sqBoxP [data-sqk="${ki}"][data-sqv="B"]`); await p.waitForTimeout(150);
- const c2 = await p.evaluate(()=>S.units.find(u=>u.name==='친칠라').sq); ok(c1==='A'&&c2==='B','본대 ↔ 2편대 바꾸기');
+ ok(rows.length===6 && rows.some(r=>/노먼.*★ 부대장/.test(r)),'배치 탭 편대 상자 (아군 여섯 · 노먼 ★)');
+ const ki = await p.evaluate(()=>S.units.findIndex(u=>u.name==='친칠라')); await p.selectOption(`#sqBoxP select[data-relchief="${ki}"]`, ''); await p.waitForTimeout(150);
+ const c1 = await p.evaluate(()=>S.units.find(u=>u.name==='친칠라').chiefNm); await p.selectOption(`#sqBoxP select[data-relchief="${ki}"]`, '노먼'); await p.waitForTimeout(150);
+ const c2 = await p.evaluate(()=>S.units.find(u=>u.name==='친칠라').chiefNm); ok(c1===''&&c2==='노먼','인주 (기본) ↔ 노먼의 부하 바꾸기');
  // 싸움 전 (0초) 전투 탭에서 바꾸기
  await p.evaluate(()=>start()); await p.waitForTimeout(400);
  const vis0 = await p.evaluate(()=>!document.getElementById('sqBoxF').hidden); ok(vis0,'싸움 전 (0초) 전투 탭에 편대 상자');
- const ri = await p.evaluate(()=>S.units.findIndex(u=>u.name==='레베카')); await p.click(`#sqBoxF [data-sqk="${ri}"][data-sqv="B"]`); await p.waitForTimeout(150); await p.click(`#sqBoxF [data-sqlead="${ri}"]`); await p.waitForTimeout(200);
+ const ri = await p.evaluate(()=>S.units.findIndex(u=>u.name==='레베카')); await p.click(`#sqBoxF [data-sqlead="${ri}"]`); await p.waitForTimeout(200); for (const nm of ['노먼','청광묵']){ const ni = await p.evaluate((n)=>S.units.findIndex(u=>u.name===n), nm); await p.selectOption(`#sqBoxF select[data-relchief="${ni}"]`, '레베카'); await p.waitForTimeout(150); }
  const w0 = await p.evaluate(()=>{ const r=world.units.find(u=>u.name==='레베카'), n=world.units.find(u=>u.name==='노먼'), g=world.units.find(u=>u.name==='청광묵'); return { r: r.rank, n: n.rank, gL: g.sqLead===r.i, nL: n.sqLead===r.i }; });
  console.log('    0초 편대', JSON.stringify(w0)); ok(w0.r==='부대장'&&w0.n===''&&w0.gL&&w0.nL,'0초에 바꾸면 판에도 바로 (레베카 편대장 · 노먼 · 청광묵이 그 편대)');
- await p.evaluate(()=>{ for(const u of S.units){ if(u.name==='레베카'){ u.rank=''; u.sq='A'; } if(u.name==='노먼') u.rank='부대장'; } sqApply(); });
+ await p.evaluate(()=>{ for(const u of S.units){ if(u.name==='레베카'){ u.rank=''; u.sq='A'; } if(u.name==='노먼'){ u.rank='부대장'; u.chiefNm=''; } if(u.name==='청광묵') u.chiefNm='노먼'; } sqApply(); });
  // 판 진행 → 상자 숨음 · 지시 점
  await p.evaluate(()=>{ togglePlay(); }); await p.waitForTimeout(300);
  await p.waitForFunction(()=>world.t>0.5,{timeout:20000}).catch(()=>{});

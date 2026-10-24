@@ -1,4 +1,4 @@
-// v8.7.8 엔진 시험 (3) — eng8780c.js v1.3 (v1.3: 초돌진은 진형 뒤의 사수 먼저 · 맞붙어 있으면 빠지지 않음 · 혼자인 편은 기다리지 않음 · v1.2: 근성 과녁은 체력 99999 (혼자인 카리우스도 이제 돌진 — 마지막 7초 안에 과녁을 쓰러뜨려 싸움이 끝나던 것) · v1.1: 꿰뚫기는 기록에도 갑옷 없음 · 뒤의 적은 노인의 팔에 안 맞음 (그 뒤 딥 킥은 따로) · 딥 킥 과녁은 물러서지 못하게 · 불경자 기술은 대기가 풀린 뒤 · 철퇴 피해는 기록으로 · 치명은 막지 못하는 적에게 · v1.0: 어퐁 (명세 C6 · 도감 C-103 — 초돌진 · 앞차기 · 버클러) · 카리우스 (명세 C7 — 3D karius.js v1.3 · 2D 불경자 · 근성: 잡아뚫기 · 노인의 팔 · 라이트 훅 · 딥 킥 · 짓밟기 · 불경자 · 근성 · 벼락))
+// v8.7.8 엔진 시험 (3) — eng8780c.js v1.4 (v1.4: v9.0.0 — 혼자서도 돌진은 돌격을 허용한 몸으로 (아군 기본은 돌격 금지) · v1.3: 초돌진은 진형 뒤의 사수 먼저 · 맞붙어 있으면 빠지지 않음 · 혼자인 편은 기다리지 않음 · v1.2: 근성 과녁은 체력 99999 (혼자인 카리우스도 이제 돌진 — 마지막 7초 안에 과녁을 쓰러뜨려 싸움이 끝나던 것) · v1.1: 꿰뚫기는 기록에도 갑옷 없음 · 뒤의 적은 노인의 팔에 안 맞음 (그 뒤 딥 킥은 따로) · 딥 킥 과녁은 물러서지 못하게 · 불경자 기술은 대기가 풀린 뒤 · 철퇴 피해는 기록으로 · 치명은 막지 못하는 적에게 · v1.0: 어퐁 (명세 C6 · 도감 C-103 — 초돌진 · 앞차기 · 버클러) · 카리우스 (명세 C7 — 3D karius.js v1.3 · 2D 불경자 · 근성: 잡아뚫기 · 노인의 팔 · 라이트 훅 · 딥 킥 · 짓밟기 · 불경자 · 근성 · 벼락))
 const {E,R,U,KAR,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const logK=(W,k)=>W.log.filter(l=>l.k===k);
@@ -148,7 +148,7 @@ console.log('O. 초돌진 — 맞붙어 있지 않을 때 진형 뒤의 사수 �
   runAct(W,a,120); ok(logK(W,'apSweep').some(l=>l.b===m.i)||logK(W,'impact').some(l=>l.b===ar.i),'앞줄을 휩쓸고 궁수에게 닿음'); }
 { const W=WF([mk(AP,0,6,10),dummy('붙은 적',7.1,10,1),dummy('먼 적',15,10,1)],{roe:'free'}); const a=W.units[0], n=W.units[1], f=W.units[2]; still(n,f); n.seenBy=1; f.seenBy=1; hold(a,'akick');
   const r=E.specAuto(W,a,n,true); ok(!(a.act&&a.act.sup),'맞붙어 있으면 초돌진으로 빠지지 않음'); }
-{ const W=WF([mk(AP,0,6,10),dummy('적',9.6,10,1)],{roe:'free'}); const a=W.units[0], e=W.units[1]; still(e); e.seenBy=1; hold(a,'asup','akick');
+{ const W=WF([mk(AP,0,6,10),dummy('적',9.6,10,1)],{roe:'free'}); const a=W.units[0], e=W.units[1]; a.noChg=a.noChg0=false; still(e); e.seenBy=1; hold(a,'asup','akick');
   ok(!E.cmdHold(W,a),'혼자인 편 (지휘 · 방패): 들어가라는 말을 기다리지 않음'); let n=0; while(n++<60&&!logK(W,'charge').length) step(W); ok(logK(W,'charge').length>=1,'혼자서도 돌진 ('+(n/30).toFixed(1)+'초)');
   const W2=WF([mk(AP,0,6,10),mk({...REB,name:'동료'},0,6,12),dummy('적',9.6,10,1)],{roe:'free'}); W2.stance[0]={k:'hold',t0:0}; ok(E.cmdHold(W2,W2.units[0]),'둘 이상이면 지휘의 "들어가!" 를 기다림 (그대로)'); }
 

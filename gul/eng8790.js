@@ -1,4 +1,4 @@
-// v8.7.9 엔진 시험 — eng8790.js v1.1 (v1.1: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기 · 기술 칸 1 · 2) · 각 몸은 받는 피해 그대로 · 각펄 보스사양 (시작 횡베기 · 둘러싸이면 횡베기 · 연속 찌르기 · 창비 · 거대 특수창 2초) · v1.0: 펄 · 각펄 (명세 E · 3D 기술표) — 몸 (페이지 설계 그대로) · 기술 칸 명령 (철 깃털 · 꼬깃꼬깃 착지 · 돌려차기 · 움츠리기) · 스스로 ·
+// v8.7.9 엔진 시험 — eng8790.js v1.2 (v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기 · 기술 칸 1 · 2) · 각 몸은 받는 피해 그대로 · 각펄 보스사양 (시작 횡베기 · 둘러싸이면 횡베기 · 연속 찌르기 · 창비 · 거대 특수창 2초) · v1.0: 펄 · 각펄 (명세 E · 3D 기술표) — 몸 (페이지 설계 그대로) · 기술 칸 명령 (철 깃털 · 꼬깃꼬깃 착지 · 돌려차기 · 움츠리기) · 스스로 ·
 //   빈사에 각펄 · 돌아옴 · 각펄 (적 · 13 기술 · 끝까지 · 천천히 걸음) · 만남의 각펄 (쓰러지되 숨은 붙어 있음 · 창이 떨어지지 않음) · 펄의 창 (열화 · 던져 버리지 않음 · 명령 · 보스는 따로 갖지 않음) ·
 //   물러날 수 없음 (noRetreat) · 같은 규칙 (적 편 동료 펄도 같은 두뇌))
 const {E,R,U,REB,mk}=require('./scen_lib790.js'); const PD=require('./pdes.js'); const fs=require('fs');
@@ -9,7 +9,7 @@ const html=fs.readFileSync(__dirname+'/build/wrapped.html','utf8'), i0=html.inde
 const GAK=(0,eval)('('+html.slice(i0+"FOE8['각펄'] = ".length, i1+1)+')'); delete GAK.key;
 const PE=des('펄');
 const dummy=(name,x,y,side,ex)=>mk({...REB,name,shield:false,weapon:'장검',ov:{hp:900,atk:20},traits:[],gear:{},...(ex||{})},side,x,y);
-const WF=(units,o)=>{ const R2=JSON.parse(JSON.stringify(R)); R2.roe.def=(o&&o.roe)||'hold'; R2.roe.autoLift=false; if(o&&o.rules) o.rules(R2); const W=E.createWorld({type:'grid',W:40,H:20,seed:7,units,torches:[{x:20,y:10,r:80}],flips:[],...(o&&o.rocks?{rocks:o.rocks}:{})},R2,(o&&o.seed)||1,{headless:true}); E.computeLight(W); return W; };
+const WF=(units,o)=>{ const R2=JSON.parse(JSON.stringify(R)); R2.chgPol={allyOff:false}; R2.roe.def=(o&&o.roe)||'hold'; R2.roe.autoLift=false; if(o&&o.rules) o.rules(R2); const W=E.createWorld({type:'grid',W:40,H:20,seed:7,units,torches:[{x:20,y:10,r:80}],flips:[],...(o&&o.rocks?{rocks:o.rocks}:{})},R2,(o&&o.seed)||1,{headless:true}); E.computeLight(W); return W; };
 const step=(W,n)=>{ for(let i=0;i<(n||1);i++){ const t0=W.t; E.stepWorld(W,1/30); if(W.t===t0) W.t+=1/30; } };
 const still=(...us)=>{ for(const u of us){ u.order={k:'hold'}; u.ev=0.0001; u.spd=0.001; } };
 const holdAll=u=>{ for(const x of u.spec||[]) x.cdT=1e9; if(u.pk) for(const s of ['feather','land','kick','psky','pball','pwide']) u.pk.cd[s]=1e9; u.wrapCd=1e9; };

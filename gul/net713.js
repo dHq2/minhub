@@ -1,4 +1,4 @@
-// v7.13 시험 — net713.js v1 (지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
+// v7.13 시험 — net713.js v1.1 (v1.1: v9.1.0 — 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시 (옛: D 는 못 함) · 지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
 const {E,R,DES,NOR,INJ,KAR,REB,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const lit=W=>{ W.torches=[{x:8,y:8,r:30}]; E.computeLight(W); };
@@ -21,7 +21,7 @@ console.log('B. 시작 배치 편대 · 무스킬 편대장 D');
   ok(n.rank==='부대장'&&g.sqLead===n.i&&rb.sqLead==null,'2편대 = 노먼 · 청광묵'); ok(n.cmd===1,'노먼 지휘 C (1)');
   const al2=[mk(INJ,0,4,8,{hero:true}),mk(REB,0,5,9,{sq:'B',rank:'부대장'}),mk(GOB,0,6,9,{sq:'B'}),mk(NOR,0,4,10,{sq:'A',rank:''})]; const W2=W_(al2,[mk(DES['창병'],1,10,9)],1,'smart'); lit(W2);
   const r2=W2.units[1], n2=W2.units[3]; console.log(`    레베카 편대장: 지휘 ${r2.cmd} · 노먼 직책 '${n2.rank}'`); ok(r2.cmd===0&&n2.rank==='','지휘 스킬 없는 편대장 = D · 노먼은 직책 없음');
-  run(W2,3); ok(W2.log.some(x=>x.k==='sqWeak'&&x.a===r2.i)&&!W2.log.some(x=>x.k==='sqDec'),'D 편대장은 스스로 지시 못 함'); }
+  run(W2,3); ok(!W2.log.some(x=>x.k==='sqWeak'&&x.a===r2.i),'v9.1 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시는 함 (지휘 D 여도 sqWeak 없음)'); }
 
 console.log('C. 노먼 (C) 편대장 자율 지시');
 { let dec=0,recv=0,N=8,ex=null; for(let sd=1;sd<=N;sd++){ const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9,{sq:'B',rank:'부대장'}),mk(GOB,0,9,9.5,{sq:'B'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],sd,'free'); lit(W);

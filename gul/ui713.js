@@ -1,4 +1,4 @@
-// v7.13 UI 시험 — ui713.js v1 (기본 배치 편대 · 편대 줄 · 2편대장 바꾸기 · 그물 · 0% 알림)
+// v7.13 UI 시험 — ui713.js v1.1 (v1.1: v9.1.0 — 편대 줄 → 대장 · 전우 줄 · 기본 배치 편대 · 편대 줄 · 2편대장 바꾸기 · 그물 · 0% 알림)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -6,9 +6,9 @@ const { chromium } = require('playwright');
  const sq = await p.evaluate(()=>S.units.filter(u=>u.side===0).map(u=>[u.name,u.sq||'A',u.rank||''])); console.log('    기본 배치', JSON.stringify(sq));
  ok(sq.some(([n,s])=>n==='청광묵'&&s==='B')&&sq.some(([n,s,r])=>n==='노먼'&&s==='B'&&r==='부대장'),'기본 배치에 청광묵 · 2편대 (노먼 · 청광묵)');
  await p.evaluate(()=>{ showTab('place'); const g=S.units.find(u=>u.name==='청광묵'); selId=g.id; renderSel(); }); await p.waitForTimeout(200);
- const row = await p.evaluate(()=>{ const b=document.querySelector('#selBox [data-psq="B"]'); return b ? b.closest('.row').innerText.replace(/\s+/g,' ') : ''; }); console.log('    편대 줄:', row); ok(/2편대 \(노먼\)/.test(row),'고른 아군에 편대 줄');
+ const row = await p.evaluate(()=>{ const s=document.getElementById('selRelChief'); return s ? s.options[s.selectedIndex].text : ''; }); console.log('    대장 줄:', row); ok(row==='노먼','고른 아군의 대장 줄 (청광묵 → 노먼)');
  // 레베카를 2편대장으로
- await p.evaluate(()=>{ const r=S.units.find(u=>u.name==='레베카'); selId=r.id; renderSel(); }); await p.click('#selBox [data-psq="B"]'); await p.waitForTimeout(150);
+ await p.evaluate(()=>{ const r=S.units.find(u=>u.name==='레베카'); selId=r.id; renderSel(); }); 
  await p.evaluate(()=>{ const r=S.units.find(u=>u.name==='레베카'); selId=r.id; renderSel(); }); const lab = await p.evaluate(()=>{ const c=document.getElementById('selSqLead'); return c ? c.closest('label').innerText : ''; }); console.log('    ', lab);
  await p.click('#selSqLead'); await p.waitForTimeout(150);
  const r2 = await p.evaluate(()=>S.units.filter(u=>u.side===0).map(u=>[u.name,u.sq||'A',u.rank||''])); console.log('    바꾼 뒤', JSON.stringify(r2));

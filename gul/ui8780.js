@@ -1,4 +1,4 @@
-// v8.7.8 UI 시험 — ui8780.js v1.1 (v1.1: 내려찍기 기록 글은 엔진이 남기는 칸 (n · r) 으로 · 조사 (굿윌이 · 검기사를) · 천둥은 급소 즉사가 없음 · v1.0: 굿윌 (C5 — 2D 그대로) 설계 · 정체성 · 글 · 그림 칸 · 뽑기 희귀도 (1 ~ 3성 1 · 4성 0.6 · 5성 0.3) · 1층 뽑기 · 여정 뽑기 풀 · 기술 칸 (니킥 · 내려찍기) 명령 · 단추로 고르기 · 딱 → 감전 (푸른 번개) ⚡ 그림 · 로그 · 서술 글 · 적뢰 감전도 같은 틀)
+// v8.7.8 UI 시험 — ui8780.js v1.2 (v1.2: v9 대 버전도 통과 · v1.1: 내려찍기 기록 글은 엔진이 남기는 칸 (n · r) 으로 · 조사 (굿윌이 · 검기사를) · 천둥은 급소 즉사가 없음 · v1.0: 굿윌 (C5 — 2D 그대로) 설계 · 정체성 · 글 · 그림 칸 · 뽑기 희귀도 (1 ~ 3성 1 · 4성 0.6 · 5성 0.3) · 1층 뽑기 · 여정 뽑기 풀 · 기술 칸 (니킥 · 내려찍기) 명령 · 단추로 고르기 · 딱 → 감전 (푸른 번개) ⚡ 그림 · 로그 · 서술 글 · 적뢰 감전도 같은 틀)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const dir = process.argv[2]||'build', url='file://'+process.cwd()+'/'+dir+'/wrapped.html';
@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
      noAct: SK.filter(k=>!ACTIVE[k]), noIco: SK.filter(k=>ICO.map[k]==null), uq: { who: U.who, lore: !!U.lore, eff: !!(U.effects&&U.effects.length||U.effects) }, tgt: ['knee','gslam','gpalm','snap','snap3','rise'].filter(k=>!SPEC_TGT[k]),
      rar: RAR_OF(d), wG: RAR_W(d), w1: RAR_W(designByKey('가윤')), w2: RAR_W(designByKey('모닝스타')), w5k: RAR_W(designByKey('카리우스')) }; }, SK);
  console.log('    ', JSON.stringify(v0));
- ok(/v8\.7\.([8-9]|\d\d)|v8\.([8-9]|\d\d)\./.test(v0.ver)&&/^8\.(7\.([8-9]|\d\d)|([8-9]|\d\d)\.\d+)$/.test(v0.mig),'버전 8.7.8 이상 · 수치표 이전 '+v0.mig);
+ ok(/v8\.7\.([8-9]|\d\d)|v8\.([8-9]|\d\d)\.|v9\.\d+\.\d+/.test(v0.ver)&&/^(8\.(7\.([8-9]|\d\d)|([8-9]|\d\d)\.\d+)|9\.\d+\.\d+)$/.test(v0.mig),'버전 8.7.8 이상 · 수치표 이전 '+v0.mig);
  ok(v0.d&&v0.d.ref==='C-010'&&v0.d.side===0&&v0.d.w==='맨손'&&v0.d.sh===false&&v0.d.u==='푸른 번개'&&v0.d.a===SK.join(',')&&v0.d.hp===360&&v0.d.atk===46,'굿윌 설계: 맨손 · ◆푸른 번개 · 기술 여섯 · 체력 360 · 공격 46');
  ok(v0.prof.u==='푸른 번개'&&v0.prof.a===SK.join(',')&&v0.prof.w==='맨손'&&v0.id.u==='푸른 번개'&&v0.id.a===SK.join(','),'도감 프로필 · 정체성 (C-010) 이 설계와 같음');
  ok(!v0.noAct.length&&!v0.noIco.length&&!v0.tgt.length&&v0.uq.who==='C-010'&&v0.uq.lore&&v0.uq.eff,'기술 글 · 그림 칸 · 대상 고르기 글 · ◆푸른 번개 글 모두 있음');

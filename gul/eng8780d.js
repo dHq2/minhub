@@ -1,4 +1,4 @@
-// v8.7.8 엔진 시험 (4) — eng8780d.js v1.1 (v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
+// v8.7.8 엔진 시험 (4) — eng8780d.js v1.2 (v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
 //   축복:테헤라 · 요정 날개 · 요정의 축복 · 광역 손짓 · 은빛 비행 · 날개 방패 · 나른한 꿈 · 명령 · 스스로 (적 · 아군 같은 두뇌))
 const {E,R,U,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -8,7 +8,7 @@ const CO={ref:'C-175',name:'콜라이더',tier:2,cls:'근접',role:'미드필더
 const TE={ref:'C-016',name:'테헤라',tier:2,cls:'치유',role:'지원',weapon:'손짓',sm:0.98,height:1.7,weight:40,sizeCls:'중형',nv:true,nvG:'B',ov:{hp:200,atk:18},traits:['축복:테헤라'],unique:['요정 날개'],race:'요정',origin:'외계',active:['광역 손짓','은빛 비행','날개 방패','나른한 꿈'],skill:{name:'요정의 축복',kit:true,inf:true,pool:99,pct:0.25,min:10,cap:999,hot:0,hotN:0,cd:9,wind:0.5,rec:0.4,rng:5,auto:0.55,aoe:5,gK:0.85,gT:4},gear:{}};
 const dummy=(name,x,y,side,ex)=>mk({...REB,name,shield:false,weapon:'장검',ov:{hp:900,atk:20},traits:[],gear:{},...(ex||{})},side,x,y);
 const archer=(name,x,y,side,ex)=>mk({ref:'C-056',name,tier:2,cls:'원거리',role:'사수',weapon:'궁수의 활',ammo:99,nv:true,nvG:'A',ov:{hp:300,atk:30},traits:['사격A'],gear:{},...(ex||{})},side,x,y);
-const WF=(units,o)=>{ const R2=JSON.parse(JSON.stringify(R)); R2.roe.def=(o&&o.roe)||'hold'; R2.roe.autoLift=false; if(o&&o.rules) o.rules(R2); const W=E.createWorld({type:'grid',W:40,H:20,seed:7,units,torches:[{x:20,y:10,r:80}],flips:[],...(o&&o.rocks?{rocks:o.rocks}:{})},R2,(o&&o.seed)||1,{headless:true}); E.computeLight(W); for(const u of W.units) for(const x of u.spec||[]) x.cdT=-9; return W; };
+const WF=(units,o)=>{ const R2=JSON.parse(JSON.stringify(R)); R2.chgPol={allyOff:false}; R2.roe.def=(o&&o.roe)||'hold'; R2.roe.autoLift=false; if(o&&o.rules) o.rules(R2); const W=E.createWorld({type:'grid',W:40,H:20,seed:7,units,torches:[{x:20,y:10,r:80}],flips:[],...(o&&o.rocks?{rocks:o.rocks}:{})},R2,(o&&o.seed)||1,{headless:true}); E.computeLight(W); for(const u of W.units) for(const x of u.spec||[]) x.cdT=-9; return W; };
 const step=(W,n)=>{ for(let i=0;i<(n||1);i++){ const t0=W.t; E.stepWorld(W,1/30); if(W.t===t0) W.t+=1/30; } };
 const hold=(u,...ks)=>{ for(const k of ks){ const x=(u.spec||[]).find(s=>s.k===k); if(x) x.cdT=1e9; } };
 const holdAll=u=>{ for(const x of u.spec||[]) x.cdT=1e9; if(u.skill) u.skill.cdT=1e9; };

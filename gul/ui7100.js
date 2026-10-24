@@ -1,3 +1,4 @@
+// ui7100.js v1.1 (v1.1: v9.1 — 편대 단추 (squad) 시험을 대장 연결 단추 (chief) · 대장 배지로) — UI 시험 (v7.10 ~)
 const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m); if(!c) fails.push(m); };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  for (const [nm,vp,mob] of [['모바일',{width:412,height:915},true],['데스크톱',{width:1280,height:800},false]]){
@@ -26,10 +27,10 @@ const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c
   await p.screenshot({path:'ui7100_'+(mob?'m':'d')+'_dove.png'});
   // 편대 단추
   await p.evaluate(()=>{ sel=new Set([2]); hud(); }); await p.waitForTimeout(200);
-  const sqBtn = await p.evaluate(()=>!!document.querySelector('[data-dk="squad"],[data-ord="squad"]')); ok(sqBtn, '편대 단추가 보임');
-  await p.evaluate(()=>{ const W=world; W.t=0; squadKey([W.units[2]]); }); 
-  ok(await p.evaluate(()=>world.units[2].sqLead===1), '편대 배속 (0초는 바로)');
-  const bd = await p.evaluate(()=>linkBadge(world, world.units[2])); ok(/노먼 편대/.test(bd), '편대 배지');
+  const sqBtn = await p.evaluate(()=>!!document.querySelector('[data-dk="chief"],[data-ord="chief"]')); ok(sqBtn, '대장 연결 단추가 보임 (v9.1 — 옛 편대 단추)');
+  await p.evaluate(()=>{ const W=world; W.t=0; chiefSet(W,[W.units[2]],W.units[1]); });
+  ok(await p.evaluate(()=>world.units[2].sqLead===1), '대장-부하 연결 (바로)');
+  const bd = await p.evaluate(()=>linkBadge(world, world.units[2])); ok(/노먼의 부하/.test(bd), '대장 배지');
   // 설정 칸
   await p.evaluate(()=>{ if (typeof openEdit==='function') {} });
   // 전파: 먼 아군

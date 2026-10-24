@@ -1,4 +1,4 @@
-// v7.24.0 시험 — eng7240.js v1.1 (v1.1: v7.29.0 부터 붙으면 대개 원형 베기 → 몇 초 뒤 돌진 원형 베기라 스텝 틈이 조금 줄어듦 — 판마다 초당 0.3번 · 모두 합쳐 0.5번 넘게 · v1.0: 세자르: 피 500 · 스텝을 마구 밟음 (비켜 섬 · 치고 빠짐 · 밟아 들어가 벰 · 옆걸음) · 스텝 중 회피 / 호레이쇼 도약 강타: 공중은 피해 없음 · 절반 넘게 겹치면 찌부러짐 · 몸에 걸치면 밀려나며 약한 피해 · 범위는 약한 피해 · 넘어짐 없음 · 여덟 판)
+// v7.24.0 시험 — eng7240.js v1.2 (v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 (아군마다 돌격 허용) · v1.1: v7.29.0 부터 붙으면 대개 원형 베기 → 몇 초 뒤 돌진 원형 베기라 스텝 틈이 조금 줄어듦 — 판마다 초당 0.3번 · 모두 합쳐 0.5번 넘게 · v1.0: 세자르: 피 500 · 스텝을 마구 밟음 (비켜 섬 · 치고 빠짐 · 밟아 들어가 벰 · 옆걸음) · 스텝 중 회피 / 호레이쇼 도약 강타: 공중은 피해 없음 · 절반 넘게 겹치면 찌부러짐 · 몸에 걸치면 밀려나며 약한 피해 · 범위는 약한 피해 · 넘어짐 없음 · 여덟 판)
 const {E,R,DES,INJ,NOR,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -32,7 +32,7 @@ const lit=W=>{ W.amb=1; E.computeLight(W); };
   ok(r.alive&&P[r.i].hp-r.hp<60&&!W.log.some(l=>l.k==='down'&&l.b===r.i)&&!(W.t<(r.proneT||-9)),'충격 범위의 레베카 — 약한 피해 · 넘어지지 않음 (피 −'+Math.round(P[r.i].hp-r.hp)+')');
   ok(j.hp===P[j.i].hp&&W.log.some(l=>l.k==='quakeAir'&&l.b===j.i),'도약 중 (공중) 인 청광묵 — 피해 없음'); }
 // 5) 여덟 판 (피 500 · 권위 · 스텝)
-{ let res=[]; for (let s=1;s<=8;s++){ const W=W_([mk(INJ,0,4,6,{hero:true}),mk(REB,0,5,8),mk(KAR,0,4,10),mk(NOR,0,3,7),mk(GOB,0,5,11),mk(KN(),0,6,9)],[mk(CZ,1,20,8)],s); lit(W); const k=W.units[6];
+{ let res=[]; for (let s=1;s<=8;s++){ const W=W_([mk(INJ,0,4,6,{hero:true}),mk(REB,0,5,8),mk(KAR,0,4,10),mk(NOR,0,3,7),mk(GOB,0,5,11),mk(KN(),0,6,9)],[mk(CZ,1,20,8)],s); for(const u of W.units) if(u.side===0) u.noChg=u.noChg0=false; lit(W); const k=W.units[6];
     run(W,90); res.push({ t: +W.t.toFixed(0), cz: k.alive?Math.round(k.hp):0, down: W.units.filter(u=>u.side===0&&!u.alive).length, step: k.cz.nStep+W.log.filter(l=>l.k==='czBack'&&l.a===k.i).length, ev: W.log.filter(l=>l.k==='evade'&&l.b===k.i).length }); }
   for (const r of res) console.log('      ',JSON.stringify(r)); const win=res.filter(r=>r.cz===0).length; console.log('      일행이 이긴 판',win,'/ 8');
   ok(res.every(r=>r.step/Math.max(1,r.t)>=0.3)&&res.reduce((a,r)=>a+r.step,0)/Math.max(1,res.reduce((a,r)=>a+r.t,0))>=0.5,'판마다 스텝을 밟음 (초당 0.3번 · 모두 합쳐 0.5번 넘게)'); }
