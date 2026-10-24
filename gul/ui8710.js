@@ -1,4 +1,4 @@
-// (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
+// (v9.4.0: 맵 위 NPC 는 only (비전투 맵 전용 — 노숙악마 · 두건) 을 빼고 10 · v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.7.1 UI 시험 — ui8710.js v1.7 (v1.7: 맵 위 NPC 칸에선 인사 (v8.7.8 — 일행에 콜라이더 · 물레가 뽑히면 고르기 창) 를 건너뜀 — 고르기 창에서 시험 고리가 멈추던 것 · v1.6: v8.7.6 D1 — 페흐토의 투구 · 망토 갑주는 땅이 아니라 전리품으로 · v1.5: v8.7.4 맵 위 NPC 에 세르파 (수정동굴) — 10 · v1.4: 카드 그림은 묶음 (atlas) · v1.3: 히든 층은 히든 시험에서만 (나머지는 끔) · v1.2: 자기 검토 — 페흐토 손님 · 고급 드랍 · 노라의 짐 · 죽은 단독 개체 · 비전투 회랑 따라 나감 · v1.1: 영입 시험 전에 자리를 비움 (뽑기로 8명이면 가득 참) · v1.0: 맵 위 NPC 9 (판 안 대화 · 숨었다 나옴 · 판에 바로 영입 · 지도로 안 감) · 손님 로지나 (튐) · 셰도르 · 항복 (페흐토 · 아해) · 도감 카드 212 · 이름 있는 만남 20 (그림 · 행동 · 싸움) · 히든 층 2 · 단달로 약속 · 정예 전용 유물)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -15,7 +15,7 @@ const { chromium } = require('playwright');
    window.__near = (E) => { const h=world.units.find(u=>u.side===0&&u.alive); h.x=E.x+1; h.y=E.y; }; });
  // 1. 맵 위 NPC 10 (v8.7.4 세르파 — 수정동굴) — 놓임 · 숨음 · 말 걸기 · 대화가 끝나도 판 그대로
  const npc = await p.evaluate((TE)=>{ const out={};
-   for (const k of Object.keys(MNPC8)){ let n=__open(k); while (TK) talkAdv();
+   for (const k of Object.keys(MNPC8).filter(k=>!MNPC8[k].only)){ let n=__open(k); while (TK) talkAdv();
      const C=S.camp, E=C.stages[1].enc; if (!E){ out[k]= k==='ahae' && world.units.some(u=>u.r8surr) ? 'foe' : 'none'; continue; }
      const st0=E.st, live0=encLive(E); if (E.st==='hidden'){ for (const u of world.units) if (u.side===1){ u.alive=false; u.hp=0; } world.cleared=true; r8Tick(world); }
      const st1=E.st; __near(E); E.seen=true; encTalk(E); const opened=!!TK && TK.npc==='m_'+k; const L=TK? TK.lines.find(l=>l.ask):null;

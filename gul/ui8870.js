@@ -1,4 +1,4 @@
-// v8.9.0 2층 UI 시험 — ui8870.js v1.2 (v1.2: 열한 칸 — 세 칸이 ❓ 랜덤 인카운터 (enc) · 만남이 열림 · v1.1: 2층 = 민수가 짠 여덟 칸 + 아래 계단 — 순서 · 이름표 · 칸마다 열어 봄 · 비어 있음 · 아래 계단 → 3층 · 보스룸 나가는 곳은 한가운데 · v1.0: 맵 5장 · 1층이 끝나면 2층)
+// v8.9.0 2층 UI 시험 — ui8870.js v1.3 (v1.3: 2층 열한 칸에 적이 있음 (9.3.0) — 비어 있던 시험을 '적 > 0 · 지나가기는 앞 다섯 + 전투룸3 만' 으로 · v1.2: 열한 칸 — 세 칸이 ❓ 랜덤 인카운터 (enc) · 만남이 열림 · v1.1: 2층 = 민수가 짠 여덟 칸 + 아래 계단 — 순서 · 이름표 · 칸마다 열어 봄 · 비어 있음 · 아래 계단 → 3층 · 보스룸 나가는 곳은 한가운데 · v1.0: 맵 5장 · 1층이 끝나면 2층)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -26,7 +26,9 @@ const { chromium } = require('playwright');
      continue;
    }
    const r = await p.evaluate((i)=>{ const R=R8S(); const nd=R.fm.rows[i][0]; const o={ e:[] }; world=null; r8Enter(nd); const W=world, M=MAPS8[S.art8]; o.base=M&&M.base; o.fall=!!(M&&M.fall); o.foes=W?W.units.filter(u=>u.side!==0&&u.alive).length:-1; o.props=M?(M.props||[]).length:-1; o.onFloor=W?W.units.filter(u=>u.side===0).every(u=>M.rows[Math.floor(u.y)]&&'.r'.includes(M.rows[Math.floor(u.y)][Math.floor(u.x)])):false; o.pass=W&&W.r8&&W.r8.pass; try{ paused=true; draw(); }catch(e){ o.e.push(e.message); } return o; }, i);
-   ok(r.base===SEQ[i]&&r.foes===0&&r.props===0&&r.onFloor&&r.pass&&!r.e.length&&r.fall===(SEQ[i]==='fmap2'),(i+1)+'. '+NM[SEQ[i]]+': 열림 · 적 0 · 소품 0 · 바닥 위 · 그림 오류 없음 · 낙사 '+(r.fall?'있음':'없음'));
+   const PASS=['ruin2a','ruin2b','gfight1','fmap2','fmap3'].includes(SEQ[i]);
+   if (r.e.length||!r.onFloor||r.props!==0||r.foes<1||!!r.pass!==PASS) console.log('    ??', JSON.stringify(r));
+   ok(r.base===SEQ[i]&&r.foes>0&&r.props===0&&r.onFloor&&!!r.pass===PASS&&!r.e.length&&r.fall===(SEQ[i]==='fmap2'),(i+1)+'. '+NM[SEQ[i]]+': 열림 · 암계 적 '+r.foes+' (v9.3.0 — 예전엔 비어 있었음) · 소품 0 · 바닥 위 · 지나가기 '+(PASS?'열림':'아님 (계단 · 보스)')+' · 그림 오류 없음 · 낙사 '+(r.fall?'있음':'없음'));
    await p.evaluate(()=>{ world=null; r8NodeDone(); });
  }
  const st = await p.evaluate(()=>{ const R=R8S(); const nd=R.fm.rows[11][0]; r8Enter(nd); return { f:R.f }; });

@@ -1,0 +1,32 @@
+// v9.4.1 UI 시험 — ui9050.js v1.0 (오래된 약병 = 특수 스킬: 기술 칸 8번 · 숫자키 8 · 동료 고르기 · 먹임 · 다 쓰면 칸이 사라짐 · 일반 회복약은 해당 없음 · 로그)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
+ const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n').slice(1,3).join('|'))); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
+ await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
+ await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); while (TK){ if (TK.timer) talkDone(); talkAdv(); } });
+ await p.waitForTimeout(400);
+ const s0 = await p.evaluate(()=>{ const R=R8S(); const nd=R.fm.rows[0][0]; world=null; r8Enter(nd); return { w:!!world }; });
+ await p.waitForTimeout(2600); await p.evaluate(()=>{ if (TK) talkClose(); });
+ const s1 = await p.evaluate(()=>{ const W=world; paused=true; const al=W.units.filter(u=>u.side===0&&u.alive); const hero=al.find(u=>u.hero)||al[0], mate=al.find(u=>u!==hero); for (const u of W.units) if (u.side===1) u.alive=false, u.hp=0;
+   for (let i=0;i<3;i++) hero.bag.push({ k:'potion', name:'오래된 약병', label:'', vial:true, heal:0.25, min:15, cap:60, uid:(W.bagN=(W.bagN||10000)+1) }); mate.x=hero.x+1.0; mate.y=hero.y; mate.hp=Math.max(5,Math.round(mate.max*0.3));
+   for (let i=0;i<30;i++) stepWorld(W,1/30); sel=new Set([hero.i]); hud(); renderSkillBar(W);
+   const btn=document.querySelector('#skbar [data-sk="8"]'); const o={ hero:hero.name, mate:mate.name, hp0:mate.hp, max:mate.max, vials:hero.bag.filter(x=>x.vial).length, btn:!!btn, dis:btn?btn.disabled:null, txt:btn?btn.textContent.replace(/\s+/g,' ').slice(0,40):'' , spec:(hero.spec||[]).map(x=>x.k+':'+x.n).join(','), lab:slotLabel(W,[hero],8) }; return o; });
+ console.log('    ', JSON.stringify(s1));
+ ok(s1.btn&&!s1.dis&&/약병/.test(s1.txt)&&/×3/.test(s1.lab||''),'기술 칸 8번 "약병" 이 뜸 ('+s1.txt+' · '+s1.lab+')');
+ const s2 = await p.evaluate(()=>{ const W=world; const hero=W.units.find(u=>u.side===0&&u.alive&&(u.spec||[]).some(x=>x.k==='vial')); const mate=W.units.find(u=>u.side===0&&u.alive&&u!==hero&&u.hp<u.max*0.5); sel=new Set([hero.i]); useSlot(8); const o={ armed:armed&&armed.k+':'+armed.s+':'+armed.slot };
+   armedTap({ x: mate.x, y: mate.y }); o.order=hero.order&&hero.order.k+':'+hero.order.s+':'+(hero.order.b===mate.i); o.armedAfter=!!armed; const hp0=mate.hp; paused=false; for (let i=0;i<90;i++) stepWorld(W,1/30); o.hp=[Math.round(hp0),Math.round(mate.hp)]; o.vials=hero.bag.filter(x=>x.vial).length; o.n=(hero.spec.find(x=>x.k==='vial')||{}).n; o.log=W.log.filter(l=>l.k==='vial').length; paused=true; hud(); renderSkillBar(W); const lines=typeof logText==='function'?null:null; return o; });
+ console.log('    ', JSON.stringify(s2));
+ ok(/spec:vial:pot/.test(s2.armed||''),'8번을 누르면 먹일 동료를 고르는 겨눔 ('+s2.armed+')');
+ ok(/spec:vial:true/.test(s2.order||'')&&!s2.armedAfter,'동료를 누르면 그 동료에게 명령이 내려감');
+ ok(s2.hp[1]>s2.hp[0]+14&&s2.vials===2&&s2.n===2&&s2.log===1,'먹임: 동료 체력 '+s2.hp.join(' → ')+' · 약병 3 → '+s2.vials+' (기술 남은 '+s2.n+') · 로그 '+s2.log);
+ const s3 = await p.evaluate(()=>{ const W=world; const hero=W.units.find(u=>u.side===0&&u.alive&&(u.spec||[]).some(x=>x.k==='vial')); hero.hp=Math.max(1,Math.round(hero.max*0.3)); const out={}; for (let k=0;k<2;k++){ hero.order={k:'spec',s:'vial',b:hero.i}; const sp=hero.spec.find(x=>x.k==='vial'); if (sp) sp.cdT=-9; paused=false; for (let i=0;i<70;i++) stepWorld(W,1/30); paused=true; hero.hp=Math.max(1,Math.round(hero.max*0.3)); }
+   for (let i=0;i<30;i++) stepWorld(W,1/30); out.vials=hero.bag.filter(x=>x.vial).length; out.spec=(hero.spec||[]).some(x=>x.k==='vial'); sel=new Set([hero.i]); hud(); renderSkillBar(W); const btn=document.querySelector('#skbar [data-sk="8"]'); out.btn=btn?btn.disabled:null; return out; });
+ console.log('    ', JSON.stringify(s3));
+ ok(s3.vials===0&&!s3.spec&&s3.btn===true,'다 쓰면 기술도 사라지고 8번 칸이 꺼짐');
+ await p.evaluate(()=>{ const W=world; const hero=W.units.find(u=>u.side===0&&u.alive&&u.hero)||W.units.find(u=>u.side===0&&u.alive); hero.bag.push({ k:'potion', name:'회복약', label:'', uid:(W.bagN=(W.bagN||10000)+1) }); for (let i=0;i<30;i++) stepWorld(W,1/30); sel=new Set([hero.i]); hud(); renderSkillBar(W); });
+ const s4 = await p.evaluate(()=>{ const btn=document.querySelector('#skbar [data-sk="8"]'); return btn?btn.disabled:null; });
+ ok(s4===true,'보통 회복약은 8번 칸을 만들지 않음');
+ await p.screenshot({path:'ui9050_a.png'});
+ ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,3)));
+ console.log(fails?'FAIL '+fails:'ALL OK'); await b.close(); process.exit(fails?1:0); })();

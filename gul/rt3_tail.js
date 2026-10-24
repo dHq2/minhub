@@ -104,16 +104,16 @@ function expoOf(W, u, t, info){
 }
 // 원거리 명중 × : 엄폐 (cov0 + 드러난 몫 — 곡사는 위에서 떨어져 arcCov 까지) × 높이차 (1M 당 aimHi)
 function terrAim(W, u, t, arc){ const T = TER(W), e = expoOf(W, u, t), c0 = T.cov0 != null ? T.cov0 : 0.2, c = arc ? Math.max(e, T.arcCov != null ? T.arcCov : 0.8) : e <= 0 ? 0.05 : c0 + (1 - c0) * e, dh = W.map.hills ? gH(W.map, u.x, u.y) - gH(W.map, t.x, t.y) : 0;
-  return c * (1 + (T.aimHi != null ? T.aimHi : 0.05) * Math.max(-2, Math.min(2, dh))); }
+  return c * (1 + (T.aimHi != null ? T.aimHi : 0.05) * (W.map.stairs && T.stairUp && dh < 0 ? T.stairUp.aim : 1) * Math.max(-2, Math.min(2, dh))); }   /* v9.3.0 계단: 아래에서 위로 쏘면 더 안 맞음 */
 const hiMelee = (W, u, t, far) => far || !W.map.hills ? 1 : 1 + (TER(W).meleeHi != null ? TER(W).meleeHi : 0.08) * Math.max(-1.5, Math.min(1.5, gH(W.map, u.x, u.y) - gH(W.map, t.x, t.y)));
 // 오르막은 느리고 내리막은 조금 빠름 (가는 방향의 기울기)
 function slopeK(W, u, dx, dy){ const l = Math.hypot(dx, dy); if (!l || !W.map.hills) return 1; const [gx, gy] = gGrad(W.map, u.x, u.y), sl = (gx * dx + gy * dy) / l, T = TER(W);
-  return sl > 0 ? 1 / (1 + (T.climb != null ? T.climb : 0.8) * sl) : 1 + (T.down != null ? T.down : 0.1) * Math.min(1, -sl); }
+  return sl > 0 ? 1 / (1 + (W.map.stairs && T.stairUp ? T.stairUp.climb : T.climb != null ? T.climb : 0.8) * sl) : 1 + (T.down != null ? T.down : 0.1) * Math.min(1, -sl); }
 // 비탈을 뛰면 미끄러져 넘어질 수 있음 (0.5초마다 판정 · 내리막이 더 위험 · 베테랑 · 네 발은 덜)
 function slopeTrip(W, u, dx, dy){ if (!W.map.hills || W.t - (u.tripT == null ? -9 : u.tripT) < 0.5 || u.lie || u.crawl) return; u.tripT = W.t;
-  const [gx, gy] = gGrad(W.map, u.x, u.y), g = Math.hypot(gx, gy), T = TER(W), s0 = T.tripS != null ? T.tripS : 0.3; if (g <= s0) return;
+  const [gx, gy] = gGrad(W.map, u.x, u.y), g = Math.hypot(gx, gy), T = TER(W), SU = W.map.stairs ? T.stairUp : null, s0 = SU ? SU.tripS : T.tripS != null ? T.tripS : 0.3; if (g <= s0) return;
   const l = Math.hypot(dx, dy) || 1, down = (gx * dx + gy * dy) / l < 0;
-  if (W.rand() < (T.trip != null ? T.trip : 0.12) * (g - s0) / 0.2 * (down ? 1.5 : 1) * (u.vet ? 0.6 : 1) * (u.quadOn ? 0.5 : 1)) knockDown(W, u, T.tripT || 0.8, null, down ? '비탈을 뛰어 내려가다 미끄러짐' : '비탈을 뛰어 오르다 미끄러짐'); }
+  if (W.rand() < (T.trip != null ? T.trip : 0.12) * (g - s0) / 0.2 * (down ? 1.5 : SU ? SU.trip : 1) * (u.vet ? 0.6 : 1) * (u.quadOn ? 0.5 : 1)) knockDown(W, u, T.tripT || 0.8, null, down ? '비탈을 뛰어 내려가다 미끄러짐' : '비탈을 뛰어 오르다 미끄러짐'); }
 /* v7.17 몸 리치: 든 근접 무기 (날붙이 · 둔기) 만 키만큼 길어지고 짧아짐. 체급: 소형 · 중형 · 중대형 · 대형 · 초대형 */
 function bodyReach(p, rules){ const w = (rules.weapons || {})[p.weapon] || {}, B = rules.reachB || {}; if (!B.k || (w.kind !== '날붙이' && w.kind !== '둔기') || w.ammo != null || w.thr) return 0; return Math.max(B.lo != null ? B.lo : -0.1, Math.min(B.hi != null ? B.hi : 0.25, B.k * ((+p.height || 1.7) - 1.7))); }
 const SIZE_RANK = { 소형: 0, 중형: 1, 중대형: 2, 대형: 3, 초대형: 4 };
@@ -160,7 +160,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       canGuard: sh || !!wp.guard || (p.traits || []).includes('반사신경') || parryArcW(rules, p.weapon) > 0, parry: !sh && !wp.guard && parryArcW(rules, p.weapon) > 0, regen: tr.includes('재생') ? ((rules.regen || {}).hp != null ? rules.regen.hp : 0.04) : +p.regenK || 0, guardMode: 'auto', raised: false, raiseAt: 1e9, reflex: (p.traits || []).includes('반사신경'), post: 100, role: roleOf(p, rules),   // v5.7 막기는 선택
       // v5.0 방어 재능 (역할): 방패 · 대검을 든 쪽만 — 막는 폭 ×(0.6 + 0.4g), 막을 때 받는 피해 1 − (1 − blockMul)·g, 자세 깎임 ×(2 − g). [반사신경] 은 몸에 밴 것이라 최소 0.9
       gTal: (sh || wp.guard || parryArcW(rules, p.weapon) > 0) ? Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1, vet,   /* v8.8.0 [방어X] */
-      gArc: Math.round(Math.max(sh ? rules.frontArc : 0, wp.guard ? rules.guardArcW || 40 : 0, (p.traits || []).includes('반사신경') ? (wp.guard || sh ? rules.guardArcRW || 55 : rules.guardArcR || 20) : 0) * ((sh || wp.guard) ? 0.6 + 0.4 * Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1)),   /* v8.8.0 [방어X] 막는 폭도 */
+      hitKb: +p.hitKb || 0, ramp: p.ramp || null, radar: (p.traits || []).includes('레이더'), survivor: (p.traits || []).includes('생존자'), shSize: sh ? (p.shSize || '중형') : null, gArc: Math.round((sh ? ((rules.shSz || {})[p.shSize || '중형'] || 1) : 1) * Math.max(sh ? rules.frontArc : 0, wp.guard ? rules.guardArcW || 40 : 0, (p.traits || []).includes('반사신경') ? (wp.guard || sh ? rules.guardArcRW || 55 : rules.guardArcR || 20) : 0) * ((sh || wp.guard) ? 0.6 + 0.4 * Math.max((roleStat(p, rules).guard != null ? roleStat(p, rules).guard : 1), (p.traits || []).includes('반사신경') ? 0.9 : 0, vet ? vT.tal : 0, gdFloor(rules, p)) : 1)),   /* v8.8.0 [방어X] 막는 폭도 */
       gCost: Math.min((p.traits || []).includes('반사신경') ? rules.reflexCost || 0.6 : 1, vet ? vT.post : 1), brokenT: -9, blockT: -9, bold: boldOf(p), wounds: [], atkMul: 1, spdMul: 1, pinT: -9,
       mood: '', moodB: null, moodT: 0, moodLogT: -9, waitT: 0, vx: 0, vy: 0, heard: null, spot: null,
       // v4.1: 감각 (sense[적 번호] = 대략 / 정확한 자리 · 때) · 전술 (pack = 포위 사냥, stalk = 어둠 속 우회)
@@ -1478,7 +1478,7 @@ function stepCharge(W, u, dt){
   if (A.v0 != null) A.sp = chargeSp(C, A.v0, A.run || 0);   // v5.8.5 도움닫기
   if (A.sup) A.sp *= APR(W).spd || 1.8;   /* v8.7.8 초돌진 */
   if (aim0){ const want = Math.atan2(aim0.y - u.y, aim0.x - u.x), cur = Math.atan2(A.dy, A.dx); let d = want - cur; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; const m = (tg0 && tg0.alive && aim0 !== A.pxy && Math.hypot(tg0.x - u.x, tg0.y - u.y) - u.r - (tg0.r || 0) < (C.commit != null ? C.commit : 1.2)) ? 0 : (C.turn != null ? C.turn : 0.6) * dt * turnMul(W, u), na = cur + Math.max(-m, Math.min(m, d)); A.dx = Math.cos(na); A.dy = Math.sin(na); u.face = u.fg = na; }
-  tryMove(W, u, u.x + A.dx * A.sp * dt, u.y + A.dy * A.sp * dt);
+  { const SU = W.map.stairs ? TER(W).stairUp : null, upK = SU && W.map.hills ? (() => { const [gx, gy] = gGrad(W.map, u.x, u.y), sl = gx * A.dx + gy * A.dy; return sl > 0.08 ? SU.charge : 1; })() : 1; tryMove(W, u, u.x + A.dx * A.sp * dt * upK, u.y + A.dy * A.sp * dt * upK); }   /* v9.3.0 계단을 오르며 돌격 — 힘을 못 얻음 */
   A.run = (A.run || 0) + Math.hypot(u.x - x0, u.y - y0);
   if (A.sup){ apSweep(W, u, A); if (!u.act) return; if (A.run > (A.lim || 99)){ u.act = null; return; } }   /* v8.7.8 초돌진: 길 둘레의 적을 휩쓺 · 노린 적을 놓치면 그만 */
   // v5.5.3 아군 사이를 비집고 나감: 앞을 막은 동료는 옆으로 밀려 비켜섬 (다치지 않음)
@@ -1506,6 +1506,7 @@ function stepCharge(W, u, dt){
     // v5.8.6 도움닫기 몫: shove 칸도 못 달렸으면 밀치기 수준 (휘청 없음 · 덜 눌림), 그 위로는 전력질주 (full 칸) 까지 휘청이 0.5 → 1배
     const runN = A.run || 0, pushOnly = !hc && runN < (C.shove != null ? C.shove : 1), pw = pushOnly ? 0 : Math.max(0, Math.min(1, (runN - (C.shove != null ? C.shove : 1)) / Math.max(0.1, (C.full || 3) - (C.shove != null ? C.shove : 1))));
     // v5.8.7 태세를 갖춘 상대: 자세가 버티면 돌격한 쪽이 당함 (setHold), 못 버티면 방어가 무너지고 그대로 들이받힘
+    if (hit.alive && hit.side !== u.side && (SIZE_RANK[sizeOf(hit)] || 0) >= SIZE_RANK['초대형']) giantChg(W, u, hit);   /* v9.2.1 초대형은 지속 돌격에 넘어짐 (태세로 받아도 셈) */
     let setBroke = false;
     if (!hc && setFor(W, hit, u)){ let cost = setCost(W, u, hit, k, br.mass / (br.trained ? C.trained || 1.6 : 1));   // 훈련 버팀 배율은 태세에 이미 들어 있음
       if (hit.post <= cost && hit.post > cost / ((hit.might || 1) * 1.05) && hit.side !== u.side && mightReady(W, hit)) cost /= mightUse(W, hit, 'brace', u);   /* v7.24.2 괴력: 무너지려던 태세를 버팀 */
@@ -1594,7 +1595,7 @@ function resolveAct(W, u){
       const blind0 = blindTo(W, u, t), dp = blind0 ? Math.max(R.darkAim != null ? R.darkAim : 0.25, gap(u, t) < 0.45 ? 0.6 : 0) : !litAt(W, t.x, t.y) && R.darkHit ? (R.darkHit.melee || 0.96) : 1;   // v7.9.3 몸이 닿는 거리면 어둠에서도 어느 정도 맞춤 · v7.5 어둠 속은 보여도 살짝 헛침 · v8.7.3 식 가운데 주석이 뒤를 잘라 (첫 1초 명중 = 시각) 바로잡음
       u.revealT = W.t;   // v7.5 치면 드러남
       if (dp < 1 && W.rand() >= dp){ u.miss++; L(W, { k: 'miss', a: u.i, b: t.i, why: `어둠 속에서 헛침 (명중률 ${Math.round(dp * 100)}%)`, dark: true, nv: !!u.nv, torch: !!u.torch && !u.torchOff, lit: !!litAt(W, t.x, t.y), d: +gap(u, t).toFixed(2) }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '빗나감', c: 'm', t0: W.t }); }
-      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const wr = ratWallHit(W, u, t), so = strike(W, u, wr || t, t, dp); if (u.cz) czHit(W, u, t, so); if (u.cleave) prnCleave(W, u, wr || t); }   /* v8.7.8 방벽 쥐가 대신 맞음 · 대검 베기 */ }   // v6.7 회피 (몸을 비틀어 흘림)
+      else if (!evadeMelee(W, t, u)){ if (A.mode) heavyHit(W, u, t, A.mode); else { const wr = ratWallHit(W, u, t), so = strike(W, u, wr || t, t, dp); if (u.cz) czHit(W, u, t, so); if (u.hitKb && so && !so.block && !so.wall && t.alive && !t.kb) shove(W, u, t, u.hitKb, t.x - u.x, t.y - u.y, { tag: '강한 일격에 밀림', noDown: true }); if (u.cleave) prnCleave(W, u, wr || t); }   /* v8.7.8 방벽 쥐가 대신 맞음 · 대검 베기 */ }   // v6.7 회피 (몸을 비틀어 흘림)
     }
     A.phase = 'rec'; A.end = W.t + u.rec * supAtkK(W, u) * (far ? (A.sm === 'rapid' ? ((R.sshot || {}).rapid || {}).rec || 0.7 : 1) * ((((R.weapons || {})[u.weapon]) || {}).recK || 1) : wpnSpd(W, u)) + (A.whiff ? (R.step || {}).recAdd || 0.3 : 0); A.t1 = W.t;   // v7.17 헛치면 더 늦게 거둠   // v6.7 단검은 빨리 거둠   // v7.0 속사는 빨리 다음 화살
     if (u.burst) A.end = Math.max(A.end, u.burst.next + (u.burst.left - 1) * u.burst.gap + 0.05);   // 점사가 끝날 때까지
@@ -2076,6 +2077,7 @@ function penRes(W, u, t, part, dir, J, pw, crit, arcX, extra){
 }
 function strike(W, u, t, meant, p, far, extra){
   const R = W.rules, J = extra && extra.jav ? (extra.kn ? KNIFE(W) : JV(W)) : null;
+  if (W.sup8 && W.sf8 && t !== u && t.side !== u.side && !(extra && (extra.far || extra.arc || extra.rain || extra.jav || extra.kn || extra.nowall)) && !(far != null ? far : isFar(u))){ const FW = wallBetween(W, u, t); if (FW){ if (W.t - (FW.blkT || -9) > 0.4){ FW.blkT = W.t; L(W, { k: 'bfieldBlock', a: FW.by, b: u.i, c: t.i, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '역장에 막힘', c: 'b', t0: W.t }); } u.atkT = W.t; return { block: true, wall: true, led: false, dir: 'front', meant: null, ff: false, far: false, p: null, arc: false, kn: false }; } }   /* v9.2.0 역장 너머는 못 침 */
   const led = W.units.some(c => c.alive && c !== u && c.side === u.side && c.cls === '지휘' && dist(c, u) <= 3);
   // v5.2 피해 흔들림: 무기마다 (jit) — 화살 · 투창은 크게 흔들림 (때로 총보다 셈), 총은 안정적
   const isF = far != null ? far : isFar(u), pw = J ? J : isF ? ((R.weapons || {})[u.weaponNow || u.weapon] || {}) : null, jt = pw && pw.jit != null ? pw.jit : R.jitter;
@@ -2221,6 +2223,7 @@ function applyDmg(W, u, t, dmg, o){
   if (t.colKit && !t.tailUsed && t.alive && u !== t && dmg >= t.hp && t.hp >= 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ t.tailUsed = true; dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '꼬리 그림자가 대신 막음' }; L(W, { k: 'colTail', a: u.i, b: t.i, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '꼬리 그림자 — 버팀!', c: 'b', t0: W.t }); if (!(dmg > 0)) return; }   /* v8.7.8 ◆마계 대사: 숨이 끊길 일격을 꼬리 그림자가 한 번 (체력 1 — 3D last) */
   if (t.gakKit && !t.gak && !t.gakUsed && t.alive && u !== t && dmg >= t.hp && t.hp >= 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ t.gakUsed = true; dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '쓰러지지 않음 (각펄)' }; pearlGak(W, t, true); if (!(dmg > 0)) return; }   /* v8.7.9 동료 펄: 숨이 끊길 일격 → 각펄 */
   if (t.h2Last && !t.h2LastUsed && t.alive && u !== t && dmg >= t.hp && t.hp >= 1 && !/출혈|화상|근성/.test((o && o.tag) || '')){ t.h2LastUsed = true; dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; o = { ...(o || {}), tag: ((o && o.tag) ? o.tag + ' — ' : '') + '끝까지 — 버팀' }; L(W, { k: 'h2Last', a: u.i, b: t.i, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '버팀! (끝까지)', c: 'd', t0: W.t }); if (!(dmg > 0)) return; }   /* v8.7.9 ◆끝까지 (각펄) */
+  if (t.grit8 && W.t < t.grit8 && t.alive && dmg >= t.hp){ dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; if (!(dmg > 0)) return; }   /* v9.2.0 장송기사가 살린 몸: 근성처럼 안 죽음 */
   if (t.spare8 && t.alive && u !== t && dmg >= t.hp){ dmg = Math.max(0, t.hp - 1); t.deathKind = null; t.headAt = null; if (t.fell8 == null){ t.fell8 = W.t; L(W, { k: 'spare8', a: u.i, b: t.i, vis: true }); } if (!(dmg > 0)) return; }   /* v8.7.9 만남의 각펄 — 쓰러지되 숨은 붙어 있음 */
   const real = Math.min(dmg, t.hp), dark = t.side === 0 && !canSee(W, t, u);
   if (o && o.ff && u !== t && u.side === t.side){ u.burst = null; u.ffHitT = W.t; u.lastDec = { t: W.t, s: `${t.name}을(를) 맞힘 — 점사를 접고 사선을 다시 봄` }; }   // v7.9.3 아군을 맞히면 남은 발을 접음
@@ -2462,6 +2465,7 @@ function fight(W, u, t, dt, see, ordered){
   u.last = { x: t.x, y: t.y };
   if (!ordered && survive(W, u, t, dt)) return;
   if (!ordered && cover(W, u, t, dt)) return;
+  if (!ordered && wallLine(W, u, t, dt)) return;   /* v9.4.0 암계 전술 — 역장 뒤 창 대열 (던지기 · 우회보다 먼저) */
   if (!ordered && u.side === 1 && u.sq && flankStep(W, u, t, dt)) return;   // v5.2 우회 조
   if (!ordered && tryThrow(W, u, t, false, dt)) return;   // 공격 명령일 땐 던지지 않음 (던지기는 따로 '투창' 명령)
   if (!ordered && u.pact && (u.side === 1 || !u.order) && !AI6.includes('pact') && pactStep(W, u, dt)) return;   // v7.4 아군 자동 전투도   // v6.0 짧은 역할 약속 (살아남기 · 숨기 · 우회 조 · 투창 다음, 보통 싸움 앞)
@@ -4223,7 +4227,7 @@ function lootOf(W){   /* v8.7.6 줍거나 쓰러지면 다시 셈 (예전엔 처
 /* ---------- v7.19.1 고유 기술: 공중제비 (탕아) · 머리 찍기 (쟝) · 영거리 사격 (간두) · 철퇴 후리기 · 휘둘러 치기 (모닝스타) — 적 · 아군 같은 규칙 ---------- */
 const SPEC_NM = k => (Object.entries(SPEC_K).find(e => e[1] === k) || [k])[0];   /* v8.7.3 기술 이름 (명령 글) */
 const PK_SPEC = { psky: 'psky', pball: 'pball', pwide: 'pwide', pfeath: 'feather', pland: 'land', pkick: 'kick' };   /* v8.7.9 동료 펄 기술 칸 → 기술표 (pk) */
-const SPEC_K = { '달라붙기 난도질': 'yclaw', '양동이 뿌리기': 'ybucket', '신나는 공중 투창': 'psky', '신나는 포탄': 'pball', '신나는 횡베기': 'pwide', '철 깃털': 'pfeath', '꼬깃꼬깃 착지': 'pland', '돌려차기': 'pkick', '움츠리기': 'pwrap', '혈영보': 'blink', '정령 강림': 'mdesc', '정령 방벽': 'mwall', '땅의 정령': 'mspirit', '물 정령 탄': 'mvolley', '차원 문': 'cgate', '별빛 지목': 'cstar', '마계 장막': 'cveil', '유혹의 손짓': 'clure', '광역 손짓': 'tsweep', '은빛 비행': 'tflight', '날개 방패': 'twing', '나른한 꿈': 'tdream', '초돌진': 'asup', '앞차기': 'akick', '잡아뚫기': 'kgrab', '노인의 팔': 'ksw', '라이트 훅': 'khook', '짓밟기': 'kstomp', '노인의 팔 철퇴': 'kslam', '돌진 몸박': 'krush', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
+const SPEC_K = { '달라붙기 난도질': 'yclaw', '양동이 뿌리기': 'ybucket', '신나는 공중 투창': 'psky', '신나는 포탄': 'pball', '신나는 횡베기': 'pwide', '철 깃털': 'pfeath', '꼬깃꼬깃 착지': 'pland', '돌려차기': 'pkick', '움츠리기': 'pwrap', '혈영보': 'blink', '정령 강림': 'mdesc', '정령 방벽': 'mwall', '땅의 정령': 'mspirit', '물 정령 탄': 'mvolley', '차원 문': 'cgate', '별빛 지목': 'cstar', '마계 장막': 'cveil', '유혹의 손짓': 'clure', '광역 손짓': 'tsweep', '은빛 비행': 'tflight', '암습': 'hamb', '무기뺏기': 'hdisarm', '암계 역장': 'bfield', '밀치기 돌진': 'bshove', '장송 치유': 'bmend', '장송 부활': 'braise', '방사 절단': 'bcut', '어둠의 화살비': 'brain', '날개 방패': 'twing', '나른한 꿈': 'tdream', '초돌진': 'asup', '앞차기': 'akick', '잡아뚫기': 'kgrab', '노인의 팔': 'ksw', '라이트 훅': 'khook', '짓밟기': 'kstomp', '노인의 팔 철퇴': 'kslam', '돌진 몸박': 'krush', '쥐 표식': 'pmark', '쥐 방진': 'pfort', '쥐 방패': 'pshield', '쥐 사다리': 'pladder', '쥐 포박': 'pbind', '혈염': 'pyre', '핏빛 장판': 'pool', '피의 검기': 'wave', '도약 강타': 'quake', '회전 투척': 'spin', '공중제비': 'flip', '머리 찍기': 'head', '영거리 사격': 'pb', '철퇴 후리기': 'sweep', '휘둘러 치기': 'hurl', '역장': 'ward', '뿌리 벽': 'root', '잡아찢기': 'tear', '딥 킥': 'kick', '방어모드': 'stone', '바위던지기': 'boulder', '손바닥': 'gpalm', '니킥': 'knee', '딱': 'snap', '딱딱딱': 'snap3', '내려찍기': 'gslam', '올려차기': 'rise' };   /* v8.7.8 굿윌 */   // v7.19.2 딸기   /* v8.7.4 붉은암석 (J22) */
 const SPR = (W, k) => ((W.rules.spec || {})[k]) || {};
 const specOf = (u, k) => (u.spec || []).find(x => x.k === k);
 function specReady(W, u, k){ const x = specOf(u, k); if (!x || !u.alive || u.down || u.noArms || u.crawl || u.lie || u.kb || W.t < x.cdT || W.t < u.brokenT || W.t < (u.proneT || -9)) return false; if (u.stoneT != null && W.t < u.stoneT) return false;   /* v8.7.4 방어모드 */ if (x.n != null && x.n <= 0) return false; if (k === 'ybucket' && !(u.skill && u.skill.left >= (SPY(W, 'ybucket').min || 60))) return false;   /* v8.8.2 양동이에 약이 남아야 */ if (GW_K.includes(k) && !gwOn(u)) return false; if ((k === 'kslam' || k === 'krush') && !u.heretic) return false;   /* v8.7.8 불경자의 기술 */   /* v8.7.8 굿윌의 기술은 맨손일 때만 */ if ((k === 'sweep' || k === 'hurl' || k === 'spin') && u.weaponGone) return false; if ((k === 'sweep' || k === 'hurl') && flailOut(W, u)) return false;   /* v7.25.0 공을 거둬야 */ if (k === 'root' && (W.roots || []).filter(r => r.by === u.i).length >= (SPR(W, 'root').max || 2)) return false; return k !== 'pb' || u.shells > 0; }   // v7.19.2 철퇴를 뺏기면 못 씀 · 뿌리 벽은 둘까지
@@ -4911,6 +4915,35 @@ H2K.pearl = { sk: [{ id: 'kick', n: '돌려차기', type: 'slash', cd: 6, use: 1
     { id: 'pball', n: '신나는 포탄', type: 'dash', cd: 9, use: 8, min: 2.5, len: 8, w: 1.0, mul: 1.2, wind: 0.35 },
     { id: 'land', n: '꼬깃꼬깃 착지', type: 'leap', cd: 8, use: 5, min: 2, len: 5, r: 2, mul: 0.6, mul2: 1.3, wind: 0.4 },
     { id: 'psky', n: '신나는 공중 투창', type: 'rain', cd: 10, use: 12, min: 3, cnt: 3, r: 1.1, spread: 2.2, mul: 0.6, delay: 1.2, gap: 0.25, wk: '날붙이', diag: true }] };
+/* v9.2.1 반 · 테리 (암계 중간보스 — 8m 초대형 · 전우조) · 흑익 · 하류 (암계 2층 보스 — 전우조). 기본 공격 + 기술 차례대로 (h2) — 도감 메모 + 민수의 명세 (D7 · D10)
+   공통 (거인): 밟기 (중대형까지 확률 즉사 — 작을수록 높음) · 돌진은 막을 수 없음 (막으면 피해만 줄고 멀리 튕김 · 확률로 밟아 죽임) · 지속 돌격에 넘어짐 (giantFall) */
+H2K.ban = { ml: { n: '광역 베기', range: 7, mul: 1.1, wind: 1.1, cd: 2.2, arc: 2.6, kb: 7 }, stalk: 0.8,
+  sk: [{ id: 'smash', n: '찍기', type: 'thrust', cd: 7, use: 9, len: 9, w: 2.2, mul: 2.1, wind: 1.0, kb: 4 },
+    { id: 'grab', n: '잡아 던지기', type: 'grab', cd: 14, use: 5, r: 3.4, arc: 2.0, mul: 0.8, toss: 6.5, wind: 0.9 },
+    { id: 'stomp', n: '밟기', type: 'stomp', cd: 9, use: 3.4, r: 3.4, mul: 1.5, p: 0.4, trip: true, wind: 0.6 },
+    { id: 'rush', n: '돌진', type: 'dash', cd: 12, use: 12, min: 4, len: 11, w: 3.2, mul: 1.4, kb: 9, trip: true, stompP: 0.15, wind: 0.8 }],
+  phase: { at: 0.4, k: 1.15, spd: 1.1, say: '(거인이 대검을 고쳐 쥔다)' } };
+H2K.teri = { ml: { n: '망치 휘두르기', range: 7.5, mul: 1.2, wind: 1.2, cd: 2.4, arc: 2.4, kb: 7 }, stalk: 0.8,
+  sk: [{ id: 'hit', n: '망치 찍기', type: 'zone', cd: 6, use: 8, r: 2.6, delay: 0.9, mul: 2.2, tag: '망치에 맞음', wk: '둔기', crush: { 소형: 0.45, 중형: 0.3, 중대형: 0.12 } },
+    { id: 'big', n: '망치 내려찍기', type: 'zone', cd: 16, use: 10, min: 3, r: 4.2, delay: 1.6, mul: 3.2, stun: 1.6, tag: '망치에 으깨짐', wk: '둔기', air: true, crush: { 소형: 0.9, 중형: 0.8, 중대형: 0.55, 대형: 0.2 }, quake: { extra: 3, stun: 0.8, down: 0.35 } },
+    { id: 'launch', n: '망치 후리기', type: 'slash', cd: 10, use: 6.5, r: 6.5, arc: 2.0, mul: 1.6, kb: 14, wind: 1.3 },
+    { id: 'stomp', n: '밟기', type: 'stomp', cd: 9, use: 3.4, r: 3.4, mul: 1.5, p: 0.4, trip: true, wind: 0.6 },
+    { id: 'rush', n: '돌진', type: 'dash', cd: 12, use: 12, min: 4, len: 11, w: 3.2, mul: 1.4, kb: 9, trip: true, stompP: 0.15, wind: 0.8 }],
+  phase: { at: 0.4, k: 1.15, spd: 1.1, say: '(거인이 망치를 어깨에서 내린다)' } };
+H2K.heugik = { ml: { n: '장검 베기', range: 2.1, mul: 1.0, wind: 0.45, cd: 1.1, arc: 1.6, kb: 1.2 }, stalk: 0.9,
+  sk: [{ id: 'jump', n: '도약', type: 'leap', cd: 6, use: 12, min: 4, len: 12, r: 1.8, mul: 0.7, mul2: 1.5, wind: 0.45 },
+    { id: 'lunge', n: '찌르기 돌격', type: 'dash', cd: 7, use: 9, min: 2.5, len: 9, w: 1.0, mul: 1.7, wind: 0.3 },
+    { id: 'orbs', n: '에너지탄 5연발', type: 'combo', cd: 11, use: 14, min: 4, gap: 0.2, sub: [0, 1, 2, 3, 4].map(i => ({ type: 'shot', len: 15, w: 0.4, mul: 0.5, wind: 0.14, far: true, wk: '마법', pm: 1.2, track: 0.1 })) },
+    { id: 'fly', n: '비행 강하', type: 'leap', cd: 13, use: 12, min: 3, len: 12, r: 2.0, mul: 0.7, mul2: 1.9, wind: 0.5, over: true },
+    { id: 'sidekick', n: '사이드킥', type: 'dash', cd: 5, use: 4.5, min: 1.2, len: 4.5, w: 1.1, mul: 1.0, kb: 3, wind: 0.22 },
+    { id: 'deepkick', n: '딥킥', type: 'dash', cd: 9, use: 6.5, min: 2, len: 7, w: 1.2, mul: 1.6, kb: 5, wind: 0.5 }],
+  phase: { at: 0.5, k: 1.15, spd: 1.12, say: '(에너지 날개가 펼쳐진다)' } };
+H2K.hareu = { ml: { n: '대검 베기', range: 2.7, mul: 1.3, wind: 0.6, cd: 1.5, arc: 1.8, kb: 2 }, stalk: 0.9,
+  sk: [{ id: 'shade', n: '어둠 속 이동 · 원형 베기', type: 'combo', cd: 9, use: 12, min: 3, gap: 0.2, sub: [{ type: 'behind', rec: 0.25 }, { type: 'slash', r: 4.2, arc: 6.3, mul: 1.6, wind: 0.35, kb: 2 }] },
+    { id: 'flip', n: '공중제비 · 원형 돌리기', type: 'combo', cd: 8, use: 6, min: 1.5, gap: 0.12, sub: [{ type: 'leap', len: 4.5, r: 1.8, mul: 0.5, mul2: 1.1, wind: 0.25 }, { type: 'slash', r: 3.3, arc: 6.3, mul: 1.0, wind: 0.15 }] },
+    { id: 'pierce', n: '잡아뚫기', type: 'thrust', cd: 10, use: 3.4, min: 0.5, len: 3.4, w: 0.9, mul: 2.2, wind: 0.45, kb: 2 },
+    { id: 'dash', n: '대검 돌진', type: 'dash', cd: 7, use: 8, min: 3, len: 7, w: 1.1, mul: 1.4, wind: 0.3 }],
+  phase: { at: 0.5, k: 1.15, spd: 1.12, say: '(대검이 어둠을 머금는다)' } };
 const H2KB = 0.5;   // 3D 밀침 → 이 판의 밀치는 힘
 const h2Of = (u, via) => (u && u[via || 'h2']) || null;   /* v8.7.9 기술표 둘 (h2 = 보스 · 각펄 / pk = 동료 펄 기술 / pw = 무기 기술) */
 const h2Kit = (u, via) => { const H = h2Of(u, via); return (H && H2K[H.k]) || null; };
@@ -4952,6 +4985,13 @@ function h2Cast(W, u, s, t, via){
   if (W.fxOn && s.say) W.fx.push({ k: 'say', a: u.i, s: s.say, t0: W.t });
   setMood(W, u, s.n, t.i);
   if (s.type === 'combo'){ const subs = (s.sub || []).filter(x => !x.ph || H.ph); return h2Sub(W, u, s, subs, 0, t, via); }   /* v8.7.9 연계: 차례로 */
+  if (s.type === 'behind'){   /* v9.2.1 어둠 속 이동: 상대 등 뒤로 (막힌 데면 옆) */
+    const fa = t.face != null ? t.face : Math.atan2(t.y - u.y, t.x - u.x); let ok = false;
+    for (const da of [Math.PI, Math.PI - 0.7, Math.PI + 0.7, Math.PI / 2, -Math.PI / 2]){ const bx = t.x + Math.cos(fa + da) * (t.r + u.r + 0.15), by = t.y + Math.sin(fa + da) * (t.r + u.r + 0.15);
+      if (!boxRock(W, bx, by, u.r * 0.9) && !W.units.some(o => o.alive && o !== u && o !== t && Math.hypot(o.x - bx, o.y - by) < o.r + u.r * 0.8)){ h2Ghost(W, u, bx, by); ok = true; break; } }
+    u.fg = u.face = Math.atan2(t.y - u.y, t.x - u.x);
+    u.act = { k: 'h2', s: s.id, n: s.n, type: s.type, b: t.i, phase: 'rec', t0: W.t, end: W.t + (s.rec || 0.2), via, cmb };
+    L(W, { k: 'h2Step', a: u.i, b: t.i, n: s.n, d: 0, vis }); return true; }
   if (s.type === 'backstep'){   // 3D: 상대에게서 len 물러남 (보스는 잔상으로 곧장)
     const a = Math.atan2(u.y - t.y, u.x - t.x), k = h2Reach(W, u, u.x, u.y, a, s.len); h2Ghost(W, u, u.x + Math.cos(a) * k, u.y + Math.sin(a) * k);
     u.act = { k: 'h2', s: s.id, n: s.n, type: s.type, b: t.i, phase: 'rec', t0: W.t, end: W.t + 0.35, via, cmb };
@@ -4963,7 +5003,7 @@ function h2Cast(W, u, s, t, via){
     u.act = { k: 'h2', s: s.id, n: s.n, type: s.type, b: t.i, phase: 'rec', t0: W.t, end: W.t + 0.6, via, cmb }; return true; }
   if (s.type === 'trap' || s.type === 'zone'){   /* v8.7.9 3D 덫 · 장판: 표적 발밑에 늦게 닫히는 원 (덫은 땅에서 솟음 — 위에서 떨어지지 않음) */
     const Z = W.h2z || (W.h2z = []), m = W.map, x = Math.max(0.5, Math.min(m.W - 0.5, t.x)), y = Math.max(0.5, Math.min(m.H - 0.5, t.y));
-    Z.push({ by: u.i, side: u.side, x, y, r: s.r, t0: W.t, at: W.t + (s.delay || 1), mul: s.mul, n: s.n, stun: s.stun || 0, wk: s.wk || null, tag: s.tag || null, up: !!s.up, trap: s.type === 'trap' });
+    Z.push({ by: u.i, side: u.side, x, y, r: s.r, t0: W.t, at: W.t + (s.delay || 1), mul: s.mul, n: s.n, stun: s.stun || 0, wk: s.wk || null, tag: s.tag || null, up: !!s.up, trap: s.type === 'trap', crush: s.crush || null, quake: s.quake || null });
     if (s.air){ u.act = { k: 'leap', phase: 'run', air: true, t0: W.t, end: W.t + (s.delay || 1) + 0.15, fx: u.x, fy: u.y, tx: u.x, ty: u.y, dir: 'up', b: t.i, h2up: { n: s.n, via, cmb } }; L(W, { k: 'h2Up', a: u.i, n: s.n, vis }); }   // 높이 날아올라 던짐 — 그동안 공중 (바닥 공격이 닿지 않음)
     else u.act = { k: 'h2', s: s.id, n: s.n, type: s.type, b: t.i, phase: 'rec', t0: W.t, end: W.t + 0.5, via, cmb };
     return true; }
@@ -4971,11 +5011,23 @@ function h2Cast(W, u, s, t, via){
   const Z = s.type === 'dash' || s.type === 'leap' ? { sh: 'line', x: u.x, y: u.y, ang, len: Math.min(s.len, d + 0.6), w: s.w || 1.1 }
     : s.type === 'thrust' || s.type === 'beam' ? { sh: 'line', x: u.x, y: u.y, ang, len: s.len, w: s.w || 0.9 }
     : s.type === 'shot' ? { sh: 'line', x: u.x, y: u.y, ang, len: s.len || s.use || 10, w: (s.w || 0.5) + (s.cnt > 1 ? Math.tan((s.spread || 0.12) * (s.cnt - 1) / 2) * (s.len || 8) : 0) }
+    : s.type === 'stomp' ? { sh: 'circ', x: u.x, y: u.y, r: s.r }
+    : s.type === 'grab' ? { sh: 'fan', x: u.x, y: u.y, ang, r: s.r, arc: s.arc || 1.6 }
     : { sh: 'fan', x: u.x, y: u.y, ang, r: s.r, arc: s.arc };
   const wind = s.wind != null ? s.wind : 0.5;
   u.act = { k: 'h2', s: s.id, n: s.n, type: s.type, b: t.i, phase: 'wind', t0: W.t, end: W.t + wind, Z, mul: s.mul, stun: s.stun || 0, trip: !!s.trip, kb: s.kb || 0, sk: s, via, cmb };
   L(W, { k: 'wind', a: u.i, b: t.i, h2: s.id, spec: 'h2', w: s.n, end: +(W.t + wind).toFixed(2), why: '', hid: u.side === 1 && !u.seenBy });
   return true;
+}
+// v9.2.1 잡아 던지기 (반): 손에 닿는 (대형 아래) 상대를 움켜쥐고 정면으로 내던짐 — 벽에 부딪히면 뭉개지고 · 사이에 낀 몸은 서로 튕김 (밀침의 날아감 규칙)
+function h2Grab(W, u, A){
+  A.phase = 'rec'; A.end = W.t + 0.9; A.t1 = W.t; u.atkT = W.t; const Z = A.Z, S = A.sk, vis = u.side === 0 || !!u.seenBy;
+  const v = W.units.filter(e => h2Hittable(u, e) && h2In(W, Z, e) && !e.giant && (SIZE_RANK[sizeOf(e)] || 0) < SIZE_RANK['대형']).sort((a, b) => dist(u, a) - dist(u, b))[0];
+  if (!v){ L(W, { k: 'miss', a: u.i, b: A.b, why: '붙잡을 수 있는 상대가 없음', spec: 'h2' }); return; }
+  if (evadeMelee(W, v, u)) return;
+  strike(W, u, v, v, 1, false, { mul: S.mul || 0.8, tag: '움켜쥠', grab: true });
+  if (v.alive){ interrupt(W, v, '움켜쥐여 준비가 끊김'); shove(W, u, v, S.toss || 6.5, Math.cos(Z.ang), Math.sin(Z.ang), { tag: '내던져짐', how: 'bash' }); }
+  L(W, { k: 'h2Grab', a: u.i, b: v.i, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: v.x, y: v.y, s: '내던짐!', c: 'd', t0: W.t });
 }
 // v8.7.9 연계의 i 번째 (그때 표적 쪽으로 다시 겨눔) · 다음 것 (표적이 쓰러졌으면 끝)
 function h2Sub(W, u, s, subs, i, t, via){ const x = subs[i]; if (!x || !t || !t.alive){ u.act = null; return false; } return h2Cast(W, u, { id: s.id + '_' + i, n: x.n || s.n, cd: 0, use: 99, ...x, sub0: true, cmb: { s, subs, i, via, gap: s.gap != null ? s.gap : 0.35 } }, t, via); }
@@ -4988,6 +5040,7 @@ function resolveH2(W, u){
   if (A.phase !== 'wind'){ u.act = null; h2Next(W, u, A); return; }
   if (A.type === 'leap'){ h2Jump(W, u, A); return; }
   if (A.type === 'shot'){ h2Shot(W, u, A); return; }
+  if (A.type === 'grab'){ h2Grab(W, u, A); return; }   /* v9.2.1 잡아 던지기 */
   A.phase = 'rec'; A.end = W.t + h2RecT(A); A.t1 = W.t; u.atkT = W.t;
   const Z = A.Z, hit = W.units.filter(e => h2Hittable(u, e) && h2In(W, Z, e)), hc = (A.sk || {}).heavyCrit || 0;
   for (const e of hit){
@@ -4997,6 +5050,9 @@ function resolveH2(W, u){
     if (A.stun) stun(W, e, A.stun, u.i);
     if (A.trip && !(e.traits || []).includes('보스') && !e.giant) knockDown(W, e, 1.2, u.i, A.n);   // 3D: 무거운 몸 · 보스는 안 넘어짐
   }
+  { const P1 = A.type === 'stomp' ? (A.sk || {}).p : (A.sk || {}).stompP;   /* v9.2.1 밟기: 중대형까지 확률 즉사 (작을수록 높음) */
+    if (P1) for (const e of hit){ if (!e.alive || e.giant || (SIZE_RANK[sizeOf(e)] || 0) > SIZE_RANK['중대형'] || e.down) continue; const pp = P1 * ((SIZE_RANK[sizeOf(e)] || 0) === 0 ? 1.4 : 1);
+      if (W.rand() < pp){ applyDmg(W, u, e, Math.max(1, Math.ceil(e.hp)) + 1, { far: false, part: '몸통', tag: '짓밟혀 죽음', death: 'squash' }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y, s: '짓밟힘!', c: 'd', t0: W.t }); } } }
   L(W, { k: 'h2Hit', a: u.i, s: A.s, n: A.n, hit: hit.map(e => e.i), vis: u.side === 0 || !!u.seenBy || hit.some(e => e.side === 0) });
   if (W.fxOn) W.fx.push({ k: 'h2Fx', sh: Z.sh, x: Z.x, y: Z.y, ang: Z.ang, r: Z.r, arc: Z.arc, len: Z.len, w: Z.w, side: u.side, t0: W.t });
   if (A.type === 'dash' && u.alive){ const k = h2Reach(W, u, Z.x, Z.y, Z.ang, Z.len); h2Ghost(W, u, Z.x + Math.cos(Z.ang) * k, Z.y + Math.sin(Z.ang) * k); }
@@ -5020,7 +5076,7 @@ function h2Shot(W, u, A){
     for (let q = 0.3; q <= L0; q += 0.3) if (rock(W.map, u.x + c * q, u.y + sn * q)){ L0 = q; break; }   // 직사 — 벽에서 멈춤
     const ZZ = { sh: 'line', x: u.x, y: u.y, ang: a, len: L0, w: s.w || 0.5 }, L1 = W.units.filter(e => h2Hittable(u, e) && h2In(W, ZZ, e)).sort((p, q) => dist(u, p) - dist(u, q));
     for (const e of L1){
-      const o = strike(W, u, e, e, 1, true, jav ? { mul: (s.mul || 1) / (J.mul || 1), tag: A.n, jav: true, pm: s.pm || 1 } : { mul: s.mul || 1, tag: A.n, wk: '날붙이' }); out.push(e.i);
+      const o = strike(W, u, e, e, 1, true, jav ? { mul: (s.mul || 1) / (J.mul || 1), tag: A.n, jav: true, pm: s.pm || 1 } : { mul: s.mul || 1, tag: A.n, wk: s.wk || '날붙이' }); out.push(e.i);
       if (o && o.block && (o.deflect || !s.pierce)) break;   // 방패에 박힘 · 막힘 — 거기서 멈춤
       if (e.alive && s.kb && !e.kb && !(o && o.block)) shove(W, u, e, s.kb * H2KB, c, sn, { tag: A.n + '에 날아감', noDown: true });
       if (e.alive && s.sts === 'bleed' && !(o && o.block)) startBleed(W, e, u.i, 1);
@@ -5092,8 +5148,13 @@ function stepH2Z(W){
   W.h2z = W.h2z.filter(Z => { const by = W.units[Z.by];
     if (W.t < Z.t0) return !!(by && by.alive);
     if (W.t < Z.at) return true;
-    const hit = W.units.filter(e => e.alive && !e.gone && !e.down && e.side !== Z.side && !(e.act && e.act.k === 'leap') && h2In(W, { sh: 'circ', x: Z.x, y: Z.y, r: Z.r }, e));
-    for (const e of hit){ strike(W, by, e, e, 1, false, { mul: Z.mul, tag: Z.tag || Z.n, wk: Z.wk || '마법', arc: !Z.up, rain: !Z.up }); if (e.alive && Z.stun) stun(W, e, Z.stun, by.i); }   /* v8.7.9 덫 · 장판 (각펄의 창은 날붙이 · 솟는 창은 땅에서) */
+    const hit = W.units.filter(e => e.alive && !e.gone && !e.down && (e.side !== Z.side || Z.ff) && !(e.act && e.act.k === 'leap') && h2In(W, { sh: 'circ', x: Z.x, y: Z.y, r: Z.r }, e));
+    for (const e of hit){ const o = strike(W, by, e, e, 1, false, { mul: Z.mul, tag: Z.tag || Z.n, wk: Z.wk || '마법', arc: !Z.up, rain: !Z.up }); if (e.alive && Z.stun) stun(W, e, Z.stun, by.i);
+      if (e.alive && Z.crush && !(o && o.block)){ const pc = Z.crush[sizeOf(e)] || 0; if (pc && W.rand() < pc){ applyDmg(W, by, e, Math.max(1, Math.ceil(e.hp)) + 1, { far: false, part: '몸통', tag: '찌부러짐', death: 'squash' }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y, s: '찌부러짐!', c: 'd', t0: W.t }); } } }
+    if (Z.quake){ const Qk = Z.quake; let qn = 0;   /* 지축 울림: 땅의 중대형까지 잠깐 뜸 · 행동 끊김 · 확률로 넘어짐 */
+      for (const e of W.units){ if (!e.alive || e.gone || e.side === Z.side || e.down || airOf(e) || (e.act && e.act.k === 'leap') || e.giant || (SIZE_RANK[sizeOf(e)] || 0) > SIZE_RANK['중대형'] || Math.hypot(e.x - Z.x, e.y - Z.y) > Z.r + (Qk.extra != null ? Qk.extra : 3)) continue;
+        interrupt(W, e, '지축이 울려 준비가 끊김'); stun(W, e, Qk.stun != null ? Qk.stun : 0.8, by.i); qn++; if (e.alive && W.rand() < (Qk.down != null ? Qk.down : 0.35)) knockDown(W, e, 1.4, by.i, '지축 울림'); }
+      L(W, { k: 'quake', a: Z.by, n: qn, x: +Z.x.toFixed(1), y: +Z.y.toFixed(1), vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: Z.x, y: Z.y - 1, s: '쿵 —', c: 'd', t0: W.t }); }   /* v8.7.9 덫 · 장판 (각펄의 창은 날붙이 · 솟는 창은 땅에서) */
     L(W, { k: 'h2Rain', a: Z.by, n: Z.n, hit: hit.map(e => e.i), x: +Z.x.toFixed(1), y: +Z.y.toFixed(1), vis: hit.some(e => e.side === 0) || litAt(W, Z.x, Z.y) });
     if (W.fxOn) W.fx.push({ k: 'h2Boom', x: Z.x, y: Z.y, r: Z.r, side: Z.side, t0: W.t });
     return false; });
@@ -6879,12 +6940,12 @@ function planMoves(W, mine, known){
   for (const a of mine){ if (AI6.includes('kite') || !isFar(a) || !mvFree(W, a) || busyW(W, a)) continue;
     const LN = chargeLane(W, a, f => known.includes(f)), x = LN ? LN.c : known.filter(f => !isFar(f) && !f.down && !f.crawl && gap(a, f) < 3 && (f.target === a || (f.order && f.order.b === a.i) || focusOf(W, f) === a)).sort((p, q) => gap(a, p) - gap(a, q))[0]; if (!x) continue;   /* v8.7.4 나를 노린 돌진 — 3칸 밖이어도 */
     if (mine.some(m => m !== a && !isFar(m) && dist(m, x) < dist(a, x) && segD(x, a.x, a.y, m) < m.r + x.r)) continue;   // 사이에 근접 동료가 막아 주면 그 자리에서 쏨
-    const close = gap(a, x) < 2.4, shot = (a.lastFireT != null ? a.lastFireT : -9) > (a.kiteT0 != null ? a.kiteT0 : -9);   /* v8.7.4 나를 노린 돌진이면 길의 옆으로 (아군과 같은 규칙) */
+    const close = gap(a, x) < (a.survivor ? 3.1 : 2.4), shot = (a.lastFireT != null ? a.lastFireT : -9) > (a.kiteT0 != null ? a.kiteT0 : -9);   /* v8.7.4 나를 노린 돌진이면 길의 옆으로 (아군과 같은 규칙) */
     if (!LN && !close && (!shot || mine.some(o => o !== a && isFar(o) && o.alive && ((o.mv && o.mv.k === 'kite' && W.t < o.mv.until) || (o.act && o.act.k === 'leap'))))) continue;
     if (gap(a, x) < Math.max(((EVM(W).kite || {}).contact != null ? EVM(W).kite.contact : 0.7), x.rng + 0.25)) continue;   // 이미 맞붙음 — 등을 보이면 맞음 (그 자리에서 쏨 · 아군과 같은 규칙 · v8.7.4)
     if (LN && !shot && laneShootFirst(W, a, LN)) continue;   // 돌진이 닿기 전에 한 발 쏘고 비킬 시간이 있으면 먼저 쏨 (v8.7.4)
     const mc = mine.filter(m => m !== a && !isFar(m)), base = LN ? Math.atan2(LN.dy, LN.dx) : Math.atan2(a.y - x.y, a.x - x.x); let best = null, bs = -1e9;
-    for (const da of LN ? [1.57, -1.57, 1.2, -1.2, 1.9, -1.9, 0.8, -0.8] : [0, 0.5, -0.5, 1.0, -1.0, 1.5, -1.5]){ const ang = base + da, px = a.x + Math.cos(ang) * 2.2, py = a.y + Math.sin(ang) * 2.2;
+    for (const da of LN ? [1.57, -1.57, 1.2, -1.2, 1.9, -1.9, 0.8, -0.8] : [0, 0.5, -0.5, 1.0, -1.0, 1.5, -1.5]){ const ang = base + da, px = a.x + Math.cos(ang) * (a.survivor ? 3.0 : 2.2), py = a.y + Math.sin(ang) * (a.survivor ? 3.0 : 2.2);
       if (px < 0.8 || py < 0.8 || px > W.map.W - 0.8 || py > W.map.H - 0.8 || boxRock(W, px, py, a.r)) continue;
       if (LN && !laneOk(LN, a, px, py)) continue;
       if (known.some(f => !isFar(f) && f !== x && Math.hypot(f.x - px, f.y - py) - f.r - a.r < f.rng + 1.2)) continue;
@@ -7431,12 +7492,12 @@ function planPacts(W){
   for (const P of [...(W.pacts || [])]){ const w = pactHolds(W, P); if (w === null){ P.badT = 0; continue; } if (w === '' || w === '누가 쓰러짐' || w === '다른 상대에게 붙들림'){ pactEnd(W, P, w || '교전이 끝남'); continue; } P.badT += 0.5; if (P.badT >= 1.2) pactEnd(W, P, w); }
   for (const S of [1, 0]){ if (S === 0 && AI6.includes('apact')) continue;   // v7.4 아군 자동 전투도 약속을 맺음 (같은 규칙)
   const E = W.units.filter(e => e.alive && e.side === S && !e.crawl), known = f => S === 0 ? !!f.seenBy || E.some(e => fresh(W, e.sense[f.i], 1.5)) : E.some(e => canSee(W, e, f) || fresh(W, e.sense[f.i], 1.5));
-  const free = E.filter(e => pactFree(W, e)), freeM = S === 0 ? E.filter(e => pactFreeM(W, e)) : [], taken = new Set();
+  const free = E.filter(e => pactFree(W, e)), freeM = E.filter(e => pactFreeM(W, e)), taken = new Set();
   const pickF = (cands, x, max) => cands.filter(f => !taken.has(f.i) && dist(f, x) < max && !engagedBy(W, f, x) && (!f.line || isFar(f))).sort((a, b) => dist(a, x) - dist(b, x))[0];   // 전열에 선 쪽은 줄을 지킴 (빠지면 틈) — 약속은 줄 밖의 몸이 맡음
   for (const A of E){
     if ((W.pacts || []).some(P => P.a === A.i)) continue;
     // v9.1 전우가 맞붙었으면 전우가 아닌 쪽 전우가 그 적의 옆 · 뒤로 (측면 협공)
-    if (S === 0 && A.cg && !isFar(A) && !A.crawl && !A.down){ const X = W.units.find(f => f.alive && f.side !== A.side && !isFar(f) && gap(A, f) < Math.max(A.rng, f.rng) + 0.4 && (focusOf(W, f) === A || A.target === f));
+    if (A.cg && !isFar(A) && !A.crawl && !A.down){ const X = W.units.find(f => f.alive && f.side !== A.side && !isFar(f) && gap(A, f) < Math.max(A.rng, f.rng) + 0.4 && (focusOf(W, f) === A || A.target === f));
       if (X){ const F = pickF(freeM.filter(f => f !== A && f.cg === A.cg && !isFar(f)), X, (W.rules.cmates || {}).flankD || 9); if (F){ taken.add(F.i); pactMake(W, 'pin', A, F, X, { rear: null, mate: true }); continue; } } }
     // screen: 물러나는 동료를 쫓는 놈
     if (retreating(A)){ const X = W.units.filter(f => f.alive && f.side !== A.side && !isFar(f) && known(f) && dist(f, A) < 4 && (focusOf(W, f) === A || dist(f, A) < 2)).sort((p, q) => dist(p, A) - dist(q, A))[0];
@@ -8236,8 +8297,9 @@ const matesOf = (W, u) => u.cg ? W.units.filter(a => a !== u && a.alive && !a.go
 const isMateOf = (u, b) => !!u.cg && u !== b && u.cg === b.cg;
 const chiefOfU = (W, u) => u.chiefLk && u.sqLead != null && W.units[u.sqLead] && W.units[u.sqLead].alive ? W.units[u.sqLead] : null;
 function chiefInit(W, setup){
-  setup.units.forEach((p, k) => { const u = W.units[k]; if (!u || u.side !== 0) return;
+  setup.units.forEach((p, k) => { const u = W.units[k]; if (!u) return;
     if (p.cg) u.cg = String(p.cg);
+    if (u.side !== 0) return;
     if (p.chiefNm !== undefined && !u.hero){
       const C = p.chiefNm ? W.units.find(c => c.side === 0 && c !== u && c.name === p.chiefNm && !c.summon && !c.hero) : null;
       if (C){ u.sqLead = C.i; u.sqAuto = false; u.sqFix = true; u.chiefLk = true; }
@@ -8293,7 +8355,7 @@ function mateAnchor(W, u, hero){
   for (const m of matesOf(W, u)){ if (m.down || m.crawl || m === hero || !(m.order || m.stay) || dist(m, hero) <= (K.away || 7)) continue; if (!best || dist(m, u) < dist(best, u)) best = m; }
   return best;
 }
-const pactFreeM = (W, u) => u.alive && u.side === 0 && !!u.cg && !u.crawl && !u.pact && !u.shadow && !u.supp && !u.pack && !u.stalk && !(u.warden && u.warden.on) && !u.order && !u.ordPend && u.lretId == null && u.cls !== '치유' && ['fight', 'idle', 'follow'].includes(u.state) && !(u.sq && u.sq.k === 'flank' && !u.sq.done) && W.t >= u.proneT && !u.kb && !(u.hp / u.max < 0.3 && u.bold < 0.5);
+const pactFreeM = (W, u) => u.alive && !!u.cg && !u.crawl && !u.pact && !u.shadow && !u.supp && !u.pack && !u.stalk && !(u.warden && u.warden.on) && !u.order && !u.ordPend && u.lretId == null && u.cls !== '치유' && ['fight', 'idle', 'follow'].includes(u.state) && !(u.sq && u.sq.k === 'flank' && !u.sq.done) && W.t >= u.proneT && !u.kb && !(u.hp / u.max < 0.3 && u.bold < 0.5);
 function stepWorld(W, dt){
   if (W.over) return;
   W.t += dt;
@@ -8309,6 +8371,7 @@ function stepWorld(W, dt){
   stealthFeel(W);   // v7.8.3 들킴을 느낌
   lieTick(W, dt);   // v7.11 포복: 자세 바꿈 · 관측 기회 · 놓침 · 스스로 일어남
   watchTick(W);   // v7.7 사주경계 (뒤돌아봄)
+  bfTick(W); rampTick(W); radarTick(W); vialSync(W);   /* v9.4.1 */   /* v9.2.0 장송기사가 살린 몸 · v9.2.1 점점 빨라짐 · 레이더 */
   lretTick(W, dt);   // v7.2 전열 조직 후퇴: 닻을 옮김 (처진 마디를 기다림)
   formTick(W, dt);   /* v8.7.5 대형 */
   W.fbT = (W.fbT || 0) - dt; if (W.fbT <= 0){ W.fbT = 0.2; fbTick(W); comboTick(W); }   /* v8.7.5 진형 · 조합 버프 */
@@ -9393,9 +9456,9 @@ function karWorld(W){ for (const u of W.units) if (u.ls && u.alive && !W.units.s
    수치는 기술표 그대로 (칸 = 3D 의 m — 카리우스와 같음) · 대기 · 준비 · 쓸 거리는 3D 구현 · 체력 · 공격은 3D 비 (200 : 175 : 125) 를 명세의 테헤라 체력 200 에 맞춤 (× 1.6).
    장판 · 문 · 방벽 · 장막은 W.sf8 (k: desc · dream · veil · gate · wall) — 그린 그대로 판정 (모양 · 자리 · 남은 때). 피해 보정은 받는 쪽에서 (supTake). */
 const healPolOf = (W, u) => u.healPol || (u.skill && u.skill.inf ? 'free' : ((W.rules.heal || {}).pol || 'dying'));   /* v8.7.8 치료 방침 (고른 것 · 없으면 마력 치유는 알아서 · 약은 위급할 때만) */
-const SUP_K = ['mdesc', 'mwall', 'mspirit', 'mvolley', 'cgate', 'cstar', 'cveil', 'clure', 'tsweep', 'tflight', 'twing', 'tdream'];
-const SUP_SELF = ['mspirit', 'cveil', 'twing', 'tdream'];   // 제자리에서 바로
-const SUP_FOE = ['mvolley', 'cstar', 'clure'];   // 적을 노림
+const SUP_K = ['mdesc', 'mwall', 'mspirit', 'mvolley', 'cgate', 'cstar', 'cveil', 'clure', 'tsweep', 'tflight', 'twing', 'tdream', 'bfield', 'bshove', 'bmend', 'braise', 'bcut', 'brain', 'hamb', 'hdisarm', 'vial'];
+const SUP_SELF = ['mspirit', 'cveil', 'twing', 'tdream', 'bcut'];   // 제자리에서 바로
+const SUP_FOE = ['mvolley', 'cstar', 'clure', 'bshove', 'hamb', 'hdisarm'];   // 적을 노림
 const SUPR = W => W.rules.sup8 || {};
 const isDemon = u => /마족|악마|마계/.test((u.race || '') + ' ' + (u.origin || ''));
 const supVis = (W, u) => u.side === 0 || !!u.seenBy;
@@ -9430,7 +9493,7 @@ function supShotHit(W, u, s, hit, o2){
 }
 // 탄의 길: 정령 방벽 (선분) 을 넘으면 막힘 · 차원 문 (가운데 eat 칸) 에 닿으면 사라짐 — 상대 편의 탄만
 function supShotStop(W, s, x0, y0, x1, y1, arc){
-  for (const F of W.sf8){ if (W.t >= F.until || F.side === s.side) continue;
+  for (const F of W.sf8){ if (W.t >= F.until || F.side === s.side) continue; if (F.hard && arc) continue;   /* v9.2.0 역장은 곡사를 못 막음 */
     let k = null, how = '';
     if (F.k === 'wall'){ k = segX(x0, y0, x1, y1, F.x - F.ux * F.h, F.y - F.uy * F.h, F.x + F.ux * F.h, F.y + F.uy * F.h); how = 'wall'; }
     else if (F.k === 'gate'){ k = segNear(x0, y0, x1, y1, F.x, F.y, F.eat || 0.9); how = 'gate'; }
@@ -9506,10 +9569,74 @@ function sfStep(W, F, dt){
       if (isBoss(e) || e.giant || (SIZE_RANK[sizeOf(e)] || 0) >= (SIZE_RANK['대형'] || 3)){ heavy++; continue; }   // 보스 · 큰 몸은 끌려가지 않음
       e.pull8 = { dx: (F.x - e.x) / d, dy: (F.y - e.y) / d, left: Math.min(F.pull || 1.5, d - 0.6), v: 6 }; n++; }
     if (n || heavy) L(W, { k: 'gatePull', a: F.by, n, heavy, vis: F.side === 0 || W.units.some(e => e.pull8 && e.side === 0) }); return; }
+  if (F.k === 'wall' && F.hard){ wallHold(W, F); return; }   /* v9.2.0 암계 역장: 못 넘음 */
   if (F.k === 'wall'){ for (const e of W.units){ if (!e.alive || e.gone || e.side === F.side || F.pushed[e.i] || e.down || airOf(e) || (e.act && e.act.k === 'tfly')) continue;
       const q = wallQ(F, e.x, e.y); if (q.d > e.r + 0.15) continue; F.pushed[e.i] = 1;
       interrupt(W, e, '방벽에 밀려 준비가 끊김'); e.push8 = { dx: F.nx * q.s, dy: F.ny * q.s, left: F.push || 2, v: 8 };
       L(W, { k: 'wallPush', a: F.by, b: e.i, vis: F.side === 0 || e.side === 0 || !!e.seenBy }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y, s: '방벽에 밀려남', c: 'b', t0: W.t }); } return; }
+}
+// v9.4.0 암계 전술 (명세 D6): 같은 편 역장이 펼쳐져 있는 동안 창 든 이 (근접) 는 선 바로 뒤 (아군 쪽 0.55 + 몸) 에 나란히 선다 — 칸은 선 방향 좌표 순 (서로 1.15칸 · 선 길이 안) · 선 너머로 찌름 (아군의 일격은 선을 지남)
+function wallLine(W, u, t, dt){
+  if (!W.sf8 || !W.sf8.length || !/창/.test(u.weapon || '') || isFar(u) || u.crawl || u.down || u.lie) return false;
+  const F = W.sf8.find(f => f.k === 'wall' && f.hard && f.side === u.side && W.t < f.until - 0.3 && Math.hypot(f.x - u.x, f.y - u.y) < 11); if (!F) return false;
+  const sg = (t.x - F.x) * F.nx + (t.y - F.y) * F.ny >= 0 ? 1 : -1;   // 적이 있는 쪽
+  const al = a => (a.x - F.x) * F.ux + (a.y - F.y) * F.uy;
+  const M = W.units.filter(a => a.alive && !a.gone && a.side === u.side && /창/.test(a.weapon || '') && !isFar(a) && !a.crawl && !a.down && Math.hypot(F.x - a.x, F.y - a.y) < 11 && Math.abs((a.x - F.x) * F.nx + (a.y - F.y) * F.ny) < 7).sort((a, b) => al(a) - al(b) || a.i - b.i);
+  const k = M.indexOf(u); if (k < 0) return false; const n = M.length, sp = Math.min(1.15, (F.h * 2 - 0.8) / Math.max(1, n - 1)), a0 = (k - (n - 1) / 2) * sp;
+  const off = 0.55 + u.r, sx = F.x + F.ux * Math.max(-F.h + 0.3, Math.min(F.h - 0.3, a0)) - F.nx * sg * off, sy = F.y + F.uy * Math.max(-F.h + 0.3, Math.min(F.h - 0.3, a0)) - F.ny * sg * off;
+  if (boxRock(W, sx, sy, u.r * 0.9)) return false;
+  if (Math.hypot(sx - u.x, sy - u.y) < 0.3){ u.goal = null; u.path = null; setMood(W, u, '대열', t.i); return true; }   // 자리에 섬 — 상대가 닿으면 보통 싸움이 이어서 처리
+  if (gap(u, t) <= u.rng + 0.2) return false;   // 이미 닿는 상대가 있으면 대열보다 일격
+  if (Math.hypot(sx - u.x, sy - u.y) > 1.2) u.mv = { k: 'shift', x: sx, y: sy, run: true, until: W.t + 0.5 };   // 3초 안에 서야 하니 뜀걸음
+  setMood(W, u, '대열', t.i); goTo(W, u, sx, sy, dt); return true;
+}
+// v9.2.0 암계 역장: 상대 편의 몸은 선을 못 넘음 (같은 편은 지나감) — 공중 · 도약 중은 넘음
+function wallHold(W, F){
+  for (const e of W.units){ if (!e.alive || e.gone || e.side === F.side || airOf(e) || (e.act && (e.act.k === 'tfly' || e.act.k === 'leap'))) continue;
+    const dx = e.x - F.x, dy = e.y - F.y, al = Math.max(-F.h, Math.min(F.h, dx * F.ux + dy * F.uy)), px = F.x + F.ux * al, py = F.y + F.uy * al; let ex = e.x - px, ey = e.y - py; const d = Math.hypot(ex, ey), need = e.r + 0.22;
+    if (d >= need) continue;
+    if (d < 1e-4){ const sg = dx * F.nx + dy * F.ny >= 0 ? 1 : -1; ex = F.nx * sg; ey = F.ny * sg; } else { ex /= d; ey /= d; }
+    const push = need - d + 0.02; tryMove(W, e, e.x + ex * push, e.y + ey * push);
+    if (W.t - (F.blkT || -9) > 0.6){ F.blkT = W.t; L(W, { k: 'bfieldBlock', a: F.by, b: e.i, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y, s: '역장에 막힘', c: 'b', t0: W.t }); } }
+}
+function wallBetween(W, u, t){
+  if (!W.sf8) return null;
+  for (const F of W.sf8){ if (F.k !== 'wall' || !F.hard || W.t >= F.until || F.side === u.side) continue;
+    if (segX(u.x, u.y, t.x, t.y, F.x - F.ux * F.h, F.y - F.uy * F.h, F.x + F.ux * F.h, F.y + F.uy * F.h) != null) return F; }
+  return null;
+}
+// v9.2.0 장송기사가 살린 몸: 시간이 다 되거나 장송기사가 쓰러지면 쓰러짐
+// v9.4.1 오래된 약병 (명세 A10): 가방의 약병이 있으면 특수 스킬 '오래된 약병' 이 뜸 (남은 수 = n) — 다 쓰면 스킬도 사라짐
+const isVial8 = it => !!it && it.k === 'potion' && (it.vial || it.name === '오래된 약병');
+function vialSync(W){
+  if (W.t < (W.vialT || 0)) return; W.vialT = W.t + 0.5;
+  for (const u of W.units){ if (!u.alive || u.gone || !u.bag) continue; const n = u.bag.filter(isVial8).length, i = (u.spec || []).findIndex(x => x.k === 'vial');
+    if (n > 0 && i < 0 && !u.crawl) (u.spec || (u.spec = [])).push({ k: 'vial', name: '오래된 약병', cdT: -9, n });
+    else if (i >= 0){ if (n > 0) u.spec[i].n = n; else { u.spec.splice(i, 1); if (u.order && u.order.k === 'spec' && u.order.s === 'vial') u.order = null; } } }
+}
+function bfTick(W){
+  for (const d of W.units){ if (!d.riseBy && d.riseBy !== 0) continue; if (!d.alive){ d.riseBy = null; continue; }
+    const by = W.units[d.riseBy];
+    if (W.t >= d.riseUntil || !by || !by.alive){ const why = !by || !by.alive ? '장송기사가 쓰러져 힘이 끊김' : '장송의 힘이 다함'; d.grit8 = null; d.riseUntil = null; d.riseBy = null; d.atkMul = Math.max(0.1, (d.atkMul || 1) / 1.5);
+      L(W, { k: 'braiseEnd', a: d.i, why, vis: d.side === 0 || !!d.seenBy }); applyDmg(W, d, d, Math.max(1, Math.ceil(d.hp)) + 1, { ff: true, far: false, part: null, tag: why, death: 'grit' }); } }
+}
+function giantChg(W, u, g){
+  const G = W.rules.giantFall || { n: 4, win: 12, down: 8 }; g.cgHits = (g.cgHits || []).filter(t => W.t - t < G.win); g.cgHits.push(W.t);
+  if (g.cgHits.length >= G.n && W.t >= (g.proneT || -9)){ g.cgHits = []; const dn = G.down;
+    g.saT = -9; g.ccRes = 0; g.act = null; g.burst = null; stop(g); g.proneT = W.t + dn; g.giantDown = W.t + dn; flailDrop(W, g, '넘어짐');
+    L(W, { k: 'giantFall', a: u.i, b: g.i, sec: dn, vis: true }); if (W.fxOn) W.fx.push({ k: 'num', x: g.x, y: g.y, s: '거인이 넘어짐!', c: 'd', t0: W.t }); }
+  else if (W.fxOn) W.fx.push({ k: 'num', x: g.x, y: g.y - 0.8, s: '돌격 ' + g.cgHits.length + ' / ' + G.n, c: 'b', t0: W.t });
+}
+// 점점 빨라지는 몸 (기형 망자): 싸움이 붙은 때부터 from → to (초당 칸) 까지 t 초에 걸쳐
+function rampTick(W){
+  for (const u of W.units){ if (!u.ramp || !u.alive) continue; const R = u.ramp;
+    if (u.rampT0 == null){ if (u.state === 'hunt' || u.state === 'fight' || u.state === 'search') u.rampT0 = W.t; u.spd = R.from; continue; }
+    const k = Math.min(1, (W.t - u.rampT0) / (R.t || 25)); u.spd = +(R.from + (R.to - R.from) * k).toFixed(3); }
+}
+function radarTick(W){
+  if (W.t < (W.radarT || 0)) return; W.radarT = W.t + 0.5;
+  for (const u of W.units){ if (!u.alive || u.gone || !u.radar) continue;
+    for (const f of W.units){ if (!f.alive || f.gone || f.side === u.side || f.summon === 'slime') continue; const s = u.sense[f.i]; if (s && W.t - s.t < 0.6 && s.sight) continue; u.sense[f.i] = { x: f.x, y: f.y, t: W.t, exact: false, radar: true }; } }
 }
 function sfEnd(W, F){
   const by = W.units[F.by];
@@ -9521,6 +9648,7 @@ function supStart(W, u, k, t, why, px, py){
   const x = specOf(u, k); if (!x || !specReady(W, u, k)) return false;
   if (k === 'cgate' && t && t.side === u.side){ const G = sfOf(W, 'gate', u.i); if (!G || G.tpd) return false; startSpec(W, u, null, k, why); if (!u.act) return false; x.cdT = Math.max(W.t + 1, G.cd0 || 0); u.act.tp = t.i; u.act.px = G.x; u.act.py = G.y; u.act.ang = Math.atan2(G.y - u.y, G.x - u.x); u.fg = u.act.ang; return true; }
   if (k === 'cgate' && sfOf(W, 'gate', u.i)) return false;   // 문은 하나
+  if ((k === 'bmend' || k === 'braise' || k === 'vial') && t){ startSpec(W, u, null, k, why); if (!u.act) return false; u.act.tp = t.i; u.act.ang = Math.atan2(t.y - u.y, t.x - u.x); u.fg = u.act.ang; return true; }   /* v9.2.0 동료 · 쓰러진 동료 */
   const foe = t && t.side !== u.side ? t : null, tx = px != null ? px : t ? t.x : u.x + Math.cos(u.face || 0), ty = py != null ? py : t ? t.y : u.y + Math.sin(u.face || 0);
   startSpec(W, u, foe, k, why); if (!u.act) return false;
   u.act.px = tx; u.act.py = ty; u.act.ang = Math.atan2(ty - u.y, tx - u.x); if (Math.hypot(tx - u.x, ty - u.y) > 0.05) u.fg = u.act.ang;
@@ -9537,6 +9665,50 @@ function supResolve(W, u, A, S, t){
     sfAdd(W, { k: 'wall', by: u.i, side: u.side, x: u.x + c * d, y: u.y + s * d, ux: -s, uy: c, nx: c, ny: s, h: (S.len || 4) / 2, push: S.push || 2, t0: W.t, until: W.t + (S.t || 4), pushed: {}, blkT: -9 });
     L(W, { k: 'mwall', a: u.i, vis: true }); return; }
   if (k === 'mspirit'){ spiritCall(W, u); return; }
+  if (k === 'bfield'){ const c = Math.cos(A.ang), s = Math.sin(A.ang); let d = S.ahead || 3; while (d > 1 && solid(W.map, u.x + c * d, u.y + s * d)) d -= 0.5;
+    const len = (S.len || 6) + (W.rand() - 0.5) * (S.lenV || 2);
+    sfAdd(W, { k: 'wall', hard: true, by: u.i, side: u.side, x: u.x + c * d, y: u.y + s * d, ux: -s, uy: c, nx: c, ny: s, h: len / 2, push: 0, t0: W.t, until: W.t + (S.t || 3), pushed: {}, blkT: -9 });
+    L(W, { k: 'bfield', a: u.i, len: +len.toFixed(1), vis: true }); return; }
+  if (k === 'bshove'){ if (!t || !t.alive){ L(W, { k: 'miss', a: u.i, b: A.b, why: '대상이 이미 쓰러짐', spec: k }); return; }
+    const ang = Math.atan2(t.y - u.y, t.x - u.x), len = Math.min(S.len || 5, Math.max(0, gap(u, t)) + 0.3), reach = h2Reach(W, u, u.x, u.y, ang, len); if (reach > 0.25) h2Ghost(W, u, u.x + Math.cos(ang) * reach, u.y + Math.sin(ang) * reach);
+    if (gap(u, t) > u.rng + 0.9){ L(W, { k: 'miss', a: u.i, b: t.i, why: '닿지 못함', spec: k }); return; }
+    if ((SIZE_RANK[sizeOf(t)] || 0) >= SIZE_RANK['초대형']){ stun(W, u, 0.5, t.i); L(W, { k: 'bshove', a: u.i, b: t.i, big: true, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '너무 커서 안 밀림', c: 'b', t0: W.t }); return; }
+    if (t.side !== u.side && evadeMelee(W, t, u)) return;
+    const o = strike(W, u, t, t, 1, false, { mul: S.mul || 0.6, tag: '밀치기 돌진' });
+    if (t.alive && !(o && o.wall)) shove(W, u, t, (S.kb || 3.2) * (o && o.block ? 0.6 : 1), t.x - u.x, t.y - u.y, { tag: '밀치기에 날아감', how: 'bash' });
+    L(W, { k: 'bshove', a: u.i, b: t.i, vis }); if (W.fxOn) W.fx.push({ k: 'h2Boom', x: t.x, y: t.y, r: 1.4, side: u.side, t0: W.t }); return; }
+  if (k === 'hamb'){ if (!t || !t.alive || t.down){ L(W, { k: 'miss', a: u.i, b: A.b, why: '대상이 이미 쓰러짐', spec: k }); return; }
+    const fa = t.face != null ? t.face : Math.atan2(t.y - u.y, t.x - u.x); let moved = false;
+    for (const da of [Math.PI, Math.PI - 0.7, Math.PI + 0.7, Math.PI / 2, -Math.PI / 2]){ const bx = t.x + Math.cos(fa + da) * (t.r + u.r + 0.12), by = t.y + Math.sin(fa + da) * (t.r + u.r + 0.12);
+      if (!boxRock(W, bx, by, u.r * 0.9) && !W.units.some(o => o.alive && o !== u && o !== t && Math.hypot(o.x - bx, o.y - by) < o.r + u.r * 0.8)){ h2Ghost(W, u, bx, by); moved = true; break; } }
+    u.fg = u.face = Math.atan2(t.y - u.y, t.x - u.x); const big = (SIZE_RANK[sizeOf(t)] || 0) > SIZE_RANK['중대형'] || t.giant;
+    const o = strike(W, u, t, t, 1, false, { mul: (S.mul || 2.1) * (big ? 0.5 : 1), heavyCrit: big ? 0 : S.crit || 0.5, tag: '암습', grab: true });
+    L(W, { k: 'hamb', a: u.i, b: t.i, back: moved, big, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y - 0.6, s: '암습!', c: 'd', t0: W.t }); return; }
+  if (k === 'hdisarm'){ if (!t || !t.alive || gap(u, t) > (S.rng || 1.6) + 0.4){ L(W, { k: 'miss', a: u.i, b: A.b, why: '손이 닿지 않음', spec: k }); return; }
+    if (t.weaponGone || t.noArms || !t.weapon || t.weapon === '맨손' || (SIZE_RANK[sizeOf(t)] || 0) > SIZE_RANK['중대형'] || t.giant){ L(W, { k: 'miss', a: u.i, b: t.i, why: '뺏을 무기가 없음', spec: k }); return; }
+    if (evadeMelee(W, t, u)) return; if (W.rand() >= (S.p || 0.65)){ L(W, { k: 'hdisarm', a: u.i, b: t.i, ok: false, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '뺏지 못함', c: 'b', t0: W.t }); return; }
+    const nm = t.wName || t.weapon; dropHeld(W, t, 'disarm'); interrupt(W, t, '무기를 뺏겨 준비가 끊김');
+    L(W, { k: 'hdisarm', a: u.i, b: t.i, ok: true, w: nm, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: t.x, y: t.y, s: '무기를 뺏김!', c: 'd', t0: W.t }); return; }
+  if (k === 'vial'){ const a = A.tp != null ? W.units[A.tp] : u; if (!a || !a.alive || a.gone || a.side !== u.side || dist(u, a) > (S.rng || 1.7) + 0.6){ L(W, { k: 'miss', a: u.i, b: A.tp != null ? A.tp : null, why: '먹일 동료가 없음 · 멀어짐', spec: k }); return; }
+    const vi = (u.bag || []).findIndex(isVial8); if (vi < 0){ L(W, { k: 'miss', a: u.i, b: a.i, why: '약병이 없음', spec: k }); return; } const it = u.bag.splice(vi, 1)[0];
+    const medK = gradeMul(W.rules, u.traits, '의학'), want = Math.round(Math.max(S.min || 15, Math.min(S.cap || 60, a.max * (S.heal != null ? S.heal : 0.25))) * medK), add = Math.max(0, Math.min(want, Math.round(a.max - a.hp)));
+    a.hp += add; u.healed += add; if (a === u) u.healedSelf = (u.healedSelf || 0) + add; const left = (u.bag || []).filter(isVial8).length;
+    L(W, { k: 'vial', a: u.i, b: a.i, n: add, left, w: it.label || it.name, vis }); if (W.fxOn){ W.fx.push({ k: 'shot', a: u.i, b: a.i, t0: W.t, dur: 0.25, heal: true }); W.fx.push({ k: 'num', x: a.x, y: a.y, s: '+' + add, c: 'h', t0: W.t }); } return; }
+  if (k === 'bmend'){ const a = A.tp != null ? W.units[A.tp] : null; if (!a || !a.alive || a.gone || a.side !== u.side || dist(u, a) > (S.rng || 7) + 1){ L(W, { k: 'miss', a: u.i, b: A.tp != null ? A.tp : null, why: '치유할 동료가 없음', spec: k }); return; }
+    const add = Math.max(0, Math.min(Math.round(a.max * (S.pct || 0.25)), Math.round(a.max - a.hp))); a.hp += add; u.healed += add;
+    L(W, { k: 'bmend', a: u.i, b: a.i, n: add, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: a.x, y: a.y, s: '+' + add, c: 'h', t0: W.t }); return; }
+  if (k === 'braise'){ const d = A.tp != null ? W.units[A.tp] : null; if (!d || d.alive || d.gone || d.side !== u.side || dist(u, d) > (S.rng || 8) + 1){ L(W, { k: 'miss', a: u.i, b: A.tp != null ? A.tp : null, why: '살릴 동료가 없음', spec: k }); return; }
+    if (W.units.filter(e => e.alive && e.riseBy === u.i).length >= (S.max || 2)){ L(W, { k: 'miss', a: u.i, b: d.i, why: '이미 둘을 살렸음', spec: k }); return; }
+    rise(W, d, S.hp || 0.4, true); d.riseBy = u.i; d.riseUntil = W.t + (S.t || 10); d.grit8 = d.riseUntil; d.atkMul = (d.atkMul || 1) * (S.atk || 1.5); d.sense = d.sense || {}; d.faceSide = u.side;
+    L(W, { k: 'braise', a: u.i, b: d.i, t: S.t || 10, vis }); if (W.fxOn) W.fx.push({ k: 'num', x: d.x, y: d.y - 0.6, s: '장송 — 되살아남!', c: 'h', t0: W.t }); return; }
+  if (k === 'bcut'){ const r = S.r || 2.6; let n = 0;
+    for (const e of W.units){ if (!e.alive || e.gone || e.side === u.side || e.down || airOf(e) || Math.hypot(e.x - u.x, e.y - u.y) > r + e.r * 0.6 || !losClear(W.map, u.x, u.y, e.x, e.y)) continue;
+      strike(W, u, e, e, 1, false, { mul: S.mul || 1.1, tag: '방사 절단' }); n++; if (e.alive && S.kb) shove(W, u, e, S.kb, e.x - u.x, e.y - u.y, { tag: '방사 절단에 밀림', noDown: true }); }
+    L(W, { k: 'bcut', a: u.i, n, vis }); if (W.fxOn) W.fx.push({ k: 'h2Fx', sh: 'circ', x: u.x, y: u.y, r, side: u.side, t0: W.t }); return; }
+  if (k === 'brain'){ const tx = A.px != null ? A.px : (t ? t.x : u.x), ty = A.py != null ? A.py : (t ? t.y : u.y), Z = W.h2z || (W.h2z = []), m = W.map;
+    for (let i = 0; i < (S.cnt || 7); i++){ const x = i ? tx + (W.rand() * 2 - 1) * (S.spread || 4.5) : tx, y = i ? ty + (W.rand() * 2 - 1) * (S.spread || 4.5) : ty;
+      Z.push({ by: u.i, side: u.side, x: Math.max(0.5, Math.min(m.W - 0.5, x)), y: Math.max(0.5, Math.min(m.H - 0.5, y)), r: S.r || 1.3, t0: W.t + i * (S.gap || 0.12), at: W.t + i * (S.gap || 0.12) + (S.delay || 1.1), mul: S.mul || 0.8, n: '어둠의 화살비', stun: 0, wk: '날붙이', tag: '어둠의 화살', diag: true, ff: true }); }
+    L(W, { k: 'brain', a: u.i, cnt: S.cnt || 7, x: +tx.toFixed(1), y: +ty.toFixed(1), vis: true }); return; }
   if (k === 'mvolley'){ if (!t || !t.alive){ L(W, { k: 'miss', a: u.i, b: A.b, why: '대상이 이미 쓰러짐', spec: k }); return; }
     const wn = ((W.rules.weapons || {})[u.weapon] || {}).kind === '마법' ? u.weapon : '마법', o = { wn, mul: S.mul || 0.6, vel: S.vel || 22, rng: S.rng || 12, n: '물 정령 탄' };
     fire(W, u); supBolt(W, u, t, o); A.vol = { b: t.i, left: (S.n || 3) - 1, next: W.t + (S.gap || 0.2), gap: S.gap || 0.2, o }; A.end = Math.max(A.end, W.t + (S.gap || 0.2) * ((S.n || 3) - 1) + 0.05);
@@ -9740,6 +9912,32 @@ const SUP_AUTO = {
       const n = F.filter(inn).length, M = W.units.filter(x => x.side === u.side && !x.summon && inn(x)), cost = M.reduce((c, x) => c + ((SIZE_RANK[sizeOf(x)] || 0) <= kd && !x.giant ? 1.5 : 0.5), 0), sc = n - cost;
       if (n < 2 || sc < 1) continue; if (!best || sc > best.sc) best = { e, n, sc, m: M.length }; }
     if (!best) return false; return supStart(W, u, 'tsweep', best.e, '적 ' + best.n + (best.m ? ' · 동료 ' + best.m + ' 감수' : ' (동료 없음)')); },
+  // v9.2.0 암계 역장: 다가오는 근접 적 둘 이상 (또는 사격 준비하는 적 사수) — 그쪽으로 곧은 선 · 이미 펼친 게 있으면 안 펼침
+  bfield(W, u, S){ if (sfOf(W, 'wall', u.i)) return false; const F = supFoes(W, u, 13).filter(e => supKnown(W, u, e));
+    const near = F.filter(e => !isFar(e) && dist(u, e) >= (S.ahead || 3) + 0.5 && dist(u, e) <= 10 && ((e.vx || 0) * (u.x - e.x) + (e.vy || 0) * (u.y - e.y) > 0.2 || e.target === u || (e.target && e.target.side === u.side))), sh = F.filter(e => isFar(e) && e.act && e.act.phase === 'wind' && W.units[e.act.b] && W.units[e.act.b].side === u.side);
+    if (near.length < 2 && !sh.length) return false; const e = sh[0] || near.sort((a, b) => dist(u, a) - dist(u, b))[0]; return supStart(W, u, 'bfield', null, sh.length ? '사격을 막음' : '다가오는 적 ' + near.length, e.x, e.y); },
+  // v9.2.0 밀치기 돌진: 손이 닿지 않는 거리 (1.3 ~ 4.5칸) 의 근접 적 — 초대형은 빼고 · 동료를 노리는 적 먼저
+  bshove(W, u, S){ const L0 = supFoes(W, u, (S.len || 5) + 0.5).filter(e => !isFar(e) && supKnown(W, u, e) && canSee(W, u, e) && gap(u, e) >= 1.3 && gap(u, e) <= (S.len || 5) - 0.3 && (SIZE_RANK[sizeOf(e)] || 0) < SIZE_RANK['초대형'] && losClear(W.map, u.x, u.y, e.x, e.y));
+    if (!L0.length) return false; const sc = e => (e.target && e.target.side === u.side && e.target !== u ? 10 : 0) + (isFar(e) ? 6 : 0) - dist(u, e); const t = L0.reduce((a, b) => sc(b) > sc(a) ? b : a); return supStart(W, u, 'bshove', t, '밀어냄'); },
+  // v9.2.0 장송 치유: 다친 (65% 아래) 동료 — 내 곁에 적이 붙지 않았을 때
+  bmend(W, u, S){ if (supFoes(W, u, 2).length) return false; const a = supMates(W, u, S.rng || 7).filter(a => a !== u && !a.summon && !a.down && a.hp < a.max * 0.65 && a.hp > 0).sort((p, q) => p.hp / p.max - q.hp / q.max)[0]; if (!a) return false; return supStart(W, u, 'bmend', a, a.name + ' 치유'); },
+  // v9.2.0 장송 부활: 가까이 (8칸) 쓰러진 동료 (최근 25초 · 이미 살린 몸 아님) — 싸움이 이어지는 동안 · 최대 둘
+  braise(W, u, S){ if (!supFoes(W, u, 14).some(e => supKnown(W, u, e))) return false; if (W.units.filter(e => e.alive && e.riseBy === u.i).length >= (S.max || 2)) return false;
+    const d = W.units.filter(a => !a.alive && !a.gone && !a.summon && a.side === u.side && a.riseBy == null && a.deadT != null && W.t - a.deadT <= (S.win || 25) && dist(u, a) <= (S.rng || 8)).sort((p, q) => dist(u, p) - dist(u, q))[0]; if (!d) return false; return supStart(W, u, 'braise', d, d.name + ' 부활'); },
+  // v9.2.0 방사 절단: 둘레 2.6칸에 적 둘 이상 (또는 하나 · 위급할 때) · 동료가 끼면 안 씀
+  bcut(W, u, S){ const r = S.r || 2.6, F = supFoes(W, u, r + 0.6).filter(e => Math.hypot(e.x - u.x, e.y - u.y) <= r + e.r * 0.6 && supKnown(W, u, e));
+    if (F.length < 2 && !(F.length && u.hp < u.max * 0.5)) return false; return supStart(W, u, 'bcut', null, '둘러싼 적 ' + F.length); },
+  // v9.2.0 어둠의 화살비: 적이 몰려 있는 곳 (6칸 밖 · 한 원 둘레 4.5칸 안에 적 둘 이상) — 피아 구분이 없으니 동료가 낀 곳은 피함 · 내 곁에 적이 붙지 않았을 때
+  brain(W, u, S){ if (supFoes(W, u, 3).length) return false; const F = supFoes(W, u, S.rng || 16).filter(e => supKnown(W, u, e) && dist(u, e) >= (S.minD || 6) && losClear(W.map, u.x, u.y, e.x, e.y)); if (F.length < 2) return false;
+    let best = null; for (const e of F){ const n = F.filter(x => Math.hypot(x.x - e.x, x.y - e.y) <= (S.spread || 4.5)).length, m = W.units.filter(a => a.alive && !a.gone && a.side === u.side && Math.hypot(a.x - e.x, a.y - e.y) <= (S.spread || 4.5) + 0.8).length, sc = n - m * 1.6; if (n >= 2 && sc >= 1 && (!best || sc > best.sc)) best = { e, n, m, sc }; }
+    if (!best) return false; return supStart(W, u, 'brain', best.e, '적 ' + best.n + (best.m ? ' · 동료 ' + best.m + ' 감수' : ''), best.e.x, best.e.y); },
+  // v9.2.1 암습: 등을 보이거나 (옆 · 뒤) 동료와 맞붙은 적 (2.2 ~ 9칸) — 중대형 아래를 먼저 · 사수 먼저
+  hamb(W, u, S){ const L0 = supFoes(W, u, S.dmax || 9).filter(e => supKnown(W, u, e) && canSee(W, u, e) && dist(u, e) >= (S.dmin || 2.2) && !e.giant && (SIZE_RANK[sizeOf(e)] || 0) <= SIZE_RANK['중대형'] && !e.down);
+    if (!L0.length) return false; const sc = e => (isFar(e) ? 8 : 0) + (sideOf(W, e, u) !== 'front' ? 6 : 0) + (W.units.some(a => a.alive && a.side === u.side && a !== u && !isFar(a) && gap(a, e) < a.rng + 0.4) ? 5 : 0) - dist(u, e) * 0.6;
+    const t = L0.reduce((a, b) => sc(b) > sc(a) ? b : a); if (sc(t) < 1) return false; return supStart(W, u, 'hamb', t, '등 뒤로'); },
+  // v9.2.1 무기뺏기: 손이 닿는 (1.6칸) 무기를 든 중대형 아래 적 — 위협적인 (공격력 큰) 쪽 먼저
+  hdisarm(W, u, S){ const L0 = supFoes(W, u, 3).filter(e => !isFar(e) && !e.weaponGone && e.weapon && e.weapon !== '맨손' && !e.giant && (SIZE_RANK[sizeOf(e)] || 0) <= SIZE_RANK['중대형'] && gap(u, e) <= (S.rng || 1.6) && supKnown(W, u, e)); if (!L0.length) return false;
+    const t = L0.reduce((a, b) => (b.atk || 0) > (a.atk || 0) ? b : a); return supStart(W, u, 'hdisarm', t, '무기를 노림'); },
   // 은빛 비행: 붙은 근접 적 (다쳤거나 둘 이상 · 나를 치려 함) — 반대쪽 · 동료 쪽으로
   tflight(W, u, S){ const th = supFoes(W, u, 3).filter(e => !isFar(e) && supKnown(W, u, e) && (gap(u, e) < 1.0 || (e.act && e.act.b === u.i && e.act.phase === 'wind')));
     if (!th.length || (u.hp > u.max * 0.75 && th.length < 2 && !th.some(e => e.act && e.act.b === u.i))) return false;
@@ -9760,4 +9958,4 @@ function supAuto(W, u){
   return false;
 }
 
-if (typeof module !== 'undefined') module.exports = { matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
+if (typeof module !== 'undefined') module.exports = { vialSync, isVial8, wallLine, giantChg, rampTick, radarTick, h2Grab, wallBetween, wallHold, bfTick, matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */

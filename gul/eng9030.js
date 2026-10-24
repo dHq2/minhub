@@ -1,4 +1,4 @@
-// v9.2.1 엔진 시험 (나) — eng9030.js v1.0 (밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
+// v9.2.1 엔진 시험 (나) — eng9030.js v1.1 (v1.1: 몸 반지름 하한 1.2 → 0.75 (rMul 3 → 2 — 계단2 방에 들어가도록) · 밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -9,11 +9,11 @@ const base={...REB,shield:false,weapon:'장검',ov:{hp:900,atk:20},traits:[],gea
 const dummy=(name,x,y,side,ex)=>mk({...base,name,...(ex||{})},side,x,y);
 const WF=(al,fo,o)=>{ const units=[...al,...(fo||[])]; const R2=JSON.parse(JSON.stringify(R)); R2.chgPol={allyOff:false}; R2.roe.def=(o&&o.roe)||'free'; R2.roe.autoLift=false; const W=E.createWorld({type:'grid',W:(o&&o.W)||44,H:(o&&o.H)||24,seed:7,units,torches:[{x:22,y:12,r:90}],flips:[]},R2,(o&&o.seed)||1,{headless:true}); W.amb=1; E.computeLight(W); for(const u of W.units) for(const x of u.spec||[]) x.cdT=-9; return W; };
 const hold=(...us)=>{ for(const u of us){ u.state='idle'; u.target=null; u.goal=null; u.path=null; u.wander=99; } };
-const BAN=(x,y,side,ex)=>dummy('반',x,y,side,{weapon:'대검',height:8,weight:20000,sizeCls:'초대형',rMul:3,h2:'ban',ov:{hp:1200,atk:60,spd:2.2},traits:['거구','갑피','베테랑'],...(ex||{})});
-const TERI=(x,y,side,ex)=>dummy('테리',x,y,side,{weapon:'둔기',height:8,weight:24000,sizeCls:'초대형',rMul:3,h2:'teri',ov:{hp:1500,atk:55,spd:2.0},traits:['거구','갑피','베테랑'],...(ex||{})});
+const BAN=(x,y,side,ex)=>dummy('반',x,y,side,{weapon:'대검',height:8,weight:20000,sizeCls:'초대형',rMul:2,h2:'ban',ov:{hp:1200,atk:60,spd:2.2},traits:['거구','갑피','베테랑'],...(ex||{})});
+const TERI=(x,y,side,ex)=>dummy('테리',x,y,side,{weapon:'둔기',height:8,weight:24000,sizeCls:'초대형',rMul:2,h2:'teri',ov:{hp:1500,atk:55,spd:2.0},traits:['거구','갑피','베테랑'],...(ex||{})});
 
 console.log('A. 거인의 몸');
-{ const W=WF([],[BAN(30,12,1),dummy('작은',10,12,0)]); const b=W.units[0]; console.log('    반 r '+b.r.toFixed(2)+' · 키 '+b.h+' · 초대형 '+(b.sizeCls)+' · h2 '+(b.h2&&b.h2.k)); ok(b.sizeCls==='초대형'&&b.h2&&b.h2.k==='ban','반: 초대형 · 기술표 ban'); ok(b.r>=1.2&&b.r<=3.2,'몸 반지름이 거인답게 (r '+b.r.toFixed(2)+')'); }
+{ const W=WF([],[BAN(30,12,1),dummy('작은',10,12,0)]); const b=W.units[0]; console.log('    반 r '+b.r.toFixed(2)+' · 키 '+b.h+' · 초대형 '+(b.sizeCls)+' · h2 '+(b.h2&&b.h2.k)); ok(b.sizeCls==='초대형'&&b.h2&&b.h2.k==='ban','반: 초대형 · 기술표 ban'); ok(b.r>=0.75&&b.r<=3.2,'몸 반지름이 거인답게 (r '+b.r.toFixed(2)+')'); }
 
 console.log('B. 반 — 기술을 골고루');
 { const used={}, died=[]; let grabs=0, stomps=0; for(let s=1;s<=4;s++){ const al=[0,1,2,3,4,5].map(i=>dummy('병'+i,8+i*1.2,10+i*0.8,0,{ov:{hp:140+i*20,atk:12},sizeCls:i<2?'소형':i<4?'중형':'중대형',height:i<2?1.3:i<4?1.7:2.1})); const W=WF(al,[BAN(24,12,1)],{seed:s}); const b=W.units[al.length];

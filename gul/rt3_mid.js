@@ -70,7 +70,7 @@ function terrainOf(m, setup){
         if (cells.some(([x, y]) => x < 1 || y < 1 || x >= m.W - 1 || y >= m.H - 4 || m.t[y * m.W + x] || piles.some(p => Math.abs(p[0] - x) <= 1 && Math.abs(p[1] - y) <= 1))) continue;
         for (const [x, y] of cells) piles.push([x, y, kind]); break; } }
   }
-  m.hills = hills.length ? hills : null; m.pk = null; m.piles = 0;
+  m.hills = hills.length ? hills : null; m.pk = null; m.piles = 0; m.stairs = !!setup.stairs && !!m.hills;   /* v9.3.0 계단 (고지대 판정) */
   m.indoor = !!setup.indoor; { const Z = (setup.zones || []).filter(z => z && isFinite(+z.amb)).map(z => ({ x0: Math.max(0, +z.x0 | 0), y0: Math.max(0, +z.y0 | 0), x1: Math.min(m.W - 1, +z.x1 | 0), y1: Math.min(m.H - 1, +z.y1 | 0), amb: Math.max(0, Math.min(1, +z.amb)) })); m.zones = Z.length ? Z : null; }   /* v7.23 실내 (벽이 시야를 자름) · 구역 빛 (맵 일부에만 주변광 — 사막 끝 햇살 등) */
   { const Wt = (setup.water || []).filter(w => w && isFinite(+w.x) && isFinite(+w.y)).map(w => ({ x: +w.x, y: +w.y, rx: Math.max(0.5, +w.rx || 3), ry: Math.max(0.5, +w.ry || 2) })); m.water = Wt.length ? Wt : null; }   // v7.22 얕은 물 (타원)
   const off = new Set(setup.pileOff || []), busy = (x, y) => off.has(x + ',' + y) || (setup.units || []).some(u => Math.floor(u.x) === x && Math.floor(u.y) === y) || (setup.torches || []).some(t => Math.floor(t.x) === x && Math.floor(t.y) === y);   // 누가 서 있는 칸 · 횃불 칸 · 손으로 뺀 칸은 비움
