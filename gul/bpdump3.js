@@ -1,0 +1,10 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
+ const p=await (await b.newContext({viewport:{width:1400,height:900}})).newPage(); p.on('pageerror',e=>console.log('ERR',e.message)); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
+ await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(600);
+ const d = await p.evaluate(()=>{ const safe=n=>{ try{ return JSON.parse(JSON.stringify(eval(n), (k,v)=>typeof v==='function'?'[fn]':v)); }catch(e){ return null; } };
+   const o={ R8:safe('R8'), BAND8:safe('BAND8'), ELITE8:safe('ELITE8'), BOSS8:safe('BOSS8'), R8W:safe('R8WEIGHT')||null };
+   o.MAPS=Object.entries(MAPS8).map(([k,m])=>({k,name:m.name,tag:m.tag,NX:m.NX,NY:m.NY,cs:m.cs,z:m.z||0, walk:(m.rows||[]).join('').split('.').length-1, tot:(m.rows||[]).join('').length}));
+   o.FOEKEYS=safe('Object.keys(FOES8||{})')||[]; return o; });
+ fs.writeFileSync('bp/dump3.json', JSON.stringify(d)); console.log(Object.keys(d).map(k=>k+':'+JSON.stringify(d[k]||0).length).join(' ')); console.log(JSON.stringify(d.R8).slice(0,900)); console.log(JSON.stringify(d.BOSS8).slice(0,600)); console.log(JSON.stringify(d.ELITE8).slice(0,400));
+ await b.close(); })();
