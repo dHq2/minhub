@@ -1,4 +1,4 @@
-// v9.6.1 UI 시험 — ui9100.js v1.0 (❓ 연기 시험: 2층에서 나올 수 있는 만남을 하나씩 (rest 선택 포함) 들어가 대화 선택을 무작위로 누르고 · 판이 열리면 걸어 다니며 말을 걸고 · 나갈 때까지 — 오류 · 멈춤 없이)
+// v9.6.1 UI 시험 — ui9100.js v1.1 (v1.1: 앞 만남 (로지나 → 단달로의 저택) 이 남긴 깃발을 매번 지움 · ❓ 연기 시험: 2층에서 나올 수 있는 만남을 하나씩 (rest 선택 포함) 들어가 대화 선택을 무작위로 누르고 · 판이 열리면 걸어 다니며 말을 걸고 · 나갈 때까지 — 오류 · 멈춤 없이)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
  const KEYS=['p:hobo','p:hood','f:dead','t:wam','t:rosina','t:smith','t:marie','t:nurse','t:curse','t:serpa','x:firewood','x:beach','c:card'];
  const out=[];
  for (const k of KEYS){ for (const mode of ['go','rest']){
-   const r = await p.evaluate(([k,mode])=>{ const R=R8S(); const nd=R.fm.rows[2][0]; const o={ k, mode, e:[], steps:0 }; nd.t='enc'; nd.empty=false; nd.npc8=undefined; nd.comp=undefined; nd.src8=undefined; nd.peace=false; nd.enc=null; nd.restAsk=0; nd.card8=undefined; R.done=R.done.filter(x=>x!==nd.id); R.at=R.fm.rows[1][0].id; R.flags.hoboN=0; R.flags.hoboGave=0; R.flags.hoodRest=0; R.npcDone=[]; world=null;
+   const r = await p.evaluate(([k,mode])=>{ const R=R8S(); const nd=R.fm.rows[2][0]; const o={ k, mode, e:[], steps:0 }; nd.t='enc'; nd.empty=false; nd.npc8=undefined; nd.comp=undefined; nd.src8=undefined; nd.peace=false; nd.enc=null; nd.restAsk=0; nd.card8=undefined; R.done=R.done.filter(x=>x!==nd.id); R.at=R.fm.rows[1][0].id; R.flags.hoboN=0; R.flags.dandal=0; R.flags.rosinaHelp=0; R.flags.hoboGave=0; R.flags.hoodRest=0; R.npcDone=[]; world=null;
      // 만남을 미리 정한 채로 쉬기 앞을 지나 가려면 enc 를 미리 두고 restAsk 만 켜 둠
      if (mode==='go'){ nd.enc=k; nd.restAsk=1; } else { nd.enc=null; }
      const w0=ENC8.map(e=>e[1]); try { if (mode==='rest'){ for (const e of ENC8) e[1]=e[0]===k?1000:0; for (const e of ENC8) { if (e[0]===k){ e[2]=1; e[3]=30; } } r8Enter(nd); } else r8Enter(nd); } catch(e){ o.e.push('enter '+e.message+' '+(e.stack||'').split('\\n')[1]); ENC8.forEach((e2,i)=>{ e2[1]=w0[i]; }); return o; } ENC8.forEach((e2,i)=>{ e2[1]=w0[i]; }); o.picked=nd.enc;
