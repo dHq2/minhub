@@ -8230,6 +8230,7 @@ function act2(W, u, dt){
     const dk = W.rules.glare && !AI6.includes('glare') && u.nv && isFar(u) && HL.torch && !HL.torchOff, fd = dk ? (W.rules.glare.keep || 3.9) : u.canGuard ? 1.5 : 1.4;   // v7.8 야시 사수는 횃불에서 떨어져 걸음 (눈이 어둠에 익은 채)
     let gx = Math.max(0.6, Math.min(W.map.W - 0.6, HL.x + Math.cos(ang) * fd)), gy = Math.max(0.6, Math.min(W.map.H - 0.6, HL.y + Math.sin(ang) * fd));   // v7.8 자리가 판 밖이면 판 안으로
     if (boxRock(W, gx, gy, u.r * 0.9)){ gx = HL.x; gy = HL.y; }
+    if (!u.order && running(W, HL)) u.mv = { k: 'crun', run: true, until: W.t + 0.4 };   /* v9.6.1 따르는 이가 뛰면 같이 뜀 (대장이 서두르면 부하도) */
     if (dist(u, HL) > (dk ? fd + 0.35 : 2.2) || (u.path && dist(u, HL) > (dk ? fd + 0.1 : 1.6)) || (dk && dist(u, HL) < fd - 1)){ setGoal(W, u, rock(W.map, gx, gy) ? HL.x : gx, rock(W.map, gx, gy) ? HL.y : gy); follow(W, u, dt); } else stop(u);   // v7.8 간격은 주인공이 기다리는 거리 (4.5칸) 안쪽으로 — 서로 기다리다 멈추지 않게
     return;
   }

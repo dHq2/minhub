@@ -1,4 +1,4 @@
-// v9.4.0 UI 시험 — ui9040.js v1.0 (❓ 쉬기 · 정해진 만남엔 없음 · 사람 만남 = 비전투 맵 (노숙악마 · 두건) · 모닥불 · 적선 → 오래된 약병 ×5 · 말 걸수록 바뀌는 대사 · 싸우면 도망 · 두건은 쉼만 · 그림 오류 없음)
+// v9.4.0 UI 시험 — ui9040.js v1.1 (v1.1: 망자 싸움 (f:) 이 뽑히면 쉬기가 안 떠서 흔들리던 것 — 그 만남은 뺌 · ❓ 쉬기 · 정해진 만남엔 없음 · 사람 만남 = 비전투 맵 (노숙악마 · 두건) · 모닥불 · 적선 → 오래된 약병 ×5 · 말 걸수록 바뀌는 대사 · 싸우면 도망 · 두건은 쉼만 · 그림 오류 없음)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -6,6 +6,7 @@ const { chromium } = require('playwright');
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); while (TK){ if (TK.timer) talkDone(); talkAdv(); } });
  await p.waitForTimeout(400);
+ await p.evaluate(()=>{ for (const e of ENC8) if (/^f:/.test(e[0])) e[1]=0; });   /* 망자 싸움 (f:) 은 쉬기가 없어 이 시험에서는 뺌 */
  const closeTK=()=>p.evaluate(()=>{ if (TK) talkClose(); });
  // 1. ❓ 쉬기
  const r1 = await p.evaluate(()=>{ const R=R8S(); const nd=R.fm.rows[2][0]; const o={}; R.party.forEach(q=>{ q.hpNow=10; }); const mx=R.party.map(q=>r8MaxHp(q)); nd.enc=null; nd.restAsk=0; world=null; r8Enter(nd); o.enc=nd.enc; const L=TK&&TK.lines[TK.i]; const A=TK&&TK.lines.find(l=>l.ask); o.asks=A?A.ask.map(a=>a[0]):[]; o.first=TK&&TK.lines[0]&&TK.lines[0].narr;
