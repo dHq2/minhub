@@ -1,0 +1,24 @@
+// v9.5.1 UI 시험 — ui9071.js v1.0 (암계 장비 드랍 그림: 전리품 칸 · 장비 이름 → 도감 그림 (이모지 대신) · 그림이 실제로 읽힘 · 암계가 아닌 장비는 이모지 그대로)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
+ const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message+' @ '+(e.stack||'').split('\n').slice(1,3).join('|'))); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true');
+ await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1000);
+ await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); const C=S.camp; const party=S.units.filter(u=>u.side===0); C.s=6; S.units=party; campEnd('clear'); document.getElementById('campRun8').click(); while (TK){ if (TK.timer) talkDone(); talkAdv(); } });
+ await p.waitForTimeout(400);
+ const r = await p.evaluate(()=>{ const R=R8S(); const nd=R.fm.rows[6][0]; world=null; r8Enter(nd); const W=world; if (TK) talkClose(); paused=true; const o={ e:[] };
+   const F=W.units.filter(u=>u.side===1&&u.alive); o.foes=F.length; W.lootRoll={}; for (const u of F) for (const sl of ['몸','머리']) W.lootRoll['a'+u.i+sl]=0;
+   const me=W.units.find(u=>u.side===0&&u.alive); for (const u of F){ u.hp=1; applyDmg(W,me,u,99999,{tag:'시험'}); } for (let i=0;i<60;i++) stepWorld(W,1/30);
+   const L=lootOf(W); o.n=L.length; o.art=[...new Set(L.filter(x=>x.art).map(x=>x.art))].sort(); o.labels=[...new Set(L.filter(x=>x.art).map(x=>x.label.replace(/^.*의 /,'')))];
+   const box=document.createElement('div'); box.id='tmpLoot'; box.style.cssText='position:fixed;left:0;top:0;width:900px;background:#fff;z-index:9'; box.innerHTML=lootCards(W, lootParty()); document.body.appendChild(box); o.imgs=box.querySelectorAll('img.eqimg').length; o.emoji=[...box.querySelectorAll('.lic')].map(x=>x.textContent.trim()).filter(Boolean).slice(0,3);
+   o.ic1=itIc({k:'armor',name:'암계 흉갑'}); o.ic2=itIc({k:'armor',name:'가죽 갑옷'}); o.ic3=itIc({k:'weapon',name:'장검',art:'eq_sword'}); o.ic4=itIc({k:'potion',name:'회복약'}); return o; });
+ await p.waitForTimeout(800);
+ const q = await p.evaluate(()=>{ const imgs=[...document.querySelectorAll('#tmpLoot img.eqimg')]; return { n:imgs.length, ok:imgs.filter(i=>i.complete&&i.naturalWidth>0).length, srcs:[...new Set(imgs.map(i=>i.getAttribute('src').replace('art/abyss/','')))].sort() }; });
+ console.log('    ', JSON.stringify(r).slice(0,420)); console.log('    ', JSON.stringify(q));
+ ok(!r.e.length&&r.foes===14&&r.n>=6,'계단1 (창방패병 10 · 장궁병 4) 을 쓰러뜨리면 전리품 '+r.n);
+ ok(['eq_bow','eq_chest','eq_helm','eq_kite','eq_sword'].every(a=>r.art.includes(a))||['eq_bow','eq_chest','eq_helm','eq_kite'].every(a=>r.art.includes(a)),'그림 이름표: '+r.art.join(' · ')+' (장궁 · 연형 방패 · 흉갑 · 투구 …)');
+ ok(r.imgs>=5&&q.n===r.imgs&&q.ok===q.n,'전리품 카드에 그림 '+r.imgs+'장이 실제로 읽힘 ('+q.ok+'/'+q.n+')');
+ ok(/img class="eqimg" src="art\/abyss\/eq_chest\.webp"/.test(r.ic1)&&r.ic2==='🥋'&&/eq_sword/.test(r.ic3)&&r.ic4==='🧪','itIc: 암계 흉갑 → 그림 · 보통 갑옷 → 이모지 · art 이름표 → 그림 · 회복약 → 이모지');
+ await p.screenshot({path:'ui9071_a.png', clip:{x:0,y:0,width:900,height:420}});
+ ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,3)));
+ console.log(fails?'FAIL '+fails:'ALL OK'); await b.close(); process.exit(fails?1:0); })();
