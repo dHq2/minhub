@@ -1,0 +1,24 @@
+// v9.6.2 UI 시험 — ui9110.js v1.0 (전우조 · 대장 단추가 눈에 띄게: 명령 칸 관계 줄이 기술 줄 바로 아래 · PC 기술 막대 🤝 🎖 · 누르면 맺힘 · 풀림 · 휴대폰 도크는 그대로)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
+ const mk = async (vw)=>{ const p=await (await b.newContext({viewport:vw})).newPage(); p.errs=[]; p.on('pageerror',e=>p.errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true'); await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900); await p.evaluate(()=>{ start(); }); await p.waitForTimeout(500); return p; };
+ const p = await mk({width:1565,height:885});
+ console.log('A. 명령 칸 · 기술 막대 위치');
+ const a = await p.evaluate(()=>{ const A=world.units.filter(u=>u.side===0&&u.alive&&!u.hero).slice(0,2); sel=new Set(A.map(u=>u.i)); hud(); const o=document.getElementById('orders'), rows=[...o.querySelectorAll(':scope > .row')]; const iR=rows.findIndex(r=>r.classList.contains('rels')), iS=rows.findIndex(r=>r.classList.contains('skills')), iL=rows.findIndex(r=>r.querySelector('[data-ord="auto"]'));
+   const bt=[...document.querySelectorAll('#skbar [data-cmd="mate"], #skbar [data-cmd="chief"]')].map(e=>{ const r=e.getBoundingClientRect(), bar=document.getElementById('skbar').getBoundingClientRect(); return r.width>0&&r.left>=bar.left-1&&r.right<=bar.right+1; });
+   return { iR, iS, iL, bt, n: A.length }; });
+ console.log('    ', JSON.stringify(a)); ok(a.iS>=0&&a.iR===a.iS+1&&a.iL===a.iR+1,'관계 줄이 기술 줄 바로 아래 · 긴 단추 줄 위'); ok(a.bt.length===2&&a.bt.every(x=>x),'PC 기술 막대에 🤝 전우조 · 🎖 대장 (막대 안에 다 보임)');
+ console.log('B. 기술 막대로 맺기 · 풀기');
+ const bb = await p.evaluate(()=>{ const A=[...sel].map(i=>world.units[i]); const out={}; document.querySelector('#skbar [data-cmd="mate"]').click(); out.on=A.every(u=>u.cg&&u.cg===A[0].cg); out.sb=document.querySelector('#skbar [data-cmd="mate"] .sb').textContent; document.querySelector('#skbar [data-cmd="mate"]').click(); out.off=A.every(u=>!u.cg); return out; });
+ console.log('    ', JSON.stringify(bb)); ok(bb.on&&bb.sb==='풀기','🤝 누르면 둘이 전우조 (단추는 풀기로 바뀜)'); ok(bb.off,'한 번 더 누르면 풀림');
+ console.log('C. 기술 막대 🎖 대장 → 판에서 대장 누르기');
+ const cc = await p.evaluate(()=>{ const W=world; const A=W.units.filter(u=>u.side===0&&u.alive&&!u.hero&&!u.chiefLk).slice(0,2); const ch=W.units.find(u=>u.side===0&&u.alive&&!u.hero&&!A.includes(u)&&!u.chiefLk); sel=new Set(A.map(u=>u.i)); hud(); document.querySelector('#skbar [data-cmd="chief"]').click(); const pick=relPick; const hint=document.querySelector('#skbar [data-cmd="chief"] .sb').textContent; pickAlly(ch.i,false); return { pick, hint, ok: A.every(u=>u.chiefLk&&u.sqLead===ch.i), after: relPick }; });
+ console.log('    ', JSON.stringify(cc)); ok(cc.pick==='chief'&&cc.hint==='대장 누르기','🎖 누르면 대장 고르는 중'); ok(cc.ok&&!cc.after,'대장을 누르면 부하로 이어짐');
+ console.log('D. 관계 풀기 · 휴대폰');
+ const dd = await p.evaluate(()=>{ const A=world.units.filter(u=>u.side===0&&u.alive&&u.chiefLk); sel=new Set(A.map(u=>u.i)); hud(); document.querySelector('#orders [data-ord="relcut"]').click(); return A.every(u=>!u.chiefLk); });
+ ok(dd,'✂ 관계 풀기가 그대로 동작');
+ const pm = await mk({width:420,height:860}); const m = await pm.evaluate(()=>{ const A=world.units.filter(u=>u.side===0&&u.alive).slice(0,2); sel=new Set(A.map(u=>u.i)); hud(); return { dock: document.querySelectorAll('#dock [data-dk="mate"], #dock [data-dk="chief"]').length, bar: !!document.querySelector('#skbar:not([hidden])') && getComputedStyle(document.getElementById('skbar')).display!=='none' }; });
+ ok(m.dock===2&&!m.bar,'휴대폰은 도크의 🤝 🎖 그대로 (기술 막대는 숨김)');
+ ok(!p.errs.length&&!pm.errs.length,'페이지 오류 없음 '+JSON.stringify([...p.errs,...pm.errs].slice(0,3)));
+ console.log(fails?'FAIL '+fails:'ALL OK'); await b.close(); process.exit(fails?1:0); })();
