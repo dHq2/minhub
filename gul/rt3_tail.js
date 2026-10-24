@@ -2347,8 +2347,17 @@ function think(W, u){
   const rm = roeOf(W, u);
   if (rm === 'smart' && W.eng && W.eng.out) lim = Math.min(lim, (R.roe || {}).outLim || 4.5);   // v7.9 열세로 싸움이 열렸으면 제 자리 둘레에서만 막음 (쫓아 나가지 않음)
   const near0 = Math.max(2.5, isFar(u) ? 0 : u.rng + 1);   /* v8.7.3 지킴이도 몸에 붙은 적은 봄 */
-  const seen = foes.filter(f => canSee(W, u, f) && ((me && !u.stay) || dist(f, anchor) <= lim || (u.stay && dist(f, u) <= near0) || (u.cg && mateNear(W, u, f, lim)))).sort((a, b) => dist(u, a) - dist(u, b));
-  if (u.stay && seen.some(f => dist(f, u) <= near0) && Math.hypot(u.x - u.stay.x, u.y - u.stay.y) > 2.5) u.stay = { x: u.x, y: u.y };   /* v8.7.3 싸움이 붙은 곳이 새 자리 (싸우다 옛 자리로 물러나 동료를 두고 가던 것) */
+  const shotMe = f => isFar(f) && (f.target === u || (f.act && f.act.b === u.i && f.act.phase === 'wind'));   /* v9.6.3 나를 쏘는 사수는 자리 밖이어도 봄 */
+  const seen = foes.filter(f => canSee(W, u, f) && ((me && !u.stay) || dist(f, anchor) <= lim || (u.stay && dist(f, u) <= near0) || (u.cg && mateNear(W, u, f, lim)) || (u.stay && !isFar(u) && shotMe(f)))).sort((a, b) => dist(u, a) - dist(u, b));
+  if (u.stay && seen.some(f => dist(f, u) <= near0) && Math.hypot(u.x - u.stay.x, u.y - u.stay.y) > 2.5) u.stay = { x: u.x, y: u.y };
+  const inc2 = !u.stay && u.side === 0 && (W.inc || []).filter(q => q.by === u.i && W.t - q.t < 4).length >= 2;   /* 따라다니던 이도 보이지 않는 사수에게 거듭 맞으면 */
+  if (u.side === 0 && (u.stay || inc2) && !u.order && !isFar(u) && W.t - (u.stayShotT || -9) > 3){   /* v9.6.3 자리를 지키다 화살을 맞음 — 가만히 서서 맞지 않음 */
+    const sh = u.stay ? seen.find(f => shotMe(f) && dist(f, u) > lim) : null, r = sh ? null : (W.inc || []).filter(q => q.by === u.i && W.t - q.t < 1.5).pop();
+    if ((sh || (r && !seen.some(f => dist(f, u) <= near0))) && (u.stay || ((u.cls === '기동' || u.bold >= 0.6) && u.hp / u.max > 0.35))){ u.stayShotT = W.t;
+      if (sh){ u.stay = null; L(W, { k: 'stayShot', a: u.i, b: sh.i, how: 'hunt', vis: true }); }
+      else { const go = (u.cls === '기동' || u.bold >= 0.6) && u.hp / u.max > 0.35, dl = Math.hypot(r.dx, r.dy) || 1, rr = Math.min(Math.max(r.tr || 6, 3), 9);
+        u.stay = go ? { x: Math.max(0.6, Math.min(W.map.W - 0.6, r.x + r.dx / dl * rr)), y: Math.max(0.6, Math.min(W.map.H - 0.6, r.y + r.dy / dl * rr)) } : null;
+        L(W, { k: 'stayShot', a: u.i, how: go ? 'hunt' : 'back', dir: dirName(r.dx, r.dy), vis: true }); } } }   /* v8.7.3 싸움이 붙은 곳이 새 자리 (싸우다 옛 자리로 물러나 동료를 두고 가던 것) */
   if (rm !== 'free'){   // v7.9 교전 규칙이 막는 상대는 거름
     const blocked = []; for (let k = seen.length - 1; k >= 0; k--){ const why = roeBlock(W, u, seen[k]); if (why){ blocked.push([seen[k], why]); seen.splice(k, 1); } }
     if (!seen.length && blocked.length){ roeNote(W, u, blocked[blocked.length - 1][0], blocked[blocked.length - 1][1]); u.target = null; u.state = u.stay ? 'stay' : me || !hero ? 'explore' : 'follow'; return; }
@@ -3689,6 +3698,8 @@ function heavyHit(W, u, t, mode){
     return;
   }
   // 찍기: 한 놈에게 무겁게. 막아도 자세가 크게 깎임 (방패벽을 깨는 망치)
+  const spx = t.x, spy = t.y, spR = H.splash != null ? H.splash : 0.45;   /* v9.6.3 찍기는 한 점 — 그 자리 둘레 (0.45칸) 에 몸을 걸친 이는 동료든 적이든 휩쓸림 */
+  for (const e of W.units){ if (!e.alive || e.gone || e === u || e === t || airOf(e) || e.jrFly || Math.hypot(e.x - spx, e.y - spy) > spR + e.r) continue; strike(W, u, e, e, 1, false, { mul: (H.mul || 1.3) * (H.splashMul != null ? H.splashMul : 0.6), wk, tag: '찍기 — 휩쓸림' }); }
   const o = strike(W, u, t, t, 1, false, { mul: H.mul || 1.3, wk, tag: '찍기', heavyCrit: H.crit || 0.2 });
   if (o && !o.block) crushBone(W, u, t);   // v5.5 막지 못하고 맞으면 뼈가 부러질 수 있음
   if (o && o.block && t.alive){ t.post -= H.post || 45; if (t.post <= 0 && W.t >= t.brokenT){ t.post = 0; t.brokenT = W.t + W.rules.breakTime; L(W, { k: 'guardBreak', a: u.i, b: t.i, arm: !!t.armShield, vis: true }); } }
@@ -4619,6 +4630,16 @@ function sweepWarn(W, u, A){
 }
 // v8.7.3 큰 공격의 예고 (도끼 던지기 · 투창 조준 · 넓게 휘두르기): 범위 안에서 그것을 본 몸은 준비가 tg.left 초 넘게 남았으면 하던 짓 (돌진 · 도약 중이 아니면) 을 끊고 비킴 — 회피 등급 · 지침 · 무게로 성공률 · 머리 위 '!' (적 · 아군 같은 규칙)
 const tgDodgeP = (W, e) => { const T = W.rules.tg || {}; return Math.max(0.1, Math.min(0.95, (T.p != null ? T.p : 0.55) * (e.ev || 1) * (e.exhausted ? 0.5 : e.tired ? 0.8 : 1) * ((e.mass || 62) > 150 ? 0.6 : 1) * (e.blind ? 0.3 : 1))); };
+function tgIn(W, a, Z, e){   // v9.6.3 예고 범위 안에 있나 — 한 몸 · 원 (자리) · 줄 · 부채꼴
+  const dx = e.x - a.x, dy = e.y - a.y, d = Math.hypot(dx, dy), al = dx * Math.cos(Z.ang) + dy * Math.sin(Z.ang), lat = -dx * Math.sin(Z.ang) + dy * Math.cos(Z.ang);
+  return Z.k === 'one' ? e.i === Z.b : Z.k === 'circle' ? Math.hypot(e.x - Z.x, e.y - Z.y) - e.r < Z.R : Z.k === 'line' ? al > 0 && al < Z.len && Math.abs(lat) < Z.w + e.r : d - e.r < Z.R && angDiff(Math.atan2(dy, dx), Z.ang) < Z.arc + 0.25;
+}
+function karFFOk(W, u, t, k){   // v9.6.3 카리우스: 못 피할 동료가 걸리거나 동료가 적보다 많이 걸리면 그 기술을 아낌
+  if (!t) return true; const Z = karTg(W, u, { s: k, ...karAim(W, u, t, k) }, t); if (Z.k === 'one') return true;
+  const M = W.units.filter(e => e.alive && !e.gone && e !== u && e.side === u.side && e.summon !== 'slime' && tgIn(W, u, Z, e)); if (!M.length) return true;
+  if (M.some(e => e.down || e.crawl || prone(W, e) || e.heldBy != null || W.t < (e.stunT || -9) || (e.act && e.act.k === 'charge' && e.act.phase === 'run'))) return false;
+  return W.units.filter(e => e.alive && !e.gone && e.side !== u.side && tgIn(W, u, Z, e)).length > M.length;
+}
 function tgTick(W){
   const T = W.rules.tg || {}, left = T.left != null ? T.left : 0.25;
   for (const a of W.units){ const A = a.act; if (!a.alive || !A || A.phase !== 'wind' || A.end - W.t < left) continue;
@@ -4630,21 +4651,22 @@ function tgTick(W){
     else if (A.k === 'spec' && (A.s === 'tear' || A.s === 'kick') && t && t.side !== a.side){ Z = { k: 'one', b: t.i, ang: Math.atan2(t.y - a.y, t.x - a.x), what: A.s === 'tear' ? '붙잡으려는 손' : '딥 킥' }; }   /* v8.7.4 */
     else if (A.k === 'h2' && A.Z){ const Q = A.Z; Z = Q.sh === 'line' ? { k: 'line', ang: Q.ang, len: Q.len + 0.3, w: Q.w / 2 + 0.25, what: A.n, foe: true } : { k: 'fan', ang: Q.ang, arc: Q.arc / 2 + 0.15, R: Q.r + 0.3, what: A.n, foe: true }; }   /* v8.7.4 기술표 (몸 가운데부터) */
     else if (A.k === 'atk' && A.mode === 'sweep' && t){ const S = W.rules.sweep || {}; Z = { k: 'fan', ang: Math.atan2(t.y - a.y, t.x - a.x), arc: (S.arc || 65) * Math.PI / 180, R: a.rng + (S.reach || 0.35) + 0.3, what: '넓게 휘두르기' }; }
+    else if (A.k === 'atk' && A.mode === 'smash' && t){ const H = W.rules.heavy || {}; Z = { k: 'circle', ang: Math.atan2(t.y - a.y, t.x - a.x), x: t.x, y: t.y, R: (H.splash != null ? H.splash : 0.45) + 0.25, what: '찍기', skip: t.i }; }   /* v9.6.3 찍기 = 한 점 (곁에 붙은 몸은 비킴) */
     if (!Z) continue;
     const seen = A.tgSeen || (A.tgSeen = []);
     for (const e of W.units){ if (!e.alive || e === a || seen.includes(e.i) || e.down || e.kb || e.crawl || e.lie || e.summon === 'slime' || W.t < (e.proneT || -9) || W.t < (e.stunT || -9)) continue;
       if ((Z.foe || Z.k === 'one') && e.side === a.side) continue;
       const dx = e.x - a.x, dy = e.y - a.y, d = Math.hypot(dx, dy), al = dx * Math.cos(Z.ang) + dy * Math.sin(Z.ang), lat = -dx * Math.sin(Z.ang) + dy * Math.cos(Z.ang);
-      const inZ = Z.k === 'one' ? e.i === Z.b : Z.k === 'line' ? al > 0 && al < Z.len && Math.abs(lat) < Z.w + e.r : d - e.r < Z.R && angDiff(Math.atan2(dy, dx), Z.ang) < Z.arc + 0.25;
+      const inZ = tgIn(W, a, Z, e) && e.i !== Z.skip, ff = e.side === a.side;   /* v9.6.3 같은 편 공격 (비켜!) */
       if (!inZ) continue; seen.push(e.i);
-      if (!aware(W, e, a) || (e.order && e.order.k === 'hold') || (W.duel && e.i === W.duel.me) || (e.act && ((e.act.k === 'charge' && e.act.phase === 'run') || e.act.k === 'leap' || e.act.k === 'dodge' || (e.act.k === 'spec' && e.act.phase !== 'wind')))) continue;   /* v8.7.3 링의 직접 조작은 그대로 */
-      if (W.rand() >= tgDodgeP(W, e)){ L(W, { k: 'tgLate', a: e.i, b: a.i, what: Z.what, vis: e.side === 0 || !!e.seenBy }); continue; }
-      const s = Z.k === 'fan' ? 0 : (lat >= 0 ? 1 : -1), D = Z.k === 'fan' ? Math.max(Z.R - d + e.r + 0.4, 0.8) : Math.max(0.9, (Z.w || 0.6) + e.r + 0.3 - Math.abs(lat)) + 0.2;
-      const ox = Z.k === 'fan' ? dx / (d || 1) : -Math.sin(Z.ang) * s, oy = Z.k === 'fan' ? dy / (d || 1) : Math.cos(Z.ang) * s;
+      if (!(ff ? canSee(W, e, a) || dist(e, a) < 6 : aware(W, e, a)) || (e.order && e.order.k === 'hold' && !ff) || (W.duel && e.i === W.duel.me) || (e.act && ((e.act.k === 'charge' && e.act.phase === 'run') || e.act.k === 'leap' || e.act.k === 'dodge' || (e.act.k === 'spec' && e.act.phase !== 'wind')))) continue;   /* v8.7.3 링의 직접 조작은 그대로 */
+      if (W.rand() >= Math.min(0.95, tgDodgeP(W, e) * (ff ? 1.6 : 1))){ L(W, { k: 'tgLate', a: e.i, b: a.i, what: Z.what, ff, vis: e.side === 0 || !!e.seenBy }); continue; }
+      const cd = Z.k === 'circle' ? Math.hypot(e.x - Z.x, e.y - Z.y) || 0.01 : 1, s = Z.k === 'fan' ? 0 : (lat >= 0 ? 1 : -1), D = Z.k === 'circle' ? Math.max(Z.R - cd + e.r + 0.4, 0.8) : Z.k === 'fan' ? Math.max(Z.R - d + e.r + 0.4, 0.8) : Math.max(0.9, (Z.w || 0.6) + e.r + 0.3 - Math.abs(lat)) + 0.2;
+      const ox = Z.k === 'circle' ? (e.x - Z.x) / cd : Z.k === 'fan' ? dx / (d || 1) : -Math.sin(Z.ang) * s, oy = Z.k === 'circle' ? (e.y - Z.y) / cd : Z.k === 'fan' ? dy / (d || 1) : Math.cos(Z.ang) * s;
       let fx = Math.max(0.6, Math.min(W.map.W - 0.6, e.x + ox * D)), fy = Math.max(0.6, Math.min(W.map.H - 0.6, e.y + oy * D)); if (boxRock(W, fx, fy, e.r * 0.9)){ fx = Math.max(0.6, Math.min(W.map.W - 0.6, e.x - ox * D)); fy = Math.max(0.6, Math.min(W.map.H - 0.6, e.y - oy * D)); if (boxRock(W, fx, fy, e.r * 0.9)) continue; }
       const ea = e.act; if (ea){ if (ea.k === 'skill' && ea.phase === 'tend') tendEnd(W, e, ea, '피함'); e.act = null; e.burst = null; }
-      e.flee = { x: fx, y: fy, until: A.end + 0.35, why: Z.what + ' — 피함' };
-      L(W, { k: 'tgDodge', a: e.i, b: a.i, what: Z.what, vis: e.side === 0 || !!e.seenBy || a.side === 0 }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y - 0.45, s: '!', c: 'g', t0: W.t }); } }
+      e.flee = { x: fx, y: fy, until: A.end + 0.35, why: Z.what + ' — 피함' }; e.mv = { k: 'crun', run: true, until: A.end + 0.35 };   /* v9.6.3 서둘러 (호다닥) */
+      L(W, { k: 'tgDodge', a: e.i, b: a.i, what: Z.what, ff, vis: e.side === 0 || !!e.seenBy || a.side === 0 }); if (W.fxOn) W.fx.push({ k: 'num', x: e.x, y: e.y - 0.45, s: '!', c: 'g', t0: W.t }); } }
   if (W.h2z && W.h2z.length) for (const Q of W.h2z){ if (W.t < Q.t0 || Q.at - W.t < left) continue; const by = W.units[Q.by], seen = Q.seen || (Q.seen = []);   /* v8.7.4 그림자 원: 바닥에 번진 원을 본 몸 (밝거나 · 시전자가 보이면) 은 원 밖으로 */
     for (const e of W.units){ if (!e.alive || e.side === Q.side || seen.includes(e.i) || e.down || e.kb || e.crawl || e.lie || e.summon === 'slime' || W.t < (e.proneT || -9) || W.t < (e.stunT || -9)) continue;
       const dx = e.x - Q.x, dy = e.y - Q.y, d = Math.hypot(dx, dy); if (d >= Q.r + 0.3) continue; seen.push(e.i);
@@ -5334,7 +5356,7 @@ function braceOf(W, t, u, dx, dy){
     m += o.mass * (C.brace != null ? C.brace : 0.6); ids.push(o.i);
   }
   // v5.7 전열의 관절: 두 마디 건너까지 무게를 나눠 받음 (한 마디 0.3 · 두 마디 0.15)
-  if (t.line){ const ids = t.line.ln.ids, k = t.line.k; for (const [j, w] of [[k - 1, 0.3], [k + 1, 0.3], [k - 2, 0.15], [k + 2, 0.15]]){ const o = ids[j] != null ? W.units[ids[j]] : null; if (o && o.alive && dist(o, t) > 1.3){ m += o.mass * w; ids.push(o.i); } else if (o && o.alive){ m += o.mass * w * 0.5; ids.push(o.i); } } }
+  if (t.line){ const lids = t.line.ln.ids, k = t.line.k;   /* v9.6.3 전열 명단은 읽기만 (예전엔 받쳐 준 몸을 거기 밀어 넣어 로그에 이름이 수백 번) */ for (const [j, w] of [[k - 1, 0.3], [k + 1, 0.3], [k - 2, 0.15], [k + 2, 0.15]]){ const o = lids[j] != null ? W.units[lids[j]] : null; if (o && o.alive && dist(o, t) > 1.3){ m += o.mass * w; ids.push(o.i); } else if (o && o.alive){ m += o.mass * w * 0.5; ids.push(o.i); } } }
   const trained = guardOn(W, t) && inGuard(W, t, u, true) && t.role === '전선';
   return { mass: (t.mass * (t.poise || 1) + m) * (trained ? C.trained || 1.6 : 1), trained, mates: m > 0, line: !!t.line, ids };   /* v8.7.3 버팀 (poise) 도 돌격에 걸림 */
 }
@@ -9299,29 +9321,30 @@ function karAim(W, u, t, k){
   return { ang };
 }
 // 부채꼴 안의 적 (몸 가운데부터 R · 벽 너머는 못 침)
-const karFan = (W, u, ang, R, arc, air) => W.units.filter(e => e.alive && !e.gone && e.side !== u.side && !e.jrFly && (air || !airOf(e)) && dist(u, e) - e.r <= R && angDiff(Math.atan2(e.y - u.y, e.x - u.x), ang) <= arc / 2 + Math.atan2(e.r, Math.max(0.3, dist(u, e))) && losClear(W.map, u.x, u.y, e.x, e.y));
+const karFan = (W, u, ang, R, arc, air, ff) => W.units.filter(e => e.alive && !e.gone && e !== u && (ff || e.side !== u.side) && !(ff && e.side === u.side && e.summon === 'slime') && !e.jrFly && (air || !airOf(e)) && dist(u, e) - e.r <= R && angDiff(Math.atan2(e.y - u.y, e.x - u.x), ang) <= arc / 2 + Math.atan2(e.r, Math.max(0.3, dist(u, e))) && losClear(W.map, u.x, u.y, e.x, e.y));
 // 카리우스가 스스로 (3D kariusThink 의 차례)
 function karAuto(W, u, t){
   const d = dist(u, t);
   if (specReady(W, u, 'kstomp')){ const dn = W.units.filter(e => e.alive && !e.gone && e.side !== u.side && prone(W, e) && !e.jrFly && gap(u, e) <= 0.7 && canSee(W, u, e)).sort((p, q) => dist(u, p) - dist(u, q))[0];
-    if (dn) return startSpec(W, u, dn, 'kstomp', isBoss(dn) ? '누운 보스를 짓밟음' : '누운 적을 확인사살'); }
+    if (dn && karFFOk(W, u, dn, 'kstomp')) return startSpec(W, u, dn, 'kstomp', isBoss(dn) ? '누운 보스를 짓밟음' : '누운 적을 확인사살'); }
   if (specReady(W, u, 'kick') && gap(u, t) <= u.rng + 0.15 && !isBoss(t) && !airOf(t) && !t.jrFly){ const a0 = Math.atan2(t.y - u.y, t.x - u.x), wb = wallBehind(W, t, Math.cos(a0), Math.sin(a0), 3.5);
     if (wb || W.rand() < 0.35) return startSpec(W, u, t, 'kick', wb ? '벽을 등진 적을 걷어참' : '앞의 적을 걷어참'); }
-  if (u.heretic && specReady(W, u, 'krush')){ const S = SPR(W, 'krush'); if (d > (S.min || 2.8) && d < (S.max || 7) && fatClear(W.map, u.x, u.y, t.x, t.y, u.r * 0.9)) return startSpec(W, u, t, 'krush', '몸을 낮춰 일직선으로 몸박'); }
-  if (u.heretic && specReady(W, u, 'kslam') && d <= (SPR(W, 'kslam').d || 2.3) + t.r) return startSpec(W, u, t, 'kslam', '노인의 팔이 부풀어 철퇴처럼');
+  if (u.heretic && specReady(W, u, 'krush')){ const S = SPR(W, 'krush'); if (d > (S.min || 2.8) && d < (S.max || 7) && fatClear(W.map, u.x, u.y, t.x, t.y, u.r * 0.9) && karFFOk(W, u, t, 'krush')) return startSpec(W, u, t, 'krush', '몸을 낮춰 일직선으로 몸박'); }
+  if (u.heretic && specReady(W, u, 'kslam') && d <= (SPR(W, 'kslam').d || 2.3) + t.r && karFFOk(W, u, t, 'kslam')) return startSpec(W, u, t, 'kslam', '노인의 팔이 부풀어 철퇴처럼');
   if (specReady(W, u, 'kgrab') && !t.jrFly){ const S = SPR(W, 'kgrab'), air = airOf(t);
     if (air ? d <= (S.dAir || 3.4) : d <= (S.d || 1.9) + t.r * 0.5 && !isBoss(t) && (SIZE_RANK[sizeOf(t)] || 0) < SIZE_RANK['초대형']) return startSpec(W, u, t, 'kgrab', air ? '뛰어오른 적을 광대의 팔로 끌어내림' : '광대의 팔로 끌어와 꿰뚫음'); }
-  if (specReady(W, u, 'kstomp') && gap(u, t) <= 0.7 && !isBoss(t) && !airOf(t) && W.rand() < 0.3) return startSpec(W, u, t, 'kstomp', '짓밟아 넘어뜨림');
-  if (specReady(W, u, 'khook') && d <= (SPR(W, 'khook').r || 1.9) + t.r) return startSpec(W, u, t, 'khook', '팔 여럿으로 라이트 훅 세 번');
-  if (specReady(W, u, 'ksw')){ const S = SPR(W, 'ksw'); if (karFan(W, u, Math.atan2(t.y - u.y, t.x - u.x), S.r || 2.7, (S.arc || 137) * Math.PI / 180, true).length) return startSpec(W, u, t, 'ksw', '노인의 팔로 앞을 후려침'); }
+  if (specReady(W, u, 'kstomp') && gap(u, t) <= 0.7 && !isBoss(t) && !airOf(t) && W.rand() < 0.3 && karFFOk(W, u, t, 'kstomp')) return startSpec(W, u, t, 'kstomp', '짓밟아 넘어뜨림');
+  if (specReady(W, u, 'khook') && d <= (SPR(W, 'khook').r || 1.9) + t.r && karFFOk(W, u, t, 'khook')) return startSpec(W, u, t, 'khook', '팔 여럿으로 라이트 훅 세 번');
+  if (specReady(W, u, 'ksw')){ const S = SPR(W, 'ksw'); if (karFan(W, u, Math.atan2(t.y - u.y, t.x - u.x), S.r || 2.7, (S.arc || 137) * Math.PI / 180, true).length && karFFOk(W, u, t, 'ksw')) return startSpec(W, u, t, 'ksw', '노인의 팔로 앞을 후려침'); }
   return false;
 }
 // 예고 (보고 피함): 부채꼴 · 줄 · 한 몸
 function karTg(W, a, A, t){
   const S = SPR(W, A.s), ang = A.ang != null ? A.ang : Math.atan2(t.y - a.y, t.x - a.x);
-  if (A.s === 'ksw' || A.s === 'khook') return { k: 'fan', ang, arc: (S.arc || (A.s === 'ksw' ? 137 : 97)) * Math.PI / 360 + 0.15, R: (S.r || (A.s === 'ksw' ? 2.7 : 1.9)) + 0.3, what: A.s === 'ksw' ? '노인의 팔' : '라이트 훅', foe: true };
-  if (A.s === 'kslam') return { k: 'fan', ang, arc: 1.0, R: (S.ahead || 1.3) + (S.r || 1.3) + 0.3, what: '노인의 팔 철퇴', foe: true };
-  if (A.s === 'krush') return { k: 'line', ang, len: (S.v || 9) * (S.time || 0.5) + 1, w: a.r + 0.4, what: '돌진 몸박', foe: true };
+  if (A.s === 'ksw' || A.s === 'khook') return { k: 'fan', ang, arc: (S.arc || (A.s === 'ksw' ? 137 : 97)) * Math.PI / 360 + 0.15, R: (S.r || (A.s === 'ksw' ? 2.7 : 1.9)) + 0.3, what: A.s === 'ksw' ? '노인의 팔' : '라이트 훅', ff: true };
+  if (A.s === 'kslam') return { k: 'circle', ang, x: A.px != null ? A.px : a.x + Math.cos(ang) * (S.ahead || 1.3), y: A.py != null ? A.py : a.y + Math.sin(ang) * (S.ahead || 1.3), R: (S.r || 1.3) + 0.3, what: '노인의 팔 철퇴', ff: true };   /* v9.6.3 자리 (원) */
+  if (A.s === 'kstomp') return { k: 'circle', ang, x: A.px != null ? A.px : t.x, y: A.py != null ? A.py : t.y, R: (S.r || 0.95) + 0.3, what: '짓밟으려는 발', ff: true };
+  if (A.s === 'krush') return { k: 'line', ang, len: (S.v || 9) * (S.time || 0.5) + 1, w: a.r + 0.4, what: '돌진 몸박', ff: true };
   return { k: 'one', b: t.i, ang, what: A.s === 'kgrab' ? '광대의 팔' : A.s === 'kstomp' ? '짓밟으려는 발' : '앞차기' };
 }
 // 카리우스의 기술이 떨어지는 때 (resolveSpec 맨 앞)
@@ -9348,13 +9371,13 @@ function karResolve(W, u, A, S, t){
     rec(); return;
   }
   if (k === 'ksw'){   // 노인의 팔 후려치기: 앞 부채꼴 — 밀침 · 휘청 (막으면 덜)
-    const arc = (S.arc || 137) * Math.PI / 180, hit = karFan(W, u, ang, S.r || 2.7, arc, true);
+    const arc = (S.arc || 137) * Math.PI / 180, hit = karFan(W, u, ang, S.r || 2.7, arc, true, true);   /* v9.6.3 동료도 맞음 */
     for (const e of hit){ const o = strike(W, u, e, e, 1, false, { mul: S.mul || 1.25, wk: '둔기', tag: '노인의 팔 — 후려치기' }); if (!e.alive) continue; if (e.kb && e.kb.by === u.i) e.kb = null;
       if (!e.kb) shove(W, u, e, (S.kb || 1.6) * (o && o.block ? 0.5 : 1), e.x - u.x, e.y - u.y, { tag: '노인의 팔에 밀려남' }); if (o && !o.block) stun(W, e, S.stun || 0.5, u.i); }
     L(W, { k: 'karSwat', a: u.i, n: hit.length, vis }); if (W.fxOn) W.fx.push({ k: 'kfan', a: u.i, x: u.x, y: u.y, ang, R: S.r || 2.7, arc, t0: W.t, c: 'old' }); rec(); return;
   }
   if (k === 'khook'){   // 라이트 훅 세 번: 팔 여럿으로 (마지막은 밀침 · 뛰어오른 몸도)
-    const arc = (S.arc || 97) * Math.PI / 180, n = (A.n || 0) + 1, last = n >= (S.n || 3), hit = karFan(W, u, ang, S.r || 1.9, arc, last);
+    const arc = (S.arc || 97) * Math.PI / 180, n = (A.n || 0) + 1, last = n >= (S.n || 3), hit = karFan(W, u, ang, S.r || 1.9, arc, last, true);
     for (const e of hit){ const o = strike(W, u, e, e, 1, false, { mul: S.mul || 0.45, wk: '둔기', tag: '라이트 훅 ' + n + '타' }); if (!e.alive) continue; if (e.kb && e.kb.by === u.i) e.kb = null; if (!e.kb && o && !o.block) shove(W, u, e, last ? S.kb || 1 : S.kb1 || 0.2, e.x - u.x, e.y - u.y, { tag: '라이트 훅에 밀려남' }); }
     L(W, { k: 'karHook', a: u.i, n, hit: hit.length, vis }); if (W.fxOn) W.fx.push({ k: 'kfan', a: u.i, x: u.x, y: u.y, ang, R: S.r || 1.9, arc, t0: W.t, c: 'hook' });
     if (!last){ A.n = n; A.phase = 'hook'; A.end = W.t + (S.gap || 0.15); return; }
@@ -9362,8 +9385,8 @@ function karResolve(W, u, A, S, t){
   }
   if (k === 'kstomp'){   // 짓밟기: 발을 든 자리 (처음에 정함) — 누운 적은 확인사살 (보스는 크게 다침) · 선 적은 넘어뜨림 (대형부터는 버팀)
     const px = A.px != null ? A.px : t ? t.x : u.x, py = A.py != null ? A.py : t ? t.y : u.y, R = S.r || 0.95; let lying = false, n = 0;
-    for (const e of W.units){ if (!e.alive || e.gone || e.side === u.side || airOf(e) || e.jrFly || Math.hypot(e.x - px, e.y - py) > R + e.r) continue; n++;
-      if (prone(W, e)){ lying = true; const bs = isBoss(e);
+    for (const e of W.units){ if (!e.alive || e.gone || e === u || airOf(e) || e.jrFly || Math.hypot(e.x - px, e.y - py) > R + e.r) continue; n++;   /* v9.6.3 동료도 밟힘 (누운 동료는 확인사살 아님) */
+      if (prone(W, e) && e.side !== u.side){ lying = true; const bs = isBoss(e);
         L(W, { k: 'stomp', a: u.i, b: e.i, kill: !bs, how: '짓밟기', vis: u.side === 0 || e.side === 0 || !!u.seenBy });
         if (!bs) applyDmg(W, u, e, Math.max(1, Math.ceil(e.hp)), { ff: false, far: false, part: '머리', tag: '짓밟기 · 확인사살' });
         else { hurtRaw(W, u, e, u.atk * u.atkMul * (W.rules.lethal || 1) * (S.boss || 2.5), { tag: '짓밟기' }); crushBone(W, u, e); } }
@@ -9374,7 +9397,7 @@ function karResolve(W, u, A, S, t){
   }
   if (k === 'kslam'){   // 불경자 — 노인의 팔이 부풀어 철퇴처럼: 앞 1.3칸 자리 둘레 1.3칸 · 휘청
     const px = A.px != null ? A.px : u.x + Math.cos(ang) * (S.ahead || 1.3), py = A.py != null ? A.py : u.y + Math.sin(ang) * (S.ahead || 1.3), R = S.r || 1.3; let n = 0;
-    for (const e of W.units){ if (!e.alive || e.gone || e.side === u.side || e.jrFly || Math.hypot(e.x - px, e.y - py) > R + e.r) continue; n++;
+    for (const e of W.units){ if (!e.alive || e.gone || e === u || e.jrFly || Math.hypot(e.x - px, e.y - py) > R + e.r) continue; n++;   /* v9.6.3 동료도 */
       const o = strike(W, u, e, e, 1, false, { mul: S.mul || 1.67, wk: '둔기', tag: '노인의 팔 철퇴' }); if (!e.alive) continue; if (e.kb && e.kb.by === u.i) e.kb = null;
       if (!e.kb) shove(W, u, e, (S.kb || 0.8) * (o && o.block ? 0.5 : 1), e.x - px, e.y - py, { tag: '철퇴에 밀려남' }); if (o && !o.block) stun(W, e, S.stun || 0.6, u.i); }
     L(W, { k: 'karSlam', a: u.i, n, vis }); if (W.fxOn){ W.fx.push({ k: 'crush', x: px, y: py, t0: W.t }); W.fx.push({ k: 'num', x: px, y: py, s: '쾅!', c: 'd', t0: W.t }); }
@@ -9390,7 +9413,7 @@ function karRushStep(W, u, dt){
   const A = u.act, S = SPR(W, 'krush'), x0 = u.x, y0 = u.y, st = (S.v || 9) * dt;
   tryMove(W, u, u.x + A.dx * st, u.y + A.dy * st); u.face = u.fg = Math.atan2(A.dy, A.dx);
   if (Math.hypot(u.x - x0, u.y - y0) < st * 0.3) A.end = W.t;   // 벽에 막힘
-  for (const e of W.units){ if (!e.alive || e.gone || e.side === u.side || A.hit.includes(e.i) || airOf(e) || e.jrFly || dist(u, e) > u.r + e.r + 0.15) continue;
+  for (const e of W.units){ if (!e.alive || e.gone || e === u || A.hit.includes(e.i) || airOf(e) || e.jrFly || dist(u, e) > u.r + e.r + 0.15) continue;   /* v9.6.3 길의 동료도 */
     A.hit.push(e.i); const o = strike(W, u, e, e, 1, false, { mul: S.mul || 1.46, wk: '둔기', tag: '돌진 몸박' }); if (!e.alive) continue; if (e.kb && e.kb.by === u.i) e.kb = null;
     if (!e.kb) shove(W, u, e, (S.kb || 4.5) * (o && o.block ? 0.6 : 1), A.dx, A.dy, { tag: '몸박에 밀려 날아감', how: 'kick' }); }
 }
@@ -9548,7 +9571,7 @@ function supInit(W){
   const P = SUPR(W).pact || {};
   for (const s of [0, 1, 2]){ if (!W.units.some(u => u.alive && u.mulKit && u.side === s)) continue;
     let n = 0; for (const a of W.units) if (a.alive && a.side === s && !a.summon && !a.pactUp){ const add = Math.round(a.max * (P.hp || 0.08)); a.max += add; a.hp = Math.min(a.max, a.hp + add); a.pactUp = add; n++; }
-    L(W, { k: 'pact', side: s, n, vis: s === 0 }); }
+    L(W, { k: 'pact8', side: s, n, vis: s === 0 }); }   /* v9.6.3 협공 약속 (pact) 과 이름이 겹쳐 로그가 섞이던 것 */
 }
 function supWorld(W, dt){
   if (!W.sup8) return;
@@ -9969,4 +9992,4 @@ function supAuto(W, u){
   return false;
 }
 
-if (typeof module !== 'undefined') module.exports = { abyssTag, ABYSS_ART, vialSync, isVial8, wallLine, giantChg, rampTick, radarTick, h2Grab, wallBetween, wallHold, bfTick, matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
+if (typeof module !== 'undefined') module.exports = { tgIn, karFFOk, abyssTag, ABYSS_ART, vialSync, isVial8, wallLine, giantChg, rampTick, radarTick, h2Grab, wallBetween, wallHold, bfTick, matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */

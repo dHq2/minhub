@@ -1,4 +1,4 @@
-// v8.7.8 엔진 시험 (4) — eng8780d.js v1.2 (v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
+// v8.7.8 엔진 시험 (4) — eng8780d.js v1.3 (v1.3: v9.6.3 — 물레의 정령 계약 기록 이름 pact → pact8 (협공 약속과 겹치던 것) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
 //   축복:테헤라 · 요정 날개 · 요정의 축복 · 광역 손짓 · 은빛 비행 · 날개 방패 · 나른한 꿈 · 명령 · 스스로 (적 · 아군 같은 두뇌))
 const {E,R,U,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -34,7 +34,7 @@ console.log('B. ◆정령 계약 — 최대 체력 +8% · 곁 5칸 초당 0.6% �
   ok(a.max===a0+Math.round(a0*0.08)&&m.max===m0+Math.round(m0*0.08)&&far.max>a0,'편 모두 최대 체력 +8% ('+a0+' → '+a.max+' · 물레 '+m0+' → '+m.max+')');
   a.hp=a.max*0.5; far.hp=far.max*0.5; const h0=a.hp, f0=far.hp; step(W,30);
   ok(a.hp>h0+a.max*0.005&&Math.abs(far.hp-f0)<0.01,'곁 5칸만 회복 ('+(a.hp-h0).toFixed(1)+' / 1초 · 먼 동료 '+(far.hp-f0).toFixed(1)+')');
-  ok(logK(W,'pact').length===1,'기록: 정령 계약'); }
+  ok(logK(W,'pact8').length===1,'기록: 정령 계약 (v9.6.3 pact8)'); }
 { const mkW=pact=>{ const L=[dummy('불사',10,10,0,{traits:['불사']}),dummy('적',35,17,1),dummy('곁의 동료',8,12,0)]; if(pact) L.push(mk(MU,0,12,10)); const W=WF(L); freeze(W); still(...W.units); for(const u of W.units) holdAll(u); return W; };
   const T=pact=>{ const W=mkW(pact), u=W.units[0]; step(W,2); E.applyDmg(W,W.units[1],u,u.hp+5,{tag:'시험'}); let k=0; while(k<3000&&u.down){ step(W); k++; } return k/30; };
   const t0=T(false), t1=T(true); ok(t1>0&&t1<t0*0.62,'쓰러진 [불사] 동료가 일어나는 때: '+t0.toFixed(1)+'초 → 물레 곁 '+t1.toFixed(1)+'초'); }

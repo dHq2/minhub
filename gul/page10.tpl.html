@@ -1,5 +1,6 @@
 <title>굴의 전투판</title>
-<!-- 굴의 전투판 v9.6.2 (2026-10-24) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v9.6.3 (2026-10-24) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v9.6.3: 판 분석 고침 — 로그에 전열 이름이 수백 번 찍히던 것 (버팀 계산이 명단을 늘림) · 협공 약속이 '💧 정령 계약 — undefined명' 으로 찍히던 것 · 자율 판단 undefined · 카리우스 기술은 자리 안의 동료도 맞음 (오사) · 찍기는 한 점 (표적 둘레 0.45칸) — 예고도 점으로 · 위험 범위의 동료는 서둘러 피함 (모든 예고 공격 · 제자리 명령이어도) · 카리우스는 못 피할 동료가 걸리면 기술을 아낌 · 자리를 지키다 화살을 맞으면 쏜 쪽으로 (날쌘 이) 또는 본대로 · 로그 머리에 전우조 · 대장
      v9.6.2: 전우조 · 대장 연결이 눈에 띄게 — 명령 칸의 '관계' 줄을 기술 줄 바로 아래로 (긴 단추 줄 맨 아래라 화면 밖이던 것) · PC 아래 기술 막대에 🤝 전우조 · 🎖 대장 단추 (휴대폰 도크에만 있던 것)
      v9.6.1: 대장이 서둘러 뛰면 부하도 서둘러 (명세 B6 — 따르는 이가 뛰는 동안 따라가는 이도 뜀걸음) · 암계 역장의 모습 (어두운 보랏빛 장 · 마름모 룬 · 이름표 "암계 역장" — 예전엔 정령 방벽의 파란 물)
      v9.6.0: 되돌아가기 (명세 C1) — 지나친 야전의사 (천막) · 오딜의 방으로 한 번 되돌아갔다 올 수 있음: 그 칸 바로 뒤 한 칸을 마친 뒤 층 지도에 "↩ 되돌아가기" 가 뜸 (낙사 · 계단 · 보스 · 정예 · 잠긴 칸은 못 돌아가는 맵) · 다녀오면 그 뒤 칸의 다음 칸으로 이어짐 (뒤 칸을 다시 싸우지 않음) · 한 번뿐
@@ -1239,7 +1240,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v9.6.2";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v9.6.3";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1623,7 +1624,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v9.6.2 전우조 · 대장 연결 단추가 눈에 띄게 / v9.6.1 대장이 뛰면 부하도 · 암계 역장 모습 / v9.6.0 되돌아가기 / v9.5.2 두건의 왕관 대사 / v9.5.1 암계 장비 그림 / v9.5.0 심계 제3세력 · 망자 맵 / v9.4.1 오래된 약병 (특수 스킬) / v9.4.0 ❓ 만남 구조 (쉬기 · 비전투 맵 · 노숙악마 · 두건) / v9.3.0 2층 배치 (계단 고지대) / v9.2.0 2층의 적 / v9.1.0 전우조 · 대장-부하 / v9.0.0 공통 규칙 / v8.9.4 2층 열한 칸 (❓ 셋) / v8.9.3 대화용 스프라이트 다섯 / v8.9.2 각펄 전용맵 / v8.9.0 2층 짜기 / v8.8.9 전투맵 2 · 3 / v8.8.8 지상 맵 5장 / v8.8.7 2층 맵 / v8.8.6 영거리 사격 / v8.8.5 간두 샷건 / v8.8.4 옐로 (돌진 · 3~5타 · 도약 스택) / v8.8.3 양동이 뿌리기 다시 / v8.8.2 옐로 업데이트 / v8.8.1 진형 폐기 / v8.8.0 위층으로 · 한 일대로 성장 / v8.7.9 펄 · 각펄 (고대 폐허의 만남) / v8.7.8 굿윌 · 포렌 (쥐 군단) · 어퐁 · 카리우스 · 물레 · 콜라이더 · 테헤라 · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v9.6.2 · 전우조 · 대장 단추 눈에 띄게 · 대장 서둘러 · 암계 역장</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v9.6.3 판 분석 고침 (오사 · 피하기 · 로그) / v9.6.2 전우조 · 대장 연결 단추가 눈에 띄게 / v9.6.1 대장이 뛰면 부하도 · 암계 역장 모습 / v9.6.0 되돌아가기 / v9.5.2 두건의 왕관 대사 / v9.5.1 암계 장비 그림 / v9.5.0 심계 제3세력 · 망자 맵 / v9.4.1 오래된 약병 (특수 스킬) / v9.4.0 ❓ 만남 구조 (쉬기 · 비전투 맵 · 노숙악마 · 두건) / v9.3.0 2층 배치 (계단 고지대) / v9.2.0 2층의 적 / v9.1.0 전우조 · 대장-부하 / v9.0.0 공통 규칙 / v8.9.4 2층 열한 칸 (❓ 셋) / v8.9.3 대화용 스프라이트 다섯 / v8.9.2 각펄 전용맵 / v8.9.0 2층 짜기 / v8.8.9 전투맵 2 · 3 / v8.8.8 지상 맵 5장 / v8.8.7 2층 맵 / v8.8.6 영거리 사격 / v8.8.5 간두 샷건 / v8.8.4 옐로 (돌진 · 3~5타 · 도약 스택) / v8.8.3 양동이 뿌리기 다시 / v8.8.2 옐로 업데이트 / v8.8.1 진형 폐기 / v8.8.0 위층으로 · 한 일대로 성장 / v8.7.9 펄 · 각펄 (고대 폐허의 만남) / v8.7.8 굿윌 · 포렌 (쥐 군단) · 어퐁 · 카리우스 · 물레 · 콜라이더 · 테헤라 · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v9.6.3 · 찍기 한 점 · 동료 공격 피하기 · 로그 고침 · 전우조 단추</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1803,7 +1804,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v9.6.2 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v9.6.3 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
   <div class="fmwin" id="fmWin" hidden role="dialog" aria-label="편성 창"><div class="fmc" id="fmC"></div></div>
 </div>
@@ -2610,7 +2611,7 @@ if (!S.v4){
 if (!S.draft) S.draft = { ...newDraft(), done: true, picks: S.units.filter(u => u.side === 0 && !u.hero && u.ref).map(u => u.ref).slice(0, 2) };   // 예전 배치는 그대로 두고 뽑기만 새로   // v2 수치표 (cd) → v3 (준비 · 회복 · 턴)
 // v7.2 수치표 이전: 저장된 수치표는 v5.2 뒤에 생긴 세부 칸을 못 받고, 옛 기본값 (활 탄속 32 · 총 85 …) 에 머물러 v7.0 의 탄속이 실제 판에 안 닿았음.
 // ① 기본값에 있는데 저장된 수치표에 없는 칸은 채움 (지난 이전 때 이미 있던 칸을 손으로 지운 건 그대로 둠) ② 옛 기본값 그대로인 칸만 지금 기본값으로 (손으로 바꾼 값은 둠)
-const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '9.6.2', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
+const OLD_DEFAULTS = /*OLDDEF*/, RULES_MIG = '9.6.3', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
 function rulePaths(d, p, out){ for (const k in d){ const v = d[k], pp = p + '/' + k; out.push(pp); if (v && typeof v === 'object' && !Array.isArray(v)) rulePaths(v, pp, out); } return out; }
 function fixRules(R, known){
   let n = 0; const ks = known ? new Set(known) : null;
@@ -3053,6 +3054,8 @@ function draw(){
     // v5.2 넓게 휘두르기 예고: 준비하는 동안 주황 부채꼴 (동료도 맞음)
     if (!ed && u.act && u.act.k === 'atk' && u.act.phase === 'wind' && u.act.mode === 'sweep' && Wd.units[u.act.b]){ const S2 = Wd.rules.sweep || {}, R2 = (u.r + u.rng + (S2.reach || 0.35)) * ts, ar = (S2.arc || 65) * Math.PI / 180, b = Wd.units[u.act.b], a0 = u.face || 0, k = Math.min(1, (now - u.act.t0) / Math.max(0.05, u.act.end - u.act.t0));
       ctx.fillStyle = `rgba(255,150,60,${0.12 + 0.22 * k})`; ctx.beginPath(); ctx.moveTo(px, py); ctx.arc(px, py, R2, a0 - ar, a0 + ar); ctx.closePath(); ctx.fill(); ctx.strokeStyle = 'rgba(255,170,80,.85)'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    if (!ed && u.act && u.act.k === 'atk' && u.act.phase === 'wind' && u.act.mode === 'smash' && Wd.units[u.act.b]){ const H2 = Wd.rules.heavy || {}, b = Wd.units[u.act.b], k = Math.min(1, (now - u.act.t0) / Math.max(0.05, u.act.end - u.act.t0)), cx = ox + b.x * ts, cy = oy + b.y * ts, R2 = ((H2.splash != null ? H2.splash : 0.45) + 0.25) * ts;   /* v9.6.3 찍기 예고: 한 점 (그 둘레에 걸친 몸은 동료도 맞음) */
+      ctx.save(); ctx.strokeStyle = 'rgba(255,170,80,.85)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(cx, cy); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = `rgba(255,150,60,${(0.14 + 0.24 * k).toFixed(2)})`; ctx.beginPath(); ctx.arc(cx, cy, R2, 0, 6.283); ctx.fill(); ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = 'rgba(255,190,110,.95)'; ctx.beginPath(); ctx.arc(cx, cy, Math.max(2.5, R2 * 0.18 + R2 * 0.25 * k), 0, 6.283); ctx.fill(); ctx.restore(); }
     if (!ed && u.act && u.act.k === 'spec' && u.act.phase === 'wind' && u.act.s === 'boulder'){ const B = SPR(Wd, 'boulder'), b = Wd.units[u.act.b], a0 = b ? Math.atan2(b.y - u.y, b.x - u.x) : u.face || 0, L0 = (B.rng || 10) * ts, w0 = Math.max(4, (B.w || 0.6) * 2 * ts), k = Math.min(1, (now - u.act.t0) / Math.max(0.05, u.act.end - u.act.t0)), col = u.side ? '255,110,70' : '120,190,255';   /* v8.7.4 바위던지기 예고: 날아갈 줄 (처음 닿는 몸) */
       ctx.save(); ctx.translate(px, py); ctx.rotate(a0); ctx.fillStyle = `rgba(${col},${(0.08 + 0.16 * k).toFixed(2)})`; ctx.fillRect(r, -w0 / 2, L0 - r, w0); ctx.fillStyle = `rgba(${col},${(0.2 + 0.25 * k).toFixed(2)})`; ctx.fillRect(r, -w0 / 2, (L0 - r) * k, w0); ctx.setLineDash([6, 4]); ctx.strokeStyle = `rgba(${col},.8)`; ctx.lineWidth = 1.5; ctx.strokeRect(r, -w0 / 2, L0 - r, w0); ctx.setLineDash([]); ctx.restore(); }
     // 시선: 앞 ±frontArc (진하게) · 옆 (옅게) 은 알아챔, 등 뒤는 비워 둠 (못 알아챔)
@@ -3830,12 +3833,13 @@ const PLAN_K = { assault: '밀어붙임', hold: '버팀', bait: '유인', hunt: 
 const PLAN_D = { assault: '대치를 짧게, 돌격을 더 씀', hold: '진형을 오래 지키며 궁수가 깎음 · 우위일 때만 들어감', bait: '앞줄이 물러서며 궁수 사거리로 끌어들인 뒤 들어감', hunt: '고립된 상대를 노림', wedge: '가장 무거운 몸이 끝, 방패가 어깨 — 전열의 관절을 뚫고 뒤로 쏟아져 들어감', encircle: '방패 · 거구가 정면을 붙드는 사이 둘로 갈라져 옆으로 벌렸다 뒤로 돌아 들어감 · 궁수는 십자 사격', withdraw: '물러나 다시 모임 · 쫓는 놈은 동료가 견제 · 붙들린 쪽은 맞섬' };
 const PLAN_N = { assault: '밀어붙이려 한다.', hold: '진형을 굳히고 버틴다.', bait: '앞줄이 슬금슬금 물러선다 — 끌어들이려는 것 같다.', hunt: '혼자 떨어진 쪽을 노린다.', wedge: '무거운 놈을 앞세워 쐐기꼴로 모인다 — 한곳을 뚫으려 한다.', encircle: '넓게 흩어진다 — 옆으로 돌아 뒤를 감싸려 한다.' };
 const START_K = { front: '정면 대치', pincer: '양쪽 협공', ambush: '매복', rear: '후방 기습', column: '행군 중 조우' };
-function pactTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', A = n(e.a), B = n(e.b), X = n(e.x);
-  return e.p === 'pin' ? `${ga(A)} ${reul(X)} 붙듦 → ${B}${jong(B) ? '은' : '는'} ${e.r != null ? '후열 ' + n(e.r) + ' 위협' : '측면으로'}`
+const stayShotTxt = (e, n) => `🏹 ${n(e.a)} 자리를 지키다 화살을 맞음 → ${e.b != null ? n(e.b) + '에게 달려듦' : e.how === 'hunt' ? (e.dir || '') + ' 날아온 쪽으로 쫓아감' : '본대로 물러남'}`;   // v9.6.3
+function pactTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', A = n(e.a), B = n(e.b), X = n(e.x), ua = Wd.units[e.a], ub = Wd.units[e.b], mate = ua && ub && ua.cg && ua.cg === ub.cg;
+  return (mate ? '[전우조] ' : '') + (e.p === 'pin' ? `${ga(A)} ${reul(X)} 붙듦 → ${B}${jong(B) ? '은' : '는'} ${e.r != null ? '후열 ' + n(e.r) + ' 위협' : '측면으로'}`
     : e.p === 'block' ? `${ga(A)} ${X}에게 내려치기 준비 → ${B}${jong(B) ? '은' : '는'} 퇴로를 막음 (아무도 밀쳐 내지 않음)`
     : e.p === 'press' ? `${ga(A)} ${reul(X)} 겨눔 → ${B}${jong(B) ? '은' : '는'} 사선을 비켜 ${X}에게 다가가 압박`
     : e.p === 'screen' ? `${ga(A)} 물러남 → ${ga(B)} 쫓는 ${reul(X)} 견제`
-    : e.p === 'cover' ? `${ga(A)} 뒤로 도약 → ${ga(B)} 쫓는 ${reul(X)} 겨눔 (교대 엄호)` : e.p; }
+    : e.p === 'cover' ? `${ga(A)} 뒤로 도약 → ${ga(B)} 쫓는 ${reul(X)} 겨눔 (교대 엄호)` : e.p); }
 // v6.4 적의 기동 (지휘: 포위 · 교대 · 양동 / 본능: 끌고 오기 · 총구 피하기)
 const MV_ORG_K = ['surround', 'swap', 'feint'];
 function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga = L => L.map(n).join(' · ') + (L.length && jong(n(L[L.length - 1])) ? '이' : '가');
@@ -3861,8 +3865,8 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
     : e.m === 'screen' ? `${e.c != null ? '지휘관 호위' : '사수 호위'} (임무): ${ga(n(e.a))} ${e.c != null ? n(e.c) : '궁수들'} 앞, ${n(e.b)} 쪽을 막아섬` : e.m; }
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
-  const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}`).join('\n');
-  return `굴의 전투판 v9.6.2 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}${(() => { const ms = u.cg ? Wd.units.filter(m => m !== u && m.side === u.side && m.cg === u.cg) : [], C = u.chiefLk && u.sqLead != null ? Wd.units[u.sqLead] : null; return (ms.length ? ' · 🤝 전우조 ' + ms.map(m => m.name).join('·') : '') + (C ? ' · 🎖 대장 ' + C.name : ''); })()}`).join('\n');   /* v9.6.3 관계 */
+  return `굴의 전투판 v9.6.3 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => { const s = padW(f2(e.t) + '초', 8); return / $/.test(s) ? s : s + ' '; };   /* v8.7.3 100초가 넘어도 띄어 씀 */
@@ -3990,7 +3994,7 @@ function logLines(Wd, from){
       case 'gwZap': out.push(`${T(e)}⚡ ${n(e.a)} ${e.big ? '딱' : '딱 (약)'} → ${n(e.b)}`); break;
       case 'gslam': out.push(`${T(e)}👊 ${n(e.a)} 뛰어오름 — 내려찍기${e.b != null ? ' → ' + n(e.b) : ''} (떠 있는 동안 무적)`); break;
       case 'gslamHit': out.push(`${T(e)}👊⚡ 내려찍기 — 둘레 ${e.r}칸 ${e.n}명 감전 · 경직`); break;
-      case 'pact': out.push(`${T(e)}💧 ◆정령 계약 — ${e.side === 0 ? '우리' : '적'} 편 ${e.n}명 최대 체력 +${Math.round((((Wd.rules.sup8 || {}).pact || {}).hp || 0.08) * 100)}%`); break;   // v8.7.8 물레
+      case 'pact8': out.push(`${T(e)}💧 ◆정령 계약 — ${e.side === 0 ? '우리' : '적'} 편 ${e.n}명 최대 체력 +${Math.round((((Wd.rules.sup8 || {}).pact || {}).hp || 0.08) * 100)}%`); break;   // v8.7.8 물레
       case 'mdesc': out.push(`${T(e)}💧 ${n(e.a)} 정령 강림 — 안의 동료 ${e.n} · 적 ${e.m} (${(SPR(Wd, 'mdesc').t || 6)}초)`); break;
       case 'mwall': out.push(`${T(e)}🌊 ${n(e.a)} 정령 방벽 (${(SPR(Wd, 'mwall').t || 4)}초)`); break;
       case 'wallBlock': out.push(`${T(e)}🌊 ${n(e.a)}의 방벽이 ${n(e.b)}의 ${e.jav ? '창' : e.arc ? '곡사' : shotNm(Wd, Wd.units[e.b])}을 막음`); break;
@@ -4115,8 +4119,8 @@ function logLines(Wd, from){
       case 'quakeAir': out.push(`${T(e)}🕊 ${n(e.b)} 공중 — 도약 강타의 충격을 받지 않음`); break;   // v7.24
       case 'czSide': out.push(`${T(e)}↔ ${ga(n(e.a))} 비켜 섬 (${n(e.b)} 의 일격)`); break;   // v7.24
       case 'quakeFlee': out.push(`${T(e)}🏃 ${n(e.a)} 내려앉을 자리에서 피함`); break;
-      case 'tgDodge': out.push(`${T(e)}❗ ${n(e.a)} — ${n(e.b)}의 ${reul(e.what)} 보고 몸을 날려 피함`); break;   /* v8.7.3 예고 회피 */
-      case 'tgLate': out.push(`${T(e)}… ${n(e.a)} — ${n(e.b)}의 ${reul(e.what)} 봤지만 늦음`); break;
+      case 'tgDodge': out.push(e.ff ? `${T(e)}❗ ${n(e.a)} — "비켜!" ${n(e.b)}의 ${e.what} 범위에서 서둘러 빠짐 (동료의 공격)` : `${T(e)}❗ ${n(e.a)} — ${n(e.b)}의 ${reul(e.what)} 보고 몸을 날려 피함`); break;   /* v9.6.3 */   /* v8.7.3 예고 회피 */
+      case 'tgLate': out.push(`${T(e)}… ${n(e.a)} — ${n(e.b)}의 ${reul(e.what)} ${e.ff ? '피하려 했지만 늦음 (동료의 공격)' : '봤지만 늦음'}`); break;
       case 'ordSwap': out.push(`${T(e)}↪ ${n(e.a)} 투창 → 찌르기 (${e.why})`); break;
       case 'spin': out.push(`${T(e)}🪓 ${n(e.a)} ${reul(e.w)} 회전시켜 던짐${e.b != null ? ' → ' + n(e.b) + ' 쪽' : ''}`); break;
       case 'spinDrop': out.push(`${T(e)}🪓 ${e.label || e.name} 땅에 떨어짐 (맞은 ${e.n}) — ${coord(e.x, e.y)}`); break;
@@ -4231,6 +4235,7 @@ function logLines(Wd, from){
       case 'cgOff': out.push(`${T(e)}🤝 전우조 풀림 — ${e.ids.map(n).join(' · ')}`); break;
       case 'chiefOn': out.push(`${T(e)}🎖 대장 ${n(e.b)} ← 부하 ${e.ids.map(n).join(' · ')}`); break;
       case 'chiefOff': out.push(`${T(e)}🎖 대장-부하 풀림 — ${e.ids.map(n).join(' · ')}`); break;
+      case 'stayShot': out.push(`${T(e)}${stayShotTxt(e, n)}`); break;   // v9.6.3
       case 'mateRescue': out.push(`${T(e)}🛟 ${n(e.a)} — 위급한 전우 ${n(e.v)}을(를) 노리는 ${n(e.b)}에게 달려듦`); break;
       case 'bfield': out.push(`${T(e)}🛡 ${n(e.a)} — 암계 역장 (${e.len}칸 · 3초)`); break;   // v9.2.0
       case 'bfieldBlock': out.push(`${T(e)}🛡 역장이 ${n(e.b)}${e.c != null ? '의 일격 (→ ' + n(e.c) + ')' : ''}을(를) 막음`); break;
@@ -4358,7 +4363,7 @@ function logLines(Wd, from){
       case 'impact': if (e.held){ out.push(`${T(e)}${n(e.a)} → ${n(e.b)} 돌격 — ${n(e.b)} 태세로 버팀 (${e.how}${e.how === '창' && e.shield ? (e.armA ? ' · 팔이 창끝을 흘림' : ' · 방패가 창끝을 흘림') : ''} · 남은 자세 ${e.post}) → 돌격한 쪽 튕겨 나옴 · 휘청 · 받아치기 (부딪힌 속력 ${e.vr} · ${e.run}칸 달림)`); break; }   // v5.8.7
         out.push(`${T(e)}${n(e.a)} → ${n(e.b)} ${e.clash ? '마주 돌격 — 정면 충돌' : '들이받음'}${e.vr ? ' (부딪힌 속력 ' + e.vr + (e.run != null ? ' · ' + e.run + '칸 달림' + (e.full ? ' · 전력질주' : e.push ? ' · 밀치기 수준 (휘청 없음)' : '') : '') + ')' : ''}${e.setBroke ? ' · 태세를 무너뜨림' : ''}${e.block ? (e.armB ? ' · 팔로 받음 (자세 크게 깎임)' : ' · 방패로 받음 (자세 크게 깎임)') : ''}${e.broke ? ' · 자세 무너짐' : ''}${e.trained ? ' · 훈련된 방진이 버팀' : e.braced ? ' · 뒤 동료가 받쳐 줌' : ''}${e.mt ? ' · 괴력으로 버팀 (휘청 없음)' : ''} · 움찔`); break;
       case 'equip': out.push(`${T(e)}${n(e.a)} ${e.slot} ${e.name ? e.name + ' ' + e.tier + '성 입음' : '방어구 벗음'}`); break;
-      case 'hold': out.push(`${T(e)}${n(e.a)} → ${n(e.b)} ${e.jav || e.flail ? '던지려다' : e.leap ? '뛰어오르며 쏘려다' : '쏘려다'} 멈춤: ${n(e.by)} ${e.arc ? '떨어질 자리 곁에 있음' : '사선에 들어옴'} (오사 피함)${e.vis ? '' : ' [아군에겐 안 보임]'}`); break;
+      case 'hold': out.push(`${T(e)}${n(e.a)} → ${n(e.b)} ${e.jav ? '던지려다' : e.flail ? '휘두르려다' : e.leap ? '뛰어오르며 쏘려다' : '쏘려다'} 멈춤: ${n(e.by)} ${e.arc ? '떨어질 자리 곁에 있음' : '사선에 들어옴'} (오사 피함)${e.vis ? '' : ' [아군에겐 안 보임]'}`); break;
       case 'heal': out.push(`${T(e)}${n(e.a)} → ${n(e.b)} 치유 +${Math.round((+e.amt || 0) * 10) / 10} (${e.hp}/${Wd.units[e.b].max})${e.stanch ? ' · 지혈' : ''}`); break;
       case 'die': out.push(e.alone ? `${T(e)}✕ ${n(e.b)} — 아군이 모두 쓰러져 [불사] 도 끝 (진짜 죽음)` : `${T(e)}✕ ${n(e.b)} 쓰러짐${e.how ? ' — ' + (DK_TXT[e.how] || e.how) + (e.how === 'incap' && Wd.units[e.b].incapWhy ? ' (' + Wd.units[e.b].incapWhy + ')' : '') : ''} (${n(e.a)}의 공격${e.ff ? ', 아군 오사' : ''}${e.last ? ' — 홀로 남은 [불사], 진짜 죽음' : ''})`); break;   // v6.9 어떻게
       case 'wound': out.push(`${T(e)}✚ ${n(e.b)} ${e.txt}${e.zone ? ' [' + (ZONE_K[e.zone] || e.zone) + (e.mode ? ' · ' + e.mode : '') + ']' : ''} — ${(e.eff || []).join(' · ')}${e.a != null ? ' (' + n(e.a) + ')' : ''}${e.vis ? '' : ' [아군에겐 안 보임]'}`); break;   // v6.9 부상
@@ -4666,6 +4671,7 @@ function narrOf(Wd, e){
     case 'cgOff': return { c: 'dim', s: `${e.ids.map(n).join(' · ')}, 각자 제 길로 선다.` };
     case 'chiefOn': return { c: 'dim', s: `${e.ids.map(n).join(' · ')} — ${n(e.b)}의 말을 따르기로 한다.` };
     case 'chiefOff': return { c: 'dim', s: `${e.ids.map(n).join(' · ')} — 대장의 곁을 떠난다.` };
+    case 'stayShot': return { c: 'dim', s: e.how === 'hunt' ? `${ga(n(e.a))} 화살이 날아온 어둠 쪽으로 몸을 날린다.` : `${ga(n(e.a))} 화살을 맞고 동료들 곁으로 물러난다.` };   // v9.6.3
     case 'mateRescue': return { c: 'good', s: `${ga(n(e.a))} 쓰러져 가는 ${n(e.v)} 곁으로 달려든다 — "${n(e.b)}!"` };
     case 'bfield': return { c: 'bad', s: `${ga(n(e.a))} 방패를 땅에 박는다 — 보이지 않는 벽이 곧게 펼쳐진다!` };   // v9.2.0
     case 'bfieldBlock': return { c: 'dim', s: `역장에 막혀 ${n(e.b)}${jong(n(e.b)) ? '이' : '가'} 더 나아가지 못한다.` };
@@ -4745,7 +4751,7 @@ function narrOf(Wd, e){
     case 'gwKnee': if (!e.head || !(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `🦵 ${n(e.a)}의 니킥이 ${n(e.b)}의 머리에 꽂힌다 — 빠아악!!` };   // v8.7.8 굿윌
     case 'gwPalm': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `✋ ${n(e.a)}의 손바닥 — ${reul(n(e.b))} 붙잡아 터트린다. 파직!` };
     case 'gwMiss': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'good' : 'dim', s: `${n(e.a)}의 손바닥이 허공을 친다 — 빈틈!` };
-    case 'pact': return e.side === 0 ? { c: 'good', s: `물레가 두 손을 모은다 — 정령 계약. 모두의 몸에 맑은 물기가 돈다.` } : null;   // v8.7.8 물레
+    case 'pact8': return e.side === 0 ? { c: 'good', s: `물레가 두 손을 모은다 — 정령 계약. 모두의 몸에 맑은 물기가 돈다.` } : null;   // v8.7.8 물레
     case 'mdesc': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} 손을 들자 물의 정령이 내려앉는다 — 정령 강림!` };
     case 'mwall': if (!(e.vis || U(e.a).side === 0)) return null; return { c: U(e.a).side ? 'bad' : 'good', s: `${n(e.a)} 앞에 물 장막이 솟는다 — 정령 방벽.` };
     case 'wallBlock': return { c: 'dim', s: `${n(e.b)}의 ${e.jav ? '창' : shotNm(Wd, U(e.b))}이 물 장막에 막힌다.` };
@@ -4857,7 +4863,7 @@ function narrOf(Wd, e){
     case 'bagSwap': return e.vis ? { c: 'dim', s: `${ga(n(e.a))} 등에 멘 ${reul(e.w)} 뽑아 든다.` } : null;
     case 'might': return U(e.a).side === 0 || e.how === 'parry' || e.how === 'grip' ? { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} ${{ resist: '이를 악물고 버틴다', stand: '쓰러지지 않고 버틴다', grip: '붙잡힌 무기를 뿌리친다', parry: '무너지려던 막기로 상대를 튕겨낸다', brace: '들이받히는 순간 버텨 선다', ram: '되튕기지 않고 밀어붙인다', push: '단숨에 밀어붙인다' }[e.how] || '힘을 쓴다'} — 괴력!` } : null;   // v7.24.2
     case 'grab': return { c: U(e.a).side ? 'bad' : 'good', s: `${ga(n(e.a))} ${n(e.b)}의 ${e.w} 자루를 낚아채 바닥에 내던진다!` };
-    case 'tgDodge': return { c: U(e.a).side ? 'dim' : 'good', s: `"!" — ${ga(n(e.a))} ${n(e.b)}의 ${reul(e.what)} 보고 몸을 날려 피한다.` };   /* v8.7.3 */
+    case 'tgDodge': return { c: U(e.a).side ? 'dim' : 'good', s: e.ff ? `"비켜!" — ${ga(n(e.a))} ${n(e.b)}의 ${e.what} 자리에서 허둥지둥 빠진다.` : `"!" — ${ga(n(e.a))} ${n(e.b)}의 ${reul(e.what)} 보고 몸을 날려 피한다.` };   /* v8.7.3 */
     case 'quakeFlee': return { c: U(e.a).side ? 'dim' : 'good', s: `${ga(n(e.a))} 드리운 그림자를 보고 내려앉을 자리에서 몸을 뺀다.` };
     case 'ordSwap': return { c: 'dim', s: `${ga(n(e.a))} 던지기엔 너무 가깝다 — 창을 쥔 채 찌른다.` };
     case 'slamHeld': return { c: U(e.b).side ? 'bad' : 'good', s: `${ga(n(e.b))} 버티고 서서 ${n(e.a)}의 내려찍기를 ${ro(e.how)} 받아 낸다! ${ga(n(e.a))} 휘청인다.` };   /* v8.7.3 태세 막힘 */
@@ -5394,7 +5400,7 @@ function cmdSummary(Wd){
   const cm = Wd.log.filter(e => e.k === 'cmd'), gm = Wd.log.filter(e => e.k === 'guardMode' && e.why === '명령'), tp = Wd.log.filter(e => e.k === 'tempo');
   if (!cm.length && !gm.length && !tp.length) return '';
   const kinds = {}, who = {}, add = (m, k, v) => { m[k] = (m[k] || 0) + (v || 1); };
-  const KN = { lineJoin: '전열 참여', move: '이동', amove: '공격 이동', attack: '공격', charge: '돌진', chargePt: '돌격 (자리)', throw: '투창', skill: '약 · 구급', hold: '제자리', auto: '자동', line: '전열', pick: '줍기', pickItem: '줍기', pickSpear: '창 줍기', leap: '도약' };
+  const KN = { lineJoin: '전열 참여', move: '이동', amove: '공격 이동', attack: '공격', charge: '돌진', chargePt: '돌격 (자리)', throw: '투창', skill: '약 · 구급', hold: '제자리', auto: '자동', line: '전열', pick: '줍기', pickItem: '줍기', pickSpear: '창 줍기', leap: '도약', spec: '기술', palm: '팜 버스트' };
   let rapid = 0, hurry = 0;
   for (const e of cm){ if (e.kind === 'swing'){ add(kinds, '휘두르기'); e.a.forEach(i => add(who, Wd.units[i].name)); continue; }
     e.o.forEach((o, k) => { add(kinds, e.note === '명령 취소' ? '취소' : KN[o && o[0]] || (o && o[0]) || '자동'); add(who, Wd.units[e.a[k]].name); if ((e.f || [])[k] && e.f[k].includes('n')) rapid++; if ((e.f || [])[k] && e.f[k].includes('h')) hurry++; }); }
@@ -5451,10 +5457,10 @@ function reviewSummary(Wd){
     if (cc.length || ch.length){ const top = L => { const m = {}; for (const e of L) for (const x of (e.sit || e.why || '').split(' · ').filter(Boolean)) m[x] = (m[x] || 0) + 1; return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, v]) => `${k} ${v}`).join(' · ') || '—'; };
       o.push(`적 지휘관의 돌격 판단: 명령 ${new Set(cc.map(e => e.t)).size}번 (마디 ${cc.length}명${cc.some(e => e.wave > 1) ? ' · 함께 돌격 ' + new Set(cc.filter(e => e.wave > 1).map(e => e.t)).size + '번' : ''}) · 참게 함 ${ch.length}번`);
       if (cc.length) o.push(`  명령할 때 본 상황: ${top(cc)}`); if (ch.length) o.push(`  참게 한 까닭: ${top(ch)}`); } }
-  { const AU = G.filter(e => ['impulse', 'regroup', 'healDefer', 'healRisk', 'healAbort', 'pushNo', 'offAct', 'flankMis', 'rally', 'netBack', 'chaseEnd', 'rejoin', 'sqFall', 'sqCall', 'sqJoin', 'sqLeave', 'succeed'].includes(e.k) && U(e.a) && U(e.a).side === 0), HO = G.filter(e => e.k === 'roeHold' && U(e.a) && U(e.a).side === 0);   // v7.9.3 아군의 자율 판단
+  { const AU = G.filter(e => ['impulse', 'regroup', 'healDefer', 'healRisk', 'healAbort', 'pushNo', 'offAct', 'flankMis', 'rally', 'netBack', 'chaseEnd', 'rejoin', 'sqFall', 'sqCall', 'sqJoin', 'sqLeave', 'succeed', 'mateRescue', 'stayShot'].includes(e.k) && U(e.a) && U(e.a).side === 0), HO = G.filter(e => e.k === 'roeHold' && U(e.a) && U(e.a).side === 0);   // v7.9.3 아군의 자율 판단
     if (AU.length || HO.length){ o.push('아군의 자율 판단 (명령 없이 스스로 한 일)');
       for (const e of AU.slice(0, 24)){ const dead = e.k === 'impulse' ? G.find(x => x.k === 'die' && x.b === e.a && x.t >= e.t && x.t - e.t <= 12) : null;
-        o.push(`  ${padW(at(e), 8)} ${{ impulse: `⚡ ${n(e.a)} 충동 — ${n(e.b)}에게 (점수 ${e.s}: 대담 ${e.bold} · 분노 ${e.anger} · 약점 ${e.vuln} − 두려움 ${e.fear})`, regroup: `↩ ${n(e.a)} ${n(e.b)} 추격을 그만두고 재집결 (본대 ${e.d}칸)`, healDefer: `✚ ${n(e.a)} 치료를 미룸 — ${n(e.by)}의 일격 ${e.eta}초 뒤`, healRisk: `✚ ${n(e.a)} 무릅쓰고 ${n(e.b)}에게 감 (체력 ${e.hp}%)`, healAbort: `✚ ${n(e.a)} 붓던 치료를 끊음`, chaseEnd: `↩ ${n(e.a)} ${n(e.b)} 추격 포기 (${e.sec}초 · ${e.d}칸)`, rejoin: `↩ ${n(e.a)} 임시 자리를 풀고 합류 (${e.why})`, offAct: `📵 ${n(e.a)} 연락 두절 — ${{ post: '마지막 임무대로 자리를 지킴', target: '마지막 임무의 표적을 계속', rejoin: '지휘관을 마지막으로 본 자리로 합류', rejoinErr: '지휘관 쪽으로 어림 (빗나갈 수 있음)' }[e.kind]}`, flankMis: `🔨 ${n(e.a)} ${n(e.b)}의 옆 · 뒤를 잘못 짐작해 앞쪽으로`, rally: `🚩 ${n(e.a)} 임시 집결 — ${e.why} (들음 ${(e.got || []).length} · 못 들음 ${(e.miss || []).length})`, netBack: `📶 ${n(e.a)} 연락 회복 (${e.sec}초 만에)`, pushNo: `🛡 ${n(e.a)} ${n(e.b)}의 방패 정면을 피함` }[e.k]}${dead ? ` → ${f2(dead.t - e.t)}초 뒤 쓰러짐 (${n(dead.a)})` : ''}`); }
+        o.push(`  ${padW(at(e), 8)} ${{ impulse: `⚡ ${n(e.a)} 충동 — ${n(e.b)}에게 (점수 ${e.s}: 대담 ${e.bold} · 분노 ${e.anger} · 약점 ${e.vuln} − 두려움 ${e.fear})`, regroup: `↩ ${n(e.a)} ${n(e.b)} 추격을 그만두고 재집결 (본대 ${e.d}칸)`, healDefer: `✚ ${n(e.a)} 치료를 미룸 — ${n(e.by)}의 일격 ${e.eta}초 뒤`, healRisk: `✚ ${n(e.a)} 무릅쓰고 ${n(e.b)}에게 감 (체력 ${e.hp}%)`, healAbort: `✚ ${n(e.a)} 붓던 치료를 끊음`, chaseEnd: `↩ ${n(e.a)} ${n(e.b)} 추격 포기 (${e.sec}초 · ${e.d}칸)`, rejoin: `↩ ${n(e.a)} 임시 자리를 풀고 합류 (${e.why})`, offAct: `📵 ${n(e.a)} 연락 두절 — ${{ post: '마지막 임무대로 자리를 지킴', target: '마지막 임무의 표적을 계속', rejoin: '지휘관을 마지막으로 본 자리로 합류', rejoinErr: '지휘관 쪽으로 어림 (빗나갈 수 있음)' }[e.kind]}`, flankMis: `🔨 ${n(e.a)} ${n(e.b)}의 옆 · 뒤를 잘못 짐작해 앞쪽으로`, rally: `🚩 ${n(e.a)} 임시 집결 — ${e.why} (들음 ${(e.got || []).length} · 못 들음 ${(e.miss || []).length})`, netBack: `📶 ${n(e.a)} 연락 회복 (${e.sec}초 만에)`, pushNo: `🛡 ${n(e.a)} ${n(e.b)}의 방패 정면을 피함`, succeed: `🚩 ${n(e.a)} 지휘를 이어받음 (${n(e.from)} ${e.left ? '먼저 올라감' : '쓰러짐'})`, sqFall: `↩ ${n(e.a)} 편대가 밀려 본대로`, sqCall: `🎖 ${n(e.a)} 부하들에게 ${n(e.b)} 먼저 치라고 외침`, sqJoin: `🎖 ${n(e.a)} ${n(e.b)}를 따름 (지휘관과 닿지 않음)`, sqLeave: `🎖 ${n(e.a)} 지휘관과 닿아 본대로`, mateRescue: `🛟 ${n(e.a)} 위급한 전우 ${n(e.v)}을(를) 노리는 ${n(e.b)}에게`, stayShot: stayShotTxt(e, n) }[e.k] || e.k}${dead ? ` → ${f2(dead.t - e.t)}초 뒤 쓰러짐 (${n(dead.a)})` : ''}`); }
       if (AU.length > 24) o.push(`  … ${AU.length - 24}줄 더`);
       if (HO.length){ const m = {}; for (const e of HO){ const k = n(e.a) + ' ' + (e.why === 'nofire' ? '사격 금지' : e.why === 'hold' ? '교전 금지' : '열세 · 안 들킴'); m[k] = (m[k] || 0) + 1; } o.push('  교전을 보류한 횟수: ' + Object.entries(m).map(([k, v]) => k + ' ' + v).join(' · ')); } } }
   if (tp.length){ o.push('흐름 (갈림길)'); o.push(...tp.slice(0, 30)); if (tp.length > 30) o.push(`  … ${tp.length - 30}줄 더 (위 로그)`); }
@@ -6657,11 +6663,12 @@ function drawFlails(Wd, ox, oy, ts, see){
 function drawKarWarn(Wd, ox, oy, ts){
   const see = $('seeAll').checked, now = Wd.t;
   for (const u of Wd.units){ const A = u.act; if (!u.alive || !A || !(u.side === 0 || u.seenBy || see)) continue;
-    const col = u.side ? '255,70,60' : '110,190,255', px = ox + u.x * ts, py = oy + u.y * ts;
+    let col = u.side ? '255,70,60' : '110,190,255'; const px = ox + u.x * ts, py = oy + u.y * ts;
     if (A.k === 'charge' && A.sup){ const S = SPR(Wd, 'asup'), t = A.b != null ? Wd.units[A.b] : null, ang = A.phase === 'run' ? Math.atan2(A.dy, A.dx) : t ? Math.atan2(t.y - u.y, t.x - u.x) : u.face || 0, L0 = t ? Math.hypot(t.x - u.x, t.y - u.y) * ts : 4 * ts, w = (u.r + (S.w || 0.9)) * 2 * ts;
       ctx.save(); ctx.translate(px, py); ctx.rotate(ang); ctx.fillStyle = `rgba(${col},0.13)`; ctx.fillRect(0, -w / 2, L0, w); ctx.strokeStyle = `rgba(${col},.7)`; ctx.lineWidth = 2; ctx.setLineDash([7, 5]); ctx.strokeRect(0, -w / 2, L0, w); ctx.setLineDash([]); ctx.restore();
       ctx.save(); ctx.font = '700 12px IBM Plex Sans KR, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = u.side ? '#ffb4a8' : '#ffe2a0'; ctx.fillText('🐂 초돌진', px, py - u.r * ts - 8); ctx.restore(); continue; }
     if (A.k !== 'spec' || A.phase !== 'wind' || !KAR_TG.includes(A.s)) continue;
+    if (!u.side && A.s !== 'akick') col = '255,160,70';   /* v9.6.3 카리우스 기술은 동료도 맞음 — 주황 */
     const t = A.b != null ? Wd.units[A.b] : null; if (!t) continue; const Z = karTg(Wd, u, A, t), S = SPR(Wd, A.s), q = Math.min(1, (now - A.t0) / Math.max(0.05, A.end - A.t0)); ctx.save();
     if (A.s === 'kslam' || A.s === 'kstomp'){ const R = (S.r || (A.s === 'kslam' ? 1.3 : 0.95)) * ts, cx = ox + (A.px != null ? A.px : t.x) * ts, cy = oy + (A.py != null ? A.py : t.y) * ts;
       ctx.fillStyle = `rgba(${col},${(0.12 + 0.18 * q).toFixed(2)})`; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.283); ctx.fill(); ctx.fillStyle = `rgba(${col},${(0.22 + 0.3 * q).toFixed(2)})`; ctx.beginPath(); ctx.arc(cx, cy, R * q, 0, 6.283); ctx.fill(); ctx.strokeStyle = `rgba(${col},.85)`; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.283); ctx.stroke(); }
@@ -7003,7 +7010,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push(`굴의 전투판 v9.6.2 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push(`굴의 전투판 v9.6.3 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   let prevRel = [];   /* v8.7.3 30층: 그 사이 얻은 유물 */
   M.forEach((m, i) => {
@@ -7035,7 +7042,7 @@ async function campLogAll(){
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
   if (J) for (const pv of (J.visits || []).filter(q => q.panel)){ const k = M.findIndex(m => m.n != null && m.n > pv.n); M.splice(k < 0 ? M.length : k, 0, { ...pv }); }   /* v8.7.3 30층 칸 (상인 · 쉼터 · 만남 글) */
-  return { game: '굴의 전투판', ver: '9.6.2', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '9.6.3', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log, run: C.run ? { f: C.run.f, end: C.run.end || null, relics: (C.run.relics || []).slice(), gold: C.run.gold } : null }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -8830,7 +8837,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v9.6.2 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v9.6.3 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
