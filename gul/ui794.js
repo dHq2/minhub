@@ -1,9 +1,9 @@
-// v7.9.4 UI: 측면 기동 (단추 → 적 탭) · 집결 깃발 그림 · 칩 표시 · 복기 · 로그
+// v7.9.4 UI: 측면 기동 (단추 → 적 탭) · 집결 깃발 그림 · 칩 표시 · 복기 · 로그  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */
 const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m); if(!c) fails.push(m); };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  for (const [name,vp,mob] of [['모바일',{width:412,height:915},true],['데스크톱',{width:1280,height:800},false]]){
   console.log('==',name); const ctx = await b.newContext({viewport:vp, deviceScaleFactor:mob?2.625:1, isMobile:mob, hasTouch:mob});
-  const p=await ctx.newPage(); p.on('pageerror',e=>errs.push(name+': '+String(e)));
+  const p=await ctx.newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ p.on('pageerror',e=>errs.push(name+': '+String(e)));
   await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>{ localStorage.clear(); }); await p.reload(); await p.waitForTimeout(700);
   const tap = async sel => { const r = await p.evaluate(s=>{ const e=document.querySelector(s); if(!e) return null; const q=e.getBoundingClientRect(); return {x:q.left+q.width/2,y:q.top+q.height/2}; }, sel); if(!r){ console.log('  !! no',sel); return null; } if (mob) await p.touchscreen.tap(r.x,r.y); else await p.click(sel); await p.waitForTimeout(220); return r; };
   const scr = (x,y)=>p.evaluate(([x,y])=>{ const ts=TS*cam.z, r=document.getElementById('cv').getBoundingClientRect(); return {x:r.left+(x-cam.x)*ts+r.width/2, y:r.top+(y-cam.y)*ts+r.height/2}; }, [x,y]);

@@ -1,8 +1,8 @@
-// v7.12 UI 시험 — ui712.js v1 (Shift + 오른쪽 클릭 우회 · Shift + 적 클릭 · 모바일 ↪ 우회 · 카리우스 포복 안 됨)
+// v7.12 UI 시험 — ui712.js v1 (Shift + 오른쪽 클릭 우회 · Shift + 적 클릭 · 모바일 ↪ 우회 · 카리우스 포복 안 됨)  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */
 const { chromium } = require('playwright');
 const waitT=async(p,sec)=>{ const t0=await p.evaluate(()=>world.t); for(let k=0;k<80;k++){ await p.waitForTimeout(100); if((await p.evaluate(()=>world.t))-t0>=sec) return; } };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
- { const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ { const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
   await p.evaluate(()=>{ start(); }); await p.waitForTimeout(300);
   // 인주 고르고, 판 위의 먼 바닥을 Shift + 오른쪽 클릭 (화면 좌표로)
@@ -23,7 +23,7 @@ const waitT=async(p,sec)=>{ const t0=await p.evaluate(()=>world.t); for(let k=0;
   const btn = await p.$('#orders [data-ord="detour"]'); ok(!!btn, '명령 칸에 ↪ 우회 단추'); if (btn){ await btn.click(); await p.waitForTimeout(200); ok(await p.evaluate(()=>detourArm), '단추로 우회 켬'); }
   await p.screenshot({path:'ui712_pc.png'});
   ok(errs.length===0, 'PC 오류 없음 '+JSON.stringify(errs)); await p.close(); }
- { const ctx=await b.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ { const ctx=await b.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}); const p=await ctx.newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
   await p.evaluate(()=>{ start(); }); await p.waitForTimeout(300);
   const ii = await p.evaluate(()=>{ const u=world.units.find(x=>x.name==='인주'); sel=new Set([u.i]); hud(); return u.i; }); await p.waitForTimeout(300);
