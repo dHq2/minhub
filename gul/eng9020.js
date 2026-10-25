@@ -1,4 +1,4 @@
-// v9.2.0 엔진 시험 (가) — eng9020.js v1.0 (암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)
+// v9.2.0 엔진 시험 (가) — eng9020.js v1.0 (암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)  /* v9.8.2: 역장 6초 · 화살비 붉은 원 */
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -13,11 +13,11 @@ const SH=(ex)=>dummy('방패병',10,10,0,{shield:true,shSize:'대형',active:['�
 
 console.log('A. 암계 역장');
 { const W=WF([SH(),dummy('아군',9,13,0)],[]); const s=W.units[0]; ok(!!(s.spec||[]).find(x=>x.k==='bfield'),'기술 이름 → 기술 (암계 역장)');
-  ok(E.DEFAULT_RULES.spec.bfield&&E.DEFAULT_RULES.spec.bfield.t===3,'수치표: 3초 · 길이 '+E.DEFAULT_RULES.spec.bfield.len); }
+  ok(E.DEFAULT_RULES.spec.bfield&&E.DEFAULT_RULES.spec.bfield.t===6,'수치표: 6초 (v9.8.2) · 길이 '+E.DEFAULT_RULES.spec.bfield.len); }
 { const W=WF([SH(),dummy('아군',9,12.5,0)],[dummy('적1',16,10,1),dummy('적2',16,8.6,1)]); const [s,al,e1,e2]=W.units; hold(s,al,e1,e2);
   const okS=E.supStart?E.supStart(W,s,'bfield',null,'시험',16,10):false; ok(okS||true,'역장 시작');
   run(W,1.2); const F=(W.sf8||[]).find(f=>f.k==='wall'&&f.hard); ok(!!F,'곧은 선 (hard) 이 생김'+(F?' · 길이 '+(F.h*2).toFixed(1)+'칸 · x '+F.x.toFixed(1):''));
-  if(F){ ok(F.h*2>=5&&F.h*2<=7.01,'길이 5 ~ 7칸 ('+(F.h*2).toFixed(1)+')'); ok(F.until-F.t0>=2.9&&F.until-F.t0<=3.1,'3초');
+  if(F){ ok(F.h*2>=5&&F.h*2<=7.01,'길이 5 ~ 7칸 ('+(F.h*2).toFixed(1)+')'); ok(F.until-F.t0>=5.9&&F.until-F.t0<=6.1,'6초 (v9.8.2)');
     // 적이 선을 넘으려 하면 막힘 (선 앞에 둠 → 선 뒤쪽 목표로 걸어감)
     e1.x=F.x+0.9; e1.y=F.y; e1.goal=null; let crossed=false; for(let i=0;i<24;i++){ e1.x-=0.05; e1.px=e1.x; step(W); if(e1.x<F.x-0.1) crossed=true; }
     ok(!crossed&&e1.x>=F.x+0.1,'적은 선을 못 넘음 (x '+e1.x.toFixed(2)+' / 선 '+F.x.toFixed(2)+')'); ok(logK(W,'bfieldBlock').length>=1,'로그: 역장에 막힘');
@@ -26,7 +26,7 @@ console.log('A. 암계 역장');
     // 근접 일격은 선 너머로 안 닿음
     const hp0=e2.hp; e2.x=F.x+0.5; e2.y=F.y+0.3; s.x=F.x-0.5; s.y=F.y+0.3; e2.hp=hp0; const o=E.strike?E.strike(W,e2,s,s,1,false,{}):null; ok(o&&o.wall&&s.hp===s.max||!E.strike,'선 너머 근접 일격은 막힘 (피해 없음)'); } }
 { // 만료 뒤엔 통과
-  const W=WF([SH()],[dummy('적',16,10,1)]); const [s,e]=W.units; hold(s,e); E.supStart(W,s,'bfield',null,'시험',16,10); run(W,1.0); const F=(W.sf8||[]).find(f=>f.hard); const un=F?F.until:0; run(W,4.0); ok(F&&W.t>=un&&!W.sf8.some(f=>f.hard&&W.t<f.until),'3초 뒤엔 사라짐 (t '+W.t.toFixed(1)+' ≥ '+un.toFixed(1)+')'); }
+  const W=WF([SH()],[dummy('적',16,10,1)]); const [s,e]=W.units; hold(s,e); E.supStart(W,s,'bfield',null,'시험',16,10); run(W,1.0); const F=(W.sf8||[]).find(f=>f.hard); const un=F?F.until:0; run(W,7.0); ok(F&&W.t>=un&&!W.sf8.some(f=>f.hard&&W.t<f.until),'6초 뒤엔 사라짐 (t '+W.t.toFixed(1)+' ≥ '+un.toFixed(1)+')'); }
 { // 자동: 다가오는 적 둘 → 역장
   const W=WF([SH({hp0:1})],[dummy('적1',17,9.5,1),dummy('적2',17.5,10.6,1)]); const [s,e1,e2]=W.units; for(const e of [e1,e2]){ e.state='hunt'; e.target=s; e.sense[s.i]={x:s.x,y:s.y,t:0,exact:true,sight:true}; } s.sense[e1.i]={x:e1.x,y:e1.y,t:0,exact:true,sight:true}; s.sense[e2.i]={x:e2.x,y:e2.y,t:0,exact:true,sight:true};
   let at=null; run(W,6,()=>{ if(logK(W,'bfield').length){ at=W.t; return true; } }); ok(at!=null,'다가오는 적 둘 이상이면 스스로 역장 ('+(at!=null?at.toFixed(1)+'초':'안 씀')+')'); }
@@ -58,7 +58,7 @@ console.log('C. 장송기사: 치유 · 부활 · 방사 절단');
 console.log('D. 어둠의 화살비');
 { const W=WF([dummy('장궁병',8,10,0,{weapon:'활',ammo:30,active:['어둠의 화살비']}),dummy('아군',16,10.5,0,{ov:{hp:300,atk:10}})],[dummy('적1',16.5,10,1,{ov:{hp:300,atk:10}}),dummy('적2',17.5,11,1,{ov:{hp:300,atk:10}})]); const [a,al,e1,e2]=W.units; hold(a,al,e1,e2); const h=[al.hp,e1.hp,e2.hp];
   E.supStart(W,a,'brain',e1,'시험',e1.x,e1.y); run(W,3.2); const dmg=[h[0]-al.hp,h[1]-e1.hp,h[2]-e2.hp]; console.log('    피해 아군 '+Math.round(dmg[0])+' · 적1 '+Math.round(dmg[1])+' · 적2 '+Math.round(dmg[2]));
-  ok(dmg[1]>0||dmg[2]>0,'화살비가 적을 맞힘'); ok(W.log.filter(l=>l.k==='h2Rain').length>=3,'원 여럿이 차례로 떨어짐 ('+W.log.filter(l=>l.k==='h2Rain').length+')'); }
+  ok(dmg[1]>0||dmg[2]>0,'화살비가 적을 맞힘'); ok(W.log.some(l=>l.k==='volley'),'붉은 원 하나 · 화살 10발 (v9.8.2 화살비)'); }
 { // 피아 구분 없이: 아군 한가운데에 쏘아 아군이 맞는 것 확인 (원 7 · 반경 4.5)
   let hit=0; for(let s=1;s<=6;s++){ const W=WF([dummy('장궁병',8,10,0,{weapon:'활',ammo:30,active:['어둠의 화살비']}),dummy('아군',16,10,0,{ov:{hp:500,atk:10}})],[dummy('적',16.2,10.2,1,{ov:{hp:500,atk:10}})],{seed:s}); const [a,al,e]=W.units; hold(a,al,e); E.supStart(W,a,'brain',e,'시험',e.x,e.y); run(W,3.2); if(al.hp<al.max) hit++; }
   ok(hit>=2,'피아 구분 없음: 적과 겹친 아군도 맞음 (6판 중 '+hit+'판)'); }

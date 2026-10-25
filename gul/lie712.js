@@ -1,4 +1,4 @@
-// v7.12 시험 — lie712.js v1.1 (v1.1: v8.7.3 '자동' 은 기준 (지휘관) 을 따라가니 B 의 노먼은 제자리 명령으로 고립을 지킴 · D 의 곤봉적은 목소리로 지휘 (말 못 하는 몸짓 · 어둠은 59% — 난수 차례에 따라 놓침) · v1: 빨리 일어남 · 카리우스 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 돌격 · 우회)
+// v7.12 시험 — lie712.js v1.1 (v1.1: v8.7.3 '자동' 은 기준 (지휘관) 을 따라가니 B 의 노먼은 제자리 명령으로 고립을 지킴 · D 의 곤봉적은 목소리로 지휘 (말 못 하는 몸짓 · 어둠은 59% — 난수 차례에 따라 놓침) · v1: 빨리 일어남 · 카리우스 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 돌격 · 우회)  /* v9.8.2: 화살비 수로 셈 */
 const {E,R,DES,NOR,INJ,KAR,REB,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dark=W=>{ for(const u of W.units){u.torch=false;u.torchOff=false;} W.torches=[]; E.computeLight(W); };
@@ -31,7 +31,7 @@ console.log('C. 곡사 면 제압 (방패 무시)');
   for(let sd=1;sd<=6;sd++){ const W=W_([mk(REB,0,6,8),mk(INJ,0,3,14)],[mk(DES['궁수'],1,12.6,8),mk(DES['곤봉적'],1,27,2)],sd,'smart'); dark(W); const rb=W.units[0], a=W.units[2]; let endT=null;
     rb.face=0; rb.fg=0; a.face=Math.PI; const P=[rb.x,rb.y]; a.supp={x:rb.x,y:rb.y,n:12,ai:true}; a.ammo=99;
     run(W,14,()=>{ rb.x=P[0]; rb.y=P[1]; rb.face=0; rb.fg=0; rb.vx=0; rb.vy=0; rb.raised=true; rb.guardMode='hold'; });
-    const sp=W.log.filter(x=>x.k==='supp'&&x.a===a.i); const e0=W.log.find(x=>x.k==='suppEnd'&&x.a===a.i), tEnd=e0?e0.t+2:99, H=W.log.filter(x=>(x.k==='hit'||x.k==='block')&&x.a===a.i&&x.b===rb.i&&x.t<=tEnd); hits+=H.filter(x=>!x.block).length; blk+=H.filter(x=>x.block).length; const e=W.log.find(x=>x.k==='suppEnd'&&x.a===a.i); fired+=e?e.n:0;
+    const sp=W.log.filter(x=>x.k==='supp'&&x.a===a.i); const e0=W.log.find(x=>x.k==='suppEnd'&&x.a===a.i), tEnd=e0?e0.t+3:99, H=W.log.filter(x=>(x.k==='hit'||x.k==='block')&&x.a===a.i&&x.b===rb.i&&x.t<=tEnd); hits+=H.filter(x=>!x.block).length; blk+=H.filter(x=>x.block).length; const e=W.log.find(x=>x.k==='suppEnd'&&x.a===a.i); fired+=W.log.filter(x=>x.k==='volley'&&x.a===a.i).length*10;   /* v9.8.2 활의 지역사격 = 화살비 (한 번에 10발) */
     if(sd===1) console.log('    ', JSON.stringify(sp[0]||null), e?JSON.stringify(e):'(끝 없음)'); }
   console.log(`    쏜 ${fired}발 · 레베카 맞음 ${hits} · 방패에 막힘 ${blk}`); ok(fired>20,'활은 곡사로 면 제압'); ok(hits>0&&blk===0,'든 방패가 머리 위를 못 막음'); }
 

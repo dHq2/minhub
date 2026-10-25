@@ -1,4 +1,4 @@
-// v9.4.0 엔진 시험 — eng9050.js v1.0 (적 (side 1) 이 하는 전술 — 아군은 돌격 금지 기본이라 스스로 안 나감 · 암계 전술 D6: 방패병의 역장이 펼쳐진 동안 창 든 이는 선 바로 뒤에 나란히 섬 · 선 너머로 찌름 · 끝나면 보통 싸움)
+// v9.4.0 엔진 시험 — eng9050.js v1.0 (적 (side 1) 이 하는 전술 — 아군은 돌격 금지 기본이라 스스로 안 나감 · 암계 전술 D6: 방패병의 역장이 펼쳐진 동안 창 든 이는 선 바로 뒤에 나란히 섬 · 선 너머로 찌름 · 끝나면 보통 싸움)  /* v9.8.2: 역장 자리 (방패 앞) 에 맞춤 */
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const step=(W,n)=>{ for(let i=0;i<(n||1);i++){ const t0=W.t; E.stepWorld(W,1/30); if(W.t===t0) W.t+=1/30; } };
@@ -27,9 +27,9 @@ console.log('B. 끝나면 보통 싸움');
   E.supStart(W,s,'bfield',null,'시험',e.x,e.y); run(W,1.0); const F=(W.sf8||[]).find(f=>f.k==='wall'&&f.hard); const x0=a.x; run(W,6.0); ok(W.t>F.until,'역장이 끝남'); ok(Math.hypot(a.x-e.x,a.y-e.y)<5||e.hp<e.max,'끝난 뒤엔 보통대로 적에게 붙음 (거리 '+Math.hypot(a.x-e.x,a.y-e.y).toFixed(1)+')'); }
 console.log('C. 대열은 창만');
 { const W=WF([dummy('방패병',10,10,1,{shield:true,shSize:'대형',active:['암계 역장'],ov:{hp:600,atk:30}}),dummy('검병',7,9,1,{weapon:'장검'}),dummy('적',20,10,0,{ov:{hp:2000,atk:5}})],{seed:2}); const [s,g,e]=W.units; hold(e); hunt([s,g],e);
-  E.supStart(W,s,'bfield',null,'시험',e.x,e.y); run(W,1.2); const F=(W.sf8||[]).find(f=>f.k==='wall'&&f.hard); const off=F?(g.x-F.x)*F.nx+(g.y-F.y)*F.ny:null; ok(F&&!(Math.abs(off)<1.6&&Math.abs((g.x-F.x)*F.ux+(g.y-F.y)*F.uy)<F.h),'창이 아닌 검병은 대열에 서지 않음 (선에서 '+(off==null?'-':off.toFixed(1))+')'); }
+  E.supStart(W,s,'bfield',null,'시험',e.x,e.y); run(W,1.2); const F=(W.sf8||[]).find(f=>f.k==='wall'&&f.hard); const off=F?(g.x-F.x)*F.nx+(g.y-F.y)*F.ny:null; ok(F&&g.mood!=='대열','창이 아닌 검병은 대열에 서지 않음 (기분 '+g.mood+' · 선에서 '+(off==null?'-':off.toFixed(1))+')'); }   /* v9.8.2 역장이 방패 바로 앞이라 거리 대신 기분으로 */
 console.log('D. 선 너머로 찌름');
-{ const W=WF([dummy('방패병',10,10,1,{shield:true,shSize:'대형',active:['암계 역장'],ov:{hp:600,atk:30}}),SP(1,12,10),dummy('적',13.9,10,0,{ov:{hp:3000,atk:5}})],{seed:4}); const [s,a,e]=W.units; hold(e); hunt([s,a],e); const hp0=e.hp;
+{ const W=WF([dummy('방패병',10,10,1,{shield:true,shSize:'대형',active:['암계 역장'],ov:{hp:600,atk:30}}),SP(1,10.4,11.0),dummy('적',12.5,10.6,0,{ov:{hp:3000,atk:5}})   /* v9.8.2 역장은 방패 바로 앞 (11.3) */],{seed:4}); const [s,a,e]=W.units; hold(e); hunt([s,a],e); const hp0=e.hp;
   E.supStart(W,s,'bfield',null,'시험',e.x,e.y); run(W,2.4); const F=(W.sf8||[]).find(f=>f.k==='wall'&&f.hard); ok(!!F&&W.t<F.until,'역장이 아직 서 있음 (t '+W.t.toFixed(1)+')');
   ok(e.hp<hp0,'선 뒤의 창이 선 너머 적을 찌름 (적 체력 '+Math.round(hp0)+' → '+Math.round(e.hp)+')'); }
 console.log(fails?'FAIL '+fails:'ALL OK'); process.exit(fails?1:0);
