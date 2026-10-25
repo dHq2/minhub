@@ -1,4 +1,4 @@
-// v9.2.1 엔진 시험 (나) — eng9030.js v1.1 (v1.1: 몸 반지름 하한 1.2 → 0.75 (rMul 3 → 2 — 계단2 방에 들어가도록) · 밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
+// v9.2.1 엔진 시험 (나) — eng9030.js v1.2 (v1.2: 실제 돌진 시험의 돌격병은 맨손 (몸으로 들이받음 — v9.9.0) · v1.1: 몸 반지름 하한 1.2 → 0.75 (rMul 3 → 2 — 계단2 방에 들어가도록) · 밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -24,7 +24,7 @@ console.log('B. 반 — 기술을 골고루');
 console.log('C. 반 — 지속 돌격에 넘어짐 (일어나는 데 오래)');
 { const W=WF([dummy('돌격병',10,12,0)],[BAN(24,12,1)]); const [c,b]=W.units; hold(b); b.h2=null; const g0=W.log.length; for(let i=0;i<3;i++) E.giantChg(W,c,b); ok(!(b.proneT>W.t),'세 번 들이받아도 아직 서 있음'); E.giantChg(W,c,b); ok(b.proneT>W.t+6,'네 번째에 넘어짐 (일어나기까지 '+(b.proneT-W.t).toFixed(1)+'초)'); ok(logK(W,'giantFall').length===1,'로그: 거인이 넘어짐'); }
 { // 실제 돌진으로: 때리지 않는 거인 (공격 0) 에게 돌격병이 거듭 부딪힘
-  const W=WF([dummy('돌격병',10,12,0,{canCharge:true})],[BAN(24,12,1,{ov:{hp:9000,atk:1,spd:2.2},h2:null,spdMul:0})]); const [c,b]=W.units; let falls=0, r=0; for(;r<8&&!falls;r++){ b.x=24; b.y=12; c.x=b.x-b.r-4.5; c.y=b.y; c.act=null; c.chargeCd=-9; c.proneT=-9; c.stunT=-9; c.kb=null; c.hp=c.max; c.brokenT=-9; b.act=null; b.state='idle'; b.target=null; E.tryCharge(W,c,b,true); run(W,2.2); falls=logK(W,'giantFall').length; }
+  const W=WF([dummy('돌격병',10,12,0,{canCharge:true,weapon:'맨손'})],[BAN(24,12,1,{ov:{hp:9000,atk:1,spd:2.2},h2:null,spdMul:0})]); const [c,b]=W.units; let falls=0, r=0; for(;r<8&&!falls;r++){ b.x=24; b.y=12; c.x=b.x-b.r-4.5; c.y=b.y; c.act=null; c.chargeCd=-9; c.proneT=-9; c.stunT=-9; c.kb=null; c.hp=c.max; c.brokenT=-9; b.act=null; b.state='idle'; b.target=null; E.tryCharge(W,c,b,true); run(W,2.2); falls=logK(W,'giantFall').length; }
   console.log('    실제 돌진 '+logK(W,'impact').filter(l=>l.b===b.i).length+'번 ('+r+'판) → 넘어짐 '+falls); ok(falls>=1||(b.cgHits||[]).length>=1,'실제 돌진도 세어짐 (센 돌격 '+((b.cgHits||[]).length)+' · 넘어짐 '+falls+')'); }
 
 console.log('D. 테리 — 망치');

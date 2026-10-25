@@ -1,4 +1,4 @@
-// v9.1.0 전우조 · 대장-부하 UI 시험 — ui9010.js v1.0 (배치 상자 · 옛 2편대 = 부대장의 부하 · 명령 칸 🤝 🎖 ✂ · 여럿 고르기 / 한 명 + 짝 누르기 · 같은 관계 다시 = 풀림 · 파란 굵은 선 · 로그 · 저장 · 휴대폰 단추)
+// v9.1.0 전우조 · 대장-부하 UI 시험 — ui9010.js v1.0 (배치 상자 · 옛 2편대 = 부대장의 부하 · 명령 칸 🤝 🎖 ✂ · 여럿 고르기 / 한 명 + 짝 누르기 · 같은 관계 다시 = 풀림 · 파란 굵은 선 · 로그 · 저장 · 휴대폰 단추)  /* v9.9.0: 인주도 공통 대장 */
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -52,7 +52,7 @@ const { chromium } = require('playwright');
  await p.evaluate(()=>{ const N=n=>world.units.find(u=>u.name===n); sel=new Set([N('카리우스').i]); hud(); }); await p.waitForTimeout(100);
  await p.click('#orders [data-ord="chief"]'); await p.waitForTimeout(100);
  await p.click('#party [data-ally="'+(await p.evaluate(()=>world.units.find(u=>u.hero).i))+'"]'); await p.waitForTimeout(150);
- ok(await p.evaluate(()=>{ const k=world.units.find(u=>u.name==='카리우스'); return k.sqLead==null&&!k.chiefLk&&S.units[k.i].chiefNm===''; }),'인주를 대장으로 누르면 부하 관계가 풀림 (기본으로)');
+ ok(await p.evaluate(()=>{ const k=world.units.find(u=>u.name==='카리우스'), h=world.units.find(u=>u.hero); return k.chiefLk&&k.sqLead===h.i; }),'인주를 대장으로 누르면 인주의 부하가 됨 (v9.9.0 인주도 공통)');
  // ✂ 관계 풀기
  await p.evaluate(()=>{ const N=n=>world.units.find(u=>u.name===n); sel=new Set([N('카리우스').i, N('친칠라').i]); hud(); }); await p.waitForTimeout(100);
  await p.click('#orders [data-ord="relcut"]'); await p.waitForTimeout(100);

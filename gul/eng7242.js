@@ -1,4 +1,4 @@
-// v7.24.2 시험 — eng7242.js v1.1 (v1.1: 공격 비교는 정한 값 없이 · 돌격 시험의 쟝은 버팀 · 근력 · 괴력: [근력X] = 늘 쓰는 공격 × · 자세 깎기 (예전 괴력 몫) · [괴력X] 만으로는 공격 그대로 / 괴력 순간: 크게 밀릴 때 버팀 (÷ 괴력) · 대기 · 넘어지려 할 때 버팀 · 잡힌 무기를 뿌리침 (거구에겐 안 됨) · 무너지려던 막기를 튕겨냄 · 쓴 뒤 빈틈 · 돌격에 버팀)
+// v7.24.2 시험 — eng7242.js v1.2 (v1.2: 돌격 버팀 시험의 기사는 방패 (몸으로 들이받음 — v9.9.0 무기를 든 이는 무기로 침) · v1.1: 공격 비교는 정한 값 없이 · 돌격 시험의 쟝은 버팀 · 근력 · 괴력: [근력X] = 늘 쓰는 공격 × · 자세 깎기 (예전 괴력 몫) · [괴력X] 만으로는 공격 그대로 / 괴력 순간: 크게 밀릴 때 버팀 (÷ 괴력) · 대기 · 넘어지려 할 때 버팀 · 잡힌 무기를 뿌리침 (거구에겐 안 됨) · 무너지려던 막기를 튕겨냄 · 쓴 뒤 빈틈 · 돌격에 버팀)
 const {E,R,DES,INJ,REB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -33,7 +33,7 @@ const lit=W=>{ W.amb=1; E.computeLight(W); };
   const o=E.strike(W,a,t,t,1,false,{}); console.log('      막기',JSON.stringify({block:o&&o.block,mp:o&&o.mightParry,post:Math.round(t.post),broke:o&&o.broke,stun:+((a.stunT||0)-W.t).toFixed(2)}));
   ok(o&&o.block&&o.mightParry&&!o.broke&&t.post>=1,'무너지려던 막기를 괴력으로 버팀 (자세 남음)'); ok(a.stunT>W.t&&(a.kb||W.log.some(l=>l.k==='shove'||l.k==='kb')||true),'튕겨낸 상대는 잠깐 휘청'); }
 // 6) 돌격에 버팀 (들이받히는 순간)
-{ let br=0; for (let s=1;s<=4;s++){ const W=W_([mk(JEAN,0,12,8)],[mk({...KN(),weight:110},1,6,8)],s,'hold'); lit(W); const [j,k]=W.units; k.canCharge=true; j.canCharge=false;   /* 쟝은 맞받아 달리지 않고 버팀 */
+{ let br=0; for (let s=1;s<=4;s++){ const W=W_([mk(JEAN,0,12,8)],[mk({...KN(),weight:110,shield:true},1,6,8)],s,'hold'); lit(W); const [j,k]=W.units; k.canCharge=true; j.canCharge=false;   /* 쟝은 맞받아 달리지 않고 버팀 */
     E.stepWorld(W,1/30); if (E.startCharge) E.startCharge(W,k,j); run(W,2.5); if (W.log.some(l=>l.k==='might'&&(l.how==='brace'||l.how==='resist'||l.how==='stand'))) br++; }
   console.log('      돌격에 괴력',br,'/ 4'); ok(br>0,'들이받히는 순간 · 밀리는 순간 괴력으로 버팀'); }
 console.log(fails?`${fails} FAIL`:'ALL 7242 OK');

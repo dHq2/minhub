@@ -1,4 +1,4 @@
-// v8.7.8 엔진 시험 (3) — eng8780c.js v1.4 (v1.4: v9.0.0 — 혼자서도 돌진은 돌격을 허용한 몸으로 (아군 기본은 돌격 금지) · v1.3: 초돌진은 진형 뒤의 사수 먼저 · 맞붙어 있으면 빠지지 않음 · 혼자인 편은 기다리지 않음 · v1.2: 근성 과녁은 체력 99999 (혼자인 카리우스도 이제 돌진 — 마지막 7초 안에 과녁을 쓰러뜨려 싸움이 끝나던 것) · v1.1: 꿰뚫기는 기록에도 갑옷 없음 · 뒤의 적은 노인의 팔에 안 맞음 (그 뒤 딥 킥은 따로) · 딥 킥 과녁은 물러서지 못하게 · 불경자 기술은 대기가 풀린 뒤 · 철퇴 피해는 기록으로 · 치명은 막지 못하는 적에게 · v1.0: 어퐁 (명세 C6 · 도감 C-103 — 초돌진 · 앞차기 · 버클러) · 카리우스 (명세 C7 — 3D karius.js v1.3 · 2D 불경자 · 근성: 잡아뚫기 · 노인의 팔 · 라이트 훅 · 딥 킥 · 짓밟기 · 불경자 · 근성 · 벼락))
+// v8.7.8 엔진 시험 (3) — eng8780c.js v1.5 (v1.5: 몸박 과녁은 맨손 (먼저 몸으로 들이받아 싸움을 엶 — v9.9.0 무기 돌격이면 몸박 전에 엉킴) · v1.4: v9.0.0 — 혼자서도 돌진은 돌격을 허용한 몸으로 (아군 기본은 돌격 금지) · v1.3: 초돌진은 진형 뒤의 사수 먼저 · 맞붙어 있으면 빠지지 않음 · 혼자인 편은 기다리지 않음 · v1.2: 근성 과녁은 체력 99999 (혼자인 카리우스도 이제 돌진 — 마지막 7초 안에 과녁을 쓰러뜨려 싸움이 끝나던 것) · v1.1: 꿰뚫기는 기록에도 갑옷 없음 · 뒤의 적은 노인의 팔에 안 맞음 (그 뒤 딥 킥은 따로) · 딥 킥 과녁은 물러서지 못하게 · 불경자 기술은 대기가 풀린 뒤 · 철퇴 피해는 기록으로 · 치명은 막지 못하는 적에게 · v1.0: 어퐁 (명세 C6 · 도감 C-103 — 초돌진 · 앞차기 · 버클러) · 카리우스 (명세 C7 — 3D karius.js v1.3 · 2D 불경자 · 근성: 잡아뚫기 · 노인의 팔 · 라이트 훅 · 딥 킥 · 짓밟기 · 불경자 · 근성 · 벼락))
 const {E,R,U,KAR,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const logK=(W,k)=>W.log.filter(l=>l.k===k);
@@ -106,7 +106,7 @@ console.log('J. 불경자 — 체력 15% 아래: 공격 × 2.5 · 받는 피해 
 { const W=WF([mk(KA,0,10,10),dummy('철퇴 과녁',11.6,10,1)]); const k=W.units[0], t=W.units[1]; freeze(W); still(t); t.seenBy=1; t.canGuard=false; hold(k,'kgrab','ksw','khook','kick','kstomp');
   k.hp=k.max*0.1; step(W,1); ok(k.heretic,'불경자'); step(W,26); k.act=null; const r=E.karAuto(W,k,t); ok(r&&k.act.s==='kslam','스스로: 붙은 적에게 노인의 팔 철퇴'); runAct(W,k,80);
   const SH=W.log.filter(l=>l.k==='hit'&&l.b===t.i&&/철퇴/.test(l.tag||'')); ok(logK(W,'karSlam').length===1&&SH.length===1&&SH[0].dmg>=120,'철퇴 피해 '+(SH[0]?SH[0].dmg:0)+' (공격 100 × 1.67)'); ok(logK(W,'stun').some(l=>l.b===t.i),'휘청'); }
-{ const W=WF([mk(KA,0,10,10),dummy('몸박 과녁',15,10,1)]); const k=W.units[0], t=W.units[1]; freeze(W); still(t); t.seenBy=1; t.canGuard=false; hold(k,'kgrab','ksw','khook','kick','kstomp','kslam');
+{ const W=WF([mk(KA,0,10,10),dummy('몸박 과녁',15,10,1,{weapon:'맨손'})]); const k=W.units[0], t=W.units[1]; freeze(W); still(t); t.seenBy=1; t.canGuard=false; hold(k,'kgrab','ksw','khook','kick','kstomp','kslam');
   t.spd=0.001; const x0=t.x; k.hp=k.max*0.1; let n=0; while(n++<90&&!logK(W,'karRush').length) step(W); ok(logK(W,'karRush').length===1&&W.log.some(l=>l.k==='wind'&&l.a===k.i&&l.spec==='krush'),'스스로: 3 ~ 7칸 적에게 돌진 몸박 ('+(n/30).toFixed(1)+'초)'); runAct(W,k,90); step(W,30);
   ok(logK(W,'karRush').length===1&&W.log.some(l=>l.k==='hit'&&l.b===t.i&&/몸박/.test(l.tag||''))&&t.x-x0>2,'몸박 — 밀려 날아감 ('+(t.x-x0).toFixed(1)+'칸)'); }
 

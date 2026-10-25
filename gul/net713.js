@@ -1,4 +1,4 @@
-// v7.13 시험 — net713.js v1.1 (v1.1: v9.1.0 — 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시 (옛: D 는 못 함) · 지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
+// v7.13 시험 — net713.js v1.2 (v1.2: v9.9.1 — 발 빠른 근접 부하는 지시 대신 추종 규칙으로 대장의 적에게 (그것도 받음으로 셈) · v1.1: v9.1.0 — 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시 (옛: D 는 못 함) · 지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
 const {E,R,DES,NOR,INJ,KAR,REB,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const lit=W=>{ W.torches=[{x:8,y:8,r:30}]; E.computeLight(W); };
@@ -25,8 +25,8 @@ console.log('B. 시작 배치 편대 · 무스킬 편대장 D');
 
 console.log('C. 노먼 (C) 편대장 자율 지시');
 { let dec=0,recv=0,N=8,ex=null; for(let sd=1;sd<=N;sd++){ const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9,{sq:'B',rank:'부대장'}),mk(GOB,0,9,9.5,{sq:'B'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],sd,'free'); lit(W);
-    const g=W.units[2]; run(W,6); const d=W.log.filter(x=>x.k==='sqDec'); if(d.length){ dec++; if(!ex) ex=d[0]; } if(W.log.some(x=>x.k==='cmdRecv'&&x.a===g.i&&x.c===W.units[1].i)) recv++; }
-  console.log('    예', JSON.stringify(ex)); console.log(`    지시한 판 ${dec}/${N} · 청광묵이 노먼의 지시를 받은 판 ${recv}/${N}`); ok(dec>=N*0.6,'노먼이 스스로 지시'); ok(recv>=1,'청광묵이 지휘망으로 받음');
+    const g=W.units[2]; run(W,6); const d=W.log.filter(x=>x.k==='sqDec'); if(d.length){ dec++; if(!ex) ex=d[0]; } if(W.log.some(x=>x.k==='cmdRecv'&&x.a===g.i&&x.c===W.units[1].i)||(g.chiefLk&&g.target===W.units[3])) recv++; }   /* v9.9.1 발 빠른 근접 부하 (청광묵) 는 지시 대신 추종 규칙으로 대장의 적에게 */
+  console.log('    예', JSON.stringify(ex)); console.log(`    지시한 판 ${dec}/${N} · 청광묵이 노먼의 지시를 받은 판 ${recv}/${N}`); ok(dec>=N*0.6,'노먼이 스스로 지시'); ok(recv>=1,'청광묵이 지휘망으로 받거나 (발 빠른 부하는) 추종 규칙으로 같은 적에게');
   const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9,{sq:'B',rank:'부대장'}),mk(GOB,0,9,9.5,{sq:'B'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],1,'free'); lit(W); const g=W.units[2]; g.order={k:'hold'}; run(W,5);
   ok(!W.log.some(x=>x.k==='cmdRecv'&&x.a===g.i&&x.c===W.units[1].i),'대장의 명령 (제자리) 을 받은 편대원은 건드리지 않음'); }
 

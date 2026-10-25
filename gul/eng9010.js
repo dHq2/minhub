@@ -12,7 +12,7 @@ console.log('A. 관계 API (바로 · 지휘망을 거치지 않음)');
   E.cgJoin(W,[r,g]); E.cgLeave(W,[g]); ok(!g.cg&&r.cg,'한 명만 빠짐 (남은 이는 짝 없음)');
   o=E.chiefSet(W,[g,n],r); ok(o.ok&&o.on&&g.sqLead===r.i&&n.sqLead===r.i&&g.chiefLk&&n.chiefLk,'대장 레베카 ← 청광묵 · 노먼');
   o=E.chiefSet(W,[r],g); ok(!o.ok,'서로가 서로의 부하는 안 됨 ('+(o.why||'')+')');
-  o=E.chiefSet(W,[h],r); ok(!o.ok,'인주는 부하가 될 수 없음');
+  o=E.chiefSet(W,[h],r); ok(o.ok&&h.chiefLk&&h.sqLead===r.i,'인주도 부하가 될 수 있음 (v9.9.0 공통)'); E.chiefClear(W,[h]);
   const lk=(()=>{ const far=mk(GOB,0,28,2); return null; })();
   r.x=2; r.y=2; g.x=28; g.y=14; const l1=E.cmdLinkX?null:null;
   o=E.chiefSet(W,[g,n],r); ok(o.ok&&!o.on&&g.sqLead==null&&!g.chiefLk,'같은 관계를 다시 → 풀림');

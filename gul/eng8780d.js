@@ -1,4 +1,4 @@
-// v8.7.8 엔진 시험 (4) — eng8780d.js v1.3 (v1.3: v9.6.3 — 물레의 정령 계약 기록 이름 pact → pact8 (협공 약속과 겹치던 것) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
+// v8.7.8 엔진 시험 (4) — eng8780d.js v1.4 (v1.4: 세워 둔 과녁 · 동료는 대기 몸짓 · 스스로 돌격 없이 · 차원 문 시험의 동료는 체력 35% (스스로 문 앞으로 데려오지 않게 — 손으로 다시 씀을 봄) (v9.9.0 대기 몸짓 · 무기 돌격) · v1.3: v9.6.3 — 물레의 정령 계약 기록 이름 pact → pact8 (협공 약속과 겹치던 것) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 재생 · 날개 방패 끝을 잴 때는 치유 방침 '명령만' (마력 치유의 기본이 '알아서' 가 되어 기본 치유가 섞이던 것) · 마력 치유의 기본 방침 시험 · v1.0: 물레 · 콜라이더 · 테헤라 — 몸 · 정령 계약 · 정령의 손길 · 정령 강림 · 정령 방벽 · 땅의 정령 · 물 정령 탄 / 갈퀴 꼬리 · 별빛 지목 · 차원 문 · 마계 장막 · 유혹의 손짓 · 마계 대사 /
 //   축복:테헤라 · 요정 날개 · 요정의 축복 · 광역 손짓 · 은빛 비행 · 날개 방패 · 나른한 꿈 · 명령 · 스스로 (적 · 아군 같은 두뇌))
 const {E,R,U,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
@@ -13,7 +13,7 @@ const step=(W,n)=>{ for(let i=0;i<(n||1);i++){ const t0=W.t; E.stepWorld(W,1/30)
 const hold=(u,...ks)=>{ for(const k of ks){ const x=(u.spec||[]).find(s=>s.k===k); if(x) x.cdT=1e9; } };
 const holdAll=u=>{ for(const x of u.spec||[]) x.cdT=1e9; if(u.skill) u.skill.cdT=1e9; };
 const freeze=W=>{ for(const u of W.units){ u.state='idle'; u.target=null; u.goal=null; u.path=null; } };
-const still=(...us)=>{ for(const u of us){ u.order={k:'hold'}; u.ev=0.0001; u.spd=0.001; } };
+const still=(...us)=>{ for(const u of us){ u.order={k:'hold'}; u.ev=0.0001; u.spd=0.001; u.noFid=true; u.noChg=u.noChgUser=true; } };
 const runAct=(W,u,n)=>{ let k=n||200; while(k-->0&&u.act) step(W); return k>0; };
 const SUP=['mdesc','mwall','mspirit','mvolley','cgate','cstar','cveil','clure','tsweep','tflight','twing','tdream'];
 
@@ -96,7 +96,7 @@ console.log('I. 별빛 지목 — 15칸 탄 · 6초 받는 피해 +20% (모두) 
   const d0=E.supTake(W,a,e,100,{}), d1=E.supTake(W,W.units[1],a,100,{}); ok(Math.abs(d0-120)<0.01&&d1===100,'표식의 적이 동료에게 받는 피해 × '+(d0/100)+' (표식 없는 쪽은 그대로)'); }
 
 console.log('J. 차원 문 — 앞 4칸 · 8초 · 반지름 4: 1초마다 1.5칸 끌어옴 · 적 탄이 사라짐 · 다시 쓰면 동료를 문 앞으로');
-{ const W=WF([mk(CO,0,10,10),dummy('적 1',16.5,10,1),dummy('적 2',14,12.8,1),dummy('보스',14,7.5,1,{traits:['보스']}),dummy('동료',4,10,0)]); const c=W.units[0], e1=W.units[1], e2=W.units[2], bs=W.units[3], al=W.units[4]; holdAll(c); freeze(W); still(e1,e2,bs,al);
+{ const W=WF([mk(CO,0,10,10),dummy('적 1',16.5,10,1),dummy('적 2',14,12.8,1),dummy('보스',14,7.5,1,{traits:['보스']}),dummy('동료',4,10,0)]); const c=W.units[0], e1=W.units[1], e2=W.units[2], bs=W.units[3], al=W.units[4]; holdAll(c); al.hp=al.max*0.35; freeze(W); still(e1,e2,bs,al);
   c.spec.find(x=>x.k==='cgate').cdT=-9; E.supStart(W,c,'cgate',null,'시험',20,10); runAct(W,c,40); const G=E.sfOf(W,'gate'); ok(G&&Math.abs(G.x-14)<0.2&&G.r===4,'문: 앞 4칸 ('+(G?G.x.toFixed(1):'없음')+') · 반지름 4');
   const d0=dist(e1,G), d2=dist(e2,G), b0=dist(bs,G); step(W,40); ok(dist(e1,G)<d0-1.2&&dist(e2,G)<d2-0.5,'1초 뒤 끌려옴 ('+d0.toFixed(1)+' → '+dist(e1,G).toFixed(1)+')'); ok(Math.abs(dist(bs,G)-b0)<0.05,'보스는 끌려가지 않음');
   const x=c.spec.find(s=>s.k==='cgate'); ok(x.cdT<W.t+0.1,'열려 있는 동안 다시 쓸 수 있음');

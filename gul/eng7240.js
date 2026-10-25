@@ -1,4 +1,4 @@
-// v7.24.0 시험 — eng7240.js v1.2 (v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 (아군마다 돌격 허용) · v1.1: v7.29.0 부터 붙으면 대개 원형 베기 → 몇 초 뒤 돌진 원형 베기라 스텝 틈이 조금 줄어듦 — 판마다 초당 0.3번 · 모두 합쳐 0.5번 넘게 · v1.0: 세자르: 피 500 · 스텝을 마구 밟음 (비켜 섬 · 치고 빠짐 · 밟아 들어가 벰 · 옆걸음) · 스텝 중 회피 / 호레이쇼 도약 강타: 공중은 피해 없음 · 절반 넘게 겹치면 찌부러짐 · 몸에 걸치면 밀려나며 약한 피해 · 범위는 약한 피해 · 넘어짐 없음 · 여덟 판)
+// v7.24.0 시험 — eng7240.js v1.3 (v1.3: 스텝 갈래 시험은 5판 (3판이면 드문 치고 빠짐이 안 나올 때가 있음 — v9.9.5 대기 몸짓이 한가할 때만이 되며 난수 순서가 바뀜) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 (아군마다 돌격 허용) · v1.1: v7.29.0 부터 붙으면 대개 원형 베기 → 몇 초 뒤 돌진 원형 베기라 스텝 틈이 조금 줄어듦 — 판마다 초당 0.3번 · 모두 합쳐 0.5번 넘게 · v1.0: 세자르: 피 500 · 스텝을 마구 밟음 (비켜 섬 · 치고 빠짐 · 밟아 들어가 벰 · 옆걸음) · 스텝 중 회피 / 호레이쇼 도약 강타: 공중은 피해 없음 · 절반 넘게 겹치면 찌부러짐 · 몸에 걸치면 밀려나며 약한 피해 · 범위는 약한 피해 · 넘어짐 없음 · 여덟 판)
 const {E,R,DES,INJ,NOR,REB,KAR,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
@@ -7,7 +7,7 @@ const HORA={ref:'C-158',name:'호레이쇼',tier:4,cls:'근접',role:'공격수'
 const KN=()=>JSON.parse(JSON.stringify(DES['검기사']));
 const lit=W=>{ W.amb=1; E.computeLight(W); };
 // 1) 세자르의 스텝: 10초 싸움에 자주 · 갈래
-{ let st={}, n=0, side=0, T=0; for (let s=1;s<=3;s++){ const W=W_([mk(KAR,0,9,8,{ov:{hp:20000}}),mk(REB,0,10,10,{ov:{hp:20000}}),mk(KN(),0,10,6,{ov:{hp:20000}})],[mk(CZ,1,16,8,{ov:{hp:20000,atk:62}})],s,'free'); lit(W); const k=W.units[3];
+{ let st={}, n=0, side=0, T=0; for (let s=1;s<=5;s++){ const W=W_([mk(KAR,0,9,8,{ov:{hp:20000}}),mk(REB,0,10,10,{ov:{hp:20000}}),mk(KN(),0,10,6,{ov:{hp:20000}})],[mk(CZ,1,16,8,{ov:{hp:20000,atk:62}})],s,'free'); lit(W); const k=W.units[3];
     run(W,10); n+=k.cz.nStep+W.log.filter(l=>l.k==='czBack'&&l.a===k.i).length; T+=W.t; side+=W.log.filter(l=>l.k==='czSide').length; for (const [a,b] of Object.entries(k.cz.stepK||{})) st[a]=(st[a]||0)+b; }
   console.log('      스텝',n,'번 /',T.toFixed(0),'초 ·',JSON.stringify(st),'· 비켜 섬 로그',side);
   ok(n/T>=0.75,'스텝 (뒷걸음 점프 포함) 을 마구 밟음 (초당 '+(n/T).toFixed(2)+'번)'); ok(['비켜 섬','치고 빠짐','밟아 들어가 벰'].every(x=>st[x]>0),'비켜 섬 · 치고 빠짐 · 밟아 들어가 벰 모두 나옴'); }

@@ -1,4 +1,4 @@
-// v8.7.3 시험 — eng8730.js v1.8 (v1.8: 사수는 동료에게 둘러싸인 표적만 노리다 한 발도 못 쏘지 않음 — 다른 표적의 각을 잡아 쏨 · v1.7: 이어진 휘청 · 넘어짐은 짧아짐 (1 → 0.6 → 0.2 → 버팀) · 사이가 벌어지면 다시 그대로 · v1.6: 하나뿐인 창은 코앞의 상대에게도 아낌 (끝낼 수 있을 때만 던짐) · v1.5: 기습 ×3 은 그 공격자를 몰랐을 때만 — 묶여 있어도 10초 안에 보았으면 뒤치기만 · 몰래 다가온 이는 그대로 기습 · v1.4: 미리 비켜서기는 그 일격 밖으로 나갈 수 있을 때만 — '피함' 뒤 같은 휘두르기에 맞는 일 없음 (여러 판) · 비킬 자리가 있으면 그대로 피함 · v1.3: 버팀이 하나로 — 세자르 버팀 (poise · ccRes) 은 돌격에도 (조금만 밀림) · 괴력으로 버티면 휘청 · 넘어짐 없이 '버텨 밀려남' · 돌격한 쪽 괴력은 되튕김을 막을 수 있을 때만 · v1.2: 돌격을 받쳐 준 동료는 날아온 몸을 받아 줌 (부딪힘 · 넘어짐 · 연쇄 없음) — 받쳐 주지 않은 몸과는 그대로 부딪힘 · v1.1: 공중제비 내려찍기 — 태세면 막힘 · 손이 묶였으면 (다른 적과 맞붙음) 무구로 받아 내지 못하고 맞음 ('막아도 즉사' 없음) · v1.0: 넉백 무게 — 한도도 받는 몸무게로 (140kg 과 40kg 이 같은 휘두르기에 다르게) · 던진 도끼는 도끼 무게 (던진 이 1100kg 이 아님) · 날아와 부딪힌 몸은 그 몸 무게 · 산탄 · 흙덩이 · 뿌리는 쏜 이의 몸무게와 상관없음 · 보통 몸 (80kg) 은 예전 그대로)
+// v8.7.3 시험 — eng8730.js v1.9 (v1.9: 몸으로 들이받는 돌격 시험은 맨손 돌격병으로 (v9.9.0 돌격은 한 가지 — 무기를 든 이는 무기로 침) · v1.8: 사수는 동료에게 둘러싸인 표적만 노리다 한 발도 못 쏘지 않음 — 다른 표적의 각을 잡아 쏨 · v1.7: 이어진 휘청 · 넘어짐은 짧아짐 (1 → 0.6 → 0.2 → 버팀) · 사이가 벌어지면 다시 그대로 · v1.6: 하나뿐인 창은 코앞의 상대에게도 아낌 (끝낼 수 있을 때만 던짐) · v1.5: 기습 ×3 은 그 공격자를 몰랐을 때만 — 묶여 있어도 10초 안에 보았으면 뒤치기만 · 몰래 다가온 이는 그대로 기습 · v1.4: 미리 비켜서기는 그 일격 밖으로 나갈 수 있을 때만 — '피함' 뒤 같은 휘두르기에 맞는 일 없음 (여러 판) · 비킬 자리가 있으면 그대로 피함 · v1.3: 버팀이 하나로 — 세자르 버팀 (poise · ccRes) 은 돌격에도 (조금만 밀림) · 괴력으로 버티면 휘청 · 넘어짐 없이 '버텨 밀려남' · 돌격한 쪽 괴력은 되튕김을 막을 수 있을 때만 · v1.2: 돌격을 받쳐 준 동료는 날아온 몸을 받아 줌 (부딪힘 · 넘어짐 · 연쇄 없음) — 받쳐 주지 않은 몸과는 그대로 부딪힘 · v1.1: 공중제비 내려찍기 — 태세면 막힘 · 손이 묶였으면 (다른 적과 맞붙음) 무구로 받아 내지 못하고 맞음 ('막아도 즉사' 없음) · v1.0: 넉백 무게 — 한도도 받는 몸무게로 (140kg 과 40kg 이 같은 휘두르기에 다르게) · 던진 도끼는 도끼 무게 (던진 이 1100kg 이 아님) · 날아와 부딪힌 몸은 그 몸 무게 · 산탄 · 흙덩이 · 뿌리는 쏜 이의 몸무게와 상관없음 · 보통 몸 (80kg) 은 예전 그대로)
 const {E,R,DES,KAR,GOB,REB,NOR,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const lit=W=>{ W.amb=1; E.computeLight(W); };
@@ -59,7 +59,7 @@ const dummy=(name,mass,x,y,side)=>{ const u=mk({...REB,name,ov:{hp:9000,atk:20}}
   const charge=(att,tgt,setup)=>{ const W=W_([mk(tgt,0,10,8)],[mk(att,1,5.5,8)],1,'hold'); lit(W); const [t,k]=W.units; t.guardMode='off'; t.raised=false; t.canGuard=false; t.order={k:'hold'}; t.face=Math.PI; if (setup) setup(W,t,k);
     W.log.length=0; E.startCharge(W,k,t); let imp=-1; for (let i=0;i<90;i++){ E.stepWorld(W,1/30); if (imp<0&&W.log.some(l=>l.k==='impact')) imp=i; if (imp>=0&&i>imp+25) break; } return { W, t, k }; };
   // (a) 세자르: 무게 70 · 버팀 ×6 · [버팀] 0.85 — 82kg 이 전력으로 들이받아도 조금만 밀림 (휘청을 버틴 그 순간 1.65칸 날아가던 것)
-  { const { W, t } = charge(MAN('탕아',82), MAN('세자르',70), (W,t)=>{ t.mass=70; t.poise=6; t.ccRes=0.85; });
+  { const { W, t } = charge(MAN('탕아',82,{weapon:'맨손'}), MAN('세자르',70), (W,t)=>{ t.mass=70; t.poise=6; t.ccRes=0.85; });
     const sh=W.log.find(l=>l.k==='shove'&&l.b===t.i), im=W.log.find(l=>l.k==='impact'); console.log('      세자르',JSON.stringify({vr:im&&im.vr,len:sh&&sh.len,shrug:W.log.some(l=>l.k==='ccRes'&&l.b===t.i)}));
     ok(im&&(!sh||sh.len<0.5),'세자르 (버팀 ×6 · [버팀]) 는 돌격에 조금만 밀림 ('+(sh?sh.len:0)+'칸)'); }
   // (b) 괴력으로 버팀 (카리우스) — 휘청 · 넘어짐 없음 · 기록 '버텨 밀려남'
@@ -68,7 +68,7 @@ const dummy=(name,mass,x,y,side)=>{ const u=mk({...REB,name,ov:{hp:9000,atk:20}}
     console.log('      괴력 버팀',JSON.stringify({how:mg&&mg.how,stun:!!st,len:sh&&sh.len,mt:sh&&sh.mt,imMt:im&&im.mt,down:W.t<(t.proneT||-9)}));
     ok(mg&&!st&&(!sh||sh.mt)&&!(W.t<(t.proneT||-9))&&im&&im.mt,'괴력으로 버티면 그 일격에 휘청 · 넘어짐 없음 (밀림은 \'버텨 밀려남\')'); }
   // (c) 돌격한 쪽 괴력: 막을 수 있으면 씀 (되튕김 없음) · 1100kg 앞에선 쓰지 않음 (튕겨 나감만)
-  for (const [w,exp] of [[250,true],[1100,false]]){ const { W, k } = charge(MAN('호레이쇼',w), MAN('모닝스타',62), (W,t,k)=>{ t.mass=w; t.might=1; k.mass=62; k.might=1.7; k.mightCd=-9; });
+  for (const [w,exp] of [[250,true],[1100,false]]){ const { W, k } = charge(MAN('호레이쇼',w,{weapon:'맨손'}), MAN('모닝스타',62), (W,t,k)=>{ t.mass=w; t.might=1; k.mass=62; k.might=1.7; k.mightCd=-9; });
     const mg=W.log.find(l=>l.k==='might'&&l.a===k.i&&l.how==='ram'), rc=W.log.find(l=>l.k==='shove'&&l.b===k.i&&l.how==='recoil');
     console.log('      괴력 밀어붙임 '+w+'kg',JSON.stringify({ram:!!mg,recoil:rc&&rc.len}));
     ok(exp?(mg&&!rc):(!mg&&rc),w+'kg: '+(exp?'괴력으로 밀어붙여 되튕기지 않음':'괴력을 쓰지 않고 그대로 튕겨 나감 (\'되튕기지 않고\' 뒤에 튕기지 않음)')); } }
