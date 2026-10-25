@@ -25,7 +25,7 @@ const POST={room:'A',door:{x:10.5,y:5.5},corner:{x:11.6,y:4.2}};
   const L=W.log.find(l=>l.k==='wardenOut'); console.log('     ',JSON.stringify(L));
   ok(L&&L.why==='near'&&!g.warden.on&&g.state==='hunt','상대가 3.5칸 안 → 터져서 덮침'); }
 // 4) 벽 너머 가까이는 안 터짐 (벽이 막음)
-{ const W=mkW([mk(INJ,0,8.5,2.5,{hero:true}),{...mk(KN(),1,11.5,2.5),warden:{...POST}}],{indoor:true}); const g=W.units[1]; W.amb=0.02;
+{ const W=mkW([mk(INJ,0,8.5,2.5,{hero:true}),{...mk(KN(),1,11.5,2.5),warden:{...POST}}],{indoor:true}); const g=W.units[1]; W.amb=0.02; W.units[0].order={k:'hold'};   /* v9.8.1 곧은 길로 2초 안에 문을 지나가 버려서 — 벽 너머를 시험하려고 세움 */
   run(W,2); ok(g.warden.on&&!W.log.some(l=>l.k==='wardenOut'),'벽 너머 3칸 — 터지지 않음'); }
 // 5) 문틈으로 보면 모퉁이로 → 안 오면 (지나쳐 감) 어둠 속으로 뒤따름
 { const W=mkW([mk(INJ,0,6.5,5.5,{hero:true}),{...mk(KN(),1,14.5,5.5),warden:{...POST}}],{indoor:true}); const g=W.units[1]; E.computeLight(W);   // 어두운 방 · 인주는 횃불 (지킴이는 봄 · 인주는 못 봄)
