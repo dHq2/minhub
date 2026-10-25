@@ -1,9 +1,9 @@
-// v7.11 포복 UI 시험 — ui711.js v1.1 (v1.1: v7.16.1 포복 · 일어남도 명령 — 클릭 뒤 일어나는 중이거나 전하는 중 · PC: C 키 · 명령 칸 단추 실제 클릭 · 그림 · 로그 / 모바일: 아래 칸 단추)  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */
+// v7.11 포복 UI 시험 — ui711.js v1.1 (v1.1: v7.16.1 포복 · 일어남도 명령 — 클릭 뒤 일어나는 중이거나 전하는 중 · PC: C 키 · 명령 칸 단추 실제 클릭 · 그림 · 로그 / 모바일: 아래 칸 단추)  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */  /* v9.8.0: 희생 돌격 · 동시 선택 단추는 지움 (명령은 그대로 시험) · ⋯ 더 펼침 */
 const { chromium } = require('playwright');
 const waitT=async(p,sec)=>{ const t0=await p.evaluate(()=>world.t); for(let k=0;k<80;k++){ await p.waitForTimeout(100); if((await p.evaluate(()=>world.t))-t0>=sec) return; } };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
- { const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
+ { const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); await p.addInitScript(()=>{ window.__dockMore=true; }); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.evaluate(()=>{ try{ dockMore=true; }catch(e){} });   /* v9.8.0 휴대폰 '⋯ 더' 펼침 */ await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
   await p.evaluate(()=>{ start(); }); await p.click('#contBtn'); await p.waitForTimeout(400);
   const ni = await p.evaluate(()=>world.units.findIndex(u=>u.name==='노먼')); await p.evaluate(i=>{ sel=new Set([i]); hud(); }, ni); await p.waitForTimeout(300);
   await p.keyboard.press('c'); await waitT(p,0.8); await p.waitForTimeout(150);
@@ -22,8 +22,8 @@ const waitT=async(p,sec)=>{ const t0=await p.evaluate(()=>world.t); for(let k=0;
   const kb = await p.evaluate(()=>JSON.stringify(KB_GROUPS).includes('포복')); ok(kb, '단축키 표에 C 포복');
   const tbl = await p.evaluate(()=>{ const el=document.getElementById('bodyTbl'); return el ? (el.innerText.match(/포복/g)||[]).length : 0; }); ok(tbl>10, `수치표에 포복 줄 (${tbl})`);
   ok(errs.length===0, '페이지 오류 없음 '+JSON.stringify(errs)); await p.close(); }
- { const ctx=await b.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}); const p=await ctx.newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
+ { const ctx=await b.newContext({viewport:{width:412,height:915},isMobile:true,hasTouch:true,deviceScaleFactor:2.6}); const p=await ctx.newPage(); await p.addInitScript(()=>{ window.__dockMore=true; }); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.evaluate(()=>{ try{ dockMore=true; }catch(e){} });   /* v9.8.0 휴대폰 '⋯ 더' 펼침 */ await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(800);
   await p.evaluate(()=>{ start(); }); await p.waitForTimeout(300); await p.evaluate(()=>togglePlay()); await p.waitForTimeout(400); console.log('    모바일 재생', await p.evaluate(()=>mode));
   const ii = await p.evaluate(()=>world.units.findIndex(u=>u.name==='인주')); await p.evaluate(i=>{ sel=new Set([i]); hud(); }, ii); await p.waitForTimeout(400);
   const db = await p.$('[data-dk="lie"]'); ok(!!db, '모바일 아래 칸에 🦎 포복');

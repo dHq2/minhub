@@ -8430,7 +8430,7 @@ function chargeBrace(W, u, dt){
     if (!t || t === u || !t.alive || t.side !== u.side || t.down || dist(u, t) > 2.2 || !(u.side === 0 ? (e.seenBy || canSee(W, u, e)) : canSee(W, u, e))) continue;
     if (dist(e, t) < dist(e, u) - 0.2 || !best || dist(u, t) < dist(u, best.t)) best = { e, t }; }
   if (!best) return false;
-  const { e, t } = best, d0 = dist(e, t) || 1, dx = (t.x - e.x) / d0, dy = (t.y - e.y) / d0, R = t.r + u.r + 0.02, a0 = Math.atan2(dy, dx);
+  const { e, t } = best, d0 = dist(e, t) || 1, dx = (t.x - e.x) / d0, dy = (t.y - e.y) / d0, R = t.r + u.r - 0.03,   /* v9.8.0 살짝 겹치게 — 밀어붙임 */ a0 = Math.atan2(dy, dx);
   const spots = [0, 0.75, -0.75, 1.3, -1.3].map(k => ({ x: t.x + Math.cos(a0 + k) * R, y: t.y + Math.sin(a0 + k) * R }))
     .filter(p => !boxRock(W, p.x, p.y, u.r * 0.9) && !W.units.some(o => o !== u && o !== t && o.alive && Math.hypot(o.x - p.x, o.y - p.y) < o.r + u.r - 0.05));
   const p = spots.sort((a, b) => Math.hypot(a.x - u.x, a.y - u.y) - Math.hypot(b.x - u.x, b.y - u.y))[0]; if (!p) return false;
@@ -8450,12 +8450,12 @@ function clumpStep(W, u, dt){
   const A = [...M.filter(m => !isFar(m)), ...M.filter(m => isFar(m))].sort((a, b) => (isFar(a) - isFar(b)) || a.order.j - b.order.j), n = A.length, k = A.indexOf(u);
   const front = A.filter(m => !isFar(m)).length, rowN = front >= 2 ? Math.min(front, 6) : Math.min(n, 4), rr = Math.max(...A.map(m => m.r)), sp = rr * 2 + 0.03;
   const row = k < rowN ? 0 : 1, col = row ? k - rowN : k, cnt = row ? n - rowN : rowN, off = (col - (cnt - 1) / 2) * sp, back = row * sp;
-  const px = o.x + Math.cos(o.f + Math.PI / 2) * off - Math.cos(o.f) * back, py = o.y + Math.sin(o.f + Math.PI / 2) * off - Math.sin(o.f) * back;
+  const sq = 1 - 0.06 / Math.max(0.3, Math.hypot(off, back)), px = o.x + (Math.cos(o.f + Math.PI / 2) * off - Math.cos(o.f) * back) * sq, py = o.y + (Math.sin(o.f + Math.PI / 2) * off - Math.sin(o.f) * back) * sq;   /* v9.8.0 가운데로 살짝 당김 — 어깨를 비빔 */
   u.fg = F ? Math.atan2(F.y - u.y, F.x - u.x) : o.f; u.wantT = W.t; setMood(W, u, '뭉침 — 어깨를 붙여 버팀', F ? F.i : null);
   if (u.canGuard && !u.raised && u.guardMode !== 'off'){ u.raised = true; u.raiseAt = W.t + ((W.rules.guard || {}).raise != null ? W.rules.guard.raise : 0.25) * (u.vet ? VETR(W).raise : 1); }
   const hit = !u.act && seen.filter(f => inReach(u, f)).sort((a, b) => gap(u, a) - gap(u, b))[0];
   if (hit && !(isFar(u) && !losClear(W.map, u.x, u.y, hit.x, hit.y))){ stop(u); u.target = hit; startAct(W, u, hit); return true; }
-  if (Math.hypot(px - u.x, py - u.y) > 0.08 && !u.act) goTo(W, u, Math.max(0.6, Math.min(W.map.W - 0.6, px)), Math.max(0.6, Math.min(W.map.H - 0.6, py)), dt); else stop(u);
+  if (Math.hypot(px - u.x, py - u.y) > 0.05 && !u.act) goTo(W, u, Math.max(0.6, Math.min(W.map.W - 0.6, px)), Math.max(0.6, Math.min(W.map.H - 0.6, py)), dt); else stop(u);
   return true;
 }
 function pairStep(W, u, dt){

@@ -1,12 +1,12 @@
-// v7.9 UI 시험 (모바일 + 데스크톱): 태세 단추 · 동시 선택 (드래그) · 정찰 방침 창 · 희생 돌격 확정 · 시작 행동 저장  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */
+// v7.9 UI 시험 (모바일 + 데스크톱): 태세 단추 · 동시 선택 (드래그) · 정찰 방침 창 · 희생 돌격 확정 · 시작 행동 저장  /* v9.7.0: 명령 칸 접기 — 시험 전에 펼침 */  /* v9.8.0: 희생 돌격 · 동시 선택 단추는 지움 (명령은 그대로 시험) · ⋯ 더 펼침 */
 const { chromium } = require('playwright');
 const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m); if(!c) fails.push(m); };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  for (const [name,vp,mob] of [['모바일',{width:412,height:915},true],['데스크톱',{width:1280,height:800},false]]){
   console.log('==',name);
   const ctx = await b.newContext({viewport:vp, deviceScaleFactor:mob?2.625:1, isMobile:mob, hasTouch:mob});
-  const p=await ctx.newPage(); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ p.on('pageerror',e=>errs.push(name+': '+String(e)));
-  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>{ localStorage.clear(); }); await p.reload(); await p.waitForTimeout(700);
+  const p=await ctx.newPage(); await p.addInitScript(()=>{ window.__dockMore=true; }); await p.addInitScript(()=>{ try{ localStorage.setItem('gulOrdGrp','{"tac":true,"adv":true}'); }catch(e){} });   /* v9.7.0 명령 칸 전술 · 고급 펼침 */ p.on('pageerror',e=>errs.push(name+': '+String(e)));
+  await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.evaluate(()=>{ try{ dockMore=true; }catch(e){} });   /* v9.8.0 휴대폰 '⋯ 더' 펼침 */ await p.waitForTimeout(400); await p.evaluate(()=>{ localStorage.clear(); }); await p.reload(); await p.waitForTimeout(700);
   const tap = async sel => { const r = await p.evaluate(s=>{ const e=document.querySelector(s); if(!e) return null; const q=e.getBoundingClientRect(); return {x:q.left+q.width/2,y:q.top+q.height/2,vis:q.width>0}; }, sel); if(!r){ console.log('  !! no',sel); return null; } if (mob) await p.touchscreen.tap(r.x,r.y); else await p.click(sel); await p.waitForTimeout(220); return r; };
   const scr = (x,y)=>p.evaluate(([x,y])=>{ const ts=TS*cam.z, r=document.getElementById('cv').getBoundingClientRect(); return {x:r.left+(x-cam.x)*ts+r.width/2, y:r.top+(y-cam.y)*ts+r.height/2}; }, [x,y]);
   // 시작 전: 0초에 은신 + 교전금지 정해 두고 시작 → 다음 판에 유지
@@ -18,8 +18,8 @@ const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m)
   // 칩/카드로 노먼 선택
   await p.evaluate(i=>{ sel=new Set([i]); hud(); }, idx('노먼')); await p.waitForTimeout(200);
   // 태세 단추 (모바일: dock, 데스크톱: orders)
-  if (mob){ ok(!!(await p.$('[data-dk="roeH"]')), '교전금지 단추 있음'); ok(!!(await p.$('[data-dk="posture"]')), '태세 단추 있음'); ok(!!(await p.$('[data-dk="sac"]')), '희생돌격 단추 있음 (1명 선택)'); ok(!!(await p.$('[data-dk="boxsel"]')), '동시선택 단추 있음'); }
-  else { ok(!!(await p.$('[data-ord="roe:hold"]')), '교전금지 단추 있음'); ok(!!(await p.$('[data-ord="roe:nofire"]')), '사격금지 단추'); ok(!!(await p.$('[data-ord="heal:order"]')), '치료 방침 단추'); ok(!!(await p.$('[data-ord="sac"]')), '희생 돌격 단추'); ok(!!(await p.$('[data-ord="boxsel"]')), '동시 선택 단추'); }
+  if (mob){ ok(!!(await p.$('[data-dk="roeH"]')), '교전금지 단추 있음'); ok(!!(await p.$('[data-dk="posture"]')), '태세 단추 있음'); }
+  else { ok(!!(await p.$('[data-ord="roe:hold"]')), '교전금지 단추 있음'); ok(!!(await p.$('[data-ord="roe:nofire"]')), '사격금지 단추'); ok(!!(await p.$('[data-ord="heal:order"]')), '치료 방침 단추'); }
   await tap(mob?'[data-dk="roeH"]':'[data-ord="roe:hold"]'); // 싸움 전 0초라 바로
   ok(await p.evaluate(i=>roeOf(world, world.units[i])==='hold', idx('노먼')), '교전금지 적용 (0초)');
   await tap(mob?'[data-dk="roeH"]':'[data-ord="roe:smart"]');
@@ -38,7 +38,7 @@ const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m)
   ok(r2.n==='nofire' && r2.r==='hold', '다음 판에 교전 규칙 유지 '+JSON.stringify(r2)); ok(r2.torchOff.every(Boolean), '다음 판에 횃불 꺼 둠 유지');
   // 동시 선택: 단추 → 끌기
   await p.evaluate(()=>{ sel=new Set(); hud(); });
-  await tap(mob?'[data-dk="boxsel"]':'[data-ord="boxsel"]'); ok(await p.evaluate(()=>boxArm), '동시 선택 켜짐');
+  await p.evaluate(()=>ordKey('boxsel')); ok(await p.evaluate(()=>boxArm), '동시 선택 켜짐');
   const pts = await p.evaluate(()=>world.units.filter(u=>u.side===0).map(u=>[u.x,u.y]));
   const mnx=Math.min(...pts.map(q=>q[0]))-1.2, mxx=Math.max(...pts.map(q=>q[0]))+1.2, mny=Math.min(...pts.map(q=>q[1]))-1.2, mxy=Math.max(...pts.map(q=>q[1]))+1.2;
   const a=await scr(mnx,mny), c=await scr(mxx,mxy);
@@ -61,8 +61,8 @@ const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m)
   ok(await p.evaluate(()=>document.getElementById('ask').hidden), '창이 닫힘'); ok(await p.evaluate(()=>S.scoutPol)==='survive', '마지막 방침 기억');
   // 희생 돌격 확정
   await p.evaluate(i=>{ sel=new Set([i]); world.units[i].order=null; hud(); }, idx('카리우스'));
-  await tap(mob?'[data-dk="sac"]':'[data-ord="sac"]'); ok(await p.evaluate(i=>!world.units[i].order, idx('카리우스')), '첫 누름은 확인만');
-  await tap(mob?'[data-dk="sac"]':'[data-ord="sac"]'); ok(await p.evaluate(i=>world.units[i].order && world.units[i].order.k==='sac', idx('카리우스')), '두 번째 누름으로 확정');
+  await p.evaluate(()=>{ ordKey('sac'); hud(); }); ok(await p.evaluate(i=>!world.units[i].order, idx('카리우스')), '첫 누름은 확인만');
+  await p.evaluate(()=>{ ordKey('sac'); hud(); }); ok(await p.evaluate(i=>world.units[i].order && world.units[i].order.k==='sac', idx('카리우스')), '두 번째 누름으로 확정');
   // 모바일: 단추 줄이 화면 밖으로 넘치지 않나
   if (mob){ const ov = await p.evaluate(()=>{ const a=document.getElementById('dActs'); const bs=[...a.querySelectorAll('.db')]; const r=bs.map(e=>e.getBoundingClientRect()); return { n:bs.length, right:Math.max(...r.map(q=>q.right)), left:Math.min(...r.map(q=>q.left)), bottom:Math.max(...r.map(q=>q.bottom)), vh: innerHeight, vw: innerWidth, scrollW: a.scrollWidth, clientW: a.clientWidth }; }); console.log('  dActs', JSON.stringify(ov)); }
   await p.screenshot({path:'ui790_'+(mob?'m':'d')+'.png'});

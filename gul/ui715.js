@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
  // 싸움 전 (0초) 전투 탭에서 바꾸기
  await p.evaluate(()=>start()); await p.waitForTimeout(400);
  const vis0 = await p.evaluate(()=>!document.getElementById('sqBoxF').hidden); ok(vis0,'싸움 전 (0초) 전투 탭에 편대 상자');
- const ri = await p.evaluate(()=>S.units.findIndex(u=>u.name==='레베카')); await p.click(`#sqBoxF [data-sqlead="${ri}"]`); await p.waitForTimeout(200); for (const nm of ['노먼','청광묵']){ const ni = await p.evaluate((n)=>S.units.findIndex(u=>u.name===n), nm); await p.selectOption(`#sqBoxF select[data-relchief="${ni}"]`, '레베카'); await p.waitForTimeout(150); }
+ await p.evaluate(()=>{ const d=document.querySelector('#sqBoxF details'); if(d) d.open=true; });   /* v9.8.0 관계 목록 접힘 */ const ri = await p.evaluate(()=>S.units.findIndex(u=>u.name==='레베카')); await p.click(`#sqBoxF [data-sqlead="${ri}"]`); await p.waitForTimeout(200); for (const nm of ['노먼','청광묵']){ const ni = await p.evaluate((n)=>S.units.findIndex(u=>u.name===n), nm); await p.selectOption(`#sqBoxF select[data-relchief="${ni}"]`, '레베카'); await p.waitForTimeout(150); }
  const w0 = await p.evaluate(()=>{ const r=world.units.find(u=>u.name==='레베카'), n=world.units.find(u=>u.name==='노먼'), g=world.units.find(u=>u.name==='청광묵'); return { r: r.rank, n: n.rank, gL: g.sqLead===r.i, nL: n.sqLead===r.i }; });
  console.log('    0초 편대', JSON.stringify(w0)); ok(w0.r==='부대장'&&w0.n===''&&w0.gL&&w0.nL,'0초에 바꾸면 판에도 바로 (레베카 편대장 · 노먼 · 청광묵이 그 편대)');
  await p.evaluate(()=>{ for(const u of S.units){ if(u.name==='레베카'){ u.rank=''; u.sq='A'; } if(u.name==='노먼'){ u.rank='부대장'; u.chiefNm=''; } if(u.name==='청광묵') u.chiefNm='노먼'; } sqApply(); });

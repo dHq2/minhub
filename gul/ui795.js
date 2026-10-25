@@ -11,7 +11,7 @@ const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c
   console.log('  먼 아군 (7.5칸)', JSON.stringify(r2));
   // 상세정보 시야 줄 · 지휘망 체크
   const det = await p.evaluate(()=>unitDetailHtml(world, world.units[0])); ok(/시야/.test(det)&&/야시 C/.test(det), '상세정보에 시야 줄 (야시 C · 횃불)');
-  ok(await p.evaluate(()=>document.getElementById('netShow').checked), '지휘망 체크 기본 켬');
+  ok(await p.evaluate(()=>!document.getElementById('netShow').checked), '지휘망 늘 보기 기본 끔 (v9.8.0 — 명령할 때만)');
   // 횃불 켜면 은신 풀림
   const st = await p.evaluate(()=>{ const W=world, H=W.units[0]; H.stealth=true; torchSet(W,H,H.torchOff?true:false); H.torchOff=true; torchSet(W,H,true); for(let k=0;k<60;k++) stepWorld(W,1/30); return { stealth:H.stealth, torchOff:H.torchOff }; });
   ok(st.stealth===false, '횃불을 켜면 은신이 풀림 '+JSON.stringify(st));

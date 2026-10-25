@@ -1,5 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>[hidden]{display:none!important}body{margin:0}</style></head><body><title>굴의 전투판</title>
-<!-- 굴의 전투판 v9.7.4 (2026-10-25) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+<!-- 굴의 전투판 v9.8.0 (2026-10-25) — 굴의 도감만 쓰는 전투 실험판. 한 턴씩, 모두 동시에.
+     v9.8.0: 대개편 (보는 재미) — 무기를 실제 사거리 길이로 그림 · 방패는 들면 앞으로 · 맞닿은 무리는 세포막 (돌격 방어면 굵게 + 버팀 배율) · 뭉친 몸은 서로 밀어붙임 · 판의 잔글씨 · 아이콘 · 선은 고른 인물 · 자세히 보기일 때만 · 지휘망은 명령할 때만 · ⚙ 설정 하나로 · 안 쓰는 단추 정리
      v9.7.4: 겹쳐 보기 (판 위 가운데 단추) — 🧱 전열 (닿은 몸 · 실제 버팀 배율) · 🎯 사선 (고른 사수의 트임 · 제 편 · 막힘) · 💨 돌격 (돌격 길 · 첫 접촉) · 👁 감각 (아군이 마지막으로 안 적의 자리)
      v9.7.3: 공격돌격 / 방어돌격 시험판 — 돌격 방식 단추 (기본 = 옛 돌격 그대로 · 공격 = 무기가 먼저 닿는 순간 달려온 힘으로 찌름 (몸은 안 부딪힘 · 피해 큼 · 덜 밀어냄) · 방어 = 몸 · 방패로 들이받음 (더 밀어내고 자세를 크게 깎음 · 무기 피해 적음)) · 양쪽 편 같은 규칙
      v9.7.2: 돌격 방어 — 버팀은 실제로 닿은 몸만 (떨어진 이웃 무게는 안 옴) · 곁의 동료에게 돌격이 오면 근접병이 그 뒤에 몸을 붙여 받침 (양쪽 편) · 🧱 뭉침 명령 (어깨를 붙여 적 쪽으로 · 사수는 뒷줄 · 막기를 든 채)
@@ -1247,7 +1248,7 @@ pre.log{margin:0;max-height:360px;overflow:auto;font:12px/1.5 var(--mono);white-
 .dock,.dmenu,.detx{display:none}
 body.mob .wrap{padding-inline:8px;padding-block:6px calc(var(--dockH,176px) + 18px)}
 body.mob .top{gap:4px;margin-bottom:6px} body.mob .top h1{font-size:19px} body.mob .top .ver,body.mob .top .lede{display:none} body.mob .assist .asb{padding:2px 7px;font-size:11px} body.mob .assist .asm{display:none}
-body.mob .top h1::after{content:" v9.7.4";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
+body.mob .top h1::after{content:" v9.8.0";font:600 11px var(--mono);color:var(--dim);letter-spacing:0}
 body.mob .app{gap:8px}
 body.mob .view{aspect-ratio:auto;max-height:none;min-height:0;height:var(--viewH,480px);border-radius:10px}
 body.mob .skbar,body.mob .mini,body.mob .follow,body.mob .edittag{display:none!important}
@@ -1299,6 +1300,17 @@ body.mob .side .ctrl > .row{display:none}
 .ovtog button{font:600 11.5px var(--mono),monospace;color:#d8cfc0;background:rgba(12,10,16,.72);border:1px solid rgba(216,207,192,.25);border-radius:6px;padding:3px 8px;cursor:pointer}
 .ovtog button.on{color:#14110c;background:#e8c46a;border-color:#e8c46a}
 body.mob .ovtog button{font-size:10px;padding:2px 6px}
+.cfg{display:inline-block;position:relative}
+.cfg>summary{list-style:none;cursor:pointer;font:600 12.5px var(--mono),monospace;color:#d8cfc0;border:1px solid rgba(216,207,192,.28);border-radius:6px;padding:4px 10px;user-select:none}
+.cfg>summary::-webkit-details-marker{display:none}
+.cfg[open]>summary{background:#e8c46a;color:#14110c;border-color:#e8c46a}
+.cfg .cfgin{position:absolute;z-index:40;top:calc(100% + 6px);left:0;min-width:230px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:12px;background:#1b1820;border:1px solid #4a4250;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.turninfo{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.turninfo.open{display:block}
+#pane-fight > p.sublab.ordleg, #pane-fight > p.keys{display:none}
+.sqdet>summary{cursor:pointer;font-weight:700;color:#e8c46a;padding:4px 0}
+.lede{display:none}   /* v9.8.0 머리말 긴 글 숨김 */
+.cfg>summary{color:#2a2420;border-color:rgba(60,50,40,.4);background:rgba(255,255,255,.5)}
 .row.sst{font-size:12px;color:var(--dim);gap:4px 6px;padding:2px 0}
 .dchip .stb.lie{left:19px;top:31px;box-shadow:0 0 0 1.5px #6ee7b7} .dchip .stb.lie.blown{box-shadow:0 0 0 1.5px #ff6b5a}
 .dchip .stb.roe{left:auto;right:2px;top:14px;background:rgba(40,30,62,.95);box-shadow:0 0 0 1.5px #8a7f9e}
@@ -1638,7 +1650,7 @@ i.dur.z::after{background:var(--foe)}
 
 <div class="wrap">
   <header class="top">
-    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v9.7.4 겹쳐 보기 (전열 · 사선 · 돌격 · 감각) / v9.7.3 공격돌격 / 방어돌격 시험판 / v9.7.2 돌격 방어 (뭉침 · 닿은 몸만 버팀) / v9.7.1 생각 순서 (이유 코드) / v9.7.0 시험판 UI (무기 그림 · 명령 칸 정리) / v9.6.5 전우조는 한 몸처럼 (1 ~ 1.5칸) / v9.6.4 짝 붙어 다니기 · 두 번 눌러 서둘러 줍기 / v9.6.3 판 분석 고침 (오사 · 피하기 · 로그) / v9.6.2 전우조 · 대장 연결 단추가 눈에 띄게 / v9.6.1 대장이 뛰면 부하도 · 암계 역장 모습 / v9.6.0 되돌아가기 / v9.5.2 두건의 왕관 대사 / v9.5.1 암계 장비 그림 / v9.5.0 심계 제3세력 · 망자 맵 / v9.4.1 오래된 약병 (특수 스킬) / v9.4.0 ❓ 만남 구조 (쉬기 · 비전투 맵 · 노숙악마 · 두건) / v9.3.0 2층 배치 (계단 고지대) / v9.2.0 2층의 적 / v9.1.0 전우조 · 대장-부하 / v9.0.0 공통 규칙 / v8.9.4 2층 열한 칸 (❓ 셋) / v8.9.3 대화용 스프라이트 다섯 / v8.9.2 각펄 전용맵 / v8.9.0 2층 짜기 / v8.8.9 전투맵 2 · 3 / v8.8.8 지상 맵 5장 / v8.8.7 2층 맵 / v8.8.6 영거리 사격 / v8.8.5 간두 샷건 / v8.8.4 옐로 (돌진 · 3~5타 · 도약 스택) / v8.8.3 양동이 뿌리기 다시 / v8.8.2 옐로 업데이트 / v8.8.1 진형 폐기 / v8.8.0 위층으로 · 한 일대로 성장 / v8.7.9 펄 · 각펄 (고대 폐허의 만남) / v8.7.8 굿윌 · 포렌 (쥐 군단) · 어퐁 · 카리우스 · 물레 · 콜라이더 · 테헤라 · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v9.7.4 시험판 · 겹쳐 보기 (전열 · 사선 · 돌격 · 감각) · 돌격 방식 · 🧱 뭉침 · 버팀은 닿은 몸만</span>
+    <h1>굴의 전투판</h1><span class="seg modeSeg" id="modeSeg" role="group" aria-label="모드"><button type="button" data-mode="story" title="1F 프롤로그 — 인주와 동료들의 이야기">📖 스토리</button><button type="button" data-mode="train" title="도감 인물을 마음대로 놓고 싸워 보는 곳">🛠 훈련장</button></span><span class="assist" id="assist" aria-label="보조 (멈춤 · 슬로우)"></span><button type="button" class="fmchip" id="fmChip" hidden aria-expanded="false" title="대형 — 눌러서 펼침 (편대 · ★ 기준 · 유지율 · 🚩 모여 · 📍 깃발 · ⚑ 편성)"></button><span class="ver" title="바뀐 것은 머리 주석 (소스 보기) 의 버전 기록에 — v9.8.0 대개편 (보는 재미) / v9.7.4 겹쳐 보기 (전열 · 사선 · 돌격 · 감각) / v9.7.3 공격돌격 / 방어돌격 시험판 / v9.7.2 돌격 방어 (뭉침 · 닿은 몸만 버팀) / v9.7.1 생각 순서 (이유 코드) / v9.7.0 시험판 UI (무기 그림 · 명령 칸 정리) / v9.6.5 전우조는 한 몸처럼 (1 ~ 1.5칸) / v9.6.4 짝 붙어 다니기 · 두 번 눌러 서둘러 줍기 / v9.6.3 판 분석 고침 (오사 · 피하기 · 로그) / v9.6.2 전우조 · 대장 연결 단추가 눈에 띄게 / v9.6.1 대장이 뛰면 부하도 · 암계 역장 모습 / v9.6.0 되돌아가기 / v9.5.2 두건의 왕관 대사 / v9.5.1 암계 장비 그림 / v9.5.0 심계 제3세력 · 망자 맵 / v9.4.1 오래된 약병 (특수 스킬) / v9.4.0 ❓ 만남 구조 (쉬기 · 비전투 맵 · 노숙악마 · 두건) / v9.3.0 2층 배치 (계단 고지대) / v9.2.0 2층의 적 / v9.1.0 전우조 · 대장-부하 / v9.0.0 공통 규칙 / v8.9.4 2층 열한 칸 (❓ 셋) / v8.9.3 대화용 스프라이트 다섯 / v8.9.2 각펄 전용맵 / v8.9.0 2층 짜기 / v8.8.9 전투맵 2 · 3 / v8.8.8 지상 맵 5장 / v8.8.7 2층 맵 / v8.8.6 영거리 사격 / v8.8.5 간두 샷건 / v8.8.4 옐로 (돌진 · 3~5타 · 도약 스택) / v8.8.3 양동이 뿌리기 다시 / v8.8.2 옐로 업데이트 / v8.8.1 진형 폐기 / v8.8.0 위층으로 · 한 일대로 성장 / v8.7.9 펄 · 각펄 (고대 폐허의 만남) / v8.7.8 굿윌 · 포렌 (쥐 군단) · 어퐁 · 카리우스 · 물레 · 콜라이더 · 테헤라 · 감전 한 틀 / v8.7.7 유물 34 · 노먼 전직 / v8.7.5 대형 (공세선 · 진형 · 조합 · 편성 창) / v8.7.4 전투 바로잡기 (붉은암석 · 망각 · 세르파) / v8.7.3 바로잡기 2 (여정 기록) / v8.7.2 바로잡기 / v8.7.1 인카운터 · 맵 위 NPC / v8.7.0 여정 구조 v2 / v8.6.0 적뢰 충실 이식 (2D · 3D) / v8.5.1 여정 목록 (인카운터 · 인물) / v8.5.0 전리품 창 다시 / v8.4.1 조작 다듬기 (겹친 자리 · 우회 곡선 · 시작 자리) / v8.4.0 세르파 슬라임 조직 / v8.3.0 히든보스 적뢰 (낙인 · 성해포) / v8.2.1 그만두기 고침 (확인 창) / v8.2.0 30층 결승 (링 · 거인 · DJ 춘향 · 글리치 챔피언 1대1 직접 조작) / v8.1.0 챔피언 로드 (관중 · MC 실황 · 깜짝 규칙) / v8.0.0 30층 여정 (갈림길 지도 · 그림 맵 · 뽑기 · 유물 · 보스 · 정산 · 결말) / v7.29.0 싸움 바로잡기 (철퇴 오사 · 돌격 안 함 · 세자르 버팀 · 권위E) / v7.28.0 연출 (카메라 · 치명타 · 진동) / v7.27.0 레지나 인카운터 · 세자르 알현실 그림 · 새 대화 그림 / v7.26.2 인카운터 바로 해 보기 (배치 그대로) / v7.26.1 맵 이동 · 고립 합류 · 간두 샷건 · 갑옷 표시 · 문 / v7.26.0 오딜의 방 / v7.25.4 대화 화면 (양 끝 큰 그림 · 가로 띠) / v7.25.3 공통 전투 · 로딩 · 여정 기록 · 인카운터 목록 / v7.25.2 정산 화면 · 전리품 · 장비 / v7.25.1 간두 두 번째 총 · 기동 사수 / v7.25.0 알현실 빛 · 철퇴 · 세자르 고침 / v7.24.5 스토리 · 훈련장 나눔 / v7.24.4 모닝스타 철퇴 다시 (관성 · 철퇴 후리기) / v7.24.3 PC 전열 · 전열 지원 / v7.24.2 근력 · 괴력 / v7.24.1 모닝스타 철퇴 (던졌다 당겨 옴) / v7.24.0 세자르 스텝 · 도약 강타 찌부러짐 / v7.23.3 프롤로그 끝 · 기록 / v7.23.2 세자르의 필살 · 권위 / v7.23.1 5S 세자르 / v7.23.0 4S 유적 (실내전) / v7.22.4 따라온 누군가 / v7.22.3 히든보스 각혈 / v7.22.2 대장군 호레이쇼 / v7.22.1 토끼마차 · 거래 · 회복약 / v7.22.0 인카운터 · 대화 창 (친칠라 · 탕아) / v7.21.4 로그 받기 (받기 기능) / v7.21.3 로그 압축 저장 · 받기 / v7.21.2 맵마다 정산 · 성장 / v7.21.1 뽑기 연출 / v7.21.0 1F 캠페인 (S 다섯 · 맵 사이 이동) / v7.20.1 전리품 · 장비 반영 / v7.20.0 소지품 · 내구도 · 파손 · 루팅 이름 / v7.19.2 딸기 역장 · 뿌리 벽 · 열매 · 무기 잡기 / v7.19.1 고유 기술 다섯 (공중제비 · 머리 찍기 · 영거리 사격 · 철퇴 기술) / v7.19.0 새 인물 아홉 (2단계) / v7.18.0 언덕 · 더미 · 엄폐 (1F 1.5단계) / v7.17.1 특성 · 기술 아이콘 (도감 · 등급 테두리) / v7.17.0 1F 1단계 (팜 버스트 · 스텝 · 기습 · 사격 · 궁수 12칸 · 체급 · 리치) / v7.16.3 모순 점검 (도감 · 뽑기 · 설명 글) / v7.16.2 카리우스 체력 700 / v7.16.1 교전 금지 자동 해제 · 포복 명령 / v7.16.0 견제사격 · 지역사격 · 친칠라 관통력 / v7.15.1 카리우스 체력 700 · 겹친 물건 고르는 창 / v7.15.0 회피기동 · 편대 지정 · 지시 점 · 팜 · 돌진 우회 · 도착해서 쓸 것 / v7.14.1 엎드린 동료 위로 쏨 · 징검다리 지휘 / v7.14.0 친칠라 · 은신 등급 · 도약 사격 · 특성 탭 / v7.13.0 지휘망 그물 · 편대장 자율 지시 · 편대 배치 / v7.12.0 포복 v2 · 스스로 엎드림 · 곡사 면 제압 · 측후방 도약 · 우회 / v7.11.0 포복 (엎드림 · 은폐 · 놓침 · 화염 · 밟힘) / v7.10.6 PC 명령 단추 · 휘두르기 줄 / v7.10.5 PC 조작 편의 / v7.10.4 특수 스킬 강조 / v7.10.3 야시 D · 새 C / v7.10.2 야시 되돌림 · 전파 · 부대장 / v7.10.1 · v7.10.0 야간 시야 3단계 · 횃불 비대칭 · 🕊 / v7.9.5 검수 / v7.9.4 임시 집결 · 망치와 모루 · 측면 기동 · 연락 두절 임무 / v7.9.3 방패 정면 · 점사 오사 · 재집결 / v7.9.2 전달망 / v7.9.1 정찰 방침 · 희생 돌격 / v7.9.0 교전 규칙">v9.8.0 대개편 · 무기 = 사거리 · 세포막 무리 · 돌격 방어 · 판을 깨끗하게</span>
     <p class="lede storyOnly">1F 프롤로그 — 굴에 떨어진 인주와 동료들. S 다섯을 지나 관 속의 왕까지. 쓰러진 이는 돌아오지 않고, 싸운 대로 자라요.</p>
     <p class="lede trainOnly">도감에서 뽑은 동료 둘과 주인공이 횃불 하나로 싸우는 실험판. 한 턴 동안 모두가 동시에 움직이고, 턴이 끝나면 멈춰서 명령을 받아요. 날아가는 공격은 사선에 먼저 걸리는 몸이 맞고, 모두가 경계하다가 기회가 올 때 쳐요. 죽기 쉬우니 막고 숨고 거리를 두세요.</p>
   </header>
@@ -1679,14 +1691,16 @@ i.dur.z::after{background:var(--foe)}
         <div class="row">
           <label class="brush" for="turnLen">한 턴 <select id="turnLen"><option value="0.5">0.5초</option><option value="1">1초</option><option value="1.5">1.5초</option><option value="2">2초</option></select></label>
           <span class="seg" id="speedSeg" aria-label="재생 속도"><button type="button" data-sp="0.125">½×</button><button type="button" data-sp="0.25" class="on">1×</button><button type="button" data-sp="0.5">2×</button><button type="button" data-sp="1">4×</button></span>
+          <details class="cfg"><summary title="설정 — 지휘망 · 모두 보기 · 자세히 보기 · 연출 · 흔들림 · 단축키">⚙ 설정</summary><div class="cfgin">
           <label class="ck trainOnly" for="seeAll"><input id="seeAll" type="checkbox"> 모두 보기</label>
-          <label class="ck" for="netShow" title="지휘관에서 각 아군으로 가는 지휘 전달선 (외침 · 손짓 · 동료를 거침 · 닿지 않음)"><input id="netShow" type="checkbox" checked> 📡 지휘망</label>
+          <label class="ck" for="netShow" title="지휘관에서 각 아군으로 가는 지휘 전달선 (외침 · 손짓 · 동료를 거침 · 닿지 않음)"><input id="netShow" type="checkbox"> 📡 지휘망 늘 보기 (끄면 명령할 때만)</label>
           <label class="ck" for="detShow" title="오른쪽 상세 패널 열기 / 접기 — 접으면 판이 넓어져요 (좁은 화면은 처음부터 접힘)"><input id="detShow" type="checkbox"> 📋 상세 열기</label>
           <label class="ck" for="cmpShow" title="아군 카드를 둘씩 간단히 — 명령 단추가 위로 올라와요"><input id="cmpShow" type="checkbox"> ▤ 카드 간단히</label>
           <button class="btn sm keybtn" id="keyBtn" type="button" title="단축키 보기 (?)">⌨ 단축키</button>
           <label class="ck" for="detailAll" title="끄면 고른 아군 · 커서를 올린 인물만 시선 · 공격 범위를 그려요"><input id="detailAll" type="checkbox"> 자세히 보기</label>
           <label class="ck" for="fxCam" title="카메라 연출 — 따라갈 때 가까운 싸움 쪽으로 살짝 · 큰 사건 (도약 강타 · 보스의 큰 기술 · 보스가 쓰러짐) 에 잠깐 다가감 · 보스 치명타의 멈칫 · 느린 순간"><input id="fxCam" type="checkbox"> 🎥 연출</label>
           <label class="ck" for="fxShake" title="화면 흔들림 — 거구가 내려찍을 때 · 도약 강타 착지 · 보스 치명타 (가볍게)"><input id="fxShake" type="checkbox"> 📳 흔들림</label>
+          </div></details>
           <span class="seg"><button type="button" id="zOut" aria-label="작게">−</button><button type="button" id="zIn" aria-label="크게">+</button></span>
         </div>
         <div class="turninfo" id="turnInfo"></div>
@@ -1819,7 +1833,7 @@ i.dur.z::after{background:var(--foe)}
       </div>
     </div>
   </div>
-  <footer>굴의 전투판 v9.7.4 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
+  <footer>굴의 전투판 v9.8.0 — 인물 · 구분 · 등급 · 설정 · 초상화: 굴의 도감 (2026-10-10). 직업은 도감 설정 글로 짐작한 값이라 인물을 눌러 바꿀 수 있어요.</footer>
   <div class="kbsheet" id="kbsheet" hidden role="dialog" aria-label="단축키"><div class="kbc" id="kbc"></div></div>
   <div class="fmwin" id="fmWin" hidden role="dialog" aria-label="편성 창"><div class="fmc" id="fmC"></div></div>
 </div>
@@ -10974,7 +10988,7 @@ function chargeBrace(W, u, dt){
     if (!t || t === u || !t.alive || t.side !== u.side || t.down || dist(u, t) > 2.2 || !(u.side === 0 ? (e.seenBy || canSee(W, u, e)) : canSee(W, u, e))) continue;
     if (dist(e, t) < dist(e, u) - 0.2 || !best || dist(u, t) < dist(u, best.t)) best = { e, t }; }
   if (!best) return false;
-  const { e, t } = best, d0 = dist(e, t) || 1, dx = (t.x - e.x) / d0, dy = (t.y - e.y) / d0, R = t.r + u.r + 0.02, a0 = Math.atan2(dy, dx);
+  const { e, t } = best, d0 = dist(e, t) || 1, dx = (t.x - e.x) / d0, dy = (t.y - e.y) / d0, R = t.r + u.r - 0.03,   /* v9.8.0 살짝 겹치게 — 밀어붙임 */ a0 = Math.atan2(dy, dx);
   const spots = [0, 0.75, -0.75, 1.3, -1.3].map(k => ({ x: t.x + Math.cos(a0 + k) * R, y: t.y + Math.sin(a0 + k) * R }))
     .filter(p => !boxRock(W, p.x, p.y, u.r * 0.9) && !W.units.some(o => o !== u && o !== t && o.alive && Math.hypot(o.x - p.x, o.y - p.y) < o.r + u.r - 0.05));
   const p = spots.sort((a, b) => Math.hypot(a.x - u.x, a.y - u.y) - Math.hypot(b.x - u.x, b.y - u.y))[0]; if (!p) return false;
@@ -10994,12 +11008,12 @@ function clumpStep(W, u, dt){
   const A = [...M.filter(m => !isFar(m)), ...M.filter(m => isFar(m))].sort((a, b) => (isFar(a) - isFar(b)) || a.order.j - b.order.j), n = A.length, k = A.indexOf(u);
   const front = A.filter(m => !isFar(m)).length, rowN = front >= 2 ? Math.min(front, 6) : Math.min(n, 4), rr = Math.max(...A.map(m => m.r)), sp = rr * 2 + 0.03;
   const row = k < rowN ? 0 : 1, col = row ? k - rowN : k, cnt = row ? n - rowN : rowN, off = (col - (cnt - 1) / 2) * sp, back = row * sp;
-  const px = o.x + Math.cos(o.f + Math.PI / 2) * off - Math.cos(o.f) * back, py = o.y + Math.sin(o.f + Math.PI / 2) * off - Math.sin(o.f) * back;
+  const sq = 1 - 0.06 / Math.max(0.3, Math.hypot(off, back)), px = o.x + (Math.cos(o.f + Math.PI / 2) * off - Math.cos(o.f) * back) * sq, py = o.y + (Math.sin(o.f + Math.PI / 2) * off - Math.sin(o.f) * back) * sq;   /* v9.8.0 가운데로 살짝 당김 — 어깨를 비빔 */
   u.fg = F ? Math.atan2(F.y - u.y, F.x - u.x) : o.f; u.wantT = W.t; setMood(W, u, '뭉침 — 어깨를 붙여 버팀', F ? F.i : null);
   if (u.canGuard && !u.raised && u.guardMode !== 'off'){ u.raised = true; u.raiseAt = W.t + ((W.rules.guard || {}).raise != null ? W.rules.guard.raise : 0.25) * (u.vet ? VETR(W).raise : 1); }
   const hit = !u.act && seen.filter(f => inReach(u, f)).sort((a, b) => gap(u, a) - gap(u, b))[0];
   if (hit && !(isFar(u) && !losClear(W.map, u.x, u.y, hit.x, hit.y))){ stop(u); u.target = hit; startAct(W, u, hit); return true; }
-  if (Math.hypot(px - u.x, py - u.y) > 0.08 && !u.act) goTo(W, u, Math.max(0.6, Math.min(W.map.W - 0.6, px)), Math.max(0.6, Math.min(W.map.H - 0.6, py)), dt); else stop(u);
+  if (Math.hypot(px - u.x, py - u.y) > 0.05 && !u.act) goTo(W, u, Math.max(0.6, Math.min(W.map.W - 0.6, px)), Math.max(0.6, Math.min(W.map.H - 0.6, py)), dt); else stop(u);
   return true;
 }
 function pairStep(W, u, dt){
@@ -13454,7 +13468,7 @@ if (!S.v4){
 if (!S.draft) S.draft = { ...newDraft(), done: true, picks: S.units.filter(u => u.side === 0 && !u.hero && u.ref).map(u => u.ref).slice(0, 2) };   // 예전 배치는 그대로 두고 뽑기만 새로   // v2 수치표 (cd) → v3 (준비 · 회복 · 턴)
 // v7.2 수치표 이전: 저장된 수치표는 v5.2 뒤에 생긴 세부 칸을 못 받고, 옛 기본값 (활 탄속 32 · 총 85 …) 에 머물러 v7.0 의 탄속이 실제 판에 안 닿았음.
 // ① 기본값에 있는데 저장된 수치표에 없는 칸은 채움 (지난 이전 때 이미 있던 칸을 손으로 지운 건 그대로 둠) ② 옛 기본값 그대로인 칸만 지금 기본값으로 (손으로 바꾼 값은 둠)
-const OLD_DEFAULTS = [[["arc", "vel"], [0.55]], [["charge", "cd"], [8]], [["charge", "spd"], [2.2]], [["charge", "turn"], [1.4]], [["charge", "wind"], [0.35]], [["evade", "busy"], [0.5]], [["evade", "crowd"], [0.6]], [["evade", "wall"], [0.7]], [["javelin", "aimFar"], [0.75]], [["javelin", "rng"], [6]], [["javelin", "vel"], [18, 30]], [["javelin", "wind"], [0.7]], [["knife", "vel"], [26, 32]], [["palm", "reach"], [0.35]], [["stealth", "dim"], [0.6]], [["weapons", "샷건", "vel"], [45, 60]], [["weapons", "소총", "rng"], [6]], [["weapons", "소총", "vel"], [70, 100]], [["weapons", "어부의 창", "rng"], [1]], [["weapons", "저격총", "vel"], [80, 110]], [["weapons", "창", "rng"], [1]], [["weapons", "총", "rng"], [5]], [["weapons", "총", "vel"], [60, 85]], [["weapons", "활", "ammo"], [12]], [["weapons", "활", "vel"], [16, 32, 110, 180]], [["nvC"], [2.5]], [["darkHit", "C"], [0.85]], [["lie", "up"], [0.9]], [["lie", "upFast"], [0.55]], [["cmdLinkW", "hops"], [3]], [["cmdLinkX", "hop2T"], [0.6]], [["weapons", "하얀 나무", "P"], [55]], [["weapons", "하얀 나무", "pen"], [0.55]], [["palm", "wind"], [0.25]], [["cz", "walk"], [0.45]], [["cz", "furyWalk"], [0.8]], [["spec", "quake", "mul"], [2.2]], [["spec", "quake", "kb"], [1.6]], [["weapons", "모닝스타", "rng"], [1.3]], [["grades", "괴력"], [{"S": 1.6, "A": 1.45, "B": 1.3, "C": 1.15}]], [["spec", "sweep", "wind"], [0.6]], [["spec", "sweep", "mul"], [1.5]], [["spec", "sweep", "kb"], [0.8]], [["weapons", "모닝스타", "flail", "v"], [13]], [["rejoin", "near"], [8]], [["rejoin", "idle"], [6]], [["rejoin", "ranged"], [2]], [["inv", "altIn"], [2.2]], [["inv", "altOut"], [3.6]], [["spec", "flip", "d"], [3.2]], [["charge", "turn"], [0.6]], [["charge", "commit"], [1.2]], [["cz", "spin"], [{"r": 2.6, "wind": 0.35, "rec": 0.5, "mul": 2.0, "kb": 1.6, "stun": 0.5, "frost": 2, "cd": 8, "brk": 3}]], [["claw", "rush", "spd"], [3.3]], [["claw", "rush", "sp0"], [0.75]], [["claw", "rush", "pow"], [2.2]], [["claw", "rush", "full"], [5.5]], [["spec", "yclaw", "tick"], [0.2]], [["spec", "yclaw", "mul"], [0.26]], [["spec", "yclaw", "fin"], [2.5]], [["spec", "ybucket", "linger"], [1.5]], [["weapons", "샷건"], [{"rng": 2.5, "cone": {"n": 5, "ang": 0.32, "mul": 0.32}, "ammo": 4, "loud": true, "aim": 0.6, "vel": 220, "P": 45, "draw": 0.05, "kind": "총포류", "pen": 1, "penK": 0.3, "jit": 0.1, "near": {"r": 1.8, "mul": 2.2, "kb": 1.0}}]], [["weapons", "샷건"], [{"rng": 2.5, "cone": {"n": 5, "ang": 0.32, "mul": 0.4}, "ammo": 4, "loud": true, "aim": 0.6, "aimK": 0.2, "recK": 0.55, "vel": 220, "P": 55, "draw": 0.02, "kind": "총포류", "pen": 1, "penK": 0.5, "jit": 0.1, "near": {"r": 2.2, "mul": 3.2, "kb": 1.5}}]]], RULES_MIG = '9.7.4', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
+const OLD_DEFAULTS = [[["arc", "vel"], [0.55]], [["charge", "cd"], [8]], [["charge", "spd"], [2.2]], [["charge", "turn"], [1.4]], [["charge", "wind"], [0.35]], [["evade", "busy"], [0.5]], [["evade", "crowd"], [0.6]], [["evade", "wall"], [0.7]], [["javelin", "aimFar"], [0.75]], [["javelin", "rng"], [6]], [["javelin", "vel"], [18, 30]], [["javelin", "wind"], [0.7]], [["knife", "vel"], [26, 32]], [["palm", "reach"], [0.35]], [["stealth", "dim"], [0.6]], [["weapons", "샷건", "vel"], [45, 60]], [["weapons", "소총", "rng"], [6]], [["weapons", "소총", "vel"], [70, 100]], [["weapons", "어부의 창", "rng"], [1]], [["weapons", "저격총", "vel"], [80, 110]], [["weapons", "창", "rng"], [1]], [["weapons", "총", "rng"], [5]], [["weapons", "총", "vel"], [60, 85]], [["weapons", "활", "ammo"], [12]], [["weapons", "활", "vel"], [16, 32, 110, 180]], [["nvC"], [2.5]], [["darkHit", "C"], [0.85]], [["lie", "up"], [0.9]], [["lie", "upFast"], [0.55]], [["cmdLinkW", "hops"], [3]], [["cmdLinkX", "hop2T"], [0.6]], [["weapons", "하얀 나무", "P"], [55]], [["weapons", "하얀 나무", "pen"], [0.55]], [["palm", "wind"], [0.25]], [["cz", "walk"], [0.45]], [["cz", "furyWalk"], [0.8]], [["spec", "quake", "mul"], [2.2]], [["spec", "quake", "kb"], [1.6]], [["weapons", "모닝스타", "rng"], [1.3]], [["grades", "괴력"], [{"S": 1.6, "A": 1.45, "B": 1.3, "C": 1.15}]], [["spec", "sweep", "wind"], [0.6]], [["spec", "sweep", "mul"], [1.5]], [["spec", "sweep", "kb"], [0.8]], [["weapons", "모닝스타", "flail", "v"], [13]], [["rejoin", "near"], [8]], [["rejoin", "idle"], [6]], [["rejoin", "ranged"], [2]], [["inv", "altIn"], [2.2]], [["inv", "altOut"], [3.6]], [["spec", "flip", "d"], [3.2]], [["charge", "turn"], [0.6]], [["charge", "commit"], [1.2]], [["cz", "spin"], [{"r": 2.6, "wind": 0.35, "rec": 0.5, "mul": 2.0, "kb": 1.6, "stun": 0.5, "frost": 2, "cd": 8, "brk": 3}]], [["claw", "rush", "spd"], [3.3]], [["claw", "rush", "sp0"], [0.75]], [["claw", "rush", "pow"], [2.2]], [["claw", "rush", "full"], [5.5]], [["spec", "yclaw", "tick"], [0.2]], [["spec", "yclaw", "mul"], [0.26]], [["spec", "yclaw", "fin"], [2.5]], [["spec", "ybucket", "linger"], [1.5]], [["weapons", "샷건"], [{"rng": 2.5, "cone": {"n": 5, "ang": 0.32, "mul": 0.32}, "ammo": 4, "loud": true, "aim": 0.6, "vel": 220, "P": 45, "draw": 0.05, "kind": "총포류", "pen": 1, "penK": 0.3, "jit": 0.1, "near": {"r": 1.8, "mul": 2.2, "kb": 1.0}}]], [["weapons", "샷건"], [{"rng": 2.5, "cone": {"n": 5, "ang": 0.32, "mul": 0.4}, "ammo": 4, "loud": true, "aim": 0.6, "aimK": 0.2, "recK": 0.55, "vel": 220, "P": 55, "draw": 0.02, "kind": "총포류", "pen": 1, "penK": 0.5, "jit": 0.1, "near": {"r": 2.2, "mul": 3.2, "kb": 1.5}}]]], RULES_MIG = '9.8.0', RULES_GONE = [['spec', 'sweep', 'stop'], ['spec', 'quake', 'down'], ['camp'], ['flare', 'brandR'], ['flare', 'brandT'], ['flare', 'brandN'], ['flare', 'gap'], ['flare', 'grab']];   // v7.8.1 없앤 칸
 function rulePaths(d, p, out){ for (const k in d){ const v = d[k], pp = p + '/' + k; out.push(pp); if (v && typeof v === 'object' && !Array.isArray(v)) rulePaths(v, pp, out); } return out; }
 function fixRules(R, known){
   let n = 0; const ks = known ? new Set(known) : null;
@@ -13591,7 +13605,8 @@ function fit(){
   return { dpr, w, h };
 }
 const W_ = () => mode === 'edit' ? preview : world;
-const detail = () => $('detailAll').checked;   // 자세히 보기: 모두의 시선 · 범위 · 칸 구분 · 노림 화살
+const detail = () => $('detailAll').checked || !!window.__detail;   /* 시험용 */
+const NETV = () => $('netShow').checked || ((paused || mode === 'plan') && sel.size > 0);   /* v9.8.0 지휘망은 명령할 때 (멈춰서 고른 동안) 만 */   // 자세히 보기: 모두의 시선 · 범위 · 칸 구분 · 노림 화살
 function toWorld(px, py){ const r = cv.getBoundingClientRect(), ts = TS * cam.z; return { x: cam.x + (px - r.left - r.width / 2) / ts, y: cam.y + (py - r.top - r.height / 2) / ts }; }
 const SIDEC = ['#5aa3dc', '#e0574b', '#b06ae8'];   /* v8.7.4 2편 (제3세력 — 각혈) 은 보라 */
 
@@ -13723,12 +13738,13 @@ function draw(){
   if (!ed && Wd.snow) drawSnow(Wd);   // v7.23.2 권위의 눈
   if (!ed && (Wd.jr8 || Wd.jrq || Wd.jrLines || Wd.rain)) jr8Draw(Wd, ox, oy, ts);
   if (!ed && (Wd.sp8 || Wd.sp8Fx || Wd.rpNext)) sp8Draw(Wd, ox, oy, ts);   /* v8.4.0 슬라임 합치기 · 우박 · 레이더 */   /* v8.3.0 적뢰 예고 · 번개 · 비 */
-  drawRel(Wd, ox, oy, ts);   /* v9.1 전우조 (굵은 파란 선) · 대장-부하 (금빛 점선 · ♛) — 옛 편대 점선을 대신함 */
-  if (!ed && $('netShow').checked && Wd.t > 0.01 && Wd.mesh0){   // v7.13 지휘망 그물: 곁의 동료끼리 닿는 줄 (흐리게)
+  if (ed || Wd.t < 0.01 || detail() || sel.size) drawRel(Wd, ox, oy, ts);   /* v9.8.0 관계선은 고를 때만 */
+  if (!ed) drawMembranes(Wd, ox, oy, ts, $('seeAll').checked);   /* v9.8.0 세포막 (몸 밑에) */   /* v9.1 전우조 (굵은 파란 선) · 대장-부하 (금빛 점선 · ♛) — 옛 편대 점선을 대신함 */
+  if (!ed && NETV() && Wd.t > 0.01 && Wd.mesh0){   // v7.13 지휘망 그물: 곁의 동료끼리 닿는 줄 (흐리게)
     ctx.save(); ctx.setLineDash([]); ctx.lineWidth = Math.max(1, ts * 0.03);
     for (const [a, b, p] of Wd.mesh0.edges){ const A = Wd.units[a], B = Wd.units[b]; if (!A || !B || !A.alive || !B.alive || hidA(Wd, A) || hidA(Wd, B)) continue; ctx.strokeStyle = `rgba(150,200,255,${(0.1 + 0.22 * p).toFixed(2)})`; ctx.beginPath(); ctx.moveTo(ox + A.x * ts, oy + A.y * ts); ctx.lineTo(ox + B.x * ts, oy + B.y * ts); ctx.stroke(); }
     ctx.restore(); }
-  if (!ed && $('netShow').checked && Wd.t > 0.01){   // v7.9.5 지휘망: 지휘관 → 각 아군 (확률 색 · 길 모양 · 가는 중인 명령)
+  if (!ed && NETV() && Wd.t > 0.01){   // v7.9.5 지휘망: 지휘관 → 각 아군 (확률 색 · 길 모양 · 가는 중인 명령)
     const C0 = cmdBoss(Wd, 0); if (C0){ ctx.save(); ctx.lineWidth = Math.max(1.4, ts * 0.055); ctx.lineCap = 'round';
       for (const u of Wd.units){ if (u.side !== 0 || !u.alive || u === C0 || hidA(Wd, u) || !u.netL) continue; const L = u.netL, via = L.via;
         const col = L.p >= 0.8 ? '120,230,150' : L.p >= 0.45 ? '255,214,110' : '255,110,100';
@@ -13837,7 +13853,7 @@ function draw(){
           badge(p.x - r * 0.9 - 4 * (allyNo(Wd, u) - 1) * 3, p.y + r * 0.9, allyNo(Wd, u), al); } }
         if (u.order.k === 'palm' && u.order.b != null){ const t = Wd.units[u.order.b]; if (t && t.alive && (t.seenBy || see)){ const p = { x: ox + t.x * ts, y: oy + t.y * ts }; ctx.strokeStyle = `rgba(255,140,70,${Math.max(al, .7)})`; ctx.beginPath(); ctx.moveTo(ox + u.x * ts, oy + u.y * ts); if (u.order.via && !u.order.viaOK) ctx.lineTo(ox + u.order.via.x * ts, oy + u.order.via.y * ts); ctx.lineTo(p.x, p.y); ctx.stroke(); } }   // v7.15 팜 버스트 명령 = 주황 선
       }
-      Wd._itN = {}; for (const u of Wd.units){ if (!u.alive || u.side !== 0 || hid0(u)) continue; const it = intentOf(Wd, u, see); if (it) intentTag(Wd, it, ox, oy, ts); }   // v7.15 도착해서 쓸 것
+      Wd._itN = {}; for (const u of Wd.units){ if (!u.alive || u.side !== 0 || hid0(u) || !(detail() || sel.has(u.i))) continue; const it = intentOf(Wd, u, see); if (it) intentTag(Wd, it, ox, oy, ts); }   // v7.15 도착해서 쓸 것
       // 지키는 자리 (이동 명령 뒤 자동): 작은 마름모 + 번호. 간단 보기에선 고른 아군만
       for (const u of Wd.units){ if (!u.alive || u.side !== 0 || !u.stay || (u.order && u.order.k !== 'hold')) continue; if (!detail() && !sel.has(u.i)) continue;
         const p = { x: ox + u.stay.x * ts, y: oy + u.stay.y * ts }, k = ts * 0.18; ctx.setLineDash([]); ctx.strokeStyle = 'rgba(159,210,255,.85)'; ctx.lineWidth = 1.5;
@@ -13974,10 +13990,10 @@ function draw(){
     const gOn = u.canGuard && (ed || guardOn(Wd, u));
     if (u.canGuard){ const ga2 = Math.max(0.12, (u.gArc || 45) * Math.PI / 180);
       // 막는 방향 (부채꼴): 바라보는 방향 ±gArc. 고른 · 커서를 올린 인물은 진하게
-      if (vis){ const strong = u.pid === hoverPid || (!ed && sel.has(u.i) && u.side === 0) || (ed && u.pid === selId), R2 = r + ts * (strong ? 1.35 : 1.0);
+      if (vis && (ed || detail() || u.pid === hoverPid || sel.has(u.i))){ const strong = u.pid === hoverPid || (!ed && sel.has(u.i) && u.side === 0) || (ed && u.pid === selId), R2 = r + ts * (strong ? 1.35 : 1.0);
         const g = ctx.createRadialGradient(px, py, r, px, py, R2); g.addColorStop(0, gOn ? `rgba(110,225,140,${strong ? .42 : .26})` : 'rgba(255,120,95,.08)'); g.addColorStop(1, gOn ? 'rgba(110,225,140,0)' : 'rgba(255,120,95,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(px + Math.cos(fa - ga2) * r, py + Math.sin(fa - ga2) * r); ctx.arc(px, py, R2, fa - ga2, fa + ga2); ctx.arc(px, py, r, fa + ga2, fa - ga2, true); ctx.closePath(); ctx.fill(); }
-      ctx.strokeStyle = gOn ? '#7fe3a0' : 'rgba(255,120,95,.85)'; ctx.lineWidth = Math.max(3, r * 0.2); if (!gOn) ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(px, py, r + 1, fa - ga2, fa + ga2); ctx.stroke(); ctx.setLineDash([]); }
+      if (ed || detail() || u.pid === hoverPid || sel.has(u.i)){ ctx.strokeStyle = gOn ? '#7fe3a0' : 'rgba(255,120,95,.85)'; ctx.lineWidth = Math.max(3, r * 0.2); if (!gOn) ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(px, py, r + 1, fa - ga2, fa + ga2); ctx.stroke(); ctx.setLineDash([]); } }
     const hp = u.hp / u.max;
     if (u.side === 0 || (!ed && (u.engaged || see))){
       const bw = Math.max(18, r * 2 + 4), bx = px - bw / 2, by = py - r - 9;
@@ -13987,17 +14003,17 @@ function draw(){
       // 자세 막대 (방어 자세가 있는 인물): 흰 줄, 무너지면 붉게
       if (u.canGuard && !ed){ ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(bx - 1, by + 5, bw + 2, 4); ctx.fillStyle = Wd.t < u.brokenT ? '#ff6b57' : '#ddd6c8'; ctx.fillRect(bx, by + 6, bw * Math.max(0, Math.min(1, u.post / 100)), 2); }
       // 기분 (경계 · 자리 잡기 · 사선에 아군 …): 체력 줄 위에 작은 글씨
-      if (!ed && ts >= 30 && !u.act && (u.quadOn || (u.mood && MOOD_TAG[u.mood] && (detail() || u.side !== 0 || u.pid === hoverPid || sel.has(u.i))))){ ctx.font = '600 10px IBM Plex Sans KR, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; const t = u.quadOn ? '네 발로' : MOOD_TAG[u.mood], tw = ctx.measureText(t).width;
+      if (!ed && ts >= 30 && !u.act && (u.quadOn || (u.mood && MOOD_TAG[u.mood] && (detail() || u.pid === hoverPid || sel.has(u.i))))){ ctx.font = '600 10px IBM Plex Sans KR, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; const t = u.quadOn ? '네 발로' : MOOD_TAG[u.mood], tw = ctx.measureText(t).width;
         ctx.fillStyle = 'rgba(10,8,12,.7)'; ctx.fillRect(px - tw / 2 - 3, by - 14, tw + 6, 12); ctx.fillStyle = u.side ? '#ffb8a8' : '#bfe0ff'; ctx.fillText(t, px, by - 2.5); }
     }
     // 탄약: 오른쪽 아래 작은 숫자 (적은 교전 뒤부터)
-    if (u.ammo != null && (ed || u.side === 0 || u.engaged || see)){ ctx.font = '700 9.5px IBM Plex Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const gn = u.alt ? (u.weapon === '샷건' ? '샷건 ' : (w => w.length <= 3 ? w : w.slice(-2))(u.weapon || '') + ' ') : '탄', t = u.magMax ? gn + u.mag + '·' + u.ammo : u.ammo ? gn + u.ammo : gn + '0', tw = ctx.measureText(t).width + 6, ax = px + r * 0.78, ay = py + r * 0.82;   /* v7.26.1 두 총을 지니면 든 총 이름 */
+    if (u.ammo != null && (ed || see || detail() || sel.has(u.i) || u.pid === hoverPid || (u.side === 0 && u.ammo <= 3))){ ctx.font = '700 9.5px IBM Plex Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const gn = u.alt ? (u.weapon === '샷건' ? '샷건 ' : (w => w.length <= 3 ? w : w.slice(-2))(u.weapon || '') + ' ') : '탄', t = u.magMax ? gn + u.mag + '·' + u.ammo : u.ammo ? gn + u.ammo : gn + '0', tw = ctx.measureText(t).width + 6, ax = px + r * 0.78, ay = py + r * 0.82;   /* v7.26.1 두 총을 지니면 든 총 이름 */
       ctx.fillStyle = u.ammo ? (u.alt && u.weapon === '샷건' ? 'rgba(150,62,14,.92)' : 'rgba(20,16,10,.85)') : 'rgba(120,30,20,.9)'; ctx.fillRect(ax - tw / 2, ay - 6, tw, 12); ctx.fillStyle = u.alt && u.weapon === '샷건' ? '#fff1dc' : u.ammo > 2 ? '#f1d27a' : '#ff8a70'; ctx.fillText(t, ax, ay + 0.5); }
     // 바라보는 방향 삼각형: 체력 줄 위에 (위를 볼 때 가려지지 않게), 테두리 검게
     ctx.fillStyle = u.canGuard ? (gOn ? '#7fe3a0' : '#ff8a70') : SIDEC[u.side]; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.moveTo(px + Math.cos(fa) * (r + 10), py + Math.sin(fa) * (r + 10)); ctx.lineTo(px + Math.cos(fa + 0.34) * (r + 1.5), py + Math.sin(fa + 0.34) * (r + 1.5)); ctx.lineTo(px + Math.cos(fa - 0.34) * (r + 1.5), py + Math.sin(fa - 0.34) * (r + 1.5)); ctx.closePath(); ctx.stroke(); ctx.fill();
+    if (ed || !wpIcon(Wd, u)){ ctx.beginPath(); ctx.moveTo(px + Math.cos(fa) * (r + 10), py + Math.sin(fa) * (r + 10)); ctx.lineTo(px + Math.cos(fa + 0.34) * (r + 1.5), py + Math.sin(fa + 0.34) * (r + 1.5)); ctx.lineTo(px + Math.cos(fa - 0.34) * (r + 1.5), py + Math.sin(fa - 0.34) * (r + 1.5)); ctx.closePath(); ctx.stroke(); ctx.fill(); }   /* v9.8.0 무기를 그리는 몸은 무기가 바라보는 쪽 */
     // 상태 아이콘: 눈 (경계 중) · 방패 (방어 자세) · 초록 방패 배지 (보호받는 중)
-    if (!ed && vis){ const is = Math.max(6, Math.min(11, r * 0.36));
+    if (!ed && vis && (detail() || sel.has(u.i) || u.pid === hoverPid)){ const is = Math.max(6, Math.min(11, r * 0.36));
       if (WATCH.has(u.mood) && !u.act) iconEye(px - r * 0.82, py - r * 0.82, is, u.side ? '#ffb8a8' : '#bfe0ff');
       if (u.look && now < u.look.until) iconEye(px + Math.cos(u.look.a) * (r + is), py + Math.sin(u.look.a) * (r + is), is, u.side ? '#ffd0c0' : '#e0f0ff');   // v7.7 뒤를 돌아봄 (사주경계)
       if (u.canGuard && !u.shield) iconParry(px + r * 0.82, py - r * 0.82, is, gOn ? '#7fe3a0' : '#ff8a70');   // v5.8.4 무구 · 반사신경으로 막기 = 칼날 표시 (방패 표시와 헷갈리지 않게)
@@ -14005,7 +14021,7 @@ function draw(){
       if (pg){ ctx.strokeStyle = 'rgba(110,225,140,.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, r + 3, 0, 6.283); ctx.stroke(); iconShield(px - r * 0.82, py + r * 0.82, is, '#d8ffe4', 'rgba(70,190,110,.95)'); }
     }
     // v5.1 방어구 (몸 · 머리): 오른쪽 가운데. 적은 보일 때
-    if (vis && ts >= 12 && u.gear){ const gs = Math.max(6, Math.min(10, r * 0.36)), gx = px + r + gs * 0.55;   /* v7.26.1 작은 판에서도 보임 */
+    if (vis && ts >= 12 && u.gear && (ed || detail() || sel.has(u.i) || u.pid === hoverPid)){ const gs = Math.max(6, Math.min(10, r * 0.36)), gx = px + r + gs * 0.55;   /* v7.26.1 작은 판에서도 보임 */
       if (u.gear['머리']){ const it = u.gear['머리']; iconHelm(gx, py - gs * 1.05, gs, it.innate ? '#e6b98c' : MAT_IC[it.mat] || '#d8dde6', it.tier); }
       if (u.gear['몸']){ const it = u.gear['몸']; iconArmor(gx, py + gs * 1.05, gs, it.innate ? '#e6b98c' : MAT_IC[it.mat] || '#d8dde6', it.tier); } }
     if (!ed && u.act){ const a = u.act, span = a.phase === 'wind' || a.phase === 'run' ? a.end - a.t0 : a.end - a.t1, p = span > 0 ? Math.min(1, 1 - (a.end - now) / span) : 1;
@@ -14015,9 +14031,9 @@ function draw(){
     else if (!ed && u.ratRec && (u.side === 0 || see || u.seenBy)) badge(px - r - 3, py - r * 0.15, u.ratRec.n + (u.ratRec.vet ? '★' : ''), 1);   /* v8.7.8 기억하는 쥐 기사의 이름 */
     if (!ed && sel.has(u.i) && u.side === 0){ ctx.strokeStyle = '#d9a94e'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.arc(px, py, r + 11, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); }
     if (u.torch) drawFlame(px + r * 0.95, py + r * 0.35, r * 0.55, false);
-    if (u.nv && (ed || u.side === 0) && !noPick(u)){ ctx.fillStyle = '#c9a8ff'; ctx.beginPath(); ctx.arc(px - r * 0.85, py + r * 0.6, Math.max(2.5, r * 0.18), 0, 6.283); ctx.fill(); }
+    if (u.nv && (ed || u.side === 0) && !noPick(u) && (ed || detail())){ ctx.fillStyle = '#c9a8ff'; ctx.beginPath(); ctx.arc(px - r * 0.85, py + r * 0.6, Math.max(2.5, r * 0.18), 0, 6.283); ctx.fill(); }
     if (ed && u.pid === selId){ ctx.strokeStyle = '#d9a94e'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.arc(px, py, r + 7, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); }
-    if (ts >= 30){
+    if (ts >= 30 && (ed || ts >= 56 || detail() || sel.has(u.i) || u.pid === hoverPid || u.hero)){
       ctx.font = `500 ${ts >= 60 ? 12 : 10}px IBM Plex Sans KR, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
       const nm = u.name.length > 6 ? u.name.slice(0, 6) + '…' : u.name;
       ctx.fillStyle = 'rgba(8,6,10,.6)'; const tw = ctx.measureText(nm).width; ctx.fillRect(px - tw / 2 - 3, py + r + 5, tw + 6, 13);
@@ -14046,7 +14062,7 @@ function draw(){
     ctx.globalAlpha = 1;
   }
   if (!ed) drawForm(Wd, ox, oy, ts, see);   /* v8.7.5 대형 · 공세선 */
-  if (!ed) drawBattleLines(Wd, ox, oy, ts, see);   // v5.7 전열 (v5.4 방진 선을 대신함) · v5.7.1 인물 위에, 몸 앞쪽에 그림 (가려지지 않게)
+  if (!ed && (detail() || OVL.line)) drawBattleLines(Wd, ox, oy, ts, see);   /* v9.8.0 전열 곡선은 세포막이 대신함 */   // v5.7 전열 (v5.4 방진 선을 대신함) · v5.7.1 인물 위에, 몸 앞쪽에 그림 (가려지지 않게)
   if (!ed) drawFireLines(Wd, ox, oy, ts, see);   // v5.8.9 사선 표시 (고른 사수)
   if (Wd._reloadTags){ for (const g of Wd._reloadTags){   // v6.7.6 재장전 중! (맨 위 층)
       ctx.save(); ctx.font = '800 12px IBM Plex Sans KR, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const tw = ctx.measureText(g.lab).width + 14, y = g.py;
@@ -14059,7 +14075,7 @@ function draw(){
     ctx.globalAlpha = vis ? 1 : 0.42; shieldMark(ox + u.x * ts, oy + u.y * ts, u.r * ts, u.face || 0, !ed && guardOn(Wd, u), !ed && Wd.t < u.brokenT, SIDEC[u.side]); ctx.globalAlpha = 1; }
   // v9.7.0 무기 그림: 든 무기를 오른손 (바라보는 쪽) 에 — 병종 · 지금 무기를 판에서 바로
   for (const u of Wd.units){ if (!u.alive || hid0(u)) continue; const ic = wpIcon(Wd, u); if (!ic) continue; const vis = u.side === 0 || ed || u.seenBy; if (!vis && !see) continue;
-    ctx.globalAlpha = vis ? 1 : 0.42; weaponMark(ox + u.x * ts, oy + u.y * ts, u.r * ts, u.face || 0, ic, SIDEC[u.side]); ctx.globalAlpha = 1; }
+    ctx.globalAlpha = vis ? 1 : 0.42; weaponMark2(Wd, u, ox, oy, ts, ic); ctx.globalAlpha = 1; }
   if (!ed) drawOvl(Wd, ox, oy, ts, see);   /* v9.7.4 겹쳐 보기 */
   // v8.7.8 감전 ⚡ (한 틀 — 푸른 번개 · 적뢰 · 잔류): 모든 판에서 · 보이는 몸만 · 몸 위에
   if (!ed) for (const u of Wd.units){ if (!u.alive || !u.zap || hid0(u) || !(u.side === 0 || see || u.seenBy)) continue; ctx.fillStyle = u.zap.kind === 'blue' ? '#7fd4ff' : /red/.test(u.zap.kind) ? '#ff4a4a' : '#ffb45a'; ctx.font = `${Math.max(9, ts * 0.28)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.fillText(`⚡${u.zap.st > 1 ? '×' + u.zap.st : ''}`, ox + (u.x + u.r) * ts, oy + (u.y - u.r) * ts); }
@@ -14086,7 +14102,7 @@ function draw(){
     ctx.restore(); }
   // 총성 '!': 쏜 자리에 noiseTime 동안 남음 (쏜 쪽이 옮겨 가도 그 자리에). 소리라 어둠 속이어도 보임
   // 브리핑 (포렌의 냄새): 보이지 않는 적의 대략적인 방향 · 거리 띠 (보라 부채꼴). 다음 브리핑까지 남음
-  if (!ed && Wd.brief && now - Wd.brief.t < Wd.rules.briefT + 1){
+  if (!ed && Wd.brief && now - Wd.brief.t < Wd.rules.briefT + 1 && (detail() || see || OVL.sense)){   /* v9.8.0 냄새 부채꼴은 볼 때만 */
     const B = Wd.brief, k = Math.max(0, 1 - (now - B.t) / (Wd.rules.briefT + 1)), cx = ox + B.x * ts, cy = oy + B.y * ts, BR = [[0.8, 3], [3, 6], [6, 9.5]];
     for (const g of B.groups){
       const [r0, r1] = BR[g.band], a0 = g.ang - Math.PI / 8, a1 = g.ang + Math.PI / 8;
@@ -14141,7 +14157,7 @@ function draw(){
     const fx0 = ox + C.x * ts, fy0 = oy + C.y * ts - C.r * ts - 6, col = side ? '#ff7a6a' : '#ffd56a';
     ctx.save(); ctx.strokeStyle = 'rgba(10,8,6,.85)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(fx0, fy0); ctx.lineTo(fx0, fy0 - 18); ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(fx0, fy0); ctx.lineTo(fx0, fy0 - 18); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(fx0, fy0 - 18); ctx.lineTo(fx0 + 12, fy0 - 14); ctx.lineTo(fx0, fy0 - 10); ctx.closePath(); if (C.cmdTmp){ ctx.lineWidth = 1.4; ctx.stroke(); } else { ctx.fillStyle = col; ctx.fill(); }
-    if (side === 0 && sel.size && mode !== 'edit'){ const R = cmdRange(Wd, C), hr = Math.min(hearR(Wd, C, null), R); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,213,106,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(fx0, oy + C.y * ts, hr * ts, 0, 6.283); ctx.stroke();
+    if (side === 0 && sel.size && mode !== 'edit' && $('netShow').checked){ const R = cmdRange(Wd, C), hr = Math.min(hearR(Wd, C, null), R); ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,213,106,.45)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(fx0, oy + C.y * ts, hr * ts, 0, 6.283); ctx.stroke();
       ctx.setLineDash([2, 6]); ctx.strokeStyle = 'rgba(255,213,106,.28)'; ctx.beginPath(); ctx.arc(fx0, oy + C.y * ts, R * 1.2 * ts, 0, 6.283); ctx.stroke(); ctx.setLineDash([]);
       ctx.font = '600 10px IBM Plex Sans KR, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,225,150,.8)'; ctx.fillText(`외침 ${hr.toFixed(1)}칸 · 손짓 ${(R * 1.2).toFixed(0)}칸`, fx0, oy + C.y * ts - hr * ts - 4); }
     ctx.restore(); }
@@ -14287,10 +14303,39 @@ function iconEye(x, y, s, col){
 const heroOf = u => { const r = u.ref && RBY[u.ref]; return r ? r[2] === '동료' || (r[3] || 0) >= 4 : !!u.hero || (u.tier || 0) >= 4; };
 const shapeOf = u => u.role === '전선' && heroOf(u) ? 'sq' : u.role === '미드필더' ? 'tri' : u.role === '사수' ? 'pent' : 'circ';
 // v5.8.4 방패 표시: 앞 왼쪽 테두리에 똑바로 선 방패 (바라보는 쪽을 따라 돎). 막는 중 = 초록 · 자세 무너짐 = 붉게 · 그 밖 = 편 색 테두리
+// v9.8.0 세포막: 서로 닿은 (0.22칸 안) 같은 편 몸 둘 이상 = 한 무리. 바깥 테두리만 그림 (안쪽 겹친 선 없음).
+// 돌격 방어 (뭉침 · 동료 뒤 받침 · 이 무리의 누군가에게 돌격이 오는 중) 면 막이 굵고 밝아지고 실제 버팀 배율을 붙임
+let MB_CV = null;
+function drawMembranes(Wd, ox, oy, ts, see){
+  const vis = u => u.side === 0 || see || u.seenBy, hid = u => u.side === 0 && !!u.posUnk && !!u.posK && !see;
+  const U = Wd.units.filter(u => u.alive && !u.down && !u.gone && !hid(u) && vis(u) && !(u.act && u.act.air)); if (U.length < 2) return;
+  const par = U.map((_, i) => i), f = i => par[i] === i ? i : (par[i] = f(par[i]));
+  for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++){ const a = U[i], b = U[j]; if (a.side !== b.side) continue; if (Math.hypot(a.x - b.x, a.y - b.y) - a.r - b.r <= 0.22) par[f(i)] = f(j); }
+  const G = {}; U.forEach((u, i) => { (G[f(i)] = G[f(i)] || []).push(u); });
+  const cv = ctx.canvas; if (!MB_CV){ MB_CV = document.createElement('canvas'); } if (MB_CV.width !== cv.width || MB_CV.height !== cv.height){ MB_CV.width = cv.width; MB_CV.height = cv.height; }
+  const oc = MB_CV.getContext('2d'), T = ctx.getTransform();
+  for (const k in G){ const M = G[k]; if (M.length < 2) continue;
+    const ch = Wd.units.find(e => e.alive && e.side !== M[0].side && e.act && e.act.k === 'charge' && e.act.b != null && M.includes(Wd.units[e.act.b]) && vis(e));
+    const brace = !!ch || M.some(m => m.why === 'CLUMP' || m.why === 'BRACE_CHARGE');
+    const col = M[0].side === 0 ? (brace ? '#9fd4ff' : '#5aa3dc') : M[0].side === 1 ? (brace ? '#ffa294' : '#e0574b') : '#b06ae8';
+    const pad = ts * (brace ? 0.16 : 0.1), ring = brace ? Math.max(3, ts * 0.085) : Math.max(1.4, ts * 0.04);
+    ctx.save(); ctx.globalAlpha = brace ? 0.2 : 0.09; ctx.fillStyle = col; ctx.beginPath(); for (const m of M){ const R = m.r * ts + pad; ctx.moveTo(ox + m.x * ts + R, oy + m.y * ts); ctx.arc(ox + m.x * ts, oy + m.y * ts, R, 0, 6.283); } ctx.fill(); ctx.restore();
+    oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, MB_CV.width, MB_CV.height); oc.setTransform(T);
+    oc.fillStyle = col; oc.beginPath(); for (const m of M){ const R = m.r * ts + pad + ring; oc.moveTo(ox + m.x * ts + R, oy + m.y * ts); oc.arc(ox + m.x * ts, oy + m.y * ts, R, 0, 6.283); } oc.fill();
+    oc.globalCompositeOperation = 'destination-out'; oc.beginPath(); for (const m of M){ const R = m.r * ts + pad; oc.moveTo(ox + m.x * ts + R, oy + m.y * ts); oc.arc(ox + m.x * ts, oy + m.y * ts, R, 0, 6.283); } oc.fill(); oc.globalCompositeOperation = 'source-over';
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = brace ? 0.95 : 0.55; ctx.drawImage(MB_CV, 0, 0); ctx.restore();
+    if (brace){ const th = ch || Wd.units.filter(e => e.alive && !e.down && e.side !== M[0].side && vis(e)).sort((a, b) => Math.hypot(a.x - M[0].x, a.y - M[0].y) - Math.hypot(b.x - M[0].x, b.y - M[0].y))[0];
+      const cx = M.reduce((a, m) => a + m.x, 0) / M.length, cy = M.reduce((a, m) => a + m.y, 0) / M.length; let mul = 1, lx = cx, ly = cy - 1.1;
+      if (th){ const d = Math.hypot(th.x - cx, th.y - cy) || 1, dx = (cx - th.x) / d, dy = (cy - th.y) / d; const front = (ch ? Wd.units[ch.act.b] : M.slice().sort((a, b) => Math.hypot(a.x - th.x, a.y - th.y) - Math.hypot(b.x - th.x, b.y - th.y))[0]);
+        const br = braceOf(Wd, front, th, dx, dy); mul = br.mass / Math.max(1, front.mass * (front.poise || 1)); }
+      lx = cx; ly = Math.min(...M.map(m => m.y - m.r)) - 0.62;   /* 무리 위 */
+      const s2 = `🛡 돌격 방어 · 버팀 ×${mul.toFixed(1)}`; ctx.save(); ctx.font = `800 ${Math.max(11, ts * 0.28)}px IBM Plex Sans KR, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const w = ctx.measureText(s2).width + 10, h = Math.max(15, ts * 0.38), X = ox + lx * ts, Y = oy + ly * ts;
+      ctx.fillStyle = 'rgba(12,10,16,.85)'; ctx.fillRect(X - w / 2, Y - h / 2, w, h); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.strokeRect(X - w / 2 + 0.5, Y - h / 2 + 0.5, w - 1, h - 1); ctx.fillStyle = col; ctx.fillText(s2, X, Y + 0.5); ctx.restore(); } }
+}
 // v9.7.4 겹쳐 보기 (리모델 3.5): 켠 것만 그림 — 적 정보는 아군이 아는 만큼 (모두 보기면 다)
 const OVL = (() => { const d = { line: false, lane: false, chg: false, sense: false }; try { return Object.assign(d, JSON.parse(localStorage.getItem('gulOvl') || '{}')); } catch (e){ return d; } })();
 const OVL_NM = [['line', '🧱 전열', '닿은 몸끼리 굵은 선 · 실제로 계산된 버팀 배율 (적 쪽을 볼 때)'], ['lane', '🎯 사선', '고른 사수 (없으면 모든 아군 사수) → 아는 적: 초록 = 트임 · 주황 = 제 편이 사선에 (오사 위험) · 회색 점선 = 다른 몸 · 방패에 막힘'], ['chg', '💨 돌격', '달리는 돌격의 길과 첫 접촉 (무기 / 몸)'], ['sense', '👁 감각', '지금은 안 보이지만 아군이 마지막으로 안 적의 자리 (점선 · 몇 초 전)']];
-function renderOvTog(){ const el = $('ovTog'); if (!el) return; el.innerHTML = OVL_NM.map(([k, nm, tt]) => `<button type="button" class="${OVL[k] ? 'on' : ''}" data-ovl="${k}" title="${tt}">${nm}</button>`).join(''); }
+function renderOvTog(){ const el = $('ovTog'); if (!el) return; el.innerHTML = OVL_NM.map(([k, nm, tt]) => `<button type="button" class="${OVL[k] ? 'on' : ''}" data-ovl="${k}" title="${tt}">${MOB ? nm.split(' ')[0] : nm}</button>`).join(''); }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ovl]'); if (!b) return; const k = b.dataset.ovl; OVL[k] = !OVL[k]; try { localStorage.setItem('gulOvl', JSON.stringify(OVL)); } catch (er){} renderOvTog(); if (typeof draw === 'function') draw(); });
 setTimeout(renderOvTog, 0);
 function drawOvl(Wd, ox, oy, ts, see){
@@ -14331,6 +14376,39 @@ function drawOvl(Wd, ox, oy, ts, see){
 function wpIcon(Wd, u){ const n = u.weapon || ''; if (!n || n === '맨손') return u.canSweep ? '👊' : null; const w = (Wd.rules.weapons || {})[n] || {}, k = w.kind || '';
   if (k === '맨손') return u.canSweep ? '👊' : null; if (k === '짐승') return null; if (k === '활') return '🏹'; if (k === '총포류') return '🔫'; if (k === '마법') return '🪄'; if (k === '둔기') return '🔨';
   if (w.axe || /도끼$/.test(n)) return '🪓'; if (/단검$|나이프$|칼$/.test(n)) return '🔪'; if (/창$/.test(n) || (w.rng || 0) >= 1.4) return '🔱'; return '🗡'; }
+// v9.8.0 무기 = 사거리: 손 (오른쪽 앞) 에서 바라보는 쪽으로, 끝이 실제로 닿는 곳 (몸 + 사거리) 까지. 준비 중엔 당기고 · 친 순간 뻗음
+function weaponMark2(Wd, u, ox, oy, ts, ic){
+  const x = ox + u.x * ts, y = oy + u.y * ts, r = u.r * ts, A = u.act, far = isFar(u);
+  let fa = u.face || 0, ext = 1;
+  if (A && A.k === 'atk' && !far){ if (A.phase === 'wind') ext = 0.72; else if (A.phase === 'rec' && Wd.t - (A.t1 || A.t0 || 0) < 0.18) ext = 1.06; }
+  if (A && A.k === 'charge' && A.mode === 'atk') ext = 1.04;
+  const hx = x + Math.cos(fa + 0.85) * r * 0.82, hy = y + Math.sin(fa + 0.85) * r * 0.82;   // 손
+  const tipD = (r + u.rng * ts) * ext, tx = x + Math.cos(fa) * tipD, ty = y + Math.sin(fa) * tipD;   // 끝 = 사거리
+  const da = Math.atan2(ty - hy, tx - hx), dl = Math.hypot(tx - hx, ty - hy), ux = Math.cos(da), uy = Math.sin(da), nx = -uy, ny = ux, W0 = Math.max(1.6, ts * 0.05);
+  const seg = (x1, y1, x2, y2, w, c) => { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+  const out = (x1, y1, x2, y2, w, c) => { seg(x1, y1, x2, y2, w + 2.2, 'rgba(10,8,12,.9)'); seg(x1, y1, x2, y2, w, c); };
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (ic === '🏹'){ const cx = x + Math.cos(fa) * r * 1.02, cy = y + Math.sin(fa) * r * 1.02, R = r * 0.78;
+    ctx.strokeStyle = 'rgba(10,8,12,.9)'; ctx.lineWidth = W0 + 2.4; ctx.beginPath(); ctx.arc(x, y, r * 1.02 + R * 0.25, fa - 0.75, fa + 0.75); ctx.stroke(); ctx.strokeStyle = '#a8763c'; ctx.lineWidth = W0 + 0.4; ctx.stroke();
+    const pull = A && A.k === 'atk' && A.phase === 'wind' ? r * 0.35 : 0, e1 = [x + Math.cos(fa - 0.75) * (r * 1.02 + R * 0.25), y + Math.sin(fa - 0.75) * (r * 1.02 + R * 0.25)], e2 = [x + Math.cos(fa + 0.75) * (r * 1.02 + R * 0.25), y + Math.sin(fa + 0.75) * (r * 1.02 + R * 0.25)], mx = cx - Math.cos(fa) * pull, my = cy - Math.sin(fa) * pull;
+    ctx.strokeStyle = 'rgba(235,228,214,.9)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(e1[0], e1[1]); ctx.lineTo(mx, my); ctx.lineTo(e2[0], e2[1]); ctx.stroke();
+    if (pull) out(mx, my, mx + Math.cos(fa) * r * 0.9, my + Math.sin(fa) * r * 0.9, 1.4, '#e8e2d4');
+  } else if (ic === '🔫'){ const L = r * 1.15; out(hx, hy, hx + Math.cos(fa) * L, hy + Math.sin(fa) * L, W0 + 1.6, '#3a3a42'); seg(hx + Math.cos(fa) * L * 0.25, hy + Math.sin(fa) * L * 0.25, hx - Math.cos(fa) * r * 0.25, hy - Math.sin(fa) * r * 0.25, W0 + 2, '#6b4a2c');
+  } else if (ic === '🪄'){ const L = r * 0.9, ex = hx + Math.cos(fa) * L, ey = hy + Math.sin(fa) * L; out(hx, hy, ex, ey, W0, '#8a6a4a'); ctx.fillStyle = '#c9a8ff'; ctx.beginPath(); ctx.arc(ex, ey, Math.max(2.5, ts * 0.07), 0, 6.283); ctx.fill();
+  } else if (ic === '👊'){ for (const k of [-0.55, 0.55]){ const fx = x + Math.cos(fa + k) * (r * 0.95 + (ext > 1 && k > 0 ? r * 0.3 : 0)), fy = y + Math.sin(fa + k) * (r * 0.95 + (ext > 1 && k > 0 ? r * 0.3 : 0)); ctx.fillStyle = '#d9a37a'; ctx.strokeStyle = 'rgba(10,8,12,.9)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(fx, fy, Math.max(3.5, r * 0.24), 0, 6.283); ctx.fill(); ctx.stroke(); }
+  } else {
+    const back = ic === '🔱' ? r * 0.45 : r * 0.18, bx = hx - ux * back, by = hy - uy * back;
+    if (ic === '🔱'){ const tl = Math.min(dl * 0.3, Math.max(5, ts * 0.22)), sx = tx - ux * tl, sy = ty - uy * tl; out(bx, by, sx, sy, W0, '#8a5a2c');
+      ctx.fillStyle = '#d6dde6'; ctx.strokeStyle = 'rgba(10,8,12,.9)'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(sx + nx * tl * 0.32, sy + ny * tl * 0.32); ctx.lineTo(sx - nx * tl * 0.32, sy - ny * tl * 0.32); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    else if (ic === '🔨' || ic === '🪓'){ const hl = Math.max(4, ts * 0.13); out(bx, by, tx, ty, W0, '#8a5a2c'); ctx.fillStyle = ic === '🔨' ? '#9aa0aa' : '#cfd6de'; ctx.strokeStyle = 'rgba(10,8,12,.9)'; ctx.lineWidth = 1.6; ctx.beginPath();
+      if (ic === '🔨'){ ctx.moveTo(tx + nx * hl - ux * hl * 0.6, ty + ny * hl - uy * hl * 0.6); ctx.lineTo(tx + nx * hl, ty + ny * hl); ctx.lineTo(tx - nx * hl, ty - ny * hl); ctx.lineTo(tx - nx * hl - ux * hl * 0.6, ty - ny * hl - uy * hl * 0.6); }
+      else { ctx.moveTo(tx - ux * hl * 0.2, ty - uy * hl * 0.2); ctx.quadraticCurveTo(tx + nx * hl * 1.4, ty + ny * hl * 1.4, tx - ux * hl * 1.1, ty - uy * hl * 1.1); }
+      ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    else { const gx = hx + ux * Math.min(dl * 0.12, r * 0.25), gy = hy + uy * Math.min(dl * 0.12, r * 0.25), gw = Math.max(4, ts * (ic === '🔪' ? 0.09 : 0.14));   // 검 · 단검
+      seg(bx, by, gx, gy, W0 + 1.5, '#6b4a2c'); out(gx, gy, tx, ty, W0 + (ic === '🔪' ? 0 : 0.6), '#d6dde6'); seg(gx + nx * gw, gy + ny * gw, gx - nx * gw, gy - ny * gw, W0 + 0.8, '#b08a3e'); }
+  }
+  ctx.restore();
+}
 function weaponMark(x, y, r, fa, ic, sc){
   const a = fa + 0.75, s = Math.max(10, r * 0.78), cx = x + Math.cos(a) * r * 1.02, cy = y + Math.sin(a) * r * 1.02;
   ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, s * 0.62, 0, 6.283); ctx.fillStyle = 'rgba(236,229,214,.94)'; ctx.fill(); ctx.lineWidth = Math.max(1.2, s * 0.12); ctx.strokeStyle = sc; ctx.stroke();
@@ -14342,7 +14420,7 @@ function weaponMark(x, y, r, fa, ic, sc){
   ctx.font = `${Math.round(s * 0.82)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ic, cx, cy + s * 0.04); ctx.restore();
 }
 function shieldMark(x, y, r, fa, on, broke, sc){
-  const a = fa - 0.75, s = Math.max(9, r * 0.72), cx = x + Math.cos(a) * r * 1.0, cy = y + Math.sin(a) * r * 1.0;
+  const a = fa - (on ? 0.3 : 1.1), s = Math.max(9, r * (on ? 0.82 : 0.66)), cx = x + Math.cos(a) * r * (on ? 1.12 : 0.92), cy = y + Math.sin(a) * r * (on ? 1.12 : 0.92);   /* v9.8.0 들면 몸 앞으로 · 내리면 옆에 */
   ctx.save(); ctx.translate(cx, cy);
   ctx.beginPath(); ctx.moveTo(-s * 0.62, -s * 0.62); ctx.quadraticCurveTo(0, -s * 0.78, s * 0.62, -s * 0.62); ctx.lineTo(s * 0.6, s * 0.02); ctx.quadraticCurveTo(s * 0.48, s * 0.58, 0, s * 0.82); ctx.quadraticCurveTo(-s * 0.48, s * 0.58, -s * 0.6, s * 0.02); ctx.closePath();
   ctx.lineWidth = Math.max(3, s * 0.36); ctx.strokeStyle = 'rgba(8,6,10,.85)'; ctx.stroke();
@@ -14768,7 +14846,7 @@ function mvTxt(Wd, e){ const n = i => Wd.units[i] ? Wd.units[i].name : '?', iga 
 function logHeader(Wd, title){
   const R = Wd.rules, m = isGrid(S.type) ? `${gridName(S)}${(S.flips || []).length ? ' · 바위 ' + S.flips.length + '칸 (' + S.flips.map(k => { const [x, y] = k.split(',').map(Number); return coord(x, y); }).join(' ') + ')' : ''}` : `동굴 ${S.W}×${S.H} (씨앗 ${S.seed})`;
   const who = s => Wd.units.filter(u => u.side === s).map(u => `  ${padW(u.name, 14)} ${padW(coord(u.home.x, u.home.y), 4)} ${u.tier}등급 ${padW(u.cls, 6)} 체력 ${u.max} · 공격 ${u.atk} · 속력 ${u.spd}칸/초 (이동 ${(u.spd * R.turn).toFixed(1)}칸/턴) · ${isFar(u) ? `조준 ${(+aimT(Wd, u)).toFixed(2)}초 (들고 쏘기까지) · 쏜 뒤 ${u.rec}초` : `준비 ${u.wind} + 회복 ${u.rec}초`} · 든 것 ${startKit(u).weapon || '맨손'} + ${shTxt(startKit(u))}${kitNow(u)} · 사거리 ${u.rng0 != null ? u.rng0 : u.rng}${u.ammoMax != null ? ' · 탄 ' + u.ammoMax + (u.loud ? ' (총성)' : '') : ''} · 대담함 ${u.bold}${u.hero ? ' · 주인공 (횃불 ' + R.heroLight + '칸)' : ''}${u.nv ? ' · 야시 ' + (u.nvG || 'B') : ' · 야시 없음'}${u.canGuard ? ' · 막는 폭 ±' + Math.round(guardArc(Wd, startKit(u))) + '° (' + guardName(startKit(u)) + ')' : ''}${u.smellG ? ' · 후각 ' + u.smellG : ''}${u.pack ? ' · 포위 사냥' : u.stalk ? ' · 어둠 속 우회' : ''}${u.skill ? ' · [' + u.skill.name + ' ' + u.skill.pool + ', 한 번에 ' + u.skill.per + ']' : ''}${(() => { const sp = S.units.find(x => x.id === u.pid) || {}; return (sp.race ? ' · 종족 ' + sp.race : '') + (sp.origin ? ' · 출신 ' + sp.origin : '') + (sp.unique || []).map(t => ' · ◆[' + t + ']').join(''); })()}${(u.traits || []).map(t => ' · [' + t + ']').join('')}${(() => { const ms = u.cg ? Wd.units.filter(m => m !== u && m.side === u.side && m.cg === u.cg) : [], C = u.chiefLk && u.sqLead != null ? Wd.units[u.sqLead] : null; return (ms.length ? ' · 🤝 전우조 ' + ms.map(m => m.name).join('·') : '') + (C ? ' · 🎖 대장 ' + C.name : ''); })()}`).join('\n');   /* v9.6.3 관계 */
-  return `굴의 전투판 v9.7.4 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
+  return `굴의 전투판 v9.8.0 · ${title}\n보조: ${assistMode()} · 맵: ${m} · 한 턴 ${R.turn}초 · 보는 거리 ${R.sight}칸 · 놓인 횃불 ${Wd.torches.length}개 · 근접 빗나감 여유 ${R.reach}칸\n방향: 앞 ±${R.frontArc}° · 측면 피해 ×${R.flankSide} · 뒤 ×${R.flankBack}\n죽기 쉬움: 피해 ×${R.lethal} · 방어 자세로 막으면 ×${R.blockMul} (자세 −${R.postCost}/100, 0 이면 ${R.breakTime}초 무너짐) · 명중률 가까이 ${Math.round(R.aimNear * 100)}% → 사거리 끝 ${Math.round(R.aimFar * 100)}% (무기마다 다름) · 총성 들리는 거리 ${R.hear}칸\n아군\n${who(0)}\n적\n${who(1)}\n`;
 }
 function logLines(Wd, from){
   const n = i => Wd.units[i].name, out = [], T = e => { const s = padW(f2(e.t) + '초', 8); return / $/.test(s) ? s : s + ' '; };   /* v8.7.3 100초가 넘어도 띄어 씀 */
@@ -16439,6 +16517,7 @@ function hud(){
     : `<b>턴 ${Wd.turn + 1}</b> 명령 차례 · 지금 ${f2(Wd.t)}초. 아군을 고르고 (판 · 카드에서 누름) 판에서 왼쪽 클릭 = 적 공격 · 오른쪽 클릭 = 이동 · 빈 바닥 왼쪽 클릭 = 고르기 풀기. <b>Space</b> = 재생 · 멈춤 · <b>Enter</b> = 한 턴만.${Wd.turn === 0 && Wd.t < 1e-6 ? ' 지금 주는 명령은 <b>시작 행동</b>으로 저장돼 같은 배치로 다시 할 때도 그대로 걸려요' + opTxt : ''}`;
   const ti2 = MOB ? ti.replace(/ ?\(Space\)/g, '').replace('판에서 왼쪽 클릭 = 적 공격 · 오른쪽 클릭 = 이동 · 빈 바닥 왼쪽 클릭 = 고르기 풀기.', '판에서 탭: 아군 = 고르기 · 바닥 = 이동 · 적 = 공격.').replace('<b>Space</b> = 재생 · 멈춤 · <b>Enter</b> = 한 턴만.', '<b>▶</b> = 재생 · 멈춤 · <b>⏭</b> = 한 턴만.').replace('<b>Space</b> 로 재생', '<b>▶</b> 로 재생').replace('Space = 멈춤', '⏸ = 멈춤') : ti;
   if (ti2 !== lastTI){ lastTI = ti2; $('turnInfo').innerHTML = ti2; }
+  if (!$('turnInfo')._ck){ $('turnInfo')._ck = 1; $('turnInfo').addEventListener('click', () => $('turnInfo').classList.toggle('open')); }   /* v9.8.0 두 줄 · 누르면 펼침 */
   { const ti3 = $('turnInfo'); if (!MOB && !ed && Wd.turn >= 1 && !S.pcFold && !ti3.dataset.fd){ ti3.dataset.fd = '1'; ti3.classList.add('fold'); } }   // v7.10.5 두 번째 턴부터 안내는 두 줄로 (눌러 펼침)   // v5.7.2 같으면 다시 안 그림 (안의 단추가 눌리게)
   $('edittag').hidden = !ed;
   renderNarr();
@@ -16484,14 +16563,13 @@ function renderOrders0(Wd){
   if (!L.length){ box.innerHTML = '<span class="brush">명령할 아군을 고르세요 · 카드나 판에서 누르거나, 판에서 끌어 네모로 여럿을</span><div class="row"><button class="btn" type="button" data-ord="all">아군 모두 고르기</button><button class="btn ' + (boxArm ? 'on' : '') + '" type="button" data-ord="boxsel" title="한 번 끌어 네모를 그리면 닿는 아군 모두를 고름">🔲 동시 선택</button></div>'; return; }
   const T = Wd.rules.turn, busy = L.filter(u => u.act);
   box.innerHTML = `<div class="ohd">고른 아군 ${L.length}명 · ${L.map(u => `<b>${allyNo(Wd, u)} ${esc(u.name)}</b> <span class="cur">${esc(orderLabel(Wd, ordOf(u)))}</span>${roeOf(Wd, u) !== 'smart' ? ` <span class="cur" title="교전 규칙">${ROE_IC[roeOf(Wd, u)]} ${ROE_NM[roeOf(Wd, u)]}</span>` : ''}`).join(' · ')}</div>
-    <div class="row skills">${SLOTS.map((_, i) => i + 1).map(n => { const lb = slotLabel(Wd, L, n), on = (n === 1 && chargePick) || (n === 2 && throwPick) || (n === 4 && skillPick) || (n === 5 && palmPick) || (n === 3 && leapPick); return `<button class="btn ${on ? 'on' : ''}" type="button" data-slot="${n}" ${lb ? '' : 'disabled'} title="${esc(SLOTS[n - 1].name)}"><kbd>${n}</kbd> ${esc(lb || '—')}</button>`; }).join('')}</div>
+    <div class="row skills">${SLOTS.map((_, i) => i + 1).map(n => { const lb = slotLabel(Wd, L, n), on = (n === 1 && chargePick) || (n === 2 && throwPick) || (n === 4 && skillPick) || (n === 5 && palmPick) || (n === 3 && leapPick); return !lb ? '' : `<button class="btn ${on ? 'on' : ''}" type="button" data-slot="${n}" ${lb ? '' : 'disabled'} title="${esc(SLOTS[n - 1].name)}"><kbd>${n}</kbd> ${esc(lb || '—')}</button>`; }).join('')}</div>
     ${L.length === 1 ? selStateHtml(Wd, L[0]) : ''}
     ${relRowHtml(Wd, L)}
     <div class="row core"><span class="lbl">핵심</span><button class="btn ${amovePick ? 'on' : ''}" type="button" data-ord="amove" title="가는 길에 보이는 적과 싸우며 그 칸으로">${amovePick ? '바닥을 누르세요 (Esc 취소)' : '공격 이동'} <kbd>A</kbd></button>${L.some(u => u.canGuard) ? `<button class="btn ${L.find(u => u.canGuard).guardMode === 'hold' ? 'on' : ''}" type="button" data-ord="guard" title="자동: 위협이 보이면 듦 (방패는 든 채 침) · 유지: 늘 듦, 틈이 보일 때만 침 · 공격 위주: 안 듦 (온 힘으로 · 갑옷만)">막기: ${GM_SHORT[L.find(u => u.canGuard).guardMode || 'auto']} <kbd>B</kbd></button>` : ''}<button class="btn" type="button" data-ord="line" title="근접은 자석처럼 나란히 붙어 적 쪽을 봄 · 사수는 전열 양 끝 뒤 (사선이 트임) · 치유는 가운데 뒤 — 지원은 전열을 따라다니며 쏘고 치료함">▬ 전열 <kbd>L</kbd></button>${L.some(u => u.canCharge) ? `<button class="btn ${L.find(u => u.canCharge).chgMode ? 'on' : ''}" type="button" data-ord="chgmode" title="돌격 방식 (누를 때마다 바뀜) — 기본: 예전 돌격 그대로 · 공격: 달리다 무기가 먼저 닿는 순간 찌름 (피해 큼 · 덜 밀어냄 · 몸은 안 부딪힘) · 방어: 몸 · 방패로 들이받음 (더 밀어내고 자세를 크게 깎음 · 피해 적음)">⚔ 돌격: ${{ '': '기본', atk: '공격', def: '방어' }[L.find(u => u.canCharge).chgMode || '']}</button>` : ''}<button class="btn ${L.length && L.every(u => u.order && u.order.k === 'clump') ? 'on' : ''}" type="button" data-ord="clump" title="돌격 방어 — 고른 무리가 어깨를 붙여 적 쪽으로 섬 (근접 앞줄 · 사수 뒷줄 · 막기를 든 채). 붙어 있을수록 돌격에 덜 밀림 · 대신 사선이 좁아지고 옆 · 뒤 · 범위 공격에 약함">🧱 뭉침</button><button class="btn" type="button" data-ord="hold" title="그 자리에 멈춰 지킴 — 고립돼도 합류하지 않고 대장이 넘어가도 남음">제자리 (정지) <kbd>H</kbd></button><button class="btn" type="button" data-ord="auto" title="지키던 자리를 풀고 주인공을 따라가며 스스로 판단">자동 · 따라감 <kbd>G</kbd></button><button class="btn" type="button" data-ord="cancel" title="준 명령을 거둠 (명령이 없으면 지키던 자리도 풂)">명령 취소 <kbd>X</kbd></button>${L.some(u => u.jav && !u.spearHeld && mySpear(Wd, u)) ? `<button class="btn" type="button" data-ord="pick">창 줍기 <kbd>E</kbd></button>` : nearItem(Wd, L) ? `<button class="btn" type="button" data-ord="pick">${esc(nearItem(Wd, L).name)} 줍기 <kbd>E</kbd></button>` : Wd.torches.some(t => t.dropped) && L.some(u => !u.torch) ? `<button class="btn" type="button" data-ord="pick">횃불 줍기 <kbd>E</kbd></button>` : ''}${L.some(u => u.canSweep) ? `<button class="btn" type="button" data-ord="swing" title="거구의 근접 — 자동: 이득을 따져 고름 (동료가 곁에 있으면 웬만하면 안 휘두름) · 넓게: 동료가 있어도 넓게 휘두름 · 찍기: 한 놈만">휘두르기: ${SWING_NM[L.find(u => u.canSweep).swing || '']} <kbd>V</kbd></button>` : ''}${(Wd.units.some(u => u.side === 0 && u.alive && u.missT != null && u.missO)) ? '<button class="btn" type="button" data-ord="resend" title="못 들은 명령을 다시 보냄">📣 재전달</button>' : ''}</div>
     <div class="row postures" title="교전 규칙 · 치료 방침 — 고른 아군에게 (명령처럼 지휘관을 거쳐 닿음)"><span class="lbl">태세</span>${['free', 'smart', 'hold', 'nofire'].map(m => `<button class="btn ${L.every(u => roeOf(Wd, u) === m) ? 'on' : ''}" type="button" data-ord="roe:${m}" title="${esc({ free: '보이면 싸움 (옛 방식)', smart: '들켰거나 · 동료가 맞았거나 · 확실히 우세할 때만 먼저 싸움', hold: '나를 노리는 상대를 막는 것 외엔 쏘지도 쫓지도 않음', nofire: '명령이 있을 때까지 쏘지 · 던지지 않음 (근접은 그대로)' }[m])}">${ROE_IC[m]} ${ROE_NM[m]}</button>`).join('')}${L.some(u => u.skill) ? ['dying', 'free', 'order'].map(m => `<button class="btn ${L.filter(u => u.skill).every(u => healPolOf(Wd, u) === m) ? 'on' : ''}" type="button" data-ord="heal:${m}" title="치료 방침 (약 명령은 언제나 따름)">✚ ${HEAL_NM[m]}</button>`).join('') : ''}${L.some(u => u.canCharge) ? `<button class="btn ${L.filter(u => u.canCharge).every(u => u.noChg) ? 'on' : ''}" type="button" data-ord="nochg" title="스스로 돌격하지 않음 (지휘관의 돌격 명령 · 자동 돌격 모두) — 유저의 돌진 명령은 따름 · 다음 판에도 이어짐">🚫 돌격 안 함</button>` : ''}</div>
-    <div class="row ogrp"><button class="btn ghd ${ordGrp.tac ? 'on' : ''}" type="button" data-ord="grp:tac">${ordGrp.tac ? '▾' : '▸'} 전술</button>${ordGrp.tac ? `<button class="btn" type="button" data-ord="scout" title="숨어서 가 보고 돌아와 보고 — 누른 뒤 살펴볼 바닥을 클릭">🔭 정찰 <kbd>Y</kbd></button><button class="btn" type="button" data-ord="assn" title="숨어서 등 뒤로 — 누른 뒤 노릴 적을 클릭 (아무도 못 보고 · 상대가 알아채지 못하고 · 경계가 약할 때 소리 없이)">🗡 암살 <kbd>U</kbd></button><button class="btn" type="button" data-ord="supp" title="베테랑 · 사격 A 이상 사수 — 누른 뒤 화살 · 총알이 날아온 쪽 바닥을 클릭 · 곧게 쏨 (보이지 않는 상대는 겨눌 수 없음 · 쏘면 드러남)">🎯 견제사격 <kbd>J</kbd></button><button class="btn" type="button" data-ord="area" title="활: 누른 뒤 바닥을 클릭 — 곡사로 그 둘레에 떨굼 (방패 너머 · 엎드린 몸 · 흩어짐) · 총: 견제사격과 같음">🏹 지역사격 <kbd>P</kbd></button><button class="btn" type="button" data-ord="watch" title="그 자리에서 바깥을 나눠 보고 섬 · 자주 뒤를 돌아봄">👁 사주경계 <kbd>O</kbd></button><button class="btn ${armed && armed.k === 'flank' ? 'on' : ''}" type="button" data-ord="flank" title="적 하나를 찍으면 그 적의 옆 · 뒤 (붙들어 주는 동료 반대쪽) 로 돌아 들어가 침 — 붙들어 줄 이가 없으면 위험">🔄 측면 기동</button>${L.some(u => lretLine(Wd, u)) ? `<button class="btn ${armed && armed.k === 'lret' ? 'on' : ''}" type="button" data-ord="lret" title="고른 아군이 낀 전열 (근접 둘 넘게 나란히) 모두가 방패를 앞으로 든 채 함께 물러섬 — 누른 뒤 물러설 바닥을 클릭">🛡 전열 후퇴 <kbd>K</kbd></button>` : ''}<button class="btn ${L.every(u => u.stealth) ? 'on' : ''}" type="button" data-ord="stealth" title="숨어 걸음 — 들킬 거리 ↓ (작은 기동병이 잘 숨음)">🥷 은신 <kbd>Z</kbd></button><button class="btn ${L.length && L.every(u => u.lie) ? 'on' : ''}" type="button" data-ord="lie" title="포복 — 엎드려 기어 감 · 모르는 적에겐 가까이서만 보임 · 멀리서 덜 맞음 · 총은 엎드려 쏨 (더 정확) · 근접에 약함">🦎 포복 <kbd>C</kbd></button><button class="btn ${detourArm ? 'on' : ''}" type="button" data-ord="detour" title="다음 이동 · 공격을 아는 적이 적은 쪽으로 크게 돌아가게 — PC 는 Shift + 오른쪽 클릭 · Shift + 적 클릭">↪ 우회 <kbd>Shift</kbd></button>${(() => { const Dp = deputyOf(Wd, 0), T2 = Dp ? L.filter(u => u.alive && !u.hero && u !== Dp) : []; return T2.length ? `<button class="btn ${T2.every(u => u.sqLead === Dp.i) ? 'on' : ''}" type="button" data-ord="squad" title="부대장 ${esc(Dp.name)}의 편대에 넣거나 (다시 누르면) 본대로 — 편대원은 주인공 대신 부대장을 따르고 그가 외친 표적을 함께 노려요">🎖 ${esc(Dp.name)} 편대</button>` : ''; })()}<button class="btn" type="button" data-ord="sac" title="한 명을 지정 — 스스로 적에게 돌격해 쓰러질 때까지 (한 번 더 눌러 확정)">💀 희생 돌격</button>` : ''}</div>
-    <div class="row ogrp"><button class="btn ghd ${ordGrp.adv ? 'on' : ''}" type="button" data-ord="grp:adv">${ordGrp.adv ? '▾' : '▸'} 고르기 · 그 밖</button>${ordGrp.adv ? `<button class="btn" type="button" data-ord="all">모두 고르기</button><button class="btn" type="button" data-ord="none">고르기 풀기</button><button class="btn ${boxArm ? 'on' : ''}" type="button" data-ord="boxsel" title="한 번 끌어 네모를 그리면 닿는 아군 모두를 고름 — 다음 명령이 모두에게">🔲 동시 선택</button>` : ''}</div>
-    <p class="note">${L.length === 1 ? esc(canDo(L[0], T)) : '한 턴 ' + T + '초 이동: ' + esc(L.map(u => `${u.name} ${(u.spd * T).toFixed(1)}칸`).join(' · '))}.${busy.length ? ' ' + esc(busy.map(u => u.name).join(' · ')) + ' 은(는) 지금 ' + (busy.length > 1 ? '공격 중' : esc(actLabel(Wd, busy[0], liveAct(Wd, busy[0])))) + ' — 이동 명령은 하던 동작을 바로 끊고 움직여요 (달리는 돌진 · 넘어짐 · 휘청만 못 끊음). 다른 명령은 준비 중인 동작을 끊어요.' : ''} 왼쪽 클릭: 적 = 공격 · 빈 바닥 = 고르기 풀기 · A → 바닥 = 공격 이동. 오른쪽 클릭: 이동${L.length > 1 ? ' (대형 그대로 각자 다른 칸)' : ''}.</p>`;
+    <div class="row ogrp"><button class="btn ghd ${ordGrp.tac ? 'on' : ''}" type="button" data-ord="grp:tac">${ordGrp.tac ? '▾' : '▸'} 전술</button>${ordGrp.tac ? `<button class="btn" type="button" data-ord="scout" title="숨어서 가 보고 돌아와 보고 — 누른 뒤 살펴볼 바닥을 클릭">🔭 정찰 <kbd>Y</kbd></button><button class="btn" type="button" data-ord="assn" title="숨어서 등 뒤로 — 누른 뒤 노릴 적을 클릭 (아무도 못 보고 · 상대가 알아채지 못하고 · 경계가 약할 때 소리 없이)">🗡 암살 <kbd>U</kbd></button><button class="btn" type="button" data-ord="supp" title="베테랑 · 사격 A 이상 사수 — 누른 뒤 화살 · 총알이 날아온 쪽 바닥을 클릭 · 곧게 쏨 (보이지 않는 상대는 겨눌 수 없음 · 쏘면 드러남)">🎯 견제사격 <kbd>J</kbd></button><button class="btn" type="button" data-ord="area" title="활: 누른 뒤 바닥을 클릭 — 곡사로 그 둘레에 떨굼 (방패 너머 · 엎드린 몸 · 흩어짐) · 총: 견제사격과 같음">🏹 지역사격 <kbd>P</kbd></button><button class="btn" type="button" data-ord="watch" title="그 자리에서 바깥을 나눠 보고 섬 · 자주 뒤를 돌아봄">👁 사주경계 <kbd>O</kbd></button><button class="btn ${armed && armed.k === 'flank' ? 'on' : ''}" type="button" data-ord="flank" title="적 하나를 찍으면 그 적의 옆 · 뒤 (붙들어 주는 동료 반대쪽) 로 돌아 들어가 침 — 붙들어 줄 이가 없으면 위험">🔄 측면 기동</button>${L.some(u => lretLine(Wd, u)) ? `<button class="btn ${armed && armed.k === 'lret' ? 'on' : ''}" type="button" data-ord="lret" title="고른 아군이 낀 전열 (근접 둘 넘게 나란히) 모두가 방패를 앞으로 든 채 함께 물러섬 — 누른 뒤 물러설 바닥을 클릭">🛡 전열 후퇴 <kbd>K</kbd></button>` : ''}<button class="btn ${L.every(u => u.stealth) ? 'on' : ''}" type="button" data-ord="stealth" title="숨어 걸음 — 들킬 거리 ↓ (작은 기동병이 잘 숨음)">🥷 은신 <kbd>Z</kbd></button><button class="btn ${L.length && L.every(u => u.lie) ? 'on' : ''}" type="button" data-ord="lie" title="포복 — 엎드려 기어 감 · 모르는 적에겐 가까이서만 보임 · 멀리서 덜 맞음 · 총은 엎드려 쏨 (더 정확) · 근접에 약함">🦎 포복 <kbd>C</kbd></button><button class="btn ${detourArm ? 'on' : ''}" type="button" data-ord="detour" title="다음 이동 · 공격을 아는 적이 적은 쪽으로 크게 돌아가게 — PC 는 Shift + 오른쪽 클릭 · Shift + 적 클릭">↪ 우회 <kbd>Shift</kbd></button>` : ''}</div>
+    <p class="note">${L.length === 1 ? esc(canDo(L[0], T)) : '한 턴 ' + T + '초 이동: ' + esc(L.map(u => `${u.name} ${(u.spd * T).toFixed(1)}칸`).join(' · '))}.${busy.length ? ' ' + esc(busy.map(u => u.name).join(' · ')) + ' 은(는) 지금 ' + (busy.length > 1 ? '공격 중' : esc(actLabel(Wd, busy[0], liveAct(Wd, busy[0])))) + ' — 이동 명령은 하던 동작을 바로 끊고 움직여요 (달리는 돌진 · 넘어짐 · 휘청만 못 끊음). 다른 명령은 준비 중인 동작을 끊어요.' : ''}</p>`;
 }
 $('party').addEventListener('click', e => { const xc = e.target.closest('[data-cancel]'); if (xc && world && mode !== 'edit'){ e.stopPropagation(); cancelOrders([world.units[+xc.dataset.cancel]]); return; } const b = e.target.closest('[data-ally]'); if (!b || mode === 'edit') return; if (skillPick && giveSkill(world.units[+b.dataset.ally])) return; pickAlly(+b.dataset.ally, e.shiftKey); hud(); });
 $('foes').addEventListener('click', e => { const b = e.target.closest('[data-foe]'); if (!b || mode === 'edit' || !world || world.over) return; giveAttack(world.units[+b.dataset.foe]); });
@@ -17947,7 +18025,7 @@ function jrSummary(C, J, M){
 }
 function jrText(C, J, M){
   const Su = jrSummary(C, J, M), o = [], P = p => `${p.name}${p.hp != null ? ' 피 ' + p.hp : ''}${p.w ? ' · ' + p.w : ''}${p.sh ? ' · ' + p.sh : ''}${(p.gear || []).length ? ' · ' + p.gear.join(' · ') : ''}${(p.bag || []).length ? ' · 가방 [' + p.bag.join(', ') + ']' : ''}`;
-  o.push(`굴의 전투판 v9.7.4 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
+  o.push(`굴의 전투판 v9.8.0 — ${C.run ? '30층 여정 기록' : '1F 프롤로그 여정 기록'}`, `기록한 때: ${jrTime(Date.now())}`, `시작: ${jrTime(C.t0)} · 끝: ${C.t1 ? jrTime(C.t1) : '—'}${Su.mins != null ? ` (${Su.mins}분)` : ''}`, `결과: ${Su.result}${Su.why ? ' — ' + Su.why : ''}`,
     `길: ${Su.route.join(' → ') || '—'}`, `처음 동료: ${(Su.party0 || []).map(n => n + ((C.pick || []).includes(n) ? ' (뽑기)' : '')).join(' · ') || '—'}`, `쓰러진 이: ${Su.fallen.join(' · ') || '없음'} · 버린 이: ${Su.lost.join(' · ') || '없음'}`, `맵 ${Su.maps}번 · 싸운 시간 모두 ${jrMmss(Su.time)} · 처치 ${Su.kills}`, '');
   let prevRel = [];   /* v8.7.3 30층: 그 사이 얻은 유물 */
   M.forEach((m, i) => {
@@ -17979,7 +18057,7 @@ async function campLogAll(){
     const v = J && x.vn != null ? (J.visits || []).find(q => q.n === x.vn) : null; M.push({ ...(v || { s: x.s, name: (CAMP_S[x.s] || {}).name, stub: true }), t: x.t, res: x.res, ev: x.n, story: tx ? tx.story : null, text: tx ? tx.text : null, log }); }
   if (S.camp && !S.camp.end && world && world.camp){ const v = jrCur(); if (v && v.t == null) M.push({ ...v, live: true, t: +world.t.toFixed(1), res: world.over ? world.result : null, ev: world.log.length, story: jrStory(world), text: logLines(world), log: world.log.slice() }); }   // 아직 넘어가지 않은 지금 맵
   if (J) for (const pv of (J.visits || []).filter(q => q.panel)){ const k = M.findIndex(m => m.n != null && m.n > pv.n); M.splice(k < 0 ? M.length : k, 0, { ...pv }); }   /* v8.7.3 30층 칸 (상인 · 쉼터 · 만남 글) */
-  return { game: '굴의 전투판', ver: '9.7.4', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
+  return { game: '굴의 전투판', ver: '9.8.0', kind: C.run ? '30층 여정 기록' : '1F 여정 기록', at: new Date().toISOString(), summary: jrSummary(C, J, M), text: jrText(C, J, M),
     camp: { s: C.s, end: C.end || null, pick: C.pick, fallen: C.fallen, lost: C.lost, log: C.log, run: C.run ? { f: C.run.f, end: C.run.end || null, relics: (C.run.relics || []).slice(), gold: C.run.gold } : null }, stages: M.map(({ story, text, ...m }) => m) };
 }
 // v7.21.4 받기는 보는 곳의 downloads 기능으로만 (확인 창 · 거절 가능) — 쓸 수 없으면 (null) 받기 단추를 숨기고 복사로
@@ -18548,7 +18626,7 @@ const KB_GROUPS = [['고르기', [['1 ~ 9', '아군 고르기 (고른 뒤엔 1 ~
 function kbOpen(on){ const el = $('kbsheet'); if (on === undefined) on = el.hidden; if (on) $('kbc').innerHTML = '<h3>⌨ 단축키 <small style="font:500 11px var(--body);color:var(--dim)">(? 또는 Esc 로 닫기)</small></h3>' + KB_GROUPS.map(([t, rows]) => `<h4>${t}</h4><div class="kbg">${rows.map(([k, v]) => `<div class="kbr"><kbd>${esc(k)}</kbd><span>${esc(v)}</span></div>`).join('')}</div>`).join(''); el.hidden = !on; }
 $('keyBtn').addEventListener('click', () => kbOpen());
 $('kbsheet').addEventListener('click', e => { if (e.target === $('kbsheet')) kbOpen(false); });
-$('netShow').checked = S.showNet !== false; $('netShow').addEventListener('change', () => { S.showNet = $('netShow').checked; save(); if (MOB) renderMenu(); hud(); });   // v7.9.5 지휘망
+$('netShow').checked = S.showNet === true;   /* v9.8.0 지휘망은 기본으로 명령할 때만 */ $('netShow').addEventListener('change', () => { S.showNet = $('netShow').checked; save(); if (MOB) renderMenu(); hud(); });   // v7.9.5 지휘망
 $('speedSeg').addEventListener('click', e => { const b = e.target.closest('[data-sp]'); if (!b) return; if (S.noSlow && +b.dataset.sp < 0.25){ toast('슬로우를 끈 판이에요 — 1× 아래로는 못 내려요'); return; } speed = +b.dataset.sp; S.speed = speed; save(); $('speedSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
 { speed = S.speed != null && isFinite(+S.speed) ? +S.speed : 0.25; if (![0.125, 0.25, 0.5, 1].includes(speed)) speed = speed > 1 ? 1 : 0.25; if (S.noSlow && speed < 0.25) speed = 0.25; $('speedSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', +x.dataset.sp === speed)); }   // v5.7.2 기본 ½× · 고른 속도는 기억   // v7.2 예전 ½× 가 공식 1× (단추 ½ · 1 · 2 · 4× = 0.125 · 0.25 · 0.5 · 1)
 $('turnLen').addEventListener('change', e => { rules.turn = +e.target.value; S.rules = rules; save(); if (world) world.rules.turn = rules.turn; renderRules(); hud(); toast(`한 턴 = ${rules.turn}초 (다음 턴부터)`); });
@@ -18944,6 +19022,8 @@ dockTap($('dock'), b => {
   if (k === 'healP'){ const L2 = selUnits(world).filter(u => u.skill), cur = L2.length ? healPolOf(world, L2[0]) : 'dying'; ordKey('heal:' + { dying: 'order', order: 'free', free: 'dying' }[cur]); return; }
   if (k === 'mate' || k === 'chief'){ relKey(k); return; }   // v9.1
   if (k === 'boxsel'){ ordKey('boxsel'); return; }
+  if (k === 'more'){ dockMore = !dockMore; hud(); return; }   /* v9.8.0 */
+  if (k === 'clump' || k === 'chgmode'){ ordKey(k); hud(); return; }
   if (k === 'sac'){ ordKey('sac'); hud(); return; }
   if (k === 'resend'){ ordKey('resend'); return; }
   if (['alt', 'amove', 'hold', 'auto', 'line', 'lret', 'scout', 'flank', 'assn', 'supp', 'area', 'watch', 'flare', 'stealth', 'lie', 'detour', 'guard', 'pick', 'swing', 'cancel', 'torch', 'nochg'].includes(k)){ ordKey(k); hud(); return; }
@@ -18985,6 +19065,7 @@ const lieChip = (Wd, u) => { if (!u.lie || !u.alive || hidA(Wd, u)) return ''; c
 const roeChip = (Wd, u) => { const m = roeOf(Wd, u); return m === 'smart' || hidA(Wd, u) || !u.alive ? '' : `<i class="stb roe" title="${ROE_NM[m]}">${ROE_IC[m]}</i>`; };   // v7.9
 const stlChip = (Wd, u) => { const si = stlInfo(Wd, u); return si ? `<i class="stb ${si.k}" title="${esc(si.why)}">${si.k === 'blown' ? '👁' : '🥷'}</i>` : ''; };
 const dockState = (Wd, u) => u.gone ? (u.gone === 'left' ? '버림' : u.gone === 'up' ? '↑ 위 맵으로 넘어감' : '↓ 아래 맵으로 넘어감') : u.down ? '쓰러짐 · 일어나는 중' : !u.alive ? '쓰러짐' : u.act ? actLabel(Wd, u, liveAct(Wd, u)) : orderLabel(Wd, ordOf(u)) || moodLabel(Wd, u) || '';
+let dockMore = !!window.__dockMore;   /* v9.8.0 휴대폰 '⋯ 더' */
 function renderDock(Wd){
   if (!MOB) return;
   const ed = mode === 'edit', over = !!(Wd && Wd.over), L = Wd && !ed ? selUnits(Wd) : [];
@@ -18998,36 +19079,38 @@ function renderDock(Wd){
   else if (over) acts = `<span class="dhint">${Wd.result === 'exit' ? '맵을 넘어감 — 정산 창에서 다음 맵으로' : Wd.result === 'win' ? '적을 모두 쓰러뜨렸어요' : '전멸했어요'}${Wd.result === 'exit' ? '' : ' — 다시 하거나 배치로'}. 이야기 · 로그는 아래에</span>`;
   else if (!ed && Wd && (() => { const SH = [...sel].map(i => Wd.units[i]).filter(u => u && u.side === 0 && (u.alive || hidA(Wd, u))); return SH.length && SH.every(u => hidA(Wd, u)); })()) acts = `<span class="dhint">📣 소식 없음 — ${esc([...sel].map(i => Wd.units[i]).filter(u => u && hidA(Wd, u)).map(u => u.name).join(' · '))}: 지휘관이 보지도 듣지도 못해 명령이 닿지 않아요. 돌아오거나 동료가 보면 다시.</span>`;   // v7.8.4 살았는지 모름 — 살았든 아니든 같게
   else if (pickTxt) acts = `<span class="dhint"><b>${esc(pickTxt)}</b></span><button type="button" class="db" data-dk="pickx"><span class="ic">✕</span><small>취소</small></button>`;
-  else if (!L.length) acts = `<button type="button" class="db ${boxArm ? 'on' : ''}" data-dk="boxsel"><span class="ic">🔲</span>동시선택</button>${Wd.units.some(u => u.side === 0 && u.alive && u.missT != null && u.missO) ? '<button type="button" class="db" data-dk="resend"><span class="ic">📣</span>재전달</button>' : ''}<span class="dhint">아군을 탭해 고르세요. 바닥 탭 = 이동 · 적 탭 = 공격 (빠르게 두 번 = 서둘러 · 사수는 바로 쏨). 꾹 누르면 슬로우 + 기술 부채 (끌어서 고름 · 아래로 = 취소)</span>`;
+  else if (!L.length) acts = `${Wd.units.some(u => u.side === 0 && u.alive && u.missT != null && u.missO) ? '<button type="button" class="db" data-dk="resend"><span class="ic">📣</span>재전달</button>' : ''}<span class="dhint">아군을 탭 → 바닥 = 이동 · 적 = 공격</span>`;
   else {
     const sk = slotOrder(Wd, L).map(({ n, s: s2 }) => { if (s2.off) return ''; const cdF = s2.cd > 0 ? Math.min(1, s2.cd / Math.max(0.1, s2.cdMax)) : 0;
       return `<button type="button" class="db ${s2.sp ? 'sp sp-' + s2.sp : ''} ${s2.on ? 'on' : ''} ${cdF ? 'cd' : ''}" style="${cdF ? '--cd:' + cdF.toFixed(2) : ''}" data-dk="sk${n}"><span class="ic">${icOf(s2)}</span>${esc(s2.nm)}<small>${esc(s2.cd > 0 ? f2(s2.cd) + '초' : s2.sb || '')}</small></button>`; }).join('');
     const melee = L.filter(u => !isFar(u)).length, gu = L.find(u => u.canGuard), canPick = L.some(u => u.jav && !u.spearHeld && mySpear(Wd, u)) || !!nearItem(Wd, L) || (Wd.torches.some(t => t.dropped) && L.some(u => !u.torch)), sw = L.find(u => u.canSweep), swS = L.find(u => u.modBody && u.canSweep);
-    acts = (swS ? `<button type="button" class="db sp sp-swing" data-dk="swing"><span class="ic">🔨</span>휘두르기<small>${SWING_NM[swS.swing || '']}</small></button>` : '') + sk + `<button type="button" class="db ${amovePick ? 'on' : ''}" data-dk="amove"><span class="ic">⚔</span>공격 이동</button><button type="button" class="db ${detourArm ? 'on' : ''}" data-dk="detour"><span class="ic">↪</span>우회<small>${detourArm ? '다음 이동' : '끔'}</small></button>`
+    acts = (swS ? `<button type="button" class="db sp sp-swing" data-dk="swing"><span class="ic">🔨</span>휘두르기<small>${SWING_NM[swS.swing || '']}</small></button>` : '') + sk + `<button type="button" class="db ${amovePick ? 'on' : ''}" data-dk="amove"><span class="ic">⚔</span>공격 이동</button>${dockMore ? `<button type="button" class="db ${detourArm ? 'on' : ''}" data-dk="detour"><span class="ic">↪</span>우회<small>${detourArm ? '다음 이동' : '끔'}</small></button>` : ''}`
       + (L.some(u => u.alt) ? `<button type="button" class="db" data-dk="alt"><span class="ic">🔁</span>${esc(L.find(u => u.alt).alt.name)}으로<small>${L.find(u => u.alt).alt.ammo != null ? '탄 ' + L.find(u => u.alt).alt.ammo : ''}</small></button>` : '')   // v7.25.1 두 번째 총
       + `<button type="button" class="db" data-dk="hold"><span class="ic">■</span>제자리</button>`
       + `<button type="button" class="db" data-dk="auto"><span class="ic">↺</span>자동</button>`
       + `<button type="button" class="db" data-dk="line"><span class="ic">▬</span>전열<small>${melee ? '' : '지원'}</small></button>`
-      + (L.some(u => lretLine(Wd, u)) ? `<button type="button" class="db ${armed && armed.k === 'lret' ? 'on' : ''}" data-dk="lret"><span class="ic">🛡</span>전열 후퇴<small>${(lretLine(Wd, L.find(u => lretLine(Wd, u))) || { ids: [] }).ids.length}명</small></button>` : '')
+      + `<button type="button" class="db ${L.every(u => u.order && u.order.k === 'clump') ? 'on' : ''}" data-dk="clump"><span class="ic">🧱</span>뭉침<small>돌격 방어</small></button>`   /* v9.8.0 */
+      + (L.some(u => u.canCharge) ? `<button type="button" class="db ${L.find(u => u.canCharge).chgMode ? 'on' : ''}" data-dk="chgmode"><span class="ic">⚔</span>돌격<small>${({ '': '기본', atk: '공격', def: '방어' })[L.find(u => u.canCharge).chgMode || '']}</small></button>` : '')
+      + (dockMore && L.some(u => lretLine(Wd, u)) ? `<button type="button" class="db ${armed && armed.k === 'lret' ? 'on' : ''}" data-dk="lret"><span class="ic">🛡</span>전열 후퇴<small>${(lretLine(Wd, L.find(u => lretLine(Wd, u))) || { ids: [] }).ids.length}명</small></button>` : '')
       + (L.some(u => u.canCharge) ? `<button type="button" class="db ${L.filter(u => u.canCharge).every(u => u.noChg) ? 'on' : ''}" data-dk="nochg"><span class="ic">🚫</span>돌격 안 함<small>${L.filter(u => u.canCharge).every(u => u.noChg) ? '켬' : '끔'}</small></button>` : '')   // v7.29.0
       + (gu ? `<button type="button" class="db ${gu.guardMode === 'hold' ? 'on' : ''}" data-dk="guard"><span class="ic">🛡</span>막기<small>${GM_SHORT[gu.guardMode || 'auto']}</small></button>` : '')
       + (canPick ? `<button type="button" class="db" data-dk="pick"><span class="ic">✋</span>줍기</button>` : '')
       + (sw && !swS ? `<button type="button" class="db" data-dk="swing"><span class="ic">🔨</span>휘두르기<small>${SWING_NM[sw.swing || '']}</small></button>` : '')
-      + (L.some(u => !u.crawl) ? `<button type="button" class="db" data-dk="scout"><span class="ic">🔭</span>정찰</button>` : '')   // v7.5   // v7.8.3 할 수 없는 단추는 숨김
-      + (L.some(u => !u.crawl && (u.assnE || 0) > 0 && (u.stealthE || 0) >= ((Wd.rules.stealth || {}).min || 0)) ? `<button type="button" class="db" data-dk="assn"><span class="ic">🗡</span>암살</button>` : '')   // v7.6
-      + (L.some(u => suppOK(u)) ? `<button type="button" class="db" data-dk="supp"><span class="ic">🎯</span>견제</button>` : '') + (L.some(u => suppOK(u) && u.lob) ? `<button type="button" class="db" data-dk="area"><span class="ic">🏹</span>지역</button>` : '')   // v7.7   // v7.16 지역사격 (활)
-      + `<button type="button" class="db" data-dk="watch"><span class="ic">👁</span>사주경계</button>`
-      + (L.some(u => u.torch && !u.crawl) ? `<button type="button" class="db" data-dk="flare"><span class="ic">🔥</span>던지기</button>` : '')   // v7.8
-      + (L.some(u => (u.stealthE || 0) >= ((Wd.rules.stealth || {}).min || 0)) ? `<button type="button" class="db ${L.every(u => u.stealth) ? 'on' : ''}" data-dk="stealth"><span class="ic">🥷</span>은신<small>${L.every(u => u.stealth) ? '켬' : L.some(u => u.blown && Wd.t - u.blown.t < 4) ? '들킴' : '끔'}</small></button>` : '')
-      + (L.some(u => !u.crawl && !u.modBody) ? `<button type="button" class="db ${L.every(u => u.lie) ? 'on' : ''}" data-dk="lie"><span class="ic">🦎</span>포복<small>${L.some(u => u.lieSw) ? (L.some(u => u.lieSw && u.lieSw.to) ? '엎드리는 중' : '일어나는 중') : L.every(u => u.lie) ? '엎드림' : L.some(u => u.lie) ? '일부' : '서 있음'}</small></button>` : '')   // v7.11 포복
-      + (L.some(u => u.i === Wd.spareBy) && Wd.spare > 0 ? `<button type="button" class="db" data-dk="torch"><span class="ic">🔥</span>내려놓기<small>${Wd.spare}개</small></button>` : '')
-      + `<button type="button" class="db ${L.every(u => roeOf(Wd, u) === 'hold') ? 'on' : ''}" data-dk="roeH"><span class="ic">🕊</span>교전금지<small>${L.every(u => roeOf(Wd, u) === 'hold') ? '켬' : ''}</small></button>`   // v7.9 한 번 누르면 켬 · 다시 누르면 판단 교전으로
+      + (dockMore && L.some(u => !u.crawl) ? `<button type="button" class="db" data-dk="scout"><span class="ic">🔭</span>정찰</button>` : '')   // v7.5   // v7.8.3 할 수 없는 단추는 숨김
+      + (dockMore && L.some(u => !u.crawl && (u.assnE || 0) > 0 && (u.stealthE || 0) >= ((Wd.rules.stealth || {}).min || 0)) ? `<button type="button" class="db" data-dk="assn"><span class="ic">🗡</span>암살</button>` : '')   // v7.6
+      + (dockMore && L.some(u => suppOK(u)) ? `<button type="button" class="db" data-dk="supp"><span class="ic">🎯</span>견제</button>` : '') + (dockMore && L.some(u => suppOK(u) && u.lob) ? `<button type="button" class="db" data-dk="area"><span class="ic">🏹</span>지역</button>` : '')   // v7.7   // v7.16 지역사격 (활)
+      + (dockMore ? `<button type="button" class="db" data-dk="watch"><span class="ic">👁</span>사주경계</button>` : '')
+      + (false && L.some(u => u.torch && !u.crawl) ? `<button type="button" class="db" data-dk="flare"><span class="ic">🔥</span>던지기</button>` : '')   // v7.8
+      + (dockMore && L.some(u => (u.stealthE || 0) >= ((Wd.rules.stealth || {}).min || 0)) ? `<button type="button" class="db ${L.every(u => u.stealth) ? 'on' : ''}" data-dk="stealth"><span class="ic">🥷</span>은신<small>${L.every(u => u.stealth) ? '켬' : L.some(u => u.blown && Wd.t - u.blown.t < 4) ? '들킴' : '끔'}</small></button>` : '')
+      + (dockMore && L.some(u => !u.crawl && !u.modBody) ? `<button type="button" class="db ${L.every(u => u.lie) ? 'on' : ''}" data-dk="lie"><span class="ic">🦎</span>포복<small>${L.some(u => u.lieSw) ? (L.some(u => u.lieSw && u.lieSw.to) ? '엎드리는 중' : '일어나는 중') : L.every(u => u.lie) ? '엎드림' : L.some(u => u.lie) ? '일부' : '서 있음'}</small></button>` : '')   // v7.11 포복
+      + (false && L.some(u => u.i === Wd.spareBy) && Wd.spare > 0 ? `<button type="button" class="db" data-dk="torch"><span class="ic">🔥</span>내려놓기<small>${Wd.spare}개</small></button>` : '')
+      + (dockMore ? `<button type="button" class="db ${L.every(u => roeOf(Wd, u) === 'hold') ? 'on' : ''}" data-dk="roeH"><span class="ic">🕊</span>교전금지<small>${L.every(u => roeOf(Wd, u) === 'hold') ? '켬' : ''}</small></button>` : '')   // v7.9 한 번 누르면 켬 · 다시 누르면 판단 교전으로
       + `<button type="button" class="db ${pstOpen ? 'on' : ''}" data-dk="posture"><span class="ic">${L.every(u => roeOf(Wd, u) === roeOf(Wd, L[0])) ? ROE_IC[roeOf(Wd, L[0])] : '⚖'}</span>태세<small>${L.every(u => roeOf(Wd, u) === roeOf(Wd, L[0])) ? ROE_NM[roeOf(Wd, L[0])] : '섞임'}</small></button>`   // v7.9.3 교전허가 · 사격금지 · 치료 방침은 태세 창에
       + (Wd.units.some(u => u.side === 0 && u.alive && u.missT != null && u.missO) ? `<button type="button" class="db" data-dk="resend"><span class="ic">📣</span>재전달</button>` : '')
       + (L.length ? `<button type="button" class="db ${relPick === 'mate' ? 'on' : ''}" data-dk="mate" title="전우조: 여럿을 골랐으면 바로 맺고, 한 명이면 짝을 눌러요"><span class="ic">🤝</span>전우조<small>${L.length >= 2 && L.every(u => u.cg && u.cg === L[0].cg) ? '풀기' : relPick === 'mate' ? '짝 누르기' : '맺기'}</small></button><button type="button" class="db ${relPick === 'chief' ? 'on' : ''}" data-dk="chief" title="고른 아군을 부하로 — 누른 뒤 대장을 눌러요"><span class="ic">🎖</span>대장<small>${relPick === 'chief' ? '대장 누르기' : '연결'}</small></button>` : '')   // v7.10
       + (L.some(u => !u.crawl && !isFar(u)) ? `<button type="button" class="db ${armed && armed.k === 'flank' ? 'on' : ''}" data-dk="flank"><span class="ic">🔄</span>측면</button>` : '')
-      + (L.length === 1 && !L[0].crawl ? `<button type="button" class="db ${sacConf && sacConf.i === L[0].i && performance.now() - sacConf.t < 3000 ? 'on' : ''}" data-dk="sac"><span class="ic">💀</span>희생돌격</button>` : '')
-      + `<button type="button" class="db ${boxArm ? 'on' : ''}" data-dk="boxsel"><span class="ic">🔲</span>동시선택</button>`
+      + (false && L.length === 1 && !L[0].crawl ? `<button type="button" class="db ${sacConf && sacConf.i === L[0].i && performance.now() - sacConf.t < 3000 ? 'on' : ''}" data-dk="sac"><span class="ic">💀</span>희생돌격</button>` : '')
+      + `<button type="button" class="db ${dockMore ? 'on' : ''}" data-dk="more"><span class="ic">⋯</span>${dockMore ? '접기' : '더'}</button>`
       + (L.some(u => u.order || u.stay) ? `<button type="button" class="db" data-dk="cancel"><span class="ic">✕</span>취소</button>` : '');
   }
   const playing = mode === 'run' && !paused;
@@ -19037,8 +19120,8 @@ function renderDock(Wd){
     : over ? `<button type="button" class="db go" data-dk="again">▶ 다시</button><button type="button" class="db" data-dk="reset"><span class="ic">⟲</span><small>${stA ? '맵 처음부터' : '배치로'}</small></button><button type="button" class="db ${detOpen ? 'on' : ''}" data-dk="info"><span class="ic">ⓘ</span><small>상세</small></button><button type="button" class="db" data-dk="menu"><span class="ic">☰</span><small>더 보기</small></button>`
     : `<button type="button" class="db go" data-dk="play">${playing ? '⏸ 멈춤' : '▶ 재생'}<small>${playing ? '멈추고 명령' : Wd && Wd.t < 1e-6 ? '시작' : '이어서'}</small></button>`
       + `<button type="button" class="db" data-dk="step" ${playing || noPauseNow() ? 'disabled' : ''}><span class="ic">⏭</span><small>${mode === 'run' && paused ? '턴 끝까지' : '한 턴'}</small></button>`
-      + (Wd && !Wd.units.some(u => u.alive && u.side === 0 && u.torch) && torchSrc(Wd).length && Wd.units.some(u => u.alive && u.side === 0 && !u.crawl) ? `<button type="button" class="db" data-dk="torchT"><span class="ic">🔥</span><small>횃불 찾기</small></button>` : '')   // v7.8.5 (든 이가 없을 때 — 횃불 가져오기)
-      + (Wd && Wd.units.some(u => u.alive && u.side === 0 && u.torch) ? `<button type="button" class="db ${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? 'on' : ''}" data-dk="torchT"><span class="ic">${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? '🔥' : '🌑'}</span><small>횃불 ${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? '켬' : '끔'}</small></button>` : '')   // v7.5 원터치
+      + (false && Wd && !Wd.units.some(u => u.alive && u.side === 0 && u.torch) && torchSrc(Wd).length && Wd.units.some(u => u.alive && u.side === 0 && !u.crawl) ? `<button type="button" class="db" data-dk="torchT"><span class="ic">🔥</span><small>횃불 찾기</small></button>` : '')   // v7.8.5 (든 이가 없을 때 — 횃불 가져오기)
+      + (false && Wd && Wd.units.some(u => u.alive && u.side === 0 && u.torch) ? `<button type="button" class="db ${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? 'on' : ''}" data-dk="torchT"><span class="ic">${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? '🔥' : '🌑'}</span><small>횃불 ${Wd.units.some(u => u.alive && u.side === 0 && u.torch && !u.torchOff) ? '켬' : '끔'}</small></button>` : '')   // v7.5 원터치
       + `<button type="button" class="db" data-dk="speed"><span class="ic" style="font-size:14px">${spT}</span><small>속도</small></button>`
       + `<button type="button" class="db" data-dk="zoom"><span class="ic">${zoomAll ? '🔍' : '⤢'}</span><small>${zoomAll ? '가까이' : '전체'}</small></button>`
       + `<button type="button" class="db ${cam.follow ? 'on' : ''}" data-dk="follow"><span class="ic">◎</span><small>따라감</small></button>`
@@ -19465,7 +19548,7 @@ function sqBoxHtml(){
       return `<div class="row sqrow"><span class="sqn">${esc(p.name)}</span>${p.hero ? '<span class="lb">인주 — 모두의 기본 대장</span>' : relSelects(p, `data-relchief="${k}"`, `data-relmate="${k}"`) + `<button type="button" class="btn sm ${p.rank === '부대장' ? 'on' : ''}" data-sqlead="${k}" title="공식 부대장은 하나 — 지휘관의 말을 못 들은 이에게 2차로 전하고, 지휘관이 쓰러지면 바로 이어받아요">${p.rank === '부대장' ? '★ 부대장' : '☆ 부대장으로'}</button>`}</div>`; }).join('') +
     '</div><p class="note">싸우는 중에도 아군을 골라 명령 칸의 🤝 / 🎖 로 바꿀 수 있어요. 판에는 전우 사이가 굵은 파란 선, 대장-부하는 금빛 점선 (대장 머리 위 ♛) 으로 보여요. 지휘 스킬이 없는 대장도 부하에게 기본 지시는 해요.</p>';   /* v9.1 편대를 대신함 */
 }
-function renderSqBox(){ const h = sqBoxHtml(); for (const id of ['sqBoxP', 'sqBoxF']){ const b = $(id); if (b && b._h !== h){ b._h = h; b.innerHTML = h; } } const f = $('sqBoxF'); if (f) f.hidden = !(mode === 'plan' && world && world.t < 1e-6); }
+function renderSqBox(){ const h = sqBoxHtml(); for (const id of ['sqBoxP', 'sqBoxF']){ const b = $(id); if (b && b._h !== h){ const od = b.querySelector('details.sqdet'), wo = od ? od.open : false; b._h = h; b.innerHTML = id === 'sqBoxF' ? `<details class="sqdet"${wo ? ' open' : ''}><summary>🤝 전우조 · 대장 정하기 (펼치기)</summary>${h}</details>` : h; } }   /* v9.8.0 싸움 칸에선 접음 */ const f = $('sqBoxF'); if (f) f.hidden = !(mode === 'plan' && world && world.t < 1e-6); }
 // v9.1 관계를 판에 다시 입힘 (배치 칸 cg · chiefNm 기준) — 싸움 도중에도 됨
 function relReapply(W){
   const Dp = W.units.find(u => u.side === 0 && u.alive && u.rank === '부대장');
@@ -19775,7 +19858,7 @@ async function copyText(txt, ok){
 $('copyHist').addEventListener('click', () => {
   if (!S.hist.length){ toast('아직 기록이 없어요'); return; }
   const rr = JSON.stringify(rules) !== JSON.stringify(DEFAULT_RULES) ? '\n지금 수치표: ' + JSON.stringify(rules) : '';
-  copyText('굴의 전투판 v9.7.4 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
+  copyText('굴의 전투판 v9.8.0 자동 판 기록 (등급 숫자 뒤 = 직업, * = 따로 고친 수치)\n' + S.hist.map(histText).join('\n') + rr, '기록을 복사했어요');
 });
 $('clearHist').addEventListener('click', () => { if (!S.hist.length) return; S.hist = []; save(); renderHist(); toast('기록을 지웠어요'); });
 $('copySetup').addEventListener('click', () => copyText(JSON.stringify({ v: 3, type: S.type, W: S.W, H: S.H, seed: S.seed, flips: S.flips || [], units: S.units, torches: S.torches, terr: S.terr || '', tseed: S.tseed || 1, piles: S.piles || [], hills: S.hills || [], pileOff: S.pileOff || [], rules }), '지금 배치를 글자로 복사했어요'));
