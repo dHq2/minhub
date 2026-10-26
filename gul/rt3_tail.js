@@ -8434,8 +8434,9 @@ function chiefInit(W, setup){
   setup.units.forEach((p, k) => { const u = W.units[k]; if (!u) return;
     if (p.cg) u.cg = String(p.cg);
     if (u.side !== 0) return;
-    if (p.chiefNm !== undefined && !u.hero){
-      const C = p.chiefNm ? W.units.find(c => c.side === 0 && c !== u && c.name === p.chiefNm && !c.summon && !c.hero) : null;
+    if (p.protNm){ const Pt = W.units.find(c => c.side === 0 && c !== u && c.name === p.protNm && !c.summon); u.protOf = Pt ? Pt.i : null; }   /* v9.9.6 보호도 이어짐 */
+    if (p.chiefNm !== undefined){   /* v9.9.6 인주도 (v9.9.0 공통) */
+      const C = p.chiefNm ? W.units.find(c => c.side === 0 && c !== u && c.name === p.chiefNm && !c.summon) : null;
       if (C){ u.sqLead = C.i; u.sqAuto = false; u.sqFix = true; u.chiefLk = true; }
       else if (p.chiefNm === ''){ u.sqLead = null; u.chiefLk = false; u.sqFix = false; } } });
   mateSlots(W);
@@ -8462,7 +8463,7 @@ function chiefSet(W, followers, chief){
 function chiefClear(W, list){ const T = list.filter(u => u && u.chiefLk); T.forEach(u => { u.sqLead = null; u.chiefLk = false; u.sqFix = false; }); if (T.length) L(W, { k: 'chiefOff', ids: T.map(u => u.i), b: null, vis: true }); return T.length; }
 function relSync(W, setup){   // 바뀐 관계를 배치 칸에 적어 둠 (다음 판 · 층에도)
   for (const u of W.units){ if (u.side !== 0 || u.summon) continue; const p = setup.units[u.i]; if (!p) continue;
-    p.cg = u.cg || ''; const C = u.chiefLk && u.sqLead != null ? W.units[u.sqLead] : null; p.chiefNm = C ? C.name : ''; }
+    p.cg = u.cg || ''; const C = u.chiefLk && u.sqLead != null ? W.units[u.sqLead] : null; p.chiefNm = C ? C.name : ''; const Pt = u.protOf != null ? W.units[u.protOf] : null; p.protNm = Pt && Pt.alive ? Pt.name : ''; }
 }
 // 전우의 표적 · 대장의 표적을 함께 노림
 function mateBias(W, u, f){

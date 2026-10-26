@@ -1,4 +1,4 @@
-// v7.17.1 UI 시험 — ui7171.js v1.2 (v1.2: 기술 막대의 명령 단추 (전열 · 전열 후퇴 — v7.24.3) 는 기술이 아니라 아이콘 검사에서 뺌 · v1.1: 테두리 색은 --gc 로만 읽음 · 특성 · 기술 아이콘: 그림 로드 · 상세 · 등급 테두리 · 특성 탭 · 기술 막대 · 동료 카드 띠 · 모바일 조작판 · 그림 스크린샷)
+// v7.17.1 UI 시험 — ui7171.js v1.3 (v1.3: 관계 단추 (보호 · 풀기) 도 명령 단추로 뺌 (v9.9.6) · v1.2: 기술 막대의 명령 단추 (전열 · 전열 후퇴 — v7.24.3) 는 기술이 아니라 아이콘 검사에서 뺌 · v1.1: 테두리 색은 --gc 로만 읽음 · 특성 · 기술 아이콘: 그림 로드 · 상세 · 등급 테두리 · 특성 탭 · 기술 막대 · 동료 카드 띠 · 모바일 조작판 · 그림 스크린샷)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/build/wrapped.html';
@@ -12,7 +12,7 @@ const { chromium } = require('playwright');
    console.log('    노먼 상세', JSON.stringify(det)); ok(det.some(x=>x[0]==='[사격A]'&&x[1]==='#ff8a70')&&det.some(x=>x[0]==='[지휘C]'&&x[1]==='#9b7fd0'),'상세 특성 줄에 아이콘 · 등급 테두리 (A 핏빛 · C 보라)');
    const kar = await p.evaluate(()=>{ const k=world.units.find(u=>u.modBody); const d=document.createElement('div'); d.innerHTML=unitDetailHtml(world,k); return d.querySelectorAll('.tico').length; }); ok(kar>=3,'카리우스 상세 (◆개조된 신체 · 거구 · 갑피 …) 아이콘 '+kar);
    const g = await p.evaluate(()=>{ const i=world.units.findIndex(u=>u.ref==='C-004'); sel=new Set([i]); hud(); return [...document.querySelectorAll('#skbar .sk:not(.off)')].map(b=>[b.querySelector('.nm').innerText, !!b.querySelector('.ic .tico')]); });
-   console.log('    청광묵 기술 막대', JSON.stringify(g)); ok(g.length>=2&&g.every(x=>x[1]||x[0]==='투척'||/^(전열|전우조|대장)/.test(x[0])),'기술 막대 아이콘 (단검 투척은 글자 그림 · 전열 · 전우조 · 대장 명령 단추는 뺌 — v9.6.2)');
+   console.log('    청광묵 기술 막대', JSON.stringify(g)); ok(g.length>=2&&g.every(x=>x[1]||x[0]==='투척'||/^(전열|전우조|대장|보호|풀기)/.test(x[0])),'기술 막대 아이콘 (단검 투척은 글자 그림 · 전열 · 전우조 · 대장 명령 단추는 뺌 — v9.6.2)');
    const n2 = await p.evaluate(()=>{ const i=world.units.findIndex(u=>u.ref==='C-007'); sel=new Set([i]); hud(); return [...document.querySelectorAll('#skbar .sk:not(.off)')].map(b=>[b.querySelector('.nm').innerText, !!b.querySelector('.ic .tico')]); });
    ok(n2.some(x=>x[0]==='응급처치'&&x[1]),'노먼 응급처치 아이콘');
    await p.evaluate(()=>{ const i=world.units.findIndex(u=>u.ref==='C-004'); sel=new Set([i]); hud(); });

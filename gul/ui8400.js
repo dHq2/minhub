@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
  await p.evaluate(()=>{ setMode('story'); campStart(); document.getElementById('gAll').click(); document.getElementById('gGo').click(); }); await p.waitForTimeout(300);
  await p.evaluate((TE)=>{ eval(TE); if (typeof ldEnd==='function') ldEnd(true); }, TALKEND);
  // 1. 동료 세르파 → 슬라임 뽑기 · 상한
- const a = await p.evaluate(()=>{ const W=world; paused=true; for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } const c=__mid(W); const s=__put(W,'세르파',0,c.x,c.y); __run(W,2.5);
+ const a = await p.evaluate(()=>{ const W=world; paused=true; for (const u of W.units) if (u.torch) u.torchOff=false; computeLight(W);   /* v9.9.6 횃불은 꺼진 채 시작 — 이 시험은 켜고 */ for (const u of W.units) if (u.side===1){ u.alive=false; u.hp=0; } const c=__mid(W); const s=__put(W,'세르파',0,c.x,c.y); __run(W,2.5);
    const n1=W.units.filter(u=>u.summon==='slime'&&u.alive&&u.side===0).length; __run(W,25); const n2=W.units.filter(u=>u.summon==='slime'&&u.alive&&u.side===0).length, ups=W.units.filter(u=>u.summon==='up'&&u.alive).length;
    return { max: s.max, boss: s.traits.includes('보스'), n1, n2, ups, chips: [...document.querySelectorAll('#dChips [data-dc]')].length }; });
  console.log('    뽑기', JSON.stringify(a)); ok(a.max===90&&!a.boss,'동료 세르파: 체력 90 · [보스] 없음'); ok(a.n1>=1,'몇 초 뒤 작은 슬라임을 뽑음 ('+a.n1+')'); ok(a.n2===SP(5)&&a.ups===0,'적이 없으면 상한 5마리까지 곁에 두고 합치지 않음 ('+a.n2+' · 합친 것 '+a.ups+')');

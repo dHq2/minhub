@@ -1,4 +1,4 @@
-// ui7100.js v1.1 (v1.1: v9.1 — 편대 단추 (squad) 시험을 대장 연결 단추 (chief) · 대장 배지로) — UI 시험 (v7.10 ~)
+// ui7100.js v1.2 (v1.2: 횃불은 꺼진 채 시작 — 0초에 켜는 것이 로그에 · v1.1: v9.1 — 편대 단추 (squad) 시험을 대장 연결 단추 (chief) · 대장 배지로) — UI 시험 (v7.10 ~)
 const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m); if(!c) fails.push(m); };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  for (const [nm,vp,mob] of [['모바일',{width:412,height:915},true],['데스크톱',{width:1280,height:800},false]]){
@@ -15,7 +15,7 @@ const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c
   // 횃불 0초 끔 → 로그
   await p.evaluate(()=>{ const W=world; toggleTorch(); });
   const lg = await p.evaluate(()=>world.log.filter(l=>l.k==='torch').map(l=>l.on+':'+!!l.t0).join(','));
-  ok(/false:true/.test(lg), '0초 횃불 끄기도 로그에 남음 '+lg);
+  ok(/true:true/.test(lg), '0초 횃불 켜기도 로그에 남음 (v9.9.6 꺼진 채 시작) '+lg);
   // 꺼진 채 떨어짐
   const dr = await p.evaluate(()=>{ const W=world, H=W.units[0]; H.hp=1; H.max=H.max||85; const foe=W.units.find(u=>u.side===1); foe.x=H.x+0.6; foe.y=H.y; applyDamageTest = typeof applyDamageTest; return H.torch+':'+H.torchOff; });
   console.log('  횃불 상태', dr);
