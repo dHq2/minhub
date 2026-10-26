@@ -581,29 +581,33 @@ function incoming(W, b, s){
   const SU = SUP(W), sh = W.units[s.a]; if (!SU || !sh || b.side === s.side) return;
   if (W.units.some(o => o.alive && o.side === b.side && !(o.side === 0 && o.posUnk) && canSee(W, o, sh))) return;
   const I = W.inc || (W.inc = []), T = SU.incT || 6;
-  I.push({ side: b.side, x: +b.x.toFixed(2), y: +b.y.toFixed(2), dx: -s.dx, dy: -s.dy, tr: +Math.hypot(s.x - s.x0, s.y - s.y0).toFixed(1), t: W.t, gun: !!s.gun, by: b.i });
+  I.push({ side: b.side, x: +b.x.toFixed(2), y: +b.y.toFixed(2), dx: -s.dx, dy: -s.dy, tr: +Math.hypot(s.x - s.x0, s.y - s.y0).toFixed(1), t: W.t, gun: !!s.gun, by: b.i, a: s.a });   /* v9.10.0 쏜 이 (방향만 앎 — 자리는 모름) */
+  { const fa = Math.atan2(-s.dy, -s.dx); for (const o of W.units){ if (!o.alive || o.down || o.side !== b.side || o.act || (o !== b && dist(o, b) > 2.5) || W.units.some(f => f.alive && !f.down && f.side !== o.side && gap(o, f) < Math.max(o.rng, 0.5) + 0.6)) continue; o.fg = fa; o.incT = W.t; } }   /* v9.10.0 날아온 쪽으로 돌아섬 (맞은 몸 · 곁 동료) */
   if (I.length > 30 || W.t - I[0].t > T) W.inc = I.filter(r => W.t - r.t < T);
   const k = 'incLogT' + b.side; if (W.t - (W[k] == null ? -9 : W[k]) >= 1.5){ W[k] = W.t; L(W, { k: 'incoming', side: b.side, b: b.i, dir: dirName(-s.dx, -s.dy), gun: !!s.gun, supp: !!s.supp, vis: b.side === 0 || !!b.seenBy }); }
 }
 // 적 지휘관: 보이지 않는 사수에게 맞으면 (날아온 방향) 보이는 상대가 없는 베테랑 사수에게 그쪽 견제사격을 시킴 (지휘 전달 공식)
 // v7.12 숨은 사수 (fireT 초 안에 쏨) 를 지금 아무도 못 보는데 seen 초 안에 정확히 안 자리 (총구 화염 · 놓치기 전 · 비명) — 적 지휘관의 곡사 면 제압
-function suppHid(W){
+function suppHid(W, sd){ sd = sd == null ? 1 : sd;   /* v9.10.0 양쪽 편 — sd = 쏘게 하는 편 */
   const SU = SUP(W) || {}; let best = null;
   for (const t of W.units){
-    if (!t.alive || t.down || t.side !== 0 || !isFar(t) || W.t - (t.lastFireT == null ? -99 : t.lastFireT) > (SU.fireT || 8)) continue;
-    if (W.units.some(e => e.alive && e.side === 1 && canSee(W, e, t))) continue;
-    for (const e of W.units){ if (!e.alive || e.side !== 1) continue; const q = e.sense[t.i]; if (q && q.exact && W.t - q.t <= (SU.seen || 4) && (!best || q.t > best.t)) best = { x: q.x, y: q.y, t: q.t, b: t.i }; }
+    if (!t.alive || t.down || t.side === sd || !isFar(t) || W.t - (t.lastFireT == null ? -99 : t.lastFireT) > (SU.fireT || 8)) continue;
+    if (W.units.some(e => e.alive && e.side === sd && canSee(W, e, t))) continue;
+    for (const e of W.units){ if (!e.alive || e.side !== sd) continue; const q = e.sense[t.i]; if (q && q.exact && W.t - q.t <= (SU.seen || 4) && (!best || q.t > best.t)) best = { x: q.x, y: q.y, t: q.t, b: t.i }; }
   }
   return best;
 }
 function suppAI(W){
   const SU = SUP(W); if (!SU || !SU.ai || AI6.includes('supp')) return;
-  const C = cmdBoss(W, 1); if (!C || roamIdle(C)) return;   // v7.8.1 떠도는 중인 지휘관은 모름
-  const rec = (W.inc || []).filter(r => r.side === 1 && W.t - r.t < 3), hs = rec.length ? null : suppHid(W); if (!rec.length && !hs) return;   // v7.12 숨은 사수의 안 자리
+  for (const sd of [1, 0]) suppAI1(W, SU, sd);   /* v9.10.0 양쪽 편 */
+}
+function suppAI1(W, SU, sd){
+  const C = cmdBoss(W, sd); if (!C || roamIdle(C)) return;   // v7.8.1 떠도는 중인 지휘관은 모름
+  const rec = (W.inc || []).filter(r => r.side === sd && W.t - r.t < 3), hs = rec.length ? null : suppHid(W, sd); if (!rec.length && !hs) return;   // v7.12 숨은 사수의 안 자리
   const r = rec[rec.length - 1];
   for (const u of W.units){
-    if (!u.alive || u.down || u.side !== 1 || !suppOK(u) || u.supp || u.suppPend || u.act || W.t < (u.suppCd || 0) || u.shadow || u.lurk || roamIdle(u)) continue;
-    if (W.units.some(f => f.alive && f.side === 0 && canSee(W, u, f) && gap(u, f) <= u.rng)) continue;
+    if (!u.alive || u.down || u.side !== sd || !suppOK(u) || u.supp || u.suppPend || u.act || W.t < (u.suppCd || 0) || u.shadow || u.lurk || roamIdle(u) || (sd === 0 && (u.order || roeOf(W, u) === 'nofire'))) continue;   /* 우리 편: 명령 중 · 사격 금지면 안 함 */
+    if (W.units.some(f => f.alive && f.side !== sd && canSee(W, u, f) && gap(u, f) <= u.rng)) continue;
     const e = SU.est || [0.7, 1.3], dE = hs ? 0 : Math.max(2, Math.min(12, r.tr * (e[0] + W.rand() * (e[1] - e[0])))), lat = (W.rand() - 0.5) * 2 * (SU.lat || 1);
     const x = hs ? Math.max(0.5, Math.min(W.map.W - 0.5, hs.x + (W.rand() - 0.5) * 0.8)) : Math.max(0.5, Math.min(W.map.W - 0.5, r.x + r.dx * dE - r.dy * lat)), y = hs ? Math.max(0.5, Math.min(W.map.H - 0.5, hs.y + (W.rand() - 0.5) * 0.8)) : Math.max(0.5, Math.min(W.map.H - 0.5, r.y + r.dy * dE + r.dx * lat));
     if (Math.hypot(x - u.x, y - u.y) > u.rng + 2) continue;
@@ -611,7 +615,7 @@ function suppAI(W){
     const busy = W.units.some(f => f.alive && f !== u && segDp(f, u.x, u.y, x, y) < f.r + 0.45 && (f.side === u.side || ((f.shield || f.armShield || f.bodyShield) && canSee(W, u, f)))), arc = !!u.lob && (!!hs || busy);   // v7.16 궁수: 숨은 사수의 안 자리 · 사선에 동료나 방패가 있으면 지역사격 (곡사) · 아니면 견제사격 (직사)
     const lk = u === C ? { p: 1, t: 0 } : cmdLink(W, C, u);   // v7.13 지휘망
     if (W.rand() < lk.p) u.suppPend = { x, y, at: W.t + lk.t, hid: !!hs, arc };
-    else if (W.t - (u.missLogT == null ? -9 : u.missLogT) > 3){ u.missLogT = W.t; L(W, { k: 'cmdMiss', side: 1, a: u.i, c: C.i, via: lk.via, why: lk.why, p: +lk.p.toFixed(2), o: ['supp'], vis: !!u.seenBy }); }
+    else if (W.t - (u.missLogT == null ? -9 : u.missLogT) > 3){ u.missLogT = W.t; L(W, { k: 'cmdMiss', side: sd, a: u.i, c: C.i, via: lk.via, why: lk.why, p: +lk.p.toFixed(2), o: ['supp'], vis: sd === 0 || !!u.seenBy }); }
   }
 }
 function suppAct(W, u, dt){   // 적 사수: 받은 견제사격 (보이는 상대가 생기면 그쪽을 겨눔)
@@ -880,10 +884,11 @@ function faceThreat(W, u){
   if (AI6.includes('backstep') || u.crawl || u.quadOn || (u.order && u.order.hurry) || (u.mv && u.mv.run && W.t < u.mv.until) || (u.side === 1 && u.ug && !u.raised)) return null;
   const near = (W.rules.backstep || {}).near || 2.5; let best = null, bs = 1e9;
   for (const f of W.units){ if (!f.alive || f.side === u.side || f.crawl || f.down) continue;
-    if (!(u.side === 0 ? (f.seenBy || canSee(W, u, f)) : (canSee(W, u, f) || fresh(W, u.sense[f.i], 1.5)))) continue;
+    const incF = (W.inc || []).some(q => q.a === f.i && q.side === u.side && W.t - q.t < 4 && (q.by === u.i || Math.hypot(q.x - u.x, q.y - u.y) < 2.5));   /* v9.10.0 보이지 않아도 화살이 날아온 쪽은 앎 */
+    if (!incF && !(u.side === 0 ? (f.seenBy || canSee(W, u, f)) : (canSee(W, u, f) || fresh(W, u.sense[f.i], 1.5)))) continue;
     const g = gap(u, f), on = !!(f.act && f.act.b === u.i && (f.act.k === 'atk' || f.act.k === 'charge' || f.act.k === 'throw')), shooter = (isFar(f) && f.ammo !== 0) || (f.jav && f.spearHeld);
     let sc;
-    if (shooter){ const inc = arcAt(W, f, u);   // v7.1.1 사수: 사거리 안 · 사선이 열림 · 겨누는 · 곡사가 내 쪽으로 날아오는 중
+    if (shooter){ const inc = arcAt(W, f, u) || incF;   // v7.1.1 사수: 사거리 안 · 사선이 열림 · 겨누는 · 곡사가 내 쪽으로 날아오는 중
       if (!on && !inc && (g > f.rng + 1 || !losClear(W.map, f.x, f.y, u.x, u.y))) continue;
       sc = (on || inc ? 0 : 3) + g * 0.4; }
     else { if (!on && g > f.rng + near) continue; sc = g - (on ? 6 : 0) - (g < f.rng + 0.3 ? 3 : 0); }   // 근접: 손이 닿는 칼이 먼저
@@ -1295,13 +1300,13 @@ function javArcHold(W, u, t){ const f = javArcRisk(W, u, t); if (f.p <= 0.2) ret
 // v9.9.2 빼꼼 사격: 사선의 첫 몸이 맞닿은 같은 편 하나 → 어깨 너머 (옆으로) 자리. 그 자리에서 사선이 트이고 오사 위험이 낮을 때만
 function peekSpot(W, u, t, jav){
   if (u.lie || u.crawl || u.kb || u.modBody || u.giant) return null;
-  const know = knows(W, u), fb = firstOnLine(W, u, t, u, know); if (fb === t || fb.side !== u.side || gap(u, fb) > 0.2) return null;
+  const know = knows(W, u), fb = firstOnLine(W, u, t, u, know); if (fb === t || fb.side !== u.side || gap(u, fb) > 2.5) return null;   /* v9.10.0 2.5칸 안이면 (맞닿을 때만이던 것) */
   const d = dist(u, t) || 1, ux = (t.x - u.x) / d, uy = (t.y - u.y) / d, px = -uy, py = ux, lim = Math.min(0.2, ffLim(u, W)), lead = -(jav ? JVu(W, u).wind : u.wind || 0.5);
   const latF = (fb.x - u.x) * px + (fb.y - u.y) * py, s0 = Math.max(0, Math.min(0.9, ((fb.x - u.x) * ux + (fb.y - u.y) * uy) / d)), L0 = Math.min(fb.r + u.r, (fb.r + 0.12) / Math.max(0.1, 1 - s0) + Math.abs(latF) * 0.5);
   const tryAt = (x, y, ex) => { if (boxRock(W, x, y, u.r * 0.9) || W.units.some(o => o.alive && o !== u && !(ex || [fb.i]).includes(o.i) && Math.hypot(o.x - x, o.y - y) < o.r + u.r * 0.85)) return false;
     if (!losClear(W.map, x, y, t.x, t.y)) return false; const ox = u.x, oy = u.y; u.x = x; u.y = y; const B = lineBodies(W, u, t, u, know).filter(b => !(ex || []).includes(b.i)); u.x = ox; u.y = oy;
     if (B.length && B[0].side === u.side) return false; const k0 = u._pkT, e0 = u._pkEx; u._pkT = W.t; u._pkEx = ex || null; const f = ffOdds(W, u, t, x, y, lead, jav); u._pkT = k0; u._pkEx = e0; return f.p <= lim; };
-  for (const sg of latF >= 0 ? [-1, 1] : [1, -1]) for (const L of [L0, L0 + 0.18]){ const x = u.x + px * sg * L, y = u.y + py * sg * L; if (tryAt(x, y, null)) return { x, y, by: fb.i }; }
+  for (const sg of latF >= 0 ? [-1, 1] : [1, -1]) for (const L of [L0, L0 + 0.18, L0 + 0.4]){ const x = u.x + px * sg * L, y = u.y + py * sg * L; if (tryAt(x, y, null)) return { x, y, by: fb.i }; }
   // 두 사람 사이 (틈): 맞닿은 앞줄 둘의 이음매 바로 뒤에서 — 그 둘만 지나감 (그 너머 몸은 그대로 막음)
   const f2 = W.units.find(o => o !== fb && o.alive && o.side === u.side && !o.down && gap(o, fb) <= 0.25 && ((o.x - u.x) * ux + (o.y - u.y) * uy) > 0 && gap(o, u) <= 0.6);
   if (f2){ const mx = (fb.x + f2.x) / 2, my = (fb.y + f2.y) / 2, lat = (mx - u.x) * px + (my - u.y) * py, x = u.x + px * lat, y = u.y + py * lat;
@@ -2530,7 +2535,7 @@ function fight(W, u, t, dt, see, ordered){
         u.lastDec = { t: W.t, s: `${t.name}이(가) 안 보인 채 ${Math.round(W.t - u.chaseT0)}초 · ${dist(u, u.chaseX).toFixed(0)}칸 — 추적을 그만둠` }; L(W, { k: 'chaseEnd', a: u.i, b: t.i, sec: Math.round(W.t - u.chaseT0), d: +dist(u, u.chaseX).toFixed(1), vis: true }); return; } }
     if (!ordered && u.side === 0 && roeOf(W, u) !== 'free'){   // v7.9.2 놓친 상대를 본대에서 멀리 쫓지 않음 (재집결) — 충동이 크면 예외
       const hero0 = ancOf(W), mates0 = W.units.filter(a => a.alive && !a.down && a.side === 0 && a !== u), tet = (W.rules.roe || {}).chase || 6.5;   /* v8.7.3 기준 */
-      const dMain = Math.min(...[...mates0.map(a => dist(u, a)), u.stay ? dist(u, u.stay) : 1e9, hero0 && hero0 !== u ? dist(u, hero0) : 1e9]), anc = mates0.length || u.stay || hero0 ? { d: dMain } : null;   // v7.9.3 가장 가까운 동료 · 주인공 · 지키는 자리 중 가까운 쪽까지
+      const dMain = Math.min(...[...mates0.map(a => dist(u, a)), u.stay ? dist(u, u.stay) : 1e9, hero0 && hero0 !== u ? dist(u, hero0) : 1e9]), anc = dMain < 1e8 ? { d: dMain } : null;   /* v9.10.0 기댈 곳이 없으면 그만두지 않음 */   // v7.9.3 가장 가까운 동료 · 주인공 · 지키는 자리 중 가까운 쪽까지
       if (anc && anc.d > tet && !impulseOK(W, u, t, 'smart')){ if (W.t - (u.regT || -9) > 5){ u.regT = W.t; L(W, { k: 'regroup', a: u.i, b: t.i, d: +anc.d.toFixed(1), vis: true }); u.lastDec = { t: W.t, s: `본대에서 ${anc.d.toFixed(1)}칸 — 놓친 ${t.name} 추격을 그만두고 돌아감` }; } u.target = null; u.state = u.stay ? 'stay' : 'follow'; setMood(W, u, '재집결'); return; } }
     // 물러나던 쪽 (체력 바닥 · 탄약 없음 · 겁 있음) 은 쫓아가지 않고 그 자리에서 버팀 — 물러남 ↔ 추적 와리가리 없음
     if (!ordered && (u.hp / u.max < 0.3 || (u.ammoMax != null && u.ammo === 0)) && u.bold < 0.5){ stop(u); u.fg = Math.atan2(p.y - u.y, p.x - u.x); setMood(W, u, '버팀', t.i); return; }
@@ -5663,7 +5668,6 @@ const COMBO = [
   { k: 'gob', nm: '고블린즈', min: 2, who: u => u.race === '고블린' || (u.traits || []).includes('종족:고블린'), why: '[종족:고블린] — 청광묵 · 트라카 (도감: 같은 고향 · 후각B · 도약 · 강자에게 복종하는 공동체)', fx: '냄새를 나눔 (한 고블린이 맡은 상대 자리를 모두 앎) · 도약 대기 ×0.85' },
   { k: 'gang', nm: '갱스터 파라다이스', min: 2, who: u => ['C-195', 'C-197', 'C-262'].includes(u.ref) || /갱스터/.test(u.name || ''), why: '갱스터 — 간두 · 쟝 · 가리 (도감 2기: 의리파 갱스터 · 조직원)', fx: '의리 — 동료 갱스터를 친 상대에게 6초 동안 피해 ×1.15' },
   { k: 'fell', nm: '굴에 떨어진 이들', min: 3, who: u => ['C-001', 'C-002', 'C-003', 'C-004'].includes(u.ref), why: '확정 일행 — 인주 · 레베카 · 카리우스 · 청광묵 (1편대 · 카리우스는 인주의 명령을 같이 외침)', fx: '서로의 목소리를 앎 — 이들끼리 전하는 명령 +15%p' },
-  { k: 'sq2', nm: '노먼의 2편대', min: 2, who: u => ['C-007', 'C-004', 'C-106'].includes(u.ref), need: u => u.ref === 'C-007', why: '2편대장 노먼 — 청광묵 · 친칠라 지휘 (도감)', fx: '노먼이 외친 표적을 칠 때 명중 · 피해 ×1.1' },
 ];
 const cbHas = (u, k) => !!(u && u.cb && u.cb.includes(k));
 function comboTick(W){
@@ -8281,10 +8285,11 @@ function act2(W, u, dt){
     if (Math.hypot(u.fill.x - u.x, u.fill.y - u.y) > 0.25){ setMood(W, u, '틈 메움'); goTo(W, u, u.fill.x, u.fill.y, dt); return whyS(W, u, 'FILL_GAP'); }
     stop(u); u.fg = u.fill.face; u.fill = null; }
   if (pinDown(W, u, dt)) return whyS(W, u, 'PIN_DOWN');   // v5.2 쓰러진 [불사] 를 눌러 둠
+  if (hitCover(W, u, dt)) return whyS(W, u, 'HIT_COVER');   /* v9.10.0 */
   if (!u.order && pairStep(W, u, dt)) return whyS(W, u, 'PAIR');   /* v9.6.4 전우조 · 대장 곁으로 (돌격하면 옆구리로) */
   if (u.side === 0 && !u.order && formStep(W, u, dt)) return whyS(W, u, 'FORMATION');   /* v8.7.5 대형: 편대원은 맞붙지 않았으면 제 자리 */
   if (u.side === 1 && (u.shadow || u.shadowPend) && shadowStep(W, u, dt)) return whyS(W, u, 'ENEMY_PLAN');   // v7.7 적 암살조
-  if (u.side === 1 && (u.supp || u.suppPend) && suppAct(W, u, dt)) return whyS(W, u, 'ENEMY_PLAN');   // v7.7 적 사수의 견제사격 (지휘관이 시킴)
+  if ((u.side === 1 || (u.supp && u.supp.ai) || u.suppPend) && (u.supp || u.suppPend) && suppAct(W, u, dt)) return whyS(W, u, 'ENEMY_PLAN');   /* v9.10.0 지휘관이 시킨 견제사격은 양쪽 편 */   // v7.7 적 사수의 견제사격 (지휘관이 시킴)
   if (u.side === 1 && !u.order && patrolStep(W, u, dt)) return whyS(W, u, 'PATROL');   // v7.8.1 조우 전 떠돎 (홀로 · 무리)
   if (u.side === 1 && lurkStep(W, u, dt)) return whyS(W, u, 'AMBUSH');   // v6.1 매복
   if (u.warden && u.warden.on && wardenStep(W, u, dt)) return whyS(W, u, 'WARDEN');   /* v7.23 방 지킴이 (양쪽 같은 규칙) */
@@ -8500,10 +8505,21 @@ function whyS(W, u, c){ if (c === 'PAIR') c = 'PAIR_' + (u.pairHow || 'link').to
 const isSupport = u => isFar(u) || (u.cls === '치유' && !u.shield && !u.armShield && (unarmed(u) || !u.canGuard));
 // v9.9.9 대장의 보호받을이: 정했으면 그대로 (cover · follow) · 안 정한 옛 관계는 장비로
 const coverU = u => !!u.chiefLk && (u.chiefMode === 'cover' || (u.chiefMode !== 'follow' && isSupport(u)));
+// v9.10.0 사수 · 치유가 사수에게 노려지거나 맞으면 (보이지 않아도) 가까운 방패 · 큰 몸 동료 뒤로 — 그 사수가 보이고 닿으면 되쏨 (양쪽 편)
+function hitCover(W, u, dt){
+  if (!isSupport(u) || u.order || u.act || u.chiefLk || u.lie || u.crawl || u.kb || u.down) return false;
+  const g = shooterOn(W, u) || (() => { const q = (W.inc || []).filter(r => r.by === u.i && W.t - r.t < 2).pop(); return q && W.units[q.a] && W.units[q.a].alive ? W.units[q.a] : null; })(); if (!g) return false;
+  if (isFar(u) && canSee(W, u, g) && dist(u, g) <= u.rng + 0.3 && u.ammo !== 0) return false;   // 보이고 닿음 → 되쏨
+  if (W.units.some(f => f.alive && !f.down && f.side !== u.side && gap(u, f) < 2)) return false;   // 코앞 적이 먼저
+  const B = W.units.filter(o => o.alive && o !== u && o.side === u.side && !o.down && !o.crawl && (o.shield || o.armShield || o.giant || o.modBody || (o.mass || 0) >= 100) && dist(o, u) < 3.5).sort((a, b) => dist(a, u) - dist(b, u))[0]; if (!B) return false;
+  const d = dist(B, g) || 1, x = B.x + (B.x - g.x) / d * (B.r + u.r + 0.05), y = B.y + (B.y - g.y) / d * (B.r + u.r + 0.05); if (Math.hypot(x - u.x, y - u.y) < 0.15) return false;
+  if (u.hcLog == null || W.t - u.hcLog > 4){ u.hcLog = W.t; L(W, { k: 'hitCover', a: u.i, b: B.i, c: g.i, vis: u.side === 0 || !!u.seenBy }); }
+  u.mv = { k: 'crun', run: true, until: W.t + 0.3 }; goTo(W, u, x, y, dt); u.fg = Math.atan2(g.y - u.y, g.x - u.x); setMood(W, u, B.name + ' 뒤로 (사수를 피함)', g.i); return true;
+}
 function chargeBrace(W, u, dt){
   if (AI6.includes('cbrace') || u.crawl || u.lie || u.kb || u.act || W.t < u.proneT || u.down || (u.stunT && W.t < u.stunT)) return false;
   const sup = isSupport(u); let best = null;   /* v9.9.3 사수 · 치유는 대장 · 전우일 때만 */
-  for (const e of W.units){ if (!e.alive || e.side === u.side || !e.act || e.act.k !== 'charge' || e.act.b == null) continue; const t = W.units[e.act.b];
+  for (const e of W.units){ if (!e.alive || e.side === u.side || !e.act || e.act.k !== 'charge' || e.act.b == null) continue; const t = W.units[e.act.b]; if (t && !(e.giant || e.rush || e.modBody || (e.mass || 70) >= (t.mass || 70) * 0.5)) continue;   /* v9.10.0 밀어낼 만한 돌격만 */
     const rel = (u.chiefLk && u.sqLead === t.i) || (u.cg && t.cg === u.cg); if (!t || t === u || !t.alive || t.side !== u.side || t.down || (sup && !rel) || dist(u, t) > (rel ? 4.5 : 2.2) || !(u.side === 0 ? (e.seenBy || canSee(W, u, e)) : canSee(W, u, e))) continue;
     if (dist(e, t) < dist(e, u) - 0.2 || !best || dist(u, t) < dist(u, best.t)) best = { e, t }; }
   if (!best) return false;
@@ -8552,7 +8568,7 @@ function pairStep(W, u, dt){
   const go = (x, y, run, how, p, t) => { x = Math.max(0.7, Math.min(W.map.W - 0.7, x)); y = Math.max(0.7, Math.min(W.map.H - 0.7, y)); if (boxRock(W, x, y, u.r * 0.9)){ const q = freeSpot(W, x, y, u.r); if (!q) return false; x = q.x; y = q.y; }
     u.stay = null; if (run) u.mv = { k: 'pair', run: true, until: W.t + 0.35 };
     u.pairHow = how; if (how !== 'link' && (u.pairLog == null || W.t - u.pairLog > 4 || u.pairLH !== how)){ u.pairLog = W.t; u.pairLH = how; L(W, { k: 'pairGo', a: u.i, b: p.i, tg: t ? t.i : null, how, run: !!run, chief: !isMateOf(u, p), vis: u.side === 0 || !!u.seenBy }); }
-    setMood(W, u, how === 'flank' ? (t ? t.name + '의 옆구리로 — ' : '') + p.name + '와 함께' : how === 'link' ? p.name + '와 붙어 감 (전우조)' : p.name + ' 곁으로', t ? t.i : null); goTo(W, u, x, y, dt); return true; };
+    setMood(W, u, how === 'flank' ? (t ? t.name + '의 옆구리로 — ' : '') + p.name + '와 함께' : how === 'link' ? p.name + (u.cg && p.cg === u.cg ? '와 붙어 감 (전우조)' : ' 따라감 (' + (coverU(u) ? '보호받을이' : '따를이') + ')') : p.name + ' 곁으로', t ? t.i : null); goTo(W, u, x, y, dt); return true; };
   if (!eng){ const rs = mateRescue(W, u, W.units.filter(f => f.alive && !f.gone && !f.down && f.side !== u.side && (u.side === 0 ? f.seenBy : canSee(W, u, f)))); if (rs){ u.target = rs; u.state = 'hunt'; u.pairOn = false; u.stay = null; return false; } }   /* v9.6.5 위급한 전우 먼저 */
   if (isSupport(u)) chg = null;   /* v9.9.1 지원 인력은 짝의 돌격을 따라 뛰어들지 않음 (v9.9.3 장비로 판단) */
   if (!chg && !isFar(u) && !isSupport(u)){ const fp = matesOf(W, u).find(p => !p.down && p.target && p.target.alive && !p.target.down && p.target.side !== u.side && gap(p, p.target) < p.rng + 0.5 && canSee(W, u, p.target) && dist(u, p.target) < 7);   /* v9.6.5 짝이 붙든 적 — 함께 포위 */
@@ -8599,6 +8615,14 @@ function pairStep(W, u, dt){
   // v9.9.1 추종 (부하): 평소엔 대장 등 뒤에 비비듯 · 대장이 싸우면 닿으면 같이 치고 · 발 빠르면 상대 등 뒤로 · 치유는 한 걸음 뒤
   const C = chiefOfU(W, u); if (!C || C.down || C.crawl || C.gone) return false;
   let coverFr = null; const heal = coverU(u), ft = C.target && C.target.alive && !C.target.gone && !C.target.down && C.target.side !== u.side && gap(C, C.target) < C.rng + 1.0 ? C.target : null;
+  if (!heal && !isFar(u) && !u.cg){   /* v9.10.0 따를이 = 적극 가담: 대장이 노리는 사수 · 나를 쏘는 사수에게 (발 빠르거나 내가 맞을 때) — 보이지 않으면 날아온 쪽으로 */
+    const fast1 = u.role === '미드필더' || u.role === '공격수' || (u.spd || 0) >= (C.spd || 2) * 1.12, myInc = (W.inc || []).filter(q => q.by === u.i && W.t - q.t < 2.5).pop(), onMe = shooterOn(W, u) || (myInc && W.units[myInc.a]);
+    const ct = C.target && C.target.alive && !C.target.down && C.target.side !== u.side && isFar(C.target) ? C.target : null, sh = (fast1 && ct) || (onMe && onMe.alive && !onMe.down && isFar(onMe) ? onMe : null);
+    if (sh && dist(sh, C) < 14 && !W.units.some(f => f.alive && !f.down && f.side !== u.side && f !== sh && gap(u, f) < Math.max(u.rng, 0.5) + 0.6)){
+      if (u.shLog == null || W.t - u.shLog > 4){ u.shLog = W.t; L(W, { k: 'pairGo', a: u.i, b: C.i, tg: sh.i, how: 'shooter', run: true, chief: true, vis: u.side === 0 || !!u.seenBy }); }
+      const known = u.side === 0 ? (sh.seenBy || canSee(W, u, sh)) : (canSee(W, u, sh) || fresh(W, u.sense[sh.i], 2));
+      if (known){ u.target = sh; u.state = 'hunt'; return false; }
+      const q = myInc || (W.inc || []).filter(r => r.a === sh.i && r.side === u.side && W.t - r.t < 3).pop(); if (q){ const dl = Math.hypot(q.dx, q.dy) || 1, rr = Math.min(Math.max(q.tr || 6, 3), 8); u.pairHow = 'shooter'; return go(Math.max(0.6, Math.min(W.map.W - 0.6, q.x + q.dx / dl * rr)), Math.max(0.6, Math.min(W.map.H - 0.6, q.y + q.dy / dl * rr)), true, 'rear', C, sh); } } }
   if (ft && !heal && !isFar(u)){
     const fast = u.role === '미드필더' || u.role === '공격수' || (u.spd || 0) >= (C.spd || 2) * 1.12;
     if (!fast && gap(u, ft) <= u.rng + 0.05){ u.target = ft; u.state = 'fight'; return false; }   // 대장 뒤에서 닿음 → 같이 침
@@ -10243,4 +10267,4 @@ function supAuto(W, u){
   return false;
 }
 
-if (typeof module !== 'undefined') module.exports = { coverU, clumpTough, isSupport, peekSpot, protStep, volStart, volTick, wallHurt, smoothPath, avoidVec, chargeBrace, clumpStep, whyS, jinkStep, pairStep, tgIn, karFFOk, abyssTag, ABYSS_ART, vialSync, isVial8, wallLine, giantChg, rampTick, radarTick, h2Grab, wallBetween, wallHold, bfTick, matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
+if (typeof module !== 'undefined') module.exports = { hitCover, suppAI1, coverU, clumpTough, isSupport, peekSpot, protStep, volStart, volTick, wallHurt, smoothPath, avoidVec, chargeBrace, clumpStep, whyS, jinkStep, pairStep, tgIn, karFFOk, abyssTag, ABYSS_ART, vialSync, isVial8, wallLine, giantChg, rampTick, radarTick, h2Grab, wallBetween, wallHold, bfTick, matesOf, isMateOf, chiefOfU, cgJoin, cgLeave, chiefSet, chiefClear, relSync, mateBias, mateRescue, mateAnchor, h2Of, h2Kit, h2Pick, h2Sub, h2Next, h2Twirl, h2Shot, h2Jump, h2LandWarn, h2Land, pearlAuto, pearlTick, pearlGak, pearlWrapGo, pthrowAuto, PK_SPEC, healPolOf, SUP_K, startSkill, supBolt, supShotHit, supShotStop, wingsDodge, supTake, supKitHeal, supInit, supWorld, sfStep, sfEnd, supStart, supResolve, lureTarget, gateTp, spiritCall, spiritAct, tsweepHit, tflyStart, tflyStep, twingEnd, cwhipStart, cwhipResolve, supAct, supOrder, SUP_AUTO, supAuto, supSpd, supAtkK, isDemon, sfOf, cmdHold, apSup, apSweep, apAuto, karAim, karFan, karAuto, karTg, karResolve, karRushStep, karHeld, karHeretic, karGritHit, karGritStart, karTick, karGritEnd, karGritOver, karWorld, think, prnRat, ratsOut, vetRoll, rollStep, javAfter, vetCmd, vetOf, prnMemTick, prnMark, prFort, prShield, prLadder, prBind, prSpin, porenTick, porenBrain, ratBrain, porenTake, tauntOf, prnCleave, ratWallHit, bindTick, prnSettle, prnRoll, zapOn, zapTick, gwOn, gwHop, gwStart, gwBrain, gwAway, gwBlind, gslamHit, startAlt, resolveAlt, altAuto, flailDrop, flailOut, woundFatal, evadeP, stepSweep, supSlot, nearLine, isSup, mightReady, mightUse, flailOf, throwFlail, stepFlails, circOv, czStep, czReact, czFront, mbOn, czBrain, czRun, czStart, czTick, czHit, frostOn, dcFire, wardenStep, markIndoor, wpnSpec, stepPools, startQuake, quakeHit, quakeWarn, stepSpins, resolveDrink, addUnit, unitInit, wetAt, stealthOf0, spdNow, spdNow0, walkClear, exitStep, leaveMap, checkEnd, lootOf, wearWhy, bagCapP, eqRuleP, isMB, wpnSpd, invAuto, startSwap, resolveSwap, pullAmmo, bagPick, canHold, bagCapOf, ammoTOf, lootName, ownKey, heldItem, stowOrDrop, wearW, wearBlock, wearHit, breakWeapon, breakShield, gearWK, sizeP, wardStop, stepFlora, grabTry, SPEC_K, specOf, specReady, startFlip, startSpec, specAuto, slamHit, leapCdNext, strike, penRes, gH, gGrad, solid, pileAt, terrainOf, expoOf, bodyH, crouching, terrAim, hiMelee, slopeK, slopeTrip, terrOn, deputyTick, deputyOf, leadOf, cmdWave, netTick, rallyTick, rallyStep, offStep, hmTick, flankOrder, arcVia, scoutKillPick, sacStep, sendPosture, roeOf, engTick, roeBlock, healTier, perilOn, impulseOf, mayWield, ROE_TXT, torchGetStep, stealthFeel, glareReach, flareStep, roamMeet, roamIdle, roamN, patrolStep, alarmTick, glareAt, sideV, watchTick, suppStep, suppAI, suppAct, incoming, launchAt, planShadow, shadowStep, clearSee, nvReach, glowAt, litAt, computeLight, assnSkill, assnVigil, assnCan, assnStep, assnOrder, assnAI, assnFoundTick, scoutStep, scoutReport, torchSet, stealthK, stealthOf, smellGrade, cmdLink, cmdLink1, cmdRange, cmdTick, cmdBoss, posKnownTick, dinAt, hearR, phaseTick, preempt, lretStart, lretTick, lretOf, lretAI, startAct, aimT, faceThreat, relayT, reportTick, picKnown, taskBoard, taskOn, inflTick, inflAt, inflMoves, opCancel, woundRoll, stabilize, injUrgent, actingCmd, cmdBoss, leapTo, leapDir, pounce, leapAside, evadeP, javWay, burnOn, startPalm, isKnife, tire, fatState, fatMul, directSpot, gauntlet, planMoves, mvStep, mvFree, wedgeFix, busyW, planSwitch, cmdSit, cmdCharge, intelTick, pHp, iDanger, iCenter, guessMax, resolveSkill, patrolStart, alarmTick, startScenario, planFocus, weakScore, planWedge, planEncircle, planPlan, withdrawStep, rearm, planPacts, pactStep, gunsOn, gunDanger, hurtOf, screenApproach, chargeValue, twoHanded, parryArcW, parryArc, guardArc, wholeBody, lineFaceOf, lineKeep, lineJoin, bareGuard, armedKind, wardMul, pickWards, planLines, lineCover, lineOpportunity, updateGuard, shieldWall, guardOn, inGuard, downOdds, canTake, takeItem, setWeapon, dropItem, dropOnDeath, scavenge, unarmed, startCharge, stun, marksOf, aimP, tryCharge, applyDmg, preempt, ordFire, undMove, undEta, maimEye, maimArm, crushBone, startBleed, maimRes, callouts, laneSpot, chargeLaneOk, isRangedW, RANGED_KIND, isFar, gapScore, cmdOf, cmdOf0, formMates, planStance, holdForm, avoidGiant, braceOf, chargeValue, bestCharge, chargeCry, fling, pikeStep, turnMul, pinDown, shove, knockDown, cripple, swingPlan, swingArc, heavyHit, startBash, bashWhy, tryDodge, prone, massOf, heightOf, backToWall, blocksFor, planSquads, kbLen, kbValue, peelOf, footwork, tryCharge, startLeap, gearOf, gearW, armorMul, equip, GEAR_SLOTS, rise, startReload, roleOf, ROLE_NAMES, edgeAt, powerOf, tryThrow, mySpear, aimJ, gradeMul, tankAI, exposure, threatPt, launch, stepShots, pickTorch, nearTorch, blindTo, inGuard, supportOf, aware, brief, sideOf, shieldBlock, lineBodies, firstOnLine, guardOn, aimP, openingOf, boldOf, DEFAULT_RULES, CLASS_NAMES, genMap, gridMap, gridCMap, buildMap, autoTorches, groupAnchors, freeNear, createWorld, stepWorld, beginTurn, endTurn, runTurn, runAuto, statsOf, mulberry32, canSee, rock, dropTorch, lieSet, lieHid, lieTick, lieTrample, lieFlash, prone, detourVia, flankLeap, suppAI, suppHid, meshNet, sqBrain, cmdLinkM: cmdLink, ffOdds, suppArc, suppOK, ordFxAdd, evadeMove, kiteMove, slipMove, roeLift, lieFree, applyPosture, POSTURES, bodyReach, sizeOf, sizeOK, SIZE_RANK, lungeChk, stepOK, mvAim, strafeWant, running, ancOf, chiefOf, injRecalc, woundAdd, invOp, resolveInv, bagRoomU, wearWhyU, gearSet, wTwo, bagWpnN, pOfU, lootOf, orderTxt, giveWay, tightAt, startAct, specAuto, fbTick, comboTick, fbPoise, fbShove, fbAim, cbDmg, cbHas, COMBO, FBUF, guardArc, kbLen, aimP, formInit, formTick, formLayout, formStep, formWait, formEng, formRally, formSet, formLeadPick, formPt, formOf, fClass, FORM_SHAPES, h2Cast, resolveH2, h2In, h2Pick, h2Tick, tearDone, tearLet, bigOk, bigWalk, bigSpot, findPath, interrupt, H2K, H2KB, chargeLane, laneOk, laneIn, kiteEng, laneEta, holyOf, authK, marbleHit, crownOn, authOn, flailKeep, giveWay, separate, lineEndVia, evoRole, missSpot, spotFor, reposition, dropShield };   /* v8.7.4 */
