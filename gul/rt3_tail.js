@@ -151,7 +151,7 @@ function unitInit(W, p, i){ const rules = W.rules;
       canCharge: tr.includes('돌진') || acts.includes('돌진') || acts.includes('돌격') || commonCharge, chargeName: p.shield ? '방패 돌진' : '돌진', chargeCd: -9,   // v5.4.3 보병 · 탱커 공통 기술 이름 = 돌진
       canLeap: tr.includes('도약') || acts.includes('도약') || acts.includes('연속 도약'), leapCd: -9, active: acts,   // v5.2 액티브 스킬 (p.active)
       ev: gradeMul(rules, tr, '회피'), vit: vitOf(rules, tr), fire: fireOf(rules, tr), palm: acts.includes('팜 버스트'), palmCd: -9, spec: acts.filter(a => SPEC_K[a]).map(a => ({ k: SPEC_K[a], name: a, cdT: -9, n: SPEC_K[a] === 'head' ? 1 : null })), shells: acts.includes('영거리 사격') ? (p.shells != null ? +p.shells : 100) : null, alt: p.alt && p.alt.name ? { name: p.alt.name, ammo: p.alt.ammo != null ? +p.alt.ammo : null, mag: p.alt.mag != null ? +p.alt.mag : null } : null, csense: tr.includes('전투센스'), race: p.race || null, berry: tr.includes('열매 맺기'), berryT: tr.includes('열매 맺기') ? (rules.berry || {}).first || 8 : null, evadeCd: -9, evN: 0, manN: 0, blindL: tr.includes('실명:좌안'), burn: null, recoil: null,   // v6.7 [회피X] · [급소X] · [발화X] · [팜 버스트] · [실명:좌안] · 화상 · 반동   // v5.2 액티브 스킬 (p.active)
-      cmd: cmdOf0(p, rules), rank: p.rank != null ? p.rank : RANK_REF[p.ref] || '', sqLead: null,   // v5.4 [지휘X] 점수
+      cmd: cmdOf0(p, rules), rank: '', sqLead: null,   /* v9.9.7 공식 부대장 (직책) 없앰 */   // v5.4 [지휘X] 점수
       longReach: !far && s.rng > 1,   // v5.4 장창
       eyes: (tr.includes('머리 넷') ? 4 : 1) * 2, eyeLost: 0, blind: false, sightMul: 1, aimMaim: 1, arms: { L: null, R: null }, noArms: false, bleed: null, bled: 0,   // v5.5 부위 (눈 · 팔) · 출혈
       heads: tr.includes('머리 넷') ? 4 : 1, cry: p.cry || '', mute: p.mute != null ? !!p.mute : p.side === 1,   // v5.3 [머리 넷] · 외침 (말 없는 쪽은 이모지 — 적 기본)
@@ -198,7 +198,7 @@ function createWorld(setup, rules, seed, opt){
   W.hadCmd = [0, 1].map(s => W.units.some(u => u.side === s && u.cmd > 0) || (s === 0 && W.units.some(u => u.side === 0 && !u.summon)));   /* v8.7.2 우리 편은 지휘관이 없어도 누군가 이어받음 (유저 명령이 닿을 길) */
   if (!W.units.some(u => u.side === 0 && u.cmd > 0)){ const c = W.units.filter(u => u.side === 0 && !u.summon).sort((a, b) => (b.vet ? 1 : 0) - (a.vet ? 1 : 0) || b.tier - a.tier || b.hp - a.hp)[0]; if (c){ c.cmd = 1; c.cmdTmp = true; } }   /* v8.7.2 처음부터 지휘관이 없으면 0초부터 임시 지휘 (혼자 남은 이도 제 명령은 받음) */   // v6.8 처음에 지휘관이 있던 편 (지휘가 끊기면 임시 지휘)
   W.giants = W.units.filter(u => u.h >= 2.2);   // 시야를 가릴 만큼 큰 몸
-  { const Dp = W.units.find(u => u.side === 0 && u.rank === '부대장'); if (Dp) setup.units.forEach((p, k) => { const u = W.units[k]; if (u && u !== Dp && u.side === 0 && !u.hero && p.sq === 'B'){ u.sqLead = Dp.i; u.sqAuto = false; u.sqFix = true; u.chiefLk = true; } }); }   // v7.13 시작 배치의 편대 (2편대 = 부대장의 편대) → v9.1 부대장의 부하
+  { const Dp = null; if (Dp) setup.units.forEach((p, k) => { const u = W.units[k]; if (u && u !== Dp && u.side === 0 && !u.hero && p.sq === 'B'){ u.sqLead = Dp.i; u.sqAuto = false; u.sqFix = true; u.chiefLk = true; } }); }   // v7.13 시작 배치의 편대 (2편대 = 부대장의 편대) → v9.1 부대장의 부하
   chiefInit(W, setup);   /* v9.1.0 전우조 · 대장-부하 (손으로 정한 관계) */
   formInit(W, setup);   /* v8.7.5 대형 (페이지가 넘길 때만) */
   for (const u of W.units){ u.stealthE = stealthOf(W, u); u.assnE = assnSkill(W, u); }
@@ -5892,7 +5892,7 @@ function actingCmd(W, side){
   c.cmd = 1; c.cmdTmp = true; st.lossT = null; st.n = (st.n || 0) + 1;
   L(W, { k: 'acting', side, a: c.i, n: st.n, vis: side === 0 || !!c.seenBy });
 }
-const RANK_REF = { 'C-007': '부대장' };   // v7.10 공식 부대장 (노먼)
+const RANK_REF = {};   // v9.9.7 공식 부대장 없앰 (옛: 노먼)
 const cmdBoss = (W, side) => W.units.filter(u => u.alive && !u.crawl && u.side === side && u.cmd > 0 && !(u.koT && W.t < u.koT)).sort((a, b) => b.cmd - a.cmd || (b.rank === '부대장' ? 1 : 0) - (a.rank === '부대장' ? 1 : 0) || (a.cmdTmp ? 1 : 0) - (b.cmdTmp ? 1 : 0))[0] || null;
 const deputyOf = (W, side) => W.units.find(u => u.alive && u.side === (side || 0) && u.rank === '부대장' && !u.crawl) || null;
 function leadOf(W, u){ { const F = formOf(W, u); if (F && F.act && F.lead !== u.i && !u.fdet){ const D = W.units[F.lead]; if (D && D.alive && !D.down && !D.crawl) return D; } }   /* v8.7.5 편대원은 편대장을 따라감 */

@@ -1,4 +1,4 @@
-// ui7100.js v1.2 (v1.2: 횃불은 꺼진 채 시작 — 0초에 켜는 것이 로그에 · v1.1: v9.1 — 편대 단추 (squad) 시험을 대장 연결 단추 (chief) · 대장 배지로) — UI 시험 (v7.10 ~)
+// ui7100.js v1.3 (v1.3: v9.9.7 공식 부대장 없앰 — 직책 검사는 '없음' 으로 · v1.2: 횃불은 꺼진 채 시작 — 0초에 켜는 것이 로그에 · v1.1: v9.1 — 편대 단추 (squad) 시험을 대장 연결 단추 (chief) · 대장 배지로) — UI 시험 (v7.10 ~)
 const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c,m)=>{ console.log((c?'  ok  ':'  FAIL ')+m); if(!c) fails.push(m); };
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
  for (const [nm,vp,mob] of [['모바일',{width:412,height:915},true],['데스크톱',{width:1280,height:800},false]]){
@@ -8,10 +8,10 @@ const { chromium } = require('playwright'); const errs=[], fails=[]; const ok=(c
   await p.evaluate(()=>start()); await p.waitForTimeout(300);
   // 등급
   const g = await p.evaluate(()=>world.units.filter(u=>u.side===0).map(u=>u.name+':'+(u.nv?u.nvG:'-')+(u.rank?'/'+u.rank:'')).join(' '));
-  ok(/인주:C/.test(g)&&/노먼:A\/부대장/.test(g)&&/레베카:A/.test(g)&&/카리우스:B/.test(g), '밤 시력 등급 · 부대장 직책 '+g);
+  ok(/인주:C/.test(g)&&/노먼:A/.test(g)&&!/부대장/.test(g)&&/레베카:A/.test(g)&&/카리우스:B/.test(g), '밤 시력 등급 · 직책 없음 (v9.9.7) '+g);
   // 상세정보 시야 줄
   const det = await p.evaluate(()=>unitDetailHtml(world, world.units[0])); ok(/야시 C/.test(det), '상세정보 시야 줄 (야시 C)');
-  const det2 = await p.evaluate(()=>unitDetailHtml(world, world.units[1])); ok(/직책/.test(det2)&&/부대장/.test(det2), '노먼 상세정보에 직책 줄');
+  const det2 = await p.evaluate(()=>unitDetailHtml(world, world.units[1])); ok(!/부대장/.test(det2), '노먼 상세정보에 부대장 없음 (v9.9.7)');
   // 횃불 0초 끔 → 로그
   await p.evaluate(()=>{ const W=world; toggleTorch(); });
   const lg = await p.evaluate(()=>world.log.filter(l=>l.k==='torch').map(l=>l.on+':'+!!l.t0).join(','));

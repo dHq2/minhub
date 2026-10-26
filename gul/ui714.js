@@ -1,11 +1,11 @@
-// v7.14 UI 시험 — ui714.js v1.3 (v1.3: 종족 · 가호 표는 앞 6000자를 봄 — v8.7.8 서포터 셋 · 적의 종족 (마족 · 정령 · 요정) 이 늘어 앞 300자 밖으로 밀리던 것 · v1.2: 훈련장 탭 여섯 (v7.25.3 인카운터) · v1.1: 모바일 탭 폭은 보이는 탭만 — 훈련장에선 이야기 탭이 숨음 (v7.24.5) · 친칠라 기본 배치 · 옛 저장 이전 · 특성 탭 · 매 판 특성 검사 · 은신 등급 고르기 · 모바일 폭)
+// v7.14 UI 시험 — ui714.js v1.4 (v1.4: v9.9.7 2편대 기본값 없음 · v1.3: 종족 · 가호 표는 앞 6000자를 봄 — v8.7.8 서포터 셋 · 적의 종족 (마족 · 정령 · 요정) 이 늘어 앞 300자 밖으로 밀리던 것 · v1.2: 훈련장 탭 여섯 (v7.25.3 인카운터) · v1.1: 모바일 탭 폭은 보이는 탭만 — 훈련장에선 이야기 탭이 숨음 (v7.24.5) · 친칠라 기본 배치 · 옛 저장 이전 · 특성 탭 · 매 판 특성 검사 · 은신 등급 고르기 · 모바일 폭)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  const url='file://'+process.cwd()+'/build/wrapped.html';
  await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900);
  const c0 = await p.evaluate(()=>{ const c=S.units.find(u=>u.name==='친칠라'); return c ? { sq:c.sq, nvG:c.nvG, w:c.weapon, tr:c.traits, ammo:c.ammo, race:c.race } : null; }); console.log('    친칠라', JSON.stringify(c0));
- ok(c0 && c0.sq==='B' && c0.nvG==='S' && c0.w==='하얀 나무' && c0.tr.includes('은신S') && c0.tr.includes('가호:바다'),'기본 배치에 친칠라 (2편대 · 야시 S · 하얀 나무 · 은신 S)');
+ ok(c0 && !c0.sq && c0.nvG==='S' && c0.w==='하얀 나무' && c0.tr.includes('은신S') && c0.tr.includes('가호:바다'),'기본 배치에 친칠라 (2편대 기본값 없음 · 야시 S · 하얀 나무 · 은신 S)');
  const g0 = await p.evaluate(()=>S.units.map(u=>u.name+':'+((u.traits||[]).find(t=>/^은신/.test(t))||'-')).join(' ')); console.log('    은신', g0);
  ok(/노먼:은신A/.test(g0)&&/청광묵:은신B/.test(g0)&&/레베카:은신C/.test(g0)&&/카리우스:은신E/.test(g0)&&/궁수:은신S/.test(g0)&&/곤봉적:은신C/.test(g0)&&/검기사:은신A/.test(g0),'정한 은신 등급');
  // 검사: 판 · 설계 · 도감 전체

@@ -1,4 +1,4 @@
-// v7.13 시험 — net713.js v1.2 (v1.2: v9.9.1 — 발 빠른 근접 부하는 지시 대신 추종 규칙으로 대장의 적에게 (그것도 받음으로 셈) · v1.1: v9.1.0 — 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시 (옛: D 는 못 함) · 지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
+// v7.13 시험 — net713.js v1.3 (v1.3: v9.9.7 공식 부대장 없앰 — 시작 관계는 chiefNm (대장 이름) 으로 · 직책 검사 빼고 대장-부하로 · v1.2: v9.9.1 — 발 빠른 근접 부하는 지시 대신 추종 규칙으로 대장의 적에게 (그것도 받음으로 셈) · v1.1: v9.1.0 — 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시 (옛: D 는 못 함) · 지휘망 그물 · 편대 · 편대장 자율 지시 · 피한 일격 · 서둘러 일어남 · 약속 교전 규칙)
 const {E,R,DES,NOR,INJ,KAR,REB,GOB,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const lit=W=>{ W.torches=[{x:8,y:8,r:30}]; E.computeLight(W); };
@@ -15,19 +15,19 @@ console.log('A. 그물: 동료가 많을수록 · 이중 전달 (어둠 · 14칸
   const W1=W_(one,[mk(DES['창병'],1,28,2)],1,'smart'); dk(W1); const W2=W_(two,[mk(DES['창병'],1,28,2)],1,'smart'); dk(W2);
   const p1=E.meshNet(W1,0,W1.units[0]).P[2], p2=E.meshNet(W2,0,W2.units[0]).P[3]; console.log(`    전해 줄 동료 하나 ${p1.toFixed(2)} · 둘 ${p2.toFixed(2)}`); ok(p2>p1,'곁에 전해 줄 동료가 둘이면 더 잘 닿음 (이중 전달)'); }
 
-console.log('B. 시작 배치 편대 · 무스킬 편대장 D');
-{ const al=[mk(INJ,0,4,8,{hero:true,sq:'A'}),mk(NOR,0,5,9,{sq:'B',rank:'부대장'}),mk(GOB,0,6,9,{sq:'B'}),mk(REB,0,4,9.5,{sq:'A'})]; const W=W_(al,[mk(DES['창병'],1,27,3)],1,'smart');
-  const n=W.units[1], g=W.units[2], rb=W.units[3]; console.log(`    노먼 직책 ${n.rank} · 지휘 ${n.cmd} · 청광묵 편대장 ${g.sqLead} · 레베카 ${rb.sqLead}`);
-  ok(n.rank==='부대장'&&g.sqLead===n.i&&rb.sqLead==null,'2편대 = 노먼 · 청광묵'); ok(n.cmd===1,'노먼 지휘 C (1)');
-  const al2=[mk(INJ,0,4,8,{hero:true}),mk(REB,0,5,9,{sq:'B',rank:'부대장'}),mk(GOB,0,6,9,{sq:'B'}),mk(NOR,0,4,10,{sq:'A',rank:''})]; const W2=W_(al2,[mk(DES['창병'],1,10,9)],1,'smart'); lit(W2);
-  const r2=W2.units[1], n2=W2.units[3]; console.log(`    레베카 편대장: 지휘 ${r2.cmd} · 노먼 직책 '${n2.rank}'`); ok(r2.cmd===0&&n2.rank==='','지휘 스킬 없는 편대장 = D · 노먼은 직책 없음');
+console.log('B. 시작 배치의 대장-부하 · 무스킬 대장 D (v9.9.7 공식 부대장 없음)');
+{ const al=[mk(INJ,0,4,8,{hero:true,sq:'A'}),mk(NOR,0,5,9),mk(GOB,0,6,9,{chiefNm:'노먼'}),mk(REB,0,4,9.5)]; const W=W_(al,[mk(DES['창병'],1,27,3)],1,'smart');
+  const n=W.units[1], g=W.units[2], rb=W.units[3]; console.log(`    노먼 직책 '${n.rank}' · 지휘 ${n.cmd} · 청광묵 대장 ${g.sqLead} · 레베카 ${rb.sqLead}`);
+  ok(!n.rank&&g.sqLead===n.i&&g.chiefLk&&rb.sqLead==null,'청광묵의 대장 = 노먼 (직책 없음)'); ok(n.cmd===1,'노먼 지휘 C (1)');
+  const al2=[mk(INJ,0,4,8,{hero:true}),mk(REB,0,5,9),mk(GOB,0,6,9,{chiefNm:'레베카'}),mk(NOR,0,4,10)]; const W2=W_(al2,[mk(DES['창병'],1,10,9)],1,'smart'); lit(W2);
+  const r2=W2.units[1], n2=W2.units[3]; console.log(`    레베카 대장: 지휘 ${r2.cmd} · 노먼 직책 '${n2.rank}'`); ok(r2.cmd===0&&n2.rank==='','지휘 스킬 없는 대장 = D · 직책은 없음');
   run(W2,3); ok(!W2.log.some(x=>x.k==='sqWeak'&&x.a===r2.i),'v9.1 부하를 둔 대장은 지휘 스킬이 없어도 기본 지시는 함 (지휘 D 여도 sqWeak 없음)'); }
 
 console.log('C. 노먼 (C) 편대장 자율 지시');
-{ let dec=0,recv=0,N=8,ex=null; for(let sd=1;sd<=N;sd++){ const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9,{sq:'B',rank:'부대장'}),mk(GOB,0,9,9.5,{sq:'B'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],sd,'free'); lit(W);
+{ let dec=0,recv=0,N=8,ex=null; for(let sd=1;sd<=N;sd++){ const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9),mk(GOB,0,9,9.5,{chiefNm:'노먼'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],sd,'free'); lit(W);
     const g=W.units[2]; run(W,6); const d=W.log.filter(x=>x.k==='sqDec'); if(d.length){ dec++; if(!ex) ex=d[0]; } if(W.log.some(x=>x.k==='cmdRecv'&&x.a===g.i&&x.c===W.units[1].i)||(g.chiefLk&&g.target===W.units[3])) recv++; }   /* v9.9.1 발 빠른 근접 부하 (청광묵) 는 지시 대신 추종 규칙으로 대장의 적에게 */
   console.log('    예', JSON.stringify(ex)); console.log(`    지시한 판 ${dec}/${N} · 청광묵이 노먼의 지시를 받은 판 ${recv}/${N}`); ok(dec>=N*0.6,'노먼이 스스로 지시'); ok(recv>=1,'청광묵이 지휘망으로 받거나 (발 빠른 부하는) 추종 규칙으로 같은 적에게');
-  const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9,{sq:'B',rank:'부대장'}),mk(GOB,0,9,9.5,{sq:'B'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],1,'free'); lit(W); const g=W.units[2]; g.order={k:'hold'}; run(W,5);
+  const al=[mk(INJ,0,3,8,{hero:true}),mk(NOR,0,8,9),mk(GOB,0,9,9.5,{chiefNm:'노먼'})]; const W=W_(al,[mk(DES['궁수'],1,15,9)],1,'free'); lit(W); const g=W.units[2]; g.order={k:'hold'}; run(W,5);
   ok(!W.log.some(x=>x.k==='cmdRecv'&&x.a===g.i&&x.c===W.units[1].i),'대장의 명령 (제자리) 을 받은 편대원은 건드리지 않음'); }
 
 console.log('D. 피한 밀치기의 손 안으로 다시 안 들어감');

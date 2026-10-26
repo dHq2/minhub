@@ -1,20 +1,20 @@
-// v9.1.0 전우조 · 대장-부하 UI 시험 — ui9010.js v1.0 (배치 상자 · 옛 2편대 = 부대장의 부하 · 명령 칸 🤝 🎖 ✂ · 여럿 고르기 / 한 명 + 짝 누르기 · 같은 관계 다시 = 풀림 · 파란 굵은 선 · 로그 · 저장 · 휴대폰 단추)  /* v9.9.0: 인주도 공통 대장 */
+// v9.1.0 전우조 · 대장-부하 UI 시험 — ui9010.js v1.1 (v1.1: v9.9.7 부대장 · 2편대 기본값 없음 — 청광묵의 대장도 상자에서 노먼으로 고름 · v1.0: 배치 상자 · 옛 2편대 = 부대장의 부하 · 명령 칸 🤝 🎖 ✂ · 여럿 고르기 / 한 명 + 짝 누르기 · 같은 관계 다시 = 풀림 · 파란 굵은 선 · 로그 · 저장 · 휴대폰 단추)  /* v9.9.0: 인주도 공통 대장 */
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
  const mkp = async (vw)=>{ const ctx=await b.newContext({viewport:vw||{width:1280,height:860}}); const p=await ctx.newPage(); p.errs=[]; p.on('pageerror',e=>p.errs.push(e.message)); p.on('dialog',d=>d.accept()); await p.addInitScript('window.__askAuto=true; window.__noJit=true'); await p.goto(url); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(900); return p; };
  const p = await mkp();
- console.log('A. 배치 상자 (옛 2편대 → 부대장의 부하)');
+ console.log('A. 배치 상자 (v9.9.7 부대장 · 2편대 기본값 없음 — 모두 인주)');
  const a = await p.evaluate(()=>{ renderSqBox(); const k=n=>S.units.findIndex(u=>u.name===n); const box=document.getElementById('sqBoxP');
    return { ch: ['청광묵','친칠라','레베카','노먼'].map(n=>n+':'+relChiefName(S.units[k(n)])).join(' · '), sel: box.querySelectorAll('select[data-relchief]').length, mate: box.querySelectorAll('select[data-relmate]').length, old: !!box.querySelector('[data-sqk]'), txt: box.innerText.includes('2편대') }; });
- console.log('    ', JSON.stringify(a)); ok(a.ch==='청광묵:노먼 · 친칠라:노먼 · 레베카: · 노먼:','청광묵 · 친칠라는 노먼의 부하 · 나머지는 인주'); ok(a.sel>=5&&a.mate>=5&&!a.old&&!a.txt,'대장 · 전우 고르기 상자 (본대 / 2편대 단추는 없어짐)');
+ console.log('    ', JSON.stringify(a)); ok(a.ch==='청광묵: · 친칠라: · 레베카: · 노먼:','기본은 모두 인주 (부대장의 부하 기본값 없음)'); ok(a.sel>=5&&a.mate>=5&&!a.old&&!a.txt,'대장 · 전우 고르기 상자 (본대 / 2편대 단추는 없어짐)');
  console.log('B. 상자에서 고르기 (배치)');
  const bb = await p.evaluate(()=>{ const k=n=>S.units.findIndex(u=>u.name===n); const fire=(sel,v)=>{ const el=document.querySelector('#sqBoxP '+sel); el.value=v; el.dispatchEvent(new Event('change',{bubbles:true})); };
    fire('select[data-relmate="'+k('레베카')+'"]','카리우스'); const r=S.units[k('레베카')], c=S.units[k('카리우스')];
-   const mateOk = r.cg && r.cg===c.cg; fire('select[data-relchief="'+k('친칠라')+'"]','레베카');
+   const mateOk = r.cg && r.cg===c.cg; fire('select[data-relchief="'+k('청광묵')+'"]','노먼'); fire('select[data-relchief="'+k('친칠라')+'"]','레베카');
    const chOk = S.units[k('친칠라')].chiefNm==='레베카' && S.units[k('청광묵')].chiefNm==='노먼';
    return { mateOk, chOk, cg:r.cg }; });
- ok(bb.mateOk,'레베카 ↔ 카리우스 전우조 (배치 칸 cg '+bb.cg+')'); ok(bb.chOk,'친칠라의 대장을 레베카로 · 청광묵은 노먼 그대로 (옛 편대가 이름표로 바뀜)');
+ ok(bb.mateOk,'레베카 ↔ 카리우스 전우조 (배치 칸 cg '+bb.cg+')'); ok(bb.chOk,'친칠라의 대장을 레베카로 · 청광묵의 대장을 노먼으로');
  console.log('C. 판에서 (start)');
  await p.evaluate(()=>{ start(); }); await p.waitForTimeout(500);
  const c = await p.evaluate(()=>{ const W=world, N=n=>W.units.find(u=>u.name===n); const r=N('레베카'), k=N('카리우스'), ch=N('친칠라'), g=N('청광묵'), n=N('노먼');
