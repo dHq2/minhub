@@ -3,7 +3,7 @@
  *  - 쓰러진 동료는 영구 손실. 아군이 전멸하면 런 종료 → 새 런.
  *  - 적도 같은 설계 규칙으로 만든다 (인원은 보유 인원에 비례, 단계가 오를수록 강해짐). 판 안의 모든 싸움 규칙은 원본 엔진이 정한다. */
 GB.Campaign = (function () {
-  const MAX_ROSTER = 20;
+  const MAX_ROSTER = 20, MAX_ENEMY = 20;
 
   function create(seed) {
     seed = (seed >>> 0) || (Date.now() >>> 0);
@@ -13,21 +13,16 @@ GB.Campaign = (function () {
     };
   }
   const enemyRatio = run => GB.clamp(GB.TUNE.enemyRatio0 + GB.TUNE.enemyRatioUp * (run.stage - 1), 0.2, GB.TUNE.enemyRatioMax);
-  const enemyCount = run => GB.clamp(Math.round(run.roster.length * enemyRatio(run)), Math.min(3, run.roster.length), MAX_ROSTER);
+  const enemyCount = run => GB.clamp(Math.round(run.roster.length * enemyRatio(run)), Math.min(3, run.roster.length), MAX_ENEMY);
   const battleSeed = run => ((run.seed ^ Math.imul(run.stage, 2654435761) ^ Math.imul(run.battleNo + 1, 40503)) >>> 0) || 1;
 
-  // 적 편성: 같은 설계 규칙. 방어 · 보병 · 사수를 반드시 포함하고 나머지는 무작위. 초반은 체력 · 공격을 깎아 영구 손실 부담을 줄임
+  // 적 편성: 아군 보상과 같은 무작위 설계(genDesign) — 병종 · 체급 · 무기 · 방패 · 갑옷 · 특성 · 의무가 모두 랜덤이고,
+  // 능력 배율 같은 특혜는 없다. 단계가 오르면 아군 신규 동료와 같은 식(power)으로 강해지고, 수만 아군보다 늘어난다.
   function enemyDesigns(run) {
-    const rng = GB.rng(battleSeed(run) ^ 0x9e3779b9), n = enemyCount(run), power = Math.max(0, run.stage - 1) * 0.9;
-    const T = GB.TUNE, h = GB.clamp(T.handicap0 + T.handicapUp * (run.stage - 1), T.handicap0, T.handicapMax);
-    const base = ['tank', 'arc', 'inf', 'inf'];
+    const rng = GB.rng(battleSeed(run) ^ 0x9e3779b9), n = enemyCount(run), power = GB.TUNE.powerAt(run.stage);
     const list = [];
     for (let i = 0; i < n; i++) {
-      const o = { power: power, medicChance: 0.15, uid: 'e' + run.stage + '_' + i };
-      if (i < base.length) o.kind = base[i];
-      if (run.stage <= 1 && i < 4) o.size = '중형';
-      const p = GB.genDesign(rng, o);
-      p.ov.hp = Math.round(p.ov.hp * h); p.ov.atk = Math.round(p.ov.atk * h);
+      const p = GB.genDesign(rng, { power: power, medicChance: 0.12, uid: 'e' + run.stage + '_' + i });
       p.name = '적' + (i + 1);
       list.push(p);
     }
@@ -76,7 +71,7 @@ GB.Campaign = (function () {
       const n = 1 + (!out.lost.length ? GB.TUNE.flawlessBonus : 0);
       for (let k = 0; k < n && run.roster.length < MAX_ROSTER; k++) {
         const rng = GB.rng((run.seed ^ Math.imul(run.stage + 11, 1597334677) ^ Math.imul(run.battleNo * 7 + k, 3266489917)) >>> 0);
-        const p = GB.genDesign(rng, { power: run.stage * 0.7, uid: 'u' + run.seed.toString(36) + '_' + run.battleNo + (k ? 'b' + k : '') });
+        const p = GB.genDesign(rng, { power: GB.TUNE.powerAt(run.stage), uid: 'u' + run.seed.toString(36) + '_' + run.battleNo + (k ? 'b' + k : '') });
         p.name = uniqueName(run, rng); run.roster.push(p); out.rewards.push(p);
       }
       out.reward = out.rewards[0] || null;

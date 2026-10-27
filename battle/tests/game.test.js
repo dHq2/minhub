@@ -5,7 +5,13 @@ const GB = load(), E = GB.E;
 const run = GB.Campaign.create(777);
 ok(run.roster.length === 4 && run.stage === 1, '런 시작: 4인, 1단계');
 const en = GB.Campaign.enemyDesigns(run);
-ok(en.length === 3 && en.some(p => GB.kindOf(p) === 'arc') && en.some(p => GB.kindOf(p) === 'tank'), '1단계 적 3인 (방어 · 사수 포함)');
+ok(en.length === 3, '1단계 적 3인 (아군 4 × 0.75)');
+// 적 편성은 랜덤이고 특혜(능력 배율)가 없다: 같은 식의 genDesign 이 만든 값 그대로
+const combos = new Set(), eq = {};
+for (let s = 1; s <= 40; s++) { const r = GB.Campaign.create(s); r.stage = 6; GB.Campaign.enemyDesigns(r).forEach(p => { eq[GB.kindOf(p)] = (eq[GB.kindOf(p)] || 0) + 1; }); combos.add(GB.Campaign.enemyDesigns(r).map(p => GB.kindOf(p)).sort().join()); }
+ok(combos.size >= 10 && Object.keys(eq).length === 4, '적 편성이 판마다 다름: 구성 ' + combos.size + '가지 · 병종 ' + JSON.stringify(eq));
+const rE = GB.Campaign.create(3); rE.stage = 5; const e5 = GB.Campaign.enemyDesigns(rE)[0], mine = GB.genDesign(GB.rng(77), { power: GB.TUNE.powerAt(5), kind: GB.kindOf(e5), size: e5.sizeCls, weapon: e5.weapon });
+ok(e5.ov.hp / mine.ov.hp > 0.8 && e5.ov.hp / mine.ov.hp < 1.25, '적 체력이 같은 단계 신규 동료와 같은 범위 (배율 특혜 없음)');
 ok(en.every(p => (p.gear.몸 ? p.gear.몸.size === p.sizeCls : true)), '장비 체급이 몸 크기와 같음');
 
 // 여러 단계를 AI에게 맡겨 진행 (아군도 자동): 영구 손실 · 보상 · 단계 증가 · 저장 직렬화
