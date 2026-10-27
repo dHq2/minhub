@@ -7,6 +7,7 @@
 - v3.0.0: 원본 엔진 도입으로 전면 재작성. v1/v2 자체 구현 폐기.
 - v3.0.1: 핀치 시 ReferenceError(view 미정의) 수정. 자동 카메라 도입 후 점검.
 - v3.0.2: Artifact 뷰어용 로그 저장을 downloads 기능으로 연결(없으면 기존 링크 방식). tools/make_artifact.py 추가.
+- v3.1.0: 균형 수치를 src/core/tune.js 한 곳으로 모음(체력 1.5배, 적 수 비율 단계별 상승, 초반 적 약화, 완승 보너스 동료). 자동정지(접근/아군 쓰러짐). 이름표 겹침 정리, 핏자국 연하게. 자동 플레이 측정 도구 tools/playbot.
 
 ## 구조
 - vendor/gul: 원본 엔진 사본. 수정 금지. UPSTREAM.md 에 커밋 해시.

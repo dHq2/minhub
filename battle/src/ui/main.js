@@ -60,6 +60,7 @@ GB.App.prototype = {
     on('btnBack', () => this.back());
     on('btnPlay', () => this.togglePlay());
     on('btnSpeed', () => { const B = this.B; if (!B) return; B.speed = B.speed === 1 ? 2 : B.speed === 2 ? 4 : 1; this.refresh(); });
+    on('btnAP', () => { const B = this.B; if (!B) return; B.autoPause.on = !B.autoPause.on; this.toast(B.autoPause.on ? '자동정지 켬: 접촉 · 아군 쓰러짐에서 멈춰요' : '자동정지 끔'); this.refresh(); });
     on('btnTurnMode', () => { const B = this.B; if (!B) return; B.stepMode = !B.stepMode; this.toast(B.stepMode ? '한 턴씩: 1초(한 턴)마다 멈춰요 — 명령을 주고 ▶' : '이어서 재생'); this.refresh(); });
     on('btnTurn', () => { const B = this.B; if (!B || B.over) return; B.stepTurn(); this.refresh(); });
     on('btnLog', () => { const B = this.B; if (!B) return; const rec = GB.BattleLog.make(B, this.run); GB.UI.$('logText').textContent = GB.BattleLog.text(rec); GB.UI.$('logDrawer').classList.remove('hidden'); const t = GB.UI.$('logText'); t.scrollTop = t.scrollHeight; });
@@ -100,7 +101,7 @@ GB.App.prototype = {
     this.ended = true;
     const B = this.B, run = this.run;
     const out = GB.Campaign.finish(run, B);
-    const rec = GB.BattleLog.make(B, run, { outcome: out.outcome, lost: out.lost.map(l => l.name), reward: out.reward ? out.reward.name : null, grown: out.grown, loot: out.loot });
+    const rec = GB.BattleLog.make(B, run, { outcome: out.outcome, lost: out.lost.map(l => l.name), reward: out.rewards.map(p => p.name).join(', ') || null, grown: out.grown, loot: out.loot });
     GB.Store.saveLog(rec); GB.Store.saveRun(run);
     this.refresh();
     this.screens.resultModal(B, out, rec);

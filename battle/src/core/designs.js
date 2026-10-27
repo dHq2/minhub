@@ -146,6 +146,7 @@ GB.toEngine = function (p, side, i) {
   q.id = p.uid; q.side = side; q.hero = false; q.nv = true; q.grp = 'g' + side;
   q.x = p.x != null ? p.x : 5; q.y = p.y != null ? p.y : 5;
   if (side === 1) q.mute = true;
+  if (q.ov && GB.TUNE.durability !== 1) q.ov.hp = Math.round(q.ov.hp * GB.TUNE.durability);
   return q;
 };
 

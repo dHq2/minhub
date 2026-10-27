@@ -21,6 +21,8 @@ let fails = 0; const ok = (c, s) => { console.log((c ? '  OK   ' : '  FAIL ') + 
     const q = fn => page.evaluate(fn);
     ok(await q(() => !!GB.app.B && !GB.app.B.started), '준비 단계에서 열림');
     await page.screenshot({ path: OUT + '/' + name + '_prep.png' });
+    ok(await q(() => !!document.getElementById('btnAP') && GB.app.B.autoPause.on), '자동정지 단추가 있고 기본 켬');
+    await page.click('#btnAP'); ok(await q(() => !GB.app.B.autoPause.on), '자동정지 끄기 (이 시험은 멈춤 없이 진행)');
     // 칩으로 보병1 고르기 → 땅 탭 = 이동 (0초: 바로 걸림)
     await page.dispatchEvent('.chip[data-i="1"]', 'pointerdown');
     ok(await q(() => GB.app.ui.sel.has(1)), '칩 탭으로 고르기');

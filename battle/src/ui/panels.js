@@ -46,7 +46,7 @@ GB.Panels.prototype = {
     const W = B.W, us0 = W.units.filter(u => u.side === 0), foes = W.units.filter(u => u.side === 1);
     const na = us0.filter(u => u.alive).length, nf = foes.filter(u => u.alive).length;
     const boss = E.cmdBoss(W, 0);
-    $('lblTop').innerHTML = '<b>단계 ' + (B.stage || '-') + '</b> · ' + this.fmtT(W.t) + ' · ' + (!B.started ? '준비' : W.over ? '종료' : B.paused ? '정지' : B.stepMode ? '한 턴씩' : '진행') +
+    $('lblTop').innerHTML = '<b>단계 ' + (B.stage || '-') + '</b> · ' + this.fmtT(W.t) + ' · ' + (!B.started ? '준비' : W.over ? '종료' : B.paused ? (B.pauseWhy ? '정지 · ' + B.pauseWhy : '정지') : B.stepMode ? '한 턴씩' : '진행') +
       '<br>아군 ' + na + '/' + us0.length + ' vs 적 ' + nf + '/' + foes.length + (boss ? ' · 지휘 ★ ' + boss.name : '');
     // 칩
     const sig = us0.map(u => u.i + (u.alive ? 1 : 0) + (ui.sel.has(u.i) ? 's' : '') + Math.round(u.hp / u.max * 20) + (u.bleed ? 'b' : '') + (u.cg || '') + (u.ordPend ? 'p' : '')).join('|') + (boss ? boss.i : '') + ui.mode + ui.multi;
@@ -68,7 +68,7 @@ GB.Panels.prototype = {
     else if (W.over) { b.textContent = '종료'; b.disabled = true; }
     else { b.textContent = B.paused ? '▶ 재개' : '⏸ 정지'; b.disabled = false; }
     $('btnSpeed').textContent = B.speed + 'x';
-    $('btnTurnMode').classList.toggle('on', B.stepMode);
+    $('btnTurnMode').classList.toggle('on', B.stepMode); $('btnAP').classList.toggle('on', B.autoPause.on);
   },
   fmtT(t) { const m = Math.floor(t / 60), s = Math.floor(t % 60); return m + ':' + (s < 10 ? '0' : '') + s; },
   refreshButtons() {

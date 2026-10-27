@@ -5,7 +5,7 @@ const GB = load(), E = GB.E;
 const run = GB.Campaign.create(777);
 ok(run.roster.length === 4 && run.stage === 1, '런 시작: 4인, 1단계');
 const en = GB.Campaign.enemyDesigns(run);
-ok(en.length === 4 && en.some(p => GB.kindOf(p) === 'arc') && en.some(p => GB.kindOf(p) === 'tank'), '적 4인 (방어 · 사수 포함)');
+ok(en.length === 3 && en.some(p => GB.kindOf(p) === 'arc') && en.some(p => GB.kindOf(p) === 'tank'), '1단계 적 3인 (방어 · 사수 포함)');
 ok(en.every(p => (p.gear.몸 ? p.gear.몸.size === p.sizeCls : true)), '장비 체급이 몸 크기와 같음');
 
 // 여러 단계를 AI에게 맡겨 진행 (아군도 자동): 영구 손실 · 보상 · 단계 증가 · 저장 직렬화
@@ -16,8 +16,8 @@ for (let i = 0; i < 12 && !r2.over; i++) {
   B.runToEnd();
   const n0 = r2.roster.length;
   const o = GB.Campaign.finish(r2, B);
-  lostTotal += o.lost.length; rewards += o.reward ? 1 : 0; grown += o.grown.length; loot += o.loot; stages++;
-  ok(r2.roster.length === n0 - o.lost.length + (o.reward ? 1 : 0), '단계 ' + (stages) + ' ' + o.outcome + ': 손실 ' + o.lost.length + ' 보상 ' + (o.reward ? o.reward.name : '-') + ' 보유 ' + r2.roster.length + ' 전리품 ' + o.loot);
+  lostTotal += o.lost.length; rewards += o.rewards.length; grown += o.grown.length; loot += o.loot; stages++;
+  ok(r2.roster.length === n0 - o.lost.length + o.rewards.length, '단계 ' + (stages) + ' ' + o.outcome + ': 손실 ' + o.lost.length + ' 보상 ' + (o.rewards.map(p => p.name).join('+') || '-') + ' 보유 ' + r2.roster.length + ' 전리품 ' + o.loot);
   JSON.parse(JSON.stringify(r2));  // 저장 가능
   if (o.outcome === 'win') { const rec = GB.BattleLog.make(B, r2, o); ok(rec.events.length > 0 && GB.BattleLog.text(rec).length > 100, '기록 생성 (' + rec.events.length + '건)'); }
 }

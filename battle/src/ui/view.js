@@ -114,7 +114,7 @@ GB.View.prototype = {
       } else if (e.k === 'die') {
         const t = W.units[e.b]; if (!t) continue;
         this.fx.push({ k: 'ring', x: t.x, y: t.y, t0: now, r: t.r * 3 });
-        this.stain(t.x, t.y, 0.5 + t.r, 9);
+        this.stain(t.x, t.y, 0.35 + t.r * 0.7, 7);
         this.shake = Math.min(8, this.shake + 2 + t.r * 2);
       } else if (e.k === 'charge') {
         const a = W.units[e.a]; if (a) this.fx.push({ k: 'dust', x: a.x, y: a.y, t0: now });
@@ -130,8 +130,8 @@ GB.View.prototype = {
   },
   stain(x, y, r, n) {
     const R = this.B.W.rand ? Math.random : Math.random;
-    for (let i = 0; i < n; i++) this.stains.push({ x: x + (R() - 0.5) * 0.9, y: y + (R() - 0.5) * 0.9, r: r * (0.3 + R() * 0.8), a: 0.14 + R() * 0.22 });
-    if (this.stains.length > 700) this.stains.splice(0, this.stains.length - 700);
+    for (let i = 0; i < n; i++) this.stains.push({ x: x + (R() - 0.5) * 0.9, y: y + (R() - 0.5) * 0.9, r: r * (0.3 + R() * 0.8), a: 0.07 + R() * 0.12 });
+    if (this.stains.length > 450) this.stains.splice(0, this.stains.length - 450);
   },
 
   // ---------- 그리기 ----------
@@ -315,7 +315,9 @@ GB.View.prototype = {
       if (n > 0) sq.set(a, { ang: Math.atan2(py, px), k: GB.clamp(n * 0.55, 0, 0.3) });
     }
     const boss = E.cmdBoss(W, 0);
+    this._labels = [];
     for (const u of live) this.drawUnit(u, now, sq.get(u), boss);
+    this.flushLabels();
   },
   drawUnit(u, now, squish, boss) {
     const g = this.g, W = this.B.W, ui = this.ui, kind = GB.kindOf(u), ally = u.side === 0;
@@ -382,7 +384,19 @@ GB.View.prototype = {
       else if (u.missT != null && W.t - u.missT < 3) { g.save(); g.fillStyle = RED; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; g.fillText('✗', p.x + R + 6, p.y + 4); g.restore(); }
     }
     if (u.down || u.crawl) { g.save(); g.strokeStyle = RED; g.lineWidth = 1.8; const r = R * 0.5; g.beginPath(); g.moveTo(p.x - r, p.y - r); g.lineTo(p.x + r, p.y + r); g.moveTo(p.x + r, p.y - r); g.lineTo(p.x - r, p.y + r); g.stroke(); g.restore(); }
-    if (this.scale >= 13 || ui.sel.has(u.i) || ui.inspect === u.i) { g.save(); g.font = '10px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.92)'; g.fillStyle = INK; g.strokeText(u.name, p.x, p.y + R + 4); g.fillText(u.name, p.x, p.y + R + 4); g.restore(); }
+    // 이름표는 모아 두었다가 겹치지 않는 것만 그림 (flushLabels)
+    const pr = ui.sel.has(u.i) || ui.inspect === u.i ? 3 : (u === boss || (u.skill && u.skill.kit)) ? 2 : this.scale >= 13 ? 1 : 0;
+    if (pr) this._labels.push({ x: p.x, y: p.y + R + 4, s: u.name, pr: pr });
+  },
+  flushLabels() {
+    const g = this.g, L = this._labels.sort((a, b) => b.pr - a.pr), placed = [];
+    g.save(); g.font = '10px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'top'; g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.92)'; g.fillStyle = INK;
+    for (const l of L) {
+      const w = g.measureText(l.s).width + 2, r = { x0: l.x - w / 2, x1: l.x + w / 2, y0: l.y, y1: l.y + 11 };
+      if (l.pr < 3 && placed.some(q => r.x0 < q.x1 && r.x1 > q.x0 && r.y0 < q.y1 && r.y1 > q.y0)) continue;
+      placed.push(r); g.strokeText(l.s, l.x, l.y); g.fillText(l.s, l.x, l.y);
+    }
+    g.restore(); this._labels = [];
   },
   // 무기 · 방패 (바라보는 쪽). 준비(wind)에서는 뒤로 젖히고, 회복에서는 앞으로
   drawArms(u, R, th, now, ally) {

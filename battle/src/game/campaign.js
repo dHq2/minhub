@@ -12,14 +12,15 @@ GB.Campaign = (function () {
       roster: GB.startRoster(seed), stash: [], history: [], nextUid: 1
     };
   }
-  const enemyCount = run => Math.min(MAX_ROSTER, run.roster.length + (run.stage >= 5 ? 1 : 0) + (run.stage >= 10 ? 1 : 0));
+  const enemyRatio = run => GB.clamp(GB.TUNE.enemyRatio0 + GB.TUNE.enemyRatioUp * (run.stage - 1), 0.2, GB.TUNE.enemyRatioMax);
+  const enemyCount = run => GB.clamp(Math.round(run.roster.length * enemyRatio(run)), Math.min(3, run.roster.length), MAX_ROSTER);
   const battleSeed = run => ((run.seed ^ Math.imul(run.stage, 2654435761) ^ Math.imul(run.battleNo + 1, 40503)) >>> 0) || 1;
 
   // 적 편성: 같은 설계 규칙. 방어 · 보병 · 사수를 반드시 포함하고 나머지는 무작위. 초반은 체력 · 공격을 깎아 영구 손실 부담을 줄임
   function enemyDesigns(run) {
     const rng = GB.rng(battleSeed(run) ^ 0x9e3779b9), n = enemyCount(run), power = Math.max(0, run.stage - 1) * 0.9;
-    const h = GB.clamp(0.75 + 0.04 * (run.stage - 1), 0.75, 1);
-    const base = ['tank', 'inf', 'arc', 'inf'];
+    const T = GB.TUNE, h = GB.clamp(T.handicap0 + T.handicapUp * (run.stage - 1), T.handicap0, T.handicapMax);
+    const base = ['tank', 'arc', 'inf', 'inf'];
     const list = [];
     for (let i = 0; i < n; i++) {
       const o = { power: power, medicChance: 0.15, uid: 'e' + run.stage + '_' + i };
@@ -51,7 +52,7 @@ GB.Campaign = (function () {
   // 판이 끝났을 때: 보유 동료 · 창고 · 단계를 갱신하고 요약을 돌려줌
   function finish(run, B) {
     const W = B.W, rules = B.rules, res = B.result;
-    const out = { outcome: res === 'win' ? 'win' : res === 'lose' ? 'lose' : 'draw', lost: [], grown: [], reward: null, loot: 0, over: false, kills: 0 };
+    const out = { outcome: res === 'win' ? 'win' : res === 'lose' ? 'lose' : 'draw', lost: [], grown: [], reward: null, rewards: [], loot: 0, over: false, kills: 0 };
     run.battleNo++;
     const stats = GB.Growth.stats(W), byPid = {};
     W.units.forEach(u => { if (u.side === 0) byPid[u.pid] = u; });
@@ -71,11 +72,14 @@ GB.Campaign = (function () {
     if (out.outcome !== 'lose') { const items = GB.Loot.collect(W); out.loot = items.length; run.stash = run.stash.concat(items).slice(-120); }
     if (out.outcome === 'win') {
       run.totalWins++;
-      if (run.roster.length < MAX_ROSTER) {
-        const rng = GB.rng((run.seed ^ Math.imul(run.stage + 11, 1597334677) ^ Math.imul(run.battleNo, 3266489917)) >>> 0);
-        const p = GB.genDesign(rng, { power: run.stage * 0.7, uid: 'u' + run.seed.toString(36) + '_' + run.battleNo });
-        p.name = uniqueName(run, rng); run.roster.push(p); out.reward = p;
+      // 보상: 승리하면 1명, 한 명도 잃지 않았으면(완승) 보너스 인원. 병종 · 체급 · 무기 · 특성 · 의무 여부는 모두 랜덤
+      const n = 1 + (!out.lost.length ? GB.TUNE.flawlessBonus : 0);
+      for (let k = 0; k < n && run.roster.length < MAX_ROSTER; k++) {
+        const rng = GB.rng((run.seed ^ Math.imul(run.stage + 11, 1597334677) ^ Math.imul(run.battleNo * 7 + k, 3266489917)) >>> 0);
+        const p = GB.genDesign(rng, { power: run.stage * 0.7, uid: 'u' + run.seed.toString(36) + '_' + run.battleNo + (k ? 'b' + k : '') });
+        p.name = uniqueName(run, rng); run.roster.push(p); out.rewards.push(p);
       }
+      out.reward = out.rewards[0] || null;
       run.stage++; run.best = Math.max(run.best, run.stage);
     }
     if (out.outcome === 'lose' || !run.roster.length) { run.over = true; out.over = true; }

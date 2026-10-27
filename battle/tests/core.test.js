@@ -44,6 +44,16 @@ ok(JSON.stringify(r1.B.W.log.length) === JSON.stringify(r2.B.W.log.length) && r1
   ok(po.ok, '교전 규칙 태세 명령');
 }
 
+// 3.5) 자동 정지: 적이 가까워지면 멈추고, 재개하면 이어 가며, 끄면 안 멈춘다
+{
+  const run = GB.Campaign.create(5), B = GB.Campaign.makeBattle(run);
+  B.start(); let n = 0; while (!B.paused && !B.over && n++ < 400) B.advance(0.25);
+  ok(B.paused && /가까워/.test(B.pauseWhy), '자동정지: ' + B.pauseWhy + ' (t=' + B.W.t.toFixed(1) + ')');
+  B.togglePause(); ok(!B.paused && !B.pauseWhy, '재개하면 이유가 지워짐');
+  const B2 = GB.Campaign.makeBattle(GB.Campaign.create(5)); B2.autoPause.on = false; B2.runToEnd();
+  ok(B2.over, '자동정지를 끄면 끝까지 감');
+}
+
 // 4) 규모: 10대10 · 20대20 이 돌고 시간이 합리적
 for (const n of [10, 20]) {
   const r = fight(21 + n, n);

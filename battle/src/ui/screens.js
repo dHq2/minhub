@@ -114,7 +114,7 @@ GB.Screens.prototype = {
     h += out.lost.length ? '<p class="lose">영구 손실: ' + esc(out.lost.map(l => l.name).join(', ')) + '</p>' : '<p>손실 없음</p>';
     if (out.grown.length) h += '<p class="win">성장</p>' + out.grown.map(g => '<div class="st">' + esc(g.name) + ': ' + esc(g.what.join(' · ')) + '</div>').join('');
     if (out.loot) h += '<p>전리품 ' + out.loot + '개를 창고에 담았어요.</p>';
-    if (out.reward) h += '<p>합류한 동료</p>' + this.card(out.reward, true);
+    if (out.rewards && out.rewards.length) h += '<p>합류한 동료' + (out.rewards.length > 1 ? ' (완승 보너스!)' : '') + '</p>' + out.rewards.map(p => this.card(p, true)).join('');
     if (out.outcome === 'win' && !out.reward) h += '<p class="dim">편성이 가득 차 새 동료는 합류하지 않았어요.</p>';
     if (out.over) h += '<p class="lose">모든 동료를 잃어 런이 끝났어요 (최고 ' + this.app.run.best + '단계).</p>';
     if (out.outcome === 'draw') h += '<p>시간 초과로 단계는 그대로예요.</p>';
