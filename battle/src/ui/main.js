@@ -59,7 +59,7 @@ GB.App.prototype = {
     GB.UI.$('btnExportRun').onclick = () => this.download('battle_run_' + GB.VERSION + '_' + this.run.id + '.json', JSON.stringify(this.run));
     on('btnBack', () => this.back());
     on('btnPlay', () => this.togglePlay());
-    on('btnSpeed', () => { const B = this.B; if (!B) return; B.speed = B.speed === 1 ? 2 : B.speed === 2 ? 4 : 1; this.refresh(); });
+    on('btnSpeed', () => { const B = this.B; if (!B) return; B.speed = B.speed < 1 ? 1 : B.speed === 1 ? 2 : B.speed === 2 ? 4 : 0.5; this.refresh(); });
     on('btnAP', () => { const B = this.B; if (!B) return; B.autoPause.on = !B.autoPause.on; this.toast(B.autoPause.on ? '자동정지 켬: 접촉 · 아군 쓰러짐에서 멈춰요' : '자동정지 끔'); this.refresh(); });
     on('btnTurnMode', () => { const B = this.B; if (!B) return; B.stepMode = !B.stepMode; this.toast(B.stepMode ? '한 턴씩: 1초(한 턴)마다 멈춰요 — 명령을 주고 ▶' : '이어서 재생'); this.refresh(); });
     on('btnTurn', () => { const B = this.B; if (!B || B.over) return; B.stepTurn(); this.refresh(); });
@@ -75,7 +75,7 @@ GB.App.prototype = {
   },
   startBattle() {
     const run = this.run; if (run.over || !run.roster.length) return;
-    this.B = GB.Campaign.makeBattle(run);
+    this.B = GB.Campaign.makeBattle(run); this.B.speed = GB.TUNE.uiSpeed;
     this.view.setBattle(this.B); this.ui.sel.clear(); this.ui.inspect = null; this.ui.mode = 'normal'; this.ui.multi = false; this.ui.detour = false;
     this.recent = []; this.ended = false; this.slowN = 0; this.logIdx = this.B.W.log.length;
     GB.UI.$('scrHome').classList.add('hidden'); GB.UI.$('scrBattle').classList.remove('hidden'); GB.UI.$('logDrawer').classList.add('hidden');
