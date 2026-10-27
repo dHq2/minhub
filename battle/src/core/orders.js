@@ -73,6 +73,16 @@ GB.Orders = (function () {
     return { ok: true, msg: (kind === 'amove' ? '공격 이동' : '이동') + ' ' + L.map(u => u.name).join(' · ') };
   }
 
+  // 철수: 모두 자기 진영 쪽 가장자리로 서둘러 달려, 가장자리에 닿으면 판을 떠남 (Battle._retreatTick).
+  // 지휘망을 거치지 않고 바로 걸린다 — 도망치라는 외침은 모두에게 들리는 걸로. 쓰러져 기는 몸은 못 나감(남음).
+  function retreat(B) {
+    const W = B.W, L = W.units.filter(u => u.alive && u.side === 0 && !u.gone && !u.summon);
+    if (!L.length) return { ok: false, msg: '철수할 아군이 없어요' };
+    for (const u of L) { u.order = { k: 'move', x: 0.9, y: Math.min(W.map.H - 1, Math.max(1, u.y)), hurry: true }; }
+    noteOrders(B, L, true); B.retreating = true; B.retreatAt = W.t; log(B, 'retreat', L, {});
+    return { ok: true, msg: '철수! 가장자리에 닿으면 판을 떠나요' };
+  }
+
   function attack(B, ids, t, opt) {
     opt = opt || {};
     const L = alive(B, ids);
@@ -184,7 +194,7 @@ GB.Orders = (function () {
     return { ok: !!n, msg: n ? '관계를 풀었어요' : '풀 관계가 없어요' };
   }
 
-  return { noteOrders: noteOrders, move: move, attack: attack, charge: charge, throwAt: throwAt, pick: pick, pickSpear: pickSpear,
+  return { noteOrders: noteOrders, retreat: retreat, move: move, attack: attack, charge: charge, throwAt: throwAt, pick: pick, pickSpear: pickSpear,
     hold: simple('hold'), auto: simple('auto'), cancel: simple('cancel'), line: simple('line'), posture: posture, guardToggle: guardToggle,
     chargePolicy: chargePolicy, mate: mate, chief: chief, relCut: relCut, applyDetour: applyDetour };
 })();

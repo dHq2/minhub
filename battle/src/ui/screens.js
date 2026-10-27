@@ -109,7 +109,7 @@ GB.Screens.prototype = {
 
   // ---------- 결과 · 도움말 ----------
   resultModal(B, out, rec) {
-    const title = out.outcome === 'win' ? '<span class="win">승리</span>' : out.outcome === 'lose' ? '<span class="lose">패배</span>' : '<span class="draw">시간 초과</span>';
+    const title = out.outcome === 'win' ? '<span class="win">승리</span>' : out.outcome === 'lose' ? '<span class="lose">패배</span>' : out.outcome === 'retreat' ? '<span class="draw">철수</span>' : '<span class="draw">시간 초과</span>';
     let h = '<h2>' + title + ' · 단계 ' + B.stage + '</h2><p>전투 시간 ' + Math.round(B.W.t) + '초 · 아군 처치 ' + out.kills + '</p>';
     h += out.lost.length ? '<p class="lose">영구 손실: ' + esc(out.lost.map(l => l.name).join(', ')) + '</p>' : '<p>손실 없음</p>';
     if (out.grown.length) h += '<p class="win">성장</p>' + out.grown.map(g => '<div class="st">' + esc(g.name) + ': ' + esc(g.what.join(' · ')) + '</div>').join('');
@@ -118,6 +118,7 @@ GB.Screens.prototype = {
     if (out.outcome === 'win' && !out.reward) h += '<p class="dim">편성이 가득 차 새 동료는 합류하지 않았어요.</p>';
     if (out.over) h += '<p class="lose">모든 동료를 잃어 런이 끝났어요 (최고 ' + this.app.run.best + '단계).</p>';
     if (out.outcome === 'draw') h += '<p>시간 초과로 단계는 그대로예요.</p>';
+    if (out.outcome === 'retreat') h += '<p>살아 나온 동료는 그대로예요. 단계는 그대로이고 보상은 없어요.</p>';
     h += '<div class="row" style="margin-top:10px"><button class="btn" id="rJson">기록 JSON</button><button class="btn" id="rTxt">기록 TXT</button><button class="btn go" id="rNext">막사로</button></div>';
     this.modal(h, () => {
       GB.UI.$('rJson').onclick = () => this.app.download('battle_log_' + GB.VERSION + '_stage' + B.stage + '.json', JSON.stringify(rec), 'application/json');
@@ -132,6 +133,8 @@ GB.Screens.prototype = {
       '<b>태세</b> 막기 풀기 · 전열 · 교전 규칙(자유/판단/금지/사격금지) · 치료 방침(위급/알아서/명령만) · 스스로 돌격 안 함<br>' +
       '<b>관계</b> 전우조(2명 이상 고르고 누름) · ♛ 대장(부하를 고르고 → 대장을 탭) · ⛨ 보호(보호받을이를 고르고 → 지켜 줄 대장을 탭) · ✕ 풀기. 관계는 막사에서도 정할 수 있어요.<br>' +
       '<b>지휘망</b> ★ = 지휘관. 명령은 지휘관을 거쳐 거리 · 소음 · 확률대로 닿아요 ("…" 전달 중 / "✗" 못 들음). 대장-부하 · 싸움 전(0초) 명령은 바로 닿아요.<br>' +
+      '<b>철수</b> ← 막사 단추(전투 중) → "철수": 모두 자기 쪽 가장자리로 달려 살아 나가요. 불리할 때 동료를 살리는 선택이에요.<br>' +
+      '<b>자동정지</b> 켜 두면 적이 가까워질 때 · 아군이 쓰러질 때 멈춰요.<br>' +
       '<b>시간</b> ⏸로 멈추고 계획 → ▶. "한 턴씩"을 켜면 1초(한 턴)마다 멈춰요. 1x/2x/4x. 준비 단계에서는 아군을 끌어 배치할 수 있어요.<br>' +
       '<b>화면</b> 핀치/휠 확대 · 두 손가락/오른쪽 버튼으로 이동 · "맞춤". 흰색=아군, 검정=적 · ■방어 ●보병 ▲기동 ⬟사수 · 크기=체급 · 붉은 십자=의무 · 굵은 테 둘레=갑옷 · 머리 위 투구 · 바닥의 물건=전리품<br>' +
       '<b>규칙</b> 모든 싸움 규칙은 원본 굴 엔진 그대로예요 (부위 · 출혈 · 기어다님 · 방향 피해 · 돌격 · 투창 · 짓밟기 · 전우조 · 대장-부하 · 응급처치). 판 끝에 한 일대로 특성이 올라요.' +

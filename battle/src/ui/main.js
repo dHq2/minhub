@@ -92,8 +92,13 @@ GB.App.prototype = {
     if (!B.started) { this.showHome(); return; }
     if (B.over) return;
     B.paused = true; this.refresh();
-    this.screens.modal('<h2>항복</h2><p>전투 중에는 막사로 돌아갈 수 없어요. 항복하면 이 전투는 패배로 처리되고 런이 끝나요.</p><div class="row"><button class="btn danger" id="sgYes">항복</button><button class="btn" id="sgNo">계속 싸운다</button></div>', () => {
+    const canRun = !B.retreating;
+    this.screens.modal('<h2>전투를 그만둘까요?</h2>' +
+      (canRun ? '<p><b>철수</b>: 모두 자기 진영 쪽 가장자리로 달려요. 가장자리에 닿은 동료는 살아 나가고, 쓰러졌거나 못 닿은 동료는 잃어요. 이번 단계는 그대로(보상 없음).</p>' : '<p>이미 철수 중이에요.</p>') +
+      '<p><b>항복</b>: 이 전투는 패배로 처리되고 런이 끝나요.</p>' +
+      '<div class="row">' + (canRun ? '<button class="btn go" id="sgRun">철수</button>' : '') + '<button class="btn danger" id="sgYes">항복</button><button class="btn" id="sgNo">계속 싸운다</button></div>', () => {
       GB.UI.$('sgNo').onclick = () => this.screens.closeModal();
+      if (canRun) GB.UI.$('sgRun').onclick = () => { this.screens.closeModal(); const r = GB.Orders.retreat(B); this.toast(r.msg); B.paused = false; B.pauseWhy = ''; this.refresh(); };
       GB.UI.$('sgYes').onclick = () => { this.screens.closeModal(); B.W.over = true; B.W.result = 'lose'; };
     });
   },

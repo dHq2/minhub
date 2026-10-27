@@ -105,5 +105,101 @@ module.exports = {
       const c = centroid(M), d = Math.min(...F.map(f => Math.hypot(f.x - c.x, f.y - c.y)));
       if (d < 9) { B._freed = true; GB.Orders.posture(B, M.map(u => u.i), 'roe', 'free'); GB.Orders.auto(B, M.map(u => u.i)); }
     }
+  },
+
+  // 부상자 후송: 체력이 낮은 아군은 가까운 적 반대쪽으로 물러나 의무병 곁으로 (림월드의 부상자 처리)
+  rescue: {
+    thr: 0.4,
+    turn(GB, B) {
+      const F = foes(B), M = mine(B); if (!F.length || !M.length) return;
+      const thr = module.exports.rescue.thr;
+      for (const u of M) {
+        if (u.hp / u.max >= thr || u.crawl || u.down) continue;
+        const f = near(u, F); if (!f) continue;
+        const d = Math.hypot(u.x - f.x, u.y - f.y) || 1, back = B.map.W * 0.0 + 8;
+        const tx = GB.clamp(u.x + (u.x - f.x) / d * back, 1.5, B.map.W - 1.5), ty = GB.clamp(u.y + (u.y - f.y) / d * back, 1.5, B.map.H - 1.5);
+        GB.Orders.move(B, [u.i], tx, ty, { kind: 'move', hurry: true });
+      }
+    }
+  },
+
+  // 사람처럼: 목표가 쓰러졌을 때만 새 명령 (매 턴 다시 내리면 휘두르던 동작이 끊김)
+  arcfocus2: {
+    turn(GB, B) {
+      const F = foes(B), A = mine(B).filter(u => GB.kindOf(u) === 'arc'); if (!F.length || !A.length) return;
+      if (B._t && B._t.alive) return;
+      const c = centroid(A);
+      B._t = F.slice().sort((a, b) => (Math.hypot(a.x - c.x, a.y - c.y) + 8 * a.hp / a.max) - (Math.hypot(b.x - c.x, b.y - c.y) + 8 * b.hp / b.max))[0];
+      GB.Orders.attack(B, A.map(u => u.i), B._t, {});
+    }
+  },
+  focus2: {
+    turn(GB, B) {
+      const F = foes(B), M = mine(B); if (!F.length || !M.length) return;
+      if (B._t && B._t.alive) return;
+      const c = centroid(M);
+      B._t = near(c, F);
+      GB.Orders.attack(B, M.map(u => u.i), B._t, {});
+    }
+  },
+
+  // 처음부터 전원 공격이동(서둘러)
+  rush: {
+    prep(GB, B) {
+      const M = mine(B), F = foes(B), c = centroid(F);
+      GB.Orders.move(B, M.map(u => u.i), c.x, c.y, { kind: 'amove', hurry: true });
+    }
+  },
+  // 사수 제외 공격이동, 사수는 자동
+  rushmelee: {
+    prep(GB, B) {
+      const M = mine(B).filter(u => GB.kindOf(u) !== 'arc'), F = foes(B), c = centroid(F);
+      GB.Orders.move(B, M.map(u => u.i), c.x, c.y, { kind: 'amove', hurry: true });
+    }
+  },
+  // 기동병만 먼저 돌격 (적 사수 쪽으로)
+  cavcharge: {
+    prep(GB, B) {
+      const C = mine(B).filter(u => GB.kindOf(u) === 'cav'), F = foes(B).filter(f => GB.kindOf(f) === 'arc'); if (!C.length || !F.length) return;
+      GB.Orders.charge(B, C.map(u => u.i), F[0], null, {});
+    }
+  },
+
+  // 전우조: 가까이 배치된 둘씩 짝 (전우 = 옆구리 · 등 덮어 줌, 쓰러지면 구하러 감)
+  pairs: {
+    prep(GB, B) {
+      const M = mine(B).slice().sort((a, b) => a.y - b.y), used = new Set();
+      for (let i = 0; i < M.length; i++) {
+        if (used.has(M[i].i)) continue;
+        const j = M.findIndex((q, k) => k > i && !used.has(q.i) && Math.hypot(q.x - M[i].x, q.y - M[i].y) < 4.5);
+        if (j < 0) continue;
+        used.add(M[i].i); used.add(M[j].i); GB.Orders.mate(B, [M[i].i, M[j].i]);
+      }
+    }
+  },
+  // 짝 + 지휘 사슬: 탱커가 대장, 나머지는 따름
+  chain: {
+    prep(GB, B) {
+      module.exports.pairs.prep(GB, B);
+      const M = mine(B), boss = M.slice().sort((a, b) => b.max - a.max)[0];
+      GB.Orders.chief(B, M.filter(u => u !== boss).map(u => u.i), boss.i, 'follow');
+    }
+  },
+
+  // 대조군: 명령은 내지만 '자동'일 뿐 (명령을 낸다는 사실 자체가 판을 바꾸는지 확인)
+  noop: { prep(GB, B) { GB.Orders.auto(B, mine(B).map(u => u.i)); } },
+
+  // 치료 방침: 의무병이 위급하지 않아도 다친 사람을 치료
+  healfree: { prep(GB, B) { GB.Orders.posture(B, mine(B).map(u => u.i), 'heal', 'free'); } },
+
+  // 불리하면 철수: 아군 총 체력 / 적 총 체력 이 문턱보다 낮으면 (한 번) 철수 — 성장 게임에서는 이기는 것보다 살리는 게 중요할 때가 많다
+  retreat: {
+    thr: 0.45, minT: 4,
+    turn(GB, B) {
+      if (B.retreating || B.W.t < module.exports.retreat.minT) return;
+      const hp = L => L.reduce((a, u) => a + Math.max(0, u.hp), 0), A = mine(B), F = foes(B);
+      if (!A.length || !F.length) return;
+      if (hp(A) / hp(F) < module.exports.retreat.thr) GB.Orders.retreat(B);
+    }
   }
 };

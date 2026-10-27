@@ -36,4 +36,14 @@ const old = GB.Loot.takeOff(mid, '몸'); ok(old && old.k === 'armor' && !mid.gea
 
 // 저장소 (localStorage 없는 환경에서도 동작)
 GB.Store.saveRun(r2); ok(GB.Store.loadRun() && GB.Store.loadRun().id === r2.id, '런 저장/불러오기');
+// 철수: 일찍 빠지면 살아 나가고, 단계는 그대로이며, 보상은 없다
+{
+  const r = GB.Campaign.create(9), n0 = r.roster.length, st0 = r.stage, B = GB.Campaign.makeBattle(r);
+  B.autoPause.on = false; B.start(); B.advance(0.5); GB.Orders.retreat(B);
+  let g = 0; while (!B.over && g++ < 400) B.advance(0.5);
+  ok(B.over && B.result === 'retreat' && B.escaped.length > 0, '철수: 결과 ' + B.result + ', 빠져나감 ' + B.escaped.length + '/' + n0 + ' (t=' + B.W.t.toFixed(0) + ')');
+  const o = GB.Campaign.finish(r, B);
+  ok(o.outcome === 'retreat' && r.stage === st0 && !o.rewards.length && !r.over, '철수 결과 반영: 단계 그대로 · 보상 없음 · 런 계속');
+  ok(r.roster.length === n0 - o.lost.length && r.roster.length >= B.escaped.length, '살아 나간 동료는 남고 못 나간 동료만 잃음 (손실 ' + o.lost.length + ')');
+}
 done();

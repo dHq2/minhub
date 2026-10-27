@@ -7,6 +7,7 @@ const { load } = require(path.join(__dirname, '..', '..', 'tests', 'lib.js'));
 const policies = require('./policies.js');
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i < 0 ? d : (process.argv[i + 1] === undefined || process.argv[i + 1][0] === '-' ? true : process.argv[i + 1]); };
 const RUNS = +arg('runs', 20), POL = arg('policy', 'auto'), MAXS = +arg('max-stage', 15), SEED0 = +arg('seed', 100), VERB = !!arg('v', false);
+const ENROE = arg('enemy-roe', '');
 const BENCH = +arg('bench', 0);   // >0: 캠페인 대신 '단계 N 고정, 보유 N+3명 상당' 판만 여러 씨앗으로 돌려 승률·손실만 비교
 const GB = load();
 const tn = arg('tune', ''); if (tn && tn !== true) tn.split(',').forEach(kv => { const [k, v] = kv.split('='); GB.TUNE[k] = +v; });
@@ -14,6 +15,7 @@ const pol = policies[POL]; if (!pol) { console.error('정책 없음:', POL, Obje
 
 function playBattle(B) {
   B.autoPause.on = false;
+  if (ENROE) B.W.units.filter(u => u.side === 1).forEach(u => { u.roe = ENROE; });
   pol.prep && pol.prep(GB, B);
   B.start();
   let guard = 0, nextTurn = B.W.turn;
@@ -42,27 +44,29 @@ const agg = { stages: [], peak: [], wins: 0, losses: 0, draws: 0, time: [], lost
 const perStage = {};
 for (let r = 0; r < RUNS; r++) {
   const run = GB.Campaign.create(SEED0 + r);
-  while (!run.over && run.stage <= MAXS) {
+  let nb = 0;
+  while (!run.over && run.stage <= MAXS && nb++ < 80) {
     const B = GB.Campaign.makeBattle(run);
     const n0 = run.roster.length, e0 = B.alive(1).length;
     playBattle(B);
     const st = run.stage, res = B.result;
     const aliveA = B.alive(0).length, aliveE = B.alive(1).length;
     const S = perStage[st] = perStage[st] || { n: 0, win: 0, lose: 0, draw: 0, t: 0, lost: 0, allies: 0, left: 0 };
-    S.n++; S.t += B.W.t; S.allies += n0; S.lost += n0 - aliveA; S.left += aliveE;
-    if (res === 'win') S.win++; else if (res === 'lose') S.lose++; else S.draw++;
+    S.n++; S.retreat = (S.retreat || 0) + (res === 'retreat' ? 1 : 0); S.t += B.W.t; S.allies += n0; S.lost += n0 - aliveA; S.left += aliveE;
+    if (res === 'win') S.win++; else if (res === 'lose') S.lose++; else if (res === 'retreat') { } else S.draw++;
     if (VERB) console.log(`run${r} st${st} ${res} t=${B.W.t.toFixed(0)} ${n0}v${e0} 아군생존 ${aliveA} 적생존 ${aliveE}`);
     const out = GB.Campaign.finish(run, B); run.peakRoster = Math.max(run.peakRoster || 0, run.roster.length);
     if (out.over || (!run.roster.length)) run.over = true;
-    if (out.outcome === 'draw') break;   // 시간초과 → 런을 끊어 통계에서 따로 센다
+    if (out.outcome === 'draw') break;
+    if (out.outcome === 'retreat') agg.retreats = (agg.retreats || 0) + 1;   // 시간초과 → 런을 끊어 통계에서 따로 센다
   }
   agg.stages.push(run.stage); agg.peak.push(run.peakRoster || 0);
 }
 agg.stages.sort((a, b) => a - b);
 const med = agg.stages[agg.stages.length >> 1], mean = agg.stages.reduce((a, b) => a + b, 0) / agg.stages.length;
-console.log(`정책 ${POL} · ${RUNS}런 · 도달 단계 중앙값 ${med} 평균 ${mean.toFixed(1)} (최소 ${agg.stages[0]} 최대 ${agg.stages[agg.stages.length - 1]}) · 최대 보유 평균 ${(agg.peak.reduce((a, b) => a + b, 0) / agg.peak.length).toFixed(1)}`);
-console.log('단계 | 판수 | 승 | 패 | 시간초과 | 평균초 | 아군(시작) | 아군 손실 | 적 잔존');
+console.log(`정책 ${POL} · ${RUNS}런 · 도달 단계 중앙값 ${med} 평균 ${mean.toFixed(1)} (최소 ${agg.stages[0]} 최대 ${agg.stages[agg.stages.length - 1]}) · 최대 보유 평균 ${(agg.peak.reduce((a, b) => a + b, 0) / agg.peak.length).toFixed(1)} · 철수 ${agg.retreats || 0}회`);
+console.log('단계 | 판수 | 승 | 패 | 시간초과 | 철수 | 평균초 | 아군(시작) | 아군 손실 | 적 잔존');
 Object.keys(perStage).map(Number).sort((a, b) => a - b).forEach(k => {
   const s = perStage[k];
-  console.log(`${String(k).padStart(3)} | ${String(s.n).padStart(3)} | ${String(s.win).padStart(3)} | ${String(s.lose).padStart(3)} | ${String(s.draw).padStart(3)} | ${(s.t / s.n).toFixed(0).padStart(4)} | ${(s.allies / s.n).toFixed(1).padStart(5)} | ${(s.lost / s.n).toFixed(1).padStart(5)} | ${(s.left / s.n).toFixed(1)}`);
+  console.log(`${String(k).padStart(3)} | ${String(s.n).padStart(3)} | ${String(s.win).padStart(3)} | ${String(s.lose).padStart(3)} | ${String(s.draw).padStart(3)} | ${String(s.retreat || 0).padStart(3)} | ${(s.t / s.n).toFixed(0).padStart(4)} | ${(s.allies / s.n).toFixed(1).padStart(5)} | ${(s.lost / s.n).toFixed(1).padStart(5)} | ${(s.left / s.n).toFixed(1)}`);
 });

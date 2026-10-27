@@ -24,11 +24,13 @@ GB.Battle = function (opt) {
   // 자동 정지 (림월드의 알림 정지): 켜 두면 접촉 · 아군 쓰러짐에서 멈춰 계획을 다시 짤 수 있다
   this.autoPause = { on: true, contact: true, down: true };
   this.pauseWhy = '';
+  this.retreating = false; this.escaped = [];   // 철수 중 · 빠져나간 동료(uid)
   this._scanIdx = 0; this._lastAP = -99; this._contacted = false; this._proxT = 0;
 };
 GB.Battle.prototype = {
   get over() { return !!this.W.over; },
-  get result() { return this.W.result; },
+  // 철수해 일부라도 빠져나갔고 남은 아군이 없으면 'retreat' (엔진은 'lose'로 끝냄)
+  get result() { const r = this.W.result; return r === 'lose' && this.escaped.length ? 'retreat' : r; },
   // 전투 개시: 0초 명령은 바로 걸린 채 첫 턴을 연다
   start() {
     if (this.started) return;
@@ -45,6 +47,7 @@ GB.Battle.prototype = {
       const s = Math.min(GB.STEP, budget, W.turnEnd - W.t);
       if (s <= 1e-9) { this._turnEnd(); if (this.paused) break; continue; }
       E.stepWorld(W, s); budget -= s; done += s;
+      if (this.retreating) this._retreatTick();
       if (this._scan()) break;
       if (W.t >= W.turnEnd - 1e-6) { this._turnEnd(); if (this.paused) break; }
     }
@@ -67,6 +70,14 @@ GB.Battle.prototype = {
     }
     if (!why || W.over || W.t - this._lastAP < 3) return false;
     this._lastAP = W.t; this.paused = true; this.pauseWhy = why; return true;
+  },
+  // 철수 중: 자기 쪽 가장자리에 닿은 아군은 판을 떠남. 엔진 leaveMap 은 alive=false + gone 을 세움
+  _retreatTick() {
+    const W = this.W;
+    for (const u of W.units) {
+      if (u.side !== 0 || !u.alive || u.gone || u.summon) continue;
+      if (u.x - u.r <= 1.3) { E.leaveMap(W, u, 'left'); this.escaped.push(u.pid); }
+    }
   },
   _turnEnd() {
     const W = this.W;

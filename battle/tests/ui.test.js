@@ -45,6 +45,8 @@ let fails = 0; const ok = (c, s) => { console.log((c ? '  OK   ' : '  FAIL ') + 
     p = await toS(foe.x, foe.y); await page.mouse.click(p.x, p.y); await page.waitForTimeout(100);
     ok(await q(() => { const u = GB.app.B.W.units[0]; return !!(u.order || u.ordPend); }), '적 탭 = 공격 명령');
     await page.screenshot({ path: OUT + '/' + name + '_paused.png' });
+    await page.click('#btnBack'); ok(await q(() => !!document.getElementById('sgRun') && !!document.getElementById('sgYes')), '전투 중 ← 단추: 철수 · 항복 · 계속 선택 창');
+    await page.click('#sgNo');
     await page.click('#btnSpeed'); await page.click('#btnPlay');
     for (let i = 0; i < 40; i++) { await page.waitForTimeout(1000); if (await q(() => GB.app.B.over)) break; }
     ok(await q(() => GB.app.B.over), '판이 끝남: ' + (await q(() => GB.app.B.result)));

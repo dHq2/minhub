@@ -52,14 +52,14 @@ GB.Campaign = (function () {
   // 판이 끝났을 때: 보유 동료 · 창고 · 단계를 갱신하고 요약을 돌려줌
   function finish(run, B) {
     const W = B.W, rules = B.rules, res = B.result;
-    const out = { outcome: res === 'win' ? 'win' : res === 'lose' ? 'lose' : 'draw', lost: [], grown: [], reward: null, rewards: [], loot: 0, over: false, kills: 0 };
+    const out = { outcome: res === 'win' ? 'win' : res === 'lose' ? 'lose' : res === 'retreat' ? 'retreat' : 'draw', lost: [], grown: [], reward: null, rewards: [], loot: 0, over: false, kills: 0 };
     run.battleNo++;
     const stats = GB.Growth.stats(W), byPid = {};
     W.units.forEach(u => { if (u.side === 0) byPid[u.pid] = u; });
     const setupBy = {}; B.setup.units.forEach(q => { if (q.side === 0) setupBy[q.id] = q; });
     run.roster = run.roster.filter(p => {
       const u = byPid[p.uid];
-      if (u && !u.alive) { out.lost.push({ uid: p.uid, name: p.name }); return false; }
+      if (u && !u.alive && !u.gone) { out.lost.push({ uid: p.uid, name: p.name }); return false; }
       return true;
     });
     for (const p of run.roster) {
@@ -69,7 +69,7 @@ GB.Campaign = (function () {
       const q = setupBy[p.uid]; if (q) { p.cg = q.cg || ''; p.chiefNm = q.chiefNm || ''; p.chiefMode = q.chiefMode || ''; }
       if (st && out.outcome === 'win') { p.wins = (p.wins || 0) + 1; const g = GB.Growth.apply(p, st, rules); if (g.length) out.grown.push({ uid: p.uid, name: p.name, what: g }); }
     }
-    if (out.outcome !== 'lose') { const items = GB.Loot.collect(W); out.loot = items.length; run.stash = run.stash.concat(items).slice(-120); }
+    if (out.outcome === 'win' || out.outcome === 'draw') { const items = GB.Loot.collect(W); out.loot = items.length; run.stash = run.stash.concat(items).slice(-120); }
     if (out.outcome === 'win') {
       run.totalWins++;
       // 보상: 승리하면 1명, 한 명도 잃지 않았으면(완승) 보너스 인원. 병종 · 체급 · 무기 · 특성 · 의무 여부는 모두 랜덤

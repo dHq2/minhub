@@ -25,9 +25,10 @@ GB.View.prototype = {
     const B = this.B;
     const us = B.W.units.filter(u => u.alive);
     if (all || !us.length) return { zoom: 1, cx: B.map.W / 2, cy: B.map.H / 2 };
-    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
-    us.forEach(u => { x0 = Math.min(x0, u.x); x1 = Math.max(x1, u.x); y0 = Math.min(y0, u.y); y1 = Math.max(y1, u.y); });
-    const bw = Math.max(14, x1 - x0 + 12), bh = Math.max(14, y1 - y0 + 12);
+    // 구석에 떨어진 한두 명 때문에 너무 멀어지지 않도록, 6명 이상이면 위·아래 8%는 빼고 잡는다
+    const ext = k => { const v = us.map(u => u[k]).sort((a, b) => a - b), n = v.length, cut = n >= 6 ? Math.floor(n * 0.08) : 0; return [v[cut], v[n - 1 - cut]]; };
+    const [x0, x1] = ext('x'), [y0, y1] = ext('y');
+    const bw = Math.max(12, x1 - x0 + 7), bh = Math.max(12, y1 - y0 + 7);
     const visW = (this.portrait ? this.ch : this.cw) / this.base, visH = (this.portrait ? this.cw : this.ch) / this.base;
     return { zoom: GB.clamp(Math.min(visW / bw, visH / bh), 1, 8), cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
   },
