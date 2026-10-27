@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0b">
+<title>굴 전투판 단순판</title>
+<style>
+/*STYLE*/
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- 막사 -->
+  <div id="scrHome" class="screen">
+    <div class="wrap">
+      <h1>굴 전투판 <span class="ver">단순판 /*VERSION*/</span></h1>
+      <div class="sub" id="homeSub"></div>
+      <div class="row">
+        <button class="btn go" id="btnStart">전투 시작</button>
+        <button class="btn" id="btnHelp">조작법</button>
+        <button class="btn" id="btnLogs">전투 기록</button>
+        <button class="btn danger" id="btnNewRun">새 런</button>
+      </div>
+      <div class="sec">보유 동료</div>
+      <div class="cards" id="rosterCards"></div>
+      <div class="sec">전리품 창고</div>
+      <div id="stashList"></div>
+      <div id="logsBox" class="hidden">
+        <div class="sec">저장된 전투 기록 (브라우저 자동 저장 · 최근 20판)</div>
+        <div id="logsList"></div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn sm" id="btnExportAll">전체 기록 JSON 내보내기</button>
+          <button class="btn sm" id="btnExportRun">런 상태 JSON 내보내기</button>
+        </div>
+      </div>
+      <div class="foot">규칙은 원본 굴의 전투판 엔진 그대로 · 이 화면과 성장 층만 새로 만들었어요.</div>
+    </div>
+  </div>
+
+  <!-- 전투 -->
+  <div id="scrBattle" class="screen hidden">
+    <div id="topbar">
+      <button class="btn sm" id="btnBack">← 막사</button>
+      <div class="lbl" id="lblTop"></div>
+      <button class="btn sm" id="btnTurnMode" title="한 턴(1초)마다 멈춤">턴 모드</button>
+      <button class="btn sm" id="btnTurn">1턴</button>
+      <button class="btn sm" id="btnSpeed">1x</button>
+      <button class="btn sm go" id="btnPlay">▶ 전투 개시</button>
+      <button class="btn sm" id="btnLog">로그</button>
+    </div>
+    <div id="chips"></div>
+    <div id="stage">
+      <canvas id="cv"></canvas>
+      <div id="info"></div>
+      <div id="zoomBtns"><button class="btn sm" id="zIn">＋</button><button class="btn sm" id="zOut">－</button><button class="btn sm" id="zFit">맞춤</button><button class="btn sm" id="zAll">전체</button></div>
+      <div id="minilog"></div>
+    </div>
+    <div id="bars">
+      <div id="hint"></div>
+      <div id="tabs"><button class="tab on" data-tab="t1">명령</button><button class="tab" data-tab="t2">태세</button><button class="tab" data-tab="t3">편성 · 관계</button></div>
+      <div class="r" id="t1">
+        <button class="btn" id="mNormal">이동·공격</button><button class="btn" id="mAmove">공격이동</button><button class="btn" id="mCharge">돌격</button><button class="btn" id="mThrow">투창</button>
+        <button class="btn" id="bHold">정지</button><button class="btn" id="bAuto">자동</button><button class="btn" id="bCancel">취소</button><button class="btn" id="bDetour">우회</button>
+      </div>
+      <div class="r hidden" id="t2">
+        <button class="btn" id="bGuard">막기 풀기</button><button class="btn" id="bLine">전열</button><button class="btn" id="bNoChg">돌격 금지</button><button class="btn" id="bSpear">창 줍기</button>
+        <button class="btn" id="bRoe">교전 규칙</button><button class="btn" id="bHeal">치료 방침</button>
+      </div>
+      <div class="r hidden" id="t3">
+        <button class="btn" id="bMulti">다중 선택</button><button class="btn" id="bAll">전체</button>
+        <button class="btn" id="bMate">전우조</button><button class="btn" id="bChief">♛ 대장</button><button class="btn" id="bCover">⛨ 보호</button><button class="btn" id="bCut">✕ 풀기</button>
+      </div>
+    </div>
+    <div id="logDrawer" class="hidden">
+      <div class="hd"><b>이번 전투 기록</b><button class="btn sm" id="lgJson">JSON</button><button class="btn sm" id="lgTxt">TXT</button><button class="btn sm" id="lgClose">닫기</button></div>
+      <div id="logText"></div>
+    </div>
+  </div>
+</div>
+<div id="modal" class="hidden"><div id="modalBox"></div></div>
+
+<script>
+'use strict';
+/* ===== 원본 굴 엔진 (vendor/gul — 수정 없이) ===== */
+const E = /*ENGINE*/;
+/* ===== 단순판 ===== */
+/*APP*/
+</script>
+</body>
+</html>

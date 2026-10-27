@@ -1,0 +1,19 @@
+# 한 파일씩 이 순서로 이어 붙입니다. [섹션] 줄은 구분용 (core·game 은 헤드리스 시험에서도 불러옴, ui 는 브라우저 전용)
+[core]
+core/ns.js
+core/rules.js
+core/designs.js
+core/battle.js
+core/orders.js
+[game]
+game/growth.js
+game/loot.js
+game/campaign.js
+game/storage.js
+game/battlelog.js
+[ui]
+ui/view.js
+ui/input.js
+ui/panels.js
+ui/screens.js
+ui/main.js

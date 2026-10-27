@@ -1,0 +1,7 @@
+# 엔진 안에서만 보이는 함수 중 우리 어댑터가 부르는 것 (엔진 끝에 export 한 줄로 덧붙임 — 원본은 수정하지 않음)
+# 한 줄에 하나. 원본에 이름이 없으면 빌드가 ReferenceError 로 바로 알려 줍니다.
+ordPush
+ordSig
+postureTick
+cmdWave
+cmdBoss
