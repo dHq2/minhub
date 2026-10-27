@@ -39,7 +39,7 @@ GB.Store.saveRun(r2); ok(GB.Store.loadRun() && GB.Store.loadRun().id === r2.id, 
 // 철수: 일찍 빠지면 살아 나가고, 단계는 그대로이며, 보상은 없다
 {
   const r = GB.Campaign.create(9), n0 = r.roster.length, st0 = r.stage, B = GB.Campaign.makeBattle(r);
-  B.autoPause.on = false; B.start(); B.advance(0.5); GB.Orders.retreat(B);
+  B.start(); B.advance(0.5); GB.Orders.retreat(B);
   let g = 0; while (!B.over && g++ < 400) B.advance(0.5);
   ok(B.over && B.result === 'retreat' && B.escaped.length > 0, '철수: 결과 ' + B.result + ', 빠져나감 ' + B.escaped.length + '/' + n0 + ' (t=' + B.W.t.toFixed(0) + ')');
   const o = GB.Campaign.finish(r, B);

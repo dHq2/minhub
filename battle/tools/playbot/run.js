@@ -14,7 +14,6 @@ const tn = arg('tune', ''); if (tn && tn !== true) tn.split(',').forEach(kv => {
 const pol = policies[POL]; if (!pol) { console.error('정책 없음:', POL, Object.keys(policies)); process.exit(1); }
 
 function playBattle(B) {
-  B.autoPause.on = false;
   if (ENROE) B.W.units.filter(u => u.side === 1).forEach(u => { u.roe = ENROE; });
   pol.prep && pol.prep(GB, B);
   B.start();

@@ -10,6 +10,5 @@ GB.TUNE = {
   handicapUp: 0.04,     // 단계마다 +
   handicapMax: 1,
   uiSpeed: 0.5,         // 화면에서 전투를 시작할 때 재생 속도 (0.5x → 1x → 2x → 4x 순으로 바꿈)
-  pauseDist: 11,        // 자동정지: 양쪽이 이 거리(칸) 안으로 들어오면 한 번 멈춤
   flawlessBonus: 1      // 한 명도 잃지 않은 승리에 더해지는 신규 동료 수
 };

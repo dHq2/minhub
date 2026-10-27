@@ -60,7 +60,6 @@ GB.App.prototype = {
     on('btnBack', () => this.back());
     on('btnPlay', () => this.togglePlay());
     on('btnSpeed', () => { const B = this.B; if (!B) return; B.speed = B.speed < 1 ? 1 : B.speed === 1 ? 2 : B.speed === 2 ? 4 : 0.5; this.refresh(); });
-    on('btnAP', () => { const B = this.B; if (!B) return; B.autoPause.on = !B.autoPause.on; this.toast(B.autoPause.on ? '자동정지 켬: 접촉 · 아군 쓰러짐에서 멈춰요' : '자동정지 끔'); this.refresh(); });
     on('btnTurnMode', () => { const B = this.B; if (!B) return; B.stepMode = !B.stepMode; this.toast(B.stepMode ? '한 턴씩: 1초(한 턴)마다 멈춰요 — 명령을 주고 ▶' : '이어서 재생'); this.refresh(); });
     on('btnTurn', () => { const B = this.B; if (!B || B.over) return; B.stepTurn(); this.refresh(); });
     on('btnLog', () => { const B = this.B; if (!B) return; const rec = GB.BattleLog.make(B, this.run); GB.UI.$('logText').textContent = GB.BattleLog.text(rec); GB.UI.$('logDrawer').classList.remove('hidden'); const t = GB.UI.$('logText'); t.scrollTop = t.scrollHeight; });
@@ -98,7 +97,7 @@ GB.App.prototype = {
       '<p><b>항복</b>: 이 전투는 패배로 처리되고 런이 끝나요.</p>' +
       '<div class="row">' + (canRun ? '<button class="btn go" id="sgRun">철수</button>' : '') + '<button class="btn danger" id="sgYes">항복</button><button class="btn" id="sgNo">계속 싸운다</button></div>', () => {
       GB.UI.$('sgNo').onclick = () => this.screens.closeModal();
-      if (canRun) GB.UI.$('sgRun').onclick = () => { this.screens.closeModal(); const r = GB.Orders.retreat(B); this.toast(r.msg); B.paused = false; B.pauseWhy = ''; this.refresh(); };
+      if (canRun) GB.UI.$('sgRun').onclick = () => { this.screens.closeModal(); const r = GB.Orders.retreat(B); this.toast(r.msg); B.paused = false; this.refresh(); };
       GB.UI.$('sgYes').onclick = () => { this.screens.closeModal(); B.W.over = true; B.W.result = 'lose'; };
     });
   },
