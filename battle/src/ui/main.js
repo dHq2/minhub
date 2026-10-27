@@ -19,6 +19,17 @@ GB.App.prototype = {
   toast(msg) { if (msg) this.panels.toast(msg); },
   refresh() { this.panels.refresh(true); },
   download(name, text, mime) {
+    // Artifact 뷰어: 직접 다운로드가 막혀 있어 downloads 기능으로 저장한다. 없으면 일반 브라우저 방식.
+    if (window.claude && window.claude.use) {
+      window.claude.use('downloads').then(d => {
+        if (!d) return this.downloadLink(name, text, mime);
+        return d.save({ filename: name, data: text }).then(() => this.toast('저장함: ' + name), e => { if (e && e.code !== 'declined') this.toast('저장 실패: ' + (e.code || e)); });
+      }, () => this.downloadLink(name, text, mime));
+      return;
+    }
+    this.downloadLink(name, text, mime);
+  },
+  downloadLink(name, text, mime) {
     const blob = new Blob([text], { type: mime || 'application/json' }), a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);

@@ -5,6 +5,7 @@
 ## 빌드와 실행
     python3 tools/build.py          # dist/battle.html 생성 (단일 파일, 브라우저에서 바로 열기)
     python3 tools/build.py --test   # 빌드 후 테스트까지
+    python3 tools/make_artifact.py  # Artifact 게시용 조각 dist/battle.artifact.html 생성
 
 ## 테스트
     node tests/core.test.js         # 엔진 어댑터, 결정성, 명령, 10v10/20v20

@@ -6,6 +6,7 @@
 ## 변경 기록
 - v3.0.0: 원본 엔진 도입으로 전면 재작성. v1/v2 자체 구현 폐기.
 - v3.0.1: 핀치 시 ReferenceError(view 미정의) 수정. 자동 카메라 도입 후 점검.
+- v3.0.2: Artifact 뷰어용 로그 저장을 downloads 기능으로 연결(없으면 기존 링크 방식). tools/make_artifact.py 추가.
 
 ## 구조
 - vendor/gul: 원본 엔진 사본. 수정 금지. UPSTREAM.md 에 커밋 해시.
