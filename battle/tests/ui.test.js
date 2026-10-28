@@ -25,14 +25,41 @@ let fails = 0; const ok = (c, s) => { console.log((c ? '  OK   ' : '  FAIL ') + 
     await page.dispatchEvent('.chip[data-i="1"]', 'pointerdown');
     ok(await q(() => GB.app.ui.sel.has(1)), '칩 탭으로 고르기');
     const u1 = await q(() => { const u = GB.app.B.W.units[1]; return { x: u.x, y: u.y }; });
-    let p = await toS(u1.x + 8, u1.y); await page.mouse.click(p.x, p.y);
-    ok(await q(() => GB.app.B.W.units[1].order && GB.app.B.W.units[1].order.k === 'move'), '땅 탭 = 이동 명령');
-    // 전우조 / 대장 / 다중 선택
+    let p = await toS(u1.x + 8, u1.y);
+    // 입력 체계: 마우스 왼쪽 클릭 = 빈 땅은 선택 해제 (명령 아님), 오른쪽 클릭 = 이동. 터치 탭 = 이동
+    await page.mouse.click(p.x, p.y);
+    ok(await q(() => !GB.app.B.W.units[1].order && GB.app.ui.sel.size === 0), '마우스 왼쪽 클릭(빈 땅) = 선택 해제, 명령 없음');
+    await page.dispatchEvent('.chip[data-i="1"]', 'pointerdown');
+    await page.mouse.click(p.x, p.y, { button: 'right' });
+    ok(await q(() => GB.app.B.W.units[1].order && GB.app.B.W.units[1].order.k === 'move'), '마우스 오른쪽 클릭(땅) = 이동 명령');
+    if (mobile) {
+      await page.dispatchEvent('.chip[data-i="2"]', 'pointerdown'); const p2 = await toS(u1.x + 6, u1.y + 4); await page.touchscreen.tap(p2.x, p2.y);
+      ok(await q(() => GB.app.B.W.units[2].order && GB.app.B.W.units[2].order.k === 'move'), '터치 탭(땅) = 이동 명령');
+    }
+    // 관계 설정 흐름: 아군을 누르면 관계 칸 → 대장 지정 → 부하 1명 이상 → 확정 (없으면 파기)
+    await page.dispatchEvent('.chip[data-i="0"]', 'pointerdown');
+    ok(await q(() => !!document.querySelector('#info [data-rel="boss"]')), '아군을 고르면 관계 칸(대장 지정 단추)이 나옴');
+    await page.dispatchEvent('#info [data-rel="boss"]', 'pointerdown');
+    ok(await q(() => !!GB.app.ui.rel && !document.getElementById('relBar').classList.contains('hidden')), '대장 지정 시작: 확정 줄이 뜸');
+    ok(await q(() => document.querySelector('#relBar [data-relact="ok"]').disabled), '부하가 0명이면 확정이 막힘');
+    await page.dispatchEvent('#relBar [data-relact="no"]', 'pointerdown');
+    ok(await q(() => !GB.app.ui.rel && !GB.app.B.W.units.some(u => u.side === 0 && u.chiefLk && u.sqLead === 0)), '파기하면 관계가 만들어지지 않음');
+    await page.dispatchEvent('.chip[data-i="0"]', 'pointerdown'); await page.dispatchEvent('#info [data-rel="boss"]', 'pointerdown');
+    await page.dispatchEvent('.chip[data-i="2"]', 'pointerdown'); await page.dispatchEvent('.chip[data-i="3"]', 'pointerdown');
+    await page.dispatchEvent('#relBar [data-relact="ok"]', 'pointerdown'); await page.waitForTimeout(100);
+    ok(await q(() => GB.app.B.W.units.filter(u => u.side === 0 && u.chiefLk && u.sqLead === 0).length === 2), '부하 2명을 골라 확정하면 대장-부하가 만들어짐');
+    await page.dispatchEvent('.chip[data-i="0"]', 'pointerdown'); await page.dispatchEvent('#info [data-rel="cut"]', 'pointerdown');
     await page.click('#tabs .tab[data-tab="t3"]');
     await page.click('#bAll'); ok(await q(() => GB.app.ui.sel.size === 4), '전체 선택');
-    await page.click('#bMate'); await page.waitForTimeout(100);
-    ok(await q(() => GB.app.B.W.units.filter(u => u.side === 0 && u.cg).length >= 2), '전우조 단추 (엔진 cgJoin)');
     await page.click('#bCut');
+    // 기술 단추: 투창은 창을 든 이(보병1)만, 응급처치는 의무병만, 돌격은 돌진 가능한 이
+    await page.dispatchEvent('.chip[data-i="3"]', 'pointerdown');   // 사수1: 기술 없음
+    ok(await q(() => document.getElementById('skills').classList.contains('hidden')), '사수를 고르면 기술 줄이 숨음');
+    await page.dispatchEvent('.chip[data-i="1"]', 'pointerdown');   // 보병1: 창 + 의무
+    ok(await q(() => !document.getElementById('sThrow').classList.contains('hidden') && !document.getElementById('sHeal').classList.contains('hidden') && !document.getElementById('sCharge').classList.contains('hidden')), '보병1(창·의무): 돌격 · 투창 · 응급처치 모두 보임');
+    await page.dispatchEvent('.chip[data-i="0"]', 'pointerdown');   // 탱커1: 창 없음
+    ok(await q(() => document.getElementById('sThrow').classList.contains('hidden') && !document.getElementById('sCharge').classList.contains('hidden')), '탱커1: 투창은 숨고 돌격은 보임');
+    await page.click('#zRange'); ok(await q(() => GB.app.ui.detail), '범위 보기 켬'); await page.screenshot({ path: OUT + '/' + name + '_range.png' }); await page.click('#zRange');
     // 전투 개시
     await page.click('#btnPlay'); await page.waitForTimeout(2500);
     ok(await q(() => GB.app.B.started && GB.app.B.W.t > 1), '전투가 진행됨 (t=' + (await q(() => GB.app.B.W.t.toFixed(1))) + ')');
@@ -41,7 +68,7 @@ let fails = 0; const ok = (c, s) => { console.log((c ? '  OK   ' : '  FAIL ') + 
     const foe = await q(() => { const f = GB.app.B.W.units.find(u => u.side === 1 && u.alive); return { x: f.x, y: f.y, i: f.i }; });
     await page.dispatchEvent('.chip[data-i="0"]', 'pointerdown');
     p = await toS(foe.x, foe.y); await page.mouse.click(p.x, p.y); await page.waitForTimeout(100);
-    ok(await q(() => { const u = GB.app.B.W.units[0]; return !!(u.order || u.ordPend); }), '적 탭 = 공격 명령');
+    ok(await q(() => { const u = GB.app.B.W.units[0]; return !!(u.order || u.ordPend); }), '마우스 왼쪽 클릭(적) = 공격 명령');
     await page.screenshot({ path: OUT + '/' + name + '_paused.png' });
     await page.click('#btnBack'); ok(await q(() => !!document.getElementById('sgRun') && !!document.getElementById('sgYes')), '전투 중 ← 단추: 철수 · 항복 · 계속 선택 창');
     await page.click('#sgNo');

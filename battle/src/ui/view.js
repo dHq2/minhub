@@ -106,7 +106,7 @@ GB.View.prototype = {
       if (e.k === 'hit') {
         const t = W.units[e.b], a = W.units[e.a]; if (!t) continue;
         const dmg = e.dmg || 0;
-        this.fx.push({ k: 'num', x: t.x, y: t.y, t0: now, s: (e.block ? '막' : '') + (dmg ? '-' + dmg : ''), c: e.block ? '#777' : (t.side === 0 ? RED : INK), big: !!e.hcrit || dmg >= 25 });
+        this.fx.push({ k: 'num', x: t.x, y: t.y, t0: now, s: (e.block ? '막' : '') + (dmg ? '-' + dmg : '') + (e.dir === 'back' ? ' 후방!' : e.dir === 'side' ? ' 측면' : ''), c: e.block ? '#777' : (t.side === 0 ? RED : INK), big: !!e.hcrit || dmg >= 25 });
         if (!e.block) {
           this.fx.push({ k: 'burst', x: t.x, y: t.y, t0: now, n: 4 + Math.min(8, Math.round(dmg / 6)), a: a ? Math.atan2(t.y - a.y, t.x - a.x) : 0 });
           this.stain(t.x, t.y, 0.15 + Math.min(0.5, dmg / 60), 1 + Math.min(4, Math.round(dmg / 12)));
@@ -154,9 +154,11 @@ GB.View.prototype = {
     this.drawItems(now);
     this.drawCorpses();
     this.drawRelations();
+    this.drawUnder(now);
     this.drawOrders(now);
     this.drawShots();
     this.drawUnits(now);
+    this.drawOver(now);
     this.drawFx(now);
     g.restore();
     g.strokeStyle = '#8a8a8a'; g.lineWidth = 1.5; g.strokeRect(mx, my, mw, mh);

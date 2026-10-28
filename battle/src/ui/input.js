@@ -1,16 +1,21 @@
 /* 입력: 선택 · 탭 · 끌기 · 핀치 · 키보드를 명령(GB.Orders)으로 바꾼다. 화면(DOM)은 app 을 통해서만 건드린다.
- *  - 유닛 탭 = 고르기 · 땅 탭 = 이동 · 적 탭 = 공격 · 바닥 물건 탭 = 줍기 · 같은 곳 다시 탭 = 서둘러(사수는 바로 쏨)
- *  - 빈 땅 끌기 = 네모 고르기 · 준비 단계에서 아군 끌기 = 배치 · 두 손가락 = 확대 · 이동 */
+ *  PC(마우스):  왼쪽 클릭 = 아군 고르기 · 적 공격 · (빈 땅은 선택 해제) / 오른쪽 클릭 = 땅은 이동 · 적은 공격 · 물건은 줍기 · 의무병 고른 채 아군은 응급처치
+ *              같은 자리를 두 번 누르면 서둘러(사수는 바로 쏨) · 왼쪽 끌기 = 네모 고르기 · 오른쪽/가운데 끌기 = 화면 이동 · 휠 = 확대
+ *  터치:       유닛 탭 = 고르기 · 땅 탭 = 이동 · 적 탭 = 공격 · 물건 탭 = 줍기 · 같은 곳 다시 탭 = 서둘러 · 두 손가락 = 확대 · 이동
+ *  준비 단계에서 아군 끌기 = 배치.  모드(공격이동 · 돌격 · 투창 · 응급처치)를 켜면 어느 쪽 버튼이든 그 모드로 실행 */
 GB.UI.State = function () {
   this.sel = new Set(); this.inspect = null; this.mode = 'normal'; this.multi = false; this.detour = false;
   this.box = null; this.app = null; this.lastTap = null;
+  this.detail = false;   // 범위 보기: 모든 몸의 방어 · 사거리 · 측후방 · 지휘 거리
+  this.hover = null;     // 마우스를 올린 몸
+  this.rel = null;       // 관계 고르는 중: { boss, mode: 'follow' | 'cover' | 'mate', picks: Set }
 };
 GB.UI.State.prototype = {
   selUnits() {
     const B = this.app && this.app.B; if (!B) return [];
     return [...this.sel].map(i => B.W.units[i]).filter(u => u && u.alive && u.side === 0);
   },
-  clearSel() { this.sel.clear(); this.inspect = null; },
+  clearSel() { this.sel.clear(); this.inspect = null; this.rel = null; },
   selectOnly(i) { this.sel.clear(); if (i != null) this.sel.add(i); this.inspect = null; },
   toggle(i) { if (this.sel.has(i)) this.sel.delete(i); else this.sel.add(i); this.inspect = null; },
   selectAll() { const B = this.app.B; this.sel.clear(); B.W.units.forEach(u => { if (u.alive && u.side === 0) this.sel.add(u.i); }); }
@@ -47,6 +52,7 @@ GB.UI.Input.prototype = {
   },
   move(e) {
     const p = this.ptr.get(e.pointerId), B = this.app.B, v = this.view;
+    if (!p && B && e.pointerType === 'mouse') { const q0 = this.pos(e), h = this.view.unitAt(q0.x, q0.y, null); this.ui.hover = h ? h.i : null; return; }
     if (!p || !B) return;
     const q = this.pos(e), ddx = q.x - p.x, ddy = q.y - p.y; p.x = q.x; p.y = q.y;
     if (this.g && this.g.mode === 'pinch' && this.ptr.size >= 2) {
@@ -84,46 +90,65 @@ GB.UI.Input.prototype = {
       return;
     }
     if (g0.mode === 'drag') { this.app.refresh(); return; }
-    if (!p.moved && (p.btn === 0 || p.type === 'touch')) this.tap(p.x, p.y, g0.shift);
+    if (!p.moved && (p.btn === 0 || p.btn === 2 || p.type === 'touch')) this.tap(p.x, p.y, g0.shift, p.type === 'mouse' ? p.btn : -1);
   },
-  // ---------- 탭 ----------
-  tap(sx, sy, additive) {
+  // ---------- 탭 · 클릭 ----------
+  // btn: 마우스 버튼(0 왼쪽 · 2 오른쪽), 터치는 -1
+  tap(sx, sy, additive, btn) {
     const B = this.app.B, v = this.view, ui = this.ui, W = B.W, O = GB.Orders;
     const now = performance.now(), prev = ui.lastTap; ui.lastTap = { x: sx, y: sy, t: now, key: null };
     const twice = prev && now - prev.t < 600 && Math.hypot(prev.x - sx, prev.y - sy) < 26;
-    const sel = [...ui.sel];
-    const own = v.unitAt(sx, sy, 0);
-    // 관계 고르기 모드: 대장(또는 보호해 줄 이)을 탭
-    if (own && (ui.mode === 'chief' || ui.mode === 'cover')) {
-      const mode = ui.mode === 'cover' ? 'cover' : 'follow';
-      const r = O.chief(B, sel.filter(i => i !== own.i), own.i, mode); this.app.toast(r.msg); ui.mode = 'normal'; this.app.refresh(); return;
+    const sel = [...ui.sel], mouse = btn >= 0, right = btn === 2;
+    const own = v.unitAt(sx, sy, 0), foe = v.unitAt(sx, sy, 1), it = v.itemAt(sx, sy);
+    const note = r => { const n = O.takeNote(B); this.app.toast(r.msg + (n ? ' · ' + n : '')); this.app.refresh(); };
+    // 관계 고르는 중: 아군 탭 = 부하(또는 전우) 넣고 빼기. 다른 곳은 무시
+    if (ui.rel) { if (own) this.app.panels.relPick(own.i); return; }
+    const mode = ui.mode, detour = ui.detour;
+    // 응급처치 모드: 치료할 아군을 탭
+    if (mode === 'skill') {
+      if (own) { ui.mode = 'normal'; note(O.skill(B, sel, own)); } return;
     }
+    // 마우스 일반 모드
+    if (mouse && mode === 'normal') {
+      if (!right) {   // 왼쪽: 고르기 · 공격
+        if (own) { if (ui.multi || additive) ui.toggle(own.i); else ui.selectOnly(own.i); this.app.refresh(); return; }
+        if (foe) { if (!sel.length) { ui.inspect = foe.i; this.app.refresh(); return; } ui.detour = false; const r = O.attack(B, sel, foe, { rush: !!(twice && prev.key === 'a' + foe.i), detour }); ui.lastTap.key = 'a' + foe.i; note(r); return; }
+        if (it && sel.length) { const r = O.pick(B, sel, it, !!(twice && prev.key === 'i' + it.id)); ui.lastTap.key = 'i' + it.id; note(r); return; }
+        ui.clearSel(); this.app.refresh(); return;   // 빈 땅: 선택 해제
+      }
+      // 오른쪽: 명령
+      if (!sel.length) { if (own) { ui.selectOnly(own.i); this.app.refresh(); } else if (foe) { ui.inspect = foe.i; this.app.refresh(); } return; }
+      if (own) { const meds = ui.selUnits().filter(u => u.skill && u.skill.kit); if (meds.length && !meds.includes(own)) { note(O.skill(B, sel, own)); } else if (!sel.includes(own.i)) { ui.selectOnly(own.i); this.app.refresh(); } return; }
+      ui.detour = false;
+      if (foe) { const r = O.attack(B, sel, foe, { rush: !!(twice && prev.key === 'a' + foe.i), detour }); ui.lastTap.key = 'a' + foe.i; note(r); return; }
+      if (it) { const r = O.pick(B, sel, it, !!(twice && prev.key === 'i' + it.id)); ui.lastTap.key = 'i' + it.id; note(r); return; }
+      const P = v.toW(sx, sy), r = O.move(B, sel, P.x, P.y, { kind: 'move', hurry: !!(twice && prev.key === 'g'), detour }); ui.lastTap.key = 'g'; note(r); return;
+    }
+    // 터치 · 모드를 켠 뒤: 유닛 탭 = 고르기 · 땅 = 이동 · 적 = 공격 · 물건 = 줍기
     if (own) { if (ui.multi || additive) ui.toggle(own.i); else ui.selectOnly(own.i); this.app.refresh(); return; }
-    const foe = v.unitAt(sx, sy, 1);
-    const detour = ui.detour; ui.detour = false;
+    ui.detour = false;
     if (foe) {
       if (!sel.length) { ui.inspect = foe.i; this.app.refresh(); return; }
       let r;
-      if (ui.mode === 'charge') { r = O.charge(B, sel, foe, null, { detour }); ui.mode = 'normal'; }
-      else if (ui.mode === 'throw') { r = O.throwAt(B, sel, foe); ui.mode = 'normal'; }
+      if (mode === 'charge') { r = O.charge(B, sel, foe, null, { detour }); if (r.ok || !/쿨타임/.test(r.msg)) ui.mode = 'normal'; }
+      else if (mode === 'throw') { r = O.throwAt(B, sel, foe); if (r.ok) ui.mode = 'normal'; }
       else r = O.attack(B, sel, foe, { rush: !!(twice && prev.key === 'a' + foe.i), detour });
-      ui.lastTap.key = 'a' + foe.i; this.app.toast(r.msg); this.app.refresh(); return;
+      ui.lastTap.key = 'a' + foe.i; note(r); return;
     }
-    const it = v.itemAt(sx, sy);
-    if (it && sel.length) { const r = O.pick(B, sel, it, !!(twice && prev.key === 'i' + it.id)); ui.lastTap.key = 'i' + it.id; this.app.toast(r.msg); this.app.refresh(); return; }
+    if (it && sel.length) { const r = O.pick(B, sel, it, !!(twice && prev.key === 'i' + it.id)); ui.lastTap.key = 'i' + it.id; note(r); return; }
     if (!sel.length) { ui.inspect = null; this.app.refresh(); return; }
     const P = v.toW(sx, sy); let r;
-    if (ui.mode === 'charge') { r = O.charge(B, sel, null, P, { detour }); ui.mode = 'normal'; }
-    else r = O.move(B, sel, P.x, P.y, { kind: ui.mode === 'amove' ? 'amove' : 'move', hurry: !!(twice && prev.key === 'g'), detour });
-    if (ui.mode === 'amove') ui.mode = 'normal';
-    ui.lastTap.key = 'g'; this.app.toast(r.msg); this.app.refresh();
+    if (mode === 'charge') { r = O.charge(B, sel, null, P, { detour }); if (r.ok) ui.mode = 'normal'; }
+    else r = O.move(B, sel, P.x, P.y, { kind: mode === 'amove' ? 'amove' : 'move', hurry: !!(twice && prev.key === 'g'), detour });
+    if (mode === 'amove') ui.mode = 'normal';
+    ui.lastTap.key = 'g'; note(r);
   },
   key(e) {
     const B = this.app.B, ui = this.ui;
     if (!B || !this.app.inBattle()) return;
     const sel = [...ui.sel], O = GB.Orders, k = e.key.toLowerCase();
     if (k === ' ') { e.preventDefault(); this.app.togglePlay(); return; }
-    if (k === 'escape') { ui.clearSel(); ui.mode = 'normal'; this.app.refresh(); return; }
+    if (k === 'escape') { if (ui.rel) { ui.rel = null; this.app.toast('관계 설정을 파기했어요'); } else ui.clearSel(); ui.mode = 'normal'; this.app.refresh(); return; }
     if ((e.ctrlKey || e.metaKey) && k === 'a') { e.preventDefault(); ui.selectAll(); this.app.refresh(); return; }
     const say = r => { if (r) this.app.toast(r.msg); this.app.refresh(); };
     if (k === 'h') say(O.hold(B, sel)); else if (k === 'g') say(O.auto(B, sel)); else if (k === 'x' || k === 'backspace') say(O.cancel(B, sel));
@@ -131,5 +156,7 @@ GB.UI.Input.prototype = {
     else if (k === 'a') { ui.mode = ui.mode === 'amove' ? 'normal' : 'amove'; this.app.refresh(); }
     else if (k === 'f') { ui.mode = ui.mode === 'charge' ? 'normal' : 'charge'; this.app.refresh(); }
     else if (k === 'r') { ui.mode = ui.mode === 'throw' ? 'normal' : 'throw'; this.app.refresh(); }
+    else if (k === 'e') { ui.mode = ui.mode === 'skill' ? 'normal' : 'skill'; this.app.refresh(); }
+    else if (k === 'v') { ui.detail = !ui.detail; this.app.refresh(); }
   }
 };

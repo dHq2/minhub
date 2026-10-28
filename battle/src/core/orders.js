@@ -15,11 +15,19 @@ GB.Orders = (function () {
     const W = B.W, C = E.cmdBoss(W, 0), pre = W.t <= 1e-6;
     const wv = raw || pre ? null : E.cmdWave(W, C, list);
     const lks = list.map((u, k) => wv ? wv[k] : { p: 1, t: 0, via: 'self' });
+    // 전달 결과 안내: 지휘관과 닿지 않는 이 (확률 5% 미만) 를 알려 줌 — 원본 noteOrders 의 '📣✕ 지금은 명령이 닿지 않아요'
+    B._reachNote = '';
+    if (!raw && !pre) {
+      const z = list.filter((u, k) => lks[k].via !== 'self' && lks[k].p < 0.05);
+      if (z.length) B._reachNote = z.map(u => u.name).join(' · ') + ': 지금은 명령이 닿지 않아요 (' + String(lks[list.indexOf(z[0])].why || '지휘관과 끊김').split(' · ')[0] + ') — 다가가거나 손짓이 보이는 곳에서 다시';
+    }
     list.forEach((u, k) => {
       const lk = lks[k];
       if (raw) { if (!u.lretId || (u.order && u.order.k === 'lret')) E.preempt(W, u); u.ordPend = null; u.ordQ = null; u.ordT0 = W.t; u.ordLive = u.order; return; }
       if (lk.via === 'self') { E.preempt(W, u); u.ordLive = u.order; u.ordPend = null; u.ordQ = null; u.ordT0 = W.t; if (!u.order) E.lieFree(W, u); return; }
       const nu = u.order; u.order = u.ordLive !== undefined ? u.ordLive : null;
+      // 가장 나중에 준 명령이 이긴다: 전달 중이던 옛 명령은 버림 (새 명령이 못 닿았을 때 옛 명령이 뒤늦게 실행돼 '새 명령이 씹힌' 것처럼 보이는 일을 막음)
+      if (GB.TUNE.cmdLatestWins) { u.ordQ = null; u.ordPend = null; }
       E.ordPush(W, u, { o: nu, m2: lk.m2, at: W.t + lk.t, ok: lk.ok !== undefined ? lk.ok : W.rand() < lk.p, hop: lk.hop, p: lk.p, via: lk.via, why: lk.why, c: lk.c, m: lk.m, t0: W.t, legs: !!(lk.legs && lk.ok) });
       if (C) E.ordFxAdd(W, u, lk, C.i, false);
     });
@@ -98,8 +106,9 @@ GB.Orders = (function () {
 
   function charge(B, ids, target, pt, opt) {
     opt = opt || {};
-    const C = alive(B, ids).filter(u => u.canCharge && !u.crawl);
-    if (!C.length) return { ok: false, msg: '돌격할 수 있는 아군이 없어요 (사수 · 기어다니는 몸은 못 함)' };
+    const all = alive(B, ids).filter(u => u.canCharge), C = all.filter(u => GB.Skills.charge(B.W, u).ready);
+    if (!all.length) return { ok: false, msg: '돌격할 수 있는 아군이 없어요 (사수는 못 함)' };
+    if (!C.length) return { ok: false, msg: '돌격 ' + GB.Skills.charge(B.W, all.sort((a, b) => a.chargeCd - b.chargeCd)[0]).why };
     if (target) {
       if (!target.seenBy) return { ok: false, msg: '안 보이는 적에게는 돌격할 수 없어요' };
       C.forEach(u => { u.order = { k: 'charge', b: target.i }; u.last = { x: target.x, y: target.y }; });
@@ -114,14 +123,45 @@ GB.Orders = (function () {
   }
 
   function throwAt(B, ids, t) {
-    const C = alive(B, ids).filter(u => u.jav && u.spearHeld);
-    if (!C.length) return { ok: false, msg: '던질 수 있는 아군이 없어요 (창 · 단검을 든 이만 — 이미 던졌으면 줍기)' };
+    const C = alive(B, ids).filter(u => GB.Skills.jav(B.W, u).ready);
+    if (!C.length) return { ok: false, msg: '던질 창이 없어요 (창 · 단검을 손에 든 이만 — 이미 던졌으면 주워야 해요)' };
     if (!t || !t.alive || t.side === 0) return { ok: false, msg: '던질 적을 고르세요' };
     if (!t.seenBy) return { ok: false, msg: '안 보이는 적에게는 못 던져요' };
     C.forEach(u => { u.order = { k: 'throw', b: t.i }; });
     noteOrders(B, C); log(B, 'throw', C, { b: t.i });
     return { ok: true, msg: C.map(u => u.name).join(' · ') + ' 투창' };
   }
+
+  // 응급처치: 의무 스킬을 가진 이가 다친 아군에게 가서 약을 씀 (원본 giveSkill: order {k:'skill', b})
+  function skill(B, ids, t) {
+    const W = B.W, all = alive(B, ids).filter(u => u.skill && u.skill.kit), C = all.filter(u => GB.Skills.heal(W, u).ready || (u.skill.left > 0 && !u.crawl));
+    if (!all.length) return { ok: false, msg: '응급처치는 의무 스킬을 가진 아군만 할 수 있어요 (붉은 십자)' };
+    if (!C.length) return { ok: false, msg: '응급처치 ' + GB.Skills.heal(W, all[0]).why };
+    if (!t || !t.alive || t.side !== 0) return { ok: false, msg: '치료할 아군을 탭하세요' };
+    C.forEach(u => { u.order = { k: 'skill', b: t.i }; });
+    const cdw = Math.max(0, ...C.map(u => GB.Skills.heal(W, u).cd));
+    noteOrders(B, C); log(B, 'skill', C, { b: t.i });
+    return { ok: true, msg: cdw > 0 ? t.name + ' 치료: 약 준비 ' + cdw.toFixed(1) + '초 뒤 곁으로 가서 기다려요' : C.map(u => u.name).join(' · ') + ' → ' + t.name + ' 응급처치' };
+  }
+
+  // 재전달: 못 들은(✗) 명령을 다시 보냄 (원본의 재전달 단추)
+  function resend(B, ids) {
+    const W = B.W, L = alive(B, ids).filter(u => u.missO && u.missT != null && W.t - u.missT < 60 && !u.ordPend);
+    if (!L.length) return { ok: false, msg: '다시 보낼 명령이 없어요' };
+    L.forEach(u => { u.order = JSON.parse(JSON.stringify(u.missO)); u.missT = null; });
+    noteOrders(B, L); log(B, 'resend', L, {});
+    return { ok: true, msg: L.map(u => u.name).join(' · ') + ': 명령 다시 전달' };
+  }
+
+  // 지휘 닿음 (화면 표시용): 아군 u 가 지휘관 말을 들을 확률 · 전달 경로 · 소음에 줄어든 외침 거리
+  function reach(B, u) {
+    const W = B.W, C = E.cmdBoss(W, 0);
+    if (!C) return { none: true, why: '지휘관 없음' };
+    if (C === u) return { boss: true, range: E.cmdRange(W, C), hear: E.hearR(W, C, null) };
+    const lk = E.cmdLink(W, C, u);
+    return { p: lk.p, via: lk.via, why: lk.why || '', t: lk.t, range: E.cmdRange(W, C), hear: E.hearR(W, C, null) };
+  }
+  function takeNote(B) { const n = B._reachNote || ''; B._reachNote = ''; return n; }
 
   // 줍기: 고른 아군 중 집어 들 수 있는 가장 가까운 쪽이 그 물건을 주우러 감 (같은 물건을 다시 누르면 서둘러)
   function pick(B, ids, item, hurry) {
@@ -194,7 +234,7 @@ GB.Orders = (function () {
     return { ok: !!n, msg: n ? '관계를 풀었어요' : '풀 관계가 없어요' };
   }
 
-  return { noteOrders: noteOrders, retreat: retreat, move: move, attack: attack, charge: charge, throwAt: throwAt, pick: pick, pickSpear: pickSpear,
+  return { noteOrders: noteOrders, retreat: retreat, skill: skill, resend: resend, reach: reach, takeNote: takeNote, move: move, attack: attack, charge: charge, throwAt: throwAt, pick: pick, pickSpear: pickSpear,
     hold: simple('hold'), auto: simple('auto'), cancel: simple('cancel'), line: simple('line'), posture: posture, guardToggle: guardToggle,
     chargePolicy: chargePolicy, mate: mate, chief: chief, relCut: relCut, applyDetour: applyDetour };
 })();

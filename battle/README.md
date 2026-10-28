@@ -11,6 +11,7 @@
     node tests/core.test.js         # 엔진 어댑터, 결정성, 명령, 10v10/20v20
     node tests/game.test.js         # 캠페인, 루팅, 저장
     node tests/ui.test.js           # Playwright 모바일+PC 전체 흐름 (스크린샷 build/shots/)
+    node tests/command.test.js      # 지휘 체계(거리 · 소음 · 명령 씹힘) · 기술 3개
 
 ## 원본 엔진 동기화
     tools/sync_upstream.sh          # gul/rt3_*.js 를 가져오고 vendor/gul/UPSTREAM.md 해시 갱신

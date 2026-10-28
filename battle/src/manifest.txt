@@ -5,6 +5,7 @@ core/tune.js
 core/rules.js
 core/designs.js
 core/battle.js
+core/skills.js
 core/orders.js
 [game]
 game/growth.js
@@ -14,6 +15,7 @@ game/storage.js
 game/battlelog.js
 [ui]
 ui/view.js
+ui/overlays.js
 ui/input.js
 ui/panels.js
 ui/screens.js

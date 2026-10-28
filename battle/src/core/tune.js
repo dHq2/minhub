@@ -9,6 +9,8 @@ GB.TUNE = {
   enemyRatioUp: 0.04,   // 단계마다 늘어나는 비율
   enemyRatioMax: 1.6,   // 상한 — 아군이 많을수록 적도 같이 많아짐
   powerPerStage: 0.7,   // 신규 동료와 적이 단계마다 얻는 power (같은 식 — 적에게만 주는 배율은 없음)
+  cmdLatestWins: 1,     // 1이면 새 명령을 주면 전달 중이던 옛 명령을 버림(가장 나중 명령이 이김)
+  chargeCd: 8,          // 돌격 쿨타임(초). 원본 기본은 4
   uiSpeed: 0.5,         // 화면에서 전투를 시작할 때 재생 속도 (0.5x → 1x → 2x → 4x 순으로 바꿈)
   flawlessBonus: 1,     // 한 명도 잃지 않은 승리에 더해지는 신규 동료 수
   powerAt: function (stage) { return stage * GB.TUNE.powerPerStage; }

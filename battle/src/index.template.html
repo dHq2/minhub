@@ -53,15 +53,21 @@
     <div id="stage">
       <canvas id="cv"></canvas>
       <div id="info"></div>
-      <div id="zoomBtns"><button class="btn sm" id="zIn">＋</button><button class="btn sm" id="zOut">－</button><button class="btn sm" id="zFit">맞춤</button><button class="btn sm" id="zAll">전체</button></div>
+      <div id="zoomBtns"><button class="btn sm" id="zIn">＋</button><button class="btn sm" id="zOut">－</button><button class="btn sm" id="zFit">맞춤</button><button class="btn sm" id="zAll">전체</button><button class="btn sm" id="zRange" title="모든 몸의 방어 · 사거리 · 측후방 · 지휘 거리 보기 (V)">범위</button></div>
       <div id="minilog"></div>
+      <div id="relBar" class="hidden"></div>
     </div>
     <div id="bars">
       <div id="hint"></div>
+      <div class="r hidden" id="skills">
+        <button class="btn sk" id="sCharge"><i class="cd"></i><span>돌격</span></button>
+        <button class="btn sk" id="sThrow"><i class="cd"></i><span>투창</span></button>
+        <button class="btn sk" id="sHeal"><i class="cd"></i><span>응급처치</span></button>
+      </div>
       <div id="tabs"><button class="tab on" data-tab="t1">명령</button><button class="tab" data-tab="t2">태세</button><button class="tab" data-tab="t3">편성 · 관계</button></div>
       <div class="r" id="t1">
-        <button class="btn" id="mNormal">이동·공격</button><button class="btn" id="mAmove">공격이동</button><button class="btn" id="mCharge">돌격</button><button class="btn" id="mThrow">투창</button>
-        <button class="btn" id="bHold">정지</button><button class="btn" id="bAuto">자동</button><button class="btn" id="bCancel">취소</button><button class="btn" id="bDetour">우회</button>
+        <button class="btn" id="mNormal">이동·공격</button><button class="btn" id="mAmove">공격이동</button>
+        <button class="btn" id="bHold">정지</button><button class="btn" id="bAuto">자동</button><button class="btn" id="bCancel">취소</button><button class="btn" id="bDetour">우회</button><button class="btn hidden" id="bResend">재전달</button>
       </div>
       <div class="r hidden" id="t2">
         <button class="btn" id="bGuard">막기 풀기</button><button class="btn" id="bLine">전열</button><button class="btn" id="bNoChg">돌격 금지</button><button class="btn" id="bSpear">창 줍기</button>
@@ -69,7 +75,7 @@
       </div>
       <div class="r hidden" id="t3">
         <button class="btn" id="bMulti">다중 선택</button><button class="btn" id="bAll">전체</button>
-        <button class="btn" id="bMate">전우조</button><button class="btn" id="bChief">♛ 대장</button><button class="btn" id="bCover">⛨ 보호</button><button class="btn" id="bCut">✕ 풀기</button>
+        <button class="btn" id="bCut">✕ 관계 풀기</button><div class="note">아군을 누르면 그 몸의 관계 칸이 떠요 (♛ 대장 지정 · ⛨ 보호 · 전우 맺기).</div>
       </div>
     </div>
     <div id="logDrawer" class="hidden">

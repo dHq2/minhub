@@ -75,7 +75,7 @@ GB.App.prototype = {
   startBattle() {
     const run = this.run; if (run.over || !run.roster.length) return;
     this.B = GB.Campaign.makeBattle(run); this.B.speed = GB.TUNE.uiSpeed;
-    this.view.setBattle(this.B); this.ui.sel.clear(); this.ui.inspect = null; this.ui.mode = 'normal'; this.ui.multi = false; this.ui.detour = false;
+    this.view.setBattle(this.B); this.ui.sel.clear(); this.ui.inspect = null; this.ui.mode = 'normal'; this.ui.multi = false; this.ui.detour = false; this.ui.rel = null; this.ui.hover = null;
     this.recent = []; this.ended = false; this.slowN = 0; this.logIdx = this.B.W.log.length;
     GB.UI.$('scrHome').classList.add('hidden'); GB.UI.$('scrBattle').classList.remove('hidden'); GB.UI.$('logDrawer').classList.add('hidden');
     this.view.fit();   // 화면이 보인 뒤에 크기를 알 수 있다
