@@ -420,7 +420,7 @@ const DEFAULT_RULES = {
   size: { kb: { 소형: 3, 중형: 2, 중대형: 1, 대형: 0.5, 초대형: 0.2 } },   /* v7.17 체급 (소형 · 중형 · 중대형 · 대형 · 초대형) — 큰 충격에 밀리는 칸 */
   reachB: { k: 0.25, lo: -0.1, hi: 0.25 },   /* v7.17 몸 리치: 든 근접 무기 사거리 + k × (키 − 1.7) (lo ~ hi) */
   cc: { shove: 0.6, fxGap: 0.6, chainGap: 0.8, chainDr: 0.4 },   /* v7.29.0 버팀 (ccRes): 넘어짐 · 휘청을 그 확률로 버팀 · 밀려나는 거리 × (1 − ccRes × shove) */
-  cz: { bulletEv: 0.7, evCd: 0.35, probe: [4.5, 7], fury: 4.5, punish: 2.2, punR: 6, keep: 3.5, orbit: 0.25, walk: 0.6, jog: 1.4, furyWalk: 1.0, run: 3, close: 1.2, back: 1.8, backT: 0.34, backRest: 0.16, backCd: 6, flankCd: 5, rushCd: 5, combo: 0.35, comboGap: 0.12, hitStun: 0.45, frostT: 4, spinP: 0.8, rspin: [3, 4.5],
+  cz: { bulletEv: 0.7, evCd: 0.35, turn: 2.6, surp: 0.5, ring: 1.0, ringLead: 0.9, probe: [2.5, 4.5], fury: 4.5, punish: 2.2, punR: 6, keep: 3.5, orbit: 0.25, walk: 0.6, jog: 1.4, furyWalk: 1.0, run: 3, close: 1.2, back: 1.8, backT: 0.34, backRest: 0.16, backCd: 6, flankCd: 5, rushCd: 5, combo: 0.35, comboGap: 0.12, hitStun: 0.45, frostT: 4, spinP: 0.8, rspin: [3, 4.5],
     spin: { r: 2.4, wind: 0.22, rec: 0.3, mul: 0.6, kb: 0.5, stun: 0.15, frost: 0.6, cd: 2.2, brk: 1.5 }, shoulder: { v: 10, max: 0.45, reach: 0.6, rng: 3.3, mul: 0.6, kb: 1.2, stun: 0.7, rec: 0.6, cd: 5 },
     upcut: { cd: 20, d0: 2.1, d1: 10, charge: 1.0, len: 16, w: 0.8, mul: 2.2, stun: 1.0, down: 1.6, hobble: 10, galeAt: 1.1, gale: 1.5, galeV: 2.2, galeArc: 0.35, galeAdd: 4 },
     thrust: { cd: 6, d0: 1.8, d1: 6.3, charge: 0.6, dash: 5, w: 0.8, mul: 1.2, crit: 0.5, lift: 500, toss: 2.4, tossMul: 0.8, tossStun: 0.8, stun: 1.2, rec: 1.1 },
