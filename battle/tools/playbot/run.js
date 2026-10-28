@@ -8,9 +8,10 @@ const policies = require('./policies.js');
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i < 0 ? d : (process.argv[i + 1] === undefined || process.argv[i + 1][0] === '-' ? true : process.argv[i + 1]); };
 const RUNS = +arg('runs', 20), POL = arg('policy', 'auto'), MAXS = +arg('max-stage', 15), SEED0 = +arg('seed', 100), VERB = !!arg('v', false);
 const ENROE = arg('enemy-roe', '');
+const MIRROR = !!arg('mirror', false);   // 적 = 아군 설계의 복제 (좌우 대칭 시험: 공정하면 승률 50%)
 const BENCH = +arg('bench', 0);   // >0: 캠페인 대신 '단계 N 고정, 보유 N+3명 상당' 판만 여러 씨앗으로 돌려 승률·손실만 비교
 const GB = load();
-const tn = arg('tune', ''); if (tn && tn !== true) tn.split(',').forEach(kv => { const [k, v] = kv.split('='); GB.TUNE[k] = +v; });
+const tn = arg('tune', ''); if (tn && tn !== true) tn.split(',').forEach(kv => { const [k, v] = kv.split('='); GB.TUNE[k] = isNaN(+v) ? v : +v; });
 const pol = policies[POL]; if (!pol) { console.error('정책 없음:', POL, Object.keys(policies)); process.exit(1); }
 
 function playBattle(B) {
@@ -31,7 +32,13 @@ if (BENCH) {
     const run = GB.Campaign.create(SEED0 + r); run.stage = BENCH;
     const rng = GB.rng(SEED0 + r * 7919);
     while (run.roster.length < Math.min(20, 3 + BENCH)) { const p = GB.genDesign(rng, { power: run.stage * 0.7, uid: 'b' + run.roster.length }); p.name = '신병' + run.roster.length; run.roster.push(p); }
-    const B = GB.Campaign.makeBattle(run); const a0 = run.roster.length;
+    let B;
+    if (MIRROR) {
+      const al = GB.clone(run.roster).map(p => Object.assign(p, { cg: '', chiefNm: '', chiefMode: '' })), en = GB.clone(run.roster).map((p, i) => Object.assign(p, { uid: 'm' + i, name: '적' + (i + 1), cg: '', chiefNm: '', chiefMode: '' }));
+      const map = GB.mapFor(al.length); GB.deploy(al, 0, map); GB.deploy(en, 1, map);
+      B = new GB.Battle({ allies: al, enemies: en, seed: GB.rng(SEED0 + r)() * 4e9 >>> 0 || 1, name: 'mirror' }); B.run = run; B.stage = run.stage;
+    } else B = GB.Campaign.makeBattle(run);
+    const a0 = run.roster.length;
     playBattle(B);
     n0 += a0; lost += a0 - B.alive(0).length; t += B.W.t;
     if (B.result === 'win') win++; else if (B.result !== 'lose') draw++;

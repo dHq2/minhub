@@ -14,6 +14,8 @@ GB.makeRules = function (extra) {
   // 기본 교전 규칙: 원본에서 적(1진영)은 늘 '자유'인데 아군 기본은 '판단'이라 가만히 먼저 맞아 줌 → 같은 조건으로 맞춘다.
   // (측정: 같은 전력 6단계 100판 승률 판단 50% → 자유 70%). 플레이어는 태세 탭에서 언제든 바꿀 수 있다.
   R.roe = Object.assign({}, R.roe, { def: GB.TUNE.allyRoe });
+  // 적 지휘관 AI 묶음 (tools/patches/10): 1이면 원본처럼 적에게만 돌림, 0이면 적도 아군과 같은 조건
+  R.staff1 = GB.TUNE.enemyStaff ? undefined : false;
   if (extra) Object.assign(R, extra);
   return R;
 };

@@ -44,6 +44,19 @@ ok(JSON.stringify(r1.B.W.log.length) === JSON.stringify(r2.B.W.log.length) && r1
   ok(po.ok, '교전 규칙 태세 명령');
 }
 
+// 3.6) 대칭: 같은 설계를 양쪽에 세우면(적에게만 주는 특혜가 없으면) 어느 쪽도 압도하지 않는다
+{
+  let win = 0, n = 36;
+  for (let r = 0; r < n; r++) {
+    const rng = GB.rng(900 + r * 7919), L = [];
+    for (let i = 0; i < 5; i++) { const p = GB.genDesign(rng, { power: GB.TUNE.powerAt(4), uid: 'x' + i }); p.name = 'n' + i; L.push(p); }
+    const mk = pre => L.map((p, i) => { const q = GB.clone(p); q.uid = pre + i; q.ref = 'G-' + pre + i; q.name = pre + i; return q; });
+    const al = mk('a'), en = mk('e'), map = GB.mapFor(5); GB.deploy(al, 0, map); GB.deploy(en, 1, map);
+    const B = new GB.Battle({ allies: al, enemies: en, seed: (GB.rng(r + 1)() * 4e9 >>> 0) || 1 }); B.runToEnd(); if (B.result === 'win') win++;
+  }
+  ok(win / n > 0.25 && win / n < 0.75, '대칭 시험: 같은 설계끼리 아군 승률 ' + Math.round(win / n * 100) + '% (' + n + '판, 25~75% 이내여야 공정)');
+}
+
 // 4) 규모: 10대10 · 20대20 이 돌고 시간이 합리적
 for (const n of [10, 20]) {
   const r = fight(21 + n, n);
