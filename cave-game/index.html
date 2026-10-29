@@ -1,8 +1,8 @@
 <meta charset="utf-8">
-<title>굴의 프롤로그</title>
+<title>굴의 프롤로그 2D</title>
 <!--
   굴의 프롤로그
-  version v14.11
+  version v14.12
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -326,6 +326,7 @@
     <button id="btn-battle">훈련장 [B]</button>
     <button id="btn-equip">🎒 인주 [I]</button>
     <button id="btn-dev">🛠 개발자: 끔</button>
+    <button id="btn-new">↺ 처음부터</button>
   </div>
   <div class="hud" id="prompt" hidden>[Space] 말걸기</div>
   <div class="hud" id="ver"></div>
@@ -380,7 +381,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.11';
+const VERSION = 'v14.12';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -2230,6 +2231,18 @@ document.getElementById('btn-stats').onclick = toggleStats;
 document.getElementById('btn-equip').onclick = () => openSheet('player');
 const syncDevBtn = () => { const b = document.getElementById('btn-dev'); b.textContent = `🛠 개발자: ${DEV ? '켬' : '끔'}`; b.style.borderColor = DEV ? 'var(--fire)' : ''; };
 document.getElementById('btn-dev').onclick = () => { DEV = !DEV; try { localStorage.setItem('cave.dev', DEV ? '1' : '0'); } catch (e) {} syncDevBtn(); caption = { text: DEV ? '개발자 모드 — 인주가 모든 장비를 입을 수 있어요 (🎒 인주)' : '개발자 모드 끔', life: 2.2, max: 2.2 }; };
+// v14.12 처음부터: 레벨 · 경험치 · 동료 · 깊이 (돌파) · 판 기록 · 본 장면 · 인주 장비를 모두 지우고 새로 시작 (훈련장 배치 · 개발자 모드는 그대로). 실수로 안 지우게 3.5초 안에 두 번 눌러야 함
+{ const nb = document.getElementById('btn-new'); let armT = -1e9;
+  const disarm = () => { nb.textContent = '↺ 처음부터'; nb.style.borderColor = ''; };
+  nb.onclick = () => {
+    if (performance.now() - armT > 3500){
+      armT = performance.now(); nb.textContent = '↺ 정말? 한 번 더'; nb.style.borderColor = 'var(--fire)';
+      caption = { text: '처음부터 — 레벨 · 동료 · 깊이 · 본 장면 · 장비가 모두 지워집니다. 한 번 더 누르면 새로 시작', life: 3.5, max: 3.5 };
+      setTimeout(() => { if (performance.now() - armT >= 3400) disarm(); }, 3600); return;
+    }
+    try { localStorage.removeItem(DG_KEY); localStorage.removeItem('cave.equip'); } catch (e) {}
+    location.reload();
+  }; }
 syncDevBtn();
 
 /* =========================================================
