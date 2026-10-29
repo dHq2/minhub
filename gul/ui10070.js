@@ -1,0 +1,24 @@
+// v9.14.1 UI 시험 — ui10070.js v1.0 (v1.0: 암계 장비 그림 = 아이템 아이콘 — 그림 6장 불러옴 · 이름표 끝이 맞아도 그림 · 암계 병사의 무기 · 방패 장비 칸 그림 · 땅에 떨어진 암계 무기 판 위 그림 · 다른 장비는 예전 그대로)
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
+ const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ await p.goto('file://'+process.cwd()+'/build/wrapped.html'); await p.waitForTimeout(400); await p.evaluate(()=>localStorage.clear()); await p.reload(); await p.waitForTimeout(1500);
+ const a = await p.evaluate(async ()=>{ const o={};
+  o.loaded=Object.entries(EQIMG9).filter(([k,im])=>im.ok&&im.naturalWidth>0).map(([k])=>k).sort();
+  const ic=it=>{ const m=/art\/abyss\/(\w+)\.webp/.exec(itIc(it)); return m?m[1]:itIc(it); };
+  o.names=[ic({k:'weapon',name:'장검',label:'방패병의 암계 장검'}), ic({k:'helm',name:'암계 투구 (고급)'}), ic({k:'shield',name:'방패',label:'암계 탑 방패'}), ic({k:'armor',name:'암계 흉갑'}), ic({k:'weapon',name:'장검',label:'장검'}), ic({k:'shield',name:'방패',label:'방패'})];
+  const d=designList().find(x=>x.name==='암계 방패병'), dk=designList().find(x=>x.name==='암계 장궁병');
+  S.units=[{...fromDesign(clone(d),1),id:uid(),x:10,y:5},{...fromDesign(clone(dk),1),id:uid(),x:12,y:5},...S.units.filter(u=>u.side===0)]; start(); const W=world;
+  const s1=W.units.find(u=>u.name==='암계 방패병'), s2=W.units.find(u=>u.name==='암계 장궁병');
+  o.slot=[eqSlotItem(W,s1,'weapon'), eqSlotItem(W,s1,'shield'), eqSlotItem(W,s2,'weapon'), eqSlotItem(W,s1,'머리')].map(it=>[it.label, artKey(it)]);
+  const h=W.units.find(u=>u.side===0&&u.alive); o.ally=[eqSlotItem(W,h,'weapon')].map(it=>[it.label, artKey(it)||null]);
+  W.items.push({ id:999, k:'weapon', name:'장검', x:s1.x+1, y:s1.y, owner:s1.i, label:'방패병의 장검' }); let drawn=0; const di=CanvasRenderingContext2D.prototype.drawImage; CanvasRenderingContext2D.prototype.drawImage=function(im,...r){ if(im&&/abyss\/eq_/.test(im.src||'')) drawn++; return di.call(this,im,...r); }; paused=true; draw(); CanvasRenderingContext2D.prototype.drawImage=di; o.drawn=drawn;
+  return o; });
+ console.log('    ', JSON.stringify(a));
+ ok(a.loaded.length===6,'암계 장비 그림 6장을 미리 불러옴 '+a.loaded.join(','));
+ ok(a.names.slice(0,4).join()==='eq_sword,eq_helm,eq_tower,eq_chest','이름 · 이름표 끝이 맞으면 그림 (방패병의 암계 장검 · 암계 투구 (고급) · 탑 방패 · 흉갑)');
+ ok(!/eq_/.test(a.names[4])&&!/eq_/.test(a.names[5]),'보통 장검 · 방패는 예전 아이콘 그대로');
+ ok(a.slot.map(x=>x[1]).join()==='eq_sword,eq_tower,eq_bow,eq_helm'&&a.slot[0][0]==='암계 장검','암계 병사의 장비 칸: 장검 · 탑 방패 · 장궁 · 투구 모두 그림 '+JSON.stringify(a.slot));
+ ok(!a.ally[0][1],'우리 편 보통 무기는 그대로 '+JSON.stringify(a.ally)); ok(a.drawn>=1,'땅에 떨어진 암계 장검을 판 위에 그림으로 ('+a.drawn+')');
+ ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,2)));
+ await b.close(); console.log(fails?'FAIL '+fails:'ALL OK'); })();
