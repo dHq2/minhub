@@ -1,4 +1,4 @@
-// v9.11.0 엔진 시험 — eng10020.js v1.0 (빼꼼은 맞닿은 전열 등 뒤에서만 · 몸 사이 좁은 틈은 막힘 · 보호받을이 사수는 서둘러 대장 등 뒤 (총안) · 사수는 망치 대상이 아님 · 지휘관 임명 · 전리품에 제 것 (던진 창) · 양쪽 편)
+// v9.11.0 엔진 시험 — eng10020.js v1.1 (v1.1: v9.13.0 총안 — 대장 0.45칸 안이면 바로 쏘므로 '붙어 지냄' 은 몸 사이 0.7칸 안으로 (적 편 대장이 싸우며 움직여 사이 중앙 0.48 → 0.6칸) · v1.0: 빼꼼은 맞닿은 전열 등 뒤에서만 · 몸 사이 좁은 틈은 막힘 · 보호받을이 사수는 서둘러 대장 등 뒤 (총안) · 사수는 망치 대상이 아님 · 지휘관 임명 · 전리품에 제 것 (던진 창) · 양쪽 편)
 const {E,R,REB,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const sw=(name,x,y,side,ex)=>mk({...REB,name,shield:false,weapon:'장검',ov:{hp:9e4,atk:5},traits:[],gear:{},...(ex||{})},side,x,y);
@@ -16,7 +16,7 @@ for (const side of [0,1]){ console.log((side?'적':'우리')+' 편');
   { const W=WF([gun('사수',8,10,side),sw('벽1',14,9.45,1-side),sw('벽2',14,10.55,1-side),sw('표적',18,10,1-side)]); const [s,a,b,t]=W.units; const r=a.r; a.y=10-r-0.1; b.y=10+r+0.1; const B=E.lineBodies(W,s,t,s,null); ok(B.length>0,'몸 사이 0.2칸 틈으로는 사선이 막힘 ('+B.map(x=>x.name).join(',')+')'); }
   // C. 보호받을이 사수: 멀리서 쏘지 않고 서둘러 대장 등 뒤로 → 총안
   { let near=0, peek=0; for (let sd=1; sd<=3; sd++){ const W=WF([sw('대장',12,10,side,{shield:true}),gun('사수',8,14,side),sw('표적',17,10,1-side)],sd); const [c,s,t]=W.units; c.order={k:'hold'}; t.order={k:'hold'}; t.spd=0.001; s.sqLead=c.i; s.chiefLk=true; s.sqFix=true; s.chiefMode='cover';
-      let pk=0, tc=0; for(let i=0;i<150;i++){ step(W); if (E.peekState(W,s)===c) pk++; if (i>=60 && Math.hypot(s.x-c.x,s.y-c.y)-s.r-c.r<0.5) tc++; } if (tc>=45) near++; if (pk>10) peek++; }
+      let pk=0, tc=0; for(let i=0;i<150;i++){ step(W); if (E.peekState(W,s)===c) pk++; if (i>=60 && Math.hypot(s.x-c.x,s.y-c.y)-s.r-c.r<0.7) tc++; } if (tc>=45) near++; if (pk>10) peek++; }
     ok(near>=3,'보호받을이 사수가 대장 등 뒤에 붙어 지냄 (2 ~ 5초의 절반 넘게) ('+near+'/3)'); ok(peek>=2,'붙은 뒤 총안 (빼꼼) 상태 ('+peek+'/3)'); }
   // D. 지휘관 임명
   { const W=WF([sw('갑',10,10,side),sw('을',11,11,side),sw('표적',30,10,1-side)]); const [a,b]=W.units; a.cmd=2; b.cmd=0; E.appointCmdr(W,b); const top=W.units.filter(u=>u.side===side&&u.cmd).sort(E.cmdSort)[0]; ok(top===b&&b.cmd>=1,'임명된 이 (재능 없음) 가 지휘 · 기본 지휘 C'); E.appointCmdr(W,a); ok(!b.cmdHat&&b.cmd===0&&W.units.filter(u=>u.side===side&&u.cmd).sort(E.cmdSort)[0]===a,'다시 임명하면 앞사람은 내려옴'); }

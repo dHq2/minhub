@@ -1,4 +1,4 @@
-// v9.2.0 엔진 시험 (가) — eng9020.js v1.0 (암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)  /* v9.8.2: 역장 6초 · 화살비 붉은 원 */
+// v9.2.0 엔진 시험 (가) — eng9020.js v1.1 (v1.1: v9.13.0 역장 같은 편 통과 시험 — 손으로 옮기는 아군은 제 걸음을 묶고 시전자 몸을 비켜 1.2칸 옆으로 지나감 (둘 다 치는 중이어도 몸이 밀려나 이제 겹쳐 지나가지 못함) · v1.0: 암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)  /* v9.8.2: 역장 6초 · 화살비 붉은 원 */
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -22,7 +22,7 @@ console.log('A. 암계 역장');
     e1.x=F.x+0.9; e1.y=F.y; e1.goal=null; let crossed=false; for(let i=0;i<24;i++){ e1.x-=0.05; e1.px=e1.x; step(W); if(e1.x<F.x-0.1) crossed=true; }
     ok(!crossed&&e1.x>=F.x+0.1,'적은 선을 못 넘음 (x '+e1.x.toFixed(2)+' / 선 '+F.x.toFixed(2)+')'); ok(logK(W,'bfieldBlock').length>=1,'로그: 역장에 막힘');
     // 같은 편은 지나감
-    al.x=F.x+0.9; al.y=F.y; let aCross=false; for(let i=0;i<24;i++){ al.x-=0.05; al.px=al.x; step(W); if(al.x<F.x-0.1) aCross=true; } ok(aCross,'같은 편은 지나감 (x '+al.x.toFixed(2)+')');
+    al.x=F.x+0.9; al.y=F.y+1.2; al.spdMul=0; let aCross=false; for(let i=0;i<24;i++){ al.x-=0.05; al.px=al.x; step(W); if(al.x<F.x-0.1) aCross=true; } ok(aCross,'같은 편은 지나감 (x '+al.x.toFixed(2)+')');
     // 근접 일격은 선 너머로 안 닿음
     const hp0=e2.hp; e2.x=F.x+0.5; e2.y=F.y+0.3; s.x=F.x-0.5; s.y=F.y+0.3; e2.hp=hp0; const o=E.strike?E.strike(W,e2,s,s,1,false,{}):null; ok(o&&o.wall&&s.hp===s.max||!E.strike,'선 너머 근접 일격은 막힘 (피해 없음)'); } }
 { // 만료 뒤엔 통과
