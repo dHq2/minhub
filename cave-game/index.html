@@ -2,7 +2,7 @@
 <title>굴의 프롤로그 2D</title>
 <!--
   굴의 프롤로그
-  version v14.12
+  version v14.13
   변경 기록은 README.md 참고
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -381,7 +381,7 @@
 /* =========================================================
    설정
    ========================================================= */
-const VERSION = 'v14.12';
+const VERSION = 'v14.13';
 const ROWS = 5;          // 모든 맵 공통: 세로 5칸
 const LOBBY_COLS = 14;   // 굴(로비) 가로 길이 — 우물 같은 굴이라 한 화면에 다 보임
 const BATTLE_COLS = 12;  // 전투 테스트 맵 가로 길이
@@ -1997,10 +1997,11 @@ function withDerived(s){
   return { ...s, stepCd: s.stepCd ?? STEP_CD[s.id], guard: guardSkill(s), atkSpd: +(1 / s.cd).toFixed(2), run: +(s.spd * RUN_MUL).toFixed(1) };
 }
 /* ---------- 인주의 장비 (무기 · 머리 · 몸 · 장신구). 굴의 개발자 모드면 무엇이든 입힘 ---------- */
+var SAVE_WIPED = false;   // v14.13 처음부터를 누른 뒤엔 다시 저장하지 않음 (다시 불러오기 전에 옛 상태가 또 저장되던 틈)
 let EQUIP = {}; try { EQUIP = JSON.parse(localStorage.getItem('cave.equip') || '{}') || {}; } catch (e) { EQUIP = {}; }
 if (!EQUIP.weapon) EQUIP.weapon = 'fisher';
 let DEV = false; try { DEV = localStorage.getItem('cave.dev') === '1'; } catch (e) {}
-const saveEquip = () => { try { localStorage.setItem('cave.equip', JSON.stringify(EQUIP)); } catch (e) {} };
+const saveEquip = () => { if (SAVE_WIPED) return; try { localStorage.setItem('cave.equip', JSON.stringify(EQUIP)); } catch (e) {} };
 // 무기: 기본 스킬 (공격, 게이지 없음) + 무기 스킬 (F). 외곽선 색 = 하는 일 (빨강 베기 · 노랑 찌르기 · 주황 사격 · 보라 던지기 · 귤색 광역 · 파랑 막기 · 분홍 반격)
 // h = 가로 그림 (끝이 오른쪽), len = 칸, grip = 쥐는 자리 (0 = 뒤끝). throw = 던질 수 있음 (같은 투창 규칙, 무기마다 피해 배율)
 const SK_COL = { slash: '#e2443a', thrust: '#f2c94c', shoot: '#f08a2a', throw: '#9b6bff', quake: '#ff7a2a', guard: '#4a8cff', counter: '#e64ca8' };
@@ -2240,8 +2241,13 @@ document.getElementById('btn-dev').onclick = () => { DEV = !DEV; try { localStor
       caption = { text: '처음부터 — 레벨 · 동료 · 깊이 · 본 장면 · 장비가 모두 지워집니다. 한 번 더 누르면 새로 시작', life: 3.5, max: 3.5 };
       setTimeout(() => { if (performance.now() - armT >= 3400) disarm(); }, 3600); return;
     }
+    SAVE_WIPED = true;
     try { localStorage.removeItem(DG_KEY); localStorage.removeItem('cave.equip'); } catch (e) {}
-    location.reload();
+    caption = { text: '처음부터 — 저장을 지웠습니다. 다시 불러오는 중…', life: 4, max: 4 };
+    const url = location.href.split('#')[0];
+    try { location.reload(); } catch (e) {}
+    setTimeout(() => { try { location.replace(url); } catch (e) {} }, 1200);   // v14.13 다시 불러오기가 막힌 화면이면 주소를 다시 엶
+    setTimeout(() => { caption = { text: '저장을 지웠습니다 — 화면을 새로 고치면 (F5 · 다시 열기) 처음부터 시작해요', life: 8, max: 8 }; }, 2600);
   }; }
 syncDevBtn();
 
@@ -6769,7 +6775,7 @@ const DG_KEY = 'cave-game.dungeon.v1';
 const LV = { grow: 0.12, need: l => 60 + l * 40 };
 let DGP = { lv: {}, xp: {}, best: 0 };
 try { DGP = Object.assign(DGP, JSON.parse(localStorage.getItem(DG_KEY) || '{}')); } catch (e) {}
-function saveDGP(){ try { localStorage.setItem(DG_KEY, JSON.stringify(DGP)); } catch (e) {} }
+function saveDGP(){ if (SAVE_WIPED) return; try { localStorage.setItem(DG_KEY, JSON.stringify(DGP)); } catch (e) {} }
 const lvOf = id => DGP.lv[id] || 1;
 const lvMul = id => 1 + LV.grow * (lvOf(id) - 1);
 const PARTY_BASE = ['player', 'rebecca', 'goblin', 'karius'];   // 처음부터 함께인 넷 (고정)

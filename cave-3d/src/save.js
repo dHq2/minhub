@@ -1,4 +1,4 @@
-/* save.js v1.4 — (v1.4, v0.90: 방 저장의 인카운터는 고른 것만 끝난 걸로) (v1.3, v0.89: 방마다 저장 — 싸움이 있던 방을 비우고 조용해지면 그 자리에서 저장. 다시 열면 같은 층을 같은 시드로 만들고, 깬 방의 적 · 열린 상자 · 바닥 물건 · 본 지도 · 들어간 인카운터를 되돌린 뒤 저장한 자리부터) (v1.2: 적뢰 오는 날 · 쥐 기사 순찰 날도 저장) (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
+/* save.js v1.5 — (v1.5, v0.94: 처음부터 — 지운 뒤엔 저장 안 함 (SAVE_WIPED) · 다시 불러오기가 막히면 주소를 다시 열고 그래도 안 되면 안내) (v1.4, v0.90: 방 저장의 인카운터는 고른 것만 끝난 걸로) (v1.3, v0.89: 방마다 저장 — 싸움이 있던 방을 비우고 조용해지면 그 자리에서 저장. 다시 열면 같은 층을 같은 시드로 만들고, 깬 방의 적 · 열린 상자 · 바닥 물건 · 본 지도 · 들어간 인카운터를 되돌린 뒤 저장한 자리부터) (v1.2: 적뢰 오는 날 · 쥐 기사 순찰 날도 저장) (v1.1: 진행 중 저장 — 원정 층마다 체크포인트 · 다시 열면 그 층 처음부터 이어함. 게임이 업데이트되면 (VERSION이 바뀌면) 저장을 모두 지우고 새로 시작) (v1.01: 레베카 꺼낸 날도 저장) 굴의 하루 저장 (RPG는 rpg.js가 따로 저장)
    · 새 아침 (잠에서 깸) · 원정에서 돌아옴 · 적뢰를 쓰러뜨림 · 굴에서 1분마다 저장
    · 주소에 아무것도 없이 열면: 저장이 있으면 굴에서 이어함 (프롤로그 건너뜀). I 창의 "처음부터"로 지움 */
 'use strict';
@@ -15,6 +15,7 @@ function plainOf(v, depth = 0){
   return o;
 }
 function proSave(){
+  if (SAVE_WIPED) return;   // v1.5 처음부터 뒤
   if (!PRO.jrDone && PRO.day <= 1 && G.mode !== 'cave') return;   // 프롤로그 중에는 저장 안 함
   const o = { v: 1, t: Date.now() }; for (const k of PRO_KEYS) o[k] = plainOf(PRO[k]);
   try { localStorage.setItem(PRO_SAVE, JSON.stringify(o)); } catch (e) {}
@@ -24,7 +25,16 @@ function proHasSave(){ try { return !!localStorage.getItem(PRO_SAVE); } catch (e
 function proLoad(){
   try { const o = JSON.parse(localStorage.getItem(PRO_SAVE) || 'null'); if (!o || o.v !== 1) return false; for (const k of PRO_KEYS) if (o[k] !== undefined) PRO[k] = o[k]; return true; } catch (e) { return false; }
 }
-function newGame(){ try { localStorage.removeItem(PRO_SAVE); localStorage.removeItem(SAVE_KEY); localStorage.removeItem(EXP_SAVE); } catch (e) {} location.hash = ''; location.reload(); }
+// v1.5 처음부터: 저장을 지우고 (그 뒤론 아무것도 저장하지 않음) 다시 불러옴. 다시 불러오기가 막힌 화면이면 주소를 다시 열어 봄 → 그래도 남아 있으면 안내
+function newGame(){
+  SAVE_WIPED = true;
+  try { localStorage.removeItem(PRO_SAVE); localStorage.removeItem(SAVE_KEY); localStorage.removeItem(EXP_SAVE); } catch (e) {}
+  if (typeof caption === 'function') caption('처음부터', '저장을 지웠다 — 프롤로그부터 다시');
+  const url = location.href.split('#')[0];
+  try { if (location.hash) location.hash = ''; location.reload(); } catch (e) {}
+  setTimeout(() => { try { location.replace(url); } catch (e) {} }, 1200);
+  setTimeout(() => { if (typeof uiToast === 'function') uiToast('저장을 지웠습니다 — 화면을 새로 고치면 (F5 · 다시 열기) 프롤로그부터 시작해요', 'warn'); }, 2600);
+}
 // 새 아침에 저장
 const _endDaySave = endDay;
 endDay = async function(...a){ const r = await _endDaySave.apply(this, a); proSave(); return r; };
@@ -34,6 +44,7 @@ setInterval(() => { if (G.mode === 'cave' && !G.lock && !G.paused && PRO.cave) p
 const EXP_SAVE = 'cave3d.exp.v1';
 const EXP_KEYS = ['F', 'startF', 'seed', 'torches', 'torchT', 'food', 'hungry', 'kills', 'gold0', 'xp0', 'got', 'deepest', 'day', 'tehera', 'blessing'];
 function expCheckpoint(){
+  if (SAVE_WIPED) return;
   if (!EXP || EXP.test || EXP.ending) return;
   const o = { v: 1, ver: VERSION, t: Date.now() }; for (const k of EXP_KEYS) o[k] = plainOf(EXP[k]);
   try { localStorage.setItem(EXP_SAVE, JSON.stringify(o)); } catch (e) {}

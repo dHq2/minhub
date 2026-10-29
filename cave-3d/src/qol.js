@@ -1,4 +1,4 @@
-/* qol.js v1.6 — 편의 · 굴 손님 (v1.6, v0.86: 기술표에 쉬운 키 — 달리며 Q 슬라이딩 · F 톡 = 막기 유지 · 휠 클릭 막기 · 앉아쏴 · 걸으며 조준) (v1.5, v0.55: 쥐 기사 순찰 끔 — 포렌이 나오면 다시) (v1.4, v0.54: 쥐 기사 순찰이 자주 옴 — 하루 60%, 이틀 거르면 반드시 · 첫날부터) (v1.3: 대련 더미 근접 공격이 하 · 중 · 상단으로) (v1.2: 아래 UI 비킴 · N 바로 먹기 · 굴 가구 옮기기 · 의자에 앉기 · 대련 더미 근접 공격 켜고 끄기 · 상인은 적뢰전 뒤에만 · 쥐 기사 순찰) (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
+/* qol.js v1.7 — (v1.7, v0.94: Esc 창의 처음부터 · 기술표 · 카메라 되돌리기가 창만 닫고 아무것도 안 하던 것 고침) 편의 · 굴 손님 (v1.6, v0.86: 기술표에 쉬운 키 — 달리며 Q 슬라이딩 · F 톡 = 막기 유지 · 휠 클릭 막기 · 앉아쏴 · 걸으며 조준) (v1.5, v0.55: 쥐 기사 순찰 끔 — 포렌이 나오면 다시) (v1.4, v0.54: 쥐 기사 순찰이 자주 옴 — 하루 60%, 이틀 거르면 반드시 · 첫날부터) (v1.3: 대련 더미 근접 공격이 하 · 중 · 상단으로) (v1.2: 아래 UI 비킴 · N 바로 먹기 · 굴 가구 옮기기 · 의자에 앉기 · 대련 더미 근접 공격 켜고 끄기 · 상인은 적뢰전 뒤에만 · 쥐 기사 순찰) (v1.1: 초상화 대화 vnTalk · Esc 일시정지 창)
    · H: 기술표 창 (무리별: 움직임 · 막기 · 맨손 · 레슬링 · 무기 · 원정 · 굴). 열려 있는 동안 멈춤. H · Esc로 닫음
    · 지름길: 보스 (5층 세자르 · 10층 대장군)를 쓰러뜨리면 원정 준비 창에서 그 아래층부터 떠날 수 있음
    · 토끼마차 (아이텐): 사흘마다 아침에 굴에 들름 (그날 하루). 장비 셋 (그날 고른 것) · 탄약 · 물약 · 횃불을 판다 */
@@ -61,12 +61,12 @@ function pauseOpen(){
   el.innerHTML = `<div class="cf-box"><b>잠깐</b><p>${G.mode === 'exp' ? `${EXP.F}층 · 횃불 ${EXP.torches} · 금화 ${RPG.gold}` : `${PRO.day || 1}일째 · 금화 ${RPG.gold}`}</p><div style="flex-direction:column;align-items:stretch">
     <button data-a="ok">이어하기 (Esc)</button><button data-p="moves">기술표 (H)</button><button data-p="cam">카메라 되돌리기</button><button data-p="new">처음부터 (저장 지움)</button></div></div>`;
   el.hidden = false;
-  UIR.confirm = (yes) => { el.hidden = true; UIR.confirm = null; G.paused = false; el.onclick = null; };
-  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
-    if (b.dataset.a === 'ok') return UIR.confirm(false);
-    if (b.dataset.p === 'moves'){ UIR.confirm(false); moveListToggle(true); }
-    if (b.dataset.p === 'cam'){ UIR.confirm(false); if (!CAM.lockYaw) setYaw(Math.round(CAM.yawT / (Math.PI * 2)) * Math.PI * 2); if (G.player) camSnapTo(G.player.x, G.player.z); }
-    if (b.dataset.p === 'new'){ UIR.confirm(false); uiConfirm('처음부터?', '저장을 지우고 프롤로그부터 다시 시작합니다.', '지운다', () => newGame()); } };
+  // v1.7 버튼 처리는 UIR.confirm 안에서 (확인 창 공용 클릭 처리기가 먼저 UIR.confirm 을 불러 창을 닫아서, 따로 단 onclick 은 한 번도 안 돌았음 — 처음부터 · 기술표 · 카메라가 먹통)
+  UIR.confirm = (yes, b) => { el.hidden = true; UIR.confirm = null; G.paused = false; el.onclick = null;
+    const p = b && b.dataset.p;
+    if (p === 'moves') moveListToggle(true);
+    if (p === 'cam'){ if (!CAM.lockYaw) setYaw(Math.round(CAM.yawT / (Math.PI * 2)) * Math.PI * 2); if (G.player) camSnapTo(G.player.x, G.player.z); }
+    if (p === 'new') uiConfirm('처음부터?', '저장 (굴의 하루 · 가방 · 장비 · 레벨 · 식구) 을 모두 지우고 프롤로그부터 다시 시작합니다.', '지운다', () => newGame()); };
 }
 
 /* ---------- v1.2 아래 UI 비킴: 스킬 줄과 가로로 겹치면 영웅 칸 · 지시 버튼을 스킬 줄 위로 올림 (크기 · 비율은 그대로) ---------- */

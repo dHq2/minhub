@@ -1,4 +1,4 @@
-/* rpg.js v1.24 — RPG 핵심. v1.24 (v0.89): 카리우스 메모 — 침묵이 아니라 현학적인 인물 (민수 설정). v1.23 (v0.86): 인주가 막지 않고 맞으면 더 아픔 (보통 ×1.2 · 어려움 ×1.35) · 인주 회피 25% 까지 · 치명 더하기 o.critAdd (앉아쏴 · 집중 사격). 레벨업에 체력이 안 참 — 전엔 25% 회복 + 층 시작 때 저장한 체력 비율로 되돌아가 사실상 크게 회복됐음 (민수: 레벨업 · 회복이 너무 편함). v1.22 (v0.58): 동료 배낭 — 저마다 따로, 크기 다름 (BAG_CAP), 인주 가방이 차면 곁의 동료 배낭으로 · 적성 저장 (RPG.sol). v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
+/* rpg.js v1.25 — RPG 핵심. v1.25 (v0.94): 처음부터 뒤엔 저장 안 함 (SAVE_WIPED). v1.24 (v0.89): 카리우스 메모 — 침묵이 아니라 현학적인 인물 (민수 설정). v1.23 (v0.86): 인주가 막지 않고 맞으면 더 아픔 (보통 ×1.2 · 어려움 ×1.35) · 인주 회피 25% 까지 · 치명 더하기 o.critAdd (앉아쏴 · 집중 사격). 레벨업에 체력이 안 참 — 전엔 25% 회복 + 층 시작 때 저장한 체력 비율로 되돌아가 사실상 크게 회복됐음 (민수: 레벨업 · 회복이 너무 편함). v1.22 (v0.58): 동료 배낭 — 저마다 따로, 크기 다름 (BAG_CAP), 인주 가방이 차면 곁의 동료 배낭으로 · 적성 저장 (RPG.sol). v1.21: 카리우스 설명에 개조된 신체 · 무기 칸 둘. v1.2: 카리우스 — 보조 칸에 아무 무기 (둘 다 공격에 더함) · 몸 · 다리 갑옷 불가. v1.1: 보조 칸 (방패 · 한손 보조무기) · 영웅 고유 무기 · 영웅마다 쓸 수 있는 무기 · 동료도 무기 공격력이 먹힘
    영웅 기록 (레벨 · 경험 · 속성 다섯 · 장비 여섯 칸 · 체력 · 정신도) · 아이템 (등급 · 품질 · 덧붙은 효과) · 공용 가방 · 굴 보관함
    파생 수치 (스탯이 실제로 먹힘) · 피해 공식 (방어 · 회피 · 치명 · 흡혈 · 가시 · 상태 이상) · 경험 · 레벨업 · 저장 (localStorage)
    ITEMS (data_items.js)를 씀. 피해는 units.js의 hurt를 한 겹 감쌈 */
@@ -421,7 +421,7 @@ function useItem(it, u = G.player){
 
 /* ---------- 저장 ---------- */
 const SAVE_KEY = 'cave3d.rpg.v1';
-function saveRpg(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ ...RPG, heroes: RPG.heroes })); } catch (e) {} }
+function saveRpg(){ if (SAVE_WIPED) return; try { localStorage.setItem(SAVE_KEY, JSON.stringify({ ...RPG, heroes: RPG.heroes })); } catch (e) {} }
 function loadRpg(){
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s && s.ver === 1){ Object.assign(RPG, s); return true; } } catch (e) {}
   return false;
