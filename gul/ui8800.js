@@ -1,3 +1,4 @@
+// ui8800.js v1.1 (v1.1 · v9.14.3: 층 회복 확인 — 새로 합류한 동료 (층 뽑기에 꼭 한 장 · v9.14.2) 는 체력 기록이 없음 = 가득 · 그대로 통과)
 // (v8.8.7: 2층이 고정층 (무너진 유적) 이 되어, 옛 2층 흐름을 쓰는 이 시험은 FIX8[2] 를 지우고 시작)
 // v8.8.0 UI 시험 — ui8800.js v1.0 (v1.0: 위층으로 — 층 지도 ▲ · ▼ (층마다 남긴 상태 · 처음 들어설 때만 회복 · 카드 · 뽑기 · 다시 온 층의 안 간 칸 · 3층 오감 셈 ·
 //   가 본 아래층은 떠난 자리 · 다시 불러와도 층 정의 그대로) · 싸움판 안 ▲ 올라가는 계단 (단추 · 그림 · 명령 글 · 나가면 앞 칸 · 여정 기록) ·
@@ -64,7 +65,7 @@ const { chromium } = require('playwright');
  // 2층을 마침 (첫 줄부터 한 칸씩 · 갈림 줄은 첫 칸) → 3층 (처음: 회복 · 카드 · 뽑기)
  const pass = () => p.evaluate(()=>{ const R=R8S(), rows=R.fm.rows; R.done=rows.map(r=>r[0].id); R.at=rows[rows.length-1][0].id; for (const q of R.party) q.hpNow=1; save(); r8Next(); });
  await pass(); await draw();
- const f3 = await p.evaluate(()=>{ const R=R8S(); return { f: R.f, fms: Object.keys(R.fms||{}).join(), hp: R.party.every(q=>q.hpNow>1), keep: !!(R.fms[2]&&R.fms[2].done.length===R.fms[2].fm.rows.length), f3n: R.flags.f3n||0, name: (F8[3]||{}).name }; });
+ const f3 = await p.evaluate(()=>{ const R=R8S(); return { f: R.f, fms: Object.keys(R.fms||{}).join(), hp: R.party.every(q=>q.hpNow==null||q.hpNow>1), keep: !!(R.fms[2]&&R.fms[2].done.length===R.fms[2].fm.rows.length), f3n: R.flags.f3n||0, name: (F8[3]||{}).name }; });
  const b3 = await btn();
  ok(f3.f===3&&f3.fms==='2'&&f3.keep&&f3.hp,'3층 처음 — 2층을 남김 (마친 칸 그대로) · 층 회복 · 뽑기 ('+f3.name+')');
  ok(b3.up==='▲ 2층으로'&&!b3.down,'3층 지도: ▲ 2층으로 · ▼ 없음');
