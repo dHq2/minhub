@@ -1,10 +1,10 @@
-// v7.25.0 시험 — eng7250.js v1.1 (v1.1: 넘어진 동안 공은 미끄러져 사슬 안에서 멈춤 · 던짐 시험은 4초 · 모닝스타: 한 바퀴 도는 중 넘어지면 끝 · 공은 바닥 → 일어나면 감아 들임 · 그동안 후리기 못 함 / 모으다 넘어져도 같음 / 휘청은 한 바퀴를 끊지 않음 / 던진 뒤 얼음 아님 ·
+// v7.25.0 시험 — eng7250.js v1.2 (v1.2: 허수아비 창병은 치지 않음 (v9.14.0 손 닿는 창병이 찌름) · 공이 돌아온 그 때를 봄 · v1.1: 넘어진 동안 공은 미끄러져 사슬 안에서 멈춤 · 던짐 시험은 4초 · 모닝스타: 한 바퀴 도는 중 넘어지면 끝 · 공은 바닥 → 일어나면 감아 들임 · 그동안 후리기 못 함 / 모으다 넘어져도 같음 / 휘청은 한 바퀴를 끊지 않음 / 던진 뒤 얼음 아님 ·
 //   세자르: [보스] 치명상 → 즉사 아님 (큰 피해) · 보스 아니면 그대로 즉사 · 영거리 사격을 자주 비킴 · 한 방에 쓰러지지 않음 · 권총 탄도 비킴)
 const {E,mk,W_}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb&&cb()===true) break; } };
 const MS={ref:'C-208',name:'모닝스타',tier:3,cls:'근접',role:'공격수',weapon:'모닝스타',height:1.85,weight:95,ov:{hp:5000,atk:40},traits:['근력A'],active:['철퇴 후리기','휘둘러 치기']};
-const DUM=(x,y)=>mk({ref:'C-053',name:'창병',tier:2,height:2,ov:{hp:9000,atk:1},traits:['망자']},1,x,y);
+const DUM=(x,y)=>mk({ref:'C-053',name:'창병',tier:2,height:2,ov:{hp:9000,atk:1,wind:30},noChg:true,traits:['망자']},1,x,y);   /* v1.2 허수아비는 치지 않음 (준비 30초 · 돌격 없음) — v9.14.0 부터 손 닿는 창병은 제자리에서 찔러 모닝스타를 휘청이게 했음 */
 const CZ={ref:'C-045',name:'세자르',tier:6,cls:'근접',role:'공격수',weapon:'노인의 검',height:2.1,weight:70,poise:6,sizeCls:'중대형',nv:true,nvG:'S',bold:1,ov:{hp:500,atk:62},traits:['보스','베테랑','회피S','속력S','갑피','망자'],gear:{머리:{name:'노인의 왕관',mat:'투구',tier:1}},brain:'cesar'};
 const GAN={ref:'C-195',name:'간두',tier:2,cls:'원거리',role:'사수',weapon:'권총',ammo:100,shells:100,height:1.9,weight:85,sizeCls:'중형',ov:{hp:110,atk:26},traits:['사격A','회피B'],active:['영거리 사격']};
 const lit=W=>{ W.amb=1; E.computeLight(W); };
@@ -18,7 +18,7 @@ const lit=W=>{ W.amb=1; E.computeLight(W); };
   ok(E.flailOut(W,m),'공이 나가 있음');
   run(W,0.6,()=>F.ph==='back'); ok(F.ph==='back'&&F.reel&&W.log.some(l=>l.k==='flailReel'),'일어나면 감아 들임 (reel)');
   const sx=m.x; m.order={k:'move',x:m.x-3,y:m.y}; run(W,1.2); console.log('       걸음',(sx-m.x).toFixed(2),'공',(W.flails||[]).some(f=>f.by===m.i));
-  ok(sx-m.x>0.4,'감아 들이면서 걸음 (얼음 아님)'); run(W,3); ok(!(W.flails||[]).some(f=>f.by===m.i),'공이 손으로 돌아옴'); }
+  ok(sx-m.x>0.4,'감아 들이면서 걸음 (얼음 아님)'); run(W,3,()=>!(W.flails||[]).some(f=>f.by===m.i)); ok(!(W.flails||[]).some(f=>f.by===m.i),'공이 손으로 돌아옴'); }   /* v1.2 돌아온 그 때를 봄 (3초 끝엔 다시 휘두를 수 있음) */
 // 2) 모으는 중 (머리 위로 돌리던 중) 넘어짐 · 공이 나가 있으면 후리기 못 함
 { const W=W_([mk(MS,0,8,8)],[DUM(10,8),DUM(8,10.2)],2,'hold'); lit(W); const [m]=W.units;
   E.startSpec(W,m,null,'sweep','시험'); run(W,0.3); const ph=m.act&&m.act.phase; E.knockDown(W,m,1,null,'시험');

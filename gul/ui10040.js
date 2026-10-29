@@ -1,4 +1,4 @@
-// v9.13.0 UI 시험 — ui10040.js v1.1 (v1.1: 훈련장 '☀ 밝은 맵' — 켜면 판 전체 빛 1 · 끄면 0 · v1.0: 1× = 현실 시간: 현실 1.2초에 판 시간도 약 1.2초 · 2× 면 약 2배 · 단추 글은 그대로)
+// v9.13.0 UI 시험 — ui10040.js v1.2 (v1.2: v9.14.0 빠르기는 예전 1× 그대로 (판 셈 0.25 / 현실 1초) · 보이는 판 시계 = 현실 초 · v1.1: 훈련장 '☀ 밝은 맵' — 켜면 판 전체 빛 1 · 끄면 0 · v1.0: 1× = 현실 시간: 현실 1.2초에 판 시간도 약 1.2초 · 2× 면 약 2배 · 단추 글은 그대로)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const p=await (await b.newContext({viewport:{width:1280,height:860}})).newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
@@ -6,7 +6,9 @@ const { chromium } = require('playwright');
  const meas = async sp => { await p.evaluate(sp=>{ if (world) resetToEdit(); S.draft.done=true; start(); const b2=document.querySelector(`#speedSeg [data-sp="${sp}"]`); b2.click(); world.turnEnd=999; paused=false; mode='run'; }, sp); const t0=await p.evaluate(()=>world.t); const r0=Date.now(); await p.waitForTimeout(1200); const t1=await p.evaluate(()=>world.t); return (t1-t0)/((Date.now()-r0)/1000); };
  const r1 = await meas('0.25'), r2 = await meas('0.5'); const lab = await p.evaluate(()=>document.querySelector('#speedSeg [data-sp="0.25"]').textContent);
  console.log('    1× 배율', r1.toFixed(2), ' 2× 배율', r2.toFixed(2), ' 단추', lab);
- ok(r1>0.8&&r1<1.15,'1× = 현실 시간 (현실 1초에 판 약 1초)'); ok(r2>1.6&&r2<2.3,'2× = 현실의 두 배'); ok(lab==='1×','단추 글 1× 그대로'); ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,2)));
+ ok(r1>0.2&&r1<0.3,'1× 빠르기 = 예전 그대로 (판 셈 0.25 / 현실 1초)'); ok(r2>0.4&&r2<0.6,'2× = 예전 2× 그대로'); ok(lab==='1×','단추 글 1× 그대로'); ok(!errs.length,'페이지 오류 없음 '+JSON.stringify(errs.slice(0,2)));
+ const disp = await p.evaluate(async ()=>{ if (world) resetToEdit(); start(); world.turnEnd=999; paused=false; mode='run'; await new Promise(r=>setTimeout(r,1500)); paused=true; hud(); await new Promise(r=>setTimeout(r,150)); const tx=document.getElementById('turnInfo').textContent; const m=tx.match(/(\d+(?:\.\d+)?)초/); return { tx: tx.slice(0,70), shown: m?+m[1]:null, real: +(world.t*4).toFixed(2) }; });
+ console.log('    표기', JSON.stringify(disp)); ok(disp.shown!=null&&Math.abs(disp.shown-disp.real)<0.3,'판 시계 = 현실 초 (판 셈 × 4 — 현실 1.5초 뒤 약 1.5초)');
  const bm = await p.evaluate(()=>{ if (world) resetToEdit(); const c=document.getElementById('brightMap'); c.checked=true; c.dispatchEvent(new Event('change')); start(); const L=world.light, on={amb:world.amb, min:Math.min(...L)}; resetToEdit(); c.checked=false; c.dispatchEvent(new Event('change')); start(); const off={amb:world.amb, min:Math.min(...world.light)}; resetToEdit(); return {on,off,saved:S.amb}; });
  console.log('    밝은 맵', JSON.stringify(bm)); ok(bm.on.amb===1&&bm.on.min>=1,'☀ 밝은 맵을 켜면 맵 전체가 밝음 (가장 어두운 칸도 1)'); ok(bm.off.amb===0&&bm.off.min<0.5,'끄면 다시 어둠'); ok(!errs.length,'페이지 오류 없음 (밝은 맵)');
  await b.close(); console.log(fails?'FAIL '+fails:'ALL OK'); })();

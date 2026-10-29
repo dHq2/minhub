@@ -1,4 +1,4 @@
-// v9.2.0 엔진 시험 (가) — eng9020.js v1.1 (v1.1: v9.13.0 역장 같은 편 통과 시험 — 손으로 옮기는 아군은 제 걸음을 묶고 시전자 몸을 비켜 1.2칸 옆으로 지나감 (둘 다 치는 중이어도 몸이 밀려나 이제 겹쳐 지나가지 못함) · v1.0: 암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)  /* v9.8.2: 역장 6초 · 화살비 붉은 원 */
+// v9.2.0 엔진 시험 (가) — eng9020.js v1.2 (v1.2: v9.14.0 밀치기 돌진이 실제로 달려 닿음 — 시험의 적은 제자리 (마주 돌격해 부딪히지 않게) · v1.1: v9.13.0 역장 같은 편 통과 시험 — 손으로 옮기는 아군은 제 걸음을 묶고 시전자 몸을 비켜 1.2칸 옆으로 지나감 (둘 다 치는 중이어도 몸이 밀려나 이제 겹쳐 지나가지 못함) · v1.0: 암계 역장 · 밀치기 돌진 · 장송 치유 · 부활 · 방사 절단 · 어둠의 화살비 · 방패 크기)  /* v9.8.2: 역장 6초 · 화살비 붉은 원 */
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -32,10 +32,10 @@ console.log('A. 암계 역장');
   let at=null; run(W,6,()=>{ if(logK(W,'bfield').length){ at=W.t; return true; } }); ok(at!=null,'다가오는 적 둘 이상이면 스스로 역장 ('+(at!=null?at.toFixed(1)+'초':'안 씀')+')'); }
 
 console.log('B. 밀치기 돌진');
-{ const W=WF([dummy('창방패병',10,10,0,{shield:true,weapon:'창',active:['밀치기 돌진']})],[dummy('적',14.5,10,1)]); const [a,e]=W.units; hold(a,e); const x0=e.x; E.supStart(W,a,'bshove',e,'시험'); run(W,2.5);
+{ const W=WF([dummy('창방패병',10,10,0,{shield:true,weapon:'창',active:['밀치기 돌진']})],[dummy('적',14.5,10,1)]); const [a,e]=W.units; hold(a,e); e.spdMul=0; e.canCharge=false; const x0=e.x; E.supStart(W,a,'bshove',e,'시험'); run(W,2.5);
   console.log('    적 x '+x0+' → '+e.x.toFixed(2)+' · 창방패병 x '+a.x.toFixed(2));
   ok(e.x>x0+1.2||(logK(W,'bshove').length&&e.x>x0+0.8),'부딪힌 적이 크게 밀림 (+'+(e.x-x0).toFixed(1)+'칸)'); ok(a.x>10.5,'창방패병이 돌진해 붙음'); ok(logK(W,'bshove').length===1,'로그'); }
-{ const W=WF([dummy('창방패병',10,10,0,{shield:true,weapon:'창',active:['밀치기 돌진']})],[dummy('거인',14.5,10,1,{sizeCls:'초대형',height:8,weight:20000,ov:{hp:3000,atk:20}})]); const [a,e]=W.units; hold(a,e); const x0=e.x; E.supStart(W,a,'bshove',e,'시험'); run(W,2.5);
+{ const W=WF([dummy('창방패병',10,10,0,{shield:true,weapon:'창',active:['밀치기 돌진']})],[dummy('거인',14.5,10,1,{sizeCls:'초대형',height:8,weight:20000,ov:{hp:3000,atk:20}})]); const [a,e]=W.units; hold(a,e); e.spdMul=0; e.canCharge=false; const x0=e.x; E.supStart(W,a,'bshove',e,'시험'); run(W,2.5);
   ok(Math.abs(e.x-x0)<0.4,'초대형은 안 밀림 (되려 휘청) — 이동 '+(e.x-x0).toFixed(2)); ok(logK(W,'bshove').some(l=>l.big),'로그: 너무 커서 안 밀림'); }
 
 console.log('C. 장송기사: 치유 · 부활 · 방사 절단');

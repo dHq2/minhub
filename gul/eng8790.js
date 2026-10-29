@@ -1,4 +1,4 @@
-// v8.7.9 엔진 시험 — eng8790.js v1.3 (v1.3: v9.6.3 — 120초 기술 시험 시드 5 → 6 (시드마다 10 ~ 12 · 예전 판도 시드 2 는 10) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기 · 기술 칸 1 · 2) · 각 몸은 받는 피해 그대로 · 각펄 보스사양 (시작 횡베기 · 둘러싸이면 횡베기 · 연속 찌르기 · 창비 · 거대 특수창 2초) · v1.0: 펄 · 각펄 (명세 E · 3D 기술표) — 몸 (페이지 설계 그대로) · 기술 칸 명령 (철 깃털 · 꼬깃꼬깃 착지 · 돌려차기 · 움츠리기) · 스스로 ·
+// v8.7.9 엔진 시험 — eng8790.js v1.4 (v1.4: v9.14.0 움츠리기 시험은 펄의 체력을 넉넉히 — 돌격이 몸까지 들이닥쳐 (관성) 무거운 각펄에 튕기는 판이 생겨, 큰 일격을 볼 때까지 버티게 함 (예전 통과는 돌격 순서에 기댄 우연) · v1.3: v9.6.3 — 120초 기술 시험 시드 5 → 6 (시드마다 10 ~ 12 · 예전 판도 시드 2 는 10) · v1.2: v9.0.0 — 아군 기본 지침이 돌격 금지라 이 시험 (돌격과 상관없는 것) 은 옛 기본 (allyOff 끔) 으로 · v1.1: 도감 맞춤 — 신나펄 기술 (신나는 공중 투창 · 포탄 · 횡베기 · 기술 칸 1 · 2) · 각 몸은 받는 피해 그대로 · 각펄 보스사양 (시작 횡베기 · 둘러싸이면 횡베기 · 연속 찌르기 · 창비 · 거대 특수창 2초) · v1.0: 펄 · 각펄 (명세 E · 3D 기술표) — 몸 (페이지 설계 그대로) · 기술 칸 명령 (철 깃털 · 꼬깃꼬깃 착지 · 돌려차기 · 움츠리기) · 스스로 ·
 //   빈사에 각펄 · 돌아옴 · 각펄 (적 · 13 기술 · 끝까지 · 천천히 걸음) · 만남의 각펄 (쓰러지되 숨은 붙어 있음 · 창이 떨어지지 않음) · 펄의 창 (열화 · 던져 버리지 않음 · 명령 · 보스는 따로 갖지 않음) ·
 //   물러날 수 없음 (noRetreat) · 같은 규칙 (적 편 동료 펄도 같은 두뇌))
 const {E,R,U,REB,mk}=require('./scen_lib790.js'); const PD=require('./pdes.js'); const fs=require('fs');
@@ -69,7 +69,7 @@ console.log('C. 스스로 — 펄 (적 · 아군 같은 두뇌)');
 for (const side of [0,1]){ const W=WF([mk(PE,side,10,10),dummy('맞상대',17,10,1-side),dummy('맞상대2',18,12,1-side)],{roe:'free'}); const p=W.units[0];
   step(W,30*25); const used=new Set(logK(W,'h2').filter(l=>l.a===p.i).map(l=>l.n));
   ok(used.size>=2,(side?'적 편':'아군')+' 펄이 스스로 쓴 기술: '+[...used].join(' · ')); }
-{ const W=WF([mk(PE,0,10,10),mk(GAK,1,14,10)],{roe:'free'}); const p=W.units[0], g=W.units[1]; for(const s of g.h2&&Object.keys(g.h2.cd)||[]) g.h2.cd[s]=0;
+{ const W=WF([mk(PE,0,10,10),mk(GAK,1,14,10)],{roe:'free'}); const p=W.units[0], g=W.units[1]; p.max=p.hp=5000; for(const s of g.h2&&Object.keys(g.h2.cd)||[]) g.h2.cd[s]=0;
   let k=0, wr=false; while(k++<30*30&&p.alive){ step(W); if(p.act&&p.act.k==='wrap') wr=true; if(wr) break; }
   ok(wr||logK(W,'pearlWrap').some(l=>l.a===p.i),'큰 일격이 올 때 스스로 움츠리기'+(logK(W,'pearlWrap').find(l=>l.a===p.i)||{}).why?' — '+(logK(W,'pearlWrap').find(l=>l.a===p.i)||{}).why:''); }
 

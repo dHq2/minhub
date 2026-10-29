@@ -1,4 +1,4 @@
-// v9.5.0 UI 시험 — ui9060.js v1.0 (제3세력 심계: 유적 입구에서 헌팅나이프 · 카밀라가 먼저 싸우는 중 · 싸움 뒤 말 걸기 · 영입 · 한발 늦음 · 공격 / ❓ 망자 맵)
+// v9.5.0 UI 시험 — ui9060.js v1.1 (v1.1: v9.14.0 둘은 제3세력 (2편) · v1.0: 제3세력 심계: 유적 입구에서 헌팅나이프 · 카밀라가 먼저 싸우는 중 · 싸움 뒤 말 걸기 · 영입 · 한발 늦음 · 공격 / ❓ 망자 맵)
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium'}); let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
  const url='file://'+process.cwd()+'/'+(process.argv[2]||'build')+'/wrapped.html';
@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
    const F=W.units.filter(u=>u.side===1&&u.alive); o.foes=F.length; o.near=G.map(g=>F.filter(f=>Math.hypot(f.x-g.x,f.y-g.y)<3.5).length); o.hunt=F.filter(f=>f.state==='hunt'&&f.target&&G.includes(f.target)).length;
    o.log=W.log.some(l=>/이미 싸움이 벌어지고/.test(l.s||'')); o.r8third=!!(W.r8&&W.r8.third); try { paused=true; draw(); for (let i=0;i<150;i++) stepWorld(W,1/30); draw(); } catch(e){ o.e.push('sim '+e.message); } o.alive=G.map(u=>u.alive); o.dmg=G.map(u=>Math.round(u.hp)); return o; });
  console.log('    ', JSON.stringify(a1).slice(0,500));
- ok(a1.third==='sim'&&a1.g.length===2&&a1.g.every(x=>x[1]===0&&x[2]&&x[3]==='sim')&&a1.g.map(x=>x[0]).sort().join()==='카밀라,헌팅나이프','유적 입구에 헌팅나이프 · 카밀라 (이쪽 편 손님 · 전우조 sim)');
+ ok(a1.third==='sim'&&a1.g.length===2&&a1.g.every(x=>x[1]===2&&x[2]&&x[3]==='sim')&&a1.g.map(x=>x[0]).sort().join()==='카밀라,헌팅나이프','유적 입구에 헌팅나이프 · 카밀라 (제3세력 2편 · 전우조 sim)');
  ok(a1.g.every(x=>x[4]<=0.85&&x[4]>0.5)&&a1.near.every(n=>n>=2)&&a1.hunt>=2&&a1.log&&a1.r8third&&!a1.e.length,'다쳐 있고 (70 · 80%) 암계 병사들에게 둘러싸임 ('+a1.near+') · 병사 '+a1.hunt+'이 노림 · 안내 줄');
  await p.waitForTimeout(2600); await p.evaluate(()=>{ if (TK) talkClose(); }); await p.waitForTimeout(200);
  await p.screenshot({path:'ui9060_a.png', clip:{x:10,y:60,width:820,height:700}});

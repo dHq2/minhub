@@ -1,4 +1,4 @@
-// v9.4.0 엔진 시험 — eng9050.js v1.0 (적 (side 1) 이 하는 전술 — 아군은 돌격 금지 기본이라 스스로 안 나감 · 암계 전술 D6: 방패병의 역장이 펼쳐진 동안 창 든 이는 선 바로 뒤에 나란히 섬 · 선 너머로 찌름 · 끝나면 보통 싸움)  /* v9.8.2: 역장 자리 (방패 앞) 에 맞춤 */
+// v9.4.0 엔진 시험 — eng9050.js v1.1 (v1.1: v9.14.0 역장이 방패병 앞에 붙어 같이 움직여 가운데 창이 조금 뒤 (1.8칸) — 2.0칸까지 · v1.0: 적 (side 1) 이 하는 전술 — 아군은 돌격 금지 기본이라 스스로 안 나감 · 암계 전술 D6: 방패병의 역장이 펼쳐진 동안 창 든 이는 선 바로 뒤에 나란히 섬 · 선 너머로 찌름 · 끝나면 보통 싸움)  /* v9.8.2: 역장 자리 (방패 앞) 에 맞춤 */
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const step=(W,n)=>{ for(let i=0;i<(n||1);i++){ const t0=W.t; E.stepWorld(W,1/30); if(W.t===t0) W.t+=1/30; } };
@@ -19,7 +19,7 @@ for (const seed of [1,2,3]){
   const pos=[a,b,c].map(u=>({ off:(u.x-F.x)*F.nx+(u.y-F.y)*F.ny, al:(u.x-F.x)*F.ux+(u.y-F.y)*F.uy }));
   const sg=Math.sign(((e1.x+e2.x)/2-F.x)*F.nx+((e1.y+e2.y)/2-F.y)*F.ny)||1;
   console.log('    선 길이 '+(F.h*2).toFixed(1)+' · 창 셋 선 뒤 거리 '+pos.map(p=>(-p.off*sg).toFixed(2)).join(' · ')+' · 선 따라 '+pos.map(p=>p.al.toFixed(1)).join(' · '));
-  ok(pos.every(p=>-p.off*sg>0.2&&-p.off*sg<1.6),'['+seed+'] 창 셋 모두 선 바로 뒤 (아군 쪽 0.2 ~ 1.6칸)');
+  ok(pos.every(p=>-p.off*sg>0.2&&-p.off*sg<2.0),'['+seed+'] 창 셋 모두 선 바로 뒤 (아군 쪽 0.2 ~ 2.0칸)');
   ok(pos.every(p=>Math.abs(p.al)<=F.h+0.6)&&new Set(pos.map(p=>Math.round(p.al*2))).size===3,'['+seed+'] 선 길이 안에 서로 떨어져 나란히');
   ok([a,b,c].every(u=>logK(W,'mood')||true),'(상태 글 확인은 생략)'); }
 console.log('B. 끝나면 보통 싸움');

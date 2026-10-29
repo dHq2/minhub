@@ -1,4 +1,4 @@
-// v7.19.1 시험 — eng7191.js v1.4 (v1.4: 후리기는 1.6초 (v7.24.4 모음 + 한 바퀴) · v1.3: 후리기 시험의 모닝스타는 오래 버팀 (v7.24.1 철퇴 2.3M) · v1.2: 로그 flailSweep · v1.1: 스스로 샷건 시험은 다가오는 검기사 (창병은 던지며 거리를 둠) · 고유 기술: 공중제비 내려찍기 · 뒤로 빠짐 · 머리 찍기 (한 번 · 확정 치명 · 즉사 확률) · 영거리 사격 (특수탄 · 날림) · 철퇴 후리기 (동료도 · 큰 몸이 막으면 멈춤) · 휘둘러 치기 (먼 상대 · 머리 직격) · 스스로 씀)
+// v7.19.1 시험 — eng7191.js v1.5 (v1.5: 공중제비 시험의 맞는 쪽은 맨손 (v9.14.0 손 닿는 창병이 제자리에서 찔러 무구로 받아 냄) · v1.4: 후리기는 1.6초 (v7.24.4 모음 + 한 바퀴) · v1.3: 후리기 시험의 모닝스타는 오래 버팀 (v7.24.1 철퇴 2.3M) · v1.2: 로그 flailSweep · v1.1: 스스로 샷건 시험은 다가오는 검기사 (창병은 던지며 거리를 둠) · 고유 기술: 공중제비 내려찍기 · 뒤로 빠짐 · 머리 찍기 (한 번 · 확정 치명 · 즉사 확률) · 영거리 사격 (특수탄 · 날림) · 철퇴 후리기 (동료도 · 큰 몸이 막으면 멈춤) · 휘둘러 치기 (먼 상대 · 머리 직격) · 스스로 씀)
 const {E,R,U,DES,INJ,mk}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const run=(W,sec,cb)=>{ const end=W.t+sec; while(W.t<end&&!W.over){ E.stepWorld(W,1/30); if(cb) cb(); } };
@@ -11,7 +11,7 @@ const MOR={ref:'C-005',name:'모닝스타',tier:2,cls:'근접',role:'공격수',
 const TOUGH=x=>({...DES['창병'],ov:{hp:99999,atk:30},...(x||{})});
 
 console.log('A. 탕아 공중제비');
-{ const W=WT([mk(TANG,0,6,8,{hero:true}),mk(TOUGH(),1,8.9,8),FAR()]); const a=W.units[0], t=W.units[1]; t.order={k:'hold'}; const okF=E.startFlip(W,a,t,false); const hp0=t.hp; run(W,0.6);
+{ const W=WT([mk(TANG,0,6,8,{hero:true}),mk(TOUGH({weapon:'맨손',shield:false}),1,8.9,8),FAR()]);   /* v1.5 맞는 쪽은 맨손 — v9.14.0 부터 손 닿는 창병은 제자리에서 찌르며 무구로 받아 냄 (예전엔 던질 자리만 찾느라 서 있었음) */ const a=W.units[0], t=W.units[1]; t.order={k:'hold'}; const okF=E.startFlip(W,a,t,false); const hp0=t.hp; run(W,0.6);
   const sl=W.log.find(x=>x.k==='slam'), hit=W.log.find(x=>x.k==='hit'&&x.a===a.i&&/내려찍기/.test(x.tag||'')); console.log(`    뜀 ${okF} · 내려찍기 ${!!sl} (${sl?sl.n:0}명) · 피해 ${Math.round(hp0-t.hp)} · 넘어짐 ${W.t<t.proneT}`);
   ok(okF&&sl&&sl.n>=1,'뛰어올라 내려찍음'); ok(Math.hypot(a.x-t.x,a.y-t.y)<1.2,'상대 바로 앞에 내려앉음');
   const W2=WT([mk(TANG,0,6,8,{hero:true}),mk(TOUGH(),1,6.8,8),FAR()]); const b=W2.units[0], e=W2.units[1]; const x0=b.x; E.startFlip(W2,b,e,true); run(W2,0.6); console.log(`    뒤로 빠짐 ${(x0-b.x).toFixed(2)}칸`); ok(x0-b.x>2,'뒤로 2칸 넘게 빠짐'); }

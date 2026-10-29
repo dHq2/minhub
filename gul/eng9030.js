@@ -1,4 +1,4 @@
-// v9.2.1 엔진 시험 (나) — eng9030.js v1.2 (v1.2: 실제 돌진 시험의 돌격병은 맨손 (몸으로 들이받음 — v9.9.0) · v1.1: 몸 반지름 하한 1.2 → 0.75 (rMul 3 → 2 — 계단2 방에 들어가도록) · 밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
+// v9.2.1 엔진 시험 (나) — eng9030.js v1.3 (v1.3: v9.14.0 암습은 실제로 달려 등 · 옆으로 — 등 뒤 일격 · 큰 피해 (치명은 확률) · v1.2: 실제 돌진 시험의 돌격병은 맨손 (몸으로 들이받음 — v9.9.0) · v1.1: 몸 반지름 하한 1.2 → 0.75 (rMul 3 → 2 — 계단2 방에 들어가도록) · 밀치는 주먹 · 점점 빨라짐 · 초대형 지속 돌격 · 반 · 테리 · 흑익 · 하류 · 헌팅나이프 암습 · 무기뺏기 · 카밀라 레이더)
 const {E,R,U,DES,mk,W_,REB}=require('./scen_lib790.js');
 let fails=0; const ok=(c,s)=>{ console.log((c?'  OK  ':'  FAIL ')+s); if(!c) fails++; };
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
@@ -39,7 +39,7 @@ console.log('E. 흑익 · 하류');
   console.log('    흑익 '+JSON.stringify(u1)+' · 하류 '+JSON.stringify(u2)+' · 역장 '+fields); ok(Object.keys(u1).length>=3,'흑익 기술 3가지 이상'); ok(Object.keys(u2).length>=3,'하류 기술 3가지 이상'); ok(fields>=1,'흑익이 역장을 펼침 (하류 보조)'); }
 
 console.log('F. 헌팅나이프 · 카밀라');
-{ const W=WF([dummy('헌팅나이프',10,12,0,{weapon:'단검',active:['암습','무기뺏기'],traits:['베테랑','장군']})],[dummy('사수',20,12,1,{weapon:'활',ammo:30,ov:{hp:400,atk:10}}),dummy('검사',17,15,1,{weapon:'장검'})]); const [h,a,b]=W.units; hold(a,b); const sx=(h.spec||[]).find(x=>x.k==='hamb'); ok(!!sx,'기술 이름 → 암습'); E.supStart(W,h,'hamb',a,'시험'); run(W,2.0); const back=Math.atan2(a.y-h.y,a.x-h.x); console.log('    암습 → 사수 체력 '+Math.round(a.hp)+'/'+a.max+' · 거리 '+dist(h,a).toFixed(1)); ok(a.hp<a.max*0.6&&dist(h,a)<2.7,'등 뒤로 붙어 큰 피해'); ok(logK(W,'hamb').length===1,'로그'); }
+{ const W=WF([dummy('헌팅나이프',10,12,0,{weapon:'단검',active:['암습','무기뺏기'],traits:['베테랑','장군']})],[dummy('사수',20,12,1,{weapon:'활',ammo:30,ov:{hp:400,atk:10}}),dummy('검사',17,15,1,{weapon:'장검'})]); const [h,a,b]=W.units; hold(a,b); const sx=(h.spec||[]).find(x=>x.k==='hamb'); ok(!!sx,'기술 이름 → 암습'); E.supStart(W,h,'hamb',a,'시험'); run(W,2.0); const back=Math.atan2(a.y-h.y,a.x-h.x); console.log('    암습 → 사수 체력 '+Math.round(a.hp)+'/'+a.max+' · 거리 '+dist(h,a).toFixed(1)); ok(a.hp<a.max*0.75&&dist(h,a)<2.7&&logK(W,'hamb').some(l=>l.back),'등 · 옆으로 붙어 큰 피해 (치명은 확률)'); ok(logK(W,'hamb').length===1,'로그'); }
 { let got=0; for(let s=1;s<=8;s++){ const W=WF([dummy('헌팅나이프',10,12,0,{weapon:'단검',active:['무기뺏기']})],[dummy('검사',11.2,12,1,{weapon:'장검'})],{seed:s}); const [h,e]=W.units; hold(h,e); E.supStart(W,h,'hdisarm',e,'시험'); run(W,1.5); if(e.weaponGone) got++; }
   ok(got>=3&&got<=8,'무기뺏기: 8번 중 '+got+'번 성공 (확률)'); }
 { const W=WF([dummy('카밀라',6,12,0,{weapon:'샷건',traits:['베테랑','레이더','생존자'],gear:{몸:{name:'방탄복',mat:'방탄복',tier:3}}})],[dummy('먼 적',38,12,1,{ov:{hp:300,atk:10}})]); const [k,e]=W.units; hold(e); run(W,2); const s=k.sense[e.i]; ok(k.radar&&s&&W.t-s.t<1,'레이더: 38칸 밖의 적도 점으로 앎'); ok(k.survivor,'생존자 표시'); ok(!!(E.DEFAULT_RULES.armor['방탄복']),'방탄복 재질: 날붙이 '+E.DEFAULT_RULES.armor['방탄복'].vs['날붙이']+' · 둔기 '+E.DEFAULT_RULES.armor['방탄복'].vs['둔기']); }
