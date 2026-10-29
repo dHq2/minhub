@@ -5911,7 +5911,7 @@ function actingCmd(W, side){
   L(W, { k: 'acting', side, a: c.i, n: st.n, vis: side === 0 || !!c.seenBy });
 }
 const RANK_REF = {};   // v9.9.7 공식 부대장 없앰 (옛: 노먼)
-const cmdBoss = (W, side) => W.units.filter(u => u.alive && !u.crawl && u.side === side && u.cmd > 0 && !(u.koT && W.t < u.koT)).sort((a, b) => b.cmd - a.cmd || (b.rank === '부대장' ? 1 : 0) - (a.rank === '부대장' ? 1 : 0) || (a.cmdTmp ? 1 : 0) - (b.cmdTmp ? 1 : 0))[0] || null;
+const cmdBoss = (W, side) => W.units.filter(u => u.alive && !u.crawl && u.side === side && u.cmd > 0 && !(u.koT && W.t < u.koT)).sort((a, b) => (b.cmdHat ? 1 : 0) - (a.cmdHat ? 1 : 0) || b.cmd - a.cmd || (b.rank === '부대장' ? 1 : 0) - (a.rank === '부대장' ? 1 : 0) || (a.cmdTmp ? 1 : 0) - (b.cmdTmp ? 1 : 0))[0] || null;   /* v9.14.2 임명한 지휘관이 지휘 전달망의 우두머리 (예전엔 지휘 등급이 높은 이가 그대로 — 임명이 표시뿐이었음) */
 const deputyOf = (W, side) => W.units.find(u => u.alive && u.side === (side || 0) && u.rank === '부대장' && !u.crawl) || null;
 function leadOf(W, u){ { const F = formOf(W, u); if (F && F.act && F.lead !== u.i && !u.fdet){ const D = W.units[F.lead]; if (D && D.alive && !D.down && !D.crawl) return D; } }   /* v8.7.5 편대원은 편대장을 따라감 */
   if (u.sqLead == null || u.hero) return null; const D = W.units[u.sqLead]; return !D || !D.alive || D.down || D.crawl || D === u || (D.sqFall && W.t < D.sqFall) ? null : D; }   // v7.10 편대장 (부대장) — 물러나는 동안은 본대 (주인공) 로   // v7.4 기절한 지휘관은 지휘 못 함
