@@ -1,4 +1,5 @@
-/* editor.js v1.2 — (v1.2) 모션 넣기 쉽게 (민수: 그 캐릭터에 어떤 모션 넣을지 정도면 됨): 카드마다 말하는 사람의 모션 단추 (깡충 · 두 번 깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 퇴장) — 누르면 켜고 끔 · 바로 미리보기. 나레이션 · 멈춤 카드는 모션 줄 인물을 고름 (b.mwho). 말하는 사람을 바꾸면 모션도 따라감. '+ 연출' 은 등장 자리 · 이동 · 다른 인물용으로, 인물 칸이 그 카드의 인물로 시작 (전엔 늘 목록 첫 사람이라 엉뚱한 인물에게 들어감)
+/* editor.js v1.3 — (v1.3) 좌우반전 (민수): 인물 칸의 '기본 좌우반전' (cast.flip, 옐로는 켜 둠) · 카드 모션 줄의 '↔ 좌우반전' = 그 카드부터 반대로 (다시 넣으면 원래대로), 반전 중이면 이름 옆에 표시 · 보는 쪽 두 줄은 '방향 자세히' 안으로
+   (v1.2) 모션 넣기 쉽게 (민수: 그 캐릭터에 어떤 모션 넣을지 정도면 됨): 카드마다 말하는 사람의 모션 단추 (깡충 · 두 번 깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 퇴장) — 누르면 켜고 끔 · 바로 미리보기. 나레이션 · 멈춤 카드는 모션 줄 인물을 고름 (b.mwho). 말하는 사람을 바꾸면 모션도 따라감. '+ 연출' 은 등장 자리 · 이동 · 다른 인물용으로, 인물 칸이 그 카드의 인물로 시작 (전엔 늘 목록 첫 사람이라 엉뚱한 인물에게 들어감)
    (v1.1) 움짤 표정 (anim · w · h · thumb) · 인물마다 화면에서 보는 쪽 (face: L · R · auto — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 움짤을 넣으면 첫 장으로 작은 그림을 만들어 올림
    (v1.0) 시나리오 편집기 화면 · 저장 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
    ■ 왼쪽 = 대사 카드 (한 장이 한 박자: 말하는 사람 · 표정 그림 · 대사 · 연출), 가운데 = 미리보기 (engine.js), 오른쪽 = 인물 · 설정 · 쓰는 법
@@ -13,9 +14,11 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const SLOTS = ['왼쪽', '왼쪽2', '가운데', '오른쪽2', '오른쪽'];
-const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', hop: '깡충', hop2: '두 번 깡충', shake: '흔들', tremble: '덜덜', bow: '꾸벅', flinch: '쿵' };
+const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', hop: '깡충', hop2: '두 번 깡충', shake: '흔들', tremble: '덜덜', bow: '꾸벅', flinch: '쿵', flip: '좌우반전' };
 const FXT = { ...FXK, hop2: '두번깡충' };   // 글 대본에 쓰는 이름 (띄어쓰기 없이)
-const MOTS = [['hop', '깡충'], ['hop2', '두 번 깡충'], ['shake', '흔들'], ['tremble', '덜덜'], ['bow', '꾸벅'], ['flinch', '쿵'], ['out', '퇴장']];
+const MOTS = [['hop', '깡충'], ['hop2', '두 번 깡충'], ['shake', '흔들'], ['tremble', '덜덜'], ['bow', '꾸벅'], ['flinch', '쿵'], ['flip', '↔ 좌우반전'], ['out', '퇴장']];
+// 그 카드에 들어올 때 이 인물이 (카드의 좌우반전으로) 반대로 서 있는지 — 퇴장하면 원래대로
+function edFlipped(sc, i, nm){ let f = false; for (let j = 0; j < i; j++) for (const x of sc.beats[j].fx || []){ if (x.k === 'out' && (x.who === nm || x.who === '모두')) f = false; else if (x.k === 'flip' && x.who === nm) f = !f; } return f; }
 const MOTK = new Set(MOTS.map(m => m[0]));
 const edCastList = () => Object.values(ED.cast).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name));
 const edScenList = () => Object.values(ED.scen).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.title || '').localeCompare(b.title || ''));
@@ -88,7 +91,7 @@ function edEngCast(){
   for (const c of Object.values(ED.cast)){
     const ex = {};
     for (const e of c.ex || []){ const url = edUrl(e); if (!url) continue; ex[e.k] = { img: edImg(url), anim: e.anim ? url : null, fw: e.anim ? e.w : e.fw, fh: e.anim ? e.h : e.fh, n: e.n, cols: e.cols, fps: e.fps, crop: e.crop ?? 1, scale: e.scale ?? 1, dx: e.dx || 0, dy: e.dy || 0, look: e.look || null }; }
-    m[c.name] = { look: c.look || 'R', face: edFace(c), pitch: c.pitch || 520, size: c.size || 1, dx: c.dx || 0, dy: c.dy || 0, ex };
+    m[c.name] = { look: c.look || 'R', face: edFace(c), flip: !!c.flip, pitch: c.pitch || 520, size: c.size || 1, dx: c.dx || 0, dy: c.dy || 0, ex };
   }
   ENG.cast = m;
 }
@@ -151,7 +154,7 @@ function edCardHtml(b, i, cur){
   else h += `<p class="rest-note">대사창 없이 한 박자 쉼 — 등장 · 퇴장만 보여 줄 때</p>`;
   // v1.2 모션 줄: 그 카드 인물의 모션을 눌러 켜고 끔
   const sc = edSc(), mw = sc && edCastList().length ? edMotWho(sc, i) : '', spk = b.kind === 'line' && b.who === mw;
-  if (mw) h += `<div class="mots">${spk ? `<span class="mlab">${esc(mw)}</span>` : `<select class="mwho" aria-label="모션 줄 인물">${edCastList().map(c2 => `<option${c2.name === mw ? ' selected' : ''}>${esc(c2.name)}</option>`).join('')}</select>`}${MOTS.map(([k, l]) => `<button class="mot${(b.fx || []).some(f => f.k === k && f.who === mw) ? ' on' : ''}" data-mot="${k}" aria-pressed="${(b.fx || []).some(f => f.k === k && f.who === mw)}">${l}</button>`).join('')}</div>`;
+  if (mw) h += `<div class="mots">${spk ? `<span class="mlab">${esc(mw)}${edFlipped(sc, i, mw) ? ' <i class="flipd">↔ 반전 중</i>' : ''}</span>` : `<select class="mwho" aria-label="모션 줄 인물">${edCastList().map(c2 => `<option${c2.name === mw ? ' selected' : ''}>${esc(c2.name)}</option>`).join('')}</select>${edFlipped(sc, i, mw) ? '<i class="flipd">↔ 반전 중</i>' : ''}`}${MOTS.map(([k, l]) => `<button class="mot${(b.fx || []).some(f => f.k === k && f.who === mw) ? ' on' : ''}" data-mot="${k}" aria-pressed="${(b.fx || []).some(f => f.k === k && f.who === mw)}">${l}</button>`).join('')}</div>`;
   const other = (b.fx || []).map((f, j) => [f, j]).filter(([f]) => !(MOTK.has(f.k) && f.who === mw));
   h += `<div class="fxs">${other.map(([f, j]) => `<span class="fx">${esc(f.k === 'out' && f.who === '모두' ? '모두 퇴장' : `${FXK[f.k]} ${f.who}${f.slot ? ' · ' + f.slot : ''}${f.ex ? ' · ' + f.ex : ''}`)}<button data-fxdel="${j}" title="빼기">✕</button></span>`).join('')}<button class="addfx" data-act="fx">+ 등장 자리 · 이동 · 다른 인물</button></div>`;
   if (ED.fxOpen === i){
@@ -198,9 +201,12 @@ function edCastHtml(){
   const e = (c.ex || []).find(x => x.k === ED.exSel);
   h += `<div class="cform">
     <label class="txtf"><span>이름</span><input id="c-name" value="${esc(c.name)}"></label>
+    <div class="row seg"><span>기본 좌우반전</span><button data-cflip="0" class="${!c.flip ? 'on' : ''}">그대로</button><button data-cflip="1" class="${c.flip ? 'on' : ''}">↔ 반전</button></div>
+    <p class="tip">모든 장면에서 이 인물을 좌우로 뒤집어 세워요. 한 장면만 돌려 세우려면 카드의 ‘↔ 좌우반전’.</p>
+    <details class="more"><summary>방향 자세히</summary>
     <div class="row seg"><span>화면에서 보는 쪽</span><button data-face="L" class="${edFace(c) === 'L' ? 'on' : ''}">← 왼쪽</button><button data-face="R" class="${edFace(c) === 'R' ? 'on' : ''}">오른쪽 →</button><button data-face="auto" class="${edFace(c) === 'auto' ? 'on' : ''}">가운데 쪽</button></div>
     <div class="row seg"><span>그림 속 인물이 보는 쪽</span><button data-look="R" class="${(c.look || 'R') === 'R' ? 'on' : ''}">오른쪽 →</button><button data-look="L" class="${c.look === 'L' ? 'on' : ''}">← 왼쪽</button></div>
-    <p class="tip">그림이 보는 쪽과 화면에서 보는 쪽이 다르면 좌우로 뒤집어요. ‘가운데 쪽’ 은 자리에 따라 저절로.</p>
+    <p class="tip">그림이 보는 쪽과 화면에서 보는 쪽이 다르면 뒤집고, 기본 좌우반전이 켜져 있으면 한 번 더 뒤집어요. ‘가운데 쪽’ 은 자리에 따라 저절로.</p></details>
     <div class="row">${rng('c-pitch', '전자음 높이', c.pitch || 520, 150, 1200, 10, 'Hz')}<button data-act="pitchplay" title="들어 보기">▶</button></div>
     ${rng('c-size', '크기', c.size || 1, 0.4, 2.5, 0.01)}${rng('c-dx', '옆', c.dx || 0, -600, 600, 1)}${rng('c-dy', '위아래', c.dy || 0, -600, 600, 1)}
     <h4>표정 그림 <small>(앞의 것이 기본)</small></h4>
@@ -242,14 +248,14 @@ function edOptHtml(){
 function edHelpHtml(){
   return `<div class="help"><h4>키</h4><p>Space · → · Enter · 미리보기 누르기 = 다음 (글이 찍히는 중이면 한 번에)<br>← · Backspace = 한 박자 뒤로 · R = 처음부터 · Esc = 녹화 멈춤</p>
     <h4>카드</h4><p>카드를 누르면 미리보기가 그 장면으로 가요. ⋮⋮ 를 끌어 순서를 바꿔요. 표정은 그 인물에게 있는 그림만 보여요 ('그대로' = 앞 장면 표정 유지).</p>
-    <h4>모션</h4><p>카드 아래 단추를 누르면 그 카드 인물에게 켜지고, 다시 누르면 꺼져요. 누르면 바로 미리보기로 보여 줘요. 깡충 · 두 번 깡충 · 흔들 · 꾸벅 · 쿵은 박자가 시작될 때 한 번, 덜덜은 그 박자 내내, 퇴장은 대사가 다 나온 뒤 나가요. 나레이션 · 멈춤 카드는 단추 앞에서 인물을 골라요. 무대에 없는 인물에게 모션을 주면 저절로 등장해요. 등장 자리 · 이동 · 다른 인물 모션은 '+ 등장 자리 · 이동 · 다른 인물'.</p>
+    <h4>모션</h4><p>카드 아래 단추를 누르면 그 카드 인물에게 켜지고, 다시 누르면 꺼져요. 누르면 바로 미리보기로 보여 줘요. 깡충 · 두 번 깡충 · 흔들 · 꾸벅 · 쿵은 박자가 시작될 때 한 번, 덜덜은 그 박자 내내, 퇴장은 대사가 다 나온 뒤 나가요. ↔ 좌우반전은 그 카드부터 반대로 돌아서고 (둘이 마주 볼 때), 뒤 카드에서 한 번 더 넣으면 원래대로 — 반전 중이면 이름 옆에 ‘↔ 반전 중’.</p><p>인물을 늘 뒤집어 세우려면 인물 칸의 ‘기본 좌우반전’. 나레이션 · 멈춤 카드는 단추 앞에서 인물을 골라요. 무대에 없는 인물에게 모션을 주면 저절로 등장해요. 등장 자리 · 이동 · 다른 인물 모션은 '+ 등장 자리 · 이동 · 다른 인물'.</p>
     <h4>녹화</h4><p>녹화는 늘 투명 배경 webm (1920 × 1080, 전자음 포함). ● 녹화는 빈 화면에서 시작해 Space 로 진행, 마지막 대사 뒤 Space 로 끝. ↻ 같은 박자로 녹화는 방금 Space 로 한 진행을 같은 박자로 다시 찍어요. 바탕 미리보기는 화면에만 보여요.</p>
     <h4>글로 보기</h4><pre>이름: 대사          이름(표정): 대사
 : 나레이션           | = 줄 바꿈
 [등장 이름 자리 표정]  [퇴장 이름] · [퇴장 모두]
 [표정 이름 표정]     [이동 이름 자리]
 [깡충 이름] · [두번깡충 이름] · [흔들 이름]
-[덜덜 이름] · [꾸벅 이름] · [쿵 이름] · [멈춤]
+[덜덜 이름] · [꾸벅 이름] · [쿵 이름] · [좌우반전 이름] · [멈춤]
 설정 속도 30 …       (설정 칸과 같음)
 자리: 왼쪽 · 왼쪽2 · 가운데 · 오른쪽2 · 오른쪽</pre>
     <h4>저장</h4><p>${ED.mode === 'db' ? '고칠 때마다 서버에 저장돼요. 다른 기기에서 열어도 같고, Claude 도 읽고 고칠 수 있어요.' : '이 화면은 서버 저장소가 없어 이 브라우저에만 저장돼요.'}</p></div>`;
@@ -427,6 +433,7 @@ function edBind(){
     if (a === 'castadd'){ const id = uid('c'), n = edCastList().length; let nm = '새 인물', k = 2; while (edByName(nm)) nm = `새 인물 ${k++}`; ED.cast[id] = { id, name: nm, order: n, look: 'R', face: 'R', pitch: 520, size: 1.2, dx: 0, dy: 0, ex: [] }; ED.castSel = id; ED.exSel = null; edSave('cast', id); edEngCast(); edRenderSide(); const inp = $('#c-name'); if (inp){ inp.focus(); inp.select(); } return; }
     if (!c) return;
     if (b.dataset.look){ c.look = b.dataset.look; edSave('cast', c.id); edEngCast(); edRenderSide(); edInspect(true); return; }
+    if (b.dataset.cflip != null){ c.flip = b.dataset.cflip === '1'; edSave('cast', c.id); edEngCast(); edRenderSide(); edInspect(true); return; }
     if (b.dataset.face){ c.face = b.dataset.face; edSave('cast', c.id); edEngCast(); edRenderSide(); edInspect(true); return; }
     if (a === 'pitchplay') return engPreview(c.pitch || 520);
     if (b.dataset.exsel != null){ ED.exSel = b.dataset.exsel; ED.armed = null; edRenderSide(); edInspect(true); return; }

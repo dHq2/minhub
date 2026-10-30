@@ -1,5 +1,6 @@
-# 시나리오 편집기 v1.2
+# 시나리오 편집기 v1.3
 
+v1.3 (2026-10-30): 좌우반전 (민수: 옐로는 기본 반전 · 둘이 마주 보고 대화할 때) — 인물 칸 '기본 좌우반전' (cast.flip, 옐로 켬) · 카드 모션 줄 '↔ 좌우반전' (그 카드부터 반대로, 다시 넣으면 원래대로 · 반전 중이면 이름 옆 표시 · 돌아설 때 0.2초 납작하게) · 보는 쪽 두 줄은 '방향 자세히' 안으로 (engine.js · editor.js v1.3)
 v1.2 (2026-10-30): 연출 고침 · 모션 넣기 쉽게 (민수: 연출이 잘 안 됨 · 그 캐릭터에 어떤 모션 넣을지 정도면 됨). 카드마다 그 인물의 모션 단추 (깡충 · 두 번 깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 퇴장) · 한 박자 안 연출 순서 고정 (등장 → 말하는 사람 → 모션 → 퇴장) · 무대에 없는 인물에게 모션 → 저절로 등장 · 말하는 사람의 퇴장은 대사 뒤 · 깡충 · 흔들 크게 · '+ 연출' 의 인물 칸이 카드 인물로 시작 (engine.js · editor.js v1.2)
 v1.1 (2026-10-30): 대화 움짤 11장 (드라이브, 도감 T-ij-1~5 · T-yl-6~9 · T-ms-9~10) — 인주 5 · 옐로 4 · 모닝스타 2. 움짤 재생 (engine.js v1.1) · 인물마다 화면에서 보는 쪽 고정 (민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 옐로 정지 그림이 거꾸로 뒤집혀 나오던 것 (보는 쪽을 왼쪽으로 잘못 적었음) 고침 · 인주 임시 그림 뺌
 v1.0 (2026-10-30): 처음. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 의 재생 · 녹화를 떼어 와서, 대사 카드 · 인물 그림 편집 · 서버 저장을 얹음 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
@@ -24,8 +25,8 @@ v1.0 (2026-10-30): 처음. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0
 
 ## 저장 (아티팩트 저장소 · 자산 보관함)
 
-- `cast/<id>`: `{ name, order, look: 'R' | 'L' (그림 속), face: 'L' | 'R' | 'auto' (화면에서), pitch, size, dx, dy, ex: [{ k, src | blob, orig: { src | blob }, anim (움짤) · w · h · frames · thumb | thumbBlob (첫 장 작은 그림), crop, scale, dx, dy, look?, tmp?, fw, fh, n, cols, fps (여러 장 붙은 그림) }] }`
-- `scen/<id>`: `{ title, order, updated, opt: { 속도, 어둡기, 글자크기, 줄간격, 글자색, 이름색, 글자그림자 · 이름그림자 · 창그림자 · 인물그림자: [옆, 아래, 번짐, 색] | null, 소리, 소리크기, 주인공, 인물크기, 등장, 퇴장, 녹화fps }, beats: [{ id, kind: 'line' | 'rest', who, ex, text, mwho, fx: [{ k: in · out · ex · move · hop · hop2 · shake · tremble · bow · flinch, who, slot, ex }] }] }`
+- `cast/<id>`: `{ name, order, look: 'R' | 'L' (그림 속), face: 'L' | 'R' | 'auto' (화면에서), flip (기본 좌우반전), pitch, size, dx, dy, ex: [{ k, src | blob, orig: { src | blob }, anim (움짤) · w · h · frames · thumb | thumbBlob (첫 장 작은 그림), crop, scale, dx, dy, look?, tmp?, fw, fh, n, cols, fps (여러 장 붙은 그림) }] }`
+- `scen/<id>`: `{ title, order, updated, opt: { 속도, 어둡기, 글자크기, 줄간격, 글자색, 이름색, 글자그림자 · 이름그림자 · 창그림자 · 인물그림자: [옆, 아래, 번짐, 색] | null, 소리, 소리크기, 주인공, 인물크기, 등장, 퇴장, 녹화fps }, beats: [{ id, kind: 'line' | 'rest', who, ex, text, mwho, fx: [{ k: in · out · ex · move · hop · hop2 · shake · tremble · bow · flinch · flip, who, slot, ex }] }] }`
 - 넣은 그림은 자산 보관함 → 화면은 `/_blob/<id>`. 기본 그림은 이 폴더의 art/cast/
 - 저장소가 없는 화면 (파일로 연 경우) 에선 이 브라우저 (localStorage `scenario-editor-v1`) 에만
 

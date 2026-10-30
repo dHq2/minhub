@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* 시나리오 편집기 v1.2 — (v1.2) 카드마다 모션 단추 (그 인물에게 눌러 켜고 끔). (v1.1) 움짤 표정 · 인물마다 화면에서 보는 쪽 고정. (v1.0) 작업대: 위 띠 (시나리오 · 재생 · 녹화) · 왼쪽 대사 카드 · 가운데 미리보기 · 오른쪽 인물 / 설정
+/* 시나리오 편집기 v1.3 — (v1.3) 좌우반전 (인물 기본 · 카드). (v1.2) 카드마다 모션 단추 (그 인물에게 눌러 켜고 끔). (v1.1) 움짤 표정 · 인물마다 화면에서 보는 쪽 고정. (v1.0) 작업대: 위 띠 (시나리오 · 재생 · 녹화) · 왼쪽 대사 카드 · 가운데 미리보기 · 오른쪽 인물 / 설정
    어두운 굴 바탕 하나로 고정 (영상 미리보기가 밝은 화면에 묻히지 않게). 포인트 = 대사창 리본의 자주 · 놋쇠 */
 :root {
   color-scheme: dark;
@@ -95,6 +95,9 @@ h4 small { font: 12px var(--font-b); color: var(--dim); }
 .mots .mwho { padding: 3px 6px; font-size: 13px; }
 .mot { padding: 4px 10px; border-radius: 999px; font-size: 13px; }
 .mot.on { background: var(--plum); border-color: var(--brass); color: #fff; }
+.flipd { font: 12px var(--font-b); font-style: normal; color: var(--brass); margin-left: 4px; }
+details.more { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 4px; }
+details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padding: 4px 0; }
 .fxform { display: flex; flex-wrap: wrap; gap: 5px; background: #17141a; border-radius: var(--r); padding: 6px; }
 .fxform select { padding: 4px; font-size: 13px; }
 .addrow { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 8px; }
@@ -157,7 +160,7 @@ h4 small { font: 12px var(--font-b); color: var(--dim); }
 
 <div id="app">
   <header id="top">
-    <h1>시나리오 편집기 <small>v1.2</small></h1>
+    <h1>시나리오 편집기 <small>v1.3</small></h1>
     <div class="grp">
       <select id="s-pick" aria-label="시나리오 고르기"></select>
       <input id="s-title" aria-label="시나리오 이름" placeholder="시나리오 이름">

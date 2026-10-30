@@ -1,9 +1,10 @@
-/* engine.js v1.2 — (v1.2) 연출 고침 (민수: 연출이 잘 안 됨): 한 박자 안의 연출 순서를 등장 → 말하는 사람 → 표정 · 이동 · 모션 → 퇴장 으로 (전엔 적힌 순서라 '깡충 → 등장' 이면 깡충이 사라짐) · 무대에 없는 인물에게 모션을 주면 저절로 등장 · 이미 있는 인물의 등장은 다시 미끄러져 들어오지 않음 (자리 · 표정만) · 말하는 사람의 퇴장은 대사가 다 나온 뒤 · 깡충 · 흔들을 크게 + 모션 넷 더함 (두 번 깡충 · 덜덜 (그 박자 내내) · 꾸벅 · 쿵)
+/* engine.js v1.3 — (v1.3) 좌우반전 (민수: 옐로는 기본 반전 · 둘이 마주 보고 대화할 때): 인물마다 기본 좌우반전 (cast.flip) · 카드 연출 '좌우반전' (flip) = 그 카드부터 반대로 (다시 넣으면 원래대로), 돌아설 때 0.2초 납작하게 뒤집힘. 글 대본 [좌우반전 이름]
+   (v1.2) 연출 고침 (민수: 연출이 잘 안 됨): 한 박자 안의 연출 순서를 등장 → 말하는 사람 → 표정 · 이동 · 모션 → 퇴장 으로 (전엔 적힌 순서라 '깡충 → 등장' 이면 깡충이 사라짐) · 무대에 없는 인물에게 모션을 주면 저절로 등장 · 이미 있는 인물의 등장은 다시 미끄러져 들어오지 않음 (자리 · 표정만) · 말하는 사람의 퇴장은 대사가 다 나온 뒤 · 깡충 · 흔들을 크게 + 모션 넷 더함 (두 번 깡충 · 덜덜 (그 박자 내내) · 꾸벅 · 쿵)
    (v1.1) 움짤 (여러 장 webp) 재생 — ImageDecoder 로 장마다 풀어 화면 크기로 들고 있음 (drawImage 는 움짤 첫 장만 그려서) · 인물마다 화면에서 보는 쪽 고정 (face: L · R, 'auto' = 가운데 쪽) — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽
    (v1.0) 시나리오 편집기의 재생 엔진. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 에서 떼어 냄
    ■ 1920 × 1080 투명 캔버스: 골반까지 나오는 스탠딩 + 대사창 (art/box.webp) · 한 자씩 찍히는 글 + 전자음 · 투명 배경 webm 녹화
    ■ 진행 = '박자 시작 시각' 목록 → 같은 박자로 다시 돌려 녹화할 수 있음
-   ■ 인물 그림은 편집기가 ENG.cast 로 넣음: 이름 → { look, face, pitch, size, dx, dy, ex: { 표정: { img, anim (움짤 주소), fw, fh, n, cols, fps, crop, scale, dx, dy, look } } }
+   ■ 인물 그림은 편집기가 ENG.cast 로 넣음: 이름 → { look, face, flip (기본 좌우반전), pitch, size, dx, dy, ex: { 표정: { img, anim (움짤 주소), fw, fh, n, cols, fps, crop, scale, dx, dy, look } } }
    ■ ENG.inspect = { nm, ex } 이면 그 인물 · 표정만 세워 보여 줌 (인물 칸에서 그림 맞출 때) */
 'use strict';
 const ENG = { W: 1920, H: 1080, cv: null, cx: null, box: null, cast: {}, beats: [], warn: [], opt: null, tl: null, lastTake: null, mode: 'live', rec: null, lastFile: null,
@@ -50,6 +51,7 @@ function engCmd(s, at, warn){
   if (k === '덜덜' || k === '떨기') return { k: 'tremble', who: rest[0] };
   if (k === '꾸벅') return { k: 'bow', who: rest[0] };
   if (k === '쿵' || k === '움찔') return { k: 'flinch', who: rest[0] };
+  if (k === '좌우반전' || k === '반전' || k === '돌아보기') return { k: 'flip', who: rest[0] };
   warn.push(`${at}: [${s}] — 모르는 연출 (등장 · 퇴장 · 표정 · 이동 · 깡충 · 두번깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 멈춤)`); return null;
 }
 function engShadow(v){ if (!v || v === '없음' || v === '끄기') return null; const w = v.split(/\s+/); if (w.length < 4 || w.slice(0, 3).some(x => isNaN(+x))) return undefined; return [+w[0], +w[1], +w[2], w.slice(3).join(' ')]; }
@@ -126,7 +128,7 @@ function engApply(C, c, T){
     if (!ENG.cast[nm]) return;
     const cur0 = C[nm]; if (cur0 && cur0.outT == null){ if (c.slot && c.slot !== cur0.slot) engApply(C, { k: 'move', who: nm, slot: c.slot }, T); if (c.ex) engApply(C, { k: 'ex', who: nm, ex: c.ex }, T); return; }   // 이미 무대에 있으면 다시 들어오지 않음
     const used = new Set(Object.values(C).filter(o => o.outT == null && o.nm !== nm).map(o => o.slot)), slot = c.slot || engSlotOf(nm, used), prev = C[nm];
-    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, fx: {}, trT: null, trEnd: null, mvFrom: null, mvT: -1e9, z: ++ENG.zc };
+    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, fx: {}, trT: null, trEnd: null, flip: false, flipT: -1e9, mvFrom: null, mvT: -1e9, z: ++ENG.zc };
     return;
   }
   let o = C[nm];
@@ -136,6 +138,7 @@ function engApply(C, c, T){
   else if (c.k === 'ex'){ if (c.ex !== o.ex){ o.exPrev = o.ex; o.ex = c.ex; o.exT = T; } }
   else if (c.k === 'move'){ o.mvFrom = engX(o, T); o.x = ENG_SLOT[c.slot]; o.slot = c.slot; o.mvT = T; }
   else if (c.k === 'tremble'){ o.trT = T; o.trEnd = null; }
+  else if (c.k === 'flip'){ o.flip = !o.flip; o.flipT = T; }
   else if (ENG_MOT[c.k]) o.fx[c.k] = T;
 }
 // v1.2 모션 (한 번): 시작부터 초 → [옆, 위아래] 밀기. 덜덜은 그 박자 내내 (engScene 의 trT · trEnd)
@@ -181,7 +184,7 @@ function engDrawBox(t, L, bA, count){
 // 인물 칸: 고른 인물 · 표정만 세워 보여 줌 (말하는 모습 · 대사창 함께)
 function engDrawInspect(t){
   const I = ENG.inspect, nm = I.nm; if (!ENG.cast[nm]) return null;
-  const slot = engSlotOf(nm, new Set()), o = { nm, slot, x: ENG_SLOT[slot], inT: -1e9, outT: null, ex: I.ex || '기본', exPrev: null, exT: -1e9, fx: I.mot ? { [I.mot]: I.motT || 0 } : {}, trT: null, trEnd: null, mvFrom: null, mvT: -1e9, z: 0 };
+  const slot = engSlotOf(nm, new Set()), o = { nm, slot, x: ENG_SLOT[slot], inT: -1e9, outT: null, ex: I.ex || '기본', exPrev: null, exT: -1e9, fx: I.mot ? { [I.mot]: I.motT || 0 } : {}, trT: null, trEnd: null, flip: false, flipT: -1e9, mvFrom: null, mvT: -1e9, z: 0 };
   engDrawChar(o, t, 1);
   const L = { who: nm, text: I.text || `(${o.ex})` }; engPrep(L); engDrawBox(t, L, 1, L.ch.length);
   return null;
@@ -258,7 +261,9 @@ function engDrawChar(o, t, br){
   const want = cast.face === 'L' || cast.face === 'R' ? cast.face : x <= 960 ? 'R' : 'L', kx = engClamp((t - o.exT) / 0.16), layers = o.exPrev && kx < 1 ? [[o.exPrev, 1], [o.ex, kx]] : [[o.ex, 1]];
   layers.forEach(([ex, la], li) => {
     const E = engEx(cast, ex); if (!E) return;
-    const P = engPlace(o.nm, E, x), flip = (E.look || cast.look || 'R') !== want;
+    // 좌우반전: 그림이 보는 쪽 ≠ 화면에서 볼 쪽 → 뒤집음. 인물 기본 반전 · 카드의 좌우반전이 그 위에 한 번씩 더 (돌아서는 0.2초 동안은 반쯤에서 바뀜)
+    const fa = t - (o.flipT ?? -1e9), turning = fa >= 0 && fa < 0.2, oflip = turning && fa < 0.1 ? !o.flip : !!o.flip;
+    const P = engPlace(o.nm, E, x), flip = ((E.look || cast.look || 'R') !== want) !== !!cast.flip !== oflip, sqz = turning ? Math.max(0.04, Math.abs(1 - fa / 0.1)) : 1;
     let img = E.img, sx = 0, sy = 0, sw = P.fw, sh = P.srcH;
     if (E.anim){ const f = engAnimFrame(engAnim(E.anim, P.dh / (E.crop || 1)), t); if (f){ img = f; const k = f.height / P.fh; sw = f.width; sh = Math.round(P.srcH * k); } }
     if (!img || !(img.width > 0)) return;
@@ -270,7 +275,8 @@ function engDrawChar(o, t, br){
     g.drawImage(img, sx, sy, sw, sh, 0, 0, P.dw, P.dh); g.setTransform(1, 0, 0, 1, 0, 0);
     if (br < 0.999){ g.globalCompositeOperation = 'source-atop'; g.fillStyle = `rgba(0,0,0,${(1 - br).toFixed(3)})`; g.fillRect(0, 0, P.dw, P.dh); g.globalCompositeOperation = 'source-over'; }
     const cx = ENG.cx; cx.save(); cx.globalAlpha = alpha * la; engShadowSet(cx, opt.인물그림자);
-    cx.drawImage(oc, P.x + Math.round(ox), P.y + Math.round(oy)); cx.restore();
+    if (sqz < 1) cx.drawImage(oc, Math.round(P.x + ox + P.dw * (1 - sqz) / 2), P.y + Math.round(oy), Math.max(1, Math.round(P.dw * sqz)), P.dh);
+    else cx.drawImage(oc, P.x + Math.round(ox), P.y + Math.round(oy)); cx.restore();
   });
 }
 
