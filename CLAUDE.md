@@ -1,5 +1,6 @@
-# minhub 작업 규칙 v1.8
+# minhub 작업 규칙 v1.9
 
+v1.9 (2026-10-30): 시나리오 편집기 (scenario/) — 게시본 · 저장소 읽는 법.
 v1.8 (2026-10-10): 도감 파이프라인에 g4_extra (4기 칸 · src4 원본) 추가.
 v1.7 (2026-10-10): 도감 정리 후보 (codex/cands.json · tools/cands.py) — 지우지 않고 꼬리표만. 파이프라인 trash_apply 뒤에 cands.
 v1.6 (2026-10-10): 도감 무거운 그림 (움짤 · hi 원본) 은 자산 보관함 (blobs.js · tools/blobs.py) — 화질은 낮추지 않음 (민수: 퀄리티 유지). 쓰레기통 뒤엔 pack.py 만. 저장소 기록이 1000건 넘으면 나눠 읽기.
@@ -36,3 +37,10 @@ v1.0 (2026-10-07): 도감 관리 규칙 (민수 지시).
 
 - 인물의 동작 · 크기 · 보는 방향 · 그림을 고치면 cave-3d/src/drill.js 의 COLO_UPD 맨 앞에 묶음 하나를 더함 ({ v: 게임 버전, n: 한 줄 설명, ids: 콜로세움 명단 id — 동료 'kariusAlly' · 드라이브 명단 'h2:slug' · 옛 적 'cesar' })
 - 콜로세움 편성 창 맨 위에 노란 테두리 + '업뎃!' 표시로 뜸. 묶음이 3개를 넘으면 가장 오래된 것을 뺌
+
+## 시나리오 편집기 (scenario/) — 대사 장면 · 영상용 (민수가 직접 짜고 고침)
+
+- 게시본: https://claude.ai/artifact/X5gaaxEsXQyGXfMoi1RYnd (저장소 cast/<인물> · scen/<시나리오>, 넣은 그림은 자산 보관함 → '/_blob/' + id). 꼴은 scenario/README.md
+- 시나리오 · 인물을 고칠 땐 먼저 저장소를 읽고 (ArtifactData list cast · scen) 그 위에 고침 (if_version). 민수가 편집기에서 고친 게 최신
+- 인물 이름은 도감 본명 (marks[C-…].name). 화면 · 재생을 고치면 scenario/engine.js — 게임 안 대사 실험장 (cave-3d/src/stage.js) 은 따로
+
