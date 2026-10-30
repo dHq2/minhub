@@ -1,4 +1,5 @@
-/* editor.js v1.1 — (v1.1) 움짤 표정 (anim · w · h · thumb) · 인물마다 화면에서 보는 쪽 (face: L · R · auto — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 움짤을 넣으면 첫 장으로 작은 그림을 만들어 올림
+/* editor.js v1.2 — (v1.2) 모션 넣기 쉽게 (민수: 그 캐릭터에 어떤 모션 넣을지 정도면 됨): 카드마다 말하는 사람의 모션 단추 (깡충 · 두 번 깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 퇴장) — 누르면 켜고 끔 · 바로 미리보기. 나레이션 · 멈춤 카드는 모션 줄 인물을 고름 (b.mwho). 말하는 사람을 바꾸면 모션도 따라감. '+ 연출' 은 등장 자리 · 이동 · 다른 인물용으로, 인물 칸이 그 카드의 인물로 시작 (전엔 늘 목록 첫 사람이라 엉뚱한 인물에게 들어감)
+   (v1.1) 움짤 표정 (anim · w · h · thumb) · 인물마다 화면에서 보는 쪽 (face: L · R · auto — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 움짤을 넣으면 첫 장으로 작은 그림을 만들어 올림
    (v1.0) 시나리오 편집기 화면 · 저장 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
    ■ 왼쪽 = 대사 카드 (한 장이 한 박자: 말하는 사람 · 표정 그림 · 대사 · 연출), 가운데 = 미리보기 (engine.js), 오른쪽 = 인물 · 설정 · 쓰는 법
    ■ 저장: 아티팩트 저장소 (db) — cast/<인물> · scen/<시나리오>. 넣은 그림은 자산 보관함 (assets) → '/_blob/' + id
@@ -12,12 +13,22 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const SLOTS = ['왼쪽', '왼쪽2', '가운데', '오른쪽2', '오른쪽'];
-const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', shake: '흔들', hop: '깡충' };
+const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', hop: '깡충', hop2: '두 번 깡충', shake: '흔들', tremble: '덜덜', bow: '꾸벅', flinch: '쿵' };
+const FXT = { ...FXK, hop2: '두번깡충' };   // 글 대본에 쓰는 이름 (띄어쓰기 없이)
+const MOTS = [['hop', '깡충'], ['hop2', '두 번 깡충'], ['shake', '흔들'], ['tremble', '덜덜'], ['bow', '꾸벅'], ['flinch', '쿵'], ['out', '퇴장']];
+const MOTK = new Set(MOTS.map(m => m[0]));
 const edCastList = () => Object.values(ED.cast).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name));
 const edScenList = () => Object.values(ED.scen).sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || (a.title || '').localeCompare(b.title || ''));
 const edByName = nm => Object.values(ED.cast).find(c => c.name === nm);
 const edSc = () => ED.scen[ED.cur];
 const edUrl = e => e.blob ? '/_blob/' + e.blob : e.src;
+// 카드의 모션 줄 인물: 말하는 사람. 나레이션 · 멈춤 카드는 고른 사람 (b.mwho), 없으면 바로 앞에 말한 사람
+function edMotWho(sc, i){
+  const b = sc.beats[i]; if (b.kind === 'line' && b.who && edByName(b.who)) return b.who;
+  if (b.mwho && edByName(b.mwho)) return b.mwho;
+  for (let j = i - 1; j >= 0; j--){ const w = sc.beats[j].who; if (w && edByName(w)) return w; }
+  return (edCastList()[0] || {}).name || '';
+}
 
 /* ---------- 저장소 ---------- */
 async function edStoreInit(){
@@ -97,7 +108,7 @@ function edEngScene(keep){
 function edToText(sc){
   const L = [];
   for (const b of sc.beats){
-    for (const f of b.fx || []) L.push(f.k === 'out' && f.who === '모두' ? '[퇴장 모두]' : `[${FXK[f.k]} ${f.who}${f.slot ? ' ' + f.slot : ''}${f.ex && f.k !== 'ex' ? ' ' + f.ex : f.k === 'ex' ? ' ' + (f.ex || '기본') : ''}]`);
+    for (const f of b.fx || []) L.push(f.k === 'out' && f.who === '모두' ? '[퇴장 모두]' : `[${FXT[f.k]} ${f.who}${f.slot ? ' ' + f.slot : ''}${f.ex && f.k !== 'ex' ? ' ' + f.ex : f.k === 'ex' ? ' ' + (f.ex || '기본') : ''}]`);
     if (b.kind === 'rest') L.push('[멈춤]');
     else L.push(`${b.who || ''}${b.who && b.ex ? `(${b.ex})` : ''}: ${(b.text || '').replace(/\n/g, ' | ')}`);
   }
@@ -138,11 +149,15 @@ function edCardHtml(b, i, cur){
   if (c && (c.ex || []).length) h += `<div class="exs"><button class="exb keep${!b.ex ? ' on' : ''}" data-ex="">그대로</button>${c.ex.map(e => `<button class="exb${b.ex === e.k ? ' on' : ''}" data-ex="${esc(e.k)}" title="${esc(e.k)}">${edThumb(e)}<span>${esc(e.k)}</span></button>`).join('')}</div>`;
   if (b.kind === 'line') h += `<textarea class="txt" rows="2" placeholder="${b.who ? '대사 (Enter = 줄 바꿈)' : '나레이션'}">${esc(b.text)}</textarea>`;
   else h += `<p class="rest-note">대사창 없이 한 박자 쉼 — 등장 · 퇴장만 보여 줄 때</p>`;
-  h += `<div class="fxs">${(b.fx || []).map((f, j) => `<span class="fx">${esc(f.k === 'out' && f.who === '모두' ? '모두 퇴장' : `${FXK[f.k]} ${f.who}${f.slot ? ' · ' + f.slot : ''}${f.ex ? ' · ' + f.ex : ''}`)}<button data-fxdel="${j}" title="빼기">✕</button></span>`).join('')}<button class="addfx" data-act="fx">+ 연출</button></div>`;
+  // v1.2 모션 줄: 그 카드 인물의 모션을 눌러 켜고 끔
+  const sc = edSc(), mw = sc && edCastList().length ? edMotWho(sc, i) : '', spk = b.kind === 'line' && b.who === mw;
+  if (mw) h += `<div class="mots">${spk ? `<span class="mlab">${esc(mw)}</span>` : `<select class="mwho" aria-label="모션 줄 인물">${edCastList().map(c2 => `<option${c2.name === mw ? ' selected' : ''}>${esc(c2.name)}</option>`).join('')}</select>`}${MOTS.map(([k, l]) => `<button class="mot${(b.fx || []).some(f => f.k === k && f.who === mw) ? ' on' : ''}" data-mot="${k}" aria-pressed="${(b.fx || []).some(f => f.k === k && f.who === mw)}">${l}</button>`).join('')}</div>`;
+  const other = (b.fx || []).map((f, j) => [f, j]).filter(([f]) => !(MOTK.has(f.k) && f.who === mw));
+  h += `<div class="fxs">${other.map(([f, j]) => `<span class="fx">${esc(f.k === 'out' && f.who === '모두' ? '모두 퇴장' : `${FXK[f.k]} ${f.who}${f.slot ? ' · ' + f.slot : ''}${f.ex ? ' · ' + f.ex : ''}`)}<button data-fxdel="${j}" title="빼기">✕</button></span>`).join('')}<button class="addfx" data-act="fx">+ 등장 자리 · 이동 · 다른 인물</button></div>`;
   if (ED.fxOpen === i){
-    const names = edCastList().map(c2 => c2.name), first = names[0] || '';
+    const names = edCastList().map(c2 => c2.name), first = mw || names[0] || '';
     h += `<div class="fxform"><select class="fk">${Object.entries(FXK).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}<option value="outall">모두 퇴장</option></select>
-      <select class="fw">${names.map(n => `<option>${esc(n)}</option>`).join('')}</select>
+      <select class="fw">${names.map(n => `<option${n === first ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>
       <select class="fs"><option value="">자리 (저절로)</option>${SLOTS.map(s => `<option>${s}</option>`).join('')}</select>
       <select class="fe"><option value="">표정 (그대로)</option>${((edByName(first) || {}).ex || []).map(e => `<option>${esc(e.k)}</option>`).join('')}</select>
       <button data-act="fxadd" class="primary">넣기</button><button data-act="fxclose">닫기</button></div>`;
@@ -227,12 +242,14 @@ function edOptHtml(){
 function edHelpHtml(){
   return `<div class="help"><h4>키</h4><p>Space · → · Enter · 미리보기 누르기 = 다음 (글이 찍히는 중이면 한 번에)<br>← · Backspace = 한 박자 뒤로 · R = 처음부터 · Esc = 녹화 멈춤</p>
     <h4>카드</h4><p>카드를 누르면 미리보기가 그 장면으로 가요. ⋮⋮ 를 끌어 순서를 바꿔요. 표정은 그 인물에게 있는 그림만 보여요 ('그대로' = 앞 장면 표정 유지).</p>
+    <h4>모션</h4><p>카드 아래 단추를 누르면 그 카드 인물에게 켜지고, 다시 누르면 꺼져요. 누르면 바로 미리보기로 보여 줘요. 깡충 · 두 번 깡충 · 흔들 · 꾸벅 · 쿵은 박자가 시작될 때 한 번, 덜덜은 그 박자 내내, 퇴장은 대사가 다 나온 뒤 나가요. 나레이션 · 멈춤 카드는 단추 앞에서 인물을 골라요. 무대에 없는 인물에게 모션을 주면 저절로 등장해요. 등장 자리 · 이동 · 다른 인물 모션은 '+ 등장 자리 · 이동 · 다른 인물'.</p>
     <h4>녹화</h4><p>녹화는 늘 투명 배경 webm (1920 × 1080, 전자음 포함). ● 녹화는 빈 화면에서 시작해 Space 로 진행, 마지막 대사 뒤 Space 로 끝. ↻ 같은 박자로 녹화는 방금 Space 로 한 진행을 같은 박자로 다시 찍어요. 바탕 미리보기는 화면에만 보여요.</p>
     <h4>글로 보기</h4><pre>이름: 대사          이름(표정): 대사
 : 나레이션           | = 줄 바꿈
 [등장 이름 자리 표정]  [퇴장 이름] · [퇴장 모두]
 [표정 이름 표정]     [이동 이름 자리]
-[흔들 이름] · [깡충 이름] · [멈춤]
+[깡충 이름] · [두번깡충 이름] · [흔들 이름]
+[덜덜 이름] · [꾸벅 이름] · [쿵 이름] · [멈춤]
 설정 속도 30 …       (설정 칸과 같음)
 자리: 왼쪽 · 왼쪽2 · 가운데 · 오른쪽2 · 오른쪽</pre>
     <h4>저장</h4><p>${ED.mode === 'db' ? '고칠 때마다 서버에 저장돼요. 다른 기기에서 열어도 같고, Claude 도 읽고 고칠 수 있어요.' : '이 화면은 서버 저장소가 없어 이 브라우저에만 저장돼요.'}</p></div>`;
@@ -376,6 +393,7 @@ function edBind(){
         (bt.fx = bt.fx || []).push(fx); ED.fxOpen = -1; return edBeatChanged(i, true);
       }
       if (b.dataset.fxdel != null){ bt.fx.splice(+b.dataset.fxdel, 1); return edBeatChanged(i, true); }
+      if (b.dataset.mot){ const k = b.dataset.mot, mw = edMotWho(sc, i), j = (bt.fx = bt.fx || []).findIndex(f => f.k === k && f.who === mw); if (j >= 0) bt.fx.splice(j, 1); else bt.fx.push({ k, who: mw }); return edBeatChanged(i, true); }
       if (b.dataset.ex != null){ bt.ex = b.dataset.ex; return edBeatChanged(i, true); }
       return;
     }
@@ -388,7 +406,8 @@ function edBind(){
   });
   beats.addEventListener('change', e => {
     const sc = edSc(), card = e.target.closest('.card'); if (!sc || !card) return; const i = +card.dataset.i, bt = sc.beats[i];
-    if (e.target.classList.contains('who')){ if (e.target.value === '__custom'){ ED.customWho = i; edRenderBeats(); const inp = card.parentNode.querySelector(`.card[data-i="${i}"] .whoin`); if (inp){ inp.focus(); inp.select(); } return; } bt.who = e.target.value; bt.ex = ''; edBeatChanged(i, true); }
+    if (e.target.classList.contains('who')){ if (e.target.value === '__custom'){ ED.customWho = i; edRenderBeats(); const inp = card.parentNode.querySelector(`.card[data-i="${i}"] .whoin`); if (inp){ inp.focus(); inp.select(); } return; } const old = bt.who, nw = e.target.value; if (old && nw && edByName(nw)) for (const f of bt.fx || []) if (MOTK.has(f.k) && f.who === old) f.who = nw; bt.who = nw; bt.ex = ''; edBeatChanged(i, true); }   // v1.2 말하는 사람을 바꾸면 모션도 따라감
+    else if (e.target.classList.contains('mwho')){ bt.mwho = e.target.value; edBeatChanged(i, true); }
     else if (e.target.classList.contains('fw')){ const c = edByName(e.target.value), fe = card.querySelector('.fe'); fe.innerHTML = '<option value="">표정 (그대로)</option>' + ((c && c.ex) || []).map(x => `<option>${esc(x.k)}</option>`).join(''); }
   });
   beats.addEventListener('focusout', e => { if (e.target.classList.contains('whoin')){ ED.customWho = -1; setTimeout(edRenderBeats, 0); } });

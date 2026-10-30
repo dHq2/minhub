@@ -1,4 +1,5 @@
-/* engine.js v1.1 — (v1.1) 움짤 (여러 장 webp) 재생 — ImageDecoder 로 장마다 풀어 화면 크기로 들고 있음 (drawImage 는 움짤 첫 장만 그려서) · 인물마다 화면에서 보는 쪽 고정 (face: L · R, 'auto' = 가운데 쪽) — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽
+/* engine.js v1.2 — (v1.2) 연출 고침 (민수: 연출이 잘 안 됨): 한 박자 안의 연출 순서를 등장 → 말하는 사람 → 표정 · 이동 · 모션 → 퇴장 으로 (전엔 적힌 순서라 '깡충 → 등장' 이면 깡충이 사라짐) · 무대에 없는 인물에게 모션을 주면 저절로 등장 · 이미 있는 인물의 등장은 다시 미끄러져 들어오지 않음 (자리 · 표정만) · 말하는 사람의 퇴장은 대사가 다 나온 뒤 · 깡충 · 흔들을 크게 + 모션 넷 더함 (두 번 깡충 · 덜덜 (그 박자 내내) · 꾸벅 · 쿵)
+   (v1.1) 움짤 (여러 장 webp) 재생 — ImageDecoder 로 장마다 풀어 화면 크기로 들고 있음 (drawImage 는 움짤 첫 장만 그려서) · 인물마다 화면에서 보는 쪽 고정 (face: L · R, 'auto' = 가운데 쪽) — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽
    (v1.0) 시나리오 편집기의 재생 엔진. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 에서 떼어 냄
    ■ 1920 × 1080 투명 캔버스: 골반까지 나오는 스탠딩 + 대사창 (art/box.webp) · 한 자씩 찍히는 글 + 전자음 · 투명 배경 webm 녹화
    ■ 진행 = '박자 시작 시각' 목록 → 같은 박자로 다시 돌려 녹화할 수 있음
@@ -45,7 +46,11 @@ function engCmd(s, at, warn){
   if (k === '이동'){ if (!slot){ warn.push(`${at}: [${s}] — 자리가 없음 (왼쪽 · 왼쪽2 · 가운데 · 오른쪽2 · 오른쪽)`); return null; } return { k: 'move', who: rest[0], slot }; }
   if (k === '흔들' || k === '흔들기') return { k: 'shake', who: rest[0] };
   if (k === '깡충' || k === '점프') return { k: 'hop', who: rest[0] };
-  warn.push(`${at}: [${s}] — 모르는 연출 (등장 · 퇴장 · 표정 · 이동 · 흔들 · 깡충 · 멈춤)`); return null;
+  if (k === '두번깡충' || k === '깡충깡충') return { k: 'hop2', who: rest[0] };
+  if (k === '덜덜' || k === '떨기') return { k: 'tremble', who: rest[0] };
+  if (k === '꾸벅') return { k: 'bow', who: rest[0] };
+  if (k === '쿵' || k === '움찔') return { k: 'flinch', who: rest[0] };
+  warn.push(`${at}: [${s}] — 모르는 연출 (등장 · 퇴장 · 표정 · 이동 · 깡충 · 두번깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 멈춤)`); return null;
 }
 function engShadow(v){ if (!v || v === '없음' || v === '끄기') return null; const w = v.split(/\s+/); if (w.length < 4 || w.slice(0, 3).some(x => isNaN(+x))) return undefined; return [+w[0], +w[1], +w[2], w.slice(3).join(' ')]; }
 function engSet(opt, key, val, at, warn){
@@ -100,10 +105,15 @@ function engScene(t){
   const tl = ENG.tl, B = ENG.beats, cur = tl.base + tl.starts.length - 1, C = {}; ENG.zc = 0;
   const T = i => (i < tl.base ? -1e9 : tl.starts[i - tl.base]);
   for (let i = 0; i <= cur && i < B.length; i++){
-    const b = B[i], Ti = T(i);
-    for (const c of b.cmds) engApply(C, c, Ti);
-    const L = b.line, nm = L && L.who && engName(L.who);
+    const b = B[i], Ti = T(i), L = b.line, nm = L && L.who && engName(L.who);
+    // 새 박자: 앞 박자의 덜덜은 멈추고, 아직 안 끝난 늦은 퇴장은 지금
+    for (const o of Object.values(C)){ if (o.trT != null && o.trEnd == null && o.trT < Ti) o.trEnd = Ti; if (o.outT != null && o.outT > Ti) o.outT = Ti; }
+    // v1.2 순서: 등장 → 말하는 사람 (저절로 등장 · 표정) → 표정 · 이동 · 모션 → 퇴장
+    for (const c of b.cmds) if (c.k === 'in') engApply(C, c, Ti);
     if (nm && ENG.cast[nm]){ const o = C[nm]; if (!o || o.outT != null) engApply(C, { k: 'in', who: nm }, Ti); if (L.ex) engApply(C, { k: 'ex', who: nm, ex: L.ex }, Ti); }
+    const fill = tl.fills[i], said = L ? Math.min(fill != null ? fill : Infinity, Ti + L.dur) + 0.35 : Ti;   // 말하는 사람의 퇴장은 대사가 다 나온 뒤
+    for (const c of b.cmds) if (c.k !== 'in' && c.k !== 'out') engApply(C, c, Ti);
+    for (const c of b.cmds) if (c.k === 'out') engApply(C, c, c.who !== '모두' && engName(c.who) === nm ? said : Ti);
   }
   return { C, cur, start: cur >= tl.base ? T(cur) : null };
 }
@@ -114,17 +124,28 @@ function engApply(C, c, T){
   const nm = engName(c.who);
   if (c.k === 'in'){
     if (!ENG.cast[nm]) return;
+    const cur0 = C[nm]; if (cur0 && cur0.outT == null){ if (c.slot && c.slot !== cur0.slot) engApply(C, { k: 'move', who: nm, slot: c.slot }, T); if (c.ex) engApply(C, { k: 'ex', who: nm, ex: c.ex }, T); return; }   // 이미 무대에 있으면 다시 들어오지 않음
     const used = new Set(Object.values(C).filter(o => o.outT == null && o.nm !== nm).map(o => o.slot)), slot = c.slot || engSlotOf(nm, used), prev = C[nm];
-    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, shakeT: -1e9, hopT: -1e9, mvFrom: null, mvT: -1e9, z: ++ENG.zc };
+    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, fx: {}, trT: null, trEnd: null, mvFrom: null, mvT: -1e9, z: ++ENG.zc };
     return;
   }
-  const o = C[nm]; if (!o || o.outT != null) return;
+  let o = C[nm];
+  if ((!o || o.outT != null) && c.k !== 'out' && ENG.cast[nm]){ engApply(C, { k: 'in', who: nm, slot: c.k === 'move' ? c.slot : undefined }, T); o = C[nm]; if (c.k === 'move') return; }   // v1.2 무대에 없는 인물에게 모션 · 표정 → 저절로 등장
+  if (!o || o.outT != null) return;
   if (c.k === 'out') o.outT = T;
   else if (c.k === 'ex'){ if (c.ex !== o.ex){ o.exPrev = o.ex; o.ex = c.ex; o.exT = T; } }
   else if (c.k === 'move'){ o.mvFrom = engX(o, T); o.x = ENG_SLOT[c.slot]; o.slot = c.slot; o.mvT = T; }
-  else if (c.k === 'shake') o.shakeT = T;
-  else if (c.k === 'hop') o.hopT = T;
+  else if (c.k === 'tremble'){ o.trT = T; o.trEnd = null; }
+  else if (ENG_MOT[c.k]) o.fx[c.k] = T;
 }
+// v1.2 모션 (한 번): 시작부터 초 → [옆, 위아래] 밀기. 덜덜은 그 박자 내내 (engScene 의 trT · trEnd)
+const ENG_MOT = {
+  hop:    a => a < 0.42 ? [0, -Math.sin(Math.PI * a / 0.42) * 64] : null,
+  hop2:   a => a < 0.76 ? [0, -Math.sin(Math.PI * ((a % 0.38) / 0.38)) * (a < 0.38 ? 58 : 42)] : null,
+  shake:  a => a < 0.5 ? [Math.sin(a * 62) * 24 * (1 - a / 0.5), 0] : null,
+  bow:    a => a < 0.75 ? [0, Math.sin(Math.PI * a / 0.75) * 50] : null,
+  flinch: a => a < 0.5 ? [Math.sin(a * 85) * 12 * (1 - a / 0.5), (a < 0.07 ? a / 0.07 : Math.max(0, 1 - (a - 0.07) / 0.43)) * 34] : null,
+};
 
 /* ---------- 그리기 ---------- */
 const engShadowSet = (cx, s) => { if (s){ cx.shadowOffsetX = s[0]; cx.shadowOffsetY = s[1]; cx.shadowBlur = s[2]; cx.shadowColor = s[3]; } else { cx.shadowColor = 'rgba(0,0,0,0)'; cx.shadowBlur = 0; cx.shadowOffsetX = cx.shadowOffsetY = 0; } };
@@ -160,7 +181,7 @@ function engDrawBox(t, L, bA, count){
 // 인물 칸: 고른 인물 · 표정만 세워 보여 줌 (말하는 모습 · 대사창 함께)
 function engDrawInspect(t){
   const I = ENG.inspect, nm = I.nm; if (!ENG.cast[nm]) return null;
-  const slot = engSlotOf(nm, new Set()), o = { nm, slot, x: ENG_SLOT[slot], inT: -1e9, outT: null, ex: I.ex || '기본', exPrev: null, exT: -1e9, shakeT: -1e9, hopT: -1e9, mvFrom: null, mvT: -1e9, z: 0 };
+  const slot = engSlotOf(nm, new Set()), o = { nm, slot, x: ENG_SLOT[slot], inT: -1e9, outT: null, ex: I.ex || '기본', exPrev: null, exT: -1e9, fx: I.mot ? { [I.mot]: I.motT || 0 } : {}, trT: null, trEnd: null, mvFrom: null, mvT: -1e9, z: 0 };
   engDrawChar(o, t, 1);
   const L = { who: nm, text: I.text || `(${o.ex})` }; engPrep(L); engDrawBox(t, L, 1, L.ch.length);
   return null;
@@ -232,8 +253,8 @@ function engDrawChar(o, t, br){
   const opt = ENG.opt, eIn = engOut(engClamp((t - o.inT) / opt.등장)), eOut = o.outT == null ? 0 : engIn(engClamp((t - o.outT) / opt.퇴장));
   const x = engX(o, t), side = x < 960 ? -1 : 1, alpha = eIn * (1 - eOut); if (alpha < 0.003) return;
   let ox = side * 140 * ((1 - eIn) + eOut), oy = 0;
-  const ds = t - o.shakeT; if (ds >= 0 && ds < 0.4) ox += Math.sin(ds * 70) * 14 * (1 - ds / 0.4);
-  const dh = t - o.hopT; if (dh >= 0 && dh < 0.34) oy -= Math.sin(Math.PI * dh / 0.34) * 34;
+  for (const k in o.fx || {}){ const a = t - o.fx[k]; if (a < 0) continue; const d = ENG_MOT[k](a); if (d){ ox += d[0]; oy += d[1]; } }
+  if (o.trT != null && t >= o.trT && (o.trEnd == null || t < o.trEnd)){ ox += Math.sin(t * 95) * 4 + Math.sin(t * 61) * 2; oy += Math.sin(t * 77) * 2; }
   const want = cast.face === 'L' || cast.face === 'R' ? cast.face : x <= 960 ? 'R' : 'L', kx = engClamp((t - o.exT) / 0.16), layers = o.exPrev && kx < 1 ? [[o.exPrev, 1], [o.ex, kx]] : [[o.ex, 1]];
   layers.forEach(([ex, la], li) => {
     const E = engEx(cast, ex); if (!E) return;
