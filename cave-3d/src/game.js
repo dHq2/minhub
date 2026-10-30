@@ -1,4 +1,4 @@
-/* game.js v0.94 — (v0.94, v0.89: 옛 굴 (#lobby) · 옛 1층 (#floor) · 옛 적뢰 장면을 뺌 (민수: 쓸모없는 건 쳐냄). 모닝스타 · 노먼은 콜로세움 · 훈련장에 그대로) (v0.93, v0.86: 인주가 쓰러져 있으면 Tab 으로 보는 동료를 바꿈 (레베카 ↔ 카리우스 …) — 전엔 첫 동료만 봄) (v0.92, v0.74: 소품 묶음 그림 — preload 가 propLoad 를 기다림) (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
+/* game.js v0.95 — (v0.95, v0.95: 대사 실험장 #stage (stage.js) — 3D 그림을 읽지 않고 바로 시작) (v0.94, v0.89: 옛 굴 (#lobby) · 옛 1층 (#floor) · 옛 적뢰 장면을 뺌 (민수: 쓸모없는 건 쳐냄). 모닝스타 · 노먼은 콜로세움 · 훈련장에 그대로) (v0.93, v0.86: 인주가 쓰러져 있으면 Tab 으로 보는 동료를 바꿈 (레베카 ↔ 카리우스 …) — 전엔 첫 동료만 봄) (v0.92, v0.74: 소품 묶음 그림 — preload 가 propLoad 를 기다림) (v0.91, v0.72: 콜로세움 #colo — PLAY_MODES · 동료 생각 · 구경 속도 G.spd) (v0.90, v0.68: 포렌의 쥐 (u.king) 는 왼쪽 동료 줄에 안 넣음) (v0.89: 훈련장 #drill · 한 프레임마다 TICKS) (v0.88: 원정 중이었으면 그 층부터 이어함 · 업데이트로 저장이 지워지면 알림) (v0.87: 밀려 날아가는 놈 (shoveTick) · 돌아다니는 손님 (D.wander)) (v0.86: 판이 바뀌면 카메라 모드 원래대로) (v0.85: H는 기술표 창) (v0.84: 대련 더미가 제자리로 돌아감) (v0.83: 굴 (로비)에서도 레슬링이 돎 · 판이 바뀌면 잡기 풀림 · 지시하면 손을 듦) (v0.82: E로 줍기 · 뒤지기 · 파기는 쪼그려 앉음, 쉬기는 앉음) (v0.81: 레슬링 한 프레임 · 잡힌 인물은 생각 안 함) 장면: 프롤로그 (낙하 · 청광묵, prologue.js) → 굴 → 석문 → 원정 (expedition.js: 절차 생성 층) · 옛 1층
    주소 끝에 #lobby (옛 굴) · #cave (프롤로그 뒤 굴) · #floor (옛 1층) · #exp (원정 바로, #exp3 = 3층부터)를 붙이면 바로 그 장면부터
    v0.8: G.paused (가방 · 확인 창이 열리면 멈춤) · 무기 그림 · RPG 한 프레임 · 원정 한 프레임 */
 'use strict';
@@ -20,12 +20,12 @@ function init(){
   bindMouse(G.renderer.domElement);
   addEventListener('resize', resize); resize();
   $('ver').textContent = VERSION;
-  preload().then(() => { $('boot').remove(); startGame(); requestAnimationFrame(loop); });
+  (location.hash === '#stage' ? Promise.resolve() : preload()).then(() => { $('boot').remove(); startGame(); requestAnimationFrame(loop); });   // v0.95 대사 실험장은 3D 그림이 필요 없음
 }
 function startGame(){
   const h = location.hash;
   const ex = /^#exp(\d*)$/.exec(h);
-  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#colo' && typeof startColo === 'function') startColo(); else if (h === '#cave') startCave();
+  if (ex) expStart({ test: true, F: +ex[1] || 1 }); else if (h === '#drill' && typeof startDrill === 'function') startDrill(); else if (h === '#colo' && typeof startColo === 'function') startColo(); else if (h === '#stage' && typeof startStage === 'function') startStage(); else if (h === '#cave') startCave();
   else if (h === '#new'){ newGame(); }
   else if (typeof proHasSave === 'function' && proHasSave() && proLoad()){ const ck = typeof expHasCheckpoint === 'function' && expHasCheckpoint(); if (ck) expResume(ck); else startCave(false).then(() => caption(`${PRO.day}일째`, '굴에서 이어함 — 처음부터는 I 창 아래')); }   // v0.30 이어하기 · v0.88 원정 중이었으면 그 층부터
   else startPrologue();
