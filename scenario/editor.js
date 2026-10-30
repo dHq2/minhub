@@ -1,8 +1,9 @@
-/* editor.js v1.0 — (v1.0) 시나리오 편집기 화면 · 저장 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
+/* editor.js v1.1 — (v1.1) 움짤 표정 (anim · w · h · thumb) · 인물마다 화면에서 보는 쪽 (face: L · R · auto — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 움짤을 넣으면 첫 장으로 작은 그림을 만들어 올림
+   (v1.0) 시나리오 편집기 화면 · 저장 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
    ■ 왼쪽 = 대사 카드 (한 장이 한 박자: 말하는 사람 · 표정 그림 · 대사 · 연출), 가운데 = 미리보기 (engine.js), 오른쪽 = 인물 · 설정 · 쓰는 법
    ■ 저장: 아티팩트 저장소 (db) — cast/<인물> · scen/<시나리오>. 넣은 그림은 자산 보관함 (assets) → '/_blob/' + id
      저장소가 없는 화면 (내려받아 연 파일 등) 에선 이 브라우저 (localStorage) 에만
-   ■ 인물 = { name, order, look (그림 속 인물이 보는 쪽 R/L), pitch (전자음 Hz), size, dx, dy, ex: [{ k (표정 이름), src | blob, orig (흰 바탕 원본), crop, scale, dx, dy, look }] }
+   ■ 인물 = { name, order, look (그림 속 인물이 보는 쪽 R/L), face (화면에서 보는 쪽 L · R · auto), pitch (전자음 Hz), size, dx, dy, ex: [{ k (표정 이름), src | blob, orig (흰 바탕 원본), anim (움짤) · w · h · thumb | thumbBlob, crop, scale, dx, dy, look }] }
    ■ 시나리오 = { title, order, updated, opt (설정), beats: [{ id, kind: 'line' | 'rest', who, ex, text, fx: [{ k: in · out · ex · move · shake · hop, who, slot, ex }] }] } */
 'use strict';
 const ED = { db: null, assets: null, mode: 'local', cast: {}, scen: {}, cur: null, tab: 'cast', castSel: null, exSel: null, textMode: false, fxOpen: -1, imgs: {}, timers: {}, inflight: {}, recent: {}, got: { cast: false, scen: false },
@@ -75,14 +76,17 @@ function edEngCast(){
   const m = {};
   for (const c of Object.values(ED.cast)){
     const ex = {};
-    for (const e of c.ex || []){ const url = edUrl(e); if (!url) continue; ex[e.k] = { img: edImg(url), fw: e.fw, fh: e.fh, n: e.n, cols: e.cols, fps: e.fps, crop: e.crop ?? 1, scale: e.scale ?? 1, dx: e.dx || 0, dy: e.dy || 0, look: e.look || null }; }
-    m[c.name] = { look: c.look || 'R', pitch: c.pitch || 520, size: c.size || 1, dx: c.dx || 0, dy: c.dy || 0, ex };
+    for (const e of c.ex || []){ const url = edUrl(e); if (!url) continue; ex[e.k] = { img: edImg(url), anim: e.anim ? url : null, fw: e.anim ? e.w : e.fw, fh: e.anim ? e.h : e.fh, n: e.n, cols: e.cols, fps: e.fps, crop: e.crop ?? 1, scale: e.scale ?? 1, dx: e.dx || 0, dy: e.dy || 0, look: e.look || null }; }
+    m[c.name] = { look: c.look || 'R', face: edFace(c), pitch: c.pitch || 520, size: c.size || 1, dx: c.dx || 0, dy: c.dy || 0, ex };
   }
   ENG.cast = m;
 }
 const edEngBeat = b => ({ cmds: (b.fx || []).map(f => ({ ...f })), line: b.kind === 'rest' ? null : { who: b.who || null, ex: b.ex || null, text: (b.text || '').replace(/\s*\|\s*/g, '\n') } });
-// 표정 그림 작은 칸: 여러 장이 붙은 그림 (움직이는 임시 그림) 은 첫 장만
-const edThumb = e => e.n > 1 ? `<i class="sheet" style="background-image:url('${esc(edUrl(e))}');background-size:${(e.cols || e.n) * 100}% auto;background-position:0 ${e.crop ? '0' : '0'}"></i>` : `<img src="${esc(edUrl(e))}" alt="" loading="lazy">`;
+// 화면에서 보는 쪽: 정해 둔 게 없으면 주인공 (기본 인주) 은 왼쪽, 나머지는 오른쪽
+const edFace = c => c.face || (c.name === ((edSc() && edSc().opt && edSc().opt.주인공) || '인주') ? 'L' : 'R');
+const edThumbUrl = e => e.thumbBlob ? '/_blob/' + e.thumbBlob : e.thumb || '';
+// 표정 그림 작은 칸: 움짤은 첫 장으로 만든 작은 그림 (움짤을 칸마다 돌리면 무거움) · 여러 장이 붙은 그림 (움직이는 임시 그림) 은 첫 장만
+const edThumb = e => edThumbUrl(e) ? `<img src="${esc(edThumbUrl(e))}" alt="" loading="lazy">` : e.n > 1 ? `<i class="sheet" style="background-image:url('${esc(edUrl(e))}');background-size:${(e.cols || e.n) * 100}% auto;background-position:0 ${e.crop ? '0' : '0'}"></i>` : `<img src="${esc(edUrl(e))}" alt="" loading="lazy">`;
 function edEngScene(keep){
   const sc = edSc(), cur = engCur();
   engSetScene(sc ? sc.beats.map(edEngBeat) : [], sc ? sc.opt : {});
@@ -173,25 +177,26 @@ function edRenderSide(){
 const rng = (id, label, v, min, max, step, unit = '') => `<label class="rng"><span>${label}</span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${v}"><output for="${id}">${v}${unit}</output></label>`;
 function edCastHtml(){
   const L = edCastList(), c = ED.cast[ED.castSel];
-  let h = `<div class="castbar">${L.map(x => `<button class="chip${x.id === ED.castSel ? ' on' : ''}" data-cast="${esc(x.id)}">${x.ex && x.ex[0] && !(x.ex[0].n > 1) ? `<img src="${esc(edUrl(x.ex[0]))}" alt="">` : ''}${esc(x.name)}</button>`).join('')}<button class="chip add" data-act="castadd">+ 인물</button></div>`;
+  let h = `<div class="castbar">${L.map(x => `<button class="chip${x.id === ED.castSel ? ' on' : ''}" data-cast="${esc(x.id)}">${x.ex && x.ex[0] && (edThumbUrl(x.ex[0]) || !(x.ex[0].n > 1)) ? `<img src="${esc(edThumbUrl(x.ex[0]) || edUrl(x.ex[0]))}" alt="">` : ''}${esc(x.name)}</button>`).join('')}<button class="chip add" data-act="castadd">+ 인물</button></div>`;
   if (!L.length) return h + `<div class="empty"><b>인물이 없어요</b><p>+ 인물로 만들고 표정 그림을 넣어요.</p></div>`;
   if (!c) return h + `<p class="tip">인물을 고르면 이름 · 보는 쪽 · 전자음 · 크기와 표정 그림을 고칠 수 있어요.</p>`;
   const e = (c.ex || []).find(x => x.k === ED.exSel);
   h += `<div class="cform">
     <label class="txtf"><span>이름</span><input id="c-name" value="${esc(c.name)}"></label>
+    <div class="row seg"><span>화면에서 보는 쪽</span><button data-face="L" class="${edFace(c) === 'L' ? 'on' : ''}">← 왼쪽</button><button data-face="R" class="${edFace(c) === 'R' ? 'on' : ''}">오른쪽 →</button><button data-face="auto" class="${edFace(c) === 'auto' ? 'on' : ''}">가운데 쪽</button></div>
     <div class="row seg"><span>그림 속 인물이 보는 쪽</span><button data-look="R" class="${(c.look || 'R') === 'R' ? 'on' : ''}">오른쪽 →</button><button data-look="L" class="${c.look === 'L' ? 'on' : ''}">← 왼쪽</button></div>
-    <p class="tip">화면에선 늘 가운데 쪽을 보게 저절로 뒤집어요.</p>
+    <p class="tip">그림이 보는 쪽과 화면에서 보는 쪽이 다르면 좌우로 뒤집어요. ‘가운데 쪽’ 은 자리에 따라 저절로.</p>
     <div class="row">${rng('c-pitch', '전자음 높이', c.pitch || 520, 150, 1200, 10, 'Hz')}<button data-act="pitchplay" title="들어 보기">▶</button></div>
     ${rng('c-size', '크기', c.size || 1, 0.4, 2.5, 0.01)}${rng('c-dx', '옆', c.dx || 0, -600, 600, 1)}${rng('c-dy', '위아래', c.dy || 0, -600, 600, 1)}
     <h4>표정 그림 <small>(앞의 것이 기본)</small></h4>
-    <div class="exgrid">${(c.ex || []).map(x => `<button class="ext${x.k === ED.exSel ? ' on' : ''}" data-exsel="${esc(x.k)}">${edThumb(x)}<span>${esc(x.k)}${x.tmp ? ' (임시)' : ''}</span></button>`).join('')}
+    <div class="exgrid">${(c.ex || []).map(x => `<button class="ext${x.k === ED.exSel ? ' on' : ''}" data-exsel="${esc(x.k)}">${edThumb(x)}<span>${esc(x.k)}${x.tmp ? ' (임시)' : ''}${x.anim ? ' ▶' : ''}</span></button>`).join('')}
       <button class="ext add" data-act="expick"><b>+</b><span>그림 넣기</span></button></div>
     <p class="tip">파일을 이 칸에 끌어다 놓아도 돼요. 파일 이름이 표정 이름 (예: 놀람.png · 모닝스타_놀람.png)</p>`;
   if (e) h += `<div class="exform"><h4>‘${esc(e.k)}’ 그림</h4>
     <label class="txtf"><span>표정 이름</span><input id="e-name" value="${esc(e.k)}"></label>
     ${rng('e-scale', '이 그림 크기', e.scale ?? 1, 0.3, 2.5, 0.01)}${rng('e-dx', '옆', e.dx || 0, -600, 600, 1)}${rng('e-dy', '위아래', e.dy || 0, -600, 600, 1)}${rng('e-crop', '아래 자르기 (보일 비율)', e.crop ?? 1, 0.3, 1, 0.01)}
     <div class="row seg"><span>보는 쪽</span><button data-elook="" class="${!e.look ? 'on' : ''}">인물 따라</button><button data-elook="R" class="${e.look === 'R' ? 'on' : ''}">오른쪽</button><button data-elook="L" class="${e.look === 'L' ? 'on' : ''}">왼쪽</button></div>
-    <div class="row"><button data-act="exfirst">기본으로 (맨 앞)</button><button data-act="exwb">흰 바탕 지우기…</button><button data-act="exdel" class="warn${ED.armed === 'exdel' ? ' armed' : ''}">${ED.armed === 'exdel' ? '정말 뺄까요?' : '이 그림 빼기'}</button></div>
+    <div class="row"><button data-act="exfirst">기본으로 (맨 앞)</button>${e.anim ? `<span class="tip">움짤 ${e.w} × ${e.h}${e.frames ? ` · ${e.frames}장` : ''}</span>` : '<button data-act="exwb">흰 바탕 지우기…</button>'}<button data-act="exdel" class="warn${ED.armed === 'exdel' ? ' armed' : ''}">${ED.armed === 'exdel' ? '정말 뺄까요?' : '이 그림 빼기'}</button></div>
     <p class="tip">미리보기에서 그림을 끌면 옮겨지고, 휠로 크기가 바뀌어요.</p></div>`;
   h += `<div class="row end"><button data-act="castdel" class="warn${ED.armed === 'castdel' ? ' armed' : ''}">${ED.armed === 'castdel' ? '정말 지울까요? (대사는 남음)' : '인물 지우기'}</button></div></div>`;
   return h;
@@ -269,6 +274,18 @@ function edRenameCast(c, nm){
   }
   return true;
 }
+// 움짤인지 (장 수 2 이상) · 크기 · 첫 장으로 만든 작은 그림. ImageDecoder 가 없으면 보통 그림으로
+async function edAnimInfo(f){
+  if (typeof ImageDecoder === 'undefined' || !/^image\/(webp|gif|png)$/.test(f.type)) return null;
+  try {
+    const d = new ImageDecoder({ data: await f.arrayBuffer(), type: f.type }); await d.tracks.ready;
+    const n = d.tracks.selectedTrack.frameCount; if (n < 2){ d.close(); return null; }
+    const { image } = await d.decode({ frameIndex: 0 }), w = image.displayWidth, h = image.displayHeight, th = 300, cv = document.createElement('canvas');
+    cv.height = th; cv.width = Math.max(1, Math.round(w * th / h)); cv.getContext('2d').drawImage(image, 0, 0, cv.width, th); image.close(); d.close();
+    const thumb = await new Promise(r => cv.toBlob(r, 'image/webp', 0.85));
+    return { n, w, h, thumb };
+  } catch (e){ return null; }
+}
 async function edAddImages(files){
   const c = ED.cast[ED.castSel]; if (!c){ edStatus('먼저 오른쪽에서 인물을 골라요'); return; }
   const imgs = [...files].filter(f => /^image\//.test(f.type)); if (!imgs.length) return;
@@ -279,8 +296,9 @@ async function edAddImages(files){
     if (!k) k = '기본'; let k2 = k, m = 2; while ((c.ex || []).some(x => x.k === k2)) k2 = `${k} ${m++}`;
     const e = { k: k2, crop: 1, scale: 1, dx: 0, dy: 0 };
     edStatus(`그림 올리는 중… (${n + 1}/${imgs.length})`);
-    if (ED.assets){ try { const r = await ED.assets.upload(f, /^image\/(png|jpeg|gif|webp)$/.test(f.type) ? undefined : { type: 'image/png' }); e.blob = r.id; } catch (er){ edStatus(er && er.code === 'too_large' ? '그림이 20MB 를 넘어요' : er && er.code === 'quota_or_state' ? '보관함이 찼어요' : '그림을 못 올렸어요 — 다시 해 주세요'); continue; } }
-    else { e.src = URL.createObjectURL(f); e.local = true; }
+    const an = await edAnimInfo(f); if (an){ e.anim = true; e.w = an.w; e.h = an.h; e.frames = an.n; }
+    if (ED.assets){ try { const r = await ED.assets.upload(f, /^image\/(png|jpeg|gif|webp)$/.test(f.type) ? undefined : { type: 'image/png' }); e.blob = r.id; if (an && an.thumb){ try { e.thumbBlob = (await ED.assets.upload(an.thumb)).id; } catch (er) {} } } catch (er){ edStatus(er && er.code === 'too_large' ? '그림이 20MB 를 넘어요' : er && er.code === 'quota_or_state' ? '보관함이 찼어요' : '그림을 못 올렸어요 — 다시 해 주세요'); continue; } }
+    else { e.src = URL.createObjectURL(f); e.local = true; if (an && an.thumb) e.thumb = URL.createObjectURL(an.thumb); }
     (c.ex = c.ex || []).push(e); n++; ED.exSel = e.k;
   }
   if (n){ edSave('cast', c.id); edEngCast(); edRenderSide(); edRenderBeats(); edInspect(true); if (!ED.assets) edStatus('이 화면에선 그림이 저장되지 않아요 (새로 고치면 사라짐)'); }
@@ -387,9 +405,10 @@ function edBind(){
     const b = e.target.closest('button'); if (!b) return; engAudio();
     const c = ED.cast[ED.castSel], a = b.dataset.act;
     if (b.dataset.cast){ ED.castSel = b.dataset.cast; const c2 = ED.cast[ED.castSel]; ED.exSel = c2 && c2.ex && c2.ex[0] ? c2.ex[0].k : null; ED.armed = null; edRenderSide(); edInspect(true); return; }
-    if (a === 'castadd'){ const id = uid('c'), n = edCastList().length; let nm = '새 인물', k = 2; while (edByName(nm)) nm = `새 인물 ${k++}`; ED.cast[id] = { id, name: nm, order: n, look: 'R', pitch: 520, size: 1.2, dx: 0, dy: 0, ex: [] }; ED.castSel = id; ED.exSel = null; edSave('cast', id); edEngCast(); edRenderSide(); const inp = $('#c-name'); if (inp){ inp.focus(); inp.select(); } return; }
+    if (a === 'castadd'){ const id = uid('c'), n = edCastList().length; let nm = '새 인물', k = 2; while (edByName(nm)) nm = `새 인물 ${k++}`; ED.cast[id] = { id, name: nm, order: n, look: 'R', face: 'R', pitch: 520, size: 1.2, dx: 0, dy: 0, ex: [] }; ED.castSel = id; ED.exSel = null; edSave('cast', id); edEngCast(); edRenderSide(); const inp = $('#c-name'); if (inp){ inp.focus(); inp.select(); } return; }
     if (!c) return;
     if (b.dataset.look){ c.look = b.dataset.look; edSave('cast', c.id); edEngCast(); edRenderSide(); edInspect(true); return; }
+    if (b.dataset.face){ c.face = b.dataset.face; edSave('cast', c.id); edEngCast(); edRenderSide(); edInspect(true); return; }
     if (a === 'pitchplay') return engPreview(c.pitch || 520);
     if (b.dataset.exsel != null){ ED.exSel = b.dataset.exsel; ED.armed = null; edRenderSide(); edInspect(true); return; }
     if (a === 'expick') return $('#f-img').click();
@@ -460,7 +479,7 @@ function edBind(){
   $('#wbdlg').addEventListener('input', e => { if (e.target.id === 'wb-tol'){ $('#wb-tolv').textContent = e.target.value; } if (/^wb-/.test(e.target.id)) edWbRun(); });
   $('#wbcv').addEventListener('click', e => { const W = ED.wb; if (!W || !W.out) return; const r = e.target.getBoundingClientRect(), x = (e.clientX - r.left) * W.out.width / r.width, y = (e.clientY - r.top) * W.out.height / r.height; (W.tool === 'erase' ? W.seeds : W.keeps).push([x, y]); W.hist.push(W.tool); edWbUi(); edWbRun(); });
 }
-function edOptChanged(){ edTouch(); const cur = engCur(); edEngScene(); if (cur >= 0) engJump(cur, true); }
+function edOptChanged(){ edTouch(); const cur = engCur(); edEngCast(); edEngScene(); if (cur >= 0) engJump(cur, true); }
 
 /* ---------- 시작 ---------- */
 function edBoot(){

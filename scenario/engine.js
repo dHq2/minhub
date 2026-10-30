@@ -1,7 +1,8 @@
-/* engine.js v1.0 — (v1.0) 시나리오 편집기의 재생 엔진. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 에서 떼어 냄
+/* engine.js v1.1 — (v1.1) 움짤 (여러 장 webp) 재생 — ImageDecoder 로 장마다 풀어 화면 크기로 들고 있음 (drawImage 는 움짤 첫 장만 그려서) · 인물마다 화면에서 보는 쪽 고정 (face: L · R, 'auto' = 가운데 쪽) — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽
+   (v1.0) 시나리오 편집기의 재생 엔진. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 에서 떼어 냄
    ■ 1920 × 1080 투명 캔버스: 골반까지 나오는 스탠딩 + 대사창 (art/box.webp) · 한 자씩 찍히는 글 + 전자음 · 투명 배경 webm 녹화
    ■ 진행 = '박자 시작 시각' 목록 → 같은 박자로 다시 돌려 녹화할 수 있음
-   ■ 인물 그림은 편집기가 ENG.cast 로 넣음: 이름 → { look, pitch, size, dx, dy, ex: { 표정: { img, fw, fh, n, cols, fps, crop, scale, dx, dy, look } } }
+   ■ 인물 그림은 편집기가 ENG.cast 로 넣음: 이름 → { look, face, pitch, size, dx, dy, ex: { 표정: { img, anim (움짤 주소), fw, fh, n, cols, fps, crop, scale, dx, dy, look } } }
    ■ ENG.inspect = { nm, ex } 이면 그 인물 · 표정만 세워 보여 줌 (인물 칸에서 그림 맞출 때) */
 'use strict';
 const ENG = { W: 1920, H: 1080, cv: null, cx: null, box: null, cast: {}, beats: [], warn: [], opt: null, tl: null, lastTake: null, mode: 'live', rec: null, lastFile: null,
@@ -140,6 +141,7 @@ function engDraw(t){
   const on = L ? 1 : 0, pOn = B[prevI] && B[prevI].line ? 1 : 0, bA = S.start == null ? on : pOn + (on - pOn) * engClamp((t - S.start) / 0.2);
   const count = L ? engCount(L, t - S.start, tl.fills[cur] <= t) : 0;
   if (bA > 0.003) engDrawBox(t, L, bA, count);
+  engWarmBeat(B[cur + 1], S.C);
   return { cur, L, count };
 }
 function engDrawBox(t, L, bA, count){
@@ -175,9 +177,53 @@ function engWrap(cx, ch, maxW){
   }
   rows.push([s, ch.length]); return rows;
 }
+/* ---------- v1.1 움짤 (여러 장 webp · gif · apng) ----------
+   브라우저의 drawImage 는 움짤의 첫 장만 그림 → ImageDecoder 로 장마다 풀어 화면에 필요한 높이로 줄여 들고 있음 (화질은 화면 크기 그대로).
+   더 크게 보여야 하면 다시 풀고, 15초 동안 안 쓴 움짤은 비움. ImageDecoder 가 없는 브라우저는 첫 장 (그림 그대로) */
+const ENG_ANIM = {};
+const engEx = (cast, ex) => cast.ex[ex] || cast.ex['기본'] || Object.values(cast.ex)[0] || null;
+function engAnim(url, needH){
+  let A = ENG_ANIM[url];
+  if (A && A.st === 'ok' && A.done && needH > A.h * 1.15 && A.h < A.fullH){ engAnimFree(A); A = null; }   // 더 크게 보임 → 더 크게 다시 풂
+  if (!A){ A = ENG_ANIM[url] = { st: 'load', frames: [], durs: [], n: 0, got: 0, h: 0, fullH: 0, need: needH, used: 0 }; engAnimLoad(url, A); }
+  A.used = engNow(); return A;
+}
+async function engAnimLoad(url, A){
+  try {
+    if (typeof ImageDecoder === 'undefined') throw new Error('no ImageDecoder');
+    const res = await fetch(url); if (!res.ok) throw new Error('http ' + res.status);
+    const ct = (res.headers.get('content-type') || '').split(';')[0].trim(), type = /^image\//.test(ct) ? ct : /\.gif(\?|$)/i.test(url) ? 'image/gif' : /\.png(\?|$)/i.test(url) ? 'image/png' : 'image/webp';
+    const dec = new ImageDecoder({ data: await res.arrayBuffer(), type });
+    await dec.tracks.ready; const n = dec.tracks.selectedTrack.frameCount; A.n = n; A.durs = new Array(n).fill(100);
+    for (let i = 0; i < n && !A.dead; i++){
+      const { image } = await dec.decode({ frameIndex: i });
+      A.fullH = image.displayHeight; const h = Math.min(A.fullH, Math.max(480, Math.ceil(A.need * 1.05))), w = Math.max(1, Math.round(image.displayWidth * h / A.fullH));
+      A.durs[i] = image.duration ? image.duration / 1000 : 100;
+      const bm = await createImageBitmap(image, { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' }); image.close();
+      if (A.dead){ bm.close(); break; }
+      A.frames[i] = bm; A.h = h; A.got = i + 1; if (i === 0) A.st = 'ok';
+    }
+    dec.close(); A.total = A.durs.reduce((a, b) => a + b, 0); A.done = true;
+  } catch (e){ A.st = 'fail'; }
+}
+function engAnimFrame(A, t){
+  if (!A || A.st !== 'ok' || !A.got) return null;
+  const total = A.total || A.durs.reduce((a, b) => a + b, 0) || 100; let ms = (t * 1000) % total, i = 0;
+  while (i < A.n - 1 && ms >= A.durs[i]){ ms -= A.durs[i]; i++; }
+  return A.frames[Math.min(i, A.got - 1)];
+}
+function engAnimFree(A){ A.dead = true; for (const f of A.frames) if (f) try { f.close(); } catch (e) {} A.frames = []; for (const k in ENG_ANIM) if (ENG_ANIM[k] === A) delete ENG_ANIM[k]; }
+function engAnimGc(t){ for (const A of Object.values(ENG_ANIM)) if (t - A.used > 15) engAnimFree(A); }
+// 다음 박자에 나올 표정 움짤을 미리 풀어 둠 (바뀌는 순간 첫 장이 늦게 뜨지 않게)
+function engWarmBeat(b, C){
+  if (!b) return; const want = [];
+  if (b.line && b.line.who) want.push([engName(b.line.who), b.line.ex || (C[engName(b.line.who)] || {}).ex || '기본']);
+  for (const c of b.cmds) if ((c.k === 'in' || c.k === 'ex') && c.who !== '모두') want.push([engName(c.who), c.ex || '기본']);
+  for (const [nm, ex] of want){ const cast = ENG.cast[nm], E = cast && engEx(cast, ex); if (E && E.anim){ const P = engPlace(nm, E, 960); engAnim(E.anim, P.dh / (E.crop || 1)); } }
+}
 // 한 표정 그림이 화면에 놓이는 자리 (인물 칸에서 끌어 옮길 때도 씀)
 function engPlace(nm, E, x){
-  const c = ENG.cast[nm], fw = E.fw || E.img.width, fh = E.fh || E.img.height, crop = E.crop || 1, srcH = fh * crop;
+  const c = ENG.cast[nm], fw = E.fw || (E.img && E.img.width) || 1, fh = E.fh || (E.img && E.img.height) || 1, crop = E.crop || 1, srcH = fh * crop;
   const k = ENG_VH * ENG.opt.인물크기 * (c.size || 1) * (E.scale || 1) / srcH, dw = Math.round(fw * k), dh = Math.round(srcH * k);
   return { fw, fh, srcH, dw, dh, x: Math.round(x - dw / 2 + (c.dx || 0) + (E.dx || 0)), y: Math.round(ENG.H - dh + (c.dy || 0) + (E.dy || 0)) };
 }
@@ -188,16 +234,19 @@ function engDrawChar(o, t, br){
   let ox = side * 140 * ((1 - eIn) + eOut), oy = 0;
   const ds = t - o.shakeT; if (ds >= 0 && ds < 0.4) ox += Math.sin(ds * 70) * 14 * (1 - ds / 0.4);
   const dh = t - o.hopT; if (dh >= 0 && dh < 0.34) oy -= Math.sin(Math.PI * dh / 0.34) * 34;
-  const want = x <= 960 ? 'R' : 'L', kx = engClamp((t - o.exT) / 0.16), layers = o.exPrev && kx < 1 ? [[o.exPrev, 1], [o.ex, kx]] : [[o.ex, 1]];
+  const want = cast.face === 'L' || cast.face === 'R' ? cast.face : x <= 960 ? 'R' : 'L', kx = engClamp((t - o.exT) / 0.16), layers = o.exPrev && kx < 1 ? [[o.exPrev, 1], [o.ex, kx]] : [[o.ex, 1]];
   layers.forEach(([ex, la], li) => {
-    const E = cast.ex[ex] || cast.ex['기본'] || Object.values(cast.ex)[0]; if (!E || !E.img || !(E.img.width > 0)) return;
+    const E = engEx(cast, ex); if (!E) return;
     const P = engPlace(o.nm, E, x), flip = (E.look || cast.look || 'R') !== want;
-    let sx = 0, sy = 0; if (E.n > 1){ const fi = Math.floor(t * (E.fps || 8)) % E.n, cols = E.cols || E.n; sx = (fi % cols) * P.fw; sy = Math.floor(fi / cols) * P.fh; }
+    let img = E.img, sx = 0, sy = 0, sw = P.fw, sh = P.srcH;
+    if (E.anim){ const f = engAnimFrame(engAnim(E.anim, P.dh / (E.crop || 1)), t); if (f){ img = f; const k = f.height / P.fh; sw = f.width; sh = Math.round(P.srcH * k); } }
+    if (!img || !(img.width > 0)) return;
+    if (E.n > 1 && !E.anim){ const fi = Math.floor(t * (E.fps || 8)) % E.n, cols = E.cols || E.n; sx = (fi % cols) * P.fw; sy = Math.floor(fi / cols) * P.fh; }
     const oc = ENG.oc[o.nm + '|' + li] || (ENG.oc[o.nm + '|' + li] = document.createElement('canvas'));
     if (oc.width !== P.dw || oc.height !== P.dh){ oc.width = P.dw; oc.height = P.dh; }
     const g = oc.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, P.dw, P.dh); g.imageSmoothingQuality = 'high';
     if (flip) g.setTransform(-1, 0, 0, 1, P.dw, 0);
-    g.drawImage(E.img, sx, sy, P.fw, P.srcH, 0, 0, P.dw, P.dh); g.setTransform(1, 0, 0, 1, 0, 0);
+    g.drawImage(img, sx, sy, sw, sh, 0, 0, P.dw, P.dh); g.setTransform(1, 0, 0, 1, 0, 0);
     if (br < 0.999){ g.globalCompositeOperation = 'source-atop'; g.fillStyle = `rgba(0,0,0,${(1 - br).toFixed(3)})`; g.fillRect(0, 0, P.dw, P.dh); g.globalCompositeOperation = 'source-over'; }
     const cx = ENG.cx; cx.save(); cx.globalAlpha = alpha * la; engShadowSet(cx, opt.인물그림자);
     cx.drawImage(oc, P.x + Math.round(ox), P.y + Math.round(oy)); cx.restore();
@@ -279,6 +328,7 @@ async function engInit(cv){
     let fr = null; try { fr = engDraw(t); } catch (e){ if (!ENG.drawErr){ ENG.drawErr = 1; console.error(e); } }
     if (!ENG.inspect) engSound(fr);
     const cur = engCur(); if (cur !== ENG.lastCur){ ENG.lastCur = cur; ENG.onBeat && ENG.onBeat(cur); }
+    if (t - (ENG.gcT || 0) > 3){ ENG.gcT = t; engAnimGc(t); }
   };
   requestAnimationFrame(loop);
 }
