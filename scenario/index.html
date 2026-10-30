@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* 시나리오 편집기 v1.3 — (v1.3) 좌우반전 (인물 기본 · 카드). (v1.2) 카드마다 모션 단추 (그 인물에게 눌러 켜고 끔). (v1.1) 움짤 표정 · 인물마다 화면에서 보는 쪽 고정. (v1.0) 작업대: 위 띠 (시나리오 · 재생 · 녹화) · 왼쪽 대사 카드 · 가운데 미리보기 · 오른쪽 인물 / 설정
+/* 시나리오 편집기 v1.4 — (v1.4) 녹화 = 박자 기록 → ⬇ 내보내기 (MP4 · PNG 묶음 · GIF) · 가장자리로 · 제자리로. (v1.3) 좌우반전 (인물 기본 · 카드). (v1.2) 카드마다 모션 단추 (그 인물에게 눌러 켜고 끔). (v1.1) 움짤 표정 · 인물마다 화면에서 보는 쪽 고정. (v1.0) 작업대: 위 띠 (시나리오 · 재생 · 녹화) · 왼쪽 대사 카드 · 가운데 미리보기 · 오른쪽 인물 / 설정
    어두운 굴 바탕 하나로 고정 (영상 미리보기가 밝은 화면에 묻히지 않게). 포인트 = 대사창 리본의 자주 · 놋쇠 */
 :root {
   color-scheme: dark;
@@ -138,6 +138,17 @@ details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padd
 .help p { margin: 4px 0; color: #d7cebf; }
 .help pre { font: 12px/1.6 var(--font-m); white-space: pre-wrap; background: #100d12; border-radius: var(--r); padding: 8px; color: #d7cebf; overflow-x: auto; }
 
+/* 내보내기 창 */
+#expdlg { position: fixed; inset: 0; z-index: 21; background: rgba(8, 6, 10, .78); display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.ex-box { width: min(620px, 100%); max-height: 100%; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.ex-box > header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font: 400 18px var(--font-d); }
+.ex-body { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+.ex-body .chk { flex-wrap: wrap; }
+#ex-hold { width: 64px; }
+#ex-bgc { width: 40px; height: 30px; padding: 0 2px; background: none; border: 1px solid var(--line); border-radius: var(--r); }
+.ex-bar { height: 8px; border-radius: 4px; background: #100d12; overflow: hidden; margin-top: 6px; }
+.ex-bar i { display: block; height: 100%; width: 0; background: var(--brass); transition: width .2s; }
+
 /* 흰 바탕 지우기 창 */
 #wbdlg { position: fixed; inset: 0; z-index: 20; background: rgba(8, 6, 10, .78); display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .wb-box { width: min(1100px, 100%); max-height: 100%; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -160,14 +171,14 @@ details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padd
 
 <div id="app">
   <header id="top">
-    <h1>시나리오 편집기 <small>v1.3</small></h1>
+    <h1>시나리오 편집기 <small>v1.4</small></h1>
     <div class="grp">
       <select id="s-pick" aria-label="시나리오 고르기"></select>
       <input id="s-title" aria-label="시나리오 이름" placeholder="시나리오 이름">
       <button data-act="snew">＋ 새 시나리오</button><button data-act="sdup">복제</button><button data-act="sdel" class="warn">지우기</button>
     </div>
     <div class="grp">
-      <button data-act="play">▶ 처음부터 <kbd>R</kbd></button><button data-act="rec" class="rec">● 녹화</button><button data-act="rerec">↻ 같은 박자로 녹화</button><button data-act="redl" disabled>⬇ 다시 저장</button>
+      <button data-act="play">▶ 처음부터 <kbd>R</kbd></button><button data-act="rec" class="rec">● 녹화</button><button data-act="exp" class="primary">⬇ 내보내기 (MP4 · PNG · GIF)</button>
     </div>
     <div class="grp">
       <label class="sel" for="bg-pick"><span>바탕</span></label>
@@ -179,7 +190,7 @@ details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padd
     <section id="beats" aria-label="대사 카드"></section>
     <section id="stage">
       <div class="frame"><canvas id="cv" class="bg-check" width="1920" height="1080" aria-label="미리보기 (누르면 다음)"></canvas><div id="hint"></div><div id="recbadge" hidden></div><div id="loading">불러오는 중…</div></div>
-      <p class="keys"><kbd>Space</kbd> 다음 · <kbd>←</kbd> 뒤로 · <kbd>R</kbd> 처음부터 · <kbd>Esc</kbd> 녹화 멈춤 — 녹화는 늘 투명 배경, 바탕 색은 화면에만</p>
+      <p class="keys"><kbd>Space</kbd> 다음 · <kbd>←</kbd> 뒤로 · <kbd>R</kbd> 처음부터 · <kbd>Esc</kbd> 녹화 멈춤 — 바탕 색은 화면에만 (내보낼 때 따로 고름)</p>
     </section>
     <aside id="side">
       <nav id="tabs"><button data-tab="cast">인물</button><button data-tab="opt">설정</button><button data-tab="help">쓰는 법</button></nav>
@@ -187,6 +198,26 @@ details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padd
       <input type="file" id="f-img" accept="image/*" multiple hidden>
     </aside>
   </main>
+</div>
+
+<div id="expdlg" hidden role="dialog" aria-modal="true" aria-labelledby="exp-title">
+  <div class="ex-box">
+    <header><b id="exp-title">내보내기 — 에펙에 넣을 파일</b><button data-x="close" aria-label="닫기">✕</button></header>
+    <div class="ex-body">
+      <h4>박자</h4>
+      <label class="chk"><input type="radio" name="ex-take" value="rec" id="ex-take-rec"> <span id="ex-rec-l">방금 녹화한 박자</span></label>
+      <label class="chk"><input type="radio" name="ex-take" value="auto" id="ex-take-auto"> 자동 — 글이 다 나온 뒤 <input type="number" id="ex-hold" value="1.5" step="0.1" min="0.2" max="10" aria-label="쉬는 초"> 초 쉬고 다음 카드</label>
+      <h4>형식</h4>
+      <div class="row seg"><button data-fmt="mp4">MP4</button><button data-fmt="png">PNG 묶음 (투명)</button><button data-fmt="gif">GIF (투명)</button></div>
+      <div class="row seg" id="ex-mp4"><span>바탕 색</span><button data-bg="#00b140">초록</button><button data-bg="#0047bb">파랑</button><button data-bg="#000000">검정</button><button data-bg="#ffffff">흰색</button><input type="color" id="ex-bgc" aria-label="바탕 색 직접"></div>
+      <div class="row seg" id="ex-gif"><span>크기</span><button data-scale="0.5">50% (960 × 540)</button><button data-scale="1">100% (1920 × 1080)</button></div>
+      <div class="row seg" id="ex-fpsrow"><span>프레임</span><button data-fps="24">24fps</button><button data-fps="30">30fps</button><button data-fps="60">60fps</button></div>
+      <p class="tip" id="ex-tip"></p>
+      <div class="row"><button data-x="go" class="primary">만들기</button><button data-x="stop" class="warn" hidden>그만</button><button data-x="save" hidden>⬇ 다시 저장</button><button data-x="snd" hidden>⬇ 전자음 (sound.wav)</button></div>
+      <div class="ex-bar"><i id="ex-bar"></i></div>
+      <p class="tip" id="ex-msg" role="status"></p>
+    </div>
+  </div>
 </div>
 
 <div id="wbdlg" hidden role="dialog" aria-modal="true" aria-labelledby="wb-title">
@@ -212,7 +243,8 @@ details.more summary { cursor: pointer; color: var(--dim); font-size: 13px; padd
   </div>
 </div>
 
-<script src="fix_webm.js"></script>
+<script src="lib/mp4-muxer.js"></script>
 <script src="wb.js"></script>
 <script src="engine.js"></script>
+<script src="export.js"></script>
 <script src="editor.js"></script>

@@ -1,4 +1,5 @@
-/* editor.js v1.3 — (v1.3) 좌우반전 (민수): 인물 칸의 '기본 좌우반전' (cast.flip, 옐로는 켜 둠) · 카드 모션 줄의 '↔ 좌우반전' = 그 카드부터 반대로 (다시 넣으면 원래대로), 반전 중이면 이름 옆에 표시 · 보는 쪽 두 줄은 '방향 자세히' 안으로
+/* editor.js v1.4 — (v1.4) 녹화는 박자만 기록하고 ⬇ 내보내기 창에서 MP4 · PNG 묶음 (투명) · GIF (투명) 로 만듦 (민수: 에펙에서 씀) · 박자 기록이 없으면 자동 박자 · 모션 '가장자리로 · 제자리로' + 자리 '왼쪽끝 · 오른쪽끝' (민수: 화면 끝으로 비켜 가운데를 비움)
+   (v1.3) 좌우반전 (민수): 인물 칸의 '기본 좌우반전' (cast.flip, 옐로는 켜 둠) · 카드 모션 줄의 '↔ 좌우반전' = 그 카드부터 반대로 (다시 넣으면 원래대로), 반전 중이면 이름 옆에 표시 · 보는 쪽 두 줄은 '방향 자세히' 안으로
    (v1.2) 모션 넣기 쉽게 (민수: 그 캐릭터에 어떤 모션 넣을지 정도면 됨): 카드마다 말하는 사람의 모션 단추 (깡충 · 두 번 깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 퇴장) — 누르면 켜고 끔 · 바로 미리보기. 나레이션 · 멈춤 카드는 모션 줄 인물을 고름 (b.mwho). 말하는 사람을 바꾸면 모션도 따라감. '+ 연출' 은 등장 자리 · 이동 · 다른 인물용으로, 인물 칸이 그 카드의 인물로 시작 (전엔 늘 목록 첫 사람이라 엉뚱한 인물에게 들어감)
    (v1.1) 움짤 표정 (anim · w · h · thumb) · 인물마다 화면에서 보는 쪽 (face: L · R · auto — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽) · 움짤을 넣으면 첫 장으로 작은 그림을 만들어 올림
    (v1.0) 시나리오 편집기 화면 · 저장 (민수: 일러스트까지 편집할 수 있는 시나리오 편집기)
@@ -13,10 +14,10 @@ const ED = { db: null, assets: null, mode: 'local', cast: {}, scen: {}, cur: nul
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const SLOTS = ['왼쪽', '왼쪽2', '가운데', '오른쪽2', '오른쪽'];
-const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', hop: '깡충', hop2: '두 번 깡충', shake: '흔들', tremble: '덜덜', bow: '꾸벅', flinch: '쿵', flip: '좌우반전' };
+const SLOTS = ['왼쪽끝', '왼쪽', '왼쪽2', '가운데', '오른쪽2', '오른쪽', '오른쪽끝'];
+const FXK = { in: '등장', out: '퇴장', ex: '표정', move: '이동', hop: '깡충', hop2: '두 번 깡충', shake: '흔들', tremble: '덜덜', bow: '꾸벅', flinch: '쿵', flip: '좌우반전', edge: '가장자리로', home: '제자리로' };
 const FXT = { ...FXK, hop2: '두번깡충' };   // 글 대본에 쓰는 이름 (띄어쓰기 없이)
-const MOTS = [['hop', '깡충'], ['hop2', '두 번 깡충'], ['shake', '흔들'], ['tremble', '덜덜'], ['bow', '꾸벅'], ['flinch', '쿵'], ['flip', '↔ 좌우반전'], ['out', '퇴장']];
+const MOTS = [['hop', '깡충'], ['hop2', '두 번 깡충'], ['shake', '흔들'], ['tremble', '덜덜'], ['bow', '꾸벅'], ['flinch', '쿵'], ['flip', '↔ 좌우반전'], ['edge', '⇤ 가장자리로'], ['home', '제자리로'], ['out', '퇴장']];
 // 그 카드에 들어올 때 이 인물이 (카드의 좌우반전으로) 반대로 서 있는지 — 퇴장하면 원래대로
 function edFlipped(sc, i, nm){ let f = false; for (let j = 0; j < i; j++) for (const x of sc.beats[j].fx || []){ if (x.k === 'out' && (x.who === nm || x.who === '모두')) f = false; else if (x.k === 'flip' && x.who === nm) f = !f; } return f; }
 const MOTK = new Set(MOTS.map(m => m[0]));
@@ -104,7 +105,7 @@ const edThumb = e => edThumbUrl(e) ? `<img src="${esc(edThumbUrl(e))}" alt="" lo
 function edEngScene(keep){
   const sc = edSc(), cur = engCur();
   engSetScene(sc ? sc.beats.map(edEngBeat) : [], sc ? sc.opt : {});
-  if (keep && cur >= 0 && sc && cur < sc.beats.length && !ENG.rec) engJump(cur, true);
+  if (keep && cur >= 0 && sc && cur < sc.beats.length && !ENG.taking && !ENG.busy) engJump(cur, true);
 }
 
 /* ---------- 글 대본 ↔ 카드 ---------- */
@@ -127,10 +128,9 @@ function edRenderTop(){
   const pick = $('#s-pick'), L = edScenList();
   pick.innerHTML = L.length ? L.map(s => `<option value="${esc(s.id)}"${s.id === ED.cur ? ' selected' : ''}>${esc(s.title || '이름 없음')}</option>`).join('') : '<option value="">시나리오 없음</option>';
   const sc = edSc(); $('#s-title').value = sc ? sc.title || '' : ''; $('#s-title').disabled = !sc;
-  for (const a of ['sdup', 'sdel', 'play', 'rec', 'rerec']) $(`[data-act="${a}"]`).disabled = !sc || (a !== 'sdup' && a !== 'sdel' && !!ENG.rec);
-  $('[data-act="redl"]').disabled = !ENG.lastFile;
+  for (const a of ['sdup', 'sdel', 'play', 'rec', 'exp']) $(`[data-act="${a}"]`).disabled = !sc || (a !== 'sdup' && a !== 'sdel' && (ENG.taking || ENG.busy));
   $('[data-act="sdel"]').textContent = ED.armed === 'sdel' ? '정말 지울까요?' : '지우기';
-  $('#recbadge').hidden = !ENG.rec; $('#recbadge').textContent = ENG.mode === 'replay' ? '● 녹화 중 (같은 박자로)' : '● 녹화 중';
+  $('#recbadge').hidden = !ENG.taking; $('#recbadge').textContent = '● 녹화 중 — Space 박자 기록';
 }
 
 /* ---------- 그리기: 대사 카드 ---------- */
@@ -248,8 +248,9 @@ function edOptHtml(){
 function edHelpHtml(){
   return `<div class="help"><h4>키</h4><p>Space · → · Enter · 미리보기 누르기 = 다음 (글이 찍히는 중이면 한 번에)<br>← · Backspace = 한 박자 뒤로 · R = 처음부터 · Esc = 녹화 멈춤</p>
     <h4>카드</h4><p>카드를 누르면 미리보기가 그 장면으로 가요. ⋮⋮ 를 끌어 순서를 바꿔요. 표정은 그 인물에게 있는 그림만 보여요 ('그대로' = 앞 장면 표정 유지).</p>
-    <h4>모션</h4><p>카드 아래 단추를 누르면 그 카드 인물에게 켜지고, 다시 누르면 꺼져요. 누르면 바로 미리보기로 보여 줘요. 깡충 · 두 번 깡충 · 흔들 · 꾸벅 · 쿵은 박자가 시작될 때 한 번, 덜덜은 그 박자 내내, 퇴장은 대사가 다 나온 뒤 나가요. ↔ 좌우반전은 그 카드부터 반대로 돌아서고 (둘이 마주 볼 때), 뒤 카드에서 한 번 더 넣으면 원래대로 — 반전 중이면 이름 옆에 ‘↔ 반전 중’.</p><p>인물을 늘 뒤집어 세우려면 인물 칸의 ‘기본 좌우반전’. 나레이션 · 멈춤 카드는 단추 앞에서 인물을 골라요. 무대에 없는 인물에게 모션을 주면 저절로 등장해요. 등장 자리 · 이동 · 다른 인물 모션은 '+ 등장 자리 · 이동 · 다른 인물'.</p>
-    <h4>녹화</h4><p>녹화는 늘 투명 배경 webm (1920 × 1080, 전자음 포함). ● 녹화는 빈 화면에서 시작해 Space 로 진행, 마지막 대사 뒤 Space 로 끝. ↻ 같은 박자로 녹화는 방금 Space 로 한 진행을 같은 박자로 다시 찍어요. 바탕 미리보기는 화면에만 보여요.</p>
+    <h4>모션</h4><p>카드 아래 단추를 누르면 그 카드 인물에게 켜지고, 다시 누르면 꺼져요. 누르면 바로 미리보기로 보여 줘요. ⇤ 가장자리로는 그 인물이 서 있는 쪽 화면 끝으로 걸어가 가운데를 비우고, 제자리로는 처음 선 자리로 돌아와요. 깡충 · 두 번 깡충 · 흔들 · 꾸벅 · 쿵은 박자가 시작될 때 한 번, 덜덜은 그 박자 내내, 퇴장은 대사가 다 나온 뒤 나가요. ↔ 좌우반전은 그 카드부터 반대로 돌아서고 (둘이 마주 볼 때), 뒤 카드에서 한 번 더 넣으면 원래대로 — 반전 중이면 이름 옆에 ‘↔ 반전 중’.</p><p>인물을 늘 뒤집어 세우려면 인물 칸의 ‘기본 좌우반전’. 나레이션 · 멈춤 카드는 단추 앞에서 인물을 골라요. 무대에 없는 인물에게 모션을 주면 저절로 등장해요. 등장 자리 · 이동 · 다른 인물 모션은 '+ 등장 자리 · 이동 · 다른 인물'.</p>
+    <h4>녹화 · 내보내기</h4><p>● 녹화는 빈 화면에서 시작해 Space 로 진행하며 박자 (누른 때) 만 적어 둬요. 마지막 대사 뒤 Space (또는 Esc) 로 끝나면 내보내기 창이 떠요. 파일은 그 박자대로 한 장씩 다시 그려 만들어서 끊기지 않아요. 녹화 없이 ⬇ 내보내기를 누르면 자동 박자 (글이 다 나온 뒤 몇 초 쉬고 다음).</p>
+    <p>MP4 — 에펙에 바로, 전자음 포함. 투명이 안 돼서 바탕 색을 깔아요 (초록이면 Keylight 로 빼요).<br>PNG 묶음 (.zip) — 투명 그대로, 에펙에서 가장 깔끔. 파일 > 가져오기 > 첫 장 고르고 'PNG 시퀀스' 체크. 전자음은 sound.wav.<br>GIF — 투명 (가장자리가 조금 계단져요), 소리 없음.</p>
     <h4>글로 보기</h4><pre>이름: 대사          이름(표정): 대사
 : 나레이션           | = 줄 바꿈
 [등장 이름 자리 표정]  [퇴장 이름] · [퇴장 모두]
@@ -257,14 +258,15 @@ function edHelpHtml(){
 [깡충 이름] · [두번깡충 이름] · [흔들 이름]
 [덜덜 이름] · [꾸벅 이름] · [쿵 이름] · [좌우반전 이름] · [멈춤]
 설정 속도 30 …       (설정 칸과 같음)
-자리: 왼쪽 · 왼쪽2 · 가운데 · 오른쪽2 · 오른쪽</pre>
+[가장자리로 이름] · [제자리로 이름]
+자리: 왼쪽끝 · 왼쪽 · 왼쪽2 · 가운데 · 오른쪽2 · 오른쪽 · 오른쪽끝</pre>
     <h4>저장</h4><p>${ED.mode === 'db' ? '고칠 때마다 서버에 저장돼요. 다른 기기에서 열어도 같고, Claude 도 읽고 고칠 수 있어요.' : '이 화면은 서버 저장소가 없어 이 브라우저에만 저장돼요.'}</p></div>`;
 }
 function edRefresh(){ edEngCast(); edEngScene(true); edRenderTop(); edRenderBeats(); edRenderSide(); edInspect(); }
 // 인물 칸에서 인물 · 표정을 고르면 미리보기에 그 인물만
 function edInspect(on){
   const c = ED.cast[ED.castSel];
-  if (on === false || ED.tab !== 'cast' || !c || ENG.rec){ ENG.inspect = null; return; }
+  if (on === false || ED.tab !== 'cast' || !c || ENG.taking || ENG.busy){ ENG.inspect = null; return; }
   if (on === true || ENG.inspect) ENG.inspect = { nm: c.name, ex: ED.exSel || (c.ex && c.ex[0] && c.ex[0].k) || '기본' };
 }
 
@@ -367,9 +369,8 @@ function edBind(){
     else if (a === 'sdup'){ const sc = edSc(); if (!sc) return; const id = uid('s'), o = JSON.parse(JSON.stringify(sc)); o.id = id; o.title = (sc.title || '') + ' 복사'; o.order = Math.max(...edScenList().map(s => s.order ?? 0)) + 1; o.updated = Date.now(); ED.scen[id] = o; ED.cur = id; edSave('scen', id); edAfterScen(); }
     else if (a === 'sdel'){ if (ED.armed !== 'sdel'){ ED.armed = 'sdel'; edRenderTop(); setTimeout(() => { if (ED.armed === 'sdel'){ ED.armed = null; edRenderTop(); } }, 3500); return; } ED.armed = null; const id = ED.cur; delete ED.scen[id]; edSave('scen', id); ED.cur = (edScenList()[0] || {}).id || null; edAfterScen(); }
     else if (a === 'play'){ edInspect(false); engReset(0, false); engHint('Space 로 시작'); }
-    else if (a === 'rec'){ edInspect(false); edEngScene(); engRecStart(false); edRenderTop(); }
-    else if (a === 'rerec'){ edInspect(false); engRecStart(true); edRenderTop(); }
-    else if (a === 'redl' && ENG.lastFile) engDownload(ENG.lastFile.blob, ENG.lastFile.name);
+    else if (a === 'rec'){ edInspect(false); edEngScene(); engTakeStart(); edRenderTop(); }
+    else if (a === 'exp') edExpOpen();
   });
   $('#s-pick').addEventListener('change', e => { ED.cur = e.target.value || null; edAfterScen(); });
   $('#s-title').addEventListener('input', e => { const sc = edSc(); if (!sc) return; sc.title = e.target.value; edTouch(); clearTimeout(ED.titleTm); ED.titleTm = setTimeout(() => { const o = $('#s-pick').selectedOptions[0]; if (o) o.textContent = sc.title || '이름 없음'; }, 200); });
@@ -484,13 +485,14 @@ function edBind(){
   // 키
   addEventListener('keydown', e => {
     if (!$('#wbdlg').hidden){ if (e.key === 'Escape') edWbClose(); return; }
+    if (!$('#expdlg').hidden){ if (e.key === 'Escape' && !EXP.busy) $('#expdlg').hidden = true; return; }
     const tg = e.target; if (tg && tg.closest && tg.closest('input,textarea,select,[contenteditable]')){ if (e.key === 'Escape') tg.blur(); return; }
     if (e.repeat) return;
     const k = e.code;
     if (k === 'Space' || k === 'Enter' || k === 'NumpadEnter' || k === 'ArrowRight'){ e.preventDefault(); engAudio(); edInspect(false); engNext(); }
     else if (k === 'ArrowLeft' || k === 'Backspace'){ e.preventDefault(); edInspect(false); engBack(); }
-    else if (k === 'KeyR' && !ENG.rec){ edInspect(false); engReset(0, false); engHint('Space 로 시작'); }
-    else if (k === 'Escape' && ENG.rec){ e.preventDefault(); engRecStop(0); }
+    else if (k === 'KeyR' && !ENG.taking){ edInspect(false); engReset(0, false); engHint('Space 로 시작'); }
+    else if (k === 'Escape' && ENG.taking){ e.preventDefault(); engTakeStop(); }
   });
   // 흰 바탕 지우기 창
   $('#wbdlg').addEventListener('click', e => {
@@ -506,6 +508,63 @@ function edBind(){
   $('#wbcv').addEventListener('click', e => { const W = ED.wb; if (!W || !W.out) return; const r = e.target.getBoundingClientRect(), x = (e.clientX - r.left) * W.out.width / r.width, y = (e.clientY - r.top) * W.out.height / r.height; (W.tool === 'erase' ? W.seeds : W.keeps).push([x, y]); W.hist.push(W.tool); edWbUi(); edWbRun(); });
 }
 function edOptChanged(){ edTouch(); const cur = engCur(); edEngCast(); edEngScene(); if (cur >= 0) engJump(cur, true); }
+
+/* ---------- v1.4 내보내기 창 (export.js) ---------- */
+const EXO = (() => { try { return Object.assign({ take: 'rec', hold: 1.5, fmt: 'mp4', bg: '#00b140', fps: 30, scale: 0.5 }, JSON.parse(localStorage.getItem('scenario-exp-v1') || '{}')); } catch (e){ return { take: 'rec', hold: 1.5, fmt: 'mp4', bg: '#00b140', fps: 30, scale: 0.5 }; } })();
+const EX_TIP = { mp4: 'MP4 — 에펙에 바로 들어가요. 전자음 포함. MP4 는 투명이 안 돼서 바탕 색을 깔아요 (초록이면 에펙 Keylight 로 빼요).',
+  png: 'PNG 묶음 (.zip) — 투명 그대로, 에펙에서 가장 깔끔해요. 파일 > 가져오기 > 첫 장 고르고 ‘PNG 시퀀스’ 체크. 전자음은 sound.wav 로 같이 들어 있어요. 파일이 아주 커요 (30fps 로 1초에 40MB 쯤 — 24fps 면 조금 작아요).',
+  gif: 'GIF — 투명 (가장자리가 조금 계단져요) · 소리 없음 · 25fps. 크기 50% 면 가볍고 100% 면 무거워요.' };
+function edExpSave(){ try { localStorage.setItem('scenario-exp-v1', JSON.stringify(EXO)); } catch (e) {} }
+function edExpUi(){
+  const has = !!(ENG.recTake && ENG.recTake.starts && ENG.recTake.starts.length);
+  if (!has && EXO.take === 'rec') EXO.take = 'auto';
+  $('#ex-take-rec').disabled = !has; $('#ex-take-rec').checked = EXO.take === 'rec'; $('#ex-take-auto').checked = EXO.take === 'auto';
+  $('#ex-rec-l').textContent = has ? `방금 녹화한 박자 (카드 ${ENG.recTake.starts.length}장 · ${Math.round((engTakeEnd(ENG.recTake) - ENG.recTake.starts[0]) * 10) / 10}초)` : '방금 녹화한 박자 (아직 없음 — 위의 ● 녹화)';
+  $('#ex-hold').value = EXO.hold;
+  document.querySelectorAll('#expdlg [data-fmt]').forEach(b => b.classList.toggle('on', b.dataset.fmt === EXO.fmt));
+  document.querySelectorAll('#expdlg [data-bg]').forEach(b => b.classList.toggle('on', b.dataset.bg === EXO.bg)); $('#ex-bgc').value = EXO.bg;
+  document.querySelectorAll('#expdlg [data-scale]').forEach(b => b.classList.toggle('on', +b.dataset.scale === EXO.scale));
+  document.querySelectorAll('#expdlg [data-fps]').forEach(b => b.classList.toggle('on', +b.dataset.fps === EXO.fps));
+  $('#ex-mp4').hidden = EXO.fmt !== 'mp4'; $('#ex-gif').hidden = EXO.fmt !== 'gif'; $('#ex-fpsrow').hidden = EXO.fmt === 'gif';
+  $('#ex-tip').textContent = EX_TIP[EXO.fmt];
+  const busy = EXP.busy; $('[data-x="snd"]').hidden = busy || !(EXP.lastFile && EXP.lastFile.snd); $('[data-x="go"]').hidden = busy; $('[data-x="stop"]').hidden = !busy; $('[data-x="save"]').hidden = busy || !EXP.lastFile;
+  $('[data-x="save"]').textContent = EXP.lastFile ? `⬇ 다시 저장 (${EXP.lastFile.name.split('.').pop().toUpperCase()})` : '⬇ 다시 저장';
+}
+function edExpOpen(take){ if (take) EXO.take = take; edInspect(false); $('#expdlg').hidden = false; $('#ex-msg').textContent = ''; $('#ex-bar').style.width = '0%'; edExpUi(); }
+async function edExpGo(){
+  edExpSave(); const sc = edSc(); if (!sc){ $('#ex-msg').textContent = '시나리오를 먼저 골라요'; return; }
+  edEngScene(); $('#ex-msg').textContent = '준비 중…'; const t0 = performance.now();
+  const p = expRun({ fmt: EXO.fmt, take: EXO.take, hold: EXO.hold, fps: EXO.fps, bg: EXO.bg, scale: EXO.scale }, (k, msg) => { $('#ex-bar').style.width = Math.round(k * 100) + '%'; $('#ex-msg').textContent = `만드는 중 ${Math.round(k * 100)}% · ${msg}`; });
+  edExpUi(); edRenderTop();
+  try {
+    const f = await p; edExpUi(); edRenderTop();
+    if (!f) return;
+    const mb = f.blob.size / 1048576;
+    $('#ex-msg').textContent = `다 됐어요 — ${f.name} · ${f.sec.toFixed(1)}초 · ${f.frames}장 · ${mb >= 10 ? Math.round(mb) : mb.toFixed(1)}MB${f.sound ? ' · 전자음 포함' : f.snd ? ' · 이 브라우저는 MP4 에 소리를 못 넣어서 전자음은 따로 (⬇ 전자음)' : EXO.fmt === 'gif' ? '' : ' · 소리 없음'} (${Math.round((performance.now() - t0) / 1000)}초 걸림)`;
+    await engDownload(f.blob, f.name);
+  } catch (e){ edExpUi(); edRenderTop(); $('#ex-msg').textContent = '못 만들었어요 — ' + (e && e.message || e); }
+}
+function edExpBind(){
+  const dlg = $('#expdlg');
+  dlg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.fmt){ EXO.fmt = b.dataset.fmt; edExpSave(); edExpUi(); }
+    else if (b.dataset.bg){ EXO.bg = b.dataset.bg; edExpSave(); edExpUi(); }
+    else if (b.dataset.scale){ EXO.scale = +b.dataset.scale; edExpSave(); edExpUi(); }
+    else if (b.dataset.fps){ EXO.fps = +b.dataset.fps; edExpSave(); edExpUi(); }
+    else if (b.dataset.x === 'go') edExpGo();
+    else if (b.dataset.x === 'stop') EXP.stop = true;
+    else if (b.dataset.x === 'save' && EXP.lastFile) engDownload(EXP.lastFile.blob, EXP.lastFile.name);
+    else if (b.dataset.x === 'snd' && EXP.lastFile && EXP.lastFile.snd) engDownload(EXP.lastFile.snd.blob, EXP.lastFile.snd.name);
+    else if (b.dataset.x === 'close' && !EXP.busy) dlg.hidden = true;
+  });
+  dlg.addEventListener('change', e => {
+    const t = e.target;
+    if (t.name === 'ex-take'){ EXO.take = t.value; edExpSave(); }
+    else if (t.id === 'ex-hold'){ EXO.hold = Math.max(0.2, Math.min(10, +t.value || 1.5)); edExpSave(); }
+    else if (t.id === 'ex-bgc'){ EXO.bg = t.value; edExpSave(); edExpUi(); }
+  });
+}
 
 /* ---------- 시작 ---------- */
 function edBoot(){
@@ -524,8 +583,9 @@ function edBoot(){
   $('#cv').className = 'bg-' + ED.bg; $('#bg-pick').value = ED.bg;
   ENG.onHint = msg => { const el = $('#hint'); el.textContent = msg; el.classList.add('show'); clearTimeout(ED.hintTm); ED.hintTm = setTimeout(() => el.classList.remove('show'), 3200); };
   ENG.onRec = () => { edRenderTop(); };
+  ENG.onTake = tk => { edRenderTop(); if (tk) edExpOpen('rec'); };
   ENG.onBeat = cur => { if (ED.ready && !ED.textMode) edMarkPlay(cur); };
-  edBind();
+  edBind(); edExpBind();
   await engInit($('#cv'));
   await edStoreInit();
 })();

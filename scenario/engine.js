@@ -1,4 +1,5 @@
-/* engine.js v1.3 — (v1.3) 좌우반전 (민수: 옐로는 기본 반전 · 둘이 마주 보고 대화할 때): 인물마다 기본 좌우반전 (cast.flip) · 카드 연출 '좌우반전' (flip) = 그 카드부터 반대로 (다시 넣으면 원래대로), 돌아설 때 0.2초 납작하게 뒤집힘. 글 대본 [좌우반전 이름]
+/* engine.js v1.4 — (v1.4) 녹화 = 박자 기록 (Space 를 누른 때) · 파일은 export.js 가 한 장씩 다시 그려 MP4 · PNG 묶음 · GIF 로 (민수: 에펙에서 씀 — 실시간 webm 녹화는 뺌) · 그리기를 시간 하나로만 (ENG.busy 동안 화면 돌기 멈춤 · 움짤이 다 풀릴 때까지 기다릴 수 있게 renderUsed · ready) · 전자음 한 소리 engBlipAt · 소리 내는 때 engSoundStep (내보내기와 같은 셈) · 자리 '왼쪽끝 · 오른쪽끝' + 연출 '가장자리로 · 제자리로' (민수: 화면 끝으로 비켜 가운데를 비움) · 이동은 거리만큼 오래 걸리며 걷듯 출렁임
+   (v1.3) 좌우반전 (민수: 옐로는 기본 반전 · 둘이 마주 보고 대화할 때): 인물마다 기본 좌우반전 (cast.flip) · 카드 연출 '좌우반전' (flip) = 그 카드부터 반대로 (다시 넣으면 원래대로), 돌아설 때 0.2초 납작하게 뒤집힘. 글 대본 [좌우반전 이름]
    (v1.2) 연출 고침 (민수: 연출이 잘 안 됨): 한 박자 안의 연출 순서를 등장 → 말하는 사람 → 표정 · 이동 · 모션 → 퇴장 으로 (전엔 적힌 순서라 '깡충 → 등장' 이면 깡충이 사라짐) · 무대에 없는 인물에게 모션을 주면 저절로 등장 · 이미 있는 인물의 등장은 다시 미끄러져 들어오지 않음 (자리 · 표정만) · 말하는 사람의 퇴장은 대사가 다 나온 뒤 · 깡충 · 흔들을 크게 + 모션 넷 더함 (두 번 깡충 · 덜덜 (그 박자 내내) · 꾸벅 · 쿵)
    (v1.1) 움짤 (여러 장 webp) 재생 — ImageDecoder 로 장마다 풀어 화면 크기로 들고 있음 (drawImage 는 움짤 첫 장만 그려서) · 인물마다 화면에서 보는 쪽 고정 (face: L · R, 'auto' = 가운데 쪽) — 민수: 인주는 늘 왼쪽, 나머지는 늘 오른쪽
    (v1.0) 시나리오 편집기의 재생 엔진. 3D 게임 대사 실험장 (cave-3d/src/stage.js v1.0) 에서 떼어 냄
@@ -7,9 +8,9 @@
    ■ 인물 그림은 편집기가 ENG.cast 로 넣음: 이름 → { look, face, flip (기본 좌우반전), pitch, size, dx, dy, ex: { 표정: { img, anim (움짤 주소), fw, fh, n, cols, fps, crop, scale, dx, dy, look } } }
    ■ ENG.inspect = { nm, ex } 이면 그 인물 · 표정만 세워 보여 줌 (인물 칸에서 그림 맞출 때) */
 'use strict';
-const ENG = { W: 1920, H: 1080, cv: null, cx: null, box: null, cast: {}, beats: [], warn: [], opt: null, tl: null, lastTake: null, mode: 'live', rec: null, lastFile: null,
-  ac: null, master: null, recDest: null, blipBeat: -1, blipN: 0, lastBlip: 0, oc: {}, zc: 0, cw: {}, inspect: null, onHint: null, onRec: null, onBeat: null, lastCur: -2 };
-const ENG_SLOT = { 왼쪽: 400, 왼쪽2: 720, 가운데: 960, 오른쪽2: 1200, 오른쪽: 1520 };
+const ENG = { W: 1920, H: 1080, cv: null, cx: null, box: null, cast: {}, beats: [], warn: [], opt: null, tl: null, lastTake: null, recTake: null, taking: false, busy: false, renderUsed: null, lastFile: null,
+  ac: null, master: null, blipBeat: -1, blipN: 0, lastBlip: 0, oc: {}, zc: 0, cw: {}, inspect: null, onHint: null, onRec: null, onTake: null, onBeat: null, lastCur: -2 };
+const ENG_SLOT = { 왼쪽끝: 230, 왼쪽: 400, 왼쪽2: 720, 가운데: 960, 오른쪽2: 1200, 오른쪽: 1520, 오른쪽끝: 1690 };
 const ENG_BOX = { src: 'art/box.webp', w: 1560, h: 348, x: 180, y: 720, nameX: 267, nameY: 66, nameW: 310, textX: 100, textY: 132, textW: 1290, triX: 1429, triY: 259 };
 const ENG_VH = 820;   // 인물 크기 1 일 때 보이는 높이 (머리 ~ 자른 곳)
 const ENG_OPT0 = () => ({ 속도: 30, 어둡기: 0.55, 글자크기: 48, 줄간격: 58, 글자색: '#2b2420', 이름색: '#f1e8d8', 글자그림자: null, 이름그림자: null, 창그림자: [0, 10, 26, 'rgba(0,0,0,0.45)'], 인물그림자: null,
@@ -52,6 +53,8 @@ function engCmd(s, at, warn){
   if (k === '꾸벅') return { k: 'bow', who: rest[0] };
   if (k === '쿵' || k === '움찔') return { k: 'flinch', who: rest[0] };
   if (k === '좌우반전' || k === '반전' || k === '돌아보기') return { k: 'flip', who: rest[0] };
+  if (k === '가장자리로' || k === '가장자리' || k === '끝으로') return { k: 'edge', who: rest[0] };
+  if (k === '제자리로' || k === '제자리') return { k: 'home', who: rest[0] };
   warn.push(`${at}: [${s}] — 모르는 연출 (등장 · 퇴장 · 표정 · 이동 · 깡충 · 두번깡충 · 흔들 · 덜덜 · 꾸벅 · 쿵 · 멈춤)`); return null;
 }
 function engShadow(v){ if (!v || v === '없음' || v === '끄기') return null; const w = v.split(/\s+/); if (w.length < 4 || w.slice(0, 3).some(x => isNaN(+x))) return undefined; return [+w[0], +w[1], +w[2], w.slice(3).join(' ')]; }
@@ -87,24 +90,26 @@ function engSetScene(beats, opt){
 /* ---------- 박자 (Space) ---------- */
 function engReset(base, startNow){ ENG.tl = { base, starts: startNow ? [engNow()] : [], fills: {}, end: null }; if (startNow) ENG.lastTake = ENG.tl; ENG.blipBeat = -1; }
 // i 번째 박자를 바로 보여 줌 (편집 중 카드를 누를 때). fill = 글을 한 번에
-function engJump(i, fill){ if (ENG.mode === 'replay') return; i = Math.max(0, Math.min(ENG.beats.length - 1, i)); engReset(i, true); if (fill) ENG.tl.fills[i] = engNow(); ENG.blipBeat = i; ENG.blipN = 1e9; }
+function engJump(i, fill){ if (ENG.busy) return; i = Math.max(0, Math.min(ENG.beats.length - 1, i)); engReset(i, true); if (fill) ENG.tl.fills[i] = engNow(); ENG.blipBeat = i; ENG.blipN = 1e9; }
 function engNext(){
-  if (ENG.mode === 'replay' || !ENG.beats.length) return;
+  if (ENG.busy || !ENG.beats.length) return;
   const t = engNow(), tl = ENG.tl, n = tl.starts.length, cur = tl.base + n - 1;
   if (!n){ tl.starts.push(t); ENG.lastTake = tl; return; }
   const L = ENG.beats[cur] && ENG.beats[cur].line;
   if (L && !(tl.fills[cur] <= t) && t - tl.starts[n - 1] < L.dur){ tl.fills[cur] = t; return; }
   if (cur + 1 < ENG.beats.length){ tl.starts.push(t); return; }
   if (tl.end == null) tl.end = t;
-  if (ENG.rec && ENG.rec.live) engRecStop(0.4); else engHint('끝 — R 처음부터 · ← 한 박자 뒤로');
+  if (ENG.taking) setTimeout(engTakeStop, 400); else engHint('끝 — R 처음부터 · ← 한 박자 뒤로');
 }
-function engBack(){ if (ENG.mode === 'replay') return; const tl = ENG.tl, cur = tl.base + tl.starts.length - 1; engReset(Math.max(0, cur - 1), true); }
+function engBack(){ if (ENG.busy) return; const tl = ENG.tl, cur = tl.base + tl.starts.length - 1; engReset(Math.max(0, cur - 1), true); }
 function engTakeEnd(tl){ if (tl.end != null) return tl.end; const i = tl.base + tl.starts.length - 1, L = ENG.beats[i] && ENG.beats[i].line; return tl.starts[tl.starts.length - 1] + (L ? L.dur : 0) + 1.2; }
 const engCur = () => ENG.tl ? ENG.tl.base + ENG.tl.starts.length - 1 : -1;
 
 /* ---------- 장면: 시각 t 의 인물 상태 ---------- */
 function engScene(t){
-  const tl = ENG.tl, B = ENG.beats, cur = tl.base + tl.starts.length - 1, C = {}; ENG.zc = 0;
+  const tl = ENG.tl, B = ENG.beats, C = {}; ENG.zc = 0;
+  let ns = tl.starts.length; while (ns > 0 && tl.starts[ns - 1] > t) ns--;   // v1.4 시각 t 에 이미 시작한 박자까지만 (내보내기는 앞 시각부터 한 장씩 그림)
+  const cur = tl.base + ns - 1;
   const T = i => (i < tl.base ? -1e9 : tl.starts[i - tl.base]);
   for (let i = 0; i <= cur && i < B.length; i++){
     const b = B[i], Ti = T(i), L = b.line, nm = L && L.who && engName(L.who);
@@ -119,7 +124,7 @@ function engScene(t){
   }
   return { C, cur, start: cur >= tl.base ? T(cur) : null };
 }
-const engX = (o, t) => { if (o.mvFrom == null) return o.x; const k = engClamp((t - o.mvT) / 0.45), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; return o.mvFrom + (o.x - o.mvFrom) * e; };
+const engX = (o, t) => { if (o.mvFrom == null) return o.x; const k = engClamp((t - o.mvT) / (o.mvDur || 0.45)), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; return o.mvFrom + (o.x - o.mvFrom) * e; };
 const engSlotOf = (nm, used) => { const order = nm === engName(ENG.opt.주인공) ? ['오른쪽', '오른쪽2', '가운데'] : ['왼쪽', '왼쪽2', '오른쪽2', '가운데', '오른쪽']; return order.find(s => !used.has(s)) || order[0]; };
 function engApply(C, c, T){
   if (c.k === 'out' && c.who === '모두'){ for (const k in C) if (C[k].outT == null) C[k].outT = T; return; }
@@ -128,7 +133,7 @@ function engApply(C, c, T){
     if (!ENG.cast[nm]) return;
     const cur0 = C[nm]; if (cur0 && cur0.outT == null){ if (c.slot && c.slot !== cur0.slot) engApply(C, { k: 'move', who: nm, slot: c.slot }, T); if (c.ex) engApply(C, { k: 'ex', who: nm, ex: c.ex }, T); return; }   // 이미 무대에 있으면 다시 들어오지 않음
     const used = new Set(Object.values(C).filter(o => o.outT == null && o.nm !== nm).map(o => o.slot)), slot = c.slot || engSlotOf(nm, used), prev = C[nm];
-    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, fx: {}, trT: null, trEnd: null, flip: false, flipT: -1e9, mvFrom: null, mvT: -1e9, z: ++ENG.zc };
+    C[nm] = { nm, slot, x: ENG_SLOT[slot], inT: T, outT: null, ex: c.ex || (prev && prev.outT == null ? prev.ex : '기본'), exPrev: null, exT: -1e9, fx: {}, trT: null, trEnd: null, flip: false, flipT: -1e9, mvFrom: null, mvT: -1e9, home: slot, z: ++ENG.zc };
     return;
   }
   let o = C[nm];
@@ -136,7 +141,11 @@ function engApply(C, c, T){
   if (!o || o.outT != null) return;
   if (c.k === 'out') o.outT = T;
   else if (c.k === 'ex'){ if (c.ex !== o.ex){ o.exPrev = o.ex; o.ex = c.ex; o.exT = T; } }
-  else if (c.k === 'move'){ o.mvFrom = engX(o, T); o.x = ENG_SLOT[c.slot]; o.slot = c.slot; o.mvT = T; }
+  else if (c.k === 'move' || c.k === 'edge' || c.k === 'home'){
+    const from = engX(o, T), slot = c.k === 'edge' ? (from <= 960 ? '왼쪽끝' : '오른쪽끝') : c.k === 'home' ? (o.home || o.slot) : c.slot;
+    if (!ENG_SLOT[slot] || ENG_SLOT[slot] === from) return;
+    o.mvFrom = from; o.x = ENG_SLOT[slot]; o.slot = slot; o.mvT = T; o.mvDur = 0.35 + Math.abs(o.x - from) / 1500;   // v1.4 먼 길은 오래 (걷듯 출렁임은 그리기에서)
+  }
   else if (c.k === 'tremble'){ o.trT = T; o.trEnd = null; }
   else if (c.k === 'flip'){ o.flip = !o.flip; o.flipT = T; }
   else if (ENG_MOT[c.k]) o.fx[c.k] = T;
@@ -209,8 +218,8 @@ const engEx = (cast, ex) => cast.ex[ex] || cast.ex['기본'] || Object.values(ca
 function engAnim(url, needH){
   let A = ENG_ANIM[url];
   if (A && A.st === 'ok' && A.done && needH > A.h * 1.15 && A.h < A.fullH){ engAnimFree(A); A = null; }   // 더 크게 보임 → 더 크게 다시 풂
-  if (!A){ A = ENG_ANIM[url] = { st: 'load', frames: [], durs: [], n: 0, got: 0, h: 0, fullH: 0, need: needH, used: 0 }; engAnimLoad(url, A); }
-  A.used = engNow(); return A;
+  if (!A){ A = ENG_ANIM[url] = { st: 'load', frames: [], durs: [], n: 0, got: 0, h: 0, fullH: 0, need: needH, used: 0 }; A.ready = new Promise(r => { A._res = r; }); engAnimLoad(url, A); }
+  A.used = engNow(); if (ENG.renderUsed) ENG.renderUsed.add(A); return A;
 }
 async function engAnimLoad(url, A){
   try {
@@ -229,6 +238,7 @@ async function engAnimLoad(url, A){
     }
     dec.close(); A.total = A.durs.reduce((a, b) => a + b, 0); A.done = true;
   } catch (e){ A.st = 'fail'; }
+  A._res && A._res();
 }
 function engAnimFrame(A, t){
   if (!A || A.st !== 'ok' || !A.got) return null;
@@ -257,6 +267,7 @@ function engDrawChar(o, t, br){
   const x = engX(o, t), side = x < 960 ? -1 : 1, alpha = eIn * (1 - eOut); if (alpha < 0.003) return;
   let ox = side * 140 * ((1 - eIn) + eOut), oy = 0;
   for (const k in o.fx || {}){ const a = t - o.fx[k]; if (a < 0) continue; const d = ENG_MOT[k](a); if (d){ ox += d[0]; oy += d[1]; } }
+  if (o.mvFrom != null && Math.abs(o.x - o.mvFrom) > 250){ const mk = (t - o.mvT) / (o.mvDur || 0.45); if (mk > 0 && mk < 1) oy -= Math.abs(Math.sin(mk * Math.PI * Math.max(2, Math.round((o.mvDur || 0.45) * 3)))) * 14; }   // 걷듯 출렁임
   if (o.trT != null && t >= o.trT && (o.trEnd == null || t < o.trEnd)){ ox += Math.sin(t * 95) * 4 + Math.sin(t * 61) * 2; oy += Math.sin(t * 77) * 2; }
   const want = cast.face === 'L' || cast.face === 'R' ? cast.face : x <= 960 ? 'R' : 'L', kx = engClamp((t - o.exT) / 0.16), layers = o.exPrev && kx < 1 ? [[o.exPrev, 1], [o.ex, kx]] : [[o.ex, 1]];
   layers.forEach(([ex, la], li) => {
@@ -280,64 +291,48 @@ function engDrawChar(o, t, br){
   });
 }
 
-/* ---------- 전자음 (뚜두두두) — 녹화에도 들어감 ---------- */
+/* ---------- 전자음 (뚜두두두) — 내보내기에도 들어감 ---------- */
 function engAudio(){
   if (ENG.ac){ if (ENG.ac.state === 'suspended') ENG.ac.resume(); return ENG.ac; }
-  try { const ac = ENG.ac = new (window.AudioContext || window.webkitAudioContext)(); ENG.master = ac.createGain(); ENG.master.gain.value = ENG.opt ? ENG.opt.소리크기 : 0.5; ENG.master.connect(ac.destination); ENG.recDest = ac.createMediaStreamDestination(); ENG.master.connect(ENG.recDest); } catch (e) {}
+  try { const ac = ENG.ac = new (window.AudioContext || window.webkitAudioContext)(); ENG.master = ac.createGain(); ENG.master.gain.value = ENG.opt ? ENG.opt.소리크기 : 0.5; ENG.master.connect(ac.destination); } catch (e) {}
   return ENG.ac;
 }
-function engBlip(pitch, c){
-  const ac = ENG.ac; if (!ac || !ENG.opt.소리) return; const now = ac.currentTime; if (now - ENG.lastBlip < 0.028) return; ENG.lastBlip = now;
+// 한 소리 (네모파 · 짧게): 화면 소리와 내보내기 (OfflineAudioContext) 가 같이 씀
+function engBlipAt(ac, dest, now, pitch, c){
   const code = (c || 'a').codePointAt(0), f = pitch * (1 + ((code % 7) - 3) * 0.025), o = ac.createOscillator(), g = ac.createGain();
   o.type = 'square'; o.frequency.value = f;
   g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.13, now + 0.003); g.gain.setValueAtTime(0.13, now + 0.032); g.gain.linearRampToValueAtTime(0, now + 0.05);
-  o.connect(g); g.connect(ENG.master); o.start(now); o.stop(now + 0.06);
+  o.connect(g); g.connect(dest); o.start(now); o.stop(now + 0.06);
 }
-function engSound(fr){
-  if (!fr || !fr.L){ ENG.blipBeat = fr ? fr.cur : -1; ENG.blipN = 0; return; }
-  if (ENG.blipBeat !== fr.cur){ ENG.blipBeat = fr.cur; ENG.blipN = 0; }
-  if (fr.count > ENG.blipN){
-    const nw = fr.L.ch.slice(ENG.blipN, fr.count), cast = fr.L.who && ENG.cast[engName(fr.L.who)];
-    if (fr.count - ENG.blipN <= 3 && nw.some(c => c.trim() && !'.,!?…~'.includes(c))) engBlip((cast && cast.pitch) || (fr.L.who ? 520 : 440), nw[nw.length - 1]);
-    ENG.blipN = fr.count;
-  } else if (fr.count < ENG.blipN && ENG.blipN < 1e9) ENG.blipN = fr.count;
+function engBlip(pitch, c){
+  const ac = ENG.ac; if (!ac || !ENG.opt.소리) return; const now = ac.currentTime; if (now - ENG.lastBlip < 0.028) return; ENG.lastBlip = now;
+  engBlipAt(ac, ENG.master, now, pitch, c);
 }
+// 소리 내는 때: 글자가 새로 찍히면 (한 번에 3자 넘게 = 건너뛴 것이면 조용히). st = { beat, n } · emit(높이, 글자)
+function engSoundStep(st, fr, emit){
+  if (!fr || !fr.L){ st.beat = fr ? fr.cur : -1; st.n = 0; return; }
+  if (st.beat !== fr.cur){ st.beat = fr.cur; st.n = 0; }
+  if (fr.count > st.n){
+    const nw = fr.L.ch.slice(st.n, fr.count), cast = fr.L.who && ENG.cast[engName(fr.L.who)];
+    if (fr.count - st.n <= 3 && nw.some(c => c.trim() && !'.,!?…~'.includes(c))) emit((cast && cast.pitch) || (fr.L.who ? 520 : 440), nw[nw.length - 1]);
+    st.n = fr.count;
+  } else if (fr.count < st.n && st.n < 1e9) st.n = fr.count;
+}
+function engSound(fr){ const st = { beat: ENG.blipBeat, n: ENG.blipN }; engSoundStep(st, fr, engBlip); ENG.blipBeat = st.beat; ENG.blipN = st.n; }
 const engPreview = pitch => { engAudio(); const ac = ENG.ac; if (!ac) return; const s = '뚜두두두'; [...s].forEach((c, i) => setTimeout(() => { ENG.lastBlip = 0; const o = ENG.opt.소리; ENG.opt.소리 = true; engBlip(pitch, c); ENG.opt.소리 = o; }, i * 70)); };
 
-/* ---------- 녹화 (투명 webm) ---------- */
-function engRecStart(replay){
-  if (ENG.rec) return false;
-  if (typeof MediaRecorder === 'undefined' || !ENG.cv.captureStream){ engHint('이 브라우저는 녹화를 못 해요 (크롬 · 엣지에서)'); return false; }
-  if (replay && !(ENG.lastTake && ENG.lastTake.starts.length)){ engHint('먼저 Space 로 한 번 진행해 주세요'); return false; }
-  engAudio(); ENG.inspect = null;
-  const tracks = ENG.cv.captureStream(ENG.opt.녹화fps).getVideoTracks(); if (ENG.opt.소리 && ENG.recDest) tracks.push(...ENG.recDest.stream.getAudioTracks());
-  const mt = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(m => MediaRecorder.isTypeSupported(m));
-  let mr; try { mr = new MediaRecorder(new MediaStream(tracks), { mimeType: mt, videoBitsPerSecond: 16e6, audioBitsPerSecond: 160000 }); } catch (e){ engHint('녹화를 시작하지 못했어요'); return false; }
-  const r = ENG.rec = { mr, chunks: [], t0: engNow(), live: !replay };
-  mr.ondataavailable = e => { if (e.data && e.data.size) r.chunks.push(e.data); };
-  mr.onstop = () => engRecSave(r);
-  if (replay){ const tk = ENG.lastTake, sh = engNow() + 0.6 - tk.starts[0], end = engTakeEnd(tk);
-    ENG.tl = { base: tk.base, starts: tk.starts.map(v => v + sh), fills: Object.fromEntries(Object.entries(tk.fills).map(([k, v]) => [k, v + sh])), end: end + sh };
-    ENG.mode = 'replay'; r.until = end + sh + 0.6; ENG.blipBeat = -1; }
-  else engReset(0, false);
-  mr.start(1000); ENG.onRec && ENG.onRec(true);
-  engHint(replay ? '방금 진행 그대로 녹화 중 — 끝나면 저절로 저장' : '녹화 중 — Space 로 시작 · 마지막 대사 뒤 Space (또는 Esc) 로 끝');
-  return true;
-}
-function engRecStop(delay){ const r = ENG.rec; if (!r || r.stopping) return; r.stopping = true; setTimeout(() => { try { r.mr.stop(); } catch (e) {} }, (delay || 0) * 1000); }
-async function engRecSave(r){
-  ENG.rec = null; if (ENG.mode === 'replay'){ ENG.mode = 'live'; engReset(0, false); }
-  let blob = new Blob(r.chunks, { type: 'video/webm' }); const ms = (engNow() - r.t0) * 1000;
-  try { if (window.ysFixWebmDuration) blob = await window.ysFixWebmDuration(blob, ms, { logger: false }); } catch (e) {}
-  const d = new Date(), p = n => String(n).padStart(2, '0');
-  ENG.lastFile = { blob, name: `scenario_${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}.webm` };
-  ENG.onRec && ENG.onRec(false); await engDownload(ENG.lastFile.blob, ENG.lastFile.name);
+/* ---------- v1.4 녹화 = 박자 기록: Space 를 누른 때만 적어 둠. 파일은 export.js 가 이 기록대로 한 장씩 다시 그려 만듦 (끊김 없음) ---------- */
+function engTakeStart(){ if (ENG.busy) return; ENG.inspect = null; engReset(0, false); ENG.taking = true; ENG.onRec && ENG.onRec(true); engHint('녹화 중 — Space 로 시작 · 마지막 대사 뒤 Space (또는 Esc) 로 끝'); }
+function engTakeStop(){
+  if (!ENG.taking) return; ENG.taking = false; const tl = ENG.tl;
+  if (tl && tl.starts.length){ if (tl.end == null) tl.end = engNow(); ENG.recTake = JSON.parse(JSON.stringify(tl)); }
+  ENG.onRec && ENG.onRec(false); ENG.onTake && ENG.onTake(ENG.recTake);
 }
 async function engDownload(blob, name){
   try {
     const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
     if (dl){ await dl.save({ filename: name, data: blob }); engHint(`저장했어요 — ${name}`); return; }
-  } catch (e){ const c = e && e.code; if (c === 'declined') return engHint('저장을 그만뒀어요 — ⬇ 로 다시'); if (c === 'rate_limited') return engHint('잠시 뒤 ⬇ 로 다시'); if (c === 'too_large') return engHint('파일이 너무 커요 — 나눠서 녹화해 주세요'); return engHint('이 화면에선 저장할 수 없어요'); }
+  } catch (e){ const c = e && e.code; if (c === 'declined') return engHint('저장을 그만뒀어요 — 내보내기 창의 ⬇ 다시 저장'); if (c === 'rate_limited') return engHint('잠시 뒤 ⬇ 다시 저장'); if (c === 'too_large') return engHint('파일이 너무 커요 — 나눠서 내보내 주세요'); if (c === 'rejected_extension') return engHint('이 형식은 저장할 수 없어요'); return engHint('이 화면에선 저장할 수 없어요'); }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 5000); engHint(`저장 — ${name}`);
 }
@@ -351,7 +346,8 @@ async function engInit(cv){
   await Promise.all([font, box]);
   const loop = () => {
     requestAnimationFrame(loop);
-    const t = engNow(); if (ENG.rec && ENG.mode === 'replay' && t >= ENG.rec.until) engRecStop(0);
+    if (ENG.busy) return;   // 내보내는 동안엔 export.js 가 그림
+    const t = engNow();
     let fr = null; try { fr = engDraw(t); } catch (e){ if (!ENG.drawErr){ ENG.drawErr = 1; console.error(e); } }
     if (!ENG.inspect) engSound(fr);
     const cur = engCur(); if (cur !== ENG.lastCur){ ENG.lastCur = cur; ENG.onBeat && ENG.onBeat(cur); }
