@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#ece6d4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="세희">
@@ -21,7 +21,7 @@
     margin:0; color:var(--ink);
     background:repeating-linear-gradient(var(--paper) 0,var(--paper) 30px,var(--paper-deep) 30px,var(--paper-deep) 31px);
     font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
-    min-height:100vh; padding-bottom:calc(110px + env(safe-area-inset-bottom));
+    min-height:100vh; padding-bottom:calc(150px + env(safe-area-inset-bottom));
   }
   button{font-family:inherit;color:inherit}
   .wrap{max-width:720px;margin:0 auto;padding:0 12px}
@@ -111,7 +111,7 @@
   footer{margin:22px 0 0;font-size:.72rem;color:var(--ink-soft);line-height:1.6;text-align:center}
 
   /* 넘기기 단추 */
-  .fab{position:fixed;right:max(16px,calc(50% - 344px));bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;
+  .fab{position:fixed;right:max(16px,calc(50% - 344px));bottom:calc(var(--tb,58px) + 14px);z-index:30;
     border:none;border-radius:28px;background:#23304a;color:#fdfcf8;font-size:.98rem;font-weight:700;padding:14px 20px;
     box-shadow:0 4px 14px rgba(35,48,74,.4);cursor:pointer}
 
@@ -141,11 +141,60 @@
   .mini{border:1px solid var(--line);background:var(--card);border-radius:3px;width:32px;height:30px;cursor:pointer;font-size:.8rem}
   hr.s{border:none;border-top:1px solid var(--line);margin:14px 0}
 
-  .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;
+  .toast{position:fixed;left:50%;bottom:calc(var(--tb,58px) + 76px);transform:translate(-50%,20px);opacity:0;
     pointer-events:none;z-index:50;background:#2b2417;color:#fdfcf8;border-radius:20px;padding:9px 14px;font-size:.85rem;
     display:flex;gap:12px;align-items:center;transition:all .2s;max-width:92vw}
   .toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
   .toast button{border:none;background:none;color:#f3d27a;font-weight:700;font-size:.85rem;padding:0;cursor:pointer}
+
+  /* ── 아래 탭: 판 / 사무실 (v0.2) ── */
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:36;background:var(--paper);border-top:2px solid var(--ink);
+    display:flex;justify-content:center;padding:0 0 env(safe-area-inset-bottom)}
+  .tabs button{flex:1 1 0;max-width:360px;border:none;background:none;padding:7px 0 8px;font-size:.8rem;color:var(--ink-soft);
+    cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative}
+  .tabs button .ic{font-size:1.15rem;line-height:1.2}
+  .tabs button.on{color:var(--ink);font-weight:700}
+  .tabs button.on::before{content:"";position:absolute;top:-2px;left:30%;right:30%;height:3px;background:var(--red)}
+  body.office .nav, body.office #old, body.office #main, body.office .fab{display:none!important}
+  body.typing .tabs{display:none}
+
+  /* ── 세희의 사무실 ── */
+  #office{display:none;position:fixed;left:0;right:0;top:var(--hh,64px);bottom:var(--tb,58px);z-index:10;
+    flex-direction:column;max-width:720px;margin:0 auto;background:#e7dfc6}
+  body.office #office{display:flex}
+  body.typing #office{bottom:0}
+  .log{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 10px;display:flex;flex-direction:column;gap:9px}
+  .log > :first-child{margin-top:auto}  /* 말이 적을 때도 세희 바로 위에 쌓이게 */
+  .msg{max-width:80%;padding:9px 13px 6px;border-radius:16px;font-size:.95rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;position:relative}
+  .msg time{display:block;font-size:.62rem;opacity:.55;margin-top:1px;text-align:right}
+  .msg.s{align-self:flex-start;background:#fdfcf8;border:1.5px solid #2b3a55;color:#23304a;margin-left:6px}
+  .msg.u{align-self:flex-end;background:#23304a;color:#fdfcf8;border:1.5px solid #23304a;margin-right:6px}
+  .msg.u::after{content:"";position:absolute;right:-7px;bottom:10px;border:7px solid transparent;border-left-color:#23304a;border-right:0}
+  /* 마지막 세희 말 — 꼬리가 아래 세희 쪽으로 */
+  .msg.s.last{margin-bottom:12px;font-size:1rem}
+  .msg.s.last::before,.msg.s.last::after{content:"";position:absolute;left:34px;top:100%;border:10px solid transparent;border-top-color:#2b3a55;border-bottom:0}
+  .msg.s.last::after{left:36px;border-width:8px;border-top-color:#fdfcf8;margin-top:-1px}
+  .msg.s:not(.last)::after{content:"";position:absolute;left:-7px;bottom:10px;border:7px solid transparent;border-right-color:#2b3a55;border-left:0}
+  .dots{display:flex;gap:5px;padding:13px 16px}
+  .dots span{width:7px;height:7px;border-radius:50%;background:#2b3a55;opacity:.3;animation:blink 1s infinite}
+  .dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{50%{opacity:1}}
+  .scene{flex:0 0 auto;height:min(200px,30dvh);line-height:0;transition:height .2s}
+  .scene{overflow:hidden}
+  .scene svg{width:100%;height:100%;display:block;overflow:visible}
+  body.typing .scene{height:min(110px,18dvh)}
+  #seheeFace{transition:opacity .15s}
+  .say{flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));
+    display:flex;justify-content:flex-end}
+  .saybub{position:relative;display:flex;align-items:flex-end;gap:6px;width:min(88%,560px);background:#fff;border:1.5px dashed #23304a;
+    border-radius:18px;padding:6px 6px 6px 14px}
+  .saybub.has{border-style:solid}
+  .saybub::after{content:"";position:absolute;right:-8px;bottom:12px;border:8px solid transparent;border-left-color:#23304a;border-right:0}
+  .saybub textarea{flex:1 1 auto;min-width:0;border:none;background:transparent;resize:none;font:inherit;font-size:.95rem;line-height:1.5;
+    padding:5px 0;max-height:7.5em;color:var(--ink)}
+  .saybub textarea:focus{outline:none}
+  .saybub button{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:none;background:#23304a;color:#fff;font-size:1.05rem;cursor:pointer}
+  .saybub button:disabled{opacity:.35}
 </style>
 </head>
 <body>
@@ -174,6 +223,48 @@
 <button class="fab" id="fab">넘기기</button>
 <div class="veil" id="veil"></div>
 <div class="sheet" id="sheet"></div>
+
+<section id="office" aria-label="세희의 사무실">
+  <div class="log" id="log"></div>
+  <div class="scene">
+    <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax meet" aria-label="책상에 앉은 세희">
+      <rect x="-200" width="800" height="200" fill="#e7dfc6"/>
+      <g transform="translate(26 22)"><rect width="78" height="60" rx="3" fill="#dce8ea" stroke="#b9ad8a" stroke-width="3"/>
+        <line x1="39" y1="0" x2="39" y2="60" stroke="#b9ad8a" stroke-width="2.5"/><line x1="0" y1="30" x2="78" y2="30" stroke="#b9ad8a" stroke-width="2.5"/></g>
+      <g transform="translate(352 34)"><circle r="17" fill="#fdfcf8" stroke="#5c5340" stroke-width="2.5"/>
+        <line x1="0" y1="0" x2="0" y2="-10" stroke="#2b2417" stroke-width="2" stroke-linecap="round"/><line x1="0" y1="0" x2="8" y2="3" stroke="#2b2417" stroke-width="2" stroke-linecap="round"/></g>
+      <g transform="translate(288 66)"><rect width="88" height="54" rx="2" fill="#c9a97a" stroke="#8a6d3b" stroke-width="2"/>
+        <rect x="8" y="8" width="20" height="20" fill="#fcf08f" transform="rotate(-6 18 18)"/><rect x="34" y="10" width="20" height="20" fill="#d8f0b8" transform="rotate(4 44 20)"/>
+        <rect x="60" y="7" width="20" height="20" fill="#ffd9c9"/><rect x="22" y="31" width="20" height="16" fill="#fcf08f" transform="rotate(3 32 39)"/></g>
+      <g transform="translate(116.4 16.3) scale(2.2)">
+        <path d="M33.4 43.5h9.2v9.5h-9.2z" fill="#e5b087"/>
+        <path d="M38 51c-12.4 0-21.6 6.4-22.8 19.2-.3 3.3-.5 6.4-.5 9.8h46.6c0-3.4-.2-6.5-.5-9.8C59.6 57.4 50.4 51 38 51z" fill="#1b1b21"/>
+        <path d="M31.8 51.6L38 62.5l6.2-10.9 2.8 1.4L38 71.5l-9-18.5z" fill="#f7f6f2"/>
+        <path d="M33.4 50.6l4.6 5.4-4.2 1.6-2.6-5.6z" fill="#fdfdfb"/><path d="M42.6 50.6L38 56l4.2 1.6 2.6-5.6z" fill="#fdfdfb"/>
+        <path d="M31.8 51.6L38 62.5l-2.6 4.2-9.6-13z" fill="#2c2c35"/><path d="M44.2 51.6L38 62.5l2.6 4.2 9.6-13z" fill="#2c2c35"/>
+      </g>
+      <image id="seheeFace" href="faces/f1.webp" x="148" y="14" width="104" height="104"/>
+      <rect x="-200" y="154" width="800" height="46" fill="#8a6d3b"/><rect x="-200" y="150" width="800" height="8" fill="#a3823f"/>
+      <g transform="translate(46 122)"><rect x="0" y="22" width="62" height="7" fill="#fdfcf8" stroke="#c3b795"/>
+        <rect x="3" y="15" width="60" height="7" fill="#f6f2e4" stroke="#c3b795" transform="rotate(-2 30 19)"/>
+        <rect x="-2" y="8" width="62" height="7" fill="#fdfcf8" stroke="#c3b795" transform="rotate(2 30 12)"/>
+        <rect x="4" y="1" width="58" height="7" fill="#f6f2e4" stroke="#c3b795"/></g>
+      <g transform="translate(300 116)"><path d="M0 0h26l-3 34h-20z" fill="rgba(255,255,255,.55)" stroke="#5c5340" stroke-width="2"/>
+        <path d="M3 12h20l-2 22h-16z" fill="#7a5a3a" opacity=".5"/></g>
+      <g transform="translate(166 164)"><rect width="68" height="20" rx="2" fill="#2b2417"/>
+        <text x="34" y="14" text-anchor="middle" font-size="11" fill="#f3d27a" font-family="serif">강세희</text></g>
+    </svg>
+  </div>
+  <div class="say"><div class="saybub" id="saybub">
+    <textarea id="sayText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea>
+    <button id="sayGo" aria-label="보내기" disabled>↑</button>
+  </div></div>
+</section>
+
+<nav class="tabs" id="tabs">
+  <button id="tabPan" class="on"><span class="ic">🗒️</span>판</button>
+  <button id="tabOffice"><span class="ic">☕</span>사무실</button>
+</nav>
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo">되돌리기</button></div>
 
 <template id="seheeFig">
@@ -205,8 +296,11 @@
 /* 세희 깡통 — 변경 기록
    v0.1 (2026-11-12) 첫 판. 날짜별 판 + 안 끝난 일 이어받기, 칸 5개(이름·색·순서 바꾸기),
         받은 것(붙여넣기 · 안드로이드 공유하기), 세희 한마디 · 도장, 태그, 백업 내보내기·가져오기,
-        글자 크기, 새 버전 띠. AI 없음. 데이터는 이 폰의 IndexedDB 에만 있다. */
-const APP_VERSION = 'v0.1';
+        글자 크기, 새 버전 띠. AI 없음. 데이터는 이 폰의 IndexedDB 에만 있다.
+   v0.2 (2026-11-12) 아래 탭으로 판 ↔ 사무실 화면 전환. 사무실 = 책상에 앉은 세희 + 말풍선 대화.
+        유저는 오른쪽 말풍선, 입력칸도 말풍선. 연결 없음 — 자동응답 랜덤 + 표정 6종(임시 그림).
+        대화는 이 폰에 저장(최근 300개), 설정에서 비우기. 키보드가 올라오면 장면이 작아진다. */
+const APP_VERSION = 'v0.2';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -500,6 +594,7 @@ function settingsSheet(){
       <input type="file" id="impFile" accept=".json,application/json" hidden></div>
     <p class="note" id="impNote"></p>
     <p class="note" id="stInfo">판 ${S.dates.length}개 · 계산 중…</p>
+    <div class="row"><button class="chip" data-sact="clearchat" id="clrBtn">사무실 대화 비우기</button></div>
     <hr class="s">
     <div class="row"><span class="note">세희 깡통 ${APP_VERSION}</span><button class="chip" data-sact="check" style="margin-left:auto">새 버전 확인</button></div>`);
   storageInfo();
@@ -539,6 +634,10 @@ $('sheet').addEventListener('click', async e => {
     $('impFile').click(); return;
   }
   else if (a === 'check'){ checkUpdate(true); return; }
+  else if (a === 'clearchat'){
+    if (!b.classList.contains('danger')){ b.classList.add('danger'); b.textContent = '한 번 더 누르면 지워요'; return; }
+    O.log = []; O.loaded = true; await kvSet('chat', []); b.classList.remove('danger'); b.textContent = '비웠어요'; return;
+  }
   else return;
   await saveSettings(); render(); settingsSheet();
 });
@@ -658,6 +757,94 @@ if ('serviceWorker' in navigator){
   }).catch(() => {});
 }
 
+
+/* ── 세희의 사무실 (v0.2) — 아직 아무것도 연결하지 않았다. 자동응답만 랜덤으로 ──
+   얼굴: f1 의심 · f2 곁눈(생각 중) · f3 미소 · f4 >_< · f5 놀람 · f6 삐침  (그림은 나중에 교체) */
+const FACE = n => `faces/f${n}.webp`;
+const GREET = [
+  { t:'안녕하세요. 비서 강세희입니다.', f:1 },
+  { t:'지금은 깡통이라 대답만 해요. 머리는 나중에 들어온대요.', f:6 },
+];
+const REPLIES = [
+  { t:'네. 적어둘게요. 아직 손이 없어서 마음속에만요.', f:1 },
+  { t:'퇴근 전까지면 되는 거죠?', f:2 },
+  { t:'…네.', f:1 },
+  { t:'그건 보스가 정하실 일이에요.', f:2 },
+  { t:'판에 올릴까요? 아, 아직 연결이 안 됐죠.', f:5 },
+  { t:'기억해 둘게요. 기억하는 척이요.', f:6 },
+  { t:'오늘도 카톡이 많네요.', f:1 },
+  { t:'커피 식었어요.', f:6 },
+  { t:'확정이에요, 미정이에요?', f:2 },
+  { t:'좋아요. 그렇게 하죠.', f:3 },
+  { t:'잠깐만요. 그거 어제도 하신 말씀이에요.', f:5 },
+  { t:'제가 지금 할 수 있는 건 고개 끄덕이기뿐이에요.', f:3 },
+  { t:'일이 너무 많아요……', f:4 },
+];
+const RULES = [
+  { re:/고마|감사|땡큐|ㄱㅅ/, list:[ { t:'별말씀을요. 월급에 포함돼 있어요.', f:3 } ] },
+  { re:/안녕|하이|ㅎㅇ|좋은 아침/, list:[ { t:'안녕하세요. 오늘도 출근하셨네요.', f:3 }, { t:'오셨어요. 판은 펴 놨어요.', f:1 } ] },
+  { re:/바보|멍청|짜증|싫어|씨발|ㅅㅂ/, list:[ { t:'……들은 걸로 할게요.', f:6 }, { t:'저도 사람이…… 아니, 비서예요.', f:4 } ] },
+  { re:/급|빨리|당장|지금 바로/, list:[ { t:'퇴근 전 태그 달아둘게요. 아, 아직 못 달아요.', f:5 }, { t:'급한 건 판 맨 위에요. 제가 손이 생기면요.', f:4 } ] },
+  { re:/[?？]|뭐야|어때|알아/, list:[ { t:'그건 연결되면 제대로 대답할게요.', f:2 }, { t:'음…… 확정이에요, 미정이에요?', f:2 }, { t:'제가 아는 건 아직 판에 적힌 것뿐이에요.', f:1 } ] },
+];
+const O = { loaded:false, log:[], busy:false, lastPick:null };
+function pickFrom(list){
+  let r, n = 0;
+  do { r = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && r === O.lastPick && ++n < 8);
+  O.lastPick = r; return r;
+}
+const replyFor = text => { for (const r of RULES) if (r.re.test(text)) return pickFrom(r.list); return pickFrom(REPLIES); };
+function setFace(n){ const im = $('seheeFace'); if (im) im.setAttribute('href', FACE(n || 1)); }
+const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+function renderLog(){
+  const el = $('log');
+  let lastS = -1; O.log.forEach((m, i) => { if (m.who === 's') lastS = i; });
+  el.innerHTML = O.log.map((m, i) => `<div class="msg ${m.who}${i === lastS && !O.busy ? ' last' : ''}">${esc(m.text)}<time>${hhmm(m.at)}</time></div>`).join('')
+    + (O.busy ? '<div class="msg s last dots" aria-label="세희가 쓰는 중"><span></span><span></span><span></span></div>' : '');
+  el.scrollTop = el.scrollHeight;
+}
+async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
+function seheeSays(r){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now() }); setFace(r.f); }
+async function openOffice(){
+  if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
+  if (!O.log.length){ GREET.forEach(seheeSays); saveLog(); }
+  const lastS = [...O.log].reverse().find(m => m.who === 's'); setFace(lastS ? lastS.face : 1);
+  renderLog();
+}
+function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  const has = !!ta.value.trim(); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy; }
+async function sendSay(){
+  const ta = $('sayText'), v = ta.value.trim(); if (!v || O.busy) return;
+  O.log.push({ who:'u', text:v, at:Date.now() }); ta.value = '';
+  O.busy = true; growSay(); setFace(2); renderLog(); saveLog();
+  await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
+  O.busy = false; seheeSays(replyFor(v)); renderLog(); growSay(); saveLog();
+}
+$('sayText').addEventListener('input', growSay);
+$('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendSay(); } });
+$('sayText').addEventListener('focus', () => { document.body.classList.add('typing'); setTimeout(() => { $('log').scrollTop = $('log').scrollHeight; }, 250); });
+$('sayText').addEventListener('blur', () => document.body.classList.remove('typing'));
+$('sayGo').addEventListener('pointerdown', e => e.preventDefault());   /* 보내도 키보드가 닫히지 않게 */
+$('sayGo').onclick = sendSay;
+
+/* ── 화면 전환: 판 ↔ 사무실. 뒤로 가기로 판에 돌아온다 ── */
+function showView(v){
+  const off = v === 'office';
+  document.body.classList.toggle('office', off);
+  $('tabPan').classList.toggle('on', !off); $('tabOffice').classList.toggle('on', off);
+  if (off) openOffice(); else { document.body.classList.remove('typing'); render(); }
+}
+$('tabOffice').onclick = () => { if (location.hash !== '#office') location.hash = 'office'; else showView('office'); };
+$('tabPan').onclick = () => { history.replaceState(null, '', location.pathname); showView('pan'); };
+window.addEventListener('hashchange', () => showView(location.hash === '#office' ? 'office' : 'pan'));
+(function measure(){
+  const set = () => {
+    document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight + 'px');
+    document.documentElement.style.setProperty('--tb', $('tabs').offsetHeight + 'px');
+  };
+  set(); if (window.ResizeObserver){ const ro = new ResizeObserver(set); ro.observe(document.querySelector('header')); ro.observe($('tabs')); }
+})();
+
 /* ── 시작 ── */
 (async function boot(){
   const st = await kvGet('settings');
@@ -677,6 +864,7 @@ if ('serviceWorker' in navigator){
     history.replaceState(null, '', location.pathname);
     if (got) await receive([got]);
   }
+  if (location.hash === '#office') showView('office');
 })();
 </script>
 </body>
