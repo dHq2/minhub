@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* 작곡 스케치북 v1.4.1 (마이크 안내를 정확하게) · v1.4 (실시간 녹음 파형, 트랙에 덮어 녹음, 녹음 중 메트로놈 끔) · v1.3 (화면 압축: 한 줄 헤더, 겹쳐 놓은 트랙 레인, 볼륨은 트랙 메뉴로) · v1.2 (타임라인 편집: 길게 눌러 옮기기, 확대) · v1.1 (모바일 파일 넣기 보강) — layout: sticky tempo strip on top, scrolling tracks/lyrics, transport pinned to the thumb zone */
+/* 작곡 스케치북 v1.5 (바로 녹음, 녹음 중 모든 소리 끔, 고른 트랙에 녹음해서 트랙이 쌓이지 않게) · v1.4.1 (마이크 안내를 정확하게) · v1.4 (실시간 녹음 파형, 트랙에 덮어 녹음, 녹음 중 메트로놈 끔) · v1.3 (화면 압축: 한 줄 헤더, 겹쳐 놓은 트랙 레인, 볼륨은 트랙 메뉴로) · v1.2 (타임라인 편집: 길게 눌러 옮기기, 확대) · v1.1 (모바일 파일 넣기 보강) — layout: sticky tempo strip on top, scrolling tracks/lyrics, transport pinned to the thumb zone */
 :root {
   --bg: #14161b;
   --panel: #1c1f26;
@@ -321,10 +321,10 @@ main { padding-top: 6px; }
       <button class="btn" id="btnAddFile">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>녹음 파일 넣기</button>
       <button class="btn" id="btnAddRec">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>지금 녹음</button>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>새 트랙에 녹음</button>
     </div>
     <p class="hint" id="recHint">녹음할 땐 이어폰을 끼세요. 비트와 메트로놈 소리가 녹음에 섞이지 않아요.</p>
-    <div class="ver">작곡 스케치북 v1.4.1</div>
+    <div class="ver">작곡 스케치북 v1.5</div>
   </section>
   <section class="view" id="viewLyrics" hidden>
     <div class="lyr-tools">
@@ -411,7 +411,11 @@ main { padding-top: 6px; }
 <div class="sheet" id="sheetSettings"><div class="back"></div><div class="panel">
   <div class="grab"></div>
   <h2>설정과 내보내기</h2>
-  <div class="row-between"><span>녹음 전 1마디 카운트</span><button class="tog" id="togCount" aria-pressed="true" style="padding:6px 10px"><span class="sw"></span></button></div>
+  <div>
+    <h3>녹음하는 동안 소리</h3>
+    <div class="seg" id="monSeg"><button data-mon="off">모두 끄기</button><button data-mon="on">비트·트랙 듣기</button></div>
+  </div>
+  <div class="row-between"><span>녹음 전 1마디 카운트 (기본 끔)</span><button class="tog" id="togCount" aria-pressed="false" style="padding:6px 10px"><span class="sw"></span></button></div>
   <div>
     <h3>메트로놈 소리 크기</h3>
     <input type="range" id="metroVol" min="0" max="1" step="0.01" style="width:100%" aria-label="메트로놈 소리 크기">
@@ -785,7 +789,7 @@ async function cloudUpload(item) {
 /* ============ project model ============ */
 const COLORS = ['#f2b544', '#4fb3bf', '#b39ddb', '#ff8a65', '#9ccc65', '#64b5f6', '#f48fb1'];
 let P = null; // current project
-let Settings = { countIn: true, latencyMs: null };
+let Settings = { countIn: false, latencyMs: null, recMonitor: 'off' };
 function newProject(n) {
   const t = Date.now();
   return { id: uid(), name: '새 곡 ' + (n || 1), createdAt: t, updatedAt: t, bpm: 100, grid: 0, bpb: 4, autoBpm: null,
@@ -1060,6 +1064,7 @@ async function startRec() {
     for (let i = 0; i < copy.length; i++) { const v = Math.abs(copy[i]); if (v > take.bm) take.bm = v; if (++take.bi >= take.blk) { take.live.push(Math.min(1, take.bm * 1.6)); take.bi = 0; take.bm = 0; } }
   };
   T.rec = { take, stream, src, proc, sink, pos0 };
+  if (Settings.recMonitor !== 'on' && master) { master.gain.cancelScheduledValues(0); master.gain.value = 0; }
   await sPut('takes', take.id, takeMeta(take));
   const countIn = Settings.countIn ? barDur() : 0;
   await play(pos0 - countIn);
@@ -1095,6 +1100,7 @@ async function stopRec() {
   try { R.proc.onaudioprocess = null; R.src.disconnect(); R.proc.disconnect(); R.sink.disconnect(); } catch (e) {}
   R.stream.getTracks().forEach((t) => t.stop());
   pause();
+  if (master) { master.gain.cancelScheduledValues(0); master.gain.value = 1; }
   T.rec = null; document.body.classList.remove('recording'); level = 0; updateRecUI();
   computeTakeStart(R.take);
   await flushTake(R.take);
@@ -1102,10 +1108,10 @@ async function stopRec() {
   const target = R.take.target ? P.tracks.find((t) => t.id === R.take.target) : null;
   let tr = null, punched = false;
   if (target) { tr = await punchIn(R.take, target); punched = !!tr; }
-  if (!tr) tr = await finalizeTake(takeMeta(R.take), '녹음 ' + (P.tracks.length + 1), P);
+  if (!tr) { tr = await finalizeTake(takeMeta(R.take), '트랙 ' + (P.tracks.length + 1), P); if (tr) T.armed = tr.id; }
   busy();
   setAudioSession('playback');
-  if (tr) { T.pos = R.pos0; renderAll(); toast(punched ? '이 트랙에 덮어 녹음했어요. 트랙 메뉴에서 되돌릴 수 있어요' : '녹음을 저장했어요', 3200); }
+  if (tr) { T.pos = R.pos0; renderAll(); toast(punched ? tr.name + '에 녹음했어요. 트랙 메뉴에서 되돌릴 수 있어요' : tr.name + '을 만들었어요. 다음 녹음도 이 트랙에 들어가요', 3200); }
   else { renderAll(); toast('녹음이 너무 짧아서 버렸어요'); }
 }
 async function finalizeTake(meta, name, proj) {
@@ -1419,7 +1425,7 @@ function trackCard(it, i) {
   return '<div class="trk lane' + (it.muted ? ' muted' : '') + (armed ? ' armed' : '') + '" data-id="' + it.id + '" style="--c:' + color + '">' +
     '<div class="trk-wave" data-act="wave"><canvas></canvas><div class="ph"></div>' +
     '<div class="lane-head"><span class="lane-name">' + esc(it.id === 'beat' ? '비트' : it.name) + '</span><span class="lane-meta">' + esc(meta) + '</span>' + badge + '</div>' +
-    '<div class="lane-btns">' + (armable ? '<button class="icon-btn arm" data-act="arm" aria-pressed="' + armed + '" aria-label="이 트랙에 녹음">' + ICON_ARM + '</button>' : '') + '<button class="icon-btn" data-act="mute" aria-pressed="' + !!it.muted + '" aria-label="' + (it.muted ? '소리 켜기' : '소리 끄기') + '">' + (it.muted ? ICON_MUTE : ICON_SPK) + '</button>' +
+    '<div class="lane-btns">' + (armable ? '<button class="icon-btn arm" data-act="arm" aria-pressed="' + armed + '" aria-label="녹음할 트랙으로 고르기">' + ICON_ARM + '</button>' : '') + '<button class="icon-btn" data-act="mute" aria-pressed="' + !!it.muted + '" aria-label="' + (it.muted ? '소리 켜기' : '소리 끄기') + '">' + (it.muted ? ICON_MUTE : ICON_SPK) + '</button>' +
     '<button class="icon-btn" data-act="menu" aria-label="트랙 메뉴">' + ICON_MORE + '</button></div></div></div>';
 }
 function renderTracks() {
@@ -1564,7 +1570,7 @@ function updateRecUI() {
   if (micBlocked && inArtifact()) hint.innerHTML = 'Claude 화면 안에서는 마이크가 막혀 있어서 실시간 녹음과 ● 버튼이 안 보여요. 실시간 녹음은 <a href="https://dhq2.github.io/minhub/sketch/" target="_blank" rel="noopener">dhq2.github.io/minhub/sketch</a> 를 크롬으로 열면 돼요. 여기서는 녹음앱 파일을 넣을 수 있어요.';
   else hint.textContent = micBlocked
     ? '마이크를 쓸 수 없어요. 브라우저 주소창 옆 설정에서 마이크를 허용하거나, 녹음앱으로 녹음한 파일을 넣어 주세요.'
-    : '녹음할 땐 이어폰을 끼세요. 녹음하는 동안 메트로놈은 꺼지고, 트랙의 ●를 켜 두면 그 트랙에 덮어 녹음돼요.';
+    : (Settings.recMonitor === 'on' ? '녹음 버튼을 누르면 바로 녹음돼요. 비트와 트랙을 들으며 녹음해요(이어폰 추천). ' : '녹음 버튼을 누르면 바로 녹음되고, 녹음하는 동안은 모든 소리가 꺼져요. ') + '●로 고른 트랙에 녹음되고, 고른 트랙이 없으면 새 트랙이 하나 생겨요.';
 }
 function renderLyrics() {
   const el = $('#lyrics'); if (document.activeElement !== el) el.value = P.lyrics || '';
@@ -1573,6 +1579,7 @@ function renderLyrics() {
 function countLyrics() { const t = $('#lyrics').value; const lines = t.split('\n').filter((l) => l.trim()).length; $('#lyrCount').textContent = lines ? lines + '줄' : ''; }
 function renderSettings() {
   $('#togCount').setAttribute('aria-pressed', String(!!Settings.countIn));
+  document.querySelectorAll('#monSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mon === (Settings.recMonitor === 'on' ? 'on' : 'off'))));
   $('#metroVol').value = String(P.metroVol);
   const ms = Settings.latencyMs != null ? Settings.latencyMs : Math.round(latencySec() * 1000);
   $('#latRange').value = String(ms);
@@ -1636,7 +1643,7 @@ function saveSettings() { sPut('kv', 'settings', Settings).catch(() => {}); }
 /* ============ events ============ */
 $('#btnPlay').onclick = () => { if (T.rec) { stopRec(); return; } if (T.playing) pause(); else play(); };
 $('#btnRec').onclick = () => { if (T.rec) stopRec(); else if (micBlocked) openImport(); else startRec(); };
-$('#btnAddRec').onclick = () => { if (!T.rec) startRec(); };
+$('#btnAddRec').onclick = () => { if (T.rec) return; T.armed = null; renderTracks(); startRec(); };
 $('#btnAddFile').onclick = () => { replaceTarget = null; $('#fileTake').click(); };
 $('#impCapture').onclick = () => { closeSheet('#sheetImport'); replaceTarget = null; $('#fileCapture').click(); };
 $('#impPick').onclick = () => { closeSheet('#sheetImport'); replaceTarget = null; $('#fileTake').click(); };
@@ -1678,7 +1685,7 @@ $('#trackList').addEventListener('click', (e) => {
   else if (a === 'arm') {
     if (T.rec) return;
     T.armed = T.armed === it.id ? null : it.id; renderTracks();
-    toast(T.armed ? '녹음하면 ' + it.name + ' 트랙에 덮어써요' : '녹음하면 새 트랙이 생겨요', 2600);
+    toast(T.armed ? it.name + '을 골랐어요. 녹음하면 여기에 들어가요' : '고른 트랙 없음. 다음 녹음은 새 트랙이 돼요', 2600);
   }
 });
 $('#trackList').addEventListener('input', (e) => {
@@ -1889,6 +1896,7 @@ $('#songList').addEventListener('click', async (e) => {
 $('#btnNewSong').onclick = async () => { closeSheet('#sheetSongs'); flushSaves(); await createSong(); toast('새 곡을 만들었어요'); };
 $('#btnSettings').onclick = () => { renderSettings(); updateStoreInfo(); openSheet('#sheetSettings'); };
 $('#togCount').onclick = () => { Settings.countIn = !Settings.countIn; saveSettings(); renderSettings(); };
+document.querySelectorAll('#monSeg button').forEach((b) => (b.onclick = () => { Settings.recMonitor = b.dataset.mon; saveSettings(); renderSettings(); updateRecUI(); }));
 $('#metroVol').addEventListener('input', (e) => { P.metroVol = +e.target.value; markDirty(); });
 $('#latRange').addEventListener('input', (e) => { Settings.latencyMs = +e.target.value; $('#latText').textContent = Settings.latencyMs + 'ms'; saveSettings(); });
 $('#btnCalib').onclick = () => { closeSheet('#sheetSettings'); $('#calibPad').textContent = '준비'; openSheet('#sheetCalib'); };
@@ -1910,6 +1918,7 @@ async function boot() {
   if (!Store.idb) { const b = $('#banner'); b.hidden = false; b.textContent = '이 화면은 브라우저 저장소를 막고 있어서 닫으면 녹음이 사라질 수 있어요. 설정에서 전체 백업을 받아 두세요.'; }
   try { Settings = Object.assign(Settings, (await sGet('kv', 'settings')) || {}); } catch (e) {}
   if (['beat', 'bar', 'free'].includes(Settings.snap)) V.snap = Settings.snap; renderSnap();
+  if (!Settings.v15) { Settings.countIn = false; Settings.recMonitor = 'off'; Settings.v15 = true; saveSettings(); }
   const recovered = await recoverTakes();
   const all = await sAll('projects');
   let lastId = null; try { lastId = await sGet('kv', 'lastProject'); } catch (e) {}
