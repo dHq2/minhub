@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14161b">
+<title>작곡 스케치북</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 작곡 스케치북 v1.4.1 (마이크 안내를 정확하게) · v1.4 (실시간 녹음 파형, 트랙에 덮어 녹음, 녹음 중 메트로놈 끔) · v1.3 (화면 압축: 한 줄 헤더, 겹쳐 놓은 트랙 레인, 볼륨은 트랙 메뉴로) · v1.2 (타임라인 편집: 길게 눌러 옮기기, 확대) · v1.1 (모바일 파일 넣기 보강) — layout: sticky tempo strip on top, scrolling tracks/lyrics, transport pinned to the thumb zone */
+:root {
+  --bg: #14161b;
+  --panel: #1c1f26;
+  --raise: #252932;
+  --line: #2e333d;
+  --text: #ece8df;
+  --muted: #8e939d;
+  --accent: #f2b544;
+  --rec: #ef4b3f;
+  --ok: #63c48f;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  font-size: 15px; line-height: 1.45; overscroll-behavior: none;
+  display: flex; flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+svg { display: block; }
+
+/* header */
+.top { display: flex; align-items: center; gap: 4px; padding: 6px 10px 2px; }
+.song-name {
+  flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1px dashed transparent;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.01em; padding: 2px 0; text-overflow: ellipsis;
+}
+.song-name:focus { border-bottom-color: var(--line); outline: none; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--muted); flex: none; }
+.icon-btn:active { background: var(--raise); }
+.icon-btn svg { width: 22px; height: 22px; }
+.save-state { display: grid; place-items: center; width: 18px; height: 32px; flex: none; padding: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.save-state .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex: none; }
+.save-state[data-s="saving"] .dot { background: var(--accent); }
+.save-state[data-s="warn"] .dot { background: var(--rec); }
+
+/* tempo strip */
+.strip { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 0 16px 10px; display: grid; gap: 8px; }
+.tempo-row { display: flex; align-items: center; gap: 10px; }
+.tempo-chip {
+  display: flex; align-items: baseline; gap: 6px; padding: 8px 12px; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--line);
+}
+.tempo-chip b { font-family: var(--font-num); font-size: 20px; font-weight: 600; color: var(--accent); }
+.tempo-chip span { font-size: 12px; color: var(--muted); }
+.beats { display: flex; gap: 6px; }
+.beats i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); transition: background .08s; }
+.beats i.on { background: var(--text); }
+.beats i.on.acc { background: var(--accent); }
+.pos { margin-left: auto; text-align: right; font-size: 12px; color: var(--muted); line-height: 1.2; }
+.pos b { display: block; font-family: var(--font-num); font-size: 17px; color: var(--text); font-weight: 600; }
+.toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tog {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px;
+  border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-weight: 600; font-size: 14px;
+}
+.tog .sw { width: 34px; height: 20px; border-radius: 10px; background: var(--line); position: relative; flex: none; transition: background .15s; }
+.tog .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: transform .15s, background .15s; }
+.tog[aria-pressed="true"] { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.tog[aria-pressed="true"] .sw { background: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.tog[aria-pressed="true"] .sw::after { transform: translateX(14px); background: var(--accent); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--panel); border-radius: 12px; padding: 3px; border: 1px solid var(--line); }
+.tabs button { padding: 7px; border-radius: 9px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.tabs button[aria-selected="true"] { background: var(--raise); color: var(--text); }
+
+/* main */
+main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 16px 16px; }
+.view[hidden] { display: none; }
+.trk {
+  --c: var(--accent);
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 10px 12px 12px; display: grid; gap: 8px; margin-bottom: 10px; position: relative;
+}
+.trk::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+.trk.muted .trk-wave canvas { opacity: .35; }
+.trk-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.trk-title { flex: 1; min-width: 0; }
+.trk-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trk-meta { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge { font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--raise); color: var(--muted); margin-left: 4px; }
+.trk-head .icon-btn { width: 36px; height: 36px; }
+.icon-btn[aria-pressed="true"] { color: var(--rec); background: color-mix(in srgb, var(--rec) 14%, transparent); }
+.trk-wave { position: relative; height: 52px; border-radius: 8px; background: #111318; overflow: hidden; touch-action: pan-y; }
+.trk-wave canvas { width: 100%; height: 100%; display: block; }
+.ph { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--text); left: 0; pointer-events: none; opacity: .85; }
+.vol-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+.vol-row input { flex: 1; }
+input[type="range"] { -webkit-appearance: none; appearance: none; height: 28px; background: transparent; }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--line); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--text); margin-top: -8px; }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line); }
+input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--text); border: 0; }
+.drop {
+  border: 1.5px dashed var(--line); border-radius: var(--r); padding: 18px 14px; display: grid; gap: 4px;
+  text-align: center; margin-bottom: 10px; width: 100%; color: var(--text);
+}
+.drop b { font-size: 16px; }
+.drop span { font-size: 13px; color: var(--muted); }
+.add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.btn {
+  padding: 12px; border-radius: 12px; background: var(--raise); font-weight: 600; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line);
+}
+.btn.primary { background: var(--accent); color: #1a1408; border-color: var(--accent); }
+.btn.danger { color: var(--rec); }
+.btn svg { width: 18px; height: 18px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 10px 2px 0; }
+.hint a { color: var(--accent); }
+
+/* lyrics */
+.lyr-tools { display: flex; gap: 8px; margin-bottom: 8px; }
+.lyr-tools .btn { padding: 8px 12px; font-size: 13px; }
+#lyrics {
+  width: 100%; min-height: 55vh; resize: vertical; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 14px; font-size: 17px; line-height: 1.75; color: var(--text);
+}
+#lyrics::placeholder { color: #5d626c; }
+
+/* transport */
+.transport {
+  background: var(--panel); border-top: 1px solid var(--line);
+  padding: 8px 16px calc(10px + env(safe-area-inset-bottom)); display: grid; gap: 4px;
+}
+.seek-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+.seek-row input { flex: 1; }
+.btn-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.tbtn { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: var(--text); }
+.tbtn:active { background: var(--raise); }
+.tbtn svg { width: 24px; height: 24px; }
+.play { width: 64px; height: 64px; background: var(--text); color: var(--bg); }
+.play:active { background: #fff; }
+.play svg { width: 28px; height: 28px; }
+.recb { width: 64px; height: 64px; background: transparent; border: 3px solid var(--rec); position: relative; }
+.recb::after { content: ""; width: 26px; height: 26px; border-radius: 50%; background: var(--rec); transition: border-radius .15s, transform .1s; }
+.recb.on::after { border-radius: 6px; transform: scale(calc(.85 + var(--lv, 0) * .35)); }
+.recb.file::after { width: 22px; height: 22px; border-radius: 4px; background: none; border: 2px solid var(--rec); }
+.recb-label { font-size: 10px; color: var(--muted); text-align: center; margin-top: 2px; }
+.rec-col { display: grid; justify-items: center; }
+body.recording .transport { border-top-color: var(--rec); }
+body.recording .song-name { color: var(--rec); }
+
+/* sheets */
+.sheet { position: fixed; inset: 0; z-index: 30; display: none; }
+.sheet.open { display: block; }
+.sheet .back { position: absolute; inset: 0; background: rgba(5, 6, 9, .6); }
+.sheet .panel {
+  position: absolute; left: 0; right: 0; bottom: 0; max-height: 86%; overflow-y: auto;
+  background: var(--panel); border-radius: 20px 20px 0 0; border-top: 1px solid var(--line);
+  padding: 8px 16px calc(20px + env(safe-area-inset-bottom)); display: grid; gap: 14px;
+}
+.grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin: 4px auto 0; }
+.panel h2 { margin: 0; font-size: 18px; text-wrap: balance; }
+.panel h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.panel p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg { display: flex; background: var(--bg); border-radius: 10px; padding: 3px; gap: 3px; }
+.seg button { flex: 1; padding: 8px 4px; border-radius: 8px; color: var(--muted); font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--raise); color: var(--text); }
+.bpm-big { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.bpm-big input {
+  width: 128px; text-align: center; font-family: var(--font-num); font-size: 38px; font-weight: 600;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 4px; color: var(--accent);
+}
+.tap-pad {
+  height: 104px; border-radius: 16px; border: 2px solid var(--line); background: var(--bg);
+  display: grid; place-items: center; font-weight: 700; font-size: 18px; user-select: none; -webkit-user-select: none; touch-action: manipulation;
+}
+.tap-pad.hit { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg)); }
+.row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.field { width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.song-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); text-align: left; width: 100%; }
+.song-item.cur { border-color: var(--accent); }
+.song-item div { flex: 1; min-width: 0; }
+.song-item b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-item span { font-size: 12px; color: var(--muted); }
+.list { display: grid; gap: 8px; }
+.kv { font-size: 13px; color: var(--muted); }
+.kv b { color: var(--text); font-weight: 600; }
+
+.toast {
+  position: fixed; left: 16px; right: 16px; bottom: calc(150px + env(safe-area-inset-bottom)); z-index: 40;
+  background: var(--raise); border: 1px solid var(--line); color: var(--text); padding: 11px 14px; border-radius: 12px;
+  font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.35); opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: none; }
+.busy {
+  position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 45;
+  background: var(--accent); color: #1a1408; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 20px; display: none;
+}
+.busy.show { display: block; }
+.banner { margin: 0 16px 8px; padding: 9px 12px; border-radius: 10px; background: color-mix(in srgb, var(--rec) 16%, var(--panel)); font-size: 13px; }
+.banner[hidden] { display: none; }
+.ver { text-align: center; font-size: 11px; color: #555a63; margin-top: 18px; }
+/* v1.3 compact layout */
+.tabs.mini { display: flex; padding: 2px; border-radius: 10px; flex: none; }
+.tabs.mini button { padding: 5px 11px; font-size: 13px; border-radius: 8px; }
+.strip { position: static; padding: 2px 12px 6px; gap: 0; }
+.tempo-row { gap: 8px; }
+.tempo-chip { padding: 5px 10px; border-radius: 10px; gap: 5px; }
+.tempo-chip b { font-size: 18px; }
+.beats { gap: 5px; }
+.beats i { width: 8px; height: 8px; }
+.mtog { padding: 6px 10px; border-radius: 10px; font-size: 12.5px; font-weight: 700; border: 1px solid var(--line); background: var(--panel); color: var(--muted); flex: none; }
+.mtog[aria-pressed="true"] { color: var(--text); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); background: color-mix(in srgb, var(--accent) 14%, var(--panel)); }
+.pos b { font-size: 17px; }
+body.lyr .tl-bar { display: none; }
+main { padding-top: 6px; }
+.lane { padding: 0; border: 0; background: none; margin-bottom: 6px; display: block; }
+.lane::before { display: none; }
+.lane .trk-wave { height: 64px; border: 1px solid var(--line); border-radius: 10px; }
+.lane .trk-wave::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--c); z-index: 1; pointer-events: none; }
+.lane.grabbed .trk-wave { border-color: var(--c); box-shadow: 0 0 0 1px var(--c); }
+.lane.grabbed { box-shadow: none; }
+.lane-head { position: absolute; left: 8px; top: 5px; right: 78px; display: flex; align-items: baseline; gap: 6px; overflow: hidden; white-space: nowrap; pointer-events: none; z-index: 1; }
+.lane-name { font-size: 12.5px; font-weight: 700; color: var(--text); background: rgba(17, 19, 24, .78); padding: 1px 6px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.lane-meta { font-size: 11px; color: var(--muted); background: rgba(17, 19, 24, .78); padding: 1px 5px; border-radius: 6px; flex: none; }
+.lane-btns { position: absolute; right: 4px; top: 4px; display: flex; gap: 3px; z-index: 2; }
+.lane-btns .icon-btn { width: 32px; height: 30px; border-radius: 8px; background: rgba(17, 19, 24, .78); }
+.lane-btns .icon-btn svg { width: 18px; height: 18px; }
+.lane .badge { font-size: 10px; padding: 1px 5px; }
+.lane-btns .arm { color: var(--muted); }
+.lane-btns .arm svg { width: 14px; height: 14px; }
+.lane-btns .arm[aria-pressed="true"] { color: var(--rec); background: color-mix(in srgb, var(--rec) 22%, #111318); }
+.lane.armed .trk-wave { border-color: color-mix(in srgb, var(--rec) 70%, var(--line)); }
+.lane.live .trk-wave { border-color: var(--rec); }
+.lane-head { right: 112px; }
+.add-row { margin-top: 8px; }
+.add-row .btn { padding: 10px; }
+.transport { padding: 6px 16px calc(8px + env(safe-area-inset-bottom)); gap: 2px; }
+.tbtn { width: 44px; height: 44px; }
+.play, .recb { width: 58px; height: 58px; }
+/* v1.2 timeline editing */
+.tl-bar { padding: 0 16px 2px; }
+.tl-tools { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.tl-tools .btn { padding: 0; height: 30px; border-radius: 9px; }
+.tl-tools .zb { width: 40px; font-size: 18px; }
+.tl-tools .zfit { padding: 0 11px; font-size: 13px; }
+.tl-tools .seg { margin-left: auto; background: var(--panel); border: 1px solid var(--line); }
+.tl-tools .seg { padding: 2px; }
+.tl-tools .seg button { flex: none; white-space: nowrap; padding: 4px 12px; font-size: 13px; }
+.ruler { position: relative; height: 22px; margin: 0; border-radius: 6px; background: #111318; overflow: hidden; }
+.ruler canvas { width: 100%; height: 100%; display: block; }
+.ruler, .trk-wave { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.trk-wave { height: 58px; }
+.tl-hint { font-size: 11.5px; color: var(--muted); margin: 6px 11px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drag-label { position: fixed; z-index: 40; transform: translateX(-50%); background: var(--text); color: var(--bg); font-weight: 700; font-size: 12.5px; padding: 5px 10px; border-radius: 10px; pointer-events: none; display: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.drag-label.show { display: block; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <button class="icon-btn" id="btnSongs" aria-label="곡 목록">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+  </button>
+  <button class="save-state" id="saveState" data-s="ok" aria-label="저장 상태"><span class="dot"></span><span id="saveText" class="sr">준비됨</span></button>
+  <input class="song-name" id="songName" aria-label="곡 이름" value="새 곡" autocomplete="off">
+  <div class="tabs mini" role="tablist">
+    <button role="tab" id="tabTracks" aria-selected="true">트랙</button>
+    <button role="tab" id="tabLyrics" aria-selected="false">가사</button>
+  </div>
+  <button class="icon-btn" id="btnSettings" aria-label="설정과 내보내기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+  </button>
+</div>
+<div class="banner" id="banner" hidden></div>
+
+<div class="strip">
+  <div class="tempo-row">
+    <button class="tempo-chip" id="btnTempo" aria-label="템포와 박자 설정"><b id="bpmText">100.0</b><span><span id="sigText">4/4</span></span></button>
+    <div class="beats" id="beatDots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <button class="mtog" id="togBeat" aria-pressed="true">비트</button>
+    <button class="mtog" id="togMetro" aria-pressed="true">메트로놈</button>
+    <div class="pos"><b id="barText">1.1</b></div>
+  </div>
+</div>
+<div class="tl-bar" id="tlBar">
+  <div class="tl-tools">
+    <button class="btn zb" id="zOut" aria-label="축소">−</button>
+    <button class="btn zb" id="zIn" aria-label="확대">+</button>
+    <button class="btn zfit" id="zFit">전체</button>
+    <div class="seg" id="snapSeg" aria-label="옮길 때 맞출 단위">
+      <button data-snap="beat">박</button><button data-snap="bar">마디</button><button data-snap="free">자유</button>
+    </div>
+  </div>
+  <div class="ruler" id="ruler"><canvas></canvas><div class="ph"></div></div>
+</div>
+
+<main id="main">
+  <section class="view" id="viewTracks">
+    <div id="trackList"></div>
+    <div class="add-row">
+      <button class="btn" id="btnAddFile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>녹음 파일 넣기</button>
+      <button class="btn" id="btnAddRec">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>지금 녹음</button>
+    </div>
+    <p class="hint" id="recHint">녹음할 땐 이어폰을 끼세요. 비트와 메트로놈 소리가 녹음에 섞이지 않아요.</p>
+    <div class="ver">작곡 스케치북 v1.4.1</div>
+  </section>
+  <section class="view" id="viewLyrics" hidden>
+    <div class="lyr-tools">
+      <button class="btn" id="btnMark">지금 마디 표시 넣기</button>
+      <span class="kv" id="lyrCount" style="margin-left:auto;align-self:center"></span>
+    </div>
+    <textarea id="lyrics" spellcheck="false" placeholder="가사를 적어요. 적는 대로 바로 저장돼요.&#10;&#10;[1절]&#10;"></textarea>
+  </section>
+</main>
+
+<div class="transport">
+  <div class="seek-row">
+    <span class="num" id="tNow">00:00.0</span>
+    <input type="range" id="seek" min="0" max="60" step="0.01" value="0" aria-label="재생 위치">
+    <span class="num" id="tLen">00:00.0</span>
+  </div>
+  <div class="btn-row">
+    <button class="tbtn" id="btnHome" aria-label="처음으로">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14l-10-7z"/></svg></button>
+    <button class="tbtn" id="btnBack" aria-label="한 마디 뒤로">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14L3 12zM21 5v14l-9-7z"/></svg></button>
+    <button class="tbtn play" id="btnPlay" aria-label="재생">
+      <svg id="icoPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>
+      <svg id="icoPause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg></button>
+    <div class="rec-col">
+      <button class="tbtn recb" id="btnRec" aria-label="녹음"></button>
+    </div>
+    <button class="tbtn" id="btnFwd" aria-label="한 마디 앞으로">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14l9-7zM3 5v14l9-7z"/></svg></button>
+  </div>
+</div>
+
+<!-- tempo sheet -->
+<div class="sheet" id="sheetTempo"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <h2>템포와 박자</h2>
+  <div class="bpm-big">
+    <button class="btn" data-bpm="-1">−1</button>
+    <button class="btn" data-bpm="-0.1">−.1</button>
+    <input id="bpmInput" class="num" type="number" inputmode="decimal" step="0.1" min="30" max="300" aria-label="BPM">
+    <button class="btn" data-bpm="0.1">+.1</button>
+    <button class="btn" data-bpm="1">+1</button>
+  </div>
+  <div class="grid2">
+    <button class="btn" id="bpmHalf">절반 (÷2)</button>
+    <button class="btn" id="bpmDouble">두 배 (×2)</button>
+  </div>
+  <div>
+    <h3>박자</h3>
+    <div class="seg" id="sigSeg">
+      <button data-bpb="2">2/4</button><button data-bpb="3">3/4</button><button data-bpb="4">4/4</button><button data-bpb="6">6/8</button>
+    </div>
+  </div>
+  <div>
+    <h3>자동 분석</h3>
+    <p id="autoInfo">비트를 넣으면 템포와 첫 박을 자동으로 찾아요.</p>
+    <button class="btn" id="btnReanalyze" style="margin-top:8px;width:100%">비트로 다시 맞추기</button>
+  </div>
+  <div>
+    <h3>첫 박(1) 위치</h3>
+    <div class="grid4">
+      <button class="btn" data-grid="-0.01">−10ms</button>
+      <button class="btn" data-grid="0.01">+10ms</button>
+      <button class="btn" data-grid="half">반 박 밀기</button>
+      <button class="btn" data-grid="beat">1박 밀기</button>
+    </div>
+    <p style="margin-top:8px">메트로놈이 비트의 엇박에 맞으면 ‘반 박 밀기’, 강박이 다른 박에 오면 ‘1박 밀기’를 눌러요.</p>
+  </div>
+  <div>
+    <h3>탭으로 맞추기</h3>
+    <div class="tap-pad" id="tapPad" role="button" tabindex="0">재생하면서 박마다 탭</div>
+    <p id="tapInfo" style="margin-top:8px">재생 중에 박에 맞춰 4번 이상 누르세요. 첫 탭이 1박이 돼요. 비트가 있으면 템포는 그대로 두고 위치만 맞춰요.</p>
+  </div>
+</div></div>
+
+<!-- songs sheet -->
+<div class="sheet" id="sheetSongs"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <div class="row-between"><h2>곡 목록</h2><button class="btn primary" id="btnNewSong">새 곡</button></div>
+  <div class="list" id="songList"></div>
+</div></div>
+
+<!-- settings sheet -->
+<div class="sheet" id="sheetSettings"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <h2>설정과 내보내기</h2>
+  <div class="row-between"><span>녹음 전 1마디 카운트</span><button class="tog" id="togCount" aria-pressed="true" style="padding:6px 10px"><span class="sw"></span></button></div>
+  <div>
+    <h3>메트로놈 소리 크기</h3>
+    <input type="range" id="metroVol" min="0" max="1" step="0.01" style="width:100%" aria-label="메트로놈 소리 크기">
+  </div>
+  <div>
+    <h3>녹음 싱크 보정 <span class="num" id="latText"></span></h3>
+    <input type="range" id="latRange" min="-100" max="400" step="1" style="width:100%" aria-label="녹음 싱크 보정 ms">
+    <p>녹음이 박보다 늦게 들리면 값을 올려요. 손뼉으로 자동으로 맞출 수도 있어요.</p>
+    <button class="btn" id="btnCalib" style="margin-top:8px;width:100%">손뼉으로 싱크 맞추기</button>
+  </div>
+  <div>
+    <h3>내보내기</h3>
+    <div class="grid2">
+      <button class="btn" id="btnExportMix">믹스 저장</button>
+      <button class="btn" id="btnExportAll">전체 백업 (ZIP)</button>
+    </div>
+    <p style="margin-top:8px">믹스는 소리가 켜진 트랙만 합쳐요. 메트로놈은 들어가지 않아요. Suno에 올릴 때 이 파일을 쓰면 돼요.</p>
+  </div>
+  <div>
+    <h3>저장 위치</h3>
+    <p id="storeInfo"></p>
+  </div>
+  <button class="btn danger" id="btnDeleteSong">이 곡 지우기</button>
+</div></div>
+
+<!-- track sheet -->
+<div class="sheet" id="sheetTrack"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <input class="field" id="trkName" aria-label="트랙 이름">
+  <div>
+    <h3>볼륨 <span class="num" id="trkVolTxt"></span></h3>
+    <input type="range" id="trkVol" min="0" max="1.5" step="0.01" style="width:100%" aria-label="트랙 볼륨">
+  </div>
+  <div>
+    <h3>위치 <span class="num" id="trkPos"></span></h3>
+    <div class="grid4">
+      <button class="btn" data-nudge="-beat">−1박</button>
+      <button class="btn" data-nudge="-0.01">−10ms</button>
+      <button class="btn" data-nudge="0.01">+10ms</button>
+      <button class="btn" data-nudge="beat">+1박</button>
+    </div>
+    <button class="btn" id="trkToPlayhead" style="margin-top:8px;width:100%">지금 재생 위치에서 시작하게</button>
+  </div>
+  <div class="grid2">
+    <button class="btn" id="trkExport">이 트랙 저장</button>
+    <button class="btn" id="trkReplace">파일 바꾸기</button>
+  </div>
+  <button class="btn" id="trkUndo" style="display:none">방금 덮어 녹음한 것 되돌리기</button>
+  <button class="btn danger" id="trkDelete">이 트랙 지우기</button>
+</div></div>
+
+<!-- import (no mic) sheet -->
+<div class="sheet" id="sheetImport"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <h2>녹음 넣기</h2>
+  <p id="importMsg">이 화면에서는 마이크를 쓸 수 없어요. 폰 녹음앱으로 녹음한 파일을 넣으면 지금 재생 위치에 트랙으로 들어가요.</p>
+  <div class="grid2">
+    <button class="btn primary" id="impCapture">녹음앱으로 녹음</button>
+    <button class="btn" id="impPick">파일에서 고르기</button>
+  </div>
+  <button class="btn" id="impAny" style="width:100%;margin-top:8px">모든 파일에서 고르기 (녹음 파일이 안 보일 때)</button>
+  <p class="hint" style="font-size:13px;opacity:.75;margin-top:10px">버튼을 눌러도 파일 고르는 창이 안 뜨거나, 골랐는데 아무 일도 없으면 Claude 앱 안에서 열어서 그래요. 이 페이지 링크를 크롬에서 열면 파일이 들어가요. 갤럭시 녹음 파일은 보통 내장 메모리 › Recordings › Voice Recorder 폴더에 있어요.</p>
+</div></div>
+
+<!-- calibration sheet -->
+<div class="sheet" id="sheetCalib"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <h2>손뼉으로 싱크 맞추기</h2>
+  <p>시작을 누르면 딸깍 소리가 4번 나고, 이어서 8번 더 나요. 뒤의 8번에 맞춰 손뼉을 치세요. 이어폰 없이 스피커로 해도 돼요.</p>
+  <div class="tap-pad" id="calibPad">준비</div>
+  <button class="btn primary" id="btnCalibGo">시작</button>
+</div></div>
+
+<!-- confirm -->
+<div class="sheet" id="sheetConfirm"><div class="back"></div><div class="panel">
+  <div class="grab"></div>
+  <h2 id="cfText">정말요?</h2>
+  <div class="grid2"><button class="btn" id="cfNo">취소</button><button class="btn danger" id="cfYes">지우기</button></div>
+</div></div>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="busy" id="busy"></div>
+<input type="file" id="fileBeat" accept="audio/*,video/mp4,video/webm,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm,.3ga,.amr,.mp4" hidden>
+<input type="file" id="fileTake" accept="audio/*,video/mp4,video/webm,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.webm,.3ga,.amr,.mp4" hidden>
+<input type="file" id="fileCapture" accept="audio/*" capture hidden>
+<input type="file" id="fileAny" hidden>
+<div class="drag-label" id="dragLabel"></div>
+
+<script>
+// v1 — tempo + beat-phase detection (pure JS, no deps). Shared by the page and the Node test.
+// detectTempo(mono Float32Array, sampleRate) -> {bpm, beatOffset, downbeatOffset, confidence}
+function detectTempo(mono, sampleRate, opts) {
+  opts = opts || {};
+  var minBpm = opts.minBpm || 60, maxBpm = opts.maxBpm || 190;
+  // 1) decimate to ~11 kHz
+  var dec = Math.max(1, Math.round(sampleRate / 11025));
+  var sr = sampleRate / dec;
+  var n = Math.floor(mono.length / dec);
+  var x = new Float32Array(n);
+  for (var i = 0, j = 0; i < n; i++, j += dec) {
+    var s = 0;
+    for (var k = 0; k < dec; k++) s += mono[j + k] || 0;
+    x[i] = s / dec;
+  }
+  // 2) onset envelope: log-magnitude spectral flux
+  var N = 1024, hop = 128;
+  var frames = Math.max(0, Math.floor((n - N) / hop));
+  var win = new Float32Array(N);
+  for (i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+  var re = new Float32Array(N), im = new Float32Array(N);
+  var half = N / 2, prev = new Float32Array(half), env = new Float32Array(frames);
+  var fmaxBin = Math.min(half, Math.floor(8000 / (sr / N)));
+  for (var f = 0; f < frames; f++) {
+    var off = f * hop;
+    for (i = 0; i < N; i++) { re[i] = x[off + i] * win[i]; im[i] = 0; }
+    fft(re, im);
+    var flux = 0;
+    for (i = 1; i < fmaxBin; i++) {
+      var mag = Math.log(1 + 100 * Math.sqrt(re[i] * re[i] + im[i] * im[i]));
+      var d = mag - prev[i];
+      if (d > 0) flux += d;
+      prev[i] = mag;
+    }
+    env[f] = flux;
+  }
+  var fps = sr / hop; // envelope frames per second
+  // high-pass the envelope (remove slow loudness drift) and half-wave rectify
+  var w = Math.round(fps * 0.5), acc = 0, q = [], hp = new Float32Array(frames);
+  for (f = 0; f < frames; f++) {
+    q.push(env[f]); acc += env[f];
+    if (q.length > w) acc -= q.shift();
+    var v = env[f] - acc / q.length;
+    hp[f] = v > 0 ? v : 0;
+  }
+  // 3) coarse tempo: autocorrelation with a log-normal prior around 110 BPM
+  var minLag = Math.floor(fps * 60 / maxBpm), maxLag = Math.ceil(fps * 60 / minBpm);
+  var best = -1, bestLag = minLag, ac = new Float32Array(maxLag + 2);
+  for (var lag = minLag; lag <= maxLag + 1; lag++) {
+    var sum = 0;
+    for (f = 0; f + lag < frames; f++) sum += hp[f] * hp[f + lag];
+    ac[lag] = sum / (frames - lag);
+  }
+  for (lag = minLag; lag <= maxLag; lag++) {
+    var bpmL = 60 * fps / lag;
+    var prior = Math.exp(-0.5 * Math.pow(Math.log2(bpmL / 110) / 0.9, 2));
+    var score = ac[lag] * prior;
+    if (score > best) { best = score; bestLag = lag; }
+  }
+  var coarse = 60 * fps / bestLag;
+  // 4) fine tempo + phase: comb (pulse-train) matching over the whole track
+  function combScore(bpm) {
+    var P = fps * 60 / bpm, steps = Math.floor(P * 2), bestS = -1, bestPh = 0;
+    for (var s2 = 0; s2 < steps; s2++) {
+      var ph = s2 * P / steps, tot = 0, cnt = 0;
+      for (var t = ph; t < frames - 1; t += P) {
+        var i0 = Math.floor(t), fr = t - i0;
+        // take the local max of a small window to tolerate micro-timing
+        var a = Math.max(hp[i0] || 0, hp[i0 - 1] || 0, hp[i0 + 1] || 0);
+        var b = Math.max(hp[i0 + 1] || 0, hp[i0] || 0, hp[i0 + 2] || 0);
+        tot += a * (1 - fr) + b * fr; cnt++;
+      }
+      var sc = tot / Math.max(1, cnt);
+      if (sc > bestS) { bestS = sc; bestPh = ph; }
+    }
+    return { s: bestS, ph: bestPh, P: P };
+  }
+  var bestFine = null;
+  for (var b2 = coarse * 0.96; b2 <= coarse * 1.04; b2 += 0.05) {
+    var r = combScore(b2);
+    if (!bestFine || r.s > bestFine.s) bestFine = { s: r.s, ph: r.ph, P: r.P, bpm: b2 };
+  }
+  // 5) downbeat: which of 4 beat phases carries the strongest onsets (kick on "1")
+  var P4 = bestFine.P, bestBar = -1, barK = 0;
+  for (var kk = 0; kk < 4; kk++) {
+    var tot2 = 0, c2 = 0;
+    for (var t2 = bestFine.ph + kk * P4; t2 < frames - 1; t2 += 4 * P4) { tot2 += hp[Math.round(t2)] || 0; c2++; }
+    var m2 = tot2 / Math.max(1, c2);
+    if (m2 > bestBar) { bestBar = m2; barK = kk; }
+  }
+  // envelope frame f covers samples [f*hop, f*hop+N); log-flux reacts when an onset reaches the
+  // window's trailing edge, so the true onset sits ~0.87*N after the frame start (calibrated on click tracks)
+  var beatSec = bestFine.ph / fps + 0.87 * N / sr;
+  var periodSec = 60 / bestFine.bpm;
+  beatSec = ((beatSec % periodSec) + periodSec) % periodSec;
+  var downSec = beatSec + barK * periodSec;
+  var meanEnv = 0; for (f = 0; f < frames; f++) meanEnv += hp[f]; meanEnv /= Math.max(1, frames);
+  return {
+    bpm: Math.round(bestFine.bpm * 10) / 10,
+    beatOffset: beatSec,
+    downbeatOffset: downSec % (4 * periodSec),
+    confidence: meanEnv > 0 ? bestFine.s / meanEnv : 0
+  };
+}
+
+function fft(re, im) {
+  var n = re.length, i, j = 0, k, m;
+  for (i = 1; i < n; i++) {
+    var bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { var t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+  }
+  for (var len = 2; len <= n; len <<= 1) {
+    var ang = -2 * Math.PI / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (i = 0; i < n; i += len) {
+      var cr = 1, ci = 0;
+      for (k = 0; k < len / 2; k++) {
+        var a = i + k, b = a + len / 2;
+        var tr = re[b] * cr - im[b] * ci, ti = re[b] * ci + im[b] * cr;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+        var ncr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = ncr;
+      }
+    }
+  }
+}
+
+
+
+</script>
+<script>
+'use strict';
+/* ============ utilities ============ */
+const $ = (s) => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const mod = (a, n) => ((a % n) + n) % n;
+const median = (a) => { const s = a.slice().sort((x, y) => x - y); const m = s.length >> 1; return s.length ? (s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2) : 0; };
+function fmtTime(t) {
+  if (!isFinite(t)) t = 0;
+  const neg = t < 0; t = Math.abs(t);
+  const m = Math.floor(t / 60), s = t - m * 60;
+  return (neg ? '-' : '') + String(m).padStart(2, '0') + ':' + s.toFixed(1).padStart(4, '0');
+}
+function fmtSize(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(b / 1024)) + 'KB'; }
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+let toastTimer = 0;
+function toast(msg, ms) {
+  const el = $('#toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), ms || 2800);
+}
+function busy(msg) { const el = $('#busy'); if (msg) { el.textContent = msg; el.classList.add('show'); } else el.classList.remove('show'); }
+function debounce(fn, ms) { let t = 0; const d = (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; d.flush = () => { clearTimeout(t); fn(); }; return d; }
+
+/* ============ storage: IndexedDB with in-memory fallback ============ */
+const STORES = ['projects', 'blobs', 'chunks', 'takes', 'kv'];
+const Store = { idb: null, mem: {} };
+STORES.forEach((s) => (Store.mem[s] = new Map()));
+function idbOpen() {
+  return new Promise((res, rej) => {
+    let r;
+    try { r = indexedDB.open('sketchbook', 1); } catch (e) { rej(e); return; }
+    r.onupgradeneeded = () => { const d = r.result; STORES.forEach((s) => { if (!d.objectStoreNames.contains(s)) d.createObjectStore(s); }); };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+    r.onblocked = () => rej(new Error('blocked'));
+    setTimeout(() => rej(new Error('timeout')), 6000);
+  });
+}
+function reqP(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+function txDone(t) { return new Promise((res, rej) => { t.oncomplete = () => res(); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('abort')); }); }
+async function sGet(st, key) {
+  if (!Store.idb) return Store.mem[st].get(key);
+  return reqP(Store.idb.transaction(st, 'readonly').objectStore(st).get(key));
+}
+async function sPut(st, key, val) {
+  if (!Store.idb) { Store.mem[st].set(key, val); return; }
+  const t = Store.idb.transaction(st, 'readwrite'); t.objectStore(st).put(val, key); await txDone(t);
+}
+async function sDel(st, key) {
+  if (!Store.idb) { Store.mem[st].delete(key); return; }
+  const t = Store.idb.transaction(st, 'readwrite'); t.objectStore(st).delete(key); await txDone(t);
+}
+async function sAll(st) {
+  if (!Store.idb) return [...Store.mem[st].values()];
+  return reqP(Store.idb.transaction(st, 'readonly').objectStore(st).getAll());
+}
+async function sPrefix(st, prefix) {
+  if (!Store.idb) return [...Store.mem[st].entries()].filter(([k]) => k.startsWith(prefix)).sort(([a], [b]) => (a < b ? -1 : 1)).map(([, v]) => v);
+  return reqP(Store.idb.transaction(st, 'readonly').objectStore(st).getAll(IDBKeyRange.bound(prefix, prefix + '￿')));
+}
+async function sDelPrefix(st, prefix) {
+  if (!Store.idb) { [...Store.mem[st].keys()].forEach((k) => k.startsWith(prefix) && Store.mem[st].delete(k)); return; }
+  const t = Store.idb.transaction(st, 'readwrite'); t.objectStore(st).delete(IDBKeyRange.bound(prefix, prefix + '￿')); await txDone(t);
+}
+
+/* ============ cloud (only inside a Claude artifact) ============ */
+const Cloud = { db: null, uid: null, assets: null, dl: null, tried: false, state: 'none' };
+function inArtifact() { return !!(window.claude && typeof window.claude.use === 'function'); }
+async function initCloud() {
+  if (!inArtifact()) { Cloud.tried = true; updateStoreInfo(); return; }
+  try {
+    const names = ['db', 'user', 'assets', 'downloads'];
+    const [db, user, assets, dl] = await Promise.all(names.map((n) => window.claude.use(n).catch(() => null)));
+    Cloud.dl = dl; Cloud.assets = assets;
+    if (db && user) { const id = await user.id(); if (id) { Cloud.db = db; Cloud.uid = id; } }
+  } catch (e) { console.warn('cloud init', e); }
+  Cloud.tried = true; updateStoreInfo();
+  if (Cloud.db) pullCloud();
+}
+function cloudCol() { return Cloud.db.collection('data/users/' + Cloud.uid); }
+function cloudBody(p) {
+  const pick = (it) => it && { id: it.id, key: it.key, name: it.name, size: it.size || 0, type: it.type || '', dur: it.dur || 0, vol: it.vol, muted: !!it.muted, startAt: it.startAt || 0, src: it.src || 'file', cloudId: it.cloudId || null, createdAt: it.createdAt || 0 };
+  return { id: p.id, name: p.name, createdAt: p.createdAt, updatedAt: p.updatedAt, bpm: p.bpm, grid: p.grid, bpb: p.bpb,
+    autoBpm: p.autoBpm || null, metroOn: !!p.metroOn, metroVol: p.metroVol, beat: pick(p.beat) || null, tracks: p.tracks.map(pick), lyrics: p.lyrics || '' };
+}
+const cloudQ = {};
+function cloudSaveNow(p) {
+  if (!Cloud.db) return;
+  const id = 'p_' + p.id;
+  const st = cloudQ[id] || (cloudQ[id] = { busy: false, next: null });
+  st.next = JSON.parse(JSON.stringify(cloudBody(p)));
+  if (!st.busy) pumpCloud(id);
+}
+async function pumpCloud(id) {
+  const st = cloudQ[id]; st.busy = true;
+  while (st.next) {
+    const body = st.next; st.next = null;
+    try { await cloudCol().doc(id).set(body); Cloud.state = 'ok'; }
+    catch (e) {
+      if (e && e.code === 'unavailable') { await sleep(700 + Math.random() * 900); try { await cloudCol().doc(id).set(body); Cloud.state = 'ok'; } catch (e2) { Cloud.state = 'err'; } }
+      else Cloud.state = 'err';
+    }
+    updateSaveBadge();
+  }
+  st.busy = false;
+}
+const cloudSaveSoon = debounce(() => P && cloudSaveNow(P), 1500);
+async function pullCloud() {
+  let snap;
+  try { snap = await Promise.race([cloudCol().get(), sleep(10000).then(() => null)]); } catch (e) { snap = null; }
+  if (!snap) { Cloud.state = 'err'; updateSaveBadge(); return; }
+  const seen = new Set(); let changedCurrent = false;
+  for (const d of snap.docs) {
+    const data = d.data(); if (!data || !data.id) continue; seen.add(data.id);
+    const local = await sGet('projects', data.id);
+    if (!local || (data.updatedAt || 0) > (local.updatedAt || 0)) {
+      const merged = normalizeProject(JSON.parse(JSON.stringify(data)));
+      await sPut('projects', merged.id, merged);
+      if (P && P.id === merged.id) changedCurrent = true;
+    }
+  }
+  const locals = await sAll('projects');
+  for (const p of locals) if (!seen.has(p.id)) cloudSaveNow(p);
+  Cloud.state = 'ok'; updateSaveBadge();
+  if (changedCurrent && !T.playing && !T.rec) { await openProject(await sGet('projects', P.id)); toast('다른 기기에서 고친 내용을 불러왔어요'); }
+  if ($('#sheetSongs').classList.contains('open')) renderSongs();
+  // tracks saved before the cloud was ready get uploaded now
+  if (P) { if (P.beat) cloudUpload(P.beat); P.tracks.forEach(cloudUpload); }
+}
+function containerType(buf) {
+  const u = new Uint8Array(buf, 0, Math.min(12, buf.byteLength));
+  if (u.length >= 8 && u[4] === 0x66 && u[5] === 0x74 && u[6] === 0x79 && u[7] === 0x70) return 'video/mp4';
+  if (u.length >= 4 && u[0] === 0x1a && u[1] === 0x45 && u[2] === 0xdf && u[3] === 0xa3) return 'video/webm';
+  return null;
+}
+const uploading = new Set();
+async function cloudUpload(item) {
+  if (!Cloud.assets || !item || item.cloudId || uploading.has(item.key)) return;
+  const rec = await sGet('blobs', item.key); if (!rec) return;
+  const type = containerType(rec.buf);
+  if (!type || rec.buf.byteLength > 20 * 1024 * 1024) return;
+  uploading.add(item.key);
+  try {
+    const r = await Cloud.assets.upload(new Blob([rec.buf]), { type });
+    item.cloudId = r.id; markDirty(); renderTracks();
+  } catch (e) { console.warn('upload', e && e.code); }
+  uploading.delete(item.key);
+}
+
+/* ============ project model ============ */
+const COLORS = ['#f2b544', '#4fb3bf', '#b39ddb', '#ff8a65', '#9ccc65', '#64b5f6', '#f48fb1'];
+let P = null; // current project
+let Settings = { countIn: true, latencyMs: null };
+function newProject(n) {
+  const t = Date.now();
+  return { id: uid(), name: '새 곡 ' + (n || 1), createdAt: t, updatedAt: t, bpm: 100, grid: 0, bpb: 4, autoBpm: null,
+    metroOn: true, metroVol: 0.7, beat: null, tracks: [], lyrics: '' };
+}
+function normalizeProject(p) {
+  const d = newProject(); for (const k in d) if (p[k] === undefined) p[k] = d[k];
+  p.tracks = (p.tracks || []).map((t) => Object.assign({ vol: 1, muted: false, startAt: 0 }, t));
+  if (p.beat) { p.beat.id = 'beat'; if (p.beat.vol == null) p.beat.vol = 0.9; p.beat.startAt = 0; }
+  return p;
+}
+const period = () => 60 / P.bpm;
+const barDur = () => period() * P.bpb;
+function songLength() {
+  let L = 0;
+  if (P.beat && P.beat.dur) L = P.beat.dur;
+  for (const t of P.tracks) L = Math.max(L, (t.startAt || 0) + (t.dur || 0));
+  return L;
+}
+function viewLength() { return Math.max(songLength(), T.recMax || 0, 30); }
+function items() { return (P.beat ? [P.beat] : []).concat(P.tracks); }
+function itemById(id) { return id === 'beat' ? P.beat : P.tracks.find((t) => t.id === id); }
+function latencySec() {
+  if (Settings.latencyMs != null) return Settings.latencyMs / 1000;
+  const c = ctx; return c ? (c.outputLatency || 0) + (c.baseLatency || 0) : 0.02;
+}
+
+const saveLocalSoon = debounce(async () => {
+  if (!P) return;
+  try { await sPut('projects', P.id, JSON.parse(JSON.stringify(P))); saveState('ok'); }
+  catch (e) { saveState('warn', '저장 실패: 저장 공간을 확인하세요'); }
+}, 250);
+function markDirty() {
+  if (!P) return;
+  P.updatedAt = Date.now(); saveState('saving'); saveLocalSoon(); cloudSaveSoon();
+}
+function flushSaves() { saveLocalSoon.flush(); cloudSaveSoon.flush(); }
+let lastSavedAt = 0;
+function saveState(s, msg) {
+  const el = $('#saveState'); el.dataset.s = s;
+  if (s === 'ok') lastSavedAt = Date.now();
+  updateSaveBadge(msg);
+}
+function updateSaveBadge(msg) {
+  const el = $('#saveState'); const s = el.dataset.s; let txt;
+  if (msg) txt = msg;
+  else if (s === 'saving') txt = '저장 중…';
+  else if (!Store.idb && !Cloud.db) txt = '저장 안 됨: 이 화면은 저장을 막아요. 내보내기로 백업하세요';
+  else {
+    const where = Cloud.db ? (Cloud.state === 'err' ? '이 기기에 저장됨 (클라우드 연결 대기)' : '저장됨 · 가사와 설정은 클라우드에도') : '이 기기에 저장됨';
+    txt = where;
+  }
+  $('#saveText').textContent = txt; el.title = txt;
+}
+function updateStoreInfo() {
+  const parts = [];
+  if (Store.idb) parts.push('녹음과 비트 파일은 이 기기의 브라우저 저장소에 바로바로 저장돼요. 녹음 중에도 1초마다 저장해서, 앱이 꺼져도 다음에 열면 복구돼요.');
+  else parts.push('이 화면은 브라우저 저장소를 막고 있어요. 닫기 전에 전체 백업을 받아 두세요.');
+  if (Cloud.db) parts.push('가사, 템포, 트랙 목록은 클라우드에도 저장돼요. m4a처럼 mp4 형식인 녹음 파일은 클라우드에도 올라가요.');
+  else if (!inArtifact()) parts.push('사파리는 홈 화면에 추가해 두면 저장이 더 오래 안전하게 유지돼요.');
+  $('#storeInfo').textContent = parts.join(' ');
+  if (navigator.storage && navigator.storage.estimate) navigator.storage.estimate().then((e) => {
+    if (e && e.usage != null) $('#storeInfo').textContent = parts.join(' ') + ' 지금 쓰는 공간: ' + fmtSize(e.usage) + '.';
+  }).catch(() => {});
+  updateSaveBadge();
+}
+
+/* ============ audio engine ============ */
+let ctx = null, master = null;
+const buffers = new Map(); // key -> AudioBuffer
+const peaks = new Map(); // key -> Float32Array
+function ac() {
+  if (!ctx) {
+    const C = window.AudioContext || window.webkitAudioContext;
+    ctx = new C({ latencyHint: 'interactive' });
+    master = ctx.createGain(); master.connect(ctx.destination);
+  }
+  return ctx;
+}
+function decode(buf) { return new Promise((res, rej) => { try { const p = ac().decodeAudioData(buf, res, rej); if (p && p.then) p.then(res, rej); } catch (e) { rej(e); } }); }
+function computePeaks(ab) {
+  const N = Math.min(60000, Math.max(1600, Math.round(ab.duration * 100))), len = ab.length, out = new Float32Array(N), chs = [];
+  for (let c = 0; c < Math.min(2, ab.numberOfChannels); c++) chs.push(ab.getChannelData(c));
+  const step = Math.max(1, Math.floor(len / N));
+  for (let i = 0; i < N; i++) {
+    let m = 0; const s = Math.floor(i * len / N), e = Math.min(len, s + step);
+    for (let j = s; j < e; j += 4) for (const ch of chs) { const v = Math.abs(ch[j]); if (v > m) m = v; }
+    out[i] = m;
+  }
+  return out;
+}
+async function loadBuffer(item) {
+  if (!item) return null;
+  if (buffers.has(item.key)) return buffers.get(item.key);
+  let rec = await sGet('blobs', item.key);
+  if (!rec && item.cloudId) {
+    try { const r = await fetch('/_blob/' + item.cloudId); if (r.ok) { rec = { type: item.type, buf: await r.arrayBuffer() }; await sPut('blobs', item.key, rec); } } catch (e) {}
+  }
+  if (!rec) { item.missing = true; return null; }
+  try {
+    const ab = await decode(rec.buf.slice(0));
+    buffers.set(item.key, ab); peaks.set(item.key, computePeaks(ab)); item.missing = false;
+    if (!item.dur || Math.abs(item.dur - ab.duration) > 0.05) { item.dur = ab.duration; }
+    return ab;
+  } catch (e) { item.missing = true; return null; }
+}
+async function setAudioSession(type) { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch (e) {} }
+let wl = null;
+async function wakeLock(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !wl) { wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => (wl = null)); }
+    else if (!on && wl) { await wl.release(); wl = null; }
+  } catch (e) {}
+}
+
+/* transport */
+const T = { playing: false, startCtx: 0, startPos: 0, pos: 0, sources: [], gains: new Map(), nextBeat: 0, timer: 0, rec: null, recMax: 0, gen: 0, armed: null, undo: null };
+function now() { return T.playing && ctx ? T.startPos + (ctx.currentTime - T.startCtx) : T.pos; }
+function stopSources() {
+  for (const s of T.sources) { try { s.stop(); } catch (e) {} try { s.disconnect(); } catch (e) {} }
+  T.sources = []; T.gains.forEach((g) => { try { g.disconnect(); } catch (e) {} }); T.gains.clear();
+  clearInterval(T.timer); T.timer = 0;
+}
+async function play(from) {
+  const c = ac(); const gen = ++T.gen;
+  if (c.state !== 'running') { try { await c.resume(); } catch (e) {} }
+  if (from == null) from = T.pos;
+  stopSources();
+  const list = items();
+  const need = list.filter((it) => !buffers.has(it.key));
+  if (need.length) { busy('소리 불러오는 중…'); await Promise.all(need.map(loadBuffer)); busy(); }
+  if (gen !== T.gen) return; // a newer play/pause won
+  const t0 = c.currentTime + 0.08;
+  T.startCtx = t0; T.startPos = from;
+  for (const it of list) {
+    const b = buffers.get(it.key); if (!b) continue;
+    const s0 = it.startAt || 0;
+    const g = c.createGain(); g.gain.value = it.muted ? 0 : it.vol; g.connect(master); T.gains.set(it.id, g);
+    const src = c.createBufferSource(); src.buffer = b; src.connect(g);
+    if (s0 >= from) src.start(t0 + (s0 - from));
+    else if (from < s0 + b.duration) src.start(t0, from - s0);
+    else continue;
+    T.sources.push(src);
+  }
+  T.nextBeat = Math.ceil((from - P.grid) / period() - 1e-9);
+  T.playing = true;
+  T.timer = setInterval(schedule, 25); schedule();
+  wakeLock(true); setAudioSession(T.rec ? 'play-and-record' : 'playback');
+  updatePlayUI();
+}
+function pause() {
+  T.gen++;
+  if (T.playing) T.pos = now();
+  T.playing = false; stopSources(); wakeLock(false); updatePlayUI();
+}
+function seek(p) {
+  const L = viewLength(); p = clamp(p, 0, Math.max(L, p));
+  if (V.span && (p < V.t0 || p > V.t0 + V.span)) { V.t0 = p - V.span * 0.1; clampView(); drawWaves(); }
+  if (T.playing) play(p); else { T.pos = p; drawPlayheads(); }
+}
+function resyncBeats() { if (T.playing) T.nextBeat = Math.ceil((now() + 0.03 - P.grid) / period() - 1e-9); }
+function schedule() {
+  if (!T.playing || !ctx) return;
+  const per = period(), horizon = ctx.currentTime + 0.15;
+  for (let guard = 0; guard < 64; guard++) {
+    const bt = P.grid + T.nextBeat * per;
+    const ct = T.startCtx + (bt - T.startPos);
+    if (ct > horizon) break;
+    const inCount = !!(T.rec && bt < T.rec.pos0 - 1e-6);
+    if (ct >= ctx.currentTime - 0.005 && ((P.metroOn && !T.rec) || inCount)) click(ct, mod(T.nextBeat, P.bpb) === 0, inCount);
+    if (ct >= ctx.currentTime - 0.005) flashBeat(ct, mod(T.nextBeat, P.bpb));
+    T.nextBeat++;
+  }
+  const L = songLength();
+  if (!T.rec && L > 0 && now() >= L + 0.3) { pause(); T.pos = L; drawPlayheads(); }
+}
+function click(t, accent, count) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'sine'; o.frequency.value = accent ? 1760 : 1175;
+  const vol = (count ? Math.max(P.metroVol, 0.6) : P.metroVol) * (accent ? 1 : 0.62);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), t + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.055);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.07);
+}
+const dots = () => document.querySelectorAll('#beatDots i');
+function renderDots() {
+  const box = $('#beatDots'); box.innerHTML = '';
+  for (let i = 0; i < P.bpb; i++) box.appendChild(document.createElement('i'));
+}
+function flashBeat(ct, idx) {
+  const delay = Math.max(0, (ct - ctx.currentTime) * 1000 + ((ctx.outputLatency || 0) * 1000));
+  setTimeout(() => {
+    const d = dots(); d.forEach((x) => x.classList.remove('on', 'acc'));
+    const el = d[idx]; if (el) { el.classList.add('on'); if (idx === 0) el.classList.add('acc'); }
+    setTimeout(() => el && el.classList.remove('on', 'acc'), 110);
+  }, delay);
+}
+function setGain(id) {
+  const it = itemById(id), g = T.gains.get(id);
+  if (g && it && ctx) g.gain.setTargetAtTime(it.muted ? 0 : it.vol, ctx.currentTime, 0.015);
+}
+
+/* ============ tempo detection ============ */
+function monoOf(ab) {
+  const n = ab.length, out = new Float32Array(n), C = ab.numberOfChannels;
+  for (let c = 0; c < C; c++) { const d = ab.getChannelData(c); for (let i = 0; i < n; i++) out[i] += d[i] / C; }
+  return out;
+}
+function analyzeTempo(ab) {
+  const mono = monoOf(ab), sr = ab.sampleRate;
+  return new Promise((resolve) => {
+    let done = false;
+    const fallback = () => { if (done) return; done = true; setTimeout(() => resolve(detectTempo(mono, sr)), 30); };
+    try {
+      const src = fft.toString() + '\n' + detectTempo.toString() + '\nonmessage=function(e){postMessage(detectTempo(e.data.x,e.data.sr));};';
+      const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+      const w = new Worker(url);
+      const timer = setTimeout(() => { try { w.terminate(); } catch (e) {} fallback(); }, 25000);
+      w.onmessage = (e) => { if (done) return; done = true; clearTimeout(timer); w.terminate(); URL.revokeObjectURL(url); resolve(e.data); };
+      w.onerror = () => { clearTimeout(timer); try { w.terminate(); } catch (e) {} fallback(); };
+      const copy = new Float32Array(mono);
+      w.postMessage({ x: copy, sr }, [copy.buffer]);
+    } catch (e) { fallback(); }
+  });
+}
+function confWord(c) { return c >= 7 ? '확실함' : c >= 4 ? '대체로 확실' : '확실하지 않음, 탭으로 확인해 보세요'; }
+async function runTempo(ab, silent) {
+  busy('템포 찾는 중…');
+  const r = await analyzeTempo(ab);
+  busy();
+  P.autoBpm = { bpm: r.bpm, conf: Math.round(r.confidence * 10) / 10 };
+  P.bpm = r.bpm; P.grid = r.downbeatOffset;
+  markDirty(); resyncBeats(); renderTempo();
+  if (!silent) toast('템포 ' + r.bpm.toFixed(1) + ' BPM으로 맞췄어요 (' + confWord(r.confidence) + ')', 3600);
+}
+
+/* ============ recording (microphone) ============ */
+function micPolicy() {
+  try { const pp = document.permissionsPolicy || document.featurePolicy; if (pp && pp.allowsFeature) return pp.allowsFeature('microphone'); } catch (e) {}
+  return null;
+}
+let micBlocked = !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || window.isSecureContext === false || micPolicy() === false;
+async function getMic() {
+  return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+}
+async function startRec() {
+  if (T.rec) return;
+  const c = ac(); try { await c.resume(); } catch (e) {}
+  let stream;
+  try { stream = await getMic(); }
+  catch (e) {
+    micBlocked = true; updateRecUI();
+    openImport(e && e.name === 'NotAllowedError' ? '마이크 권한이 꺼져 있어요. 브라우저 설정에서 마이크를 허용하거나, 녹음앱으로 녹음한 파일을 넣어 주세요.' : null);
+    return;
+  }
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  if (T.playing) pause();
+  const pos0 = T.pos;
+  const target = T.armed && P.tracks.some((t) => t.id === T.armed) ? T.armed : null;
+  const take = { id: 't' + uid(), projectId: P.id, sr: c.sampleRate, seq: 0, pending: [], total: 0, anchors: [], pos0, startAt: null, createdAt: Date.now(), target, live: [], blk: Math.max(1, Math.round(c.sampleRate / 100)), bi: 0, bm: 0 };
+  const src = c.createMediaStreamSource(stream);
+  const proc = c.createScriptProcessor(4096, 1, 1);
+  const sink = c.createGain(); sink.gain.value = 0;
+  src.connect(proc); proc.connect(sink); sink.connect(c.destination);
+  proc.onaudioprocess = (e) => {
+    const d = e.inputBuffer.getChannelData(0); const copy = new Float32Array(d);
+    take.pending.push(copy); take.total += copy.length;
+    if (take.anchors.length < 16) take.anchors.push(c.currentTime - take.total / take.sr);
+    let s = 0; for (let i = 0; i < copy.length; i += 8) s += copy[i] * copy[i];
+    level = Math.min(1, Math.sqrt(s / (copy.length / 8)) * 4);
+    for (let i = 0; i < copy.length; i++) { const v = Math.abs(copy[i]); if (v > take.bm) take.bm = v; if (++take.bi >= take.blk) { take.live.push(Math.min(1, take.bm * 1.6)); take.bi = 0; take.bm = 0; } }
+  };
+  T.rec = { take, stream, src, proc, sink, pos0 };
+  await sPut('takes', take.id, takeMeta(take));
+  const countIn = Settings.countIn ? barDur() : 0;
+  await play(pos0 - countIn);
+  take.startCtx = T.startCtx; take.startPos = T.startPos;
+  T.rec.flushTimer = setInterval(() => flushTake(take), 1000);
+  document.body.classList.add('recording'); updateRecUI(); renderTracks();
+}
+let level = 0;
+function takeMeta(take) {
+  return { id: take.id, projectId: take.projectId, sr: take.sr, pos0: take.pos0, startAt: take.startAt, createdAt: take.createdAt, seqs: take.seq };
+}
+function computeTakeStart(take) {
+  if (take.startAt != null || take.anchors.length < 3 || take.startCtx == null) return;
+  const anchor = median(take.anchors);
+  take.startAt = take.startPos + (anchor - take.startCtx) - latencySec();
+}
+async function flushTake(take) {
+  computeTakeStart(take);
+  if (!take.pending.length) return;
+  const parts = take.pending; take.pending = [];
+  let n = 0; for (const p of parts) n += p.length;
+  const i16 = new Int16Array(n); let o = 0;
+  for (const p of parts) for (let i = 0; i < p.length; i++) { const v = clamp(p[i], -1, 1); i16[o++] = v < 0 ? v * 0x8000 : v * 0x7fff; }
+  const seq = take.seq++;
+  try {
+    await sPut('chunks', take.id + ':' + String(seq).padStart(6, '0'), i16.buffer);
+    await sPut('takes', take.id, takeMeta(take));
+  } catch (e) { saveState('warn', '녹음 저장 실패: 저장 공간을 확인하세요'); }
+}
+async function stopRec() {
+  const R = T.rec; if (!R) return;
+  clearInterval(R.flushTimer);
+  try { R.proc.onaudioprocess = null; R.src.disconnect(); R.proc.disconnect(); R.sink.disconnect(); } catch (e) {}
+  R.stream.getTracks().forEach((t) => t.stop());
+  pause();
+  T.rec = null; document.body.classList.remove('recording'); level = 0; updateRecUI();
+  computeTakeStart(R.take);
+  await flushTake(R.take);
+  busy('녹음 정리 중…');
+  const target = R.take.target ? P.tracks.find((t) => t.id === R.take.target) : null;
+  let tr = null, punched = false;
+  if (target) { tr = await punchIn(R.take, target); punched = !!tr; }
+  if (!tr) tr = await finalizeTake(takeMeta(R.take), '녹음 ' + (P.tracks.length + 1), P);
+  busy();
+  setAudioSession('playback');
+  if (tr) { T.pos = R.pos0; renderAll(); toast(punched ? '이 트랙에 덮어 녹음했어요. 트랙 메뉴에서 되돌릴 수 있어요' : '녹음을 저장했어요', 3200); }
+  else { renderAll(); toast('녹음이 너무 짧아서 버렸어요'); }
+}
+async function finalizeTake(meta, name, proj) {
+  const chunks = await sPrefix('chunks', meta.id + ':');
+  let n = 0; for (const c of chunks) n += c.byteLength / 2;
+  if (n < meta.sr * 0.3) { await sDelPrefix('chunks', meta.id + ':'); await sDel('takes', meta.id); return null; }
+  const i16 = new Int16Array(n); let o = 0;
+  for (const c of chunks) { const a = new Int16Array(c); i16.set(a, o); o += a.length; }
+  const wav = wavFromInt16(i16, meta.sr);
+  const key = 'k' + uid();
+  await sPut('blobs', key, { type: 'audio/wav', buf: wav });
+  const startAt = meta.startAt != null ? meta.startAt : meta.pos0;
+  const tr = { id: 'r' + uid(), key, name, src: 'mic', type: 'audio/wav', size: wav.byteLength, dur: n / meta.sr, startAt, vol: 1, muted: false, createdAt: meta.createdAt || Date.now() };
+  proj.tracks.push(tr);
+  proj.updatedAt = Date.now();
+  await sPut('projects', proj.id, JSON.parse(JSON.stringify(proj)));
+  if (P && proj.id === P.id) {
+    const ab = ac().createBuffer(1, n, meta.sr); const ch = ab.getChannelData(0);
+    for (let i = 0; i < n; i++) ch[i] = i16[i] / 0x8000;
+    buffers.set(key, ab); peaks.set(key, computePeaks(ab));
+    cloudSaveSoon();
+  }
+  await sDelPrefix('chunks', meta.id + ':'); await sDel('takes', meta.id);
+  return tr;
+}
+async function punchIn(take, tr) {
+  const meta = takeMeta(take);
+  const chunks = await sPrefix('chunks', meta.id + ':');
+  let n = 0; for (const c of chunks) n += c.byteLength / 2;
+  const sr = meta.sr;
+  const tStart = meta.startAt != null ? meta.startAt : meta.pos0;
+  const skip = Math.max(0, Math.round((meta.pos0 - tStart) * sr)); // drop the count-in part
+  if (n - skip < sr * 0.3) return null;
+  const ab = await loadBuffer(tr);
+  if (!ab || ab.sampleRate !== sr) return null;
+  const ti = new Int16Array(n); let o = 0;
+  for (const c of chunks) { const a = new Int16Array(c); ti.set(a, o); o += a.length; }
+  const pStart = tStart + skip / sr, pN = n - skip;
+  const oStart = tr.startAt || 0, oN = ab.length;
+  const nStart = Math.min(oStart, pStart), nEnd = Math.max(oStart + oN / sr, pStart + pN / sr);
+  const N = Math.round((nEnd - nStart) * sr);
+  const out = new Float32Array(N);
+  const oOff = Math.round((oStart - nStart) * sr), C = ab.numberOfChannels;
+  for (let c = 0; c < C; c++) { const d = ab.getChannelData(c); for (let i = 0; i < oN && oOff + i < N; i++) out[oOff + i] += d[i] / C; }
+  const pOff = Math.round((pStart - nStart) * sr), F = Math.min(Math.round(sr * 0.006), Math.floor(pN / 2));
+  for (let i = 0; i < pN && pOff + i < N; i++) {
+    const v = ti[skip + i] / 0x8000; let w = 1;
+    if (i < F) w = i / F; else if (i >= pN - F) w = (pN - i) / F;
+    out[pOff + i] = out[pOff + i] * (1 - w) + v * w;
+  }
+  const i16 = new Int16Array(N); for (let i = 0; i < N; i++) { const v = clamp(out[i], -1, 1); i16[i] = v < 0 ? v * 0x8000 : v * 0x7fff; }
+  const wav = wavFromInt16(i16, sr); const key = 'k' + uid();
+  try { await sPut('blobs', key, { type: 'audio/wav', buf: wav }); } catch (e) { return null; }
+  dropUndo();
+  T.undo = { trackId: tr.id, prev: { key: tr.key, type: tr.type, size: tr.size, dur: tr.dur, startAt: tr.startAt, cloudId: tr.cloudId || null }, key };
+  buffers.delete(tr.key); peaks.delete(tr.key);
+  Object.assign(tr, { key, type: 'audio/wav', size: wav.byteLength, dur: N / sr, startAt: nStart, cloudId: null, missing: false });
+  const nb = ac().createBuffer(1, N, sr); nb.getChannelData(0).set(out);
+  buffers.set(key, nb); peaks.set(key, computePeaks(nb));
+  await sDelPrefix('chunks', meta.id + ':'); await sDel('takes', meta.id);
+  markDirty();
+  return tr;
+}
+function dropUndo() { if (T.undo) { sDel('blobs', T.undo.prev.key); T.undo = null; } }
+async function undoPunch() {
+  const u = T.undo; if (!u) return;
+  const tr = P.tracks.find((t) => t.id === u.trackId); if (!tr) { T.undo = null; return; }
+  buffers.delete(tr.key); peaks.delete(tr.key); sDel('blobs', tr.key);
+  Object.assign(tr, u.prev); T.undo = null;
+  markDirty(); renderTracks(); if (T.playing) play(now());
+  toast('덮어 녹음하기 전으로 되돌렸어요');
+}
+async function recoverTakes() {
+  let takes = [];
+  try { takes = await sAll('takes'); } catch (e) { return 0; }
+  let count = 0;
+  for (const m of takes) {
+    const proj = await sGet('projects', m.projectId);
+    if (!proj) { await sDelPrefix('chunks', m.id + ':'); await sDel('takes', m.id); continue; }
+    normalizeProject(proj);
+    const tr = await finalizeTake(m, '복구된 녹음', proj);
+    if (tr) count++;
+  }
+  return count;
+}
+
+/* calibration: clap along with 8 clicks */
+async function calibrate() {
+  const pad = $('#calibPad');
+  const c = ac(); try { await c.resume(); } catch (e) {}
+  let stream;
+  try { stream = await getMic(); } catch (e) { pad.textContent = '마이크를 쓸 수 없어요'; return; }
+  if (T.playing) pause();
+  const sr = c.sampleRate, per = 0.5;
+  const src = c.createMediaStreamSource(stream), proc = c.createScriptProcessor(2048, 1, 1), sink = c.createGain();
+  sink.gain.value = 0; src.connect(proc); proc.connect(sink); sink.connect(c.destination);
+  const chunks = []; let total = 0; const anchors = [];
+  proc.onaudioprocess = (e) => { const d = new Float32Array(e.inputBuffer.getChannelData(0)); chunks.push(d); total += d.length; if (anchors.length < 16) anchors.push(c.currentTime - total / sr); };
+  const t0 = c.currentTime + 0.4, clicks = [];
+  for (let k = 0; k < 12; k++) {
+    const t = t0 + k * per; clicks.push(t);
+    const o = c.createOscillator(), g = c.createGain(); o.frequency.value = k % 4 === 0 ? 1760 : 1175;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.8, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.06);
+    setTimeout(() => { pad.textContent = k < 4 ? '준비 ' + (4 - k) : '짝! ' + (k - 3); pad.classList.toggle('hit', k >= 4); }, Math.max(0, (t - c.currentTime) * 1000));
+  }
+  await sleep((t0 - c.currentTime + 12 * per + 0.5) * 1000);
+  proc.onaudioprocess = null; try { src.disconnect(); proc.disconnect(); sink.disconnect(); } catch (e) {}
+  stream.getTracks().forEach((t) => t.stop()); pad.classList.remove('hit');
+  const x = new Float32Array(total); let o = 0; for (const ch of chunks) { x.set(ch, o); o += ch.length; }
+  const anchor = median(anchors);
+  const onsets = detectOnsets(x, sr).map((i) => anchor + i / sr);
+  const deltas = [];
+  for (const ot of onsets) {
+    let best = 1e9; for (let k = 4; k < 12; k++) { const d = ot - clicks[k]; if (Math.abs(d) < Math.abs(best)) best = d; }
+    if (best > -0.12 && best < 0.45) deltas.push(best);
+  }
+  if (deltas.length < 4) { pad.textContent = '손뼉 소리를 못 찾았어요. 조금 더 크게 다시 해 주세요'; return; }
+  const ms = Math.round(median(deltas) * 1000);
+  Settings.latencyMs = clamp(ms, -100, 400); saveSettings(); renderSettings();
+  pad.textContent = '맞췄어요: ' + Settings.latencyMs + 'ms';
+}
+function detectOnsets(x, sr) {
+  const hop = Math.round(sr * 0.005), env = [];
+  let prev = 0;
+  for (let i = 0; i + hop < x.length; i += hop) {
+    let s = 0; for (let j = i; j < i + hop; j++) { const hp = x[j] - prev; prev = x[j]; s += hp * hp; }
+    env.push(Math.sqrt(s / hop));
+  }
+  const floor = median(env) || 1e-4, thr = Math.max(floor * 6, 0.01);
+  const out = []; let last = -1e9;
+  for (let k = 1; k < env.length; k++) {
+    if (env[k] > thr && env[k - 1] <= thr && (k - last) * hop > sr * 0.15) { out.push(k * hop); last = k; }
+  }
+  return out;
+}
+
+/* ============ files: WAV + ZIP ============ */
+function wavHeader(view, n, ch, sr) {
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); view.setUint32(4, 36 + n * ch * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, ch, true); view.setUint32(24, sr, true);
+  view.setUint32(28, sr * ch * 2, true); view.setUint16(32, ch * 2, true); view.setUint16(34, 16, true); w(36, 'data'); view.setUint32(40, n * ch * 2, true);
+}
+function wavFromInt16(i16, sr) {
+  const buf = new ArrayBuffer(44 + i16.length * 2); wavHeader(new DataView(buf), i16.length, 1, sr);
+  new Int16Array(buf, 44).set(i16); return buf;
+}
+function wavFromBuffer(ab) {
+  const ch = ab.numberOfChannels, n = ab.length, buf = new ArrayBuffer(44 + n * ch * 2), v = new DataView(buf);
+  wavHeader(v, n, ch, ab.sampleRate);
+  const data = []; for (let c = 0; c < ch; c++) data.push(ab.getChannelData(c));
+  let o = 44;
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const s = clamp(data[c][i], -1, 1); v.setInt16(o, s < 0 ? s * 0x8000 : s * 0x7fff, true); o += 2; }
+  return buf;
+}
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xffffffff; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+  const d = new Date(), time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.data instanceof Uint8Array ? f.data : new Uint8Array(f.data), crc = crc32(data), size = data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true);
+    lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
+    ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+    central.push(ch.buffer, name);
+    offset += 30 + name.length + size;
+  }
+  let cdSize = 0; for (const c of central) cdSize += c.byteLength;
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob(parts.concat(central, [end.buffer]), { type: 'application/zip' });
+}
+function safeName(s) { return (s || '곡').replace(/[\\/:*?"<>|]/g, '_').trim().slice(0, 60) || '곡'; }
+function extOf(it) {
+  const n = (it.name || '').toLowerCase(), m = n.match(/\.([a-z0-9]{2,4})$/);
+  if (m) return m[1];
+  if ((it.type || '').includes('wav')) return 'wav';
+  if ((it.type || '').includes('mp4') || (it.type || '').includes('m4a')) return 'm4a';
+  if ((it.type || '').includes('mpeg')) return 'mp3';
+  return 'audio';
+}
+async function saveFile(filename, blob, zipName) {
+  if (inArtifact()) {
+    if (!Cloud.tried) await sleep(300);
+    if (!Cloud.dl) { toast('이 화면에서는 파일 저장을 쓸 수 없어요'); return; }
+    let name = filename, data = blob;
+    if (!/\.(zip|mp4|webm|txt|json|md)$/i.test(filename)) { const buf = new Uint8Array(await blob.arrayBuffer()); data = makeZip([{ name: filename, data: buf }]); name = zipName || filename.replace(/\.[^.]+$/, '') + '.zip'; }
+    try { await Cloud.dl.save({ filename: name, data }); }
+    catch (e) { if (e && e.code !== 'declined') toast('저장하지 못했어요: ' + ((e && e.code) || '오류')); }
+    return;
+  }
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+async function renderMix() {
+  const list = items().filter((it) => !it.muted);
+  await Promise.all(list.map(loadBuffer));
+  const L = songLength(); if (L <= 0) return null;
+  const sr = 44100, oc = new OfflineAudioContext(2, Math.ceil((L + 0.2) * sr), sr);
+  for (const it of list) {
+    const b = buffers.get(it.key); if (!b) continue;
+    const s = oc.createBufferSource(), g = oc.createGain(); s.buffer = b; g.gain.value = it.vol; s.connect(g); g.connect(oc.destination);
+    const s0 = it.startAt || 0; if (s0 >= 0) s.start(s0); else if (-s0 < b.duration) s.start(0, -s0);
+  }
+  return oc.startRendering();
+}
+async function exportMix() {
+  busy('믹스 만드는 중…');
+  try { const ab = await renderMix(); busy(); if (!ab) { toast('합칠 소리가 없어요'); return; } await saveFile(safeName(P.name) + ' 믹스.wav', new Blob([wavFromBuffer(ab)], { type: 'audio/wav' }), safeName(P.name) + ' 믹스.zip'); }
+  catch (e) { busy(); toast('믹스를 만들지 못했어요'); }
+}
+async function exportAll() {
+  busy('백업 묶는 중…');
+  try {
+    const files = [], base = safeName(P.name);
+    const ab = await renderMix(); if (ab) files.push({ name: base + '/믹스.wav', data: new Uint8Array(wavFromBuffer(ab)) });
+    for (const it of items()) {
+      const rec = await sGet('blobs', it.key); if (!rec) continue;
+      const nm = it.id === 'beat' ? '비트' : safeName(it.name);
+      files.push({ name: base + '/' + nm + '.' + extOf(it), data: new Uint8Array(rec.buf) });
+    }
+    files.push({ name: base + '/가사.txt', data: new TextEncoder().encode(P.lyrics || '') });
+    files.push({ name: base + '/곡정보.json', data: new TextEncoder().encode(JSON.stringify(cloudBody(P), null, 2)) });
+    const zip = makeZip(files); busy();
+    await saveFile(base + ' 백업.zip', zip);
+  } catch (e) { busy(); toast('백업을 만들지 못했어요'); }
+}
+
+/* ============ importing audio files ============ */
+async function readAudioFile(file) {
+  if (file.size > 80 * 1024 * 1024) { toast('80MB보다 큰 파일은 넣을 수 없어요'); return null; }
+  const buf = await file.arrayBuffer();
+  let ab; try { ab = await decode(buf.slice(0)); } catch (e) { busy(); const ext = ((file.name || '').match(/\.([^.]+)$/) || [,''])[1]; toast((ext ? ext + ' ' : '') + '파일을 읽지 못했어요. 녹음앱 설정에서 m4a나 wav로 저장해 보세요', 4200); return null; }
+  return { buf, ab, type: file.type || '', name: file.name || '녹음' };
+}
+async function importBeat(file) {
+  if (!file) return;
+  if (T.rec) return;
+  pause(); busy('비트 불러오는 중…');
+  const r = await readAudioFile(file); busy(); if (!r) return;
+  const key = 'k' + uid();
+  try { await sPut('blobs', key, { type: r.type, buf: r.buf }); } catch (e) { toast('저장 공간이 부족해요'); return; }
+  const old = P.beat;
+  P.beat = { id: 'beat', key, name: r.name, type: r.type, size: r.buf.byteLength, dur: r.ab.duration, vol: old ? old.vol : 0.9, muted: false, startAt: 0, createdAt: Date.now() };
+  buffers.set(key, r.ab); peaks.set(key, computePeaks(r.ab));
+  if (old) { buffers.delete(old.key); peaks.delete(old.key); sDel('blobs', old.key); }
+  T.pos = 0; markDirty(); renderAll();
+  await runTempo(r.ab);
+  renderAll();
+  cloudUpload(P.beat);
+}
+let replaceTarget = null;
+async function importTake(file) {
+  if (!file) { toast('파일을 받지 못했어요. 크롬에서 열어 다시 해 보세요', 3600); return; }
+  busy('녹음 불러오는 중…');
+  const r = await readAudioFile(file); busy(); if (!r) return;
+  const key = 'k' + uid();
+  try { await sPut('blobs', key, { type: r.type, buf: r.buf }); } catch (e) { toast('저장 공간이 부족해요'); return; }
+  if (replaceTarget) {
+    const tr = itemById(replaceTarget); replaceTarget = null; if (!tr) return;
+    buffers.delete(tr.key); peaks.delete(tr.key); sDel('blobs', tr.key);
+    Object.assign(tr, { key, type: r.type, size: r.buf.byteLength, dur: r.ab.duration, cloudId: null, name: tr.name });
+    buffers.set(key, r.ab); peaks.set(key, computePeaks(r.ab));
+    markDirty(); renderAll(); toast('파일을 바꿨어요'); cloudUpload(tr); return;
+  }
+  const at = T.playing ? now() : T.pos;
+  const nm = r.name.replace(/\.[^.]+$/, '').slice(0, 40) || '녹음 ' + (P.tracks.length + 1);
+  const tr = { id: 'r' + uid(), key, name: nm, src: 'file', type: r.type, size: r.buf.byteLength, dur: r.ab.duration, startAt: Math.max(0, at), vol: 1, muted: false, createdAt: Date.now() };
+  buffers.set(key, r.ab); peaks.set(key, computePeaks(r.ab));
+  P.tracks.push(tr); markDirty(); renderAll();
+  toast(fmtTime(tr.startAt) + ' 위치에 넣었어요. 길게 눌러 끌면 옮길 수 있어요', 3600);
+  cloudUpload(tr);
+}
+
+/* ============ UI rendering ============ */
+function renderAll() { renderHeader(); renderTempo(); renderTracks(); renderLyrics(); renderSettings(); drawPlayheads(); }
+function renderHeader() { const el = $('#songName'); if (document.activeElement !== el) el.value = P.name; }
+function renderTempo() {
+  $('#bpmText').textContent = P.bpm.toFixed(1);
+  $('#sigText').textContent = P.bpb === 6 ? '6/8' : P.bpb + '/4';
+  const bi = $('#bpmInput'); if (document.activeElement !== bi) bi.value = P.bpm.toFixed(1);
+  document.querySelectorAll('#sigSeg button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.bpb === P.bpb)));
+  $('#togMetro').setAttribute('aria-pressed', String(!!P.metroOn));
+  $('#togBeat').setAttribute('aria-pressed', String(!(P.beat && P.beat.muted)));
+  $('#togBeat').disabled = !P.beat; $('#togBeat').style.opacity = P.beat ? 1 : 0.45;
+  $('#autoInfo').textContent = P.autoBpm ? '비트에서 찾은 템포: ' + P.autoBpm.bpm.toFixed(1) + ' BPM (' + confWord(P.autoBpm.conf) + ')' : (P.beat ? '아직 분석하지 않았어요.' : '비트를 넣으면 템포와 첫 박을 자동으로 찾아요.');
+  $('#btnReanalyze').disabled = !P.beat; $('#btnReanalyze').style.opacity = P.beat ? 1 : 0.45;
+  if (dots().length !== P.bpb) renderDots();
+}
+const ICON_SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>';
+const ICON_MUTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+const ICON_ARM = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" fill="currentColor"/></svg>';
+const ICON_MORE = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+function trackCard(it, i) {
+  const color = it.id === 'beat' ? '#e9e6df' : COLORS[i % COLORS.length];
+  const meta = it.id === 'beat' ? (P.autoBpm ? P.autoBpm.bpm.toFixed(1) + ' BPM' : fmtTime(it.dur)) : fmtTime(Math.max(0, it.startAt)) + ' · ' + fmtTime(it.dur);
+  let badge = '';
+  if (it.missing) badge = '<span class="badge">파일 없음</span>';
+  else if (Cloud.db && Cloud.assets && !it.cloudId) badge = '<span class="badge">이 기기에만</span>';
+  const armable = it.id !== 'beat' && !micBlocked, armed = armable && T.armed === it.id;
+  return '<div class="trk lane' + (it.muted ? ' muted' : '') + (armed ? ' armed' : '') + '" data-id="' + it.id + '" style="--c:' + color + '">' +
+    '<div class="trk-wave" data-act="wave"><canvas></canvas><div class="ph"></div>' +
+    '<div class="lane-head"><span class="lane-name">' + esc(it.id === 'beat' ? '비트' : it.name) + '</span><span class="lane-meta">' + esc(meta) + '</span>' + badge + '</div>' +
+    '<div class="lane-btns">' + (armable ? '<button class="icon-btn arm" data-act="arm" aria-pressed="' + armed + '" aria-label="이 트랙에 녹음">' + ICON_ARM + '</button>' : '') + '<button class="icon-btn" data-act="mute" aria-pressed="' + !!it.muted + '" aria-label="' + (it.muted ? '소리 켜기' : '소리 끄기') + '">' + (it.muted ? ICON_MUTE : ICON_SPK) + '</button>' +
+    '<button class="icon-btn" data-act="menu" aria-label="트랙 메뉴">' + ICON_MORE + '</button></div></div></div>';
+}
+function renderTracks() {
+  const box = $('#trackList');
+  let html = '';
+  if (P.beat) html += trackCard(P.beat, 0);
+  else html += '<button class="drop" id="btnBeatDrop"><b>비트 파일 넣기</b><span>mp3 · wav · m4a, 15MB 넘어도 괜찮아요. 넣으면 템포를 자동으로 맞춰요.</span></button>';
+  P.tracks.forEach((t, i) => (html += trackCard(t, i)));
+  if (T.rec && !T.rec.take.target) html += '<div class="trk lane live" data-id="live" style="--c:#ff5a4f"><div class="trk-wave"><canvas></canvas><div class="ph"></div><div class="lane-head"><span class="lane-name">● 녹음 중</span></div></div></div>';
+  box.innerHTML = html;
+  const drop = $('#btnBeatDrop'); if (drop) drop.onclick = () => $('#fileBeat').click();
+  drawWaves();
+  // waveforms for items not yet decoded
+  const pending = items().filter((it) => !peaks.has(it.key) && !it.missing);
+  if (pending.length) Promise.all(pending.map(loadBuffer)).then(() => { drawWaves(); $('#tLen').textContent = fmtTime(songLength()); });
+  $('#tLen').textContent = fmtTime(songLength());
+  updateRecUI();
+}
+const V = { t0: 0, span: 0, snap: 'beat', lastTouch: 0, user: false };
+const G = { ptrs: new Map(), mode: null, it: null, el: null, card: null, rect: null, x0: 0, y0: 0, lastX: 0, t00: 0, orig: 0, k: 0, timer: 0, down: 0, pd0: 0, span0: 0, tm: 0 };
+function clampView() {
+  const L = viewLength();
+  if (!V.span || !V.user) V.span = Math.min(L, 16 * barDur());
+  V.span = clamp(V.span, 2, Math.max(2, L));
+  V.t0 = clamp(V.t0, 0, Math.max(0, L - V.span));
+}
+function hexA(c, a) { const m = /^#([0-9a-f]{6})$/i.exec(c); if (!m) return c; const n = parseInt(m[1], 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+function sizeCanvas(cv) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w) return null;
+  const W = Math.round(w * dpr), H = Math.round(h * dpr); if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h); return { g, w, h };
+}
+function bar1Start() { const bar = barDur(); let s = mod(P.grid, bar); if (s > bar / 2) s -= bar; return s; }
+function drawGrid(g, w, h) {
+  const per = period(), bar = barDur(), t0 = V.t0, span = V.span, s1 = bar1Start();
+  const pxBeat = w * per / span;
+  if (pxBeat > 7) { g.fillStyle = 'rgba(255,255,255,0.045)'; const k = Math.ceil((t0 - s1) / per); for (let t = s1 + k * per; t < t0 + span; t += per) g.fillRect(Math.round((t - t0) / span * w), 0, 1, h); }
+  if (pxBeat * P.bpb > 5) { g.fillStyle = 'rgba(255,255,255,0.11)'; const k = Math.ceil((t0 - s1) / bar); for (let t = s1 + k * bar; t < t0 + span; t += bar) g.fillRect(Math.round((t - t0) / span * w), 0, 1, h); }
+}
+function drawRuler() {
+  const cv = document.querySelector('#ruler canvas'); if (!cv) return;
+  const s = sizeCanvas(cv); if (!s) return; const { g, w, h } = s;
+  const bar = barDur(), t0 = V.t0, span = V.span, s1 = bar1Start();
+  const pxBar = w * bar / span; let step = 1; while (pxBar * step < 30) step *= 2;
+  g.font = '600 11px system-ui, sans-serif'; g.textBaseline = 'top';
+  let k = Math.max(0, Math.ceil((t0 - s1) / bar));
+  for (; k < 100000; k++) {
+    const t = s1 + k * bar; if (t > t0 + span) break; const x = Math.round((t - t0) / span * w);
+    if (k % step === 0) { g.fillStyle = 'rgba(255,255,255,0.38)'; g.fillRect(x, h - 10, 1, 10); g.fillStyle = 'rgba(255,255,255,0.55)'; g.fillText(String(k + 1), x + 3, 3); }
+    else { g.fillStyle = 'rgba(255,255,255,0.2)'; g.fillRect(x, h - 5, 1, 5); }
+  }
+}
+function drawWaves() {
+  if (!P) return;
+  clampView(); drawRuler();
+  const t0 = V.t0, span = V.span;
+  document.querySelectorAll('.trk').forEach((card) => {
+    const id = card.dataset.id;
+    if (id === 'live') { const cv = card.querySelector('canvas'); const s = cv && sizeCanvas(cv); if (s) { drawGrid(s.g, s.w, s.h); drawLive(s.g, s.w, s.h, false); } return; }
+    const it = itemById(id); const cv = card.querySelector('canvas'); if (!it || !cv) return;
+    const s = sizeCanvas(cv); if (!s) return; const { g, w, h } = s;
+    if (T.rec && T.rec.take.target === id) { drawGrid(g, w, h); drawClip(g, w, h, it, card); drawLive(g, w, h, true); return; }
+    drawGrid(g, w, h);
+    drawClip(g, w, h, it, card);
+  });
+}
+function drawClip(g, w, h, it, card) {
+    const t0 = V.t0, span = V.span;
+    const s0 = it.startAt || 0, dur = it.dur || 0; if (!dur) return;
+    const x0 = (s0 - t0) / span * w, x1 = (s0 + dur - t0) / span * w;
+    if (x1 < 0 || x0 > w) return;
+    const color = getComputedStyle(card).getPropertyValue('--c').trim() || '#f2b544';
+    const grabbed = G.mode === 'grab' && G.it === it;
+    const a0 = Math.max(0, x0), a1 = Math.min(w, x1);
+    if (it.id !== 'beat') {
+      g.fillStyle = hexA(color, grabbed ? 0.24 : 0.10); g.fillRect(a0, 0, a1 - a0, h);
+      g.fillStyle = hexA(color, 0.9); if (x0 >= 0) g.fillRect(Math.round(x0), 0, 2, h); if (x1 <= w) g.fillRect(Math.round(x1) - 2, 0, 2, h);
+    }
+    const pk = peaks.get(it.key);
+    if (pk) {
+      g.fillStyle = color;
+      const n = pk.length, sps = span / w;
+      for (let x = Math.floor(a0); x < Math.ceil(a1); x++) {
+        const ta = t0 + x * sps - s0;
+        const a = Math.max(0, Math.floor(ta / dur * n)), b = Math.min(n, Math.max(a + 1, Math.floor((ta + sps) / dur * n)));
+        let m = 0; for (let i = a; i < b; i++) if (pk[i] > m) m = pk[i];
+        const hh = Math.max(1, m * (h - 6)); g.fillRect(x, (h - hh) / 2, 1, hh);
+      }
+    }
+    if (grabbed) { g.strokeStyle = color; g.lineWidth = 2; g.strokeRect(a0 + 1, 1, Math.max(0, a1 - a0 - 2), h - 2); }
+}
+function drawLive(g, w, h, punch) {
+  const tk = T.rec && T.rec.take; if (!tk) return;
+  const t0 = V.t0, span = V.span, pk = tk.live;
+  const start = tk.startAt != null ? tk.startAt : (tk.startPos != null ? tk.startPos : tk.pos0);
+  const from = punch ? Math.max(0, Math.round((tk.pos0 - start) * 100)) : 0;
+  if (pk.length <= from) return;
+  const s0 = start + from / 100, s1 = start + pk.length / 100;
+  const x0 = (s0 - t0) / span * w, x1 = (s1 - t0) / span * w;
+  const a0 = Math.max(0, x0), a1 = Math.min(w, x1); if (a1 <= a0) return;
+  if (punch) { g.fillStyle = '#111318'; g.fillRect(a0, 0, a1 - a0, h); }
+  g.fillStyle = 'rgba(255,90,79,0.16)'; g.fillRect(a0, 0, a1 - a0, h);
+  g.fillStyle = '#ff5a4f';
+  const sps = span / w;
+  for (let x = Math.floor(a0); x < Math.ceil(a1); x++) {
+    const ta = t0 + x * sps - start; const a = Math.max(from, Math.floor(ta * 100)), b = Math.min(pk.length, Math.max(a + 1, Math.floor((ta + sps) * 100)));
+    let m = 0; for (let i = a; i < b; i++) if (pk[i] > m) m = pk[i];
+    const hh = Math.max(1, m * (h - 6)); g.fillRect(x, (h - hh) / 2, 1, hh);
+  }
+  g.fillRect(Math.round(x1) - 2, 0, 2, h);
+}
+function drawPlayheads() {
+  const p = now(), L = viewLength();
+  if (P && T.playing && G.mode == null && performance.now() - V.lastTouch > 1500 && V.span && (p > V.t0 + V.span * 0.92 || p < V.t0)) { V.t0 = p - V.span * 0.08; drawWaves(); }
+  const f = V.span ? (p - V.t0) / V.span : 0;
+  document.querySelectorAll('.ph').forEach((el) => { el.style.display = f < 0 || f > 1 ? 'none' : ''; el.style.left = (f * 100) + '%'; });
+  $('#tNow').textContent = fmtTime(p);
+  const seekEl = $('#seek'); seekEl.max = String(L); if (!seeking) seekEl.value = String(clamp(p, 0, L));
+  const bb = barBeat(p);
+  $('#barText').textContent = bb.bar + '.' + bb.beat;
+}
+// bar 1 starts at the downbeat nearest the start of the song; anything before it counts as 1.1
+function barBeat(p) {
+  const per = period(), bar = barDur();
+  let start1 = mod(P.grid, bar); if (start1 > bar / 2) start1 -= bar;
+  if (p < start1) return { bar: 1, beat: 1 };
+  const bi = Math.floor((p - start1) / per + 1e-6);
+  return { bar: Math.floor(bi / P.bpb) + 1, beat: mod(bi, P.bpb) + 1 };
+}
+function updatePlayUI() {
+  $('#icoPlay').style.display = T.playing ? 'none' : '';
+  $('#icoPause').style.display = T.playing ? '' : 'none';
+  $('#btnPlay').setAttribute('aria-label', T.playing ? '일시정지' : '재생');
+}
+function updateRecUI() {
+  const b = $('#btnRec');
+  b.classList.toggle('on', !!T.rec); b.classList.toggle('file', micBlocked && !T.rec);
+  b.setAttribute('aria-label', T.rec ? '녹음 멈추기' : micBlocked ? '녹음 파일 넣기' : '녹음');
+  $('#btnAddRec').style.display = micBlocked ? 'none' : '';
+  $('#btnAddFile').style.gridColumn = micBlocked ? '1 / -1' : '';
+  const hint = $('#recHint');
+  if (micBlocked && inArtifact()) hint.innerHTML = 'Claude 화면 안에서는 마이크가 막혀 있어서 실시간 녹음과 ● 버튼이 안 보여요. 실시간 녹음은 <a href="https://dhq2.github.io/minhub/sketch/" target="_blank" rel="noopener">dhq2.github.io/minhub/sketch</a> 를 크롬으로 열면 돼요. 여기서는 녹음앱 파일을 넣을 수 있어요.';
+  else hint.textContent = micBlocked
+    ? '마이크를 쓸 수 없어요. 브라우저 주소창 옆 설정에서 마이크를 허용하거나, 녹음앱으로 녹음한 파일을 넣어 주세요.'
+    : '녹음할 땐 이어폰을 끼세요. 녹음하는 동안 메트로놈은 꺼지고, 트랙의 ●를 켜 두면 그 트랙에 덮어 녹음돼요.';
+}
+function renderLyrics() {
+  const el = $('#lyrics'); if (document.activeElement !== el) el.value = P.lyrics || '';
+  countLyrics();
+}
+function countLyrics() { const t = $('#lyrics').value; const lines = t.split('\n').filter((l) => l.trim()).length; $('#lyrCount').textContent = lines ? lines + '줄' : ''; }
+function renderSettings() {
+  $('#togCount').setAttribute('aria-pressed', String(!!Settings.countIn));
+  $('#metroVol').value = String(P.metroVol);
+  const ms = Settings.latencyMs != null ? Settings.latencyMs : Math.round(latencySec() * 1000);
+  $('#latRange').value = String(ms);
+  $('#latText').textContent = ms + 'ms' + (Settings.latencyMs == null ? ' (자동 추정)' : '');
+  $('#btnCalib').style.display = micBlocked ? 'none' : '';
+}
+async function renderSongs() {
+  const all = (await sAll('projects')).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  $('#songList').innerHTML = all.map((p) => {
+    const d = new Date(p.updatedAt || 0);
+    const when = (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    return '<button class="song-item' + (p.id === P.id ? ' cur' : '') + '" data-pid="' + p.id + '"><div><b>' + esc(p.name) + '</b><span>' + (p.bpm || 100).toFixed(1) + ' BPM · 트랙 ' + ((p.tracks || []).length) + '개 · ' + when + '</span></div></button>';
+  }).join('');
+}
+let seeking = false;
+let liveDrawAt = 0;
+function raf() { if (T.rec && performance.now() - liveDrawAt > 90) { liveDrawAt = performance.now(); drawWaves(); } if (T.playing || T.rec) drawPlayheads(); $('#btnRec').style.setProperty('--lv', level.toFixed(2)); requestAnimationFrame(raf); }
+
+/* ============ sheets ============ */
+function openSheet(id) { $(id).classList.add('open'); }
+function closeSheet(id) { $(id).classList.remove('open'); }
+document.querySelectorAll('.sheet .back').forEach((b) => (b.onclick = () => b.parentElement.classList.remove('open')));
+let confirmResolve = null;
+function askConfirm(text, yes) {
+  $('#cfText').textContent = text; $('#cfYes').textContent = yes || '지우기'; openSheet('#sheetConfirm');
+  return new Promise((r) => (confirmResolve = r));
+}
+$('#cfYes').onclick = () => { closeSheet('#sheetConfirm'); confirmResolve && confirmResolve(true); };
+$('#cfNo').onclick = () => { closeSheet('#sheetConfirm'); confirmResolve && confirmResolve(false); };
+$('#sheetConfirm .back').onclick = () => { closeSheet('#sheetConfirm'); confirmResolve && confirmResolve(false); };
+function openImport(msg) { $('#importMsg').textContent = msg || '이 화면에서는 마이크를 쓸 수 없어요. 폰 녹음앱으로 녹음한 파일을 넣으면 지금 재생 위치에 트랙으로 들어가요.'; openSheet('#sheetImport'); }
+
+/* ============ project open / switch ============ */
+async function openProject(p) {
+  if (T.rec) await stopRec();
+  pause();
+  buffers.clear(); peaks.clear();
+  dropUndo(); T.armed = null;
+  P = normalizeProject(p); T.pos = 0; V.t0 = 0; V.span = 0; V.user = false;
+  try { await sPut('kv', 'lastProject', P.id); } catch (e) {}
+  renderDots(); renderAll(); updateSaveBadge();
+}
+async function createSong() {
+  const n = (await sAll('projects')).length + 1;
+  const p = newProject(n);
+  await sPut('projects', p.id, p); await openProject(p); cloudSaveNow(p);
+}
+async function deleteSong() {
+  const ok = await askConfirm('“' + P.name + '”을 지울까요? 녹음과 가사가 모두 사라져요.', '곡 지우기'); if (!ok) return;
+  const victim = P;
+  for (const it of items()) { await sDel('blobs', it.key); if (it.cloudId && Cloud.assets) Cloud.assets.delete(it.cloudId).catch(() => {}); }
+  await sDel('projects', victim.id);
+  if (Cloud.db) cloudCol().doc('p_' + victim.id).delete().catch(() => {});
+  closeSheet('#sheetSettings');
+  const rest = (await sAll('projects')).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  if (rest.length) await openProject(rest[0]); else await createSong();
+  toast('곡을 지웠어요');
+}
+function saveSettings() { sPut('kv', 'settings', Settings).catch(() => {}); }
+
+/* ============ events ============ */
+$('#btnPlay').onclick = () => { if (T.rec) { stopRec(); return; } if (T.playing) pause(); else play(); };
+$('#btnRec').onclick = () => { if (T.rec) stopRec(); else if (micBlocked) openImport(); else startRec(); };
+$('#btnAddRec').onclick = () => { if (!T.rec) startRec(); };
+$('#btnAddFile').onclick = () => { replaceTarget = null; $('#fileTake').click(); };
+$('#impCapture').onclick = () => { closeSheet('#sheetImport'); replaceTarget = null; $('#fileCapture').click(); };
+$('#impPick').onclick = () => { closeSheet('#sheetImport'); replaceTarget = null; $('#fileTake').click(); };
+$('#impAny').onclick = () => { closeSheet('#sheetImport'); replaceTarget = null; $('#fileAny').click(); };
+$('#btnHome').onclick = () => { if (!T.rec) seek(0); };
+$('#btnBack').onclick = () => { if (!T.rec) seek(Math.max(0, now() - barDur())); };
+$('#btnFwd').onclick = () => { if (!T.rec) seek(now() + barDur()); };
+const seekEl = $('#seek');
+seekEl.addEventListener('pointerdown', () => (seeking = true));
+seekEl.addEventListener('input', () => { if (T.rec) return; T.pos = +seekEl.value; if (!T.playing) drawPlayheads(); else $('#tNow').textContent = fmtTime(+seekEl.value); });
+seekEl.addEventListener('change', () => { seeking = false; if (!T.rec) seek(+seekEl.value); });
+$('#fileBeat').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; importBeat(f); };
+$('#fileTake').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; importTake(f); };
+$('#fileCapture').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; importTake(f); };
+$('#fileAny').onchange = (e) => { const f = e.target.files[0]; e.target.value = ''; importTake(f); };
+$('#songName').addEventListener('input', (e) => { P.name = e.target.value.trim() || '이름 없는 곡'; markDirty(); });
+$('#togMetro').onclick = () => { P.metroOn = !P.metroOn; markDirty(); renderTempo(); };
+$('#togBeat').onclick = () => { if (!P.beat) return; P.beat.muted = !P.beat.muted; setGain('beat'); markDirty(); renderTempo(); renderTracks(); };
+$('#saveState').onclick = () => toast($('#saveText').textContent, 3200);
+$('#tabTracks').onclick = () => { document.body.classList.remove('lyr'); $('#viewTracks').hidden = false; $('#viewLyrics').hidden = true; $('#tabTracks').setAttribute('aria-selected', 'true'); $('#tabLyrics').setAttribute('aria-selected', 'false'); drawWaves(); };
+$('#tabLyrics').onclick = () => { document.body.classList.add('lyr'); $('#viewTracks').hidden = true; $('#viewLyrics').hidden = false; $('#tabTracks').setAttribute('aria-selected', 'false'); $('#tabLyrics').setAttribute('aria-selected', 'true'); };
+$('#lyrics').addEventListener('input', (e) => { P.lyrics = e.target.value; markDirty(); countLyrics(); });
+$('#btnMark').onclick = () => {
+  const el = $('#lyrics'), bar = barBeat(now()).bar;
+  const mark = '[' + bar + '마디] ', s = el.selectionStart != null ? el.selectionStart : el.value.length;
+  el.value = el.value.slice(0, s) + mark + el.value.slice(el.selectionEnd != null ? el.selectionEnd : s);
+  el.focus(); el.selectionStart = el.selectionEnd = s + mark.length;
+  P.lyrics = el.value; markDirty(); countLyrics();
+};
+
+/* track list delegation */
+let menuTarget = null;
+$('#trackList').addEventListener('click', (e) => {
+  const card = e.target.closest('.trk'); if (!card) return;
+  const it = itemById(card.dataset.id); if (!it) return;
+  const act = e.target.closest('[data-act]'); const a = act && act.dataset.act;
+  if (a === 'mute') { it.muted = !it.muted; setGain(it.id); markDirty(); renderTracks(); renderTempo(); }
+  else if (a === 'menu') openTrackMenu(it);
+  else if (a === 'arm') {
+    if (T.rec) return;
+    T.armed = T.armed === it.id ? null : it.id; renderTracks();
+    toast(T.armed ? '녹음하면 ' + it.name + ' 트랙에 덮어써요' : '녹음하면 새 트랙이 생겨요', 2600);
+  }
+});
+$('#trackList').addEventListener('input', (e) => {
+  if (e.target.dataset.act !== 'vol') return;
+  const it = itemById(e.target.closest('.trk').dataset.id); if (!it) return;
+  it.vol = +e.target.value; setGain(it.id); markDirty();
+});
+/* ============ v1.2 timeline gestures ============ */
+let drawQ = false;
+function requestDraw() { if (drawQ) return; drawQ = true; requestAnimationFrame(() => { drawQ = false; drawWaves(); drawPlayheads(); }); }
+function tAtX(x) { return V.t0 + (x - G.rect.left) / G.rect.width * V.span; }
+function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+function showLabel() {
+  const el = $('#dragLabel'), it = G.it; if (!it) return;
+  const bb = barBeat(Math.max(0, it.startAt)); const u = V.snap === 'bar' ? '마디' : '박';
+  el.textContent = fmtTime(Math.max(0, it.startAt)) + ' · ' + bb.bar + '마디 ' + bb.beat + '박' + (G.k ? '  (' + (G.k > 0 ? '+' : '') + G.k + u + ')' : '');
+  el.style.top = Math.max(8, G.rect.top - 38) + 'px'; el.style.left = clamp(G.lastX, 80, window.innerWidth - 80) + 'px'; el.classList.add('show');
+}
+function grab() {
+  if (G.mode !== 'pending' || !G.it || G.it.id === 'beat') return;
+  G.mode = 'grab'; G.orig = G.it.startAt || 0; G.k = 0; G.t00 = V.t0; G.gx = G.lastX;
+  if (G.card) G.card.classList.add('grabbed');
+  buzz(15); showLabel(); requestDraw();
+}
+function moveGrab() {
+  const it = G.it; const dt = (G.lastX - G.x0) / G.rect.width * V.span + (V.t0 - G.t00);
+  const unit = V.snap === 'beat' ? period() : V.snap === 'bar' ? barDur() : 0;
+  let ns, k = 0;
+  if (unit) { k = Math.round(dt / unit); ns = G.orig + k * unit; } else ns = Math.round((G.orig + dt) * 100) / 100;
+  ns = Math.max(ns, -((it.dur || 0) - 0.25));
+  if (unit && k !== G.k) buzz(5);
+  G.k = k;
+  if (ns !== it.startAt) { it.startAt = ns; requestDraw(); }
+  showLabel();
+}
+function endGrab() {
+  if (G.card) G.card.classList.remove('grabbed'); $('#dragLabel').classList.remove('show');
+  const it = G.it; G.mode = null;
+  if (it && Math.abs((it.startAt || 0) - G.orig) > 1e-6) { markDirty(); renderTracks(); if (T.playing) play(now()); }
+  else requestDraw();
+}
+function startPinch() {
+  clearTimeout(G.timer);
+  if (G.mode === 'grab') endGrab();
+  const [a, b] = [...G.ptrs.values()];
+  G.rect = (G.el || $('#ruler')).getBoundingClientRect();
+  G.pd0 = Math.max(24, Math.hypot(a.x - b.x, a.y - b.y)); G.span0 = V.span;
+  const mf = clamp(((a.x + b.x) / 2 - G.rect.left) / G.rect.width, 0, 1); G.tm = V.t0 + mf * V.span;
+  G.mode = 'pinch'; V.user = true;
+}
+function updatePinch() {
+  const [a, b] = [...G.ptrs.values()]; if (!b) return;
+  const d = Math.max(24, Math.hypot(a.x - b.x, a.y - b.y));
+  V.span = clamp(G.span0 * G.pd0 / d, 2, Math.max(2, viewLength()));
+  const mf = clamp(((a.x + b.x) / 2 - G.rect.left) / G.rect.width, 0, 1);
+  V.t0 = G.tm - mf * V.span; V.lastTouch = performance.now(); requestDraw();
+}
+(function wireTimeline() {
+  const tv = document.body;
+  tv.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest('.trk-wave, #ruler'); if (!el || e.target.closest('button, input')) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    G.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    V.lastTouch = performance.now();
+    if (G.ptrs.size === 2) { startPinch(); return; }
+    if (G.ptrs.size > 2) return;
+    G.el = el; G.rect = el.getBoundingClientRect(); G.card = el.closest('.trk');
+    G.it = G.card ? itemById(G.card.dataset.id) : null;
+    G.x0 = G.lastX = e.clientX; G.y0 = e.clientY; G.t00 = V.t0; G.down = performance.now();
+    G.mode = T.rec ? 'none' : 'pending';
+    clearTimeout(G.timer);
+    if (G.it && !T.rec) {
+      const t = tAtX(e.clientX), s0 = G.it.startAt || 0, pad = V.span * 0.02;
+      if (G.it.id === 'beat') G.timer = setTimeout(() => { if (G.mode === 'pending') toast('비트는 고정이에요. 녹음 트랙을 길게 눌러서 옮겨요'); }, 500);
+      else if (t >= s0 - pad && t <= s0 + (G.it.dur || 0) + pad) G.timer = setTimeout(grab, 350);
+    }
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  tv.addEventListener('pointermove', (e) => {
+    const pt = G.ptrs.get(e.pointerId); if (!pt) return;
+    pt.x = e.clientX; pt.y = e.clientY;
+    if (G.mode === 'pinch') { updatePinch(); return; }
+    if (G.ptrs.size !== 1 || !G.rect) return;
+    G.lastX = e.clientX;
+    const dx = e.clientX - G.x0, dy = e.clientY - G.y0;
+    if (G.mode === 'pending') {
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { G.mode = 'pan'; clearTimeout(G.timer); }
+      else if (Math.abs(dy) > 10) { G.mode = 'none'; clearTimeout(G.timer); }
+    }
+    if (G.mode === 'pan') { V.user = true; V.t0 = G.t00 - dx / G.rect.width * V.span; V.lastTouch = performance.now(); requestDraw(); }
+    else if (G.mode === 'grab') moveGrab();
+  });
+  const endPtr = (e, cancelled) => {
+    if (!G.ptrs.has(e.pointerId)) return;
+    G.ptrs.delete(e.pointerId); clearTimeout(G.timer); V.lastTouch = performance.now();
+    if (G.mode === 'pinch') { G.mode = G.ptrs.size ? 'none' : null; return; }
+    if (G.mode === 'grab') { endGrab(); return; }
+    if (G.mode === 'pending' && !cancelled && performance.now() - G.down < 600 && G.rect) seek(clamp(tAtX(e.clientX), 0, viewLength()));
+    if (!G.ptrs.size) G.mode = null;
+  };
+  tv.addEventListener('pointerup', (e) => endPtr(e, false));
+  tv.addEventListener('pointercancel', (e) => endPtr(e, true));
+  tv.addEventListener('touchmove', (e) => { if (G.mode === 'grab' || G.mode === 'pinch' || G.mode === 'pan') e.preventDefault(); }, { passive: false });
+  tv.addEventListener('contextmenu', (e) => { if (e.target.closest('.trk-wave, #ruler')) e.preventDefault(); });
+  const zoomBy = (f) => {
+    clampView(); V.user = true; const p = now(); const c = p >= V.t0 && p <= V.t0 + V.span ? p : V.t0 + V.span / 2; const fr = (c - V.t0) / V.span;
+    V.span = clamp(V.span * f, 2, Math.max(2, viewLength())); V.t0 = c - fr * V.span; V.lastTouch = performance.now(); requestDraw();
+  };
+  $('#zIn').onclick = () => zoomBy(0.5);
+  $('#zOut').onclick = () => zoomBy(2);
+  $('#zFit').onclick = () => { V.user = true; V.span = viewLength(); V.t0 = 0; requestDraw(); };
+  document.querySelectorAll('#snapSeg button').forEach((b) => (b.onclick = () => { V.snap = b.dataset.snap; Settings.snap = V.snap; saveSettings(); renderSnap(); }));
+})();
+function renderSnap() { document.querySelectorAll('#snapSeg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.snap === V.snap))); }
+// edge auto-scroll while dragging a track
+(function edgeScroll() {
+  if (G.mode === 'grab' && G.rect && Math.abs(G.lastX - G.gx) > 12) {
+    const xr = G.lastX - G.rect.left, w = G.rect.width, edge = 36;
+    let d = 0; if (xr < edge) d = -(edge - xr) / edge; else if (xr > w - edge) d = (xr - (w - edge)) / edge;
+    if (d) { V.t0 = clamp(V.t0 + d * V.span * 0.015, 0, Math.max(0, viewLength() - V.span)); moveGrab(); }
+  }
+  requestAnimationFrame(edgeScroll);
+})();
+function openTrackMenu(it) {
+  menuTarget = it.id;
+  $('#trkName').value = it.id === 'beat' ? it.name : it.name;
+  $('#trkName').disabled = it.id === 'beat';
+  document.querySelectorAll('[data-nudge]').forEach((b) => (b.disabled = it.id === 'beat', b.style.opacity = it.id === 'beat' ? 0.4 : 1));
+  $('#trkToPlayhead').style.display = it.id === 'beat' ? 'none' : '';
+  $('#trkReplace').textContent = it.id === 'beat' ? '비트 바꾸기' : '파일 바꾸기';
+  $('#trkDelete').textContent = it.id === 'beat' ? '비트 빼기' : '이 트랙 지우기';
+  $('#trkPos').textContent = it.id === 'beat' ? '' : fmtTime(it.startAt) + '부터';
+  $('#trkUndo').style.display = T.undo && T.undo.trackId === it.id ? '' : 'none';
+  $('#trkVol').value = String(it.vol); $('#trkVolTxt').textContent = Math.round(it.vol * 100) + '%';
+  openSheet('#sheetTrack');
+}
+$('#trkUndo').onclick = () => { closeSheet('#sheetTrack'); undoPunch(); };
+$('#trkVol').addEventListener('input', (e) => { const it = itemById(menuTarget); if (!it) return; it.vol = +e.target.value; $('#trkVolTxt').textContent = Math.round(it.vol * 100) + '%'; setGain(it.id); markDirty(); });
+$('#trkName').addEventListener('input', (e) => { const it = itemById(menuTarget); if (!it || it.id === 'beat') return; it.name = e.target.value || '녹음'; markDirty(); renderTracks(); });
+document.querySelectorAll('[data-nudge]').forEach((b) => (b.onclick = () => {
+  const it = itemById(menuTarget); if (!it || it.id === 'beat') return;
+  const v = b.dataset.nudge; const d = v === 'beat' ? period() : v === '-beat' ? -period() : parseFloat(v);
+  it.startAt = (it.startAt || 0) + d; $('#trkPos').textContent = fmtTime(it.startAt) + '부터';
+  markDirty(); renderTracks(); if (T.playing) play(now());
+}));
+$('#trkToPlayhead').onclick = () => { const it = itemById(menuTarget); if (!it) return; it.startAt = now(); markDirty(); renderTracks(); closeSheet('#sheetTrack'); toast(fmtTime(it.startAt) + '부터 시작하게 했어요'); };
+$('#trkExport').onclick = async () => {
+  const it = itemById(menuTarget); if (!it) return; const rec = await sGet('blobs', it.key); if (!rec) { toast('파일을 찾을 수 없어요'); return; }
+  const nm = safeName(it.id === 'beat' ? it.name.replace(/\.[^.]+$/, '') : it.name) + '.' + extOf(it);
+  saveFile(nm, new Blob([rec.buf], { type: it.type || 'application/octet-stream' }));
+};
+$('#trkReplace').onclick = () => { const it = itemById(menuTarget); if (!it) return; closeSheet('#sheetTrack'); if (it.id === 'beat') $('#fileBeat').click(); else { replaceTarget = it.id; $('#fileTake').click(); } };
+$('#trkDelete').onclick = async () => {
+  const it = itemById(menuTarget); if (!it) return; closeSheet('#sheetTrack');
+  const ok = await askConfirm(it.id === 'beat' ? '비트를 뺄까요?' : '“' + it.name + '”을 지울까요?', it.id === 'beat' ? '빼기' : '지우기'); if (!ok) return;
+  if (T.playing) pause();
+  await sDel('blobs', it.key); buffers.delete(it.key); peaks.delete(it.key);
+  if (it.cloudId && Cloud.assets) Cloud.assets.delete(it.cloudId).catch(() => {});
+  if (T.armed === it.id) T.armed = null;
+  if (T.undo && T.undo.trackId === it.id) dropUndo();
+  if (it.id === 'beat') { P.beat = null; P.autoBpm = null; } else P.tracks = P.tracks.filter((t) => t.id !== it.id);
+  markDirty(); renderAll();
+};
+
+/* tempo sheet */
+$('#btnTempo').onclick = () => { renderTempo(); openSheet('#sheetTempo'); };
+function setBpm(v) { P.bpm = clamp(Math.round(v * 10) / 10, 30, 300); markDirty(); resyncBeats(); renderTempo(); drawWaves(); }
+document.querySelectorAll('[data-bpm]').forEach((b) => (b.onclick = () => setBpm(P.bpm + parseFloat(b.dataset.bpm))));
+$('#bpmInput').addEventListener('change', (e) => { const v = parseFloat(e.target.value); if (isFinite(v)) setBpm(v); else renderTempo(); });
+$('#bpmHalf').onclick = () => setBpm(P.bpm / 2);
+$('#bpmDouble').onclick = () => setBpm(P.bpm * 2);
+document.querySelectorAll('#sigSeg button').forEach((b) => (b.onclick = () => { P.bpb = +b.dataset.bpb; markDirty(); resyncBeats(); renderDots(); renderTempo(); drawWaves(); }));
+document.querySelectorAll('[data-grid]').forEach((b) => (b.onclick = () => {
+  const v = b.dataset.grid; P.grid += v === 'half' ? period() / 2 : v === 'beat' ? period() : parseFloat(v);
+  P.grid = mod(P.grid, barDur()); markDirty(); resyncBeats(); renderTempo(); drawWaves(); drawPlayheads();
+  toast(v === 'beat' ? '강박을 한 박 옮겼어요' : v === 'half' ? '메트로놈을 반 박 옮겼어요' : '첫 박 위치를 ' + (parseFloat(v) * 1000) + 'ms 옮겼어요', 1600);
+}));
+$('#btnReanalyze').onclick = async () => { if (!P.beat) return; const ab = await loadBuffer(P.beat); if (ab) runTempo(ab); };
+let taps = [];
+function onTap() {
+  const pad = $('#tapPad'); pad.classList.add('hit'); setTimeout(() => pad.classList.remove('hit'), 90);
+  if (!T.playing) { $('#tapInfo').textContent = '먼저 재생을 눌러 주세요. 재생하면서 박에 맞춰 탭해요.'; return; }
+  const heard = now() - ((ctx.outputLatency || 0) + (ctx.baseLatency || 0));
+  if (taps.length && heard - taps[taps.length - 1] > 2.2) taps = [];
+  taps.push(heard);
+  if (taps.length < 4) { $('#tapInfo').textContent = '탭 ' + taps.length + '번… 4번 이상 눌러 주세요.'; return; }
+  const iv = []; for (let i = 1; i < taps.length; i++) iv.push(taps[i] - taps[i - 1]);
+  const tapBpm = 60 / median(iv);
+  let msg;
+  if (!P.beat || Math.abs(tapBpm / P.bpm - 1) > 0.06) { P.bpm = clamp(Math.round(tapBpm * 10) / 10, 30, 300); msg = '템포 ' + P.bpm.toFixed(1) + ' BPM, '; }
+  else msg = '템포는 그대로, ';
+  const per = period(), t0 = taps[0];
+  const est = taps.map((t) => t - Math.round((t - t0) / per) * per);
+  P.grid = mod(median(est), barDur());
+  markDirty(); resyncBeats(); renderTempo(); drawWaves();
+  $('#tapInfo').textContent = msg + '첫 탭을 1박으로 맞췄어요 (탭 ' + taps.length + '번).';
+}
+$('#tapPad').addEventListener('pointerdown', (e) => { e.preventDefault(); onTap(); });
+$('#tapPad').addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onTap(); } });
+
+/* songs + settings */
+$('#btnSongs').onclick = async () => { await renderSongs(); openSheet('#sheetSongs'); };
+$('#songList').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-pid]'); if (!b) return;
+  closeSheet('#sheetSongs'); flushSaves();
+  if (b.dataset.pid !== P.id) { const p = await sGet('projects', b.dataset.pid); if (p) openProject(p); }
+});
+$('#btnNewSong').onclick = async () => { closeSheet('#sheetSongs'); flushSaves(); await createSong(); toast('새 곡을 만들었어요'); };
+$('#btnSettings').onclick = () => { renderSettings(); updateStoreInfo(); openSheet('#sheetSettings'); };
+$('#togCount').onclick = () => { Settings.countIn = !Settings.countIn; saveSettings(); renderSettings(); };
+$('#metroVol').addEventListener('input', (e) => { P.metroVol = +e.target.value; markDirty(); });
+$('#latRange').addEventListener('input', (e) => { Settings.latencyMs = +e.target.value; $('#latText').textContent = Settings.latencyMs + 'ms'; saveSettings(); });
+$('#btnCalib').onclick = () => { closeSheet('#sheetSettings'); $('#calibPad').textContent = '준비'; openSheet('#sheetCalib'); };
+$('#btnCalibGo').onclick = () => calibrate();
+$('#btnExportMix').onclick = () => exportMix();
+$('#btnExportAll').onclick = () => exportAll();
+$('#btnDeleteSong').onclick = () => deleteSong();
+
+window.addEventListener('resize', debounce(drawWaves, 150));
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { if (T.rec) { flushTake(T.rec.take); stopRec(); } flushSaves(); }
+});
+window.addEventListener('pagehide', () => { if (T.rec) flushTake(T.rec.take); flushSaves(); });
+document.addEventListener('pointerdown', function unlock() { try { ac().resume(); } catch (e) {} document.removeEventListener('pointerdown', unlock); }, { once: true });
+
+/* ============ boot ============ */
+async function boot() {
+  try { Store.idb = await idbOpen(); } catch (e) { Store.idb = null; }
+  if (!Store.idb) { const b = $('#banner'); b.hidden = false; b.textContent = '이 화면은 브라우저 저장소를 막고 있어서 닫으면 녹음이 사라질 수 있어요. 설정에서 전체 백업을 받아 두세요.'; }
+  try { Settings = Object.assign(Settings, (await sGet('kv', 'settings')) || {}); } catch (e) {}
+  if (['beat', 'bar', 'free'].includes(Settings.snap)) V.snap = Settings.snap; renderSnap();
+  const recovered = await recoverTakes();
+  const all = await sAll('projects');
+  let lastId = null; try { lastId = await sGet('kv', 'lastProject'); } catch (e) {}
+  let p = all.find((x) => x.id === lastId) || all.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
+  if (!p) { p = newProject(1); await sPut('projects', p.id, p); }
+  await openProject(p);
+  saveState('ok');
+  if (recovered) toast('끊긴 녹음 ' + recovered + '개를 복구했어요', 4000);
+  else if (!Settings.hint13) { Settings.hint13 = true; saveSettings(); setTimeout(() => toast('트랙을 길게 눌러 끌면 옮겨져요 · 옆으로 밀면 이동 · 두 손가락 확대', 4500), 900); }
+  updateRecUI(); updateStoreInfo();
+  requestAnimationFrame(raf);
+  initCloud();
+}
+boot();
+</script>
+</body>
+</html>
