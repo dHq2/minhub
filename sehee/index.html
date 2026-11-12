@@ -214,6 +214,7 @@
   .brain.on{color:#33472d;border-color:var(--green);background:#e7ecdd}
   .msg.s.err{border-color:var(--red);color:var(--red)}
   .sheet select.free{border-radius:6px;padding:6px 8px}
+  .keyin{font-family:ui-monospace,Consolas,monospace;font-size:.78rem;border-radius:6px}
 </style>
 </head>
 <body>
@@ -336,8 +337,10 @@
         로그 정리 규칙(중복 하나로, 바뀐 일정은 최종값, 로그 날짜 기준 날짜 계산, 미정은 확정 칸에 안 넣기).
    v0.6.2 (2026-11-12) 한도 대응 — 하루 한도/분당 한도/크레딧 부족을 가려 한국어 한 줄로(영어 원문은 연결 기록에만).
         분당 한도면 알려준 시간만큼 초를 세며 기다렸다 자동으로 다시(두 번까지). 하루 한도면 풀리는 시각 안내.
-        '긴 글 정리' 모델 — 평소는 위 모델(Claude 기본 Haiku), 300자·6줄 넘는 글은 Sonnet 이 정리. */
-const APP_VERSION = 'v0.6.2';
+        '긴 글 정리' 모델 — 평소는 위 모델(Claude 기본 Haiku), 300자·6줄 넘는 글은 Sonnet 이 정리.
+   v0.6.3 (2026-11-12) 키 입력칸을 보이는 글자로(비밀번호 칸이면 폰이 저장된 비밀번호를 자동으로 채울 수 있었다).
+        📋 붙여넣기 단추, 빈칸·줄바꿈·보이지 않는 글자 자동 제거, 글자 수와 sk-ant- 시작 여부 즉석 확인. */
+const APP_VERSION = 'v0.6.3';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -638,7 +641,8 @@ function settingsSheet(){
     <hr class="s">
     <label class="t">세희 머리 — AI 연결. 키는 이 폰에만 저장되고 백업 파일에는 안 들어가요.</label>
     <div class="row">${['anthropic','gemini'].map(v => `<button class="chip ${AI.cfg.provider === v ? 'on' : ''}" data-sact="prov" data-v="${v}">${v === 'anthropic' ? 'Claude' : 'Gemini'}</button>`).join('')}</div>
-    <div class="row" style="margin-top:6px"><input class="free" id="aiKey" type="password" autocomplete="off" placeholder="${AI.cfg.provider === 'anthropic' ? 'sk-ant- 로 시작하는 키' : 'Gemini API 키'} 붙여넣기"><button class="chip" data-sact="savekey">저장</button></div>
+    <div class="row" style="margin-top:6px"><input class="free keyin" id="aiKey" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${AI.cfg.provider === 'anthropic' ? 'sk-ant- 로 시작하는 키' : 'Gemini API 키'} 붙여넣기"></div>
+    <div class="row" style="margin-top:6px"><button class="chip" data-sact="pastekey">📋 붙여넣기</button><button class="chip" data-sact="savekey">저장</button><span class="note" id="keyLen"></span></div>
     <p class="note" id="aiKeyNote">${keyNote()}</p>
     <div class="row"><select class="free" id="aiModel">${modelOptions()}</select><button class="chip" data-sact="models">모델 불러오기</button></div>
     <div class="row" style="margin-top:6px"><span class="note">긴 글 정리</span><select class="free" id="aiBig">${bigOptions()}</select></div>
@@ -699,12 +703,17 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'clearlog'){ await kvSet('ailog', []); fillAiLog(); return; }
   else if (a === 'sendpan'){ AI.cfg.sendPan[AI.cfg.provider] = b.dataset.v === '1'; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'prov'){ AI.cfg.provider = b.dataset.v; await saveAi(); refreshBrain(); settingsSheet(); return; }
+  else if (a === 'pastekey'){
+    try{ $('aiKey').value = cleanKey(await navigator.clipboard.readText()); $('keyLen').textContent = keyCheck($('aiKey').value); }
+    catch(e){ $('keyLen').textContent = '붙여넣기 권한이 없어요. 칸을 길게 눌러 붙여넣어 주세요'; }
+    return;
+  }
   else if (a === 'savekey'){
-    const v = $('aiKey').value.trim(); if (!v){ $('aiKeyNote').textContent = '키를 붙여넣어 주세요.'; return; }
+    const v = cleanKey($('aiKey').value); if (!v){ $('aiKeyNote').textContent = '키를 붙여넣어 주세요.'; return; }
     AI.cfg.keys[AI.cfg.provider] = v; await saveAi(); $('aiKey').value = '';
     $('aiKeyNote').textContent = '저장했어요. 모델 목록을 불러오는 중…';
     try{ await loadModels(); settingsSheet(); $('aiNote').textContent = '모델을 골랐어요. 「연결 시험」으로 확인해 보세요.'; }
-    catch(err){ $('aiKeyNote').textContent = '키는 저장했지만 모델 목록을 못 불러왔어요: ' + err.message; }
+    catch(err){ $('aiKeyNote').textContent = `키는 저장했지만 모델 목록을 못 불러왔어요: ${err.message} — 저장된 키는 ${v.length}자예요. 콘솔에서 키 전체가 복사됐는지 확인해 주세요.`; }
     refreshBrain(); return;
   }
   else if (a === 'models'){
@@ -734,6 +743,7 @@ $('sheet').addEventListener('click', async e => {
   else return;
   await saveSettings(); render(); settingsSheet();
 });
+$('sheet').addEventListener('input', e => { if (e.target.id === 'aiKey') $('keyLen').textContent = keyCheck(cleanKey(e.target.value)); });
 $('sheet').addEventListener('change', async e => {
   const t = e.target;
   if (t.dataset.sact === 'name'){
@@ -874,7 +884,15 @@ const aiKey = () => AI.cfg && AI.cfg.keys[AI.cfg.provider];
 const aiModel = () => AI.cfg && AI.cfg.models[AI.cfg.provider];
 const aiReady = () => !!(aiKey() && aiModel());
 const mask = k => k.length > 12 ? k.slice(0, 7) + '…' + k.slice(-4) : '••••';
-function keyNote(){ const k = aiKey(); return k ? `저장된 키: ${esc(mask(k))}` : '저장된 키가 없어요.'; }
+function keyNote(){ const k = aiKey(); return k ? `저장된 키: ${esc(mask(k))} (${k.length}자)` : '저장된 키가 없어요.'; }
+/* 복사할 때 딸려 오는 빈칸·줄바꿈·보이지 않는 글자·따옴표를 걷어낸다 */
+const cleanKey = v => String(v || '').replace(/[\s\u200B-\u200D\uFEFF\u00A0]/g, '').replace(/^["'`]+|["'`]+$/g, '');
+function keyCheck(v){
+  if (!v) return '';
+  if (AI.cfg.provider === 'anthropic' && !/^sk-ant-/.test(v)) return `⚠ sk-ant- 로 시작하지 않아요. 키가 아닌 걸 복사한 것 같아요 (${v.length}자)`;
+  if (AI.cfg.provider === 'anthropic' && v.length < 90) return `⚠ ${v.length}자예요. Claude 키는 보통 100자가 넘어요. 일부만 복사된 것 같아요`;
+  return `${v.length}자`;
+}
 function modelOptions(){
   const list = (AI.cfg.lists[AI.cfg.provider] || []), cur = aiModel();
   if (!list.length) return cur ? `<option value="${esc(cur)}">${esc(cur)}</option>` : '<option value="">모델 — 키를 저장하면 불러와요</option>';
