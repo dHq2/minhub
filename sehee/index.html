@@ -332,8 +332,10 @@
         📋 붙여넣기 단추, 빈칸·줄바꿈·보이지 않는 글자 자동 제거, 글자 수와 sk-ant- 시작 여부 즉석 확인.
    v0.6.4 (2026-11-12) 사무실 그림 교체 — 보스가 준 배경(청록 사무실)·책상·서류·모니터·세희 자세 7종.
         세희는 책상 뒤 상반신만. 생각 중엔 턱 괴기, 글자가 들어오는 동안 말하는 손짓, 끝나면 표정 태그 자세.
-        원본은 저장소 assets/sehee-originals/ 에 따로 보관. */
-const APP_VERSION = 'v0.6.4';
+        원본은 저장소 assets/sehee-originals/ 에 따로 보관.
+   v0.6.5 (2026-11-12) Claude 키 연결 고침 — 인증을 문서 기본인 Authorization: Bearer 로, 401이면 x-api-key 로 한 번 더(되는 쪽 기억).
+        키 칸이 콘솔 목록과 같은 모양(앞 14자…끝 4자)과 길이를 보여줌. 가려진 사본(…)·키 ID·이상한 글자 경고. 「연결 시험」은 칸에 든 키를 먼저 저장. */
+const APP_VERSION = 'v0.6.5';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -702,12 +704,8 @@ $('sheet').addEventListener('click', async e => {
     return;
   }
   else if (a === 'savekey'){
-    const v = cleanKey($('aiKey').value); if (!v){ $('aiKeyNote').textContent = '키를 붙여넣어 주세요.'; return; }
-    AI.cfg.keys[AI.cfg.provider] = v; await saveAi(); $('aiKey').value = '';
-    $('aiKeyNote').textContent = '저장했어요. 모델 목록을 불러오는 중…';
-    try{ await loadModels(); settingsSheet(); $('aiNote').textContent = '모델을 골랐어요. 「연결 시험」으로 확인해 보세요.'; }
-    catch(err){ $('aiKeyNote').textContent = `키는 저장했지만 모델 목록을 못 불러왔어요: ${err.message} — 저장된 키는 ${v.length}자예요. 콘솔에서 키 전체가 복사됐는지 확인해 주세요.`; }
-    refreshBrain(); return;
+    if (!cleanKey($('aiKey').value)){ $('aiKeyNote').textContent = '키를 붙여넣어 주세요.'; return; }
+    await saveKeyFromInput(); return;
   }
   else if (a === 'models'){
     if (!aiKey()){ $('aiNote').textContent = '키부터 저장해 주세요.'; return; }
@@ -716,11 +714,12 @@ $('sheet').addEventListener('click', async e => {
     return;
   }
   else if (a === 'aitest'){
+    if (cleanKey($('aiKey').value)){ if (!(await saveKeyFromInput())) return; }
     if (!aiKey()){ $('aiNote').textContent = '키부터 저장해 주세요.'; return; }
     $('aiNote').textContent = '세희에게 물어보는 중…';
     try{
       const r = await aiStream([{ role:'user', content:'연결 시험이에요. 한 문장으로 인사해 주세요.' }]);
-      $('aiNote').textContent = `연결됐어요 (첫 글자 ${secs1(r.rec.firstMs)} · 전체 ${secs1(r.rec.ms)}) — ` + parseFace(r.text).t;
+      $('aiNote').textContent = `연결됐어요 (첫 글자 ${secs1(r.rec.firstMs)} · 전체 ${secs1(r.rec.ms)}${r.rec.auth ? ' · ' + (r.rec.auth === 'bearer' ? 'Bearer' : 'x-api-key') : ''}) — ` + parseFace(r.text).t;
     }catch(err){ $('aiNote').textContent = '연결 안 됨: ' + err.message; }
     fillAiLog();
     return;
@@ -876,15 +875,26 @@ const saveAi = () => kvSet('ai', AI.cfg);
 const aiKey = () => AI.cfg && AI.cfg.keys[AI.cfg.provider];
 const aiModel = () => AI.cfg && AI.cfg.models[AI.cfg.provider];
 const aiReady = () => !!(aiKey() && aiModel());
-const mask = k => k.length > 12 ? k.slice(0, 7) + '…' + k.slice(-4) : '••••';
-function keyNote(){ const k = aiKey(); return k ? `저장된 키: ${esc(mask(k))} (${k.length}자)` : '저장된 키가 없어요.'; }
+/* 콘솔 키 목록과 같은 모양(앞 14자…끝 4자)으로 보여준다 — 둘을 눈으로 맞춰볼 수 있게 */
+const mask = k => k.length > 22 ? k.slice(0, 14) + '…' + k.slice(-4) : /\.\.\.|…/.test(k) ? k : k.length > 8 ? k.slice(0, 4) + '…' + k.slice(-2) : '••••';
+function keyNote(){
+  const k = aiKey(); if (!k) return '저장된 키가 없어요.';
+  const w = keyCheck(k);
+  return `저장된 키: ${esc(mask(k))} (${k.length}자)` + (w.startsWith('⚠') ? ' — ' + esc(w) : '') + (AI.cfg.provider === 'anthropic' && AI.cfg.auth ? ` · 인증 방식 ${AI.cfg.auth === 'bearer' ? 'Bearer' : 'x-api-key'}` : '');
+}
 /* 복사할 때 딸려 오는 빈칸·줄바꿈·보이지 않는 글자·따옴표를 걷어낸다 */
 const cleanKey = v => String(v || '').replace(/[\s\u200B-\u200D\uFEFF\u00A0]/g, '').replace(/^["'`]+|["'`]+$/g, '');
 function keyCheck(v){
   if (!v) return '';
-  if (AI.cfg.provider === 'anthropic' && !/^sk-ant-/.test(v)) return `⚠ sk-ant- 로 시작하지 않아요. 키가 아닌 걸 복사한 것 같아요 (${v.length}자)`;
-  if (AI.cfg.provider === 'anthropic' && v.length < 90) return `⚠ ${v.length}자예요. Claude 키는 보통 100자가 넘어요. 일부만 복사된 것 같아요`;
-  return `${v.length}자`;
+  if (/\.\.\.|…|•/.test(v)) return `⚠ 가운데가 가려진 키예요 (${v.length}자). 콘솔 목록에 보이는 건 진짜 키가 아니에요. 새로 만들 때 한 번만 나오는 전체 키를 복사해야 해요`;
+  const bad = v.match(/[^A-Za-z0-9_\-]/);
+  if (bad) return `⚠ 키에 들어갈 수 없는 글자 「${bad[0]}」가 섞였어요 (${v.length}자)`;
+  if (AI.cfg.provider === 'anthropic'){
+    if (/^apikey_/.test(v)) return '⚠ 이건 키 ID예요. 진짜 키는 sk-ant- 로 시작해요';
+    if (!/^sk-ant-/.test(v)) return `⚠ sk-ant- 로 시작하지 않아요. 키가 아닌 걸 복사한 것 같아요 (${v.length}자)`;
+    if (v.length < 60) return `⚠ ${v.length}자밖에 안 돼요. 진짜 키는 100자 안팎이에요. 일부만 복사된 것 같아요`;
+  }
+  return `${v.length}자 · ${mask(v)} — 콘솔 목록의 앞뒤 글자와 같으면 맞는 키예요`;
 }
 function modelOptions(){
   const list = (AI.cfg.lists[AI.cfg.provider] || []), cur = aiModel();
@@ -903,16 +913,45 @@ async function fetchJson(url, opt, ms){
   try{
     const r = await fetch(url, { ...opt, signal:ctl.signal });
     let j = null; try{ j = await r.json(); }catch(e){}
-    if (!r.ok) throw new Error(errText(j, r));
+    if (!r.ok){ const e = new Error(errText(j, r)); e.status = r.status; throw e; }
     return j;
   }catch(err){ if (err.name === 'AbortError') throw new Error('시간이 너무 걸려서 끊었어요'); throw err; }
   finally{ clearTimeout(t); }
 }
-const anthHeaders = key => ({ 'content-type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' });
+/* 인증: 문서 기본인 Authorization: Bearer 먼저, 401이면 예전 방식 x-api-key 로 한 번 더. 되는 쪽을 기억한다 */
+const anthAuth = () => AI.cfg.auth || 'bearer';
+const otherAuth = m => m === 'bearer' ? 'xkey' : 'bearer';
+function anthHeaders(key, mode){
+  const h = { 'content-type':'application/json', 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' };
+  if ((mode || anthAuth()) === 'bearer') h.authorization = 'Bearer ' + key; else h['x-api-key'] = key;
+  return h;
+}
+/* 칸에 있는 키를 저장하고 바로 모델 목록으로 확인. 칸 위 글씨로 결과를 알린다 */
+async function saveKeyFromInput(){
+  const v = cleanKey($('aiKey').value), p = AI.cfg.provider;
+  if (AI.cfg.keys[p] !== v && p === 'anthropic') delete AI.cfg.auth;
+  AI.cfg.keys[p] = v; await saveAi(); $('aiKey').value = ''; $('keyLen').textContent = '';
+  $('aiKeyNote').textContent = '저장했어요. 키가 맞는지 확인하는 중…';
+  try{ await loadModels(); settingsSheet(); $('aiNote').textContent = '키 확인 끝, 모델을 골랐어요. 「연결 시험」으로 대화까지 확인해 보세요.'; refreshBrain(); return true; }
+  catch(err){ $('aiKeyNote').textContent = `키는 저장했지만 확인이 안 됐어요: ${err.message}`; refreshBrain(); return false; }
+}
+function keyFailText(raw){
+  const k = aiKey() || '', w = keyCheck(k);
+  if (w.startsWith('⚠')) return `키를 안 받아줘요(${raw || '401'}). ${w.slice(2)}`;
+  return `키를 안 받아줘요(${raw || '401'}) — Bearer·x-api-key 둘 다 거절. 저장된 키 ${mask(k)} · ${k.length}자. 콘솔 목록의 키와 앞 14자·끝 4자가 다르면 콘솔에서 새 키를 만들어 그 창의 전체 키를 복사해 주세요. 같은데도 안 되면 그 키가 만료·삭제됐는지 콘솔에서 봐주세요`;
+}
 async function loadModels(){
   const p = AI.cfg.provider, key = aiKey(); let list;
   if (p === 'anthropic'){
-    const j = await fetchJson('https://api.anthropic.com/v1/models?limit=100', { headers:anthHeaders(key) }, 20000);
+    const url = 'https://api.anthropic.com/v1/models?limit=100'; let j, mode = anthAuth();
+    try{ j = await fetchJson(url, { headers:anthHeaders(key, mode) }, 20000); }
+    catch(err){
+      if (err.status !== 401) throw err;
+      mode = otherAuth(mode);
+      try{ j = await fetchJson(url, { headers:anthHeaders(key, mode) }, 20000); }
+      catch(err2){ if (err2.status === 401) throw new Error(keyFailText(err2.message)); throw err2; }
+    }
+    if (AI.cfg.auth !== mode){ AI.cfg.auth = mode; }
     list = (j.data || []).map(m => ({ id:m.id, name:m.display_name || m.id }));
   } else {
     const j = await fetchJson('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000', { headers:{ 'x-goog-api-key':key } }, 20000);
@@ -1162,7 +1201,8 @@ function friendly(code, info){
   if (code === -1) return '대답이 너무 늦어서 끊었어요';
   if (code === 0) return '인터넷이 끊겼거나 막혔어요';
   if (info.billing) return '크레딧이 부족해요. console.anthropic.com 결제 화면에서 충전해 주세요';
-  if (code === 401 || code === 403) return '키가 틀렸거나 권한이 없어요. 설정에서 키를 다시 넣어주세요';
+  if (code === 401) return '키를 안 받아줘요. 설정 → 세희 머리에서 저장된 키의 앞뒤 글자·길이를 콘솔과 맞춰 보세요';
+  if (code === 403) return '키는 맞는데 권한이 없대요. 콘솔에서 키의 워크스페이스·역할을 확인해 주세요';
   if (code === 404) return '그 모델을 못 찾았어요. 설정에서 모델을 다시 골라주세요';
   if (code === 429 && info.kind === 'day') return `오늘 쓸 수 있는 횟수${info.limit ? `(하루 ${info.limit}번)` : ''}를 다 썼어요. ${resetText()} 풀려요. 계속 쓰려면 결제를 연결하거나 엔진을 바꿔주세요`;
   if (code === 429) return '잠깐 사이에 너무 많이 불렀어요(분당 한도). 조금 뒤에 다시 말 걸어 주세요';
@@ -1251,7 +1291,13 @@ async function aiRound(st, onText, stopSignal){
     if (p === 'anthropic'){
       const body = { model, max_tokens:2500, system:st.system, messages:st.msgs, stream:true };
       if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
-      const r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key));
+      let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
+      if (r.status === 401){
+        mode = otherAuth(mode); const r2 = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
+        if (r2.ok){ AI.cfg.auth = mode; saveAi(); }
+        r = r2;
+      }
+      rec.auth = mode;
       if (!r.ok) await fail(r);
       const cur = {};
       for await (const data of sseEvents(r, ctl, 40000)){
