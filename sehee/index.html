@@ -30,8 +30,8 @@
   header{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:2px solid var(--ink);
     padding:calc(6px + env(safe-area-inset-top)) 0 6px}
   .hrow{display:flex;align-items:center;gap:6px}
-  .brand{font-family:"Noto Serif KR","Batang",serif;font-weight:700;font-size:1.15rem;letter-spacing:.5px}
-  .ver{font-size:.68rem;color:var(--ink-soft);margin-left:2px}
+  .brand{font-family:"Noto Serif KR","Batang",serif;font-weight:700;font-size:1.15rem;letter-spacing:.5px;white-space:nowrap;flex:0 0 auto}
+  .ver{font-size:.68rem;color:var(--ink-soft);margin-left:2px;white-space:nowrap;flex:0 0 auto}
   .saved{font-size:.72rem;color:var(--green);margin-left:auto;opacity:0;transition:opacity .4s}
   .saved.on{opacity:1}
   .ib{border:1px solid var(--ink-soft);background:transparent;border-radius:3px;min-width:36px;height:34px;
@@ -217,7 +217,37 @@
   body.typing .scene{height:min(110px,18dvh)}
   #seheeFace{transition:opacity .15s}
   .say{flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));
-    display:flex;justify-content:flex-end}
+    display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  /* 첨부 줄 (v0.7) */
+  .tray{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;width:min(88%,560px)}
+  .tray[hidden]{display:none}
+  .att{position:relative;display:inline-flex;align-items:center;border:1.5px solid #23304a;border-radius:8px;background:#fff;overflow:hidden}
+  .att img{width:44px;height:58px;object-fit:cover;object-position:top;display:block}
+  .att.doc{font-size:.74rem;padding:5px 26px 5px 9px;color:var(--ink)}
+  .att button{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;border:none;background:rgba(35,48,74,.85);color:#fff;font-size:.6rem;line-height:18px;padding:0;cursor:pointer}
+  .tray small{flex-basis:100%;text-align:right;font-size:.68rem;color:var(--ink-soft)}
+  .saybub .clip{background:transparent;color:var(--ink);font-size:1.15rem;width:30px;margin-left:-8px}
+  .msg .pics{display:flex;gap:4px;margin:2px 0 6px;flex-wrap:wrap}
+  .msg .pics img{width:40px;height:54px;object-fit:cover;object-position:top;border-radius:5px;border:1px solid rgba(255,255,255,.4)}
+  .msg .tag{display:block;font-size:.78rem;opacity:.85;margin-bottom:2px}
+  .msg details.ocr{margin-top:6px;font-size:.8rem}
+  .msg details.ocr summary{cursor:pointer;opacity:.85}
+  .msg details.ocr pre{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.76rem;line-height:1.5;max-height:42vh;overflow:auto;
+    background:rgba(255,255,255,.08);border-radius:8px;padding:7px 9px;margin:6px 0 4px}
+  .msg details.ocr button{border:1px solid rgba(255,255,255,.4);background:transparent;color:inherit;border-radius:8px;font-size:.7rem;padding:2px 9px;cursor:pointer}
+  .msg .src{display:block;margin-top:5px;font-size:.7rem;color:var(--ink-soft);white-space:normal}
+  .msg .src a{color:var(--blue);text-decoration:none}
+  /* 로딩 화면 (v0.7) — 그림 아래쪽(책상)을 기준으로 맞추고, 그 위 점 세 개를 깜빡인다 */
+  #splash{position:fixed;inset:0;z-index:200;background:#10292f;overflow:hidden;transition:opacity .4s ease}
+  #splash.out{opacity:0;pointer-events:none}
+  .sp-wrap{position:absolute;left:50%;bottom:0;transform:translateX(-50%);aspect-ratio:941/1672;height:max(100dvh,calc(100vw * 1672 / 941));container-type:inline-size}
+  .sp-wrap img{display:block;width:100%;height:100%}
+  .sp-dots{position:absolute;left:49.97%;top:94.11%;transform:translate(-50%,-50%);display:flex;gap:2.15cqw}
+  .sp-dots i{width:1.1cqw;height:1.1cqw;border-radius:50%;background:#ead5c5;opacity:.15;animation:spBlink 1.2s infinite ease-in-out}
+  .sp-dots i:nth-child(2){animation-delay:.2s}.sp-dots i:nth-child(3){animation-delay:.4s}
+  @keyframes spBlink{0%,100%{opacity:.15}35%{opacity:1}}
+  .sp-status{position:absolute;left:0;right:0;top:96.3%;text-align:center;font-size:max(11px,2.5cqw);color:rgba(234,213,197,.72);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 9cqw;letter-spacing:.02em}
   .saybub{position:relative;display:flex;align-items:flex-end;gap:6px;width:min(88%,560px);background:#fff;border:1.5px dashed #23304a;
     border-radius:18px;padding:6px 6px 6px 14px}
   .saybub.has{border-style:solid}
@@ -228,7 +258,7 @@
   .saybub button{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:none;background:#23304a;color:#fff;font-size:1.05rem;cursor:pointer}
   .saybub button:disabled{opacity:.35}
   .brain{margin-left:6px;border:1px solid var(--line);background:rgba(253,252,248,.9);border-radius:12px;
-    padding:4px 9px;font-size:.72rem;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+    padding:4px 9px;font-size:.72rem;color:var(--ink-soft);cursor:pointer;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
   body:not(.office) .brain{display:none}
   .brain.on{color:#33472d;border-color:var(--green);background:#e7ecdd}
   .msg.s.err{border-color:var(--red);color:var(--red)}
@@ -237,6 +267,7 @@
 </style>
 </head>
 <body>
+<div id="splash" aria-live="polite"><div class="sp-wrap"><img src="art/loading.webp" alt=""><div class="sp-dots"><i></i><i></i><i></i></div><div class="sp-status" id="spStatus">껍데기 여는 중</div></div></div>
 <header>
   <div class="wrap">
     <div class="hrow">
@@ -272,10 +303,11 @@
     <img class="prop papers" src="art/papers.webp" alt="">
     <img class="prop monitor" src="art/monitor.webp" alt="">
   </div>
-  <div class="say"><div class="saybub" id="saybub">
+  <div class="say"><div class="tray" id="tray" hidden></div><div class="saybub" id="saybub">
+    <button id="sayClip" class="clip" aria-label="사진·파일 붙이기">📎</button>
     <textarea id="sayText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea>
     <button id="sayGo" aria-label="보내기" disabled>↑</button>
-  </div></div>
+  </div><input type="file" id="sayFile" accept="image/*,.txt,text/plain" multiple hidden></div>
 </section>
 
 <nav class="tabs" id="tabs">
@@ -342,8 +374,13 @@
    v0.6.5 (2026-11-12) Claude 키 연결 고침 — 인증을 문서 기본인 Authorization: Bearer 로, 401이면 x-api-key 로 한 번 더(되는 쪽 기억).
         키 칸이 콘솔 목록과 같은 모양(앞 14자…끝 4자)과 길이를 보여줌. 가려진 사본(…)·키 ID·이상한 글자 경고. 「연결 시험」은 칸에 든 키를 먼저 저장.
    v0.6.6 (2026-11-12) 옆으로 밀어 화면 전환 — 사무실에서 오른쪽으로 밀면 판, 판에서 왼쪽으로 밀면 사무실.
-        손가락을 따라 살짝 끌려오고, 덜 밀면 제자리. 지금 쓰고 있는 칸·설정 창·화면 가장자리에서 시작하면 무시. */
-const APP_VERSION = 'v0.6.6';
+        손가락을 따라 살짝 끌려오고, 덜 밀면 제자리. 지금 쓰고 있는 칸·설정 창·화면 가장자리에서 시작하면 무시.
+   v0.7.0 (2026-11-12) 캡처 해독 — 📎·붙여넣기·공유하기로 카톡 캡처(긴 캡처 포함)를 넣으면 말풍선 사이 빈 줄에서 잘라 조각으로 읽고,
+        해독본을 세희가 판에 정리. 묶음별 재시도·잘리면 반으로 나눠 다시·못 읽은 곳 표시. txt(대화 내보내기)도 받음.
+        웹 검색 — Claude 웹 검색 도구(1번 $0.01)·Gemini 구글 검색. 출처는 말풍선 아래. 설정에서 켜고 끔.
+        로딩 화면 — 보스 그림 위 점 세 개가 깜빡이고, 아래에 실제로 하는 일(저장소·판·그림·머리 확인).
+        공유하기를 POST 로 바꿔 사진·파일도 받음(글만 공유하던 예전 방식도 그대로 받음). */
+const APP_VERSION = 'v0.7.0';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -648,10 +685,12 @@ function settingsSheet(){
     <div class="row" style="margin-top:6px"><button class="chip" data-sact="pastekey">📋 붙여넣기</button><button class="chip" data-sact="savekey">저장</button><span class="note" id="keyLen"></span></div>
     <p class="note" id="aiKeyNote">${keyNote()}</p>
     <div class="row"><select class="free" id="aiModel">${modelOptions()}</select><button class="chip" data-sact="models">모델 불러오기</button></div>
-    <div class="row" style="margin-top:6px"><span class="note">긴 글 정리</span><select class="free" id="aiBig">${bigOptions()}</select></div>
-    <p class="note" style="margin:4px 0 0">카톡 로그처럼 긴 글(300자 또는 6줄 이상)을 넘길 때만 이 모델이 정리해요. 평소 대화는 위 모델이에요.</p>
+    <div class="row" style="margin-top:6px"><span class="note">긴 글·사진</span><select class="free" id="aiBig">${bigOptions()}</select></div>
+    <p class="note" style="margin:4px 0 0">카톡 로그처럼 긴 글(300자 또는 6줄 이상)과 캡처 사진 해독은 이 모델이 해요. 평소 대화는 위 모델이에요.</p>
     <div class="row" style="margin-top:6px"><span class="note">세희가 판 보기</span><button class="chip ${sendPanOn() ? 'on' : ''}" data-sact="sendpan" data-v="1">켬</button><button class="chip ${sendPanOn() ? '' : 'on'}" data-sact="sendpan" data-v="0">끔</button></div>
     <p class="note" style="margin:4px 0 0">켜면 세희가 오늘 판을 늘 보고, 필요하면 지난 판도 직접 찾아봐요. 끄면 자기가 적은 것만 알아요.</p>
+    <div class="row" style="margin-top:6px"><span class="note">웹 검색</span><button class="chip ${webOn() ? 'on' : ''}" data-sact="web" data-v="1">켬</button><button class="chip ${webOn() ? '' : 'on'}" data-sact="web" data-v="0">끔</button></div>
+    <p class="note" style="margin:4px 0 0">날씨·영업시간·뉴스·가격처럼 바깥 정보를 물을 때만 세희가 찾아봐요. 출처는 말풍선 아래에 달려요. ${AI.cfg.provider === 'anthropic' ? 'Claude는 검색 1번에 $0.01(약 14원)이 따로 붙어요.' : 'Gemini는 구글 검색으로 찾아요.'}${AI.noWeb ? ' ⚠ 방금 검색이 거절됐어요(콘솔에서 웹 검색이 꺼져 있거나 이 모델이 못 써요).' : ''}</p>
     <div class="row" style="margin-top:6px"><button class="chip" data-sact="aitest">연결 시험</button>${aiKey() ? '<button class="chip danger" data-sact="delkey">키 지우기</button>' : ''}</div>
     <p class="note" id="aiNote">${usageLine()}</p>
     <label class="t">연결 기록 — 최근 대화가 어떻게 오갔는지(내용·키는 안 남겨요)</label>
@@ -704,6 +743,7 @@ $('sheet').addEventListener('click', async e => {
     return;
   }
   else if (a === 'clearlog'){ await kvSet('ailog', []); fillAiLog(); return; }
+  else if (a === 'web'){ AI.cfg.web = AI.cfg.web || {}; AI.cfg.web[AI.cfg.provider] = b.dataset.v === '1'; AI.noWeb = false; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'sendpan'){ AI.cfg.sendPan[AI.cfg.provider] = b.dataset.v === '1'; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'prov'){ AI.cfg.provider = b.dataset.v; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'pastekey'){
@@ -877,6 +917,9 @@ function bigOptions(){
   const list = AI.cfg.lists[AI.cfg.provider] || [], cur = AI.cfg.big[AI.cfg.provider] || '';
   return '<option value="">같은 모델</option>' + list.map(m => `<option value="${esc(m.id)}" ${m.id === cur ? 'selected' : ''}>${esc(m.name)}</option>`).join('');
 }
+/* 웹 검색 (v0.7) — 기본 켬. Claude는 검색 1번 $0.01, Gemini는 구글 검색 근거 */
+const WEB_TOOL = { type:'web_search_20250305', name:'web_search', max_uses:3, user_location:{ type:'approximate', country:'KR', timezone:'Asia/Seoul' } };
+function webOn(){ const v = (AI.cfg.web || {})[AI.cfg.provider]; return v === undefined ? true : v; }
 /* 세희가 판 보기 — v0.6 부터 두 엔진 모두 기본 켬. 끄면 판을 안 보내고 자기가 적은 것만 안다 */
 function sendPanOn(){ const v = AI.cfg.sendPan[AI.cfg.provider]; return v === undefined ? true : v; }
 const saveAi = () => kvSet('ai', AI.cfg);
@@ -913,7 +956,7 @@ const shortModel = id => (id || '').replace(/^claude-/, '').replace(/-\d{8}$/, '
 function refreshBrain(){
   const b = $('brain'); if (!b) return;
   b.classList.toggle('on', aiReady());
-  b.textContent = aiReady() ? '머리: ' + shortModel(aiModel()) + (bigModel() ? ' / ' + shortModel(bigModel()) : '') + (sendPanOn() ? ' · 판 봄' : ' · 판 안 봄') : '머리 없음 · 깡통';
+  b.textContent = aiReady() ? '머리: ' + shortModel(aiModel()) + (bigModel() ? ' / ' + shortModel(bigModel()) : '') + (sendPanOn() ? ' · 판 봄' : ' · 판 안 봄') + (webOn() && !AI.noWeb ? ' · 검색' : '') : '머리 없음 · 깡통';
 }
 function errText(j, r){ return (j && j.error && (j.error.message || j.error.status)) || `HTTP ${r.status}`; }
 async function fetchJson(url, opt, ms){
@@ -984,11 +1027,17 @@ async function addUsage(model, inTok, outTok){
   if (pr) row.usd += (inTok * pr.i + outTok * pr.o) / 1e6; else row.priced = false;
   await kvSet('usage', u); AI.usage = u;
 }
+async function addSearch(provider, n){
+  const m = todayStr().slice(0, 7), u = (await kvGet('usage')) || {};
+  const row = u[m] || (u[m] = { calls:0, in:0, out:0, usd:0, priced:true });
+  row.search = (row.search || 0) + n; if (provider === 'anthropic') row.usd += n * 0.01;
+  await kvSet('usage', u); AI.usage = u;
+}
 function usageLine(){
   const m = todayStr().slice(0, 7), row = AI.usage && AI.usage[m];
   if (!row) return '이번 달 사용: 아직 없어요.';
   const n = x => x.toLocaleString('ko-KR');
-  return `이번 달 ${row.calls}번 · 입력 ${n(row.in)} / 출력 ${n(row.out)} 토큰` + (row.usd ? ` · 약 $${row.usd.toFixed(4)}` : '') + (row.priced ? '' : ' (단가 모르는 모델은 금액에서 빠짐)');
+  return `이번 달 ${row.calls}번 · 입력 ${n(row.in)} / 출력 ${n(row.out)} 토큰` + (row.search ? ` · 검색 ${row.search}번` : '') + (row.usd ? ` · 약 $${row.usd.toFixed(4)}` : '') + (row.priced ? '' : ' (단가 모르는 모델은 금액에서 빠짐)');
 }
 
 /* 오늘 판을 세희가 읽을 수 있는 글로 (항목마다 #id — 세희가 고칠 때 쓴다) */
@@ -1039,19 +1088,25 @@ async function systemPrompt(){
   같은 일이 여러 방에 나오면 하나만 적는다. 로그 안에서 바뀐 일정은 마지막 내용으로 적고, 로그 안에서 이미 끝난 일은 적지 않거나 끝냄으로 둔다.
   로그 속 "오늘·내일·이번 주"는 지금이 아니라 그 메시지가 오간 날짜 기준으로 계산한다. 확정 아닌 이야기는 확정된 지시 칸에 넣지 말고 '미정'으로 표시한다.
   다 적은 뒤 무엇을 몇 개 적었는지 한두 줄로 말하고, 애매한 것만 한두 개 묻는다.
+- 보스가 카톡 캡처 사진을 넘기면 앱이 먼저 글로 해독해 [카톡 캡처 해독본]으로 준다. 해독본의 '나'는 보스다. [?]·[시각?]은 사진에서 안 읽힌 곳이다.
+  해독본에 날짜 구분선이 없으면 오늘 대화로 보고 정리하되, 그렇게 가정했다고 한 줄 말한다. [⚠ … 못 읽음]이 있으면 그 부분은 못 봤다고 말한다.
+${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스·가격·사실 확인처럼 판과 대화로 알 수 없는 바깥 정보를 물을 때만 쓴다. 판에 있는 일·보스 개인 일은 검색하지 않는다.
+  검색한 뒤엔 핵심만 1~3문장. 출처 목록은 앱이 말풍선 아래에 붙이니 링크를 말로 늘어놓지 않는다.` : ''}
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
 ${sendPanOn() ? await panContext() : await touchedContext()}`;
 }
 /* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
 function toMessages(log){
-  const out = [];
-  for (const m of log.slice(-24)){
-    if (m.err || m.hint || m.who === 'a') continue;
+  const out = [], tail = log.slice(-24);
+  const heavy = tail.map((m, i) => (m.ocr !== undefined || m.doc) ? i : -1).filter(i => i >= 0), recentHeavy = heavy.slice(-2);
+  tail.forEach((m, i) => {
+    if (m.err || m.hint || m.who === 'a') return;
     const role = m.who === 'u' ? 'user' : 'assistant';
+    const text = role === 'user' ? userContent(m, recentHeavy.includes(i)) : m.text;
     const last = out[out.length - 1];
-    if (last && last.role === role) last.content += '\n' + m.text; else out.push({ role, content:m.text });
-  }
+    if (last && last.role === role) last.content += '\n' + text; else out.push({ role, content:text });
+  });
   while (out.length && out[0].role !== 'user') out.shift();
   return out;
 }
@@ -1221,7 +1276,7 @@ function friendly(code, info){
 }
 /* 말풍선에는 한국어 한 줄만. 영어 원문(raw)은 연결 기록에만 남긴다 */
 class AIError extends Error{
-  constructor(code, raw, info){ info = info || {}; super(friendly(code, info)); this.code = code; this.raw = raw || ''; this.kind = info.kind; this.retryMs = info.retryMs; this.limit = info.limit; }
+  constructor(code, raw, info){ info = info || {}; super(friendly(code, info)); this.code = code; this.raw = raw || ''; this.kind = info.kind; this.retryMs = info.retryMs; this.limit = info.limit; this.billing = !!info.billing; }
 }
 const sleepFor = (ms, sig) => new Promise((res, rej) => {
   if (sig && sig.aborted) return rej(new AIError(-2, ''));
@@ -1255,18 +1310,39 @@ async function aiLogLines(n){
   return l.map(r => `${d(r.at)} ${r.provider === 'anthropic' ? 'Claude' : 'Gemini'} ${shortModel(r.model)} · `
     + (r.ok ? '성공' : `실패 ${r.code > 0 ? r.code : r.code === -2 ? '그만' : r.code === -1 ? '시간초과' : '연결'}`)
     + ` · 첫 글자 ${secs1(r.firstMs)} · 전체 ${secs1(r.ms)} · 입력 ${r.in || 0}/출력 ${r.out || 0}`
-    + (r.finish ? ` · ${r.finish}` : '') + (r.tools ? ` · 판 작업: ${r.tools.join(', ')}` : '') + (r.retried ? ' · 생각설정 빼고 재시도' : '') + (r.partial ? ' · 중간에 끊김' : '')
+    + (r.finish ? ` · ${r.finish}` : '') + (r.kind ? ` · ${r.kind} 해독 ${r.tiles}조각` : '') + (r.search ? ` · 검색 ${r.search}번` : '') + (r.noweb ? ' · 검색 거절돼 빼고 다시' : '') + (r.tools ? ` · 판 작업: ${r.tools.join(', ')}` : '') + (r.retried ? ' · 생각설정 빼고 재시도' : '') + (r.partial ? ' · 중간에 끊김' : '')
     + (r.err ? `\n   └ ${r.err}` : ''));
 }
 async function fillAiLog(){ const el = $('aiLog'); if (!el) return; const lines = await aiLogLines(6); el.textContent = lines.join('\n') || '아직 기록이 없어요.'; }
 async function logCall(rec){ const l = (await kvGet('ailog')) || []; l.push(rec); while (l.length > 40) l.shift(); await kvSet('ailog', l); }
 
 /* 한 번 주고받기. 도구 호출이 오면 calls 로 돌려준다 */
+/* API 오류 응답 → AIError (한도 종류·다시 시도까지 남은 시간·크레딧 부족을 가려낸다) */
+async function apiFail(r){
+  let raw = '', j = null; try{ raw = await r.text(); j = JSON.parse(raw); }catch(e){}
+  const er = (j && j.error) || {}, msg = String(er.message || er.status || raw || '').slice(0, 300), info = {};
+  for (const d of (er.details || [])){
+    const t = d['@type'] || '';
+    if (/QuotaFailure/.test(t)) for (const v of (d.violations || [])){
+      const id = v.quotaId || v.quotaMetric || '';
+      if (/PerDay/i.test(id)) info.kind = 'day'; else if (/PerMinute/i.test(id) && !info.kind) info.kind = 'minute';
+      if (v.quotaValue && (!info.limit || /PerDay/i.test(id))) info.limit = v.quotaValue;
+    }
+    if (/RetryInfo/.test(t) && d.retryDelay){ const sec = parseFloat(d.retryDelay); if (!isNaN(sec)) info.retryMs = Math.round(sec * 1000); }
+  }
+  if (r.status === 429 && !info.kind){ if (/per ?day|PerDay/i.test(msg)) info.kind = 'day'; else info.kind = 'minute'; }
+  if (r.status === 429 && !info.limit){ const m = msg.match(/limit:\s*(\d+)/); if (m) info.limit = m[1]; }
+  if (r.status === 429 && !info.retryMs){ const ra = r.headers.get('retry-after'); if (ra && !isNaN(+ra)) info.retryMs = +ra * 1000; }
+  if (/credit balance/i.test(msg)) info.billing = true;
+  throw new AIError(r.status, msg, info);
+}
 async function aiRound(st, onText, stopSignal){
   const { p, key, model } = st;
   const t0 = performance.now(), rec = { at:Date.now(), provider:p, model, ok:false };
   let tFirst = null, text = '', inTok = 0, outTok = 0, finish = '', sig = null;
-  const calls = [], blocks = [], fcParts = [];
+  const calls = [], blocks = [], fcParts = [], sources = [];
+  let searches = 0;
+  const addSrc = (u, t) => { if (!u || !/^https?:/.test(u) || sources.some(x => x.u === u)) return; sources.push({ u, t:t || '' }); };
   const ctl = new AbortController();
   if (stopSignal){ if (stopSignal.aborted) ctl.abort(); stopSignal.addEventListener('abort', () => ctl.abort()); }
   const push = t => { if (!t) return; if (tFirst === null) tFirst = performance.now(); text += t; if (onText) onText(text); };
@@ -1277,28 +1353,12 @@ async function aiRound(st, onText, stopSignal){
     catch(e){ if (late) throw new AIError(-1, '45초 동안 대답이 없었어요'); if (ctl.signal.aborted) throw new AIError(-2, ''); throw new AIError(0, e.message); }
     finally{ clearTimeout(t); }
   };
-  const fail = async r => {
-    let raw = '', j = null; try{ raw = await r.text(); j = JSON.parse(raw); }catch(e){}
-    const er = (j && j.error) || {}, msg = String(er.message || er.status || raw || '').slice(0, 300), info = {};
-    for (const d of (er.details || [])){
-      const t = d['@type'] || '';
-      if (/QuotaFailure/.test(t)) for (const v of (d.violations || [])){
-        const id = v.quotaId || v.quotaMetric || '';
-        if (/PerDay/i.test(id)) info.kind = 'day'; else if (/PerMinute/i.test(id) && !info.kind) info.kind = 'minute';
-        if (v.quotaValue && (!info.limit || /PerDay/i.test(id))) info.limit = v.quotaValue;
-      }
-      if (/RetryInfo/.test(t) && d.retryDelay){ const sec = parseFloat(d.retryDelay); if (!isNaN(sec)) info.retryMs = Math.round(sec * 1000); }
-    }
-    if (r.status === 429 && !info.kind){ if (/per ?day|PerDay/i.test(msg)) info.kind = 'day'; else info.kind = 'minute'; }
-    if (r.status === 429 && !info.limit){ const m = msg.match(/limit:\s*(\d+)/); if (m) info.limit = m[1]; }
-    if (r.status === 429 && !info.retryMs){ const ra = r.headers.get('retry-after'); if (ra && !isNaN(+ra)) info.retryMs = +ra * 1000; }
-    if (/credit balance/i.test(msg)) info.billing = true;
-    throw new AIError(r.status, msg, info);
-  };
+  const fail = apiFail;
   try{
     if (p === 'anthropic'){
       const body = { model, max_tokens:2500, system:st.system, messages:st.msgs, stream:true };
       if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
+      if (st.tools && st.web) body.tools.push(WEB_TOOL);
       let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
       if (r.status === 401){
         mode = otherAuth(mode); const r2 = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
@@ -1306,33 +1366,57 @@ async function aiRound(st, onText, stopSignal){
         r = r2;
       }
       rec.auth = mode;
+      /* 조직에서 웹 검색을 꺼 두면 400 — 검색 빼고 한 번 더, 이번 실행 동안은 검색 안 함 */
+      if (r.status === 400 && st.web){
+        const peek = await r.clone().text().catch(() => '');
+        if (/web.?search/i.test(peek)){ AI.noWeb = true; st.web = false; rec.noweb = true; body.tools = body.tools.filter(t => t !== WEB_TOOL); r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
+      }
       if (!r.ok) await fail(r);
       const cur = {};
       for await (const data of sseEvents(r, ctl, 40000)){
         let d; try{ d = JSON.parse(data); }catch(e){ continue; }
         if (d.type === 'message_start') inTok = (d.message && d.message.usage && d.message.usage.input_tokens) || 0;
-        else if (d.type === 'content_block_start'){ const cb = d.content_block || {}; cur[d.index] = cb.type === 'tool_use' ? { type:'tool_use', id:cb.id, name:cb.name, json:'' } : { type:cb.type, text:'' }; }
+        else if (d.type === 'content_block_start'){
+          const cb = d.content_block || {};
+          if (cb.type === 'tool_use' || cb.type === 'server_tool_use') cur[d.index] = { type:cb.type, id:cb.id, name:cb.name, json:'' };
+          else if (cb.type === 'text') cur[d.index] = { type:'text', text:'', cites:[] };
+          else {   /* 검색 결과 블록 — 받은 그대로 다시 보내야 한다 */
+            cur[d.index] = null; blocks.push(cb);
+            if (cb.type === 'web_search_tool_result' && Array.isArray(cb.content)) st.lastResults = cb.content.filter(x => x.url).slice(0, 3);
+          }
+        }
         else if (d.type === 'content_block_delta'){
           const b = cur[d.index]; if (!b || !d.delta) continue;
           if (d.delta.type === 'text_delta'){ b.text += d.delta.text; push(d.delta.text); }
           else if (d.delta.type === 'input_json_delta') b.json += d.delta.partial_json || '';
+          else if (d.delta.type === 'citations_delta' && d.delta.citation){ b.cites.push(d.delta.citation); addSrc(d.delta.citation.url, d.delta.citation.title); }
         }
         else if (d.type === 'content_block_stop'){
           const b = cur[d.index]; if (!b) continue;
           if (b.type === 'tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'tool_use', id:b.id, name:b.name, input }); calls.push({ id:b.id, name:b.name, args:input }); }
-          else if (b.type === 'text' && b.text) blocks.push({ type:'text', text:b.text });
+          else if (b.type === 'server_tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'server_tool_use', id:b.id, name:b.name, input }); if (st.onSearch) st.onSearch(input.query || ''); }
+          else if (b.type === 'text' && b.text) blocks.push({ type:'text', text:b.text, ...(b.cites.length ? { citations:b.cites } : {}) });
         }
-        else if (d.type === 'message_delta'){ if (d.usage && d.usage.output_tokens) outTok = d.usage.output_tokens; if (d.delta && d.delta.stop_reason) finish = d.delta.stop_reason; }
+        else if (d.type === 'message_delta'){
+          if (d.usage && d.usage.output_tokens) outTok = d.usage.output_tokens;
+          if (d.usage && d.usage.server_tool_use && d.usage.server_tool_use.web_search_requests) searches = d.usage.server_tool_use.web_search_requests;
+          if (d.delta && d.delta.stop_reason) finish = d.delta.stop_reason;
+        }
         else if (d.type === 'error') throw new AIError(529, (d.error && d.error.message) || '대답 도중 오류');
       }
+      if (searches && !sources.length && st.lastResults) st.lastResults.forEach(x => addSrc(x.url, x.title));
     } else {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
       const headers = { 'content-type':'application/json', 'x-goog-api-key':key };
       const base = { systemInstruction:{ parts:[{ text:st.system }] }, contents:st.contents, generationConfig:{ maxOutputTokens:4096 } };
       if (st.tools) base.tools = [{ functionDeclarations:TOOL_DEFS().map(t => ({ name:t.name, description:t.description, parameters:gemSchema(t.schema) })) }];
+      /* 웹 검색(구글 검색 근거) — 함수와 같이 못 쓰는 모델이면 400 → 검색 빼고 다시 */
+      const withWeb = b => st.tools && st.web ? { ...b, tools:[...(b.tools || []), { google_search:{} }] } : b;
       /* Gemini 3 계열은 기본으로 오래 생각한다 → 대화용으로 '조금만 생각'. 못 알아들으면 빼고 다시 */
       const think = /gemini-3/.test(model);
-      let r = await go(url, think ? { ...base, generationConfig:{ ...base.generationConfig, thinkingConfig:{ thinkingLevel:'low' } } } : base, headers);
+      const thinking = think ? { ...base, generationConfig:{ ...base.generationConfig, thinkingConfig:{ thinkingLevel:'low' } } } : base;
+      let r = await go(url, withWeb(thinking), headers);
+      if (!r.ok && r.status === 400 && st.tools && st.web){ AI.noWeb = true; st.web = false; rec.noweb = true; r = await go(url, thinking, headers); }
       if (!r.ok && r.status === 400 && think){ rec.retried = true; r = await go(url, base, headers); }
       if (!r.ok) await fail(r);
       for await (const data of sseEvents(r, ctl, 40000)){
@@ -1345,14 +1429,20 @@ async function aiRound(st, onText, stopSignal){
           else if (part.thoughtSignature && !part.text) sig = sig || part.thoughtSignature;
         }
         if (c.finishReason) finish = c.finishReason;
+        const gm = c.groundingMetadata;
+        if (gm){
+          if (gm.webSearchQueries && gm.webSearchQueries.length){ searches = gm.webSearchQueries.length; if (st.onSearch && !st.saidQ){ st.saidQ = true; st.onSearch(gm.webSearchQueries[0]); } }
+          for (const ch of (gm.groundingChunks || [])) if (ch.web) addSrc(ch.web.uri, ch.web.title);
+        }
         const um = d.usageMetadata; if (um){ inTok = um.promptTokenCount || inTok; outTok = ((um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0)) || outTok; }
       }
     }
-    if (!text.trim() && !calls.length) throw new AIError(502, `빈 대답이 왔어요${finish ? ' (' + finish + ')' : ''}`);
+    if (!text.trim() && !calls.length && finish !== 'pause_turn') throw new AIError(502, `빈 대답이 왔어요${finish ? ' (' + finish + ')' : ''}`);
     rec.ok = true; if (calls.length) rec.tools = calls.map(x => x.name);
     /* Gemini 에 다시 보낼 모델 차례 — 함수 호출 부분은 받은 그대로(생각 서명 포함) */
     const modelParts = [...(text ? [{ text, ...(sig && !fcParts.length ? { thoughtSignature:sig } : {}) }] : []), ...fcParts];
-    return { text, calls, blocks, modelParts, finish, rec };
+    if (searches) rec.search = searches;
+    return { text, calls, blocks, modelParts, finish, rec, sources:sources.slice(0, 5) };
   }catch(e){
     const err = e instanceof AIError ? e : new AIError(0, e.message);
     rec.code = err.code; rec.err = (err.raw || '').slice(0, 160); if (text) rec.partial = true;
@@ -1361,16 +1451,17 @@ async function aiRound(st, onText, stopSignal){
   }finally{
     rec.ms = Math.round(performance.now() - t0); rec.firstMs = tFirst === null ? null : Math.round(tFirst - t0);
     rec.in = inTok; rec.out = outTok; rec.finish = finish;
-    try{ if (inTok || outTok) await addUsage(model, inTok, outTok); await logCall(rec); }catch(e){}
+    try{ if (inTok || outTok) await addUsage(model, inTok, outTok); if (searches) await addSearch(p, searches); await logCall(rec); }catch(e){}
   }
 }
 /* 한 차례 대화: 도구를 부르면 판에 적고, 결과를 돌려주고, 다시 묻는다(최대 8번) */
 async function aiTurn(history, onText, stopSignal, opts){
   const p = AI.cfg.provider;
   const st = { p, key:aiKey(), model:(opts && opts.big && bigModel()) || aiModel(), system:await systemPrompt(), tools:!(opts && opts.noTools),
+    web:webOn() && !AI.noWeb, onSearch:opts && opts.onSearch,
     msgs:history.map(m => ({ role:m.role, content:m.content })),
     contents:history.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })) };
-  let said = '', last = null;
+  let said = '', last = null; const srcs = [];
   for (let round = 0; round < 8; round++){
     const before = said;
     let r, tries = 0;
@@ -1389,6 +1480,9 @@ async function aiTurn(history, onText, stopSignal, opts){
       }
     }
     last = r; said = before + r.text;
+    for (const x of (r.sources || [])) if (!srcs.some(y => y.u === x.u)) srcs.push(x);
+    /* 검색이 길어 서버가 잠깐 멈춘 것 — 받은 그대로 돌려주면 이어서 한다 */
+    if (r.finish === 'pause_turn' && p === 'anthropic' && !r.calls.length){ st.msgs.push({ role:'assistant', content:r.blocks }); if (said && !/\s$/.test(said)) said += ' '; continue; }
     if (!r.calls.length) break;
     const results = [];
     for (const c of r.calls) results.push({ c, out:await runTool(c) });
@@ -1401,13 +1495,306 @@ async function aiTurn(history, onText, stopSignal, opts){
     }
     if (said && !/\s$/.test(said)) said += ' ';
   }
-  return { text:said.trim(), finish:last ? last.finish : '', rec:last ? last.rec : null };
+  return { text:said.trim(), finish:last ? last.finish : '', rec:last ? last.rec : null, sources:srcs.slice(0, 5) };
 }
 const aiStream = (messages, onText, stopSignal) => aiTurn(messages, onText, stopSignal, { noTools:true });
 function parseFace(raw){
   const m = (raw || '').match(/^\s*\[(의심|생각|미소|당황|놀람|삐침)\]\s*/);
   const text = (m ? raw.slice(m[0].length) : (raw || '')).replace(/\[(의심|생각|미소|당황|놀람|삐침)\]\s*/g, '').trim();
   return { t:text || '…', f:m ? FACE_TAGS[m[1]] : 0 };
+}
+
+/* ── 사진 해독 (v0.7) — 카톡 캡처를 글로 ──
+   긴 캡처는 말풍선 사이 빈 줄을 찾아 잘라서(못 찾으면 겹치게) 조각마다 AI가 읽기 좋은 크기로 보낸다.
+   조각 4개씩 묶어 두 줄로 동시에 읽고, 실패한 묶음은 다시, 말이 너무 길어 잘리면 반으로 나눠 다시 읽는다.
+   조각 크기: 가로 896px · 세로는 이미지 토큰 1568 안 (줄이지 않고 그대로 읽히는 최대 크기) */
+const TILE = { w:896, tok:1568, edge:1568, per:4, lanes:2 };
+const OCR_SYS = `너는 메신저 캡처 해독기다. 받은 이미지 조각들은 한 화면(또는 길게 이어 붙인 캡처)을 위에서 아래로 자른 것이다. 보이는 대화를 순서대로, 빠짐없이, 글자 그대로 받아 적는다. 요약·해석·맞춤법 교정 금지.
+
+형식 — 한 메시지 한 줄. 말풍선 안 줄바꿈은 ' / '로 잇는다.
+방: 방 이름   ← 화면 맨 위에 방 이름이 보일 때만, 맨 처음 한 번
+--- 2026년 11월 11일 수요일 ---   ← 날짜 구분선이 보일 때
+[오후 3:12] 이름: 내용
+- 카카오톡에서 오른쪽(노란) 말풍선은 '나'다. 왼쪽 말풍선은 위에 적힌 이름을 쓴다. 이름 없이 이어지는 말풍선은 바로 위 사람.
+- 시각은 말풍선 옆 작은 글씨다. 같은 사람이 같은 분에 연달아 보낸 말풍선은 같은 시각을 쓴다. 안 보이면 [시각?].
+- 말풍선 옆 작은 숫자(안 읽은 사람 수)는 적지 않는다.
+- 사진·이모티콘·동영상·파일·링크 미리보기는 [사진] [이모티콘] [동영상] [파일: 이름] [링크: 제목].
+- 답장(인용)은 '[오후 3:12] 이름: (↪ 인용한 말 앞부분) 내용'.
+- 입장·퇴장·삭제된 메시지·공지는 '* 내용'.
+- 안 읽히는 글자는 [?]. 조각 경계에서 잘린 말풍선은 이어서 한 번만 적는다. 조각끼리 겹친 부분도 한 번만.
+- 대화 화면이 아니면(문서·영수증·메모 사진) 보이는 글자를 줄 그대로 적는다.
+해독본만 출력한다. 앞뒤 설명·인사 없이.`;
+const ocrModel = () => bigModel() || aiModel();
+const tickMs = ms => new Promise(r => setTimeout(r, ms));
+async function loadPic(file){
+  try{ const b = await createImageBitmap(file); return { src:b, w:b.width, h:b.height, done:() => b.close && b.close() }; }
+  catch(e){
+    const url = URL.createObjectURL(file), im = new Image(); im.src = url;
+    try{ await im.decode(); }catch(x){ URL.revokeObjectURL(url); throw new Error('사진을 열 수 없어요(너무 크거나 지원 안 되는 형식)'); }
+    return { src:im, w:im.naturalWidth, h:im.naturalHeight, done:() => URL.revokeObjectURL(url) };
+  }
+}
+/* 아래쪽부터 거슬러 올라가며 '한 줄이 통째로 같은 색'인 띠(말풍선 사이 빈 곳)를 찾는다 */
+function findGap(src, w, y0, y1){
+  const cw = 160, k = cw / w, ch = Math.max(2, Math.round((y1 - y0) * k));
+  const c = document.createElement('canvas'); c.width = cw; c.height = ch;
+  const x = c.getContext('2d', { willReadFrequently:true });
+  x.drawImage(src, 0, y0, w, y1 - y0, 0, 0, cw, ch);
+  const d = x.getImageData(0, 0, cw, ch).data, blank = [];
+  for (let r = 0; r < ch; r++){
+    let mn = 255, mx = 0;
+    for (let cx = 4; cx < cw - 4; cx++){ const i = (r * cw + cx) * 4, l = (d[i] * 3 + d[i + 1] * 6 + d[i + 2]) / 10; if (l < mn) mn = l; if (l > mx) mx = l; }
+    blank.push(mx - mn < 10);
+  }
+  for (let r = ch - 1; r >= 0; r--){
+    if (!blank[r]) continue;
+    let s = r; while (s > 0 && blank[s - 1]) s--;
+    if (r - s + 1 >= 2) return y0 + Math.round(((s + r) / 2) / k);
+    r = s;
+  }
+  return 0;
+}
+function planTiles(src, w, h){
+  const scale = Math.min(1, TILE.w / w), tw = Math.max(1, Math.round(w * scale));
+  const cols = Math.ceil(tw / 28), maxH = Math.min(TILE.edge, Math.floor(TILE.tok / cols) * 28);
+  const step = Math.max(200, Math.floor(maxH / scale)), cuts = [];
+  let y = 0;
+  while (y < h && cuts.length < 200){
+    if (h - y <= step){ cuts.push({ y, h:h - y, ov:false }); break; }
+    const gap = findGap(src, w, y + Math.floor(step * 0.62), y + step);
+    if (gap > y){ cuts.push({ y, h:gap - y, ov:false }); y = gap; }
+    else { cuts.push({ y, h:step, ov:true }); y = y + step - Math.floor(step * 0.14); }
+  }
+  return { scale, tw, cuts };
+}
+async function tileB64(src, w, sy, sh, scale, tw){
+  const th = Math.max(1, Math.round(sh * scale)), c = document.createElement('canvas');
+  c.width = tw; c.height = th;
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.fillStyle = '#fff'; x.fillRect(0, 0, tw, th);
+  x.drawImage(src, 0, sy, w, sh, 0, 0, tw, th);
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.86));
+  c.width = c.height = 0;
+  return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+/* 해독 한 번 — 스트리밍으로 받는다(오래 걸려도 안 끊기게) */
+async function visionCall(tiles, signal, onLen){
+  const p = AI.cfg.provider, key = aiKey(), model = ocrModel();
+  const t0 = performance.now(), rec = { at:Date.now(), provider:p, model, ok:false, kind:'사진', tiles:tiles.length };
+  const ctl = new AbortController(); if (signal){ if (signal.aborted) ctl.abort(); signal.addEventListener('abort', () => ctl.abort()); }
+  let text = '', inTok = 0, outTok = 0, finish = '';
+  const label = t => `사진 ${t.pic} · 조각 ${t.part}/${t.parts}` + (t.part === 1 && t.pic > 1 ? ' (새 사진 — 앞 사진과 대화가 겹칠 수 있음)' : '') + (t.ovPrev ? ' (앞 조각과 위쪽이 겹침)' : '');
+  const ask = tiles[0].part > 1 || tiles[0].pic > 1 ? '이 조각들은 더 긴 캡처의 중간부터다. 맨 위에 잘린 말풍선은 보이는 만큼 적는다. 위 조각들을 순서대로 해독본으로.' : '위 조각들을 순서대로 해독본으로.';
+  const go = async (url, body, headers) => {
+    let late = false; const t = setTimeout(() => { late = true; ctl.abort(); }, 60000);
+    try{ return await fetch(url, { method:'POST', headers, body:JSON.stringify(body), signal:ctl.signal }); }
+    catch(e){ if (late) throw new AIError(-1, '60초 동안 대답이 없었어요'); if (ctl.signal.aborted) throw new AIError(-2, ''); throw new AIError(0, e.message); }
+    finally{ clearTimeout(t); }
+  };
+  try{
+    if (p === 'anthropic'){
+      const content = [];
+      for (const t of tiles){ content.push({ type:'text', text:label(t) }); content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data:t.b64 } }); }
+      content.push({ type:'text', text:ask });
+      const r = await go('https://api.anthropic.com/v1/messages', { model, max_tokens:8000, system:OCR_SYS, messages:[{ role:'user', content }], stream:true }, anthHeaders(key));
+      if (!r.ok) await apiFail(r);
+      for await (const data of sseEvents(r, ctl, 60000)){
+        let d; try{ d = JSON.parse(data); }catch(e){ continue; }
+        if (d.type === 'message_start') inTok = (d.message && d.message.usage && d.message.usage.input_tokens) || 0;
+        else if (d.type === 'content_block_delta' && d.delta && d.delta.type === 'text_delta'){ text += d.delta.text; if (onLen) onLen(text.length); }
+        else if (d.type === 'message_delta'){ if (d.usage && d.usage.output_tokens) outTok = d.usage.output_tokens; if (d.delta && d.delta.stop_reason) finish = d.delta.stop_reason; }
+        else if (d.type === 'error') throw new AIError(529, (d.error && d.error.message) || '해독 도중 오류');
+      }
+    } else {
+      const parts = [];
+      for (const t of tiles){ parts.push({ text:label(t) }); parts.push({ inlineData:{ mimeType:'image/jpeg', data:t.b64 } }); }
+      parts.push({ text:ask });
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
+      const headers = { 'content-type':'application/json', 'x-goog-api-key':key };
+      const base = { systemInstruction:{ parts:[{ text:OCR_SYS }] }, contents:[{ role:'user', parts }], generationConfig:{ maxOutputTokens:8192 } };
+      const rich = { ...base, generationConfig:{ ...base.generationConfig, mediaResolution:'MEDIA_RESOLUTION_HIGH', ...(/gemini-3/.test(model) ? { thinkingConfig:{ thinkingLevel:'low' } } : {}) } };
+      let r = await go(url, rich, headers);
+      if (!r.ok && r.status === 400){ rec.retried = true; r = await go(url, base, headers); }
+      if (!r.ok) await apiFail(r);
+      for await (const data of sseEvents(r, ctl, 60000)){
+        let d; try{ d = JSON.parse(data); }catch(e){ continue; }
+        if (d.error) throw new AIError(d.error.code || 500, d.error.message || '');
+        const c = (d.candidates || [])[0] || {};
+        for (const part of ((c.content || {}).parts || [])) if (part.text && !part.thought){ text += part.text; if (onLen) onLen(text.length); }
+        if (c.finishReason) finish = c.finishReason;
+        const um = d.usageMetadata; if (um){ inTok = um.promptTokenCount || inTok; outTok = ((um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0)) || outTok; }
+      }
+    }
+    rec.ok = true;
+    return { text:text.trim(), finish };
+  }catch(e){
+    const err = e instanceof AIError ? e : new AIError(0, e.message);
+    rec.code = err.code; rec.err = (err.raw || '').slice(0, 160); throw err;
+  }finally{
+    rec.ms = Math.round(performance.now() - t0); rec.in = inTok; rec.out = outTok; rec.finish = finish;
+    try{ if (inTok || outTok) await addUsage(model, inTok, outTok); await logCall(rec); }catch(e){}
+  }
+}
+const isCut = f => /max_tokens|MAX_TOKENS/.test(f || '');
+async function readBatch(tiles, signal, onLen){
+  for (let attempt = 0; ; attempt++){
+    try{
+      const r = await visionCall(tiles, signal, onLen);
+      if (isCut(r.finish) && tiles.length > 1){
+        const mid = Math.ceil(tiles.length / 2);
+        return (await readBatch(tiles.slice(0, mid), signal, onLen)) + '\n' + (await readBatch(tiles.slice(mid), signal, onLen));
+      }
+      return r.text + (isCut(r.finish) ? '\n[잘림 — 이 조각은 말이 너무 많아요]' : '');
+    }catch(e){
+      if (e.code === -2) throw e;
+      const again = [0, -1, 429, 500, 502, 503, 504, 529].includes(e.code) && e.kind !== 'day' && !e.billing;
+      if (again && attempt < 2){ await sleepFor(Math.min(Math.max(e.retryMs || 0, 4000 * (attempt + 1)), 30000), signal); continue; }
+      if (!again || e.kind === 'day') throw e;   /* 키·크레딧·하루 한도 — 다른 조각도 똑같이 안 된다 */
+      const a = tiles[0], b = tiles[tiles.length - 1];
+      return `[⚠ 사진 ${a.pic} 조각 ${a.part}${b !== a ? '~' + (b.pic !== a.pic ? '사진 ' + b.pic + ' 조각 ' : '') + b.part : ''} 못 읽음 — ${e.message}]`;
+    }
+  }
+}
+/* 묶음 경계에서 같은 줄이 두 번 나오면 하나만 */
+const normLine = s => s.replace(/^\[[^\]]*\]\s*/, '').replace(/\s+/g, '');
+function joinParts(parts){
+  let out = [];
+  for (const part of parts){
+    let lines = part.split('\n').map(s => s.trimEnd()).filter(s => s.trim());
+    if (out.length){
+      if (/^방:/.test(lines[0] || '')) lines = lines.slice(1);
+      let best = 0;
+      for (let k = Math.min(8, lines.length, out.length); k > 0; k--){
+        const a = out.slice(-k).map(normLine), b = lines.slice(0, k).map(normLine);
+        if (a.every((x, i) => x && x === b[i])){ best = k; break; }
+      }
+      lines = lines.slice(best);
+      const lastDate = [...out].reverse().find(s => /^---.*---$/.test(s));
+      if (lastDate && lines[0] === lastDate) lines = lines.slice(1);
+    }
+    out = out.concat(lines);
+  }
+  return out.join('\n');
+}
+async function decodeImages(files, signal, onP){
+  const tiles = [];
+  for (let fi = 0; fi < files.length; fi++){
+    onP({ step:`사진 자르는 중 ${fi + 1}/${files.length}` });
+    const pic = await loadPic(files[fi]);
+    try{
+      const plan = planTiles(pic.src, pic.w, pic.h);
+      for (let ti = 0; ti < plan.cuts.length; ti++){
+        const ct = plan.cuts[ti];
+        tiles.push({ b64:await tileB64(pic.src, pic.w, ct.y, ct.h, plan.scale, plan.tw), pic:fi + 1, part:ti + 1, parts:plan.cuts.length, ovPrev:ti > 0 && plan.cuts[ti - 1].ov });
+        onP({ total:tiles.length });
+        if (signal && signal.aborted) throw new AIError(-2, '');
+      }
+    }finally{ pic.done(); }
+  }
+  const batches = [];
+  for (let i = 0; i < tiles.length; i += TILE.per) batches.push(tiles.slice(i, i + TILE.per));
+  const out = new Array(batches.length), lens = new Array(batches.length).fill(0);
+  let done = 0, next = 0;
+  onP({ step:'읽는 중', done:0, total:tiles.length, chars:0 });
+  await Promise.all([...Array(Math.min(TILE.lanes, batches.length))].map(async () => {
+    while (next < batches.length){
+      const bi = next++;
+      out[bi] = await readBatch(batches[bi], signal, n => { lens[bi] = n; onP({ chars:lens.reduce((a, b) => a + b, 0) }); });
+      done += batches[bi].length; onP({ done });
+    }
+  }));
+  const text = joinParts(out);
+  return { text, tiles:tiles.length, lines:text ? text.split('\n').length : 0, failed:(text.match(/\[⚠ 사진/g) || []).length };
+}
+
+/* ── 첨부 (사진·글 파일) — 📎, 붙여넣기, 공유하기로 들어온다 ── */
+const ATT = [];
+const MAX_PICS = 12, MAX_DOC = 40000;
+function renderTray(){
+  const el = $('tray'); if (!el) return;
+  el.hidden = !ATT.length;
+  el.innerHTML = ATT.map((a, i) => a.kind === 'img'
+      ? `<span class="att"><img src="${a.url}" alt=""><button data-att="${i}" aria-label="빼기">✕</button></span>`
+      : `<span class="att doc">📄 ${esc(a.name)} · ${a.text.length.toLocaleString('ko-KR')}자<button data-att="${i}" aria-label="빼기">✕</button></span>`).join('')
+    + (ATT.some(a => a.kind === 'img') ? '<small>긴 캡처도 잘라서 읽어요 · 보내면 시작</small>' : '');
+  growSay();
+}
+async function addFiles(files){
+  let skipped = 0;
+  for (const f of files){
+    if (/^image\//.test(f.type)){
+      if (ATT.filter(a => a.kind === 'img').length >= MAX_PICS){ skipped++; continue; }
+      ATT.push({ kind:'img', file:f, url:URL.createObjectURL(f), name:f.name || '사진' });
+    } else if (/^text\//.test(f.type) || /\.txt$/i.test(f.name || '')){
+      ATT.push({ kind:'txt', name:f.name || '글', text:await f.text() });
+    } else skipped++;
+  }
+  renderTray();
+  if (skipped) toast(`${skipped}개는 못 넣었어요 (사진은 한 번에 ${MAX_PICS}장까지, 사진·txt만)`);
+}
+function clipDoc(t){ return t.length > MAX_DOC ? `(앞부분 ${(t.length - MAX_DOC).toLocaleString('ko-KR')}자 생략)\n` + t.slice(-MAX_DOC) : t; }
+/* 대화 기록 속 보스 말 → AI에 보낼 글. 최근 것만 해독본·첨부 글 전체, 오래된 건 앞부분만 */
+function userContent(m, recent){
+  let s = m.text || '';
+  if (m.ocr !== undefined){
+    if (!s) s = '이 캡처 정리해줘.';
+    s += `\n\n[카톡 캡처 해독본 · 사진 ${m.pics}장${m.ocrMeta ? ' · ' + m.ocrMeta.lines + '줄' : ''}]\n` + (recent ? m.ocr : m.ocr.slice(0, 400) + '\n…(앞부분만. 이 해독본은 이미 정리했다)');
+  }
+  if (m.doc){
+    if (!m.text) s = s || '이 글 정리해줘.';
+    s += `\n\n[첨부 글: ${(m.docs || []).join(', ')}]\n` + (recent ? m.doc : m.doc.slice(0, 400) + '\n…(앞부분만. 이미 정리했다)');
+  }
+  return s;
+}
+const hostOf = u => { try{ return new URL(u).hostname.replace(/^www\./, ''); }catch(e){ return u; } };
+
+/* ── 로딩 화면 (v0.7) — 점 세 개가 깜빡이고, 아래에 지금 하는 일 ── */
+const SP = { t0:performance.now(), hold:0 };
+function spStep(t){ const el = $('spStatus'); if (el) el.textContent = t; }
+async function spDone(){
+  const el = $('splash'); if (!el) return;
+  const wait = 900 + SP.hold - (performance.now() - SP.t0); if (wait > 0) await tickMs(wait);
+  el.classList.add('out'); setTimeout(() => el.remove(), 450);
+}
+function preloadArt(onEach){
+  const list = [...new Set(['art/bg-office.webp', 'art/desk.webp', 'art/papers.webp', 'art/monitor.webp', ...Object.values(SPRITES).map(n => `art/${n}.webp`)])];
+  let n = 0;
+  return Promise.all(list.map(src => new Promise(res => { const i = new Image(); i.onload = i.onerror = () => { onEach(++n, list.length); res(); }; i.src = src; })));
+}
+async function pingBrain(){
+  if (!aiReady()) return '머리 없음 · 깡통으로 열어요';
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 2500);
+  try{
+    const r = AI.cfg.provider === 'anthropic'
+      ? await fetch('https://api.anthropic.com/v1/models?limit=1', { headers:anthHeaders(aiKey()), signal:ctl.signal })
+      : await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1', { headers:{ 'x-goog-api-key':aiKey() }, signal:ctl.signal });
+    if (r.ok) return `머리 연결됨 · ${shortModel(aiModel())}`;
+    SP.hold = 900;
+    return r.status === 401 ? '머리: 키를 안 받아줘요 — 설정에서 확인' : `머리: 응답 ${r.status} — 열고 나서 다시 볼게요`;
+  }catch(e){ SP.hold = 600; return '머리: 확인 못 함 (인터넷?)'; }
+  finally{ clearTimeout(t); }
+}
+/* 안드로이드 공유하기(사진·txt) — 일꾼(sw.js)이 받아 둔 걸 꺼낸다 */
+async function takeShared(){
+  if (!('caches' in window)) return false;
+  const c = await caches.open('share-inbox'), base = new URL('./__share/', location.href).href;
+  const mr = await c.match(base + 'meta'); if (!mr) return false;
+  let meta = {}; try{ meta = await mr.json(); }catch(e){}
+  const files = [];
+  for (const f of (meta.files || [])){ const r = await c.match(f.key); if (r){ const b = await r.blob(); files.push(new File([b], f.name || 'shared', { type:f.type || b.type })); } }
+  for (const k of await c.keys()) await c.delete(k);
+  const title = (meta.title || '').trim(), text = (meta.text || '').trim(), url = (meta.url || '').trim();
+  let got = text;
+  if (title && !text.includes(title)) got = title + (got ? '\n' + got : '');
+  if (url && !got.includes(url)) got = got ? got + '\n' + url : url;
+  if (files.length){
+    await addFiles(files);
+    if (got) $('sayText').value = got;
+    if (location.hash !== '#office') history.replaceState(null, '', location.pathname + '#office');
+    toast(`${files.length}개 받았어요 — 사무실에서 보내면 읽어요`);
+    return 'office';
+  }
+  if (got){ await receive([got]); return 'pan'; }
+  return false;
 }
 
 /* ── 세희의 사무실 (v0.2) — 아직 아무것도 연결하지 않았다. 자동응답만 랜덤으로 ──
@@ -1443,7 +1830,7 @@ const RULES = [
   { re:/급|빨리|당장|지금 바로/, list:[ { t:'퇴근 전 태그 달아둘게요. 아, 아직 못 달아요.', f:5 }, { t:'급한 건 판 맨 위에요. 제가 손이 생기면요.', f:4 } ] },
   { re:/[?？]|뭐야|어때|알아/, list:[ { t:'그건 연결되면 제대로 대답할게요.', f:2 }, { t:'음…… 확정이에요, 미정이에요?', f:2 }, { t:'제가 아는 건 아직 판에 적힌 것뿐이에요.', f:1 } ] },
 ];
-const O = { loaded:false, log:[], busy:false, lastPick:null };
+const O = { loaded:false, log:[], busy:false, lastPick:null, thumbs:{} };
 function pickFrom(list){
   let r, n = 0;
   do { r = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && r === O.lastPick && ++n < 8);
@@ -1458,13 +1845,29 @@ function renderLog(){
   el.innerHTML = O.log.map((m, i) => m.who === 'a'
       ? (m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
-      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${esc(m.text)}<time>${hhmm(m.at)}</time></div>`).join('')
+      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<time>${hhmm(m.at)}</time></div>`).join('')
     + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
 }
+function msgInner(m, i){
+  let h = '';
+  const th = O.thumbs[m.at];
+  if (th && th.length) h += `<span class="pics">${th.map(u => `<img src="${u}" alt="">`).join('')}</span>`;
+  if (m.pics) h += `<span class="tag">📷 캡처 ${m.pics}장</span>`;
+  if (m.docs) h += `<span class="tag">📄 ${esc(m.docs.join(', '))}</span>`;
+  h += esc(m.text || '');
+  if (m.ocr !== undefined) h += `<details class="ocr"><summary>해독본 ${m.ocrMeta ? m.ocrMeta.lines + '줄' : ''}${m.ocrMeta && m.ocrMeta.failed ? ` · ⚠ ${m.ocrMeta.failed}곳 못 읽음` : ''} 보기</summary><pre>${esc(m.ocr || '(글자를 못 찾았어요)')}</pre><button data-copyocr="${i}">복사</button></details>`;
+  if (m.src && m.src.length) h += `<span class="src">출처 ${m.src.map(x => `<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t || hostOf(x.u))}</a>`).join(' · ')}</span>`;
+  return h;
+}
 function waitText(){
   if (!O.live) return '';
+  if (O.live.ocr){
+    const o = O.live.ocr, sec = Math.floor((Date.now() - O.live.t0) / 1000);
+    return o.step === '읽는 중' ? `캡처 읽는 중 · 조각 ${o.done || 0}/${o.total || 0}${o.chars ? ` · ${o.chars.toLocaleString('ko-KR')}자` : ''} · ${sec}초` : `${o.step || '준비 중'}${o.total ? ` · 조각 ${o.total}개` : ''}`;
+  }
+  if (O.live.search) return `🔎 검색 중: ${O.live.search}`;
   if (O.live.waitUntil > Date.now()) return `분당 한도에 걸렸어요 — ${Math.ceil((O.live.waitUntil - Date.now()) / 1000)}초 뒤 다시 해볼게요`;
   const sec = Math.floor((Date.now() - O.live.t0) / 1000);
   const busy = O.live.big ? `긴 글이라 ${shortModel(O.live.big)}로 정리 중` : '세희가 생각 중';
@@ -1477,7 +1880,7 @@ function updateLive(){
   if (logPinned) $('log').scrollTop = $('log').scrollHeight;
 }
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
-function seheeSays(r){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now() }); setFace(r.f); }
+function seheeSays(r, src){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f); }
 async function openOffice(){
   if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
   if (!O.log.length){ GREET.forEach(seheeSays); saveLog(); }
@@ -1485,33 +1888,50 @@ async function openOffice(){
   renderLog();
 }
 function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
-  const has = !!ta.value.trim(); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy; }
+  const has = !!ta.value.trim() || ATT.length > 0; $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy; }
 async function sendSay(){
-  const ta = $('sayText'), v = ta.value.trim(); if (!v || O.busy) return;
-  O.log.push({ who:'u', text:v, at:Date.now() }); ta.value = '';
+  const ta = $('sayText'), v = ta.value.trim(); if ((!v && !ATT.length) || O.busy) return;
+  const atts = ATT.splice(0), imgs = atts.filter(a => a.kind === 'img'), txts = atts.filter(a => a.kind === 'txt');
+  renderTray();
+  const um = { who:'u', text:v, at:Date.now() };
+  if (imgs.length){ um.pics = imgs.length; O.thumbs[um.at] = imgs.map(a => a.url); }
+  if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => clipDoc(t.text)).join('\n\n'); }
+  O.log.push(um); ta.value = '';
   O.busy = true; growSay(); setFace(2); renderLog(); saveLog();
   if (aiReady()){
-    const long = v.length >= 300 || v.split('\n').length >= 6;
+    const long = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
     O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:long ? bigModel() : null, waitUntil:0 };
     renderLog();
     const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
+    const showWait = () => { const w = $('waitTxt'); if (w) w.textContent = waitText(); };
     try{
+      if (imgs.length){
+        O.live.ocr = { step:'사진 여는 중', done:0, total:0, chars:0 }; renderLog();
+        const tr = await decodeImages(imgs.map(a => a.file), O.abort.signal, pr => { if (O.live && O.live.ocr){ Object.assign(O.live.ocr, pr); showWait(); } });
+        um.ocr = tr.text; um.ocrMeta = { tiles:tr.tiles, lines:tr.lines, failed:tr.failed };
+        O.live.ocr = null; O.live.t0 = Date.now(); renderLog(); saveLog();
+        if (!tr.text.trim()) throw Object.assign(new AIError(422, ''), { message:'캡처에서 글자를 못 찾았어요. 더 선명한 캡처로 다시 보내 주세요' });
+      }
       const r = await aiTurn(toMessages(O.log), t => {
-        O.live.text = t;
+        O.live.text = t; O.live.search = '';
         if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
-      }, O.abort.signal, { big:long, onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); } });
+      }, O.abort.signal, { big:long,
+        onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; showWait(); },
+        onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
       const pf = parseFace(r.text);
       if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
-      seheeSays(pf);
+      seheeSays(pf, r.sources);
     }catch(err){
       if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
       if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
+      else if (err.code === 422) { O.log.push({ who:'s', text:err.message, face:5, at:Date.now(), err:true }); setFace(5); }
       else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message, face:5, at:Date.now(), err:true }); setFace(5); }
     }finally{ clearInterval(tick); O.live = null; O.abort = null; }
   } else {
     await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
-    seheeSays(replyFor(v));
+    if (imgs.length || txts.length) seheeSays({ t:'사진이랑 파일은 머리가 있어야 읽어요. 설정에서 키부터요.', f:6 });
+    else seheeSays(replyFor(v));
     if (!O.hinted){ O.hinted = true; O.log.push({ who:'s', text:'⚙ 설정 → 세희 머리에서 API 키를 넣으면 진짜로 대답할 수 있어요.', face:1, at:Date.now(), hint:true }); }
   }
   O.busy = false; renderLog(); growSay(); saveLog();
@@ -1529,7 +1949,18 @@ $('sayGo').onclick = sendSay;
 $('log').addEventListener('click', e => {
   if (e.target.closest('[data-stop]') && O.abort) O.abort.abort();
   const u = e.target.closest('[data-undo]'); if (u) undoAction(Number(u.dataset.undo));
+  const c = e.target.closest('[data-copyocr]');
+  if (c){ const m = O.log[Number(c.dataset.copyocr)]; if (m && m.ocr) navigator.clipboard.writeText(m.ocr).then(() => { c.textContent = '복사됨'; }, () => { c.textContent = '복사 안 됨'; }); }
 });
+$('sayClip').addEventListener('pointerdown', e => e.preventDefault());
+$('sayClip').onclick = () => $('sayFile').click();
+$('sayFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; addFiles(f); };
+$('sayText').addEventListener('paste', e => {
+  const files = [...((e.clipboardData && e.clipboardData.files) || [])].filter(f => /^image\//.test(f.type));
+  if (!files.length) return;
+  e.preventDefault(); addFiles(files);
+});
+$('tray').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (!b) return; const a = ATT.splice(Number(b.dataset.att), 1)[0]; if (a && a.url) URL.revokeObjectURL(a.url); renderTray(); });
 $('brain').onclick = settingsSheet;
 
 /* ── 화면 전환: 판 ↔ 사무실. 뒤로 가기로 판에 돌아온다 ── */
@@ -1610,25 +2041,39 @@ const SWIPE = { anim:'' };
 
 /* ── 시작 ── */
 (async function boot(){
-  const st = await kvGet('settings');
-  S.settings = Object.assign({ sections:DEFAULT_SECTIONS.map(s => ({ ...s })), fs:1, openOnly:false }, st || {});
-  if (!st) await saveSettings();
-  applyFs();
-  await loadAi(); AI.usage = (await kvGet('usage')) || {}; refreshBrain();
-  S.dates = (await allDates()).sort();
-  await goDate(S.today);
+  try{
+    spStep('저장소 여는 중');
+    const st = await kvGet('settings');
+    S.settings = Object.assign({ sections:DEFAULT_SECTIONS.map(s => ({ ...s })), fs:1, openOnly:false }, st || {});
+    if (!st) await saveSettings();
+    applyFs();
+    spStep('세희 머리 설정 읽는 중');
+    await loadAi(); AI.usage = (await kvGet('usage')) || {}; refreshBrain();
+    spStep('판 불러오는 중');
+    S.dates = (await allDates()).sort();
+    await goDate(S.today);
+    spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중`);
+    await Promise.race([preloadArt((n, t) => spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중 ${n}/${t}`)), tickMs(4000)]);
+    spStep('세희 머리 확인 중');
+    const brain = await pingBrain();
+    spStep(brain);
 
-  /* 공유하기로 들어온 것 (안드로이드: 카톡 → 공유 → 세희) */
-  const q = new URLSearchParams(location.search);
-  const title = (q.get('title') || '').trim(), text = (q.get('text') || '').trim(), url = (q.get('url') || '').trim();
-  let got = text;
-  if (title && !text.includes(title)) got = title + (got ? '\n' + got : '');
-  if (url && !got.includes(url)) got = got ? got + '\n' + url : url;
-  if (q.has('share') || got){
-    history.replaceState(null, '', location.pathname);
-    if (got) await receive([got]);
-  }
-  if (location.hash === '#office') showView('office');
+    /* 공유하기로 들어온 것 — 예전 방식(주소에 글이 붙어 옴)과 새 방식(일꾼이 받아 둠) 둘 다 */
+    const q = new URLSearchParams(location.search);
+    const title = (q.get('title') || '').trim(), text = (q.get('text') || '').trim(), url = (q.get('url') || '').trim();
+    let got = text;
+    if (title && !text.includes(title)) got = title + (got ? '\n' + got : '');
+    if (url && !got.includes(url)) got = got ? got + '\n' + url : url;
+    if (q.has('share') || q.has('shared') || got){
+      history.replaceState(null, '', location.pathname + location.hash);
+      if (got) await receive([got]);
+      if (q.has('shared')){ spStep('공유받은 것 꺼내는 중'); await takeShared(); }
+    }
+    if (location.hash === '#office') showView('office');
+    spStep('준비 끝 · ' + brain);
+  }catch(e){
+    SP.hold = 1500; spStep('여는 중 문제가 생겼어요: ' + (e && e.message || e));
+  }finally{ spDone(); }
 })();
 </script>
 </body>
