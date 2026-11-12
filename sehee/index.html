@@ -155,7 +155,7 @@
   .tabs button .ic{font-size:1.15rem;line-height:1.2}
   .tabs button.on{color:var(--ink);font-weight:700}
   .tabs button.on::before{content:"";position:absolute;top:-2px;left:30%;right:30%;height:3px;background:var(--red)}
-  body.office .nav, body.office #old, body.office #main, body.office .fab{display:none!important}
+  body.alt .nav, body.alt #old, body.alt #main, body.alt .fab{display:none!important}
   body.typing .tabs{display:none}
   /* 옆으로 밀어 판 ↔ 사무실 (v0.6.6) */
   #main, #office{touch-action:pan-y pinch-zoom}
@@ -219,6 +219,115 @@
   .say{flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));
     display:flex;flex-direction:column;align-items:flex-end;gap:7px}
   #office.drop{outline:3px dashed #f3d27a;outline-offset:-6px}
+  /* ── v0.9 화면들: 달력 · 화이트보드 · 사람 ── */
+  #cal,#board,#people{display:none;position:fixed;left:0;right:0;top:var(--hh,64px);bottom:var(--tb,58px);z-index:10;margin:0 auto;overflow:hidden}
+  body.v-cal #cal,body.v-board #board,body.v-people #people{display:flex;flex-direction:column}
+  body.typing #board{bottom:0}
+  .log{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
+  .log::-webkit-scrollbar{width:6px}.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:3px}.log::-webkit-scrollbar-track{background:transparent}
+  /* 달력 — 책상 위 서류철 */
+  #cal{max-width:960px;background:linear-gradient(#cdbf9c,#bfae86)}
+  .cal-year{flex:1;overflow:auto;padding:10px 44px 14px 12px}
+  .cy-head{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
+  .cy-head b{font:700 1.15rem "Noto Serif KR","Batang",serif}
+  .cy-head small{margin-left:auto;font-size:.72rem;color:var(--ink-soft)}
+  .cy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .cy-m{background:#fbf8ef;border:1px solid #a89a76;border-radius:3px;padding:7px 7px 6px;cursor:pointer;box-shadow:0 2px 0 #a89a76}
+  .cy-m:active{transform:translateY(1px)}
+  .cy-t{font-weight:700;font-size:.82rem;margin-bottom:4px}
+  .cy-d{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+  .cy-d i{font-style:normal;font-size:.56rem;text-align:center;line-height:1.55;color:var(--ink-soft);border-radius:50%}
+  .cy-d i.ev{background:var(--c);color:#fff;font-weight:700}
+  .cy-d i.today{outline:1.5px solid var(--red)}
+  .cal-tabs{position:absolute;right:0;top:8px;bottom:8px;width:38px;display:flex;flex-direction:column;gap:2px;z-index:4;touch-action:none}
+  .cal-tabs button{flex:1;border:1px solid #8c7d5a;border-right:none;border-radius:6px 0 0 6px;background:#e9dfc4;font-size:.62rem;color:var(--ink);padding:0;cursor:pointer;writing-mode:vertical-rl;letter-spacing:-1px}
+  .cal-tabs button:nth-child(3n+2){background:#d9e3d2}.cal-tabs button:nth-child(3n){background:#ead6cf}
+  .cal-tabs button.on{background:#fbf8ef;font-weight:700;margin-left:-6px}
+  .cal-sheet{position:absolute;top:6px;bottom:6px;left:5%;right:38px;background:#fbf8ef;border:1px solid #8c7d5a;border-radius:4px 0 0 4px;box-shadow:-6px 4px 14px rgba(0,0,0,.25);
+    transform:translateX(110%);transition:transform .3s cubic-bezier(.2,.8,.3,1);z-index:3;display:flex;flex-direction:column;padding:8px 10px;overflow:hidden}
+  .cal-sheet.on{transform:none}
+  .cal-sheet.flipR{animation:inR .25s ease}.cal-sheet.flipL{animation:inL .25s ease}
+  .cs-ear{position:absolute;left:-1px;top:-1px;background:#a13b2c;color:#fff;font-size:.68rem;padding:2px 9px;border-radius:0 0 6px 0}
+  .cs-head{display:flex;align-items:center;gap:8px;justify-content:center;margin:4px 0 6px}
+  .cs-head b{font:700 1rem "Noto Serif KR","Batang",serif;min-width:8em;text-align:center}
+  .cs-head [data-cal="close"]{position:absolute;right:8px;top:6px}
+  .cs-wd,.cs-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+  .cs-wd span{text-align:center;font-size:.7rem;color:var(--ink-soft);padding-bottom:3px}
+  .cs-wd .sun{color:var(--red)}.cs-wd .sat{color:var(--blue)}
+  .cs-grid{flex:1;grid-auto-rows:1fr;border-top:1px solid var(--line);border-left:1px solid var(--line);min-height:0}
+  .cs-c{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:2px 2px 0;overflow:hidden;cursor:pointer;min-height:0;display:flex;flex-direction:column;gap:1px}
+  .cs-c.off{background:rgba(0,0,0,.03);cursor:default}
+  .cs-c.today{background:#fff4e8}.cs-c.today .n{color:var(--red);font-weight:700}
+  .cs-c .n{font-size:.68rem}
+  .cs-c .chip{display:block;font-size:.58rem;line-height:1.35;background:var(--c);color:#fff;border-radius:3px;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cs-c .chip.done{opacity:.45;text-decoration:line-through}
+  .cs-c .more{font-size:.56rem;color:var(--ink-soft)}
+  .cs-hint{font-size:.66rem;color:var(--ink-soft);text-align:center;margin:5px 0 0}
+  .cal-day{position:absolute;left:5%;right:38px;bottom:6px;max-height:62%;background:#fffdf6;border:1px solid #8c7d5a;border-bottom:none;border-radius:10px 10px 0 0;
+    box-shadow:0 -6px 16px rgba(0,0,0,.2);transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.8,.3,1);z-index:5;display:flex;flex-direction:column;padding:10px 12px}
+  .cal-day.on{transform:none}
+  .cd-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.cd-head b{font-size:.95rem}.cd-head .tg{font-size:.66rem;background:var(--red);color:#fff;border-radius:8px;padding:1px 7px}
+  .cd-head [data-cal="dclose"]{margin-left:auto}
+  .cd-list{overflow:auto;flex:1}
+  .cd-it{display:grid;grid-template-columns:auto 1fr;gap:0 8px;border-left:4px solid var(--c);padding:5px 8px;margin-bottom:5px;background:#fff;border-radius:3px}
+  .cd-it .t{font-size:.74rem;font-weight:700;color:var(--ink-soft)}.cd-it .x{font-size:.86rem}.cd-it .s{grid-column:2;font-size:.66rem;color:var(--ink-soft)}
+  .cd-it.done .x{text-decoration:line-through;color:var(--done)}
+  .cd-add{display:flex;gap:6px;margin-top:6px}.cd-add input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.82rem;background:#fff}
+  /* 화이트보드 */
+  #board{max-width:1100px;background:#6b6257}
+  .wb{flex:1;min-height:0;margin:8px 8px 0;background:#f7f7f3;border:6px solid #c9ccd1;border-radius:6px;box-shadow:inset 0 0 30px rgba(0,0,0,.06);display:flex;flex-direction:column}
+  .wb-head{display:flex;align-items:center;gap:8px;padding:6px 10px 2px}
+  .wb-head b{font:700 .95rem "Noto Serif KR","Batang",serif}.wb-head span{font-size:.7rem;color:var(--ink-soft)}
+  .wb-head button{margin-left:auto;border:1px dashed #8a8f99;background:transparent;border-radius:12px;font-size:.72rem;padding:3px 10px;cursor:pointer}
+  .wb-grid{flex:1;overflow:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px 12px;align-content:start}
+  .wb-empty{grid-column:1/-1;text-align:center;color:var(--ink-soft);font-size:.82rem;line-height:1.7;padding:30px 10px}
+  .card{position:relative;background:#fffef9;border:1px solid #dad6c8;box-shadow:0 2px 5px rgba(0,0,0,.12);padding:12px 9px 6px;transform:rotate(calc(var(--r) * .35));cursor:pointer;min-width:0}
+  .card.k-note{background:#fff7b8}.card.k-file{background:#eef3f7}
+  .card .tape{position:absolute;top:-8px;left:50%;width:56px;height:16px;background:rgba(230,220,170,.75);transform:translateX(-50%) rotate(var(--r));box-shadow:0 1px 1px rgba(0,0,0,.08)}
+  .card .ch{font-weight:700;font-size:.8rem;margin-bottom:5px;line-height:1.35}
+  .card .cm{font-size:.6rem;color:var(--ink-soft);margin-top:5px}
+  .card.new{animation:cardIn .9s ease}
+  @keyframes cardIn{0%{transform:scale(.6) rotate(-8deg);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:rotate(calc(var(--r) * .35))}}
+  .ct{border-collapse:collapse;width:100%;font-size:.66rem}
+  .ct th,.ct td{border:1px solid #d5d0bf;padding:2px 4px;text-align:left;vertical-align:top;word-break:break-all}
+  .ct th{background:#efe9d6}
+  .cl{margin:0;padding-left:16px;font-size:.7rem;line-height:1.5}
+  .cn{font-size:.72rem;line-height:1.5;margin:0;white-space:pre-wrap;word-break:break-word}
+  .cfile{font-size:.74rem;font-weight:600;margin-bottom:3px}
+  .cc{width:100%;height:auto;display:block}
+  .card small.more,.card-full small.more{display:block;font-size:.6rem;color:var(--ink-soft);margin-top:3px}
+  .card-full{max-height:60vh;overflow:auto}
+  .card-full .ct{font-size:.8rem}.card-full .cl{font-size:.88rem}
+  .cf{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.82rem;line-height:1.55;margin:0}
+  .bt{flex:0 0 auto;display:flex;align-items:flex-end;gap:6px;padding:8px 8px 0;max-height:34%}
+  .bt-bub{flex:1;position:relative;background:#fdfcf8;border:1.5px solid #2b3a55;border-radius:14px;padding:8px 12px;max-height:100%;overflow:auto;margin-bottom:14px;font-size:.9rem;line-height:1.55}
+  .bt-bub::after{content:"";position:absolute;right:-9px;bottom:18px;border:8px solid transparent;border-left-color:#2b3a55;border-right:0}
+  .bt-u{font-size:.7rem;color:var(--ink-soft);margin-bottom:3px}
+  .bt-s{white-space:pre-wrap;word-break:break-word}.bt-s.err{color:var(--red)}
+  .bt-s.wait{display:flex;align-items:center;gap:8px}.bt-s.wait i{display:flex;gap:4px}
+  .bt-s.wait i span{width:7px;height:7px;border-radius:50%;background:#2b3a55;opacity:.3;animation:blink 1s infinite}
+  .bt-s.wait i span:nth-child(2){animation-delay:.2s}.bt-s.wait i span:nth-child(3){animation-delay:.4s}
+  .bt-s.wait small{font-size:.72rem;color:var(--ink-soft)}
+  .bt-s .src{display:block;margin-top:4px;font-size:.7rem;color:var(--ink-soft)}.bt-s .src a{color:var(--blue);text-decoration:none}
+  .bt-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
+  .bt-side img{height:clamp(84px,15dvh,140px);display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+  .bt-side button{border:none;background:none;color:#f3d27a;font-size:.64rem;cursor:pointer;padding:2px 0 4px}
+  body.typing .bt-side img{height:60px}
+  .bt-say{flex:0 0 auto;display:flex;gap:6px;align-items:flex-end;padding:6px 10px calc(8px + env(safe-area-inset-bottom));background:var(--paper);border-top:1px solid var(--line)}
+  .bt-say textarea{flex:1;min-width:0;border:1.5px solid #23304a;border-radius:16px;padding:7px 12px;resize:none;font:inherit;font-size:.92rem;line-height:1.45;max-height:6.5em;background:#fff}
+  .bt-say button{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:none;background:#23304a;color:#fff;font-size:1.05rem;cursor:pointer}
+  .bt-say button:disabled{opacity:.35}
+  /* 인간관계 판 — 아직 깡통 */
+  #people{max-width:960px;background:#a97a4c radial-gradient(rgba(0,0,0,.08) 1px,transparent 1.5px) 0 0/7px 7px}
+  .pp{flex:1;overflow:auto;padding:16px 14px}
+  .pp h3{margin:0 0 4px;font:700 1.05rem "Noto Serif KR","Batang",serif;color:#fff7e6;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .pp p{margin:0 0 14px;font-size:.78rem;color:#ffefd6}
+  .pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px}
+  .pp-c{position:relative;background:#fffdf6;padding:14px 10px 10px;text-align:center;box-shadow:0 3px 6px rgba(0,0,0,.25);transform:rotate(var(--r))}
+  .pp-c::before{content:"";position:absolute;top:-5px;left:50%;width:12px;height:12px;border-radius:50%;background:#c0392b;transform:translateX(-50%);box-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .pp-c .face{width:56px;height:56px;border-radius:50%;background:#e6dcc6;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#a89a76}
+  .pp-c .ln{height:7px;background:#ece5d3;border-radius:3px;margin:5px 8px}
+  .pp-c .ln.s{margin:5px 24px}
   /* 첨부 줄 (v0.7) */
   .tray{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;width:min(88%,560px)}
   .tray[hidden]{display:none}
@@ -261,7 +370,7 @@
   .saybub button:disabled{opacity:.35}
   .brain{margin-left:6px;border:1px solid var(--line);background:rgba(253,252,248,.9);border-radius:12px;
     padding:4px 9px;font-size:.72rem;color:var(--ink-soft);cursor:pointer;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
-  body:not(.office) .brain{display:none}
+  body:not(.office):not(.v-board) .brain{display:none}
   .brain.on{color:#33472d;border-color:var(--green);background:#e7ecdd}
   .msg.s.err{border-color:var(--red);color:var(--red)}
   .sheet select.free{border-radius:6px;padding:6px 8px}
@@ -312,9 +421,30 @@
   </div><input type="file" id="sayFile" accept="image/*,.txt,.md,.csv,.tsv,.json,.html,.htm,.xml,.pdf,.docx,.xlsx,.pptx,.hwp,.hwpx,text/plain,application/pdf" multiple hidden></div>
 </section>
 
+<section id="cal" aria-label="달력">
+  <div class="cal-year" id="calYear"></div>
+  <div class="cal-tabs noswipe" id="calTabs"></div>
+  <div class="cal-sheet noswipe" id="calSheet"></div>
+  <div class="cal-day noswipe" id="calDay"></div>
+</section>
+
+<section id="board" aria-label="화이트보드">
+  <div class="wb"><div class="wb-head"><b>화이트보드</b><span id="wbCount"></span><button id="wbMemo">+ 메모</button></div><div class="wb-grid" id="wbGrid"></div></div>
+  <div class="bt"><div class="bt-bub" id="btBub"></div><div class="bt-side"><img id="btSpr" src="art/s-lean.webp" alt="강세희"><button id="btAll">대화 전체 ›</button></div></div>
+  <div class="bt-say"><textarea id="bdText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea><button id="bdGo" aria-label="보내기" disabled>↑</button></div>
+</section>
+
+<section id="people" aria-label="인간관계 판">
+  <div class="pp"><h3>인간관계 판</h3><p>아직 준비 중이에요. 사람 카드는 다음에 붙여요.</p>
+    <div class="pp-grid"><div class="pp-c" style="--r:-2deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div><div class="pp-c" style="--r:1.5deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div><div class="pp-c" style="--r:-1deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div><div class="pp-c" style="--r:2.5deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div><div class="pp-c" style="--r:-2.5deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div><div class="pp-c" style="--r:1deg"><div class="face">?</div><div class="ln"></div><div class="ln s"></div></div></div></div>
+</section>
+
 <nav class="tabs" id="tabs">
   <button id="tabPan" class="on"><span class="ic">🗒️</span>판</button>
   <button id="tabOffice"><span class="ic">☕</span>사무실</button>
+  <button id="tabCal"><span class="ic">📅</span>달력</button>
+  <button id="tabBoard"><span class="ic">📌</span>보드</button>
+  <button id="tabPeople"><span class="ic">👥</span>사람</button>
 </nav>
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo">되돌리기</button></div>
 
@@ -391,8 +521,13 @@
    v0.7.4 (2026-11-12) 컴퓨터에서 쓰기 — 넓은 화면에서도 로딩 그림 전체(세희 얼굴)가 보이게, 캡처 파일을 사무실로 끌어다 놓기.
    v0.8.0 (2026-11-12) 문서 읽기 — 한글(hwp·hwpx)·워드(docx)·엑셀(xlsx)·PPT(pptx)·PDF·txt·csv·md·html.
         폰 안에서 글만 뽑아 세희에게 넘김(파일 자체는 밖으로 안 나감). 스캔 PDF는 쪽을 그림으로 바꿔 캡처처럼 읽음(30쪽까지).
-        PDF 읽기 도구(pdf.js)는 lib/ 에 같이 넣고 PDF를 처음 열 때만 불러옴. 옛 형식(doc·xls·ppt)은 새 형식·PDF로 저장 안내. */
-const APP_VERSION = 'v0.8.0';
+        PDF 읽기 도구(pdf.js)는 lib/ 에 같이 넣고 PDF를 처음 열 때만 불러옴. 옛 형식(doc·xls·ppt)은 새 형식·PDF로 저장 안내.
+   v0.9.0 (2026-11-12) 탭 다섯 개 — 판·사무실·달력·보드·사람.
+        달력: 날짜 있는 판 항목이 저절로 붙음. 연간 열두 달 + 오른쪽 서류철 견출지(누르거나 끌면 그 달 시트가 빠져나옴), 날짜 누르면 그날 쪽지, 쪽지에서 일정 넣기.
+        보드(화이트보드): 세희가 make_card 로 표·목록·메모·차트를 붙이고, 보스가 넘긴 문서도 테이프로 붙음. 지우라기 전엔 유지.
+          카드를 만들면 보드를 띄워 브리핑. 아래 말풍선·입력칸은 사무실과 같은 대화. 카드: 표 복사(엑셀 붙여넣기)·CSV 받기·브리핑·떼기.
+        사람(인간관계 판): 깡통. 사무실 대화 스크롤바를 얇게. */
+const APP_VERSION = 'v0.9.0';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1103,6 +1238,9 @@ async function systemPrompt(){
   같은 일이 여러 방에 나오면 하나만 적는다. 로그 안에서 바뀐 일정은 마지막 내용으로 적고, 로그 안에서 이미 끝난 일은 적지 않거나 끝냄으로 둔다.
   로그 속 "오늘·내일·이번 주"는 지금이 아니라 그 메시지가 오간 날짜 기준으로 계산한다. 확정 아닌 이야기는 확정된 지시 칸에 넣지 말고 '미정'으로 표시한다.
   다 적은 뒤 무엇을 몇 개 적었는지 한두 줄로 말하고, 애매한 것만 한두 개 묻는다.
+- 화이트보드: 표·목록·비교·수치 정리·차트처럼 눈으로 볼 자료를 만들 일이면 make_card 로 화이트보드에 붙인다(판 항목과 별개, 지우라기 전엔 남는다).
+  카드를 붙이면 앱이 화이트보드를 띄운다. 대답은 그 카드를 브리핑하듯 핵심 2~4문장. 표 내용을 말로 되풀이하지 않는다.
+  있는 카드를 고치라면 update_card, 떼라고 분명히 말할 때만 remove_card. 문서 카드 본문이 필요하면 read_card.
 - 보스가 문서(한글·워드·엑셀·PPT·PDF 등)를 넘기면 앱이 글만 뽑아 [첨부 문서]로 준다. 표는 칸을 탭이나 ' | '로 나눈다. [시트: 이름] [슬라이드 n] [n쪽]은 위치 표시다.
   문서에서 할 일·일정·확정 지시·기억할 것을 골라 판에 적고, 보스가 다른 걸 물으면 그 질문에 맞게 답한다.
 - 보스가 카톡 캡처 사진을 넘기면 앱이 먼저 글로 해독해 [카톡 캡처 해독본]으로 준다. 해독본의 '나'는 보스다. [?]·[시각?]은 사진에서 안 읽힌 곳이다.
@@ -1111,7 +1249,9 @@ ${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스
   검색한 뒤엔 핵심만 1~3문장. 출처 목록은 앱이 말풍선 아래에 붙이니 링크를 말로 늘어놓지 않는다.` : ''}
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
-${sendPanOn() ? await panContext() : await touchedContext()}`;
+${sendPanOn() ? await panContext() : await touchedContext()}
+
+${await boardContext()}`;
 }
 /* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
 function toMessages(log){
@@ -1153,6 +1293,7 @@ function TOOL_DEFS(){
       query:{ type:'string', description:'찾을 낱말. 띄어 쓰면 모두 들어간 것만' },
       days:{ type:'number', description:'며칠 전까지 볼지. 기본 60, 최대 365' } }, required:['query'] } },
     ] : []),
+    ...BOARD_TOOLS(),
   ];
 }
 function gemSchema(x){
@@ -1160,6 +1301,7 @@ function gemSchema(x){
   for (const [k, v] of Object.entries(x)){
     if (k === 'type') o.type = String(v).toUpperCase();
     else if (k === 'properties') o.properties = Object.fromEntries(Object.entries(v).map(([pk, pv]) => [pk, gemSchema(pv)]));
+    else if (k === 'items') o.items = gemSchema(v);
     else o[k] = v;
   }
   if (o.enum) o.format = 'enum';
@@ -1185,6 +1327,7 @@ function noteAction(kind, before, after, extra){
 async function runTool(c){
   const p = await todayPanRef(), a = c.args || {}, clean = v => String(v || '').replace(/^#/, '');
   const find = id => p.items.find(x => x.id === clean(id));
+  if (/_card$/.test(c.name)) return runBoardTool(c);
   try{
     if (c.name === 'add_item'){
       const text = String(a.text || '').trim(); if (!text) return { ok:false, error:'text가 비었음' };
@@ -1849,7 +1992,7 @@ async function runJob(job, um){
     }finally{
       clearInterval(tick); O.live = null; O.abort = null; JOB.cur = null;
       await kvSet('job', null);
-      O.busy = false; renderLog(); growSay(); saveLog();
+      O.busy = false; renderLog(); growSay(); bdGrow(); saveLog();
     }
   };
   /* 잠금을 쥐고 있으면 크롬이 화면을 덜 얼린다(안 되는 폰이면 그냥 한다) */
@@ -2244,12 +2387,13 @@ function renderLog(){
   const el = $('log');
   let lastS = -1; O.log.forEach((m, i) => { if (m.who === 's') lastS = i; });
   el.innerHTML = O.log.map((m, i) => m.who === 'a'
-      ? (m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
+      ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
       : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<time>${hhmm(m.at)}</time></div>`).join('')
     + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
+  renderBoardTalk();
 }
 function msgInner(m, i){
   let h = '';
@@ -2279,9 +2423,14 @@ function updateLive(){
   if (!el){ renderLog(); return; }
   el.textContent = parseFace(O.live.text).t;
   if (logPinned) $('log').scrollTop = $('log').scrollHeight;
+  renderBoardTalk();
 }
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
-function seheeSays(r, src){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f); }
+function seheeSays(r, src){
+  O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f);
+  /* 이번 대화에서 화이트보드 카드를 만들거나 고쳤으면 — 보드를 띄우고 그 카드를 반짝 */
+  if (BOARD.changed){ const id = BOARD.changed; BOARD.changed = null; setTimeout(() => { if (curView() !== 'board') goView('board'); else boardRender(); setTimeout(() => flashCard(id), 120); }, 60); }
+}
 async function openOffice(){
   if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
   if (!O.log.length){ GREET.forEach(seheeSays); saveLog(); }
@@ -2290,12 +2439,13 @@ async function openOffice(){
 }
 function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   const has = !!ta.value.trim() || ATT.length > 0, reading = ATT.some(a => a.reading); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy || reading; }
-async function sendSay(){
-  const ta = $('sayText'), v = ta.value.trim(); if ((!v && !ATT.length) || O.busy || ATT.some(a => a.reading)) return;
+async function sendSay(src){
+  const ta = src instanceof HTMLTextAreaElement ? src : $('sayText'), v = ta.value.trim(); if ((!v && !ATT.length) || O.busy || ATT.some(a => a.reading)) return;
   const atts = ATT.splice(0), imgs = atts.filter(a => a.kind === 'img'), txts = atts.filter(a => a.kind === 'txt');
   renderTray();
   const um = { who:'u', text:v, at:Date.now() };
   if (imgs.length){ um.pics = imgs.length; O.thumbs[um.at] = imgs.map(a => a.url); if (imgs.every(a => a.scan)) um.scanOf = [...new Set(imgs.map(a => a.name.replace(/ \d+쪽$/, '')))].join(', '); }
+  for (const t of txts) await boardAdd(cardFrom({ kind:'file', title:t.name, name:t.name, text:t.text, pages:t.pages }, 'boss'), false);
   if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => (txts.length > 1 ? `── ${t.name} ──\n` : '') + clipDoc(t.text, t.head)).join('\n\n'); }
   const heavy = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
   if (heavy && aiReady()) askNotify();   /* 누른 순간에 물어야 폰이 허락 창을 띄워준다 */
@@ -2343,7 +2493,7 @@ async function sendSay(){
     else seheeSays(replyFor(v));
     if (!O.hinted){ O.hinted = true; O.log.push({ who:'s', text:'⚙ 설정 → 세희 머리에서 API 키를 넣으면 진짜로 대답할 수 있어요.', face:1, at:Date.now(), hint:true }); }
   }
-  O.busy = false; renderLog(); growSay(); saveLog();
+  O.busy = false; renderLog(); growSay(); bdGrow(); saveLog();
 }
 $('sayText').addEventListener('input', growSay);
 $('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendSay(); } });
@@ -2376,42 +2526,53 @@ $('sayText').addEventListener('paste', e => {
 $('tray').addEventListener('click', e => { const b = e.target.closest('[data-att]'); if (!b) return; const a = ATT.splice(Number(b.dataset.att), 1)[0]; if (a && a.url) URL.revokeObjectURL(a.url); renderTray(); });
 $('brain').onclick = settingsSheet;
 
-/* ── 화면 전환: 판 ↔ 사무실. 뒤로 가기로 판에 돌아온다 ── */
+/* ── 화면 (v0.9) — 판 · 사무실 · 달력 · 보드 · 사람 ── */
+const VIEWS = ['pan', 'office', 'cal', 'board', 'people'];
+const TAB_OF = { pan:'tabPan', office:'tabOffice', cal:'tabCal', board:'tabBoard', people:'tabPeople' };
+const VIEW_EL = { pan:'main', office:'office', cal:'cal', board:'board', people:'people' };
+const hashView = () => { const h = location.hash.slice(1); return VIEWS.includes(h) ? h : 'pan'; };
+const curView = () => VIEWS.find(v => v !== 'pan' && document.body.classList.contains(v === 'office' ? 'office' : 'v-' + v)) || 'pan';
+function goView(v){
+  if (v === 'pan'){ history.replaceState(null, '', location.pathname); showView('pan'); }
+  else if (location.hash !== '#' + v) location.hash = v; else showView(v);
+}
 function showView(v){
-  const off = v === 'office';
-  document.body.classList.toggle('office', off);
-  $('tabPan').classList.toggle('on', !off); $('tabOffice').classList.toggle('on', off);
-  if (off) openOffice(); else { document.body.classList.remove('typing'); render(); }
+  if (!VIEWS.includes(v)) v = 'pan';
+  const b = document.body;
+  b.classList.toggle('office', v === 'office'); b.classList.toggle('alt', v !== 'pan');
+  for (const x of ['cal', 'board', 'people']) b.classList.toggle('v-' + x, v === x);
+  for (const x of VIEWS) $(TAB_OF[x]).classList.toggle('on', x === v);
+  if (v !== 'office' && v !== 'board') b.classList.remove('typing');
+  if (v === 'office') openOffice();
+  else if (v === 'pan') render();
+  else if (v === 'cal') calOpen();
+  else if (v === 'board') boardOpen();
   const a = SWIPE.anim; SWIPE.anim = '';
   if (a){
-    const el = off ? $('office') : $('main');
+    const el = $(VIEW_EL[v]);
     el.classList.remove('slide-inL', 'slide-inR'); void el.offsetWidth; el.classList.add(a);
     el.addEventListener('animationend', () => el.classList.remove(a), { once:true });
   }
 }
-$('tabOffice').onclick = () => { if (location.hash !== '#office') location.hash = 'office'; else showView('office'); };
-$('tabPan').onclick = () => { history.replaceState(null, '', location.pathname); showView('pan'); };
-window.addEventListener('hashchange', () => showView(location.hash === '#office' ? 'office' : 'pan'));
+for (const v of VIEWS) $(TAB_OF[v]).onclick = () => goView(v);
+window.addEventListener('hashchange', () => showView(hashView()));
 
-/* ── 옆으로 밀기 (v0.6.6): 사무실에서 오른쪽으로 → 판, 판에서 왼쪽으로 → 사무실 ──
-   손가락을 따라 살짝 끌려오다가, 충분히 밀면 넘어가고 아니면 제자리로.
-   지금 쓰고 있는 칸·설정 창 위에서 시작하거나, 화면 가장자리(폰 '뒤로' 제스처 자리)에서 시작하면 무시 */
+/* ── 옆으로 밀기 — 탭 순서대로 왼쪽·오른쪽 화면으로. 달력 서류철·시트 위에서는 달력이 먼저 ── */
 const SWIPE = { anim:'' };
 (function swipeNav(){
   let g = null;
   const EDGE = 18, LOCK = 10, GO = 70;
-  const viewEl = () => document.body.classList.contains('office') ? $('office') : $('main');
   const reset = el => { el.style.transition = 'transform .18s ease, opacity .18s ease'; el.style.transform = ''; el.style.opacity = '';
     setTimeout(() => { el.style.transition = ''; }, 200); };
   document.addEventListener('touchstart', e => {
     g = null;
     if (e.touches.length !== 1 || $('sheet').classList.contains('on') || document.body.classList.contains('typing')) return;
-    if (e.target.closest('.sheet,#veil')) return;
-    const ae = document.activeElement;   /* 지금 글 쓰는 중인 칸 위에서는 커서 옮기기가 먼저 */
+    if (e.target.closest('.sheet,#veil,.noswipe')) return;
+    const ae = document.activeElement;
     if (ae && ae !== document.body && ae.matches('input,textarea,select,[contenteditable]') && (e.target === ae || ae.contains(e.target))) return;
     const t = e.touches[0];
     if (t.clientX < EDGE || t.clientX > window.innerWidth - EDGE) return;
-    g = { x:t.clientX, y:t.clientY, t:performance.now(), axis:'', off:document.body.classList.contains('office') };
+    g = { x:t.clientX, y:t.clientY, t:performance.now(), axis:'', v:curView() };
   }, { passive:true });
   document.addEventListener('touchmove', e => {
     if (!g) return;
@@ -2421,29 +2582,295 @@ const SWIPE = { anim:'' };
       g.axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y';
       if (g.axis === 'y'){ g = null; return; }
     }
-    const want = g.off ? dx > 0 : dx < 0;   /* 사무실은 오른쪽으로만, 판은 왼쪽으로만 */
-    const d = want ? dx : dx * 0.15;
-    const el = viewEl(); el.style.transition = '';
-    el.style.transform = `translateX(${Math.round(d * 0.55)}px)`;
+    const i = VIEWS.indexOf(g.v), can = dx > 0 ? i > 0 : i < VIEWS.length - 1;
+    const d = can ? dx : dx * 0.15, el = $(VIEW_EL[g.v]);
+    el.style.transition = ''; el.style.transform = `translateX(${Math.round(d * 0.55)}px)`;
     el.style.opacity = String(Math.max(0.55, 1 - Math.abs(d) / 700));
     g.dx = dx;
   }, { passive:true });
   const end = () => {
     if (!g || g.axis !== 'x'){ g = null; return; }
-    const dx = g.dx || 0, v = Math.abs(dx) / Math.max(1, performance.now() - g.t), el = viewEl(), off = g.off;
+    const dx = g.dx || 0, sp = Math.abs(dx) / Math.max(1, performance.now() - g.t), el = $(VIEW_EL[g.v]), i = VIEWS.indexOf(g.v);
     g = null;
-    const far = Math.abs(dx) > GO || (Math.abs(dx) > 35 && v > 0.45);
-    if (off && dx > 0 && far){
-      el.style.transform = ''; el.style.opacity = '';
-      SWIPE.anim = 'slide-inL'; $('tabPan').onclick();
-    } else if (!off && dx < 0 && far){
-      el.style.transform = ''; el.style.opacity = '';
-      SWIPE.anim = 'slide-inR'; $('tabOffice').onclick();
-    } else reset(el);
+    const far = Math.abs(dx) > GO || (Math.abs(dx) > 35 && sp > 0.45), to = dx > 0 ? i - 1 : i + 1;
+    if (far && to >= 0 && to < VIEWS.length){ el.style.transform = ''; el.style.opacity = ''; SWIPE.anim = dx > 0 ? 'slide-inL' : 'slide-inR'; goView(VIEWS[to]); }
+    else reset(el);
   };
   document.addEventListener('touchend', end, { passive:true });
-  document.addEventListener('touchcancel', () => { if (g){ reset(viewEl()); g = null; } }, { passive:true });
+  document.addEventListener('touchcancel', () => { if (g){ reset($(VIEW_EL[g.v])); g = null; } }, { passive:true });
 })();
+
+/* ── 달력 (v0.9) — 날짜(due)가 있는 판 항목이 저절로 달력에 붙는다 ──
+   연간: 열두 달 미니 달력. 오른쪽 서류철 견출지(1~12월)를 누르거나 끌면 그 달 시트가 서류철에서 빠져나온다.
+   달 시트: 날마다 일정 칩. 날짜를 누르면 그날 쪽지가 아래에서 올라온다. 시트를 옆으로 밀면 앞뒤 달. */
+const CAL = { year:null, month:null, day:null, items:[], byDate:{} };
+const secColor = id => (secById(id) || secs()[0] || {}).color || '#3a6b64';
+async function calLoad(){
+  const pans = (await allPans()).sort((a, b) => a.date < b.date ? -1 : 1), last = {}, latest = pans.length ? pans[pans.length - 1].date : S.today;
+  for (const p of pans) for (const it of p.items) last[it.id] = { it, seen:p.date };
+  CAL.items = Object.values(last).filter(x => x.it.due && (x.it.done || x.seen === latest)).map(x => x.it);
+  CAL.byDate = {};
+  for (const it of CAL.items) (CAL.byDate[it.due] = CAL.byDate[it.due] || []).push(it);
+  for (const d in CAL.byDate) CAL.byDate[d].sort((a, b) => (a.time || '99') < (b.time || '99') ? -1 : 1);
+}
+async function calOpen(){
+  if (CAL.year === null){ const t = parseYmd(S.today); CAL.year = t.getFullYear(); }
+  await calLoad(); calYear(); calTabs();
+  if (CAL.month !== null) calMonth(CAL.month, true);
+}
+function monthCells(y, m){
+  const first = new Date(y, m, 1), start = first.getDay(), days = new Date(y, m + 1, 0).getDate(), cells = [];
+  for (let i = 0; i < start; i++) cells.push(null);
+  for (let d = 1; d <= days; d++) cells.push(ymd(new Date(y, m, d)));
+  while (cells.length % 7) cells.push(null);
+  return cells;
+}
+function calYear(){
+  const y = CAL.year;
+  $('calYear').innerHTML = `<div class="cy-head"><button class="ib" data-cal="py">‹</button><b>${y}년</b><button class="ib" data-cal="ny">›</button><small>${CAL.items.filter(it => it.due.startsWith(y + '-')).length}개 일정</small></div>
+    <div class="cy-grid">${[...Array(12)].map((_, m) => `<div class="cy-m" data-cal="m" data-m="${m}"><div class="cy-t">${m + 1}월</div><div class="cy-d">${
+      monthCells(y, m).map(d => !d ? '<i></i>' : `<i class="${d === S.today ? 'today' : ''}${CAL.byDate[d] ? ' ev' : ''}" ${CAL.byDate[d] ? `style="--c:${secColor(CAL.byDate[d][0].sec)}"` : ''}>${+d.slice(8)}</i>`).join('')
+    }</div></div>`).join('')}</div>`;
+}
+function calTabs(){
+  $('calTabs').innerHTML = [...Array(12)].map((_, m) => `<button data-m="${m}" class="${CAL.month === m ? 'on' : ''}">${m + 1}월</button>`).join('');
+}
+function calMonth(m, quiet){
+  if (m < 0){ CAL.year--; m = 11; calYear(); } else if (m > 11){ CAL.year++; m = 0; calYear(); }
+  CAL.month = m; calTabs();
+  const y = CAL.year, sh = $('calSheet');
+  sh.innerHTML = `<div class="cs-ear">${m + 1}월</div>
+    <div class="cs-head"><button class="ib" data-cal="pm">‹</button><b>${y}년 ${m + 1}월</b><button class="ib" data-cal="nm">›</button><button class="ib" data-cal="close" aria-label="연간으로">✕</button></div>
+    <div class="cs-wd">${[...WD].map((w, i) => `<span class="${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</span>`).join('')}</div>
+    <div class="cs-grid">${monthCells(y, m).map(d => !d ? '<div class="cs-c off"></div>' : `<div class="cs-c${d === S.today ? ' today' : ''}" data-cal="d" data-d="${d}"><span class="n">${+d.slice(8)}</span>${
+      (CAL.byDate[d] || []).slice(0, 3).map(it => `<span class="chip${it.done ? ' done' : ''}" style="--c:${secColor(it.sec)}">${it.time ? it.time + ' ' : ''}${esc(it.text)}</span>`).join('')
+    }${(CAL.byDate[d] || []).length > 3 ? `<span class="more">+${CAL.byDate[d].length - 3}</span>` : ''}</div>`).join('')}</div>
+    <p class="cs-hint">날짜를 누르면 그날 쪽지가 나와요 · 옆으로 밀면 다른 달</p>`;
+  if (!quiet || !sh.classList.contains('on')){ sh.classList.remove('on'); void sh.offsetWidth; sh.classList.add('on'); }
+  if (CAL.day && !CAL.day.startsWith(`${y}-${pad(m + 1)}`)) calDay(null);
+}
+function calDay(d){
+  CAL.day = d; const el = $('calDay');
+  if (!d){ el.classList.remove('on'); return; }
+  const x = parseYmd(d), list = CAL.byDate[d] || [];
+  el.innerHTML = `<div class="cd-head"><b>${x.getMonth() + 1}월 ${x.getDate()}일 (${WD[x.getDay()]})</b>${d === S.today ? '<span class="tg">오늘</span>' : ''}<button class="ib" data-cal="dclose" aria-label="닫기">✕</button></div>
+    <div class="cd-list">${list.length ? list.map(it => `<div class="cd-it${it.done ? ' done' : ''}" style="--c:${secColor(it.sec)}"><span class="t">${it.time || '시간 미정'}</span><span class="x">${esc(it.text)}</span><span class="s">${esc(secName(it.sec))}${it.tag ? ' · ' + esc(it.tag) : ''}</span></div>`).join('') : '<p class="note">이 날은 비어 있어요.</p>'}</div>
+    <div class="cd-add"><input id="calAdd" placeholder="+ 이 날 일정 (예: 15:00 학부모 상담)" enterkeyhint="done"><button class="ib" data-cal="add">넣기</button></div>`;
+  el.classList.add('on');
+}
+async function calAddItem(){
+  const v = $('calAdd').value.trim(); if (!v || !CAL.day) return;
+  const m = v.match(/^(\d{1,2}):(\d{2})\s+(.+)$/) || v.match(/^(\d{1,2})시(?:\s*(\d{1,2})분)?\s+(.+)$/);
+  const time = m ? pad(+m[1]) + ':' + pad(+(m[2] || 0)) : null, text = m ? m[3] : v;
+  await runTool({ name:'add_item', args:{ section:secById('sched') ? 'sched' : secs()[0].id, text, due:CAL.day, ...(time ? { time } : {}) } });
+  saveLog(); await calLoad(); calYear(); calMonth(CAL.month, true); calDay(CAL.day); toast('달력에 넣었어요 — 판에도 적혔어요');
+}
+$('cal').addEventListener('click', e => {
+  const b = e.target.closest('[data-cal]'); if (!b) return;
+  const a = b.dataset.cal;
+  if (a === 'py' || a === 'ny'){ CAL.year += a === 'py' ? -1 : 1; calYear(); if (CAL.month !== null) calMonth(CAL.month, true); }
+  else if (a === 'm') calMonth(+b.dataset.m);
+  else if (a === 'pm' || a === 'nm') calMonth(CAL.month + (a === 'pm' ? -1 : 1), true);
+  else if (a === 'close'){ CAL.month = null; calDay(null); $('calSheet').classList.remove('on'); calTabs(); }
+  else if (a === 'd') calDay(b.dataset.d);
+  else if (a === 'dclose') calDay(null);
+  else if (a === 'add') calAddItem();
+});
+$('cal').addEventListener('keydown', e => { if (e.target.id === 'calAdd' && e.key === 'Enter' && !e.isComposing){ e.preventDefault(); calAddItem(); } });
+/* 서류철 견출지 — 누르거나 위아래로 끌면 그 달이 빠져나온다 */
+(function calScrub(){
+  const tabs = $('calTabs'); let on = false;
+  const pick = e => { const el = document.elementFromPoint(e.clientX, e.clientY), b = el && el.closest('#calTabs button'); if (b && +b.dataset.m !== CAL.month) calMonth(+b.dataset.m, CAL.month !== null); };
+  tabs.addEventListener('pointerdown', e => { on = true; try{ tabs.setPointerCapture(e.pointerId); }catch(x){} pick(e); e.preventDefault(); });
+  tabs.addEventListener('pointermove', e => { if (on) pick(e); });
+  const stop = () => { on = false; };
+  tabs.addEventListener('pointerup', stop); tabs.addEventListener('pointercancel', stop);
+})();
+/* 달 시트를 옆으로 밀면 앞뒤 달 */
+(function sheetSwipe(){
+  const sh = $('calSheet'); let g = null;
+  sh.addEventListener('pointerdown', e => { if (e.target.closest('button,input')) return; g = { x:e.clientX, y:e.clientY }; });
+  sh.addEventListener('pointerup', e => {
+    if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; g = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){ calMonth(CAL.month + (dx < 0 ? 1 : -1), true); const s = $('calSheet'); s.classList.remove('flipL', 'flipR'); void s.offsetWidth; s.classList.add(dx < 0 ? 'flipR' : 'flipL'); }
+  });
+  sh.addEventListener('pointercancel', () => { g = null; });
+})();
+
+/* ── 화이트보드 (v0.9) — 세희가 만든 표·목록·메모·차트, 보스가 넘긴 문서가 테이프로 붙는다 ──
+   지우라고 하기 전까지 그대로 남는다. 아래 말풍선은 사무실과 같은 대화(틀만 다르다). */
+const BOARD = { cards:null, changed:null };
+async function boardLoad(){ if (!BOARD.cards) BOARD.cards = ((await kvGet('board')) || {}).cards || []; return BOARD.cards; }
+const boardSave = () => kvSet('board', { cards:BOARD.cards });
+const cell = v => v === null || v === undefined ? '' : String(v).slice(0, 300);
+function cardFrom(a, by){
+  const kind = ['table', 'list', 'note', 'chart', 'file'].includes(a.kind) ? a.kind : (a.rows ? 'table' : a.items ? 'list' : a.values ? 'chart' : 'note');
+  const c = { id:uid(), kind, title:String(a.title || '제목 없음').slice(0, 80), at:Date.now(), by:by || 'sehee' };
+  return cardApply(c, a);
+}
+function cardApply(c, a){
+  if (a.title) c.title = String(a.title).slice(0, 80);
+  if (Array.isArray(a.columns)) c.columns = a.columns.slice(0, 12).map(cell);
+  if (Array.isArray(a.rows)) c.rows = a.rows.slice(0, 300).map(r => (Array.isArray(r) ? r : [r]).slice(0, 12).map(cell));
+  if (Array.isArray(a.items)) c.items = a.items.slice(0, 150).map(cell);
+  if (typeof a.text === 'string') c.text = a.text.slice(0, 60000);
+  if (a.chart_type) c.chartType = a.chart_type === 'line' ? 'line' : 'bar';
+  if (Array.isArray(a.labels)) c.labels = a.labels.slice(0, 40).map(cell);
+  if (Array.isArray(a.values)) c.values = a.values.slice(0, 40).map(v => Number(v) || 0);
+  if (typeof a.unit === 'string') c.unit = a.unit.slice(0, 12);
+  if (a.name) c.name = String(a.name);
+  if (a.pages) c.pages = a.pages;
+  c.edited = Date.now();
+  return c;
+}
+async function boardAdd(c, note){
+  await boardLoad(); BOARD.cards.unshift(c); await boardSave();
+  if (note !== false){ O.log.push({ who:'a', board:true, text:`화이트보드에 붙였어요 — ${c.title}`, at:Date.now() }); renderLog(); saveLog(); }
+  return c;
+}
+async function boardContext(){
+  await boardLoad();
+  if (!BOARD.cards.length) return '화이트보드: 비어 있음';
+  return '화이트보드 카드 (최근 것부터):\n' + BOARD.cards.slice(0, 20).map(c => `- #${c.id} ${({ table:'표', list:'목록', note:'메모', chart:'차트', file:'문서' })[c.kind]} '${c.title}'${c.rows ? ` (${c.rows.length}행)` : c.items ? ` (${c.items.length}개)` : ''}`).join('\n');
+}
+const BOARD_TOOLS = () => [
+  { name:'make_card', description:'화이트보드에 카드를 붙인다. 표·목록·비교·수치 정리·차트·긴 메모처럼 눈으로 볼 자료를 만들 때 쓴다(판 항목과 별개).', schema:{ type:'object', properties:{
+    kind:{ type:'string', enum:['table', 'list', 'note', 'chart'], description:'table=표, list=목록, note=메모, chart=막대·선 차트' },
+    title:{ type:'string', description:'짧은 제목' },
+    columns:{ type:'array', items:{ type:'string' }, description:'표 머리(열 이름)' },
+    rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'표 내용. 행마다 칸 글자 배열' },
+    items:{ type:'array', items:{ type:'string' }, description:'목록 줄들' },
+    text:{ type:'string', description:'메모 본문' },
+    chart_type:{ type:'string', enum:['bar', 'line'] },
+    labels:{ type:'array', items:{ type:'string' }, description:'차트 가로축 이름들' },
+    values:{ type:'array', items:{ type:'number' }, description:'차트 값들(labels 와 같은 순서)' },
+    unit:{ type:'string', description:'값 단위. 예: 명, 원, %' } }, required:['kind', 'title'] } },
+  { name:'update_card', description:'화이트보드 카드를 고친다. 바꿀 것만 넣는다(표는 columns·rows 를 통째로).', schema:{ type:'object', properties:{
+    id:{ type:'string', description:'카드 id (# 없이)' }, title:{ type:'string' },
+    columns:{ type:'array', items:{ type:'string' } }, rows:{ type:'array', items:{ type:'array', items:{ type:'string' } } },
+    items:{ type:'array', items:{ type:'string' } }, text:{ type:'string' },
+    labels:{ type:'array', items:{ type:'string' } }, values:{ type:'array', items:{ type:'number' } } }, required:['id'] } },
+  { name:'remove_card', description:'화이트보드에서 카드를 뗀다. 보스가 분명히 떼라고 할 때만.', schema:{ type:'object', properties:{ id:{ type:'string' } }, required:['id'] } },
+  { name:'read_card', description:'화이트보드 카드 내용을 전부 본다(문서 카드의 본문 포함).', schema:{ type:'object', properties:{ id:{ type:'string' } }, required:['id'] } },
+];
+async function runBoardTool(c){
+  await boardLoad();
+  const a = c.args || {}, id = String(a.id || '').replace(/^#/, ''), card = BOARD.cards.find(x => x.id === id);
+  if (c.name === 'make_card'){
+    const nc = cardFrom(a); await boardAdd(nc); BOARD.changed = nc.id;
+    return { ok:true, id:nc.id };
+  }
+  if (!card) return { ok:false, error:'그 id의 카드가 없음' };
+  if (c.name === 'update_card'){
+    cardApply(card, a); await boardSave(); BOARD.changed = card.id;
+    O.log.push({ who:'a', board:true, text:`화이트보드 카드를 고쳤어요 — ${card.title}`, at:Date.now() }); renderLog(); saveLog();
+    return { ok:true, id:card.id };
+  }
+  if (c.name === 'remove_card'){
+    BOARD.cards = BOARD.cards.filter(x => x !== card); await boardSave(); if (curView() === 'board') boardRender();
+    O.log.push({ who:'a', board:true, text:`화이트보드에서 뗐어요 — ${card.title}`, at:Date.now() }); renderLog(); saveLog();
+    return { ok:true };
+  }
+  if (c.name === 'read_card') return { ok:true, card:{ ...card, text:card.text ? card.text.slice(0, 30000) : undefined } };
+  return { ok:false, error:'모르는 도구' };
+}
+/* 그리기 */
+const tapeRot = id => { let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) | 0; return ((h % 9) - 4) * 0.8; };
+function tableHtml(c, max){
+  const rows = c.rows || [], cols = c.columns || [], R = max ? rows.slice(0, max) : rows, w = Math.max(cols.length, ...rows.map(r => r.length), 0), C = max ? Math.min(w, 4) : w;
+  return `<table class="ct">${cols.length ? `<thead><tr>${cols.slice(0, C).map(x => `<th>${esc(x)}</th>`).join('')}</tr></thead>` : ''}<tbody>${R.map(r => `<tr>${[...Array(C)].map((_, i) => `<td>${esc(r[i] || '')}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+    + (max && (rows.length > max || w > C) ? `<small class="more">${rows.length}행 × ${w}열</small>` : '');
+}
+function chartSvg(c, W, H){
+  const L = c.labels || [], V = c.values || [], n = Math.max(L.length, V.length); if (!n) return '<p class="note">값이 없어요</p>';
+  const max = Math.max(...V, 0) || 1, pl = 6, pb = 18, pt = 14, cw = (W - pl * 2) / n, ch = H - pb - pt, y = v => pt + ch - (Math.max(v, 0) / max) * ch;
+  const lab = (s, i) => `<text x="${pl + cw * i + cw / 2}" y="${H - 5}" text-anchor="middle" font-size="9" fill="#5c5340">${esc(String(s).slice(0, Math.max(2, Math.floor(cw / 7))))}</text>`;
+  const val = (v, i, yy) => `<text x="${pl + cw * i + cw / 2}" y="${yy - 3}" text-anchor="middle" font-size="9" fill="#2b2417">${(+v).toLocaleString('ko-KR')}</text>`;
+  let body = '';
+  if (c.chartType === 'line'){
+    const pts = V.map((v, i) => `${pl + cw * i + cw / 2},${y(v)}`).join(' ');
+    body = `<polyline points="${pts}" fill="none" stroke="#3a6b64" stroke-width="2"/>` + V.map((v, i) => `<circle cx="${pl + cw * i + cw / 2}" cy="${y(v)}" r="3" fill="#3a6b64"/>${val(v, i, y(v))}`).join('');
+  } else body = V.map((v, i) => `<rect x="${pl + cw * i + cw * 0.18}" y="${y(v)}" width="${cw * 0.64}" height="${pt + ch - y(v)}" fill="#a13b2c" rx="2"/>${val(v, i, y(v))}`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" class="cc"><line x1="${pl}" y1="${pt + ch}" x2="${W - pl}" y2="${pt + ch}" stroke="#c3b795"/>${body}${L.map(lab).join('')}</svg>${c.unit ? `<small class="more">단위: ${esc(c.unit)}</small>` : ''}`;
+}
+function cardBody(c, full){
+  if (c.kind === 'table') return tableHtml(c, full ? 0 : 5);
+  if (c.kind === 'list') return `<ul class="cl">${(full ? c.items || [] : (c.items || []).slice(0, 6)).map(x => `<li>${esc(x)}</li>`).join('')}</ul>${!full && (c.items || []).length > 6 ? `<small class="more">${c.items.length}개</small>` : ''}`;
+  if (c.kind === 'chart') return chartSvg(c, full ? 340 : 200, full ? 200 : 120);
+  if (c.kind === 'file') return full ? `<pre class="cf">${esc(c.text || '')}</pre>` : `<div class="cfile">📄 ${esc(c.name || c.title)}</div><p class="cn">${esc((c.text || '').slice(0, 140))}</p><small class="more">${(c.text || '').length.toLocaleString('ko-KR')}자${c.pages ? ` · ${c.pages}쪽` : ''}</small>`;
+  return full ? `<pre class="cf">${esc(c.text || '')}</pre>` : `<p class="cn">${esc((c.text || '').slice(0, 200))}</p>`;
+}
+async function boardOpen(){
+  await boardLoad();
+  if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
+  boardRender(); renderBoardTalk(); bdGrow();
+}
+function boardRender(){
+  const cs = BOARD.cards || [];
+  $('wbCount').textContent = cs.length ? `카드 ${cs.length}장` : '';
+  $('wbGrid').innerHTML = cs.length ? cs.map(c => `<div class="card k-${c.kind}" data-card="${c.id}" style="--r:${tapeRot(c.id)}deg"><i class="tape"></i><div class="ch">${esc(c.title)}</div>${cardBody(c, false)}<div class="cm">${c.by === 'boss' ? '보스' : c.kind === 'file' ? '받은 문서' : '세희'} · ${new Date(c.edited || c.at).getMonth() + 1}/${new Date(c.edited || c.at).getDate()}</div></div>`).join('')
+    : `<div class="wb-empty">아직 붙은 게 없어요.<br>세희에게 "이번 주 일정 표로 정리해줘" 같은 걸 시키거나, 문서를 넘기면 여기 붙어요.</div>`;
+}
+function flashCard(id){ const el = document.querySelector(`[data-card="${id}"]`); if (!el) return; el.scrollIntoView({ block:'nearest', behavior:'smooth' }); el.classList.remove('new'); void el.offsetWidth; el.classList.add('new'); }
+function renderBoardTalk(){
+  if (curView() !== 'board') return;
+  const lastU = [...O.log].reverse().find(m => m.who === 'u'), lastS = [...O.log].reverse().find(m => m.who === 's');
+  let h = '';
+  if (lastU) h += `<div class="bt-u">보스 · ${esc((lastU.text || (lastU.pics ? '📷 사진 ' + lastU.pics + '장' : lastU.docs ? '📄 ' + lastU.docs.join(', ') : '')).slice(0, 90))}</div>`;
+  if (O.busy && O.live) h += O.live.text ? `<div class="bt-s">${esc(parseFace(O.live.text).t)}</div>` : `<div class="bt-s wait"><i><span></span><span></span><span></span></i><small>${esc(waitText())}</small></div>`;
+  else if (lastS) h += `<div class="bt-s${lastS.err ? ' err' : ''}">${esc(lastS.text)}${lastS.src && lastS.src.length ? `<span class="src">출처 ${lastS.src.map(x => `<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t || hostOf(x.u))}</a>`).join(' · ')}</span>` : ''}</div>`;
+  else h += '<div class="bt-s">카드를 누르면 크게 보여요. 물어보시면 브리핑할게요.</div>';
+  $('btBub').innerHTML = h; $('btBub').scrollTop = $('btBub').scrollHeight;
+  const f = O.busy ? (O.live && O.live.faced ? 'talk' : 2) : (lastS ? lastS.face : 0), src = FACE(f);
+  if ($('btSpr').getAttribute('src') !== src) $('btSpr').setAttribute('src', src);
+}
+setInterval(() => { if (O.busy && curView() === 'board' && !(O.live && O.live.text)) renderBoardTalk(); }, 1000);
+const tsvOf = c => c.kind === 'table' ? [c.columns || [], ...(c.rows || [])].filter(r => r.length).map(r => r.map(x => String(x).replace(/[\t\n]/g, ' ')).join('\t')).join('\n')
+  : c.kind === 'list' ? (c.items || []).map(x => '• ' + x).join('\n') : c.kind === 'chart' ? (c.labels || []).map((l, i) => `${l}\t${(c.values || [])[i] ?? ''}`).join('\n') : (c.text || '');
+function csvOf(c){
+  const rows = c.kind === 'table' ? [c.columns || [], ...(c.rows || [])].filter(r => r.length) : c.kind === 'chart' ? (c.labels || []).map((l, i) => [l, (c.values || [])[i]]) : (c.items || [c.text || '']).map(x => [x]);
+  return '﻿' + rows.map(r => r.map(x => { const s = String(x ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n');
+}
+function cardSheet(id){
+  const c = (BOARD.cards || []).find(x => x.id === id); if (!c) return;
+  openSheet(`<h4>${esc(c.title)}</h4><div class="card-full k-${c.kind}">${cardBody(c, true)}</div>
+    <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px">
+      <button class="chip" data-bact="copy" data-id="${c.id}">${c.kind === 'table' ? '표 복사 (엑셀에 붙여넣기)' : '글 복사'}</button>
+      ${c.kind === 'table' || c.kind === 'chart' ? `<button class="chip" data-bact="csv" data-id="${c.id}">엑셀 파일(CSV) 받기</button>` : ''}
+      <button class="chip" data-bact="brief" data-id="${c.id}">세희 브리핑</button>
+      <button class="chip danger" data-bact="del" data-id="${c.id}">떼기</button>
+    </div><p class="note" id="bnote"></p>`);
+}
+$('wbGrid').addEventListener('click', e => { const el = e.target.closest('[data-card]'); if (el) cardSheet(el.dataset.card); });
+$('sheet').addEventListener('click', async e => {
+  const b = e.target.closest('[data-bact]'); if (!b) return;
+  const c = (BOARD.cards || []).find(x => x.id === b.dataset.id); if (!c) return;
+  const a = b.dataset.bact;
+  if (a === 'copy') navigator.clipboard.writeText(tsvOf(c)).then(() => { $('bnote').textContent = '복사했어요. 엑셀·시트·카톡에 붙여넣으면 돼요.'; }, () => { $('bnote').textContent = '복사가 막혔어요.'; });
+  else if (a === 'csv'){ const u = URL.createObjectURL(new Blob([csvOf(c)], { type:'text/csv;charset=utf-8' })), l = document.createElement('a'); l.href = u; l.download = (c.title.replace(/[\\/:*?"<>|]/g, '') || 'sehee') + '.csv'; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000); }
+  else if (a === 'brief'){ closeSheet(); $('bdText').value = `'${c.title}' 카드 브리핑해줘`; sendSay($('bdText')); }
+  else if (a === 'del'){
+    if (!b.textContent.includes('한 번 더')){ b.textContent = '한 번 더 누르면 떼요'; return; }
+    BOARD.cards = BOARD.cards.filter(x => x !== c); await boardSave(); closeSheet(); boardRender();
+  }
+});
+$('wbMemo').onclick = () => {
+  openSheet(`<h4>메모 붙이기</h4><input class="free" id="memoT" placeholder="제목"><textarea class="big" id="memoX" placeholder="내용"></textarea><div class="row" style="margin-top:8px"><button class="chip" data-bact2="memo">붙이기</button></div>`);
+};
+$('sheet').addEventListener('click', async e => {
+  const b = e.target.closest('[data-bact2="memo"]'); if (!b) return;
+  const t = $('memoT').value.trim(), x = $('memoX').value.trim(); if (!t && !x) return;
+  const c = cardFrom({ kind:'note', title:t || x.slice(0, 20), text:x }, 'boss'); await boardAdd(c, false); closeSheet(); boardRender(); flashCard(c.id);
+});
+/* 보드 아래 입력칸 — 사무실과 같은 대화로 보낸다 */
+const bdGrow = () => { const t = $('bdText'); if (t.offsetParent){ t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 100) + 'px'; } $('bdGo').disabled = !t.value.trim() || O.busy; };
+$('bdText').addEventListener('input', bdGrow);
+$('bdText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); if ($('bdText').value.trim()) sendSay($('bdText')); } });
+$('bdText').addEventListener('focus', () => document.body.classList.add('typing'));
+$('bdText').addEventListener('blur', () => document.body.classList.remove('typing'));
+$('bdGo').addEventListener('pointerdown', e => e.preventDefault());
+$('bdGo').onclick = () => { if ($('bdText').value.trim()) sendSay($('bdText')); };
+$('btAll').onclick = () => goView('office');
 (function measure(){
   const set = () => {
     document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight + 'px');
@@ -2482,7 +2909,7 @@ const SWIPE = { anim:'' };
       if (got) await receive([got]);
       if (q.has('shared')){ spStep('공유받은 것 꺼내는 중'); await takeShared(); }
     }
-    if (location.hash === '#office') showView('office');
+    if (hashView() !== 'pan') showView(hashView());
     spStep('준비 끝 · ' + brain);
     setTimeout(() => resumeJob().catch(() => {}), 1200);
   }catch(e){
