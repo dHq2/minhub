@@ -465,12 +465,12 @@
   .card-full .ct{font-size:.8rem}.card-full .cl{font-size:.88rem}
   .cf{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.82rem;line-height:1.55;margin:0}
   /* v1.2.3 보드 대화 — 게임 대화창: 아래에 넓은 상자, 세희는 오른쪽 아래에서 상자 위로 올라앉는다 */
-  .bt{flex:0 0 auto;position:relative;z-index:5;padding:14px 8px 8px;height:clamp(150px,30%,300px);display:flex;flex-direction:column}
-  .bt-bub{flex:1;min-height:0;position:relative;z-index:1;background:rgba(253,252,248,.97);border:2px solid #2b3a55;border-radius:12px;padding:16px 14px 12px;
+  .bt{--sh:clamp(190px,27dvh,290px);flex:0 0 auto;position:relative;z-index:5;padding:14px 8px 8px;height:clamp(170px,36%,340px);display:flex;flex-direction:column}
+  .bt-bub{flex:1;min-height:0;position:relative;z-index:1;background:rgba(253,252,248,.97);border:2px solid #2b3a55;border-radius:12px;padding:16px calc(var(--sh) * .5) 12px 14px;
     overflow-y:auto;overflow-x:hidden;font-size:1.02rem;line-height:1.65;box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 0 0 3px rgba(43,58,85,.08)}
   .bt-name{position:absolute;left:18px;right:16px;top:2px;z-index:3;display:flex;align-items:center;gap:8px;pointer-events:none}
   .bt-name b{background:#2b3a55;color:#fff;font:700 .8rem "Noto Serif KR","Batang",serif;letter-spacing:.12em;padding:4px 14px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
-  .bt-name button{pointer-events:auto;border:1px solid #2b3a55;background:#fdfcf8;color:#2b3a55;font-size:.68rem;font-weight:700;border-radius:10px;padding:2px 9px;cursor:pointer;margin-left:auto;margin-right:clamp(96px,34%,170px)}
+  .bt-name button{pointer-events:auto;border:1px solid #2b3a55;background:#fdfcf8;color:#2b3a55;font-size:.68rem;font-weight:700;border-radius:10px;padding:2px 9px;cursor:pointer;margin-left:auto;margin-right:calc(var(--sh) * .5)}
   .bt-u{font-size:.74rem;color:var(--ink-soft);margin-bottom:5px;padding-right:2px}
   .bt-s{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}.bt-s.err{color:var(--red)}
   .bt-s.wait{display:flex;align-items:center;gap:8px}.bt-s.wait i{display:flex;gap:4px}
@@ -478,9 +478,9 @@
   .bt-s.wait i span:nth-child(2){animation-delay:.2s}.bt-s.wait i span:nth-child(3){animation-delay:.4s}
   .bt-s.wait small{font-size:.78rem;color:var(--ink-soft)}
   .bt-s .src{display:block;margin-top:4px;font-size:.72rem;color:var(--ink-soft)}.bt-s .src a{color:var(--blue);text-decoration:none}
-  .bt-side{position:absolute;right:2px;bottom:calc(100% - 30px);z-index:0;pointer-events:none}
-  .bt-side img{height:clamp(110px,19dvh,190px);display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45))}
-  body.typing .bt{height:clamp(120px,26%,220px)}body.typing .bt-side img{height:clamp(80px,12dvh,120px)}
+  .bt-side{position:absolute;right:0;bottom:8px;z-index:2;pointer-events:none}
+  .bt-side img{height:var(--sh);display:block;transform:translateX(30%);filter:drop-shadow(-3px 3px 6px rgba(0,0,0,.4))}
+  body.typing .bt{--sh:clamp(140px,19dvh,200px);height:clamp(130px,28%,240px)}
   .bt-say{display:none!important;flex:0 0 auto;gap:6px;align-items:flex-end;padding:6px 10px calc(8px + env(safe-area-inset-bottom));background:var(--paper);border-top:1px solid var(--line)}
   .bt-say textarea{flex:1;min-width:0;border:1.5px solid #23304a;border-radius:16px;padding:7px 12px;resize:none;font:inherit;font-size:.92rem;line-height:1.45;max-height:6.5em;background:#fff}
   .bt-say button{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:none;background:#23304a;color:#fff;font-size:1.05rem;cursor:pointer}
@@ -711,8 +711,9 @@
    v1.2.2 (2026-11-12) 긴 글 정리 1차 실패 원인 — 소넷 5.5는 생각을 못 끄는데 자리가 2500뿐이라 생각만 하다 다 써서 빈 대답(502로 보임).
         생각을 끌 수 없는 모델은 모델별로 기억하고, 생각 '낮음'(effort low)·자리 16000. 서버 삐끗(5xx·529·빈 대답·끊김)은 글자 나오기 전이면
         자동으로 두 번 더(두 번째는 작은 머리로). 막힌 말풍선엔 「↻ 다시 시도」 버튼.
-   v1.2.3 (2026-11-12) 보드 대화를 게임 대화창처럼 — 아래 넓은 상자(이름표 '강세희'), 세희는 오른쪽 아래에서 상자 위에 올라앉고 더 크게, 글씨도 크게. 가로 스크롤 없앰. */
-const APP_VERSION = 'v1.2.3';
+   v1.2.3 (2026-11-12) 보드 대화를 게임 대화창처럼 — 아래 넓은 상자(이름표 '강세희'), 세희는 오른쪽 아래에서 상자 위에 올라앉고 더 크게, 글씨도 크게. 가로 스크롤 없앰.
+   v1.2.4 (2026-11-12) 세희를 상자 오른쪽 아래 구석에 앞으로 세우고 크게(높이 약 31%), 상자도 높게(36%). 글은 세희 왼쪽으로. */
+const APP_VERSION = 'v1.2.4';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
