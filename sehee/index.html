@@ -343,6 +343,8 @@
   .th-map .pp-node::after{content:"";position:absolute;left:50%;bottom:-22px;width:16px;height:16px;margin-left:-8px;background:var(--c);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:-1px 2px 2px rgba(0,0,0,.35)}
   .th-map .pp-node b{font:700 .95rem "Noto Serif KR",serif;color:#3b2a14}.th-map .pp-node span{color:#7a5a32;font-size:.7rem}
   .th-map .pp-empty{color:#5c4424;text-shadow:none}
+  .msg .retry{display:block;margin:8px 0 2px;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:14px;padding:5px 14px;font-size:.8rem;font-weight:700;cursor:pointer}
+  .msg .retry:active{background:#fbe9e6}
   /* 판 견출지 — 사무실 왼쪽, 오른쪽으로 끌면 판으로 (v1.2) */
   .pan-tab{position:absolute;left:0;top:7%;z-index:12;width:26px;height:clamp(64px,12dvh,104px);border:1px solid rgba(0,0,0,.4);border-left:none;border-radius:0 9px 9px 0;
     background:#ece6d4;color:var(--ink);writing-mode:vertical-rl;font-size:.74rem;font-weight:700;letter-spacing:3px;cursor:grab;padding:0;touch-action:none;
@@ -702,8 +704,11 @@
         글 쓰는 중에도 오른쪽 견출지(달력·보드·사람)가 작게 보여 바로 끌 수 있고, 왼쪽에 '판' 견출지(오른쪽으로 끌면 판으로).
         적었다고 말해 놓고 실제로 안 적었으면 ⚠ 알림. 프롬프트에도 '말하기 전에 도구부터'.
    v1.2.1 (2026-11-12) 수사판 꾸밈 세 가지 — 코르크 / 화이트보드(마커 선·자석·손글씨) / 옛 지도(무리별 구역·등고선·나침반·핀 깃발). 「꾸밈」 버튼으로 돌려 보고, 고른 건 저장·동기화.
-        핀 이름이 PIN 화면(.pin)과 겹쳐 커지던 것 pp-pin 으로 분리, 무리 크기에 따라 자리 넓게, 전체가 한 화면에 들어오게. */
-const APP_VERSION = 'v1.2.1';
+        핀 이름이 PIN 화면(.pin)과 겹쳐 커지던 것 pp-pin 으로 분리, 무리 크기에 따라 자리 넓게, 전체가 한 화면에 들어오게.
+   v1.2.2 (2026-11-12) 긴 글 정리 1차 실패 원인 — 소넷 5.5는 생각을 못 끄는데 자리가 2500뿐이라 생각만 하다 다 써서 빈 대답(502로 보임).
+        생각을 끌 수 없는 모델은 모델별로 기억하고, 생각 '낮음'(effort low)·자리 16000. 서버 삐끗(5xx·529·빈 대답·끊김)은 글자 나오기 전이면
+        자동으로 두 번 더(두 번째는 작은 머리로). 막힌 말풍선엔 「↻ 다시 시도」 버튼. */
+const APP_VERSION = 'v1.2.2';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1639,9 +1644,9 @@ function friendly(code, info){
   if (code === 404) return '그 모델을 못 찾았어요. 설정에서 모델을 다시 골라주세요';
   if (code === 429 && info.kind === 'day') return `오늘 쓸 수 있는 횟수${info.limit ? `(하루 ${info.limit}번)` : ''}를 다 썼어요. ${resetText()} 풀려요. 계속 쓰려면 결제를 연결하거나 엔진을 바꿔주세요`;
   if (code === 429) return '잠깐 사이에 너무 많이 불렀어요(분당 한도). 조금 뒤에 다시 말 걸어 주세요';
-  if (code === 529) return 'AI 서버가 붐벼요. 잠시 후 다시 말 걸어 주세요';
+  if (code === 529) return 'AI 서버가 붐벼요. 세 번 해 봤는데 안 됐어요. 조금 뒤 「다시 시도」를 눌러 주세요';
   if (code === 400) return '요청을 거절당했어요. 연결 기록에 이유가 남아 있어요';
-  if (code >= 500) return 'AI 서버가 바빠요. 잠시 후 다시 말 걸어 주세요';
+  if (code >= 500) return 'AI 서버가 삐끗했어요. 세 번 해 봤는데 안 됐어요. 조금 뒤 「다시 시도」를 눌러 주세요';
   return '알 수 없는 오류예요. 연결 기록을 보내주세요';
 }
 /* 말풍선에는 한국어 한 줄만. 영어 원문(raw)은 연결 기록에만 남긴다 */
@@ -1706,6 +1711,9 @@ async function apiFail(r){
   if (/credit balance/i.test(msg)) info.billing = true;
   throw new AIError(r.status, msg, info);
 }
+/* 생각을 끌 수 없는 모델 목록(모델마다 따로 — 소넷이 거절했다고 하이쿠까지 생각을 켜지 않게) */
+const thinkLocked = m => !!(AI.thinkLock || {})[m];
+function lockThink(m){ AI.thinkLock = AI.thinkLock || {}; AI.thinkLock[m] = true; }
 async function aiRound(st, onText, stopSignal){
   const { p, key, model } = st;
   const t0 = performance.now(), rec = { at:Date.now(), provider:p, model, ok:false };
@@ -1726,9 +1734,12 @@ async function aiRound(st, onText, stopSignal){
   const fail = apiFail;
   try{
     if (p === 'anthropic'){
-      const body = { model, max_tokens:2500, system:st.system, messages:st.msgs, stream:true };
-      /* 대화용이라 깊은 생각은 끈다(빠르고 싸다, 생각 블록을 주고받다 꼬일 일도 없다). 못 알아들으면 빼고 다시 */
-      if (!AI.noThinkOff) body.thinking = { type:'disabled' };
+      const body = { model, max_tokens:st.maxTok || 2500, system:st.system, messages:st.msgs, stream:true };
+      /* 대화용이라 깊은 생각은 끈다(빠르고 싸다, 생각 블록을 주고받다 꼬일 일도 없다).
+         끌 수 없는 모델(v1.2.2: 소넷 5.5)은 생각을 '낮음'으로 줄이고 자리를 넉넉히 — 생각만 하다 2500자를 다 써서 빈 대답이 오던 것 */
+      const noOff = thinkLocked(model);
+      if (!noOff) body.thinking = { type:'disabled' };
+      else { rec.thinkOn = true; body.max_tokens = Math.max(body.max_tokens, 16000); if (!AI.noEffort) body.output_config = { effort:'low' }; }
       if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
       if (st.tools && st.web) body.tools.push(WEB_TOOL);
       let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
@@ -1745,7 +1756,11 @@ async function aiRound(st, onText, stopSignal){
       }
       if (r.status === 400 && body.thinking){
         const peek = await r.clone().text().catch(() => '');
-        if (/thinking/i.test(peek) && !/messages\.\d+/.test(peek)){ AI.noThinkOff = true; delete body.thinking; rec.thinkOn = true; r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
+        if (/thinking/i.test(peek) && !/messages\.\d+/.test(peek)){ lockThink(model); delete body.thinking; rec.thinkOn = true; body.max_tokens = Math.max(body.max_tokens, 16000); if (!AI.noEffort) body.output_config = { effort:'low' }; r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
+      }
+      if (r.status === 400 && body.output_config){
+        const peek = await r.clone().text().catch(() => '');
+        if (/output_config|effort/i.test(peek)){ AI.noEffort = true; delete body.output_config; r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
       }
       if (!r.ok) await fail(r);
       const cur = {};
@@ -1850,7 +1865,7 @@ async function aiTurn(history, onText, stopSignal, opts){
   const p = AI.cfg.provider;
   const st = { p, key:aiKey(), model:(opts && opts.big && bigModel()) || aiModel(), system:await systemPrompt(), tools:!(opts && opts.noTools),
     web:webOn() && !AI.noWeb, onSearch:opts && opts.onSearch,
-    msgs:history.map(m => ({ role:m.role, content:m.content })),
+    msgs:history.map(m => ({ role:m.role, content:m.content })), retry:0,
     contents:history.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })) };
   let said = '', last = null; const srcs = [];
   for (let round = 0; round < 8; round++){
@@ -1871,6 +1886,17 @@ async function aiTurn(history, onText, stopSignal, opts){
           if (opts && opts.onWait) opts.onWait(wait);
           try{ await sleepFor(wait, stopSignal); }catch(x){ x.partial = before; throw x; }
           if (opts && opts.onWait) opts.onWait(0);
+          continue;
+        }
+        /* v1.2.2 서버가 잠깐 바쁘거나(5xx·529) 빈 대답·끊김 — 아직 한 글자도 안 보였으면 조용히 두 번까지 다시.
+           빈 대답이 생각하다 자리가 모자라서면 자리를 두 배로. 마지막엔 다른 모델(작은 머리)로 */
+        const busy = (e.code >= 500 || e.code === -1 || e.code === 0) && !(e.partial && e.partial.trim()) && !(stopSignal && stopSignal.aborted);
+        if (busy && (st.retry || 0) < 2){
+          st.retry = (st.retry || 0) + 1;
+          if (/max_tokens/.test(e.raw || e.message)) st.maxTok = Math.min((st.maxTok || 2500) * 2, 32000);
+          if (st.retry === 2 && opts && opts.big && aiModel() !== st.model){ st.model = aiModel(); st.fellBack = true; }
+          if (opts && opts.onRetry) opts.onRetry(st.retry);
+          try{ await sleepFor(st.retry === 1 ? 1500 : 4000, stopSignal); }catch(x){ x.partial = before; throw x; }
           continue;
         }
         e.partial = before + (e.partial || ''); throw e;
@@ -1998,9 +2024,9 @@ async function visionCall(tiles, signal, onLen){
       const content = [];
       for (const t of tiles){ content.push({ type:'text', text:label(t) }); content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data:t.b64 } }); }
       content.push({ type:'text', text:ask });
-      const ob = { model, max_tokens:8000, system:OCR_SYS, messages:[{ role:'user', content }], stream:true, ...(AI.noThinkOff ? {} : { thinking:{ type:'disabled' } }) };
+      const ob = { model, max_tokens:thinkLocked(model) ? 16000 : 8000, system:OCR_SYS, messages:[{ role:'user', content }], stream:true, ...(thinkLocked(model) ? (AI.noEffort ? {} : { output_config:{ effort:'low' } }) : { thinking:{ type:'disabled' } }) };
       let r = await go('https://api.anthropic.com/v1/messages', ob, anthHeaders(key));
-      if (r.status === 400 && ob.thinking && /thinking/i.test(await r.clone().text().catch(() => ''))){ AI.noThinkOff = true; delete ob.thinking; r = await go('https://api.anthropic.com/v1/messages', ob, anthHeaders(key)); }
+      if (r.status === 400 && ob.thinking && /thinking/i.test(await r.clone().text().catch(() => ''))){ lockThink(model); delete ob.thinking; ob.max_tokens = 16000; r = await go('https://api.anthropic.com/v1/messages', ob, anthHeaders(key)); }
       if (!r.ok) await apiFail(r);
       for await (const data of sseEvents(r, ctl, 60000)){
         let d; try{ d = JSON.parse(data); }catch(e){ continue; }
@@ -2637,7 +2663,7 @@ async function runJob(job, um){
             O.live.text = t; O.live.search = '';
             if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
             updateLive();
-          }, O.abort.signal, { big:long,
+          }, O.abort.signal, { big:long, onRetry:n => { if (O.live){ O.live.retry = n; showWait(); } },
             onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; showWait(); },
             onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
           break;
@@ -3060,7 +3086,7 @@ function renderLog(){
   el.innerHTML = O.log.map((m, i) => m.who === 'a'
       ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
-      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<time>${hhmm(m.at)}</time></div>`).join('')
+      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}${m.err && i === lastS && !O.busy && aiReady() ? `<button class="retry" data-retry="${i}">↻ 다시 시도</button>` : ''}<time>${hhmm(m.at)}</time></div>`).join('')
     + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
@@ -3087,7 +3113,8 @@ function waitText(){
   if (O.live.waitUntil > Date.now()) return `분당 한도에 걸렸어요 — ${Math.ceil((O.live.waitUntil - Date.now()) / 1000)}초 뒤 다시 해볼게요`;
   const sec = Math.floor((Date.now() - O.live.t0) / 1000);
   const busy = O.live.big ? `긴 글이라 ${shortModel(O.live.big)}로 정리 중` : '세희가 생각 중';
-  return (sec < 2 ? '보내는 중' : busy) + ` · ${sec}초` + (sec >= 15 ? ' · 오래 걸리네요' : '');
+  const re = O.live.retry ? ` · 서버가 삐끗해서 다시 하는 중(${O.live.retry}번째)` : '';
+  return (sec < 2 && !re ? '보내는 중' : busy) + ` · ${sec}초` + re + (sec >= 15 && !re ? ' · 오래 걸리네요' : '');
 }
 function updateLive(){
   const el = $('log').querySelector('.msg.live');
@@ -3129,6 +3156,44 @@ async function openOffice(){
 }
 function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   const has = !!ta.value.trim() || ATT.length > 0, reading = ATT.some(a => a.reading); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy || reading; }
+/* 보통 대답 한 번(v1.2.2 — 다시 시도 버튼도 이걸 쓴다) */
+async function replyNow(){
+    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:null, waitUntil:0 };
+    renderLog();
+    const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
+    try{
+      const r = await aiTurn(toMessages(O.log), t => {
+        O.live.text = t; O.live.search = '';
+        if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
+        updateLive();
+      }, O.abort.signal, { big:false, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
+        onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
+        onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
+      const pf = parseFace(r.text);
+      if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
+      seheeSays(pf, r.sources);
+    }catch(err){
+      if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
+      if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
+      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message + (err.code === 400 && err.raw ? ` — 서버 말: ${err.raw.slice(0, 160)}` : ''), face:5, at:Date.now(), err:true }); setFace(5); }
+    }finally{ clearInterval(tick); O.live = null; O.abort = null; }
+}
+/* 다시 시도 — 막힌 말풍선을 걷어내고, 그 앞의 보스 말에 다시 대답한다. 사진은 이미 읽어 둔 글로, 긴 글은 큰 머리로 */
+async function retryLast(i){
+  if (O.busy || !aiReady()) return;
+  const m = O.log[i]; if (!m || !m.err) return;
+  let ui = -1; for (let j = i - 1; j >= 0; j--) if (O.log[j].who === 'u'){ ui = j; break; }
+  if (ui < 0) return;
+  const um = O.log[ui];
+  O.log.splice(i, 1);
+  if (um.pics && !um.ocr){ O.log.push({ who:'s', text:'그 캡처는 읽기 전에 막혀서, 사진을 한 번 더 붙여 주셔야 해요.', face:5, at:Date.now(), err:false }); renderLog(); saveLog(); return; }
+  O.turnActs = O.log.filter(x => x.who === 'a' && !x.read).length;
+  O.busy = true; growSay(); setFace(2); renderLog(); await saveLog();
+  const heavy = !!(um.pics || um.docs) || (um.text || '').length >= 300 || (um.text || '').split('\n').length >= 6;
+  if (heavy){ const job = { at:Date.now(), msgAt:um.at, stage:'organize' }; await kvSet('job', job); await runJob(job, um); return; }
+  await replyNow();
+  O.busy = false; renderLog(); growSay(); bdGrow(); saveLog();
+}
 async function sendSay(src){
   const ta = src instanceof HTMLTextAreaElement ? src : $('sayText'), v = ta.value.trim(); if ((!v && !ATT.length) || O.busy || ATT.some(a => a.reading)) return;
   const atts = ATT.splice(0), imgs = atts.filter(a => a.kind === 'img'), txts = atts.filter(a => a.kind === 'txt');
@@ -3158,27 +3223,8 @@ async function sendSay(src){
     await runJob(job, um);
     return;
   }
-  if (aiReady()){
-    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:null, waitUntil:0 };
-    renderLog();
-    const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
-    try{
-      const r = await aiTurn(toMessages(O.log), t => {
-        O.live.text = t; O.live.search = '';
-        if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
-        updateLive();
-      }, O.abort.signal, { big:false,
-        onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
-        onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
-      const pf = parseFace(r.text);
-      if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
-      seheeSays(pf, r.sources);
-    }catch(err){
-      if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
-      if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
-      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message + (err.code === 400 && err.raw ? ` — 서버 말: ${err.raw.slice(0, 160)}` : ''), face:5, at:Date.now(), err:true }); setFace(5); }
-    }finally{ clearInterval(tick); O.live = null; O.abort = null; }
-  } else {
+  if (aiReady()) await replyNow();
+  else {
     await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
     if (imgs.length || txts.length) seheeSays({ t:'사진이랑 파일은 머리가 있어야 읽어요. 설정에서 키부터요.', f:6 });
     else seheeSays(replyFor(v));
@@ -3199,6 +3245,7 @@ $('sayGo').onclick = sendSay;
 $('log').addEventListener('click', e => {
   if (e.target.closest('[data-stop]') && O.abort) O.abort.abort();
   const u = e.target.closest('[data-undo]'); if (u) undoAction(Number(u.dataset.undo));
+  const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry));
   const c = e.target.closest('[data-copyocr]');
   if (c){ const m = O.log[Number(c.dataset.copyocr)]; if (m && m.ocr) navigator.clipboard.writeText(m.ocr).then(() => { c.textContent = '복사됨'; }, () => { c.textContent = '복사 안 됨'; }); }
 });
