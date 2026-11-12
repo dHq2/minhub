@@ -383,8 +383,10 @@
    v0.7.1 (2026-11-12) 판에 적은 뒤 '요청을 거절당했어요(400)' 고침 — 빈칸뿐인 글 블록을 안 보내고,
         도구 다음 차례에 400이 나면 검색 블록·인용·빈 글을 걷어내고 검색 없이 한 번 더. 그래도 안 되면 서버 이유를 말풍선에 보여줌.
    v0.7.2 (2026-11-12) 나가 있어도 — 긴 글·캡처 정리를 '일'로 저장(묶음 하나 읽을 때마다). 앱이 얼었다 깨면 끊긴 요청을 다시,
-        폰이 앱을 내렸으면 다음에 열 때 읽던 데부터 이어서. 폰 위 알림으로 진행 상황·끝난 결과. 설정에 '작업 알림'. */
-const APP_VERSION = 'v0.7.2';
+        폰이 앱을 내렸으면 다음에 열 때 읽던 데부터 이어서. 폰 위 알림으로 진행 상황·끝난 결과. 설정에 '작업 알림'.
+   v0.7.3 (2026-11-12) 'thinking block must contain thinking' 400 고침 — 대화 요청에 생각 끄기(thinking disabled),
+        혹시 생각 블록이 와도 내용·서명을 다 모아 그대로 돌려보내고, 빈 생각 블록은 버림. 400 복구 때 생각 블록도 걷어냄. */
+const APP_VERSION = 'v0.7.3';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1364,6 +1366,8 @@ async function aiRound(st, onText, stopSignal){
   try{
     if (p === 'anthropic'){
       const body = { model, max_tokens:2500, system:st.system, messages:st.msgs, stream:true };
+      /* 대화용이라 깊은 생각은 끈다(빠르고 싸다, 생각 블록을 주고받다 꼬일 일도 없다). 못 알아들으면 빼고 다시 */
+      if (!AI.noThinkOff) body.thinking = { type:'disabled' };
       if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
       if (st.tools && st.web) body.tools.push(WEB_TOOL);
       let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
@@ -1378,6 +1382,10 @@ async function aiRound(st, onText, stopSignal){
         const peek = await r.clone().text().catch(() => '');
         if (/web.?search/i.test(peek)){ AI.noWeb = true; st.web = false; rec.noweb = true; body.tools = body.tools.filter(t => t !== WEB_TOOL); r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
       }
+      if (r.status === 400 && body.thinking){
+        const peek = await r.clone().text().catch(() => '');
+        if (/thinking/i.test(peek) && !/messages\.\d+/.test(peek)){ AI.noThinkOff = true; delete body.thinking; rec.thinkOn = true; r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode)); }
+      }
       if (!r.ok) await fail(r);
       const cur = {};
       for await (const data of sseEvents(r, ctl, 40000)){
@@ -1387,6 +1395,7 @@ async function aiRound(st, onText, stopSignal){
           const cb = d.content_block || {};
           if (cb.type === 'tool_use' || cb.type === 'server_tool_use') cur[d.index] = { type:cb.type, id:cb.id, name:cb.name, json:'' };
           else if (cb.type === 'text') cur[d.index] = { type:'text', text:'', cites:[] };
+          else if (cb.type === 'thinking') cur[d.index] = { type:'thinking', thinking:cb.thinking || '', signature:cb.signature || '' };
           else {   /* 검색 결과 블록 — 받은 그대로 다시 보내야 한다 */
             cur[d.index] = null; blocks.push(cb);
             if (cb.type === 'web_search_tool_result' && Array.isArray(cb.content)) st.lastResults = cb.content.filter(x => x.url).slice(0, 3);
@@ -1396,11 +1405,14 @@ async function aiRound(st, onText, stopSignal){
           const b = cur[d.index]; if (!b || !d.delta) continue;
           if (d.delta.type === 'text_delta'){ b.text += d.delta.text; push(d.delta.text); }
           else if (d.delta.type === 'input_json_delta') b.json += d.delta.partial_json || '';
+          else if (d.delta.type === 'thinking_delta') b.thinking += d.delta.thinking || '';
+          else if (d.delta.type === 'signature_delta') b.signature = d.delta.signature || b.signature;
           else if (d.delta.type === 'citations_delta' && d.delta.citation){ b.cites.push(d.delta.citation); addSrc(d.delta.citation.url, d.delta.citation.title); }
         }
         else if (d.type === 'content_block_stop'){
           const b = cur[d.index]; if (!b) continue;
           if (b.type === 'tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'tool_use', id:b.id, name:b.name, input }); calls.push({ id:b.id, name:b.name, args:input }); }
+          else if (b.type === 'thinking'){ if (b.thinking.trim()) blocks.push({ type:'thinking', thinking:b.thinking, signature:b.signature }); }
           else if (b.type === 'server_tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'server_tool_use', id:b.id, name:b.name, input }); if (st.onSearch) st.onSearch(input.query || ''); }
           else if (b.type === 'text' && b.text && b.text.trim()) blocks.push({ type:'text', text:b.text, ...(b.cites.length ? { citations:b.cites } : {}) });
         }
@@ -1466,6 +1478,7 @@ function healMsgs(msgs){
   return msgs.map(m => {
     if (!Array.isArray(m.content)) return m;
     const c = m.content.filter(b => b.type !== 'server_tool_use' && !/_tool_result$/.test(b.type) || b.type === 'tool_result')
+      .filter(b => b.type !== 'thinking' && b.type !== 'redacted_thinking')
       .filter(b => b.type !== 'text' || (b.text && b.text.trim()))
       .map(b => b.type === 'text' ? { type:'text', text:b.text } : b);
     return { ...m, content:c.length ? c : [{ type:'text', text:'(계속)' }] };
@@ -1618,7 +1631,9 @@ async function visionCall(tiles, signal, onLen){
       const content = [];
       for (const t of tiles){ content.push({ type:'text', text:label(t) }); content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data:t.b64 } }); }
       content.push({ type:'text', text:ask });
-      const r = await go('https://api.anthropic.com/v1/messages', { model, max_tokens:8000, system:OCR_SYS, messages:[{ role:'user', content }], stream:true }, anthHeaders(key));
+      const ob = { model, max_tokens:8000, system:OCR_SYS, messages:[{ role:'user', content }], stream:true, ...(AI.noThinkOff ? {} : { thinking:{ type:'disabled' } }) };
+      let r = await go('https://api.anthropic.com/v1/messages', ob, anthHeaders(key));
+      if (r.status === 400 && ob.thinking && /thinking/i.test(await r.clone().text().catch(() => ''))){ AI.noThinkOff = true; delete ob.thinking; r = await go('https://api.anthropic.com/v1/messages', ob, anthHeaders(key)); }
       if (!r.ok) await apiFail(r);
       for await (const data of sseEvents(r, ctl, 60000)){
         let d; try{ d = JSON.parse(data); }catch(e){ continue; }
