@@ -157,6 +157,12 @@
   .tabs button.on::before{content:"";position:absolute;top:-2px;left:30%;right:30%;height:3px;background:var(--red)}
   body.office .nav, body.office #old, body.office #main, body.office .fab{display:none!important}
   body.typing .tabs{display:none}
+  /* 옆으로 밀어 판 ↔ 사무실 (v0.6.6) */
+  #main, #office{touch-action:pan-y pinch-zoom}
+  @keyframes inL{from{transform:translateX(-22%);opacity:.25}to{transform:none;opacity:1}}
+  @keyframes inR{from{transform:translateX(22%);opacity:.25}to{transform:none;opacity:1}}
+  .slide-inL{animation:inL .22s cubic-bezier(.2,.7,.3,1)}
+  .slide-inR{animation:inR .22s cubic-bezier(.2,.7,.3,1)}
 
   /* ── 세희의 사무실 ── */
   #office{display:none;position:fixed;left:0;right:0;top:var(--hh,64px);bottom:var(--tb,58px);z-index:10;
@@ -334,8 +340,10 @@
         세희는 책상 뒤 상반신만. 생각 중엔 턱 괴기, 글자가 들어오는 동안 말하는 손짓, 끝나면 표정 태그 자세.
         원본은 저장소 assets/sehee-originals/ 에 따로 보관.
    v0.6.5 (2026-11-12) Claude 키 연결 고침 — 인증을 문서 기본인 Authorization: Bearer 로, 401이면 x-api-key 로 한 번 더(되는 쪽 기억).
-        키 칸이 콘솔 목록과 같은 모양(앞 14자…끝 4자)과 길이를 보여줌. 가려진 사본(…)·키 ID·이상한 글자 경고. 「연결 시험」은 칸에 든 키를 먼저 저장. */
-const APP_VERSION = 'v0.6.5';
+        키 칸이 콘솔 목록과 같은 모양(앞 14자…끝 4자)과 길이를 보여줌. 가려진 사본(…)·키 ID·이상한 글자 경고. 「연결 시험」은 칸에 든 키를 먼저 저장.
+   v0.6.6 (2026-11-12) 옆으로 밀어 화면 전환 — 사무실에서 오른쪽으로 밀면 판, 판에서 왼쪽으로 밀면 사무실.
+        손가락을 따라 살짝 끌려오고, 덜 밀면 제자리. 지금 쓰고 있는 칸·설정 창·화면 가장자리에서 시작하면 무시. */
+const APP_VERSION = 'v0.6.6';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1530,10 +1538,68 @@ function showView(v){
   document.body.classList.toggle('office', off);
   $('tabPan').classList.toggle('on', !off); $('tabOffice').classList.toggle('on', off);
   if (off) openOffice(); else { document.body.classList.remove('typing'); render(); }
+  const a = SWIPE.anim; SWIPE.anim = '';
+  if (a){
+    const el = off ? $('office') : $('main');
+    el.classList.remove('slide-inL', 'slide-inR'); void el.offsetWidth; el.classList.add(a);
+    el.addEventListener('animationend', () => el.classList.remove(a), { once:true });
+  }
 }
 $('tabOffice').onclick = () => { if (location.hash !== '#office') location.hash = 'office'; else showView('office'); };
 $('tabPan').onclick = () => { history.replaceState(null, '', location.pathname); showView('pan'); };
 window.addEventListener('hashchange', () => showView(location.hash === '#office' ? 'office' : 'pan'));
+
+/* ── 옆으로 밀기 (v0.6.6): 사무실에서 오른쪽으로 → 판, 판에서 왼쪽으로 → 사무실 ──
+   손가락을 따라 살짝 끌려오다가, 충분히 밀면 넘어가고 아니면 제자리로.
+   지금 쓰고 있는 칸·설정 창 위에서 시작하거나, 화면 가장자리(폰 '뒤로' 제스처 자리)에서 시작하면 무시 */
+const SWIPE = { anim:'' };
+(function swipeNav(){
+  let g = null;
+  const EDGE = 18, LOCK = 10, GO = 70;
+  const viewEl = () => document.body.classList.contains('office') ? $('office') : $('main');
+  const reset = el => { el.style.transition = 'transform .18s ease, opacity .18s ease'; el.style.transform = ''; el.style.opacity = '';
+    setTimeout(() => { el.style.transition = ''; }, 200); };
+  document.addEventListener('touchstart', e => {
+    g = null;
+    if (e.touches.length !== 1 || $('sheet').classList.contains('on') || document.body.classList.contains('typing')) return;
+    if (e.target.closest('.sheet,#veil')) return;
+    const ae = document.activeElement;   /* 지금 글 쓰는 중인 칸 위에서는 커서 옮기기가 먼저 */
+    if (ae && ae !== document.body && ae.matches('input,textarea,select,[contenteditable]') && (e.target === ae || ae.contains(e.target))) return;
+    const t = e.touches[0];
+    if (t.clientX < EDGE || t.clientX > window.innerWidth - EDGE) return;
+    g = { x:t.clientX, y:t.clientY, t:performance.now(), axis:'', off:document.body.classList.contains('office') };
+  }, { passive:true });
+  document.addEventListener('touchmove', e => {
+    if (!g) return;
+    const t = e.touches[0], dx = t.clientX - g.x, dy = t.clientY - g.y;
+    if (!g.axis){
+      if (Math.abs(dx) < LOCK && Math.abs(dy) < LOCK) return;
+      g.axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y';
+      if (g.axis === 'y'){ g = null; return; }
+    }
+    const want = g.off ? dx > 0 : dx < 0;   /* 사무실은 오른쪽으로만, 판은 왼쪽으로만 */
+    const d = want ? dx : dx * 0.15;
+    const el = viewEl(); el.style.transition = '';
+    el.style.transform = `translateX(${Math.round(d * 0.55)}px)`;
+    el.style.opacity = String(Math.max(0.55, 1 - Math.abs(d) / 700));
+    g.dx = dx;
+  }, { passive:true });
+  const end = () => {
+    if (!g || g.axis !== 'x'){ g = null; return; }
+    const dx = g.dx || 0, v = Math.abs(dx) / Math.max(1, performance.now() - g.t), el = viewEl(), off = g.off;
+    g = null;
+    const far = Math.abs(dx) > GO || (Math.abs(dx) > 35 && v > 0.45);
+    if (off && dx > 0 && far){
+      el.style.transform = ''; el.style.opacity = '';
+      SWIPE.anim = 'slide-inL'; $('tabPan').onclick();
+    } else if (!off && dx < 0 && far){
+      el.style.transform = ''; el.style.opacity = '';
+      SWIPE.anim = 'slide-inR'; $('tabOffice').onclick();
+    } else reset(el);
+  };
+  document.addEventListener('touchend', end, { passive:true });
+  document.addEventListener('touchcancel', () => { if (g){ reset(viewEl()); g = null; } }, { passive:true });
+})();
 (function measure(){
   const set = () => {
     document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight + 'px');
