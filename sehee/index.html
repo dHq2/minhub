@@ -218,6 +218,7 @@
   #seheeFace{transition:opacity .15s}
   .say{flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));
     display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  #office.drop{outline:3px dashed #f3d27a;outline-offset:-6px}
   /* 첨부 줄 (v0.7) */
   .tray{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;width:min(88%,560px)}
   .tray[hidden]{display:none}
@@ -240,7 +241,7 @@
   /* 로딩 화면 (v0.7) — 그림 아래쪽(책상)을 기준으로 맞추고, 그 위 점 세 개를 깜빡인다 */
   #splash{position:fixed;inset:0;z-index:200;background:#10292f;overflow:hidden;transition:opacity .4s ease}
   #splash.out{opacity:0;pointer-events:none}
-  .sp-wrap{position:absolute;left:50%;bottom:0;transform:translateX(-50%);aspect-ratio:941/1672;height:max(100dvh,calc(100vw * 1672 / 941));container-type:inline-size}
+  .sp-wrap{position:absolute;left:50%;bottom:0;transform:translateX(-50%);aspect-ratio:941/1672;height:100dvh;container-type:inline-size}  /* 폰은 양옆이 잘리고, 넓은 화면은 양옆이 어둡게 남는다 — 세희 얼굴은 늘 보인다 */
   .sp-wrap img{display:block;width:100%;height:100%}
   .sp-dots{position:absolute;left:49.97%;top:94.11%;transform:translate(-50%,-50%);display:flex;gap:2.15cqw}
   .sp-dots i{width:1.1cqw;height:1.1cqw;border-radius:50%;background:#ead5c5;opacity:.15;animation:spBlink 1.2s infinite ease-in-out}
@@ -385,8 +386,9 @@
    v0.7.2 (2026-11-12) 나가 있어도 — 긴 글·캡처 정리를 '일'로 저장(묶음 하나 읽을 때마다). 앱이 얼었다 깨면 끊긴 요청을 다시,
         폰이 앱을 내렸으면 다음에 열 때 읽던 데부터 이어서. 폰 위 알림으로 진행 상황·끝난 결과. 설정에 '작업 알림'.
    v0.7.3 (2026-11-12) 'thinking block must contain thinking' 400 고침 — 대화 요청에 생각 끄기(thinking disabled),
-        혹시 생각 블록이 와도 내용·서명을 다 모아 그대로 돌려보내고, 빈 생각 블록은 버림. 400 복구 때 생각 블록도 걷어냄. */
-const APP_VERSION = 'v0.7.3';
+        혹시 생각 블록이 와도 내용·서명을 다 모아 그대로 돌려보내고, 빈 생각 블록은 버림. 400 복구 때 생각 블록도 걷어냄.
+   v0.7.4 (2026-11-12) 컴퓨터에서 쓰기 — 넓은 화면에서도 로딩 그림 전체(세희 얼굴)가 보이게, 캡처 파일을 사무실로 끌어다 놓기. */
+const APP_VERSION = 'v0.7.4';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -2119,6 +2121,10 @@ $('log').addEventListener('click', e => {
 $('sayClip').addEventListener('pointerdown', e => e.preventDefault());
 $('sayClip').onclick = () => $('sayFile').click();
 $('sayFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; addFiles(f); };
+/* 컴퓨터: 캡처 파일을 사무실로 끌어다 놓기 (v0.7.4) */
+$('office').addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')){ e.preventDefault(); $('office').classList.add('drop'); } });
+$('office').addEventListener('dragleave', e => { if (e.target === $('office')) $('office').classList.remove('drop'); });
+$('office').addEventListener('drop', e => { e.preventDefault(); $('office').classList.remove('drop'); const f = [...(e.dataTransfer.files || [])]; if (f.length) addFiles(f); });
 $('sayText').addEventListener('paste', e => {
   const files = [...((e.clipboardData && e.clipboardData.files) || [])].filter(f => /^image\//.test(f.type));
   if (!files.length) return;
