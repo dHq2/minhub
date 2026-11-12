@@ -586,18 +586,18 @@
   </div>
   <button class="pan-tab noswipe" id="panTab" aria-label="판으로">판</button>
   <div class="dw-tabs noswipe" id="dwTabs"><button data-dw="cal" style="--c:#3a6b64">달력</button><button data-dw="board" style="--c:#8a6d3b">보드</button><button data-dw="people" style="--c:#a13b2c">사람</button></div>
-  <div class="dw noswipe" id="dw-cal" style="--c:#3a6b64"><div class="dw-head"><b>📅 달력</b><span class="dw-hint">머리나 옆면을 잡고 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="cal">
+  <div class="dw noswipe" id="dw-cal" style="--c:#3a6b64"><div class="dw-head"><b>📅 달력</b><span class="dw-hint">옆면이나 머리를 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="cal">
   <div class="cal-year" id="calYear"></div>
   <div class="cal-tabs noswipe" id="calTabs"></div>
   <div class="cal-sheet noswipe" id="calSheet"></div>
   <div class="cal-day noswipe" id="calDay"></div>
 </div></div>
-  <div class="dw noswipe" id="dw-board" style="--c:#8a6d3b"><div class="dw-head"><b>📌 화이트보드</b><span class="dw-hint">머리나 옆면을 잡고 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="board">
+  <div class="dw noswipe" id="dw-board" style="--c:#8a6d3b"><div class="dw-head"><b>📌 화이트보드</b><span class="dw-hint">옆면이나 머리를 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="board">
   <div class="wb"><div class="wb-head"><span class="seg" id="wbSeg"><button data-mode="board" class="on">보드</button><button data-mode="reports">보고서함</button></span><span id="wbCount"></span><span class="seg sm" id="rlSeg" hidden><button data-v="gallery">갤러리</button><button data-v="list">목록</button></span><button id="wbMemo">+ 메모</button></div><div class="wb-grid" id="wbGrid"></div></div>
   <div class="bt"><div class="bt-side"><img id="btSpr" src="art/s-lean.webp" alt="강세희"></div><div class="bt-name"><b>강세희</b><button id="btAll">대화 보기 ›</button></div><div class="bt-bub" id="btBub"></div></div>
   <div class="bt-say"><textarea id="bdText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea><button id="bdGo" aria-label="보내기" disabled>↑</button></div>
 </div></div>
-  <div class="dw noswipe" id="dw-people" style="--c:#a13b2c"><div class="dw-head"><b>👥 인간관계 판</b><span class="dw-hint">머리나 옆면을 잡고 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="people"><div class="pp-bar"><b>수사판</b><span id="ppCount"></span><button id="ppAdd">+ 사람</button><button id="ppTheme">꾸밈</button><button id="ppCenter">크게 보기</button></div><div class="pp-scroll noswipe" id="ppScroll"><div class="pp-map" id="ppMap"></div></div></div></div>
+  <div class="dw noswipe" id="dw-people" style="--c:#a13b2c"><div class="dw-head"><b>👥 인간관계 판</b><span class="dw-hint">옆면이나 머리를 오른쪽으로 끌면 닫혀요</span><button class="ib dw-x" aria-label="닫기">✕</button></div><div class="dw-body" id="people"><div class="pp-bar"><b>수사판</b><span id="ppCount"></span><button id="ppAdd">+ 사람</button><button id="ppTheme">꾸밈</button><button id="ppCenter">크게 보기</button></div><div class="pp-scroll noswipe" id="ppScroll"><div class="pp-map" id="ppMap"></div></div></div></div>
   <div class="say" id="say"><div class="tray" id="tray" hidden></div><div class="saybub" id="saybub">
     <button id="sayClip" class="clip" aria-label="사진·파일 붙이기">📎</button>
     <textarea id="sayText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea>
@@ -717,8 +717,10 @@
    v1.2.4 (2026-11-12) 세희를 상자 오른쪽 아래 구석에 앞으로 세우고 크게(높이 약 31%), 상자도 높게(36%). 글은 세희 왼쪽으로.
    v1.2.5 (2026-11-12) 폰에서 키보드가 올라오면 화면이 '컴퓨터용 노트20 틀'로 바뀌어 쪼그라들던 것 — 틀은 마우스 쓰는 기기에서만.
         수사판 위 막대가 세로로 꺾이던 것 한 줄로. 서랍은 머리뿐 아니라 오른쪽 옆면·왼쪽 끝을 잡고 끌어도 닫힘(놓쳐도 닫힘 판정).
-        설정 「사적인 일·관계」 넣기(기본)/빼기 — 넣기면 개인 대화도 정리·판·인간관계 판에 똑같이, 빼기면 업무만. */
-const APP_VERSION = 'v1.2.5';
+        설정 「사적인 일·관계」 넣기(기본)/빼기 — 넣기면 개인 대화도 정리·판·인간관계 판에 똑같이, 빼기면 업무만.
+   v1.2.6 (2026-11-12) 서랍 ✕가 안 눌리던 것 — 머리가 손가락을 붙잡으면(pointer capture) 뗄 때 ✕가 아니라 머리로 잡혀서 무시됐다. 누를 때 ✕였는지 기억.
+        옆면 손잡이는 머리 높이를 재서 그 아래부터(✕를 덮지 않게). */
+const APP_VERSION = 'v1.2.6';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -3378,15 +3380,19 @@ function dwClose(k){
 (function dwGrip(){
   /* v1.2.5 머리뿐 아니라 옆면(오른쪽 서류 등 22px·왼쪽 끝 14px)을 잡고 끌어도 닫힘 */
   const grips = k => { const el = dwEl(k), out = [el.querySelector('.dw-head')];
-    for (const side of ['r', 'l']){ const d = document.createElement('div'); d.className = 'dw-grip noswipe ' + side; el.appendChild(d); out.push(d); } return out; };
+    for (const side of ['r', 'l']){ const d = document.createElement('div'); d.className = 'dw-grip noswipe ' + side; el.appendChild(d); out.push(d); }
+    const fit = () => { const h = out[0].offsetHeight; if (h) for (const d of out.slice(1)) d.style.top = h + 'px'; };
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(out[0]); else setTimeout(fit, 500);
+    return out; };
   for (const k of DRAWERS) for (const head of grips(k)){
     let g = null;
-    head.addEventListener('pointerdown', e => { if (e.target.closest('button,input') && !e.target.closest('.dw-x')) return; g = { x:e.clientX, t:performance.now(), moved:false }; try{ head.setPointerCapture(e.pointerId); }catch(x){} });
+    head.addEventListener('pointerdown', e => { if (e.target.closest('button,input') && !e.target.closest('.dw-x')) return; g = { x:e.clientX, t:performance.now(), moved:false, onX:!!e.target.closest('.dw-x') }; try{ head.setPointerCapture(e.pointerId); }catch(x){} });
     head.addEventListener('pointermove', e => { if (!g) return; const dx = e.clientX - g.x; if (!g.moved && Math.abs(dx) < 6) return; g.moved = true; dwSet(k, Math.max(0, dx), false); });
-    const up = e => { if (!g) return; const dx = e.clientX - g.x, v = dx / Math.max(1, performance.now() - g.t), moved = g.moved; g = null;
+    const up = e => { if (!g) return; const dx = e.clientX - g.x, v = dx / Math.max(1, performance.now() - g.t), moved = g.moved, onX = g.onX; g = null;
       if (!moved){
+        if (onX){ dwClose(k); return; }
         if (head.classList.contains('dw-grip')){ head.style.pointerEvents = 'none'; const under = document.elementFromPoint(e.clientX, e.clientY); head.style.pointerEvents = ''; if (under) under.click(); return; }
-        if (e.target.closest('.dw-x')) dwClose(k); return; }
+        return; }
       (dx > dwW(k) * 0.3 || v > 0.5) ? dwClose(k) : dwOpen(k, true); };
     head.addEventListener('pointerup', up); head.addEventListener('pointercancel', up);
     head.addEventListener('lostpointercapture', e => { if (g && g.moved) up(e); });
