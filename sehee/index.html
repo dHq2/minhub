@@ -160,7 +160,7 @@
 
   /* ── 세희의 사무실 ── */
   #office{display:none;position:fixed;left:0;right:0;top:var(--hh,64px);bottom:var(--tb,58px);z-index:10;
-    flex-direction:column;max-width:720px;margin:0 auto;background:#e7dfc6}
+    flex-direction:column;max-width:720px;margin:0 auto;background:#1d4650 url(art/bg-office.webp) center 30% / cover no-repeat}
   body.office #office{display:flex}
   body.typing #office{bottom:0}
   .log{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 10px;display:flex;flex-direction:column;gap:9px}
@@ -192,6 +192,19 @@
   .ailog{font:500 .7rem/1.6 ui-monospace,Consolas,monospace;color:var(--ink-soft);background:rgba(255,255,255,.55);border:1px solid var(--line);
     border-radius:4px;padding:6px 8px;white-space:pre-wrap;word-break:break-all;max-height:12em;overflow:auto;margin:6px 0}
   @keyframes blink{50%{opacity:1}}
+  /* 사무실 무대 — 세희(상반신) 뒤에 책상, 책상 위에 서류와 모니터 (v0.6.4) */
+  .stage{--sh:min(310px,42dvh);flex:0 0 auto;position:relative;height:var(--sh);overflow:hidden;transition:height .2s}
+  body.typing .stage{--sh:min(150px,22dvh)}
+  .spr{position:absolute;left:50%;top:calc(var(--sh) * .03);height:calc(var(--sh) * .70);transform:translateX(-50%);
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));pointer-events:none}
+  .desk{position:absolute;left:0;right:0;bottom:0;height:calc(var(--sh) * .30);background:#5a4330 url(art/desk.webp) center top / 100% auto no-repeat;
+    box-shadow:0 -2px 8px rgba(0,0,0,.25)}
+  .plate{position:absolute;left:50%;top:40%;transform:translateX(-50%);background:#2b2417;color:#f3d27a;font:600 .68rem "Noto Serif KR","Batang",serif;
+    padding:2px 10px;border-radius:2px;white-space:nowrap}
+  body.typing .plate{display:none}
+  .prop{position:absolute;bottom:calc(var(--sh) * .30 - 9px);pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+  .prop.papers{left:3%;width:min(26%,calc(var(--sh) * .42))}
+  .prop.monitor{right:2%;width:min(30%,calc(var(--sh) * .48))}
   .scene{flex:0 0 auto;height:min(200px,30dvh);line-height:0;transition:height .2s}
   .scene{overflow:hidden}
   .scene svg{width:100%;height:100%;display:block;overflow:visible}
@@ -247,34 +260,11 @@
 
 <section id="office" aria-label="세희의 사무실">
   <div class="log" id="log"></div>
-  <div class="scene">
-    <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax meet" aria-label="책상에 앉은 세희">
-      <rect x="-200" width="800" height="200" fill="#e7dfc6"/>
-      <g transform="translate(26 22)"><rect width="78" height="60" rx="3" fill="#dce8ea" stroke="#b9ad8a" stroke-width="3"/>
-        <line x1="39" y1="0" x2="39" y2="60" stroke="#b9ad8a" stroke-width="2.5"/><line x1="0" y1="30" x2="78" y2="30" stroke="#b9ad8a" stroke-width="2.5"/></g>
-      <g transform="translate(352 34)"><circle r="17" fill="#fdfcf8" stroke="#5c5340" stroke-width="2.5"/>
-        <line x1="0" y1="0" x2="0" y2="-10" stroke="#2b2417" stroke-width="2" stroke-linecap="round"/><line x1="0" y1="0" x2="8" y2="3" stroke="#2b2417" stroke-width="2" stroke-linecap="round"/></g>
-      <g transform="translate(288 66)"><rect width="88" height="54" rx="2" fill="#c9a97a" stroke="#8a6d3b" stroke-width="2"/>
-        <rect x="8" y="8" width="20" height="20" fill="#fcf08f" transform="rotate(-6 18 18)"/><rect x="34" y="10" width="20" height="20" fill="#d8f0b8" transform="rotate(4 44 20)"/>
-        <rect x="60" y="7" width="20" height="20" fill="#ffd9c9"/><rect x="22" y="31" width="20" height="16" fill="#fcf08f" transform="rotate(3 32 39)"/></g>
-      <g transform="translate(116.4 16.3) scale(2.2)">
-        <path d="M33.4 43.5h9.2v9.5h-9.2z" fill="#e5b087"/>
-        <path d="M38 51c-12.4 0-21.6 6.4-22.8 19.2-.3 3.3-.5 6.4-.5 9.8h46.6c0-3.4-.2-6.5-.5-9.8C59.6 57.4 50.4 51 38 51z" fill="#1b1b21"/>
-        <path d="M31.8 51.6L38 62.5l6.2-10.9 2.8 1.4L38 71.5l-9-18.5z" fill="#f7f6f2"/>
-        <path d="M33.4 50.6l4.6 5.4-4.2 1.6-2.6-5.6z" fill="#fdfdfb"/><path d="M42.6 50.6L38 56l4.2 1.6 2.6-5.6z" fill="#fdfdfb"/>
-        <path d="M31.8 51.6L38 62.5l-2.6 4.2-9.6-13z" fill="#2c2c35"/><path d="M44.2 51.6L38 62.5l2.6 4.2 9.6-13z" fill="#2c2c35"/>
-      </g>
-      <image id="seheeFace" href="faces/f1.webp" x="148" y="14" width="104" height="104"/>
-      <rect x="-200" y="154" width="800" height="46" fill="#8a6d3b"/><rect x="-200" y="150" width="800" height="8" fill="#a3823f"/>
-      <g transform="translate(46 122)"><rect x="0" y="22" width="62" height="7" fill="#fdfcf8" stroke="#c3b795"/>
-        <rect x="3" y="15" width="60" height="7" fill="#f6f2e4" stroke="#c3b795" transform="rotate(-2 30 19)"/>
-        <rect x="-2" y="8" width="62" height="7" fill="#fdfcf8" stroke="#c3b795" transform="rotate(2 30 12)"/>
-        <rect x="4" y="1" width="58" height="7" fill="#f6f2e4" stroke="#c3b795"/></g>
-      <g transform="translate(300 116)"><path d="M0 0h26l-3 34h-20z" fill="rgba(255,255,255,.55)" stroke="#5c5340" stroke-width="2"/>
-        <path d="M3 12h20l-2 22h-16z" fill="#7a5a3a" opacity=".5"/></g>
-      <g transform="translate(166 164)"><rect width="68" height="20" rx="2" fill="#2b2417"/>
-        <text x="34" y="14" text-anchor="middle" font-size="11" fill="#f3d27a" font-family="serif">강세희</text></g>
-    </svg>
+  <div class="stage" id="stage">
+    <img class="spr" id="seheeSpr" src="art/s-lean.webp" alt="강세희">
+    <div class="desk"><span class="plate">강세희</span></div>
+    <img class="prop papers" src="art/papers.webp" alt="">
+    <img class="prop monitor" src="art/monitor.webp" alt="">
   </div>
   <div class="say"><div class="saybub" id="saybub">
     <textarea id="sayText" rows="1" placeholder="세희에게 말하기" enterkeyhint="send"></textarea>
@@ -339,8 +329,11 @@
         분당 한도면 알려준 시간만큼 초를 세며 기다렸다 자동으로 다시(두 번까지). 하루 한도면 풀리는 시각 안내.
         '긴 글 정리' 모델 — 평소는 위 모델(Claude 기본 Haiku), 300자·6줄 넘는 글은 Sonnet 이 정리.
    v0.6.3 (2026-11-12) 키 입력칸을 보이는 글자로(비밀번호 칸이면 폰이 저장된 비밀번호를 자동으로 채울 수 있었다).
-        📋 붙여넣기 단추, 빈칸·줄바꿈·보이지 않는 글자 자동 제거, 글자 수와 sk-ant- 시작 여부 즉석 확인. */
-const APP_VERSION = 'v0.6.3';
+        📋 붙여넣기 단추, 빈칸·줄바꿈·보이지 않는 글자 자동 제거, 글자 수와 sk-ant- 시작 여부 즉석 확인.
+   v0.6.4 (2026-11-12) 사무실 그림 교체 — 보스가 준 배경(청록 사무실)·책상·서류·모니터·세희 자세 7종.
+        세희는 책상 뒤 상반신만. 생각 중엔 턱 괴기, 글자가 들어오는 동안 말하는 손짓, 끝나면 표정 태그 자세.
+        원본은 저장소 assets/sehee-originals/ 에 따로 보관. */
+const APP_VERSION = 'v0.6.4';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1360,14 +1353,18 @@ const aiStream = (messages, onText, stopSignal) => aiTurn(messages, onText, stop
 function parseFace(raw){
   const m = (raw || '').match(/^\s*\[(의심|생각|미소|당황|놀람|삐침)\]\s*/);
   const text = (m ? raw.slice(m[0].length) : (raw || '')).replace(/\[(의심|생각|미소|당황|놀람|삐침)\]\s*/g, '').trim();
-  return { t:text || '…', f:m ? FACE_TAGS[m[1]] : 1 };
+  return { t:text || '…', f:m ? FACE_TAGS[m[1]] : 0 };
 }
 
 /* ── 세희의 사무실 (v0.2) — 아직 아무것도 연결하지 않았다. 자동응답만 랜덤으로 ──
    얼굴: f1 의심 · f2 곁눈(생각 중) · f3 미소 · f4 >_< · f5 놀람 · f6 삐침  (그림은 나중에 교체) */
-const FACE = n => `faces/f${n}.webp`;
+/* 표정 태그 → 세희 그림: 0 기본(기대어 섬) · 1 의심(허리에 손) · 2 생각(턱 괴기) · 3 미소 · 4 당황(말하는 손짓) · 5 놀람 · 6 삐침(정면 무표정)
+   talk = 글자가 들어오는 동안 */
+const SPRITES = { 0:'s-lean', 1:'s-hip', 2:'s-think', 3:'s-smug', 4:'s-talk', 5:'s-surprised', 6:'s-front', talk:'s-talk' };
+const FACE = n => `art/${SPRITES[n] || SPRITES[0]}.webp`;
+Object.values(SPRITES).forEach(n => { const i = new Image(); i.src = `art/${n}.webp`; });
 const GREET = [
-  { t:'안녕하세요. 비서 강세희입니다.', f:1 },
+  { t:'안녕하세요. 비서 강세희입니다.', f:0 },
   { t:'지금은 깡통이라 대답만 해요. 머리는 나중에 들어온대요.', f:6 },
 ];
 const REPLIES = [
@@ -1399,7 +1396,7 @@ function pickFrom(list){
   O.lastPick = r; return r;
 }
 const replyFor = text => { for (const r of RULES) if (r.re.test(text)) return pickFrom(r.list); return pickFrom(REPLIES); };
-function setFace(n){ const im = $('seheeFace'); if (im) im.setAttribute('href', FACE(n || 1)); }
+function setFace(n){ const im = $('seheeSpr'); if (!im) return; const src = FACE(n); if (im.getAttribute('src') !== src) im.setAttribute('src', src); }
 const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
 function renderLog(){
   const el = $('log');
@@ -1430,7 +1427,7 @@ function seheeSays(r){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now() }
 async function openOffice(){
   if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
   if (!O.log.length){ GREET.forEach(seheeSays); saveLog(); }
-  const lastS = [...O.log].reverse().find(m => m.who === 's'); setFace(lastS ? lastS.face : 1);
+  const lastS = [...O.log].reverse().find(m => m.who === 's'); setFace(lastS ? lastS.face : 0);
   renderLog();
 }
 function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
@@ -1447,7 +1444,7 @@ async function sendSay(){
     try{
       const r = await aiTurn(toMessages(O.log), t => {
         O.live.text = t;
-        if (!O.live.faced && /^\s*\[[^\]]+\]/.test(t)){ O.live.faced = true; setFace(parseFace(t).f); }
+        if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
       }, O.abort.signal, { big:long, onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); } });
       const pf = parseFace(r.text);
