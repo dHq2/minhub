@@ -379,8 +379,10 @@
         해독본을 세희가 판에 정리. 묶음별 재시도·잘리면 반으로 나눠 다시·못 읽은 곳 표시. txt(대화 내보내기)도 받음.
         웹 검색 — Claude 웹 검색 도구(1번 $0.01)·Gemini 구글 검색. 출처는 말풍선 아래. 설정에서 켜고 끔.
         로딩 화면 — 보스 그림 위 점 세 개가 깜빡이고, 아래에 실제로 하는 일(저장소·판·그림·머리 확인).
-        공유하기를 POST 로 바꿔 사진·파일도 받음(글만 공유하던 예전 방식도 그대로 받음). */
-const APP_VERSION = 'v0.7.0';
+        공유하기를 POST 로 바꿔 사진·파일도 받음(글만 공유하던 예전 방식도 그대로 받음).
+   v0.7.1 (2026-11-12) 판에 적은 뒤 '요청을 거절당했어요(400)' 고침 — 빈칸뿐인 글 블록을 안 보내고,
+        도구 다음 차례에 400이 나면 검색 블록·인용·빈 글을 걷어내고 검색 없이 한 번 더. 그래도 안 되면 서버 이유를 말풍선에 보여줌. */
+const APP_VERSION = 'v0.7.1';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1395,7 +1397,7 @@ async function aiRound(st, onText, stopSignal){
           const b = cur[d.index]; if (!b) continue;
           if (b.type === 'tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'tool_use', id:b.id, name:b.name, input }); calls.push({ id:b.id, name:b.name, args:input }); }
           else if (b.type === 'server_tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'server_tool_use', id:b.id, name:b.name, input }); if (st.onSearch) st.onSearch(input.query || ''); }
-          else if (b.type === 'text' && b.text) blocks.push({ type:'text', text:b.text, ...(b.cites.length ? { citations:b.cites } : {}) });
+          else if (b.type === 'text' && b.text && b.text.trim()) blocks.push({ type:'text', text:b.text, ...(b.cites.length ? { citations:b.cites } : {}) });
         }
         else if (d.type === 'message_delta'){
           if (d.usage && d.usage.output_tokens) outTok = d.usage.output_tokens;
@@ -1454,6 +1456,16 @@ async function aiRound(st, onText, stopSignal){
     try{ if (inTok || outTok) await addUsage(model, inTok, outTok); if (searches) await addSearch(p, searches); await logCall(rec); }catch(e){}
   }
 }
+/* 다시 보낼 대화에서 서버 검색 블록(짝 맞는 것 통째로)·인용·빈 글 블록을 걷어낸다 */
+function healMsgs(msgs){
+  return msgs.map(m => {
+    if (!Array.isArray(m.content)) return m;
+    const c = m.content.filter(b => b.type !== 'server_tool_use' && !/_tool_result$/.test(b.type) || b.type === 'tool_result')
+      .filter(b => b.type !== 'text' || (b.text && b.text.trim()))
+      .map(b => b.type === 'text' ? { type:'text', text:b.text } : b);
+    return { ...m, content:c.length ? c : [{ type:'text', text:'(계속)' }] };
+  }).filter((m, i, a) => !(m.role === 'assistant' && i === a.length - 1 && m.content.every(b => b.type === 'text' && b.text === '(계속)')));
+}
 /* 한 차례 대화: 도구를 부르면 판에 적고, 결과를 돌려주고, 다시 묻는다(최대 8번) */
 async function aiTurn(history, onText, stopSignal, opts){
   const p = AI.cfg.provider;
@@ -1464,10 +1476,16 @@ async function aiTurn(history, onText, stopSignal, opts){
   let said = '', last = null; const srcs = [];
   for (let round = 0; round < 8; round++){
     const before = said;
-    let r, tries = 0;
+    let r, tries = 0, healed = false;
     for (;;){
       try{ r = await aiRound(st, t => { if (onText) onText(before + t); }, stopSignal); break; }
       catch(e){
+        /* 도구 쓴 뒤 400 — 주고받은 블록 중 하나가 거절된 것. 검색 블록·빈 글을 걷어내고 검색 없이 한 번 더 */
+        if (e.code === 400 && round > 0 && !healed && !(e.partial && e.partial.trim())){
+          healed = true; st.web = false; AI.noWeb = true; st.healed = (e.raw || '').slice(0, 120);
+          st.msgs = healMsgs(st.msgs);
+          continue;
+        }
         /* 분당 한도면 알려준 만큼(최대 60초) 기다렸다가 다시 — 두 번까지. 하루 한도는 기다려도 소용없다 */
         if (e.code === 429 && e.kind !== 'day' && tries < 2 && (e.retryMs || 0) <= 60000 && !(e.partial && e.partial.trim())){
           tries++; const wait = Math.max(e.retryMs || 15000, 3000);
@@ -1926,7 +1944,7 @@ async function sendSay(){
       if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
       if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
       else if (err.code === 422) { O.log.push({ who:'s', text:err.message, face:5, at:Date.now(), err:true }); setFace(5); }
-      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message, face:5, at:Date.now(), err:true }); setFace(5); }
+      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message + (err.code === 400 && err.raw ? ` — 서버 말: ${err.raw.slice(0, 160)}` : ''), face:5, at:Date.now(), err:true }); setFace(5); }
     }finally{ clearInterval(tick); O.live = null; O.abort = null; }
   } else {
     await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
