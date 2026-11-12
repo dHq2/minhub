@@ -381,8 +381,10 @@
         로딩 화면 — 보스 그림 위 점 세 개가 깜빡이고, 아래에 실제로 하는 일(저장소·판·그림·머리 확인).
         공유하기를 POST 로 바꿔 사진·파일도 받음(글만 공유하던 예전 방식도 그대로 받음).
    v0.7.1 (2026-11-12) 판에 적은 뒤 '요청을 거절당했어요(400)' 고침 — 빈칸뿐인 글 블록을 안 보내고,
-        도구 다음 차례에 400이 나면 검색 블록·인용·빈 글을 걷어내고 검색 없이 한 번 더. 그래도 안 되면 서버 이유를 말풍선에 보여줌. */
-const APP_VERSION = 'v0.7.1';
+        도구 다음 차례에 400이 나면 검색 블록·인용·빈 글을 걷어내고 검색 없이 한 번 더. 그래도 안 되면 서버 이유를 말풍선에 보여줌.
+   v0.7.2 (2026-11-12) 나가 있어도 — 긴 글·캡처 정리를 '일'로 저장(묶음 하나 읽을 때마다). 앱이 얼었다 깨면 끊긴 요청을 다시,
+        폰이 앱을 내렸으면 다음에 열 때 읽던 데부터 이어서. 폰 위 알림으로 진행 상황·끝난 결과. 설정에 '작업 알림'. */
+const APP_VERSION = 'v0.7.2';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -693,6 +695,8 @@ function settingsSheet(){
     <p class="note" style="margin:4px 0 0">켜면 세희가 오늘 판을 늘 보고, 필요하면 지난 판도 직접 찾아봐요. 끄면 자기가 적은 것만 알아요.</p>
     <div class="row" style="margin-top:6px"><span class="note">웹 검색</span><button class="chip ${webOn() ? 'on' : ''}" data-sact="web" data-v="1">켬</button><button class="chip ${webOn() ? '' : 'on'}" data-sact="web" data-v="0">끔</button></div>
     <p class="note" style="margin:4px 0 0">날씨·영업시간·뉴스·가격처럼 바깥 정보를 물을 때만 세희가 찾아봐요. 출처는 말풍선 아래에 달려요. ${AI.cfg.provider === 'anthropic' ? 'Claude는 검색 1번에 $0.01(약 14원)이 따로 붙어요.' : 'Gemini는 구글 검색으로 찾아요.'}${AI.noWeb ? ' ⚠ 방금 검색이 거절됐어요(콘솔에서 웹 검색이 꺼져 있거나 이 모델이 못 써요).' : ''}</p>
+    <div class="row" style="margin-top:6px" id="ntInfo"><span class="note">작업 알림</span>${!('Notification' in window) ? '<span class="note">이 폰에선 못 써요</span>' : Notification.permission === 'granted' ? '<span class="note">켜짐 ✓</span>' : Notification.permission === 'denied' ? '<span class="note">막혀 있어요 — 폰 설정 → 앱 → 세희 → 알림에서 허용</span>' : '<button class="chip" data-sact="notify">알림 켜기</button>'}</div>
+    <p class="note" style="margin:4px 0 0">긴 글·캡처 정리 중에 앱을 나가면 폰 위에 진행 상황이, 끝나면 결과가 떠요. 앱을 완전히 닫거나 폰이 앱을 내리면 멈추지만, 다시 열면 읽던 데부터 이어서 해요.</p>
     <div class="row" style="margin-top:6px"><button class="chip" data-sact="aitest">연결 시험</button>${aiKey() ? '<button class="chip danger" data-sact="delkey">키 지우기</button>' : ''}</div>
     <p class="note" id="aiNote">${usageLine()}</p>
     <label class="t">연결 기록 — 최근 대화가 어떻게 오갔는지(내용·키는 안 남겨요)</label>
@@ -745,6 +749,7 @@ $('sheet').addEventListener('click', async e => {
     return;
   }
   else if (a === 'clearlog'){ await kvSet('ailog', []); fillAiLog(); return; }
+  else if (a === 'notify'){ askNotify(); return; }
   else if (a === 'web'){ AI.cfg.web = AI.cfg.web || {}; AI.cfg.web[AI.cfg.provider] = b.dataset.v === '1'; AI.noWeb = false; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'sendpan'){ AI.cfg.sendPan[AI.cfg.provider] = b.dataset.v === '1'; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'prov'){ AI.cfg.provider = b.dataset.v; await saveAi(); refreshBrain(); settingsSheet(); return; }
@@ -1654,7 +1659,9 @@ async function visionCall(tiles, signal, onLen){
 }
 const isCut = f => /max_tokens|MAX_TOKENS/.test(f || '');
 async function readBatch(tiles, signal, onLen){
+  let frozen = 0;
   for (let attempt = 0; ; attempt++){
+    const h0 = PG.hides;
     try{
       const r = await visionCall(tiles, signal, onLen);
       if (isCut(r.finish) && tiles.length > 1){
@@ -1664,6 +1671,8 @@ async function readBatch(tiles, signal, onLen){
       return r.text + (isCut(r.finish) ? '\n[잘림 — 이 조각은 말이 너무 많아요]' : '');
     }catch(e){
       if (e.code === -2) throw e;
+      /* 앱이 뒤로 가서 얼었다 깨며 끊긴 것 — 실패로 안 세고, 화면이 보이면 다시 */
+      if ([0, -1].includes(e.code) && (PG.hides !== h0 || document.hidden) && frozen < 4){ frozen++; attempt--; await waitVisible(); continue; }
       const again = [0, -1, 429, 500, 502, 503, 504, 529].includes(e.code) && e.kind !== 'day' && !e.billing;
       if (again && attempt < 2){ await sleepFor(Math.min(Math.max(e.retryMs || 0, 4000 * (attempt + 1)), 30000), signal); continue; }
       if (!again || e.kind === 'day') throw e;   /* 키·크레딧·하루 한도 — 다른 조각도 똑같이 안 된다 */
@@ -1693,7 +1702,18 @@ function joinParts(parts){
   }
   return out.join('\n');
 }
-async function decodeImages(files, signal, onP){
+/* ── 오래 걸리는 일 (v0.7.2) — 긴 글 정리·캡처 해독 ──
+   폰이 앱을 뒤로 보내면 크롬이 화면을 얼리거나 아예 내려버릴 수 있다. 그래서
+   ① 한 묶음 읽을 때마다 진행 상황을 저장해 두고(kv 'job'), 앱이 다시 열리면 남은 것부터 이어서 하고,
+   ② 얼어 있다 깨어나서 끊긴 요청은 실패로 세지 않고 다시 보내고,
+   ③ 폰 위 알림으로 진행 상황과 끝난 걸 알려준다. */
+const PG = { hides:0 };
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden){ PG.hides++; if (JOB.cur) jobNotify(false); }
+  else if (JOB.cur) closeJobNote();
+});
+const waitVisible = () => document.hidden ? new Promise(r => { const f = () => { if (!document.hidden){ document.removeEventListener('visibilitychange', f); r(); } }; document.addEventListener('visibilitychange', f); }) : Promise.resolve();
+async function cutTiles(files, signal, onP){
   const tiles = [];
   for (let fi = 0; fi < files.length; fi++){
     onP({ step:`사진 자르는 중 ${fi + 1}/${files.length}` });
@@ -1708,20 +1728,123 @@ async function decodeImages(files, signal, onP){
       }
     }finally{ pic.done(); }
   }
-  const batches = [];
+  return tiles;
+}
+/* job.out[묶음] 에 읽은 글이 쌓인다. 이미 읽은 묶음은 건너뛴다 */
+async function readTiles(job, signal, onP){
+  const tiles = job.tiles, batches = [];
   for (let i = 0; i < tiles.length; i += TILE.per) batches.push(tiles.slice(i, i + TILE.per));
-  const out = new Array(batches.length), lens = new Array(batches.length).fill(0);
-  let done = 0, next = 0;
-  onP({ step:'읽는 중', done:0, total:tiles.length, chars:0 });
-  await Promise.all([...Array(Math.min(TILE.lanes, batches.length))].map(async () => {
-    while (next < batches.length){
-      const bi = next++;
-      out[bi] = await readBatch(batches[bi], signal, n => { lens[bi] = n; onP({ chars:lens.reduce((a, b) => a + b, 0) }); });
+  job.out = job.out || [];
+  const lens = new Array(batches.length).fill(0);
+  let done = batches.reduce((a, b, i) => a + (job.out[i] !== undefined && job.out[i] !== null ? b.length : 0), 0);
+  const todo = batches.map((_, i) => i).filter(i => job.out[i] === undefined || job.out[i] === null);
+  onP({ step:'읽는 중', done, total:tiles.length, chars:0 });
+  let k = 0;
+  await Promise.all([...Array(Math.min(TILE.lanes, todo.length))].map(async () => {
+    while (k < todo.length){
+      const bi = todo[k++];
+      job.out[bi] = await readBatch(batches[bi], signal, n => { lens[bi] = n; onP({ chars:lens.reduce((a, b) => a + b, 0) }); });
       done += batches[bi].length; onP({ done });
+      await kvSet('job', job);   /* 여기서 앱이 내려가도 다음에 이어서 */
     }
   }));
-  const text = joinParts(out);
+  const text = joinParts(job.out);
   return { text, tiles:tiles.length, lines:text ? text.split('\n').length : 0, failed:(text.match(/\[⚠ 사진/g) || []).length };
+}
+
+/* ── 폰 위 알림 ── */
+const JOB = { cur:null, lastNote:0 };
+const notifyOk = () => 'Notification' in window && Notification.permission === 'granted' && 'serviceWorker' in navigator;
+function askNotify(){ try{ if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().then(() => { if ($('ntInfo')) settingsSheet(); }); }catch(e){} }
+function jobLine(){
+  const L = O.live; if (!L) return '세희가 일하는 중';
+  if (L.ocr){ const o = L.ocr; return o.step === '읽는 중' ? `캡처 읽는 중 · 조각 ${o.done || 0}/${o.total || 0}` : (o.step || '캡처 준비 중'); }
+  return L.text ? '정리한 걸 판에 적는 중' : (L.big ? '긴 글 정리 중' : '생각 중');
+}
+async function jobNotify(final, body){
+  if (!notifyOk()) return;
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(final ? '세희 · 끝났어요' : '세희 · 일하는 중', {
+      body:body || jobLine() + ' — 앱을 닫지 말고 두면 계속해요', tag:'sehee-job', icon:'icon-192.png', badge:'icon-192.png',
+      renotify:!!final, silent:!final, data:{ url:'./#office' } });
+  }catch(e){}
+}
+async function closeJobNote(){ if (!notifyOk()) return; try{ const reg = await navigator.serviceWorker.ready; (await reg.getNotifications({ tag:'sehee-job' })).forEach(n => n.close()); }catch(e){} }
+function jobProgress(){ if (!document.hidden || !JOB.cur) return; const now = Date.now(); if (now - JOB.lastNote < 4000) return; JOB.lastNote = now; jobNotify(false); }
+
+/* 긴 일 하나를 처음부터(또는 저장된 데서부터) 끝까지 — 사진 읽기 → 세희 정리 */
+async function runJob(job, um){
+  JOB.cur = job; const long = true;
+  O.busy = true; growSay(); setFace(2);
+  O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:bigModel(), waitUntil:0 };
+  renderLog();
+  const showWait = () => { const w = $('waitTxt'); if (w) w.textContent = waitText(); jobProgress(); };
+  const tick = setInterval(showWait, 1000);
+  const acts0 = O.log.filter(m => m.who === 'a').length;
+  const work = async () => {
+    try{
+      if (job.stage === 'read'){
+        O.live.ocr = { step:'읽는 중', done:0, total:job.tiles.length, chars:0 }; renderLog();
+        const tr = await readTiles(job, O.abort.signal, pr => { if (O.live && O.live.ocr){ Object.assign(O.live.ocr, pr); showWait(); } });
+        um.ocr = tr.text; um.ocrMeta = { tiles:tr.tiles, lines:tr.lines, failed:tr.failed };
+        O.live.ocr = null; O.live.t0 = Date.now(); renderLog(); await saveLog();
+        if (!tr.text.trim()) throw Object.assign(new AIError(422, ''), { message:'캡처에서 글자를 못 찾았어요. 더 선명한 캡처로 다시 보내 주세요' });
+        job.stage = 'organize'; job.tiles = null; job.out = null; await kvSet('job', job);
+      }
+      let r, again = 0;
+      for (;;){
+        const h0 = PG.hides;
+        try{
+          r = await aiTurn(toMessages(O.log), t => {
+            O.live.text = t; O.live.search = '';
+            if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
+            updateLive();
+          }, O.abort.signal, { big:long,
+            onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; showWait(); },
+            onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
+          break;
+        }catch(e){
+          /* 뒤로 가 있는 동안 얼어서 끊긴 거면 — 화면이 다시 보일 때 처음부터 한 번 더(판은 이미 보고 있으니 중복은 피한다) */
+          if ([0, -1].includes(e.code) && (PG.hides !== h0 || document.hidden) && again < 2 && !(e.partial && e.partial.trim())){
+            again++; await waitVisible(); O.live.t0 = Date.now(); O.live.text = ''; renderLog(); continue;
+          }
+          throw e;
+        }
+      }
+      const pf = parseFace(r.text);
+      if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
+      seheeSays(pf, r.sources);
+      const acts = O.log.filter(m => m.who === 'a').length - acts0;
+      if (document.hidden) jobNotify(true, (acts ? `판에 ${acts}개 적었어요. ` : '') + pf.t.slice(0, 80)); else closeJobNote();
+    }catch(err){
+      if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
+      if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
+      else if (err.code === 422) { O.log.push({ who:'s', text:err.message, face:5, at:Date.now(), err:true }); setFace(5); }
+      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message + (err.code === 400 && err.raw ? ` — 서버 말: ${err.raw.slice(0, 160)}` : ''), face:5, at:Date.now(), err:true }); setFace(5); }
+      if (document.hidden) jobNotify(true, err.code === -2 ? '그만뒀어요.' : '하다가 막혔어요 — 앱에서 이유를 볼 수 있어요.'); else closeJobNote();
+    }finally{
+      clearInterval(tick); O.live = null; O.abort = null; JOB.cur = null;
+      await kvSet('job', null);
+      O.busy = false; renderLog(); growSay(); saveLog();
+    }
+  };
+  /* 잠금을 쥐고 있으면 크롬이 화면을 덜 얼린다(안 되는 폰이면 그냥 한다) */
+  if (navigator.locks && navigator.locks.request) await navigator.locks.request('sehee-job', work).catch(work);
+  else await work();
+}
+/* 앱이 다시 열렸을 때 — 하다 만 일이 있으면 이어서 */
+async function resumeJob(){
+  if (O.busy || !aiReady()) return;
+  const job = await kvGet('job'); if (!job) return;
+  if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; }
+  const um = O.log.find(m => m.who === 'u' && m.at === job.msgAt);
+  const answered = um && O.log.some(m => m.who === 's' && m.at > job.msgAt && !m.hint);
+  if (!um || answered || Date.now() - job.at > 6 * 3600e3 || (job.stage === 'read' && !(job.tiles && job.tiles.length))){ await kvSet('job', null); return; }
+  if (!document.body.classList.contains('office')) location.hash = 'office';
+  O.log.push({ who:'s', text:`⏳ 아까 ${job.stage === 'read' ? '캡처 읽던 것' : '정리하던 것'}을 이어서 할게요.`, face:2, at:Date.now(), hint:true });
+  renderLog();
+  await runJob(job, um);
 }
 
 /* ── 첨부 (사진·글 파일) — 📎, 붙여넣기, 공유하기로 들어온다 ── */
@@ -1914,28 +2037,37 @@ async function sendSay(){
   const um = { who:'u', text:v, at:Date.now() };
   if (imgs.length){ um.pics = imgs.length; O.thumbs[um.at] = imgs.map(a => a.url); }
   if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => clipDoc(t.text)).join('\n\n'); }
+  const heavy = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
+  if (heavy && aiReady()) askNotify();   /* 누른 순간에 물어야 폰이 허락 창을 띄워준다 */
   O.log.push(um); ta.value = '';
-  O.busy = true; growSay(); setFace(2); renderLog(); saveLog();
+  O.busy = true; growSay(); setFace(2); renderLog(); await saveLog();
+  if (aiReady() && heavy){
+    const job = { at:Date.now(), msgAt:um.at, stage:imgs.length ? 'read' : 'organize' };
+    if (imgs.length){
+      O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), ocr:{ step:'사진 여는 중', done:0, total:0, chars:0 } }; renderLog();
+      try{
+        job.tiles = await cutTiles(imgs.map(a => a.file), O.abort.signal, pr => { if (O.live && O.live.ocr){ Object.assign(O.live.ocr, pr); const w = $('waitTxt'); if (w) w.textContent = waitText(); } });
+      }catch(err){
+        O.log.push({ who:'s', text:err.code === -2 ? '네, 그만둘게요.' : '사진을 못 열었어요. ' + err.message, face:5, at:Date.now(), err:err.code !== -2 }); setFace(5);
+        O.live = null; O.abort = null; O.busy = false; renderLog(); growSay(); saveLog(); return;
+      }
+      O.live = null; O.abort = null;
+    }
+    await kvSet('job', job);
+    await runJob(job, um);
+    return;
+  }
   if (aiReady()){
-    const long = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
-    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:long ? bigModel() : null, waitUntil:0 };
+    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:null, waitUntil:0 };
     renderLog();
     const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
-    const showWait = () => { const w = $('waitTxt'); if (w) w.textContent = waitText(); };
     try{
-      if (imgs.length){
-        O.live.ocr = { step:'사진 여는 중', done:0, total:0, chars:0 }; renderLog();
-        const tr = await decodeImages(imgs.map(a => a.file), O.abort.signal, pr => { if (O.live && O.live.ocr){ Object.assign(O.live.ocr, pr); showWait(); } });
-        um.ocr = tr.text; um.ocrMeta = { tiles:tr.tiles, lines:tr.lines, failed:tr.failed };
-        O.live.ocr = null; O.live.t0 = Date.now(); renderLog(); saveLog();
-        if (!tr.text.trim()) throw Object.assign(new AIError(422, ''), { message:'캡처에서 글자를 못 찾았어요. 더 선명한 캡처로 다시 보내 주세요' });
-      }
       const r = await aiTurn(toMessages(O.log), t => {
         O.live.text = t; O.live.search = '';
         if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
-      }, O.abort.signal, { big:long,
-        onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; showWait(); },
+      }, O.abort.signal, { big:false,
+        onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
         onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
       const pf = parseFace(r.text);
       if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
@@ -1943,7 +2075,6 @@ async function sendSay(){
     }catch(err){
       if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
       if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
-      else if (err.code === 422) { O.log.push({ who:'s', text:err.message, face:5, at:Date.now(), err:true }); setFace(5); }
       else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message + (err.code === 400 && err.raw ? ` — 서버 말: ${err.raw.slice(0, 160)}` : ''), face:5, at:Date.now(), err:true }); setFace(5); }
     }finally{ clearInterval(tick); O.live = null; O.abort = null; }
   } else {
@@ -2089,6 +2220,7 @@ const SWIPE = { anim:'' };
     }
     if (location.hash === '#office') showView('office');
     spStep('준비 끝 · ' + brain);
+    setTimeout(() => resumeJob().catch(() => {}), 1200);
   }catch(e){
     SP.hold = 1500; spStep('여는 중 문제가 생겼어요: ' + (e && e.message || e));
   }finally{ spDone(); }

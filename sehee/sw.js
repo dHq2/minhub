@@ -1,7 +1,7 @@
 /* 세희 깡통 — 앱 껍데기를 폰에 담아두는 일꾼.
    VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 대기시키고, 화면에 「새 버전」 띠가 뜬다.
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v0.7.1';
+const VERSION = 'v0.7.2';
 const CACHE = 'sehee-' + VERSION;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
@@ -53,4 +53,14 @@ self.addEventListener('fetch', e => {
     return;
   }
   e.respondWith(caches.match(req, { ignoreSearch: true }).then(r => r || fetch(req)));
+});
+
+/* 알림을 누르면 열린 세희로, 없으면 새로 (v0.7.2) */
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './#office', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type:'window', includeUncontrolled:true }).then(list => {
+    for (const c of list){ if (c.url.startsWith(self.registration.scope)) return c.focus(); }   /* 하던 일이 끊기지 않게 새로 고치지 않는다 */
+    return self.clients.openWindow(url);
+  }));
 });
