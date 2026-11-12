@@ -20,7 +20,7 @@
     "enctype": "multipart/form-data",
     "params": {
       "title": "title", "text": "text", "url": "url",
-      "files": [ { "name": "files", "accept": ["image/*", "text/plain", ".txt"] } ]
+      "files": [ { "name": "files", "accept": ["image/*", "text/*", "application/pdf", "application/*", ".txt", ".pdf", ".docx", ".xlsx", ".pptx", ".hwp", ".hwpx", ".csv", ".md"] } ]
     }
   }
 }
