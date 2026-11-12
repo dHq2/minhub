@@ -175,9 +175,21 @@
   .msg.s.last::before,.msg.s.last::after{content:"";position:absolute;left:34px;top:100%;border:10px solid transparent;border-top-color:#2b3a55;border-bottom:0}
   .msg.s.last::after{left:36px;border-width:8px;border-top-color:#fdfcf8;margin-top:-1px}
   .msg.s:not(.last)::after{content:"";position:absolute;left:-7px;bottom:10px;border:7px solid transparent;border-right-color:#2b3a55;border-left:0}
-  .dots{display:flex;gap:5px;padding:13px 16px}
-  .dots span{width:7px;height:7px;border-radius:50%;background:#2b3a55;opacity:.3;animation:blink 1s infinite}
-  .dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+  .msg.wait{display:flex;align-items:center;gap:9px;padding:10px 12px}
+  .wait i{display:flex;gap:4px}
+  .wait i span{width:7px;height:7px;border-radius:50%;background:#2b3a55;opacity:.3;animation:blink 1s infinite}
+  .wait i span:nth-child(2){animation-delay:.2s}.wait i span:nth-child(3){animation-delay:.4s}
+  .wait small{font-size:.72rem;color:var(--ink-soft)}
+  .wait .stop{border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:.72rem;padding:3px 9px;cursor:pointer;color:var(--red)}
+  .msg.live{opacity:.92}
+  .act{align-self:center;max-width:92%;font-size:.74rem;line-height:1.45;color:#33472d;background:rgba(231,236,221,.92);border:1px solid var(--green);
+    border-radius:12px;padding:5px 11px;text-align:center}
+  .act button{border:none;background:none;color:var(--blue);font-size:.72rem;padding:0 0 0 4px;cursor:pointer}
+  .act.undone{color:var(--done);border-color:var(--line);background:rgba(255,255,255,.5);text-decoration:line-through}
+  .due{font-size:.72rem;color:#3a6b64;font-weight:600}
+  .due.now{color:var(--red)} .due.past{color:var(--done);font-weight:400}
+  .ailog{font:500 .7rem/1.6 ui-monospace,Consolas,monospace;color:var(--ink-soft);background:rgba(255,255,255,.55);border:1px solid var(--line);
+    border-radius:4px;padding:6px 8px;white-space:pre-wrap;word-break:break-all;max-height:12em;overflow:auto;margin:6px 0}
   @keyframes blink{50%{opacity:1}}
   .scene{flex:0 0 auto;height:min(200px,30dvh);line-height:0;transition:height .2s}
   .scene{overflow:hidden}
@@ -310,8 +322,14 @@
    v0.3 (2026-11-12) 세희 머리 연결 — 사용자 API 키(Claude 또는 Gemini)로 폰에서 바로 대화. 서버 없음.
         세희는 오늘 판(안 끝난 일·받은 것·끝낸 일)을 읽고 대답하고, 답 앞 표정 태그로 얼굴이 바뀐다.
         키는 이 폰의 kv 'ai' 에만(백업 제외). 월 사용 토큰·추정 금액 표시. 키가 없으면 v0.2 자동응답.
-        '판 같이 보내기' 스위치 — Claude 기본 켬, Gemini 기본 끔(무료 키에 개인정보가 가지 않게). */
-const APP_VERSION = 'v0.3';
+        '판 같이 보내기' 스위치 — Claude 기본 켬, Gemini 기본 끔(무료 키에 개인정보가 가지 않게).
+   v0.4 (2026-11-12) 무한로딩 대책. 글자가 오는 대로 말풍선에 뜬다(스트리밍). 기다리는 동안 초를 세고 「그만」 단추.
+        45초 동안 대답이 없거나 40초 동안 글자가 멈추면 끊는다. 오류는 한국어 이유(키·한도·서버·인터넷)로 보여준다.
+        Gemini 3 계열은 '조금만 생각(low)'으로 불러 빨라지게. 설정에 연결 기록(첫 글자·전체 시간·토큰·오류) + 기록 복사.
+   v0.5 (2026-11-12) 세희가 대화하면서 오늘 판에 직접 적는다(도구 호출: 적기·고치기·끝냄·지우기·받은 것 담기).
+        약속은 '다가오는 일정'에 날짜와 함께 먼저 적고, 시각을 모르면 비워둔 채 한 번만 묻는다. 지금 시각과 8일치 달력을 매번 같이 보낸다.
+        판 작업은 대화에 📌 줄로 보이고 하나씩 되돌릴 수 있다. 판 항목에 📅 날짜·시각, '세희가 적음' 표시. */
+const APP_VERSION = 'v0.5';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -484,7 +502,7 @@ function itemRow(it){
   return `<div class="it ${it.done ? 'done' : ''}" data-id="${it.id}">
     <button class="ck" data-act="toggle" aria-label="끝냄">${it.done ? '✓' : ''}</button>
     <div class="body"><div class="tx" data-act="edit">${esc(it.text)}</div>
-      <div class="meta">${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}</div></div>
+      <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
 }
@@ -545,6 +563,7 @@ function itemMenu(id){
     <div class="row" style="margin-top:6px"><input class="free" id="freeTag" placeholder="직접 쓰기 (예: 3시, 금요일까지)" value="${isFree ? esc(it.tag) : ''}"><button class="chip" data-mact="freetag">달기</button></div>
     <label class="t">다른 칸으로</label>
     <div class="row">${secs().filter(s => s.id !== it.sec).map(s => `<button class="chip" data-mact="move" data-v="${s.id}"><span class="dot" style="background:${s.color}"></span>${esc(s.label)}</button>`).join('')}</div>
+    ${it.due ? `<p class="note" style="margin:10px 0 0">📅 ${esc(dueText(it))} <button class="chip" data-mact="nodue">날짜 지우기</button></p>` : ''}
     <hr class="s">
     <div class="row"><button class="chip danger" data-mact="del">지우기</button>${it.since ? `<span class="note" style="margin-left:auto">${esc(dayLabel(it.since))}부터</span>` : ''}</div>`);
   $('sheet').dataset.item = id;
@@ -555,6 +574,7 @@ $('sheet').addEventListener('click', e => {
   const it = findItem($('sheet').dataset.item); if (!it) return closeSheet();
   const a = b.dataset.mact;
   if (a === 'tag'){ it.tag = b.dataset.v || null; }
+  else if (a === 'nodue'){ it.due = null; it.time = null; }
   else if (a === 'freetag'){ const v = $('freeTag').value.trim(); it.tag = v || null; }
   else if (a === 'move'){ const snap = snapshot(); it.sec = b.dataset.v; touch(true); closeSheet(); render(); toast(`'${secById(b.dataset.v).label}'(으)로 옮겼어요`, () => restore(snap)); return; }
   else if (a === 'del'){ const snap = snapshot(); S.pan.items = S.pan.items.filter(x => x !== it); touch(true); closeSheet(); render(); toast('지웠어요', () => restore(snap)); return; }
@@ -587,6 +607,7 @@ async function receive(parts){
 /* ── 설정 ── */
 function settingsSheet(){
   const st = S.settings;
+  setTimeout(fillAiLog, 0);
   openSheet(`<h4>설정</h4>
     <label class="t">칸 — 이름을 고치고, 점을 눌러 색을 바꿔요</label>
     <div id="secList">${secs().map((s,i) => `<div class="srow" data-sid="${s.id}">
@@ -616,6 +637,9 @@ function settingsSheet(){
     <p class="note" style="margin:4px 0 0">켜면 세희가 오늘 판(안 끝난 일·받은 것)을 읽고 대답해요. 끄면 판을 모른 채 대화만 해요.</p>
     <div class="row" style="margin-top:6px"><button class="chip" data-sact="aitest">연결 시험</button>${aiKey() ? '<button class="chip danger" data-sact="delkey">키 지우기</button>' : ''}</div>
     <p class="note" id="aiNote">${usageLine()}</p>
+    <label class="t">연결 기록 — 최근 대화가 어떻게 오갔는지(내용·키는 안 남겨요)</label>
+    <div class="ailog" id="aiLog">불러오는 중…</div>
+    <div class="row"><button class="chip" data-sact="copylog">기록 복사</button><button class="chip" data-sact="clearlog">기록 비우기</button></div>
     <p class="note">${AI.cfg.provider === 'gemini' ? '제미나이 무료 키에는 개인정보를 보내면 안 돼요(구글 약관). 결제를 연결한 키를 쓰세요. ' : ''}API 요금은 Claude 구독과 따로예요. 콘솔에서 월 사용 한도를 걸어두세요.</p>
     <hr class="s">
     <div class="row"><span class="note">세희 깡통 ${APP_VERSION}</span><button class="chip" data-sact="check" style="margin-left:auto">새 버전 확인</button></div>`);
@@ -656,6 +680,13 @@ $('sheet').addEventListener('click', async e => {
     $('impFile').click(); return;
   }
   else if (a === 'check'){ checkUpdate(true); return; }
+  else if (a === 'copylog'){
+    const txt = (await aiLogLines(30)).join('\n') || '기록 없음';
+    try{ await navigator.clipboard.writeText(`세희 ${APP_VERSION} 연결 기록\n` + txt); toast('기록을 복사했어요. 그대로 붙여넣어 보내주세요'); }
+    catch(e){ toast('복사가 안 돼요. 화면을 캡처해 주세요'); }
+    return;
+  }
+  else if (a === 'clearlog'){ await kvSet('ailog', []); fillAiLog(); return; }
   else if (a === 'sendpan'){ AI.cfg.sendPan[AI.cfg.provider] = b.dataset.v === '1'; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'prov'){ AI.cfg.provider = b.dataset.v; await saveAi(); refreshBrain(); settingsSheet(); return; }
   else if (a === 'savekey'){
@@ -675,8 +706,11 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'aitest'){
     if (!aiKey()){ $('aiNote').textContent = '키부터 저장해 주세요.'; return; }
     $('aiNote').textContent = '세희에게 물어보는 중…';
-    try{ const r = await aiCall([{ role:'user', content:'연결 시험이에요. 한 문장으로 인사해 주세요.' }]); $('aiNote').textContent = '연결됐어요 — ' + parseFace(r).t; }
-    catch(err){ $('aiNote').textContent = '연결 안 됨: ' + err.message; }
+    try{
+      const r = await aiStream([{ role:'user', content:'연결 시험이에요. 한 문장으로 인사해 주세요.' }]);
+      $('aiNote').textContent = `연결됐어요 (첫 글자 ${secs1(r.rec.firstMs)} · 전체 ${secs1(r.rec.ms)}) — ` + parseFace(r.text).t;
+    }catch(err){ $('aiNote').textContent = '연결 안 됨: ' + err.message; }
+    fillAiLog();
     return;
   }
   else if (a === 'delkey'){
@@ -881,35 +915,58 @@ function usageLine(){
   return `이번 달 ${row.calls}번 · 입력 ${n(row.in)} / 출력 ${n(row.out)} 토큰` + (row.usd ? ` · 약 $${row.usd.toFixed(4)}` : '') + (row.priced ? '' : ' (단가 모르는 모델은 금액에서 빠짐)');
 }
 
-/* 오늘 판을 세희가 읽을 수 있는 글로 */
+/* 오늘 판을 세희가 읽을 수 있는 글로 (항목마다 #id — 세희가 고칠 때 쓴다) */
+const mdDay = d => { const x = parseYmd(d); return `${x.getMonth() + 1}/${x.getDate()}(${WD[x.getDay()]})`; };
+const dueText = it => it.due ? mdDay(it.due) + (it.time ? ' ' + it.time : ' · 시간 미정') : '';
+const secName = id => (secById(id) || secs()[0]).label;
+function itemLine(it, date){
+  const age = it.since && it.since < date ? ` (${dayDiff(it.since, date) + 1}일째)` : '';
+  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}`;
+}
+async function todayPanRef(){ if (S.date === S.today && S.pan) return S.pan; return (await getPan(S.today)) || await makeToday(S.today); }
 async function panContext(){
-  const p = S.date === S.today && S.pan ? S.pan : await getPan(S.today);
-  if (!p) return '오늘 판은 아직 없어요.';
-  const name = id => (secById(id) || secs()[0]).label;
-  const age = it => it.since && it.since < p.date ? ` (${dayDiff(it.since, p.date) + 1}일째)` : '';
-  const open = p.items.filter(it => !it.done).map(it => `- [${name(it.sec)}] ${it.text}${it.tag ? ` (태그: ${it.tag})` : ''}${age(it)}`);
-  const done = p.items.filter(it => it.done).map(it => `- [${name(it.sec)}] ${it.text}`);
-  const inbox = (p.inbox || []).map(x => `- ${x.text.replace(/\n/g, ' / ')}`);
-  return [`안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
+  const p = await todayPanRef();
+  const open = p.items.filter(it => !it.done).map(it => itemLine(it, p.date));
+  const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}`);
+  const inbox = (p.inbox || []).map(x => `- #${x.id} ${x.text.replace(/\n/g, ' / ')}`);
+  return [`지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
           `오늘 끝낸 일:\n${done.join('\n') || '- 없음'}`, p.line ? `세희 한마디(판 위): ${p.line}` : ''].filter(Boolean).join('\n\n');
 }
+/* 판 보내기를 꺼도 — 이 대화에서 세희가 직접 다룬 항목만은 알려준다(보스가 말로 한 것뿐이라) */
+async function touchedContext(){
+  const p = await todayPanRef(), ids = [];
+  for (const m of O.log) if (m.who === 'a' && !m.undone){ const id = (m.act.after || m.act.before || {}).id; if (id && !ids.includes(id)) ids.push(id); }
+  const lines = ids.slice(-12).map(id => p.items.find(x => x.id === id)).filter(Boolean).map(it => itemLine(it, p.date));
+  return `판 전체는 보지 못한다(보스가 판 보내기를 꺼둠). 아래는 이 대화에서 세희가 직접 다룬 항목뿐이다.\n${lines.join('\n') || '- 아직 없음'}`;
+}
 async function systemPrompt(){
+  const now = new Date();
+  const cal = [...Array(8)].map((_, i) => { const d = new Date(now); d.setDate(d.getDate() + i);
+    return `${['오늘 ', '내일 ', '모레 '][i] || ''}${ymd(d)}(${WD[d.getDay()]})`; }).join(', ');
+  const todayLabel = (secById('today') || secs()[0]).label, schedLabel = (secById('sched') || secs()[1] || secs()[0]).label;
   return `너는 '강세희'다. 사용자의 개인 비서이고 사용자를 '보스'라고 부른다. 앱 '세희'의 사무실 책상에 앉아 말풍선으로 대화한다.
 말투: 존댓말. 짧고 건조하게, 대개 1~3문장. 과장·아부·이모지 없음. 가끔 무심한 농담. 모르는 건 모른다고 말한다.
-일: 보스가 넘긴 일과 판(날짜별 업무판)의 안 끝난 일을 챙긴다. 무엇이 남았는지, 무엇을 먼저 할지 짚는다.
-아직 판을 직접 고칠 손은 없다. 판에 적어야 할 게 있으면 "판의 '칸 이름'에 '내용'으로 적어두세요"처럼 그대로 옮겨 적을 수 있는 문장으로 제안한다.
 모든 답의 맨 앞에 표정 태그를 딱 하나 붙인다: [의심] [생각] [미소] [당황] [놀람] [삐침] 중 하나.
 
-오늘: ${dayLabel(S.today)}
-칸: ${secs().map(x => x.label).join(', ')}
+지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
+판 칸 (id = 이름): ${secs().map(x => `${x.id} = ${x.label}`).join(', ')}
 
-${sendPanOn() ? await panContext() : '판 내용은 이번 대화에 보내지 않았다(보스가 설정에서 꺼둠). 판에 대해 물으면 "판 보내기가 꺼져 있어서 판은 못 봐요"라고 짧게 말한다.'}`;
+판 다루기 (도구로 직접 적는다):
+- 보스가 할 일·약속·기억할 것을 말하면, 되묻기 전에 먼저 판에 적는다(add_item). 아는 만큼만 적고 모르는 건 비워둔다.
+- 날짜가 있는 약속·일정은 '${schedLabel}' 칸에 due(YYYY-MM-DD)를 넣어 적는다. 시각을 모르면 time 없이 적고, 대답 끝에 시각만 한 번 묻는다. 다른 건 캐묻지 않는다.
+- 보스가 시각·장소 같은 걸 알려주면 새로 적지 말고 그 항목을 update_item으로 고친다.
+- 오늘 안에 할 일은 '${todayLabel}' 칸. 퇴근 전까지면 tag '퇴근 전'.
+- 끝냈다고 하면 complete_item. 지우라고 분명히 말할 때만 delete_item. 받은 것을 칸에 담으라면 file_inbox.
+- 판에 적은 걸 말로 길게 되풀이하지 않는다. 앱이 적은 내용을 따로 보여준다. "적어뒀어요" 정도면 된다.
+- 항목 id는 아래 목록의 #id에서 #를 뺀 값이다.
+
+${sendPanOn() ? await panContext() : await touchedContext()}`;
 }
-/* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다 */
+/* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
 function toMessages(log){
   const out = [];
   for (const m of log.slice(-24)){
-    if (m.err || m.hint) continue;
+    if (m.err || m.hint || m.who === 'a') continue;
     const role = m.who === 'u' ? 'user' : 'assistant';
     const last = out[out.length - 1];
     if (last && last.role === role) last.content += '\n' + m.text; else out.push({ role, content:m.text });
@@ -917,24 +974,265 @@ function toMessages(log){
   while (out.length && out[0].role !== 'user') out.shift();
   return out;
 }
-async function aiCall(messages){
-  const p = AI.cfg.provider, key = aiKey(), model = aiModel(), system = await systemPrompt();
-  if (p === 'anthropic'){
-    const j = await fetchJson('https://api.anthropic.com/v1/messages', { method:'POST', headers:anthHeaders(key),
-      body:JSON.stringify({ model, max_tokens:700, system, messages }) });
-    await addUsage(model, (j.usage && j.usage.input_tokens) || 0, (j.usage && j.usage.output_tokens) || 0);
-    return (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n').trim();
-  }
-  const j = await fetchJson(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method:'POST', headers:{ 'content-type':'application/json', 'x-goog-api-key':key },
-    body:JSON.stringify({ systemInstruction:{ parts:[{ text:system }] },
-      contents:messages.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })),
-      generationConfig:{ maxOutputTokens:1024 } }) });
-  const um = j.usageMetadata || {};
-  await addUsage(model, um.promptTokenCount || 0, (um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0));
-  const parts = (((j.candidates || [])[0] || {}).content || {}).parts || [];
-  return parts.filter(x => x.text && !x.thought).map(x => x.text).join('').trim();
+
+/* ── 판 도구 (v0.5) — 세희가 대화하면서 오늘 판에 직접 적는다. 작업마다 대화에 표시 + 되돌리기 ── */
+function TOOL_DEFS(){
+  const ids = secs().map(x => x.id), idp = { type:'string', description:'항목 id (# 없이)' };
+  return [
+    { name:'add_item', description:'오늘 판에 새 항목을 적는다.', schema:{ type:'object', properties:{
+      section:{ type:'string', enum:ids, description:'칸 id' },
+      text:{ type:'string', description:'짧은 한 줄. 예: 친구와 저녁' },
+      due:{ type:'string', description:'날짜 YYYY-MM-DD. 날짜가 있는 일만' },
+      time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
+      tag:{ type:'string', description:"짧은 꼬리표. 예: '퇴근 전'. 없으면 넣지 않는다" } }, required:['section', 'text'] } },
+    { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
+      id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
+      tag:{ type:'string' }, section:{ type:'string', enum:ids } }, required:['id'] } },
+    { name:'complete_item', description:'항목을 끝냄으로 표시한다.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
+    { name:'delete_item', description:'항목을 지운다. 보스가 분명히 지우라고 할 때만.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
+    { name:'file_inbox', description:'받은 것 하나를 칸에 담는다.', schema:{ type:'object', properties:{
+      id:{ type:'string', description:'받은 것 id (# 없이)' }, section:{ type:'string', enum:ids },
+      text:{ type:'string', description:'다듬은 한 줄(선택)' }, due:{ type:'string' }, time:{ type:'string' } }, required:['id', 'section'] } },
+  ];
 }
+function gemSchema(x){
+  const o = {};
+  for (const [k, v] of Object.entries(x)){
+    if (k === 'type') o.type = String(v).toUpperCase();
+    else if (k === 'properties') o.properties = Object.fromEntries(Object.entries(v).map(([pk, pv]) => [pk, gemSchema(pv)]));
+    else o[k] = v;
+  }
+  if (o.enum) o.format = 'enum';
+  return o;
+}
+const normDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
+const normTime = v => { const m = typeof v === 'string' && v.match(/^(\d{1,2}):(\d{2})$/); return m && +m[1] < 24 && +m[2] < 60 ? pad(+m[1]) + ':' + m[2] : null; };
+const itemBrief = it => ({ id:it.id, section:secName(it.sec), text:it.text, due:it.due || null, time:it.time || null, tag:it.tag || null, done:!!it.done });
+async function commitToday(p){
+  p.updatedAt = Date.now();
+  if (S.pan === p) await flush(true); else { await putPan(p); S.dates = (await allDates()).sort(); }
+}
+function noteAction(kind, before, after, extra){
+  const it = after || before, dt = it && it.due ? ' · ' + dueText(it) : '';
+  const text = kind === 'add' ? `'${secName(it.sec)}'에 적었어요 — ${it.text}${dt}`
+    : kind === 'update' ? `고쳤어요 — ${it.text}${dt}`
+    : kind === 'complete' ? `끝냄 ✓ — ${it.text}`
+    : kind === 'delete' ? `지웠어요 — ${it.text}`
+    : `받은 것을 '${secName(it.sec)}'에 담았어요 — ${it.text}${dt}`;
+  O.log.push({ who:'a', text, at:Date.now(), act:{ kind, before, after, ...(extra || {}) } });
+  renderLog(); saveLog();
+}
+async function runTool(c){
+  const p = await todayPanRef(), a = c.args || {}, clean = v => String(v || '').replace(/^#/, '');
+  const find = id => p.items.find(x => x.id === clean(id));
+  try{
+    if (c.name === 'add_item'){
+      const text = String(a.text || '').trim(); if (!text) return { ok:false, error:'text가 비었음' };
+      const sec = secById(a.section) ? a.section : (a.due && secById('sched') ? 'sched' : secs()[0].id);
+      const it = { id:uid(), sec, text, tag:a.tag ? String(a.tag) : null, done:false, since:p.date, due:normDate(a.due), time:normTime(a.time), by:'sehee' };
+      p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
+      return { ok:true, item:itemBrief(it) };
+    }
+    if (c.name === 'update_item'){
+      const it = find(a.id); if (!it) return { ok:false, error:'그 id의 항목이 판에 없음' };
+      const before = { ...it };
+      if (a.text) it.text = String(a.text).trim();
+      if ('due' in a) it.due = normDate(a.due);
+      if ('time' in a) it.time = normTime(a.time);
+      if ('tag' in a) it.tag = a.tag ? String(a.tag) : null;
+      if (a.section && secById(a.section)) it.sec = a.section;
+      await commitToday(p); noteAction('update', before, { ...it });
+      return { ok:true, item:itemBrief(it) };
+    }
+    if (c.name === 'complete_item'){
+      const it = find(a.id); if (!it) return { ok:false, error:'그 id의 항목이 판에 없음' };
+      const before = { ...it }; it.done = true; it.doneAt = Date.now();
+      await commitToday(p); noteAction('complete', before, { ...it });
+      return { ok:true, item:itemBrief(it) };
+    }
+    if (c.name === 'delete_item'){
+      const it = find(a.id); if (!it) return { ok:false, error:'그 id의 항목이 판에 없음' };
+      const idx = p.items.indexOf(it); p.items.splice(idx, 1);
+      await commitToday(p); noteAction('delete', { ...it }, null, { idx });
+      return { ok:true };
+    }
+    if (c.name === 'file_inbox'){
+      const x = (p.inbox || []).find(v => v.id === clean(a.id)); if (!x) return { ok:false, error:'그 id의 받은 것이 없음' };
+      const sec = secById(a.section) ? a.section : secs()[0].id;
+      p.inbox = p.inbox.filter(v => v !== x);
+      const it = { id:uid(), sec, text:String(a.text || x.text).trim(), tag:null, done:false, since:p.date, due:normDate(a.due), time:normTime(a.time), by:'sehee' };
+      p.items.push(it); await commitToday(p); noteAction('file', null, { ...it }, { inboxItem:x });
+      return { ok:true, item:itemBrief(it) };
+    }
+    return { ok:false, error:'모르는 도구' };
+  }catch(e){ return { ok:false, error:e.message }; }
+}
+async function undoAction(i){
+  const m = O.log[i]; if (!m || m.who !== 'a' || m.undone) return;
+  const p = await todayPanRef(), a = m.act, at = id => p.items.findIndex(x => x.id === id);
+  if (a.kind === 'add' || a.kind === 'file'){ const k = at(a.after.id); if (k >= 0) p.items.splice(k, 1); if (a.kind === 'file' && a.inboxItem) (p.inbox = p.inbox || []).push(a.inboxItem); }
+  else if (a.kind === 'update' || a.kind === 'complete'){ const k = at(a.before.id); if (k >= 0) p.items[k] = { ...a.before }; }
+  else if (a.kind === 'delete'){ p.items.splice(Math.min(a.idx == null ? p.items.length : a.idx, p.items.length), 0, { ...a.before }); }
+  await commitToday(p); m.undone = true; renderLog(); saveLog(); toast('되돌렸어요');
+}
+
+/* ── 연결 (v0.4) — 글자가 오는 대로 보여준다(스트리밍). 멈추면 끊고, 왜 멈췄는지 한국어로 남긴다 ── */
+const secs1 = ms => ms == null ? '—' : (ms / 1000).toFixed(1) + '초';
+function friendly(code){
+  if (code === -2) return '그만두셨어요';
+  if (code === -1) return '대답이 너무 늦어서 끊었어요';
+  if (code === 0) return '인터넷이 끊겼거나 막혔어요';
+  if (code === 401 || code === 403) return '키가 틀렸거나 권한이 없어요';
+  if (code === 404) return '그 모델을 못 찾았어요';
+  if (code === 429) return '한도에 걸렸어요(무료 키는 분당·하루 횟수가 적어요). 잠시 후 다시 말 걸어 주세요';
+  if (code === 400) return '요청을 거절당했어요';
+  if (code >= 500) return 'AI 서버가 바빠요. 잠시 후 다시 말 걸어 주세요';
+  return '알 수 없는 오류예요';
+}
+class AIError extends Error{
+  constructor(code, raw){ super(friendly(code) + (raw ? ` (${code > 0 ? code : '연결'} · ${String(raw).slice(0, 140)})` : '')); this.code = code; this.raw = raw || ''; }
+}
+async function* sseEvents(resp, ctl, idleMs){
+  const reader = resp.body.getReader(), dec = new TextDecoder(); let buf = '';
+  for (;;){
+    let timer;
+    const idle = new Promise((_, rej) => { timer = setTimeout(() => { ctl.abort(); rej(new AIError(-1, `${idleMs / 1000}초 동안 글자가 안 왔어요`)); }, idleMs); });
+    let r;
+    try{ r = await Promise.race([reader.read(), idle]); }
+    catch(e){ if (e instanceof AIError) throw e; throw new AIError(ctl.signal.aborted ? -2 : 0, e.message); }
+    finally{ clearTimeout(timer); }
+    if (r.done) break;
+    buf += dec.decode(r.value, { stream:true }).replace(/\r\n/g, '\n');
+    let k;
+    while ((k = buf.indexOf('\n\n')) >= 0){
+      const block = buf.slice(0, k); buf = buf.slice(k + 2);
+      const data = block.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('\n');
+      if (data) yield data;
+    }
+  }
+  const rest = buf.split('\n').filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('\n');
+  if (rest) yield rest;
+}
+async function aiLogLines(n){
+  const l = ((await kvGet('ailog')) || []).slice(-n).reverse();
+  const d = t => { const x = new Date(t); return `${x.getMonth() + 1}/${x.getDate()} ${pad(x.getHours())}:${pad(x.getMinutes())}`; };
+  return l.map(r => `${d(r.at)} ${r.provider === 'anthropic' ? 'Claude' : 'Gemini'} ${shortModel(r.model)} · `
+    + (r.ok ? '성공' : `실패 ${r.code > 0 ? r.code : r.code === -2 ? '그만' : r.code === -1 ? '시간초과' : '연결'}`)
+    + ` · 첫 글자 ${secs1(r.firstMs)} · 전체 ${secs1(r.ms)} · 입력 ${r.in || 0}/출력 ${r.out || 0}`
+    + (r.finish ? ` · ${r.finish}` : '') + (r.tools ? ` · 판 작업: ${r.tools.join(', ')}` : '') + (r.retried ? ' · 생각설정 빼고 재시도' : '') + (r.partial ? ' · 중간에 끊김' : '')
+    + (r.err ? `\n   └ ${r.err}` : ''));
+}
+async function fillAiLog(){ const el = $('aiLog'); if (!el) return; const lines = await aiLogLines(6); el.textContent = lines.join('\n') || '아직 기록이 없어요.'; }
+async function logCall(rec){ const l = (await kvGet('ailog')) || []; l.push(rec); while (l.length > 40) l.shift(); await kvSet('ailog', l); }
+
+/* 한 번 주고받기. 도구 호출이 오면 calls 로 돌려준다 */
+async function aiRound(st, onText, stopSignal){
+  const { p, key, model } = st;
+  const t0 = performance.now(), rec = { at:Date.now(), provider:p, model, ok:false };
+  let tFirst = null, text = '', inTok = 0, outTok = 0, finish = '', sig = null;
+  const calls = [], blocks = [], fcParts = [];
+  const ctl = new AbortController();
+  if (stopSignal){ if (stopSignal.aborted) ctl.abort(); stopSignal.addEventListener('abort', () => ctl.abort()); }
+  const push = t => { if (!t) return; if (tFirst === null) tFirst = performance.now(); text += t; if (onText) onText(text); };
+  /* 머리글(첫 응답)이 45초 안에 안 오면 끊는다 */
+  const go = async (url, body, headers) => {
+    let late = false; const t = setTimeout(() => { late = true; ctl.abort(); }, 45000);
+    try{ return await fetch(url, { method:'POST', headers, body:JSON.stringify(body), signal:ctl.signal }); }
+    catch(e){ if (late) throw new AIError(-1, '45초 동안 대답이 없었어요'); if (ctl.signal.aborted) throw new AIError(-2, ''); throw new AIError(0, e.message); }
+    finally{ clearTimeout(t); }
+  };
+  const fail = async r => { let raw = ''; try{ raw = await r.text(); const j = JSON.parse(raw); raw = (j.error && (j.error.message || j.error.status)) || raw; }catch(e){} throw new AIError(r.status, raw.slice(0, 200)); };
+  try{
+    if (p === 'anthropic'){
+      const body = { model, max_tokens:900, system:st.system, messages:st.msgs, stream:true };
+      if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
+      const r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key));
+      if (!r.ok) await fail(r);
+      const cur = {};
+      for await (const data of sseEvents(r, ctl, 40000)){
+        let d; try{ d = JSON.parse(data); }catch(e){ continue; }
+        if (d.type === 'message_start') inTok = (d.message && d.message.usage && d.message.usage.input_tokens) || 0;
+        else if (d.type === 'content_block_start'){ const cb = d.content_block || {}; cur[d.index] = cb.type === 'tool_use' ? { type:'tool_use', id:cb.id, name:cb.name, json:'' } : { type:cb.type, text:'' }; }
+        else if (d.type === 'content_block_delta'){
+          const b = cur[d.index]; if (!b || !d.delta) continue;
+          if (d.delta.type === 'text_delta'){ b.text += d.delta.text; push(d.delta.text); }
+          else if (d.delta.type === 'input_json_delta') b.json += d.delta.partial_json || '';
+        }
+        else if (d.type === 'content_block_stop'){
+          const b = cur[d.index]; if (!b) continue;
+          if (b.type === 'tool_use'){ let input = {}; try{ input = b.json ? JSON.parse(b.json) : {}; }catch(e){} blocks.push({ type:'tool_use', id:b.id, name:b.name, input }); calls.push({ id:b.id, name:b.name, args:input }); }
+          else if (b.type === 'text' && b.text) blocks.push({ type:'text', text:b.text });
+        }
+        else if (d.type === 'message_delta'){ if (d.usage && d.usage.output_tokens) outTok = d.usage.output_tokens; if (d.delta && d.delta.stop_reason) finish = d.delta.stop_reason; }
+        else if (d.type === 'error') throw new AIError(529, (d.error && d.error.message) || '대답 도중 오류');
+      }
+    } else {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
+      const headers = { 'content-type':'application/json', 'x-goog-api-key':key };
+      const base = { systemInstruction:{ parts:[{ text:st.system }] }, contents:st.contents, generationConfig:{ maxOutputTokens:1024 } };
+      if (st.tools) base.tools = [{ functionDeclarations:TOOL_DEFS().map(t => ({ name:t.name, description:t.description, parameters:gemSchema(t.schema) })) }];
+      /* Gemini 3 계열은 기본으로 오래 생각한다 → 대화용으로 '조금만 생각'. 못 알아들으면 빼고 다시 */
+      const think = /gemini-3/.test(model);
+      let r = await go(url, think ? { ...base, generationConfig:{ ...base.generationConfig, thinkingConfig:{ thinkingLevel:'low' } } } : base, headers);
+      if (!r.ok && r.status === 400 && think){ rec.retried = true; r = await go(url, base, headers); }
+      if (!r.ok) await fail(r);
+      for await (const data of sseEvents(r, ctl, 40000)){
+        let d; try{ d = JSON.parse(data); }catch(e){ continue; }
+        if (d.error) throw new AIError(d.error.code || 500, d.error.message || '');
+        const c = (d.candidates || [])[0] || {};
+        for (const part of ((c.content || {}).parts || [])){
+          if (part.functionCall){ fcParts.push(part); calls.push({ id:part.functionCall.id, name:part.functionCall.name, args:part.functionCall.args || {} }); }
+          else if (part.text && !part.thought){ push(part.text); if (part.thoughtSignature) sig = part.thoughtSignature; }
+          else if (part.thoughtSignature && !part.text) sig = sig || part.thoughtSignature;
+        }
+        if (c.finishReason) finish = c.finishReason;
+        const um = d.usageMetadata; if (um){ inTok = um.promptTokenCount || inTok; outTok = ((um.candidatesTokenCount || 0) + (um.thoughtsTokenCount || 0)) || outTok; }
+      }
+    }
+    if (!text.trim() && !calls.length) throw new AIError(502, `빈 대답이 왔어요${finish ? ' (' + finish + ')' : ''}`);
+    rec.ok = true; if (calls.length) rec.tools = calls.map(x => x.name);
+    /* Gemini 에 다시 보낼 모델 차례 — 함수 호출 부분은 받은 그대로(생각 서명 포함) */
+    const modelParts = [...(text ? [{ text, ...(sig && !fcParts.length ? { thoughtSignature:sig } : {}) }] : []), ...fcParts];
+    return { text, calls, blocks, modelParts, finish, rec };
+  }catch(e){
+    const err = e instanceof AIError ? e : new AIError(0, e.message);
+    rec.code = err.code; rec.err = (err.raw || '').slice(0, 160); if (text) rec.partial = true;
+    err.partial = text;
+    throw err;
+  }finally{
+    rec.ms = Math.round(performance.now() - t0); rec.firstMs = tFirst === null ? null : Math.round(tFirst - t0);
+    rec.in = inTok; rec.out = outTok; rec.finish = finish;
+    try{ if (inTok || outTok) await addUsage(model, inTok, outTok); await logCall(rec); }catch(e){}
+  }
+}
+/* 한 차례 대화: 도구를 부르면 판에 적고, 결과를 돌려주고, 다시 묻는다(최대 4번) */
+async function aiTurn(history, onText, stopSignal, opts){
+  const p = AI.cfg.provider;
+  const st = { p, key:aiKey(), model:aiModel(), system:await systemPrompt(), tools:!(opts && opts.noTools),
+    msgs:history.map(m => ({ role:m.role, content:m.content })),
+    contents:history.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })) };
+  let said = '', last = null;
+  for (let round = 0; round < 4; round++){
+    const before = said;
+    let r;
+    try{ r = await aiRound(st, t => { if (onText) onText(before + t); }, stopSignal); }
+    catch(e){ e.partial = before + (e.partial || ''); throw e; }
+    last = r; said = before + r.text;
+    if (!r.calls.length) break;
+    const results = [];
+    for (const c of r.calls) results.push({ c, out:await runTool(c) });
+    if (p === 'anthropic'){
+      st.msgs.push({ role:'assistant', content:r.blocks });
+      st.msgs.push({ role:'user', content:results.map(x => ({ type:'tool_result', tool_use_id:x.c.id, content:JSON.stringify(x.out) })) });
+    } else {
+      st.contents.push({ role:'model', parts:r.modelParts });
+      st.contents.push({ role:'user', parts:results.map(x => ({ functionResponse:{ name:x.c.name, ...(x.c.id ? { id:x.c.id } : {}), response:x.out } })) });
+    }
+    if (said && !/\s$/.test(said)) said += ' ';
+  }
+  return { text:said.trim(), finish:last ? last.finish : '', rec:last ? last.rec : null };
+}
+const aiStream = (messages, onText, stopSignal) => aiTurn(messages, onText, stopSignal, { noTools:true });
 function parseFace(raw){
   const m = (raw || '').match(/^\s*\[(의심|생각|미소|당황|놀람|삐침)\]\s*/);
   const text = (m ? raw.slice(m[0].length) : (raw || '')).replace(/\[(의심|생각|미소|당황|놀람|삐침)\]\s*/g, '').trim();
@@ -982,9 +1280,23 @@ const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ':' + pad(
 function renderLog(){
   const el = $('log');
   let lastS = -1; O.log.forEach((m, i) => { if (m.who === 's') lastS = i; });
-  el.innerHTML = O.log.map((m, i) => `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${esc(m.text)}<time>${hhmm(m.at)}</time></div>`).join('')
-    + (O.busy ? '<div class="msg s last dots" aria-label="세희가 쓰는 중"><span></span><span></span><span></span></div>' : '');
+  el.innerHTML = O.log.map((m, i) => m.who === 'a'
+      ? `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`
+      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${esc(m.text)}<time>${hhmm(m.at)}</time></div>`).join('')
+    + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
+      : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
+}
+function waitText(){
+  if (!O.live) return '';
+  const sec = Math.floor((Date.now() - O.live.t0) / 1000);
+  return (sec < 2 ? '보내는 중' : '세희가 생각 중') + ` · ${sec}초` + (sec >= 15 ? ' · 오래 걸리네요' : '');
+}
+function updateLive(){
+  const el = $('log').querySelector('.msg.live');
+  if (!el){ renderLog(); return; }
+  el.textContent = parseFace(O.live.text).t;
+  if (logPinned) $('log').scrollTop = $('log').scrollHeight;
 }
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
 function seheeSays(r){ O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now() }); setFace(r.f); }
@@ -1001,8 +1313,23 @@ async function sendSay(){
   O.log.push({ who:'u', text:v, at:Date.now() }); ta.value = '';
   O.busy = true; growSay(); setFace(2); renderLog(); saveLog();
   if (aiReady()){
-    try{ seheeSays(parseFace(await aiCall(toMessages(O.log)))); }
-    catch(err){ O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message, face:5, at:Date.now(), err:true }); setFace(5); }
+    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false };
+    renderLog();
+    const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
+    try{
+      const r = await aiTurn(toMessages(O.log), t => {
+        O.live.text = t;
+        if (!O.live.faced && /^\s*\[[^\]]+\]/.test(t)){ O.live.faced = true; setFace(parseFace(t).f); }
+        updateLive();
+      }, O.abort.signal);
+      const pf = parseFace(r.text);
+      if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
+      seheeSays(pf);
+    }catch(err){
+      if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
+      if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });
+      else { O.log.push({ who:'s', text:'연결이 안 됐어요. ' + err.message, face:5, at:Date.now(), err:true }); setFace(5); }
+    }finally{ clearInterval(tick); O.live = null; O.abort = null; }
   } else {
     await new Promise(r => setTimeout(r, 700 + Math.random() * 900));
     seheeSays(replyFor(v));
@@ -1020,6 +1347,10 @@ $('log').addEventListener('scroll', () => { const l = $('log'); logPinned = l.sc
 if (window.ResizeObserver) new ResizeObserver(() => { if (logPinned) $('log').scrollTop = $('log').scrollHeight; }).observe($('log'));
 $('sayGo').addEventListener('pointerdown', e => e.preventDefault());   /* 보내도 키보드가 닫히지 않게 */
 $('sayGo').onclick = sendSay;
+$('log').addEventListener('click', e => {
+  if (e.target.closest('[data-stop]') && O.abort) O.abort.abort();
+  const u = e.target.closest('[data-undo]'); if (u) undoAction(Number(u.dataset.undo));
+});
 $('brain').onclick = settingsSheet;
 
 /* ── 화면 전환: 판 ↔ 사무실. 뒤로 가기로 판에 돌아온다 ── */
