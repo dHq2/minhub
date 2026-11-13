@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'text', text:'' } },{ type:'content_block_delta', index:0, delta:{ type:'text_delta', text:t } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'end_turn' }, usage:{ output_tokens:5 } }]);
 const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'tool_use', id:'tu' + Math.random().toString(36).slice(2,6), name } },{ type:'content_block_delta', index:0, delta:{ type:'input_json_delta', partial_json:JSON.stringify(input) } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'tool_use' }, usage:{ output_tokens:5 } }]);
-// v1.1 (2026-11-14, C) 기다림 40초로(전체 돌릴 때 느려서 한 번 실패) · v1.0 (2026-11-13, C) 세희 기억 — 오래된 해독본은 잘려 가되 자료 번호·안내가 붙고, read_material 로 목록·찾기·전문을 다시 읽는다. 세희가 자기 머리를 알고, "소넷으로" 하면 그 차례만 큰 머리
+// v1.2 (2026-11-14, C) 자료 번호를 위치 대신 해독본으로 찾기(가끔 실패) · v1.1 기다림 40초로(전체 돌릴 때 느려서 한 번 실패) · v1.0 (2026-11-13, C) 세희 기억 — 오래된 해독본은 잘려 가되 자료 번호·안내가 붙고, read_material 로 목록·찾기·전문을 다시 읽는다. 세희가 자기 머리를 알고, "소넷으로" 하면 그 차례만 큰 머리
 (async () => { const b = await chromium.launch();
   const ctx = await b.newContext({ viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true, serviceWorkers:'block' });
   const cors = { 'access-control-allow-origin':'*', 'access-control-allow-headers':'*', 'access-control-allow-methods':'GET,POST,OPTIONS' };
@@ -20,7 +20,7 @@ const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ i
       { who:'u', text:'고마워', at:t0 + 2000 }, { who:'s', text:'[미소] 네.', face:2, at:t0 + 3000 }, { who:'u', text:'오늘 날씨 어때', at:t0 + 4000 }, { who:'s', text:'[생각] 맑아요.', face:1, at:t0 + 5000 });
     await saveLog(); AI.cfg.keys.anthropic = 'sk-ant-api03-' + 'K'.repeat(95); AI.cfg.work = false; await saveAi(); await loadModels(); refreshBrain(); }, OCR);
   const wait = async () => { for (let i = 0; i < 160; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; } await p.waitForTimeout(300); };
-  const id = await p.evaluate(() => matId(O.log[O.log.length - 6]));
+  const id = await p.evaluate(() => matId(O.log.find(m => m.ocr !== undefined)));   /* v1.2 — 인사 말풍선이 늦게 끼어들어도 그 자료를 찾게 */
   plan = [tool('read_material', { id, find:'수요일' }), tool('read_material', { id }), txt('[생각] 마지막은 김가람 조교가 "회식 고마웠어요"라고 한 데서 끝나요.')];
   await p.locator('#sayText').fill('김가람 조교랑 회식 대화 어디까지 나와 있어? 정확하게'); await p.locator('#sayGo').click(); await wait();
   const b0 = bodies[0], sys0 = JSON.stringify(b0.system), msgs0 = JSON.stringify(b0.messages);

@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-14 06:55 · 본체 v1.5.17 — 보고서 띠 없앰, 제목 = 보고서 목록 · [보통] · 받는 쪽: A
+- 무엇: render 가 verBar 를 더는 안 그림(함수는 verBarOld 로 남김). #day 클릭 = reportList()(모든 날 · 지금 판 + 지난 판, .rl-list 다섯 줄 높이 굴림). 지난 판 보기 중 제목 아래 .dv-old. '오늘' 단추는 지난 판 보는 중이면 켜져서 지금 판으로. verSheet() 는 reportList() 로 넘김. 새 판 단추는 목록 아래 data-rlnew.
+- 받는 쪽에게 필요한 일: A — 일간보고서 쪽을 더 고칠 때 띠 대신 제목 목록을 기준으로. treport.js 의 띠 단계는 목록으로 바꿔 두었음(v1.1). 다음 본체는 v1.5.18.
+- 관련 파일·버전: 본체 v1.5.17 / js/base.js·settings.js·app.css·tests/treport.js, 전체 39종 통과
+
 ## 2026-11-14 06:30 · 본체 v1.5.15 — 인간관계 사진 단서 (+ 충돌 표시 정리) · [급함] · 받는 쪽: 모두
 - 무엇: people.js 에 '사진 단서' 묶음(CLU · clueLoad/clueAdd/clueDel/clueForget/cluesOf · 기록부 pdDoc 새 칸 · 크게 보기 #clv 는 #pd 안 · paste 듣기 · 도구 clue_to_person). pplLoad 가 clueLoad 도 부름. 저장: kv 'pplclues'(글 목록) + kv 'clue_<id>'({full, th}). sync.js 에 SYNC_PFX = /^([bc]_|clue_)/ — 접두 키 동기화는 이제 이 정규식 하나로.
 - 받는 쪽에게 필요한 일: B — 수사판 카드(pplRender)엔 안 건드렸어요. 카드에 📎 단서 장수를 붙이고 싶으면 cluesOf(id).length 를 쓰면 됩니다. A — 세희 도구 이름이 _person 으로 끝나야 runToolCore 가 runPeopleTool 로 보내서 clue_to_person 으로 지었어요(ai.js 는 안 건드림). 다음 본체는 v1.5.16.

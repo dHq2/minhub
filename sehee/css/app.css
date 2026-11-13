@@ -824,3 +824,16 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .tie-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center;border:1px dashed #d8cfbb;border-radius:6px;padding:6px}
 .tie-row>b{width:100%;font-size:.8rem}.tie-row input{flex:1;min-width:110px}.tie-btns{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .tie-add{margin-top:6px;width:100%}
+
+/* v1.5.17 (C) 일간보고서 — 제목을 누르면 보고서 목록(다섯 줄만 보이고 굴려 보기) */
+.day .dv-dn{font-style:normal;font-size:.62em;margin-left:4px;opacity:.55;vertical-align:2px}
+.day .dv-old{display:block;color:#a13b2c;font-weight:700;font-size:.62rem;line-height:1.15;margin:1px 0 0}
+.rl-list{--rl-h:62px;display:flex;flex-direction:column;gap:6px;max-height:calc(var(--rl-h) * 5 + 6px * 4);overflow-y:auto;overscroll-behavior:contain;padding-right:2px;margin-top:4px}
+.rl-row{flex:0 0 var(--rl-h);height:var(--rl-h);display:grid;grid-template-columns:1fr;align-content:center;gap:1px;text-align:left;padding:6px 12px;border:1px solid #d8cfba;border-left:4px solid #3a6b64;border-radius:6px;background:#fffdf7;color:#2b2417;font:inherit;cursor:pointer;overflow:hidden}
+.rl-row b{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-row span{font-size:.72rem;color:#8a8373}
+.rl-row small{font-size:.7rem;color:#5b3f6e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-row.past{border-left-color:#b39b6b;background:#faf6ec}
+.rl-row.now{border-color:#3a6b64;background:#eef6f3;box-shadow:inset 0 0 0 1px #3a6b64}
+.hrow.nav .ib{white-space:nowrap;flex:0 0 auto}
+.hrow.nav .day{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

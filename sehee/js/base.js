@@ -124,10 +124,12 @@ async function askPersist(){
 /* ── 그리기 ── */
 function render(){
   $('ver').textContent = APP_VERSION;
-  $('day').innerHTML = esc(dayLabel(S.date)) + (S.date === S.today ? '<small>오늘</small>' : '');
+  /* v1.5.16 (C) 제목 = 보고서 목록 단추. 지난 판을 보는 중이면 제목 옆에 '4시 · 지난 판' */
+  $('day').innerHTML = esc(dayLabel(S.date)) + (RPT.view ? '' : S.date === S.today ? '<small>오늘</small>' : '') + '<i class="dv-dn">▾</i>' + (RPT.view ? `<small class="dv-old">${esc(RPT.view)} 보고서 · 지난 판</small>` : '');
+  $('day').setAttribute('aria-label', '보고서 목록 열기');
   $('prev').disabled = !S.dates.some(d => d < S.date);
   $('next').disabled = S.date >= S.today;
-  $('today').disabled = S.date === S.today;
+  $('today').disabled = S.date === S.today && !RPT.view;
   $('open').classList.toggle('on', !!S.settings.openOnly);
   $('old').classList.toggle('on', S.date !== S.today);
   $('fab').style.display = S.pan ? '' : 'none';
@@ -143,7 +145,7 @@ function render(){
   const live = S.pan, snap = RPT.view ? (verEnsure(live).vers || []).find(v => v.label === RPT.view) : null;
   if (RPT.view && !snap) RPT.view = null;
   if (snap) S.pan = { ...live, items:snap.items || [], inbox:snap.inbox || [], line:snap.line || '', face:snap.face || '-_-' };
-  try{ m.innerHTML = verBar(live, snap) + seheeBlock() + inboxBlock() + secs().map(sectionBlock).join('') + footer(); } finally { S.pan = live; }
+  try{ m.innerHTML = seheeBlock() + inboxBlock() + secs().map(sectionBlock).join('') + footer(); } finally { S.pan = live; }
   m.classList.toggle('ro', !!snap);
   if (snap) m.querySelectorAll('textarea, input').forEach(x => { x.readOnly = true; });
   const ta = m.querySelector('#line'); if (ta) grow(ta);
@@ -228,13 +230,30 @@ async function newReport(p, why, by){
   dlog('판', '새 판 ' + verTitle(p, p.ver) + (p.ver.why ? ' · ' + p.ver.why : ''));
   return p.ver;
 }
-function verBar(live, snap){
+/* (v1.5.16 C — 판 위 보고서 띠는 보스 지시로 없앰. 지난 판·새 판은 제목을 눌러 여는 보고서 목록에서) */
+function verBarOld(live, snap){
   verEnsure(live); const v = snap || live.ver, n = live.vers.length;
   return `<div class="verbar${snap ? ' old' : ''}"><span class="vb-t">📄 ${esc(verTitle(live, v))}</span><span class="vb-s">${snap ? '지난 판 · 보기만' : '지금'}</span>
     ${snap ? '<button class="vb-b" data-ver="">지금 판으로</button>' : `${n ? `<button class="vb-b" data-verlist="1">지난 판 ${n} ▾</button>` : ''}${live.date === S.today ? `<button class="vb-b vb-new${RPT.arm ? ' on' : ''}" data-vernew="1">${RPT.arm ? '한 번 더 누르면 새 판' : '새 판'}</button>` : ''}`}</div>`;
 }
 const verHM = t => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
-function verSheet(){
+/* ── 보고서 목록 (v1.5.16 · C) — 맨 위 제목(날짜)을 누르면 지금까지 보고서 전부. 다섯 줄만 보이고 그 아래는 굴려 본다 ── */
+async function reportList(){
+  await flush();
+  const pans = (await allPans()).filter(x => x && x.date && x.date <= S.today).sort((a, b) => a.date < b.date ? 1 : -1), rows = [];
+  for (const p of pans){ verEnsure(p);
+    rows.push({ date:p.date, v:p.ver, live:true, n:(p.items || []).length, end:p.date === S.today ? '지금' : '' });
+    for (const v of p.vers.slice().reverse()) rows.push({ date:p.date, v, live:false, n:(v.items || []).length, end:verHM(v.until) }); }
+  const cur = r => r.date === S.date && (r.live ? !RPT.view : RPT.view === r.v.label);
+  openSheet(`<h4>보고서 — 모두 ${rows.length}개</h4>
+    <div class="rl-list" id="rlList">${rows.map(r => `<button class="rl-row${cur(r) ? ' now' : ''}${r.live ? '' : ' past'}" data-rl="${r.date}" data-rlv="${r.live ? '' : esc(r.v.label)}">
+      <b>${esc(verTitle({ date:r.date }, r.v))}</b><span>${verHM(r.v.at)}${r.end ? '~' + r.end : ''} · 항목 ${r.n}${r.live ? '' : ' · 지난 판'}</span>${r.v.why ? `<small>${esc(r.v.why)}</small>` : ''}</button>`).join('') || '<p class="note">아직 보고서가 없어요.</p>'}</div>
+    <div class="row" style="margin-top:8px;gap:6px"><button class="chip" data-rlnew="1">오늘 새 판 만들기</button><button class="chip" data-rlpick="1">날짜로 찾기</button></div>
+    <p class="note">지난 판은 그때 그대로 남아 있어요(보기만). 새 판은 날이 바뀔 때, 세희가 크게 정리할 때, 여기서 만들 때 생겨요.</p>`);
+  const now = document.querySelector('#rlList .rl-row.now'); if (now) now.scrollIntoView({ block:'nearest' });
+}
+function verSheet(){ return reportList(); }
+function verSheetOld(){
   const p = verEnsure(S.pan); if (!p) return;
   const row = (v, now) => `<button class="vs-row${now ? ' now' : ''}" data-ver="${now ? '' : esc(v.label)}"><b>${esc(v.label)} 보고서</b><span>${verHM(v.at)}~${now ? "지금" : verHM(v.until)} · 항목 ${(now ? p.items : v.items || []).length}</span>${v.why ? `<small>${esc(v.why)}</small>` : ''}</button>`;
   openSheet(`<h4>${esc(verTitle(p, { label:'' }).replace(/ - $/, ''))} — 판 ${p.vers.length + 1}개</h4><div class="vs-list">${row(p.ver, true)}${p.vers.slice().reverse().map(v => row(v, false)).join('')}</div>
@@ -244,6 +263,12 @@ function verSheet(){
 $('main').addEventListener('click', e => { if ($('main').classList.contains('ro') && !e.target.closest('.verbar')){ e.stopImmediatePropagation(); e.preventDefault(); } }, true);
 document.addEventListener('click', async e => {
   const t = e.target;
+  const rl = t.closest('[data-rl]');
+  if (rl && rl.closest('#sheet')){ closeSheet(); const v = rl.dataset.rlv || null; if (rl.dataset.rl !== S.date) await goDate(rl.dataset.rl); RPT.view = v; render(); $('main').scrollTop = 0; return; }
+  const rn = t.closest('[data-rlnew]');
+  if (rn){ if (!rn.classList.contains('armed')){ rn.classList.add('armed'); rn.textContent = '한 번 더 누르면 새 판'; return; }
+    closeSheet(); if (S.date !== S.today) await goDate(S.today); RPT.view = null; const v = await newReport(await todayPanRef(), '보스가 새 판', 'boss'); render(); toast(`새 판 — ${v.label} 보고서`); return; }
+  if (t.closest('[data-rlpick]')){ closeSheet(); const p = $('pick'); p.max = S.today; p.value = S.date; try{ p.showPicker(); }catch(x){ p.click(); } return; }
   if (t.closest('[data-verlist]')) return verSheet();
   const vn = t.closest('[data-vernew]');
   if (vn){ if (!RPT.arm){ RPT.arm = true; render(); setTimeout(() => { if (RPT.arm){ RPT.arm = false; render(); } }, 4000); return; }

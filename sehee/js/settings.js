@@ -294,7 +294,7 @@ $('next').onclick = () => { const d = S.dates.find(x => x > S.date && x <= S.tod
 $('today').onclick = () => goDate(S.today);
 $('oldGo').onclick = () => goDate(S.today);
 $('open').onclick = async () => { S.settings.openOnly = !S.settings.openOnly; await saveSettings(); render(); };
-$('day').onclick = () => { const p = $('pick'); p.max = S.today; p.value = S.date; try{ p.showPicker(); }catch(e){ p.click(); } };
+$('day').onclick = () => reportList();   /* v1.5.16 (C) 제목 → 보고서 목록(날짜로 찾기는 목록 아래) */
 $('pick').onchange = e => { const v = e.target.value; if (v && v <= S.today) goDate(v); };
 $('gear').onclick = settingsSheet;
 $('fab').onclick = passSheet;
