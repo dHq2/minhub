@@ -758,7 +758,6 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 /* v1.5.13 (C) 처리 단추 이름 칸 */
 .wayn input{width:5.2em;padding:6px 8px;border:1px solid var(--line);border-radius:4px;font:inherit;font-size:.86rem;background:#fffdf6}
 
-<<<<<<< Updated upstream
 /* v1.5.14 일간보고서 판 띠 · 지난 판 · 세희 코멘트 (A) */
 .verbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:2px 0 8px;padding:6px 9px;border:1px solid #d8cfbb;border-radius:9px;background:rgba(255,255,255,.6);font-size:.8rem}
 .verbar .vb-t{font-weight:700;color:#2b2417}.verbar .vb-s{color:#8a8373;font-size:.72rem;margin-right:auto}
@@ -774,8 +773,8 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .icm{margin:3px 0 1px;font-size:.8rem;line-height:1.45;color:#5b3f6e}
 .icm i{font-style:normal;font-weight:700;font-size:.66rem;color:#fff;background:#7a5a8f;border-radius:6px;padding:0 5px;margin-right:5px;vertical-align:1px}
 .it.done .icm{opacity:.55}
-=======
-/* v1.5.14 (C) 인간관계 사진 단서 — 기록부 갤러리(세 칸 격자) + 크게 보기 */
+
+/* v1.5.15 (C) 인간관계 사진 단서 — 기록부 갤러리(세 칸 격자) + 크게 보기 */
 .pd-sec h3 .cl-n{font-size:.72rem;font-weight:400;color:#8a8170;margin-left:6px}
 .cl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .cl-th,.cl-add{position:relative;display:flex;flex-direction:column;align-items:stretch;padding:4px 4px 6px;border:1px solid #cfc6b2;background:#fffdf6;box-shadow:0 2px 4px rgba(0,0,0,.12);cursor:pointer;font:inherit;text-align:left;color:#3a3326;transform:rotate(-1deg)}
@@ -804,4 +803,3 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .clv-by{font-size:.72rem;color:#8a8170;margin-left:auto}
 .clv-ppl .pd-chip{--c:#5c5340;font-size:.8rem;padding:3px 10px}
 .clv .chip.on{background:#2b2417;color:#fff;border-color:#2b2417}
->>>>>>> Stashed changes
