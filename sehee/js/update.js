@@ -3,8 +3,14 @@
    「업데이트」 = 누르는 즉시 '업데이트하는 중…'으로 바뀌고 한 번에 가장 최신으로. 「지금 버전으로 계속」 = 이번엔 그대로, 다음에 켤 때 다시.
    새로 고친 뒤엔 「업데이트 끝 — v1.4.0 → v1.4.1」을 띄워 됐는지 바로 보이게. 눌렀는데 그대로면 그것도 말해 준다.
    쓰는 도중에 새 버전이 오면 세희가 쉴 때 한 번만 묻는다. */
+/* v1.5.2 (C) 본체가 여러 파일로 나뉜 뒤(v1.5.0) — 폰이 느리면 새 버전 소식이 bonus-api.js 를 불러오기 전에 도착한다.
+   그때 LANES·BONUS 를 바로 부르면 오류로 조용히 멈춰 띠가 안 떴다. 보너스 쪽은 아래 셋으로만 읽는다(아직 없으면 빈 것). */
+const updLanesList = () => (typeof LANES !== 'undefined' && typeof BONUS !== 'undefined' && BONUS.loaded) ? LANES : [];
+const updVer = k => (typeof BONUS !== 'undefined' && BONUS.vers && BONUS.vers[k]) || '';
+const updOn = k => typeof bonusOn === 'function' && bonusOn(k);
 let waitingSW = null, wantReload = false, reloading = false, updAsked = false, updDeclined = false, updLanes = {}, updMode = 'ask';
 function updIdle(){
+  if (typeof O === 'undefined') return false;   /* v1.5.2 아직 사무실 파일을 불러오는 중 — 3초 뒤 다시 */
   const say = document.getElementById('sayText'), sh = document.getElementById('sheet');
   return !O.busy && !(say && say.value.trim()) && !(sh && sh.classList.contains('on')) && !document.getElementById('pinVeil');
 }
@@ -30,10 +36,9 @@ async function laneLive(l){
     const m = t.match(new RegExp('\\b' + l.k + '\\d+(?:\\.\\d+)+')); return m ? m[0] : ''; }catch(e){ return ''; }
 }
 async function checkLanes(){
-  if (typeof LANES === 'undefined' || !BONUS.loaded) return;
-  for (const l of LANES){
-    const cur = BONUS.vers[l.k] || '';
-    if (!bonusOn(l.k) || !cur) continue;
+  for (const l of updLanesList()){
+    const cur = updVer(l.k);
+    if (!updOn(l.k) || !cur) continue;
     const live = await laneLive(l);
     if (live && live !== cur){ if (updLanes[l.k] !== live) dlog('업데이트', `${l.name} 새 버전 ${cur} → ${live}`); updLanes[l.k] = live; }
     else delete updLanes[l.k];
@@ -46,11 +51,11 @@ async function askUpdate(){
   updAsked = true; updMode = 'ask'; dlog('업데이트', '새 버전 물어봄');
   const parts = [];
   if (waitingSW){ const v = await newVersionName(); parts.push(`본체 ${APP_VERSION} → ${v || '새 버전'}`); }
-  for (const l of LANES) if (updLanes[l.k]) parts.push(`${l.name} ${BONUS.vers[l.k]} → ${updLanes[l.k]}`);
+  for (const l of updLanesList()) if (updLanes[l.k]) parts.push(`${l.name} ${updVer(l.k)} → ${updLanes[l.k]}`);
   updBand(`새 버전이 있어요 — ${parts.join(' · ')}. 지금 업데이트할까요?`, '업데이트', '지금 버전으로 계속');
   $('upd').classList.add('ask');
 }
-function updSeen(){ const v = { A:APP_VERSION }; for (const l of LANES) if (bonusOn(l.k) && BONUS.vers[l.k]) v[l.k] = BONUS.vers[l.k]; return v; }
+function updSeen(){ const v = { A:APP_VERSION }; for (const l of updLanesList()) if (updOn(l.k) && updVer(l.k)) v[l.k] = updVer(l.k); return v; }
 function doUpdate(){
   if (updMode === 'done'){ updHide(); return; }
   if (reloading || wantReload) return;
@@ -93,7 +98,7 @@ async function checkUpdate(manual){
     if (S.reg.installing){ toast('새 버전을 받는 중이에요 — 받으면 물어볼게요'); return; }
     const live = await newVersionName();
     if (live && live !== APP_VERSION){ toast(`올라온 건 ${live}인데 아직 다 안 올라왔어요. 1~2분 뒤 다시 눌러 주세요`); return; }
-    const lv = LANES.filter(l => bonusOn(l.k) && BONUS.vers[l.k]).map(l => BONUS.vers[l.k]);
+    const lv = updLanesList().filter(l => updOn(l.k) && updVer(l.k)).map(l => updVer(l.k));
     toast(`지금이 최신이에요 — 본체 ${APP_VERSION}${lv.length ? ' · ' + lv.join(' · ') : ''}`);
   }, 900);
 }

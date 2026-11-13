@@ -672,3 +672,13 @@ body:not(.office):not(.v-board) .brain{display:none}
 .sfold > :not(.bt-peek){display:none!important}
 .sfold > .bt-peek{display:flex}
 .bt-sliding > .bt-peek{display:flex;opacity:0}   /* 꼬리를 당기는 동안 손가락 추적이 끊기지 않게 자리는 남김 */
+/* v1.5.2 (C) 판 일간보고 방식 — 끝 · 알바노 · 내일 · 기억만 단추, 처리한 일은 흐리게 + 오른쪽 '✓ 처리', 🆕·🔁 표시 */
+.it .ways{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0 2px}
+.it .wy{font:inherit;font-size:.76rem;line-height:1;padding:6px 9px;border:1px solid rgba(60,50,30,.42);border-radius:3px;background:#f7f2e4;color:#3a3326;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.it .wy:active{transform:translateY(1px)}
+.it .wy.on{background:#7a7262;border-color:#7a7262;color:#fff}
+.it .wyok{margin-left:auto;font-size:.76rem;color:#6f8a5a;white-space:nowrap}
+.it.done .wy:not(.on),.it.later .wy:not(.on){opacity:.55}
+.it.done .tx,.it.later .tx{opacity:.62}
+.it.later .tx{color:var(--done)}
+.it .tx .mk{font-size:.86em;margin-right:4px;vertical-align:1px}

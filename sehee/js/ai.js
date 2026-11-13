@@ -142,15 +142,17 @@ const dueText = it => it.due ? mdDay(it.due) + (it.time ? ' ' + it.time : ' · �
 const secName = id => (secById(id) || secs()[0]).label;
 function itemLine(it, date){
   const age = it.since && it.since < date ? ` (${dayDiff(it.since, date) + 1}일째)` : '';
-  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}${it.note ? `\n    메모: ${it.note.replace(/\n/g, ' / ')}` : ''}`;
+  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}${it.back ? ' (보스가 어제 「내일」로 미뤘던 일)' : ''}${it.way === '기억만' && !it.done ? ' (보스: 기억만 — 챙기라고 재촉하지 말 것)' : ''}${it.note ? `\n    메모: ${it.note.replace(/\n/g, ' / ')}` : ''}`;
 }
 async function todayPanRef(){ if (S.date === S.today && S.pan) return S.pan; return (await getPan(S.today)) || await makeToday(S.today); }
 async function panContext(){
   const p = await todayPanRef();
-  const open = p.items.filter(it => !it.done).map(it => itemLine(it, p.date));
-  const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}`);
+  const open = p.items.filter(it => !it.done && !it.later).map(it => itemLine(it, p.date));
+  const later = p.items.filter(it => !it.done && it.later).map(it => itemLine(it, p.date));   /* v1.5.2 보스가 「내일」 — 오늘은 꺼내지 않는다 */
+  const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}${it.way === '알바노' ? ' (알바노 — 보스: 우리 일 아님, 다시 꺼내지 말 것)' : ''}`);
   const inbox = (p.inbox || []).map(x => `- #${x.id} ${x.text.replace(/\n/g, ' / ')}`);
   return [`지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
+          later.length ? `내일로 미룬 일(보스가 「내일」을 누름 — 오늘은 먼저 꺼내지 말 것, 내일 판에 다시 올라옴):\n${later.join('\n')}` : '',
           `오늘 끝낸 일:\n${done.join('\n') || '- 없음'}`, p.line ? `세희 한마디(판 위): ${p.line}` : ''].filter(Boolean).join('\n\n');
 }
 /* 판 보내기를 꺼도 — 이 대화에서 세희가 직접 다룬 항목만은 알려준다(보스가 말로 한 것뿐이라) */

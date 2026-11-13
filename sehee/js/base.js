@@ -65,7 +65,9 @@ async function makeToday(date){
   if (prevDate){
     const prev = await getPan(prevDate);
     const first = secs()[0].id;
-    p.items = (prev.items || []).filter(it => !it.done).map(it => ({ ...it, sec: secById(it.sec) ? it.sec : first }));
+    /* v1.5.2 (C) 「내일」 누른 일은 오늘 판에 🔁 로 다시 올라온다. 🔁 표시는 하루만 */
+    p.items = (prev.items || []).filter(it => !it.done).map(it => { const x = { ...it, sec: secById(it.sec) ? it.sec : first };
+      if (x.later){ delete x.later; x.back = true; } else delete x.back; return x; });
     p.inbox = (prev.inbox || []).map(x => ({ ...x }));
     p.carriedFrom = prevDate;
   }
@@ -159,11 +161,11 @@ function sectionBlock(s, i){
   /* 지운 칸에 있던 지난 판 항목은 첫 칸에 보여준다 — 안 보이게 사라지면 안 된다 */
   const known = new Set(secs().map(x => x.id));
   const all = S.pan.items.filter(it => it.sec === s.id || (i === 0 && !known.has(it.sec)));
-  const open = all.filter(it => !it.done), done = all.filter(it => it.done);
-  const shown = S.settings.openOnly ? open : open.concat(done);
+  const open = all.filter(it => !it.done && !it.later), parked = all.filter(it => !it.done && it.later), done = all.filter(it => it.done);
+  const shown = S.settings.openOnly ? open : open.concat(parked, done);
   const folded = S.folded[s.id];
   return `<section class="sec ${folded ? 'folded' : ''}" style="--c:${s.color}" data-sec="${s.id}">
-    <div class="sh" data-act="fold"><b>${esc(s.label)}</b><span class="cnt">${open.length}${done.length ? ' · 끝남 ' + done.length : ''}</span><span class="fold">${folded ? '펼치기' : '접기'}</span></div>
+    <div class="sh" data-act="fold"><b>${esc(s.label)}</b><span class="cnt">${open.length}${parked.length ? ' · 내일 ' + parked.length : ''}${done.length ? ' · 끝남 ' + done.length : ''}</span><span class="fold">${folded ? '펼치기' : '접기'}</span></div>
     <div class="list">${shown.map(itemRow).join('')}</div>
     <div class="add"><input placeholder="+ 적기" enterkeyhint="enter" data-sec="${s.id}"><button class="ib" data-act="add">넣기</button></div>
   </section>`;
@@ -173,10 +175,12 @@ function itemRow(it){
   const t = it.tag ? (TAGS.find(x => x.k === it.tag)?.c || FREE_TAG) : null;
   const age = it.since && it.since < S.pan.date ? dayDiff(it.since, S.pan.date) + 1 : 0;
   const stamped = S.justDone === it.id; if (stamped) S.justDone = null;
-  return `<div class="it ${it.done ? 'done' : ''}${stamped ? ' stamped' : ''}" data-id="${it.id}">
+  const ew = wayOf(it), mk = it.back ? '<span class="mk" title="내일로 미뤘던 일">🔁</span>' : it.since === S.pan.date && !it.done ? '<span class="mk" title="오늘 새로">🆕</span>' : '';
+  return `<div class="it ${it.done ? 'done' : ''}${it.later && !it.done ? ' later' : ''}${stamped ? ' stamped' : ''}" data-id="${it.id}">
     <button class="ck" data-act="toggle" aria-label="${it.done ? '끝냄 취소' : '끝냄'}">${it.done ? '<span class="seal">完</span>' : ''}</button>
-    <div class="body"><div class="tx" data-act="edit">${esc(it.text)}</div>
+    <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>
       <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div>
+      <div class="ways">${WAYS.map(w => `<button class="wy${ew === w ? ' on' : ''}" data-act="way" data-w="${w}">${w}</button>`).join('')}${ew ? `<span class="wyok">✓ ${ew}${ew === '내일' ? ' ' + mdShort(it.later) : ''}</span>` : ''}</div>
       <textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
@@ -209,6 +213,32 @@ function addItem(sec, text){
   S.pan.items.push({ id:uid(), sec, text, tag:null, done:false, since:S.pan.date });
   touch(true);
 }
+
+/* ── 처리 단추 (v1.5.2 · C) — 일간보고 오늘판과 같은 넷: 끝 · 알바노 · 내일 · 기억만 ──
+   끝 = 한 일(完 도장과 같음) · 알바노 = 우리 일 아님으로 닫음 · 내일 = 오늘은 접고 내일 판에 🔁 로 다시 · 기억만 = '기억해둘 것' 칸으로 내림.
+   같은 단추를 다시 누르면 취소. 누른 순서는 it.wayLog 에 남긴다(지우지 않음). 세희는 읽기만 한다. */
+const WAYS = ['끝', '알바노', '내일', '기억만'];
+const mdShort = d => { if (!d) return ''; const x = parseYmd(d); return (x.getMonth() + 1) + '/' + x.getDate(); };
+function wayOf(it){ if (it.done) return it.way === '알바노' ? '알바노' : '끝'; if (it.later) return '내일'; if (it.way === '기억만') return '기억만'; return null; }
+function setWay(it, w){
+  const cur = wayOf(it), snap = snapshot(), undo = cur === w;
+  (it.wayLog = it.wayLog || []).push({ w: undo ? '취소' : w, at: Date.now() }); if (it.wayLog.length > 20) it.wayLog = it.wayLog.slice(-20);
+  if (cur === '기억만' && it.waySec && secById(it.waySec)) it.sec = it.waySec;
+  it.done = false; it.doneAt = null; delete it.later; delete it.way; delete it.waySec;
+  let msg = `'${w}' 풀었어요`;
+  if (!undo){
+    if (w === '끝' || w === '알바노'){ it.done = true; it.doneAt = Date.now(); it.way = w; S.justDone = it.id; msg = w === '끝' ? '끝냈어요' : '알바노 — 우리 일 아닌 걸로 닫았어요'; }
+    else if (w === '내일'){ const t = parseYmd(S.pan.date); t.setDate(t.getDate() + 1); it.later = ymd(t); msg = `내일(${mdShort(it.later)}) 판에 다시 올라와요`; }
+    else if (w === '기억만'){ it.way = '기억만'; const m = secById('memo');
+      if (m && it.sec !== 'memo'){ it.waySec = it.sec; it.sec = 'memo'; msg = `'${m.label}'으로 내렸어요`; } else msg = '기억만 해 둘게요'; }
+  }
+  dlog('판', `처리 단추 ${undo ? w + ' 취소' : w} #${it.id}`);
+  touch(true); render(); toast(msg, () => restore(snap));
+}
+$('main').addEventListener('click', e => {
+  const b = e.target.closest('[data-act="way"]'); if (!b) return;
+  const row = b.closest('.it'), it = row && findItem(row.dataset.id); if (it) setWay(it, b.dataset.w);
+});
 
 function startEdit(row){
   const it = findItem(row.dataset.id); if (!it) return;
