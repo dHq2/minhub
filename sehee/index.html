@@ -455,6 +455,15 @@
   .pd-lock.on{border-color:#c0392b;color:#c0392b;background:#fff4f2}.pd-x{color:#9a9384}.pd-add{margin-top:6px;border-style:dashed}
   .pd-del{margin-top:16px;color:#c0392b;border-color:#c0392b}.pd-del.armed{background:#c0392b;color:#fff}
   .pp-me{cursor:pointer}
+  /* v1.3.6 판 서랍은 맨 윗줄(세희·⚙) 바로 아래부터 — 날짜 줄도 판 서랍의 일부, 그 오른쪽 끝으로 사무실·견출지가 맨 위부터 보인다 */
+  body:not(.alt) header{background:linear-gradient(var(--paper),var(--paper)) top/100% var(--hh1,48px) no-repeat;border-bottom:none;padding-bottom:0}
+  body:not(.alt) header .hrow:first-child{box-shadow:0 2px 0 var(--ink);padding:0 12px 6px;margin:0 -12px;position:relative;z-index:2}
+  body:not(.alt) header .nav,body:not(.alt) header .band.on{margin-left:-12px;width:calc(100% + 6px);padding-left:12px;padding-right:10px;
+    background:var(--paper);border-right:6px double #cfc4a6;box-shadow:5px 0 16px rgba(0,0,0,.35);position:relative}
+  body:not(.alt) header .nav{padding-top:8px;padding-bottom:6px;margin-top:0}
+  body:not(.alt) #office{top:var(--hh1,48px)}
+  body:not(.alt) .dw-tabs.pan-dw{top:calc(var(--hh1,48px) + 10px)}
+  body:not(.alt) .pan-grip{top:var(--hh1,48px)}
   /* 판 견출지 — 사무실 왼쪽, 오른쪽으로 끌면 판으로 (v1.2) */
   .pan-tab{position:absolute;left:0;top:7%;z-index:12;width:26px;height:clamp(64px,12dvh,104px);border:1px solid rgba(0,0,0,.4);border-left:none;border-radius:0 9px 9px 0;
     background:#ece6d4;color:var(--ink);writing-mode:vertical-rl;font-size:.74rem;font-weight:700;letter-spacing:3px;cursor:grab;padding:0;touch-action:none;
@@ -864,6 +873,8 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.6) 인물 기록부 서류 바깥 빈 곳을 누르면 닫힘(고치던 중이면 저장하고).
+        (v1.3.6) 판 서랍이 맨 윗줄(세희·⚙) 바로 아래부터 시작 — 날짜 줄도 서랍에 들어가고, 오른쪽 끝으로 사무실과 견출지(달력·보드·사람)가 맨 위부터 보인다.
         (v1.3.5) 보조 방 창구 요청 3가지 — b_로 시작하는 키도 계정 동기화 / SEHEE.talk()·on('talk')(대화창 그대로, 단추 포함) / on('people')·SEHEE.pplPos(id,{x,y})·pplPosAll·pplRedraw(옮긴 자리로 본체가 그리고 실도 따라감).
         (v1.3.4) 인물 기록부 — 수사판의 '나'든 사람이든 누르면 똑같은 한 장짜리 서류: 기본(이름·관계·무리 + 생일·나이·키 등 항목) · 관계도 · 기억할 점 · 기타(🔒 비공개 줄) · 세희 메모 · 판에 나온 일.
           「고치기」로 같은 서류가 칸별 입력란으로. 세희는 update_person(person:'나' 포함)으로 채우고, 🔒 줄은 보고서·남에게 보이는 글에 절대 안 씀.
@@ -874,7 +885,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.5';
+const APP_VERSION = 'v1.3.6';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -2713,6 +2724,12 @@ function pdCollect(p){
 $('pd').addEventListener('click', async e => {
   const t = e.target;
   if (t.closest('[data-pd="close"]')) return pdClose();
+  /* 서류 바깥 빈 곳을 누르면 닫힘(고치던 중이면 저장하고) — v1.3.6 */
+  if (t.closest('#pdBody') && !t.closest('.pd-paper')){
+    const q = pdGet(PD.id);
+    if (PD.edit && q){ pdNorm(q); pdCollect(q); q.info = q.info.filter(x => x.k && x.v); q.extra = q.extra.filter(x => x.text); await pplSave(); if (DW.open === 'people') pplRender(); toast('서류를 고쳤어요'); }
+    return pdClose();
+  }
   const pp = t.closest('.pd-graph [data-pp]'); if (pp && !PD.edit){ if (pp.dataset.pp === 'me') await meLoad(); PD.id = pp.dataset.pp; return pdRender(); }
   const p = pdGet(PD.id); if (!p) return; pdNorm(p);
   if (t.closest('#pdEdit')){
@@ -4394,6 +4411,7 @@ $('btAll').onclick = () => dwClose('board');
   const set = () => {
     $('office').style.setProperty('--sayh', $('say').offsetHeight + 'px');
     document.documentElement.style.setProperty('--hh', document.querySelector('header').offsetHeight + 'px');
+    const r1 = document.querySelector('header .hrow'); document.documentElement.style.setProperty('--hh1', (r1.offsetTop + r1.offsetHeight + 6) + 'px');
     document.documentElement.style.setProperty('--tb', $('tabs').offsetHeight + 'px');
   };
   set(); if (window.ResizeObserver){ const ro = new ResizeObserver(set); ro.observe(document.querySelector('header')); ro.observe($('tabs')); ro.observe($('say')); }
