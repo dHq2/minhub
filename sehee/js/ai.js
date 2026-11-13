@@ -150,7 +150,7 @@ async function panContext(){
   const p = await todayPanRef();
   const open = p.items.filter(it => !it.done && !it.later).map(it => itemLine(it, p.date));
   const later = p.items.filter(it => !it.done && it.later).map(it => itemLine(it, p.date));   /* v1.5.2 보스가 「내일」 — 오늘은 꺼내지 않는다 */
-  const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}${it.way === '알바노' ? ' (알바노 — 보스: 우리 일 아님, 다시 꺼내지 말 것)' : ''}`);
+  const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}${it.way === '알바노' ? ` (${wayName('알바노')} — 보스가 안 하기로 닫음, 다시 꺼내지 말 것)` : ''}`);
   const inbox = (p.inbox || []).map(x => `- #${x.id} ${x.text.replace(/\n/g, ' / ')}`);
   return [`지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
           later.length ? `내일로 미룬 일(보스가 「내일」을 누름 — 오늘은 먼저 꺼내지 말 것, 내일 판에 다시 올라옴):\n${later.join('\n')}` : '',
@@ -190,7 +190,7 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
 - 날짜가 있는 약속·일정은 '${schedLabel}' 칸에 due(YYYY-MM-DD)를 넣어 적는다. 시각을 모르면 time 없이 적고, 대답 끝에 시각만 한 번 묻는다. 다른 건 캐묻지 않는다.
 - 보스가 시각·장소 같은 걸 알려주면 새로 적지 말고 그 항목을 update_item으로 고친다.
 - 판 항목 아래 '메모:' 줄은 그 항목의 메모칸이다(보스가 직접 쓰기도 한다). 한 줄 제목에 안 담기는 덧붙임(누가·어디서·진행 상황)은 note 로 메모칸에 적는다. 보스가 쓴 메모는 지우거나 덮지 말고 살려서 이어 쓴다.
-- 오늘 안에 할 일은 '${todayLabel}' 칸. 퇴근 전까지면 tag '퇴근 전'.
+- 오늘 안에 할 일은 '${todayLabel}' 칸. 오늘 안에 꼭 끝내야 하면 tag '오늘 안에'.
 - 끝냈다고 하면 complete_item. 지우라고 분명히 말할 때만 delete_item. 받은 것을 칸에 담으라면 file_inbox.
 - 판에 적은 걸 말로 길게 되풀이하지 않는다. 앱이 적은 내용을 따로 보여준다. "적어뒀어요" 정도면 된다.
 - 항목 id는 아래 목록의 #id에서 #를 뺀 값이다.
@@ -201,7 +201,7 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   · 보고서: make_card 로 kind='report' 카드를 만든다. title, summary(핵심 2~3문장), sections(heading + text 문단, 필요하면 points 몇 줄, 표가 필요하면 table_columns·table_rows).
     한눈에 볼 숫자·사실이 있으면 highlights 2~4개(예: 남은 일 4건, 마감 11/14). 섹션은 보통 개요 → 주요 내용(사실·발언·수치) → 결정 사항 → 남은 일·담당 → 확인 필요/위험 순. 자료에 있는 사실만, 날짜·이름·수치는 빠짐없이. 꾸밈말·추측 금지.
     보고서를 붙인 뒤 말풍선에는 "보고서 올렸어요"와 가장 중요한 한두 가지만.
-  · 판에 적기: 보스가 "일정에 넣어", "판에 적어", "할 일로 올려"처럼 시킬 때만. 그때 할 일·약속·확정 지시만 골라 여러 개 한 번에 적는다.
+  · 판에 적기: 보스가 "일정에 넣어", "판에 적어", "할 일로 올려"처럼 시킬 때만. 그때 할 일·약속·정해진 일만 골라 여러 개 한 번에 적는다.
     같은 일은 하나만, 바뀐 일정은 마지막 내용으로, 이미 끝난 일은 빼고. 로그 속 "오늘·내일"은 메시지가 오간 날 기준. 확정 아닌 건 '미정' 표시.
 - 인간관계 판 — 목적부터: 보스 혼자 쓰는 사적인 사람 수첩이다. 보스 폰과 보스 계정에만 있고 보스 말고는 아무도 보지 않는다. 보스가 이걸 만든 이유는 기억하기 어려운 사람들의 사정·이야기·성격·취향·관계를 자세히 적어 두고, 다음에 그 사람을 더 잘 대하기 위해서다.
   그래서 보스가 어떤 사람 이야기를 적으라고 하거나 기억해 두라고 하면, 업무든 사적인 일이든(가족·연애·건강·고민·속마음·본인이 털어놓은 이야기·갈등) 보스가 말한 그대로 자세히 적는다. 언제·무슨 일·왜·그 사람이 한 말과 마음·보스와의 사이를 살리고, 요약해 뭉개거나 골라 빼지 않는다.
@@ -260,7 +260,7 @@ function TOOL_DEFS(){
       text:{ type:'string', description:'짧은 한 줄. 예: 친구와 저녁' },
       due:{ type:'string', description:'날짜 YYYY-MM-DD. 날짜가 있는 일만' },
       time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
-      tag:{ type:'string', description:"짧은 꼬리표. 예: '퇴근 전'. 없으면 넣지 않는다" },
+      tag:{ type:'string', description:"짧은 꼬리표. 예: '오늘 안에'. 없으면 넣지 않는다" },
       note:{ type:'string', description:'항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황). 없으면 넣지 않는다' } }, required:['section', 'text'] } },
     { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },

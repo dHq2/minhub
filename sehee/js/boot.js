@@ -6,12 +6,14 @@
     const st = await kvGet('settings');
     S.settings = Object.assign({ sections:DEFAULT_SECTIONS.map(s => ({ ...s })), fs:1, openOnly:false }, st || {});
     if (!st) await saveSettings();
+    if (panUniversal()) await saveSettings();   /* v1.5.13 보편 설계 — 예전 기본 칸 정리(한 번) */
     applyFs();
     spStep('세희 머리 설정 읽는 중');
     await loadAi(); AI.usage = (await kvGet('usage')) || {}; refreshBrain();
     spStep('판 불러오는 중');
     S.dates = (await allDates()).sort();
     await goDate(S.today);
+    if (S.uniNote) setTimeout(() => toast("판 기본 칸에서 '확정된 지시'를 뺐어요. 거기 있던 일은 첫 칸에 그대로 있어요(⚙ '+ 칸 더하기'로 다시 만들 수 있어요)"), 6000);
     spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중`);
     await Promise.race([preloadArt((n, t) => spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중 ${n}/${t}`)), tickMs(4000)]);
     spStep('세희 머리 확인 중');

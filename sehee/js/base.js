@@ -4,10 +4,18 @@ const DEFAULT_SECTIONS = [
   { id:'today', label:'오늘 할 일',    color:'#a13b2c' },
   { id:'sched', label:'다가오는 일정', color:'#3a6b64' },
   { id:'memo',  label:'기억해둘 것',   color:'#a3823f' },
-  { id:'order', label:'확정된 지시',   color:'#5f7a55' },
   { id:'me',    label:'개인',          color:'#6b5b95' },
 ];
-const TAGS = [ { k:'퇴근 전', c:'#D32029' }, { k:'미정', c:'#5C6670' } ];
+/* v1.5.13 (C) 보편 설계 — 기본 칸·꼬리표에 직장·학원 말을 박지 않는다(누가 써도 같은 판). 개인 필요는 ⚙ 칸 더하기·이름 고치기로 */
+const TAGS = [ { k:'오늘 안에', c:'#D32029' }, { k:'미정', c:'#5C6670' } ];
+const TAG_OLD = { '퇴근 전':'#D32029' };   /* 예전 판에 남은 꼬리표도 같은 색으로 */
+/* 예전 기본 칸 '확정된 지시'를 한 번 정리 — 이름을 안 바꾼 채 그대로면 뺀다(거기 있던 일은 판 첫 칸에 그대로 보임). 사용자가 새로 만든 칸은 건드리지 않는다 */
+function panUniversal(){
+  if (S.settings.uni1) return false; S.settings.uni1 = true;
+  const list = S.settings.sections || [], i = list.findIndex(s => s.id === 'order' && s.label === '확정된 지시');
+  if (i < 0 || list.length < 2) return true;
+  list.splice(i, 1); S.uniNote = true; dlog('판', "보편 설계 — 기본 칸 '확정된 지시' 뺌"); return true;
+}
 const FREE_TAG = '#1B5FC1';
 const FACES = ['-_-','^_^','T_T','>_<','¬_¬',';_;','o_O'];
 const FS_STEPS = [ {v:.9,t:'작게'}, {v:1,t:'보통'}, {v:1.15,t:'크게'}, {v:1.3,t:'아주 크게'} ];
@@ -172,7 +180,7 @@ function sectionBlock(s, i){
 }
 
 function itemRow(it){
-  const t = it.tag ? (TAGS.find(x => x.k === it.tag)?.c || FREE_TAG) : null;
+  const t = it.tag ? (TAGS.find(x => x.k === it.tag)?.c || TAG_OLD[it.tag] || FREE_TAG) : null;
   const age = it.since && it.since < S.pan.date ? dayDiff(it.since, S.pan.date) + 1 : 0;
   const stamped = S.justDone === it.id; if (stamped) S.justDone = null;
   const ew = wayOf(it), mk = it.back ? '<span class="mk" title="내일로 미뤘던 일">🔁</span>' : it.since === S.pan.date && !it.done ? '<span class="mk" title="오늘 새로">🆕</span>' : '';
@@ -180,7 +188,7 @@ function itemRow(it){
     <button class="ck" data-act="toggle" aria-label="${it.done ? '끝냄 취소' : '끝냄'}">${it.done ? '<span class="seal">完</span>' : ''}</button>
     <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>
       <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div>
-      <div class="ways">${WAYS.map(w => `<button class="wy${ew === w ? ' on' : ''}" data-act="way" data-w="${w}">${w}</button>`).join('')}${ew ? `<span class="wyok">✓ ${ew}${ew === '내일' ? ' ' + mdShort(it.later) : ''}</span>` : ''}</div>
+      <div class="ways">${WAYS.map(w => `<button class="wy${ew === w ? ' on' : ''}" data-act="way" data-w="${w}">${esc(wayName(w))}</button>`).join('')}${ew ? `<span class="wyok">✓ ${esc(wayName(ew))}${ew === '내일' ? ' ' + mdShort(it.later) : ''}</span>` : ''}</div>
       <textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
@@ -214,10 +222,13 @@ function addItem(sec, text){
   touch(true);
 }
 
-/* ── 처리 단추 (v1.5.2 · C) — 일간보고 오늘판과 같은 넷: 끝 · 알바노 · 내일 · 기억만 ──
-   끝 = 한 일(完 도장과 같음) · 알바노 = 우리 일 아님으로 닫음 · 내일 = 오늘은 접고 내일 판에 🔁 로 다시 · 기억만 = '기억해둘 것' 칸으로 내림.
-   같은 단추를 다시 누르면 취소. 누른 순서는 it.wayLog 에 남긴다(지우지 않음). 세희는 읽기만 한다. */
+/* ── 처리 단추 (v1.5.2 · C) — 넷: 끝 · 안 함 · 내일 · 기억만 ──
+   끝 = 한 일(完 도장과 같음) · 안 함 = 안 하기로(내 일 아님) 닫음 · 내일 = 오늘은 접고 내일 판에 🔁 로 다시 · 기억만 = '기억해둘 것' 칸으로 내림.
+   같은 단추를 다시 누르면 취소. 누른 순서는 it.wayLog 에 남긴다(지우지 않음). 세희는 읽기만 한다.
+   v1.5.13 보편 설계: 안쪽 값(it.way·data-w)은 예전 그대로('알바노' 등) 두고, 보이는 이름만 기본 '안 함' — ⚙ 설정에서 사용자가 단추 이름을 바꾼다 */
 const WAYS = ['끝', '알바노', '내일', '기억만'];
+const WAY_DEFAULT = { '끝':'끝', '알바노':'안 함', '내일':'내일', '기억만':'기억만' };
+const wayName = k => ((S.settings && S.settings.wayNames && S.settings.wayNames[k]) || WAY_DEFAULT[k] || k);
 const mdShort = d => { if (!d) return ''; const x = parseYmd(d); return (x.getMonth() + 1) + '/' + x.getDate(); };
 function wayOf(it){ if (it.done) return it.way === '알바노' ? '알바노' : '끝'; if (it.later) return '내일'; if (it.way === '기억만') return '기억만'; return null; }
 function setWay(it, w){
@@ -225,14 +236,14 @@ function setWay(it, w){
   (it.wayLog = it.wayLog || []).push({ w: undo ? '취소' : w, at: Date.now() }); if (it.wayLog.length > 20) it.wayLog = it.wayLog.slice(-20);
   if (cur === '기억만' && it.waySec && secById(it.waySec)) it.sec = it.waySec;
   it.done = false; it.doneAt = null; delete it.later; delete it.way; delete it.waySec;
-  let msg = `'${w}' 풀었어요`;
+  let msg = `'${wayName(w)}' 풀었어요`;
   if (!undo){
-    if (w === '끝' || w === '알바노'){ it.done = true; it.doneAt = Date.now(); it.way = w; S.justDone = it.id; msg = w === '끝' ? '끝냈어요' : '알바노 — 우리 일 아닌 걸로 닫았어요'; }
+    if (w === '끝' || w === '알바노'){ it.done = true; it.doneAt = Date.now(); it.way = w; S.justDone = it.id; msg = w === '끝' ? '끝냈어요' : `${wayName(w)} — 안 하기로 닫았어요`; }
     else if (w === '내일'){ const t = parseYmd(S.pan.date); t.setDate(t.getDate() + 1); it.later = ymd(t); msg = `내일(${mdShort(it.later)}) 판에 다시 올라와요`; }
     else if (w === '기억만'){ it.way = '기억만'; const m = secById('memo');
       if (m && it.sec !== 'memo'){ it.waySec = it.sec; it.sec = 'memo'; msg = `'${m.label}'으로 내렸어요`; } else msg = '기억만 해 둘게요'; }
   }
-  dlog('판', `처리 단추 ${undo ? w + ' 취소' : w} #${it.id}`);
+  dlog('판', `처리 단추 ${undo ? wayName(w) + ' 취소' : wayName(w)} #${it.id}`);
   touch(true); render(); toast(msg, () => restore(snap));
 }
 $('main').addEventListener('click', e => {

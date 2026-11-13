@@ -16,6 +16,9 @@ function settingsSheet(){
       <button class="mini" data-sact="down" ${i === secs().length - 1 ? 'disabled' : ''}>↓</button>
       <button class="mini danger" data-sact="del">✕</button></div>`).join('')}</div>
     <button class="chip" data-sact="addsec" style="margin-top:4px">+ 칸 더하기</button>
+    <label class="t">처리 단추 이름 — 판 항목 아래 넷. 나한테 맞는 말로 바꿔요</label>
+    <div class="row wayn" style="flex-wrap:wrap;gap:6px">${WAYS.map(w => `<input data-wayn="${esc(w)}" value="${esc(wayName(w))}" placeholder="${esc(WAY_DEFAULT[w])}" maxlength="6" aria-label="${esc(WAY_DEFAULT[w])} 단추 이름">`).join('')}</div>
+    <p class="note" style="margin:4px 0 10px">왼쪽부터 끝 · 안 함 · 내일 · 기억만 자리예요. 비우면 기본 이름으로 돌아가요.</p>
     <label class="t">보너스 업데이트</label>
     ${LANES.map(l => `<div class="row" style="margin-top:4px"><span class="note" style="min-width:58px">${l.name}</span><button class="chip ${bonusOn(l.k) ? 'on' : ''}" data-sact="bonus" data-k="${l.k}" data-v="1">켬</button><button class="chip ${bonusOn(l.k) ? '' : 'on'}" data-sact="bonus" data-k="${l.k}" data-v="0">끔</button>${BONUS.vers[l.k] ? `<span class="note" style="margin-left:6px">${esc(BONUS.vers[l.k])}</span>` : ''}</div>`).join('')}
     ${BONUS.menu.length ? `<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${BONUS.menu.map((m, i) => `<button class="chip" data-sact="bonusrun" data-i="${i}">${esc(m.label)}</button>`).join('')}</div>` : ''}
@@ -169,6 +172,11 @@ $('sheet').addEventListener('click', async e => {
 $('sheet').addEventListener('input', e => { if (e.target.id === 'aiKey') $('keyLen').textContent = keyCheck(cleanKey(e.target.value)); });
 $('sheet').addEventListener('change', async e => {
   const t = e.target;
+  if (t.dataset.wayn){   /* v1.5.13 처리 단추 이름 */
+    const k = t.dataset.wayn, v = t.value.trim().slice(0, 6); S.settings.wayNames = { ...(S.settings.wayNames || {}) };
+    if (!v || v === WAY_DEFAULT[k]) delete S.settings.wayNames[k]; else S.settings.wayNames[k] = v;
+    t.value = wayName(k); await saveSettings(); render(); toast(`단추 이름: ${WAYS.map(wayName).join(' · ')}`); return;
+  }
   if (t.dataset.sact === 'name'){
     const s = secById(t.closest('[data-sid]').dataset.sid);
     s.label = t.value.trim() || s.label; await saveSettings(); render();

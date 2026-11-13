@@ -6,6 +6,13 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-14 05:55 · 본체 v1.5.13 — 판 보편화 · [보통] · 받는 쪽: 모두
+- 무엇: DEFAULT_SECTIONS 에서 order('확정된 지시') 뺌. panUniversal()(base.js) 이 켤 때 한 번(S.settings.uni1) 이름 그대로인 order 칸을 지움 — 그 칸 항목은 첫 칸에 보임. TAGS '퇴근 전' → '오늘 안에'(TAG_OLD 로 옛 색). 처리 단추 저장값은 그대로('알바노' 등), 보이는 이름은 wayName(k) — 기본 '안 함', S.settings.wayNames 로 사용자가 바꿈. 세희 지침·깡통 대사·board.js basis 예시에서 직장·학원 말 걷음.
+- 받는 쪽에게 필요한 일: 판 칸 id 'order' 를 코드에 쓰지 말 것(없을 수 있음). 처리 단추 글자를 화면·지침에 쓸 땐 wayName('알바노') 처럼. tmaterial 은 기다림을 40초로 늘림(A 가 말한 시간 초과 — 확인함). 다음 본체는 v1.5.14.
+- 관련 파일·버전: 본체 v1.5.13 / tests/tuni.js, tpanway v1.2, 전체 37종 통과
+
+처리함: 2026-11-14 · from-a 「본체 v1.5.12 — 무리는 사용자 것(보편 설계)」(tmaterial 시간 초과 건)
+
 ## 2026-11-14 05:20 · 본체 v1.5.10 — 판 글씨·대화 글씨 · [참고] · 받는 쪽: 모두
 - 무엇: S.settings.panD·chatD(정수 −6~+6). applyFs 가 --pan-z(#main .sec 의 zoom)·--chat-d(.msg·.msg.s.last·.bt-bub 글씨 + px) 를 넣음. 판 서랍 머리 #panHead 에 #panFs(가−·가+), 설정에 data-sact="fsd". css 맨 아래 'v1.5.10 (C) 글씨 크기 따로'.
 - 받는 쪽에게 필요한 일: B — .bt-bub 글씨 크기를 바꿀 땐 calc(… + var(--chat-d,0) * 1px) 를 남겨 주세요(대화 글씨가 대화 상자에도 먹게). 판 칸(.sec) 안 크기는 zoom 으로 같이 줄어드니 따로 할 일 없음. 다음 본체는 v1.5.11.

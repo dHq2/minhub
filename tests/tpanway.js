@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-// v1.1 (2026-11-14, C) 끝낸 일이 그 자리에 남는지 · v1.0 (2026-11-13, C) 판 일간보고 방식 — 끝·알바노·내일·기억만 단추, 같은 단추 다시 = 취소, 내일 판에 🔁, 세희가 읽는 판 글
+// v1.2 (2026-11-14, C) 알바노 단추는 이제 '안 함'으로 보임 · v1.1 끝낸 일이 그 자리에 남는지 · v1.0 (2026-11-13, C) 판 일간보고 방식 — 끝·알바노·내일·기억만 단추, 같은 단추 다시 = 취소, 내일 판에 🔁, 세희가 읽는 판 글
 (async () => { const b = await chromium.launch();
   for (const [name, opt] of [['폰', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }], ['컴', { viewport:{ width:1366, height:860 } }]]){
     const ctx = await b.newContext({ ...opt, serviceWorkers:'block' }); const p = await ctx.newPage();
@@ -30,7 +30,7 @@ const { chromium } = require('playwright');
     console.log(name, '누른 기록', await p.evaluate(() => ['w1','w2','w3','w4'].map(id => id + ':' + (findItem(id).wayLog || []).map(x => x.w).join('>')).join(' ')));
     // 세희가 읽는 판 글
     const ctxt = await p.evaluate(() => panContext());
-    console.log(name, '세희 판 글 — 내일 칸:', ctxt.includes('내일로 미룬 일') && /내일로 미룬 일[^]*결석표 셋/.test(ctxt), '| 안 끝난 일에 결석표 없음:', !/안 끝난 일:[^]*결석표 셋[^]*받은 것/.test(ctxt), '| 알바노 표시:', ctxt.includes('옆 반 교재 주문 확인 (알바노'), '| 기억만 표시:', ctxt.includes('(보스: 기억만'));
+    console.log(name, '세희 판 글 — 내일 칸:', ctxt.includes('내일로 미룬 일') && /내일로 미룬 일[^]*결석표 셋/.test(ctxt), '| 안 끝난 일에 결석표 없음:', !/안 끝난 일:[^]*결석표 셋[^]*받은 것/.test(ctxt), '| 알바노 표시:', ctxt.includes('옆 반 교재 주문 확인 (안 함'), '| 기억만 표시:', ctxt.includes('(보스: 기억만'));
     // 다시 켜도 남음
     await p.reload(); await p.waitForTimeout(1600);
     console.log(name, '다시 켬', await p.evaluate(async () => { const pr = await todayPanRef(); return pr.items.filter(i => /^w/.test(i.id)).map(i => i.id + ':' + (i.done ? (i.way || '끝') : i.later ? '내일' : i.way || '-')).join(' '); }));

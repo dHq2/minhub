@@ -53,7 +53,7 @@ const BOARD_TOOLS = () => [
     values:{ type:'array', items:{ type:'number' }, description:'차트 값들(labels 와 같은 순서)' },
     unit:{ type:'string', description:'값 단위. 예: 명, 원, %' },
     summary:{ type:'string', description:'보고서 맨 위 핵심 요약 2~3문장' },
-    basis:{ type:'string', description:'보고서 근거 자료. 예: 11/8 원장님 카톡, 민수실장_분석.docx' },
+    basis:{ type:'string', description:'보고서 근거 자료. 예: 11/8 팀 단톡방 캡처, 3분기_정리.docx' },
     highlights:{ type:'array', description:'보고서 맨 위 핵심 숫자·사실 2~4개(선택). 예: {label:"남은 일", value:"4건"}', items:{ type:'object', properties:{ label:{ type:'string' }, value:{ type:'string' } }, required:['label', 'value'] } },
     sections:{ type:'array', description:'보고서 본문 섹션들', items:{ type:'object', properties:{
       heading:{ type:'string', description:'섹션 제목' }, text:{ type:'string', description:'문단. 평범한 문장' },

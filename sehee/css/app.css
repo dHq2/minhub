@@ -754,3 +754,6 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .gq-n{flex:none;width:30px;text-align:right;color:#8a8373;font-size:.72rem}
 .gq-row .ib:disabled,.gq-row .chip:disabled{opacity:.3}
 .gq-row .chip.danger.on{background:#fff4f2;color:#c0392b;border-color:#c0392b;white-space:nowrap}
+
+/* v1.5.13 (C) 처리 단추 이름 칸 */
+.wayn input{width:5.2em;padding:6px 8px;border:1px solid var(--line);border-radius:4px;font:inherit;font-size:.86rem;background:#fffdf6}
