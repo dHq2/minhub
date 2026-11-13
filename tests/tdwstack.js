@@ -24,9 +24,9 @@ const { chromium } = require('playwright');
     R.closed = await geo();
     const t0 = await box('#dwTabs [data-dw=people]'); const x = t0.x + t0.width / 2, y = t0.y + t0.height / 2;
     const end = await drag(x, y, -150, 10, true);
-    R.mid = await geo(); await p.screenshot({ path:`vdwstack-${vp.tag}-pulling.png` });
+    R.mid = await geo(); await p.screenshot({ path:`/tmp/vdwstack-${vp.tag}-pulling.png` });
     await end(); await p.waitForTimeout(800);
-    R.opened = await geo(); await p.screenshot({ path:`vdwstack-${vp.tag}-open.png` });
+    R.opened = await geo(); await p.screenshot({ path:`/tmp/vdwstack-${vp.tag}-open.png` });
     /* 살짝 보이는 견출지를 누르면 닫힘 */
     const g = R.opened, o = await box('#office');
     await tap(o.x + Math.max(3, (g.tabR) / 2) * (o.width / g.officeW), y);

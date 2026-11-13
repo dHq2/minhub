@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.8
+/* 세희 보너스 업데이트 — B0.9
    실험 파일 B(방 B 기본 담당). 인수인계 v3 — 세 방 동등, 본체도 할일.md 찜으로 직접 고친다.
    본체와는 주로 window.SEHEE 창구로 잇고, v3 부터는 본체 함수(btFold 등)도 직접 부른다.
 
@@ -37,10 +37,11 @@
         ② 자동 카드는 한 줄만: 본체 v1.4.1 창구 SEHEE.og 로 출처 페이지 대표 사진(상품 사진)을 먼저 → 없으면 위키 사진(더 엄하게) → 그래도 없을 때만 출처 화면 한 장.
            출처를 전부 화면으로 늘어놓지 않는다.
    B0.8 (2026-11-13, 본체 v1.5.1 과 같이) 사람 서랍 대화 상자도 본체 btFold 로 옆으로 접기(이름표 끌기·꼬리 당기기).
-        다시 답하기(on regen)로 지워진 답의 자료 카드(b_vis)를 같이 지운다. */
+        다시 답하기(on regen)로 지워진 답의 자료 카드(b_vis)를 같이 지운다.
+   B0.9 (2026-11-14, 본체 v1.5.11 과 같이) 사람 서랍 대화 상자의 '대화 보기' 단추 없앰(보스 — 다른 단추로 충분). 이름 옆 ▶▷ 는 본체 btFold 가 붙임. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.8');
+  S.setVersion('B0.9');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -184,9 +185,8 @@
   function addTalkBox(){
     const body = $('people'); if (!body || $('bPpTalk')) return;
     const d = document.createElement('div'); d.className = 'bt b-ppt'; d.id = 'bPpTalk';
-    d.innerHTML = `<div class="bt-side"><img id="bPpSpr" src="art/s-lean.webp" alt="강세희"></div><div class="bt-name"><b>강세희</b><button type="button" id="bPpAll">대화 보기 ›</button></div><div class="bt-bub" id="bPpBub"></div>`;
+    d.innerHTML = `<div class="bt-side"><img id="bPpSpr" src="art/s-lean.webp" alt="강세희"></div><div class="bt-name"><b>강세희</b></div><div class="bt-bub" id="bPpBub"></div>`;
     body.appendChild(d);
-    $('bPpAll').onclick = () => S.closeDrawer();
     if (typeof window.btFold === 'function') window.btFold(d, 'people');   // 본체 v1.5.1 옆으로 접기
     refit();
   }
@@ -211,7 +211,7 @@
     if (waiting) h += `<div class="bt-s wait"><i><span></span><span></span><span></span></i><small>${sec < 2 ? '보내는 중' : '세희가 생각 중'} · ${sec}초</small></div>`;
     else if (lastS){
       h += `<div class="bt-s${lastS.err ? ' err' : ''}${lastS.ask && lastS.ask.open ? ' ask' : ''}">${S.esc(lastS.text)}`;
-      if (lastS.ask && lastS.ask.open) h += `<span class="b-ask">고를 게 있으면 「대화 보기」에서 누르거나 아래 칸에 써 주세요.</span>`;
+      if (lastS.ask && lastS.ask.open) h += `<span class="b-ask">고를 게 있으면 사무실 대화에서 누르거나 아래 칸에 써 주세요.</span>`;
       if (lastS.src && lastS.src.length) h += `<span class="src">출처 ${lastS.src.map(x => `<a href="${S.esc(x.u)}" target="_blank" rel="noopener">${S.esc(x.t || x.u)}</a>`).join(' · ')}</span>`;
       h += '</div>';
     } else h += `<div class="bt-s">${EMPTY}</div>`;

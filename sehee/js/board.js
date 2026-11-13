@@ -202,6 +202,8 @@ function btFold(box, key){
   if (!box || box.dataset.fold) return; box.dataset.fold = key;
   const tag = box.querySelector('.bt-name b'); if (!tag) return;
   tag.classList.add('noswipe'); tag.title = '옆으로 끌거나 눌러서 접기';
+  /* v1.5.11 이름 옆 ▶▷ — 은은하게 반짝이며 '끌거나 누르면 접힌다'를 알려 줌. 이름표 안에 있어 같이 끌린다 */
+  if (!tag.querySelector('.bt-hint')) tag.insertAdjacentHTML('beforeend', '<i class="bt-hint" aria-hidden="true"><span>▶</span><span>▷</span></i>');
   const peek = document.createElement('button'); peek.type = 'button'; peek.className = 'bt-peek noswipe'; peek.setAttribute('aria-label', '세희 대화 펴기');
   peek.innerHTML = '<span>세희</span><i></i>'; box.appendChild(peek);
   const K = 'sehee.fold.' + key, lastAt = () => { for (let i = O.log.length - 1; i >= 0; i--) if (O.log[i].who === 's') return O.log[i].at; return 0; };
@@ -246,14 +248,13 @@ function btFold(box, key){
   if (on){ box.classList.add('sfold'); setTimeout(() => { seen = lastAt(); }, 1500); }
   box.btFold = { fold, open, folded:() => box.classList.contains('sfold') };
 }
-/* 판 위 대화 상자: 이름표 끌기/누르기 = 옆으로 접기(v1.5.2), 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
+/* 판 위 대화 상자: 이름표 끌기/누르기 = 옆으로 접기(v1.5.2), 높이만큼 판 아래를 비워 둔다. 대화 보기 단추는 v1.5.11 에 없앰(↻·🗑 등 다른 단추로 충분) */
 (function panTalkInit(){
   const pt = $('panTalk');
   try{ if (localStorage.getItem('sehee.ptFold') === '1' && localStorage.getItem('sehee.fold.pan') === null) localStorage.setItem('sehee.fold.pan', '1'); localStorage.removeItem('sehee.ptFold'); }catch(e){}
   $('ptName').textContent = '강세희';
   btFold(pt.querySelector('.pt-box'), 'pan');
   btFold(document.querySelector('#dw-board .bt'), 'board');
-  $('ptAll').onclick = () => goView('office');
   $('ptBub').addEventListener('click', e => { msgToolClick(e); });
   const fit = () => document.body.style.setProperty('--pth', pt.offsetHeight + 'px');
   if (window.ResizeObserver) new ResizeObserver(fit).observe(pt); fit();
@@ -315,7 +316,6 @@ $('bdText').addEventListener('focus', () => document.body.classList.add('typing'
 $('bdText').addEventListener('blur', () => document.body.classList.remove('typing'));
 $('bdGo').addEventListener('pointerdown', e => e.preventDefault());
 $('bdGo').onclick = () => { if ($('bdText').value.trim()) sendSay($('bdText')); };
-$('btAll').onclick = () => dwClose('board');
 (function measure(){
   const set = () => {
     $('office').style.setProperty('--sayh', $('say').offsetHeight + 'px');

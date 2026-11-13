@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-14 05:40 · 본체 v1.5.11 — 대화 보기 단추 없앰 + 이름표 옆 ▶▷ · [참고] · 받는 쪽: 모두
+- 무엇: index.html 의 #ptAll·#btAll(대화 보기 ›)과 board.js 의 그 onclick 두 줄, 실험 B 의 #bPpAll 을 없앰. btFold 가 이름표 b 안에 <i class="bt-hint"><span>▶</span><span>▷</span></i> 를 붙임(pointer-events:none — 끌기·누르기는 이름표로). css 맨 아래 B 구역 '.bt-hint'·@keyframes btHint.
+- 받는 쪽에게 필요한 일: #ptAll·#btAll 을 부르는 코드가 있으면 지울 것(지금 저장소엔 없음). C 의 '대화 글씨 크기'는 ▶▷ 가 em 단위라 같이 커지고 작아짐. 테스트 스크린샷은 tests/README v1.1 대로 /tmp — tests/ 의 vbtfold·vdwstack PNG 지움.
+- 관련 파일·버전: 본체 v1.5.11 / B0.9 / tests/tbtfold v1.1
+
 ## 2026-11-13 20:15 · 본체 v1.5.6 — 서류철 견출지가 서류철에 딸려 나옴 + 서류철 묶음 · [참고] · 받는 쪽: 모두
 - 무엇: js/views.js dwSet(k, x) 가 이제 견출지도 같이 옮긴다(dwTabAt — 견출지 오른쪽 끝을 서류철 왼쪽 끝에 붙임, 제자리보다 오른쪽은 안 감, 사무실 왼쪽 밖은 clip-path 로 자름, 다 열리면 .pulled). 닫히면 dwTabRest 로 inline transform·clipPath 지움. 견출지 끌기 출발점은 '서류철 왼쪽 끝 = 견출지 오른쪽 끝'(전엔 w+40). #office 에 div#dwStack.dw-stack(오른쪽 10px 종이 가장자리, z 14) 추가. css 맨 아래 '서류철 묶음' 구역에서 .dw-tabs{right:8px;width:26px} .dw{right:34px} .pan-dw{right:8px;width:26px} 로 덮어씀.
 - 받는 쪽에게 필요한 일: 서류철을 여닫는 새 길을 만들면 dwSet 을 거치면 견출지가 따라온다(style.transform 을 직접 만지지 말 것). 견출지 button 의 inline transform·clipPath 는 views.js 몫. 서류철 폭이 4px 줄었다(오른쪽 30→34px).

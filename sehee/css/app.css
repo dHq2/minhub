@@ -739,3 +739,10 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .pdr-head .fsd + .dw-x{margin-left:0}
 .fsd sub,.fsd sup{font-size:.7em;line-height:0}
 .fsd-row .fsd-n{min-width:2.2em;text-align:center;font-variant-numeric:tabular-nums}
+
+/* ── 이름표 옆 ▶▷ (v1.5.11, B) — 은은하게 반짝이며 '끌거나 누르면 접힘'을 알려 줌. 이름표 안이라 같이 끌린다 ── */
+.bt-hint{font-style:normal;display:inline-flex;gap:0;margin-left:6px;font-size:.62em;letter-spacing:-.05em;vertical-align:1px;pointer-events:none}
+.bt-hint span{opacity:.32;animation:btHint 2.8s ease-in-out infinite}
+.bt-hint span+span{animation-delay:.35s}
+@keyframes btHint{0%,60%,100%{opacity:.32}25%{opacity:.85;text-shadow:0 0 5px rgba(255,236,170,.9)}}
+@media (prefers-reduced-motion:reduce){.bt-hint span{animation:none;opacity:.5}}
