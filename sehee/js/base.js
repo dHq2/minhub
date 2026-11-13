@@ -162,7 +162,7 @@ function sectionBlock(s, i){
   const known = new Set(secs().map(x => x.id));
   const all = S.pan.items.filter(it => it.sec === s.id || (i === 0 && !known.has(it.sec)));
   const open = all.filter(it => !it.done && !it.later), parked = all.filter(it => !it.done && it.later), done = all.filter(it => it.done);
-  const shown = S.settings.openOnly ? open : open.concat(parked, done);
+  const shown = S.settings.openOnly ? open : all;   /* v1.5.9 (C) 보스: 끝낸 일·내일로 미룬 일도 아래로 내리지 않고 그 자리에서 취소선·흐리게 — 적은 순서 그대로 */
   const folded = S.folded[s.id];
   return `<section class="sec ${folded ? 'folded' : ''}" style="--c:${s.color}" data-sec="${s.id}">
     <div class="sh" data-act="fold"><b>${esc(s.label)}</b><span class="cnt">${open.length}${parked.length ? ' · 내일 ' + parked.length : ''}${done.length ? ' · 끝남 ' + done.length : ''}</span><span class="fold">${folded ? '펼치기' : '접기'}</span></div>

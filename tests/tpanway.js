@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-// v1.0 (2026-11-13, C) 판 일간보고 방식 — 끝·알바노·내일·기억만 단추, 같은 단추 다시 = 취소, 내일 판에 🔁, 세희가 읽는 판 글
+// v1.1 (2026-11-14, C) 끝낸 일이 그 자리에 남는지 · v1.0 (2026-11-13, C) 판 일간보고 방식 — 끝·알바노·내일·기억만 단추, 같은 단추 다시 = 취소, 내일 판에 🔁, 세희가 읽는 판 글
 (async () => { const b = await chromium.launch();
   for (const [name, opt] of [['폰', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }], ['컴', { viewport:{ width:1366, height:860 } }]]){
     const ctx = await b.newContext({ ...opt, serviceWorkers:'block' }); const p = await ctx.newPage();
@@ -14,9 +14,11 @@ const { chromium } = require('playwright');
       return { way:wayOf(it), done:!!it.done, later:it.later || '', sec:it.sec, ok:r ? (r.querySelector('.wyok') || {}).textContent || '' : '(안 보임)', on:r ? [...r.querySelectorAll('.wy.on')].map(x => x.textContent).join(',') : '' }; }, id);
     await p.screenshot({ path:`/tmp/panway-${name}-0.png` });
     await tap('.it[data-id="w1"] .wy[data-w="끝"]'); await p.waitForTimeout(250);
+    const order = () => p.evaluate(() => [...document.querySelectorAll('.sec[data-sec="today"] .it')].map(r => r.dataset.id).filter(id => /^w/.test(id)).join(','));
+    console.log(name, '끝낸 뒤 자리 그대로(w1 맨 위)', await order(), '| 취소선', await p.evaluate(() => getComputedStyle(document.querySelector('.it[data-id="w1"] .tx')).textDecorationLine));
     console.log(name, '끝', JSON.stringify(await st('w1')), '| 完', await p.evaluate(() => (document.querySelector('.it[data-id="w1"] .seal') || {}).textContent));
     await tap('.it[data-id="w2"] .wy[data-w="알바노"]'); await p.waitForTimeout(250); console.log(name, '알바노', JSON.stringify(await st('w2')));
-    await tap('.it[data-id="w3"] .wy[data-w="내일"]'); await p.waitForTimeout(250); console.log(name, '내일', JSON.stringify(await st('w3')), '| 칸 세기', await p.evaluate(() => document.querySelector('.sec[data-sec="today"] .cnt').textContent));
+    await tap('.it[data-id="w3"] .wy[data-w="내일"]'); await p.waitForTimeout(250); console.log(name, '알바노·내일 뒤 순서', await order()); console.log(name, '내일', JSON.stringify(await st('w3')), '| 칸 세기', await p.evaluate(() => document.querySelector('.sec[data-sec="today"] .cnt').textContent));
     await tap('.it[data-id="w4"] .wy[data-w="기억만"]'); await p.waitForTimeout(250); console.log(name, '기억만', JSON.stringify(await st('w4')));
     await p.waitForTimeout(400); await p.screenshot({ path:`/tmp/panway-${name}-1.png`, fullPage:false });
     await p.evaluate(() => document.querySelector('.it[data-id="w4"]').scrollIntoView({ block:'center' })); await p.waitForTimeout(200);
