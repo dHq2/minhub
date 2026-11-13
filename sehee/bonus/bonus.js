@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.5
+/* 세희 보너스 업데이트 — B0.5.1
    이 폴더(sehee/bonus/)는 '제작기 2' 방 몫이다. 본체(index.html·sw.js)는 메인 방만 고친다.
    본체와는 window.SEHEE 창구로 잇는다. 쓰는 법은 인수인계 문서 4장.
 
@@ -21,10 +21,12 @@
         정확히 같은 걸 못 찾으면 '비슷한 것' 표시를 달고 가장 가까운 것을 보여 준다. 카드를 누르면 크게 보기 + 출처 열기.
         사진 출처: 위키미디어 공용(자유 이용 사진) · 위키백과 대표 사진. 웹 페이지 대표 사진은 본체 창구 SEHEE.og 가 생기면 자동으로 씀.
         그래프: 막대·꺾은선(세희가 실제 숫자를 줄 때만). 카드 기록은 b_vis(계정 동기화, 최근 60개 답까지).
-        본체 v1.3.8 정리: 컴퓨터 틀 굴림 되돌리기는 예전 본체에서만, 인간관계 판 배율은 SEHEE.pplZoom 으로도 넘긴다. */
+        본체 v1.3.8 정리: 컴퓨터 틀 굴림 되돌리기는 예전 본체에서만, 인간관계 판 배율은 SEHEE.pplZoom 으로도 넘긴다.
+   B0.5.1 (2026-11-13) 판 견출지 마우스 올리기: 견출지로 서랍을 닫고 판으로 돌아온 직후처럼, 화면이 바뀔 때 마우스가 이미 견출지 위에 있으면
+        한 번 밖으로 나갔다 들어올 때까지 넘어가지 않는다(메인 from-main 14:55 참고 사항). 본체 v1.4.0·보너스 C0.1 과 같이 켜서 확인. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.5');
+  S.setVersion('B0.5.1');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -224,19 +226,27 @@
     S.goView(k);
     keep(); setTimeout(keep, 0); setTimeout(keep, 60); setTimeout(keep, 250);
   }
+  /* B0.5.1: 화면이 바뀐 순간(서랍 닫고 판으로 돌아옴 등) 마우스가 이미 견출지 위에 있으면, 한 번 밖으로 나갔다 들어올 때까지 안 넘어간다 */
+  let lx = -1, ly = -1, needLeave = false;
+  const overPanDw = () => { const box = $('panDw'); if (!box || lx < 0) return false; const el = document.elementFromPoint(lx, ly); return !!(el && box.contains(el)); };
+  const recheck = () => setTimeout(() => { needLeave = overPanDw(); if (needLeave && hov){ hov.classList.remove('b-peek'); hov = null; clearTimeout(hovT); } }, 80);
+  window.addEventListener('pointermove', e => { if (e.pointerType === 'mouse'){ lx = e.clientX; ly = e.clientY; } }, { capture:true, passive:true });
+  window.addEventListener('pointerup', e => { if (e.pointerType === 'mouse'){ lx = e.clientX; ly = e.clientY; recheck(); } }, true);
+  S.on('view', recheck);
   function bindPanTabs(){
     const box = $('panDw'); if (!box || box.dataset.bHover) return; box.dataset.bHover = '1';
     box.addEventListener('pointerover', e => {
-      if (e.pointerType !== 'mouse' || e.buttons) return;
+      if (e.pointerType !== 'mouse' || e.buttons || needLeave) return;
       const b = e.target.closest('button[data-pdw]'); if (!b || b === hov) return;
       if (hov) hov.classList.remove('b-peek');
       hov = b; b.classList.add('b-peek'); clearTimeout(hovT);
-      hovT = setTimeout(() => { if (hov === b && b.matches(':hover')){ b.classList.remove('b-peek'); hov = null; jump(b.dataset.pdw); } }, 120);
+      hovT = setTimeout(() => { if (hov === b && !needLeave && b.matches(':hover')){ b.classList.remove('b-peek'); hov = null; jump(b.dataset.pdw); } }, 120);
     });
     box.addEventListener('pointerout', e => {
-      if (e.pointerType !== 'mouse' || !hov) return;
-      if (e.relatedTarget && hov.contains(e.relatedTarget)) return;
-      hov.classList.remove('b-peek'); hov = null; clearTimeout(hovT);
+      if (e.pointerType !== 'mouse') return;
+      if (e.relatedTarget && box.contains(e.relatedTarget)){ if (hov && !hov.contains(e.relatedTarget)){ hov.classList.remove('b-peek'); hov = null; clearTimeout(hovT); } return; }
+      needLeave = false;   // 견출지 밖으로 나감 — 다음에 들어오면 넘어간다
+      if (hov){ hov.classList.remove('b-peek'); hov = null; clearTimeout(hovT); }
     });
   }
 
