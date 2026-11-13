@@ -757,3 +757,19 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 
 /* v1.5.13 (C) 처리 단추 이름 칸 */
 .wayn input{width:5.2em;padding:6px 8px;border:1px solid var(--line);border-radius:4px;font:inherit;font-size:.86rem;background:#fffdf6}
+
+/* v1.5.14 일간보고서 판 띠 · 지난 판 · 세희 코멘트 (A) */
+.verbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:2px 0 8px;padding:6px 9px;border:1px solid #d8cfbb;border-radius:9px;background:rgba(255,255,255,.6);font-size:.8rem}
+.verbar .vb-t{font-weight:700;color:#2b2417}.verbar .vb-s{color:#8a8373;font-size:.72rem;margin-right:auto}
+.verbar .vb-b{border:1px solid #b9ad93;background:#fffdf7;color:#5c5340;border-radius:12px;padding:2px 10px;font:600 .72rem var(--f-body);cursor:pointer}
+.verbar .vb-new.on{border-color:#c0392b;color:#c0392b;background:#fff4f2}
+.verbar.old{background:#f3ead6;border-color:#b39b6b}.verbar.old .vb-s{color:#8a6d3b;font-weight:700}
+#main.ro .sec,#main.ro .sehee,#main.ro .inbox{opacity:.82;filter:sepia(.25)}
+#main.ro .add,#main.ro .ways,#main.ro .more,#main.ro .memo:not(.has){display:none}
+.vs-list{display:flex;flex-direction:column;gap:6px;margin:6px 0}
+.vs-row{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;text-align:left;padding:8px 10px;border:1px solid #d8cfbb;border-radius:9px;background:#fffdf7;font:inherit;cursor:pointer}
+.vs-row b{font-size:.88rem}.vs-row span{font-size:.74rem;color:#8a8373;align-self:center}.vs-row small{grid-column:1/-1;color:#6b6250;font-size:.74rem}
+.vs-row.now{border-color:#3a6b64;background:#f1f7f5}
+.icm{margin:3px 0 1px;font-size:.8rem;line-height:1.45;color:#5b3f6e}
+.icm i{font-style:normal;font-weight:700;font-size:.66rem;color:#fff;background:#7a5a8f;border-radius:6px;padding:0 5px;margin-right:5px;vertical-align:1px}
+.it.done .icm{opacity:.55}

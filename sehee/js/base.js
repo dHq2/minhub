@@ -79,13 +79,14 @@ async function makeToday(date){
     p.inbox = (prev.inbox || []).map(x => ({ ...x }));
     p.carriedFrom = prevDate;
   }
+  p.ver = { label:verHour(p.createdAt), at:p.createdAt, by:'app', why:prevDate ? '날이 바뀜' : '첫 판' }; p.vers = [];   /* v1.5.14 날이 바뀌면 새 판 */
   await putPan(p);
   S.dates = (await allDates()).sort();
   return p;
 }
 
 async function goDate(date){
-  await flush();
+  await flush(); RPT.view = null;
   let p = await getPan(date);
   if (!p && date === S.today) p = await makeToday(date);
   S.date = date; S.pan = p || null;
@@ -138,7 +139,13 @@ function render(){
   }
   /* v1.5.1 메모칸에 쓰는 중에 다시 그려져도(동기화·세희 작업) 쓰던 자리 그대로 */
   const fa = document.activeElement, fm = fa && fa.dataset && fa.dataset.memo ? { id:fa.dataset.memo, a:fa.selectionStart, b:fa.selectionEnd } : null;
-  m.innerHTML = seheeBlock() + inboxBlock() + secs().map(sectionBlock).join('') + footer();
+  /* v1.5.14 지난 판을 보는 중이면 그 판을 잠깐 꺼내 같은 모양으로 그린다(보기 전용) */
+  const live = S.pan, snap = RPT.view ? (verEnsure(live).vers || []).find(v => v.label === RPT.view) : null;
+  if (RPT.view && !snap) RPT.view = null;
+  if (snap) S.pan = { ...live, items:snap.items || [], inbox:snap.inbox || [], line:snap.line || '', face:snap.face || '-_-' };
+  try{ m.innerHTML = verBar(live, snap) + seheeBlock() + inboxBlock() + secs().map(sectionBlock).join('') + footer(); } finally { S.pan = live; }
+  m.classList.toggle('ro', !!snap);
+  if (snap) m.querySelectorAll('textarea, input').forEach(x => { x.readOnly = true; });
   const ta = m.querySelector('#line'); if (ta) grow(ta);
   m.querySelectorAll('textarea[data-memo].has').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; });
   if (fm){ const t = m.querySelector(`textarea[data-memo="${fm.id}"]`); if (t){ t.focus({ preventScroll:true }); try{ t.setSelectionRange(fm.a, fm.b); }catch(e){} } }
@@ -186,13 +193,64 @@ function itemRow(it){
   const ew = wayOf(it), mk = it.back ? '<span class="mk" title="내일로 미뤘던 일">🔁</span>' : it.since === S.pan.date && !it.done ? '<span class="mk" title="오늘 새로">🆕</span>' : '';
   return `<div class="it ${it.done ? 'done' : ''}${it.later && !it.done ? ' later' : ''}${stamped ? ' stamped' : ''}" data-id="${it.id}">
     <button class="ck" data-act="toggle" aria-label="${it.done ? '끝냄 취소' : '끝냄'}">${it.done ? '<span class="seal">完</span>' : ''}</button>
-    <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>
+    <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>${it.cm ? `<div class="icm"><i>세희</i>${esc(it.cm)}</div>` : ''}
       <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div>
       <div class="ways">${WAYS.map(w => `<button class="wy${ew === w ? ' on' : ''}" data-act="way" data-w="${w}">${esc(wayName(w))}</button>`).join('')}${ew ? `<span class="wyok">✓ ${esc(wayName(ew))}${ew === '내일' ? ' ' + mdShort(it.later) : ''}</span>` : ''}</div>
       <textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
 }
+
+/* ── 일간보고서 판 (v1.5.14, A — handoff/설계-일간보고서.md) ──
+   날짜 판 하나에 '지금 판'(ver)과 얼린 지난 판들(vers)이 같이 들어 있다 → 동기화(pan:날짜)를 그대로 탄다.
+   새 판은 날이 바뀔 때(makeToday)·세희의 큰 갱신(new_report)·보스의 「새 판」에서만. 작은 수정은 지금 판 안에서. 지난 판은 고치지 않는다.
+   이름은 쓴 시각의 시(5시·17시). 같은 시가 겹치면 앞 판을 '5시-1'로 바꾸고 새 판은 '5시-2', 다음 '5시-3'. */
+const RPT = { view:null, arm:false };
+const VER_MAX = 24;
+const verHour = at => new Date(at || Date.now()).getHours() + '시';
+function verEnsure(p){ if (!p) return p; if (!p.ver) p.ver = { label:verHour(p.createdAt), at:p.createdAt || Date.now(), by:'app', why:'' }; if (!p.vers) p.vers = []; return p; }
+function verNextLabel(p){
+  /* newReport 가 지금 판을 vers 에 얼려 넣은 뒤 부른다 — 그래서 vers 만 보면 그날 판이 다 있다 */
+  const h = verHour(Date.now()), all = p.vers, same = all.filter(v => v.label === h || v.label.startsWith(h + '-'));
+  if (!same.length) return h;
+  for (const v of all) if (v.label === h) v.label = h + '-1';
+  return h + '-' + (same.length + 1);
+}
+const verTitle = (p, v) => { const d = parseYmd(p.date); return `${d.getMonth() + 1}월 ${d.getDate()}일 보고서 - ${v.label}`; };
+const verClone = x => JSON.parse(JSON.stringify(x || []));
+async function newReport(p, why, by){
+  verEnsure(p);
+  p.vers.push({ ...p.ver, until:Date.now(), line:p.line || '', face:p.face || '-_-', items:verClone(p.items), inbox:verClone(p.inbox) });
+  if (p.vers.length > VER_MAX) p.vers.splice(0, p.vers.length - VER_MAX);
+  p.ver = { label:verNextLabel(p), at:Date.now(), by:by || 'sehee', why:String(why || '').trim().slice(0, 80) };
+  p.updatedAt = Date.now();
+  if (S.pan === p){ await flush(true); if (!RPT.view) render(); } else await putPan(p);
+  dlog('판', '새 판 ' + verTitle(p, p.ver) + (p.ver.why ? ' · ' + p.ver.why : ''));
+  return p.ver;
+}
+function verBar(live, snap){
+  verEnsure(live); const v = snap || live.ver, n = live.vers.length;
+  return `<div class="verbar${snap ? ' old' : ''}"><span class="vb-t">📄 ${esc(verTitle(live, v))}</span><span class="vb-s">${snap ? '지난 판 · 보기만' : '지금'}</span>
+    ${snap ? '<button class="vb-b" data-ver="">지금 판으로</button>' : `${n ? `<button class="vb-b" data-verlist="1">지난 판 ${n} ▾</button>` : ''}${live.date === S.today ? `<button class="vb-b vb-new${RPT.arm ? ' on' : ''}" data-vernew="1">${RPT.arm ? '한 번 더 누르면 새 판' : '새 판'}</button>` : ''}`}</div>`;
+}
+const verHM = t => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+function verSheet(){
+  const p = verEnsure(S.pan); if (!p) return;
+  const row = (v, now) => `<button class="vs-row${now ? ' now' : ''}" data-ver="${now ? '' : esc(v.label)}"><b>${esc(v.label)} 보고서</b><span>${verHM(v.at)}~${now ? "지금" : verHM(v.until)} · 항목 ${(now ? p.items : v.items || []).length}</span>${v.why ? `<small>${esc(v.why)}</small>` : ''}</button>`;
+  openSheet(`<h4>${esc(verTitle(p, { label:'' }).replace(/ - $/, ''))} — 판 ${p.vers.length + 1}개</h4><div class="vs-list">${row(p.ver, true)}${p.vers.slice().reverse().map(v => row(v, false)).join('')}</div>
+    <p class="note">지난 판은 그때 그대로 남아 있어요(고칠 수 없어요). 새 판은 날이 바뀔 때, 세희가 크게 정리할 때만 생겨요.</p>`);
+}
+/* 지난 판을 보는 동안은 판 띠 말고는 아무것도 안 눌리게(입력도 막음) */
+$('main').addEventListener('click', e => { if ($('main').classList.contains('ro') && !e.target.closest('.verbar')){ e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+document.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.closest('[data-verlist]')) return verSheet();
+  const vn = t.closest('[data-vernew]');
+  if (vn){ if (!RPT.arm){ RPT.arm = true; render(); setTimeout(() => { if (RPT.arm){ RPT.arm = false; render(); } }, 4000); return; }
+    RPT.arm = false; const v = await newReport(S.pan, '보스가 새 판', 'boss'); toast(`새 판 — ${v.label} 보고서`); return; }
+  const vv = t.closest('[data-ver]');
+  if (vv && (vv.closest('.verbar') || vv.closest('#sheet'))){ RPT.view = vv.dataset.ver || null; if (vv.closest('#sheet')) closeSheet(); render(); $('main').scrollTop = 0; }
+});
 
 function footer(){
   return `<footer>세희 깡통 ${APP_VERSION} · 데이터는 이 폰 안에만 있어요 · 백업은 ⚙ 에서</footer>`;

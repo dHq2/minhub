@@ -143,16 +143,17 @@ const dueText = it => it.due ? mdDay(it.due) + (it.time ? ' ' + it.time : ' · �
 const secName = id => (secById(id) || secs()[0]).label;
 function itemLine(it, date){
   const age = it.since && it.since < date ? ` (${dayDiff(it.since, date) + 1}일째)` : '';
-  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}${it.back ? ' (보스가 어제 「내일」로 미뤘던 일)' : ''}${it.way === '기억만' && !it.done ? ' (보스: 기억만 — 챙기라고 재촉하지 말 것)' : ''}${it.note ? `\n    메모: ${it.note.replace(/\n/g, ' / ')}` : ''}`;
+  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}${it.back ? ' (보스가 어제 「내일」로 미뤘던 일)' : ''}${it.way === '기억만' && !it.done ? ' (보스: 기억만 — 챙기라고 재촉하지 말 것)' : ''}${it.note ? `\n    메모: ${it.note.replace(/\n/g, ' / ')}` : ''}${it.cm ? `\n    세희 코멘트: ${it.cm}` : ''}`;
 }
 async function todayPanRef(){ if (S.date === S.today && S.pan) return S.pan; return (await getPan(S.today)) || await makeToday(S.today); }
 async function panContext(){
-  const p = await todayPanRef();
+  const p = verEnsure(await todayPanRef());
+  const head = `일간보고서 — 지금 판: ${verTitle(p, p.ver)} (${verHM(p.ver.at)}부터${p.ver.why ? ', ' + p.ver.why : ''})${p.vers.length ? ' · 오늘 지난 판: ' + p.vers.map(v => v.label).join(', ') : ''}`;
   const open = p.items.filter(it => !it.done && !it.later).map(it => itemLine(it, p.date));
   const later = p.items.filter(it => !it.done && it.later).map(it => itemLine(it, p.date));   /* v1.5.2 보스가 「내일」 — 오늘은 꺼내지 않는다 */
   const done = p.items.filter(it => it.done).map(it => `- [${secName(it.sec)}] ${it.text}${it.way === '알바노' ? ` (${wayName('알바노')} — 보스가 안 하기로 닫음, 다시 꺼내지 말 것)` : ''}`);
   const inbox = (p.inbox || []).map(x => `- #${x.id} ${x.text.replace(/\n/g, ' / ')}`);
-  return [`지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
+  return [head, `지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
           later.length ? `내일로 미룬 일(보스가 「내일」을 누름 — 오늘은 먼저 꺼내지 말 것, 내일 판에 다시 올라옴):\n${later.join('\n')}` : '',
           `오늘 끝낸 일:\n${done.join('\n') || '- 없음'}`, p.line ? `세희 한마디(판 위): ${p.line}` : ''].filter(Boolean).join('\n\n');
 }
@@ -211,6 +212,13 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   판에 없는 사람 이야기를 적으라면 add_person 으로 붙이면서 같이 적는다(무리는 맥락의 '무리:' 목록 중에서 고르고, 맞는 게 없으면 기타. 보스가 새 무리를 원하면 edit_groups). 적으라는 말 없이 대화에 사람이 스쳐 나오기만 하면 붙이지 않는다.
   맥락에 짧게만 나온 사람을 자세히 알아야 하면 read_person. 그 사람이 맡은 일 자체는 판(add_item)에 적는다. 적은 뒤엔 무엇을 적었는지 한 줄만(예: 지민 팀장 이야기 두 건, 비공개로 적어 뒀어요).
 - 인간관계 판 기록부는 '나'(보스 본인)도 다른 사람과 같은 양식이다. 보스가 자기 정보를 넣어 달라면 update_person(person:'나'): 생일·나이·키 같은 건 info, 근무·처우·사정 같은 건 add_extra(남이 알면 안 되는 건 lock:true). 판(add_item)에 따로 적지 않는다.
+- 일간보고서(v1.5.14): '판'과 같은 것이다. 보스는 일간보고서·보고서라고 부르고, 세희도 보스에게 말할 땐 '일간보고서'라고 한다.
+  판은 시각 단위로 쌓인다(예: 11월 14일 보고서 - 17시). 지금 판과 오늘 지난 판 목록은 맥락 첫 줄에 있다.
+  새 판(new_report)은 큰 갱신 때만 먼저 연다: 보스가 판·보고서를 정리하자·새로 쓰자고 할 때, 긴 캡처·문서·여러 소식으로 항목 여러 개를 한꺼번에 바꿀 때. 날이 바뀌면 앱이 연다.
+  작은 수정(항목 하나 고치기·시각 넣기·메모·끝냄·한두 개 더하기)은 새 판 없이 지금 판 안에서. 지난 판은 고치지 않는다 — 다시 볼 땐 read_pan(date, version).
+- 일간보고서는 세희가 쓰는 문서다 — 세희 목소리가 나야 하되 짧게:
+  한마디(set_line): 새 판을 열면 꼭 쓴다. 그 뒤엔 크게 달라졌을 때만. 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
+  항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같아요', '~입니다', '~부터 하시면 좋겠어요'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
 - 판에 적었다·넣었다·붙였다고 말하려면 그 차례에 실제로 도구(add_item·update_item·make_card·add_person 등)를 불러야 한다. 도구를 안 불렀으면 '적겠다'고 말하지 말고 지금 부른다.
 - 화이트보드: 보고서·표·목록·비교·수치 정리·차트처럼 눈으로 볼 자료를 만들 일이면 make_card 로 화이트보드에 붙인다(판 항목과 별개, 지우라기 전엔 남는다).
   카드를 붙이면 앱이 화이트보드를 띄운다. 대답은 그 카드를 브리핑하듯 핵심 2~4문장. 표 내용을 말로 되풀이하지 않는다.
@@ -261,11 +269,18 @@ function TOOL_DEFS(){
       due:{ type:'string', description:'날짜 YYYY-MM-DD. 날짜가 있는 일만' },
       time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
       tag:{ type:'string', description:"짧은 꼬리표. 예: '오늘 안에'. 없으면 넣지 않는다" },
-      note:{ type:'string', description:'항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황). 없으면 넣지 않는다' } }, required:['section', 'text'] } },
+      note:{ type:'string', description:'항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황). 없으면 넣지 않는다' },
+      comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안) — 판단·짐작·권유가 필요한 항목에만. 예: 답이 늦어지는 것 같아요, 이것부터 하시면 좋겠어요' } }, required:['section', 'text'] } },
     { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
       tag:{ type:'string' }, section:{ type:'string', enum:ids },
-      note:{ type:'string', description:'항목 아래 메모칸 전체를 이 글로 바꾼다. 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움' } }, required:['id'] } },
+      note:{ type:'string', description:'항목 아래 메모칸 전체를 이 글로 바꾼다. 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움' },
+      comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안)을 이 글로. 빈 글이면 지움' } }, required:['id'] } },
+    { name:'new_report', description:'일간보고서 새 판을 연다 — 지금 판은 그대로 얼려 보관되고, 지금 시각 이름(예: 17시)의 새 판이 열린다. 큰 갱신 전에만: 보스가 판·보고서를 정리하자·새로 쓰자고 할 때, 긴 캡처·문서·여러 소식으로 항목 여러 개를 한꺼번에 바꿀 때. 작은 수정에는 쓰지 않는다. 연 뒤에 그 판에 고쳐 쓴다.', schema:{ type:'object', properties:{
+      why:{ type:'string', description:'새 판을 여는 까닭 한 줄. 예: 보스가 정리하자고 함, 카톡 캡처 3장 반영' } }, required:['why'] } },
+    { name:'set_line', description:'일간보고서 맨 위 세희 한마디(말풍선)와 표정 도장을 쓴다. 새 판을 열면 꼭, 그 뒤엔 크게 달라졌을 때만.', schema:{ type:'object', properties:{
+      line:{ type:'string', description:'2~4줄, 말하듯이. 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 없이, 200자 안' },
+      face:{ type:'string', enum:['-_-', '¬_¬', '>_<', 'T_T', 'o_O', '^_^'], description:'-_- 밀린 날 · ¬_¬ 어이없는 날 · >_< 답답한 날 · T_T 급한 게 밀림 · o_O 예상 못 함 · ^_^ 잘 풀림' } }, required:['line'] } },
     { name:'read_material', description:'보스가 예전에 보낸 자료(카톡 캡처 해독본·스캔·첨부 문서)의 원문을 다시 본다. 대화에 「앞부분만 보임」으로 잘린 자료의 내용 — 누가 무슨 말을 했는지, 어디까지 나왔는지, 숫자·날짜 — 를 물으면 기억이나 판 요약으로 답하지 말고 먼저 이걸로 확인한다. id 없이 부르면 자료 목록. find 를 주면 그 낱말이 나온 곳만 앞뒤 줄과 함께.', schema:{ type:'object', properties:{
       id:{ type:'string', description:"자료 번호(예: m1k2x3y). 'latest' 는 가장 최근 자료. 없으면 목록" },
       find:{ type:'string', description:'찾을 낱말(선택). 띄어 쓰면 모두 들어간 줄만' },
@@ -276,8 +291,8 @@ function TOOL_DEFS(){
       id:{ type:'string', description:'받은 것 id (# 없이)' }, section:{ type:'string', enum:ids },
       text:{ type:'string', description:'다듬은 한 줄(선택)' }, due:{ type:'string' }, time:{ type:'string' } }, required:['id', 'section'] } },
     ...(sendPanOn() ? [
-    { name:'read_pan', description:'어느 하루의 판 전체(안 끝난 일·끝낸 일·받은 것·세희 한마디)를 본다. 지난 날을 물으면 쓴다.', schema:{ type:'object', properties:{
-      date:{ type:'string', description:'YYYY-MM-DD' } }, required:['date'] } },
+    { name:'read_pan', description:'어느 하루의 일간보고서 판 전체(안 끝난 일·끝낸 일·받은 것·세희 한마디)를 본다. 지난 날이나, 같은 날 앞 판(예: 5시 판)을 물으면 쓴다. 돌려줄 때 그날 판 목록도 같이 준다.', schema:{ type:'object', properties:{
+      date:{ type:'string', description:'YYYY-MM-DD' }, version:{ type:'string', description:'그날 지난 판 이름(예: 5시, 5시-2). 없으면 그날 지금 판' } }, required:['date'] } },
     { name:'search_history', description:'지난 판들에서 글자로 찾는다. 끝낸 일·지난 일정·받은 것까지 나온다. "그거 언제였지", "지난주에 몇 건" 같은 질문에 쓴다.', schema:{ type:'object', properties:{
       query:{ type:'string', description:'찾을 낱말. 띄어 쓰면 모두 들어간 것만' },
       days:{ type:'number', description:'며칠 전까지 볼지. 기본 60, 최대 365' } }, required:['query'] } },
@@ -302,9 +317,9 @@ function gemSchema(x){
 }
 const normDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
 const normTime = v => { const m = typeof v === 'string' && v.match(/^(\d{1,2}):(\d{2})$/); return m && +m[1] < 24 && +m[2] < 60 ? pad(+m[1]) + ':' + m[2] : null; };
-const itemBrief = it => ({ id:it.id, section:secName(it.sec), text:it.text, due:it.due || null, time:it.time || null, tag:it.tag || null, done:!!it.done, note:it.note || null });
+const itemBrief = it => ({ id:it.id, section:secName(it.sec), text:it.text, due:it.due || null, time:it.time || null, tag:it.tag || null, done:!!it.done, note:it.note || null, comment:it.cm || null });
 async function commitToday(p){
-  p.updatedAt = Date.now();
+  p.updatedAt = Date.now(); if (RPT.view) RPT.view = null;   /* 세희가 쓰면 지난 판 보기에서 지금 판으로 */
   if (S.pan === p) await flush(true); else { await putPan(p); S.dates = (await allDates()).sort(); }
 }
 function noteAction(kind, before, after, extra){
@@ -343,6 +358,7 @@ async function runToolCore(c){
       const sec = secById(a.section) ? a.section : (a.due && secById('sched') ? 'sched' : secs()[0].id);
       const it = { id:uid(), sec, text, tag:a.tag ? String(a.tag) : null, done:false, since:p.date, due:normDate(a.due), time:normTime(a.time), by:'sehee' };
       if (a.note && String(a.note).trim()) it.note = String(a.note).trim();
+      if (a.comment && String(a.comment).trim()) it.cm = String(a.comment).trim().slice(0, 60);
       p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
       if (it.due && !CAL.quiet) CAL.changed = it.due;
       return { ok:true, item:itemBrief(it) };
@@ -356,6 +372,7 @@ async function runToolCore(c){
       if ('tag' in a) it.tag = a.tag ? String(a.tag) : null;
       if (a.section && secById(a.section)) it.sec = a.section;
       if ('note' in a){ const n = String(a.note || '').trim(); if (n) it.note = n; else delete it.note; }
+      if ('comment' in a){ const n = String(a.comment || '').trim().slice(0, 60); if (n) it.cm = n; else delete it.cm; }
       await commitToday(p); noteAction('update', before, { ...it });
       if (it.due && (it.due !== before.due || it.time !== before.time) && !CAL.quiet) CAL.changed = it.due;
       return { ok:true, item:itemBrief(it) };
@@ -381,12 +398,27 @@ async function runToolCore(c){
       return { ok:true, item:itemBrief(it) };
     }
     if (c.name === 'read_material') return readMaterial(a);
+    if (c.name === 'new_report'){
+      if (p.ver && p.ver.by === 'sehee' && Date.now() - p.ver.at < 120000) return { ok:true, already:true, report:verTitle(p, p.ver), note:'방금 연 판이 있어 그대로 씀' };
+      const v = await newReport(p, a.why, 'sehee'); noteRead(`일간보고서 새 판을 열었어요 — ${v.label} 보고서`);
+      return { ok:true, report:verTitle(p, v), kept:p.vers.map(x => x.label) };
+    }
+    if (c.name === 'set_line'){
+      const line = String(a.line || '').trim().slice(0, 220); if (!line) return { ok:false, error:'line이 비었음' };
+      p.line = line; if (a.face) p.face = String(a.face).slice(0, 6); await commitToday(p); render(); noteRead('일간보고서 한마디를 썼어요');
+      return { ok:true };
+    }
     if (c.name === 'read_pan'){
       const d = normDate(a.date); if (!d) return { ok:false, error:'date는 YYYY-MM-DD' };
-      const pn = d === S.today ? p : await getPan(d);
-      noteRead(`${mdDay(d)} 판을 봤어요${pn ? '' : ' — 그날은 판이 없어요'}`);
-      if (!pn) return { ok:true, date:d, exists:false };
-      return { ok:true, date:d, exists:true, line:pn.line || '', items:pn.items.map(itemBrief), inbox:(pn.inbox || []).map(x => ({ id:x.id, text:x.text })) };
+      const pn0 = d === S.today ? p : await getPan(d);
+      if (!pn0){ noteRead(`${mdDay(d)} 판을 봤어요 — 그날은 판이 없어요`); return { ok:true, date:d, exists:false }; }
+      verEnsure(pn0); const want = String(a.version || '').replace(/\s*(보고서|판)$/, '').trim();
+      const old = want && want !== pn0.ver.label ? pn0.vers.find(v => v.label === want) : null;
+      if (want && want !== pn0.ver.label && !old) return { ok:false, error:'그날 그 이름의 판이 없음', versions:[...pn0.vers.map(v => v.label), pn0.ver.label] };
+      const pn = old || pn0, v = old || pn0.ver;
+      noteRead(`${mdDay(d)} ${v.label} 보고서를 봤어요`);
+      return { ok:true, date:d, exists:true, report:verTitle(pn0, v), current:!old, versions:[...pn0.vers.map(x => x.label), pn0.ver.label + '(지금)'],
+        line:pn.line || '', items:(pn.items || []).map(itemBrief), inbox:(pn.inbox || []).map(x => ({ id:x.id, text:x.text })) };
     }
     if (c.name === 'search_history'){
       const q = String(a.query || '').trim(); if (!q) return { ok:false, error:'query가 비었음' };
