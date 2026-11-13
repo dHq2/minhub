@@ -49,6 +49,7 @@ function modelOptions(){
   return list.map(m => `<option value="${esc(m.id)}" ${m.id === cur ? 'selected' : ''}>${esc(m.name)} · ${esc(m.id)}</option>`).join('');
 }
 const shortModel = id => (id || '').replace(/^claude-/, '').replace(/-\d{8}$/, '');
+const niceModel = id => shortModel(id).replace(/^(haiku|sonnet|opus)-(\d+)-(\d+)$/i, (_, n, x, y) => n[0].toUpperCase() + n.slice(1) + ' ' + x + '.' + y);   /* v1.5.8 세희가 자기 머리를 말할 때 */
 function refreshBrain(){
   const b = $('brain'); if (!b) return;
   b.classList.toggle('on', aiReady());
@@ -162,13 +163,13 @@ async function touchedContext(){
   const lines = ids.slice(-12).map(id => p.items.find(x => x.id === id)).filter(Boolean).map(it => itemLine(it, p.date));
   return `판 전체는 보지 못한다(보스가 판 보내기를 꺼둠). 아래는 이 대화에서 세희가 직접 다룬 항목뿐이다.\n${lines.join('\n') || '- 아직 없음'}`;
 }
-async function systemPrompt(){
+async function systemPrompt(model){
   const now = new Date();
   const cal = [...Array(8)].map((_, i) => { const d = new Date(now); d.setDate(d.getDate() + i);
     return `${['오늘 ', '내일 ', '모레 '][i] || ''}${ymd(d)}(${WD[d.getDay()]})`; }).join(', ');
   const todayLabel = (secById('today') || secs()[0]).label, schedLabel = (secById('sched') || secs()[1] || secs()[0]).label;
   return `너는 '강세희'다. 사용자의 개인 비서이고 사용자를 '보스'라고 부른다. 앱 '세희'의 사무실 책상에 앉아 말풍선으로 대화한다.
-말투: 존댓말. 짧고 건조하게, 대개 1~3문장. 과장·아부·이모지 없음. 가끔 무심한 농담. 모르는 건 모른다고 말한다.
+${model ? `너의 머리(모델): 지금 ${niceModel(model)}${bigModel() && bigModel() !== model ? `. 긴 글·사진이 오면 그 차례는 ${niceModel(bigModel())}` : ''}. 보스가 머리를 바꾸라고 하면 '못 한다'고 하지 않는다 — 평소 머리는 보스가 ⚙ 설정의 '세희 머리'에서 고르고, 이번 한 번만 더 큰 머리로 답하게 하려면 말에 "소넷으로"를 넣으면 된다고 알려 준다.\n` : ''}말투: 존댓말. 짧고 건조하게, 대개 1~3문장. 과장·아부·이모지 없음. 가끔 무심한 농담. 모르는 건 모른다고 말한다.
 말풍선은 사람이 메신저로 보내는 말이다. 마크다운과 기계식 기호를 절대 쓰지 않는다: **굵게**, ## 제목, - 나 * 로 시작하는 목록, 표, 코드 표시 모두 금지.
 여러 가지를 말해야 하면 평범한 문장으로 잇거나 '첫째, 둘째'처럼 말로 나눈다. 줄바꿈은 써도 된다. 실제 비서가 카톡으로 보고하듯 자연스럽게.
 항상 보스의 가장 마지막 말에 답한다. 인사·잡담·안부에는 그에 맞게 짧게 답한다. 앞에서 끝나지 않은 자료 정리나 지난 질문은 보스가 다시 꺼내기 전에는 먼저 묻지 않는다.
@@ -265,6 +266,10 @@ function TOOL_DEFS(){
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
       tag:{ type:'string' }, section:{ type:'string', enum:ids },
       note:{ type:'string', description:'항목 아래 메모칸 전체를 이 글로 바꾼다. 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움' } }, required:['id'] } },
+    { name:'read_material', description:'보스가 예전에 보낸 자료(카톡 캡처 해독본·스캔·첨부 문서)의 원문을 다시 본다. 대화에 「앞부분만 보임」으로 잘린 자료의 내용 — 누가 무슨 말을 했는지, 어디까지 나왔는지, 숫자·날짜 — 를 물으면 기억이나 판 요약으로 답하지 말고 먼저 이걸로 확인한다. id 없이 부르면 자료 목록. find 를 주면 그 낱말이 나온 곳만 앞뒤 줄과 함께.', schema:{ type:'object', properties:{
+      id:{ type:'string', description:"자료 번호(예: m1k2x3y). 'latest' 는 가장 최근 자료. 없으면 목록" },
+      find:{ type:'string', description:'찾을 낱말(선택). 띄어 쓰면 모두 들어간 줄만' },
+      from:{ type:'integer', description:'전문이 길어 나눠 읽을 때 몇 번째 글자부터(앞 결과의 next_from)' } } } },
     { name:'complete_item', description:'항목을 끝냄으로 표시한다.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'delete_item', description:'항목을 지운다. 보스가 분명히 지우라고 할 때만.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'file_inbox', description:'받은 것 하나를 칸에 담는다.', schema:{ type:'object', properties:{
@@ -375,6 +380,7 @@ async function runToolCore(c){
       p.items.push(it); await commitToday(p); noteAction('file', null, { ...it }, { inboxItem:x });
       return { ok:true, item:itemBrief(it) };
     }
+    if (c.name === 'read_material') return readMaterial(a);
     if (c.name === 'read_pan'){
       const d = normDate(a.date); if (!d) return { ok:false, error:'date는 YYYY-MM-DD' };
       const pn = d === S.today ? p : await getPan(d);
@@ -402,6 +408,32 @@ async function runToolCore(c){
     }
     return { ok:false, error:'모르는 도구' };
   }catch(e){ return { ok:false, error:e.message }; }
+}
+/* ── 자료 다시 읽기 (v1.5.8 · C) — 보스 말에 붙은 해독본(m.ocr)·문서(m.doc)는 대화 기록(최근 300개)에 원문 그대로 남아 있다 ── */
+function materials(){ return O.log.filter(m => m.who === 'u' && (m.ocr !== undefined || m.doc)).map(m => ({ m, id:matId(m), text:m.ocr !== undefined ? m.ocr : m.doc,
+  kind:m.ocr !== undefined ? (m.scanOf ? '스캔 ' + m.scanOf : `카톡 캡처 해독본 ${m.pics || ''}장`) : '문서 ' + (m.docs || []).join(', ') })); }
+const matWhen = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+function readMaterial(a){
+  const all = materials(), list = () => all.slice().reverse().slice(0, 20).map(x => ({ id:x.id, when:matWhen(x.m.at), kind:x.kind, chars:x.text.length, boss_said:String(x.m.text || '').slice(0, 60), head:x.text.slice(0, 120) }));
+  if (!all.length){ noteRead('예전 자료를 찾아봤어요 — 대화에 남은 자료가 없어요'); return { ok:true, materials:[], note:'대화 기록에 남은 해독본·문서가 없음(지웠거나 아주 오래됨). 보스에게 다시 보내 달라고 한다' }; }
+  const want = String(a.id || '').trim().replace(/^#/, '');
+  if (!want){ noteRead(`예전 자료 목록을 봤어요 — ${all.length}건`); return { ok:true, materials:list() }; }
+  const x = want === 'latest' ? all[all.length - 1] : all.find(v => v.id === want);
+  if (!x){ noteRead('그 자료를 못 찾았어요'); return { ok:false, error:'그 번호의 자료가 없음 — 아래 목록에서 고른다', materials:list() }; }
+  const t = x.text, label = `${matWhen(x.m.at)} ${x.kind}`;
+  const q = String(a.find || '').trim();
+  if (q){
+    const words = q.toLowerCase().split(/\s+/).filter(Boolean), lines = t.split('\n'), hits = [], used = new Set();
+    lines.forEach((l, i) => { if (words.every(w => l.toLowerCase().includes(w))) hits.push(i); });
+    const parts = [];
+    for (const i of hits.slice(0, 30)){ const lo = Math.max(0, i - 2), hi = Math.min(lines.length - 1, i + 2), seg = [];
+      for (let k = lo; k <= hi; k++){ if (used.has(k)) continue; used.add(k); seg.push(`${k + 1}: ${lines[k]}`); } if (seg.length) parts.push(seg.join('\n')); }
+    noteRead(`${label}에서 '${q}' 찾아봤어요 — ${hits.length}곳`);
+    return { ok:true, id:x.id, kind:x.kind, when:matWhen(x.m.at), lines:lines.length, hits:hits.length, found:parts.join('\n…\n') || '(없음)', ...(hits.length > 30 ? { note:'30곳까지만. 더 좁은 낱말로 다시' } : {}) };
+  }
+  const from = Math.max(0, Math.min(Number(a.from) || 0, t.length)), CH = 20000, part = t.slice(from, from + CH);
+  noteRead(`${label} 원문을 다시 읽었어요${from ? ` (${from.toLocaleString('ko-KR')}자부터)` : ''}`);
+  return { ok:true, id:x.id, kind:x.kind, when:matWhen(x.m.at), boss_said:x.m.text || '', chars:t.length, from, text:part, ...(from + CH < t.length ? { next_from:from + CH, note:'아직 뒷부분이 있음 — 필요하면 from 으로 이어 읽는다' } : {}) };
 }
 function noteRead(text){ O.log.push({ who:'a', read:true, text, at:Date.now() }); renderLog(); saveLog(); }
 async function undoAction(i){
@@ -659,7 +691,7 @@ async function aiTurn(history, onText, stopSignal, opts){
   WORK.active = workOn() && !(opts && opts.noTools); WORK.noAsk = askMode() === 'auto'; WORK.before = null;
   dlog('AI', `→ 대답 시작 · ${opts && opts.big ? '큰 머리 ' + (bigModel() || aiModel()) : aiModel()} · 대화 ${history.length}개${opts && opts.noTools ? ' · 도구 없음' : ''}`);
   const p = AI.cfg.provider;
-  const st = { p, key:aiKey(), model:(opts && opts.big && bigModel()) || aiModel(), system:await systemPrompt(), tools:!(opts && opts.noTools),
+  const st = { p, key:aiKey(), model:(opts && opts.big && bigModel()) || aiModel(), system:await systemPrompt((opts && opts.big && bigModel()) || aiModel()), tools:!(opts && opts.noTools),
     web:webOn() && !AI.noWeb, onSearch:opts && opts.onSearch,
     msgs:history.map(m => ({ role:m.role, content:m.content })), retry:0,
     contents:history.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })) };

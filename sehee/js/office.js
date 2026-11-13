@@ -124,7 +124,7 @@ function waitText(){
   if (O.live.search) return `🔎 검색 중: ${O.live.search}`;
   if (O.live.waitUntil > Date.now()) return `분당 한도에 걸렸어요 — ${Math.ceil((O.live.waitUntil - Date.now()) / 1000)}초 뒤 다시 해볼게요`;
   const sec = Math.floor((Date.now() - O.live.t0) / 1000);
-  const busy = O.live.big ? `긴 글이라 ${shortModel(O.live.big)}로 정리 중` : '세희가 생각 중';
+  const busy = O.live.big ? (O.live.deep ? `${shortModel(O.live.big)}로 깊게 생각 중` : `긴 글이라 ${shortModel(O.live.big)}로 정리 중`) : '세희가 생각 중';
   const re = O.live.retry ? ` · 서버가 삐끗해서 다시 하는 중(${O.live.retry}번째)` : '';
   return (sec < 2 && !re ? '보내는 중' : busy) + ` · ${sec}초` + re + (sec >= 15 && !re ? ' · 오래 걸리네요' : '');
 }
@@ -173,7 +173,10 @@ function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.
   const has = !!ta.value.trim() || ATT.length > 0, reading = ATT.some(a => a.reading); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy || reading; }
 /* 보통 대답 한 번(v1.2.2 — 다시 시도 버튼도 이걸 쓴다) */
 async function replyNow(){
-    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:null, waitUntil:0 };
+    /* v1.5.8 (C) 보스가 "소넷으로"·"큰 머리로"·"깊게 생각해" 하면 그 차례만 큰 머리 */
+    const lastU = [...O.log].reverse().find(m => m.who === 'u'), wantBig = !!(lastU && bigModel() && /소넷|sonnet|큰\s?머리|깊게\s?생각/i.test((lastU.text || '') + ' ' + (lastU.regenHow || '')));
+    if (wantBig) dlog('AI', '보스가 큰 머리를 부름 — 이번 차례만 ' + bigModel());
+    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:wantBig ? bigModel() : null, deep:wantBig, waitUntil:0 };
     renderLog();
     const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
     try{
@@ -181,7 +184,7 @@ async function replyNow(){
         O.live.text = t; O.live.search = '';
         if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
-      }, O.abort.signal, { big:false, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
+      }, O.abort.signal, { big:wantBig, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
         onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
         onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
       const pf = parseFace(r.text);

@@ -262,15 +262,18 @@ function clipDoc(t, head){
   return head ? t.slice(0, MAX_DOC) + `\n(뒷부분 ${cut}자 생략)` : `(앞부분 ${cut}자 생략)\n` + t.slice(-MAX_DOC);
 }
 /* 대화 기록 속 보스 말 → AI에 보낼 글. 최근 것만 해독본·첨부 글 전체, 오래된 건 앞부분만 */
+/* v1.5.8 (C) 잘린 자료에 붙는 안내 — 전문은 앱(대화 기록)에 그대로 있고 세희가 read_material 로 다시 읽는다 */
+const matId = m => 'm' + Number(m.at).toString(36);
+const matCut = (m, len) => `\n…(여기까지 앞부분만 보임. 전문 ${len.toLocaleString('ko-KR')}자는 앱에 그대로 있다 — 자료 번호 ${matId(m)}. 이 자료에 나온 말·사람·숫자·순서·"어디까지 나왔는지"를 묻거나 정확히 확인할 일이면 반드시 read_material 로 다시 읽고 답한다. 판 요약이나 기억으로 답하거나 "원문이 없다"고 하지 않는다)`;
 function userContent(m, recent){
   let s = m.text || '';
   if (m.ocr !== undefined){
     if (!s) s = '(보스가 설명 없이 넘겼다)';
-    s += `\n\n[${m.scanOf ? '스캔 문서 해독본: ' + m.scanOf : '카톡 캡처 해독본'} · ${m.scanOf ? '' : '사진 '}${m.pics}${m.scanOf ? '쪽' : '장'}${m.ocrMeta ? ' · ' + m.ocrMeta.lines + '줄' : ''}]\n` + (recent ? m.ocr : m.ocr.slice(0, 400) + '\n…(앞부분만. 이 해독본은 이미 정리했다)');
+    s += `\n\n[${m.scanOf ? '스캔 문서 해독본: ' + m.scanOf : '카톡 캡처 해독본'} · ${m.scanOf ? '' : '사진 '}${m.pics}${m.scanOf ? '쪽' : '장'}${m.ocrMeta ? ' · ' + m.ocrMeta.lines + '줄' : ''}]\n` + (recent ? m.ocr : m.ocr.slice(0, 400) + matCut(m, m.ocr.length));
   }
   if (m.doc){
     if (!m.text) s = s || '(보스가 설명 없이 넘겼다)';
-    s += `\n\n[첨부 문서: ${(m.docs || []).join(', ')}]\n` + (recent ? m.doc : m.doc.slice(0, 400) + '\n…(앞부분만. 이미 정리했다)');
+    s += `\n\n[첨부 문서: ${(m.docs || []).join(', ')}]\n` + (recent ? m.doc : m.doc.slice(0, 400) + matCut(m, m.doc.length));
   }
   return s;
 }

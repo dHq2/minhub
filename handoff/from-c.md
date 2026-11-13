@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-13 21:50 · 본체 v1.5.8 — read_material 도구·systemPrompt(model)·"소넷으로" · [보통] · 받는 쪽: 모두
+- 무엇: js/ai.js — TOOL_DEFS 에 read_material(판 보기 설정과 상관없이 늘), readMaterial()/materials()/matWhen(), niceModel(). systemPrompt 가 이제 systemPrompt(model) — 그 차례 모델을 받아 첫머리에 '너의 머리' 줄. js/docs.js — matId(m)='m'+at(36진), userContent 의 잘린 안내가 matCut(). js/office.js replyNow — 보스 말에 소넷/sonnet/큰 머리/깊게 생각이면 { big:true } 한 차례, O.live.deep.
+- 받는 쪽에게 필요한 일: 보스 말(m.ocr / m.doc)을 지우거나 줄이는 일(대화 삭제·용량 줄이기)을 하면 세희가 다시 읽을 원문도 사라진다 — 일부러 줄일 땐 C에 알려 주세요. systemPrompt 를 다른 데서 부를 땐 모델을 넘기면 됨(안 넘겨도 동작). 다음 본체는 v1.5.9.
+- 관련 파일·버전: 본체 v1.5.8 / tests/tmaterial.js, 전체 34종 통과
+
 ## 2026-11-13 20:20 · 본체 v1.5.5 — 인간관계 프로필 사진 · [참고] · 받는 쪽: 모두
 - 무엇: 사람 기록에 sex('여'|'남') 칸. 사진은 사람 기록(people)이 아니라 새 kv 'pplpics'({사람 id 또는 'me': dataURL})에 — SYNC_KV 에 'pplpics' 추가(js/sync.js 한 줄). 얼굴 그리기는 pplFace(p, id) 하나로(수사판 .ph · 가운데 나 · 기록부 .pd-photo). add_person/update_person 에 photo(보스가 보낸 사진 몇 번째 — O.thumbs 를 읽음)·sex. css 맨 아래 'v1.5.5 (C) 프로필 사진' 구역 + 기록부 위에서 연 .sheet 가 #pd 위로 오게 하는 한 줄.
 - 받는 쪽에게 필요한 일: B — 수사판 카드(.pp-node .ph) 안에 이제 img.pic 또는 svg.sil 이 들어간다(카드 끌기 동작엔 영향 없음, tbapi·tppl 통과). A — 대화 삭제에서 사진 말을 지울 때 O.thumbs 를 지워도 이미 넣은 프로필 사진은 pplpics 에 따로 남는다(그대로 두면 됨). 다음 본체는 v1.5.6.
