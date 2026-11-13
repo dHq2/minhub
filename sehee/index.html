@@ -347,6 +347,9 @@
   .th-map .pp-empty{color:#5c4424;text-shadow:none}
   .msg .retry{display:block;margin:8px 0 2px;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:14px;padding:5px 14px;font-size:.8rem;font-weight:700;cursor:pointer}
   .msg .retry:active{background:#fbe9e6}
+  .regen-b{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+  .regen{border:1px solid #b9ad93;background:transparent;color:#5c5340;border-radius:12px;padding:2px 10px;font-size:.72rem;cursor:pointer;font-family:inherit}
+  .regen.sm{color:#8a8373;border-style:dashed}.regen:active{background:#efe8d6}
   /* 판 위 세희 (v1.2.8) — 보드처럼 아래 대화 상자 + 오른쪽 아래 세희. 입력창은 사무실 것을 그대로 옮겨 와서 같은 대화 */
   .pt{display:none;position:fixed;left:0;right:0;bottom:var(--tb,58px);z-index:26;max-width:720px;margin:0 auto;pointer-events:none;--sh:clamp(150px,22dvh,240px)}
   body:not(.alt) .pt{display:block}body.typing .pt{bottom:0}
@@ -867,6 +870,8 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.4.3) 다시 답하기 — 마지막 대답 아래 「↻ 다시 답하기」(+ 더 짧게·더 자세히·더 쉽게·다시 찾아보고). 그 대답이 판에 한 일은 되돌리고,
+          앞 답은 대화 기록에서 완전히 빼서 세희가 못 본 채 처음처럼 새로 답한다(보스 요구: 앞 답 참조 금지). 창구 on('regen').
         (v1.4.2 · 보너스 C 담당) 업데이트 손봄 — 누르는 즉시 '업데이트하는 중…', 새로 고친 뒤 「업데이트 끝 — v1.4.1 → v1.4.2」(보너스 B·C 바뀐 것도),
           눌렀는데 그대로면 그렇다고 말하고 90초 뒤 다시 확인. 보너스 B·C 새 버전도 띠로 묻는다(켤 때·돌아올 때·새 버전 확인). 보너스는 늘 새 파일로 불러옴.
           껍데기 받을 때 index.html 버전이 sw.js 와 다르면(올린 직후 반쯤 올라온 상태) 받지 않고 다음에 다시.
@@ -891,7 +896,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.4.2';
+const APP_VERSION = 'v1.4.3';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1793,6 +1798,7 @@ function toMessages(log){
     const role = m.who === 'u' ? 'user' : 'assistant';
     let text = role === 'user' ? userContent(m, lastTwo.includes(i) && (m.ocr !== undefined || !!m.doc)) : m.text;
     if (failed.has(i)) text += '\n(이 말은 그때 연결 오류로 처리하지 못했다. 보스가 다시 꺼내기 전에는 다시 묻지 않는다.)';
+    if (m.regen && i === userIdx[userIdx.length - 1]) text += `\n\n(보스가 이 말에 새로 답해 달라고 했다${m.regenHow ? ' — ' + m.regenHow : ''}. 처음 답하는 것처럼 새로 생각해서 답한다.)`;
     const last = out[out.length - 1];
     if (last && last.role === role) last.content += '\n' + text; else out.push({ role, content:text });
   });
@@ -2977,7 +2983,7 @@ window.SEHEE = {
   },
   /* 인간관계 판 배율 지키기 — 숫자면 다시 그려도 그 배율, null 이면 본체 '전체 보기' 배율 */
   pplZoom(k){ BONUS.zoom = k && isFinite(k) ? Math.max(0.2, Math.min(3, +k)) : null; },
-  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) */
+  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) · regen({oldAts,newAt,userAt}) */
   on(ev, fn){ (BONUS.subs[ev] = BONUS.subs[ev] || []).push(fn); },
   setVersion(v){ v = String(v); const k = v[0].toUpperCase(); BONUS.vers[LANES.some(l => l.k === k) ? k : 'B'] = v; BONUS.ver = Object.values(BONUS.vers).join(' · '); },
 };
@@ -3751,7 +3757,7 @@ function renderLog(){
   el.innerHTML = O.log.map((m, i) => m.who === 'a'
       ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
-      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}${m.err && i === lastS && !O.busy && aiReady() ? `<button class="retry" data-retry="${i}">↻ 다시 시도</button>` : ''}<time>${hhmm(m.at)}</time></div>`).join('')
+      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}${m.err && i === lastS && !O.busy && aiReady() ? `<button class="retry" data-retry="${i}">↻ 다시 시도</button>` : !m.err && !m.ask && i === lastS && i === O.log.length - 1 && !O.busy && aiReady() && O.log.some(x => x.who === 'u') ? `<span class="regen-b"><button class="regen" data-regen="">↻ 다시 답하기</button>${REGEN_HOW.map(h => `<button class="regen sm" data-regen="${h}">${h}</button>`).join('')}</span>` : ''}<time>${hhmm(m.at)}</time></div>`).join('')
     + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
@@ -3864,6 +3870,28 @@ async function retryLast(i){
   await replyNow();
   O.busy = false; renderLog(); growSay(); bdGrow(); saveLog();
 }
+/* 다시 답하기 (v1.4.3) — 마지막 대답이 마음에 안 들면. 보스 요구: 새 답은 앞 답을 참조하지 않는다.
+   그 대답이 판에 한 일은 되돌리고, 앞 답은 대화 기록에서 완전히 빼서(세희가 못 보게) 처음처럼 다시 답하게 한다. */
+async function regenLast(how){
+  if (O.busy || !aiReady()) return;
+  let ui = -1; for (let j = O.log.length - 1; j >= 0; j--) if (O.log[j].who === 'u'){ ui = j; break; }
+  if (ui < 0) return;
+  const um = O.log[ui], after = O.log.slice(ui + 1);
+  if (!after.some(x => x.who === 's')) return;
+  for (let j = O.log.length - 1; j > ui; j--){ const x = O.log[j]; if (x.who === 'a' && x.act && !x.undone) await undoAction(j).catch(() => {}); }
+  const oldAts = after.map(x => x.at);
+  um.regen = (um.regen || 0) + 1; um.regenHow = how || '';
+  O.log.splice(ui + 1); dlog('대화', '다시 답하기 ' + um.regen + '번째' + (how ? ' · ' + how : ''));
+  if (um.pics && !um.ocr){ O.log.push({ who:'s', text:'그 캡처는 읽은 게 남아 있지 않아서, 사진을 한 번 더 붙여 주셔야 해요.', face:5, at:Date.now() }); renderLog(); saveLog(); return; }
+  O.turnActs = O.log.filter(x => x.who === 'a' && !x.read).length;
+  O.busy = true; growSay(); setFace(2); renderLog(); await saveLog();
+  const heavy = !!(um.pics || um.docs) || (um.text || '').length >= 300 || (um.text || '').split('\n').length >= 6;
+  if (heavy){ const job = { at:Date.now(), msgAt:um.at, stage:'organize' }; await kvSet('job', job); await runJob(job, um); }
+  else { await replyNow(); O.busy = false; renderLog(); growSay(); bdGrow(); saveLog(); }
+  const newAt = (O.log.filter(x => x.who === 's').pop() || {}).at;
+  bonusEmit('regen', { oldAts, newAt, userAt:um.at });
+}
+const REGEN_HOW = ['더 짧게', '더 자세히', '더 쉽게', '다시 찾아보고'];
 async function sendSay(src){
   await loadChat();
   if (WORK.ask){ const ta0 = src instanceof HTMLTextAreaElement ? src : $('sayText'), v0 = ta0.value.trim(); if (!v0) return;
@@ -3919,6 +3947,7 @@ $('log').addEventListener('click', e => {
   if (e.target.closest('[data-stop]') && O.abort) O.abort.abort();
   const u = e.target.closest('[data-undo]'); if (u) undoAction(Number(u.dataset.undo));
   const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry));
+  const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen);
   const c = e.target.closest('[data-copyocr]');
   if (c){ const m = O.log[Number(c.dataset.copyocr)]; if (m && m.ocr) navigator.clipboard.writeText(m.ocr).then(() => { c.textContent = '복사됨'; }, () => { c.textContent = '복사 안 됨'; }); }
 });
@@ -4418,6 +4447,7 @@ function talkHtml(empty){
   /* 막힌 말풍선이면 여기서도 다시 시도 */
   const li = O.log.lastIndexOf(lastS);
   if (lastS && lastS.err && !O.busy && aiReady()) h += `<button class="retry" data-retry="${li}">↻ 다시 시도</button>`;
+  else if (lastS && !lastS.ask && li === O.log.length - 1 && !O.busy && aiReady() && O.log.some(x => x.who === 'u')) h += `<span class="regen-b"><button class="regen" data-regen="">↻ 다시 답하기</button>${REGEN_HOW.map(h => `<button class="regen sm" data-regen="${h}">${h}</button>`).join('')}</span>`;
   return { h, face:O.busy ? (O.live && O.live.faced ? 'talk' : 2) : (lastS ? lastS.face : 0) };
 }
 function renderPanTalk(){
@@ -4444,7 +4474,7 @@ let bonusWasBusy = false; setInterval(() => { if (bonusWasBusy && !O.busy) bonus
   $('ptName').onclick = () => { pt.classList.toggle('fold'); $('ptName').textContent = pt.classList.contains('fold') ? '강세희 ▴' : '강세희 ▾'; try{ localStorage.setItem('sehee.ptFold', pt.classList.contains('fold') ? '1' : '0'); }catch(e){} };
   if (pt.classList.contains('fold')) $('ptName').textContent = '강세희 ▴';
   $('ptAll').onclick = () => goView('office');
-  $('ptBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); });
+  $('ptBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen); });
   const fit = () => document.body.style.setProperty('--pth', pt.offsetHeight + 'px');
   if (window.ResizeObserver) new ResizeObserver(fit).observe(pt); fit();
 })();
@@ -4465,7 +4495,7 @@ function cardSheet(id){
       <button class="chip danger" data-bact="del" data-id="${c.id}">떼기</button>
     </div><p class="note" id="bnote"></p>`);
 }
-$('btBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); });
+$('btBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen); });
 $('wbGrid').addEventListener('click', e => {
   const r = e.target.closest('[data-rep]'); if (r){ rvOpen(r.dataset.rep); return; }
   const el = e.target.closest('[data-card]'); if (!el) return;
