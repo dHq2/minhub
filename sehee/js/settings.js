@@ -218,6 +218,15 @@ function applyFont(){
 }
 
 /* ── 화면 손짓 ── */
+/* 항목 아래 메모칸 (v1.5.1) — 쓰는 대로 저장(다시 그리지 않아서 쓰는 중에 안 끊김). 글이 길면 칸이 늘어난다 */
+function memoGrow(ta){ ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 2 + 'px'; }
+$('main').addEventListener('input', e => {
+  const ta = e.target.closest('textarea[data-memo]'); if (!ta) return;
+  const it = findItem(ta.dataset.memo); if (!it) return;
+  it.note = ta.value.replace(/\s+$/, '') || undefined; if (!it.note) delete it.note;
+  ta.classList.toggle('has', !!it.note); memoGrow(ta); touch();
+});
+$('main').addEventListener('focusout', e => { const ta = e.target.closest('textarea[data-memo]'); if (ta){ touch(true); dlog('판', '메모 저장 #' + ta.dataset.memo); } });
 $('main').addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act;
@@ -226,7 +235,7 @@ $('main').addEventListener('click', e => {
   const row = b.closest('.it');
   if (row){
     const it = findItem(row.dataset.id); if (!it) return;
-    if (a === 'toggle'){ it.done = !it.done; it.doneAt = it.done ? Date.now() : null; touch(true); render(); return; }
+    if (a === 'toggle'){ it.done = !it.done; it.doneAt = it.done ? Date.now() : null; S.justDone = it.done ? it.id : null; touch(true); render(); return; }
     if (a === 'edit'){ startEdit(row); return; }
     if (a === 'menu'){ itemMenu(it.id); return; }
   }

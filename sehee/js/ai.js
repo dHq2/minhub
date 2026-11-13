@@ -142,7 +142,7 @@ const dueText = it => it.due ? mdDay(it.due) + (it.time ? ' ' + it.time : ' · �
 const secName = id => (secById(id) || secs()[0]).label;
 function itemLine(it, date){
   const age = it.since && it.since < date ? ` (${dayDiff(it.since, date) + 1}일째)` : '';
-  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}`;
+  return `- #${it.id} [${secName(it.sec)}] ${it.text}${it.due ? ` (날짜 ${dueText(it)})` : ''}${it.tag ? ` (태그: ${it.tag})` : ''}${age}${it.done ? ' (끝냄)' : ''}${it.note ? `\n    메모: ${it.note.replace(/\n/g, ' / ')}` : ''}`;
 }
 async function todayPanRef(){ if (S.date === S.today && S.pan) return S.pan; return (await getPan(S.today)) || await makeToday(S.today); }
 async function panContext(){
@@ -186,6 +186,7 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
 - 보스가 대화에서 자기 할 일·약속·기억할 것을 직접 말하면(예: "내일 친구랑 밥 먹기로 했어"), 되묻기 전에 먼저 판에 적는다(add_item). 아는 만큼만 적고 모르는 건 비워둔다.
 - 날짜가 있는 약속·일정은 '${schedLabel}' 칸에 due(YYYY-MM-DD)를 넣어 적는다. 시각을 모르면 time 없이 적고, 대답 끝에 시각만 한 번 묻는다. 다른 건 캐묻지 않는다.
 - 보스가 시각·장소 같은 걸 알려주면 새로 적지 말고 그 항목을 update_item으로 고친다.
+- 판 항목 아래 '메모:' 줄은 그 항목의 메모칸이다(보스가 직접 쓰기도 한다). 한 줄 제목에 안 담기는 덧붙임(누가·어디서·진행 상황)은 note 로 메모칸에 적는다. 보스가 쓴 메모는 지우거나 덮지 말고 살려서 이어 쓴다.
 - 오늘 안에 할 일은 '${todayLabel}' 칸. 퇴근 전까지면 tag '퇴근 전'.
 - 끝냈다고 하면 complete_item. 지우라고 분명히 말할 때만 delete_item. 받은 것을 칸에 담으라면 file_inbox.
 - 판에 적은 걸 말로 길게 되풀이하지 않는다. 앱이 적은 내용을 따로 보여준다. "적어뒀어요" 정도면 된다.
@@ -251,10 +252,12 @@ function TOOL_DEFS(){
       text:{ type:'string', description:'짧은 한 줄. 예: 친구와 저녁' },
       due:{ type:'string', description:'날짜 YYYY-MM-DD. 날짜가 있는 일만' },
       time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
-      tag:{ type:'string', description:"짧은 꼬리표. 예: '퇴근 전'. 없으면 넣지 않는다" } }, required:['section', 'text'] } },
+      tag:{ type:'string', description:"짧은 꼬리표. 예: '퇴근 전'. 없으면 넣지 않는다" },
+      note:{ type:'string', description:'항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황). 없으면 넣지 않는다' } }, required:['section', 'text'] } },
     { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
-      tag:{ type:'string' }, section:{ type:'string', enum:ids } }, required:['id'] } },
+      tag:{ type:'string' }, section:{ type:'string', enum:ids },
+      note:{ type:'string', description:'항목 아래 메모칸 전체를 이 글로 바꾼다. 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움' } }, required:['id'] } },
     { name:'complete_item', description:'항목을 끝냄으로 표시한다.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'delete_item', description:'항목을 지운다. 보스가 분명히 지우라고 할 때만.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'file_inbox', description:'받은 것 하나를 칸에 담는다.', schema:{ type:'object', properties:{
@@ -287,7 +290,7 @@ function gemSchema(x){
 }
 const normDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
 const normTime = v => { const m = typeof v === 'string' && v.match(/^(\d{1,2}):(\d{2})$/); return m && +m[1] < 24 && +m[2] < 60 ? pad(+m[1]) + ':' + m[2] : null; };
-const itemBrief = it => ({ id:it.id, section:secName(it.sec), text:it.text, due:it.due || null, time:it.time || null, tag:it.tag || null, done:!!it.done });
+const itemBrief = it => ({ id:it.id, section:secName(it.sec), text:it.text, due:it.due || null, time:it.time || null, tag:it.tag || null, done:!!it.done, note:it.note || null });
 async function commitToday(p){
   p.updatedAt = Date.now();
   if (S.pan === p) await flush(true); else { await putPan(p); S.dates = (await allDates()).sort(); }
@@ -327,6 +330,7 @@ async function runToolCore(c){
       const text = String(a.text || '').trim(); if (!text) return { ok:false, error:'text가 비었음' };
       const sec = secById(a.section) ? a.section : (a.due && secById('sched') ? 'sched' : secs()[0].id);
       const it = { id:uid(), sec, text, tag:a.tag ? String(a.tag) : null, done:false, since:p.date, due:normDate(a.due), time:normTime(a.time), by:'sehee' };
+      if (a.note && String(a.note).trim()) it.note = String(a.note).trim();
       p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
       if (it.due && !CAL.quiet) CAL.changed = it.due;
       return { ok:true, item:itemBrief(it) };
@@ -339,6 +343,7 @@ async function runToolCore(c){
       if ('time' in a) it.time = normTime(a.time);
       if ('tag' in a) it.tag = a.tag ? String(a.tag) : null;
       if (a.section && secById(a.section)) it.sec = a.section;
+      if ('note' in a){ const n = String(a.note || '').trim(); if (n) it.note = n; else delete it.note; }
       await commitToday(p); noteAction('update', before, { ...it });
       if (it.due && (it.due !== before.due || it.time !== before.time) && !CAL.quiet) CAL.changed = it.due;
       return { ok:true, item:itemBrief(it) };

@@ -126,8 +126,12 @@ function render(){
     m.innerHTML = '<div class="empty">이 날은 판이 없어요.<br>세희가 쉬었거나, 아직 앱을 쓰기 전이에요.</div>' + footer();
     return;
   }
+  /* v1.5.1 메모칸에 쓰는 중에 다시 그려져도(동기화·세희 작업) 쓰던 자리 그대로 */
+  const fa = document.activeElement, fm = fa && fa.dataset && fa.dataset.memo ? { id:fa.dataset.memo, a:fa.selectionStart, b:fa.selectionEnd } : null;
   m.innerHTML = seheeBlock() + inboxBlock() + secs().map(sectionBlock).join('') + footer();
   const ta = m.querySelector('#line'); if (ta) grow(ta);
+  m.querySelectorAll('textarea[data-memo].has').forEach(t => { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; });
+  if (fm){ const t = m.querySelector(`textarea[data-memo="${fm.id}"]`); if (t){ t.focus({ preventScroll:true }); try{ t.setSelectionRange(fm.a, fm.b); }catch(e){} } }
 }
 
 function seheeBlock(){
@@ -168,10 +172,12 @@ function sectionBlock(s, i){
 function itemRow(it){
   const t = it.tag ? (TAGS.find(x => x.k === it.tag)?.c || FREE_TAG) : null;
   const age = it.since && it.since < S.pan.date ? dayDiff(it.since, S.pan.date) + 1 : 0;
-  return `<div class="it ${it.done ? 'done' : ''}" data-id="${it.id}">
-    <button class="ck" data-act="toggle" aria-label="끝냄">${it.done ? '✓' : ''}</button>
+  const stamped = S.justDone === it.id; if (stamped) S.justDone = null;
+  return `<div class="it ${it.done ? 'done' : ''}${stamped ? ' stamped' : ''}" data-id="${it.id}">
+    <button class="ck" data-act="toggle" aria-label="${it.done ? '끝냄 취소' : '끝냄'}">${it.done ? '<span class="seal">完</span>' : ''}</button>
     <div class="body"><div class="tx" data-act="edit">${esc(it.text)}</div>
-      <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div></div>
+      <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div>
+      <textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
 }
