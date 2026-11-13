@@ -96,7 +96,7 @@ function renderLog(){
   el.innerHTML = O.log.map((m, i) => m.who === 'a'
       ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
-      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}${m.err && i === lastS && !O.busy && aiReady() ? `<button class="retry" data-retry="${i}">↻ 다시 시도</button>` : !m.err && !m.ask && i === lastS && i === O.log.length - 1 && !O.busy && aiReady() && O.log.some(x => x.who === 'u') ? `<span class="regen-b"><button class="regen" data-regen="">↻ 다시 답하기</button>${REGEN_HOW.map(h => `<button class="regen sm" data-regen="${h}">${h}</button>`).join('')}</span>` : ''}<time>${hhmm(m.at)}</time></div>`).join('')
+      : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<div class="mfoot">${msgTools(m, i, lastS)}<time>${hhmm(m.at)}</time></div></div>`).join('')
     + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
@@ -231,6 +231,59 @@ async function regenLast(how){
   bonusEmit('regen', { oldAts, newAt, userAt:um.at });
 }
 const REGEN_HOW = ['더 짧게', '더 자세히', '더 쉽게', '다시 찾아보고'];
+/* ── 말풍선 아래 아이콘 (v1.5.5) — ↻ 다시(마지막 세희 답: 다시 답하기 / 막힌 답: 다시 시도) · 🗑 지우기(모든 말) ── */
+const MT_ICON = {
+  re:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>',
+  bin:'<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l1 12.2a1.8 1.8 0 0 0 1.8 1.6h5.4a1.8 1.8 0 0 0 1.8-1.6L17.5 7"/><path d="M10 11v6M14 11v6"/></svg>' };
+const canRegen = i => { const m = O.log[i]; return m && m.who === 's' && !m.err && !m.ask && !O.log.slice(i + 1).some(x => x.who === 'u' || x.who === 's') && O.log.slice(0, i).some(x => x.who === 'u'); };
+function msgTools(m, i, lastS){
+  if (O.busy || m.ask || m.hint) return '<span class="mtools"></span>';
+  let h = '';
+  if (i === lastS && aiReady()){
+    if (m.err) h += `<button class="mt re" data-retry="${i}" aria-label="다시 시도">${MT_ICON.re}</button>`;
+    else if (canRegen(i)) h += `<button class="mt re${O.regenOpen === m.at ? ' on' : ''}" data-regenmenu="${m.at}" aria-label="다시 답하기">${MT_ICON.re}</button>`;
+  }
+  const key = i + ':' + m.at, armed = O.delArm === key;   /* 같은 때(at)에 생긴 말이 둘일 수 있어서 자리+때로 가린다 */
+  h += `<button class="mt bin${armed ? ' armed' : ''}" data-delmsg="${key}" aria-label="지우기">${MT_ICON.bin}${armed ? `<span>${m.who === 'u' ? '세희 답까지 지워요 · 한 번 더' : '한 번 더 누르면 지워요'}</span>` : ''}</button>`;
+  let menu = '';
+  if (O.regenOpen === m.at && canRegen(i)) menu = `<span class="regen-menu"><button class="regen" data-regen="">그냥 다시</button>${REGEN_HOW.map(x => `<button class="regen sm" data-regen="${x}">${x}</button>`).join('')}</span>`;
+  return `<span class="mtools">${h}</span>${menu}`;
+}
+/* 아이콘 누르기 — 대화창·판 대화 상자·보드 대화 상자가 같이 쓴다 */
+function msgToolClick(e){
+  const t = e.target;
+  const rt = t.closest('[data-retry]'); if (rt){ O.regenOpen = null; retryLast(Number(rt.dataset.retry)); return true; }
+  const rg = t.closest('[data-regen]'); if (rg){ O.regenOpen = null; regenLast(rg.dataset.regen); return true; }
+  const rm = t.closest('[data-regenmenu]'); if (rm){ const at = Number(rm.dataset.regenmenu); O.regenOpen = O.regenOpen === at ? null : at; O.delArm = null; renderLog(); renderPanTalk(); return true; }
+  const dm = t.closest('[data-delmsg]');
+  if (dm){ const key = dm.dataset.delmsg;
+    if (O.delArm === key){ O.delArm = null; const [i, at] = key.split(':').map(Number); deleteMsg(at, i); return true; }
+    O.delArm = key; O.regenOpen = null; renderLog(); renderPanTalk(); clearTimeout(O.delT); O.delT = setTimeout(() => { if (O.delArm === key){ O.delArm = null; renderLog(); renderPanTalk(); } }, 4000); return true; }
+  return false;
+}
+/* ── 말 지우기 (v1.5.5) — 보스 요구: 지운 말은 세희가 다시 읽지 못하게 완전히.
+   보스 말을 지우면 그 차례 통째(다음 보스 말 전까지: 세희 답·작업 표시), 세희 답은 그 말 하나.
+   대화 기록(chat)에서 빼고 → 저장(계정 서버도 같은 값으로 덮어씀), 개발자 로그·이 기기 presync 사본에서 그 글을 지우고, 이어 하던 긴 일도 버린다.
+   판·보드·사람에 이미 적은 것은 그대로 둔다(그건 결과물 — 따로 지운다). */
+async function deleteMsg(at, idx){
+  if (O.busy) return;
+  const i = O.log[idx] && O.log[idx].at === at ? idx : O.log.findIndex(m => m.at === at); if (i < 0) return;
+  let j = i + 1; if (O.log[i].who === 'u') while (j < O.log.length && O.log[j].who !== 'u') j++;
+  const gone = O.log.splice(i, j - i), ats = gone.map(x => x.at);
+  for (const x of gone) delete O.thumbs[x.at];
+  await saveLog(); await scrubTraces(gone);
+  renderLog(); renderPanTalk(); growSay && growSay();
+  bonusEmit('turnRemoved', { ats });
+  dlog('대화', `말 지움 · ${gone.length}개`); toast(gone.length > 1 ? `${gone.length}개 지웠어요 — 세희는 다시 못 봐요` : '지웠어요 — 세희는 다시 못 봐요');
+}
+async function scrubTraces(gone){
+  const ats = new Set(gone.map(x => x.at)), texts = gone.map(x => String(x.text || '').trim()).filter(Boolean);
+  const hit = line => texts.some(t => { const k = t.slice(0, 40); return k.length >= 4 ? line.includes(k) : line.endsWith('→ ' + t) || line.endsWith('] ' + t); });
+  const before = DBG.lines.length; DBG.lines = DBG.lines.filter(l => !hit(l.m));
+  if (DBG.lines.length !== before){ try{ localStorage.setItem('sehee.dbg', JSON.stringify(DBG.lines.slice(-300))); }catch(e){} if (localStorage.getItem('sehee.dev') === '1') kvSet('dbg', { at:Date.now(), v:APP_VERSION, lines:DBG.lines.slice(-300) }).catch(() => {}); }
+  try{ const job = await kvGet('job'); if (job && ats.has(job.msgAt)) await kvSet('job', null); }catch(e){}
+  try{ const ps = await kvGet('presync'); if (ps && ps.kv && Array.isArray(ps.kv.chat)){ ps.kv.chat = ps.kv.chat.filter(x => !ats.has(x.at)); await kvSet('presync', ps); } }catch(e){}
+}
 async function sendSay(src){
   await loadChat();
   if (WORK.ask){ const ta0 = src instanceof HTMLTextAreaElement ? src : $('sayText'), v0 = ta0.value.trim(); if (!v0) return;
@@ -285,8 +338,7 @@ $('sayGo').onclick = sendSay;
 $('log').addEventListener('click', e => {
   if (e.target.closest('[data-stop]') && O.abort) O.abort.abort();
   const u = e.target.closest('[data-undo]'); if (u) undoAction(Number(u.dataset.undo));
-  const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry));
-  const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen);
+  if (msgToolClick(e)) return;
   const c = e.target.closest('[data-copyocr]');
   if (c){ const m = O.log[Number(c.dataset.copyocr)]; if (m && m.ocr) navigator.clipboard.writeText(m.ocr).then(() => { c.textContent = '복사됨'; }, () => { c.textContent = '복사 안 됨'; }); }
 });

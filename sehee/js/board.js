@@ -173,8 +173,8 @@ function talkHtml(empty){
   else h += `<div class="bt-s">${empty}</div>`;
   /* 막힌 말풍선이면 여기서도 다시 시도 */
   const li = O.log.lastIndexOf(lastS);
-  if (lastS && lastS.err && !O.busy && aiReady()) h += `<button class="retry" data-retry="${li}">↻ 다시 시도</button>`;
-  else if (lastS && !lastS.ask && li === O.log.length - 1 && !O.busy && aiReady() && O.log.some(x => x.who === 'u')) h += `<span class="regen-b"><button class="regen" data-regen="">↻ 다시 답하기</button>${REGEN_HOW.map(h => `<button class="regen sm" data-regen="${h}">${h}</button>`).join('')}</span>`;
+  /* v1.5.5 말풍선 아래 아이콘(↻ 다시 · 🗑 지우기) — 대화창과 같은 단추 */
+  if (lastS) h += `<div class="mfoot bt-foot">${msgTools(lastS, li, li)}</div>`;
   return { h, face:O.busy ? (O.live && O.live.faced ? 'talk' : 2) : (lastS ? lastS.face : 0) };
 }
 function renderPanTalk(){
@@ -254,7 +254,7 @@ function btFold(box, key){
   btFold(pt.querySelector('.pt-box'), 'pan');
   btFold(document.querySelector('#dw-board .bt'), 'board');
   $('ptAll').onclick = () => goView('office');
-  $('ptBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen); });
+  $('ptBub').addEventListener('click', e => { msgToolClick(e); });
   const fit = () => document.body.style.setProperty('--pth', pt.offsetHeight + 'px');
   if (window.ResizeObserver) new ResizeObserver(fit).observe(pt); fit();
 })();
@@ -275,7 +275,7 @@ function cardSheet(id){
       <button class="chip danger" data-bact="del" data-id="${c.id}">떼기</button>
     </div><p class="note" id="bnote"></p>`);
 }
-$('btBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen); });
+$('btBub').addEventListener('click', e => { msgToolClick(e); });
 $('wbGrid').addEventListener('click', e => {
   const r = e.target.closest('[data-rep]'); if (r){ rvOpen(r.dataset.rep); return; }
   const el = e.target.closest('[data-card]'); if (!el) return;

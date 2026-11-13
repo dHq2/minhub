@@ -29,9 +29,9 @@ const thinkOnly = sseOf([{ type:'message_start', message:{ usage:{ input_tokens:
   // B: short msg → 503 x3 → error bubble with retry button
   plan = ['503', '503', '503']; bodies = [];
   await say('안녕');
-  console.log('B last:', await last(), '| retry btn:', await p.locator('[data-retry]').count(), '| calls', bodies.length);
+  console.log('B last:', await last(), '| retry btn:', await p.locator('#log [data-retry]').count(), '| calls', bodies.length);
   await p.screenshot({ path:'v122-retry.png' });
-  plan = ['ok']; await p.locator('[data-retry]').click();
+  plan = ['ok']; await p.locator('#log [data-retry]').click();
   for (let i = 0; i < 40; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; }
   await p.waitForTimeout(400);
   console.log('B after retry:', await last(), '| err left:', await p.evaluate(() => O.log.filter(m => m.err).length), '| user msgs:', await p.evaluate(() => O.log.filter(m => m.who === 'u').length));

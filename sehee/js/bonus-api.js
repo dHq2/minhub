@@ -43,7 +43,7 @@ window.SEHEE = {
   },
   /* 인간관계 판 배율 지키기 — 숫자면 다시 그려도 그 배율, null 이면 본체 '전체 보기' 배율 */
   pplZoom(k){ BONUS.zoom = k && isFinite(k) ? Math.max(0.2, Math.min(3, +k)) : null; },
-  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) · regen({oldAts,newAt,userAt}) */
+  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) · regen({oldAts,newAt,userAt}) · turnRemoved({ats}) — 보스가 말을 지움(v1.5.5) */
   on(ev, fn){ (BONUS.subs[ev] = BONUS.subs[ev] || []).push(fn); },
   setVersion(v){ v = String(v); const k = v[0].toUpperCase(); BONUS.vers[LANES.some(l => l.k === k) ? k : 'B'] = v; BONUS.ver = Object.values(BONUS.vers).join(' · '); },
 };

@@ -19,7 +19,8 @@ rm -rf /tmp/updt && mkdir -p /tmp/updt && cp -r "$ROOT/sehee" /tmp/updt/sehee
 (node "$ROOT/tests/syncsrv/serve.mjs" >/dev/null 2>&1 &)
 sleep 1.5
 
-ALL="tcode tload tmemo tstory tpanway tregen tretry twork tpdr tdoss tpdout tbapi tlanes tbt tppl tscroll tsync tvis tgo tupd2 toff tdraw tx tcal tjob tshare tdev tnote tswipe2 tpplpic tbtfold tdwstack"
+ALL="$(cd "$ROOT/tests" && ls t*.js | sed 's/\.js$//' | grep -v '^tcode$\|^tload$' | tr '\n' ' ')"   # v1.1 — 폴더의 t*.js 를 저절로 모은다(목록 충돌 없음)
+ALL="tcode tload $ALL"
 LIST="${*:-$ALL}"
 pass=0; fail=0; failed=""
 for t in $LIST; do

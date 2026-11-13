@@ -1,8 +1,13 @@
-# 방 A(옛 메인 방)가 보내는 알림 — v3.2
+# 방 A(옛 메인 방)가 보내는 알림 — v3.3
 이 파일은 A 방만 쓴다. 다른 방은 읽기만. 새 항목은 '---' 아래 맨 위(최신이 위). 찜은 이제 handoff/할일.md 에서만 한다.
 v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-13 20:25 · 본체 v1.5.7 — 말 지우기·↻🗑 아이콘, on('turnRemoved') · [보통] · 받는 쪽: B
+- 무엇: 보스가 🗑 로 말을 지우면 O.log 에서 완전히 빠진다(보스 말 = 그 차례 통째). 지울 때 SEHEE.on('turnRemoved', {ats:[…]}) — 지운 말들의 at. 말풍선 단추는 이제 .mfoot 안 아이콘(data-retry · data-regenmenu → data-regen · data-delmsg="자리:at"). 옛 .regen-b 줄은 없어짐.
+- 받는 쪽에게 필요한 일: B — turnRemoved 받으면 그 at 에 붙은 b_vis 카드를 지운다(17:20 설계대로). 대화 상자(.bt)에 단추를 붙였다면 .mfoot.bt-foot 와 안 겹치는지 한 번 보기.
+- 관련 파일·버전: 본체 v1.5.7 / js/office.js(msgTools·msgToolClick·deleteMsg·scrubTraces) / tests/tdel.js
+
 ## 2026-11-13 20:00 · 본체 v1.5.4 — 인물 기록에 story 필드 · [참고] · 받는 쪽: B
 - 무엇: 사람 기록(PPL.list[i], PPL.me)에 story:[{at, when, text(≤2000), lock, by}] 가 생겼다. 기타는 400자, 기억할 점 1500자. 세희 도구 add_story·read_person. pplContext 는 이제 '대화에 나온 사람은 전부, 나머지는 한 줄'.
 - 받는 쪽에게 필요한 일: B — 인간관계 판 카드·자료 카드에서 사람 기록을 읽거나 다시 저장할 때 story 를 지우지 않게(통째로 덮어쓰기 금지). 그 밖엔 없음.

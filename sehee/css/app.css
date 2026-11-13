@@ -717,3 +717,14 @@ body:has(#pd.on) .veil{z-index:239} body:has(#pd.on) .sheet{z-index:240}   /* �
 .dw{right:34px}
 .dw-tabs button.pulled{box-shadow:-3px 3px 7px rgba(0,0,0,.4);filter:brightness(1.12)}
 body:not(.alt) #office .dw-stack{visibility:visible}
+/* v1.5.7 말풍선 아래 아이콘 — ↻ 다시 · 🗑 지우기 (시각과 한 줄) */
+.mfoot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:2px;flex-wrap:wrap}
+.mfoot time{margin:0;margin-left:auto}
+.mtools{display:flex;gap:2px;margin-left:-6px}
+.mt{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:30px;height:26px;padding:0 6px;border:none;border-radius:9px;background:transparent;color:inherit;opacity:.42;cursor:pointer;font:600 .7rem var(--f-body)}
+.mt:active,.mt.on{opacity:.95;background:rgba(0,0,0,.07)}
+.msg.u .mt:active,.msg.u .mt.on{background:rgba(255,255,255,.14)}
+.mt.re{opacity:.6}
+.mt.armed{opacity:1;color:#c0392b;background:#fff4f2;padding:0 9px}
+.regen-menu{display:flex;flex-wrap:wrap;gap:4px;width:100%;margin-top:4px}
+.bt-foot{margin-top:6px}

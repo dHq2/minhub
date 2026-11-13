@@ -15,10 +15,10 @@ const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ i
   const wait = async () => { for (let i = 0; i < 60; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; } await p.waitForTimeout(300); };
   plan = [tool('add_item', { section:'today', text:'첫 답이 적은 일 ZZZ' }), txt('[미소] 첫 번째 답 AAA 입니다.')];
   await p.locator('#sayText').fill('사탕 추천해줘'); await p.locator('#sayGo').click(); await wait();
-  console.log('btn count', await p.locator('#log [data-regen]').count(), '| items', await p.evaluate(async () => (await todayPanRef()).items.map(i => i.text).join(',')));
-  await p.screenshot({ path:'v143-regen.png' });
+  console.log('btn count', await p.locator('#log [data-regenmenu]').count(), '| items', await p.evaluate(async () => (await todayPanRef()).items.map(i => i.text).join(',')));
+  await p.screenshot({ path:'/tmp/v143-regen.png' });
   plan = [txt('[미소] 두 번째 답 BBB 짧게.')]; bodies = [];
-  await p.locator('#log [data-regen="더 짧게"]').click(); await wait();
+  await p.locator('#log [data-regenmenu]').click(); await p.waitForTimeout(150); await p.locator('#log [data-regen="더 짧게"]').click(); await wait();
   const sent = bodies.join('\n');
   console.log('sent has old answer:', sent.includes('AAA'), '| has 더 짧게:', sent.includes('더 짧게'), '| has 새로 답해:', sent.includes('새로 답해'));
   console.log('log now:', await p.evaluate(() => O.log.filter(m => m.who !== 'a' || !m.undone).map(m => m.who + ':' + (m.text || '').slice(0, 14)).join(' | ')));
