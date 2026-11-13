@@ -812,9 +812,12 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.2) 보너스 업데이트 자리 — 다른 방(제작기 2)은 sehee/bonus/ 폴더에만 만들고, 본체는 부팅 끝에 bonus/bonus.js 를 불러 SEHEE 창구로만 잇는다.
+          창구: kvGet/kvSet·todayPan/savePan/render·log/say·board/people/cal·goView/openDrawer·sheet/toast·addTool/addPrompt/addMenu·on(boot·view·say·tool·turnEnd).
+          설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.1';
+const APP_VERSION = 'v1.3.2';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1108,6 +1111,10 @@ function settingsSheet(){
       <button class="mini" data-sact="down" ${i === secs().length - 1 ? 'disabled' : ''}>↓</button>
       <button class="mini danger" data-sact="del">✕</button></div>`).join('')}</div>
     <button class="chip" data-sact="addsec" style="margin-top:4px">+ 칸 더하기</button>
+    <label class="t">보너스 업데이트</label>
+    <div class="row"><button class="chip ${bonusOn() ? 'on' : ''}" data-sact="bonus" data-v="1">켬</button><button class="chip ${bonusOn() ? '' : 'on'}" data-sact="bonus" data-v="0">끔</button>${BONUS.ver ? `<span class="note" style="margin-left:6px">${esc(BONUS.ver)}</span>` : ''}</div>
+    ${BONUS.menu.length ? `<div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${BONUS.menu.map((m, i) => `<button class="chip" data-sact="bonusrun" data-i="${i}">${esc(m.label)}</button>`).join('')}</div>` : ''}
+    <p class="note" style="margin:4px 0 10px">따로 만드는 보너스 기능이에요. 이상하면 끔으로 바로 빼요(다시 켜면 새로 고칠 때 돌아와요).</p>
     <label class="t">개발자 로그</label>
     <div class="row"><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? 'on' : ''}" data-sact="dev" data-v="1">켬</button><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? '' : 'on'}" data-sact="dev" data-v="0">끔</button></div>
     <p class="note" style="margin:4px 0 10px">켜면 아래에 「🛠 로그」 탭이 생겨요. AI 요청·도구·동기화·화면 이동·오류가 실시간으로 찍혀요. 켠 동안은 10초마다 계정 서버에도 올라가서 개발자가 같이 볼 수 있어요.</p>
@@ -1185,6 +1192,8 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'addsec'){ list.push({ id:'s' + uid(), label:'새 칸', color:PALETTE[list.length % PALETTE.length] }); }
   else if (a === 'fs'){ S.settings.fs = Number(b.dataset.v); applyFs(); }
   else if (a === 'font'){ S.settings.font = b.dataset.v; applyFont(); }
+  else if (a === 'bonus'){ try{ localStorage.setItem('sehee.bonus', b.dataset.v); }catch(e){} toast(b.dataset.v === '1' ? '새로 고치면 보너스가 들어와요' : '새로 고치면 보너스가 빠져요'); settingsSheet(); return; }
+  else if (a === 'bonusrun'){ const m = BONUS.menu[Number(b.dataset.i)]; closeSheet(); if (m) try{ await m.run(); }catch(e){ dlog('오류', '보너스 메뉴 ' + e.message, e.stack); toast('보너스 기능에서 문제가 났어요'); } return; }
   else if (a === 'dev'){ try{ localStorage.setItem('sehee.dev', b.dataset.v); }catch(e){} devApply(); settingsSheet(); return; }
   else if (a === 'export'){ await exportAll(); return; }
   else if (a === 'import'){
@@ -1634,7 +1643,7 @@ ${sendPanOn() ? await panContext() : await touchedContext()}
 
 ${await boardContext()}
 
-${await pplContext()}`;
+${await pplContext()}${await bonusPrompt()}`;
 }
 /* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
 function toMessages(log){
@@ -1684,6 +1693,7 @@ function TOOL_DEFS(){
     ] : []),
     ...BOARD_TOOLS(),
     ...PEOPLE_TOOLS(),
+    ...BONUS.tools,
     ...(askMode() === 'need' ? [{ name:'ask_boss', description:'작업을 하다가 정말 막혀서(틀리면 처음부터 다시 해야 하는 것) 보스에게 지금 물어야 할 때만. 한 작업에 최대 2번. 고를 것 2~4개를 짧게.', schema:{ type:'object', properties:{
       question:{ type:'string', description:'한 문장 질문' }, options:{ type:'array', items:{ type:'string' }, description:'고를 것 2~4개, 각각 짧게' } }, required:['question'] } }] : []),
   ];
@@ -1725,7 +1735,7 @@ async function runTool(c){
   const t0 = performance.now(); dlog('도구', `▶ ${c.name}`, c.args);
   if (c.name === 'ask_boss'){ const r = await askBoss(c); dlog('도구', `✓ ask_boss · ${Math.round(performance.now() - t0)}ms`, r); return r; }
   try{ if (WORK.active) await workBefore(c).catch(e => dlog('경고', '작업 중계(앞) ' + e.message));
-    const r = await runToolCore(c); dlog('도구', `✓ ${c.name} · ${Math.round(performance.now() - t0)}ms`, r);
+    const r = await runToolCore(c); dlog('도구', `✓ ${c.name} · ${Math.round(performance.now() - t0)}ms`, r); bonusEmit('tool', { name:c.name, args:c.args, result:r });
     if (WORK.active) await workAfter(c, r).catch(e => dlog('경고', '작업 중계(뒤) ' + e.message));
     return r; }
   catch(e){ dlog('오류', `✕ 도구 ${c.name}: ${e.message}`, e.stack); throw e; }
@@ -1735,6 +1745,7 @@ async function runToolCore(c){
   const find = id => p.items.find(x => x.id === clean(id));
   if (/_card$/.test(c.name)) return runBoardTool(c);
   if (/_person$/.test(c.name)) return runPeopleTool(c);
+  if (BONUS.handlers[c.name]){ try{ return await BONUS.handlers[c.name](c.args || {}); }catch(e){ dlog('오류', `보너스 도구 ${c.name}: ${e.message}`, e.stack); return { ok:false, error:'보너스 기능 오류: ' + e.message }; } }
   try{
     if (c.name === 'add_item'){
       const text = String(a.text || '').trim(); if (!text) return { ok:false, error:'text가 비었음' };
@@ -2674,6 +2685,45 @@ document.addEventListener('click', e => {
   O.log.push({ who:'u', text:v, at:Date.now() }); WORK.ask.done(v === '알아서 해' ? '알아서 해 — 이번 작업은 더 묻지 말고 가장 그럴듯하게 정해서 끝까지' : v);
 });
 
+/* ── 보너스 업데이트 자리 (v1.3.2) — 두 갈래 개발 ──
+   본체(index.html·sw.js)는 메인 방만 고친다. 보너스 기능은 다른 방(제작기 2)이 sehee/bonus/ 폴더에만 만든다.
+   본체는 부팅 끝에 bonus/bonus.js 를 한 번 불러오고, 아래 SEHEE 창구로만 서로 이어진다(본체 속을 직접 고치지 않게).
+   보너스가 고장 나도 본체는 그대로 — 설정 「보너스 업데이트」 끔으로 바로 뺄 수 있다. */
+const BONUS = { tools:[], handlers:{}, prompts:[], menu:[], subs:{}, loaded:false, ver:'' };
+const bonusOn = () => { try{ return localStorage.getItem('sehee.bonus') !== '0'; }catch(e){ return true; } };
+function bonusEmit(ev, data){ for (const f of BONUS.subs[ev] || []) try{ f(data); }catch(e){ dlog('오류', `보너스(${ev}) ${e.message}`, e.stack); } }
+window.SEHEE = {
+  version:() => APP_VERSION,
+  /* 읽기·쓰기 창구 — 바꾸면 안 되는 이름들. 속 구조가 바뀌어도 이 이름은 메인 방이 지켜 준다 */
+  kvGet:k => kvGet(k), kvSet:(k, v) => kvSet(k, v),
+  todayPan:() => todayPanRef(), savePan:p => putPan(p), render:() => render(),
+  log:() => O.log, chatSave:() => saveLog(), say:(text, face) => { seheeSays({ t:String(text), f:face ?? 0 }); renderLog(); saveLog(); },
+  board:() => BOARD, people:() => PPL, cal:() => CAL,
+  goView:v => goView(v), openDrawer:k => dwOpen(k), closeDrawer:() => dwClose(),
+  sheet:html => openSheet(html), closeSheet:() => closeSheet(), toast:m => toast(m), esc:s => esc(s), dlog:(c, m, d) => dlog(c, m, d),
+  aiReady:() => aiReady(),
+  /* 세희 머리에 보너스 도구·지침 더하기 */
+  addTool(def, handler){ if (!def || !def.name || typeof handler !== 'function') return; BONUS.tools = BONUS.tools.filter(t => t.name !== def.name); BONUS.tools.push(def); BONUS.handlers[def.name] = handler; },
+  addPrompt(fn){ if (typeof fn === 'function' || typeof fn === 'string') BONUS.prompts.push(fn); },
+  /* 설정 → 보너스 칸에 단추 */
+  addMenu(label, run){ BONUS.menu.push({ label:String(label), run }); },
+  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd */
+  on(ev, fn){ (BONUS.subs[ev] = BONUS.subs[ev] || []).push(fn); },
+  setVersion(v){ BONUS.ver = String(v); },
+};
+async function bonusPrompt(){
+  if (!BONUS.prompts.length) return '';
+  const out = []; for (const p of BONUS.prompts){ try{ out.push(typeof p === 'function' ? await p() : p); }catch(e){ dlog('오류', '보너스 지침 ' + e.message); } }
+  return '\n\n보너스 기능:\n' + out.filter(Boolean).join('\n');
+}
+function loadBonus(){
+  if (!bonusOn() || BONUS.loaded) return; BONUS.loaded = true;
+  const s = document.createElement('script'); s.src = 'bonus/bonus.js?t=' + Math.floor(Date.now() / 60000);
+  s.onload = () => { dlog('화면', '보너스 불러옴 ' + (BONUS.ver || '')); bonusEmit('boot'); };
+  s.onerror = () => dlog('화면', '보너스 없음(bonus/bonus.js)');
+  document.body.appendChild(s);
+}
+
 /* 개발자 로그 화면 */
 (function devInit(){
   const CATS = ['all', 'AI', '도구', '대화', '동기화', '화면', '업데이트', '오류'];
@@ -3464,6 +3514,7 @@ function updateLive(){
 }
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
 function seheeSays(r, src){
+  bonusEmit('say', { text:r.t, face:r.f });
   dlog('대화', `세희 ← [${r.f}] ${String(r.t).slice(0, 80)}`);
   O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f);
   /* 적었다고 말했는데 이번 차례에 실제로 적힌 게 없으면 — 보스가 믿고 넘어가지 않게 알려 준다 */
@@ -3622,6 +3673,7 @@ function goView(v){
   else if (location.hash !== '#office') location.hash = 'office'; else showView('office');
 }
 function showView(v){
+  setTimeout(() => bonusEmit('view', curView()), 0);
   dlog('화면', '보기 → ' + v);
   const want = DRAWERS.includes(location.hash.slice(1)) ? location.hash.slice(1) : null;
   if (!VIEWS.includes(v)) v = 'pan';
@@ -4081,6 +4133,7 @@ function renderBoardTalk(){
   const src = FACE(t.face); if ($('btSpr').getAttribute('src') !== src) $('btSpr').setAttribute('src', src);
 }
 setInterval(() => { if (O.busy && (DW.open === 'board' || curView() === 'pan') && !(O.live && O.live.text)) renderBoardTalk(); }, 1000);
+let bonusWasBusy = false; setInterval(() => { if (bonusWasBusy && !O.busy) bonusEmit('turnEnd'); bonusWasBusy = !!O.busy; }, 400);
 /* 판 위 대화 상자: 이름표 누르면 접기/펴기, 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
 (function panTalkInit(){
   const pt = $('panTalk');
@@ -4191,6 +4244,7 @@ $('btAll').onclick = () => dwClose('board');
       if (q.has('shared')){ spStep('공유받은 것 꺼내는 중'); await takeShared(); }
     }
     showView(hashView());
+    loadBonus();
     spStep('준비 끝 · ' + brain);
     setTimeout(() => resumeJob().catch(() => {}), 1200);
   }catch(e){
