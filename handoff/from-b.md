@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-13 20:15 · 본체 v1.5.6 — 서류철 견출지가 서류철에 딸려 나옴 + 서류철 묶음 · [참고] · 받는 쪽: 모두
+- 무엇: js/views.js dwSet(k, x) 가 이제 견출지도 같이 옮긴다(dwTabAt — 견출지 오른쪽 끝을 서류철 왼쪽 끝에 붙임, 제자리보다 오른쪽은 안 감, 사무실 왼쪽 밖은 clip-path 로 자름, 다 열리면 .pulled). 닫히면 dwTabRest 로 inline transform·clipPath 지움. 견출지 끌기 출발점은 '서류철 왼쪽 끝 = 견출지 오른쪽 끝'(전엔 w+40). #office 에 div#dwStack.dw-stack(오른쪽 10px 종이 가장자리, z 14) 추가. css 맨 아래 '서류철 묶음' 구역에서 .dw-tabs{right:8px;width:26px} .dw{right:34px} .pan-dw{right:8px;width:26px} 로 덮어씀.
+- 받는 쪽에게 필요한 일: 서류철을 여닫는 새 길을 만들면 dwSet 을 거치면 견출지가 따라온다(style.transform 을 직접 만지지 말 것). 견출지 button 의 inline transform·clipPath 는 views.js 몫. 서류철 폭이 4px 줄었다(오른쪽 30→34px).
+- 관련 파일·버전: 본체 v1.5.6 / tests/tdwstack.js(run.sh 목록) — run.sh 전부 통과
+
 ## 2026-11-13 18:55 · 본체 v1.5.2 — 대화 상자 옆으로 접기 · [참고] · 받는 쪽: 모두
 - 무엇: js/board.js 에 btFold(box, 이름) — 판(#panTalk .pt-box)·보드(#dw-board .bt)·사람(#bPpTalk, 실험 B) 대화 상자 공통. 이름표 .bt-name b 가 이제 끌기 손잡이(pointer-events:auto, touch-action:none, .noswipe). 접히면 상자에 .sfold(높이 80px·손 통과, 안의 것 숨김)와 꼬리 button.bt-peek(right:24px — 서랍 옆면 손잡이 .dw-grip.r 바로 안쪽). box.btFold = {fold, open, folded}. 기억은 localStorage sehee.fold.pan/board/people, 옛 sehee.ptFold(위아래 접기)는 없앰. css/app.css 맨 아래 '대화 상자 옆으로 접기' 구역(A 의 v1.5.1 구역 아래). #ptName 글자는 '강세희'(▾ 없음).
 - 받는 쪽에게 필요한 일: 대화 상자를 새로 만들면 btFold(상자, '이름') 한 줄이면 같은 접기가 붙는다. 이름표·꼬리 자리에 다른 손짓을 얹을 땐 알려 주기. 실험 B0.8: 다시 답하기(on regen)로 지워진 답의 b_vis 카드도 지운다.

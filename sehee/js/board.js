@@ -194,7 +194,7 @@ function renderBoardTalk(){
 }
 setInterval(() => { if (O.busy && (DW.open === 'board' || curView() === 'pan') && !(O.live && O.live.text)) renderBoardTalk(); }, 1000);
 let bonusWasBusy = false; setInterval(() => { if (bonusWasBusy && !O.busy) bonusEmit('turnEnd'); bonusWasBusy = !!O.busy; }, 400);
-/* 대화 상자 옆으로 접기 (v1.5.1, B) — 판·보드·사람 대화 상자 공통.
+/* 대화 상자 옆으로 접기 (v1.5.2, B) — 판·보드·사람 대화 상자 공통.
    이름표(강세희)를 견출지처럼 오른쪽으로 끌면 상자가 화면 밖으로 접히고 오른쪽 끝에 '세희' 꼬리만 남는다(그만큼 아래가 보인다).
    꼬리를 왼쪽으로 끌거나 누르면 다시 나온다. 이름표를 그냥 눌러도 접힌다. 접혀 있을 때 세희 새 답이 오면 꼬리에 빨간 점.
    기기마다 기억(localStorage sehee.fold.<이름>). v1.2.8 의 위아래 접기(sehee.ptFold)는 이걸로 바뀜 */
@@ -246,7 +246,7 @@ function btFold(box, key){
   if (on){ box.classList.add('sfold'); setTimeout(() => { seen = lastAt(); }, 1500); }
   box.btFold = { fold, open, folded:() => box.classList.contains('sfold') };
 }
-/* 판 위 대화 상자: 이름표 끌기/누르기 = 옆으로 접기(v1.5.1), 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
+/* 판 위 대화 상자: 이름표 끌기/누르기 = 옆으로 접기(v1.5.2), 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
 (function panTalkInit(){
   const pt = $('panTalk');
   try{ if (localStorage.getItem('sehee.ptFold') === '1' && localStorage.getItem('sehee.fold.pan') === null) localStorage.setItem('sehee.fold.pan', '1'); localStorage.removeItem('sehee.ptFold'); }catch(e){}

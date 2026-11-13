@@ -40,10 +40,29 @@ const dwEl = k => $('dw-' + k);
 const dwW = k => dwEl(k).getBoundingClientRect().width || 300;
 function dwSet(k, x, anim){   /* x = 0(다 열림) ~ 너비(다 닫힘) */
   const el = dwEl(k), w = dwW(k);
+  x = Math.max(0, Math.min(w + 40, x));
   el.style.transition = anim ? 'transform .32s cubic-bezier(.2,.8,.25,1)' : 'none';
-  el.style.transform = `translateX(${Math.max(0, Math.min(w + 40, x))}px)`;
+  el.style.transform = `translateX(${x}px)`;
   el.classList.add('moving');
+  dwTabAt(k, x, anim);
 }
+/* v1.5.6 (B) 견출지는 서류철 왼쪽 끝에 붙어 있다 — 서류철이 빠져나오면 같이 딸려 나오고, 다 열리면 화면 왼쪽 끝에 살짝 보인다.
+   제자리(오른쪽 서류철 묶음 앞)보다 오른쪽으로는 안 간다. 위치는 #office 안 CSS 픽셀(컴퓨터 틀 배율과 무관) */
+const dwTab = k => $('dwTabs').querySelector(`button[data-dw="${k}"]`);
+const dwTabHome = k => { const b = dwTab(k); return b ? $('dwTabs').offsetLeft + b.offsetLeft + b.offsetWidth : 0; };   // 견출지 오른쪽 끝(제자리)
+function dwTabAt(k, x, anim){
+  const b = dwTab(k); if (!b) return;
+  const sh = Math.min(0, Math.round(dwEl(k).offsetLeft + x - dwTabHome(k) + 2));   // 서류철 왼쪽 끝에 2px 겹쳐 붙음
+  b.style.transition = anim ? 'transform .32s cubic-bezier(.2,.8,.25,1), filter .15s' : 'none';
+  b.style.transform = sh ? `translateX(${sh}px)` : '';
+  b.classList.toggle('pulled', sh < 0);
+  /* 사무실 왼쪽 끝 밖으로 나간 부분은 잘라 낸다(컴퓨터 폰 틀 밖으로 삐져나오지 않게) */
+  const out = -(dwTabHome(k) - b.offsetWidth + sh);
+  b.style.clipPath = out > 0 ? `inset(0 0 0 ${Math.ceil(out)}px)` : '';
+}
+const dwTabRest = k => { const b = dwTab(k); if (b){ b.style.transition = ''; b.style.transform = ''; b.style.clipPath = ''; b.classList.remove('pulled'); } };
+/* 오른쪽 빈자리 = 서류철이 꽂힌 묶음(종이 가장자리). 견출지 줄 뒤, 서류철은 이 묶음 밑에서 빠져나온다 */
+(function dwStack(){ const t = $('dwTabs'); if (!t || $('dwStack')) return; const d = document.createElement('div'); d.id = 'dwStack'; d.className = 'dw-stack'; d.setAttribute('aria-hidden', 'true'); t.parentNode.insertBefore(d, t); })();
 async function dwOpen(k, quiet){
   dlog('화면', '서랍 열기 → ' + k + (quiet ? '(조용히)' : ''));
   if (!DRAWERS.includes(k)) return;
@@ -56,7 +75,7 @@ async function dwOpen(k, quiet){
 function dwClose(k){
   k = k || DW.open; if (!k) return;
   const el = dwEl(k); dwSet(k, dwW(k) + 40, true);
-  setTimeout(() => { if (DW.open !== k){ el.classList.remove('open', 'moving'); el.style.transform = ''; } }, 340);
+  setTimeout(() => { if (DW.open !== k){ el.classList.remove('open', 'moving'); el.style.transform = ''; dwTabRest(k); } }, 340);
   if (DW.open === k){ DW.open = null; document.body.classList.remove('dw-on'); }
   $('dwTabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.dw === DW.open));
 }
@@ -81,8 +100,9 @@ function dwClose(k){
       const el = dwEl(g.k); el.classList.add('open', 'moving');
       if (!g.wasOpen){ if (g.k === 'cal') calOpen(); else if (g.k === 'board') boardOpen(); else if (g.k === 'people') pplOpen(); }
     }
-    const w = dwW(g.k);
-    dwSet(g.k, g.wasOpen ? Math.max(0, dx) : w + 40 + Math.min(0, dx) * 1.05, false);
+    /* 닫힌 서류철은 왼쪽 끝이 견출지 오른쪽 끝에 닿은 자리에서 출발 — 견출지와 서류철이 손가락을 1:1 로 같이 따라온다 */
+    const w = dwW(g.k), start = dwTabHome(g.k) - 2 - dwEl(g.k).offsetLeft;
+    dwSet(g.k, g.wasOpen ? Math.max(0, dx) : Math.min(w + 40, start + Math.min(0, dx)), false);
   });
   const up = e => {
     if (!g) return;
@@ -118,7 +138,7 @@ function dwClose(k){
   }
 })();
 /* 크기가 바뀌면(키보드·창 크기) 닫힌 서류는 계속 밖에 */
-window.addEventListener('resize', () => { for (const k of DRAWERS) if (DW.open !== k && dwEl(k).classList.contains('moving')) dwSet(k, dwW(k) + 40, false); });
+window.addEventListener('resize', () => { for (const k of DRAWERS){ if (DW.open !== k && dwEl(k).classList.contains('moving')) dwSet(k, dwW(k) + 40, false); else if (DW.open === k) dwTabAt(k, 0, false); } });
 
 /* ── 옆으로 밀기 — 판 ↔ 사무실 (서류철 위에서는 서류가 먼저) ── */
 const SWIPE = { anim:'' };

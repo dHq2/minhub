@@ -659,7 +659,7 @@ body:not(.office):not(.v-board) .brain{display:none}
 .memo.has{border-left:2px solid rgba(47,74,122,.35);padding-left:7px}
 .it.done .memo{opacity:.6}
 
-/* ── 대화 상자 옆으로 접기 (v1.5.1, B) — 판·보드·사람 대화 상자 공통. 이름표를 오른쪽으로 끌면 접히고 '세희' 꼬리만 남음.
+/* ── 대화 상자 옆으로 접기 (v1.5.2, B) — 판·보드·사람 대화 상자 공통. 이름표를 오른쪽으로 끌면 접히고 '세희' 꼬리만 남음.
    꼬리는 서랍 옆면 손잡이(.dw-grip.r 22px) 바로 안쪽 — 손잡이 위에 두면 당길 때 서랍이 닫힌다 ── */
 .bt-name b{pointer-events:auto;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
 .bt-name b:active{cursor:grabbing}
@@ -705,3 +705,15 @@ body:not(.office):not(.v-board) .brain{display:none}
 .pp-picbig{position:relative;flex:0 0 112px;height:112px;overflow:hidden;border:2px solid #2b2417;background:#e9e3d4;display:flex;align-items:center;justify-content:center;font:700 2.4rem var(--f-head);color:#5c5340}
 .pp-picact{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 body:has(#pd.on) .veil{z-index:239} body:has(#pd.on) .sheet{z-index:240}   /* 인물 기록부 위에서 연 판이 기록부 뒤로 숨지 않게 */
+/* ── 서류철 묶음 (v1.5.6, B) — 오른쪽 빈자리는 서류철이 꽂힌 묶음(종이 가장자리 10px). 견출지는 그 앞에 튀어나와 있고,
+   끌면 서류철 왼쪽 끝에 붙어 딸려 나온다(다 열리면 화면 왼쪽 끝에 살짝). 앞쪽 .dw-tabs·.dw·.pan-dw 규칙을 여기서 덮어씀 ── */
+.dw-stack{position:absolute;right:0;top:0;bottom:var(--sayh,64px);width:10px;z-index:14;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,0) 3px),
+    repeating-linear-gradient(90deg,#bfae84 0 1px,#f4ecd8 1px 2.5px,#d9cba6 2.5px 3.5px,#fbf6e9 3.5px 5px);
+  border-left:1px solid rgba(0,0,0,.45);box-shadow:-4px 0 7px rgba(0,0,0,.35)}
+.dw-stack::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 37px,rgba(90,70,40,.18) 37px 38px);pointer-events:none}
+.dw-tabs{right:8px;width:26px}
+.dw-tabs.pan-dw{right:8px;width:26px}
+.dw{right:34px}
+.dw-tabs button.pulled{box-shadow:-3px 3px 7px rgba(0,0,0,.4);filter:brightness(1.12)}
+body:not(.alt) #office .dw-stack{visibility:visible}
