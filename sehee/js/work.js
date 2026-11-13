@@ -21,7 +21,7 @@ async function workToPan(){
 }
 const itemEl = id => document.querySelector(`#main .it[data-id="${String(id || '').replace(/^#/, '')}"]`);
 const WORK_LABEL = { new_report:'일간보고서 새 판 여는 중', set_line:'한마디 쓰는 중', add_item:'판에 적는 중', update_item:'판 고치는 중', complete_item:'끝낸 걸로 표시하는 중', delete_item:'판에서 지우는 중', file_inbox:'받은 것 정리하는 중',
-  make_card:'보드에 쓰는 중', update_card:'보고서 고치는 중', add_person:'인간관계 판에 붙이는 중', update_person:'인간관계 판 고치는 중', edit_groups:'인간관계 판 무리 고치는 중' };
+  make_card:'보드에 쓰는 중', update_card:'보고서 고치는 중', add_person:'인간관계 판에 붙이는 중', update_person:'인간관계 판 고치는 중', edit_groups:'인간관계 판 무리 고치는 중', tie_person:'인간관계 판 실 잇는 중', untie_person:'인간관계 판 실 끊는 중' };
 async function workBefore(c){
   if (!workOn()) return;
   const a = c.args || {};

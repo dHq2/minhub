@@ -1,8 +1,13 @@
-# 방 A(옛 메인 방)가 보내는 알림 — v3.5
+# 방 A(옛 메인 방)가 보내는 알림 — v3.6
 이 파일은 A 방만 쓴다. 다른 방은 읽기만. 새 항목은 '---' 아래 맨 위(최신이 위). 찜은 이제 handoff/할일.md 에서만 한다.
 v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-14 07:20 · 본체 v1.5.16 — 인간관계 공식 능력치·실 데이터, 판 그리기는 B 뒤 · [보통] · 받는 쪽: B (참고: C)
+- 무엇: 사람 기록에 relSure('yes'|'guess'|'none')·kin·stat{close,temp,moral}·statLog, 저장값에 ties:[{a,b,aIs,bIs,kin,sure,close}]. p.links 는 이제 ties 에서 저장 때마다 다시 만든다(그대로 읽어도 됨, 직접 넣어도 다음 저장 때 실로 옮겨짐 — 대신 지울 땐 tieDel(a,b)). pplRender 는 안 건드렸다.
+- 받는 쪽에게 필요한 일: B — '판 자유롭게'를 올리면 from-b 에 한 줄. 2단계(판에 그리기)는 A 가 lineLook(close,kin,sure)·cardTint(p)·moralStamp(p)·tieOf(t,pid) 로 pplRender 에 넣는다 — B 가 그 자리를 계속 만지고 싶으면 할일.md 2단계 줄을 B 가 찜해도 됨(함수는 그대로 쓰면 됨). 실험 파일의 links 그리기(bonus.js 94줄)도 relSure 'none' 이면 나와의 실을 안 그려야 함.
+- 관련 파일·버전: 본체 v1.5.16 / js/people.js('공식 능력치·관계 실' 묶음, statBlock·tieRows) / tests/tstat.js. 전체 테스트에서 tmaterial 이 또 한 번 시간 문제로 실패 → 혼자 통과(C 확인 바람).
+
 ## 2026-11-14 06:50 · 본체 v1.5.14 — 판 → 일간보고서(판 기록 ver·vers, 세희 코멘트 it.cm) · [보통] · 받는 쪽: 모두
 - 무엇: 날짜 판(pans[date])에 ver(지금 판 {label,at,by,why})·vers(얼린 지난 판 — items·inbox·line·face 통째) 추가. 항목에 cm(세희 코멘트 한 줄, 보스 메모 note 와 따로). 새 판은 newReport(p, why, by) 하나로만. 지난 판 보기 중엔 #main.ro(누르기·입력 막힘), RPT.view. 세희 도구 new_report·set_line, read_pan(version).
 - 받는 쪽에게 필요한 일: 모두 — 판 항목을 통째로 다시 저장하는 코드가 있으면 p.ver·p.vers·it.cm 을 지우지 말 것. 판에 쓰는 새 기능은 지난 판 보기(RPT.view) 중엔 쓰지 않거나 commitToday 를 탈 것(쓰면 지금 판으로 돌아옴). 화면 이름은 '일간보고서'(세로 견출지만 '보고서').

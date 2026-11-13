@@ -16,7 +16,7 @@ function pplGroupsSet(arr){
 function pplFreeColor(){ const used = new Set(Object.values(GROUP_COLOR)); return GROUP_PALETTE.find(c => !used.has(c)) || GROUP_PALETTE[Object.keys(GROUP_COLOR).length % GROUP_PALETTE.length]; }
 const pplGroupsOut = () => GROUPS.map(n => ({ name:n, color:GROUP_COLOR[n] }));
 pplGroupsSet(GROUP_DEFAULT.map(([name, color]) => ({ name, color })));
-async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null;
+async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null; PPL.ties = d.ties || [];
     if (Array.isArray(d.groups) && d.groups.length) pplGroupsSet(d.groups);
     else {   /* 처음 — 이미 쓰던 사람이면 그 무리를 기본 앞에 그대로 살린다(예전 '학생·학부모' 같은 것) */
       const old = { '학생·학부모':'#8a6d3b' }, base = GROUP_DEFAULT.map(([name, color]) => ({ name, color })), used = [...new Set(PPL.list.map(p => p.group).filter(Boolean))];
@@ -26,7 +26,7 @@ async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {
     }
     for (const p of PPL.list) if (!GROUPS.includes(p.group)) p.group = '기타';
   } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; await clueLoad(); return PPL.list; }
-const pplSave = () => kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', groups:pplGroupsOut(), ...(PPL.me ? { me:PPL.me } : {}) });
+const pplSave = () => { tiesSync(); return kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', groups:pplGroupsOut(), ties:PPL.ties || [], ...(PPL.me ? { me:PPL.me } : {}) }); };
 /* 무리 고치기 — 이름 바꾸면 그 무리 사람도 따라가고, 지운 무리 사람은 '기타'로 */
 function pplGroupsApply(next, renames){
   for (const p of PPL.list){ if (renames[p.group]) p.group = renames[p.group]; }
@@ -91,18 +91,22 @@ const pplFind = key => { const k = String(key || '').replace(/^#/, '').trim(); r
 const STORY_MAX = 2000;
 function pplLine(p, isMe){
   const info = (p.info || []).map(x => `${x.k} ${x.v}`).join(', '), st = p.story || [];
-  return `- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${p.note ? ' — ' + p.note.replace(/\n/g, ' ').slice(0, 80) : ''}${(p.extra || []).length ? ` · 기타 ${p.extra.length}줄` : ''}${st.length ? ` · 이야기 ${st.length}건(최근 ${storyWhen(st[st.length - 1])})` : ''}`;
+  return `- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + pplRelTxt(p) + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${isMe ? '' : pplStatTxt(p)}${p.note ? ' — ' + p.note.replace(/\n/g, ' ').slice(0, 80) : ''}${(p.extra || []).length ? ` · 기타 ${p.extra.length}줄` : ''}${st.length ? ` · 이야기 ${st.length}건(최근 ${storyWhen(st[st.length - 1])})` : ''}`;
 }
 const storyWhen = x => x.when || ymdDot(x.at);
+const pplRelTxt = p => { const r = relSure(p); return r === 'none' ? '나와의 관계 안 밝혀짐(실 없음)' : `나에게: ${p.rel || '?'}${r === 'guess' ? '(추측)' : ''}${isKin(p) ? '·가족' : ''}`; };
+const pplStatTxt = p => { const st = p.stat || {}; const w = ['close', 'temp', 'moral'].filter(k => st[k]).map(k => `${statName(k)} ${statTxt(k, st[k])}(${byTxt(st[k].by)})`); return w.length ? ' · ' + w.join(' · ') : ''; };
 function pplFull(p, isMe){
   const info = (p.info || []).map(x => `${x.k} ${x.v}`).join(', ');
-  const out = [`- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${PPL.pics && PPL.pics[isMe ? 'me' : p.id] ? ' · 프로필 사진 있음' : ''}`];
+  const out = [`- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + pplRelTxt(p) + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${isMe ? '' : pplStatTxt(p)}${PPL.pics && PPL.pics[isMe ? 'me' : p.id] ? ' · 프로필 사진 있음' : ''}`];
   if (p.note) out.push('  기억할 점: ' + p.note.replace(/\n/g, ' / '));
   for (const x of p.extra || []) out.push(`  기타: ${x.lock ? '[비공개] ' : ''}${x.text}`);
   const st = (p.story || []).slice(-12);
   if (st.length) out.push(`  이야기 기록(오래된 것부터, 모두 ${(p.story || []).length}건):`, ...st.map(x => `    · ${storyWhen(x)} ${x.lock ? '[비공개] ' : ''}${x.text.replace(/\n/g, ' / ').slice(0, 700)}`));
   const ns = (p.notes || []).slice(-5); if (ns.length) out.push('  세희 메모: ' + ns.map(x => x.text).join(' / '));
-  const links = (p.links || []).map(x => pplFind(x)).filter(Boolean).map(x => x.name); if (links.length) out.push('  아는 사이: ' + links.join(', '));
+  const ties = isMe ? [] : (PPL.ties || []).filter(t => t.a === p.id || t.b === p.id).map(t => { const v = tieOf(t, p.id), o = pplFind(v.other); return o ? `${o.name}(${[v.mine && '이 사람은 ' + v.mine, v.theirs && '그쪽은 ' + v.theirs, t.kin && '가족', t.sure === 'guess' && '추측', t.close && '친밀도 ' + t.close.v + '·' + byTxt(t.close.by)].filter(Boolean).join(', ') || '아는 사이'})` : ''; }).filter(Boolean);
+  if (ties.length) out.push('  사람끼리 실: ' + ties.join(' / '));
+  const lg = (p.statLog || []).slice(-3); if (lg.length) out.push('  능력치 바뀐 기록: ' + lg.map(x => `${ymdDot(x.at)} ${statName(x.k)} ${x.from ?? '?'}→${x.v ?? '지움'}(${byTxt(x.by)}${x.why ? ', ' + x.why : ''})`).join(' / '));
   const cl = cluesOf(isMe ? 'me' : p.id); if (cl.length) out.push(`  사진 단서(모두 ${cl.length}장 — 사진 속은 세희가 못 봄, 보스가 적은 설명만):`, ...cl.slice(-10).map(x => `    · ${x.when || ymdDot(x.at)} ${x.lock ? '[비공개] ' : ''}${x.text || '(설명 없음)'}${x.people.length > 1 ? ' — 같이: ' + x.people.filter(i => i !== (isMe ? 'me' : p.id)).map(i => i === 'me' ? '나' : (pplFind(i) || {}).name).filter(Boolean).join(', ') : ''}`));
   return out.join('\n');
 }
@@ -138,6 +142,13 @@ const PEOPLE_TOOLS = () => [
     add_story:{ type:'array', description:'이야기 기록(선택) — update_person 과 같음', items:{ type:'object', properties:{ text:{ type:'string' }, when:{ type:'string' }, lock:{ type:'boolean' } } } },
     sex:{ type:'string', enum:['여', '남'], description:'성별(선택) — 사진이 없을 때 기본 얼굴. 관계·호칭으로 분명할 때만(어머니·아버지·언니·형 등). 이름만으로 짐작하지 않는다' },
     photo:{ type:'integer', description:'프로필 사진(선택) — 보스가 이번에 보낸 사진 중 몇 번째(1부터)를 이 사람 프로필 사진으로. 보스가 사진을 보내며 이 사람 사진·프사로 하라고 할 때만' },
+    relation_sure:{ type:'string', enum:['확실', '추측', '모름'], description:'보스와의 관계가 밝혀졌나. 추측이면 판에 ? 실, 모름이면 실을 긋지 않는다' },
+    family:{ type:'boolean', description:'보스의 가족(혈연·혼인)이면 true — 가족 모양 실' },
+    closeness:{ type:'string', enum:GRADE_ALL, description:'보스와의 친밀도 S~F(+/- 한 칸). 보스가 말했거나 단서가 분명할 때만' },
+    emotion:{ type:'integer', minimum:1, maximum:5, description:'감정 온도 1 무감정·계산적 ~ 5 아주 감정적' },
+    morality:{ type:'integer', minimum:-2, maximum:2, description:'선악 -2 아주 나쁨 ~ +2 아주 착함(0 보통)' },
+    stat_why:{ type:'string', description:'능력치를 매긴 근거 한 줄(단서). 능력치를 넣을 땐 꼭' },
+    boss_said:{ type:'boolean', description:'보스가 이번에 그 값을 직접 말했으면 true — 보스가 확정한 값도 바꾼다. 세희 판단이면 비움' },
     link_to:{ type:'string', description:'이미 판에 있는 사람 중 이 사람과 연결된 이름(선택)' } }, required:['name', 'group'] } },
   { name:'update_person', description:"인간관계 판의 사람 기록부를 고친다. 보스 본인은 person:'나'. 바꿀 것만 넣는다.", schema:{ type:'object', properties:{
     person:{ type:'string', description:"사람 id(# 없이) 또는 이름. 보스 본인이면 '나'" }, relation:{ type:'string' }, group:{ type:'string', enum:GROUPS },
@@ -148,7 +159,20 @@ const PEOPLE_TOOLS = () => [
       items:{ type:'object', properties:{ text:{ type:'string' }, when:{ type:'string', description:'언제 일인지(YYYY-MM-DD 또는 \'작년 겨울\'처럼). 모르면 비움 — 적은 날로 남는다' }, lock:{ type:'boolean' } }, required:['text'] } },
     sex:{ type:'string', enum:['여', '남'], description:'성별(선택) — 사진이 없을 때 기본 얼굴. 관계·호칭으로 분명할 때만(어머니·아버지·언니·형 등). 이름만으로 짐작하지 않는다' },
     photo:{ type:'integer', description:'프로필 사진(선택) — 보스가 이번에 보낸 사진 중 몇 번째(1부터)를 이 사람 프로필 사진으로. 보스가 사진을 보내며 이 사람 사진·프사로 하라고 할 때만' },
+    relation_sure:{ type:'string', enum:['확실', '추측', '모름'], description:'보스와의 관계가 밝혀졌나. 추측이면 판에 ? 실, 모름이면 실을 긋지 않는다' },
+    family:{ type:'boolean', description:'보스의 가족(혈연·혼인)이면 true — 가족 모양 실' },
+    closeness:{ type:'string', enum:GRADE_ALL, description:'보스와의 친밀도 S~F(+/- 한 칸). 보스가 말했거나 단서가 분명할 때만' },
+    emotion:{ type:'integer', minimum:1, maximum:5, description:'감정 온도 1 무감정·계산적 ~ 5 아주 감정적' },
+    morality:{ type:'integer', minimum:-2, maximum:2, description:'선악 -2 아주 나쁨 ~ +2 아주 착함(0 보통)' },
+    stat_why:{ type:'string', description:'능력치를 매긴 근거 한 줄(단서). 능력치를 넣을 땐 꼭' },
+    boss_said:{ type:'boolean', description:'보스가 이번에 그 값을 직접 말했으면 true — 보스가 확정한 값도 바꾼다. 세희 판단이면 비움' },
     add_note:{ type:'string', description:'세희 메모 한 줄' }, link_to:{ type:'string', description:'잇고 싶은 다른 사람 이름' } }, required:['person'] } },
+  { name:'tie_person', description:'판에 있는 두 사람 사이에 실을 잇거나 고친다(보스 본인과의 관계는 update_person). 실 위에 양쪽 관계 이름이 붙는다 — 예: 엄마와 딸이면 person_is:"엄마", other_is:"딸". 친구면 둘 다 "친구". 그들끼리의 친밀도는 보스가 본 그들 사이.',
+    schema:{ type:'object', properties:{ person:{ type:'string', description:'사람 이름 또는 id' }, other:{ type:'string', description:'다른 사람 이름 또는 id' },
+      person_is:{ type:'string', description:'person 이 other 에게 무엇인지(예: 엄마, 삼촌, 친구, 팀장)' }, other_is:{ type:'string', description:'other 가 person 에게 무엇인지(예: 딸, 조카, 친구, 팀원)' },
+      family:{ type:'boolean', description:'둘이 가족이면 true' }, guess:{ type:'boolean', description:'추측이면 true(판에 ?)' },
+      closeness:{ type:'string', enum:GRADE_ALL, description:'둘 사이 친밀도(선택)' }, why:{ type:'string', description:'근거 한 줄' }, boss_said:{ type:'boolean' } }, required:['person', 'other'] } },
+  { name:'untie_person', description:'두 사람 사이 실을 끊는다. 보스가 둘이 관계없다고 하거나 지우라고 할 때만.', schema:{ type:'object', properties:{ person:{ type:'string' }, other:{ type:'string' } }, required:['person', 'other'] } },
   { name:'edit_groups', description:'인간관계 판의 무리(묶음)를 고친다. 보스가 무리를 만들거나 이름을 바꾸거나 없애라고 할 때만. 이름을 바꾸면 그 무리 사람도 따라가고, 없앤 무리 사람은 기타로 간다. 기타는 못 없앤다.',
     schema:{ type:'object', properties:{ add:{ type:'array', items:{ type:'string' }, description:'새 무리 이름들' },
       rename:{ type:'array', items:{ type:'object', properties:{ from:{ type:'string' }, to:{ type:'string' } }, required:['from', 'to'] } },
@@ -173,12 +197,81 @@ function pplPatch(p, a){
   if (Array.isArray(a.add_story)){ p.story = p.story || []; for (const x of a.add_story){ const t = String((x && x.text) || x || '').trim().slice(0, STORY_MAX); if (!t || p.story.some(y => y.text === t)) continue;
     p.story.push({ at:Date.now(), when:String((x && x.when) || '').trim().slice(0, 30) || null, text:t, lock:!!(x && x.lock), by:'sehee' }); } }
 }
+/* 능력치·나와의 관계 — add/update 공통. 보스가 확정한 값을 못 바꿨으면 그 이름을 돌려준다 */
+function pplApplyStat(p, a){
+  const held = [], force = !!a.boss_said, by = force ? 'boss' : 'sehee';
+  if (a.relation_sure) p.relSure = a.relation_sure === '추측' ? 'guess' : a.relation_sure === '모름' ? 'none' : 'yes';
+  if (typeof a.family === 'boolean') p.kin = a.family;
+  for (const [k, v] of [['close', a.closeness], ['temp', a.emotion], ['moral', a.morality]]){
+    if (v === undefined || v === null || v === '') continue;
+    if (statSet(p, k, k === 'close' ? String(v) : Number(v), by, a.stat_why, force) === 'boss') held.push(statName(k));
+  }
+  return held;
+}
 /* 세희가 무엇을 고쳤는지 대화창에 한 줄로 */
 function pplWhat(a){ const w = [];
   if (a.info && a.info.length) w.push('항목 ' + a.info.length); if (a.note) w.push('기억할 점'); if (a.add_extra && a.add_extra.length) w.push('기타 ' + a.add_extra.length + '줄');
-  if (a.add_story && a.add_story.length) w.push('이야기 ' + a.add_story.length + '건'); if (a.photo) w.push('프로필 사진'); if (a.sex === '여' || a.sex === '남') w.push(a.sex === '여' ? '여성' : '남성'); if (a.add_note) w.push('세희 메모'); if (a.link_to) w.push('관계 잇기');
+  if (a.add_story && a.add_story.length) w.push('이야기 ' + a.add_story.length + '건'); if (a.closeness) w.push('친밀도 ' + a.closeness); if (a.emotion) w.push('감정 온도 ' + a.emotion); if (a.morality !== undefined && a.morality !== null && a.morality !== '') w.push('선악 ' + (a.morality > 0 ? '+' : '') + a.morality); if (a.relation_sure) w.push('관계 ' + a.relation_sure); if (a.photo) w.push('프로필 사진'); if (a.sex === '여' || a.sex === '남') w.push(a.sex === '여' ? '여성' : '남성'); if (a.add_note) w.push('세희 메모'); if (a.link_to) w.push('관계 잇기');
   return w.length ? ' — ' + w.join(' · ') : ''; }
-function pplLink(a, b){ if (!a || !b || a === b) return; a.links = [...new Set([...(a.links || []), b.id])]; b.links = [...new Set([...(b.links || []), a.id])]; }
+function pplLink(a, b){ if (!a || !b || a === b) return; if (!tieFind(a.id, b.id)) tieSet(a, b, {}); }
+/* ── 공식 능력치·관계 실 (v1.5.16, A) — 판에 그리기는 2단계(B 의 '판 자유롭게' 뒤) ──
+   나와의 관계: p.rel(나에게 무엇인지) · p.relSure 'yes'(확실) | 'guess'(추측 → ?) | 'none'(안 밝혀짐 → 실 없음) · p.kin(가족 → 가족 모양 실).
+   공식 능력치 p.stat = { close:{v:'A+',by,at,why}, temp:{v:1~5}, moral:{v:-2~2} } — 친밀도(실 색·굵기) · 감정 온도(카드 바탕 회색→연두) · 선악(善/惡 도장).
+   누가 매겼나(by:'boss'|'sehee')와 근거는 p.statLog 에 쌓인다. 보스가 매긴 값은 세희가 바로 못 바꾼다(제안만).
+   사람끼리 실: PPL.ties = [{ id, a, b, aIs:'엄마'(a 가 b 에게), bIs:'딸', kin, sure:'yes'|'guess', close:{v,by,at,why} }]. p.links 는 ties 에서 다시 만든다(옛 코드·실험 파일 호환). */
+const GRADE_ALL = ['S+', 'S', 'S-', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F+', 'F', 'F-'];
+const TEMP_NAME = ['', '무감정·계산적', '차분한 편', '보통', '감정적인 편', '아주 감정적'];
+const MORAL_NAME = { '-2':'아주 나쁨', '-1':'나쁜 편', '0':'보통', '1':'착한 편', '2':'아주 착함' };
+const relSure = p => p.relSure || (p.rel ? 'yes' : 'none');
+const isKin = p => p.kin !== undefined ? !!p.kin : p.group === '가족';
+function statOk(k, v){ if (k === 'close') return GRADE_ALL.includes(v); if (k === 'temp') return Number.isInteger(v) && v >= 1 && v <= 5; if (k === 'moral') return Number.isInteger(v) && v >= -2 && v <= 2; return false; }
+function statSet(p, k, v, by, why, force){
+  if (!statOk(k, v)) return 'bad';
+  p.stat = p.stat || {}; const old = p.stat[k];
+  if (old && old.by === 'boss' && by === 'sehee' && !force) return 'boss';
+  if (old && old.v === v && old.by === by) return 'same';
+  p.stat[k] = { v, by, at:Date.now(), why:String(why || '').trim().slice(0, 120) };
+  p.statLog = [...(p.statLog || []), { k, v, from:old ? old.v : null, by, at:Date.now(), why:String(why || '').trim().slice(0, 120) }].slice(-40);
+  return 'ok';
+}
+function statClear(p, k, by){ if (!p.stat || !p.stat[k]) return; const old = p.stat[k]; delete p.stat[k]; p.statLog = [...(p.statLog || []), { k, v:null, from:old.v, by, at:Date.now(), why:'지움' }].slice(-40); }
+const statTxt = (k, x) => !x ? '모름' : k === 'close' ? x.v : k === 'temp' ? `${x.v}/5 ${TEMP_NAME[x.v]}` : `${x.v > 0 ? '+' : ''}${x.v} ${MORAL_NAME[x.v]}`;
+const byTxt = by => by === 'boss' ? '보스' : '세희 판단';
+const statName = k => k === 'close' ? '친밀도' : k === 'temp' ? '감정 온도' : '선악';
+function tieFind(x, y){ return (PPL.ties || []).find(t => (t.a === x && t.b === y) || (t.a === y && t.b === x)); }
+function tieSet(pa, pb, o){
+  PPL.ties = PPL.ties || []; let t = tieFind(pa.id, pb.id);
+  if (!t){ t = { id:uid(), a:pa.id, b:pb.id, aIs:'', bIs:'', kin:false, sure:'yes', close:null, at:Date.now() }; PPL.ties.push(t); }
+  const flip = t.a !== pa.id;   /* o 는 pa 쪽에서 본 말 — 저장 방향에 맞춰 넣는다 */
+  if (o.paIs !== undefined) t[flip ? 'bIs' : 'aIs'] = String(o.paIs || '').trim().slice(0, 12);
+  if (o.pbIs !== undefined) t[flip ? 'aIs' : 'bIs'] = String(o.pbIs || '').trim().slice(0, 12);
+  if (o.kin !== undefined) t.kin = !!o.kin;
+  if (o.sure) t.sure = o.sure === 'guess' ? 'guess' : 'yes';
+  if (o.close !== undefined){ if (o.close === null || o.close === '') t.close = null; else if (GRADE_ALL.includes(o.close) && !(t.close && t.close.by === 'boss' && o.by === 'sehee' && !o.force)) t.close = { v:o.close, by:o.by || 'boss', at:Date.now(), why:String(o.why || '').slice(0, 120) }; }
+  return t;
+}
+function tieDel(x, y){ PPL.ties = (PPL.ties || []).filter(t => !((t.a === x && t.b === y) || (t.a === y && t.b === x)));
+  for (const p of PPL.list || []) if (p.id === x || p.id === y) p.links = (p.links || []).filter(id => id !== x && id !== y); }
+const tieOf = (t, pid) => { const me = t.a === pid; return { other:me ? t.b : t.a, mine:me ? t.aIs : t.bIs, theirs:me ? t.bIs : t.aIs }; };
+/* 저장 전 — 옛 links 를 실로 옮기고(실험 파일이 직접 넣었어도), 없는 사람 실은 버리고, links 를 실에서 다시 만든다 */
+function tiesSync(){
+  if (!PPL.list) return; PPL.ties = PPL.ties || []; const ids = new Set(PPL.list.map(p => p.id));
+  for (const p of PPL.list) for (const id of p.links || []) if (ids.has(id) && id !== p.id && !tieFind(p.id, id)) PPL.ties.push({ id:uid(), a:p.id, b:id, aIs:'', bIs:'', kin:false, sure:'yes', close:null, at:Date.now() });
+  PPL.ties = PPL.ties.filter(t => ids.has(t.a) && ids.has(t.b) && t.a !== t.b);
+  for (const p of PPL.list) p.links = [];
+  for (const t of PPL.ties){ pplFind(t.a).links.push(t.b); pplFind(t.b).links.push(t.a); }
+}
+/* 판 그리기(2단계)에서 쓸 모양 — 친밀도 → 실 색·굵기, 가족 → 이중선, 추측 → 연필 점선 + ?, 안 밝혀짐 → 없음 */
+const CLOSE_LOOK = { S:['#b0182a', 6], A:['#d23a2e', 4.6], B:['#e0703f', 3.4], C:['#c99a6b', 2.4], D:['#9c968a', 1.6], F:['#3f4a5a', 1.6] };
+function lineLook(close, kin, sure){
+  if (sure === 'none') return null;
+  if (sure === 'guess') return { color:'#9c968a', width:1.4, dash:'4 4', double:false, mark:'?' };
+  const g = close && close.v, base = g ? CLOSE_LOOK[g[0]] : ['#c0392b', 2], w = base[1] + (g && g[1] === '+' ? 0.6 : g && g[1] === '-' ? -0.6 : 0);
+  return { color:base[0], width:Math.max(1, w), dash:g && g[0] === 'F' ? '2 5' : '', double:!!kin, mark:'' };
+}
+const TEMP_COLOR = ['', '#d3d1c7', '#e2dfd2', '#ece6d3', '#dfecc2', '#cfe8a5'];
+const cardTint = p => p.stat && p.stat.temp ? TEMP_COLOR[p.stat.temp.v] : null;
+const moralStamp = p => { const m = p.stat && p.stat.moral ? p.stat.moral.v : 0; return m > 0 ? { ch:'善', strong:m === 2 } : m < 0 ? { ch:'惡', strong:m === -2 } : null; };
 /* v1.5.5 성별·프로필 사진 — add/update 공통. 사진을 못 찾으면 그 까닭을 돌려준다 */
 async function pplApplyLook(p, id, a){
   if (a.sex === '여' || a.sex === '남') p.sex = a.sex;
@@ -202,7 +295,7 @@ async function runPeopleTool(c){
     const name = String(a.name || '').trim().slice(0, 30); if (!name) return { ok:false, error:'name이 비었음' };
     if (pplFind(name)) return { ok:false, error:'이미 판에 있음 — update_person 을 쓴다', id:pplFind(name).id };
     const p = { id:uid(), name, rel:String(a.relation || '').slice(0, 60), group:GROUPS.includes(a.group) ? a.group : '기타', note:String(a.note || '').slice(0, 200), info:[], extra:[], notes:[], links:[], at:Date.now(), by:'sehee' };
-    pplPatch(p, a); const look = await pplApplyLook(p, p.id, a);
+    pplPatch(p, a); const look = await pplApplyLook(p, p.id, a); pplApplyStat(p, a);
     PPL.list.push(p); if (a.link_to) pplLink(p, pplFind(a.link_to));
     await pplSave(); PPL.changed = p.id; pplNote(`인간관계 판에 붙였어요 — ${p.name}${p.rel ? ' (' + p.rel + ')' : ''}${pplWhat({ ...a, info:null, note:null, link_to:null, photo:look === 'ok' ? 1 : null })}`);
     return { ok:true, id:p.id, ...(look && look !== 'ok' ? { photo_error:look } : {}) };
@@ -214,10 +307,22 @@ async function runPeopleTool(c){
     if (a.relation && !isMe) p.rel = String(a.relation).slice(0, 60);
     if (GROUPS.includes(a.group) && !isMe) p.group = a.group;
     if (a.add_note) p.notes = [...(p.notes || []), { at:Date.now(), text:String(a.add_note).slice(0, 200) }].slice(-30);
+    const held = isMe ? [] : pplApplyStat(p, a);
     if (a.link_to) pplLink(p, pplFind(a.link_to));
     await pplSave(); if (!isMe) PPL.changed = p.id; pplNote(`인간관계 판을 고쳤어요 — ${p.name}${pplWhat(aw)}`); if (PD.id === (isMe ? 'me' : p.id)) pdRender();
     if (isMe && workOn() && WORK.active){ if (curView() !== 'office') goView('office'); if (DW.open !== 'people') await dwOpen('people'); await wsleep(300); await pdOpen('me'); await wsleep(300); document.querySelectorAll('#pdBody .pd-sec').forEach((el, i) => setTimeout(() => hl(el), i * 160)); }
-    return { ok:true, id:p.id, ...(look && look !== 'ok' ? { photo_error:look } : {}) };
+    return { ok:true, id:p.id, ...(look && look !== 'ok' ? { photo_error:look } : {}), ...(held.length ? { kept_boss_values:held, note:'보스가 확정한 값이라 바꾸지 않았다 — 근거와 함께 보스에게 바꿀지 물어본다' } : {}) };
+  }
+  if (c.name === 'tie_person' || c.name === 'untie_person'){
+    const o = /^(나|me|보스|본인)$/.test(String(a.other || '').trim()) ? null : pplFind(a.other);
+    if (isMe || !o) return { ok:false, error:"두 사람 다 판에 있어야 함(보스 본인과의 관계는 update_person 의 relation·relation_sure·family)" };
+    if (o === p) return { ok:false, error:'같은 사람' };
+    if (c.name === 'untie_person'){ tieDel(p.id, o.id); await pplSave(); pplNote(`인간관계 판 — ${p.name}·${o.name} 실을 끊었어요`); if (DW.open === 'people') pplRender(); if (PD.id) pdRender(); return { ok:true }; }
+    const before = tieFind(p.id, o.id), bossClose = before && before.close && before.close.by === 'boss';
+    const t = tieSet(p, o, { paIs:a.person_is, pbIs:a.other_is, kin:a.family, sure:a.guess ? 'guess' : (a.guess === false ? 'yes' : undefined), close:a.closeness, why:a.why, by:a.boss_said ? 'boss' : 'sehee', force:!!a.boss_said });
+    await pplSave(); PPL.changed = p.id; if (DW.open === 'people') pplRender(); if (PD.id) pdRender();
+    const v = tieOf(t, p.id); pplNote(`인간관계 판 — ${p.name}${v.mine ? '(' + v.mine + ')' : ''} · ${o.name}${v.theirs ? '(' + v.theirs + ')' : ''} 실을 이었어요${t.kin ? ' · 가족' : ''}${t.sure === 'guess' ? ' · 추측' : ''}${t.close ? ' · 친밀도 ' + t.close.v : ''}`);
+    return { ok:true, ...(bossClose && a.closeness && !a.boss_said && t.close.v !== a.closeness ? { kept_boss_values:['둘 사이 친밀도'], note:'보스가 확정한 값이라 안 바꿈 — 보스에게 물어본다' } : {}) };
   }
   if (c.name === 'read_person') return { ok:true, person:pplFull(pdNorm(p), isMe) };
   if (c.name === 'remove_person'){
@@ -492,6 +597,54 @@ async function meLoad(){ await pplLoad(); if (!PPL.me) PPL.me = { id:'me', name:
 const pdGet = id => id === 'me' ? PPL.me : pplFind(id);
 function pdNorm(p){ p.info = p.info || []; p.extra = p.extra || []; p.story = p.story || []; p.notes = p.notes || []; p.links = p.links || []; return p; }
 function sec(n, title, body){ return `<section class="pd-sec"><h3><i>${n}</i>${title}</h3>${body}</section>`; }
+/* ── 기록부: 공식 능력치 · 사람끼리 실 (v1.5.16, A) — 누르면 바로 매겨짐(보스 확정), 같은 걸 다시 누르면 지움 ── */
+function statBlock(p){
+  const st = p.stat || {}, rs = relSure(p), cl = st.close, g = cl ? cl.v[0] : null, md = cl ? (cl.v[1] || '') : '';
+  const mark = x => x ? `<em class="sb-by ${x.by}">${byTxt(x.by)}</em>` : '';
+  return `<div class="sb">
+    <div class="sb-row"><b>나와의 관계</b><span class="sb-opts">${[['yes', '확실'], ['guess', '추측 ?'], ['none', '모름']].map(([k, t]) => `<button class="sb-o${rs === k ? ' on' : ''}" data-rs="${k}">${t}</button>`).join('')}<button class="sb-o kin${isKin(p) ? ' on' : ''}" data-kin="1">가족</button></span></div>
+    <div class="sb-row"><b>친밀도</b><span class="sb-opts">${'SABCDF'.split('').map(x => `<button class="sb-g g${x}${g === x ? ' on' : ''}" data-st="close" data-v="${x}">${x}${g === x ? md : ''}</button>`).join('')}<button class="sb-o${md === '+' ? ' on' : ''}" data-gm="+">+</button><button class="sb-o${md === '-' ? ' on' : ''}" data-gm="-">−</button></span>${mark(cl)}</div>
+    <div class="sb-row"><b>감정 온도</b><span class="sb-opts">${[1, 2, 3, 4, 5].map(v => `<button class="sb-t${st.temp && st.temp.v === v ? ' on' : ''}" data-st="temp" data-v="${v}" style="background:${TEMP_COLOR[v]}" aria-label="${TEMP_NAME[v]}">${v}</button>`).join('')}</span><small>${st.temp ? TEMP_NAME[st.temp.v] : '회색 무감정 → 연두 감정적'}</small>${mark(st.temp)}</div>
+    <div class="sb-row"><b>선악</b><span class="sb-opts">${[-2, -1, 0, 1, 2].map(v => `<button class="sb-m m${v}${st.moral && st.moral.v === v ? ' on' : ''}" data-st="moral" data-v="${v}" aria-label="${MORAL_NAME[v]}">${v === -2 ? '惡惡' : v === -1 ? '惡' : v === 0 ? '·' : v === 1 ? '善' : '善善'}</button>`).join('')}</span><small>${st.moral ? MORAL_NAME[st.moral.v] : ''}</small>${mark(st.moral)}</div>
+    ${(p.statLog || []).length ? `<ul class="sb-log">${p.statLog.slice(-4).reverse().map(x => `<li>${ymdDot(x.at)} · ${statName(x.k)} ${esc(String(x.from ?? '—'))} → ${esc(String(x.v ?? '지움'))} · ${byTxt(x.by)}${x.why ? ' · ' + esc(x.why) : ''}</li>`).join('')}</ul>` : '<p class="pd-empty">누르면 바로 매겨져요(보스 확정). 같은 걸 다시 누르면 지워요. 세희가 매긴 건 「세희 판단」으로 남아요.</p>'}
+  </div>`;
+}
+function tieRows(p, edit){
+  const ts = (PPL.ties || []).filter(t => t.a === p.id || t.b === p.id).map(t => ({ t, v:tieOf(t, p.id) })).filter(x => pplFind(x.v.other));
+  if (!edit) return ts.length ? `<ul class="tie-ul">${ts.map(({ t, v }) => { const o = pplFind(v.other); return `<li><button class="tie-n" data-tgo="${o.id}">${esc(o.name)}</button><span>${v.mine ? '이 사람은 <b>' + esc(v.mine) + '</b>' : ''}${v.mine && v.theirs ? ' · ' : ''}${v.theirs ? '그쪽은 <b>' + esc(v.theirs) + '</b>' : ''}${!v.mine && !v.theirs ? '아는 사이' : ''}</span>${t.kin ? '<i class="tie-k">가족</i>' : ''}${t.sure === 'guess' ? '<i class="tie-q">?</i>' : ''}${t.close ? `<i class="tie-c${t.close.by === 'sehee' ? ' guess' : ''}">${esc(t.close.v)}</i>` : ''}</li>`; }).join('')}</ul>` : '';
+  const others = (PPL.list || []).filter(o => o.id !== p.id && !tieFind(p.id, o.id));
+  return `<div class="pd-rows">${ts.map(({ t, v }) => { const o = pplFind(v.other); return `<div class="tie-row"><b>${esc(o.name)}</b>
+      <input data-tme="${t.id}" value="${esc(v.mine)}" placeholder="이 사람은 (예: 엄마)"><input data-tthem="${t.id}" value="${esc(v.theirs)}" placeholder="그쪽은 (예: 딸)">
+      <span class="tie-btns"><button class="pd-lock${t.kin ? ' on' : ''}" data-tkin="${t.id}">가족</button><button class="pd-lock${t.sure === 'guess' ? ' on' : ''}" data-tq="${t.id}">추측 ?</button>
+      <select data-tcl="${t.id}"><option value="">친밀도 —</option>${GRADE_ALL.map(g => `<option ${t.close && t.close.v === g ? 'selected' : ''}>${g}</option>`).join('')}</select><button class="pd-x" data-tdel="${t.id}">끊기</button></span></div>`; }).join('')}</div>
+    ${others.length ? `<select class="tie-add" id="pdTieAdd"><option value="">+ 다른 사람과 실 잇기…</option>${others.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select>` : ''}`;
+}
+const tieById = id => (PPL.ties || []).find(t => t.id === id);
+async function pdStatSaved(p){ await pplSave(); if (DW.open === 'people') pplRender(); await pdRender(); }
+$('pdBody').addEventListener('click', async e => {
+  const t = e.target, b = t.closest('[data-rs],[data-kin],[data-st],[data-gm],[data-tgo],[data-tkin],[data-tq],[data-tdel]'); if (!b) return;
+  e.stopPropagation(); const p = pdGet(PD.id); if (!p || PD.id === 'me') return; pdNorm(p); if (PD.edit) pdCollect(p);
+  if (b.dataset.tgo){ PD.id = b.dataset.tgo; return pdRender(); }
+  if (b.dataset.rs){ p.relSure = b.dataset.rs; return pdStatSaved(p); }
+  if (b.dataset.kin){ p.kin = !isKin(p); return pdStatSaved(p); }
+  if (b.dataset.st){ const k = b.dataset.st, cur = p.stat && p.stat[k];
+    let v = k === 'close' ? b.dataset.v + (cur && cur.v[0] === b.dataset.v ? '' : '') : Number(b.dataset.v);
+    if (cur && (k === 'close' ? cur.v[0] === b.dataset.v : cur.v === v)) statClear(p, k, 'boss');
+    else statSet(p, k, v, 'boss', '', true);
+    return pdStatSaved(p); }
+  if (b.dataset.gm){ const cur = p.stat && p.stat.close; if (!cur) return; const L = cur.v[0], m = cur.v[1] === b.dataset.gm ? '' : b.dataset.gm; statSet(p, 'close', L + m, 'boss', '', true); return pdStatSaved(p); }
+  const tie = tieById(b.dataset.tkin || b.dataset.tq || b.dataset.tdel); if (!tie) return;
+  if (b.dataset.tkin) tie.kin = !tie.kin;
+  if (b.dataset.tq) tie.sure = tie.sure === 'guess' ? 'yes' : 'guess';
+  if (b.dataset.tdel) tieDel(tie.a, tie.b);
+  return pdStatSaved(p);
+});
+$('pdBody').addEventListener('change', async e => {
+  const p = pdGet(PD.id); if (!p || PD.id === 'me') return;
+  if (e.target.id === 'pdTieAdd' && e.target.value){ pdNorm(p); pdCollect(p); tieSet(p, pplFind(e.target.value), {}); return pdStatSaved(p); }
+  const tc = e.target.dataset && e.target.dataset.tcl; if (tc){ const tie = tieById(tc); if (!tie) return; pdNorm(p); pdCollect(p);
+    tie.close = e.target.value ? { v:e.target.value, by:'boss', at:Date.now(), why:'' } : null; return pdStatSaved(p); }
+});
 async function pdDoc(p, isMe){
   pdNorm(p);
   const E = PD.edit, col = isMe ? '#2b2417' : (GROUP_COLOR[p.group] || '#5c5340');
@@ -510,6 +663,7 @@ async function pdDoc(p, isMe){
         <button class="pd-add" data-add="extra">+ 줄 더하기</button>`)}
       ${sec(4, '이야기 기록', `<div class="pd-rows">${p.story.map((x, i) => `<div class="pd-srow"><div class="pd-shead"><input data-sw="${i}" value="${esc(x.when || '')}" placeholder="언제 (${ymdDot(x.at)})"><button class="pd-lock ${x.lock ? 'on' : ''}" data-slock="${i}">${x.lock ? '🔒 비공개' : '🔓 공개'}</button><button class="pd-x" data-del="story" data-i="${i}">빼기</button></div><textarea class="pd-ta" data-s="${i}" placeholder="있었던 일·들은 이야기를 자세히">${esc(x.text)}</textarea></div>`).join('')}</div>
         <button class="pd-add" data-add="story">+ 이야기 더하기</button>`)}
+      ${isMe ? '' : sec(5, '사람끼리 실', tieRows(p, true))}
       ${isMe ? '' : `<button class="pd-del" data-pdel="${p.id}">이 사람 떼기</button>`}`;
   }
   const kv = [['이름', esc(p.name)], ['관계', esc(isMe ? '본인' : (p.rel || '미정'))], ...(isMe ? [] : [['무리', `<span class="pd-chip" style="--c:${col}">${esc(p.group)}</span>`]]), ...(p.sex ? [['성별', p.sex === '여' ? '여성' : '남성']] : []), ...p.info.map(x => [esc(x.k), esc(x.v)])];
@@ -519,7 +673,8 @@ async function pdDoc(p, isMe){
       ${links.length ? `<div class="pg-e" style="--c:#c9a227"><span>아는 사이</span></div><div class="pg-ns">${links.map(x => `<button class="pg-n sm" data-pp="${x.id}" style="--c:${GROUP_COLOR[x.group] || '#5c5340'}">${esc(x.name)}</button>`).join('')}</div>` : ''}</div>`;
   let n = 0;
   return `${sec(++n, '기본', `<table class="pd-kv">${kv.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</table>${p.info.length ? '' : '<p class="pd-empty" style="margin-top:4px">생일·나이·키 같은 건 「고치기」에서</p>'}`)}
-    ${sec(++n, '관계도', graph)}
+    ${isMe ? '' : sec(++n, '공식 능력치', statBlock(p))}
+    ${sec(++n, '관계도', graph + (isMe ? '' : tieRows(p, false)))}
     ${sec(++n, '기억할 점', p.note ? `<p class="pd-p">${esc(p.note)}</p>` : '<p class="pd-empty">아직 없음</p>')}
     ${sec(++n, '기타', p.extra.length ? `<ul class="pd-ul">${p.extra.map(x => `<li class="${x.lock ? 'lk' : ''}">${x.lock ? '<span class="pd-stamp">비공개</span>' : ''}${esc(x.text)}</li>`).join('')}</ul>` : '<p class="pd-empty">아직 없음</p>')}
     ${sec(++n, '이야기 기록', p.story.length ? `<ol class="pd-story">${p.story.slice().reverse().map(x => `<li class="${x.lock ? 'lk' : ''}"><div class="pd-sw">${esc(storyWhen(x))}${x.lock ? '<span class="pd-stamp">비공개</span>' : ''}${x.by === 'sehee' ? '<em>세희가 적음</em>' : ''}</div><p>${esc(x.text)}</p></li>`).join('')}</ol>` : '<p class="pd-empty">아직 없음 — 세희에게 이 사람 이야기를 들려주면 날짜별로 적어요</p>')}
@@ -555,6 +710,8 @@ function pdCollect(p){
   for (const el of document.querySelectorAll('#pdBody [data-l]')){ const x = p.extra[Number(el.dataset.l)]; if (x) x.text = el.value.trim().slice(0, 400); }
   for (const el of document.querySelectorAll('#pdBody [data-s]')){ const x = p.story[Number(el.dataset.s)]; if (x) x.text = el.value.trim().slice(0, STORY_MAX); }
   for (const el of document.querySelectorAll('#pdBody [data-sw]')){ const x = p.story[Number(el.dataset.sw)]; if (x) x.when = el.value.trim().slice(0, 30) || null; }
+  for (const el of document.querySelectorAll('#pdBody [data-tme]')){ const t = tieById(el.dataset.tme); if (t){ const o = pplFind(tieOf(t, p.id).other); if (o) tieSet(p, o, { paIs:el.value }); } }
+  for (const el of document.querySelectorAll('#pdBody [data-tthem]')){ const t = tieById(el.dataset.tthem); if (t){ const o = pplFind(tieOf(t, p.id).other); if (o) tieSet(p, o, { pbIs:el.value }); } }
 }
 $('pd').addEventListener('click', async e => {
   const t = e.target;
