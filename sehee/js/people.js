@@ -358,10 +358,17 @@ const PP_THEMES = [['cork', '코르크'], ['white', '화이트보드'], ['map', 
 function pplTheme(){ const t = PPL.theme || 'cork'; const el = $('people'); PP_THEMES.forEach(([k]) => el.classList.toggle('th-' + k, k === t));
   if (t === 'white' && !document.getElementById('ppFont')){ const l = document.createElement('link'); l.id = 'ppFont'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); }
   $('ppTheme').textContent = '꾸밈 · ' + PP_THEMES.find(x => x[0] === t)[1]; return t; }
+const PPL_PAD = 150;   /* v1.5.18 (B) 끝없는 판: 가장 바깥 카드에서 이만큼까지만 판을 넓힌다 */
 function pplRender(center){
   const list = PPL.list || [], S = Math.max(440, 380 + list.length * 24), C = S / 2, th = pplTheme();
   const { pos, used, starts, spans } = pplLayout(list, S);
-  for (const [id, xy] of Object.entries(BONUS.pos || {})) if (pos[id]) pos[id] = { x:xy.x * S, y:xy.y * S };   /* 보너스가 옮겨 둔 자리 */
+  for (const [id, xy] of Object.entries(BONUS.pos || {})) if (pos[id]) pos[id] = { x:xy.x * S, y:xy.y * S };   /* 보너스가 옮겨 둔 자리(판 밖도 됨) */
+  /* v1.5.18 (B) 끝없는 판 — 카드가 기본 판(0~S) 밖에 있으면 판을 그만큼 넓힌다. 가장 바깥 카드에서 PPL_PAD 까지만(그 너머 빈 곳으로는 못 감).
+     좌표는 그대로(나 = S/2), 그리는 자리만 (L,T) 만큼 민다. #ppMap data-s·l·t 에 남겨 실험 B 가 같은 좌표를 쓴다 */
+  let L = 0, T = 0, R = S, B = S;
+  for (const q of Object.values(pos)){ L = Math.min(L, q.x - PPL_PAD); T = Math.min(T, q.y - PPL_PAD); R = Math.max(R, q.x + PPL_PAD); B = Math.max(B, q.y + PPL_PAD); }
+  L = Math.floor(L); T = Math.floor(T); const W = Math.ceil(R - L), H = Math.ceil(B - T);
+  const size = id => { const v = +((BONUS.size || {})[id]); return v > 0 ? Math.max(0.5, Math.min(2.5, v)) : 1; };   /* 카드 크기(중요도) — 실험 B 가 정함 */
   const hs = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   const f = n => n.toFixed(1);
   const path = (x1, y1, x2, y2, cls, seed) => {
@@ -388,15 +395,15 @@ function pplRender(center){
   const seen = new Set();
   for (const p of list) for (const id of (p.links || [])){ const k = [p.id, id].sort().join('-'); if (seen.has(k) || !pos[id]) continue; seen.add(k); svg += path(pos[p.id].x, pos[p.id].y, pos[id].x, pos[id].y, 'pp-lk', hs(k)); }
   if (th === 'white') svg += `<ellipse cx="${C}" cy="${C}" rx="62" ry="48" transform="rotate(-8 ${C} ${C})" class="pp-mecircle"/>`;
-  $('ppMap').style.width = $('ppMap').style.height = S + 'px';
-  $('ppMap').innerHTML = `<svg class="pp-svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">${under}${svg}</svg>
-    <div class="pp-me${PPL.pics && PPL.pics.me ? ' has-pic' : ''}" style="left:${C}px;top:${C}px"><i class="pp-pin"></i>${PPL.pics && PPL.pics.me ? `<div class="ph pic"><img class="pic" src="${PPL.pics.me}" alt=""></div>` : ''}<b>나</b><span>${th === 'map' ? '현위치' : '보스'}</span></div>
-    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node" data-pp="${p.id}" style="left:${q.x.toFixed(0)}px;top:${q.y.toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg"><i class="pp-pin"></i><div class="ph${PPL.pics && PPL.pics[p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}">${pplFace(p)}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
-    ${list.length ? '' : `<div class="pp-empty" style="left:${C}px;top:${C + 70}px">아직 아무도 없어요.<br>「+ 사람」을 누르거나 세희에게 "○○을 인간관계 판에 추가해줘"라고 해 보세요.</div>`}`;
+  const map = $('ppMap'); map.style.width = W + 'px'; map.style.height = H + 'px'; map.dataset.s = S; map.dataset.l = L; map.dataset.t = T;
+  map.innerHTML = `<svg class="pp-svg" width="${W}" height="${H}" viewBox="${L} ${T} ${W} ${H}">${under}${svg}</svg>
+    <div class="pp-me${PPL.pics && PPL.pics.me ? ' has-pic' : ''}" style="left:${C - L}px;top:${C - T}px"><i class="pp-pin"></i>${PPL.pics && PPL.pics.me ? `<div class="ph pic"><img class="pic" src="${PPL.pics.me}" alt=""></div>` : ''}<b>나</b><span>${th === 'map' ? '현위치' : '보스'}</span></div>
+    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node" data-pp="${p.id}" style="left:${(q.x - L).toFixed(0)}px;top:${(q.y - T).toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg${size(p.id) !== 1 ? ';--bs:' + size(p.id) : ''}"><i class="pp-pin"></i><div class="ph${PPL.pics && PPL.pics[p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}">${pplFace(p)}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
+    ${list.length ? '' : `<div class="pp-empty" style="left:${C - L}px;top:${C - T + 70}px">아직 아무도 없어요.<br>「+ 사람」을 누르거나 세희에게 "○○을 인간관계 판에 추가해줘"라고 해 보세요.</div>`}`;
   $('ppCount').textContent = list.length ? `${list.length}명` : '';
-  const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / S, (sc.clientHeight - 8) / S) : 1;
-  const k = PPL.big ? 1 : (BONUS.zoom || fitK); $('ppMap').style.zoom = k; $('ppCenter').textContent = PPL.big ? '전체 보기' : '크게 보기';
-  if (center || !PPL.big) requestAnimationFrame(() => { sc.scrollLeft = (S * k - sc.clientWidth) / 2; sc.scrollTop = (S * k - sc.clientHeight) / 2; });
+  const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / W, (sc.clientHeight - 8) / H) : 1;   /* 다시 열면 넓힌 판 전체가 한눈에 */
+  const k = PPL.big ? 1 : (BONUS.zoom || fitK); map.style.zoom = k; $('ppCenter').textContent = PPL.big ? '전체 보기' : '크게 보기';
+  if (center || !PPL.big) requestAnimationFrame(() => { sc.scrollLeft = (W * k - sc.clientWidth) / 2; sc.scrollTop = (H * k - sc.clientHeight) / 2; });
   setTimeout(() => bonusEmit('people'), 0);
 }
 $('ppTheme').onclick = async () => { const i = PP_THEMES.findIndex(x => x[0] === (PPL.theme || 'cork')); PPL.theme = PP_THEMES[(i + 1) % PP_THEMES.length][0]; await pplSave(); pplRender(true); };

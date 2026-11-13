@@ -842,3 +842,12 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .rl-row.now{border-color:#3a6b64;background:#eef6f3;box-shadow:inset 0 0 0 1px #3a6b64}
 .hrow.nav .ib{white-space:nowrap;flex:0 0 auto}
 .hrow.nav .day{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── 인간관계 판 카드 크기·고름 (v1.5.18, B) — 카드마다 --bs(50%~250%, 실험 B 가 정함). 회전·가운데 맞춤은 그대로 두고 크기만 곱함 ── */
+#ppMap .pp-node{transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(var(--bs,1))}
+#ppMap .pp-node:hover{transform:translate(-50%,-50%) rotate(0deg) scale(calc(var(--bs,1) * 1.06))}
+#ppMap .pp-node.b-sel{z-index:7;touch-action:none;cursor:move;outline:calc(4px / var(--bs,1)) solid #f0b429;outline-offset:calc(3px / var(--bs,1))}   /* 고름 = 굵은 테두리. 고른 카드는 손가락으로 끌어도 판이 안 굴러감 */
+#ppMap .b-rs{position:absolute;right:calc(-11px / var(--bs,1));bottom:calc(-11px / var(--bs,1));width:calc(24px / var(--bs,1));height:calc(24px / var(--bs,1));border-radius:50%;background:#2b3a55;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-style:normal;cursor:nwse-resize;touch-action:none;z-index:9;box-shadow:0 2px 5px rgba(0,0,0,.4);pointer-events:auto}
+#ppMap .b-rs b{font-size:calc(14px / var(--bs,1));line-height:1;font-weight:700}
+#ppMap .b-rs .b-rsv{position:absolute;right:110%;bottom:10%;white-space:nowrap;background:rgba(43,58,85,.9);color:#fff;border-radius:6px;padding:1px 5px;font:600 calc(10px / var(--bs,1)) system-ui,sans-serif}

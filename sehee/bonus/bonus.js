@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.9
+/* 세희 보너스 업데이트 — B0.11
    실험 파일 B(방 B 기본 담당). 인수인계 v3 — 세 방 동등, 본체도 할일.md 찜으로 직접 고친다.
    본체와는 주로 window.SEHEE 창구로 잇고, v3 부터는 본체 함수(btFold 등)도 직접 부른다.
 
@@ -38,10 +38,17 @@
            출처를 전부 화면으로 늘어놓지 않는다.
    B0.8 (2026-11-13, 본체 v1.5.1 과 같이) 사람 서랍 대화 상자도 본체 btFold 로 옆으로 접기(이름표 끌기·꼬리 당기기).
         다시 답하기(on regen)로 지워진 답의 자료 카드(b_vis)를 같이 지운다.
-   B0.9 (2026-11-14, 본체 v1.5.11 과 같이) 사람 서랍 대화 상자의 '대화 보기' 단추 없앰(보스 — 다른 단추로 충분). 이름 옆 ▶▷ 는 본체 btFold 가 붙임. */
+   B0.9 (2026-11-14, 본체 v1.5.11 과 같이) 사람 서랍 대화 상자의 '대화 보기' 단추 없앰(보스 — 다른 단추로 충분). 이름 옆 ▶▷ 는 본체 btFold 가 붙임.
+   B0.10 (2026-11-14, 본체 v1.5.18 와 같이) 인간관계 판 자유롭게.
+        ① 카드 크기(중요도): 카드를 꾹 눌렀다 그냥 떼면 '고름' — 오른쪽 아래 ⤡ 손잡이를 끌어 50%~250%. 손잡이 두 번 누르면 100%. b_ppSize(동기화).
+        ② 끝없는 판: 판 끝까지 끌면 화면이 따라 굴러가고, 놓으면 본체가 가장 바깥 카드에서 150 만큼 판을 넓힌다(그 너머 빈 곳으로는 못 감).
+           확대·축소의 가장 작은 배율도 넓힌 판 전체가 한눈에 보이는 데까지만. 다시 열면 넓힌 판 전체가 한눈에.
+        좌표는 본체 #ppMap data-s·l·t(기본 판 크기·넓힌 만큼)를 따른다.
+   B0.11 (2026-11-14, 같은 본체 v1.5.18 — 올리기 전 보스 말씀으로 바꿈) 꾹 누르기 없앰. 한 번 누르면 고름(굵은 테두리 + ⤡) — 고른 카드는 바로 끌어 옮기고 ⤡ 로 크기,
+        고른 카드를 한 번 더 누르면 인물 기록부. 안 고른 카드 위에서 끌면 판이 굴러감(카드 안 움직임). 옮긴 뒤에도 고른 채로. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.9');
+  S.setVersion('B0.11');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -55,11 +62,11 @@
   const css = document.createElement('style');
   css.textContent = `
   #ppMap .pp-node{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-  #ppMap .pp-node.b-hold{transition:transform .5s ease;transform:translate(-50%,-50%) rotate(0deg) scale(1.05)}
-  #ppMap .pp-node.b-lift,#ppMap .pp-node.b-lift:hover{z-index:8;cursor:grabbing;transition:none;transform:translate(-50%,-50%) rotate(0deg) scale(1.14);box-shadow:0 14px 22px rgba(0,0,0,.45)}
+  #ppMap .pp-node.b-hold{transition:transform .5s ease;transform:translate(-50%,-50%) rotate(0deg) scale(calc(var(--bs,1) * 1.05))}
+  #ppMap .pp-node.b-lift,#ppMap .pp-node.b-lift:hover{z-index:8;cursor:grabbing;transition:none;transform:translate(-50%,-50%) rotate(0deg) scale(calc(var(--bs,1) * 1.14));box-shadow:0 14px 22px rgba(0,0,0,.45)}
   #ppMap .pp-node.b-lift .pp-pin{transform:translateY(-5px) scale(1.15)}
   #ppMap .pp-node.b-drop{animation:bDrop .35s ease}
-  @keyframes bDrop{0%{transform:translate(-50%,-50%) rotate(0deg) scale(1.14)}70%{transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(.96)}100%{transform:translate(-50%,-50%) rotate(var(--r,0deg))}}
+  @keyframes bDrop{0%{transform:translate(-50%,-50%) rotate(0deg) scale(calc(var(--bs,1) * 1.14))}70%{transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(calc(var(--bs,1) * .96))}100%{transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(var(--bs,1))}}
   #people .b-ppt{--sh:clamp(170px,24dvh,260px);height:clamp(160px,32%,300px)}
   #people .b-ppt .bt-u{color:#5c5340}
   #people .b-ppt .b-ask{display:block;margin-top:6px;font-size:.74rem;color:var(--ink-soft)}
@@ -72,6 +79,10 @@
   const f1 = n => n.toFixed(1);
   const theme = () => { const el = $('people'); return el && el.classList.contains('th-white') ? 'white' : el && el.classList.contains('th-map') ? 'map' : 'cork'; };
   const mapSize = map => parseFloat(map.style.width) || map.offsetWidth || 0;
+  /* B0.10 판 좌표 — S: 기본 판 크기(나 = S/2), L·T: 넓힌 만큼(카드 left = 좌표 - L), W·H: 지금 그려진 판 크기 */
+  const frame = map => { const W = mapSize(map), H = parseFloat(map.style.height) || map.offsetHeight || W; return { S:+map.dataset.s || W, L:+map.dataset.l || 0, T:+map.dataset.t || 0, W, H }; };
+  const SIZE_KEY = 'b_ppSize'; let SIZE = {};
+  const shareSize = () => { try{ if (typeof BONUS === 'object') BONUS.size = SIZE; }catch(e){} };
   const list = () => { const p = S.people && S.people(); return (p && p.list) || []; };
   const asXY = () => { const o = {}; for (const [id, v] of Object.entries(POS)) if (Array.isArray(v)) o[id] = { x:v[0], y:v[1] }; return o; };
 
@@ -84,8 +95,8 @@
   function redrawStrings(map){
     const svg = map.querySelector('svg.pp-svg'); if (!svg) return;
     const old = [...svg.querySelectorAll('.pp-str,.pp-lk')]; if (!old.length) return;
-    const Sz = mapSize(map), C = Sz / 2, th = theme(), off = th === 'white' ? 54 : th === 'map' ? 30 : 0, pos = {};
-    map.querySelectorAll('.pp-node[data-pp]').forEach(n => { pos[n.dataset.pp] = { x:parseFloat(n.style.left), y:parseFloat(n.style.top) }; });
+    const fr = frame(map), C = fr.S / 2, th = theme(), off = th === 'white' ? 54 : th === 'map' ? 30 : 0, pos = {};
+    map.querySelectorAll('.pp-node[data-pp]').forEach(n => { pos[n.dataset.pp] = { x:parseFloat(n.style.left) + fr.L, y:parseFloat(n.style.top) + fr.T }; });   // 본체 좌표(svg viewBox 와 같음)
     let out = '';
     const ppl = list();
     for (const p of ppl){ const q = pos[p.id]; if (!q) continue; const d = Math.hypot(q.x - C, q.y - C) || 1;
@@ -115,32 +126,34 @@
     try{ await S.kvSet(POS_KEY, POS); }catch(e){ S.dlog('오류', '보너스 사진 자리 저장 실패 ' + e.message); }
   }
   async function resetPos(){
-    POS = {}; await savePos();
+    POS = {}; await savePos(); SIZE = {}; shareSize(); await saveSize(); unselect();
     if (API){ S.pplPosAll({}); S.pplRedraw(); }
     else { const map = $('ppMap'); if (map){ map.querySelectorAll('.pp-node[data-bx]').forEach(n => { n.style.left = n.dataset.bx + 'px'; n.style.top = n.dataset.by + 'px'; }); redrawStrings(map); } }
-    S.toast('인간관계 판 사진을 처음 자리로 돌렸어요');
+    S.toast('인간관계 판 사진을 처음 자리·크기로 돌렸어요');
   }
 
-  let g = null, noClick = 0;
+  let g = null, noClick = 0, clickSel = null;   // clickSel: 누르기 시작할 때 이미 고른 카드였나
   function cancelHold(){ if (!g) return; clearTimeout(g.timer); g.n.classList.remove('b-hold'); g = null; }
   function lift(){
     if (!g) return;
-    const map = $('ppMap'), Sz = mapSize(map), r = map.getBoundingClientRect();
-    g.on = true; g.k = (r.width / Sz) || 1; g.Sz = Sz;
+    const map = $('ppMap'), r = map.getBoundingClientRect();
+    g.on = true; g.fr = frame(map); g.k = (r.width / g.fr.W) || 1; g.moved = false;
     g.l0 = parseFloat(g.n.style.left); g.t0 = parseFloat(g.n.style.top);
-    g.n.classList.remove('b-hold'); g.n.classList.add('b-lift');
+    g.gx = g.l0 - (g.x0 - r.left) / g.k; g.gy = g.t0 - (g.y0 - r.top) / g.k; g.cx = g.x0; g.cy = g.y0;   // 손가락과 카드 가운데 사이
+    g.n.classList.add('b-lift');
+    requestAnimationFrame(edgeTick);
     try{ g.n.setPointerCapture(g.pid); }catch(e){}
     try{ navigator.vibrate && navigator.vibrate(15); }catch(e){}
     S.dlog('화면', '보너스: 사진 들어올림 ' + g.id);
   }
   function drop(save){
     if (!g) return;
-    const { n, id, on } = g; clearTimeout(g.timer); n.classList.remove('b-hold', 'b-lift'); g = null;
-    if (!on) return;
+    const { n, id, on } = g; n.classList.remove('b-lift'); g = null;
+    if (!on) return;   // 그냥 누른 것 — 고르기·기록부 열기는 click 에서
     noClick = Date.now();
     if (!save) return;
-    const Sz = mapSize($('ppMap')) || 1;
-    POS[id] = [+(parseFloat(n.style.left) / Sz).toFixed(4), +(parseFloat(n.style.top) / Sz).toFixed(4)];
+    const fr = frame($('ppMap'));
+    POS[id] = [+((parseFloat(n.style.left) + fr.L) / fr.S).toFixed(4), +((parseFloat(n.style.top) + fr.T) / fr.S).toFixed(4)];   // 판 밖이면 0 아래·1 위도 됨
     savePos(); S.dlog('화면', '보너스: 사진 옮김 ' + id);
     if (API){
       S.pplPos(id, { x:POS[id][0], y:POS[id][1] }); S.pplRedraw();
@@ -149,32 +162,88 @@
     } else { n.classList.remove('b-drop'); void n.offsetWidth; n.classList.add('b-drop'); n.addEventListener('animationend', () => n.classList.remove('b-drop'), { once:true }); }
   }
   let raf = 0;
+  /* 손가락 자리로 카드 옮기기 — 지금 판(넓힌 판 포함) 안에서만. 판은 가장 바깥 카드에서 150 씩 넓어지니 놓고 다시 끌면 더 멀리 */
+  function dragAt(){
+    if (!g || !g.on) return;
+    const map = $('ppMap'), r = map.getBoundingClientRect(), k = r.width / g.fr.W, sc = +(getComputedStyle(g.n).getPropertyValue('--bs')) || 1;
+    const mx = g.n.offsetWidth * sc / 2 + 6, my = g.n.offsetHeight * sc / 2 + 10;
+    g.n.style.left = Math.max(mx, Math.min(g.fr.W - mx, (g.cx - r.left) / k + g.gx)).toFixed(0) + 'px';
+    g.n.style.top = Math.max(my, Math.min(g.fr.H - my, (g.cy - r.top) / k + g.gy)).toFixed(0) + 'px';
+    if (!raf) raf = requestAnimationFrame(() => { raf = 0; redrawStrings(map); });
+  }
+  /* 들고 화면 끝(40px)에 가면 판이 그쪽으로 굴러가며 카드가 따라간다 */
+  function edgeTick(){
+    if (!g || !g.on) return;
+    const sc = $('ppScroll');
+    if (sc && g.moved){ const sr = sc.getBoundingClientRect(), E = 40, sp = d => Math.round(Math.max(0, E - d) / E * 14);
+      const vx = -sp(g.cx - sr.left) + sp(sr.right - g.cx), vy = -sp(g.cy - sr.top) + sp(sr.bottom - g.cy);
+      if (vx || vy){ sc.scrollLeft += vx; sc.scrollTop += vy; dragAt(); } }
+    requestAnimationFrame(edgeTick);
+  }
+  /* 카드 크기(중요도) — 고른 카드 오른쪽 아래 ⤡ 를 끌면 가운데에서 멀어질수록 커짐. 50%~250%, 두 번 누르면 100% */
+  let SEL = null, rs = null;
+  const cardOf = id => document.querySelector(`#ppMap .pp-node[data-pp="${id}"]`);
+  function unselect(){ const n = SEL && cardOf(SEL); if (n){ n.classList.remove('b-sel'); n.querySelectorAll('.b-rs').forEach(x => x.remove()); } SEL = null; }
+  function selectCard(id){
+    unselect(); const n = cardOf(id); if (!n) return; SEL = id;
+    n.classList.add('b-sel');
+    const h = document.createElement('i'); h.className = 'b-rs'; h.title = '끌어서 크기 · 두 번 누르면 원래대로'; h.setAttribute('aria-label', '카드 크기');
+    h.innerHTML = '<b>⤡</b><span class="b-rsv"></span>'; n.appendChild(h);
+    const val = () => { h.querySelector('.b-rsv').textContent = Math.round((SIZE[id] || 1) * 100) + '%'; }; val();
+    let last = 0;
+    h.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault();
+      const r = n.getBoundingClientRect(), c = { x:r.left + r.width / 2, y:r.top + r.height / 2 };
+      rs = { id, n, c, s0:SIZE[id] || 1, d0:Math.max(12, Math.hypot(e.clientX - c.x, e.clientY - c.y)), pid:e.pointerId, moved:false };
+      try{ h.setPointerCapture(e.pointerId); }catch(x){} });
+    h.addEventListener('pointermove', e => { if (!rs || e.pointerId !== rs.pid) return; e.preventDefault();
+      const s = Math.round(Math.max(0.5, Math.min(2.5, rs.s0 * Math.hypot(e.clientX - rs.c.x, e.clientY - rs.c.y) / rs.d0)) * 20) / 20;
+      if (Math.abs(s - rs.s0) > 0.001) rs.moved = true;
+      SIZE[id] = s; n.style.setProperty('--bs', s); val(); });
+    const up = async e => { if (!rs || e.pointerId !== rs.pid) return; const was = rs; rs = null; noClick = Date.now();
+      if (!was.moved){ const now = Date.now(); if (now - last < 400){ SIZE[id] = 1; n.style.removeProperty('--bs'); val(); } last = now; }
+      if (Math.abs((SIZE[id] || 1) - 1) < 0.001) delete SIZE[id];
+      shareSize(); await saveSize(); S.dlog('화면', `보너스: 카드 크기 ${id} ${Math.round((SIZE[id] || 1) * 100)}%`); };
+    h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+    h.addEventListener('touchmove', e => e.preventDefault(), { passive:false });
+    S.dlog('화면', '보너스: 카드 고름 ' + id);
+  }
+  async function saveSize(){
+    const ids = new Set(list().map(p => p.id)); if (ids.size) for (const k of Object.keys(SIZE)) if (!ids.has(k)) delete SIZE[k];
+    try{ await S.kvSet(SIZE_KEY, SIZE); }catch(e){ S.dlog('오류', '보너스 카드 크기 저장 실패 ' + e.message); }
+  }
+  /* 고른 카드 밖 어디든(판 바깥 빈 화면 포함) 누르면 고름 풀림 */
+  document.addEventListener('pointerdown', e => { if (SEL && !e.target.closest(`#ppMap .pp-node[data-pp="${SEL}"]`)) unselect(); }, true);
+  /* 본체가 다시 그려도 고른 카드는 그대로 고른 채 */
+  function keepSel(){ if (SEL){ const id = SEL; SEL = null; if (cardOf(id)) selectCard(id); } }
   function bindMap(map){
     if (map.dataset.bDrag) return; map.dataset.bDrag = '1';
     map.addEventListener('pointerdown', e => {
-      const n = e.target.closest('.pp-node[data-pp]'); if (!n || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      cancelHold();
-      g = { n, id:n.dataset.pp, pid:e.pointerId, x0:e.clientX, y0:e.clientY, on:false };
-      n.classList.add('b-hold'); g.timer = setTimeout(lift, HOLD);
+      if (e.target.closest('.b-rs')) return;   // 크기 손잡이는 따로
+      const n = e.target.closest('.pp-node[data-pp]'); clickSel = n && SEL === n.dataset.pp ? SEL : null;
+      if (!n || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      /* B0.11 고른 카드만 바로 끌림(꾹 누르기 없음). 안 고른 카드 위에서 끌면 그냥 판 굴리기 */
+      g = clickSel ? { n, id:n.dataset.pp, pid:e.pointerId, x0:e.clientX, y0:e.clientY, on:false } : null;
     });
     map.addEventListener('pointermove', e => {
       if (!g || e.pointerId !== g.pid) return;
       const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
-      if (!g.on){ if (Math.hypot(dx, dy) > SLOP) cancelHold(); return; }
+      if (!g.on){ if (Math.hypot(dx, dy) <= 4) return; lift(); g.moved = true; }
       e.preventDefault();
-      /* 카드가 판 밖으로 삐져나가지 않게 — 카드 반 크기 + 핀 자리만큼 안쪽까지 */
-      const mx = g.n.offsetWidth / 2 + 6, my = g.n.offsetHeight / 2 + 10;
-      g.n.style.left = Math.max(mx, Math.min(g.Sz - mx, g.l0 + dx / g.k)).toFixed(0) + 'px';
-      g.n.style.top = Math.max(my, Math.min(g.Sz - my, g.t0 + dy / g.k)).toFixed(0) + 'px';
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; redrawStrings(map); });
+      g.cx = e.clientX; g.cy = e.clientY; dragAt();
     });
     map.addEventListener('pointerup', e => { if (g && e.pointerId === g.pid) drop(true); });
     map.addEventListener('pointercancel', e => { if (g && e.pointerId === g.pid) drop(true); });
     /* 들린 동안엔 손가락이 판을 굴리지 않게 */
     map.addEventListener('touchmove', e => { if (g && g.on) e.preventDefault(); }, { passive:false });
     map.addEventListener('contextmenu', e => { if (e.target.closest('.pp-node')) e.preventDefault(); });
-    /* 옮기고 손을 뗀 건 '눌러서 열기(인물 기록부)'로 치지 않는다 */
-    map.addEventListener('click', e => { if (Date.now() - noClick < 400 && e.target.closest('.pp-node')){ e.stopPropagation(); e.preventDefault(); } }, true);
+    /* B0.11 누르기: 안 고른 카드 → 고름(기록부 X), 고른 카드 한 번 더 → 기록부. 옮기거나 크기 바꾸고 뗀 건 아무것도 아님 */
+    map.addEventListener('click', e => {
+      const n = e.target.closest('.pp-node[data-pp]'); if (!n) return;
+      const stop = () => { e.stopPropagation(); e.preventDefault(); };
+      if (Date.now() - noClick < 400 || e.target.closest('.b-rs')) return stop();
+      if (clickSel && clickSel === n.dataset.pp){ unselect(); return; }   // 본체가 인물 기록부를 엶
+      stop(); selectCard(n.dataset.pp);
+    }, true);
     if (!API) new MutationObserver(applyPosOld).observe(map, { childList:true });
   }
 
@@ -269,37 +338,41 @@
      폰: 두 손가락으로 벌리고 오므려 확대·축소, 두 손가락을 같이 끌면 이동(한 손가락은 원래처럼 판 굴리기).
      컴퓨터: 휠로 확대·축소(마우스가 있는 곳을 중심으로), 휠 버튼을 누른 채 끌면 손바닥처럼 판 이동.
      본체가 판을 다시 그려도(사람 추가·꾸밈·사진 놓기) 보던 배율과 자리를 지킨다. 서랍을 새로 열거나 「크게/전체 보기」를 누르면 본체 배율로. */
-  const Z = { k:null, fx:.5, fy:.5 };   // k: 보스가 정한 배율(null 이면 본체 배율), fx·fy: 화면 가운데가 판의 어디인지(비율)
+  const Z = { k:null, cx:null, cy:null };   // k: 보스가 정한 배율(null 이면 본체 배율), cx·cy: 화면 가운데에 있던 판 자리(본체 좌표)
   const curK = map => parseFloat(map.style.zoom) || 1;
   const setZ = k => { Z.k = k; if (typeof S.pplZoom === 'function') S.pplZoom(k); };   // 본체 v1.3.8+ 도 같은 배율로 그리게
   const bodyScale = sc => (sc.getBoundingClientRect().width / sc.offsetWidth) || 1;
   function zRange(map, sc){
-    const Sz = mapSize(map), fit = Math.min(1, (sc.clientWidth - 8) / Sz, (sc.clientHeight - 8) / Sz);
-    return [Math.max(0.2, fit * 0.6), 3];
+    const fr = frame(map), fit = Math.min(1, (sc.clientWidth - 8) / fr.W, (sc.clientHeight - 8) / fr.H);
+    return [Math.max(0.12, fit * 0.85), 3];   // B0.10 가장 작게 = 넓힌 판 전체가 한눈에 보이는 데까지(그 너머 빈 곳 X)
   }
   function rememberView(){
     const map = $('ppMap'), sc = $('ppScroll'); if (!map || !sc || Z.k === null) return;
     if (Math.abs(curK(map) - Z.k) > 0.001) return;   // 본체가 다시 그리며 잠깐 제 배율로 돌린 순간은 기억하지 않는다
-    const w = mapSize(map) * curK(map);
-    Z.fx = (sc.scrollLeft + sc.clientWidth / 2) / w; Z.fy = (sc.scrollTop + sc.clientHeight / 2) / w;
+    const fr = frame(map), r = map.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+    Z.cx = (sr.left + sr.width / 2 - r.left) / (r.width / fr.W) + fr.L; Z.cy = (sr.top + sr.height / 2 - r.top) / (r.height / fr.H) + fr.T;
   }
   /* 배율을 k 로 — (cx,cy) 화면 점 아래에 있던 판 자리가 그대로 그 점 아래 남게 */
   function zoomTo(k, cx, cy, ux, uy){
     const map = $('ppMap'), sc = $('ppScroll'); if (!map || !sc) return;
-    const Sz = mapSize(map); if (!Sz) return;
+    const fr = frame(map); if (!fr.W) return;
     const [lo, hi] = zRange(map, sc); k = Math.max(lo, Math.min(hi, k));
-    if (ux === undefined){ const r = map.getBoundingClientRect(); ux = (cx - r.left) / (r.width / Sz); uy = (cy - r.top) / (r.height / Sz); }
+    if (ux === undefined){ const r = map.getBoundingClientRect(); ux = (cx - r.left) / (r.width / fr.W); uy = (cy - r.top) / (r.height / fr.H); }
     setZ(k); map.style.zoom = k;
     const r2 = map.getBoundingClientRect(), bs = bodyScale(sc);
-    sc.scrollLeft += (r2.left + ux * (r2.width / Sz) - cx) / bs;
-    sc.scrollTop += (r2.top + uy * (r2.height / Sz) - cy) / bs;
+    sc.scrollLeft += (r2.left + ux * (r2.width / fr.W) - cx) / bs;
+    sc.scrollTop += (r2.top + uy * (r2.height / fr.H) - cy) / bs;
     rememberView();
   }
   function afterRender(){
     if (Z.k === null) return;
     const go = () => { const map = $('ppMap'), sc = $('ppScroll'); if (!map || !sc) return;
-      const w = mapSize(map) * Z.k; map.style.zoom = Z.k;
-      sc.scrollLeft = Z.fx * w - sc.clientWidth / 2; sc.scrollTop = Z.fy * w - sc.clientHeight / 2; };
+      const [lo, hi] = zRange(map, sc); if (Z.k < lo || Z.k > hi) Z.k = Math.max(lo, Math.min(hi, Z.k));
+      map.style.zoom = Z.k; if (Z.cx === null) return;
+      /* 보던 판 자리(본체 좌표)가 다시 화면 가운데로 — 판이 넓어져 그리는 자리가 밀려도 같은 곳 */
+      const fr = frame(map), r = map.getBoundingClientRect(), sr = sc.getBoundingClientRect(), bs = bodyScale(sc);
+      sc.scrollLeft += (r.left + (Z.cx - fr.L) * (r.width / fr.W) - (sr.left + sr.width / 2)) / bs;
+      sc.scrollTop += (r.top + (Z.cy - fr.T) * (r.height / fr.H) - (sr.top + sr.height / 2)) / bs; };
     /* 본체는 그린 뒤 다음 화면에서 가운데로 굴린다 — 그 뒤에 덮어쓴다 */
     requestAnimationFrame(() => requestAnimationFrame(go));
   }
@@ -335,8 +408,8 @@
       if (e.touches.length !== 2) return;
       if (g && !g.on) cancelHold();
       if (g && g.on) return;   // 사진을 들고 있는 중이면 확대 안 함
-      const t = two(e.touches), r = map.getBoundingClientRect(), Sz = mapSize(map);
-      pin = { d0:t.d, k0:curK(map), ux:(t.x - r.left) / (r.width / Sz), uy:(t.y - r.top) / (r.height / Sz) };
+      const t = two(e.touches), r = map.getBoundingClientRect(), fr = frame(map);
+      pin = { d0:t.d, k0:curK(map), ux:(t.x - r.left) / (r.width / fr.W), uy:(t.y - r.top) / (r.height / fr.H) };
     }, { passive:true });
     sc.addEventListener('touchmove', e => {
       if (!pin || e.touches.length !== 2) return;
@@ -349,7 +422,7 @@
     const cb = $('ppCenter'); if (cb) cb.addEventListener('click', () => setZ(null), true);
     /* 서랍을 닫으면 다음에 열 때 본체 배율(전체 보기)부터 */
     const dw = $('dw-people'); let was = isOpen();
-    if (dw) new MutationObserver(() => { const now = isOpen(); if (now !== was) setZ(null); was = now; }).observe(dw, { attributes:true, attributeFilter:['class'] });
+    if (dw) new MutationObserver(() => { const now = isOpen(); if (now !== was){ setZ(null); Z.cx = Z.cy = null; if (!now) unselect(); } was = now; }).observe(dw, { attributes:true, attributeFilter:['class'] });
     const css4 = document.createElement('style');
     css4.textContent = `#ppScroll{touch-action:pan-x pan-y;overscroll-behavior:contain}html.b-hand,html.b-hand *{cursor:grabbing!important}`;
     document.head.appendChild(css4);
@@ -604,6 +677,7 @@
   /* ── 붙이기 ── */
   async function boot(){
     try{ POS = (await S.kvGet(POS_KEY)) || {}; }catch(e){ POS = {}; }
+    try{ SIZE = (await S.kvGet(SIZE_KEY)) || {}; }catch(e){ SIZE = {}; } shareSize(); if (Object.keys(SIZE).length && API) S.pplRedraw();
     try{ VIS = (await S.kvGet(VIS_KEY)) || {}; }catch(e){ VIS = {}; }
     const lg = $('log'); if (lg){ new MutationObserver(() => decorate()).observe(lg, { childList:true }); decorate(); }
     bindPanTabs();
@@ -614,7 +688,7 @@
     if (dw) new MutationObserver(() => { if (isOpen()) talk(true); }).observe(dw, { attributes:true, attributeFilter:['class'] });
     talk(true);
   }
-  S.on('people', afterRender);
+  S.on('people', () => { afterRender(); keepSel(); });
   /* 다시 답하기 — 지워진 답의 카드는 같이 지운다(새 답은 새로 판단) */
   S.on('regen', e => { const ats = (e && e.oldAts) || []; let n = 0; for (const at of ats) if (VIS[at]){ delete VIS[at]; n++; } if (n){ saveVis(); S.dlog('화면', `보너스: 다시 답하기로 카드 ${n}묶음 지움`); } });
   S.on('talk', () => talk(false));
@@ -625,10 +699,12 @@
   S.on('tool', () => talk(false));
   setInterval(() => talk(false), 1000);   // 기다리는 초 세기(사람 서랍에선 본체가 안 불러 줌)
   /* 다른 기기에서 옮긴 자리가 동기화로 들어오면 — 판을 열 때마다 저장된 자리를 다시 읽어 본체에 넘긴다 */
-  S.on('view', async () => { try{ const p = (await S.kvGet(POS_KEY)) || {}; if (JSON.stringify(p) !== JSON.stringify(POS)){ POS = p; pushPos(); } }catch(e){} });
+  S.on('view', async () => { try{ const p = (await S.kvGet(POS_KEY)) || {}, z = (await S.kvGet(SIZE_KEY)) || {}; let ch = false;
+    if (JSON.stringify(z) !== JSON.stringify(SIZE)){ SIZE = z; shareSize(); ch = true; }
+    if (JSON.stringify(p) !== JSON.stringify(POS)){ POS = p; pushPos(); } else if (ch && API) S.pplRedraw(); }catch(e){} });
   if (API) new MutationObserver(async () => { if (!isOpen()) return; try{ const p = (await S.kvGet(POS_KEY)) || {}; if (JSON.stringify(p) !== JSON.stringify(POS)){ POS = p; pushPos(); } }catch(e){} })
     .observe($('dw-people') || document.body, { attributes:true, attributeFilter:['class'] });
-  S.addMenu('인간관계 판 사진 자리 되돌리기', resetPos);
+  S.addMenu('인간관계 판 사진 자리·크기 되돌리기', resetPos);
   S.addPrompt('인간관계 판의 사진 카드는 보스가 꾹 눌러(컴퓨터는 마우스를 0.5초 누르고) 직접 끌어 옮길 수 있다. 옮긴 자리는 계정에 저장돼 다른 기기에서도 같다.');
   boot();
 })();
