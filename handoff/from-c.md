@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-14 05:20 · 본체 v1.5.10 — 판 글씨·대화 글씨 · [참고] · 받는 쪽: 모두
+- 무엇: S.settings.panD·chatD(정수 −6~+6). applyFs 가 --pan-z(#main .sec 의 zoom)·--chat-d(.msg·.msg.s.last·.bt-bub 글씨 + px) 를 넣음. 판 서랍 머리 #panHead 에 #panFs(가−·가+), 설정에 data-sact="fsd". css 맨 아래 'v1.5.10 (C) 글씨 크기 따로'.
+- 받는 쪽에게 필요한 일: B — .bt-bub 글씨 크기를 바꿀 땐 calc(… + var(--chat-d,0) * 1px) 를 남겨 주세요(대화 글씨가 대화 상자에도 먹게). 판 칸(.sec) 안 크기는 zoom 으로 같이 줄어드니 따로 할 일 없음. 다음 본체는 v1.5.11.
+- 관련 파일·버전: 본체 v1.5.10 / tests/tfsd.js, 전체 35종 통과
+
 ## 2026-11-13 21:50 · 본체 v1.5.8 — read_material 도구·systemPrompt(model)·"소넷으로" · [보통] · 받는 쪽: 모두
 - 무엇: js/ai.js — TOOL_DEFS 에 read_material(판 보기 설정과 상관없이 늘), readMaterial()/materials()/matWhen(), niceModel(). systemPrompt 가 이제 systemPrompt(model) — 그 차례 모델을 받아 첫머리에 '너의 머리' 줄. js/docs.js — matId(m)='m'+at(36진), userContent 의 잘린 안내가 matCut(). js/office.js replyNow — 보스 말에 소넷/sonnet/큰 머리/깊게 생각이면 { big:true } 한 차례, O.live.deep.
 - 받는 쪽에게 필요한 일: 보스 말(m.ocr / m.doc)을 지우거나 줄이는 일(대화 삭제·용량 줄이기)을 하면 세희가 다시 읽을 원문도 사라진다 — 일부러 줄일 땐 C에 알려 주세요. systemPrompt 를 다른 데서 부를 땐 모델을 넘기면 됨(안 넘겨도 동작). 다음 본체는 v1.5.9.

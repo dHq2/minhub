@@ -28,6 +28,8 @@ function settingsSheet(){
     <p class="note" style="margin:4px 0 10px">${esc((FONTS.find(x => x.v === (st.font || 'sys')) || FONTS[0]).d)}. 기본 말고는 처음 고를 때 인터넷에서 글꼴을 한 번 받아 와요.</p>
     <label class="t">글자 크기</label>
     <div class="row">${FS_STEPS.map(f => `<button class="chip ${st.fs === f.v ? 'on' : ''}" data-sact="fs" data-v="${f.v}">${f.t}</button>`).join('')}</div>
+    ${[['chatD', '대화 글씨'], ['panD', '판 글씨']].map(([k, t]) => `<div class="row fsd-row" style="margin-top:6px"><span class="note" style="min-width:58px">${t}</span><button class="chip" data-sact="fsd" data-k="${k}" data-d="-1">−1</button><b class="fsd-n" id="fsdN-${k}">${fsBase() + (st[k] || 0)}</b><button class="chip" data-sact="fsd" data-k="${k}" data-d="1">+1</button>${st[k] ? `<button class="chip" data-sact="fsd" data-k="${k}" data-d="0">기본으로</button>` : ''}</div>`).join('')}
+    <p class="note" style="margin:4px 0 10px">대화 글씨는 사무실 말풍선과 판·보드 아래 대화 상자만, 판 글씨는 판의 할 일 칸만 바뀌어요. 판 글씨는 판 위쪽 가−·가+로도 바꿀 수 있어요.</p>
     <hr class="s">
     <label class="t">백업 — 데이터는 이 폰 안에만 있어요. 가끔 내려받아 두세요.</label>
     <div class="row"><button class="chip" data-sact="export">모든 판 내려받기</button>
@@ -96,6 +98,7 @@ $('sheet').addEventListener('click', async e => {
   }
   else if (a === 'addsec'){ list.push({ id:'s' + uid(), label:'새 칸', color:PALETTE[list.length % PALETTE.length] }); }
   else if (a === 'fs'){ S.settings.fs = Number(b.dataset.v); applyFs(); }
+  else if (a === 'fsd'){ await stepFsd(b.dataset.k, Number(b.dataset.d)); }
   else if (a === 'font'){ S.settings.font = b.dataset.v; applyFont(); }
   else if (a === 'bonus'){ try{ localStorage.setItem(laneKey(b.dataset.k || 'B'), b.dataset.v); }catch(e){} toast(b.dataset.v === '1' ? '새로 고치면 보너스가 들어와요' : '새로 고치면 보너스가 빠져요'); settingsSheet(); return; }
   else if (a === 'bonusrun'){ const m = BONUS.menu[Number(b.dataset.i)]; closeSheet(); if (m) try{ await m.run(); }catch(e){ dlog('오류', '보너스 메뉴 ' + e.message, e.stack); toast('보너스 기능에서 문제가 났어요'); } return; }
@@ -199,7 +202,22 @@ async function doImport(data){
   closeSheet(); await goDate(S.today);
   toast(`판 ${data.pans.length}개를 불러왔어요`);
 }
-function applyFs(){ document.documentElement.style.setProperty('--fs', S.settings.fs || 1); applyFont(); }
+/* v1.5.10 (C) 글씨 크기 따로 — 판 글씨(panD)·대화 글씨(chatD)를 1px씩. 전체 '글자 크기'(fs) 위에 더하고 빼는 값, -6 ~ +6 */
+const FSD_MIN = -6, FSD_MAX = 6;
+const fsBase = () => Math.round(15 * (S.settings.fs || 1));
+function applyFs(){ const r = document.documentElement.style, base = 15 * (S.settings.fs || 1);
+  r.setProperty('--fs', S.settings.fs || 1);
+  r.setProperty('--pan-z', ((base + (S.settings.panD || 0)) / base).toFixed(4));
+  r.setProperty('--chat-d', S.settings.chatD || 0);
+  applyFont(); }
+async function stepFsd(k, d){
+  const cur = S.settings[k] || 0, v = d === 0 ? 0 : Math.max(FSD_MIN, Math.min(FSD_MAX, cur + d)), name = k === 'panD' ? '판' : '대화';
+  if (v === cur && d){ toast(`${name} 글씨는 더 ${d < 0 ? '작게' : '크게'} 못 해요`); return false; }
+  S.settings[k] = v; await saveSettings(); applyFs(); dlog('화면', `${name} 글씨 ${fsBase() + v}`);
+  toast(`${name} 글씨 ${fsBase() + v}${v ? ` (기본보다 ${v > 0 ? '+' : ''}${v})` : ' (기본)'}`); return true;
+}
+$('panFsDn').onclick = () => stepFsd('panD', -1);
+$('panFsUp').onclick = () => stepFsd('panD', 1);
 /* 글꼴 (v1.2.8) — 본문·제목 짝. 기본은 폰 글꼴(인터넷 없이도). 나머지는 처음 고를 때 인터넷에서 한 번 받아 온다 */
 const GF = f => 'https://fonts.googleapis.com/css2?' + f.map(x => 'family=' + x).join('&') + '&display=swap';
 const FONTS = [

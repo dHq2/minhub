@@ -728,3 +728,14 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .mt.armed{opacity:1;color:#c0392b;background:#fff4f2;padding:0 9px}
 .regen-menu{display:flex;flex-wrap:wrap;gap:4px;width:100%;margin-top:4px}
 .bt-foot{margin-top:6px}
+
+/* v1.5.10 (C) 글씨 크기 따로 — 판 글씨는 할 일 칸만 확대 비율(--pan-z), 대화 글씨는 말풍선·대화 상자에 px 더하기(--chat-d) */
+#main .sec{zoom:var(--pan-z,1)}
+.msg{font-size:calc(.95rem + var(--chat-d,0) * 1px)}
+.msg.s.last{font-size:calc(1rem + var(--chat-d,0) * 1px)}
+.bt-bub{font-size:calc(1.02rem + var(--chat-d,0) * 1px)}
+.fsd{display:inline-flex;gap:4px;flex:0 0 auto;margin-left:auto}
+.fsd .ib{padding:3px 8px;min-width:0;font-weight:700;background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.4)}
+.pdr-head .fsd + .dw-x{margin-left:0}
+.fsd sub,.fsd sup{font-size:.7em;line-height:0}
+.fsd-row .fsd-n{min-width:2.2em;text-align:center;font-variant-numeric:tabular-nums}
