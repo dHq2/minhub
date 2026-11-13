@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.5.1
+/* 세희 보너스 업데이트 — B0.6
    이 폴더(sehee/bonus/)는 '제작기 2' 방 몫이다. 본체(index.html·sw.js)는 메인 방만 고친다.
    본체와는 window.SEHEE 창구로 잇는다. 쓰는 법은 인수인계 문서 4장.
 
@@ -23,10 +23,15 @@
         그래프: 막대·꺾은선(세희가 실제 숫자를 줄 때만). 카드 기록은 b_vis(계정 동기화, 최근 60개 답까지).
         본체 v1.3.8 정리: 컴퓨터 틀 굴림 되돌리기는 예전 본체에서만, 인간관계 판 배율은 SEHEE.pplZoom 으로도 넘긴다.
    B0.5.1 (2026-11-13) 판 견출지 마우스 올리기: 견출지로 서랍을 닫고 판으로 돌아온 직후처럼, 화면이 바뀔 때 마우스가 이미 견출지 위에 있으면
-        한 번 밖으로 나갔다 들어올 때까지 넘어가지 않는다(메인 from-main 14:55 참고 사항). 본체 v1.4.0·보너스 C0.1 과 같이 켜서 확인. */
+        한 번 밖으로 나갔다 들어올 때까지 넘어가지 않는다(메인 from-main 14:55 참고 사항). 본체 v1.4.0·보너스 C0.1 과 같이 켜서 확인.
+   B0.6 (2026-11-13) 두 가지.
+        ① 다른 주제면 사무실로: 판·달력·보드·사람 서랍을 연 채로 그 서랍과 상관없는 이야기를 꺼내면 세희가 b_to_office 로 사무실로 데려간다
+           (지금 열린 서랍을 세희 지침에 알려 줌). 자료 카드가 붙는 답이면 서랍에 있어도 사무실로(카드는 사무실 대화에만 보임).
+        ② 물건 사진 자동: 세희가 웹 검색으로 답했는데 카드를 안 붙였으면, 보너스가 출처 제목으로 위키백과·위키미디어 공용에서 사진을 찾아
+           제목 낱말이 맞을 때만 붙인다(날씨·뉴스·환율 같은 검색은 건너뜀). web 카드도 대표 사진 창구가 없으면 query 로 위키·사진을 대신 찾는다. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.5.1');
+  S.setVersion('B0.6');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -393,8 +398,10 @@
       } else if (kind === 'web'){
         const urls = (a.urls || []).filter(u => /^https?:\/\//.test(u));
         const r = await findWeb(urls, n);
-        if (r === null) return { ok:false, error:'웹 페이지 사진은 아직 못 가져와요. photo(영어 낱말) 나 wiki 로 비슷한 것을 보여 주세요.' };
-        g.items = r;
+        g.items = r || [];
+        const q = strip(a.query);
+        if (!g.items.length && q){ g.items = await findWiki(q, n); if (!g.items.length) g.items = await findPhotos(q, n); }   // 대표 사진 창구가 아직 없으면 이름으로 대신
+        if (!g.items.length && r === null) return { ok:false, error:'웹 페이지 사진은 아직 못 가져와요. query 에 물건 이름(영어 모델명이 잘 나옴)을 넣어 다시, 또는 photo 로.' };
       } else if (kind === 'wiki'){ g.items = await findWiki(strip(a.query), n); }
       else { g.kind = 'photo'; g.items = await findPhotos(strip(a.query), n); }
     }catch(e){ S.dlog('오류', '보너스 자료 카드 ' + e.message); return { ok:false, error:'사진을 못 불러왔어요(' + e.message + '). 다른 낱말로 한 번만 더 해 보세요.' }; }
@@ -406,7 +413,7 @@
   S.addTool({ name:'b_visual', description:'답에 사진·그래프 카드를 붙여 보스에게 보여 준다. 매번 쓰지 않는다 — 보스가 생김새·물건·상품·장소·동물을 묻거나 찾을 때, 또는 숫자 비교·추이가 답의 핵심일 때만. 정확히 같은 것을 못 찾았으면 가장 비슷한 것을 similar:true 로. 한 답에 1~2번까지.',
     schema:{ type:'object', properties:{
       kind:{ type:'string', enum:['photo', 'wiki', 'web', 'chart'], description:'photo: 비슷한 사진(위키미디어 공용, 영어 낱말이 잘 나옴) · wiki: 개념·동물·장소의 대표 사진 · web: 웹 검색으로 찾은 페이지들의 대표 사진 · chart: 숫자 그래프' },
-      query:{ type:'string', description:'photo·wiki 에서 찾을 말. 예: "panda pen", "판다"' },
+      query:{ type:'string', description:'찾을 말(모든 kind 에 넣기). 물건은 정확한 모델명, 영어면 더 잘 나옴. 예: "Samsung Galaxy Tab A7 Lite", "panda pen", "판다"' },
       urls:{ type:'array', items:{ type:'string' }, description:'web 일 때 웹 검색으로 찾은 페이지 주소 2~3개' },
       count:{ type:'number', description:'카드 수 1~4, 기본 3' },
       similar:{ type:'boolean', description:'정확히 같은 게 아니라 비슷한 것이면 true' },
@@ -414,7 +421,7 @@
       chart:{ type:'object', description:'chart 일 때', properties:{ type:{ type:'string', enum:['bar', 'line'] }, labels:{ type:'array', items:{ type:'string' } },
         series:{ type:'array', items:{ type:'object', properties:{ name:{ type:'string' }, values:{ type:'array', items:{ type:'number' } } } } }, unit:{ type:'string' } } } },
       required:['kind'] } }, visualTool);
-  S.addPrompt('자료 카드(b_visual): 생김새·물건·상품·장소를 묻거나 찾을 때, 숫자 비교·추이가 답의 핵심일 때만 쓴다. 인사·일정·판 정리 같은 평범한 답에는 쓰지 않는다. 웹 검색으로 상품·물건을 찾았으면 먼저 web(그 페이지 주소)을, 안 되면 photo 를 영어 낱말로. 정확히 같은 걸 못 찾아도 비슷한 것은 보여 주고 similar:true. 카드가 붙으면 말로는 한 줄만.');
+  S.addPrompt('자료 카드(b_visual): 생김새·물건·상품·기기·장소를 묻거나 찾을 때, 숫자 비교·추이가 답의 핵심일 때만 쓴다. 인사·일정·판 정리 같은 평범한 답에는 쓰지 않는다. 보스가 물건·상품·기기를 묻거나 사진을 주며 "이거 뭐야/얼마야" 하면 반드시 붙인다 — 웹 검색으로 찾았으면 kind web(그 페이지 주소 + query 에 정확한 모델명), 아니면 wiki 나 photo(영어 모델명). 정확히 같은 걸 못 찾아도 비슷한 것은 보여 주고 similar:true. 카드가 붙으면 말로는 한 줄만.');
 
   /* 그래프 그리기 — 말풍선 폭에 맞는 SVG */
   const PAL = ['#2b6a9e', '#c0533b', '#5d8a4a'];
@@ -496,6 +503,65 @@
   .b-big p{font-size:.85rem;margin:8px 0 0}.b-big .b-src{color:#7a7466;font-size:.75rem}.b-big a{display:inline-block;margin-top:10px}`;
   document.head.appendChild(css5);
 
+  /* ── ⑥ 물건 사진 자동 (B0.6) — 세희가 웹 검색으로 답했는데 카드를 안 붙였을 때 ── */
+  const SKIP_Q = /날씨|기온|미세먼지|뉴스|속보|환율|주가|시세표|코스피|영업\s*시간|몇\s*시까지|길\s*찾|교통|버스|지하철|일정|휴무/;
+  const cleanTitle = t => strip(t).split(/\s[-|–—:·]\s|\s\|\s/)[0].replace(/\(r\d+\s*판\)|\(.*?판\)/g, '').replace(/\s+/g, ' ').trim();
+  const toks = t => (String(t).toLowerCase().match(/[a-z0-9]+|[가-힣]{2,}/g) || []).filter(w => !/^(the|and|of|for|with|full|specifications?|review|price|가격|스펙|사양|정보|리뷰)$/.test(w));
+  const fits = (q, title) => { const a = toks(q), b = new Set(toks(title)); if (!a.length) return false; const hit = a.filter(w => b.has(w)).length; return hit >= Math.min(2, a.length) && hit / a.length >= 0.5; };
+  const autoBusy = new Set(), autoTried = new Set();
+  async function autoVisual(){
+    const log = S.log() || []; let iU = -1; for (let i = log.length - 1; i >= 0; i--) if (log[i].who === 'u'){ iU = i; break; }
+    const u = log[iU]; if (!u) return null;
+    const ms = log.slice(iU + 1).filter(m => m.who === 's' && !m.err);
+    if (!ms.length || ms.some(m => VIS[m.at])) return null;                 // 이미 카드가 있으면 그대로
+    const m = ms.find(x => x.src && x.src.length); if (!m || autoBusy.has(m.at) || autoTried.has(m.at)) return null;
+    if (SKIP_Q.test(u.text || '')) return null;
+    autoBusy.add(m.at); autoTried.add(m.at);
+    try{
+      const qs = [...new Set(m.src.map(x => cleanTitle(x.t || '')).filter(q => q && q.length >= 3))].slice(0, 3);
+      for (const q of qs){
+        let items = (await findWiki(q, 2).catch(() => [])).filter(it => fits(q, it.title)).slice(0, 1);
+        const ph = (await findPhotos(q, 4).catch(() => [])).filter(it => fits(q, it.title));
+        items = items.concat(ph).slice(0, 3);
+        if (items.length){
+          VIS[m.at] = [{ kind:'photo', title:q, similar:false, items, at:Date.now(), auto:true }];
+          saveVis(); decorate(); S.dlog('도구', `보너스 자동 사진 ${q} ${items.length}장`);
+          return m.at;
+        }
+      }
+      S.dlog('화면', '보너스 자동 사진: 맞는 사진 못 찾음 ' + qs.join(' / '));
+    } finally { autoBusy.delete(m.at); }
+    return null;
+  }
+
+  /* ── ⑦ 다른 주제면 사무실로 (B0.6) ── */
+  const DW_NAME = { pan:'판(오늘 할 일)', cal:'달력', board:'화이트보드', people:'인간관계 판' };
+  let VIEW = document.body.classList.contains('office') ? 'office' : document.body.classList.contains('alt') ? 'log' : 'pan';
+  S.on('view', v => { VIEW = v; });
+  /* 지금 열린 서랍 — 판은 view 알림으로, 사무실 안 서랍은 창구가 없어 화면을 읽는다(SEHEE.drawer 요청 중) */
+  function openDrawer(){
+    if (typeof S.drawer === 'function') return S.drawer() || (VIEW === 'pan' ? 'pan' : null);
+    if (VIEW === 'pan') return 'pan';
+    if (VIEW !== 'office' || !document.body.classList.contains('dw-on')) return null;
+    const t = document.querySelector('#dwTabs button.on'); return t ? t.dataset.dw : null;
+  }
+  function toOffice(why){
+    const d = openDrawer(); if (!d) return false;
+    S.dlog('화면', `보너스: ${DW_NAME[d] || d} → 사무실 (${why})`);
+    if (d === 'pan') S.goView('office'); else S.closeDrawer();
+    return true;
+  }
+  S.addTool({ name:'b_to_office', description:'보스가 지금 열린 서랍(판·달력·보드·사람)과 상관없는 이야기를 꺼냈을 때, 다른 도구보다 먼저 한 번 부른다. 보스를 사무실로 데려가 대화를 크게 보여 준다. 서랍 내용에 대한 이야기면 부르지 않는다.',
+    schema:{ type:'object', properties:{ why:{ type:'string', description:'한 마디. 예: "제품 검색"' } } } },
+    a => { const moved = toOffice((a && a.why) || '다른 주제'); return { ok:true, moved, note:moved ? '사무실로 옮겼습니다. 이 말은 하지 말고 바로 답하세요.' : '이미 사무실입니다.' }; });
+  S.addPrompt(() => { const d = openDrawer(); return d ? `지금 보스 화면: ${DW_NAME[d] || d} 서랍이 열려 있다. 보스의 말이 ${DW_NAME[d] || d}과(와) 상관없는 주제(물건·검색·잡담·다른 서랍 일 등)면 다른 도구보다 먼저 b_to_office 를 부른다. ${DW_NAME[d] || d} 내용에 대한 말이면 부르지 않는다.` : ''; });
+  async function afterTurn(){
+    const hadPend = PEND.length > 0;
+    attach();
+    const auto = await autoVisual();
+    if (hadPend || auto) toOffice('자료 카드');
+  }
+
   /* ── 붙이기 ── */
   async function boot(){
     try{ POS = (await S.kvGet(POS_KEY)) || {}; }catch(e){ POS = {}; }
@@ -512,8 +578,8 @@
   S.on('people', afterRender);
   S.on('talk', () => talk(false));
   S.on('say', () => setTimeout(() => talk(false), 30));
-  S.on('turnEnd', () => { talk(false); attach(); });
-  S.on('say', () => setTimeout(attach, 0));
+  S.on('turnEnd', () => { talk(false); afterTurn(); });
+  S.on('say', () => setTimeout(afterTurn, 0));
   S.on('view', async v => { if (v !== 'office') return; try{ const p = (await S.kvGet(VIS_KEY)) || {}; if (JSON.stringify(p) !== JSON.stringify(VIS)){ VIS = p; decorate(); } }catch(e){} });
   S.on('tool', () => talk(false));
   setInterval(() => talk(false), 1000);   // 기다리는 초 세기(사람 서랍에선 본체가 안 불러 줌)
