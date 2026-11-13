@@ -658,3 +658,17 @@ body:not(.office):not(.v-board) .brain{display:none}
 .memo:focus{border-bottom-color:rgba(47,74,122,.45);background:rgba(255,255,255,.35)}
 .memo.has{border-left:2px solid rgba(47,74,122,.35);padding-left:7px}
 .it.done .memo{opacity:.6}
+
+/* ── 대화 상자 옆으로 접기 (v1.5.1, B) — 판·보드·사람 대화 상자 공통. 이름표를 오른쪽으로 끌면 접히고 '세희' 꼬리만 남음.
+   꼬리는 서랍 옆면 손잡이(.dw-grip.r 22px) 바로 안쪽 — 손잡이 위에 두면 당길 때 서랍이 닫힌다 ── */
+.bt-name b{pointer-events:auto;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+.bt-name b:active{cursor:grabbing}
+.bt-peek{display:none;position:absolute;right:24px;bottom:6px;z-index:31;width:30px;height:68px;border:none;border-radius:10px;background:#2b3a55;color:#fff;box-shadow:-2px 2px 7px rgba(0,0,0,.35);padding:0;cursor:pointer;touch-action:none;pointer-events:auto;
+  font:700 .8rem var(--f-head);letter-spacing:.25em;writing-mode:vertical-rl;align-items:center;justify-content:center}
+.bt-peek i{position:absolute;top:6px;left:50%;margin-left:-4px;width:8px;height:8px;border-radius:50%;background:#e2483d;display:none}
+.bt-peek.new i{display:block;animation:blink 1s infinite}
+.bt-peek:active{background:#1d2a44}
+.sfold{height:80px!important;min-height:0!important;padding:0!important;overflow:visible!important;pointer-events:none!important}   /* 꼬리 높이만큼만 자리를 남기고 나머지는 손이 통과 */
+.sfold > :not(.bt-peek){display:none!important}
+.sfold > .bt-peek{display:flex}
+.bt-sliding > .bt-peek{display:flex;opacity:0}   /* 꼬리를 당기는 동안 손가락 추적이 끊기지 않게 자리는 남김 */

@@ -194,12 +194,65 @@ function renderBoardTalk(){
 }
 setInterval(() => { if (O.busy && (DW.open === 'board' || curView() === 'pan') && !(O.live && O.live.text)) renderBoardTalk(); }, 1000);
 let bonusWasBusy = false; setInterval(() => { if (bonusWasBusy && !O.busy) bonusEmit('turnEnd'); bonusWasBusy = !!O.busy; }, 400);
-/* 판 위 대화 상자: 이름표 누르면 접기/펴기, 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
+/* 대화 상자 옆으로 접기 (v1.5.1, B) — 판·보드·사람 대화 상자 공통.
+   이름표(강세희)를 견출지처럼 오른쪽으로 끌면 상자가 화면 밖으로 접히고 오른쪽 끝에 '세희' 꼬리만 남는다(그만큼 아래가 보인다).
+   꼬리를 왼쪽으로 끌거나 누르면 다시 나온다. 이름표를 그냥 눌러도 접힌다. 접혀 있을 때 세희 새 답이 오면 꼬리에 빨간 점.
+   기기마다 기억(localStorage sehee.fold.<이름>). v1.2.8 의 위아래 접기(sehee.ptFold)는 이걸로 바뀜 */
+function btFold(box, key){
+  if (!box || box.dataset.fold) return; box.dataset.fold = key;
+  const tag = box.querySelector('.bt-name b'); if (!tag) return;
+  tag.classList.add('noswipe'); tag.title = '옆으로 끌거나 눌러서 접기';
+  const peek = document.createElement('button'); peek.type = 'button'; peek.className = 'bt-peek noswipe'; peek.setAttribute('aria-label', '세희 대화 펴기');
+  peek.innerHTML = '<span>세희</span><i></i>'; box.appendChild(peek);
+  const K = 'sehee.fold.' + key, lastAt = () => { for (let i = O.log.length - 1; i >= 0; i--) if (O.log[i].who === 's') return O.log[i].at; return 0; };
+  let seen = 0;
+  const save = on => { try{ localStorage.setItem(K, on ? '1' : '0'); }catch(e){} };
+  const scale = () => (box.getBoundingClientRect().width / box.offsetWidth) || 1;
+  const slide = (x, ms) => { box.style.transition = ms ? `transform ${ms}ms cubic-bezier(.2,.8,.2,1)` : 'none'; box.style.transform = x ? `translateX(${x}px)` : ''; };
+  function fold(fromX){
+    const w = box.offsetWidth; box.classList.remove('bt-sliding');
+    slide(fromX || 0, 0); void box.offsetWidth; slide(w + 12, 260);
+    setTimeout(() => { box.classList.add('sfold'); slide(0, 0); seen = lastAt(); peek.classList.remove('new'); save(true); dlog('화면', `대화 상자 접음(${key})`); }, 260);
+  }
+  function open(fromX){
+    box.classList.remove('sfold'); const w = box.offsetWidth;
+    slide(fromX == null ? w + 12 : fromX, 0); void box.offsetWidth; slide(0, 260);
+    setTimeout(() => { box.style.transition = ''; }, 280); peek.classList.remove('new'); save(false); dlog('화면', `대화 상자 폄(${key})`);
+  }
+  /* 이름표 끌기 — 오른쪽으로만 따라온다. 28% 넘게 끌거나 50px 넘게 휙 밀면 접힘 */
+  let d = null;
+  tag.addEventListener('pointerdown', e => { if (e.button > 0) return; d = { x0:e.clientX, t0:performance.now(), on:false, k:scale(), w:box.offsetWidth, pid:e.pointerId }; try{ tag.setPointerCapture(e.pointerId); }catch(x){} });
+  tag.addEventListener('pointermove', e => { if (!d || e.pointerId !== d.pid) return; const dx = (e.clientX - d.x0) / d.k;
+    if (!d.on){ if (Math.abs(dx) < 6) return; d.on = true; } slide(Math.max(0, dx), 0); });
+  const tagUp = e => { if (!d || e.pointerId !== d.pid) return; const g = d; d = null; const dx = Math.max(0, (e.clientX - g.x0) / g.k), v = dx / Math.max(1, performance.now() - g.t0);
+    if (!g.on){ fold(0); return; }
+    if (dx > g.w * 0.28 || (v > 0.8 && dx > 50)) fold(dx); else slide(0, 200); };   // 짧은 움직임은 휙이어도 제자리
+  tag.addEventListener('pointerup', tagUp); tag.addEventListener('pointercancel', e => { if (d && e.pointerId === d.pid){ d = null; slide(0, 200); } });
+  /* 꼬리 끌기 — 왼쪽으로 당기면 상자가 따라 나온다. 28% 넘게 나오거나 휙 당기면 펴짐, 아니면 다시 접힘. 그냥 누르면 펴짐 */
+  let q = null;
+  peek.addEventListener('pointerdown', e => { if (e.button > 0) return; e.preventDefault(); q = { x0:e.clientX, t0:performance.now(), on:false, k:scale(), pid:e.pointerId }; try{ peek.setPointerCapture(e.pointerId); }catch(x){} });
+  peek.addEventListener('pointermove', e => { if (!q || e.pointerId !== q.pid) return; const dx = (e.clientX - q.x0) / q.k;
+    if (!q.on){ if (dx > -6) return; q.on = true; box.classList.remove('sfold'); box.classList.add('bt-sliding'); q.w = box.offsetWidth; }
+    slide(Math.max(0, q.w + 12 + dx), 0); });
+  const peekUp = e => { if (!q || e.pointerId !== q.pid) return; const g = q; q = null;
+    if (!g.on){ open(); return; }
+    const dx = (e.clientX - g.x0) / g.k, out = -dx, v = out / Math.max(1, performance.now() - g.t0); box.classList.remove('bt-sliding');
+    if (out > g.w * 0.28 || (v > 0.8 && out > 50)) open(Math.max(0, g.w + 12 + dx)); else fold(Math.max(0, g.w + 12 + dx)); };
+  peek.addEventListener('pointerup', peekUp); peek.addEventListener('pointercancel', e => { if (q && e.pointerId === q.pid){ q = null; box.classList.remove('bt-sliding'); fold(box.offsetWidth); } });
+  peek.addEventListener('click', e => e.preventDefault());
+  /* 접혀 있을 때 새 답 → 빨간 점 */
+  setInterval(() => { if (box.classList.contains('sfold')){ const a = lastAt(); if (a && seen && a > seen) peek.classList.add('new'); } }, 800);
+  let on = false; try{ on = localStorage.getItem(K) === '1'; }catch(e){}
+  if (on){ box.classList.add('sfold'); setTimeout(() => { seen = lastAt(); }, 1500); }
+  box.btFold = { fold, open, folded:() => box.classList.contains('sfold') };
+}
+/* 판 위 대화 상자: 이름표 끌기/누르기 = 옆으로 접기(v1.5.1), 대화 보기는 사무실로, 높이만큼 판 아래를 비워 둔다 */
 (function panTalkInit(){
   const pt = $('panTalk');
-  try{ if (localStorage.getItem('sehee.ptFold') === '1') pt.classList.add('fold'); }catch(e){}
-  $('ptName').onclick = () => { pt.classList.toggle('fold'); $('ptName').textContent = pt.classList.contains('fold') ? '강세희 ▴' : '강세희 ▾'; try{ localStorage.setItem('sehee.ptFold', pt.classList.contains('fold') ? '1' : '0'); }catch(e){} };
-  if (pt.classList.contains('fold')) $('ptName').textContent = '강세희 ▴';
+  try{ if (localStorage.getItem('sehee.ptFold') === '1' && localStorage.getItem('sehee.fold.pan') === null) localStorage.setItem('sehee.fold.pan', '1'); localStorage.removeItem('sehee.ptFold'); }catch(e){}
+  $('ptName').textContent = '강세희';
+  btFold(pt.querySelector('.pt-box'), 'pan');
+  btFold(document.querySelector('#dw-board .bt'), 'board');
   $('ptAll').onclick = () => goView('office');
   $('ptBub').addEventListener('click', e => { const rt = e.target.closest('[data-retry]'); if (rt) retryLast(Number(rt.dataset.retry)); const rg = e.target.closest('[data-regen]'); if (rg) regenLast(rg.dataset.regen); });
   const fit = () => document.body.style.setProperty('--pth', pt.offsetHeight + 'px');

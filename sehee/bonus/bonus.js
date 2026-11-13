@@ -1,6 +1,6 @@
-/* 세희 보너스 업데이트 — B0.7.1
-   이 폴더(sehee/bonus/)는 '제작기 2' 방 몫이다. 본체(index.html·sw.js)는 메인 방만 고친다.
-   본체와는 window.SEHEE 창구로 잇는다. 쓰는 법은 인수인계 문서 4장.
+/* 세희 보너스 업데이트 — B0.8
+   실험 파일 B(방 B 기본 담당). 인수인계 v3 — 세 방 동등, 본체도 할일.md 찜으로 직접 고친다.
+   본체와는 주로 window.SEHEE 창구로 잇고, v3 부터는 본체 함수(btFold 등)도 직접 부른다.
 
    변경 기록
    B0.1 (2026-11-13) 자리만 만듦 — 불러와지는지 확인용.
@@ -35,10 +35,12 @@
    B0.7.1 (2026-11-13, 메인이 보스 지시로 긴급 수정) 사탕을 물었는데 G마켓 강연 사진·출처 화면 줄이 뜨던 것.
         ① 출처 제목에서 사이트 이름(G마켓·11번가·쿠팡·나무위키 …)을 빼고 상품 이름 쪽을 고른다. 한 글자 낱말(g 등)은 맞춤에 안 씀.
         ② 자동 카드는 한 줄만: 본체 v1.4.1 창구 SEHEE.og 로 출처 페이지 대표 사진(상품 사진)을 먼저 → 없으면 위키 사진(더 엄하게) → 그래도 없을 때만 출처 화면 한 장.
-           출처를 전부 화면으로 늘어놓지 않는다. */
+           출처를 전부 화면으로 늘어놓지 않는다.
+   B0.8 (2026-11-13, 본체 v1.5.1 과 같이) 사람 서랍 대화 상자도 본체 btFold 로 옆으로 접기(이름표 끌기·꼬리 당기기).
+        다시 답하기(on regen)로 지워진 답의 자료 카드(b_vis)를 같이 지운다. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.7.1');
+  S.setVersion('B0.8');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -185,6 +187,7 @@
     d.innerHTML = `<div class="bt-side"><img id="bPpSpr" src="art/s-lean.webp" alt="강세희"></div><div class="bt-name"><b>강세희</b><button type="button" id="bPpAll">대화 보기 ›</button></div><div class="bt-bub" id="bPpBub"></div>`;
     body.appendChild(d);
     $('bPpAll').onclick = () => S.closeDrawer();
+    if (typeof window.btFold === 'function') window.btFold(d, 'people');   // 본체 v1.5.1 옆으로 접기
     refit();
   }
   /* 대화창이 들어와 판 높이가 줄었으니 '전체 보기' 배율을 다시 맞춘다(본체 '크게 보기' 상태면 그대로) */
@@ -612,6 +615,8 @@
     talk(true);
   }
   S.on('people', afterRender);
+  /* 다시 답하기 — 지워진 답의 카드는 같이 지운다(새 답은 새로 판단) */
+  S.on('regen', e => { const ats = (e && e.oldAts) || []; let n = 0; for (const at of ats) if (VIS[at]){ delete VIS[at]; n++; } if (n){ saveVis(); S.dlog('화면', `보너스: 다시 답하기로 카드 ${n}묶음 지움`); } });
   S.on('talk', () => talk(false));
   S.on('say', () => setTimeout(() => talk(false), 30));
   S.on('turnEnd', () => { talk(false); afterTurn(); });
