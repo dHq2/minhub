@@ -712,7 +712,9 @@ function dlog(cat, msg, data){
   DBG.lines.push(l); if (DBG.lines.length > DBG.max) DBG.lines.splice(0, DBG.lines.length - DBG.max);
   DBG.dirty = true; for (const f of DBG.subs) try{ f(l); }catch(e){}
 }
-setInterval(() => { if (!DBG.dirty) return; DBG.dirty = false; try{ localStorage.setItem('sehee.dbg', JSON.stringify(DBG.lines.slice(-300))); }catch(e){} }, 2000);
+setInterval(() => { if (!DBG.dirty) return; DBG.dirty = false; DBG.up = true; try{ localStorage.setItem('sehee.dbg', JSON.stringify(DBG.lines.slice(-300))); }catch(e){} }, 2000);
+/* 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버에도 올린다 — 개발자가 같이 보며 원인을 찾게(v1.3.1) */
+setInterval(() => { try{ if (!DBG.up || localStorage.getItem('sehee.dev') !== '1' || typeof kvSet !== 'function') return; DBG.up = false; kvSet('dbg', { at:Date.now(), v:APP_VERSION, lines:DBG.lines.slice(-300) }); }catch(e){} }, 10000);
 window.addEventListener('error', e => dlog('오류', (e.message || '스크립트 오류') + (e.filename ? ` @${e.filename.split('/').pop()}:${e.lineno}` : ''), e.error && e.error.stack));
 window.addEventListener('unhandledrejection', e => dlog('오류', '처리 안 된 실패: ' + ((e.reason && e.reason.message) || e.reason), e.reason && e.reason.stack));
 for (const k of ['error', 'warn']){ const o = console[k].bind(console); console[k] = (...a) => { try{ dlog(k === 'error' ? '오류' : '경고', a.map(x => x && x.message ? x.message : typeof x === 'object' ? JSON.stringify(x) : String(x)).join(' ').slice(0, 300)); }catch(e){} o(...a); }; }
@@ -810,8 +812,9 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.0';
+const APP_VERSION = 'v1.3.1';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1107,7 +1110,7 @@ function settingsSheet(){
     <button class="chip" data-sact="addsec" style="margin-top:4px">+ 칸 더하기</button>
     <label class="t">개발자 로그</label>
     <div class="row"><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? 'on' : ''}" data-sact="dev" data-v="1">켬</button><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? '' : 'on'}" data-sact="dev" data-v="0">끔</button></div>
-    <p class="note" style="margin:4px 0 10px">켜면 아래에 「🛠 로그」 탭이 생겨요. AI 요청·도구·동기화·화면 이동·오류가 실시간으로 찍혀요. 이 기기에서만, 서버로는 안 올라가요.</p>
+    <p class="note" style="margin:4px 0 10px">켜면 아래에 「🛠 로그」 탭이 생겨요. AI 요청·도구·동기화·화면 이동·오류가 실시간으로 찍혀요. 켠 동안은 10초마다 계정 서버에도 올라가서 개발자가 같이 볼 수 있어요.</p>
     <label class="t">글꼴</label>
     <div class="row" style="flex-wrap:wrap;gap:6px">${FONTS.map(f => `<button class="chip ${(st.font || 'sys') === f.v ? 'on' : ''}" data-sact="font" data-v="${f.v}" style="font-family:${f.body.replace(/"/g, "'")}">${f.t}</button>`).join('')}</div>
     <p class="note" style="margin:4px 0 10px">${esc((FONTS.find(x => x.v === (st.font || 'sys')) || FONTS[0]).d)}. 기본 말고는 처음 고를 때 인터넷에서 글꼴을 한 번 받아 와요.</p>
@@ -2713,7 +2716,7 @@ document.addEventListener('click', e => {
    · 한 사람은 한 기기에서만. 다른 기기에서 암호를 넣으면 여기는 다음 확인(20초 안) 때 닫힌다
    · 서버 기록으로 덮어쓰기 전에, 이 기기에 있던 기록은 'presync' 로 따로 남겨 둔다 */
 const SYNC = { url:'', token:'', user:'', device:'', last:0, on:false, dead:false, busy:false, again:false, fails:0, timer:null, dirty:new Map(), gen:0 };
-const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people'];
+const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'dbg'];
 const SYNC_LS = 'sehee-sync';
 function deviceName(){
   const u = navigator.userAgent;
