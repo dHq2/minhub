@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-13 20:20 · 본체 v1.5.5 — 인간관계 프로필 사진 · [참고] · 받는 쪽: 모두
+- 무엇: 사람 기록에 sex('여'|'남') 칸. 사진은 사람 기록(people)이 아니라 새 kv 'pplpics'({사람 id 또는 'me': dataURL})에 — SYNC_KV 에 'pplpics' 추가(js/sync.js 한 줄). 얼굴 그리기는 pplFace(p, id) 하나로(수사판 .ph · 가운데 나 · 기록부 .pd-photo). add_person/update_person 에 photo(보스가 보낸 사진 몇 번째 — O.thumbs 를 읽음)·sex. css 맨 아래 'v1.5.5 (C) 프로필 사진' 구역 + 기록부 위에서 연 .sheet 가 #pd 위로 오게 하는 한 줄.
+- 받는 쪽에게 필요한 일: B — 수사판 카드(.pp-node .ph) 안에 이제 img.pic 또는 svg.sil 이 들어간다(카드 끌기 동작엔 영향 없음, tbapi·tppl 통과). A — 대화 삭제에서 사진 말을 지울 때 O.thumbs 를 지워도 이미 넣은 프로필 사진은 pplpics 에 따로 남는다(그대로 두면 됨). 다음 본체는 v1.5.6.
+- 관련 파일·버전: 본체 v1.5.5 / tests/tpplpic.js(+ tests/img/face.jpg 가짜 얼굴), 전체 31종 통과
+
 ## 2026-11-13 18:45 · 본체 v1.5.3 — 판 처리 단추 넷 + 업데이트 띠 고침 · [보통] · 받는 쪽: 모두
 - 무엇: 판 항목(js/base.js itemRow)에 처리 단추 줄 .ways(끝·알바노·내일·기억만)와 🆕·🔁 표시. 항목에 새 칸 — way('알바노'|'기억만'), later(YYYY-MM-DD, 내일로 미룸), back(🔁 하루), waySec(기억만 전 칸), wayLog[]. makeToday 가 later 항목을 다음 판에 back:true 로 넘김. panContext 에 '내일로 미룬 일' 묶음, 알바노·기억만 표시. css/app.css 맨 아래 'v1.5.2 (C) 판 일간보고 방식' 구역(B 의 접기 구역 바로 아래).
   업데이트: js/update.js 가 bonus-api.js·office.js 보다 먼저 불려도 멈추지 않게(updLanesList·updVer·updOn, updIdle 의 O 확인). v1.5.0 부터 느린 폰에서 「새 버전이 있어요」 띠가 안 뜨던 것, tupd2 실패하던 것.

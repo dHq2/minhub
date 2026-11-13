@@ -4,7 +4,7 @@
    · 한 사람은 한 기기에서만. 다른 기기에서 암호를 넣으면 여기는 다음 확인(20초 안) 때 닫힌다
    · 서버 기록으로 덮어쓰기 전에, 이 기기에 있던 기록은 'presync' 로 따로 남겨 둔다 */
 const SYNC = { url:'', token:'', user:'', device:'', last:0, on:false, dead:false, busy:false, again:false, fails:0, timer:null, dirty:new Map(), gen:0 };
-const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'dbg'];
+const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'pplpics', 'dbg'];   /* v1.5.5 pplpics = 인간관계 프로필 사진(C) */
 /* 보너스(b_·c_로 시작하는 키)도 계정에 같이 — v1.3.5 / v1.4.0 */
 function syncKey(k){ return SYNC_KV.includes(k) || /^[bc]_/.test(String(k)); }
 const SYNC_LS = 'sehee-sync';

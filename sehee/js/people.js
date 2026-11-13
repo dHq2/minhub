@@ -4,19 +4,73 @@
 const PPL = { list:null, changed:null };
 const GROUPS = ['직장', '학생·학부모', '친구', '가족', '기타'];
 const GROUP_COLOR = { '직장':'#3a6b64', '학생·학부모':'#8a6d3b', '친구':'#6b5b95', '가족':'#a13b2c', '기타':'#5c5340' };
-async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null; } return PPL.list; }
+async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null; } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; return PPL.list; }
 const pplSave = () => kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', ...(PPL.me ? { me:PPL.me } : {}) });
+/* ── 프로필 사진 (v1.5.5 · C) ──
+   사진은 kv 'pplpics' 에 { 사람id(나는 'me'): 정사각 JPEG dataURL } 로 따로 둔다 — 사람 기록(people)은 글만이라 가볍게 오가고, 사진은 바뀔 때만 오간다.
+   사진이 없으면 성별(p.sex '여'|'남')에 맞는 기본 얼굴, 성별도 모르면 이름 첫 글자. 세희는 add/update_person 의 photo(보스가 보낸 사진 몇 번째)·sex 로 넣는다. */
+const PIC_PX = 192;
+const pplPicSave = () => kvSet('pplpics', PPL.pics || {});
+const SIL = {
+  '여':'<svg viewBox="0 0 64 64" class="sil"><rect width="64" height="64" fill="#e3d8c6"/><path d="M15 50c0-6 1-26 4-31 3-6 8-9 13-9s10 3 13 9c3 5 4 25 4 31z" fill="#5b4636"/><path d="M8 64c2-10 11-15 24-15s22 5 24 15z" fill="#a8746f"/><path d="M28 40h8v10h-8z" fill="#e8c9ac"/><ellipse cx="32" cy="30" rx="10" ry="12" fill="#f0d6bb"/><path d="M21.5 28c1-9 5.5-13.5 10.5-13.5S42 19 42.5 28c-4-5-9-7-11-12-2 5-6 9-10 12z" fill="#5b4636"/></svg>',
+  '남':'<svg viewBox="0 0 64 64" class="sil"><rect width="64" height="64" fill="#d8dde0"/><path d="M6 64c2-11 12-16 26-16s24 5 26 16z" fill="#56677a"/><path d="M28 39h8v10h-8z" fill="#e3c3a6"/><ellipse cx="32" cy="29" rx="10.5" ry="12" fill="#ecd1b6"/><path d="M21 28c-1.5-10 4-16 11-16s12.5 6 11 16c-1-4-3-6.5-5-7.5-4 1.5-9 1.5-13 0-2 1-3.5 3.5-4 7.5z" fill="#3a3129"/></svg>' };
+/* 그 사람 얼굴 칸 안에 들어갈 것 — 사진 > 성별 기본 얼굴 > 첫 글자 */
+function pplFace(p, id){ const k = id || p.id, u = PPL.pics && PPL.pics[k];
+  if (u) return `<img class="pic" src="${u}" alt="">`;
+  if (SIL[p.sex]) return SIL[p.sex];
+  return esc(String(p.name || '?').slice(0, 1)); }
+/* 파일·사진 주소 → 정사각(얼굴이 보통 위쪽이라 조금 위를 잘라 씀) 192px JPEG */
+async function picThumb(src){
+  const url = typeof src === 'string' ? src : URL.createObjectURL(src);
+  try{
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('사진을 못 열었어요')); i.src = url; });
+    const w = img.naturalWidth, h = img.naturalHeight, side = Math.min(w, h), sx = (w - side) / 2, sy = h > w ? Math.min((h - side) * 0.25, h - side) : 0;
+    const cv = document.createElement('canvas'); cv.width = cv.height = PIC_PX;
+    const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, sx, sy, side, side, 0, 0, PIC_PX, PIC_PX);
+    return cv.toDataURL('image/jpeg', 0.82);
+  } finally { if (typeof src !== 'string') URL.revokeObjectURL(url); }
+}
+async function pplSetPic(id, dataUrl){ await pplLoad(); if (dataUrl) PPL.pics[id] = dataUrl; else delete PPL.pics[id]; await pplPicSave();
+  dlog('사람', `프로필 사진 ${dataUrl ? '넣음' : '뺌'} #${id}${dataUrl ? ' · ' + Math.round(dataUrl.length / 1024) + 'KB' : ''}`);
+  if (DW.open === 'people') pplRender(); if (PD.id === id) pdRender(); }
+/* 보스가 이번 대화에서 보낸 사진 중 n번째(맨 마지막에 사진을 보낸 말 기준) */
+function bossPic(n){
+  for (let i = O.log.length - 1; i >= 0; i--){ const m = O.log[i]; if (m.who !== 'u') continue; const th = O.thumbs && O.thumbs[m.at];
+    if (th && th.length) return th[Math.min(Math.max((Number(n) || 1) - 1, 0), th.length - 1)]; }
+  return null;
+}
+function picPick(){ return new Promise(ok => { const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*';
+  f.onchange = () => ok(f.files && f.files[0] || null); f.click(); }); }
+function picSheet(id){
+  const isMe = id === 'me', p = pdGet(id); if (!p) return; const has = !!(PPL.pics && PPL.pics[id]);
+  openSheet(`<h4>${esc(isMe ? '나' : p.name)} · 프로필 사진</h4>
+    <div class="pp-picrow"><div class="pp-picbig">${pplFace(p, id)}</div>
+      <div class="pp-picact"><button class="chip" data-pic="pick">${has ? '사진 바꾸기' : '사진 넣기'}</button>${has ? '<button class="chip danger" data-pic="del">사진 빼기</button>' : ''}</div></div>
+    <label class="t">사진이 없을 때 기본 얼굴</label>
+    <div class="row">${['여', '남', ''].map(x => `<button class="chip ${(p.sex || '') === x ? 'on' : ''}" data-pic="sex" data-v="${x}">${x ? (x === '여' ? '여성' : '남성') : '모름(첫 글자)'}</button>`).join('')}</div>
+    <p class="note" style="margin-top:8px">채팅에 사진을 같이 보내며 "이 사진 ${esc(isMe ? '내' : p.name)} 프로필로 해줘"라고 해도 돼요.</p>`);
+  $('sheet').dataset.pic = id;
+}
+$('sheet').addEventListener('click', async e => {
+  const b = e.target.closest('[data-pic]'); if (!b) return;
+  const id = $('sheet').dataset.pic, p = pdGet(id); if (!p) return closeSheet();
+  const a = b.dataset.pic;
+  if (a === 'pick'){ const f = await picPick(); if (!f) return; try{ await pplSetPic(id, await picThumb(f)); closeSheet(); toast('프로필 사진을 넣었어요'); }catch(err){ toast(err.message); } return; }
+  if (a === 'del'){ if (!b.classList.contains('armed')){ b.classList.add('armed'); b.textContent = '한 번 더 누르면 빼요'; return; } await pplSetPic(id, null); closeSheet(); toast('사진을 뺐어요'); return; }
+  if (a === 'sex'){ if (b.dataset.v) p.sex = b.dataset.v; else delete p.sex; await pplSave(); if (DW.open === 'people') pplRender(); if (PD.id === id) pdRender(); picSheet(id); }
+});
+
 const pplFind = key => { const k = String(key || '').replace(/^#/, '').trim(); return (PPL.list || []).find(p => p.id === k) || (PPL.list || []).find(p => p.name === k); };
 /* v1.5.4 — 인간관계 판은 보스의 사적인 사람 수첩. 맥락: 모두는 짧게, 요 몇 마디에 나온 사람(+ 나)은 전부 자세히. 나머지는 read_person 으로 */
 const STORY_MAX = 2000;
 function pplLine(p, isMe){
   const info = (p.info || []).map(x => `${x.k} ${x.v}`).join(', '), st = p.story || [];
-  return `- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${info ? ' · ' + info : ''}${p.note ? ' — ' + p.note.replace(/\n/g, ' ').slice(0, 80) : ''}${(p.extra || []).length ? ` · 기타 ${p.extra.length}줄` : ''}${st.length ? ` · 이야기 ${st.length}건(최근 ${storyWhen(st[st.length - 1])})` : ''}`;
+  return `- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${p.note ? ' — ' + p.note.replace(/\n/g, ' ').slice(0, 80) : ''}${(p.extra || []).length ? ` · 기타 ${p.extra.length}줄` : ''}${st.length ? ` · 이야기 ${st.length}건(최근 ${storyWhen(st[st.length - 1])})` : ''}`;
 }
 const storyWhen = x => x.when || ymdDot(x.at);
 function pplFull(p, isMe){
   const info = (p.info || []).map(x => `${x.k} ${x.v}`).join(', ');
-  const out = [`- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${info ? ' · ' + info : ''}`];
+  const out = [`- ${isMe ? '나(보스 본인)' : '#' + p.id + ' ' + p.name + ' · ' + (p.rel || '관계 미정') + ' · ' + p.group}${p.sex ? ' · ' + p.sex : ''}${info ? ' · ' + info : ''}${PPL.pics && PPL.pics[isMe ? 'me' : p.id] ? ' · 프로필 사진 있음' : ''}`];
   if (p.note) out.push('  기억할 점: ' + p.note.replace(/\n/g, ' / '));
   for (const x of p.extra || []) out.push(`  기타: ${x.lock ? '[비공개] ' : ''}${x.text}`);
   const st = (p.story || []).slice(-12);
@@ -55,6 +109,8 @@ const PEOPLE_TOOLS = () => [
     info:{ type:'array', description:'기본 항목(선택). 예: 생일·나이·키', items:{ type:'object', properties:{ key:{ type:'string' }, value:{ type:'string' } } } },
     add_extra:{ type:'array', description:'기타 줄(선택) — update_person 과 같음', items:{ type:'object', properties:{ text:{ type:'string' }, lock:{ type:'boolean' } } } },
     add_story:{ type:'array', description:'이야기 기록(선택) — update_person 과 같음', items:{ type:'object', properties:{ text:{ type:'string' }, when:{ type:'string' }, lock:{ type:'boolean' } } } },
+    sex:{ type:'string', enum:['여', '남'], description:'성별(선택) — 사진이 없을 때 기본 얼굴. 관계·호칭으로 분명할 때만(어머니·아버지·언니·형 등). 이름만으로 짐작하지 않는다' },
+    photo:{ type:'integer', description:'프로필 사진(선택) — 보스가 이번에 보낸 사진 중 몇 번째(1부터)를 이 사람 프로필 사진으로. 보스가 사진을 보내며 이 사람 사진·프사로 하라고 할 때만' },
     link_to:{ type:'string', description:'이미 판에 있는 사람 중 이 사람과 연결된 이름(선택)' } }, required:['name', 'group'] } },
   { name:'update_person', description:"인간관계 판의 사람 기록부를 고친다. 보스 본인은 person:'나'. 바꿀 것만 넣는다.", schema:{ type:'object', properties:{
     person:{ type:'string', description:"사람 id(# 없이) 또는 이름. 보스 본인이면 '나'" }, relation:{ type:'string' }, group:{ type:'string', enum:GROUPS },
@@ -63,6 +119,8 @@ const PEOPLE_TOOLS = () => [
     add_extra:{ type:'array', description:'기타 줄 더하기 — 짧은 사실 한 줄씩(근무·처우·사정·취향·가족 관계 등). 남이 알면 안 되는 건 lock:true', items:{ type:'object', properties:{ text:{ type:'string' }, lock:{ type:'boolean' } } } },
     add_story:{ type:'array', description:'이야기 기록 더하기 — 보스가 들려준 그 사람의 일·사정·털어놓은 이야기·있었던 일을 한 건씩 자세히. 요약해 뭉개지 말고 언제·무슨 일·왜·그 사람이 한 말과 마음·보스와의 사이를 살려 쓴다(길어도 됨). 본인이 털어놓은 속 이야기나 남이 알면 곤란한 건 lock:true',
       items:{ type:'object', properties:{ text:{ type:'string' }, when:{ type:'string', description:'언제 일인지(YYYY-MM-DD 또는 \'작년 겨울\'처럼). 모르면 비움 — 적은 날로 남는다' }, lock:{ type:'boolean' } }, required:['text'] } },
+    sex:{ type:'string', enum:['여', '남'], description:'성별(선택) — 사진이 없을 때 기본 얼굴. 관계·호칭으로 분명할 때만(어머니·아버지·언니·형 등). 이름만으로 짐작하지 않는다' },
+    photo:{ type:'integer', description:'프로필 사진(선택) — 보스가 이번에 보낸 사진 중 몇 번째(1부터)를 이 사람 프로필 사진으로. 보스가 사진을 보내며 이 사람 사진·프사로 하라고 할 때만' },
     add_note:{ type:'string', description:'세희 메모 한 줄' }, link_to:{ type:'string', description:'잇고 싶은 다른 사람 이름' } }, required:['person'] } },
   { name:'read_person', description:'한 사람의 기록부 전체(기타·이야기 기록 전부 포함)를 읽는다. 맥락에 짧게만 나온 사람을 자세히 알아야 할 때.', schema:{ type:'object', properties:{ person:{ type:'string', description:"사람 id(# 없이) 또는 이름. 보스 본인이면 '나'" } }, required:['person'] } },
   { name:'remove_person', description:'인간관계 판에서 사람을 뗀다. 보스가 분명히 떼라고 할 때만.', schema:{ type:'object', properties:{ person:{ type:'string' } }, required:['person'] } },
@@ -80,35 +138,43 @@ function pplPatch(p, a){
 /* 세희가 무엇을 고쳤는지 대화창에 한 줄로 */
 function pplWhat(a){ const w = [];
   if (a.info && a.info.length) w.push('항목 ' + a.info.length); if (a.note) w.push('기억할 점'); if (a.add_extra && a.add_extra.length) w.push('기타 ' + a.add_extra.length + '줄');
-  if (a.add_story && a.add_story.length) w.push('이야기 ' + a.add_story.length + '건'); if (a.add_note) w.push('세희 메모'); if (a.link_to) w.push('관계 잇기');
+  if (a.add_story && a.add_story.length) w.push('이야기 ' + a.add_story.length + '건'); if (a.photo) w.push('프로필 사진'); if (a.sex === '여' || a.sex === '남') w.push(a.sex === '여' ? '여성' : '남성'); if (a.add_note) w.push('세희 메모'); if (a.link_to) w.push('관계 잇기');
   return w.length ? ' — ' + w.join(' · ') : ''; }
 function pplLink(a, b){ if (!a || !b || a === b) return; a.links = [...new Set([...(a.links || []), b.id])]; b.links = [...new Set([...(b.links || []), a.id])]; }
+/* v1.5.5 성별·프로필 사진 — add/update 공통. 사진을 못 찾으면 그 까닭을 돌려준다 */
+async function pplApplyLook(p, id, a){
+  if (a.sex === '여' || a.sex === '남') p.sex = a.sex;
+  if (a.photo === undefined || a.photo === null || a.photo === '') return null;
+  const u = bossPic(a.photo); if (!u) return '보스가 보낸 사진을 찾지 못함(앱을 다시 켜면 앞서 보낸 사진은 사라짐) — 보스에게 사진을 다시 같이 보내 달라고 하거나, 인물 기록부의 사진칸을 눌러 넣는 법을 알려 준다';
+  try{ PPL.pics[id] = await picThumb(u); await pplPicSave(); return 'ok'; }catch(e){ return '사진을 못 열었음'; }
+}
 async function runPeopleTool(c){
   await pplLoad(); const a = c.args || {};
   if (c.name === 'add_person'){
     const name = String(a.name || '').trim().slice(0, 30); if (!name) return { ok:false, error:'name이 비었음' };
     if (pplFind(name)) return { ok:false, error:'이미 판에 있음 — update_person 을 쓴다', id:pplFind(name).id };
     const p = { id:uid(), name, rel:String(a.relation || '').slice(0, 60), group:GROUPS.includes(a.group) ? a.group : '기타', note:String(a.note || '').slice(0, 200), info:[], extra:[], notes:[], links:[], at:Date.now(), by:'sehee' };
-    pplPatch(p, a);
+    pplPatch(p, a); const look = await pplApplyLook(p, p.id, a);
     PPL.list.push(p); if (a.link_to) pplLink(p, pplFind(a.link_to));
-    await pplSave(); PPL.changed = p.id; pplNote(`인간관계 판에 붙였어요 — ${p.name}${p.rel ? ' (' + p.rel + ')' : ''}${pplWhat({ ...a, info:null, note:null, link_to:null })}`);
-    return { ok:true, id:p.id };
+    await pplSave(); PPL.changed = p.id; pplNote(`인간관계 판에 붙였어요 — ${p.name}${p.rel ? ' (' + p.rel + ')' : ''}${pplWhat({ ...a, info:null, note:null, link_to:null, photo:look === 'ok' ? 1 : null })}`);
+    return { ok:true, id:p.id, ...(look && look !== 'ok' ? { photo_error:look } : {}) };
   }
   const isMe = /^(나|me|보스|본인)$/.test(String(a.person || '').trim());
   const p = isMe ? await meLoad() : pplFind(a.person); if (!p) return { ok:false, error:'그 사람이 판에 없음' };
   if (c.name === 'update_person'){
-    pplPatch(p, a);
+    pplPatch(p, a); const look = await pplApplyLook(p, isMe ? 'me' : p.id, a), aw = { ...a, photo:look === 'ok' ? 1 : null };
     if (a.relation && !isMe) p.rel = String(a.relation).slice(0, 60);
     if (GROUPS.includes(a.group) && !isMe) p.group = a.group;
     if (a.add_note) p.notes = [...(p.notes || []), { at:Date.now(), text:String(a.add_note).slice(0, 200) }].slice(-30);
     if (a.link_to) pplLink(p, pplFind(a.link_to));
-    await pplSave(); if (!isMe) PPL.changed = p.id; pplNote(`인간관계 판을 고쳤어요 — ${p.name}${pplWhat(a)}`);
+    await pplSave(); if (!isMe) PPL.changed = p.id; pplNote(`인간관계 판을 고쳤어요 — ${p.name}${pplWhat(aw)}`); if (PD.id === (isMe ? 'me' : p.id)) pdRender();
     if (isMe && workOn() && WORK.active){ if (curView() !== 'office') goView('office'); if (DW.open !== 'people') await dwOpen('people'); await wsleep(300); await pdOpen('me'); await wsleep(300); document.querySelectorAll('#pdBody .pd-sec').forEach((el, i) => setTimeout(() => hl(el), i * 160)); }
-    return { ok:true, id:p.id };
+    return { ok:true, id:p.id, ...(look && look !== 'ok' ? { photo_error:look } : {}) };
   }
   if (c.name === 'read_person') return { ok:true, person:pplFull(pdNorm(p), isMe) };
   if (c.name === 'remove_person'){
     PPL.list = PPL.list.filter(x => x !== p); for (const x of PPL.list) x.links = (x.links || []).filter(id => id !== p.id);
+    if (PPL.pics && PPL.pics[p.id]){ delete PPL.pics[p.id]; await pplPicSave(); }
     await pplSave(); pplNote(`인간관계 판에서 뗐어요 — ${p.name}`); if (DW.open === 'people') pplRender();
     return { ok:true };
   }
@@ -170,8 +236,8 @@ function pplRender(center){
   if (th === 'white') svg += `<ellipse cx="${C}" cy="${C}" rx="62" ry="48" transform="rotate(-8 ${C} ${C})" class="pp-mecircle"/>`;
   $('ppMap').style.width = $('ppMap').style.height = S + 'px';
   $('ppMap').innerHTML = `<svg class="pp-svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">${under}${svg}</svg>
-    <div class="pp-me" style="left:${C}px;top:${C}px"><i class="pp-pin"></i><b>나</b><span>${th === 'map' ? '현위치' : '보스'}</span></div>
-    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node" data-pp="${p.id}" style="left:${q.x.toFixed(0)}px;top:${q.y.toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg"><i class="pp-pin"></i><div class="ph">${esc(p.name.slice(0, 1))}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
+    <div class="pp-me${PPL.pics && PPL.pics.me ? ' has-pic' : ''}" style="left:${C}px;top:${C}px"><i class="pp-pin"></i>${PPL.pics && PPL.pics.me ? `<div class="ph pic"><img class="pic" src="${PPL.pics.me}" alt=""></div>` : ''}<b>나</b><span>${th === 'map' ? '현위치' : '보스'}</span></div>
+    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node" data-pp="${p.id}" style="left:${q.x.toFixed(0)}px;top:${q.y.toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg"><i class="pp-pin"></i><div class="ph${PPL.pics && PPL.pics[p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}">${pplFace(p)}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
     ${list.length ? '' : `<div class="pp-empty" style="left:${C}px;top:${C + 70}px">아직 아무도 없어요.<br>「+ 사람」을 누르거나 세희에게 "○○을 인간관계 판에 추가해줘"라고 해 보세요.</div>`}`;
   $('ppCount').textContent = list.length ? `${list.length}명` : '';
   const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / S, (sc.clientHeight - 8) / S) : 1;
@@ -199,7 +265,7 @@ async function pplSheet(id){
     <div class="row" style="margin-top:8px;gap:6px"><button class="chip" data-pact="save" data-id="${p.id}">저장</button><button class="chip danger" data-pact="del" data-id="${p.id}">떼기</button></div>`);
 }
 function pplAddSheet(){
-  openSheet(`<h4>사람 붙이기</h4><input class="free" id="ppNewName" placeholder="이름 (예: 이예진 조교)"><div class="row" style="margin-top:6px;gap:6px"><input class="free" id="ppNewRel" placeholder="관계 (예: 같이 일하는 조교)"><select class="free" id="ppNewGrp">${GROUPS.map(g => `<option>${g}</option>`).join('')}</select></div>
+  openSheet(`<h4>사람 붙이기</h4><input class="free" id="ppNewName" placeholder="이름 (예: 이예진 조교)"><div class="row" style="margin-top:6px;gap:6px"><input class="free" id="ppNewRel" placeholder="관계 (예: 같이 일하는 조교)"><select class="free" id="ppNewGrp">${GROUPS.map(g => `<option>${g}</option>`).join('')}</select><select class="free" id="ppNewSex"><option value="">성별 모름</option><option value="여">여성</option><option value="남">남성</option></select></div>
     <input class="free" id="ppNewNote" placeholder="기억할 점 (선택)" style="margin-top:6px"><div class="row" style="margin-top:8px"><button class="chip" data-pact="add">붙이기</button></div><p class="note" id="ppMsg"></p>`);
 }
 $('sheet').addEventListener('click', async e => {
@@ -209,6 +275,7 @@ $('sheet').addEventListener('click', async e => {
     const name = $('ppNewName').value.trim(); if (!name){ $('ppMsg').textContent = '이름을 넣어 주세요.'; return; }
     if (pplFind(name)){ $('ppMsg').textContent = '이미 판에 있어요.'; return; }
     const p = { id:uid(), name:name.slice(0, 30), rel:$('ppNewRel').value.trim().slice(0, 60), group:$('ppNewGrp').value, note:$('ppNewNote').value.trim().slice(0, 200), notes:[], links:[], at:Date.now(), by:'boss' };
+    if ($('ppNewSex').value) p.sex = $('ppNewSex').value;
     PPL.list.push(p); await pplSave(); closeSheet(); pplRender(); setTimeout(() => pplFlash(p.id), 80);
   } else {
     const p = pplFind(b.dataset.id); if (!p) return;
@@ -242,7 +309,8 @@ async function pdDoc(p, isMe){
     const hints = INFO_HINT.filter(h => !p.info.some(x => x.k === h));
     return `${sec(1, '기본', `<div class="pd-form">
         <label>이름<input id="pdName" value="${esc(p.name)}"></label>
-        ${isMe ? '<label>관계<input value="본인" disabled></label>' : `<label>관계<input id="pdRel" value="${esc(p.rel || '')}" placeholder="예: 같이 일하는 조교"></label><label>무리<select id="pdGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${g}</option>`).join('')}</select></label>`}</div>
+        ${isMe ? '<label>관계<input value="본인" disabled></label>' : `<label>관계<input id="pdRel" value="${esc(p.rel || '')}" placeholder="예: 같이 일하는 조교"></label><label>무리<select id="pdGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${g}</option>`).join('')}</select></label>`}
+        <label>성별<select id="pdSex">${[['', '모름'], ['여', '여성'], ['남', '남성']].map(([v, t]) => `<option value="${v}" ${(p.sex || '') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></label></div>
         <div class="pd-rows" style="margin-top:8px">${p.info.map((x, i) => `<div class="pd-irow"><input data-ik="${i}" value="${esc(x.k)}" placeholder="항목"><input data-iv="${i}" value="${esc(x.v)}" placeholder="내용"><button class="pd-x" data-del="info" data-i="${i}">빼기</button></div>`).join('')}</div>
         <div class="pd-addrow">${hints.map(h => `<button class="pd-add" data-addk="${h}">+ ${h}</button>`).join('')}<button class="pd-add" data-addk="">+ 다른 항목</button></div>`)}
       ${sec(2, '기억할 점', `<textarea class="pd-ta" id="pdNote" placeholder="이 사람에 대해 기억할 것">${esc(p.note || '')}</textarea>`)}
@@ -252,7 +320,7 @@ async function pdDoc(p, isMe){
         <button class="pd-add" data-add="story">+ 이야기 더하기</button>`)}
       ${isMe ? '' : `<button class="pd-del" data-pdel="${p.id}">이 사람 떼기</button>`}`;
   }
-  const kv = [['이름', esc(p.name)], ['관계', esc(isMe ? '본인' : (p.rel || '미정'))], ...(isMe ? [] : [['무리', `<span class="pd-chip" style="--c:${col}">${esc(p.group)}</span>`]]), ...p.info.map(x => [esc(x.k), esc(x.v)])];
+  const kv = [['이름', esc(p.name)], ['관계', esc(isMe ? '본인' : (p.rel || '미정'))], ...(isMe ? [] : [['무리', `<span class="pd-chip" style="--c:${col}">${esc(p.group)}</span>`]]), ...(p.sex ? [['성별', p.sex === '여' ? '여성' : '남성']] : []), ...p.info.map(x => [esc(x.k), esc(x.v)])];
   const graph = isMe
     ? (links.length ? `<div class="pd-graph"><div class="pg-n me">나</div><div class="pg-e" style="--c:#a13b2c"><span>${links.length}명</span></div><div class="pg-ns">${links.map(x => `<button class="pg-n sm" data-pp="${x.id}" style="--c:${GROUP_COLOR[x.group] || '#5c5340'}">${esc(x.name)}</button>`).join('')}</div></div>` : '<p class="pd-empty">아직 아무도 없음</p>')
     : `<div class="pd-graph"><button class="pg-n me" data-pp="me">나</button><div class="pg-e" style="--c:${col}"><span>${esc(p.rel || p.group)}</span></div><div class="pg-n" style="--c:${col}">${esc(p.name)}</div>
@@ -274,7 +342,7 @@ async function pdRender(){
   $('pdEdit').textContent = PD.edit ? '다 됐어요' : '고치기';
   $('pdBody').innerHTML = `<div class="pd-paper${PD.edit ? ' editing' : ''}">
     <div class="pd-top"><span class="pd-kind">인물 기록</span><span class="pd-no">${isMe ? 'PER-000' : 'PER-' + String(p.id).slice(-4).toUpperCase()}</span></div>
-    <div class="pd-id"><div class="pd-photo" style="--c:${col}">${esc(p.name.slice(0, 1))}</div>
+    <div class="pd-id"><button class="pd-photo${PPL.pics && PPL.pics[isMe ? 'me' : p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}" data-pdpic="${isMe ? 'me' : p.id}" style="--c:${col}" aria-label="프로필 사진">${pplFace(p, isMe ? 'me' : p.id)}<i class="pd-cam">📷</i></button>
       <div><h1>${esc(p.name)}</h1><p>${esc(isMe ? '본인' : (p.rel || '관계 미정') + ' · ' + p.group)}</p></div>
       ${[...p.extra, ...p.story].some(x => x.lock) ? '<span class="pd-stamp big">대외비</span>' : ''}</div>
     ${await pdDoc(p, isMe)}
@@ -287,6 +355,7 @@ function pdCollect(p){
   if (v('pdName')) p.name = v('pdName').slice(0, 30);
   if (p.id !== 'me'){ if (v('pdRel') !== null) p.rel = v('pdRel').slice(0, 60); if (v('pdGrp')) p.group = v('pdGrp'); }
   if (v('pdNote') !== null) p.note = v('pdNote').slice(0, 1500);
+  if (v('pdSex') !== null){ if (v('pdSex')) p.sex = v('pdSex'); else delete p.sex; }
   for (const el of document.querySelectorAll('#pdBody [data-ik]')){ const x = p.info[Number(el.dataset.ik)]; if (x) x.k = el.value.trim().slice(0, 20); }
   for (const el of document.querySelectorAll('#pdBody [data-iv]')){ const x = p.info[Number(el.dataset.iv)]; if (x) x.v = el.value.trim().slice(0, 80); }
   for (const el of document.querySelectorAll('#pdBody [data-l]')){ const x = p.extra[Number(el.dataset.l)]; if (x) x.text = el.value.trim().slice(0, 400); }
@@ -295,6 +364,7 @@ function pdCollect(p){
 }
 $('pd').addEventListener('click', async e => {
   const t = e.target;
+  const pic = t.closest('[data-pdpic]'); if (pic){ if (PD.edit){ const q = pdGet(PD.id); if (q){ pdNorm(q); pdCollect(q); } } return picSheet(pic.dataset.pdpic); }
   if (t.closest('[data-pd="close"]')) return pdClose();
   /* 서류 바깥 빈 곳을 누르면 닫힘(고치던 중이면 저장하고) — v1.3.6 */
   if (t.closest('#pdBody') && !t.closest('.pd-paper')){
@@ -319,6 +389,7 @@ $('pd').addEventListener('click', async e => {
   const pdel = t.closest('[data-pdel]');
   if (pdel){ if (!pdel.classList.contains('armed')){ pdel.classList.add('armed'); pdel.textContent = '한 번 더 누르면 떼요'; return; }
     PPL.list = PPL.list.filter(x => x !== p); for (const x of PPL.list) x.links = (x.links || []).filter(id => id !== p.id);
+    if (PPL.pics && PPL.pics[p.id]){ delete PPL.pics[p.id]; await pplPicSave(); }
     await pplSave(); pdClose(); if (DW.open === 'people') pplRender(); }
 });
 

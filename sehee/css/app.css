@@ -691,3 +691,17 @@ body:not(.office):not(.v-board) .brain{display:none}
 .pd-sw{font-size:.72rem;color:#8a8373;margin-bottom:2px}.pd-sw em{font-style:normal;margin-left:6px;color:#a39c8c}
 .pd-story p{margin:0;font-size:.86rem;line-height:1.6;white-space:pre-wrap}
 .pd-srow{border:1px dashed #d8cfbb;border-radius:6px;padding:6px;margin-bottom:6px}.pd-shead{display:flex;gap:5px;align-items:center;margin-bottom:4px}.pd-shead input{flex:1;min-width:0}
+
+/* v1.5.5 (C) 프로필 사진 — 수사판 카드·나·인물 기록부 사진칸, 성별 기본 얼굴, 사진 고르기 판 */
+.pp-node .ph,.pd-photo{position:relative;overflow:hidden}
+.pp-node .ph .pic,.pp-node .ph .sil,.pd-photo .pic,.pd-photo .sil,.pp-me .ph .pic,.pp-picbig .pic,.pp-picbig .sil{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pp-node .ph.pic,.pp-node .ph.sx{background:none;text-shadow:none}
+.th-white .pp-node .ph.pic,.th-white .pp-node .ph.sx{background:none}
+.pp-me.has-pic .ph{position:relative;overflow:hidden;width:58px;height:58px;margin:2px auto 5px;border:2px solid #2b2417}
+.pd-photo{padding:0;font:700 1.8rem var(--f-head);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pd-photo.pic,.pd-photo.sx{background:#e9e3d4}
+.pd-photo .pd-cam{position:absolute;right:2px;bottom:2px;font-style:normal;font-size:.62rem;line-height:1;background:rgba(255,253,246,.88);border-radius:3px;padding:2px 3px;opacity:.85}
+.pp-picrow{display:flex;align-items:center;gap:14px;margin:4px 0 6px}
+.pp-picbig{position:relative;flex:0 0 112px;height:112px;overflow:hidden;border:2px solid #2b2417;background:#e9e3d4;display:flex;align-items:center;justify-content:center;font:700 2.4rem var(--f-head);color:#5c5340}
+.pp-picact{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+body:has(#pd.on) .veil{z-index:239} body:has(#pd.on) .sheet{z-index:240}   /* 인물 기록부 위에서 연 판이 기록부 뒤로 숨지 않게 */
