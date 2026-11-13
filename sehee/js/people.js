@@ -358,12 +358,12 @@ const PP_THEMES = [['cork', '코르크'], ['white', '화이트보드'], ['map', 
 function pplTheme(){ const t = PPL.theme || 'cork'; const el = $('people'); PP_THEMES.forEach(([k]) => el.classList.toggle('th-' + k, k === t));
   if (t === 'white' && !document.getElementById('ppFont')){ const l = document.createElement('link'); l.id = 'ppFont'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); }
   $('ppTheme').textContent = '꾸밈 · ' + PP_THEMES.find(x => x[0] === t)[1]; return t; }
-const PPL_PAD = 150;   /* v1.5.18 (B) 끝없는 판: 가장 바깥 카드에서 이만큼까지만 판을 넓힌다 */
+const PPL_PAD = 150;   /* v1.5.19 (B) 끝없는 판: 가장 바깥 카드에서 이만큼까지만 판을 넓힌다 */
 function pplRender(center){
   const list = PPL.list || [], S = Math.max(440, 380 + list.length * 24), C = S / 2, th = pplTheme();
   const { pos, used, starts, spans } = pplLayout(list, S);
   for (const [id, xy] of Object.entries(BONUS.pos || {})) if (pos[id]) pos[id] = { x:xy.x * S, y:xy.y * S };   /* 보너스가 옮겨 둔 자리(판 밖도 됨) */
-  /* v1.5.18 (B) 끝없는 판 — 카드가 기본 판(0~S) 밖에 있으면 판을 그만큼 넓힌다. 가장 바깥 카드에서 PPL_PAD 까지만(그 너머 빈 곳으로는 못 감).
+  /* v1.5.19 (B) 끝없는 판 — 카드가 기본 판(0~S) 밖에 있으면 판을 그만큼 넓힌다. 가장 바깥 카드에서 PPL_PAD 까지만(그 너머 빈 곳으로는 못 감).
      좌표는 그대로(나 = S/2), 그리는 자리만 (L,T) 만큼 민다. #ppMap data-s·l·t 에 남겨 실험 B 가 같은 좌표를 쓴다 */
   let L = 0, T = 0, R = S, B = S;
   for (const q of Object.values(pos)){ L = Math.min(L, q.x - PPL_PAD); T = Math.min(T, q.y - PPL_PAD); R = Math.max(R, q.x + PPL_PAD); B = Math.max(B, q.y + PPL_PAD); }

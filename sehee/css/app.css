@@ -843,7 +843,7 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .hrow.nav .ib{white-space:nowrap;flex:0 0 auto}
 .hrow.nav .day{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── 인간관계 판 카드 크기·고름 (v1.5.18, B) — 카드마다 --bs(50%~250%, 실험 B 가 정함). 회전·가운데 맞춤은 그대로 두고 크기만 곱함 ── */
+/* ── 인간관계 판 카드 크기·고름 (v1.5.19, B) — 카드마다 --bs(50%~250%, 실험 B 가 정함). 회전·가운데 맞춤은 그대로 두고 크기만 곱함 ── */
 #ppMap .pp-node{transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(var(--bs,1))}
 #ppMap .pp-node:hover{transform:translate(-50%,-50%) rotate(0deg) scale(calc(var(--bs,1) * 1.06))}
 #ppMap .pp-node.b-sel{z-index:7;touch-action:none;cursor:move;outline:calc(4px / var(--bs,1)) solid #f0b429;outline-offset:calc(3px / var(--bs,1))}   /* 고름 = 굵은 테두리. 고른 카드는 손가락으로 끌어도 판이 안 굴러감 */

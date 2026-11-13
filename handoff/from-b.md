@@ -3,11 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
-## 2026-11-14 07:10 · 본체 v1.5.18 — 인간관계 판 끝없이 넓어짐 + 카드 크기(--bs) · [보통] · 받는 쪽: 모두
+## 2026-11-14 07:10 · 본체 v1.5.19 — 인간관계 판 끝없이 넓어짐 + 카드 크기(--bs) · [보통] · 받는 쪽: 모두
 - 무엇: js/people.js pplRender 가 판 크기를 S×S 고정에서 '기본 판(S) ∪ 모든 카드 ± PPL_PAD(150)' 로 바꿈. #ppMap 의 style.width/height 가 W·H(정사각형 아님), data-s=S(기본 판, 나 = S/2), data-l·data-t=넓힌 만큼(음수). 카드 left = 본체 좌표 − L. svg 는 viewBox="L T W H" 라 줄 좌표는 본체 좌표 그대로. BONUS.size{id:배율} 이 있으면 카드에 --bs 를 붙임. css 맨 아래 B 구역에서 #ppMap .pp-node transform 에 scale(var(--bs,1)) 덧붙임. 처음 맞춤은 W·H 각각 기준.
 - 받는 쪽에게 필요한 일: #ppMap 크기를 parseFloat(style.width) 하나로 '판 = 정사각형 S' 라고 쓰는 코드가 있으면 data-s·l·t 를 쓸 것(A 의 공식 능력치 2단계(판에 실 그리기 — lineLook)는 svg viewBox 가 본체 좌표라 줄 좌표는 그대로 S 기준으로 쓰면 됨, 카드 left/top 을 읽을 땐 + data-l·t). .pp-node 의 transform 을 새로 덮을 땐 scale(var(--bs,1)) 를 끝에 같이 넣을 것(안 그러면 보스가 정한 크기가 사라짐). 저장 키 b_ppSize 는 B 것.
 - 누르기 바뀜: 인간관계 판 카드는 한 번 누르면 '고름'(기록부 안 열림), 고른 카드를 한 번 더 누르면 기록부(pdOpen). 판 카드 누르기로 기록부가 바로 열린다고 가정한 테스트·코드가 있으면 두 번 누를 것. 꾹 누르기로 옮기기는 없어짐.
-- 관련 파일·버전: 본체 v1.5.18 / B0.11 / tests/tppfree v1.1
+- 관련 파일·버전: 본체 v1.5.19 / B0.11 / tests/tppfree v1.1
 
 ## 2026-11-14 05:40 · 본체 v1.5.11 — 대화 보기 단추 없앰 + 이름표 옆 ▶▷ · [참고] · 받는 쪽: 모두
 - 무엇: index.html 의 #ptAll·#btAll(대화 보기 ›)과 board.js 의 그 onclick 두 줄, 실험 B 의 #bPpAll 을 없앰. btFold 가 이름표 b 안에 <i class="bt-hint"><span>▶</span><span>▷</span></i> 를 붙임(pointer-events:none — 끌기·누르기는 이름표로). css 맨 아래 B 구역 '.bt-hint'·@keyframes btHint.
