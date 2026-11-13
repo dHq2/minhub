@@ -4,9 +4,10 @@
    · 한 사람은 한 기기에서만. 다른 기기에서 암호를 넣으면 여기는 다음 확인(20초 안) 때 닫힌다
    · 서버 기록으로 덮어쓰기 전에, 이 기기에 있던 기록은 'presync' 로 따로 남겨 둔다 */
 const SYNC = { url:'', token:'', user:'', device:'', last:0, on:false, dead:false, busy:false, again:false, fails:0, timer:null, dirty:new Map(), gen:0 };
-const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'pplpics', 'dbg'];   /* v1.5.5 pplpics = 인간관계 프로필 사진(C) */
-/* 보너스(b_·c_로 시작하는 키)도 계정에 같이 — v1.3.5 / v1.4.0 */
-function syncKey(k){ return SYNC_KV.includes(k) || /^[bc]_/.test(String(k)); }
+const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'pplpics', 'pplclues', 'dbg'];   /* v1.5.5 pplpics = 인간관계 프로필 사진 · v1.5.14 pplclues = 사진 단서 글(C) */
+/* 보너스(b_·c_로 시작하는 키)도 계정에 같이 — v1.3.5 / v1.4.0. v1.5.14(C) 사진 단서 사진(clue_<id>)도 한 장씩 따로 */
+const SYNC_PFX = /^([bc]_|clue_)/;
+function syncKey(k){ return SYNC_KV.includes(k) || SYNC_PFX.test(String(k)); }
 const SYNC_LS = 'sehee-sync';
 function deviceName(){
   const u = navigator.userAgent;
@@ -90,7 +91,7 @@ async function syncPull(){
     if (!old || old.user !== SYNC.user) await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:SYNC.user, pans:localPans, kv }, 'presync'));
   }
   await tx('pans', 'readwrite', s => { s.clear(); for (const k of keys) if (k.startsWith('pan:') && recs[k].v && recs[k].v.date) s.put(recs[k].v); });
-  const localB = (await kvKeys()).filter(k => /^[bc]_/.test(String(k))), names = [...new Set([...SYNC_KV, ...localB, ...keys.filter(k => /^kv:[bc]_/.test(k)).map(k => k.slice(3))])];
+  const localB = (await kvKeys()).filter(k => SYNC_PFX.test(String(k))), names = [...new Set([...SYNC_KV, ...localB, ...keys.filter(k => /^kv:([bc]_|clue_)/.test(k)).map(k => k.slice(3))])];
   await tx('kv', 'readwrite', s => { for (const n of names){ const rec = recs['kv:' + n]; if (rec) s.put(rec.v, n); else s.delete(n); } });
   SYNC.last = Date.now(); syncKeep();
   return keys.length;
@@ -98,7 +99,7 @@ async function syncPull(){
 /* 서버가 비어 있으면 이 기기 기록을 통째로 올린다 */
 async function syncUploadAll(){
   for (const d of await allDates()) SYNC.dirty.set('pan:' + d, ++SYNC.gen);
-  for (const n of [...SYNC_KV, ...(await kvKeys()).filter(k => /^[bc]_/.test(String(k)))]) if ((await kvGet(n)) !== undefined) SYNC.dirty.set('kv:' + n, ++SYNC.gen);
+  for (const n of [...SYNC_KV, ...(await kvKeys()).filter(k => SYNC_PFX.test(String(k)))]) if ((await kvGet(n)) !== undefined) SYNC.dirty.set('kv:' + n, ++SYNC.gen);
   syncKeep(); await syncFlush();
 }
 function syncDead(j){

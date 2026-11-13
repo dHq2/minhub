@@ -25,7 +25,7 @@ async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {
       if (PPL.list.length) setTimeout(() => pplSave(), 0);
     }
     for (const p of PPL.list) if (!GROUPS.includes(p.group)) p.group = '기타';
-  } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; return PPL.list; }
+  } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; await clueLoad(); return PPL.list; }
 const pplSave = () => kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', groups:pplGroupsOut(), ...(PPL.me ? { me:PPL.me } : {}) });
 /* 무리 고치기 — 이름 바꾸면 그 무리 사람도 따라가고, 지운 무리 사람은 '기타'로 */
 function pplGroupsApply(next, renames){
@@ -103,6 +103,7 @@ function pplFull(p, isMe){
   if (st.length) out.push(`  이야기 기록(오래된 것부터, 모두 ${(p.story || []).length}건):`, ...st.map(x => `    · ${storyWhen(x)} ${x.lock ? '[비공개] ' : ''}${x.text.replace(/\n/g, ' / ').slice(0, 700)}`));
   const ns = (p.notes || []).slice(-5); if (ns.length) out.push('  세희 메모: ' + ns.map(x => x.text).join(' / '));
   const links = (p.links || []).map(x => pplFind(x)).filter(Boolean).map(x => x.name); if (links.length) out.push('  아는 사이: ' + links.join(', '));
+  const cl = cluesOf(isMe ? 'me' : p.id); if (cl.length) out.push(`  사진 단서(모두 ${cl.length}장 — 사진 속은 세희가 못 봄, 보스가 적은 설명만):`, ...cl.slice(-10).map(x => `    · ${x.when || ymdDot(x.at)} ${x.lock ? '[비공개] ' : ''}${x.text || '(설명 없음)'}${x.people.length > 1 ? ' — 같이: ' + x.people.filter(i => i !== (isMe ? 'me' : p.id)).map(i => i === 'me' ? '나' : (pplFind(i) || {}).name).filter(Boolean).join(', ') : ''}`));
   return out.join('\n');
 }
 function pplKeys(p){
@@ -153,6 +154,13 @@ const PEOPLE_TOOLS = () => [
       rename:{ type:'array', items:{ type:'object', properties:{ from:{ type:'string' }, to:{ type:'string' } }, required:['from', 'to'] } },
       remove:{ type:'array', items:{ type:'string' } } } } },
   { name:'read_person', description:'한 사람의 기록부 전체(기타·이야기 기록 전부 포함)를 읽는다. 맥락에 짧게만 나온 사람을 자세히 알아야 할 때.', schema:{ type:'object', properties:{ person:{ type:'string', description:"사람 id(# 없이) 또는 이름. 보스 본인이면 '나'" } }, required:['person'] } },
+  { name:'clue_to_person', description:'인물 기록부의 「사진 단서」에 사진을 붙인다 — "이 사람과 이런 일이 있었지" 갤러리. 보스가 사진을 보내며 그 사람(들) 단서·갤러리·기록에 붙이라고 할 때만. 사진 속은 네가 설명하지 말고 보스가 한 말로 text 를 적는다.', schema:{ type:'object', properties:{
+      people:{ type:'array', items:{ type:'string' }, description:"사진에 얽힌 사람들 — id(# 없이) 또는 이름. 보스 본인은 '나'" },
+      photo:{ type:'integer', description:'보스가 이번에 보낸 사진 중 몇 번째(1부터). 여러 장이면 photos' },
+      photos:{ type:'array', items:{ type:'integer' }, description:'여러 장을 한 번에(같은 설명)' },
+      text:{ type:'string', description:'한 줄 설명 — 무슨 일이었는지(보스 말 그대로에 가깝게)' },
+      when:{ type:'string', description:'언제(선택) — YYYY-MM-DD 또는 "2026-11 초"처럼' },
+      lock:{ type:'boolean', description:'비공개(선택)' } }, required:['people'] } },
   { name:'remove_person', description:'인간관계 판에서 사람을 뗀다. 보스가 분명히 떼라고 할 때만.', schema:{ type:'object', properties:{ person:{ type:'string' } }, required:['person'] } },
 ];
 function pplNote(text){ O.log.push({ who:'a', board:true, text, at:Date.now() }); renderLog(); saveLog(); }
@@ -179,7 +187,8 @@ async function pplApplyLook(p, id, a){
   try{ PPL.pics[id] = await picThumb(u); await pplPicSave(); return 'ok'; }catch(e){ return '사진을 못 열었음'; }
 }
 async function runPeopleTool(c){
-  await pplLoad(); const a = c.args || {};
+  await pplLoad(); await clueLoad(); const a = c.args || {};
+  if (c.name === 'clue_to_person') return clueTool(a);   /* 이름이 _person 으로 끝나야 ai.js 가 여기로 보낸다 */
   if (c.name === 'edit_groups'){
     const next = pplGroupsOut(), renames = {}, did = [];
     for (const r of a.rename || []){ const from = String(r.from || '').trim(), to = String(r.to || '').trim().slice(0, 12); const g = next.find(x => x.name === from);
@@ -214,6 +223,7 @@ async function runPeopleTool(c){
   if (c.name === 'remove_person'){
     PPL.list = PPL.list.filter(x => x !== p); for (const x of PPL.list) x.links = (x.links || []).filter(id => id !== p.id);
     if (PPL.pics && PPL.pics[p.id]){ delete PPL.pics[p.id]; await pplPicSave(); }
+    await clueForget(p.id);
     await pplSave(); pplNote(`인간관계 판에서 뗐어요 — ${p.name}`); if (DW.open === 'people') pplRender();
     return { ok:true };
   }
@@ -368,6 +378,114 @@ $('ppCenter').onclick = () => { PPL.big = !PPL.big; pplRender(true); };
 /* ── 인물 기록부 (v1.3.4) — 수사판에서 '나'든 다른 사람이든 누르면 똑같은 한 장짜리 서류 ──
    모두 같은 칸: 기본(이름·관계·무리 + 생일·나이·키 같은 항목, 항목은 더하고 뺄 수 있음) · 관계도 · 기억할 점 · 기타(🔒 비공개 줄) · 세희 메모 · 판에 나온 일.
    「고치기」를 누르면 같은 서류가 칸별 입력란으로. 세희는 update_person(person:'나' 포함)으로 채운다. 🔒 줄은 보고서·남에게 보이는 글에 절대 안 씀. */
+/* ── 사진 단서 (v1.5.14 · C) — 인물 기록부의 갤러리: "이 사람과 이런 일이 있었지" ──
+   글(설명·날짜·사람·🔒)은 kv 'pplclues' 한 줄 목록, 사진은 한 장마다 kv 'clue_<id>' = { full(긴 변 1080px), th(240px) } — 동기화도 한 장씩 따로(sync.js clue_ 접두).
+   한 장에 여러 사람을 걸 수 있다(같이 있었던 일). 세희는 사진 속을 못 보고 보스가 적은 설명만 읽는다. */
+const CLU = { list:null, th:new Map(), view:null };
+const CLUE_PX = 1080, CLUE_TH = 240;
+async function clueLoad(){ if (!CLU.list) CLU.list = (await kvGet('pplclues')) || []; return CLU.list; }
+const clueSave = () => kvSet('pplclues', CLU.list || []);
+const cluesOf = id => (CLU.list || []).filter(c => (c.people || []).includes(id)).sort((x, y) => String(x.when || ymd(new Date(x.at))) < String(y.when || ymd(new Date(y.at))) ? -1 : 1);
+const kvDel = k => tx('kv', 'readwrite', s => s.delete(k)).then(r => { if (syncKey(k)) syncMark('kv:' + k); return r; });
+async function imgShrink(src, max, q){
+  const url = typeof src === 'string' ? src : URL.createObjectURL(src);
+  try{ const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error('사진을 못 열었어요')); i.src = url; });
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+    return cv.toDataURL('image/jpeg', q);
+  } finally { if (typeof src !== 'string') URL.revokeObjectURL(url); }
+}
+async function clueAdd(src, people, o){
+  await clueLoad(); const id = 'cl' + uid();
+  const full = await imgShrink(src, CLUE_PX, 0.8), th = await imgShrink(src, CLUE_TH, 0.74);
+  await kvSet('clue_' + id, { full, th }); CLU.th.set(id, th);
+  const c = { id, at:Date.now(), when:(o && o.when) || '', text:String((o && o.text) || '').slice(0, 300), people:[...new Set(people)], ...(o && o.lock ? { lock:true } : {}), by:(o && o.by) || 'boss' };
+  CLU.list.push(c); await clueSave(); dlog('사람', `사진 단서 넣음 ${id} · ${Math.round(full.length / 1024)}KB · ${c.people.join(',')}`); return c;
+}
+async function clueDel(id){ CLU.list = (CLU.list || []).filter(c => c.id !== id); CLU.th.delete(id); await kvDel('clue_' + id); await clueSave(); dlog('사람', '사진 단서 지움 ' + id); }
+/* 사람을 떼면 그 사람만 걸린 단서는 지우고, 여럿이 걸린 단서에선 그 사람만 뺀다 */
+async function clueForget(pid){ await clueLoad(); for (const c of CLU.list.filter(c => c.people.includes(pid))){ c.people = c.people.filter(x => x !== pid); if (!c.people.length) await clueDel(c.id); } await clueSave(); }
+async function clueThumb(id){ if (CLU.th.has(id)) return CLU.th.get(id); const v = await kvGet('clue_' + id); const t = v && v.th || ''; CLU.th.set(id, t); return t; }
+function clueGrid(pid){
+  const cl = cluesOf(pid);
+  return `<div class="cl-grid" data-clpid="${pid}">${cl.map(c => `<button class="cl-th${c.lock ? ' lk' : ''}" data-clue="${c.id}" aria-label="사진 단서 크게 보기"><span class="cl-img" data-clth="${c.id}"></span><small>${esc(c.when || ymdDot(c.at))}${c.lock ? ' 🔒' : ''}</small><em>${esc(c.text || '설명 없음')}</em></button>`).join('')}
+    <button class="cl-add" data-cladd="${pid}"><b>＋</b><span>사진 넣기</span></button></div>
+    <p class="pd-empty cl-hint">${cl.length ? '' : '이 사람과 있었던 일을 사진으로 — 여러 장 한 번에, 컴퓨터에선 복사한 사진을 Ctrl+V 로 붙여도 돼요. 채팅에 사진을 보내며 "○○ 단서에 붙여줘"라고 해도 돼요.'}</p>`;
+}
+async function clueThumbs(){ for (const el of document.querySelectorAll('#pdBody [data-clth]')){ const t = await clueThumb(el.dataset.clth); if (t && el.isConnected) el.style.backgroundImage = `url("${t}")`; } }
+async function clueAddFiles(pid, files){
+  const imgs = [...files].filter(f => /^image\//.test(f.type)).slice(0, 20); if (!imgs.length) return;
+  toast(`사진 ${imgs.length}장 넣는 중…`);
+  const made = []; for (const f of imgs){ try{ made.push(await clueAdd(f, [pid])); }catch(e){ toast(e.message); } }
+  if (PD.id === pid) await pdRender();
+  if (made.length === 1) clueOpen(made[0].id, pid, true); else toast(`사진 단서 ${made.length}장을 넣었어요 — 눌러서 설명을 적어 주세요`);
+}
+/* 크게 보기 — 사진 · 날짜 · 설명 · 같이 나온 사람 · 🔒 · ‹ › · 지우기 */
+function clueOpen(id, pid, fresh){
+  const c = (CLU.list || []).find(x => x.id === id); if (!c) return;
+  CLU.view = { id, pid };
+  let v = $('clv'); if (!v){ v = document.createElement('div'); v.id = 'clv'; v.className = 'clv'; $('pd').appendChild(v);   /* 기록부 안에 — 컴퓨터의 폰 비율 틀에도 꼭 맞게 */ v.addEventListener('click', clueViewClick); v.addEventListener('change', clueViewChange); }
+  const list = cluesOf(pid), i = list.findIndex(x => x.id === id), names = c.people.map(x => ({ id:x, name:x === 'me' ? '나' : (pplFind(x) || {}).name })).filter(x => x.name);
+  const others = [{ id:'me', name:'나' }, ...(PPL.list || []).map(x => ({ id:x.id, name:x.name }))].filter(x => !c.people.includes(x.id));
+  v.innerHTML = `<div class="clv-top"><button class="ib" data-clv="prev" ${i <= 0 ? 'disabled' : ''} aria-label="앞 사진">‹</button><span>${i + 1} / ${list.length}</span><button class="ib" data-clv="next" ${i >= list.length - 1 ? 'disabled' : ''} aria-label="다음 사진">›</button><button class="ib clv-x" data-clv="close" aria-label="닫기">✕</button></div>
+    <div class="clv-pic"><img id="clvImg" alt=""></div>
+    <div class="clv-form">
+      <div class="clv-row"><input id="clvWhen" value="${esc(c.when || '')}" placeholder="언제 — ${esc(ymdDot(c.at))}" maxlength="20"><button class="chip ${c.lock ? 'on' : ''}" data-clv="lock">🔒 비공개</button></div>
+      <textarea id="clvText" rows="2" maxlength="300" placeholder="무슨 일이었는지 한 줄 — 예: 첫 회의 끝나고 같이 찍은 사진">${esc(c.text || '')}</textarea>
+      <div class="clv-ppl">${names.map(x => `<span class="pd-chip">${esc(x.name)}${names.length > 1 ? `<button data-clv="unp" data-p="${x.id}" aria-label="${esc(x.name)} 빼기">✕</button>` : ''}</span>`).join('')}
+        ${others.length ? `<select id="clvAddP"><option value="">+ 같이 있던 사람</option>${others.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>` : ''}</div>
+      <div class="clv-row"><button class="chip danger" data-clv="del">이 사진 지우기</button>${c.by === 'sehee' ? '<em class="clv-by">세희가 붙임</em>' : ''}</div></div>`;
+  v.classList.add('on');
+  kvGet('clue_' + id).then(x => { const im = $('clvImg'); if (im && x && CLU.view && CLU.view.id === id) im.src = x.full || x.th; });
+  if (fresh) setTimeout(() => { const t = $('clvText'); if (t) t.focus(); }, 200);
+}
+async function clueClose(){ const v = $('clv'); if (v) v.classList.remove('on'); const pid = CLU.view && CLU.view.pid; CLU.view = null; if (pid && PD.id === pid) await pdRender(); }
+async function clueViewChange(e){
+  const c = CLU.view && (CLU.list || []).find(x => x.id === CLU.view.id); if (!c) return;
+  if (e.target.id === 'clvText'){ c.text = e.target.value.trim().slice(0, 300); await clueSave(); }
+  if (e.target.id === 'clvWhen'){ c.when = e.target.value.trim().slice(0, 20); await clueSave(); }
+  if (e.target.id === 'clvAddP' && e.target.value){ c.people.push(e.target.value); await clueSave(); clueOpen(c.id, CLU.view.pid); }
+}
+async function clueViewClick(e){
+  const b = e.target.closest('[data-clv]'); if (!b){ if (e.target.id === 'clv') clueClose(); return; }
+  const c = CLU.view && (CLU.list || []).find(x => x.id === CLU.view.id), pid = CLU.view && CLU.view.pid; if (!c) return clueClose();
+  const t = $('clvText'), w = $('clvWhen'); if (t) c.text = t.value.trim().slice(0, 300); if (w) c.when = w.value.trim().slice(0, 20);
+  const k = b.dataset.clv, list = cluesOf(pid), i = list.findIndex(x => x.id === c.id);
+  if (k === 'close'){ await clueSave(); return clueClose(); }
+  if (k === 'prev' || k === 'next'){ await clueSave(); const n = list[i + (k === 'prev' ? -1 : 1)]; if (n) clueOpen(n.id, pid); return; }
+  if (k === 'lock'){ c.lock = !c.lock; if (!c.lock) delete c.lock; await clueSave(); return clueOpen(c.id, pid); }
+  if (k === 'unp'){ c.people = c.people.filter(x => x !== b.dataset.p); await clueSave(); if (!c.people.includes(pid)){ toast('이 사람 단서에서는 빠졌어요'); return clueClose(); } return clueOpen(c.id, pid); }
+  if (k === 'del'){ if (!b.classList.contains('armed')){ b.classList.add('armed'); b.textContent = '한 번 더 누르면 지워요'; return; }
+    const n = list[i + 1] || list[i - 1]; await clueDel(c.id); toast('사진 단서를 지웠어요'); if (n) clueOpen(n.id, pid); else clueClose(); }
+}
+$('pdBody').addEventListener('click', async e => {
+  const th = e.target.closest('[data-clue]'); if (th){ e.stopPropagation(); return clueOpen(th.dataset.clue, th.closest('[data-clpid]').dataset.clpid); }
+  const ad = e.target.closest('[data-cladd]'); if (ad){ e.stopPropagation(); const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*'; f.multiple = true;
+    f.onchange = () => clueAddFiles(ad.dataset.cladd, f.files || []); f.click(); }
+});
+/* 컴퓨터 — 인물 기록부가 열려 있을 때 복사한 사진을 Ctrl+V 하면 그 사람 단서로 */
+document.addEventListener('paste', e => {
+  if (!PD.id || !$('pd').classList.contains('on') || ($('clv') && $('clv').classList.contains('on'))) return;
+  if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  const files = [...(e.clipboardData && e.clipboardData.files || [])].filter(f => /^image\//.test(f.type)); if (!files.length) return;
+  e.preventDefault(); clueAddFiles(PD.id, files);
+});
+document.addEventListener('keydown', e => { const v = $('clv'); if (!v || !v.classList.contains('on')) return;
+  if (e.key === 'Escape') clueClose(); if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowLeft'){ const b = v.querySelector('[data-clv="prev"]'); if (b && !b.disabled) b.click(); } if (e.key === 'ArrowRight'){ const b = v.querySelector('[data-clv="next"]'); if (b && !b.disabled) b.click(); } });
+/* 세희 — 채팅 사진으로 단서 붙이기 */
+async function clueTool(a){
+  const ids = []; for (const k of [].concat(a.people || a.person || [])){ const key = String(k).trim(); if (/^(나|me|보스)$/.test(key)){ ids.push('me'); continue; } const p = pplFind(key); if (p) ids.push(p.id); }
+  if (!ids.length) return { ok:false, error:'그 사람을 판에서 못 찾음 — add_person 으로 먼저 붙이거나 보스에게 누구인지 묻는다' };
+  const ns = (a.photos && a.photos.length ? a.photos : [a.photo || 1]).map(Number).filter(n => n >= 1).slice(0, 12), made = [];
+  for (const n of ns){ const u = bossPic(n); if (!u){ if (!made.length) return { ok:false, error:'보스가 보낸 사진을 찾지 못함(앱을 다시 켜면 앞서 보낸 사진은 사라짐) — 사진을 다시 같이 보내 달라고 하거나, 인물 기록부의 「사진 단서」 ＋ 로 넣는 법을 알려 준다' }; break; }
+    try{ made.push(await clueAdd(u, ids, { text:a.text, when:a.when ? String(a.when).slice(0, 20) : '', lock:!!a.lock, by:'sehee' })); }catch(e){ return { ok:false, error:'사진을 못 열었음' }; } }
+  const names = ids.map(i => i === 'me' ? '나' : pplFind(i).name);
+  pplNote(`사진 단서를 붙였어요 — ${names.join('·')} · ${made.length}장${a.text ? ' · ' + String(a.text).slice(0, 30) : ''}`);
+  if (PD.id && ids.includes(PD.id)) await pdRender();
+  return { ok:true, added:made.length, people:names };
+}
+
 const PD = { id:null, edit:false };
 const INFO_HINT = ['생일', '나이', '키'];
 async function meLoad(){ await pplLoad(); if (!PPL.me) PPL.me = { id:'me', name:'나', rel:'본인', group:'나', info:[], note:'', extra:[], notes:[], links:[], at:Date.now(), by:'boss' }; return PPL.me; }
@@ -405,6 +523,7 @@ async function pdDoc(p, isMe){
     ${sec(++n, '기억할 점', p.note ? `<p class="pd-p">${esc(p.note)}</p>` : '<p class="pd-empty">아직 없음</p>')}
     ${sec(++n, '기타', p.extra.length ? `<ul class="pd-ul">${p.extra.map(x => `<li class="${x.lock ? 'lk' : ''}">${x.lock ? '<span class="pd-stamp">비공개</span>' : ''}${esc(x.text)}</li>`).join('')}</ul>` : '<p class="pd-empty">아직 없음</p>')}
     ${sec(++n, '이야기 기록', p.story.length ? `<ol class="pd-story">${p.story.slice().reverse().map(x => `<li class="${x.lock ? 'lk' : ''}"><div class="pd-sw">${esc(storyWhen(x))}${x.lock ? '<span class="pd-stamp">비공개</span>' : ''}${x.by === 'sehee' ? '<em>세희가 적음</em>' : ''}</div><p>${esc(x.text)}</p></li>`).join('')}</ol>` : '<p class="pd-empty">아직 없음 — 세희에게 이 사람 이야기를 들려주면 날짜별로 적어요</p>')}
+    ${sec(++n, `사진 단서${cluesOf(isMe ? 'me' : p.id).length ? ' <small class="cl-n">' + cluesOf(isMe ? 'me' : p.id).length + '장</small>' : ''}`, clueGrid(isMe ? 'me' : p.id))}
     ${p.notes.length ? sec(++n, '세희 메모', `<ul class="pd-ul">${p.notes.slice().reverse().map(x => `<li>${esc(x.text)} <small>${ymdDot(x.at)}</small></li>`).join('')}</ul>`) : ''}
     ${isMe ? '' : sec(++n, '판에 나온 일', items.length ? `<ul class="pd-ul">${items.map(h => `<li class="${h.it.done ? 'done' : ''}">${esc(h.it.text)} <small>${mdDay(h.date)}</small></li>`).join('')}</ul>` : '<p class="pd-empty">아직 없음</p>')}`;
 }
@@ -421,8 +540,9 @@ async function pdRender(){
       ${[...p.extra, ...p.story].some(x => x.lock) ? '<span class="pd-stamp big">대외비</span>' : ''}</div>
     ${await pdDoc(p, isMe)}
     <div class="pd-foot">세희 · 인간관계 판 · ${ymdDot(Date.now())}${[...p.extra, ...p.story].some(x => x.lock) ? ' · 🔒 줄은 보고서·남에게 보이는 글에 쓰지 않음' : ''}</div></div>`;
+  clueThumbs();
 }
-async function pdOpen(id){ await pplLoad(); if (id === 'me') await meLoad(); PD.id = id; PD.edit = false; await pdRender(); $('pd').classList.add('on'); $('pdBody').scrollTop = 0; }
+async function pdOpen(id){ await pplLoad(); await clueLoad(); if (id === 'me') await meLoad(); PD.id = id; PD.edit = false; await pdRender(); $('pd').classList.add('on'); $('pdBody').scrollTop = 0; }
 function pdClose(){ $('pd').classList.remove('on'); PD.id = null; PD.edit = false; }
 function pdCollect(p){
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : null; };
@@ -464,6 +584,7 @@ $('pd').addEventListener('click', async e => {
   if (pdel){ if (!pdel.classList.contains('armed')){ pdel.classList.add('armed'); pdel.textContent = '한 번 더 누르면 떼요'; return; }
     PPL.list = PPL.list.filter(x => x !== p); for (const x of PPL.list) x.links = (x.links || []).filter(id => id !== p.id);
     if (PPL.pics && PPL.pics[p.id]){ delete PPL.pics[p.id]; await pplPicSave(); }
+    await clueForget(p.id);
     await pplSave(); pdClose(); if (DW.open === 'people') pplRender(); }
 });
 

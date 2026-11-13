@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-14 06:30 · 본체 v1.5.14 — 인간관계 사진 단서 · [보통] · 받는 쪽: 모두
+- 무엇: people.js 에 '사진 단서' 묶음(CLU · clueLoad/clueAdd/clueDel/clueForget/cluesOf · 기록부 pdDoc 새 칸 · 크게 보기 #clv 는 #pd 안 · paste 듣기 · 도구 clue_to_person). pplLoad 가 clueLoad 도 부름. 저장: kv 'pplclues'(글 목록) + kv 'clue_<id>'({full, th}). sync.js 에 SYNC_PFX = /^([bc]_|clue_)/ — 접두 키 동기화는 이제 이 정규식 하나로.
+- 받는 쪽에게 필요한 일: B — 수사판 카드(pplRender)엔 안 건드렸어요. 카드에 📎 단서 장수를 붙이고 싶으면 cluesOf(id).length 를 쓰면 됩니다. A — 세희 도구 이름이 _person 으로 끝나야 runToolCore 가 runPeopleTool 로 보내서 clue_to_person 으로 지었어요(ai.js 는 안 건드림). 다음 본체는 v1.5.15.
+- 관련 파일·버전: 본체 v1.5.14 / tests/tclue.js, 전체 38종 통과
+
 ## 2026-11-14 05:55 · 본체 v1.5.13 — 판 보편화 · [보통] · 받는 쪽: 모두
 - 무엇: DEFAULT_SECTIONS 에서 order('확정된 지시') 뺌. panUniversal()(base.js) 이 켤 때 한 번(S.settings.uni1) 이름 그대로인 order 칸을 지움 — 그 칸 항목은 첫 칸에 보임. TAGS '퇴근 전' → '오늘 안에'(TAG_OLD 로 옛 색). 처리 단추 저장값은 그대로('알바노' 등), 보이는 이름은 wayName(k) — 기본 '안 함', S.settings.wayNames 로 사용자가 바꿈. 세희 지침·깡통 대사·board.js basis 예시에서 직장·학원 말 걷음.
 - 받는 쪽에게 필요한 일: 판 칸 id 'order' 를 코드에 쓰지 말 것(없을 수 있음). 처리 단추 글자를 화면·지침에 쓸 땐 wayName('알바노') 처럼. tmaterial 은 기다림을 40초로 늘림(A 가 말한 시간 초과 — 확인함). 다음 본체는 v1.5.14.
