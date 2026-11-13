@@ -1,10 +1,15 @@
 /* 세희 깡통 — 앱 껍데기를 폰에 담아두는 일꾼.
-   VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 바로 자리를 잡고, 화면은 세희가 쉴 때 한 번 새로 고친다(v1.2.7).
-   v1.4.2 — 받은 index.html 버전이 VERSION 과 같을 때만 받는다(보너스 C 담당).
+   VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 대기시키고, 켤 때 보스에게 묻는다(v1.3.9).
+   v1.4.2 — 받은 index.html 버전이 VERSION 과 같을 때만 받는다.
+   v1.5.0 — 본체가 css/app.css · js/*.js 로 쪼개짐. 새 파일을 만들면 아래 CODE 목록에도 꼭 넣는다(안 넣으면 오프라인·업데이트 때 빠짐).
+            CODE 파일은 주소 뒤에 ?v=VERSION 을 붙여 받는다 — 중간 캐시에 남은 옛 파일이 새 index.html 과 섞이지 않게.
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v1.4.3';
+const VERSION = 'v1.5.0';
 const CACHE = 'sehee-' + VERSION;
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
+/* 본체 코드 — index.html 의 <script src> 순서 그대로 */
+const CODE = ['./css/app.css',
+  './js/dev.js', './js/base.js', './js/settings.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/boot.js'];
+const SHELL = [...CODE, './', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
 
@@ -12,7 +17,7 @@ const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png',
 /* v1.4.2 (보너스 C) 올린 직후 반쯤 올라온 상태 막기 — 받은 index.html 의 APP_VERSION 이 이 VERSION 과 다르면 이번엔 받지 않는다(다음 확인 때 다시) */
 async function getShell(){
   const c = await caches.open(CACHE);
-  const got = await Promise.all(SHELL.map(async u => { const r = await fetch(new Request(u, { cache: 'reload' })); if (!r.ok) throw new Error(u + ' ' + r.status); return [u, r]; }));
+  const got = await Promise.all(SHELL.map(async u => { const r = await fetch(new Request(CODE.includes(u) ? u + '?v=' + VERSION : u, { cache: 'reload' })); if (!r.ok) throw new Error(u + ' ' + r.status); return [u, r]; }));
   for (const [u, r] of got){
     if (u !== './' && u !== './index.html') continue;
     const t = await r.clone().text();
