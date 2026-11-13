@@ -94,7 +94,7 @@ export default {
     try{
       if (!env.DB) return json(req, 500, { error:'D1 데이터베이스가 DB 라는 이름으로 연결돼 있지 않아요' });
       await setup(env.DB);
-      if (path === '/' ) return json(req, 200, { ok:true, name:'sehee-sync', v:1 });
+      if (path === '/' ) return json(req, 200, { ok:true, name:'sehee-sync', v:2 });
 
       if (path === '/login' && req.method === 'POST'){
         const ip = req.headers.get('cf-connecting-ip') || 'local', now = Date.now();
