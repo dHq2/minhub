@@ -380,13 +380,15 @@
   /* 판을 서랍처럼 (v1.2.8) — 판 뒤에 사무실이 깔려 있고 오른쪽 끝으로 살짝 보인다. 왼쪽으로 끌면 손가락을 따라 밀려나며 사무실로 */
   body:not(.alt) #office{display:flex;pointer-events:none;z-index:9}
   body:not(.alt) #office .say,body:not(.alt) #office .log{visibility:hidden}
-  body:not(.alt) #main{position:relative;z-index:11;margin:0;width:calc(100% - 18px);max-width:720px;
-    min-height:calc(100dvh - var(--hh,64px) - var(--tb,58px));padding-bottom:calc(var(--pth,0px) + 40px);
+  /* v1.3.2 판은 자기 안에서 위아래로 굴러간다(문서 전체가 아니라) — 컴퓨터 틀 안에서 안 굴러가던 것 */
+  body:not(.alt) #main{position:fixed;z-index:11;left:0;top:var(--hh,64px);bottom:var(--tb,58px);margin:0;width:calc(100% - 18px);max-width:720px;
+    overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--pth,0px) + 40px);
     background:repeating-linear-gradient(var(--paper) 0,var(--paper) 30px,var(--paper-deep) 30px,var(--paper-deep) 31px);
     box-shadow:5px 0 16px rgba(0,0,0,.4);border-right:1px solid #bfb39a;border-radius:0 0 12px 0}
-  body:not(.alt) #main::after{content:"";position:absolute;right:0;top:0;bottom:0;width:6px;background:repeating-linear-gradient(#efe7d2 0 2px,#cfc4a6 2px 3px);opacity:.8}
-  body:not(.alt){background:#1d4650}
+  body:not(.alt) #main{border-right:6px double #cfc4a6}
+  body:not(.alt){background:#1d4650;padding-bottom:0}
   body:not(.alt) .pt{right:18px}
+  body.typing:not(.alt) #main{bottom:0}
   .pan-grip{display:none;position:fixed;top:var(--hh,64px);bottom:var(--tb,58px);width:30px;z-index:12;touch-action:none;cursor:grab}
   body:not(.alt) .pan-grip{display:block}
   /* 넘기기 단추 폐기 (v1.3.0) — 판에서 세희와 바로 대화하니 필요 없다 */
@@ -812,12 +814,13 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.3) 판이 위아래로 안 굴러가던 것(컴퓨터 틀에서 문서 전체가 굴러가 버림) — 판이 자기 안에서 굴러가게. 대화 상자 뒤로 가린 줄도 끌어 올려 보인다.
         (v1.3.2) 보너스 업데이트 자리 — 다른 방(제작기 2)은 sehee/bonus/ 폴더에만 만들고, 본체는 부팅 끝에 bonus/bonus.js 를 불러 SEHEE 창구로만 잇는다.
           창구: kvGet/kvSet·todayPan/savePan/render·log/say·board/people/cal·goView/openDrawer·sheet/toast·addTool/addPrompt/addMenu·on(boot·view·say·tool·turnEnd).
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.2';
+const APP_VERSION = 'v1.3.3';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -899,7 +902,7 @@ async function goDate(date){
   if (!p && date === S.today) p = await makeToday(date);
   S.date = date; S.pan = p || null;
   render();
-  window.scrollTo(0, 0); document.body.scrollTop = 0;
+  window.scrollTo(0, 0); document.body.scrollTop = 0; $('main').scrollTop = 0;
 }
 
 /* ── 저장 ── */
