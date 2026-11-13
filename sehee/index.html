@@ -866,6 +866,8 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.8) 사무실로 갈 때 주소를 pushState 로 — 컴퓨터 틀에서 #office 칸으로 문서가 36px 굴러 서랍 머리가 잘리던 것(보조 방 발견). 뒤로 가기도 그대로.
+          창구 SEHEE.pplZoom(k|null) — 인간관계 판을 다시 그려도 보너스 배율 유지.
         (v1.3.7) 판 = 왼쪽에서 나오는 서랍. 달력·보드·사람과 똑같은 서랍 모양(색 띠 머리 '🗒️ 판' + ✕, 그 아래 날짜 줄), 방향만 왼쪽.
           사무실이 늘 바탕이고 오른쪽 견출지는 가리지 않는다. 세희 대화 상자도 판 서랍 안에. 머리·옆면을 왼쪽으로 끌거나 ✕로 닫힘(v1.2.8~1.3.6의 '판이 화면을 덮는' 방식 폐기).
         (v1.3.6) 인물 기록부 서류 바깥 빈 곳을 누르면 닫힘(고치던 중이면 저장하고).
@@ -880,7 +882,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.7';
+const APP_VERSION = 'v1.3.8';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -2603,7 +2605,7 @@ function pplRender(center){
     ${list.length ? '' : `<div class="pp-empty" style="left:${C}px;top:${C + 70}px">아직 아무도 없어요.<br>「+ 사람」을 누르거나 세희에게 "○○을 인간관계 판에 추가해줘"라고 해 보세요.</div>`}`;
   $('ppCount').textContent = list.length ? `${list.length}명` : '';
   const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / S, (sc.clientHeight - 8) / S) : 1;
-  const k = PPL.big ? 1 : fitK; $('ppMap').style.zoom = k; $('ppCenter').textContent = PPL.big ? '전체 보기' : '크게 보기';
+  const k = PPL.big ? 1 : (BONUS.zoom || fitK); $('ppMap').style.zoom = k; $('ppCenter').textContent = PPL.big ? '전체 보기' : '크게 보기';
   if (center || !PPL.big) requestAnimationFrame(() => { sc.scrollLeft = (S * k - sc.clientWidth) / 2; sc.scrollTop = (S * k - sc.clientHeight) / 2; });
   setTimeout(() => bonusEmit('people'), 0);
 }
@@ -2891,6 +2893,8 @@ window.SEHEE = {
   pplPos(id, xy){ if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; else delete BONUS.pos[id]; },
   pplPosAll(map){ BONUS.pos = {}; for (const [id, xy] of Object.entries(map || {})) if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; },
   pplRedraw:() => { if (DW.open === 'people') pplRender(); },
+  /* 인간관계 판 배율 지키기 — 숫자면 다시 그려도 그 배율, null 이면 본체 '전체 보기' 배율 */
+  pplZoom(k){ BONUS.zoom = k && isFinite(k) ? Math.max(0.2, Math.min(3, +k)) : null; },
   /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) */
   on(ev, fn){ (BONUS.subs[ev] = BONUS.subs[ev] || []).push(fn); },
   setVersion(v){ BONUS.ver = String(v); },
@@ -3858,7 +3862,7 @@ const curView = () => document.body.classList.contains('office') ? 'office' : 'p
 function goView(v){
   if (v === 'pan'){ history.replaceState(null, '', location.pathname); showView('pan'); }
   else if (DRAWERS.includes(v)){ if (curView() !== 'office') goView('office'); dwOpen(v); }
-  else if (location.hash !== '#office') location.hash = 'office'; else showView('office');
+  else { if (location.hash !== '#office') history.pushState(null, '', location.pathname + '#office'); showView('office'); }   /* 해시를 직접 바꾸면 컴퓨터 틀에서 #office 칸으로 문서가 굴러가 서랍 머리가 잘림(보조 방 발견) — pushState 로 */
 }
 function showView(v){
   setTimeout(() => bonusEmit('view', curView()), 0);
@@ -3880,6 +3884,7 @@ function showView(v){
 }
 for (const v of VIEWS) $(TAB_OF[v]).onclick = () => goView(v);
 window.addEventListener('hashchange', () => showView(hashView()));
+window.addEventListener('popstate', () => showView(hashView()));
 
 /* ── 서류철 ── */
 const DW = { open:null };
