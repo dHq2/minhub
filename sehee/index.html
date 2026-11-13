@@ -864,6 +864,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.5) 보조 방 창구 요청 3가지 — b_로 시작하는 키도 계정 동기화 / SEHEE.talk()·on('talk')(대화창 그대로, 단추 포함) / on('people')·SEHEE.pplPos(id,{x,y})·pplPosAll·pplRedraw(옮긴 자리로 본체가 그리고 실도 따라감).
         (v1.3.4) 인물 기록부 — 수사판의 '나'든 사람이든 누르면 똑같은 한 장짜리 서류: 기본(이름·관계·무리 + 생일·나이·키 등 항목) · 관계도 · 기억할 점 · 기타(🔒 비공개 줄) · 세희 메모 · 판에 나온 일.
           「고치기」로 같은 서류가 칸별 입력란으로. 세희는 update_person(person:'나' 포함)으로 채우고, 🔒 줄은 보고서·남에게 보이는 글에 절대 안 씀.
           판 오른쪽 끝에도 서랍 견출지(달력·보드·사람)가 튀어나와, 누르거나 왼쪽으로 끌면 사무실의 그 서랍이 열린다.
@@ -873,7 +874,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.4';
+const APP_VERSION = 'v1.3.5';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -923,7 +924,8 @@ const putPan   = p => tx('pans','readwrite', s => s.put(p)).then(r => { syncMark
 const allPans  = () => tx('pans','readonly', s => s.getAll());
 const allDates = () => tx('pans','readonly', s => s.getAllKeys());
 const kvGet    = k => tx('kv','readonly',  s => s.get(k));
-const kvSet    = (k,v) => tx('kv','readwrite', s => s.put(v,k)).then(r => { if (SYNC_KV.includes(k)) syncMark('kv:' + k); return r; });
+const kvSet    = (k,v) => tx('kv','readwrite', s => s.put(v,k)).then(r => { if (syncKey(k)) syncMark('kv:' + k); return r; });
+const kvKeys   = () => tx('kv','readonly', s => s.getAllKeys());
 
 /* ── 상태 ── */
 const S = { settings:null, today:todayStr(), date:null, pan:null, dates:[], folded:{}, persisted:null, persistAsked:false };
@@ -2561,6 +2563,7 @@ function pplTheme(){ const t = PPL.theme || 'cork'; const el = $('people'); PP_T
 function pplRender(center){
   const list = PPL.list || [], S = Math.max(440, 380 + list.length * 24), C = S / 2, th = pplTheme();
   const { pos, used, starts, spans } = pplLayout(list, S);
+  for (const [id, xy] of Object.entries(BONUS.pos || {})) if (pos[id]) pos[id] = { x:xy.x * S, y:xy.y * S };   /* 보너스가 옮겨 둔 자리 */
   const hs = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   const f = n => n.toFixed(1);
   const path = (x1, y1, x2, y2, cls, seed) => {
@@ -2596,6 +2599,7 @@ function pplRender(center){
   const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / S, (sc.clientHeight - 8) / S) : 1;
   const k = PPL.big ? 1 : fitK; $('ppMap').style.zoom = k; $('ppCenter').textContent = PPL.big ? '전체 보기' : '크게 보기';
   if (center || !PPL.big) requestAnimationFrame(() => { sc.scrollLeft = (S * k - sc.clientWidth) / 2; sc.scrollTop = (S * k - sc.clientHeight) / 2; });
+  setTimeout(() => bonusEmit('people'), 0);
 }
 $('ppTheme').onclick = async () => { const i = PP_THEMES.findIndex(x => x[0] === (PPL.theme || 'cork')); PPL.theme = PP_THEMES[(i + 1) % PP_THEMES.length][0]; await pplSave(); pplRender(true); };
 
@@ -2851,7 +2855,7 @@ document.addEventListener('click', e => {
    본체(index.html·sw.js)는 메인 방만 고친다. 보너스 기능은 다른 방(제작기 2)이 sehee/bonus/ 폴더에만 만든다.
    본체는 부팅 끝에 bonus/bonus.js 를 한 번 불러오고, 아래 SEHEE 창구로만 서로 이어진다(본체 속을 직접 고치지 않게).
    보너스가 고장 나도 본체는 그대로 — 설정 「보너스 업데이트」 끔으로 바로 뺄 수 있다. */
-const BONUS = { tools:[], handlers:{}, prompts:[], menu:[], subs:{}, loaded:false, ver:'' };
+const BONUS = { tools:[], handlers:{}, prompts:[], menu:[], subs:{}, loaded:false, ver:'', pos:{} };
 const bonusOn = () => { try{ return localStorage.getItem('sehee.bonus') !== '0'; }catch(e){ return true; } };
 function bonusEmit(ev, data){ for (const f of BONUS.subs[ev] || []) try{ f(data); }catch(e){ dlog('오류', `보너스(${ev}) ${e.message}`, e.stack); } }
 window.SEHEE = {
@@ -2869,7 +2873,13 @@ window.SEHEE = {
   addPrompt(fn){ if (typeof fn === 'function' || typeof fn === 'string') BONUS.prompts.push(fn); },
   /* 설정 → 보너스 칸에 단추 */
   addMenu(label, run){ BONUS.menu.push({ label:String(label), run }); },
-  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd */
+  /* 대화창 내용(본체 talkHtml 그대로 — 실시간 글자·고르기·다시 시도 단추 포함). 단추는 본체가 문서 전체에서 받아 처리한다 */
+  talk:(empty) => { const t = talkHtml(empty || ''); return { html:t.h, face:t.face, sprite:FACE(t.face) }; },
+  /* 인간관계 판 자리 덮어쓰기 — {x,y}는 판 크기에 대한 비율(0~1). null 이면 원래 자리. 본체가 그 자리로 그리고 실도 거기로 */
+  pplPos(id, xy){ if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; else delete BONUS.pos[id]; },
+  pplPosAll(map){ BONUS.pos = {}; for (const [id, xy] of Object.entries(map || {})) if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; },
+  pplRedraw:() => { if (DW.open === 'people') pplRender(); },
+  /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) */
   on(ev, fn){ (BONUS.subs[ev] = BONUS.subs[ev] || []).push(fn); },
   setVersion(v){ BONUS.ver = String(v); },
 };
@@ -2929,6 +2939,8 @@ function loadBonus(){
    · 서버 기록으로 덮어쓰기 전에, 이 기기에 있던 기록은 'presync' 로 따로 남겨 둔다 */
 const SYNC = { url:'', token:'', user:'', device:'', last:0, on:false, dead:false, busy:false, again:false, fails:0, timer:null, dirty:new Map(), gen:0 };
 const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'dbg'];
+/* 보너스(b_로 시작하는 키)도 계정에 같이 — v1.3.5, 보조 방 요청 */
+function syncKey(k){ return SYNC_KV.includes(k) || /^b_/.test(String(k)); }
 const SYNC_LS = 'sehee-sync';
 function deviceName(){
   const u = navigator.userAgent;
@@ -3012,14 +3024,15 @@ async function syncPull(){
     if (!old || old.user !== SYNC.user) await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:SYNC.user, pans:localPans, kv }, 'presync'));
   }
   await tx('pans', 'readwrite', s => { s.clear(); for (const k of keys) if (k.startsWith('pan:') && recs[k].v && recs[k].v.date) s.put(recs[k].v); });
-  await tx('kv', 'readwrite', s => { for (const n of SYNC_KV){ const rec = recs['kv:' + n]; if (rec) s.put(rec.v, n); else s.delete(n); } });
+  const localB = (await kvKeys()).filter(k => /^b_/.test(String(k))), names = [...new Set([...SYNC_KV, ...localB, ...keys.filter(k => k.startsWith('kv:b_')).map(k => k.slice(3))])];
+  await tx('kv', 'readwrite', s => { for (const n of names){ const rec = recs['kv:' + n]; if (rec) s.put(rec.v, n); else s.delete(n); } });
   SYNC.last = Date.now(); syncKeep();
   return keys.length;
 }
 /* 서버가 비어 있으면 이 기기 기록을 통째로 올린다 */
 async function syncUploadAll(){
   for (const d of await allDates()) SYNC.dirty.set('pan:' + d, ++SYNC.gen);
-  for (const n of SYNC_KV) if ((await kvGet(n)) !== undefined) SYNC.dirty.set('kv:' + n, ++SYNC.gen);
+  for (const n of [...SYNC_KV, ...(await kvKeys()).filter(k => /^b_/.test(String(k)))]) if ((await kvGet(n)) !== undefined) SYNC.dirty.set('kv:' + n, ++SYNC.gen);
   syncKeep(); await syncFlush();
 }
 function syncDead(j){
@@ -4297,8 +4310,10 @@ function renderPanTalk(){
   $('ptBub').innerHTML = t.h; $('ptBub').scrollTop = $('ptBub').scrollHeight;
   const src = FACE(t.face); if ($('ptSpr').getAttribute('src') !== src) $('ptSpr').setAttribute('src', src);
 }
+let talkSig = '';
 function renderBoardTalk(){
   renderPanTalk();
+  if (BONUS.subs.talk){ const t = talkHtml(''), k = t.h + '|' + t.face; if (k !== talkSig){ talkSig = k; bonusEmit('talk', t); } }
   if (DW.open !== 'board') return;
   const t = talkHtml('카드를 누르면 크게 보여요. 물어보시면 브리핑할게요.');
   $('btBub').innerHTML = t.h; $('btBub').scrollTop = $('btBub').scrollHeight;
