@@ -1,14 +1,15 @@
 /* 세희 깡통 — 앱 껍데기를 폰에 담아두는 일꾼.
-   VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 대기시키고, 화면에 「새 버전」 띠가 뜬다.
+   VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 바로 자리를 잡고, 화면은 세희가 쉴 때 한 번 새로 고친다(v1.2.7).
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v1.2.6';
+const VERSION = 'v1.2.7';
 const CACHE = 'sehee-' + VERSION;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
 
+/* v1.2.7 받자마자 바로 자리 잡기 — '대기'가 쌓여 띠를 여러 번 누르던 일 없음. 화면 새로 고침은 앱이 알아서 쉴 때 한 번 */
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
