@@ -1,5 +1,6 @@
 /* 세희 깡통 — 앱 껍데기를 폰에 담아두는 일꾼.
    VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 바로 자리를 잡고, 화면은 세희가 쉴 때 한 번 새로 고친다(v1.2.7).
+   v1.4.1 — 받은 index.html 버전이 VERSION 과 같을 때만 받는다(보너스 C 담당).
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
 const VERSION = 'v1.4.1';
 const CACHE = 'sehee-' + VERSION;
@@ -8,8 +9,20 @@ const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
 
 /* v1.3.9 새 껍데기는 대기 — 대기는 늘 가장 최신 하나뿐이라 '업데이트' 한 번이면 최신 */
+/* v1.4.1 (보너스 C) 올린 직후 반쯤 올라온 상태 막기 — 받은 index.html 의 APP_VERSION 이 이 VERSION 과 다르면 이번엔 받지 않는다(다음 확인 때 다시) */
+async function getShell(){
+  const c = await caches.open(CACHE);
+  const got = await Promise.all(SHELL.map(async u => { const r = await fetch(new Request(u, { cache: 'reload' })); if (!r.ok) throw new Error(u + ' ' + r.status); return [u, r]; }));
+  for (const [u, r] of got){
+    if (u !== './' && u !== './index.html') continue;
+    const t = await r.clone().text();
+    if (!t.includes("APP_VERSION = '" + VERSION + "'")){ await caches.delete(CACHE); throw new Error('index.html 이 아직 ' + VERSION + ' 이 아님'); }
+  }
+  await Promise.all(got.map(([u, r]) => c.put(u, r)));
+}
+
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))));   /* v1.3.9 받아 두기만 — 켤 때 보스에게 묻고 '업데이트'면 skip */
+  e.waitUntil(getShell());   /* v1.3.9 받아 두기만 — 켤 때 보스에게 묻고 '업데이트'면 skip */
 });
 
 self.addEventListener('activate', e => {
