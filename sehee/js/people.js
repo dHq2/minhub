@@ -1,11 +1,37 @@
 /* ── 인간관계 판 (v1.2) — 나를 가운데 두고 사람 카드가 방사형으로 붙는 수사판 ──
-   빨간 실이 나에서 각 사람으로, 서로 아는 사람끼리도 실로 잇는다. 무리(직장·가족·친구·학생·학부모·기타)마다 방향이 정해져 있다.
+   빨간 실이 나에서 각 사람으로, 서로 아는 사람끼리도 실로 잇는다. 무리마다 부채꼴 방향이 정해져 있다.
+   v1.5.12 보편 설계 — 무리는 사용자 것(이름·색·순서를 바꾸고 더하고 뺀다). 앱에는 특정 직업용 무리·예시를 박지 않는다.
    세희가 대화에서 한 명씩 붙이고(add_person), 보스도 「+ 사람」으로 직접 붙인다. 카드를 누르면 메모·관련 판 항목이 나온다. */
 const PPL = { list:null, changed:null };
-const GROUPS = ['직장', '학생·학부모', '친구', '가족', '기타'];
-const GROUP_COLOR = { '직장':'#3a6b64', '학생·학부모':'#8a6d3b', '친구':'#6b5b95', '가족':'#a13b2c', '기타':'#5c5340' };
-async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null; } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; return PPL.list; }
-const pplSave = () => kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', ...(PPL.me ? { me:PPL.me } : {}) });
+/* 무리 (v1.5.12) — 사용자마다 다르다. 처음 쓰는 사람은 아래 기본, 이미 쓰던 사람은 쓰던 무리를 그대로 이어 받는다.
+   GROUPS·GROUP_COLOR 는 그 자리에서 고쳐 쓰는 살아 있는 목록(다른 코드는 예전처럼 읽기만 하면 됨). '기타'는 늘 맨 끝에 있고 못 지운다(갈 곳 없는 사람이 가는 자리). */
+const GROUP_DEFAULT = [['직장', '#3a6b64'], ['친구', '#6b5b95'], ['가족', '#a13b2c'], ['손님·거래처', '#8a6d3b'], ['지인', '#3d5a80'], ['기타', '#5c5340']];
+const GROUP_PALETTE = ['#3a6b64', '#6b5b95', '#a13b2c', '#8a6d3b', '#3d5a80', '#2f6e4f', '#9a4f7a', '#b0662e', '#4f6d7a', '#7a6a2f', '#5c5340'];
+const GROUPS = [], GROUP_COLOR = {};
+function pplGroupsSet(arr){
+  GROUPS.length = 0; for (const k of Object.keys(GROUP_COLOR)) delete GROUP_COLOR[k];
+  for (const g of arr){ const n = String(g.name || '').trim().slice(0, 12); if (!n || n === '나' || GROUPS.includes(n) || n === '기타') continue; GROUPS.push(n); GROUP_COLOR[n] = g.color || pplFreeColor(); }
+  const etc = arr.find(g => g.name === '기타'); GROUPS.push('기타'); GROUP_COLOR['기타'] = (etc && etc.color) || '#5c5340';
+}
+function pplFreeColor(){ const used = new Set(Object.values(GROUP_COLOR)); return GROUP_PALETTE.find(c => !used.has(c)) || GROUP_PALETTE[Object.keys(GROUP_COLOR).length % GROUP_PALETTE.length]; }
+const pplGroupsOut = () => GROUPS.map(n => ({ name:n, color:GROUP_COLOR[n] }));
+pplGroupsSet(GROUP_DEFAULT.map(([name, color]) => ({ name, color })));
+async function pplLoad(){ if (!PPL.list){ const d = (await kvGet('people')) || {}; PPL.list = d.list || []; PPL.theme = d.theme || 'cork'; PPL.me = d.me || null;
+    if (Array.isArray(d.groups) && d.groups.length) pplGroupsSet(d.groups);
+    else {   /* 처음 — 이미 쓰던 사람이면 그 무리를 기본 앞에 그대로 살린다(예전 '학생·학부모' 같은 것) */
+      const old = { '학생·학부모':'#8a6d3b' }, base = GROUP_DEFAULT.map(([name, color]) => ({ name, color })), used = [...new Set(PPL.list.map(p => p.group).filter(Boolean))];
+      for (const g of used) if (!base.some(b => b.name === g)) base.splice(base.length - 1, 0, { name:g, color:null, keep:old[g] });
+      pplGroupsSet(base); for (const b of base) if (b.keep && !Object.values(GROUP_COLOR).includes(b.keep)) GROUP_COLOR[b.name] = b.keep;
+      if (PPL.list.length) setTimeout(() => pplSave(), 0);
+    }
+    for (const p of PPL.list) if (!GROUPS.includes(p.group)) p.group = '기타';
+  } if (!PPL.pics) PPL.pics = (await kvGet('pplpics')) || {}; return PPL.list; }
+const pplSave = () => kvSet('people', { list:PPL.list, theme:PPL.theme || 'cork', groups:pplGroupsOut(), ...(PPL.me ? { me:PPL.me } : {}) });
+/* 무리 고치기 — 이름 바꾸면 그 무리 사람도 따라가고, 지운 무리 사람은 '기타'로 */
+function pplGroupsApply(next, renames){
+  for (const p of PPL.list){ if (renames[p.group]) p.group = renames[p.group]; }
+  pplGroupsSet(next); for (const p of PPL.list) if (!GROUPS.includes(p.group)) p.group = '기타';
+}
 /* ── 프로필 사진 (v1.5.5 · C) ──
    사진은 kv 'pplpics' 에 { 사람id(나는 'me'): 정사각 JPEG dataURL } 로 따로 둔다 — 사람 기록(people)은 글만이라 가볍게 오가고, 사진은 바뀔 때만 오간다.
    사진이 없으면 성별(p.sex '여'|'남')에 맞는 기본 얼굴, 성별도 모르면 이름 첫 글자. 세희는 add/update_person 의 photo(보스가 보낸 사진 몇 번째)·sex 로 넣는다. */
@@ -94,7 +120,7 @@ async function pplContext(){
   const hot = pplMentioned(), hotIds = new Set(hot.map(p => p.id));
   const brief = PPL.list.filter(p => !hotIds.has(p.id)).slice(0, 60).map(p => pplLine(p));
   const anyLock = [PPL.me, ...PPL.list].some(p => p && [...(p.extra || []), ...(p.story || [])].some(x => x.lock));
-  return ['인간관계 판 기록부 — 보스 혼자 보는 사적인 사람 수첩(나 포함).',
+  return ['인간관계 판 기록부 — 보스 혼자 보는 사적인 사람 수첩(나 포함). 무리: ' + GROUPS.join('·'),
     PPL.me ? '나:\n' + pplFull(PPL.me, true) : '',
     hot.length ? '요 몇 마디에 나온 사람(전부 자세히):\n' + hot.map(p => pplFull(p)).join('\n') : '',
     brief.length ? '나머지(짧게 — 자세한 건 read_person):\n' + brief.join('\n') : '',
@@ -102,9 +128,9 @@ async function pplContext(){
 }
 const PEOPLE_TOOLS = () => [
   { name:'add_person', description:'인간관계 판에 사람 한 명을 붙인다. 보스가 추가하라고 할 때만. 한 번에 한 명.', schema:{ type:'object', properties:{
-    name:{ type:'string', description:'이름 또는 부르는 말. 예: 이예진 조교, 정은쌤' },
-    relation:{ type:'string', description:'보스와의 관계 한 줄. 예: 같이 일하는 조교, 중2 김민준 어머니' },
-    group:{ type:'string', enum:GROUPS, description:'무리' },
+    name:{ type:'string', description:'이름 또는 보스가 부르는 말 그대로. 예: 김지민 팀장, 수진이' },
+    relation:{ type:'string', description:'보스와의 관계 한 줄. 예: 같은 팀 선배, 대학 동기, 단골 손님' },
+    group:{ type:'string', enum:GROUPS, description:"무리(보스가 쓰는 무리 중에서). 맞는 게 없으면 '기타' — 새 무리가 필요하면 보스에게 물어 edit_groups" },
     note:{ type:'string', description:'기억할 점 한 줄(선택)' },
     info:{ type:'array', description:'기본 항목(선택). 예: 생일·나이·키', items:{ type:'object', properties:{ key:{ type:'string' }, value:{ type:'string' } } } },
     add_extra:{ type:'array', description:'기타 줄(선택) — update_person 과 같음', items:{ type:'object', properties:{ text:{ type:'string' }, lock:{ type:'boolean' } } } },
@@ -122,6 +148,10 @@ const PEOPLE_TOOLS = () => [
     sex:{ type:'string', enum:['여', '남'], description:'성별(선택) — 사진이 없을 때 기본 얼굴. 관계·호칭으로 분명할 때만(어머니·아버지·언니·형 등). 이름만으로 짐작하지 않는다' },
     photo:{ type:'integer', description:'프로필 사진(선택) — 보스가 이번에 보낸 사진 중 몇 번째(1부터)를 이 사람 프로필 사진으로. 보스가 사진을 보내며 이 사람 사진·프사로 하라고 할 때만' },
     add_note:{ type:'string', description:'세희 메모 한 줄' }, link_to:{ type:'string', description:'잇고 싶은 다른 사람 이름' } }, required:['person'] } },
+  { name:'edit_groups', description:'인간관계 판의 무리(묶음)를 고친다. 보스가 무리를 만들거나 이름을 바꾸거나 없애라고 할 때만. 이름을 바꾸면 그 무리 사람도 따라가고, 없앤 무리 사람은 기타로 간다. 기타는 못 없앤다.',
+    schema:{ type:'object', properties:{ add:{ type:'array', items:{ type:'string' }, description:'새 무리 이름들' },
+      rename:{ type:'array', items:{ type:'object', properties:{ from:{ type:'string' }, to:{ type:'string' } }, required:['from', 'to'] } },
+      remove:{ type:'array', items:{ type:'string' } } } } },
   { name:'read_person', description:'한 사람의 기록부 전체(기타·이야기 기록 전부 포함)를 읽는다. 맥락에 짧게만 나온 사람을 자세히 알아야 할 때.', schema:{ type:'object', properties:{ person:{ type:'string', description:"사람 id(# 없이) 또는 이름. 보스 본인이면 '나'" } }, required:['person'] } },
   { name:'remove_person', description:'인간관계 판에서 사람을 뗀다. 보스가 분명히 떼라고 할 때만.', schema:{ type:'object', properties:{ person:{ type:'string' } }, required:['person'] } },
 ];
@@ -150,6 +180,15 @@ async function pplApplyLook(p, id, a){
 }
 async function runPeopleTool(c){
   await pplLoad(); const a = c.args || {};
+  if (c.name === 'edit_groups'){
+    const next = pplGroupsOut(), renames = {}, did = [];
+    for (const r of a.rename || []){ const from = String(r.from || '').trim(), to = String(r.to || '').trim().slice(0, 12); const g = next.find(x => x.name === from);
+      if (g && to && from !== '기타' && !next.some(x => x.name === to)){ g.name = to; renames[from] = to; did.push(from + ' → ' + to); } }
+    for (const n of a.remove || []){ const i = next.findIndex(x => x.name === n && n !== '기타'); if (i >= 0){ next.splice(i, 1); did.push(n + ' 없앰'); } }
+    for (const n0 of a.add || []){ const n = String(n0 || '').trim().slice(0, 12); if (n && n !== '나' && !next.some(x => x.name === n)){ next.splice(next.length - 1, 0, { name:n, color:null }); did.push(n + ' 만듦'); } }
+    if (!did.length) return { ok:false, error:'바꿀 게 없음', groups:GROUPS.slice() };
+    pplGroupsApply(next, renames); await pplSave(); pplNote('인간관계 판 무리를 고쳤어요 — ' + did.join(', ')); return { ok:true, groups:GROUPS.slice() };
+  }
   if (c.name === 'add_person'){
     const name = String(a.name || '').trim().slice(0, 30); if (!name) return { ok:false, error:'name이 비었음' };
     if (pplFind(name)) return { ok:false, error:'이미 판에 있음 — update_person 을 쓴다', id:pplFind(name).id };
@@ -249,7 +288,7 @@ $('ppTheme').onclick = async () => { const i = PP_THEMES.findIndex(x => x[0] ===
 
 function pplFlash(id){ const el = document.querySelector(`[data-pp="${id}"]`); if (!el) return; if (PPL.big) el.scrollIntoView({ block:'center', inline:'center', behavior:'smooth' }); el.classList.remove('new'); void el.offsetWidth; el.classList.add('new'); }
 async function pplItems(name){
-  const hits = [], seen = new Set(), key = name.replace(/\s*(조교|쌤|선생님|님|씨)$/, '');
+  const hits = [], seen = new Set(), key = name.replace(/\s*(팀장|과장|차장|부장|대리|주임|사원|실장|원장|사장|대표|선배|후배|언니|오빠|누나|형|동생|이모|삼촌|선생님|쌤|조교|님|씨)$/, '');
   for (const pn of (await allPans()).sort((a, b) => a.date < b.date ? 1 : -1)) for (const it of pn.items) if (!seen.has(it.id) && (it.text + ' ' + (it.tag || '')).includes(key)){ seen.add(it.id); hits.push({ it, date:pn.date }); }
   return hits.slice(0, 12);
 }
@@ -257,7 +296,7 @@ async function pplSheet(id){
   const p = pplFind(id); if (!p) return;
   const items = await pplItems(p.name), links = (p.links || []).map(x => pplFind(x)).filter(Boolean);
   openSheet(`<h4>${esc(p.name)}</h4>
-    <div class="row" style="flex-wrap:wrap;gap:6px"><input class="free" id="ppRel" value="${esc(p.rel || '')}" placeholder="관계"><select class="free" id="ppGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${g}</option>`).join('')}</select></div>
+    <div class="row" style="flex-wrap:wrap;gap:6px"><input class="free" id="ppRel" value="${esc(p.rel || '')}" placeholder="관계"><select class="free" id="ppGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select></div>
     <textarea class="big" id="ppNote" placeholder="기억할 점">${esc(p.note || '')}</textarea>
     ${(p.notes || []).length ? `<label class="t">세희가 덧붙인 것</label><ul class="cl">${p.notes.slice().reverse().map(n => `<li>${esc(n.text)} <small class="note">${ymdDot(n.at)}</small></li>`).join('')}</ul>` : ''}
     ${links.length ? `<label class="t">이어진 사람</label><p class="note">${links.map(x => esc(x.name)).join(' · ')}</p>` : ''}
@@ -265,7 +304,7 @@ async function pplSheet(id){
     <div class="row" style="margin-top:8px;gap:6px"><button class="chip" data-pact="save" data-id="${p.id}">저장</button><button class="chip danger" data-pact="del" data-id="${p.id}">떼기</button></div>`);
 }
 function pplAddSheet(){
-  openSheet(`<h4>사람 붙이기</h4><input class="free" id="ppNewName" placeholder="이름 (예: 이예진 조교)"><div class="row" style="margin-top:6px;gap:6px"><input class="free" id="ppNewRel" placeholder="관계 (예: 같이 일하는 조교)"><select class="free" id="ppNewGrp">${GROUPS.map(g => `<option>${g}</option>`).join('')}</select><select class="free" id="ppNewSex"><option value="">성별 모름</option><option value="여">여성</option><option value="남">남성</option></select></div>
+  openSheet(`<h4>사람 붙이기</h4><input class="free" id="ppNewName" placeholder="이름 (예: 김지민 팀장, 수진이)"><div class="row" style="margin-top:6px;gap:6px"><input class="free" id="ppNewRel" placeholder="관계 (예: 같은 팀 선배)"><select class="free" id="ppNewGrp">${GROUPS.map(g => `<option>${esc(g)}</option>`).join('')}</select><select class="free" id="ppNewSex"><option value="">성별 모름</option><option value="여">여성</option><option value="남">남성</option></select></div>
     <input class="free" id="ppNewNote" placeholder="기억할 점 (선택)" style="margin-top:6px"><div class="row" style="margin-top:8px"><button class="chip" data-pact="add">붙이기</button></div><p class="note" id="ppMsg"></p>`);
 }
 $('sheet').addEventListener('click', async e => {
@@ -289,6 +328,41 @@ $('sheet').addEventListener('click', async e => {
 });
 $('ppMap').addEventListener('click', e => { if (e.target.closest('.pp-me')) return pdOpen('me'); const n = e.target.closest('[data-pp]'); if (n) pdOpen(n.dataset.pp); });
 $('ppAdd').onclick = pplAddSheet;
+/* ── 무리 고치기 화면 (v1.5.12) — 이름·색·순서·더하기·빼기. 기타는 맨 끝 고정 ── */
+function pplGroupSheet(){ PPL.gEdit = pplGroupsOut().map(g => ({ ...g, from:g.name })); PPL.gDel = null; pplGroupDraw(); }
+function pplGroupRead(){ for (const el of document.querySelectorAll('#sheet [data-gname]')){ const g = PPL.gEdit[Number(el.dataset.gname)]; if (g && g.from !== '기타') g.name = el.value.trim().slice(0, 12); } }
+function pplGroupDraw(msg){
+  const G = PPL.gEdit, cnt = n => n ? PPL.list.filter(p => p.group === n).length : 0, last = G.length - 1;
+  openSheet(`<h4>무리 고치기</h4><p class="note">사람을 묶는 칸이에요. 이름을 바꾸면 그 무리 사람도 같이 옮겨 가고, 뺀 무리 사람은 '기타'로 가요. 동그라미를 누르면 색이 바뀌어요.</p>
+    <div class="gq-list">${G.map((g, i) => { const isEtc = g.from === '기타', n = cnt(g.from), arm = PPL.gDel === i;
+      return `<div class="gq-row"><button class="gq-dot" data-gact="color" data-i="${i}" style="background:${g.color || '#5c5340'}" aria-label="색 바꾸기"></button>
+        <input class="free" data-gname="${i}" value="${esc(g.name)}" maxlength="12" placeholder="무리 이름" ${isEtc ? 'disabled' : ''}><small class="gq-n">${n}명</small>
+        <button class="ib" data-gact="up" data-i="${i}" ${i === 0 || isEtc ? 'disabled' : ''} aria-label="위로">↑</button><button class="ib" data-gact="down" data-i="${i}" ${i >= last - 1 || isEtc ? 'disabled' : ''} aria-label="아래로">↓</button>
+        <button class="chip danger${arm ? ' on' : ''}" data-gact="del" data-i="${i}" ${isEtc ? 'disabled' : ''}>${arm ? n + '명 기타로 · 한 번 더' : '빼기'}</button></div>`; }).join('')}</div>
+    <div class="row" style="gap:6px;margin-top:8px"><button class="chip" data-gact="add">+ 무리 더하기</button><button class="chip" data-gact="save">저장</button></div><p class="note" id="gqMsg">${esc(msg || '')}</p>`);
+}
+$('sheet').addEventListener('click', async e => {
+  const b = e.target.closest('[data-gact]'); if (!b || b.disabled) return;
+  pplGroupRead(); const G = PPL.gEdit, i = Number(b.dataset.i), a = b.dataset.gact;
+  if (a !== 'del') PPL.gDel = null;
+  if (a === 'color'){ const k = GROUP_PALETTE.indexOf(G[i].color); G[i].color = GROUP_PALETTE[(k + 1) % GROUP_PALETTE.length]; return pplGroupDraw(); }
+  if (a === 'up' || a === 'down'){ const j = a === 'up' ? i - 1 : i + 1; if (j < 0 || j >= G.length - 1) return; [G[i], G[j]] = [G[j], G[i]]; return pplGroupDraw(); }
+  if (a === 'del'){ const n = PPL.list.filter(p => p.group === G[i].from).length;
+    if (n && PPL.gDel !== i){ PPL.gDel = i; return pplGroupDraw(); }
+    PPL.gDel = null; G.splice(i, 1); return pplGroupDraw(); }
+  if (a === 'add'){ const used = new Set(G.map(g => g.color)); G.splice(G.length - 1, 0, { name:'', color:GROUP_PALETTE.find(c => !used.has(c)) || GROUP_PALETTE[0], from:null }); pplGroupDraw();
+    const ins = document.querySelectorAll('#sheet [data-gname]'); if (ins.length > 1) ins[ins.length - 2].focus(); return; }
+  if (a === 'save'){
+    const names = G.map(g => g.name);
+    if (names.some(n => !n)) return pplGroupDraw('이름이 빈 무리가 있어요.');
+    if (names.some(n => n === '나')) return pplGroupDraw("'나'는 무리 이름으로 못 써요.");
+    if (new Set(names).size !== names.length) return pplGroupDraw('같은 이름의 무리가 둘 있어요.');
+    const renames = {}; for (const g of G) if (g.from && g.from !== g.name) renames[g.from] = g.name;
+    await pplLoad(); pplGroupsApply(G.map(g => ({ name:g.name, color:g.color })), renames); await pplSave();
+    dlog('사람', '무리 고침 · ' + GROUPS.join('·')); closeSheet(); pplRender(true); toast('무리를 고쳤어요');
+  }
+});
+$('ppGroups').onclick = async () => { await pplLoad(); pplGroupSheet(); };
 $('ppCenter').onclick = () => { PPL.big = !PPL.big; pplRender(true); };
 
 /* ── 인물 기록부 (v1.3.4) — 수사판에서 '나'든 다른 사람이든 누르면 똑같은 한 장짜리 서류 ──
@@ -309,7 +383,7 @@ async function pdDoc(p, isMe){
     const hints = INFO_HINT.filter(h => !p.info.some(x => x.k === h));
     return `${sec(1, '기본', `<div class="pd-form">
         <label>이름<input id="pdName" value="${esc(p.name)}"></label>
-        ${isMe ? '<label>관계<input value="본인" disabled></label>' : `<label>관계<input id="pdRel" value="${esc(p.rel || '')}" placeholder="예: 같이 일하는 조교"></label><label>무리<select id="pdGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${g}</option>`).join('')}</select></label>`}
+        ${isMe ? '<label>관계<input value="본인" disabled></label>' : `<label>관계<input id="pdRel" value="${esc(p.rel || '')}" placeholder="예: 대학 동기, 단골 손님"></label><label>무리<select id="pdGrp">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select></label>`}
         <label>성별<select id="pdSex">${[['', '모름'], ['여', '여성'], ['남', '남성']].map(([v, t]) => `<option value="${v}" ${(p.sex || '') === v ? 'selected' : ''}>${t}</option>`).join('')}</select></label></div>
         <div class="pd-rows" style="margin-top:8px">${p.info.map((x, i) => `<div class="pd-irow"><input data-ik="${i}" value="${esc(x.k)}" placeholder="항목"><input data-iv="${i}" value="${esc(x.v)}" placeholder="내용"><button class="pd-x" data-del="info" data-i="${i}">빼기</button></div>`).join('')}</div>
         <div class="pd-addrow">${hints.map(h => `<button class="pd-add" data-addk="${h}">+ ${h}</button>`).join('')}<button class="pd-add" data-addk="">+ 다른 항목</button></div>`)}

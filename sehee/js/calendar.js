@@ -53,7 +53,7 @@ function calDay(d){
   const x = parseYmd(d), list = CAL.byDate[d] || [];
   el.innerHTML = `<div class="cd-head"><b>${x.getMonth() + 1}월 ${x.getDate()}일 (${WD[x.getDay()]})</b>${d === S.today ? '<span class="tg">오늘</span>' : ''}<button class="ib" data-cal="dclose" aria-label="닫기">✕</button></div>
     <div class="cd-list">${list.length ? list.map(it => `<div class="cd-it${it.done ? ' done' : ''}" style="--c:${secColor(it.sec)}"><span class="t">${it.time || '시간 미정'}</span><span class="x">${esc(it.text)}</span><span class="s">${esc(secName(it.sec))}${it.tag ? ' · ' + esc(it.tag) : ''}</span></div>`).join('') : '<p class="note">이 날은 비어 있어요.</p>'}</div>
-    <div class="cd-add"><input id="calAdd" placeholder="+ 이 날 일정 (예: 15:00 학부모 상담)" enterkeyhint="done"><button class="ib" data-cal="add">넣기</button></div>`;
+    <div class="cd-add"><input id="calAdd" placeholder="+ 이 날 일정 (예: 15:00 미팅)" enterkeyhint="done"><button class="ib" data-cal="add">넣기</button></div>`;
   el.classList.add('on');
 }
 async function calAddItem(){

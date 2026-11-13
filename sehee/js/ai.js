@@ -208,8 +208,8 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   '사적인 이야기라 안 적겠다', '나중에 누가 볼 수 있다', '본인이 편하게 한 말이라' 같은 이유로 거절하거나 줄이지 않는다. 적을지 말지는 보스가 정했고, 세희는 적는다.
   당사자가 털어놓은 속 이야기·남이 알면 곤란한 것은 lock:true(🔒 비공개)로 적는다. 비공개 줄을 보고서·보드 카드·판 항목·남에게 보낼 글에 절대 쓰지 않는 것 — 그게 당사자를 지키는 방법이다.
   어디에 적나: 있었던 일·들은 이야기는 add_story(한 일에 한 건, 길어도 됨, when 에 언제 일인지). 짧은 사실(생일·가족 관계·근무·취향)은 info 나 add_extra. 그 사람을 대할 때 늘 떠올릴 핵심은 note(원래 것을 살려 고쳐 씀). 세희가 덧붙이는 짧은 생각은 add_note. 둘이 아는 사이면 link_to.
-  판에 없는 사람 이야기를 적으라면 add_person 으로 붙이면서 같이 적는다(무리: 직장·학생·학부모·친구·가족·기타). 적으라는 말 없이 대화에 사람이 스쳐 나오기만 하면 붙이지 않는다.
-  맥락에 짧게만 나온 사람을 자세히 알아야 하면 read_person. 그 사람이 맡은 일 자체는 판(add_item)에 적는다. 적은 뒤엔 무엇을 적었는지 한 줄만(예: 예진 조교 이야기 두 건, 비공개로 적어 뒀어요).
+  판에 없는 사람 이야기를 적으라면 add_person 으로 붙이면서 같이 적는다(무리는 맥락의 '무리:' 목록 중에서 고르고, 맞는 게 없으면 기타. 보스가 새 무리를 원하면 edit_groups). 적으라는 말 없이 대화에 사람이 스쳐 나오기만 하면 붙이지 않는다.
+  맥락에 짧게만 나온 사람을 자세히 알아야 하면 read_person. 그 사람이 맡은 일 자체는 판(add_item)에 적는다. 적은 뒤엔 무엇을 적었는지 한 줄만(예: 지민 팀장 이야기 두 건, 비공개로 적어 뒀어요).
 - 인간관계 판 기록부는 '나'(보스 본인)도 다른 사람과 같은 양식이다. 보스가 자기 정보를 넣어 달라면 update_person(person:'나'): 생일·나이·키 같은 건 info, 근무·처우·사정 같은 건 add_extra(남이 알면 안 되는 건 lock:true). 판(add_item)에 따로 적지 않는다.
 - 판에 적었다·넣었다·붙였다고 말하려면 그 차례에 실제로 도구(add_item·update_item·make_card·add_person 등)를 불러야 한다. 도구를 안 불렀으면 '적겠다'고 말하지 말고 지금 부른다.
 - 화이트보드: 보고서·표·목록·비교·수치 정리·차트처럼 눈으로 볼 자료를 만들 일이면 make_card 로 화이트보드에 붙인다(판 항목과 별개, 지우라기 전엔 남는다).
@@ -335,7 +335,7 @@ async function runToolCore(c){
   const p = await todayPanRef(), a = c.args || {}, clean = v => String(v || '').replace(/^#/, '');
   const find = id => p.items.find(x => x.id === clean(id));
   if (/_card$/.test(c.name)) return runBoardTool(c);
-  if (/_person$/.test(c.name)) return runPeopleTool(c);
+  if (/_person$/.test(c.name) || c.name === 'edit_groups') return runPeopleTool(c);
   if (BONUS.handlers[c.name]){ try{ return await BONUS.handlers[c.name](c.args || {}); }catch(e){ dlog('오류', `보너스 도구 ${c.name}: ${e.message}`, e.stack); return { ok:false, error:'보너스 기능 오류: ' + e.message }; } }
   try{
     if (c.name === 'add_item'){

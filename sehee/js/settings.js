@@ -64,7 +64,7 @@ function settingsSheet(){
     <label class="t">연결 기록 — 최근 대화가 어떻게 오갔는지(내용·키는 안 남겨요)</label>
     <div class="ailog" id="aiLog">불러오는 중…</div>
     <div class="row"><button class="chip" data-sact="copylog">기록 복사</button><button class="chip" data-sact="clearlog">기록 비우기</button></div>
-    <p class="note">${AI.cfg.provider === 'gemini' ? '결제를 연결하지 않은 무료 키면, 보낸 판 내용을 구글이 제품 개선에 쓰고 사람이 읽을 수도 있어요(약관상 개인정보는 넣지 말라고 해요). 판에 학생·학부모 이름이 있으면 AI Studio에서 그 키의 프로젝트에 결제를 연결하세요. 연결하면 유료 등급이 돼서 내용이 학습에 안 쓰여요. ' : ''}API 요금은 Claude 구독과 따로예요. 월 사용 한도를 걸어두세요.</p>
+    <p class="note">${AI.cfg.provider === 'gemini' ? '결제를 연결하지 않은 무료 키면, 보낸 판 내용을 구글이 제품 개선에 쓰고 사람이 읽을 수도 있어요(약관상 개인정보는 넣지 말라고 해요). 판에 다른 사람 이름·사정이 있으면 AI Studio에서 그 키의 프로젝트에 결제를 연결하세요. 연결하면 유료 등급이 돼서 내용이 학습에 안 쓰여요. ' : ''}API 요금은 Claude 구독과 따로예요. 월 사용 한도를 걸어두세요.</p>
     <hr class="s">
     <div class="row"><span class="note">세희 깡통 ${APP_VERSION}</span><button class="chip" data-sact="check" style="margin-left:auto">새 버전 확인</button></div>`);
   storageInfo();

@@ -746,3 +746,11 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .bt-hint span+span{animation-delay:.35s}
 @keyframes btHint{0%,60%,100%{opacity:.32}25%{opacity:.85;text-shadow:0 0 5px rgba(255,236,170,.9)}}
 @media (prefers-reduced-motion:reduce){.bt-hint span{animation:none;opacity:.5}}
+/* v1.5.12 인간관계 판 무리 고치기 (A) */
+.gq-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.gq-row{display:flex;align-items:center;gap:5px}
+.gq-row input{flex:1;min-width:0}
+.gq-dot{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);cursor:pointer}
+.gq-n{flex:none;width:30px;text-align:right;color:#8a8373;font-size:.72rem}
+.gq-row .ib:disabled,.gq-row .chip:disabled{opacity:.3}
+.gq-row .chip.danger.on{background:#fff4f2;color:#c0392b;border-color:#c0392b;white-space:nowrap}
