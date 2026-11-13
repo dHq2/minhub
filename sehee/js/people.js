@@ -502,22 +502,30 @@ async function imgShrink(src, max, q){
 }
 async function clueAdd(src, people, o){
   await clueLoad(); const id = 'cl' + uid();
-  const full = await imgShrink(src, CLUE_PX, 0.8), th = await imgShrink(src, CLUE_TH, 0.74);
+  const full = await imgShrink(src, CLUE_PX, 0.8), th = await imgShrink(src, CLUE_TH, 0.74), shape = await clueShapeOf(th);
   await kvSet('clue_' + id, { full, th }); CLU.th.set(id, th);
-  const c = { id, at:Date.now(), when:(o && o.when) || '', text:String((o && o.text) || '').slice(0, 300), people:[...new Set(people)], ...(o && o.lock ? { lock:true } : {}), by:(o && o.by) || 'boss' };
+  const c = { id, shape, at:Date.now(), when:(o && o.when) || '', text:String((o && o.text) || '').slice(0, 300), people:[...new Set(people)], ...(o && o.lock ? { lock:true } : {}), by:(o && o.by) || 'boss' };
   CLU.list.push(c); await clueSave(); dlog('사람', `사진 단서 넣음 ${id} · ${Math.round(full.length / 1024)}KB · ${c.people.join(',')}`); return c;
 }
 async function clueDel(id){ CLU.list = (CLU.list || []).filter(c => c.id !== id); CLU.th.delete(id); await kvDel('clue_' + id); await clueSave(); dlog('사람', '사진 단서 지움 ' + id); }
 /* 사람을 떼면 그 사람만 걸린 단서는 지우고, 여럿이 걸린 단서에선 그 사람만 뺀다 */
 async function clueForget(pid){ await clueLoad(); for (const c of CLU.list.filter(c => c.people.includes(pid))){ c.people = c.people.filter(x => x !== pid); if (!c.people.length) await clueDel(c.id); } await clueSave(); }
+/* v1.5.18 사진 비율 셋 — 가로(w, 4:3·두 칸) · 세로(t, 3:4) · 정사각(s) */
+const clueShape = (w, h) => { const r = w / Math.max(1, h); return r >= 1.15 ? 'w' : r <= 0.87 ? 't' : 's'; };
+function clueShapeOf(url){ return new Promise(ok => { const i = new Image(); i.onload = () => ok(clueShape(i.naturalWidth, i.naturalHeight)); i.onerror = () => ok('s'); i.src = url; }); }
+const clueTilt = id => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) | 0; return ((Math.abs(h) % 9) - 4) * 0.45; };   /* -1.8° ~ +1.8°, 사진마다 늘 같은 기울기 */
 async function clueThumb(id){ if (CLU.th.has(id)) return CLU.th.get(id); const v = await kvGet('clue_' + id); const t = v && v.th || ''; CLU.th.set(id, t); return t; }
 function clueGrid(pid){
   const cl = cluesOf(pid);
-  return `<div class="cl-grid" data-clpid="${pid}">${cl.map(c => `<button class="cl-th${c.lock ? ' lk' : ''}" data-clue="${c.id}" aria-label="사진 단서 크게 보기"><span class="cl-img" data-clth="${c.id}"></span><small>${esc(c.when || ymdDot(c.at))}${c.lock ? ' 🔒' : ''}</small><em>${esc(c.text || '설명 없음')}</em></button>`).join('')}
+  return `<div class="cl-grid" data-clpid="${pid}">${cl.map(c => `<button class="cl-th sh-${c.shape || 's'}${c.lock ? ' lk' : ''}" data-clue="${c.id}" style="--tilt:${clueTilt(c.id)}deg" aria-label="사진 단서 크게 보기"><span class="cl-ph"><i class="cl-tape"></i><span class="cl-img" data-clth="${c.id}"></span></span><small>${esc(c.when || ymdDot(c.at))}${c.lock ? ' 🔒' : ''}</small><em>${esc(c.text || '설명 없음')}</em></button>`).join('')}
     <button class="cl-add" data-cladd="${pid}"><b>＋</b><span>사진 넣기</span></button></div>
     <p class="pd-empty cl-hint">${cl.length ? '' : '이 사람과 있었던 일을 사진으로 — 여러 장 한 번에, 컴퓨터에선 복사한 사진을 Ctrl+V 로 붙여도 돼요. 채팅에 사진을 보내며 "○○ 단서에 붙여줘"라고 해도 돼요.'}</p>`;
 }
-async function clueThumbs(){ for (const el of document.querySelectorAll('#pdBody [data-clth]')){ const t = await clueThumb(el.dataset.clth); if (t && el.isConnected) el.style.backgroundImage = `url("${t}")`; } }
+async function clueThumbs(){ let fixed = false;
+  for (const el of document.querySelectorAll('#pdBody [data-clth]')){ const t = await clueThumb(el.dataset.clth); if (!t || !el.isConnected) continue; el.style.backgroundImage = `url("${t}")`;
+    const c = (CLU.list || []).find(x => x.id === el.dataset.clth);   /* 예전에 넣은 사진은 처음 볼 때 비율을 재서 적어 둔다 */
+    if (c && !c.shape){ c.shape = await clueShapeOf(t); fixed = true; const b = el.closest('.cl-th'); if (b){ b.classList.remove('sh-s'); b.classList.add('sh-' + c.shape); } } }
+  if (fixed) await clueSave(); }
 async function clueAddFiles(pid, files){
   const imgs = [...files].filter(f => /^image\//.test(f.type)).slice(0, 20); if (!imgs.length) return;
   toast(`사진 ${imgs.length}장 넣는 중…`);

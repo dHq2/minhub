@@ -2,8 +2,8 @@ const { chromium } = require('playwright'); const path = require('path');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'text', text:'' } },{ type:'content_block_delta', index:0, delta:{ type:'text_delta', text:t } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'end_turn' }, usage:{ output_tokens:5 } }]);
 const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'tool_use', id:'tu' + Math.random().toString(36).slice(2,6), name } },{ type:'content_block_delta', index:0, delta:{ type:'input_json_delta', partial_json:JSON.stringify(input) } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'tool_use' }, usage:{ output_tokens:5 } }]);
-// v1.0 (2026-11-14, C) 인간관계 사진 단서 — 기록부 ＋ 여러 장, 크게 보기(설명·날짜·사람·🔒·‹ ›·지우기), Ctrl+V 붙여넣기, 세희 clue_to_person·읽기, 동기화 키, 사람 떼면 정리, 다시 켜도 남음
-const FACE = path.join(__dirname, 'img', 'face.jpg'), SHORT = path.join(__dirname, 'img', 'short.png');
+// v1.1 (2026-11-14, C) 액자 모양·비율 셋(가로 두 칸·세로·정사각) · v1.0 인간관계 사진 단서 — 기록부 ＋ 여러 장, 크게 보기(설명·날짜·사람·🔒·‹ ›·지우기), Ctrl+V 붙여넣기, 세희 clue_to_person·읽기, 동기화 키, 사람 떼면 정리, 다시 켜도 남음
+const FACE = path.join(__dirname, 'img', 'face.jpg'), SHORT = path.join(__dirname, 'img', 'short.png'), WIDE = path.join(__dirname, 'img', 'wide.jpg'), SQ = path.join(__dirname, 'img', 'square.jpg');
 (async () => { const b = await chromium.launch(); const errs = [];
   for (const [name, opt] of [['폰', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }], ['컴', { viewport:{ width:1366, height:860 } }]]){
     const ctx = await b.newContext({ ...opt, serviceWorkers:'block' }); const p = await ctx.newPage(); p.on('pageerror', e => errs.push(name + ': ' + e.message));
@@ -23,6 +23,13 @@ const FACE = path.join(__dirname, 'img', 'face.jpg'), SHORT = path.join(__dirnam
     const g1 = await p.evaluate(() => ({ 장:document.querySelectorAll('#pdBody .cl-th').length, 섬네일:[...document.querySelectorAll('#pdBody .cl-img')].every(x => /data:image\/jpeg/.test(x.style.backgroundImage)), 목록:CLU.list.length, 키:CLU.list.map(c => 'clue_' + c.id).every(k => syncKey(k)), 글키:syncKey('pplclues') }));
     console.log(name, '두 장 넣음', JSON.stringify(g1), '|', await p.evaluate(() => $('toastMsg').textContent));
     await p.evaluate(() => document.querySelector('#pdBody .cl-grid').scrollIntoView({ block:'center' })); await p.waitForTimeout(200); await p.screenshot({ path:`/tmp/clue-${name}-1.png` });
+    // 비율 셋 — 가로·정사각 더 넣고 모양 확인
+    const [fc2] = await Promise.all([p.waitForEvent('filechooser'), tap('#pdBody [data-cladd]')]); await fc2.setFiles([WIDE, SQ]); await p.waitForTimeout(1500);
+    const shp = await p.evaluate(() => [...document.querySelectorAll('#pdBody .cl-th')].map(b => { const ph = b.querySelector('.cl-ph').getBoundingClientRect(), im = b.querySelector('.cl-img').getBoundingClientRect(), sh = [...b.classList].find(c => /^sh-/.test(c));
+      return `${sh}:${(im.width / im.height).toFixed(2)}:${Math.round(ph.width)}px:테두리${Math.round(ph.width - im.width) / 2}`; }).join(' '));
+    console.log(name, '비율 셋', shp, '| 테이프', await p.locator('#pdBody .cl-tape').count(), '| 기울기 다름', await p.evaluate(() => new Set([...document.querySelectorAll('#pdBody .cl-th')].map(b => b.style.getPropertyValue('--tilt'))).size > 1));
+    await p.evaluate(() => document.querySelector('#pdBody .cl-grid').scrollIntoView({ block:'center' })); await p.waitForTimeout(200); await p.screenshot({ path:`/tmp/clue-${name}-frames.png` });
+    await p.evaluate(async () => { for (const c of CLU.list.filter(x => x.shape === 'w' || (x.shape === 's' && x.people.length === 1 && x !== CLU.list[1]))) if (c.shape === 'w' || c.id === CLU.list[CLU.list.length - 1].id) await clueDel(c.id); await pdRender(); });
     // 크게 보기 — 설명·날짜·사람·🔒
     await tap('#pdBody .cl-th'); await p.waitForTimeout(600);
     await p.fill('#clvText', '첫 프로젝트 끝나고 같이 찍은 사진'); await p.locator('#clvText').dispatchEvent('change');

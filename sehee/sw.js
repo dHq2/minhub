@@ -4,7 +4,7 @@
    v1.5.0 — 본체가 css/app.css · js/*.js 로 쪼개짐. 새 파일을 만들면 아래 CODE 목록에도 꼭 넣는다(안 넣으면 오프라인·업데이트 때 빠짐).
             CODE 파일은 주소 뒤에 ?v=VERSION 을 붙여 받는다 — 중간 캐시에 남은 옛 파일이 새 index.html 과 섞이지 않게.
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v1.5.17';
+const VERSION = 'v1.5.18';
 const CACHE = 'sehee-' + VERSION;
 /* 본체 코드 — index.html 의 <script src> 순서 그대로 */
 const CODE = ['./css/app.css',
