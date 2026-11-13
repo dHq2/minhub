@@ -682,3 +682,12 @@ body:not(.office):not(.v-board) .brain{display:none}
 .it.done .tx,.it.later .tx{opacity:.62}
 .it.later .tx{color:var(--done)}
 .it .tx .mk{font-size:.86em;margin-right:4px;vertical-align:1px}
+
+/* v1.5.4 인물 기록부 — 이야기 기록(날짜별 타임라인) */
+.pd-story{list-style:none;margin:0;padding:0 0 0 12px;border-left:2px solid #d8cfbb}
+.pd-story li{position:relative;margin:0 0 10px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.55)}
+.pd-story li::before{content:"";position:absolute;left:-18px;top:11px;width:9px;height:9px;border-radius:50%;background:#8a6d3b;box-shadow:0 0 0 2px #fbf7ee}
+.pd-story li.lk{background:#fff4f2}.pd-story li.lk::before{background:#c0392b}
+.pd-sw{font-size:.72rem;color:#8a8373;margin-bottom:2px}.pd-sw em{font-style:normal;margin-left:6px;color:#a39c8c}
+.pd-story p{margin:0;font-size:.86rem;line-height:1.6;white-space:pre-wrap}
+.pd-srow{border:1px dashed #d8cfbb;border-radius:6px;padding:6px;margin-bottom:6px}.pd-shead{display:flex;gap:5px;align-items:center;margin-bottom:4px}.pd-shead input{flex:1;min-width:0}
