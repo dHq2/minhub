@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.7
+/* 세희 보너스 업데이트 — B0.7.1
    이 폴더(sehee/bonus/)는 '제작기 2' 방 몫이다. 본체(index.html·sw.js)는 메인 방만 고친다.
    본체와는 window.SEHEE 창구로 잇는다. 쓰는 법은 인수인계 문서 4장.
 
@@ -31,10 +31,14 @@
            제목 낱말이 맞을 때만 붙인다(날씨·뉴스·환율 같은 검색은 건너뜀). web 카드도 대표 사진 창구가 없으면 query 로 위키·사진을 대신 찾는다.
    B0.7 (2026-11-13) 출처 화면 캡처 카드. 세희가 웹 검색으로 답하면 출처 페이지 화면 캡처(WordPress.com mShots, 무료·비상업용)를
         '출처 화면' 카드로 말풍선에 붙인다 — 쇼핑몰 상품처럼 위키에 사진이 없는 것도 보이게. 위키 사진이 맞으면 그 줄도 같이.
-        캡처는 처음 부를 때 몇 초 만드는 중 그림이 나오니 6초·14초 뒤 한 번씩 다시 불러 진짜 화면으로 바꾼다. b_visual web 도 og 창구가 없으면 캡처로. */
+        캡처는 처음 부를 때 몇 초 만드는 중 그림이 나오니 6초·14초 뒤 한 번씩 다시 불러 진짜 화면으로 바꾼다. b_visual web 도 og 창구가 없으면 캡처로.
+   B0.7.1 (2026-11-13, 메인이 보스 지시로 긴급 수정) 사탕을 물었는데 G마켓 강연 사진·출처 화면 줄이 뜨던 것.
+        ① 출처 제목에서 사이트 이름(G마켓·11번가·쿠팡·나무위키 …)을 빼고 상품 이름 쪽을 고른다. 한 글자 낱말(g 등)은 맞춤에 안 씀.
+        ② 자동 카드는 한 줄만: 본체 v1.4.1 창구 SEHEE.og 로 출처 페이지 대표 사진(상품 사진)을 먼저 → 없으면 위키 사진(더 엄하게) → 그래도 없을 때만 출처 화면 한 장.
+           출처를 전부 화면으로 늘어놓지 않는다. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.7');
+  S.setVersion('B0.7.1');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -523,8 +527,11 @@
 
   /* ── ⑥ 물건 사진 자동 (B0.6) — 세희가 웹 검색으로 답했는데 카드를 안 붙였을 때 ── */
   const SKIP_Q = /날씨|기온|미세먼지|뉴스|속보|환율|주가|시세표|코스피|영업\s*시간|몇\s*시까지|길\s*찾|교통|버스|지하철|일정|휴무/;
-  const cleanTitle = t => strip(t).split(/\s[-|–—:·]\s|\s\|\s/)[0].replace(/\(r\d+\s*판\)|\(.*?판\)/g, '').replace(/\s+/g, ' ').trim();
-  const toks = t => (String(t).toLowerCase().match(/[a-z0-9]+|[가-힣]{2,}/g) || []).filter(w => !/^(the|and|of|for|with|full|specifications?|review|price|가격|스펙|사양|정보|리뷰)$/.test(w));
+  /* B0.7.1 사이트 이름은 빼고 상품·글 이름 쪽 조각을 고른다 */
+  const SITE_RE = /^(g마켓|gmarket|지마켓|11번가|쿠팡|coupang|옥션|auction|네이버|naver|네이버\s*쇼핑|다음|daum|나무위키|위키백과|wikipedia|티스토리|tistory|블로그|blog|인터파크|ssg|ssg\.com|이마트|롯데온|위메프|티몬|다나와|에누리|무신사|올리브영|youtube|유튜브|검색결과|쇼핑)$/i;
+  const cleanTitle = t => { const parts = strip(t).replace(/\(r\d+\s*판\)|\(.*?판\)/g, '').split(/\s[-|–—:·]\s|\s\|\s|\s*[:：]\s*/).map(x => x.replace(/검색\s*결과|최저가|추천|BEST\s*\d*|\(\d{4}\)/gi, '').replace(/\s+/g, ' ').trim()).filter(x => x && !SITE_RE.test(x) && !/^[\w.-]+\.(com|co\.kr|net|kr)$/i.test(x));
+    return parts.sort((a, b) => b.length - a.length)[0] || ''; };
+  const toks = t => (String(t).toLowerCase().match(/[a-z0-9]{2,}|[가-힣]{2,}/g) || []).filter(w => !SITE_RE.test(w) && !/^(the|and|of|for|with|full|specifications?|review|price|가격|스펙|사양|정보|리뷰|마켓)$/.test(w));
   const fits = (q, title) => { const a = toks(q), b = new Set(toks(title)); if (!a.length) return false; const hit = a.filter(w => b.has(w)).length; return hit >= Math.min(2, a.length) && hit / a.length >= 0.5; };
   const autoBusy = new Set(), autoTried = new Set();
   async function autoVisual(){
@@ -538,15 +545,20 @@
     try{
       const qs = [...new Set(m.src.map(x => cleanTitle(x.t || '')).filter(q => q && q.length >= 3))].slice(0, 3);
       const groups = [];
-      for (const q of qs){
+      /* ① 출처 페이지 대표 사진(본체 v1.4.1 SEHEE.og) — 쇼핑 상품은 이게 진짜 사진 */
+      if (typeof S.og === 'function'){
+        const urls = m.src.map(x => x && x.u).filter(u => /^https?:\/\//.test(u || '')).slice(0, 4), items = [];
+        for (const u of urls){ const o = await S.og(u).catch(() => null); if (o && o.img && !items.some(it => it.img === o.img)) items.push({ img:o.img, big:o.img, url:u, title:strip(o.title).slice(0, 60) || host(u), site:o.site || host(u) }); if (items.length >= 3) break; }
+        if (items.length) groups.push({ kind:'web', title:qs[0] || '찾은 사진', similar:false, items, at:Date.now(), auto:true });
+      }
+      for (const q of groups.length ? [] : qs){
         let items = (await findWiki(q, 2).catch(() => [])).filter(it => fits(q, it.title)).slice(0, 1);
         const ph = (await findPhotos(q, 4).catch(() => [])).filter(it => fits(q, it.title));
         items = items.concat(ph).slice(0, 3);
         if (items.length){ groups.push({ kind:'photo', title:q, similar:false, items, at:Date.now(), auto:true }); break; }
       }
-      /* 위키에 없는 쇼핑 상품도 보이게 — 출처 페이지 화면 캡처 */
-      const shots = shotItems(m.src, 3);
-      if (shots.length) groups.push({ kind:'shot', title:'출처 화면', similar:false, items:shots, at:Date.now(), auto:true });
+      /* 아무것도 없을 때만 — 출처 화면 한 장(B0.7.1: 전부 늘어놓지 않음) */
+      if (!groups.length){ const shots = shotItems(m.src, 1); if (shots.length) groups.push({ kind:'shot', title:'출처 화면', similar:false, items:shots, at:Date.now(), auto:true }); }
       if (groups.length){
         if (VIS[m.at]) return null;   // 그사이 세희 카드가 붙었으면 그대로
         VIS[m.at] = groups; saveVis(); decorate();

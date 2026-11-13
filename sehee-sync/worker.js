@@ -1,4 +1,4 @@
-/* 세희 계정·동기화 서버 v1 — Cloudflare Worker + D1
+/* 세희 계정·동기화 서버 v2 — Cloudflare Worker + D1  (v2 2026-11-13: /og 대표 사진 찾기 추가)
    ─ 하는 일
      · 암호(PIN)로 로그인 → 그 사람의 판·대화·보드·설정을 어느 브라우저에서든 연다
      · 한 사람은 한 기기에서만 열린다. 새 기기에서 로그인하면 예전 기기는 다음 확인 때 닫힌다
@@ -57,6 +57,36 @@ async function save(env, user, body){
   return { ok:true, at:now, n:stmts.length };
 }
 
+/* ── /og?u=주소 (v2, 2026-11-13) — 그 페이지 대표 사진·제목 ──
+   세희가 웹 검색으로 찾은 상품·글의 사진을 보여 주려고. 로그인한 사람만, 공개 주소(http/https, 사설·내부 주소 막음)만,
+   앞부분 300KB·6초까지만 읽는다. og:image → twitter:image → 상품 사진처럼 보이는 첫 <img> 순서로 고른다. */
+const PRIVATE_HOST = /^(localhost|.*\.local|.*\.internal|0\.0\.0\.0|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|\[?::1\]?|\[?f[cd]|\[?fe80)/i;
+const absu = (u, base) => { try{ return new URL(u.replace(/&amp;/g, '&'), base).href; }catch(e){ return ''; } };
+const meta = (html, key) => { const re = new RegExp(`<meta[^>]+(?:property|name)=["']${key}["'][^>]*>`, 'i'), m = html.match(re); if (!m) return ''; const c = m[0].match(/content=["']([^"']+)["']/i); return c ? c[1] : ''; };
+async function og(target){
+  let u; try{ u = new URL(target); }catch(e){ return { error:'bad-url' }; }
+  if (!/^https?:$/.test(u.protocol) || PRIVATE_HOST.test(u.hostname) || /^\d+\.\d+\.\d+\.\d+$/.test(u.hostname)) return { error:'blocked' };
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 6000);
+  let html = '';
+  try{
+    const r = await fetch(u.href, { signal:ctl.signal, redirect:'follow', headers:{ 'user-agent':'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36 sehee-og', 'accept':'text/html,*/*;q=0.8', 'accept-language':'ko,en;q=0.7' } });
+    if (!/text\/html|xml/i.test(r.headers.get('content-type') || '')) return { error:'not-html' };
+    const rd = r.body.getReader(), dec = new TextDecoder(); let n = 0;
+    while (n < 300000){ const { done, value } = await rd.read(); if (done) break; n += value.length; html += dec.decode(value, { stream:true }); if (/<\/head>/i.test(html) && /og:image/i.test(html)) break; }
+    try{ rd.cancel(); }catch(e){}
+  }catch(e){ return { error:'fetch-failed' }; } finally { clearTimeout(timer); }
+  const base = u.href;
+  let img = meta(html, 'og:image') || meta(html, 'og:image:url') || meta(html, 'twitter:image') || meta(html, 'twitter:image:src');
+  if (!img || /logo|favicon|sprite|default|og_?img|share_?img|blank/i.test(img)){
+    const imgs = [...html.matchAll(/<img[^>]+(?:data-src|data-original|src)=["']([^"']+\.(?:jpe?g|png|webp)(?:\?[^"']*)?)["']/gi)].map(m => m[1]);
+    const good = imgs.find(x => !/logo|icon|sprite|banner|btn|blank|loading|common|ad[_-]|pixel/i.test(x));
+    if (good) img = good;
+  }
+  const title = (meta(html, 'og:title') || (html.match(/<title[^>]*>([^<]{1,200})<\/title>/i) || [])[1] || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+  const site = (meta(html, 'og:site_name') || u.hostname.replace(/^www\./, '')).slice(0, 40);
+  return { ok:true, img:img ? absu(img, base) : '', title, site, url:u.href };
+}
+
 export default {
   async fetch(req, env){
     if (req.method === 'OPTIONS') return new Response(null, { status:204, headers:cors(req) });
@@ -94,6 +124,7 @@ export default {
       if (a.bad) return json(req, 401, { error:a.bad, device:a.device || null, at:a.at || null });
 
       if (path === '/session') return json(req, 200, { ok:true, user:a.user, device:a.device });
+      if (path === '/og' && req.method === 'GET') return json(req, 200, await og(url.searchParams.get('u') || ''));
       if (path === '/data' && req.method === 'GET'){
         const rows = (await env.DB.prepare('SELECT k, v, ver, at FROM records WHERE user = ?').bind(a.user).all()).results || [];
         const out = {}; for (const r of rows) out[r.k] = { v:JSON.parse(r.v), ver:r.ver, at:r.at };

@@ -867,6 +867,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.4.1) 창구 SEHEE.og(url) — 계정 서버 v2 의 /og 로 그 페이지 대표 사진(og:image → 상품 사진 같은 첫 그림)·제목. 보너스 자료 카드가 쇼핑몰 상품 사진을 바로 보여 준다.
         (v1.4.0) 세 방 체제 — 보너스 갈래 B(제작기 2, sehee/bonus/bonus.js)·C(제작기 3, sehee/bonus-c/c.js). 갈래마다 설정에서 따로 켬/끔, 버전은 B·C로 시작.
           c_ 키도 계정 동기화. 갈래를 B → C 순서로 불러오고 다 끝나면 boot 한 번.
         (v1.3.9) 새 버전은 켤 때 물어본다 — 「업데이트」면 한 번에 가장 최신으로, 「지금 버전으로 계속」이면 그대로(다음에 켤 때 다시). 저절로 새로 고침은 없앰.
@@ -887,7 +888,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.4.1';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -2873,7 +2874,7 @@ document.addEventListener('click', e => {
    본체(index.html·sw.js)는 메인 방만 고친다. 보너스 기능은 다른 방(제작기 2)이 sehee/bonus/ 폴더에만 만든다.
    본체는 부팅 끝에 bonus/bonus.js 를 한 번 불러오고, 아래 SEHEE 창구로만 서로 이어진다(본체 속을 직접 고치지 않게).
    보너스가 고장 나도 본체는 그대로 — 설정 「보너스 업데이트」 끔으로 바로 뺄 수 있다. */
-const BONUS = { tools:[], handlers:{}, prompts:[], menu:[], subs:{}, loaded:false, ver:'', vers:{}, pos:{} };
+const BONUS = { tools:[], handlers:{}, prompts:[], menu:[], subs:{}, loaded:false, ver:'', vers:{}, pos:{}, ogCache:{}, ogOff:false };
 /* v1.4.0 보너스 갈래 여럿 — B(제작기 2, sehee/bonus/), C(제작기 3, sehee/bonus-c/). 갈래마다 따로 켜고 끈다 */
 const LANES = [{ k:'B', path:'bonus/bonus.js', name:'보너스 B' }, { k:'C', path:'bonus-c/c.js', name:'보너스 C' }];
 const laneKey = k => k === 'B' ? 'sehee.bonus' : 'sehee.bonus.' + k;
@@ -2900,6 +2901,18 @@ window.SEHEE = {
   pplPos(id, xy){ if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; else delete BONUS.pos[id]; },
   pplPosAll(map){ BONUS.pos = {}; for (const [id, xy] of Object.entries(map || {})) if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; },
   pplRedraw:() => { if (DW.open === 'people') pplRender(); },
+  /* 웹 페이지 대표 사진 — 계정 서버 /og 로(로그인 필요). {img,title,site} 또는 null. 같은 주소는 기억해 둔다 */
+  async og(u){
+    if (!SYNC.url || !SYNC.token || BONUS.ogOff || !/^https?:\/\//.test(String(u))) return null;
+    if (BONUS.ogCache[u] !== undefined) return BONUS.ogCache[u];
+    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 9000);
+    try{
+      const r = await fetch(SYNC.url + '/og?u=' + encodeURIComponent(u), { headers:authH(), signal:ctl.signal });
+      if (r.status === 404){ BONUS.ogOff = true; dlog('경고', '계정 서버에 /og 가 없어요(서버가 예전 버전)'); return null; }
+      const j = await r.json(); const out = j && j.ok && j.img ? { img:j.img, title:j.title || '', site:j.site || '' } : null;
+      BONUS.ogCache[u] = out; return out;
+    }catch(e){ return null; } finally { clearTimeout(tm); }
+  },
   /* 인간관계 판 배율 지키기 — 숫자면 다시 그려도 그 배율, null 이면 본체 '전체 보기' 배율 */
   pplZoom(k){ BONUS.zoom = k && isFinite(k) ? Math.max(0.2, Math.min(3, +k)) : null; },
   /* 일 생길 때 알려 받기: boot · view(v) · say(세희 말) · tool({name,args,result}) · turnEnd · talk({h,face}) · people(인간관계 판을 다시 그린 직후) */
