@@ -199,8 +199,9 @@
     border-radius:4px;padding:6px 8px;white-space:pre-wrap;word-break:break-all;max-height:12em;overflow:auto;margin:6px 0}
   @keyframes blink{50%{opacity:1}}
   /* 사무실 무대 — 세희(상반신) 뒤에 책상, 책상 위에 서류와 모니터 (v0.6.4) */
-  .stage{--sh:min(310px,42dvh);flex:0 0 auto;position:relative;height:var(--sh);overflow:hidden;transition:height .2s}
-  body.typing .stage{--sh:min(150px,22dvh)}
+  .stage{--sh:min(225px,28dvh);   /* v1.3.9 세희·책상을 줄여서 대화가 더 보이게(전 42dvh) */
+  flex:0 0 auto;position:relative;height:var(--sh);overflow:hidden;transition:height .2s}
+  body.typing .stage{--sh:min(120px,15dvh)}
   .spr{position:absolute;left:50%;top:calc(var(--sh) * .03);height:calc(var(--sh) * .70);transform:translateX(-50%);
     filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));pointer-events:none}
   .desk{position:absolute;left:0;right:0;bottom:0;height:calc(var(--sh) * .30);background:#5a4330 url(art/desk.webp) center top / 100% auto no-repeat;
@@ -674,7 +675,7 @@
       <button class="ib" id="today">오늘</button>
       <button class="ib" id="open" title="끝난 일 숨기기">열린 것만</button>
     </div>
-    <div class="band upd" id="upd"><span>새 버전이 왔어요. 하던 일이 끝나면 저절로 바뀌어요(쓰던 내용은 그대로).</span><button class="ib" id="updGo">지금 적용</button></div>
+    <div class="band upd" id="upd"><span>새 버전이 있어요. 지금 업데이트할까요?</span><button class="ib" id="updGo">업데이트</button><button class="ib" id="updNo">지금 버전으로 계속</button></div>
     <div class="band old" id="old"><span>지난 판이에요. 여기서 고쳐도 오늘 판은 그대로예요.</span><button class="ib" id="oldGo">오늘 판으로</button></div>
   </div>
 </header>
@@ -866,6 +867,8 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
+        (v1.3.9) 새 버전은 켤 때 물어본다 — 「업데이트」면 한 번에 가장 최신으로, 「지금 버전으로 계속」이면 그대로(다음에 켤 때 다시). 저절로 새로 고침은 없앰.
+        (v1.3.9) 사무실 기본 화면 — 세희·책상 높이 42%→28%(글 쓸 땐 22%→15%), 그만큼 대화가 더 보인다.
         (v1.3.8) 사무실로 갈 때 주소를 pushState 로 — 컴퓨터 틀에서 #office 칸으로 문서가 36px 굴러 서랍 머리가 잘리던 것(보조 방 발견). 뒤로 가기도 그대로.
           창구 SEHEE.pplZoom(k|null) — 인간관계 판을 다시 그려도 보너스 배율 유지.
         (v1.3.7) 판 = 왼쪽에서 나오는 서랍. 달력·보드·사람과 똑같은 서랍 모양(색 띠 머리 '🗒️ 판' + ✕, 그 아래 날짜 줄), 방향만 왼쪽.
@@ -882,7 +885,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.3.8';
+const APP_VERSION = 'v1.3.9';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1434,12 +1437,11 @@ document.addEventListener('visibilitychange', async () => {
 });
 window.addEventListener('pagehide', () => { flush(); });
 
-/* ── 새 버전 (v1.2.7) — 몇 개가 쌓였든 한 번에 최신으로 ──
-   예전엔 새 껍데기가 '대기'하다 띠를 누르면 한 칸씩 넘어가서, 자리를 비운 사이 여러 번 올라오면 띠를 여러 번 눌러야 했다.
-   이제 새 껍데기는 받자마자 바로 자리를 잡고(skipWaiting), 화면은 세희가 쉬고 있을 때 저절로 한 번만 새로 고친다.
-   대답 중·작업 중·글 쓰는 중이면 기다렸다가 끝나면(또는 앱을 내렸을 때) 고친다. 띠의 「지금 적용」은 언제 눌러도 한 번이면 끝. */
-let waitingSW = null, wantReload = false, pendingReload = false, reloading = false;
-const hadCtrl = 'serviceWorker' in navigator && !!navigator.serviceWorker.controller;
+/* ── 새 버전 (v1.3.9) — 켤 때 물어본다 ──
+   새 껍데기는 받아 두기만 하고(대기), 앱을 켜면 「최신 버전 vX로 업데이트할까요?」를 띄운다.
+   「업데이트」 = 한 번에 가장 최신으로(대기 중인 건 언제나 가장 최신 하나뿐). 「지금 버전으로 계속」 = 이번엔 그대로, 다음에 켤 때 다시 묻는다.
+   쓰는 도중에 새 버전이 오면 세희가 쉴 때 한 번만 묻는다. */
+let waitingSW = null, wantReload = false, reloading = false, updAsked = false, updDeclined = false;
 function updIdle(){
   const say = document.getElementById('sayText'), sh = document.getElementById('sheet');
   return !O.busy && !(say && say.value.trim()) && !(sh && sh.classList.contains('on')) && !document.getElementById('pinVeil');
@@ -1450,31 +1452,31 @@ async function applyUpdate(){
   try{ if (typeof SYNC !== 'undefined' && SYNC.on) await syncFlush(); }catch(e){}
   location.reload();
 }
-function showUpdate(sw){
-  dlog('업데이트', '새 버전 받음(대기)');
-  waitingSW = sw;
-  /* 옛 껍데기(v1.2.6 이하)는 스스로 자리를 못 잡으니 여기서 바로 밀어준다 */
-  if (sw && sw.state !== 'redundant'){ wantReload = updIdle(); sw.postMessage('skip'); }
-  if (!updIdle()){ pendingReload = true; $('upd').classList.add('on'); }
+async function newVersionName(){
+  try{ const t = await (await fetch('sw.js?v=' + Date.now(), { cache:'no-store' })).text(); const m = t.match(/VERSION = '([^']+)'/); return m ? m[1] : ''; }catch(e){ return ''; }
 }
-function newShellReady(){
-  dlog('업데이트', '새 껍데기가 자리 잡음 · 쉬는 중=' + updIdle());
-  if (!hadCtrl && !wantReload) return;          /* 처음 깔린 거면 새로 고칠 필요 없음 */
-  if (wantReload || updIdle()) return applyUpdate();
-  pendingReload = true; $('upd').classList.add('on');
+async function askUpdate(){
+  if (updAsked || updDeclined || !waitingSW) return;
+  if (!updIdle()){ setTimeout(askUpdate, 3000); return; }
+  updAsked = true; dlog('업데이트', '새 버전 물어봄');
+  const v = await newVersionName();
+  $('upd').querySelector('span').textContent = `새 버전${v ? '(' + v + ')' : ''}이 있어요. 지금 업데이트할까요? 지금은 ${APP_VERSION}`;
+  $('upd').classList.add('on', 'ask');
 }
-$('updGo').onclick = async () => {
-  wantReload = true;
-  if (waitingSW && waitingSW.state !== 'redundant') waitingSW.postMessage('skip');
-  else if (S.reg && S.reg.waiting) S.reg.waiting.postMessage('skip');
-  setTimeout(applyUpdate, waitingSW || (S.reg && S.reg.waiting) ? 2500 : 0);   /* 무슨 일이 있어도 한 번 누르면 끝 */
-};
-setInterval(() => { if (pendingReload && updIdle()) applyUpdate(); }, 4000);
-document.addEventListener('visibilitychange', () => { if (document.hidden && pendingReload && !O.busy) applyUpdate(); });
+function doUpdate(){
+  wantReload = true; dlog('업데이트', '업데이트 누름');
+  const w = waitingSW && waitingSW.state !== 'redundant' ? waitingSW : (S.reg && S.reg.waiting);
+  if (w) w.postMessage('skip');
+  setTimeout(applyUpdate, w ? 2500 : 0);   /* 무슨 일이 있어도 한 번 누르면 끝 */
+}
+function showUpdate(sw){ waitingSW = sw; dlog('업데이트', '새 버전 받아 둠(대기)'); askUpdate(); }
+function newShellReady(){ dlog('업데이트', '새 껍데기가 자리 잡음'); if (wantReload) applyUpdate(); }
+$('updGo').onclick = doUpdate;
+$('updNo').onclick = () => { updDeclined = true; $('upd').classList.remove('on', 'ask'); dlog('업데이트', '지금 버전으로 계속'); toast(`이번엔 ${APP_VERSION} 그대로 쓸게요. 다음에 켤 때 다시 물어볼게요`); };
 async function checkUpdate(manual){
   if (!S.reg){ if (manual) toast('이 화면에서는 업데이트를 확인할 수 없어요'); return; }
   try{ await S.reg.update(); }catch(e){}
-  if (manual) setTimeout(() => toast(pendingReload || waitingSW || S.reg.installing ? '새 버전을 받는 중이에요 — 곧 저절로 바뀌어요' : '지금이 최신이에요'), 900);
+  if (manual) setTimeout(() => { if (waitingSW || S.reg.waiting){ waitingSW = waitingSW || S.reg.waiting; updAsked = false; updDeclined = false; askUpdate(); } else toast(S.reg.installing ? '새 버전을 받는 중이에요 — 받으면 물어볼게요' : '지금이 최신이에요'); }, 900);
 }
 if ('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('controllerchange', newShellReady);
