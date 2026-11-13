@@ -1,15 +1,15 @@
 /* 세희 깡통 — 앱 껍데기를 폰에 담아두는 일꾼.
    VERSION 을 올려서 올리면 폰이 새 껍데기를 받아 바로 자리를 잡고, 화면은 세희가 쉴 때 한 번 새로 고친다(v1.2.7).
-   v1.4.1 — 받은 index.html 버전이 VERSION 과 같을 때만 받는다(보너스 C 담당).
+   v1.4.2 — 받은 index.html 버전이 VERSION 과 같을 때만 받는다(보너스 C 담당).
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v1.4.1';
+const VERSION = 'v1.4.2';
 const CACHE = 'sehee-' + VERSION;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
 
 /* v1.3.9 새 껍데기는 대기 — 대기는 늘 가장 최신 하나뿐이라 '업데이트' 한 번이면 최신 */
-/* v1.4.1 (보너스 C) 올린 직후 반쯤 올라온 상태 막기 — 받은 index.html 의 APP_VERSION 이 이 VERSION 과 다르면 이번엔 받지 않는다(다음 확인 때 다시) */
+/* v1.4.2 (보너스 C) 올린 직후 반쯤 올라온 상태 막기 — 받은 index.html 의 APP_VERSION 이 이 VERSION 과 다르면 이번엔 받지 않는다(다음 확인 때 다시) */
 async function getShell(){
   const c = await caches.open(CACHE);
   const got = await Promise.all(SHELL.map(async u => { const r = await fetch(new Request(u, { cache: 'reload' })); if (!r.ok) throw new Error(u + ' ' + r.status); return [u, r]; }));

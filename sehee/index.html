@@ -867,13 +867,10 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
    v1.3.0 (2026-11-13) 작업 중계 — 사무실에서 생각(…)하다 판을 고치기 시작하면 판이 밀려 들어오고, 고칠 줄에 형광펜, 새 줄은 한 글자씩.
         보고서는 문서가 열려 문단이 위에서부터 차례로 써지고, 고친 문단엔 형광펜. 한 번에 여러 개면 빨라진다(합쳐서 2~3초).
         「넘기기」 단추·화면 폐기(판 아래 대화 상자로 바로 말하면 된다).
-<<<<<<< Updated upstream
-        (v1.4.1) 창구 SEHEE.og(url) — 계정 서버 v2 의 /og 로 그 페이지 대표 사진(og:image → 상품 사진 같은 첫 그림)·제목. 보너스 자료 카드가 쇼핑몰 상품 사진을 바로 보여 준다.
-=======
-        (v1.4.1 · 보너스 C 담당) 업데이트 손봄 — 누르는 즉시 '업데이트하는 중…', 새로 고친 뒤 「업데이트 끝 — v1.4.0 → v1.4.1」(보너스 B·C 바뀐 것도),
+        (v1.4.2 · 보너스 C 담당) 업데이트 손봄 — 누르는 즉시 '업데이트하는 중…', 새로 고친 뒤 「업데이트 끝 — v1.4.1 → v1.4.2」(보너스 B·C 바뀐 것도),
           눌렀는데 그대로면 그렇다고 말하고 90초 뒤 다시 확인. 보너스 B·C 새 버전도 띠로 묻는다(켤 때·돌아올 때·새 버전 확인). 보너스는 늘 새 파일로 불러옴.
           껍데기 받을 때 index.html 버전이 sw.js 와 다르면(올린 직후 반쯤 올라온 상태) 받지 않고 다음에 다시.
->>>>>>> Stashed changes
+        (v1.4.1) 창구 SEHEE.og(url) — 계정 서버 v2 의 /og 로 그 페이지 대표 사진(og:image → 상품 사진 같은 첫 그림)·제목. 보너스 자료 카드가 쇼핑몰 상품 사진을 바로 보여 준다.
         (v1.4.0) 세 방 체제 — 보너스 갈래 B(제작기 2, sehee/bonus/bonus.js)·C(제작기 3, sehee/bonus-c/c.js). 갈래마다 설정에서 따로 켬/끔, 버전은 B·C로 시작.
           c_ 키도 계정 동기화. 갈래를 B → C 순서로 불러오고 다 끝나면 boot 한 번.
         (v1.3.9) 새 버전은 켤 때 물어본다 — 「업데이트」면 한 번에 가장 최신으로, 「지금 버전으로 계속」이면 그대로(다음에 켤 때 다시). 저절로 새로 고침은 없앰.
@@ -894,7 +891,7 @@ window.addEventListener('online', () => dlog('네트워크', '인터넷 연결�
           설정 「보너스 업데이트」 켬/끔(기기별). 보너스가 고장 나도 본체는 그대로.
         (v1.3.1) 개발자 로그를 켠 기기는 10초마다 마지막 300줄을 계정 서버(kv 'dbg')에 올림 — 개발자 중계용.
         작업 중 질문: 필요할 때만(ask_boss — 멈춰서 고를 것·「알아서 해」 띄움, 입력창에 써도 답) / 마지막에 한 번(기본) / 알아서. "알아서 해"라고 하면 그 일은 안 묻는다. */
-const APP_VERSION = 'v1.4.1';
+const APP_VERSION = 'v1.4.2';
 
 const PALETTE = ['#a13b2c','#3a6b64','#a3823f','#5f7a55','#6b5b95','#3d5a80','#8a6d3b','#7a2e2e'];
 const DEFAULT_SECTIONS = [
@@ -1443,12 +1440,12 @@ document.addEventListener('visibilitychange', async () => {
   const t = todayStr();
   if (t !== S.today){ const wasToday = S.date === S.today; S.today = t; if (wasToday) await goDate(t); else render(); }
   if (S.reg) S.reg.update().catch(() => {});
-  checkLanes().then(() => askUpdate()).catch(() => {});   /* v1.4.1 보너스 새 버전도 */
+  checkLanes().then(() => askUpdate()).catch(() => {});   /* v1.4.2 보너스 새 버전도 */
 });
 window.addEventListener('pagehide', () => { flush(); });
 
-/* ── 새 버전 (v1.3.9 → v1.4.1 보너스 C 담당) — 켤 때 물어본다 ──
-   새 껍데기는 받아 두기만 하고(대기), 앱을 켜면 「새 버전이 있어요」를 띄운다. 보너스 B·C 도 올라온 파일과 버전을 비교해 같이 묻는다(v1.4.1).
+/* ── 새 버전 (v1.3.9 → v1.4.2 보너스 C 담당) — 켤 때 물어본다 ──
+   새 껍데기는 받아 두기만 하고(대기), 앱을 켜면 「새 버전이 있어요」를 띄운다. 보너스 B·C 도 올라온 파일과 버전을 비교해 같이 묻는다(v1.4.2).
    「업데이트」 = 누르는 즉시 '업데이트하는 중…'으로 바뀌고 한 번에 가장 최신으로. 「지금 버전으로 계속」 = 이번엔 그대로, 다음에 켤 때 다시.
    새로 고친 뒤엔 「업데이트 끝 — v1.4.0 → v1.4.1」을 띄워 됐는지 바로 보이게. 눌렀는데 그대로면 그것도 말해 준다.
    쓰는 도중에 새 버전이 오면 세희가 쉴 때 한 번만 묻는다. */
@@ -2994,7 +2991,7 @@ function loadBonus(){
   /* 켜 둔 갈래를 순서대로(B → C) 불러오고, 다 끝나면 boot 를 한 번만 알린다 */
   const one = l => new Promise(res => {
     if (!bonusOn(l.k)) return res();
-    const s = document.createElement('script'); s.src = l.path + '?t=' + Date.now();   /* v1.4.1 늘 새 파일 — 1분 안에 다시 켜도 옛 보너스가 안 남게 */
+    const s = document.createElement('script'); s.src = l.path + '?t=' + Date.now();   /* v1.4.2 늘 새 파일 — 1분 안에 다시 켜도 옛 보너스가 안 남게 */
     s.onload = () => { dlog('화면', `${l.name} 불러옴 ${BONUS.vers[l.k] || ''}`); res(); };
     s.onerror = () => { dlog('화면', `${l.name} 없음(${l.path})`); res(); };
     document.body.appendChild(s);
