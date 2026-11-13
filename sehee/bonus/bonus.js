@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.6
+/* 세희 보너스 업데이트 — B0.7
    이 폴더(sehee/bonus/)는 '제작기 2' 방 몫이다. 본체(index.html·sw.js)는 메인 방만 고친다.
    본체와는 window.SEHEE 창구로 잇는다. 쓰는 법은 인수인계 문서 4장.
 
@@ -28,10 +28,13 @@
         ① 다른 주제면 사무실로: 판·달력·보드·사람 서랍을 연 채로 그 서랍과 상관없는 이야기를 꺼내면 세희가 b_to_office 로 사무실로 데려간다
            (지금 열린 서랍을 세희 지침에 알려 줌). 자료 카드가 붙는 답이면 서랍에 있어도 사무실로(카드는 사무실 대화에만 보임).
         ② 물건 사진 자동: 세희가 웹 검색으로 답했는데 카드를 안 붙였으면, 보너스가 출처 제목으로 위키백과·위키미디어 공용에서 사진을 찾아
-           제목 낱말이 맞을 때만 붙인다(날씨·뉴스·환율 같은 검색은 건너뜀). web 카드도 대표 사진 창구가 없으면 query 로 위키·사진을 대신 찾는다. */
+           제목 낱말이 맞을 때만 붙인다(날씨·뉴스·환율 같은 검색은 건너뜀). web 카드도 대표 사진 창구가 없으면 query 로 위키·사진을 대신 찾는다.
+   B0.7 (2026-11-13) 출처 화면 캡처 카드. 세희가 웹 검색으로 답하면 출처 페이지 화면 캡처(WordPress.com mShots, 무료·비상업용)를
+        '출처 화면' 카드로 말풍선에 붙인다 — 쇼핑몰 상품처럼 위키에 사진이 없는 것도 보이게. 위키 사진이 맞으면 그 줄도 같이.
+        캡처는 처음 부를 때 몇 초 만드는 중 그림이 나오니 6초·14초 뒤 한 번씩 다시 불러 진짜 화면으로 바꾼다. b_visual web 도 og 창구가 없으면 캡처로. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.6');
+  S.setVersion('B0.7');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -385,6 +388,10 @@
     for (const u of urls.slice(0, n + 1)){ try{ const o = await S.og(u); if (o && o.img) out.push({ img:o.img, big:o.img, url:u, title:strip(o.title).slice(0, 60) || host(u), site:o.site || host(u) }); }catch(e){} if (out.length >= n) break; }
     return out;
   }
+  /* 출처 화면 캡처 — WordPress.com mShots(키 없음, 무료·비상업용). 주소만 넘기면 그 페이지 화면 사진을 준다 */
+  const shot = (u, w, h) => `https://s0.wp.com/mshots/v1/${encodeURIComponent(u)}?w=${w}&h=${h}`;
+  const shotItems = (src, n) => src.filter(x => x && /^https?:\/\//.test(x.u)).slice(0, n)
+    .map(x => ({ img:shot(x.u, 480, 600), big:shot(x.u, 900, 1350), url:x.u, title:cleanTitle(x.t || '') || host(x.u), site:host(x.u) + ' 화면', shot:true }));
   async function visualTool(a){
     a = a || {};
     const kind = a.kind, n = Math.max(1, Math.min(4, +a.count || 3));
@@ -399,6 +406,7 @@
         const urls = (a.urls || []).filter(u => /^https?:\/\//.test(u));
         const r = await findWeb(urls, n);
         g.items = r || [];
+        if (!g.items.length && r === null) g.items = shotItems(urls.map(u => ({ u, t:'' })), n);   // 대표 사진 창구가 없으면 화면 캡처로
         const q = strip(a.query);
         if (!g.items.length && q){ g.items = await findWiki(q, n); if (!g.items.length) g.items = await findPhotos(q, n); }   // 대표 사진 창구가 아직 없으면 이름으로 대신
         if (!g.items.length && r === null) return { ok:false, error:'웹 페이지 사진은 아직 못 가져와요. query 에 물건 이름(영어 모델명이 잘 나옴)을 넣어 다시, 또는 photo 로.' };
@@ -447,7 +455,7 @@
     return groups.map((g, gi) => {
       const head = `<div class="b-vh">${g.similar ? '<em>비슷한 것</em>' : ''}${S.esc(g.title || (g.kind === 'chart' ? '그래프' : '자료'))}</div>`;
       if (g.kind === 'chart') return `<div class="b-vg">${head}<div class="b-chart">${chartSvg(g.chart)}${g.chart.series.length > 1 || g.chart.unit ? `<div class="b-leg">${g.chart.series.map((s, k) => `<span><i style="background:${PAL[k]}"></i>${S.esc(s.name)}</span>`).join('')}${g.chart.unit ? `<span>단위 ${S.esc(g.chart.unit)}</span>` : ''}</div>` : ''}</div></div>`;
-      return `<div class="b-vg">${head}<div class="b-row">${g.items.map((it, i) => `<button type="button" class="b-card" data-bvis="${gi}:${i}"><img src="${S.esc(it.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('.b-card').remove()"><span>${S.esc(it.title)}</span><small>${S.esc(it.site || host(it.url))}</small></button>`).join('')}</div></div>`;
+      return `<div class="b-vg">${head}<div class="b-row">${g.items.map((it, i) => `<button type="button" class="b-card${it.shot ? ' shot' : ''}" data-bvis="${gi}:${i}"><img src="${S.esc(it.img)}" alt="" loading="lazy" referrerpolicy="no-referrer"${it.shot ? ' data-shot="1"' : ''} onerror="this.closest('.b-card').remove()"><span>${S.esc(it.title)}</span><small>${S.esc(it.site || host(it.url))}</small></button>`).join('')}</div></div>`;
     }).join('');
   }
   async function saveVis(){
@@ -476,10 +484,19 @@
       const t = box.querySelector(':scope > time'); box.insertBefore(d, t || null); added = true;
     });
     if (added && pinned) el.scrollTop = el.scrollHeight;
+    if (added) refreshShots(el);
+  }
+  /* 캡처는 처음 부르면 '만드는 중' 그림이 오고 몇 초 뒤 진짜가 생긴다 — 새로 붙인 캡처만 두 번 다시 부른다 */
+  function refreshShots(root){
+    root.querySelectorAll('img[data-shot="1"]:not([data-rt])').forEach(img => {
+      img.dataset.rt = '1';
+      [6000, 14000].forEach((ms, k) => setTimeout(() => { if (!img.isConnected) return; const base = img.getAttribute('src').replace(/&_r=\d+$/, ''); img.setAttribute('src', base + '&_r=' + (k + 1)); }, ms));
+    });
   }
   function openCard(at, key){
     const [gi, i] = key.split(':').map(Number), g = (VIS[at] || [])[gi], it = g && g.items[i]; if (!it) return;
-    S.sheet(`<div class="b-big"><h4>${S.esc(it.title)}</h4><img src="${S.esc(it.big || it.img)}" alt="" referrerpolicy="no-referrer">${it.note ? `<p>${S.esc(it.note)}</p>` : ''}<p class="b-src">${S.esc(it.site || '')}${it.lic ? ' · ' + S.esc(it.lic) : ''}${g.similar ? ' · 비슷한 것' : ''}</p><a href="${S.esc(it.url)}" target="_blank" rel="noopener">출처 열기 ↗</a></div>`);
+    S.sheet(`<div class="b-big"><h4>${S.esc(it.title)}</h4><img src="${S.esc(it.big || it.img)}" alt="" referrerpolicy="no-referrer"${it.shot ? ' data-shot="1"' : ''}>${it.note ? `<p>${S.esc(it.note)}</p>` : ''}<p class="b-src">${S.esc(it.site || '')}${it.lic ? ' · ' + S.esc(it.lic) : ''}${g.similar ? ' · 비슷한 것' : ''}${it.shot ? ' · 화면 캡처(WordPress.com mShots) — 처음엔 몇 초 걸려요' : ''}</p><a href="${S.esc(it.url)}" target="_blank" rel="noopener">출처 열기 ↗</a></div>`);
+    if (it.shot) setTimeout(() => { const s2 = $('sheet'); if (s2) refreshShots(s2); }, 50);
   }
   document.addEventListener('click', e => {
     const c = e.target.closest('.b-vis .b-card'); if (!c) return;
@@ -495,6 +512,7 @@
   .b-card img{display:block;width:112px;height:96px;object-fit:cover;background:#eee8da}
   .b-card span{display:block;font-size:.72rem;line-height:1.3;padding:4px 6px 0;max-height:2.6em;overflow:hidden}
   .b-card small{display:block;font-size:.62rem;color:#8a8373;padding:1px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .b-card.shot{flex-basis:124px}.b-card.shot img{width:124px;height:150px;object-position:top center}
   .b-chart{background:#fff;border:1px solid #d6cfbf;border-radius:10px;padding:6px 6px 4px}
   .b-chart svg{display:block;width:100%;height:auto}
   .b-leg{display:flex;flex-wrap:wrap;gap:8px;font-size:.66rem;color:#5a5f6c;padding:2px 4px 0}
@@ -519,17 +537,23 @@
     autoBusy.add(m.at); autoTried.add(m.at);
     try{
       const qs = [...new Set(m.src.map(x => cleanTitle(x.t || '')).filter(q => q && q.length >= 3))].slice(0, 3);
+      const groups = [];
       for (const q of qs){
         let items = (await findWiki(q, 2).catch(() => [])).filter(it => fits(q, it.title)).slice(0, 1);
         const ph = (await findPhotos(q, 4).catch(() => [])).filter(it => fits(q, it.title));
         items = items.concat(ph).slice(0, 3);
-        if (items.length){
-          VIS[m.at] = [{ kind:'photo', title:q, similar:false, items, at:Date.now(), auto:true }];
-          saveVis(); decorate(); S.dlog('도구', `보너스 자동 사진 ${q} ${items.length}장`);
-          return m.at;
-        }
+        if (items.length){ groups.push({ kind:'photo', title:q, similar:false, items, at:Date.now(), auto:true }); break; }
       }
-      S.dlog('화면', '보너스 자동 사진: 맞는 사진 못 찾음 ' + qs.join(' / '));
+      /* 위키에 없는 쇼핑 상품도 보이게 — 출처 페이지 화면 캡처 */
+      const shots = shotItems(m.src, 3);
+      if (shots.length) groups.push({ kind:'shot', title:'출처 화면', similar:false, items:shots, at:Date.now(), auto:true });
+      if (groups.length){
+        if (VIS[m.at]) return null;   // 그사이 세희 카드가 붙었으면 그대로
+        VIS[m.at] = groups; saveVis(); decorate();
+        S.dlog('도구', `보너스 자동 카드 ${groups.map(g => g.kind + ' ' + g.items.length).join(', ')}`);
+        return m.at;
+      }
+      S.dlog('화면', '보너스 자동 사진: 붙일 것 없음 ' + qs.join(' / '));
     } finally { autoBusy.delete(m.at); }
     return null;
   }
