@@ -1,4 +1,4 @@
-// v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
+// v1.1 (2026-11-15, A: 같은 브라우저 탭 둘) · v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
 const { chromium } = require('playwright');
 const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
 (async () => {
@@ -74,6 +74,17 @@ const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
   check('관전석 나가도 A 그대로', !(await A.evaluate(() => SYNC.dead)));
   const r = await fetch(SRV + '/session', { headers:{ authorization:'Bearer ' + tokB } });
   check('나간 관전석 표는 막힘', r.status === 401, r.status);
+  // 같은 브라우저에 탭 둘 — 둘 다 빠짐없이 (v1.5.22)
+  await A.evaluate(() => localStorage.setItem('sehee.devlog', '1'));
+  const A2 = await A.context().newPage(); await A2.goto(APP); await A2.waitForTimeout(2500);
+  await A.evaluate(() => { dlog('대화', '탭1', '탭1 원문 xyz'); }); await A2.evaluate(() => { dlog('대화', '탭2', '탭2 원문 xyz'); });
+  await A.evaluate(() => logPush(true)); await A2.evaluate(() => logPush(true)); await A.waitForTimeout(400);
+  await A.evaluate(() => { dlog('대화', '탭1 둘째', '탭1 둘째 xyz'); }); await A2.evaluate(() => { dlog('대화', '탭2 둘째', '탭2 둘째 xyz'); });
+  await A2.evaluate(() => logPush(true)); await A.evaluate(() => logPush(true)); await A.waitForTimeout(400);
+  const g4 = await (await fetch(SRV + '/log?n=500', { headers:{ authorization:'Bearer ' + tokA } })).json();
+  const got = g4.lines.filter(l => /xyz/.test(l.d || '')).map(l => l.d);
+  check('탭 둘 — 네 줄 다 들어감', ['탭1 원문 xyz', '탭2 원문 xyz', '탭1 둘째 xyz', '탭2 둘째 xyz'].every(x => got.includes(x)), got.join(' / '));
+  check('탭마다 이름이 다름', (await A.evaluate(() => devId())) !== (await A2.evaluate(() => devId())));
   console.log('BLACKBOX bad', bad);
   await b.close();
   if (bad) process.exit(1);

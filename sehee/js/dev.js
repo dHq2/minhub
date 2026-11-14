@@ -12,9 +12,18 @@ setInterval(() => { if (!DBG.dirty) return; DBG.dirty = false; DBG.up = true; tr
 /* ── 개발 블랙박스 (v1.5.21, A) — 계정 서버 /log 로 새 줄만 올린다. 서버의 LOG_USERS 계정(보스)만 받고, 나머지는 서버가 '안 받음'으로 답해 바로 멈춘다.
    설정 「개발 기록 남김」(기본 켬). 쓰는 중엔 새 줄이 있으면 15초마다, 아니면 2분마다 상태만. 앱을 내릴 때 한 번 더.
    서버는 5분마다 비공개 GitHub 금고로 내보낸다(30일) — 세 방이 보스 컴퓨터 없이도 읽는다(handoff/디버그-모니터링.md). */
-const LOGUP = { sent:+(localStorage.getItem('sehee.logsent') || 0), last:0, busy:false, off:false, fails:0, st:'' };
-function devId(){ let id = localStorage.getItem('sehee.devid'); if (!id){ id = Math.random().toString(36).slice(2, 8); try{ localStorage.setItem('sehee.devid', id); }catch(e){} } return id; }
-if (DBG.seq < LOGUP.sent){ try{ localStorage.removeItem('sehee.devid'); localStorage.setItem('sehee.logsent', '0'); }catch(e){} LOGUP.sent = 0; }   /* 이 기기 기록이 지워졌으면 새 기기 이름으로(서버는 같은 번호를 버리니까) */
+/* v1.5.22: 같은 브라우저에 세희 탭이 둘 열려도 서로 안 밀리게 — 기기 번호(localStorage)에 탭 번호(sessionStorage)를 붙이고, 어디까지 올렸는지는 탭마다 따로 */
+const LOGUP = { sent:0, last:0, busy:false, off:false, fails:0, st:'' };
+function devId(){
+  let id = localStorage.getItem('sehee.devid'); if (!id){ id = Math.random().toString(36).slice(2, 8); try{ localStorage.setItem('sehee.devid', id); }catch(e){} }
+  let tab = sessionStorage.getItem('sehee.tabid'); if (!tab){ tab = Math.random().toString(36).slice(2, 4); try{ sessionStorage.setItem('sehee.tabid', tab); }catch(e){} }
+  return id + '-' + tab;
+}
+try{
+  const mine = sessionStorage.getItem('sehee.logsent');
+  if (mine !== null && +mine <= DBG.seq) LOGUP.sent = +mine;   /* 이 탭이 새로 고침만 한 경우 */
+  else { const all = +(localStorage.getItem('sehee.logsent') || 0); LOGUP.sent = all <= DBG.seq ? all : DBG.seq; if (mine !== null) sessionStorage.removeItem('sehee.tabid'); }   /* 새 탭 — 남이 이미 올린 줄은 건너뜀 */
+}catch(e){}
 const logOn = () => localStorage.getItem('sehee.devlog') !== '0';
 function logState(){
   try{ const p = S.pan;
@@ -35,7 +44,7 @@ async function logPush(force){
     if (!fresh.length && stj === LOGUP.st){ LOGUP.last = now; return; }
     const r = await fetch(SYNC.url + '/log', { method:'POST', headers:{ 'content-type':'application/json', authorization:'Bearer ' + SYNC.token }, body:JSON.stringify({ dev:(SYNC.device || deviceName()) + ' #' + devId(), lines:fresh.slice(-300), ...(stj !== LOGUP.st ? { state:st } : {}) }), keepalive:!!force });
     const j = await r.json().catch(() => ({})); LOGUP.last = now;
-    if (r.ok){ LOGUP.fails = 0; LOGUP.st = stj; if (j.logging === false) LOGUP.off = true; else if (fresh.length){ LOGUP.sent = fresh[fresh.length - 1].n; try{ localStorage.setItem('sehee.logsent', String(LOGUP.sent)); }catch(e){} } }
+    if (r.ok){ LOGUP.fails = 0; LOGUP.st = stj; if (j.logging === false) LOGUP.off = true; else if (fresh.length){ LOGUP.sent = fresh[fresh.length - 1].n; try{ sessionStorage.setItem('sehee.logsent', String(LOGUP.sent)); if (LOGUP.sent > +(localStorage.getItem('sehee.logsent') || 0)) localStorage.setItem('sehee.logsent', String(LOGUP.sent)); }catch(e){} } }
     else LOGUP.fails++;
   }catch(e){ LOGUP.fails++; LOGUP.last = now; }finally{ LOGUP.busy = false; }
 }
