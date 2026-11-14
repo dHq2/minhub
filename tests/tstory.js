@@ -1,3 +1,4 @@
+// (2026-11-15, B) 기록부「고치기」 단추가 없어져(그 자리에서 고침) #pdEdit 누르는 줄만 뺌 — 나머지 그대로
 const { chromium } = require('playwright');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'text', text:'' } },{ type:'content_block_delta', index:0, delta:{ type:'text_delta', text:t } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'end_turn' }, usage:{ output_tokens:5 } }]);
@@ -33,9 +34,9 @@ const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ i
   console.log('dossier story items:', await p.locator('#pdBody .pd-story li').count(), '| 대외비:', await p.locator('#pdBody .pd-stamp.big').count());
   await p.evaluate(() => { const s = document.querySelector('#pdBody .pd-story'); if (s) s.scrollIntoView(); }); await p.waitForTimeout(200);
   await p.screenshot({ path:'/tmp/story-view.png' });
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(300); await p.locator('#pdBody [data-add="story"]').click(); await p.waitForTimeout(300);
+  await p.locator('#pdBody [data-add="story"]').click(); await p.waitForTimeout(300);
   await p.locator('#pdBody [data-s="1"]').fill('보스가 직접 적은 두 번째 이야기'); await p.locator('#pdBody [data-sw="1"]').fill('11/13');
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(400);
+  await p.waitForTimeout(700);
   console.log('after boss edit:', JSON.stringify(await p.evaluate(() => pplFind('ha1').story.map(s => [s.when, s.by, s.text.slice(0, 10)]))));
   await p.screenshot({ path:'/tmp/story-view2.png' });
   console.log('errors []'); await b.close(); })();

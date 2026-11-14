@@ -879,3 +879,27 @@ body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
    사진은 누름을 안 받고(카드가 대신 받음) 끌리지도 않음. 크게 보기·기록부의 사진은 그대로 ── */
 #ppScroll,#ppMap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #ppMap img{-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}
+
+/* ── 인물 기록부 그 자리에서 고치기 (v1.5.24, B) — 칸이 곧 입력란. 평소엔 종이 글씨처럼, 누르면 연한 노란 밑줄 칸 ── */
+.pd-paper .pd-in{width:100%;min-width:0;box-sizing:border-box;border:0;border-bottom:1px dashed transparent;border-radius:3px;background:transparent;font:inherit;color:inherit;line-height:1.5;padding:2px 4px;margin:0;resize:none;outline:none;overflow:hidden}
+.pd-paper .pd-in:hover{border-bottom-color:#d8cfbb}
+.pd-paper .pd-in:focus{background:#fffbe6;border-bottom-color:#b39b6b}
+.pd-paper .pd-in::placeholder{color:#b8ae98}
+.pd-paper select.pd-in{-webkit-appearance:none;appearance:none;cursor:pointer;width:auto;padding-right:16px;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%239a9384'/%3E%3C/svg%3E") no-repeat right 4px center}
+.pd-paper select.pd-chipsel{color:#fff;font-weight:600;font-size:.78rem;border-radius:10px;padding:1px 18px 1px 9px;background:var(--c,#5c5340) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23fff'/%3E%3C/svg%3E") no-repeat right 6px center;border:0}
+.pd-paper select.pd-chipsel:focus{background-color:var(--c,#5c5340);box-shadow:0 0 0 2px #fbe9a8}
+.pd-kv.pd-live td{padding:3px 4px}.pd-kv.pd-live th .pd-in{font-weight:600;color:#5c5340;padding:2px 0}
+.pd-cell{display:flex;align-items:center;gap:2px}
+.pd-tip{display:block;font-size:.66rem;color:#a39c8c;padding:0 4px}
+.pd-paper .pd-x{flex:none;border:0;background:none;color:#b0a894;font-size:1rem;line-height:1;padding:2px 6px;cursor:pointer;border-radius:4px}
+.pd-paper .pd-x:hover{color:#c0392b;background:#fff0ed}
+.pd-lk{flex:none;border:0;background:none;font-size:.82rem;padding:2px 4px;cursor:pointer;opacity:.45;border-radius:4px}.pd-lk.on{opacity:1}
+.pd-ul.pd-live{list-style:none;padding-left:0}.pd-ul.pd-live li{display:flex;align-items:center;gap:2px;border-radius:4px;margin:1px 0}
+.pd-story.pd-live .pd-sw{display:flex;align-items:center;gap:2px}.pd-story.pd-live .pd-sw .pd-in{flex:1;font-size:.72rem;color:#8a8373}
+.pd-story.pd-live .pd-sw em{flex:none}.pd-story.pd-live textarea.pd-in{font-size:.86rem;line-height:1.6}
+.pd-note{font-size:.88rem;line-height:1.7;min-height:2.4em}
+.tie-ul li .tie-lb{flex:1;min-width:70px;font-size:.8rem}
+.tie-ul .tie-btns{display:flex;align-items:center;gap:3px;flex:none}
+.tie-ul button.tie-k,.tie-ul button.tie-q{background:none;cursor:pointer;opacity:.4;line-height:1.5}.tie-ul button.tie-k.on,.tie-ul button.tie-q.on{opacity:1}
+.tie-ul select.tie-c{background:none;font-size:.7rem;padding:0 2px;cursor:pointer}
+.pd-addrow .pd-add{font-size:.72rem;padding:2px 8px}

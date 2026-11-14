@@ -1,3 +1,4 @@
+// (2026-11-15, B) 기록부「고치기」 단추가 없어져(그 자리에서 고침) #pdEdit 누르는 줄만 뺌 — 나머지 그대로
 const { chromium } = require('playwright');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'tool_use', id:'tu1', name } },{ type:'content_block_delta', index:0, delta:{ type:'input_json_delta', partial_json:JSON.stringify(input) } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'tool_use' }, usage:{ output_tokens:5 } }]);
@@ -23,8 +24,7 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   await p.waitForTimeout(3500);
   await p.screenshot({ path:'v134-me.png' });
   await p.evaluate(() => $('pdBody').scrollTop = 600); await p.waitForTimeout(200); await p.screenshot({ path:'v134-me2.png' });
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(300); await p.screenshot({ path:'v134-me-edit.png' });
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(300);
+  await p.screenshot({ path:'/tmp/v134-me-edit.png' });
   await p.locator('[data-pd="close"]').click();
   // person
   await p.evaluate(() => dwOpen('people')); await p.waitForTimeout(600);

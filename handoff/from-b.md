@@ -3,6 +3,12 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 01:40 · 본체 v1.5.24 — 기록부「고치기」 없어짐(그 자리에서 고침) · 실 위 글씨 한두 단어 · [보통] · 받는 쪽: A · C
+- 무엇: js/people.js 인물 기록부가 한 가지 모습만 — 보이는 칸이 곧 입력란(class pd-in), 칠 때마다 pdCollect → 0.5초 뒤 pplSave·pplRender. #pdEdit 단추와 PD.edit 쓰임 없어짐(PD.edit 는 늘 false 로 남겨 둠). 닫을 때 pdTidy 가 빈 줄 치움. tieRows(p) 는 인자 하나, 줄마다 '둘 사이' 입력(data-tlb → t.label).
+- 판 글씨: relWord(s)·pplTag(p)·tieLabel(t) 새로. pplStrings 의 나와의 실 글씨 = pplTag(p)(p.tag 또는 rel 끝 낱말), 사람끼리 실 = 가운데 하나 tieLabel(t)(t.label → 없으면 aIs·bIs 를 줄여 '엄마·딸', 같으면 '친구'). aIs·bIs 데이터는 그대로 둠.
+- A 에게: 기록부 공식 능력치·실 단추 처리(pdBody click/change)는 그대로 옮겨 둠(pdCollect 를 늘 먼저 부름). A 테스트 tdoss·tpplpic·tstat·tstory 에서 #pdEdit 누르는 줄만 뺐고 tstat 은 data-tme 대신 data-tlb 로 '어머니'를 넣음. 새 칸 p.tag(판 이름) — 세희 add/update_person tag 로도 들어감.
+- 관련 파일·버전: 본체 v1.5.24 / tests/tpdlive v1
+
 ## 2026-11-14 07:10 · 본체 v1.5.19 — 인간관계 판 끝없이 넓어짐 + 카드 크기(--bs) · [보통] · 받는 쪽: 모두
 - 무엇: js/people.js pplRender 가 판 크기를 S×S 고정에서 '기본 판(S) ∪ 모든 카드 ± PPL_PAD(150)' 로 바꿈. #ppMap 의 style.width/height 가 W·H(정사각형 아님), data-s=S(기본 판, 나 = S/2), data-l·data-t=넓힌 만큼(음수). 카드 left = 본체 좌표 − L. svg 는 viewBox="L T W H" 라 줄 좌표는 본체 좌표 그대로. BONUS.size{id:배율} 이 있으면 카드에 --bs 를 붙임. css 맨 아래 B 구역에서 #ppMap .pp-node transform 에 scale(var(--bs,1)) 덧붙임. 처음 맞춤은 W·H 각각 기준.
 - 받는 쪽에게 필요한 일: #ppMap 크기를 parseFloat(style.width) 하나로 '판 = 정사각형 S' 라고 쓰는 코드가 있으면 data-s·l·t 를 쓸 것(A 의 공식 능력치 2단계(판에 실 그리기 — lineLook)는 svg viewBox 가 본체 좌표라 줄 좌표는 그대로 S 기준으로 쓰면 됨, 카드 left/top 을 읽을 땐 + data-l·t). .pp-node 의 transform 을 새로 덮을 땐 scale(var(--bs,1)) 를 끝에 같이 넣을 것(안 그러면 보스가 정한 크기가 사라짐). 저장 키 b_ppSize 는 B 것.

@@ -1,3 +1,4 @@
+// (2026-11-15, B) 기록부「고치기」 단추가 없어져(그 자리에서 고침) #pdEdit 누르는 줄만 뺌 — 나머지 그대로 · 실 이름은 '둘 사이' 한 칸(data-tlb)
 // v1.0 (2026-11-14) 인간관계 공식 능력치 1단계 — 친밀도·감정 온도·선악(보스 확정/세희 판단), 나와의 관계 확실·추측·모름, 사람끼리 실(양쪽 이름·가족·추측·친밀도), 옛 links 이어받기
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch();
@@ -34,12 +35,11 @@ const { chromium } = require('playwright');
   console.log('tie row:', (await p.locator('#pdBody .tie-ul li').first().textContent()).replace(/\s+/g, ' '));
   await p.evaluate(() => { const s = document.querySelector('#pdBody .sb'); if (s) s.scrollIntoView(); }); await p.screenshot({ path:'/tmp/stat-view.png' });
   // 고치기에서 실 이름 바꾸기 · 새 실
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(300);
   const tid = await p.evaluate(() => PPL.ties[0].id);
-  await p.locator(`#pdBody [data-tme="${tid}"]`).fill('어머니'); await p.selectOption('#pdTieAdd', 'x1'); await p.waitForTimeout(300);
+  await p.locator(`#pdBody [data-tlb="${tid}"]`).fill('어머니'); await p.waitForTimeout(700); await p.selectOption('#pdTieAdd', 'x1'); await p.waitForTimeout(300);
   await p.evaluate(() => { const s = document.querySelector('#pdBody .tie-row'); if (s) s.scrollIntoView(); }); await p.screenshot({ path:'/tmp/stat-edit.png' });
-  await p.locator('#pdEdit').click(); await p.waitForTimeout(300);
-  console.log('after edit:', await p.evaluate(() => PPL.ties.map(t => `${pplFind(t.a).name}(${t.aIs})-${pplFind(t.b).name}(${t.bIs})`).join(' / ')));
+  await p.waitForTimeout(300);
+  console.log('after edit:', await p.evaluate(() => PPL.ties.map(t => `${pplFind(t.a).name}-${pplFind(t.b).name}: ${tieLabel(t)}`).join(' / ')));
   await T('untie_person', { person:'박지영', other:'모르는사람' });
   await p.reload(); await p.waitForTimeout(1500);
   console.log('after reload:', await p.evaluate(async () => { await pplLoad(); return PPL.ties.length + ' tie · m1 links ' + pplFind('m1').links.join(',') + ' · d1 ' + pplFind('d1').stat.close.v; }));

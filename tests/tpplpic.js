@@ -1,3 +1,4 @@
+// (2026-11-15, B) 기록부「고치기」 단추가 없어져(그 자리에서 고침) #pdEdit 누르는 줄만 뺌 — 나머지 그대로
 const { chromium } = require('playwright'); const path = require('path');
 // v1.0 (2026-11-13, C) 인간관계 프로필 사진 — 기록부 사진칸으로 넣기·빼기, 성별 기본 얼굴, 채팅 사진으로 세희가 넣기(photo), 다시 켜도 남음, 떼면 사진도 지움
 const FACE = path.join(__dirname, 'img', 'face.jpg');
@@ -57,8 +58,8 @@ const FACE = path.join(__dirname, 'img', 'face.jpg');
     await p.fill('#ppNewName', '최가은'); await p.selectOption('#ppNewSex', '여'); await tap('[data-pact="add"]'); await p.waitForTimeout(400);
     console.log(name, '붙이기 판 성별', await p.evaluate(() => pplFind('최가은') && pplFind('최가은').sex));
     // 고치기 화면에서 성별
-    await p.evaluate(() => pdOpen(pplFind('최가은').id)); await p.waitForTimeout(400); await tap('#pdEdit'); await p.waitForTimeout(300);
-    await p.selectOption('#pdSex', '남'); await tap('#pdEdit'); await p.waitForTimeout(300);
+    await p.evaluate(() => pdOpen(pplFind('최가은').id)); await p.waitForTimeout(400); await p.waitForTimeout(300);
+    await p.selectOption('#pdSex', '남'); await p.waitForTimeout(700);
     console.log(name, '고치기 성별', await p.evaluate(() => pplFind('최가은').sex));
     await p.screenshot({ path:`/tmp/pplpic-${name}-4.png` });
     await ctx.close();
