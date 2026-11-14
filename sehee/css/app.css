@@ -874,3 +874,8 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 #obsBar .chip{background:#fff;color:#2f3a4a;padding:3px 10px;font-size:.74rem}
 body.observer{padding-top:34px}
 body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
+
+/* ── 인간관계 판 사진 복사 막기 (v1.5.22, B) — 판 안에선 조작만: 사진을 끌면 브라우저가 반투명 복사본을 끌어가던 것·길게 눌러 '이미지 저장' 메뉴·글자 선택을 막음.
+   사진은 누름을 안 받고(카드가 대신 받음) 끌리지도 않음. 크게 보기·기록부의 사진은 그대로 ── */
+#ppScroll,#ppMap{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#ppMap img{-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}

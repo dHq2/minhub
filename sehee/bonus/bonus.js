@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.11.1
+/* 세희 보너스 업데이트 — B0.12
    실험 파일 B(방 B 기본 담당). 인수인계 v3 — 세 방 동등, 본체도 할일.md 찜으로 직접 고친다.
    본체와는 주로 window.SEHEE 창구로 잇고, v3 부터는 본체 함수(btFold 등)도 직접 부른다.
 
@@ -46,10 +46,11 @@
         좌표는 본체 #ppMap data-s·l·t(기본 판 크기·넓힌 만큼)를 따른다.
    B0.11.1 (2026-11-14, A — 본체 v1.5.20) 끄는 동안 미리 보기(redrawStrings)가 본체 SEHEE.pplStrings 가 있으면 그걸로 그림 — 공식 능력치 실·관계 이름이 끄는 중에도 그대로.
    B0.11 (2026-11-14, 같은 본체 v1.5.19 — 올리기 전 보스 말씀으로 바꿈) 꾹 누르기 없앰. 한 번 누르면 고름(굵은 테두리 + ⤡) — 고른 카드는 바로 끌어 옮기고 ⤡ 로 크기,
-        고른 카드를 한 번 더 누르면 인물 기록부. 안 고른 카드 위에서 끌면 판이 굴러감(카드 안 움직임). 옮긴 뒤에도 고른 채로. */
+        고른 카드를 한 번 더 누르면 인물 기록부. 안 고른 카드 위에서 끌면 판이 굴러감(카드 안 움직임). 옮긴 뒤에도 고른 채로. 
+   B0.12 (2026-11-15, B — 본체 v1.5.22 와 같이) 인간관계 판 안에서 사진·글자 끌기(dragstart)·오른쪽 클릭/길게 누르기 메뉴(contextmenu) 막음 — 보스: '조작만 하고 싶다'. 본체 css 가 사진 누름도 막음. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.11.1');
+  S.setVersion('B0.12');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -222,7 +223,10 @@
   /* 본체가 다시 그려도 고른 카드는 그대로 고른 채 */
   function keepSel(){ if (SEL){ const id = SEL; SEL = null; if (cardOf(id)) selectCard(id); } }
   function bindMap(map){
+    /* B0.12 판 안에선 조작만 — 브라우저가 사진·글자를 끌어가거나(반투명 복사본) 메뉴(이미지 저장·복사)를 띄우지 않게 */
     if (map.dataset.bDrag) return; map.dataset.bDrag = '1';
+    map.addEventListener('dragstart', e => e.preventDefault());
+    map.addEventListener('contextmenu', e => e.preventDefault());
     map.addEventListener('pointerdown', e => {
       if (e.target.closest('.b-rs')) return;   // 크기 손잡이는 따로
       const n = e.target.closest('.pp-node[data-pp]'); clickSel = n && SEL === n.dataset.pp ? SEL : null;

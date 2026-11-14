@@ -1,4 +1,5 @@
-/* tppfree v1.1 (2026-11-14, B) — v1.1: 꾹 누르기 대신 '한 번 누르면 고름 → 고른 카드는 바로 끌림 → 한 번 더 누르면 기록부'(B0.11), 안 고른 카드는 끌어도 안 움직임
+/* tppfree v1.2 (2026-11-15, B) — v1.2: 판 안 사진 복사 막기(사진 끌기·메뉴·선택 X, 마우스로 안 고른 카드 끌어도 dragstart 안 생김)
+   v1.1 (2026-11-14, B) — v1.1: 꾹 누르기 대신 '한 번 누르면 고름 → 고른 카드는 바로 끌림 → 한 번 더 누르면 기록부'(B0.11), 안 고른 카드는 끌어도 안 움직임
    인간관계 판 자유롭게: ① 카드 누르면 고름 → ⤡ 끌어 크기(저장·다시 그려도 유지·두 번 누르면 100%)
    ② 판 끝으로 끌면 화면이 따라 굴러가고 놓으면 판이 넓어짐(가장 바깥 카드 + 150), 다시 끌면 더 멀리 ③ 가장 작은 배율 = 넓힌 판 전체 ④ 다시 열면 넓힌 판 전체가 한눈에. 폰·컴퓨터 */
 const { chromium } = require('playwright');
@@ -29,6 +30,13 @@ const PEOPLE = { list:[
       const cards = [...m.querySelectorAll('.pp-node')].map(n => { const r = n.getBoundingClientRect(); return { id:n.dataset.pp, inView:r.left >= sr.left - 1 && r.right <= sr.right + 1 && r.top >= sr.top - 1 && r.bottom <= sr.bottom + 1, bs:n.style.getPropertyValue('--bs') || '1' }; });
       return { W:parseFloat(m.style.width), H:parseFloat(m.style.height), S:+m.dataset.s, L:+m.dataset.l, T:+m.dataset.t, zoom:+(+m.style.zoom).toFixed(3), sel:(m.querySelector('.b-sel') || {}).dataset?.pp || null, allInView:cards.every(c => c.inView), cards }; });
     const R = {}; R.start = await info();
+    /* 사진 복사 막기 — 사진은 누름·끌기 X, 판은 글자 선택·길게 누르기 메뉴 X, dragstart·contextmenu 는 막힘 */
+    R.noCopy = await p.evaluate(() => { const m = $('ppMap'), im = m.querySelector('img') || (() => { const x = document.createElement('img'); m.querySelector('.pp-node').appendChild(x); return x; })(), cs = getComputedStyle(im), ms = getComputedStyle(m);
+      const ev = t => { const e = new Event(t, { bubbles:true, cancelable:true }); m.querySelector('.pp-node').dispatchEvent(e); return e.defaultPrevented; };
+      return { imgPE:cs.pointerEvents, imgDrag:cs.webkitUserDrag, sel:ms.userSelect || ms.webkitUserSelect, drag:ev('dragstart'), menu:ev('contextmenu') }; });
+    if (!cdp){ let fired = 0; await p.exposeFunction('bDragFired', () => fired++).catch(() => {}); await p.evaluate(() => document.addEventListener('dragstart', e => { if (!e.defaultPrevented) window.bDragFired(); }));
+      const [a, c] = await ctr('[data-pp="p2"]'); await p.mouse.move(a, c); await p.mouse.down(); for (let i = 1; i <= 8; i++){ await p.mouse.move(a + 8 * i, c + 5 * i); await p.waitForTimeout(16); } await p.mouse.up(); await p.waitForTimeout(300);
+      R.noCopy.mouseDragGhost = fired; await p.evaluate(() => SEHEE.pplRedraw()); await p.waitForTimeout(300); }
     /* ① 고르기 → 크기 */
     let [x, y] = await ctr('[data-pp="p3"]'); await tap(x, y);
     R.selected = (await info()).sel; R.tapNoRecord = !(await pdOn());
