@@ -1,4 +1,4 @@
-/* tday1 v1.0 (2026-11-15, A) — 하루 생성기 1일차 고칠 거리: 프롬프트 캐시 · 자료 전체 찾기 · 일정 겹침 · 큰 머리 기준 · 업데이트 설명(내부 걸러냄·다음 맥락에서 뺌) · 지침 · 로그 길이. 가짜 이름만 */
+/* tday1 v1.1 (2026-11-15, A — 읽기 쉽게 지침) · v1.0 — 하루 생성기 1일차 고칠 거리: 프롬프트 캐시 · 자료 전체 찾기 · 일정 겹침 · 큰 머리 기준 · 업데이트 설명(내부 걸러냄·다음 맥락에서 뺌) · 지침 · 로그 길이. 가짜 이름만 */
 const { chromium } = require('playwright');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10, cache_read_input_tokens:900 } } }, { type:'content_block_start', index:0, content_block:{ type:'text', text:'' } }, { type:'content_block_delta', index:0, delta:{ type:'text_delta', text:t } }, { type:'content_block_stop', index:0 }, { type:'message_delta', delta:{ stop_reason:'end_turn' }, usage:{ output_tokens:5 } }, { type:'message_stop' }]);
@@ -19,7 +19,7 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   check('지금 시각은 뒷부분(매번 바뀌는 곳)', !b1.system[0].text.includes('지금: ') && b1.system[1].text.includes('지금: '));
   const lm = b1.messages[b1.messages.length - 1]; check('마지막 메시지에도 캐시 표시', Array.isArray(lm.content) && !!lm.content[lm.content.length - 1].cache_control);
   check('평소 말은 작은 머리', b1.model === 'claude-haiku-5-5', b1.model);
-  check('지침 — 일하는 원칙·판 대신 일간보고서', b1.system[0].text.includes('묻기보다 먼저 한다') && b1.system[0].text.includes("'판'이라는 말은 쓰지 않는다"));
+  check('지침 — 일하는 원칙·판 대신 일간보고서·읽기 쉽게', b1.system[0].text.includes('묻기보다 먼저 한다') && b1.system[0].text.includes("'판'이라는 말은 쓰지 않는다") && b1.system[0].text.includes('한 줄에 하나씩'));
   const lastAi = await p.evaluate(async () => ((await kvGet('ailog')) || []).pop());
   check('캐시 읽은 양을 기록', lastAi.cRead === 900, JSON.stringify({ cRead:lastAi.cRead }));
   // 큰 머리 기준
