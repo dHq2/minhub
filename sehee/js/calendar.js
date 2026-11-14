@@ -30,7 +30,13 @@ async function calPageOpen(){
   const pg = $('calPage');
   if (CAL.year === null || CAL.month === null){ const t = parseYmd(S.today); CAL.year = t.getFullYear(); CAL.month = t.getMonth(); }
   if (!calPreloaded){ calPreloaded = true; [...new Set(Object.values(CAL_VN).concat('vn-memo'))].forEach(n => { const i = new Image(); i.src = `art/${n}.webp`; }); }
-  if (!CAL.on) CAL.zoom = CAL_ZTODAY;   /* 11-15 B: 열 때는 늘 오늘 쪽을 확대해서 */
+  /* 11-15 B: 처음 열 땐 오늘 쪽 확대, 그 뒤엔 보스가 둔 대로(배율·위치·달), 그사이 일정이 바뀌었으면 그 날을 다시 확대 */
+  if (!CAL.on){
+    const f = CAL.focus || (CAL.view ? null : S.today); CAL.focus = null;
+    if (f){ const t = parseYmd(f); CAL.year = t.getFullYear(); CAL.month = t.getMonth(); CAL.zoom = CAL_ZTODAY; CAL.center = f; CAL.restore = null; }
+    else { CAL.year = CAL.view.year; CAL.month = CAL.view.month; CAL.zoom = CAL.view.zoom; CAL.restore = CAL.view; CAL.center = null; }
+    clearTimeout(CAL.holdT); CAL.holdT = setTimeout(() => { CAL.restore = CAL.center = null; }, 700);
+  }
   await calLoad(); calMonth(CAL.month, true);
   if (!CAL.on){
     CAL.on = true; dlog('화면', '달력 쪽 열기');
@@ -43,6 +49,7 @@ async function calPageOpen(){
 const calOpen = calPageOpen;   /* 옛 이름 */
 function calPageClose(){
   if (!CAL.on) return;
+  { const sh = $('calSheet'); CAL.view = { year:CAL.year, month:CAL.month, zoom:CAL.zoom, x:sh.scrollLeft, y:sh.scrollTop }; }   /* 11-15 B: 다음에 열면 그대로 */
   CAL.on = false; dlog('화면', '달력 쪽 닫기'); calDay(null); inkSet(null);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   const pg = $('calPage'); pg.classList.remove('in'); pg.classList.add('out'); document.body.classList.remove('cal-on');
@@ -58,7 +65,7 @@ function calMonth(m, quiet, dir){
   $('cpToday').textContent = +S.today.slice(8);
   const n = Object.keys(CAL.byDate).filter(d => d.startsWith(`${y}-${pad(m + 1)}`)).reduce((s, d) => s + CAL.byDate[d].length, 0);
   /* 11-15 B: 가로 보드에 매직으로 쓴 글 — 칸 색 대신 마커 색(오늘 할 일 빨강·일정 파랑·개인 초록·그 밖 검정), 손으로 쓴 듯 살짝 기울임. 글은 다 적음(자르기·+N 없음) */
-  const chip = it => `<span class="cb-it${it.done ? ' done' : ''}${CAL.fresh === it.id ? ' fresh' : ''}" data-id="${esc(it.id)}" style="--c:${secColor(it.sec)};--mk:${calMarker(it.sec)};--rot:${calTilt(it.id)}deg">${it.time ? `<i>${esc(it.time)}</i>` : ''}${esc(it.text)}</span>`;
+  const chip = it => `<span class="cb-it${it.done ? ' done' : ''}${CAL.fresh === it.id ? ' fresh' : ''}" data-id="${esc(it.id)}" title="${esc(it.text)}" style="--c:${secColor(it.sec)};--mk:${calMarker(it.sec)};--rot:${calTilt(it.id)}deg">${it.time ? `<i>${esc(it.time.replace(/^0/, ''))}</i>` : ''}${esc(calMemo(it))}</span>`;
   const sh = $('calSheet');
   sh.innerHTML = `<div class="cb-wd">${[...WD].map((w, i) => `<span class="${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</span>`).join('')}</div>
     <div class="cb-grid">${monthCells(y, m).map((d, i) => {
@@ -74,7 +81,17 @@ function calMonth(m, quiet, dir){
 const calGo = (delta) => { calMonth(CAL.month + delta, true, delta); };
 /* ── 11-15 B: 가로 보드 — 벽에 거는 가로형 월간 화이트보드처럼 칸을 넉넉히(폰 한 화면에 3~4일), 손가락으로 옆으로 밀어 본다.
    글은 줄이지도 자르지도 않음 — 한 칸에 많으면 그 주만 길어지고 보드를 위아래로도 굴린다. 열면 오늘(그 달이 아니면 1일)이 가운데. ── */
-const CAL_COL = 124;   /* 한 칸 폭(px) — 매직 글씨 한 줄에 예닐곱 자 */
+const CAL_COL = 150;   /* 한 칸 폭(px) — 매직 글씨 한 줄에 CAL_MEMO_MAX 자쯤. 넘으면 다음 줄로 */
+const CAL_MEMO_MAX = 9, CAL_ROWMIN = 150;
+/* 11-15 B: 달력엔 사무적 메모로 — 세희가 적은 memo(예: 1층 이채린 만남) 가 있으면 그것, 없으면 보고서 말투 끝을 떼어 짧게 */
+const CAL_STEM = { 해야:'하기', 가야:'가기', 와야:'오기', 봐야:'보기', '해 봐야':'해 보기', 드려야:'드리기', 받아야:'받기', 내야:'내기', 만나야:'만나기', 챙겨야:'챙기기', 보내야:'보내기', 들러야:'들르기', 확인해야:'확인', 준비해야:'준비', 제출해야:'제출', 연락해야:'연락' };
+function calMemo(it){
+  if (it.memo) return it.memo;
+  let t = String(it.text || '').trim().replace(/[.。]$/, '');
+  t = t.replace(/\s*(이|가)\s*있습니다$/, '').replace(/\s*입니다$/, '').replace(/\s*됩니다$/, '');
+  t = t.replace(/\s*(해 봐야|확인해야|준비해야|제출해야|연락해야|해야|가야|와야|봐야|드려야|받아야|내야|만나야|챙겨야|보내야|들러야)\s*합니다$/, (m, v) => ' ' + CAL_STEM[v]);
+  return t.replace(/\s+/g, ' ').trim();
+}
 const calMarker = sec => ({ today:'#c62828', sched:'#1f3c88', me:'#2e7d32' })[sec] || '#222';
 const calTilt = id => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) | 0; return ((Math.abs(h) % 7) - 3) * 0.35; };
 let calFontReady = false;
@@ -82,7 +99,8 @@ function calWide(dir){
   if (!calFontReady){ calFontReady = true; if (!document.querySelector('link[data-cal-font]')){ const l = document.createElement('link'); l.rel = 'stylesheet'; l.dataset.calFont = '1'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); } }
   const sh = $('calSheet'); if (!sh) return;
   const fit = () => { const w = sh.clientWidth; if (!w) return; calZoomApply();
-    if (dir === undefined || dir === 0 || !CAL.wideAt) calCenter(); else { sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; sh.scrollTop = 0; } CAL.wideAt = Date.now(); };
+    if (CAL.restore){ sh.scrollLeft = CAL.restore.x; sh.scrollTop = CAL.restore.y; }
+    else if (dir === undefined || dir === 0 || !CAL.wideAt) calCenter(CAL.center); else { sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; sh.scrollTop = 0; } CAL.wideAt = Date.now(); };
   fit(); requestAnimationFrame(fit);
   if (document.fonts && !document.fonts.check('700 16px Gaegu')) document.fonts.load('700 16px Gaegu').then(() => { if (CAL.on) calPack(); }).catch(() => {});
 }
@@ -91,8 +109,8 @@ function calWide(dir){
    열 때·'오늘'을 누를 때는 오늘 쪽 확대(CAL_ZTODAY)로 돌아감 ── */
 const CAL_ZTODAY = 1;   /* 오늘 쪽 확대 — 폰 한 화면에 사흘쯤 */
 CAL.zoom = CAL_ZTODAY;
-/* 오늘(그 달이 아니면 1일) 칸을 보드 가운데로 */
-function calCenter(){ const sh = $('calSheet'), t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (!t) return;
+/* 그 날(없으면 오늘, 그 달이 아니면 1일) 칸을 보드 가운데로 */
+function calCenter(d){ const sh = $('calSheet'), t = (d && sh.querySelector(`.cb-c[data-d="${d}"]`)) || sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (!t) return;
   const sr = sh.getBoundingClientRect(), r = t.getBoundingClientRect();
   sh.scrollLeft = Math.max(0, r.left - sr.left + sh.scrollLeft + r.width / 2 - sr.width / 2); sh.scrollTop = Math.max(0, r.top - sr.top + sh.scrollTop + r.height / 2 - sr.height / 2); }
 const calZMin = () => { const sh = $('calSheet'); return Math.min(1, (sh.clientWidth - 2) / (CAL_COL * 7)); };
@@ -104,7 +122,7 @@ function calZoomApply(){
   sh.classList.toggle('wide', CAL_COL * 7 * z > w + 2); sh.classList.toggle('zmin', z <= zmin + .001);
   const rows = Math.ceil(sh.querySelectorAll('.cb-grid > .cb-c').length / 7) || 5, wd = sh.querySelector('.cb-wd'), ft = sh.querySelector('.cb-foot');
   const avail = sh.clientHeight - (wd ? wd.getBoundingClientRect().height : 20) - (ft ? ft.getBoundingClientRect().height : 0) - 4;
-  sh.style.setProperty('--rowh', Math.max(70, Math.floor(avail / rows / Math.min(z, 1))) + 'px');
+  sh.style.setProperty('--rowh', Math.max(CAL_ROWMIN, Math.floor(avail / rows / Math.min(z, 1))) + 'px');   /* 11-15 B: 줄 높이 최소 150 — 메모 대여섯 줄. 줄이면 화면을 채움 */
   calPack();
 }
 function calZoomTo(z, cx, cy){   /* cx·cy = 화면 좌표(그 자리를 고정) */
@@ -143,8 +161,8 @@ window.addEventListener('resize', () => { if (CAL.on) calWide(); });
   sh.addEventListener('touchmove', e => { if (!p || e.touches.length !== 2) return; if (e.cancelable) e.preventDefault(); const [x, y] = mid(e.touches); calZoomTo(p.z * dist(e.touches) / p.d, x, y); CAL.swiped = CAL.pinchAt = Date.now(); }, { passive:false });
   sh.addEventListener('touchend', e => { if (p || e.touches.length) CAL.pinchAt = CAL.swiped = Date.now(); if (p && e.touches.length < 2) p = null; });
 })();
-/* 11-15 B: 칸은 모두 같은 높이(그어 둔 칸). 일정은 한 줄씩 대충 적고, 칸에 다 안 들어가면 그 칸 글씨를 통째로 줄인다(자르지 않음) —
-   자세히는 확대해서 본다. 열 때는 오늘 쪽이 확대돼 있음. (포스트잇 방식은 보스 말로 뺌) */
+/* 11-15 B: 칸은 모두 같은 높이(그어 둔 칸). 일정은 짧은 사무 메모로(calMemo) 한 줄 — 글자 수 기준(CAL_MEMO_MAX)을 넘으면 다음 줄로 늘어남.
+   칸이 넘칠 때만 그 칸 글씨를 조금 줄임(최소 0.62). 자세히는 확대해서. (포스트잇·한 줄 우겨 넣기는 보스 말로 뺌) */
 function calPack(){
   const sh = $('calSheet'); if (!sh) return;
   sh.querySelectorAll('.cb-grid > .cb-c[data-d]').forEach(c => {
@@ -152,8 +170,8 @@ function calPack(){
     const cs = getComputedStyle(c), n = c.querySelector(':scope > .n');
     const aw = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 2;
     const ah = c.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - (n ? n.offsetHeight : 0) - 2;
-    const gap = parseFloat(cs.rowGap) || 0, w = Math.max(...its.map(it => it.scrollWidth)), h = its.reduce((a, it) => a + it.offsetHeight, 0) + gap * its.length;
-    const k = Math.min(1, aw / w, ah / h); if (k < 1) c.style.setProperty('--fs', Math.max(.05, k * .98).toFixed(3));
+    const gap = parseFloat(cs.rowGap) || 0, h = its.reduce((a, it) => a + it.offsetHeight, 0) + gap * its.length;
+    if (h > ah) c.style.setProperty('--fs', Math.max(.62, Math.sqrt(ah / h) * .97).toFixed(3));   /* 칸이 넘칠 때만 조금 줄임(줄바꿈이라 넓이²) — 그래도 넘치면 확대해서 */
   });
   calInk();
 }
@@ -250,7 +268,7 @@ function calFlash(d){ const c = document.querySelector(`#calSheet [data-d="${d}"
 async function calShowDate(d){
   const x = parseYmd(d); if (!CAL.on) await calPageOpen();
   const dir = (x.getFullYear() - CAL.year) * 12 + x.getMonth() - CAL.month;
-  CAL.year = x.getFullYear(); await calLoad(); calMonth(x.getMonth(), true, dir ? Math.sign(dir) : 0);
+  CAL.year = x.getFullYear(); CAL.zoom = CAL_ZTODAY; CAL.focus = null; await calLoad(); calMonth(x.getMonth(), true, dir ? Math.sign(dir) : 0); calCenter(d);   /* 11-15 B: 바뀐 날을 다시 확대 */
   return calFlash(d);
 }
 /* 대사창 — 사무실 대화와 같은 말(talkHtml), 얼굴은 서 있는 그림으로 */
@@ -263,7 +281,8 @@ function renderCalTalk(){
   cpGrow();
 }
 /* 세희가 일하는 모습(js/work.js 가 부른다) — 날짜 있는 일만 */
-const calItemOf = c => { const a = c.args || {}; if (c.name === 'add_item') return a.due ? { due:a.due } : null;
+/* 11-15 B: 달력 화면으로 넘어가는 건 달력이 이미 열려 있거나, 보스가 '달력에 적어'라고 콕 집은 일(calendar:true)만 — 평소엔 판에만 적고 말로 알림 */
+const calItemOf = c => { const a = c.args || {}; if (!CAL.on && !a.calendar) return null; if (c.name === 'add_item') return a.due ? { due:a.due } : null;
   if (['update_item', 'complete_item', 'delete_item'].includes(c.name)){ const it = typeof findItem === 'function' ? findItem(String(a.id || '').replace(/^#/, '')) : null; const due = a.due || (it && it.due); return due ? { due, id:it && it.id } : null; }
   return null; };
 async function calWorkBefore(c){

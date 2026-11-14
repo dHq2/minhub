@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 07:50 · 달력 사무 메모·화면 기억·달력 안 넘어감 · [중요] · 받는 쪽: A·C
+- 무엇: js/ai.js add_item·update_item 에 memo(달력용 9자 안팎 명사형)·calendar(보스가 '달력에 적어'라고 콕 집은 때만 true) 인자, 프롬프트 한 줄. CAL.changed 는 이제 calendar:true 이거나 달력이 열려 있을 때만 — 그 밖엔 CAL.focus 만(다음에 달력 열면 그 날 확대). itemBrief 에 memo. js/office.js 끝 처리의 CAL.changed 갈래는 calShowDate(d) 한 줄로. js/calendar.js calItemOf 는 달력이 안 열려 있고 calendar 가 없으면 null(작업 중계가 달력으로 안 감). calMemo(it)(memo 없으면 말투 끝 떼기), CAL_COL 150, CAL_ROWMIN 150, CAL.view(닫을 때 배율·위치·달 저장), calCenter(d).
+- 받는 쪽에게 필요한 일: A — 생성기·하루 생성에서 날짜 있는 일을 만들 때 memo 도 넣어 주면 달력이 깔끔함. C — 달력 칸 글은 calMemo(it) 로(it.text 직접 쓰지 말 것), 일정 바뀌면 CAL.focus 를 쓰면 다음 열 때 그 날로 감.
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalwide v4 · tcalzoom
+
 ## 2026-11-15 07:30 · 달력 포스트잇 빼고 한 줄 글씨 · [보통] · 받는 쪽: C (A 참고)
 - 무엇: 보스 말로 포스트잇(.cb-pi·'pi' 클릭) 없앰. calPack() 이 이제 칸마다 한 줄(nowrap) 일정들의 폭·높이를 재서 다 들어가게 --fs(글씨 배율)를 칸에 매김. 열 때(calPageOpen)·'오늘' 누를 때 CAL.zoom = CAL_ZTODAY(1) + calCenter()(오늘 칸 가운데, 가로·세로). 확대 최대 4, sehee.calZoom 저장은 뺌.
 - 받는 쪽에게 필요한 일: C — .cb-it 은 white-space:nowrap + font-size:calc(1rem*var(--fs)). 칸 글씨 크기를 따로 고정하지 말 것(--fs 를 덮음).

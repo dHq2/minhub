@@ -211,8 +211,7 @@ function seheeSays(r, src){
     setTimeout(async () => { if (DW.open !== 'people') await dwOpen('people'); else pplRender(); setTimeout(() => pplFlash(id), 380); }, curView() === 'office' ? 60 : 260);
   } else if (CAL.changed){
     const d = CAL.changed; CAL.changed = null;
-    if (curView() === 'office') setTimeout(async () => { await dwOpen('cal'); const x = parseYmd(d); CAL.year = x.getFullYear(); calYear(); calMonth(x.getMonth(), true);
-      setTimeout(() => { const c = document.querySelector(`#calSheet [data-d="${d}"]`); if (c){ c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); } }, 380); }, 60);
+    if (curView() === 'office') setTimeout(() => calShowDate(d), 60);   /* 11-15 B: 보스가 '달력에 적어'라고 한 일만 여기 옴 — 그 날을 확대해 보여 줌 */
   }
 }
 async function openOffice(){

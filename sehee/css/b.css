@@ -23,7 +23,7 @@
 
 #calSheet .cb-c .n{font:700 1.08rem/1.1 Gaegu,var(--f-head),cursive}
 #calSheet .cb-it{display:block;-webkit-line-clamp:unset;overflow:visible;border-left:0;padding:0;color:var(--mk,#222);
-  font:700 calc(1rem * var(--fs,1))/1.12 Gaegu,"Nanum Pen Script",var(--f-body),cursive;letter-spacing:-.01em;white-space:nowrap;   /* 11-15 B: 한 줄씩 — 넘치면 칸 글씨를 줄임(--fs, calPack) */
+  font:700 calc(1.12rem * var(--fs,1))/1.1 Gaegu,"Nanum Pen Script",var(--f-body),cursive;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere;   /* 11-15 B: 사무 메모 크게 — 기준 글자 수 넘으면 다음 줄, 칸 넘칠 때만 --fs 로 조금 줄임 */
   transform:rotate(var(--rot,0deg));transform-origin:left center;text-shadow:0 0 .7px var(--mk,#222),.3px .3px 0 rgba(0,0,0,.06)}
 #calSheet .cb-it i{font-style:normal;font-weight:700;font-size:.88em;opacity:1;margin-right:3px;text-decoration:underline 1.5px;text-underline-offset:2px}
 #calSheet .cb-it.done{text-decoration:line-through 2px;opacity:.5}

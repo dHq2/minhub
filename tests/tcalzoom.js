@@ -1,5 +1,5 @@
 /* tcalzoom v1 (2026-11-15, B) — 달력 확대·축소: 컴퓨터는 휠(커서 자리 고정), 끝까지 줄이면 한 달 전체가 한 화면(옆·아래로 안 넘침, 글 안 잘림),
-   휠 누르고 끌기(가운데 버튼) = 손바닥, 낙서는 확대해도 같은 칸에, 다시 열면 오늘 쪽 확대(배율 1)로. 폰은 두 손가락 벌리기·오므리기. 스크롤바 안 보임. 가짜 일정만 */
+   휠 누르고 끌기(가운데 버튼) = 손바닥, 낙서는 확대해도 같은 칸에, 처음 열 땐 오늘 쪽 확대 · 닫았다 열면 보스가 둔 대로(배율·위치) · 그사이 일정이 바뀌면 그 날을 다시 확대 · 날짜 있는 일을 적어도 달력으로 안 넘어감(calendar:true 일 때만). 폰은 두 손가락 벌리기·오므리기. 스크롤바 안 보임. 가짜 일정만 */
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch();
   for (const [tag, opt] of [['d', { viewport:{ width:1366, height:860 } }], ['m', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }]]){
@@ -37,7 +37,17 @@ const { chromium } = require('playwright');
       R.midPan = { moved:(await S()).x - x0, note:await p.evaluate(() => $('calDay').classList.contains('on')), month:await p.evaluate(() => CAL.month === parseYmd(S.today).getMonth()) };
       await p.keyboard.down('Shift'); const x1 = (await S()).x; await p.mouse.wheel(0, 200); await p.keyboard.up('Shift'); await p.waitForTimeout(150); R.shiftWheel = (await S()).x - x1;
       const z1 = (await S()).z; await p.evaluate(() => calPageClose()); await p.waitForTimeout(450); await p.evaluate(() => calPageOpen()); await p.waitForTimeout(500);
-      R.reopen = { z:(await S()).z, was:z1, todayIn:await p.evaluate(() => { const sh = $('calSheet'), sr = sh.getBoundingClientRect(), r = sh.querySelector('.cb-c.today').getBoundingClientRect(); return r.left >= sr.left - 1 && r.right <= sr.right + 1 && r.top >= sr.top - 1 && r.bottom <= sr.bottom + 1; }) };
+      R.reopen = { z:(await S()).z, was:z1, x:(await S()).x };
+      R.focus = await p.evaluate(async () => { calPageClose(); await new Promise(r => setTimeout(r, 450));
+        const t = parseYmd(S.today), nx = new Date(t.getFullYear(), t.getMonth() + 1, 3), d = ymd(nx);
+        const r = await runTool({ name:'add_item', args:{ section:secById('sched') ? 'sched' : secs()[0].id, text:'가상 거래처 미팅이 있습니다', memo:'거래처 미팅', due:d, time:'15:00' } });
+        const jumped = CAL.on, changed = CAL.changed, relay = calItemOf({ name:'add_item', args:{ due:d } });
+        await calPageOpen(); await new Promise(r => setTimeout(r, 500));
+        const sh = $('calSheet'), sr = sh.getBoundingClientRect(), c = sh.querySelector(`.cb-c[data-d="${d}"]`), q = c && c.getBoundingClientRect();
+        const out = { ok:r.ok, jumped, changed, relay, month:CAL.month === nx.getMonth(), z:CAL.zoom, inView:!!q && q.left >= sr.left - 1 && q.right <= sr.right + 1 && q.top >= sr.top - 1 && q.bottom <= sr.bottom + 1, text:c && c.textContent };
+        calPageClose(); await new Promise(r => setTimeout(r, 450));
+        await runTool({ name:'add_item', args:{ section:secById('sched') ? 'sched' : secs()[0].id, text:'가상 회의가 있습니다', memo:'회의', due:d, calendar:true } });
+        out.askedChanged = CAL.changed === d; out.askedRelay = !!calItemOf({ name:'add_item', args:{ due:d, calendar:true } }); CAL.changed = null; return out; });
     } else {
       const cdp = await ctx.newCDPSession(p), T = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints:pts });
       const pinch = async (d0, d1) => { await T('touchStart', [{ x:cx - d0, y:cy, id:1 }, { x:cx + d0, y:cy, id:2 }]); for (let i = 1; i <= 10; i++){ const d = d0 + (d1 - d0) * i / 10; await T('touchMove', [{ x:cx - d, y:cy, id:1 }, { x:cx + d, y:cy, id:2 }]); await p.waitForTimeout(16); } await T('touchEnd', []); await p.waitForTimeout(200); };
