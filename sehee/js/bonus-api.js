@@ -29,6 +29,8 @@ window.SEHEE = {
   pplPos(id, xy){ if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; else delete BONUS.pos[id]; },
   pplPosAll(map){ BONUS.pos = {}; for (const [id, xy] of Object.entries(map || {})) if (xy && isFinite(xy.x) && isFinite(xy.y)) BONUS.pos[id] = { x:+xy.x, y:+xy.y }; },
   pplRedraw:() => { if (DW.open === 'people') pplRender(); },
+  /* v1.5.20 공식 능력치 실 — 끄는 동안 미리 보기도 본체와 같은 모양으로: pos = {id:{x,y}}(판 좌표), o = {C, th} → {lines, tags}(svg 조각) */
+  pplStrings:(pos, o) => pplStrings(pos, o),
   /* 웹 페이지 대표 사진 — 계정 서버 /og 로(로그인 필요). {img,title,site} 또는 null. 같은 주소는 기억해 둔다 */
   async og(u){
     if (!SYNC.url || !SYNC.token || BONUS.ogOff || !/^https?:\/\//.test(String(u))) return null;

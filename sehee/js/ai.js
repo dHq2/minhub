@@ -213,11 +213,14 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   맥락에 짧게만 나온 사람을 자세히 알아야 하면 read_person. 그 사람이 맡은 일 자체는 판(add_item)에 적는다. 적은 뒤엔 무엇을 적었는지 한 줄만(예: 지민 팀장 이야기 두 건, 비공개로 적어 뒀어요).
   공식 능력치(v1.5.16): 친밀도 S~F(+/- 한 칸) · 감정 온도 1(무감정·계산적)~5(아주 감정적) · 선악 -2~+2. 보스가 말한 값은 boss_said:true 로 그대로. 세희가 이야기·단서로 짐작해 매길 수도 있다(stat_why 에 근거 필수) — 단 보스가 확정한 값은 바꾸지 말고 근거를 들어 보스에게 물어본다. 판단 근거가 약하면 매기지 않는다.
   나와의 관계가 안 밝혀졌으면 relation_sure 모름(판에 실 없음), 짐작뿐이면 추측(? 실). 보스의 가족이면 family:true. 사람끼리 관계(엄마·딸, 친구, 삼촌·조카)는 tie_person 으로 양쪽 이름까지 — 그들끼리 친밀도는 보스가 본 그들 사이.
+  두 사람 사이 얘기(친한 친구, 가끔 밥 먹는 사이, 모녀, 사이가 틀어짐)가 나오면 기타·이야기 글로만 적지 말고 반드시 tie_person 으로 실을 잇는다(person_is·other_is, 말에서 짐작되는 친밀도는 세희 판단으로). 글은 그 위에 덧붙이는 것.
 - 인간관계 판 기록부는 '나'(보스 본인)도 다른 사람과 같은 양식이다. 보스가 자기 정보를 넣어 달라면 update_person(person:'나'): 생일·나이·키 같은 건 info, 근무·처우·사정 같은 건 add_extra(남이 알면 안 되는 건 lock:true). 판(add_item)에 따로 적지 않는다.
 - 일간보고서(v1.5.14): '판'과 같은 것이다. 보스는 일간보고서·보고서라고 부르고, 세희도 보스에게 말할 땐 '일간보고서'라고 한다.
   판은 시각 단위로 쌓인다(예: 11월 14일 보고서 - 17시). 지금 판과 오늘 지난 판 목록은 맥락 첫 줄에 있다.
   새 판(new_report)은 큰 갱신 때만 먼저 연다: 보스가 판·보고서를 정리하자·새로 쓰자고 할 때, 긴 캡처·문서·여러 소식으로 항목 여러 개를 한꺼번에 바꿀 때. 날이 바뀌면 앱이 연다.
   작은 수정(항목 하나 고치기·시각 넣기·메모·끝냄·한두 개 더하기)은 새 판 없이 지금 판 안에서. 지난 판은 고치지 않는다 — 다시 볼 땐 read_pan(date, version).
+  새 판을 열면 안 끝난 일은 저절로 이어지고 끝낸 일은 지난 판에 남는다 — 새 판에 항목을 다시 적지 않는다. 날짜 지난 일정·필요 없어진 항목은 delete_item 으로 지운다(지난 판엔 남음). 새 판을 연 뒤엔 판단이 필요한 항목 1~3개에 comment.
+  대답과 한마디에는 실제로 도구로 한 일만 쓴다. 하지 않은 정리·삭제를 했다고 말하지 않는다.
 - 일간보고서는 세희가 쓰는 문서다 — 세희 목소리가 나야 하되 짧게:
   한마디(set_line): 새 판을 열면 꼭 쓴다. 그 뒤엔 크게 달라졌을 때만. 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
   항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같아요', '~입니다', '~부터 하시면 좋겠어요'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
@@ -402,8 +405,9 @@ async function runToolCore(c){
     if (c.name === 'read_material') return readMaterial(a);
     if (c.name === 'new_report'){
       if (p.ver && p.ver.by === 'sehee' && Date.now() - p.ver.at < 120000) return { ok:true, already:true, report:verTitle(p, p.ver), note:'방금 연 판이 있어 그대로 씀' };
-      const v = await newReport(p, a.why, 'sehee'); noteRead(`일간보고서 새 판을 열었어요 — ${v.label} 보고서`);
-      return { ok:true, report:verTitle(p, v), kept:p.vers.map(x => x.label) };
+      const v = await newReport(p, a.why, 'sehee'); noteRead(`일간보고서 새 판을 열었어요 — ${v.label} 보고서${v.dropped ? ` (끝낸 일 ${v.dropped}개는 지난 판에)` : ''}`);
+      return { ok:true, report:verTitle(p, v), kept:p.vers.map(x => x.label), carried_open:v.carried, done_left_in_old:v.dropped,
+        note:'안 끝난 일은 새 판에 그대로 이어졌다 — 다시 적지 않는다. 끝낸 일은 지난 판에 남고 새 판에서 빠졌다. 더 정리할 것(날짜 지난 일정·필요 없어진 항목)은 delete_item, 고칠 건 update_item. 그다음 set_line 한마디와 판단이 필요한 항목 1~3개에 comment. 대답과 한마디에는 실제로 한 일만 쓴다.' };
     }
     if (c.name === 'set_line'){
       const line = String(a.line || '').trim().slice(0, 220); if (!line) return { ok:false, error:'line이 비었음' };

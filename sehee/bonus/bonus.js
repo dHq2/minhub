@@ -1,4 +1,4 @@
-/* 세희 보너스 업데이트 — B0.11
+/* 세희 보너스 업데이트 — B0.11.1
    실험 파일 B(방 B 기본 담당). 인수인계 v3 — 세 방 동등, 본체도 할일.md 찜으로 직접 고친다.
    본체와는 주로 window.SEHEE 창구로 잇고, v3 부터는 본체 함수(btFold 등)도 직접 부른다.
 
@@ -44,11 +44,12 @@
         ② 끝없는 판: 판 끝까지 끌면 화면이 따라 굴러가고, 놓으면 본체가 가장 바깥 카드에서 150 만큼 판을 넓힌다(그 너머 빈 곳으로는 못 감).
            확대·축소의 가장 작은 배율도 넓힌 판 전체가 한눈에 보이는 데까지만. 다시 열면 넓힌 판 전체가 한눈에.
         좌표는 본체 #ppMap data-s·l·t(기본 판 크기·넓힌 만큼)를 따른다.
+   B0.11.1 (2026-11-14, A — 본체 v1.5.20) 끄는 동안 미리 보기(redrawStrings)가 본체 SEHEE.pplStrings 가 있으면 그걸로 그림 — 공식 능력치 실·관계 이름이 끄는 중에도 그대로.
    B0.11 (2026-11-14, 같은 본체 v1.5.19 — 올리기 전 보스 말씀으로 바꿈) 꾹 누르기 없앰. 한 번 누르면 고름(굵은 테두리 + ⤡) — 고른 카드는 바로 끌어 옮기고 ⤡ 로 크기,
         고른 카드를 한 번 더 누르면 인물 기록부. 안 고른 카드 위에서 끌면 판이 굴러감(카드 안 움직임). 옮긴 뒤에도 고른 채로. */
 (function(){
   const S = window.SEHEE; if (!S) return;
-  S.setVersion('B0.11');
+  S.setVersion('B0.11.1');
   const $ = id => document.getElementById(id);
   const HOLD = 500;          // 꾹 누르는 시간(ms)
   const SLOP = 8;            // 들리기 전에 이만큼 움직이면 그냥 화면 굴리기
@@ -99,6 +100,11 @@
     map.querySelectorAll('.pp-node[data-pp]').forEach(n => { pos[n.dataset.pp] = { x:parseFloat(n.style.left) + fr.L, y:parseFloat(n.style.top) + fr.T }; });   // 본체 좌표(svg viewBox 와 같음)
     let out = '';
     const ppl = list();
+    if (typeof S.pplStrings === 'function'){   /* 본체 v1.5.20+ — 공식 능력치 실(색·굵기·이중선·?·이름)을 본체와 똑같이(A 가 고침) */
+      const st = S.pplStrings(pos, { C, th }), tmp = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); tmp.innerHTML = st.lines;
+      const at = old[0]; for (const el of [...tmp.childNodes]) svg.insertBefore(el, at); old.forEach(el => el.remove());
+      const tg = map.querySelector('.pp-tags'); if (tg) tg.innerHTML = st.tags; return;
+    }
     for (const p of ppl){ const q = pos[p.id]; if (!q) continue; const d = Math.hypot(q.x - C, q.y - C) || 1;
       out += strPath(C + (q.x - C) / d * off, C + (q.y - C) / d * off * (th === 'white' ? 0.8 : 1), q.x, q.y, 'pp-str', hs(p.id), th); }
     const seen = new Set();

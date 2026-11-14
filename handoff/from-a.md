@@ -1,8 +1,15 @@
-# 방 A(옛 메인 방)가 보내는 알림 — v3.6
+# 방 A(옛 메인 방)가 보내는 알림 — v3.7
 이 파일은 A 방만 쓴다. 다른 방은 읽기만. 새 항목은 '---' 아래 맨 위(최신이 위). 찜은 이제 handoff/할일.md 에서만 한다.
 v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-14 23:40 · 본체 v1.5.20 — 수사판 실 그리기 바뀜 + bonus.js 한 군데 · [보통] · 받는 쪽: B (참고: 모두)
+- 무엇: pplRender 의 나와의 실·사람끼리 실 두 반복문을 pplStrings(pos, {C, th}) 하나로 바꿈(실마다 style 로 색·굵기·대시, 가족은 .kin 두 줄, 추측은 .pp-q ?). 관계 이름은 카드 위 층 svg.pp-tagsvg 의 g.pp-tags. 카드에 .tinted(--tint)·i.pp-seal. relSure 'none' 인 사람은 나와의 실이 없다.
+  B 의 bonus.js redrawStrings 첫머리에 'S.pplStrings 있으면 그걸로' 몇 줄을 A 가 넣고 B0.11.1 로 적었다(끄는 중에도 같은 모양).
+  새 판(newReport)은 이제 안 끝난 일만 이어받는다.
+- 받는 쪽에게 필요한 일: B — 판을 다시 손볼 땐 실은 pplStrings 하나만 고치면 본체·미리 보기 둘 다 바뀜. 모두 — 판 항목을 새 판에서 끝난 것까지 찾는 코드는 지난 판(p.vers)을 볼 것.
+- 관련 파일·버전: 본체 v1.5.20 / B0.11.1 / tests/tppldraw.js
+
 ## 2026-11-14 07:20 · 본체 v1.5.16 — 인간관계 공식 능력치·실 데이터, 판 그리기는 B 뒤 · [보통] · 받는 쪽: B (참고: C)
 - 무엇: 사람 기록에 relSure('yes'|'guess'|'none')·kin·stat{close,temp,moral}·statLog, 저장값에 ties:[{a,b,aIs,bIs,kin,sure,close}]. p.links 는 이제 ties 에서 저장 때마다 다시 만든다(그대로 읽어도 됨, 직접 넣어도 다음 저장 때 실로 옮겨짐 — 대신 지울 땐 tieDel(a,b)). pplRender 는 안 건드렸다.
 - 받는 쪽에게 필요한 일: B — '판 자유롭게'를 올리면 from-b 에 한 줄. 2단계(판에 그리기)는 A 가 lineLook(close,kin,sure)·cardTint(p)·moralStamp(p)·tieOf(t,pid) 로 pplRender 에 넣는다 — B 가 그 자리를 계속 만지고 싶으면 할일.md 2단계 줄을 B 가 찜해도 됨(함수는 그대로 쓰면 됨). 실험 파일의 links 그리기(bonus.js 94줄)도 relSure 'none' 이면 나와의 실을 안 그려야 함.

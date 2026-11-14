@@ -225,6 +225,8 @@ async function newReport(p, why, by){
   p.vers.push({ ...p.ver, until:Date.now(), line:p.line || '', face:p.face || '-_-', items:verClone(p.items), inbox:verClone(p.inbox) });
   if (p.vers.length > VER_MAX) p.vers.splice(0, p.vers.length - VER_MAX);
   p.ver = { label:verNextLabel(p), at:Date.now(), by:by || 'sehee', why:String(why || '').trim().slice(0, 80) };
+  /* v1.5.20 새 판은 날이 바뀔 때처럼 안 끝난 일만 이어받는다 — 끝낸 일은 방금 얼린 지난 판에 그대로 남는다(보스: '지울 거 지우고') */
+  const before = p.items.length; p.items = p.items.filter(i => !i.done); p.ver.carried = p.items.length; p.ver.dropped = before - p.items.length;
   p.updatedAt = Date.now();
   if (S.pan === p){ await flush(true); if (!RPT.view) render(); } else await putPan(p);
   dlog('판', '새 판 ' + verTitle(p, p.ver) + (p.ver.why ? ' · ' + p.ver.why : ''));

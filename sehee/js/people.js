@@ -167,7 +167,7 @@ const PEOPLE_TOOLS = () => [
     stat_why:{ type:'string', description:'능력치를 매긴 근거 한 줄(단서). 능력치를 넣을 땐 꼭' },
     boss_said:{ type:'boolean', description:'보스가 이번에 그 값을 직접 말했으면 true — 보스가 확정한 값도 바꾼다. 세희 판단이면 비움' },
     add_note:{ type:'string', description:'세희 메모 한 줄' }, link_to:{ type:'string', description:'잇고 싶은 다른 사람 이름' } }, required:['person'] } },
-  { name:'tie_person', description:'판에 있는 두 사람 사이에 실을 잇거나 고친다(보스 본인과의 관계는 update_person). 실 위에 양쪽 관계 이름이 붙는다 — 예: 엄마와 딸이면 person_is:"엄마", other_is:"딸". 친구면 둘 다 "친구". 그들끼리의 친밀도는 보스가 본 그들 사이.',
+  { name:'tie_person', description:'판에 있는 두 사람 사이에 실을 잇거나 고친다(보스 본인과의 관계는 update_person). 두 사람 사이 얘기가 나오면 기타 글 대신 꼭 이걸 쓴다. 실 위에 양쪽 관계 이름이 붙는다 — 예: 엄마와 딸이면 person_is:"엄마", other_is:"딸". 친구면 둘 다 "친구". 그들끼리의 친밀도는 보스가 본 그들 사이.',
     schema:{ type:'object', properties:{ person:{ type:'string', description:'사람 이름 또는 id' }, other:{ type:'string', description:'다른 사람 이름 또는 id' },
       person_is:{ type:'string', description:'person 이 other 에게 무엇인지(예: 엄마, 삼촌, 친구, 팀장)' }, other_is:{ type:'string', description:'other 가 person 에게 무엇인지(예: 딸, 조카, 친구, 팀원)' },
       family:{ type:'boolean', description:'둘이 가족이면 true' }, guess:{ type:'boolean', description:'추측이면 true(판에 ?)' },
@@ -359,6 +359,37 @@ function pplTheme(){ const t = PPL.theme || 'cork'; const el = $('people'); PP_T
   if (t === 'white' && !document.getElementById('ppFont')){ const l = document.createElement('link'); l.id = 'ppFont'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); }
   $('ppTheme').textContent = '꾸밈 · ' + PP_THEMES.find(x => x[0] === t)[1]; return t; }
 const PPL_PAD = 150;   /* v1.5.19 (B) 끝없는 판: 가장 바깥 카드에서 이만큼까지만 판을 넓힌다 */
+/* ── 판에 실 그리기 (v1.5.20, A — 공식 능력치 2단계) ──
+   나와의 실: 친밀도 → 색·굵기, 가족 → 이중선, 추측 → 연필 점선 + ?, 안 밝혀짐 → 실 없음. 실 위에 그 사람이 나에게 무엇인지(삼촌·친구).
+   사람끼리 실: 같은 규칙 + 양쪽 끝에 서로 무엇인지(엄마 · 딸). 본체 pplRender 와 실험 파일(끄는 동안 미리 보기)이 같이 쓴다 — SEHEE.pplStrings. */
+const pplHash = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
+function pplStrings(pos, o){
+  const C = o.C, th = o.th || 'cork', off = th === 'white' ? 54 : th === 'map' ? 30 : 0, f = n => n.toFixed(1), list = PPL.list || [];
+  const bend = (x1, y1, x2, y2, seed) => { if (th === 'cork') return 0; const L = Math.hypot(x2 - x1, y2 - y1) || 1; return ((seed % 21) - 10) / 10 * L * (th === 'map' ? 0.16 : 0.07); };
+  const curve = (x1, y1, x2, y2, b) => { const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1; return { cx:mx - dy / L * b, cy:my + dx / L * b }; };
+  const at = (x1, y1, x2, y2, b, t) => { const q = curve(x1, y1, x2, y2, b), u = 1 - t; return { x:u * u * x1 + 2 * u * t * q.cx + t * t * x2, y:u * u * y1 + 2 * u * t * q.cy + t * t * y2 }; };
+  const one = (x1, y1, x2, y2, b, cls, st) => { if (!b) return `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" class="${cls}" style="${st}"/>`; const q = curve(x1, y1, x2, y2, b); return `<path d="M${f(x1)} ${f(y1)} Q${f(q.cx)} ${f(q.cy)} ${f(x2)} ${f(y2)}" class="${cls}" style="${st}"/>`; };
+  const draw = (x1, y1, x2, y2, look, cls, seed) => {
+    const b = bend(x1, y1, x2, y2, seed), st = w => `stroke:${look.color};stroke-width:${w.toFixed(1)};stroke-dasharray:${look.dash || 'none'}`;
+    if (!look.double) return one(x1, y1, x2, y2, b, cls, st(look.width));
+    const L = Math.hypot(x2 - x1, y2 - y1) || 1, nx = -(y2 - y1) / L, ny = (x2 - x1) / L, g = Math.max(2.2, look.width * 0.75), w = Math.max(1.2, look.width * 0.6);   /* 가족 — 나란한 두 줄 */
+    return one(x1 + nx * g, y1 + ny * g, x2 + nx * g, y2 + ny * g, b, cls + ' kin', st(w)) + one(x1 - nx * g, y1 - ny * g, x2 - nx * g, y2 - ny * g, b, cls + ' kin', st(w));
+  };
+  const tag = (x, y, t, cls) => t ? `<text x="${f(x)}" y="${f(y)}" class="pp-tl${cls ? ' ' + cls : ''}">${esc(String(t).slice(0, 8))}</text>` : '';
+  const q = (x, y) => `<g class="pp-q" transform="translate(${f(x)} ${f(y)})"><circle r="9"/><text y="4">?</text></g>`;
+  let lines = '', tags = '';
+  for (const p of list){ const P = pos[p.id]; if (!P) continue; const look = lineLook(p.stat && p.stat.close, isKin(p), relSure(p)); if (!look) continue;
+    const d = Math.hypot(P.x - C, P.y - C) || 1, x1 = C + (P.x - C) / d * off, y1 = C + (P.y - C) / d * off * (th === 'white' ? 0.8 : 1), seed = pplHash(p.id), b = bend(x1, y1, P.x, P.y, seed);
+    lines += draw(x1, y1, P.x, P.y, look, 'pp-str', seed);
+    const m = at(x1, y1, P.x, P.y, b, 0.47); tags += look.mark ? q(m.x, m.y) : ''; tags += tag(m.x, m.y + (look.mark ? -13 : -4), p.rel); }
+  for (const t of PPL.ties || []){ const A = pos[t.a], B = pos[t.b]; if (!A || !B) continue; const look = lineLook(t.close, t.kin, t.sure); if (!look) continue;
+    const k = [t.a, t.b].sort().join('-'), seed = pplHash(k), b = bend(A.x, A.y, B.x, B.y, seed);
+    lines += draw(A.x, A.y, B.x, B.y, { ...look, dash:look.dash || (t.close || t.kin ? '' : '6 4') }, 'pp-lk' + (t.close || t.kin ? ' rated' : ''), seed);
+    if (look.mark){ const m = at(A.x, A.y, B.x, B.y, b, 0.5); tags += q(m.x, m.y); }
+    const ea = at(A.x, A.y, B.x, B.y, b, 0.36), eb = at(A.x, A.y, B.x, B.y, b, 0.64); tags += tag(ea.x, ea.y - 4, t.aIs, 'lk') + tag(eb.x, eb.y - 4, t.bIs, 'lk'); }
+  return { lines, tags };
+}
+function pplCardDeco(p){ const tint = cardTint(p), m = moralStamp(p); return { style:tint ? ';--tint:' + tint : '', cls:tint ? ' tinted' : '', seal:m ? `<i class="pp-seal ${m.ch === '善' ? 'good' : 'bad'}${m.strong ? ' strong' : ''}">${m.ch}</i>` : '' }; }
 function pplRender(center){
   const list = PPL.list || [], S = Math.max(440, 380 + list.length * 24), C = S / 2, th = pplTheme();
   const { pos, used, starts, spans } = pplLayout(list, S);
@@ -391,14 +422,12 @@ function pplRender(center){
   } else under += `<circle cx="${C}" cy="${C}" r="${S * 0.29}" class="pp-ring"/><circle cx="${C}" cy="${C}" r="${S * 0.39}" class="pp-ring"/>`;
   used.forEach(g => { const a = starts[g] + spans[g] / 2; svg += `<text x="${(C + Math.cos(a) * S * 0.47).toFixed(0)}" y="${(C + Math.sin(a) * S * 0.47).toFixed(0)}" class="pp-gl" fill="${GROUP_COLOR[g]}">${th === 'map' ? g + ' 구역' : g}</text>`; });
   const off = th === 'white' ? 54 : th === 'map' ? 30 : 0;
-  for (const p of list){ const q = pos[p.id]; if (!q) continue; const d = Math.hypot(q.x - C, q.y - C) || 1; svg += path(C + (q.x - C) / d * off, C + (q.y - C) / d * off * (th === 'white' ? 0.8 : 1), q.x, q.y, 'pp-str', hs(p.id)); }
-  const seen = new Set();
-  for (const p of list) for (const id of (p.links || [])){ const k = [p.id, id].sort().join('-'); if (seen.has(k) || !pos[id]) continue; seen.add(k); svg += path(pos[p.id].x, pos[p.id].y, pos[id].x, pos[id].y, 'pp-lk', hs(k)); }
+  { const st = pplStrings(pos, { C, th }); svg += st.lines; PPL.tagSvg = st.tags; }   /* v1.5.20 공식 능력치 실(A) — 옛 단색 실 대신 */
   if (th === 'white') svg += `<ellipse cx="${C}" cy="${C}" rx="62" ry="48" transform="rotate(-8 ${C} ${C})" class="pp-mecircle"/>`;
   const map = $('ppMap'); map.style.width = W + 'px'; map.style.height = H + 'px'; map.dataset.s = S; map.dataset.l = L; map.dataset.t = T;
-  map.innerHTML = `<svg class="pp-svg" width="${W}" height="${H}" viewBox="${L} ${T} ${W} ${H}">${under}${svg}</svg>
+  map.innerHTML = `<svg class="pp-svg" width="${W}" height="${H}" viewBox="${L} ${T} ${W} ${H}">${under}${svg}</svg><svg class="pp-tagsvg" width="${W}" height="${H}" viewBox="${L} ${T} ${W} ${H}"><g class="pp-tags">${PPL.tagSvg || ''}</g></svg>
     <div class="pp-me${PPL.pics && PPL.pics.me ? ' has-pic' : ''}" style="left:${C - L}px;top:${C - T}px"><i class="pp-pin"></i>${PPL.pics && PPL.pics.me ? `<div class="ph pic"><img class="pic" src="${PPL.pics.me}" alt=""></div>` : ''}<b>나</b><span>${th === 'map' ? '현위치' : '보스'}</span></div>
-    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node" data-pp="${p.id}" style="left:${(q.x - L).toFixed(0)}px;top:${(q.y - T).toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg${size(p.id) !== 1 ? ';--bs:' + size(p.id) : ''}"><i class="pp-pin"></i><div class="ph${PPL.pics && PPL.pics[p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}">${pplFace(p)}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
+    ${list.map(p => { const q = pos[p.id]; return q ? `<div class="pp-node${pplCardDeco(p).cls}" data-pp="${p.id}" style="left:${(q.x - L).toFixed(0)}px;top:${(q.y - T).toFixed(0)}px;--c:${GROUP_COLOR[p.group]};--r:${((hs(p.id) % 7) - 3) * 1.4}deg${size(p.id) !== 1 ? ';--bs:' + size(p.id) : ''}${pplCardDeco(p).style}"><i class="pp-pin"></i>${pplCardDeco(p).seal}<div class="ph${PPL.pics && PPL.pics[p.id] ? ' pic' : SIL[p.sex] ? ' sx' : ''}">${pplFace(p)}</div><b>${esc(p.name)}</b><span>${esc(p.rel || p.group)}</span></div>` : ''; }).join('')}
     ${list.length ? '' : `<div class="pp-empty" style="left:${C - L}px;top:${C - T + 70}px">아직 아무도 없어요.<br>「+ 사람」을 누르거나 세희에게 "○○을 인간관계 판에 추가해줘"라고 해 보세요.</div>`}`;
   $('ppCount').textContent = list.length ? `${list.length}명` : '';
   const sc = $('ppScroll'), fitK = sc.clientWidth > 80 ? Math.min(1, (sc.clientWidth - 8) / W, (sc.clientHeight - 8) / H) : 1;   /* 다시 열면 넓힌 판 전체가 한눈에 */
