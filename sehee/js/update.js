@@ -56,7 +56,7 @@ async function askUpdate(){
   if (typeof scenePlay === 'function' && !(typeof SYNC !== 'undefined' && SYNC.observer)){
     dlog('업데이트', '장면으로 물어봄 — ' + parts.join(' · '));
     const v = await scenePlay(SCENES.update, { keep:true });
-    if (v === 'yes'){ await scenePlay(SCENES.updateYes, { cont:true, keep:true, auto:500 }); doUpdate(); return; }
+    if (v === 'yes'){ await scenePlay(SCENES.updateYes, { cont:true, keep:true, auto:500 }); updSceneRun(); return; }
     if (v === 'no'){ await scenePlay(SCENES.updateNo, { cont:true }); updDeclined = true; updHide(); dlog('업데이트', '지금 버전으로 계속(장면)'); return; }
     await sceneClose();
   }
@@ -75,6 +75,32 @@ function doUpdate(){
   const w = waitingSW && waitingSW.state !== 'redundant' ? waitingSW : (S.reg && S.reg.waiting);
   if (w) w.postMessage('skip');
   setTimeout(applyUpdate, w ? 2500 : 300);   /* 무슨 일이 있어도 한 번 누르면 끝. 보너스만이면 바로 새로 고침(불러올 때 늘 새 파일) */
+}
+/* 11-15 A: 장면에서 '예' 뒤 — 멈춘 것처럼 보이지 않게 단계와 막대, 이번에 바뀌는 것 제목을 보여 준다(보스: '얼마나 되는지, 뭐 하는지 모르겠어')
+   ① 쓰던 기록 마저 저장·올리기 ② 새 규정 끼우기(대기 중인 새 껍데기를 깨움) ③ 사무실 다시 열기(새로 고침). 다시 열린 뒤엔 로딩 화면 단계 → 세희 설명 */
+async function updSceneRun(){
+  if (reloading || wantReload) return;
+  wantReload = true; dlog('업데이트', '업데이트 누름(장면 · 단계 보임)');
+  try{ localStorage.setItem('sehee.updFrom', JSON.stringify(updSeen())); }catch(e){}
+  const el = typeof VN !== 'undefined' && VN.el, box = el && el.querySelector('.vn-box');
+  let bar = null;
+  if (box){ bar = document.createElement('div'); bar.className = 'vn-prog'; bar.innerHTML = '<div class="vn-prog-bar"><i></i></div><div class="vn-prog-list"></div>'; box.appendChild(bar); }
+  const step = (n, t, pct) => { if (typeof sceneSay === 'function') sceneSay(`(${n}/3) ${t}`); if (bar) bar.querySelector('i').style.width = pct + '%'; dlog('업데이트', `단계 ${n}/3 · ${t}`); };
+  /* 바뀌는 것 — 사용자 쪽 제목만 몇 줄 */
+  (async () => { try{ const to = await newVersionName(); const notes = typeof updUserNotes === 'function' && typeof updNotes === 'function' ? updUserNotes(await updNotes(APP_VERSION, to)) : '';
+    const titles = (notes.match(/^## v[\d.]+ · [A-Z] · (.+)$/gm) || []).map(l => l.replace(/^## v[\d.]+ · [A-Z] · /, '').split(/ — /)[0].trim()).filter(Boolean).slice(0, 5);
+    if (bar && titles.length) bar.querySelector('.vn-prog-list').innerHTML = `<b>이번에 바뀌는 것 ${titles.length}가지</b>` + titles.map(x => `<span>· ${esc(x)}</span>`).join(''); }catch(e){} })();
+  step(1, '쓰던 기록을 먼저 안전하게 저장하고 있어요…', 15);
+  const t0 = Date.now();
+  try{ await flush(true); }catch(e){}
+  try{ if (typeof SYNC !== 'undefined' && SYNC.on) await Promise.race([syncFlush(), new Promise(r => setTimeout(r, 6000))]); }catch(e){}
+  step(2, '새 규정을 꺼내 끼우는 중이에요…', 55);
+  const w = waitingSW && waitingSW.state !== 'redundant' ? waitingSW : (S.reg && S.reg.waiting);
+  if (w){ const swapped = new Promise(r => { navigator.serviceWorker.addEventListener('controllerchange', r, { once:true }); setTimeout(r, 4000); }); w.postMessage('skip'); await swapped; }
+  await new Promise(r => setTimeout(r, Math.max(0, 900 - (Date.now() - t0))));   /* 너무 빨라도 글을 읽을 틈은 두고 */
+  step(3, '사무실을 다시 여는 중이에요. 금방 다시 뵐게요.', 90);
+  await new Promise(r => setTimeout(r, 700));
+  applyUpdate();
 }
 /* 켠 뒤(보너스까지 다 불러온 뒤) — 지난번과 버전이 바뀌었으면 「업데이트 끝」, 눌렀는데 그대로면 그렇다고 */
 function updAfterBoot(){

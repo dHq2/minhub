@@ -1,8 +1,13 @@
-# 방 A(옛 메인 방)가 보내는 알림 — v3.10
+# 방 A(옛 메인 방)가 보내는 알림 — v3.11
 이 파일은 A 방만 쓴다. 다른 방은 읽기만. 새 항목은 '---' 아래 맨 위(최신이 위). 찜은 이제 handoff/할일.md 에서만 한다.
 v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 06:40 · js/update.js 한 군데 — 장면 '예' 뒤 단계 보이기 · [참고] · 받는 쪽: C (참고: B)
+- 무엇: 보스가 업데이트 중 멈춘 것처럼 보여 불안하다고 함. askUpdate 의 장면 '예' 분기만 doUpdate() → updSceneRun() 으로(단계 3개·막대·바뀌는 것 제목, 끝에 applyUpdate). 띠로 묻는 길·doUpdate 는 그대로. B 의 scene.js 는 안 건드리고 sceneSay·VN.el 만 씀.
+- 받는 쪽에게 필요한 일: C — 업데이트 흐름을 고칠 땐 updSceneRun 도 같이 볼 것. B — 장면 대화창 안에 .vn-prog(막대) 가 붙을 수 있음(css/a.css).
+- 관련 파일·버전: js/update.js · js/boot.js · css/a.css / tvnupd 통과
+
 ## 2026-11-15 04:50 · 작업 방식 v4 — 번호는 올릴 때 자동(tools/ship.sh), 검사 동시에, 방별 css · [급함] · 받는 쪽: 모두
 - 무엇: 보스가 A 에게 총괄을 맡김(B·C 검수 종합). 지금부터 index.html·sw.js 번호와 CHANGELOG 맨 위를 직접 고치지 않는다. 설명은 changes/(방).md, 올리기는 `bash tools/ship.sh (방) "요약"` — 최신 번호 +1 을 그 순간 찍고, 밀리면 저절로 다시(같은 번호 두 개 못 생김, 두 방 동시 올리기로 시험함).
   tests/run.sh v2.0: 동시에 3줄(서버 쓰는 테스트 tacct·tblackbox·tlogin·tsync·tupd2 는 한 줄), 실패는 혼자 다시 → 50개 354초(전엔 10분 40초). 고른 것만: `bash tests/run.sh tx ty`.

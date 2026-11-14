@@ -1,6 +1,7 @@
 /* ── 시작 ── */
 (async function boot(){
   try{
+    try{ const f = JSON.parse(localStorage.getItem('sehee.updFrom') || 'null'); if (f && f.A) spStep(`새 규정 적용 중 — ${f.A} → ${APP_VERSION}`); }catch(e){}   /* 11-15 A: 업데이트 직후 로딩 화면에도 무슨 일인지 */
     await syncStart();
     spStep('저장소 여는 중');
     const st = await kvGet('settings');
@@ -10,12 +11,12 @@
     applyFs();
     spStep('세희 머리 설정 읽는 중');
     await loadAi(); AI.usage = (await kvGet('usage')) || {}; refreshBrain();
-    spStep('판 불러오는 중');
+    spStep('일간보고서 불러오는 중');
     S.dates = (await allDates()).sort();
     await goDate(S.today);
     if (S.uniNote) setTimeout(() => toast("판 기본 칸에서 '확정된 지시'를 뺐어요. 거기 있던 일은 첫 칸에 그대로 있어요(⚙ '+ 칸 더하기'로 다시 만들 수 있어요)"), 6000);
-    spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중`);
-    await Promise.race([preloadArt((n, t) => spStep(`판 ${S.dates.length}개 · 사무실 그림 거는 중 ${n}/${t}`)), tickMs(4000)]);
+    spStep(`보고서 ${S.dates.length}일치 · 사무실 그림 거는 중`);
+    await Promise.race([preloadArt((n, t) => spStep(`보고서 ${S.dates.length}일치 · 사무실 그림 거는 중 ${n}/${t}`)), tickMs(4000)]);
     spStep('세희 머리 확인 중');
     const brain = await pingBrain();
     spStep(brain);

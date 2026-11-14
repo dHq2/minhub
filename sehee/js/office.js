@@ -125,7 +125,7 @@ function waitText(){
   if (O.live.search) return `🔎 검색 중: ${O.live.search}`;
   if (O.live.waitUntil > Date.now()) return `분당 한도에 걸렸어요 — ${Math.ceil((O.live.waitUntil - Date.now()) / 1000)}초 뒤 다시 해볼게요`;
   const sec = Math.floor((Date.now() - O.live.t0) / 1000);
-  const busy = O.live.big ? (O.live.deep ? `${shortModel(O.live.big)}로 깊게 생각 중` : `${O.live.hard ? '꼼꼼히 따져 보는 중' : '긴 글이라 ' + shortModel(O.live.big) + '로 정리 중'}`) : '세희가 생각 중';
+  const busy = O.live.big ? (O.live.deep ? `${shortModel(O.live.big)}로 깊게 생각 중` : `${O.live.hard ? '꼼꼼히 따져 보는 중' : '긴 글이라 ' + shortModel(O.live.big) + '로 정리 중'}`) : O.updTour ? '바뀐 점 정리하는 중' : '세희가 생각 중';
   const re = O.live.retry ? ` · 서버가 삐끗해서 다시 하는 중(${O.live.retry}번째)` : '';
   return (sec < 2 && !re ? '보내는 중' : busy) + ` · ${sec}초` + re + (sec >= 15 && !re ? ' · 오래 걸리네요' : '');
 }

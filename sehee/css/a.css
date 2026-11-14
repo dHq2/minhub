@@ -1,2 +1,9 @@
 /* 방 A 전용 스타일 — v1.0 (2026-11-15, A · 작업 속도 개편)
    새 기능의 스타일은 app.css 맨 아래 대신 여기에 덧붙인다(세 방이 같은 줄을 다투지 않게). 블록마다 「/* 날짜 · 기능 */」 머리 주석. app.css 다음에 불러온다. */
+
+/* 11-15 · 업데이트 장면 진행 — 단계 막대와 이번에 바뀌는 것 */
+.vn-prog{margin-top:10px}
+.vn-prog-bar{height:6px;border-radius:3px;background:#e4e1d8;overflow:hidden}
+.vn-prog-bar i{display:block;height:100%;width:0;background:#2f3a4a;transition:width .6s ease}
+.vn-prog-list{margin-top:8px;font-size:.78rem;line-height:1.5;color:#4a5160;display:flex;flex-direction:column}
+.vn-prog-list b{font-weight:700;color:#2f3a4a}
