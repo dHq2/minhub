@@ -9,11 +9,11 @@ const DBG = { lines:[], max:600, seq:0, paused:false, filter:'all', subs:new Set
 try{ DBG.lines = JSON.parse(localStorage.getItem('sehee.dbg') || '[]'); DBG.seq = DBG.lines.length ? DBG.lines[DBG.lines.length - 1].n : 0; }catch(e){}
 function dlog(cat, msg, data){
   const l = { n:++DBG.seq, t:Date.now(), c:cat, m:String(msg).slice(0, 400) };
-  if (data !== undefined){ try{ l.d = typeof data === 'string' ? data.slice(0, 4000) : JSON.stringify(data, (k, v) => typeof v === 'string' && v.length > 600 ? v.slice(0, 600) + '…(' + v.length + '자)' : v).slice(0, 4000); }catch(e){ l.d = String(data); } }
+  if (data !== undefined){ try{ l.d = typeof data === 'string' ? data.slice(0, 20000) : JSON.stringify(data, (k, v) => typeof v === 'string' && v.length > 600 ? v.slice(0, 600) + '…(' + v.length + '자)' : v).slice(0, 4000); }catch(e){ l.d = String(data); } }
   DBG.lines.push(l); if (DBG.lines.length > DBG.max) DBG.lines.splice(0, DBG.lines.length - DBG.max);
   DBG.dirty = true; for (const f of DBG.subs) try{ f(l); }catch(e){}
 }
-setInterval(() => { if (!DBG.dirty) return; DBG.dirty = false; DBG.up = true; try{ localStorage.setItem('sehee.dbg', JSON.stringify(DBG.lines.slice(-300))); }catch(e){} }, 2000);
+setInterval(() => { if (!DBG.dirty) return; DBG.dirty = false; DBG.up = true; try{ localStorage.setItem('sehee.dbg', JSON.stringify(DBG.lines.slice(-300).map(l => l.d && l.d.length > 3000 ? { ...l, d:l.d.slice(0, 3000) + '…(이 기기 저장은 3천 자까지 — 서버엔 전문)' } : l))); }catch(e){} }, 2000);
 /* ── 개발 블랙박스 (v1.5.21, A) — 계정 서버 /log 로 새 줄만 올린다. 서버의 LOG_USERS 계정(보스)만 받고, 나머지는 서버가 '안 받음'으로 답해 바로 멈춘다.
    설정 「개발 기록 남김」(기본 켬). 쓰는 중엔 새 줄이 있으면 15초마다, 아니면 2분마다 상태만. 앱을 내릴 때 한 번 더.
    서버는 5분마다 비공개 GitHub 금고로 내보낸다(30일) — 세 방이 보스 컴퓨터 없이도 읽는다(handoff/디버그-모니터링.md). */

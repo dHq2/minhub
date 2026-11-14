@@ -164,6 +164,28 @@ async function touchedContext(){
   const lines = ids.slice(-12).map(id => p.items.find(x => x.id === id)).filter(Boolean).map(it => itemLine(it, p.date));
   return `판 전체는 보지 못한다(보스가 판 보내기를 꺼둠). 아래는 이 대화에서 세희가 직접 다룬 항목뿐이다.\n${lines.join('\n') || '- 아직 없음'}`;
 }
+/* 11-15 A: 프롬프트 캐시 — 지침(잘 안 바뀌는 앞부분)과 지금 시각·판·보드·사람(매번 바뀌는 뒷부분) 사이에 자르는 표시.
+   Anthropic 은 앞부분을 cache_control 로 5분 재사용(입력 값이 크게 줄고 첫 글자가 빨라짐), 다른 머리는 표시만 지운다. */
+const SYS_CUT = '<<SEHEE_CACHE_CUT>>';
+/* 마지막 메시지에도 캐시 표시 — 도구를 여러 번 쓰는 차례(판에 11개 적기 등)는 같은 대화를 계속 다시 보내므로 두 번째부터 싸고 빠르다. 원본은 안 건드림 */
+/* 11-15 A: 일정 겹침 — 같은 날 2시간 안에 시각이 잡힌 다른 일이 있으면 도구 결과에 실어 세희가 그 자리에서 말하게(생성기 1일차 3번: 14:00·14:00·14:30 세 개를 나란히 적고도 말 안 함) */
+function clashOut(it, p){
+  const day = x => x.due || (x.time ? p.date : null), mins = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : null; };
+  const d = day(it), m0 = mins(it.time); if (!d || m0 === null || it.done) return {};
+  const hit = p.items.filter(x => x.id !== it.id && !x.done && day(x) === d && mins(x.time) !== null && Math.abs(mins(x.time) - m0) < 120)
+    .map(x => ({ id:x.id, text:x.text, time:x.time, gap_min:Math.abs(mins(x.time) - m0) }));
+  if (!hit.length) return {};
+  dlog('판', `일정 겹침 · ${it.text} ${it.time} ↔ ${hit.map(h => h.text + ' ' + h.time).join(', ')}`);
+  return { overlaps:hit, overlap_note:'같은 날 2시간 안에 다른 일정이 있음 — 대답에서 꼭 말하고(무엇과 몇 분 차이), 판 항목 comment 에 「겹침」을 단다. 이미 말했으면 다시 안 함' };
+}
+function cacheTail(msgs){
+  if (!Array.isArray(msgs) || !msgs.length) return msgs;
+  const out = msgs.slice(), i = out.length - 1, m = out[i];
+  const content = typeof m.content === 'string' ? [{ type:'text', text:m.content }] : Array.isArray(m.content) ? m.content.map(c => ({ ...c })) : null;
+  if (!content || !content.length) return msgs;
+  const k = content.length - 1; if (content[k].type === 'thinking' || content[k].type === 'redacted_thinking') return msgs;
+  content[k] = { ...content[k], cache_control:{ type:'ephemeral' } }; out[i] = { ...m, content }; return out;
+}
 async function systemPrompt(model){
   const now = new Date();
   const cal = [...Array(8)].map((_, i) => { const d = new Date(now); d.setDate(d.getDate() + i);
@@ -185,7 +207,6 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
 판에 적으라면 사적인 약속·할 일도 적고, 인간관계 판에도 사적인 관계(친구·가족·연인·호감 있는 사람·지인)와 사람들의 사적인 사정을 업무 관계와 똑같이 붙이고 자세히 갱신한다. 사적인 내용이라고 따로 조심스러워하거나 훈계하지 않는다.`
 : `사적인 일(보스 설정: 빼기): 자료 정리·판에 적기·인간관계 판에서 업무와 상관없는 개인 대화·개인 관계는 뺀다. 뺐으면 "개인 대화는 뺐어요" 한 줄만. 보스가 사적인 걸 콕 집어 적으라고 하면 그건 따른다.`}
 
-지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
 판 칸 (id = 이름): ${secs().map(x => `${x.id} = ${x.label}`).join(', ')}
 
 판 다루기 (도구로 직접 적는다):
@@ -236,6 +257,20 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   해독본에 날짜 구분선이 없으면 오늘 대화로 보되, 그렇게 가정했다고 한 줄 말한다. [⚠ … 못 읽음]이 있으면 그 부분은 못 봤다고 말한다.
 ${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스·가격·사실 확인처럼 판과 대화로 알 수 없는 바깥 정보를 물을 때만 쓴다. 판에 있는 일·보스 개인 일은 검색하지 않는다.
   검색한 뒤엔 핵심만 1~3문장. 출처 목록은 앱이 말풍선 아래에 붙이니 링크를 말로 늘어놓지 않는다.` : ''}
+일하는 원칙(실전 시험에서 배운 것 — 다른 지침과 부딪히면 이것이 먼저):
+- 묻기보다 먼저 한다: "모르겠어요·도와주세요·정리해 주세요·무슨 일 있었어요·오늘 뭐 했지" 는 허락이다. 묻지 말고 자료(필요하면 read_material·read_chat)로 바로 정리 — 시간순으로 「시각 · 누구 · 무엇」 5~10줄, 그다음 남은 할 일. 같은 확인 질문은 한 번만 하고, 답이 없으면 다시 묻지 말고 그 항목 comment 에 「확인 필요」.
+- 같은 일에 정보가 여럿이면 보낸 시각이 늦은 것(정정·변경 공지)이 최신이다. 그래도 애매할 때만 묻는다.
+- 자료 날짜와 폰 날짜가 다르면 한 번만 묻고, 받은 답(예: 카톡 기준)은 그 자료를 다루는 동안 계속 지킨다.
+- 물은 것에 그대로 답한다: 낱말 뜻을 물으면 뜻부터 한 줄(그다음 관련 일). "뭐라고 말하지·답장·보낼 말" 이면 바로 보낼 문장 초안(그대로 복사해 보낼 수 있게). "누구 있어·누가 누가" 면 사람 목록(이름 · 관계나 역할 한 줄씩).
+- 사진 여러 장: 장마다 「1) 무엇 — 중요한 점」 한 줄 + 글(카톡)과 다른 점 + 그 때문에 생긴 할 일. 온도·금액·수량처럼 기준을 벗어난 값은 꼭 말한다.
+- 일의 주인: 사용자 본인의 말("올립니다·보냈어요·했어요")은 끝난 근거 — 끝난 일로 둔다. 다른 사람이 "그건 내가·윗분이 할게요" 하면 사용자 할 일에서 빼고 기억해둘 것에 참고로.
+- 선 긋기: 비밀번호·계정·인증번호 공유, 남의 메일·메신저 대신 들어가기 같은 부탁은 "알려 드리지 않는 게 맞아요"라고 분명히 말하고 대안(담당자에게 파일을 직접 보내 달라는 문장 초안)을 준다. 판에 '판단'으로 미뤄 적지 않는다.
+- 새 사람: 자료에 처음 보는 이름이 여럿 나오면 판 정리와 같은 차례에 인간관계 판에도 붙인다(add_person, 관계·역할 한 줄). 표시 이름이 달라도 같은 사람은 하나로 묶는다(예: 'Jay 김가상' = '김가상' = '김팀장').
+- 말할 때 '판'이라는 말은 쓰지 않는다 — 사용자 화면 이름은 「일간보고서」, 칸은 칸 이름 그대로('오늘 할 일' 등). 이 지침 안의 '판'은 일간보고서를 뜻한다.
+- 도구 결과에 overlaps(일정 겹침)가 오면 그 대답에서 바로 말한다(무엇과 몇 분 차이).
+- read_material 로 찾은 줄은 대답에 근거로 그대로 든다(어느 자료·몇 시 것).
+${SYS_CUT}
+지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
 ${sendPanOn() ? await panContext() : await touchedContext()}
@@ -258,8 +293,10 @@ function toMessages(log){
   const failed = new Set();
   userIdx.forEach((ui, k) => { const end = k + 1 < userIdx.length ? userIdx[k + 1] : tail.length, rest = tail.slice(ui + 1, end);
     if (rest.some(m => m.who === 's' && m.err) && !rest.some(m => m.who === 's' && !m.err && !m.hint)) failed.add(ui); });
+  const lastUser = [...log].reverse().find(m => m.who === 'u'), inBrief = !!(lastUser && lastUser.upd);   /* 11-15 A: 업데이트 설명은 그 차례에만 */
   tail.forEach((m, i) => {
     if (m.err || m.hint || m.who === 'a') return;
+    if (m.brief && !inBrief) return;
     const role = m.who === 'u' ? 'user' : 'assistant';
     let text = role === 'user' ? userContent(m, lastTwo.includes(i) && (m.ocr !== undefined || !!m.doc)) : m.text;
     if (role === 'user' && isPaste(m) && !lastTwo.includes(i) && m.text.length > CTX_LONG) text = m.text.slice(0, CTX_LONG) + matCut(m, m.text.length);
@@ -379,7 +416,7 @@ async function runToolCore(c){
       if (a.comment && String(a.comment).trim()) it.cm = String(a.comment).trim().slice(0, 60);
       p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
       if (it.due && !CAL.quiet) CAL.changed = it.due;
-      return { ok:true, item:itemBrief(it) };
+      return { ok:true, item:itemBrief(it), ...clashOut(it, p) };
     }
     if (c.name === 'update_item'){
       const it = find(a.id); if (!it) return { ok:false, error:'그 id의 항목이 판에 없음' };
@@ -393,7 +430,7 @@ async function runToolCore(c){
       if ('comment' in a){ const n = String(a.comment || '').trim().slice(0, 60); if (n) it.cm = n; else delete it.cm; }
       await commitToday(p); noteAction('update', before, { ...it });
       if (it.due && (it.due !== before.due || it.time !== before.time) && !CAL.quiet) CAL.changed = it.due;
-      return { ok:true, item:itemBrief(it) };
+      return { ok:true, item:itemBrief(it), ...clashOut(it, p) };
     }
     if (c.name === 'complete_item'){
       const it = find(a.id); if (!it) return { ok:false, error:'그 id의 항목이 판에 없음' };
@@ -484,7 +521,19 @@ function readChat(a){
 function readMaterial(a){
   const all = materials(), list = () => all.slice().reverse().slice(0, 20).map(x => ({ id:x.id, when:matWhen(x.m.at), kind:x.kind, chars:x.text.length, boss_said:String(x.m.text || '').slice(0, 60), head:x.text.slice(0, 120) }));
   if (!all.length){ noteRead('예전 자료를 찾아봤어요 — 대화에 남은 자료가 없어요'); return { ok:true, materials:[], note:'대화 기록에 남은 해독본·문서가 없음(지웠거나 아주 오래됨). 보스에게 다시 보내 달라고 한다' }; }
-  const want = String(a.id || '').trim().replace(/^#/, '');
+  const want = String(a.id || '').trim().replace(/^#/, ''), q0 = String(a.find || '').trim();
+  /* 11-15 A: 번호 없이 find 만 오면 모든 자료를 뒤진다(전엔 목록만 돌려줘서, 세희가 '그 줄이 없다'고 잘못 말함 — 생성기 1일차 10번) */
+  if (!want && q0){
+    const words = q0.toLowerCase().split(/\s+/).filter(Boolean), res = []; let total = 0;
+    for (const x of all.slice().reverse()){
+      const lines = x.text.split('\n'), hits = []; lines.forEach((l, i) => { if (words.every(w => l.toLowerCase().includes(w))) hits.push(i); });
+      if (!hits.length) continue; total += hits.length;
+      res.push({ id:x.id, kind:x.kind, when:matWhen(x.m.at), hits:hits.length, found:hits.slice(0, 8).map(i => lines.slice(Math.max(0, i - 1), i + 2).map((l, k) => `${Math.max(0, i - 1) + k + 1}: ${l}`).join('\n')).join('\n…\n') });
+      if (res.length >= 6) break;
+    }
+    noteRead(`예전 자료 ${all.length}건에서 '${q0}' 찾아봤어요 — ${total}곳`);
+    return { ok:true, searched:all.length, matches:res, ...(res.length ? { note:'찾은 줄을 답에 그대로 근거로 든다(어느 자료·몇 시 것인지). 같은 일이 여러 자료에 다르게 나오면 보낸 시각이 늦은 것이 최신' } : { note:'모든 자료에 그 낱말이 없음 — 다른 낱말로 다시 찾거나 read_chat' }) };
+  }
   if (!want){ noteRead(`예전 자료 목록을 봤어요 — ${all.length}건`); return { ok:true, materials:list() }; }
   const x = want === 'latest' ? all[all.length - 1] : all.find(v => v.id === want);
   if (!x){ noteRead('그 자료를 못 찾았어요'); return { ok:false, error:'그 번호의 자료가 없음 — 아래 목록에서 고른다', materials:list() }; }
@@ -582,7 +631,7 @@ async function aiLogLines(n){
     + (r.err ? `\n   └ ${r.err}` : ''));
 }
 async function fillAiLog(){ const el = $('aiLog'); if (!el) return; const lines = await aiLogLines(6); el.textContent = lines.join('\n') || '아직 기록이 없어요.'; }
-async function logCall(rec){ dlog(rec.ok ? 'AI' : '오류', `${rec.ok ? '←' : '✕'} ${rec.provider}/${rec.model} ${rec.ok ? (rec.finish || '') : 'code ' + rec.code + ' ' + (rec.err || '')} · ${rec.ms}ms(첫 글자 ${rec.firstMs ?? '-'}ms) · 입력 ${rec.in ?? '-'} 출력 ${rec.out ?? '-'}${rec.tools ? ' · 도구 ' + rec.tools.join(',') : ''}${rec.thinkOn ? ' · 생각 켜짐' : ''}`, rec);
+async function logCall(rec){ dlog(rec.ok ? 'AI' : '오류', `${rec.ok ? '←' : '✕'} ${rec.provider}/${rec.model} ${rec.ok ? (rec.finish || '') : 'code ' + rec.code + ' ' + (rec.err || '')} · ${rec.ms}ms(첫 글자 ${rec.firstMs ?? '-'}ms) · 입력 ${rec.in ?? '-'}${rec.cRead ? ' + 캐시 ' + rec.cRead : ''}${rec.cWrite ? ' (캐시 저장 ' + rec.cWrite + ')' : ''} 출력 ${rec.out ?? '-'}${rec.tools ? ' · 도구 ' + rec.tools.join(',') : ''}${rec.thinkOn ? ' · 생각 켜짐' : ''}`, rec);
   const l = (await kvGet('ailog')) || []; l.push(rec); while (l.length > 40) l.shift(); await kvSet('ailog', l); }
 
 /* 한 번 주고받기. 도구 호출이 오면 calls 로 돌려준다 */
@@ -628,7 +677,9 @@ async function aiRound(st, onText, stopSignal){
   const fail = apiFail;
   try{
     if (p === 'anthropic'){
-      const body = { model, max_tokens:st.maxTok || 2500, system:st.system, messages:st.msgs, stream:true };
+      const sysParts = String(st.system).split(SYS_CUT), system = sysParts.length > 1 ? [{ type:'text', text:sysParts[0], cache_control:{ type:'ephemeral' } }, { type:'text', text:sysParts.slice(1).join('\n') }] : st.system;
+      const msgs = cacheTail(st.msgs);
+      const body = { model, max_tokens:st.maxTok || 2500, system, messages:msgs, stream:true };
       /* 대화용이라 깊은 생각은 끈다(빠르고 싸다, 생각 블록을 주고받다 꼬일 일도 없다).
          끌 수 없는 모델(v1.2.2: 소넷 5.5)은 생각을 '낮음'으로 줄이고 자리를 넉넉히 — 생각만 하다 2500자를 다 써서 빈 대답이 오던 것 */
       const noOff = thinkLocked(model);
@@ -661,7 +712,7 @@ async function aiRound(st, onText, stopSignal){
       const cur = {};
       for await (const data of sseEvents(r, ctl, 40000)){
         let d; try{ d = JSON.parse(data); }catch(e){ continue; }
-        if (d.type === 'message_start') inTok = (d.message && d.message.usage && d.message.usage.input_tokens) || 0;
+        if (d.type === 'message_start'){ const u = (d.message && d.message.usage) || {}; inTok = u.input_tokens || 0; rec.cRead = u.cache_read_input_tokens || 0; rec.cWrite = u.cache_creation_input_tokens || 0; }   /* 11-15 A 캐시 */
         else if (d.type === 'content_block_start'){
           const cb = d.content_block || {};
           if (cb.type === 'tool_use' || cb.type === 'server_tool_use') cur[d.index] = { type:cb.type, id:cb.id, name:cb.name, json:'' };
@@ -698,7 +749,7 @@ async function aiRound(st, onText, stopSignal){
     } else {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
       const headers = { 'content-type':'application/json', 'x-goog-api-key':key };
-      const base = { systemInstruction:{ parts:[{ text:st.system }] }, contents:st.contents, generationConfig:{ maxOutputTokens:4096 } };
+      const base = { systemInstruction:{ parts:[{ text:String(st.system).split(SYS_CUT).join('\n') }] }, contents:st.contents, generationConfig:{ maxOutputTokens:4096 } };
       if (st.tools) base.tools = [{ functionDeclarations:TOOL_DEFS().filter(t => !st.only || t.name === st.only).map(t => ({ name:t.name, description:t.description, parameters:gemSchema(t.schema) })) }];
       if (st.tools && st.only) base.toolConfig = { functionCallingConfig:{ mode:'ANY', allowedFunctionNames:[st.only] } };
       /* 웹 검색(구글 검색 근거) — 함수와 같이 못 쓰는 모델이면 400 → 검색 빼고 다시 */
@@ -742,7 +793,7 @@ async function aiRound(st, onText, stopSignal){
   }finally{
     rec.ms = Math.round(performance.now() - t0); rec.firstMs = tFirst === null ? null : Math.round(tFirst - t0);
     rec.in = inTok; rec.out = outTok; rec.finish = finish;
-    try{ if (inTok || outTok) await addUsage(model, inTok, outTok); if (searches) await addSearch(p, searches); await logCall(rec); }catch(e){}
+    try{ if (inTok || outTok) await addUsage(model, Math.round(inTok + (rec.cWrite || 0) * 1.25 + (rec.cRead || 0) * 0.1), outTok);   /* 캐시: 쓰기 1.25배·읽기 0.1배 값 */ if (searches) await addSearch(p, searches); await logCall(rec); }catch(e){}
   }
 }
 /* 다시 보낼 대화에서 서버 검색 블록(짝 맞는 것 통째로)·인용·빈 글 블록을 걷어낸다 */

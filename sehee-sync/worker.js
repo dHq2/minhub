@@ -1,5 +1,6 @@
 /* 세희 계정·동기화 서버 v4 — Cloudflare Worker + D1
    (v2 2026-11-13: /og 대표 사진 찾기 · v3 2026-11-14: 개발 블랙박스(/log) · 비공개 GitHub 금고로 내보내기 · 보기 전용 관전석
+    v4.1 2026-11-15: 개발 기록 한 줄 자료 8천 → 2만 자(긴 붙여 넣기 통째로)
     v4 2026-11-15: 앱 안에서 가입(/signup — 아이디 + 숫자 4자리, 아무나) · 암호 바꾸기(/pin) · 아이디로 로그인 · 계정별 잠금. PINS 계정은 그대로 됨)
    ─ 하는 일
      · 암호(PIN)로 로그인 → 그 사람의 판·대화·보드·설정을 어느 브라우저에서든 연다
@@ -246,7 +247,7 @@ export default {
         const b = await req.json().catch(() => ({})), dev = String(b.dev || a.device || '기기').slice(0, 80), now = Date.now();
         const lines = (Array.isArray(b.lines) ? b.lines : []).slice(-300).filter(l => l && Number.isFinite(+l.n));
         const st = lines.map(l => env.DB.prepare('INSERT OR IGNORE INTO logs (user, dev, n, t, c, m, d) VALUES (?, ?, ?, ?, ?, ?, ?)')
-          .bind(a.user, dev, +l.n, +l.t || now, String(l.c || '').slice(0, 20), String(l.m || '').slice(0, 2000), l.d === undefined ? null : String(l.d).slice(0, 8000)));
+          .bind(a.user, dev, +l.n, +l.t || now, String(l.c || '').slice(0, 20), String(l.m || '').slice(0, 2000), l.d === undefined ? null : String(l.d).slice(0, 20000)));
         if (b.state) st.push(env.DB.prepare('INSERT INTO devstate (user, dev, v, at) VALUES (?, ?, ?, ?) ON CONFLICT(user, dev) DO UPDATE SET v = excluded.v, at = excluded.at').bind(a.user, dev, JSON.stringify(b.state).slice(0, 8000), now));
         if (st.length) await env.DB.batch(st);
         return json(req, 200, { ok:true, logging:true, got:lines.length });

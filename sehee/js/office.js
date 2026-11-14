@@ -125,7 +125,7 @@ function waitText(){
   if (O.live.search) return `🔎 검색 중: ${O.live.search}`;
   if (O.live.waitUntil > Date.now()) return `분당 한도에 걸렸어요 — ${Math.ceil((O.live.waitUntil - Date.now()) / 1000)}초 뒤 다시 해볼게요`;
   const sec = Math.floor((Date.now() - O.live.t0) / 1000);
-  const busy = O.live.big ? (O.live.deep ? `${shortModel(O.live.big)}로 깊게 생각 중` : `긴 글이라 ${shortModel(O.live.big)}로 정리 중`) : '세희가 생각 중';
+  const busy = O.live.big ? (O.live.deep ? `${shortModel(O.live.big)}로 깊게 생각 중` : `${O.live.hard ? '꼼꼼히 따져 보는 중' : '긴 글이라 ' + shortModel(O.live.big) + '로 정리 중'}`) : '세희가 생각 중';
   const re = O.live.retry ? ` · 서버가 삐끗해서 다시 하는 중(${O.live.retry}번째)` : '';
   return (sec < 2 && !re ? '보내는 중' : busy) + ` · ${sec}초` + re + (sec >= 15 && !re ? ' · 오래 걸리네요' : '');
 }
@@ -190,7 +190,7 @@ async function seheeSaysSplit(pf, src){
 }
 function seheeSays(r, src){
   bonusEmit('say', { text:r.t, face:r.f });
-  dlog('대화', `세희 ← [${r.f}] ${String(r.t).slice(0, 80)}`, String(r.t));   /* v1.5.21 원문은 d 에(개발 블랙박스) */
+  dlog('대화', `세희 ← [${r.f}] ${String(r.t).replace(/\s*\n+\s*/g, ' ⏎ ').slice(0, 80)}`, String(r.t));   /* 11-15 A: 요약 줄에 줄바꿈이 섞여 '이름 한 줄이 끼인' 것처럼 보이던 것(생성기 1일차 14번 — 앱 화면 문제 아님) */   /* v1.5.21 원문은 d 에(개발 블랙박스) */
   O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f);
   /* 적었다고 말했는데 이번 차례에 실제로 적힌 게 없으면 — 보스가 믿고 넘어가지 않게 알려 준다 */
   if (O.turnActs !== undefined){
@@ -223,12 +223,16 @@ async function openOffice(){
 }
 function growSay(){ const ta = $('sayText'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
   const has = !!ta.value.trim() || ATT.length > 0, reading = ATT.some(a => a.reading); $('saybub').classList.toggle('has', has); $('sayGo').disabled = !has || O.busy || reading; }
+const HARD_Q = /정리|요약|무슨\s?일|뭔\s?일|있었(어|나|던|는지)|겹치|겹쳐|충돌|누가\s?누가|누구(누구)?\s?(있|나와|나오)|사람들?\s?(은|이|좀|목록)|비교|뭐가\s?(달|다르|틀)|차이|어떻게\s?해야|뭐라고\s?(말|답|보내|하)|답장|초안|도와\s?(줘|주세요|줄래)|모르겠/;
 /* 보통 대답 한 번(v1.2.2 — 다시 시도 버튼도 이걸 쓴다) */
 async function replyNow(){
     /* v1.5.8 (C) 보스가 "소넷으로"·"큰 머리로"·"깊게 생각해" 하면 그 차례만 큰 머리 */
     const lastU = [...O.log].reverse().find(m => m.who === 'u'), wantBig = !!(lastU && bigModel() && /소넷|sonnet|큰\s?머리|깊게\s?생각/i.test((lastU.text || '') + ' ' + (lastU.regenHow || '')));
     if (wantBig) dlog('AI', '보스가 큰 머리를 부름 — 이번 차례만 ' + bigModel());
-    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:wantBig ? bigModel() : null, deep:wantBig, waitUntil:0 };
+    /* 11-15 A: 짧아도 하루 전체를 다시 따져야 하는 질문(정리·요약·누가·겹침·비교·차이·답장 초안·도와줘)은 큰 머리로 — 생성기 1일차 4번 */
+    const hardQ = !wantBig && !!(lastU && bigModel() && !lastU.pics && HARD_Q.test(lastU.text || ''));
+    if (hardQ) dlog('AI', '따져야 하는 질문 — 이번 차례 큰 머리 ' + bigModel());
+    O.abort = new AbortController(); O.live = { text:'', t0:Date.now(), faced:false, big:(wantBig || hardQ) ? bigModel() : null, deep:wantBig, hard:hardQ, waitUntil:0 };
     renderLog();
     const tick = setInterval(() => { const w = $('waitTxt'); if (w) w.textContent = waitText(); }, 1000);
     try{
@@ -236,7 +240,7 @@ async function replyNow(){
         O.live.text = t; O.live.search = '';
         if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
-      }, O.abort.signal, { big:wantBig, onPart:seheePart, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
+      }, O.abort.signal, { big:wantBig || hardQ, onPart:seheePart, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
         onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
         onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
       const pf = parseFace(r.text);
@@ -354,7 +358,7 @@ async function sendSay(src){
   if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => (txts.length > 1 ? `── ${t.name} ──\n` : '') + clipDoc(t.text, t.head)).join('\n\n'); }
   const heavy = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
   if (heavy && aiReady()) askNotify();   /* 누른 순간에 물어야 폰이 허락 창을 띄워준다 */
-  O.log.push(um); ta.value = ''; dlog('대화', `보스 → ${v.slice(0, 60)}${v.length > 60 ? '…(' + v.length + '자)' : ''}${um.pics ? ' · 사진 ' + um.pics : ''}${um.docs ? ' · 문서 ' + um.docs.length : ''}${heavy ? ' · 긴 작업' : ''}`, v);
+  O.log.push(um); ta.value = ''; dlog('대화', `보스 → ${v.replace(/\s*\n+\s*/g, ' ⏎ ').slice(0, 60)}${v.length > 60 ? '…(' + v.length + '자)' : ''}${um.pics ? ' · 사진 ' + um.pics : ''}${um.docs ? ' · 문서 ' + um.docs.length : ''}${heavy ? ' · 긴 작업' : ''}`, v);
   O.turnActs = O.log.filter(m => m.who === 'a' && !m.read).length;
   O.busy = true; growSay(); setFace(2); renderLog(); await saveLog();
   if (aiReady() && heavy){
@@ -399,7 +403,9 @@ async function updBrief(from, to){
   if (typeof SYNC !== 'undefined' && SYNC.observer) return;
   for (let k = 0; k < 240 && (O.busy || WORK.ask || (typeof VN !== 'undefined' && VN.el) || !!document.getElementById('pinVeil')); k++) await new Promise(r => setTimeout(r, 500));   /* 다른 대답·장면(처음 인사)·잠금 화면이 끝날 때까지 */
   await loadChat(); if (curView() !== 'office') goView('office');
-  const notes = await updNotes(from, to);
+  const notes = updUserNotes(await updNotes(from, to));
+  /* 11-15 A: 사용자에게 보이는 변화가 없으면(내부 일만) 세희를 부르지 않고 한 줄만 — 개발 얘기가 새어 나가던 것(생성기 1일차) · 3만 토큰 아낌 */
+  if (!notes.trim()){ dlog('업데이트', `세희 설명 생략 ${from} → ${to} — 사용자 쪽 변화 없음(내부 일만)`); seheeSays({ t:'새 규정 적용을 마쳤어요. 쓰시는 화면은 그대로예요.', f:0 }); briefMark(O.log.length - 1); renderLog(); saveLog(); return; }
   if (!aiReady()){   /* 머리가 없으면 바뀐 기록 제목만 추려서 한마디(11-15 B) */
     const titles = (notes.match(/^## v[\d.]+ · [A-Z] · (.+)$/gm) || []).map(l => l.replace(/^## v[\d.]+ · [A-Z] · /, '').split(/ — |: /)[0].trim()).filter(Boolean).slice(0, 5);
     seheeSays({ t:`새 규정 적용을 마쳤습니다.${titles.length ? ' 바뀐 것은 이래요.\n' + titles.map(x => '· ' + x).join('\n') : ''}`, f:0 }); renderLog(); saveLog(); return; }
@@ -413,7 +419,16 @@ async function updBrief(from, to){
 ${notes || '(기록을 못 가져왔다 — 무엇이 바뀌었는지 모른다고 솔직히 말하고, 써 보시다 이상한 게 있으면 알려 달라고만 한다)'}` });
   O.turnActs = O.log.filter(m => m.who === 'a' && !m.read).length;
   O.busy = true; O.updTour = true; growSay(); setFace(2); renderLog(); await saveLog();
-  try{ await replyNow(); }finally{ O.updTour = false; O.busy = false; renderLog(); growSay(); saveLog(); }
+  const mark = O.log.length - 1;
+  try{ await replyNow(); }finally{ briefMark(mark); O.updTour = false; O.busy = false; renderLog(); growSay(); saveLog(); }
+}
+/* 11-15 A: 업데이트 설명(숨은 안내 + 세희 대답)은 다음 대답의 맥락에서 뺀다 — "왜 이렇게 어렵게 설명해요!" 에 업데이트 얘기로 답하던 것(생성기 1일차 9번) */
+function briefMark(from){ for (let i = Math.max(0, from); i < O.log.length; i++) if (O.log[i].who !== 'u' || O.log[i].upd) O.log[i].brief = true; }
+/* 변경 기록에서 사용자에게 안 보이는 일(제목이나 줄에 '(내부)')을 걷어낸다 */
+function updUserNotes(notes){
+  const out = [], blocks = String(notes || '').split(/\n(?=## v)/);
+  for (const b of blocks){ const lines = b.split('\n'); if (/^## v.*\(내부\)/.test(lines[0])) continue; const keep = lines.filter(l => !/\(내부\)/.test(l)); if (keep.length > 1 || (keep[0] && !/^## v/.test(keep[0]))) out.push(keep.join('\n')); }
+  return out.join('\n');
 }
 $('sayText').addEventListener('input', growSay);
 $('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendSay(); } });
