@@ -16,12 +16,12 @@ function deviceName(){
   return (os + (br ? ' ' + br : '') + (matchMedia('(display-mode: standalone)').matches ? ' (앱)' : '')).trim();
 }
 function syncLoad(){
-  try{ const o = JSON.parse(localStorage.getItem(SYNC_LS) || '{}'); Object.assign(SYNC, { url:o.url || '', token:o.token || '', user:o.user || '', device:o.device || '', last:o.last || 0 }); }catch(e){}
+  try{ const o = JSON.parse(localStorage.getItem(SYNC_LS) || '{}'); Object.assign(SYNC, { url:o.url || '', token:o.token || '', user:o.user || '', device:o.device || '', last:o.last || 0, observer:!!o.observer }); }catch(e){}
   try{ for (const k of JSON.parse(localStorage.getItem(SYNC_LS + '-dirty') || '[]')) SYNC.dirty.set(k, ++SYNC.gen); }catch(e){}
 }
 function syncKeep(){
   try{
-    localStorage.setItem(SYNC_LS, JSON.stringify({ url:SYNC.url, token:SYNC.token, user:SYNC.user, device:SYNC.device, last:SYNC.last }));
+    localStorage.setItem(SYNC_LS, JSON.stringify({ url:SYNC.url, token:SYNC.token, user:SYNC.user, device:SYNC.device, last:SYNC.last, observer:!!SYNC.observer }));
     localStorage.setItem(SYNC_LS + '-dirty', JSON.stringify([...SYNC.dirty.keys()]));
   }catch(e){}
 }
@@ -31,7 +31,7 @@ function syncBadge(state){
   const [t, tip] = map[state] || map.off; el.textContent = SYNC.url && SYNC.token ? t : ''; el.title = tip; el.className = 'cloud ' + state;
 }
 function syncMark(key){
-  if (!SYNC.on || SYNC.dead) return;
+  if (!SYNC.on || SYNC.dead || SYNC.observer) return;   /* 관전석은 올리지 않는다 */
   SYNC.dirty.set(key, ++SYNC.gen); syncKeep();
   clearTimeout(SYNC.timer); SYNC.timer = setTimeout(() => syncFlush(), 800);
 }
@@ -42,7 +42,7 @@ async function readLocal(k){
 const authH = () => ({ authorization:'Bearer ' + SYNC.token });
 async function syncFlush(beacon){
   dlog('동기화', `↑ 올리기${beacon ? '(비콘)' : ''} · 바뀐 것 ${SYNC.dirty.size}개`);
-  if (!SYNC.on || SYNC.dead || !SYNC.url || !SYNC.token || !SYNC.dirty.size) return;
+  if (!SYNC.on || SYNC.dead || SYNC.observer || !SYNC.url || !SYNC.token || !SYNC.dirty.size) return;
   if (SYNC.busy && !beacon){ SYNC.again = true; return; }
   const snap = [...SYNC.dirty.entries()], puts = {}, dels = [];
   for (const [k] of snap){ const v = await readLocal(k); if (v === undefined || v === null) dels.push(k); else puts[k] = v; }
@@ -83,9 +83,10 @@ async function syncPull(){
   if (r.status === 401){ syncDead(await r.json().catch(() => ({}))); throw new Error('다른 기기에서 열렸어요'); }
   if (!r.ok) throw new Error('서버 응답 ' + r.status);
   const recs = (await r.json()).records || {}, keys = Object.keys(recs);
+  SYNC.fp = keys.sort().map(k => k + ':' + (recs[k].ver || recs[k].at || '')).join('|');
   if (!keys.length) return 0;
   const localPans = await allPans();
-  if (localPans.length){
+  if (localPans.length && !SYNC.observer){
     const kv = {}; for (const n of SYNC_KV) kv[n] = await kvGet(n);
     const old = await kvGet('presync');
     if (!old || old.user !== SYNC.user) await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:SYNC.user, pans:localPans, kv }, 'presync'));
@@ -127,6 +128,7 @@ function pinScreen(note){
     const el = document.createElement('div'); el.id = 'pinVeil';
     el.innerHTML = `<div class="pin"><div class="pin-t">세희 · 계정 열기</div><div class="pin-d" id="pinD"><i></i><i></i><i></i><i></i></div>
       <p class="pin-m" id="pinM">${esc(note || '암호 네 자리를 눌러 주세요')}</p>
+      <label class="pin-ob"><input type="checkbox" id="pinOb"${SYNC.watchAsk ? ' checked' : ''}> 보기 전용(관전석) — 쓰던 기기를 밀어내지 않아요</label>
       <div class="pin-k">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="skip" class="sm">이 기기만</button><button data-k="0">0</button><button data-k="del" class="sm">지우기</button></div></div>`;
     document.body.appendChild(el);
     let v = '', busy = false;
@@ -136,16 +138,17 @@ function pinScreen(note){
     const go = async () => {
       busy = true; msg('여는 중…');
       try{
-        const r = await fetch(SYNC.url + '/login', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ pin:v, device:deviceName() }) });
+        const r = await fetch(SYNC.url + '/login', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ pin:v, device:deviceName(), ...($('pinOb') && $('pinOb').checked ? { observe:true } : {}) }) });
         const j = await r.json().catch(() => ({}));
         if (r.status === 429){ v = ''; dots(); msg(`너무 많이 틀려서 잠겼어요. ${Math.ceil((j.wait || 900) / 60)}분 뒤에 다시 해 주세요.`, true); busy = false; return; }
         if (!r.ok){ v = ''; dots(); el.querySelector('.pin').classList.add('shake'); setTimeout(() => el.querySelector('.pin').classList.remove('shake'), 400);
           msg(j.error === 'wrong' ? `암호가 틀렸어요${j.left ? ` · ${j.left}번 더 틀리면 15분 잠겨요` : ''}` : '서버가 이상해요: ' + (j.error || r.status), true); busy = false; return; }
-        Object.assign(SYNC, { token:j.token, user:j.user, device:j.device, dead:false }); syncKeep();
-        msg(`${j.user} 열었어요${j.prev ? ` · ${j.prev}는 닫혀요` : ''}`);
-        if (j.records){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
+        Object.assign(SYNC, { token:j.token, user:j.user, device:j.device, dead:false, observer:!!j.observer }); syncKeep();
+        msg(j.observer ? `${j.user} 관전석으로 열었어요 · 보기만 해요` : `${j.user} 열었어요${j.prev ? ` · ${j.prev}는 닫혀요` : ''}`);
+        if (j.observer){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
+        else if (j.records){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
         else { SYNC.on = true; msg('처음이라 이 기기 기록을 올리는 중…'); await syncUploadAll(); }
-        syncBadge('ok'); done('in');
+        syncBadge('ok'); if (SYNC.observer) obsStart(); done('in');
       }catch(e){ v = ''; dots(); msg('서버에 닿지 않아요. 인터넷을 확인하거나 「이 기기만」으로 열어 주세요.', true); busy = false; }
     };
     const press = k => {
@@ -164,6 +167,8 @@ function pinScreen(note){
 async function syncStart(){
   syncLoad();
   const q = new URLSearchParams(location.search), su = q.get('sync');
+  SYNC.watchAsk = q.has('watch');   /* v1.5.21 ?watch=1 → 암호 화면에서 관전석이 미리 골라짐 */
+  if (q.has('watch') && !su) history.replaceState(null, '', location.pathname + location.hash);
   if (su){ SYNC.url = su.replace(/\/+$/, ''); syncKeep(); history.replaceState(null, '', location.pathname + location.hash); }
   if (!SYNC.url) return 'local';
   let note = '';
@@ -174,18 +179,45 @@ async function syncStart(){
       SYNC.on = true;
       if (SYNC.dirty.size){ spStep('못 올린 기록 올리는 중'); await syncFlush(); }
       spStep('최신 기록 받는 중'); try{ await syncPull(); }catch(e){}
-      syncBadge(SYNC.dead ? 'dead' : 'ok'); return 'in';
+      syncBadge(SYNC.dead ? 'dead' : 'ok'); if (SYNC.observer) obsStart(); return 'in';
     }
     if (c.st === 'offline'){ SYNC.on = true; syncBadge('wait'); return 'offline'; }
     note = c.st === 'replaced' ? `${c.device || '다른 기기'}에서 열려서 여기는 닫혔어요. 다시 열려면 암호를 눌러 주세요.` : '';
-    SYNC.token = ''; SYNC.dirty.clear(); syncKeep();
+    SYNC.token = ''; SYNC.observer = false; SYNC.dirty.clear(); syncKeep();
   }
   spStep('암호를 기다리는 중');
   return await pinScreen(note);
 }
 async function syncLogout(){
   try{ await syncFlush(); await fetch(SYNC.url + '/logout', { method:'POST', headers:authH() }); }catch(e){}
-  SYNC.token = ''; SYNC.on = false; SYNC.dirty.clear(); syncKeep(); location.reload();
+  SYNC.token = ''; SYNC.on = false; SYNC.observer = false; SYNC.dirty.clear(); syncKeep(); location.reload();
+}
+/* ── 관전석 (v1.5.21, A) — 보기 전용 두 번째 자리. 주 기기(폰)를 밀어내지 않는다.
+   올리기·세희에게 말 걸기는 막고, 15초마다 서버에서 새로 받아 화면을 다시 그린다. 개발자가 「지금 봐봐」 할 때 쓴다. */
+function obsStart(){
+  if (SYNC.obsT) return;
+  document.body.classList.add('observer');
+  const bar = document.createElement('div'); bar.id = 'obsBar';
+  bar.innerHTML = `<span>👀 관전석 · ${esc(SYNC.user)} 기록을 보기만 해요 · <b id="obsAt">방금</b> 받음</span><button class="chip" id="obsOut">나가기</button>`;
+  document.body.appendChild(bar);
+  $('obsOut').onclick = () => syncLogout();
+  dlog('동기화', '관전석으로 엶');
+  SYNC.obsT = setInterval(() => { if (!document.hidden) obsTick(); }, 15000);
+}
+async function obsTick(){
+  if (!SYNC.on || SYNC.dead || SYNC.obsBusy) return;
+  SYNC.obsBusy = true;
+  try{
+    const before = SYNC.fp; await syncPull();
+    const t = new Date(); if ($('obsAt')) $('obsAt').textContent = pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds());
+    if (SYNC.fp !== before) await obsRefresh();
+  }catch(e){ dlog('동기화', '관전석 받기 실패 · ' + e.message); }finally{ SYNC.obsBusy = false; }
+}
+async function obsRefresh(){
+  S.dates = (await allDates()).sort(); await goDate(S.date || S.today);
+  O.loaded = false; await loadChat(); if (curView() === 'office') renderLog();
+  PPL.list = null; await pplLoad(); if (typeof DW === 'object' && DW.open === 'people') pplRender();
+  dlog('동기화', '관전석 · 새 기록으로 다시 그림');
 }
 function syncLine(){
   if (!SYNC.url) return '계정 서버가 아직 없어요. 서버 주소를 넣으면 앱을 열 때 암호를 물어요.';

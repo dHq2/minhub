@@ -866,3 +866,11 @@ body:not(.alt) #office .dw-stack{visibility:visible}
 .pp-seal{position:absolute;right:-7px;top:-7px;width:22px;height:22px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font:900 .74rem "Noto Serif KR","Batang",serif;font-style:normal;transform:rotate(-12deg);background:rgba(255,253,246,.85);z-index:3;pointer-events:none}
 .pp-seal.good{color:#3b6d11;border-color:#3b6d11}.pp-seal.bad{color:#26215c;border-color:#26215c}
 .pp-seal.strong{width:26px;height:26px;border-width:3px;font-size:.86rem;background:rgba(255,253,246,.95)}
+
+/* ── v1.5.21 (A) 관전석 — 보기 전용 띠 · 암호 화면 고르기 ── */
+.pin-ob{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--ink-soft);margin:0 0 8px;justify-content:center}
+.pin-ob input{width:16px;height:16px}
+#obsBar{position:fixed;left:0;right:0;top:0;z-index:9000;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#2f3a4a;color:#fff;font-size:.78rem;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+#obsBar .chip{background:#fff;color:#2f3a4a;padding:3px 10px;font-size:.74rem}
+body.observer{padding-top:34px}
+body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}

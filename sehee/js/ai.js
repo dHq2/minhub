@@ -21,7 +21,7 @@ function sendPanOn(){ const v = AI.cfg.sendPan[AI.cfg.provider]; return v === un
 const saveAi = () => kvSet('ai', AI.cfg);
 const aiKey = () => AI.cfg && AI.cfg.keys[AI.cfg.provider];
 const aiModel = () => AI.cfg && AI.cfg.models[AI.cfg.provider];
-const aiReady = () => !!(aiKey() && aiModel());
+const aiReady = () => !!(aiKey() && aiModel()) && !(typeof SYNC === 'object' && SYNC.observer);   /* v1.5.21 관전석은 세희를 부르지 않는다 */
 /* 콘솔 키 목록과 같은 모양(앞 14자…끝 4자)으로 보여준다 — 둘을 눈으로 맞춰볼 수 있게 */
 const mask = k => k.length > 22 ? k.slice(0, 14) + '…' + k.slice(-4) : /\.\.\.|…/.test(k) ? k : k.length > 8 ? k.slice(0, 4) + '…' + k.slice(-2) : '••••';
 function keyNote(){

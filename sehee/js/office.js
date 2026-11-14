@@ -138,7 +138,7 @@ function updateLive(){
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
 function seheeSays(r, src){
   bonusEmit('say', { text:r.t, face:r.f });
-  dlog('대화', `세희 ← [${r.f}] ${String(r.t).slice(0, 80)}`);
+  dlog('대화', `세희 ← [${r.f}] ${String(r.t).slice(0, 80)}`, String(r.t));   /* v1.5.21 원문은 d 에(개발 블랙박스) */
   O.log.push({ who:'s', text:r.t, face:r.f, at:Date.now(), ...(src && src.length ? { src } : {}) }); setFace(r.f);
   /* 적었다고 말했는데 이번 차례에 실제로 적힌 게 없으면 — 보스가 믿고 넘어가지 않게 알려 준다 */
   if (O.turnActs !== undefined){
@@ -288,6 +288,7 @@ async function scrubTraces(gone){
   try{ const ps = await kvGet('presync'); if (ps && ps.kv && Array.isArray(ps.kv.chat)){ ps.kv.chat = ps.kv.chat.filter(x => !ats.has(x.at)); await kvSet('presync', ps); } }catch(e){}
 }
 async function sendSay(src){
+  if (SYNC.observer){ toast('관전석에서는 보기만 해요 — 말은 폰에서 걸어 주세요'); return; }
   await loadChat();
   if (WORK.ask){ const ta0 = src instanceof HTMLTextAreaElement ? src : $('sayText'), v0 = ta0.value.trim(); if (!v0) return;
     O.log.push({ who:'u', text:v0, at:Date.now() }); ta0.value = ''; growSay(); WORK.ask.done(v0); return; }
@@ -300,7 +301,7 @@ async function sendSay(src){
   if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => (txts.length > 1 ? `── ${t.name} ──\n` : '') + clipDoc(t.text, t.head)).join('\n\n'); }
   const heavy = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;
   if (heavy && aiReady()) askNotify();   /* 누른 순간에 물어야 폰이 허락 창을 띄워준다 */
-  O.log.push(um); ta.value = ''; dlog('대화', `보스 → ${v.slice(0, 60)}${v.length > 60 ? '…(' + v.length + '자)' : ''}${um.pics ? ' · 사진 ' + um.pics : ''}${um.docs ? ' · 문서 ' + um.docs.length : ''}${heavy ? ' · 긴 작업' : ''}`);
+  O.log.push(um); ta.value = ''; dlog('대화', `보스 → ${v.slice(0, 60)}${v.length > 60 ? '…(' + v.length + '자)' : ''}${um.pics ? ' · 사진 ' + um.pics : ''}${um.docs ? ' · 문서 ' + um.docs.length : ''}${heavy ? ' · 긴 작업' : ''}`, v);
   O.turnActs = O.log.filter(m => m.who === 'a' && !m.read).length;
   O.busy = true; growSay(); setFace(2); renderLog(); await saveLog();
   if (aiReady() && heavy){

@@ -25,7 +25,10 @@ function settingsSheet(){
     <p class="note" style="margin:4px 0 10px">따로 만드는 보너스 기능이에요. 이상하면 끔으로 바로 빼요(다시 켜면 새로 고칠 때 돌아와요).</p>
     <label class="t">개발자 로그</label>
     <div class="row"><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? 'on' : ''}" data-sact="dev" data-v="1">켬</button><button class="chip ${localStorage.getItem('sehee.dev') === '1' ? '' : 'on'}" data-sact="dev" data-v="0">끔</button></div>
-    <p class="note" style="margin:4px 0 10px">켜면 아래에 「🛠 로그」 탭이 생겨요. AI 요청·도구·동기화·화면 이동·오류가 실시간으로 찍혀요. 켠 동안은 10초마다 계정 서버에도 올라가서 개발자가 같이 볼 수 있어요.</p>
+    <p class="note" style="margin:4px 0 10px">켜면 아래에 「🛠 로그」 탭이 생겨요. AI 요청·도구·동기화·화면 이동·오류가 실시간으로 찍혀요.</p>
+    <label class="t">개발 기록 남김</label>
+    <div class="row"><button class="chip ${localStorage.getItem('sehee.devlog') !== '0' ? 'on' : ''}" data-sact="devlog" data-v="1">켬</button><button class="chip ${localStorage.getItem('sehee.devlog') === '0' ? 'on' : ''}" data-sact="devlog" data-v="0">끔</button></div>
+    <p class="note" style="margin:4px 0 10px">개발 단계용 블랙박스예요. 대화 원문·세희 도구·누른 단추·오류·상태가 계정 서버를 거쳐 개발자 비공개 금고에 30일 남아요. 계정 서버가 허락한 계정만 받아요. 출시 전에 끕니다.</p>
     <label class="t">글꼴</label>
     <div class="row" style="flex-wrap:wrap;gap:6px">${FONTS.map(f => `<button class="chip ${(st.font || 'sys') === f.v ? 'on' : ''}" data-sact="font" data-v="${f.v}" style="font-family:${f.body.replace(/"/g, "'")}">${f.t}</button>`).join('')}</div>
     <p class="note" style="margin:4px 0 10px">${esc((FONTS.find(x => x.v === (st.font || 'sys')) || FONTS[0]).d)}. 기본 말고는 처음 고를 때 인터넷에서 글꼴을 한 번 받아 와요.</p>
@@ -106,6 +109,7 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'bonus'){ try{ localStorage.setItem(laneKey(b.dataset.k || 'B'), b.dataset.v); }catch(e){} toast(b.dataset.v === '1' ? '새로 고치면 보너스가 들어와요' : '새로 고치면 보너스가 빠져요'); settingsSheet(); return; }
   else if (a === 'bonusrun'){ const m = BONUS.menu[Number(b.dataset.i)]; closeSheet(); if (m) try{ await m.run(); }catch(e){ dlog('오류', '보너스 메뉴 ' + e.message, e.stack); toast('보너스 기능에서 문제가 났어요'); } return; }
   else if (a === 'dev'){ try{ localStorage.setItem('sehee.dev', b.dataset.v); }catch(e){} devApply(); settingsSheet(); return; }
+  else if (a === 'devlog'){ try{ localStorage.setItem('sehee.devlog', b.dataset.v); }catch(e){} dlog('설정', '개발 기록 남김 ' + (b.dataset.v === '0' ? '끔' : '켬')); if (b.dataset.v !== '0'){ LOGUP.off = false; logPush(true); } settingsSheet(); return; }
   else if (a === 'export'){ await exportAll(); return; }
   else if (a === 'import'){
     if (impPending){ await doImport(impPending); impPending = null; return; }
