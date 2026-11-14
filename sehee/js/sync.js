@@ -100,6 +100,21 @@ async function syncPull(){
   SYNC.last = Date.now(); syncKeep();
   return keys.length;
 }
+/* v1.5.28 다른 계정으로 열 때 — 앞 계정 기록을 새 계정에 올리지 않게, 이 기기를 비운다.
+   앞 계정 것은 이미 서버에 있고, 혹시 몰라 이 기기 kv 'presync' 에 한 벌 남긴다. 세희 머리 설정(ai: 모델·키)만 기기 것으로 남겨 새 계정에서도 바로 말이 되게. */
+async function acctSwitch(prev){
+  try{
+    const pans = await allPans(), kv = {}; for (const n of SYNC_KV) kv[n] = await kvGet(n);
+    await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:prev, pans, kv }, 'presync'));
+    const ai = await kvGet('ai');
+    await tx('pans', 'readwrite', s => s.clear());
+    const gone = [...SYNC_KV.filter(n => n !== 'ai'), ...(await kvKeys()).filter(k => SYNC_PFX.test(String(k)))];
+    await tx('kv', 'readwrite', s => { for (const n of gone) s.delete(n); });
+    if (ai !== undefined) await kvSet('ai', ai);
+    SYNC.dirty.clear(); syncKeep();
+    dlog('동기화', `계정 바꿈 ${prev} → 새 계정 · 이 기기 비움(머리 설정만 남김)`);
+  }catch(e){ dlog('오류', '계정 바꿈 비우기 실패 · ' + e.message); }
+}
 /* 서버가 비어 있으면 이 기기 기록을 통째로 올린다 */
 async function syncUploadAll(){
   for (const d of await allDates()) SYNC.dirty.set('pan:' + d, ++SYNC.gen);
@@ -139,7 +154,7 @@ function pinScreen(note){
     const msg = (t, bad) => { $('pinM').textContent = t; $('pinM').classList.toggle('bad', !!bad); };
     const done = r => { document.removeEventListener('keydown', onKey); el.remove(); resolve(r); };
     const go = async () => {
-      busy = true; msg('여는 중…');
+      busy = true; msg('여는 중…'); const prevUser = SYNC.user;
       try{
         const r = await fetch(SYNC.url + '/login', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ pin:v, device:deviceName(), ...($('pinOb') && $('pinOb').checked ? { observe:true } : {}) }) });
         const j = await r.json().catch(() => ({}));
@@ -148,6 +163,7 @@ function pinScreen(note){
           msg(j.error === 'wrong' ? `암호가 틀렸어요${j.left ? ` · ${j.left}번 더 틀리면 15분 잠겨요` : ''}` : '서버가 이상해요: ' + (j.error || r.status), true); busy = false; return; }
         Object.assign(SYNC, { token:j.token, user:j.user, device:j.device, dead:false, observer:!!j.observer }); syncKeep();
         msg(j.observer ? `${j.user} 관전석으로 열었어요 · 보기만 해요` : `${j.user} 열었어요${j.prev ? ` · ${j.prev}는 닫혀요` : ''}`);
+        if (prevUser && prevUser !== j.user && !j.observer){ msg('다른 계정이라 이 기기를 비우는 중…'); await acctSwitch(prevUser); }
         if (j.observer){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
         else if (j.records){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
         else { SYNC.on = true; msg('처음이라 이 기기 기록을 올리는 중…'); await syncUploadAll(); }

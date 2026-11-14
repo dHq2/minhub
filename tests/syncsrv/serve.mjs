@@ -11,7 +11,7 @@ const mk = (q, args = []) => ({
 });
 const DB = { prepare:q => mk(q), batch:async stmts => { sql.exec('BEGIN'); try{ for (const s of stmts) await s.run(); sql.exec('COMMIT'); }catch(e){ sql.exec('ROLLBACK'); throw e; } return []; } };
 const port0 = +(process.env.PORT || 8787);
-const env = { DB, PINS:process.env.PINS || 'test:2580', LOG_USERS:'test', GH_REPO:'o/vault', GH_TOKEN:'fake', GH_API:'http://localhost:' + port0 + '/__gh' };
+const env = { DB, PINS:process.env.PINS || 'test:2580,manbok:1357', LOG_USERS:'test', GH_REPO:'o/vault', GH_TOKEN:'fake', GH_API:'http://localhost:' + port0 + '/__gh' };
 const VAULT = new Map();   /* 가짜 금고 — path → { text, sha } */
 const port = +(process.env.PORT || 8787);
 http.createServer(async (req, res) => {

@@ -1,3 +1,18 @@
+/* ── 체험 공간 (v1.5.28, A) — 주소에 ?space=이름 을 붙이면 이 탭만 따로 된 빈 세희가 된다(로그인 없는 새 사용자처럼).
+   이 기기의 저장(localStorage·IndexedDB)을 이름표를 붙여 나눠 쓴다 — 원래 세희 기록은 안 보이고 안 건드린다. 같은 탭에선 새로 고쳐도 유지.
+   나가기: 주소에 ?space= (빈 값) 또는 새 탭에서 원래 주소. 개발자가 같은 크롬 탭에서 같이 보며 시험할 때 쓴다. */
+(function(){
+  let sp = null; const q = new URLSearchParams(location.search);
+  try{ if (q.has('space')){ sp = q.get('space').trim().slice(0, 20); if (sp) sessionStorage.setItem('sehee.space', sp); else sessionStorage.removeItem('sehee.space'); } else sp = sessionStorage.getItem('sehee.space'); }catch(e){}
+  if (!sp) return;
+  window.SEHEE_SPACE = sp;
+  const P = 'space~' + sp + '~', SP = Storage.prototype, g = SP.getItem, st = SP.setItem, rm = SP.removeItem;
+  SP.getItem = function(k){ return g.call(this, this === localStorage ? P + k : k); };
+  SP.setItem = function(k, v){ return st.call(this, this === localStorage ? P + k : k, v); };
+  SP.removeItem = function(k){ return rm.call(this, this === localStorage ? P + k : k); };
+  if (q.has('space')) history.replaceState(null, '', location.pathname + location.hash);
+  addEventListener('DOMContentLoaded', () => { const b = document.createElement('div'); b.id = 'spaceBar'; b.textContent = '🧪 체험 공간 · ' + sp + ' — 원래 세희와 따로예요'; document.body.appendChild(b); document.body.classList.add('space'); });
+})();
 /* ── 개발자 로그 (v1.2.8) — 프로그램이 도는 걸 실시간으로 적는다. 설정에서 켠 기기에서만 「로그」 탭이 보인다.
    메모리에 600줄, 이 기기 localStorage 에 마지막 300줄(새로 고침해도 남게). v1.5.21 부터 계정 서버로도(아래 개발 블랙박스). */
 const DBG = { lines:[], max:600, seq:0, paused:false, filter:'all', subs:new Set(), dirty:false };
@@ -27,7 +42,7 @@ try{
 const logOn = () => localStorage.getItem('sehee.devlog') !== '0';
 function logState(){
   try{ const p = S.pan;
-    return { v:APP_VERSION, view:curView(), busy:!!O.busy, model:AI.cfg && AI.cfg.model, observer:!!SYNC.observer, drawer:typeof DW === 'object' ? DW.open || null : null,
+    return { v:APP_VERSION, space:window.SEHEE_SPACE || null, view:curView(), busy:!!O.busy, model:AI.cfg && AI.cfg.model, observer:!!SYNC.observer, drawer:typeof DW === 'object' ? DW.open || null : null,
       pan:p ? { date:p.date, ver:p.ver && p.ver.label, open:p.items.filter(i => !i.done).length, done:p.items.filter(i => i.done).length } : null,
       people:PPL.list ? PPL.list.length : null, ties:PPL.ties ? PPL.ties.length : null, chat:O.log ? O.log.length : null,
       lastErr:(DBG.lines.filter(l => l.c === '오류').pop() || {}).m || null, syncLast:SYNC.last, dirty:SYNC.dirty.size, screen:innerWidth + 'x' + innerHeight };

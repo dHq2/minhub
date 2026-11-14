@@ -100,5 +100,5 @@ function loadBonus(){
       try{ await navigator.clipboard.writeText(t); toast('로그를 복사했어요'); }catch(x){ toast('복사가 막혔어요'); } }
   };
   devApply();
-  dlog('화면', `세희 ${APP_VERSION} 시작 · ${innerWidth}×${innerHeight} · ${navigator.onLine ? '온라인' : '오프라인'}`);
+  dlog('화면', `세희 ${APP_VERSION} 시작 · ${innerWidth}×${innerHeight} · ${navigator.onLine ? '온라인' : '오프라인'}${window.SEHEE_SPACE ? ' · 체험 공간 ' + window.SEHEE_SPACE : ''}`);
 })();

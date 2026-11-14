@@ -903,3 +903,6 @@ body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
 .tie-ul button.tie-k,.tie-ul button.tie-q{background:none;cursor:pointer;opacity:.4;line-height:1.5}.tie-ul button.tie-k.on,.tie-ul button.tie-q.on{opacity:1}
 .tie-ul select.tie-c{background:none;font-size:.7rem;padding:0 2px;cursor:pointer}
 .pd-addrow .pd-add{font-size:.72rem;padding:2px 8px}
+
+/* ── v1.5.27 (A) 체험 공간 띠 ── */
+#spaceBar{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:8999;padding:1px 10px;border-radius:0 0 8px 8px;background:#5b3e8c;color:#fff;font-size:.68rem;opacity:.9;pointer-events:none;white-space:nowrap}
