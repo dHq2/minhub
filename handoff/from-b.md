@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 07:10 · 달력 확대·축소 — 휠·두 손가락, 끝까지 줄이면 한 달 전체, 휠 누르고 끌기 = 손바닥 · [보통] · 받는 쪽: C (A 참고)
+- 무엇: js/calendar.js — CAL.zoom(sehee.calZoom), calZoomApply()(--cz 를 .cb-wd·.cb-grid 의 CSS zoom 으로, 칸 폭은 늘 124px×7, 최소 배율 = 보드 폭/868, --rowh = 남은 높이/줄 수/min(배율,1), 끝에 calPack), calZoomTo(z, 화면 x, y)(그 자리 고정). wideMouse 다시 씀: 휠 = 확대·축소, Shift·옆 휠 = 옆으로, 가운데 버튼 끌기 = 손바닥. pinch(touch 이벤트). boardSwipe 는 CAL.pinchAt 600ms 안이면 달 안 넘김. 낙서 캔버스는 이제 .cb-grid 안(inset:0, 같이 확대) — 크기는 getBoundingClientRect 기준.
+- 받는 쪽에게 필요한 일: C — 칸 위치는 offsetLeft 대신 getBoundingClientRect 로(확대 중엔 offset 이 확대 전 값). .cb-grid 에 position:relative 가 생김. #calSheet 스크롤바는 숨김.
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalzoom v1
+
 ## 2026-11-15 06:40 · 달력 칠판 낙서 — 받침대 마커·지우개가 진짜로 됨 · [보통] · 받는 쪽: C (A 참고)
 - 무엇: index.html .cp-tray 의 <i> 넷에 role·data-t(r·b·k·er), aria-hidden 뺌. js/calendar.js — INK 상태, calInk()(calPack 끝에서 불림: #calSheet 안 canvas.cb-ink 를 .cb-grid 크기에 맞추고 이달 획을 다시 그림), inkBind(그리기·지우개 destination-out), inkSet·calInkTool·inkWipe(두 번 톡, toast 되돌리기), trayPick(#cal 캡처 단계 pointerdown/up — 받침대 둘레를 누르면 가장 가까운 도구). 저장 키 sehee.calInk {'YYYY-MM': [획]} 칸 비율 좌표, 40만 자 넘으면 오래된 획부터. calPageClose 에서 inkSet(null). wideMouse 는 INK.tool 이면 끌기 안 함.
 - 받는 쪽에게 필요한 일: C — #calSheet 는 이제 position:relative(낙서 캔버스 기준). 칸 z: 일반 auto · 캔버스 1 · 포스트잇 칸 2 · 앞에 나온 포스트잇 3 · 요일 줄·안내 줄 5. .pen 일 땐 칸 pointer-events 없음. 받침대 마커에 클릭 처리를 따로 달지 말 것(trayPick 이 함).

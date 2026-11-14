@@ -65,7 +65,7 @@ function calMonth(m, quiet, dir){
       const list = CAL.byDate[d] || [], wd = i % 7;
       return `<div class="cb-c${d === S.today ? ' today' : ''}${d === CAL.day ? ' sel' : ''}${wd === 0 ? ' sun' : wd === 6 ? ' sat' : ''}" data-cal="d" data-d="${d}"><span class="n">${+d.slice(8)}</span>${
         list.map(chip).join('')}</div>`; }).join('')}</div>
-    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 옆으로 밀기 · 날짜·포스트잇 누르면 쪽지</p>`;
+    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 확대·축소 · 밀기 · 날짜·포스트잇 누르면 쪽지</p>`;
   calWide(dir);
   if (dir){ sh.classList.remove('wipeL', 'wipeR'); void sh.offsetWidth; sh.classList.add(dir < 0 ? 'wipeL' : 'wipeR'); }
   if (CAL.day && !CAL.day.startsWith(`${y}-${pad(m + 1)}`)) calDay(null);
@@ -80,13 +80,65 @@ let calFontReady = false;
 function calWide(dir){
   if (!calFontReady){ calFontReady = true; if (!document.querySelector('link[data-cal-font]')){ const l = document.createElement('link'); l.rel = 'stylesheet'; l.dataset.calFont = '1'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); } }
   const sh = $('calSheet'); if (!sh) return;
-  const fit = () => { const w = sh.clientWidth; if (!w) return; const col = Math.max(CAL_COL, Math.floor((w - 2) / 7)); sh.style.setProperty('--cbw', (col * 7) + 'px'); sh.classList.toggle('wide', col * 7 > w + 2);
-    const rows = Math.ceil(sh.querySelectorAll('.cb-grid > .cb-c').length / 7) || 5, wd = sh.querySelector('.cb-wd'); sh.style.setProperty('--rowh', Math.max(70, Math.floor((sh.clientHeight - (wd ? wd.offsetHeight : 20) - 4) / rows)) + 'px');
-    if (dir === undefined || dir === 0 || !CAL.wideAt){ const t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (t) sh.scrollLeft = Math.max(0, t.offsetLeft + t.offsetWidth / 2 - w / 2); }
-    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); calPack(); };
+  const fit = () => { const w = sh.clientWidth; if (!w) return; calZoomApply();
+    const t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'), sr = sh.getBoundingClientRect();
+    if (dir === undefined || dir === 0 || !CAL.wideAt){ if (t){ const r = t.getBoundingClientRect(); sh.scrollLeft = Math.max(0, r.left - sr.left + sh.scrollLeft + r.width / 2 - w / 2); } }
+    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); };
   fit(); requestAnimationFrame(fit);
   if (document.fonts && !document.fonts.check('700 16px Gaegu')) document.fonts.load('700 16px Gaegu').then(() => { if (CAL.on) calPack(); }).catch(() => {});
 }
+/* ── 11-15 B: 확대·축소 — 컴퓨터는 휠(커서 자리 기준), 폰은 두 손가락 벌리기·오므리기. 제일 줄이면 한 달 전체가 한 화면.
+   CSS zoom 으로 요일 줄·칸·포스트잇·낙서가 같이 커지고 작아짐. 줄일 땐 칸이 세로로 화면을 채워(배율만큼 칸이 길어짐) 포스트잇이 줄어듦.
+   CAL.zoom 은 이 기기에 남김(sehee.calZoom) ── */
+CAL.zoom = +(localStorage.getItem('sehee.calZoom') || 1) || 1;
+const calZMin = () => { const sh = $('calSheet'); return Math.min(1, (sh.clientWidth - 2) / (CAL_COL * 7)); };
+const calZMax = 2.2;
+function calZoomApply(){
+  const sh = $('calSheet'); const w = sh.clientWidth; if (!w) return;
+  const zmin = Math.max(.2, (w - 2) / (CAL_COL * 7)), z = Math.max(zmin, Math.min(calZMax, CAL.zoom));
+  sh.style.setProperty('--cbw', (CAL_COL * 7) + 'px'); sh.style.setProperty('--cz', z);
+  sh.classList.toggle('wide', CAL_COL * 7 * z > w + 2); sh.classList.toggle('zmin', z <= zmin + .001);
+  const rows = Math.ceil(sh.querySelectorAll('.cb-grid > .cb-c').length / 7) || 5, wd = sh.querySelector('.cb-wd'), ft = sh.querySelector('.cb-foot');
+  const avail = sh.clientHeight - (wd ? wd.getBoundingClientRect().height : 20) - (ft ? ft.getBoundingClientRect().height : 0) - 4;
+  sh.style.setProperty('--rowh', Math.max(70, Math.floor(avail / rows / Math.min(z, 1))) + 'px');
+  calPack();
+}
+function calZoomTo(z, cx, cy){   /* cx·cy = 화면 좌표(그 자리를 고정) */
+  const sh = $('calSheet'), g = sh.querySelector('.cb-grid'); if (!g) return;
+  const sr = sh.getBoundingClientRect(), gr = g.getBoundingClientRect();
+  if (cx === undefined){ cx = sr.left + sr.width / 2; cy = sr.top + sr.height / 2; }
+  const fx = (cx - gr.left) / gr.width, fy = (cy - gr.top) / gr.height;
+  CAL.zoom = Math.max(calZMin(), Math.min(calZMax, z)); try { localStorage.setItem('sehee.calZoom', String(+CAL.zoom.toFixed(3))); } catch {}
+  calZoomApply();
+  const g2 = sh.querySelector('.cb-grid').getBoundingClientRect();
+  sh.scrollLeft += (g2.left + fx * g2.width) - cx; sh.scrollTop += (g2.top + fy * g2.height) - cy;
+}
+window.addEventListener('resize', () => { if (CAL.on) calWide(); });
+/* 11-15 B: 컴퓨터 — 휠 = 확대·축소(커서 자리), Shift+휠·트랙패드 옆밀기 = 옆으로. 휠 누르고 끌기(가운데 버튼) = 손바닥, 왼쪽 끌기도 손바닥(마커를 들었을 땐 그림) */
+(function wideMouse(){
+  const sh = $('calSheet'); let g = null;
+  const can = () => sh.scrollWidth > sh.clientWidth + 2 || sh.scrollHeight > sh.clientHeight + 2;
+  sh.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault();
+    if ((e.button === 0 && INK.tool) || (e.button !== 0 && e.button !== 1) || !can() || e.target.closest('input,button')) return;
+    g = { x:e.clientX, y:e.clientY, l:sh.scrollLeft, t:sh.scrollTop, moved:false, mid:e.button === 1 }; if (g.mid) sh.classList.add('grab'); });
+  sh.addEventListener('auxclick', e => { if (e.button === 1) e.preventDefault(); });
+  window.addEventListener('mousemove', e => { if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; if (!g.moved && Math.hypot(dx, dy) < 5) return; g.moved = true; sh.classList.add('grab'); sh.scrollLeft = g.l - dx; sh.scrollTop = g.t - dy; });
+  window.addEventListener('mouseup', () => { if (!g) return; if (g.moved) CAL.swiped = Date.now(); g = null; sh.classList.remove('grab'); });
+  let acc = 0, raf = 0, last = null;
+  sh.addEventListener('wheel', e => {
+    if (e.shiftKey || (!e.ctrlKey && Math.abs(e.deltaX) > Math.abs(e.deltaY))){ if (e.shiftKey && !e.deltaX){ e.preventDefault(); sh.scrollLeft += e.deltaY; } return; }
+    e.preventDefault(); acc += e.deltaMode === 1 ? e.deltaY * 33 : e.deltaY; last = e;
+    if (!raf) raf = requestAnimationFrame(() => { raf = 0; const k = Math.exp(-acc * (last.ctrlKey ? .01 : .0013)); acc = 0; calZoomTo(CAL.zoom * k, last.clientX, last.clientY); });
+  }, { passive:false });
+})();
+/* 11-15 B: 폰 — 두 손가락으로 벌리면 확대, 오므리면 축소(한 손가락은 그대로 밀기) */
+(function pinch(){
+  const sh = $('calSheet'); let p = null;
+  const mid = t => [(t[0].clientX + t[1].clientX) / 2, (t[0].clientY + t[1].clientY) / 2], dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  sh.addEventListener('touchstart', e => { if (e.touches.length > 1) CAL.pinchAt = Date.now(); if (e.touches.length === 2 && !INK.tool){ p = { d:dist(e.touches), z:CAL.zoom }; CAL.swiped = Date.now(); } }, { passive:true });
+  sh.addEventListener('touchmove', e => { if (!p || e.touches.length !== 2) return; if (e.cancelable) e.preventDefault(); const [x, y] = mid(e.touches); calZoomTo(p.z * dist(e.touches) / p.d, x, y); CAL.swiped = CAL.pinchAt = Date.now(); }, { passive:false });
+  sh.addEventListener('touchend', e => { if (p || e.touches.length) CAL.pinchAt = CAL.swiped = Date.now(); if (p && e.touches.length < 2) p = null; });
+})();
 /* 11-15 B: 칸은 실제 보드처럼 모두 같은 높이로 그어 두고, 칸에 다 안 들어가는 일정은 노란 포스트잇에 적어 그 칸에 붙인다.
    포스트잇은 옆(아래) 칸을 살짝 덮을 수 있음 — 누르면 앞으로 나오고, 앞에 나온 걸 한 번 더 누르면 그날 쪽지. 글은 포스트잇에서도 다 보임 */
 const calPiTilt = d => [-2.4, 1.8, -1.2, 2.6, -2.8, 1.1, -1.7][+d.slice(8) % 7];
@@ -122,25 +174,24 @@ function inkLine(x, s, W, H){
   if (p.length === 2) x.lineTo(p[0] * W + .01, p[1] * H); for (let i = 2; i < p.length; i += 2) x.lineTo(p[i] * W, p[i + 1] * H);
   x.stroke();
 }
-function inkDraw(cv){ const x = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = cv.width / (W || 1);
+function inkDraw(cv){ const x = cv.getContext('2d'), r = cv.getBoundingClientRect(), W = r.width, H = r.height, dpr = cv.width / (W || 1);
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.setTransform(dpr, 0, 0, dpr, 0, 0);
   INK.strokes.forEach(s => inkLine(x, s, W, H)); x.globalCompositeOperation = 'source-over'; }
-function calInk(){
+function calInk(){   /* 캔버스는 .cb-grid 안(같이 확대·축소) — 픽셀은 화면에 보이는 크기 기준 */
   const sh = $('calSheet'), g = sh && sh.querySelector('.cb-grid'); if (!g) return;
-  let cv = sh.querySelector(':scope > .cb-ink'); if (!cv){ cv = document.createElement('canvas'); cv.className = 'cb-ink'; sh.appendChild(cv); inkBind(cv); }
-  const W = g.offsetWidth, H = g.offsetHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
-  Object.assign(cv.style, { left:g.offsetLeft + 'px', top:g.offsetTop + 'px', width:W + 'px', height:H + 'px' });
-  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  let cv = g.querySelector(':scope > .cb-ink'); if (!cv){ cv = document.createElement('canvas'); cv.className = 'cb-ink'; g.appendChild(cv); inkBind(cv); }
+  const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const pw = Math.max(1, Math.round(r.width * dpr)), ph = Math.max(1, Math.round(r.height * dpr)); if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
   const k = inkKey(); if (INK.key !== k){ INK.key = k; INK.strokes = inkAll()[k] || []; INK.cur = null; }
   inkDraw(cv);
 }
 function inkBind(cv){
   const at = e => { const r = cv.getBoundingClientRect(); return [+((e.clientX - r.left) / r.width).toFixed(4), +((e.clientY - r.top) / r.height).toFixed(4)]; };
-  const seg = (s, a, b) => { const x = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = cv.width / (W || 1); x.setTransform(dpr, 0, 0, dpr, 0, 0); inkLine(x, { ...s, p:[...a, ...b] }, W, H); x.globalCompositeOperation = 'source-over'; };
+  const seg = (s, a, b) => { const x = cv.getContext('2d'), r = cv.getBoundingClientRect(), W = r.width, H = r.height, dpr = cv.width / (W || 1); x.setTransform(dpr, 0, 0, dpr, 0, 0); inkLine(x, { ...s, p:[...a, ...b] }, W, H); x.globalCompositeOperation = 'source-over'; };
   cv.addEventListener('pointerdown', e => { if (!INK.tool || (e.button && e.button !== 0)) return; e.preventDefault(); e.stopPropagation(); try { cv.setPointerCapture(e.pointerId); } catch {}
-    const er = INK.tool === 'er', p = at(e), W = cv.clientWidth || 1;
+    const er = INK.tool === 'er', p = at(e), W = cv.getBoundingClientRect().width || 1;
     INK.cur = er ? { e:1, w:+(26 / W).toFixed(5), p } : { c:INK.tool, w:+(3.4 / W).toFixed(5), p }; seg(INK.cur, p, p); });
-  cv.addEventListener('pointermove', e => { const s = INK.cur; if (!s) return; e.preventDefault(); const q = at(e), n = s.p.length, W = cv.clientWidth, H = cv.clientHeight;
+  cv.addEventListener('pointermove', e => { const s = INK.cur; if (!s) return; e.preventDefault(); const q = at(e), n = s.p.length, r = cv.getBoundingClientRect(), W = r.width, H = r.height;
     if (Math.hypot((q[0] - s.p[n - 2]) * W, (q[1] - s.p[n - 1]) * H) < 1.5) return; seg(s, [s.p[n - 2], s.p[n - 1]], q); s.p.push(q[0], q[1]); });
   const end = e => { if (!INK.cur) return; e.stopPropagation(); INK.strokes.push(INK.cur); INK.cur = null; inkPut(INK.key, INK.strokes); };
   cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
@@ -172,17 +223,6 @@ function inkWipe(){
   INK.strokes = []; inkPut(k, []); calInk();
   toast('이달 낙서를 싹 지웠어요', () => { if (INK.key === k){ INK.strokes = old; calInk(); } inkPut(k, old); });
 }
-window.addEventListener('resize', () => { if (CAL.on) calWide(); });
-/* 11-15 B: 컴퓨터 — 마우스로 끌면 보드가 따라 움직이고(손바닥), 휠은 보드가 위아래로 더 못 가면 옆으로 */
-(function wideMouse(){
-  const sh = $('calSheet'); let g = null;
-  sh.addEventListener('mousedown', e => { if (INK.tool || (e.button !== 0 && e.button !== 1) || !sh.classList.contains('wide') || e.target.closest('input,button')) return; g = { x:e.clientX, y:e.clientY, l:sh.scrollLeft, t:sh.scrollTop, moved:false }; if (e.button === 1) e.preventDefault(); });
-  window.addEventListener('mousemove', e => { if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; if (!g.moved && Math.hypot(dx, dy) < 5) return; g.moved = true; sh.classList.add('grab'); sh.scrollLeft = g.l - dx; sh.scrollTop = g.t - dy; });
-  window.addEventListener('mouseup', () => { if (!g) return; if (g.moved) CAL.swiped = Date.now(); g = null; sh.classList.remove('grab'); });
-  sh.addEventListener('wheel', e => { if (!sh.classList.contains('wide') || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    const canV = sh.scrollHeight > sh.clientHeight + 2 && !(e.deltaY > 0 && sh.scrollTop + sh.clientHeight >= sh.scrollHeight - 1) && !(e.deltaY < 0 && sh.scrollTop <= 0);
-    if (!canV){ e.preventDefault(); sh.scrollLeft += e.deltaY; } }, { passive:false });
-})();
 /* 그날 쪽지 — 칠판에 붙는 포스트잇 */
 function calDay(d){
   CAL.day = d; const el = $('calDay');
@@ -268,6 +308,7 @@ $('cal').addEventListener('keydown', e => { if (e.target.id === 'calAdd' && e.ke
   sh.addEventListener('pointerdown', e => { g = { x:e.clientX, y:e.clientY }; });
   sh.addEventListener('pointerup', e => {
     if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; g = null;
+    if (Date.now() - (CAL.pinchAt || 0) < 600) return;   /* 11-15 B: 두 손가락 확대·축소 중엔 달 안 넘김 */
     if (sh.classList.contains('wide')){ if (Math.abs(dx) > 8) CAL.swiped = Date.now(); return; }   /* 11-15 B: 가로 보드는 옆으로 밀면 보드가 움직임(달은 ‹ ›) */
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){ CAL.swiped = Date.now(); calGo(dx < 0 ? 1 : -1); }
   });
