@@ -93,7 +93,7 @@ const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ':' + pad(
 function renderLog(){
   const el = $('log');
   let lastS = -1; O.log.forEach((m, i) => { if (m.who === 's') lastS = i; });
-  el.innerHTML = O.log.map((m, i) => m.who === 'a'
+  el.innerHTML = O.log.map((m, i) => m.hide ? '' : m.who === 'a'
       ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
       : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<div class="mfoot">${msgTools(m, i, lastS)}<time>${hhmm(m.at)}</time></div></div>`).join('')
@@ -357,6 +357,37 @@ async function sendSay(src){
     if (!O.hinted){ O.hinted = true; O.log.push({ who:'s', text:'⚙ 설정 → 세희 머리에서 API 키를 넣으면 진짜로 대답할 수 있어요.', face:1, at:Date.now(), hint:true }); }
   }
   O.busy = false; renderLog(); growSay(); bdGrow(); saveLog();
+}
+/* ── 업데이트 뒤 세희 설명 (v1.5.30, B) — 보스가 장면에서 '예'를 누르고 새로 켜진 뒤 한 번.
+   바뀐 기록(CHANGELOG.md 의 그 사이 항목)을 숨은 말(m.hide — 화면엔 안 보이고 세희만 읽음)로 건네면, 세희가
+   ① 보스 쪽에서 보이는 것 위주로 쉽게 짧게 알리고 ② 기존 자료를 손볼 게 있으면 도구로 고치고, 보스 판단이 필요한 건 ask_boss 선택지로 묻는다 ── */
+const verNum = v => String(v || '').replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+const verGt = (a, b) => { const x = verNum(a), y = verNum(b); for (let i = 0; i < 3; i++){ if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
+async function updNotes(from, to){
+  try{ const t = await (await fetch('CHANGELOG.md?v=' + Date.now(), { cache:'no-store' })).text();
+    const secs = t.split(/\n(?=## v\d)/).filter(s => /^## v\d/.test(s)).filter(s => { const v = s.match(/^## (v[\d.]+)/)[1]; return verGt(v, from) && !verGt(v, to); });
+    let out = secs.join('\n').trim();
+    if (out.length > 7000) out = secs.map(s => s.split('\n').slice(0, 3).join('\n')).join('\n').slice(0, 7000);
+    return out;
+  }catch(e){ return ''; }
+}
+async function updBrief(from, to){
+  if (typeof SYNC !== 'undefined' && SYNC.observer) return;
+  for (let k = 0; k < 60 && (O.busy || WORK.ask); k++) await new Promise(r => setTimeout(r, 500));   /* 다른 대답 중이면 기다림 */
+  await loadChat(); if (curView() !== 'office') goView('office');
+  if (!aiReady()){ seheeSays({ t:'새 규정 적용을 마쳤습니다. 무엇이 바뀌었는지는 머리(설정 → 세희 머리)를 넣어 주시면 설명해 드릴게요.', f:0 }); renderLog(); saveLog(); return; }
+  const notes = await updNotes(from, to);
+  dlog('업데이트', `세희 설명 시작 ${from} → ${to} · 기록 ${notes.length}자`);
+  O.log.push({ who:'u', hide:true, upd:{ from, to }, at:Date.now(), text:`(앱 안내 — 보스가 쓴 말이 아니다. 보스 화면엔 안 보인다)
+보스가 방금 업데이트 장면에서 '예'를 눌러 사내 규정(세희 앱)을 ${from} → ${to} 로 바꿨다. 사무실로 돌아온 보스에게 이렇게 한다.
+1) 첫 마디는 "새 규정, 적용 마쳤습니다." 같은 보고로 시작하고, 바뀐 점을 보스 쪽에서 보이고 쓰는 것 위주로 쉬운 말로 짧게(3~6줄) 알린다. 버전 번호·파일 이름·방 이름(A·B·C)·코드 말은 빼고, 비슷한 건 묶는다.
+2) 이번 변화로 보스의 기존 자료(인간관계 판·보드·일정·일간보고서 등)를 손보면 더 좋아지는 게 있으면, 도구로 먼저 들여다보고 확실한 정리는 바로 한다(한 일은 한 줄씩 말한다). 보스 뜻이 갈리는 건 ask_boss 로 고를 것 2~4개를 주고 묻는다(한 번에 하나씩). 손볼 게 없으면 없다고 한 줄.
+3) 길게 늘어놓지 않는다. 이 안내 글이 있다는 말은 하지 않는다.
+── 바뀐 기록(개발자 말투) ──
+${notes || '(기록을 못 가져왔다 — 무엇이 바뀌었는지 모른다고 솔직히 말하고, 써 보시다 이상한 게 있으면 알려 달라고만 한다)'}` });
+  O.turnActs = O.log.filter(m => m.who === 'a' && !m.read).length;
+  O.busy = true; O.updTour = true; growSay(); setFace(2); renderLog(); await saveLog();
+  try{ await replyNow(); }finally{ O.updTour = false; O.busy = false; renderLog(); growSay(); saveLog(); }
 }
 $('sayText').addEventListener('input', growSay);
 $('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendSay(); } });

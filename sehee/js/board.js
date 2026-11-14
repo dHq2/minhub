@@ -164,7 +164,7 @@ window.addEventListener('resize', () => requestAnimationFrame(fitThumbs));
 function flashCard(id){ const el = document.querySelector(`[data-card="${id}"]`); if (!el) return; el.scrollIntoView({ block:'nearest', behavior:'smooth' }); el.classList.remove('new'); void el.offsetWidth; el.classList.add('new'); }
 async function loadChat(){ if (!O.loaded){ O.log = (await kvGet('chat')) || []; O.loaded = true; } }
 function talkHtml(empty){
-  const lastU = [...O.log].reverse().find(m => m.who === 'u'), lastS = [...O.log].reverse().find(m => m.who === 's');
+  const lastU = [...O.log].reverse().find(m => m.who === 'u' && !m.hide), lastS = [...O.log].reverse().find(m => m.who === 's');
   let h = '';
   if (lastU) h += `<div class="bt-u">보스 · ${esc((lastU.text || (lastU.pics ? '📷 사진 ' + lastU.pics + '장' : lastU.docs ? '📄 ' + lastU.docs.join(', ') : '')).slice(0, 90))}</div>`;
   if (WORK.ask) h += `<div class="bt-s ask">${esc(WORK.ask.m.text)}${askButtons(WORK.ask.m)}</div>`;

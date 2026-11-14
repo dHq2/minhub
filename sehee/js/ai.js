@@ -306,7 +306,7 @@ function TOOL_DEFS(){
     ...BOARD_TOOLS(),
     ...PEOPLE_TOOLS(),
     ...BONUS.tools,
-    ...(askMode() === 'need' ? [{ name:'ask_boss', description:'작업을 하다가 정말 막혀서(틀리면 처음부터 다시 해야 하는 것) 보스에게 지금 물어야 할 때만. 한 작업에 최대 2번. 고를 것 2~4개를 짧게.', schema:{ type:'object', properties:{
+    ...(askMode() === 'need' || (typeof O !== 'undefined' && O.updTour) ? [{ name:'ask_boss', description:'작업을 하다가 정말 막혀서(틀리면 처음부터 다시 해야 하는 것) 보스에게 지금 물어야 할 때만. 한 작업에 최대 2번. 고를 것 2~4개를 짧게.', schema:{ type:'object', properties:{
       question:{ type:'string', description:'한 문장 질문' }, options:{ type:'array', items:{ type:'string' }, description:'고를 것 2~4개, 각각 짧게' } }, required:['question'] } }] : []),
   ];
 }

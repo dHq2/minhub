@@ -52,6 +52,14 @@ async function askUpdate(){
   const parts = [];
   if (waitingSW){ const v = await newVersionName(); parts.push(`본체 ${APP_VERSION} → ${v || '새 버전'}`); }
   for (const l of updLanesList()) if (updLanes[l.k]) parts.push(`${l.name} ${updVer(l.k)} → ${updLanes[l.k]}`);
+  /* v1.5.30 (B) 띠 대신 게임 대화 장면 — 세희가 '사내 규정이 바뀌었다'며 묻는다(예 / 구버전으로 계속). 장면을 못 열면 예전 띠 */
+  if (typeof scenePlay === 'function' && !(typeof SYNC !== 'undefined' && SYNC.observer)){
+    dlog('업데이트', '장면으로 물어봄 — ' + parts.join(' · '));
+    const v = await scenePlay(SCENES.update, { keep:true });
+    if (v === 'yes'){ await scenePlay(SCENES.updateYes, { cont:true, keep:true, auto:500 }); doUpdate(); return; }
+    if (v === 'no'){ await scenePlay(SCENES.updateNo, { cont:true }); updDeclined = true; updHide(); dlog('업데이트', '지금 버전으로 계속(장면)'); return; }
+    await sceneClose();
+  }
   updBand(`새 버전이 있어요 — ${parts.join(' · ')}. 지금 업데이트할까요?`, '업데이트', '지금 버전으로 계속');
   $('upd').classList.add('ask');
 }
@@ -77,6 +85,8 @@ function updAfterBoot(){
   const base = from || seen; if (!base) return;
   const names = { A:'본체', B:'보너스 B', C:'보너스 C' }, ch = [];
   for (const k of Object.keys(now)) if (base[k] && base[k] !== now[k]) ch.push(`${names[k] || k} ${base[k]} → ${now[k]}`);
+  /* v1.5.30 (B) 장면에서 '예'로 올린 본체 업데이트 — 띠 대신 사무실에서 세희가 바뀐 점을 설명하고 자료를 손본다(office.js updBrief) */
+  if (ch.length && from && from.A && from.A !== now.A && typeof updBrief === 'function'){ dlog('업데이트', '업데이트 끝 · ' + ch.join(' · ') + ' — 세희 설명으로'); updMode = 'done'; setTimeout(() => updBrief(from.A, now.A), 300); return; }
   if (ch.length){ dlog('업데이트', '업데이트 끝 · ' + ch.join(' · ')); updMode = 'done'; updBand(`업데이트 끝 — ${ch.join(' · ')}`, '확인'); setTimeout(() => { if (updMode === 'done') updHide(); }, 15000); return; }
   if (from){ dlog('업데이트', '눌렀는데 버전 그대로'); updMode = 'done';
     updBand('아직 새 버전이 다 올라오지 않았어요(올린 직후 1~2분은 이래요). 조금 뒤에 다시 물어볼게요', '확인');

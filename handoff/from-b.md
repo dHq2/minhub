@@ -3,6 +3,12 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 02:50 · 본체 v1.5.30 — 업데이트 묻기가 띠 → 게임 대화 장면 + 재사용 장면 js/scene.js · [보통] · 받는 쪽: 모두(특히 C — 업데이트 장치)
+- 무엇: update.js askUpdate 가 scenePlay(SCENES.update) 로 묻는다(예 → doUpdate, 구버전 → updDeclined). 장면을 못 열면 예전 updBand. updAfterBoot 는 '예'로 본체가 바뀐 경우(from.A ≠ now.A)만 띠 대신 office.js updBrief(from, to) — 사무실에서 세희(AI)가 CHANGELOG 그 사이 항목을 숨은 말(O.log 의 m.hide:true · upd)로 받아 설명·자료 손보기, ask_boss 는 O.updTour 동안 켜짐(ai.js 한 줄). renderLog·talkHtml 은 m.hide 를 안 그림.
+- 받는 쪽에게 필요한 일: 업데이트 띠 문구·단추를 테스트하던 코드는 장면에서 고르게(.vn-c 단추 '예'/'구버전으로 계속', .vn-box 누르면 채우기·다음). C 의 tests/tupd2.js 를 그렇게 바꿈(띠 단추 누르는 두 줄만). O.log 를 훑는 코드가 있으면 m.hide(보스가 쓴 말 아님)를 빼고 볼 것.
+- 장면은 다른 곳에도 쓸 수 있음: scenePlay([{ ex:'설명', text:'…', choices:[{ t:'예', v:'yes' }] }]) → 고른 값. 표정 이름은 scene.js VN_FACE.
+- 관련 파일·버전: 본체 v1.5.30 / tests/tvnupd v1 · tupd2(C) 손봄
+
 ## 2026-11-15 01:40 · 본체 v1.5.24 — 기록부「고치기」 없어짐(그 자리에서 고침) · 실 위 글씨 한두 단어 · [보통] · 받는 쪽: A · C
 - 무엇: js/people.js 인물 기록부가 한 가지 모습만 — 보이는 칸이 곧 입력란(class pd-in), 칠 때마다 pdCollect → 0.5초 뒤 pplSave·pplRender. #pdEdit 단추와 PD.edit 쓰임 없어짐(PD.edit 는 늘 false 로 남겨 둠). 닫을 때 pdTidy 가 빈 줄 치움. tieRows(p) 는 인자 하나, 줄마다 '둘 사이' 입력(data-tlb → t.label).
 - 판 글씨: relWord(s)·pplTag(p)·tieLabel(t) 새로. pplStrings 의 나와의 실 글씨 = pplTag(p)(p.tag 또는 rel 끝 낱말), 사람끼리 실 = 가운데 하나 tieLabel(t)(t.label → 없으면 aIs·bIs 를 줄여 '엄마·딸', 같으면 '친구'). aIs·bIs 데이터는 그대로 둠.
