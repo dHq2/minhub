@@ -70,3 +70,23 @@ async function introSave(r){
 }
 /* 앱을 다 연 뒤 — 업데이트 장면과 겹치지 않게 조금 기다렸다가 */
 async function introMaybe(){ try{ if (SYNC.observer) return; try{ if (localStorage.getItem('sehee.nointro') === '1') return; }catch(e){}   /* 자동 테스트는 끔(tests/_guard.js) */ if (await introNeeded()) setTimeout(() => { if (!VN.el) introPlay(false); }, 900); }catch(e){ dlog('오류', '프롤로그 확인 실패 · ' + e.message); } }
+
+/* ── 데이터 초기화 (11-15 A, 보스: '로그는 남고 그 방만 재시작 — 페르소나 새로 설정할 때') ──
+   이 계정의 기록(판·대화·보드·인간관계·사진·단서·보너스 b_/c_ 자료·처음 인사)을 지우고 앱을 다시 연다 → 처음 인사부터.
+   남는 것: 세희 머리 설정(키·모델 — 호칭만 지움), 판 칸·글꼴 같은 설정, AI 호출 기록(ailog)·사용량·개발 로그(dbg·금고). 서버에서도 같이 지운다(동기화 중이면).
+   이 기기 kv 'presync' 에 지운 것 한 벌(마지막 1번만) — 급하면 개발자가 되살릴 수 있게. */
+const RESET_KEEP = new Set(['ai', 'ailog', 'dbg', 'usage', 'settings', 'presync', 'job']);
+async function dataReset(){
+  if (SYNC.observer){ toast('관전석에서는 초기화할 수 없어요'); return; }
+  dlog('설정', '데이터 초기화 시작 · ' + (SYNC.user || '이 기기만'));
+  const dates = await allDates(), pans = await allPans();
+  const gone = (await kvKeys()).map(String).filter(k => !RESET_KEEP.has(k)), back = {};
+  for (const k of gone) back[k] = await kvGet(k);
+  await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:SYNC.user || '', pans, kv:back, why:'데이터 초기화' }, 'presync'));
+  await tx('pans', 'readwrite', s => s.clear());
+  await tx('kv', 'readwrite', s => { for (const k of gone) s.delete(k); });
+  if (AI.cfg.callMe){ delete AI.cfg.callMe; await saveAi(); }
+  if (SYNC.on && !SYNC.dead){ for (const d of dates) syncMark('pan:' + d); for (const k of gone) if (syncKey(k)) syncMark('kv:' + k); await syncFlush(); }
+  dlog('설정', `데이터 초기화 끝 · 판 ${dates.length}일 · 기록 ${gone.length}가지 지움`);
+  setTimeout(() => location.reload(), 300);
+}
