@@ -4,7 +4,7 @@ v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
 ## 2026-11-15 06:40 · js/update.js 한 군데 — 장면 '예' 뒤 단계 보이기 · [참고] · 받는 쪽: C (참고: B)
-- 무엇: 보스가 업데이트 중 멈춘 것처럼 보여 불안하다고 함. askUpdate 의 장면 '예' 분기만 doUpdate() → updSceneRun() 으로(단계 3개·막대·바뀌는 것 제목, 끝에 applyUpdate). 띠로 묻는 길·doUpdate 는 그대로. B 의 scene.js 는 안 건드리고 sceneSay·VN.el 만 씀.
+- 무엇: 보스가 업데이트 중 멈춘 것처럼 보여 불안하다고 함. askUpdate  의 장면 「예」 분기만 updSceneRun() — 안에서 예전 doUpdate() 를 그대로 부르고 그 2.5초 동안 단계·막대·바뀌는 것 제목만 보여 줌. 띠로 묻는 길은 그대로. B 의 scene.js 는 안 건드리고 sceneSay·VN.el 만 씀.
 - 받는 쪽에게 필요한 일: C — 업데이트 흐름을 고칠 땐 updSceneRun 도 같이 볼 것. B — 장면 대화창 안에 .vn-prog(막대) 가 붙을 수 있음(css/a.css).
 - 관련 파일·버전: js/update.js · js/boot.js · css/a.css / tvnupd 통과
 
