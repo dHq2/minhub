@@ -207,6 +207,7 @@ function seheeSays(r, src){
     else if (!isRep){ goView('office'); setTimeout(async () => { await dwOpen('board'); setTimeout(() => flashCard(id), 380); }, 260); }   /* 판도 서랍 — 보드 서랍으로 갈아 연다(v1.3.7) */
   } else if (PPL.changed){
     const id = PPL.changed; PPL.changed = null; CAL.changed = null;
+    if (!(curView() === 'office' && DW.open === 'people') && typeof seeMark === 'function'){ seeMark('people', id); return; }   /* 11-15 B: 사람 판을 보고 있을 때만 반짝, 아니면 「볼 거」 */
     if (curView() !== 'office') goView('office');
     setTimeout(async () => { if (DW.open !== 'people') await dwOpen('people'); else pplRender(); setTimeout(() => pplFlash(id), 380); }, curView() === 'office' ? 60 : 260);
   } else if (CAL.changed){

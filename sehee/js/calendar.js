@@ -45,6 +45,7 @@ async function calPageOpen(){
     document.body.classList.add('cal-on');
   }
   await loadChat(); renderCalTalk();
+  if (typeof seeFlush === 'function') setTimeout(() => seeFlush('cal'), 380);   /* 11-15 B: 볼 거 — 바뀐 날 반짝 */
 }
 const calOpen = calPageOpen;   /* 옛 이름 */
 function calPageClose(){
@@ -282,7 +283,7 @@ function renderCalTalk(){
 }
 /* 세희가 일하는 모습(js/work.js 가 부른다) — 날짜 있는 일만 */
 /* 11-15 B: 달력 화면으로 넘어가는 건 달력이 이미 열려 있거나, 보스가 '달력에 적어'라고 콕 집은 일(calendar:true)만 — 평소엔 판에만 적고 말로 알림 */
-const calItemOf = c => { const a = c.args || {}; if (!CAL.on && !a.calendar) return null; if (c.name === 'add_item') return a.due ? { due:a.due } : null;
+const calItemOf = c => { const a = c.args || {}; if (!CAL.on && !a.calendar && !a.show) return null; if (c.name === 'add_item') return a.due ? { due:a.due } : null;
   if (['update_item', 'complete_item', 'delete_item'].includes(c.name)){ const it = typeof findItem === 'function' ? findItem(String(a.id || '').replace(/^#/, '')) : null; const due = a.due || (it && it.due); return due ? { due, id:it && it.id } : null; }
   return null; };
 async function calWorkBefore(c){

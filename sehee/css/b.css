@@ -44,3 +44,16 @@
 #cal .cp-tray .er{width:52px;height:14px;top:-12px}
 #cal .cp-tray i.on{transform:translateY(-10px) rotate(-9deg);box-shadow:0 6px 8px -2px rgba(0,0,0,.45)}
 #cal .cp-tray .er.on{transform:translateY(-10px) rotate(6deg)}
+
+/* 11-15 · 볼 거 — 세희가 다른 화면에 적으면 그 탭·견출지에 작은 라벨이 살짝 튀어나왔다 잠시 뒤 들어감. js/work.js seeMark */
+#tabPan.see::after,#panTab.see::after,.dw-tabs button.see::after{content:attr(data-see);position:absolute;z-index:5;pointer-events:none;white-space:nowrap;writing-mode:horizontal-tb;letter-spacing:0;
+  font:700 .66rem/1 var(--f-body,sans-serif);color:#5a3b00;background:#ffe27a;border:1px solid rgba(0,0,0,.28);border-radius:3px;padding:3px 6px 3px 5px;box-shadow:1px 2px 3px rgba(0,0,0,.25);
+  animation:seeOut 9s ease both}
+#tabPan.see::after{top:-15px;right:calc(50% - 46px);transform:rotate(-4deg)}
+#panTab.see::after{left:calc(100% - 2px);top:6px;transform:rotate(5deg);transform-origin:left center}
+.dw-tabs button{position:relative}
+.dw-tabs button.see::after{right:calc(100% - 2px);top:8px;transform:rotate(-5deg);transform-origin:right center}
+.dw-tabs button.see,#panTab.see{filter:brightness(1.12) drop-shadow(0 0 5px rgba(255,214,90,.9))}
+#tabPan.see .ic{animation:seeBob 1.1s ease 3}
+@keyframes seeOut{0%{opacity:0;translate:6px 0}6%{opacity:1;translate:0 0}82%{opacity:1}100%{opacity:0;translate:4px 0}}
+@keyframes seeBob{50%{transform:translateY(-3px)}}

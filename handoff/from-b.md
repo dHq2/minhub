@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 08:20 · 세희가 화면 안 넘기고 「볼 거」 라벨 · [중요] · 받는 쪽: A·C
+- 무엇: 보스 — "질문만 했는데 세희가 혼자 휙휙 난리". 적는 건 자동 그대로, 화면 이동만 없앰. js/work.js — SEE·seeMark(k,id)·seeFlush(k)(k = pan·cal·people), workShow(c)(그 화면을 보고 있거나 args.show·calendar 일 때만 옮겨 보여 줌), 아니면 workAfter 에서 seeMark. 'view'·'people' 보너스 이벤트로 그 화면을 열면 반짝. js/office.js 끝 처리 PPL 갈래 — 사람 서랍을 보고 있을 때만 반짝, 아니면 seeMark('people'). js/ai.js add_item·update_item 에 show, 지침 「세희는 보고만 한다」 한 줄(답 먼저, 묻지 않은 제안·확인 질문 덧붙이지 않음). css/b.css 맨 아래 라벨.
+- 받는 쪽에게 필요한 일: A — '묻기보다 먼저 한다'(v1.5.40)는 그대로 살아 있음(적기는 자동). 새 지침 줄과 부딪히는 문구를 넣지 말 것. C — 새 화면 이동 코드를 넣을 땐 workShow·seeMark 를 거칠 것. 보고서 카드(make_card)는 보스가 시킨 거라 지금처럼 보드를 띄움.
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tsee v1 · twork 고침
+
 ## 2026-11-15 07:50 · 달력 사무 메모·화면 기억·달력 안 넘어감 · [중요] · 받는 쪽: A·C
 - 무엇: js/ai.js add_item·update_item 에 memo(달력용 9자 안팎 명사형)·calendar(보스가 '달력에 적어'라고 콕 집은 때만 true) 인자, 프롬프트 한 줄. CAL.changed 는 이제 calendar:true 이거나 달력이 열려 있을 때만 — 그 밖엔 CAL.focus 만(다음에 달력 열면 그 날 확대). itemBrief 에 memo. js/office.js 끝 처리의 CAL.changed 갈래는 calShowDate(d) 한 줄로. js/calendar.js calItemOf 는 달력이 안 열려 있고 calendar 가 없으면 null(작업 중계가 달력으로 안 감). calMemo(it)(memo 없으면 말투 끝 떼기), CAL_COL 150, CAL_ROWMIN 150, CAL.view(닫을 때 배율·위치·달 저장), calCenter(d).
 - 받는 쪽에게 필요한 일: A — 생성기·하루 생성에서 날짜 있는 일을 만들 때 memo 도 넣어 주면 달력이 깔끔함. C — 달력 칸 글은 calMemo(it) 로(it.text 직접 쓰지 말 것), 일정 바뀌면 CAL.focus 를 쓰면 다음 열 때 그 날로 감.

@@ -247,7 +247,9 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   메모(note)와 코멘트(comment)도 '~입니다·~했습니다·~것 같습니다' 말투(예: 업태식 실장님 요청으로 21만→23만입니다. 내일까지 답하기로 했습니다). 세희가 쓴 메모엔 앱이 세희 얼굴을 붙인다.
   한마디(set_line): 판을 새로 열거나 판을 고친 차례에는 반드시 마지막에 지금 판에 맞게 다시 쓴다(11-15 보스 — 한마디 없는 판은 안 됨. 빠뜨리면 앱이 한 번 더 시킨다). 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
   항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같습니다', '~입니다', '~부터 하시면 좋겠습니다'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
-- 날짜 있는 일을 적을 땐 달력용 memo(9자 안팎 명사형)도 같이 넣는다. 적은 뒤엔 "일정에 적어 뒀습니다"처럼 짧게만 말한다 — 달력 화면은 보스가 '달력에 적어'라고 콕 집은 한두 건에만 calendar:true.
+- 날짜 있는 일을 적을 땐 달력용 memo(9자 안팎 명사형)도 같이 넣는다.
+- 세희는 보고만 한다(11-15 보스): 일간보고서·달력·인간관계 판에 적는 건 지금처럼 알아서 하되, 화면은 앱이 「볼 거」 라벨로 알리니 말은 "일정에 적어 뒀습니다·할 일 두 개 적어 뒀어요"처럼 무엇을 적었는지 한 줄만. 보스가 물은 게 있으면 그 답이 먼저고, 묻지 않은 제안·확인 질문을 덧붙이지 않는다(정말 필요한 것 하나만).
+  보스가 콕 집어 '이거 적어·달력에 넣어'라고 한두 건만 시킬 때만 show:true(달력이면 calendar:true) — 그때만 그 화면으로 가서 적는 걸 보여 준다.
 - 판에 적었다·넣었다·붙였다고 말하려면 그 차례에 실제로 도구(add_item·update_item·make_card·add_person 등)를 불러야 한다. 도구를 안 불렀으면 '적겠다'고 말하지 말고 지금 부른다.
 - 화이트보드: 보고서·표·목록·비교·수치 정리·차트처럼 눈으로 볼 자료를 만들 일이면 make_card 로 화이트보드에 붙인다(판 항목과 별개, 지우라기 전엔 남는다).
   카드를 붙이면 앱이 화이트보드를 띄운다. 대답은 그 카드를 브리핑하듯 핵심 2~4문장. 표 내용을 말로 되풀이하지 않는다.
@@ -330,12 +332,14 @@ function TOOL_DEFS(){
       time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
       memo:{ type:'string', description:"달력 칸에 적을 사무적 메모(날짜 있는 일만). 9자 안팎, 시각은 빼고(time 에), 말투 없이 명사형 · 가운뎃점으로 이음. 예: 1층 이채린 만남 / 첫 출근 / 이사님 방 · 9시 반 / 등본 원본 제출" },
       calendar:{ type:'boolean', description:"보스가 콕 집어 '달력에 적어·달력에 넣어'라고 한 한두 건만 true — 그때만 달력 화면을 띄운다. 그 밖엔 넣지 않는다" },
+      show:{ type:'boolean', description:"보스가 콕 집어 '이거 적어'라고 한두 건만 시킬 때 true — 그 화면으로 가서 적는 걸 보여 준다. 자료 정리로 여러 개 적을 땐 넣지 않는다(앱이 「볼 거」로만 알림)" },
       tag:{ type:'string', description:"짧은 꼬리표. 예: '오늘 안에'. 없으면 넣지 않는다" },
       note:{ type:'string', description:"항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황) — '~입니다·~했습니다' 말투. 없으면 넣지 않는다" },
       comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안) — 판단·짐작·권유가 필요한 항목에만. 예: 답이 늦어지는 것 같습니다, 이것부터 하시면 좋겠습니다' } }, required:['section', 'text'] } },
     { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
       memo:{ type:'string', description:'달력 칸 사무 메모(9자 안팎, 명사형)를 이 글로. 빈 글이면 지움' }, calendar:{ type:'boolean', description:"보스가 '달력에서 고쳐·달력에 보여 줘'라고 콕 집은 때만 true" },
+      show:{ type:'boolean', description:"보스가 콕 집어 이 항목 하나를 고치라고 할 때만 true — 그 화면으로 가서 보여 준다" },
       tag:{ type:'string' }, section:{ type:'string', enum:ids },
       note:{ type:'string', description:"항목 아래 메모칸 전체를 이 글로 바꾼다('~입니다' 말투). 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움" },
       comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안)을 이 글로. 빈 글이면 지움' } }, required:['id'] } },
@@ -428,7 +432,7 @@ async function runToolCore(c){
       if (a.comment && String(a.comment).trim()) it.cm = String(a.comment).trim().slice(0, 60);
       if (it.due && a.memo && String(a.memo).trim()) it.memo = String(a.memo).trim().slice(0, 24);   /* 11-15 B: 달력용 사무 메모 */
       p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
-      if (it.due && !CAL.quiet){ CAL.focus = it.due; if (a.calendar || CAL.on) CAL.changed = it.due; }   /* 11-15 B: 평소엔 달력으로 안 넘어감 — 다음에 달력 열면 그 날을 확대 */
+      if (it.due && !CAL.quiet){ CAL.focus = it.due; if (a.calendar || (a.show && curView() !== 'pan') || CAL.on) CAL.changed = it.due; }   /* 11-15 B: 평소엔 달력으로 안 넘어감 — 다음에 달력 열면 그 날을 확대 */
       return { ok:true, item:itemBrief(it), ...clashOut(it, p) };
     }
     if (c.name === 'update_item'){

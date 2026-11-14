@@ -31,14 +31,15 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   for (let i = 0; i < 60; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; }
   console.log('warns:', await p.evaluate(() => DBG.lines.filter(l => l.c === '경고' || l.c === '오류').map(l => l.m).join(' || ')));
   console.log('done items:', await p.evaluate(() => S.pan.items.map(x => x.text).join(' / ')));
+  console.log('11-15 B 볼 거:', await p.evaluate(() => ({ view:curView(), see:SEE.pan.size, label:($('tabPan').classList.contains('see') || $('panTab').classList.contains('see')) ? ($('panTab').dataset.see || $('tabPan').dataset.see) : null })));
   await p.evaluate(() => rvClose());
   // ask mode
   await p.evaluate(async () => { AI.cfg.ask = 'need'; await saveAi(); });
   plan = [ tools([['ask_boss', { question:'보고서 받는 사람은 실장님인가요, 팀장님인가요?', options:['실장님', '팀장님'] }]]), bd => txt('[미소] 실장님 기준으로 할게요.') ];
   await p.locator('#sayText').fill('보고서 한 번 더 손봐줘'); await p.locator('#sayGo').click();
   await p.waitForTimeout(2200); await p.screenshot({ path:'/tmp/v130-ask.png' });
-  console.log('ask open:', await p.evaluate(() => !!WORK.ask), 'buttons:', await p.locator('#ptBub [data-ask]').count(), 'ask tool offered:', seen[seen.length - 1]);
-  await p.locator('#ptBub [data-ask="실장님"]').click();
+  console.log('ask open:', await p.evaluate(() => !!WORK.ask), 'buttons:', await p.locator('[data-ask]:visible').count(), 'ask tool offered:', seen[seen.length - 1]);
+  await p.locator('#btBub [data-ask="실장님"]').click();   /* 11-15 B: 보고서를 써서 보드 서랍이 열려 있으니 보드 대화 상자에서 */   /* 11-15 B: 판으로 안 넘어가니 보이는 대화 상자에서 */
   for (let i = 0; i < 40; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; }
   console.log('after answer:', await p.evaluate(() => O.log.slice(-3).map(m => m.who + ':' + (m.text || '').slice(0, 30)).join(' | ')));
   console.log('fab visible:', await p.evaluate(() => getComputedStyle($('fab')).display));
