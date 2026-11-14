@@ -22,18 +22,18 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   await p.waitForTimeout(800);
   console.log('pd open', await p.evaluate(() => $('pd').classList.contains('on') && PD.id));
   await p.waitForTimeout(3500);
-  await p.screenshot({ path:'v134-me.png' });
-  await p.evaluate(() => $('pdBody').scrollTop = 600); await p.waitForTimeout(200); await p.screenshot({ path:'v134-me2.png' });
+  await p.screenshot({ path:'/tmp/v134-me.png' });
+  await p.evaluate(() => $('pdBody').scrollTop = 600); await p.waitForTimeout(200); await p.screenshot({ path:'/tmp/v134-me2.png' });
   await p.screenshot({ path:'/tmp/v134-me-edit.png' });
   await p.locator('[data-pd="close"]').click();
   // person
   await p.evaluate(() => dwOpen('people')); await p.waitForTimeout(600);
-  await p.locator('#ppMap [data-pp]').first().click(); await p.waitForTimeout(500); await p.screenshot({ path:'v134-person.png' });
+  await p.locator('#ppMap [data-pp]').first().click(); await p.waitForTimeout(500); await p.screenshot({ path:'/tmp/v134-person.png' });
   // prompt context check
   plan = [txt('네.')]; await p.evaluate(() => $('pd').classList.remove('on'));
   await p.evaluate(() => dwClose()); await p.waitForTimeout(400);
   await p.locator('#sayText').fill('안녕'); await p.locator('#sayGo').click(); await p.waitForTimeout(1500);
   console.log('prompt has me:', lastSys.includes('나(보스 본인)'), lastSys.includes('[비공개]'));
-  await p.evaluate(() => goView('pan')); await p.waitForTimeout(500); await p.screenshot({ path:'v134-pantabs.png' });
+  await p.evaluate(() => goView('pan')); await p.waitForTimeout(500); await p.screenshot({ path:'/tmp/v134-pantabs.png' });
   await p.locator('#panDw [data-pdw="board"]').click(); await p.waitForTimeout(700); console.log('pan tab → ', await p.evaluate(() => [curView(), DW.open]));
   console.log('errors', errs); await b.close(); })();

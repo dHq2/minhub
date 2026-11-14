@@ -17,6 +17,6 @@ const { chromium } = require('playwright');
     await p.waitForTimeout(2500);
     const vis = await p.evaluate(async () => { const v = await kvGet('b_vis'); const last = v && Object.entries(v).sort((a, b) => b[0] - a[0])[0]; return last ? last[1].map(g => g.kind + ':' + g.title + ':' + g.items.length + ':' + g.items.map(i => i.title.slice(0, 18)).join('|')).join(' / ') : 'none'; });
     console.log(withOg ? 'with og →' : 'no og   →', vis);
-    await p.screenshot({ path:`vis-${withOg ? 'og' : 'noog'}.png` });
+    await p.screenshot({ path:`/tmp/vis-${withOg ? 'og' : 'noog'}.png` });
   }
   console.log('errors', errs); await b.close(); })();

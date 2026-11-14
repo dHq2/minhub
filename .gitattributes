@@ -1,2 +1,4 @@
 # v1.0 (2026-11-13, A) 변경 기록은 세 방이 맨 위에 동시에 덧붙인다 — 충돌 대신 둘 다 남긴다(순서만 보고 손봄)
 sehee/CHANGELOG.md merge=union
+# v1.1 (2026-11-15, A) 할일.md 도 — 세 방이 찜 줄을 같이 더해도 둘 다 남긴다
+handoff/할일.md merge=union

@@ -1,0 +1,4 @@
+- 작업 방식 v4(보스가 A 에게 총괄): 번호·CHANGELOG 는 tools/ship.sh 가 올리는 순간에 찍음(밀리면 저절로 다시). 방은 changes/(방).md 에 설명만.
+- tests/run.sh v2.0: 동시에 3줄(서버 쓰는 테스트는 한 줄), 실패는 혼자 다시 — 50개 약 6분(전엔 10분 40초).
+- 테스트 스크린샷 전부 /tmp(16개 고침), tests/*.png 63장 저장소에서 뺌(.gitignore).
+- 방별 스타일 파일 sehee/css/a.css·b.css·c.css(app.css 다음, SW 목록에도). 할일.md union 합치기.

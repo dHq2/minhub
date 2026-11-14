@@ -22,12 +22,12 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto('http://localhost:8765/sehee/#office'); await p.waitForTimeout(1700);
     await p.evaluate(async () => { AI.cfg.keys.anthropic = 'sk-ant-api03-' + 'K'.repeat(95); await saveAi(); await loadModels(); refreshBrain(); });
-    await p.screenshot({ path:`v092-${vp.tag}-office.png` });
+    await p.screenshot({ path:`/tmp/v092-${vp.tag}-office.png` });
     // drag the board tab leftwards halfway and hold
     const tb = await p.locator('#dwTabs button[data-dw="board"]').boundingBox();
     await p.mouse.move(tb.x + tb.width / 2, tb.y + tb.height / 2); await p.mouse.down();
     await p.mouse.move(tb.x - 120, tb.y + tb.height / 2, { steps:6 }); await p.waitForTimeout(100);
-    await p.screenshot({ path:`v092-${vp.tag}-dragging.png` });
+    await p.screenshot({ path:`/tmp/v092-${vp.tag}-dragging.png` });
     const mid = await p.evaluate(() => document.getElementById('dw-board').style.transform);
     await p.mouse.move(tb.x - 260, tb.y + tb.height / 2, { steps:4 }); await p.mouse.up(); await p.waitForTimeout(450);
     console.log(vp.tag, 'mid transform:', mid, '| after release open:', await p.evaluate(() => DW.open));
@@ -37,18 +37,18 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
     console.log(vp.tag, 'after head drag:', await p.evaluate(() => DW.open));
     // tap calendar tab
     await p.locator('#dwTabs button[data-dw="cal"]').click(); await p.waitForTimeout(450);
-    console.log(vp.tag, 'tap cal:', await p.evaluate(() => DW.open)); await p.screenshot({ path:`v092-${vp.tag}-cal.png` });
+    console.log(vp.tag, 'tap cal:', await p.evaluate(() => DW.open)); await p.screenshot({ path:`/tmp/v092-${vp.tag}-cal.png` });
     await p.locator('#dw-cal .dw-x').click(); await p.waitForTimeout(400);
     // Sehee adds dated item → calendar auto-opens
     await p.locator('#sayText').fill('18일 3시 학부모 상담 잡혔어'); await p.locator('#sayGo').click();
     await p.waitForFunction(() => !O.busy, null, { timeout:15000 }); await p.waitForTimeout(800);
     console.log(vp.tag, 'auto after item:', await p.evaluate(() => DW.open), await p.evaluate(() => CAL.month));
-    await p.screenshot({ path:`v092-${vp.tag}-autocal.png` });
+    await p.screenshot({ path:`/tmp/v092-${vp.tag}-autocal.png` });
     await p.locator('#sayText').fill('표로 만들어줘'); await p.locator('#sayGo').click();
     await p.waitForFunction(() => !O.busy, null, { timeout:15000 }); await p.waitForTimeout(900);
-    console.log(vp.tag, 'auto after card:', await p.evaluate(() => DW.open)); await p.screenshot({ path:`v092-${vp.tag}-autoboard.png` });
+    console.log(vp.tag, 'auto after card:', await p.evaluate(() => DW.open)); await p.screenshot({ path:`/tmp/v092-${vp.tag}-autoboard.png` });
     await p.evaluate(() => document.activeElement.blur()); await p.waitForTimeout(200);
-    await p.locator('#tabPan').click(); await p.waitForTimeout(300); await p.screenshot({ path:`v092-${vp.tag}-pan.png` });
+    await p.locator('#tabPan').click(); await p.waitForTimeout(300); await p.screenshot({ path:`/tmp/v092-${vp.tag}-pan.png` });
     console.log(vp.tag, 'errors', errs); await ctx.close();
   }
   await b.close();

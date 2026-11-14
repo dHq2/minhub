@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
   console.log('events', await p.evaluate(() => [...new Set(__ev)].join(',')), 'p1 pos', await p.evaluate(() => document.querySelector('[data-pp="p1"]').style.left), 'talk()', await p.evaluate(() => typeof SEHEE.talk('x').html));
   // b_ key sync mark
   await p.evaluate(() => { SYNC.dirty.clear(); return kvSet('b_test', { a:1 }); }); console.log('b_ marked', await p.evaluate(() => SYNC.dirty.has('kv:b_test')));
-  await p.screenshot({ path:'v135-people-bonus.png' });
+  await p.screenshot({ path:'/tmp/v135-people-bonus.png' });
   // tap a node → dossier (not broken by bonus drag)
   await p.locator('[data-pp="p2"]').tap(); await p.waitForTimeout(600); console.log('tap opens pd', await p.evaluate(() => PD.id));
   console.log('errors', errs); await b.close(); })();

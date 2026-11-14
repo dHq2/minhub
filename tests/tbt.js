@@ -12,7 +12,7 @@ const { chromium } = require('playwright');
       await dwOpen('board');
     });
     await p.waitForTimeout(700);
-    await p.screenshot({ path:`v123-${vp.tag}.png` });
+    await p.screenshot({ path:`/tmp/v123-${vp.tag}.png` });
     const sc = await p.evaluate(() => { const e = $('btBub'); return [e.scrollWidth, e.clientWidth]; });
     console.log(vp.tag, 'bub scrollW/clientW', sc, 'errors', errs); await ctx.close();
   }

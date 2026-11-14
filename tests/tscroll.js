@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
   const r = await p.locator('#main').boundingBox();
   if (mob){ const cdp = await ctx.newCDPSession(p); await cdp.send('Input.synthesizeScrollGesture', { x:200, y:500, yDistance:-300, speed:800 }); }
   else { await p.mouse.move(r.x + 150, r.y + 300); await p.mouse.wheel(0, 400); }
-  await p.waitForTimeout(600); await p.screenshot({ path:'v132-scroll-' + (mob ? 'm' : 'd') + '.png' }); console.log(mob ? 'm' : 'd', 'after', JSON.stringify(await st()));
+  await p.waitForTimeout(600); await p.screenshot({ path:'/tmp/v132-scroll-' + (mob ? 'm' : 'd') + '.png' }); console.log(mob ? 'm' : 'd', 'after', JSON.stringify(await st()));
   const el = await p.evaluate(({x, y}) => { const e = document.elementFromPoint(x, y); return e && (e.id || e.className); }, { x:r.x + 150, y:r.y + 300 }); console.log('under cursor', el);
   await ctx.close(); }
   await b.close(); })();

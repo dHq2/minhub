@@ -10,7 +10,7 @@ const APP = 'http://localhost:8765/sehee/';
   // A: phone
   const A = await open('A', { width:412, height:915 }, true);
   await A.goto(APP + '?sync=http://localhost:8787#office'); await A.waitForSelector('#pinVeil');
-  await A.screenshot({ path:'v10-pin.png' });
+  await A.screenshot({ path:'/tmp/v10-pin.png' });
   await pin(A, '1111'); await A.waitForTimeout(500); console.log('A wrong:', await A.locator('#pinM').textContent());
   await pin(A, '2580'); await A.waitForSelector('#pinVeil', { state:'detached' }); await A.waitForTimeout(1500);
   console.log('A logged:', await A.evaluate(() => [SYNC.user, SYNC.on, SYNC.device]), '| badge:', await A.locator('#cloud').textContent());
@@ -23,11 +23,11 @@ const APP = 'http://localhost:8765/sehee/';
   await B.goto(APP + '?sync=http://localhost:8787'); await B.waitForSelector('#pinVeil');
   await pin(B, '2580'); await B.waitForSelector('#pinVeil', { state:'detached' }); await B.waitForTimeout(1800);
   console.log('B sees:', await B.evaluate(() => S.pan.items.map(i => i.text)));
-  await B.screenshot({ path:'v10-B.png' });
+  await B.screenshot({ path:'/tmp/v10-B.png' });
   // A notices takeover when it comes back to the screen
   await A.evaluate(() => document.dispatchEvent(new Event('visibilitychange'))); await A.waitForTimeout(800);
   console.log('A dead:', await A.evaluate(() => SYNC.dead), '|', await A.locator('#deadVeil b').textContent().catch(() => '-'));
-  await A.screenshot({ path:'v10-A-dead.png' });
+  await A.screenshot({ path:'/tmp/v10-A-dead.png' });
   // B edits
   await B.locator('.add input').first().fill('B컴퓨터에서 적은 일'); await B.locator('.add input').first().press('Enter'); await B.evaluate(() => kvSet('b_ppPos', { p1:[0.2, 0.3] })); await B.waitForTimeout(2500);
   // A reopens → PIN with note → pulls

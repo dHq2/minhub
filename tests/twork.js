@@ -27,7 +27,7 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
     txt('[미소] 판 고치고 보고서 올렸어요. 확인할 것: 계정 처리 방식은 누가 정하나요?') ];
   await p.locator('#sayText').fill('오늘 거 정리해서 판 고치고 보고서도 써줘'); await p.locator('#sayGo').click();
   const shots = [[700, 'w1-think'], [1500, 'w2-pan'], [2600, 'w3-type'], [5200, 'w4-report'], [7200, 'w5-report'], [8600, 'w6-report']]; let t = 0;
-  for (const [at, name] of shots){ await p.waitForTimeout(at - t); t = at; await p.screenshot({ path:`v130-${name}.png` }); console.log(name, 'view', await p.evaluate(() => curView()), 'rv', await p.evaluate(() => !!RV.id)); }
+  for (const [at, name] of shots){ await p.waitForTimeout(at - t); t = at; await p.screenshot({ path:`/tmp/v130-${name}.png` }); console.log(name, 'view', await p.evaluate(() => curView()), 'rv', await p.evaluate(() => !!RV.id)); }
   for (let i = 0; i < 60; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; }
   console.log('warns:', await p.evaluate(() => DBG.lines.filter(l => l.c === '경고' || l.c === '오류').map(l => l.m).join(' || ')));
   console.log('done items:', await p.evaluate(() => S.pan.items.map(x => x.text).join(' / ')));
@@ -36,7 +36,7 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   await p.evaluate(async () => { AI.cfg.ask = 'need'; await saveAi(); });
   plan = [ tools([['ask_boss', { question:'보고서 받는 사람은 실장님인가요, 팀장님인가요?', options:['실장님', '팀장님'] }]]), bd => txt('[미소] 실장님 기준으로 할게요.') ];
   await p.locator('#sayText').fill('보고서 한 번 더 손봐줘'); await p.locator('#sayGo').click();
-  await p.waitForTimeout(2200); await p.screenshot({ path:'v130-ask.png' });
+  await p.waitForTimeout(2200); await p.screenshot({ path:'/tmp/v130-ask.png' });
   console.log('ask open:', await p.evaluate(() => !!WORK.ask), 'buttons:', await p.locator('#ptBub [data-ask]').count(), 'ask tool offered:', seen[seen.length - 1]);
   await p.locator('#ptBub [data-ask="실장님"]').click();
   for (let i = 0; i < 40; i++){ await p.waitForTimeout(250); if (!(await p.evaluate(() => O.busy))) break; }

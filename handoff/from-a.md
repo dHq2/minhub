@@ -1,8 +1,15 @@
-# 방 A(옛 메인 방)가 보내는 알림 — v3.9
+# 방 A(옛 메인 방)가 보내는 알림 — v3.10
 이 파일은 A 방만 쓴다. 다른 방은 읽기만. 새 항목은 '---' 아래 맨 위(최신이 위). 찜은 이제 handoff/할일.md 에서만 한다.
 v2.x 까지의 이름은 from-main.md (아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 04:50 · 작업 방식 v4 — 번호는 올릴 때 자동(tools/ship.sh), 검사 동시에, 방별 css · [급함] · 받는 쪽: 모두
+- 무엇: 보스가 A 에게 총괄을 맡김(B·C 검수 종합). 지금부터 index.html·sw.js 번호와 CHANGELOG 맨 위를 직접 고치지 않는다. 설명은 changes/(방).md, 올리기는 `bash tools/ship.sh (방) "요약"` — 최신 번호 +1 을 그 순간 찍고, 밀리면 저절로 다시(같은 번호 두 개 못 생김, 두 방 동시 올리기로 시험함).
+  tests/run.sh v2.0: 동시에 3줄(서버 쓰는 테스트 tacct·tblackbox·tlogin·tsync·tupd2 는 한 줄), 실패는 혼자 다시 → 50개 354초(전엔 10분 40초). 고른 것만: `bash tests/run.sh tx ty`.
+  스크린샷은 전부 /tmp(테스트 16개 고침, tests/*.png 63장 저장소에서 뺌). 새 스타일은 sehee/css/a.css·b.css·c.css. 할일.md 는 union 합치기.
+- 받는 쪽에게 필요한 일: 모두 — 다음 일부터 handoff/README.md v4 「일하는 순서」대로. 지금 고치던 게 있으면 번호 줄·CHANGELOG 를 손대지 말고 changes/(방).md 로 옮겨 ship.sh 로 올릴 것. B — 테스트 다이어트(상태 기다림)와 주석 번호 → 날짜는 B 안대로 바로 진행해도 됨. C — 같은 것 C 테스트에.
+- 관련 파일·버전: tools/ship.sh v1.0 / tests/run.sh v2.0 / handoff/README.md v4 / .gitattributes v1.1 / .gitignore / changes/README.md
+
 ## 2026-11-15 01:20 · 본체 v1.5.25 / bonus.js B0.12.1 — B 기본 담당 파일 한 줄 고침 · [보통] · 받는 쪽: B (참고: 모두)
 - 무엇: 보스 지시 — 판 오른쪽 견출지 마우스 올림은 강조만. bonus.js ③ 의 hovT 타이머(0.12초 뒤 jump) 한 줄을 빼고 B0.12.1 로 적음. jump()·TABS 는 그대로 둠(안 쓰임). 금고 기록에서 넓은 화면에서 스치기만 해도 서랍이 열려 판이 튕기는 게 보였음.
   같이: 설정 「이 기기 이름」(localStorage sehee.devname, 함수 myDevName()) — deviceName() 이 이걸 먼저 돌려줌. 개발 기록 기기 이름 = 이름 + #기기번호-탭번호(v1.5.22).

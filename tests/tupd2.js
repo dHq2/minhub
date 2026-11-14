@@ -10,7 +10,7 @@ const bump = v => { for (const f of ['sw.js', 'index.html']){ let s = fs.readFil
   bump('v1.4.0'); bump('v1.4.1'); bump('v1.4.2');
   await p.reload(); await p.waitForTimeout(4000);   // launch: should ask, not auto
   console.log('launch: ver', await ver(), '| band:', await band());
-  await p.screenshot({ path:'v139-upd.png' }); await vnPick('구버전'); await p.waitForTimeout(2600); await p.locator('.vn-box').click(); await p.waitForTimeout(600); console.log('declined: ver', await ver(), '| band:', await band());
+  await p.screenshot({ path:'/tmp/v139-upd.png' }); await vnPick('구버전'); await p.waitForTimeout(2600); await p.locator('.vn-box').click(); await p.waitForTimeout(600); console.log('declined: ver', await ver(), '| band:', await band());
   await p.reload(); await p.waitForTimeout(3000); console.log('next launch: ver', await ver(), '| band:', await band());
   await vnPick('예'); await p.waitForTimeout(7000); console.log('after 업데이트 once: ver', await ver(), '| band:', await band());
   console.log('errors', errs); await b.close(); })();

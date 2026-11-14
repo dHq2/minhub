@@ -32,25 +32,25 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
     await p.locator('#sayText').focus(); await p.waitForTimeout(300);
     const tabsVis = await p.evaluate(() => { const r = document.getElementById('dwTabs').getBoundingClientRect(); const pt = document.getElementById('panTab').getBoundingClientRect(); return { tabs: r.width > 0 && getComputedStyle(document.getElementById('dwTabs')).display !== 'none', pan: pt.width > 0, typing: document.body.classList.contains('typing') }; });
     console.log(vp.tag, 'typing tabs', JSON.stringify(tabsVis));
-    await p.screenshot({ path:`v12-${vp.tag}-typing.png` });
+    await p.screenshot({ path:`/tmp/v12-${vp.tag}-typing.png` });
     await say('김실장님 인간관계판에 넣어줘');
     console.log(vp.tag, 'after 1:', await p.evaluate(() => [DW.open, PPL.list.length, document.querySelectorAll('#ppMap .pp-node').length]));
     await say('이강사도. 실장님이랑 아는 사이'); await say('친구 준호'); await say('엄마도');
     console.log(vp.tag, 'after 4:', await p.evaluate(() => [DW.open, PPL.list.map(x => x.name + '/' + x.group).join(','), document.querySelectorAll('#ppMap .pp-node').length, document.querySelectorAll('#ppMap .pp-str').length, document.querySelectorAll('#ppMap .pp-lk').length]));
-    await p.screenshot({ path:`v12-${vp.tag}-board.png` });
+    await p.screenshot({ path:`/tmp/v12-${vp.tag}-board.png` });
     // manual add
     await p.locator('#ppAdd').click(); await p.waitForTimeout(400);
-    await p.screenshot({ path:`v12-${vp.tag}-addsheet.png` });
+    await p.screenshot({ path:`/tmp/v12-${vp.tag}-addsheet.png` });
     const inputs = await p.evaluate(() => [...document.querySelectorAll('.sheet input, .sheet select, .sheet textarea')].map(e => e.id || e.name || e.tagName).join(','));
     console.log(vp.tag, 'add sheet fields:', inputs);
     await p.locator('#ppNewName').fill('박조교'); await p.locator('#ppNewRel').fill('2층 조교');
     await p.locator('[data-pact="add"]').click(); await p.waitForTimeout(600);
     console.log(vp.tag, 'manual add:', await p.evaluate(() => PPL.list.map(x => x.name).join(',')));
-    await p.screenshot({ path:`v12-${vp.tag}-board2.png` });
+    await p.screenshot({ path:`/tmp/v12-${vp.tag}-board2.png` });
     await p.locator('[data-pp]').first().click(); await p.waitForTimeout(500);
-    await p.screenshot({ path:`v12-${vp.tag}-sheet.png` });
+    await p.screenshot({ path:`/tmp/v12-${vp.tag}-sheet.png` });
     await p.evaluate(() => { closeSheet(); pdClose(); }); await p.waitForTimeout(300);
-    await p.locator('#ppCenter').click(); await p.waitForTimeout(300); await p.screenshot({ path:`v12-${vp.tag}-big.png` });
+    await p.locator('#ppCenter').click(); await p.waitForTimeout(300); await p.screenshot({ path:`/tmp/v12-${vp.tag}-big.png` });
     await p.evaluate(() => dwClose()); await p.waitForTimeout(500);
     // fake write warning
     await say('마이크 충전 적어줘');

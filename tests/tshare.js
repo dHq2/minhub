@@ -23,7 +23,7 @@ const { chromium } = require('playwright');
   // text-only share (old GET style still works)
   await p.goto('http://localhost:8765/sehee/?text=' + encodeURIComponent('내일 3시 상담')); await p.waitForTimeout(2500);
   console.log('GET share → inbox:', await p.evaluate(() => S.pan.inbox.map(x => x.text).slice(-1)[0]));
-  await p.screenshot({ path:'v07-share.png' });
+  await p.screenshot({ path:'/tmp/v07-share.png' });
   console.log('errors', errs);
   await b.close();
 })();
