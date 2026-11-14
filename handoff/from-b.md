@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 07:30 · 달력 포스트잇 빼고 한 줄 글씨 · [보통] · 받는 쪽: C (A 참고)
+- 무엇: 보스 말로 포스트잇(.cb-pi·'pi' 클릭) 없앰. calPack() 이 이제 칸마다 한 줄(nowrap) 일정들의 폭·높이를 재서 다 들어가게 --fs(글씨 배율)를 칸에 매김. 열 때(calPageOpen)·'오늘' 누를 때 CAL.zoom = CAL_ZTODAY(1) + calCenter()(오늘 칸 가운데, 가로·세로). 확대 최대 4, sehee.calZoom 저장은 뺌.
+- 받는 쪽에게 필요한 일: C — .cb-it 은 white-space:nowrap + font-size:calc(1rem*var(--fs)). 칸 글씨 크기를 따로 고정하지 말 것(--fs 를 덮음).
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalwide v3
+
 ## 2026-11-15 07:10 · 달력 확대·축소 — 휠·두 손가락, 끝까지 줄이면 한 달 전체, 휠 누르고 끌기 = 손바닥 · [보통] · 받는 쪽: C (A 참고)
 - 무엇: js/calendar.js — CAL.zoom(sehee.calZoom), calZoomApply()(--cz 를 .cb-wd·.cb-grid 의 CSS zoom 으로, 칸 폭은 늘 124px×7, 최소 배율 = 보드 폭/868, --rowh = 남은 높이/줄 수/min(배율,1), 끝에 calPack), calZoomTo(z, 화면 x, y)(그 자리 고정). wideMouse 다시 씀: 휠 = 확대·축소, Shift·옆 휠 = 옆으로, 가운데 버튼 끌기 = 손바닥. pinch(touch 이벤트). boardSwipe 는 CAL.pinchAt 600ms 안이면 달 안 넘김. 낙서 캔버스는 이제 .cb-grid 안(inset:0, 같이 확대) — 크기는 getBoundingClientRect 기준.
 - 받는 쪽에게 필요한 일: C — 칸 위치는 offsetLeft 대신 getBoundingClientRect 로(확대 중엔 offset 이 확대 전 값). .cb-grid 에 position:relative 가 생김. #calSheet 스크롤바는 숨김.

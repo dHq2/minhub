@@ -30,6 +30,7 @@ async function calPageOpen(){
   const pg = $('calPage');
   if (CAL.year === null || CAL.month === null){ const t = parseYmd(S.today); CAL.year = t.getFullYear(); CAL.month = t.getMonth(); }
   if (!calPreloaded){ calPreloaded = true; [...new Set(Object.values(CAL_VN).concat('vn-memo'))].forEach(n => { const i = new Image(); i.src = `art/${n}.webp`; }); }
+  if (!CAL.on) CAL.zoom = CAL_ZTODAY;   /* 11-15 B: 열 때는 늘 오늘 쪽을 확대해서 */
   await calLoad(); calMonth(CAL.month, true);
   if (!CAL.on){
     CAL.on = true; dlog('화면', '달력 쪽 열기');
@@ -65,7 +66,7 @@ function calMonth(m, quiet, dir){
       const list = CAL.byDate[d] || [], wd = i % 7;
       return `<div class="cb-c${d === S.today ? ' today' : ''}${d === CAL.day ? ' sel' : ''}${wd === 0 ? ' sun' : wd === 6 ? ' sat' : ''}" data-cal="d" data-d="${d}"><span class="n">${+d.slice(8)}</span>${
         list.map(chip).join('')}</div>`; }).join('')}</div>
-    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 확대·축소 · 밀기 · 날짜·포스트잇 누르면 쪽지</p>`;
+    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 확대·축소 · 밀기 · 날짜 누르면 쪽지</p>`;
   calWide(dir);
   if (dir){ sh.classList.remove('wipeL', 'wipeR'); void sh.offsetWidth; sh.classList.add(dir < 0 ? 'wipeL' : 'wipeR'); }
   if (CAL.day && !CAL.day.startsWith(`${y}-${pad(m + 1)}`)) calDay(null);
@@ -81,18 +82,21 @@ function calWide(dir){
   if (!calFontReady){ calFontReady = true; if (!document.querySelector('link[data-cal-font]')){ const l = document.createElement('link'); l.rel = 'stylesheet'; l.dataset.calFont = '1'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); } }
   const sh = $('calSheet'); if (!sh) return;
   const fit = () => { const w = sh.clientWidth; if (!w) return; calZoomApply();
-    const t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'), sr = sh.getBoundingClientRect();
-    if (dir === undefined || dir === 0 || !CAL.wideAt){ if (t){ const r = t.getBoundingClientRect(); sh.scrollLeft = Math.max(0, r.left - sr.left + sh.scrollLeft + r.width / 2 - w / 2); } }
-    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); };
+    if (dir === undefined || dir === 0 || !CAL.wideAt) calCenter(); else { sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; sh.scrollTop = 0; } CAL.wideAt = Date.now(); };
   fit(); requestAnimationFrame(fit);
   if (document.fonts && !document.fonts.check('700 16px Gaegu')) document.fonts.load('700 16px Gaegu').then(() => { if (CAL.on) calPack(); }).catch(() => {});
 }
 /* ── 11-15 B: 확대·축소 — 컴퓨터는 휠(커서 자리 기준), 폰은 두 손가락 벌리기·오므리기. 제일 줄이면 한 달 전체가 한 화면.
    CSS zoom 으로 요일 줄·칸·포스트잇·낙서가 같이 커지고 작아짐. 줄일 땐 칸이 세로로 화면을 채워(배율만큼 칸이 길어짐) 포스트잇이 줄어듦.
-   CAL.zoom 은 이 기기에 남김(sehee.calZoom) ── */
-CAL.zoom = +(localStorage.getItem('sehee.calZoom') || 1) || 1;
+   열 때·'오늘'을 누를 때는 오늘 쪽 확대(CAL_ZTODAY)로 돌아감 ── */
+const CAL_ZTODAY = 1;   /* 오늘 쪽 확대 — 폰 한 화면에 사흘쯤 */
+CAL.zoom = CAL_ZTODAY;
+/* 오늘(그 달이 아니면 1일) 칸을 보드 가운데로 */
+function calCenter(){ const sh = $('calSheet'), t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (!t) return;
+  const sr = sh.getBoundingClientRect(), r = t.getBoundingClientRect();
+  sh.scrollLeft = Math.max(0, r.left - sr.left + sh.scrollLeft + r.width / 2 - sr.width / 2); sh.scrollTop = Math.max(0, r.top - sr.top + sh.scrollTop + r.height / 2 - sr.height / 2); }
 const calZMin = () => { const sh = $('calSheet'); return Math.min(1, (sh.clientWidth - 2) / (CAL_COL * 7)); };
-const calZMax = 2.2;
+const calZMax = 4;   /* 한 줄로 줄인 글씨도 확대하면 읽히게 */
 function calZoomApply(){
   const sh = $('calSheet'); const w = sh.clientWidth; if (!w) return;
   const zmin = Math.max(.2, (w - 2) / (CAL_COL * 7)), z = Math.max(zmin, Math.min(calZMax, CAL.zoom));
@@ -108,7 +112,7 @@ function calZoomTo(z, cx, cy){   /* cx·cy = 화면 좌표(그 자리를 고정)
   const sr = sh.getBoundingClientRect(), gr = g.getBoundingClientRect();
   if (cx === undefined){ cx = sr.left + sr.width / 2; cy = sr.top + sr.height / 2; }
   const fx = (cx - gr.left) / gr.width, fy = (cy - gr.top) / gr.height;
-  CAL.zoom = Math.max(calZMin(), Math.min(calZMax, z)); try { localStorage.setItem('sehee.calZoom', String(+CAL.zoom.toFixed(3))); } catch {}
+  CAL.zoom = Math.max(calZMin(), Math.min(calZMax, z));
   calZoomApply();
   const g2 = sh.querySelector('.cb-grid').getBoundingClientRect();
   sh.scrollLeft += (g2.left + fx * g2.width) - cx; sh.scrollTop += (g2.top + fy * g2.height) - cy;
@@ -139,20 +143,19 @@ window.addEventListener('resize', () => { if (CAL.on) calWide(); });
   sh.addEventListener('touchmove', e => { if (!p || e.touches.length !== 2) return; if (e.cancelable) e.preventDefault(); const [x, y] = mid(e.touches); calZoomTo(p.z * dist(e.touches) / p.d, x, y); CAL.swiped = CAL.pinchAt = Date.now(); }, { passive:false });
   sh.addEventListener('touchend', e => { if (p || e.touches.length) CAL.pinchAt = CAL.swiped = Date.now(); if (p && e.touches.length < 2) p = null; });
 })();
-/* 11-15 B: 칸은 실제 보드처럼 모두 같은 높이로 그어 두고, 칸에 다 안 들어가는 일정은 노란 포스트잇에 적어 그 칸에 붙인다.
-   포스트잇은 옆(아래) 칸을 살짝 덮을 수 있음 — 누르면 앞으로 나오고, 앞에 나온 걸 한 번 더 누르면 그날 쪽지. 글은 포스트잇에서도 다 보임 */
-const calPiTilt = d => [-2.4, 1.8, -1.2, 2.6, -2.8, 1.1, -1.7][+d.slice(8) % 7];
+/* 11-15 B: 칸은 모두 같은 높이(그어 둔 칸). 일정은 한 줄씩 대충 적고, 칸에 다 안 들어가면 그 칸 글씨를 통째로 줄인다(자르지 않음) —
+   자세히는 확대해서 본다. 열 때는 오늘 쪽이 확대돼 있음. (포스트잇 방식은 보스 말로 뺌) */
 function calPack(){
   const sh = $('calSheet'); if (!sh) return;
   sh.querySelectorAll('.cb-grid > .cb-c[data-d]').forEach(c => {
-    const old = c.querySelector(':scope > .cb-pi');
-    if (old){ old.querySelectorAll('.cb-it').forEach(it => c.appendChild(it)); old.remove(); c.classList.remove('has-pi', 'up'); }
-    const its = [...c.querySelectorAll(':scope > .cb-it')]; if (!its.length) return;
-    const lim = c.clientHeight - 3, k = its.findIndex(it => it.offsetTop + it.offsetHeight > lim); if (k < 0) return;
-    const pi = document.createElement('div'); pi.className = 'cb-pi'; pi.dataset.cal = 'pi';
-    pi.style.top = Math.max(its[k].offsetTop - 2, 18) + 'px'; pi.style.setProperty('--prot', calPiTilt(c.dataset.d) + 'deg');
-    its.slice(k).forEach(it => pi.appendChild(it)); c.appendChild(pi); c.classList.add('has-pi');
-  });  calInk();
+    const its = [...c.querySelectorAll(':scope > .cb-it')]; c.style.removeProperty('--fs'); if (!its.length) return;
+    const cs = getComputedStyle(c), n = c.querySelector(':scope > .n');
+    const aw = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 2;
+    const ah = c.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - (n ? n.offsetHeight : 0) - 2;
+    const gap = parseFloat(cs.rowGap) || 0, w = Math.max(...its.map(it => it.scrollWidth)), h = its.reduce((a, it) => a + it.offsetHeight, 0) + gap * its.length;
+    const k = Math.min(1, aw / w, ah / h); if (k < 1) c.style.setProperty('--fs', Math.max(.05, k * .98).toFixed(3));
+  });
+  calInk();
 }
 /* ── 11-15 B: 칠판 낙서 — 받침대의 마커(빨강·파랑·검정)를 들면 손가락·마우스로 칠판에 그리고, 지우개로 문질러 지운다.
    다시 누르면 내려놓기(그때부터 다시 밀어 보기). 지우개 두 번 톡 = 이달 낙서 싹 지우기(되돌리기 있음). 일정 글씨는 안 지워짐.
@@ -293,10 +296,7 @@ $('cal').addEventListener('click', e => {
   const b = e.target.closest('[data-cal]'); if (!b) return;
   const a = b.dataset.cal;
   if (a === 'pm' || a === 'nm') calGo(a === 'pm' ? -1 : 1);
-  else if (a === 'today'){ const t = parseYmd(S.today), dir = (t.getFullYear() - CAL.year) * 12 + t.getMonth() - CAL.month; CAL.year = t.getFullYear(); calMonth(t.getMonth(), true, Math.sign(dir)); calFlash(S.today); }
-  else if (a === 'pi'){ if (Date.now() - CAL.swiped < 400) return; const c = b.closest('.cb-c');   /* 11-15 B: 포스트잇 — 처음 누르면 앞으로, 앞에 나온 걸 또 누르면 그날 쪽지 */
-    if (!c.classList.contains('up')){ document.querySelectorAll('#calSheet .cb-c.up').forEach(x => x.classList.remove('up')); c.classList.add('up'); }
-    else calDay(c.dataset.d); }
+  else if (a === 'today'){ const t = parseYmd(S.today), dir = (t.getFullYear() - CAL.year) * 12 + t.getMonth() - CAL.month; CAL.year = t.getFullYear(); CAL.zoom = CAL_ZTODAY; calMonth(t.getMonth(), true, Math.sign(dir)); calCenter(); calFlash(S.today); }
   else if (a === 'd'){ if (Date.now() - CAL.swiped < 400) return; calDay(CAL.day === b.dataset.d ? null : b.dataset.d); }
   else if (a === 'dclose') calDay(null);
   else if (a === 'add') calAddItem();

@@ -1,5 +1,5 @@
 /* tcalzoom v1 (2026-11-15, B) — 달력 확대·축소: 컴퓨터는 휠(커서 자리 고정), 끝까지 줄이면 한 달 전체가 한 화면(옆·아래로 안 넘침, 글 안 잘림),
-   휠 누르고 끌기(가운데 버튼) = 손바닥, 낙서는 확대해도 같은 칸에, 배율은 다시 열어도 남음. 폰은 두 손가락 벌리기·오므리기. 스크롤바 안 보임. 가짜 일정만 */
+   휠 누르고 끌기(가운데 버튼) = 손바닥, 낙서는 확대해도 같은 칸에, 다시 열면 오늘 쪽 확대(배율 1)로. 폰은 두 손가락 벌리기·오므리기. 스크롤바 안 보임. 가짜 일정만 */
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch();
   for (const [tag, opt] of [['d', { viewport:{ width:1366, height:860 } }], ['m', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }]]){
@@ -18,7 +18,7 @@ const { chromium } = require('playwright');
     const S = () => p.evaluate(() => { const sh = $('calSheet'), sr = sh.getBoundingClientRect(), g = sh.querySelector('.cb-grid').getBoundingClientRect(), its = [...sh.querySelectorAll('.cb-it')];
       const cut = its.filter(it => { const c = (it.closest('.cb-pi') || it.closest('.cb-c')).getBoundingClientRect(), r = it.getBoundingClientRect(); return r.bottom > c.bottom + 2 || r.right > c.right + 3; }).length;
       return { z:+CAL.zoom.toFixed(3), cz:+getComputedStyle(sh).getPropertyValue('--cz'), fitsW:g.width <= sr.width + 2 && sh.scrollWidth <= sh.clientWidth + 2, fitsH:sh.scrollHeight <= sh.clientHeight + 2,
-        gw:Math.round(g.width), gh:Math.round(g.height), sw:Math.round(sr.width), x:Math.round(sh.scrollLeft), y:Math.round(sh.scrollTop), cut, chips:its.length, pis:sh.querySelectorAll('.cb-pi').length,
+        gw:Math.round(g.width), gh:Math.round(g.height), sw:Math.round(sr.width), x:Math.round(sh.scrollLeft), y:Math.round(sh.scrollTop), cut, chips:its.length, fs19:+(sh.querySelector('.cb-c[data-d$="-19"]').style.getPropertyValue('--fs') || 1),
         bar:sh.offsetWidth - sh.clientWidth, saved:localStorage.getItem('sehee.calZoom') }; });
     const at = (fx, fy) => p.evaluate(([fx, fy]) => { const sh = $('calSheet'), r = sh.getBoundingClientRect(), x = r.left + r.width * fx, y = r.top + r.height * fy, e = document.elementFromPoint(x, y), c = e && e.closest('.cb-c'); return c ? c.dataset.d : null; }, [fx, fy]);
     const dot = () => p.evaluate(() => { const cv = $('calSheet').querySelector('.cb-ink'), r = cv.getBoundingClientRect(), d = cv.width / r.width, x = cv.getContext('2d');
@@ -31,12 +31,13 @@ const { chromium } = require('playwright');
       for (let i = 0; i < 14; i++){ await p.mouse.move(cx, cy); await p.mouse.wheel(0, 120); await p.waitForTimeout(40); }
       await p.waitForTimeout(200); R.min = { ...(await S()), dot:await dot() }; await p.screenshot({ path:`/tmp/vcalzoom-${tag}-min.png` });
       const before = await at(.5, .45);
-      for (let i = 0; i < 9; i++){ await p.mouse.move(cx, cy); await p.mouse.wheel(0, -120); await p.waitForTimeout(40); }
+      for (let i = 0; i < 16; i++){ await p.mouse.move(cx, cy); await p.mouse.wheel(0, -120); await p.waitForTimeout(40); }
       await p.waitForTimeout(200); R.zin = { ...(await S()), sameUnder:before === await at(.5, .45), under:before, dot:await dot() }; await p.screenshot({ path:`/tmp/vcalzoom-${tag}-in.png` });
       const x0 = (await S()).x; await p.mouse.move(cx, cy); await p.mouse.down({ button:'middle' }); await p.mouse.move(cx - 160, cy - 40, { steps:8 }); await p.mouse.up({ button:'middle' }); await p.waitForTimeout(150);
       R.midPan = { moved:(await S()).x - x0, note:await p.evaluate(() => $('calDay').classList.contains('on')), month:await p.evaluate(() => CAL.month === parseYmd(S.today).getMonth()) };
       await p.keyboard.down('Shift'); const x1 = (await S()).x; await p.mouse.wheel(0, 200); await p.keyboard.up('Shift'); await p.waitForTimeout(150); R.shiftWheel = (await S()).x - x1;
-      const z1 = (await S()).z; await open(); R.reopen = { z:(await S()).z, was:z1 };
+      const z1 = (await S()).z; await p.evaluate(() => calPageClose()); await p.waitForTimeout(450); await p.evaluate(() => calPageOpen()); await p.waitForTimeout(500);
+      R.reopen = { z:(await S()).z, was:z1, todayIn:await p.evaluate(() => { const sh = $('calSheet'), sr = sh.getBoundingClientRect(), r = sh.querySelector('.cb-c.today').getBoundingClientRect(); return r.left >= sr.left - 1 && r.right <= sr.right + 1 && r.top >= sr.top - 1 && r.bottom <= sr.bottom + 1; }) };
     } else {
       const cdp = await ctx.newCDPSession(p), T = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints:pts });
       const pinch = async (d0, d1) => { await T('touchStart', [{ x:cx - d0, y:cy, id:1 }, { x:cx + d0, y:cy, id:2 }]); for (let i = 1; i <= 10; i++){ const d = d0 + (d1 - d0) * i / 10; await T('touchMove', [{ x:cx - d, y:cy, id:1 }, { x:cx + d, y:cy, id:2 }]); await p.waitForTimeout(16); } await T('touchEnd', []); await p.waitForTimeout(200); };

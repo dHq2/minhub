@@ -1,5 +1,5 @@
-/* tcalwide v2 (2026-11-15, B) — 달력 가로 보드: 칸 넉넉히(폰 한 화면 3~4일) 옆으로 밀어 보기, 매직 글씨(개구 굵게·마커 색·기울임),
-   v2: 줄 높이는 모두 같게, 칸에 안 들어가는 일정은 포스트잇에(글은 다 보임, +N 없음) · 포스트잇 누르면 앞으로, 또 누르면 쪽지, 열면 오늘이 보임, 옆으로 밀어도 달은 그대로(‹ › 로만), 날짜 누르면 쪽지. 폰·컴퓨터. 가짜 일정만 */
+/* tcalwide v3 (2026-11-15, B) — 달력 가로 보드: 칸 넉넉히(폰 한 화면 3~4일) 옆으로 밀어 보기, 매직 글씨(개구 굵게·마커 색·기울임),
+   v3: 줄 높이는 모두 같게, 일정은 한 줄씩 — 칸에 안 들어가면 그 칸 글씨를 줄임(자르지 않음, 포스트잇 없음), 열면 오늘 쪽 확대, 열면 오늘이 보임, 옆으로 밀어도 달은 그대로(‹ › 로만), 날짜 누르면 쪽지. 폰·컴퓨터. 가짜 일정만 */
 const { chromium } = require('playwright');
 (async () => { const b = await chromium.launch();
   for (const [tag, opt] of [['m', { viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true }], ['d', { viewport:{ width:1366, height:860 } }]]){
@@ -18,12 +18,14 @@ const { chromium } = require('playwright');
     const R = {};
     R.board = await p.evaluate(() => { const sh = $('calSheet'), its = [...sh.querySelectorAll('.cb-it')], cs = getComputedStyle(its[0]);
       const cut = its.filter(it => { const c = (it.closest('.cb-pi') || it.closest('.cb-c')).getBoundingClientRect(), r = it.getBoundingClientRect(); return r.bottom > c.bottom + 2 || r.right > c.right + 3 || it.scrollHeight > it.clientHeight + 1; }).map(it => it.textContent.slice(0, 8));
-      const pis = [...sh.querySelectorAll('.cb-pi')].map(pi => ({ d:pi.closest('.cb-c').dataset.d.slice(8), n:pi.querySelectorAll('.cb-it').length }));
+      const oneLine = its.every(it => it.offsetHeight <= parseFloat(getComputedStyle(it).fontSize) * 1.3 + 1);
+      const fs = Object.fromEntries([...sh.querySelectorAll('.cb-c[data-d]')].filter(c => c.style.getPropertyValue('--fs')).map(c => [c.dataset.d.slice(8), +c.style.getPropertyValue('--fs')]));
+      const pis = sh.querySelectorAll('.cb-pi').length;
       const t = sh.querySelector('.cb-c.today'), tr = t && t.getBoundingClientRect(), sr = sh.getBoundingClientRect();
       const col = sh.querySelector('.cb-grid > .cb-c').getBoundingClientRect().width;
       return { wide:sh.classList.contains('wide'), scrollW:sh.scrollWidth > sh.clientWidth + 2, colsInView:+(sh.clientWidth / col).toFixed(1), chips:its.length, more:sh.querySelectorAll('.more').length, cut,
         font:cs.fontFamily.split(',')[0], fontSize:parseFloat(cs.fontSize), gaegu:document.fonts.check('700 16px Gaegu'), colors:[...new Set(its.map(it => getComputedStyle(it).color))].length, todayInView:!!tr && tr.left >= sr.left - 1 && tr.right <= sr.right + 1,
-        tilt:its.some(it => getComputedStyle(it).transform !== 'none'), pis, rowH:[...sh.querySelectorAll('.cb-grid > .cb-c')].filter((_, i) => i % 7 === 0).map(c => Math.round(c.getBoundingClientRect().height)) }; });
+        tilt:its.some(it => getComputedStyle(it).transform !== 'none'), pis, oneLine, fs, rowH:[...sh.querySelectorAll('.cb-grid > .cb-c')].filter((_, i) => i % 7 === 0).map(c => Math.round(c.getBoundingClientRect().height)) }; });
     await p.screenshot({ path:`/tmp/vcalwide-${tag}-1.png` });
     /* 옆으로 밀기 — 보드가 움직이고 달은 그대로 */
     const m0 = await p.evaluate(() => CAL.month), x0 = await p.evaluate(() => $('calSheet').scrollLeft), sr = await p.locator('#calSheet').boundingBox();
@@ -37,14 +39,6 @@ const { chromium } = require('playwright');
     await p.locator('[data-cal="nm"]').click(); await p.waitForFunction(m0 => CAL.month !== m0, m0);
     R.nextMonth = await p.evaluate(() => ({ title:$('cpTitle').textContent, left:$('calSheet').scrollLeft }));
     await p.locator('[data-cal="pm"]').click(); await p.waitForFunction(m0 => CAL.month === m0, m0);
-    /* 포스트잇 — 처음 누르면 앞으로, 또 누르면 그날 쪽지 */
-    await p.evaluate(() => { const c = document.querySelector('#calSheet [data-d$="-19"]'); c.scrollIntoView({ inline:'center', block:'nearest' }); }); await p.waitForTimeout(200);
-    const tapPi = async () => { const r = await p.locator('#calSheet [data-d$="-19"] .cb-pi').boundingBox(); const x = r.x + r.width / 2, y = r.y + Math.min(30, r.height / 2);
-      if (tag === 'm') await p.touchscreen.tap(x, y); else await p.mouse.click(x, y); await p.waitForTimeout(250); };
-    await tapPi(); R.piUp = await p.evaluate(() => ({ up:document.querySelector('#calSheet [data-d$="-19"]').classList.contains('up'), note:$('calDay').classList.contains('on') }));
-    await p.screenshot({ path:`/tmp/vcalwide-${tag}-3.png` });
-    await tapPi(); R.piNote = await p.evaluate(() => ({ on:$('calDay').classList.contains('on'), text:$('calDay').textContent.includes('연말 물량') }));
-    await p.evaluate(() => calDay(null));
     /* 날짜 누르면 쪽지 */
     await p.evaluate(() => { const c = document.querySelector('#calSheet [data-d$="-18"]'); c.scrollIntoView({ inline:'center', block:'nearest' }); }); await p.waitForTimeout(200);
     const c18 = await p.locator('#calSheet [data-d$="-18"]').boundingBox();
