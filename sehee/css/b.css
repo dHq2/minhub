@@ -11,3 +11,19 @@
 .rl-foot{display:flex;align-items:center;gap:6px;margin-top:8px}
 .rl-foot span{margin-left:auto;font-size:.72rem;color:#8a8373}
 @keyframes rlDrop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* 11-15 · 달력 가로 보드 — 벽걸이 가로형 월간 화이트보드, 매직으로 쓴 글씨. 칸 넉넉히 + 옆으로 밀어 보기, 글은 자르지도 줄이지도 않음. js/calendar.js calWide. c.css 를 이기게 #calSheet 로 */
+#calSheet{display:block;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(31,60,136,.3) transparent}
+#calSheet .cb-wd,#calSheet .cb-grid{width:var(--cbw,100%);min-width:100%}
+#calSheet .cb-wd{position:sticky;top:0;z-index:2;background:#f3f5f7;padding-top:2px}
+#calSheet .cb-wd span{font:700 .95rem Gaegu,var(--f-head),cursive}
+#calSheet .cb-grid{min-height:0;grid-auto-rows:minmax(var(--rowh,90px),auto)}
+#calSheet .cb-c{overflow:visible;min-height:var(--rowh,90px);padding:3px 6px 5px 6px;gap:4px}
+#calSheet .cb-c .n{font:700 1.08rem/1.1 Gaegu,var(--f-head),cursive}
+#calSheet .cb-it{display:block;-webkit-line-clamp:unset;overflow:visible;border-left:0;padding:0;color:var(--mk,#222);
+  font:700 1rem/1.12 Gaegu,"Nanum Pen Script",var(--f-body),cursive;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere;
+  transform:rotate(var(--rot,0deg));transform-origin:left center;text-shadow:0 0 .7px var(--mk,#222),.3px .3px 0 rgba(0,0,0,.06)}
+#calSheet .cb-it i{font-style:normal;font-weight:700;font-size:.88em;opacity:1;margin-right:3px;text-decoration:underline 1.5px;text-underline-offset:2px}
+#calSheet .cb-it.done{text-decoration:line-through 2px;opacity:.5}
+#calSheet .cb-foot{position:sticky;left:0;bottom:0}
+#calSheet.grab{cursor:grabbing;user-select:none}

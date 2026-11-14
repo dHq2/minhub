@@ -56,19 +56,47 @@ function calMonth(m, quiet, dir){
   $('cpTitle').innerHTML = `<small>${y}</small>${m + 1}월`;
   $('cpToday').textContent = +S.today.slice(8);
   const n = Object.keys(CAL.byDate).filter(d => d.startsWith(`${y}-${pad(m + 1)}`)).reduce((s, d) => s + CAL.byDate[d].length, 0);
-  const chip = it => `<span class="cb-it${it.done ? ' done' : ''}${CAL.fresh === it.id ? ' fresh' : ''}" data-id="${esc(it.id)}" style="--c:${secColor(it.sec)}">${it.time ? `<i>${esc(it.time)}</i>` : ''}${esc(it.text)}</span>`;
+  /* 11-15 B: 가로 보드에 매직으로 쓴 글 — 칸 색 대신 마커 색(오늘 할 일 빨강·일정 파랑·개인 초록·그 밖 검정), 손으로 쓴 듯 살짝 기울임. 글은 다 적음(자르기·+N 없음) */
+  const chip = it => `<span class="cb-it${it.done ? ' done' : ''}${CAL.fresh === it.id ? ' fresh' : ''}" data-id="${esc(it.id)}" style="--c:${secColor(it.sec)};--mk:${calMarker(it.sec)};--rot:${calTilt(it.id)}deg">${it.time ? `<i>${esc(it.time)}</i>` : ''}${esc(it.text)}</span>`;
   const sh = $('calSheet');
   sh.innerHTML = `<div class="cb-wd">${[...WD].map((w, i) => `<span class="${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</span>`).join('')}</div>
     <div class="cb-grid">${monthCells(y, m).map((d, i) => {
       if (!d) return '<div class="cb-c off"></div>';
       const list = CAL.byDate[d] || [], wd = i % 7;
       return `<div class="cb-c${d === S.today ? ' today' : ''}${d === CAL.day ? ' sel' : ''}${wd === 0 ? ' sun' : wd === 6 ? ' sat' : ''}" data-cal="d" data-d="${d}"><span class="n">${+d.slice(8)}</span>${
-        list.slice(0, 3).map(chip).join('')}${list.length > 3 ? `<span class="more">+${list.length - 3}</span>` : ''}</div>`; }).join('')}</div>
-    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 날짜를 누르면 쪽지</p>`;
+        list.map(chip).join('')}</div>`; }).join('')}</div>
+    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 옆으로 밀어 보기 · 날짜를 누르면 쪽지</p>`;
+  calWide(dir);
   if (dir){ sh.classList.remove('wipeL', 'wipeR'); void sh.offsetWidth; sh.classList.add(dir < 0 ? 'wipeL' : 'wipeR'); }
   if (CAL.day && !CAL.day.startsWith(`${y}-${pad(m + 1)}`)) calDay(null);
 }
 const calGo = (delta) => { calMonth(CAL.month + delta, true, delta); };
+/* ── 11-15 B: 가로 보드 — 벽에 거는 가로형 월간 화이트보드처럼 칸을 넉넉히(폰 한 화면에 3~4일), 손가락으로 옆으로 밀어 본다.
+   글은 줄이지도 자르지도 않음 — 한 칸에 많으면 그 주만 길어지고 보드를 위아래로도 굴린다. 열면 오늘(그 달이 아니면 1일)이 가운데. ── */
+const CAL_COL = 124;   /* 한 칸 폭(px) — 매직 글씨 한 줄에 예닐곱 자 */
+const calMarker = sec => ({ today:'#c62828', sched:'#1f3c88', me:'#2e7d32' })[sec] || '#222';
+const calTilt = id => { let h = 0; for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) | 0; return ((Math.abs(h) % 7) - 3) * 0.35; };
+let calFontReady = false;
+function calWide(dir){
+  if (!calFontReady){ calFontReady = true; if (!document.querySelector('link[data-cal-font]')){ const l = document.createElement('link'); l.rel = 'stylesheet'; l.dataset.calFont = '1'; l.href = 'https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap'; document.head.appendChild(l); } }
+  const sh = $('calSheet'); if (!sh) return;
+  const fit = () => { const w = sh.clientWidth; if (!w) return; const col = Math.max(CAL_COL, Math.floor((w - 2) / 7)); sh.style.setProperty('--cbw', (col * 7) + 'px'); sh.classList.toggle('wide', col * 7 > w + 2);
+    const rows = Math.ceil(sh.querySelectorAll('.cb-grid > .cb-c').length / 7) || 5, wd = sh.querySelector('.cb-wd'); sh.style.setProperty('--rowh', Math.max(70, Math.floor((sh.clientHeight - (wd ? wd.offsetHeight : 20) - 4) / rows)) + 'px');
+    if (dir === undefined || dir === 0 || !CAL.wideAt){ const t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (t) sh.scrollLeft = Math.max(0, t.offsetLeft + t.offsetWidth / 2 - w / 2); }
+    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); };
+  fit(); requestAnimationFrame(fit);
+}
+window.addEventListener('resize', () => { if (CAL.on) calWide(); });
+/* 11-15 B: 컴퓨터 — 마우스로 끌면 보드가 따라 움직이고(손바닥), 휠은 보드가 위아래로 더 못 가면 옆으로 */
+(function wideMouse(){
+  const sh = $('calSheet'); let g = null;
+  sh.addEventListener('mousedown', e => { if ((e.button !== 0 && e.button !== 1) || !sh.classList.contains('wide') || e.target.closest('input,button')) return; g = { x:e.clientX, y:e.clientY, l:sh.scrollLeft, t:sh.scrollTop, moved:false }; if (e.button === 1) e.preventDefault(); });
+  window.addEventListener('mousemove', e => { if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; if (!g.moved && Math.hypot(dx, dy) < 5) return; g.moved = true; sh.classList.add('grab'); sh.scrollLeft = g.l - dx; sh.scrollTop = g.t - dy; });
+  window.addEventListener('mouseup', () => { if (!g) return; if (g.moved) CAL.swiped = Date.now(); g = null; sh.classList.remove('grab'); });
+  sh.addEventListener('wheel', e => { if (!sh.classList.contains('wide') || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const canV = sh.scrollHeight > sh.clientHeight + 2 && !(e.deltaY > 0 && sh.scrollTop + sh.clientHeight >= sh.scrollHeight - 1) && !(e.deltaY < 0 && sh.scrollTop <= 0);
+    if (!canV){ e.preventDefault(); sh.scrollLeft += e.deltaY; } }, { passive:false });
+})();
 /* 그날 쪽지 — 칠판에 붙는 포스트잇 */
 function calDay(d){
   CAL.day = d; const el = $('calDay');
@@ -151,6 +179,7 @@ $('cal').addEventListener('keydown', e => { if (e.target.id === 'calAdd' && e.ke
   sh.addEventListener('pointerdown', e => { g = { x:e.clientX, y:e.clientY }; });
   sh.addEventListener('pointerup', e => {
     if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; g = null;
+    if (sh.classList.contains('wide')){ if (Math.abs(dx) > 8) CAL.swiped = Date.now(); return; }   /* 11-15 B: 가로 보드는 옆으로 밀면 보드가 움직임(달은 ‹ ›) */
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){ CAL.swiped = Date.now(); calGo(dx < 0 ? 1 : -1); }
   });
   sh.addEventListener('pointercancel', () => { g = null; });

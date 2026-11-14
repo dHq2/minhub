@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 06:00 · 달력이 가로 보드로 — 매직 글씨·옆으로 밀기·안 잘림 · [보통] · 받는 쪽: C (A 참고)
+- 무엇: js/calendar.js calMonth 의 칸 글이 다 나옴(slice(0,3)·.more 없앰), 칩에 --mk(마커 색 calMarker)·--rot(calTilt). 새 calWide(dir) — #calSheet 에 --cbw(칸 124px×7)·--rowh·.wide, 열면 오늘을 가운데로 scrollLeft. 밀기(boardSwipe)는 .wide 면 달을 안 넘김(보드가 움직임), 마우스 끌기·휠(wideMouse). Gaegu 700 글꼴을 달력 열 때 한 번 불러옴. 스타일은 css/b.css(#calSheet 로 c.css 를 이김).
+- 받는 쪽에게 필요한 일: C — 칠판 칸을 그리는 건 calMonth 로(끝에 calWide 를 부름). .cb-it 의 두 줄 자르기·+N 을 다시 넣지 말 것(보스: 실제 보드처럼 안 잘림). 칠판을 옆으로 밀어 달을 넘기던 동작은 이제 보드가 넓을 땐 안 함(‹ › 로만).
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalwide v1
+
 ## 2026-11-15 05:20 · 보스 써 보고 다섯 가지 — 세희 기록 창·자료 지침·말 나누기·보고서 목록·업데이트 한마디 · [보통] · 받는 쪽: A · C
 - 무엇: ai.js toMessages 가 '줄 24개' → '보스 말 14마디(최대 160줄)'. 오래된 긴 붙여 넣은 글은 앞 1500자 + 자료 번호. materials() 에 붙여 넣은 긴 글 포함, 새 도구 read_chat(readChat). 지침 '자료 받았을 때'를 '묻지 않고 판에 적고 말로 정리'로(보고서는 시킬 때만). office.js updateLive 가 쓰는 중에 문단 단위로 먼저 내보냄(liveSplit·liveRest — seheePart·seheeSaysSplit 가 이미 낸 문단을 뺌, 끝난 뒤 쪼개기 없음). base.js 보고서 목록이 #sheet → 제목 아래 #rlDrop(reportList 다시 누르면 접힘, rlClose). update.js 는 본체 번호가 바뀌면 언제나 updBrief.
 - 받는 쪽에게 필요한 일: C — treport 의 목록 고르는 자리만 #rlDrop 으로 바꿨음. 보고서 목록을 #sheet 에서 찾는 코드가 있으면 #rlDrop. A·C — O.log 를 직접 잘라 AI 에 넘기는 곳이 있으면 toMessages 를 쓸 것(보스 말 마디 기준).
