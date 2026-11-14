@@ -6,9 +6,10 @@ function settingsSheet(){
     <label class="t">계정 — 암호로 열면 판·대화·보드·설정이 다른 기기에서도 그대로 열려요</label>
     <p class="note" id="syncInfo">${esc(syncLine())}</p>
     <div class="row" id="pinChg" hidden style="margin-top:6px"><input class="free" id="pinOld" type="password" inputmode="numeric" maxlength="4" placeholder="지금 암호"><input class="free" id="pinNew" type="password" inputmode="numeric" maxlength="4" placeholder="새 암호 4자리"><button class="chip" data-sact="pinset">바꾸기</button></div>
+    <div class="row" style="margin-bottom:6px"><button class="chip" data-sact="intro">처음 인사 다시 보기</button><span class="note" style="margin-left:6px">호칭·하는 일·프로필을 다시 정해요</span></div>
     <div class="row"><input class="free" id="devName" placeholder="이 기기 이름 (예: 집 데스크탑, 내 폰)" value="${esc(myDevName())}" maxlength="24"><button class="chip" data-sact="devname">이름 저장</button></div>
     <div class="row"><input class="free" id="syncUrl" placeholder="계정 서버 주소 (https://…workers.dev)" value="${esc(SYNC.url)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="chip" data-sact="syncurl">저장</button></div>
-    <div class="row" style="margin-top:6px">${SYNC.url && SYNC.on ? (SYNC.observer ? '' : '<button class="chip" data-sact="syncnow">지금 올리기</button><button class="chip" data-sact="watch">보기 전용으로 바꾸기</button><button class="chip" data-sact="pinchg">암호 바꾸기</button>') + '<button class="chip danger" data-sact="logout">' + (SYNC.observer ? '관전석 나가기' : '로그아웃') + '</button>' : SYNC.url ? '<button class="chip" data-sact="login">암호로 열기</button>' : ''}</div>
+    <div class="row" style="margin-top:6px">${SYNC.url && SYNC.on ? (SYNC.observer ? '' : '<button class="chip" data-sact="syncnow">지금 올리기</button><button class="chip" data-sact="watch">보기 전용으로 바꾸기</button><button class="chip" data-sact="pinchg">암호 바꾸기</button><button class="chip" data-sact="switch">다른 계정으로</button>') + '<button class="chip danger" data-sact="logout">' + (SYNC.observer ? '관전석 나가기' : '로그아웃') + '</button>' : SYNC.url ? '<button class="chip" data-sact="login">암호로 열기</button>' : ''}</div>
     <hr class="s">
     <label class="t">칸 — 이름을 고치고, 점을 눌러 색을 바꿔요</label>
     <div id="secList">${secs().map((s,i) => `<div class="srow" data-sid="${s.id}">
@@ -134,6 +135,8 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'pinchg'){ $('pinChg').hidden = !$('pinChg').hidden; if (!$('pinChg').hidden) $('pinOld').focus(); return; }
   else if (a === 'pinset'){ const o = $('pinOld').value, n = $('pinNew').value; if (!/^\d{4}$/.test(n)){ toast('새 암호는 숫자 네 자리예요'); return; }
     const r = await syncPinChange(o, n); toast(r.ok ? '암호를 바꿨어요 — 다음부터 새 암호로 열어요' : r.error === 'wrong-old' ? '지금 암호가 틀렸어요' : '못 바꿨어요: ' + r.error); if (r.ok) settingsSheet(); return; }
+  else if (a === 'switch'){ await syncFlush(); dlog('동기화', '다른 계정으로 — 이 기기만 닫음(서버 자리는 그대로)'); SYNC.token = ''; SYNC.on = false; SYNC.observer = false; SYNC.dirty.clear(); syncKeep(); location.reload(); return; }   /* v1.5.32: 이 기기에서만 나가 다른 아이디로 — 다른 기기에서 쓰는 중이어도 안 끊김 */
+  else if (a === 'intro'){ closeSheet(); introPlay(true); return; }   /* v1.5.32 */
   else if (a === 'login'){ SYNC.token = ''; syncKeep(); location.reload(); return; }
   else if (a === 'logout'){ if (!b.textContent.includes('한 번 더')){ b.textContent = '한 번 더 누르면 로그아웃'; return; } syncLogout(); return; }
   else if (a === 'syncnow'){ await syncFlush(); $('syncInfo').textContent = syncLine(); return; }

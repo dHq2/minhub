@@ -904,8 +904,6 @@ body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
 .tie-ul select.tie-c{background:none;font-size:.7rem;padding:0 2px;cursor:pointer}
 .pd-addrow .pd-add{font-size:.72rem;padding:2px 8px}
 
-/* ── v1.5.27 (A) 체험 공간 띠 ── */
-#spaceBar{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:8999;padding:1px 10px;border-radius:0 0 8px 8px;background:#5b3e8c;color:#fff;font-size:.68rem;opacity:.9;pointer-events:none;white-space:nowrap}
 
 /* ── v1.5.29 (A) 로그인 화면 — 로그인/가입 고르기 · 아이디 칸 ── */
 .pin-tabs{display:flex;gap:6px;justify-content:center;margin:0 0 8px}
@@ -943,3 +941,8 @@ body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
 .vn-c:hover,.vn-c:focus-visible{background:#fff;outline:none;transform:translateX(4px)}.vn-c.on{background:#2b3a55;color:#fff}.vn-c.on::before{color:#fff}
 @keyframes vnChoice{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.vn-spr,.vn-box,.vn-dim{transition:none!important}.vn-who{animation:none!important}}
+
+/* ── v1.5.32 (A) 처음 인사 — 장면 안 입력칸 ── */
+.vn-ask{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + clamp(140px,22dvh,196px));width:min(calc(100vw - 40px),460px);z-index:3;background:#fff;border:2px solid #2f3a4a;border-radius:12px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.vn-ask input,.vn-ask textarea{display:block;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:.95rem}
+.vn-ask .row{display:flex;justify-content:flex-end;gap:6px;margin-top:8px}

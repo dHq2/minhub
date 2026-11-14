@@ -35,6 +35,7 @@
     loadBonus();
     spStep('준비 끝 · ' + brain);
     setTimeout(() => resumeJob().catch(() => {}), 1200);
+    setTimeout(() => introMaybe(), 1800);   /* v1.5.32 새 사용자면 처음 인사(js/intro.js) */
   }catch(e){
     SP.hold = 1500; spStep('여는 중 문제가 생겼어요: ' + (e && e.message || e));
   }finally{ spDone(); }

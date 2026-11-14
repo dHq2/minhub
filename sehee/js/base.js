@@ -36,7 +36,7 @@ let dbp = null;
 function idb(){
   if (dbp) return dbp;
   dbp = new Promise((res, rej) => {
-    const r = indexedDB.open(window.SEHEE_SPACE ? 'sehee~' + window.SEHEE_SPACE : 'sehee', 1);
+    const r = indexedDB.open('sehee', 1);
     r.onupgradeneeded = () => { const db = r.result; db.createObjectStore('pans', { keyPath:'date' }); db.createObjectStore('kv'); };
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });

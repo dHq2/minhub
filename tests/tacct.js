@@ -1,4 +1,4 @@
-// v1.1 (2026-11-15, A: 아이디 칸) · v1.0 — 한 기기에서 다른 계정으로 열 때: 앞 계정 기록을 새 계정에 안 올림, 머리 설정만 남김, 다시 돌아오면 그대로
+// v1.2 (2026-11-15, A: 「다른 계정으로」 단추) · v1.1 (아이디 칸) · v1.0 — 한 기기에서 다른 계정으로 열 때: 앞 계정 기록을 새 계정에 안 올림, 머리 설정만 남김, 다시 돌아오면 그대로
 const { chromium } = require('playwright');
 const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
 (async () => {
@@ -10,8 +10,11 @@ const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
   await p.evaluate(async () => { AI.cfg.model = AI.cfg.model || 'claude-haiku-5-5'; AI.cfg.keyMark = 'KEEPME'; await saveAi(); });
   await p.locator('#tabPan').click(); await p.waitForTimeout(300);
   await p.locator('.add input').first().fill('본 계정의 비밀 일'); await p.locator('.add input').first().press('Enter'); await p.waitForTimeout(2500);
+  const tok0 = await p.evaluate(() => SYNC.token);
   check('본 계정에 적힘', (await p.evaluate(() => S.pan.items.map(i => i.text))).includes('본 계정의 비밀 일'));
-  await p.evaluate(() => syncLogout()); await p.waitForSelector('#pinVeil'); await pin('1357', 'manbok'); await p.waitForSelector('#pinVeil', { state:'detached' }); await p.waitForTimeout(2000);
+  await p.evaluate(() => settingsSheet()); await p.waitForTimeout(300); await p.locator('[data-sact="switch"]').click(); await p.waitForSelector('#pinVeil');
+  check('「다른 계정으로」는 서버 자리를 안 지움', (await (await fetch(SRV + '/session', { headers:{ authorization:'Bearer ' + tok0 } })).status) === 200);
+  await pin('1357', 'manbok'); await p.waitForSelector('#pinVeil', { state:'detached' }); await p.waitForTimeout(2000);
   check('테스트 계정으로 열림', (await p.evaluate(() => SYNC.user)) === 'manbok');
   check('판이 비어 있음', (await p.evaluate(() => S.pan.items.length)) === 0, JSON.stringify(await p.evaluate(() => S.pan.items.map(i => i.text))));
   check('머리 설정은 남음', (await p.evaluate(() => AI.cfg.keyMark)) === 'KEEPME');

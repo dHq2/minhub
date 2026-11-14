@@ -4,11 +4,11 @@
    v1.5.0 — 본체가 css/app.css · js/*.js 로 쪼개짐. 새 파일을 만들면 아래 CODE 목록에도 꼭 넣는다(안 넣으면 오프라인·업데이트 때 빠짐).
             CODE 파일은 주소 뒤에 ?v=VERSION 을 붙여 받는다 — 중간 캐시에 남은 옛 파일이 새 index.html 과 섞이지 않게.
    데이터(판)는 IndexedDB 에 따로 있어서 껍데기가 바뀌어도 그대로다. */
-const VERSION = 'v1.5.31';
+const VERSION = 'v1.5.32';
 const CACHE = 'sehee-' + VERSION;
 /* 본체 코드 — index.html 의 <script src> 순서 그대로 */
 const CODE = ['./css/app.css',
-  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/boot.js'];
+  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/intro.js', './js/boot.js'];
 const SHELL = [...CODE, './', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
