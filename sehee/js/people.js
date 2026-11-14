@@ -730,7 +730,9 @@ function pdLive(e){
 }
 $('pdBody').addEventListener('input', pdLive);
 $('pdBody').addEventListener('change', e => { if (e.target.tagName === 'SELECT') pdLive(e); });
-const pdGrow = el => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; };
+/* v1.5.33 (C) 기록부가 아직 화면에 안 떴을 때(열리는 중) 재면 높이가 0 → 글이 한 줄만 보이고 굴러가지도 않았다. 0 이면 높이를 건드리지 않고, 뜬 뒤에 다시 잰다 */
+const pdGrow = el => { if (!el || !el.isConnected) return; el.style.height = 'auto'; const h = el.scrollHeight; if (h) el.style.height = h + 'px'; else el.style.height = ''; };
+const pdGrowAll = () => document.querySelectorAll('#pdBody .pd-grow').forEach(pdGrow);
 async function pdDoc(p, isMe){
   pdNorm(p);
   const col = isMe ? '#2b2417' : (GROUP_COLOR[p.group] || '#5c5340');
@@ -781,7 +783,7 @@ async function pdRender(){
     ${await pdDoc(p, isMe)}
     <div class="pd-foot">세희 · 인간관계 판 · ${ymdDot(Date.now())} · 칸을 누르면 바로 고쳐지고 저절로 저장돼요${[...p.extra, ...p.story].some(x => x.lock) ? ' · 🔒 줄은 보고서·남에게 보이는 글에 쓰지 않음' : ''}</div></div>`;
   $('pdBody').scrollTop = top;
-  document.querySelectorAll('#pdBody .pd-grow').forEach(pdGrow);
+  pdGrowAll(); requestAnimationFrame(pdGrowAll); setTimeout(pdGrowAll, 400);   /* v1.5.33 열리는 동안·뜬 뒤 한 번 더 */
   if (keep && keep.sel){ const el = document.querySelector('#pdBody ' + keep.sel); if (el){ el.focus({ preventScroll:true }); try{ el.setSelectionRange(keep.s, keep.e); }catch(x){} } }
   clueThumbs();
 }
@@ -853,3 +855,4 @@ $('pd').addEventListener('click', async e => {
   };
   t.addEventListener('pointerup', up); t.addEventListener('pointercancel', up);
 })();
+window.addEventListener('resize', () => { if ($('pd').classList.contains('on')) pdGrowAll(); });   /* v1.5.33 화면 크기가 바뀌면 다시 잼 */
