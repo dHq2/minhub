@@ -1,4 +1,4 @@
-// v1.0 (2026-11-15, A) — 체험 공간(?space=): 같은 브라우저에서 따로 된 빈 세희, 원래 기록 안 건드림
+// v1.1 (2026-11-15, A: ?space 와 ?sync 같이) · v1.0 — 체험 공간(?space=): 같은 브라우저에서 따로 된 빈 세희, 원래 기록 안 건드림
 const { chromium } = require('playwright');
 const APP = 'http://localhost:8765/sehee/';
 (async () => {
@@ -23,5 +23,8 @@ const APP = 'http://localhost:8765/sehee/';
   check('원래 세희는 그대로', a.includes('원래 세희 일') && !a.includes('만복상회 일'), a.join('/'));
   await B.goto(APP + '?space='); await B.waitForTimeout(2500);
   check('?space= 로 나가면 원래 세희', !(await B.evaluate(() => window.SEHEE_SPACE)) && (await items(B)).includes('원래 세희 일'));
+  const C = await ctx.newPage(); await C.goto(APP + '?space=guest&sync=http://localhost:8787'); await C.waitForTimeout(1500);
+  check('?space 와 ?sync 같이 — 체험 공간에서 로그인 화면', await C.locator('#pinVeil').count() === 1 && (await C.evaluate(() => window.SEHEE_SPACE)) === 'guest');
+  check('원래 세희엔 서버 주소 안 생김', (await A.evaluate(() => localStorage.getItem('sehee-sync'))) === null);
   console.log('SPACE bad', bad); await b.close(); if (bad) process.exit(1);
 })();

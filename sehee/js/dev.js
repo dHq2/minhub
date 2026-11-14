@@ -10,7 +10,7 @@
   SP.getItem = function(k){ return g.call(this, this === localStorage ? P + k : k); };
   SP.setItem = function(k, v){ return st.call(this, this === localStorage ? P + k : k, v); };
   SP.removeItem = function(k){ return rm.call(this, this === localStorage ? P + k : k); };
-  if (q.has('space')) history.replaceState(null, '', location.pathname + location.hash);
+  if (q.has('space')){ q.delete('space'); const rest = q.toString(); history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash); }   /* v1.5.31: ?sync= 같은 다른 값은 남김 */
   addEventListener('DOMContentLoaded', () => { const b = document.createElement('div'); b.id = 'spaceBar'; b.textContent = '🧪 체험 공간 · ' + sp + ' — 원래 세희와 따로예요'; document.body.appendChild(b); document.body.classList.add('space'); });
 })();
 /* ── 개발자 로그 (v1.2.8) — 프로그램이 도는 걸 실시간으로 적는다. 설정에서 켠 기기에서만 「로그」 탭이 보인다.
