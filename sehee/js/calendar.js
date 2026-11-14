@@ -42,7 +42,7 @@ async function calPageOpen(){
 const calOpen = calPageOpen;   /* 옛 이름 */
 function calPageClose(){
   if (!CAL.on) return;
-  CAL.on = false; dlog('화면', '달력 쪽 닫기'); calDay(null);
+  CAL.on = false; dlog('화면', '달력 쪽 닫기'); calDay(null); inkSet(null);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   const pg = $('calPage'); pg.classList.remove('in'); pg.classList.add('out'); document.body.classList.remove('cal-on');
   setTimeout(() => { if (!CAL.on){ pg.hidden = true; pg.classList.remove('out'); } }, 340);
@@ -100,13 +100,83 @@ function calPack(){
     const pi = document.createElement('div'); pi.className = 'cb-pi'; pi.dataset.cal = 'pi';
     pi.style.top = Math.max(its[k].offsetTop - 2, 18) + 'px'; pi.style.setProperty('--prot', calPiTilt(c.dataset.d) + 'deg');
     its.slice(k).forEach(it => pi.appendChild(it)); c.appendChild(pi); c.classList.add('has-pi');
-  });
+  });  calInk();
+}
+/* ── 11-15 B: 칠판 낙서 — 받침대의 마커(빨강·파랑·검정)를 들면 손가락·마우스로 칠판에 그리고, 지우개로 문질러 지운다.
+   다시 누르면 내려놓기(그때부터 다시 밀어 보기). 지우개 두 번 톡 = 이달 낙서 싹 지우기(되돌리기 있음). 일정 글씨는 안 지워짐.
+   낙서는 포스트잇 밑, 일정 글씨 위. 달마다 이 기기에만(sehee.calInk) — 칸 비율로 저장해 화면 크기가 바뀌어도 제자리 ── */
+const INK = { tool:null, key:'', strokes:[], cur:null, erTap:0 };
+const INK_COL = { r:'#c62828', b:'#1f3c88', k:'#222' }, INK_NAME = { r:'빨강', b:'파랑', k:'검정' };
+const inkKey = () => `${CAL.year}-${pad(CAL.month + 1)}`;
+function inkAll(){ try { return JSON.parse(localStorage.getItem('sehee.calInk') || '{}') || {}; } catch { return {}; } }
+function inkPut(k, strokes){
+  const all = inkAll(); if (strokes.length) all[k] = strokes; else delete all[k];
+  let txt = JSON.stringify(all); while (txt.length > 400000 && all[k] && all[k].length){ all[k].shift(); txt = JSON.stringify(all); }   /* 너무 많으면 오래된 획부터 */
+  try { localStorage.setItem('sehee.calInk', txt); } catch {}
+}
+function inkLine(x, s, W, H){
+  x.globalCompositeOperation = s.e ? 'destination-out' : 'source-over';
+  x.strokeStyle = s.e ? '#000' : (INK_COL[s.c] || '#222'); x.shadowColor = x.strokeStyle; x.shadowBlur = s.e ? 0 : .8;
+  x.lineWidth = s.w * W; x.lineCap = x.lineJoin = 'round';
+  const p = s.p; x.beginPath(); x.moveTo(p[0] * W, p[1] * H);
+  if (p.length === 2) x.lineTo(p[0] * W + .01, p[1] * H); for (let i = 2; i < p.length; i += 2) x.lineTo(p[i] * W, p[i + 1] * H);
+  x.stroke();
+}
+function inkDraw(cv){ const x = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = cv.width / (W || 1);
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  INK.strokes.forEach(s => inkLine(x, s, W, H)); x.globalCompositeOperation = 'source-over'; }
+function calInk(){
+  const sh = $('calSheet'), g = sh && sh.querySelector('.cb-grid'); if (!g) return;
+  let cv = sh.querySelector(':scope > .cb-ink'); if (!cv){ cv = document.createElement('canvas'); cv.className = 'cb-ink'; sh.appendChild(cv); inkBind(cv); }
+  const W = g.offsetWidth, H = g.offsetHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+  Object.assign(cv.style, { left:g.offsetLeft + 'px', top:g.offsetTop + 'px', width:W + 'px', height:H + 'px' });
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  const k = inkKey(); if (INK.key !== k){ INK.key = k; INK.strokes = inkAll()[k] || []; INK.cur = null; }
+  inkDraw(cv);
+}
+function inkBind(cv){
+  const at = e => { const r = cv.getBoundingClientRect(); return [+((e.clientX - r.left) / r.width).toFixed(4), +((e.clientY - r.top) / r.height).toFixed(4)]; };
+  const seg = (s, a, b) => { const x = cv.getContext('2d'), W = cv.clientWidth, H = cv.clientHeight, dpr = cv.width / (W || 1); x.setTransform(dpr, 0, 0, dpr, 0, 0); inkLine(x, { ...s, p:[...a, ...b] }, W, H); x.globalCompositeOperation = 'source-over'; };
+  cv.addEventListener('pointerdown', e => { if (!INK.tool || (e.button && e.button !== 0)) return; e.preventDefault(); e.stopPropagation(); try { cv.setPointerCapture(e.pointerId); } catch {}
+    const er = INK.tool === 'er', p = at(e), W = cv.clientWidth || 1;
+    INK.cur = er ? { e:1, w:+(26 / W).toFixed(5), p } : { c:INK.tool, w:+(3.4 / W).toFixed(5), p }; seg(INK.cur, p, p); });
+  cv.addEventListener('pointermove', e => { const s = INK.cur; if (!s) return; e.preventDefault(); const q = at(e), n = s.p.length, W = cv.clientWidth, H = cv.clientHeight;
+    if (Math.hypot((q[0] - s.p[n - 2]) * W, (q[1] - s.p[n - 1]) * H) < 1.5) return; seg(s, [s.p[n - 2], s.p[n - 1]], q); s.p.push(q[0], q[1]); });
+  const end = e => { if (!INK.cur) return; e.stopPropagation(); INK.strokes.push(INK.cur); INK.cur = null; inkPut(INK.key, INK.strokes); };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+}
+function inkSet(t){
+  INK.tool = t || null; const sh = $('calSheet');
+  sh.classList.toggle('pen', !!INK.tool); sh.classList.toggle('erase', INK.tool === 'er');
+  document.querySelectorAll('#cal .cp-tray [data-t]').forEach(i => i.classList.toggle('on', i.dataset.t === INK.tool));
+}
+function calInkTool(t){
+  const now = Date.now();
+  if (t === 'er' && now - INK.erTap < 380){ INK.erTap = 0; inkSet('er'); inkWipe(); return; }   /* 지우개 두 번 톡 */
+  INK.erTap = t === 'er' ? now : 0;
+  if (INK.tool === t){ inkSet(null); toast('내려놨어요 — 다시 밀어서 볼 수 있어요'); return; }
+  inkSet(t); toast(t === 'er' ? '지우개 — 문질러 지워요 · 두 번 톡 치면 싹 지우기' : `${INK_NAME[t]} 마커를 들었어요 — 칠판에 그려 보세요 · 다시 누르면 내려놓기`);
+}
+/* 받침대 — 마커가 작고 바로 위에 안내 줄이 있어 손가락이 빗나가기 쉬움: 받침대 둘레를 넉넉히 누르면 가장 가까운 마커·지우개를 집는다 */
+(function trayPick(){
+  const cal = $('cal'), tray = cal.querySelector('.cp-tray'); let hit = null, at = 0;
+  const near = e => { const r = tray.getBoundingClientRect(); if (e.clientY < r.top - 24 || e.clientY > r.bottom + 18 || e.clientX < r.left - 12 || e.clientX > r.right + 12) return null;
+    let best = null, bd = 14; tray.querySelectorAll('[data-t]').forEach(i => { const q = i.getBoundingClientRect(), d = Math.abs(e.clientX - (q.left + q.width / 2)) - q.width / 2; if (d < bd){ bd = d; best = i.dataset.t; } }); return best; };
+  cal.addEventListener('pointerdown', e => { const t = near(e); if (!t) return; hit = { t, x:e.clientX, y:e.clientY }; e.preventDefault(); e.stopPropagation(); }, true);
+  cal.addEventListener('pointerup', e => { if (!hit) return; const h = hit; hit = null; e.stopPropagation(); if (Math.hypot(e.clientX - h.x, e.clientY - h.y) < 14){ at = Date.now(); calInkTool(h.t); } }, true);
+  cal.addEventListener('pointercancel', () => { hit = null; }, true);
+  cal.addEventListener('click', e => { if (Date.now() - at < 600){ e.preventDefault(); e.stopPropagation(); } }, true);
+})();
+function inkWipe(){
+  const k = INK.key, old = INK.strokes; if (!old.length){ toast('지울 낙서가 없어요'); return; }
+  INK.strokes = []; inkPut(k, []); calInk();
+  toast('이달 낙서를 싹 지웠어요', () => { if (INK.key === k){ INK.strokes = old; calInk(); } inkPut(k, old); });
 }
 window.addEventListener('resize', () => { if (CAL.on) calWide(); });
 /* 11-15 B: 컴퓨터 — 마우스로 끌면 보드가 따라 움직이고(손바닥), 휠은 보드가 위아래로 더 못 가면 옆으로 */
 (function wideMouse(){
   const sh = $('calSheet'); let g = null;
-  sh.addEventListener('mousedown', e => { if ((e.button !== 0 && e.button !== 1) || !sh.classList.contains('wide') || e.target.closest('input,button')) return; g = { x:e.clientX, y:e.clientY, l:sh.scrollLeft, t:sh.scrollTop, moved:false }; if (e.button === 1) e.preventDefault(); });
+  sh.addEventListener('mousedown', e => { if (INK.tool || (e.button !== 0 && e.button !== 1) || !sh.classList.contains('wide') || e.target.closest('input,button')) return; g = { x:e.clientX, y:e.clientY, l:sh.scrollLeft, t:sh.scrollTop, moved:false }; if (e.button === 1) e.preventDefault(); });
   window.addEventListener('mousemove', e => { if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y; if (!g.moved && Math.hypot(dx, dy) < 5) return; g.moved = true; sh.classList.add('grab'); sh.scrollLeft = g.l - dx; sh.scrollTop = g.t - dy; });
   window.addEventListener('mouseup', () => { if (!g) return; if (g.moved) CAL.swiped = Date.now(); g = null; sh.classList.remove('grab'); });
   sh.addEventListener('wheel', e => { if (!sh.classList.contains('wide') || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;

@@ -19,7 +19,7 @@
 #calSheet .cb-wd span{font:700 .95rem Gaegu,var(--f-head),cursive}
 #calSheet .cb-grid{min-height:0;grid-auto-rows:var(--rowh,90px)}   /* 11-15 B: 줄 높이는 모두 같게(보드에 그어 둔 칸) */
 #calSheet .cb-c{overflow:visible;height:var(--rowh,90px);min-height:0;padding:3px 6px 5px 6px;gap:4px}
-#calSheet .cb-c.has-pi{z-index:1}#calSheet .cb-c.up{z-index:3}
+#calSheet .cb-c.has-pi{z-index:2}#calSheet .cb-c.up{z-index:3}
 #calSheet .cb-c .n{font:700 1.08rem/1.1 Gaegu,var(--f-head),cursive}
 #calSheet .cb-it{display:block;-webkit-line-clamp:unset;overflow:visible;border-left:0;padding:0;color:var(--mk,#222);
   font:700 1rem/1.12 Gaegu,"Nanum Pen Script",var(--f-body),cursive;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere;
@@ -36,3 +36,17 @@
 #calSheet .cb-c.up .cb-pi{transform:rotate(0deg) scale(1.04);box-shadow:0 2px 2px rgba(0,0,0,.1),3px 10px 18px -4px rgba(0,0,0,.35)}
 #calSheet .cb-pi .cb-it{text-shadow:0 0 .7px var(--mk,#222)}
 #calSheet.grab{cursor:grabbing;user-select:none}
+
+/* 11-15 · 칠판 낙서 — 받침대 마커를 들면 그림, 지우개로 지움. js/calendar.js calInk·inkSet. 낙서(캔버스)는 일정 글씨 위·포스트잇 밑 */
+#calSheet{position:relative}
+#calSheet .cb-ink{position:absolute;z-index:1;pointer-events:none;touch-action:none}
+#calSheet.pen .cb-ink{pointer-events:auto;cursor:crosshair}
+#calSheet.erase .cb-ink{cursor:cell}
+#calSheet.pen .cb-c{pointer-events:none}
+#calSheet.pen{touch-action:none}
+#cal .cp-tray i{cursor:pointer;transition:transform .18s,box-shadow .18s}
+#cal .cp-tray{height:14px;bottom:-12px}
+#cal .cp-tray .mk{width:44px;height:10px;top:-8px;border-radius:4px}
+#cal .cp-tray .er{width:52px;height:14px;top:-12px}
+#cal .cp-tray i.on{transform:translateY(-10px) rotate(-9deg);box-shadow:0 6px 8px -2px rgba(0,0,0,.45)}
+#cal .cp-tray .er.on{transform:translateY(-10px) rotate(6deg)}

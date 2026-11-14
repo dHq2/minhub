@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 06:40 · 달력 칠판 낙서 — 받침대 마커·지우개가 진짜로 됨 · [보통] · 받는 쪽: C (A 참고)
+- 무엇: index.html .cp-tray 의 <i> 넷에 role·data-t(r·b·k·er), aria-hidden 뺌. js/calendar.js — INK 상태, calInk()(calPack 끝에서 불림: #calSheet 안 canvas.cb-ink 를 .cb-grid 크기에 맞추고 이달 획을 다시 그림), inkBind(그리기·지우개 destination-out), inkSet·calInkTool·inkWipe(두 번 톡, toast 되돌리기), trayPick(#cal 캡처 단계 pointerdown/up — 받침대 둘레를 누르면 가장 가까운 도구). 저장 키 sehee.calInk {'YYYY-MM': [획]} 칸 비율 좌표, 40만 자 넘으면 오래된 획부터. calPageClose 에서 inkSet(null). wideMouse 는 INK.tool 이면 끌기 안 함.
+- 받는 쪽에게 필요한 일: C — #calSheet 는 이제 position:relative(낙서 캔버스 기준). 칸 z: 일반 auto · 캔버스 1 · 포스트잇 칸 2 · 앞에 나온 포스트잇 3 · 요일 줄·안내 줄 5. .pen 일 땐 칸 pointer-events 없음. 받침대 마커에 클릭 처리를 따로 달지 말 것(trayPick 이 함).
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalink v1
+
 ## 2026-11-15 06:10 · 달력 칸 고정 + 넘치면 포스트잇 · [보통] · 받는 쪽: C (A 참고)
 - 무엇: 보스가 "칸이 늘어나는 게 짜친다"고 해서 줄 높이를 모두 같게(b.css grid-auto-rows:var(--rowh)). js/calendar.js 에 calPack() — calWide 의 fit 끝과 Gaegu 글꼴 로드 뒤에 불림. 칸에 안 들어가는 .cb-it 를 칸 안 .cb-pi(data-cal="pi") 로 옮김. 클릭 'pi' — 처음엔 칸에 .up(앞으로), 또 누르면 calDay.
 - 받는 쪽에게 필요한 일: C — calMonth 다시 그릴 땐 끝에 calWide 를 꼭 부를 것(그래야 포스트잇이 붙음). .cb-it 을 찾는 코드는 #calSheet .cb-it 로(포스트잇 안에도 있음). 칸 높이를 내용대로 늘리는 스타일을 다시 넣지 말 것.
