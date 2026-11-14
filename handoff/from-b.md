@@ -3,6 +3,11 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 06:10 · 달력 칸 고정 + 넘치면 포스트잇 · [보통] · 받는 쪽: C (A 참고)
+- 무엇: 보스가 "칸이 늘어나는 게 짜친다"고 해서 줄 높이를 모두 같게(b.css grid-auto-rows:var(--rowh)). js/calendar.js 에 calPack() — calWide 의 fit 끝과 Gaegu 글꼴 로드 뒤에 불림. 칸에 안 들어가는 .cb-it 를 칸 안 .cb-pi(data-cal="pi") 로 옮김. 클릭 'pi' — 처음엔 칸에 .up(앞으로), 또 누르면 calDay.
+- 받는 쪽에게 필요한 일: C — calMonth 다시 그릴 땐 끝에 calWide 를 꼭 부를 것(그래야 포스트잇이 붙음). .cb-it 을 찾는 코드는 #calSheet .cb-it 로(포스트잇 안에도 있음). 칸 높이를 내용대로 늘리는 스타일을 다시 넣지 말 것.
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tcalwide v2
+
 ## 2026-11-15 06:00 · 달력이 가로 보드로 — 매직 글씨·옆으로 밀기·안 잘림 · [보통] · 받는 쪽: C (A 참고)
 - 무엇: js/calendar.js calMonth 의 칸 글이 다 나옴(slice(0,3)·.more 없앰), 칩에 --mk(마커 색 calMarker)·--rot(calTilt). 새 calWide(dir) — #calSheet 에 --cbw(칸 124px×7)·--rowh·.wide, 열면 오늘을 가운데로 scrollLeft. 밀기(boardSwipe)는 .wide 면 달을 안 넘김(보드가 움직임), 마우스 끌기·휠(wideMouse). Gaegu 700 글꼴을 달력 열 때 한 번 불러옴. 스타일은 css/b.css(#calSheet 로 c.css 를 이김).
 - 받는 쪽에게 필요한 일: C — 칠판 칸을 그리는 건 calMonth 로(끝에 calWide 를 부름). .cb-it 의 두 줄 자르기·+N 을 다시 넣지 말 것(보스: 실제 보드처럼 안 잘림). 칠판을 옆으로 밀어 달을 넘기던 동작은 이제 보드가 넓을 땐 안 함(‹ › 로만).

@@ -65,7 +65,7 @@ function calMonth(m, quiet, dir){
       const list = CAL.byDate[d] || [], wd = i % 7;
       return `<div class="cb-c${d === S.today ? ' today' : ''}${d === CAL.day ? ' sel' : ''}${wd === 0 ? ' sun' : wd === 6 ? ' sat' : ''}" data-cal="d" data-d="${d}"><span class="n">${+d.slice(8)}</span>${
         list.map(chip).join('')}</div>`; }).join('')}</div>
-    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 옆으로 밀어 보기 · 날짜를 누르면 쪽지</p>`;
+    <p class="cb-foot">${n ? `이달 일정 ${n}개` : '이달 일정 없음'} · 옆으로 밀기 · 날짜·포스트잇 누르면 쪽지</p>`;
   calWide(dir);
   if (dir){ sh.classList.remove('wipeL', 'wipeR'); void sh.offsetWidth; sh.classList.add(dir < 0 ? 'wipeL' : 'wipeR'); }
   if (CAL.day && !CAL.day.startsWith(`${y}-${pad(m + 1)}`)) calDay(null);
@@ -83,8 +83,24 @@ function calWide(dir){
   const fit = () => { const w = sh.clientWidth; if (!w) return; const col = Math.max(CAL_COL, Math.floor((w - 2) / 7)); sh.style.setProperty('--cbw', (col * 7) + 'px'); sh.classList.toggle('wide', col * 7 > w + 2);
     const rows = Math.ceil(sh.querySelectorAll('.cb-grid > .cb-c').length / 7) || 5, wd = sh.querySelector('.cb-wd'); sh.style.setProperty('--rowh', Math.max(70, Math.floor((sh.clientHeight - (wd ? wd.offsetHeight : 20) - 4) / rows)) + 'px');
     if (dir === undefined || dir === 0 || !CAL.wideAt){ const t = sh.querySelector('.cb-c.today') || sh.querySelector('.cb-c[data-d$="-01"]'); if (t) sh.scrollLeft = Math.max(0, t.offsetLeft + t.offsetWidth / 2 - w / 2); }
-    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); };
+    else sh.scrollLeft = dir > 0 ? 0 : sh.scrollWidth; CAL.wideAt = Date.now(); calPack(); };
   fit(); requestAnimationFrame(fit);
+  if (document.fonts && !document.fonts.check('700 16px Gaegu')) document.fonts.load('700 16px Gaegu').then(() => { if (CAL.on) calPack(); }).catch(() => {});
+}
+/* 11-15 B: 칸은 실제 보드처럼 모두 같은 높이로 그어 두고, 칸에 다 안 들어가는 일정은 노란 포스트잇에 적어 그 칸에 붙인다.
+   포스트잇은 옆(아래) 칸을 살짝 덮을 수 있음 — 누르면 앞으로 나오고, 앞에 나온 걸 한 번 더 누르면 그날 쪽지. 글은 포스트잇에서도 다 보임 */
+const calPiTilt = d => [-2.4, 1.8, -1.2, 2.6, -2.8, 1.1, -1.7][+d.slice(8) % 7];
+function calPack(){
+  const sh = $('calSheet'); if (!sh) return;
+  sh.querySelectorAll('.cb-grid > .cb-c[data-d]').forEach(c => {
+    const old = c.querySelector(':scope > .cb-pi');
+    if (old){ old.querySelectorAll('.cb-it').forEach(it => c.appendChild(it)); old.remove(); c.classList.remove('has-pi', 'up'); }
+    const its = [...c.querySelectorAll(':scope > .cb-it')]; if (!its.length) return;
+    const lim = c.clientHeight - 3, k = its.findIndex(it => it.offsetTop + it.offsetHeight > lim); if (k < 0) return;
+    const pi = document.createElement('div'); pi.className = 'cb-pi'; pi.dataset.cal = 'pi';
+    pi.style.top = Math.max(its[k].offsetTop - 2, 18) + 'px'; pi.style.setProperty('--prot', calPiTilt(c.dataset.d) + 'deg');
+    its.slice(k).forEach(it => pi.appendChild(it)); c.appendChild(pi); c.classList.add('has-pi');
+  });
 }
 window.addEventListener('resize', () => { if (CAL.on) calWide(); });
 /* 11-15 B: 컴퓨터 — 마우스로 끌면 보드가 따라 움직이고(손바닥), 휠은 보드가 위아래로 더 못 가면 옆으로 */
@@ -168,6 +184,9 @@ $('cal').addEventListener('click', e => {
   const a = b.dataset.cal;
   if (a === 'pm' || a === 'nm') calGo(a === 'pm' ? -1 : 1);
   else if (a === 'today'){ const t = parseYmd(S.today), dir = (t.getFullYear() - CAL.year) * 12 + t.getMonth() - CAL.month; CAL.year = t.getFullYear(); calMonth(t.getMonth(), true, Math.sign(dir)); calFlash(S.today); }
+  else if (a === 'pi'){ if (Date.now() - CAL.swiped < 400) return; const c = b.closest('.cb-c');   /* 11-15 B: 포스트잇 — 처음 누르면 앞으로, 앞에 나온 걸 또 누르면 그날 쪽지 */
+    if (!c.classList.contains('up')){ document.querySelectorAll('#calSheet .cb-c.up').forEach(x => x.classList.remove('up')); c.classList.add('up'); }
+    else calDay(c.dataset.d); }
   else if (a === 'd'){ if (Date.now() - CAL.swiped < 400) return; calDay(CAL.day === b.dataset.d ? null : b.dataset.d); }
   else if (a === 'dclose') calDay(null);
   else if (a === 'add') calAddItem();

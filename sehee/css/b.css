@@ -15,15 +15,24 @@
 /* 11-15 · 달력 가로 보드 — 벽걸이 가로형 월간 화이트보드, 매직으로 쓴 글씨. 칸 넉넉히 + 옆으로 밀어 보기, 글은 자르지도 줄이지도 않음. js/calendar.js calWide. c.css 를 이기게 #calSheet 로 */
 #calSheet{display:block;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(31,60,136,.3) transparent}
 #calSheet .cb-wd,#calSheet .cb-grid{width:var(--cbw,100%);min-width:100%}
-#calSheet .cb-wd{position:sticky;top:0;z-index:2;background:#f3f5f7;padding-top:2px}
+#calSheet .cb-wd{position:sticky;top:0;z-index:5;background:#f3f5f7;padding-top:2px}
 #calSheet .cb-wd span{font:700 .95rem Gaegu,var(--f-head),cursive}
-#calSheet .cb-grid{min-height:0;grid-auto-rows:minmax(var(--rowh,90px),auto)}
-#calSheet .cb-c{overflow:visible;min-height:var(--rowh,90px);padding:3px 6px 5px 6px;gap:4px}
+#calSheet .cb-grid{min-height:0;grid-auto-rows:var(--rowh,90px)}   /* 11-15 B: 줄 높이는 모두 같게(보드에 그어 둔 칸) */
+#calSheet .cb-c{overflow:visible;height:var(--rowh,90px);min-height:0;padding:3px 6px 5px 6px;gap:4px}
+#calSheet .cb-c.has-pi{z-index:1}#calSheet .cb-c.up{z-index:3}
 #calSheet .cb-c .n{font:700 1.08rem/1.1 Gaegu,var(--f-head),cursive}
 #calSheet .cb-it{display:block;-webkit-line-clamp:unset;overflow:visible;border-left:0;padding:0;color:var(--mk,#222);
   font:700 1rem/1.12 Gaegu,"Nanum Pen Script",var(--f-body),cursive;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:anywhere;
   transform:rotate(var(--rot,0deg));transform-origin:left center;text-shadow:0 0 .7px var(--mk,#222),.3px .3px 0 rgba(0,0,0,.06)}
 #calSheet .cb-it i{font-style:normal;font-weight:700;font-size:.88em;opacity:1;margin-right:3px;text-decoration:underline 1.5px;text-underline-offset:2px}
 #calSheet .cb-it.done{text-decoration:line-through 2px;opacity:.5}
-#calSheet .cb-foot{position:sticky;left:0;bottom:0}
+#calSheet .cb-foot{position:sticky;left:0;bottom:0;z-index:5}
+/* 11-15 B: 칸에 안 들어간 일정은 노란 포스트잇에 — 테이프로 붙인 듯, 살짝 기울고 그림자. 아래 칸을 덮을 수 있음(누르면 앞으로) */
+#calSheet .cb-pi{position:absolute;left:3px;right:-5px;padding:9px 7px 8px;display:flex;flex-direction:column;gap:4px;cursor:pointer;
+  background:linear-gradient(170deg,#fff8b0 0%,#ffef7a 70%,#f7e26a 100%);border-radius:1px 1px 3px 10px/1px 1px 3px 6px;
+  box-shadow:0 1px 1px rgba(0,0,0,.08),2px 5px 9px -2px rgba(0,0,0,.28);transform:rotate(var(--prot,-2deg));transform-origin:top center;transition:transform .18s,box-shadow .18s}
+#calSheet .cb-pi::before{content:"";position:absolute;top:-6px;left:50%;width:36px;height:13px;margin-left:-18px;background:rgba(255,255,255,.55);
+  box-shadow:0 0 0 1px rgba(0,0,0,.04);transform:rotate(calc(var(--prot,-2deg) * -1.6))}
+#calSheet .cb-c.up .cb-pi{transform:rotate(0deg) scale(1.04);box-shadow:0 2px 2px rgba(0,0,0,.1),3px 10px 18px -4px rgba(0,0,0,.35)}
+#calSheet .cb-pi .cb-it{text-shadow:0 0 .7px var(--mk,#222)}
 #calSheet.grab{cursor:grabbing;user-select:none}
