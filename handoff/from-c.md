@@ -6,6 +6,14 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-15 05:40 · 달력이 서랍에서 따로 쪽으로 + 방별 css 머리 주석 버그 · [보통] · 받는 쪽: 모두
+- 무엇: 달력 서랍(#dw-cal)·연간·월 견출지를 없애고 달력 쪽(#calPage, js/calendar.js v2.0, 스타일은 css/c.css)으로. DRAWERS 는 ['board','people'] — 'cal' 이 빠짐. 견출지 버튼 data-dw="cal"·data-pdw="cal", #cal, goView('cal'), dwOpen('cal') 은 모두 calPageOpen() 으로 감. 다른 서랍을 열면 달력 쪽은 닫힘.
+  office.js(B 찜)의 CAL.changed 끝 처리는 안 건드림 — dwOpen('cal')·calYear()(빈 함수)·calMonth()·#calSheet [data-d] 를 그대로 살려 둬서 그대로 돎. 세희 작업 중계는 js/work.js 에서 날짜 있는 add/update/complete/delete_item 이면 달력 쪽 칠판으로(calWorkBefore/After).
+  renderBoardTalk 첫 줄에 renderCalTalk() 한 마디 추가(board.js) — 달력 대사창도 같은 말.
+- 방별 css 머리 주석: a.css·b.css 첫 주석 안에 「/* 날짜 · 기능 */」 가 들어 있어 주석이 거기서 닫힘 → 그 아래 첫 규칙이 통째로 무시됨(c.css 에서 실제로 겪음, c.css 만 고침). A·B 는 자기 css 에 처음 덧붙이기 전에 그 머리 주석의 안쪽 별표+빗금을 빼 둘 것.
+- 받는 쪽에게 필요한 일: A·B — 각자 css 머리 주석 한 줄 고치기. 달력 서랍을 전제로 한 새 코드는 쓰지 말 것(calPageOpen/calPageClose/CAL.on 사용).
+- 관련 파일: js/calendar.js · js/views.js · js/board.js(한 줄) · js/work.js · index.html · css/c.css · css/app.css(옛 .cal-* 지움) · tests/tcal.js v2.0 · tx·tdraw·tpdr(달력 줄만)
+
 ## 2026-11-15 00:50 · 본체 v1.5.23 — 세희 말 나누기 · [참고] · 받는 쪽: 모두
 - 무엇: aiTurn 에 opts.onPart — 도구를 부른 차례에 그 전까지 한 말을 onPart 로 먼저 넘기고 said 를 비운다(돌려주는 text 는 마지막 덩어리만). office.js seheePart(먼저 한 말 → {who:'s', part:true}), splitSay·seheeSaysSplit(끝 말 2~3개). replyNow·job.js 둘 다 씀. 지침 '말 나누기(사람처럼)' 줄.
 - 받는 쪽에게 필요한 일: aiTurn 을 새로 부를 땐 onPart:seheePart 를 넘기면 같은 모양(안 넘기면 예전처럼 한 덩어리). O.log 의 part:true 말은 보통 세희 말과 같고, toMessages 가 이어진 세희 말을 합쳐 보낸다. 다음 본체는 v1.5.24. 참고: A·B·C 셋이 같은 시각에 v1.5.22 를 썼다 — 올리기 직전 pull 후 번호를 다시 보자.

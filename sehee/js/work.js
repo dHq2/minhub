@@ -26,6 +26,8 @@ async function workBefore(c){
   if (!workOn()) return;
   const a = c.args || {};
   if (O.live){ O.live.work = (WORK_LABEL[c.name] || '작업 중') + (a.text || a.title || a.name ? ' — ' + String(a.text || a.title || a.name).slice(0, 24) : ''); renderBoardTalk(); }
+  if (await calWorkBefore(c)) return;   /* 11-15 C: 날짜 있는 일은 달력 쪽 칠판에서(js/calendar.js) */
+  if (CAL.on && PAN_TOOLS.includes(c.name)) calPageClose();
   if (PAN_TOOLS.includes(c.name)){
     await workToPan();
     if (c.name === 'add_item'){
@@ -42,6 +44,7 @@ async function workBefore(c){
   }
 }
 async function workAfter(c, r){
+  if (CAL.writing){ if (!r || r.ok === false || r.error){ CAL.writing = false; renderCalTalk(); return; } render(); await calWorkAfter(c, r); return; }
   if (!workOn() || !r || r.ok === false || r.error) return;
   const a = c.args || {};
   if (PAN_TOOLS.includes(c.name)){

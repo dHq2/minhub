@@ -2,20 +2,21 @@
    사무실 오른쪽 끝에 서류 뭉치처럼 견출지가 튀어나와 있다. 누르면 열리고, 왼쪽으로 끌면 손가락을 따라 실시간으로 빠져나온다.
    열린 서류는 견출지를 다시 누르거나, 머리를 잡고 오른쪽으로 끌면 들어간다. 세희가 그 일을 하면 저절로 열린다. */
 const VIEWS = ['pan', 'office'];
-const DRAWERS = ['cal', 'board', 'people'];
+const DRAWERS = ['board', 'people'];   /* 11-15 C: 달력은 서랍이 아니라 따로 쪽(js/calendar.js calPageOpen). 견출지·#cal·dwOpen('cal') 은 그 쪽을 연다 */
 const TAB_OF = { pan:'tabPan', office:'tabOffice' };
 const VIEW_EL = { pan:'main', office:'office' };
-const hashView = () => { const h = location.hash.slice(1); return h === 'office' || DRAWERS.includes(h) ? 'office' : 'pan'; };
+const hashView = () => { const h = location.hash.slice(1); return h === 'office' || h === 'cal' || DRAWERS.includes(h) ? 'office' : 'pan'; };
 const curView = () => document.body.classList.contains('office') ? 'office' : 'pan';
 function goView(v){
   if (v === 'pan'){ history.replaceState(null, '', location.pathname); showView('pan'); }
+  else if (v === 'cal') calPageOpen();
   else if (DRAWERS.includes(v)){ if (curView() !== 'office') goView('office'); dwOpen(v); }
   else { if (location.hash !== '#office') history.pushState(null, '', location.pathname + '#office'); showView('office'); }   /* 해시를 직접 바꾸면 컴퓨터 틀에서 #office 칸으로 문서가 굴러가 서랍 머리가 잘림(보조 방 발견) — pushState 로 */
 }
 function showView(v){
   setTimeout(() => bonusEmit('view', curView()), 0);
   dlog('화면', '보기 → ' + v);
-  const want = DRAWERS.includes(location.hash.slice(1)) ? location.hash.slice(1) : null;
+  const want = DRAWERS.includes(location.hash.slice(1)) || location.hash === '#cal' ? location.hash.slice(1) : null;
   if (!VIEWS.includes(v)) v = 'pan';
   const b = document.body;
   b.classList.toggle('office', v === 'office'); b.classList.toggle('alt', v !== 'pan');
@@ -65,12 +66,14 @@ const dwTabRest = k => { const b = dwTab(k); if (b){ b.style.transition = ''; b.
 (function dwStack(){ const t = $('dwTabs'); if (!t || $('dwStack')) return; const d = document.createElement('div'); d.id = 'dwStack'; d.className = 'dw-stack'; d.setAttribute('aria-hidden', 'true'); t.parentNode.insertBefore(d, t); })();
 async function dwOpen(k, quiet){
   dlog('화면', '서랍 열기 → ' + k + (quiet ? '(조용히)' : ''));
+  if (k === 'cal') return calPageOpen();
   if (!DRAWERS.includes(k)) return;
+  if (CAL.on) calPageClose();
   for (const o of DRAWERS) if (o !== k && (DW.open === o || dwEl(o).classList.contains('moving'))) dwClose(o);
   DW.open = k; document.body.classList.add('dw-on');
   dwEl(k).classList.add('open'); dwSet(k, 0, true);
   $('dwTabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.dw === k));
-  if (!quiet){ if (k === 'cal') await calOpen(); else if (k === 'board') await boardOpen(); else if (k === 'people') await pplOpen(); }
+  if (!quiet){ if (k === 'board') await boardOpen(); else if (k === 'people') await pplOpen(); }
 }
 function dwClose(k){
   k = k || DW.open; if (!k) return;
@@ -85,6 +88,7 @@ function dwClose(k){
   tabs.addEventListener('pointerdown', e => {
     const b = e.target.closest('button[data-dw]'); if (!b) return;
     const k = b.dataset.dw, wasOpen = DW.open === k;
+    if (k === 'cal'){ e.preventDefault(); calPageOpen(); return; }
     g = { k, x:e.clientX, t:performance.now(), wasOpen, moved:false, prepared:false };
     try{ tabs.setPointerCapture(e.pointerId); }catch(x){}
     e.preventDefault();
@@ -98,7 +102,7 @@ function dwClose(k){
       g.prepared = true;
       for (const o of DRAWERS) if (o !== g.k && DW.open === o) dwClose(o);
       const el = dwEl(g.k); el.classList.add('open', 'moving');
-      if (!g.wasOpen){ if (g.k === 'cal') calOpen(); else if (g.k === 'board') boardOpen(); else if (g.k === 'people') pplOpen(); }
+      if (!g.wasOpen){ if (g.k === 'board') boardOpen(); else if (g.k === 'people') pplOpen(); }
     }
     /* 닫힌 서류철은 왼쪽 끝이 견출지 오른쪽 끝에 닿은 자리에서 출발 — 견출지와 서류철이 손가락을 1:1 로 같이 따라온다 */
     const w = dwW(g.k), start = dwTabHome(g.k) - 2 - dwEl(g.k).offsetLeft;
@@ -201,7 +205,7 @@ function panAway(){
 /* 판 쪽 서랍 견출지 — 누르거나 왼쪽으로 끌면 판이 밀려나고 사무실의 그 서랍이 열린다 */
 (function panDwTabs(){
   const box = $('panDw'); let g = null;
-  const go = async k => { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); SWIPE.anim = 'slide-inR'; goView('office'); await new Promise(r => setTimeout(r, 120)); dwOpen(k); };
+  const go = async k => { if (k === 'cal'){ calPageOpen(); return; } if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); SWIPE.anim = 'slide-inR'; goView('office'); await new Promise(r => setTimeout(r, 120)); dwOpen(k); };
   box.addEventListener('pointerdown', e => { const b = e.target.closest('[data-pdw]'); if (!b) return; g = { k:b.dataset.pdw, x:e.clientX, moved:false }; try{ box.setPointerCapture(e.pointerId); }catch(x){} e.preventDefault(); });
   box.addEventListener('pointermove', e => { if (!g) return; const dx = e.clientX - g.x; if (!g.moved && Math.abs(dx) < 6) return; g.moved = true; if (dx < 0) panFollow(dx * 0.6); });
   const up = e => { if (!g) return; const { k, x, moved } = g; g = null; const dx = e.clientX - x; panBack(); if (!moved || dx < -40) go(k); };

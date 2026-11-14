@@ -185,7 +185,7 @@ function renderPanTalk(){
 }
 let talkSig = '';
 function renderBoardTalk(){
-  renderPanTalk();
+  renderPanTalk(); renderCalTalk();   /* 11-15 C: 달력 쪽 대사창도 같은 말 */
   if (BONUS.subs.talk){ const t = talkHtml(''), k = t.h + '|' + t.face; if (k !== talkSig){ talkSig = k; bonusEmit('talk', t); } }
   if (DW.open !== 'board') return;
   const t = talkHtml('카드를 누르면 크게 보여요. 물어보시면 브리핑할게요.');

@@ -15,8 +15,8 @@ const { chromium } = require('playwright');
     await p.mouse.move(h.x + 60, h.y + 5); await p.mouse.down(); await p.mouse.move(h.x - 80, h.y + 5, { steps:5 }); await p.screenshot({ path:`/tmp/v137-drag-${tag}.png` }); await p.mouse.move(h.x - 260, h.y + 5, { steps:4 }); await p.mouse.up(); await p.waitForTimeout(500);
     g.afterDrag = await p.evaluate(() => curView());
     await p.evaluate(() => goView('pan')); await p.waitForTimeout(400); await p.locator('#panX').click(); await p.waitForTimeout(400); g.afterX = await p.evaluate(() => curView());
-    await p.evaluate(() => goView('pan')); await p.waitForTimeout(400); await p.locator('#panDw [data-pdw="cal"]').click(); await p.waitForTimeout(700); g.tab = await p.evaluate(() => [curView(), DW.open]);
-    await p.evaluate(() => { dwClose(); goView('pan'); }); await p.waitForTimeout(400); await p.locator('#sayText').focus(); await p.waitForTimeout(300); await p.screenshot({ path:`/tmp/v137-typing-${tag}.png` });
+    await p.evaluate(() => goView('pan')); await p.waitForTimeout(400); await p.locator('#panDw [data-pdw="cal"]').click(); await p.waitForTimeout(700); g.tab = await p.evaluate(() => [curView(), DW.open, CAL.on]);   // 11-15 C: 달력은 따로 쪽
+    await p.evaluate(() => { calPageClose(); dwClose(); goView('pan'); }); await p.waitForTimeout(400); await p.locator('#sayText').focus(); await p.waitForTimeout(300); await p.screenshot({ path:`/tmp/v137-typing-${tag}.png` });
     g.sayIn = await p.evaluate(() => $('say').closest('#panDrawer') ? 'drawer' : 'other');
     console.log(tag, JSON.stringify(g)); await ctx.close(); }
   console.log('errors', errs); await b.close(); })();

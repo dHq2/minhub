@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
     const ctx = await b.newContext({ viewport:vp, isMobile:mob, hasTouch:mob, serviceWorkers:'block' });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto('http://localhost:8765/sehee/#office'); await p.waitForTimeout(1800);
-    for (const k of ['board', 'cal', 'people']){
+    for (const k of ['board', 'people']){   // 11-15 C: 달력은 서랍이 아니라 따로 쪽(tcal)
       await p.evaluate(k => dwOpen(k), k); await p.waitForTimeout(500);
       const x = await p.locator(`#dw-${k} .dw-x`).boundingBox();
       // real pointer press/release at X center (mouse or touch)

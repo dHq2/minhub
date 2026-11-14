@@ -37,12 +37,12 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
     console.log(vp.tag, 'after head drag:', await p.evaluate(() => DW.open));
     // tap calendar tab
     await p.locator('#dwTabs button[data-dw="cal"]').click(); await p.waitForTimeout(450);
-    console.log(vp.tag, 'tap cal:', await p.evaluate(() => DW.open)); await p.screenshot({ path:`/tmp/v092-${vp.tag}-cal.png` });
-    await p.locator('#dw-cal .dw-x').click(); await p.waitForTimeout(400);
+    console.log(vp.tag, 'tap cal(11-15 C: 따로 쪽):', await p.evaluate(() => [DW.open, CAL.on]));
+    await p.locator('#cpX').click(); await p.waitForTimeout(400);
     // Sehee adds dated item → calendar auto-opens
     await p.locator('#sayText').fill('18일 3시 학부모 상담 잡혔어'); await p.locator('#sayGo').click();
     await p.waitForFunction(() => !O.busy, null, { timeout:15000 }); await p.waitForTimeout(800);
-    console.log(vp.tag, 'auto after item:', await p.evaluate(() => DW.open), await p.evaluate(() => CAL.month));
+    console.log(vp.tag, 'auto after item:', await p.evaluate(() => [DW.open, CAL.on]), await p.evaluate(() => CAL.month)); await p.evaluate(() => calPageClose()); await p.waitForTimeout(400);
     await p.screenshot({ path:`/tmp/v092-${vp.tag}-autocal.png` });
     await p.locator('#sayText').fill('표로 만들어줘'); await p.locator('#sayGo').click();
     await p.waitForFunction(() => !O.busy, null, { timeout:15000 }); await p.waitForTimeout(900);

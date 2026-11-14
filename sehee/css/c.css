@@ -1,2 +1,108 @@
 /* 방 C 전용 스타일 — v1.0 (2026-11-15, A · 작업 속도 개편)
-   새 기능의 스타일은 app.css 맨 아래 대신 여기에 덧붙인다(세 방이 같은 줄을 다투지 않게). 블록마다 「/* 날짜 · 기능 */」 머리 주석. app.css 다음에 불러온다. */
+   새 기능의 스타일은 app.css 맨 아래 대신 여기에 덧붙인다(세 방이 같은 줄을 다투지 않게). 블록마다 「날짜 · 기능」 머리 주석.
+   (11-15 C: 이 머리 주석 안에 주석 닫는 표시가 들어 있어 주석이 일찍 닫히고 첫 규칙이 통째로 무시됐음 — 그 표시를 뺌. 주석 안엔 별표+빗금을 쓰지 말 것) app.css 다음에 불러온다. */
+
+/* 11-15 C · 달력 쪽 — 「이달의 일정」 화이트보드 칠판 + 왼쪽 아래 세희 + 오른쪽 아래 대사창 */
+.cp{position:fixed;inset:0;z-index:220;overflow:hidden;--cp-bot:clamp(184px,30dvh,300px);--cp-ink:#1f3c88;
+  background:#3b3a36;-webkit-user-select:none;user-select:none}
+.cp[hidden]{display:none}
+.cp::before{content:"";position:absolute;inset:-12px;background:url(../art/bg-office.webp) center 30% / cover;filter:blur(4px) brightness(.5) saturate(.85)}
+.cp::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--cp-bot) * .55);background:linear-gradient(transparent,rgba(10,10,14,.55));pointer-events:none}
+.cp-top{position:absolute;left:0;right:0;top:0;z-index:6;height:calc(env(safe-area-inset-top) + 42px);padding:env(safe-area-inset-top) 10px 0 14px;display:flex;align-items:center;gap:8px;color:#fff}
+.cp-top b{font:700 1rem var(--f-head);letter-spacing:.2em}
+.cp-top span{font-size:.7rem;opacity:.7}
+.cp-x{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;font-size:1rem;cursor:pointer}
+.cp-x:active{background:rgba(255,255,255,.25)}
+/* 칠판 — 알루미늄 테두리 + 흰 판 + 비스듬한 반사 */
+.cp-board{position:absolute;z-index:1;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 44px);bottom:calc(env(safe-area-inset-bottom) + var(--cp-bot) - 14px)}
+.cp-frame{position:relative;height:100%;padding:7px;border-radius:7px;background:linear-gradient(160deg,#eef0f2,#b8bec6 45%,#dfe3e7 60%,#a3aab3);box-shadow:0 12px 26px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.8)}
+.cp-surf{position:relative;height:100%;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;padding:4px 7px 6px;
+  background:linear-gradient(118deg,rgba(255,255,255,0) 34%,rgba(255,255,255,.75) 44%,rgba(255,255,255,0) 54%),
+    radial-gradient(ellipse at 78% 18%,rgba(120,140,170,.07),transparent 45%),radial-gradient(ellipse at 14% 82%,rgba(120,140,170,.08),transparent 50%),#f5f7f8;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.12),inset 0 2px 8px rgba(0,0,0,.08)}
+.cp-tray{position:absolute;left:16%;right:16%;bottom:-9px;height:11px;border-radius:0 0 4px 4px;background:linear-gradient(#dfe3e7,#9aa1aa);box-shadow:0 3px 5px rgba(0,0,0,.35);z-index:2}
+.cp-tray i{position:absolute;top:-5px;height:7px;border-radius:3px}
+.cp-tray .mk{width:34px;background:linear-gradient(90deg,#f4f4f4 0 72%,var(--k) 72%)}
+.cp-tray .mk.r{left:10%;--k:#c0392b}.cp-tray .mk.b{left:26%;--k:#1f3c88}.cp-tray .mk.k{left:42%;--k:#222}
+.cp-tray .er{right:12%;width:44px;height:10px;top:-8px;background:linear-gradient(#3a3a3a 0 55%,#d8d0c0 55%);border-radius:3px}
+.cp-head{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:12px;height:40px}
+.cp-head b{font:800 1.55rem/1 var(--f-head);color:var(--cp-ink);min-width:4.2em;text-align:center;letter-spacing:.02em;transform:rotate(-1deg)}
+.cp-head b small{display:block;font:700 .62rem var(--f-body);color:#6a7486;letter-spacing:.3em;margin-bottom:2px}
+.cp-head button{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(31,60,136,.35);background:rgba(255,255,255,.6);color:var(--cp-ink);font-size:1.15rem;line-height:1;cursor:pointer;padding:0}
+.cp-head button:active{background:rgba(31,60,136,.12)}
+.cb-sheet{flex:1;min-height:0;display:flex;flex-direction:column;touch-action:pan-y}
+.cb-sheet.wipeR{animation:cbWipeR .36s ease}.cb-sheet.wipeL{animation:cbWipeL .36s ease}
+@keyframes cbWipeR{0%{opacity:0;transform:translateX(26px)}100%{opacity:1;transform:none}}
+@keyframes cbWipeL{0%{opacity:0;transform:translateX(-26px)}100%{opacity:1;transform:none}}
+.cb-wd,.cb-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cb-wd span{text-align:center;font:800 .7rem var(--f-head);color:#4a5568;padding-bottom:3px}
+.cb-wd .sun{color:#c0392b}.cb-wd .sat{color:#1f5fbf}
+.cb-grid{flex:1;min-height:0;grid-auto-rows:minmax(0,1fr);border-top:1.5px solid rgba(31,60,136,.28);border-left:1.5px solid rgba(31,60,136,.28)}
+.cb-c{position:relative;min-width:0;min-height:0;overflow:hidden;cursor:pointer;padding:2px 2px 0 3px;display:flex;flex-direction:column;gap:1px;
+  border-right:1.5px solid rgba(31,60,136,.28);border-bottom:1.5px solid rgba(31,60,136,.28)}
+.cb-c.off{cursor:default;background:repeating-linear-gradient(135deg,rgba(31,60,136,.035) 0 4px,transparent 4px 9px)}
+.cb-c .n{align-self:flex-start;font:800 .78rem/1.25 var(--f-head);color:#2d3748;padding:0 3px}
+.cb-c.sun .n{color:#c0392b}.cb-c.sat .n{color:#1f5fbf}
+.cb-c.today .n{color:#c0392b;border:2px solid #d0342c;border-radius:52% 46% 55% 44%;transform:rotate(-6deg);margin:-1px 0 0 -2px;padding:0 4px}
+.cb-c.sel{background:rgba(31,60,136,.08)}
+.cb-c.flash{animation:cbFlash 1.5s ease 2}
+@keyframes cbFlash{50%{background:rgba(255,214,102,.55)}}
+.cb-it{flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:700 .6rem/1.25 var(--f-body);color:var(--c);word-break:break-all;letter-spacing:-.03em;border-left:2px solid var(--c);padding-left:2px}
+.cb-it i{font-style:normal;font-weight:600;font-size:.88em;opacity:.75;margin-right:2px}
+.cb-it.done{text-decoration:line-through;opacity:.45}
+.cb-it.fresh{animation:cbWrite 1.1s steps(14) both;background:linear-gradient(transparent 62%,rgba(255,214,102,.6) 62%)}
+@keyframes cbWrite{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(0 0 0 0)}}
+.cb-it.w-hl{animation:cbFlash 1.2s ease 2}
+.cb-c .more{font-size:.56rem;color:#6a7486;font-weight:700}
+.cb-foot{flex:0 0 auto;margin:3px 0 0;padding-left:46px;font-size:.62rem;color:#6a7486;text-align:right}
+/* 왼쪽 아래 모서리 동그란 자석 — 이번 달로 */
+.cp-today{position:absolute;z-index:3;left:-3px;bottom:-3px;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;padding:0;color:#fff;
+  background:radial-gradient(circle at 35% 30%,#ff8a7a,#d0342c 55%,#93231b);box-shadow:0 3px 6px rgba(0,0,0,.4),inset 0 -2px 3px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.cp-today small{font-size:.5rem;opacity:.9;letter-spacing:.05em}.cp-today b{font:800 1rem var(--f-head)}
+.cp-today:active{transform:scale(.94)}
+/* 그날 쪽지(포스트잇) */
+.cp-note{position:absolute;z-index:5;left:9%;right:9%;top:22%;max-height:66%;display:flex;flex-direction:column;padding:16px 12px 10px;background:linear-gradient(#fff6a6,#ffef86);color:#3a3320;
+  box-shadow:0 10px 18px rgba(0,0,0,.28);transform:rotate(-1.6deg) scale(.6);opacity:0;pointer-events:none;transition:transform .22s cubic-bezier(.2,.9,.3,1.2),opacity .16s}
+.cp-note.on{transform:rotate(-1.6deg);opacity:1;pointer-events:auto;-webkit-user-select:text;user-select:text}
+.cp-note::before{content:"";position:absolute;top:-8px;left:50%;width:64px;height:16px;margin-left:-32px;background:rgba(220,226,232,.75);transform:rotate(2deg);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.cn-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.cn-head b{font:800 1rem var(--f-head)}
+.cn-head .tg{font-size:.62rem;background:#c0392b;color:#fff;border-radius:8px;padding:1px 7px}
+.cn-head button{margin-left:auto;border:none;background:rgba(0,0,0,.08);border-radius:50%;width:26px;height:26px;cursor:pointer;color:#3a3320}
+.cn-list{flex:1;min-height:0;overflow:auto}
+.cn-it{display:grid;grid-template-columns:auto 1fr;gap:0 8px;border-left:4px solid var(--c);padding:4px 8px;margin-bottom:5px;background:rgba(255,255,255,.55);border-radius:3px}
+.cn-it .t{font-size:.72rem;font-weight:700;color:#6b5f3a}.cn-it .x{font-size:.86rem;word-break:keep-all;overflow-wrap:anywhere}.cn-it .s{grid-column:2;font-size:.64rem;color:#7a6e4a}
+.cn-it.done .x{text-decoration:line-through;opacity:.55}
+.cn-empty{margin:4px 0 8px;font-size:.8rem;color:#7a6e4a}
+.cn-add{display:flex;gap:6px;margin-top:6px}
+.cn-add input{flex:1;min-width:0;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 8px;font:inherit;font-size:.82rem;background:rgba(255,255,255,.8)}
+.cn-add button{border:none;background:#3a3320;color:#fff8d0;border-radius:6px;padding:0 12px;font-weight:700;cursor:pointer}
+/* 세희 — 왼쪽 아래에 서 있음 */
+.cp-who{position:absolute;z-index:3;left:-4%;bottom:0;height:calc(var(--cp-bot) + 26px);pointer-events:none}
+.cp-who img{height:100%;width:auto;display:block;filter:drop-shadow(4px 4px 10px rgba(0,0,0,.45));-webkit-user-drag:none}
+.cp-who img.pop{animation:cpPop .32s ease-out}
+@keyframes cpPop{0%{transform:translateY(0)}40%{transform:translateY(-6px)}100%{transform:none}}
+/* 오른쪽 아래 대사창 — 사무실 대화와 같은 말 */
+.cp-box{position:absolute;z-index:4;left:38%;right:8px;bottom:calc(env(safe-area-inset-bottom) + 10px);height:calc(var(--cp-bot) - 34px);display:flex;flex-direction:column;
+  background:rgba(253,252,248,.97);border:2px solid #2b3a55;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.45);padding:16px 10px 8px 12px}
+.cp-name{position:absolute;left:12px;top:-14px}
+.cp-name b{background:#2b3a55;color:#fff;font:700 .8rem var(--f-head);letter-spacing:.12em;padding:4px 14px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.cp-bub{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;font-size:calc(.95rem + var(--chat-d,0) * 1px);line-height:1.55;-webkit-user-select:text;user-select:text;scrollbar-width:thin}
+.cp-say{flex:0 0 auto;display:flex;gap:6px;align-items:flex-end;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(43,58,85,.25)}
+.cp-say textarea{flex:1;min-width:0;border:1.5px solid #23304a;border-radius:14px;padding:6px 11px;resize:none;font:inherit;font-size:.88rem;line-height:1.4;max-height:92px;background:#fff}
+.cp-say button{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:none;background:#23304a;color:#fff;font-size:1rem;cursor:pointer}
+.cp-say button:disabled{opacity:.35}
+/* 쓰는 동안(키보드) — 세희 그림을 내리고 대사창을 넓게 */
+.cp.typing .cp-who{display:none}.cp.typing .cp-box{left:8px}
+/* 열고 닫는 움직임 */
+.cp.in .cp-board{animation:cpBoardIn .42s cubic-bezier(.2,.9,.3,1) both}
+.cp.in .cp-who{animation:cpWhoIn .5s cubic-bezier(.22,.9,.3,1) .08s both}
+.cp.in .cp-box{animation:cpBoxIn .4s cubic-bezier(.2,.9,.3,1) .16s both}
+.cp.in::before,.cp.in .cp-top{animation:cpFade .3s ease both}
+.cp.out{animation:cpOut .3s ease forwards;pointer-events:none}
+@keyframes cpBoardIn{0%{opacity:0;transform:translateY(-18px) scale(.98)}100%{opacity:1;transform:none}}
+@keyframes cpWhoIn{0%{opacity:0;transform:translateX(-70px)}100%{opacity:1;transform:none}}
+@keyframes cpBoxIn{0%{opacity:0;transform:translateY(22px)}100%{opacity:1;transform:none}}
+@keyframes cpFade{0%{opacity:0}100%{opacity:1}}
+@keyframes cpOut{to{opacity:0}}
+body.cal-on .toast{z-index:300}body.cal-on .veil{z-index:225}body.cal-on .sheet{z-index:226}
+@media (prefers-reduced-motion:reduce){.cp.in .cp-board,.cp.in .cp-who,.cp.in .cp-box,.cb-it.fresh,.cb-sheet{animation:none!important}}

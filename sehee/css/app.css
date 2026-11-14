@@ -485,58 +485,8 @@ body.typing .dw-tabs{top:4px;gap:4px}body.typing .dw-tabs button,body.typing .pa
 .dw-head b{font-size:.9rem;white-space:nowrap}.dw-head .dw-hint{font-size:.62rem;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dw-head .dw-x{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.4)}
 .dw-body{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;overflow:hidden}
-.cs-c.flash{animation:dayFlash 1.6s ease 2}
-@keyframes dayFlash{50%{background:#ffe08a}}
 .log{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
 .log::-webkit-scrollbar{width:6px}.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:3px}.log::-webkit-scrollbar-track{background:transparent}
-/* 달력 — 책상 위 서류철 */
-#cal{max-width:960px;background:linear-gradient(#cdbf9c,#bfae86)}
-.cal-year{flex:1;overflow:auto;padding:10px 44px 14px 12px}
-.cy-head{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
-.cy-head b{font:700 1.15rem var(--f-head)}
-.cy-head small{margin-left:auto;font-size:.72rem;color:var(--ink-soft)}
-.cy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-.cy-m{background:#fbf8ef;border:1px solid #a89a76;border-radius:3px;padding:7px 7px 6px;cursor:pointer;box-shadow:0 2px 0 #a89a76}
-.cy-m:active{transform:translateY(1px)}
-.cy-t{font-weight:700;font-size:.82rem;margin-bottom:4px}
-.cy-d{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
-.cy-d i{font-style:normal;font-size:.56rem;text-align:center;line-height:1.55;color:var(--ink-soft);border-radius:50%}
-.cy-d i.ev{background:var(--c);color:#fff;font-weight:700}
-.cy-d i.today{outline:1.5px solid var(--red)}
-.cal-tabs{position:absolute;right:0;top:8px;bottom:8px;width:38px;display:flex;flex-direction:column;gap:2px;z-index:4;touch-action:none}
-.cal-tabs button{flex:1;border:1px solid #8c7d5a;border-right:none;border-radius:6px 0 0 6px;background:#e9dfc4;font-size:.62rem;color:var(--ink);padding:0;cursor:pointer;writing-mode:vertical-rl;letter-spacing:-1px}
-.cal-tabs button:nth-child(3n+2){background:#d9e3d2}.cal-tabs button:nth-child(3n){background:#ead6cf}
-.cal-tabs button.on{background:#fbf8ef;font-weight:700;margin-left:-6px}
-.cal-sheet{position:absolute;top:6px;bottom:6px;left:5%;right:38px;background:#fbf8ef;border:1px solid #8c7d5a;border-radius:4px 0 0 4px;box-shadow:-6px 4px 14px rgba(0,0,0,.25);
-  transform:translateX(110%);transition:transform .3s cubic-bezier(.2,.8,.3,1);z-index:3;display:flex;flex-direction:column;padding:8px 10px;overflow:hidden}
-.cal-sheet.on{transform:none}
-.cal-sheet.flipR{animation:inR .25s ease}.cal-sheet.flipL{animation:inL .25s ease}
-.cs-ear{position:absolute;left:-1px;top:-1px;background:#a13b2c;color:#fff;font-size:.68rem;padding:2px 9px;border-radius:0 0 6px 0}
-.cs-head{display:flex;align-items:center;gap:8px;justify-content:center;margin:4px 0 6px}
-.cs-head b{font:700 1rem var(--f-head);min-width:8em;text-align:center}
-.cs-head [data-cal="close"]{position:absolute;right:8px;top:6px}
-.cs-wd,.cs-grid{display:grid;grid-template-columns:repeat(7,1fr)}
-.cs-wd span{text-align:center;font-size:.7rem;color:var(--ink-soft);padding-bottom:3px}
-.cs-wd .sun{color:var(--red)}.cs-wd .sat{color:var(--blue)}
-.cs-grid{flex:1;grid-auto-rows:1fr;border-top:1px solid var(--line);border-left:1px solid var(--line);min-height:0}
-.cs-c{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:2px 2px 0;overflow:hidden;cursor:pointer;min-height:0;display:flex;flex-direction:column;gap:1px}
-.cs-c.off{background:rgba(0,0,0,.03);cursor:default}
-.cs-c.today{background:#fff4e8}.cs-c.today .n{color:var(--red);font-weight:700}
-.cs-c .n{font-size:.68rem}
-.cs-c .chip{display:block;font-size:.58rem;line-height:1.35;background:var(--c);color:#fff;border-radius:3px;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cs-c .chip.done{opacity:.45;text-decoration:line-through}
-.cs-c .more{font-size:.56rem;color:var(--ink-soft)}
-.cs-hint{font-size:.66rem;color:var(--ink-soft);text-align:center;margin:5px 0 0}
-.cal-day{position:absolute;left:5%;right:38px;bottom:6px;max-height:62%;background:#fffdf6;border:1px solid #8c7d5a;border-bottom:none;border-radius:10px 10px 0 0;
-  box-shadow:0 -6px 16px rgba(0,0,0,.2);transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.8,.3,1);z-index:5;display:flex;flex-direction:column;padding:10px 12px}
-.cal-day.on{transform:none}
-.cd-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.cd-head b{font-size:.95rem}.cd-head .tg{font-size:.66rem;background:var(--red);color:#fff;border-radius:8px;padding:1px 7px}
-.cd-head [data-cal="dclose"]{margin-left:auto}
-.cd-list{overflow:auto;flex:1}
-.cd-it{display:grid;grid-template-columns:auto 1fr;gap:0 8px;border-left:4px solid var(--c);padding:5px 8px;margin-bottom:5px;background:#fff;border-radius:3px}
-.cd-it .t{font-size:.74rem;font-weight:700;color:var(--ink-soft)}.cd-it .x{font-size:.86rem}.cd-it .s{grid-column:2;font-size:.66rem;color:var(--ink-soft)}
-.cd-it.done .x{text-decoration:line-through;color:var(--done)}
-.cd-add{display:flex;gap:6px;margin-top:6px}.cd-add input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:.82rem;background:#fff}
 /* 화이트보드 */
 #board{max-width:1100px;background:#6b6257}
 .wb{flex:1;min-height:0;margin:8px 10px 0 8px;background:#f7f7f3;border:6px solid #c9ccd1;border-radius:6px;box-shadow:inset 0 0 30px rgba(0,0,0,.06);display:flex;flex-direction:column}
