@@ -86,7 +86,8 @@ function updAfterBoot(){
   const names = { A:'본체', B:'보너스 B', C:'보너스 C' }, ch = [];
   for (const k of Object.keys(now)) if (base[k] && base[k] !== now[k]) ch.push(`${names[k] || k} ${base[k]} → ${now[k]}`);
   /* v1.5.30 (B) 장면에서 '예'로 올린 본체 업데이트 — 띠 대신 사무실에서 세희가 바뀐 점을 설명하고 자료를 손본다(office.js updBrief) */
-  if (ch.length && from && from.A && from.A !== now.A && typeof updBrief === 'function'){ dlog('업데이트', '업데이트 끝 · ' + ch.join(' · ') + ' — 세희 설명으로'); updMode = 'done'; setTimeout(() => updBrief(from.A, now.A), 300); return; }
+  /* 11-15 B: 눌러서 올렸든, 꺼 둔 사이 저절로 올라갔든 — 본체 번호가 바뀌었으면 세희가 한 번은 바뀐 점을 말한다(보스 11-15) */
+  if (ch.length && base.A && now.A && base.A !== now.A && typeof updBrief === 'function'){ dlog('업데이트', '업데이트 끝 · ' + ch.join(' · ') + ' — 세희 설명으로'); updMode = 'done'; updHide(); setTimeout(() => updBrief(base.A, now.A), 300); return; }
   if (ch.length){ dlog('업데이트', '업데이트 끝 · ' + ch.join(' · ')); updMode = 'done'; updBand(`업데이트 끝 — ${ch.join(' · ')}`, '확인'); setTimeout(() => { if (updMode === 'done') updHide(); }, 15000); return; }
   if (from){ dlog('업데이트', '눌렀는데 버전 그대로'); updMode = 'done';
     updBand('아직 새 버전이 다 올라오지 않았어요(올린 직후 1~2분은 이래요). 조금 뒤에 다시 물어볼게요', '확인');

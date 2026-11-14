@@ -97,7 +97,7 @@ function renderLog(){
       ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
       : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<div class="mfoot">${msgTools(m, i, lastS)}<time>${hhmm(m.at)}</time></div></div>`).join('')
-    + (O.busy ? (O.live && O.live.text ? `<div class="msg s last live">${esc(parseFace(O.live.text).t)}</div>`
+    + (O.busy ? (O.live && O.live.text && liveRest(parseFace(O.live.text).t) ? `<div class="msg s last live">${esc(liveRest(parseFace(O.live.text).t))}</div>`
       : `<div class="msg s last wait" aria-label="세희가 쓰는 중"><i><span></span><span></span><span></span></i><small id="waitTxt">${waitText()}</small>${O.abort ? '<button class="stop" data-stop>그만</button>' : ''}</div>`) : '');
   el.scrollTop = el.scrollHeight;
   renderBoardTalk();
@@ -128,10 +128,28 @@ function waitText(){
   const re = O.live.retry ? ` · 서버가 삐끗해서 다시 하는 중(${O.live.retry}번째)` : '';
   return (sec < 2 && !re ? '보내는 중' : busy) + ` · ${sec}초` + re + (sec >= 15 && !re ? ' · 오래 걸리네요' : '');
 }
+/* 11-15 B: 말 나누기를 쓰는 중에 — 글이 오다가 문단이 끝나면 그 문단을 바로 말풍선 하나로 내보내고 다음 말풍선에 이어 쓴다.
+   큰 말풍선을 다 쓴 뒤에 쪼개는 게 보여 버벅이던 것(보스 11-15 — '너처럼 차례대로'). 한 조각 40자 이상, 한 대답에 먼저 내보내는 건 2개까지(마지막 포함 3개) */
+const LIVE_MIN = 40, LIVE_MAX = 2;
+function liveRest(t){ let s = String(t || ''); const L = O.live; if (L && L.flushed) for (const c of L.flushed){ const k = s.indexOf(c); if (k >= 0) s = s.slice(k + c.length); } return s.replace(/^\s+/, ''); }
+function liveSplit(){
+  const L = O.live; if (!L || !L.text) return;
+  const pf = parseFace(L.text); let did = false;
+  while ((L.flushed || []).length < LIVE_MAX){
+    const rest = liveRest(pf.t), re = /\n\s*\n/g; let m, cut = -1, brk = '';
+    while ((m = re.exec(rest))) if (m.index >= LIVE_MIN){ cut = m.index; brk = m[0]; break; }
+    if (cut < 0 || !rest.slice(cut + brk.length).trim()) break;   /* 뒤에 글이 와야 나눈다 */
+    const chunk = rest.slice(0, cut).trim(); (L.flushed = L.flushed || []).push(chunk);
+    O.log.push({ who:'s', text:chunk, face:pf.f, at:Date.now(), part:true }); did = true;
+    dlog('대화', `세희 ← (차례로) ${chunk.slice(0, 50)}`);
+  }
+  if (did){ L.faced = true; setFace(pf.f); renderLog(); saveLog(); }
+}
 function updateLive(){
+  liveSplit();
   const el = $('log').querySelector('.msg.live');
   if (!el){ renderLog(); return; }
-  el.textContent = parseFace(O.live.text).t;
+  el.textContent = liveRest(parseFace(O.live.text).t);
   if (logPinned) $('log').scrollTop = $('log').scrollHeight;
   renderBoardTalk();
 }
@@ -139,7 +157,8 @@ async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try
 /* ── 말을 나눠서 (v1.5.22 · C) — 보스: 큰 일은 두세 번에 나눠 말하는 게 사람 같다 ──
    seheePart = 도구 쓰기 전에 한 말(그 자리에서 말풍선 하나). seheeSaysSplit = 끝 대답이 길고 문단이 나뉘면 2~3개로, 사이에 잠깐 '…'. */
 function seheePart(t){
-  const pf = parseFace(t); if (!pf.t.trim()) return;
+  const pf = parseFace(t); pf.t = liveRest(pf.t); if (O.live) O.live.flushed = [];   /* 11-15 B: 쓰는 중에 이미 내보낸 문단은 빼고 */
+  if (!pf.t.trim()){ if (O.live){ O.live.text = ''; O.live.faced = false; } renderLog(); return; }
   O.log.push({ who:'s', text:pf.t, face:pf.f, at:Date.now(), part:true }); setFace(pf.f); dlog('대화', `세희 ← (먼저) ${pf.t.slice(0, 60)}`);
   if (O.live){ O.live.text = ''; O.live.faced = false; }
   renderLog(); saveLog();
@@ -155,6 +174,9 @@ function splitSay(t){
   return out;
 }
 async function seheeSaysSplit(pf, src){
+  /* 11-15 B: 쓰는 중에 이미 차례로 내보냈으면 남은 것만 끝 말로 — 다 쓴 뒤 쪼개기는 하지 않는다(버벅임) */
+  if (O.live){ const had = (O.live.flushed || []).length; pf = { ...pf, t:liveRest(pf.t) }; O.live.flushed = [];
+    if (had || O.live.text){ if (!String(pf.t || '').trim()){ const last = O.log[O.log.length - 1]; if (last && last.part){ O.log.pop(); return seheeSays({ t:last.text, f:last.face }, src); } } return seheeSays(pf, src); } }
   /* 끝 말이 비었는데 앞서 먼저 한 말이 있으면 — 그 말을 끝 말로(판 반짝임 등 뒤처리는 seheeSays 가 한다) */
   if (!String(pf.t || '').trim()){ const last = O.log[O.log.length - 1]; if (last && last.part){ O.log.pop(); return seheeSays({ t:last.text, f:last.face }, src); } }
   const parts = splitSay(pf.t);
@@ -373,10 +395,12 @@ async function updNotes(from, to){
 }
 async function updBrief(from, to){
   if (typeof SYNC !== 'undefined' && SYNC.observer) return;
-  for (let k = 0; k < 60 && (O.busy || WORK.ask); k++) await new Promise(r => setTimeout(r, 500));   /* 다른 대답 중이면 기다림 */
+  for (let k = 0; k < 240 && (O.busy || WORK.ask || (typeof VN !== 'undefined' && VN.el) || !!document.getElementById('pinVeil')); k++) await new Promise(r => setTimeout(r, 500));   /* 다른 대답·장면(처음 인사)·잠금 화면이 끝날 때까지 */
   await loadChat(); if (curView() !== 'office') goView('office');
-  if (!aiReady()){ seheeSays({ t:'새 규정 적용을 마쳤습니다. 무엇이 바뀌었는지는 머리(설정 → 세희 머리)를 넣어 주시면 설명해 드릴게요.', f:0 }); renderLog(); saveLog(); return; }
   const notes = await updNotes(from, to);
+  if (!aiReady()){   /* 머리가 없으면 바뀐 기록 제목만 추려서 한마디(11-15 B) */
+    const titles = (notes.match(/^## v[\d.]+ · [A-Z] · (.+)$/gm) || []).map(l => l.replace(/^## v[\d.]+ · [A-Z] · /, '').split(/ — |: /)[0].trim()).filter(Boolean).slice(0, 5);
+    seheeSays({ t:`새 규정 적용을 마쳤습니다.${titles.length ? ' 바뀐 것은 이래요.\n' + titles.map(x => '· ' + x).join('\n') : ''}`, f:0 }); renderLog(); saveLog(); return; }
   dlog('업데이트', `세희 설명 시작 ${from} → ${to} · 기록 ${notes.length}자`);
   O.log.push({ who:'u', hide:true, upd:{ from, to }, at:Date.now(), text:`(앱 안내 — 보스가 쓴 말이 아니다. 보스 화면엔 안 보인다)
 보스가 방금 업데이트 장면에서 '예'를 눌러 사내 규정(세희 앱)을 ${from} → ${to} 로 바꿨다. 사무실로 돌아온 보스에게 이렇게 한다.

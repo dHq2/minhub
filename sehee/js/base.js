@@ -125,7 +125,10 @@ async function askPersist(){
 function render(){
   $('ver').textContent = APP_VERSION;
   /* v1.5.16 (C) 제목 = 보고서 목록 단추. 지난 판을 보는 중이면 제목 옆에 '4시 · 지난 판' */
-  $('day').innerHTML = esc(dayLabel(S.date)) + (RPT.view ? '' : S.date === S.today ? '<small>오늘</small>' : '') + '<i class="dv-dn">▾</i>' + (RPT.view ? `<small class="dv-old">${esc(RPT.view)} 보고서 · 지난 판</small>` : '');
+  /* 11-15 B: 제목에 '몇 시 보고서'까지 — 작은 글씨로 한 줄에(보스: (일)까지만 보이고 몇 시 보고서인지 안 보임) */
+  const vl = RPT.view || (S.pan && S.pan.ver && S.pan.ver.label) || '';
+  const arw = `<i class="dv-dn">${$('rlDrop') && $('rlDrop').classList.contains('on') ? '▴' : '▾'}</i>`;
+  $('day').innerHTML = esc(dayLabel(S.date)) + (vl ? `<span class="dv-rep">${esc(vl)} 보고서${RPT.view ? '<small class="dv-past">지난 판</small>' : ''}${arw}</span>` : arw);
   $('day').setAttribute('aria-label', '보고서 목록 열기');
   $('prev').disabled = !S.dates.some(d => d < S.date);
   $('next').disabled = S.date >= S.today;
@@ -240,20 +243,24 @@ function verBarOld(live, snap){
 }
 const verHM = t => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
 /* ── 보고서 목록 (v1.5.16 · C) — 맨 위 제목(날짜)을 누르면 지금까지 보고서 전부. 다섯 줄만 보이고 그 아래는 굴려 본다 ── */
+/* 11-15 B: 보고서 목록 = 제목 바로 아래 펼침 목록(굴려서 찾기). 아래서 올라오던 창은 없앰(보스 11-15). 제목을 다시 누르거나 바깥을 누르면 접힘 */
+function rlClose(){ const d = $('rlDrop'); if (d && d.classList.contains('on')){ d.classList.remove('on'); render(); } }
 async function reportList(){
+  let d = $('rlDrop'); if (d && d.classList.contains('on')) return rlClose();
   await flush();
   const pans = (await allPans()).filter(x => x && x.date && x.date <= S.today).sort((a, b) => a.date < b.date ? 1 : -1), rows = [];
   for (const p of pans){ verEnsure(p);
     rows.push({ date:p.date, v:p.ver, live:true, n:(p.items || []).length, end:p.date === S.today ? '지금' : '' });
     for (const v of p.vers.slice().reverse()) rows.push({ date:p.date, v, live:false, n:(v.items || []).length, end:verHM(v.until) }); }
   const cur = r => r.date === S.date && (r.live ? !RPT.view : RPT.view === r.v.label);
-  openSheet(`<h4>보고서 — 모두 ${rows.length}개</h4>
-    <div class="rl-list" id="rlList">${rows.map(r => `<button class="rl-row${cur(r) ? ' now' : ''}${r.live ? '' : ' past'}" data-rl="${r.date}" data-rlv="${r.live ? '' : esc(r.v.label)}">
-      <b>${esc(verTitle({ date:r.date }, r.v))}</b><span>${verHM(r.v.at)}${r.end ? '~' + r.end : ''} · 항목 ${r.n}${r.live ? '' : ' · 지난 판'}</span>${r.v.why ? `<small>${esc(r.v.why)}</small>` : ''}</button>`).join('') || '<p class="note">아직 보고서가 없어요.</p>'}</div>
-    <div class="row" style="margin-top:8px;gap:6px"><button class="chip" data-rlnew="1">오늘 새 판 만들기</button><button class="chip" data-rlpick="1">날짜로 찾기</button></div>
-    <p class="note">지난 판은 그때 그대로 남아 있어요(보기만). 새 판은 날이 바뀔 때, 세희가 크게 정리할 때, 여기서 만들 때 생겨요.</p>`);
-  const now = document.querySelector('#rlList .rl-row.now'); if (now) now.scrollIntoView({ block:'nearest' });
+  if (!d){ d = document.createElement('div'); d.id = 'rlDrop'; d.className = 'rl-drop'; d.setAttribute('role', 'listbox'); d.setAttribute('aria-label', '보고서 목록'); document.querySelector('.hrow.nav').insertAdjacentElement('afterend', d); }
+  d.innerHTML = `<div class="rl-list" id="rlList">${rows.map(r => `<button class="rl-row${cur(r) ? ' now' : ''}${r.live ? '' : ' past'}" data-rl="${r.date}" data-rlv="${r.live ? '' : esc(r.v.label)}">
+      <b>${esc(verTitle({ date:r.date }, r.v))}</b><span>${verHM(r.v.at)}${r.end ? '~' + r.end : ''} · 항목 ${r.n}${r.live ? '' : ' · 지난 판'}</span>${r.v.why ? `<small>${esc(r.v.why)}</small>` : ''}</button>`).join('') || '<p class="note">아직 보고서가 없어요</p>'}</div>
+    <div class="rl-foot"><button class="chip" data-rlnew="1">오늘 새 판 만들기</button><button class="chip" data-rlpick="1">날짜로 찾기</button><span>모두 ${rows.length}개</span></div>`;
+  d.classList.add('on'); render();
+  const now = d.querySelector('.rl-row.now'); if (now) now.scrollIntoView({ block:'nearest' });
 }
+document.addEventListener('pointerdown', e => { const d = $('rlDrop'); if (d && d.classList.contains('on') && !e.target.closest('#rlDrop, #day')) rlClose(); }, true);
 function verSheet(){ return reportList(); }
 function verSheetOld(){
   const p = verEnsure(S.pan); if (!p) return;
@@ -266,11 +273,11 @@ $('main').addEventListener('click', e => { if ($('main').classList.contains('ro'
 document.addEventListener('click', async e => {
   const t = e.target;
   const rl = t.closest('[data-rl]');
-  if (rl && rl.closest('#sheet')){ closeSheet(); const v = rl.dataset.rlv || null; if (rl.dataset.rl !== S.date) await goDate(rl.dataset.rl); RPT.view = v; render(); $('main').scrollTop = 0; return; }
+  if (rl && rl.closest('#sheet, #rlDrop')){ closeSheet(); rlClose(); const v = rl.dataset.rlv || null; if (rl.dataset.rl !== S.date) await goDate(rl.dataset.rl); RPT.view = v; render(); $('main').scrollTop = 0; return; }
   const rn = t.closest('[data-rlnew]');
   if (rn){ if (!rn.classList.contains('armed')){ rn.classList.add('armed'); rn.textContent = '한 번 더 누르면 새 판'; return; }
-    closeSheet(); if (S.date !== S.today) await goDate(S.today); RPT.view = null; const v = await newReport(await todayPanRef(), '보스가 새 판', 'boss'); render(); toast(`새 판 — ${v.label} 보고서`); return; }
-  if (t.closest('[data-rlpick]')){ closeSheet(); const p = $('pick'); p.max = S.today; p.value = S.date; try{ p.showPicker(); }catch(x){ p.click(); } return; }
+    closeSheet(); rlClose(); if (S.date !== S.today) await goDate(S.today); RPT.view = null; const v = await newReport(await todayPanRef(), '보스가 새 판', 'boss'); render(); toast(`새 판 — ${v.label} 보고서`); return; }
+  if (t.closest('[data-rlpick]')){ closeSheet(); rlClose(); const p = $('pick'); p.max = S.today; p.value = S.date; try{ p.showPicker(); }catch(x){ p.click(); } return; }
   if (t.closest('[data-verlist]')) return verSheet();
   const vn = t.closest('[data-vernew]');
   if (vn){ if (!RPT.arm){ RPT.arm = true; render(); setTimeout(() => { if (RPT.arm){ RPT.arm = false; render(); } }, 4000); return; }

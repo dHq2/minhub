@@ -196,15 +196,13 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
 - 끝냈다고 하면 complete_item. 지우라고 분명히 말할 때만 delete_item. 받은 것을 칸에 담으라면 file_inbox.
 - 판에 적은 걸 말로 길게 되풀이하지 않는다. 앱이 적은 내용을 따로 보여준다. "적어뒀어요" 정도면 된다.
 - 항목 id는 아래 목록의 #id에서 #를 뺀 값이다.
-- 자료(카톡 로그·캡처 해독본·문서·긴 메모)를 받았을 때 — 판에 함부로 적지 않는다. 자료를 받았다고 일정에 넣는 건 금지다.
-  보스가 정리·분석·요약을 부탁하면, 형식을 이미 말하지 않은 한 먼저 한 번만 묻는다: "말로 정리해 드릴까요, 보고서로 만들어 보드에 올릴까요?"
-  설명 없이 자료만 넘기면 무엇을 할지 묻는다: 말로 정리 / 보고서 / 판에 일정 적기 중에서.
-  · 말로 정리: 말풍선에 평범한 문장으로. 핵심부터, 구체적으로(날짜·사람·수치·결정·남은 일). 기호 없이.
-  · 보고서: make_card 로 kind='report' 카드를 만든다. title, summary(핵심 2~3문장), sections(heading + text 문단, 필요하면 points 몇 줄, 표가 필요하면 table_columns·table_rows).
-    한눈에 볼 숫자·사실이 있으면 highlights 2~4개(예: 남은 일 4건, 마감 11/14). 섹션은 보통 개요 → 주요 내용(사실·발언·수치) → 결정 사항 → 남은 일·담당 → 확인 필요/위험 순. 자료에 있는 사실만, 날짜·이름·수치는 빠짐없이. 꾸밈말·추측 금지.
-    보고서를 붙인 뒤 말풍선에는 "보고서 올렸어요"와 가장 중요한 한두 가지만.
-  · 판에 적기: 보스가 "일정에 넣어", "판에 적어", "할 일로 올려"처럼 시킬 때만. 그때 할 일·약속·정해진 일만 골라 여러 개 한 번에 적는다.
-    같은 일은 하나만, 바뀐 일정은 마지막 내용으로, 이미 끝난 일은 빼고. 로그 속 "오늘·내일"은 메시지가 오간 날 기준. 확정 아닌 건 '미정' 표시.
+- 자료(카톡 로그·캡처 해독본·문서·긴 메모)를 받았을 때 — 묻지 않고 두 가지를 한 번에 한다(보스 11-15: 판에 적고 말로 정리가 기본. 일간보고서가 따로 생기니 보고서를 고르게 하지 않는다).
+  ① 판에 적기: 자료 속 보스가 할 일·약속·정해진 일정만 골라 여러 개 한 번에 add_item. 같은 일은 하나만, 바뀐 일정은 마지막 내용으로, 이미 끝난 일은 빼고, 확정 아닌 건 '미정'.
+    날짜는 자료(메시지)에 찍힌 날 기준 — 로그 속 "오늘·내일·수요일"은 메시지가 오간 날에서 센다. 앱의 오늘 날짜와 다르면 자료 날짜를 따르고 한 줄로만 알린다(되묻지 않는다). 할 일·일정이 없는 자료면 판에 적지 않는다.
+  ② 말로 정리: 말풍선에 평범한 문장으로. 핵심부터, 구체적으로(언제·누가·무슨 말·수치·결정·남은 일). 보스가 시간순·사람별을 원하면 그 순서로. 기호 없이. 판에 적은 걸 또 늘어놓지 않는다("판에 일곱 개 적어 뒀어요" 정도).
+  보고서 카드는 보스가 "보고서로", "보드에 카드로"라고 분명히 말할 때만 만든다 — 먼저 권하거나 묻지 않는다. 그때는 make_card 로 kind='report': title, summary(핵심 2~3문장), sections(heading + text 문단, 필요하면 points 몇 줄, 표가 필요하면 table_columns·table_rows).
+    한눈에 볼 숫자·사실이 있으면 highlights 2~4개. 섹션은 보통 개요 → 주요 내용 → 결정 사항 → 남은 일·담당 → 확인 필요 순. 자료에 있는 사실만, 날짜·이름·수치는 빠짐없이. 꾸밈말·추측 금지. 붙인 뒤 말풍선엔 "보고서 올렸어요"와 가장 중요한 한두 가지만.
+- 지난 대화·자료: 보스가 "아까·위에·전에 보낸/말한 것"을 말하는데 맥락에 안 보이면, 모른다·다시 보내 달라고 하기 전에 read_chat(지난 대화 찾기)과 read_material(자료 원문)로 먼저 찾아본다. 대화 기록에 남아 있으면 세희가 찾아서 답한다.
 - 인간관계 판 — 목적부터: 보스 혼자 쓰는 사적인 사람 수첩이다. 보스 폰과 보스 계정에만 있고 보스 말고는 아무도 보지 않는다. 보스가 이걸 만든 이유는 기억하기 어려운 사람들의 사정·이야기·성격·취향·관계를 자세히 적어 두고, 다음에 그 사람을 더 잘 대하기 위해서다.
   그래서 보스가 어떤 사람 이야기를 적으라고 하거나 기억해 두라고 하면, 업무든 사적인 일이든(가족·연애·건강·고민·속마음·본인이 털어놓은 이야기·갈등) 보스가 말한 그대로 자세히 적는다. 언제·무슨 일·왜·그 사람이 한 말과 마음·보스와의 사이를 살리고, 요약해 뭉개거나 골라 빼지 않는다.
   '사적인 이야기라 안 적겠다', '나중에 누가 볼 수 있다', '본인이 편하게 한 말이라' 같은 이유로 거절하거나 줄이지 않는다. 적을지 말지는 보스가 정했고, 세희는 적는다.
@@ -244,10 +242,15 @@ ${await boardContext()}
 ${await pplContext()}${await bonusPrompt()}`;
 }
 /* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
+/* 11-15 B: 기록 창은 '줄 24개'가 아니라 '보스 말 마디'로 센다 — 판 적기 기록(a)·나눠 보낸 말풍선이 줄을 먹어서
+   바로 열 마디 위 카톡 원문이 창 밖으로 밀려나던 것(보스 11-15 04:31). 보스 말 14마디(최대 160줄)를 보내고,
+   자료 전문은 최근 4마디 안에서만, 그보다 오래된 긴 글은 앞부분 + 자료 번호(세희가 read_material·read_chat 으로 다시 봄) */
+const CTX_TURNS = 14, CTX_FULL = 4, CTX_LONG = 1500;
+const isPaste = m => m && m.who === 'u' && m.ocr === undefined && !m.doc && ((m.text || '').length >= 300 || (m.text || '').split('\n').length >= 6);
 function toMessages(log){
-  const out = [], tail = log.slice(-24);
-  /* 자료(해독본·문서) 전문은 보스의 최근 두 마디 안에 있을 때만. 그보다 오래되면 앞부분만 */
-  const userIdx = tail.map((m, i) => m.who === 'u' ? i : -1).filter(i => i >= 0), lastTwo = userIdx.slice(-2);
+  let start = 0, n = 0; for (let i = log.length - 1; i >= 0; i--) if (log[i].who === 'u' && ++n >= CTX_TURNS){ start = i; break; }
+  const out = [], tail = log.slice(Math.max(start, log.length - 160)), older = log.slice(0, log.length - tail.length).filter(m => m.who === 'u' && !m.err).length;
+  const userIdx = tail.map((m, i) => m.who === 'u' ? i : -1).filter(i => i >= 0), lastTwo = userIdx.slice(-CTX_FULL);
   /* 오류로 답을 못 받은 말은 '그때 못 했다'고 표시 — 세희가 아직 숙제로 여겨 되묻지 않게 */
   const failed = new Set();
   userIdx.forEach((ui, k) => { const end = k + 1 < userIdx.length ? userIdx[k + 1] : tail.length, rest = tail.slice(ui + 1, end);
@@ -256,12 +259,14 @@ function toMessages(log){
     if (m.err || m.hint || m.who === 'a') return;
     const role = m.who === 'u' ? 'user' : 'assistant';
     let text = role === 'user' ? userContent(m, lastTwo.includes(i) && (m.ocr !== undefined || !!m.doc)) : m.text;
+    if (role === 'user' && isPaste(m) && !lastTwo.includes(i) && m.text.length > CTX_LONG) text = m.text.slice(0, CTX_LONG) + matCut(m, m.text.length);
     if (failed.has(i)) text += '\n(이 말은 그때 연결 오류로 처리하지 못했다. 보스가 다시 꺼내기 전에는 다시 묻지 않는다.)';
     if (m.regen && i === userIdx[userIdx.length - 1]) text += `\n\n(보스가 이 말에 새로 답해 달라고 했다${m.regenHow ? ' — ' + m.regenHow : ''}. 처음 답하는 것처럼 새로 생각해서 답한다.)`;
     const last = out[out.length - 1];
     if (last && last.role === role) last.content += '\n' + text; else out.push({ role, content:text });
   });
   while (out.length && out[0].role !== 'user') out.shift();
+  if (older && out.length) out[0].content = `(이보다 앞 대화에 보스 말 ${older}마디가 더 있다 — 여기 안 보이는 앞 이야기가 필요하면 read_chat 으로 찾아본다)\n` + out[0].content;
   return out;
 }
 
@@ -291,6 +296,10 @@ function TOOL_DEFS(){
       id:{ type:'string', description:"자료 번호(예: m1k2x3y). 'latest' 는 가장 최근 자료. 없으면 목록" },
       find:{ type:'string', description:'찾을 낱말(선택). 띄어 쓰면 모두 들어간 줄만' },
       from:{ type:'integer', description:'전문이 길어 나눠 읽을 때 몇 번째 글자부터(앞 결과의 next_from)' } } } },
+    { name:'read_chat', description:'보스와 나눈 지난 대화를 거슬러 올라가 본다 — 맥락에 안 보이는 앞 대화까지. find 를 주면 그 낱말이 나온 말을 찾고(띄어 쓰면 모두 들어간 말), 없으면 back(보스 말 몇 마디 전부터)·count(몇 마디) 만큼 차례로 보여 준다. 보스가 아까·위에서 한 말·보낸 것을 묻는데 맥락에 없으면 모른다고 하기 전에 먼저 쓴다. 긴 자료 원문은 결과의 자료 번호로 read_material.', schema:{ type:'object', properties:{
+      find:{ type:'string', description:'찾을 낱말(선택)' },
+      back:{ type:'integer', description:'보스 말 기준 몇 마디 전부터(0 = 맨 끝, 기본 0)' },
+      count:{ type:'integer', description:'몇 마디(기본 6, 많아야 20)' } } } },
     { name:'complete_item', description:'항목을 끝냄으로 표시한다.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'delete_item', description:'항목을 지운다. 보스가 분명히 지우라고 할 때만.', schema:{ type:'object', properties:{ id:idp }, required:['id'] } },
     { name:'file_inbox', description:'받은 것 하나를 칸에 담는다.', schema:{ type:'object', properties:{
@@ -404,6 +413,7 @@ async function runToolCore(c){
       return { ok:true, item:itemBrief(it) };
     }
     if (c.name === 'read_material') return readMaterial(a);
+    if (c.name === 'read_chat') return readChat(a);
     if (c.name === 'new_report'){
       if (p.ver && p.ver.by === 'sehee' && Date.now() - p.ver.at < 120000) return { ok:true, already:true, report:verTitle(p, p.ver), note:'방금 연 판이 있어 그대로 씀' };
       const v = await newReport(p, a.why, 'sehee'); noteRead(`일간보고서 새 판을 열었어요 — ${v.label} 보고서${v.dropped ? ` (끝낸 일 ${v.dropped}개는 지난 판에)` : ''}`);
@@ -449,9 +459,25 @@ async function runToolCore(c){
   }catch(e){ return { ok:false, error:e.message }; }
 }
 /* ── 자료 다시 읽기 (v1.5.8 · C) — 보스 말에 붙은 해독본(m.ocr)·문서(m.doc)는 대화 기록(최근 300개)에 원문 그대로 남아 있다 ── */
-function materials(){ return O.log.filter(m => m.who === 'u' && (m.ocr !== undefined || m.doc)).map(m => ({ m, id:matId(m), text:m.ocr !== undefined ? m.ocr : m.doc,
-  kind:m.ocr !== undefined ? (m.scanOf ? '스캔 ' + m.scanOf : `카톡 캡처 해독본 ${m.pics || ''}장`) : '문서 ' + (m.docs || []).join(', ') })); }
+function materials(){ return O.log.filter(m => m.who === 'u' && (m.ocr !== undefined || m.doc || isPaste(m))).map(m => ({ m, id:matId(m), text:m.ocr !== undefined ? m.ocr : m.doc || m.text,
+  kind:m.ocr !== undefined ? (m.scanOf ? '스캔 ' + m.scanOf : `카톡 캡처 해독본 ${m.pics || ''}장`) : m.doc ? '문서 ' + (m.docs || []).join(', ') : `붙여 넣은 글 ${m.text.length.toLocaleString('ko-KR')}자` })); }   /* 11-15 B: 붙여 넣은 긴 글도 자료 */
 const matWhen = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+/* 11-15 B: 지난 대화 찾아보기 — 보스: '세희가 직접 스크롤해서 찾는 기능' */
+function readChat(a){
+  const L = O.log.filter(m => !m.err && !m.hint && m.who !== 'a' && !m.hide), turns = L.filter(m => m.who === 'u').length;
+  const fmt = m => { const t = String(m.text || ''), tag = m.ocr !== undefined ? ` [캡처 해독본 · 자료 ${matId(m)}]` : m.doc ? ` [문서 · 자료 ${matId(m)}]` : isPaste(m) ? ` [자료 ${matId(m)}]` : '';
+    return `${matWhen(m.at)} ${m.who === 'u' ? '보스' : '세희'}: ${t.slice(0, 700)}${t.length > 700 ? ` …(${t.length.toLocaleString('ko-KR')}자 — 전문은 read_material)` : ''}${tag}`; };
+  const q = String(a.find || '').trim();
+  if (q){ const words = q.toLowerCase().split(/\s+/).filter(Boolean), hits = [];
+    L.forEach((m, i) => { const t = [m.text, m.ocr, m.doc].filter(Boolean).join('\n').toLowerCase(); if (words.every(w => t.includes(w))) hits.push(i); });
+    noteRead(`지난 대화에서 '${q}' 찾아봤어요 — ${hits.length}곳`);
+    return { ok:true, hits:hits.length, found:hits.slice(-12).map(i => fmt(L[i])).join('\n') || '(없음)', ...(hits.length > 12 ? { note:'최근 12곳만 — 더 좁은 낱말로' } : {}) }; }
+  const back = Math.max(0, parseInt(a.back, 10) || 0), cnt = Math.min(20, Math.max(1, parseInt(a.count, 10) || 6));
+  let end = L.length, n = 0; for (let i = L.length - 1; i >= 0 && n < back; i--) if (L[i].who === 'u'){ n++; end = i; }
+  let start = end, k = 0; while (start > 0 && k < cnt){ start--; if (L[start].who === 'u') k++; }
+  noteRead(`지난 대화를 거슬러 봤어요 — ${back ? back + '마디 전부터 ' : ''}${k}마디`);
+  return { ok:true, boss_turns_total:turns, shown:L.slice(start, end).map(fmt).join('\n') || '(없음)', more_before:start > 0 };
+}
 function readMaterial(a){
   const all = materials(), list = () => all.slice().reverse().slice(0, 20).map(x => ({ id:x.id, when:matWhen(x.m.at), kind:x.kind, chars:x.text.length, boss_said:String(x.m.text || '').slice(0, 60), head:x.text.slice(0, 120) }));
   if (!all.length){ noteRead('예전 자료를 찾아봤어요 — 대화에 남은 자료가 없어요'); return { ok:true, materials:[], note:'대화 기록에 남은 해독본·문서가 없음(지웠거나 아주 오래됨). 보스에게 다시 보내 달라고 한다' }; }
