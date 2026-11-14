@@ -368,8 +368,19 @@ const PPL_PAD = 150;   /* v1.5.19 (B) 끝없는 판: 가장 바깥 카드에서 
    나와의 실: 판 이름(p.tag) 또는 관계 서술의 첫 마디 끝 낱말(같이 일하는 조교, … → 조교 / 보스의 아버지 → 아버지). 사람끼리 실: 가운데 하나만(t.label, 없으면 엄마·딸 / 친구) */
 const relWord = s => { const t = String(s || '').split(/[,，·(/\n]/)[0].trim().replace(/^(보스|민수|본인|나|내)(의)?\s+/, ''), m = /^(.+?)의\s+(.+)$/.exec(t);   /* 이예지의 친구 → '이예지 친구'(나와의 친구로 읽히지 않게) */
   const w = (m ? m[2] : t).split(/\s+/).filter(Boolean), last = (w[w.length - 1] || '').replace(/(이에요|예요|입니다|이다)$/, ''); const r = (m && last ? m[1].split(/\s+/)[0] + ' ' + last : last).slice(0, 7); return /^(보스|민수|본인|나)$/.test(r) ? '' : r; };
-const pplTag = p => (p.tag && String(p.tag).trim()) || relWord(p.rel);
-const tieLabel = t => { if (t.label !== undefined && t.label !== null && (t.label || (!t.aIs && !t.bIs))) return t.label; const a = relWord(t.aIs), b = relWord(t.bIs); return a && b && a !== b ? a + '·' + b : (a || b); };
+/* v1.5.27 (B) 관계 서술이 판의 다른 사람을 가리키고(이예지의 친구 · 원파인 원장님 딸) 둘 사이 실이 있으면 — 그 말은 둘 사이 실 가운데로, 나와의 실엔 안 붙임.
+   세희가 사람끼리 사이를 '관계' 칸에 적어 둔 판(실 글씨가 빔)도 바로 맞게 보이게. 데이터는 안 바꾸고 그릴 때만 */
+function relRef(p){
+  const c = String((p && p.rel) || '').split(/[,，·(/\n]/)[0].trim(); if (!c) return null;
+  for (const o of PPL.list || []){ if (o === p || !o.name) continue; const f = o.name.split(/\s+/)[0], hit = c.includes(o.name) ? o.name : (f.length >= 2 && c.includes(f) ? f : '');
+    if (!hit) continue; const t = tieFind(p.id, o.id); if (!t) continue;
+    const w = c.slice(c.indexOf(hit) + hit.length).replace(/^의/, '').trim().split(/\s+/).filter(Boolean), word = (w[w.length - 1] || '').replace(/(이에요|예요|입니다|이다)$/, '').slice(0, 6);
+    if (word) return { o, t, word }; }
+  return null;
+}
+const pplTag = p => (p.tag && String(p.tag).trim()) || (relRef(p) ? '' : relWord(p.rel));
+const tieLabel = t => { if (t.label !== undefined && t.label !== null && (t.label || (!t.aIs && !t.bIs))) return t.label; const a = relWord(t.aIs), b = relWord(t.bIs); if (a || b) return a && b && a !== b ? a + '·' + b : (a || b);
+  const w = [pplFind(t.a), pplFind(t.b)].map(p => { const r = p && relRef(p); return r && r.t === t ? r.word : ''; }).filter(Boolean); return [...new Set(w)].join('·'); };   /* 실 글씨가 비면 관계 서술에서(v1.5.26) */
 const pplHash = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
 function pplStrings(pos, o){
   const C = o.C, th = o.th || 'cork', off = th === 'white' ? 54 : th === 'map' ? 30 : 0, f = n => n.toFixed(1), list = PPL.list || [];
@@ -713,7 +724,7 @@ function pdLive(e){
   if (el.classList.contains('pd-grow')) pdGrow(el);
   if (el.id === 'pdName' || el.id === 'pdRel' || el.id === 'pdGrp'){ const isMe = PD.id === 'me', h = document.querySelector('#pdBody .pd-id h1'), s = document.querySelector('#pdBody .pd-id p');
     if (h) h.textContent = p.name; if (s) s.textContent = isMe ? '본인' : (p.rel || '관계 미정') + ' · ' + p.group; $('pdT').textContent = '인물 기록부 · ' + p.name; }
-  if (el.id === 'pdRel'){ const tg = $('pdTag'); if (tg) tg.placeholder = relWord(p.rel) || '예: 친구'; }
+  if (el.id === 'pdRel'){ const tg = $('pdTag'); if (tg) tg.placeholder = (relRef(p) ? '' : relWord(p.rel)) || '예: 친구'; }
   if (el.id === 'pdGrp') el.style.setProperty('--c', GROUP_COLOR[p.group] || '#5c5340');
   clearTimeout(pdSaveT); pdSaveT = setTimeout(() => { pdSaveT = 0; pplSave(); if (DW.open === 'people') pplRender(); }, 500);
 }
@@ -729,7 +740,7 @@ async function pdDoc(p, isMe){
   const lockB = (on, attr, i) => `<button class="pd-lk${on ? ' on' : ''}" ${attr}="${i}" aria-label="${on ? '비공개 — 누르면 공개' : '공개 — 누르면 비공개'}" title="${on ? '비공개' : '공개'}">${on ? '🔒' : '🔓'}</button>`;
   const kv = [['이름', `<input id="pdName" class="pd-in" value="${esc(p.name)}" maxlength="30" aria-label="이름">`],
     ...(isMe ? [['관계', '본인']] : [
-      ['판 이름', `<input id="pdTag" class="pd-in" value="${esc(p.tag || '')}" maxlength="6" placeholder="${esc(relWord(p.rel) || '예: 친구')}" aria-label="판 이름"><small class="pd-tip">판 실 위에 붙는 한두 단어</small>`],
+      ['판 이름', `<input id="pdTag" class="pd-in" value="${esc(p.tag || '')}" maxlength="6" placeholder="${esc((relRef(p) ? '' : relWord(p.rel)) || '예: 친구')}" aria-label="판 이름"><small class="pd-tip">판 실 위에 붙는 한두 단어</small>`],
       ['관계', `<textarea id="pdRel" class="pd-in pd-grow" rows="1" maxlength="60" placeholder="예: 대학 동기, 단골 손님" aria-label="관계">${esc(p.rel || '')}</textarea>`],
       ['무리', `<select id="pdGrp" class="pd-in pd-chipsel" style="--c:${col}" aria-label="무리">${GROUPS.map(g => `<option ${g === p.group ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select>`]]),
     ['성별', `<select id="pdSex" class="pd-in" aria-label="성별">${[['', '모름'], ['여', '여성'], ['남', '남성']].map(([v, t]) => `<option value="${v}" ${(p.sex || '') === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`],

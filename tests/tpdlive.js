@@ -1,11 +1,12 @@
-/* tpdlive v1 (2026-11-15, B) — 인물 기록부 그 자리에서 고치기(「고치기」 단추 없음, 치면 저절로 저장) + 판 실 위 글씨는 한두 단어(나와의 실: 판 이름/관계 끝 낱말, 사람끼리: 가운데 하나). 폰·컴퓨터. 가짜 이름만 */
+/* tpdlive v1.1 (2026-11-15, B) — v1.1: 관계 서술이 판의 다른 사람을 가리키면(○○의 친구) 둘 사이 실 가운데로·나와의 실엔 안 붙임(k2 는 실 글씨 빈 채 — 보스 판과 같은 꼴)
+   v1 — 인물 기록부 그 자리에서 고치기(「고치기」 단추 없음, 치면 저절로 저장) + 판 실 위 글씨는 한두 단어(나와의 실: 판 이름/관계 끝 낱말, 사람끼리: 가운데 하나). 폰·컴퓨터. 가짜 이름만 */
 const { chromium } = require('playwright');
 const PEOPLE = { list:[
   { id:'q1', name:'한별 조교', rel:'같이 일하는 조교, 대학생', group:'직장', note:'', info:[], extra:[], notes:[], links:[], at:1 },
   { id:'q2', name:'아빠', rel:'보스의 아버지', group:'가족', note:'', info:[], extra:[], notes:[], links:[], at:2, kin:true },
   { id:'q3', name:'다온', rel:'한별 조교의 친구, 고등학교 때부터', group:'친구', note:'', info:[], extra:[], notes:[], links:[], at:3 },
   { id:'q4', name:'다온 엄마', rel:'다온의 어머니', group:'기타', note:'', info:[], extra:[], notes:[], links:[], at:4 } ],
-  ties:[{ id:'k1', a:'q1', b:'q3', aIs:'친구', bIs:'친구', kin:false, sure:'yes', close:null }, { id:'k2', a:'q4', b:'q3', aIs:'엄마', bIs:'딸', kin:true, sure:'yes', close:null }], theme:'cork' };
+  ties:[{ id:'k1', a:'q1', b:'q3', aIs:'친구', bIs:'친구', kin:false, sure:'yes', close:null }, { id:'k2', a:'q4', b:'q3', aIs:'', bIs:'', kin:true, sure:'yes', close:null }], theme:'cork' };
 (async () => {
   const b = await chromium.launch();
   for (const vp of [{ width:412, height:915, mob:true, tag:'m' }, { width:1366, height:860, tag:'d' }]){
