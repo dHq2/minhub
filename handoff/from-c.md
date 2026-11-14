@@ -6,6 +6,16 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-15 05:40 · 사진 크게·저장 / 판 세희 말투·세희 얼굴 / 한마디 필수 / 문단 · [보통] · 받는 쪽: 모두(특히 B — office.js·ai.js 같은 파일 다른 함수)
+- 무엇: ① js/picview.js 새로(index.html·sw.js CODE). office.js 는 세 줄만 — msgInner 사진 img 에 data-pv-at/data-pv-i + 사본 불러오기(picLoad), sendSay 에 picSave, deleteMsg 에 picForget. kv 'chatpic_<at>' 는 Blob 배열이라 동기화·JSON 내보내기에 넣지 말 것.
+  ② ai.js 지침 「판 글 말투」·add/update_item text·note·comment 설명. 세희가 note 를 쓰면 it.noteBy='sehee'(보스가 메모를 고치면 settings.js 가 지움). base.js item 렌더에 .memo-w/.memo-by, 코멘트 앞 「세희」 글자 대신 얼굴(SH_ICO).
+  ③ ai.js aiTurn: 판 도구(PAN_TOOLS, set_line 빼고)가 성공한 차례인데 set_line 이 없으면 끝에 forceLine — 도구를 set_line 하나만 주고(st.only, 생각 꺼진 모델은 tool_choice 강제) 한 번 더 부름. 테스트에서 가짜 대답 줄(plan)을 차례마다 정확히 세던 곳은 이 한 번이 더 생길 수 있음(판 도구를 쓰고 set_line 을 안 쓴 차례만).
+  base.js autoLine/ensureLine — makeToday 와 goDate(오늘 판·한마디 빔)에서 임시 한마디(p.lineAuto). set_line 은 p.lineAt 를 적고 lineAuto 를 지움.
+  표정 도장: FACES 에 '!!'·'O□O' 추가, stampHtml(face) 로 art/f-*.webp 그림. #stamp 누르기는 closest 로(그림을 눌러도 됨).
+  ④ ai.js parseFace 끝에 paraFix — 140자 넘고 빈 줄 없는 답만, 날짜·요일로 시작하는 문장이 둘 이상일 때만 문단을 나눔.
+- 받는 쪽에게 필요한 일: B — 말 나누기(seheePart·seheeSaysSplit)는 안 건드림. paraFix 가 넣은 빈 줄로 말풍선이 나뉠 수 있음(보스 화면에선 날짜별 말풍선 — 읽기 좋아서 그대로 둠). A·B — 판 렌더에서 .icm i·「세희가 적음」 글자를 찾던 테스트가 있으면 .sh-ico 로.
+- 관련 파일: js/picview.js · js/office.js(세 줄) · js/ai.js · js/base.js · js/settings.js(두 줄) · art/f-*.webp(9장) · css/c.css · sw.js · tests/tpicv.js·tvoice.js v1.0
+
 ## 2026-11-15 05:40 · 달력이 서랍에서 따로 쪽으로 + 방별 css 머리 주석 버그 · [보통] · 받는 쪽: 모두
 - 무엇: 달력 서랍(#dw-cal)·연간·월 견출지를 없애고 달력 쪽(#calPage, js/calendar.js v2.0, 스타일은 css/c.css)으로. DRAWERS 는 ['board','people'] — 'cal' 이 빠짐. 견출지 버튼 data-dw="cal"·data-pdw="cal", #cal, goView('cal'), dwOpen('cal') 은 모두 calPageOpen() 으로 감. 다른 서랍을 열면 달력 쪽은 닫힘.
   office.js(B 찜)의 CAL.changed 끝 처리는 안 건드림 — dwOpen('cal')·calYear()(빈 함수)·calMonth()·#calSheet [data-d] 를 그대로 살려 둬서 그대로 돎. 세희 작업 중계는 js/work.js 에서 날짜 있는 add/update/complete/delete_item 이면 달력 쪽 칠판으로(calWorkBefore/After).

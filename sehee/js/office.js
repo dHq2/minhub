@@ -105,7 +105,8 @@ function renderLog(){
 function msgInner(m, i){
   let h = '';
   const th = O.thumbs[m.at];
-  if (th && th.length) h += `<span class="pics">${th.map(u => `<img src="${u}" alt="">`).join('')}</span>`;
+  if (th && th.length) h += `<span class="pics">${th.map((u, k) => `<img src="${u}" alt="보스가 보낸 사진 ${k + 1}" data-pv-at="${m.at}" data-pv-i="${k}">`).join('')}</span>`;
+  else if (m.pics && m.who === 'u' && typeof picLoad === 'function') picLoad(m.at);   /* 11-15 C: 다시 켠 뒤 이 기기 사본으로 되살림(js/picview.js) */
   if (m.pics) h += m.scanOf ? `<span class="tag">📄 ${esc(m.scanOf)} · 스캔 ${m.pics}쪽</span>` : `<span class="tag">📷 캡처 ${m.pics}장</span>`;
   if (m.docs) h += `<span class="tag">📄 ${esc(m.docs.join(', '))}</span>`;
   h += esc(m.text || '');
@@ -325,6 +326,7 @@ async function deleteMsg(at, idx){
   let j = i + 1; if (O.log[i].who === 'u') while (j < O.log.length && O.log[j].who !== 'u') j++;
   const gone = O.log.splice(i, j - i), ats = gone.map(x => x.at);
   for (const x of gone) delete O.thumbs[x.at];
+  picForget(gone.filter(x => x.pics).map(x => x.at));   /* 11-15 C: 사진 사본도 */
   await saveLog(); await scrubTraces(gone);
   renderLog(); renderPanTalk(); growSay && growSay();
   bonusEmit('turnRemoved', { ats });
@@ -347,7 +349,7 @@ async function sendSay(src){
   const atts = ATT.splice(0), imgs = atts.filter(a => a.kind === 'img'), txts = atts.filter(a => a.kind === 'txt');
   renderTray();
   const um = { who:'u', text:v, at:Date.now() };
-  if (imgs.length){ um.pics = imgs.length; O.thumbs[um.at] = imgs.map(a => a.url); if (imgs.every(a => a.scan)) um.scanOf = [...new Set(imgs.map(a => a.name.replace(/ \d+쪽$/, '')))].join(', '); }
+  if (imgs.length){ um.pics = imgs.length; O.thumbs[um.at] = imgs.map(a => a.url); picSave(um.at, imgs.map(a => a.file)); if (imgs.every(a => a.scan)) um.scanOf = [...new Set(imgs.map(a => a.name.replace(/ \d+쪽$/, '')))].join(', '); }
   for (const t of txts) await boardAdd(cardFrom({ kind:'file', title:t.name, name:t.name, text:t.text, pages:t.pages }, 'boss'), false);
   if (txts.length){ um.docs = txts.map(t => t.name); um.doc = txts.map(t => (txts.length > 1 ? `── ${t.name} ──\n` : '') + clipDoc(t.text, t.head)).join('\n\n'); }
   const heavy = !!(imgs.length || txts.length) || v.length >= 300 || v.split('\n').length >= 6;

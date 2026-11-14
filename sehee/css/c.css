@@ -106,3 +106,36 @@
 @keyframes cpOut{to{opacity:0}}
 body.cal-on .toast{z-index:300}body.cal-on .veil{z-index:225}body.cal-on .sheet{z-index:226}
 @media (prefers-reduced-motion:reduce){.cp.in .cp-board,.cp.in .cp-who,.cp.in .cp-box,.cb-it.fresh,.cb-sheet{animation:none!important}}
+
+/* 11-15 C · 보스가 보낸 사진 크게 보기 — 손가락 확대·저장 */
+.msg .pics img[data-pv-at]{cursor:zoom-in}
+.pv{position:fixed;inset:0;z-index:9400;background:rgba(8,8,10,.96);display:flex;flex-direction:column;touch-action:none;-webkit-user-select:none;user-select:none}
+.pv[hidden]{display:none}
+.pv.in{animation:pvIn .2s ease}
+@keyframes pvIn{from{opacity:0}to{opacity:1}}
+.pv-top{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 10px 8px;color:#fff;z-index:2}
+.pv-top span{flex:1;text-align:center;font-size:.85rem;opacity:.8}
+.pv-b{height:36px;min-width:36px;border-radius:18px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;font-size:.86rem;padding:0 12px;cursor:pointer}
+.pv-b[hidden]{display:none}
+.pv-save{background:#f3d27a;color:#2b2417;border-color:#f3d27a;font-weight:700}
+.pv-b:active{filter:brightness(.85)}
+.pv-stage{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:zoom-in}
+.pv.zoomed .pv-stage{cursor:grab}
+.pv-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;will-change:transform;-webkit-user-drag:none;pointer-events:none}
+.pv-nav{position:absolute;top:50%;z-index:2;width:40px;height:56px;margin-top:-28px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:1.6rem;cursor:pointer}
+.pv-nav.l{left:0;border-radius:0 10px 10px 0}.pv-nav.r{right:0;border-radius:10px 0 0 10px}
+.pv-nav:disabled{opacity:.15}.pv.one .pv-nav,.pv.zoomed .pv-nav{display:none}
+.pv-hint{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom) + 18px);transform:translateX(-50%);color:#fff;font-size:.74rem;opacity:.7;background:rgba(0,0,0,.4);padding:4px 12px;border-radius:12px;white-space:nowrap;transition:opacity .4s;pointer-events:none}
+.pv-hint.gone{opacity:0}
+
+/* 11-15 C · 세희 얼굴 표시 — 표정 도장 · 세희 메모 · 세희 코멘트 · 세희가 적음 */
+.stamp:has(img){border:none;width:42px;height:42px;right:6px;background:none}
+.stamp img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.sh-ico{width:18px;height:18px;object-fit:contain;vertical-align:-4px;flex:0 0 auto;-webkit-user-drag:none}
+.icm{display:flex;align-items:flex-start;gap:5px}.icm .sh-ico{margin-top:1px}
+.sh-by{display:inline-flex;align-items:center;gap:3px}.sh-by .sh-ico{width:15px;height:15px;vertical-align:0}
+.memo-by{display:flex;align-items:center;gap:4px;margin:5px 0 -1px;font-size:.66rem;color:#5b3f6e;letter-spacing:.02em}
+.memo-by b{font-weight:700}
+.memo-w.sh .memo.has{border-left-color:rgba(122,90,143,.6);color:#3d2f52;background:rgba(122,90,143,.05);border-radius:0 4px 4px 0}
+.it .memo-w{display:block}
+.it .memo-by b{display:inline;font:700 .66rem/1.2 var(--f-body);color:#5b3f6e;letter-spacing:.02em;margin:0;padding:0;background:none}

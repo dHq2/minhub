@@ -8,10 +8,11 @@ const VERSION = 'v1.5.37';
 const CACHE = 'sehee-' + VERSION;
 /* 본체 코드 — index.html 의 <script src> 순서 그대로 */
 const CODE = ['./css/app.css', './css/a.css', './css/b.css', './css/c.css',
-  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/intro.js', './js/boot.js'];
+  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/picview.js', './js/intro.js', './js/boot.js'];
 const SHELL = [...CODE, './', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
-  './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp'];
+  './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp',
+  /* 11-15 C: 세희 얼굴 도장·표시 */ './art/f-pout.webp', './art/f-smile.webp', './art/f-dizzy.webp', './art/f-fluster.webp', './art/f-doubt.webp', './art/f-alert.webp', './art/f-angry.webp', './art/f-shout.webp', './art/f-smirk.webp'];
 
 /* v1.3.9 새 껍데기는 대기 — 대기는 늘 가장 최신 하나뿐이라 '업데이트' 한 번이면 최신 */
 /* v1.4.2 (보너스 C) 올린 직후 반쯤 올라온 상태 막기 — 받은 index.html 의 APP_VERSION 이 이 VERSION 과 다르면 이번엔 받지 않는다(다음 확인 때 다시) */

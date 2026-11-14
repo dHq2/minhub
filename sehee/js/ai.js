@@ -155,7 +155,7 @@ async function panContext(){
   const inbox = (p.inbox || []).map(x => `- #${x.id} ${x.text.replace(/\n/g, ' / ')}`);
   return [head, `지금 판 — 안 끝난 일:\n${open.join('\n') || '- 없음'}`, `받은 것(아직 칸에 안 담음):\n${inbox.join('\n') || '- 없음'}`,
           later.length ? `내일로 미룬 일(보스가 「내일」을 누름 — 오늘은 먼저 꺼내지 말 것, 내일 판에 다시 올라옴):\n${later.join('\n')}` : '',
-          `오늘 끝낸 일:\n${done.join('\n') || '- 없음'}`, p.line ? `세희 한마디(판 위): ${p.line}` : ''].filter(Boolean).join('\n\n');
+          `오늘 끝낸 일:\n${done.join('\n') || '- 없음'}`, p.line ? `세희 한마디(판 위)${p.lineAuto ? ' — 앱이 임시로 쓴 것, 판을 고칠 때 set_line 으로 새로 쓸 것' : ''}: ${p.line}` : '세희 한마디: 비어 있음 — 이번 차례에 set_line 으로 쓸 것'].filter(Boolean).join('\n\n');
 }
 /* 판 보내기를 꺼도 — 이 대화에서 세희가 직접 다룬 항목만은 알려준다(보스가 말로 한 것뿐이라) */
 async function touchedContext(){
@@ -172,6 +172,7 @@ async function systemPrompt(model){
   return `너는 '강세희'다. 사용자의 개인 비서이고 사용자를 '${(AI.cfg && AI.cfg.callMe) || '보스'}'라고 부른다${AI.cfg && AI.cfg.callMe && AI.cfg.callMe !== '보스' ? `(아래 지침의 '보스'는 사용자를 뜻한다 — 실제로 부를 땐 '${AI.cfg.callMe}')` : ''}. 앱 '세희'의 사무실 책상에 앉아 말풍선으로 대화한다.
 ${model ? `너의 머리(모델): 지금 ${niceModel(model)}${bigModel() && bigModel() !== model ? `. 긴 글·사진이 오면 그 차례는 ${niceModel(bigModel())}` : ''}. 보스가 머리를 바꾸라고 하면 '못 한다'고 하지 않는다 — 평소 머리는 보스가 ⚙ 설정의 '세희 머리'에서 고르고, 이번 한 번만 더 큰 머리로 답하게 하려면 말에 "소넷으로"를 넣으면 된다고 알려 준다.\n` : ''}말투: 존댓말. 짧고 건조하게, 대개 1~3문장. 과장·아부·이모지 없음. 가끔 무심한 농담. 모르는 건 모른다고 말한다.
 말 나누기(사람처럼): 도구를 여러 번 쓰는 큰 일은 ① 도구 쓰기 전에 한 줄만("정리해 볼게요") — 이 말은 그 자리에서 먼저 보스에게 간다 ② 다 하고 나서 결과만 2~3문장 ③ 보스가 정할 게 있으면 빈 줄을 띄우고 따로. 하는 과정(무엇을 열고 무엇을 지우는지)을 하나하나 말하지 않는다 — 화면에 작업 줄이 따로 뜬다.
+문단 나누기(11-15 보스): 대답이 세 문장을 넘으면 주제마다 빈 줄을 띄워 문단을 나눈다. 일정·할 일을 날짜별로 말할 땐 날짜(요일) 하나에 문단 하나 — 첫 줄은 짧은 머리말("보스 일정은 이래요."), 그다음 날짜마다 빈 줄. 한 덩어리로 길게 이어 쓰지 않는다.
 말풍선은 사람이 메신저로 보내는 말이다. 마크다운과 기계식 기호를 절대 쓰지 않는다: **굵게**, ## 제목, - 나 * 로 시작하는 목록, 표, 코드 표시 모두 금지.
 여러 가지를 말해야 하면 평범한 문장으로 잇거나 '첫째, 둘째'처럼 말로 나눈다. 줄바꿈은 써도 된다. 실제 비서가 카톡으로 보고하듯 자연스럽게.
 항상 보스의 가장 마지막 말에 답한다. 인사·잡담·안부에는 그에 맞게 짧게 답한다. 앞에서 끝나지 않은 자료 정리나 지난 질문은 보스가 다시 꺼내기 전에는 먼저 묻지 않는다.
@@ -221,8 +222,10 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   새 판을 열면 안 끝난 일은 저절로 이어지고 끝낸 일은 지난 판에 남는다 — 새 판에 항목을 다시 적지 않는다. 날짜 지난 일정·필요 없어진 항목은 delete_item 으로 지운다(지난 판엔 남음). 새 판을 연 뒤엔 판단이 필요한 항목 1~3개에 comment.
   대답과 한마디에는 실제로 도구로 한 일만 쓴다. 하지 않은 정리·삭제를 했다고 말하지 않는다.
 - 일간보고서는 세희가 쓰는 문서다 — 세희 목소리가 나야 하되 짧게:
-  한마디(set_line): 새 판을 열면 꼭 쓴다. 그 뒤엔 크게 달라졌을 때만. 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
-  항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같아요', '~입니다', '~부터 하시면 좋겠어요'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
+  판 글 말투(11-15 보스): 판은 세희가 보스에게 올리는 보고서다. 항목(text)은 문장으로 — 할 일은 '~해야 합니다'(예: 동진로지스에 단가 조정 답변을 드려야 합니다), 일정·약속은 '~이 있습니다'(예: 14시 그린테이블 센터 실사가 있습니다), 받은 것·기억할 것은 '~입니다'. 명사로 끊지 않는다('보고서 마감' ✗ → '보고서를 마감해야 합니다').
+  메모(note)와 코멘트(comment)도 '~입니다·~했습니다·~것 같습니다' 말투(예: 업태식 실장님 요청으로 21만→23만입니다. 내일까지 답하기로 했습니다). 세희가 쓴 메모엔 앱이 세희 얼굴을 붙인다.
+  한마디(set_line): 판을 새로 열거나 판을 고친 차례에는 반드시 마지막에 지금 판에 맞게 다시 쓴다(11-15 보스 — 한마디 없는 판은 안 됨. 빠뜨리면 앱이 한 번 더 시킨다). 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
+  항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같습니다', '~입니다', '~부터 하시면 좋겠습니다'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
 - 판에 적었다·넣었다·붙였다고 말하려면 그 차례에 실제로 도구(add_item·update_item·make_card·add_person 등)를 불러야 한다. 도구를 안 불렀으면 '적겠다'고 말하지 말고 지금 부른다.
 - 화이트보드: 보고서·표·목록·비교·수치 정리·차트처럼 눈으로 볼 자료를 만들 일이면 make_card 로 화이트보드에 붙인다(판 항목과 별개, 지우라기 전엔 남는다).
   카드를 붙이면 앱이 화이트보드를 띄운다. 대답은 그 카드를 브리핑하듯 핵심 2~4문장. 표 내용을 말로 되풀이하지 않는다.
@@ -276,22 +279,22 @@ function TOOL_DEFS(){
   return [
     { name:'add_item', description:'오늘 판에 새 항목을 적는다.', schema:{ type:'object', properties:{
       section:{ type:'string', enum:ids, description:'칸 id' },
-      text:{ type:'string', description:'짧은 한 줄. 예: 친구와 저녁' },
+      text:{ type:'string', description:"한 줄, 보고서 말투. 할 일은 '~해야 합니다', 일정은 '~이 있습니다', 받은 것은 '~입니다'. 예: 친구와 저녁 약속이 있습니다 / 등본 원본을 류 대리님께 드려야 합니다" },
       due:{ type:'string', description:'날짜 YYYY-MM-DD. 날짜가 있는 일만' },
       time:{ type:'string', description:'시각 HH:MM(24시간). 모르면 넣지 않는다' },
       tag:{ type:'string', description:"짧은 꼬리표. 예: '오늘 안에'. 없으면 넣지 않는다" },
-      note:{ type:'string', description:'항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황). 없으면 넣지 않는다' },
-      comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안) — 판단·짐작·권유가 필요한 항목에만. 예: 답이 늦어지는 것 같아요, 이것부터 하시면 좋겠어요' } }, required:['section', 'text'] } },
+      note:{ type:'string', description:"항목 아래 메모칸. 한 줄로 안 담기는 덧붙임(누가·어디서·진행 상황) — '~입니다·~했습니다' 말투. 없으면 넣지 않는다" },
+      comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안) — 판단·짐작·권유가 필요한 항목에만. 예: 답이 늦어지는 것 같습니다, 이것부터 하시면 좋겠습니다' } }, required:['section', 'text'] } },
     { name:'update_item', description:'판에 있는 항목을 고친다. 바꿀 것만 넣는다.', schema:{ type:'object', properties:{
       id:idp, text:{ type:'string' }, due:{ type:'string', description:'YYYY-MM-DD' }, time:{ type:'string', description:'HH:MM' },
       tag:{ type:'string' }, section:{ type:'string', enum:ids },
-      note:{ type:'string', description:'항목 아래 메모칸 전체를 이 글로 바꾼다. 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움' },
+      note:{ type:'string', description:"항목 아래 메모칸 전체를 이 글로 바꾼다('~입니다' 말투). 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움" },
       comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안)을 이 글로. 빈 글이면 지움' } }, required:['id'] } },
     { name:'new_report', description:'일간보고서 새 판을 연다 — 지금 판은 그대로 얼려 보관되고, 지금 시각 이름(예: 17시)의 새 판이 열린다. 큰 갱신 전에만: 보스가 판·보고서를 정리하자·새로 쓰자고 할 때, 긴 캡처·문서·여러 소식으로 항목 여러 개를 한꺼번에 바꿀 때. 작은 수정에는 쓰지 않는다. 연 뒤에 그 판에 고쳐 쓴다.', schema:{ type:'object', properties:{
       why:{ type:'string', description:'새 판을 여는 까닭 한 줄. 예: 보스가 정리하자고 함, 카톡 캡처 3장 반영' } }, required:['why'] } },
     { name:'set_line', description:'일간보고서 맨 위 세희 한마디(말풍선)와 표정 도장을 쓴다. 새 판을 열면 꼭, 그 뒤엔 크게 달라졌을 때만.', schema:{ type:'object', properties:{
       line:{ type:'string', description:'2~4줄, 말하듯이. 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 없이, 200자 안' },
-      face:{ type:'string', enum:['-_-', '¬_¬', '>_<', 'T_T', 'o_O', '^_^'], description:'-_- 밀린 날 · ¬_¬ 어이없는 날 · >_< 답답한 날 · T_T 급한 게 밀림 · o_O 예상 못 함 · ^_^ 잘 풀림' } }, required:['line'] } },
+      face:{ type:'string', enum:['-_-', '¬_¬', '>_<', 'T_T', 'o_O', '^_^', '!!', 'O□O'], description:'표정 도장(세희 얼굴 그림). -_- 밀린 날 · ¬_¬ 어이없는 날 · >_< 답답한 날 · T_T 정신없는 날 · o_O 예상 못 함·주의 · ^_^ 잘 풀림 · !! 마감 넘김·경고 · O□O 큰일 남' } }, required:['line'] } },
     { name:'read_material', description:'보스가 예전에 보낸 자료(카톡 캡처 해독본·스캔·첨부 문서)의 원문을 다시 본다. 대화에 「앞부분만 보임」으로 잘린 자료의 내용 — 누가 무슨 말을 했는지, 어디까지 나왔는지, 숫자·날짜 — 를 물으면 기억이나 판 요약으로 답하지 말고 먼저 이걸로 확인한다. id 없이 부르면 자료 목록. find 를 주면 그 낱말이 나온 곳만 앞뒤 줄과 함께.', schema:{ type:'object', properties:{
       id:{ type:'string', description:"자료 번호(예: m1k2x3y). 'latest' 는 가장 최근 자료. 없으면 목록" },
       find:{ type:'string', description:'찾을 낱말(선택). 띄어 쓰면 모두 들어간 줄만' },
@@ -372,7 +375,7 @@ async function runToolCore(c){
       const text = String(a.text || '').trim(); if (!text) return { ok:false, error:'text가 비었음' };
       const sec = secById(a.section) ? a.section : (a.due && secById('sched') ? 'sched' : secs()[0].id);
       const it = { id:uid(), sec, text, tag:a.tag ? String(a.tag) : null, done:false, since:p.date, due:normDate(a.due), time:normTime(a.time), by:'sehee' };
-      if (a.note && String(a.note).trim()) it.note = String(a.note).trim();
+      if (a.note && String(a.note).trim()){ it.note = String(a.note).trim(); it.noteBy = 'sehee'; }   /* 11-15 C: 세희가 쓴 메모 — 판에 세희 얼굴 */
       if (a.comment && String(a.comment).trim()) it.cm = String(a.comment).trim().slice(0, 60);
       p.items.push(it); await commitToday(p); noteAction('add', null, { ...it });
       if (it.due && !CAL.quiet) CAL.changed = it.due;
@@ -386,7 +389,7 @@ async function runToolCore(c){
       if ('time' in a) it.time = normTime(a.time);
       if ('tag' in a) it.tag = a.tag ? String(a.tag) : null;
       if (a.section && secById(a.section)) it.sec = a.section;
-      if ('note' in a){ const n = String(a.note || '').trim(); if (n) it.note = n; else delete it.note; }
+      if ('note' in a){ const n = String(a.note || '').trim(); if (n){ it.note = n; it.noteBy = 'sehee'; } else { delete it.note; delete it.noteBy; } }
       if ('comment' in a){ const n = String(a.comment || '').trim().slice(0, 60); if (n) it.cm = n; else delete it.cm; }
       await commitToday(p); noteAction('update', before, { ...it });
       if (it.due && (it.due !== before.due || it.time !== before.time) && !CAL.quiet) CAL.changed = it.due;
@@ -422,7 +425,7 @@ async function runToolCore(c){
     }
     if (c.name === 'set_line'){
       const line = String(a.line || '').trim().slice(0, 220); if (!line) return { ok:false, error:'line이 비었음' };
-      p.line = line; if (a.face) p.face = String(a.face).slice(0, 6); await commitToday(p); render(); noteRead('일간보고서 한마디를 썼어요');
+      p.line = line; p.lineAt = Date.now(); delete p.lineAuto; if (a.face) p.face = String(a.face).slice(0, 6); await commitToday(p); render(); noteRead('일간보고서 한마디를 썼어요');
       return { ok:true };
     }
     if (c.name === 'read_pan'){
@@ -631,7 +634,8 @@ async function aiRound(st, onText, stopSignal){
       const noOff = thinkLocked(model);
       if (!noOff) body.thinking = { type:'disabled' };
       else { rec.thinkOn = true; body.max_tokens = Math.max(body.max_tokens, 16000); if (!AI.noEffort) body.output_config = { effort:'low' }; }
-      if (st.tools) body.tools = TOOL_DEFS().map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
+      if (st.tools) body.tools = TOOL_DEFS().filter(t => !st.only || t.name === st.only).map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
+      if (st.tools && st.only && body.thinking && body.thinking.type === 'disabled') body.tool_choice = { type:'tool', name:st.only };   /* 11-15 C: 한 도구만 시킬 때(생각이 꺼진 모델만 — 생각 켜진 모델은 강제 선택이 안 됨) */
       if (st.tools && st.web) body.tools.push(WEB_TOOL);
       let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
       if (r.status === 401){
@@ -695,7 +699,8 @@ async function aiRound(st, onText, stopSignal){
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
       const headers = { 'content-type':'application/json', 'x-goog-api-key':key };
       const base = { systemInstruction:{ parts:[{ text:st.system }] }, contents:st.contents, generationConfig:{ maxOutputTokens:4096 } };
-      if (st.tools) base.tools = [{ functionDeclarations:TOOL_DEFS().map(t => ({ name:t.name, description:t.description, parameters:gemSchema(t.schema) })) }];
+      if (st.tools) base.tools = [{ functionDeclarations:TOOL_DEFS().filter(t => !st.only || t.name === st.only).map(t => ({ name:t.name, description:t.description, parameters:gemSchema(t.schema) })) }];
+      if (st.tools && st.only) base.toolConfig = { functionCallingConfig:{ mode:'ANY', allowedFunctionNames:[st.only] } };
       /* 웹 검색(구글 검색 근거) — 함수와 같이 못 쓰는 모델이면 400 → 검색 빼고 다시 */
       const withWeb = b => st.tools && st.web ? { ...b, tools:[...(b.tools || []), { google_search:{} }] } : b;
       /* Gemini 3 계열은 기본으로 오래 생각한다 → 대화용으로 '조금만 생각'. 못 알아들으면 빼고 다시 */
@@ -804,7 +809,8 @@ async function aiTurn(history, onText, stopSignal, opts){
     if (opts && opts.onPart && said.trim()){ opts.onPart(said.trim()); said = ''; }
     const results = [];
     WORK.batch = r.calls.filter(c => c.name !== 'ask_boss').length;
-    for (const c of r.calls) results.push({ c, out:await runTool(c) });
+    for (const c of r.calls){ const out = await runTool(c); results.push({ c, out });
+      if (out && out.ok !== false && !out.error){ if (c.name === 'set_line') st.lineSet = true; else if (PAN_TOOLS.includes(c.name)) st.panTouched = true; } }
     if (p === 'anthropic'){
       st.msgs.push({ role:'assistant', content:r.blocks });
       st.msgs.push({ role:'user', content:results.map(x => ({ type:'tool_result', tool_use_id:x.c.id, content:JSON.stringify(x.out) })) });
@@ -814,7 +820,21 @@ async function aiTurn(history, onText, stopSignal, opts){
     }
     if (said && !/\s$/.test(said)) said += ' ';
   }
+  /* 11-15 C: 판을 고친 차례인데 한마디(set_line)를 안 썼으면 — 한마디만 쓰게 한 번 더(보스: 한마디 없는 판은 안 됨) */
+  if (st.tools && st.panTouched && !st.lineSet && last && !(stopSignal && stopSignal.aborted)) await forceLine(st, last, stopSignal);
   return { text:said.trim(), finish:last ? last.finish : '', rec:last ? last.rec : null, sources:srcs.slice(0, 5) };
+}
+async function forceLine(st, last, stopSignal){
+  const note = '(앱 안내 — 보스에게 안 보임) 이번 차례에 판이 바뀌었는데 세희 한마디(set_line)를 아직 안 썼다. 지금 판에 맞게 set_line 하나만 부른다. 다른 말·다른 도구 없이.';
+  try{
+    if (st.p === 'anthropic'){ const bl = (last.blocks || []).filter(b => b.type !== 'text' || (b.text || '').trim()); st.msgs.push({ role:'assistant', content:bl.length ? bl : [{ type:'text', text:'(끝)' }] }); st.msgs.push({ role:'user', content:note }); }
+    else { st.contents.push({ role:'model', parts:(last.modelParts && last.modelParts.length) ? last.modelParts : [{ text:'(끝)' }] }); st.contents.push({ role:'user', parts:[{ text:note }] }); }
+    st.only = 'set_line'; st.web = false;
+    const r = await aiRound(st, null, stopSignal), c = (r.calls || []).find(x => x.name === 'set_line');
+    if (c){ const out = await runTool(c); dlog('AI', '한마디가 빠져서 한 번 더 — set_line ' + (out && out.ok ? '씀' : '실패')); }
+    else dlog('AI', '한마디 한 번 더 — 도구를 안 부름');
+  }catch(e){ dlog('오류', '한마디 덧쓰기 실패: ' + (e.message || e)); }
+  st.only = null;
 }
 const aiStream = (messages, onText, stopSignal) => aiTurn(messages, onText, stopSignal, { noTools:true });
 /* 말풍선에 기계식 기호가 섞여 오면 걷어낸다 — **굵게**, ## 제목, - 목록, 표 줄 */
@@ -826,5 +846,14 @@ function plainChat(t){
 function parseFace(raw){
   const m = (raw || '').match(/^\s*\[(의심|생각|미소|당황|놀람|삐침)\]\s*/);
   const text = plainChat((m ? raw.slice(m[0].length) : (raw || '')).replace(/\[(의심|생각|미소|당황|놀람|삐침)\]\s*/g, '')).trim();
-  return { t:text || '…', f:m ? FACE_TAGS[m[1]] : 0 };
+  return { t:paraFix(text) || '…', f:m ? FACE_TAGS[m[1]] : 0 };
+}
+/* 11-15 C: 긴 대답이 한 덩어리로 오면 — 날짜·요일로 시작하는 문장 앞에서 문단을 나눈다(보스: 가독성). 이미 빈 줄이 있으면 손대지 않는다 */
+const PARA_HEAD = /^(오늘|내일|모레|이번 주|다음 주|주말|[월화수목금토일]요일|\d{1,2}월 \d{1,2}일|\d{1,2}일[에은는 ]|첫째|둘째|셋째|넷째|다섯째|마지막으로)/;
+function paraFix(t){
+  t = String(t || ''); if (t.length < 140 || /\n\s*\n/.test(t)) return t;
+  const ss = t.split(/(?<=[.!?。]|[요다]\.)\s+/).filter(Boolean); if (ss.length < 4) return t;
+  let out = '', n = 0;
+  ss.forEach((x, i) => { const head = i > 0 && PARA_HEAD.test(x); if (head) n++; out += i === 0 ? x : (head ? '\n\n' : (/\n$/.test(out) ? '' : ' ')) + x; });
+  return n >= 2 ? out : t;
 }

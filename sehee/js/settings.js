@@ -265,6 +265,7 @@ $('main').addEventListener('input', e => {
   const ta = e.target.closest('textarea[data-memo]'); if (!ta) return;
   const it = findItem(ta.dataset.memo); if (!it) return;
   it.note = ta.value.replace(/\s+$/, '') || undefined; if (!it.note) delete it.note;
+  if (it.noteBy){ delete it.noteBy; const w = ta.closest('.memo-w'); if (w){ w.classList.remove('sh'); const by = w.querySelector('.memo-by'); if (by) by.remove(); } }   /* 11-15 C: 보스가 고치면 보스 메모 */
   ta.classList.toggle('has', !!it.note); memoGrow(ta); touch();
 });
 $('main').addEventListener('focusout', e => { const ta = e.target.closest('textarea[data-memo]'); if (ta){ touch(true); dlog('판', '메모 저장 #' + ta.dataset.memo); } });
@@ -298,10 +299,10 @@ $('main').addEventListener('keydown', e => {
   }
 });
 $('main').addEventListener('input', e => {
-  if (e.target.id === 'line'){ S.pan.line = e.target.value; grow(e.target); touch(); }
+  if (e.target.id === 'line'){ S.pan.line = e.target.value; delete S.pan.lineAuto; grow(e.target); touch(); }
 });
 $('main').addEventListener('click', e => {
-  if (e.target.id === 'stamp'){ const f = S.pan.face || '-_-'; S.pan.face = FACES[(FACES.indexOf(f) + 1) % FACES.length]; e.target.textContent = S.pan.face; touch(true); }
+  if (e.target.closest('#stamp')){ const f = S.pan.face || '-_-'; S.pan.face = FACES[(FACES.indexOf(f) + 1) % FACES.length]; $('stamp').innerHTML = stampHtml(S.pan.face); touch(true); }
 });
 
 $('prev').onclick = () => { const d = S.dates.filter(x => x < S.date).pop(); if (d) goDate(d); };

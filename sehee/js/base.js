@@ -17,7 +17,18 @@ function panUniversal(){
   list.splice(i, 1); S.uniNote = true; dlog('판', "보편 설계 — 기본 칸 '확정된 지시' 뺌"); return true;
 }
 const FREE_TAG = '#1B5FC1';
-const FACES = ['-_-','^_^','T_T','>_<','¬_¬',';_;','o_O'];
+const FACES = ['-_-','^_^','T_T','>_<','¬_¬',';_;','o_O','!!','O□O'];
+/* 11-15 C: 표정 도장·세희 표시를 세희 얼굴 그림으로(보스가 준 얼굴 9장, art/f-*.webp). 글자 도장은 그림 이름으로 바꿔 보여 준다 */
+const STAMP_ART = { '-_-':'f-pout', '^_^':'f-smile', 'T_T':'f-dizzy', ';_;':'f-dizzy', '>_<':'f-fluster', '¬_¬':'f-doubt', 'o_O':'f-alert', '!!':'f-angry', 'O□O':'f-shout' };
+const stampHtml = f => { f = f || '-_-'; const a = STAMP_ART[f]; return a ? `<img src="art/${a}.webp" alt="${esc(f)}" draggable="false">` : esc(f); };
+const SH_ICO = '<img class="sh-ico" src="art/f-smirk.webp" alt="세희" draggable="false">';
+/* 판에 한마디가 비면 — 앱이 먼저 임시 한마디(세희가 판을 고치면 새로 씀, ai.js forceLine) */
+function autoLine(p){
+  const open = (p.items || []).filter(i => !i.done), today = open.filter(i => i.due === p.date).length, back = open.filter(i => i.back).length;
+  if (!open.length) return '오늘 판 열었어요. 아직 적힌 일이 없어요.\n할 일이나 받은 걸 말해 주시면 바로 적어 둘게요.';
+  return `오늘 판 열었어요. 이어진 일 ${open.length}개${today ? `, 오늘 날짜인 일 ${today}개` : ''}${back ? `, 어제 미룬 일 ${back}개` : ''}예요.\n위에서부터 같이 봐요.`;
+}
+function ensureLine(p){ if (!p || (p.line || '').trim()) return false; p.line = autoLine(p); p.lineAuto = true; return true; }
 const FS_STEPS = [ {v:.9,t:'작게'}, {v:1,t:'보통'}, {v:1.15,t:'크게'}, {v:1.3,t:'아주 크게'} ];
 
 /* ── 날짜 ── */
@@ -80,6 +91,7 @@ async function makeToday(date){
     p.carriedFrom = prevDate;
   }
   p.ver = { label:verHour(p.createdAt), at:p.createdAt, by:'app', why:prevDate ? '날이 바뀜' : '첫 판' }; p.vers = [];   /* v1.5.14 날이 바뀌면 새 판 */
+  ensureLine(p);   /* 11-15 C: 첫 판이어도 한마디 */
   await putPan(p);
   S.dates = (await allDates()).sort();
   return p;
@@ -89,6 +101,7 @@ async function goDate(date){
   await flush(); RPT.view = null;
   let p = await getPan(date);
   if (!p && date === S.today) p = await makeToday(date);
+  else if (p && date === S.today && ensureLine(p)) await putPan(p);   /* 11-15 C: 한마디가 빈 오늘 판 */
   S.date = date; S.pan = p || null;
   render();
   window.scrollTo(0, 0); document.body.scrollTop = 0; $('main').scrollTop = 0;
@@ -161,7 +174,7 @@ function seheeBlock(){
   return `<div class="sehee">
     <div class="fig">${$('seheeFig').innerHTML}<div class="cap">비서 강세희</div></div>
     <div class="bubble"><textarea id="line" rows="1" placeholder="세희 한마디">${esc(p.line)}</textarea>
-      <button class="stamp" id="stamp" title="도장 바꾸기">${esc(p.face || '-_-')}</button></div>
+      <button class="stamp" id="stamp" title="도장 바꾸기">${stampHtml(p.face)}</button></div>
   </div>`;
 }
 
@@ -198,10 +211,10 @@ function itemRow(it){
   const ew = wayOf(it), mk = it.back ? '<span class="mk" title="내일로 미뤘던 일">🔁</span>' : it.since === S.pan.date && !it.done ? '<span class="mk" title="오늘 새로">🆕</span>' : '';
   return `<div class="it ${it.done ? 'done' : ''}${it.later && !it.done ? ' later' : ''}${stamped ? ' stamped' : ''}" data-id="${it.id}">
     <button class="ck" data-act="toggle" aria-label="${it.done ? '끝냄 취소' : '끝냄'}">${it.done ? '<span class="seal">完</span>' : ''}</button>
-    <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>${it.cm ? `<div class="icm"><i>세희</i>${esc(it.cm)}</div>` : ''}
-      <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? '<span class="age">세희가 적음</span>' : ''}</div>
+    <div class="body"><div class="tx" data-act="edit">${mk}${esc(it.text)}</div>${it.cm ? `<div class="icm">${SH_ICO}${esc(it.cm)}</div>` : ''}
+      <div class="meta">${it.due ? `<span class="due${it.due === S.pan.date ? ' now' : it.due < S.pan.date ? ' past' : ''}">📅 ${esc(dueText(it))}</span>` : ''}${t ? `<span class="tag" style="--c:${t}">${esc(it.tag)}</span>` : ''}${age > 1 && !it.done ? `<span class="age">${age}일째</span>` : ''}${it.by === 'sehee' ? `<span class="age sh-by">${SH_ICO}세희가 적음</span>` : ''}</div>
       <div class="ways">${WAYS.map(w => `<button class="wy${ew === w ? ' on' : ''}" data-act="way" data-w="${w}">${esc(wayName(w))}</button>`).join('')}${ew ? `<span class="wyok">✓ ${esc(wayName(ew))}${ew === '내일' ? ' ' + mdShort(it.later) : ''}</span>` : ''}</div>
-      <textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div>
+      <div class="memo-w${it.note && it.noteBy === 'sehee' ? ' sh' : ''}">${it.note && it.noteBy === 'sehee' ? `<span class="memo-by">${SH_ICO}<b>세희 메모</b></span>` : ''}<textarea class="memo${it.note ? ' has' : ''}" data-memo="${it.id}" rows="1" placeholder="✎ 메모" enterkeyhint="enter">${esc(it.note || '')}</textarea></div></div>
     <button class="more" data-act="menu" aria-label="더보기">⋯</button>
   </div>`;
 }
