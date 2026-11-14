@@ -9,7 +9,10 @@ const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 
 const SYNC_PFX = /^([bc]_|clue_)/;
 function syncKey(k){ return SYNC_KV.includes(k) || SYNC_PFX.test(String(k)); }
 const SYNC_LS = 'sehee-sync';
+/* v1.5.23: 보스가 정한 이 기기 이름(설정 → 계정 「이 기기 이름」)이 있으면 그걸로 — 「집 데스크탑」 「학원 PC」 */
+const myDevName = () => { try{ return (localStorage.getItem('sehee.devname') || '').trim(); }catch(e){ return ''; } };
 function deviceName(){
+  if (myDevName()) return myDevName();
   const u = navigator.userAgent;
   const os = /Android/.test(u) ? (/Mobile/.test(u) ? '안드로이드 폰' : '안드로이드 태블릿') : /iPhone/.test(u) ? '아이폰' : /iPad/.test(u) ? '아이패드' : /Windows/.test(u) ? '윈도우 컴퓨터' : /Mac OS/.test(u) ? '맥' : /Linux/.test(u) ? '리눅스' : '기기';
   const br = /SamsungBrowser/.test(u) ? '삼성 인터넷' : /Edg\//.test(u) ? '엣지' : /Chrome\//.test(u) ? '크롬' : /Firefox\//.test(u) ? '파이어폭스' : /Safari\//.test(u) ? '사파리' : '';
@@ -223,5 +226,5 @@ function syncLine(){
   if (!SYNC.url) return '계정 서버가 아직 없어요. 서버 주소를 넣으면 앱을 열 때 암호를 물어요.';
   if (!SYNC.token || !SYNC.on) return '이 기기만 쓰는 중이에요(계정으로 안 열었어요).';
   const t = SYNC.last ? new Date(SYNC.last) : null;
-  return `${SYNC.user} · ${SYNC.device || deviceName()} 에서 열림 · 마지막으로 올린 때 ${t ? pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '아직'}${SYNC.dirty.size ? ` · 올릴 것 ${SYNC.dirty.size}개` : ''}`;
+  return `${SYNC.user} · ${myDevName() || SYNC.device || deviceName()} 에서 열림 · 마지막으로 올린 때 ${t ? pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()) : '아직'}${SYNC.dirty.size ? ` · 올릴 것 ${SYNC.dirty.size}개` : ''}`;
 }

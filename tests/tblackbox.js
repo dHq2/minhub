@@ -1,4 +1,4 @@
-// v1.1 (2026-11-15, A: 같은 브라우저 탭 둘) · v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
+// v1.2 (2026-11-15, A: 기기 이름) · v1.1 (같은 브라우저 탭 둘) · v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
 const { chromium } = require('playwright');
 const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
 (async () => {
@@ -85,6 +85,13 @@ const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
   const got = g4.lines.filter(l => /xyz/.test(l.d || '')).map(l => l.d);
   check('탭 둘 — 네 줄 다 들어감', ['탭1 원문 xyz', '탭2 원문 xyz', '탭1 둘째 xyz', '탭2 둘째 xyz'].every(x => got.includes(x)), got.join(' / '));
   check('탭마다 이름이 다름', (await A.evaluate(() => devId())) !== (await A2.evaluate(() => devId())));
+  // 기기 이름 (v1.5.23)
+  await A.evaluate(() => { localStorage.setItem('sehee.devname', '집 데스크탑'); dlog('설정', '이름 확인', '이름 확인 qqq'); });
+  await A.evaluate(() => logPush(true)); await A.waitForTimeout(400);
+  const g5 = await (await fetch(SRV + '/log?n=500', { headers:{ authorization:'Bearer ' + tokA } })).json();
+  const ln = g5.lines.find(l => l.d === '이름 확인 qqq');
+  check('정한 기기 이름으로 올라감', ln && /^집 데스크탑 #/.test(ln.dev), ln && ln.dev);
+  check('계정 줄에도 그 이름', /집 데스크탑/.test(await A.evaluate(() => syncLine())));
   console.log('BLACKBOX bad', bad);
   await b.close();
   if (bad) process.exit(1);

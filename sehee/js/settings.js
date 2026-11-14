@@ -5,6 +5,7 @@ function settingsSheet(){
   openSheet(`<h4>설정</h4>
     <label class="t">계정 — 암호로 열면 판·대화·보드·설정이 다른 기기에서도 그대로 열려요</label>
     <p class="note" id="syncInfo">${esc(syncLine())}</p>
+    <div class="row"><input class="free" id="devName" placeholder="이 기기 이름 (예: 집 데스크탑, 내 폰)" value="${esc(myDevName())}" maxlength="24"><button class="chip" data-sact="devname">이름 저장</button></div>
     <div class="row"><input class="free" id="syncUrl" placeholder="계정 서버 주소 (https://…workers.dev)" value="${esc(SYNC.url)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="chip" data-sact="syncurl">저장</button></div>
     <div class="row" style="margin-top:6px">${SYNC.url && SYNC.on ? '<button class="chip" data-sact="syncnow">지금 올리기</button><button class="chip danger" data-sact="logout">로그아웃</button>' : SYNC.url ? '<button class="chip" data-sact="login">암호로 열기</button>' : ''}</div>
     <hr class="s">
@@ -127,6 +128,7 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'syncurl'){ const u = $('syncUrl').value.trim().replace(/\/+$/, ''); if (u && !/^https?:\/\//.test(u)){ $('syncInfo').textContent = 'https:// 로 시작하는 주소를 넣어 주세요.'; return; }
     try{ if (u){ const r = await fetch(u + '/'); const j = await r.json(); if (!j || j.name !== 'sehee-sync') throw 0; } }catch(e){ $('syncInfo').textContent = '그 주소에서 세희 서버가 대답하지 않아요. 주소를 확인해 주세요.'; return; }
     SYNC.url = u; SYNC.token = ''; syncKeep(); $('syncInfo').textContent = u ? '저장했어요. 「암호로 열기」를 누르면 암호를 물어요.' : '서버 주소를 지웠어요.'; settingsSheet(); return; }
+  else if (a === 'devname'){ const v = $('devName').value.trim().slice(0, 24); try{ if (v) localStorage.setItem('sehee.devname', v); else localStorage.removeItem('sehee.devname'); }catch(e){} dlog('설정', '이 기기 이름 → ' + (v || '(자동)')); LOGUP.st = ''; logPush(true); toast(v ? `이 기기는 이제 「${v}」예요` : '이 기기 이름을 자동으로 돌렸어요'); settingsSheet(); return; }
   else if (a === 'login'){ SYNC.token = ''; syncKeep(); location.reload(); return; }
   else if (a === 'logout'){ if (!b.textContent.includes('한 번 더')){ b.textContent = '한 번 더 누르면 로그아웃'; return; } syncLogout(); return; }
   else if (a === 'syncnow'){ await syncFlush(); $('syncInfo').textContent = syncLine(); return; }

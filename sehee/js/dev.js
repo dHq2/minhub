@@ -42,7 +42,7 @@ async function logPush(force){
   try{
     const st = logState(), stj = JSON.stringify({ ...st, syncLast:0 });   /* 상태는 바뀌었을 때만(계정 서버 쓰기 아끼기) */
     if (!fresh.length && stj === LOGUP.st){ LOGUP.last = now; return; }
-    const r = await fetch(SYNC.url + '/log', { method:'POST', headers:{ 'content-type':'application/json', authorization:'Bearer ' + SYNC.token }, body:JSON.stringify({ dev:(SYNC.device || deviceName()) + ' #' + devId(), lines:fresh.slice(-300), ...(stj !== LOGUP.st ? { state:st } : {}) }), keepalive:!!force });
+    const r = await fetch(SYNC.url + '/log', { method:'POST', headers:{ 'content-type':'application/json', authorization:'Bearer ' + SYNC.token }, body:JSON.stringify({ dev:(myDevName() || SYNC.device || deviceName()) + (SYNC.observer && myDevName() ? ' · 관전석' : '') + ' #' + devId(), lines:fresh.slice(-300), ...(stj !== LOGUP.st ? { state:st } : {}) }), keepalive:!!force });
     const j = await r.json().catch(() => ({})); LOGUP.last = now;
     if (r.ok){ LOGUP.fails = 0; LOGUP.st = stj; if (j.logging === false) LOGUP.off = true; else if (fresh.length){ LOGUP.sent = fresh[fresh.length - 1].n; try{ sessionStorage.setItem('sehee.logsent', String(LOGUP.sent)); if (LOGUP.sent > +(localStorage.getItem('sehee.logsent') || 0)) localStorage.setItem('sehee.logsent', String(LOGUP.sent)); }catch(e){} } }
     else LOGUP.fails++;
