@@ -4,9 +4,9 @@
    · 한 사람은 한 기기에서만. 다른 기기에서 암호를 넣으면 여기는 다음 확인(20초 안) 때 닫힌다
    · 서버 기록으로 덮어쓰기 전에, 이 기기에 있던 기록은 'presync' 로 따로 남겨 둔다 */
 const SYNC = { url:'', token:'', user:'', device:'', last:0, on:false, dead:false, busy:false, again:false, fails:0, timer:null, dirty:new Map(), gen:0 };
-const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'pplpics', 'pplclues', 'dbg'];   /* v1.5.5 pplpics = 인간관계 프로필 사진 · v1.5.14 pplclues = 사진 단서 글(C) */
+const SYNC_KV = ['settings', 'ai', 'usage', 'chat', 'board', 'ailog', 'people', 'pplpics', 'pplclues', 'dbg', 'bdpics'];   /* 11-15 B bdpics = 보드 사진첩 목록 */   /* v1.5.5 pplpics = 인간관계 프로필 사진 · v1.5.14 pplclues = 사진 단서 글(C) */
 /* 보너스(b_·c_로 시작하는 키)도 계정에 같이 — v1.3.5 / v1.4.0. v1.5.14(C) 사진 단서 사진(clue_<id>)도 한 장씩 따로 */
-const SYNC_PFX = /^([bc]_|clue_)/;
+const SYNC_PFX = /^([bc]_|clue_|bdp_)/;   /* 11-15 B: bdp_<id> = 보드 사진첩 서버 사본(1024px). 이 기기 원본 bdpic_ 은 안 실음 */
 function syncKey(k){ return SYNC_KV.includes(k) || SYNC_PFX.test(String(k)); }
 const SYNC_LS = 'sehee-sync';
 /* v1.5.23: 보스가 정한 이 기기 이름(설정 → 계정 「이 기기 이름」)이 있으면 그걸로 — 「집 데스크탑」 「학원 PC」 */
@@ -95,7 +95,7 @@ async function syncPull(){
     if (!old || old.user !== SYNC.user) await tx('kv', 'readwrite', s => s.put({ at:Date.now(), user:SYNC.user, pans:localPans, kv }, 'presync'));
   }
   await tx('pans', 'readwrite', s => { s.clear(); for (const k of keys) if (k.startsWith('pan:') && recs[k].v && recs[k].v.date) s.put(recs[k].v); });
-  const localB = (await kvKeys()).filter(k => SYNC_PFX.test(String(k))), names = [...new Set([...SYNC_KV, ...localB, ...keys.filter(k => /^kv:([bc]_|clue_)/.test(k)).map(k => k.slice(3))])];
+  const localB = (await kvKeys()).filter(k => SYNC_PFX.test(String(k))), names = [...new Set([...SYNC_KV, ...localB, ...keys.filter(k => /^kv:([bc]_|clue_|bdp_)/.test(k)).map(k => k.slice(3))])];
   await tx('kv', 'readwrite', s => { for (const n of names){ const rec = recs['kv:' + n]; if (rec) s.put(rec.v, n); else s.delete(n); } });
   SYNC.last = Date.now(); syncKeep();
   return keys.length;

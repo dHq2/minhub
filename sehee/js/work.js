@@ -21,11 +21,11 @@ async function workToPan(){
 }
 const itemEl = id => document.querySelector(`#main .it[data-id="${String(id || '').replace(/^#/, '')}"]`);
 const WORK_LABEL = { new_report:'일간보고서 새 판 여는 중', set_line:'한마디 쓰는 중', add_item:'판에 적는 중', update_item:'판 고치는 중', complete_item:'끝낸 걸로 표시하는 중', delete_item:'판에서 지우는 중', file_inbox:'받은 것 정리하는 중',
-  make_card:'보드에 쓰는 중', update_card:'보고서 고치는 중', add_person:'인간관계 판에 붙이는 중', update_person:'인간관계 판 고치는 중', edit_groups:'인간관계 판 무리 고치는 중', tie_person:'인간관계 판 실 잇는 중', untie_person:'인간관계 판 실 끊는 중' };
+  make_card:'보드에 쓰는 중', update_card:'보고서 고치는 중', add_person:'인간관계 판에 붙이는 중', update_person:'인간관계 판 고치는 중', edit_groups:'인간관계 판 무리 고치는 중', tie_person:'인간관계 판 실 잇는 중', untie_person:'인간관계 판 실 끊는 중', keep_photo:'보드 사진첩에 넣는 중' };
 /* ── 11-15 B: 볼 거 — 세희가 다른 화면(일간보고서·달력·사람)에 적어도 화면을 옮기지 않는다. 그 화면의 탭·견출지에 「볼 거」 라벨이 살짝 튀어나왔다가
    잠시 뒤 들어가고, 보스가 그 화면을 열면 바뀐 줄이 한 번 반짝. 옮겨 가며 보여 주는 건 ① 그 화면을 이미 보고 있을 때 ② 보스가 콕 집은 한두 건(show·calendar) 뿐 ── */
-const SEE = { pan:new Set(), cal:new Set(), people:new Set(), t:{} };
-const SEE_SEL = { pan:'#tabPan,#panTab', cal:'[data-dw="cal"],[data-pdw="cal"]', people:'[data-dw="people"],[data-pdw="people"]' };
+const SEE = { pan:new Set(), cal:new Set(), people:new Set(), board:new Set(), t:{} };
+const SEE_SEL = { pan:'#tabPan,#panTab', cal:'[data-dw="cal"],[data-pdw="cal"]', people:'[data-dw="people"],[data-pdw="people"]', board:'[data-dw="board"],[data-pdw="board"]' };
 const SEE_MS = 9000;
 function seeMark(k, id){
   if (id) SEE[k].add(String(id));
@@ -36,7 +36,7 @@ function seeMark(k, id){
 function seeFlush(k){
   if (!SEE[k] || !SEE[k].size) return; const ids = [...SEE[k]]; SEE[k].clear();
   clearTimeout(SEE.t[k]); document.querySelectorAll(SEE_SEL[k]).forEach(b => b.classList.remove('see'));
-  setTimeout(() => ids.forEach(id => { if (k === 'pan'){ const el = itemEl(id); if (el) hl(el); } else if (k === 'cal') calFlash(id); else if (k === 'people' && typeof pplFlash === 'function') pplFlash(id); }), 260);
+  setTimeout(() => ids.forEach(id => { if (k === 'pan'){ const el = itemEl(id); if (el) hl(el); } else if (k === 'cal') calFlash(id); else if (k === 'people' && typeof pplFlash === 'function') pplFlash(id); else if (k === 'board' && typeof flashBp === 'function') flashBp(id); }), 260);
 }
 document.addEventListener('DOMContentLoaded', () => {   /* bonus-api.js 가 이 파일 뒤에 실림 */
   (BONUS.subs.view = BONUS.subs.view || []).push(v => { if (v === 'pan') seeFlush('pan'); });

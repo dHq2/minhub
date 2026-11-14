@@ -8,7 +8,7 @@ const VERSION = 'v1.5.48';
 const CACHE = 'sehee-' + VERSION;
 /* 본체 코드 — index.html 의 <script src> 순서 그대로 */
 const CODE = ['./css/app.css', './css/a.css', './css/b.css', './css/c.css',
-  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/picview.js', './js/intro.js', './js/boot.js'];
+  './js/dev.js', './js/base.js', './js/settings.js', './js/scene.js', './js/update.js', './js/ai.js', './js/ocr.js', './js/report.js', './js/people.js', './js/work.js', './js/bonus-api.js', './js/sync.js', './js/job.js', './js/docs.js', './js/office.js', './js/views.js', './js/calendar.js', './js/board.js', './js/picview.js', './js/bdpics.js', './js/intro.js', './js/boot.js'];
 const SHELL = [...CODE, './', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png',
   './art/loading.webp', './art/bg-office.webp', './art/desk.webp', './art/papers.webp', './art/monitor.webp',
   './art/s-lean.webp', './art/s-hip.webp', './art/s-think.webp', './art/s-smug.webp', './art/s-talk.webp', './art/s-surprised.webp', './art/s-front.webp',

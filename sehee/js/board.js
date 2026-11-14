@@ -147,7 +147,8 @@ function boardRender(){
   const cs = BOARD.cards || [];
   $('wbSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.mode === RL.mode));
   $('rlSeg').hidden = RL.mode !== 'reports'; $('rlSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === RL.view));
-  $('wbMemo').hidden = RL.mode === 'reports';
+  $('wbMemo').hidden = RL.mode !== 'board'; $('wbPic').hidden = RL.mode !== 'pics'; $('wbGrid').classList.remove('bp-on');
+  if (RL.mode === 'pics'){ $('wbGrid').classList.remove('rl'); bpRender(); return; }   /* 11-15 B: 보드 사진첩(js/bdpics.js) */
   if (RL.mode === 'reports'){
     const n = cs.filter(c => c.kind === 'report').length; $('wbCount').textContent = n ? `보고서 ${n}건` : '';
     $('wbGrid').classList.add('rl'); $('wbGrid').innerHTML = reportsHtml(); requestAnimationFrame(fitThumbs); return;

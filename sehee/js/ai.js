@@ -248,6 +248,7 @@ ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·�
   한마디(set_line): 판을 새로 열거나 판을 고친 차례에는 반드시 마지막에 지금 판에 맞게 다시 쓴다(11-15 보스 — 한마디 없는 판은 안 됨. 빠뜨리면 앱이 한 번 더 시킨다). 2~4줄, 말하듯이 — 오늘 핵심 · 지금 손댈 것 · 세희 생각. 머리표 금지. 표정 도장도 같이.
   항목 코멘트(add_item·update_item 의 comment): 판단이 필요한 몇 개에만(판 항목의 3분의 1 이하), 한 줄 40자 안. 사실을 되풀이하지 말고 세희의 판단·짐작·권유로 — '~인 것 같습니다', '~입니다', '~부터 하시면 좋겠습니다'. 메모칸(note)은 보스 것이라 코멘트를 메모에 쓰지 않는다.
 - 날짜 있는 일을 적을 땐 달력용 memo(9자 안팎 명사형)도 같이 넣는다.
+- 보드 사진첩(11-15 보스): 보스가 보낸 사진이 나중에 다시 꺼내 볼 업무 자료(서류·안내문·공지·제출 목록·계약서·영수증·명함·표·일정표)면 — 카톡 캡처라도 그 안에 그런 내용이 있으면 — 묻지 않고 keep_photo 로 넣고 한 줄만 보고. 잡담 캡처·사람·풍경·추억 사진은 넣지 않는다.
 - 세희는 보고만 한다(11-15 보스): 일간보고서·달력·인간관계 판에 적는 건 지금처럼 알아서 하되, 화면은 앱이 「볼 거」 라벨로 알리니 말은 "일정에 적어 뒀습니다·할 일 두 개 적어 뒀어요"처럼 무엇을 적었는지 한 줄만. 보스가 물은 게 있으면 그 답이 먼저고, 묻지 않은 제안·확인 질문을 덧붙이지 않는다(정말 필요한 것 하나만).
   보스가 콕 집어 '이거 적어·달력에 넣어'라고 한두 건만 시킬 때만 show:true(달력이면 calendar:true) — 그때만 그 화면으로 가서 적는 걸 보여 준다.
 - 판에 적었다·넣었다·붙였다고 말하려면 그 차례에 실제로 도구(add_item·update_item·make_card·add_person 등)를 불러야 한다. 도구를 안 불렀으면 '적겠다'고 말하지 말고 지금 부른다.
@@ -343,6 +344,10 @@ function TOOL_DEFS(){
       tag:{ type:'string' }, section:{ type:'string', enum:ids },
       note:{ type:'string', description:"항목 아래 메모칸 전체를 이 글로 바꾼다('~입니다' 말투). 보스가 쓴 메모에 덧붙일 땐 원래 메모를 살려서 이어 쓴다. 빈 글이면 지움" },
       comment:{ type:'string', description:'세희 코멘트 한 줄(40자 안)을 이 글로. 빈 글이면 지움' } }, required:['id'] } },
+    { name:'keep_photo', description:'보드 사진첩에 업무 사진을 넣는다(11-15 B) — 보스가 이번에 보낸 사진이 나중에 다시 꺼내 볼 업무 자료(서류·안내문·공지·제출 목록·계약서·영수증·명함·표·일정표)면 묻지 않고 넣는다. 잡담 캡처·사람·풍경·음식·추억 사진은 넣지 않는다(사람 사진 단서는 보스가 시킬 때 clue_to_person).', schema:{ type:'object', properties:{
+      photo:{ type:'integer', description:'보스가 이번에 보낸 사진 중 몇 번째(1부터). 여러 장이면 photos' },
+      photos:{ type:'array', items:{ type:'integer' }, description:'여러 장일 때 번호들' },
+      title:{ type:'string', description:"무슨 자료인지 한 줄(20자 안팎, 명사형). 예: 신규입사자 제출서류 안내 / 11월 근무표 / 거래처 명함" } }, required:['title'] } },
     { name:'new_report', description:'일간보고서 새 판을 연다 — 지금 판은 그대로 얼려 보관되고, 지금 시각 이름(예: 17시)의 새 판이 열린다. 큰 갱신 전에만: 보스가 판·보고서를 정리하자·새로 쓰자고 할 때, 긴 캡처·문서·여러 소식으로 항목 여러 개를 한꺼번에 바꿀 때. 작은 수정에는 쓰지 않는다. 연 뒤에 그 판에 고쳐 쓴다.', schema:{ type:'object', properties:{
       why:{ type:'string', description:'새 판을 여는 까닭 한 줄. 예: 보스가 정리하자고 함, 카톡 캡처 3장 반영' } }, required:['why'] } },
     { name:'set_line', description:'일간보고서 맨 위 세희 한마디(말풍선)와 표정 도장을 쓴다. 새 판을 열면 꼭, 그 뒤엔 크게 달라졌을 때만.', schema:{ type:'object', properties:{
@@ -420,6 +425,7 @@ async function runTool(c){
 async function runToolCore(c){
   const p = await todayPanRef(), a = c.args || {}, clean = v => String(v || '').replace(/^#/, '');
   const find = id => p.items.find(x => x.id === clean(id));
+  if (c.name === 'keep_photo') return bpTool(a);   /* 11-15 B: 보드 사진첩(js/bdpics.js) */
   if (/_card$/.test(c.name)) return runBoardTool(c);
   if (/_person$/.test(c.name) || c.name === 'edit_groups') return runPeopleTool(c);
   if (BONUS.handlers[c.name]){ try{ return await BONUS.handlers[c.name](c.args || {}); }catch(e){ dlog('오류', `보너스 도구 ${c.name}: ${e.message}`, e.stack); return { ok:false, error:'보너스 기능 오류: ' + e.message }; } }
