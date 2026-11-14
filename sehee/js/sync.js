@@ -175,6 +175,8 @@ async function syncStart(){
   if (su){ SYNC.url = su.replace(/\/+$/, ''); syncKeep(); history.replaceState(null, '', location.pathname + location.hash); }
   if (!SYNC.url) return 'local';
   let note = '';
+  /* v1.5.26: 이미 운전석으로 열린 기기가 ?watch=1 로 오면 — 암호 화면을 다시 띄워 관전석으로(서버의 운전석은 건드리지 않음) */
+  if (SYNC.token && SYNC.watchAsk && !SYNC.observer){ SYNC.token = ''; SYNC.dirty.clear(); syncKeep(); note = '보기 전용(관전석)으로 열어요 — 암호를 눌러 주세요'; }
   if (SYNC.token){
     spStep('계정 확인 중');
     const c = await syncCheck();

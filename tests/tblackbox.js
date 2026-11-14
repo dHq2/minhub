@@ -1,4 +1,4 @@
-// v1.2 (2026-11-15, A: 기기 이름) · v1.1 (같은 브라우저 탭 둘) · v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
+// v1.3 (2026-11-15, A: 열린 기기를 관전석으로) · v1.2 (기기 이름) · v1.1 (같은 브라우저 탭 둘) · v1.0 (2026-11-14, A) — 개발 블랙박스(/log · 금고 내보내기) + 관전석(보기 전용, 주 기기 안 밀어냄)
 const { chromium } = require('playwright');
 const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
 (async () => {
@@ -92,6 +92,17 @@ const APP = 'http://localhost:8765/sehee/', SRV = 'http://localhost:8787';
   const ln = g5.lines.find(l => l.d === '이름 확인 qqq');
   check('정한 기기 이름으로 올라감', ln && /^집 데스크탑 #/.test(ln.dev), ln && ln.dev);
   check('계정 줄에도 그 이름', /집 데스크탑/.test(await A.evaluate(() => syncLine())));
+  // 이미 운전석으로 열린 기기 → 보기 전용으로 바꾸기 (v1.5.26)
+  const D = await open('D', { width:1366, height:860 }, false);
+  await D.goto(APP + '?sync=' + SRV); await D.waitForSelector('#pinVeil'); await pin(D, '2580'); await D.waitForSelector('#pinVeil', { state:'detached' }); await D.waitForTimeout(1200);
+  await D.evaluate(() => settingsSheet()); await D.waitForTimeout(300);
+  check('설정에 「보기 전용으로 바꾸기」', await D.locator('[data-sact="watch"]').count() === 1);
+  await D.locator('[data-sact="watch"]').click(); await D.waitForSelector('#pinVeil');
+  check('암호 화면이 다시 뜨고 보기 전용이 체크됨', await D.locator('#pinOb').isChecked(), await D.locator('#pinM').textContent());
+  await pin(D, '2580'); await D.waitForSelector('#pinVeil', { state:'detached' }); await D.waitForTimeout(1200);
+  check('관전석으로 열림', await D.evaluate(() => SYNC.observer) && await D.locator('#obsBar').isVisible());
+  await D.evaluate(() => settingsSheet()); await D.waitForTimeout(300);
+  check('관전석 설정엔 「관전석 나가기」', /관전석 나가기/.test(await D.locator('[data-sact="logout"]').textContent()) && !(await D.locator('[data-sact="watch"]').count()));
   console.log('BLACKBOX bad', bad);
   await b.close();
   if (bad) process.exit(1);
