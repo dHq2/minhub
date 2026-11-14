@@ -1,5 +1,6 @@
-/* 세희 계정·동기화 서버 v3 — Cloudflare Worker + D1
-   (v2 2026-11-13: /og 대표 사진 찾기 · v3 2026-11-14: 개발 블랙박스(/log) · 비공개 GitHub 금고로 내보내기 · 보기 전용 관전석)
+/* 세희 계정·동기화 서버 v4 — Cloudflare Worker + D1
+   (v2 2026-11-13: /og 대표 사진 찾기 · v3 2026-11-14: 개발 블랙박스(/log) · 비공개 GitHub 금고로 내보내기 · 보기 전용 관전석
+    v4 2026-11-15: 앱 안에서 가입(/signup — 아이디 + 숫자 4자리, 아무나) · 암호 바꾸기(/pin) · 아이디로 로그인 · 계정별 잠금. PINS 계정은 그대로 됨)
    ─ 하는 일
      · 암호(PIN)로 로그인 → 그 사람의 판·대화·보드·설정을 어느 브라우저에서든 연다
      · 한 사람은 한 기기에서만 열린다. 새 기기에서 로그인하면 예전 기기는 다음 확인 때 닫힌다
@@ -15,7 +16,8 @@
      · 암호 5번 틀리면 그 접속(IP)은 15분 잠김. 전체로 1시간에 30번 넘게 틀리면 1시간 잠김
      · 토큰은 서버에 해시로만 남긴다 */
 const ORIGINS = ['https://dhq2.github.io', 'http://localhost:8765', 'http://127.0.0.1:8765'];
-const LOCK_AFTER = 5, LOCK_MS = 15 * 60e3, GLOBAL_MAX = 30, MAX_BODY = 20e6;
+const LOCK_AFTER = 5, LOCK_MS = 15 * 60e3, GLOBAL_MAX = 300, MAX_BODY = 20e6;   /* v4: 가입이 열려서 전체 한도 30 → 300 */
+const ACCT_LOCK_AFTER = 10, SIGNUP_PER_HOUR = 5;
 const OBS_MS = 30 * 86400e3, LOG_KEEP_MS = 30 * 86400e3, D1_KEEP_MS = 3 * 86400e3, LOG_BATCH = 400;   /* 금고 30일, D1 은 3일만(쓰기 한도 아끼기) */
 
 const enc = new TextEncoder();
@@ -35,6 +37,9 @@ async function setup(db){
     db.prepare('CREATE TABLE IF NOT EXISTS logs (user TEXT, dev TEXT, n INTEGER, t INTEGER, c TEXT, m TEXT, d TEXT, sent INTEGER DEFAULT 0, PRIMARY KEY (user, dev, n))'),
     db.prepare('CREATE TABLE IF NOT EXISTS logcursor (user TEXT PRIMARY KEY, rid INTEGER)'),
     db.prepare('CREATE TABLE IF NOT EXISTS devstate (user TEXT, dev TEXT, v TEXT, at INTEGER, PRIMARY KEY (user, dev))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS accounts (user TEXT PRIMARY KEY, salt TEXT, hash TEXT, at INTEGER)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS acctfails (user TEXT PRIMARY KEY, n INTEGER, until INTEGER, at INTEGER)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS signups (ip TEXT PRIMARY KEY, n INTEGER, at INTEGER)'),
   ]);
   ready = true;
 }
@@ -47,7 +52,7 @@ const json = (req, status, body) => new Response(JSON.stringify(body), { status,
 
 async function auth(req, env, url){
   const raw = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '') || url.searchParams.get('t') || '';
-  const user = raw.split('.')[0];
+  let user = raw.split('.')[0]; try{ user = decodeURIComponent(user); }catch(e){ return { bad:'no-token' }; }   /* v4: 한글 아이디는 표에 %인코딩으로(헤더엔 영문만 돼서) */
   if (!user || !raw.includes('.')) return { bad:'no-token' };
   const cur = await env.DB.prepare('SELECT token_hash, device, at FROM current WHERE user = ?').bind(user).first();
   const h = await sha(raw);
@@ -103,7 +108,23 @@ async function og(target){
 /* ── v3 개발 블랙박스를 비공개 GitHub 금고로 (5분마다) ──
    한 번에 계정마다 최대 400줄을 logs/날짜(한국)/시분초-계정.jsonl 새 파일 하나로 올린다(덮어쓰기 없음). 어디까지 올렸는지는 logcursor 한 줄(줄마다 표시하면 쓰기가 두 배).
    한 시간에 한 번: D1 의 3일 지난 줄을 지우고(금고에 이미 있음), 금고의 30일 지난 날짜 폴더 파일을 몇 개씩 지운다. */
-const logUser = (env, user) => String(env.LOG_USERS || '').split(',').map(x => x.trim()).filter(Boolean).includes(user);
+const logUser = (env, user) => { const l = String(env.LOG_USERS || '').split(',').map(x => x.trim()).filter(Boolean); return l.includes('*') || l.includes(user); };   /* v4: '*' = 모든 계정(개발 단계 테스트용) */
+const NAME_RE = /^[0-9A-Za-z가-힣_-]{2,20}$/;
+const pinsList = env => String(env.PINS || '').split(',').map(x => x.trim()).filter(Boolean).map(x => { const i = x.indexOf(':'); return [x.slice(0, i), x.slice(i + 1)]; });
+/* 로그인·가입 성공 — 표 내주기. 관전석이면 운전석은 그대로 */
+async function issue(req, env, user, device, observe, now, extra){
+  const token = encodeURIComponent(user) + '.' + rand(24);
+  if (observe){
+    await env.DB.prepare('INSERT INTO observers (token_hash, user, device, at) VALUES (?, ?, ?, ?)').bind(await sha(token), user, device + ' · 관전석', now).run();
+    const c2 = await env.DB.prepare('SELECT COUNT(*) AS n FROM records WHERE user = ?').bind(user).first();
+    return json(req, 200, { ok:true, token, user, device:device + ' · 관전석', observer:true, records:c2.n || 0 });
+  }
+  const prev = await env.DB.prepare('SELECT device, at FROM current WHERE user = ?').bind(user).first();
+  await env.DB.prepare('INSERT INTO current (user, token_hash, device, at) VALUES (?, ?, ?, ?) ON CONFLICT(user) DO UPDATE SET token_hash = excluded.token_hash, device = excluded.device, at = excluded.at')
+    .bind(user, await sha(token), device, now).run();
+  const cnt = await env.DB.prepare('SELECT COUNT(*) AS n, MAX(at) AS last FROM records WHERE user = ?').bind(user).first();
+  return json(req, 200, { ok:true, token, user, device, prev:prev && prev.device || null, records:cnt.n || 0, last:cnt.last || 0, ...extra });
+}
 const kst = t => new Date(t + 9 * 3600e3).toISOString();   /* '2026-11-14T23:40:00.000Z' 꼴이지만 한국 시각 */
 function b64(text){ const by = enc.encode(text); let s = ''; for (let i = 0; i < by.length; i += 0x8000) s += String.fromCharCode(...by.subarray(i, i + 0x8000)); return btoa(s); }
 function gh(env, path, init){
@@ -156,41 +177,70 @@ export default {
     try{
       if (!env.DB) return json(req, 500, { error:'D1 데이터베이스가 DB 라는 이름으로 연결돼 있지 않아요' });
       await setup(env.DB);
-      if (path === '/' ) return json(req, 200, { ok:true, name:'sehee-sync', v:3, logs:!!String(env.LOG_USERS || '').trim(), vault:!!(env.GH_REPO && env.GH_TOKEN) });
+      if (path === '/' ) return json(req, 200, { ok:true, name:'sehee-sync', v:4, signup:true, logs:!!String(env.LOG_USERS || '').trim(), vault:!!(env.GH_REPO && env.GH_TOKEN) });
 
-      if (path === '/login' && req.method === 'POST'){
+      if ((path === '/login' || path === '/signup') && req.method === 'POST'){
         const ip = req.headers.get('cf-connecting-ip') || 'local', now = Date.now();
         const f = await env.DB.prepare('SELECT n, until FROM fails WHERE ip = ?').bind(ip).first();
         if (f && f.until > now) return json(req, 429, { error:'locked', wait:Math.ceil((f.until - now) / 1000) });
         const g = await env.DB.prepare('SELECT SUM(n) AS n FROM fails WHERE at > ?').bind(now - 3600e3).first();
         if (g && g.n >= GLOBAL_MAX) return json(req, 429, { error:'locked', wait:3600 });
-        const b = await req.json().catch(() => ({})), pin = String(b.pin || ''), device = String(b.device || '기기').slice(0, 60);
-        const pins = String(env.PINS || '').split(',').map(x => x.trim()).filter(Boolean).map(x => { const i = x.indexOf(':'); return [x.slice(0, i), x.slice(i + 1)]; });
-        const hit = pin.length >= 4 && pins.find(([, p]) => same(p, pin));
-        if (!hit){
+        const b = await req.json().catch(() => ({})), pin = String(b.pin || ''), device = String(b.device || '기기').slice(0, 60), name = String(b.user || '').trim();
+        const pins = pinsList(env);
+        if (path === '/signup'){   /* v4 가입 — 아이디 + 숫자 4자리. 같은 곳(IP)에서 한 시간에 5개까지 */
+          if (!NAME_RE.test(name)) return json(req, 400, { error:'name' });
+          if (!/^\d{4}$/.test(pin)) return json(req, 400, { error:'pin' });
+          const su = await env.DB.prepare('SELECT n, at FROM signups WHERE ip = ?').bind(ip).first();
+          const sn = su && now - su.at < 3600e3 ? su.n : 0;
+          if (sn >= SIGNUP_PER_HOUR) return json(req, 429, { error:'signups', wait:Math.ceil((su.at + 3600e3 - now) / 1000) });
+          if (pins.some(([n]) => n.toLowerCase() === name.toLowerCase()) || await env.DB.prepare('SELECT 1 AS x FROM accounts WHERE lower(user) = lower(?)').bind(name).first()) return json(req, 409, { error:'taken' });
+          const salt = rand(8);
+          await env.DB.batch([
+            env.DB.prepare('INSERT INTO accounts (user, salt, hash, at) VALUES (?, ?, ?, ?)').bind(name, salt, await sha(salt + pin), now),
+            env.DB.prepare('INSERT INTO signups (ip, n, at) VALUES (?, ?, ?) ON CONFLICT(ip) DO UPDATE SET n = excluded.n, at = excluded.at').bind(ip, sn + 1, sn ? su.at : now),
+          ]);
+          return await issue(req, env, name, device, false, now, { created:true });
+        }
+        let user = null;
+        if (name){   /* v4 아이디로 — 앱 가입 계정이 먼저, 없으면 PINS */
+          const af = await env.DB.prepare('SELECT n, until FROM acctfails WHERE user = ?').bind(name).first();
+          if (af && af.until > now) return json(req, 429, { error:'locked', wait:Math.ceil((af.until - now) / 1000) });
+          const acct = await env.DB.prepare('SELECT user, salt, hash FROM accounts WHERE lower(user) = lower(?)').bind(name).first();
+          if (acct){ if (pin.length >= 4 && same(await sha(acct.salt + pin), acct.hash)) user = acct.user; }
+          else { const hit = pin.length >= 4 && pins.find(([n, p]) => n.toLowerCase() === name.toLowerCase() && same(p, pin)); if (hit) user = hit[0]; }
+          if (!user){
+            const an = ((af && af.n) || 0) + 1;
+            await env.DB.prepare('INSERT INTO acctfails (user, n, until, at) VALUES (?, ?, ?, ?) ON CONFLICT(user) DO UPDATE SET n = excluded.n, until = excluded.until, at = excluded.at')
+              .bind(name, an >= ACCT_LOCK_AFTER ? 0 : an, an >= ACCT_LOCK_AFTER ? now + LOCK_MS : 0, now).run();
+          }
+        } else {   /* 예전 앱(아이디 없이 숫자만) — PINS 계정 중, 앱에서 암호를 바꾸지 않은 것만 */
+          for (const [n, p] of pins) if (pin.length >= 4 && same(p, pin) && !(await env.DB.prepare('SELECT 1 AS x FROM accounts WHERE user = ?').bind(n).first())){ user = n; break; }
+        }
+        if (!user){
           const n = ((f && f.n) || 0) + 1;
           await env.DB.prepare('INSERT INTO fails (ip, n, until, at) VALUES (?, ?, ?, ?) ON CONFLICT(ip) DO UPDATE SET n = excluded.n, until = excluded.until, at = excluded.at')
             .bind(ip, n >= LOCK_AFTER ? 0 : n, n >= LOCK_AFTER ? now + LOCK_MS : 0, now).run();
           return json(req, 401, { error:'wrong', left:n >= LOCK_AFTER ? 0 : LOCK_AFTER - n, wait:n >= LOCK_AFTER ? LOCK_MS / 1000 : 0 });
         }
-        await env.DB.prepare('DELETE FROM fails WHERE ip = ?').bind(ip).run();
-        const user = hit[0], token = user + '.' + rand(24);
-        if (b.observe === true){   /* v3 관전석 — 주 기기 자리는 그대로 */
-          await env.DB.prepare('INSERT INTO observers (token_hash, user, device, at) VALUES (?, ?, ?, ?)').bind(await sha(token), user, device + ' · 관전석', now).run();
-          const c2 = await env.DB.prepare('SELECT COUNT(*) AS n FROM records WHERE user = ?').bind(user).first();
-          return json(req, 200, { ok:true, token, user, device:device + ' · 관전석', observer:true, records:c2.n || 0 });
-        }
-        const prev = await env.DB.prepare('SELECT device, at FROM current WHERE user = ?').bind(user).first();
-        await env.DB.prepare('INSERT INTO current (user, token_hash, device, at) VALUES (?, ?, ?, ?) ON CONFLICT(user) DO UPDATE SET token_hash = excluded.token_hash, device = excluded.device, at = excluded.at')
-          .bind(user, await sha(token), device, now).run();
-        const cnt = await env.DB.prepare('SELECT COUNT(*) AS n, MAX(at) AS last FROM records WHERE user = ?').bind(user).first();
-        return json(req, 200, { ok:true, token, user, device, prev:prev && prev.device || null, records:cnt.n || 0, last:cnt.last || 0 });
+        await env.DB.batch([env.DB.prepare('DELETE FROM fails WHERE ip = ?').bind(ip), env.DB.prepare('DELETE FROM acctfails WHERE user = ?').bind(name || user)]);
+        return await issue(req, env, user, device, b.observe === true, now, {});
       }
 
       const a = await auth(req, env, url);
       if (a.bad) return json(req, 401, { error:a.bad, device:a.device || null, at:a.at || null });
 
       if (path === '/session') return json(req, 200, { ok:true, user:a.user, device:a.device, observer:!!a.observer });
+      if (path === '/pin' && req.method === 'POST'){   /* v4 암호 바꾸기 — 지금 암호 + 새 숫자 4자리. PINS 계정도 여기서 바꾸면 그다음부턴 앱 암호가 먼저 */
+        if (a.observer) return json(req, 403, { error:'observer' });
+        const b = await req.json().catch(() => ({})), old = String(b.old || ''), nw = String(b.pin || '');
+        if (!/^\d{4}$/.test(nw)) return json(req, 400, { error:'pin' });
+        const acct = await env.DB.prepare('SELECT salt, hash FROM accounts WHERE user = ?').bind(a.user).first();
+        const okOld = acct ? same(await sha(acct.salt + old), acct.hash) : pinsList(env).some(([n, p]) => n === a.user && same(p, old));
+        if (!okOld) return json(req, 401, { error:'wrong-old' });
+        const salt = rand(8);
+        await env.DB.prepare('INSERT INTO accounts (user, salt, hash, at) VALUES (?, ?, ?, ?) ON CONFLICT(user) DO UPDATE SET salt = excluded.salt, hash = excluded.hash, at = excluded.at').bind(a.user, salt, await sha(salt + nw), Date.now()).run();
+        return json(req, 200, { ok:true });
+      }
       if (path === '/log' && req.method === 'POST'){   /* v3 개발 블랙박스 — 기기가 새 줄을 올린다 */
         if (!logUser(env, a.user)) return json(req, 200, { ok:true, logging:false });
         const b = await req.json().catch(() => ({})), dev = String(b.dev || a.device || '기기').slice(0, 80), now = Date.now();

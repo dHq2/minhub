@@ -906,3 +906,9 @@ body.observer #say, body.observer .say-go{opacity:.45;pointer-events:none}
 
 /* ── v1.5.27 (A) 체험 공간 띠 ── */
 #spaceBar{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:8999;padding:1px 10px;border-radius:0 0 8px 8px;background:#5b3e8c;color:#fff;font-size:.68rem;opacity:.9;pointer-events:none;white-space:nowrap}
+
+/* ── v1.5.29 (A) 로그인 화면 — 로그인/가입 고르기 · 아이디 칸 ── */
+.pin-tabs{display:flex;gap:6px;justify-content:center;margin:0 0 8px}
+.pin-tabs button{flex:1;height:32px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:.82rem;color:var(--ink-soft);cursor:pointer}
+.pin-tabs button.on{background:var(--ink,#2f3a4a);color:#fff;border-color:transparent}
+.pin-id{display:block;width:100%;box-sizing:border-box;height:38px;margin:0 0 8px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:.95rem;text-align:center;background:#fff}

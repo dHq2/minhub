@@ -141,34 +141,52 @@ window.addEventListener('pagehide', () => { if (SYNC.on && !SYNC.dead) syncFlush
 window.addEventListener('online', () => { if (SYNC.on && !SYNC.dead) syncFlush(); });
 
 /* ── 암호 화면 — 앱을 열 때 ── */
+/* v1.5.29 (A): 로그인 화면 — 아이디 + 숫자 4자리, 「가입」으로 앱 안에서 계정 만들기(서버 v4). 아이디를 비우면 예전처럼 숫자만(PINS 계정) */
 function pinScreen(note){
   return new Promise(resolve => {
     const el = document.createElement('div'); el.id = 'pinVeil';
-    el.innerHTML = `<div class="pin"><div class="pin-t">세희 · 계정 열기</div><div class="pin-d" id="pinD"><i></i><i></i><i></i><i></i></div>
-      <p class="pin-m" id="pinM">${esc(note || '암호 네 자리를 눌러 주세요')}</p>
+    let lastId = ''; try{ lastId = localStorage.getItem('sehee.lastid') || SYNC.user || ''; }catch(e){}
+    el.innerHTML = `<div class="pin"><div class="pin-t">세희 · 계정</div><div class="pin-tabs"><button class="on" data-mode="in">로그인</button><button data-mode="up">가입</button></div>
+      <input class="pin-id" id="pinId" placeholder="아이디" value="${esc(lastId)}" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="20">
+      <div class="pin-d" id="pinD"><i></i><i></i><i></i><i></i></div>
+      <p class="pin-m" id="pinM">${esc(note || '아이디를 쓰고 암호 네 자리를 눌러 주세요')}</p>
       <label class="pin-ob"><input type="checkbox" id="pinOb"${SYNC.watchAsk ? ' checked' : ''}> 보기 전용(관전석) — 쓰던 기기를 밀어내지 않아요</label>
       <div class="pin-k">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button data-k="${n}">${n}</button>`).join('')}<button data-k="skip" class="sm">이 기기만</button><button data-k="0">0</button><button data-k="del" class="sm">지우기</button></div></div>`;
     document.body.appendChild(el);
-    let v = '', busy = false;
+    let v = '', first = '', mode = 'in', busy = false;
     const dots = () => $('pinD').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', i < v.length));
     const msg = (t, bad) => { $('pinM').textContent = t; $('pinM').classList.toggle('bad', !!bad); };
+    const shake = () => { const p = el.querySelector('.pin'); p.classList.add('shake'); setTimeout(() => p.classList.remove('shake'), 400); };
     const done = r => { document.removeEventListener('keydown', onKey); el.remove(); resolve(r); };
+    const setMode = m => { mode = m; v = ''; first = ''; dots(); el.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+      $('pinOb').closest('label').hidden = m === 'up';
+      msg(m === 'up' ? '쓸 아이디를 정하고(2~20자, 한글·영문·숫자) 암호 네 자리를 눌러 주세요' : '아이디를 쓰고 암호 네 자리를 눌러 주세요'); };
+    const ERR = { wrong:'아이디나 암호가 틀렸어요', taken:'그 아이디는 이미 있어요 — 다른 걸로 해 주세요', name:'아이디는 2~20자, 한글·영문·숫자·_- 만 돼요', pin:'암호는 숫자 네 자리예요', signups:'여기서는 한 시간에 다섯 번까지 가입할 수 있어요' };
     const go = async () => {
-      busy = true; msg('여는 중…'); const prevUser = SYNC.user;
+      const id = $('pinId').value.trim();
+      if (mode === 'up'){
+        if (!id){ v = ''; dots(); msg('아이디를 먼저 써 주세요', true); $('pinId').focus(); return; }
+        if (!first){ first = v; v = ''; dots(); msg('확인 — 같은 암호를 한 번 더 눌러 주세요'); return; }
+        if (first !== v){ first = ''; v = ''; dots(); shake(); msg('두 번 누른 암호가 달라요. 처음부터 다시 눌러 주세요', true); return; }
+      }
+      busy = true; msg(mode === 'up' ? '만드는 중…' : '여는 중…'); const prevUser = SYNC.user;
       try{
-        const r = await fetch(SYNC.url + '/login', { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ pin:v, device:deviceName(), ...($('pinOb') && $('pinOb').checked ? { observe:true } : {}) }) });
+        const body = mode === 'up' ? { user:id, pin:v, device:deviceName() } : { ...(id ? { user:id } : {}), pin:v, device:deviceName(), ...($('pinOb') && $('pinOb').checked ? { observe:true } : {}) };
+        const r = await fetch(SYNC.url + (mode === 'up' ? '/signup' : '/login'), { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify(body) });
         const j = await r.json().catch(() => ({}));
-        if (r.status === 429){ v = ''; dots(); msg(`너무 많이 틀려서 잠겼어요. ${Math.ceil((j.wait || 900) / 60)}분 뒤에 다시 해 주세요.`, true); busy = false; return; }
-        if (!r.ok){ v = ''; dots(); el.querySelector('.pin').classList.add('shake'); setTimeout(() => el.querySelector('.pin').classList.remove('shake'), 400);
-          msg(j.error === 'wrong' ? `암호가 틀렸어요${j.left ? ` · ${j.left}번 더 틀리면 15분 잠겨요` : ''}` : '서버가 이상해요: ' + (j.error || r.status), true); busy = false; return; }
+        if (r.status === 429){ v = ''; first = ''; dots(); msg(j.error === 'signups' ? ERR.signups : `너무 많이 틀려서 잠겼어요. ${Math.ceil((j.wait || 900) / 60)}분 뒤에 다시 해 주세요.`, true); busy = false; return; }
+        if (!r.ok){ v = ''; first = ''; dots(); shake();
+          msg(j.error === 'wrong' ? `${ERR.wrong}${j.left ? ` · ${j.left}번 더 틀리면 15분 잠겨요` : ''}` : ERR[j.error] || '서버가 이상해요: ' + (j.error || r.status), true); busy = false; return; }
+        try{ localStorage.setItem('sehee.lastid', j.user); }catch(e){}
         Object.assign(SYNC, { token:j.token, user:j.user, device:j.device, dead:false, observer:!!j.observer }); syncKeep();
-        msg(j.observer ? `${j.user} 관전석으로 열었어요 · 보기만 해요` : `${j.user} 열었어요${j.prev ? ` · ${j.prev}는 닫혀요` : ''}`);
+        dlog('동기화', j.created ? `새 계정 만듦 · ${j.user}` : `열림 · ${j.user}${j.observer ? ' · 관전석' : ''}`);
+        msg(j.created ? `${j.user} 계정을 만들었어요` : j.observer ? `${j.user} 관전석으로 열었어요 · 보기만 해요` : `${j.user} 열었어요${j.prev ? ` · ${j.prev}는 닫혀요` : ''}`);
         if (prevUser && prevUser !== j.user && !j.observer){ msg('다른 계정이라 이 기기를 비우는 중…'); await acctSwitch(prevUser); }
         if (j.observer){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
         else if (j.records){ msg('기록 받는 중…'); await syncPull(); SYNC.on = true; }
-        else { SYNC.on = true; msg('처음이라 이 기기 기록을 올리는 중…'); await syncUploadAll(); }
+        else { SYNC.on = true; msg(j.created ? '새 계정에 이 기기 설정을 담는 중…' : '처음이라 이 기기 기록을 올리는 중…'); await syncUploadAll(); }
         syncBadge('ok'); if (SYNC.observer) obsStart(); done('in');
-      }catch(e){ v = ''; dots(); msg('서버에 닿지 않아요. 인터넷을 확인하거나 「이 기기만」으로 열어 주세요.', true); busy = false; }
+      }catch(e){ v = ''; first = ''; dots(); msg('서버에 닿지 않아요. 인터넷을 확인하거나 「이 기기만」으로 열어 주세요.', true); busy = false; }
     };
     const press = k => {
       if (busy) return;
@@ -177,9 +195,9 @@ function pinScreen(note){
       if (v.length >= 4) return;
       v += k; dots(); if (v.length === 4) go();
     };
-    const onKey = e => { if (/^\d$/.test(e.key)) press(e.key); else if (e.key === 'Backspace') press('del'); };
+    const onKey = e => { if (e.target && e.target.id === 'pinId'){ if (e.key === 'Enter') e.target.blur(); return; } if (/^\d$/.test(e.key)) press(e.key); else if (e.key === 'Backspace') press('del'); };
     document.addEventListener('keydown', onKey);
-    el.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
+    el.addEventListener('click', e => { const m = e.target.closest('[data-mode]'); if (m && !busy){ setMode(m.dataset.mode); return; } const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
   });
 }
 /* 앱을 열 때 맨 먼저 — 저장소를 읽기 전에 계정을 정한다 */
@@ -208,6 +226,13 @@ async function syncStart(){
   }
   spStep('암호를 기다리는 중');
   return await pinScreen(note);
+}
+/* v1.5.29 암호 바꾸기 (서버 v4 /pin) */
+async function syncPinChange(old, pin){
+  const r = await fetch(SYNC.url + '/pin', { method:'POST', headers:{ 'content-type':'application/json', ...authH() }, body:JSON.stringify({ old, pin }) });
+  const j = await r.json().catch(() => ({}));
+  dlog('동기화', '암호 바꾸기 · ' + (r.ok ? '됨' : (j.error || r.status)));
+  return r.ok ? { ok:true } : { ok:false, error:j.error || String(r.status) };
 }
 async function syncLogout(){
   try{ await syncFlush(); await fetch(SYNC.url + '/logout', { method:'POST', headers:authH() }); }catch(e){}
