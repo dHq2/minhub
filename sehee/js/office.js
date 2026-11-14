@@ -136,6 +136,35 @@ function updateLive(){
   renderBoardTalk();
 }
 async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try{ await kvSet('chat', O.log); }catch(e){} }
+/* ── 말을 나눠서 (v1.5.22 · C) — 보스: 큰 일은 두세 번에 나눠 말하는 게 사람 같다 ──
+   seheePart = 도구 쓰기 전에 한 말(그 자리에서 말풍선 하나). seheeSaysSplit = 끝 대답이 길고 문단이 나뉘면 2~3개로, 사이에 잠깐 '…'. */
+function seheePart(t){
+  const pf = parseFace(t); if (!pf.t.trim()) return;
+  O.log.push({ who:'s', text:pf.t, face:pf.f, at:Date.now(), part:true }); setFace(pf.f); dlog('대화', `세희 ← (먼저) ${pf.t.slice(0, 60)}`);
+  if (O.live){ O.live.text = ''; O.live.faced = false; }
+  renderLog(); saveLog();
+}
+function splitSay(t){
+  const paras = String(t).split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
+  if (String(t).length < 90 || paras.length < 2) return [String(t)];
+  const n = Math.min(3, paras.length), goal = paras.join('').length / n, out = [];
+  let cur = [];
+  for (let i = 0; i < paras.length; i++){ cur.push(paras[i]); const left = paras.length - i - 1, need = n - out.length - 1;
+    if (out.length < n - 1 && (cur.join('').length >= goal * 0.8 || left === need) && left >= need && left > 0){ out.push(cur.join('\n\n')); cur = []; } }
+  if (cur.length) out.push(cur.join('\n\n'));
+  return out;
+}
+async function seheeSaysSplit(pf, src){
+  /* 끝 말이 비었는데 앞서 먼저 한 말이 있으면 — 그 말을 끝 말로(판 반짝임 등 뒤처리는 seheeSays 가 한다) */
+  if (!String(pf.t || '').trim()){ const last = O.log[O.log.length - 1]; if (last && last.part){ O.log.pop(); return seheeSays({ t:last.text, f:last.face }, src); } }
+  const parts = splitSay(pf.t);
+  for (let i = 0; i < parts.length - 1; i++){
+    O.log.push({ who:'s', text:parts[i], face:pf.f, at:Date.now(), part:true }); setFace(pf.f);
+    if (O.live){ O.live.text = ''; } renderLog();
+    try{ await sleepFor(650, O.abort && O.abort.signal); }catch(e){}
+  }
+  return seheeSays({ ...pf, t:parts[parts.length - 1] }, src);
+}
 function seheeSays(r, src){
   bonusEmit('say', { text:r.t, face:r.f });
   dlog('대화', `세희 ← [${r.f}] ${String(r.t).slice(0, 80)}`, String(r.t));   /* v1.5.21 원문은 d 에(개발 블랙박스) */
@@ -184,12 +213,12 @@ async function replyNow(){
         O.live.text = t; O.live.search = '';
         if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
         updateLive();
-      }, O.abort.signal, { big:wantBig, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
+      }, O.abort.signal, { big:wantBig, onPart:seheePart, onRetry:n => { if (O.live){ O.live.retry = n; const w = $('waitTxt'); if (w) w.textContent = waitText(); } },
         onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; const w = $('waitTxt'); if (w) w.textContent = waitText(); },
         onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
       const pf = parseFace(r.text);
       if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
-      seheeSays(pf, r.sources);
+      await seheeSaysSplit(pf, r.sources);
     }catch(err){
       if (err.partial && err.partial.trim()){ const pf = parseFace(err.partial); pf.t += ' …'; seheeSays(pf); }
       if (err.code === -2) seheeSays({ t:'네, 그만둘게요.', f:6 });

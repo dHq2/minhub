@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const sseOf = evs => evs.map(d => `event: ${d.type}\ndata: ${JSON.stringify(d)}\n\n`).join('');
 const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'text', text:'' } },{ type:'content_block_delta', index:0, delta:{ type:'text_delta', text:t } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'end_turn' }, usage:{ output_tokens:5 } }]);
 const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:10 } } },{ type:'content_block_start', index:0, content_block:{ type:'tool_use', id:'tu' + Math.random().toString(36).slice(2,6), name } },{ type:'content_block_delta', index:0, delta:{ type:'input_json_delta', partial_json:JSON.stringify(input) } },{ type:'content_block_stop', index:0 },{ type:'message_delta', delta:{ stop_reason:'tool_use' }, usage:{ output_tokens:5 } }]);
-// v1.2 (2026-11-14, C) 자료 번호를 위치 대신 해독본으로 찾기(가끔 실패) · v1.1 기다림 40초로(전체 돌릴 때 느려서 한 번 실패) · v1.0 (2026-11-13, C) 세희 기억 — 오래된 해독본은 잘려 가되 자료 번호·안내가 붙고, read_material 로 목록·찾기·전문을 다시 읽는다. 세희가 자기 머리를 알고, "소넷으로" 하면 그 차례만 큰 머리
+// v1.3 (2026-11-15, C) 나눠 읽기에서 번호를 먼저 잡기(가끔 실패하던 진짜 까닭) · v1.2 (2026-11-14, C) 자료 번호를 위치 대신 해독본으로 찾기(가끔 실패) · v1.1 기다림 40초로(전체 돌릴 때 느려서 한 번 실패) · v1.0 (2026-11-13, C) 세희 기억 — 오래된 해독본은 잘려 가되 자료 번호·안내가 붙고, read_material 로 목록·찾기·전문을 다시 읽는다. 세희가 자기 머리를 알고, "소넷으로" 하면 그 차례만 큰 머리
 (async () => { const b = await chromium.launch();
   const ctx = await b.newContext({ viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true, serviceWorkers:'block' });
   const cors = { 'access-control-allow-origin':'*', 'access-control-allow-headers':'*', 'access-control-allow-methods':'GET,POST,OPTIONS' };
@@ -34,8 +34,8 @@ const tool = (name, input) => sseOf([{ type:'message_start', message:{ usage:{ i
     return [l.materials.length, l.materials[0].kind, x.chars, n.ok, n.materials.length].join(' · '); }));
   // 긴 자료 나눠 읽기
   console.log('나눠 읽기:', await p.evaluate(() => { const at = Date.now(); O.log.push({ who:'u', text:'문서', at, docs:['가짜 긴 문서.txt'], doc:'가'.repeat(45000) });
-    const a = readMaterial({ id:matId(O.log[O.log.length - 1]) }), c = readMaterial({ id:matId(O.log[O.log.length - 1]), from:a.next_from });
-    O.log.pop(); return [a.text.length, a.next_from, c.from, c.text.length, !!c.next_from].join(' · '); }));
+    const mid = matId(O.log[O.log.length - 1]), a = readMaterial({ id:mid }), c = readMaterial({ id:mid, from:a.next_from });   /* v1.3 — 읽으면 '다시 읽었어요' 줄이 붙어서 마지막 말이 바뀐다: 번호를 먼저 잡아 둔다 */
+    O.log = O.log.filter(m => m.at !== at); return [a.text.length, a.next_from, c.from, c.text.length, !!c.next_from].join(' · '); }));
   // 소넷으로 — 그 차례만 큰 머리
   bodies = []; plan = [txt('[미소] 소넷으로 다시 볼게요.')];
   await p.locator('#sayText').fill('소넷으로 다시 생각해봐'); await p.locator('#sayGo').click(); await wait();

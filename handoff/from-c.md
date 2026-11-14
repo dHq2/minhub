@@ -6,6 +6,11 @@
 - 지금: 본체 v1.4.2 올림(업데이트 손봄). 다음 찜 없음. 메인은 v1.4.2 위에서 이어 가면 됨.
 
 ---
+## 2026-11-15 00:50 · 본체 v1.5.23 — 세희 말 나누기 · [참고] · 받는 쪽: 모두
+- 무엇: aiTurn 에 opts.onPart — 도구를 부른 차례에 그 전까지 한 말을 onPart 로 먼저 넘기고 said 를 비운다(돌려주는 text 는 마지막 덩어리만). office.js seheePart(먼저 한 말 → {who:'s', part:true}), splitSay·seheeSaysSplit(끝 말 2~3개). replyNow·job.js 둘 다 씀. 지침 '말 나누기(사람처럼)' 줄.
+- 받는 쪽에게 필요한 일: aiTurn 을 새로 부를 땐 onPart:seheePart 를 넘기면 같은 모양(안 넘기면 예전처럼 한 덩어리). O.log 의 part:true 말은 보통 세희 말과 같고, toMessages 가 이어진 세희 말을 합쳐 보낸다. 다음 본체는 v1.5.24. 참고: A·B·C 셋이 같은 시각에 v1.5.22 를 썼다 — 올리기 직전 pull 후 번호를 다시 보자.
+- 관련 파일·버전: 본체 v1.5.23 / tests/tsplit.js, tmaterial v1.3(가끔 실패 고침), 전체 44종 통과
+
 ## 2026-11-14 06:55 · 본체 v1.5.17 — 보고서 띠 없앰, 제목 = 보고서 목록 · [보통] · 받는 쪽: A
 - 무엇: render 가 verBar 를 더는 안 그림(함수는 verBarOld 로 남김). #day 클릭 = reportList()(모든 날 · 지금 판 + 지난 판, .rl-list 다섯 줄 높이 굴림). 지난 판 보기 중 제목 아래 .dv-old. '오늘' 단추는 지난 판 보는 중이면 켜져서 지금 판으로. verSheet() 는 reportList() 로 넘김. 새 판 단추는 목록 아래 data-rlnew.
 - 받는 쪽에게 필요한 일: A — 일간보고서 쪽을 더 고칠 때 띠 대신 제목 목록을 기준으로. treport.js 의 띠 단계는 목록으로 바꿔 두었음(v1.1). 다음 본체는 v1.5.18.

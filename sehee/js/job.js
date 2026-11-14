@@ -96,7 +96,7 @@ async function runJob(job, um){
             O.live.text = t; O.live.search = '';
             if (!O.live.faced && t.trim()){ O.live.faced = true; setFace('talk'); }
             updateLive();
-          }, O.abort.signal, { big:long, onRetry:n => { if (O.live){ O.live.retry = n; showWait(); } },
+          }, O.abort.signal, { big:long, onPart:seheePart, onRetry:n => { if (O.live){ O.live.retry = n; showWait(); } },
             onWait:ms => { if (!O.live) return; O.live.waitUntil = ms ? Date.now() + ms : 0; showWait(); },
             onSearch:q => { if (!O.live) return; O.live.search = q || '…'; if (!O.live.text) renderLog(); } });
           break;
@@ -110,7 +110,7 @@ async function runJob(job, um){
       }
       const pf = parseFace(r.text);
       if (/max_tokens|MAX_TOKENS/.test(r.finish)) pf.t += ' …(말이 길어서 잘렸어요)';
-      seheeSays(pf, r.sources);
+      await seheeSaysSplit(pf, r.sources);   /* v1.5.22 (C) 길면 나눠서 */
       const acts = O.log.filter(m => m.who === 'a').length - acts0;
       if (document.hidden) jobNotify(true, (acts ? `판에 ${acts}개 적었어요. ` : '') + pf.t.slice(0, 80)); else closeJobNote();
     }catch(err){
