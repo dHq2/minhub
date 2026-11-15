@@ -54,6 +54,29 @@ async function gdChip(){
   if (!want){ if (el) el.remove(); return; }
   if (!el){ el = document.createElement('button'); el.id = 'gdChip'; el.className = 'chip'; el.textContent = '구글 드라이브 다시 연결'; el.onclick = async () => { if (await gdConnect()){ GD.wantChip = false; gdChip(); toast('다시 연결했어요 — 방금 부탁을 한 번 더 말해 주세요'); } }; document.body.appendChild(el); }
 }
+/* 11-16 A: 📎 차림 — 「사진·파일」 / 「구글 드라이브」. 대화창에서 바로 드라이브를 찾게.
+   팝업 열쇠는 누른 그 자리에서 열어야 해서, 차림을 여는 순간 구글 스크립트를 미리 불러 둔다. */
+async function gdClipMenu(){
+  let m = $('clipMenu'); if (m){ m.remove(); return; }
+  gdLoad().catch(() => {});
+  const st = await gdState();
+  m = document.createElement('div'); m.id = 'clipMenu'; m.className = 'clip-menu';
+  m.innerHTML = `<button data-cm="file">📷 사진·파일 붙이기</button><button data-cm="drive">📂 ${st.on ? '구글 드라이브에서 찾기' : '구글 드라이브 연결하기'}</button>`;
+  $('say').appendChild(m);
+  const close = e => { if (!e || !m.contains(e.target) && e.target !== $('sayClip')){ m.remove(); document.removeEventListener('pointerdown', close, true); } };
+  setTimeout(() => document.addEventListener('pointerdown', close, true), 0);
+  m.onclick = async e => {
+    const b = e.target.closest('[data-cm]'); if (!b) return; close();
+    if (b.dataset.cm === 'file') return $('sayFile').click();
+    try{
+      if (!gdHasToken() && !(await gdConnect())) return;
+      const d = await gdPick(''); if (!d.length) return;
+      await gdAddFiles(d); toast(`${d.length}개를 세희에게 연결했어요`);
+      const ta = $('sayText');
+      if (!ta.value.trim()){ ta.value = `드라이브에서 고른 ${d.slice(0, 3).map(x => '「' + x.name + '」').join(', ')}${d.length > 3 ? ' 외 ' + (d.length - 3) + '개' : ''} 봐줘`; ta.dispatchEvent(new Event('input')); ta.focus(); }
+    }catch(err){ dlog('구글', '📎 드라이브 실패 · ' + err.message); toast('드라이브를 못 열었어요'); }
+  };
+}
 /* 파일 고르기 창 — 검색어·공유 문서함 포함, 여러 개 */
 async function gdPick(query){
   await gdLoad(); if (!gdHasToken()) throw Object.assign(new Error('need_connect'), { need:true });

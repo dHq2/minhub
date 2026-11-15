@@ -449,7 +449,7 @@ $('log').addEventListener('click', e => {
   if (c){ const m = O.log[Number(c.dataset.copyocr)]; if (m && m.ocr) navigator.clipboard.writeText(m.ocr).then(() => { c.textContent = '복사됨'; }, () => { c.textContent = '복사 안 됨'; }); }
 });
 $('sayClip').addEventListener('pointerdown', e => e.preventDefault());
-$('sayClip').onclick = () => $('sayFile').click();
+$('sayClip').onclick = () => (typeof gdClipMenu === 'function' && gdReady()) ? gdClipMenu() : $('sayFile').click();   /* 11-16 A: 📎 → 사진·파일 / 구글 드라이브 */
 $('sayFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; addFiles(f); };
 /* 컴퓨터: 캡처 파일을 사무실로 끌어다 놓기 (v0.7.4) */
 $('office').addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')){ e.preventDefault(); $('office').classList.add('drop'); } });
