@@ -34,7 +34,11 @@ const FS_STEPS = [ {v:.9,t:'작게'}, {v:1,t:'보통'}, {v:1.15,t:'크게'}, {v:
 /* ── 날짜 ── */
 const pad = n => String(n).padStart(2,'0');
 const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const todayStr = () => ymd(new Date());
+/* 11-15 B: 기준 시각(개발 설정) — 생성기 세계 시각에 맞춰 세희가 같은 날·같은 시각을 살게(복기 S2·G8).
+   localStorage 'sehee.clock' = { base:그 시각 ms, at:맞춘 순간 ms } → 그때부터 진짜 시간만큼 흐름. 없으면 진짜 시계 */
+const clockOff = () => { try{ const c = JSON.parse(localStorage.getItem('sehee.clock') || 'null'); return c && c.base ? c.base - c.at : 0; }catch(e){ return 0; } };
+const nowDate = () => new Date(Date.now() + clockOff());
+const todayStr = () => ymd(nowDate());
 const parseYmd = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
 const dayDiff = (a,b) => Math.round((parseYmd(b) - parseYmd(a)) / 86400000);
 const WD = '일월화수목금토';
@@ -135,7 +139,11 @@ async function askPersist(){
 }
 
 /* ── 그리기 ── */
+/* 11-15 B: 보스가 판 글·메모를 고치는 중이면 다시 그리기를 미룬다 — 세희가 판에 쓰는 순간 입력칸이 닫혀 편집을 몇 번씩 다시 누르던 것(복기 S7). 고치기가 끝나면(blur) 그린다 */
+const editingNow = () => { const a = document.activeElement; return !!(a && a.tagName === 'TEXTAREA' && (a.classList.contains('ed') || a.dataset.memo) && $('main').contains(a)); };
 function render(){
+  if (editingNow()){ S.renderLater = true; return; }
+  S.renderLater = false;
   $('ver').textContent = APP_VERSION;
   /* v1.5.16 (C) 제목 = 보고서 목록 단추. 지난 판을 보는 중이면 제목 옆에 '4시 · 지난 판' */
   /* 11-15 B: 제목에 '몇 시 보고서'까지 — 작은 글씨로 한 줄에(보스: (일)까지만 보이고 몇 시 보고서인지 안 보임) */

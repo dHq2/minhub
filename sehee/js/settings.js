@@ -36,6 +36,9 @@ function settingsSheet(){
     <label class="t">개발 기록 남김</label>
     <div class="row"><button class="chip ${localStorage.getItem('sehee.devlog') !== '0' ? 'on' : ''}" data-sact="devlog" data-v="1">켬</button><button class="chip ${localStorage.getItem('sehee.devlog') === '0' ? 'on' : ''}" data-sact="devlog" data-v="0">끔</button></div>
     <p class="note" style="margin:4px 0 10px">개발 단계용 블랙박스예요. 대화 원문·세희 도구·누른 단추·오류·상태가 계정 서버를 거쳐 개발자 비공개 금고에 30일 남아요. 계정 서버가 허락한 계정만 받아요. 출시 전에 끕니다.</p>
+    <label class="t">기준 시각(개발)</label>
+    <div class="row" style="flex-wrap:wrap;gap:6px"><input id="clkIn" type="datetime-local" value="${(() => { const d = nowDate(); return ymd(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); })()}" style="flex:1;min-width:170px"><button class="chip" data-sact="clock">맞추기</button><button class="chip ${clockOff() ? '' : 'on'}" data-sact="clockoff">진짜 시계</button></div>
+    <p class="note" style="margin:4px 0 10px">${clockOff() ? `지금 세희 시계: ${ymd(nowDate())} ${pad(nowDate().getHours())}:${pad(nowDate().getMinutes())} (맞춘 시각부터 진짜 시간만큼 흘러요)` : '진짜 시계를 써요.'} 생성기 세계 시각에 맞추면 세희가 그 날·그 시각을 기준으로 판과 대답을 정해요.</p>
     <label class="t">글꼴</label>
     <div class="row" style="flex-wrap:wrap;gap:6px">${FONTS.map(f => `<button class="chip ${(st.font || 'sys') === f.v ? 'on' : ''}" data-sact="font" data-v="${f.v}" style="font-family:${f.body.replace(/"/g, "'")}">${f.t}</button>`).join('')}</div>
     <p class="note" style="margin:4px 0 10px">${esc((FONTS.find(x => x.v === (st.font || 'sys')) || FONTS[0]).d)}. 기본 말고는 처음 고를 때 인터넷에서 글꼴을 한 번 받아 와요.</p>
@@ -65,7 +68,7 @@ function settingsSheet(){
     <div class="row" style="margin-top:6px"><span class="note">작업 보여주기</span><button class="chip ${workOn() ? 'on' : ''}" data-sact="work" data-v="1">켬</button><button class="chip ${workOn() ? '' : 'on'}" data-sact="work" data-v="0">끔</button></div>
     <p class="note" style="margin:4px 0 0">켜면 세희가 고치는 모습이 보여요. 판이 열리고 고칠 줄에 형광펜, 새 줄은 한 글자씩, 보고서는 문단이 차례로 써져요.</p>
     <div class="row" style="margin-top:6px"><span class="note">작업 중 질문</span>${[['need', '필요할 때만'], ['end', '마지막에 한 번'], ['auto', '알아서']].map(([v, t]) => `<button class="chip ${askMode() === v ? 'on' : ''}" data-sact="ask" data-v="${v}">${t}</button>`).join('')}</div>
-    <p class="note" style="margin:4px 0 0">필요할 때만: 정말 막히면 멈추고 고를 것을 띄워요. 마지막에 한 번: 끝까지 해 놓고 확인할 것만 한 번에. 알아서: 안 묻고 가정만 한 줄.</p>
+    <p class="note" style="margin:4px 0 0">필요할 때만: 정말 막히면 멈추고 고를 것을 띄워요. 마지막에 한 번: 끝까지 해 놓고, 보스만 정할 게 정말 남았을 때만 끝에 한 번 물어요. 알아서: 안 묻고 가정만 한 줄.</p>
     <div class="row" style="margin-top:6px"><span class="note">사적인 일·관계</span><button class="chip ${privOn() ? 'on' : ''}" data-sact="priv" data-v="1">넣기</button><button class="chip ${privOn() ? '' : 'on'}" data-sact="priv" data-v="0">빼기</button></div>
     <p class="note" style="margin:4px 0 0">넣기: 연애·친구·가족·개인 약속도 업무처럼 정리하고, 판과 인간관계 판에 똑같이 올려요. 빼기: 업무 일만 다루고 개인 대화는 뺐다고만 말해요.</p>
     <div class="row" style="margin-top:6px"><span class="note">웹 검색</span><button class="chip ${webOn() ? 'on' : ''}" data-sact="web" data-v="1">켬</button><button class="chip ${webOn() ? '' : 'on'}" data-sact="web" data-v="0">끔</button></div>
@@ -117,6 +120,12 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'bonusrun'){ const m = BONUS.menu[Number(b.dataset.i)]; closeSheet(); if (m) try{ await m.run(); }catch(e){ dlog('오류', '보너스 메뉴 ' + e.message, e.stack); toast('보너스 기능에서 문제가 났어요'); } return; }
   else if (a === 'dev'){ try{ localStorage.setItem('sehee.dev', b.dataset.v); }catch(e){} devApply(); settingsSheet(); return; }
   else if (a === 'devlog'){ try{ localStorage.setItem('sehee.devlog', b.dataset.v); }catch(e){} dlog('설정', '개발 기록 남김 ' + (b.dataset.v === '0' ? '끔' : '켬')); if (b.dataset.v !== '0'){ LOGUP.off = false; logPush(true); } settingsSheet(); return; }
+  else if (a === 'clock' || a === 'clockoff'){   /* 11-15 B: 기준 시각 */
+    const v = a === 'clock' ? Date.parse(($('clkIn') || {}).value || '') : NaN;
+    try{ if (a === 'clock' && v) localStorage.setItem('sehee.clock', JSON.stringify({ base:v, at:Date.now() })); else localStorage.removeItem('sehee.clock'); }catch(e){}
+    dlog('설정', a === 'clock' && v ? `기준 시각 ${ymd(nowDate())} ${pad(nowDate().getHours())}:${pad(nowDate().getMinutes())}` : '기준 시각 끔 — 진짜 시계');
+    const t = todayStr(); if (t !== S.today){ S.today = t; await goDate(t); }
+    toast(a === 'clock' && v ? '세희 시계를 맞췄어요' : '진짜 시계로 돌렸어요'); settingsSheet(); return; }
   else if (a === 'export'){ await exportAll(); return; }
   else if (a === 'import'){
     if (impPending){ await doImport(impPending); impPending = null; return; }
@@ -275,7 +284,7 @@ $('main').addEventListener('input', e => {
   if (it.noteBy){ delete it.noteBy; const w = ta.closest('.memo-w'); if (w){ w.classList.remove('sh'); const by = w.querySelector('.memo-by'); if (by) by.remove(); } }   /* 11-15 C: 보스가 고치면 보스 메모 */
   ta.classList.toggle('has', !!it.note); memoGrow(ta); touch();
 });
-$('main').addEventListener('focusout', e => { const ta = e.target.closest('textarea[data-memo]'); if (ta){ touch(true); dlog('판', '메모 저장 #' + ta.dataset.memo); } });
+$('main').addEventListener('focusout', e => { const ta = e.target.closest('textarea[data-memo]'); if (ta){ touch(true); dlog('판', '메모 저장 #' + ta.dataset.memo); if (S.renderLater) setTimeout(() => { if (!editingNow()) render(); }, 0); } });   /* 11-15 B: 고치는 동안 미룬 그리기 */
 $('main').addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act;

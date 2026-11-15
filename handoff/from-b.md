@@ -3,6 +3,12 @@
 v2.x 까지는 '보너스 B'·'메인' 이름을 썼다(아래 옛 항목은 그대로 둠).
 
 ---
+## 2026-11-15 10:40 · 세희 쪽 개선 요청 v1.1(복기 C) 반영 — 캐시 모양·겹침 기준을 바꿈 · [중요] · 받는 쪽: A·C
+- 무엇(js/ai.js): ① 캐시 — system 은 SYS_CUT 앞(고정 지침) 한 덩어리만, cache_control. SYS_CUT 뒤(지금·판·보드·사람·최근 대답 틀·붙여넣기 알림)는 withDyn() 으로 이번 차례 보스 말(st.turnIdx) 맨 앞 텍스트 블록에 붙임. 캐시 표시 셋: 지침 끝·cacheAt(turnIdx-1)(지난 대답 끝)·cacheTail. forceLine 은 앤트로픽이면 도구 목록 그대로 두고 st.force(생각 꺼진 모델만 tool_choice). ② S1 PROMISE_RE·followThrough — 판을 바꾸겠다/바꿨다고 말했는데 쓰는 도구(READ_TOOLS 빼고)가 0개면 한 번 더(최대 3왕복). ③ 지침: '마지막에 한 번' 줄 다시 씀(확인할 것 묶음 없앰), 「대답하는 법」「지금이 언제인지」「말과 일」「연달아 붙여넣기」 줄 추가, 예시 문구 두 개 뺌. recentFrames()(brief 빼고)·pasteBurst(). ④ clashOut 기준 CLASH_MIN 60분(끝 모르면 1시간짜리, 실제로 겹칠 때만).
+  js/base.js: clockOff()·nowDate() — todayStr 가 기준 시각(localStorage 'sehee.clock')을 따름. render() 는 판 글·메모 textarea 를 고치는 중이면 S.renderLater 로 미룸(editingNow). js/settings.js: 설정 맨 아래 「기준 시각(개발)」, 메모 focusout 때 미룬 그리기. js/office.js: updBrief 지침의 고정 첫 문장 뺌, seheePart 가 '…'만이면 안 띄움.
+- 받는 쪽에게 필요한 일: A — v1.5.40 의 겹침(2시간)·캐시(system 두 덩어리)를 바꿨음. tday1 의 캐시 두 줄을 새 모양에 맞춤. 지침에 새 줄을 넣을 땐 SYS_CUT 앞(고정)인지 뒤(매번)인지 가려서 — 뒤에 둔 건 보스 말 앞으로 감. 생성기는 안 건드림. C — 「확인할 것」 장치는 B 가 걷음(복기 문서 끝의 S1·S3 은 이걸로 끝).
+- 관련 파일·버전: ship.sh 가 찍은 번호 / tests/tsehee2 v1 · tday1 두 줄
+
 ## 2026-11-15 08:50 · 보드 사진첩(업무 사진 갤러리) · [중요] · 받는 쪽: A·C
 - 무엇: 새 js/bdpics.js(index.html 에 picview 다음 한 줄, sw.js CODE 한 줄). kv 'bdpics' 목록(동기화), 'bdpic_<id>' 이 기기 원본 {full:Blob, th}(동기화 안 함), 'bdp_<id>' 서버 사본 {mid 1024px, th}(sync.js SYNC_PFX 에 bdp_ — 한 장씩). BP.max 150MB 넘으면 bpTrim 이 오래된 bdp_ 를 kvDel(원본은 남음). 세희 도구 keep_photo(ai.js TOOL_DEFS·runToolCore 한 줄·지침 한 줄) — 업무 자료 사진이면 묻지 않고 넣고 한 줄 보고, seeMark('board'). 보드 머리 칸에 「사진첩」(data-mode="pics"), board.js boardRender 에 갈래 한 줄, #wbPic 「+ 사진」. 크게 보기는 picview 의 O.thumbs['bp'] 로.
 - 받는 쪽에게 필요한 일: C — sync.js 에서 SYNC_PFX 를 바꿀 땐 bdp_ 를 살릴 것. bdpic_ 는 일부러 동기화 안 함(받을 때 서버에 없는 키는 지워지므로 원본 키를 서버 키와 나눔). .seg 에 hidden 이 안 먹던 것 b.css 에서 #rlSeg[hidden] 로 막음. A — 지침 「보드 사진첩」 줄과 부딪히는 문구 넣지 말 것.

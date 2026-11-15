@@ -15,8 +15,8 @@ const txt = t => sseOf([{ type:'message_start', message:{ usage:{ input_tokens:1
   const say = async t => { bodies = []; await p.fill('#sayText', t); await p.click('#sayGo'); for (let i = 0; i < 60; i++){ await p.waitForTimeout(150); if (!(await p.evaluate(() => O.busy))) break; } return bodies[0]; };
   // 캐시
   const b1 = await say('안녕하세요');
-  check('지침 앞부분에 캐시 표시', Array.isArray(b1.system) && b1.system[0].cache_control && b1.system[0].cache_control.type === 'ephemeral' && b1.system.length === 2);
-  check('지금 시각은 뒷부분(매번 바뀌는 곳)', !b1.system[0].text.includes('지금: ') && b1.system[1].text.includes('지금: '));
+  check('지침 앞부분에 캐시 표시', Array.isArray(b1.system) && b1.system[0].cache_control && b1.system[0].cache_control.type === 'ephemeral' && b1.system.length === 1);   /* 11-15 B: 지침(고정)만 system — 바뀌는 글은 이번 보스 말 앞(tsehee2 S6) */
+  check('지금 시각은 뒷부분(매번 바뀌는 곳)', !b1.system[0].text.includes('지금: ') && JSON.stringify(b1.messages[b1.messages.length - 1]).includes('지금: '));
   const lm = b1.messages[b1.messages.length - 1]; check('마지막 메시지에도 캐시 표시', Array.isArray(lm.content) && !!lm.content[lm.content.length - 1].cache_control);
   check('평소 말은 작은 머리', b1.model === 'claude-haiku-5-5', b1.model);
   check('지침 — 일하는 원칙·판 대신 일간보고서·읽기 쉽게', b1.system[0].text.includes('묻기보다 먼저 한다') && b1.system[0].text.includes("'판'이라는 말은 쓰지 않는다") && b1.system[0].text.includes('한 줄에 하나씩'));

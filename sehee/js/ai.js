@@ -169,14 +169,33 @@ async function touchedContext(){
 const SYS_CUT = '<<SEHEE_CACHE_CUT>>';
 /* 마지막 메시지에도 캐시 표시 — 도구를 여러 번 쓰는 차례(판에 11개 적기 등)는 같은 대화를 계속 다시 보내므로 두 번째부터 싸고 빠르다. 원본은 안 건드림 */
 /* 11-15 A: 일정 겹침 — 같은 날 2시간 안에 시각이 잡힌 다른 일이 있으면 도구 결과에 실어 세희가 그 자리에서 말하게(생성기 1일차 3번: 14:00·14:00·14:30 세 개를 나란히 적고도 말 안 함) */
+const CLASH_MIN = 60;
 function clashOut(it, p){
   const day = x => x.due || (x.time ? p.date : null), mins = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : null; };
   const d = day(it), m0 = mins(it.time); if (!d || m0 === null || it.done) return {};
-  const hit = p.items.filter(x => x.id !== it.id && !x.done && day(x) === d && mins(x.time) !== null && Math.abs(mins(x.time) - m0) < 120)
+  const hit = p.items.filter(x => x.id !== it.id && !x.done && day(x) === d && mins(x.time) !== null && Math.abs(mins(x.time) - m0) < CLASH_MIN)   /* 11-15 B: 끝 시각을 모르면 1시간짜리로 — 실제로 겹칠 때만(9:30·10:30 은 안 겹침, 복기 S5) */
     .map(x => ({ id:x.id, text:x.text, time:x.time, gap_min:Math.abs(mins(x.time) - m0) }));
   if (!hit.length) return {};
   dlog('판', `일정 겹침 · ${it.text} ${it.time} ↔ ${hit.map(h => h.text + ' ' + h.time).join(', ')}`);
-  return { overlaps:hit, overlap_note:'같은 날 2시간 안에 다른 일정이 있음 — 대답에서 꼭 말하고(무엇과 몇 분 차이), 판 항목 comment 에 「겹침」을 단다. 이미 말했으면 다시 안 함' };
+  return { overlaps:hit, overlap_note:'시각이 겹치는 일정이 있음(끝 시각을 모르면 1시간짜리로 봄) — 대답에서 말하고(무엇과 몇 분 차이), 판 항목 comment 에 「겹침」을 단다. 이미 말했으면 다시 안 함' };
+}
+/* 11-15 B: 캐시 다시 짜기(복기 S6 — 캐시 새로 쓰기가 읽기보다 많았음). 바뀌는 글(시각·판·보드·사람)이 지침 바로 뒤에 있어서
+   그 뒤 대화 전체가 매번 새로 써졌다. 이제 지침(고정)만 system 에 두고, 바뀌는 글은 이번 차례 보스 말 앞에 붙인다.
+   표시는 세 군데: 지침 끝 · 지난 대답 끝(다음 차례엔 여기까지 그대로라 읽기) · 마지막(같은 차례 도구 왕복) */
+function withDyn(msgs, i, dyn){
+  if (!dyn || !dyn.trim() || i < 0 || !msgs[i] || msgs[i].role !== 'user') return msgs;
+  const out = msgs.slice(), m = out[i];
+  const content = typeof m.content === 'string' ? [{ type:'text', text:m.content }] : Array.isArray(m.content) ? m.content.map(c => ({ ...c })) : [];
+  out[i] = { ...m, content:[{ type:'text', text:'(앱이 붙인 지금 상황 — 보스가 쓴 말 아님)\n' + dyn.trim() }, ...content] };
+  return out;
+}
+function cacheAt(msgs, i){
+  if (i < 0 || !msgs[i]) return msgs;
+  const out = msgs.slice(), m = out[i];
+  const content = typeof m.content === 'string' ? [{ type:'text', text:m.content }] : Array.isArray(m.content) ? m.content.map(c => ({ ...c })) : null;
+  if (!content || !content.length) return msgs;
+  const k = content.length - 1; if (content[k].type === 'thinking' || content[k].type === 'redacted_thinking' || (content[k].type === 'text' && !String(content[k].text || '').trim())) return msgs;
+  content[k] = { ...content[k], cache_control:{ type:'ephemeral' } }; out[i] = { ...m, content }; return out;
 }
 function cacheTail(msgs){
   if (!Array.isArray(msgs) || !msgs.length) return msgs;
@@ -186,22 +205,39 @@ function cacheTail(msgs){
   const k = content.length - 1; if (content[k].type === 'thinking' || content[k].type === 'redacted_thinking') return msgs;
   content[k] = { ...content[k], cache_control:{ type:'ephemeral' } }; out[i] = { ...m, content }; return out;
 }
+/* 11-15 B: 최근 대답의 시작·끝 — 같은 틀을 되풀이하지 않게 세희에게 보여 줌(특정 문구를 막는 규칙이 아니라 반복 자체를 피하게, 복기 S3) */
+function recentFrames(){
+  const outs = []; let cur = null;
+  for (const m of O.log){ if (m.brief) continue; if (m.who === 'u'){ if (cur) outs.push(cur); cur = null; } else if (m.who === 's' && !m.hidden && m.text){ cur = cur ? cur + '\n' + m.text : m.text; } }   /* 업데이트 설명(brief)은 빼고 */
+  if (cur) outs.push(cur);
+  const fr = outs.slice(-4).map(t => { t = t.replace(/\s+/g, ' ').trim(); return t.length < 70 ? `「${t}」` : `「${t.slice(0, 28)}…${t.slice(-34)}」`; });
+  return fr.length >= 2 ? `네 최근 대답의 시작·끝(이 틀을 되풀이하지 말 것): ${fr.join(' / ')}` : '';
+}
+/* 11-15 B: 보스가 자료를 연달아 붙여 넣는 중인지(최근 4분, 복기 S4) */
+function pasteBurst(){
+  const t0 = Date.now() - 4 * 60000, ps = O.log.filter(m => m.who === 'u' && (m.at || 0) >= t0 && (isPaste(m) || m.pics || m.ocr !== undefined));
+  return ps.length >= 2 ? `보스가 최근 4분 사이 자료(캡처·긴 글)를 ${ps.length}번 연달아 보내는 중이다 — 지금 정리를 원하는지, 일단 던지는 중인지 판단해서 말의 양을 정한다(판에는 적는다).` : '';
+}
 async function systemPrompt(model){
-  const now = new Date(), gdLine = typeof gdContext === 'function' ? await gdContext().catch(() => '') : '';
+  const now = nowDate(), gdLine = typeof gdContext === 'function' ? await gdContext().catch(() => '') : '';
   const cal = [...Array(8)].map((_, i) => { const d = new Date(now); d.setDate(d.getDate() + i);
     return `${['오늘 ', '내일 ', '모레 '][i] || ''}${ymd(d)}(${WD[d.getDay()]})`; }).join(', ');
   const todayLabel = (secById('today') || secs()[0]).label, schedLabel = (secById('sched') || secs()[1] || secs()[0]).label;
   return `너는 '강세희'다. 사용자의 개인 비서이고 사용자를 '${(AI.cfg && AI.cfg.callMe) || '보스'}'라고 부른다${AI.cfg && AI.cfg.callMe && AI.cfg.callMe !== '보스' ? `(아래 지침의 '보스'는 사용자를 뜻한다 — 실제로 부를 땐 '${AI.cfg.callMe}')` : ''}. 앱 '세희'의 사무실 책상에 앉아 말풍선으로 대화한다.
 ${model ? `너의 머리(모델): 지금 ${niceModel(model)}${bigModel() && bigModel() !== model ? `. 긴 글·사진이 오면 그 차례는 ${niceModel(bigModel())}` : ''}. 보스가 머리를 바꾸라고 하면 '못 한다'고 하지 않는다 — 평소 머리는 보스가 ⚙ 설정의 '세희 머리'에서 고르고, 이번 한 번만 더 큰 머리로 답하게 하려면 말에 "소넷으로"를 넣으면 된다고 알려 준다.\n` : ''}말투: 존댓말. 짧고 건조하게, 대개 1~3문장. 과장·아부·이모지 없음. 가끔 무심한 농담. 모르는 건 모른다고 말한다.
-말 나누기(사람처럼): 도구를 여러 번 쓰는 큰 일은 ① 도구 쓰기 전에 한 줄만("정리해 볼게요") — 이 말은 그 자리에서 먼저 보스에게 간다 ② 다 하고 나서 결과만 2~3문장 ③ 보스가 정할 게 있으면 빈 줄을 띄우고 따로. 하는 과정(무엇을 열고 무엇을 지우는지)을 하나하나 말하지 않는다 — 화면에 작업 줄이 따로 뜬다.
-문단 나누기(11-15 보스): 대답이 세 문장을 넘으면 주제마다 빈 줄을 띄워 문단을 나눈다. 일정·할 일을 날짜별로 말할 땐 날짜(요일) 하나에 문단 하나 — 첫 줄은 짧은 머리말("보스 일정은 이래요."), 그다음 날짜마다 빈 줄. 한 덩어리로 길게 이어 쓰지 않는다.
+말 나누기(사람처럼): 도구를 여러 번 쓰는 큰 일은 ① 도구 쓰기 전에 짧게 한 줄 — 이 말은 그 자리에서 먼저 보스에게 간다 ② 다 하고 나서 결과만 2~3문장 ③ 보스가 정할 게 있으면 빈 줄을 띄우고 따로. 하는 과정(무엇을 열고 무엇을 지우는지)을 하나하나 말하지 않는다 — 화면에 작업 줄이 따로 뜬다.
+문단 나누기(11-15 보스): 대답이 세 문장을 넘으면 주제마다 빈 줄을 띄워 문단을 나눈다. 일정·할 일을 날짜별로 말할 땐 날짜(요일) 하나에 문단 하나 — 첫 줄은 짧은 머리말, 그다음 날짜마다 빈 줄. 한 덩어리로 길게 이어 쓰지 않는다.
 말풍선은 사람이 메신저로 보내는 말이다. 마크다운과 기계식 기호를 절대 쓰지 않는다: **굵게**, ## 제목, - 나 * 로 시작하는 목록, 표, 코드 표시 모두 금지.
 여러 가지를 말해야 하면 평범한 문장으로 잇거나 '첫째, 둘째'처럼 말로 나눈다. 줄바꿈은 써도 된다. 실제 비서가 카톡으로 보고하듯 자연스럽게.
 항상 보스의 가장 마지막 말에 답한다. 인사·잡담·안부에는 그에 맞게 짧게 답한다. 앞에서 끝나지 않은 자료 정리나 지난 질문은 보스가 다시 꺼내기 전에는 먼저 묻지 않는다.
 모든 답의 맨 앞에 표정 태그를 딱 하나 붙인다: [의심] [생각] [미소] [당황] [놀람] [삐침] 중 하나.
 ${askMode() === 'need' ? `작업 중 질문(보스 설정: 필요할 때만): 판·보고서를 만들거나 고치다가 정말 막히는 것(틀리면 다시 해야 하는 것)만 ask_boss 로 멈춰서 묻는다. 한 작업에 최대 2번, 사소한 건 알아서 정한다.`
 : askMode() === 'auto' ? `작업 중 질문(보스 설정: 알아서): 묻지 않는다. 확실치 않은 건 가장 그럴듯하게 정해서 끝까지 하고, 대답 끝에 중요한 가정만 한 줄로 알린다.`
-: `작업 중 질문(보스 설정: 마지막에 한 번): 작업 도중엔 묻지 않는다. 확실치 않은 건 그럴듯하게 정해서 끝까지 하고, 다 끝낸 뒤 대답 끝에 '확인할 것' 하나로 묶어 딱 한 번만 묻는다(최대 3가지, 없으면 묻지 않는다).`}
+: `작업 중 질문(보스 설정: 마지막에 한 번): 작업 도중엔 묻지 않는다. 확실치 않은 건 그럴듯하게 정해서 끝까지 한다. 도구로 실제 작업을 한 차례에서 보스만 정할 수 있는 게 정말 남았을 때만, 끝에 한 번 보통 말로 묻는다(정해진 머리말 없이). 질문에 답하거나 자료를 읽어 주는 보통 대화에선 끝에 질문을 덧붙이지 않는다.`}
+대답하는 법(11-15 보스 — 모양이 아니라 목적): 보스가 지금 감당할 수 있는 만큼, 보스에게 가장 필요한 것부터. 모르는 건 짐작을 말하되 짐작이라고 밝힌다. 되묻기 전엔 그 질문이 보스 짐을 늘리는지 먼저 생각한다. 대답의 모양(길이·순서·끝맺음)은 매번 상황을 보고 새로 정한다 — 정해진 첫 문장·머리말·끝 질문 같은 틀을 만들지 않고, 최근 대답과 같은 틀을 되풀이하지 않는다.
+지금이 언제인지(11-15 보스): 기준은 '지금 상황'의 시각이지만, 보스가 보낸 캡처·글에 그보다 늦은 시각이 보이거나 보스가 "끝났어·다녀왔어"라고 하면 그걸로 지금을 짐작한다. 시각이 보이면 몇 시냐고 되묻지 않는다. 보스가 끝났다고 한 일은 판에서 끝냄(complete_item) 처리하고, 끝난 일을 "지금"이라고 말하지 않는다.
+말과 일(11-15 보스): 판을 바꾸겠다고 말한 건(빼겠다·적겠다·옮기겠다·지우겠다·바꾸겠다) 같은 차례에 도구로 실제로 끝낸다. 못 하면 못 한다고 말한다.
+연달아 붙여넣기(11-15 보스): 보스가 캡처·글을 짧은 사이에 연달아 던지면 지금 정리를 원하는 게 아니라 일단 던지는 중일 수 있다. 그럴 땐 판에는 적어 두고, 꼭 짚을 것만 짧게 말하고, 자세한 정리는 보스가 원할 때 한다. 어떻게 말할지는 상황 보고 정한다.
 보스가 "알아서 해", "대충 다 해놔"라고 하면 그 요청은 묻지 않고 끝까지 한다.
 ${privOn() ? `사적인 일(보스 설정: 넣기): 보스의 연애·친구·가족·개인 약속·개인 대화도 업무와 똑같이 다룬다. 자료를 정리할 때 개인 대화를 '업무와 무관하다'며 빼지 않고 함께 정리한다.
 판에 적으라면 사적인 약속·할 일도 적고, 인간관계 판에도 사적인 관계(친구·가족·연인·호감 있는 사람·지인)와 사람들의 사적인 사정을 업무 관계와 똑같이 붙이고 자세히 갱신한다. 사적인 내용이라고 따로 조심스러워하거나 훈계하지 않는다.`
@@ -281,15 +317,16 @@ ${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스
   · 졸업증명서
 
   점심은 식당에서 11시 50분에 줄을 서요.
+매 차례 보스 말 바로 앞에 앱이 '지금 상황'(시각·판·보드·사람)을 붙인다 — 보스가 쓴 말이 아니라 지금 상태다.
 ${SYS_CUT}
-${gdLine ? gdLine + '\n' : ''}지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
+${gdLine ? gdLine + '\n' : ''}지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각${clockOff() ? '(기준 시각 — 보스가 맞춘 세계 시각)' : ''}. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
 ${sendPanOn() ? await panContext() : await touchedContext()}
 
 ${await boardContext()}
 
-${await pplContext()}${await bonusPrompt()}`;
+${await pplContext()}${await bonusPrompt()}${(() => { const x = [recentFrames(), pasteBurst()].filter(Boolean).join('\n'); return x ? '\n\n' + x : ''; })()}`;
 }
 /* 대화 기록 → API 메시지. 사용자로 시작하고, 같은 쪽이 이어지면 합친다. 판 작업 표시(a)는 빼고 */
 /* 11-15 B: 기록 창은 '줄 24개'가 아니라 '보스 말 마디'로 센다 — 판 적기 기록(a)·나눠 보낸 말풍선이 줄을 먹어서
@@ -703,8 +740,10 @@ async function aiRound(st, onText, stopSignal){
   const fail = apiFail;
   try{
     if (p === 'anthropic'){
-      const sysParts = String(st.system).split(SYS_CUT), system = sysParts.length > 1 ? [{ type:'text', text:sysParts[0], cache_control:{ type:'ephemeral' } }, { type:'text', text:sysParts.slice(1).join('\n') }] : st.system;
-      const msgs = cacheTail(st.msgs);
+      const sysParts = String(st.system).split(SYS_CUT), ti = st.turnIdx === undefined ? st.msgs.length - 1 : st.turnIdx;
+      const system = sysParts.length > 1 ? [{ type:'text', text:sysParts[0], cache_control:{ type:'ephemeral' } }] : st.system;   /* 11-15 B: 지침(고정)만 */
+      let msgs = sysParts.length > 1 ? withDyn(st.msgs, ti, sysParts.slice(1).join('\n')) : st.msgs;
+      msgs = cacheTail(ti > 0 ? cacheAt(msgs, ti - 1) : msgs);
       const body = { model, max_tokens:st.maxTok || 2500, system, messages:msgs, stream:true };
       /* 대화용이라 깊은 생각은 끈다(빠르고 싸다, 생각 블록을 주고받다 꼬일 일도 없다).
          끌 수 없는 모델(v1.2.2: 소넷 5.5)은 생각을 '낮음'으로 줄이고 자리를 넉넉히 — 생각만 하다 2500자를 다 써서 빈 대답이 오던 것 */
@@ -712,7 +751,8 @@ async function aiRound(st, onText, stopSignal){
       if (!noOff) body.thinking = { type:'disabled' };
       else { rec.thinkOn = true; body.max_tokens = Math.max(body.max_tokens, 16000); if (!AI.noEffort) body.output_config = { effort:'low' }; }
       if (st.tools) body.tools = TOOL_DEFS().filter(t => !st.only || t.name === st.only).map(t => ({ name:t.name, description:t.description, input_schema:t.schema }));
-      if (st.tools && st.only && body.thinking && body.thinking.type === 'disabled') body.tool_choice = { type:'tool', name:st.only };   /* 11-15 C: 한 도구만 시킬 때(생각이 꺼진 모델만 — 생각 켜진 모델은 강제 선택이 안 됨) */
+      if (st.tools && st.only && body.thinking && body.thinking.type === 'disabled') body.tool_choice = { type:'tool', name:st.only };
+      if (st.tools && st.force && body.thinking && body.thinking.type === 'disabled') body.tool_choice = { type:'tool', name:st.force };   /* 11-15 B: 도구 목록은 그대로(캐시 유지), 고르는 것만 강제 */   /* 11-15 C: 한 도구만 시킬 때(생각이 꺼진 모델만 — 생각 켜진 모델은 강제 선택이 안 됨) */
       if (st.tools && st.web) body.tools.push(WEB_TOOL);
       let mode = anthAuth(), r = await go('https://api.anthropic.com/v1/messages', body, anthHeaders(key, mode));
       if (r.status === 401){
@@ -840,7 +880,7 @@ async function aiTurn(history, onText, stopSignal, opts){
   const p = AI.cfg.provider;
   const st = { p, key:aiKey(), model:(opts && opts.big && bigModel()) || aiModel(), system:await systemPrompt((opts && opts.big && bigModel()) || aiModel()), tools:!(opts && opts.noTools),
     web:webOn() && !AI.noWeb, onSearch:opts && opts.onSearch,
-    msgs:history.map(m => ({ role:m.role, content:m.content })), retry:0,
+    msgs:history.map(m => ({ role:m.role, content:m.content })), turnIdx:history.length - 1, retry:0,
     contents:history.map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })) };
   let said = '', last = null; const srcs = [];
   for (let round = 0; round < 8; round++){
@@ -886,7 +926,7 @@ async function aiTurn(history, onText, stopSignal, opts){
     if (opts && opts.onPart && said.trim()){ opts.onPart(said.trim()); said = ''; }
     const results = [];
     WORK.batch = r.calls.filter(c => c.name !== 'ask_boss').length;
-    for (const c of r.calls){ const out = await runTool(c); results.push({ c, out });
+    for (const c of r.calls){ const out = await runTool(c); results.push({ c, out }); if (!READ_TOOLS.includes(c.name)) st.wrote = true;
       if (out && out.ok !== false && !out.error){ if (c.name === 'set_line') st.lineSet = true; else if (PAN_TOOLS.includes(c.name)) st.panTouched = true; } }
     if (p === 'anthropic'){
       st.msgs.push({ role:'assistant', content:r.blocks });
@@ -898,6 +938,7 @@ async function aiTurn(history, onText, stopSignal, opts){
     if (said && !/\s$/.test(said)) said += ' ';
   }
   /* 11-15 C: 판을 고친 차례인데 한마디(set_line)를 안 썼으면 — 한마디만 쓰게 한 번 더(보스: 한마디 없는 판은 안 됨) */
+  if (st.tools && !st.wrote && last && PROMISE_RE.test(said) && !(stopSignal && stopSignal.aborted)) last = await followThrough(st, last, stopSignal);
   if (st.tools && st.panTouched && !st.lineSet && last && !(stopSignal && stopSignal.aborted)) await forceLine(st, last, stopSignal);
   return { text:said.trim(), finish:last ? last.finish : '', rec:last ? last.rec : null, sources:srcs.slice(0, 5) };
 }
@@ -906,12 +947,33 @@ async function forceLine(st, last, stopSignal){
   try{
     if (st.p === 'anthropic'){ const bl = (last.blocks || []).filter(b => b.type !== 'text' || (b.text || '').trim()); st.msgs.push({ role:'assistant', content:bl.length ? bl : [{ type:'text', text:'(끝)' }] }); st.msgs.push({ role:'user', content:note }); }
     else { st.contents.push({ role:'model', parts:(last.modelParts && last.modelParts.length) ? last.modelParts : [{ text:'(끝)' }] }); st.contents.push({ role:'user', parts:[{ text:note }] }); }
-    st.only = 'set_line'; st.web = false;
+    if (st.p === 'anthropic') st.force = 'set_line'; else { st.only = 'set_line'; st.web = false; }   /* 11-15 B: 앤트로픽은 도구 목록을 그대로 둬서 캐시를 살림(복기 S6) */
     const r = await aiRound(st, null, stopSignal), c = (r.calls || []).find(x => x.name === 'set_line');
     if (c){ const out = await runTool(c); dlog('AI', '한마디가 빠져서 한 번 더 — set_line ' + (out && out.ok ? '씀' : '실패')); }
     else dlog('AI', '한마디 한 번 더 — 도구를 안 부름');
   }catch(e){ dlog('오류', '한마디 덧쓰기 실패: ' + (e.message || e)); }
-  st.only = null;
+  st.only = null; st.force = null;
+}
+/* 11-15 B: 말만 하고 안 함(복기 S1 — "빼 둘게요" 해 놓고 도구 0개) — 판을 바꾸겠다/바꿨다고 말했는데 이 차례에 쓰는 도구가 하나도 없으면, 말한 대로 하게 한 번 더 */
+const PROMISE_RE = /(뺄게요|빼\s?둘게요|빼\s?놓을게요|적을게요|적어\s?둘게요|적어\s?놓을게요|옮길게요|옮겨\s?둘게요|지울게요|지워\s?둘게요|바꿀게요|바꿔\s?둘게요|고칠게요|고쳐\s?둘게요|넣을게요|넣어\s?둘게요|정리해\s?둘게요|처리해\s?둘게요|끝낸\s?일로\s?(처리|옮기|옮겨|돌려|둘)|남겨\s?둘게요|달아\s?둘게요|적어\s?뒀어요|적어\s?두었어요|옮겨\s?뒀어요|고쳐\s?뒀어요|넣어\s?뒀어요|끝낸\s?일로\s?옮겼어요)/;
+const READ_TOOLS = ['read_pan', 'search_history', 'read_material', 'read_chat', 'ask_boss'];
+async function followThrough(st, last, stopSignal){
+  const note = '(앱 안내 — 보스에게 안 보임) 방금 대답에서 판을 바꾸겠다(또는 바꿨다)고 말했는데 이번 차례에 쓰는 도구를 하나도 안 불렀다. 말한 그대로 지금 도구로 실제로 한다. 판이 이미 그렇게 돼 있으면 아무것도 안 부른다. 말은 덧붙이지 않는다.';
+  let n = 0;
+  try{
+    if (st.p === 'anthropic'){ const bl = (last.blocks || []).filter(b => b.type !== 'text' || (b.text || '').trim()); st.msgs.push({ role:'assistant', content:bl.length ? bl : [{ type:'text', text:'(끝)' }] }); st.msgs.push({ role:'user', content:note }); }
+    else { st.contents.push({ role:'model', parts:(last.modelParts && last.modelParts.length) ? last.modelParts : [{ text:'(끝)' }] }); st.contents.push({ role:'user', parts:[{ text:note }] }); }
+    for (let k = 0; k < 3; k++){
+      const r = await aiRound(st, null, stopSignal); last = r; if (!r.calls.length) break;
+      const results = [];
+      for (const c of r.calls){ const out = await runTool(c); results.push({ c, out }); n++;
+        if (out && out.ok !== false && !out.error){ if (c.name === 'set_line') st.lineSet = true; else if (PAN_TOOLS.includes(c.name)) st.panTouched = true; } }
+      if (st.p === 'anthropic'){ st.msgs.push({ role:'assistant', content:r.blocks }); st.msgs.push({ role:'user', content:results.map(x => ({ type:'tool_result', tool_use_id:x.c.id, content:JSON.stringify(x.out) })) }); }
+      else { st.contents.push({ role:'model', parts:r.modelParts }); st.contents.push({ role:'user', parts:results.map(x => ({ functionResponse:{ name:x.c.name, ...(x.c.id ? { id:x.c.id } : {}), response:x.out } })) }); }
+    }
+  }catch(e){ dlog('오류', '말한 대로 하기 실패: ' + (e.message || e)); }
+  dlog('AI', `말만 하고 안 해서 한 번 더 — 도구 ${n}개`);
+  return last;
 }
 const aiStream = (messages, onText, stopSignal) => aiTurn(messages, onText, stopSignal, { noTools:true });
 /* 말풍선에 기계식 기호가 섞여 오면 걷어낸다 — **굵게**, ## 제목, - 목록, 표 줄 */

@@ -159,7 +159,7 @@ async function saveLog(){ if (O.log.length > 300) O.log = O.log.slice(-300); try
    seheePart = 도구 쓰기 전에 한 말(그 자리에서 말풍선 하나). seheeSaysSplit = 끝 대답이 길고 문단이 나뉘면 2~3개로, 사이에 잠깐 '…'. */
 function seheePart(t){
   const pf = parseFace(t); pf.t = liveRest(pf.t); if (O.live) O.live.flushed = [];   /* 11-15 B: 쓰는 중에 이미 내보낸 문단은 빼고 */
-  if (!pf.t.trim()){ if (O.live){ O.live.text = ''; O.live.faced = false; } renderLog(); return; }
+  if (!pf.t.trim() || /^[….·\s]+$/.test(pf.t)){ if (O.live){ O.live.text = ''; O.live.faced = false; } renderLog(); return; }   /* 11-15 B: 표정만 오고 말이 없으면 '…' 말풍선을 안 띄움 */
   O.log.push({ who:'s', text:pf.t, face:pf.f, at:Date.now(), part:true }); setFace(pf.f); dlog('대화', `세희 ← (먼저) ${pf.t.slice(0, 60)}`);
   if (O.live){ O.live.text = ''; O.live.faced = false; }
   renderLog(); saveLog();
@@ -413,8 +413,8 @@ async function updBrief(from, to){
   dlog('업데이트', `세희 설명 시작 ${from} → ${to} · 기록 ${notes.length}자`);
   O.log.push({ who:'u', hide:true, upd:{ from, to }, at:Date.now(), text:`(앱 안내 — 보스가 쓴 말이 아니다. 보스 화면엔 안 보인다)
 보스가 방금 업데이트 장면에서 '예'를 눌러 사내 규정(세희 앱)을 ${from} → ${to} 로 바꿨다. 사무실로 돌아온 보스에게 이렇게 한다.
-1) 첫 마디는 "새 규정, 적용 마쳤습니다." 같은 보고로 시작하고, 바뀐 점을 보스 쪽에서 보이고 쓰는 것 위주로 쉬운 말로 짧게(3~6줄) 알린다. 버전 번호·파일 이름·방 이름(A·B·C)·코드 말은 빼고, 비슷한 건 묶는다.
-2) 이번 변화로 보스의 기존 자료(인간관계 판·보드·일정·일간보고서 등)를 손보면 더 좋아지는 게 있으면, 도구로 먼저 들여다보고 확실한 정리는 바로 한다(한 일은 한 줄씩 말한다). 보스 뜻이 갈리는 건 ask_boss 로 고를 것 2~4개를 주고 묻는다(한 번에 하나씩). 손볼 게 없으면 없다고 한 줄.
+1) 업데이트가 끝났다는 걸 자연스럽게 알리고(정해진 첫 문장을 쓰지 않는다 — 지난번 업데이트 때와 다르게), 바뀐 점을 보스 쪽에서 보이고 쓰는 것 위주로 쉬운 말로 짧게(3~6줄) 알린다. 버전 번호·파일 이름·방 이름(A·B·C)·코드 말은 빼고, 비슷한 건 묶는다.
+2) 이번 변화로 보스의 기존 자료(인간관계 판·보드·일정·일간보고서 등)를 손보면 더 좋아지는 게 있으면, 도구로 먼저 들여다보고 확실한 정리는 바로 한다(한 일은 한 줄씩 말한다). 보스 뜻이 갈리는 건 ask_boss 로 고를 것 2~4개를 주고 묻는다(한 번에 하나씩). 손볼 게 없으면 그 얘기는 꺼내지 않는다.
 3) 길게 늘어놓지 않는다. 이 안내 글이 있다는 말은 하지 않는다.
 ── 바뀐 기록(개발자 말투) ──
 ${notes || '(기록을 못 가져왔다 — 무엇이 바뀌었는지 모른다고 솔직히 말하고, 써 보시다 이상한 게 있으면 알려 달라고만 한다)'}` });
