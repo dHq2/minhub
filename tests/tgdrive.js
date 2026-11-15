@@ -1,4 +1,4 @@
-/* tgdrive v1.3 (2026-11-16, A) — v1.3: 📎 차림에서 바로 드라이브 찾기 · v1.2 (11-15): v1.2: 「폴더 목록」 색인 시트를 고르면 지침에 색인 안내 · v1.1: 사진 파일은 캡처 해독 길로 글자 읽기 */
+/* tgdrive v1.4 (2026-11-16, A) — v1.4: 🖼️ 사진 단추(사진만 받는 칸) · v1.3: 📎 차림에서 바로 드라이브 찾기 · v1.2 (11-15): v1.2: 「폴더 목록」 색인 시트를 고르면 지침에 색인 안내 · v1.1: 사진 파일은 캡처 해독 길로 글자 읽기 */
 /* tgdrive v1.0 (2026-11-15, A) — 구글 드라이브 연결: 가짜 구글(로그인 창·고르기 창·드라이브·시트 API)로 도구 다섯 개와 다시 연결 단추 */
 const { chromium } = require('playwright');
 (async () => {
@@ -66,11 +66,13 @@ const { chromium } = require('playwright');
   await p.screenshot({ path:'/tmp/tgdrive-set.png' });
   await p.evaluate(() => { closeSheet(); window._pickWith = [{ id:'d9', name:'가상 회의록', mimeType:'application/vnd.google-apps.document', url:'u9' }]; $('sayText').value = ''; });
   await p.locator('#sayClip').click(); await p.waitForTimeout(200);
-  check('📎 → 사진·파일 / 구글 드라이브 차림', await p.locator('#clipMenu button').count() === 2 && /구글 드라이브에서 찾기/.test(await p.locator('#clipMenu').textContent()));
+  check('📎 → 파일 / 구글 드라이브 차림', await p.locator('#clipMenu button').count() === 2 && /구글 드라이브에서 찾기/.test(await p.locator('#clipMenu').textContent()));
   await p.screenshot({ path:'/tmp/tgdrive-clip.png' });
   await p.locator('[data-cm="drive"]').click(); await p.waitForTimeout(400);
   check('드라이브에서 고르면 연결 + 말 칸에 「봐줘」', !(await p.locator('#clipMenu').count()) && (await p.inputValue('#sayText')) === '드라이브에서 고른 「가상 회의록」 봐줘' && !(await p.locator('#sayGo').isDisabled()), await p.inputValue('#sayText'));
   await p.locator('#sayClip').click(); await p.waitForTimeout(150); await p.mouse.click(200, 200); await p.waitForTimeout(150);
   check('바깥을 누르면 차림 닫힘', !(await p.locator('#clipMenu').count()));
+  check('🖼️ 단추는 사진만 받는 칸', await p.locator('#sayPic').isVisible() && (await p.getAttribute('#sayPicFile', 'accept')) === 'image/*');
+  await p.screenshot({ path:'/tmp/tgdrive-say.png', clip:{ x:0, y:780, width:412, height:135 } });
   console.log('GDRIVE bad', bad); await b.close(); if (bad) process.exit(1);
 })();

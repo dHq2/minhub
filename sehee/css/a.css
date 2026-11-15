@@ -16,3 +16,5 @@
 .clip-menu button + button{border-top:1px solid rgba(47,58,74,.18)}
 .clip-menu button:active{background:rgba(47,58,74,.08)}
 #say{position:relative}
+/* 11-16 A: 🖼️ 사진 단추 — 📎 바로 옆 */
+.saybub .clip.pic{margin-left:-4px;font-size:1.1rem}

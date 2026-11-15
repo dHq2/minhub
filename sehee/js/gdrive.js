@@ -54,14 +54,14 @@ async function gdChip(){
   if (!want){ if (el) el.remove(); return; }
   if (!el){ el = document.createElement('button'); el.id = 'gdChip'; el.className = 'chip'; el.textContent = '구글 드라이브 다시 연결'; el.onclick = async () => { if (await gdConnect()){ GD.wantChip = false; gdChip(); toast('다시 연결했어요 — 방금 부탁을 한 번 더 말해 주세요'); } }; document.body.appendChild(el); }
 }
-/* 11-16 A: 📎 차림 — 「사진·파일」 / 「구글 드라이브」. 대화창에서 바로 드라이브를 찾게.
+/* 11-16 A: 📎 차림 — 「파일」 / 「구글 드라이브」(사진은 옆 🖼️ 단추가 바로 갤러리). 대화창에서 바로 드라이브를 찾게.
    팝업 열쇠는 누른 그 자리에서 열어야 해서, 차림을 여는 순간 구글 스크립트를 미리 불러 둔다. */
 async function gdClipMenu(){
   let m = $('clipMenu'); if (m){ m.remove(); return; }
   gdLoad().catch(() => {});
   const st = await gdState();
   m = document.createElement('div'); m.id = 'clipMenu'; m.className = 'clip-menu';
-  m.innerHTML = `<button data-cm="file">📷 사진·파일 붙이기</button><button data-cm="drive">📂 ${st.on ? '구글 드라이브에서 찾기' : '구글 드라이브 연결하기'}</button>`;
+  m.innerHTML = `<button data-cm="file">📄 파일 붙이기 (문서·PDF·엑셀 등)</button><button data-cm="drive">📂 ${st.on ? '구글 드라이브에서 찾기' : '구글 드라이브 연결하기'}</button>`;
   $('say').appendChild(m);
   const close = e => { if (!e || !m.contains(e.target) && e.target !== $('sayClip')){ m.remove(); document.removeEventListener('pointerdown', close, true); } };
   setTimeout(() => document.addEventListener('pointerdown', close, true), 0);

@@ -451,6 +451,10 @@ $('log').addEventListener('click', e => {
 $('sayClip').addEventListener('pointerdown', e => e.preventDefault());
 $('sayClip').onclick = () => (typeof gdClipMenu === 'function' && gdReady()) ? gdClipMenu() : $('sayFile').click();   /* 11-16 A: 📎 → 사진·파일 / 구글 드라이브 */
 $('sayFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; addFiles(f); };
+/* 11-16 A: 🖼️ = 사진만(accept image/*) — 안드로이드는 사진 고르기 창(갤러리 격자)이 바로 뜬다 */
+$('sayPic').addEventListener('pointerdown', e => e.preventDefault());
+$('sayPic').onclick = () => $('sayPicFile').click();
+$('sayPicFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; addFiles(f); };
 /* 컴퓨터: 캡처 파일을 사무실로 끌어다 놓기 (v0.7.4) */
 $('office').addEventListener('dragover', e => { if ([...(e.dataTransfer.types || [])].includes('Files')){ e.preventDefault(); $('office').classList.add('drop'); } });
 $('office').addEventListener('dragleave', e => { if (e.target === $('office')) $('office').classList.remove('drop'); });
