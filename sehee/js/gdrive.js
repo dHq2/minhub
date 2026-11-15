@@ -4,7 +4,7 @@
    - 세희 도구: drive_files(연결된 목록) · drive_find(검색어 넣은 고르기 창 — 사용자가 고름) · drive_read(내용 읽기) · drive_write_sheet(시트 칸 쓰기) · drive_save(「세희」 폴더에 새 문서·시트).
    - 열쇠가 없거나 끝났으면 도구는 need_connect 를 돌려주고, 화면 아래 「구글 드라이브 다시 연결」 단추가 뜬다(팝업은 사용자가 눌러야 열려서).
    설정 값(공개돼도 되는 것만): 클라이언트 ID·프로젝트 번호. 비밀 열쇠는 없다. */
-const GD_CFG = { clientId:'', appId:'', apiKey:'' };
+const GD_CFG = { clientId:'409029954703-mmkpqpf0t2nvt02gocafjovv9tv6megq.apps.googleusercontent.com', appId:'409029954703', apiKey:'' };
 const GD_SCOPE = 'https://www.googleapis.com/auth/drive.file openid email';
 const GD = { token:null, exp:0, tc:null, loading:null, st:null };
 const gdReady = () => !!GD_CFG.clientId;
