@@ -304,7 +304,7 @@ async function calWorkAfter(c, r){
 /* 입력칸 — 사무실과 같은 대화로 보낸다 */
 const cpGrow = () => { const t = $('cpText'); if (t.offsetParent){ t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 92) + 'px'; } $('cpGo').disabled = !t.value.trim() || O.busy; };
 $('cpText').addEventListener('input', cpGrow);
-$('cpText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); if ($('cpText').value.trim()) sendSay($('cpText')); } });
+$('cpText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && enterSends()){ e.preventDefault(); if ($('cpText').value.trim()) sendSay($('cpText')); } });
 $('cpText').addEventListener('focus', () => $('calPage').classList.add('typing'));
 $('cpText').addEventListener('blur', () => $('calPage').classList.remove('typing'));
 $('cpGo').addEventListener('pointerdown', e => e.preventDefault());

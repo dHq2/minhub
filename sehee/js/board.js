@@ -312,7 +312,7 @@ $('sheet').addEventListener('click', async e => {
 /* 보드 아래 입력칸 — 사무실과 같은 대화로 보낸다 */
 const bdGrow = () => { const t = $('bdText'); if (t.offsetParent){ t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 100) + 'px'; } $('bdGo').disabled = !t.value.trim() || O.busy; };
 $('bdText').addEventListener('input', bdGrow);
-$('bdText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); if ($('bdText').value.trim()) sendSay($('bdText')); } });
+$('bdText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && enterSends()){ e.preventDefault(); if ($('bdText').value.trim()) sendSay($('bdText')); } });
 $('bdText').addEventListener('focus', () => document.body.classList.add('typing'));
 $('bdText').addEventListener('blur', () => document.body.classList.remove('typing'));
 $('bdGo').addEventListener('pointerdown', e => e.preventDefault());

@@ -432,7 +432,11 @@ function updUserNotes(notes){
   return out.join('\n');
 }
 $('sayText').addEventListener('input', growSay);
-$('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendSay(); } });
+/* 11-16 A: 폰·태블릿(손가락)에서는 엔터 = 줄 바꿈, 보내기는 ↑ 단추만. 붙여 넣은 글을 고치다 엔터로 잘못 보내던 것.
+   컴퓨터(마우스)는 그대로 엔터 = 보내기, Shift+엔터 = 줄 바꿈. */
+function enterSends(){ return !(window.matchMedia && matchMedia('(pointer: coarse)').matches); }
+if (!enterSends()) ['sayText', 'bdText', 'cpText'].forEach(id => { const t = $(id); if (t) t.setAttribute('enterkeyhint', 'enter'); });
+$('sayText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && enterSends()){ e.preventDefault(); sendSay(); } });
 $('sayText').addEventListener('focus', () => { document.body.classList.add('typing'); setTimeout(() => { $('log').scrollTop = $('log').scrollHeight; }, 250); });
 $('sayText').addEventListener('blur', () => document.body.classList.remove('typing'));
 /* 키보드가 내려가거나 장면 크기가 바뀌어도, 맨 아래를 보고 있었다면 맨 아래에 붙어 있는다 */
