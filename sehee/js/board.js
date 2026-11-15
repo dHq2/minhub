@@ -25,7 +25,14 @@ function cardApply(c, a){
   if (Array.isArray(a.highlights)) c.highlights = a.highlights.slice(0, 4).map(h => ({ label:plainChat(cell(h && h.label)).slice(0, 20), value:plainChat(cell(h && h.value)).slice(0, 24) })).filter(h => h.label || h.value);
   if (Array.isArray(a.sections)) c.sections = a.sections.slice(0, 20).map(x => ({ heading:plainChat(cell(x && x.heading)), text:plainChat(String((x && x.text) || '')).slice(0, 6000),
     points:Array.isArray(x && x.points) ? x.points.slice(0, 30).map(v => plainChat(cell(v))) : [],
+    style:['box', 'check'].includes(x && x.style) ? x.style : '',
     cols:Array.isArray(x && x.table_columns) ? x.table_columns.slice(0, 10).map(cell) : [], rows:Array.isArray(x && x.table_rows) ? x.table_rows.slice(0, 60).map(r => (Array.isArray(r) ? r : [r]).slice(0, 10).map(cell)) : [] }));
+  /* 11-16 A: 문서 모양을 매번 고른다 — 맨 위 띠·받는 분·결재 칸·요약 이름·섹션 번호·섹션 꾸밈 */
+  if (typeof a.doc_kind === 'string') c.docKind = plainChat(a.doc_kind).slice(0, 16);
+  if (typeof a.to === 'string') c.to = plainChat(a.to).slice(0, 60);
+  if (Array.isArray(a.signs)) c.signs = a.signs.slice(0, 5).map(x => plainChat(cell(x)).slice(0, 6)).filter(Boolean);
+  if (typeof a.summary_label === 'string') c.summaryLabel = plainChat(a.summary_label).slice(0, 16);
+  if (typeof a.numbered === 'boolean') c.numbered = a.numbered;
   if (a.pages) c.pages = a.pages;
   c.edited = Date.now();
   return c;
@@ -37,12 +44,29 @@ async function boardAdd(c, note){
 }
 async function boardContext(){
   await boardLoad();
-  if (!BOARD.cards.length) return '화이트보드: 비어 있음';
-  return '화이트보드 카드 (최근 것부터):\n' + BOARD.cards.slice(0, 20).map(c => `- #${c.id} ${({ report:'보고서', table:'표', list:'목록', note:'메모', chart:'차트', file:'문서' })[c.kind]} '${c.title}'${c.rows ? ` (${c.rows.length}행)` : c.items ? ` (${c.items.length}개)` : ''}`).join('\n');
+  const ds = (await kvGet('docstyle')) || [], dl = ds.length ? '\n보스 문서 양식(기억한 것 — 그 종류 문서를 쓸 때 따른다. 이번에 보스가 따로 말하면 그 말이 먼저):\n' + ds.map(x => `- ${x.name}: ${x.rule}`).join('\n') : '';   /* 11-16 A */
+  if (!BOARD.cards.length) return '화이트보드: 비어 있음' + dl;
+  return '화이트보드 카드 (최근 것부터):\n' + BOARD.cards.slice(0, 20).map(c => `- #${c.id} ${({ report:'보고서', table:'표', list:'목록', note:'메모', chart:'차트', file:'문서' })[c.kind]} '${c.title}'${c.rows ? ` (${c.rows.length}행)` : c.items ? ` (${c.items.length}개)` : ''}`).join('\n') + dl;
 }
+/* 11-16 A: 보고서·문서 칸 — make_card 와 update_card 가 같이 쓴다(고칠 때도 모양을 다 바꿀 수 있게) */
+const DOC_PROPS = {
+    doc_kind:{ type:'string', description:'맨 위 검은 띠 글자 — 문서 종류에 맞게. 예: 업무 보고, 이사님 보고, 회의록, 공지문, 견적 비교, 메일 초안, 확인서, 체크리스트, 인수인계' },
+    to:{ type:'string', description:'받는 분(선택). 예: 마정란 이사님, 거래처 담당자, 팀 전체' },
+    signs:{ type:'array', items:{ type:'string' }, description:'결재 칸 이름들(선택). 예: ["작성","검토","승인"]. 필요 없는 문서면 [] (칸 없음). 안 주면 작성·확인' },
+    summary:{ type:'string', description:'맨 위 강조 상자 글(선택) — 결론·요청·요약 등. 필요 없으면 비움' },
+    summary_label:{ type:'string', description:'강조 상자 이름. 예: 결론, 결정 요청, 한 줄 요약, 요약' },
+    basis:{ type:'string', description:'근거 자료(선택). 예: 11/8 팀 단톡방 캡처, 3분기_정리.docx' },
+    highlights:{ type:'array', description:'맨 위 숫자 칸 2~4개(선택) — 숫자·짧은 상태만, 문장 금지. 예: {label:"남은 일", value:"4건"}', items:{ type:'object', properties:{ label:{ type:'string' }, value:{ type:'string' } }, required:['label', 'value'] } },
+    numbered:{ type:'boolean', description:'섹션 제목에 번호(기본 켬). 메일·공지처럼 번호가 어색하면 false' },
+    sections:{ type:'array', description:'본문 섹션들 — 몇 개든, 어떤 순서든 문서에 맞게', items:{ type:'object', properties:{
+      heading:{ type:'string', description:'섹션 제목(선택 — 없으면 문단만)' }, text:{ type:'string', description:'문단. 평범한 문장, 줄바꿈으로 문단 나눔' },
+      points:{ type:'array', items:{ type:'string' }, description:'요점 줄(선택)' },
+      style:{ type:'string', enum:['', 'box', 'check'], description:"box=강조 상자, check=체크 목록(points 앞에 □)" },
+      table_columns:{ type:'array', items:{ type:'string' }, description:'섹션 안 표 머리(선택)' },
+      table_rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'섹션 안 표 내용(선택)' } } } } };
 const BOARD_TOOLS = () => [
-  { name:'make_card', description:'화이트보드에 카드를 붙인다. 표·목록·비교·수치 정리·차트·긴 메모처럼 눈으로 볼 자료를 만들 때 쓴다(판 항목과 별개).', schema:{ type:'object', properties:{
-    kind:{ type:'string', enum:['report', 'table', 'list', 'note', 'chart'], description:'report=정리 보고서, table=표, list=목록, note=메모, chart=막대·선 차트' },
+  { name:'make_card', description:'화이트보드에 카드를 붙인다. 표·목록·비교·수치 정리·차트·긴 메모, 보고서·문서(kind=report — 모양은 매번 문서에 맞게 고른다)를 만들 때 쓴다(판 항목과 별개).', schema:{ type:'object', properties:{
+    kind:{ type:'string', enum:['report', 'table', 'list', 'note', 'chart'], description:'report=보고서·문서(아무 서류), table=표, list=목록, note=메모, chart=막대·선 차트' },
     title:{ type:'string', description:'짧은 제목' },
     columns:{ type:'array', items:{ type:'string' }, description:'표 머리(열 이름)' },
     rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'표 내용. 행마다 칸 글자 배열' },
@@ -52,26 +76,31 @@ const BOARD_TOOLS = () => [
     labels:{ type:'array', items:{ type:'string' }, description:'차트 가로축 이름들' },
     values:{ type:'array', items:{ type:'number' }, description:'차트 값들(labels 와 같은 순서)' },
     unit:{ type:'string', description:'값 단위. 예: 명, 원, %' },
-    summary:{ type:'string', description:'보고서 맨 위 핵심 요약 2~3문장' },
-    basis:{ type:'string', description:'보고서 근거 자료. 예: 11/8 팀 단톡방 캡처, 3분기_정리.docx' },
-    highlights:{ type:'array', description:'보고서 맨 위 핵심 숫자·사실 2~4개(선택). 예: {label:"남은 일", value:"4건"}', items:{ type:'object', properties:{ label:{ type:'string' }, value:{ type:'string' } }, required:['label', 'value'] } },
-    sections:{ type:'array', description:'보고서 본문 섹션들', items:{ type:'object', properties:{
-      heading:{ type:'string', description:'섹션 제목' }, text:{ type:'string', description:'문단. 평범한 문장' },
-      points:{ type:'array', items:{ type:'string' }, description:'짧은 요점 줄(선택)' },
-      table_columns:{ type:'array', items:{ type:'string' }, description:'섹션 안 표 머리(선택)' },
-      table_rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'섹션 안 표 내용(선택)' } }, required:['heading'] } } }, required:['kind', 'title'] } },
-  { name:'update_card', description:'화이트보드 카드를 고친다. 바꿀 것만 넣는다(표는 columns·rows 를 통째로).', schema:{ type:'object', properties:{
+    ...DOC_PROPS }, required:['kind', 'title'] } },
+  { name:'update_card', description:'화이트보드 카드를 고친다. 바꿀 것만 넣는다(표는 columns·rows, 문서는 sections 를 통째로). 보고서·문서를 고쳐 달라면 새로 만들지 말고 이걸로 — 띠·받는 분·결재 칸·순서·말투까지 다 바꿀 수 있다.', schema:{ type:'object', properties:{
     id:{ type:'string', description:'카드 id (# 없이)' }, title:{ type:'string' },
     columns:{ type:'array', items:{ type:'string' } }, rows:{ type:'array', items:{ type:'array', items:{ type:'string' } } },
     items:{ type:'array', items:{ type:'string' } }, text:{ type:'string' },
     labels:{ type:'array', items:{ type:'string' } }, values:{ type:'array', items:{ type:'number' } },
-    summary:{ type:'string' }, sections:{ type:'array', items:{ type:'object', properties:{ heading:{ type:'string' }, text:{ type:'string' }, points:{ type:'array', items:{ type:'string' } } } } } }, required:['id'] } },
+    ...DOC_PROPS }, required:['id'] } },
+  { name:'save_doc_style', description:'보스의 문서 양식을 기억한다 — 보스가 "앞으로 ○○는 이렇게", "이 양식 기억해", 예시 문서를 주며 "이렇게 써"라고 할 때. 같은 이름이면 덮어쓴다.', schema:{ type:'object', properties:{
+    name:{ type:'string', description:'양식 이름. 예: 이사님 보고, 주간 회의록, 거래처 메일' }, rule:{ type:'string', description:'규칙 — 순서·칸·말투·길이·받는 분·결재 칸 등 보스 말 그대로 요약(300자 안)' } }, required:['name', 'rule'] } },
+  { name:'remove_doc_style', description:'기억한 문서 양식을 지운다. 보스가 지우라고 할 때만.', schema:{ type:'object', properties:{ name:{ type:'string' } }, required:['name'] } },
   { name:'remove_card', description:'화이트보드에서 카드를 뗀다. 보스가 분명히 떼라고 할 때만.', schema:{ type:'object', properties:{ id:{ type:'string' } }, required:['id'] } },
   { name:'read_card', description:'화이트보드 카드 내용을 전부 본다(문서 카드의 본문 포함).', schema:{ type:'object', properties:{ id:{ type:'string' } }, required:['id'] } },
 ];
 async function runBoardTool(c){
   await boardLoad();
   const a = c.args || {}, id = String(a.id || '').replace(/^#/, ''), card = BOARD.cards.find(x => x.id === id);
+  if (c.name === 'save_doc_style' || c.name === 'remove_doc_style'){   /* 11-16 A */
+    const L = (await kvGet('docstyle')) || [], nm = plainChat(String(a.name || '')).slice(0, 30).trim(); if (!nm) return { ok:false, error:'양식 이름이 비었음' };
+    const k = L.findIndex(x => x.name === nm);
+    if (c.name === 'save_doc_style'){ const r = { name:nm, rule:plainChat(String(a.rule || '')).slice(0, 400), at:Date.now() }; if (k >= 0) L[k] = r; else L.push(r); }
+    else if (k >= 0) L.splice(k, 1); else return { ok:false, error:'그 이름의 양식이 없음', have:L.map(x => x.name) };
+    await kvSet('docstyle', L.slice(-20)); dlog('보드', `문서 양식 ${c.name === 'save_doc_style' ? '기억' : '지움'} · ${nm}`);
+    O.log.push({ who:'a', board:true, text:`문서 양식을 ${c.name === 'save_doc_style' ? '기억했어요' : '지웠어요'} — ${nm}`, at:Date.now() }); renderLog(); saveLog();
+    return { ok:true };
+  }
   if (c.name === 'make_card'){
     const nc = cardFrom(a); await boardAdd(nc); BOARD.changed = nc.id;
     return { ok:true, id:nc.id };

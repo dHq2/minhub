@@ -4,17 +4,20 @@
 const RV = { id:null, fz:+(localStorage.getItem('sehee-rvfz') || 1.3) };
 const docNo = c => { const d = new Date(c.at); return `RPT-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${c.id.slice(-3).toUpperCase()}`; };
 const ymdDot = t => { const d = new Date(t); return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`; };
+/* 11-16 A: 모양은 문서마다 — 띠 글자(doc_kind)·받는 분·결재 칸(없을 수도)·강조 상자 이름·섹션 번호·섹션 꾸밈(강조 상자·체크 목록)·제목 없는 문단 */
 function reportBlocks(c){
-  const B = [];
-  B.push(`<div class="rb-title"><div class="rb-top"><span class="rb-kind">업무 보고</span><span class="rb-no">${docNo(c)}</span></div>
-    <div class="rb-row"><div><h1>${esc(c.title)}</h1><div class="rb-sub">작성 강세희 · ${ymdDot(c.edited || c.at)}${c.basis ? ` · 근거 ${esc(c.basis)}` : ''}</div></div>
-    <table class="rb-sign"><tr><th>작성</th><th>확인</th></tr><tr><td>세희</td><td></td></tr></table></div></div>`);
-  if (c.summary) B.push(`<div class="rb-sum"><b>요약</b><p>${esc(c.summary)}</p></div>`);
+  const B = [], signs = c.signs || ['작성', '확인'];
+  B.push(`<div class="rb-title"><div class="rb-top"><span class="rb-kind">${esc(c.docKind || '업무 보고')}</span><span class="rb-no">${docNo(c)}</span></div>
+    <div class="rb-row"><div><h1>${esc(c.title)}</h1>${c.to ? `<div class="rb-to">받는 분 · ${esc(c.to)}</div>` : ''}<div class="rb-sub">작성 강세희 · ${ymdDot(c.edited || c.at)}${c.basis ? ` · 근거 ${esc(c.basis)}` : ''}</div></div>
+    ${signs.length ? `<table class="rb-sign"><tr>${signs.map(x => `<th>${esc(x)}</th>`).join('')}</tr><tr>${signs.map((x, i) => `<td>${i ? '' : '세희'}</td>`).join('')}</tr></table>` : ''}</div></div>`);
+  if (c.summary) B.push(`<div class="rb-sum"><b>${esc(c.summaryLabel || '요약')}</b><p>${esc(c.summary)}</p></div>`);
   if (c.highlights && c.highlights.length) B.push(`<div class="rb-hl">${c.highlights.map(h => `<div><span>${esc(h.label)}</span><b>${esc(h.value)}</b></div>`).join('')}</div>`);
-  (c.sections || []).forEach((x, i) => {
-    B.push(`<h2 class="rb-h"><i>${i + 1}</i>${esc(x.heading)}</h2>`);
-    if (x.text) for (const t of x.text.split(/\n+/).filter(Boolean)) B.push(`<p class="rb-p">${esc(t)}</p>`);
-    if (x.points && x.points.length) B.push(`<ul class="rb-ul">${x.points.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`);
+  let n = 0;
+  (c.sections || []).forEach(x => {
+    const box = x.style === 'box' ? ' rb-box' : '';
+    if (x.heading) B.push(`<h2 class="rb-h${c.numbered === false ? ' nonum' : ''}">${c.numbered === false ? '' : `<i>${++n}</i>`}${esc(x.heading)}</h2>`);
+    if (x.text) for (const t of x.text.split(/\n+/).filter(Boolean)) B.push(`<p class="rb-p${box}">${esc(t)}</p>`);
+    if (x.points && x.points.length) B.push(`<ul class="rb-ul${box}${x.style === 'check' ? ' rb-ck' : ''}">${x.points.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`);
     if (x.rows && x.rows.length) B.push(`<div class="rb-tw">${tableHtml({ columns:x.cols, rows:x.rows }, 0)}</div>`);
   });
   B.push('<div class="rb-end">— 끝 —</div>');

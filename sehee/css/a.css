@@ -18,3 +18,8 @@
 #say{position:relative}
 /* 11-16 A: 🖼️ 사진 단추 — 📎 바로 옆 */
 .saybub .clip.pic{margin-left:-4px;font-size:1.1rem}
+/* 11-16 A: 문서 모양 고르기 — 받는 분 줄, 번호 없는 제목, 강조 상자 섹션, 체크 목록 */
+.rb-to{font-size:.82em;color:#3a3427;margin:.15em 0 .1em;font-weight:600}
+.rb-h.nonum{padding-left:0}
+.rb-p.rb-box,.rb-ul.rb-box{background:#f6f2e7;border-left:.3em solid #3a6b64;padding:.45em .8em;margin-left:0;border-radius:0 .3em .3em 0}
+.rb-ul.rb-ck li::before{content:"□";background:none;transform:none;width:auto;height:auto;top:0;left:0;color:#3a6b64;font-weight:700}
