@@ -187,7 +187,7 @@ function cacheTail(msgs){
   content[k] = { ...content[k], cache_control:{ type:'ephemeral' } }; out[i] = { ...m, content }; return out;
 }
 async function systemPrompt(model){
-  const now = new Date();
+  const now = new Date(), gdLine = typeof gdContext === 'function' ? await gdContext().catch(() => '') : '';
   const cal = [...Array(8)].map((_, i) => { const d = new Date(now); d.setDate(d.getDate() + i);
     return `${['오늘 ', '내일 ', '모레 '][i] || ''}${ymd(d)}(${WD[d.getDay()]})`; }).join(', ');
   const todayLabel = (secById('today') || secs()[0]).label, schedLabel = (secById('sched') || secs()[1] || secs()[0]).label;
@@ -282,7 +282,7 @@ ${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스
 
   점심은 식당에서 11시 50분에 줄을 서요.
 ${SYS_CUT}
-지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
+${gdLine ? gdLine + '\n' : ''}지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
 ${sendPanOn() ? await panContext() : await touchedContext()}
@@ -375,6 +375,7 @@ function TOOL_DEFS(){
     ] : []),
     ...BOARD_TOOLS(),
     ...PEOPLE_TOOLS(),
+    ...(typeof DRIVE_TOOLS === 'function' ? DRIVE_TOOLS() : []),   /* 11-15 A 구글 드라이브(js/gdrive.js) */
     ...BONUS.tools,
     ...(askMode() === 'need' || (typeof O !== 'undefined' && O.updTour) ? [{ name:'ask_boss', description:'작업을 하다가 정말 막혀서(틀리면 처음부터 다시 해야 하는 것) 보스에게 지금 물어야 할 때만. 한 작업에 최대 2번. 고를 것 2~4개를 짧게.', schema:{ type:'object', properties:{
       question:{ type:'string', description:'한 문장 질문' }, options:{ type:'array', items:{ type:'string' }, description:'고를 것 2~4개, 각각 짧게' } }, required:['question'] } }] : []),
@@ -428,6 +429,7 @@ async function runToolCore(c){
   if (c.name === 'keep_photo') return bpTool(a);   /* 11-15 B: 보드 사진첩(js/bdpics.js) */
   if (/_card$/.test(c.name)) return runBoardTool(c);
   if (/_person$/.test(c.name) || c.name === 'edit_groups') return runPeopleTool(c);
+  if (/^drive_/.test(c.name)) return runDriveTool(c);
   if (BONUS.handlers[c.name]){ try{ return await BONUS.handlers[c.name](c.args || {}); }catch(e){ dlog('오류', `보너스 도구 ${c.name}: ${e.message}`, e.stack); return { ok:false, error:'보너스 기능 오류: ' + e.message }; } }
   try{
     if (c.name === 'add_item'){

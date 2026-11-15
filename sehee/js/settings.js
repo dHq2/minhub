@@ -2,11 +2,15 @@
 function settingsSheet(){
   const st = S.settings;
   setTimeout(fillAiLog, 0);
+  setTimeout(async () => { const n = $('gdNote'); if (!n || typeof gdState !== 'function') return; const g = await gdState();   /* 11-15 A 구글 드라이브 칸 */
+    n.parentElement.insertAdjacentHTML('beforeend', g.on ? `<button class="chip" data-sact="gdpick">파일 고르기</button>${gdHasToken() ? '' : '<button class="chip" data-sact="gdon">다시 연결</button>'}<button class="chip" data-sact="gdoff">끊기</button>` : '<button class="chip on" data-sact="gdon">연결</button>');
+    n.textContent = g.on ? `${g.email ? g.email.replace(/^(.{2}).*(@.*)$/, '$1…$2') + ' · ' : ''}연결된 파일 ${g.files.length}개` : '연결하면 고른 시트·문서를 세희가 읽고 고쳐요'; }, 0);
   openSheet(`<h4>설정</h4>
     <label class="t">계정 — 암호로 열면 판·대화·보드·설정이 다른 기기에서도 그대로 열려요</label>
     <p class="note" id="syncInfo">${esc(syncLine())}</p>
     <div class="row" id="pinChg" hidden style="margin-top:6px"><input class="free" id="pinOld" type="password" inputmode="numeric" maxlength="4" placeholder="지금 암호"><input class="free" id="pinNew" type="password" inputmode="numeric" maxlength="4" placeholder="새 암호 4자리"><button class="chip" data-sact="pinset">바꾸기</button></div>
     <div class="row" style="margin-bottom:6px"><button class="chip" data-sact="intro">처음 인사 다시 보기</button><button class="chip danger" data-sact="reset">데이터 초기화</button><span class="note" style="margin-left:6px">초기화: 판·대화·인간관계를 지우고 처음 인사부터(세희 머리 설정·로그는 남음)</span></div>
+    ${typeof gdReady === 'function' && gdReady() ? `<div class="row" id="gdRow" style="margin-bottom:6px"><b style="font-size:.85rem;margin-right:6px">구글 드라이브</b><span class="note" id="gdNote">확인 중…</span></div>` : ''}
     <div class="row"><input class="free" id="devName" placeholder="이 기기 이름 (예: 집 데스크탑, 내 폰)" value="${esc(myDevName())}" maxlength="24"><button class="chip" data-sact="devname">이름 저장</button></div>
     <div class="row"><input class="free" id="syncUrl" placeholder="계정 서버 주소 (https://…workers.dev)" value="${esc(SYNC.url)}" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="chip" data-sact="syncurl">저장</button></div>
     <div class="row" style="margin-top:6px">${SYNC.url && SYNC.on ? (SYNC.observer ? '' : '<button class="chip" data-sact="syncnow">지금 올리기</button><button class="chip" data-sact="watch">보기 전용으로 바꾸기</button><button class="chip" data-sact="pinchg">암호 바꾸기</button><button class="chip" data-sact="switch">다른 계정으로</button>') + '<button class="chip danger" data-sact="logout">' + (SYNC.observer ? '관전석 나가기' : '로그아웃') + '</button>' : SYNC.url ? '<button class="chip" data-sact="login">암호로 열기</button>' : ''}</div>
@@ -138,6 +142,9 @@ $('sheet').addEventListener('click', async e => {
   else if (a === 'switch'){ await syncFlush(); dlog('동기화', '다른 계정으로 — 이 기기만 닫음(서버 자리는 그대로)'); SYNC.token = ''; SYNC.on = false; SYNC.observer = false; SYNC.dirty.clear(); syncKeep(); location.reload(); return; }   /* v1.5.32: 이 기기에서만 나가 다른 아이디로 — 다른 기기에서 쓰는 중이어도 안 끊김 */
   else if (a === 'reset'){ if (!b.textContent.includes('한 번 더')){ b.textContent = '한 번 더 누르면 지워요 — 판·대화·인간관계 전부'; setTimeout(() => { if (b.isConnected) b.textContent = '데이터 초기화'; }, 5000); return; } b.disabled = true; b.textContent = '지우는 중…'; await dataReset(); return; }   /* 11-15 A */
   else if (a === 'intro'){ closeSheet(); introPlay(true); return; }   /* v1.5.32 */
+  else if (a === 'gdon'){ if (await gdConnect()) toast('구글 드라이브를 연결했어요'); settingsSheet(); return; }   /* 11-15 A */
+  else if (a === 'gdpick'){ if (!gdHasToken() && !(await gdConnect())) return; const d = await gdPick(''); if (d.length){ await gdAddFiles(d); toast(`${d.length}개를 세희에게 연결했어요`); } settingsSheet(); return; }
+  else if (a === 'gdoff'){ await gdDisconnect(); toast('구글 드라이브 연결을 끊었어요'); settingsSheet(); return; }
   else if (a === 'login'){ SYNC.token = ''; syncKeep(); location.reload(); return; }
   else if (a === 'logout'){ if (!b.textContent.includes('한 번 더')){ b.textContent = '한 번 더 누르면 로그아웃'; return; } syncLogout(); return; }
   else if (a === 'syncnow'){ await syncFlush(); $('syncInfo').textContent = syncLine(); return; }
