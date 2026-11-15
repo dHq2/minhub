@@ -178,5 +178,7 @@ async function gdContext(){
   const st = await gdState();
   if (!st.on) return '- 구글 드라이브: 연결 안 됨(보스가 시트·드라이브 파일을 말하면 설정 → 「구글 드라이브 연결」을 안내)';
   const names = st.files.slice(0, 12).map(f => `${f.name}(${GD_KIND(f.mime)})`).join(', ');
-  return `- 구글 드라이브: 연결됨 · 연결된 파일 ${st.files.length}개${names ? ' — ' + names : ''}. 보스가 파일·시트·문서·자료를 말하면 drive_files 로 찾고, 없으면 drive_find(검색어)로 고르기 창을 띄운다(공유받은 파일도 그 창에 있음). 시트 칸을 고치는 건 보스가 시켰을 때만`;
+  return `- 구글 드라이브: 연결됨 · 연결된 파일 ${st.files.length}개${names ? ' — ' + names : ''}. 보스가 파일·시트·문서·자료를 말하면 drive_files 로 찾고, 없으면 drive_find(검색어)로 고르기 창을 띄운다(공유받은 파일도 그 창에 있음). 시트 칸을 고치는 건 보스가 시켰을 때만`
+    + (st.files.some(f => /폴더 목록/.test(f.name || '')) ? ' · 「폴더 목록」 시트는 드라이브 폴더를 10분마다 훑어 적는 색인이다 — 새 파일·고쳐진 파일·자료를 물으면 먼저 그 시트를 drive_read 로 본다(「목록」 탭은 새 것부터, 「내용」 탭에 문서·시트 내용). 거기 내용이 "골라 주면 읽음"인 파일(사진·PDF 등)만 drive_find 로 고르기 창을 띄운다' : '');
+  /* 11-15 A: 앱스 스크립트 색인 시트(tools/drive-scan.gs)를 고르면 폴더 전체를 아는 길 */
 }
