@@ -319,7 +319,7 @@ ${webOn() && !AI.noWeb ? `- 웹 검색(web_search): 날씨·영업시간·뉴스
   점심은 식당에서 11시 50분에 줄을 서요.
 매 차례 보스 말 바로 앞에 앱이 '지금 상황'(시각·판·보드·사람)을 붙인다 — 보스가 쓴 말이 아니라 지금 상태다.
 ${SYS_CUT}
-${gdLine ? gdLine + '\n' : ''}지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각${clockOff() ? '(기준 시각 — 보스가 맞춘 세계 시각)' : ''}. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
+${gdLine ? gdLine + '\n' : ''}지금: ${ymd(now)} (${WD[now.getDay()]}) ${pad(now.getHours())}:${pad(now.getMinutes())} — 보스 폰의 시각. "오늘·내일·이번 주 금요일" 같은 말은 반드시 이 달력으로 날짜를 정한다: ${cal}.
 ${sendPanOn() ? `- 판 기록: 판 ${S.dates.length}개 (${S.dates[0] || S.today} ~ 오늘). 지난 일·끝낸 일·"그거 언제였지" 같은 질문은 추측하지 말고 read_pan 이나 search_history 로 찾아본 뒤 대답한다.` : ''}
 
 ${sendPanOn() ? await panContext() : await touchedContext()}
@@ -564,7 +564,7 @@ async function runToolCore(c){
 /* ── 자료 다시 읽기 (v1.5.8 · C) — 보스 말에 붙은 해독본(m.ocr)·문서(m.doc)는 대화 기록(최근 300개)에 원문 그대로 남아 있다 ── */
 function materials(){ return O.log.filter(m => m.who === 'u' && (m.ocr !== undefined || m.doc || isPaste(m))).map(m => ({ m, id:matId(m), text:m.ocr !== undefined ? m.ocr : m.doc || m.text,
   kind:m.ocr !== undefined ? (m.scanOf ? '스캔 ' + m.scanOf : `카톡 캡처 해독본 ${m.pics || ''}장`) : m.doc ? '문서 ' + (m.docs || []).join(', ') : `붙여 넣은 글 ${m.text.length.toLocaleString('ko-KR')}자` })); }   /* 11-15 B: 붙여 넣은 긴 글도 자료 */
-const matWhen = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+const matWhen = at => { const d = new Date(at + clockOff());   /* 11-16 A: 기준 시각이면 지난 말 시각도 같은 시계로 */ return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
 /* 11-15 B: 지난 대화 찾아보기 — 보스: '세희가 직접 스크롤해서 찾는 기능' */
 function readChat(a){
   const L = O.log.filter(m => !m.err && !m.hint && m.who !== 'a' && !m.hide), turns = L.filter(m => m.who === 'u').length;

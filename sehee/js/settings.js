@@ -38,7 +38,7 @@ function settingsSheet(){
     <p class="note" style="margin:4px 0 10px">개발 단계용 블랙박스예요. 대화 원문·세희 도구·누른 단추·오류·상태가 계정 서버를 거쳐 개발자 비공개 금고에 30일 남아요. 계정 서버가 허락한 계정만 받아요. 출시 전에 끕니다.</p>
     <label class="t">기준 시각(개발)</label>
     <div class="row" style="flex-wrap:wrap;gap:6px"><input id="clkIn" type="datetime-local" value="${(() => { const d = nowDate(); return ymd(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); })()}" style="flex:1;min-width:170px"><button class="chip" data-sact="clock">맞추기</button><button class="chip ${clockOff() ? '' : 'on'}" data-sact="clockoff">진짜 시계</button></div>
-    <p class="note" style="margin:4px 0 10px">${clockOff() ? `지금 세희 시계: ${ymd(nowDate())} ${pad(nowDate().getHours())}:${pad(nowDate().getMinutes())} (맞춘 시각부터 진짜 시간만큼 흘러요)` : '진짜 시계를 써요.'} 생성기 세계 시각에 맞추면 세희가 그 날·그 시각을 기준으로 판과 대답을 정해요.</p>
+    <p class="note" style="margin:4px 0 10px">${clockOff() ? `지금 세희 시계: ${ymd(nowDate())} ${pad(nowDate().getHours())}:${pad(nowDate().getMinutes())} (맞춘 시각부터 진짜 시간만큼 흘러요)` : '진짜 시계를 써요.'} 생성기 세계 시각에 맞추면 세희가 그 날·그 시각을 기준으로 판과 대답을 정해요. 세희는 맞춘 줄 모르고 진짜 시계로 알아요 — 지난 말 시각, 파일 이름 속 날짜·시각(Screenshot_날짜_시각 등)도 같은 시계로 옮겨서 보여 줘요. 생성기 시각과 어긋나면 다시 「맞추기」.</p>
     <label class="t">글꼴</label>
     <div class="row" style="flex-wrap:wrap;gap:6px">${FONTS.map(f => `<button class="chip ${(st.font || 'sys') === f.v ? 'on' : ''}" data-sact="font" data-v="${f.v}" style="font-family:${f.body.replace(/"/g, "'")}">${f.t}</button>`).join('')}</div>
     <p class="note" style="margin:4px 0 10px">${esc((FONTS.find(x => x.v === (st.font || 'sys')) || FONTS[0]).d)}. 기본 말고는 처음 고를 때 인터넷에서 글꼴을 한 번 받아 와요.</p>

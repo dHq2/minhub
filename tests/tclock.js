@@ -1,0 +1,32 @@
+const { chromium } = require('playwright');
+// tclock v1.0 (2026-11-16, A) 기준 시각을 맞춰도 세희는 모르게 — 지침에 '기준·세계' 말 없음, 지난 말 시각·파일 이름 속 시각도 같은 시계, 캡처 해독은 폰 상태 표시줄 시계를 안 적음
+(async () => { const b = await chromium.launch(); let bad = 0;
+  const check = (n, ok, info) => { console.log((ok ? 'OK   ' : 'FAIL ') + n + (info ? ' · ' + info : '')); if (!ok) bad++; };
+  const ctx = await b.newContext({ viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true, locale:'ko-KR', serviceWorkers:'block' });
+  const p = await ctx.newPage();
+  await p.goto('http://localhost:8765/sehee/#office'); await p.waitForFunction(() => typeof O !== 'undefined' && O.loaded);
+  /* 진짜 06:20:07 에 찍은 캡처를 세계 시각 12:53 에 맞춘 상태로 */
+  await p.evaluate(() => { const real = new Date(); real.setHours(6, 20, 7, 0); const world = new Date(real); world.setHours(12, 53, 0, 0);
+    localStorage.setItem('sehee.clock', JSON.stringify({ base:world.getTime(), at:real.getTime() })); });
+  const sp = await p.evaluate(() => systemPrompt('claude-haiku-5-5'));
+  check('지침에 「기준 시각·세계 시각」 같은 말 없음', !/기준 시각|세계 시각|세계/.test(sp));
+  check('지침의 지금은 맞춘 시계', /지금: \d{4}-\d\d-\d\d \(.\) \d\d:\d\d — 보스 폰의 시각\./.test(sp));
+  const ymd = await p.evaluate(() => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; });
+  await p.locator('#sayPicFile').setInputFiles([{ name:`Screenshot_${ymd}_062007_Chrome.jpg`, mimeType:'image/jpeg', buffer:require('fs').readFileSync(__dirname + '/img/short.png') }]);
+  await p.waitForTimeout(300);
+  const nm = await p.evaluate(() => ATT.map(a => a.name).join(','));
+  check('파일 이름 속 시각도 같은 시계로(06:20:07 → 12:53:00)', nm === `Screenshot_${ymd}_125300_Chrome.jpg`, nm);
+  await p.evaluate(() => { ATT.length = 0; renderTray(); });
+  await p.locator('#sayPicFile').setInputFiles([{ name:'견적비교_v2.xlsx.png', mimeType:'image/png', buffer:require('fs').readFileSync(__dirname + '/img/short.png') }]);
+  await p.waitForTimeout(200);
+  check('시각 없는 이름은 그대로', (await p.evaluate(() => ATT.map(a => a.name).join(','))) === '견적비교_v2.xlsx.png');
+  await p.evaluate(() => { ATT.length = 0; renderTray(); });
+  const w = await p.evaluate(() => { const real = new Date(); real.setHours(6, 21, 0, 0); return matWhen(real.getTime()); });
+  check('지난 말 시각(read_chat)도 같은 시계', / 12:53$/.test(w) || / 12:54$/.test(w), w);
+  check('캡처 해독 지침: 폰 상태 표시줄 시계는 안 적음', await p.evaluate(() => /상태 표시줄\(시계·배터리·알림 아이콘\)은 적지 않는다/.test(OCR_SYS)));
+  await p.evaluate(() => localStorage.removeItem('sehee.clock'));
+  await p.locator('#sayPicFile').setInputFiles([{ name:`Screenshot_${ymd}_062007_Chrome.jpg`, mimeType:'image/jpeg', buffer:require('fs').readFileSync(__dirname + '/img/short.png') }]);
+  await p.waitForTimeout(200);
+  check('진짜 시계면 이름 안 건드림', (await p.evaluate(() => ATT.map(a => a.name).join(','))) === `Screenshot_${ymd}_062007_Chrome.jpg`);
+  console.log('CLOCK bad', bad); await b.close(); if (bad) process.exit(1);
+})();

@@ -230,15 +230,24 @@ function renderTray(){
     + (ATT.length ? `<small>${ATT.some(a => a.reading) ? '문서 읽는 중 — 다 읽으면 보낼 수 있어요' : ATT.some(a => a.kind === 'img') ? '긴 캡처도 잘라서 읽어요 · 보내면 시작' : '보내면 세희가 읽고 정리해요'}</small>` : '');
   growSay();
 }
+/* 11-16 A: 기준 시각을 맞춰 둔 기기면, 파일 이름 속 날짜·시각(Screenshot_20261116_062007 등)도 같은 시계로 옮긴다 — 세희가 두 시계를 보지 않게 */
+function clockName(n){
+  const off = clockOff(); if (!off) return n;
+  return String(n).replace(/(20\d\d)(-?)(\d\d)\2(\d\d)([_\- ]?)(\d\d)([.\-:]?)(\d\d)(?:\7(\d\d))?/, (all, y, s1, mo, d, s2, h, s3, mi, se) => {
+    const t = new Date(+y, +mo - 1, +d, +h, +mi, +(se || 0)); if (isNaN(t) || +h > 23 || +mi > 59) return all;
+    const w = new Date(t.getTime() + off), p2 = x => String(x).padStart(2, '0');
+    return `${w.getFullYear()}${s1}${p2(w.getMonth() + 1)}${s1}${p2(w.getDate())}${s2}${p2(w.getHours())}${s3}${p2(w.getMinutes())}${se !== undefined ? s3 + p2(w.getSeconds()) : ''}`;
+  });
+}
 async function addFiles(files){
   let skipped = 0;
   for (const f of files){
     if (/^image\//.test(f.type)){
       if (ATT.filter(a => a.kind === 'img').length >= MAX_PICS){ skipped++; continue; }
-      ATT.push({ kind:'img', file:f, url:URL.createObjectURL(f), name:f.name || '사진' });
+      ATT.push({ kind:'img', file:f, url:URL.createObjectURL(f), name:clockName(f.name || '사진') });
     } else {
       /* 문서 (v0.8) — 칸에 먼저 '읽는 중'으로 넣고, 다 읽으면 글자 수로 바뀐다 */
-      const name = f.name || '문서', a = { kind:'txt', name, text:'', reading:true, status:'읽는 중', head:extOf(name) !== 'txt' };
+      const name = clockName(f.name || '문서'), a = { kind:'txt', name, text:'', reading:true, status:'읽는 중', head:extOf(name) !== 'txt' };
       ATT.push(a); renderTray();
       const drop = () => { const i = ATT.indexOf(a); if (i >= 0) ATT.splice(i, 1); };
       try{
