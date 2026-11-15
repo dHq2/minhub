@@ -59,7 +59,7 @@ async function gdPick(query){
   await gdLoad(); if (!gdHasToken()) throw Object.assign(new Error('need_connect'), { need:true });
   const P = google.picker;
   return new Promise(resolve => {
-    const mine = new P.DocsView(P.ViewId.DOCS).setIncludeFolders(false).setOwnedByMe(true), shared = new P.DocsView(P.ViewId.DOCS).setOwnedByMe(false), recent = new P.DocsView(P.ViewId.RECENTLY_PICKED);
+    const mine = new P.DocsView(P.ViewId.DOCS).setIncludeFolders(true).setOwnedByMe(true), shared = new P.DocsView(P.ViewId.DOCS).setIncludeFolders(true).setOwnedByMe(false), recent = new P.DocsView(P.ViewId.RECENTLY_PICKED);
     if (query){ mine.setQuery(query); shared.setQuery(query); }
     const b = new P.PickerBuilder().setOAuthToken(GD.token).addView(mine).addView(shared).addView(recent).enableFeature(P.Feature.MULTISELECT_ENABLED)
       .setLocale('ko').setTitle(query ? `「${query}」 찾기 — 세희에게 줄 파일을 골라 주세요` : '세희에게 줄 파일을 골라 주세요')
@@ -88,8 +88,14 @@ async function gdRead(f){
   if (/google-apps\.(document|presentation)/.test(f.mime)){ const r = await gdFetch(`https://www.googleapis.com/drive/v3/files/${id}/export?mimeType=text/plain`); return await r.text(); }
   const r = await gdFetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`);
   const blob = await r.blob(), file = new File([blob], f.name || 'file', { type:f.mime || blob.type });
-  const d = await readDocFile(file);
-  return d.kind === 'txt' ? d.text : '(그림·스캔이라 글자를 바로 못 읽음 — 보스에게 사진으로 보내 달라고)';
+  /* 11-15 A: 사진·스캔 PDF 는 캡처 해독(ocr.js·job.js)과 같은 길로 글자를 읽는다 */
+  let pics;
+  if (/^image\//.test(file.type) || /\.(png|jpe?g|webp|gif|bmp|heic)$/i.test(f.name || '')) pics = [file];
+  else { const d = await readDocFile(file); if (d.kind === 'txt') return d.text; pics = (d.files || []).slice(0, 12); }
+  if (!pics.length || typeof cutTiles !== 'function') return '(그림이라 글자를 바로 못 읽음 — 보스에게 사진으로 보내 달라고)';
+  const job = { tiles:await cutTiles(pics, null, () => {}) };
+  const o = await readTiles(job, null, () => {});
+  return o.text ? `(사진 속 글자를 읽은 것${o.failed ? ' · 일부 못 읽음' : ''})\n` + o.text : '(사진에 읽을 글자가 없음)';
 }
 async function gdFolder(){
   const st = await gdState(); if (st.folder) return st.folder;
@@ -113,7 +119,7 @@ function DRIVE_TOOLS(){
   return [
     { name:'drive_files', description:'보스가 세희에게 연결해 준 구글 드라이브 파일 목록(이름·종류·id). 시트·문서·자료 얘기가 나오면 먼저 본다', schema:{ type:'object', properties:{ find:{ type:'string', description:'이름에 들어간 낱말로 걸러 보기' } } } },
     { name:'drive_find', description:'아직 연결 안 된 파일이 필요할 때 — 검색어를 넣은 구글 「파일 고르기」 창을 보스 화면에 띄운다(내 드라이브·공유 문서함). 보스가 골라 주면 연결된다. 보스가 안 고르면 빈 목록', schema:{ type:'object', properties:{ query:{ type:'string', description:'찾을 낱말(파일 이름에 있을 법한 것). 비우면 전체' } } } },
-    { name:'drive_read', description:'연결된 파일 내용을 읽는다(시트는 탭마다 줄 번호와 칸, 문서·PDF·엑셀은 글). find 를 주면 그 낱말이 든 줄만', schema:{ type:'object', properties:{ id:{ type:'string' }, find:{ type:'string' } }, required:['id'] } },
+    { name:'drive_read', description:'연결된 파일 내용을 읽는다(시트는 탭마다 줄 번호와 칸, 문서·PDF·엑셀은 글, 사진·스캔은 사진 속 글자를 읽어 옴 — 조금 걸림). find 를 주면 그 낱말이 든 줄만', schema:{ type:'object', properties:{ id:{ type:'string' }, find:{ type:'string' } }, required:['id'] } },
     { name:'drive_write_sheet', description:'연결된 구글 시트의 칸에 쓴다. 보스가 시트를 고치라고 했을 때만. range 예: 시트1!B3 또는 시트1!A:D(append 와 함께)', schema:{ type:'object', properties:{ id:{ type:'string' }, range:{ type:'string' }, values:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'줄들[[칸, 칸], …]' }, append:{ type:'boolean', description:'true 면 맨 아래에 줄 추가' } }, required:['id', 'range', 'values'] } },
     { name:'drive_save', description:'보스 드라이브의 「세희」 폴더에 새 구글 문서나 시트를 만든다(보고서·정리표 남기기). 만든 파일은 연결 목록에 들어간다', schema:{ type:'object', properties:{ name:{ type:'string' }, as:{ type:'string', enum:['doc', 'sheet'] }, text:{ type:'string', description:'문서 내용(as=doc)' }, rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'시트 줄들(as=sheet)' } }, required:['name', 'as'] } },
   ];

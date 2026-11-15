@@ -1,3 +1,4 @@
+/* tgdrive v1.1 (2026-11-15, A) — v1.1: 사진 파일은 캡처 해독 길로 글자 읽기 */
 /* tgdrive v1.0 (2026-11-15, A) — 구글 드라이브 연결: 가짜 구글(로그인 창·고르기 창·드라이브·시트 API)로 도구 다섯 개와 다시 연결 단추 */
 const { chromium } = require('playwright');
 (async () => {
@@ -12,6 +13,7 @@ const { chromium } = require('playwright');
     if (u.includes('/upload/drive/v3/files')) return J(route, { id:'doc9', name:'가상 보고서', mimeType:'application/vnd.google-apps.document', webViewLink:'https://docs.google.com/x' });
     if (u.includes('/drive/v3/files?fields=id,name')) return J(route, { id:'sh9', name:'가상 정리표', mimeType:'application/vnd.google-apps.spreadsheet', webViewLink:'https://docs.google.com/y' });
     if (u.includes('/drive/v3/files?fields=id')) return J(route, { id:'folder1' });
+    if (u.includes('/files/p1?alt=media')) return route.fulfill({ status:200, headers:{ 'content-type':'image/png', 'access-control-allow-origin':'*' }, body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64') });
     if (u.includes('/export?mimeType=text/plain')) return route.fulfill({ status:200, headers:{ 'content-type':'text/plain', 'access-control-allow-origin':'*' }, body:'가상 문서 첫 줄\n둘째 줄 안전교육 목요일' });
     return J(route, {}); });
   await ctx.route('https://sheets.googleapis.com/**', async route => { const r = route.request(), u = r.url(); calls.push(r.method() + ' ' + decodeURIComponent(u.replace('https://sheets.googleapis.com', '')));
@@ -46,6 +48,9 @@ const { chromium } = require('playwright');
   const r6 = await run('drive_save', { name:'가상 보고서', as:'doc', text:'오늘 한 일' }); check('「세희」 폴더에 문서 저장', r6.ok && r6.id === 'doc9' && calls.some(c => c.startsWith('POST /drive/v3/files?fields=id')));
   const r7 = await run('drive_save', { name:'가상 정리표', as:'sheet', rows:[['a', 'b']] }); check('폴더는 한 번만 만듦 · 시트 저장', r7.kind === '시트' && calls.filter(c => c.startsWith('POST /drive/v3/files?fields=id ') || c === 'POST /drive/v3/files?fields=id').length === 1);
   check('만든 파일도 연결 목록에', (await run('drive_files', {})).total === 4);
+  await p.evaluate(() => { window._pickWith = [{ id:'p1', name:'가상 영수증.png', mimeType:'image/png', url:'u3' }]; window.readTiles = async job => ({ text:'[가상] 합계 12,000원 · 조각 ' + job.tiles.length, failed:0 }); });
+  await run('drive_find', { query:'영수증' }); const rp = await run('drive_read', { id:'p1' });
+  check('사진은 사진 속 글자를 읽어 옴', rp.ok && /사진 속 글자/.test(rp.text) && /합계 12,000원 · 조각 1/.test(rp.text), JSON.stringify(rp).slice(0, 160));
   await p.evaluate(() => { GD.token = 'OLD'; });
   const r8 = await run('drive_read', { id:'s1' }); await p.waitForTimeout(200);
   check('열쇠가 끝나면 다시 연결 안내 + 단추', r8.need_connect === true && await p.locator('#gdChip').isVisible(), JSON.stringify(r8).slice(0, 160) + ' chip=' + await p.locator('#gdChip').count());
@@ -53,7 +58,7 @@ const { chromium } = require('playwright');
   await p.locator('#gdChip').click(); await p.waitForTimeout(300);
   check('단추로 다시 연결 → 단추 사라짐', (await p.evaluate(() => gdHasToken())) && !(await p.locator('#gdChip').count()));
   await p.evaluate(() => settingsSheet()); await p.waitForTimeout(300);
-  check('설정 칸', /연결된 파일 4개/.test(await p.locator('#gdNote').textContent()) && await p.locator('[data-sact="gdpick"]').count() === 1, await p.locator('#gdNote').textContent());
+  check('설정 칸', /연결된 파일 5개/.test(await p.locator('#gdNote').textContent()) && await p.locator('[data-sact="gdpick"]').count() === 1, await p.locator('#gdNote').textContent());
   await p.screenshot({ path:'/tmp/tgdrive-set.png' });
   console.log('GDRIVE bad', bad); await b.close(); if (bad) process.exit(1);
 })();
