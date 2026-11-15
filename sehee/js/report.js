@@ -6,6 +6,7 @@ const docNo = c => { const d = new Date(c.at); return `RPT-${d.getFullYear()}${p
 const ymdDot = t => { const d = new Date(t); return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`; };
 /* 11-16 A: 모양은 문서마다 — 띠 글자(doc_kind)·받는 분·결재 칸(없을 수도)·강조 상자 이름·섹션 번호·섹션 꾸밈(강조 상자·체크 목록)·제목 없는 문단 */
 function reportBlocks(c){
+  if (c.kind === 'doc') return mdBlocksHtml(c.md);   /* 11-16 A(v1.5.60): 양식 없는 문서 — 세희가 쓴 그대로 */
   const B = [], signs = c.signs || ['작성', '확인'];
   B.push(`<div class="rb-title"><div class="rb-top"><span class="rb-kind">${esc(c.docKind || '업무 보고')}</span><span class="rb-no">${docNo(c)}</span></div>
     <div class="rb-row"><div><h1>${esc(c.title)}</h1>${c.to ? `<div class="rb-to">받는 분 · ${esc(c.to)}</div>` : ''}<div class="rb-sub">작성 강세희 · ${ymdDot(c.edited || c.at)}${c.basis ? ` · 근거 ${esc(c.basis)}` : ''}</div></div>
@@ -25,8 +26,8 @@ function reportBlocks(c){
 }
 function pageFrame(c, n, N, W, fz){
   return `<div class="pg" style="width:${W}px;height:${Math.round(W * 1.4142)}px;--u:${(W / 600).toFixed(4)};--fz:${fz}">
-    <div class="pg-head"><span>세희 · 내부 문서</span><span>${esc(c.title)}</span></div><div class="pg-body"></div>
-    <div class="pg-foot"><span>${docNo(c)}</span><span>${n} / ${N}</span></div></div>`;
+    <div class="pg-head">${c.kind === 'doc' ? '<span></span>' : `<span>세희 · 내부 문서</span><span>${esc(c.title)}</span>`}</div><div class="pg-body${c.kind === 'doc' ? ' md' : ''}"></div>
+    <div class="pg-foot">${c.kind === 'doc' ? '<span></span>' : `<span>${docNo(c)}</span>`}<span>${n} / ${N}</span></div></div>`;
 }
 /* 블록을 한 쪽씩 채워 넣다가 넘치면 다음 쪽으로. 제목만 쪽 끝에 홀로 남지 않게 같이 넘긴다 */
 function paginate(c, W, fz){
@@ -56,10 +57,10 @@ function rvRender(){
 }
 async function rvOpen(id){
   await boardLoad(); RV.id = id;
-  $('rv').classList.add('on'); $('rvScroll').scrollTop = 0;
+  $('rv').classList.add('on'); document.body.classList.add('rv-on'); $('rvScroll').scrollTop = 0;
   requestAnimationFrame(rvRender);
 }
-function rvClose(){ $('rv').classList.remove('on'); RV.id = null; }
+function rvClose(){ $('rv').classList.remove('on'); document.body.classList.remove('rv-on'); RV.id = null; }
 $('rv').addEventListener('click', async e => {
   const b = e.target.closest('[data-rv]'); if (!b) return;
   const a = b.dataset.rv, c = (BOARD.cards || []).find(x => x.id === RV.id);
@@ -67,6 +68,7 @@ $('rv').addEventListener('click', async e => {
   else if (a === 'big' || a === 'small'){ RV.fz = Math.max(0.8, Math.min(1.8, +(RV.fz + (a === 'big' ? 0.15 : -0.15)).toFixed(2))); localStorage.setItem('sehee-rvfz', RV.fz); rvRender(); }
   else if (a === 'copy' && c) navigator.clipboard.writeText(reportText(c)).then(() => toast('보고서 글을 복사했어요'), () => toast('복사가 막혔어요'));
   else if (a === 'print') window.print();
+  else if (a === 'file' && c) fileMenu(c.id);   /* 11-16 A */
   else if (a === 'del' && c){
     if (!b.classList.contains('armed')){ b.classList.add('armed'); b.textContent = '한 번 더'; setTimeout(() => { b.classList.remove('armed'); b.textContent = '떼기'; }, 2500); return; }
     BOARD.cards = BOARD.cards.filter(x => x !== c); await boardSave(); rvClose(); boardRender();
@@ -80,8 +82,8 @@ function thumbHtml(c){
   return `<div class="th-wrap"><div class="th-scale">${pageFrame(c, 1, '…', W, 1).replace('<div class="pg-body"></div>', `<div class="pg-body">${blocks.slice(0, 8).join('')}</div>`)}</div></div>`;
 }
 function reportsHtml(){
-  const rs = (BOARD.cards || []).filter(c => c.kind === 'report');
+  const rs = (BOARD.cards || []).filter(c => c.kind === 'report' || c.kind === 'doc');
   if (!rs.length) return '<div class="wb-empty">아직 보고서가 없어요.<br>자료를 넘기고 "보고서로 정리해줘"라고 하면 여기 쌓여요.</div>';
-  if (RL.view === 'list') return `<div class="rl-list">${rs.map(c => `<div class="rl-row" data-rep="${c.id}"><div class="rl-ico">📄</div><div class="rl-x"><b>${esc(c.title)}</b><span>${ymdDot(c.edited || c.at)} · ${(c.sections || []).length}개 항목${c.basis ? ' · ' + esc(c.basis) : ''}</span><p>${esc((c.summary || '').slice(0, 90))}</p></div></div>`).join('')}</div>`;
+  if (RL.view === 'list') return `<div class="rl-list">${rs.map(c => `<div class="rl-row" data-rep="${c.id}"><div class="rl-ico">📄</div><div class="rl-x"><b>${esc(c.title)}</b><span>${ymdDot(c.edited || c.at)} · ${c.kind === 'doc' ? (c.md || '').length.toLocaleString('ko-KR') + '자' : (c.sections || []).length + '개 항목'}${c.basis ? ' · ' + esc(c.basis) : ''}</span><p>${esc((c.kind === 'doc' ? mdPlain(c.md || '').replace(/^#+\s*/gm, '') : c.summary || '').slice(0, 90))}</p></div></div>`).join('')}</div>`;
   return `<div class="rl-gal">${rs.map(c => `<div class="rl-card" data-rep="${c.id}">${thumbHtml(c)}<b>${esc(c.title)}</b><span>${ymdDot(c.edited || c.at)}</span></div>`).join('')}</div>`;
 }

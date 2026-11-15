@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-// tdoc v1.0 (2026-11-16, A) 문서 모양을 매번 고른다 — 띠 글자·받는 분·결재 칸(바꾸기·없애기)·강조 상자 이름·번호 끄기·강조 섹션·체크 목록·제목 없는 문단, 고치기(update_card)로 모양까지, 문서 양식 기억(save/remove_doc_style)
+// tdoc v1.1 (2026-11-16, A) — v1.1: 지침 문구 바뀐 것 따라감(양식 없는 문서 v1.5.60) · v1.0: 문서 모양을 매번 고른다 — 띠 글자·받는 분·결재 칸(바꾸기·없애기)·강조 상자 이름·번호 끄기·강조 섹션·체크 목록·제목 없는 문단, 고치기(update_card)로 모양까지, 문서 양식 기억(save/remove_doc_style)
 (async () => { const b = await chromium.launch(); let bad = 0;
   const check = (n, ok, info) => { console.log((ok ? 'OK   ' : 'FAIL ') + n + (info ? ' · ' + info : '')); if (!ok) bad++; };
   const ctx = await b.newContext({ viewport:{ width:412, height:915 }, isMobile:true, hasTouch:true, locale:'ko-KR', serviceWorkers:'block' });
@@ -33,6 +33,6 @@ const { chromium } = require('playwright');
   const ctx3 = await p.evaluate(async () => { await runTool({ name:'remove_doc_style', args:{ name:'이사님 보고' } }); return boardContext(); });
   check('지우면 사라짐', !/보스 문서 양식/.test(ctx3));
   const sp = await p.evaluate(() => systemPrompt('claude-haiku-5-5'));
-  check('지침: 정해진 틀 없음 · 고칠 땐 update_card', /문서 모양은 정해진 틀이 없다/.test(sp) && /update_card 로 같은 카드를 고친다/.test(sp) && !/섹션은 보통 개요 → 주요 내용/.test(sp));
+  check('지침: 정해진 틀 없음 · 고칠 땐 update_card', /정해진 틀·순서는 없다/.test(sp) && /새 카드 말고 update_card/.test(sp) && !/섹션은 보통 개요 → 주요 내용/.test(sp));
   console.log('DOC bad', bad); await b.close(); if (bad) process.exit(1);
 })();

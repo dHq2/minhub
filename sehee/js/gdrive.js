@@ -126,8 +126,10 @@ async function gdFolder(){
   st.folder = r.id; await gdSaveState(); return r.id;
 }
 async function gdSaveDoc(name, text){
+  /* 11-16 A: 마크다운(제목·목록·표·굵게)은 구글 문서에서도 모양이 살게 HTML 로 올린다 */
+  const html = typeof mdBlocksHtml === 'function' ? `<html><head><meta charset="utf-8"></head><body>${mdBlocksHtml(text).join('')}</body></html>` : '';
   const folder = await gdFolder(), bd = 'sehee' + Math.random().toString(36).slice(2);
-  const body = `--${bd}\r\ncontent-type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name, mimeType:'application/vnd.google-apps.document', parents:[folder] })}\r\n--${bd}\r\ncontent-type: text/plain; charset=UTF-8\r\n\r\n${text}\r\n--${bd}--`;
+  const body = `--${bd}\r\ncontent-type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name, mimeType:'application/vnd.google-apps.document', parents:[folder] })}\r\n--${bd}\r\ncontent-type: ${html ? 'text/html' : 'text/plain'}; charset=UTF-8\r\n\r\n${html || text}\r\n--${bd}--`;
   return gdFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,webViewLink', { method:'POST', headers:{ 'content-type':'multipart/related; boundary=' + bd }, body });
 }
 async function gdSaveSheet(name, rows){

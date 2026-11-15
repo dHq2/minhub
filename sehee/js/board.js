@@ -5,7 +5,7 @@ async function boardLoad(){ if (!BOARD.cards) BOARD.cards = ((await kvGet('board
 const boardSave = () => kvSet('board', { cards:BOARD.cards });
 const cell = v => v === null || v === undefined ? '' : String(v).slice(0, 300);
 function cardFrom(a, by){
-  const kind = ['report', 'table', 'list', 'note', 'chart', 'file'].includes(a.kind) ? a.kind : (a.sections ? 'report' : a.rows ? 'table' : a.items ? 'list' : a.values ? 'chart' : 'note');
+  const kind = ['doc', 'sheet', 'report', 'table', 'list', 'note', 'chart', 'file'].includes(a.kind) ? a.kind : (typeof a.md === 'string' ? 'doc' : Array.isArray(a.sheets) ? 'sheet' : a.sections ? 'report' : a.rows ? 'table' : a.items ? 'list' : a.values ? 'chart' : 'note');
   const c = { id:uid(), kind, title:String(a.title || '제목 없음').slice(0, 80), at:Date.now(), by:by || 'sehee' };
   return cardApply(c, a);
 }
@@ -27,6 +27,11 @@ function cardApply(c, a){
     points:Array.isArray(x && x.points) ? x.points.slice(0, 30).map(v => plainChat(cell(v))) : [],
     style:['box', 'check'].includes(x && x.style) ? x.style : '',
     cols:Array.isArray(x && x.table_columns) ? x.table_columns.slice(0, 10).map(cell) : [], rows:Array.isArray(x && x.table_rows) ? x.table_rows.slice(0, 60).map(r => (Array.isArray(r) ? r : [r]).slice(0, 10).map(cell)) : [] }));
+  /* 11-16 A(v1.5.60): 양식 없는 문서(md)·시트(sheets 탭+수식). md_replace 는 긴 문서의 한 부분만 고칠 때 */
+  if (typeof a.md === 'string') c.md = a.md.slice(0, 120000);
+  if (Array.isArray(a.md_replace) && typeof c.md === 'string') for (const r of a.md_replace){ if (r && r.find && c.md.includes(r.find)) c.md = c.md.split(r.find).join(String(r.replace ?? '')); else if (r && r.find) (c.missed = c.missed || []).push(String(r.find).slice(0, 40)); }
+  if (Array.isArray(a.sheets)) c.sheets = a.sheets.slice(0, 12).map((x, i) => ({ name:cell(x && x.name || `시트${i + 1}`).slice(0, 31), rows:(Array.isArray(x && x.rows) ? x.rows : []).slice(0, 2000).map(r => (Array.isArray(r) ? r : [r]).slice(0, 40).map(cell)),
+    formulas:(Array.isArray(x && x.formulas) ? x.formulas : []).slice(0, 500).map(f => ({ cell:cell(f && f.cell).slice(0, 8), f:cell(f && f.f).slice(0, 200) })).filter(f => f.cell && f.f) }));
   /* 11-16 A: 문서 모양을 매번 고른다 — 맨 위 띠·받는 분·결재 칸·요약 이름·섹션 번호·섹션 꾸밈 */
   if (typeof a.doc_kind === 'string') c.docKind = plainChat(a.doc_kind).slice(0, 16);
   if (typeof a.to === 'string') c.to = plainChat(a.to).slice(0, 60);
@@ -39,16 +44,22 @@ function cardApply(c, a){
 }
 async function boardAdd(c, note){
   await boardLoad(); BOARD.cards.unshift(c); await boardSave();
-  if (note !== false){ O.log.push({ who:'a', board:true, text:`화이트보드에 붙였어요 — ${c.title}`, at:Date.now() }); renderLog(); saveLog(); }
+  if (note !== false){ O.log.push({ who:'a', board:true, card:c.id, text:`화이트보드에 붙였어요 — ${c.title}`, at:Date.now() }); renderLog(); saveLog(); }
   return c;
 }
 async function boardContext(){
   await boardLoad();
   const ds = (await kvGet('docstyle')) || [], dl = ds.length ? '\n보스 문서 양식(기억한 것 — 그 종류 문서를 쓸 때 따른다. 이번에 보스가 따로 말하면 그 말이 먼저):\n' + ds.map(x => `- ${x.name}: ${x.rule}`).join('\n') : '';   /* 11-16 A */
   if (!BOARD.cards.length) return '화이트보드: 비어 있음' + dl;
-  return '화이트보드 카드 (최근 것부터):\n' + BOARD.cards.slice(0, 20).map(c => `- #${c.id} ${({ report:'보고서', table:'표', list:'목록', note:'메모', chart:'차트', file:'문서' })[c.kind]} '${c.title}'${c.rows ? ` (${c.rows.length}행)` : c.items ? ` (${c.items.length}개)` : ''}`).join('\n') + dl;
+  return '화이트보드 카드 (최근 것부터):\n' + BOARD.cards.slice(0, 20).map(c => `- #${c.id} ${({ doc:'문서', sheet:'시트', report:'보고서', table:'표', list:'목록', note:'메모', chart:'차트', file:'받은 문서' })[c.kind]} '${c.title}'${c.rows ? ` (${c.rows.length}행)` : c.items ? ` (${c.items.length}개)` : c.md ? ` (${c.md.length.toLocaleString('ko-KR')}자)` : c.sheets ? ` (탭 ${c.sheets.map(x => x.name + ' ' + Math.max(0, x.rows.length - 1) + '행').join(', ')})` : ''}`).join('\n') + dl;
 }
 /* 11-16 A: 보고서·문서 칸 — make_card 와 update_card 가 같이 쓴다(고칠 때도 모양을 다 바꿀 수 있게) */
+const FREE_PROPS = {   /* 11-16 A(v1.5.60): 양식 없는 문서·시트 */
+    md:{ type:'string', description:'문서 본문 전체(kind=doc) — 마크다운으로 자유롭게: # 제목, ## 소제목, 문단, - 목록, 1. 번호, - [ ] 체크, | 표 |, > 인용, **굵게**, ---. 정해진 틀 없이 이 문서에 맞게' },
+    md_replace:{ type:'array', description:'긴 문서의 일부만 고칠 때(update_card) — 원문에 있는 글 그대로 find, 바꿀 글 replace', items:{ type:'object', properties:{ find:{ type:'string' }, replace:{ type:'string' } }, required:['find', 'replace'] } },
+    sheets:{ type:'array', description:'시트 탭들(kind=sheet) — 엑셀로 받을 표. 첫 줄은 머리', items:{ type:'object', properties:{
+      name:{ type:'string', description:'탭 이름' }, rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'줄들(칸 글자). 숫자는 숫자로(1,234 가능). 수식 칸에도 계산한 값을 넣는다' },
+      formulas:{ type:'array', description:'엑셀 수식(선택) — 엑셀로 받으면 살아 있는 수식이 된다. 예: {cell:"D6", f:"SUM(D2:D5)"}', items:{ type:'object', properties:{ cell:{ type:'string' }, f:{ type:'string' } }, required:['cell', 'f'] } } }, required:['name', 'rows'] } } };
 const DOC_PROPS = {
     doc_kind:{ type:'string', description:'맨 위 검은 띠 글자 — 문서 종류에 맞게. 예: 업무 보고, 이사님 보고, 회의록, 공지문, 견적 비교, 메일 초안, 확인서, 체크리스트, 인수인계' },
     to:{ type:'string', description:'받는 분(선택). 예: 마정란 이사님, 거래처 담당자, 팀 전체' },
@@ -65,8 +76,8 @@ const DOC_PROPS = {
       table_columns:{ type:'array', items:{ type:'string' }, description:'섹션 안 표 머리(선택)' },
       table_rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'섹션 안 표 내용(선택)' } } } } };
 const BOARD_TOOLS = () => [
-  { name:'make_card', description:'화이트보드에 카드를 붙인다. 표·목록·비교·수치 정리·차트·긴 메모, 보고서·문서(kind=report — 모양은 매번 문서에 맞게 고른다)를 만들 때 쓴다(판 항목과 별개).', schema:{ type:'object', properties:{
-    kind:{ type:'string', enum:['report', 'table', 'list', 'note', 'chart'], description:'report=보고서·문서(아무 서류), table=표, list=목록, note=메모, chart=막대·선 차트' },
+  { name:'make_card', description:'화이트보드에 카드를 붙인다 — 문서·서류·보고서(kind=doc, 마크다운 자유 작성), 엑셀용 시트(kind=sheet), 표·목록·차트·메모. 보스는 카드에서 Word·엑셀·PDF·구글 문서/시트 파일로 받는다(판 항목과 별개).', schema:{ type:'object', properties:{
+    kind:{ type:'string', enum:['doc', 'sheet', 'table', 'list', 'note', 'chart', 'report'], description:'doc=문서·서류·보고서 아무거나(md 에 자유롭게 — 기본), sheet=엑셀로 받을 시트(탭·수식), report=예전 칸 나눈 보고서(쓰지 않아도 됨), table=표, list=목록, note=메모, chart=막대·선 차트' },
     title:{ type:'string', description:'짧은 제목' },
     columns:{ type:'array', items:{ type:'string' }, description:'표 머리(열 이름)' },
     rows:{ type:'array', items:{ type:'array', items:{ type:'string' } }, description:'표 내용. 행마다 칸 글자 배열' },
@@ -76,13 +87,13 @@ const BOARD_TOOLS = () => [
     labels:{ type:'array', items:{ type:'string' }, description:'차트 가로축 이름들' },
     values:{ type:'array', items:{ type:'number' }, description:'차트 값들(labels 와 같은 순서)' },
     unit:{ type:'string', description:'값 단위. 예: 명, 원, %' },
-    ...DOC_PROPS }, required:['kind', 'title'] } },
-  { name:'update_card', description:'화이트보드 카드를 고친다. 바꿀 것만 넣는다(표는 columns·rows, 문서는 sections 를 통째로). 보고서·문서를 고쳐 달라면 새로 만들지 말고 이걸로 — 띠·받는 분·결재 칸·순서·말투까지 다 바꿀 수 있다.', schema:{ type:'object', properties:{
+    ...FREE_PROPS, ...DOC_PROPS }, required:['kind', 'title'] } },
+  { name:'update_card', description:'화이트보드 카드를 고친다 — 문서·시트를 고쳐 달라면 새로 만들지 말고 이걸로. 문서는 md 통째로 또는 md_replace(일부만), 시트는 sheets 통째로, 표는 columns·rows.', schema:{ type:'object', properties:{
     id:{ type:'string', description:'카드 id (# 없이)' }, title:{ type:'string' },
     columns:{ type:'array', items:{ type:'string' } }, rows:{ type:'array', items:{ type:'array', items:{ type:'string' } } },
     items:{ type:'array', items:{ type:'string' } }, text:{ type:'string' },
     labels:{ type:'array', items:{ type:'string' } }, values:{ type:'array', items:{ type:'number' } },
-    ...DOC_PROPS }, required:['id'] } },
+    ...FREE_PROPS, ...DOC_PROPS }, required:['id'] } },
   { name:'save_doc_style', description:'보스의 문서 양식을 기억한다 — 보스가 "앞으로 ○○는 이렇게", "이 양식 기억해", 예시 문서를 주며 "이렇게 써"라고 할 때. 같은 이름이면 덮어쓴다.', schema:{ type:'object', properties:{
     name:{ type:'string', description:'양식 이름. 예: 이사님 보고, 주간 회의록, 거래처 메일' }, rule:{ type:'string', description:'규칙 — 순서·칸·말투·길이·받는 분·결재 칸 등 보스 말 그대로 요약(300자 안)' } }, required:['name', 'rule'] } },
   { name:'remove_doc_style', description:'기억한 문서 양식을 지운다. 보스가 지우라고 할 때만.', schema:{ type:'object', properties:{ name:{ type:'string' } }, required:['name'] } },
@@ -107,9 +118,9 @@ async function runBoardTool(c){
   }
   if (!card) return { ok:false, error:'그 id의 카드가 없음' };
   if (c.name === 'update_card'){
-    cardApply(card, a); await boardSave(); BOARD.changed = card.id;
-    O.log.push({ who:'a', board:true, text:`화이트보드 카드를 고쳤어요 — ${card.title}`, at:Date.now() }); renderLog(); saveLog();
-    return { ok:true, id:card.id };
+    delete card.missed; cardApply(card, a); const missed = card.missed; delete card.missed; await boardSave(); BOARD.changed = card.id;
+    O.log.push({ who:'a', board:true, card:card.id, text:`화이트보드 카드를 고쳤어요 — ${card.title}`, at:Date.now() }); renderLog(); saveLog();
+    return { ok:true, id:card.id, ...(missed ? { not_found:missed, note:'md_replace 의 find 가 문서에 그대로 없어서 못 바꾼 곳 — read_card 로 원문을 보고 다시' } : {}) };
   }
   if (c.name === 'remove_card'){
     BOARD.cards = BOARD.cards.filter(x => x !== card); await boardSave(); if (DW.open === 'board') boardRender();
@@ -151,6 +162,7 @@ function reportHtml(c){
       ${x.rows && x.rows.length ? tableHtml({ columns:x.cols, rows:x.rows }, 0) : ''}</section>`).join('')}</article>`;
 }
 function reportText(c){
+  if (c.kind === 'doc') return mdPlain(c.md || '');   /* 11-16 A */
   const L = [c.title, ''];
   if (c.summary) L.push('요약', c.summary, '');
   (c.sections || []).forEach((x, i) => { L.push(`${i + 1}. ${x.heading}`); if (x.text) L.push(x.text); for (const t of x.points || []) L.push('· ' + t);
@@ -159,7 +171,8 @@ function reportText(c){
   return L.join('\n').trim();
 }
 function cardBody(c, full){
-  if (c.kind === 'report') return full ? reportHtml(c) : thumbHtml(c);
+  if (c.kind === 'report' || c.kind === 'doc') return full && c.kind === 'report' ? reportHtml(c) : thumbHtml(c);
+  if (c.kind === 'sheet') return sheetHtml(c, full);
   if (c.kind === 'table') return tableHtml(c, full ? 0 : 5);
   if (c.kind === 'list') return `<ul class="cl">${(full ? c.items || [] : (c.items || []).slice(0, 6)).map(x => `<li>${esc(x)}</li>`).join('')}</ul>${!full && (c.items || []).length > 6 ? `<small class="more">${c.items.length}개</small>` : ''}`;
   if (c.kind === 'chart') return chartSvg(c, full ? 340 : 200, full ? 200 : 120);
@@ -179,7 +192,7 @@ function boardRender(){
   $('wbMemo').hidden = RL.mode !== 'board'; $('wbPic').hidden = RL.mode !== 'pics'; $('wbGrid').classList.remove('bp-on');
   if (RL.mode === 'pics'){ $('wbGrid').classList.remove('rl'); bpRender(); return; }   /* 11-15 B: 보드 사진첩(js/bdpics.js) */
   if (RL.mode === 'reports'){
-    const n = cs.filter(c => c.kind === 'report').length; $('wbCount').textContent = n ? `보고서 ${n}건` : '';
+    const n = cs.filter(c => c.kind === 'report' || c.kind === 'doc').length; $('wbCount').textContent = n ? `문서 ${n}건` : '';
     $('wbGrid').classList.add('rl'); $('wbGrid').innerHTML = reportsHtml(); requestAnimationFrame(fitThumbs); return;
   }
   $('wbGrid').classList.remove('rl');
@@ -289,7 +302,7 @@ function btFold(box, key){
   const fit = () => document.body.style.setProperty('--pth', pt.offsetHeight + 'px');
   if (window.ResizeObserver) new ResizeObserver(fit).observe(pt); fit();
 })();
-const tsvOf = c => c.kind === 'report' ? reportText(c) : c.kind === 'table' ? [c.columns || [], ...(c.rows || [])].filter(r => r.length).map(r => r.map(x => String(x).replace(/[\t\n]/g, ' ')).join('\t')).join('\n')
+const tsvOf = c => c.kind === 'report' || c.kind === 'doc' ? reportText(c) : c.kind === 'sheet' ? ((c.sheets || [])[0] || { rows:[] }).rows.map(r => r.map(x => String(x).replace(/[\t\n]/g, ' ')).join('\t')).join('\n') : c.kind === 'table' ? [c.columns || [], ...(c.rows || [])].filter(r => r.length).map(r => r.map(x => String(x).replace(/[\t\n]/g, ' ')).join('\t')).join('\n')
   : c.kind === 'list' ? (c.items || []).map(x => '• ' + x).join('\n') : c.kind === 'chart' ? (c.labels || []).map((l, i) => `${l}\t${(c.values || [])[i] ?? ''}`).join('\n') : (c.text || '');
 function csvOf(c){
   const rows = c.kind === 'table' ? [c.columns || [], ...(c.rows || [])].filter(r => r.length) : c.kind === 'chart' ? (c.labels || []).map((l, i) => [l, (c.values || [])[i]]) : (c.items || [c.text || '']).map(x => [x]);
@@ -300,6 +313,7 @@ function cardSheet(id){
   openSheet(`<h4>${esc(c.title)}</h4><div class="card-full k-${c.kind}">${cardBody(c, true)}</div>
     <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px">
       <button class="chip" data-bact="copy" data-id="${c.id}">${c.kind === 'table' ? '표 복사 (엑셀에 붙여넣기)' : '글 복사'}</button>
+      <button class="chip on" data-bact="file" data-id="${c.id}">파일로 받기 (Word·엑셀·PDF·구글)</button>
       ${c.kind === 'report' ? `<button class="chip" data-bact="print" data-id="${c.id}">인쇄 · PDF로 저장</button>` : ''}
       ${c.kind === 'table' || c.kind === 'chart' ? `<button class="chip" data-bact="csv" data-id="${c.id}">엑셀 파일(CSV) 받기</button>` : ''}
       <button class="chip" data-bact="brief" data-id="${c.id}">세희 브리핑</button>
@@ -311,12 +325,13 @@ $('wbGrid').addEventListener('click', e => {
   const r = e.target.closest('[data-rep]'); if (r){ rvOpen(r.dataset.rep); return; }
   const el = e.target.closest('[data-card]'); if (!el) return;
   const c = (BOARD.cards || []).find(x => x.id === el.dataset.card);
-  if (c && c.kind === 'report') rvOpen(c.id); else cardSheet(el.dataset.card);
+  if (c && (c.kind === 'report' || c.kind === 'doc')) rvOpen(c.id); else cardSheet(el.dataset.card);
 });
 $('sheet').addEventListener('click', async e => {
   const b = e.target.closest('[data-bact]'); if (!b) return;
   const c = (BOARD.cards || []).find(x => x.id === b.dataset.id); if (!c) return;
   const a = b.dataset.bact;
+  if (a === 'file'){ fileMenu(c.id); return; }   /* 11-16 A */
   if (a === 'copy') navigator.clipboard.writeText(tsvOf(c)).then(() => { $('bnote').textContent = '복사했어요. 엑셀·시트·카톡에 붙여넣으면 돼요.'; }, () => { $('bnote').textContent = '복사가 막혔어요.'; });
   else if (a === 'csv'){ const u = URL.createObjectURL(new Blob([csvOf(c)], { type:'text/csv;charset=utf-8' })), l = document.createElement('a'); l.href = u; l.download = (c.title.replace(/[\\/:*?"<>|]/g, '') || 'sehee') + '.csv'; l.click(); setTimeout(() => URL.revokeObjectURL(u), 2000); }
   else if (a === 'print'){

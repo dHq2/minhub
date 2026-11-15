@@ -23,3 +23,21 @@
 .rb-h.nonum{padding-left:0}
 .rb-p.rb-box,.rb-ul.rb-box{background:#f6f2e7;border-left:.3em solid #3a6b64;padding:.45em .8em;margin-left:0;border-radius:0 .3em .3em 0}
 .rb-ul.rb-ck li::before{content:"□";background:none;transform:none;width:auto;height:auto;top:0;left:0;color:#3a6b64;font-weight:700}
+/* 11-16 A(v1.5.60): 양식 없는 문서(마크다운) · 시트 카드 · 대화창 카드 단추 */
+.pg-body.md{line-height:1.75;color:#1d1a14}
+.md-h{margin:.9em 0 .4em;line-height:1.35;color:#1d1a14}
+.md-h1{font-size:1.55em;font-weight:800;margin-top:.2em;padding-bottom:.25em;border-bottom:2px solid #2b2417}
+.md-h2{font-size:1.18em;font-weight:700;padding-bottom:.15em;border-bottom:1px solid #e1dccd}
+.md-h3{font-size:1.04em;font-weight:700}.md-h4{font-size:.98em;font-weight:700;color:#3a3427}
+.md-p{margin:0 0 .6em}.md-p code,.md-li code{background:#f2eee3;padding:0 .25em;border-radius:.2em;font-size:.92em}
+.md-hr{border:0;border-top:1px solid #cfc8b6;margin:.9em 0}
+.md-q{margin:0 0 .7em;padding:.45em .85em;background:#f6f2e7;border-left:.3em solid #3a6b64;border-radius:0 .3em .3em 0}
+.md-li{display:flex;gap:.45em;margin:0 0 .22em;padding-left:calc(.2em + var(--lv,0) * 1.3em)}
+.md-li .md-b{flex:0 0 auto;min-width:1em;color:#3a6b64;font-weight:700}.md-li.md-ck .md-b{font-weight:400}
+.md-tw{overflow-x:auto;margin:.2em 0 .8em}.md-t{border-collapse:collapse;width:100%;font-size:.92em}
+.md-t th,.md-t td{border:1px solid #cfc8b6;padding:.3em .5em;text-align:left;vertical-align:top}.md-t th{background:#efebe0;font-weight:700}
+.ct.sh td.n{text-align:right;font-variant-numeric:tabular-nums}.ct.sh td.f{background:#e9f3ee;color:#1f5a46}
+.sh-tab{margin:12px 0 4px;font-size:.9rem}
+.act .actb{margin-left:6px;padding:2px 9px;font-size:.78rem;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit}
+/* 11-16 A: 문서 보기(.rv) 위에서 「파일」 차림을 열면 차림이 위로 */
+body.rv-on .veil{z-index:240}body.rv-on .sheet{z-index:241}

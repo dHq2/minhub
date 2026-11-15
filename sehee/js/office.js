@@ -94,7 +94,7 @@ function renderLog(){
   const el = $('log');
   let lastS = -1; O.log.forEach((m, i) => { if (m.who === 's') lastS = i; });
   el.innerHTML = O.log.map((m, i) => m.hide ? '' : m.who === 'a'
-      ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
+      ? (m.board ? `<div class="act read">🗂 ${esc(m.text)}${m.card ? ` <button class="actb" data-opencard="${m.card}">열기</button><button class="actb" data-filecard="${m.card}">파일로 받기</button>` : ''}</div>` : m.read ? `<div class="act read">🔎 ${esc(m.text)}</div>`
         : `<div class="act${m.undone ? ' undone' : ''}">📌 ${esc(m.text)}${m.undone ? ' · 되돌림' : ` <button data-undo="${i}">되돌리기</button>`}</div>`)
       : `<div class="msg ${m.who}${m.err ? ' err' : ''}${i === lastS && !O.busy ? ' last' : ''}">${msgInner(m, i)}<div class="mfoot">${msgTools(m, i, lastS)}<time>${hhmm(m.at)}</time></div></div>`).join('')
     + (O.busy ? (O.live && O.live.text && liveRest(parseFace(O.live.text).t) ? `<div class="msg s last live">${esc(liveRest(parseFace(O.live.text).t))}</div>`
@@ -312,6 +312,8 @@ function msgTools(m, i, lastS){
 /* 아이콘 누르기 — 대화창·판 대화 상자·보드 대화 상자가 같이 쓴다 */
 function msgToolClick(e){
   const t = e.target;
+  const oc = t.closest('[data-opencard]'); if (oc){ const c = (BOARD.cards || []).find(x => x.id === oc.dataset.opencard); if (!c) toast('그 카드는 떼어졌어요'); else if (c.kind === 'report' || c.kind === 'doc') rvOpen(c.id); else cardSheet(c.id); return true; }   /* 11-16 A */
+  const fc = t.closest('[data-filecard]'); if (fc){ boardLoad().then(() => (BOARD.cards || []).some(x => x.id === fc.dataset.filecard) ? fileMenu(fc.dataset.filecard) : toast('그 카드는 떼어졌어요')); return true; }
   const rt = t.closest('[data-retry]'); if (rt){ O.regenOpen = null; retryLast(Number(rt.dataset.retry)); return true; }
   const rg = t.closest('[data-regen]'); if (rg){ O.regenOpen = null; regenLast(rg.dataset.regen); return true; }
   const rm = t.closest('[data-regenmenu]'); if (rm){ const at = Number(rm.dataset.regenmenu); O.regenOpen = O.regenOpen === at ? null : at; O.delArm = null; renderLog(); renderPanTalk(); return true; }
