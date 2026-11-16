@@ -56,7 +56,7 @@ const SEED = { v: 3, id: '20261116-test', at: 1, nodes: [{ id: 'n1', kind: 'brie
     want(nl.n >= 4 && /Coding/.test(nl.f) && parseFloat(nl.f.split('|')[1]) <= 13 && !nl.pen && !nl.meta, `${name} 수첩 목록형 ${JSON.stringify(nl)}`);
     await p.screenshot({ path: `/tmp/martin-${name}.png` });
     /* 11-16 B: 마틴 페르소나(설정 v2) — 프롬프트 맨 앞에 사람·성격·운용 원칙, 정해진 말투 없음 */
-    want(await p.evaluate(() => { const t = String(window.__lastp); return t.startsWith('너는 "Dr. 마틴"이다.') && t.includes('강력계 형사') && t.includes('말버릇') && !t.includes('하드보일드 반말'); }), `${name} 프롬프트에 마틴 페르소나`);
+    want(await p.evaluate(() => { const t = String(window.__lastp); return t.startsWith('너는 "Dr. 마틴"이다.') && t.includes('강력계 형사') && t.includes('말버릇') && t.includes('의문이 아주 많다') && !t.includes('하드보일드 반말'); }), `${name} 프롬프트에 마틴 페르소나`);
     /* 11-16 B: 난제 지도 */
     const pz = await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('drmartin.v2')); return s.probs; });
     want(pz && pz[0].root && pz[0].hy[0].t === '가설' && pz[0].hy[0].id === 'h1', `${name} 옛 가설 띠 → 뿌리 난제 가설 ${pz && pz[0].hy.map(h => h.id + ':' + h.t)}`);
