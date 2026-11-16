@@ -14,3 +14,6 @@
 #nbBody .nl-x{opacity:.6;color:#8b8172;font-size:15px}
 #nbBody .nl-x:active{color:#d0262f;opacity:1}
 #nbBody .nl{cursor:default}
+
+/* 11-16 C: 자료 사진은 원래 색 그대로(보스) — app.css 의 흑백·세피아·대비 보정을 걷는다. 판의 사진 카드·인물 프사·대화 썸네일·첨부 칩 */
+.k-person .ph, .k-person .ph img, .k-photo img, .msg .ph img, .chip img{filter:none}
