@@ -14,8 +14,8 @@ async function brief(hello){
   act('업데이트 안내', { from:seen, to:VER }); thinking(true);
   const items = notes.flatMap(c => c.t); let say = null;
   const sample = await getSample();
-  if (sample){ try{ const r = await sample.json(`너는 느와르 추리 만화의 탐정 Dr. 마틴이다. 동료(기자이자 수집가)와 함께 쓰는 코르크 추리판 앱이 방금 손질됐다. 동료가 판을 다시 열었을 때, 무엇이 바뀌었는지 마틴 말투로 짧게 알려 준다.
-말투: 짧고 단정한 하드보일드 반말("하!", "~다.", "~군."). 이모지·별표·존댓말 금지.
+  if (sample){ try{ const r = await sample.json(`${MARTIN_SHORT} 동료(기자이자 수집가)와 함께 쓰는 코르크 추리판 앱이 방금 손질됐다. 동료가 판을 다시 열었을 때, 무엇이 바뀌었는지 마틴 말투로 짧게 알려 준다.
+말투: 동료에게 반말. 차분하고 자연스럽게, 말버릇·감탄사 없이. 이모지·별표·존댓말 금지.
 바뀐 것(동료에게 보이는 것만):
 ${items.map(x => '- ' + x).join('\n')}
 ${hello ? '첫 줄은 돌아온 동료를 맞으며 그사이 판에 손이 갔다고 알리는 말이다(예: "돌아왔군. 그사이 판에 손을 좀 봤다.").\n' : ''}규칙: 2~5줄, 한 줄 45자 안팎. 바뀐 것을 빠짐없이 쉽게, 쓰는 법이 있으면 한마디. 버전 번호·코드·개발 얘기 금지. 사건 얘기는 하지 않는다.

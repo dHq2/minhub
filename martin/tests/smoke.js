@@ -1,6 +1,7 @@
 // 마틴 기본 점검 v1.3 (2026-11-16, A·D·B) — 가짜 마틴(window.claude 대역)으로 열기·옛 수첩 옮기기·한 턴·수첩 적기·저장까지. 폰 화면만(보스: 모바일 기준).
 // v1.0 → v1.1: 컴 화면 빼고 폰만
 // v1.1 → v1.2 (D): 수첩 목록형 확인 줄
+// (11-16 B) 마틴 페르소나(설정 v2): 프롬프트 맨 앞
 // v1.2 → v1.3 (11-16 B): 난제 지도 — 옛 가설 띠 옮기기·pz 적용(새 난제·가설·이력·풀림·합침·없어짐)·서랍·난제 지정·붙잡기
 // 쓰는 법: bash martin/tests/run.sh   (스크린샷은 /tmp/martin-*.png — 꼭 직접 열어 본다)
 const { chromium } = require('playwright');
@@ -54,6 +55,8 @@ const SEED = { v: 3, id: '20261116-test', at: 1, nodes: [{ id: 'n1', kind: 'brie
     const nl = await p.evaluate(() => { const li = [...document.querySelectorAll('#nbBody .nl[data-n], #nbBody .nl[data-card]')]; const f = li.length ? getComputedStyle(li[0]).fontFamily + '|' + getComputedStyle(li[0]).fontSize : ''; return { n: li.length, f, pen: [...document.querySelectorAll('#nbBody *')].some(e => /Pen Script/.test(getComputedStyle(e).fontFamily)), meta: document.querySelectorAll('#nbBody .mt').length }; });
     want(nl.n >= 4 && /Coding/.test(nl.f) && parseFloat(nl.f.split('|')[1]) <= 13 && !nl.pen && !nl.meta, `${name} 수첩 목록형 ${JSON.stringify(nl)}`);
     await p.screenshot({ path: `/tmp/martin-${name}.png` });
+    /* 11-16 B: 마틴 페르소나(설정 v2) — 프롬프트 맨 앞에 사람·성격·운용 원칙, 정해진 말투 없음 */
+    want(await p.evaluate(() => { const t = String(window.__lastp); return t.startsWith('너는 "Dr. 마틴"이다.') && t.includes('강력계 형사') && t.includes('말버릇') && !t.includes('하드보일드 반말'); }), `${name} 프롬프트에 마틴 페르소나`);
     /* 11-16 B: 난제 지도 */
     const pz = await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('drmartin.v2')); return s.probs; });
     want(pz && pz[0].root && pz[0].hy[0].t === '가설' && pz[0].hy[0].id === 'h1', `${name} 옛 가설 띠 → 뿌리 난제 가설 ${pz && pz[0].hy.map(h => h.id + ':' + h.t)}`);
