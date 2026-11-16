@@ -2,7 +2,7 @@
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
-설계(화면·프롬프트·저장 방식)는 프로젝트 자료 「claude/마틴-추리판-엔진-v0.2.md」(엔진 메모)에 있다.
+설계(화면·프롬프트·저장 방식)는 프로젝트 자료 「claude/마틴-추리판-엔진-v0.3.md」(엔진 메모 — 한 턴의 흐름·프롬프트 칸 순서도 여기)에 있다.
 
 ## 0. 이 방은 누구인가 — 첫 답에서 할 일
 - 방 이름으로 자리를 정한다: 처음 마틴을 만든 방 = A, 보스가 새로 연 마틴 방은 보스가 부르는 대로 B·C·D. 모르면 보스에게 한 번만 묻는다.
@@ -67,10 +67,13 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/pvtalk.js | 사진 위에 뜨는 대화(v0.13.0, C) — 사진 크게 보기의 「대화 보기」: 사진은 입력줄 바로 위까지 가득, 최근 대화 6줄을 #pvTalk 에 베껴 반투명으로(손가락 통과), 입력줄·칩은 #app.pvtalk 로 사진 위에 |
 | js/trail.js | 행동 기록 자세히(v0.13.2, A) — act() 의 id 를 이름표 refs 로(actRefs)·어디서 where·판/사진 확대·굴림을 손짓 끝에 한 줄·기록 행동 탭 actDetail·프롬프트 trailText. act 에 id·ids·ev·on 을 넣으면 이름표는 저절로 붙는다 |
 | js/xref.js | 맞춰 보기(v0.14.2, C) — 판독문·글 원문에서 날짜·시각·「이름(시각): 말」 줄을 뽑아 xrefText()(전체 시계·인물별 발언·판독문 없는 자료·판 빚·모순 쓸기 지시)를 buildPrompt 고리에, xrClockLines() 를 수첩 「전체 시계」 칸에. 판독문 모양이 바뀌면 xrLine 을 |
+| js/clock.js | 사건 시계(v0.14.3, D) — S.clock{ms,start,sess}, 앱이 보이고 초점이 있을 때만 흐름, 위 띠 #clk(누르면 들인 시간 0.01초), log 를 감싸 모든 기록에 clk, 프롬프트 clockText()(사건 시각·들인 시간·동료 쪽 현실 시각), clockTick()·clockMs() |
+| js/recap.js | 사건 복기본(v0.13.3~, D) — 계정+기기 기록을 사건 id 로 모아 11칸 글(recapGather·recapText), 텍스트 파일로 받기(recapSave, downloads), 날것 JSON(recapRaw) |
 | js/wallclock.js · img/clock.webp · img/clock-cap.webp | 벽시계(A) — 판 왼쪽 위에 늘 걸려 사건 시계(D 의 S.clock / clockMs())를 따라 도는 그림 시계. 바늘은 SVG, 누르면 크게(clockSheet() 가 있으면 그쪽) |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
+| tests/v15.js | 한 판 점검 — 네 방 몫(기억·자료 형편·맞춰 보기·사건 시계·벽시계·행동 기록·복기본)이 가짜 사건 하나에서 같이 도는지. 프롬프트 칸을 더하거나 옮기면 여기 KEYS·순서 줄도 고친다 |
 | handoff/ | 할일.md(찜) · from-a~d.md(알림) |
 | CHANGELOG.md | 변경 기록 |
 
@@ -87,7 +90,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 
 ## 5. 올리기 (GitHub → 아티팩트, 이 순서 그대로)
 1. `git pull --rebase`
-2. `bash martin/tests/run.sh` — 문법 검사 + 가짜 마틴 점검. 바꾼 기능은 smoke.js 에 확인 줄을 더한다. 스크린샷 /tmp/martin-폰.png 를 직접 열어 가림·잘림·겹침을 본다. 통과 표시만 믿지 말고 출력 줄을 읽는다.
+2. `bash martin/tests/run.sh` — 문법 검사 + 가짜 마틴 점검(전부는 600초를 넘으니 반씩: 앞 13개 · 나머지 — 프롬프트·턴 흐름을 건드렸으면 `run.sh v15` 를 꼭). 바꾼 기능은 smoke.js 에 확인 줄을 더한다. 스크린샷 /tmp/martin-폰.png 를 직접 열어 가림·잘림·겹침을 본다. 통과 표시만 믿지 말고 출력 줄을 읽는다.
 3. 번호: js/ver.js 의 VER 을 +1(작은 것 끝자리, 보스가 체감할 큰 기능은 가운데 자리). 다른 곳엔 번호를 쓰지 않는다.
 4. 기록: CHANGELOG.md 맨 위에 `## v0.5.1 · B · 날짜 · 요약` + '- ' 줄. 보스 눈에 보이는 변화면 js/changes.js 맨 아래 `];` 앞에 `{ v:'v0.5.1', t:['보스 말로 짧게', …] },` 한 줄(내부 일은 넣지 않음 — 마틴이 개발 얘기를 하지 않게).
 5. 커밋·푸시: 메시지 `마틴 v0.5.1 — B: 요약` (+ 끝에 Co-Authored-By 줄). 밀리면 `git pull --rebase` → 남이 같은 번호를 이미 썼으면 내 번호를 다음 것으로 고치고(ver.js·changes.js·CHANGELOG) 2번부터 다시.
@@ -127,4 +130,5 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.16 | 2026-11-17 | B: 파일 지도에 js/mode.js(자료 형편), 인물 설정 v2.2 |
 | v1.17 | 2026-11-17 | C: 파일 지도에 js/xref.js(맞춰 보기), 수첩 정돈(합치기·덮기) |
 | v1.18 | 2026-11-17 | A: 파일 지도에 js/wallclock.js·img/clock(벽시계), 마틴 인물 설정 v2.3(다른 세계의 의뢰·현실 시간) |
+| v1.19 | 2026-11-17 | A: v0.15.0 — 엔진 메모 v0.3 으로, 한 판 점검 tests/v15.js, 점검은 반씩, 파일 지도에 빠져 있던 js/clock.js·js/recap.js(D) |
 | v1.20 | 2026-11-17 | B: 파일 지도에 js/habits.js(수사 버릇·실 why·cut·꼬리표 자리), doOp 에 cut (v0.14.5) — v1.19 는 A 의 v0.15.0 몫(엔진 메모 v0.3·tests/v15.js)이 쓸 번호 |

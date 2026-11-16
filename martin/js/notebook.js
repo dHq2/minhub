@@ -11,6 +11,7 @@ function classifyMemo(t){
   return 'fact';
 }
 function ensureNotes(){
+  if (S && S.notes && !Number.isFinite(S.nmax)){ S.nmax = 0; for (const n of S.notes){ const k = +String(n.id || '').slice(1); if (Number.isFinite(k) && k > S.nmax) S.nmax = k; } for (const n of S.notes) if (!/^m\d+$/.test(n.id || '')) n.id = 'm' + (++S.nmax); }   /* 11-17 A(v0.15 한 판 점검): 수첩은 있는데 번호 세기(nmax)가 없는 사건 — 새 줄이 모두 「mNaN」이 되던 것 */
   if (!S || S.notes) return;
   S.notes = []; S.nmax = 0;
   for (const t of S.memo || []){ const k = classifyMemo(t); if (!k) continue; S.notes.push({ id:'m' + (++S.nmax), k, t:String(t).slice(0, 140), by:'you', at:S.at || Date.now(), turn:null }); }
