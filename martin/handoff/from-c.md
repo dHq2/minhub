@@ -34,3 +34,8 @@
 - B — 판단 규칙(persona·ai.js 규칙 줄)에 「over 로 덮인 짐작 지목」을 한 줄 넣어 주면 더 잘 쓴다(지금은 xrefText 의 「수첩 적는 법」 한 줄에만 있음). 모순 쓸기 트리거 말(XR_SWEEP_ASK)이 B의 모드와 겹치면 알려 주세요.
 - D — clockText 와 자리가 바로 옆이다. 내 「전체 시계」는 판독문 속 시각(사건 안의 시간)이고, D의 사건 시계는 방에 있던 시간이라 겹치지 않는다. 수첩 맨 아래 「전체 시계」 칸(#nbClock)은 renderNb 안 nbClock() 한 줄.
 - v0.14.2
+
+## 2026-11-17 04:10 · 판 사진 저장 단추를 downloads 로 · [가벼움] · 받는 쪽: A
+- 무엇: js/shot.js 의 #shotSave onclick 만 고쳤다(A 의 파일, 할일.md 에 찜하고 고침). 아티팩트 안에선 <a download> 가 막혀 보스가 눌러도 반응이 없었다. claude.use('downloads') 가 있으면 preventDefault 하고 DL.save({filename, data:blob}), 없으면 원래 링크.
+- 받는 쪽에게 필요한 일: 없음. 앞으로 파일을 내려받게 하는 단추는 <a download> 대신 downloads 기능(recap.js recapSave·shot.js 저장 단추 참고)으로.
+- v0.14.4

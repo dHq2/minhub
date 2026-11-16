@@ -1,4 +1,4 @@
-// 판 사진 점검 v1.0 (2026-11-16, A) — 「판 사진」: 판 전체를 화면 배율과 상관없이 고화질 PNG 로 · 카드·실·코르크가 그림에 들어감 · 고른 카드 테두리는 안 찍힘 · 저장 링크 · 복사. 폰 화면.
+// 판 사진 점검 v1.1 (2026-11-17, C — v1.1: 저장 단추가 아티팩트에선 downloads 저장 창으로) · v1.0 (2026-11-16, A) — 「판 사진」: 판 전체를 화면 배율과 상관없이 고화질 PNG 로 · 카드·실·코르크가 그림에 들어감 · 고른 카드 테두리는 안 찍힘 · 저장 링크 · 복사. 폰 화면.
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const SEED = { v: 3, id: '20261116-shot', at: 1, nodes: [{ id: 'n1', kind: 'brief', title: '가짜 사진 사건', note: '', x: 1000, y: 820, r: 0 }, { id: 'n3', kind: 'person', title: '김지민', note: '총무', x: 700, y: 1050, r: 2 }, { id: 'n4', kind: 'clue', title: '열쇠', note: '반납', x: 1500, y: 1100, r: -3 }, { id: 'n5', kind: 'doc', title: '경비 일지', note: '23:20 출입', x: 1200, y: 1300, r: 4 }],
@@ -30,6 +30,14 @@ const SEED = { v: 3, id: '20261116-shot', at: 1, nodes: [{ id: 'n1', kind: 'brie
   await p.screenshot({ path: '/tmp/martin-shot-sheet.png' });
   await p.click('#shotCopy'); await p.waitForTimeout(800);
   const msg = await p.evaluate(() => $('#shotMsg').textContent); want(/복사했다|막혀/.test(msg), '복사 단추 ' + msg);
+  /* 11-17 C: 저장 — 아티팩트(가짜 downloads)에선 링크 대신 저장 창으로, 이름·PNG 그대로 */
+  await p.evaluate(() => { window.__saved = null; const u = window.claude.use; window.claude.use = async n => n === 'downloads' ? { save: async o => { window.__saved = { name: o.filename, type: o.data.type, size: o.data.size }; } } : u(n); });
+  await p.click('#shotSave'); await p.waitForTimeout(600);
+  const sv = await p.evaluate(() => ({ s: window.__saved, msg: $('#shotMsg').textContent }));
+  want(sv.s && /^마틴-판-.*\.png$/.test(sv.s.name) && sv.s.type === 'image/png' && sv.s.size > 50000 && /저장했다/.test(sv.msg), '저장 단추 → 아티팩트 저장 창(downloads) ' + JSON.stringify(sv));
+  await p.evaluate(() => { window.claude.use = async n => n === 'downloads' ? { save: async () => { const e = new Error('no'); e.code = 'declined'; throw e; } } : null; });
+  await p.click('#shotSave'); await p.waitForTimeout(400);
+  want(/그만뒀다/.test(await p.evaluate(() => $('#shotMsg').textContent)), '저장 창에서 그만두면 그렇다고 알림');
   const img = await p.evaluate(async () => { const im = document.querySelector('.shotimg img'); const r = await fetch(im.src); const b = await r.blob(); return [...new Uint8Array(await b.arrayBuffer())].slice(0, 0).length || b.size; });
   require('fs').writeFileSync('/tmp/martin-shot.png', Buffer.from(await p.evaluate(async () => { const r = await fetch(document.querySelector('.shotimg img').src); const a = new Uint8Array(await r.arrayBuffer()); let s = ''; for (let i = 0; i < a.length; i += 8192) s += String.fromCharCode(...a.subarray(i, i + 8192)); return btoa(s); }), 'base64'));
   want(!errs.length, '페이지 오류 ' + JSON.stringify(errs));

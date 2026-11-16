@@ -1,6 +1,7 @@
 /* martin/js/shot.js — 판 사진(11-16 A, v0.11.0). 판 전체(모든 카드·실·꼬리표·코르크)를 지금 화면 배율과 상관없이 고화질 PNG 로 찍어 저장·복사.
    찍는 법: 화면 밖에 코르크 틀을 하나 만들고 판(#world)을 통째로 복사해 넣어, 카드가 있는 범위만큼만 잘라 html-to-image(js/lib, MIT)로 그린다.
-   배율은 3배까지(긴 변 8192px·넓이 1,600만 px 안 — 폰 브라우저 한계). 글꼴을 못 받아 오면 글꼴 없이 다시. */
+   배율은 3배까지(긴 변 8192px·넓이 1,600만 px 안 — 폰 브라우저 한계). 글꼴을 못 받아 오면 글꼴 없이 다시.
+   11-17 C: 「저장」은 아티팩트에선 downloads 기능으로(링크 download 가 막혀 반응이 없었다) */
 function shotBounds(){
   measure(); let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
   for (const n of S.nodes){ const w = (n.w || 130) * 1.08, h = (n.h || 150) * 1.08; l = Math.min(l, n.x - w / 2); r = Math.max(r, n.x + w / 2); t = Math.min(t, n.y - h / 2); b = Math.max(b, n.y + h / 2); }
@@ -45,7 +46,15 @@ async function shotSheet(){
   <a class="shotimg" href="${shotURL}" target="_blank" rel="noopener"><img src="${shotURL}" alt="판 사진"></a>
   <div class="btns" style="margin-top:10px"><a class="ghost shotbtn" id="shotSave" href="${shotURL}" download="${esc(name)}">저장</a><button class="ghost" type="button" id="shotCopy">복사</button></div>
   <p class="foot" id="shotMsg">단추가 안 먹히는 화면이면 그림을 꾹 눌러 저장·복사한다.</p>`);
-  $('#shotSave').onclick = () => act('판 사진 저장');
+  /* 11-17 C: 저장 단추가 아무 반응 없던 것 — 아티팩트는 막힌 틀(sandbox) 안이라 <a download> 가 소리 없이 막힌다. 아티팩트에선 downloads 기능(D 의 복기본 받기와 같은 길)으로
+     저장 확인 창을 띄워 저장, 그 밖(GitHub Pages 등)에선 원래대로 링크가 내려받는다. 폰: 안드로이드는 다운로드 폴더(갤러리의 Download 앨범), 아이폰은 「파일」 앱 */
+  $('#shotSave').onclick = async e => {
+    let DL = null; try{ DL = window.claude ? await Promise.race([window.claude.use('downloads'), sleep(3000).then(() => null)]) : null; }catch(x){}
+    if (!DL){ act('판 사진 저장', { way:'a' }); return; }   /* 링크가 그대로 내려받는다 */
+    e.preventDefault(); const m = $('#shotMsg'); m.textContent = '저장 창이 뜨면 「저장」을 눌러라.';
+    try{ await DL.save({ filename:name, data:r.blob }); m.textContent = `저장했다. ${name} — 폰은 다운로드 폴더(갤러리의 Download 앨범)에 들어간다. 아이폰은 「파일」 앱에 들어가니, 사진 앱에 바로 넣으려면 그림을 꾹 눌러 「사진 앱에 저장」.`; act('판 사진 저장', { name, kb:Math.round(r.blob.size / 1024) }); }
+    catch(x){ const c = x && x.code; m.textContent = c === 'declined' ? '저장을 그만뒀다.' : c === 'rate_limited' ? '저장 창이 이미 떠 있다. 잠시 뒤 다시.' : '이 화면에선 저장이 막혔다 — 그림을 꾹 눌러 저장해라.'; act('판 사진 저장 막힘', { code:c || String(x && x.message || x).slice(0, 60) }); }
+  };
   $('#shotCopy').onclick = async () => {
     try{ await navigator.clipboard.write([new ClipboardItem({ 'image/png':r.blob })]); $('#shotMsg').textContent = '복사했다. 붙여 넣으면 된다.'; act('판 사진 복사'); }
     catch(e){ $('#shotMsg').textContent = '이 화면에선 복사가 막혀 있다 — 그림을 꾹 눌러 복사해라.'; act('판 사진 복사 막힘', { msg:String(e && e.message || e).slice(0, 80) }); }
