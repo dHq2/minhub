@@ -116,7 +116,12 @@ async function turn({ text = '', atts = [], retry = false }){
     const view = pvOpenId();
     if (view){ const vn = itemOf(view), ve = /^e/.test(view) ? vn : evByCard(view), vt = /^e/.test(view) ? evTitle(vn) : vn.title; let rc = [];
       if (canImg){ try{ rc = ve ? await evCopies(ve) : await readCopies(photoSrc(vn)); }catch(e){ rc = []; } imgs.push(...rc); }
-      given += `[동료는 지금 ${ve ? '자료함 ' + ve.id + (ve.card ? '(판 ' + ve.card + ')' : '') : '판의 ' + view}「${vt}」 원본을 크게 띄워 놓고 보면서 말한다.${rc.length ? ` 그 원본을 다시 같이 보낸다${rc.length > 1 ? `(세로로 긴 사진이라 위에서부터 ${rc.length}조각)` : ''} — 동료가 가리키는 부분을 사진에서 찾아 답하고, 새로 밝혀진 게 있으면 판에 반영해도 된다.${ve ? ` 판독문이 없거나 빠진 게 있으면 read 로 ${ve.id} 판독문을 새로 써라.` : ''}` : ''}]\n`; }
+      /* 11-16 D: 띄워 둔 사진이 있다고 무조건 사진에 잇지 않게 — 카드를 고르면 사진이 저절로 뜨기도 한다(보스 판 11-16 21:44). 사진 속을 가리키는 말일 때만 사진에서 답하고, 나머지는 앞 대화를 잇는다 */
+      const vSaid = Math.max(0, S.log.filter(l => l.who === 'p').length - (PV.n0 || 0));
+      given += `[화면 — 동료 옆에 ${ve ? '자료함 ' + ve.id + (ve.card ? '(판 ' + ve.card + ')' : '') : '판의 ' + view}「${vt}」 원본이 크게 펼쳐져 있다. 판에서 카드를 고르다 저절로 뜬 것일 수도 있다.${vSaid ? ` 띄운 뒤로 동료가 ${vSaid}번 더 말했다.` : ''}${rc.length ? ` 원본을 같이 보낸다${rc.length > 1 ? `(세로로 긴 사진이라 위에서부터 ${rc.length}조각)` : ''}.` : ''}
+먼저 동료의 이 말이 무엇에 대한 것인지 가른다.
+· 사진 속(나온 사람·말·글자·물건)을 짚거나 '이거·여기·이 사람·이 말·이 사진'처럼 화면을 가리키는 말 → 사진에서 찾아 답한다. 새로 밝혀진 게 있으면 판에 반영한다.
+· 그 밖의 말 — [최근 대화]를 이어 가는 물음·의견·잡담 → 그 대화에 답한다. 사진이 떠 있다는 것만으로 화제를 사진 쪽으로 돌리지 않는다. '사진을 다시 봤다'로 말을 열지 않는다. 사진은 답에 정말 필요할 때만 한 줄 꺼낸다.${ve && rc.length ? `\n어느 쪽이든 ${ve.id} 판독문이 없거나 빠진 게 있으면 read 로 써 둔다(말로는 꺼내지 않는다).` : ''}]\n`; }
     if (!view && !photos.length && !atts.length && text.length < 300 && !/\[.+\] \[(오전|오후)/.test(text)) given = `[자료 없음 — 동료가 말만 건넸다. 대화로 답하고, 판은 동료가 고치라고 할 때만 고친다]\n` + given;
     if (photos.length) given += canImg ? `[사진 ${photos.length}장 — 이미 보드에 ${photos.join(', ')} 카드로 꽂았고, 원본은 자료함 ${evs.filter(x => evOf(x).kind === 'photo').join(', ')} 에 보관했다${Object.keys(tiles).length ? ` (세로로 긴 사진은 위에서부터 조각내 보낸다: ${Object.entries(tiles).map(([k, v]) => k + ' ' + v + '조각').join(', ')})` : ''}. 사진을 보고 edit 로 제목·메모를 붙이고 이어라. 그리고 사진마다 read 로 판독문을 꼭 남겨라.]\n` : `[사진 ${photos.length}장을 ${photos.join(', ')} 카드로 꽂았지만 너는 사진 속을 볼 수 없다. 동료에게 무엇이 찍혔는지 물어라.]\n`;
     const m = { who:'p', text:text.slice(0, 1500), at:Date.now(), photos, files:atts.filter(a => a.type === 'txt').map(a => a.name), ...(view ? { viewing:view } : {}) }; S.log.push(m); chatEl().insertAdjacentHTML('beforeend', msgHtml(m)); toEnd(true);

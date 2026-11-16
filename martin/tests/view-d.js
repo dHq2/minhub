@@ -1,4 +1,5 @@
-// 사진 크게 보기 — 바깥 눌러 닫기 점검 v1.0 (2026-11-16, D). 폰 화면.
+// 사진 크게 보기 점검 v1.1 (2026-11-16, D). 폰 화면.
+// v1.0 바깥 눌러 닫기 → v1.1 사진 띄운 채 한 말: 막 띄운 첫마디 / 띄워 둔 채 이어지는 대화를 프롬프트가 가르는지
 // 사진 위 톡 → 그대로 · 바깥 끌기 → 그대로 · 바깥 톡 → 닫힘. 스크린샷 /tmp/martin-사진보기.png
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -29,6 +30,23 @@ const SEED = { v: 3, id: '20261116-pv', at: 1, nodes: [{ id: 'n1', kind: 'brief'
   await open(); await p.waitForTimeout(600);
   await p.mouse.click(ox, r.s[3] - 20); await p.waitForTimeout(400);
   want(!(await isOpen()), '다시 열고 아래 바깥 톡 → 닫힘');
+  await p.close();
+  /* 11-16 D: 사진 띄운 채 한 말 — 프롬프트의 화면 안내 */
+  const q = await b.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2 });
+  q.on('pageerror', e => errs.push(e.message));
+  await q.addInitScript(() => { window.__pr = []; window.claude = { use: async n => { if (n !== 'sample') return null; const f = async () => ({ text: '' }); f.limits = async () => ({ images: true });
+    f.json = async pr => { window.__pr.push(String(pr)); await new Promise(r => setTimeout(r, 150)); return { say: ['그래.'] }; }; return f; } }; });
+  await q.addInitScript(s => { localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); }, JSON.stringify(SEED));
+  await q.goto(URL); await q.waitForTimeout(3000);
+  await q.evaluate(() => { const c = document.createElement('canvas'); c.width = 200; c.height = 300; c.getContext('2d').fillRect(0, 0, 200, 300);
+    S.nodes.push({ id: 'n9', kind: 'photo', title: '가짜 캡처', note: '', x: 1100, y: 1100, r: 0, mid: c.toDataURL() }); openPv('n9'); });
+  const say = async t => { await q.click('#msg'); await q.keyboard.type(t); await q.keyboard.press('Enter'); await q.waitForFunction(n => window.__pr.length >= n && !busy, (await q.evaluate(() => window.__pr.length)) + 1, { timeout: 15000 }); await q.waitForTimeout(400); return q.evaluate(() => window.__pr[window.__pr.length - 1]); };
+  let pr = await say('여기 이 사람 누구야');
+  want(/화면 — 동료 옆에/.test(pr) && /저절로 뜬 것일 수도/.test(pr) && /사진에서 찾아 답한다/.test(pr) && /\[최근 대화\]를 이어 가는/.test(pr) && !/동료가 가리키는 부분을 사진에서 찾아/.test(pr) && !/띄운 뒤로 동료가/.test(pr), '띄운 뒤 첫마디 → 두 갈래 가르기 안내(사진 쪽으로 밀지 않음)');
+  pr = await say('평소에도 가족이랑 연락했을까?');
+  want(/띄운 뒤로 동료가 1번 더 말했다/.test(pr) && /사진이 떠 있다는 것만으로 화제를 사진 쪽으로 돌리지 않는다/.test(pr) && /사진을 다시 봤다'로 말을 열지 않는다/.test(pr), '띄워 둔 채 이어지는 말 → 앞 대화 쪽 안내');
+  want(await q.evaluate(() => (S.log.filter(l => l.who === 'p').pop() || {}).viewing === 'n9'), '대화창 꼬리표 「보면서」는 그대로');
+  await q.close();
   want(!errs.length, '페이지 오류 ' + JSON.stringify(errs));
   await b.close(); console.log(bad ? `실패 ${bad}` : '전부 통과'); process.exit(bad ? 1 : 0);
 })();

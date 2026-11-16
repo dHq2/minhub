@@ -58,7 +58,8 @@ function pvRefresh(){ const id = PV.id, n = id && itemOf(id); if (!n) return; co
   $('#pvT').textContent = (isEv ? evTitle(n) : n.title) || '사진';
   $('#pvN').textContent = [isEv ? (n.card && nodeOf(n.card) || {}).note : n.note, ev && ev.read ? '판독 — ' + ev.read : ev ? '판독문이 아직 없다. 「다시 읽혀」를 누르면 마틴이 원본을 다시 읽는다.' : ''].filter(Boolean).join('\n\n'); }
 function openPv(id){ const n = itemOf(id); if (!n) return; const isEv = /^e/.test(id), ev = isEv ? n : evByCard(id), title = isEv ? evTitle(n) : n.title;   /* 11-16 A: 자료함의 원본도 여기서 — 아래엔 마틴의 판독문 */
-  act('사진 크게', { id, title }); PV.id = id; pvRefresh(); $('#pv').classList.add('on'); $('#pv').classList.remove('touched'); closeSheet(); pvLayout();
+  act('사진 크게', { id, title }); PV.id = id; PV.n0 = S.log.filter(l => l.who === 'p').length;   /* 11-16 D: 띄울 때까지 동료가 한 말 수 — 사진을 띄워 둔 채 대화가 이어지는지 마틴이 가르는 재료 */
+   pvRefresh(); $('#pv').classList.add('on'); $('#pv').classList.remove('touched'); closeSheet(); pvLayout();
   const im = $('#pvI'), src = photoSrc(n), fb = photoThumb(n); PV.iw = 0; im.style.transform = 'scale(0)';
   im.onload = () => { PV.iw = im.naturalWidth; PV.ih = im.naturalHeight; pvFit(); };
   im.onerror = () => { if (fb && im.getAttribute('src') !== fb) im.src = fb; }; im.src = src || fb;
