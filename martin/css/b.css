@@ -1,7 +1,10 @@
 /* 방 B 전용 스타일 — app.css 다음에 불러온다. 새 기능 스타일은 여기에 「11-16 B: 기능」 주석과 함께 */
 
 /* 11-16 B: 난제 지도 — 위 단추 「난제」 (단추 셋이 들어가게 폰에선 살짝 좁힘) */
-@media(max-width:430px){ .top{gap:6px} .top .tb{padding:0 9px} }
+@media(max-width:430px){ .top{gap:6px} .top .tb{padding:0 8px} }
+/* 11-17 B: 단추가 넷(자료·수첩·난제·사건)이 되면서 좁은 폰에서 글자가 세로로 꺾이던 것 — 단추는 한 줄로 고정, 줄어드는 건 왼쪽 이름(DR. MARTIN v…)만 */
+.top .tb{white-space:nowrap;flex:none}
+.top .brand{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 #btnPz{position:relative}
 #btnPz .n{position:absolute;right:-5px;top:-5px;background:var(--red);color:#fff;font:700 10px/16px "Nanum Gothic Coding",monospace;min-width:16px;height:16px;border-radius:8px;padding:0 3px}
 #btnPz .n:empty{display:none}

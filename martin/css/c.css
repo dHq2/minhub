@@ -41,3 +41,18 @@
 #nodes .card.sizing{transition:none}
 #nodes .card.sizing .szh::after{background-color:#ffd36b}
 #nodes .card.sizing .szh-c::after{background:none;border-color:#ffd36b}
+
+/* 11-17 C: 사진 크게 보기 「대화 보기」 — 대화를 사진 위에 띄운다(js/pvtalk.js). 입력줄·첨부 칩은 진짜 것을 사진 위로 올려 그대로 쓴다 */
+#app.pvtalk .chips, #app.pvtalk .bar{position:relative;z-index:41}
+.pv-talk{display:none}
+.pv:not(.full) .pv-talk{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;position:absolute;left:0;right:0;bottom:0;max-height:42%;padding:30px 10px 10px 12px;overflow:hidden;pointer-events:none;z-index:3;
+  background:linear-gradient(to bottom,rgba(5,4,3,0),rgba(5,4,3,.6) 30px,rgba(5,4,3,.78));-webkit-mask-image:linear-gradient(transparent,#000 26px);mask-image:linear-gradient(transparent,#000 26px)}
+.pv-talk .msg{max-width:86%;flex:none}
+.pv-talk .msg.m{font-size:12.5px;box-shadow:2px 2px 0 #000}
+.pv-talk .msg.p{font-size:12px;background:rgba(42,36,29,.94)}
+.pv-talk .msg time{display:none}
+.pv-talk .msg.p .txt{-webkit-line-clamp:3}
+.pv-talk .msg .ph img{width:24px;height:30px}
+.pv.doc .pv-talk{display:none}
+.pv:not(.full) .pv-hint{bottom:auto;top:8px}
+.pv.on:not(.full){background:#050403}   /* 뒤의 진짜 대화창이 비쳐 말풍선이 겹쳐 보이지 않게 */
