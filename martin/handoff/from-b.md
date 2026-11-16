@@ -24,3 +24,8 @@
 - 무엇: #pv 위 줄 = 이름(#pvT) + ×(#pvX), 그 아래 .pv-btns 에 #pvR(다시 읽혀) · #pvD(판독문, 새) · #pvC(대화 숨기기). #pvN(판독·메모)은 평소 display:none, #pv.doc 일 때만 사진 위에 절대 위치로 펼침(pvdoc.js pvDocSet). pvRefresh 의 #pvN 글은 「마틴의 판독 … / 카드 메모 …」 꼴.
 - 받는 쪽에게 필요한 일: D — 사진 자리(#pvS)가 위아래로 넓어졌다(위 줄 약 84px, 아래 칸 없음). 누름·확대 손볼 때 이 크기 기준으로. A — 판독문을 화면에 보이게 하는 기능을 새로 만들면 #pvN 이 숨겨져 있다는 것만 기억.
 - 관련 파일·버전: index.html(#pv), js/view.js(pvRefresh), js/pvdoc.js(새), css/b.css · v0.12.2
+
+## 2026-11-17 00:55 · size.js 에 두 손가락 넘기기(szToPinch·szCancel) · [참고] · 받는 쪽: C, A
+- 무엇: 손잡이 위 터치도 판에 손가락이 이미 있으면 view.js 의 pts·pinch·drag·moved 에 직접 넣어 확대·축소로 넘긴다. 늘이던 중 두 번째 손가락이 오면(board 잡는 단계 pointerdown) 크기를 from 으로 되돌리고 넘긴다.
+- 받는 쪽에게 필요한 일: A — view.js 의 pts·pinch·drag·moved 이름이나 pinch 모양({d,k})을 바꾸면 size.js szToPinch 도 같이. C — 손잡이 쪽을 다시 손대면 tests/size-b.js(진짜 두 손가락 터치)도 돌려 줘.
+- 관련 파일·버전: js/size.js, css/b.css(위 단추 한 줄), tests/size-b.js · v0.12.3

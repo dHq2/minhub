@@ -1,4 +1,5 @@
 /* martin/js/size.js — 고른 카드 크기 손잡이 (11-16 C). 고칠 땐 이 줄 아래에 「11-16 C: …」처럼 날짜·방 주석
+   11-17 B: 두 손가락 확대·축소는 손잡이를 건드리지 않음(szToPinch·szCancel)
    고른 카드(금빛 테두리, view.js 의 SELC)에 손잡이 셋:
      오른쪽 변 = 가로 늘이기·줄이기(n.cw) · 아래 변 = 세로 늘이기·줄이기(n.ch) · 왼쪽 아래 모서리 = 통째 확대·축소(n.sc)
    늘이는 동안 카드 위쪽은 제자리(핀·실이 덜 흔들림), 확대·축소는 오른쪽 위 모서리를 붙잡고 커진다. 손잡이를 두 번 누르면 그 크기만 원래대로.
@@ -45,18 +46,40 @@ function szPut(){   /* 지금 n 의 크기·자리를 카드에 바로 — 다�
   el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; n.w = Math.round(W); n.h = Math.round(H);
   if (!RS.raf) RS.raf = requestAnimationFrame(() => { if (RS) RS.raf = 0; renderStrings(); renderMarks(); });
 }
+/* 11-17 B: 두 손가락 확대·축소는 손잡이를 건드리지 않는다(보스).
+   ① 판에 이미 손가락이 있는데 두 번째 손가락이 손잡이에 닿으면 — 크기 조절을 시작하지 않고 판의 두 손가락(view.js pts·pinch)에 넘긴다.
+   ② 손잡이로 크기를 바꾸던 중에 두 번째 손가락이 판 어디든 닿으면 — 바꾸던 크기는 원래대로, 그 첫 손가락도 판에 넘겨 바로 확대·축소.
+   판은 단추 위에서 시작한 터치를 무시하므로(view.js pointerdown) 여기서 직접 pts 에 넣고 board 가 그 손가락을 붙잡게 한다 */
+function szToPinch(pid, x, y){
+  pts.set(pid, { x, y }); try{ board.setPointerCapture(pid); }catch(e){}
+  if (pts.size === 2){ drag = null; const [a, b] = [...pts.values()]; pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, k:cam.k }; moved = 99; }
+}
+function szCancel(why){
+  if (!RS) return; const r = RS, { n, el, from } = r;
+  for (const k of ['cw', 'ch', 'sc']){ if (from[k] === undefined) delete n[k]; else n[k] = from[k]; }
+  szPut(); RS = null; el.classList.remove('sizing'); measure(); renderStrings(); renderMarks();
+  act('카드 크기 취소', { id:n.id, why });
+  return r;
+}
+board.addEventListener('pointerdown', e => {   /* ② — 잡는 단계(capture)라 판·손잡이 처리보다 먼저 */
+  if (!RS || e.pointerId === RS.pid) return;
+  const r = szCancel('두 손가락'); szToPinch(r.pid, r.cx, r.cy);
+}, true);
 $('#nodes').addEventListener('pointerdown', e => {
   const h = e.target.closest('.szh'); if (!h) return;
-  e.preventDefault(); e.stopPropagation(); if (busy) return;
+  e.preventDefault(); e.stopPropagation();
+  if (pts.size){ szToPinch(e.pointerId, e.clientX, e.clientY); return; }   /* ① */
+  if (busy) return;
   const el = h.closest('.card'), n = el && nodeOf(el.dataset.id); if (!n) return;
   try{ h.setPointerCapture(e.pointerId); }catch(x){}
   const s0 = +n.sc || 1, W = el.offsetWidth * s0, H = el.offsetHeight * s0, p0 = wpt(e.clientX, e.clientY);
-  RS = { k:h.dataset.sz, el, n, pid:e.pointerId, p0, s0, W0:el.offsetWidth, H0:el.offsetHeight, left:n.x - W / 2, top:n.y - H / 2, ax:n.x + W / 2, ay:n.y - H / 2, from:{ cw:n.cw, ch:n.ch, sc:n.sc } };
+  RS = { k:h.dataset.sz, el, n, pid:e.pointerId, cx:e.clientX, cy:e.clientY, p0, s0, W0:el.offsetWidth, H0:el.offsetHeight, left:n.x - W / 2, top:n.y - H / 2, ax:n.x + W / 2, ay:n.y - H / 2, from:{ cw:n.cw, ch:n.ch, sc:n.sc } };
   RS.d0 = Math.max(20, Math.hypot(p0.x - RS.ax, p0.y - RS.ay));
   el.classList.add('sizing');
 });
 addEventListener('pointermove', e => {
   if (!RS || e.pointerId !== RS.pid) return;
+  RS.cx = e.clientX; RS.cy = e.clientY;   /* 11-17 B: 두 번째 손가락이 오면 이 자리에서 판에 넘김 */
   const p = wpt(e.clientX, e.clientY), dx = p.x - RS.p0.x, dy = p.y - RS.p0.y, { n, s0 } = RS;
   if (RS.k === 'r') n.cw = Math.round(clampTo((RS.W0 * s0 + dx) / s0, SZ.w));
   else if (RS.k === 'b') n.ch = Math.round(clampTo((RS.H0 * s0 + dy) / s0, SZ.h));
