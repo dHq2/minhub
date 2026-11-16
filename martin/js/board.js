@@ -87,17 +87,18 @@ const hhmm = t => t ? new Date(t).toTimeString().slice(0, 5) : '';
 function msgHtml(l){
   if (l.who === 'p'){ const ph = (l.photos || []).map(id => nodeOf(id)).filter(n => n && photoThumb(n));
     return `<div class="msg p">${ph.length ? `<span class="ph">${ph.map(n => `<img src="${esc(photoThumb(n))}" data-pv="${n.id}" alt="">`).join('')}</span>` : ''}${(l.files || []).length ? `<span class="ft">파일 · ${esc(l.files.join(', '))}</span>` : ''}${l.viewing && nodeOf(l.viewing) ? `<span class="ft" data-pv="${l.viewing}">보면서 · ${esc(nodeOf(l.viewing).title)}</span>` : ''}${l.text ? `<span class="txt">${esc(l.text)}</span>` : ''}<time>${hhmm(l.at)}</time></div>`; }
-  return `<div class="msg m">${esc(l.text)}<time>${hhmm(l.at)}</time></div>`;
+  const on = (l.on || []).filter(nodeOf);   /* 11-16 A: 카드를 짚은 말 — 누르면 그 카드로 다시 간다 */
+  return `<div class="msg m${on.length ? ' on' : ''}${l.beat === 'reveal' ? ' rv' : ''}"${on.length ? ` data-on="${on.join(' ')}"` : ''}>${esc(l.text)}<time>${hhmm(l.at)}</time></div>`;
 }
 const chatEl = () => $('#chat');
 let stick = true;   /* v0.3 위로 올려 읽는 중이면 끌어내리지 않는다 */
 $('#chat').addEventListener('scroll', () => { const c = chatEl(); stick = c.scrollHeight - c.scrollTop - c.clientHeight < 60; }, { passive:true });
 const toEnd = force => { const c = chatEl(); if (force || stick){ c.scrollTop = c.scrollHeight; stick = true; } };
 function renderChat(force){ chatEl().innerHTML = S.log.map(msgHtml).join('') + (S.pending && !busy ? `<div class="retry">마틴이 아직 답하지 못했다<button type="button" data-retry>다시 묻기</button></div>` : ''); toEnd(force); }
-async function speak(t, keep = true){
+async function speak(t, keep = true, meta){
   t = String(t || '').trim(); if (!t) return; const at = Date.now();
-  if (keep){ curLines.push(t); S.log.push({ who:'m', text:t, at }); save(); }
-  chatEl().insertAdjacentHTML('beforeend', `<div class="msg m live"><span class="tx"></span><time>${hhmm(at)}</time></div>`);
+  if (keep){ curLines.push(t); S.log.push({ who:'m', text:t, at, ...(meta || {}) }); save(); }
+  chatEl().insertAdjacentHTML('beforeend', `<div class="msg m live${meta && meta.on ? ' on' : ''}"${meta && meta.on ? ` data-on="${esc(meta.on.join(' '))}"` : ''}><span class="tx"></span><time>${hhmm(at)}</time></div>`);
   const el = chatEl().lastElementChild.querySelector('.tx'); skip = false; toEnd();
   for (let i = 1; i <= t.length; i++){ if (skip || RM){ el.textContent = t; break; } el.textContent = t.slice(0, i); if (i % 6 === 0) toEnd(); await sleep(t[i - 1] === '.' || t[i - 1] === '?' ? 150 : 28); }
   chatEl().lastElementChild.classList.remove('live'); toEnd();
@@ -105,7 +106,9 @@ async function speak(t, keep = true){
 }
 $('#chat').addEventListener('click', e => { const im = e.target.closest('[data-pv]'); if (im) return openPv(im.dataset.pv);
   if (e.target.closest('[data-retry]')){ act('다시 묻기'); return turn({ retry:true }); }
-  const p = e.target.closest('.msg.p'); if (p) p.classList.toggle('full'); else skip = true; });
+  const p = e.target.closest('.msg.p'); if (p) return p.classList.toggle('full');
+  const o = e.target.closest('.msg.m[data-on]'); if (o && !o.classList.contains('live') && !busy){ act('말에서 카드로', { on:o.dataset.on }); return lookBack(o.dataset.on.split(' ')); }
+  skip = true; });
 function thinking(on){ $('#martin').classList.toggle('think', on); const w = $('#chat .wait'); if (w) w.remove();
   if (on){ chatEl().insertAdjacentHTML('beforeend', '<div class="msg m wait"><span class="dots"><i></i><i></i><i></i></span></div>'); toEnd(); } }
 
@@ -208,11 +211,25 @@ function clean(r){
   if (!r || typeof r !== 'object') return { say:[String(r || '…')], ops:[] };
   const ops = Array.isArray(r.ops) ? r.ops.filter(o => o && typeof o === 'object').slice(0, 16) : [];
   for (const o of ops) if (o.op === 'add'){ o.id = /^n\d+$/.test(o.id) ? o.id : 'n' + S.nid; const k = +o.id.slice(1); if (k >= S.nid) S.nid = k + 1; }
-  return { say:(Array.isArray(r.say) ? r.say : [r.say]).filter(Boolean).slice(0, 5), ops, hyp:r.hypothesis, ask:r.ask, raw:r };
+  const BEATS = ['look', 'link', 'ask', 'yes', 'reveal'];
+  const say = (Array.isArray(r.say) ? r.say : [r.say]).filter(Boolean).slice(0, 10).map(x => {   /* 11-16 A: 줄마다 짚는 카드(on)·박자(beat) */
+    if (typeof x !== 'object') return { t:String(x) };
+    const on = (Array.isArray(x.on) ? x.on : x.on ? [x.on] : []).map(String).filter(id => /^n\d+$/.test(id)).slice(0, 3);
+    return { t:String(x.t || x.text || ''), on, beat:BEATS.includes(x.beat) ? x.beat : on.length > 1 ? 'link' : on.length ? 'look' : '' };
+  }).filter(x => x.t.trim());
+  if (say.filter(x => x.beat === 'reveal').length > 1) say.forEach((x, i, a) => { if (x.beat === 'reveal' && a.slice(i + 1).some(y => y.beat === 'reveal')) x.beat = 'yes'; });
+  return { say, ops, hyp:r.hypothesis, ask:r.ask, raw:r };
 }
 async function play(r){
-  for (const l of r.say) await speak(l);
-  for (const op of r.ops){ await Promise.all([doOp(op).catch(e => { act("판 조작 오류", { op:op.op, msg:String(e && e.message || e).slice(0, 160) }); }), op.line ? speak(op.line) : null]); save(); }
+  let opsDone = false;
+  const runOps = async () => { if (opsDone) return; opsDone = true; if (focusOn) unfocus(true);
+    for (const op of r.ops){ await Promise.all([doOp(op).catch(e => { act("판 조작 오류", { op:op.op, msg:String(e && e.message || e).slice(0, 160) }); }), op.line ? speak(op.line) : null]); save(); } };
+  for (const l of r.say){
+    if (!opsDone && l.on && l.on.some(id => !nodeOf(id) && r.ops.some(o => o.op === 'add' && o.id === id))) await runOps();   /* 새 카드를 짚는 말이면 판부터 꽂고 */
+    await sayLine(l);
+  }
+  if (focusOn) await unfocus();
+  await runOps();
   const nr = await applyNotes(r.raw);   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
   const h = r.hyp;
   if (h && h.title){
@@ -224,3 +241,57 @@ async function play(r){
   if (r.ask) await speak(r.ask);
 }
 
+
+/* ── 11-16 A: 시선 따라가기 — 마틴이 말하며 판의 카드를 짚는다(조금 다가가 비추기·두 카드 잇기·되묻기·확정 연출) ──
+   say 줄 {t, on:[카드], beat:look|link|ask|yes|reveal}. 너무 당기지 않는다(배율 0.62~1.0, 여백 넉넉히) */
+let focusOn = false, ghostN = 0;
+function boxOf(ids){
+  const ns = ids.map(nodeOf).filter(Boolean); if (!ns.length) return null;
+  const x0 = Math.min(...ns.map(n => n.x - (n.w || 112) / 2)), x1 = Math.max(...ns.map(n => n.x + (n.w || 112) / 2));
+  const y0 = Math.min(...ns.map(n => n.y - (n.h || 130) / 2)), y1 = Math.max(...ns.map(n => n.y + (n.h || 130) / 2));
+  const W = board.clientWidth, H = board.clientHeight, pad = 150;
+  const k = Math.max(.62, Math.min(1, W / (x1 - x0 + pad * 2), H / (y1 - y0 + pad * 2)));
+  return { x:(x0 + x1) / 2, y:(y0 + y1) / 2, k, ns };
+}
+function spot(ids){
+  world.classList.add('focus'); focusOn = true;
+  for (const el of document.querySelectorAll('#nodes .card')) el.classList.toggle('spot', ids.includes(el.dataset.id));
+  for (const p of document.querySelectorAll('#strings .str')){ const L = S.links.find(x => x.id === p.dataset.id); p.classList.toggle('hot', !!L && ids.includes(L.a) && ids.includes(L.b)); }
+}
+function ghostLink(a, b){   /* 판에 아직 없는 연결 — 분필처럼 점선을 그었다가 지운다 */
+  if (S.links.some(L => (L.a === a && L.b === b) || (L.a === b && L.b === a))) return;
+  const c = curve({ a, b }); if (!c) return; const g = $('#strings');
+  g.insertAdjacentHTML('beforeend', `<path class="ghost" data-g="${++ghostN}" d="${c.d}"/>`);
+  const p = g.querySelector(`[data-g="${ghostN}"]`); if (!p || RM) return; const len = p.getTotalLength();
+  p.style.strokeDasharray = `${len}`; p.style.strokeDashoffset = `${len}`; p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset .9s cubic-bezier(.5,0,.3,1)'; p.style.strokeDashoffset = '0';
+  setTimeout(() => { p.style.transition = ''; p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; }, 950);
+}
+async function unfocus(quick){
+  focusOn = false; world.classList.remove('focus');
+  for (const el of document.querySelectorAll('#nodes .card.spot')) el.classList.remove('spot');
+  for (const p of document.querySelectorAll('#strings .hot')) p.classList.remove('hot');
+  for (const p of document.querySelectorAll('#strings .ghost')) p.remove();
+  if (!quick) await fitAll(700);
+}
+function stampOn(n, t){ const el = document.createElement('div'); el.className = 'stamp'; el.textContent = t; el.style.left = (n.x + (n.w || 112) * .18) + 'px'; el.style.top = (n.y - (n.h || 130) * .25) + 'px'; world.appendChild(el); setTimeout(() => el.remove(), 2600); }
+function caption(t){ const el = document.createElement('div'); el.className = 'cap'; el.innerHTML = `<span>${esc(t)}</span>`; board.appendChild(el); setTimeout(() => el.classList.add('out'), 2300); setTimeout(() => el.remove(), 2800); }
+async function sayLine(l){
+  const ids = (l.on || []).filter(nodeOf);
+  if (!ids.length){ if (l.beat === 'reveal'){ board.classList.add('shake'); boom('하!'); setTimeout(() => board.classList.remove('shake'), 500); caption(l.t); } return speak(l.t, true, l.beat ? { beat:l.beat } : undefined); }
+  const B = boxOf(ids), meta = { on:ids, beat:l.beat };
+  const go = fly(B.x, B.y, B.k, focusOn ? 620 : 760).then(() => {
+    spot(ids);
+    if (l.beat === 'link' && ids.length > 1) for (let i = 1; i < ids.length; i++) ghostLink(ids[i - 1], ids[i]);
+    if (l.beat === 'ask'){ const n = B.ns[B.ns.length - 1]; sfx(n.x + (n.w || 112) / 2 - 6, n.y - (n.h || 130) / 2 - 18, '?'); }
+    if (l.beat === 'reveal'){ for (let i = 1; i < ids.length; i++) ghostLink(ids[i - 1], ids[i]); board.classList.add('shake'); setTimeout(() => board.classList.remove('shake'), 500); boom('하!'); stampOn(B.ns[B.ns.length - 1], '그래'); }
+  });
+  await Promise.all([go, speak(l.t, true, meta)]);
+  if (l.beat === 'reveal'){ caption(l.t); await sleep(skip ? 300 : 1700); }
+  else if (l.beat === 'ask') await sleep(skip ? 100 : 550);
+}
+async function lookBack(ids){   /* 대화창의 말을 누르면 그때 짚던 카드로 */
+  ids = ids.filter(nodeOf); if (!ids.length) return; const B = boxOf(ids);
+  await fly(B.x, B.y, B.k, 620); spot(ids); if (ids.length > 1) for (let i = 1; i < ids.length; i++) ghostLink(ids[i - 1], ids[i]);
+  clearTimeout(lookBack.t); lookBack.t = setTimeout(() => { if (!busy) unfocus(true); }, 2600);
+}
+board.addEventListener('pointerdown', () => { if (busy) skip = true; else if (focusOn) unfocus(true); });

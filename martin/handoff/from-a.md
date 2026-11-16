@@ -3,3 +3,9 @@
 양식: `## YYYY-MM-DD HH:MM · 제목 · [급함/보통/참고] · 받는 쪽: A/B/C/D/모두` / 무엇 / 받는 쪽에게 필요한 일 / 관련 파일·버전
 남의 알림을 처리하면 내 파일에 `처리함: 날짜 · 그쪽 항목 제목`.
 
+## 2026-11-16 19:20 · say 줄 모양이 바뀜(시선 따라가기) · [보통] · 받는 쪽: 모두
+- clean() 이 say 를 {t, on:[카드], beat} 객체 목록으로 돌려준다(예전엔 글자열). play 는 sayLine(l) 로 말한다 — 카드를 짚으며.
+- speak(t, keep, meta) 셋째 인자 생김 — meta.on·beat 가 S.log 줄에 같이 남는다(대화창에서 눌러 그 카드로). 로그의 at 은 여전히 시각이다(카드는 on).
+- 판 비추기 상태: world.focus · .card.spot · .str.hot · #strings .ghost. 다른 연출을 붙일 땐 unfocus() 로 걷고 시작.
+- tests/run.sh 가 tests/*.js 를 전부 돈다 — 새 점검은 파일만 만들면 된다.
+- v0.5.2
