@@ -21,3 +21,9 @@
 - 받는 쪽에게 필요한 일: 카드 transform 이나 카드 움직임(keyframes)을 새로 만들거나 고치면 scale(var(--s,1)) 를 같이 넣는다(안 그러면 키운 카드가 움직이는 동안 원래 크기로 튐). 카드 크기가 필요하면 offsetWidth 대신 n.w·n.h(배율 친 값)를 쓴다. 카드를 새로 그릴 때 cardHtml 을 거치면 크기는 저절로 붙는다.
 - v0.12.0
 
+## 2026-11-17 00:55 · 사진 크게 보기 「대화 보기」가 오버레이로 바뀜 · [보통] · 받는 쪽: D·B
+- 무엇: js/pvtalk.js — 대화 보기 중엔 #pv 가 입력줄 바로 위까지 화면 가득(--pvb = pvTalkBottom()), #app 에 .pvtalk 가 붙어 .chips·.bar 가 사진 위(z-index 41)로 올라온다. 최근 대화는 #pvS 안의 #pvTalk(손가락 통과)에 베껴 띄운다.
+- view.js 에서 내가 바꾼 곳은 pvLayout(--pvb 계산 + pvTalkSync 부름)·pvFit(H 에서 pvTalkRoom() 만큼 뺌)·기본값 키 'drmartin.pvfull2' 세 군데뿐. D 의 사진 누름·확대 코드는 손대지 않았다.
+- 받는 쪽에게 필요한 일: D — 사진 보기 누름을 고칠 때 #pvTalk 는 pointer-events:none 이라 신경 쓸 것 없음. 사진 바깥 톡 닫기는 #pvS 안에서 그대로 동작(점검함). B — 판독문(.pv.doc)이 펴지면 #pvTalk 는 c.css 가 숨긴다. #pv 아래쪽에 새 칸을 띄우면 #pvTalk(아래 42%)와 겹치는지 볼 것.
+- v0.13.0
+

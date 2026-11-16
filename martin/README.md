@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.12 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.13 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -62,6 +62,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/split.js | 판·대화 나누기(v0.11.2, B) — 대화창(.stage) 높이를 비율 SPLIT.r 로(기본 반반), 가운데 손잡이 #split 끌기·두 번 눌러 반반, 기기 키 'drmartin.split'. 높이를 바꾸면 가짜 resize 신호를 보냄 |
 | js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
 | js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
+| js/pvtalk.js | 사진 위에 뜨는 대화(v0.13.0, C) — 사진 크게 보기의 「대화 보기」: 사진은 입력줄 바로 위까지 가득, 최근 대화 6줄을 #pvTalk 에 베껴 반투명으로(손가락 통과), 입력줄·칩은 #app.pvtalk 로 사진 위에 |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
@@ -70,7 +71,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 
 - 모든 js 는 같은 전역에서 돈다(옛 한 파일과 같음). 단, 불러오는 순간 바로 실행되는 줄은 앞 파일에 있는 것만 부를 수 있다. 함수 안에서 부르는 건 어디 있든 된다. 새 js 를 만들면 index.html 의 script 목록에 넣는다.
 - 코드 주석엔 번호 대신 날짜·방: `/* 11-16 B: 무엇 */`.
-- 저장 키: 기기 localStorage 'drmartin.v2'(판) · 'drmartin.log' · 'drmartin.ai' · 'drmartin.seen' · 'drmartin.pvfull' · 'drmartin.split'. 계정 db: state/board · cases/<사건> · turns/ · logs/ · photos/ · meta/seen. 이름을 바꾸면 보스의 진행 중인 사건이 날아간다 — 바꾸지 않는다(필요하면 옮기는 코드를 같이).
+- 저장 키: 기기 localStorage 'drmartin.v2'(판) · 'drmartin.log' · 'drmartin.ai' · 'drmartin.seen' · 'drmartin.pvfull2'(사진 보기 모드) · 'drmartin.split'. 계정 db: state/board · cases/<사건> · turns/ · logs/ · photos/ · meta/seen. 이름을 바꾸면 보스의 진행 중인 사건이 날아간다 — 바꾸지 않는다(필요하면 옮기는 코드를 같이).
 
 ## 4. 일감과 찜 — martin/handoff/
 - 할일.md = 유일한 찜 자리(union 합치기 — 네 방이 같이 줄을 더해도 충돌 안 남). 보스가 어느 방에 말하든 그 방이 할일.md 에 한 줄로 적는다. 시작하려면 그 줄의 `맡음:` 에 내 방, `파일:` 에 고칠 파일을 적고 바로 push.
@@ -115,3 +116,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.10 | 2026-11-16 | B: 마틴 인물 설정 v2.1(추리하는 방식과 말) |
 | v1.11 | 2026-11-16 | C: 파일 지도에 js/size.js(카드 크기 손잡이) |
 | v1.12 | 2026-11-17 | B: 파일 지도에 js/pvdoc.js(사진 보기 판독문 단추) |
+| v1.13 | 2026-11-17 | C: 파일 지도에 js/pvtalk.js(사진 위에 뜨는 대화), 기기 키 drmartin.pvfull → pvfull2 |

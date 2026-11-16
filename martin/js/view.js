@@ -49,11 +49,12 @@ addEventListener('resize', () => applyCam(0));
 /* ── 사진 크게 보기 (v0.3) — 두 손가락 확대·끌기·두 번 눌러 확대, × 로 닫기 ── */
 const PV = { k:1, k0:1, x:0, y:0, iw:0, ih:0, pts:new Map(), pinch:null, up:null };
 function pvApply(){ $('#pvI').style.transform = `translate(${PV.x}px,${PV.y}px) scale(${PV.k})`; }
-function pvFit(){ const st = $('#pvS'), W = st.clientWidth, H = st.clientHeight; if (!PV.iw) return; PV.k = Math.min(W / PV.iw, H / PV.ih); PV.x = (W - PV.iw * PV.k) / 2; PV.y = (H - PV.ih * PV.k) / 2; PV.k0 = PV.k; pvApply(); }
+function pvFit(){ const st = $('#pvS'), W = st.clientWidth, H = st.clientHeight - (typeof pvTalkRoom === 'function' ? pvTalkRoom() : 0); if (!PV.iw) return;   /* 11-17 C: 대화가 사진 위에 떠 있으면 그만큼 위로 맞춤(pvtalk.js) */ PV.k = Math.min(W / PV.iw, H / PV.ih); PV.x = (W - PV.iw * PV.k) / 2; PV.y = (H - PV.ih * PV.k) / 2; PV.k0 = PV.k; pvApply(); }
 /* v0.4.2 사진을 띄운 채로 대화 — 기본은 위에 사진, 아래 대화창·입력줄 그대로(「대화 숨기기」로 전체 화면) */
-let pvFull = false; try{ pvFull = localStorage.getItem('drmartin.pvfull') === '1'; }catch(e){}
+let pvFull = false; try{ pvFull = localStorage.getItem('drmartin.pvfull2') === '1'; }catch(e){}   /* 11-17 C: 대화 보기가 오버레이로 바뀌어 기본값을 새로(예전 'drmartin.pvfull' 은 안 씀) */
 function pvLayout(){ const pv = $('#pv'), st = document.querySelector('.stage'); pv.classList.toggle('full', pvFull); $('#pvC').textContent = pvFull ? '대화 보기' : '대화 숨기기';
-  pv.style.setProperty('--pvb', pvFull ? '0px' : Math.max(0, $('#app').clientHeight - st.offsetTop) + 'px'); }
+  pv.style.setProperty('--pvb', pvFull ? '0px' : (typeof pvTalkBottom === 'function' ? pvTalkBottom() : Math.max(0, $('#app').clientHeight - st.offsetTop)) + 'px');   /* 11-17 C: 대화 보기 = 사진은 입력줄 바로 위까지, 대화는 사진 위에(pvtalk.js) */
+  if (typeof pvTalkSync === 'function') pvTalkSync(); }
 function pvRefresh(){ const id = PV.id, n = id && itemOf(id); if (!n) return; const isEv = /^e/.test(id), ev = isEv ? n : evByCard(id);
   $('#pvT').textContent = (isEv ? evTitle(n) : n.title) || '사진';
   const memo = isEv ? (n.card && nodeOf(n.card) || {}).note : n.note;   /* 11-17 B: 이 칸은 평소엔 숨김 — 「판독문」 단추로 사진 위에 펼침(pvdoc.js) */
@@ -66,7 +67,7 @@ function openPv(id){ const n = itemOf(id); if (!n) return; const isEv = /^e/.tes
   im.onerror = () => { if (fb && im.getAttribute('src') !== fb) im.src = fb; }; im.src = src || fb;
   if (!n.asset && !n.big && !n.mid && n.pid && DB) DB.doc('photos/' + S.id + '-' + n.id).get().then(ph => { const v = ph && ph.exists ? ph.data() : null; if (v && v.img){ n.mid = v.img; if ($('#pv').classList.contains('on')) im.src = v.img; } }).catch(() => {}); }
 $('#pvX').onclick = () => { $('#pv').classList.remove('on'); PV.id = null; };
-$('#pvC').onclick = () => { pvFull = !pvFull; try{ localStorage.setItem('drmartin.pvfull', pvFull ? '1' : '0'); }catch(e){} act(pvFull ? '사진 전체 화면' : '사진 보며 대화'); pvLayout(); requestAnimationFrame(pvFit); };
+$('#pvC').onclick = () => { pvFull = !pvFull; try{ localStorage.setItem('drmartin.pvfull2', pvFull ? '1' : '0'); }catch(e){} act(pvFull ? '사진 전체 화면' : '사진 보며 대화'); pvLayout(); requestAnimationFrame(pvFit); };
 addEventListener('resize', () => { if ($('#pv').classList.contains('on')){ pvLayout(); requestAnimationFrame(pvFit); } });
 const pvOpenId = () => $('#pv').classList.contains('on') && PV.id && itemOf(PV.id) ? PV.id : null;
 $('#pvR').onclick = () => { if (busy || !PV.id) return; act('다시 읽혀', { id:PV.id }); turn({ text:'이 자료 원본을 처음부터 꼼꼼히 다시 읽어 줘. 판독문도 고쳐 두고.' }); };   /* 11-16 A */
