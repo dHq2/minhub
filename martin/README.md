@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.12 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.13 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -49,7 +49,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/core.js | 기본 도구($·esc·sleep) · 상태 S · 기기 저장(localStorage) · 계정 저장(db, put/dbStart/adopt) · 사진 보관(assets) |
 | js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy) · 판 정리 · play |
 | js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 |
-| js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기 |
+| js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기(폰은 엔터 = 줄 바꿈, 건네기는 단추) |
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
 | js/persona.js | 마틴이라는 사람(설정 v2.1, 보스 확정) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
@@ -115,3 +115,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.10 | 2026-11-16 | B: 마틴 인물 설정 v2.1(추리하는 방식과 말) |
 | v1.11 | 2026-11-16 | C: 파일 지도에 js/size.js(카드 크기 손잡이) |
 | v1.12 | 2026-11-17 | B: 파일 지도에 js/pvdoc.js(사진 보기 판독문 단추) |
+| v1.13 | 2026-11-17 | A: 폰에서 엔터 = 줄 바꿈(js/input.js) |

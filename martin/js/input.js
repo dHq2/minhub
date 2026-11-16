@@ -64,8 +64,11 @@ document.addEventListener('input', async e => { const z = e.target.closest && e.
 
 
 $('#msg').addEventListener('paste', e => { const fs = [...(e.clipboardData && e.clipboardData.files || [])].filter(f => /^image\//.test(f.type)); if (fs.length){ e.preventDefault(); addFiles(fs); } });
-/* v0.4.4 엔터 = 건네기, Shift+엔터 = 줄 바꿈(한글 조합 중 엔터는 건드리지 않음) */
-$('#msg').addEventListener('keydown', e => { if (e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229) return; e.preventDefault(); act('엔터로 건네기'); $('#form').requestSubmit ? $('#form').requestSubmit() : $('#send').click(); });
+/* v0.4.4 엔터 = 건네기, Shift+엔터 = 줄 바꿈(한글 조합 중 엔터는 건드리지 않음)
+   v0.12.3 A: 폰(손가락 화면·마우스 없음)에선 엔터 = 줄 바꿈, 건네기는 단추로만. 자판의 엔터 키도 '줄 바꿈' 모양으로 */
+const PHONE_IN = () => matchMedia('(hover: none) and (pointer: coarse)').matches;
+if (PHONE_IN()) $('#msg').setAttribute('enterkeyhint', 'enter');
+$('#msg').addEventListener('keydown', e => { if (e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229 || PHONE_IN()) return; e.preventDefault(); act('엔터로 건네기'); $('#form').requestSubmit ? $('#form').requestSubmit() : $('#send').click(); });
 $('#msg').addEventListener('input', e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(120, e.target.scrollHeight) + 'px'; });
 $('#form').onsubmit = async e => { e.preventDefault(); if (busy) return; if (attN){ $('#send').disabled = true; $('#send').textContent = '사진 준비'; await attWork; setBusy(false); } const t = $('#msg').value.trim(); if (busy || (!t && !att.length)) return; const a = att.splice(0); $('#msg').value = ''; $('#msg').style.height = ''; renderChips(); turn({ text:t, atts:a }); };
 
