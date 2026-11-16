@@ -49,3 +49,6 @@
 .pv-stage img{will-change:transform;backface-visibility:hidden}
 .pv-stage img.zm{transition:transform .15s cubic-bezier(.2,.7,.3,1)}
 @media (prefers-reduced-motion:reduce){.pv-stage img.zm{transition:none}}
+
+/* 11-17 D: 사건 복기본 — 복사가 막힌 화면에서 길게 눌러 고르는 칸 */
+.rcbox{display:block;width:100%;height:200px;margin-top:8px;background:#0d0c0a;color:#d9cfbc;border:1px solid #3a342b;border-radius:6px;font:11px/16px "Nanum Gothic Coding",monospace;padding:8px;resize:vertical}

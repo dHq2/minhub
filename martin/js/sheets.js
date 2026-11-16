@@ -25,7 +25,7 @@ function logSheet(){
   openSheet(`<h3>수사 기록</h3><p class="sub">사건 ${esc(S.id)} · 이 기기에 ${all.length}줄${DB ? ' · 계정 저장소에도 쌓는 중' : ' · 계정 저장소 연결 안 됨(기기에만)'}</p>
   <div class="tabs">${[['chat', '대화'], ['act', '행동'], ['mem', '기억']].map(([k, n]) => `<button type="button" data-tab="${k}" class="${logTab === k ? 'on' : ''}">${n}</button>`).join('')}</div>
   <div class="log">${body}</div>
-  <div class="btns" style="margin-top:12px"><button class="ghost" data-s="copylog" type="button">기록 전체 복사</button></div><p class="foot" id="cpMsg"></p>`);
+  <div class="btns" style="margin-top:12px"><button class="ghost" data-s="copylog" type="button">기록 전체 복사</button><button class="ghost" data-s="copyraw" type="button">날것(JSON)</button></div><p class="foot" id="cpMsg">「기록 전체 복사」 = 사건 복기본. 폰·컴 어디서 했든 이 사건의 판·자료 판독문·글 원문·난제·수첩·대화·행동을 한 번씩 모은 글 — 다른 방에 붙여 넣으면 그대로 복기된다.</p>`);   /* 11-17 D: 사건 복기본(js/recap.js) */
 }
 $('#sheet').addEventListener('click', async e => {
   const t = e.target.closest('button'); if (!t) return;
@@ -39,9 +39,7 @@ $('#sheet').addEventListener('click', async e => {
   if (s === 'cases'){ act('지난 사건 열기'); if (!DB){ openSheet('<h3>지난 사건</h3><p class="sub">계정 저장소에 닿지 않는다. 잠시 뒤 다시.</p>'); return; }
     openSheet('<h3>지난 사건</h3><p class="sub">불러오는 중…</p>'); const cs = await listCases(); window.__cs = cs;
     openSheet(`<h3>지난 사건</h3><p class="sub">누르면 그 사건으로 간다. 지금 판은 그대로 계정에 남는다.</p>${cs.map((c, i) => { const b = (c.nodes || []).find(n => n.id === 'n1') || {}, d = new Date(c.at); return `<button class="row" data-case="${i}" type="button"><span class="folder">${c.id === S.id ? '●' : esc(String(c.turn || 0))}</span><span><b>${esc(b.title || '사건')}</b><small>${d.getMonth() + 1}/${d.getDate()} ${d.toTimeString().slice(0, 5)} · ${c.turn || 0}턴 · 카드 ${(c.nodes || []).length}장${c.id === S.id ? ' · 지금 판' : ''}</small></span></button>`; }).join('') || '<p class="sub">아직 남은 사건이 없다.</p>'}`); return; }
-  if (s === 'copylog'){ let all = '[]'; try{ all = localStorage.getItem('drmartin.log') || '[]'; }catch(x){}
-    const txt = JSON.stringify({ case:snap(), chat:S.log, log:JSON.parse(all) }, null, 1);
-    try{ await navigator.clipboard.writeText(txt); $('#cpMsg').textContent = '복사했다. ' + Math.round(txt.length / 1024) + 'KB'; act('기록 복사'); }catch(x){ $('#cpMsg').textContent = '이 화면에선 복사가 막혔다.'; } return; }
+  if (s === 'copylog' || s === 'copyraw') return recapCopy(s === 'copyraw');   /* 11-17 D: 계정+기기 기록을 모은 사건 복기본(날것은 JSON) — js/recap.js */
   if (s === 'reset'){ if (t.dataset.arm !== '1'){ t.dataset.arm = '1'; const r = $('#rs'); if (r) r.textContent = '한 번 더 누르면 비운다.'; return; }
     closeSheet(); if (busy) return; log('memory', { n:S.turn, closed:true, board:snap() }); act('새 사건', { from:S.id }); flushLog(); S = fresh(); save(); renderAll(); renderChat(true); act('사건 시작'); await fitAll(0); for (const l of OPEN) await speak(l); save(); }
 });
