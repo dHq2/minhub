@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1 (2026-11-16)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.1 (2026-11-16)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -25,7 +25,7 @@
   마틴의 머리(sample)·계정 저장(db)·사진 보관(assets)은 아티팩트 안에서만 돈다 — Claude 는 보스 계정으로만 연결된다. API 키를 만들거나 저장하지 않는다.
 - GitHub(minhub/martin) = 원본 보관과 네 방의 협업 자리. 아티팩트는 언제나 GitHub main 의 martin/ 을 그대로 올린 것이다.
   GitHub Pages 주소(https://dhq2.github.io/minhub/martin/)로 열면 화면은 뜨지만 마틴의 머리는 없다(데모라 괜찮음).
-- 게임: 내장 시나리오 없음. 동료(보스, 기자·수집가)가 사진·대화 텍스트를 가져오면 탐정 마틴이 코르크 판에 꽂고 실을 잇고 가설을 세운다. 정답은 동료가 쥔 자료 쪽에 있다.
+- 게임: 내장 시나리오 없음. 동료(보스, 기자·수집가)가 사진·대화 텍스트를 가져오면 탐정 마틴이 코르크 판에 꽂고 실을 잇고 난제 지도에서 난제를 하나씩 풀어 진실을 조립한다. 정답은 동료가 쥔 자료 쪽에 있다.
 - 시나리오·정답 문서는 저장소·프로젝트 어디에도 올리지 않고, 엔진(프롬프트)이 참조하지도 않는다.
 
 ## 2. 보스(민수)와 일하는 방식
@@ -47,7 +47,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/ver.js | 지금 버전 VER (올리는 방이 +1) |
 | js/changes.js | 보스 눈에 보이는 변화 목록 CHANGES — 업데이트 뒤 마틴이 자기 말투로 설명하는 재료 |
 | js/core.js | 기본 도구($·esc·sleep) · 상태 S · 기기 저장(localStorage) · 계정 저장(db, put/dbStart/adopt) · 사진 보관(assets) |
-| js/board.js | 판 그리기 · 가설 띠 · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy) · 판 정리 · play |
+| js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy) · 판 정리 · play |
 | js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 |
 | js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기 |
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
@@ -95,3 +95,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | 버전 | 날짜 | 바뀐 것 |
 | --- | --- | --- |
 | v1 | 2026-11-16 | 첫 판 — GitHub 이사(minhub/martin), 네 방(A~D) 동등 체제, 파일 지도, 찜·알림, 올리기 7단계(GitHub → 아티팩트), 모바일 기준·데모라 가볍게 |
+| v1.1 | 2026-11-16 | B: 파일 지도에 js/puzzles.js(난제 지도), 가설 띠 → 난제 띠 |
