@@ -1,4 +1,4 @@
-/* martin/js/update.js — 업데이트 묻기·적용 과정 v1.0 (11-16 D). 고칠 땐 이 줄 아래에 「11-16 D: …」처럼 날짜·방 주석
+/* martin/js/update.js — 업데이트 묻기·적용 과정 v1.1 (11-16 D · 11-17 D: 사건 중엔 한 줄 묻기 + 한 줄 안내 + 「바뀐 것」 서랍). 고칠 땐 이 줄 아래에 「11-16 D: …」처럼 날짜·방 주석
    세희 update.js · SCENES.update 의 흐름을 그대로, 모양은 마틴 대화창(말풍선 + 선택 단추)으로.
      세희: "사내 규정이 바뀌었습니다. 바로 적용하시겠어요?" [예 / 구버전으로 계속] → (1/3)(2/3)(3/3) 막대 + 이번에 바뀌는 것 → 다시 열린 뒤 세희 설명
      마틴: "새로운 업데이트가 있다. 적용하겠나?" [적용한다 / 지금 판으로 계속] → (1/3)(2/3)(3/3) 막대 + 이번에 바뀌는 것 → brief()(마틴 설명)
@@ -53,16 +53,22 @@ async function updGate(hello){   /* 11-16 C: hello — 판을 다시 연 첫 인
   const titles = updTitles(seen); if (!titles.length) return true;
   act('업데이트 물어봄', { from:seen, to:VER }); UPD.asked = true;
   thinking(false);
-  await speak(hello ? '돌아왔군, 동료.' : '잠깐, 동료.', false);
-  await speak('자리를 비운 사이에 수사 도구 몇 개가 바뀌었다.', false);
-  await speak('새로운 업데이트가 있다. 적용하겠나?', false);
+  /* 11-17 D: v0.14 — 사건 중 안내는 한두 줄, 마틴 말투로. 묻기는 한 줄(바뀐 목록은 서랍) */
+  await speak(hello ? '돌아왔군. 그사이 판에 손이 갔다. 적용하겠나?' : '판에 손이 갔다. 적용하겠나?', false);
   UPD.asking = true;
   const v = await updChoice();
-  if (v === 'no'){ act('업데이트 미룸', { from:seen, to:VER }); await speak('알겠다. 오늘은 지금 판으로 간다. 다음에 열면 다시 묻겠다.', false); return false; }
-  await speak('좋다. 잠깐이면 된다.', false);
-  await updApply(seen, titles);
+  if (v === 'no'){ act('업데이트 미룸', { from:seen, to:VER }); await speak('알겠다. 다음에 열면 다시 묻겠다.', false); return false; }
+  await updApply(seen, isBlank(S) ? titles : []);   /* 11-17 D: 사건 중엔 막대만 — 목록은 서랍 */
   return true;
 }
+/* 11-17 D: 바뀐 것 서랍 — 사건 중 안내는 한 줄이라, 자세한 건 여기. 안내 줄 아래 「바뀐 것 자세히」 단추로 연다 */
+function updSheet(from){
+  const vs = CHANGES.filter(c => (!from || verGt(c.v, from)) && !verGt(c.v, VER)).reverse(), list = vs.length ? vs : CHANGES.slice(-5).reverse();
+  act('바뀐 것 서랍', { from:from || '', n:list.length });
+  openSheet(`<h3>바뀐 것</h3><p class="sub">${from && vs.length ? esc(from) + ' → ' : '최근 · '}${esc(VER)}</p>${list.map(c => `<p class="sub" style="margin:12px 0 4px">${esc(c.v)}</p><div class="doc">${c.t.map(t => '· ' + esc(t)).join('<br>')}</div>`).join('')}`);
+}
+function updMoreChip(from){ chatEl().insertAdjacentHTML('beforeend', `<div class="upd-ask upd-more"><button type="button" data-umore="${esc(from || '')}">바뀐 것 자세히</button></div>`); toEnd(true); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-umore]'); if (b) updSheet(b.dataset.umore); });
 /* brief 감싸기 — brief.js 를 고치지 않고 앞에 끼운다(C 가 brief 를 합치거나 이름을 바꾸면 이 줄을 같이 옮긴다) */
 /* 11-16 C: 첫 인사와 합침 — brief(hello) 의 hello 를 문지기에 넘기고, 문지기가 이미 물었으면(인사를 했으면) 브리핑은 다시 인사하지 않는다.
    돌려주는 값: 무언가 말했으면 true — boot 가 「돌아왔군. 판은 그대로다.」를 건너뛴다(미룸도 말한 것) */

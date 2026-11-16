@@ -11,8 +11,12 @@ async function brief(hello){
   const mark = () => { try{ localStorage.setItem('drmartin.seen', VER); }catch(e){} if (DB) put('meta/seen', { v:VER, at:Date.now() }); };
   if (!verGt(VER, seen)){ mark(); return false; }
   const notes = CHANGES.filter(c => verGt(c.v, seen) && !verGt(c.v, VER)); mark(); if (!notes.length) return false;
-  act('업데이트 안내', { from:seen, to:VER }); thinking(true);
+  act('업데이트 안내', { from:seen, to:VER });
   const items = notes.flatMap(c => c.t); let say = null;
+  /* 11-17 D: v0.14 — 사건 중(판이 비어 있지 않음)엔 고정 한 줄, 마틴 말투. 자세한 건 「바뀐 것 자세히」 단추 → 서랍(update.js updSheet) */
+  if (!isBlank(S)){ const l = `${hello ? '돌아왔군. 그사이 ' : ''}새 도구 ${items.length}가지가 들어왔다. 자세한 건 서랍에 적어 뒀다.`;
+    await speak(l, false); S.log.push({ who:'m', text:l, at:Date.now(), upd:1 }); if (typeof updMoreChip === 'function') updMoreChip(seen); save(); return true; }
+  thinking(true);
   const sample = await getSample();
   if (sample){ try{ const r = await sample.json(`${MARTIN_SHORT} 동료(기자이자 수집가)와 함께 쓰는 코르크 추리판 앱이 방금 손질됐다. 동료가 판을 다시 열었을 때, 무엇이 바뀌었는지 마틴 말투로 짧게 알려 준다.
 말투: 동료에게 반말. 차분하고 자연스럽게, 말버릇·감탄사 없이. 이모지·별표·존댓말 금지.

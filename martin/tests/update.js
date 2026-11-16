@@ -1,4 +1,4 @@
-// 업데이트 묻기·적용 과정 점검 v1.0 (2026-11-16, D) — 본 버전이 옛것인 판을 열면 마틴이 묻는지, 적용/미룸 두 갈래, 처음 쓰는 사람은 안 묻는지. 폰 화면.
+// 업데이트 묻기·적용 과정 점검 v1.1 (2026-11-16, D · 11-17 D: 사건 중 한 줄 묻기·한 줄 안내·「바뀐 것」 서랍) — 본 버전이 옛것인 판을 열면 마틴이 묻는지, 적용/미룸 두 갈래, 처음 쓰는 사람은 안 묻는지. 폰 화면.
 // 쓰는 법: bash martin/tests/run.sh update   (스크린샷 /tmp/martin-업데이트-묻기.png · /tmp/martin-업데이트-끝.png — 꼭 직접 열어 본다)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -30,16 +30,21 @@ const SEED = { v: 3, id: '20261116-upd', at: 1, nodes: [{ id: 'n1', kind: 'brief
   // 1) 적용한다
   let p = await open('v0.4.0');
   const asked = await p.waitForSelector('#updAsk', { timeout: 20000 }).then(() => true).catch(() => false);
-  want(asked && await chatHas(p, '새로운 업데이트가 있다. 적용하겠나?'), '옛 버전 본 판 → 마틴이 묻는다');
+  want(asked && await chatHas(p, '판에 손이 갔다. 적용하겠나?'), '옛 버전 본 판 → 마틴이 한 줄로 묻는다');
   want(await p.evaluate(() => document.getElementById('send').disabled), '묻는 동안 건네기 잠김');
   await p.screenshot({ path: '/tmp/martin-업데이트-묻기.png' });
   if (asked){
     await p.click('#updAsk [data-u="yes"]');
     const done = await p.waitForSelector('#updProg.done', { timeout: 15000 }).then(() => true).catch(() => false);
     want(done, '적용 과정 (1/3)~(3/3) 끝까지');
-    want(await p.evaluate(() => (document.querySelector('#updProg .upd-list') || {}).textContent || '').then(t => /이번에 바뀌는 것 \d+가지/.test(t)), '이번에 바뀌는 것 목록');
+    want(await p.evaluate(() => !document.querySelector('#updProg .upd-list')), '사건 중엔 막대만(목록은 서랍)');
     await p.waitForTimeout(4000);
-    want(await chatHas(p, '판에 손을 좀 봤다'), '적용 뒤 마틴이 바뀐 점 설명(brief)');
+    want(await chatHas(p, '가지가 들어왔다. 자세한 건 서랍에 적어 뒀다.') && !(await chatHas(p, '판에 손을 좀 봤다')), '적용 뒤 안내는 고정 한 줄(머리 안 씀)');
+    const ml = await p.evaluate(() => S.log.filter(l => l.who === 'm').length);
+    want(ml <= 2, `사건 중 업데이트로 늘어난 마틴 말 ${ml}줄(묻기는 기록 안 됨 + 안내 1줄)`);
+    await p.click('[data-umore]'); await p.waitForTimeout(400);
+    want(await p.evaluate(() => /바뀐 것/.test(document.getElementById('sheet').textContent) && document.getElementById('app').classList.contains('open')), '「바뀐 것 자세히」 → 서랍');
+    await p.evaluate(() => closeSheet());
     const st = await p.evaluate(() => [localStorage.getItem('drmartin.seen'), VER, !!localStorage.getItem('drmartin.bak'), document.getElementById('send').disabled]);
     want(st[0] === st[1], `본 버전 표시 ${st[0]} = ${st[1]}`);
     want(st[2], '적용 직전 판 사본(drmartin.bak)');
