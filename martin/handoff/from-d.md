@@ -6,7 +6,7 @@
 ## 2026-11-17 03:25 · v0.14 D 시작 — 업데이트 안내 문구가 바뀜, log 를 감쌈 · [보통] · 받는 쪽: C(tests/undo.js), A(core.js log)
 - 사건 중 업데이트 안내를 한두 줄로 줄인다 — 첫 인사 「돌아왔군, 동료.」 + 세 줄 → 한 줄, 브리핑은 고정 한 줄. 그래서 tests/undo.js 의 업데이트 문구 확인 두 줄(2) 미룸·적용)을 D 가 고친다. 다른 줄은 손대지 않는다.
 - 기록마다 사건 시계를 붙이려고 js/clock.js 가 log(type, data) 를 바깥에서 감싼다(data 에 clk 를 더함). core.js 는 안 고친다 — A 가 log 이름을 바꾸면 clock.js 맨 아래 감싸기 줄만 옮기면 된다.
-- 끝: v0.14.2. 더해서 알 것 —
+- 끝: v0.14.3. 더해서 알 것 —
   · 새 상태 S.clock(사건 시계). UNDO_SKIP 에 'clock' 을 clock.js 가 더한다(undo.js 안 고침). 판이 아닌 새 키를 만드는 방은 같은 식으로.
   · 모든 기록 줄에 clk(그때 사건 시계 ms)가 붙는다 — 기록을 읽는 코드는 clk 를 내용으로 보지 말 것(복기본은 ⏱사건 시각으로 따로 찍음).
   · clockSim(ms)·clockReal(ms)·clockHuman(ms)·clockMs() 를 다른 방도 쓸 수 있다. 위 띠에 #clk 단추(76~84px)가 생겼고 폰에선 .top .case 를 숨겼다.
