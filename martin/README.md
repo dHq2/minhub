@@ -53,7 +53,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
 | js/persona.js | 마틴이라는 사람(설정 v2.2, 보스 확정 + v0.14 처지 질문 보충) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
-| js/mode.js | 자료 형편(v0.14.0, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 프롬프트 칸 modeText()(buildPrompt 의 [이번에 동료가 가져온 것] 바로 위), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
+| js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 프롬프트 칸 modeText()(buildPrompt 의 [이번에 동료가 가져온 것] 바로 위), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
