@@ -1,0 +1,45 @@
+// 판·대화 나누기 점검 v1.0 (2026-11-16, B). 폰 화면(412×915).
+// 기본 반반(판·대화창 거의 정사각형) · 손잡이 끌어 비율 바꿈 · 기기에 기억 · 두 번 누르면 반반. 스크린샷 /tmp/martin-나누기.png · /tmp/martin-나누기-끌기.png
+const { chromium } = require('playwright');
+const URL = process.env.URL || 'http://localhost:8790/martin/';
+const LOG = Array.from({ length: 10 }, (_, i) => ({ who: i % 2 ? 'm' : 'p', text: i % 2 ? `가짜 마틴의 말 ${i} — 지민은 그 밤 편의점에 있었다. 영수증 시각이 맞는다.` : `가짜 동료의 말 ${i}`, at: 1 + i }));
+const SEED = { v: 3, id: '20261116-split', at: 1, nodes: [{ id: 'n1', kind: 'brief', title: '가짜 실종 사건', note: '', x: 1000, y: 1000, r: 0 }], links: [], log: LOG, memo: [], turn: 5, nid: 2, suspect: null };
+(async () => {
+  const b = await chromium.launch(); const errs = []; let bad = 0;
+  const want = (ok, what) => { console.log((ok ? '  ok  ' : '  XX  ') + what); if (!ok) bad++; };
+  const p = await b.newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2 });
+  p.on('pageerror', e => errs.push(e.message));
+  await p.addInitScript(() => { window.claude = { use: async () => null }; });
+  await p.addInitScript(s => { if (!sessionStorage.getItem('seeded')){ localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); localStorage.removeItem('drmartin.split'); sessionStorage.setItem('seeded', '1'); } }, JSON.stringify(SEED));
+  await p.goto(URL); await p.waitForTimeout(2500);
+  const geo = () => p.evaluate(() => { const bd = document.getElementById('board').getBoundingClientRect(), st = document.querySelector('.stage').getBoundingClientRect(), ch = document.getElementById('chat').getBoundingClientRect();
+    const seen = [...document.querySelectorAll('#chat .msg')].filter(m => { const r = m.getBoundingClientRect(); return r.top >= ch.top - 2 && r.bottom <= ch.bottom + 2; }).length;
+    return { bw: Math.round(bd.width), bh: Math.round(bd.height), sh: Math.round(st.height), seen, r: SPLIT.r }; });
+  const g0 = await geo();
+  want(Math.abs(g0.bh - g0.sh) <= 4, `기본 반반 — 판 ${g0.bw}×${g0.bh}, 대화창 높이 ${g0.sh}`);
+  want(g0.bh / g0.bw > .85 && g0.bh / g0.bw < 1.1, `판이 거의 정사각형 (${(g0.bh / g0.bw).toFixed(2)})`);
+  want(g0.seen >= 4, `대화가 한 화면에 ${g0.seen}개 보인다(예전 높이 208px 에선 2개 반)`);
+  await p.screenshot({ path: '/tmp/martin-나누기.png' });
+  const h = await p.evaluate(() => { const r = document.getElementById('split').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  await p.mouse.move(h.x, h.y); await p.mouse.down(); await p.mouse.move(h.x, h.y - 180, { steps: 8 }); await p.mouse.up(); await p.waitForTimeout(300);
+  const g1 = await geo();
+  want(g1.sh > g0.sh + 150 && g1.bh < g0.bh - 150, `손잡이를 위로 끌면 대화창이 커진다 (대화 ${g0.sh}→${g1.sh}, 판 ${g0.bh}→${g1.bh})`);
+  want(g1.seen > g0.seen, `더 많이 보인다 ${g0.seen}→${g1.seen}`);
+  await p.screenshot({ path: '/tmp/martin-나누기-끌기.png' });
+  const saved = await p.evaluate(() => localStorage.getItem('drmartin.split'));
+  want(saved && Math.abs(+saved - g1.r) < .01, `비율이 기기에 기억됨 ${saved}`);
+  const hb = await p.evaluate(() => { const r = document.getElementById('split').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  await p.mouse.move(hb.x, hb.y); await p.mouse.down(); await p.mouse.move(hb.x, hb.y - 2000, { steps: 6 }); await p.mouse.up(); await p.waitForTimeout(300);
+  const g2 = await geo();
+  want(Math.abs(g2.r - .75) < .001 && g2.bh >= 140, `끝까지 끌어도 판은 남는다 (비율 ${g2.r}, 판 ${g2.bh})`);
+  await p.reload(); await p.waitForTimeout(2500);
+  const g3 = await geo();
+  want(Math.abs(g3.r - g2.r) < .01, `다시 열어도 비율 그대로 ${g3.r}`);
+  const h2 = await p.evaluate(() => { const r = document.getElementById('split').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+  await p.mouse.click(h2.x, h2.y); await p.waitForTimeout(120); await p.mouse.click(h2.x, h2.y); await p.waitForTimeout(300);
+  const g4 = await geo();
+  want(Math.abs(g4.r - .5) < .001 && Math.abs(g4.bh - g4.sh) <= 4, `두 번 누르면 반반 (판 ${g4.bh}, 대화 ${g4.sh})`);
+  want(await p.evaluate(() => Math.abs(cam.k) > 0 && document.querySelector('#nodes .card') !== null), '판은 그대로 그려져 있다');
+  want(!errs.length, '페이지 오류 없음 ' + errs.join(' | '));
+  await b.close(); if (bad){ console.log(`실패 ${bad}`); process.exit(1); } console.log('전부 통과');
+})();
