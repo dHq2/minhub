@@ -68,7 +68,7 @@ const szEnd = e => {
   const { n, el, k, from } = RS; RS = null; el.classList.remove('sizing');
   if (n.sc === 1) delete n.sc;
   if (from.cw === n.cw && from.ch === n.ch && from.sc === n.sc) return;
-  measure(); renderStrings(); renderMarks(); save();
+  measure(); renderStrings(); renderMarks(); save(); if (typeof undoCommit === 'function') undoCommit();   /* 손 뗀 한 번 = 되돌리기 한 칸(0.7초 모으기를 기다리지 않음) */
   act('카드 크기', { id:n.id, what:SZ_LABEL[k], cw:n.cw || null, ch:n.ch || null, sc:n.sc || 1 });
 };
 addEventListener('pointerup', szEnd); addEventListener('pointercancel', szEnd);
@@ -77,6 +77,6 @@ $('#nodes').addEventListener('dblclick', e => {
   const h = e.target.closest('.szh'); if (!h || busy) return; e.stopPropagation();
   const el = h.closest('.card'), n = el && nodeOf(el.dataset.id); if (!n) return;
   const key = { r:'cw', b:'ch', c:'sc' }[h.dataset.sz]; if (!(key in n)) return;
-  delete n[key]; el.outerHTML = cardHtml(n); measure(); renderStrings(); renderMarks(); save();
+  delete n[key]; el.outerHTML = cardHtml(n); measure(); renderStrings(); renderMarks(); save(); if (typeof undoCommit === 'function') undoCommit();
   act('카드 크기 원래대로', { id:n.id, what:SZ_LABEL[h.dataset.sz] });
 });

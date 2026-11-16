@@ -123,4 +123,5 @@ addEventListener('keydown', e => {   /* 넓은 화면 — Ctrl+Z 되돌리기, C
   if (!(e.ctrlKey || e.metaKey) || /^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '')) return;
   const k = e.key.toLowerCase(); if (k === 'z' && !e.shiftKey){ e.preventDefault(); undoGo(-1); } else if (k === 'y' || (k === 'z' && e.shiftKey)){ e.preventDefault(); undoGo(1); }
 });
-setInterval(() => { if (S && S !== UN.S) undoReset(); }, 300);   /* 사건이 바뀌면(불러옴·새 사건·지난 사건) 되돌리기 칸을 비우고 새로 시작 */
+setInterval(() => { if (S && S !== UN.S) undoReset(); }, 300);
+addEventListener('pointerdown', () => { if (UN.t && S && S === UN.S && !busy) undoCommit(); }, true);   /* 11-16 C: 새 손짓이 시작되면 앞 손짓을 먼저 한 칸으로 — 빠르게 이어 해도 한 칸씩 무를 수 있게 */   /* 사건이 바뀌면(불러옴·새 사건·지난 사건) 되돌리기 칸을 비우고 새로 시작 */

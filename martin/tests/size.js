@@ -58,12 +58,12 @@ const SEED = { v: 3, id: '20261116-size', at: 1, turn: 2, nid: 6, nmax: 0, suspe
   want(z.sc < a.sc, `모서리 안쪽으로 → 축소 ${a.sc} → ${z.sc}`);
 
   /* 두 번 누르면 원래대로(그 크기만) */
-  await center(); await p.waitForTimeout(120); const c3 = await hb('c'); await p.mouse.dblclick(c3.x, c3.y); await p.waitForTimeout(400); z = await node();
+  const scBefore = (await node()).sc; await center(); await p.waitForTimeout(120); const c3 = await hb('c'); await p.mouse.dblclick(c3.x, c3.y); await p.waitForTimeout(400); z = await node();
   want(!z.sc && z.cw && z.ch, `모서리 두 번 → 확대·축소만 원래대로 (sc ${z.sc}, cw ${z.cw}, ch ${z.ch})`);
 
   /* 되돌리기 */
   await p.waitForTimeout(900); await p.click('#btnUndo'); await p.waitForTimeout(500); z = await node();
-  want(z.sc && z.sc < 1.3, `되돌리기 → 확대·축소 돌아옴 (sc ${z.sc})`);
+  want(z.sc && z.sc === scBefore, `되돌리기 → 확대·축소 돌아옴 (sc ${z.sc}, 원래대로 하기 전 ${scBefore})`);
   const toast = await p.evaluate(() => (document.querySelector('.undo-toast') || {}).textContent || '');
   want(/크기 바꿈/.test(toast), `되돌리기 띠 「${toast}」`);
 
