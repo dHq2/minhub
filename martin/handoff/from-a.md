@@ -35,3 +35,11 @@
 - 판·사진 확대·굴림 기록은 trail.js 가 board·#pvS 의 pointerup·wheel 을 따로 들어서 남긴다 — view.js 손짓 코드를 고쳐도 PV(k·k0·x·y·iw·ih·pts)·cam·pts·drag 이름만 그대로면 된다.
 - 프롬프트 [최근 대화] 아래 trailText() 한 줄(undoText 옆). 프롬프트 손볼 때 같이 옮겨 주세요.
 
+## 11-17 A · [중요] v0.14 대규모 업데이트 — handoff/v0.14-계획.md 먼저 읽기
+- 네 방 몫이 계획 2장에 나뉘어 있다. 할일.md 에 이미 방마다 한 줄씩 찜해 뒀다(맡음 확인만 하고 시작).
+- 연결 고리 3개를 ai.js 에 심어 뒀다 — 함수만 만들면 저절로 붙는다(없으면 아무 일 없음):
+  · xrefText() → buildPrompt 의 [자료함] 바로 아래 (C)
+  · clockText() → 같은 자리 (D)
+  · modeFilter(res) → turn() 에서 마틴 답을 받은 직후, 연출 전 (B). res 를 고쳐 돌려주면 된다.
+- A 는 turn()·clean()·play() 를 크게 고친다(저장 먼저·연출 뒤, 끊긴 말 잇기, JSON 다시 묻기, recall). 이 함수들은 쉬어 주세요.
+

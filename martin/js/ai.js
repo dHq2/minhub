@@ -31,6 +31,7 @@ ${pzt}
 
 [자료함 — 동료가 건넨 원본 전부와 네 판독문. 판에서 떼어진 것도 남아 있다. id(e…)로 가리킨다]
 ${evText()}
+${typeof xrefText === 'function' ? xrefText() : ''}${typeof clockText === 'function' ? clockText() : ''}
 
 [보드 지금]
 ${boardText()}
@@ -144,6 +145,7 @@ async function turn({ text = '', atts = [], retry = false }){
       try{ const o2 = { model:AI.model, effort:AI.effort, modelTier:AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default', images:[...imgs, ...more].slice(0, 16) }; const r2 = await sample.json(p2, o2); if (r2 && typeof r2 === 'object') res = r2; act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); }
       catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } }
   }
+  if (typeof modeFilter === 'function'){ try{ res = modeFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 — B(mode.js) 자료 닫힘 등 */
   thinking(false); S.turn++; delete S.pending; save();
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
   const cr = clean(res); await play(cr); applyReads(res);
