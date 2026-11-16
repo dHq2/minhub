@@ -50,7 +50,7 @@ ${pzt}
 
 [자료함 — 동료가 건넨 원본 전부와 네 판독문. 판에서 떼어진 것도 남아 있다. id(e…)로 가리킨다]
 ${evText()}
-${typeof xrefText === 'function' ? xrefText() : ''}${typeof clockText === 'function' ? clockText() : ''}
+${typeof xrefText === 'function' ? xrefText() : ''}${typeof tlText === 'function' ? tlText() : ''}${typeof clockText === 'function' ? clockText() : ''}
 
 [보드 지금]
 ${boardText()}
@@ -122,12 +122,16 @@ ${typeof habitText === 'function' ? habitText() : ''}
 - recall: 앞서 오간 말(동료가 정한 조건·정정·네가 한 말)이 위에 안 보이는데 필요할 때 찾을 말 목록(많아야 3, 예 ["열쇠","금요일"]). 앱이 옛 대화에서 찾아 붙여 한 번 더 묻는다. recallLine 에 그 순간 한마디(예: "잠깐. 앞에서 한 말을 다시 본다."). 기억을 지어내기 전에 이걸 쓴다.
 - look: 판독문만으로 모자라 원본을 다시 봐야 할 때 자료 id 목록(많아야 3, 예 ["e3"]). 앱이 원본을 붙여 한 번 더 묻는다. 이번에 이미 원본을 받았으면 쓰지 않는다. lookLine 에 그 순간의 한마디(예: "잠깐. 그 캡처를 다시 본다.").
 - ask: 수사가 막혔을 때만, 동료가 다음에 캐 올 것을 마틴 말투로 한 줄. 매번 넣지 않는다 — 대화 중이면 빼라. [자료 형편]이 닫힘이면 절대 쓰지 않는다 — 있는 조각으로 추리한다.
+- tl: 연혁(동료가 「연혁」 탭으로 늘 보는 세로 타임라인)을 세우고 고친다 — 11-17 A. 사건에서 일어난 일(누가 무엇을 했나·말했나·어디 갔나)을 한 줄씩, 메시지 하나하나가 아니라 일 단위로. 새 자료·새 사실이 나오면 그 답에서 바로 고친다.
+  add: {"op":"add","id":"${typeof tlNext === 'function' ? tlNext() : 't1'}","d":"2024-11-04","t":"23:02","what":"지민이 금고 열쇠 반납(40자 안)","who":"김지민","where":"경비실","src":["e5"],"sure":true,"after":"t2"} — d 는 YYYY-MM-DD(해를 모르면 MM-DD, 모르면 비움), t 는 24시간 HH:MM(모르면 비우고 when 에 「송년회 밤」처럼), 오전·오후를 모르면 "amb":true. src 에 자료 id 를 꼭. 자료에 적힌 일은 sure:true, 네 추정이면 false. 반드시 어떤 일 뒤라면 after 에 그 연혁 id.
+  edit: {"op":"edit","id":"t3","t":"21:40",…} · drop: {"op":"drop","id":"t3","why":"…"} · 어긋남: {"op":"clash","a":"t3","b":"t7","why":"…"} · 풀림: {"op":"clash","a":"t3","b":"t7","ok":true,"why":"…"}.
+  앱이 출처 판독문에 그 시각이 정말 있는지, after 순서가 맞는지, 같은 사람이 같은 때 두 곳에 있는지 대조해 [연혁]의 「어긋남」에 띄운다 — 띄운 건 그 답에서 고치거나 이유를 대고 푼다. 어긋남은 수사의 실마리다: 누군가 거짓말을 했거나 기록이 틀렸다는 뜻이니 수첩 의문·난제로 이어 간다.
 - mode: 동료의 말로 자료 형편이 바뀔 때만 "closed"(더 가져올 자료 없음) 또는 "open"(더 구해 올 수 있음). 평소엔 빼라.
 - 판과 건넨 것에 없는 사건 사실을 지어내지 않는다. 정답을 아는 척하지 않는다. 자료 속 낱말(물건·장소·이름·말)은 판독문 글자 그대로 옮긴다 — 비슷한 말로 바꾸지 않는다(「반납 카트」를 「반납 카드」로 쓰지 않는다).
 - 「자료에 없다·사진에 안 보인다·판독문에 없다」고 말하려면 먼저 look 으로 그 원본을 다시 본다 — 판독문은 옮겨 적은 것이라 빠진 게 있을 수 있다. 원본까지 보고도 없을 때만 「원본을 다시 봤는데 없다」고 말한다.
 
 JSON 하나만 출력한다:
-{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"핵심(시각·이름·장소)은 자르지 말고 80자 안쪽","near":"n1","of":"n3","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true,"why":"가족 단톡에서 이모라 부름"},{"op":"cut","a":"n4","b":"n7","why":"날짜만 같고 같은 결제라는 근거 없음"},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"ask":"…"}`;
+{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"핵심(시각·이름·장소)은 자르지 말고 80자 안쪽","near":"n1","of":"n3","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true,"why":"가족 단톡에서 이모라 부름"},{"op":"cut","a":"n4","b":"n7","why":"날짜만 같고 같은 결제라는 근거 없음"},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"tl":[{"op":"add","id":"${typeof tlNext === 'function' ? tlNext() : 't1'}","d":"2024-11-04","t":"23:02","what":"…","who":"…","src":["e5"],"sure":true}],"ask":"…"}`;
 }
 /* 11-17 A: 「자료에 없다」류 말 — 그 말이 짚은 카드의 자료, 아니면 그 말의 낱말이 판독문에 나오는 자료, 아니면 최근 사진 */
 const NOPE_RE = /(자료|판독문|사진|캡처|카톡|화면|원본|프사|프로필)[^.!?]{0,18}(없다|없어|없는|없음|안 보|보이지 않|나오지 않|안 나와|안 나온|빠져 있)/;
@@ -230,7 +234,7 @@ async function turn({ text = '', atts = [], retry = false }){
   thinking(false); S.turn++; delete S.pending;
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
   /* 11-17 A: 저장 먼저, 연출은 뒤 — 판독문은 바로 적고, 나머지(판 고침·수첩·난제)는 play 가 단계마다 기기에 적어 두며 한다. 중간에 화면이 다시 열려도 resumePlay 가 마저 한다 */
-  applyReads(res); const cr = clean(res); save();
+  applyReads(res); if (typeof applyTl === 'function'){ try{ applyTl(res); }catch(e){} } const cr = clean(res); save();   /* 11-17 A: 연혁도 연출 전에 바로 */
   await play(cr);
   const mm = (S.notes || []).filter(n => n.turn === S.turn).map(n => n.k + ':' + n.t);
   if (curLines.length) log('chat', { who:'m', text:curLines.join(' / ') });
