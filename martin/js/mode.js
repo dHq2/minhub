@@ -27,6 +27,7 @@ function modeSense(){
   S.modeSeen = m.at; const t = m.text.slice(0, 400);
   if (MODE_OPEN.test(t)) modeSet(false, '동료의 말');
   else if (MODE_CLOSE.test(t)) modeSet(true, '동료의 말');
+  else if (S.closed === undefined && S.moreAsked && S.turn === S.moreAsked) modeSet(true, '물었는데 답 없이 넘어감 — 있는 것부터');   /* 11-17 A: 보스 사건 20261117-5723 — 「더 구해 올 수 있나」에 답 없이 자료를 건네고 넘어갔는데 마틴이 「새로 받아 와야」 했다. 답이 없으면 지금 가진 게 전부로 본다(수첩 「다시 열기」로 풀림) */
 }
 /* 프롬프트 한 칸 — buildPrompt 가 [이번에 동료가 가져온 것] 바로 위에 붙인다 */
 function modeText(){

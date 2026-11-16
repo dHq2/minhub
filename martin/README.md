@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.20 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.21 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -57,6 +57,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/habits.js | 수사 버릇(v0.14.5, B) — HABITS 일곱 줄 · habitText()(buildPrompt 의 「판 고치기 (ops)」 위 — 뒤집어 보기·전제 의심(S.premiseAt)·끊은 실 목록) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
+| js/face.js | 프사 자동(v0.15.1, A) — 얼굴 없는 인물 카드마다 판독문에 그 이름이 나오는 캡처에서 프사 자리를 짧게 물어(faceFind — 조각 좌표를 원본으로) cropFace 로 잘라 붙임(faceAuto). 판독문에 「[프사] 이름 — …」. 동료가 뺀 카드(n.faceNo)는 다시 안 붙임 |
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
 | js/shot.js · js/lib/html-to-image.js | 판 사진(v0.11.0, A) — 판 전체를 고화질 PNG 로(boardShot), 저장·복사 서랍(shotSheet). 라이브러리는 html-to-image 1.11.13(MIT) 그대로 |
 | js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
@@ -132,3 +133,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.18 | 2026-11-17 | A: 파일 지도에 js/wallclock.js·img/clock(벽시계), 마틴 인물 설정 v2.3(다른 세계의 의뢰·현실 시간) |
 | v1.19 | 2026-11-17 | A: v0.15.0 — 엔진 메모 v0.3 으로, 한 판 점검 tests/v15.js, 점검은 반씩, 파일 지도에 빠져 있던 js/clock.js·js/recap.js(D) |
 | v1.20 | 2026-11-17 | B: 파일 지도에 js/habits.js(수사 버릇·실 why·cut·꼬리표 자리), doOp 에 cut (v0.14.5) — v1.19 는 A 의 v0.15.0 몫(엔진 메모 v0.3·tests/v15.js)이 쓸 번호 |
+| v1.21 | 2026-11-17 | A: 파일 지도에 js/face.js(프사 자동), 그림은 한 번에 IMG_MAX(4)장 |

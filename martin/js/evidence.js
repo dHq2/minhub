@@ -29,14 +29,14 @@ async function evTextOf(e){
   return '';
 }
 /* 마틴에게 보낼 읽기용 사본 — 보통은 긴 변 1600px 한 장, 세로로 긴 캡처(카톡 스크롤 등)는 폭 1100px 로 위에서부터 겹쳐 자른 조각(많아야 6장) */
-async function readCopies(src){
+async function readCopies(src, opt){   /* 11-17 A: opt.whole = 길어도 한 장으로(그림 수가 모자랄 때) */
   const own = typeof src !== 'string', url = own ? URL.createObjectURL(src) : src;
   try{
     const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
     const W = img.naturalWidth, H = img.naturalHeight, out = [];
     const jpg = c => new Promise(r => c.toBlob(r, 'image/jpeg', .88));
     const cv = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); return [c, x]; };
-    if (H / W <= 2.2){ const k = Math.min(1, 1600 / Math.max(W, H)), [c, x] = cv(Math.round(W * k), Math.round(H * k)); x.drawImage(img, 0, 0, c.width, c.height); out.push(await jpg(c)); }
+    if (H / W <= 2.2 || opt && opt.whole){ const k = Math.min(1, 1600 / Math.max(W, H)), [c, x] = cv(Math.round(W * k), Math.round(H * k)); x.drawImage(img, 0, 0, c.width, c.height); out.push(await jpg(c)); }
     else {
       const k = Math.min(1, 1100 / W), tw = Math.round(W * k), th = Math.round(tw * 1.8), ov = Math.round(tw * .12), sh = Math.round(H * k);
       for (let y = 0; y < sh && out.length < 6; y += th - ov){ const h = Math.min(th, sh - y), [c, x] = cv(tw, h); x.drawImage(img, 0, y / k, W, h / k, 0, 0, tw, h); out.push(await jpg(c)); if (y + h >= sh) break; }
@@ -77,12 +77,18 @@ async function evBackfill(){
   try{ const sample = await getSample(); if (!sample || !canImg) return;
     for (const e of todo().slice(0, 6)){
       if (busy) break; let imgs = []; try{ imgs = await evCopies(e); }catch(x){} if (!imgs.length){ e.bfFail = 1; continue; }
-      const p = `${MARTIN_SHORT}\n지금은 말하지 않고 자료 사진 한 장을 받아 적는다. 동료가 건넨 원본이다(세로로 긴 건 위에서부터 조각).\n화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. ${READ_RULE}\nJSON 하나만: {"t":"판독문"}`;
-      try{ const r = await sample.json(p, { model:AI.model, effort:'low', images:imgs }); const t = r && String(r.t || r.read || r.text || '').trim();
-        if (t && !e.read){ e.read = t.slice(0, 1800); e.readTurn = S.turn; act('판독문 채움', { ev:e.id, imgs:imgs.length }); evPing(1); save(); if (PV.id) pvRefresh(); } }
+      try{ const t = await evReadOne(e, imgs.slice(0, typeof IMG_MAX === 'number' ? IMG_MAX : 4), 'low', true);
+        if (t && !e.read){ e.read = t; e.readTurn = S.turn; act('판독문 채움', { ev:e.id, imgs:Math.min(imgs.length, IMG_MAX) }); evPing(1); save(); if (PV.id) pvRefresh(); } }
       catch(x){ e.bfFail = 1; act('판독문 채우기 실패', { ev:e.id, code:x && x.code || '' }); }
     }
-  } finally { evBF = false; }
+  } finally { evBF = false; if (typeof faceAuto === 'function') setTimeout(faceAuto, 800); }   /* 11-17 A: 채운 판독문으로 프사 찾기 */
+}
+/* 11-17 A: 사진 한 장 받아 적기 — 판독문 채우기와 「사진이 많아 먼저 판독」(ai.js turn)이 같이 쓴다. 그림은 IMG_MAX 장 안으로 넘겨 받는다 */
+async function evReadOne(e, imgs, effort, raise){
+  const sample = await getSample(); if (!sample || !canImg || !imgs || !imgs.length) return '';
+  const p = `${MARTIN_SHORT}\n지금은 말하지 않고 자료 사진 한 장을 받아 적는다. 동료가 건넨 원본이다(세로로 긴 건 위에서부터 조각).\n화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. ${READ_RULE}\nJSON 하나만: {"t":"판독문"}`;
+  try{ const r = await sample.json(p, { model:AI.model, effort:effort || 'low', images:imgs }); return String(r && (r.t || r.read || r.text) || '').trim().slice(0, 1800); }
+  catch(x){ if (raise) throw x; act('판독 실패', { ev:e.id, code:x && x.code || '' }); return ''; }
 }
 /* ── 자료함 화면 ── */
 function evPing(n){ const b = $('#evN'); if (!b || !S) return; b.textContent = (S.ev || []).length || ''; if (n){ const t = $('#btnEv'); t.classList.remove('ping'); void t.offsetWidth; t.classList.add('ping'); } }

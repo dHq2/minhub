@@ -1,9 +1,11 @@
 /* martin/js/ai.js — 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn). 고칠 땐 이 줄 아래에 「11-16 A: …」처럼 날짜·방 주석 */
 /* ── 마틴에게 묻기 ── */
+/* 11-17 A: 한 번에 보낼 수 있는 그림 수 — 보스 사건 20261117-5723 에서 사진 4장(세로로 긴 캡처 둘이 3조각씩 = 8장)이 「at most 4 images per call」로 튕겼다 */
+let IMG_MAX = 4;
 async function getSample(){
   if (sampleFn !== undefined) return sampleFn;
   try{ sampleFn = window.claude ? await window.claude.use('sample') : null; }catch(e){ sampleFn = null; }
-  if (sampleFn){ try{ canImg = !!(await sampleFn.limits()).images; }catch(e){ canImg = false; } }
+  if (sampleFn){ try{ const lim = await sampleFn.limits(); canImg = !!lim.images; const mx = +(lim.maxImages || lim.max_images || lim.imagesPerCall || 0); if (mx > 0) IMG_MAX = Math.min(mx, 16); }catch(e){ canImg = false; } }
   return sampleFn;
 }
 function boardText(){
@@ -14,7 +16,7 @@ function boardText(){
 /* 11-17 A: 대화 기억 — 마틴이 한 번에 여러 줄 말해 16줄 창에선 동료 말이 두세 번 만에 밀려났다.
    최근 대화는 24줄, 그보다 앞선 동료의 말은 이번 사건 것을 줄여서 따로(못 박은 조건·정정이 남게). 더 앞이 필요하면 마틴이 recall 로 찾는다 */
 /* 11-17 A: 판독 규칙 — 마틴의 read 와 판독문 채우기(evidence.js evBackfill)가 같이 쓴다 */
-const READ_RULE = "시각은 화면 그대로 날짜·오전/오후·시:분까지 적는다(오전·오후를 빼지 않는다 — 날짜 구분선도 줄로). 이름표 없는 말풍선은 색·위치로 적고, 누구일 공산이 큰지 괄호로 덧붙인다(예: '노란 말풍선(이 방 주인 쪽으로 보임)'). 프사·사진 속 풍경·물건·장소는 보이는 대로 쓰되 흔히 달리 부르는 이름이 있으면 같이 적는다(예: '단풍(낙엽) 길'). 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자.";
+const READ_RULE = "시각은 화면 그대로 날짜·오전/오후·시:분까지 적는다(오전·오후를 빼지 않는다 — 날짜 구분선도 줄로). 이름표 없는 말풍선은 색·위치로 적고, 누구일 공산이 큰지 괄호로 덧붙인다(예: '노란 말풍선(이 방 주인 쪽으로 보임)'). 프사·사진 속 풍경·물건·장소는 보이는 대로 쓰되 흔히 달리 부르는 이름이 있으면 같이 적는다(예: '단풍(낙엽) 길'). 메신저 캡처면 프사가 보이는 발신자마다 맨 끝에 「[프사] 이름 — 보이는 것」 한 줄씩(예: '[프사] 김지민 — 고양이 그림 동그라미', 기본 프사면 '기본 프사'). 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자.";
 function convoText(){
   const L = S.log.filter(l => !l.upd && l.text), recent = L.slice(-24), older = L.slice(0, -24).filter(l => l.who === 'p');
   const keep = []; let budget = 4200;
@@ -82,7 +84,7 @@ ${typeof habitText === 'function' ? habitText() : ''}
 3. edit: 제목·메모 고침(새로 확인된 것을 반영).
 4. merge: {"op":"merge","from":"n2","into":"n10"} — 같은 자료의 다른 판본(저화질·고화질 캡처, 같은 사람의 다른 이름)이면 하나로 합친다. into 가 남는다(사진이면 더 선명한 쪽을 into 로).
 5. remove: 쓸모없어진 카드를 뗀다. 의문(question) 카드는 판에 많아야 4장 — 풀린 의문 카드는 remove 대신 아래 solve 에 넣는다(앱이 떼고 수첩의 풀린 의문 칸에 결말과 함께 남긴다). 넘치는 작은 의문은 수첩 q 로.
-6. face: {"op":"face","id":"인물 카드 id","from":"사진 카드 id","box":[왼,위,너비,높이]} — 이번에 받은 사진 속에 그 사람의 프로필 사진(카톡 프사 동그라미 등)이 또렷하면 인물 카드 사진으로 붙인다. box 는 사진 전체를 1로 본 비율(0~1)이고 프사 하나만 딱 맞게 감싼다. 누구 프사인지 확실할 때만(이름표가 바로 옆에 있을 때).
+6. face: {"op":"face","id":"인물 카드 id","from":"사진 카드 id","box":[왼,위,너비,높이]} — 이번에 받은 사진 속에 그 사람의 프로필 사진(카톡 프사 동그라미 등)이 또렷하면 인물 카드 사진으로 붙인다. box 는 사진 전체를 1로 본 비율(0~1)이고 프사 하나만 딱 맞게 감싼다. 누구 프사인지 확실할 때만(이름표가 바로 옆에 있을 때). 11-17 A: 인물 카드의 얼굴은 앱이 그 사람이 말한 캡처(자료함)에서 프사를 찾아 저절로 잘라 붙인다 — 프사가 판독문에 없다고 사진을 따로 청하거나 「얼굴은 비워 둔다」고 하지 않는다. 동료가 「프사·얼굴 붙여」 하면 인물 카드만 세우면 된다.
 7. suspect: 가장 의심스러운 사람에게 빨간 동그라미.
 8. cut: {"op":"cut","a":"n2","b":"n5","why":"…"} — 잘못 이은 실, 더는 맞지 않는 추측 실을 끊는다. why 는 꼭. 끊은 실은 「끊은 실」에 남고, 새 근거 없이 다시 잇지 않는다.
 9. tidy: {"op":"tidy"} — 동료가 정리를 부탁하면 맨 끝에 넣는다. 앱이 판을 사람 묶음(누구의 이야기인가)대로 다시 놓는다 — 묶음을 처음부터 새로 짜는 건 동료의 「판 정리」 단추다. 정리할 땐 먼저 merge·remove 로 겹치는 것을 걷어 낸다.
@@ -121,17 +123,29 @@ ${typeof habitText === 'function' ? habitText() : ''}
 - look: 판독문만으로 모자라 원본을 다시 봐야 할 때 자료 id 목록(많아야 3, 예 ["e3"]). 앱이 원본을 붙여 한 번 더 묻는다. 이번에 이미 원본을 받았으면 쓰지 않는다. lookLine 에 그 순간의 한마디(예: "잠깐. 그 캡처를 다시 본다.").
 - ask: 수사가 막혔을 때만, 동료가 다음에 캐 올 것을 마틴 말투로 한 줄. 매번 넣지 않는다 — 대화 중이면 빼라. [자료 형편]이 닫힘이면 절대 쓰지 않는다 — 있는 조각으로 추리한다.
 - mode: 동료의 말로 자료 형편이 바뀔 때만 "closed"(더 가져올 자료 없음) 또는 "open"(더 구해 올 수 있음). 평소엔 빼라.
-- 판과 건넨 것에 없는 사건 사실을 지어내지 않는다. 정답을 아는 척하지 않는다.
+- 판과 건넨 것에 없는 사건 사실을 지어내지 않는다. 정답을 아는 척하지 않는다. 자료 속 낱말(물건·장소·이름·말)은 판독문 글자 그대로 옮긴다 — 비슷한 말로 바꾸지 않는다(「반납 카트」를 「반납 카드」로 쓰지 않는다).
+- 「자료에 없다·사진에 안 보인다·판독문에 없다」고 말하려면 먼저 look 으로 그 원본을 다시 본다 — 판독문은 옮겨 적은 것이라 빠진 게 있을 수 있다. 원본까지 보고도 없을 때만 「원본을 다시 봤는데 없다」고 말한다.
 
 JSON 하나만 출력한다:
 {"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"핵심(시각·이름·장소)은 자르지 말고 80자 안쪽","near":"n1","of":"n3","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true,"why":"가족 단톡에서 이모라 부름"},{"op":"cut","a":"n4","b":"n7","why":"날짜만 같고 같은 결제라는 근거 없음"},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"ask":"…"}`;
+}
+/* 11-17 A: 「자료에 없다」류 말 — 그 말이 짚은 카드의 자료, 아니면 그 말의 낱말이 판독문에 나오는 자료, 아니면 최근 사진 */
+const NOPE_RE = /(자료|판독문|사진|캡처|카톡|화면|원본|프사|프로필)[^.!?]{0,18}(없다|없어|없는|없음|안 보|보이지 않|나오지 않|안 나와|안 나온|빠져 있)/;
+function nopePick(lines){
+  const photos = (S.ev || []).filter(e => e.kind === 'photo'); if (!photos.length) return [];
+  const on = [].concat(...lines.map(l => l && typeof l === 'object' ? [].concat(l.on || []) : [])).map(id => evOf(id) || (nodeOf(id) && evByCard(id))).filter(e => e && e.kind === 'photo');
+  if (on.length) return [...new Set(on)].slice(0, 2);
+  const stop = /^(자료|판독문|사진|캡처|카톡|화면|원본|지금|가진|없다|안|보인다|새로|받아|와야|붙는다|얘기)$/;
+  const toks = [...new Set(lines.map(l => typeof l === 'string' ? l : l.t || '').join(' ').match(/[가-힣A-Za-z]{2,}/g) || [])].map(w => w.replace(/(은|는|이|가|을|를|에|에서|의|도|만)$/, '')).filter(w => w.length >= 2 && !stop.test(w));
+  const sc = photos.map(e => ({ e, s:toks.reduce((a, w) => a + ((e.read || '') + (e.title || '')).split(w).length - 1, 0) })).sort((a, b) => b.s - a.s);
+  return (sc[0] && sc[0].s ? sc.filter(x => x.s).map(x => x.e) : photos.slice().reverse()).slice(0, 2);
 }
 function setBusy(on){ busy = on; $('#send').disabled = on; $('#send').textContent = on ? '추리 중' : '건네기'; }
 async function turn({ text = '', atts = [], retry = false }){
   if (busy) return; setBusy(true); curLines = [];
   const sample = await getSample();
   if (!sample){ await speak('…연결이 끊겼다. 여기선 내 머리가 돌아가지 않는다.', false); setBusy(false); return; }
-  let imgs = [], photos = [], given = ''; const evs = [], tiles = {};
+  let imgs = [], photos = [], given = ''; const evs = [], tiles = {}, shots = [];
   if (retry && S.pending){ given = S.pending.given; photos = S.pending.photos || [];
     for (const id of photos){ const n = nodeOf(id); if (!n) continue; try{ const b = await (await fetch(photoSrc(n))).blob(); if (b.size) imgs.push(b); }catch(e){} }
     renderChat(); }
@@ -141,7 +155,7 @@ async function turn({ text = '', atts = [], retry = false }){
       await fly(n.x, n.y, .85, 600); S.nodes.push(n); $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); sfx(n.x + 50, n.y - 80, '탁');
       const ev = addEv({ kind:'photo', card:id, title:a.name || '사진', name:a.name, thumb:a.thumb, big:n.big }); evs.push(ev.id); save(); keepPhoto(n, a, ev); await sleep(500);
       const rc = canImg ? await readCopies(a.orig || a.blob) : []; if (rc.length > 1) tiles[ev.id] = rc.length;   /* 11-16 A: 세로로 긴 캡처는 조각으로 — 글자가 읽히게 */
-      imgs.push(...(rc.length ? rc : [a.blob])); photos.push(id); }
+      imgs.push(...(rc.length ? rc : [a.blob])); photos.push(id); shots.push({ e:ev, rc, src:a.orig || a.blob }); }
     const longPaste = text.length >= 300 || /\[.+\] \[(오전|오후)/.test(text);   /* 11-16 A: 붙여 넣은 대화·긴 글은 자료함에 원문째 */
     if (text){ let tag = ''; if (longPaste){ const e = addEv({ kind:'text', name:'붙여 넣은 글', len:text.length, head:text.slice(0, 160) }); keepText(e, text); evs.push(e.id); tag = ` — 자료함 ${e.id}`; } given += `[동료의 말/붙여넣기${tag}]\n${text.slice(0, 12000)}\n`; }
     for (const a of atts) if (a.type === 'txt'){ const e = addEv({ kind:'text', name:a.name, len:a.text.length, head:a.text.slice(0, 160) }); keepText(e, a.text); evs.push(e.id); given += `[파일 ${a.name} — 자료함 ${e.id}]\n${a.text.slice(0, 12000)}\n`; }
@@ -161,6 +175,15 @@ async function turn({ text = '', atts = [], retry = false }){
     log('chat', { who:'p', text, files:atts.map(a => ({ name:a.name, type:a.type, chars:a.text ? a.text.length : undefined })), photos, ...(view ? { viewing:view } : {}) });
   }
   renderAll(); thinking(true);
+  /* 11-17 A: 그림은 한 번에 IMG_MAX 장까지 — 넘으면 사진마다 원본(조각)을 먼저 따로 읽혀 판독문을 적어 두고, 이번 답엔 사진을 한 장씩 줄여 보낸다 */
+  if (canImg && imgs.length > IMG_MAX && shots.length){
+    let n = 0; for (const x of shots){ const e = evOf(x.e.id) || x.e; if (e.read) continue; const t = await evReadOne(e, (x.rc.length ? x.rc : []).slice(0, IMG_MAX), AI.effort); if (t){ e.read = t; e.readTurn = S.turn + 1; n++; } }
+    const whole = []; for (const x of shots.slice(0, IMG_MAX)){ try{ const w = await readCopies(x.src, { whole:true }); if (w[0]) whole.push(w[0]); }catch(e){} }
+    act('사진 먼저 판독', { n, imgs:imgs.length, max:IMG_MAX }); evPing(n);
+    imgs = whole;
+    given += `[그림은 한 번에 ${IMG_MAX}장까지라, 앱이 사진마다 원본을 먼저 따로 읽혀 판독문을 [자료함]에 적어 두었다. 이번엔 사진 ${imgs.length}장을 한 장씩 줄여 같이 보낸다. 판독문을 바탕으로 답하고, 빠지거나 틀린 게 보이면 read 로 고쳐 쓴다.]\n`;
+    if (S.pending) S.pending.given = given.slice(0, 26000); save(); }
+  if (imgs.length > IMG_MAX) imgs = imgs.slice(0, IMG_MAX);
   let res; const prompt = buildPrompt(given), t0 = Date.now();
   const tier = () => AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default';
   /* 11-17 A: JSON 이 안 오면 조용히 한 번 더 — 보스가 다시 묻기를 열 번 누르던 것 */
@@ -186,10 +209,23 @@ async function turn({ text = '', atts = [], retry = false }){
     if (more.length) add += `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다(세로로 긴 건 위에서부터 조각). 판독문은 read 로 고쳐 쓴다.]\n`;
     if (keys.length) add += `\n[대화 다시 보기 — 네가 찾은 말(${keys.join(', ')})이 나온 옛 대화와 앞뒤 한 줄씩, 오래된 것부터]\n${recallText(keys)}\n`;
     if (add){ add += '[이걸 보고 이번 답을 처음부터 다시 써라. look 과 recall 은 비워라.]\n';
-      try{ const r2 = await ask(buildPrompt(given + add), [...imgs, ...more].slice(0, 16)); if (r2 && typeof r2 === 'object') res = r2;
+      try{ const r2 = await ask(buildPrompt(given + add), [...more, ...imgs].slice(0, IMG_MAX)); if (r2 && typeof r2 === 'object') res = r2;
         if (more.length) act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); if (keys.length) act('대화 다시 보기', { keys }); }
       catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } }
   }
+  /* 11-17 A: 「자료에 없다·안 보인다」고 하면 원본을 다시 본다 — 판독문에 없으면 원본에도 없다고 단정하던 것(보스 사건 20261117-5723 3턴: 「프로필 사진은 자료에선 안 보인다」) */
+  if (!lookOk && canImg && !imgs.length){
+    const tx = l => typeof l === 'string' ? l : (l && l.t) || '';
+    const bad = (Array.isArray(res && res.say) ? res.say : []).filter(l => NOPE_RE.test(tx(l)));
+    const pick = bad.length ? nopePick(bad) : [];
+    if (pick.length){
+      log('turn', { ok:true, n:S.turn + 1, part:'nolook', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
+      thinking(false); await speak('잠깐. 원본을 다시 본다.', true, { on:pick.map(e => e.card).filter(id => id && nodeOf(id)) }); thinking(true);
+      const more = []; for (const e of pick){ if (more.length >= IMG_MAX) break; try{ more.push(...(await evCopies(e)).slice(0, IMG_MAX - more.length)); }catch(x){} }
+      if (more.length){
+        const add = `\n[다시 보기 — 너는 「${bad.map(tx).join(' / ').slice(0, 160)}」라고 하려 했다. 그 말을 하기 전에 원본 ${pick.map(e => e.id).join(', ')} 을 같이 보낸다(세로로 긴 건 위에서부터 조각). 원본에 있으면 그대로 답하고 판독문을 read 로 고친다. 원본에도 정말 없을 때만 「원본을 다시 봤는데 없다」고 말한다. look 과 recall 은 비워라.]\n`;
+        try{ const r2 = await ask(buildPrompt(given + add), more); if (r2 && typeof r2 === 'object') res = r2; act('없다 전 다시 보기', { ids:pick.map(e => e.id), imgs:more.length }); }
+        catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } } } }
   if (typeof modeFilter === 'function'){ try{ res = modeFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 — B(mode.js) 자료 닫힘 등 */
   thinking(false); S.turn++; delete S.pending;
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
@@ -201,5 +237,6 @@ async function turn({ text = '', atts = [], retry = false }){
   log('memory', { n:S.turn, newMemo:mm, board:snap(), pz:S.probs, pfocus:S.pfocus });   /* 11-16 B: 난제 지도도 */
   save(); renderAll(); setBusy(false);
   if (typeof evBackfill === 'function') setTimeout(evBackfill, 1500);   /* 11-17 A: 판독문 없는 자료가 있으면 한가할 때 채운다 */
+  if (typeof faceAuto === 'function') setTimeout(faceAuto, 2500);   /* 11-17 A: 얼굴 없는 인물 카드엔 캡처 속 프사를 */
 }
 
