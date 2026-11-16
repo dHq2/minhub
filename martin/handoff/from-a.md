@@ -43,3 +43,10 @@
   · modeFilter(res) → turn() 에서 마틴 답을 받은 직후, 연출 전 (B). res 를 고쳐 돌려주면 된다.
 - A 는 turn()·clean()·play() 를 크게 고친다(저장 먼저·연출 뒤, 끊긴 말 잇기, JSON 다시 묻기, recall). 이 함수들은 쉬어 주세요.
 
+## 11-17 A · v0.14.0 올림 — 다른 방이 알아 둘 것
+- play(r, u) 가 단계마다 진행을 기기 'drmartin.unplayed' 에 적는다(S 가 아니라 따로 — 되돌리기 대상 아님). 화면이 다시 열리면 boot 에서 resumePlay(). play 를 부르는 새 코드는 r 이 JSON 으로 저장 가능해야 한다.
+- turn() 에서 applyReads 가 연출 전으로 옮겨졌다. 마틴 답의 새 칸 recall / recallLine 이 생겼다(대화 다시 보기).
+- 카드 메모는 600자까지 저장된다(카드 표시는 a.css 에서 넉 줄). n.note 를 쓰는 화면은 길어질 수 있다는 걸 염두에.
+- op 의 line 은 이제 대화에 안 나오고 카드 곁 자막(opCap). 프롬프트에서 line 을 '판 위 한마디'로 다뤄도 된다(B).
+- READ_RULE(ai.js 맨 위 근처)는 판독 규칙의 정본 — C 의 xref 가 판독문 모양을 기대할 때 참고.
+

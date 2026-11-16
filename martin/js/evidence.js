@@ -68,6 +68,22 @@ function applyReads(raw){
   if (n){ act('판독문', { ids:rs.map(r => r && r.id).filter(Boolean) }); evPing(n); save(); if (PV.id) pvRefresh(); }
   return n;
 }
+/* 11-17 A: 판독문 채우기 — 판독문 없는 사진(자료함 이전에 건넨 것, 판독문이 날아간 것)은 마틴이 다시 볼 때까지 비어 있었다.
+   사건을 열 때·턴이 끝날 때, 한가하면 하나씩 원본을 다시 읽혀 채운다. 동료가 말을 건네면(busy) 다음으로 미룬다 */
+let evBF = false;
+async function evBackfill(){
+  if (evBF || !S) return; const todo = () => (S.ev || []).filter(e => e.kind === 'photo' && !e.read && !e.bfFail);
+  if (!todo().length) return; evBF = true;
+  try{ const sample = await getSample(); if (!sample || !canImg) return;
+    for (const e of todo().slice(0, 6)){
+      if (busy) break; let imgs = []; try{ imgs = await evCopies(e); }catch(x){} if (!imgs.length){ e.bfFail = 1; continue; }
+      const p = `${MARTIN_SHORT}\n지금은 말하지 않고 자료 사진 한 장을 받아 적는다. 동료가 건넨 원본이다(세로로 긴 건 위에서부터 조각).\n화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. ${READ_RULE}\nJSON 하나만: {"t":"판독문"}`;
+      try{ const r = await sample.json(p, { model:AI.model, effort:'low', images:imgs }); const t = r && String(r.t || r.read || r.text || '').trim();
+        if (t && !e.read){ e.read = t.slice(0, 1800); e.readTurn = S.turn; act('판독문 채움', { ev:e.id, imgs:imgs.length }); evPing(1); save(); if (PV.id) pvRefresh(); } }
+      catch(x){ e.bfFail = 1; act('판독문 채우기 실패', { ev:e.id, code:x && x.code || '' }); }
+    }
+  } finally { evBF = false; }
+}
 /* ── 자료함 화면 ── */
 function evPing(n){ const b = $('#evN'); if (!b || !S) return; b.textContent = (S.ev || []).length || ''; if (n){ const t = $('#btnEv'); t.classList.remove('ping'); void t.offsetWidth; t.classList.add('ping'); } }
 function evSheet(){

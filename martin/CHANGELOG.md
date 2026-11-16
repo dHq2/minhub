@@ -1,6 +1,18 @@
 # Dr. 마틴의 추리판 — 변경 기록
 맨 위에 새 줄. 양식: `## v0.5.1 · 방 · 날짜 · 한 줄 요약` + 아래에 '- ' 줄. 보스 눈에 보이는 변화는 js/changes.js 에도 한 줄.
 
+## v0.14.0 · A · 2026-11-17 · 「기억과 대조」 A 몫 — 기억의 바닥·출력·대화 다시 보기
+- 근거: 보스 첫 장편 사건 복기(110턴) + 시나리오 작가 평가 대조. 계획은 handoff/v0.14-계획.md.
+- 저장 먼저, 연출 뒤(ai.js turn): 답이 오면 판독문 즉시 적용·저장. 판 고침·수첩·난제는 play 가 단계마다 기기(localStorage 'drmartin.unplayed')에 진행을 적으며 하고, 화면이 다시 열리면 boot 가 resumePlay 로 마저 한다(두 번 적용 안 함). 답 못 받은 말(S.pending, 6시간 안)은 다시 열면 저절로 다시 묻기.
+- JSON 실패는 한 번 조용히 다시 묻기(log turn part:'json'). say 의 찌꺼기 줄({…}·빈 줄·undefined)은 거름(board.js sayable).
+- 카드 메모 상한 60 → 600자(카드 표시는 넉 줄 clamp). JSON 예시의 메모 안내도 「핵심은 자르지 말고 80자 안쪽」.
+- 판독문 채우기(evidence.js evBackfill): 판독문 없는 사진을 사건 열 때·턴 끝에 한가하면 하나씩 읽혀 채움(effort low, 실패하면 그 사건에선 건너뜀).
+- 판독 규칙 READ_RULE(ai.js, read 와 채우기가 같이 씀): 날짜·오전/오후·시:분 그대로, 이름표 없는 말풍선은 누구일 공산을 괄호로, 사물·풍경은 다른 이름 같이.
+- 대화 기억(convoText): 최근 24줄 + 그 앞 동료의 말은 이번 사건 것을 줄여서 따로(약 4200자). 대화 다시 보기(recall): 마틴이 recall:[찾을 말] 을 쓰면 옛 대화에서 앞뒤 한 줄씩 붙여 한 번 더 묻는다(look 과 한 번에).
+- 판 고침 한 줄(op line)은 대화창 말이 아니라 카드 곁 자막(.opcap).
+- 연결 고리: buildPrompt 의 xrefText()(C)·clockText()(D), turn 의 modeFilter(res)(B).
+- 점검 tests/memory.js(새, 15줄).
+
 ## v0.13.4 · D · 2026-11-17 · 복기본 텍스트 파일로 받기
 - 수사 기록에 「텍스트 파일로 받기」 단추 — 복기본 전문을 마틴-복기본-<사건 제목>-<날짜>-<시각>.txt 로. 아티팩트에선 downloads 기능(저장 확인 창 한 번), 그 밖(GitHub Pages)에선 보통 내려받기. 그만두거나 막히면 안내만.
 - 아티팩트 기능 선언에 downloads 를 더함(assets·db·sample·user 그대로). js/recap.js v1.1(recapSave), js/sheets.js 단추 줄. 점검 tests/recap.js v1.1.

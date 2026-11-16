@@ -11,8 +11,25 @@ function boardText(){
   const ls = S.links.map(L => `${L.a}↔${L.b} ${L.label || ''}${L.sure ? '' : ' (추측)'}`).join('\n') || '(없음)';
   return `카드:\n${ns}\n실:\n${ls}\n용의자 표시: ${S.suspect || '없음'}`;   /* 11-16 B: 가설은 [난제 지도] 칸으로 */
 }
+/* 11-17 A: 대화 기억 — 마틴이 한 번에 여러 줄 말해 16줄 창에선 동료 말이 두세 번 만에 밀려났다.
+   최근 대화는 24줄, 그보다 앞선 동료의 말은 이번 사건 것을 줄여서 따로(못 박은 조건·정정이 남게). 더 앞이 필요하면 마틴이 recall 로 찾는다 */
+/* 11-17 A: 판독 규칙 — 마틴의 read 와 판독문 채우기(evidence.js evBackfill)가 같이 쓴다 */
+const READ_RULE = "시각은 화면 그대로 날짜·오전/오후·시:분까지 적는다(오전·오후를 빼지 않는다 — 날짜 구분선도 줄로). 이름표 없는 말풍선은 색·위치로 적고, 누구일 공산이 큰지 괄호로 덧붙인다(예: '노란 말풍선(이 방 주인 쪽으로 보임)'). 프사·사진 속 풍경·물건·장소는 보이는 대로 쓰되 흔히 달리 부르는 이름이 있으면 같이 적는다(예: '단풍(낙엽) 길'). 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자.";
+function convoText(){
+  const L = S.log.filter(l => !l.upd && l.text), recent = L.slice(-24), older = L.slice(0, -24).filter(l => l.who === 'p');
+  const keep = []; let budget = 4200;
+  for (let i = older.length - 1; i >= 0 && budget > 0; i--){ const t = older[i].text.replace(/\s+/g, ' ').slice(0, 220); keep.unshift(`· ${hhmm(older[i].at)} ${t}`); budget -= t.length + 9; }
+  const fmt = l => (l.who === 'p' ? '동료(기자): ' : '마틴: ') + l.text;
+  return (keep.length ? `[동료가 이 사건에서 앞서 한 말 — 오래된 것부터, 길면 줄임. 동료가 못 박은 조건·정정·사정은 지금도 그대로 유효하다]\n${keep.join('\n')}\n\n` : '') + `[최근 대화]\n${recent.map(fmt).join('\n') || '(없음)'}`;
+}
+/* 11-17 A: 대화 다시 보기 — 마틴이 recall 에 찾을 말을 쓰면 옛 대화에서 그 말과 앞뒤 한 줄씩 */
+function recallText(keys){
+  const L = S.log.filter(l => !l.upd && l.text), hit = new Set();
+  for (const k of keys.map(x => String(x).trim()).filter(x => x.length >= 1).slice(0, 3)) L.forEach((l, i) => { if (l.text.includes(k)) for (const j of [i - 1, i, i + 1]) if (j >= 0 && j < L.length) hit.add(j); });
+  const idx = [...hit].sort((a, b) => a - b).slice(-40);
+  return idx.map(i => `${hhmm(L[i].at)} ${L[i].who === 'p' ? '동료' : '마틴'}: ${L[i].text.replace(/\s+/g, ' ').slice(0, 300)}`).join('\n') || '(찾는 말이 대화에 없다)';
+}
 function buildPrompt(given){
-  const hist = S.log.filter(l => !l.upd).slice(-16).map(l => (l.who === 'p' ? '동료(기자): ' : '마틴: ') + l.text).join('\n');
   ensureNotes(); const memo = noteText(); ensurePz(); const pzt = pzText();   /* 11-16 B: 난제 지도 */
   return `${MARTIN_WHO}
 
@@ -36,8 +53,7 @@ ${typeof xrefText === 'function' ? xrefText() : ''}${typeof clockText === 'funct
 [보드 지금]
 ${boardText()}
 
-[최근 대화]
-${hist || '(없음)'}
+${convoText()}
 ${typeof undoText === 'function' ? undoText() : ''}${typeof trailText === 'function' ? trailText() : ''}
 
 [이번에 동료가 가져온 것]
@@ -87,13 +103,14 @@ ${given}
 - notes: 수사 수첩에 적을 것 0~4줄 — {"k":"q","t":"작은 의문"} {"k":"guess","t":"근거 없는 짐작","by":"me 또는 you"} {"k":"todo","t":"확인할 것·캐 올 것"} {"k":"fact","t":"사사로운 사실(날짜·호칭·말버릇·습관·작은 정황)"}. 한 줄 50자 안팎. 판에는 굵직한 것, 수첩에는 작은 것. 의문 카드가 4장이면 나머지 의문은 수첩 q 로. 동료가 근거 없이 짐작을 말하면 guess(by:"me")로 적어 두고, 네 짐작은 guess(by:"you"). 이미 수첩에 있는 건 다시 쓰지 않는다. 판 조작 방법·의문 카드 상한 같은 네 작업 메모는 수첩에 쓰지 않는다.
 - solve: 이번에 풀린 것 [{"id":"m3","a":"어떻게 풀렸나 한 줄"}]. 수첩 줄(m…)도, 판의 의문 카드(n…)도 된다 — 의문 카드를 풀면 앱이 판에서 떼고 풀린 의문 칸으로 옮긴다. 짐작이 확정되거나 틀린 것으로 밝혀져도 solve 로 결말을 적는다.
 - drop: 틀렸거나 겹치거나 낡은 수첩 줄 id 목록. 동료가 직접 적은 줄은 지우지 않는다.
-- read: 자료 판독문 [{"id":"e5","t":"…"}]. 이번에 사진이나 글을 받았으면 자료마다 꼭 쓴다 — 다음 턴부터 너는 사진을 다시 못 보고 이 판독문으로만 기억한다. 화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자. 이미 판독문이 있으면 고칠 때만.
+- read: 자료 판독문 [{"id":"e5","t":"…"}]. 이번에 사진이나 글을 받았으면 자료마다 꼭 쓴다 — 다음 턴부터 너는 사진을 다시 못 보고 이 판독문으로만 기억한다. 화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. ${READ_RULE} 이미 판독문이 있으면 고칠 때만.
+- recall: 앞서 오간 말(동료가 정한 조건·정정·네가 한 말)이 위에 안 보이는데 필요할 때 찾을 말 목록(많아야 3, 예 ["열쇠","금요일"]). 앱이 옛 대화에서 찾아 붙여 한 번 더 묻는다. recallLine 에 그 순간 한마디(예: "잠깐. 앞에서 한 말을 다시 본다."). 기억을 지어내기 전에 이걸 쓴다.
 - look: 판독문만으로 모자라 원본을 다시 봐야 할 때 자료 id 목록(많아야 3, 예 ["e3"]). 앱이 원본을 붙여 한 번 더 묻는다. 이번에 이미 원본을 받았으면 쓰지 않는다. lookLine 에 그 순간의 한마디(예: "잠깐. 그 캡처를 다시 본다.").
 - ask: 수사가 막혔을 때만, 동료가 다음에 캐 올 것을 마틴 말투로 한 줄. 매번 넣지 않는다 — 대화 중이면 빼라. 동료가 더 가져올 자료가 없다고 했으면 자료를 요구하지 말고, 있는 조각으로 추리한다.
 - 판과 건넨 것에 없는 사실을 지어내지 않는다. 정답을 아는 척하지 않는다.
 
 JSON 하나만 출력한다:
-{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"40자 이내 한 줄","near":"n1","of":"n3","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"ask":"…"}`;
+{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"핵심(시각·이름·장소)은 자르지 말고 80자 안쪽","near":"n1","of":"n3","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"ask":"…"}`;
 }
 function setBusy(on){ busy = on; $('#send').disabled = on; $('#send').textContent = on ? '추리 중' : '건네기'; }
 async function turn({ text = '', atts = [], retry = false }){
@@ -131,27 +148,44 @@ async function turn({ text = '', atts = [], retry = false }){
   }
   renderAll(); thinking(true);
   let res; const prompt = buildPrompt(given), t0 = Date.now();
-  try{ const opts = { model:AI.model, effort:AI.effort, modelTier:AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default' }; if (imgs.length && canImg) opts.images = imgs; res = await sample.json(prompt, opts); }
+  const tier = () => AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default';
+  /* 11-17 A: JSON 이 안 오면 조용히 한 번 더 — 보스가 다시 묻기를 열 번 누르던 것 */
+  const ask = async (p, images) => { const o = { model:AI.model, effort:AI.effort, modelTier:tier() }; if (images && images.length && canImg) o.images = images;
+    try{ return await sample.json(p, o); }
+    catch(e){ const c = e && e.code || ''; if (c !== 'invalid_json' && !/json/i.test(String(e && e.message || ''))) throw e;
+      log('turn', { ok:false, n:S.turn + 1, part:'json', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt:p, error:{ code:c, message:String(e && e.message || e) } }); act('JSON 다시 묻기');
+      return await sample.json(p + '\n\n[앞서 낸 답이 JSON 이 아니었다. 위 형식의 JSON 객체 하나만 낸다. 말은 전부 say 안에.]', o); } };
+  try{ res = await ask(prompt, imgs); }
   catch(e){ thinking(false); const c = e && e.code; log('turn', { ok:false, n:S.turn + 1, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, error:{ code:c || '', message:String(e && e.message || e) } });
     await speak(c === 'rate_limited' ? '…머리가 과열됐다. 잠시 뒤에 다시 묻자.' : c === 'not_granted' ? '…생각할 허락이 없다. 연결을 허락해 줘야 움직인다.' : '…실이 끊겼다. 다시 묻기를 눌러라.', false);
     save(); setBusy(false); renderChat(); return; }
-  /* 11-16 A: 다시 보기 — 마틴이 look 으로 원본을 청하면 그 원본(읽기용 조각)을 붙여 한 번 더 묻는다 */
+  /* 11-16 A: 다시 보기(look — 원본) · 11-17 A: 대화 다시 보기(recall — 옛 대화). 둘 다 청하면 한 번에 붙여 한 번 더 묻는다 */
   const want = (Array.isArray(res && res.look) ? res.look : []).map(String).map(id => evOf(id) || (nodeOf(id) && evByCard(id))).filter(e => e && e.kind === 'photo').slice(0, 3);
-  if (want.length && canImg){
-    log('turn', { ok:true, n:S.turn + 1, part:'look', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
-    thinking(false); await speak(res.lookLine || '잠깐. 원본을 다시 본다.', true, { on:want.map(e => e.card).filter(id => id && nodeOf(id)) }); thinking(true);
-    const more = []; for (const e of want){ try{ more.push(...(await evCopies(e))); }catch(x){} }
-    if (more.length){ const p2 = buildPrompt(given + `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다(세로로 긴 건 위에서부터 조각). 이걸 보고 이번 답을 처음부터 다시 써라. 판독문은 read 로 고쳐 쓰고, look 은 비워라.]\n`);
-      try{ const o2 = { model:AI.model, effort:AI.effort, modelTier:AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default', images:[...imgs, ...more].slice(0, 16) }; const r2 = await sample.json(p2, o2); if (r2 && typeof r2 === 'object') res = r2; act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); }
+  const keys = (Array.isArray(res && res.recall) ? res.recall : res && typeof res.recall === 'string' ? [res.recall] : []).map(String).filter(Boolean).slice(0, 3);
+  const lookOk = want.length && canImg;
+  if (lookOk || keys.length){
+    log('turn', { ok:true, n:S.turn + 1, part:lookOk ? (keys.length ? 'look+recall' : 'look') : 'recall', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
+    const line = lookOk ? res.lookLine || '잠깐. 원본을 다시 본다.' : res.recallLine || '잠깐. 앞에서 한 말을 다시 본다.';
+    thinking(false); if (sayable(line)) await speak(line, true, { on:lookOk ? want.map(e => e.card).filter(id => id && nodeOf(id)) : [] }); thinking(true);
+    const more = []; if (lookOk) for (const e of want){ try{ more.push(...(await evCopies(e))); }catch(x){} }
+    let add = '';
+    if (more.length) add += `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다(세로로 긴 건 위에서부터 조각). 판독문은 read 로 고쳐 쓴다.]\n`;
+    if (keys.length) add += `\n[대화 다시 보기 — 네가 찾은 말(${keys.join(', ')})이 나온 옛 대화와 앞뒤 한 줄씩, 오래된 것부터]\n${recallText(keys)}\n`;
+    if (add){ add += '[이걸 보고 이번 답을 처음부터 다시 써라. look 과 recall 은 비워라.]\n';
+      try{ const r2 = await ask(buildPrompt(given + add), [...imgs, ...more].slice(0, 16)); if (r2 && typeof r2 === 'object') res = r2;
+        if (more.length) act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); if (keys.length) act('대화 다시 보기', { keys }); }
       catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } }
   }
   if (typeof modeFilter === 'function'){ try{ res = modeFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 — B(mode.js) 자료 닫힘 등 */
-  thinking(false); S.turn++; delete S.pending; save();
+  thinking(false); S.turn++; delete S.pending;
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
-  const cr = clean(res); await play(cr); applyReads(res);
+  /* 11-17 A: 저장 먼저, 연출은 뒤 — 판독문은 바로 적고, 나머지(판 고침·수첩·난제)는 play 가 단계마다 기기에 적어 두며 한다. 중간에 화면이 다시 열려도 resumePlay 가 마저 한다 */
+  applyReads(res); const cr = clean(res); save();
+  await play(cr);
   const mm = (S.notes || []).filter(n => n.turn === S.turn).map(n => n.k + ':' + n.t);
   if (curLines.length) log('chat', { who:'m', text:curLines.join(' / ') });
   log('memory', { n:S.turn, newMemo:mm, board:snap(), pz:S.probs, pfocus:S.pfocus });   /* 11-16 B: 난제 지도도 */
   save(); renderAll(); setBusy(false);
+  if (typeof evBackfill === 'function') setTimeout(evBackfill, 1500);   /* 11-17 A: 판독문 없는 자료가 있으면 한가할 때 채운다 */
 }
 

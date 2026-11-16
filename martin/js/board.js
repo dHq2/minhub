@@ -124,7 +124,7 @@ async function doOp(op){
   if (op.op === 'add'){
     const id = op.id; if (nodeOf(id)) return doOp({ ...op, op:'edit' });
     const kind = KINDS[op.kind] && op.kind !== 'brief' ? op.kind : 'clue', of = op.of && groupOf(op.of) ? op.of : null, p = placeNear(of || op.near);   /* 11-16 A: of = 누구 묶음인지 */
-    const n = { id, kind, title:String(op.title || '?').slice(0, 16), note:String(op.note || '').slice(0, 60), x:p.x, y:p.y, r:(hash(id) % 9) - 4 };
+    const n = { id, kind, title:String(op.title || '?').slice(0, 16), note:String(op.note || '').slice(0, 600), x:p.x, y:p.y, r:(hash(id) % 9) - 4 };
     await fly(n.x, n.y, Math.max(cam.k, .85), 650);
     S.nodes.push(n); if (of && joinGroup(id, of)) play.regroup = true; $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); renderStrings();
     await sleep(360); sfx(n.x + 50, n.y - (n.h || 130) / 2, '탁'); await sleep(320);
@@ -136,7 +136,7 @@ async function doOp(op){
     await fly((A.x + B.x) / 2, (A.y + B.y) / 2, k, 650); renderStrings(L.id); await sleep(950);
   } else if (op.op === 'edit'){
     const n = nodeOf(op.id); if (!n) return;
-    if (op.title) n.title = String(op.title).slice(0, 16); if (op.note !== undefined) n.note = String(op.note).slice(0, 60);
+    if (op.title) n.title = String(op.title).slice(0, 16); if (op.note !== undefined) n.note = String(op.note).slice(0, 600);   /* 11-17 A: 60자에서 잘려 중요한 글자가 사라지던 것 — 저장·프롬프트는 전문, 카드엔 넉 줄만(a.css) */
     if (PV.id === n.id || (PV.id && /^e/.test(PV.id) && (evOf(PV.id) || {}).card === n.id)) pvRefresh(); if (op.kind && KINDS[op.kind] && n.kind !== 'brief' && n.kind !== 'photo') n.kind = op.kind;
     await fly(n.x, n.y, Math.max(cam.k, .85), 600);
     const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el){ el.outerHTML = cardHtml(n, 'flash'); measure(); renderStrings(); renderMarks(); } await sleep(700);
@@ -170,6 +170,7 @@ async function doOp(op){
     evDetach(n.id); S.nodes = S.nodes.filter(x => x !== n); S.links = S.links.filter(L => L.a !== n.id && L.b !== n.id); if (S.suspect === n.id) S.suspect = null; renderAll();
   }
 }
+const sayable = t => { t = String(t || '').trim(); return !!t && !/^[\[{][\s\S]*[:"][\s\S]*[\]}]$/.test(t) && !/^(undefined|null|\[object Object\]|…)$/.test(t); };
 function clean(r){
   if (!r || typeof r !== 'object') return { say:[String(r || '…')], ops:[] };
   const ops = Array.isArray(r.ops) ? r.ops.filter(o => o && typeof o === 'object').slice(0, 16) : [];
@@ -179,25 +180,43 @@ function clean(r){
     if (typeof x !== 'object') return { t:String(x) };
     const on = (Array.isArray(x.on) ? x.on : x.on ? [x.on] : []).map(String).filter(id => /^n\d+$/.test(id)).slice(0, 3);
     return { t:String(x.t || x.text || ''), on, beat:BEATS.includes(x.beat) ? x.beat : on.length > 1 ? 'link' : on.length ? 'look' : '' };
-  }).filter(x => x.t.trim());
+  }).filter(x => sayable(x.t));   /* 11-17 A: {"placeholder":""} 같은 찌꺼기는 말로 내보내지 않는다 */
   if (say.filter(x => x.beat === 'reveal').length > 1) say.forEach((x, i, a) => { if (x.beat === 'reveal' && a.slice(i + 1).some(y => y.beat === 'reveal')) x.beat = 'yes'; });
   return { say, ops, hyp:r.hypothesis, ask:r.ask, raw:r };
 }
-async function play(r){
-  let opsDone = false;
-  const runOps = async () => { if (opsDone) return; opsDone = true; if (focusOn) unfocus(true);
-    for (const op of r.ops){ await Promise.all([doOp(op).catch(e => { act("판 조작 오류", { op:op.op, msg:String(e && e.message || e).slice(0, 160) }); }), op.line ? speak(op.line) : null]); save(); } };
-  for (const l of r.say){
-    if (!opsDone && l.on && l.on.some(id => !nodeOf(id) && r.ops.some(o => o.op === 'add' && o.id === id))) await runOps();   /* 새 카드를 짚는 말이면 판부터 꽂고 */
-    await sayLine(l);
+/* 11-17 A: 끊겨도 이어지는 연출 — 마틴의 답(r)과 어디까지 했는지를 기기에 적어 두고(drmartin.unplayed), 화면이 다시 열리면 마저 한다(resumePlay).
+   판독문은 연출 전에 이미 적용(ai.js turn). 수첩·난제·판 고침도 단계마다 표시해 두 번 하지 않는다 */
+const UPK = 'drmartin.unplayed';
+const upGet = () => { try{ const u = JSON.parse(localStorage.getItem(UPK) || 'null'); return u && S && u.cid === S.id ? u : null; }catch(e){ return null; } };
+const upSet = u => { try{ if (u) localStorage.setItem(UPK, JSON.stringify(u)); else localStorage.removeItem(UPK); }catch(e){} };
+function opCap(op){   /* 판 고침 한 줄은 대화창 말이 아니라 카드 곁 자막으로만 */
+  const n = nodeOf(op.id || op.a || op.into || ''); if (!n || !op.line) return;
+  const el = document.createElement('div'); el.className = 'opcap'; el.textContent = String(op.line).slice(0, 40);
+  el.style.left = n.x + 'px'; el.style.top = (n.y - (n.h || 130) / 2 - 14) + 'px'; world.appendChild(el); setTimeout(() => el.remove(), 2600);
+}
+async function play(r, u){
+  u = u || { cid:S.id, turn:S.turn, r:{ say:r.say, ops:r.ops, ask:r.ask, raw:r.raw }, i:0, opi:0, notes:0, pz:0 }; upSet(u);
+  const runOps = async () => { if (u.opi >= r.ops.length) return; if (focusOn) unfocus(true);
+    while (u.opi < r.ops.length){ const op = r.ops[u.opi]; await doOp(op).catch(e => { act("판 조작 오류", { op:op.op, msg:String(e && e.message || e).slice(0, 160) }); }); opCap(op); u.opi++; upSet(u); save(); } };
+  while (u.i < r.say.length){ const l = r.say[u.i];
+    if (u.opi < r.ops.length && l.on && l.on.some(id => !nodeOf(id) && r.ops.some(o => o.op === 'add' && o.id === id))) await runOps();   /* 새 카드를 짚는 말이면 판부터 꽂고 */
+    await sayLine(l); u.i++; upSet(u);
   }
   if (focusOn) await unfocus();
   play.regroup = false; await runOps();   /* 11-16 A: 자리는 동료가 정한다 — 새 카드는 관련 카드 옆에만 놓고 판 전체를 다시 놓지 않는다 */
-  const nr = await applyNotes(r.raw);   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
-  const pr = await applyPz(r.raw);   /* 11-16 B: 가설은 난제 지도로(pz). 옛 hypothesis 가 오면 뿌리 난제 가설로 받는다 */
+  let nr = { solved:[] }, pr = { n:0 };
+  if (!u.notes){ nr = await applyNotes(r.raw); u.notes = 1; upSet(u); save(); }   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
+  if (!u.pz){ pr = await applyPz(r.raw); u.pz = 1; upSet(u); save(); }   /* 11-16 B: 가설은 난제 지도로(pz) */
   if (r.ops.length || nr.solved.length) await fitAll(800);
   if (pr.n) await sleep(400);
-  if (r.ask) await speak(r.ask);
+  if (r.ask && !u.asked){ u.asked = 1; upSet(u); await speak(r.ask); }
+  upSet(null);
+}
+async function resumePlay(){   /* 화면이 다시 열렸을 때 — 끊긴 말을 마저 */
+  const u = upGet(); if (!u || !u.r || !Array.isArray(u.r.say)) { upSet(null); return false; }
+  act('끊긴 답 잇기', { turn:u.turn, from:u.i, of:u.r.say.length });
+  if (u.i < u.r.say.length || u.opi < (u.r.ops || []).length) await speak('아까 하던 말을 마저 한다.', false);
+  await play({ say:u.r.say, ops:u.r.ops || [], ask:u.r.ask, raw:u.r.raw || {} }, u); save(); renderAll(); return true;
 }
 
 
