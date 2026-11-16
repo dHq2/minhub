@@ -6,7 +6,10 @@
    폰: 위 「난제」 단추로 오른쪽 서랍. 아주 넓은 화면(1180px~): 판 오른쪽에 늘 펼침.
    모든 게 난제는 아니다 — 난제는 합쳐지기도(merge), 없어지기도(drop) 한다. 사라진 난제는 「사라진 난제」에 이유와 함께 남는다(S.pgone).
    옛 큰 가설 띠는 한 줄 「붙잡은 난제」 띠가 됐다(renderPzBar). 옛 S.hyp 는 처음 열 때 뿌리 난제의 가설로 옮긴다 */
+/* 11-17 B: v0.14 판단 규칙 — ① 확신은 새 근거(b 에 새 id)가 올 때만 움직인다(근거 없이 2~5%씩 흔들리던 것). ② 근거 없이 오래 멈춘 가설엔 프롬프트에 「n턴째 그대로」 — 버리거나(kill) 받쳐라.
+   ③ 의뢰의 본래 질문(누굴 찾나·무엇을 밝히나)은 「의뢰」 난제(p.req)로 — 없으면 프롬프트가 세우라고 짚는다 */
 const PZ_ROOT_T = '무슨 일이 있었나 — 이 사건의 진실';
+const PZ_IDLE = 8;   /* 이만큼 턴 동안 확신·근거가 그대로면 「멈춘 가설」 */
 let pzSel = null, pzFlash = new Set();
 const pzPct = v => Math.max(0, Math.min(100, Math.round(+v || 0)));
 const probOf = id => (S.probs || []).find(p => p.id === id);
@@ -42,7 +45,8 @@ function addProb(o, by){
   const k = +id.slice(1); if (k > S.pmax) S.pmax = k;
   const up = probOf(o.up) ? o.up : pzRoot().id;
   const p = { id, t, up, by:by === 'me' ? 'me' : 'you', st:'open', hy:[], at:Date.now(), turn:S.turn, log:[] };
-  S.probs.push(p); pzEv(p, `난제 지정 — ${up} 아래`, by); return p;
+  if (o.req && !S.probs.some(x => x.req)) p.req = 1;   /* 11-17 B: 의뢰의 본래 질문 — 사건에 하나 */
+  S.probs.push(p); pzEv(p, `난제 지정 — ${up} 아래${p.req ? ' · 의뢰' : ''}`, by); return p;
 }
 /* 마틴의 답 → 난제 지도. 옛 모양(hypothesis)이 오면 뿌리 난제 가설로 받는다 */
 async function applyPz(raw){
@@ -54,8 +58,10 @@ async function applyPz(raw){
       if (o.op === 'new'){ const p = addProb(o, o.by); if (p){ made.push(p.id); act('난제 생김', { id:p.id, t:p.t, by:p.by }); } }
       else if (o.op === 'hyp'){
         const [old, op] = o.id ? hypOf(o.id) : [null, null];
-        if (old){ const c = o.c != null ? pzPct(o.c) : old.c, b = o.b != null ? basisOf(o.b) : old.b;
+        if (old){ let c = o.c != null ? pzPct(o.c) : old.c; const b = o.b != null ? basisOf(o.b) : old.b, nb = b.filter(x => !old.b.includes(x));
+          if (c !== old.c && !nb.length){ act('확신 그대로 — 새 근거 없음', { id:old.id, want:c, keep:old.c }); c = old.c; }   /* 11-17 B: 확신은 새 근거가 올 때만 */
           const msg = []; if (c !== old.c){ msg.push(`${old.c}→${c}%`); old.hist.push([S.turn, c]); old.c = c; }
+          if (nb.length) old.bturn = S.turn;
           if (o.t && String(o.t).trim() && String(o.t).trim().slice(0, 80) !== old.t){ old.t = String(o.t).trim().slice(0, 80); msg.push('고쳐 씀'); }
           if (b.join() !== old.b.join()){ old.b = b; msg.push('근거 ' + (b.join(',') || '없음')); }
           if (o.why){ old.why = String(o.why).slice(0, 200); }
@@ -70,6 +76,7 @@ async function applyPz(raw){
           pzEv(p, `풀림 → ${p.a}`, 'you'); made.push(p.id); act('난제 풀림', { id:p.id, a:p.a });
           if (p.root) boom('봐라.'); else if (p.up) pzEv(probOf(p.up), `${p.id} 풀림 — 이제 근거로 쓸 수 있다`, 'you'); } }
       else if (o.op === 'reopen'){ const p = probOf(o.p); if (p && p.st === 'solved'){ reopenProb(p, String(o.why || '').slice(0, 120), 'you'); made.push(p.id); } }
+      else if (o.op === 'edit' && o.req){ const p = probOf(o.p); if (p && !p.root && !S.probs.some(x => x.req && x !== p)){ p.req = 1; pzEv(p, '의뢰의 본래 질문으로', 'you'); made.push(p.id); } }   /* 11-17 B */
       else if (o.op === 'edit'){ const p = probOf(o.p); if (p && !p.root && p.by !== 'me' && o.t){ p.t = String(o.t).trim().slice(0, 80); pzEv(p, '제목 고침', 'you'); made.push(p.id); } }
       else if (o.op === 'merge'){ const f = probOf(o.from || o.p), t = probOf(o.into); if (f && t && !f.root && f !== t && t.up !== f.id && mergeProb(f, t, o.why, 'you')){ made.push(t.id); act('난제 합침', { from:f.id, into:t.id, why:o.why || '' }); } }
       else if (o.op === 'drop'){ const p = probOf(o.p || o.id); if (p && !p.root && goneProb(p, {}, o.why, 'you')){ pzEv(probOf(p.up) || pzRoot(), `${p.id} 「${p.t}」 없어짐${o.why ? ' — ' + o.why : ''}`, 'you'); made.push(p.up); act('난제 없어짐', { id:p.id, why:o.why || '' }); } }
@@ -101,11 +108,12 @@ function pzRename(from, into){   /* 판의 카드가 합쳐지면 근거 id 도 
   for (const p of S.probs || []){ const fix = b => [...new Set((b || []).map(x => x === from ? into : x))]; p.ab = p.ab && fix(p.ab); for (const h of p.hy) h.b = fix(h.b); }
 }
 /* 마틴에게 보내는 난제 지도 */
+function pzIdle(h){ if (h.st !== 'live' || S.turn == null) return 0; const last = Math.max(h.turn ?? 0, h.bturn ?? 0, (h.hist[h.hist.length - 1] || [0])[0] ?? 0); return S.turn - last; }   /* 11-17 B: 확신·근거가 그대로인 턴 수 */
 function pzText(){
   ensurePz();
-  const out = [], lineH = h => `${'  '}가설 ${h.id}${h.by === 'me' ? '(동료)' : ''} ${h.c}% ${h.t} | 근거 ${h.b.join(',') || '없음'}${h.why ? ' | 왜: ' + h.why : ''}${h.hist.length > 1 ? ' | 이력 ' + h.hist.map(x => x[1]).join('→') : ''}`;
+  const out = [], lineH = h => `${'  '}가설 ${h.id}${h.by === 'me' ? '(동료)' : ''} ${h.c}% ${h.t} | 근거 ${h.b.join(',') || '없음'}${h.why ? ' | 왜: ' + h.why : ''}${h.hist.length > 1 ? ' | 이력 ' + h.hist.map(x => x[1]).join('→') : ''}${pzIdle(h) >= PZ_IDLE ? ` | 근거 없이 ${pzIdle(h)}턴째 그대로` : ''}`;
   const walk = (p, d) => {
-    const pad = '  '.repeat(d), tags = [p.st === 'solved' ? '풀림' : '열림', p.root ? '뿌리' : '', S.pfocus === p.id ? '붙잡음' : '', p.by === 'me' ? '동료 지정' : ''].filter(Boolean).join('·');
+    const pad = '  '.repeat(d), tags = [p.st === 'solved' ? '풀림' : '열림', p.root ? '뿌리' : '', S.pfocus === p.id ? '붙잡음' : '', p.by === 'me' ? '동료 지정' : '', p.req ? '의뢰' : ''].filter(Boolean).join('·');
     out.push(`${pad}${p.id} [${tags}] ${p.t}${p.root ? '' : ` (→ ${p.up} 의 근거)`}`);
     if (p.st === 'solved') out.push(`${pad}  결론: ${p.a} | 근거 ${(p.ab || []).join(',') || '없음'}`);
     else { const lv = liveHy(p); for (const h of lv) out.push(pad + lineH(h)); if (!lv.length) out.push(`${pad}  (가설 없음)`);
@@ -114,7 +122,8 @@ function pzText(){
   };
   walk(pzRoot(), 0);
   const gone = (S.pgone || []).slice(-5).map(g => `${g.id} 「${g.t}」 ${g.into ? g.into + ' 로 합쳐짐' : '없어짐'}${g.why ? ' — ' + g.why : ''}`);
-  return `붙잡은 난제: ${S.pfocus || pzRoot().id}\n${out.join('\n')}${gone.length ? '\n사라진 난제(최근): ' + gone.join(' / ') : ''}`;
+  const hint = S.probs.some(p => p.req) ? '' : '\n(의뢰의 본래 질문 — 누굴 찾나·무엇을 밝히나 — 이 아직 난제로 서지 않았다. 동료의 의뢰가 보이면 그 질문을 p1 바로 아래에 new 로, "req":true 를 붙여 세워라.)';   /* 11-17 B */
+  return `붙잡은 난제: ${S.pfocus || pzRoot().id}\n${out.join('\n')}${gone.length ? '\n사라진 난제(최근): ' + gone.join(' / ') : ''}${hint}`;
 }
 /* ── 그리기 ── */
 const pzUnderOf = () => [probOf(pzSel), probOf(S.pfocus)].find(p => p && p.st !== 'solved') || pzRoot();   /* 새 난제는 펼친 난제 → 붙잡은 난제 → 뿌리 아래(풀린 난제 밑엔 안 단다) */
@@ -140,7 +149,7 @@ function probHtml(p, d){
   const lv = liveHy(p), lead = lv[0], sel = pzSel === p.id, kids = pzKids(p.id), dead = p.hy.filter(h => h.st === 'dead');
   const tag = p.st === 'solved' ? '풀림' : S.pfocus === p.id ? '붙잡음' : '열림';
   return `<div class="pzn st-${p.st}${S.pfocus === p.id ? ' focus' : ''}${sel ? ' sel' : ''}${p.root ? ' root' : ''}${pzFlash.has(p.id) ? ' new' : ''}" data-p="${p.id}">
-  <button type="button" class="pz-h" data-ptog="${p.id}"><i class="pid">${p.id}</i><span class="ptag">${tag}</span><b class="pt">${esc(p.t)}</b><span class="pc">${p.st === 'solved' ? '✓' : lead ? lead.c + '%' : '—'}</span></button>
+  <button type="button" class="pz-h" data-ptog="${p.id}"><i class="pid">${p.id}</i><span class="ptag${p.req ? ' preq' : ''}">${p.req ? '의뢰 · ' : ''}${tag}</span><b class="pt">${esc(p.t)}</b><span class="pc">${p.st === 'solved' ? '✓' : lead ? lead.c + '%' : '—'}</span></button>
   ${p.st === 'solved' ? `<div class="pz-a">→ ${esc(p.a || '')}${!p.root ? `<small>${p.up} 의 근거</small>` : ''}</div>` : lead ? `<div class="pz-s"><i>${lead.id}</i>${esc(lead.t)}${lv.length > 1 ? `<small>외 ${lv.length - 1}</small>` : ''}</div>` : `<div class="pz-s none">가설 없음 — 자료가 더 필요하다</div>`}
   ${sel ? `<div class="pz-more">
     ${p.st === 'solved' ? `<div class="hy st-win"><div class="hy-h"><i>결론</i><b>${esc(p.a || '')}</b><span>턴 ${p.doneTurn ?? '-'}</span></div>${basisRow(p.ab)}</div>` : ''}

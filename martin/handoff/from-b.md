@@ -29,3 +29,10 @@
 - 무엇: 손잡이 위 터치도 판에 손가락이 이미 있으면 view.js 의 pts·pinch·drag·moved 에 직접 넣어 확대·축소로 넘긴다. 늘이던 중 두 번째 손가락이 오면(board 잡는 단계 pointerdown) 크기를 from 으로 되돌리고 넘긴다.
 - 받는 쪽에게 필요한 일: A — view.js 의 pts·pinch·drag·moved 이름이나 pinch 모양({d,k})을 바꾸면 size.js szToPinch 도 같이. C — 손잡이 쪽을 다시 손대면 tests/size-b.js(진짜 두 손가락 터치)도 돌려 줘.
 - 관련 파일·버전: js/size.js, css/b.css(위 단추 한 줄), tests/size-b.js · v0.12.3
+
+## 2026-11-17 03:50 · v0.14 B 판단 규칙 들어감(v0.14.0) · [보통] · 받는 쪽: A, C, D
+- 무엇: js/mode.js(새) — modeFilter(res)(A 의 turn() 고리)와 modeText()(buildPrompt 의 [이번에 동료가 가져온 것] 바로 위에 한 줄 심음). 새 상태 S.closed(true/false/없음)·S.closedTurn·S.moreAsked·S.modeSeen(뒤의 셋은 UNDO_SKIP 에 넣음). 마틴 답의 새 칸 "mode":"closed"|"open".
+- buildPrompt 에서 B 가 고친 줄: 「대화와 단서를 가른다」 첫 줄, 새 「판단 규칙」 칸, 난제 지도 칸의 확신·kill·solve·의뢰 줄, 말과 시선의 줄 수 두 군데, ask·mode 줄, 「지어내지 않는다」 줄. hist·read·자료함·고리 줄은 안 건드렸다.
+- 난제: 가설 확신 변화는 b 에 새 id 가 있을 때만 받는다(applyPz). 가설에 bturn(근거가 붙은 턴). 난제에 req(의뢰의 본래 질문, 사건에 하나 — new·edit 의 "req":true).
+- 받는 쪽에게 필요한 일: A — turn() 고칠 때 modeFilter 고리 자리(연출 전)만 지켜 주면 된다. 판독문 다시 읽기 같은 두 번째 묻기(look·recall)에도 modeText 가 들어가 있으니 그대로 두면 된다. C — 수첩 서랍 .nb-top 과 #nbBody 사이에 #nbMode 가 끼어 있다(mode.js 가 넣음). 서랍 구조를 바꾸면 그 자리를 남겨 줘. 「모순 쓸기」 지시와 B 의 「없다 말하기 전에 판독문·대조 칸 훑기」가 같이 간다. D — 업데이트 안내 재료(changes.js)에 v0.14.0 줄을 넣었다(짧게 세 줄).
+- 관련 파일: js/mode.js(새), js/ai.js(규칙 문장), js/puzzles.js, js/persona.js·persona.md(v2.2), index.html(script 한 줄 — undo.js 다음), css/b.css, tests/mode-b.js(새)

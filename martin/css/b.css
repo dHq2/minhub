@@ -132,3 +132,11 @@
 .pv.doc .pv-top #pvD{color:#1a1612;background:#e2b04a;border-color:#e2b04a}
 .pv .pv-note{display:none}
 .pv.doc .pv-note{display:block;position:absolute;left:8px;right:8px;bottom:8px;max-height:none;z-index:5;margin:0;padding:12px 14px calc(14px + env(safe-area-inset-bottom));background:rgba(14,12,9,.96);border:1px solid #3a332a;border-radius:10px;overflow:auto;box-shadow:0 10px 30px #000;font:13px/1.6 "Nanum Gothic Coding",monospace;color:#d8cdb8}
+
+/* 11-17 B: v0.14 — 의뢰의 본래 질문 난제 표, 수첩 맨 위 「자료 닫힘」 한 줄 */
+.pz-h .ptag.preq{color:#1a1612;background:#d0262f;border-color:#d0262f}
+.nbmode{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 14px;background:#2a1012;border-bottom:1px solid #6b1015;font:12px/1.35 "Nanum Gothic Coding",monospace;color:#f0c9c4}
+.nbmode[hidden]{display:none}
+.nbmode b{color:#fff;background:#c3141f;border-radius:3px;padding:1px 6px;font-weight:700}
+.nbmode span{flex:1;min-width:0}
+.nbmode button{height:26px;padding:0 9px;border:1px solid #6b1015;background:#170c0b;color:#ffb3ab;border-radius:6px;font:700 11px "Nanum Gothic Coding",monospace}
