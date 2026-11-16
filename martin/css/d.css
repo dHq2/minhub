@@ -31,3 +31,16 @@
 .nl-add input::placeholder{color:#5d564c}
 .nl-add input:focus{border-color:#e2b04a}
 .nl-add button{height:30px;padding:0 10px;font-size:11.5px}
+
+/* 11-16 D: 업데이트 묻기·적용 과정 — 세희식 [예 / 구버전으로 계속] 을 대화창 오른쪽(동료 자리) 단추로, 진행 막대는 마틴 쪽 서류 쪽지로 */
+.upd-ask{align-self:flex-end;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:2px 0 4px}
+.upd-ask button{min-height:40px;padding:0 16px;border:1px solid #4a4136;background:#1b1714;color:#d9cfbc;border-radius:20px;font:700 13px "Nanum Gothic Coding",monospace;cursor:pointer}
+.upd-ask button.go{border-color:var(--red);background:#2a1212;color:#ffd9d6;box-shadow:0 0 0 1px rgba(208,38,47,.35)}
+.upd-ask button:active{transform:translateY(1px)}
+.upd-prog{align-self:flex-start;width:min(88%,300px);padding:9px 11px 10px;border:1px solid #3a342b;border-left:3px solid #e2b04a;border-radius:6px;background:#15120f;color:#d9cfbc;font:12px/18px "Nanum Gothic Coding",monospace;letter-spacing:-.02em}
+.upd-st{color:#efe6d4}
+.upd-bar{height:5px;margin:7px 0 2px;border-radius:3px;background:#2b2620;overflow:hidden}
+.upd-bar i{display:block;height:100%;width:0;background:#e2b04a;transition:width .6s ease}
+.upd-prog.done{border-left-color:#6f8f70}.upd-prog.done .upd-bar i{background:#6f8f70}
+.upd-list{display:flex;flex-direction:column;margin-top:7px;color:#a99c86;word-break:keep-all;overflow-wrap:anywhere}
+.upd-list b{color:#e2b04a;font-weight:700}
