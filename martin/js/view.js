@@ -1,15 +1,47 @@
 /* martin/js/view.js — 판 움직이기(끌기·확대) · 사진 크게 보기. 고칠 땐 이 줄 아래에 「11-16 A: …」처럼 날짜·방 주석 */
 /* 11-16 C: 인물 서랍 프사의 흑백(grayscale) 걷음 — 자료 사진은 원래 색 그대로 */
-/* ── 판 움직이기: 끌기·두 손가락·휠, 카드 누르기 ── */
-const pts = new Map(); let moved = 0, pinch = null;
-board.addEventListener('pointerdown', e => { if (e.target.closest('.fit')) return; board.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x:e.clientX, y:e.clientY }); moved = 0; if (pts.size === 2){ const [a, b] = [...pts.values()]; pinch = { d:Math.hypot(a.x - b.x, a.y - b.y), k:cam.k }; } });
+/* ── 판 움직이기·카드 옮기기 (11-16 A, 세희 인간관계 판 방식) ──
+   한 번 누르면 고름(금빛 테두리) · 고른 카드를 한 번 더 누르면 상세(사진이면 크게 보기) · 고른 카드를 끌면 옮김 · 안 고른 카드나 빈 곳을 끌면 판이 굴러감
+   두 손가락·휠 = 손가락(마우스) 자리를 중심으로 확대·축소 · 빈 곳을 누르면 고름 풀림 · 들고 판 가장자리로 가면 판이 그쪽으로 굴러감 */
+const pts = new Map(); let moved = 0, pinch = null, SELC = null, drag = null, dragRaf = 0;
+const cardElOf = id => document.querySelector(`#nodes .card[data-id="${id}"]`);
+const cardAt = (x, y) => document.elementsFromPoint(x, y).find(el => el.classList && el.classList.contains('card') && el.closest('#nodes'));
+function selectCard(id){ unselectCard(); const el = cardElOf(id); if (!el) return; SELC = id; el.classList.add('sel'); act('카드 고름', { id }); }
+function unselectCard(){ if (SELC){ const el = cardElOf(SELC); if (el) el.classList.remove('sel'); } SELC = null; }
+const camZoom = (px, py, k) => { const r = board.getBoundingClientRect(), W = r.width, H = r.height, ox = px - r.left - W / 2, oy = py - r.top - H / 2;
+  k = Math.max(.24, Math.min(2.2, k)); const wx = cam.x + ox / cam.k, wy = cam.y + oy / cam.k; cam.k = k; cam.x = wx - ox / k; cam.y = wy - oy / k; applyCam(0); };
+function dragTick(){   /* 들고 가장자리(44px)에 닿으면 판이 굴러가며 카드가 따라간다 */
+  if (!drag || !drag.on){ dragRaf = 0; return; }
+  const r = board.getBoundingClientRect(), E = 44, sp = d => Math.max(0, E - d) / E * 12, vx = sp(r.right - drag.cx) - sp(drag.cx - r.left), vy = sp(r.bottom - drag.cy) - sp(drag.cy - r.top);
+  if (vx || vy){ cam.x += vx / cam.k; cam.y += vy / cam.k; applyCam(0); dragMove(); }
+  dragRaf = requestAnimationFrame(dragTick);
+}
+function dragMove(){ const r = board.getBoundingClientRect(), n = nodeOf(drag.id), el = cardElOf(drag.id); if (!n || !el) return;
+  n.x = Math.round(cam.x + (drag.cx - r.left - r.width / 2) / cam.k + drag.gx); n.y = Math.round(cam.y + (drag.cy - r.top - r.height / 2) / cam.k + drag.gy);
+  el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
+  if (!drag.raf) drag.raf = requestAnimationFrame(() => { if (drag) drag.raf = 0; renderStrings(); renderMarks(); }); }
+board.addEventListener('dragstart', e => e.preventDefault());
+board.addEventListener('pointerdown', e => { if (e.target.closest('.fit, .undo-bt, button')) return; try{ board.setPointerCapture(e.pointerId); }catch(x){} pts.set(e.pointerId, { x:e.clientX, y:e.clientY }); moved = 0;
+  if (pts.size === 1){ const el = cardAt(e.clientX, e.clientY), id = el && el.dataset.id;
+    if (id && id === SELC && !busy){ const r = board.getBoundingClientRect(), n = nodeOf(id), wx = cam.x + (e.clientX - r.left - r.width / 2) / cam.k, wy = cam.y + (e.clientY - r.top - r.height / 2) / cam.k;
+      drag = { id, pid:e.pointerId, x0:e.clientX, y0:e.clientY, cx:e.clientX, cy:e.clientY, gx:n.x - wx, gy:n.y - wy, on:false, fx:n.x, fy:n.y }; } else drag = null; }
+  if (pts.size === 2){ drag = null; const [a, b] = [...pts.values()]; pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, k:cam.k }; } });
 board.addEventListener('pointermove', e => { const p = pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  if (drag && e.pointerId === drag.pid && pts.size === 1){ drag.cx = e.clientX; drag.cy = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+    if (!drag.on){ if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) <= 4) return; drag.on = true; const el = cardElOf(drag.id); if (el) el.classList.add('lift'); try{ navigator.vibrate && navigator.vibrate(12); }catch(x){} if (!dragRaf) dragRaf = requestAnimationFrame(dragTick); }
+    dragMove(); return; }
   if (pts.size === 1){ moved += Math.abs(dx) + Math.abs(dy); cam.x -= dx / cam.k; cam.y -= dy / cam.k; applyCam(0); }
-  else if (pts.size === 2 && pinch){ const [a, b] = [...pts.values()]; moved = 99; cam.k = Math.max(.3, Math.min(2, pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d)); applyCam(0); } });
+  else if (pts.size === 2 && pinch){ const [a, b] = [...pts.values()]; moved = 99; camZoom((a.x + b.x) / 2, (a.y + b.y) / 2, pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / pinch.d); } });
 const up = e => { const was = pts.size; pts.delete(e.pointerId); if (pts.size < 2) pinch = null;
-  if (was === 1 && moved < 8){ const el = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList && x.classList.contains('card')); if (el) cardSheet(el.dataset.id); } };
-board.addEventListener('pointerup', up); board.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; });
-board.addEventListener('wheel', e => { e.preventDefault(); cam.k = Math.max(.3, Math.min(2, cam.k * (e.deltaY < 0 ? 1.1 : .9))); applyCam(0); }, { passive:false });
+  if (drag && e.pointerId === drag.pid){ const d = drag; drag = null; const el = cardElOf(d.id);
+    if (d.on){ if (el){ el.classList.remove('lift'); el.classList.remove('dropped'); void el.offsetWidth; el.classList.add('dropped'); } renderStrings(); renderMarks(); save(); act('카드 옮김', { id:d.id, from:[d.fx, d.fy], to:[nodeOf(d.id).x, nodeOf(d.id).y] }); return; } }
+  if (was === 1 && moved < 8){ const el = cardAt(e.clientX, e.clientY);
+    if (!el){ unselectCard(); return; }
+    const id = el.dataset.id; if (id === SELC){ eatClick = Date.now() + 450; cardSheet(id); } else selectCard(id); } };
+let eatClick = 0;   /* 서랍을 연 그 누름의 뒤따르는 click 이 바로 덮개를 눌러 닫지 않게 */
+document.addEventListener('click', e => { if (Date.now() < eatClick && !e.target.closest('#sheet')){ e.stopPropagation(); e.preventDefault(); } }, true);
+board.addEventListener('pointerup', up); board.addEventListener('pointercancel', e => { pts.delete(e.pointerId); pinch = null; if (drag && e.pointerId === drag.pid){ const el = cardElOf(drag.id); if (el) el.classList.remove('lift'); if (drag.on){ renderStrings(); save(); } drag = null; } });
+board.addEventListener('wheel', e => { e.preventDefault(); camZoom(e.clientX, e.clientY, cam.k * (e.deltaY < 0 ? 1.12 : .89)); }, { passive:false });
 function cardSheet(id){ const n = nodeOf(id); if (!n) return; if (n.kind === 'photo') return openPv(id); act('카드 열기', { id, title:n.title, kind:n.kind });
   const ls = S.links.filter(L => L.a === id || L.b === id).map(L => { const o = nodeOf(L.a === id ? L.b : L.a); return o ? `<div class="alt"><span>${esc(o.title)}</span><span>${esc(L.label || '')}${L.sure ? '' : ' ?'}</span></div>` : ''; }).join('');
   openSheet(`<h3>${esc(n.title)}</h3><p class="sub">${KINDS[n.kind]}${S.suspect === id ? ' · 용의자' : ''}</p>${n.face ? `<img src="${n.face}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:6px">` : ''}<div class="doc">${esc(n.note || '(메모 없음)')}</div>${ls ? '<p class="sub">이어진 것</p>' + ls : ''}${n.face ? `<div class="btns"><button class="ghost" type="button" data-unface="${n.id}">이 사진 빼기</button>${n.faceFrom && nodeOf(n.faceFrom) ? `<button class="ghost" type="button" data-pvo="${n.faceFrom}">원본 사진 보기</button>` : ''}</div>` : ''}`); }

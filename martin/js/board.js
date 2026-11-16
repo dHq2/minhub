@@ -33,24 +33,23 @@ function cardHtml(n, cls = ''){
   else if (n.kind === 'place') inner = `${mapSvg(n)}<h4>${esc(n.title)}</h4><p>${esc(n.note)}</p>`;
   else if (n.kind === 'photo') inner = `<img src="${esc(photoThumb(n))}" alt="" onerror="this.style.visibility='hidden'"><h4>${esc(n.title)}</h4>`;
   else inner = `<h4>${esc(n.title)}</h4><p>${esc(n.note)}</p>`;
-  return `<div class="card k-${n.kind}${sus} ${cls}" data-id="${n.id}" style="left:${n.x}px;top:${n.y}px;--r:${n.r}deg">${head}${inner}</div>`;
+  return `<div class="card k-${n.kind}${sus}${typeof SELC !== 'undefined' && SELC === n.id ? ' sel' : ''} ${cls}" data-id="${n.id}" style="left:${n.x}px;top:${n.y}px;--r:${n.r}deg">${head}${inner}</div>`;
 }
 function renderNodes(){ $('#nodes').innerHTML = S.nodes.map(n => cardHtml(n)).join(''); measure(); }
 function measure(){ for (const el of document.querySelectorAll('#nodes .card')){ const n = nodeOf(el.dataset.id); if (n) n.h = el.offsetHeight, n.w = el.offsetWidth; } }
 const pinOf = n => ({ x:n.x, y:n.y - (n.h || 130) / 2 + 2 });
-function curve(L){ const A = nodeOf(L.a), B = nodeOf(L.b); if (!A || !B) return null; const p = pinOf(A), q = pinOf(B), d = Math.hypot(q.x - p.x, q.y - p.y), sag = Math.min(70, d * .13), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 + sag;
+function curve(L){ const A = nodeOf(L.a), B = nodeOf(L.b); if (!A || !B) return null; const p = pinOf(A), q = pinOf(B), d = Math.hypot(q.x - p.x, q.y - p.y), sag = Math.min(24, d * .05), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 + sag;
   return { d:`M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`, lx:mx, ly:(p.y + q.y) / 2 + sag / 2 }; }
-function renderStrings(newId){   /* 11-16 A: 묶음이 있으면 — 중심↔구성원은 기둥(#zones), 같은 묶음 안은 묶음 색, 묶음 사이는 카드 위 빨강(#xl) */
-  let svg = '', xl = '', tags = '';
-  for (const L of S.links){ const kind = linkKind(L); if (kind === 'spine') continue; const c = curve(L); if (!c) continue;
-    const g = kind === 'in' ? groupOf(L.a) : null, st = g ? ` style="--gc:${gColor(g)}"` : '';
-    const p = `<path class="str${L.sure ? '' : ' maybe'}${kind === 'in' ? ' gin' : kind === 'x' ? ' xg' : ''}" data-id="${L.id}" d="${c.d}"${st}/>`;
-    if (kind === 'x') xl += p; else svg += p;
-    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}${kind === 'x' ? ' xt' : ''}" style="left:${c.lx}px;top:${c.ly}px;--r:${(hash(L.id) % 7) - 3}deg${g ? ';--gc:' + gColor(g) : ''}">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
-  $('#strings').innerHTML = svg; $('#xl').innerHTML = xl; $('#tags').innerHTML = tags; renderZones();
-  if (newId){ const p = document.querySelector(`#strings [data-id="${newId}"], #xl [data-id="${newId}"]`); if (p && !RM){ const len = p.getTotalLength(), dash = p.classList.contains('maybe');
+function renderStrings(newId){   /* 11-16 A: 실은 전부 카드 위(#xl) — 핀에서 핀으로 팽팽하게, 끝마다 핀 머리. 같은 묶음 안 = 묶음 색 실, 그 밖 = 빨간 실. 꼬리표는 맨 위 */
+  let xl = '', tags = ''; const pins = new Set();
+  for (const L of S.links){ const c = curve(L); if (!c) continue; const g = null;   /* 11-16 A: 묶음 색은 지금 단계에선 안 씀(보스) */
+    xl += `<path class="str${L.sure ? '' : ' maybe'}${g ? ' gin' : ''}" data-id="${L.id}" d="${c.d}"${g ? ` style="--gc:${gColor(g)}"` : ''}/>`; pins.add(L.a); pins.add(L.b);
+    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}" style="left:${c.lx}px;top:${c.ly}px;--r:${(hash(L.id) % 7) - 3}deg${g ? ';--gc:' + gColor(g) : ''}">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
+  for (const id of pins){ const n = nodeOf(id); if (!n) continue; const p = pinOf(n); xl += `<circle class="pinh" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6.5"/>`; }
+  $('#strings').innerHTML = ''; $('#xl').innerHTML = '<defs><radialGradient id="pinG" cx=".35" cy=".32" r=".75"><stop offset="0" stop-color="#ff9a8f"/><stop offset=".45" stop-color="#cf1620"/><stop offset="1" stop-color="#4f0507"/></radialGradient></defs>' + xl; $('#tags').innerHTML = tags; renderZones();
+  if (newId){ const p = document.querySelector(`#xl [data-id="${newId}"]`); if (p && !RM){ const len = p.getTotalLength();
     p.style.strokeDasharray = `${len}`; p.style.strokeDashoffset = `${len}`; p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset .8s cubic-bezier(.5,0,.3,1)'; p.style.strokeDashoffset = '0';
-    setTimeout(() => { p.style.transition = ''; p.style.strokeDasharray = dash ? '' : ''; p.style.strokeDashoffset = ''; }, 900); } }
+    setTimeout(() => { p.style.transition = ''; p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; }, 900); } }
 }
 function renderMarks(anim){
   const n = S.suspect && nodeOf(S.suspect); if (!n){ $('#marks').innerHTML = ''; return; }
@@ -193,7 +192,7 @@ async function play(r){
     await sayLine(l);
   }
   if (focusOn) await unfocus();
-  play.regroup = false; await runOps(); if (play.regroup){ play.regroup = false; await relayout(); }   /* 11-16 A: 묶음에 새 카드가 들면 자리만 다시 */
+  play.regroup = false; await runOps();   /* 11-16 A: 자리는 동료가 정한다 — 새 카드는 관련 카드 옆에만 놓고 판 전체를 다시 놓지 않는다 */
   const nr = await applyNotes(r.raw);   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
   const pr = await applyPz(r.raw);   /* 11-16 B: 가설은 난제 지도로(pz). 옛 hypothesis 가 오면 뿌리 난제 가설로 받는다 */
   if (r.ops.length || nr.solved.length) await fitAll(800);
@@ -220,7 +219,7 @@ function spot(ids){
 }
 function ghostLink(a, b){   /* 판에 아직 없는 연결 — 분필처럼 점선을 그었다가 지운다 */
   if (S.links.some(L => (L.a === a && L.b === b) || (L.a === b && L.b === a))) return;
-  const c = curve({ a, b }); if (!c) return; const g = $('#strings');
+  const c = curve({ a, b }); if (!c) return; const g = $('#xl');
   g.insertAdjacentHTML('beforeend', `<path class="ghost" data-g="${++ghostN}" d="${c.d}"/>`);
   const p = g.querySelector(`[data-g="${ghostN}"]`); if (!p || RM) return; const len = p.getTotalLength();
   p.style.strokeDasharray = `${len}`; p.style.strokeDashoffset = `${len}`; p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset .9s cubic-bezier(.5,0,.3,1)'; p.style.strokeDashoffset = '0';
@@ -230,7 +229,7 @@ async function unfocus(quick){
   focusOn = false; world.classList.remove('focus');
   for (const el of document.querySelectorAll('#nodes .card.spot')) el.classList.remove('spot');
   for (const p of document.querySelectorAll('#strings .hot, #xl .hot, #zones .hot')) p.classList.remove('hot');
-  for (const p of document.querySelectorAll('#strings .ghost')) p.remove();
+  for (const p of document.querySelectorAll('#xl .ghost, #strings .ghost')) p.remove();
   if (!quick) await fitAll(700);
 }
 function stampOn(n, t){ const el = document.createElement('div'); el.className = 'stamp'; el.textContent = t; el.style.left = (n.x + (n.w || 112) * .18) + 'px'; el.style.top = (n.y - (n.h || 130) * .25) + 'px'; world.appendChild(el); setTimeout(() => el.remove(), 2600); }

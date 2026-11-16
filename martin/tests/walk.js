@@ -32,7 +32,7 @@ const SEED = { v: 3, id: '20261116-walk', at: 1, nodes: [{ id: 'n1', kind: 'brie
   await p.waitForFunction(() => document.querySelector('#nodes .card.spot'), null, { timeout: 15000 });
   const s1 = await p.evaluate(() => ({ focus: world.classList.contains('focus'), spot: [...document.querySelectorAll('#nodes .card.spot')].map(e => e.dataset.id), k: cam.k.toFixed(2) }));
   want(s1.focus && s1.spot.join() === 'n4' && +s1.k <= 1 && +s1.k >= .62, '첫 걸음: n4 만 비춤·살짝 다가감 ' + JSON.stringify(s1));
-  await p.waitForFunction(() => document.querySelector('#strings .ghost'), null, { timeout: 15000 });
+  await p.waitForFunction(() => document.querySelector('#xl .ghost'), null, { timeout: 15000 });
   const s2 = await p.evaluate(() => [...document.querySelectorAll('#nodes .card.spot')].map(e => e.dataset.id).join());
   want(s2 === 'n4,n9', '잇기: 두 카드 + 분필 점선 ' + s2); await p.waitForTimeout(400); await p.screenshot({ path: '/tmp/martin-walk-link.png' });
   await p.waitForFunction(() => [...document.querySelectorAll('#nodes .card.spot')].map(e => e.dataset.id).join() === 'n12', null, { timeout: 20000 });
@@ -41,7 +41,7 @@ const SEED = { v: 3, id: '20261116-walk', at: 1, nodes: [{ id: 'n1', kind: 'brie
   await p.screenshot({ path: '/tmp/martin-walk-reveal.png' });
   want(await p.evaluate(() => !!document.querySelector('.stamp')), '확정: 자막·도장');
   await p.waitForFunction(() => !busy, null, { timeout: 20000 }); await p.waitForTimeout(900);
-  const st = await p.evaluate(() => ({ focus: world.classList.contains('focus'), ghost: document.querySelectorAll('#strings .ghost').length, log: S.log.filter(l => l.who === 'm' && l.on).map(l => l.on.join('+') + ':' + (l.beat || '')) }));
+  const st = await p.evaluate(() => ({ focus: world.classList.contains('focus'), ghost: document.querySelectorAll('#xl .ghost').length, log: S.log.filter(l => l.who === 'm' && l.on).map(l => l.on.join('+') + ':' + (l.beat || '')) }));
   want(!st.focus && !st.ghost, '끝나면 비추기·점선 걷음');
   want(st.log.join() === 'n4:look,n4+n9:link,n9:ask,n12:look,n9+n12:reveal', '기록에 짚은 카드 남음 ' + st.log.join());
   want(await p.evaluate(() => String(window.__lastp).includes('"beat"') && String(window.__lastp).includes('카드 번호(n12, m3)를 쓰지 않는다')), '프롬프트에 시선·박자 규칙');

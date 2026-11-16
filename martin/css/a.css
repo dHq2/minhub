@@ -42,23 +42,23 @@
 .pv-top #pvR{color:#f3d27a;border-color:#5a4a2a}
 .evt span:last-child{display:flex;flex-direction:column;align-items:flex-start;gap:2px}.evt small{display:block}
 
-/* 11-16 A: 판 다시 짓기 — 묶음 바탕·이름표·기둥 실(묶음 색), 묶음 사이 실은 카드 위 빨강. 꼬리표는 카드 위로 */
+/* 11-16 A: 진짜 수사판 — 실은 카드 위로 핀에서 핀으로(털실·그림자), 끝마다 핀 머리, 꼬리표는 맨 위 종이쪽지. 묶음 상자·이름표는 없앰 */
 .world>#zones{z-index:0}
-.zone{fill:color-mix(in srgb,var(--gc) 9%,transparent);stroke:color-mix(in srgb,var(--gc) 70%,transparent);stroke-width:2.5;stroke-dasharray:10 7}
-.spine{fill:none;stroke:var(--gc);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round;opacity:.8;filter:drop-shadow(0 2px 1.5px rgba(0,0,0,.6))}
-.spine.sure{stroke-width:3.6;opacity:1}
-.spine.maybe{stroke-dasharray:8 6}
-.spine.hot{stroke-width:5.5;opacity:1;filter:drop-shadow(0 0 6px var(--gc))}
-.str{stroke:#ff2d36;stroke-width:3.6}
-.str.maybe{stroke:#efe4cc;stroke-width:2.6}
-.str.gin{stroke:var(--gc)}
-.str.xg{stroke:#ff2d36;stroke-width:3.4;opacity:.92}
-.str.xg.maybe{stroke:#ffb3b0;stroke-dasharray:9 7;stroke-width:2.6}
-#tags .tag{z-index:3}
-.tag.gt{background:var(--gc);color:#17130f;transform:translate(-50%,-50%)}
-.tag.xt{background:#ff2d36;color:#fff}
-.zt{position:absolute;z-index:3;pointer-events:auto;cursor:pointer;transform-origin:0 100%;transform:translateY(-55%) rotate(-1.5deg) scale(var(--ik,1));background:var(--gc);color:#15110d;font:400 15px/1 "Black Han Sans",sans-serif;padding:6px 10px 5px;border-radius:3px;box-shadow:2px 3px 0 rgba(0,0,0,.55);white-space:nowrap}
-.zt small{font:700 11px "Nanum Gothic Coding",monospace;margin-left:6px;opacity:.7}
-#zones{transition:opacity .3s}.hidestr #zones,.hidestr #xl{opacity:0}
-.world.focus #zones .zone{opacity:.35}
-.world.focus #xl .str:not(.hot){opacity:.25}
+#xl .str{fill:none;stroke:#cf1620;stroke-width:2.8;stroke-linecap:round;filter:drop-shadow(1.5px 3px 1.5px rgba(0,0,0,.55));opacity:.96}
+#xl .str.maybe{stroke:#ead9c0;stroke-width:2.2;stroke-dasharray:7 6}
+#xl .str.gin{stroke:var(--gc)}
+#xl .str.gin.maybe{stroke:var(--gc);opacity:.75}
+#xl .str.hot{stroke-width:5;opacity:1}
+#xl .pinh{fill:url(#pinG);stroke:#3a0405;stroke-width:1;filter:drop-shadow(1px 2px 1px rgba(0,0,0,.6))}
+#xl .ghost{fill:none;stroke:#f5e9cf;stroke-width:3;stroke-linecap:round;stroke-dasharray:2 9;opacity:.95}
+#tags .tag{z-index:4;background:#f3ead6;color:#211a12;font:700 11.5px "Nanum Gothic Coding",monospace;padding:2px 7px 1px;box-shadow:1px 2px 3px rgba(0,0,0,.5)}
+#tags .tag.maybe{background:#e6dcc6;color:#5a4d3c}
+#xl{transition:opacity .3s}.hidestr #xl{opacity:0}
+.world.focus #xl .str:not(.hot),.world.focus #xl .pinh{opacity:.3}
+/* 11-16 A: 카드 고르기·옮기기(세희 인간관계 판 방식) — 고름 = 금빛 테두리, 고른 카드는 끌어도 판이 안 굴러감, 들면 떠오르고 놓으면 톡 */
+#nodes .card.sel{outline:3px solid #f0b429;outline-offset:3px;touch-action:none;cursor:move}
+#nodes .card.lift{z-index:6;transform:translate(-50%,-50%) rotate(var(--r)) scale(1.07);box-shadow:0 22px 30px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.2) inset;transition:transform .12s,box-shadow .12s}
+#nodes .card.dropped{animation:cdrop .32s ease-out}
+@keyframes cdrop{0%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1.07)}60%{transform:translate(-50%,-50%) rotate(var(--r)) scale(.97)}100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}}
+.board{touch-action:none;-webkit-user-select:none;user-select:none}
+.board img{-webkit-user-drag:none;pointer-events:none}

@@ -1,4 +1,5 @@
-// 판 다시 짓기 점검 v1.0 (2026-11-16, A) — 「판 정리」: 마틴이 묶음을 짜고(가짜 답) 앱이 사람 기둥으로 다시 놓음 · 묶음끼리 안 겹침 · 기둥 실·묶음 사이 빨간 실 · 실 솎기/잇기 · 머리 없을 때 실 따라 묶기 · 새 카드 of. 폰 화면.
+// 판 다시 짓기 점검 v1.1 (2026-11-16, A) — 「판 정리」: 마틴이 묶음을 짜고(가짜 답) 앱이 불규칙한 더미로 가로로 펼침 · 더미끼리 떨어짐 · 더미 안은 겹쳐도 제목 띠는 보임 · 중심 카드가 맨 위 · 실은 전부 카드 위·꼬리표는 그 위 · 실 솎기/잇기 · 머리 없을 때 실 따라 묶기 · 새 카드 of. 폰 화면.
+// v1.0 → v1.1: 사람 기둥·묶음 상자 점검 → 수사판 더미 점검(보스 11-16 21:08)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const MOCK = () => {
@@ -23,6 +24,7 @@ const SEED = { v: 3, id: '20261116-tidy', at: 1, nodes: [P('n1', 'brief', '가�
     P('n10', 'photo', '지민 카톡', 500, 1000), P('n11', 'doc', '지민 진술', 1450, 1100), P('n12', 'photo', '단톡 캡처', 800, 1500), P('n13', 'doc', '팀장 메일', 1200, 800), P('n14', 'photo', '팀장 문자', 1600, 1200)],
   links: [{ id: 'n4-n3', a: 'n4', b: 'n3', label: '반납', sure: true }, { id: 'n9-n4', a: 'n9', b: 'n4', label: '복사?', sure: false }, { id: 'n7-n6', a: 'n7', b: 'n6', label: '기록', sure: true }, { id: 'n13-n5', a: 'n13', b: 'n5', label: '보냄', sure: true }, { id: 'n8-n9', a: 'n8', b: 'n9', label: '', sure: false }],
   log: [{ who: 'p', text: '이전', at: 1 }], memo: [], notes: [], nmax: 0, turn: 2, nid: 15, suspect: null };
+const S_LINKS = st => st.links.length;
 (async () => {
   const b = await chromium.launch(); const errs = []; let bad = 0;
   const want = (ok, what) => { console.log((ok ? '  ok  ' : '  XX  ') + what); if (!ok) bad++; };
@@ -33,26 +35,31 @@ const SEED = { v: 3, id: '20261116-tidy', at: 1, nodes: [P('n1', 'brief', '가�
   await p.screenshot({ path: '/tmp/martin-tidy-0.png' });
   await p.click('#btnTidy'); await p.waitForFunction(() => !busy && (S.groups || []).length, null, { timeout: 30000 }); await p.waitForTimeout(800);
   const st = await p.evaluate(() => {
-    const box = g => { const ns = [g.a, ...g.cards].filter(Boolean).map(nodeOf); return [Math.min(...ns.map(n => n.x - n.w / 2)), Math.min(...ns.map(n => n.y - n.h / 2)), Math.max(...ns.map(n => n.x + n.w / 2)), Math.max(...ns.map(n => n.y + n.h / 2))]; };
-    const bx = S.groups.map(box), over = []; for (let i = 0; i < bx.length; i++) for (let j = i + 1; j < bx.length; j++){ const A = bx[i], B = bx[j]; if (A[0] < B[2] + 60 && B[0] < A[2] + 60 && A[1] < B[3] + 60 && B[1] < A[3] + 60) over.push(i + '-' + j); }
-    const cardsOver = []; const ns = S.nodes; for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++){ const A = ns[i], B = ns[j]; if (Math.abs(A.x - B.x) < (A.w + B.w) / 2 && Math.abs(A.y - B.y) < (A.h + B.h) / 2) cardsOver.push(A.id + '/' + B.id); }
-    return { groups: S.groups.map(g => (g.a || '-') + ':' + g.cards.join('+')), over, cardsOver, spines: document.querySelectorAll('#zones .spine').length, zones: document.querySelectorAll('#zones .zone').length, zt: [...document.querySelectorAll('.zt')].map(e => e.textContent), xl: [...document.querySelectorAll('#xl .str')].map(e => e.dataset.id), links: S.links.map(L => L.id + ':' + L.label), anchorAbove: S.groups.every(g => !g.a || g.cards.every(id => nodeOf(id).y > nodeOf(g.a).y)) };
+    const ids = g => [g.a, ...g.cards].filter(Boolean), box = g => { const ns = ids(g).map(nodeOf); return [Math.min(...ns.map(n => n.x - n.w / 2)), Math.min(...ns.map(n => n.y - n.h / 2)), Math.max(...ns.map(n => n.x + n.w / 2)), Math.max(...ns.map(n => n.y + n.h / 2))]; };
+    const bx = S.groups.map(box), over = []; for (let i = 0; i < bx.length; i++) for (let j = i + 1; j < bx.length; j++){ const A = bx[i], B = bx[j]; if (A[0] < B[2] + 30 && B[0] < A[2] + 30 && A[1] < B[3] + 30 && B[1] < A[3] + 30) over.push(i + '-' + j); }
+    const cover = []; for (const g of S.groups){ const ns = ids(g).map(nodeOf); for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++){ const A = ns[i], B = ns[j]; if (Math.abs(A.x - B.x) < (A.w + B.w) / 2 * .55 && Math.abs(A.y - B.y) < (A.h + B.h) / 2 * .45) cover.push(A.id + '/' + B.id); } }
+    const far = S.groups.flatMap(g => g.cards.filter(id => Math.hypot(nodeOf(id).x - nodeOf(g.a).x, nodeOf(id).y - nodeOf(g.a).y) > 430));
+    const overlapAny = S.groups.some(g => { const ns = ids(g).map(nodeOf); return ns.some((A, i) => ns.some((B, j) => i < j && Math.abs(A.x - B.x) < (A.w + B.w) / 2 && Math.abs(A.y - B.y) < (A.h + B.h) / 2)); });
+    const all = S.nodes, W = Math.max(...all.map(n => n.x + n.w / 2)) - Math.min(...all.map(n => n.x - n.w / 2)), H = Math.max(...all.map(n => n.y + n.h / 2)) - Math.min(...all.map(n => n.y - n.h / 2));
+    const dom = [...document.querySelectorAll('#nodes .card')].map(e => e.dataset.id), onTop = S.groups.every(g => g.cards.every(id => dom.indexOf(id) < dom.indexOf(g.a)));
+    const tz = getComputedStyle(document.querySelector('#tags .tag')).zIndex, xz = getComputedStyle($('#xl')).zIndex;
+    return { groups: S.groups.map(g => (g.a || '-') + ':' + g.cards.join('+')), over, cover, far, overlapAny, W:Math.round(W), H:Math.round(H), onTop, tz, xz, under: document.querySelectorAll('#strings path, #zones *').length, xl: document.querySelectorAll('#xl .str').length, pins: document.querySelectorAll('#xl .pinh').length, links: S.links.map(L => L.id + ':' + L.label), zt: document.querySelectorAll('.zt').length };
   });
   want(st.groups.join('|') === 'n3:n4+n10+n11+n12|n5:n13+n14|n6:n7+n8+n9', '마틴이 짠 묶음 그대로 ' + st.groups.join('|'));
-  want(!st.over.length, '묶음끼리 60px 넘게 떨어짐 ' + JSON.stringify(st.over));
-  want(!st.cardsOver.length, '카드끼리 안 겹침 ' + JSON.stringify(st.cardsOver));
-  want(st.anchorAbove, '사람(중심)이 묶음 맨 위');
-  want(st.zones === 3 && st.zt.length === 3, '묶음 바탕·이름표 3 ' + st.zt.join(','));
-  want(st.spines === 9, '기둥 실 = 구성원 수 9 → ' + st.spines);
-  want(st.xl.includes('n5-n3') && !st.links.some(l => l.startsWith('n9-n4')), '묶음 사이 실은 위(빨강), 솎은 실 없음 ' + st.xl.join(','));
-  want(st.links.includes('n4-n3:열쇠') && st.links.includes('n12-n3:보낸 이'), '꼬리표 고침·새 실');
+  want(!st.over.length, '더미끼리 떨어짐 ' + JSON.stringify(st.over));
+  want(st.overlapAny, '더미 안에선 카드가 겹쳐 쌓임');
+  want(!st.cover.length, '겹쳐도 거의 다 덮진 않음 ' + JSON.stringify(st.cover));
+  want(!st.far.length, '자료는 중심 카드 가까이 ' + JSON.stringify(st.far));
+  want(st.W > st.H, '가로로 퍼짐 ' + st.W + '×' + st.H);
+  want(st.onTop, '중심 카드가 더미 맨 위');
+  want(!st.under && st.xl === S_LINKS(st) && st.pins > 0, '실은 전부 카드 위 ' + st.xl + '줄 · 핀 머리 ' + st.pins);
+  want(+st.tz > +st.xz, '꼬리표가 실 위 ' + st.tz + '>' + st.xz);
+  want(!st.zt, '묶음 상자·이름표 없음');
+  want(st.links.includes('n4-n3:열쇠') && st.links.includes('n12-n3:보낸 이') && !st.links.some(l => l.startsWith('n9-n4')), '꼬리표 고침·새 실·솎은 실');
   await p.screenshot({ path: '/tmp/martin-tidy-1.png' });
-  await p.locator('.zt').nth(2).click(); await p.waitForTimeout(900);
-  want(await p.evaluate(() => [...document.querySelectorAll('#nodes .card.spot')].map(e => e.dataset.id).sort().join()) === 'n6,n7,n8,n9', '이름표 누르면 그 묶음 비춤');
-  await p.screenshot({ path: '/tmp/martin-tidy-2.png' }); await p.waitForTimeout(2800);
   await p.click('#msg'); await p.keyboard.type('경비 일지도 있어'); await p.keyboard.press('Enter');
   await p.waitForFunction(() => !busy && S.turn >= 3, null, { timeout: 30000 }); await p.waitForTimeout(1200);
-  const st2 = await p.evaluate(() => ({ g: S.groups.find(g => g.a === 'n6').cards.join('+'), near: Math.abs(nodeOf('n15').x - nodeOf('n6').x) < 300 && nodeOf('n15').y > nodeOf('n6').y }));
+  const st2 = await p.evaluate(() => ({ g: S.groups.find(g => g.a === 'n6').cards.join('+'), near: Math.hypot(nodeOf('n15').x - nodeOf('n6').x, nodeOf('n15').y - nodeOf('n6').y) < 430 }));
   want(st2.g.includes('n15') && st2.near, '새 카드 of → 그 묶음 안에 자리 ' + st2.g);
   await p.evaluate(() => { window.__fail = true; S.groups = []; }); await p.click('#btnTidy'); await p.waitForFunction(() => !busy && (S.groups || []).length, null, { timeout: 30000 }); await p.waitForTimeout(500);
   const st3 = await p.evaluate(() => S.groups.map(g => (g.a || '-') + ':' + g.cards.join('+')));
