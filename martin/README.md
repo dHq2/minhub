@@ -61,7 +61,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
 | js/split.js | 판·대화 나누기(v0.11.2, B) — 대화창(.stage) 높이를 비율 SPLIT.r 로(기본 반반), 가운데 손잡이 #split 끌기·두 번 눌러 반반, 기기 키 'drmartin.split'. 높이를 바꾸면 가짜 resize 신호를 보냄 |
 | js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
-| js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.1, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
+| js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |

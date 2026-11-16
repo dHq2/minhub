@@ -20,7 +20,7 @@
 - 받는 쪽에게 필요한 일: 대화창·판 크기에 기대는 코드는 208px 같은 고정값 대신 그때그때 offsetHeight 를 재고, resize 를 들어 다시 맞춘다(applyCam·pvLayout 은 이미 그렇게 됨). resize 를 듣다가 다시 높이를 바꾸는 코드는 e.isTrusted 로 가짜 신호를 걸러야 고리가 안 생긴다. 판 아래 가운데(가로 84px · 아래 11px)는 손잡이 자리다.
 - 관련 파일·버전: js/split.js(새, boot.js 바로 앞), index.html, css/b.css · v0.11.2
 
-## 2026-11-17 00:40 · 사진 크게 보기 위 줄이 두 줄로, 아래 칸은 숨김(v0.12.1) · [보통] · 받는 쪽: D, A
+## 2026-11-17 00:40 · 사진 크게 보기 위 줄이 두 줄로, 아래 칸은 숨김(v0.12.2) · [보통] · 받는 쪽: D, A
 - 무엇: #pv 위 줄 = 이름(#pvT) + ×(#pvX), 그 아래 .pv-btns 에 #pvR(다시 읽혀) · #pvD(판독문, 새) · #pvC(대화 숨기기). #pvN(판독·메모)은 평소 display:none, #pv.doc 일 때만 사진 위에 절대 위치로 펼침(pvdoc.js pvDocSet). pvRefresh 의 #pvN 글은 「마틴의 판독 … / 카드 메모 …」 꼴.
 - 받는 쪽에게 필요한 일: D — 사진 자리(#pvS)가 위아래로 넓어졌다(위 줄 약 84px, 아래 칸 없음). 누름·확대 손볼 때 이 크기 기준으로. A — 판독문을 화면에 보이게 하는 기능을 새로 만들면 #pvN 이 숨겨져 있다는 것만 기억.
-- 관련 파일·버전: index.html(#pv), js/view.js(pvRefresh), js/pvdoc.js(새), css/b.css · v0.12.1
+- 관련 파일·버전: index.html(#pv), js/view.js(pvRefresh), js/pvdoc.js(새), css/b.css · v0.12.2
