@@ -119,3 +119,13 @@
 .split{position:absolute;left:50%;top:-11px;width:84px;margin-left:-42px;height:22px;z-index:9;display:flex;align-items:center;justify-content:center;cursor:row-resize;touch-action:none}
 .split i{display:block;width:46px;height:5px;border-radius:3px;background:#5a4f42;box-shadow:0 0 0 1px #0a0908,0 1px 3px #000;transition:background .15s,width .15s}
 .split:hover i,.split.on i{background:var(--red);width:62px}
+
+/* 11-17 B: 사진 크게 보기 — 위는 이름 한 줄 + ×, 그 아래 단추 한 줄. 메모·판독문은 「판독문」을 눌러야 사진 위에 펼쳐짐 */
+.pv-top{flex-wrap:wrap;row-gap:0;padding:2px 2px 6px 14px;background:#0b0907}
+.pv-top b{flex:1 1 0;min-width:0}
+.pv-btns{flex:1 0 100%;display:flex;justify-content:flex-end;gap:6px;padding-right:8px}
+.pv-top .pvc{height:30px;padding:0 11px}
+.pv-top #pvD{color:#e8dfcc}
+.pv.doc .pv-top #pvD{color:#1a1612;background:#e2b04a;border-color:#e2b04a}
+.pv .pv-note{display:none}
+.pv.doc .pv-note{display:block;position:absolute;left:8px;right:8px;bottom:8px;max-height:none;z-index:5;margin:0;padding:12px 14px calc(14px + env(safe-area-inset-bottom));background:rgba(14,12,9,.96);border:1px solid #3a332a;border-radius:10px;overflow:auto;box-shadow:0 10px 30px #000;font:13px/1.6 "Nanum Gothic Coding",monospace;color:#d8cdb8}
