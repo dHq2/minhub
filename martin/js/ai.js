@@ -27,6 +27,9 @@ ${memo}
 [난제 지도 — 진실을 조립하는 틀. 동료도 오른쪽에 펼쳐 놓고 본다]
 ${pzt}
 
+[자료함 — 동료가 건넨 원본 전부와 네 판독문. 판에서 떼어진 것도 남아 있다. id(e…)로 가리킨다]
+${evText()}
+
 [보드 지금]
 ${boardText()}
 
@@ -80,33 +83,39 @@ ${given}
 - notes: 수사 수첩에 적을 것 0~4줄 — {"k":"q","t":"작은 의문"} {"k":"guess","t":"근거 없는 짐작","by":"me 또는 you"} {"k":"todo","t":"확인할 것·캐 올 것"} {"k":"fact","t":"사사로운 사실(날짜·호칭·말버릇·습관·작은 정황)"}. 한 줄 50자 안팎. 판에는 굵직한 것, 수첩에는 작은 것. 의문 카드가 4장이면 나머지 의문은 수첩 q 로. 동료가 근거 없이 짐작을 말하면 guess(by:"me")로 적어 두고, 네 짐작은 guess(by:"you"). 이미 수첩에 있는 건 다시 쓰지 않는다. 판 조작 방법·의문 카드 상한 같은 네 작업 메모는 수첩에 쓰지 않는다.
 - solve: 이번에 풀린 것 [{"id":"m3","a":"어떻게 풀렸나 한 줄"}]. 수첩 줄(m…)도, 판의 의문 카드(n…)도 된다 — 의문 카드를 풀면 앱이 판에서 떼고 풀린 의문 칸으로 옮긴다. 짐작이 확정되거나 틀린 것으로 밝혀져도 solve 로 결말을 적는다.
 - drop: 틀렸거나 겹치거나 낡은 수첩 줄 id 목록. 동료가 직접 적은 줄은 지우지 않는다.
+- read: 자료 판독문 [{"id":"e5","t":"…"}]. 이번에 사진이나 글을 받았으면 자료마다 꼭 쓴다 — 다음 턴부터 너는 사진을 다시 못 보고 이 판독문으로만 기억한다. 화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자. 이미 판독문이 있으면 고칠 때만.
+- look: 판독문만으로 모자라 원본을 다시 봐야 할 때 자료 id 목록(많아야 3, 예 ["e3"]). 앱이 원본을 붙여 한 번 더 묻는다. 이번에 이미 원본을 받았으면 쓰지 않는다. lookLine 에 그 순간의 한마디(예: "잠깐. 그 캡처를 다시 본다.").
 - ask: 수사가 막혔을 때만, 동료가 다음에 캐 올 것을 마틴 말투로 한 줄. 매번 넣지 않는다 — 대화 중이면 빼라. 동료가 더 가져올 자료가 없다고 했으면 자료를 요구하지 말고, 있는 조각으로 추리한다.
 - 판과 건넨 것에 없는 사실을 지어내지 않는다. 정답을 아는 척하지 않는다.
 
 JSON 하나만 출력한다:
-{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"40자 이내 한 줄","near":"n1","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"ask":"…"}`;
+{"say":["…",{"t":"…","on":"n3","beat":"look"},{"t":"…","on":["n3","n5"],"beat":"link"},{"t":"…?","on":"n5","beat":"ask"},{"t":"…","on":["n5","n2"],"beat":"reveal"}],"ops":[{"op":"add","id":"n${S.nid}","kind":"person","title":"12자 이내","note":"40자 이내 한 줄","near":"n1","line":"…"},{"op":"link","a":"n2","b":"n${S.nid}","label":"조카","sure":true},{"op":"edit","id":"n2","note":"…"},{"op":"merge","from":"n2","into":"n10"},{"op":"face","id":"n3","from":"n10","box":[0.04,0.21,0.09,0.05]},{"op":"remove","id":"n9"},{"op":"suspect","id":"n3"},{"op":"tidy"}],"pz":[{"op":"new","id":"p${S.pmax + 1}","t":"질문 한 줄?","up":"p1"},{"op":"hyp","p":"p${S.pmax + 1}","id":"h${S.hmax + 1}","t":"가설 30자 이내","c":55,"b":["n3","p2"],"why":"근거→가설 40자 이내"},{"op":"hyp","id":"h1","c":30,"b":["n3"]},{"op":"kill","h":"h2","why":"…"},{"op":"solve","p":"p2","h":"h4","a":"결론 한 줄","b":["n7"]},{"op":"merge","from":"p4","into":"p2","why":"같은 물음"},{"op":"drop","p":"p5","why":"전제가 틀렸다"},{"op":"focus","p":"p3"},{"op":"reopen","p":"p2","why":"…"}],"notes":[{"k":"q","t":"…"},{"k":"guess","t":"…","by":"me"}],"solve":[{"id":"m3","a":"…"}],"drop":["m5"],"read":[{"id":"e5","t":"방: 가짜상사 전체 4 · 11월 4일(화)\n김지민(23:02): 금고 열쇠 반납했어요\n박팀장(23:05): 확인. 내일 봐요\n…"}],"look":[],"ask":"…"}`;
 }
 function setBusy(on){ busy = on; $('#send').disabled = on; $('#send').textContent = on ? '추리 중' : '건네기'; }
 async function turn({ text = '', atts = [], retry = false }){
   if (busy) return; setBusy(true); curLines = [];
   const sample = await getSample();
   if (!sample){ await speak('…연결이 끊겼다. 여기선 내 머리가 돌아가지 않는다.', false); setBusy(false); return; }
-  let imgs = [], photos = [], given = '';
+  let imgs = [], photos = [], given = ''; const evs = [], tiles = {};
   if (retry && S.pending){ given = S.pending.given; photos = S.pending.photos || [];
     for (const id of photos){ const n = nodeOf(id); if (!n) continue; try{ const b = await (await fetch(photoSrc(n))).blob(); if (b.size) imgs.push(b); }catch(e){} }
     renderChat(); }
   else {
     for (const a of atts) if (a.type === 'img'){
       const id = 'n' + S.nid++, p = placeNear('n1'), n = { id, kind:'photo', title:'사진', note:'', thumb:a.thumb, big:URL.createObjectURL(a.blob), mid:a.mid, x:p.x, y:p.y, r:(hash(id) % 9) - 4 };
-      await fly(n.x, n.y, .85, 600); S.nodes.push(n); $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); sfx(n.x + 50, n.y - 80, '탁'); save(); keepPhoto(n, a); await sleep(500);
-      imgs.push(a.blob); photos.push(id); }
-    if (text) given += `[동료의 말/붙여넣기]\n${text.slice(0, 12000)}\n`;
-    for (const a of atts) if (a.type === 'txt') given += `[파일 ${a.name}]\n${a.text.slice(0, 12000)}\n`;
+      await fly(n.x, n.y, .85, 600); S.nodes.push(n); $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); sfx(n.x + 50, n.y - 80, '탁');
+      const ev = addEv({ kind:'photo', card:id, title:a.name || '사진', name:a.name, thumb:a.thumb, big:n.big }); evs.push(ev.id); save(); keepPhoto(n, a, ev); await sleep(500);
+      const rc = canImg ? await readCopies(a.orig || a.blob) : []; if (rc.length > 1) tiles[ev.id] = rc.length;   /* 11-16 A: 세로로 긴 캡처는 조각으로 — 글자가 읽히게 */
+      imgs.push(...(rc.length ? rc : [a.blob])); photos.push(id); }
+    const longPaste = text.length >= 300 || /\[.+\] \[(오전|오후)/.test(text);   /* 11-16 A: 붙여 넣은 대화·긴 글은 자료함에 원문째 */
+    if (text){ let tag = ''; if (longPaste){ const e = addEv({ kind:'text', name:'붙여 넣은 글', len:text.length, head:text.slice(0, 160) }); keepText(e, text); evs.push(e.id); tag = ` — 자료함 ${e.id}`; } given += `[동료의 말/붙여넣기${tag}]\n${text.slice(0, 12000)}\n`; }
+    for (const a of atts) if (a.type === 'txt'){ const e = addEv({ kind:'text', name:a.name, len:a.text.length, head:a.text.slice(0, 160) }); keepText(e, a.text); evs.push(e.id); given += `[파일 ${a.name} — 자료함 ${e.id}]\n${a.text.slice(0, 12000)}\n`; }
     const view = pvOpenId();
-    if (view){ const vn = nodeOf(view); let vb = null; if (canImg){ try{ vb = await (await fetch(photoSrc(vn))).blob(); if (vb.size) imgs.push(vb); else vb = null; }catch(e){ vb = null; } }
-      given += `[동료는 지금 판의 ${view}「${vn.title}」 사진을 크게 띄워 놓고 보면서 말한다.${vb ? ' 그 사진을 다시 같이 보낸다 — 동료가 가리키는 부분을 사진에서 찾아 답하고, 새로 밝혀진 게 있으면 판에 반영해도 된다.' : ''}]\n`; }
+    if (view){ const vn = itemOf(view), ve = /^e/.test(view) ? vn : evByCard(view), vt = /^e/.test(view) ? evTitle(vn) : vn.title; let rc = [];
+      if (canImg){ try{ rc = ve ? await evCopies(ve) : await readCopies(photoSrc(vn)); }catch(e){ rc = []; } imgs.push(...rc); }
+      given += `[동료는 지금 ${ve ? '자료함 ' + ve.id + (ve.card ? '(판 ' + ve.card + ')' : '') : '판의 ' + view}「${vt}」 원본을 크게 띄워 놓고 보면서 말한다.${rc.length ? ` 그 원본을 다시 같이 보낸다${rc.length > 1 ? `(세로로 긴 사진이라 위에서부터 ${rc.length}조각)` : ''} — 동료가 가리키는 부분을 사진에서 찾아 답하고, 새로 밝혀진 게 있으면 판에 반영해도 된다.${ve ? ` 판독문이 없거나 빠진 게 있으면 read 로 ${ve.id} 판독문을 새로 써라.` : ''}` : ''}]\n`; }
     if (!view && !photos.length && !atts.length && text.length < 300 && !/\[.+\] \[(오전|오후)/.test(text)) given = `[자료 없음 — 동료가 말만 건넸다. 대화로 답하고, 판은 동료가 고치라고 할 때만 고친다]\n` + given;
-    if (photos.length) given += canImg ? `[사진 ${photos.length}장 — 이미 보드에 ${photos.join(', ')} 카드로 꽂았다. 사진을 보고 edit 로 제목·메모를 붙이고 이어라.]\n` : `[사진 ${photos.length}장을 ${photos.join(', ')} 카드로 꽂았지만 너는 사진 속을 볼 수 없다. 동료에게 무엇이 찍혔는지 물어라.]\n`;
+    if (photos.length) given += canImg ? `[사진 ${photos.length}장 — 이미 보드에 ${photos.join(', ')} 카드로 꽂았고, 원본은 자료함 ${evs.filter(x => evOf(x).kind === 'photo').join(', ')} 에 보관했다${Object.keys(tiles).length ? ` (세로로 긴 사진은 위에서부터 조각내 보낸다: ${Object.entries(tiles).map(([k, v]) => k + ' ' + v + '조각').join(', ')})` : ''}. 사진을 보고 edit 로 제목·메모를 붙이고 이어라. 그리고 사진마다 read 로 판독문을 꼭 남겨라.]\n` : `[사진 ${photos.length}장을 ${photos.join(', ')} 카드로 꽂았지만 너는 사진 속을 볼 수 없다. 동료에게 무엇이 찍혔는지 물어라.]\n`;
     const m = { who:'p', text:text.slice(0, 1500), at:Date.now(), photos, files:atts.filter(a => a.type === 'txt').map(a => a.name), ...(view ? { viewing:view } : {}) }; S.log.push(m); chatEl().insertAdjacentHTML('beforeend', msgHtml(m)); toEnd(true);
     S.pending = { given:given.slice(0, 26000), photos:view ? [...photos, view] : photos, at:Date.now() }; save();   /* 보내는 순간 저장 — 끊겨도 다시 묻기 */
     log('chat', { who:'p', text, files:atts.map(a => ({ name:a.name, type:a.type, chars:a.text ? a.text.length : undefined })), photos, ...(view ? { viewing:view } : {}) });
@@ -117,9 +126,19 @@ async function turn({ text = '', atts = [], retry = false }){
   catch(e){ thinking(false); const c = e && e.code; log('turn', { ok:false, n:S.turn + 1, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, error:{ code:c || '', message:String(e && e.message || e) } });
     await speak(c === 'rate_limited' ? '…머리가 과열됐다. 잠시 뒤에 다시 묻자.' : c === 'not_granted' ? '…생각할 허락이 없다. 연결을 허락해 줘야 움직인다.' : '…실이 끊겼다. 다시 묻기를 눌러라.', false);
     save(); setBusy(false); renderChat(); return; }
+  /* 11-16 A: 다시 보기 — 마틴이 look 으로 원본을 청하면 그 원본(읽기용 조각)을 붙여 한 번 더 묻는다 */
+  const want = (Array.isArray(res && res.look) ? res.look : []).map(String).map(id => evOf(id) || (nodeOf(id) && evByCard(id))).filter(e => e && e.kind === 'photo').slice(0, 3);
+  if (want.length && canImg){
+    log('turn', { ok:true, n:S.turn + 1, part:'look', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
+    thinking(false); await speak(res.lookLine || '잠깐. 원본을 다시 본다.', true, { on:want.map(e => e.card).filter(id => id && nodeOf(id)) }); thinking(true);
+    const more = []; for (const e of want){ try{ more.push(...(await evCopies(e))); }catch(x){} }
+    if (more.length){ const p2 = buildPrompt(given + `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다(세로로 긴 건 위에서부터 조각). 이걸 보고 이번 답을 처음부터 다시 써라. 판독문은 read 로 고쳐 쓰고, look 은 비워라.]\n`);
+      try{ const o2 = { model:AI.model, effort:AI.effort, modelTier:AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default', images:[...imgs, ...more].slice(0, 16) }; const r2 = await sample.json(p2, o2); if (r2 && typeof r2 === 'object') res = r2; act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); }
+      catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } }
+  }
   thinking(false); S.turn++; delete S.pending; save();
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
-  const cr = clean(res); await play(cr);
+  const cr = clean(res); await play(cr); applyReads(res);
   const mm = (S.notes || []).filter(n => n.turn === S.turn).map(n => n.k + ':' + n.t);
   if (curLines.length) log('chat', { who:'m', text:curLines.join(' / ') });
   log('memory', { n:S.turn, newMemo:mm, board:snap(), pz:S.probs, pfocus:S.pfocus });   /* 11-16 B: 난제 지도도 */

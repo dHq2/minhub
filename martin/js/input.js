@@ -12,7 +12,7 @@ function addFiles(files){ attN += files.length; renderChips(); const w = attWork
 async function addFiles0(files){
   for (const f of files){ act('파일 붙임', { name:f.name, type:f.type, kb:Math.round(f.size / 1024) });
     if (/^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name)){ try{ const t = await shrink(f, 320, .72), b = await shrink(f, 1600, .86); let m = await shrink(f, 1000, .72); if (m.data.length > 240000) m = await shrink(f, 800, .6);
-        att.push({ type:'img', name:f.name || '사진', thumb:t.data, blob:b.blob, mid:m.data }); }catch(e){ act('사진 읽기 실패', { name:f.name, type:f.type }); speak(`${f.name || '그 사진'}… 열리지 않는다. 캡처나 JPG로 다시 줘라.`, false); } }
+        att.push({ type:'img', name:f.name || '사진', thumb:t.data, blob:b.blob, mid:m.data, orig:f }); }catch(e){ act('사진 읽기 실패', { name:f.name, type:f.type }); speak(`${f.name || '그 사진'}… 열리지 않는다. 캡처나 JPG로 다시 줘라.`, false); } }
     else if (/^text\/|json/.test(f.type) || /\.(txt|md|csv|json|log|html|srt)$/i.test(f.name)){ att.push({ type:'txt', name:f.name, text:await f.text() }); }
     else speak(`${f.name}… 이 서류는 아직 못 읽는다. 글이나 사진으로 가져와라.`, false);
   }

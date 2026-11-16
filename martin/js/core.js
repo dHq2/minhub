@@ -19,7 +19,7 @@ const KEY = 'drmartin.v2', SID = Math.random().toString(36).slice(2, 8);
 const newId = () => { const d = new Date(); return String(d.getFullYear()) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); }; const _nid = newId; /* 날짜 */
 const caseId = () => _nid() + '-' + Math.random().toString(36).slice(2, 6);
 function fresh(){
-  const s = { v:3, id:caseId(), nodes:[], links:[], suspect:null, hyp:{ n:0, title:'', body:'', confidence:0, culprit:null, alts:[] }, log:[], memo:[], notes:[], nmax:0, turn:0, nid:2, at:Date.now() };
+  const s = { v:3, id:caseId(), nodes:[], links:[], suspect:null, hyp:{ n:0, title:'', body:'', confidence:0, culprit:null, alts:[] }, log:[], memo:[], notes:[], nmax:0, ev:[], emax:0, turn:0, nid:2, at:Date.now() };
   s.nodes.push({ id:'n1', kind:'brief', title:'새 사건', note:'아직 아무것도 없다. 사진이나 대화를 가져와라.', x:1000, y:1000, r:-1.5 });
   return s;
 }
@@ -58,10 +58,11 @@ const snap = () => ({ nodes:S.nodes.map(lean), links:S.links, suspect:S.suspect,
 function toastNote(t){ try{ speak(t, false); }catch(x){} }
 /* v0.4.3 빈 판은 절대 계정에 쓰지 않는다 — 새 브라우저가 빈 판으로 계정 판을 덮어쓴 사고(11-16 18:15·18:18) 방지 */
 const isBlank = s => !s || !(s.log || []).some(l => l.who === 'p') && (s.nodes || []).length <= 1;
-function dbSave(){ if (!DB || !S || isBlank(S)) return; try{ const { nodes, ...rest } = S, d = clone({ ...rest, nodes:nodes.map(lean) }); put('state/board', d); put('cases/' + S.id, d); }catch(x){} }
+function dbSave(){ if (!DB || !S || isBlank(S)) return; try{ const { nodes, ev, ...rest } = S, d = clone({ ...rest, nodes:nodes.map(lean), ev:(ev || []).map(lean) });   /* 11-16 A: 자료함도 미리보기 빼고 */ put('state/board', d); put('cases/' + S.id, d); }catch(x){} }
 function adopt(v, why){   /* 계정에서 받은 판으로 갈아탄다(사진 미리보기는 이 기기 것 살림) */
   const local = S && S.id === v.id ? S : null;
   for (const n of v.nodes || []) if (n.kind === 'photo'){ const o = local && local.nodes.find(x => x.id === n.id); if (o && (o.thumb || o.img)) n.thumb = o.thumb || o.img; }
+  for (const e of v.ev || []){ const o = local && (local.ev || []).find(x => x.id === e.id); if (o && o.thumb) e.thumb = o.thumb; }
   S = v; try{ localStorage.setItem(KEY, JSON.stringify(S, slim)); }catch(x){} renderAll(); renderChat(true); fitAll(0); act(why, { cid:S.id, turn:S.turn }); dbSave();   /* 계정의 지금 판 자리도 진짜 사건으로 되돌림 */
   for (const n of S.nodes) if (n.kind === 'photo' && !n.asset && !n.thumb) DB.doc('photos/' + S.id + '-' + n.id).get().then(ph => { const p = ph && ph.exists ? ph.data() : null; if (p && p.img){ n.thumb = p.img; renderNodes(); renderStrings(); renderMarks(); } }).catch(() => {});
 }
@@ -83,9 +84,10 @@ async function dbStart(){
 /* 사진 — 보이는 곳마다 가장 좋은 것: 보관함 원본 > 이 기기에서 방금 고른 원본 > 1000px 사본 > 미리보기 */
 const photoSrc = n => n.asset ? '/_blob/' + n.asset : (n.big || n.mid || n.thumb || n.img || '');
 const photoThumb = n => n.thumb || n.img || (n.asset ? '/_blob/' + n.asset : n.big || '');
-async function keepPhoto(n, a){
-  if (AS){ try{ const r = await AS.upload(a.blob, { type:'image/jpeg' }); n.asset = r.id; save(); act('사진 보관', { id:n.id, kb:Math.round((r.sizeBytes || 0) / 1024) }); return; }catch(e){ act('사진 보관 실패', { id:n.id, code:e && e.code || '' }); } }
-  if (DB && a.mid){ put('photos/' + S.id + '-' + n.id, { img:a.mid, cid:S.id, id:n.id }); n.pid = 1; save(); }
+async function keepPhoto(n, a, ev){   /* 11-16 A: 올린 파일 그대로(jpg·png·webp, 12MB 아래) — 글자를 다시 읽을 수 있게. 아니면 1600px */
+  const raw = a.orig && /^image\/(jpeg|png|webp)$/.test(a.orig.type) && a.orig.size < 12e6 ? a.orig : null;
+  if (AS){ try{ const r = await AS.upload(raw || a.blob, { type:raw ? raw.type : 'image/jpeg' }); n.asset = r.id; if (ev) ev.asset = r.id; save(); act('사진 보관', { id:n.id, kb:Math.round((r.sizeBytes || 0) / 1024) }); return; }catch(e){ act('사진 보관 실패', { id:n.id, code:e && e.code || '' }); } }
+  if (DB && a.mid){ put('photos/' + S.id + '-' + n.id, { img:a.mid, cid:S.id, id:n.id }); n.pid = 1; if (ev) ev.pid = 1; save(); }
 }
 const nodeOf = id => S.nodes.find(n => n.id === id);
 

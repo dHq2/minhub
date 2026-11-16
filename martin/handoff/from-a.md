@@ -9,3 +9,10 @@
 - 판 비추기 상태: world.focus · .card.spot · .str.hot · #strings .ghost. 다른 연출을 붙일 땐 unfocus() 로 걷고 시작.
 - tests/run.sh 가 tests/*.js 를 전부 돈다 — 새 점검은 파일만 만들면 된다.
 - v0.5.2
+
+## 2026-11-16 19:45 · 자료함 생김(v0.7.0) · [보통] · 받는 쪽: 모두
+- 새 상태 S.ev·S.emax(js/evidence.js). 사진 카드 = 판의 표시, 자료함 = 원본 정본. 카드를 지우거나 합치는 코드를 새로 짜면 evDetach(카드, 합친쪽) 를 불러 줄 것.
+- openPv(id) 는 이제 카드 id(n…)도 자료 id(e…)도 받는다. 보는 중인 것은 pvOpenId()(n 또는 e), 아래 글은 pvRefresh() 로 다시 그림. itemOf(id) = 카드든 자료든.
+- keepPhoto(n, a, ev) 셋째 인자, 첨부 a.orig(올린 파일 그대로). 마틴 답 칸 read·look·lookLine 추가 — look 이 오면 turn 안에서 한 번 더 묻는다(turns/ 로그에 part:'look' 줄).
+- 위 단추가 넷(자료·수첩·난제·사건) — .top .tb 좌우 여백을 10px 로 줄였다(css/a.css).
+- v0.7.0

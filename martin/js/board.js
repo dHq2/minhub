@@ -54,7 +54,7 @@ function renderMarks(anim){
   $('#marks').innerHTML = `<ellipse class="mark" id="mk" cx="${n.x}" cy="${n.y + 4}" rx="${rx}" ry="${ry}" transform="rotate(-7 ${n.x} ${n.y})"/><text class="markt" x="${n.x + rx - 20}" y="${n.y - ry + 4}" transform="rotate(-8 ${n.x} ${n.y})">용의자</text>`;
   if (anim && !RM){ const e = $('#mk'), len = e.getTotalLength(); e.style.strokeDasharray = len; e.style.strokeDashoffset = len; e.getBoundingClientRect(); e.style.transition = 'stroke-dashoffset .9s ease-in-out'; e.style.strokeDashoffset = '0'; }
 }
-function renderAll(){ ensureNotes(); renderNb(); renderPz(); $('#brain').textContent = brainTxt(); renderNodes(); renderStrings(); renderMarks(); renderHyp(false); $('#caseName').textContent = (nodeOf('n1') || {}).title || '새 사건'; }
+function renderAll(){ ensureNotes(); ensureEv(); evPing(0); renderNb(); renderPz(); $('#brain').textContent = brainTxt(); renderNodes(); renderStrings(); renderMarks(); renderHyp(false); $('#caseName').textContent = (nodeOf('n1') || {}).title || '새 사건'; }
 function sfx(x, y, t){ const el = document.createElement('div'); el.className = 'sfx'; el.textContent = t; el.style.left = x + 'px'; el.style.top = y + 'px'; world.appendChild(el); setTimeout(() => el.remove(), 800); }
 function boom(t){ const el = document.createElement('div'); el.className = 'boom'; el.textContent = t; board.appendChild(el); setTimeout(() => el.remove(), 1200); }
 
@@ -165,7 +165,7 @@ async function doOp(op){
   } else if (op.op === 'edit'){
     const n = nodeOf(op.id); if (!n) return;
     if (op.title) n.title = String(op.title).slice(0, 16); if (op.note !== undefined) n.note = String(op.note).slice(0, 60);
-    if (PV.id === n.id){ $('#pvT').textContent = n.title; $('#pvN').textContent = n.note || ''; } if (op.kind && KINDS[op.kind] && n.kind !== 'brief' && n.kind !== 'photo') n.kind = op.kind;
+    if (PV.id === n.id || (PV.id && /^e/.test(PV.id) && (evOf(PV.id) || {}).card === n.id)) pvRefresh(); if (op.kind && KINDS[op.kind] && n.kind !== 'brief' && n.kind !== 'photo') n.kind = op.kind;
     await fly(n.x, n.y, Math.max(cam.k, .85), 600);
     const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el){ el.outerHTML = cardHtml(n, 'flash'); measure(); renderStrings(); renderMarks(); } await sleep(700);
   } else if (op.op === 'suspect'){
@@ -179,6 +179,7 @@ async function doOp(op){
     for (const L of S.links){ if (L.a === F.id) L.a = I.id; if (L.b === F.id) L.b = I.id; L.id = L.a + '-' + L.b; }
     const seen = new Set(); S.links = S.links.filter(L => { if (L.a === L.b) return false; const k = [L.a, L.b].sort().join('|'); if (seen.has(k)) return false; seen.add(k); return true; });
     for (const m of S.log) if (m.photos) m.photos = m.photos.map(x => x === F.id ? I.id : x);
+    evDetach(F.id, I.id);   /* 11-16 A: 원본은 자료함에 그대로 — 카드만 합쳐진 쪽을 가리킨다 */
     if (S.pending && S.pending.photos) S.pending.photos = S.pending.photos.map(x => x === F.id ? I.id : x);
     if (S.suspect === F.id) S.suspect = I.id; if (S.hyp.culprit === F.id) S.hyp.culprit = I.id; pzRename(F.id, I.id);   /* 11-16 B: 난제 근거 id 도 */
     const el = document.querySelector(`#nodes [data-id="${F.id}"]`); if (el){ el.style.transition = 'left .5s,top .5s,opacity .5s'; el.style.left = I.x + 'px'; el.style.top = I.y + 'px'; el.style.opacity = '0'; }
@@ -194,7 +195,7 @@ async function doOp(op){
     const n = nodeOf(op.id); if (!n || n.kind === 'brief') return;
     if (n.kind === 'question'){ const sn = cardSolved(n, op.why || op.line); if (sn){ nbFlash.add(sn.id); setTimeout(renderNb, 600); } }
     await fly(n.x, n.y, Math.max(cam.k, .8), 550); const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el) el.classList.add('gone'); await sleep(520);
-    S.nodes = S.nodes.filter(x => x !== n); S.links = S.links.filter(L => L.a !== n.id && L.b !== n.id); if (S.suspect === n.id) S.suspect = null; renderAll();
+    evDetach(n.id); S.nodes = S.nodes.filter(x => x !== n); S.links = S.links.filter(L => L.a !== n.id && L.b !== n.id); if (S.suspect === n.id) S.suspect = null; renderAll();
   }
 }
 function clean(r){

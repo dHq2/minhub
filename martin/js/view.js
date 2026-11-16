@@ -21,8 +21,11 @@ function pvFit(){ const st = $('#pvS'), W = st.clientWidth, H = st.clientHeight;
 let pvFull = false; try{ pvFull = localStorage.getItem('drmartin.pvfull') === '1'; }catch(e){}
 function pvLayout(){ const pv = $('#pv'), st = document.querySelector('.stage'); pv.classList.toggle('full', pvFull); $('#pvC').textContent = pvFull ? '대화 보기' : '대화 숨기기';
   pv.style.setProperty('--pvb', pvFull ? '0px' : Math.max(0, $('#app').clientHeight - st.offsetTop) + 'px'); }
-function openPv(id){ const n = nodeOf(id); if (!n) return; act('사진 크게', { id, title:n.title }); PV.id = id;
-  $('#pvT').textContent = n.title || '사진'; $('#pvN').textContent = n.note || ''; $('#pv').classList.add('on'); $('#pv').classList.remove('touched'); closeSheet(); pvLayout();
+function pvRefresh(){ const id = PV.id, n = id && itemOf(id); if (!n) return; const isEv = /^e/.test(id), ev = isEv ? n : evByCard(id);
+  $('#pvT').textContent = (isEv ? evTitle(n) : n.title) || '사진';
+  $('#pvN').textContent = [isEv ? (n.card && nodeOf(n.card) || {}).note : n.note, ev && ev.read ? '판독 — ' + ev.read : ev ? '판독문이 아직 없다. 「다시 읽혀」를 누르면 마틴이 원본을 다시 읽는다.' : ''].filter(Boolean).join('\n\n'); }
+function openPv(id){ const n = itemOf(id); if (!n) return; const isEv = /^e/.test(id), ev = isEv ? n : evByCard(id), title = isEv ? evTitle(n) : n.title;   /* 11-16 A: 자료함의 원본도 여기서 — 아래엔 마틴의 판독문 */
+  act('사진 크게', { id, title }); PV.id = id; pvRefresh(); $('#pv').classList.add('on'); $('#pv').classList.remove('touched'); closeSheet(); pvLayout();
   const im = $('#pvI'), src = photoSrc(n), fb = photoThumb(n); PV.iw = 0; im.style.transform = 'scale(0)';
   im.onload = () => { PV.iw = im.naturalWidth; PV.ih = im.naturalHeight; pvFit(); };
   im.onerror = () => { if (fb && im.getAttribute('src') !== fb) im.src = fb; }; im.src = src || fb;
@@ -30,7 +33,8 @@ function openPv(id){ const n = nodeOf(id); if (!n) return; act('사진 크게', 
 $('#pvX').onclick = () => { $('#pv').classList.remove('on'); PV.id = null; };
 $('#pvC').onclick = () => { pvFull = !pvFull; try{ localStorage.setItem('drmartin.pvfull', pvFull ? '1' : '0'); }catch(e){} act(pvFull ? '사진 전체 화면' : '사진 보며 대화'); pvLayout(); requestAnimationFrame(pvFit); };
 addEventListener('resize', () => { if ($('#pv').classList.contains('on')){ pvLayout(); requestAnimationFrame(pvFit); } });
-const pvOpenId = () => $('#pv').classList.contains('on') && PV.id && nodeOf(PV.id) ? PV.id : null;
+const pvOpenId = () => $('#pv').classList.contains('on') && PV.id && itemOf(PV.id) ? PV.id : null;
+$('#pvR').onclick = () => { if (busy || !PV.id) return; act('다시 읽혀', { id:PV.id }); turn({ text:'이 자료 원본을 처음부터 꼼꼼히 다시 읽어 줘. 판독문도 고쳐 두고.' }); };   /* 11-16 A */
 const pvS = $('#pvS');
 const zoomAt = (cx, cy, k) => { k = Math.max(PV.k0 || .1, Math.min(8, k)); PV.x = cx - (cx - PV.x) * k / PV.k; PV.y = cy - (cy - PV.y) * k / PV.k; PV.k = k; pvApply(); };
 pvS.addEventListener('pointerdown', e => { $('#pv').classList.add('touched'); pvS.setPointerCapture(e.pointerId); PV.pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
