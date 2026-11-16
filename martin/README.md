@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.7 (2026-11-16)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.8 (2026-11-16)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -56,6 +56,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
+| js/shot.js · js/lib/html-to-image.js | 판 사진(v0.11.0, A) — 판 전체를 고화질 PNG 로(boardShot), 저장·복사 서랍(shotSheet). 라이브러리는 html-to-image 1.11.13(MIT) 그대로 |
 | js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
 | js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
 | js/brief.js | 업데이트 안내 |
@@ -106,3 +107,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.5 | 2026-11-16 | A: 판 손잡이(고르기·옮기기)·진짜 수사판 배치로 파일 지도 고침 |
 | v1.6 | 2026-11-16 | B: 파일 지도에 js/persona.js · persona.md(마틴 인물 설정 v2) |
 | v1.7 | 2026-11-16 | B: 2장 마틴 말투 줄 → 인물 설정 v2(정해진 대사 예시 걷음) |
+| v1.8 | 2026-11-16 | A: 파일 지도에 js/shot.js(판 사진)·js/lib |

@@ -62,3 +62,11 @@
 @keyframes cdrop{0%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1.07)}60%{transform:translate(-50%,-50%) rotate(var(--r)) scale(.97)}100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}}
 .board{touch-action:none;-webkit-user-select:none;user-select:none}
 .board img{-webkit-user-drag:none;pointer-events:none}
+/* 11-16 A: 판 사진 — 판 오른쪽 위 단추, 찍을 때 번쩍, 서랍에 미리보기·저장·복사 */
+.fit.fit3{top:10px;bottom:auto}
+.shotflash{position:absolute;inset:0;z-index:8;background:#fff;pointer-events:none;animation:shotfl .6s ease-out forwards}
+@keyframes shotfl{0%{opacity:.85}100%{opacity:0}}
+.shotimg{display:block;margin-top:10px;border:1px solid #3a342c;border-radius:6px;overflow:auto;max-height:50vh;background:#0b0a09}
+.shotimg img{display:block;width:100%;height:auto}
+.shotbtn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.shotbtn{color:inherit}
