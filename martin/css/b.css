@@ -1,1 +1,115 @@
 /* 방 B 전용 스타일 — app.css 다음에 불러온다. 새 기능 스타일은 여기에 「11-16 B: 기능」 주석과 함께 */
+
+/* 11-16 B: 난제 지도 — 위 단추 「난제」 (단추 셋이 들어가게 폰에선 살짝 좁힘) */
+@media(max-width:430px){ .top{gap:6px} .top .tb{padding:0 9px} }
+#btnPz{position:relative}
+#btnPz .n{position:absolute;right:-5px;top:-5px;background:var(--red);color:#fff;font:700 10px/16px "Nanum Gothic Coding",monospace;min-width:16px;height:16px;border-radius:8px;padding:0 3px}
+#btnPz .n:empty{display:none}
+#btnPz.ping{animation:ping .9s ease}
+
+/* 11-16 B: 옛 큰 가설 띠 → 한 줄 「붙잡은 난제」 띠 */
+.pzbar{cursor:pointer}
+.pzbar .hyp-row{min-height:40px;padding:6px 12px;gap:8px}
+/* 띠 도장은 .pzst — .stamp 는 판 위 확정 도장(a.css)이라 겹치지 않게 */
+.pzbar .pzst{flex:none;font:400 11px "Black Han Sans",sans-serif;color:var(--red);border:2px solid var(--red);padding:1px 5px;transform:rotate(-4deg);border-radius:3px;letter-spacing:.04em;white-space:nowrap}
+.pzbar.bump .pzst{animation:thump .55s ease}
+.pzbar .ht{font:700 13px/1.3 "Nanum Myeongjo",serif;-webkit-line-clamp:1;line-clamp:1}
+.pzbar .pzcnt{flex:none;font:700 10px "Nanum Gothic Coding",monospace;color:var(--dim);border:1px solid #3a332a;border-radius:9px;padding:1px 6px}
+.pzbar .pzcnt:empty{display:none}
+.pzbar .pct{width:42px}.pzbar .pct b{font-size:17px}
+
+/* 11-16 B: 난제 지도 서랍 — 오른쪽에서 */
+#pzm{position:fixed;right:0;top:0;bottom:0;width:min(92vw,380px);z-index:60;display:flex;flex-direction:column;background:#0f0d0b;color:#efe6d4;box-shadow:-8px 0 30px #000;transform:translateX(105%);transition:transform .3s cubic-bezier(.3,.8,.3,1)}
+.pzmopen #pzm{transform:none}
+#pzmScrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:59;display:none}.pzmopen #pzmScrim{display:block}
+.pz-top{flex:none;display:flex;align-items:center;gap:8px;padding:12px 10px 10px 16px;border-bottom:2px solid #6b1015;background:linear-gradient(#17130f,#0f0d0b)}
+.pz-top b{flex:1;font:400 20px "Black Han Sans",sans-serif;letter-spacing:.02em}
+.pz-top small{display:block;font:700 11px "Nanum Gothic Coding",monospace;color:#8b8172;letter-spacing:0;margin-top:2px}
+.pz-top button{width:40px;height:40px;border:0;background:none;color:#cfc4b0;font:400 24px/1 sans-serif}
+#pzmBody{flex:1;overflow-y:auto;padding:8px 10px 20px 10px}
+.pz-sum0{display:flex;justify-content:space-between;font:700 11px "Nanum Gothic Coding",monospace;color:#8b8172;padding:2px 2px 8px}
+.pz-sum0 b{color:#e2b04a}
+
+/* 난제 하나 */
+.pzn{position:relative;margin:0 0 8px}
+.pz-h{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"id tag . pc" "t t t t";gap:2px 6px;align-items:center;width:100%;padding:8px 10px 4px;border:1px solid #2e2820;border-bottom:0;border-radius:8px 8px 0 0;background:#1a1612;text-align:left}
+.pz-h .pid{grid-area:id;font:700 11px "Nanum Gothic Coding",monospace;font-style:normal;color:#d0262f}
+.pz-h .ptag{grid-area:tag;font:700 10px "Nanum Gothic Coding",monospace;color:#8b8172;border:1px solid #3a332a;border-radius:3px;padding:0 4px}
+.pz-h .pt{grid-area:t;font:800 14px/1.35 "Nanum Myeongjo",serif;color:#f4ecdc;word-break:keep-all}
+.pz-h .pc{grid-area:pc;font:400 17px "Black Han Sans",sans-serif;color:#f4ecdc}
+.pz-s,.pz-a{padding:2px 10px 8px;border:1px solid #2e2820;border-top:0;border-radius:0 0 8px 8px;background:#1a1612;font:12.5px/1.4 "Nanum Myeongjo",serif;color:#cfc4b0}
+.pz-s i{font:700 10px "Nanum Gothic Coding",monospace;font-style:normal;color:#e2b04a;margin-right:5px}
+.pz-s small{margin-left:6px;font:10px "Nanum Gothic Coding",monospace;color:#8b8172}
+.pz-s.none{color:#6e665a}
+.pz-a{color:#e2b04a;font-weight:700}
+.pz-a small{display:inline-block;margin-left:6px;font:700 10px "Nanum Gothic Coding",monospace;color:#1a1612;background:#e2b04a;border-radius:3px;padding:0 4px;vertical-align:1px}
+.pzn.root>.pz-h .pt{font-size:15.5px}
+.pzn.root>.pz-h{border-color:#6b1015}.pzn.root>.pz-s,.pzn.root>.pz-a{border-color:#6b1015}
+.pzn.focus>.pz-h,.pzn.focus>.pz-s,.pzn.focus>.pz-a,.pzn.focus>.pz-more{border-color:#e2b04a}
+.pzn.focus>.pz-h .ptag{color:#1a1612;background:#e2b04a;border-color:#e2b04a}
+.pzn.st-solved>.pz-h{background:#15120f}.pzn.st-solved>.pz-h .pt{color:#a89d8a}
+.pzn.st-solved>.pz-h .pc{color:#e2b04a}
+.pzn.st-solved>.pz-h .ptag{color:#e2b04a;border-color:#6d5524}
+.pzn.sel>.pz-s,.pzn.sel>.pz-a{border-radius:0}
+.pzn.new>.pz-h,.pzn.new>.pz-s,.pzn.new>.pz-a{animation:nbnew 1.6s ease}
+
+/* 아래 난제 — 빨간 실로 매달림 */
+.pz-kids{position:relative;margin:8px 0 0 10px;padding-left:14px;border-left:2px solid rgba(195,20,31,.55)}
+.pz-kids>.pzn::before{content:"";position:absolute;left:-14px;top:17px;width:12px;border-top:2px solid rgba(195,20,31,.55)}
+.pz-kids>.pzn::after{content:"";position:absolute;left:-4px;top:13px;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff6a6a,#8c0d14);box-shadow:0 1px 2px #000}
+.pz-kids>.pzn.st-solved::after{background:radial-gradient(circle at 35% 35%,#ffe08a,#8a6416)}
+
+/* 펼친 난제 — 가설들 */
+.pz-more{border:1px solid #2e2820;border-top:1px dashed #3a332a;border-radius:0 0 8px 8px;background:#13100d;padding:4px 10px 10px}
+.pz-empty{margin:8px 0;font:12.5px "Nanum Myeongjo",serif;color:#6e665a}
+.hy{padding:8px 0 6px;border-bottom:1px dashed #2e2820}
+.hy-h{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:baseline}
+.hy-h i{font:700 10px "Nanum Gothic Coding",monospace;font-style:normal;color:#e2b04a}
+.hy-h b{font:800 13px/1.35 "Nanum Myeongjo",serif;color:#f1e8d6;word-break:keep-all}
+.hy-h span{font:400 14px "Black Han Sans",sans-serif;color:#f1e8d6}
+.hy.st-win .hy-h b,.hy.st-win .hy-h span{color:#e2b04a}
+.hy.st-dead .hy-h b{color:#8b8172}.hy.st-dead s{text-decoration-color:#d0262f;text-decoration-thickness:2px}
+.hy.st-dead .hy-h span{color:#8b8172;font-size:12px}
+.hy.new{animation:nbnew 1.6s ease}
+.hm{height:3px;background:#2a251e;margin:5px 0 2px}.hm i{display:block;height:100%;background:var(--red)}
+.why{margin:4px 0 0;font:12.5px/1.45 "Nanum Myeongjo",serif;color:#cfc4b0}
+.why.kill{color:#b2555b}
+.bs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.bc{display:inline-flex;align-items:center;gap:4px;max-width:100%;height:22px;padding:0 7px;border:1px solid #3a332a;border-radius:11px;background:#1d1915;font:11px "Nanum Gothic Coding",monospace;color:#d8cdb8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bc i{font-style:normal;font-weight:700;color:#d0262f}
+.bc.bn{border-color:#5a4632;background:#2a2017}
+.bc.bm{border-color:#334453;color:#b9cfe0}.bc.bm i{color:#8fb3d0}
+.bc.bp.ok{border-color:#6d5524;color:#e2b04a}.bc.bp.ok i{color:#e2b04a}
+.bc.gone,.bc.none{border-style:dashed;color:#6e665a}.bc.none{color:#b2555b;border-color:#6b1015}
+.hh{margin-top:4px;font:10px "Nanum Gothic Coding",monospace;color:#6e665a}
+.pz-more details{margin-top:8px;font:11px "Nanum Gothic Coding",monospace;color:#8b8172}
+.pz-more summary{cursor:pointer;padding:3px 0}
+.plog ol{list-style:none;margin:4px 0 0;padding:0}
+.plog li{padding:2px 0;color:#a89d8a;font:11px/1.45 "Nanum Gothic Coding",monospace;border-bottom:1px dotted #2a251e}
+.plog li i{font-style:normal;color:#6e665a;margin-right:6px}
+.pz-act{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.pz-act button{height:32px;padding:0 12px;border:1px solid #3a332a;background:#1d1915;border-radius:8px;font:700 12px "Nanum Gothic Coding",monospace;color:#e8dfcc}
+.pz-act button[data-pfocus]{border-color:#e2b04a;color:#e2b04a}
+.pz-act .del{margin-left:auto;color:#b2555b;border-color:#4a1a1d}
+
+/* 사라진 난제 — 합쳐짐·없어짐 */
+.pgone{margin:14px 2px 0;font:11px "Nanum Gothic Coding",monospace;color:#8b8172}
+.pgone summary{cursor:pointer;padding:4px 0}
+.pgone ol{list-style:none;margin:4px 0 0;padding:0}
+.pgone li{padding:4px 0;border-bottom:1px dotted #2a251e;line-height:1.5}
+.pgone li i{font-style:normal;font-weight:700;color:#6e665a;margin-right:6px}
+.pgone li s{color:#a89d8a;text-decoration-color:#d0262f}
+.pgone li em{display:block;font-style:normal;color:#6e665a}
+
+/* 새 난제 적기 */
+.pzadd{flex:none;display:flex;align-items:center;gap:6px;padding:8px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #2e2820;background:#14110e}
+.pzadd #pzmUnder{flex:none;font:700 11px "Nanum Gothic Coding",monospace;color:#e2b04a;white-space:nowrap}
+.pzadd input{flex:1;height:38px;border:1px solid #3a332a;border-radius:8px;background:#0f0d0b;color:#f1e8d6;font:14px "Nanum Myeongjo",serif;outline:none;padding:0 10px}
+.pzadd input:focus{border-color:#e2b04a}
+.pzadd button{height:38px;padding:0 12px;border:1px solid #6b1015;background:#1b1210;color:#ffb3ab;border-radius:8px;font:700 12px "Nanum Gothic Coding",monospace}
+
+/* 아주 넓은 화면 — 판 오른쪽에 늘 */
+@media(min-width:1180px){
+  #pzm{position:relative;transform:none;width:360px;height:min(100dvh,915px);border-radius:14px;box-shadow:0 0 0 1px #2a2620,0 30px 80px #000;z-index:1;flex:none}
+  #pzmScrim,#btnPz,#pzmX{display:none!important}
+}

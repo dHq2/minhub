@@ -54,7 +54,7 @@ function renderMarks(anim){
   $('#marks').innerHTML = `<ellipse class="mark" id="mk" cx="${n.x}" cy="${n.y + 4}" rx="${rx}" ry="${ry}" transform="rotate(-7 ${n.x} ${n.y})"/><text class="markt" x="${n.x + rx - 20}" y="${n.y - ry + 4}" transform="rotate(-8 ${n.x} ${n.y})">용의자</text>`;
   if (anim && !RM){ const e = $('#mk'), len = e.getTotalLength(); e.style.strokeDasharray = len; e.style.strokeDashoffset = len; e.getBoundingClientRect(); e.style.transition = 'stroke-dashoffset .9s ease-in-out'; e.style.strokeDashoffset = '0'; }
 }
-function renderAll(){ ensureNotes(); renderNb(); $('#brain').textContent = brainTxt(); renderNodes(); renderStrings(); renderMarks(); renderHyp(false); $('#caseName').textContent = (nodeOf('n1') || {}).title || '새 사건'; }
+function renderAll(){ ensureNotes(); renderNb(); renderPz(); $('#brain').textContent = brainTxt(); renderNodes(); renderStrings(); renderMarks(); renderHyp(false); $('#caseName').textContent = (nodeOf('n1') || {}).title || '새 사건'; }
 function sfx(x, y, t){ const el = document.createElement('div'); el.className = 'sfx'; el.textContent = t; el.style.left = x + 'px'; el.style.top = y + 'px'; world.appendChild(el); setTimeout(() => el.remove(), 800); }
 function boom(t){ const el = document.createElement('div'); el.className = 'boom'; el.textContent = t; board.appendChild(el); setTimeout(() => el.remove(), 1200); }
 
@@ -68,18 +68,8 @@ function placeNear(nearId){
 }
 
 /* ── 가설 띠 ── */
-function renderHyp(bump){
-  const h = S.hyp, has = h.n > 0;
-  $('#hypN').textContent = has ? '가설 #' + h.n : '가설 없음';
-  $('#hypT').textContent = has ? h.title : '사진이나 대화를 건네면 첫 가설을 세운다.';
-  $('#hypP').textContent = has ? h.confidence : 0; $('#hypM').style.width = (has ? h.confidence : 0) + '%';
-  const cul = h.culprit && nodeOf(h.culprit);
-  $('#hypMore').innerHTML = `${has ? `<p>${esc(h.body)}</p>${cul ? `<div class="alt"><span>마틴이 지목한 사람</span><span>${esc(cul.title)}</span></div>` : ''}${(h.alts || []).map(a => `<div class="alt"><span>${esc(a.title)}</span><span>${a.confidence}%</span></div>`).join('')}` : '<p>증거나 이야기를 건네면 마틴이 가장 그럴듯한 가설을 세운다.</p>'}
-    <div class="hyp-act"><button class="ghost" data-a="fold" type="button">접기</button></div>`;
-  if (bump){ const e = $('#hyp'); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); }
-}
-$('#hypRow').onclick = () => { const o = $('#hyp').classList.toggle('open'); if (o) act('가설 펼침', { hyp:S.hyp.n }); $('#hypRow').setAttribute('aria-expanded', o); };
-$('#hypMore').onclick = e => { const a = e.target.closest('[data-a]'); if (!a) return; $('#hyp').classList.remove('open'); };
+/* 11-16 B: 큰 가설 띠는 기록·이력이 안 남아 없앰 → 한 줄 「붙잡은 난제」 띠(puzzles.js renderPzBar). 가설은 난제 지도에 */
+function renderHyp(bump){ renderPzBar(bump); }
 
 /* ── 마틴의 말 ── */
 let skip = false;
@@ -190,7 +180,7 @@ async function doOp(op){
     const seen = new Set(); S.links = S.links.filter(L => { if (L.a === L.b) return false; const k = [L.a, L.b].sort().join('|'); if (seen.has(k)) return false; seen.add(k); return true; });
     for (const m of S.log) if (m.photos) m.photos = m.photos.map(x => x === F.id ? I.id : x);
     if (S.pending && S.pending.photos) S.pending.photos = S.pending.photos.map(x => x === F.id ? I.id : x);
-    if (S.suspect === F.id) S.suspect = I.id; if (S.hyp.culprit === F.id) S.hyp.culprit = I.id;
+    if (S.suspect === F.id) S.suspect = I.id; if (S.hyp.culprit === F.id) S.hyp.culprit = I.id; pzRename(F.id, I.id);   /* 11-16 B: 난제 근거 id 도 */
     const el = document.querySelector(`#nodes [data-id="${F.id}"]`); if (el){ el.style.transition = 'left .5s,top .5s,opacity .5s'; el.style.left = I.x + 'px'; el.style.top = I.y + 'px'; el.style.opacity = '0'; }
     await sleep(560); S.nodes = S.nodes.filter(x => x !== F); renderAll(); renderChat(); sfx(I.x + 50, I.y - (I.h || 120) / 2, '합침'); await sleep(450);
   } else if (op.op === 'face'){
@@ -231,13 +221,9 @@ async function play(r){
   if (focusOn) await unfocus();
   await runOps();
   const nr = await applyNotes(r.raw);   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
-  const h = r.hyp;
-  if (h && h.title){
-    const prev = S.hyp, cul = h.culprit && nodeOf(h.culprit) && nodeOf(h.culprit).kind === 'person' ? h.culprit : null, changed = h.title !== prev.title;
-    S.hyp = { n:prev.n + (changed ? 1 : 0) || 1, title:String(h.title).slice(0, 60), body:String(h.body || '').slice(0, 400), confidence:Math.max(0, Math.min(100, Math.round(+h.confidence || 0))), culprit:cul, alts:(Array.isArray(h.alts) ? h.alts : []).slice(0, 2).map(a => ({ title:String(a.title || '').slice(0, 50), confidence:Math.max(0, Math.min(100, Math.round(+a.confidence || 0))) })) };
-    if (cul && cul !== S.suspect){ const n = nodeOf(cul); await fly(n.x, n.y, Math.max(cam.k, .8), 600); S.suspect = cul; renderNodes(); renderMarks(true); if (prev.culprit && prev.culprit !== cul) boom('하!'); await sleep(800); }
-    await fitAll(800); renderHyp(true); await sleep(500);
-  } else if (r.ops.length || nr.solved.length) await fitAll(800);
+  const pr = await applyPz(r.raw);   /* 11-16 B: 가설은 난제 지도로(pz). 옛 hypothesis 가 오면 뿌리 난제 가설로 받는다 */
+  if (r.ops.length || nr.solved.length) await fitAll(800);
+  if (pr.n) await sleep(400);
   if (r.ask) await speak(r.ask);
 }
 

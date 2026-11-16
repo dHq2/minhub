@@ -20,16 +20,18 @@
     <div class="brand">DR. MARTIN<small id="ver"></small></div>
     <div class="case" id="caseName"></div>
     <button class="tb" id="btnNb" type="button">수첩<span class="n" id="nbN"></span></button>
+    <button class="tb" id="btnPz" type="button">난제<span class="n" id="pzN"></span></button>
     <button class="tb" id="btnMenu" type="button">사건</button>
   </header>
-  <section class="hyp" id="hyp">
-    <button class="hyp-row" id="hypRow" type="button" aria-expanded="false">
-      <span class="stamp" id="hypN">가설 없음</span>
-      <span class="ht" id="hypT">아직 아무것도 이어지지 않았다.</span>
+  <!-- 11-16 B: 큰 가설 띠 → 한 줄 「붙잡은 난제」 띠. 누르면 난제 지도 -->
+  <section class="hyp pzbar" id="hyp" role="button" tabindex="0" aria-label="붙잡은 난제 — 난제 지도 열기">
+    <div class="hyp-row">
+      <span class="pzst" id="hypN">p1 붙잡음</span>
+      <span class="ht" id="hypT">무슨 일이 있었나</span>
+      <span class="pzcnt" id="pzCnt"></span>
       <span class="pct"><b id="hypP">0</b><small>%</small></span>
-    </button>
+    </div>
     <div class="meter"><i id="hypM"></i></div>
-    <div class="hyp-more" id="hypMore"></div>
   </section>
   <main class="board" id="board">
     <div class="world" id="world">
@@ -60,6 +62,9 @@
   <div class="scrim" id="scrim"></div>
   <div class="sheet" id="sheet" role="dialog"></div>
 </div>
+<!-- 11-16 B: 난제 지도 — 폰은 오른쪽 서랍, 아주 넓은 화면은 판 오른쪽에 늘 -->
+<aside id="pzm" aria-label="난제 지도"><div class="pz-top"><b>난제 지도<small id="pzmCase"></small></b><button type="button" id="pzmX" aria-label="닫기">×</button></div><div id="pzmBody"></div><form class="pzadd" id="pzmAdd"><span id="pzmUnder"></span><input id="pzmIn" maxlength="80" placeholder="새 난제 — 질문 한 줄" autocomplete="off"><button type="submit">지정</button></form></aside>
+<div id="pzmScrim"></div>
 <script src="js/ver.js"></script>
 <script src="js/changes.js"></script>
 <script src="js/core.js"></script>
@@ -69,6 +74,7 @@
 <script src="js/sheets.js"></script>
 <script src="js/view.js"></script>
 <script src="js/notebook.js"></script>
+<script src="js/puzzles.js"></script>
 <script src="js/brief.js"></script>
 <script src="js/boot.js"></script>
 </body>
