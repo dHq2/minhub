@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Dr. 마틴의 추리판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Gothic+Coding:wght@400;700&family=Nanum+Myeongjo:wght@700;800&family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/a.css">
+<link rel="stylesheet" href="css/b.css">
+<link rel="stylesheet" href="css/c.css">
+<link rel="stylesheet" href="css/d.css">
+</head>
+<body>
+<aside id="nb" aria-label="수사 수첩"><div class="nb-top"><b>수사 수첩<small id="nbCase"></small></b><button type="button" id="nbX" aria-label="닫기">×</button></div><div id="nbBody"></div></aside>
+<div id="nbScrim"></div>
+<div id="app">
+  <header class="top">
+    <div class="brand">DR. MARTIN<small id="ver"></small></div>
+    <div class="case" id="caseName"></div>
+    <button class="tb" id="btnNb" type="button">수첩<span class="n" id="nbN"></span></button>
+    <button class="tb" id="btnMenu" type="button">사건</button>
+  </header>
+  <section class="hyp" id="hyp">
+    <button class="hyp-row" id="hypRow" type="button" aria-expanded="false">
+      <span class="stamp" id="hypN">가설 없음</span>
+      <span class="ht" id="hypT">아직 아무것도 이어지지 않았다.</span>
+      <span class="pct"><b id="hypP">0</b><small>%</small></span>
+    </button>
+    <div class="meter"><i id="hypM"></i></div>
+    <div class="hyp-more" id="hypMore"></div>
+  </section>
+  <main class="board" id="board">
+    <div class="world" id="world">
+      <svg id="strings" viewBox="0 0 2000 2000"></svg>
+      <div id="tags"></div>
+      <div id="nodes"></div>
+      <svg id="marks" viewBox="0 0 2000 2000" style="z-index:4"></svg>
+    </div>
+    <div class="shade"></div>
+    <button class="fit fit2" id="btnTidy" type="button">판 정리</button>
+    <button class="fit" id="btnFit" type="button">전체 보기</button>
+  </main>
+  <section class="stage">
+    <img class="martin" id="martin" alt="Dr. 마틴" src="img/martin.webp">
+    <div class="talk">
+      <div class="who"><span>DR. 마틴 <small id="brain"></small></span><button id="btnLog" type="button">기록</button></div>
+      <div class="chat" id="chat"></div>
+    </div>
+  </section>
+  <div class="chips" id="chips"></div>
+  <form class="bar" id="form">
+    <button class="ib" id="btnAtt" type="button" aria-label="사진·파일 붙이기" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M16 7l-7.5 7.5a2.1 2.1 0 003 3L19 10a4 4 0 00-5.7-5.7L5.6 12a6 6 0 008.5 8.5L20 14.6"/></svg></button>
+    <textarea id="msg" rows="1" placeholder="무엇이든 붙여 넣어라"></textarea>
+    <button class="go" id="send" type="submit">건네기</button>
+  </form>
+  <div class="attm" id="attm"><label>사진 고르기<input type="file" id="fileImg" accept="image/*" multiple></label><label>글 파일 고르기<input type="file" id="fileAny" multiple></label><button type="button" class="attx" id="attPaste">붙여넣기 칸 · 크롬에서 열기</button></div>
+  <div class="pv" id="pv"><div class="pv-top"><b id="pvT"></b><button type="button" class="pvc" id="pvC">대화 숨기기</button><button type="button" id="pvX" aria-label="닫기">×</button></div><div class="pv-stage" id="pvS"><img id="pvI" alt=""><span class="pv-hint">두 손가락 확대 · 두 번 눌러 확대</span></div><div class="pv-note" id="pvN"></div></div>
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" role="dialog"></div>
+</div>
+<script src="js/ver.js"></script>
+<script src="js/changes.js"></script>
+<script src="js/core.js"></script>
+<script src="js/board.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/input.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/view.js"></script>
+<script src="js/notebook.js"></script>
+<script src="js/brief.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>

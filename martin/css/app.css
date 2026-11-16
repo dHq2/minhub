@@ -1,0 +1,229 @@
+/* Dr. 마틴의 추리판 — 공통 스타일. 새 기능 스타일은 자기 방 파일(a·b·c·d.css)에 날짜·기능 주석과 함께 */
+/* VOICE: 느와르 만화. 비 오는 밤 사무실, 말수 적은 탐정, 확신에 찬 망상.
+   IDEA: 탐정 사무실 벽의 코르크 수사판(세희 인간관계판의 파생). 카드가 꽂히고 빨간 실이 이어진다.
+   PICTURE: 판 자체가 그림. 아래에 마틴이 서서 말풍선으로 판을 따라가며 중얼거린다.
+   COLOUR/TYPE: 먹색 바탕·바랜 종이·어두운 코르크, 색은 빨간 실 하나. Black Han Sans 제목, 명조 대사, 타자기 문서, 손글씨 메모.
+   LAYOUT: 폰 비율 한 화면. 위 가설 띠, 가운데 판, 아래 마틴과 입력줄. 넓은 화면은 왼쪽에 수사 수첩.
+   버전별 변화는 martin/CHANGELOG.md */
+:root{color-scheme:dark;--ink:#ece4d4;--dim:#9a9184;--bg:#0c0b0a;--red:#c3141f;--paper:#efe7d6;--paper2:#e4dac4;--cork:#7d5a3a;--k:#141210}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:#050505 radial-gradient(ellipse at 50% 0,#1d1a17,#050505 70%);color:var(--ink);font:15px/1.5 "Nanum Myeongjo",serif;overflow:hidden;display:flex;justify-content:center}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{position:relative;width:min(100vw,430px);height:100dvh;max-height:940px;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+@media(min-width:600px){#app{margin:auto 0;height:min(100dvh,915px);box-shadow:0 0 0 1px #2a2620,0 30px 80px #000;border-radius:18px}}
+.top{flex:none;height:46px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#0a0908;border-bottom:1px solid #26221d;z-index:8}
+.brand{font:400 19px "Black Han Sans",sans-serif;letter-spacing:.02em;color:#f2ead9;white-space:nowrap}
+.brand small{font:700 10px "Nanum Gothic Coding",monospace;color:var(--dim);margin-left:4px}
+.case{flex:1;font:700 12px "Nanum Gothic Coding",monospace;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb{border:1px solid #3a342c;background:#17140f;border-radius:8px;height:32px;padding:0 12px;font:700 13px "Nanum Gothic Coding",monospace}
+/* 가설 띠 */
+.hyp{flex:none;position:relative;z-index:7;background:#16130f;border-bottom:1px solid #2b261f}
+.hyp-row{display:flex;align-items:center;gap:10px;padding:8px 12px;width:100%;border:0;background:none;text-align:left;min-height:52px}
+.stamp{flex:none;font:400 12px "Black Han Sans",sans-serif;color:var(--red);border:2px solid var(--red);padding:2px 6px;transform:rotate(-4deg);border-radius:3px;letter-spacing:.04em}
+.ht{flex:1;font:800 14px/1.3 "Nanum Myeongjo",serif;color:#f4ecdc;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pct{flex:none;width:52px;text-align:right}
+.pct b{font:400 20px "Black Han Sans",sans-serif;color:#f4ecdc}.pct small{font-size:11px;color:var(--dim)}
+.meter{height:3px;background:#2a251e}.meter i{display:block;height:100%;width:0;background:var(--red);transition:width 1.1s cubic-bezier(.3,.7,.2,1)}
+.hyp.bump .stamp{animation:thump .55s ease}
+.hyp.bump .ht{animation:flick .7s ease}
+@keyframes thump{0%{transform:rotate(-4deg) scale(2.4);opacity:0}55%{transform:rotate(-4deg) scale(.9);opacity:1}100%{transform:rotate(-4deg) scale(1)}}
+@keyframes flick{0%{opacity:0;filter:blur(3px)}100%{opacity:1;filter:none}}
+.hyp-more{display:none;position:absolute;left:0;right:0;top:100%;background:#16130f;border-bottom:1px solid #2b261f;padding:4px 14px 14px;box-shadow:0 14px 30px #000a;max-height:55vh;overflow:auto}
+.hyp.open .hyp-more{display:block}
+.hyp-more p{margin:4px 0 10px;font-size:14px;color:#ddd3c1}
+.alt{display:flex;justify-content:space-between;gap:10px;font:13px "Nanum Gothic Coding",monospace;color:var(--dim);padding:6px 0;border-top:1px dashed #3a332a}
+.hyp-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+/* 판 */
+.board{flex:1;position:relative;overflow:hidden;background:var(--cork);touch-action:none;cursor:grab;
+ background-image:radial-gradient(rgba(0,0,0,.22) 1px,transparent 1.6px),radial-gradient(rgba(255,220,170,.10) 1px,transparent 1.4px),radial-gradient(rgba(0,0,0,.14) 2px,transparent 2.6px);
+ background-size:7px 7px,11px 11px,23px 19px;background-position:0 0,3px 5px,9px 2px;box-shadow:inset 0 0 0 6px #2b1d13,inset 0 0 0 8px #120c08}
+.board:active{cursor:grabbing}
+.world{position:absolute;left:0;top:0;width:2000px;height:2000px;transform-origin:0 0;will-change:transform}
+.world>svg{position:absolute;left:0;top:0;width:2000px;height:2000px;overflow:visible;pointer-events:none}
+.shade{position:absolute;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse 80% 70% at 55% 30%,rgba(255,230,180,.10),transparent 60%),radial-gradient(ellipse at 50% 45%,transparent 35%,rgba(0,0,0,.72) 100%)}
+.str{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 3px 2px rgba(0,0,0,.55))}
+.str.maybe{stroke:#d9cdb5;stroke-width:2.2;stroke-dasharray:7 6}
+.mark{fill:none;stroke:var(--red);stroke-width:5;stroke-linecap:round;opacity:.92}
+.markt{font:52px "Nanum Pen Script",cursive;fill:var(--red)}
+.tag{position:absolute;transform:translate(-50%,-50%) rotate(var(--r));background:#efe5cf;color:#2a221a;font:700 12px "Nanum Gothic Coding",monospace;padding:2px 7px;box-shadow:0 2px 3px rgba(0,0,0,.45);white-space:nowrap;z-index:3;pointer-events:none}
+.tag.maybe{background:#cfc6b3}
+.tag.new{animation:pop .5s .45s both}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(0)}70%{transform:translate(-50%,-50%) scale(1.2)}100%{transform:translate(-50%,-50%) rotate(var(--r))}}
+/* 카드 */
+.card{position:absolute;transform:translate(-50%,-50%) rotate(var(--r));color:#221c15;box-shadow:0 7px 12px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.2) inset;z-index:2;cursor:pointer}
+.card.drop{animation:drop .62s cubic-bezier(.25,.9,.3,1.2) both}
+@keyframes drop{0%{transform:translate(-50%,-50%) translateY(-90px) scale(1.5) rotate(calc(var(--r) - 14deg));opacity:0;box-shadow:0 40px 40px rgba(0,0,0,.2)}70%{opacity:1}100%{transform:translate(-50%,-50%) rotate(var(--r))}}
+.card.flash{animation:flash 1s ease}
+@keyframes flash{0%,100%{filter:none}30%{filter:brightness(1.35) drop-shadow(0 0 12px #ffd9a0)}}
+.card.gone{transition:opacity .5s,transform .5s;opacity:0;transform:translate(-50%,-50%) scale(.6) rotate(20deg)}
+.pin{position:absolute;top:-8px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 32%,#ff7a6e,#9b0c12 70%);box-shadow:0 3px 3px rgba(0,0,0,.55);z-index:3}
+.card h4{margin:0;font:700 13px/1.25 "Nanum Gothic Coding",monospace;word-break:keep-all}
+.card p{margin:3px 0 0;font:12px/1.35 "Nanum Gothic Coding",monospace;word-break:keep-all;color:#4a4036}
+.k-person{width:112px;background:#f1ece2;padding:7px 7px 8px}
+.k-person .ph{height:96px;background:linear-gradient(#5d5a55,#2c2a27);position:relative;overflow:hidden;filter:contrast(1.1)}
+.k-person .ph svg{position:absolute;inset:0;width:100%;height:100%}
+.k-person .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) sepia(.12)}
+.card.mv{transition:left .9s cubic-bezier(.6,.05,.25,1),top .9s cubic-bezier(.6,.05,.25,1)}
+#strings,#tags,#marks{transition:opacity .3s}.hidestr #strings,.hidestr #tags,.hidestr #marks{opacity:0}
+.fit.fit2{right:104px}
+.k-person h4{font:24px/1 "Nanum Pen Script",cursive;text-align:center;margin-top:5px;color:#1a1612}
+.k-person p{text-align:center;font-size:11px}
+.k-person.sus .ph::after{content:"";position:absolute;inset:0;background:rgba(195,20,31,.18)}
+.k-doc{width:146px;background:var(--paper) repeating-linear-gradient(transparent 0 17px,rgba(80,90,120,.16) 17px 18px);padding:12px 10px 10px}
+.k-doc h4{border-bottom:1px solid #b9ad95;padding-bottom:3px;margin-bottom:2px}
+.k-doc::before{content:"";position:absolute;right:12px;top:-10px;width:10px;height:30px;border:2px solid #8e8a83;border-radius:6px;transform:rotate(8deg)}
+.k-brief{width:184px;background:#ddd3bd;padding:12px 12px 10px;font-family:"Nanum Myeongjo",serif}
+.k-brief .kk{font:400 11px "Black Han Sans",sans-serif;letter-spacing:.2em;color:#6d6252;border-bottom:3px double #6d6252;padding-bottom:3px;margin-bottom:6px}
+.k-brief h4{font:400 22px/1.15 "Black Han Sans",sans-serif;color:#15110d}
+.k-brief p{font:700 12px/1.45 "Nanum Myeongjo",serif;color:#3a3127}
+.k-clue{width:120px;background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(220,226,230,.35));border:1px solid rgba(255,255,255,.6);padding:20px 9px 9px;backdrop-filter:blur(1px)}
+.k-clue::before{content:"증거";position:absolute;left:0;right:0;top:0;height:15px;background:var(--red);color:#fff;font:400 10px/15px "Black Han Sans",sans-serif;letter-spacing:.3em;text-align:left;padding-left:8px}
+.k-clue h4,.k-clue p{color:#14110e}
+.k-place{width:124px;background:#e7e1d3;padding:6px 6px 8px}
+.k-place svg{display:block;width:100%;height:62px;background:#cfc7b5}
+.k-place h4{margin-top:5px}
+.k-time,.k-question{width:108px;min-height:96px;padding:12px 9px 9px;background:#d9c66c}
+.k-time h4,.k-question h4{font:26px/1 "Nanum Pen Script",cursive;color:#2b2410}
+.k-time p,.k-question p{font:19px/1.05 "Nanum Pen Script",cursive;color:#3a3216}
+.k-question{background:#b7c8a0}
+.k-question h4::before{content:"? ";color:var(--red)}
+.k-photo{width:128px;background:#f3efe6;padding:7px 7px 22px}
+.k-photo img{display:block;width:100%;height:auto;max-height:150px;min-height:60px;object-fit:cover;object-position:top;background:#cfc8b8;filter:grayscale(1) contrast(1.15) sepia(.15)}
+.k-photo h4{position:absolute;left:8px;right:8px;bottom:3px;font:20px/1 "Nanum Pen Script",cursive;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-photo p{display:none}
+.sfx{position:absolute;font:400 28px "Black Han Sans",sans-serif;color:#fff3dc;-webkit-text-stroke:1.5px #111;pointer-events:none;z-index:5;animation:sfx .7s ease-out forwards}
+@keyframes sfx{0%{transform:translate(-50%,-50%) scale(.4) rotate(-10deg);opacity:0}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(-10deg)}100%{opacity:0;transform:translate(-50%,-90%) scale(1) rotate(-10deg)}}
+.boom{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font:400 74px "Black Han Sans",sans-serif;color:#f6efe0;-webkit-text-stroke:3px #0b0b0b;text-shadow:6px 6px 0 var(--red);pointer-events:none;z-index:6;animation:boom 1.1s ease-out forwards}
+@keyframes boom{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}25%{transform:translate(-50%,-50%) scale(1.1) rotate(-8deg);opacity:1}75%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.25) rotate(-8deg);opacity:0}}
+.fit{position:absolute;right:10px;bottom:10px;z-index:5;border:1px solid rgba(255,255,255,.25);background:rgba(10,8,6,.6);border-radius:8px;height:34px;padding:0 10px;font:700 12px "Nanum Gothic Coding",monospace;color:#eadfca}
+/* 마틴 */
+.stage{flex:none;position:relative;height:208px;z-index:6;background:linear-gradient(#0e0c0a,#0a0908);border-top:1px solid #2a251e}
+.martin{position:absolute;left:-10px;bottom:0;height:176px;width:auto;pointer-events:none;filter:drop-shadow(4px 0 10px #000);transform-origin:50% 100%;transition:filter .4s;z-index:1}
+.martin.think{animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(4px 0 10px #000) brightness(.8)}
+@keyframes bob{50%{transform:translateY(2px) rotate(-.6deg)}}
+.talk{position:absolute;left:124px;right:0;top:0;bottom:0;display:flex;flex-direction:column;z-index:2}
+.who{flex:none;display:flex;justify-content:space-between;align-items:center;padding:4px 10px 0 8px;font:400 11px "Black Han Sans",sans-serif;letter-spacing:.1em;color:#8b8172}
+.who small{font:700 10px "Nanum Gothic Coding",monospace;letter-spacing:0;color:#6e665a;margin-left:4px}
+.who button{border:0;background:none;font:700 12px "Nanum Gothic Coding",monospace;color:#a99c86;padding:4px 0 4px 10px;min-height:30px}
+.chat{flex:1;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:7px;padding:4px 10px 12px 12px;scrollbar-width:none;-webkit-mask-image:linear-gradient(transparent,#000 14px)}
+.chat::-webkit-scrollbar{display:none}
+.msg{max-width:88%;position:relative;padding:7px 11px 4px;border-radius:14px;white-space:pre-wrap;word-break:break-word}
+.msg time{display:block;font:10px "Nanum Gothic Coding",monospace;opacity:.5;text-align:right;margin-top:1px}
+.msg.m{align-self:flex-start;background:#f4eee2;color:#141210;border:2px solid #0b0a09;border-bottom-left-radius:4px;box-shadow:3px 3px 0 #000;font:800 13.5px/1.45 "Nanum Myeongjo",serif;word-break:keep-all}
+.msg.m::before{content:"";position:absolute;left:-9px;bottom:6px;border:5px solid transparent;border-right:8px solid #0b0a09}
+.msg.p{align-self:flex-end;background:#2a241d;color:#efe6d4;border:1px solid #4a4136;border-bottom-right-radius:4px;font:13px/1.45 "Nanum Gothic Coding",monospace}
+.msg.p .txt{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.msg.p.full .txt{display:block}
+.msg .ft{display:block;font:11px "Nanum Gothic Coding",monospace;color:#b9ad97;margin-bottom:2px}
+.msg .ph{display:flex;gap:4px;margin:1px 0 5px;flex-wrap:wrap}.msg .ph img{width:38px;height:48px;object-fit:cover;border-radius:4px;filter:grayscale(1)}
+.msg.wait{padding:9px 12px}
+.dots i{display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:#2a241d;animation:dot 1.1s infinite}
+.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
+@keyframes dot{0%,100%{opacity:.2}40%{opacity:1}}
+/* 입력 */
+.chips{flex:none;display:flex;gap:6px;padding:0 10px;overflow-x:auto;background:#0a0908}
+.chips:empty{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:6px;margin-top:8px;border:1px solid #3a342c;background:#17140f;border-radius:8px;padding:3px 4px 3px 8px;font:12px "Nanum Gothic Coding",monospace;color:#d8cdb8}
+.chip img{width:28px;height:28px;object-fit:cover;filter:grayscale(1)}
+.chip button{border:0;background:none;width:28px;height:28px;color:#a99c86}
+.bar{flex:none;display:flex;align-items:flex-end;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#0a0908}
+.ib{flex:none;width:44px;height:44px;border:1px solid #3a342c;background:#17140f;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative}
+.ib svg{width:22px;height:22px;stroke:#e1d6c1;fill:none;stroke-width:1.7}
+.ib input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ib .n{position:absolute;right:-4px;top:-4px;background:var(--red);color:#fff;font:700 10px/16px "Nanum Gothic Coding",monospace;min-width:16px;height:16px;border-radius:8px;padding:0 3px}
+#msg{flex:1;min-height:44px;max-height:120px;resize:none;border:1px solid #3a342c;background:#15120e;color:#efe6d4;border-radius:10px;padding:11px 12px;font:16px/1.35 "Nanum Gothic Coding",monospace}
+#msg:focus,.ib:focus-visible,.tb:focus-visible,.go:focus-visible{outline:2px solid #e9c58a;outline-offset:1px}
+.go{flex:none;height:44px;padding:0 14px;border:0;border-radius:10px;background:var(--red);color:#fff;font:400 15px "Black Han Sans",sans-serif;letter-spacing:.05em}
+.go:disabled{opacity:.45}
+/* 서랍 */
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:20;display:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:82%;overflow:auto;z-index:21;background:#15120f;border-top:1px solid #3a332a;border-radius:16px 16px 0 0;padding:14px 16px 22px;transform:translateY(105%);transition:transform .32s cubic-bezier(.3,.8,.3,1)}
+.open .scrim{display:block}.open .sheet{transform:none}
+.sheet h3{margin:0 0 4px;font:400 22px "Black Han Sans",sans-serif;color:#f1e8d6}
+.sheet .sub{margin:0 0 12px;font:13px "Nanum Gothic Coding",monospace;color:var(--dim)}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid #2a251e;background:none;padding:12px 2px;min-height:52px}
+.folder{flex:none;width:42px;height:32px;background:#b89b62;border-radius:2px 6px 3px 3px;position:relative;font:400 12px/34px "Black Han Sans",sans-serif;text-align:center;color:#3b2d14}
+.folder::before{content:"";position:absolute;left:0;top:-5px;width:18px;height:6px;background:#b89b62;border-radius:3px 3px 0 0}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns .go{flex:1}
+.ghost{height:44px;padding:0 14px;border:1px solid #3a342c;background:#1b1813;border-radius:10px;font:700 13px "Nanum Gothic Coding",monospace}
+.log p{margin:0;padding:9px 0;border-top:1px solid #26221c;font-size:14px}
+.log .p{color:#b9ad97;font-family:"Nanum Gothic Coding",monospace;font-size:13px}
+.tabs{display:flex;gap:6px;margin:4px 0 10px}.tabs button{flex:1;height:40px;border:1px solid #3a342c;background:#1b1813;border-radius:10px;font:700 13px "Nanum Gothic Coding",monospace;color:#cfc4b0}.tabs button.on{background:#efe5cf;color:#15110d}
+.log small{display:block;font:11px "Nanum Gothic Coding",monospace;color:#6e665a}.log pre{margin:4px 0 0;white-space:pre-wrap;font:12px/1.45 "Nanum Gothic Coding",monospace;color:#cfc4b0;max-height:220px;overflow:auto;background:#0f0d0b;padding:8px;border-radius:6px}
+.log .memo{color:#e9d9a6}
+.foot{font:11px "Nanum Gothic Coding",monospace;color:#6e665a;margin-top:14px}
+/* v0.3 — 첨부 고르기, 사진 크게 보기, 다시 묻기 */
+.attm{position:absolute;left:8px;bottom:62px;z-index:12;display:none;flex-direction:column;background:#17140f;border:1px solid #3a342c;border-radius:12px;padding:6px;box-shadow:0 10px 30px #000c}
+.attm.on{display:flex}
+.attm label{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:8px;font:700 14px "Nanum Gothic Coding",monospace;color:#e6dbc6;cursor:pointer}
+.attm label:active{background:#2a241d}.attm input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.attx{min-height:44px;padding:0 14px;border:0;border-top:1px solid #2a251e;margin-top:4px;background:none;text-align:left;font:12px "Nanum Gothic Coding",monospace;color:#a99c86}
+.golink{display:flex;align-items:center;justify-content:center;text-decoration:none;margin:4px 0 0}
+.pz{min-height:96px;border:1.5px dashed #6b6152;border-radius:12px;background:#0f0d0b;padding:12px;font:16px "Nanum Gothic Coding",monospace;color:#efe6d4;outline:none}
+.pz:empty::before{content:"여기를 길게 눌러 붙여넣기";color:#6e665a}
+.pz:focus{border-color:#e9c58a}
+.pz img{max-width:80px}
+.msg .ph img{cursor:zoom-in}
+.retry{align-self:flex-end;display:flex;gap:8px;align-items:center;font:12px "Nanum Gothic Coding",monospace;color:#a99c86}
+.retry button{height:36px;padding:0 14px;border:1px solid var(--red);background:#1b1210;color:#ffb3ab;border-radius:18px;font:700 13px "Nanum Gothic Coding",monospace}
+.pv{position:absolute;left:0;right:0;top:0;bottom:var(--pvb,0px);z-index:40;box-shadow:0 8px 24px #000;background:rgba(5,4,3,.96);display:none;flex-direction:column}
+.pv.on{display:flex}
+.pv-top{flex:none;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-bottom:1px solid #2a251e}
+.pv-top b{flex:1;font:400 16px "Black Han Sans",sans-serif;color:#f1e8d6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-top button{width:44px;height:44px;border:0;background:none;font:400 26px/1 sans-serif;color:#efe6d4}
+.pv-top .pvc{width:auto;padding:0 12px;height:34px;border:1px solid #3a342c;border-radius:8px;background:#17140f;font:700 12px "Nanum Gothic Coding",monospace;color:#cfc4b0}
+.pv.full{bottom:0}.pv:not(.full) .pv-note{max-height:64px}
+.pv.touched .pv-hint{display:none}
+.msg .ft[data-pv]{cursor:zoom-in;text-decoration:underline dotted}
+.pv-stage{flex:1;position:relative;overflow:hidden;touch-action:none}
+.pv-stage img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-drag:none}
+.pv-note{flex:none;padding:10px 14px calc(12px + env(safe-area-inset-bottom));font:13px/1.5 "Nanum Gothic Coding",monospace;color:#cfc4b0;border-top:1px solid #2a251e;max-height:22%;overflow:auto}
+.pv-note:empty{display:none}
+.pv-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font:11px "Nanum Gothic Coding",monospace;color:#8b8172;background:rgba(0,0,0,.5);padding:3px 10px;border-radius:10px;pointer-events:none}
+/* v0.5 수사 수첩 — 검은 수첩에 붉은 줄(보스 그림), 손글씨 */
+#nb{position:fixed;left:0;top:0;bottom:0;width:min(88vw,360px);z-index:60;display:flex;flex-direction:column;background:#100e0c;color:#efe6d4;box-shadow:8px 0 30px #000;transform:translateX(-105%);transition:transform .3s cubic-bezier(.3,.8,.3,1)}
+.nbopen #nb{transform:none}
+#nbScrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:59;display:none}.nbopen #nbScrim{display:block}
+.nb-top{flex:none;display:flex;align-items:center;gap:8px;padding:12px 10px 10px 16px;border-bottom:2px solid #6b1015;background:linear-gradient(#17130f,#100e0c)}
+.nb-top b{flex:1;font:400 20px "Black Han Sans",sans-serif;letter-spacing:.02em}
+.nb-top small{display:block;font:700 11px "Nanum Gothic Coding",monospace;color:#8b8172;letter-spacing:0;margin-top:2px}
+.nb-top button{width:40px;height:40px;border:0;background:none;color:#cfc4b0;font:400 24px/1 sans-serif}
+#nbBody{flex:1;overflow-y:auto;padding:4px 0 24px;background:#100e0c linear-gradient(90deg,transparent 33px,rgba(195,20,31,.45) 33px 34px,transparent 34px)}
+.ns h5{margin:14px 0 2px;padding:4px 14px 2px 42px;border-bottom:1px solid rgba(226,176,74,.35);font:700 12px/28px "Nanum Gothic Coding",monospace;color:#e2b04a;display:flex;justify-content:space-between}
+.ns h5 small{color:#8b8172;font-size:11px}
+.ns ul{list-style:none;margin:0;padding:0}
+.nt{position:relative;display:grid;grid-template-columns:20px minmax(0,1fr);gap:0 12px;padding:5px 12px 3px 8px;cursor:pointer;border-bottom:1px solid rgba(195,20,31,.22)}
+.nt .tx{font:21px/26px "Nanum Pen Script",cursive;color:#f1e8d6;word-break:keep-all}
+.nt .tx em{display:block;font-style:normal;font-size:19px;line-height:24px;color:#e2b04a}
+.nt .mt{grid-column:2;margin-top:0;display:flex;align-items:center;gap:6px;font:10px/18px "Nanum Gothic Coding",monospace;color:#6e665a}
+.nt .nx{border:0;background:none;color:#6e665a;font:14px/1 sans-serif;width:24px;height:22px;margin-left:auto;opacity:0}
+.nt:hover .nx,.nt:focus-within .nx{opacity:1}
+.nt .mk{width:14px;height:14px;margin-top:6px;border:1.5px solid #8b8172;border-radius:2px}
+.k-q .mk{border:0;width:auto;height:auto;margin-top:0;font:400 20px/26px "Black Han Sans",sans-serif;color:#d0262f}.k-q .mk::before{content:"?"}
+.k-guess .mk{border:0;width:auto;height:auto;margin-top:0;font:20px/26px "Nanum Pen Script",cursive;color:#e2b04a}.k-guess .mk::before{content:"~"}
+.k-fact .mk{border:0;width:6px;height:6px;margin:10px 0 0 4px;background:#cfc4b0;border-radius:50%}
+.k-me .mk{border:0;width:auto;height:auto;margin-top:0;font:700 11px/26px "Nanum Gothic Coding",monospace;color:#8fb3d0}.k-me .mk::before{content:"나"}
+.nt.done .tx{color:#8b8172}.nt.done .tx s{text-decoration-color:#d0262f;text-decoration-thickness:2px}
+.nt.done .tx em{color:#b9ad97}
+.nt.done.k-todo .mk{background:#d0262f;border-color:#d0262f}
+.nt.card .tx{color:#ffd9d6}.nt.card .mt{color:#b2555b}
+.nt.none{cursor:default;border:0}.nt.none .tx{grid-column:2;color:#5d564c;font-size:18px}
+.nt.new{animation:nbnew 1.6s ease}
+@keyframes nbnew{0%{background:rgba(226,176,74,.35)}100%{background:transparent}}
+.nbadd{display:flex;gap:6px;padding:6px 12px 0 42px}
+.nbadd input{flex:1;height:40px;border:0;border-bottom:1.5px solid #6b6152;background:transparent;color:#f1e8d6;font:20px "Nanum Pen Script",cursive;outline:none;padding:0 4px}
+.nbadd input:focus{border-color:#e2b04a}
+.nbadd button{height:36px;padding:0 12px;border:1px solid #6b1015;background:#1b1210;color:#ffb3ab;border-radius:8px;font:700 12px "Nanum Gothic Coding",monospace}
+#btnNb{position:relative}
+#btnNb .n{position:absolute;right:-5px;top:-5px;background:var(--red);color:#fff;font:700 10px/16px "Nanum Gothic Coding",monospace;min-width:16px;height:16px;border-radius:8px;padding:0 3px}
+#btnNb .n:empty{display:none}
+#btnNb.ping{animation:ping .9s ease}
+@keyframes ping{30%{transform:scale(1.15);border-color:#e2b04a;color:#e2b04a}}
+@media(min-width:980px){
+  body{gap:18px;align-items:center}
+  #nb{position:relative;transform:none;width:330px;height:min(100dvh,915px);border-radius:14px;box-shadow:0 0 0 1px #2a2620,0 30px 80px #000;z-index:1;flex:none}
+  #nbScrim,#btnNb,#nbX{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}

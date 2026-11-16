@@ -2,3 +2,7 @@
 sehee/CHANGELOG.md merge=union
 # v1.1 (2026-11-15, A) 할일.md 도 — 세 방이 찜 줄을 같이 더해도 둘 다 남긴다
 handoff/할일.md merge=union
+# v1.2 (2026-11-16, 마틴 A) 마틴도 — 네 방이 같이 덧붙여도 둘 다 남긴다
+martin/handoff/할일.md merge=union
+martin/CHANGELOG.md merge=union
+martin/js/changes.js merge=union
