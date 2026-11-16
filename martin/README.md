@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.10 (2026-11-16)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.11 (2026-11-16)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -60,6 +60,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
 | js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
 | js/split.js | 판·대화 나누기(v0.11.2, B) — 대화창(.stage) 높이를 비율 SPLIT.r 로(기본 반반), 가운데 손잡이 #split 끌기·두 번 눌러 반반, 기기 키 'drmartin.split'. 높이를 바꾸면 가짜 resize 신호를 보냄 |
+| js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
@@ -111,3 +112,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.8 | 2026-11-16 | A: 파일 지도에 js/shot.js(판 사진)·js/lib |
 | v1.9 | 2026-11-16 | B: 파일 지도에 js/split.js(판·대화 나누기), 기기 키 drmartin.split |
 | v1.10 | 2026-11-16 | B: 마틴 인물 설정 v2.1(추리하는 방식과 말) |
+| v1.11 | 2026-11-16 | C: 파일 지도에 js/size.js(카드 크기 손잡이) |

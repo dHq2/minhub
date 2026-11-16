@@ -17,3 +17,27 @@
 
 /* 11-16 C: 자료 사진은 원래 색 그대로(보스) — app.css 의 흑백·세피아·대비 보정을 걷는다. 판의 사진 카드·인물 프사·대화 썸네일·첨부 칩 */
 .k-person .ph, .k-person .ph img, .k-photo img, .msg .ph img, .chip img{filter:none}
+
+/* 11-16 C: 카드 크기 — 확대·축소(--s)를 카드 모양에 얹는다(app.css·a.css 의 transform·움직임에 같은 배율). 손잡이 셋은 고른 카드에만(js/size.js) */
+#nodes .card{transform:translate(-50%,-50%) rotate(var(--r)) scale(var(--s,1))}
+#nodes .card.lift{transform:translate(-50%,-50%) rotate(var(--r)) scale(calc(var(--s,1) * 1.07))}
+#nodes .card.gone{transform:translate(-50%,-50%) scale(calc(var(--s,1) * .6)) rotate(20deg)}
+@keyframes drop{0%{transform:translate(-50%,-50%) translateY(-90px) scale(calc(var(--s,1) * 1.5)) rotate(calc(var(--r) - 14deg));opacity:0;box-shadow:0 40px 40px rgba(0,0,0,.2)}70%{opacity:1}100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(var(--s,1))}}
+@keyframes cdrop{0%{transform:translate(-50%,-50%) rotate(var(--r)) scale(calc(var(--s,1) * 1.07))}60%{transform:translate(-50%,-50%) rotate(var(--r)) scale(calc(var(--s,1) * .97))}100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(var(--s,1))}}
+/* 세로로 늘인 카드 — 사진·프사·지도가 같이 커진다 */
+#nodes .k-photo[style*="--cw"] img{max-height:calc(var(--cw) * 1.25)}
+#nodes .k-photo[style*="--ch"] img{height:max(50px, calc(var(--ch) - 36px));max-height:none}
+#nodes .k-person[style*="--ch"] .ph{height:max(60px, calc(var(--ch) - 66px))}
+#nodes .k-place[style*="--ch"] svg{height:max(40px, calc(var(--ch) - 64px))}
+/* 손잡이 — 판 배율과 상관없이 손가락 크기(--hk = 1 / 판 배율 / 카드 배율) */
+#nodes .szh{position:absolute;z-index:5;margin:0;padding:0;border:0;background:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+#nodes .szh::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#f0b429;box-shadow:0 0 0 calc(2px * var(--hk,1)) rgba(20,14,6,.85),0 calc(3px * var(--hk,1)) calc(6px * var(--hk,1)) rgba(0,0,0,.5);border-radius:calc(5px * var(--hk,1))}
+#nodes .szh-r{top:50%;right:calc(-26px * var(--hk,1));width:calc(36px * var(--hk,1));height:calc(64px * var(--hk,1));transform:translateY(-50%);cursor:ew-resize}
+#nodes .szh-r::after{width:calc(8px * var(--hk,1));height:calc(36px * var(--hk,1))}
+#nodes .szh-b{left:50%;bottom:calc(-26px * var(--hk,1));width:calc(64px * var(--hk,1));height:calc(36px * var(--hk,1));transform:translateX(-50%);cursor:ns-resize}
+#nodes .szh-b::after{width:calc(36px * var(--hk,1));height:calc(8px * var(--hk,1))}
+#nodes .szh-c{left:calc(-28px * var(--hk,1));bottom:calc(-28px * var(--hk,1));width:calc(44px * var(--hk,1));height:calc(44px * var(--hk,1));cursor:nesw-resize}
+#nodes .szh-c::after{width:calc(18px * var(--hk,1));height:calc(18px * var(--hk,1));background:none;border-left:calc(6px * var(--hk,1)) solid #f0b429;border-bottom:calc(6px * var(--hk,1)) solid #f0b429;border-radius:0 0 0 calc(4px * var(--hk,1));box-shadow:none;filter:drop-shadow(0 0 calc(1.5px * var(--hk,1)) #140e06) drop-shadow(0 calc(2px * var(--hk,1)) calc(3px * var(--hk,1)) rgba(0,0,0,.6))}
+#nodes .card.sizing{transition:none}
+#nodes .card.sizing .szh::after{background-color:#ffd36b}
+#nodes .card.sizing .szh-c::after{background:none;border-color:#ffd36b}

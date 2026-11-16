@@ -15,3 +15,9 @@
 - 받는 쪽에게 필요한 일: 없음. tests/update.js 그대로 통과(11줄).
 - v0.8.0
 
+## 2026-11-16 21:55 · 카드에 크기(cw·ch·sc)가 생김 — 카드 transform 에 배율 · [보통] · 받는 쪽: A(그리고 모두)
+- 무엇: js/size.js — 동료가 고른 카드의 크기를 바꾼다. 노드에 n.cw(가로 px)·n.ch(세로 최소 px)·n.sc(통째 배율)가 붙을 수 있다. cardHtml 의 style 끝에 sizeStyle(n), measure() 는 sc 를 곱한 보이는 크기를 n.w·n.h 에 넣는다.
+- c.css 가 #nodes .card · .card.lift · .card.gone 의 transform 과 @keyframes drop·cdrop 을 scale(var(--s,1)) 넣은 같은 모양으로 덮어쓴다(a.css·app.css 의 것보다 뒤에 있어 이긴다).
+- 받는 쪽에게 필요한 일: 카드 transform 이나 카드 움직임(keyframes)을 새로 만들거나 고치면 scale(var(--s,1)) 를 같이 넣는다(안 그러면 키운 카드가 움직이는 동안 원래 크기로 튐). 카드 크기가 필요하면 offsetWidth 대신 n.w·n.h(배율 친 값)를 쓴다. 카드를 새로 그릴 때 cardHtml 을 거치면 크기는 저절로 붙는다.
+- v0.12.0
+

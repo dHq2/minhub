@@ -62,8 +62,10 @@ function undoWhat(a, b){
   const na = ids(a.nodes), nb = ids(b.nodes), add = [...nb.keys()].filter(i => !na.has(i)), del = [...na.keys()].filter(i => !nb.has(i));
   if (add.length) out.push(`카드 ${add.length}장 꽂음`);
   if (del.length) out.push(`카드 ${del.slice(0, 3).map(i => q(na.get(i).title)).join(', ')}${del.length > 3 ? ` 외 ${del.length - 3}장` : ''} 뗌`);
-  let moved = 0; const ed = [];
-  for (const [i, n] of nb){ const o = na.get(i); if (!o) continue; if (o.x !== n.x || o.y !== n.y) moved++; if (o.title !== n.title || o.note !== n.note || !!o.face !== !!n.face) ed.push(n.title); }
+  let moved = 0; const ed = [], sized = [];
+  for (const [i, n] of nb){ const o = na.get(i); if (!o) continue; const sz = o.cw !== n.cw || o.ch !== n.ch || (+o.sc || 1) !== (+n.sc || 1);   /* 11-16 C: 크기(size.js) */
+    if (sz) sized.push(n.title); else if (o.x !== n.x || o.y !== n.y) moved++; if (o.title !== n.title || o.note !== n.note || !!o.face !== !!n.face) ed.push(n.title); }
+  if (sized.length) out.push(`카드 ${sized.slice(0, 2).map(q).join(', ')}${sized.length > 2 ? ` 외 ${sized.length - 2}장` : ''} 크기 바꿈`);
   if (ed.length) out.push(`카드 ${ed.slice(0, 2).map(q).join(', ')}${ed.length > 2 ? ` 외 ${ed.length - 2}장` : ''} 고침`);
   if (moved) out.push(`카드 ${moved}장 자리 옮김`);
   if (undoKey(a.links || []) !== undoKey(b.links || [])) out.push('실 바뀜');

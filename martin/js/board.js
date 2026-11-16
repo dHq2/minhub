@@ -33,10 +33,10 @@ function cardHtml(n, cls = ''){
   else if (n.kind === 'place') inner = `${mapSvg(n)}<h4>${esc(n.title)}</h4><p>${esc(n.note)}</p>`;
   else if (n.kind === 'photo') inner = `<img src="${esc(photoThumb(n))}" alt="" onerror="this.style.visibility='hidden'"><h4>${esc(n.title)}</h4>`;
   else inner = `<h4>${esc(n.title)}</h4><p>${esc(n.note)}</p>`;
-  return `<div class="card k-${n.kind}${sus}${typeof SELC !== 'undefined' && SELC === n.id ? ' sel' : ''} ${cls}" data-id="${n.id}" style="left:${n.x}px;top:${n.y}px;--r:${n.r}deg">${head}${inner}</div>`;
+  return `<div class="card k-${n.kind}${sus}${typeof SELC !== 'undefined' && SELC === n.id ? ' sel' : ''} ${cls}" data-id="${n.id}" style="left:${n.x}px;top:${n.y}px;--r:${n.r}deg${typeof sizeStyle === 'function' ? sizeStyle(n) : ''}">${head}${inner}</div>`;   /* 11-16 C: 동료가 정한 크기(size.js) */
 }
 function renderNodes(){ $('#nodes').innerHTML = S.nodes.map(n => cardHtml(n)).join(''); measure(); }
-function measure(){ for (const el of document.querySelectorAll('#nodes .card')){ const n = nodeOf(el.dataset.id); if (n) n.h = el.offsetHeight, n.w = el.offsetWidth; } }
+function measure(){ for (const el of document.querySelectorAll('#nodes .card')){ const n = nodeOf(el.dataset.id), s = n && +n.sc || 1; if (n) n.h = Math.round(el.offsetHeight * s), n.w = Math.round(el.offsetWidth * s); } }   /* 11-16 C: 확대·축소(sc)까지 친 보이는 크기 — 실·판 정리가 이걸 쓴다 */
 const pinOf = n => ({ x:n.x, y:n.y - (n.h || 130) / 2 + 2 });
 function curve(L){ const A = nodeOf(L.a), B = nodeOf(L.b); if (!A || !B) return null; const p = pinOf(A), q = pinOf(B), d = Math.hypot(q.x - p.x, q.y - p.y), sag = Math.min(24, d * .05), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 + sag;
   return { d:`M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`, lx:mx, ly:(p.y + q.y) / 2 + sag / 2 }; }
