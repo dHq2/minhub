@@ -37,13 +37,18 @@ const pvOpenId = () => $('#pv').classList.contains('on') && PV.id && itemOf(PV.i
 $('#pvR').onclick = () => { if (busy || !PV.id) return; act('다시 읽혀', { id:PV.id }); turn({ text:'이 자료 원본을 처음부터 꼼꼼히 다시 읽어 줘. 판독문도 고쳐 두고.' }); };   /* 11-16 A */
 const pvS = $('#pvS');
 const zoomAt = (cx, cy, k) => { k = Math.max(PV.k0 || .1, Math.min(8, k)); PV.x = cx - (cx - PV.x) * k / PV.k; PV.y = cy - (cy - PV.y) * k / PV.k; PV.k = k; pvApply(); };
+/* 11-16 D: 사진 바깥(어두운 곳)을 톡 누르면 닫기 — 끌기·두 손가락·길게 누름은 닫지 않음. 사진 위 톡은 예전대로(두 번 = 확대) */
+const pvOutside = (x, y) => { const r = $('#pvI').getBoundingClientRect(); return !(PV.iw && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom); };
+pvS.addEventListener('pointerdown', e => { PV.tap = PV.pts.size ? null : { x:e.clientX, y:e.clientY, t:Date.now(), out:pvOutside(e.clientX, e.clientY) }; });
+pvS.addEventListener('pointerup', e => { const t = PV.tap; PV.tap = null;
+  if (t && t.out && PV.pts.size <= 1 && Date.now() - t.t < 450 && Math.hypot(e.clientX - t.x, e.clientY - t.y) < 10){ act('사진 바깥 눌러 닫기', { id:PV.id }); $('#pvX').onclick(); } });
 pvS.addEventListener('pointerdown', e => { $('#pv').classList.add('touched'); pvS.setPointerCapture(e.pointerId); PV.pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
   if (PV.pts.size === 2){ const [a, b] = [...PV.pts.values()]; PV.pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, k:PV.k }; }
   else { const now = Date.now(); if (now - PV.last < 300){ const r = pvS.getBoundingClientRect(); if (PV.k > PV.k0 * 1.2) pvFit(); else zoomAt(e.clientX - r.left, e.clientY - r.top, PV.k * 2.5); } PV.last = now; } });
 pvS.addEventListener('pointermove', e => { const p = PV.pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
   if (PV.pts.size === 1){ PV.x += dx; PV.y += dy; pvApply(); }
   else if (PV.pinch){ const [a, b] = [...PV.pts.values()], r = pvS.getBoundingClientRect(); zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, PV.pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / PV.pinch.d); } });
-const pvUp = e => { PV.pts.delete(e.pointerId); if (PV.pts.size < 2) PV.pinch = null; };
+const pvUp = e => { PV.pts.delete(e.pointerId); if (PV.pts.size < 2) PV.pinch = null; if (PV.pts.size) PV.tap = null; };
 pvS.addEventListener('pointerup', pvUp); pvS.addEventListener('pointercancel', pvUp);
 pvS.addEventListener('wheel', e => { e.preventDefault(); const r = pvS.getBoundingClientRect(); zoomAt(e.clientX - r.left, e.clientY - r.top, PV.k * (e.deltaY < 0 ? 1.15 : .87)); }, { passive:false });
 
