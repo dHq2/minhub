@@ -1,4 +1,4 @@
-// 카드 고르기·옮기기 점검 v1.0 (2026-11-16, A) — 세희 인간관계 판 방식: 한 번 = 고름 · 고른 카드 한 번 더 = 상세 · 고른 카드 끌기 = 옮김 · 안 고른 카드/빈 곳 끌기 = 판 굴리기 · 빈 곳 = 고름 풀림 · 휠·두 손가락 = 그 자리 중심 확대. 폰(터치)·마우스.
+// 카드 고르기·옮기기 점검 v1.0 (2026-11-16, A) — 세희 인간관계 판 방식: 한 번 = 고름 · 고른 카드 한 번 더 = 상세 · 고른 카드 끌기 = 옮김 · 안 고른 카드/빈 곳 끌기 = 판 굴리기 · 빈 곳 = 고름 풀림 · 휠·두 손가락 = 그 자리 중심 확대. 폰(터치)·마우스. · v1.1 (11-17): 빈 곳 누름은 벽시계 아래
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const SEED = { v: 3, id: '20261116-move', at: 1, nodes: [{ id: 'n1', kind: 'brief', title: '가짜 사건', note: '', x: 1000, y: 820, r: 0 }, { id: 'n3', kind: 'person', title: '김지민', note: '총무', x: 900, y: 1050, r: 0 }, { id: 'n4', kind: 'clue', title: '열쇠', note: '반납', x: 1120, y: 1060, r: 2 }],
@@ -35,7 +35,7 @@ const SEED = { v: 3, id: '20261116-move', at: 1, nodes: [{ id: 'n1', kind: 'brie
   await p.screenshot({ path: '/tmp/martin-move-sheet.png' });
   await p.evaluate(() => closeSheet()); await p.waitForTimeout(300);
   // 5) 빈 곳 = 고름 풀림
-  await p.evaluate(() => selectCard('n4')); const bx = await p.evaluate(() => { const r = board.getBoundingClientRect(); return { x: r.left + 20, y: r.top + 20 }; });
+  await p.evaluate(() => selectCard('n4')); const bx = await p.evaluate(() => { const r = board.getBoundingClientRect(); return { x: r.left + 20, y: r.top + 110 }; });   /* 11-17 A: 왼쪽 위 모서리엔 벽시계가 걸려 있다 — 그 아래 빈 곳 */
   await p.touchscreen.tap(bx.x, bx.y); await p.waitForTimeout(200);
   want(await p.evaluate(() => SELC === null && !document.querySelector('#nodes .card.sel')), '빈 곳을 누르면 고름 풀림');
   // 6) 두 손가락 = 그 자리 중심 확대
