@@ -29,3 +29,9 @@
 - 실은 이제 전부 #xl(카드 위) — #strings 는 비어 있다. 실을 고르려면 '#xl .str'. 핀 머리 #xl .pinh. 꼬리표 .tag z 4.
 - 묶음(S.groups)은 판 정리 때 자리 잡는 데만 쓴다 — 묶음 상자·이름표·묶음 색 실은 없다(보스: 지금은 필요 없음). 자리는 보스가 옮기니, 마틴 턴에서 판 전체를 다시 놓는 코드를 넣지 말 것.
 - v0.10.0
+
+## 11-17 A · v0.13.2 행동 기록 자세히 (js/trail.js)
+- act(what, more) 는 그대로 쓰면 된다. more 에 id·ids·ev·on(공백으로 나눈 id) 중 하나를 넣으면 이름표(refs: 카드 이름·종류·자료 id·파일 이름…)와 어디서(where)가 저절로 붙는다. 이름·제목을 따로 넣을 필요 없음.
+- 판·사진 확대·굴림 기록은 trail.js 가 board·#pvS 의 pointerup·wheel 을 따로 들어서 남긴다 — view.js 손짓 코드를 고쳐도 PV(k·k0·x·y·iw·ih·pts)·cam·pts·drag 이름만 그대로면 된다.
+- 프롬프트 [최근 대화] 아래 trailText() 한 줄(undoText 옆). 프롬프트 손볼 때 같이 옮겨 주세요.
+

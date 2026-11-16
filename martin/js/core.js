@@ -52,7 +52,7 @@ function log(type, data){
 function flushLog(){ if (!LB.items.length || !LB.cid) return; const k = `logs/${LB.cid}-${SID}-${LB.k}`, d = { cid:LB.cid, sid:SID, k:LB.k, items:LB.items.slice() }; if (DB) put(k, d); else pending.push([k, d]); }
 addEventListener('pagehide', () => { flushLog(); dbSave(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden){ flushLog(); dbSave(); } });
-const act = (what, more) => log('action', { act:what, ...(more || {}) });
+const act = (what, more) => { more = more || {}; try{ const x = typeof actRefs === 'function' ? actRefs(more) : null; if (x) more = { ...more, ...x }; }catch(e){} log('action', { act:what, ...more }); };   /* 11-17 A: id 를 이름표(카드 이름·자료·파일)로 풀고 어디서 눌렀는지 붙임(trail.js) */
 const lean = n => { const { img, thumb, big, mid, h, w, ...r } = n; return r; };
 const snap = () => ({ nodes:S.nodes.map(lean), links:S.links, suspect:S.suspect, hyp:S.hyp, notes:S.notes, turn:S.turn });
 function toastNote(t){ try{ speak(t, false); }catch(x){} }

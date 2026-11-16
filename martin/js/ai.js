@@ -37,7 +37,7 @@ ${boardText()}
 
 [최근 대화]
 ${hist || '(없음)'}
-${typeof undoText === 'function' ? undoText() : ''}
+${typeof undoText === 'function' ? undoText() : ''}${typeof trailText === 'function' ? trailText() : ''}
 
 [이번에 동료가 가져온 것]
 ${given}

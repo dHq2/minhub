@@ -70,3 +70,5 @@
 .shotimg img{display:block;width:100%;height:auto}
 .shotbtn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 .shotbtn{color:inherit}
+/* 11-17 A: 행동 기록 자세히 — 무엇을(이름표)·얼마나·어디서 */
+.log .ad{display:block;margin-top:3px;font:12px/1.45 "Nanum Gothic Coding",monospace;color:#bfb39c}.log .ad.w{color:#8a8072}

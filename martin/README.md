@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.14 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.15 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -63,6 +63,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
 | js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
 | js/pvtalk.js | 사진 위에 뜨는 대화(v0.13.0, C) — 사진 크게 보기의 「대화 보기」: 사진은 입력줄 바로 위까지 가득, 최근 대화 6줄을 #pvTalk 에 베껴 반투명으로(손가락 통과), 입력줄·칩은 #app.pvtalk 로 사진 위에 |
+| js/trail.js | 행동 기록 자세히(v0.13.2, A) — act() 의 id 를 이름표 refs 로(actRefs)·어디서 where·판/사진 확대·굴림을 손짓 끝에 한 줄·기록 행동 탭 actDetail·프롬프트 trailText. act 에 id·ids·ev·on 을 넣으면 이름표는 저절로 붙는다 |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
@@ -118,3 +119,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.12 | 2026-11-17 | B: 파일 지도에 js/pvdoc.js(사진 보기 판독문 단추) |
 | v1.13 | 2026-11-17 | C: 파일 지도에 js/pvtalk.js(사진 위에 뜨는 대화), 기기 키 drmartin.pvfull → pvfull2 |
 | v1.14 | 2026-11-17 | A: 폰에서 엔터 = 줄 바꿈(js/input.js) |
+| v1.15 | 2026-11-17 | A: 파일 지도에 js/trail.js(행동 기록 자세히) |
