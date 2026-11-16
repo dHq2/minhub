@@ -140,3 +140,8 @@
 .nbmode b{color:#fff;background:#c3141f;border-radius:3px;padding:1px 6px;font-weight:700}
 .nbmode span{flex:1;min-width:0}
 .nbmode button{height:26px;padding:0 9px;border:1px solid #6b1015;background:#170c0b;color:#ffb3ab;border-radius:6px;font:700 11px "Nanum Gothic Coding",monospace}
+
+/* 11-17 B: 의문·시각 카드(손글씨) — 제목 줄 높이가 1이라 줄이 바뀌면 본문과 글씨가 겹치던 것(보스 판). 크기 손잡이로 늘인 카드도 같이 */
+.k-time h4,.k-question h4{line-height:1.12;margin-bottom:7px;word-break:keep-all;overflow-wrap:anywhere}
+.k-question h4{font-size:24px}
+.k-time p,.k-question p{line-height:1.18}

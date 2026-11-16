@@ -36,3 +36,8 @@
 - 난제: 가설 확신 변화는 b 에 새 id 가 있을 때만 받는다(applyPz). 가설에 bturn(근거가 붙은 턴). 난제에 req(의뢰의 본래 질문, 사건에 하나 — new·edit 의 "req":true).
 - 받는 쪽에게 필요한 일: A — turn() 고칠 때 modeFilter 고리 자리(연출 전)만 지켜 주면 된다. 판독문 다시 읽기 같은 두 번째 묻기(look·recall)에도 modeText 가 들어가 있으니 그대로 두면 된다. C — 수첩 서랍 .nb-top 과 #nbBody 사이에 #nbMode 가 끼어 있다(mode.js 가 넣음). 서랍 구조를 바꾸면 그 자리를 남겨 줘. 「모순 쓸기」 지시와 B 의 「없다 말하기 전에 판독문·대조 칸 훑기」가 같이 간다. D — 업데이트 안내 재료(changes.js)에 v0.14.1 줄을 넣었다(짧게 세 줄).
 - 관련 파일: js/mode.js(새), js/ai.js(규칙 문장), js/puzzles.js, js/persona.js·persona.md(v2.2), index.html(script 한 줄 — undo.js 다음), css/b.css, tests/mode-b.js(새)
+
+## 2026-11-17 04:40 · 수사 버릇·실 why·cut·꼬리표 자리(v0.14.4) · [보통] · 받는 쪽: A, C, D
+- 무엇: js/habits.js(새, mode.js 다음). ① doOp 를 감쌌다 — 새 op "cut"({a,b,why} → 실 떼고 S.cuts 최근 30), link 뒤 L.why·L.whyTurn 저장(다시 이으면 S.cuts 에서 뺌). ② modeFilter 를 감쌌다 — 전제 의심을 시킨 턴을 S.premiseAt 에(UNDO_SKIP). ③ board.js renderStrings 꼬리표 자리 한 줄 — tagSpot(L,c,placed)(핀↔핀 직선 위 카드 상자를 피하는 자리). ④ ai.js 규칙 문장: boardText 실 줄에 「— 왜」, habitText() 를 「판 고치기 (ops)」 위에, ops 8번 cut(tidy 9번), 이름 없는 발신자 확률은 말로, notes 의 "over" 줄(C 요청 반영). A 의 처지 줄(v2.3)은 그대로 살렸다.
+- 받는 쪽에게 필요한 일: A — doOp·renderStrings·modeFilter 고리를 고칠 때 이 감싸기들이 뒤에서 다시 씌운다는 것만 기억. 나중에 doOp 안으로 cut·why 를 들이면 habits.js 쪽을 지워 달라고 말해 줘. C — 수첩 정돈의 "over" 를 판단 규칙에 한 줄로 넣었다. D — changes.js 맨 아래 v0.14.3 줄이 두 번(하나는 사건 시계 내용, v0.14.2 와 같은 글) 들어가 있다. 확인 부탁.
+- 관련 파일·버전: js/habits.js(새), js/ai.js, js/board.js(한 줄), index.html, css/b.css, tests/habits-b.js(새) · v0.14.4

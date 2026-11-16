@@ -41,10 +41,11 @@ const pinOf = n => ({ x:n.x, y:n.y - (n.h || 130) / 2 + 2 });
 function curve(L){ const A = nodeOf(L.a), B = nodeOf(L.b); if (!A || !B) return null; const p = pinOf(A), q = pinOf(B), d = Math.hypot(q.x - p.x, q.y - p.y), sag = Math.min(24, d * .05), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 + sag;
   return { d:`M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`, lx:mx, ly:(p.y + q.y) / 2 + sag / 2 }; }
 function renderStrings(newId){   /* 11-16 A: 실은 전부 카드 위(#xl) — 핀에서 핀으로 팽팽하게, 끝마다 핀 머리. 같은 묶음 안 = 묶음 색 실, 그 밖 = 빨간 실. 꼬리표는 맨 위 */
-  let xl = '', tags = ''; const pins = new Set();
+  let xl = '', tags = ''; const pins = new Set(), placed = [];   /* 11-17 B: placed — 이미 놓은 꼬리표(tagSpot) */
   for (const L of S.links){ const c = curve(L); if (!c) continue; const g = null;   /* 11-16 A: 묶음 색은 지금 단계에선 안 씀(보스) */
     xl += `<path class="str${L.sure ? '' : ' maybe'}${g ? ' gin' : ''}" data-id="${L.id}" d="${c.d}"${g ? ` style="--gc:${gColor(g)}"` : ''}/>`; pins.add(L.a); pins.add(L.b);
-    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}" style="left:${c.lx}px;top:${c.ly}px;--r:${(hash(L.id) % 7) - 3}deg${g ? ';--gc:' + gColor(g) : ''}">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
+    const tp = L.label && typeof tagSpot === 'function' ? tagSpot(L, c, placed) : { x:c.lx, y:c.ly };   /* 11-17 B: 꼬리표가 카드 글씨 위에 앉지 않게 실 위 빈 곳으로 */
+    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}" style="left:${tp.x}px;top:${tp.y}px;--r:${(hash(L.id) % 7) - 3}deg${g ? ';--gc:' + gColor(g) : ''}">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
   for (const id of pins){ const n = nodeOf(id); if (!n) continue; const p = pinOf(n); xl += `<circle class="pinh" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6.5"/>`; }
   $('#strings').innerHTML = ''; $('#xl').innerHTML = '<defs><radialGradient id="pinG" cx=".35" cy=".32" r=".75"><stop offset="0" stop-color="#ff9a8f"/><stop offset=".45" stop-color="#cf1620"/><stop offset="1" stop-color="#4f0507"/></radialGradient></defs>' + xl; $('#tags').innerHTML = tags; renderZones();
   if (newId){ const p = document.querySelector(`#xl [data-id="${newId}"]`); if (p && !RM){ const len = p.getTotalLength();

@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.18 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.19 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -47,13 +47,14 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/ver.js | 지금 버전 VER (올리는 방이 +1) |
 | js/changes.js | 보스 눈에 보이는 변화 목록 CHANGES — 업데이트 뒤 마틴이 자기 말투로 설명하는 재료 |
 | js/core.js | 기본 도구($·esc·sleep) · 상태 S · 기기 저장(localStorage) · 계정 저장(db, put/dbStart/adopt) · 사진 보관(assets) |
-| js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy) · 판 정리 · play |
+| js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy — cut 과 link 의 why 는 habits.js 가 감쌈) · 판 정리 · play |
 | js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 |
 | js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기(폰은 엔터 = 줄 바꿈, 건네기는 단추) |
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
 | js/persona.js | 마틴이라는 사람(설정 v2.3, 보스 확정 — 8장 의뢰와 시간) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
 | js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 프롬프트 칸 modeText()(buildPrompt 의 [이번에 동료가 가져온 것] 바로 위), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
+| js/habits.js | 수사 버릇(v0.14.4, B) — HABITS 일곱 줄 · habitText()(buildPrompt 의 「판 고치기 (ops)」 위 — 뒤집어 보기·전제 의심(S.premiseAt)·끊은 실 목록) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
@@ -126,3 +127,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.16 | 2026-11-17 | B: 파일 지도에 js/mode.js(자료 형편), 인물 설정 v2.2 |
 | v1.17 | 2026-11-17 | C: 파일 지도에 js/xref.js(맞춰 보기), 수첩 정돈(합치기·덮기) |
 | v1.18 | 2026-11-17 | A: 파일 지도에 js/wallclock.js·img/clock(벽시계), 마틴 인물 설정 v2.3(다른 세계의 의뢰·현실 시간) |
+| v1.19 | 2026-11-17 | B: 파일 지도에 js/habits.js(수사 버릇·실 why·cut·꼬리표 자리), doOp 에 cut |
