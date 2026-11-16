@@ -4,8 +4,8 @@
    담는 것: 사건 파일 · 난제 지도(가설·확신 이력·버림·풀림·사라진 난제) · 지금 판(카드·실) · 판에서 사라진 카드·실(지난 판 기억에서) ·
             자료함(판독문 전문, 판독문이 바뀌었으면 옛 판 · 붙여 넣은 글 원문 전문) · 수사 수첩(풀린·지워진 줄까지) · 대화 전사 · 마틴의 턴(판을 어떻게 고쳤나) · 행동 기록
    사진 그림 자체는 글에 못 담는다 — 마틴의 판독문이 그 자리를 대신한다. data: 그림 글자는 전부 걷어 낸다.
-   날것(JSON)이 필요하면 recapRaw() — 「날것」 단추. */
-const RC_VER = 'v1.0';
+   날것(JSON)이 필요하면 recapRaw() — 「날것」 단추. 11-17 D v1.1: 「텍스트 파일로 받기」(recapSave) — 같은 글을 .txt 로. */
+const RC_VER = 'v1.1';
 const rcClip = (s, n) => { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n) + '…' : s; };
 const rcNoImg = v => JSON.parse(JSON.stringify(v, (k, x) => typeof x === 'string' && /^data:|^blob:/.test(x) ? '(그림)' : x));
 const rcT = t => { if (!t) return '-'; const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${d.toTimeString().slice(0, 8)}`; };
@@ -115,6 +115,21 @@ function recapText(g){
     else if (e.type === 'chat' && e.who === 'p' && ((e.files || []).length || (e.photos || []).length)) P(`[${rcT(e.ts)}] 건넴 · 사진 ${(e.photos || []).join(',') || '-'} · 파일 ${(e.files || []).map(f => f.name || f).join(',') || '-'}`); }
   P(''); P(`— 복기본 끝 (${RC_VER}) —`);
   return L.join('\n');
+}
+/* 11-17 D: 텍스트 파일로 받기 — 아티팩트에선 downloads 기능(저장 확인 창이 한 번 뜬다), 그 밖(GitHub Pages 등)에선 보통 내려받기 */
+const rcName = () => { const t = ((nodeOf('n1') || {}).title || '사건').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40); const d = new Date(); return `마틴-복기본-${t}-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${d.toTimeString().slice(0, 5).replace(':', '')}.txt`; };
+async function recapSave(){
+  const m = $('#cpMsg'); if (m) m.textContent = '계정과 이 기기의 기록을 모으는 중…';
+  let txt = ''; try{ txt = recapText(await recapGather()); }catch(e){ if (m) m.textContent = '모으다 막혔다: ' + rcClip(e && e.message, 80); return; }
+  window.__recap = txt; const name = rcName(), kb = Math.round(new Blob([txt]).size / 1024);
+  let DL = null; try{ DL = window.claude ? await window.claude.use('downloads') : null; }catch(e){}
+  if (DL){ if (m) m.textContent = '저장 창이 뜨면 「저장」을 누른다.';
+    try{ await DL.save({ filename:name, data:new Blob([txt], { type:'text/plain' }) }); if (m) m.textContent = `받았다. ${name} · ${kb}KB`; act('복기본 파일로 받음', { name, kb }); }
+    catch(e){ const c = e && e.code; if (m) m.textContent = c === 'declined' ? '저장을 그만뒀다.' : c === 'rate_limited' ? '저장 창이 이미 떠 있다. 잠시 뒤 다시.' : '이 화면에선 파일 저장이 막혔다. 「기록 전체 복사」로 옮겨라.'; act('복기본 파일 막힘', { code:c || String(e && e.message || e).slice(0, 60) }); }
+    return; }
+  try{ const u = URL.createObjectURL(new Blob([txt], { type:'text/plain;charset=utf-8' })), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000);
+    if (m) m.textContent = `받았다. ${name} · ${kb}KB`; act('복기본 파일로 받음', { name, kb, way:'a' }); }
+  catch(e){ if (m) m.textContent = '이 화면에선 파일 저장이 막혔다. 「기록 전체 복사」로 옮겨라.'; }
 }
 /* 날것 — 예전 「기록 전체 복사」와 같은 모양에 계정 기록을 더한 것(그림 글자는 뺌) */
 async function recapRaw(){ const g = await recapGather(); return JSON.stringify(rcNoImg({ case:{ ...snap(), ev:(S.ev || []).map(lean), probs:S.probs, pgone:S.pgone, groups:S.groups }, chat:S.log, log:g.items, texts:g.texts }), null, 1); }

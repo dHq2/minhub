@@ -1,4 +1,4 @@
-// 사건 복기본 점검 v1.0 (2026-11-17, D) — 「기록 전체 복사」가 계정+기기 기록을 모아 사건 전부를 한 번씩 담는지. 가짜 사건(김지민). 폰 화면.
+// 사건 복기본 점검 v1.1 (2026-11-17, D) — v1.1: 텍스트 파일로 받기 — 「기록 전체 복사」가 계정+기기 기록을 모아 사건 전부를 한 번씩 담는지. 가짜 사건(김지민). 폰 화면.
 // 쓰는 법: bash martin/tests/run.sh recap   (복기본 전문 /tmp/martin-복기본.txt — 꼭 열어 읽어 본다)
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -38,7 +38,8 @@ const DEV = [   // 이 기기 기록 — 계정과 한 줄 겹침
     const snap = d => ({ exists:!!d, data:() => JSON.parse(JSON.stringify(d)) });
     const coll = name => { let f = null; const q = { where:(k, op, v) => { f = [k, v]; return q; }, orderBy:() => q, limit:() => q,
       get:async () => ({ docs:Object.entries(docs).filter(([k, d]) => k.startsWith(name + '/') && (!f || d[f[0]] === f[1])).map(([, d]) => snap(d)) }) }; return q; };
-    window.claude = { use:async n => n === 'db' ? { doc:path => ({ get:async () => snap(docs[path]), set:async d => { docs[path] = d; } }), collection:coll } : null }; }, ACC);
+    window.__saved = null; const dl = { save:async r => { window.__saved = { filename:r.filename, text:await r.data.text() }; return { status:'saved' }; } };
+    window.claude = { use:async n => n === 'downloads' ? dl : n === 'db' ? { doc:path => ({ get:async () => snap(docs[path]), set:async d => { docs[path] = d; } }), collection:coll } : null }; }, ACC);
   await p.addInitScript(([s, dev]) => { if (!sessionStorage.getItem('rc')){ localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); localStorage.setItem('drmartin.log', dev); sessionStorage.setItem('rc', 1); } }, [JSON.stringify(SEED), JSON.stringify(DEV)]);
   await p.goto(URL); await p.waitForTimeout(3500);
   await p.evaluate(() => logSheet()); await p.waitForTimeout(300);
@@ -67,6 +68,12 @@ const DEV = [   // 이 기기 기록 — 계정과 한 줄 겹침
   want(/접속 3번/.test(t), '접속 수(폰·컴·지금 화면) ' + (t.match(/접속 \d+번[^\n]*/) || [''])[0]);
   const raw = await p.evaluate(async () => recapRaw());
   want(raw.includes('원문끝표시ZZZ') && raw.includes('유일한폰행동표시') && !/data:image/.test(raw), '날것(JSON)에도 계정 기록·원문, 그림 글자 없음');
+  /* 11-17 D: 텍스트 파일로 받기 */
+  await p.evaluate(() => logSheet()); await p.waitForTimeout(200); await p.click('[data-s="savelog"]'); await p.waitForFunction(() => window.__saved, null, { timeout:20000 });
+  const sv = await p.evaluate(() => window.__saved), msg = await p.textContent('#cpMsg');
+  want(/^마틴-복기본-금고_사건-\d{8}-\d{4}\.txt$/.test(sv.filename), '파일 이름 ' + sv.filename);
+  want(sv.text.includes('## 6. 자료함') && sv.text.includes('원문끝표시ZZZ') && sv.text.split('\n').length > 50, '파일 내용 = 복기본 전문');
+  want(/받았다\./.test(msg), '받은 뒤 안내 ' + msg);
   want(!errs.length, '페이지 오류 ' + JSON.stringify(errs));
   console.log(`  복기본 ${Math.round(t.length / 1024)}KB · ${t.split('\n').length}줄 → /tmp/martin-복기본.txt`);
   await b.close(); console.log(bad ? `실패 ${bad}` : '전부 통과'); process.exit(bad ? 1 : 0);
