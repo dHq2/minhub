@@ -56,3 +56,16 @@
 .pv.doc .pv-talk{display:none}
 .pv:not(.full) .pv-hint{bottom:auto;top:8px}
 .pv.on:not(.full){background:#050403}   /* 뒤의 진짜 대화창이 비쳐 말풍선이 겹쳐 보이지 않게 */
+/* 11-17 C: 수첩 「전체 시계」 칸 — 판독문의 날짜·시각 줄을 방 가로질러 시간순(xref.js). 접힌 제목줄 = 다른 칸 제목과 같은 모양 */
+.xr-s summary.nl-h{cursor:pointer;list-style:none;user-select:none}
+.xr-s summary.nl-h::-webkit-details-marker{display:none}
+.xr-s summary.nl-h::after{content:"펼치기";margin-left:auto;font-weight:400;font-size:10px;color:#6e665a}
+.xr-s details[open] summary.nl-h::after{content:"접기"}
+.xr-s ol.xr-l{list-style:none;margin:0;padding:0 10px 4px 38px;font:400 11.5px/17px "Nanum Gothic Coding",monospace;letter-spacing:-.03em;color:#cfc5b2}
+.xr-day{margin:6px 0 2px;padding-bottom:1px;border-bottom:1px dashed #2c2822;font-weight:700;font-size:10.5px;color:#9fb7a0}
+.xr-r{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:6px;align-items:start;padding:1px 0}
+.xr-r b{font-weight:700;color:#e2b04a;white-space:nowrap}
+.xr-r.amb b{color:#d0262f}
+.xr-r span{word-break:keep-all;overflow-wrap:anywhere}
+.xr-r u{text-decoration:none;color:#8fb3d0}
+.xr-r i{font-style:normal;font-size:10px;color:#6e665a;white-space:nowrap}

@@ -9,7 +9,7 @@ addEventListener('blur', () => { WC.focus = false; });
 const wcHere = () => document.visibilityState === 'visible' && WC.focus;
 /* 사건 시계 ms — D 의 것을 믿고, 그 사이는 이어 센다 */
 function wcMs(){
-  if (typeof clockMs === 'function'){ try{ const v = clockMs(); if (typeof v === 'number' && isFinite(v)) return v; }catch(e){} }
+  if (typeof clockMs === 'function'){ try{ if (typeof clockTick === 'function') clockTick(); const v = clockMs();   /* D 의 시계와 한 몸 — 매 프레임 흐른 만큼 더하고 읽는다 */ if (typeof v === 'number' && isFinite(v)) return v; }catch(e){} }
   const now = performance.now(), c = S && S.clock, sv = c && typeof c.ms === 'number' ? c.ms : null;
   if (WC.base === null || (sv !== null && sv !== WC.seen)){ WC.base = sv !== null ? sv : (WC.base || 0); WC.seen = sv; WC.perf = now; }
   if (wcHere()){ WC.base += now - WC.perf; } WC.perf = now; return WC.base;

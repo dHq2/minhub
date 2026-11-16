@@ -52,3 +52,13 @@
 
 /* 11-17 D: 사건 복기본 — 복사가 막힌 화면에서 길게 눌러 고르는 칸 */
 .rcbox{display:block;width:100%;height:200px;margin-top:8px;background:#0d0c0a;color:#d9cfbc;border:1px solid #3a342b;border-radius:6px;font:11px/16px "Nanum Gothic Coding",monospace;padding:8px;resize:vertical}
+
+/* 11-17 D: 사건 시계 — 위 띠, DR. MARTIN 옆. 흐를 땐 호박색, 멈추면 흐리게, 누르면 실제로 든 시간(0.01초) */
+.clk{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:84px;height:34px;padding:0 4px;border:1px solid #3a342c;border-radius:7px;background:#100e0b;color:#e2b04a;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.clk b{font:700 13px/15px "Nanum Gothic Coding",monospace;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.clk small{font:400 9px/11px "Nanum Gothic Coding",monospace;color:#8b8172}
+.clk.real{border-color:#e2b04a;background:#1c160c}
+.clk.real b{color:#f4d27a}
+.clk.off b{color:#6f675b}
+.clk:active{transform:translateY(1px)}
+@media(max-width:430px){ .top .brand small#ver{display:none} .top .brand{font-size:16px} .top .case{display:none} .clk{width:76px} .clk b{font-size:12px} }

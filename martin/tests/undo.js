@@ -53,13 +53,13 @@ const SEED = { v: 3, id: '20261116-undo', at: 1, turn: 3, nid: 6, nmax: 5, suspe
   await p.waitForSelector('#updAsk [data-u="no"]', { timeout: 8000 }).catch(() => {});
   await p.click('#updAsk [data-u="no"]').catch(() => {}); await p.waitForTimeout(2500);
   c = await chat(p);
-  want(c[0] === '돌아왔군, 동료.' && c.some(t => t.includes('적용하겠나')) && !c.some(t => t.includes('잠깐') || t.includes('판은 그대로다')), `업데이트 미룸 — 인사로 시작, 「판은 그대로다」 없음 ${JSON.stringify(c)}`);
+  want(/^돌아왔군/.test(c[0] || '') && (c[0] || '').includes('적용하겠나') && !c.some(t => t.includes('잠깐') || t.includes('판은 그대로다')), `업데이트 미룸 — 인사로 시작(11-17 D: 인사·묻기 한 줄), 「판은 그대로다」 없음 ${JSON.stringify(c)}`);
   await p.close();
   p = await open('v0.1.0', SEED);
   await p.waitForSelector('#updAsk [data-u="yes"]', { timeout: 8000 }).catch(() => {});
   await p.click('#updAsk [data-u="yes"]').catch(() => {}); await p.waitForTimeout(6000);
   c = await chat(p);
-  want(c[0] === '돌아왔군, 동료.' && c.some(t => t.includes('수첩 줄은 이제')) && c.filter(t => t.includes('돌아왔군')).length === 1 && !c.some(t => t.includes('판은 그대로다')), `업데이트 적용 — 인사 → 묻기 → 브리핑 ${JSON.stringify(c.slice(-2))}`);
+  want(/^돌아왔군/.test(c[0] || '') && c.some(t => t.includes('가지가 들어왔다')) && c.filter(t => t.includes('돌아왔군')).length === 1 && !c.some(t => t.includes('판은 그대로다')), `업데이트 적용 — 인사 → 묻기 → 브리핑 ${JSON.stringify(c.slice(-2))}`);
 
   /* 3) 예전에 눌러서 풀린 칸으로 간 줄 되살림(마틴이 푼 줄은 그대로) */
   let s = await st(p);

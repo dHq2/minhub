@@ -4,8 +4,9 @@
    담는 것: 사건 파일 · 난제 지도(가설·확신 이력·버림·풀림·사라진 난제) · 지금 판(카드·실) · 판에서 사라진 카드·실(지난 판 기억에서) ·
             자료함(판독문 전문, 판독문이 바뀌었으면 옛 판 · 붙여 넣은 글 원문 전문) · 수사 수첩(풀린·지워진 줄까지) · 대화 전사 · 마틴의 턴(판을 어떻게 고쳤나) · 행동 기록
    사진 그림 자체는 글에 못 담는다 — 마틴의 판독문이 그 자리를 대신한다. data: 그림 글자는 전부 걷어 낸다.
-   날것(JSON)이 필요하면 recapRaw() — 「날것」 단추. 11-17 D v1.1: 「텍스트 파일로 받기」(recapSave) — 같은 글을 .txt 로. */
-const RC_VER = 'v1.1';
+   날것(JSON)이 필요하면 recapRaw() — 「날것」 단추. 11-17 D v1.1: 「텍스트 파일로 받기」(recapSave) — 같은 글을 .txt 로.
+   11-17 D v1.2(v0.14): 사건 시계 — 머리말에 총 추리 시간, 턴·행동 줄에 그때 사건 시각(⏱), 11칸 「사건 시계」(세션별·턴별). */
+const RC_VER = 'v1.2';
 const rcClip = (s, n) => { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n) + '…' : s; };
 const rcNoImg = v => JSON.parse(JSON.stringify(v, (k, x) => typeof x === 'string' && /^data:|^blob:/.test(x) ? '(그림)' : x));
 const rcT = t => { if (!t) return '-'; const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${d.toTimeString().slice(0, 8)}`; };
@@ -37,6 +38,8 @@ function recapText(g){
   P(`- 사건 번호 ${S.id} · 앱 ${VER} · 만든 때 ${rcT(Date.now())}`);
   P(`- 기간 ${rcT(first)} ~ ${rcT(last)} · 마틴 턴 ${S.turn} · 카드 ${S.nodes.length}장 · 실 ${S.links.length}줄 · 자료 ${(S.ev || []).length}건 · 대화 ${S.log.length}줄`);
   P(`- 기록 출처: 계정 ${g.fromDb}건 + 이 기기 ${g.fromDev}줄 → 합쳐 ${items.length}줄(겹친 것은 한 번만) · 접속 ${sids.length}번${opens.length ? ' (' + [...new Set(opens.map(o => (o.w || 0) <= 500 ? '폰' : '컴'))].join('·') + ')' : ''}`);
+  const ck = S.clock || null, rcS = ms => typeof clockSim === 'function' ? clockSim(ms, ck && ck.start) : '-', rcH = ms => typeof clockHuman === 'function' ? clockHuman(ms) : Math.round((ms || 0) / 1000) + '초';
+  if (ck) P(`- 사건 시계: 사건 시각 ${ck.start || '10:50'} → ${rcS(ck.ms)} · 총 추리 시간 ${rcH(ck.ms)} (동료가 이 방에 있을 때만 흐른 시간 · 0.01초 단위) — 자세한 건 11칸`);
   P('- 읽는 법: 이 글 하나로 사건 전체를 되짚을 수 있게 모았다. 사진 그림은 담지 못해 마틴의 판독문으로 대신한다. id: n…=판 카드, e…=자료함, m…=수사 수첩, p…=난제, h…=가설. 동료=플레이어(기자·수집가), 마틴=탐정.');
 
   H('1. 사건 파일');
@@ -101,7 +104,7 @@ function recapText(g){
   H('9. 마틴의 턴 — 판·난제·수첩을 어떻게 고쳤나');
   if (!turns.length) P('(계정·기기 어디에도 턴 기록이 없다)');
   for (const t of turns){ const r = t.response || {};
-    P(`- 턴 ${t.n || '-'}${t.part ? '(' + t.part + ')' : ''} · ${rcT(t.ts)} · ${t.model || ''} ${t.effort || ''} · ${((t.ms || 0) / 1000).toFixed(1)}초${t.ok ? '' : ' · 실패 ' + rcClip(JSON.stringify(t.error || ''), 160)}`);
+    P(`- 턴 ${t.n || '-'}${t.part ? '(' + t.part + ')' : ''} · ${rcT(t.ts)}${t.clk != null ? ' · ⏱' + rcS(t.clk) : ''} · ${t.model || ''} ${t.effort || ''} · ${((t.ms || 0) / 1000).toFixed(1)}초${t.ok ? '' : ' · 실패 ' + rcClip(JSON.stringify(t.error || ''), 160)}`);
     if (!t.ok) continue;
     const j = (k, v) => { if (v && (!Array.isArray(v) || v.length) && (typeof v !== 'object' || Object.keys(v).length)) P(`  · ${k}: ${rcClip(JSON.stringify(rcNoImg(v)), 4000)}`); };
     j('판 고침', r.ops); j('난제', r.pz); j('수첩', r.notes); j('풀림', r.solve); j('지움', r.drop); j('다시 봄', r.look); j('캐 올 것', r.ask);
@@ -109,10 +112,23 @@ function recapText(g){
     j('묶음', r.groups); j('실 자름', r.cut); j('실 이음', r.link); j('꼬리표', r.relabel); j('합침', r.merge); }
 
   H('10. 행동 기록 — 동료가 누르고 연 것');
-  const skip = new Set(['ts', 'at', 'sid', 'cid', 'type', 'act', 'ua']);
+  const skip = new Set(['ts', 'at', 'sid', 'cid', 'type', 'act', 'ua', 'clk']);
   for (const e of items){ if (e.type === 'action'){ const more = Object.entries(e).filter(([k]) => !skip.has(k)).map(([k, v]) => k + '=' + rcClip(typeof v === 'string' ? v : JSON.stringify(rcNoImg(v)), 120)).join(' ');
-      P(`[${rcT(e.ts)}] ${e.act}${more ? ' · ' + more : ''}`); }
+      P(`[${rcT(e.ts)}${e.clk != null ? ' ⏱' + rcS(e.clk) : ''}] ${e.act}${more ? ' · ' + more : ''}`); }
     else if (e.type === 'chat' && e.who === 'p' && ((e.files || []).length || (e.photos || []).length)) P(`[${rcT(e.ts)}] 건넴 · 사진 ${(e.photos || []).join(',') || '-'} · 파일 ${(e.files || []).map(f => f.name || f).join(',') || '-'}`); }
+  H('11. 사건 시계 — 세션별·턴별 추리 시간');
+  if (!ck) P('(이 사건엔 시계 기록이 없다 — v0.14 이전에 진행)');
+  else {
+    P(`- 총 추리 시간 ${rcH(ck.ms)} (${typeof clockReal === 'function' ? clockReal(ck.ms) : ''}) · 사건 시각 ${ck.start || '10:50'} → ${rcS(ck.ms)}`);
+    const ss = Object.entries(ck.sess || {}).sort((a, b) => (a[1].from || 0) - (b[1].from || 0));
+    if (ss.length){ P('- 세션별(접속마다, 방에 있었던 시간):');
+      for (const [sid, x] of ss){ const o = opens.find(e => e.sid === sid), dev = o ? ((o.w || 0) <= 500 ? '폰' : '컴') : '';
+        P(`  · ${sid}${dev ? ' ' + dev : ''} · ${rcT(x.from)} ~ ${rcT(x.to)} · ${rcH(x.ms)}`); } }
+    const tk = turns.filter(t => t.clk != null && !t.part).sort((a, b) => a.clk - b.clk);
+    if (tk.length){ P('- 턴별(앞 턴이 끝난 뒤부터 이 턴의 답이 올 때까지 — 동료가 읽고 생각하고 건넨 시간 + 마틴이 답한 시간):');
+      let prev = null; for (const t of tk){ const d = prev == null ? t.clk : t.clk - prev; P(`  · 턴 ${t.n} · ⏱${rcS(t.clk)} · ${rcH(d)} (마틴 답 ${((t.ms || 0) / 1000).toFixed(2)}초)`); prev = t.clk; } }
+    else P('- 턴별: 시계가 붙은 턴 기록이 아직 없다.');
+  }
   P(''); P(`— 복기본 끝 (${RC_VER}) —`);
   return L.join('\n');
 }
