@@ -47,5 +47,5 @@ $('#sheet').addEventListener('click', async e => {
 });
 $('#btnMenu').onclick = menuSheet; $('#btnLog').onclick = () => { act('기록 열기'); logSheet(); };
 $('#btnFit').onclick = () => { act('전체 보기'); fitAll(600); };
-$('#btnTidy').onclick = async () => { if (busy) return; busy = true; act('판 정리 단추'); await tidy(); save(); busy = false; };
+$('#btnTidy').onclick = () => { if (busy) return; act('판 정리 단추'); rebuildBoard(); };   /* 11-16 A: 마틴이 묶음을 새로 짜서 다시 놓는다 */
 

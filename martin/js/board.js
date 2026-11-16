@@ -6,13 +6,15 @@ function applyCam(ms){
   const W = board.clientWidth, H = board.clientHeight;
   world.style.transition = ms ? `transform ${ms}ms cubic-bezier(.62,.04,.24,1)` : 'none';
   world.style.transform = `translate(${W / 2 - cam.x * cam.k}px,${H / 2 - cam.y * cam.k}px) scale(${cam.k})`;
+  world.style.setProperty('--ik', Math.max(1, Math.min(3, .62 / cam.k)).toFixed(2));   /* 11-16 A: 멀리서 봐도 묶음 이름은 읽히게 */
 }
 async function fly(x, y, k, ms = 720){ cam.x = x; cam.y = y; if (k) cam.k = k; if (RM) ms = 0; applyCam(ms); await sleep(ms); }
 function fitBox(){
   if (!S.nodes.length) return { x:1000, y:1000, k:.9 };
   let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
   for (const n of S.nodes){ l = Math.min(l, n.x - 100); r = Math.max(r, n.x + 100); t = Math.min(t, n.y - 110); b = Math.max(b, n.y + 110); }
-  const W = board.clientWidth, H = board.clientHeight, k = Math.max(.32, Math.min(1, (W - 30) / (r - l), (H - 40) / (b - t)));
+  if ((S.groups || []).length){ t -= 40; b += 70; }   /* 11-16 A: 묶음 이름표 자리 · 아래 단추에 안 가리게 */
+  const W = board.clientWidth, H = board.clientHeight, k = Math.max(.24, Math.min(1, (W - 30) / (r - l), (H - 40) / (b - t)));
   return { x:(l + r) / 2, y:(t + b) / 2, k };
 }
 const fitAll = ms => { const f = fitBox(); return fly(f.x, f.y, f.k, ms); };
@@ -38,13 +40,15 @@ function measure(){ for (const el of document.querySelectorAll('#nodes .card')){
 const pinOf = n => ({ x:n.x, y:n.y - (n.h || 130) / 2 + 2 });
 function curve(L){ const A = nodeOf(L.a), B = nodeOf(L.b); if (!A || !B) return null; const p = pinOf(A), q = pinOf(B), d = Math.hypot(q.x - p.x, q.y - p.y), sag = Math.min(70, d * .13), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2 + sag;
   return { d:`M${p.x.toFixed(1)} ${p.y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`, lx:mx, ly:(p.y + q.y) / 2 + sag / 2 }; }
-function renderStrings(newId){
-  let svg = '', tags = '';
-  for (const L of S.links){ const c = curve(L); if (!c) continue;
-    svg += `<path class="str${L.sure ? '' : ' maybe'}" data-id="${L.id}" d="${c.d}"/>`;
-    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}" style="left:${c.lx}px;top:${c.ly}px;--r:${(hash(L.id) % 7) - 3}deg">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
-  $('#strings').innerHTML = svg; $('#tags').innerHTML = tags;
-  if (newId){ const p = document.querySelector(`#strings [data-id="${newId}"]`); if (p && !RM){ const len = p.getTotalLength(), dash = p.classList.contains('maybe');
+function renderStrings(newId){   /* 11-16 A: 묶음이 있으면 — 중심↔구성원은 기둥(#zones), 같은 묶음 안은 묶음 색, 묶음 사이는 카드 위 빨강(#xl) */
+  let svg = '', xl = '', tags = '';
+  for (const L of S.links){ const kind = linkKind(L); if (kind === 'spine') continue; const c = curve(L); if (!c) continue;
+    const g = kind === 'in' ? groupOf(L.a) : null, st = g ? ` style="--gc:${gColor(g)}"` : '';
+    const p = `<path class="str${L.sure ? '' : ' maybe'}${kind === 'in' ? ' gin' : kind === 'x' ? ' xg' : ''}" data-id="${L.id}" d="${c.d}"${st}/>`;
+    if (kind === 'x') xl += p; else svg += p;
+    if (L.label) tags += `<div class="tag${L.sure ? '' : ' maybe'}${L.id === newId ? ' new' : ''}${kind === 'x' ? ' xt' : ''}" style="left:${c.lx}px;top:${c.ly}px;--r:${(hash(L.id) % 7) - 3}deg${g ? ';--gc:' + gColor(g) : ''}">${esc(L.label)}${L.sure ? '' : ' ?'}</div>`; }
+  $('#strings').innerHTML = svg; $('#xl').innerHTML = xl; $('#tags').innerHTML = tags; renderZones();
+  if (newId){ const p = document.querySelector(`#strings [data-id="${newId}"], #xl [data-id="${newId}"]`); if (p && !RM){ const len = p.getTotalLength(), dash = p.classList.contains('maybe');
     p.style.strokeDasharray = `${len}`; p.style.strokeDashoffset = `${len}`; p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset .8s cubic-bezier(.5,0,.3,1)'; p.style.strokeDashoffset = '0';
     setTimeout(() => { p.style.transition = ''; p.style.strokeDasharray = dash ? '' : ''; p.style.strokeDashoffset = ''; }, 900); } }
 }
@@ -104,38 +108,7 @@ function thinking(on){ $('#martin').classList.toggle('think', on); const w = $('
 
 /* ── 보드 조작 하나씩 (마틴이 따라가며) ── */
 /* ── 판 정리 (v0.4) — 사람은 가운데(실 많은 사람이 한가운데), 그 사람의 단서는 바깥쪽 부채꼴, 사진은 왼쪽 줄, 의문은 오른쪽 줄, 시각은 위쪽 줄, 사건 파일은 그 아래 ── */
-function tidyPlan(){   /* v0.4.1 세로 화면용 — 위에서 아래로: 시각 줄 → 사건 파일 → 사람(실 많은 사람이 가운데)과 각자의 단서 → 의문 줄 → 사진 줄 → 나머지 */
-  const N = S.nodes, deg = {}, nb = {}; for (const L of S.links){ deg[L.a] = (deg[L.a] || 0) + 1; deg[L.b] = (deg[L.b] || 0) + 1; (nb[L.a] = nb[L.a] || []).push(L.b); (nb[L.b] = nb[L.b] || []).push(L.a); }
-  const pos = {}, C = { x:1000, y:1000 }, by = k => N.filter(n => n.kind === k), DX = 178, DY = 215, PER = 4;
-  const row = (list, y, dir = 1) => { list.forEach((n, i) => { const r = Math.floor(i / PER), inRow = Math.min(PER, list.length - r * PER), c = i % PER; pos[n.id] = { x:C.x + (c - (inRow - 1) / 2) * DX, y:y + dir * r * DY }; }); return list.length ? y + dir * (Math.ceil(list.length / PER) - 1) * DY : y - dir * DY; };
-  const people = by('person').sort((a, b) => (deg[b.id] || 0) - (deg[a.id] || 0) || (a.id < b.id ? -1 : 1));
-  people.forEach((p, i) => { if (i === 0){ pos[p.id] = { ...C }; return; } const ring = i <= 6 ? 1 : 2, idx = ring === 1 ? i - 1 : i - 7, cnt = ring === 1 ? Math.min(6, people.length - 1) : people.length - 7, a = Math.PI + idx / cnt * Math.PI * 2 + (ring === 2 ? Math.PI / cnt : 0), R = ring === 1 ? 300 : 520;   /* 옆(왼쪽)부터 — 세로로 길쭉해지지 않게 */ pos[p.id] = { x:C.x + Math.cos(a) * R, y:C.y + Math.sin(a) * R * .9 }; });
-  const placed = new Set(['n1', ...by('time').map(n => n.id), ...by('photo').map(n => n.id), ...by('question').map(n => n.id), ...people.map(n => n.id)]);
-  const home = {}, loose = [];
-  for (const n of N){ if (placed.has(n.id)) continue; const pp = (nb[n.id] || []).map(nodeOf).filter(x => x && x.kind === 'person').sort((a, b) => (deg[b.id] || 0) - (deg[a.id] || 0))[0]; if (pp) (home[pp.id] = home[pp.id] || []).push(n); else loose.push(n); }
-  for (const [pid, list] of Object.entries(home)){ const P = pos[pid], out = pid === people[0].id ? (people.length > 1 ? Math.PI / 2 : 0) : Math.atan2(P.y - C.y, P.x - C.x);
-    list.forEach((n, k) => { const a = out + (k - (list.length - 1) / 2) * .7, R = 210 + Math.floor(k / 4) * 130; pos[n.id] = { x:P.x + Math.cos(a) * R, y:P.y + Math.sin(a) * R }; }); }
-  if (!people.length) row(loose.splice(0), C.y);
-  let top = C.y, bot = C.y; for (const q of Object.values(pos)){ top = Math.min(top, q.y); bot = Math.max(bot, q.y); }
-  const brief = nodeOf('n1'); if (brief){ pos.n1 = { x:C.x, y:top - DY - 10 }; top = pos.n1.y; }
-  row(by('time'), top - DY, -1);
-  let y = bot + DY + 10; y = row(by('question'), y) + DY; y = row(by('photo'), y) + DY; row(loose, y);
-  const ids = Object.keys(pos);   /* 겹침 풀기 */
-  for (let it = 0; it < 40; it++) for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++){
-    const A = pos[ids[i]], B = pos[ids[j]], dx = B.x - A.x, dy = B.y - A.y, ox = 160 - Math.abs(dx), oy = 190 - Math.abs(dy);
-    if (ox > 0 && oy > 0){ if (ox < oy){ const s = (dx >= 0 ? 1 : -1) * ox / 2; A.x -= s; B.x += s; } else { const s = (dy >= 0 ? 1 : -1) * oy / 2; A.y -= s; B.y += s; } } }
-  let mnY = 1e9, mxY = -1e9; for (const id of ids){ mnY = Math.min(mnY, pos[id].y); mxY = Math.max(mxY, pos[id].y); }
-  const shift = 1000 - (mnY + mxY) / 2;   /* 판 한가운데로 */
-  for (const id of ids){ pos[id].x = Math.round(Math.max(110, Math.min(1890, pos[id].x))); pos[id].y = Math.round(Math.max(130, Math.min(1880, pos[id].y + shift))); }
-  return pos;
-}
-async function tidy(){
-  const pos = tidyPlan(); await fitAll(500);
-  $('#world').classList.add('hidestr'); await sleep(300);
-  for (const n of S.nodes){ const q = pos[n.id]; if (!q) continue; n.x = q.x; n.y = q.y; n.r = (hash(n.id) % 7) - 3;
-    const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el){ el.classList.add('mv'); el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; el.style.setProperty('--r', n.r + 'deg'); } }
-  await sleep(950); renderNodes(); renderStrings(); renderMarks(); $('#world').classList.remove('hidestr'); await fitAll(700); act('판 정리됨', { n:S.nodes.length });
-}
+/* 판 정리 — 11-16 A: js/tidy.js 의 묶음 배치(relayout·rebuildBoard)로 옮김 */
 /* 프사 자르기 — 사진 카드의 가장 좋은 원본에서 box(0~1 비율) 둘레를 정사각형으로 160px */
 async function cropFace(F, b){
   if (!b.every(v => isFinite(v)) || b[2] <= 0 || b[3] <= 0) return null;
@@ -151,10 +124,10 @@ async function doOp(op){
   const W = board.clientWidth, H = board.clientHeight;
   if (op.op === 'add'){
     const id = op.id; if (nodeOf(id)) return doOp({ ...op, op:'edit' });
-    const kind = KINDS[op.kind] && op.kind !== 'brief' ? op.kind : 'clue', p = placeNear(op.near);
+    const kind = KINDS[op.kind] && op.kind !== 'brief' ? op.kind : 'clue', of = op.of && groupOf(op.of) ? op.of : null, p = placeNear(of || op.near);   /* 11-16 A: of = 누구 묶음인지 */
     const n = { id, kind, title:String(op.title || '?').slice(0, 16), note:String(op.note || '').slice(0, 60), x:p.x, y:p.y, r:(hash(id) % 9) - 4 };
     await fly(n.x, n.y, Math.max(cam.k, .85), 650);
-    S.nodes.push(n); $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); renderStrings();
+    S.nodes.push(n); if (of && joinGroup(id, of)) play.regroup = true; $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); renderStrings();
     await sleep(360); sfx(n.x + 50, n.y - (n.h || 130) / 2, '탁'); await sleep(320);
   } else if (op.op === 'link'){
     const A = nodeOf(op.a), B = nodeOf(op.b); if (!A || !B || A === B) return;
@@ -190,7 +163,7 @@ async function doOp(op){
     P.face = url; P.faceFrom = F.id; act('프사 붙임', { id:P.id, from:F.id });
     await fly(P.x, P.y, Math.max(cam.k, .85), 600); const el = document.querySelector(`#nodes [data-id="${P.id}"]`); if (el){ el.outerHTML = cardHtml(P, 'flash'); measure(); renderStrings(); renderMarks(); } sfx(P.x + 50, P.y - (P.h || 150) / 2, '찰칵'); await sleep(750);
   } else if (op.op === 'tidy'){
-    await tidy();
+    play.regroup = false; await relayout();
   } else if (op.op === 'remove'){
     const n = nodeOf(op.id); if (!n || n.kind === 'brief') return;
     if (n.kind === 'question'){ const sn = cardSolved(n, op.why || op.line); if (sn){ nbFlash.add(sn.id); setTimeout(renderNb, 600); } }
@@ -220,7 +193,7 @@ async function play(r){
     await sayLine(l);
   }
   if (focusOn) await unfocus();
-  await runOps();
+  play.regroup = false; await runOps(); if (play.regroup){ play.regroup = false; await relayout(); }   /* 11-16 A: 묶음에 새 카드가 들면 자리만 다시 */
   const nr = await applyNotes(r.raw);   /* v0.5 수첩 — 판의 의문 카드가 풀리면 여기서 떼고 풀린 칸으로 */
   const pr = await applyPz(r.raw);   /* 11-16 B: 가설은 난제 지도로(pz). 옛 hypothesis 가 오면 뿌리 난제 가설로 받는다 */
   if (r.ops.length || nr.solved.length) await fitAll(800);
@@ -243,7 +216,7 @@ function boxOf(ids){
 function spot(ids){
   world.classList.add('focus'); focusOn = true;
   for (const el of document.querySelectorAll('#nodes .card')) el.classList.toggle('spot', ids.includes(el.dataset.id));
-  for (const p of document.querySelectorAll('#strings .str')){ const L = S.links.find(x => x.id === p.dataset.id); p.classList.toggle('hot', !!L && ids.includes(L.a) && ids.includes(L.b)); }
+  for (const p of document.querySelectorAll('#strings .str, #xl .str, #zones .spine')){ const L = S.links.find(x => x.id === p.dataset.id); p.classList.toggle('hot', !!L && ids.includes(L.a) && ids.includes(L.b)); }
 }
 function ghostLink(a, b){   /* 판에 아직 없는 연결 — 분필처럼 점선을 그었다가 지운다 */
   if (S.links.some(L => (L.a === a && L.b === b) || (L.a === b && L.b === a))) return;
@@ -256,7 +229,7 @@ function ghostLink(a, b){   /* 판에 아직 없는 연결 — 분필처럼 점�
 async function unfocus(quick){
   focusOn = false; world.classList.remove('focus');
   for (const el of document.querySelectorAll('#nodes .card.spot')) el.classList.remove('spot');
-  for (const p of document.querySelectorAll('#strings .hot')) p.classList.remove('hot');
+  for (const p of document.querySelectorAll('#strings .hot, #xl .hot, #zones .hot')) p.classList.remove('hot');
   for (const p of document.querySelectorAll('#strings .ghost')) p.remove();
   if (!quick) await fitAll(700);
 }

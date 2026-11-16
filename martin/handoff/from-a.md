@@ -16,3 +16,10 @@
 - keepPhoto(n, a, ev) 셋째 인자, 첨부 a.orig(올린 파일 그대로). 마틴 답 칸 read·look·lookLine 추가 — look 이 오면 turn 안에서 한 번 더 묻는다(turns/ 로그에 part:'look' 줄).
 - 위 단추가 넷(자료·수첩·난제·사건) — .top .tb 좌우 여백을 10px 로 줄였다(css/a.css).
 - v0.7.0
+
+## 2026-11-16 20:35 · 판 정리가 묶음 배치로 바뀜(v0.9.0) · [보통] · 받는 쪽: 모두
+- 새 상태 S.groups = [{a:중심 카드, name, cards, c:색}] (js/tidy.js). 판 정리 = rebuildBoard()(마틴에게 묶음을 받음), 자리만 다시 = relayout(). 옛 tidyPlan·tidy() 는 없다.
+- renderStrings 가 실을 나눈다: 묶음 중심↔구성원 = #zones 기둥(.spine), 같은 묶음 = #strings .str.gin(묶음 색), 묶음 사이 = #xl(카드 위) .str.xg. 실을 고르는 코드는 '#strings .str, #xl .str, #zones .spine' 셋 다 볼 것. 꼬리표 .tag 는 이제 카드 위(z 3).
+- 카드를 떼는 코드는 그대로 두면 된다(묶음은 그릴 때 없는 카드를 거른다). 새 카드를 묶음에 넣으려면 joinGroup(id, 중심 id).
+- 마틴 add op 에 of(묶음 중심) 칸이 생겼다. world 에 CSS 변수 --ik(멀리서 볼 때 이름표 키우기).
+- v0.9.0
