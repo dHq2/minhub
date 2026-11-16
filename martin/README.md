@@ -54,7 +54,8 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/view.js | 판 움직이기(끌기·두 손가락·휠) · 사진 크게 보기 |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
-| js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모) |
+| js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
+| js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
 | js/brief.js | 업데이트 안내 |
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
@@ -98,3 +99,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1 | 2026-11-16 | 첫 판 — GitHub 이사(minhub/martin), 네 방(A~D) 동등 체제, 파일 지도, 찜·알림, 올리기 7단계(GitHub → 아티팩트), 모바일 기준·데모라 가볍게 |
 | v1.1 | 2026-11-16 | B: 파일 지도에 js/puzzles.js(난제 지도), 가설 띠 → 난제 띠 |
 | v1.2 | 2026-11-16 | A: 파일 지도에 js/evidence.js(자료함) |
+| v1.3 | 2026-11-16 | C: 파일 지도에 js/undo.js(되돌리기), 수첩 줄 × 로만 |

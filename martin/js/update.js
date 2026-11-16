@@ -47,13 +47,13 @@ async function updApply(from, titles){
   act('업데이트 적용', { from, to:VER });
 }
 /* brief 앞 문지기 — true 면 brief 가 이어서 설명·본 표시, false 면 이번엔 넘어감 */
-async function updGate(){
+async function updGate(hello){   /* 11-16 C: hello — 판을 다시 연 첫 인사 자리에서 부를 때(boot). 첫 줄이 인사가 된다 */
   const seen = await updSeenVer();
   if (!seen || !verGt(VER, seen)) return true;
   const titles = updTitles(seen); if (!titles.length) return true;
-  act('업데이트 물어봄', { from:seen, to:VER });
+  act('업데이트 물어봄', { from:seen, to:VER }); UPD.asked = true;
   thinking(false);
-  await speak('잠깐, 동료.', false);
+  await speak(hello ? '돌아왔군, 동료.' : '잠깐, 동료.', false);
   await speak('자리를 비운 사이에 수사 도구 몇 개가 바뀌었다.', false);
   await speak('새로운 업데이트가 있다. 적용하겠나?', false);
   UPD.asking = true;
@@ -64,4 +64,6 @@ async function updGate(){
   return true;
 }
 /* brief 감싸기 — brief.js 를 고치지 않고 앞에 끼운다(C 가 brief 를 합치거나 이름을 바꾸면 이 줄을 같이 옮긴다) */
-if (typeof brief === 'function'){ const briefCore = brief; brief = async function(){ if (await updGate()) return briefCore.apply(this, arguments); }; }
+/* 11-16 C: 첫 인사와 합침 — brief(hello) 의 hello 를 문지기에 넘기고, 문지기가 이미 물었으면(인사를 했으면) 브리핑은 다시 인사하지 않는다.
+   돌려주는 값: 무언가 말했으면 true — boot 가 「돌아왔군. 판은 그대로다.」를 건너뛴다(미룸도 말한 것) */
+if (typeof brief === 'function'){ const briefCore = brief; brief = async function(hello){ UPD.asked = false; if (!(await updGate(hello))) return true; const r = await briefCore.call(this, UPD.asked ? false : hello); return r || UPD.asked; }; }

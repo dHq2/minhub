@@ -35,6 +35,7 @@ ${boardText()}
 
 [최근 대화]
 ${hist || '(없음)'}
+${typeof undoText === 'function' ? undoText() : ''}
 
 [이번에 동료가 가져온 것]
 ${given}

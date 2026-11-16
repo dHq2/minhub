@@ -29,7 +29,7 @@ let saveT = 0;
 /* v0.3 실시간 저장 — 바뀔 때마다 기기에 바로, 계정 저장소엔 0.9초 모아서 */
 const slim = (k, v) => k === 'mid' || k === 'big' ? undefined : v;   /* 기기 저장엔 미리보기만 — 큰 사본은 보관함·저장소에 */
 function save(){ S.at = Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S, slim)); }catch(e){}
-  clearTimeout(saveT); saveT = setTimeout(dbSave, 900); }
+  clearTimeout(saveT); saveT = setTimeout(dbSave, 900); if (typeof undoTick === 'function') undoTick(); }   /* 11-16 C: 되돌리기 칸 쌓기(undo.js) */
 /* ── 계정 저장소 (v0.3) ──
    state/board = 지금 판(사진 몸통 빼고) · cases/<사건> = 사건마다 마지막 판 · turns/<사건>-<턴> = 프롬프트·날것 답·판 · logs/<사건>-<접속>-<묶음> = 행동·대화 120줄씩
    사진 = assets(원본 1600px) → 카드엔 asset id. assets 가 없으면 photos/<사건>-<카드> 에 1000px 사본 */

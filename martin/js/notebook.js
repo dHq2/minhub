@@ -24,6 +24,12 @@ function cardSolved(card, a){   /* 판의 의문 카드가 떼어질 때 — 풀
   if (!card || card.kind !== 'question') return null;
   return addNote('q', card.title + (card.note ? ' — ' + card.note : ''), 'you', { done:1, a:String(a || '판에서 풀림').slice(0, 120), doneAt:Date.now(), doneTurn:S.turn, card:card.id });
 }
+function healNotes(){   /* 11-16 C: 예전 줄 누르기로 '동료가 풀림 표시'가 된 줄을 제자리로(한 번만 일어남 — 이제 그 표시를 만드는 길이 없다).
+     저장은 하지 않는다 — S.at 이 새로워지면 다른 기기의 더 새 판을 덮을 수 있어서. 다음 저장(계정 판 받기·아무 행동) 때 같이 실린다 */
+  if (!S || !S.notes) return 0; let k = 0;
+  for (const x of S.notes) if (x.done && x.a === '동료가 풀림 표시'){ x.done = 0; delete x.a; delete x.doneAt; delete x.doneTurn; k++; }
+  if (k){ act('수첩 되살림', { n:k }); try{ localStorage.setItem(KEY, JSON.stringify(S, slim)); }catch(e){} } return k;
+}
 let nbFlash = new Set();
 async function applyNotes(raw){
   const r = raw || {}, made = [], solved = [], dropped = [];
@@ -54,7 +60,7 @@ function noteText(){
 const nbOpenCount = () => S.notes.filter(n => !n.done && (n.k === 'q' || n.k === 'todo')).length + S.nodes.filter(n => n.kind === 'question').length;
 function nbPing(n){ const b = $('#nbN'); if (!b) return; b.textContent = nbOpenCount() || ''; if (n){ const t = $('#btnNb'); t.classList.remove('ping'); void t.offsetWidth; t.classList.add('ping'); } }
 function renderNb(){   /* 11-16 D: 코드처럼 작은 글씨 한 줄 목록 — 제목·상세 두 줄과 「마틴 · 턴」 꼬리표를 없앰, 줄 번호는 css 카운터, 판의 의문 카드는 제목만(상세는 판 카드에) */
-  if (!S) return; ensureNotes();
+  if (!S) return; ensureNotes(); healNotes();
   const mk = { q:'?', guess:'~', todo:'[ ]', fact:'-', me:'>' };
   const item = n => `<li class="nl k-${n.k}${n.done ? ' done' : ''}${n.by === 'me' ? ' byme' : ''}${nbFlash.has(n.id) ? ' new' : ''}" data-n="${n.id}"><b class="nl-k">${n.done ? (n.k === 'todo' ? '[x]' : '✓') : mk[n.k]}</b><span class="nl-t"><span class="nl-v">${esc(n.t)}</span>${n.done && n.a ? `<i class="nl-a"> → ${esc(n.a)}</i>` : ''}</span><button type="button" class="nl-x" data-ndel="${n.id}" aria-label="지우기">×</button></li>`;
   const sec = (title, list, empty, extra = '') => `<section class="nl-s"><div class="nl-h">// ${title}<i>${list.length || ''}</i></div><ol>${list.join('') || `<li class="nl none"><b class="nl-k"></b><span class="nl-t">${empty}</span></li>`}</ol>${extra}</section>`;
@@ -74,10 +80,9 @@ const nbOpen = on => { document.body.classList.toggle('nbopen', on); if (on){ ac
 $('#btnNb').onclick = () => nbOpen(!document.body.classList.contains('nbopen'));
 $('#nbX').onclick = () => nbOpen(false); $('#nbScrim').onclick = () => nbOpen(false);
 $('#nb').addEventListener('click', async e => {
-  const del = e.target.closest('[data-ndel]'); if (del){ const i = S.notes.findIndex(x => x.id === del.dataset.ndel); if (i >= 0){ act('수첩 지움', { id:S.notes[i].id, t:S.notes[i].t }); S.notes.splice(i, 1); save(); renderNb(); } return; }
+  const del = e.target.closest('[data-ndel]'); if (del){ e.stopPropagation(); const i = S.notes.findIndex(x => x.id === del.dataset.ndel); if (i >= 0){ act('수첩 지움', { id:S.notes[i].id, t:S.notes[i].t }); S.notes.splice(i, 1); save(); renderNb(); } return; }
   const c = e.target.closest('[data-card]'); if (c){ const n = nodeOf(c.dataset.card); if (n){ if (innerWidth < 980) nbOpen(false); act('수첩에서 카드로', { id:n.id }); await fly(n.x, n.y, 1, 600); const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } return; }
-  const li = e.target.closest('.nl[data-n]'); if (li){ const n = S.notes.find(x => x.id === li.dataset.n); if (!n || n.k === 'fact' || n.k === 'me') return;
-    if (n.done){ n.done = 0; delete n.a; act('수첩 되돌림', { id:n.id }); } else { solveNote(n.id, '동료가 풀림 표시'); act('수첩 풀림 표시', { id:n.id }); } save(); renderNb(); }
+  /* 11-16 C: 줄을 눌러도 아무 일 없다 — 예전엔 누르면 '풀린 의문'으로 넘어가 지워진 것처럼 보였다(보스 판에서 8줄). 지우기는 줄 끝 × 로만, 실수는 판의 되돌리기로 */
 });
 $('#nb').addEventListener('submit', e => { e.preventDefault(); const i = $('#nbIn'); const t = i.value.trim(); if (!t) return; const n = addNote('me', t, 'me'); i.value = ''; if (n){ act('수첩에 적음', { t }); nbFlash = new Set([n.id]); save(); renderNb(); setTimeout(() => $('#nbIn') && $('#nbIn').focus(), 0); } });
 

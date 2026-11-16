@@ -1,1 +1,16 @@
 /* 방 C 전용 스타일 — app.css 다음에 불러온다. 새 기능 스타일은 여기에 「11-16 C: 기능」 주석과 함께 */
+
+/* 11-16 C: 되돌리기 · 다시 하기 — 판 왼쪽 아래(오른쪽엔 판 정리·전체 보기) */
+.undo-bt{position:absolute;left:10px;bottom:10px;z-index:5;display:flex;gap:6px}
+.undo-bt button{height:34px;padding:0 10px;border:1px solid rgba(255,255,255,.25);background:rgba(10,8,6,.6);border-radius:8px;font:700 12px "Nanum Gothic Coding",monospace;color:#eadfca}
+.undo-bt button:disabled{opacity:.35}
+.undo-bt button:not(:disabled):active{background:rgba(208,38,47,.55)}
+.undo-bt #btnRedo{width:34px;padding:0;font-size:15px}
+.undo-bt #btnRedo[hidden]{display:none}
+.undo-toast{position:absolute;left:10px;right:10px;bottom:52px;z-index:6;padding:7px 10px;border-radius:8px;background:rgba(10,8,6,.86);border:1px solid rgba(226,176,74,.45);color:#efe3cc;font:12px/17px "Nanum Gothic Coding",monospace;letter-spacing:-.03em;pointer-events:none;transition:opacity .5s;word-break:keep-all;overflow-wrap:anywhere}
+.undo-toast.out{opacity:0}
+
+/* 11-16 C: 수첩 줄의 × — 폰에선 마우스를 올릴 수 없으니 늘 보이게(흐리게). 줄은 눌러도 아무 일 없다 */
+#nbBody .nl-x{opacity:.6;color:#8b8172;font-size:15px}
+#nbBody .nl-x:active{color:#d0262f;opacity:1}
+#nbBody .nl{cursor:default}
