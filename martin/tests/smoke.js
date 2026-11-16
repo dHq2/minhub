@@ -1,5 +1,6 @@
-// 마틴 기본 점검 v1.1 (2026-11-16, A) — 가짜 마틴(window.claude 대역)으로 열기·옛 수첩 옮기기·한 턴·수첩 적기·저장까지. 폰 화면만(보스: 모바일 기준).
+// 마틴 기본 점검 v1.2 (2026-11-16, A·D) — 가짜 마틴(window.claude 대역)으로 열기·옛 수첩 옮기기·한 턴·수첩 적기·저장까지. 폰 화면만(보스: 모바일 기준).
 // v1.0 → v1.1: 컴 화면 빼고 폰만
+// v1.1 → v1.2 (D): 수첩 목록형 확인 줄
 // 쓰는 법: bash martin/tests/run.sh   (스크린샷은 /tmp/martin-*.png — 꼭 직접 열어 본다)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -44,6 +45,9 @@ const SEED = { v: 3, id: '20261116-test', at: 1, nodes: [{ id: 'n1', kind: 'brie
     if (name === '폰'){ await p.click('#btnNb'); await p.waitForTimeout(400); }
     await p.fill('#nbIn', '김지민 인스타 확인'); await p.press('#nbIn', 'Enter'); await p.waitForTimeout(300);
     want((await p.evaluate(() => JSON.parse(localStorage.getItem('drmartin.v2')).notes.filter(n => n.k === 'me').length)) === 1, `${name} 내 메모 적기`);
+    /* 11-16 D: 수첩 목록형 — 한 줄 목록, 고정폭 작은 글씨, 손글씨체 없음, 꼬리표 없음 */
+    const nl = await p.evaluate(() => { const li = [...document.querySelectorAll('#nbBody .nl[data-n], #nbBody .nl[data-card]')]; const f = li.length ? getComputedStyle(li[0]).fontFamily + '|' + getComputedStyle(li[0]).fontSize : ''; return { n: li.length, f, pen: [...document.querySelectorAll('#nbBody *')].some(e => /Pen Script/.test(getComputedStyle(e).fontFamily)), meta: document.querySelectorAll('#nbBody .mt').length }; });
+    want(nl.n >= 4 && /Coding/.test(nl.f) && parseFloat(nl.f.split('|')[1]) <= 13 && !nl.pen && !nl.meta, `${name} 수첩 목록형 ${JSON.stringify(nl)}`);
     await p.screenshot({ path: `/tmp/martin-${name}.png` });
     await p.close();
   }

@@ -1,1 +1,33 @@
 /* 방 D 전용 스타일 — app.css 다음에 불러온다. 새 기능 스타일은 여기에 「11-16 D: 기능」 주석과 함께 */
+
+/* 11-16 D: 수사 수첩 목록형 — 손글씨체·두 줄 카드를 버리고, 코드 편집기처럼 작은 고정폭 글씨가 줄 번호와 함께 주르륵 */
+#nbBody{background:#0d0c0a;padding:2px 0 28px;counter-reset:nl}
+.nl-s{margin:0}
+.nl-h{display:flex;align-items:baseline;gap:6px;padding:11px 12px 3px 38px;font:700 11px/16px "Nanum Gothic Coding",monospace;color:#e2b04a;letter-spacing:.02em}
+.nl-h i{font-style:normal;font-weight:400;color:#6e665a}
+.nl-s ol{list-style:none;margin:0;padding:0}
+.nl{position:relative;display:grid;grid-template-columns:30px 26px minmax(0,1fr) 22px;align-items:start;min-height:20px;padding:1px 0;font:400 12px/18px "Nanum Gothic Coding",monospace;letter-spacing:-.03em;color:#d9cfbc;cursor:pointer;counter-increment:nl;word-break:keep-all;overflow-wrap:anywhere}
+.nl::before{content:counter(nl);grid-column:1;padding-right:7px;text-align:right;font-size:10px;color:#4b453c;border-right:1px solid #24201b;min-height:100%}
+.nl:active{background:rgba(255,255,255,.04)}
+.nl-k{grid-column:2;text-align:center;font-weight:700;color:#8b8172;white-space:nowrap}
+.nl-t{grid-column:3;padding-right:2px}
+.nl-a{font-style:normal;color:#c9a45a}
+.nl-t u{margin-left:6px;padding:0 4px;border:1px solid #5a2328;border-radius:3px;text-decoration:none;font-size:10px;line-height:14px;color:#c0656b;vertical-align:1px}
+.nl-x{grid-column:4;border:0;background:none;color:#5d564c;font:13px/18px sans-serif;padding:0;opacity:0}
+.nl:hover .nl-x,.nl:focus-within .nl-x{opacity:1}
+.k-q .nl-k{color:#d0262f}
+.k-guess .nl-k{color:#e2b04a}
+.k-todo .nl-k{color:#9fb7a0;font-size:10.5px;letter-spacing:-.04em}
+.k-me .nl-k,.nl.byme .nl-k{color:#8fb3d0}
+.nl.nl-card .nl-t{color:#ffd9d6}
+.nl.done .nl-t{color:#7d7466}
+.nl.done .nl-v{text-decoration:line-through;text-decoration-color:rgba(208,38,47,.7)}
+.nl.done .nl-k{color:#6f8f70}
+.nl.none{cursor:default;counter-increment:none}.nl.none::before{content:""}.nl.none .nl-t{color:#4b453c}
+.nl.new{animation:nbnew 1.6s ease}
+.nl-add{display:flex;align-items:center;gap:6px;padding:6px 10px 0 38px}
+.nl-add b{font:700 13px "Nanum Gothic Coding",monospace;color:#8fb3d0}
+.nl-add input{flex:1;height:34px;border:0;border-bottom:1px solid #3a352d;background:transparent;color:#efe6d4;font:12px "Nanum Gothic Coding",monospace;letter-spacing:-.03em;outline:none;padding:0 2px}
+.nl-add input::placeholder{color:#5d564c}
+.nl-add input:focus{border-color:#e2b04a}
+.nl-add button{height:30px;padding:0 10px;font-size:11.5px}

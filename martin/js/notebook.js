@@ -53,20 +53,20 @@ function noteText(){
 }
 const nbOpenCount = () => S.notes.filter(n => !n.done && (n.k === 'q' || n.k === 'todo')).length + S.nodes.filter(n => n.kind === 'question').length;
 function nbPing(n){ const b = $('#nbN'); if (!b) return; b.textContent = nbOpenCount() || ''; if (n){ const t = $('#btnNb'); t.classList.remove('ping'); void t.offsetWidth; t.classList.add('ping'); } }
-function renderNb(){
+function renderNb(){   /* 11-16 D: 코드처럼 작은 글씨 한 줄 목록 — 제목·상세 두 줄과 「마틴 · 턴」 꼬리표를 없앰, 줄 번호는 css 카운터, 판의 의문 카드는 제목만(상세는 판 카드에) */
   if (!S) return; ensureNotes();
-  const tm = n => n.turn != null ? `턴 ${n.turn}` : '';
-  const item = n => `<li class="nt k-${n.k}${n.done ? ' done' : ''}${nbFlash.has(n.id) ? ' new' : ''}" data-n="${n.id}"><span class="mk"></span><span class="tx">${n.done ? `<s>${esc(n.t)}</s>` : esc(n.t)}${n.done && n.a ? `<em>→ ${esc(n.a)}</em>` : ''}</span><span class="mt">${n.by === 'me' ? '나' : '마틴'}${tm(n) ? ' · ' + tm(n) : ''}<button type="button" class="nx" data-ndel="${n.id}" aria-label="지우기">×</button></span></li>`;
-  const sec = (title, list, empty, extra = '') => `<section class="ns"><h5>${title}<small>${list.length || ''}</small></h5><ul>${list.join('') || `<li class="nt none"><span class="tx">${empty}</span></li>`}</ul>${extra}</section>`;
+  const mk = { q:'?', guess:'~', todo:'[ ]', fact:'-', me:'>' };
+  const item = n => `<li class="nl k-${n.k}${n.done ? ' done' : ''}${n.by === 'me' ? ' byme' : ''}${nbFlash.has(n.id) ? ' new' : ''}" data-n="${n.id}"><b class="nl-k">${n.done ? (n.k === 'todo' ? '[x]' : '✓') : mk[n.k]}</b><span class="nl-t"><span class="nl-v">${esc(n.t)}</span>${n.done && n.a ? `<i class="nl-a"> → ${esc(n.a)}</i>` : ''}</span><button type="button" class="nl-x" data-ndel="${n.id}" aria-label="지우기">×</button></li>`;
+  const sec = (title, list, empty, extra = '') => `<section class="nl-s"><div class="nl-h">// ${title}<i>${list.length || ''}</i></div><ol>${list.join('') || `<li class="nl none"><b class="nl-k"></b><span class="nl-t">${empty}</span></li>`}</ol>${extra}</section>`;
   const open = k => S.notes.filter(n => n.k === k && !n.done);
-  const cardQ = S.nodes.filter(n => n.kind === 'question').map(c => `<li class="nt k-q card" data-card="${c.id}"><span class="mk"></span><span class="tx">${esc(c.title)}${c.note ? `<em>${esc(c.note)}</em>` : ''}</span><span class="mt">판의 의문 카드</span></li>`);
+  const cardQ = S.nodes.filter(n => n.kind === 'question').map(c => `<li class="nl k-q nl-card" data-card="${c.id}"><b class="nl-k">?</b><span class="nl-t">${esc(c.title)}<u>판</u></span></li>`);
   $('#nbBody').innerHTML =
-    sec('의문', [...cardQ, ...open('q').map(item)], '아직 없다') +
-    sec('짐작 · 미확정', open('guess').map(item), '아직 없다') +
-    sec('확인할 것', open('todo').map(item), '아직 없다') +
-    sec('사사로운 사실', open('fact').slice().reverse().map(item), '아직 없다') +
-    sec('풀린 의문', S.notes.filter(n => n.done).slice().reverse().map(item), '아직 없다') +
-    sec('내 메모', open('me').map(item), '적어 둘 것을 아래에', `<form class="nbadd" id="nbAdd"><input id="nbIn" maxlength="140" placeholder="한 줄 적기 — 마틴도 읽는다" autocomplete="off"><button type="submit">적기</button></form>`);
+    sec('의문', [...cardQ, ...open('q').map(item)], '(없음)') +
+    sec('짐작 · 미확정', open('guess').map(item), '(없음)') +
+    sec('확인할 것', open('todo').map(item), '(없음)') +
+    sec('사사로운 사실', open('fact').slice().reverse().map(item), '(없음)') +
+    sec('풀린 의문', S.notes.filter(n => n.done).slice().reverse().map(item), '(없음)') +
+    sec('내 메모', open('me').map(item), '(없음)', `<form class="nbadd nl-add" id="nbAdd"><b>›</b><input id="nbIn" maxlength="140" placeholder="한 줄 적기 — 마틴도 읽는다" autocomplete="off"><button type="submit">적기</button></form>`);
   $('#nbCase').textContent = (nodeOf('n1') || {}).title || '새 사건';
   nbPing(0); setTimeout(() => { nbFlash = new Set(); }, 50);
 }
@@ -76,7 +76,7 @@ $('#nbX').onclick = () => nbOpen(false); $('#nbScrim').onclick = () => nbOpen(fa
 $('#nb').addEventListener('click', async e => {
   const del = e.target.closest('[data-ndel]'); if (del){ const i = S.notes.findIndex(x => x.id === del.dataset.ndel); if (i >= 0){ act('수첩 지움', { id:S.notes[i].id, t:S.notes[i].t }); S.notes.splice(i, 1); save(); renderNb(); } return; }
   const c = e.target.closest('[data-card]'); if (c){ const n = nodeOf(c.dataset.card); if (n){ if (innerWidth < 980) nbOpen(false); act('수첩에서 카드로', { id:n.id }); await fly(n.x, n.y, 1, 600); const el = document.querySelector(`#nodes [data-id="${n.id}"]`); if (el){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } return; }
-  const li = e.target.closest('.nt[data-n]'); if (li){ const n = S.notes.find(x => x.id === li.dataset.n); if (!n || n.k === 'fact' || n.k === 'me') return;
+  const li = e.target.closest('.nl[data-n]'); if (li){ const n = S.notes.find(x => x.id === li.dataset.n); if (!n || n.k === 'fact' || n.k === 'me') return;
     if (n.done){ n.done = 0; delete n.a; act('수첩 되돌림', { id:n.id }); } else { solveNote(n.id, '동료가 풀림 표시'); act('수첩 풀림 표시', { id:n.id }); } save(); renderNb(); }
 });
 $('#nb').addEventListener('submit', e => { e.preventDefault(); const i = $('#nbIn'); const t = i.value.trim(); if (!t) return; const n = addNote('me', t, 'me'); i.value = ''; if (n){ act('수첩에 적음', { t }); nbFlash = new Set([n.id]); save(); renderNb(); setTimeout(() => $('#nbIn') && $('#nbIn').focus(), 0); } });
