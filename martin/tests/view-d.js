@@ -1,5 +1,6 @@
-// 사진 크게 보기 점검 v1.1 (2026-11-16, D). 폰 화면.
+// 사진 크게 보기 점검 v1.2 (2026-11-17, D). 폰 화면.
 // v1.0 바깥 눌러 닫기 → v1.1 사진 띄운 채 한 말: 막 띄운 첫마디 / 띄워 둔 채 이어지는 대화를 프롬프트가 가르는지
+// v1.1 → v1.2 (11-17): 폰 톡톡 두 번 눌러 확대 — 손가락이 0.09초 닿는 실제 톡, 손 뗀 뒤 0.3초 간격까지 확대, 세 번째 톡이 되돌리지 않음
 // 사진 위 톡 → 그대로 · 바깥 끌기 → 그대로 · 바깥 톡 → 닫힘. 스크린샷 /tmp/martin-사진보기.png
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -47,6 +48,27 @@ const SEED = { v: 3, id: '20261116-pv', at: 1, nodes: [{ id: 'n1', kind: 'brief'
   want(/띄운 뒤로 동료가 1번 더 말했다/.test(pr) && /사진이 떠 있다는 것만으로 화제를 사진 쪽으로 돌리지 않는다/.test(pr) && /사진을 다시 봤다'로 말을 열지 않는다/.test(pr), '띄워 둔 채 이어지는 말 → 앞 대화 쪽 안내');
   want(await q.evaluate(() => (S.log.filter(l => l.who === 'p').pop() || {}).viewing === 'n9'), '대화창 꼬리표 「보면서」는 그대로');
   await q.close();
+  /* 11-17 D: 폰 톡톡 — 터치 기기로 */
+  const tc = await b.newContext({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true }), t = await tc.newPage();
+  t.on('pageerror', e => errs.push(e.message));
+  await t.addInitScript(() => { window.claude = { use: async () => null }; });
+  await t.addInitScript(s => { localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); }, JSON.stringify(SEED));
+  await t.goto(URL); await t.waitForTimeout(3000);
+  await t.evaluate(() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 2400; c.getContext('2d').fillRect(0, 0, 1080, 2400);
+    S.nodes.push({ id: 'n9', kind: 'photo', title: '가짜 캡처', note: '', x: 1100, y: 1100, r: 0, mid: c.toDataURL('image/jpeg', .7) }); openPv('n9'); });
+  await t.waitForTimeout(800);
+  const cdp = await tc.newCDPSession(t), c0 = await t.evaluate(() => { const a = document.getElementById('pvI').getBoundingClientRect(); return [a.left + a.width / 2, a.top + a.height / 2]; });
+  const tap = async (dx = 0) => { await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: c0[0] + dx, y: c0[1] }] }); await t.waitForTimeout(90); await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); };
+  const kNow = () => t.evaluate(() => PV.k), kFit = await kNow();
+  await tap(); await t.waitForTimeout(280); await tap(8); await t.waitForTimeout(350);
+  want((await kNow()) > kFit * 1.2, '폰 톡톡(손 뗀 뒤 0.28초) → 확대');
+  await tap(); await t.waitForTimeout(450);
+  want((await kNow()) > kFit * 1.2, '확대된 채 세 번째 톡 → 되돌리지 않음');
+  await tap(); await t.waitForTimeout(150); await tap(); await t.waitForTimeout(350);
+  want(Math.abs((await kNow()) - kFit) < 1e-6, '확대된 채 톡톡 → 원래 크기');
+  await tap(); await t.waitForTimeout(500); await tap(); await t.waitForTimeout(350);
+  want(Math.abs((await kNow()) - kFit) < 1e-6, '느린 두 번(0.5초) → 그대로');
+  await tc.close();
   want(!errs.length, '페이지 오류 ' + JSON.stringify(errs));
   await b.close(); console.log(bad ? `실패 ${bad}` : '전부 통과'); process.exit(bad ? 1 : 0);
 })();

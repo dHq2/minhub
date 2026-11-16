@@ -47,7 +47,7 @@ function cardSheet(id){ const n = nodeOf(id); if (!n) return; if (n.kind === 'ph
   openSheet(`<h3>${esc(n.title)}</h3><p class="sub">${KINDS[n.kind]}${S.suspect === id ? ' · 용의자' : ''}</p>${n.face ? `<img src="${n.face}" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:6px">` : ''}<div class="doc">${esc(n.note || '(메모 없음)')}</div>${ls ? '<p class="sub">이어진 것</p>' + ls : ''}${n.face ? `<div class="btns"><button class="ghost" type="button" data-unface="${n.id}">이 사진 빼기</button>${n.faceFrom && nodeOf(n.faceFrom) ? `<button class="ghost" type="button" data-pvo="${n.faceFrom}">원본 사진 보기</button>` : ''}</div>` : ''}`); }
 addEventListener('resize', () => applyCam(0));
 /* ── 사진 크게 보기 (v0.3) — 두 손가락 확대·끌기·두 번 눌러 확대, × 로 닫기 ── */
-const PV = { k:1, k0:1, x:0, y:0, iw:0, ih:0, pts:new Map(), pinch:null, last:0 };
+const PV = { k:1, k0:1, x:0, y:0, iw:0, ih:0, pts:new Map(), pinch:null, up:null };
 function pvApply(){ $('#pvI').style.transform = `translate(${PV.x}px,${PV.y}px) scale(${PV.k})`; }
 function pvFit(){ const st = $('#pvS'), W = st.clientWidth, H = st.clientHeight; if (!PV.iw) return; PV.k = Math.min(W / PV.iw, H / PV.ih); PV.x = (W - PV.iw * PV.k) / 2; PV.y = (H - PV.ih * PV.k) / 2; PV.k0 = PV.k; pvApply(); }
 /* v0.4.2 사진을 띄운 채로 대화 — 기본은 위에 사진, 아래 대화창·입력줄 그대로(「대화 숨기기」로 전체 화면) */
@@ -74,12 +74,17 @@ const zoomAt = (cx, cy, k) => { k = Math.max(PV.k0 || .1, Math.min(8, k)); PV.x 
 /* 11-16 D: 사진 바깥(어두운 곳)을 톡 누르면 닫기 — 끌기·두 손가락·길게 누름은 닫지 않음. 사진 위 톡은 예전대로(두 번 = 확대) */
 const pvOutside = (x, y) => { const r = $('#pvI').getBoundingClientRect(); return !(PV.iw && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom); };
 pvS.addEventListener('pointerdown', e => { PV.tap = PV.pts.size ? null : { x:e.clientX, y:e.clientY, t:Date.now(), out:pvOutside(e.clientX, e.clientY) }; });
+/* 11-17 D: 톡(짧고 안 움직인 한 손가락 누름)을 뗀 때 — 다음 누름이 두 번 누름인지 가르는 기준 */
+pvS.addEventListener('pointerup', e => { const t = PV.tap, d = PV.dbl; PV.dbl = false; PV.up = !d && t && !t.out && PV.pts.size <= 1 && Date.now() - t.t < 300 && Math.hypot(e.clientX - t.x, e.clientY - t.y) < 10 ? { t:Date.now(), x:e.clientX, y:e.clientY } : null; });
+/* 11-17 D: 두 번 누름 확대는 0.15초 부드럽게 — 끌거나 두 손가락이 닿으면 바로 끊고 손을 따라감 */
+let pvZT = 0; function pvZoomAnim(){ const im = $('#pvI'); im.classList.add('zm'); clearTimeout(pvZT); pvZT = setTimeout(() => im.classList.remove('zm'), 170); }
 pvS.addEventListener('pointerup', e => { const t = PV.tap; PV.tap = null;
   if (t && t.out && PV.pts.size <= 1 && Date.now() - t.t < 450 && Math.hypot(e.clientX - t.x, e.clientY - t.y) < 10){ act('사진 바깥 눌러 닫기', { id:PV.id }); $('#pvX').onclick(); } });
 pvS.addEventListener('pointerdown', e => { $('#pv').classList.add('touched'); pvS.setPointerCapture(e.pointerId); PV.pts.set(e.pointerId, { x:e.clientX, y:e.clientY });
   if (PV.pts.size === 2){ const [a, b] = [...PV.pts.values()]; PV.pinch = { d:Math.hypot(a.x - b.x, a.y - b.y) || 1, k:PV.k }; }
-  else { const now = Date.now(); if (now - PV.last < 300){ const r = pvS.getBoundingClientRect(); if (PV.k > PV.k0 * 1.2) pvFit(); else zoomAt(e.clientX - r.left, e.clientY - r.top, PV.k * 2.5); } PV.last = now; } });
-pvS.addEventListener('pointermove', e => { const p = PV.pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  else { const u = PV.up, now = Date.now();   /* 11-17 D: 두 번 누름 = 앞 누름을 뗀 뒤 0.32초 안에 40px 안쪽을 다시 누름(폰 표준). 옛 판정(누름 시작끼리 0.3초)은 손가락이 닿아 있는 시간까지 먹어서 톡톡이 자주 빠졌다 */
+    if (u && now - u.t < 320 && Math.hypot(e.clientX - u.x, e.clientY - u.y) < 40){ PV.up = null; PV.dbl = true; const r = pvS.getBoundingClientRect(); pvZoomAnim(); if (PV.k > PV.k0 * 1.2) pvFit(); else zoomAt(e.clientX - r.left, e.clientY - r.top, PV.k * 2.5); } } });
+pvS.addEventListener('pointermove', e => { const p = PV.pts.get(e.pointerId); if (!p) return; const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; if (dx || dy) $('#pvI').classList.remove('zm');
   if (PV.pts.size === 1){ PV.x += dx; PV.y += dy; pvApply(); }
   else if (PV.pinch){ const [a, b] = [...PV.pts.values()], r = pvS.getBoundingClientRect(); zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, PV.pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / PV.pinch.d); } });
 const pvUp = e => { PV.pts.delete(e.pointerId); if (PV.pts.size < 2) PV.pinch = null; if (PV.pts.size) PV.tap = null; };

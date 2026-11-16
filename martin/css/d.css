@@ -44,3 +44,8 @@
 .upd-prog.done{border-left-color:#6f8f70}.upd-prog.done .upd-bar i{background:#6f8f70}
 .upd-list{display:flex;flex-direction:column;margin-top:7px;color:#a99c86;word-break:keep-all;overflow-wrap:anywhere}
 .upd-list b{color:#e2b04a;font-weight:700}
+
+/* 11-17 D: 사진 크게 보기 — 확대·끌기를 그래픽 칩에서 바로(다시 그리기 줄임), 두 번 누름 확대만 0.15초 부드럽게 */
+.pv-stage img{will-change:transform;backface-visibility:hidden}
+.pv-stage img.zm{transition:transform .15s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.pv-stage img.zm{transition:none}}
