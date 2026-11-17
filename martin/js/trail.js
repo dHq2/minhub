@@ -97,5 +97,5 @@ function trailText(){
   if (!a.length) return '';
   const tm = e => new Date(e.ts).toTimeString().slice(0, 5);
   const lines = a.slice(-10).map(e => { const l = trLine(e, true); return `- ${tm(e)} ${e.act}${l.refs ? ' ' + l.refs : ''}${l.bits ? ' — ' + l.bits : ''}`; });
-  return `\n[지난 네 말 뒤 동료가 판에서 한 일 — 무엇을 눌러 보고 어디를 확대해 봤는지. 동료가 말한 게 아니다. 지금 말이 무엇을 가리키는지 알아듣는 데 쓰고, 굳이 하나하나 짚지 않는다]\n${lines.join('\n')}`;
+  return `\n[지난 네 말 뒤 동료가 판에서 한 일 — 무엇을 눌러 보고 어디를 확대해 봤는지. 동료가 말한 게 아니다]\n${lines.join('\n')}`;
 }

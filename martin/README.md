@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.22 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.23 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -37,6 +37,13 @@
 - 지금 대화 방식(왼쪽에 선 마틴, 한 줄씩 쌓이는 말풍선)은 보스가 좋다고 했다 — 모양을 갈아엎지 말고 기능·편의를 손본다.
 - 마틴이라는 사람은 보스가 확정한 인물 설정 v2.3(martin/persona.md · 프로젝트 자료 「claude/마틴-인물설정-v2.md」)를 따른다 — 차갑고 절제된 전문가, 논리적이고 집요하며 의문이 많아 동료에게 되물으며 생각을 정리, 동료에게 반말, 실제 사람처럼 자연스럽게. 말버릇·감탄사·의성어·과장된 탐정물 대사 없음. 게임 안에 설정을 따로 드러내지 않는다. 동료는 조수가 아니라 대등한 파트너. 마틴은 다른 세계(동료 쪽)의 의뢰를 받을 뿐 그쪽을 캐지 않고 자료를 분석할 뿐이며, 현실 시간을 안다(v2.3).
 
+## 2-1. 구조 원칙 — 특별·예외를 쌓지 않는다 (보스 지시 11-17, 모든 작업 방 공통 — 마틴·세희 모두)
+- 디버그와 기능 추가에서 가장 중요한 원칙이다. 버그가 나면 그 자리에 특별 규칙·예외 줄을 덧대지 않는다. 먼저 「어느 원칙·구조가 약해서 이 일이 생겼나」를 보고, 기존 것을 재구성해 그 원칙을 고친다.
+- 새것은 기존 것과 유기적으로 잇는다. 같은 뜻의 규칙·코드·문장이 두 곳에 있으면 하나로 합친다 — 한 개념은 한 곳에.
+- 중첩 제약(조건 위의 조건)은 꼭 필요할 때만. 기본은 어디든 쓸 수 있는 통일 규칙으로, 최선의 구조를 찾는다.
+- 깔끔하고 효율적인 구조, 아름다운 구조적 혁신을 계속 고민한다. 일을 마치면 「예외를 몇 개 더했고 몇 개 걷었나」를 스스로 보고, 보고에도 적는다.
+- 마틴 프롬프트에서의 모양(v0.15.4): 규칙은 js/rules.js 한 곳 — 다섯 원칙(근거·무게·변화·말·의심) · 「이번 턴에 걸린 것」(dueText, 원칙 이름으로만 가리킴, 많아야 셋) · 출력 형식(outText, 칸 모양만). 상태 칸(…Text 함수)엔 상태만 쓰고 「~해라」를 붙이지 않는다. 새 신호는 rules.js 의 DUE_SRC 에 한 항목으로, 새 규칙은 원칙 문장을 고쳐서. tests/rules-b.js 가 이 구조(명령문 없는 상태 칸·한 번만·개발 메모 없음·걸린 것 셋)를 지킨다 — 깨지면 점검을 느슨하게 하지 말고 규칙이 어느 원칙에 녹아야 하는지부터 본다.
+
 ## 3. 파일 지도 (빌드 없음 — 그대로 올린다)
 martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사진은 img/martin.webp.
 
@@ -53,8 +60,9 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
 | js/persona.js | 마틴이라는 사람(설정 v2.3, 보스 확정 — 8장 의뢰와 시간) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
-| js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 프롬프트 칸 modeText()(buildPrompt 의 [이번에 동료가 가져온 것] 바로 위), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
-| js/habits.js | 수사 버릇(v0.14.5, B) — HABITS 일곱 줄 · habitText()(buildPrompt 의 「판 고치기 (ops)」 위 — 뒤집어 보기·전제 의심(S.premiseAt)·끊은 실 목록) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
+| js/rules.js | 마틴의 규칙 한 곳(v0.15.4, B) — RULES(다섯 원칙: 근거·무게·변화·말·의심) · dueText()/dueList()(「이번 턴에 걸린 것」 — DUE_SRC 의 신호를 우선순위로 많아야 DUE_MAX(3)개, 원칙 이름으로) · outText()(출력 칸 모양만). buildPrompt 는 조립만: 인물 → 상태 칸 → 걸린 것 → 가져온 것 → 원칙 → 출력 형식 |
+| js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 상태 칸 modeText()(cue.js 의 자료 예고 상태도 같은 칸에), 묻기는 modeWantAsk()(rules.js 가 「걸린 것」으로), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
+| js/habits.js | 실의 이유와 끊기(v0.14.5 → v0.15.4, B) — 버릇 일곱 줄은 rules.js 원칙으로 녹였다. HB_FLIP·hbLastMove(rules.js 가 뒤집어 보기·전제 의심 신호로 읽음, S.premiseAt) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/face.js | 프사 자동(v0.15.1, A) — 얼굴 없는 인물 카드마다 판독문에 그 이름이 나오는 캡처에서 프사 자리를 짧게 물어(faceFind — 조각 좌표를 원본으로) cropFace 로 잘라 붙임(faceAuto). 판독문에 「[프사] 이름 — …」. 동료가 뺀 카드(n.faceNo)는 다시 안 붙임 |
@@ -68,7 +76,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
 | js/pvtalk.js | 사진 위에 뜨는 대화(v0.13.0, C) — 사진 크게 보기의 「대화 보기」: 사진은 입력줄 바로 위까지 가득, 최근 대화 6줄을 #pvTalk 에 베껴 반투명으로(손가락 통과), 입력줄·칩은 #app.pvtalk 로 사진 위에 |
 | js/trail.js | 행동 기록 자세히(v0.13.2, A) — act() 의 id 를 이름표 refs 로(actRefs)·어디서 where·판/사진 확대·굴림을 손짓 끝에 한 줄·기록 행동 탭 actDetail·프롬프트 trailText. act 에 id·ids·ev·on 을 넣으면 이름표는 저절로 붙는다 |
-| js/xref.js | 맞춰 보기(v0.14.2, C) — 판독문·글 원문에서 날짜·시각·「이름(시각): 말」 줄을 뽑아 xrefText()(전체 시계·인물별 발언·판독문 없는 자료·판 빚·모순 쓸기 지시)를 buildPrompt 고리에, xrClockLines() 를 수첩 「전체 시계」 칸에. 판독문 모양이 바뀌면 xrLine 을 |
+| js/xref.js | 맞춰 보기(v0.14.2, C) — 판독문·글 원문에서 날짜·시각·「이름(시각): 말」 줄을 뽑아 xrefText()(상태만 — 전체 시계·인물별 발언·판독문 없는 자료·기록과 자료가 안 맞는 곳. 모순 쓸기는 rules.js 의 의심 신호(xrSweepWhy)로)를 buildPrompt 고리에, xrClockLines() 를 수첩 「전체 시계」 칸에. 판독문 모양이 바뀌면 xrLine 을 |
 | js/clock.js | 사건 시계(v0.14.3, D) — S.clock{ms,start,sess}, 앱이 보이고 초점이 있을 때만 흐름, 위 띠 #clk(누르면 들인 시간 0.01초), log 를 감싸 모든 기록에 clk, 프롬프트 clockText()(사건 시각·들인 시간·동료 쪽 현실 시각), clockTick()·clockMs() |
 | js/recap.js | 사건 복기본(v0.13.3~, D) — 계정+기기 기록을 사건 id 로 모아 11칸 글(recapGather·recapText), 텍스트 파일로 받기(recapSave, downloads), 날것 JSON(recapRaw) |
 | js/wallclock.js · img/clock.webp · img/clock-cap.webp | 벽시계(A) — 판 왼쪽 위에 늘 걸려 사건 시계(D 의 S.clock / clockMs())를 따라 도는 그림 시계. 바늘은 SVG, 누르면 크게(clockSheet() 가 있으면 그쪽) |
@@ -92,7 +100,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 
 ## 5. 올리기 (GitHub → 아티팩트, 이 순서 그대로)
 1. `git pull --rebase`
-2. `bash martin/tests/run.sh` — 문법 검사 + 가짜 마틴 점검(전부는 600초를 넘으니 반씩: 앞 13개 · 나머지 — 프롬프트·턴 흐름을 건드렸으면 `run.sh v15` 를 꼭). 바꾼 기능은 smoke.js 에 확인 줄을 더한다. 스크린샷 /tmp/martin-폰.png 를 직접 열어 가림·잘림·겹침을 본다. 통과 표시만 믿지 말고 출력 줄을 읽는다.
+2. `bash martin/tests/run.sh` — 문법 검사 + 가짜 마틴 점검(전부는 600초를 넘으니 반씩: 앞 13개 · 나머지 — 프롬프트·턴 흐름을 건드렸으면 `run.sh v15 rules-b` 를 꼭). 바꾼 기능은 smoke.js 에 확인 줄을 더한다. 스크린샷 /tmp/martin-폰.png 를 직접 열어 가림·잘림·겹침을 본다. 통과 표시만 믿지 말고 출력 줄을 읽는다.
 3. 번호: js/ver.js 의 VER 을 +1(작은 것 끝자리, 보스가 체감할 큰 기능은 가운데 자리). 다른 곳엔 번호를 쓰지 않는다.
 4. 기록: CHANGELOG.md 맨 위에 `## v0.5.1 · B · 날짜 · 요약` + '- ' 줄. 보스 눈에 보이는 변화면 js/changes.js 맨 아래 `];` 앞에 `{ v:'v0.5.1', t:['보스 말로 짧게', …] },` 한 줄(내부 일은 넣지 않음 — 마틴이 개발 얘기를 하지 않게).
 5. 커밋·푸시: 메시지 `마틴 v0.5.1 — B: 요약` (+ 끝에 Co-Authored-By 줄). 밀리면 `git pull --rebase` → 남이 같은 번호를 이미 썼으면 내 번호를 다음 것으로 고치고(ver.js·changes.js·CHANGELOG) 2번부터 다시.
@@ -136,3 +144,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.20 | 2026-11-17 | B: 파일 지도에 js/habits.js(수사 버릇·실 why·cut·꼬리표 자리), doOp 에 cut (v0.14.5) — v1.19 는 A 의 v0.15.0 몫(엔진 메모 v0.3·tests/v15.js)이 쓸 번호 |
 | v1.21 | 2026-11-17 | A: 파일 지도에 js/face.js(프사 자동), 그림은 한 번에 IMG_MAX(4)장 |
 | v1.22 | 2026-11-17 | A: 파일 지도에 js/timeline.js(연혁 — 세로 타임라인) |
+| v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳), habits·mode·xref 줄 고침, 올리기 2번에 rules-b |

@@ -1,4 +1,4 @@
-// v0.15 한 판 점검 v1.2 (2026-11-17, A — v1.1: B 수사 버릇·뒤집어 보기 칸 · v1.2: 연혁 칸) — 네 방의 v0.14 몫(A 기억·B 자료 형편·C 맞춰 보기·D 사건 시계 + 벽시계·행동 기록)이 한 사건에서 같이 맞물려 도는지 처음부터 끝까지
+// v0.15 한 판 점검 v1.3 (2026-11-17, A — v1.1: B 수사 버릇·뒤집어 보기 칸 · v1.2: 연혁 칸 · v1.3 B: 통일 규칙 — 걸린 것·원칙·출력 형식 칸과 순서) — 네 방의 v0.14 몫(A 기억·B 자료 형편·C 맞춰 보기·D 사건 시계 + 벽시계·행동 기록)이 한 사건에서 같이 맞물려 도는지 처음부터 끝까지
 // 쓰는 법: bash martin/tests/run.sh v15   (가짜 사건만 — 실제 사건 이름·대사·답은 넣지 않는다)
 const { chromium } = require('playwright'); const fs = require('fs'), path = require('path');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -75,13 +75,13 @@ const SEED = { v: 3, id: '20261117-v15', at: 1, turn: 3, nid: 9, emax: 3, notes:
   const pr = all[0] || '', re = all[1] || '';
   const once = (s, k) => s.split(k).length - 1 === 1;
   const KEYS = [['[동료가 이 사건에서 앞서 한 말', 'A 옛 동료 말'], ['[최근 대화]', 'A 최근 대화'], ['recall:', 'A recall 규칙'], ['흔히 달리 부르는 이름', 'A 판독 규칙'],
-    ['[자료 형편 — 닫힘', 'B 자료 닫힘'], ['판단 규칙', 'B 판단 규칙'], ['[의뢰와 시간 — v2.3]', 'B·A 인물 설정'],
-    ['[맞춰 보기', 'C 맞춰 보기'], ['[모순 쓸기 — 이번 답에서 꼭', 'C 모순 쓸기'], ['[사건 시계]', 'D 사건 시계'], ['동료 쪽 현실 시각', 'A 현실 시각'],
-    ['수사 버릇 (몸에 밴 것', 'B 수사 버릇'], ['[이번엔 뒤집어 보기]', 'B 뒤집어 보기'], ['[연혁 —', 'A 연혁']];
+    ['[자료 형편 — 닫힘', 'B 자료 닫힘'], ['[이번 턴에 걸린 것 — 앱이', 'B 걸린 것'], ['원칙 — 언제나', 'B 원칙'], ['[의뢰와 시간 — v2.3]', 'B·A 인물 설정'],
+    ['[맞춰 보기 — 앱이', 'C 맞춰 보기'], ['· 의심 — 동료가 결론', 'C·B 의심(모순 쓸기·뒤집어 보기)'], ['[사건 시계]', 'D 사건 시계'], ['동료 쪽 현실 시각', 'A 현실 시각'],
+    ['출력 — JSON 하나만', 'B 출력 형식'], ['[연혁 —', 'A 연혁']];
   const miss = KEYS.filter(([k]) => !once(pr, k)).map(([, n]) => n);
-  want(!miss.length, '열네 칸이 한 번씩 다 있음' + (miss.length ? ' — 빠지거나 겹침: ' + miss.join(', ') : ''));
+  want(!miss.length, `${KEYS.length}칸이 한 번씩 다 있음` + (miss.length ? ' — 빠지거나 겹침: ' + miss.join(', ') : ''));
   want(pr.includes('가짜열쇠는 경비실에 있었다'), '24줄보다 앞선 동료의 말이 기억 칸에 남음');
-  want(pr.indexOf('[맞춰 보기') < pr.indexOf('[사건 시계]') && pr.indexOf('[사건 시계]') < pr.indexOf('[최근 대화]') && pr.indexOf('[자료 형편') < pr.indexOf('수사 버릇 (몸에 밴 것') && pr.indexOf('수사 버릇 (몸에 밴 것') < pr.indexOf('판 고치기 (ops)'), '칸 순서 — 자료함·맞춰 보기·사건 시계 → 판 → 대화 → 자료 형편 → … → 수사 버릇 → 판 고치기');
+  want(pr.indexOf('[맞춰 보기') < pr.indexOf('[사건 시계]') && pr.indexOf('[사건 시계]') < pr.indexOf('[최근 대화]') && pr.indexOf('[자료 형편') < pr.indexOf('[이번 턴에 걸린 것') && pr.indexOf('[이번 턴에 걸린 것') < pr.indexOf('[이번에 동료가 가져온 것]') && pr.indexOf('[이번에 동료가 가져온 것]') < pr.indexOf('원칙 — 언제나') && pr.indexOf('원칙 — 언제나') < pr.indexOf('출력 — JSON 하나만'), '칸 순서 — 상태(자료함·맞춰 보기·사건 시계·판·대화·자료 형편) → 걸린 것 → 가져온 것 → 원칙 → 출력 형식');
   console.log(`      (프롬프트 ${pr.length}자)`);
   want(pr.length < 30000, '프롬프트가 3만 자 안쪽');
   want(re.includes('[대화 다시 보기') && re.includes('[자료 형편 — 닫힘') && re.includes('[맞춰 보기'), 'recall 로 다시 물을 때도 닫힘·맞춰 보기 칸이 그대로');

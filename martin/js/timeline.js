@@ -80,13 +80,13 @@ function applyTl(res){
 /* 프롬프트 [연혁] — 매 턴. 길면 줄을 짧게(아래 둘 다 남김) */
 function tlText(){
   if (!S) return ''; const rows = tlSorted(), bad = tlCheck(), hasRead = (S.ev || []).some(e => e.read);
-  if (!rows.length) return hasRead ? `\n[연혁 — 아직 비었다] 동료는 「연혁」 탭에서 이 사건에 일어난 일을 시간순으로 본다. 이번 답에서 자료함 판독문으로 연혁을 세워라 — 일어난 일마다 tl add 한 줄(많아야 20).\n` : '';
-  let day = null; const out = [`\n[연혁 — 이 사건에서 일어난 일, 시간순(네가 세우고 고친다 · 동료가 「연혁」 탭으로 늘 본다). 결론·재구성·「언제」를 말할 땐 여기부터 본다. 새 자료로 바뀌면 이번 답에서 tl 로 고친다]`];
+  if (!rows.length) return hasRead ? `\n[연혁 — 아직 비었다]\n` : '';   /* 11-17 B: 세우라는 말은 「이번 턴에 걸린 것」(rules.js)에서 */
+  let day = null; const out = [`\n[연혁 — 이 사건에서 일어난 일, 시간순. 네가 tl 로 세우고 고친다 · 동료도 「연혁」 탭으로 본다]`];
   const cut = rows.length > 60 ? 48 : 90;
   for (const x of rows){ if (x.d !== day){ day = x.d; out.push(tlDayTxt(x.d)); }
     const w = `${x.what}`.slice(0, cut);
     out.push(`  ${x.id} ${x.t ? tlTimeTxt(x) : (x.when ? '(' + x.when + ')' : '--:--')} ${w}${x.who ? ' — ' + x.who : ''}${x.src && x.src.length ? ' [' + x.src.join(' ') + ']' : ''}${x.sure === false ? ' (추정)' : ''}${x.after ? ' (' + x.after + ' 뒤)' : ''}`); }
-  if (bad.length) out.push(`어긋남(앱 대조·네가 짚은 것 — 이번 답에서 고치거나(tl edit·drop) 이유를 대고 풀어라(clash ok)):\n${bad.slice(0, 10).map(b => '  ! ' + b.why).join('\n')}`);
+  if (bad.length) out.push(`어긋남(앱 대조·네가 짚은 것):\n${bad.slice(0, 10).map(b => '  ! ' + b.why).join('\n')}`);
   return out.join('\n') + '\n';
 }
 /* ── 화면 ── */

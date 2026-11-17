@@ -30,14 +30,15 @@ function modeSense(){
   else if (S.closed === undefined && S.moreAsked && S.turn === S.moreAsked) modeSet(true, '물었는데 답 없이 넘어감 — 있는 것부터');   /* 11-17 A: 보스 사건 20261117-5723 — 「더 구해 올 수 있나」에 답 없이 자료를 건네고 넘어갔는데 마틴이 「새로 받아 와야」 했다. 답이 없으면 지금 가진 게 전부로 본다(수첩 「다시 열기」로 풀림) */
 }
 /* 프롬프트 한 칸 — buildPrompt 가 [이번에 동료가 가져온 것] 바로 위에 붙인다 */
-function modeText(){
-  modeSense(); modeAskNow = false;
-  if (S.closed === true) return `[자료 형편 — 닫힘(턴 ${S.closedTurn ?? '-'}부터)] 동료가 더 가져올 자료가 없다고 했다. 자료를 요구하지 마라 — ask 는 비우고, 「가져와라·캐 와라·구해 와라」 같은 말도 하지 않는다. 대신 이미 있는 조각 중 아직 맞춰 보지 않은 조합(다른 방의 시각끼리, 한 사람의 말끼리, 판독문 속 지나가듯 적힌 문장)을 꺼내 추리를 앞으로 민다. 동료가 새 자료를 구했다고 하면 mode 에 "open".\n`;
-  if (S.closed === false) return `[자료 형편 — 열림] 동료는 자료를 더 구해 올 수 있다. 그래도 ask 는 수사가 막혔을 때만, 한 번에 하나. 동료가 더 없다고 하면 mode 에 "closed".\n`;
-  if (!S.moreAsked && (S.log || []).some(l => l.who === 'p')){ modeAskNow = true;
-    return `[자료 형편 — 아직 모름] 이번 답에서 한 번만, 동료가 자료를 더 구해 올 수 있는 형편인지 짧게 물어라(say 끝에 한 줄). 동료가 답하면 mode 에 "closed"(더 없음) 또는 "open"(더 구해 올 수 있음).\n`; }
-  return `[자료 형편 — 아직 모름] 동료가 자료가 더 없다고 하면 mode 에 "closed", 더 구해 올 수 있다고 하면 "open".\n`;
+function modeText(){   /* 11-17 B: 상태만 — 묻게 하는 건 「이번 턴에 걸린 것」(rules.js, modeWantAsk), 닫힘의 뜻은 원칙 4(말)·ask 칸, 걸러 내기는 modeFilter */
+  modeSense();
+  const cue = typeof cueState === 'function' ? cueState() : '', tail = cue ? ` · ${cue}` : '';   /* 11-17 D cue.js 의 상태(자료 예고)도 같은 칸에 */
+  if (S.closed === true) return `[자료 형편 — 닫힘(턴 ${S.closedTurn ?? '-'}부터)] 동료가 더 가져올 자료가 없다. 있는 조각으로 간다.${tail}\n`;
+  if (S.closed === false) return `[자료 형편 — 열림] 동료는 자료를 더 구해 올 수 있다.${tail}\n`;
+  return `[자료 형편 — 아직 모름]${tail}\n`;
 }
+/* 자료 형편을 아직 모르고, 이 사건에서 아직 안 물었다 — rules.js 가 「걸린 것」에 올리면 modeAskNow 를 켠다 */
+function modeWantAsk(){ return S.closed !== true && S.closed !== false && !S.moreAsked && (S.log || []).some(l => l.who === 'p'); }
 /* 마틴의 답을 연출 전에 거른다(ai.js turn() 의 고리) */
 function modeFilter(res){
   if (!res || typeof res !== 'object') return res;

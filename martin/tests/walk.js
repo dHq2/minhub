@@ -1,4 +1,4 @@
-// 시선 따라가기 점검 v1.0 (2026-11-16, A) — 마틴이 말하며 카드를 짚는다: 비추기·두 카드 잇기(없는 실은 분필 점선)·되묻기·확정 연출·새 카드는 판부터 꽂고·말 누르면 그 카드로. 폰 화면.
+// 시선 따라가기 점검 v1.1 (2026-11-16, A — v1.1 B 11-17: 카드 번호 규칙 문장을 원칙 4 로) — 마틴이 말하며 카드를 짚는다: 비추기·두 카드 잇기(없는 실은 분필 점선)·되묻기·확정 연출·새 카드는 판부터 꽂고·말 누르면 그 카드로. 폰 화면.
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const MOCK = () => {
@@ -44,7 +44,7 @@ const SEED = { v: 3, id: '20261116-walk', at: 1, nodes: [{ id: 'n1', kind: 'brie
   const st = await p.evaluate(() => ({ focus: world.classList.contains('focus'), ghost: document.querySelectorAll('#xl .ghost').length, log: S.log.filter(l => l.who === 'm' && l.on).map(l => l.on.join('+') + ':' + (l.beat || '')) }));
   want(!st.focus && !st.ghost, '끝나면 비추기·점선 걷음');
   want(st.log.join() === 'n4:look,n4+n9:link,n9:ask,n12:look,n9+n12:reveal', '기록에 짚은 카드 남음 ' + st.log.join());
-  want(await p.evaluate(() => String(window.__lastp).includes('"beat"') && String(window.__lastp).includes('카드 번호(n12, m3)를 쓰지 않는다')), '프롬프트에 시선·박자 규칙');
+  want(await p.evaluate(() => String(window.__lastp).includes('"beat"') && String(window.__lastp).includes('카드 번호(n12, m3)는 입에 올리지 않고')), '프롬프트에 시선·박자 규칙');
   await p.locator('#chat .msg.m.on').nth(1).click(); await p.waitForTimeout(900);
   want(await p.evaluate(() => [...document.querySelectorAll('#nodes .card.spot')].map(e => e.dataset.id).join()) === 'n4,n9', '대화창의 말을 누르면 그 카드로');
   await p.screenshot({ path: '/tmp/martin-walk-back.png' });

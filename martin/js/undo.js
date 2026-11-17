@@ -112,7 +112,7 @@ function undoToast(t){ const b = $('#board'); if (!b) return; const old = b.quer
 /* 마틴에게 — 지난 답 뒤로 동료가 되돌린 것 (ai.js buildPrompt 가 부른다) */
 function undoText(){
   const u = (S && S.undone || []).filter(x => x.turn === S.turn); if (!u.length) return '';
-  return `\n[동료가 자기가 한 일을 되돌렸다 — 네 지난 답 뒤로 동료가 '되돌리기'로 자기 손질(수첩·난제·판 정리 같은)을 물렀다. 네가 쓰고 꽂은 건 그대로고 대화도 그대로다. 손이 미끄러진 정도다. 캐묻지 말고 지금 판을 그대로 받아들인다. 필요하면 한마디만 짚는다.]\n${u.map(x => `- ${x.redo ? '다시 함' : '되돌림'}: ${x.what}`).join('\n')}\n`;
+  return `\n[동료가 자기가 한 일을 되돌렸다 — 네 지난 답 뒤로 동료가 '되돌리기'로 자기 손질(수첩·난제·판 정리 같은)을 물렀다. 네가 쓰고 꽂은 것과 대화는 그대로다]\n${u.map(x => `- ${x.redo ? '다시 함' : '되돌림'}: ${x.what}`).join('\n')}\n`;
 }
 $('#btnUndo').onclick = () => undoGo(-1);
 $('#chips').addEventListener('click', e => { const x = e.target.closest('[data-x]'); if (!x) return; const i = +x.dataset.x, a = att[i]; if (!a) return;   /* 첨부 뺌도 동료의 일 — input.js 가 빼기 전에 적어 둔다 */

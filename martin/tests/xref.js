@@ -1,4 +1,4 @@
-// 마틴 점검 — 맞춰 보기·수첩 정돈 v1.0 (2026-11-17, C)
+// 마틴 점검 — 맞춰 보기·수첩 정돈 v1.1 (2026-11-17, C — v1.1 B: 모순 쓸기는 「이번 턴에 걸린 것」의 의심 + 원칙 5 로 확인)
 // 확인: 판독문 여러 모양(「이름(오후 7:40): 말」·날짜 줄·카톡 PC/폰 내보내기·「밤 11시 42분」·「11/13 01:05」·「7:40 PM」)에서 날짜·시각을 뽑아
 //       방을 가로지른 「전체 시계」가 시간순 · 출처 자료 id · 오전/오후 없는 시각은 (오전·오후?) · 인물별 발언 · 판독문 없는 자료 ·
 //       판 빚(카드 없는 사람·옛 카드 메모·오전/오후 빠짐) · 결론 요청/새 가설에 「모순 쓸기」 · 수첩 합치기/덮기/망설임 보존 · 수첩 「전체 시계」 칸
@@ -76,12 +76,12 @@ const SEED = { v: 3, id: '20260306-xref', at: 1, turn: 3, nid: 9, emax: 4, nmax:
   want(/e3 판독문에 오전·오후 없는 시각/.test(X), '판 빚: 오전·오후 빠진 판독');
   want(!/모순 쓸기/.test(X), '평소엔 모순 쓸기 지시 없음');
   want(await p.evaluate(() => buildPrompt('그냥 보는 중').includes('맞춰 보기')), 'A의 고리로 buildPrompt 에 실림');
-  const X2 = await p.evaluate(() => { S.log.push({ who: 'p', text: '이제 결론 내 봐. 누가 거짓말했어?', at: 9 }); return xrefText(); });
-  want(/모순 쓸기[^\n]*결론·전체 검토/.test(X2) && /한 사람의 말끼리/.test(X2) && /시각끼리/.test(X2) && /수첩 의문/.test(X2), '결론 요청 → 모순 쓸기(한 사람·다른 사람·시각, 어긋남은 수첩 의문)');
-  const X3 = await p.evaluate(() => { window._pz = S.probs; S.log.push({ who: 'p', text: '응', at: 10 }); S.probs = [{ id: 'p1', t: '가짜 퍼즐', hy: [{ id: 'h1', t: '도윤이 편의점에서 누굴 만났다', st: 'live', turn: S.turn }] }]; return xrefText(); });
-  want(/모순 쓸기[^\n]*새 가설 h1/.test(X3), '새 가설 → 모순 쓸기');
-  const X4 = await p.evaluate(() => { S.probs[0].hy[0].turn = S.turn - 1; const x = xrefText(); S.probs = window._pz; return x; });
-  want(!/모순 쓸기/.test(X4), '지난 가설만 있으면 지시 없음');
+  const X2 = await p.evaluate(() => { S.log.push({ who: 'p', text: '이제 결론 내 봐. 누가 거짓말했어?', at: 9 }); return dueText() + RULES; });   /* 11-17 B: 모순 쓸기는 「걸린 것」(의심) + 원칙 5 */
+  want(/· 의심 — 동료가 결론·전체 검토/.test(X2) && /한 사람의 말끼리/.test(X2) && /시각끼리/.test(X2) && /수첩 의문/.test(X2), '결론 요청 → 의심(모순 쓸기 — 한 사람·다른 사람·시각, 어긋남은 수첩 의문)');
+  const X3 = await p.evaluate(() => { window._pz = S.probs; S.log.push({ who: 'p', text: '응', at: 10 }); S.probs = [{ id: 'p1', t: '가짜 퍼즐', hy: [{ id: 'h1', t: '도윤이 편의점에서 누굴 만났다', st: 'live', turn: S.turn }] }]; return dueText(); });
+  want(/· 의심 — 새 가설 h1/.test(X3), '새 가설 → 의심');
+  const X4 = await p.evaluate(() => { S.probs[0].hy[0].turn = S.turn - 1; const x = dueText(); S.probs = window._pz; return x; });
+  want(!/· 의심 —/.test(X4), '지난 가설만 있으면 지시 없음');
   /* 판 빚: 뒤에 풀렸는데 옛 카드 메모 그대로 */
   const X5 = await p.evaluate(() => { S.notes.push({ id: 'm9', k: 'fact', t: '도윤 귀가 시각은 3월 4일 오후 9시 20분으로 확인', by: 'you', at: 2, turn: 3 }); return xrefText(); });
   want(/n2「도윤」 메모가 「귀가 시각 미확정」[^\n]*m9/.test(X5), '판 빚: 옛 카드 메모(미확정)와 새 사실이 겹치면 고치라고');

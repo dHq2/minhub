@@ -56,7 +56,7 @@ function evText(){
   let budget = 14000; const out = [];
   for (const e of S.ev.slice().reverse()){
     const head = `${e.id} ${e.kind === 'photo' ? '사진' : '글'}「${evTitle(e)}」${e.card ? ' · 판 ' + e.card : e.kind === 'photo' ? ' · 판에서 뗌' : ''}${e.turn ? ' · ' + e.turn + '턴에 받음' : ''}`;
-    const body = e.read || (e.kind === 'photo' ? '(판독문 없음 — 사진 속을 다시 봐야 하면 look 으로 원본을 청해라)' : e.head ? '앞부분: ' + e.head : '(내용 없음)');
+    const body = e.read || (e.kind === 'photo' ? '(판독문 없음)' : e.head ? '앞부분: ' + e.head : '(내용 없음)');
     const take = Math.min(body.length, Math.max(0, budget)); budget -= take;
     out.unshift(head + '\n  ' + (take ? body.slice(0, take) + (take < body.length ? '…' : '') : body.slice(0, 100) + '…'));
   }

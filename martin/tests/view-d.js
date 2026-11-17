@@ -1,4 +1,4 @@
-// 사진 크게 보기 점검 v1.2 (2026-11-17, D). 폰 화면.
+// 사진 크게 보기 점검 v1.3 (2026-11-17, D — v1.3 B: 화면 안내는 상태 + 원칙 4 「말이 가리키는 것에 답한다」). 폰 화면.
 // v1.0 바깥 눌러 닫기 → v1.1 사진 띄운 채 한 말: 막 띄운 첫마디 / 띄워 둔 채 이어지는 대화를 프롬프트가 가르는지
 // v1.1 → v1.2 (11-17): 폰 톡톡 두 번 눌러 확대 — 손가락이 0.09초 닿는 실제 톡, 손 뗀 뒤 0.3초 간격까지 확대, 세 번째 톡이 되돌리지 않음
 // 사진 위 톡 → 그대로 · 바깥 끌기 → 그대로 · 바깥 톡 → 닫힘. 스크린샷 /tmp/martin-사진보기.png
@@ -43,9 +43,9 @@ const SEED = { v: 3, id: '20261116-pv', at: 1, nodes: [{ id: 'n1', kind: 'brief'
     S.nodes.push({ id: 'n9', kind: 'photo', title: '가짜 캡처', note: '', x: 1100, y: 1100, r: 0, mid: c.toDataURL() }); openPv('n9'); });
   const say = async t => { await q.click('#msg'); await q.keyboard.type(t); await q.keyboard.press('Enter'); await q.waitForFunction(n => window.__pr.length >= n && !busy, (await q.evaluate(() => window.__pr.length)) + 1, { timeout: 15000 }); await q.waitForTimeout(400); return q.evaluate(() => window.__pr[window.__pr.length - 1]); };
   let pr = await say('여기 이 사람 누구야');
-  want(/화면 — 동료 옆에/.test(pr) && /저절로 뜬 것일 수도/.test(pr) && /사진에서 찾아 답한다/.test(pr) && /\[최근 대화\]를 이어 가는/.test(pr) && !/동료가 가리키는 부분을 사진에서 찾아/.test(pr) && !/띄운 뒤로 동료가/.test(pr), '띄운 뒤 첫마디 → 두 갈래 가르기 안내(사진 쪽으로 밀지 않음)');
+  want(/화면 — 동료 옆에/.test(pr) && /저절로 뜬 것일 수도/.test(pr) && /동료의 말이 가리키는 것에 답한다 — 화면에 떠 있는 사진/.test(pr) && !/띄운 뒤로 동료가/.test(pr), '띄운 뒤 첫마디 → 화면은 상태, 「말이 가리키는 것에 답한다」(원칙 4 — 11-17 B)');
   pr = await say('평소에도 가족이랑 연락했을까?');
-  want(/띄운 뒤로 동료가 1번 더 말했다/.test(pr) && /사진이 떠 있다는 것만으로 화제를 사진 쪽으로 돌리지 않는다/.test(pr) && /사진을 다시 봤다'로 말을 열지 않는다/.test(pr), '띄워 둔 채 이어지는 말 → 앞 대화 쪽 안내');
+  want(/띄운 뒤로 동료가 1번 더 말했다/.test(pr) && /단서일 뿐 화제가 아니다/.test(pr), '띄워 둔 채 이어지는 말 → 몇 번 더 말했는지 상태 + 원칙 4');
   want(await q.evaluate(() => (S.log.filter(l => l.who === 'p').pop() || {}).viewing === 'n9'), '대화창 꼬리표 「보면서」는 그대로');
   await q.close();
   /* 11-17 D: 폰 톡톡 — 터치 기기로 */

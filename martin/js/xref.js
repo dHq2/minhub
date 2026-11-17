@@ -127,17 +127,17 @@ function xrDebts(items){
   const has = w => { const k = xrKey(w); return pk.some(p => p && (p.includes(k) || k.includes(p.slice(0, Math.max(2, Math.min(3, p.length)))))); };
   const by = new Map(); for (const x of items) if (x.who){ const k = xrKey(x.who); const o = by.get(k) || { who:x.who, n:0, evs:new Set() }; o.n++; x.evs.forEach(e => o.evs.add(e)); by.set(k, o); }
   const miss = [...by.values()].filter(o => (o.n >= 2 || o.evs.size >= 2) && !has(o.who) && !/말풍선|^나$|^상대|^발신|익명|모름|미상|^\?/.test(o.who)).sort((a, b) => b.n - a.n).slice(0, 6);
-  for (const o of miss) out.push(`「${o.who}」 — ${o.n}번 말함(${[...o.evs].join(' ')})인데 인물 카드가 없다. 누군지 짐작이 서면 person 카드로 꽂아라`);
+  for (const o of miss) out.push(`「${o.who}」 — ${o.n}번 말함(${[...o.evs].join(' ')})인데 인물 카드가 없다`);
   const known = (S.notes || []).filter(n => n.done && n.a || n.k === 'fact' && !n.done);
   for (const c of S.nodes){
     if (!c.note || !/미확정|미상|불명|모른다|모름|확인 안|확인되지|안 됨|알 수 없|없다/.test(c.note)) continue;
     const ct = xrToks(c.title + ' ' + c.note);
     const hit = known.find(n => { const nt = xrToks(n.t + ' ' + (n.a || '')); let k = 0; for (const w of nt) if (ct.has(w)) k++; return k >= 2 && !/미확정|미상|불명|모른다|모름/.test(n.a || n.t); });
-    if (hit) out.push(`${c.id}「${c.title}」 메모가 「${c.note.slice(0, 40)}」 그대로인데 수첩 ${hit.id} 에 「${(hit.a || hit.t).slice(0, 40)}」 — 맞으면 카드 메모를 edit 로 고쳐라`);
+    if (hit) out.push(`${c.id}「${c.title}」 메모가 「${c.note.slice(0, 40)}」 그대로인데 수첩 ${hit.id} 에 「${(hit.a || hit.t).slice(0, 40)}」`);
     if (out.length > 9) break;
   }
   const amb = new Map(); for (const x of items) if (x.amb) for (const e of x.evs) amb.set(e, (amb.get(e) || 0) + 1);
-  for (const [e, n] of amb) out.push(`${e} 판독문에 오전·오후 없는 시각 ${n}개 — 원본에서 오전·오후를 가려 read 로 고쳐 적어라`);
+  for (const [e, n] of amb) out.push(`${e} 판독문에 오전·오후 없는 시각 ${n}개`);
   return out.slice(0, 12);
 }
 const XR_SWEEP_ASK = /결론|정리해|정리 좀|종합|총정리|전체적|전부 다시|다시 (?:훑|검토|봐|살펴)|처음부터|무슨 일이 있었|진실|범인|진범|누가 (?:한|했|그랬|죽|가져)|최종|검토|맞춰 ?보|모순|어긋|앞뒤가|말이 안 맞|사건의 전말|전말|재구성/;
@@ -150,13 +150,13 @@ function xrSweepWhy(){
 function xrefText(){
   if (!S) return '';
   const items = xrItems(), clock = xrClock(items), out = [];
-  out.push(`\n[맞춰 보기 — 앱이 판독문·글 원문에서 뽑은 것. 「~가 없다·화면에 없다」고 말하기 전에 여기와 자료함을 먼저 본다. 시각은 판독문 그대로 옮겨 정렬했고, 오전·오후가 빠진 건 (오전·오후?)]`);
+  out.push(`\n[맞춰 보기 — 앱이 판독문·글 원문에서 뽑아 맞춘 것. 시각은 판독문 그대로 정렬했고, 오전·오후가 빠진 건 (오전·오후?)]`);
   out.push(`전체 시계(방을 가로질러 시간순, [ ]는 출처 자료):`);
   out.push(clock.length ? xrFit(clock, 3400).map(l => '  ' + l).join('\n') : '  (아직 시각이 붙은 판독 줄이 없다)');
   const by = new Map(); for (const x of items) if (x.who){ const k = xrKey(x.who); (by.get(k) || by.set(k, []).get(k)).push(x); }
   const people = [...by.values()].filter(l => l.length >= 1).sort((a, b) => b.length - a.length).slice(0, 10);
   if (people.length){
-    out.push(`인물별 발언(한 사람의 말끼리 부딪쳐 볼 것):`);
+    out.push(`인물별 발언:`);
     let budget = 2600;
     for (const l of people){
       const s = l.slice().sort(xrSort), evs = [...new Set(s.flatMap(x => x.evs))];
@@ -167,11 +167,8 @@ function xrefText(){
     }
   }
   const noRead = (S.ev || []).filter(e => !e.read);
-  if (noRead.length) out.push(`판독문 없는 자료(속을 아직 글로 안 옮김 — 필요하면 look 으로 원본을 청해 read 로 적어라): ${noRead.map(e => `${e.id} ${e.kind === 'photo' ? '사진' : '글'}「${(typeof evTitle === 'function' ? evTitle(e) : e.title || '').slice(0, 24)}」${e.kind !== 'photo' ? '(원문은 위 시계에 들어감)' : ''}`).join(', ')}`);
-  const debts = xrDebts(items);
-  if (debts.length) out.push(`판 빚(갚을 것):\n${debts.map(d => '  - ' + d).join('\n')}`);
-  out.push(`수첩 적는 법: 같은 말은 다시 적지 않는다(앱이 비슷한 줄을 합친다). 새 짐작·사실이 옛 짐작을 덮으면 그 notes 줄에 "over":"m12" 처럼 덮는 수첩 id 를 붙인다. 「~일 수 있다·~인 듯」은 사실(fact)이 아니라 짐작(guess)으로, 말한 그대로 적는다.`);
-  const why = xrSweepWhy();
-  if (why) out.push(`[모순 쓸기 — 이번 답에서 꼭 · ${why}] 결론을 말하기 전에 위 전체 시계·인물별 발언과 자료함 판독문 전체를 처음부터 다시 훑는다. ① 한 사람의 말끼리(앞뒤가 맞나) ② 다른 사람의 말과(같은 일을 다르게 말하나) ③ 시각끼리(그 시각에 그 일이 될 수 있나, 순서가 뒤집혔나) 부딪쳐 본다. 다른 걸 말하는 문장 속에 섞여 지나간 단서도 본다. 어긋나는 것은 수첩 의문(q)으로 적고, 결론은 그 어긋남까지 설명할 수 있을 때만 낸다.`);
+  if (noRead.length) out.push(`판독문 없는 자료: ${noRead.map(e => `${e.id} ${e.kind === 'photo' ? '사진' : '글'}「${(typeof evTitle === 'function' ? evTitle(e) : e.title || '').slice(0, 24)}」${e.kind !== 'photo' ? '(원문은 위 시계에 들어감)' : ''}`).join(', ')}`);
+  const debts = xrDebts(items);   /* 11-17 B: 판 빚은 상태로만 — 「이번 턴에 걸린 것」(rules.js)이 원칙 이름으로 가리킨다. 모순 쓸기·수첩 적는 법도 원칙(근거·의심)과 출력 형식으로 */
+  if (debts.length) out.push(`기록과 자료가 안 맞는 곳:\n${debts.map(d => '  - ' + d).join('\n')}`);
   return out.join('\n') + '\n';
 }

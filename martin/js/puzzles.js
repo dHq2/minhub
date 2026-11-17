@@ -122,8 +122,7 @@ function pzText(){
   };
   walk(pzRoot(), 0);
   const gone = (S.pgone || []).slice(-5).map(g => `${g.id} 「${g.t}」 ${g.into ? g.into + ' 로 합쳐짐' : '없어짐'}${g.why ? ' — ' + g.why : ''}`);
-  const hint = S.probs.some(p => p.req) ? '' : '\n(의뢰의 본래 질문 — 누굴 찾나·무엇을 밝히나 — 이 아직 난제로 서지 않았다. 동료의 의뢰가 보이면 그 질문을 p1 바로 아래에 new 로, "req":true 를 붙여 세워라.)';   /* 11-17 B */
-  return `붙잡은 난제: ${S.pfocus || pzRoot().id}\n${out.join('\n')}${gone.length ? '\n사라진 난제(최근): ' + gone.join(' / ') : ''}${hint}`;
+  return `붙잡은 난제: ${S.pfocus || pzRoot().id}\n${out.join('\n')}${gone.length ? '\n사라진 난제(최근): ' + gone.join(' / ') : ''}`;   /* 11-17 B: 의뢰 난제 짚음은 「이번 턴에 걸린 것」(rules.js)으로 */
 }
 /* ── 그리기 ── */
 const pzUnderOf = () => [probOf(pzSel), probOf(S.pfocus)].find(p => p && p.st !== 'solved') || pzRoot();   /* 새 난제는 펼친 난제 → 붙잡은 난제 → 뿌리 아래(풀린 난제 밑엔 안 단다) */

@@ -1,4 +1,4 @@
-// 마틴 점검 — 수사 버릇·실의 이유와 끊기·꼬리표 자리·손글씨 카드 v1.0 (2026-11-17, B). 가짜 사건·가짜 마틴, 폰 화면(412×915).
+// 마틴 점검 — 수사 버릇·실의 이유와 끊기·꼬리표 자리·손글씨 카드 v1.1 (2026-11-17, B — v1.1: 버릇이 원칙으로, 뒤집어 보기·전제 의심이 「걸린 것」으로). 가짜 사건·가짜 마틴, 폰 화면(412×915).
 // 쓰는 법: bash martin/tests/run.sh habits-b   (스크린샷 /tmp/martin-버릇-판.png)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -31,15 +31,15 @@ const SEED = { v: 3, id: '20261117-habit', at: 1, turn: 0, nid: 9, nmax: 0, susp
   /* 1 — 버릇은 늘, 뒤집어 보기는 결론 쪽 말일 때만 */
   await say('영수증 얘기 좀 해 봐.', { say: ['영수증은 날짜만 같다.'] });
   let pr = await lastP();
-  for (const k of ['빈 주어 채우기', '그때 알 수 있었나', '사이의 일', '없음 가르기', '한 출처', '조각끼리 잇기', '확률은 말로']) want(pr.includes(k), `버릇 — ${k}`);
-  want(!pr.includes('[이번엔 뒤집어 보기]'), '평소 말엔 뒤집어 보기 없음');
-  want(!/\(\d+%\)/.test(pr.split('[보드 지금]')[0]) && pr.includes('말로 확률을 붙여(숫자 말고)'), '이름 없는 발신자 확률은 말로(숫자 % 없음)');
-  want(pr.includes('"over":"m…"'), '덮인 짐작 지목(over) 규칙');
-  want(pr.includes('8. cut:') && pr.includes('why 에 왜 이었는지'), 'link 의 why · cut 규칙');
+  for (const [k, w] of [['빈 곳을 채우는 건 짐작', '빈 주어 채우기'], ['그때 알 수 없었어야 할', '그때 알 수 있었나'], ['두 조각 사이에 있어야 할 일', '사이의 일'], ['「없다」는 둘이다', '없음 가르기'], ['근거의 수는 처음 말한 사람의 수', '한 출처'], ['조각끼리(시각이 앞뒤인 것', '조각끼리 잇기'], ['확신의 크기는 말로', '확률은 말로']]) want(pr.split(k).length === 2, `버릇 → 원칙 한 번씩 — ${w}`);
+  want(!pr.includes('· 의심 —'), '평소 말엔 뒤집어 보기 없음');
+  want(!/\(\d+%\)/.test(pr.split('[보드 지금]')[0]) && pr.includes('이름 없는 발신자') && pr.includes('공산이 크다·반반이다·희박하다'), '이름 없는 발신자·확률은 말로(숫자 % 없음)');
+  want(pr.includes('over 에 그 m id') && pr.split('over').length <= 4, '덮인 짐작 지목(over) — 형식 한 곳');
+  want(pr.includes('cut {a, b, why}') && pr.includes('why 한 줄') && pr.includes('이유와 함께 잇는다'), 'link 의 why · cut 규칙');
   const words = pr.length; console.log(`        (프롬프트 ${words}자)`);
   await say('그래서 범인은 누구야?', { say: ['대표 쪽이 공산이 크다. 다만 뒤집어 보면 —'] });
   pr = await lastP();
-  want(pr.includes('[이번엔 뒤집어 보기]'), '「범인은 누구야?」 → 뒤집어 보기 켜짐');
+  want(pr.includes('· 의심 — 동료가 결론') && pr.includes('뒤집어 세워 보고'), '「범인은 누구야?」 → 뒤집어 보기 켜짐(걸린 것)');
 
   /* 2 — 실: why 저장·프롬프트에 「왜」, cut 으로 끊고 기록, 다시 이으면 기록에서 빠짐 */
   await say('그 둘 이어 봐.', { say: ['잇는다.'], ops: [{ op: 'link', a: 'n2', b: 'n4', label: '같은 밤', sure: false, why: '대화 끊긴 밤과 승인 새벽이 붙어 있음' }] });
@@ -50,7 +50,7 @@ const SEED = { v: 3, id: '20261117-habit', at: 1, turn: 0, nid: 9, nmax: 0, susp
   want(!st.has && st.cuts.length === 1 && st.cuts[0].includes('근거 없음'), `cut → 실 사라지고 끊은 기록 남음 ${st.cuts}`);
   await say('다음은?', { say: ['다음으로.'] });
   pr = await lastP();
-  want(pr.includes('끊은 실') && pr.includes('n4↔n7') && pr.includes('— 왜: 대화 끊긴 밤'), '프롬프트: 끊은 실 · 실마다 「왜」');
+  want(pr.includes('끊은 실: n4↔n7') && pr.includes('— 왜: 대화 끊긴 밤'), '프롬프트: [보드 지금]에 끊은 실 · 실마다 「왜」');
   await say('영수증 다시 보니 카드 번호가 같아.', { say: ['그럼 다시 잇는다.'], ops: [{ op: 'link', a: 'n4', b: 'n7', label: '같은 결제', sure: true, why: '영수증 카드 끝자리 같음' }] });
   st = await p.evaluate(() => ({ has: S.links.some(L => (L.a === 'n4' && L.b === 'n7')), cuts: (S.cuts || []).length }));
   want(st.has && st.cuts === 0, '새 근거로 다시 이으면 끊은 기록에서 빠짐');
@@ -59,10 +59,10 @@ const SEED = { v: 3, id: '20261117-habit', at: 1, turn: 0, nid: 9, nmax: 0, susp
   await p.evaluate(() => { S.turn = 20; });
   await say('음.', { say: ['잠깐. 전제를 의심해 본다.'] });
   pr = await lastP();
-  want(pr.includes('[전제 의심]'), '판이 오래 제자리 → 전제 의심');
+  want(pr.includes('턴째 제자리다. 전제 하나를'), '판이 오래 제자리 → 전제 의심(걸린 것)');
   await say('응.', { say: ['그래.'] });
   pr = await lastP();
-  want(!pr.includes('[전제 의심]'), '바로 다음 턴엔 다시 시키지 않음');
+  want(!pr.includes('턴째 제자리다'), '바로 다음 턴엔 다시 시키지 않음');
 
   /* 4 — 판: 꼬리표가 카드 위에 안 앉음 · 손글씨 카드 제목·본문 안 겹침 */
   await p.evaluate(() => { renderAll(); const n = nodeOf('n2'); cam.x = 1080; cam.y = 1200; cam.k = .8; applyCam(0); });
