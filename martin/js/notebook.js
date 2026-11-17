@@ -1,5 +1,7 @@
 /* martin/js/notebook.js — 수사 수첩(v0.5). 고칠 땐 이 줄 아래에 「11-16 A: …」처럼 날짜·방 주석
-   11-17 C(v0.14): 비슷한 줄 합치기·덮인 짐작 넘기기·망설인 사실은 짐작으로(addNote·nbTidy), 짐작은 프롬프트에 최근 20, 「전체 시계」 칸(nbClock) */
+   11-17 C(v0.14): 비슷한 줄 합치기·덮인 짐작 넘기기·망설인 사실은 짐작으로(addNote·nbTidy), 짐작은 프롬프트에 최근 20, 「전체 시계」 칸(nbClock)
+   11-18 B(v0.15.8): 의문이 자기 답을 품는다 — 답은 언제나 nbAnswer 한 길(solve·over·판 의문 카드 내림). 확인된 답 = 풀림(done), 짐작 답 = 기운 답(lean, 짐작 칸에 「의문 → 답」으로).
+     덮기(over)의 「마틴 줄만」 조건을 걷음(보스 사건 20턴: 동료 판단 줄 by:me 의 over 가 조용히 버려졌다). 의문이 얼마나 오래 열렸나는 nbAge(rules.js 의 걸린 것이 씀) */
 /* ── 수사 수첩 (v0.5) — 판에 꽂기엔 작은 것들: 의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모
    넓은 화면은 앱 왼쪽 바깥에 늘 펼침, 폰은 「수첩」 단추로 왼쪽 서랍. 마틴은 notes/solve/drop 으로 고친다 */
 const NK = { q:'의문', guess:'짐작', todo:'확인할 것', fact:'사사로운 사실', me:'내 메모' };
@@ -27,23 +29,48 @@ function nbSim(a, b){
   const A = bg(a), B = bg(b); let hit = 0; for (const [g, n] of A) hit += Math.min(n, B.get(g) || 0);
   return 2 * hit / Math.max(1, a.length - 1 + b.length - 1);
 }
+/* 11-18 B: 묻는 줄이 동료의 말 안에 얼마나 들어 있나 — 낱말은 맞춰 보기와 같은 xrToks(조사 뗀 두 글자 이상), 활용이 달라도 앞 두 글자로 */
+function nbIn(ask, text){
+  if (typeof xrToks !== 'function') return 0;
+  const ws = [...new Set([...xrToks(ask)].map(w => w.replace(/(?:이냐|냐|인가|인지|일까|는가|나)$/, '')).filter(w => w.length >= 2))]; if (ws.length < 2) return 0;
+  const b = String(text || '').replace(/\s/g, ''); let hit = 0; for (const w of ws) if (b.includes(w.slice(0, 2))) hit++;
+  return hit / ws.length;
+}
+const NB_TOUCH = 0.5;
+/* 동료의 말이 다루는 묻는 줄들(아직 답 없는 것·기운 답만 있는 것) */
+const nbTouched = text => (S.notes || []).filter(n => NB_ASKS(n.k) && !n.done && nbIn(n.t, text) >= NB_TOUCH);
 const NB_SAME = 0.85, NB_OVER = 0.72;
 function nbOver(old, by, why){ if (!old || old.done || old.k === 'me') return 0; old.done = 1; old.a = why.slice(0, 120); old.doneAt = Date.now(); old.doneTurn = S.turn; old.over = by; return 1; }
+/* 묻는 줄(의문·확인할 것)에 답 달기 — 한 길. sure 면 풀림, 아니면 기운 답(열린 채 짐작 칸으로). 다시 달면 고친다 */
+const NB_ASKS = k => k === 'q' || k === 'todo';
+function nbAnswer(n, a, sure){
+  if (!n || n.done || n.k === 'me') return null; a = String(a || '').trim().slice(0, 120);
+  if (sure === false && NB_ASKS(n.k) && a){ n.lean = a; n.leanTurn = S.turn; return n; }
+  n.done = 1; n.a = a || n.lean || ''; delete n.lean; n.doneAt = Date.now(); n.doneTurn = S.turn; return n;
+}
+/* 아직 답이 없는 의문이 몇 턴째 그대로인가(판 의문 카드는 판의 몫이라 셈하지 않는다) */
+const nbBare = () => (S.notes || []).filter(n => n.k === 'q' && !n.done && !n.lean);
+const nbAge = n => Math.max(0, (S.turn || 0) - (n.leanTurn ?? n.turn ?? 0));
 function addNote(k, t, by, extra){
   t = String(t || '').trim().slice(0, 140); if (!t || !NK[k]) return null;
   by = by === 'me' ? 'me' : 'you';
-  if (S.notes.some(x => !x.done && x.t === t)) return null;
   if (by === 'you' && k === 'fact' && NB_HEDGE.test(t)) k = 'guess';
   const ex = Object.assign({}, extra || {}), over = [].concat(ex.over || []).filter(x => /^m\d+$/.test(x)); delete ex.over;
+  /* 짐작·사실이 가리킨 줄 — 묻는 줄이면 이 줄이 그 답이 되고(새 줄 없이), 짐작이면 덮는다. 누가 적은 줄이든 같다(11-18 B) */
+  const tg = ex.done || !(k === 'guess' || k === 'fact') ? [] : over.map(id => S.notes.find(x => x.id === id)).filter(o => o && !o.done && o.k !== 'me');
+  const asks = tg.filter(o => NB_ASKS(o.k)), olds = tg.filter(o => o.k === 'guess');
+  for (const o of asks) nbAnswer(o, t, k === 'fact');
+  if (asks.length && !olds.length) return asks[0];
+  if (S.notes.some(x => !x.done && x.t === t)) return null;
   if (!ex.done && by === 'you'){
     const fam = k === 'guess' ? ['guess', 'fact'] : [k];   /* 새 사실이 옛 짐작과 닮았으면 합치지 않고 아래에서 덮는다 */
     const twin = S.notes.find(x => !x.done && x.by === 'you' && fam.includes(x.k) && nbSim(x.t, t) >= NB_SAME);
-    if (twin){ if (twin.k === k && t.length > twin.t.length) twin.t = t; twin.merged = (twin.merged || 0) + 1; return null; }
+    if (twin){ if (twin.k === k && t.length > twin.t.length) twin.t = t; twin.merged = (twin.merged || 0) + 1; if (ex.lean) nbAnswer(twin, ex.lean, false); return null; }
   }
   const n = { id:'m' + (++S.nmax), k, t, by, at:Date.now(), turn:S.turn, ...ex }; S.notes.push(n);
-  if (!n.done && by === 'you' && (k === 'guess' || k === 'fact')){
-    for (const id of over){ const o = S.notes.find(x => x.id === id); if (o && o !== n && (o.k === 'guess' || o.k === 'q' || o.k === 'todo')) nbOver(o, n.id, `${n.id} 에 덮임`); }
-    for (const o of S.notes) if (o !== n && !o.done && o.by === 'you' && o.k === 'guess' && nbSim(o.t, t) >= NB_OVER) nbOver(o, n.id, `새 ${k === 'fact' ? '사실' : '짐작'} ${n.id} 에 덮임`);
+  if (!n.done && (k === 'guess' || k === 'fact')){
+    for (const o of olds) nbOver(o, n.id, `${n.id} 에 덮임`);
+    for (const o of S.notes) if (o !== n && !o.done && o.by === by && o.k === 'guess' && nbSim(o.t, t) >= NB_OVER) nbOver(o, n.id, `새 ${k === 'fact' ? '사실' : '짐작'} ${n.id} 에 덮임`);
   }
   return n;
 }
@@ -57,10 +84,12 @@ function nbTidy(){
   if (k) S.notes = S.notes.filter(x => !x.gone);
   return k;
 }
-function solveNote(id, a){ const n = S.notes.find(x => x.id === id); if (!n || n.done) return null; n.done = 1; n.a = String(a || '').slice(0, 120); n.doneAt = Date.now(); n.doneTurn = S.turn; return n; }
-function cardSolved(card, a){   /* 판의 의문 카드가 떼어질 때 — 풀린 의문 칸으로 옮겨 흔적을 남긴다 */
+const solveNote = (id, a, sure) => nbAnswer(S.notes.find(x => x.id === id), a, sure);
+function cardSolved(card, a){   /* 판의 의문 카드가 떼어질 때 — 수첩으로 옮겨 흔적을 남긴다. 기운 답(card.lean)을 들고 내려왔으면 열린 채 짐작 칸으로 */
   if (!card || card.kind !== 'question') return null;
-  return addNote('q', card.title + (card.note ? ' — ' + card.note : ''), 'you', { done:1, a:String(a || '판에서 풀림').slice(0, 120), doneAt:Date.now(), doneTurn:S.turn, card:card.id });
+  const t = card.title + (card.note ? ' — ' + card.note : '');
+  if (card.lean) return addNote('q', t, 'you', { lean:card.lean, leanTurn:S.turn, card:card.id });
+  return addNote('q', t, 'you', { done:1, a:String(a || '판에서 풀림').slice(0, 120), doneAt:Date.now(), doneTurn:S.turn, card:card.id });
 }
 function healNotes(){   /* 11-16 C: 예전 줄 누르기로 '동료가 풀림 표시'가 된 줄을 제자리로(한 번만 일어남 — 이제 그 표시를 만드는 길이 없다).
      저장은 하지 않는다 — S.at 이 새로워지면 다른 기기의 더 새 판을 덮을 수 있어서. 다음 저장(계정 판 받기·아무 행동) 때 같이 실린다 */
@@ -74,10 +103,10 @@ async function applyNotes(raw){
   const notes = Array.isArray(r.notes) ? r.notes : [];
   for (const x of notes.slice(0, 6)){ const n = x && typeof x === 'object' ? addNote(x.k in NK ? x.k : 'fact', x.t, x.by, x.over ? { over:x.over } : null) : addNote('fact', x, 'you'); if (n) made.push(n.id); }
   for (const x of (Array.isArray(r.memo) ? r.memo : r.memo ? [r.memo] : []).slice(0, 3)){ const k = classifyMemo(String(x)); if (k){ const n = addNote(k, x, 'you'); if (n) made.push(n.id); } }
-  for (const s of (Array.isArray(r.solve) ? r.solve : []).slice(0, 8)){
-    const id = typeof s === 'string' ? s : s && s.id, a = s && s.a;
-    if (/^n\d+$/.test(id || '')){ const c = nodeOf(id); if (c && c.kind === 'question'){ await doOp({ op:'remove', id, why:a }).catch(() => {}); solved.push(id); } }
-    else if (solveNote(id, a)) solved.push(id);
+  for (const s of (Array.isArray(r.solve) ? r.solve : []).slice(0, 12)){
+    const id = typeof s === 'string' ? s : s && s.id, a = s && s.a, sure = !(s && s.sure === false);
+    if (/^n\d+$/.test(id || '')){ const c = nodeOf(id); if (c && c.kind === 'question'){ if (!sure && a) c.lean = String(a).slice(0, 120); await doOp({ op:'remove', id, why:a }).catch(() => {}); solved.push(id); } }   /* 판 의문 카드는 답이 나면 판에서 내려온다 — 기운 답이면 수첩의 짐작 칸으로 */
+    else if (solveNote(id, a, sure)) solved.push(id);
   }
   for (const id of (Array.isArray(r.drop) ? r.drop : []).slice(0, 10)){ const i = S.notes.findIndex(x => x.id === id && x.k !== 'me'); if (i >= 0){ S.notes.splice(i, 1); dropped.push(id); } }
   const tidied = nbTidy();
@@ -85,29 +114,32 @@ async function applyNotes(raw){
   return { made, solved, dropped, tidied };
 }
 function noteText(){
-  const open = k => S.notes.filter(n => n.k === k && !n.done);
+  const open = k => S.notes.filter(n => n.k === k && !n.done && !n.lean);
   const line = n => `${n.id}${n.by === 'me' ? '(동료)' : ''} ${n.t}`;
   const qs = S.nodes.filter(n => n.kind === 'question');
-  const facts = open('fact').slice(-30), solvedQ = S.notes.filter(n => n.done).slice(-8), gs = open('guess');   /* 11-17 C: 짐작은 최근 20 + 개수 */
-  return `열린 의문: ${[...qs.map(c => `${c.id}[판] ${c.title} — ${c.note || ''}`), ...open('q').map(line)].join(' / ') || '(없음)'}
-짐작(미확정${gs.length > 20 ? ` · 최근 20 / 모두 ${gs.length}` : ''}): ${gs.slice(-20).map(line).join(' / ') || '(없음)'}
+  const facts = open('fact').slice(-30), solvedQ = S.notes.filter(n => n.done).slice(-8), gs = nbLeaning();   /* 11-17 C: 짐작은 최근 20 + 개수 · 11-18 B: 기운 답이 달린 의문도 짐작이다 */
+  const gl = n => n.lean ? `${line(n)} → ${n.lean}` : line(n);
+  return `열린 의문(아직 답 없음): ${[...qs.map(c => `${c.id}[판] ${c.title} — ${c.note || ''}`), ...open('q').map(n => `${line(n)}${nbAge(n) >= 3 ? ` (${nbAge(n)}턴째)` : ''}`)].join(' / ') || '(없음)'}
+짐작(미확정 — 「의문 → 기운 답」 포함${gs.length > 20 ? ` · 최근 20 / 모두 ${gs.length}` : ''}): ${gs.slice(-20).map(gl).join(' / ') || '(없음)'}
 확인할 것: ${open('todo').map(line).join(' / ') || '(없음)'}
 사사로운 사실${open('fact').length > 30 ? '(최근 30)' : ''}: ${facts.map(line).join(' / ') || '(없음)'}
 동료가 수첩에 직접 적은 것: ${open('me').map(n => `${n.id} ${n.t}`).join(' / ') || '(없음)'}
 최근 풀린 것: ${solvedQ.map(n => `${n.id} ${n.t} → ${n.a || ''}`).join(' / ') || '(없음)'}`;
 }
-const nbOpenCount = () => S.notes.filter(n => !n.done && (n.k === 'q' || n.k === 'todo')).length + S.nodes.filter(n => n.kind === 'question').length;
+/* 짐작 칸 = 짐작 줄 + 기운 답이 달린 묻는 줄(적힌 순서대로) */
+const nbLeaning = () => S.notes.filter(n => !n.done && (n.k === 'guess' || n.lean));
+const nbOpenCount = () => S.notes.filter(n => !n.done && !n.lean && NB_ASKS(n.k)).length + S.nodes.filter(n => n.kind === 'question').length;
 function nbPing(n){ const b = $('#nbN'); if (!b) return; b.textContent = nbOpenCount() || ''; if (n){ const t = $('#btnNb'); t.classList.remove('ping'); void t.offsetWidth; t.classList.add('ping'); } }
 function renderNb(){   /* 11-16 D: 코드처럼 작은 글씨 한 줄 목록 — 제목·상세 두 줄과 「마틴 · 턴」 꼬리표를 없앰, 줄 번호는 css 카운터, 판의 의문 카드는 제목만(상세는 판 카드에) */
   if (!S) return; ensureNotes(); healNotes();
   const mk = { q:'?', guess:'~', todo:'[ ]', fact:'-', me:'>' };
-  const item = n => `<li class="nl k-${n.k}${n.done ? ' done' : ''}${n.by === 'me' ? ' byme' : ''}${nbFlash.has(n.id) ? ' new' : ''}" data-n="${n.id}"><b class="nl-k">${n.done ? (n.k === 'todo' ? '[x]' : '✓') : mk[n.k]}</b><span class="nl-t"><span class="nl-v">${esc(n.t)}</span>${n.done && n.a ? `<i class="nl-a"> → ${esc(n.a)}</i>` : ''}</span><button type="button" class="nl-x" data-ndel="${n.id}" aria-label="지우기">×</button></li>`;
+  const item = n => `<li class="nl k-${n.k}${n.done ? ' done' : ''}${n.lean ? ' lean' : ''}${n.by === 'me' ? ' byme' : ''}${nbFlash.has(n.id) ? ' new' : ''}" data-n="${n.id}"><b class="nl-k">${n.done ? (n.k === 'todo' ? '[x]' : '✓') : n.lean ? mk[n.k] + '~' : mk[n.k]}</b><span class="nl-t"><span class="nl-v">${esc(n.t)}</span>${n.done && n.a ? `<i class="nl-a"> → ${esc(n.a)}</i>` : n.lean ? `<i class="nl-a"> → ${esc(n.lean)}</i>` : ''}</span><button type="button" class="nl-x" data-ndel="${n.id}" aria-label="지우기">×</button></li>`;
   const sec = (title, list, empty, extra = '') => `<section class="nl-s"><div class="nl-h">// ${title}<i>${list.length || ''}</i></div><ol>${list.join('') || `<li class="nl none"><b class="nl-k"></b><span class="nl-t">${empty}</span></li>`}</ol>${extra}</section>`;
-  const open = k => S.notes.filter(n => n.k === k && !n.done);
+  const open = k => S.notes.filter(n => n.k === k && !n.done && !n.lean);
   const cardQ = S.nodes.filter(n => n.kind === 'question').map(c => `<li class="nl k-q nl-card" data-card="${c.id}"><b class="nl-k">?</b><span class="nl-t">${esc(c.title)}<u>판</u></span></li>`);
   $('#nbBody').innerHTML =
     sec('의문', [...cardQ, ...open('q').map(item)], '(없음)') +
-    sec('짐작 · 미확정', open('guess').map(item), '(없음)') +
+    sec('짐작 · 미확정', nbLeaning().map(item), '(없음)') +
     sec('확인할 것', open('todo').map(item), '(없음)') +
     sec('사사로운 사실', open('fact').slice().reverse().map(item), '(없음)') +
     sec('풀린 의문', S.notes.filter(n => n.done).slice().reverse().map(item), '(없음)') +

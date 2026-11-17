@@ -9,7 +9,9 @@
    xrefText() 는 ai.js buildPrompt 의 [자료함] 아래 고리(A)가 부른다. 수첩의 「전체 시계」 칸은 xrClockLines() 를 쓴다(notebook.js).
    읽는 판독문 모양(보스 판에서 흔한 것): 「이름(오전/오후 시:분): 말」, 날짜 줄 「2026년 11월 12일 목요일」. 그 밖에 카톡 내보내기
    「[이름] [오후 7:40] 말」·「2026. 11. 12. 오후 7:40, 이름 : 말」, 「오후 7:40 이름: 말」, 「11/12 23:42」, 「밤 11시 42분」, 「7:40 PM」 도 견딘다.
-   사건 고유의 이름·말은 코드에 없다 — 전부 판독문에서 읽는다. */
+   사건 고유의 이름·말은 코드에 없다 — 전부 판독문에서 읽는다.
+   11-18 B: 날짜는 줄의 머리에서만 — 날짜 줄(「날짜 구분선: …」처럼 이름표가 붙어도)과 줄 맨 앞 도장. 말 속 날짜(공지의 「11/20(금)」, 청첩장의 예식일)는 말이다.
+     보스 사건에서 말 속 날짜가 그 뒤 줄들의 날짜를 바꿔 직원방이 11/20 으로 서고, 「날짜 구분선」이 사람으로 읽혔다. */
 const XR_WD = '일월화수목금토';
 const XR_AMPM = '오전|오후|새벽|아침|낮|저녁|밤';
 const XR_LABEL = new Set(('날짜 일시 시각 시간 장소 위치 내용 제목 요약 메모 참고 비고 주의 발신 수신 발신자 수신자 보낸이 받는이 방 방이름 채팅방 단톡 대화 화면 사진 프사 '
@@ -57,21 +59,22 @@ const xrQuote = s => String(s || '').trim().replace(/^["'“‘「『]+|["'”�
 function xrLine(L, y0){
   let line = L.replace(/^[\s\-•*·>]+/, '').trim(); if (!line) return null;
   const d = xrDate(line, y0);
-  const rest = d ? (line.slice(0, d.i) + line.slice(d.i + d.n)).replace(/[\s\-=─—_,.()（）]|[일월화수목금토]요일|^\s*$/g, '') : line;
-  if (d && rest.length <= 2) return { head:d };   /* 날짜 줄 */
+  const rest = d ? (line.slice(0, d.i) + line.slice(d.i + d.n)).replace(/^[^:：()（）\d]{1,12}[:：]/, '').replace(/[\s\-=─—_,.()（）]|[일월화수목금토]요일|^\s*$/g, '') : line;
+  if (d && rest.length <= 2) return { head:d };   /* 날짜 줄 — 이름표(「날짜 구분선:」)를 떼고 날짜·요일만 남으면 */
+  const stamp = d && d.i <= 1 ? d : null;   /* 줄 맨 앞 날짜만 그 줄의 날짜다 */
   let who = '', say = '', tm = null, m;
   if ((m = /^\[([^\]]{1,20})\]\s*\[([^\]]{2,14})\]\s*(.*)$/.exec(line))){ who = xrName(m[1]); tm = xrTime(m[2]); say = m[3]; }   /* 카톡 PC 내보내기 */
   else if ((m = new RegExp(`^(?:\\d{4}\\s*[.\\-/년]\\s*\\d{1,2}\\s*[.\\-/월]\\s*\\d{1,2}\\s*[.일]?\\s*)?((?:${XR_AMPM})\\s*\\d{1,2}:\\d{2})\\s*,\\s*([^:：]{1,20}?)\\s*[:：]\\s*(.*)$`).exec(line))){ who = xrName(m[2]); tm = xrTime(m[1]); say = m[3]; }   /* 카톡 폰 내보내기 */
   else {
     let s2 = line; if (d && d.i <= 1) s2 = s2.slice(d.i + d.n).trim();
     const t0 = xrTime(s2); if (t0 && t0.i <= 1){ tm = t0; s2 = s2.slice(t0.i + t0.n).replace(/^[\s,·\-—]+/, ''); }
-    if ((m = /^["「『]?([^():：「」"\[\]]{1,20}?)["」』]?\s*(?:[(（][^)）]{0,40}[)）]\s*)*?[(（]([^)）]{0,40})[)）]\s*[:：]\s*(.*)$/.exec(s2))){ who = xrName(m[1]); const t1 = xrTime(m[2]); if (t1) tm = t1; const d1 = xrDate(m[2], y0); if (d1) return { who, say:m[3], tm, day:d1 }; say = m[3]; }   /* 이름(시각): 말 — 「노란 말풍선(이 방 주인 쪽으로 보임)(오후 7:40): 말」처럼 설명 괄호가 앞에 붙어도(ai.js READ_RULE) */
+    if ((m = /^["「『]?([^():：「」"\[\]]{1,20}?)["」』]?\s*(?:[(（][^)）]{0,40}[)）]\s*)*?[(（]([^)）]{0,40})[)）]\s*[:：]\s*(.*)$/.exec(s2))){ who = xrName(m[1]); const t1 = xrTime(m[2]); if (t1) tm = t1; const d1 = xrDate(m[2], y0); if (d1) return { who, say:m[3], tm, day:d1 }; say = m[3]; }   /* 괄호 속 날짜는 그 말의 도장 */   /* 이름(시각): 말 — 「노란 말풍선(이 방 주인 쪽으로 보임)(오후 7:40): 말」처럼 설명 괄호가 앞에 붙어도(ai.js READ_RULE) */
     else if ((m = /^([^:：()（）]{1,16}?)\s*[:：](?!\d{2}(?!\d))\s*(.+)$/.exec(s2))){   /* 「7:55」의 : 는 이름 뒤 : 가 아니다 */ who = xrName(m[1]); say = m[2]; }
     else if (tm){ say = s2; }
     if (!who && !tm){ const t2 = xrTime(line); if (t2) tm = t2; say = line; }
   }
-  if (!who && !tm) return d ? { day:d, say:line } : null;
-  return { who, say:xrQuote(say || line), tm, day:d };
+  if (!who && !tm) return null;
+  return { who, say:xrQuote(say || line), tm, day:stamp, loose:!tm };   /* loose — 시각 없는 「X: 말」. X 가 도장 붙은 줄로 아는 사람일 때만 말로 받는다(xrItems) */
 }
 /* 자료 하나의 줄들 */
 function xrParse(text, ev){
@@ -82,7 +85,7 @@ function xrParse(text, ev){
     if (r.head){ ctx = r.head; ctxY = r.head.y; continue; }
     if (r.day){ ctx = r.day; ctxY = r.day.y; }
     if (!r.tm && !r.who) continue;
-    out.push({ ev, day:(r.day || ctx) ? xrDayKey(r.day || ctx) : '', t:r.tm ? r.tm.t : null, amb:!!(r.tm && r.tm.amb), who:r.who || '', say:String(r.say || '').slice(0, 220) });
+    out.push({ ev, day:(r.day || ctx) ? xrDayKey(r.day || ctx) : '', t:r.tm ? r.tm.t : null, amb:!!(r.tm && r.tm.amb), who:r.who || '', say:String(r.say || '').slice(0, 220), loose:!!r.loose });
   }
   return out;
 }
@@ -100,7 +103,8 @@ function xrItems(){
       it.evs = [e.id]; seen.set(k, it); all.push(it);
     }
   }
-  return all;
+  const known = new Set(all.filter(x => x.who && !x.loose).map(x => xrKey(x.who)));   /* 11-18 B: 말한 사람 = 시각 도장이 붙은 줄의 이름 */
+  return all.filter(x => !x.loose || known.has(xrKey(x.who)));
 }
 const xrSort = (a, b) => (a.day || '9') < (b.day || '9') ? -1 : (a.day || '9') > (b.day || '9') ? 1 : a.t - b.t;
 function xrClock(items){ return (items || xrItems()).filter(x => x.t != null).sort(xrSort); }
@@ -119,7 +123,7 @@ function xrFit(rows, budget){
   return out;
 }
 /* 판 빚 */
-const XR_STOP = new Set('그리고 그런데 하지만 그래서 있다 없다 했다 한다 된다 이다 아니다 것이다 같다 보인다 그녀 그는 이것 저것 그것 자료 판독 사진 카드 메모 확인 미확정 미상 불명 모름'.split(' '));
+const XR_STOP = new Set('그리고 그런데 하지만 그래서 있다 없다 했다 한다 된다 이다 아니다 것이다 같다 보인다 그녀 그는 이것 저것 그것 자료 판독 사진 카드 메모 확인 미확정 미상 불명 모름 누구 무엇 무슨 어디 언제 어떻게 혹시 정말 같은 다른'.split(' '));   /* 11-18 B: 물음 낱말도 — 수첩 nbIn 이 같은 낱말 자르기를 씀 */
 const xrToks = s => new Set((String(s || '').match(/[가-힣A-Za-z0-9]{2,}/g) || []).map(w => w.replace(/(?:은|는|이|가|을|를|의|에|에서|으로|로|과|와|도|만|께|에게|한테|이다|였다|이었다)$/, '')).filter(w => w.length >= 2 && !XR_STOP.has(w)));
 function xrDebts(items){
   const out = [];

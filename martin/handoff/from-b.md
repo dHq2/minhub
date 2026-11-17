@@ -57,3 +57,10 @@
 - 무엇: 보스 「한번에 시작해」로 A·D 파일을 같이 고쳤다(할일.md 끝난 일 줄에 파일 목록). ① 판 정리 프롬프트(tidy.js tidyPrompt)를 MARTIN_SHORT + RULES + 묶음 짜는 법으로 — 옛 「느와르·하드보일드」 말투와 겹친 실 규칙을 걷음, cut·link 는 why 와 함께. ② 판독 지시 「화면 속 글자를 빠짐없이 …」를 READ_RULE 맨 앞으로 옮기고 evReadOne·outText 는 READ_RULE 만 부름. ③ 감싸기를 걷었다 — modeFilter(mode←cue←habits)·modeText(cue)·doOp(habits) 재할당이 없다.
 - 받는 쪽에게 필요한 일(모두): 앞으로 마틴의 답을 연출 전에 거르거나 기록해야 하면 함수를 감싸지 말고 rules.js 의 RES_STEPS 에 [이름, 함수] 한 항목을 더한다(순서 = 목록 순서). 실을 잇거나 끊는 코드는 habits.js 의 strLink(a,b,label,sure,why)·strCut(L,why)·strFind(id 나 {a,b}) 를 부른다 — 이유와 「끊은 실」 기록이 저절로 따라온다. A — board.js doOp 의 link 가지가 strLink 를 부르고 cut 가지가 새로 생겼다. turn() 고리 한 줄은 modeFilter → resFilter. D — cue.js 는 감싸기 대신 cueStep(res) 함수가 되었고 cueSense 는 mode.js modeText 가 부른다(tests/cue.js 는 resFilter 로). tests/rules-b.js 가 「감싸기 없음」도 본다.
 - 관련 파일·버전: 할일.md 끝난 일 「통일 규칙 마저」 줄 · v0.15.5
+
+## 11-18 B · v0.15.8 수첩 의문이 답을 품는다 · 맞춰 보기 날짜·사람 · 연혁 앞뒤 — [중요] · 받는 쪽: C, A, 모두
+- 무엇: 보스 「의문을 해결했는데도 그대로 남아 있고 참조도 안 한다」. 수첩의 묻는 줄(의문·확인할 것)에 답 달기를 notebook.js 의 nbAnswer(n, a, sure) 한 길로 — sure 면 풀림, 아니면 기운 답(n.lean·n.leanTurn, 열린 채 짐작 칸에 「의문 → 답」). solve(이제 sure 칸)·over(묻는 줄을 가리키면 새 줄 없이 그 줄의 답)·판 의문 카드 내림(cardSolved 가 card.lean 을 들고)이 다 이 길. 덮기의 「마틴 줄만」 조건은 걷음.
+- C(notebook.js·xref.js): ① 「열린」 묻는 줄 = !done && !lean. 짐작 칸 = nbLeaning()(짐작 + 기운 답 달린 묻는 줄), 열린 수 nbOpenCount 도 lean 을 뺌. 수첩 줄을 새로 그리는 코드는 n.lean 을 「→ 답」으로 보여 주면 된다(li 에 .lean, 표시 「?~」). ② xref: 날짜는 줄 머리에서만(xrLine 의 stamp — 날짜 줄·줄 앞 도장·괄호 도장), 말 속 날짜는 말. 날짜 줄은 「날짜 구분선:」 같은 이름표를 떼고 본다. 시각 없는 「X: 말」 줄은 loose — xrItems 가 시각 도장 붙은 줄로 아는 사람일 때만 남긴다. XR_STOP 에 물음 낱말(누구·무엇·어디·언제 …) — 수첩 nbIn 이 같은 xrToks 를 쓴다.
+- A(timeline.js): tlCheck 의 순서 대조는 tlBefore(x, y) 한 곳 — 해·날짜·시각을 둘 다 아는 자리까지만, 오전·오후 모르는 시각은 두 갈래 어느 쪽으로도 앞설 때만. tests/timeline.js v1.1 은 그래서 순서 어긋남을 t5·t1 로 바꿨다(t3 은 오전·오후 모름).
+- 모두: 「이번 턴에 걸린 것」 번호를 목록 순서대로 1~10 으로 다시 매겼다(새 둘: 무게 — 동료 말이 수첩 의문을 다룸 · 변화 — 답 없이 오래 열린 의문). 새 신호는 들어갈 자리에 넣고 번호를 다시 매기면 된다.
+- 관련 파일·버전: notebook.js, xref.js, timeline.js, rules.js v1.3, tests/notebook-b.js(새)·timeline.js · v0.15.8

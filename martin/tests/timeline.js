@@ -1,4 +1,4 @@
-// 연혁(세로 타임라인) 점검 v1.0 (2026-11-17, A) — 비었으면 세우라 · 마틴 tl 적용 · 시간순·날짜 머리 · 앱 대조(순서·출처 시각·마틴이 짚은 어긋남) · 고침·지움·풀림 · 매 턴 프롬프트 · 동료 × 와 되돌리기 · 줄 → 카드
+// 연혁(세로 타임라인) 점검 v1.1 (2026-11-18, B — v1.1: 오전·오후 모르는 t3 는 어느 갈래로도 앞선다 못 하니 순서 대조는 t5·t1 로 · v1.0 11-17 A) — 비었으면 세우라 · 마틴 tl 적용 · 시간순·날짜 머리 · 앱 대조(순서·출처 시각·마틴이 짚은 어긋남) · 고침·지움·풀림 · 매 턴 프롬프트 · 동료 × 와 되돌리기 · 줄 → 카드
 // 쓰는 법: bash martin/tests/run.sh timeline   (가짜 사건만)
 const { chromium } = require('playwright'); const fs = require('fs'), path = require('path');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -13,7 +13,7 @@ const MOCK = () => {
         { op: 'add', id: 't2', d: '2026.11.10', t: '오후 10:30', what: '가짜A 문 잠금', who: '가짜A', src: ['e1'], after: 't1' },
         { op: 'add', id: 't3', d: '2026-11-10', t: '21:40', amb: true, what: '가짜B 아직 밖', who: '가짜B', src: ['e2'], sure: false },
         { op: 'add', id: 't4', d: '2026-11-10', t: '23:15', what: '가짜A 다시 외출', who: '가짜A', src: ['e1'] },
-        { op: 'add', id: 't5', d: '2026-11-10', t: '21:00', what: '가짜B 귀가', who: '가짜B', src: ['e2'], after: 't3' },
+        { op: 'add', id: 't5', d: '2026-11-10', t: '21:00', what: '가짜B 귀가', who: '가짜B', src: ['e2'], after: 't1' },   /* 11-18 B: t3(오전·오후 모름)은 어느 갈래로 봐도 앞선다고 못 하니 대조는 t1 과 */
         { op: 'add', id: 't6', when: '어느 날 밤', what: '가짜C 전화', who: '가짜C', src: ['e2'] },
         { op: 'clash', a: 't1', b: 't3', why: '둘이 같이 있었다는 말과 어긋남' }] };
       if (said.includes('연혁시험2')) return { say: ['고쳤다.'], tl: [{ op: 'edit', id: 't4', t: '22:30', what: '가짜A 다시 문 확인' }, { op: 'drop', id: 't6', why: '다른 사건 이야기' }, { op: 'clash', a: 't1', b: 't3', ok: true, why: '다른 날 이야기였다' }] };
@@ -47,7 +47,7 @@ const SEED = { v: 3, id: '20261117-tl', at: 1, turn: 2, nid: 9, emax: 2, notes: 
   want(st.ids === 't5,t1,t3,t2,t4,t6', '시간순(날짜 모름은 맨 아래) ' + st.ids);
   want(st.t2.d === '2026-11-10' && st.t2.t === '22:30', '「2026.11.10」「오후 10:30」도 받아 고침');
   want(st.n === '6' && st.warn, '단추에 줄 수 6 · 어긋남 빨간 점');
-  want(st.bad.includes('order:t5-t3') && st.bad.includes('src:t4') && st.bad.includes('clash:t1-t3') && st.bad.includes('src:t5') && st.bad.length === 4, '앱 대조: 순서 뒤집힘·출처에 없는 시각(t4·t5)·마틴이 짚은 어긋남 ' + st.bad.join(' '));
+  want(st.bad.includes('order:t5-t1') && st.bad.includes('src:t4') && st.bad.includes('clash:t1-t3') && st.bad.includes('src:t5') && st.bad.length === 4, '앱 대조: 순서 뒤집힘·출처에 없는 시각(t4·t5)·마틴이 짚은 어긋남 ' + st.bad.join(' '));
   await p.click('#btnTl'); await p.waitForTimeout(500);
   st = await p.evaluate(() => ({ on: document.body.classList.contains('tlopen'), day: [...document.querySelectorAll('#tlm .tld')].map(e => e.textContent), rows: [...document.querySelectorAll('#tlm .tlr:not(.gone)')].map(e => e.dataset.tl), badRows: [...document.querySelectorAll('#tlm .tlr.bad')].map(e => e.dataset.tl), guess: !!document.querySelector('#tlm .tlr.guess[data-tl="t3"]'), warn: document.querySelectorAll('#tlm .tlw').length, fs: getComputedStyle(document.querySelector('#tlmBody')).fontSize, nw: document.querySelectorAll('#tlm .tlr.new').length }));
   want(st.on && st.day.join('|') === '2026-11-10(화)|날짜 모름', '서랍: 날짜 머리(요일) 아래로 ' + st.day.join('|'));
@@ -61,7 +61,7 @@ const SEED = { v: 3, id: '20261117-tl', at: 1, turn: 2, nid: 9, emax: 2, notes: 
   await send('연혁시험2');
   let pr = (await p.evaluate(() => window.__p.find(x => x.includes('연혁시험2'))));
   want(pr.includes('[연혁 — 이 사건에서 일어난 일') && pr.includes('t1 21:05 가짜A 귀가 — 가짜A [e1]') && pr.includes('9:40? 가짜B 아직 밖') && pr.includes('(추정)'), '매 턴 [연혁] — 날짜 머리 아래 줄마다 id·시각·누가·출처·추정');
-  want(pr.includes('! t5는 t3 뒤라 했는데 더 이르다(21:00 < 21:40)') && pr.includes('! t4의 시각 23:15 이 출처 e1 판독문에 안 보인다') && pr.includes('어긋남(앱 대조'), '어긋남을 마틴에게 — 고치거나 풀라고');
+  want(pr.includes('! t5는 t1 뒤라 했는데 더 이르다(21:00 < 21:05)') && pr.includes('! t4의 시각 23:15 이 출처 e1 판독문에 안 보인다') && pr.includes('어긋남(앱 대조'), '어긋남을 마틴에게 — 고치거나 풀라고');
   want(pr.includes('- tl: 연혁') && pr.includes('"tl":[{"op":"add","id":"t7"'), 'tl 규칙과 다음 id(t7)');
   want(pr.indexOf('[맞춰 보기') < pr.indexOf('[연혁 —') && pr.indexOf('[연혁 —') < pr.indexOf('[사건 시계]'), '칸 자리: 맞춰 보기 아래, 사건 시계 위');
 
@@ -69,7 +69,7 @@ const SEED = { v: 3, id: '20261117-tl', at: 1, turn: 2, nid: 9, emax: 2, notes: 
   st = await p.evaluate(() => ({ t4: S.tl.find(x => x.id === 't4'), t6: S.tl.find(x => x.id === 't6').gone, bad: tlCheck().map(b => b.kind + ':' + b.ids.join('-')) }));
   want(st.t4.t === '22:30' && st.t4.what === '가짜A 다시 문 확인', 'edit — 시각·내용 고침');
   want(st.t6 && st.t6.why === '다른 사건 이야기', 'drop — 이유와 함께 지운 줄로');
-  want(st.bad.sort().join(' ') === 'order:t5-t3 src:t5', '고치고 풀면 남은 어긋남만 ' + st.bad.join(' '));
+  want(st.bad.sort().join(' ') === 'order:t5-t1 src:t5', '고치고 풀면 남은 어긋남만 ' + st.bad.join(' '));
   await p.click('#btnTl'); await p.waitForTimeout(400);
   want(await p.evaluate(() => document.querySelector('#tlm .tlg summary').textContent.includes('지운 줄 1')), '서랍 맨 아래 「지운 줄 1」');
 

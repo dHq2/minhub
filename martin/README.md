@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.25 (2026-11-18)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.26 (2026-11-18)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -68,17 +68,17 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/face.js | 프사 자동(v0.15.1, A) — 얼굴 없는 인물 카드마다 판독문에 그 이름이 나오는 캡처에서 프사 자리를 짧게 물어(faceFind — 조각 좌표를 원본으로) cropFace 로 잘라 붙임(faceAuto). 판독문에 「[프사] 이름 — …」. 동료가 뺀 카드(n.faceNo)는 다시 안 붙임 |
-| js/timeline.js | 연혁(v0.15.2, A) — S.tl(일어난 일 시간순)·S.tclash, 마틴 답 "tl"(applyTl), 앱 대조 tlCheck(순서·출처 시각·두 곳·마틴이 짚은 어긋남), 프롬프트 [연혁] tlText(맞춰 보기 아래), 위 단추 「연혁」·오른쪽 서랍 #tlm(작고 빽빽한 세로 타임라인) |
+| js/timeline.js | 연혁(v0.15.2, A) — S.tl(일어난 일 시간순)·S.tclash, 마틴 답 "tl"(applyTl), 앱 대조 tlCheck(순서·출처 시각·두 곳·마틴이 짚은 어긋남 — 앞뒤는 tlBefore 한 곳, 둘 다 아는 것끼리만), 프롬프트 [연혁] tlText(맞춰 보기 아래), 위 단추 「연혁」·오른쪽 서랍 #tlm(작고 빽빽한 세로 타임라인) |
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함 — 프롬프트는 MARTIN_SHORT + RULES + 묶음 짜는 법, 실은 strLink·strCut 으로) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
 | js/shot.js · js/lib/html-to-image.js | 판 사진(v0.11.0, A) — 판 전체를 고화질 PNG 로(boardShot), 저장·복사 서랍(shotSheet). 라이브러리는 html-to-image 1.11.13(MIT) 그대로 |
-| js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
+| js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만. 묻는 줄(의문·확인할 것)에 답 달기는 nbAnswer 한 길(v0.15.8, B) — sure 면 풀림, 아니면 기운 답(lean, 짐작 칸에 「의문 → 답」). solve·over·판 의문 카드 내림이 다 이 길. nbTouched(동료 말이 다루는 의문)·nbBare·nbAge(오래 답 없는 의문)는 rules.js 걸린 것이 씀 |
 | js/undo.js | 되돌리기(v0.8.0, C) — 동료의 손질은 한 칸씩, 마틴의 답 하나도 한 칸(그 답이 판에 한 것 통째로 — v0.15.7 보스). 대화·판독문은 안 무름. core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 앱이 스스로 판을 고치는 새 코드는 바꾸기 직전 undoApp() 한 줄(마틴의 칸에 합쳐짐) · 앱이 알아낸 칸은 UNDO_LEARN · 마틴에게 알림 undoText() |
 | js/split.js | 판·대화 나누기(v0.11.2, B) — 대화창(.stage) 높이를 비율 SPLIT.r 로(기본 반반), 가운데 손잡이 #split 끌기·두 번 눌러 반반, 기기 키 'drmartin.split'. 높이를 바꾸면 가짜 resize 신호를 보냄 |
 | js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
 | js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
 | js/pvtalk.js | 사진 위에 뜨는 대화(v0.13.0, C) — 사진 크게 보기의 「대화 보기」: 사진은 입력줄 바로 위까지 가득, 최근 대화 6줄을 #pvTalk 에 베껴 반투명으로(손가락 통과), 입력줄·칩은 #app.pvtalk 로 사진 위에 |
 | js/trail.js | 행동 기록 자세히(v0.13.2, A) — act() 의 id 를 이름표 refs 로(actRefs)·어디서 where·판/사진 확대·굴림을 손짓 끝에 한 줄·기록 행동 탭 actDetail·프롬프트 trailText. act 에 id·ids·ev·on 을 넣으면 이름표는 저절로 붙는다 |
-| js/xref.js | 맞춰 보기(v0.14.2, C) — 판독문·글 원문에서 날짜·시각·「이름(시각): 말」 줄을 뽑아 xrefText()(상태만 — 전체 시계·인물별 발언·판독문 없는 자료·기록과 자료가 안 맞는 곳. 모순 쓸기는 rules.js 의 의심 신호(xrSweepWhy)로)를 buildPrompt 고리에, xrClockLines() 를 수첩 「전체 시계」 칸에. 판독문 모양이 바뀌면 xrLine 을 |
+| js/xref.js | 맞춰 보기(v0.14.2, C) — 판독문·글 원문에서 날짜·시각·「이름(시각): 말」 줄을 뽑아 xrefText()(상태만 — 전체 시계·인물별 발언·판독문 없는 자료·기록과 자료가 안 맞는 곳. 모순 쓸기는 rules.js 의 의심 신호(xrSweepWhy)로)를 buildPrompt 고리에, xrClockLines() 를 수첩 「전체 시계」 칸에. 날짜는 줄 머리에서만(날짜 줄·줄 앞 도장 — 말 속 날짜는 말), 말한 사람은 시각 도장이 붙은 줄의 이름(시각 없는 「X: 말」은 아는 사람만, v0.15.8 B). 판독문 모양이 바뀌면 xrLine 을 |
 | js/clock.js | 사건 시계(v0.14.3, D) — S.clock{ms,start,sess}, 앱이 보이고 초점이 있을 때만 흐름, 위 띠 #clk(누르면 들인 시간 0.01초), log 를 감싸 모든 기록에 clk, 프롬프트 clockText()(사건 시각·들인 시간·동료 쪽 현실 시각), clockTick()·clockMs() |
 | js/recap.js | 사건 복기본(v0.13.3~, D) — 계정+기기 기록을 사건 id 로 모아 11칸 글(recapGather·recapText), 텍스트 파일로 받기(recapSave, downloads), 날것 JSON(recapRaw) |
 | js/wallclock.js · img/clock.webp · img/clock-cap.webp | 벽시계(A) — 판 왼쪽 위에 늘 걸려 사건 시계(D 의 S.clock / clockMs())를 따라 도는 그림 시계. 바늘은 SVG, 누르면 크게(clockSheet() 가 있으면 그쪽) |
@@ -87,6 +87,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
 | tests/v15.js | 한 판 점검 — 네 방 몫(기억·자료 형편·맞춰 보기·사건 시계·벽시계·행동 기록·복기본)이 가짜 사건 하나에서 같이 도는지. 프롬프트 칸을 더하거나 옮기면 여기 KEYS·순서 줄도 고친다 |
 | tests/rules-b.js | 통일 규칙 점검 — 상태 칸·건넨 것에 명령문 없음, 원칙·출력·걸린 것 칸 한 번씩, 같은 규칙 한 곳, 개발 메모 없음, 걸린 것 1~3·원칙 이름. 깨지면 점검을 느슨하게 하지 말고 규칙을 원칙에 녹인다(2-1) |
+| tests/notebook-b.js | 수첩 의문이 답을 품는지 — solve sure true·false, over 가 의문을 가리킬 때(누가 적은 줄이든), 판 의문 카드 내림, 걸린 것 두 신호, 맞춰 보기 날짜·사람, 연혁 앞뒤(v0.15.8, B) |
 | handoff/ | 할일.md(찜) · from-a~d.md(알림) |
 | CHANGELOG.md | 변경 기록 |
 
@@ -150,3 +151,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳)·js/cue.js(D, 빠져 있던 줄)·tests/rules-b.js, habits·mode·xref 줄 고침, 올리기 2번에 rules-b |
 | v1.24 | 2026-11-17 | B: 통일 규칙 마저 — 답 받기 단계 목록(rules.js RES_STEPS·resFilter), 실 기록(habits.js strLink·strCut — 감싸기 걷음), 판 정리도 같은 원칙·인물 설정, 판독 규칙 한 곳, 7장 세희 인수인계 한 줄 |
 | v1.25 | 2026-11-18 | A: 되돌리기 — 마틴의 답 하나 = 한 칸, 앱의 손질은 undoApp() 으로 그 칸에(파일 지도 undo.js 줄). 판 빚에서 「말한 사람인데 카드 없음」 걷음, 사람 카드의 무게·얼굴은 원칙 2 (v0.15.7) |
+| v1.26 | 2026-11-18 | B: 수첩 답 달기 한 길(notebook.js nbAnswer), 맞춰 보기 날짜·사람 읽는 법, 연혁 앞뒤 tlBefore, tests/notebook-b.js (v0.15.8) |

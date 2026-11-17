@@ -8,6 +8,8 @@
    · 앱이 스스로 대조(tlCheck): after 인데 시각이 앞섬 · 출처 판독문에 그 시각이 안 보임 · 같은 사람이 같은 때 두 곳 · 마틴이 짚은 어긋남.
    · 화면: 위 단추 「연혁」(줄 수, 어긋남 있으면 빨간 점) → 오른쪽 서랍 #tlm. 날짜 머리 아래로 「시각 · 일 · 누가 · 출처」 한 줄씩, 작은 고정폭 글씨.
      줄을 누르면 출처 카드로 날아가 반짝, × 는 동료가 지움(되돌리기 됨). 이번 턴에 새로 생기거나 고친 줄은 금빛 */
+/* 11-18 B: 앞뒤 대조는 tlBefore 한 곳 — 둘 다 아는 것끼리만 비교한다(해·날짜·시각). 시각 없는 줄과 견줘 생기던 가짜 어긋남(보스 사건 t16·t15)을 걷음.
+   오전·오후를 모르는 시각(amb)은 두 갈래(오전·오후) 다 될 수 있는 시각으로 본다 — 어느 갈래로 봐도 앞설 때만 앞선다 */
 const TL_WD = '일월화수목금토';
 let tlFlash = new Set();
 function ensureTl(){ if (!S) return; if (!Array.isArray(S.tl)) S.tl = []; if (!Number.isFinite(S.tmax)) S.tmax = S.tl.reduce((m, x) => Math.max(m, +String(x.id || '').slice(1) || 0), 0); if (!Array.isArray(S.tclash)) S.tclash = []; }
@@ -41,10 +43,20 @@ function tlTimeIn(x, read){
   return pats.some(p => read.includes(p));
 }
 /* 앱의 대조 — 줄마다 어긋남 [{ ids, why, kind }] */
+/* x 가 y 보다 분명히 이른가 — 둘 다 아는 자리까지만 견준다. 모르면 false */
+function tlBefore(x, y){
+  const p = d => { const m = /^(\d{4}|-)-?(\d{2})?-?(\d{2})?$/.exec(d || ''); return m ? { y:m[1] === '-' ? '' : m[1], md:m[2] && m[3] ? m[2] + '-' + m[3] : '' } : null; };
+  const a = p(x.d), b = p(y.d); if (!a || !b) return false;
+  if (a.y && b.y && a.y !== b.y) return a.y < b.y;
+  if (!a.md || !b.md) return false;
+  if (a.md !== b.md) return a.md < b.md;
+  const span = z => { if (!z.t) return null; const [h, m] = z.t.split(':').map(Number), lo = (z.amb ? h % 12 : h) * 60 + m; return [lo, z.amb ? lo + 720 : lo]; };
+  const u = span(x), v = span(y); return !!(u && v) && u[1] < v[0];
+}
 function tlCheck(){
   const out = [], live = tlLive(), by = new Map(live.map(x => [x.id, x]));
   for (const x of live){
-    if (x.after && by.has(x.after)){ const y = by.get(x.after); if (x.d && y.d && (x.t || x.d !== y.d) && tlKey(x) < tlKey(y)) out.push({ ids:[x.id, y.id], kind:'order', why:`${x.id}는 ${y.id} 뒤라 했는데 더 이르다(${x.d === y.d ? '' : tlDayTxt(x.d) + ' '}${x.t || ''} < ${x.d === y.d ? '' : tlDayTxt(y.d) + ' '}${y.t || ''})` }); }
+    if (x.after && by.has(x.after)){ const y = by.get(x.after); if (tlBefore(x, y)) out.push({ ids:[x.id, y.id], kind:'order', why:`${x.id}는 ${y.id} 뒤라 했는데 더 이르다(${x.d === y.d ? '' : tlDayTxt(x.d) + ' '}${x.t || ''} < ${x.d === y.d ? '' : tlDayTxt(y.d) + ' '}${y.t || ''})` }); }
     if (x.t && (x.src || []).length){ const rs = x.src.map(id => evOf(id)).filter(e => e && e.read); if (rs.length && !rs.some(e => tlTimeIn(x, e.read))) out.push({ ids:[x.id], kind:'src', why:`${x.id}의 시각 ${x.t} 이 출처 ${x.src.join(',')} 판독문에 안 보인다 — 시각을 다시 확인` }); }
   }
   const grp = new Map(); for (const x of live) if (x.who && x.d && x.t && x.where) { const k = x.who + '|' + x.d + '|' + x.t; (grp.get(k) || grp.set(k, []).get(k)).push(x); }
