@@ -1,4 +1,4 @@
-// 자료함 점검 v1.0 (2026-11-16, A) — 원본 보관(올린 파일 그대로)·세로로 긴 캡처는 조각내 보내기·판독문 저장·[자료함] 프롬프트·look 다시 보기·합쳐도 원본 남음·갤러리 화면. 폰 화면.
+// 자료함 점검 v1.1 (2026-11-16, A — v1.1 11-18 A: 그림 순서표) — 원본 보관(올린 파일 그대로)·세로로 긴 캡처는 조각내 보내기·판독문 저장·[자료함] 프롬프트·look 다시 보기·합쳐도 원본 남음·갤러리 화면. 폰 화면.
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const MOCK = () => {
@@ -33,6 +33,8 @@ const MOCK = () => {
   let st = await p.evaluate(() => ({ ev: S.ev.map(e => [e.id, e.kind, e.card, !!e.read, e.asset || '', e.len || 0]), n: window.__calls.filter(c => !c.p.includes('손질됐다'))[0].n, up: window.__up, raw: localStorage.getItem('drmartin.ev.' + S.id + '.e3') || '' }));
   want(st.ev.length === 3 && st.ev[2][1] === 'text', '자료함 3건(사진 2·글 1) ' + JSON.stringify(st.ev));
   want(st.n === 4, '긴 캡처는 3조각 + 넓은 사진 1장 = 마틴에게 4장 → ' + st.n);
+  const p1 = await p.evaluate(() => window.__calls.filter(c => !c.p.includes('손질됐다'))[0].p);
+  want(/순서대로: 1~3번째 = e1\(판 n2\)[^\n]*위에서부터 3조각 · 4번째 = e2\(판 n3\)/.test(p1), '그림마다 어느 자료인지 순서표(11-18 A) ' + (p1.match(/\[같이 보내는 그림[^\n]*/) || [''])[0].slice(0, 160));
   want(st.up.length === 2 && st.up.every(u => u[0] === 'image/png'), '보관함엔 올린 파일 그대로(png) ' + JSON.stringify(st.up));
   want(st.ev.every(e => e[3]), '판독문 3건 저장');
   want(st.raw.includes('열쇠 반납'), '붙여 넣은 글 원문 보관');
@@ -41,6 +43,8 @@ const MOCK = () => {
   st = await p.evaluate(() => { const cs = window.__calls.filter(c => !c.p.includes('손질됐다')); return { second: cs[1].p.includes('[자료함') && cs[1].p.includes('e1 사진') && cs[1].p.includes('열쇠 반납'), third: cs[2] && cs[2].p.includes('[다시 보기'), n3: cs[2] && cs[2].n, read: S.ev[0].read, ev: S.ev.map(e => e.card), nodes: S.nodes.map(n => n.id), lines: S.log.filter(l => l.who === 'm').slice(-2).map(l => l.text) }; });
   want(st.second, '다음 턴 프롬프트에 [자료함]과 판독문');
   want(st.third && st.n3 === 3, 'look → 원본(3조각) 붙여 다시 묻기 ' + st.n3);
+  const p3 = await p.evaluate(() => window.__calls.filter(c => !c.p.includes('손질됐다'))[2].p);
+  want(/1~3번째 = e1\(판 n2\)[^\n]*네가 청한 원본/.test(p3) && p3.includes('원본이 맞다'), 'look 다시 묻기에도 순서표 · 원본이 맞다');
   want(st.read.includes('복사본은 제가'), '판독문 고쳐 씀');
   want(!st.nodes.includes('n3') && st.ev[0] === 'n2' && st.ev[1] === 'n2', '카드를 합쳐도 원본 둘 다 자료함에 ' + JSON.stringify(st.ev));
   want(st.lines.join('|').includes('다시 본다'), '다시 보기 한마디 ' + st.lines.join('|'));

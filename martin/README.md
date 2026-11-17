@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.26 (2026-11-18)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.27 (2026-11-18)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -56,7 +56,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/changes.js | 보스 눈에 보이는 변화 목록 CHANGES — 업데이트 뒤 마틴이 자기 말투로 설명하는 재료 |
 | js/core.js | 기본 도구($·esc·sleep) · 상태 S · 기기 저장(localStorage) · 계정 저장(db, put/dbStart/adopt) · 사진 보관(assets) |
 | js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/cut/edit/merge/remove/face/suspect/tidy — 실 잇기·끊기는 habits.js 의 실 기록 strLink·strCut 을 부름) · 판 정리 · play |
-| js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 |
+| js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 · 그림 보내기는 imgPack(groups) 하나(그림마다 어느 자료인지 순서표 + IMG_MAX 자르기 — v0.15.9) |
 | js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기(폰은 엔터 = 줄 바꿈, 건네기는 단추) |
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
@@ -152,3 +152,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.24 | 2026-11-17 | B: 통일 규칙 마저 — 답 받기 단계 목록(rules.js RES_STEPS·resFilter), 실 기록(habits.js strLink·strCut — 감싸기 걷음), 판 정리도 같은 원칙·인물 설정, 판독 규칙 한 곳, 7장 세희 인수인계 한 줄 |
 | v1.25 | 2026-11-18 | A: 되돌리기 — 마틴의 답 하나 = 한 칸, 앱의 손질은 undoApp() 으로 그 칸에(파일 지도 undo.js 줄). 판 빚에서 「말한 사람인데 카드 없음」 걷음, 사람 카드의 무게·얼굴은 원칙 2 (v0.15.7) |
 | v1.26 | 2026-11-18 | B: 수첩 답 달기 한 길(notebook.js nbAnswer), 맞춰 보기 날짜·사람 읽는 법, 연혁 앞뒤 tlBefore, tests/notebook-b.js (v0.15.8) |
+| v1.27 | 2026-11-18 | A: 파일 지도 ai.js 줄에 imgPack(마틴에게 그림을 보내는 길은 이 하나 — 순서표) (v0.15.9) |

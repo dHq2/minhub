@@ -2,6 +2,16 @@
 /* ── 마틴에게 묻기 ── */
 /* 11-17 A: 한 번에 보낼 수 있는 그림 수 — 보스 사건 20261117-5723 에서 사진 4장(세로로 긴 캡처 둘이 3조각씩 = 8장)이 「at most 4 images per call」로 튕겼다 */
 let IMG_MAX = 4;
+/* 11-18 A: 그림엔 이름표가 안 붙는다 — 보내는 그림마다 어느 자료인지 순서표를 글로 같이 보낸다(보스 사건: 사진 세 장의 판독문이 서로 엇갈려 붙고, 카드 이름을 고쳐도 같은 이름으로만 고침).
+   마틴에게 그림을 보내는 길(새 자료·띄운 사진·먼저 판독·다시 보기·없다 전 다시 보기)은 전부 이 하나로 묶어 보낸다. groups = [{label, imgs}] */
+const evLabel = e => `${e.id}${e.card ? '(판 ' + e.card + ')' : ''}「${typeof evTitle === 'function' ? evTitle(e) : e.title || ''}」`;
+function imgPack(groups, max){
+  const lim = max || IMG_MAX, imgs = [], rows = [];
+  for (const g of groups || []){ const all = g && g.imgs || [], list = all.slice(0, lim - imgs.length); if (!list.length) continue;
+    const a = imgs.length + 1, b = imgs.length + list.length; imgs.push(...list);
+    rows.push(`${a === b ? a : a + '~' + b}번째 = ${g.label}${list.length > 1 || all.length > list.length ? ` — 세로로 긴 사진, 위에서부터 ${list.length}조각${all.length > list.length ? `(모두 ${all.length}조각 중)` : ''}` : ''}`); }
+  return { imgs, text:rows.length ? `[같이 보내는 그림 ${imgs.length}장 — 순서대로: ${rows.join(' · ')}. 그림 속을 말하거나 판독문(read)을 적을 땐 이 순서표의 자료 id 로]\n` : '' };
+}
 async function getSample(){
   if (sampleFn !== undefined) return sampleFn;
   try{ sampleFn = window.claude ? await window.claude.use('sample') : null; }catch(e){ sampleFn = null; }
@@ -81,44 +91,44 @@ async function turn({ text = '', atts = [], retry = false }){
   if (busy) return; setBusy(true); curLines = [];
   const sample = await getSample();
   if (!sample){ await speak('…연결이 끊겼다. 여기선 내 머리가 돌아가지 않는다.', false); setBusy(false); return; }
-  let imgs = [], photos = [], given = ''; const evs = [], tiles = {}, shots = [];
+  let imgs = [], grp = [], photos = [], given = ''; const evs = [], shots = [];
   if (retry && S.pending){ given = S.pending.given; photos = S.pending.photos || [];
-    for (const id of photos){ const n = nodeOf(id); if (!n) continue; try{ const b = await (await fetch(photoSrc(n))).blob(); if (b.size) imgs.push(b); }catch(e){} }
+    for (const id of photos){ const n = nodeOf(id); if (!n) continue; try{ const b = await (await fetch(photoSrc(n))).blob(); const e = evByCard(id); if (b.size) grp.push({ label:e ? evLabel(e) : `판 ${id}「${n.title}」`, imgs:[b] }); }catch(e){} }
     renderChat(); }
   else {
     for (const a of atts) if (a.type === 'img'){
       const id = 'n' + S.nid++, p = placeNear('n1'), n = { id, kind:'photo', title:'사진', note:'', thumb:a.thumb, big:URL.createObjectURL(a.blob), mid:a.mid, x:p.x, y:p.y, r:(hash(id) % 9) - 4 };
       await fly(n.x, n.y, .85, 600); S.nodes.push(n); $('#nodes').insertAdjacentHTML('beforeend', cardHtml(n, 'drop')); measure(); sfx(n.x + 50, n.y - 80, '탁');
       const ev = addEv({ kind:'photo', card:id, title:a.name || '사진', name:a.name, thumb:a.thumb, big:n.big }); evs.push(ev.id); save(); keepPhoto(n, a, ev); await sleep(500);
-      const rc = canImg ? await readCopies(a.orig || a.blob) : []; if (rc.length > 1) tiles[ev.id] = rc.length;   /* 11-16 A: 세로로 긴 캡처는 조각으로 — 글자가 읽히게 */
-      imgs.push(...(rc.length ? rc : [a.blob])); photos.push(id); shots.push({ e:ev, rc, src:a.orig || a.blob }); }
+      const rc = canImg ? await readCopies(a.orig || a.blob) : [];   /* 11-16 A: 세로로 긴 캡처는 조각으로 — 글자가 읽히게 */
+      grp.push({ label:evLabel(ev), imgs:rc.length ? rc : [a.blob] }); photos.push(id); shots.push({ e:ev, rc, src:a.orig || a.blob }); }
     const longPaste = text.length >= 300 || /\[.+\] \[(오전|오후)/.test(text);   /* 11-16 A: 붙여 넣은 대화·긴 글은 자료함에 원문째 */
     if (text){ let tag = ''; if (longPaste){ const e = addEv({ kind:'text', name:'붙여 넣은 글', len:text.length, head:text.slice(0, 160) }); keepText(e, text); evs.push(e.id); tag = ` — 자료함 ${e.id}`; } given += `[동료의 말/붙여넣기${tag}]\n${text.slice(0, 12000)}\n`; }
     for (const a of atts) if (a.type === 'txt'){ const e = addEv({ kind:'text', name:a.name, len:a.text.length, head:a.text.slice(0, 160) }); keepText(e, a.text); evs.push(e.id); given += `[파일 ${a.name} — 자료함 ${e.id}]\n${a.text.slice(0, 12000)}\n`; }
     const view = pvOpenId();
     if (view){ const vn = itemOf(view), ve = /^e/.test(view) ? vn : evByCard(view), vt = /^e/.test(view) ? evTitle(vn) : vn.title; let rc = [];
-      if (canImg){ try{ rc = ve ? await evCopies(ve) : await readCopies(photoSrc(vn)); }catch(e){ rc = []; } imgs.push(...rc); }
+      if (canImg){ try{ rc = ve ? await evCopies(ve) : await readCopies(photoSrc(vn)); }catch(e){ rc = []; } grp.push({ label:(ve ? evLabel(ve) : `판 ${view}「${vt}」`) + ' — 동료가 화면에 띄워 둔 것', imgs:rc }); }
       /* 11-16 D: 띄워 둔 사진이 있다고 무조건 사진에 잇지 않게 — 카드를 고르면 사진이 저절로 뜨기도 한다(보스 판 11-16 21:44). 사진 속을 가리키는 말일 때만 사진에서 답하고, 나머지는 앞 대화를 잇는다 */
       const vSaid = Math.max(0, S.log.filter(l => l.who === 'p').length - (PV.n0 || 0));
-      given += `[화면 — 동료 옆에 ${ve ? '자료함 ' + ve.id + (ve.card ? '(판 ' + ve.card + ')' : '') : '판의 ' + view}「${vt}」 원본이 크게 펼쳐져 있다. 판에서 카드를 고르다 저절로 뜬 것일 수도 있다.${vSaid ? ` 띄운 뒤로 동료가 ${vSaid}번 더 말했다.` : ''}${rc.length ? ` 원본을 같이 보낸다${rc.length > 1 ? `(세로로 긴 사진이라 위에서부터 ${rc.length}조각)` : ''}.` : ''}
+      given += `[화면 — 동료 옆에 ${ve ? '자료함 ' + ve.id + (ve.card ? '(판 ' + ve.card + ')' : '') : '판의 ' + view}「${vt}」 원본이 크게 펼쳐져 있다. 판에서 카드를 고르다 저절로 뜬 것일 수도 있다.${vSaid ? ` 띄운 뒤로 동료가 ${vSaid}번 더 말했다.` : ''}${rc.length ? ' 원본을 같이 보낸다.' : ''}
 ]\n`; }
     if (!view && !photos.length && !atts.length && text.length < 300 && !/\[.+\] \[(오전|오후)/.test(text)) given = `[새 자료 없음 — 동료가 말만 건넸다]\n` + given;
-    if (photos.length) given += canImg ? `[사진 ${photos.length}장 — 이미 보드에 ${photos.join(', ')} 카드로 꽂았고, 원본은 자료함 ${evs.filter(x => evOf(x).kind === 'photo').join(', ')} 에 보관했다${Object.keys(tiles).length ? ` (세로로 긴 사진은 위에서부터 조각내 보낸다: ${Object.entries(tiles).map(([k, v]) => k + ' ' + v + '조각').join(', ')})` : ''}. 카드 제목·메모는 아직 비었고 판독문도 없다.]\n` : `[사진 ${photos.length}장을 ${photos.join(', ')} 카드로 꽂았지만 너는 사진 속을 볼 수 없다 — 무엇이 찍혔는지는 동료만 안다.]\n`;
+    if (photos.length) given += canImg ? `[사진 ${photos.length}장 — 이미 보드에 ${photos.join(', ')} 카드로 꽂았고, 원본은 자료함 ${evs.filter(x => evOf(x).kind === 'photo').join(', ')} 에 보관했다. 카드 제목·메모는 아직 비었고 판독문도 없다.]\n` : `[사진 ${photos.length}장을 ${photos.join(', ')} 카드로 꽂았지만 너는 사진 속을 볼 수 없다 — 무엇이 찍혔는지는 동료만 안다.]\n`;
     const m = { who:'p', text:text.slice(0, 1500), at:Date.now(), photos, files:atts.filter(a => a.type === 'txt').map(a => a.name), ...(view ? { viewing:view } : {}) }; S.log.push(m); chatEl().insertAdjacentHTML('beforeend', msgHtml(m)); toEnd(true);
     S.pending = { given:given.slice(0, 26000), photos:view ? [...photos, view] : photos, at:Date.now() }; save();   /* 보내는 순간 저장 — 끊겨도 다시 묻기 */
     log('chat', { who:'p', text, files:atts.map(a => ({ name:a.name, type:a.type, chars:a.text ? a.text.length : undefined })), photos, ...(view ? { viewing:view } : {}) });
   }
   renderAll(); thinking(true);
   /* 11-17 A: 그림은 한 번에 IMG_MAX 장까지 — 넘으면 사진마다 원본(조각)을 먼저 따로 읽혀 판독문을 적어 두고, 이번 답엔 사진을 한 장씩 줄여 보낸다 */
-  if (canImg && imgs.length > IMG_MAX && shots.length){
+  if (canImg && grp.reduce((k, g) => k + g.imgs.length, 0) > IMG_MAX && shots.length){
     let n = 0; for (const x of shots){ const e = evOf(x.e.id) || x.e; if (e.read) continue; const t = await evReadOne(e, (x.rc.length ? x.rc : []).slice(0, IMG_MAX), AI.effort); if (t){ e.read = t; e.readTurn = S.turn + 1; n++; } }
-    const whole = []; for (const x of shots.slice(0, IMG_MAX)){ try{ const w = await readCopies(x.src, { whole:true }); if (w[0]) whole.push(w[0]); }catch(e){} }
-    act('사진 먼저 판독', { n, imgs:imgs.length, max:IMG_MAX }); evPing(n);
-    imgs = whole;
-    given += `[그림은 한 번에 ${IMG_MAX}장까지라, 앱이 사진마다 원본을 먼저 따로 읽혀 판독문을 [자료함]에 적어 두었다. 이번엔 사진 ${imgs.length}장을 한 장씩 줄여 같이 보낸다.]\n`;
+    const whole = []; for (const x of shots.slice(0, IMG_MAX)){ try{ const w = await readCopies(x.src, { whole:true }); if (w[0]) whole.push({ label:evLabel(evOf(x.e.id) || x.e), imgs:[w[0]] }); }catch(e){} }
+    act('사진 먼저 판독', { n, imgs:grp.reduce((k, g) => k + g.imgs.length, 0), max:IMG_MAX }); evPing(n);
+    grp = whole;
+    given += `[그림은 한 번에 ${IMG_MAX}장까지라, 앱이 사진마다 원본을 먼저 따로 읽혀 판독문을 [자료함]에 적어 두었다. 이번엔 사진 ${grp.length}장을 한 장씩 줄여 같이 보낸다.]\n`;
     if (S.pending) S.pending.given = given.slice(0, 26000); save(); }
-  if (imgs.length > IMG_MAX) imgs = imgs.slice(0, IMG_MAX);
-  let res; const prompt = buildPrompt(given), t0 = Date.now();
+  const pk = imgPack(grp); imgs = pk.imgs;
+  let res; const prompt = buildPrompt(given + pk.text), t0 = Date.now();
   const tier = () => AI.model.includes('opus') ? 'complex' : AI.model.includes('haiku') ? 'quick' : 'default';
   /* 11-17 A: JSON 이 안 오면 조용히 한 번 더 — 보스가 다시 묻기를 열 번 누르던 것 */
   const ask = async (p, images) => { const o = { model:AI.model, effort:AI.effort, modelTier:tier() }; if (images && images.length && canImg) o.images = images;
@@ -138,12 +148,13 @@ async function turn({ text = '', atts = [], retry = false }){
     log('turn', { ok:true, n:S.turn + 1, part:lookOk ? (keys.length ? 'look+recall' : 'look') : 'recall', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
     const line = lookOk ? res.lookLine || '잠깐. 원본을 다시 본다.' : res.recallLine || '잠깐. 앞에서 한 말을 다시 본다.';
     thinking(false); if (sayable(line)) await speak(line, true, { on:lookOk ? want.map(e => e.card).filter(id => id && nodeOf(id)) : [] }); thinking(true);
-    const more = []; if (lookOk) for (const e of want){ try{ more.push(...(await evCopies(e))); }catch(x){} }
+    const wg = []; if (lookOk) for (const e of want){ try{ wg.push({ label:evLabel(e) + ' — 네가 청한 원본', imgs:await evCopies(e) }); }catch(x){} }
+    const more = wg.flatMap(g => g.imgs), pk2 = imgPack([...wg, ...grp]);
     let add = '';
-    if (more.length) add += `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다(세로로 긴 건 위에서부터 조각). ]\n`;
+    if (more.length) add += `\n[다시 보기 — 네가 청한 원본 ${want.map(e => e.id).join(', ')} 를 같이 보낸다. 판독문과 원본이 다르면 원본이 맞다 — read 로 고친다.]\n`;
     if (keys.length) add += `\n[대화 다시 보기 — 네가 찾은 말(${keys.join(', ')})이 나온 옛 대화와 앞뒤 한 줄씩, 오래된 것부터]\n${recallText(keys)}\n`;
     if (add){ add += '[이걸 보고 이번 답을 처음부터 다시 써라. look 과 recall 은 비워라.]\n';
-      try{ const r2 = await ask(buildPrompt(given + add), [...more, ...imgs].slice(0, IMG_MAX)); if (r2 && typeof r2 === 'object') res = r2;
+      try{ const r2 = await ask(buildPrompt(given + add + pk2.text), pk2.imgs); if (r2 && typeof r2 === 'object') res = r2;
         if (more.length) act('다시 보기', { ids:want.map(e => e.id), imgs:more.length }); if (keys.length) act('대화 다시 보기', { keys }); }
       catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } }
   }
@@ -155,9 +166,10 @@ async function turn({ text = '', atts = [], retry = false }){
     if (pick.length){
       log('turn', { ok:true, n:S.turn + 1, part:'nolook', model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
       thinking(false); await speak('잠깐. 원본을 다시 본다.', true, { on:pick.map(e => e.card).filter(id => id && nodeOf(id)) }); thinking(true);
-      const more = []; for (const e of pick){ if (more.length >= IMG_MAX) break; try{ more.push(...(await evCopies(e)).slice(0, IMG_MAX - more.length)); }catch(x){} }
+      const pg = []; for (const e of pick){ try{ pg.push({ label:evLabel(e), imgs:await evCopies(e) }); }catch(x){} }
+      const pk3 = imgPack(pg), more = pk3.imgs;
       if (more.length){
-        const add = `\n[다시 보기 — 너는 「${bad.map(tx).join(' / ').slice(0, 160)}」라고 하려 했다. 그 말을 하기 전에 원본 ${pick.map(e => e.id).join(', ')} 을 같이 보낸다(세로로 긴 건 위에서부터 조각). look 과 recall 은 비워라.]\n`;
+        const add = `\n[다시 보기 — 너는 「${bad.map(tx).join(' / ').slice(0, 160)}」라고 하려 했다. 그 말을 하기 전에 원본 ${pick.map(e => e.id).join(', ')} 을 같이 보낸다. look 과 recall 은 비워라.]\n` + pk3.text;
         try{ const r2 = await ask(buildPrompt(given + add), more); if (r2 && typeof r2 === 'object') res = r2; act('없다 전 다시 보기', { ids:pick.map(e => e.id), imgs:more.length }); }
         catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } } } }
   if (typeof resFilter === 'function'){ try{ res = resFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 → 11-17 B: 답 받기 단계 목록(rules.js RES_STEPS) */
