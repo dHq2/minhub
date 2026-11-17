@@ -9,7 +9,7 @@ async function getSample(){
   return sampleFn;
 }
 function boardText(){
-  const ns = S.nodes.map(n => `${n.id} [${n.kind}] ${n.title} — ${n.note || ''}`).join('\n');
+  const ns = S.nodes.map(n => `${n.id} [${n.kind}] ${n.title}${n.kind === 'person' ? (n.face ? ` (얼굴: ${n.faceEv ? n.faceEv + ' 프사' : '붙음'})` : ' (얼굴 없음)') : ''} — ${n.note || ''}`).join('\n');   /* 11-18 A: 인물 카드의 얼굴도 판의 상태 */
   const ls = S.links.map(L => `${L.a}↔${L.b} ${L.label || ''}${L.sure ? '' : ' (추측)'}${L.why ? ' — 왜: ' + L.why : ''}`).join('\n') || '(없음)';   /* 11-17 B: 실마다 왜 이었나 */
   const cuts = (S.cuts || []).slice(-8).map(c => `${c.a}↔${c.b}${c.label ? ' ' + c.label : ''} — ${c.why || '이유 없음'}`).join(' / ');   /* 11-17 B: 끊은 실도 판의 상태 */
   return `카드:\n${ns}\n실:\n${ls}${cuts ? '\n끊은 실: ' + cuts : ''}\n용의자 표시: ${S.suspect || '없음'}`;

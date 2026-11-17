@@ -56,6 +56,7 @@ async function faceAuto(){
         const F = (e.card && nodeOf(e.card)) || { id:e.id, asset:e.asset, big:e.big, thumb:e.thumb };
         const url = await cropFace(F, f.box); if (!url) continue;
         if (P.face || P.faceNo || !nodeOf(P.id)) break;   /* 그사이 동료·마틴이 붙였거나 뗐으면 그대로 */
+        if (typeof undoApp === 'function') undoApp();   /* 11-18 A: 앱의 뒤따름 손질 — 마틴의 답과 한 칸(되돌리기) */
         P.face = url; P.faceFrom = e.card || ''; P.faceEv = e.id; P.faceAuto = 1;
         const nm = faceNames(P)[0], tag = `[프사] ${nm}`;
         if (f.desc && !String(e.read).includes(tag)) e.read = (e.read + `\n${tag} — ${f.desc}`).slice(0, 1800);

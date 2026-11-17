@@ -4,7 +4,7 @@
    무엇: 자료함의 판독문(S.ev[].read)과 글 원문(기기에 있으면)에서 줄을 뽑아
      · 전체 시계 — 날짜·시각이 붙은 줄을 방을 가로질러 시간순 한 줄씩(출처 자료 id). 날짜 줄과 오전/오후를 따라 정규화, 오전/오후 없는 시각은 (?) 표시
      · 인물별 발언 — 「이름(시각): 말」 꼴 줄을 사람별로
-     · 판독문 없는 자료 · 판 빚(여러 번 말한 사람인데 인물 카드 없음, 뒤에 풀렸는데 옛말 그대로인 카드 메모, 오전/오후 빠진 판독)
+     · 판독문 없는 자료 · 판 빚(뒤에 풀렸는데 옛말 그대로인 카드 메모, 오전/오후 빠진 판독) — 11-18 A: 「말한 사람인데 인물 카드 없음」은 걷음(보스)
      · 동료가 결론·전체 검토를 청하거나 새 가설이 섰을 때 「모순 쓸기」 지시
    xrefText() 는 ai.js buildPrompt 의 [자료함] 아래 고리(A)가 부른다. 수첩의 「전체 시계」 칸은 xrClockLines() 를 쓴다(notebook.js).
    읽는 판독문 모양(보스 판에서 흔한 것): 「이름(오전/오후 시:분): 말」, 날짜 줄 「2026년 11월 12일 목요일」. 그 밖에 카톡 내보내기
@@ -123,11 +123,7 @@ const XR_STOP = new Set('그리고 그런데 하지만 그래서 있다 없다 �
 const xrToks = s => new Set((String(s || '').match(/[가-힣A-Za-z0-9]{2,}/g) || []).map(w => w.replace(/(?:은|는|이|가|을|를|의|에|에서|으로|로|과|와|도|만|께|에게|한테|이다|였다|이었다)$/, '')).filter(w => w.length >= 2 && !XR_STOP.has(w)));
 function xrDebts(items){
   const out = [];
-  const persons = S.nodes.filter(n => n.kind === 'person'), pk = persons.map(n => xrKey(n.title));
-  const has = w => { const k = xrKey(w); return pk.some(p => p && (p.includes(k) || k.includes(p.slice(0, Math.max(2, Math.min(3, p.length)))))); };
-  const by = new Map(); for (const x of items) if (x.who){ const k = xrKey(x.who); const o = by.get(k) || { who:x.who, n:0, evs:new Set() }; o.n++; x.evs.forEach(e => o.evs.add(e)); by.set(k, o); }
-  const miss = [...by.values()].filter(o => (o.n >= 2 || o.evs.size >= 2) && !has(o.who) && !/말풍선|^나$|^상대|^발신|익명|모름|미상|^\?/.test(o.who)).sort((a, b) => b.n - a.n).slice(0, 6);
-  for (const o of miss) out.push(`「${o.who}」 — ${o.n}번 말함(${[...o.evs].join(' ')})인데 인물 카드가 없다`);
+  /* 11-18 A(보스): 「여러 번 말했는데 인물 카드가 없다」는 빚에서 걷었다 — 말한 사람을 다 세우라는 압력이 됐다. 누굴 세울지는 원칙 2(무게)로 마틴이 고른다. 인물별 발언은 위 [맞춰 보기]에 그대로 있다 */
   const known = (S.notes || []).filter(n => n.done && n.a || n.k === 'fact' && !n.done);
   for (const c of S.nodes){
     if (!c.note || !/미확정|미상|불명|모른다|모름|확인 안|확인되지|안 됨|알 수 없|없다/.test(c.note)) continue;

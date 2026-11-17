@@ -1,4 +1,4 @@
-// 프사 자동·그림 4장·없다 전 다시 보기·답 없으면 닫힘 점검 v1.1 (2026-11-17, A — v1.1 B: 없다 전 원본·글자 그대로를 원칙 1 문장으로 확인) — 보스 버그 보고(사건 20261117-5723 첫 턴)를 가짜 사건으로
+// 프사 자동·그림 4장·없다 전 다시 보기·답 없으면 닫힘 점검 v1.2 (2026-11-18, A — v1.2 A: 얼굴 문구는 원칙 2·판 글에 얼굴 상태 · v1.1 B: 없다 전 원본·글자 그대로를 원칙 1 문장으로 확인) — 보스 버그 보고(사건 20261117-5723 첫 턴)를 가짜 사건으로
 // 쓰는 법: bash martin/tests/run.sh face   (가짜 사건만)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -57,7 +57,7 @@ const MOCK = () => {
   await p.evaluate(() => faceAuto()); await p.waitForTimeout(1500);
   want(await p.evaluate(() => !nodeOf('n6').face && nodeOf('n6').faceNo === 1), '「이 사진 빼기」 한 카드엔 다시 안 붙임');
   const pr = await p.evaluate(() => window.__c.filter(c => c.p.includes('사진시험'))[0].p);
-  want(pr.includes('[프사] 이름 — 보이는 것') && pr.includes('앱이 그 사람이 말한 캡처'), '프롬프트: 판독에 [프사] 줄 · 얼굴은 앱이 붙이니 사진을 청하지 않음');
+  want(pr.includes('[프사] 이름 — 보이는 것') && pr.includes('앱이 그 캡처에서 찾아 붙이니') && pr.includes('사진을 따로 청하지 않고') && /\(얼굴 없음\)|\(얼굴: /.test(pr), '프롬프트: 판독에 [프사] 줄 · 얼굴은 앱이 붙이니 사진을 청하지 않음(원칙 2) · 판 글에 얼굴 상태');
   want(pr.includes('글자를 바꾸지 않는다') && pr.includes('look 으로 원본까지 본 뒤'), '프롬프트: 글자 그대로 · 없다 전 원본(원칙 1 근거 — 11-17 B 통일 규칙)');
 
   console.log('— 자료 형편 — 물었는데 답 없이 넘어가면');

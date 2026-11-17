@@ -1,4 +1,4 @@
-// 마틴 점검 — 되돌리기 · 수첩 × · 첫 인사 v1.0 (2026-11-16, C)
+// 마틴 점검 — 되돌리기 · 수첩 × · 첫 인사 v1.1 (2026-11-16, C — v1.1 11-18 A: 마틴의 답도 한 칸, 앱의 뒤따름 손질은 그 칸에)
 // 확인: 예전 '동료가 풀림 표시' 줄 되살림 · 수첩 줄 눌러도 그대로 · × 로만 지움 · 되돌리기/다시 하기 · 마틴 답 하나를 통째로 되돌림(대화는 그대로) ·
 //       다음 프롬프트에 '동료가 되돌린 것' · 첫 인사(… → 「판은 그대로다」 / 업데이트가 있으면 브리핑이 곧 인사)
 // 쓰는 법: bash martin/tests/run.sh undo   (스크린샷 /tmp/martin-되돌리기.png — 꼭 직접 연다)
@@ -91,7 +91,7 @@ const SEED = { v: 3, id: '20261116-undo', at: 1, turn: 3, nid: 6, nmax: 5, suspe
   want(!s.notes.some(n => n.id === 'm1'), '다시 하기 → 다시 지워짐');
   await p.click('#btnUndo'); await p.waitForTimeout(500);
 
-  /* 6) 마틴이 쓰고 꽂은 건 되돌리지 않는다 — 동료가 한 일만, 마틴의 답이 사이에 껴도 */
+  /* 6) 11-18 A: 마틴의 답 하나 = 한 칸 — 그 답이 판에 한 것(카드·수첩)을 통째로, 앱의 뒤따름 손질(프사)도 그 칸에. 대화는 그대로 */
   await p.click('#btnNb'); await p.waitForTimeout(400);
   await p.click('#nbBody .nl[data-n="m2"] .nl-x'); await p.waitForTimeout(900);
   await p.click('#nbX'); await p.waitForTimeout(400);
@@ -99,11 +99,22 @@ const SEED = { v: 3, id: '20261116-undo', at: 1, turn: 3, nid: 6, nmax: 5, suspe
   await p.click('#msg'); await p.keyboard.type('영수증 봐'); await p.keyboard.press('Enter'); await p.waitForTimeout(6000);
   s = await st(p);
   want(s.nodes.some(n => n.id === 'n6') && s.notes.some(n => n.t === '영수증은 22:41') && !s.notes.some(n => n.id === 'm2'), '마틴이 카드·수첩 추가, m2 는 지워진 채');
+  const nBack = await p.evaluate(() => UN.back.length);
+  await p.evaluate(() => { undoApp(); const n = S.nodes.find(x => x.id === 'n6'); n.face = 'data:image/png;base64,iVBORw0KGgo='; n.faceTried = ['e1']; save(); });   /* 앱이 뒤따라 붙인 얼굴 */
+  await p.waitForTimeout(900);
+  want(await p.evaluate(n => UN.back.length === n && UN.back[UN.back.length - 1].mart > 0 && /^마틴의 답 — /.test(UN.back[UN.back.length - 1].why), nBack), '앱의 뒤따름 손질은 새 칸이 아니라 마틴의 칸에 합쳐짐');
   await p.click('#btnUndo'); await p.waitForTimeout(700);
   s = await st(p);
-  want(s.notes.some(n => n.id === 'm2'), '되돌리기 → 마틴 답 앞에 동료가 지운 m2 돌아옴');
-  want(s.nodes.some(n => n.id === 'n6') && s.notes.some(n => n.t === '영수증은 22:41'), `마틴이 꽂은 카드·적은 수첩은 그대로 (${s.nodes.map(n => n.id)})`);
+  want(!s.nodes.some(n => n.id === 'n6') && !s.notes.some(n => n.t === '영수증은 22:41') && !s.notes.some(n => n.id === 'm2'), `되돌리기 한 번 → 마틴 답의 카드·수첩 통째로 빠짐, 그 앞 동료 손질(m2 지움)은 그대로 (${s.nodes.map(n => n.id)})`);
   want(s.log.length >= logN + 2 && s.log.some(l => l.text === '이어졌군.'), `대화는 그대로 ${s.log.length}줄`);
+  want((s.undone || []).some(x => x.mart > 0), '되돌린 기록에 마틴의 답 표시');
+  await p.click('#btnRedo'); await p.waitForTimeout(600);
+  s = await st(p);
+  want(s.nodes.some(n => n.id === 'n6' && n.face) && s.notes.some(n => n.t === '영수증은 22:41'), '다시 하기 → 마틴 답 통째로 돌아옴(얼굴까지)');
+  await p.click('#btnUndo'); await p.waitForTimeout(600);
+  await p.click('#btnUndo'); await p.waitForTimeout(600);
+  s = await st(p);
+  want(s.notes.some(n => n.id === 'm2') && !s.nodes.some(n => n.id === 'n6'), '한 번 더 → 마틴 답 앞에 동료가 지운 m2 돌아옴');
   await p.screenshot({ path: '/tmp/martin-되돌리기.png' });
   /* 첨부 칩 빼기도 동료의 일 */
   await p.setInputFiles('#fileAny', { name: '메모.txt', mimeType: 'text/plain', buffer: Buffer.from('가짜 메모') }); await p.waitForTimeout(600);
@@ -112,13 +123,13 @@ const SEED = { v: 3, id: '20261116-undo', at: 1, turn: 3, nid: 6, nmax: 5, suspe
   await p.click('#btnUndo'); await p.waitForTimeout(300);
   want(await p.evaluate(() => att.length === 1 && att[0].name === '메모.txt'), '되돌리기 → 뺀 첨부 돌아옴');
   await p.click('#chips [data-x="0"]'); await p.waitForTimeout(300);
-  /* 남은 되돌리기 칸이 마틴의 일을 건드리지 않는지 — 끝까지 눌러도 n6 은 그대로 */
+  /* 끝까지 눌러도 오류 없이 */
   for (let i = 0; i < 6; i++){ await p.click('#btnUndo').catch(() => {}); await p.waitForTimeout(250); }
   s = await st(p);
-  want(s.nodes.some(n => n.id === 'n6'), '끝까지 되돌려도 마틴의 카드는 그대로');
+  want(!s.nodes.some(n => n.id === 'n6'), '끝까지 되돌린 뒤에도 마틴 답의 카드는 빠진 채');
   await p.click('#msg'); await p.keyboard.type('아까 그건 실수야'); await p.keyboard.press('Enter'); await p.waitForTimeout(6000);
   const lp = await p.evaluate(() => String(window.__lastp));
-  want(lp.includes('[동료가 자기가 한 일을 되돌렸다') && lp.includes('수첩'), '다음 프롬프트에 「동료가 되돌린 것」');
+  want(lp.includes('[동료가 되돌렸다') && lp.includes('수첩') && lp.includes('네 답이 판에 한 것 통째로'), '다음 프롬프트에 「동료가 되돌린 것」(마틴의 답 통째로 포함)');
   /* 입력칸에선 Ctrl+Z 가 글자 되돌리기(판 되돌리기가 끼어들지 않음) */
   const before = (await st(p)).notes.length;
   await p.click('#msg'); await p.keyboard.type('지우다 만 글'); await p.keyboard.press('Control+z'); await p.waitForTimeout(400);

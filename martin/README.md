@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.24 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.25 (2026-11-18)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -72,7 +72,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함 — 프롬프트는 MARTIN_SHORT + RULES + 묶음 짜는 법, 실은 strLink·strCut 으로) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
 | js/shot.js · js/lib/html-to-image.js | 판 사진(v0.11.0, A) — 판 전체를 고화질 PNG 로(boardShot), 저장·복사 서랍(shotSheet). 라이브러리는 html-to-image 1.11.13(MIT) 그대로 |
 | js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
-| js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
+| js/undo.js | 되돌리기(v0.8.0, C) — 동료의 손질은 한 칸씩, 마틴의 답 하나도 한 칸(그 답이 판에 한 것 통째로 — v0.15.7 보스). 대화·판독문은 안 무름. core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 앱이 스스로 판을 고치는 새 코드는 바꾸기 직전 undoApp() 한 줄(마틴의 칸에 합쳐짐) · 앱이 알아낸 칸은 UNDO_LEARN · 마틴에게 알림 undoText() |
 | js/split.js | 판·대화 나누기(v0.11.2, B) — 대화창(.stage) 높이를 비율 SPLIT.r 로(기본 반반), 가운데 손잡이 #split 끌기·두 번 눌러 반반, 기기 키 'drmartin.split'. 높이를 바꾸면 가짜 resize 신호를 보냄 |
 | js/size.js | 카드 크기 손잡이(v0.12.0, C) — 고른 카드의 가로(n.cw)·세로(n.ch)·통째 배율(n.sc). cardHtml 의 sizeStyle, measure 가 배율 친 n.w·n.h. 카드 transform 엔 scale(var(--s,1)) |
 | js/pvdoc.js | 사진 크게 보기의 판독문 펼치기(v0.12.2, B) — #pvN(판독·메모)은 평소 숨김, 「판독문」(#pvD)으로 사진 위에 펼침 · pvDocSet |
@@ -149,3 +149,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.22 | 2026-11-17 | A: 파일 지도에 js/timeline.js(연혁 — 세로 타임라인) |
 | v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳)·js/cue.js(D, 빠져 있던 줄)·tests/rules-b.js, habits·mode·xref 줄 고침, 올리기 2번에 rules-b |
 | v1.24 | 2026-11-17 | B: 통일 규칙 마저 — 답 받기 단계 목록(rules.js RES_STEPS·resFilter), 실 기록(habits.js strLink·strCut — 감싸기 걷음), 판 정리도 같은 원칙·인물 설정, 판독 규칙 한 곳, 7장 세희 인수인계 한 줄 |
+| v1.25 | 2026-11-18 | A: 되돌리기 — 마틴의 답 하나 = 한 칸, 앱의 손질은 undoApp() 으로 그 칸에(파일 지도 undo.js 줄). 판 빚에서 「말한 사람인데 카드 없음」 걷음, 사람 카드의 무게·얼굴은 원칙 2 (v0.15.7) |
