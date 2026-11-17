@@ -1,5 +1,6 @@
 // 판 다시 짓기 점검 v1.1 (2026-11-16, A) — 「판 정리」: 마틴이 묶음을 짜고(가짜 답) 앱이 불규칙한 더미로 가로로 펼침 · 더미끼리 떨어짐 · 더미 안은 겹쳐도 제목 띠는 보임 · 중심 카드가 맨 위 · 실은 전부 카드 위·꼬리표는 그 위 · 실 솎기/잇기 · 머리 없을 때 실 따라 묶기 · 새 카드 of. 폰 화면.
 // v1.0 → v1.1: 사람 기둥·묶음 상자 점검 → 수사판 더미 점검(보스 11-16 21:08)
+// v1.2 (11-18 A): 판 정리는 두 번 눌러야 — 첫 누름은 「다시 누르면 정리」, 3초 지나면 풀림(armTap)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
 const MOCK = () => {
@@ -33,7 +34,18 @@ const S_LINKS = st => st.links.length;
   await p.addInitScript(MOCK); await p.addInitScript(s => { if (!sessionStorage.getItem('s')){ localStorage.clear(); localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); sessionStorage.setItem('s', 1); } }, JSON.stringify(SEED));
   await p.goto(URL); await p.waitForTimeout(3500);
   await p.screenshot({ path: '/tmp/martin-tidy-0.png' });
+  /* 11-18 A: 실수로 한 번 누르면 묻기만 */
+  const g0 = await p.evaluate(() => JSON.stringify(S.nodes.map(n => [n.id, n.x, n.y])));
+  await p.click('#btnTidy'); await p.waitForTimeout(400);
+  let ar = await p.evaluate(() => ({ t: $('#btnTidy').textContent, on: $('#btnTidy').classList.contains('armed'), busy, same: JSON.stringify(S.nodes.map(n => [n.id, n.x, n.y])) }));
+  want(ar.t === '다시 누르면 정리' && ar.on && !ar.busy && ar.same === g0, '한 번 누르면 판은 그대로, 단추가 붉게 「다시 누르면 정리」');
+  await p.screenshot({ path: '/tmp/martin-정리묻기.png', clip: { x: 0, y: 380, width: 412, height: 120 } });
+  await p.waitForTimeout(3200);
+  ar = await p.evaluate(() => ({ t: $('#btnTidy').textContent, on: $('#btnTidy').classList.contains('armed') }));
+  want(ar.t === '판 정리' && !ar.on, '3초 지나면 원래대로 풀림');
+  await p.click('#btnTidy'); await p.waitForTimeout(250);
   await p.click('#btnTidy'); await p.waitForFunction(() => !busy && (S.groups || []).length, null, { timeout: 30000 }); await p.waitForTimeout(800);
+  want(await p.evaluate(() => $('#btnTidy').textContent === '판 정리' && JSON.parse(localStorage.getItem('drmartin.log') || '[]').some(e => e.act === '판 정리 묻기')), '두 번 누르면 정리하고 단추 글은 원래대로');
   const st = await p.evaluate(() => {
     const ids = g => [g.a, ...g.cards].filter(Boolean), box = g => { const ns = ids(g).map(nodeOf); return [Math.min(...ns.map(n => n.x - n.w / 2)), Math.min(...ns.map(n => n.y - n.h / 2)), Math.max(...ns.map(n => n.x + n.w / 2)), Math.max(...ns.map(n => n.y + n.h / 2))]; };
     const bx = S.groups.map(box), over = []; for (let i = 0; i < bx.length; i++) for (let j = i + 1; j < bx.length; j++){ const A = bx[i], B = bx[j]; if (A[0] < B[2] + 30 && B[0] < A[2] + 30 && A[1] < B[3] + 30 && B[1] < A[3] + 30) over.push(i + '-' + j); }
@@ -61,7 +73,7 @@ const S_LINKS = st => st.links.length;
   await p.waitForFunction(() => !busy && S.turn >= 3, null, { timeout: 30000 }); await p.waitForTimeout(1200);
   const st2 = await p.evaluate(() => ({ g: S.groups.find(g => g.a === 'n6').cards.join('+'), near: Math.hypot(nodeOf('n15').x - nodeOf('n6').x, nodeOf('n15').y - nodeOf('n6').y) < 430 }));
   want(st2.g.includes('n15') && st2.near, '새 카드 of → 그 묶음 안에 자리 ' + st2.g);
-  await p.evaluate(() => { window.__fail = true; S.groups = []; }); await p.click('#btnTidy'); await p.waitForFunction(() => !busy && (S.groups || []).length, null, { timeout: 30000 }); await p.waitForTimeout(500);
+  await p.evaluate(() => { window.__fail = true; S.groups = []; }); await p.click('#btnTidy'); await p.waitForTimeout(200); await p.click('#btnTidy'); await p.waitForFunction(() => !busy && (S.groups || []).length, null, { timeout: 30000 }); await p.waitForTimeout(500);
   const st3 = await p.evaluate(() => S.groups.map(g => (g.a || '-') + ':' + g.cards.join('+')));
   want(st3.length >= 2 && st3.some(g => g.startsWith('n3:')) && st3.some(g => g.startsWith('n5:') && g.includes('n13')), '머리 없을 때 실 따라 묶기 ' + st3.join('|'));
   want(!errs.length, '페이지 오류 ' + JSON.stringify(errs));

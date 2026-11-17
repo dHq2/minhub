@@ -111,3 +111,6 @@
 .tl-empty{color:#8d8576;padding:12px 4px}
 .tl-foot{flex:none;padding:6px 10px;border-top:1px solid #2a2620;color:#7f776a;font:9.5px "Nanum Gothic Coding",monospace}
 @media(max-width:430px){.top .tb{padding:0 6px}.top{gap:5px}}
+
+/* 11-18 A: 두 번 눌러야 하는 단추의 첫 누름(armTap) — 붉게 */
+.armed{border-color:#e0412f!important;background:rgba(120,28,18,.85)!important;color:#ffd9cf!important}

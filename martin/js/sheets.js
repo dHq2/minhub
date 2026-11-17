@@ -41,10 +41,18 @@ $('#sheet').addEventListener('click', async e => {
     openSheet(`<h3>지난 사건</h3><p class="sub">누르면 그 사건으로 간다. 지금 판은 그대로 계정에 남는다.</p>${cs.map((c, i) => { const b = (c.nodes || []).find(n => n.id === 'n1') || {}, d = new Date(c.at); return `<button class="row" data-case="${i}" type="button"><span class="folder">${c.id === S.id ? '●' : esc(String(c.turn || 0))}</span><span><b>${esc(b.title || '사건')}</b><small>${d.getMonth() + 1}/${d.getDate()} ${d.toTimeString().slice(0, 5)} · ${c.turn || 0}턴 · 카드 ${(c.nodes || []).length}장${c.id === S.id ? ' · 지금 판' : ''}</small></span></button>`; }).join('') || '<p class="sub">아직 남은 사건이 없다.</p>'}`); return; }
   if (s === 'savelog') return recapSave();   /* 11-17 D: 복기본 .txt */
   if (s === 'copylog' || s === 'copyraw') return recapCopy(s === 'copyraw');   /* 11-17 D: 계정+기기 기록을 모은 사건 복기본(날것은 JSON) — js/recap.js */
-  if (s === 'reset'){ if (t.dataset.arm !== '1'){ t.dataset.arm = '1'; const r = $('#rs'); if (r) r.textContent = '한 번 더 누르면 비운다.'; return; }
+  if (s === 'reset'){ if (!armTap(t, '한 번 더 누르면 비운다.', $('#rs'))) return;
     closeSheet(); if (busy) return; log('memory', { n:S.turn, closed:true, board:snap() }); act('새 사건', { from:S.id }); flushLog(); S = fresh(); save(); renderAll(); renderChat(true); act('사건 시작'); await fitAll(0); for (const l of OPEN) await speak(l); save(); }
 });
 $('#btnMenu').onclick = menuSheet; $('#btnLog').onclick = () => { act('기록 열기'); logSheet(); };
 $('#btnFit').onclick = () => { act('전체 보기'); fitAll(600); };
-$('#btnTidy').onclick = () => { if (busy) return; act('판 정리 단추'); rebuildBoard(); };   /* 11-16 A: 마틴이 묶음을 새로 짜서 다시 놓는다 */
+$('#btnTidy').onclick = () => { if (busy) return; if (!armTap($('#btnTidy'), '다시 누르면 정리')){ act('판 정리 묻기'); return; } act('판 정리 단추'); rebuildBoard(); };   /* 11-16 A: 마틴이 묶음을 새로 짜서 다시 놓는다 · 11-18 A: 실수로 누르면 판이 통째로 바뀌니 두 번 */
+/* 11-18 A: 되돌리기 힘든 단추는 두 번 눌러야 한다 — 첫 누름은 글이 「한 번 더 …」로 바뀌고(.armed), 3초 안에 다시 누르면 true. 새 사건·판 정리가 같은 길을 쓴다(예전 새 사건의 dataset.arm 을 이 하나로) */
+function armTap(el, label, txt){
+  if (!el) return true; const t = txt || el;
+  if (el.dataset.arm === '1'){ clearTimeout(el._armT); delete el.dataset.arm; el.classList.remove('armed'); if (el._armOld != null) t.textContent = el._armOld; return true; }
+  el._armOld = t.textContent; t.textContent = label; el.dataset.arm = '1'; el.classList.add('armed');
+  clearTimeout(el._armT); el._armT = setTimeout(() => { delete el.dataset.arm; el.classList.remove('armed'); t.textContent = el._armOld; }, 3000);
+  return false;
+}
 
