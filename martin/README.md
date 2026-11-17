@@ -62,6 +62,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/persona.js | 마틴이라는 사람(설정 v2.3, 보스 확정 — 8장 의뢰와 시간) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
 | js/rules.js | 마틴의 규칙 한 곳(v0.15.4, B) — RULES(다섯 원칙: 근거·무게·변화·말·의심) · dueText()/dueList()(「이번 턴에 걸린 것」 — DUE_SRC 의 신호를 우선순위로 많아야 DUE_MAX(3)개, 원칙 이름으로) · outText()(출력 칸 모양만). buildPrompt 는 조립만: 인물 → 상태 칸 → 걸린 것 → 가져온 것 → 원칙 → 출력 형식 |
 | js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 상태 칸 modeText()(cue.js 의 자료 예고 상태도 같은 칸에), 묻기는 modeWantAsk()(rules.js 가 「걸린 것」으로), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
+| js/cue.js | 자료 예고 알아듣기(v0.15.3, D) — 동료가 사진 없이 「다음 기록이다·보낼게」면 S.cue(상태만 — [자료 형편] 칸 끝·「걸린 것」은 다음 답으로), 「지금 당장은 힘들어」 같은 한때 사정엔 닫힘을 안 켬. modeText·modeFilter 를 감쌈 |
 | js/habits.js | 실의 이유와 끊기(v0.14.5 → v0.15.4, B) — 버릇 일곱 줄은 rules.js 원칙으로 녹였다. HB_FLIP·hbLastMove(rules.js 가 뒤집어 보기·전제 의심 신호로 읽음, S.premiseAt) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
@@ -84,6 +85,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/boot.js | 시작 |
 | tests/run.sh · smoke.js | 점검(가짜 마틴으로 폰 화면) |
 | tests/v15.js | 한 판 점검 — 네 방 몫(기억·자료 형편·맞춰 보기·사건 시계·벽시계·행동 기록·복기본)이 가짜 사건 하나에서 같이 도는지. 프롬프트 칸을 더하거나 옮기면 여기 KEYS·순서 줄도 고친다 |
+| tests/rules-b.js | 통일 규칙 점검 — 상태 칸·건넨 것에 명령문 없음, 원칙·출력·걸린 것 칸 한 번씩, 같은 규칙 한 곳, 개발 메모 없음, 걸린 것 1~3·원칙 이름. 깨지면 점검을 느슨하게 하지 말고 규칙을 원칙에 녹인다(2-1) |
 | handoff/ | 할일.md(찜) · from-a~d.md(알림) |
 | CHANGELOG.md | 변경 기록 |
 
@@ -144,4 +146,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.20 | 2026-11-17 | B: 파일 지도에 js/habits.js(수사 버릇·실 why·cut·꼬리표 자리), doOp 에 cut (v0.14.5) — v1.19 는 A 의 v0.15.0 몫(엔진 메모 v0.3·tests/v15.js)이 쓸 번호 |
 | v1.21 | 2026-11-17 | A: 파일 지도에 js/face.js(프사 자동), 그림은 한 번에 IMG_MAX(4)장 |
 | v1.22 | 2026-11-17 | A: 파일 지도에 js/timeline.js(연혁 — 세로 타임라인) |
-| v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳), habits·mode·xref 줄 고침, 올리기 2번에 rules-b |
+| v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳)·js/cue.js(D, 빠져 있던 줄)·tests/rules-b.js, habits·mode·xref 줄 고침, 올리기 2번에 rules-b |
