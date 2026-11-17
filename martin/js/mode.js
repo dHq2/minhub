@@ -31,6 +31,7 @@ function modeSense(){
 }
 /* 프롬프트 한 칸 — buildPrompt 가 [이번에 동료가 가져온 것] 바로 위에 붙인다 */
 function modeText(){   /* 11-17 B: 상태만 — 묻게 하는 건 「이번 턴에 걸린 것」(rules.js, modeWantAsk), 닫힘의 뜻은 원칙 4(말)·ask 칸, 걸러 내기는 modeFilter */
+  if (typeof cueSense === 'function') cueSense();   /* 11-17 B: 자료 예고(cue.js) 감지도 여기서 — 감싸기 대신 */
   modeSense();
   const cue = typeof cueState === 'function' ? cueState() : '', tail = cue ? ` · ${cue}` : '';   /* 11-17 D cue.js 의 상태(자료 예고)도 같은 칸에 */
   if (S.closed === true) return `[자료 형편 — 닫힘(턴 ${S.closedTurn ?? '-'}부터)] 동료가 더 가져올 자료가 없다. 있는 조각으로 간다.${tail}\n`;

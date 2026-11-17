@@ -1,4 +1,4 @@
-/* martin/js/cue.js — 자료 예고 알아듣기 v1.1 (11-17 D · v1.1: 프롬프트 문장 대신 상태 S.cue 만 — B 통일 작업 맞춤). 고칠 땐 이 줄 아래에 「11-17 D: …」처럼 날짜·방 주석 */
+/* martin/js/cue.js — 자료 예고 알아듣기 v1.2 (11-17 D · v1.1: 프롬프트 문장 대신 상태 S.cue 만 — B 통일 작업 맞춤 · v1.2 B: 감싸기 대신 cueStep 한 항목). 고칠 땐 이 줄 아래에 「11-17 D: …」처럼 날짜·방 주석 */
 /* 보스 사건 20261117-5723 에서 생긴 일 두 가지(로그 진단):
    ① 턴 9 — 마틴이 「쪽지 원본과 열흘 치 일기를 더 받아 올 수 있나」 묻자 보스가 「지금 당장은 힘들어」.
       한때 사정이었는데 마틴이 답에 "mode":"closed" 를 실어 자료 닫힘이 켜졌다(자료가 다 끝난 것처럼).
@@ -8,7 +8,7 @@
    · 자료 예고(다음 기록·다음 거·보낼게·올릴게·잠깐만 …)를 사진 없이 말하면 → S.cue 를 세우고(프롬프트 글은 B 가 잇는다),
      닫혀 있었으면 연다(modeSet(false)), 그 턴 마틴 답의 ask·closed 는 받지 않는다.
    · 동료의 말이 「지금은·당장은·아직은·나중에 … 힘들다·어렵다」처럼 한때 사정이면 → 마틴이 closed 를 실어도 받지 않는다.
-   mode.js(B 몫)는 고치지 않고 modeText·modeFilter 를 감싸기만 한다. index.html 에서 mode.js 뒤에 읽는다 */
+   v1.2(11-17 B): 감싸기를 걷었다 — cueSense 는 mode.js modeText 가 부르고, 답 거르기는 cueStep 한 항목으로 rules.js RES_STEPS(답 받기 단계)에 */
 const CUE_SOON = /(다음\s*(기록|거|것|꺼|자료|사진|캡처|캡쳐|일기|장|카톡|편)\s*(이다|야|임|입니다|간다|갈게|줄게|보자|나간다)?(?=\s|$|[.!~,…ㅋㅎ])|(보낼|올릴|넘길|넘겨\s*줄|붙일|가져갈)\s*(게|께|게요|께요)(?=\s|$|[.!~,…ㅋㅎ])|이어서\s*(간다|갈게|보낸다)|하나\s*더\s*(있|간다|줄게))/;
 const CUE_WAIT = /^(잠깐만?|잠시만|기다려\s*(봐|줘)?|대기|ㄱㄷ)[.!~…ㅋㅎ\s]*$/;   /* 이 말만 짧게 했을 때 */
 const CUE_LATER = /(지금\s*(당장)?\s*은|당장\s*은|아직\s*은|오늘\s*은|이번\s*엔|나중에|이따가?)[^.!?\n]{0,12}(힘들|어렵|안\s*돼|안\s*되|못\s*(해|구|가져|받)|무리)/;
@@ -41,22 +41,16 @@ function cueSense(){
   return S.cue || null;
 }
 function cueState(){ return (typeof S !== 'undefined' && S && S.cue && S.cue.soon) ? `자료 예고 — 「${S.cue.text}」(사진 없이, 곧 건넴)` : ''; }
-if (typeof modeText === 'function'){
-  const modeTextCore = modeText;
-  modeText = function(){ cueSense(); return modeTextCore(); };   /* 글은 그대로 — 상태만 맞춘다 */
-}
-if (typeof modeFilter === 'function'){
-  const modeFilterCore = modeFilter;
-  modeFilter = function(res){
-    if (res && typeof res === 'object'){
-      const m = cueLast();
-      if (String(res.mode || '').toLowerCase() === 'closed' && cueLater(m) && !(typeof MODE_CLOSE !== 'undefined' && MODE_CLOSE.test(m.text.slice(0, 400)))){
-        delete res.mode; if (typeof act === 'function') act('자료 닫힘 보류', { why:'동료의 말이 한때 사정(지금은·당장은 …)' });
-      }
-      if (cueNow && String(res.mode || '').toLowerCase() === 'closed') delete res.mode;   /* 예고한 턴엔 닫지 않는다 */
-      if (cueNow){ if (res.ask) res.ask = ''; }
+/* 답 받기 단계(rules.js RES_STEPS) — 자료 예고·한때 사정이면 마틴의 closed·ask 를 받지 않는다. 자료 예고 감지(cueSense)는 mode.js modeText 가 부른다(11-17 B: 감싸기를 걷음) */
+function cueStep(res){
+  if (res && typeof res === 'object'){
+    const m = cueLast();
+    if (String(res.mode || '').toLowerCase() === 'closed' && cueLater(m) && !(typeof MODE_CLOSE !== 'undefined' && MODE_CLOSE.test(m.text.slice(0, 400)))){
+      delete res.mode; if (typeof act === 'function') act('자료 닫힘 보류', { why:'동료의 말이 한때 사정(지금은·당장은 …)' });
     }
-    cueNow = '';
-    return modeFilterCore(res);
-  };
+    if (cueNow && String(res.mode || '').toLowerCase() === 'closed') delete res.mode;   /* 예고한 턴엔 닫지 않는다 */
+    if (cueNow){ if (res.ask) res.ask = ''; }
+  }
+  cueNow = '';
+  return res;
 }

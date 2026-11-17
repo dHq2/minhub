@@ -1,7 +1,7 @@
-/* martin/js/habits.js — 실의 이유와 끊기 · 꼬리표 자리 · 결론 물음 감지 v1.1 (11-17 B). 고칠 땐 이 줄 아래에 「11-17 B: …」처럼 날짜·방 주석 */
+/* martin/js/habits.js — 실의 이유와 끊기 · 꼬리표 자리 · 결론 물음 감지 v1.2 (11-17 B · v1.2: doOp·modeFilter 감싸기를 걷고 실 기록 함수·답 받기 단계로). 고칠 땐 이 줄 아래에 「11-17 B: …」처럼 날짜·방 주석 */
 /* v1.1(11-17 B, 프롬프트 통일 규칙): 버릇 일곱 줄(habitText)은 rules.js 원칙(근거·무게·의심)으로 녹였다. 여기 남은 것:
-   · HB_FLIP·hbLastMove — 「이번 턴에 걸린 것」(rules.js)이 뒤집어 보기·전제 의심을 고를 때 읽는다. hbPremiseNow 는 rules.js 가 켜고 modeFilter 감싸기가 S.premiseAt 에 적는다.
-   · doOp 감싸기 — link 의 why(L.why), 새 op cut(S.cuts — boardText 의 「끊은 실」로 보임). doOp 는 board.js(A).
+   · HB_FLIP·hbLastMove — 「이번 턴에 걸린 것」(rules.js)이 뒤집어 보기·전제 의심을 고를 때 읽는다. hbPremiseNow 는 rules.js 가 켜고 hbStep(답 받기 단계)이 S.premiseAt 에 적는다.
+   · 실 기록 strLink·strCut·strFind — link 의 why(L.why), cut(S.cuts — boardText 의 「끊은 실」로 보임). board.js doOp 와 tidy.js 판 정리가 같이 부른다(v1.2 — 감싸기 걷음).
    · tagSpot — 실 꼬리표 자리(board.js renderStrings 가 부름). */
 const HB_FLIP = /(결론|범인|진범|누가\s*(했|한|그랬)|누구(야|지|냐|일까)|정리해|진실|확정|마무리|맞(지|아)\s*\?|그 사람이(지|야))/;
 let hbPremiseNow = false;
@@ -12,30 +12,22 @@ function hbLastMove(){   /* 판이 마지막으로 움직인 턴 — 새 자료�
   return t;
 }
 /* 11-17 B: habitText 는 걷었다 — 버릇 일곱 줄은 rules.js 원칙(근거·무게·의심)으로, 뒤집어 보기·전제 의심은 「이번 턴에 걸린 것」으로, 끊은 실은 boardText 의 상태로 */
-/* doOp 감싸기 — link 에 why, 새 op cut. board.js(A)의 doOp 는 그대로 두고 앞뒤에서만 */
-{
-  const doOpBase = doOp;
-  doOp = async function(op){
-    if (op && op.op === 'cut'){
-      const L = (S.links || []).find(x => (x.a === op.a && x.b === op.b) || (x.a === op.b && x.b === op.a) || x.id === op.id); if (!L) return;
-      const A = nodeOf(L.a), B = nodeOf(L.b);
-      if (A && B){ await fly((A.x + B.x) / 2, (A.y + B.y) / 2, Math.max(.45, Math.min(cam.k, 1)), 550); }
-      (S.cuts || (S.cuts = [])).push({ a:L.a, b:L.b, label:L.label || '', why:String(op.why || '').slice(0, 80), turn:S.turn, at:Date.now() }); if (S.cuts.length > 30) S.cuts.splice(0, S.cuts.length - 30);
-      S.links = S.links.filter(x => x !== L); renderStrings(); act('실 끊음', { ids:[L.a, L.b], label:L.label || '', why:op.why || '' });
-      if (A && B && typeof sfx === 'function') sfx((A.x + B.x) / 2, (A.y + B.y) / 2 - 40, '툭'); await sleep(600); return;
-    }
-    const r = await doOpBase(op);
-    if (op && op.op === 'link' && op.why){ const L = (S.links || []).find(x => (x.a === op.a && x.b === op.b) || (x.a === op.b && x.b === op.a)); if (L){ L.why = String(op.why).slice(0, 80); L.whyTurn = S.turn; } }
-    if (op && op.op === 'link' && S.cuts){ S.cuts = S.cuts.filter(c => !((c.a === op.a && c.b === op.b) || (c.a === op.b && c.b === op.a))); }   /* 다시 이었으면 끊은 기록에서 뺀다 */
-    return r;
-  };
+/* 실 기록 — 잇기(이유)·끊기(이유와 함께 S.cuts)를 한 곳에서. 대화 중 판 고침(board.js doOp)과 판 정리(tidy.js)가 같이 부른다 */
+function strLink(a, b, label, sure, why){
+  const old = S.links.find(L => (L.a === a && L.b === b) || (L.a === b && L.b === a));
+  const L = old || { id:a + '-' + b, a, b }; L.label = String(label || '').slice(0, 8); L.sure = sure !== false; if (!old) S.links.push(L);
+  if (why){ L.why = String(why).slice(0, 80); L.whyTurn = S.turn; }
+  if (S.cuts) S.cuts = S.cuts.filter(c => !((c.a === a && c.b === b) || (c.a === b && c.b === a)));   /* 다시 이었으면 끊은 기록에서 뺀다 */
+  return L;
+}
+function strFind(x){ return x && (S.links || []).find(L => L.id === x.id || L.id === x || (x.a && ((L.a === x.a && L.b === x.b) || (L.a === x.b && L.b === x.a))) || (typeof x === 'string' && L.b + '-' + L.a === x)); }
+function strCut(L, why){
+  (S.cuts || (S.cuts = [])).push({ a:L.a, b:L.b, label:L.label || '', why:String(why || '').slice(0, 80), turn:S.turn, at:Date.now() }); if (S.cuts.length > 30) S.cuts.splice(0, S.cuts.length - 30);
+  S.links = S.links.filter(x => x !== L); act('실 끊음', { ids:[L.a, L.b], label:L.label || '', why:why || '' });
 }
 if (typeof UNDO_SKIP !== 'undefined') UNDO_SKIP.add('premiseAt');
-/* 이번 프롬프트가 「전제 의심」을 시켰으면 기록 — 6턴 안엔 다시 안 시킴(modeFilter 뒤에 붙어 돈다) */
-{
-  const mf = typeof modeFilter === 'function' ? modeFilter : null;
-  modeFilter = function(res){ if (hbPremiseNow){ S.premiseAt = S.turn; hbPremiseNow = false; } return mf ? mf(res) : res; };
-}
+/* 답 받기 단계(rules.js RES_STEPS) — 이번 프롬프트가 「전제 의심」을 실었으면 그 턴을 적는다(6턴 안엔 다시 안 실림) */
+function hbStep(res){ if (hbPremiseNow){ S.premiseAt = S.turn; hbPremiseNow = false; } return res; }
 /* 실 꼬리표 자리 — 핀에서 핀까지 곧은 실 위, 한가운데부터 바깥쪽으로 훑어 카드와 다른 꼬리표를 피한 첫 자리 */
 const TAG_T = [.5, .42, .58, .34, .66, .27, .73, .2, .8];
 function tagSpot(L, c, placed){

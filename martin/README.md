@@ -1,4 +1,4 @@
-# Dr. 마틴의 추리판 — 네 방 인수인계 v1.23 (2026-11-17)
+# Dr. 마틴의 추리판 — 네 방 인수인계 v1.24 (2026-11-17)
 
 마틴 작업 방(A·B·C·D) 모두가 보는 공통 맥락이다. 세희·미궁 방은 이 문서를 무시하고, 마틴 방은 세희 문서를 따르지 않는다.
 정본은 이 파일(저장소 dhq2/minhub 의 martin/README.md). 프로젝트 자료 「claude/마틴-인수인계-v1.md」는 같은 내용의 사본이다 — 고치면 둘 다.
@@ -54,21 +54,21 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | js/ver.js | 지금 버전 VER (올리는 방이 +1) |
 | js/changes.js | 보스 눈에 보이는 변화 목록 CHANGES — 업데이트 뒤 마틴이 자기 말투로 설명하는 재료 |
 | js/core.js | 기본 도구($·esc·sleep) · 상태 S · 기기 저장(localStorage) · 계정 저장(db, put/dbStart/adopt) · 사진 보관(assets) |
-| js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/edit/merge/remove/face/suspect/tidy — cut 과 link 의 why 는 habits.js 가 감쌈) · 판 정리 · play |
+| js/board.js | 판 그리기 · 위 띠(renderHyp → 난제 띠) · 마틴의 말(speak) · 판 조작(doOp: add/link/cut/edit/merge/remove/face/suspect/tidy — 실 잇기·끊기는 habits.js 의 실 기록 strLink·strCut 을 부름) · 판 정리 · play |
 | js/ai.js | 마틴에게 묻기 — 프롬프트(buildPrompt) · 한 턴(turn) · 다시 묻기 |
 | js/input.js | 입력줄 · 첨부 · 붙여넣기 칸 · 엔터 = 건네기(폰은 엔터 = 줄 바꿈, 건네기는 단추) |
 | js/sheets.js | 서랍 — 사건 서류함(머리 고르기·지난 사건·새 사건) · 수사 기록 · 인물 카드 |
 | js/view.js | 판 손잡이(v0.10.0 A, 세희 인간관계 판 방식) — 한 번 누르면 고름·한 번 더 상세·고른 카드 끌기 = 옮김·나머지 끌기 = 판 굴리기·두 손가락/휠 = 그 자리 중심 확대 · 사진 크게 보기 |
 | js/persona.js | 마틴이라는 사람(설정 v2.3, 보스 확정 — 8장 의뢰와 시간) — MARTIN_WHO(한 턴 프롬프트 맨 앞) · MARTIN_SHORT(짧은 프롬프트 한 줄). 원본은 martin/persona.md — 고치면 둘 다. 마틴에게 묻는 새 프롬프트는 맨 앞에 둘 중 하나. 게임 안에 따로 드러내지 않는다 |
-| js/rules.js | 마틴의 규칙 한 곳(v0.15.4, B) — RULES(다섯 원칙: 근거·무게·변화·말·의심) · dueText()/dueList()(「이번 턴에 걸린 것」 — DUE_SRC 의 신호를 우선순위로 많아야 DUE_MAX(3)개, 원칙 이름으로) · outText()(출력 칸 모양만). buildPrompt 는 조립만: 인물 → 상태 칸 → 걸린 것 → 가져온 것 → 원칙 → 출력 형식 |
+| js/rules.js | 마틴의 규칙 한 곳(v0.15.4, B) — RULES(다섯 원칙: 근거·무게·변화·말·의심) · dueText()/dueList()(「이번 턴에 걸린 것」 — DUE_SRC 의 신호를 우선순위로 많아야 DUE_MAX(3)개, 원칙 이름으로) · outText()(출력 칸 모양만) · resFilter()(답 받기 — 마틴의 답이 연출 전에 거치는 단계 목록 RES_STEPS: 전제 의심 기록 → 자료 예고·한때 사정 → 자료 형편. 감싸기 대신 한 항목씩). buildPrompt 는 조립만: 인물 → 상태 칸 → 걸린 것 → 가져온 것 → 원칙 → 출력 형식. 판 정리(tidy.js)도 같은 RULES 를 쓴다 |
 | js/mode.js | 자료 형편(v0.14.1, B) — S.closed(닫힘·열림·모름), 동료 말 감지(modeSense)·마틴 "mode", 상태 칸 modeText()(cue.js 의 자료 예고 상태도 같은 칸에), 묻기는 modeWantAsk()(rules.js 가 「걸린 것」으로), 답 거르기 modeFilter(res)(turn() 고리 — ask·「가져와라」·캐 올 할 일·8줄 넘는 말), 수첩 맨 위 #nbMode |
-| js/cue.js | 자료 예고 알아듣기(v0.15.3, D) — 동료가 사진 없이 「다음 기록이다·보낼게」면 S.cue(상태만 — [자료 형편] 칸 끝·「걸린 것」은 다음 답으로), 「지금 당장은 힘들어」 같은 한때 사정엔 닫힘을 안 켬. modeText·modeFilter 를 감쌈 |
-| js/habits.js | 실의 이유와 끊기(v0.14.5 → v0.15.4, B) — 버릇 일곱 줄은 rules.js 원칙으로 녹였다. HB_FLIP·hbLastMove(rules.js 가 뒤집어 보기·전제 의심 신호로 읽음, S.premiseAt) · doOp 감싸기(op cut → S.cuts, link 의 why → L.why) · modeFilter 감싸기(premiseAt) · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름). A 가 doOp 를 고치면 cut·why 를 안으로 들여도 됨 |
+| js/cue.js | 자료 예고 알아듣기(v0.15.3, D) — 동료가 사진 없이 「다음 기록이다·보낼게」면 S.cue(상태만 — [자료 형편] 칸 끝·「걸린 것」은 다음 답으로), 「지금 당장은 힘들어」 같은 한때 사정엔 닫힘을 안 켬. cueSense 는 mode.js modeText 가 부르고, 답 거르기는 cueStep 한 항목(RES_STEPS) |
+| js/habits.js | 실의 이유와 끊기(v0.14.5 → v0.15.4, B) — 버릇 일곱 줄은 rules.js 원칙으로 녹였다. HB_FLIP·hbLastMove(rules.js 가 뒤집어 보기·전제 의심 신호로 읽음, hbStep 이 S.premiseAt) · 실 기록 strLink(이유 L.why, 다시 이으면 끊은 기록에서 뺌)·strCut(S.cuts 에 이유와 함께)·strFind — board.js doOp 와 tidy.js 판 정리가 같이 부름 · 실 꼬리표 자리 tagSpot(board.js renderStrings 가 부름) |
 | js/puzzles.js | 난제 지도(v0.6.0, B) — 난제 나무·가설·근거·이력 · 마틴 pz 적용(applyPz) · 프롬프트 칸(pzText) · 한 줄 「붙잡은 난제」 띠(renderPzBar). 서랍 id 는 #pzm(#pz 는 붙여넣기 칸) |
 | js/evidence.js | 자료함(v0.7.0, A) — 동료가 건넨 원본 전부(S.ev: 사진은 assets 에 올린 파일 그대로, 글은 기기 localStorage 'drmartin.ev.<사건>.<e>' + 계정 evid/), 마틴 판독문(read), 읽기용 사본(readCopies — 세로로 긴 캡처는 조각), 프롬프트 칸(evText), 갤러리 화면(evSheet). 판의 카드가 합쳐지거나 떼어져도 원본은 남음(evDetach) |
 | js/face.js | 프사 자동(v0.15.1, A) — 얼굴 없는 인물 카드마다 판독문에 그 이름이 나오는 캡처에서 프사 자리를 짧게 물어(faceFind — 조각 좌표를 원본으로) cropFace 로 잘라 붙임(faceAuto). 판독문에 「[프사] 이름 — …」. 동료가 뺀 카드(n.faceNo)는 다시 안 붙임 |
 | js/timeline.js | 연혁(v0.15.2, A) — S.tl(일어난 일 시간순)·S.tclash, 마틴 답 "tl"(applyTl), 앱 대조 tlCheck(순서·출처 시각·두 곳·마틴이 짚은 어긋남), 프롬프트 [연혁] tlText(맞춰 보기 아래), 위 단추 「연혁」·오른쪽 서랍 #tlm(작고 빽빽한 세로 타임라인) |
-| js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
+| js/tidy.js | 판 다시 짓기(v0.9.0~, A) — 「판 정리」 rebuildBoard(마틴이 실 솎기·잇기와 누가 누구 곁인지 정함 — 프롬프트는 MARTIN_SHORT + RULES + 묶음 짜는 법, 실은 strLink·strCut 으로) · layoutPlan(진짜 수사판 더미 — 중심 카드 둘레로 겹쳐 쌓고 가로로 펼침) · relayout. S.groups 는 자리 잡을 때만(화면엔 안 보임) |
 | js/shot.js · js/lib/html-to-image.js | 판 사진(v0.11.0, A) — 판 전체를 고화질 PNG 로(boardShot), 저장·복사 서랍(shotSheet). 라이브러리는 html-to-image 1.11.13(MIT) 그대로 |
 | js/notebook.js | 수사 수첩(의문·짐작·확인할 것·사사로운 사실·풀린 의문·내 메모). 줄은 눌러도 그대로, 지우기는 × 로만 |
 | js/undo.js | 되돌리기(v0.8.0, C) — 동료가 한 일만 한 칸씩(마틴의 답·대화는 안 무름). core.js save() 끝에서 undoTick. S 에 판이 아닌 키를 새로 만들면 UNDO_SKIP 에 더한다 · 마틴에게 알림 undoText() |
@@ -118,7 +118,7 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 ## 7. 보안·금지
 - PIN·API 키·보스 개인 정보는 코드·저장소·문서·테스트 어디에도 적지 않는다(저장소 공개).
 - 테스트·예시는 가짜 이름(김지민 등). 보스 사건의 실제 인물·내용을 쓰지 않는다.
-- 저장소의 다른 앱(sehee/, sehee-sync/, boss.html 등)과 세희의 handoff/·changes/·tools/·tests/ 는 손대지 않는다. 마틴 일은 전부 martin/ 안에서.
+- 저장소의 다른 앱(sehee/, sehee-sync/, boss.html 등)과 세희의 handoff/·changes/·tools/·tests/ 는 손대지 않는다. 마틴 일은 전부 martin/ 안에서. 보스가 모든 방 공통으로 정한 원칙(2-1 처럼)은 세희 인수인계에도 같은 글로 적는다 — 그 장만.
 
 ## 변경 기록
 | 버전 | 날짜 | 바뀐 것 |
@@ -147,3 +147,4 @@ martin/index.html = 뼈대(HTML) + css + js 를 아래 순서로 불러옴. 사�
 | v1.21 | 2026-11-17 | A: 파일 지도에 js/face.js(프사 자동), 그림은 한 번에 IMG_MAX(4)장 |
 | v1.22 | 2026-11-17 | A: 파일 지도에 js/timeline.js(연혁 — 세로 타임라인) |
 | v1.23 | 2026-11-17 | B: 2-1 구조 원칙(특별·예외를 쌓지 않는다 — 보스 지시, 모든 방 공통), 파일 지도에 js/rules.js(규칙 한 곳)·js/cue.js(D, 빠져 있던 줄)·tests/rules-b.js, habits·mode·xref 줄 고침, 올리기 2번에 rules-b |
+| v1.24 | 2026-11-17 | B: 통일 규칙 마저 — 답 받기 단계 목록(rules.js RES_STEPS·resFilter), 실 기록(habits.js strLink·strCut — 감싸기 걷음), 판 정리도 같은 원칙·인물 설정, 판독 규칙 한 곳, 7장 세희 인수인계 한 줄 |

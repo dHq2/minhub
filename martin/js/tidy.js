@@ -93,29 +93,28 @@ function tidyPrompt(){
   const ns = S.nodes.map(n => `${n.id} [${n.kind}] ${n.title} — ${n.note || ''}`).join('\n');
   const ev = (S.ev || []).filter(e => e.card && e.read).map(e => `${e.card} 판독: ${e.read.replace(/\s+/g, ' ').slice(0, 220)}`).join('\n');
   const old = groupsOf().map(g => `${g.a || '-'} 「${g.name}」: ${g.cards.join(', ')}`).join('\n');
-  return `너는 느와르 추리 만화의 탐정 "Dr. 마틴"이다. 동료가 「판 정리」를 눌렀다. 지금 코르크 판을 지금까지 아는 것으로 가장 잘 보이게 처음부터 다시 짠다 — 흩어진 카드를 사람 중심으로 묶고, 실을 솎는다. 판을 본 사람이 '어떤 자료가 어떤 사람과 이어지는지' 한눈에 알아야 한다. 관계없는 건 멀리 떨어진다.
+  return `${MARTIN_SHORT}
+동료가 「판 정리」를 눌렀다. 지금 코르크 판을 지금까지 아는 것으로 가장 잘 보이게 다시 짠다 — 흩어진 카드를 묶고 실을 솎는다. 판을 본 사람이 누가 누구와 얽혔는지, 어떤 자료가 누구 것인지 한눈에 알아야 한다.
 
 [카드]
 ${ns}
 
 [실 — id: 양끝 꼬리표]
 ${ls}
-${ev ? `\n[사진·캡처 판독 — 누구의 대화인지 가릴 때 참고]\n${ev}\n` : ''}${old ? `\n[지난번 묶음]\n${old}\n` : ''}
-짜는 법
+${ev ? `\n[사진·캡처 판독 — 누구의 대화인지 가릴 때 참고]\n${ev}\n` : ''}${old ? `\n[지난번 묶음]\n${old}\n` : ''}${typeof S.cuts !== 'undefined' && S.cuts.length ? `\n[끊은 실]\n${S.cuts.slice(-8).map(c => `${c.a}↔${c.b}${c.label ? ' ' + c.label : ''} — ${c.why || '이유 없음'}`).join('\n')}\n` : ''}
+${typeof RULES === 'string' ? RULES : ''}
+출력 — JSON 하나만. 쓸 칸만 넣는다.
 - groups: 묶음 목록, 사건에서 중요한 순서로. {"a":"묶음 중심 카드 id","name":"묶음 이름 8자 이내","cards":["그 묶음에 들 카드 id", …]}
   · 중심(a)은 사람 카드가 기본이다. 사람 없이 굴러가는 갈래(돈·물건·장소·회사)는 그걸 대표하는 카드를 중심으로 한다.
   · n1(사건 파일)을 뺀 모든 카드가 정확히 한 묶음에 들어간다(중심 카드는 cards 에 다시 넣지 않는다).
   · 사진·대화 캡처는 그 대화의 주인공이나 가장 깊이 얽힌 사람에게. 진술·문서는 말한 사람이나 다루는 사람에게. 의문 카드는 그 의문이 걸린 사람에게.
-  · 묶음은 2~7개, 한 묶음은 많아야 9장. 넘치면 갈래를 나눈다. 사람이 둘뿐이라도 억지로 둘에 몰지 말고 갈래가 다르면 나눈다.
-- cut: 지울 실 id — 겹치거나(같은 두 카드를 잇는 실 둘), 뜻이 흐리거나, 묶음을 짜고 나니 군더더기인 실. 많아야 12.
-- link: 새로 이을 실 [{"a":"n…","b":"n…","label":"1~6자","sure":true}] — 특히 자료와 사람(누가 보냈나·누가 나오나), 그리고 묶음 사이의 중요한 관계(누가 누구를 쫓나, 누가 누구에게 거짓말했나). 많아야 8. 확실하지 않으면 sure:false.
-- relabel: [{"id":"실 id","label":"1~6자"}] — 뜻이 흐린 꼬리표만.
-- merge: 같은 자료의 다른 판본이나 같은 사람의 다른 카드 [{"from":"n…","into":"n…"}] — 있을 때만.
-- say: 1~3줄 — 어떻게 다시 짰는지 마틴 말투(짧고 단정한 하드보일드 반말). 줄을 {"t":"…","on":["묶음 중심 id"]} 로 써도 된다. 대사에 카드 번호는 쓰지 않는다.
-- 판에 없는 사실을 지어내지 않는다.
-
-JSON 하나만:
-{"say":["판을 다시 짠다.",{"t":"…","on":["n3"]}],"groups":[{"a":"n3","name":"…","cards":["n5","n14"]},{"a":"n7","name":"…","cards":["n9"]}],"cut":["n4-n3"],"link":[{"a":"n9","b":"n3","label":"보낸 이","sure":true}],"relabel":[{"id":"n6-n3","label":"…"}],"merge":[]}`;
+  · 묶음은 2~7개, 한 묶음은 많아야 9장. 넘치면 갈래를 나눈다. 사람이 둘뿐이라도 갈래가 다르면 나눈다.
+- cut: [{"id":"실 id","why":"한 줄"}] 걷을 실 — 같은 두 카드를 잇는 겹친 실, 뜻이 흐린 실, 묶음을 짜고 나니 군더더기인 실. 많아야 12.
+- link: [{"a":"n…","b":"n…","label":"1~6자","sure":true,"why":"한 줄"}] 새로 이을 실 — 특히 자료와 사람(누가 보냈나·누가 나오나), 묶음 사이의 중요한 관계. 많아야 8.
+- relabel: [{"id":"실 id","label":"1~6자"}] 뜻이 흐린 꼬리표만.
+- merge: [{"from":"n…","into":"n…"}] 같은 자료의 다른 판본이나 같은 사람의 다른 카드 — 있을 때만.
+- say: 1~3줄, 어떻게 다시 짰는지. 줄을 {"t":"…","on":["묶음 중심 id"]} 로 써도 된다.
+예: {"say":["판을 다시 짠다.",{"t":"…","on":["n3"]}],"groups":[{"a":"n3","name":"…","cards":["n5","n14"]},{"a":"n7","name":"…","cards":["n9"]}],"cut":[{"id":"n4-n3","why":"n3-n4 와 겹침"}],"link":[{"a":"n9","b":"n3","label":"보낸 이","sure":true,"why":"캡처 발신자가 n3"}],"relabel":[{"id":"n6-n3","label":"…"}],"merge":[]}`;
 }
 function cleanGroups(raw){
   const seen = new Set(['n1']), out = [];
@@ -138,10 +137,10 @@ async function rebuildBoard(){
   if (say.length) await sayLine(say.shift()); else await speak(r ? '판을 다시 짠다.' : '…머리가 안 닿는다. 실을 따라 내 손으로 다시 놓겠다.');
   if (r){
     for (const m of (Array.isArray(r.merge) ? r.merge : []).slice(0, 4)) if (m && nodeOf(m.from) && nodeOf(m.into) && m.from !== m.into) await doOp({ op:'merge', from:m.from, into:m.into }).catch(() => {});
-    const cut = new Set((Array.isArray(r.cut) ? r.cut : []).slice(0, 12).map(String));
-    const before = S.links.length; S.links = S.links.filter(L => !cut.has(L.id) && !cut.has(L.b + '-' + L.a));
+    const before = S.links.length;   /* 11-17 B: 실 기록은 habits.js 한 곳 — 판 정리로 끊은 실도 이유와 함께 「끊은 실」에, 이은 실엔 이유 */
+    for (const x of (Array.isArray(r.cut) ? r.cut : []).slice(0, 12)){ const L = strFind(typeof x === 'object' && x ? (x.id || x) : String(x)); if (L) strCut(L, (x && x.why) || '판 정리'); }
     for (const x of (Array.isArray(r.relabel) ? r.relabel : []).slice(0, 12)){ const L = x && S.links.find(L => L.id === x.id || L.b + '-' + L.a === x.id); if (L && x.label) L.label = String(x.label).slice(0, 8); }
-    let added = 0; for (const x of (Array.isArray(r.link) ? r.link : []).slice(0, 8)){ if (!x || !nodeOf(x.a) || !nodeOf(x.b) || x.a === x.b) continue; if (S.links.some(L => (L.a === x.a && L.b === x.b) || (L.a === x.b && L.b === x.a))) continue; S.links.push({ id:x.a + '-' + x.b, a:x.a, b:x.b, label:String(x.label || '').slice(0, 8), sure:x.sure !== false }); added++; }
+    let added = 0; for (const x of (Array.isArray(r.link) ? r.link : []).slice(0, 8)){ if (!x || !nodeOf(x.a) || !nodeOf(x.b) || x.a === x.b) continue; if (S.links.some(L => (L.a === x.a && L.b === x.b) || (L.a === x.b && L.b === x.a))) continue; strLink(x.a, x.b, x.label, x.sure, x.why); added++; }
     const gs = cleanGroups(r.groups); S.groups = fillGroups(gs);
     act('판 다시 지음', { groups:S.groups.map(g => g.name + ':' + (g.cards.length + (g.a ? 1 : 0))), cut:before - S.links.length + added, added });
   } else S.groups = fillGroups([]);

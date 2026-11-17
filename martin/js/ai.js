@@ -17,7 +17,7 @@ function boardText(){
 /* 11-17 A: 대화 기억 — 마틴이 한 번에 여러 줄 말해 16줄 창에선 동료 말이 두세 번 만에 밀려났다.
    최근 대화는 24줄, 그보다 앞선 동료의 말은 이번 사건 것을 줄여서 따로(못 박은 조건·정정이 남게). 더 앞이 필요하면 마틴이 recall 로 찾는다 */
 /* 11-17 A: 판독 규칙 — 마틴의 read 와 판독문 채우기(evidence.js evBackfill)가 같이 쓴다 */
-const READ_RULE = "시각은 화면 그대로 날짜·오전/오후·시:분까지 적는다(오전·오후를 빼지 않는다 — 날짜 구분선도 줄로). 이름표 없는 말풍선은 색·위치로 적고, 누구일 공산이 큰지 괄호로 덧붙인다(예: '노란 말풍선(이 방 주인 쪽으로 보임)'). 프사·사진 속 풍경·물건·장소는 보이는 대로 쓰되 흔히 달리 부르는 이름이 있으면 같이 적는다(예: '단풍(낙엽) 길'). 메신저 캡처면 프사가 보이는 발신자마다 맨 끝에 「[프사] 이름 — 보이는 것」 한 줄씩(예: '[프사] 김지민 — 고양이 그림 동그라미', 기본 프사면 '기본 프사'). 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자.";
+const READ_RULE = "화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. 시각은 화면 그대로 날짜·오전/오후·시:분까지 적는다(오전·오후를 빼지 않는다 — 날짜 구분선도 줄로). 이름표 없는 말풍선은 색·위치로 적고, 누구일 공산이 큰지 괄호로 덧붙인다(예: '노란 말풍선(이 방 주인 쪽으로 보임)'). 프사·사진 속 풍경·물건·장소는 보이는 대로 쓰되 흔히 달리 부르는 이름이 있으면 같이 적는다(예: '단풍(낙엽) 길'). 메신저 캡처면 프사가 보이는 발신자마다 맨 끝에 「[프사] 이름 — 보이는 것」 한 줄씩(예: '[프사] 김지민 — 고양이 그림 동그라미', 기본 프사면 '기본 프사'). 추측은 쓰지 않는다(안 보이면 '안 보임'). 많아야 1500자.";
 function convoText(){
   const L = S.log.filter(l => !l.upd && l.text), recent = L.slice(-24), older = L.slice(0, -24).filter(l => l.who === 'p');
   const keep = []; let budget = 4200;
@@ -160,7 +160,7 @@ async function turn({ text = '', atts = [], retry = false }){
         const add = `\n[다시 보기 — 너는 「${bad.map(tx).join(' / ').slice(0, 160)}」라고 하려 했다. 그 말을 하기 전에 원본 ${pick.map(e => e.id).join(', ')} 을 같이 보낸다(세로로 긴 건 위에서부터 조각). look 과 recall 은 비워라.]\n`;
         try{ const r2 = await ask(buildPrompt(given + add), more); if (r2 && typeof r2 === 'object') res = r2; act('없다 전 다시 보기', { ids:pick.map(e => e.id), imgs:more.length }); }
         catch(e){ act('다시 보기 실패', { code:e && e.code || '' }); } } } }
-  if (typeof modeFilter === 'function'){ try{ res = modeFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 — B(mode.js) 자료 닫힘 등 */
+  if (typeof resFilter === 'function'){ try{ res = resFilter(res) || res; }catch(e){} }   /* 11-17 A: v0.14 연결 고리 → 11-17 B: 답 받기 단계 목록(rules.js RES_STEPS) */
   thinking(false); S.turn++; delete S.pending;
   log('turn', { ok:true, n:S.turn, model:AI.model, effort:AI.effort, ms:Date.now() - t0, prompt, response:res });
   /* 11-17 A: 저장 먼저, 연출은 뒤 — 판독문은 바로 적고, 나머지(판 고침·수첩·난제)는 play 가 단계마다 기기에 적어 두며 한다. 중간에 화면이 다시 열려도 resumePlay 가 마저 한다 */

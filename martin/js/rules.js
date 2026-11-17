@@ -1,8 +1,10 @@
-/* martin/js/rules.js — 마틴의 규칙 한 곳 v1.0 (2026-11-17, B · 보스: 예외를 더하지 말고 통일 규칙으로)
+/* martin/js/rules.js — 마틴의 규칙 한 곳 v1.1 (2026-11-17, B · 보스: 예외를 더하지 말고 통일 규칙으로)
    구조: buildPrompt(ai.js) = 인물 → [상태 칸들: 앱이 보여 주는 것, 명령문 없음] → [이번 턴에 걸린 것](dueText) → [이번에 동료가 가져온 것] → 원칙(RULES) → 출력 형식(outText)
    - RULES: 언제나 쓰는 다섯 원칙(근거·무게·변화·말·의심). 새 버그가 나면 줄을 덧대지 말고, 어느 원칙이 약했는지 보고 그 원칙 문장을 고친다.
    - dueText(): 앱이 상태에서 「이번 턴에 걸린 것」을 골라 우선순위대로 많아야 DUE_MAX 개. 한 줄 = 원칙 이름 + 무엇(상태). 새 신호는 DUE_SRC 에 한 항목으로 더한다.
-   - outText(): 출력 칸의 모양만. 언제·왜 쓰는지는 원칙 쪽에 둔다. */
+   - outText(): 출력 칸의 모양만. 언제·왜 쓰는지는 원칙 쪽에 둔다.
+   - resFilter(): 답 받기 — 마틴의 답이 연출 전에 거치는 단계 목록 RES_STEPS. 감싸기(wrapper)를 쌓지 않고 한 항목씩.
+   v1.1(11-17 B): RES_STEPS·resFilter, 판 정리(tidy.js)도 RULES 를 씀, 판독 규칙은 READ_RULE 한 곳. */
 const RULES = `원칙 — 언제나 이 다섯으로 판단한다. [이번 턴에 걸린 것]과 아래 출력 형식은 이 원칙을 어디에 쓰는지 가리킬 뿐이다.
 
 1. 근거 — 무엇이 참인가
@@ -78,6 +80,18 @@ function dueText(){
   return `[이번 턴에 걸린 것 — 앱이 상태에서 고름, 위에서부터 먼저]\n${L.length ? L.map(x => '· ' + x.t).join('\n') : S.cue && S.cue.soon ? '(동료가 곧 자료를 건넨다 — 다음 답으로)' : '(없음)'}\n`;
 }
 
+/* ── 답 받기 — 마틴의 답이 연출 전에 거치는 단계, 위에서부터. 각 방은 감싸지 말고 여기 한 항목을 더한다 ── */
+const RES_STEPS = [
+  ['전제 의심 기록', r => typeof hbStep === 'function' ? hbStep(r) : r],        /* habits.js */
+  ['자료 예고·한때 사정', r => typeof cueStep === 'function' ? cueStep(r) : r],  /* cue.js(D) */
+  ['자료 형편', r => typeof modeFilter === 'function' ? modeFilter(r) : r],      /* mode.js — 닫힘이면 요구 거름 · 말 8줄 */
+];
+function resFilter(res){
+  if (!res || typeof res !== 'object') return res;
+  for (const [name, f] of RES_STEPS){ try{ res = f(res) || res; }catch(e){ if (typeof act === 'function') act('답 받기 오류', { step:name, msg:String(e && e.message || e).slice(0, 80) }); } }
+  return res;
+}
+
 /* ── 출력 형식 — 칸의 모양만 ── */
 function outText(){
   const nn = 'n' + S.nid, pp = 'p' + (S.pmax + 1), hh = 'h' + (S.hmax + 1), tt = typeof tlNext === 'function' ? tlNext() : 't1';
@@ -94,7 +108,7 @@ function outText(){
 - notes: 수첩 0~4줄 {k, t 50자 안, by, over} — k: q 작은 의문 · guess 짐작(by "me" 동료의 것 / "you" 너의 것) · todo 확인할 것 · fact 작은 사실(날짜·호칭·말버릇·습관·정황). 옛 짐작을 덮으면 over 에 그 m id. 네 작업 메모는 적지 않는다.
 - solve: [{"id":"m3 또는 의문 카드 n…","a":"어떻게 풀렸나"}] · drop: ["m5"] 낡은 수첩 줄(동료가 적은 줄은 빼고)
 - tl: 연혁 — 일 단위로 한 줄씩(메시지 하나하나가 아니라). add {id ${tt}부터, d YYYY-MM-DD(해를 모르면 MM-DD, 모르면 비움), t 24시간 HH:MM(모르면 비우고 when 에 「송년회 밤」처럼), amb 오전·오후를 모르면 true, what 40자 안, who, where, src 자료 id 들, sure, after 반드시 그 뒤인 연혁 id} · edit {id, …} · drop {id, why} · clash {a, b, why} 어긋남 · clash {a, b, ok:true, why} 풀림
-- read: [{"id":"e5","t":"…"}] 판독문 — 화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 눈에 띄는 프사·배경·사진 속 물건. ${READ_RULE} 이미 있으면 고칠 때만.
+- read: [{"id":"e5","t":"…"}] 판독문 — ${READ_RULE} 이미 있으면 고칠 때만.
 - look: ["e3"] 원본을 다시 볼 자료(많아야 3, 이번에 원본이 온 건 빼고) + lookLine 그 순간 한마디 · recall: ["열쇠","금요일"] 옛 대화에서 찾을 말(많아야 3) + recallLine 한마디 — 앱이 붙여 한 번 더 묻는다.
 - ask: 동료가 다음에 캐 올 것 한 줄(마틴 말투).
 - mode: 동료의 말로 자료 형편이 바뀌면 "closed"(더는 구할 수 없음) 또는 "open"(더 구해 올 수 있음 — 「지금 당장은 어렵다」는 아직 열림).

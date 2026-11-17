@@ -1,4 +1,4 @@
-// 마틴 점검 — 통일 규칙 v1.0 (2026-11-17, B · 보스: 특별·예외가 넘치지 않게). 가짜 사건·가짜 마틴, 폰 화면.
+// 마틴 점검 — 통일 규칙 v1.1 (2026-11-17, B · 보스: 특별·예외가 넘치지 않게 · v1.1: 감싸기 없음·답 받기 한 목록·판 정리도 같은 원칙·판독 규칙 한 곳·판 정리 실 기록). 가짜 사건·가짜 마틴, 폰 화면.
 // 프롬프트 구조를 지킨다: 상태 칸엔 명령문이 없고, 규칙은 원칙 다섯 + 출력 형식 한 곳에, 같은 규칙은 한 번만, 개발 메모 없음, 걸린 것은 많아야 셋.
 // 새 규칙이 필요해 이 점검이 깨지면 — 점검을 느슨하게 하지 말고 그 규칙이 다섯 원칙 중 어디에 녹아야 하는지부터 본다.
 // 쓰는 법: bash martin/tests/run.sh rules-b
@@ -48,6 +48,20 @@ const SEED = { v: 3, id: '20261117-rules', at: 1, turn: 12, nid: 9, emax: 2, not
   const pc = await ask('좋아. 다음 기록이다.');
   want(pc.includes('(동료가 곧 자료를 건넨다 — 다음 답으로)') && /\[자료 형편[^\n]*자료 예고 — 「좋아\. 다음 기록이다\.」/.test(pc), '자료 예고 → 걸린 것은 미루고, 형편 칸에 상태로');
   want(pc.includes('말의 크기만큼'), '짧은 말엔 짧게 — 원칙 4');
+
+  /* 감싸기 없음 — 답 받기는 한 목록, 판 조작은 원래 함수 그대로 */
+  const st = await p.evaluate(() => ({ steps: RES_STEPS.map(x => x[0]), doOp: String(doOp).includes("op.op === 'cut'"), mf: String(modeFilter).includes('modeAskNow'), mt: String(modeText).includes('cueSense') }));
+  want(st.steps.length === 3 && st.doOp && st.mf && st.mt, `감싸기 없음 — 답 받기 단계 ${st.steps.join('·')}, doOp 에 cut, modeFilter·modeText 는 원래 함수`);
+  want(pr.split('화면 속 글자를 빠짐없이').length === 2, '판독 규칙은 한 곳(READ_RULE)');
+
+  /* 판 정리 — 인물 설정 한 줄 + 같은 원칙, 옛 말투 없음, 실 기록은 같은 길(끊은 실·이유) */
+  const [tp, ms] = await p.evaluate(() => [tidyPrompt(), MARTIN_SHORT]);
+  want(tp.startsWith(ms) && tp.includes('1. 근거 —') && tp.includes('5. 의심 —') && !/느와르|하드보일드|지어내지 않는다/.test(tp), '판 정리 프롬프트 — 인물 설정 한 줄 + 다섯 원칙, 옛 말투·겹친 규칙 없음');
+  want(tp.includes('[끊은 실]') && tp.includes('"why":"한 줄"'), '판 정리에도 끊은 실이 보이고, 실엔 이유');
+  const tr = await p.evaluate(async () => { window.__q2 = { say: ['다시 짠다.'], groups: [{ a: 'n3', name: '가짜A', cards: ['n7', 'n8'] }], cut: [{ id: 'n3-n7', why: '발신 근거 없음' }], link: [{ a: 'n8', b: 'n3', label: '찍은 곳', sure: false, why: '골목 사진 속 간판' }], relabel: [], merge: [] };
+    const f = await getSample(); const j = f.json; f.json = async q => q.includes('「판 정리」를 눌렀다') ? window.__q2 : j(q); await rebuildBoard(); f.json = j;
+    const L = S.links.find(x => x.a === 'n8' && x.b === 'n3'); return { cut: (S.cuts || []).some(c => c.a === 'n3' && c.b === 'n7' && c.why === '발신 근거 없음'), gone: !S.links.some(x => x.id === 'n3-n7'), why: L && L.why }; });
+  want(tr.cut && tr.gone && tr.why === '골목 사진 속 간판', `판 정리로 끊은 실 → 끊은 실 기록(이유), 이은 실 → 이유 「${tr.why}」`);
 
   want(!errs.length, '페이지 오류 없음 ' + errs.join(' | '));
   await b.close(); if (bad){ console.log(`실패 ${bad}`); process.exit(1); } console.log('전부 통과');

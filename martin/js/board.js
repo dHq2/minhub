@@ -131,10 +131,14 @@ async function doOp(op){
     await sleep(360); sfx(n.x + 50, n.y - (n.h || 130) / 2, '탁'); await sleep(320);
   } else if (op.op === 'link'){
     const A = nodeOf(op.a), B = nodeOf(op.b); if (!A || !B || A === B) return;
-    const old = S.links.find(L => (L.a === A.id && L.b === B.id) || (L.a === B.id && L.b === A.id));
-    const L = old || { id:A.id + '-' + B.id, a:A.id, b:B.id }; L.label = String(op.label || '').slice(0, 8); L.sure = op.sure !== false; if (!old) S.links.push(L);
+    const L = strLink(A.id, B.id, op.label, op.sure, op.why);   /* 11-17 B: 실 기록은 habits.js 한 곳(이유·끊은 기록) */
     const k = Math.max(.38, Math.min(1, (W - 60) / (Math.abs(A.x - B.x) + 240), (H - 60) / (Math.abs(A.y - B.y) + 300)));
     await fly((A.x + B.x) / 2, (A.y + B.y) / 2, k, 650); renderStrings(L.id); await sleep(950);
+  } else if (op.op === 'cut'){   /* 11-17 B: 틀린 실을 이유와 함께 끊는다(habits.js 감싸기에서 옮김) */
+    const L = strFind(op), A = L && nodeOf(L.a), B = L && nodeOf(L.b); if (!L) return;
+    if (A && B) await fly((A.x + B.x) / 2, (A.y + B.y) / 2, Math.max(.45, Math.min(cam.k, 1)), 550);
+    strCut(L, op.why); renderStrings();
+    if (A && B && typeof sfx === 'function') sfx((A.x + B.x) / 2, (A.y + B.y) / 2 - 40, '툭'); await sleep(600);
   } else if (op.op === 'edit'){
     const n = nodeOf(op.id); if (!n) return;
     if (op.title) n.title = String(op.title).slice(0, 16); if (op.note !== undefined) n.note = String(op.note).slice(0, 600);   /* 11-17 A: 60자에서 잘려 중요한 글자가 사라지던 것 — 저장·프롬프트는 전문, 카드엔 넉 줄만(a.css) */

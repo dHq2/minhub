@@ -86,7 +86,7 @@ async function evBackfill(){
 /* 11-17 A: 사진 한 장 받아 적기 — 판독문 채우기와 「사진이 많아 먼저 판독」(ai.js turn)이 같이 쓴다. 그림은 IMG_MAX 장 안으로 넘겨 받는다 */
 async function evReadOne(e, imgs, effort, raise){
   const sample = await getSample(); if (!sample || !canImg || !imgs || !imgs.length) return '';
-  const p = `${MARTIN_SHORT}\n지금은 말하지 않고 자료 사진 한 장을 받아 적는다. 동료가 건넨 원본이다(세로로 긴 건 위에서부터 조각).\n화면 속 글자를 빠짐없이: 대화는 '이름(시각): 말' 꼴로 한 줄씩, 날짜 구분선·읽음 표시·삭제된 메시지·방 이름·참여 인원, 프사·배경·사진 속 물건처럼 눈에 띄는 것. ${READ_RULE}\nJSON 하나만: {"t":"판독문"}`;
+  const p = `${MARTIN_SHORT}\n지금은 말하지 않고 자료 사진 한 장을 받아 적는다. 동료가 건넨 원본이다(세로로 긴 건 위에서부터 조각).\n${READ_RULE}\nJSON 하나만: {"t":"판독문"}`;
   try{ const r = await sample.json(p, { model:AI.model, effort:effort || 'low', images:imgs }); return String(r && (r.t || r.read || r.text) || '').trim().slice(0, 1800); }
   catch(x){ if (raise) throw x; act('판독 실패', { ev:e.id, code:x && x.code || '' }); return ''; }
 }

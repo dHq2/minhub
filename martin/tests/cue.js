@@ -1,4 +1,4 @@
-// 자료 예고 알아듣기 점검 v1.1 (2026-11-17, D · v1.1: 프롬프트 글 대신 S.cue 상태를 본다) — 「다음 기록이다」면 받을 채비만 · 닫힘이었으면 열림 · 「지금 당장은 힘들어」로는 닫히지 않음
+// 자료 예고 알아듣기 점검 v1.2 (2026-11-17, D · v1.1: 프롬프트 글 대신 S.cue 상태를 본다 · v1.2 B: 답 거르기는 resFilter(답 받기 단계 목록)) — 「다음 기록이다」면 받을 채비만 · 닫힘이었으면 열림 · 「지금 당장은 힘들어」로는 닫히지 않음
 // 쓰는 법: bash martin/tests/run.sh cue   (가짜 사건 — 김지민)
 const { chromium } = require('playwright');
 const URL = process.env.URL || 'http://localhost:8790/martin/';
@@ -13,7 +13,7 @@ const SEED = { v:3, id:'20261117-cue', at:1, nodes:[{ id:'n1', kind:'brief', tit
   await p.addInitScript(s => { if (!sessionStorage.getItem('ck')){ localStorage.setItem('drmartin.v2', s); localStorage.setItem('drmartin.seen', 'v9.9.9'); sessionStorage.setItem('ck', 1); } }, JSON.stringify(SEED));
   await p.goto(URL); await p.waitForTimeout(2000);
   const say = (text, extra) => p.evaluate(([t, x]) => { S.log.push({ who:'p', text:t, at:Date.now() + Math.random(), photos:[], files:[], ...(x || {}) }); modeText(); return JSON.stringify(S.cue || null); }, [text, extra]);
-  const filt = r => p.evaluate(r => { const o = modeFilter(r); return { mode:o.mode, ask:o.ask, closed:S.closed }; }, r);
+  const filt = r => p.evaluate(r => { const o = resFilter(r); return { mode:o.mode, ask:o.ask, closed:S.closed }; }, r);
   /* ① 「지금 당장은 힘들어」 + 마틴이 closed → 닫지 않음 */
   await say('지금은 좀 힘들어. 있는 걸로 보자');
   let r = await filt({ say:['알겠다.'], mode:'closed' });
